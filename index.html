@@ -883,7 +883,6 @@
   .rangebtns button { background: none; border: 1px solid var(--border); border-radius: var(--r-normal);
     color: var(--ink-2); font: inherit; font-size: var(--fs-neben); padding: 3px 9px; cursor: pointer; }
   .rangebtns button.active { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
-  #bigchart { width: 100%; height: 300px; display: block; }
   .chartleiste { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:8px 0 6px; font-size:var(--fs-neben); color:var(--ink-2); }
   .chartleiste label { display:flex; gap:5px; align-items:center; }
   .chartleiste select { font-size:var(--fs-neben); padding:2px 4px; }
@@ -927,8 +926,17 @@
   .vwKreuz { position: absolute; top: 4px; left: 8px; pointer-events: none; font-size: var(--fs-neben);
              color: var(--muted); font-variant-numeric: tabular-nums; }
   .vwQuelle { margin-top: 4px; }
-  .vwAlt { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
-  .vwAlt > summary { cursor: pointer; font-weight: 600; display: flex; gap: 10px; align-items: baseline; }
+  .vwWahl { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 4px; }
+  .vwWahl > b { font-size: var(--fs-neben); color: var(--muted); font-weight: 600; min-width: 62px; }
+  .rangebtns button[disabled] { opacity: .38; cursor: not-allowed; }
+  .vwZoom { display: flex; gap: 4px; margin-left: auto; }
+  .vwZoom button { background: none; border: 1px solid var(--border); border-radius: var(--r-normal);
+                   color: var(--ink-2); cursor: pointer; width: 28px; height: 24px; line-height: 1; }
+  .vwZoom button:hover { border-color: var(--btn); color: var(--ink); }
+  .vwGruppe { color: var(--muted); font-size: var(--fs-neben); font-weight: 600; }
+  #vwIndi { width: 100%; height: 90px; display: block; }
+  #vwQuelleDetail { margin-top: 4px; }
+  #vwQuelleDetail ul { margin: 0; padding-left: 18px; }
   @media (max-width: 1100px) { .vwBand { width: 90px; } #vwChart { height: 340px; } }
   /* QS-F8 (04.09.2026): Der Sitzungszustand ist eine Zeile, die Störungsmeldung
      eine zweite darunter. Bei 1024 px lief die Meldung sonst in dieselbe Zeile und
@@ -1864,7 +1872,17 @@
          Gehandelt wird aus dem Viewer nichts. -->
     <div class="vwKopf" id="vwKopf"></div>
     <div class="panel">
-      <div class="rangebtns" id="vwZeitrahmen"></div>
+      <!-- Zwei Fragen, zwei Reihen: wie weit zurück (Zeitraum) und wie fein
+           (Kerze). Beide Listen stehen in markt/kerzenchart.js, nicht hier. -->
+      <div class="vwWahl">
+        <b id="vwZeitraumLabel">Zeitraum</b>
+        <div class="rangebtns" id="vwZeitraum" role="group" aria-labelledby="vwZeitraumLabel"></div>
+        <div class="vwZoom" id="vwZoom" role="group" aria-label="Zoom"></div>
+      </div>
+      <div class="vwWahl">
+        <b id="vwKerzeLabel">Kerze</b>
+        <div class="rangebtns" id="vwKerze" role="group" aria-labelledby="vwKerzeLabel"></div>
+      </div>
       <div class="chartleiste" id="vwLeiste">
         <span style="color:var(--muted); font-size:var(--fs-neben);">Durchschnitte:</span>
         <label class="sigbox"><input type="checkbox" data-ma="20"> 20</label>
@@ -1875,12 +1893,36 @@
                 aria-label="Erklärung: Wie der Viewer zu seinen Kerzen kommt">i</button>
         <span id="vwHinweis" class="hinweis"></span>
       </div>
+      <!-- Einblenden: Signale, Kanäle, Indikatoren. Aus SIGNALE/INDIKATOREN
+           gebaut - die Erklärtexte und die Urteile stehen dort an einer Stelle. -->
+      <div class="chartleiste" id="vwEinblenden" role="group" aria-label="Einblenden"></div>
       <div class="vwWrap">
         <canvas id="vwChart" tabindex="0" role="img"
                 aria-label="Kerzenchart des gewählten Werts – Pfeiltasten blättern, Plus und Minus zoomen"></canvas>
         <div id="vwKreuz" class="vwKreuz"></div>
       </div>
-      <div id="vwQuelle" class="hinweis vwQuelle"></div>
+      <!-- Die Indikator-Spur: eigene Skala, dieselbe x-Achse. Verborgen,
+           solange niemand sie einblendet. -->
+      <div id="vwIndiWrap" hidden><canvas id="vwIndi" role="img"
+           aria-label="Indikator-Spur unter dem Kerzenchart"></canvas></div>
+      <div id="vwKanalInfo" class="hinweis"></div>
+      <!-- Kanal-Verzug: Ein Regressionskanal beschreibt, was war, und läuft der
+           Bewegung deshalb immer nach. Wie weit, gehört als Zahl unter den Chart –
+           sonst hält man eine Beschreibung der Vergangenheit für eine Vorhersage. -->
+      <div id="vwKanalVerzug" class="hinweis" style="margin:2px 0 0; line-height:1.5;"></div>
+      <!-- Die Fußzeile sagt EINEN Satz; die Einzelheiten (Naht, verworfene
+           Kerzen, laufende Kerze, Bänder) liegen hinter dem i-Knopf. -->
+      <div class="chartleiste" style="gap:8px; margin:4px 0 0;">
+        <span id="vwQuelle" class="hinweis vwQuelle"></span>
+        <button class="info" type="button" id="vwQuelleMehr" aria-expanded="false"
+                aria-controls="vwQuelleDetail"
+                aria-label="Erklärung: woher die Kerzen dieses Charts kommen">i</button>
+      </div>
+      <div id="vwQuelleDetail" class="hinweis" hidden></div>
+    </div>
+    <div class="panel" style="margin-top:12px;">
+      <h3>Signale im Chart</h3>
+      <div id="vwSigListe"></div>
     </div>
     <div class="grid2" style="margin-top:12px;">
       <div class="panel">
@@ -1893,75 +1935,6 @@
       </div>
     </div>
     <div id="vwBelegstand" class="hinweis" style="margin-top:10px;"></div>
-    <details class="vwAlt" id="vwAlt">
-      <summary>Linien-Ansicht mit Signalen und Kanälen <span class="klappe-stand" id="vwAltStatus"></span></summary>
-    <div class="panel">
-      <div class="rangebtns" id="expRanges"></div>
-      <div class="chartleiste">
-        <label title="Linie zeigt nur den Schlusskurs. Kerzen zeigen zusätzlich Eröffnung, Hoch und Tief jeder Periode – daran erkennt man, wie eine Bewegung zustande kam.">Darstellung
-          <select id="expChartArt"><option value="linie" selected>Linie</option><option value="kerzen">Kerzen</option></select>
-        </label>
-        <label title="Wie weit zurück der Chart reicht. Yahoo begrenzt Intraday-Daten: 1-Minuten höchstens 7 Tage, 5/15-Minuten 60 Tage, Stundenkerzen 730 Tage.">Zeitraum
-          <select id="expZeit">
-            <option value="1d">1 Tag</option>
-            <option value="5d">5 Tage</option>
-            <option value="1mo">1 Monat</option>
-            <option value="60d">60 Tage</option>
-            <option value="6mo">6 Monate</option>
-            <option value="1y" selected>1 Jahr</option>
-            <option value="2y">2 Jahre</option>
-            <option value="5y">5 Jahre</option>
-            <option value="max">Maximum</option>
-          </select>
-        </label>
-        <label title="Freie Datumswahl – schlägt den Zeitraum links. Ein Klick auf einen Schnellwahl-Knopf setzt sie zurück.">von<input id="expVon" type="date" style="width:130px;"></label>
-        <label>bis<input id="expBis" type="date" style="width:130px;"></label>
-        <label title="Wie fein der Chart aufgelöst ist. Feinere Kerzen reichen weniger weit zurück.">Kerzen
-          <select id="expKerze">
-            <option value="1m">1 Minute</option>
-            <option value="5m">5 Minuten</option>
-            <option value="15m">15 Minuten</option>
-            <option value="60m">1 Stunde</option>
-            <option value="1d" selected>1 Tag</option>
-            <option value="1wk">1 Woche</option>
-            <option value="1mo">1 Monat</option>
-          </select>
-        </label>
-        <span id="expZeitHinweis" class="hinweis"></span>
-      </div>
-      <div class="chartleiste" id="expSignalLeiste">
-        <span style="color:var(--muted); font-size:var(--fs-neben);">Signale einblenden:</span>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
-        <label class="sigbox" title="Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long."><input type="checkbox" data-sig="reversion"> Umkehr</label>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
-        <label class="sigbox" title="Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die Hauptstrategie; gegen eine gepaarte Kontrolle ist sie seit dem 23.08.2026 nicht entscheidbar."><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="donchian"> Donchian</label>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="squeeze"> Squeeze</label>
-        <label class="sigbox"><input type="checkbox" data-sig="linie"> Leitlinie (EMA20)</label>
-        <span id="expSigZahl" class="hinweis"></span>
-      </div>
-      <div class="chartleiste" id="expIndiLeiste">
-        <span style="color:var(--muted); font-size:var(--fs-neben);">Chartbild:</span>
-        <label class="sigbox" title="Gleitende Durchschnitte über die letzten 50 bzw. 200 KERZEN der gewählten Kerzengröße – auf dem Tageschart also 50/200 Handelstage, auf dem Stundenchart 50/200 Stunden. Gezeichnet wird nur, wenn genug Kerzen da sind, nie heimlich verkürzt."><input type="checkbox" data-ind="ma"> SMA 50/200</label>
-        <label class="sigbox" title="Kreuzungen der beiden Durchschnitte. Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-ind="cross50200"> Golden/Death Cross</label>
-        <label class="sigbox" title="Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg."><input type="checkbox" data-ind="kanal"> Trendkanal</label>
-        <label class="sigbox" title="Zerlegt die gesamte sichtbare Historie an ihren Wendepunkten und zeichnet für JEDEN Trendabschnitt einen eigenen Kanal – grün aufwärts, rot abwärts, blau seitwärts. Reine Anzeige zum Erkennen von Marktphasen: Als Handelsbedingung wurde ein Dip-Kauf im frischen Seitwärtsabschnitt gemessen und fiel durch – es wird bewusst nichts davon gehandelt."><input type="checkbox" data-ind="segmente"> Kanal-Abschnitte (Historie)</label>
-        <label class="sigbox" title="Höchster und tiefster Kurs der letzten 20 bzw. 60 Perioden – die Zonen, an denen der Kurs zuletzt gedreht hat."><input type="checkbox" data-ind="sr"> Unterstützung / Widerstand</label>
-        <label class="sigbox" title="Handelsvolumen je Kerze. Ein Ausbruch mit hohem Volumen ist glaubwürdiger als einer bei dünnem Handel."><input type="checkbox" data-ind="volumen"> Volumen</label>
-        <span id="expKanalInfo" class="hinweis"></span>
-      </div>
-      <!-- Kanal-Verzug: Ein Regressionskanal beschreibt, was war, und läuft der Bewegung
-           deshalb immer nach. Wie weit, gehört als Zahl unter den Chart – sonst hält man
-           eine Beschreibung der Vergangenheit für eine Vorhersage. -->
-      <div id="expKanalVerzug" class="hinweis" style="margin:2px 0 8px; line-height:1.5;"></div>
-      <div class="chartwrap">
-        <div id="expReadout"></div>
-        <svg id="bigchart"></svg>
-      </div>
-      <div id="expSigDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px;"></div>
-      <div id="expSigListe" style="margin-top:10px;"></div>
-    </div>
-    </details>
     <div class="grid2" style="margin-top:12px;">
       <div class="panel">
         <h3>Kennzahlen</h3>

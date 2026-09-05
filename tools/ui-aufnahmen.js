@@ -475,6 +475,17 @@ async function lauf(win) {
        * Klick-Sperrliste, also kommt zuerst die Attrappe aus kunstinstanz.js: der
        * Knopf laeuft seinen echten Weg, es geht aber nichts ins Netz.
        * Nur mit --kunstdaten: eine leere Instanz soll leer bleiben. */
+      /* Der Aktien-Viewer zeigt ohne geoeffneten Wert nur seine Startkarte. Der
+       * Chart, seine zwei Knopfreihen und die Leiste "Einblenden" stuenden dann
+       * auf keinem Bild. Geoeffnet wird ueber dieselbe Schnittstelle wie in
+       * tools/ui-probe.js (viewerPruefen) - kein zweiter Weg in denselben
+       * Bildschirm. Nur mit --kunstdaten. */
+      if (KUNSTDATEN && sub === 'explorer') {
+        const KI2 = require(path.join(__dirname, 'kunstinstanz.js'));
+        await js("(function () { if (!window.Explorer) return 'kein Explorer';" +
+          " window.Explorer.oeffne('" + (KI2.viewerSymbol ? KI2.viewerSymbol() : 'KUNSTA') + "', 'Kunst A'); return 'ok'; })()");
+        await schlaf(3500);
+      }
       if (KUNSTDATEN && sub === 'scheine') {
         const KI = require(path.join(__dirname, 'kunstinstanz.js'));
         const gesetzt = await js(KI.scheinAttrappeCode(Date.now()));

@@ -270,6 +270,12 @@ function archiv(jetzt) {
     var stand = { fertig: {}, ohne: {} };
     KUNST_SYMBOLE.forEach(function (sym, nr) {
       var serie = [];
+      /* Eine gesaete Reihe, kein Zufall: derselbe Aufruf gibt dieselben Kurse.
+       * Der Kurs muss sich BEWEGEN, sonst schlaegt kein Detektor an und die
+       * Oberflaechen-Probe kann Signal-Marken nicht sehen (gemessen 05.09.2026:
+       * auf der alten Geraden null Signale ueber alle sechs Detektoren). */
+      var saat = 4711 + nr * 97, lauf = 0;
+      function wuerfel() { saat = (saat * 1103515245 + 12345) % 2147483648; return saat / 2147483648; }
       tage.slice().reverse().forEach(function (t0, idx) {
         var alter = L.tage - 1 - idx;                     // 0 = juengster Tag
         if (L.luecke && alter >= L.luecke[0] && alter <= L.luecke[1]) return;
@@ -283,8 +289,17 @@ function archiv(jetzt) {
         var schritt = Math.min(L.barMin, 60);
         for (var k = 0; k < (L.jeTag || 3); k++) {
           var t = t0 + (14 * 60 + 30 + k * schritt) * 60000;
-          var kurs = Math.round((100 + nr * 7 + idx * 0.4 + k * 0.15) * 100) / 100;
-          serie.push([t, kurs, 12000 + k * 300, kurs + 0.3, kurs - 0.3, kurs - 0.1]);
+          /* Trend + zwei Wellen + Streuung, dazu alle 17 Kerzen ein scharfer
+           * Ruecksetzer: der treibt den RSI(2) ins Extrem und gibt dem
+           * Donchian-Ausbruch danach eine Spanne, aus der er ausbrechen kann. */
+          var welle = 2.6 * Math.sin(lauf / 3.3) + 1.4 * Math.sin(lauf / 11.7);
+          var dip = (lauf % 17 === 0 && lauf > 0) ? -4.2 : 0;
+          var kurs = Math.round((100 + nr * 7 + lauf * 0.4 + welle + (wuerfel() - 0.5) * 1.8 + dip) * 100) / 100;
+          var auf = Math.round((kurs - (wuerfel() - 0.5) * 0.9) * 100) / 100;
+          serie.push([t, kurs, 12000 + k * 300,
+            Math.round((Math.max(kurs, auf) + wuerfel() * 0.6) * 100) / 100,
+            Math.round((Math.min(kurs, auf) - wuerfel() * 0.6) * 100) / 100, auf]);
+          lauf++;
         }
       });
       if (!serie.length) return;

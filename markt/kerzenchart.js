@@ -35,15 +35,92 @@
    * Fuer die Naht zaehlt nur der Stempel, nicht die Dauer. */
   var INTERVALL_MS = {
     '1m': 60000, '5m': 300000, '15m': 900000,
-    '1h': 3600000, '1T': 86400000, '1W': 604800000
+    '1h': 3600000, '1T': 86400000, '1W': 604800000,
+    /* 1M hat KEINE feste Dauer - Monate sind 28 bis 31 Tage lang. Wer hier eine
+     * Zahl hinschreibt, bekommt sie in periodeVon() zurueck und legt die laufende
+     * Monatskerze auf einen Tag, den es im Kalender nicht gibt. Monatskerzen
+     * entstehen deshalb ausschliesslich ueber verdichten(). */
+    '1M': null
   };
   /* Welcher Archivordner traegt diesen Zeitrahmen (kerzenquelle.js kennt die Pfade).
-   * 1W fuehrt das Archiv NICHT - dort ist der Rueckfall auf Yahoo kein Notbehelf,
-   * sondern die einzige Quelle, und die Fusszeile sagt es. */
-  var ARCHIV_INTERVALL = { '1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '1T': '1d', '1W': null };
+   * 1W und 1M fuehrt das Archiv NICHT - sie werden aus TAGESKERZEN gebildet
+   * (verdichten()), nicht von einer eigenen Quelle geholt. Eine zweite Quelle fuer
+   * dieselbe Woche waere eine zweite Wahrheit ueber denselben Kurs. */
+  var ARCHIV_INTERVALL = { '1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '1T': '1d', '1W': null, '1M': null };
   /* Wie derselbe Zeitrahmen bei Yahoo heisst. */
-  var YAHOO_INTERVALL = { '1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '1T': '1d', '1W': '1wk' };
-  var ZEITRAHMEN = ['1m', '5m', '15m', '1h', '1T', '1W'];
+  var YAHOO_INTERVALL = { '1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '1T': '1d', '1W': '1wk', '1M': '1mo' };
+  /* Aus welchen Kerzen 1W und 1M gebildet werden. Was hier nicht steht, wird geholt. */
+  var AUS_TAGESKERZEN = { '1W': true, '1M': true };
+  var ZEITRAHMEN = ['1m', '5m', '15m', '1h', '1T', '1W', '1M'];
+
+  /* ---------------------------------------------------------------------------
+   * ZEITRAUM UND KERZENLAENGE SIND ZWEI FRAGEN (Viewer 8a, 05.09.2026)
+   *
+   * Bis hierher gab es EINE Reihe Knoepfe, und sie beantwortete beide zugleich:
+   * "1W" hiess sowohl "eine Woche weit" als auch "Wochenkerzen". Wilhelms Befund vom
+   * 05.09.: man kam nur bis zum Wochenchart, und die Zeitraeume waren falsch
+   * beschriftet - genau das ist die Verwechslung.
+   *
+   * Deshalb zwei Listen: ZEITRAEUME sagt, wie weit zurueck; KERZEN sagt, wie fein.
+   * VORGABE verbindet sie beim Klick auf einen Zeitraum, ueberschreibt die Kerze aber
+   * nie danach - wer eine Kerze waehlt, behaelt sie. */
+  var ZEITRAEUME = ['1T', '5T', '1M', '3M', '6M', '1J', '5J', 'Max'];
+  var KERZEN = ['1m', '5m', '15m', '1h', '1T', '1W', '1M'];
+  var VORGABE = { '1T': '5m', '5T': '15m', '1M': '1h', '3M': '1T', '6M': '1T', '1J': '1T', '5J': '1W', 'Max': '1M' };
+
+  /* HANDELSTAGE, nicht Kalendertage: ein Jahr hat 252 Sitzungen, nicht 365. Wer mit
+   * Kalendertagen rechnet, bekommt fuer jeden Zeitraum ein Drittel zu viele Kerzen
+   * und graut Paare aus, die in Wahrheit passen. 'Max' ist keine Zahl, sondern
+   * "so weit die Quelle reicht" - hier steht eine grosszuegige Obergrenze, damit die
+   * Ausgrau-Regel ueberhaupt rechnen kann. */
+  var HANDELSTAGE = { '1T': 1, '5T': 5, '1M': 21, '3M': 63, '6M': 126, '1J': 252, '5J': 1260, 'Max': 10000 };
+  /* Wie viele Kerzen ein Handelstag traegt. 390 Minuten regulaere Sitzung; die
+   * Vor- und Nachboerse zaehlt hier NICHT mit - sie ist im Viewer abschaltbar und
+   * wuerde die Schaetzung von der Stellung eines Schalters abhaengig machen. */
+  var KERZEN_JE_TAG = { '1m': 390, '5m': 78, '15m': 26, '1h': 7, '1T': 1, '1W': 1 / 5, '1M': 1 / 21 };
+  /* Die Grenzen der Vernunft. Unten drei Kerzen: aus zwei Kerzen wird kein Chart,
+   * und "1 Tag mit Wochenkerzen" ist keine Ansicht, sondern ein Missverstaendnis.
+   * Oben 20.000: darueber ist jede Kerze schmaler als ein Bildpunkt. */
+  var KERZEN_MIN = 3;
+  var KERZEN_MAX = 20000;
+
+  /** Wie viele Kerzen ergaebe dieses Paar ungefaehr? Reine Schaetzung aus zwei
+   *  Tabellen - sie fragt keine Quelle und laedt nichts. */
+  function kerzenZahl(zeitraum, kerze) {
+    var t = HANDELSTAGE[zeitraum], j = KERZEN_JE_TAG[kerze];
+    if (!(t > 0) || !(j > 0)) return null;
+    return t * j;
+  }
+  /** Passt dieses Paar zusammen? Zurueck kommt IMMER ein Grund, wenn nicht - ein
+   *  ausgegrauter Knopf ohne Begruendung ist eine Sackgasse mit Deckel. */
+  function paarUrteil(zeitraum, kerze) {
+    var n = kerzenZahl(zeitraum, kerze);
+    if (n == null) return { ok: false, grund: 'Diese Kombination gibt es nicht.' };
+    if (n < KERZEN_MIN) {
+      return { ok: false, grund: zeitraum + ' ergibt mit ' + kerze + '-Kerzen weniger als drei Kerzen – dafür ist der Zeitraum zu kurz.' };
+    }
+    if (n > KERZEN_MAX) {
+      return { ok: false, grund: zeitraum + ' mit ' + kerze + '-Kerzen wären rund ' + gerundet(n) + ' Kerzen – feiner, als ein Bildschirm zeigen kann.' };
+    }
+    return { ok: true, grund: '' };
+  }
+  function gerundet(n) {
+    if (n >= 1e6) return Math.round(n / 1e5) / 10 + ' Mio.';
+    if (n >= 1000) return Math.round(n / 1000) + '.000';
+    return String(Math.round(n));
+  }
+  /** Die Kerze, die ein Zeitraum vorschlaegt - und die gewaehlte, falls sie noch
+   *  passt. So bleibt eine bewusst gewaehlte Kerze beim Zeitraumwechsel stehen,
+   *  solange sie sinnvoll ist, und rutscht sonst auf die Vorgabe. */
+  function kerzeFuer(zeitraum, bisher) {
+    if (bisher && paarUrteil(zeitraum, bisher).ok) return bisher;
+    var v = VORGABE[zeitraum];
+    if (v && paarUrteil(zeitraum, v).ok) return v;
+    for (var i = 0; i < KERZEN.length; i++) {
+      if (paarUrteil(zeitraum, KERZEN[i]).ok) return KERZEN[i];
+    }
+    return v || KERZEN[0];
+  }
 
   function zahl(v) { return typeof v === 'number' && isFinite(v); }
   function kerzeOk(k) { return Array.isArray(k) && k.length >= 2 && zahl(k[0]) && zahl(k[1]); }
@@ -365,6 +442,116 @@
     return { von: Math.max(0, e - n + 1), bis: e, anzahl: n };
   }
 
+  /** Dasselbe Fenster, aber am LINKEN Rand festgemacht. TradingView merkt sich die
+   *  Position des linken Chartrands: wechselt man die Kerzenlaenge, bleibt der
+   *  Anfang stehen und das Bild wird feiner, statt nach rechts wegzuspringen.
+   *  Beides ist dieselbe Rechnung - nur der Anker ist ein anderer. */
+  function fensterAbVon(gesamt, von, anzahl, mindest) {
+    var min = mindest > 0 ? mindest : 20;
+    if (!(gesamt > 0)) return { von: 0, bis: -1, anzahl: 0 };
+    var n = Math.max(min, Math.min(gesamt, Math.round(anzahl) || gesamt));
+    var v = Math.max(0, Math.min(gesamt - n, Math.round(von) || 0));
+    return { von: v, bis: v + n - 1, anzahl: n };
+  }
+
+  /* ---------------------------------------------------------------------------
+   * 5b) Rad-Zoom und Blaettern - als Rechnung, nicht als Ereignis
+   *
+   * Die alte Linien-Ansicht hatte den Rad-Zoom in ihrem wheel-Horcher stehen
+   * (explorer.js, Tester-Wunsch #27). Dort war er nicht pruefbar, und mit der
+   * Ansicht waere er verschwunden. Hier ist er eine Funktion: gleiche Eingabe,
+   * gleiches Fenster, ohne Maus.
+   *
+   * DIE KERZE UNTER DEM ZEIGER BLEIBT STEHEN. `anteil` ist die Position des
+   * Zeigers im Bild (0 = linker Rand, 1 = rechter). Genau die Kerze, die dort
+   * liegt, liegt danach wieder dort - sonst zoomt man am Punkt vorbei, auf den man
+   * zeigt. */
+  var ZOOM_SCHRITT = 0.75;
+  var ZOOM_MIN = 20;
+  function radZoom(gesamt, von, anzahl, anteil, rein) {
+    if (!(gesamt > 0)) return { von: 0, anzahl: 0 };
+    var n = Math.max(1, Math.min(gesamt, Math.round(anzahl) || gesamt));
+    var v = Math.max(0, Math.min(gesamt - n, Math.round(von) || 0));
+    var a = zahl(anteil) ? Math.max(0, Math.min(1, anteil)) : 0.5;
+    var anker = v + Math.round(a * (n - 1));
+    var neuN = rein ? Math.round(n * ZOOM_SCHRITT) : Math.round(n / ZOOM_SCHRITT);
+    neuN = Math.max(Math.min(ZOOM_MIN, gesamt), Math.min(gesamt, neuN));
+    var neuVon = Math.max(0, Math.min(gesamt - neuN, anker - Math.round(a * (neuN - 1))));
+    return { von: neuVon, anzahl: neuN };
+  }
+  /** Blaettern um `kerzen` Stellen. Positiv heisst nach rechts (juenger). */
+  function blaettern(gesamt, von, anzahl, kerzen) {
+    if (!(gesamt > 0)) return { von: 0, anzahl: 0 };
+    var n = Math.max(1, Math.min(gesamt, Math.round(anzahl) || gesamt));
+    return { von: Math.max(0, Math.min(gesamt - n, Math.round(von) + Math.round(kerzen))), anzahl: n };
+  }
+
+  /* ---------------------------------------------------------------------------
+   * 5c) Wochen- und Monatskerzen aus TAGESKERZEN
+   *
+   * Warum gebildet und nicht geholt: Yahoo liefert '1wk' und '1mo' zwar, aber das
+   * eigene Archiv fuehrt sie nicht. Wer die Woche holt und den Tag hat, hat zwei
+   * Quellen fuer denselben Kurs - und an der Naht entscheidet dann der Zufall,
+   * welche gewinnt. Gebildet ist sie ableitbar: dieselben Tage geben dieselbe Woche.
+   *
+   * WOCHEN NACH BOERSENKALENDER, nicht nach Millisekunden. 604800000 ms auf den
+   * Stempel addiert verschiebt sich ueber die Sommerzeit hinweg und legt die
+   * Wochengrenze irgendwann mitten in den Dienstag. Gebildet wird ueber den
+   * KALENDERTAG in der Boersenzeitzone: alle Tage mit demselben Montag gehoeren in
+   * dieselbe Kerze. Eine Feiertagswoche hat vier Tage und ergibt trotzdem GENAU
+   * EINE Kerze - keine leere daneben.
+   *
+   * Der Stempel der gebildeten Kerze ist der ERSTE Handelstag des Abschnitts, nicht
+   * der Montag: an einem Montagsfeiertag gaebe es sonst eine Kerze zu einem Tag, an
+   * dem nicht gehandelt wurde. */
+  function teileIn(ms, zone) {
+    var d = new Date(ms);
+    try {
+      var s = d.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: zone });
+      return { jahr: Number(s.slice(0, 4)), monat: Number(s.slice(5, 7)), tag: Number(s.slice(8, 10)) };
+    } catch (e) {
+      return { jahr: d.getUTCFullYear(), monat: d.getUTCMonth() + 1, tag: d.getUTCDate() };
+    }
+  }
+  /** Schluessel des Abschnitts, in den diese Kerze faellt. '1W' -> der Montag,
+   *  '1M' -> der Kalendermonat. Rein: kein Zufall, keine Uhr. */
+  function abschnittSchluessel(ms, art, zone) {
+    var t = teileIn(ms, zone || 'America/New_York');
+    if (art === '1M') return t.jahr + '-' + (t.monat < 10 ? '0' : '') + t.monat;
+    var u = Date.UTC(t.jahr, t.monat - 1, t.tag);
+    var wt = new Date(u).getUTCDay();              // 0 = Sonntag
+    var zurueck = (wt + 6) % 7;                    // auf den Montag zurueck
+    return new Date(u - zurueck * 86400000).toISOString().slice(0, 10);
+  }
+  /** Tageskerzen zu Wochen- oder Monatskerzen verdichten.
+   *  Eroeffnung der ersten, Schluss der letzten, Hoch das hoechste, Tief das
+   *  tiefste, Umsatz die Summe. Fehlt ueberall der Umsatz, bleibt er null - eine
+   *  Null waere die Behauptung, es sei nichts gehandelt worden. */
+  function verdichten(tageskerzen, art, zone) {
+    if (art !== '1W' && art !== '1M') return (tageskerzen || []).slice();
+    var ks = (tageskerzen || []).filter(kerzeOk);
+    var aus = [], letzterS = null, akt = null;
+    ks.forEach(function (k) {
+      var s = abschnittSchluessel(k[0], art, zone);
+      if (s !== letzterS) {
+        if (akt) aus.push(fertig(akt));
+        letzterS = s;
+        akt = { zeit: k[0], auf: zahl(k[5]) ? k[5] : k[1], zu: k[1],
+                hoch: zahl(k[3]) ? k[3] : k[1], tief: zahl(k[4]) ? k[4] : k[1],
+                umsatz: zahl(k[2]) ? k[2] : null };
+        return;
+      }
+      akt.zu = k[1];
+      var h = zahl(k[3]) ? k[3] : k[1], t = zahl(k[4]) ? k[4] : k[1];
+      if (h > akt.hoch) akt.hoch = h;
+      if (t < akt.tief) akt.tief = t;
+      if (zahl(k[2])) akt.umsatz = (akt.umsatz == null ? 0 : akt.umsatz) + k[2];
+    });
+    if (akt) aus.push(fertig(akt));
+    return aus;
+    function fertig(a) { return [a.zeit, a.zu, a.umsatz, a.hoch, a.tief, a.auf]; }
+  }
+
   /* ---------------------------------------------------------------------------
    * 6) Zeichnen
    *
@@ -481,11 +668,14 @@
     });
     ctx.restore();
 
-    /* (b) Umsatzbalken unter den Kursen. */
+    /* (b) Umsatzbalken unter den Kursen. Abschaltbar, weil der Umsatz im Viewer
+     *     ein Schalter der Leiste "Einblenden" ist - die Skala behaelt ihren Platz
+     *     trotzdem, sonst spraenge das Kursbild beim Umschalten in der Hoehe. */
     ctx.save();
     ctx.fillStyle = f.umsatz;
     var mitUmsatz = 0;
     kerzen.forEach(function (k, i) {
+      if (o.umsatz === false) return;
       if (!zahl(k[2]) || k[2] <= 0) return;
       mitUmsatz++;
       var y = sk.volY(k[2]);
@@ -548,6 +738,47 @@
       ctx.restore();
     });
 
+    /* (d2) Die Signal-Marken. Dreieck nach oben unter der Kerze (Kauf), nach unten
+     *      darueber (Verkauf) - dieselbe Form wie in der alten Linien-Ansicht, damit
+     *      niemand zwei Zeichensprachen lernen muss.
+     *
+     *      HIER WIRD NICHTS GERECHNET. Die Marken kommen fertig herein; welcher
+     *      Detektor sie erzeugt hat und was sein Belegstand ist, entscheidet der
+     *      Aufrufer. Ein Zeichner, der Signale selbst faende, waere eine zweite
+     *      Rechnung neben der, auf die die Automatik hoert. */
+    var marken = 0;
+    (o.marken || []).forEach(function (mk) {
+      if (!mk || !zahl(mk.index) || mk.index < 0 || mk.index >= kerzen.length) return;
+      var kk = kerzen[mk.index];
+      if (!kerzeOk(kk)) return;
+      marken++;
+      var mx = sk.x(mk.index);
+      var hoch = zahl(kk[3]) ? kk[3] : kk[1];
+      var tief = zahl(kk[4]) ? kk[4] : kk[1];
+      var auf = mk.richtung !== 'put';
+      var my = auf ? sk.y(tief) + 7 : sk.y(hoch) - 7;
+      var s = mk.gewaehlt ? 8 : 6;
+      ctx.save();
+      ctx.fillStyle = mk.farbe || f.ma20;
+      ctx.beginPath();
+      ctx.moveTo(mx, my);
+      ctx.lineTo(mx + s, my + (auf ? s + 3 : -s - 3));
+      ctx.lineTo(mx - s, my + (auf ? s + 3 : -s - 3));
+      ctx.closePath();
+      ctx.fill();
+      /* Die gewaehlte Marke bekommt eine Senkrechte durch das ganze Bild - auf einem
+       * Jahreschart findet man sie sonst nicht wieder. */
+      if (mk.gewaehlt) {
+        ctx.strokeStyle = mk.farbe || f.ma20;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(mx, sk.oben);
+        ctx.lineTo(mx, sk.oben + sk.kursHoehe + sk.volHoehe);
+        ctx.stroke();
+      }
+      ctx.restore();
+    });
+
     /* (e) Das Fadenkreuz - nur wenn eines gesetzt ist. */
     if (o.kreuz && zahl(o.kreuz.index)) {
       var xk = sk.x(o.kreuz.index);
@@ -560,14 +791,99 @@
       ctx.stroke();
       ctx.restore();
     }
-    return { kerzen: gezeichnet, baender: bs.length, linien: linien, mitUmsatz: mitUmsatz };
+    return { kerzen: gezeichnet, baender: bs.length, linien: linien, mitUmsatz: mitUmsatz, marken: marken };
+  }
+
+  /* ---------------------------------------------------------------------------
+   * 7) Die Indikator-Spur unter dem Chart
+   *
+   * RSI gehoert nicht in die Kursskala: er laeuft zwischen 0 und 100, der Kurs bei
+   * 300 - in einem Bild waere eine der beiden Linien immer platt am Rand. Deshalb
+   * eine eigene Flaeche mit eigener Skala, aber DERSELBEN x-Achse: sonst stehen
+   * Kerze und Indikator nicht uebereinander, und genau darauf sieht man hin.
+   *
+   * Gerechnet wird der RSI hier nicht - er kommt als Reihe herein, aus window.Quant,
+   * wie die gleitenden Durchschnitte auch. */
+  function spurZeichnen(ctx, werte, masse, opt) {
+    if (!ctx || !werte || !werte.length) return { punkte: 0 };
+    var m = masse || {}, o = opt || {};
+    var breite = m.breite > 0 ? m.breite : 900;
+    var hoehe = m.hoehe > 0 ? m.hoehe : 90;
+    var links = m.links >= 0 ? m.links : 8;
+    var rechts = m.rechts >= 0 ? m.rechts : 64;
+    var oben = m.oben >= 0 ? m.oben : 6;
+    var unten = m.unten >= 0 ? m.unten : 6;
+    var lo = zahl(o.tief) ? o.tief : 0;
+    var hi = zahl(o.hoch) ? o.hoch : 100;
+    var feldB = Math.max(1, breite - links - rechts);
+    var feldH = Math.max(1, hoehe - oben - unten);
+    var dx = feldB / werte.length;
+    var f = o.farben || {};
+    function X(i) { return links + (i + 0.5) * dx; }
+    function Y(v) { return oben + (hi - v) / (hi - lo) * feldH; }
+    ctx.clearRect(0, 0, breite, hoehe);
+    /* Die Schwellen zuerst - sie sind der Massstab, an dem man die Linie liest. */
+    ctx.save();
+    ctx.strokeStyle = f.gitter || FARBEN.gitter;
+    ctx.setLineDash([3, 3]);
+    (o.schwellen || []).forEach(function (s) {
+      if (!zahl(s)) return;
+      ctx.beginPath();
+      ctx.moveTo(links, Y(s));
+      ctx.lineTo(breite - rechts, Y(s));
+      ctx.stroke();
+    });
+    ctx.restore();
+    ctx.save();
+    ctx.strokeStyle = o.farbe || f.ma20 || FARBEN.ma20;
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    var offen = false, punkte = 0;
+    werte.forEach(function (v, i) {
+      if (!zahl(v)) { offen = false; return; }
+      punkte++;
+      if (!offen) { ctx.moveTo(X(i), Y(v)); offen = true; }
+      else ctx.lineTo(X(i), Y(v));
+    });
+    ctx.stroke();
+    ctx.restore();
+    /* Beschriftung an derselben Kante wie die Kursachse, damit die Augen eine
+     * Spalte lesen und nicht zwei. */
+    ctx.save();
+    ctx.fillStyle = f.text || FARBEN.text;
+    ctx.font = '10px system-ui, sans-serif';
+    (o.schwellen || []).forEach(function (s) {
+      if (zahl(s)) ctx.fillText(String(s), breite - rechts + 4, Y(s) + 3);
+    });
+    if (o.name) ctx.fillText(String(o.name), links + 2, oben + 10);
+    ctx.restore();
+    return { punkte: punkte, schwellen: (o.schwellen || []).length };
   }
 
   var KerzenChart = {
     INTERVALL_MS: INTERVALL_MS,
     ARCHIV_INTERVALL: ARCHIV_INTERVALL,
     YAHOO_INTERVALL: YAHOO_INTERVALL,
+    AUS_TAGESKERZEN: AUS_TAGESKERZEN,
     ZEITRAHMEN: ZEITRAHMEN,
+    ZEITRAEUME: ZEITRAEUME,
+    KERZEN: KERZEN,
+    VORGABE: VORGABE,
+    HANDELSTAGE: HANDELSTAGE,
+    KERZEN_JE_TAG: KERZEN_JE_TAG,
+    KERZEN_MIN: KERZEN_MIN,
+    KERZEN_MAX: KERZEN_MAX,
+    ZOOM_SCHRITT: ZOOM_SCHRITT,
+    ZOOM_MIN: ZOOM_MIN,
+    kerzenZahl: kerzenZahl,
+    paarUrteil: paarUrteil,
+    kerzeFuer: kerzeFuer,
+    fensterAbVon: fensterAbVon,
+    radZoom: radZoom,
+    blaettern: blaettern,
+    abschnittSchluessel: abschnittSchluessel,
+    verdichten: verdichten,
+    spurZeichnen: spurZeichnen,
     VOR_MIN: VOR_MIN, NACH_MIN: NACH_MIN,
     FARBEN: FARBEN,
     kerzenAusText: kerzenAusText,

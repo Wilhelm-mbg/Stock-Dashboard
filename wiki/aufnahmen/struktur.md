@@ -3,7 +3,7 @@ tags: [bauplan]
 ---
 # Struktur der Oberfläche — mit Aufnahmen
 
-*Erzeugt am 2026-09-04 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.41.0** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
+*Erzeugt am 2026-09-05 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.42.0** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
 
 **Was hier steht:** ▪ = Überschrift `h2`, · = Überschrift `h3`, ▸ = Klappe (`<details>`). Die Einrückung ist die echte Verschachtelung: eine Klappe **in** einer Klappe steht eine Stufe weiter rechts. `[#kennung]` ist die `id` des Blocks. „verborgen“ heißt: der Block steht in der Seite, ist aber ausgeblendet, bis etwas passiert (z. B. Explorer → „Kennzahlen“ erst nach dem Öffnen eines Werts).
 
@@ -78,9 +78,9 @@ Regeln (data-tab="strategien")
 Werkzeuge (data-tab="werkzeuge")
 ├─ Aktien-Explorer (data-sub="explorer", #sub-explorer)
    │  · Einen Wert öffnen  [in #expStart]
+   │  · Signale im Chart  [in #expDetail]  (verborgen: ausgeblendet)
    │  · Termine  [in #expDetail]  (verborgen: ausgeblendet)
    │  · Im Archiv  [in #expDetail]  (verborgen: ausgeblendet)
-   │  ▸ Klappe: Linien-Ansicht mit Signalen und Kanälen  [#vwAlt]  (verborgen: ausgeblendet)
    │  · Kennzahlen  [in #expDetail]  (verborgen: ausgeblendet)
    │  · News zu diesem Wert  [in #expDetail]  (verborgen: ausgeblendet)
 ├─ Schein-Finder (data-sub="scheine", #sub-scheine)
@@ -88,12 +88,12 @@ Werkzeuge (data-tab="werkzeuge")
 └─ Betrieb (data-sub="betrieb", #sub-betrieb)
    │  ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
    │    ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
-   │  ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.09.26 · Marktlage 04.09.26“
+   │  ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.09.26 · Marktlage 05.09.26“
    │    · Autopilot & Datensammlung  [#abAutopilot]
    │    · Autopilot – die App verbessert sich selbst  [in #sub-auswertung]
    │    ▸ Klappe: Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)  [in #sub-auswertung]
-   │  ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 02.09.26“
-   │  ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 04.09.26“
+   │  ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 03.09.26“
+   │  ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 05.09.26“
    │    · Mittelfrist – Momentum & Ergebnis-Drift  [#abMittelfrist]
    │    · Momentum im Querschnitt · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
    │    · Was jetzt zu halten wäre  [in #sub-mittelfrist]
@@ -167,7 +167,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 8133 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 7419 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -253,9 +253,9 @@ Dialoge (gehören zu keinem Reiter)
 `#sub-explorer` · 6 Blöcke · 268 Zeichen sichtbarer Text
 
 - · Einen Wert öffnen  [in #expStart]
+- · Signale im Chart  [in #expDetail]  (verborgen: ausgeblendet)
 - · Termine  [in #expDetail]  (verborgen: ausgeblendet)
 - · Im Archiv  [in #expDetail]  (verborgen: ausgeblendet)
-- ▸ Klappe: Linien-Ansicht mit Signalen und Kanälen  [#vwAlt]  (verborgen: ausgeblendet)
 - · Kennzahlen  [in #expDetail]  (verborgen: ausgeblendet)
 - · News zu diesem Wert  [in #expDetail]  (verborgen: ausgeblendet)
 
@@ -271,16 +271,16 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Betrieb
 
-`#sub-betrieb` · 34 Blöcke · 17083 Zeichen sichtbarer Text
+`#sub-betrieb` · 34 Blöcke · 17084 Zeichen sichtbarer Text
 
 - ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
   - ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
-- ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.09.26 · Marktlage 04.09.26“
+- ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.09.26 · Marktlage 05.09.26“
   - · Autopilot & Datensammlung  [#abAutopilot]
   - · Autopilot – die App verbessert sich selbst  [in #sub-auswertung]
   - ▸ Klappe: Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)  [in #sub-auswertung]
-- ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 02.09.26“
-- ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 04.09.26“
+- ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 03.09.26“
+- ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 05.09.26“
   - · Mittelfrist – Momentum & Ergebnis-Drift  [#abMittelfrist]
   - · Momentum im Querschnitt · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
   - · Was jetzt zu halten wäre  [in #sub-mittelfrist]

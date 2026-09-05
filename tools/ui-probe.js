@@ -311,38 +311,165 @@ async function viewerPruefen(win, js) {
   await new Promise((r) => setTimeout(r, 3500));
 
   const z = await js("(function () {" +
-    " var kn = document.querySelectorAll('#vwZeitrahmen button[data-zeitrahmen]');" +
+    " var zr = document.querySelectorAll('#vwZeitraum button[data-zeitraum]');" +
+    " var kn = document.querySelectorAll('#vwKerze button[data-kerze]');" +
     " var c = document.getElementById('vwChart');" +
     " var V = window.__viewer || {};" +
-    " return { knoepfe: Array.prototype.map.call(kn, function (b) { return b.getAttribute('data-zeitrahmen'); })," +
-    "   aktiv: (document.querySelector('#vwZeitrahmen button.active') || {}).textContent || ''," +
+    " return { zeitraeume: Array.prototype.map.call(zr, function (b) { return b.getAttribute('data-zeitraum'); })," +
+    "   kerzen: Array.prototype.map.call(kn, function (b) { return b.getAttribute('data-kerze'); })," +
+    "   gesperrt: Array.prototype.filter.call(kn, function (b) { return b.disabled; })" +
+    "     .map(function (b) { return b.getAttribute('data-kerze') + (b.getAttribute('title') ? '' : ' OHNE-GRUND'); })," +
+    "   zoomKnoepfe: document.querySelectorAll('#vwZoom button[data-zoom]').length," +
+    "   schalter: document.querySelectorAll('#vwEinblenden input[data-sig]').length," +
+    "   indi: document.querySelectorAll('#vwEinblenden input[data-ind]').length," +
+    "   aktivZ: (document.querySelector('#vwZeitraum button.active') || {}).textContent || ''," +
+    "   aktivK: (document.querySelector('#vwKerze button.active') || {}).textContent || ''," +
     "   quelle: (document.getElementById('vwQuelle') || {}).textContent || ''," +
+    "   detailVerborgen: !!(document.getElementById('vwQuelleDetail') || {}).hidden," +
     "   kopf: (document.getElementById('vwKopf') || {}).textContent || ''," +
     "   belegstand: (document.getElementById('vwBelegstand') || {}).textContent || ''," +
     "   canvasBreite: c ? c.width : 0, canvasHoehe: c ? c.height : 0," +
     "   fest: (V.fest || []).length, sichtbar: V.sichtbar ? V.sichtbar.kerzen.length : 0," +
     "   nurRegulaer: !!V.nurRegulaer }; })()");
-  console.log('    Viewer: ' + z.knoepfe.length + ' Zeitrahmen (' + z.knoepfe.join(' ') + '), aktiv ' + z.aktiv +
-    ', ' + z.fest + ' Kerzen geladen, ' + z.sichtbar + ' im Bild, Canvas ' + z.canvasBreite + 'x' + z.canvasHoehe);
+  console.log('    Viewer: ' + z.zeitraeume.length + ' Zeitraeume (' + z.zeitraeume.join(' ') + '), ' +
+    z.kerzen.length + ' Kerzenlaengen (' + z.kerzen.join(' ') + '), aktiv ' + z.aktivZ + '/' + z.aktivK);
+  console.log('    Gesperrt bei ' + z.aktivZ + ': ' + (z.gesperrt.join(' ') || 'nichts') +
+    ' · ' + z.schalter + ' Signal-, ' + z.indi + ' Chartbild-Schalter · ' + z.zoomKnoepfe + ' Zoom-Knoepfe');
+  console.log('    ' + z.fest + ' Kerzen geladen, ' + z.sichtbar + ' im Bild, Canvas ' + z.canvasBreite + 'x' + z.canvasHoehe);
   console.log('    Fusszeile: ' + String(z.quelle).slice(0, 160));
-  if (z.knoepfe.length !== 6) funde.push('Viewer: ' + z.knoepfe.length + ' Zeitrahmen-Knoepfe statt sechs');
+  if (z.zeitraeume.length !== 8) funde.push('Viewer: ' + z.zeitraeume.length + ' Zeitraum-Knoepfe statt acht');
+  if (z.kerzen.length !== 7) funde.push('Viewer: ' + z.kerzen.length + ' Kerzen-Knoepfe statt sieben');
+  if (z.gesperrt.some(function (g) { return /OHNE-GRUND/.test(g); })) {
+    funde.push('Viewer: ein gesperrter Kerzen-Knopf traegt keinen Grund: ' + z.gesperrt.join(' '));
+  }
+  if (z.zoomKnoepfe !== 3) funde.push('Viewer: ' + z.zoomKnoepfe + ' Zoom-Knoepfe statt drei (+ − ↺)');
+  if (!z.schalter || !z.indi) funde.push('Viewer: die Leiste "Einblenden" ist leer (' + z.schalter + ' Signale, ' + z.indi + ' Chartbild)');
+  if (!z.detailVerborgen) funde.push('Viewer: die Einzelheiten der Fusszeile stehen offen, statt hinter dem i-Knopf zu liegen');
   if (!z.canvasBreite) funde.push('Viewer: die Zeichenflaeche hat keine Breite - es wurde nichts gezeichnet');
   if (!z.fest) funde.push('Viewer: keine Kerze geladen, obwohl das Kunst-Archiv eine Reihe fuer ' + sym + ' fuehrt');
   if (!String(z.quelle).trim()) funde.push('Viewer: die Fusszeile ist stumm - sie muss immer sagen, woher die Kerzen kommen');
   if (String(z.quelle).indexOf('Archiv') === -1 && String(z.quelle).indexOf('Alpaca') === -1) {
     funde.push('Viewer: die Fusszeile nennt das Archiv nicht: ' + String(z.quelle).slice(0, 80));
   }
+  /* Die Fusszeile ist EIN Satz - der Auftrag 8a hat sie aus einer Textwand geholt. */
+  if (String(z.quelle).split('·').length > 6) {
+    funde.push('Viewer: die Fusszeile hat wieder ' + String(z.quelle).split('·').length + ' Abschnitte - sie soll ein Satz sein');
+  }
   if (!String(z.belegstand).trim()) funde.push('Viewer: der Wegweiser zum Belegstand fehlt');
 
-  /* Zeitrahmen wechseln: die Knoepfe muessen wirklich etwas tun. */
-  await js("(function () { var b = document.querySelector('#vwZeitrahmen [data-zeitrahmen=\"1h\"]'); if (b) b.click(); return 'ok'; })()");
-  await new Promise((r) => setTimeout(r, 2500));
-  const nach = await js("(function () { var V = window.__viewer || {};" +
-    " return { zr: V.zeitrahmen, quelle: (document.getElementById('vwQuelle') || {}).textContent || ''," +
-    "   fest: (V.fest || []).length }; })()");
-  console.log('    Nach Klick auf 1h: ' + nach.zr + ', ' + nach.fest + ' Kerzen · ' + String(nach.quelle).slice(0, 120));
-  if (nach.zr !== '1h') funde.push('Viewer: der Zeitrahmen-Knopf 1h hat den Zustand nicht umgestellt (' + nach.zr + ')');
-  if (!String(nach.quelle).trim()) funde.push('Viewer: nach dem Wechsel ist die Fusszeile stumm');
+  /* ---- Zeitraum-Klick: setzt er die Kerze vor? ----
+   * 5J muss auf Wochenkerzen umstellen, 1M auf Stundenkerzen. Zwei verschiedene
+   * Ziele: eine Klinke, die nur EINEN Wert prueft, koennte auch eine Konstante sein. */
+  async function zeitraumKlick(wohin) {
+    await js("(function () { var b = document.querySelector('#vwZeitraum [data-zeitraum=\"" + wohin + "\"]'); if (b) b.click(); return 'ok'; })()");
+    await new Promise((r) => setTimeout(r, 2500));
+    return js("(function () { var V = window.__viewer || {};" +
+      " return { zeitraum: V.zeitraum, kerze: V.kerze, fest: (V.fest || []).length," +
+      "   quelle: (document.getElementById('vwQuelle') || {}).textContent || '' }; })()");
+  }
+  const n5J = await zeitraumKlick('5J');
+  const n1M = await zeitraumKlick('1M');
+  console.log('    Zeitraum 5J -> Kerze ' + n5J.kerze + ' (' + n5J.fest + ' Kerzen) · 1M -> Kerze ' + n1M.kerze + ' (' + n1M.fest + ' Kerzen)');
+  if (n5J.zeitraum !== '5J' || n5J.kerze !== '1W') {
+    funde.push('Viewer: 5J setzt nicht die Wochenkerze vor (' + n5J.zeitraum + '/' + n5J.kerze + ')');
+  }
+  if (n1M.zeitraum !== '1M' || n1M.kerze !== '1h') {
+    funde.push('Viewer: 1M setzt nicht die Stundenkerze vor (' + n1M.zeitraum + '/' + n1M.kerze + ')');
+  }
+  /* Gegenprobe: die beiden Vorgaben sind verschieden - die Klinke oben kann also
+   * nicht von einer Konstanten erfuellt werden. */
+  if (n5J.kerze === n1M.kerze) {
+    funde.push('Viewer: beide Zeitraeume setzen dieselbe Kerze vor - die Vorgabe-Klinke belegt nichts');
+  }
+  if (!String(n1M.quelle).trim()) funde.push('Viewer: nach dem Wechsel ist die Fusszeile stumm');
+
+  /* ---- Rad-Zoom: weniger Kerzen im Bild, und wieder mehr ---- */
+  async function rad(runter) {
+    await js("(function () {" +
+      " var c = document.getElementById('vwChart');" +
+      " var r = c.getBoundingClientRect();" +
+      " c.dispatchEvent(new WheelEvent('wheel', { deltaY: " + (runter ? '120' : '-120') +
+      ", clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, bubbles: true, cancelable: true }));" +
+      " return 'ok'; })()");
+    await new Promise((r) => setTimeout(r, 400));
+    return js("(function () { var V = window.__viewer || {};" +
+      " return { sichtbar: V.sichtbar ? V.sichtbar.kerzen.length : 0," +
+      "   von: V.sichtbar ? V.sichtbar.fenster.von : -1, gesamt: V.sichtbar ? V.sichtbar.gesamt : 0 }; })()");
+  }
+  const vorZoom = await js("(function () { var V = window.__viewer || {};" +
+    " return { sichtbar: V.sichtbar ? V.sichtbar.kerzen.length : 0 }; })()");
+  const nachRein = await rad(false);
+  const nachRaus = await rad(true);
+  console.log('    Rad: ' + vorZoom.sichtbar + ' -> rein ' + nachRein.sichtbar + ' -> raus ' + nachRaus.sichtbar + ' Kerzen im Bild');
+  if (!(nachRein.sichtbar < vorZoom.sichtbar)) {
+    funde.push('Viewer: das Mausrad zoomt nicht hinein (' + vorZoom.sichtbar + ' -> ' + nachRein.sichtbar + ')');
+  }
+  /* Gegenprobe: dasselbe Ereignis in die andere Richtung muss es wieder aufmachen -
+   * sonst misst die Klinke oben nur, dass sich IRGENDETWAS geaendert hat. */
+  if (!(nachRaus.sichtbar > nachRein.sichtbar)) {
+    funde.push('Viewer: Rad zurueck zoomt nicht wieder heraus (' + nachRein.sichtbar + ' -> ' + nachRaus.sichtbar + ')');
+  }
+
+  /* ---- Ziehen blaettert ---- */
+  const gezogen = await js("(function () {" +
+    " var c = document.getElementById('vwChart');" +
+    " var V = window.__viewer || {};" +
+    " var vorher = V.sichtbar ? V.sichtbar.fenster.von : -1;" +
+    " var r = c.getBoundingClientRect();" +
+    " var mitte = { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, bubbles: true };" +
+    " c.dispatchEvent(new MouseEvent('mousemove', mitte));" +
+    " var ohneZiehen = (window.__viewer.sichtbar || {}).fenster.von;" +
+    " c.dispatchEvent(new MouseEvent('mousedown', mitte));" +
+    " c.dispatchEvent(new MouseEvent('mousemove', { clientX: r.left + r.width / 2 + 120, clientY: mitte.clientY, bubbles: true }));" +
+    " var mitZiehen = (window.__viewer.sichtbar || {}).fenster.von;" +
+    " c.dispatchEvent(new MouseEvent('mouseup', mitte));" +
+    " return { vorher: vorher, ohneZiehen: ohneZiehen, mitZiehen: mitZiehen }; })()");
+  console.log('    Ziehen: Fensteranfang ' + gezogen.vorher + ' · nur Mausbewegung ' + gezogen.ohneZiehen +
+    ' · mit gedrueckter Taste ' + gezogen.mitZiehen);
+  if (gezogen.mitZiehen === gezogen.ohneZiehen) {
+    funde.push('Viewer: Ziehen verschiebt das Fenster nicht (' + gezogen.ohneZiehen + ' -> ' + gezogen.mitZiehen + ')');
+  }
+  /* Gegenprobe: eine Mausbewegung OHNE gedrueckte Taste darf nichts verschieben -
+   * sonst waere die Klinke oben schon von jedem Fadenkreuz erfuellt. */
+  if (gezogen.ohneZiehen !== gezogen.vorher) {
+    funde.push('Viewer: schon eine blosse Mausbewegung blaettert - das Fadenkreuz verschiebt das Bild');
+  }
+
+  /* ---- Signal-Schalter: werden wirklich Marken gezeichnet? ----
+   * Die Kunst-Reihe traegt seit dem 05.09.2026 Bewegung; auf der alten Geraden
+   * schlug kein Detektor an, und ein leerer Chart haette hier bestanden. */
+  async function schalter(an) {
+    await js("(function () {" +
+      " var cb = document.querySelector('#vwEinblenden input[data-sig=\"cross\"]');" +
+      " if (!cb) return 'kein Schalter';" +
+      " cb.checked = " + (an ? 'true' : 'false') + ";" +
+      " cb.dispatchEvent(new Event('change', { bubbles: true }));" +
+      " return 'ok'; })()");
+    await new Promise((r) => setTimeout(r, 900));
+    return js("(function () { var V = window.__viewer || {};" +
+      " return { punkte: (V.punkte || []).length," +
+      "   marken: V.gezeichnet ? V.gezeichnet.marken : -1," +
+      "   liste: (document.getElementById('vwSigListe') || {}).textContent || ''," +
+      "   zahl: (document.getElementById('vwSigZahl') || {}).textContent || '' }; })()");
+  }
+  const sigAus = await schalter(false);
+  const sigAn = await schalter(true);
+  console.log('    Signal-Schalter aus: ' + sigAus.punkte + ' Punkte / ' + sigAus.marken + ' Marken · ' +
+    'an: ' + sigAn.punkte + ' Punkte / ' + sigAn.marken + ' Marken · ' + String(sigAn.zahl).slice(0, 60));
+  if (!(sigAn.punkte > 0)) {
+    funde.push('Viewer: mit eingeschaltetem Detektor findet der Kunst-Chart kein einziges Signal - die Probe kann Marken nicht belegen');
+  }
+  if (!(sigAn.marken > 0)) {
+    funde.push('Viewer: es werden keine Signal-Marken gezeichnet (' + sigAn.marken + ')');
+  }
+  /* Gegenprobe: ausgeschaltet darf keine einzige Marke stehen. */
+  if (sigAus.marken !== 0 || sigAus.punkte !== 0) {
+    funde.push('Viewer: ausgeschaltet bleiben Marken stehen (' + sigAus.punkte + ' Punkte / ' + sigAus.marken + ' Marken)');
+  }
+  /* Und die Liste unter dem Chart nennt das Urteil - nicht der Viewer selbst. */
+  if (sigAn.liste.indexOf('Studienregister') === -1 && sigAn.liste.indexOf('Protokoll') === -1) {
+    funde.push('Viewer: die Signal-Liste nennt keinen Belegstand aus dem Studienregister');
+  }
 
   /* ---- F2: ein Zustand, drei Orte, dieselben Worte ---- */
   await js("(function () { var b = document.querySelector('nav.tabs [data-tab=\"markt\"]'); if (b) b.click(); " +
@@ -596,6 +723,11 @@ async function scheinFinderPruefen(win, js) {
 
   /* Jetzt die Attrappe, dann der Knopf. */
   const KI = require(path.join(__dirname, 'kunstinstanz.js'));
+  /* Der Abruf-Zaehler `window.__kunstAbrufe` ist GLOBAL - er zaehlt jeden Abruf
+   * der Instanz, auch die Hintergrundtakte anderer Bildschirme (der Viewer holt
+   * im Minutentakt seinen Kurs). Gezaehlt werden hier deshalb nur die Abrufe, die
+   * das Kuerzel des Schein-Finders nennen: sonst schreibt die Probe einen fremden
+   * Abruf dem gerade geklickten Knopf zu (Fund 05.09.2026). */
   const attrappe = await js(KI.scheinAttrappeCode(Date.now()));
   if (attrappe !== 'attrappe') funde.push('Schein-Finder: die Kurs-Attrappe liess sich nicht setzen (' + attrappe + ') - der Knopf haette echt geladen');
   await js("(function () { var e = document.getElementById('sfSymbol'); if (e) e.value = '" + KI.scheinSymbol() + "'; return 'ok'; })()");
@@ -609,7 +741,7 @@ async function scheinFinderPruefen(win, js) {
     "   pillen: t ? t.querySelectorAll('.sf-stufe').length : 0," +
     "   treffer: (document.getElementById('sfTreffer') || {}).textContent || ''," +
     "   status: (document.getElementById('sfStatus') || {}).textContent || ''," +
-    "   abrufe: (window.__kunstAbrufe || []).length }; })()");
+    "   abrufe: (window.__kunstAbrufe || []).filter(function (u) { return String(u).indexOf('" + KI.scheinSymbol() + "') >= 0; }).length }; })()");
   console.log('    Schein-Finder geladen: ' + geladen.zeilen + ' Zeilen, ' + geladen.spalten + ' Spalten, ' +
     geladen.pillen + ' Stufen-Pillen, "' + String(geladen.treffer).trim() + '", ' + geladen.abrufe + ' Abrufe');
   console.log('    Statuszeile: ' + String(geladen.status).slice(0, 140));
@@ -642,7 +774,7 @@ async function scheinFinderPruefen(win, js) {
     " var t = document.getElementById('sfTabelle');" +
     " return { zeilen: t ? t.querySelectorAll('tbody tr[data-sfi]').length : 0," +
     "   treffer: (document.getElementById('sfTreffer') || {}).textContent || ''," +
-    "   abrufe: (window.__kunstAbrufe || []).length }; })()");
+    "   abrufe: (window.__kunstAbrufe || []).filter(function (u) { return String(u).indexOf('" + KI.scheinSymbol() + "') >= 0; }).length }; })()");
   console.log('    Enger (Spanne hoechstens 0,5 %): ' + nachFilter.zeilen + ' Zeilen, "' +
     String(nachFilter.treffer).trim() + '", Abrufe ' + abrufeVorher + ' -> ' + nachFilter.abrufe);
   if (nachFilter.abrufe !== abrufeVorher) {
@@ -660,7 +792,7 @@ async function scheinFinderPruefen(win, js) {
     " e.value = '100'; e.dispatchEvent(new Event('change'));" +
     " var t = document.getElementById('sfTabelle');" +
     " return { zeilen: t ? t.querySelectorAll('tbody tr[data-sfi]').length : 0," +
-    "   abrufe: (window.__kunstAbrufe || []).length }; })()");
+    "   abrufe: (window.__kunstAbrufe || []).filter(function (u) { return String(u).indexOf('" + KI.scheinSymbol() + "') >= 0; }).length }; })()");
   console.log('    Wieder auf (Spanne egal): ' + wiederAuf.zeilen + ' Zeilen');
   if (wiederAuf.zeilen <= nachFilter.zeilen) {
     funde.push('Schein-Finder: das Lockern des Filters bringt keine Zeilen zurueck (' +
@@ -676,7 +808,7 @@ async function scheinFinderPruefen(win, js) {
     " e.checked = true; e.dispatchEvent(new Event('change'));" +
     " var t = document.getElementById('sfTabelle');" +
     " return { spalten: t ? t.querySelectorAll('thead th').length : 0," +
-    "   abrufe: (window.__kunstAbrufe || []).length }; })()");
+    "   abrufe: (window.__kunstAbrufe || []).filter(function (u) { return String(u).indexOf('" + KI.scheinSymbol() + "') >= 0; }).length }; })()");
   console.log('    Schalter "alle Kennzahlen": ' + nachSchalter.spalten + ' Spalten');
   if (nachSchalter.spalten !== 15) {
     funde.push('Schein-Finder: der Schalter zeigt ' + nachSchalter.spalten + ' statt fuenfzehn Spalten');
@@ -695,7 +827,7 @@ async function scheinFinderPruefen(win, js) {
     "   var t = document.getElementById('sfTabelle');" +
     "   aus[n] = { wahl: lies(), zeilen: t.querySelectorAll('tbody tr[data-sfi]').length };" +
     " });" +
-    " aus.abrufe = (window.__kunstAbrufe || []).length;" +
+    " aus.abrufe = (window.__kunstAbrufe || []).filter(function (u) { return String(u).indexOf('" + KI.scheinSymbol() + "') >= 0; }).length;" +
     " return aus; })()");
   ['defensiv', 'ausgewogen', 'offensiv'].forEach(function (n) {
     console.log('    Voreinstellung ' + n.padEnd(11) + vor[n].wahl + '  -> ' + vor[n].zeilen + ' Zeilen');

@@ -4779,8 +4779,13 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(/opt\.mindestGuete != null \? opt\.mindestGuete : 50/.test(qn9),
      'Die interne Auswahl-Schwelle blieb in Roh-Guete - es aendert sich nicht, welche Kanaele erscheinen (#80)');
   var ex9 = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
-  ok((ex9.match(/des Zufalls/g) || []).length >= 3,
-     'Der Explorer zeigt das Perzentil an allen Kanal-Stellen (#80)');
+  var stellen80 = (ex9.match(/des Zufalls/g) || []).length;
+  var roh80 = (ex9.match(/Roh-Güte/g) || []).length;
+  ok(stellen80 >= 2 && roh80 <= stellen80 &&
+     /texte\.push\('A' \+ \(si \+ 1\)[\s\S]{0,400}des Zufalls/.test(ex9) &&
+     /texte\.push\(kk\.name[\s\S]{0,300}des Zufalls/.test(ex9),
+     'Der Explorer zeigt das Perzentil an BEIDEN Kanal-Stellen (Abschnitte und Ebenen-Kanaele) - und keine Roh-Guete steht ohne es (#80)',
+     stellen80 + 'x Perzentil / ' + roh80 + 'x Roh-Guete');
   ok(/gueteZufallsAnteil\(sg\.guete, sg\.n\)/.test(ex9) && /gueteZufallsAnteil\(kk\.guete, kk\.n\)/.test(ex9),
      'Abschnitte UND Ebenen-Kanaele rechnen ihr Perzentil aus derselben Funktion (#80)');
   var sc9 = fs.readFileSync(__dirname + '/strategiechart.js', 'utf8');
@@ -16960,28 +16965,41 @@ console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelr
      'preload.js reicht sie durch - und nichts, was schriebe');
 
   /* ---- 74.11 Zeitrahmen-Knoepfe und Fusszeile ---- */
-  ok(/id="vwZeitrahmen"/.test(htmlQ) && /id="vwChart"/.test(htmlQ) && /id="vwQuelle"/.test(htmlQ),
-     'der Viewer hat Zeitrahmen-Leiste, Zeichenflaeche und Fusszeile');
-  /* Die Linien-Ansicht mit Signalen und Kanaelen ist NICHT geloescht - sie liegt in
-   * einer Klappe unter dem Kerzenchart. drawBig kann keine Kerzen und bleibt fuer
-   * sie unangetastet; K5/K13 (Sprungziele) gelten unveraendert weiter. */
-  ok(/<details class="vwAlt" id="vwAlt">/.test(htmlQ) && /id="expRanges"/.test(htmlQ) &&
-     /id="bigchart"/.test(htmlQ) && /id="expSignalLeiste"/.test(htmlQ),
-     'die alte Linien-Ansicht steht vollstaendig in einer Klappe - nichts geloescht');
-  ok(/id="vwAltStatus"/.test(htmlQ) && /altStatus\.textContent = beschriftung/.test(expQ),
-     'und ihre Klappe traegt eine Statuszeile aus Daten - kein Versteck, keine Zahl im Markup');
-  ok(/alt\.addEventListener\('toggle'/.test(expQ),
-     'beim Aufklappen wird neu gezeichnet - zugeklappt hat das SVG keine Breite');
-  ok(expQ.indexOf('function drawBig(svg, series, rangeKey)') > 0,
-     'drawBig selbst ist unberuehrt geblieben - der Kerzenchart ist ein eigener Zeichner');
+  ok(/id="vwZeitraum"/.test(htmlQ) && /id="vwKerze"/.test(htmlQ) &&
+     /id="vwChart"/.test(htmlQ) && /id="vwQuelle"/.test(htmlQ),
+     'der Viewer hat ZWEI Knopfreihen (Zeitraum und Kerze), Zeichenflaeche und Fusszeile');
+  /* Viewer 8a (05.09.2026): Die Klappe ist aufgeloest - ihre INHALTE sind in den
+   * Kerzenchart gewandert (Auftrag Punkt 4). Die Klinke folgt dem Umzug und wird
+   * dabei strenger: sie verlangt nicht mehr nur, dass es die Bloecke GIBT, sondern
+   * dass es sie genau EINMAL gibt - eine zweite Zeichenflaeche waere ein zweiter
+   * Chart im Chart, und genau den sollte der Umbau beseitigen. */
+  ok(!/id="vwAlt"/.test(htmlQ) && !/id="bigchart"/.test(htmlQ) && !/id="expRanges"/.test(htmlQ),
+     'die zweite, eingeklappte Ansicht gibt es nicht mehr - es gibt einen Chart');
+  ok(/id="vwEinblenden"/.test(htmlQ) && /id="vwSigListe"/.test(htmlQ) &&
+     /id="vwKanalInfo"/.test(htmlQ) && /id="vwKanalVerzug"/.test(htmlQ) && /id="vwIndi"/.test(htmlQ),
+     'ihre Inhalte stehen jetzt am Kerzenchart: Einblenden, Signal-Liste, Kanal-Zeile, Kanal-Verzug, Indikator-Spur');
+  /* KEIN TEXT VERLOREN: die Erklaersaetze der Kaestchen standen als title im
+   * Markup und stehen jetzt in den Tabellen SIGNALE/INDIKATOREN. */
+  ['Roh ein Münzwurf', 'Kapitulations-Dip', 'nie heimlich verkürzt',
+   'KEINEN Vorsprung', 'es wird bewusst nichts davon gehandelt',
+   'an denen der Kurs zuletzt gedreht hat'].forEach(function (satz) {
+    ok(expQ.indexOf(satz) > 0, 'der Erklaertext "' + satz.slice(0, 28) + '…" ist beim Umzug nicht verloren gegangen');
+  });
+  ok((expQ.match(/function signalePunkte\(/g) || []).length === 1 &&
+     /VW\.punkte = signalePunkte\(/.test(expQ),
+     'die Marken im Kerzenchart kommen aus DEMSELBEN Detektorlauf - es gibt genau eine signalePunkte und der Viewer benutzt sie');
   ok(!/data-zeitrahmen="/.test(htmlQ),
      'KEINE Zahl im Markup: die Zeitrahmen stehen im Modul, nicht als sechs feste Knoepfe');
-  ok(/data-zeitrahmen="' \+ z \+ '"/.test(expQ) && /KC\(\)\.ZEITRAHMEN\.map/.test(expQ),
-     'die Knoepfe werden aus KerzenChart.ZEITRAHMEN gebaut');
-  ok(/closest\('button\[data-zeitrahmen\]'\)/.test(expQ) && /VW\.zeitrahmen = b\.getAttribute\('data-zeitrahmen'\)/.test(expQ),
-     'und sie sind verdrahtet: ein Klick setzt den Zeitrahmen und laedt');
-  ok(KC.ZEITRAHMEN.join(' ') === '1m 5m 15m 1h 1T 1W',
-     'sechs Zeitrahmen, so wie im Auftrag', KC.ZEITRAHMEN.join(' '));
+  ok(/KC\(\)\.ZEITRAEUME\.map/.test(expQ) && /KC\(\)\.KERZEN\.map/.test(expQ),
+     'BEIDE Knopfreihen werden aus dem Modul gebaut - Zeitraeume und Kerzenlaengen');
+  ok(/closest\('button\[data-zeitraum\]'\)/.test(expQ) && /VW\.zeitraum = b\.getAttribute\('data-zeitraum'\)/.test(expQ) &&
+     /closest\('button\[data-kerze\]'\)/.test(expQ) && /VW\.kerze = neu/.test(expQ),
+     'und beide sind verdrahtet: ein Klick setzt Zeitraum bzw. Kerzenlaenge und laedt');
+  ok(KC.ZEITRAHMEN.join(' ') === '1m 5m 15m 1h 1T 1W 1M' &&
+     KC.KERZEN.join(' ') === '1m 5m 15m 1h 1T 1W 1M' &&
+     KC.ZEITRAEUME.join(' ') === '1T 5T 1M 3M 6M 1J 5J Max',
+     'sieben Kerzenlaengen und acht Zeitraeume, so wie im Auftrag 8a',
+     KC.ZEITRAEUME.join(' ') + ' | ' + KC.KERZEN.join(' '));
   ok(Object.keys(KC.ARCHIV_INTERVALL).length === KC.ZEITRAHMEN.length &&
      Object.keys(KC.YAHOO_INTERVALL).length === KC.ZEITRAHMEN.length,
      'jeder Zeitrahmen weiss, wie er im Archiv und bei Yahoo heisst');
@@ -16990,7 +17008,7 @@ console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelr
   /* DIE FUSSZEILE IST NIE STUMM: auch ohne Kerzen und ohne Archiv steht ein Grund. */
   ok(/teile\.push\('Archiv: ' \+ \(\(r && r\.grund\)/.test(expQ),
      'scheitert das Archiv, nennt die Fusszeile den Grund - statt zu schweigen');
-  ok(/var teile = \[VW\.quelleText \|\| 'Quelle unbekannt'\]/.test(expQ),
+  ok(/\(VW\.quelleText \|\| 'Quelle unbekannt'\)/.test(expQ),
      'und ohne jede Quelle steht dort "Quelle unbekannt" - nie eine leere Zeile');
   ok(/doppelte Kerzen an der Naht verworfen \(Archiv gewinnt\)/.test(expQ),
      'die Fusszeile sagt auch, wenn an der Naht etwas verworfen wurde');
@@ -17540,8 +17558,8 @@ console.log('\n75) Laufband, Marktglocke, Kleinkram');
      '75.9 bei Tagesbalken steht das Datum mit Jahr, wie vorher', tagM.map(function (m) { return m.text; }).join(' '));
   ok(KC75.achsenBeschriftung([], { intervallMs: 3600000 }).length === 0,
      '75.9 ohne Kerzen keine Beschriftung');
-  ok(/kc\.achsenBeschriftung\(kerzen, \{ intervallMs: kc\.INTERVALL_MS\[VW\.zeitrahmen\]/.test(exp75),
-     '75.9 und der Viewer benutzt sie');
+  ok(/kc\.achsenBeschriftung\(kerzen, \{ intervallMs: kc\.INTERVALL_MS\[VW\.kerze\]/.test(exp75),
+     '75.9 und der Viewer benutzt sie - mit der KERZENLAENGE, nicht mit dem Zeitraum');
 
   /* ---- 75.10 Gegenproben ----
    * Jede prueft, dass die Zusicherung darueber bei einem eingebauten Fehler ROT wird. */
@@ -18302,6 +18320,315 @@ console.log('\n79) Schein-Finder: Auswahllisten statt freier Zahlen');
      '79.10 ohne Raster schreibt zeige() nicht - daran haengt der Leerzustand (Abschnitt 57)');
 
   ok(g79 === rot79, '79.11 alle Gegenproben dieses Abschnitts schlagen an', rot79 + ' von ' + g79);
+})();
+
+/* ================= 80) Aktien-Viewer 8a: Zeitraum, Kerze, Zoom, Signale =========
+ * Wilhelms Befund vom 05.09.2026 am AMD-Chart (1h, echte Daten): "Ich kann im Viewer
+ * nicht mehr reinzoomen, auch keine Signale mehr einblenden, zudem lassen sich nur
+ * maximal Wochencharts anzeigen bzw. sind die Zeiträume falsch beschriftet."
+ * Dazu der PM-Fund am selben Bild: die MA200 begann erst Ende August, obwohl 695
+ * Kerzen geladen waren.
+ *
+ * Alle vier Punkte sind RECHNUNGEN, und sie stehen deshalb in markt/kerzenchart.js:
+ *   - Zeitraum und Kerzenlaenge sind zwei Listen, nicht eine (paarUrteil, kerzeFuer),
+ *   - Wochen- und Monatskerzen werden aus Tageskerzen GEBILDET (verdichten),
+ *   - der Rad-Zoom ist eine Funktion, kein Ereignis (radZoom),
+ *   - die Durchschnitte laufen ueber die geladene Reihe, nicht ueber das Fenster.
+ *
+ * Was ein Textabtaster nicht sieht und hier trotzdem geprueft wird: dass die
+ * Signal-Marken aus DEMSELBEN Detektorlauf kommen wie die alte Ansicht (kein
+ * zweiter Satz Detektoren) und dass an jeder Marke das Urteil des Studienregisters
+ * WOERTLICH steht - der Viewer bewertet nichts. */
+console.log('\n80) Aktien-Viewer 8a: Zeitraum und Kerze getrennt, Zoom, Signale im Kerzenchart');
+(function () {
+  var K8 = require('./markt/kerzenchart.js');
+  var Q8 = require('./quant.js');
+  var exp8 = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+  var html8 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var g80 = 0, rot80 = 0;
+  function gegen80(was, ergebnis) { g80++; if (ergebnis) rot80++; ok(ergebnis, '   Gegenprobe: ' + was); }
+
+  /* --- 80.1 Zwei Listen statt einer, und die Vorgabe steht im Auftrag --- */
+  ok(K8.ZEITRAEUME.join(' ') === '1T 5T 1M 3M 6M 1J 5J Max',
+     '80.1 die Zeitraeume sind die acht des Auftrags', K8.ZEITRAEUME.join(' '));
+  ok(K8.KERZEN.join(' ') === '1m 5m 15m 1h 1T 1W 1M',
+     '80.1 die Kerzenlaengen sind die sieben des Auftrags', K8.KERZEN.join(' '));
+  var soll80 = { '1T': '5m', '5T': '15m', '1M': '1h', '3M': '1T', '6M': '1T', '1J': '1T', '5J': '1W', 'Max': '1M' };
+  ok(Object.keys(soll80).every(function (z) { return K8.VORGABE[z] === soll80[z]; }) &&
+     Object.keys(K8.VORGABE).length === K8.ZEITRAEUME.length,
+     '80.1 jeder Zeitraum setzt genau die Kerze vor, die der Auftrag nennt',
+     K8.ZEITRAEUME.map(function (z) { return z + '→' + K8.VORGABE[z]; }).join(' '));
+  /* Und die Vorgabe ist selbst erlaubt - eine vorgesetzte Kerze, die die eigene
+   * Ausgrau-Regel verbietet, waere ein Startzustand, den kein Klick herstellen kann. */
+  ok(K8.ZEITRAEUME.every(function (z) { return K8.paarUrteil(z, K8.VORGABE[z]).ok; }),
+     '80.1 keine Vorgabe faellt durch die eigene Ausgrau-Regel');
+
+  /* --- 80.2 Die Ausgrau-Regel: rein, und jeder gesperrte Knopf sagt warum --- */
+  ok(!K8.paarUrteil('Max', '1m').ok && !K8.paarUrteil('5J', '1m').ok,
+     '80.2 Max und 5J mit Minutenkerzen sind gesperrt');
+  ok(!K8.paarUrteil('1T', '1W').ok && !K8.paarUrteil('1T', '1M').ok && !K8.paarUrteil('5T', '1M').ok,
+     '80.2 und ein Tag ergibt keine Wochen- oder Monatskerze');
+  ok(K8.paarUrteil('1J', '1T').ok && K8.paarUrteil('Max', '1M').ok && K8.paarUrteil('1T', '5m').ok,
+     '80.2 die sinnvollen Paare bleiben offen');
+  var ohneGrund80 = [];
+  K8.ZEITRAEUME.forEach(function (z) {
+    K8.KERZEN.forEach(function (k) {
+      var u = K8.paarUrteil(z, k);
+      if (!u.ok && !(u.grund && u.grund.length > 20)) ohneGrund80.push(z + '/' + k);
+    });
+  });
+  ok(ohneGrund80.length === 0,
+     '80.2 JEDER gesperrte Knopf traegt einen Grund - ein Deckel ohne Begruendung ist eine Sackgasse',
+     ohneGrund80.length ? ohneGrund80.join(' ') : 'alle mit Grund');
+  /* Rein: dieselbe Frage gibt dieselbe Antwort, ohne Uhr und ohne Zufall. */
+  ok(K8.paarUrteil('1J', '1h').grund === K8.paarUrteil('1J', '1h').grund &&
+     K8.kerzenZahl('1J', '1T') === 252,
+     '80.2 die Regel ist eine Rechnung: 1J in Tageskerzen sind 252 Handelstage',
+     String(K8.kerzenZahl('1J', '1T')));
+  gegen80('ohne Obergrenze waere Max mit 1m erlaubt - die Klinke misst wirklich die Schranke',
+     K8.kerzenZahl('Max', '1m') > K8.KERZEN_MAX && !K8.paarUrteil('Max', '1m').ok);
+  gegen80('ohne Untergrenze waere 1T mit Monatskerzen erlaubt',
+     K8.kerzenZahl('1T', '1M') < K8.KERZEN_MIN && !K8.paarUrteil('1T', '1M').ok);
+
+  /* --- 80.3 kerzeFuer: die Wahl bleibt, solange sie passt --- */
+  ok(K8.kerzeFuer('5J', '1T') === '1T', '80.3 eine passende Kerze ueberlebt den Zeitraumwechsel');
+  ok(K8.kerzeFuer('5J', '1m') === K8.VORGABE['5J'],
+     '80.3 eine unpassende rutscht auf die Vorgabe', K8.kerzeFuer('5J', '1m'));
+  ok(K8.kerzeFuer('1T', null) === '5m', '80.3 ohne bisherige Wahl gilt die Vorgabe');
+  /* Und der KLICK auf einen Zeitraum ehrt keine Vorwahl - er setzt vor.
+   * Diese Klinke fehlte: 80.3 oben prueft die reine Funktion, und die tut ihre
+   * Sache richtig; gefehlt hat, WOMIT der Knopf sie aufruft. Gefunden hat es die
+   * Oberflaechen-Probe (5J blieb bei Tageskerzen statt auf 1W zu gehen). */
+  ok(/VW\.kerze = KC\(\)\.kerzeFuer\(VW\.zeitraum, null\);/.test(exp8),
+     '80.3 ein Zeitraum-Klick setzt die Vorgabe-Kerze - er traegt die bisherige Wahl NICHT weiter');
+  gegen80('mit der bisherigen Wahl als zweitem Argument bliebe 5J bei Tageskerzen - genau der Fund der Probe',
+     K8.kerzeFuer('5J', '1T') === '1T' && K8.kerzeFuer('5J', null) === '1W');
+
+  /* --- 80.4 Wochen- und Monatskerzen aus Tageskerzen, nach Boersenkalender ---
+   * Die Feiertagswoche ist der Fall, an dem sich Kalenderrechnung und
+   * Millisekunden-Arithmetik trennen: der 4. Juli 2025 faellt auf einen Freitag,
+   * die Woche hat vier Handelstage - und ergibt trotzdem GENAU EINE Kerze. */
+  function tag80(d, kurs, vol) {
+    return [Date.parse(d + 'T20:00:00Z'), kurs, vol, kurs + 1, kurs - 1, kurs - 0.5];
+  }
+  var tage80 = [
+    tag80('2025-06-30', 100, 10), tag80('2025-07-01', 102, 11),
+    tag80('2025-07-02', 101, 12), tag80('2025-07-03', 105, 13),
+    tag80('2025-07-07', 106, 14), tag80('2025-07-08', 103, 15), tag80('2025-07-09', 108, 16)
+  ];
+  var w80 = K8.verdichten(tage80, '1W');
+  ok(w80.length === 2, '80.4 vier Handelstage einer Feiertagswoche geben EINE Wochenkerze, nicht vier',
+     w80.length + ' Wochenkerzen aus 7 Tagen');
+  ok(w80[0][5] === 99.5 && w80[0][1] === 105 && w80[0][3] === 106 && w80[0][4] === 99,
+     '80.4 Eroeffnung der ersten, Schluss der letzten, Hoch das hoechste, Tief das tiefste',
+     'auf ' + w80[0][5] + ' zu ' + w80[0][1] + ' hoch ' + w80[0][3] + ' tief ' + w80[0][4]);
+  ok(w80[0][2] === 46 && w80[1][2] === 45, '80.4 der Umsatz ist die Summe der Tage',
+     w80[0][2] + ' / ' + w80[1][2]);
+  ok(w80[0][0] === tage80[0][0] && w80[1][0] === tage80[4][0],
+     '80.4 die Kerze traegt den Stempel des ERSTEN Handelstags - nicht den eines Montags, an dem nicht gehandelt wurde');
+  var m80 = K8.verdichten(tage80, '1M');
+  ok(m80.length === 2 && m80[1][1] === 108,
+     '80.4 Monatskerzen ebenso: Juni und Juli getrennt', m80.length + ' Monatskerzen');
+  ok(K8.abschnittSchluessel(Date.parse('2025-07-03T20:00:00Z'), '1W') === '2025-06-30' &&
+     K8.abschnittSchluessel(Date.parse('2025-07-07T20:00:00Z'), '1W') === '2025-07-07',
+     '80.4 der Schluessel einer Woche ist ihr Montag, in der Boersenzeitzone gerechnet');
+  /* Die Sommerzeit ist der Grund, warum hier nicht mit 604800000 ms gerechnet wird. */
+  /* Mo 10., Mi 12., Do 13., Fr 14. Maerz 2025 - EINE Boersenwoche. Die Epoche
+   * begann an einem Donnerstag; feste 604800000-ms-Wochen laufen deshalb von
+   * Donnerstag bis Mittwoch und zerschneiden genau diese Woche. */
+  var maerz80 = [tag80('2025-03-10', 10, 1), tag80('2025-03-12', 11, 1),
+                 tag80('2025-03-13', 12, 1), tag80('2025-03-14', 13, 1)];
+  ok(K8.verdichten(maerz80, '1W').length === 1,
+     '80.4 vier Tage einer Boersenwoche geben EINE Wochenkerze - auch ueber den Donnerstag hinweg',
+     K8.verdichten(maerz80, '1W').length + ' Wochen');
+  gegen80('mit fester Wochendauer (604800000 ms) zerfaellt dieselbe Woche in zwei - die Kalenderrechnung ist es, die zaehlt',
+    (function () {
+      var eimer = {};
+      maerz80.forEach(function (k) { eimer[Math.floor(k[0] / 604800000)] = 1; });
+      return Object.keys(eimer).length === 2 && K8.verdichten(maerz80, '1W').length === 1;
+    })());
+  gegen80('eine leere Reihe gibt keine Kerze - und wirft nicht',
+     K8.verdichten([], '1W').length === 0 && K8.verdichten(null, '1M').length === 0);
+
+  /* --- 80.5 Die Durchschnitte ueber die GELADENE Reihe, nicht ueber das Fenster ---
+   * Das ist der PM-Fund am AMD-Foto in Zahlen: 695 geladene Kerzen, 260 sichtbare.
+   * Ueber die ganze Reihe gerechnet hat die MA200 auf ALLEN 260 einen Wert; ueber
+   * das Fenster gerechnet erst ab der 200. sichtbaren. */
+  var lang80 = [];
+  for (var i80 = 0; i80 < 695; i80++) lang80.push([i80 * 86400000, 100 + i80 * 0.1, 1, 101 + i80 * 0.1, 99 + i80 * 0.1, 100 + i80 * 0.1]);
+  var f80 = K8.fenster(lang80.length, lang80.length - 1, 260);
+  var ganz80 = K8.maReihe(lang80, 200, Q8.sma).slice(f80.von, f80.bis + 1);
+  var eng80 = K8.maReihe(lang80.slice(f80.von, f80.bis + 1), 200, Q8.sma);
+  var mitWert80 = ganz80.filter(function (v) { return v != null; }).length;
+  var engWert80 = eng80.filter(function (v) { return v != null; }).length;
+  ok(mitWert80 === 260,
+     '80.5 ueber die geladene Reihe gerechnet hat die MA200 auf allen 260 sichtbaren Kerzen einen Wert',
+     mitWert80 + ' von 260');
+  gegen80('ueber das Fenster gerechnet beginnt dieselbe Linie erst weit im Bild - genau der Befund vom 05.09.',
+     engWert80 === 61);
+  ok(/KC\(\)\.maReihe\(alle, Number\(n\), window\.Quant\.sma\)/.test(exp8) &&
+     /var alle = s\.alle;/.test(exp8) && /\.slice\(von, bis \+ 1\)/.test(exp8),
+     '80.5 und der Viewer rechnet sie ueber die ganze Reihe und schneidet DANACH auf das Fenster');
+  ok(!/maReihe\(s\.kerzen/.test(exp8),
+     '80.5 nirgends im Viewer laeuft ein Durchschnitt mehr ueber die sichtbaren Kerzen allein');
+
+  /* --- 80.6 Rad-Zoom als Rechnung: die Kerze unterm Zeiger bleibt stehen --- */
+  var ankerFest80 = [0, 0.25, 0.5, 0.75, 1].every(function (anteil) {
+    var vonV = 100, nV = 400;
+    var ank = vonV + Math.round(anteil * (nV - 1));
+    var na = K8.radZoom(1000, vonV, nV, anteil, true);
+    return na.von + Math.round(anteil * (na.anzahl - 1)) === ank;
+  });
+  ok(ankerFest80, '80.6 an fuenf Zeigerpositionen bleibt genau die Kerze unter dem Zeiger stehen');
+  var rein80 = K8.radZoom(1000, 0, 400, 0.5, true);
+  ok(rein80.anzahl === 300 && K8.radZoom(1000, rein80.von, rein80.anzahl, 0.5, false).anzahl === 400,
+     '80.6 hinein und wieder heraus fuehrt auf dieselbe Zahl zurueck',
+     rein80.anzahl + ' → ' + K8.radZoom(1000, rein80.von, rein80.anzahl, 0.5, false).anzahl);
+  var raus80 = K8.radZoom(500, 0, 480, 0.5, false);
+  ok(raus80.von === 0 && raus80.anzahl === 500,
+     '80.6 herausgezoomt endet es bei der ganzen Reihe - nie darueber hinaus');
+  ok(K8.radZoom(1000, 900, 100, 0.5, true).anzahl >= K8.ZOOM_MIN &&
+     K8.radZoom(0, 0, 100, 0.5, true).anzahl === 0,
+     '80.6 unter die Mindestzahl geht es nicht, und ohne Kerzen wirft es nicht');
+  ok(K8.blaettern(1000, 100, 200, -50).von === 50 && K8.blaettern(1000, 0, 200, -50).von === 0,
+     '80.6 Blaettern verschiebt das Fenster und bleibt am Anfang stehen');
+  ok(K8.fensterAbVon(695, 600, 260).von === 435 && K8.fensterAbVon(695, 600, 260).bis === 694,
+     '80.6 der linke Rand als Anker rutscht nur so weit, dass das Fenster in die Reihe passt');
+  gegen80('ohne die Ankerkorrektur wandert die Kerze unter dem Zeiger - der Test misst wirklich die Verschiebung',
+    (function () {
+      var anteil = 0.75, vonV = 100, nV = 400;
+      var ank = vonV + Math.round(anteil * (nV - 1));
+      var naiv = { von: vonV, anzahl: Math.round(nV * 0.75) };   // linker Rand bleibt einfach stehen
+      return naiv.von + Math.round(anteil * (naiv.anzahl - 1)) !== ank;
+    })());
+  ok(/c\.addEventListener\('wheel', vwRad/.test(exp8) && /c\.addEventListener\('dblclick', vwZurueck\)/.test(exp8) &&
+     /c\.addEventListener\('mousedown', vwZiehenStart\)/.test(exp8),
+     '80.6 und am Chart haengen Rad, Ziehen und Doppelklick');
+  ok(/data-zoom="rein"/.test(exp8) && /data-zoom="raus"/.test(exp8) && /data-zoom="zurueck"/.test(exp8) &&
+     /id="vwZoom"/.test(html8),
+     '80.6 die drei sichtbaren Knoepfe + − ↺ stehen da - die Tastatur war unsichtbar');
+  ok(/ev\.key === 'ArrowLeft'/.test(exp8) && /ev\.key === '\+'/.test(exp8),
+     '80.6 die Tastatur bleibt, was sie war');
+
+  /* --- 80.7 Zoomen laedt nichts nach, solange die Reihe reicht --- */
+  ok(/if \(!rein && f\.von === 0 && f\.anzahl >= s\.gesamt\) vwMehrLaden\(\);/.test(exp8) &&
+     /function vwMehrLaden\(\)/.test(exp8),
+     '80.7 nachgeladen wird erst, wenn das Fenster am Anfang der Reihe anschlaegt');
+  ok(/VW\.nachgeladen = 'Am Anfang der geladenen Reihe – auf ' \+ neu \+ ' erweitert\.'/.test(exp8) &&
+     /if \(VW\.nachgeladen\) satz \+= ' · ' \+ VW\.nachgeladen;/.test(exp8),
+     '80.7 und die Fusszeile sagt es, wenn der Zeitraum von selbst gewachsen ist');
+
+  /* --- 80.8 Signal-Marken: dieselben Detektoren, eine Rechnung --- */
+  ok((exp8.match(/Q\.signalCross\(/g) || []).length === 1 &&
+     (exp8.match(/Q\.rsiExtremSignal\(/g) || []).length === 1 &&
+     (exp8.match(/Q\.donchianSignal\(/g) || []).length === 1,
+     '80.8 jeder Detektor wird an GENAU EINER Stelle aufgerufen - keine zweite Rechnung fuer die neue Zeichenflaeche');
+  ok(/function vwMarken\(kerzen\)/.test(exp8) && /wo\[k\[0\]\] = i;/.test(exp8) &&
+     !/signalePunkte\([\s\S]{0,40}sichtbar/.test(exp8),
+     '80.8 die Marken des Bildes sind eine ZUORDNUNG ueber den Zeitstempel, kein zweiter Detektorlauf');
+  /* Und die Zuordnung stimmt: an einer erfundenen Reihe liegt die Marke auf der
+   * Kerze mit demselben Stempel. */
+  var kern80 = [[1000, 10], [2000, 11], [3000, 12], [4000, 13]];
+  var woSoll80 = {};
+  kern80.forEach(function (k, i) { woSoll80[k[0]] = i; });
+  ok(woSoll80[3000] === 2, '80.8 Zuordnung ueber den Stempel trifft die richtige Kerze');
+
+  /* --- 80.9 Das Urteil steht WOERTLICH an der Marke, gelesen statt behauptet --- */
+  var su80 = fs.readFileSync(__dirname + '/studienurteile.js', 'utf8');
+  ok(/function urteilZu\(schluessel\)/.test(exp8) && /SU\.verworfen\(schluessel\)/.test(exp8) &&
+     /return \{ text: e\.befund/.test(exp8),
+     '80.9 das Urteil kommt aus StudienUrteile.verworfen und wird woertlich uebernommen (e.befund)');
+  ok(/urteil: 'donchian'/.test(exp8) && /urteil: 'squeeze'/.test(exp8) &&
+     /urteil: 'ruecksetzer'/.test(exp8) && /urteil: 'kanaltrend'/.test(exp8),
+     '80.9 die vier Schluessel, die das Register fuehrt, haengen an ihren Schaltern');
+  ['donchian', 'squeeze', 'ruecksetzer', 'kanaltrend'].forEach(function (k) {
+    ok(su80.indexOf(k + ': {') > 0, '80.9 ... und ' + k + ' steht im Register wirklich drin');
+  });
+  ok(/vwMarkeTipp/.test(exp8) && /u\.text/.test(exp8) &&
+     /Belegstand laut Studienregister/.test(exp8),
+     '80.9 Tooltip und Signal-Liste tragen dasselbe gelesene Urteil');
+  /* Die Sperre bleibt: kein sichtbarer Text nennt eine Kante belegt. */
+  ok(/Kein Protokoll sagt bestätigt\./.test(exp8) && !/ist belegt/.test(exp8),
+     '80.9 wo das Register nichts fuehrt, steht "kein Protokoll sagt bestaetigt" - nicht "nicht gemessen"');
+  gegen80('ein fest hineingeschriebenes Urteil waere auffindbar - die Klinke sucht nach der Leseform, nicht nach Text',
+     !/befund: *'/.test(exp8));
+
+  /* --- 80.10 Die Fusszeile ist ein Satz, die Einzelheiten stehen hinter dem i-Knopf --- */
+  ok(/id="vwQuelleMehr"/.test(html8) && /id="vwQuelleDetail"/.test(html8) &&
+     /aria-controls="vwQuelleDetail"/.test(html8),
+     '80.10 der i-Knopf und sein Ziel stehen im Markup und sind verbunden');
+  ok(/d\.hidden = !auf;/.test(exp8) && /mehr\.setAttribute\('aria-expanded'/.test(exp8),
+     '80.10 er klappt die Einzelheiten auf und meldet seinen Zustand');
+  ok(/e\.textContent = satz;/.test(exp8) && /' · ' \+ VW\.zeitraum \+ ' in ' \+ VW\.kerze \+ '-Kerzen · '/.test(exp8),
+     '80.10 die Fusszeile nennt Quelle, Zeitraum, Kerze und die Zahl in EINEM Satz');
+  ok(/zeilen\.push\('Die letzte Kerze läuft noch/.test(exp8) &&
+     /doppelte Kerzen an der Naht verworfen \(Archiv gewinnt\)/.test(exp8),
+     '80.10 Naht, verworfene Kerzen und laufende Kerze sind nicht verschwunden - sie stehen in den Einzelheiten');
+
+  /* --- 80.11 Der Store merkt Zeitraum, Kerzenlaenge und Schalter --- */
+  ok(/VW_STORE_ZEITRAUM = 'viewerZeitraum'/.test(exp8) && /VW_STORE_KERZE = 'viewerKerze'/.test(exp8) &&
+     /VW_STORE_SCHALTER = 'viewerSchalter'/.test(exp8),
+     '80.11 drei Schluessel: Zeitraum, Kerzenlaenge, Schalter');
+  ok(/storeSet\(VW_STORE_ZEITRAUM, VW\.zeitraum\)/.test(exp8) &&
+     /storeSet\(VW_STORE_KERZE, VW\.kerze\)/.test(exp8) &&
+     /storeSet\(VW_STORE_SCHALTER, \{ sig: sigAn, ind: indAn, ma: VW\.ma \}\)/.test(exp8),
+     '80.11 sie werden geschrieben ...');
+  ok(/storeGet\(VW_STORE_ZEITRAUM\)/.test(exp8) && /storeGet\(VW_STORE_SCHALTER\)/.test(exp8),
+     '80.11 ... und beim Start wieder gelesen');
+  ok(/KC\(\)\.kerzeFuer\(VW\.zeitraum, KC\(\)\.KERZEN\.indexOf\(k\) >= 0 \? k : null\)/.test(exp8),
+     '80.11 eine gemerkte Kerze, die zum gemerkten Zeitraum nicht passt, wird NICHT uebernommen');
+
+  /* --- 80.12 Gezeichnet wird wirklich: Marken und Indikator-Spur an einer Attrappe --- */
+  function ctx80() {
+    var a = { rufe: {}, dash: 0 };
+    ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'stroke',
+     'save', 'restore', 'fillText', 'measureText', 'setLineDash', 'closePath', 'fill', 'arc'].forEach(function (n) {
+      a[n] = function () { a.rufe[n] = (a.rufe[n] || 0) + 1; if (n === 'setLineDash') a.dash++; return { width: 10 }; };
+    });
+    return a;
+  }
+  var k80 = [];
+  for (var j80 = 0; j80 < 60; j80++) k80.push([j80 * 3600000, 100 + j80, 500 + j80, 101 + j80, 99 + j80, 100 + j80]);
+  var sk80 = K8.skala(k80, { breite: 900, hoehe: 400 });
+  var cM80 = ctx80();
+  var erg80 = K8.zeichnen(cM80, k80, sk80, {
+    marken: [{ index: 5, richtung: 'call', farbe: '#0f0' },
+             { index: 40, richtung: 'put', farbe: '#f00', gewaehlt: true }]
+  });
+  ok(erg80.marken === 2 && cM80.rufe.fill >= 2 && cM80.rufe.closePath >= 2,
+     '80.12 zwei Signal-Marken werden als Dreiecke gezeichnet', erg80.marken + ' Marken');
+  ok(K8.zeichnen(ctx80(), k80, sk80, { marken: [{ index: 999, richtung: 'call' }] }).marken === 0,
+     '80.12 eine Marke ausserhalb des Fensters wird nicht gezeichnet - und wirft nicht');
+  var ohneVol80 = K8.zeichnen(ctx80(), k80, sk80, { umsatz: false });
+  ok(ohneVol80.mitUmsatz === 0 && K8.zeichnen(ctx80(), k80, sk80, {}).mitUmsatz === 60,
+     '80.12 der Umsatz laesst sich abschalten und ist sonst da', ohneVol80.mitUmsatz + ' / 60');
+  var cS80 = ctx80();
+  var spur80 = K8.spurZeichnen(cS80, [null, 30, 55, 72, 61], { breite: 900, hoehe: 90 },
+    { name: 'RSI 14', schwellen: [30, 70], tief: 0, hoch: 100 });
+  ok(spur80.punkte === 4 && spur80.schwellen === 2 && cS80.rufe.clearRect === 1,
+     '80.12 die Indikator-Spur zeichnet ihre Punkte und ihre zwei Schwellen',
+     spur80.punkte + ' Punkte / ' + spur80.schwellen + ' Schwellen');
+  gegen80('ohne Kontext oder ohne Werte zeichnet die Spur nichts - und wirft nicht',
+     K8.spurZeichnen(null, [1, 2], {}, {}).punkte === 0 && K8.spurZeichnen(ctx80(), [], {}, {}).punkte === 0);
+
+  /* --- 80.13 Keine Zahl im Markup, kein toter Rest der alten Ansicht --- */
+  /* `data-zeitraum` traegt im Reiter Markt schon die Sektorbalken (1 Tag/1 Woche/
+   * 1 Monat). Geprueft wird deshalb der VIEWER-Block, nicht die ganze Datei -
+   * sonst misst die Klinke ein fremdes Widget und wird rot, obwohl hier alles
+   * stimmt. */
+  var vwBlock8 = html8.slice(html8.indexOf('id="sub-explorer"'), html8.indexOf('id="sub-scheine"'));
+  ok(vwBlock8.length > 500 && !/data-zeitraum=/.test(vwBlock8) && !/data-kerze=/.test(vwBlock8),
+     '80.13 KEINE Zahl im Markup: beide Knopfreihen sind leer und werden gebaut');
+  ok(/id="vwZeitraum" role="group"/.test(vwBlock8) && /id="vwKerze" role="group"/.test(vwBlock8),
+     '80.13 ... und beide Reihen sind als Gruppe ausgezeichnet, mit Beschriftung');
+  ok(!/id="expSigListe"/.test(html8) && !/id="expChartArt"/.test(html8) && !/id="expKanalInfo"/.test(html8),
+     '80.13 die Kennungen der alten Ansicht sind restlos weg');
+  ok(!/expRanges|expZeitHinweis|bigCross/.test(exp8),
+     '80.13 und explorer.js spricht keine von ihnen mehr an');
+  ok(/b\.disabled = !u\.ok;/.test(exp8) && /b\.setAttribute\('title', u\.grund\)/.test(exp8),
+     '80.13 der gesperrte Knopf traegt seinen Grund als Tooltip');
+
+  ok(g80 === rot80, '80.14 alle Gegenproben dieses Abschnitts schlagen an', rot80 + ' von ' + g80);
 })();
 
 Promise.all(offeneProben).then(function () {

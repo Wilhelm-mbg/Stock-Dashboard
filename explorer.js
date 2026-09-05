@@ -5,24 +5,6 @@
   var Q = window.Quant, U = window.U;
   var CUR = null; // aktuell angezeigtes Symbol {sym, name, exch, type}
   var CURDATA = { daily: null, rangeSeries: null, meta: null, news: [] };
-  var RANGES = [
-    { k: '1T', range: '1d', interval: '5m' },
-    { k: '5T', range: '5d', interval: '15m' },
-    // 1M mit Stundenkerzen statt Tageskerzen: ein Monat hat nur ~21 Handelstage,
-    // und fast jedes Signal braucht 40+ Kerzen Vorlauf - mit Tageskerzen war die
-    // Monatsansicht deshalb immer leer (Tester-Meldung #10). ~150 Stundenkerzen
-    // tragen Signale, Kanal und Durchschnitte.
-    { k: '1M', range: '1mo', interval: '60m' },
-    // 6M ebenfalls mit Stundenkerzen: 126 Tageskerzen liegen unter dem Vorlauf,
-    // den die meisten Signale brauchen (~130) - die Halbjahresansicht zeigte
-    // deshalb kaum je etwas. ~780 Stundenkerzen tragen alles.
-    { k: '6M', range: '6mo', interval: '60m' },
-    { k: '1J', range: '1y', interval: '1d' },
-    { k: '5J', range: '5y', interval: '1wk' },
-    { k: 'Max', range: 'max', interval: '1mo' }
-  ];
-  var activeRange = '1J';
-
   /* ================= Suche ================= */
   /* Gescheiterte Suche und leere Suche waren dasselbe: beide gaben [] zurueck und die
    * Liste sagte "Nichts gefunden." Bei abgerissener Verbindung behauptet die App damit,
@@ -125,13 +107,6 @@
   async function openDetail(hit) {
     var seq = ++openSeq;
     CUR = hit;
-    activeRange = '1J';
-    // Menues auf den Startzustand der Schnellwahl stellen (Menues = einzige Wahrheit)
-    var zElO = document.getElementById('expZeit'), kElO = document.getElementById('expKerze');
-    if (zElO) zElO.value = '1y';
-    if (kElO) kElO.value = '1d';
-    var vElO = document.getElementById('expVon'), bElO = document.getElementById('expBis');
-    if (vElO) vElO.value = ''; if (bElO) bElO.value = '';
     var startEl = document.getElementById('expStart');
     if (startEl) startEl.style.display = 'none';
     document.getElementById('expDetail').style.display = 'block';
@@ -148,8 +123,6 @@
     document.getElementById('expStats').innerHTML = '';
     document.getElementById('expNews').innerHTML = '<div class="loading">Lade News …</div>';
     document.getElementById('aiStatus').textContent = '';
-    buildRangeButtons();
-    buildChartLeiste();
     vwOeffnen();
 
     // Tagesdaten (2 Jahre) für Kennzahlen/Analyse + aktueller Range-Chart + News parallel
@@ -181,207 +154,62 @@
       // ins DOM wie jeder andere Fremdtext auch (überall sonst macht die App das bereits).
       document.getElementById('expStats').innerHTML = stats.map(function (s) { return '<dt>' + U.esc(s[0]) + '</dt><dd>' + U.esc(s[1]) + '</dd>'; }).join('');
     }
-    loadRange();
     loadNews();
   }
 
-  /** Zeitraum-, Kerzen- und Signalwahl verdrahten. Einmal beim Start, nicht je Symbol. */
-  function buildChartLeiste() {
-    var zEl = document.getElementById('expZeit'), kEl = document.getElementById('expKerze');
-    if (zEl && !zEl.__bereit) {
-      zEl.__bereit = true;
-      zEl.addEventListener('change', function () {
-        // Schnellwahl-Knoepfe abwaehlen, sobald frei gewaehlt wird - sonst waere unklar, was gilt
-        var rb = document.getElementById('expRanges');
-        if (rb) rb.querySelectorAll('button').forEach(function (x) { x.classList.remove('active'); });
-        // Handwahl des Zeitraums hebt die Datumswahl auf
-        var v4 = document.getElementById('expVon'), b4 = document.getElementById('expBis');
-        if (v4) v4.value = ''; if (b4) b4.value = '';
-        loadRange();
-      });
+  /* ================= Signale im Chart =================
+   * Berechnet mit denselben Funktionen, die auch die Messung und der Handel benutzen -
+   * es wird nichts fuer die Anzeige nachgebaut. Was hier zu sehen ist, ist exakt das,
+   * worauf die Automatik reagieren wuerde.
+   *
+   * Viewer 8a (05.09.2026): Diese Tabelle stand frueher neben einer zweiten Ansicht
+   * (ein eigener SVG-Zeichner mit eigener Achse). Die ist weg, die Tabelle ist DIESELBE
+   * geblieben - sie speist jetzt den Kerzenchart. Ein zweiter Satz Detektoren fuer
+   * die neue Zeichenflaeche waere genau die zweite Wahrheit, die das Projekt schon
+   * einmal Kerzen gekostet hat.
+   *
+   * `hinweis` ist der Text, der bisher als title am Kaestchen im Markup stand. Er
+   * steht jetzt hier, damit die Leiste aus Daten gebaut wird und kein Satz beim
+   * Umbau verloren geht.
+   *
+   * `urteil` nennt den Schluessel, unter dem das Studienregister sein Urteil fuehrt.
+   * Der Viewer BEHAUPTET nichts: was in der Marke steht, wird aus StudienUrteile
+   * gelesen (Regel D2). */
+  var SIGNALE = {
+    /* C14 (01.09.2026): Farben aus der Token-Palette statt roher Hex-Werte - die
+     * Kontraste sind dort je Thema GERECHNET; feste Hex-Toene galten nur fuer eines. */
+    cross: {
+      name: 'EMA-Kreuzung', farbe: 'var(--series)', urteil: null,
+      hinweis: 'Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt.',
+      fn: function (b) { var r = Q.signalCross(b, 'ema', 20, 15); return r.crossed ? (r.crossed === 'up' ? 'call' : 'put') : null; }
+    },
+    reversion: {
+      name: 'Umkehr', farbe: 'var(--series4)', urteil: null,
+      hinweis: 'Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long.',
+      fn: function (b) { return Q.reversionSignal(b, 'ema', 20, 1.5).signal; }
+    },
+    pullback: {
+      name: 'Rücksetzer', farbe: 'var(--warn)', urteil: 'ruecksetzer',
+      hinweis: 'Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt.',
+      fn: function (b) { return Q.pullbackSignal(b, 'ema', 20, 15).signal; }
+    },
+    rsi2: {
+      name: 'RSI(2)', farbe: 'var(--series3)', urteil: null,
+      hinweis: 'Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die Hauptstrategie; gegen eine gepaarte Kontrolle ist sie seit dem 23.08.2026 nicht entscheidbar.',
+      fn: function (b) { return Q.rsiExtremSignal(b).signal; }
+    },
+    donchian: {
+      name: 'Donchian', farbe: 'var(--series2)', urteil: 'donchian',
+      hinweis: 'Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt.',
+      fn: function (b) { return Q.donchianSignal(b, 20, 15).signal; }
+    },
+    squeeze: {
+      name: 'Squeeze', farbe: 'var(--series5)', urteil: 'squeeze',
+      hinweis: 'Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt.',
+      fn: function (b) { return Q.squeezeSignal(b, 20).signal; }
     }
-    if (kEl && !kEl.__bereit) { kEl.__bereit = true; kEl.addEventListener('change', function () { loadRange(); }); }
-    ['expVon', 'expBis'].forEach(function (idD) {
-      var eD = document.getElementById(idD);
-      if (eD && !eD.__bereit) {
-        eD.__bereit = true;
-        eD.addEventListener('change', function () {
-          var rb2 = document.getElementById('expRanges');
-          if (rb2) rb2.querySelectorAll('button').forEach(function (x) { x.classList.remove('active'); });
-          loadRange();
-        });
-      }
-    });
-    var leiste = document.getElementById('expSignalLeiste');
-    if (leiste && !leiste.__bereit) {
-      leiste.__bereit = true;
-      leiste.querySelectorAll('input[data-sig]').forEach(function (cb) {
-        cb.addEventListener('change', function () {
-          sigAn[cb.getAttribute('data-sig')] = cb.checked;
-          // Neu zeichnen genuegt - die Kurse sind schon da, es wird nichts nachgeladen
-          drawAktuell();
-        });
-      });
-    }
-    var artL = document.getElementById('expChartArt');
-    if (artL && !artL.__bereit) {
-      artL.__bereit = true;
-      artL.addEventListener('change', function () {
-        chartArt = artL.value;
-        drawAktuell();
-      });
-    }
-    var indL = document.getElementById('expIndiLeiste');
-    if (indL && !indL.__bereit) {
-      indL.__bereit = true;
-      indL.querySelectorAll('input[data-ind]').forEach(function (cb) {
-        cb.addEventListener('change', function () {
-          indAn[cb.getAttribute('data-ind')] = cb.checked;
-          drawAktuell();
-        });
-      });
-    }
-  }
-  var letzteBeschriftung = '';
+  };
 
-  /* ---- Mausrad-Zoom (Tester-Wunsch #27) ----
-   * Zoomt in die GELADENE Reihe hinein, ohne neu zu laden: zoomFenster haelt die
-   * sichtbaren Indizes. Rad nach vorn verengt das Fenster um den Mauszeiger
-   * herum, Rad zurueck weitet es; ganz herausgezoomt (null) gilt die volle Reihe. */
-  var zoomFenster = null;   // {von, bis} als Indizes in CURDATA.rangeSeries
-  function sichtbareSerie() {
-    var s = CURDATA.rangeSeries || [];
-    if (!zoomFenster || !s.length) return s;
-    return s.slice(Math.max(0, zoomFenster.von), Math.min(s.length, zoomFenster.bis + 1));
-  }
-  function drawAktuell() {
-    drawBig(document.getElementById('bigchart'), sichtbareSerie(),
-      letzteBeschriftung + (zoomFenster ? ' · Ausschnitt (Rad zurück = ganz)' : ''));
-  }
-  (function () {
-    var svgZ = document.getElementById('bigchart');
-    if (!svgZ || svgZ.__zoomBereit) return;
-    svgZ.__zoomBereit = true;
-    svgZ.addEventListener('wheel', function (ev) {
-      var s = CURDATA.rangeSeries || [];
-      if (s.length < 40) return;
-      ev.preventDefault();                                  // Seite soll nicht mitscrollen
-      var von = zoomFenster ? zoomFenster.von : 0;
-      var bis = zoomFenster ? zoomFenster.bis : s.length - 1;
-      var len = bis - von + 1;
-      var r = svgZ.getBoundingClientRect();
-      var frac = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
-      var anker = von + Math.round(frac * (len - 1));       // Kerze unterm Mauszeiger bleibt stehen
-      var neuLen = ev.deltaY < 0 ? Math.max(30, Math.round(len * 0.75)) : Math.round(len / 0.75);
-      if (neuLen >= s.length) { zoomFenster = null; drawAktuell(); return; }
-      var neuVon = Math.max(0, anker - Math.round(frac * (neuLen - 1)));
-      var neuBis = Math.min(s.length - 1, neuVon + neuLen - 1);
-      neuVon = Math.max(0, neuBis - neuLen + 1);
-      zoomFenster = { von: neuVon, bis: neuBis };
-      drawAktuell();
-    }, { passive: false });
-  })();
-
-  /* Aufklappen heisst neu zeichnen - zugeklappt hat das SVG keine Breite. */
-  (function () {
-    var alt = document.getElementById('vwAlt');
-    if (!alt || alt.__bereit) return;
-    alt.__bereit = true;
-    alt.addEventListener('toggle', function () { if (alt.open && CUR) drawAktuell(); });
-  })();
-
-  function buildRangeButtons() {
-    var el = document.getElementById('expRanges');
-    el.innerHTML = RANGES.map(function (r) {
-      return '<button data-range="' + r.k + '" class="' + (r.k === activeRange ? 'active' : '') + '">' + r.k + '</button>';
-    }).join('');
-    el.querySelectorAll('button').forEach(function (b) {
-      b.addEventListener('click', function () {
-        activeRange = b.getAttribute('data-range');
-        /* Aufgeraeumt (Tester-Meldungen #23/#26): Die Menues sind die EINZIGE
-           Wahrheit - ein Schnellwahl-Knopf setzt nur die beiden Menues und laedt.
-           Frueher liefen zwei getrennte Zweige, und der Schnellwahl-Zweig
-           ueberschrieb jede Kerzenwahl sofort wieder. */
-        var r = RANGES.filter(function (x) { return x.k === activeRange; })[0];
-        var zEl3 = document.getElementById('expZeit'), kEl3 = document.getElementById('expKerze');
-        if (zEl3) zEl3.value = r.range;
-        if (kEl3) kEl3.value = r.interval;
-        var v3 = document.getElementById('expVon'), b3 = document.getElementById('expBis');
-        if (v3) v3.value = ''; if (b3) b3.value = '';   // Schnellwahl hebt die Datumswahl auf
-        el.querySelectorAll('button').forEach(function (x) { x.classList.toggle('active', x === b); });
-        loadRange();
-      });
-    });
-  }
-
-  /* Yahoo begrenzt Intraday-Daten hart und lehnt zu weite Anfragen mit einem Fehler ab.
-   * Am 20.08.2026 ausgemessen - das sind die tatsaechlichen Obergrenzen, nicht geschaetzt. */
-  var MAX_ZEIT = { '1m': '7d', '5m': '60d', '15m': '60d', '60m': '730d' };
-  var ZEIT_TAGE = { '5d': 5, '1mo': 30, '60d': 60, '6mo': 182, '1y': 365, '2y': 730, '5y': 1825, 'max': 99999, '7d': 7, '730d': 730 };
-
-  /** Passt den Zeitraum an, wenn er fuer die gewaehlte Kerzengroesse zu weit reicht.
-   *  Lieber stillschweigend kuerzen und es DAZUSCHREIBEN, als eine leere Antwort zeigen. */
-  function zeitPruefen(zeit, kerze) {
-    var max = MAX_ZEIT[kerze];
-    if (!max) return { zeit: zeit, hinweis: '' };
-    if ((ZEIT_TAGE[zeit] || 0) <= (ZEIT_TAGE[max] || 0)) return { zeit: zeit, hinweis: '' };
-    var txt = { '7d': '7 Tage', '60d': '60 Tage', '730d': '730 Handelstage' }[max] || max;
-    return { zeit: max, hinweis: 'Bei ' + kerze + '-Kerzen liefert die Quelle höchstens ' + txt + ' – darauf gekürzt.' };
-  }
-
-  async function loadRange() {
-    if (!CUR) return;
-    var seqR = openSeq;
-    var zEl = document.getElementById('expZeit'), kEl = document.getElementById('expKerze');
-    var vEl = document.getElementById('expVon'), bEl = document.getElementById('expBis');
-    var hEl = document.getElementById('expZeitHinweis');
-    /* EIN Weg statt zwei (Tester-Meldungen #23/#26): Die Menues sind die einzige
-       Wahrheit; Schnellwahl-Knoepfe setzen nur die Menues. Der fruehere zweite
-       Zweig ueberschrieb jede Kerzenwahl sofort wieder - das Kerzen-Menue wirkte
-       tot, solange eine Schnellwahl aktiv war.
-       selectedIndex bleibt defensiv geprueft (.options[-1].text warf frueher
-       einen TypeError, Tester-Meldung #12). */
-    var kerze = (kEl && kEl.selectedIndex >= 0 && kEl.value) ? kEl.value : '1d';
-    var kTxt = (kEl && kEl.selectedIndex >= 0) ? kEl.options[kEl.selectedIndex].text : kerze;
-    var zeit, beschriftung, von = null, bis = null;
-    if (vEl && bEl && vEl.value && bEl.value) {
-      // Freie Datumswahl (Tester-Wunsch #25): von/bis schlaegt alles andere
-      von = Date.parse(vEl.value); bis = Date.parse(bEl.value) + 86399000; // bis-Tag einschliesslich
-      if (!(von < bis)) { if (hEl) hEl.textContent = '„Von" muss vor „Bis" liegen.'; return; }
-      var spannTage = Math.ceil((bis - von) / 86400000);
-      var maxT = ZEIT_TAGE[MAX_ZEIT[kerze]] || 99999;
-      if (spannTage > maxT) {
-        von = bis - maxT * 86400000;
-        if (hEl) hEl.textContent = 'Bei ' + kerze + '-Kerzen liefert die Quelle höchstens ' + maxT + ' Tage – Beginn entsprechend verschoben.';
-      } else if (hEl) hEl.textContent = '';
-      beschriftung = vEl.value + ' – ' + bEl.value + ' · ' + kTxt;
-    } else {
-      zeit = (zEl && zEl.value) || '1y';
-      var pr = zeitPruefen(zeit, kerze);
-      zeit = pr.zeit;
-      if (hEl) hEl.textContent = pr.hinweis;
-      var zTxt = (zEl && zEl.selectedIndex >= 0) ? zEl.options[zEl.selectedIndex].text : zeit;
-      beschriftung = zTxt + ' · ' + kTxt;
-    }
-    var data = await fetchRange(CUR.sym, zeit, kerze, von, bis);
-    if (seqR !== openSeq) return; // Symbol wurde inzwischen gewechselt
-    if (!data || !data.series.length) {
-      if (hEl) hEl.textContent = 'Für diese Kombination liefert die Quelle keine Daten.';
-    }
-    CURDATA.rangeSeries = data ? data.series : null;
-    CURDATA.rangeBars = data ? data.bars : null;
-    CURDATA.kerze = kerze;
-    letzteBeschriftung = beschriftung;
-    var altStatus = document.getElementById('vwAltStatus');
-    if (altStatus) {
-      altStatus.textContent = beschriftung +
-        (data && data.series ? ' · ' + data.series.length + ' Kerzen' : ' · keine Daten');
-    }
-    zoomFenster = null;   // neue Daten = neuer Massstab, der alte Ausschnitt gilt nicht mehr
-    drawBig(document.getElementById('bigchart'), data ? data.series : [], beschriftung);
-  }
-
-  var bigMeta = null;
   /** Liste aller Signale des aktuellen Charts. Ohne sie muss man mit der Maus auf
    *  winzige Dreiecke zielen, um zu sehen, was ein Signal war - auf einem Jahreschart
    *  mit hunderten Markierungen ist das aussichtslos. */
@@ -394,111 +222,48 @@
     'Squeeze': 'Die Bollinger-Bänder waren deutlich enger als zuletzt üblich, und jetzt bricht der Kurs aus dieser Kompression aus.'
   };
 
-  /** Was das gewählte Signal aussagt – und was danach tatsächlich passiert ist. */
-  function zeigeSignalDetail() {
-    var el = document.getElementById('expSigDetail');
-    if (!el) return;
-    if (GEWAEHLT == null || !LETZTE_PUNKTE[GEWAEHLT]) { el.innerHTML = ''; el.style.display = 'none'; return; }
-    var p = LETZTE_PUNKTE[GEWAEHLT];
-    var bars = CURDATA.rangeBars || [];
-    var idx = -1;
-    for (var i = 0; i < bars.length; i++) if (bars[i][0] === p.t) { idx = i; break; }
-    var danach = '';
-    if (idx >= 0) {
-      // Was danach kam - in Signalrichtung gerechnet, damit "+" immer "richtig gelegen" heisst
-      var zeilen = [4, 8, 16, 26].map(function (h) {
-        if (idx + h >= bars.length) return null;
-        var r = (bars[idx + h][1] / bars[idx][1] - 1) * 100;
-        var inRichtung = p.dir === 'call' ? r : -r;
-        return '<span style="display:inline-block; min-width:104px;">nach ' + h + ' Kerzen: <b class="' +
-          (inRichtung >= 0 ? 'up' : 'down') + '" style="color:' + (inRichtung >= 0 ? 'var(--up)' : 'var(--down)') + '">' +
-          (inRichtung >= 0 ? '+' : '') + inRichtung.toFixed(2) + ' %</b></span>';
-      }).filter(Boolean);
-      danach = zeilen.length
-        ? '<div style="margin-top:8px; font-size:var(--fs-neben);"><span style="color:var(--muted);">Was danach kam, in Signalrichtung:</span><br>' + zeilen.join(' ') + '</div>'
-        : '<div style="margin-top:8px; font-size:var(--fs-neben); color:var(--muted);">Das Signal ist zu jung – die Entwicklung danach liegt noch nicht vor.</div>';
-    }
-    el.style.display = 'block';
-    el.innerHTML =
-      '<div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">' +
-        '<span style="width:11px; height:11px; border-radius:var(--r-klein); background:' + p.farbe + '; display:inline-block;"></span>' +
-        '<b style="font-size:var(--fs-gross);">' + U.esc(p.name) + '</b>' +
-        '<span style="color:' + (p.dir === 'call' ? 'var(--up)' : 'var(--down)') + '; font-weight:700;">' +
-          (p.dir === 'call' ? '▲ Kauf' : '▼ Verkauf') + '</span>' +
-        '<span style="color:var(--muted);">' + new Date(p.t).toLocaleString('de-DE') + ' · Kurs ' + U.nf2.format(p.preis) + '</span>' +
-        '<button class="btn ghost tiny" id="expSigZu" style="margin-left:auto;">schließen</button>' +
-      '</div>' +
-      '<div style="font-size:var(--fs-text); color:var(--ink-2); margin-top:6px;">' +
-        U.esc(SIGNAL_ERKLAERT[p.name] || 'Keine Erläuterung hinterlegt.') + '</div>' +
-      danach +
-      '<div style="font-size:var(--fs-klein); color:var(--muted); margin-top:8px;">' +
-        'Hinweis: Einzelsignale wurden über 19 000 Kerzen gemessen und liegen bei 46–56 % Trefferquote. ' +
-        'Was einzeln kaum trägt, kann in Kombination mit Trendkanal und Volumen deutlich besser sein.</div>';
-    var zu = document.getElementById('expSigZu');
-    if (zu) zu.addEventListener('click', function () {
-      GEWAEHLT = null;
-      drawAktuell();
-    });
-  }
-
-  function zeigeSignalListe() {
-    var el = document.getElementById('expSigListe');
-    if (!el) return;
-    if (!LETZTE_PUNKTE.length) {
-      el.innerHTML = '<div class="empty" style="padding:10px 0;">Keine Signale eingeblendet. Oben Häkchen setzen.</div>';
-      return;
-    }
-    // Neueste zuerst - die interessieren beim Prüfen am meisten
-    var mitIndex = LETZTE_PUNKTE.map(function (p, i) { return { p: p, i: i }; })
-      .sort(function (a, b) { return b.p.t - a.p.t; }).slice(0, 200);
-    el.innerHTML =
-      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">' +
-        LETZTE_PUNKTE.length + ' Signale · Zeile anklicken, um sie im Chart zu markieren' +
-        (SIG_FEHLER ? ' · ACHTUNG: ' + SIG_FEHLER + ' Detektor-Abbrüche – die Liste ist unvollständig' : '') +
-        (LETZTE_PUNKTE.length > 200 ? ' · die 200 jüngsten' : '') + '</div>' +
-      '<div style="max-height:260px; overflow:auto;"><table class="tbl"><thead><tr>' +
-        '<th>Zeitpunkt</th><th>Signal</th><th>Richtung</th><th style="text-align:right;">Kurs</th>' +
-      '</tr></thead><tbody>' +
-      mitIndex.map(function (x) {
-        var p = x.p;
-        return '<tr data-zeile="' + x.i + '" style="cursor:pointer;' +
-          (GEWAEHLT === x.i ? ' background:var(--grid);' : '') + '">' +
-          '<td>' + new Date(p.t).toLocaleString('de-DE', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</td>' +
-          '<td><span style="display:inline-block; width:9px; height:9px; border-radius:var(--r-klein); background:' + p.farbe + '; margin-right:6px;"></span>' + U.esc(p.name) + '</td>' +
-          '<td class="' + (p.dir === 'call' ? 'up' : 'down') + '" style="color:' + (p.dir === 'call' ? 'var(--up)' : 'var(--down)') + ';">' +
-            (p.dir === 'call' ? '▲ Kauf' : '▼ Verkauf') + '</td>' +
-          '<td style="text-align:right;">' + U.nf2.format(p.preis) + '</td></tr>';
-      }).join('') + '</tbody></table></div>';
-    el.querySelectorAll('[data-zeile]').forEach(function (tr) {
-      tr.addEventListener('click', function () {
-        var i3 = parseInt(tr.getAttribute('data-zeile'), 10);
-        GEWAEHLT = (GEWAEHLT === i3) ? null : i3;
-        drawAktuell();
-      });
-    });
-  }
-
-  /* ================= Signale im Chart =================
-   * Berechnet mit denselben Funktionen, die auch die Messung und der Handel benutzen -
-   * es wird nichts fuer die Anzeige nachgebaut. Was hier zu sehen ist, ist exakt das,
-   * worauf die Automatik reagieren wuerde. */
-  var SIGNALE = {
-    /* C14 (01.09.2026): Farben aus der Token-Palette statt roher Hex-Werte - die
-     * Kontraste sind dort je Thema GERECHNET; feste Hex-Toene galten nur fuer eines.
-     * var() in SVG-Attributen traegt (dasselbe Muster wie die Kerzenfarben unten). */
-    cross:     { name: 'EMA-Kreuzung', farbe: 'var(--series)',  fn: function (b) { var r = Q.signalCross(b, 'ema', 20, 15); return r.crossed ? (r.crossed === 'up' ? 'call' : 'put') : null; } },
-    reversion: { name: 'Umkehr',       farbe: 'var(--series4)', fn: function (b) { return Q.reversionSignal(b, 'ema', 20, 1.5).signal; } },
-    pullback:  { name: 'Rücksetzer',   farbe: 'var(--warn)',    fn: function (b) { return Q.pullbackSignal(b, 'ema', 20, 15).signal; } },
-    rsi2:      { name: 'RSI(2)',       farbe: 'var(--series3)', fn: function (b) { return Q.rsiExtremSignal(b).signal; } },
-    donchian:  { name: 'Donchian',     farbe: 'var(--series2)', fn: function (b) { return Q.donchianSignal(b, 20, 15).signal; } },
-    squeeze:   { name: 'Squeeze',      farbe: 'var(--series5)', fn: function (b) { return Q.squeezeSignal(b, 20).signal; } }
+  /* Das Chartbild: was ausser den Kerzen noch zu sehen ist. Auch diese Texte
+   * standen als title im Markup und stehen jetzt hier - eine Leiste aus Daten. */
+  var INDIKATOREN = {
+    ma: { name: 'SMA 50/200', urteil: null,
+      hinweis: 'Gleitende Durchschnitte über die letzten 50 bzw. 200 KERZEN der gewählten Kerzengröße – auf dem Tageschart also 50/200 Handelstage, auf dem Stundenchart 50/200 Stunden. Gezeichnet wird nur, wenn genug Kerzen da sind, nie heimlich verkürzt.' },
+    cross50200: { name: 'Golden/Death Cross', urteil: null,
+      hinweis: 'Kreuzungen der beiden Durchschnitte. Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt.' },
+    kanal: { name: 'Trendkanal', urteil: 'kanaltrend',
+      hinweis: 'Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg.' },
+    segmente: { name: 'Kanal-Abschnitte (Historie)', urteil: 'kanaltrend',
+      hinweis: 'Zerlegt die gesamte sichtbare Historie an ihren Wendepunkten und zeichnet für JEDEN Trendabschnitt einen eigenen Kanal – grün aufwärts, rot abwärts, blau seitwärts. Reine Anzeige zum Erkennen von Marktphasen: Als Handelsbedingung wurde ein Dip-Kauf im frischen Seitwärtsabschnitt gemessen und fiel durch – es wird bewusst nichts davon gehandelt.' },
+    sr: { name: 'Unterstützung / Widerstand', urteil: null,
+      hinweis: 'Höchster und tiefster Kurs der letzten 20 bzw. 60 Perioden – die Zonen, an denen der Kurs zuletzt gedreht hat.' },
+    volumen: { name: 'Volumen', urteil: null,
+      hinweis: 'Handelsvolumen je Kerze. Ein Ausbruch mit hohem Volumen ist glaubwürdiger als einer bei dünnem Handel.' },
+    rsi: { name: 'RSI (14) als eigene Spur', urteil: null,
+      hinweis: 'Der Relative-Stärke-Index über 14 Kerzen, unter dem Chart in eigener Skala von 0 bis 100. Er läuft zwischen null und hundert – in der Kursskala wäre er eine platte Linie am unteren Rand.' },
+    linie: { name: 'Leitlinie (EMA20)', urteil: null,
+      hinweis: 'Der 20er-Exponentialdurchschnitt, an dem sich Umkehr und Rücksetzer messen. Dieselbe Linie, die die Detektoren benutzen.' }
   };
+
   var sigAn = {};
   var LETZTE_PUNKTE = [];     // Signale des aktuellen Charts - fuer Liste und Auswahl
   var SIG_FEHLER = 0;         // Detektor-Abbrueche des letzten Durchlaufs
   var GEWAEHLT = null;        // gerade angeklicktes Signal
-  var indAn = {};        // Chartbild: gleitende Durchschnitte, Kanal, Zonen, Volumen
-  var chartArt = 'linie';   // 'linie' oder 'kerzen'
+  var indAn = {};             // Chartbild: Durchschnitte, Kanal, Zonen, Volumen, RSI
+
+  /** Das Urteil zu einem Schalter - GELESEN, nie behauptet.
+   *
+   * Warum das hier steht und nicht als Satz im Markup: das Projekt hat schon einmal
+   * eine ueberholte Formel monatelang weitergetragen, weil sie fest im Text stand
+   * (Regel D2). Was das Studienregister nicht fuehrt, bekommt deshalb keine
+   * einladende Beschriftung: "nicht gemessen" ist von allen Etiketten das
+   * freundlichste und stand genau auf den Kandidaten, bei denen das Gegenteil
+   * bekannt war (studienurteile.js, Kopf). Hier steht dann, was wahr ist: dass kein
+   * Protokoll etwas bestaetigt. */
+  function urteilZu(schluessel) {
+    var SU = window.StudienUrteile;
+    var e = (schluessel && SU && typeof SU.verworfen === 'function') ? SU.verworfen(schluessel) : null;
+    if (e && e.befund) return { text: e.befund, quelle: e.quelle || '', gefuehrt: true };
+    return { text: 'Kein Protokoll sagt bestätigt.', quelle: '', gefuehrt: false };
+  }
 
   /** Signale ueber die geladene Kursreihe rechnen.
    *  Jeder Punkt sieht nur die Kerzen BIS zu sich selbst - kein Blick in die Zukunft,
@@ -521,409 +286,11 @@
          * bis zu 1200 Kerzen still null. Der Chart blieb ohne Markierungen und die
          * Liste sagte "keine Signale": ein Ausfall sah aus wie ein Befund. */
         try { d = def.fn(fenster); } catch (e) { d = null; SIG_FEHLER++; }
-        if (d) raus.push({ t: bars[i][0], preis: bars[i][1], dir: d, farbe: def.farbe, name: def.name });
+        if (d) raus.push({ t: bars[i][0], preis: bars[i][1], dir: d, farbe: def.farbe, name: def.name, schluessel: keys[ki] });
       }
     }
     return raus;
   }
-
-  function drawBig(svg, series, rangeKey) {
-    var W = svg.clientWidth || 800, H = svg.clientHeight || 300, pad = 8, padB = 18;
-    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    if (!series || series.length < 2) { svg.innerHTML = '<text x="20" y="40" fill="var(--muted)" font-size="12">Keine Daten für diesen Zeitraum.</text>'; return; }
-    var xs = series.map(function (p) { return p[0]; }), ys = series.map(function (p) { return p[1]; });
-    var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
-    // Zeitstempel -> Position in der Reihe. Nur so bekommt jede Kerze gleich viel Platz.
-    var xIndex = {};
-    for (var xi = 0; xi < series.length; xi++) xIndex[series[xi][0]] = xi;
-    var letzterIdx = series.length - 1;
-    var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
-    if (y1 - y0 < 1e-9) { y0 -= 1; y1 += 1; }
-    /** x-Position einer Kerze. Bekannte Zeitstempel gehen ueber ihren Index (dadurch
-     *  fallen Nacht und Wochenende heraus); unbekannte werden auf den naechstgelegenen
-     *  Index interpoliert, damit auch Kanalkanten und Marker richtig sitzen. */
-    function X(t) {
-      var idx = xIndex[t];
-      if (idx === undefined) {
-        if (t <= x0) idx = 0;
-        else if (t >= x1) idx = letzterIdx;
-        else {
-          // naechstgelegene Kerze suchen (Reihe ist zeitlich sortiert)
-          var lo = 0, hi = letzterIdx;
-          while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (series[mid][0] <= t) lo = mid; else hi = mid; }
-          var span = series[hi][0] - series[lo][0];
-          idx = span > 0 ? lo + (t - series[lo][0]) / span : lo;
-        }
-      }
-      return pad + (letzterIdx > 0 ? idx / letzterIdx : 0) * (W - 2 * pad);
-    }
-    function Y(v) { return H - padB - (v - y0) / (y1 - y0) * (H - pad - padB); }
-    var d = series.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
-    var grid = '';
-    for (var g = 0; g < 4; g++) {
-      var gy = pad + g / 3 * (H - pad - padB);
-      var gv = y1 - g / 3 * (y1 - y0);
-      grid += '<line x1="' + pad + '" x2="' + (W - pad) + '" y1="' + gy + '" y2="' + gy + '" stroke="var(--grid)" stroke-width="1"></line>' +
-        '<text x="' + (W - pad - 2) + '" y="' + (gy - 3) + '" fill="var(--muted)" font-size="10" text-anchor="end">' + U.nf2.format(gv) + '</text>';
-    }
-    /* --- Chartbild: Durchschnitte, Kanal, Zonen, Volumen --- */
-    var indiPfad = '', zonen = '', volBalken = '', kreuze = '';
-    var barsI = CURDATA.rangeBars;
-    if (barsI && barsI.length > 30) {
-      var cI = barsI.map(function (b) { return b[1]; });
-      /** Einfacher gleitender Durchschnitt als Reihe - fuer die ANZEIGE.
-       *  Bewusst SMA und nicht EMA: "SMA 50/200" ist das, was in jedem Chartprogramm
-       *  steht, und der Nutzer soll dasselbe sehen. */
-      function smaReihe(a, n) {
-        var out = new Array(a.length).fill(null), summe = 0;
-        for (var i2 = 0; i2 < a.length; i2++) {
-          summe += a[i2];
-          if (i2 >= n) summe -= a[i2 - n];
-          if (i2 >= n - 1) out[i2] = summe / n;
-        }
-        return out;
-      }
-      function pfadAus(reihe, farbe, breite, strich) {
-        var p = [];
-        for (var i3 = 0; i3 < barsI.length; i3++) {
-          if (reihe[i3] == null || barsI[i3][0] < x0 || barsI[i3][0] > x1) continue;
-          p.push((p.length ? 'L' : 'M') + X(barsI[i3][0]).toFixed(1) + ' ' + Y(reihe[i3]).toFixed(1));
-        }
-        return p.length > 1 ? '<path d="' + p.join(' ') + '" fill="none" stroke="' + farbe + '" stroke-width="' + breite +
-          '"' + (strich ? ' stroke-dasharray="' + strich + '"' : '') + ' opacity="0.85"></path>' : '';
-      }
-      var s50 = null, s200 = null;
-      if (indAn.ma || indAn.cross50200) {
-        /* Volle 50/200 Kerzen oder gar nicht. Frueher schrumpften die Fenster still
-           auf ein Drittel bzw. die Haelfte der Reihe - auf einem Monatschart wurde
-           als "SMA 50/200" in Wahrheit ein SMA 7/10 gezeichnet, samt Golden Cross
-           darauf (Tester-Meldung #10). Lieber ehrlich weglassen und es dazuschreiben. */
-        if (cI.length >= 55) s50 = smaReihe(cI, 50);
-        if (cI.length >= 210) s200 = smaReihe(cI, 200);
-      }
-      if (indAn.ma) {
-        if (s50) indiPfad += pfadAus(s50, 'var(--series)', 1.3);
-        if (s200) indiPfad += pfadAus(s200, 'var(--warn)', 1.6);
-      }
-      if ((indAn.ma || indAn.cross50200) && (!s50 || !s200)) {
-        indiPfad += '<text x="' + (pad + 4) + '" y="' + (pad + 12) + '" fill="var(--muted)" font-size="10">' +
-          (!s50 ? 'SMA 50 und 200' : 'SMA 200') + ': erst ab ' + (!s50 ? 55 : 210) +
-          ' Kerzen (hier ' + cI.length + ') – längeren Zeitraum oder feinere Kerzen wählen</text>';
-      }
-      if (indAn.cross50200 && s50 && s200) {
-        for (var ck = 1; ck < barsI.length; ck++) {
-          if (s50[ck] == null || s200[ck] == null || s50[ck - 1] == null || s200[ck - 1] == null) continue;
-          if (barsI[ck][0] < x0 || barsI[ck][0] > x1) continue;
-          var golden = s50[ck - 1] <= s200[ck - 1] && s50[ck] > s200[ck];
-          var death = s50[ck - 1] >= s200[ck - 1] && s50[ck] < s200[ck];
-          if (!golden && !death) continue;
-          var cx = X(barsI[ck][0]), cy = Y(s50[ck]);
-          kreuze += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5" fill="none" stroke="' +
-            (golden ? 'var(--up)' : 'var(--down)') + '" stroke-width="2"><title>' +
-            (golden ? 'Golden Cross' : 'Death Cross') + ' · SMA50 kreuzt SMA200 ' + (golden ? 'nach oben' : 'nach unten') +
-            '\n' + new Date(barsI[ck][0]).toLocaleDateString('de-DE') +
-            '\nHinweis: an 191 Werten über 55 Jahre gemessen hat dieses Signal keinen Vorsprung (48 % Trefferquote).' +
-            '</title></circle>';
-        }
-      }
-      var kInfoEl = document.getElementById('expKanalInfo');
-      // Sonst bleibt beim Wechsel auf einen zu kurzen Chart die alte Zeile stehen
-      // und behauptet Kanaele, die gar nicht gezeichnet wurden.
-      if (kInfoEl) kInfoEl.textContent = indAn.kanal && barsI.length < 40
-        ? "Nur " + barsI.length + " Kerzen - fuer einen Kanal zu wenig." : "";
-      /* Kanal-Abschnitte ueber die GESAMTE Historie (21.08.2026): Die vier
-       * Ebenen-Kanaele enden alle am rechten Rand - ein Chart hat aber so viele
-       * Kanaele, wie er Trendabschnitte hat. Farbe nach Richtung, Deckkraft
-       * nach Guete; jeder Abschnitt traegt seine Nummer und einen Tooltip. */
-      if (indAn.segmente && barsI.length >= 40 && Q.kanalSegmente) {
-        var sichtS = [];
-        for (var sv2 = 0; sv2 < barsI.length; sv2++) if (barsI[sv2][0] >= x0 && barsI[sv2][0] <= x1) sichtS.push(barsI[sv2]);
-        Q.kanalSegmente(sichtS).forEach(function (sg, si) {
-          var tS1 = sichtS[sg.von][0], tS2 = sichtS[sg.bis][0];
-          var mS1 = sg.achse, mS2 = sg.achse + sg.steigung * (sg.n - 1);
-          var oS1 = mS1 + (sg.oben - sg.mitteJetzt), oS2 = sg.oben;
-          var uS1 = mS1 + (sg.unten - sg.mitteJetzt), uS2 = sg.unten;
-          var fS = sg.trend === 'auf' ? 'var(--up)' : sg.trend === 'ab' ? 'var(--down)' : 'var(--acc)';
-          /* #80 (Wilhelms Weg 2): angezeigt und gewichtet wird das PERZENTIL gegen
-           * Rauschen, nicht die Roh-Guete - deren Nullpunkt liegt bei ~75-94, je
-           * Fensterlaenge (Eichung studien/kanal-guete-2026-08-26). Die Auswahl,
-           * WELCHE Abschnitte erscheinen, blieb unveraendert in Roh-Guete. */
-          var pS = Q.gueteZufallsAnteil(sg.guete, sg.n);
-          var dS = (0.30 + Math.min(0.5, (pS == null ? 50 : pS) / 100 * 0.5)).toFixed(2);
-          function linS(p1, p2, br, str) {
-            return '<line x1="' + X(tS1).toFixed(1) + '" y1="' + Y(p1).toFixed(1) + '" x2="' + X(tS2).toFixed(1) +
-              '" y2="' + Y(p2).toFixed(1) + '" stroke="' + fS + '" stroke-width="' + br + '"' +
-              (str ? ' stroke-dasharray="' + str + '"' : '') + ' opacity="' + dS + '"></line>';
-          }
-          var titelS = sg.name + ' · ' + (sg.trend === 'auf' ? 'aufwärts' : sg.trend === 'ab' ? 'abwärts' : 'seitwärts') +
-            ' · ' + sg.n + ' Kerzen · ' + (pS == null ? 'Ordnung nicht einordbar' : 'besser als ' + pS + ' % des Zufalls (Roh-Güte ' + sg.guete + '/100)') +
-            ' · Breite ' + sg.breitePct.toFixed(1) + ' %';
-          indiPfad += '<g><title>' + titelS + '</title>' + linS(mS1, mS2, 1.2) +
-            linS(oS1, oS2, 1, '4 3') + linS(uS1, uS2, 1, '4 3') +
-            '<text x="' + ((X(tS1) + X(tS2)) / 2).toFixed(1) + '" y="' + (Y(Math.max(oS1, oS2)) - 3).toFixed(1) +
-            '" fill="' + fS + '" font-size="9" text-anchor="middle" opacity="0.9">A' + (si + 1) + ' ' +
-            (sg.trend === 'auf' ? '▲' : sg.trend === 'ab' ? '▼' : '▬') + '</text></g>';
-        });
-      }
-      if (indAn.kanal && barsI.length >= 40) {
-        var sichtB = [];
-        for (var sv = 0; sv < barsI.length; sv++) if (barsI[sv][0] >= x0 && barsI[sv][0] <= x1) sichtB.push(barsI[sv]);
-        var kListe = (sichtB.length >= 40 && Q.kanaele) ? Q.kanaele(sichtB) : [];
-        var FARBEN = { kurz: 'var(--series4)', mittel: 'var(--acc)', lang: 'var(--series3)', 'ab Wendepunkt': 'var(--warn)' };
-        kListe.forEach(function (kk, ki) {
-          var t1 = sichtB[kk.von][0], t2 = sichtB[kk.bis][0];
-          var mit1 = kk.achse, mit2 = kk.achse + kk.steigung * (kk.n - 1);
-          var oben1 = mit1 + (kk.oben - kk.mitteJetzt), oben2 = kk.oben;
-          var unt1 = mit1 + (kk.unten - kk.mitteJetzt), unt2 = kk.unten;
-          var farbe = FARBEN[kk.name] || 'var(--series4)';
-          // Schwache Kanaele blasser zeichnen - die Ordnung soll man SEHEN, nicht lesen
-          // muessen. Seit #80 speist das Perzentil die Deckkraft: zufallsnahe Kanaele
-          // werden blass, obwohl ihre Roh-Guete hoch aussieht (Rauschen-Median 75-94).
-          var pK = Q.gueteZufallsAnteil(kk.guete, kk.n);
-          var deck = 0.25 + Math.min(0.55, (pK == null ? 50 : pK) / 100 * 0.55);
-          function lin(p1, p2, br, str) {
-            return '<line x1="' + X(t1).toFixed(1) + '" y1="' + Y(p1).toFixed(1) + '" x2="' + X(t2).toFixed(1) +
-              '" y2="' + Y(p2).toFixed(1) + '" stroke="' + farbe + '" stroke-width="' + br + '"' +
-              (str ? ' stroke-dasharray="' + str + '"' : '') + ' opacity="' + deck.toFixed(2) + '"></line>';
-          }
-          var titel = 'Kanal ' + kk.name + ' · ' +
-            (kk.trend === 'auf' ? 'aufwärts' : kk.trend === 'ab' ? 'abwärts' : 'seitwärts') +
-            ' · ' + (pK == null ? 'Ordnung nicht einordbar' : 'besser als ' + pK + ' % des Zufalls') +
-            ' (Roh-Güte ' + kk.guete + '/100, Passgenauigkeit ' + kk.r2 + ', Kanten berührt ' +
-            kk.beruehrungenOben + '× oben / ' + kk.beruehrungenUnten + '× unten)' +
-            ' · Breite ' + kk.breitePct.toFixed(1) + ' % · Kurs steht bei ' + Math.round(kk.pos * 100) + ' % im Kanal';
-          indiPfad += '<g><title>' + titel + '</title>' + lin(mit1, mit2, 1.2) +
-            lin(oben1, oben2, 1, '5 4') + lin(unt1, unt2, 1, '5 4') + '</g>';
-          if (ki === 0 || kk.name === 'lang') {
-            indiPfad += '<text x="' + (X(t2) - 4).toFixed(1) + '" y="' + (Y(oben2) - 3).toFixed(1) +
-              '" fill="' + farbe + '" font-size="9" text-anchor="end">' + kk.name + ' ' +
-              (kk.trend === 'auf' ? '▲' : kk.trend === 'ab' ? '▼' : '▬') + ' ' +
-              (pK == null ? '' : pK + '&#8202;%') + '</text>';
-          }
-        });
-        var kEl = document.getElementById('expKanalInfo');
-        if (kEl) kEl.textContent = kListe.length
-          ? kListe.map(function (k5) {
-            var p5 = Q.gueteZufallsAnteil(k5.guete, k5.n);
-            return k5.name + ': ' + (k5.trend === 'auf' ? 'aufwärts' : k5.trend === 'ab' ? 'abwärts' : 'seitwärts') +
-              ' (' + (p5 == null ? 'nicht einordbar' : 'besser als ' + p5 + ' % des Zufalls') +
-              (k5.wendeBestaetigt ? ', beginnt an echtem Wendepunkt' : '') + ')';
-          }).join(' · ')
-          : 'Zu wenige Kerzen im Fenster für einen Kanal.';
-
-        /* Wie spät ist der Kanal? Ein Regressionskanal beschreibt, was war – er kann der
-           Bewegung nur nachlaufen. Wie weit, stand bisher nirgends, und man sieht es dem
-           Bild nicht an: Am AMD-Chart vom 20.08.2026 meldete er am Tageshoch „aufwärts"
-           und am Tagestief „abwärts". Diese Zeile rechnet es aus, statt es dem Auge zu
-           überlassen – gerade weil sie oft unbequem ausfällt. */
-        var vzEl = document.getElementById('expKanalVerzug');
-        if (vzEl && Q.kanalVerzug) {
-          var fen = Math.min(200, Math.max(40, Math.floor(sichtB.length / 3)));
-          var vz = sichtB.length >= fen + 12 ? Q.kanalVerzug(sichtB, { fenster: fen, maxRueck: 150 }) : null;
-          if (!vz) {
-            vzEl.textContent = '';
-          } else if (vz.ohneRichtung) {
-            vzEl.innerHTML = '<b>Kanal-Verzug:</b> Der Kanal steht seitwärts – ohne Richtung gibt es keinen Verzug zu messen.';
-          } else {
-            var richt = vz.trend === 'auf' ? 'aufwärts' : 'abwärts';
-            var wort = vz.trend === 'auf' ? 'Tief' : 'Hoch';
-            var txt = '<b>Kanal-Verzug:</b> „' + richt + '" wird seit ' + vz.gemeldetVor + ' Kerzen gemeldet, ' +
-              'zuerst bei ' + U.nf2.format(vz.gemeldetBei) + '. Das ' + wort + ', an dem die Bewegung begann, ' +
-              'lag ' + vz.verzugKerzen + ' Kerzen davor bei ' + U.nf2.format(vz.wendeBei) + '.';
-            if (vz.anteilVerpasst != null) {
-              txt += ' <b style="color:' + (vz.anteilVerpasst >= 50 ? 'var(--down)' : 'var(--warn)') + ';">' +
-                vz.anteilVerpasst + ' % der Bewegung waren beim Melden schon vorbei.</b>';
-            }
-            if (vz.gekappt) txt += ' <span style="opacity:.7;">(Richtung hält länger als das Suchfenster – der Verzug ist mindestens so groß.)</span>';
-            vzEl.innerHTML = txt;
-          }
-        }
-      }
-      if (indAn.sr) {
-        // Unterstuetzung und Widerstand als Hoch/Tief der letzten 20 und 60 Kerzen.
-        // Das ist dieselbe Groesse, die der Donchian-Detektor benutzt - was man sieht,
-        // ist also genau das, worauf die Automatik reagieren wuerde.
-        [[20, 'var(--baseline)'], [60, 'var(--muted)']].forEach(function (paar) {
-          var nn = paar[0];
-          if (barsI.length < nn + 2) return;
-          var hoch = -Infinity, tief = Infinity;
-          for (var k4 = barsI.length - nn; k4 < barsI.length; k4++) {
-            var hh = barsI[k4][3] != null ? barsI[k4][3] : barsI[k4][1];
-            var ll = barsI[k4][4] != null ? barsI[k4][4] : barsI[k4][1];
-            if (hh > hoch) hoch = hh; if (ll < tief) tief = ll;
-          }
-          [[hoch, 'Widerstand'], [tief, 'Unterstützung']].forEach(function (z) {
-            if (z[0] < y0 || z[0] > y1) return;
-            var yy = Y(z[0]);
-            zonen += '<line x1="' + pad + '" x2="' + (W - pad) + '" y1="' + yy.toFixed(1) + '" y2="' + yy.toFixed(1) +
-              '" stroke="' + paar[1] + '" stroke-width="1" stroke-dasharray="6 4" opacity="0.75"></line>' +
-              '<text x="' + (pad + 3) + '" y="' + (yy - 3).toFixed(1) + '" fill="' + paar[1] + '" font-size="9">' +
-              z[1] + ' ' + nn + ' · ' + U.nf2.format(z[0]) + '</text>';
-          });
-        });
-      }
-      if (indAn.volumen) {
-        var maxV = 0;
-        for (var vv = 0; vv < barsI.length; vv++) if ((barsI[vv][2] || 0) > maxV) maxV = barsI[vv][2] || 0;
-        if (maxV > 0) {
-          var hVol = Math.round((H - pad - padB) * 0.18);
-          var bw = Math.max(1, (W - 2 * pad) / Math.max(1, barsI.length) * 0.8);
-          for (var vb = 0; vb < barsI.length; vb++) {
-            if (barsI[vb][0] < x0 || barsI[vb][0] > x1) continue;
-            var vh = (barsI[vb][2] || 0) / maxV * hVol;
-            if (vh < 0.4) continue;
-            // eigener Name: 'steigt' heisst weiter unten schon die Kerzenrichtung
-            var volSteigt = vb === 0 || cI[vb] >= cI[vb - 1];
-            volBalken += '<rect x="' + (X(barsI[vb][0]) - bw / 2).toFixed(1) + '" y="' + (H - padB - vh).toFixed(1) +
-              '" width="' + bw.toFixed(1) + '" height="' + vh.toFixed(1) + '" fill="' +
-              (volSteigt ? 'var(--up)' : 'var(--down)') + '" opacity="0.22"></rect>';
-          }
-        }
-      }
-    }
-
-    /* --- Signale und Leitlinie --- */
-    var marker = '', linienPfad = '';
-    var bars = CURDATA.rangeBars;
-    if (bars && bars.length > 30) {
-      if (sigAn.linie) {
-        var closesL = bars.map(function (b) { return b[1]; });
-        var linie = Q.emaSeries(closesL, 20);
-        var lp = [];
-        for (var li = 20; li < bars.length; li++) {
-          if (bars[li][0] < x0 || bars[li][0] > x1) continue;
-          lp.push((lp.length ? 'L' : 'M') + X(bars[li][0]).toFixed(1) + ' ' + Y(linie[li]).toFixed(1));
-        }
-        if (lp.length > 1) linienPfad = '<path d="' + lp.join(' ') + '" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3" opacity="0.8"></path>';
-      }
-      var punkte = signalePunkte(bars);
-      // Zaehler fuer die Bedienleiste - macht sichtbar, wie oft ein Setup ueberhaupt anschlaegt
-      var zEl2 = document.getElementById('expSigZahl');
-      var etwasAn = Object.keys(sigAn).some(function (k) { return sigAn[k] && k !== 'linie'; });
-      if (zEl2) {
-        if (punkte.length) zEl2.textContent = punkte.length + ' Signale im gezeigten Zeitraum';
-        else if (!etwasAn) zEl2.textContent = '';
-        else if (bars.length < 130) zEl2.textContent = 'Nur ' + bars.length +
-          ' Kerzen – die meisten Signale brauchen mehr Vorlauf. Längeren Zeitraum oder feinere Kerzen wählen.';
-        else zEl2.textContent = 'kein Signal in diesem Zeitraum';
-      }
-      LETZTE_PUNKTE = punkte.slice();
-      punkte.forEach(function (p, pi) {
-        if (p.t < x0 || p.t > x1) return;
-        var px = X(p.t), py = Y(p.preis);
-        var gew = GEWAEHLT != null && GEWAEHLT === pi;
-        // Nochmals vergroessert (8 statt 6 Pixel Halbbreite; Tester-Wunsch #27:
-        // "bitte um 2 mm") - mit unsichtbarer Klickflaeche darum.
-        var s2 = gew ? 11 : 8;
-        var d2 = p.dir === 'call'
-          ? 'M' + px + ' ' + (py + 7) + ' l' + s2 + ' ' + (s2 + 3) + ' l' + (-2 * s2) + ' 0 Z'
-          : 'M' + px + ' ' + (py - 7) + ' l' + s2 + ' ' + (-s2 - 3) + ' l' + (-2 * s2) + ' 0 Z';
-        marker +=
-          '<g class="sigmark" data-sig-i="' + pi + '" style="cursor:pointer;">' +
-          '<rect x="' + (px - 11).toFixed(1) + '" y="' + (py - 20).toFixed(1) + '" width="22" height="40" fill="transparent"></rect>' +
-          '<path d="' + d2 + '" fill="' + p.farbe + '" opacity="' + (gew ? '1' : '0.85') + '"' +
-            (gew ? ' stroke="var(--ink)" stroke-width="1.5"' : '') + '></path>' +
-          (gew ? '<line x1="' + px.toFixed(1) + '" x2="' + px.toFixed(1) + '" y1="' + pad + '" y2="' + (H - padB) +
-                 '" stroke="' + p.farbe + '" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"></line>' : '') +
-          '<title>' + p.name + ' · ' + (p.dir === 'call' ? 'Kauf' : 'Verkauf') + '\n' +
-          new Date(p.t).toLocaleString('de-DE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) +
-          '\n' + U.nf2.format(p.preis) + '\n(anklicken für Einzelheiten)</title></g>';
-      });
-    }
-    var first = series[0][1], last = series[series.length - 1][1];
-    var chg = (last / first - 1) * 100;
-    /* --- Kerzen --- */
-    var kerzen = '';
-    if (chartArt === 'kerzen' && barsI && barsI.length > 1) {
-      // Breite aus dem Abstand zweier Kerzen, 70 % davon als Koerper - so bleibt ein
-      // sichtbarer Spalt und die Kerzen kleben nicht aneinander.
-      var abst = (W - 2 * pad) / Math.max(1, barsI.length - 1);
-      var kb = Math.max(1, Math.min(14, abst * 0.7));
-      var duenn = kb < 2.5;      // bei sehr vielen Kerzen nur noch Striche zeichnen
-      for (var ki2 = 0; ki2 < barsI.length; ki2++) {
-        var bk = barsI[ki2];
-        if (bk[0] < x0 || bk[0] > x1) continue;
-        var o = bk[5] != null ? bk[5] : bk[1], c2 = bk[1];
-        var h2 = bk[3] != null ? bk[3] : Math.max(o, c2), l2 = bk[4] != null ? bk[4] : Math.min(o, c2);
-        var xk = X(bk[0]);
-        var steigt = c2 >= o;
-        var farbe = steigt ? 'var(--up)' : 'var(--down)';
-        // Docht: Hoch bis Tief
-        kerzen += '<line x1="' + xk.toFixed(1) + '" x2="' + xk.toFixed(1) + '" y1="' + Y(h2).toFixed(1) +
-          '" y2="' + Y(l2).toFixed(1) + '" stroke="' + farbe + '" stroke-width="1"></line>';
-        if (!duenn) {
-          // Koerper: Eroeffnung bis Schluss. Bei gleichem Kurs ein waagerechter Strich,
-          // sonst waere die Kerze unsichtbar.
-          var yo = Y(o), yc = Y(c2);
-          var oben = Math.min(yo, yc), hoehe = Math.max(0.8, Math.abs(yc - yo));
-          kerzen += '<rect x="' + (xk - kb / 2).toFixed(1) + '" y="' + oben.toFixed(1) + '" width="' + kb.toFixed(1) +
-            '" height="' + hoehe.toFixed(1) + '" fill="' + (steigt ? farbe : farbe) + '" opacity="' + (steigt ? '0.9' : '1') + '"></rect>';
-        }
-      }
-    }
-    svg.innerHTML = grid +
-      (chartArt === 'kerzen' ? '' :
-        '<path d="' + d + ' L' + X(x1).toFixed(1) + ' ' + (H - padB) + ' L' + X(x0).toFixed(1) + ' ' + (H - padB) + ' Z" fill="var(--series-soft)"></path>') +
-      (chartArt === 'kerzen' ? '' :
-        '<path d="' + d + '" fill="none" stroke="var(--series)" stroke-width="2" vector-effect="non-scaling-stroke"></path>') +
-      volBalken + zonen + kerzen + indiPfad + linienPfad + kreuze + marker +
-      '<text x="' + pad + '" y="' + (H - 5) + '" fill="var(--muted)" font-size="10">' + rangeKey + ': <tspan class="' + U.signCls(chg) + '" fill="' + (chg >= 0 ? 'var(--up)' : 'var(--down)') + '">' + U.signTxt(chg, ' %') + '</tspan></text>' +
-      '<line id="bigCross" y1="' + pad + '" y2="' + (H - padB) + '" stroke="var(--baseline)" stroke-width="1" style="display:none"></line>';
-    bigMeta = { series: series, x0: x0, x1: x1, W: W, X: X };
-    svg.querySelectorAll('.sigmark').forEach(function (g2) {
-      g2.addEventListener('click', function (ev) {
-        ev.stopPropagation();
-        var i2 = parseInt(g2.getAttribute('data-sig-i'), 10);
-        GEWAEHLT = (GEWAEHLT === i2) ? null : i2;
-        drawBig(svg, CURDATA.rangeSeries || [], letzteBeschriftung);
-      });
-    });
-    zeigeSignalListe();
-    zeigeSignalDetail();
-  }
-
-  // Crosshair-Tooltip auf dem großen Chart
-  var tip = document.getElementById('tip');
-  document.getElementById('bigchart').addEventListener('mousemove', function (e) {
-    if (!bigMeta) return;
-    var svg = e.currentTarget, r = svg.getBoundingClientRect();
-    var frac = (e.clientX - r.left) / r.width;
-    // Achse laeuft ueber den Kerzen-Index, nicht ueber die Zeit
-    var idxF = Math.round(frac * (bigMeta.series.length - 1));
-    var idx = Math.max(0, Math.min(bigMeta.series.length - 1, idxF));
-    var best = bigMeta.series[idx];
-    var cross = svg.querySelector('#bigCross');
-    if (cross) { cross.style.display = 'block'; cross.setAttribute('x1', bigMeta.X(best[0])); cross.setAttribute('x2', bigMeta.X(best[0])); }
-    var ro = document.getElementById('expReadout');
-    if (ro) {
-      var dt = new Date(best[0]);
-      var wtag = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][dt.getDay()];
-      var mR = (CURDATA.daily && CURDATA.daily.meta) || {};
-      var curR = mR.currency === 'EUR' ? ' €' : mR.currency === 'USD' ? ' $' : (mR.currency ? ' ' + U.esc(mR.currency) : '');
-      // Veraenderung zur VORHERIGEN Kerze der Serie; an der ersten gibt es keine
-      var vorher = idx > 0 ? bigMeta.series[idx - 1][1] : null;
-      var pctR = vorher ? (best[1] / vorher - 1) * 100 : null;
-      ro.innerHTML = wtag + ' ' + dt.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' +
-        dt.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) +
-        ' · ' + U.nf2.format(best[1]) + curR +
-        (pctR != null
-          ? ' · <span style="color:' + (pctR >= 0 ? 'var(--up)' : 'var(--down)') + ';">' + U.signTxt(pctR, ' %') + '</span>'
-          : '');
-      ro.style.display = 'block';
-    }
-    tip.innerHTML = '<span class="tv">' + U.nf2.format(best[1]) + '</span><br><span class="tt">' +
-      new Date(best[0]).toLocaleString('de-DE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + '</span>';
-    tip.style.display = 'block';
-    tip.style.left = Math.min(window.innerWidth - 150, e.clientX + 14) + 'px';
-    tip.style.top = (e.clientY + 14) + 'px';
-  });
-  document.getElementById('bigchart').addEventListener('mouseleave', function (e) {
-    tip.style.display = 'none';
-    var cross = e.currentTarget.querySelector('#bigCross');
-    if (cross) cross.style.display = 'none';
-    var roZu = document.getElementById('expReadout');
-    if (roZu) roZu.style.display = 'none';
-  });
 
   /* ================= News ================= */
   async function loadNews() {
@@ -1028,11 +395,19 @@
   });
 
 
-  /* ================= Aktien-Viewer (Oberflaeche Stufe 6, 04.09.2026) =================
+  /* ================= Aktien-Viewer (Stufe 6, 04.09. · Viewer 8a, 05.09.2026) =====
    *
    * Der Explorer bekommt einen Kerzenchart nach TradingView-Muster. Die RECHNUNG
    * steht in markt/kerzenchart.js und ist dort in Node pruefbar; hier steht nur, was
    * sie mit dem Bildschirm zu tun hat.
+   *
+   * ZWEI FRAGEN, ZWEI KNOPFREIHEN (8a). Wilhelms Befund vom 05.09.2026: "Ich kann
+   * nicht mehr reinzoomen, auch keine Signale mehr einblenden, zudem lassen sich nur
+   * maximal Wochencharts anzeigen bzw. sind die Zeitraeume falsch beschriftet."
+   * Alle drei Punkte hatten dieselbe Wurzel: EINE Reihe Knoepfe beantwortete
+   * "wie weit zurueck" und "wie fein" zugleich, und die Signale lagen in einer
+   * zweiten, eingeklappten Ansicht. Jetzt sagt Reihe 1 den ZEITRAUM, Reihe 2 die
+   * KERZENLAENGE, und die Signale liegen im Kerzenchart selbst.
    *
    * DATENQUELLEN IN FESTER REIHENFOLGE, und die Fusszeile nennt sie:
    *   1. das eigene Archiv ueber die Leseauskunft `archiv-kerzen` (nur lesend). Fuer
@@ -1040,60 +415,251 @@
    *      sonst archiv1d/60m/15m/5m/1m im Format 2.
    *   2. Yahoo als RUECKFALL, wenn das Archiv den Wert oder den Zeitrahmen nicht
    *      fuehrt - und fuer den Rest des laufenden Tages, den das Archiv noch nicht hat.
+   *   3. WOCHEN- UND MONATSKERZEN werden NICHT geholt, sondern aus Tageskerzen
+   *      gebildet (KerzenChart.verdichten). Zwei Quellen fuer dieselbe Woche waeren
+   *      zwei Wahrheiten ueber denselben Kurs.
    * AN DER NAHT GEWINNT DAS ARCHIV (wiki/archiv-zusammenfuehrung.md Paragraph 6).
-   * Keine Kerze steht zweimal; das rechnet KerzenChart.zusammenfuehren.
    *
    * DIE LAUFENDE KERZE kommt aus den Quotes und wird gestrichelt gezeichnet. Sie
    * geht NIE ins Archiv: der Viewer ruft keine schreibende Auskunft auf, und die
    * Kerze traegt zusaetzlich eine Marke, die archivFaehig() herauswirft.
    *
-   * GEHANDELT WIRD AUS DEM VIEWER NICHTS. */
+   * GEHANDELT WIRD AUS DEM VIEWER NICHTS. Er bewertet auch nichts: was an einer
+   * Signal-Marke steht, ist aus dem Studienregister GELESEN (urteilZu). */
   function KC() { return window.KerzenChart; }
   function MU2() { return window.MarktUebersicht; }
   var VW = {
-    zeitrahmen: '1T',
+    zeitraum: '1J',
+    kerze: '1T',
     kerzen: [],            // was gezeichnet wird (Archiv + Live + laufende Kerze)
     fest: [],              // dasselbe ohne die laufende Kerze
     sitzungen: [],         // Sitzung je Kerze der festen Reihe
-    quelleText: '',
+    quelleText: '',        // EIN Satz fuer die Fusszeile
+    quelleDetails: [],     // die Einzelheiten dahinter (i-Knopf)
     ma: { 20: false, 50: false, 200: true },
     nurRegulaer: true,
-    fensterBis: null,      // Index der rechten Kerze, null = ganz rechts
-    fensterN: 260,         // wie viele Kerzen sichtbar
+    /* Der LINKE Rand ist der Anker, nicht der rechte: beim Wechsel der Kerzenlaenge
+     * soll der Anfang stehen bleiben (TradingView-Verhalten). null = ganz rechts. */
+    fensterVon: null,
+    fensterN: 260,
     kreuz: null,
     takt: null,
     laeuft: false,
     letzterLauf: 0,
-    tages: null            // Tagesreihe aus dem eigenen Archiv (Volumen-Median)
+    tages: null,           // Tagesreihe aus dem eigenen Archiv (Volumen-Median)
+    punkte: [],            // Signale ueber die GELADENE Reihe - nicht je Fenster
+    nachgeladen: ''        // Grund, falls der Zeitraum von selbst gewachsen ist
   };
   var VW_STORE = 'viewerNurRegulaer';
+  var VW_STORE_ZEITRAUM = 'viewerZeitraum';
+  var VW_STORE_KERZE = 'viewerKerze';
+  var VW_STORE_SCHALTER = 'viewerSchalter';
   var VW_TAKT_MS = 60000;
 
-  /* ---- Zeitrahmen-Knoepfe. Kein Text im Markup, die Liste steht im Modul. ---- */
-  function vwZeitrahmenBauen() {
-    var el = document.getElementById('vwZeitrahmen');
+  /* ---- Reihe 1: der ZEITRAUM. Kein Text im Markup, die Liste steht im Modul. ---- */
+  function vwZeitraumBauen() {
+    var el = document.getElementById('vwZeitraum');
     if (!el || el.__bereit || !KC()) return;
     el.__bereit = true;
-    el.innerHTML = KC().ZEITRAHMEN.map(function (z) {
-      return '<button type="button" data-zeitrahmen="' + z + '" class="' + (z === VW.zeitrahmen ? 'active' : '') + '">' + z + '</button>';
+    el.innerHTML = KC().ZEITRAEUME.map(function (z) {
+      return '<button type="button" data-zeitraum="' + z + '">' + z + '</button>';
     }).join('');
     el.addEventListener('click', function (ev) {
-      var b = ev.target && ev.target.closest ? ev.target.closest('button[data-zeitrahmen]') : null;
+      var b = ev.target && ev.target.closest ? ev.target.closest('button[data-zeitraum]') : null;
       if (!b) return;
-      VW.zeitrahmen = b.getAttribute('data-zeitrahmen');
-      [].slice.call(el.querySelectorAll('button[data-zeitrahmen]')).forEach(function (x) {
-        x.classList.toggle('active', x === b);
-      });
-      VW.fensterBis = null;
+      VW.zeitraum = b.getAttribute('data-zeitraum');
+      /* Der Zeitraum SETZT DIE KERZE VOR (Auftrag 8a): 5J zeigt Wochenkerzen, 1M
+       * Stundenkerzen. Danach ist die Kerze frei waehlbar - die zweite Reihe steht
+       * direkt darunter und nimmt jeden erlaubten Knopf an.
+       *
+       * Die bisherige Wahl wird bewusst NICHT weitergetragen: sonst haengt an einem
+       * Knopf zweierlei Verhalten, je nachdem, was vorher galt - wer von 1J/1T auf
+       * 5J klickt, bekaeme Tageskerzen, wer von 1J/1h kommt, Stundenkerzen. Ein
+       * Knopf, der zweierlei tut, ist genau die Verwechslung, aus der 8a herausfuehrt.
+       * `null` heisst deshalb: keine Vorwahl, die zu ehren waere. */
+      VW.kerze = KC().kerzeFuer(VW.zeitraum, null);
+      VW.fensterVon = null;
+      VW.nachgeladen = '';
+      vwWahlZeichnen();
+      vwMerken();
       vwLaden();
     });
   }
 
-  /* ---- Wie viele Kerzen holt ein Zeitrahmen? Ein Tag Minutenkerzen sind 960 (mit
-   * Vor- und Nachboerse), ein Jahr Tageskerzen 252. Die Zahl steht hier, damit sie
-   * an EINER Stelle steht - nicht einmal beim Archiv und einmal bei Yahoo. */
-  var VW_ANZAHL = { '1m': 1400, '5m': 900, '15m': 700, '1h': 700, '1T': 500, '1W': 400 };
-  var VW_YAHOO_BEREICH = { '1m': '5d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '1T': '2y', '1W': '5y' };
+  /* ---- Reihe 2: die KERZENLAENGE. Unsinnige Paare sind ausgegraut und sagen,
+   * warum - ein Knopf, der nichts tut und nichts sagt, ist eine Sackgasse. ---- */
+  function vwKerzeBauen() {
+    var el = document.getElementById('vwKerze');
+    if (!el || el.__bereit || !KC()) return;
+    el.__bereit = true;
+    el.innerHTML = KC().KERZEN.map(function (k) {
+      return '<button type="button" data-kerze="' + k + '">' + k + '</button>';
+    }).join('');
+    el.addEventListener('click', function (ev) {
+      var b = ev.target && ev.target.closest ? ev.target.closest('button[data-kerze]') : null;
+      if (!b || b.disabled) return;
+      var neu = b.getAttribute('data-kerze');
+      if (neu === VW.kerze) return;
+      /* DER LINKE RAND BLEIBT STEHEN. Beim Wechsel auf eine feinere Kerze zeigt das
+       * Bild denselben Anfang, nur genauer - es springt nicht ans Reihenende. Die
+       * Zahl der sichtbaren Kerzen waechst dabei im selben Verhaeltnis wie die
+       * Aufloesung, sonst zeigte "feiner" pltzlich einen kuerzeren Ausschnitt. */
+      var altZeit = vwLinkeZeit();
+      VW.kerze = neu;
+      VW.__linkeZeit = altZeit;
+      VW.nachgeladen = '';
+      vwWahlZeichnen();
+      vwMerken();
+      vwLaden();
+    });
+  }
+
+  /** Der Zeitstempel der linken Kerze im Bild - der Anker ueber den Kerzenwechsel.
+   *  Ein INDEX taugte dafuer nicht: bei feineren Kerzen zeigt derselbe Index auf
+   *  einen ganz anderen Tag. */
+  function vwLinkeZeit() {
+    var s = VW.sichtbar;
+    return (s && s.kerzen && s.kerzen.length) ? s.kerzen[0][0] : null;
+  }
+
+  /** Beide Reihen anmalen: was gewaehlt ist, was gesperrt ist und warum. */
+  function vwWahlZeichnen() {
+    var kc = KC();
+    if (!kc) return;
+    var zEl = document.getElementById('vwZeitraum');
+    if (zEl) {
+      [].slice.call(zEl.querySelectorAll('button[data-zeitraum]')).forEach(function (b) {
+        b.classList.toggle('active', b.getAttribute('data-zeitraum') === VW.zeitraum);
+      });
+    }
+    var kEl = document.getElementById('vwKerze');
+    if (kEl) {
+      [].slice.call(kEl.querySelectorAll('button[data-kerze]')).forEach(function (b) {
+        var k = b.getAttribute('data-kerze');
+        var u = kc.paarUrteil(VW.zeitraum, k);
+        b.disabled = !u.ok;
+        b.classList.toggle('active', k === VW.kerze);
+        /* Der Grund steht am Knopf, nicht in einer Fussnote - dort sucht ihn
+         * niemand. */
+        if (u.ok) b.removeAttribute('title'); else b.setAttribute('title', u.grund);
+        b.setAttribute('aria-disabled', u.ok ? 'false' : 'true');
+      });
+    }
+  }
+
+  /* ---- Die Leiste "Einblenden": Signale, Kanaele, Indikatoren ----
+   * Aus Daten gebaut (SIGNALE, INDIKATOREN), nicht aus Markup - die Erklaertexte
+   * und die Urteile stehen dort an EINER Stelle. */
+  function vwEinblendenBauen() {
+    var el = document.getElementById('vwEinblenden');
+    if (!el || el.__bereit) return;
+    el.__bereit = true;
+    function kasten(art, schluessel, def) {
+      var u = urteilZu(def.urteil);
+      var titel = def.hinweis + (def.urteil ? '\n\nStudienregister: ' + u.text + (u.quelle ? ' (' + u.quelle + ')' : '') : '');
+      return '<label class="sigbox" title="' + U.esc(titel) + '">' +
+        '<input type="checkbox" data-' + art + '="' + U.esc(schluessel) + '"> ' + U.esc(def.name) + '</label>';
+    }
+    el.innerHTML =
+      '<span class="vwGruppe">Signale:</span>' +
+      Object.keys(SIGNALE).map(function (k) { return kasten('sig', k, SIGNALE[k]); }).join('') +
+      '<span class="vwGruppe">Chartbild:</span>' +
+      Object.keys(INDIKATOREN).map(function (k) { return kasten('ind', k, INDIKATOREN[k]); }).join('') +
+      '<span id="vwSigZahl" class="hinweis"></span>';
+    el.addEventListener('change', function (ev) {
+      var cb = ev.target;
+      if (!cb || cb.type !== 'checkbox') return;
+      var s = cb.getAttribute('data-sig'), i = cb.getAttribute('data-ind');
+      if (s) { sigAn[s] = cb.checked; vwPunkteRechnen(); }
+      else if (i) { indAn[i] = cb.checked; }
+      else return;
+      GEWAEHLT = null;
+      vwMerken();
+      /* Neu zeichnen genuegt - die Kerzen sind schon da, es wird nichts nachgeladen. */
+      vwZeichnen();
+    });
+  }
+
+  /* ---- Die Zoom-Knoepfe. Die Tastatur bleibt, aber sie war unsichtbar. ---- */
+  function vwZoomBauen() {
+    var el = document.getElementById('vwZoom');
+    if (!el || el.__bereit) return;
+    el.__bereit = true;
+    el.innerHTML =
+      '<button type="button" data-zoom="rein" aria-label="Hineinzoomen">+</button>' +
+      '<button type="button" data-zoom="raus" aria-label="Herauszoomen">−</button>' +
+      '<button type="button" data-zoom="zurueck" aria-label="Zoom auf den Zeitraum zurücksetzen">↺</button>';
+    el.addEventListener('click', function (ev) {
+      var b = ev.target && ev.target.closest ? ev.target.closest('button[data-zoom]') : null;
+      if (!b) return;
+      var was = b.getAttribute('data-zoom');
+      if (was === 'zurueck') { vwZurueck(); return; }
+      vwZoomen(was === 'rein', 0.5);
+    });
+  }
+
+  /** Zoom auf den Zeitraum zuruecksetzen - das ist der Doppelklick und der ↺-Knopf. */
+  function vwZurueck() {
+    VW.fensterVon = null;
+    VW.fensterN = vwFensterVorgabe();
+    VW.nachgeladen = '';
+    vwZeichnen();
+  }
+  /** Wie viele Kerzen zeigt der gewaehlte Zeitraum von sich aus? Genau so viele, wie
+   *  er hat - der Zeitraum IST das Bild, solange niemand zoomt. */
+  function vwFensterVorgabe() {
+    var n = KC() ? KC().kerzenZahl(VW.zeitraum, VW.kerze) : null;
+    return n ? Math.max(20, Math.round(n)) : 260;
+  }
+
+  /** Zoomen um einen Anteil der Bildbreite (0 = linker Rand, 1 = rechter). */
+  function vwZoomen(rein, anteil) {
+    var s = VW.sichtbar;
+    if (!s || !KC()) return;
+    var f = KC().radZoom(s.gesamt, s.fenster.von, s.fenster.anzahl, anteil, rein);
+    VW.fensterVon = f.von;
+    VW.fensterN = f.anzahl;
+    vwZeichnen();
+    /* Ganz links angekommen und immer noch weiter herausgezoomt: dann reicht die
+     * geladene Reihe nicht mehr, und der naechstgroessere Zeitraum wird geholt. */
+    if (!rein && f.von === 0 && f.anzahl >= s.gesamt) vwMehrLaden();
+  }
+
+  /** Blaettern um `kerzen` Stellen (positiv = nach rechts, juenger). */
+  function vwBlaettern(kerzen) {
+    var s = VW.sichtbar;
+    if (!s || !KC()) return;
+    var f = KC().blaettern(s.gesamt, s.fenster.von, s.fenster.anzahl, kerzen);
+    var amAnfang = f.von === 0 && s.fenster.von === 0 && kerzen < 0;
+    VW.fensterVon = f.von;
+    VW.fensterN = f.anzahl;
+    vwZeichnen();
+    if (amAnfang) vwMehrLaden();
+  }
+
+  /** Ueber den Anfang hinaus: den naechstgroesseren Zeitraum nachladen.
+   *  Zoomen laedt sonst NICHTS nach - solange die geladene Reihe reicht, ist das
+   *  Bild eine Sache der Anzeige, keine der Quelle. */
+  function vwMehrLaden() {
+    if (!KC() || VW.laeuft) return;
+    var liste = KC().ZEITRAEUME;
+    var i = liste.indexOf(VW.zeitraum);
+    if (i < 0 || i >= liste.length - 1) return;
+    var neu = liste[i + 1];
+    if (!KC().paarUrteil(neu, VW.kerze).ok) {
+      /* Der groessere Zeitraum vertruege diese Kerze nicht - dann waechst er nicht
+       * heimlich mit einer anderen Kerze, sondern es bleibt, wie es ist. */
+      VW.nachgeladen = 'Weiter zurück ginge nur mit gröberen Kerzen als ' + VW.kerze + '.';
+      vwQuelleZeichnen(VW.sichtbar);
+      return;
+    }
+    VW.zeitraum = neu;
+    VW.nachgeladen = 'Am Anfang der geladenen Reihe – auf ' + neu + ' erweitert.';
+    VW.fensterVon = 0;
+    vwWahlZeichnen();
+    vwMerken();
+    vwLaden();
+  }
 
   /* ---- Sitzung je Kerze: Bereiche aus der Datei, sonst die Uhr ---- */
   function vwSitzungAusZeit(tsMs) {
@@ -1102,19 +668,41 @@
     return KC().sitzungAusMinuten(window.Quant.minutenSeitOeffnung(tsMs), laenge);
   }
 
-  /* ---- Laden: Archiv zuerst, Yahoo als Rueckfall ---- */
+  /* ---- Wie weit die Quelle je Zeitraum gefragt wird ---- */
+  var VW_YAHOO_BEREICH = {
+    '1T': '1d', '5T': '5d', '1M': '1mo', '3M': '3mo',
+    '6M': '6mo', '1J': '1y', '5J': '5y', 'Max': 'max'
+  };
+  /* Vorlauf fuer die Durchschnitte: die MA200 braucht 200 Kerzen VOR der ersten
+   * sichtbaren, sonst beginnt die Linie mitten im Bild. Genau das war der Befund am
+   * AMD-Foto (05.09.2026) - dort lag der Fehler zwar an der Rechnung, aber ohne
+   * Vorlauf waere er nur verschoben. */
+  var VW_VORLAUF = 250;
+
+  /** Wie viele Kerzen der gewaehlte Zeitraum in der gewaehlten Kerzenlaenge braucht. */
+  function vwAnzahl(kerze) {
+    var n = KC() ? KC().kerzenZahl(VW.zeitraum, kerze) : null;
+    return Math.min(20000, Math.max(60, Math.round((n || 260) + VW_VORLAUF)));
+  }
+
+  /* ---- Laden: Archiv zuerst, Yahoo als Rueckfall, 1W/1M gebildet ---- */
   async function vwLaden() {
     if (!CUR || !KC()) return;
     var seq = openSeq;
     VW.laeuft = true;
-    var zr = VW.zeitrahmen;
-    var n = VW_ANZAHL[zr] || 500;
-    var teile = [];
+    var kc = KC();
+    /* Wochen und Monate holt niemand: sie werden aus TAGESKERZEN gebildet. Geladen
+     * wird also die Tagesreihe, verdichtet wird danach. */
+    var gebildet = !!kc.AUS_TAGESKERZEN[VW.kerze];
+    var quellKerze = gebildet ? '1T' : VW.kerze;
+    var n = vwAnzahl(quellKerze) * (gebildet ? (VW.kerze === '1M' ? 21 : 5) : 1);
+    n = Math.min(20000, n);
+    var teile = [], details = [];
     var archiv = [], sitzungsBereiche = [], archivBis = null;
 
     var r = null;
     if (window.api && typeof window.api.archivKerzen === 'function') {
-      try { r = await window.api.archivKerzen(CUR.sym, zr, n); } catch (e) { r = { ok: false, grund: String(e && e.message || e) }; }
+      try { r = await window.api.archivKerzen(CUR.sym, quellKerze, n); } catch (e) { r = { ok: false, grund: String(e && e.message || e) }; }
     } else {
       r = { ok: false, grund: 'Leseauskunft in dieser Fassung nicht vorhanden' };
     }
@@ -1128,38 +716,66 @@
       var qn = (r.quellen || ['unbekannt']).map(function (q) {
         return q === 'unbekannt' ? 'Herkunft nicht vermerkt' : q;
       });
-      var quellName = r.quelle === 'alpaca'
-        ? 'Alpaca-Minutenarchiv'
-        : 'Archiv (' + qn.join(', ') + ')';
-      teile.push(quellName + ', bis ' + vwZeitpunkt(r.bis));
+      var quellName = r.quelle === 'alpaca' ? 'Alpaca-Minutenarchiv' : 'Archiv (' + qn.join(', ') + ')';
+      teile.push(quellName);
+      details.push(quellName + ', bis ' + vwZeitpunkt(r.bis));
     } else {
       teile.push('Archiv: ' + ((r && r.grund) || 'nichts gefunden'));
+      details.push('Archiv: ' + ((r && r.grund) || 'nichts gefunden'));
     }
 
     /* Rueckfall und Ergaenzung: Yahoo. Er wird IMMER gefragt, wenn das Archiv den
      * laufenden Tag nicht hat - sonst endete der Chart am Vortagsschluss, ohne dass
      * jemand saehe, warum. Was Yahoo doppelt liefert, wirft die Naht weg. */
     var live = [];
-    var brauchtLive = !archiv.length || vwArchivVeraltet(archivBis, zr);
+    var brauchtLive = !archiv.length || vwArchivVeraltet(archivBis, quellKerze);
     if (brauchtLive) {
       try {
-        var iv = KC().YAHOO_INTERVALL[zr];
-        var kd = await window.Kurse.hole(CUR.sym, { range: VW_YAHOO_BEREICH[zr] || '1mo', interval: iv, bereinigt: false });
+        var iv = kc.YAHOO_INTERVALL[quellKerze];
+        var kd = await window.Kurse.hole(CUR.sym, { range: VW_YAHOO_BEREICH[VW.zeitraum] || '1y', interval: iv, bereinigt: false });
         if (seq !== openSeq) return;
         live = (kd && kd.bars) ? kd.bars : [];
-        teile.push(live.length ? 'Yahoo live' : 'Yahoo live: keine Kerzen');
-      } catch (e) { teile.push('Yahoo live: ' + String(e && e.message || e)); }
+        if (!archiv.length) teile.push(live.length ? 'Yahoo' : 'Yahoo: keine Kerzen');
+        details.push(live.length ? 'Yahoo live: ' + live.length + ' Kerzen' : 'Yahoo live: keine Kerzen');
+      } catch (e) {
+        teile.push('Yahoo: ' + String(e && e.message || e));
+        details.push('Yahoo live: ' + String(e && e.message || e));
+      }
     }
 
-    var z = KC().zusammenfuehren(archiv, live);
-    VW.fest = z.kerzen;
-    VW.sitzungen = KC().sitzungJeKerze(VW.fest, sitzungsBereiche, vwSitzungAusZeit);
-    VW.quelleText = teile.join(' · ') +
-      (z.doppelt ? ' · ' + z.doppelt + ' doppelte Kerzen an der Naht verworfen (Archiv gewinnt)' : '');
+    var z = kc.zusammenfuehren(archiv, live);
+    var reihe = z.kerzen;
+    if (gebildet) {
+      var vorher = reihe.length;
+      reihe = kc.verdichten(reihe, VW.kerze, 'America/New_York');
+      details.push(VW.kerze + '-Kerzen aus ' + vorher + ' Tageskerzen gebildet (Börsenkalender), nicht geholt');
+    }
+    VW.fest = reihe;
+    VW.sitzungen = kc.sitzungJeKerze(VW.fest, gebildet ? [] : sitzungsBereiche, gebildet ? null : vwSitzungAusZeit);
+    if (z.doppelt) details.push(z.doppelt + ' doppelte Kerzen an der Naht verworfen (Archiv gewinnt)');
+    VW.quelleText = teile.join(' · ');
+    VW.quelleDetails = details;
     VW.laeuft = false;
     VW.letzterLauf = Date.now();
+    vwPunkteRechnen();
+    /* Der gemerkte linke Rand (Kerzenwechsel) wird jetzt auf die neue Reihe
+     * uebersetzt - ueber die ZEIT, nicht ueber den Index. */
+    if (VW.__linkeZeit) { vwLinkenRandSetzen(VW.__linkeZeit); VW.__linkeZeit = null; }
+    else if (VW.fensterVon == null) VW.fensterN = vwFensterVorgabe();
     vwZeichnen();
     vwArchivKarte();
+  }
+
+  /** Den linken Rand auf den Zeitpunkt legen, der vor dem Wechsel dort stand. */
+  function vwLinkenRandSetzen(zeitMs) {
+    var basis = vwBasis().kerzen;
+    if (!basis.length) return;
+    var i = 0;
+    while (i < basis.length - 1 && basis[i][0] < zeitMs) i++;
+    var alt = VW.fensterN;
+    VW.fensterN = Math.max(20, Math.min(basis.length, Math.round(vwFensterVorgabe())));
+    VW.fensterVon = Math.max(0, Math.min(basis.length - VW.fensterN, i));
+    if (!(alt > 0)) VW.fensterVon = null;
   }
 
   /* Ist das Archiv fuer diesen Zeitrahmen nicht mehr aktuell? Eine Kerzendauer
@@ -1183,12 +799,19 @@
     return {
       auf: v('--up', '#16a34a'), ab: v('--down', '#dc2626'),
       band: 'rgba(148,163,184,0.13)', umsatz: 'rgba(148,163,184,0.5)',
+      gitter: 'rgba(148,163,184,0.22)',
+      text: v('--muted', '#64748b'),
       ma20: v('--series', '#2563eb'), ma50: v('--warn', '#f59e0b'), ma200: v('--series3', '#a855f7'),
-      kreuz: v('--muted', '#94a3b8')
+      kreuz: v('--muted', '#94a3b8'),
+      linie: v('--muted', '#94a3b8'),
+      zone20: v('--baseline', '#64748b'), zone60: v('--muted', '#94a3b8'),
+      kanal: v('--series4', '#0ea5e9'), acc: v('--acc', '#2563eb')
     };
   }
   var VW_MA_FARBE = { 20: 'ma20', 50: 'ma50', 200: 'ma200' };
-  function vwSichtbar() {
+
+  /** Die Reihe, auf der Fenster und Signale sitzen: gefiltert, mit laufender Kerze. */
+  function vwBasis() {
     var basis = VW.fest, sitz = VW.sitzungen;
     if (VW.nurRegulaer && KC()) {
       var g = KC().nurRegulaer(basis, sitz);
@@ -1196,22 +819,35 @@
     }
     /* Die laufende Kerze haengt hinten an - und NUR hier, in der Zeichenliste. */
     var lauf = vwLaufendeKerze(basis);
-    var alle = lauf ? basis.concat([lauf]) : basis;
-    var sitzAlle = lauf ? sitz.concat([vwSitzungAusZeit(lauf[0]) || 'unbekannt']) : sitz;
-    var f = KC().fenster(alle.length, VW.fensterBis == null ? alle.length - 1 : VW.fensterBis, VW.fensterN);
+    return {
+      kerzen: lauf ? basis.concat([lauf]) : basis,
+      sitzungen: lauf ? sitz.concat([vwSitzungAusZeit(lauf[0]) || 'unbekannt']) : sitz,
+      laufend: !!lauf
+    };
+  }
+  function vwSichtbar() {
+    var b = vwBasis();
+    var alle = b.kerzen;
+    var n = Math.min(alle.length || 1, VW.fensterN || vwFensterVorgabe());
+    var f = VW.fensterVon == null
+      ? KC().fenster(alle.length, alle.length - 1, n)
+      : KC().fensterAbVon(alle.length, VW.fensterVon, n);
     return {
       kerzen: alle.slice(f.von, f.bis + 1),
-      sitzungen: sitzAlle.slice(f.von, f.bis + 1),
-      gesamt: alle.length, fenster: f, laufend: !!lauf
+      sitzungen: b.sitzungen.slice(f.von, f.bis + 1),
+      gesamt: alle.length, fenster: f, laufend: b.laufend, alle: alle
     };
   }
   /* Die laufende Kerze aus dem Quote - nur bei sichtbarem Fenster und nur, wenn ein
-   * Kurs da ist. Sie wird nie gespeichert und nie geschrieben. */
+   * Kurs da ist. Sie wird nie gespeichert und nie geschrieben.
+   * Bei gebildeten Kerzen (1W/1M) entsteht sie nicht: ihre Periode hat keine feste
+   * Laenge, und die letzte Wochenkerze traegt den laufenden Tag ohnehin schon. */
   function vwLaufendeKerze(basis) {
     if (document.hidden || !basis.length || !KC()) return null;
+    if (KC().AUS_TAGESKERZEN[VW.kerze]) return null;
     var q = vwQuote();
     if (!q || !(q.kurs > 0)) return null;
-    var d = KC().INTERVALL_MS[VW.zeitrahmen];
+    var d = KC().INTERVALL_MS[VW.kerze];
     if (!d) return null;
     return KC().laufendeKerze(basis[basis.length - 1], q.kurs, Date.now(), d);
   }
@@ -1222,6 +858,29 @@
       if (q && q.kurs > 0) return q;
     }
     return null;
+  }
+
+  /** Die Signale ueber die GELADENE Reihe rechnen - einmal, nicht je Bild.
+   *  Zoomen und Blaettern duerfen nichts nachrechnen; sonst kostet jede Radbewegung
+   *  auf einem Jahreschart hunderte Detektor-Laeufe. */
+  function vwPunkteRechnen() {
+    VW.punkte = signalePunkte(vwBasis().kerzen);
+    LETZTE_PUNKTE = VW.punkte.slice();
+    GEWAEHLT = null;
+  }
+  /** Aus den Signalen die Marken fuer das gezeigte Fenster - reine Zuordnung ueber
+   *  den Zeitstempel, keine zweite Rechnung. */
+  function vwMarken(kerzen) {
+    var wo = {};
+    kerzen.forEach(function (k, i) { wo[k[0]] = i; });
+    var aus = [];
+    VW.punkte.forEach(function (p, pi) {
+      var i = wo[p.t];
+      if (i === undefined) return;
+      aus.push({ index: i, richtung: p.dir === 'call' ? 'call' : 'put', farbe: p.farbe,
+                 gewaehlt: GEWAEHLT === pi, punkt: pi });
+    });
+    return aus;
   }
 
   function vwZeichnen() {
@@ -1239,8 +898,10 @@
     var hin = document.getElementById('vwHinweis');
     if (!s.kerzen.length) {
       ctx.clearRect(0, 0, breite, hoehe);
-      if (hin) hin.textContent = 'Für diesen Zeitrahmen liegen keine Kerzen vor.';
+      if (hin) hin.textContent = 'Für diese Kombination liegen keine Kerzen vor.';
+      VW.sichtbar = s;
       vwQuelleZeichnen(s);
+      vwSignalListe();
       return;
     }
     if (hin) hin.textContent = '';
@@ -1249,19 +910,259 @@
     VW.skala = sk;
     VW.sichtbar = s;
     var f = vwFarben();
+    var linien = vwLinien(s);
+    var bs = KC().baender(s.sitzungen);
+    var marken = vwMarken(s.kerzen);
+    /* Das Ergebnis des Zeichnens bleibt stehen - die Oberflaechen-Probe kann sonst
+     * nur pruefen, dass ein Canvas Breite hat, nicht WAS darauf steht. */
+    VW.gezeichnet = KC().zeichnen(ctx, s.kerzen, sk, {
+      farben: f, baender: bs, linien: linien, kreuz: VW.kreuz,
+      marken: marken, umsatz: indAn.volumen !== false
+    });
+    vwZonenZeichnen(ctx, sk, s.kerzen, f);
+    vwKanaeleZeichnen(ctx, sk, s.kerzen, f);
+    vwBandBeschriften(ctx, sk, bs, f);
+    vwAchsen(ctx, sk, s.kerzen, f);
+    vwSpurZeichnen(s, f);
+    vwQuelleZeichnen(s, bs);
+    vwSignalListe();
+  }
+
+  /** Die Linien im Kursbild: gleitende Durchschnitte und die Leitlinie.
+   *
+   *  UEBER DIE GANZE GELADENE REIHE gerechnet, dann auf das Fenster geschnitten.
+   *  Vorher lief maReihe ueber die SICHTBAREN Kerzen - auf einem Bild mit 260 von
+   *  695 geladenen Kerzen begann die MA200 deshalb erst bei der 200. sichtbaren,
+   *  also weit im Bild drin (PM-Fund am AMD-Foto, 05.09.2026). Eine Linie, die
+   *  spaeter beginnt, als sie koennte, ist keine kuerzere Linie - sie ist eine
+   *  andere Zahl unter demselben Namen. */
+  function vwLinien(s) {
     var linien = [];
+    if (!window.Quant || !KC()) return linien;
+    var f = vwFarben();
+    var alle = s.alle;
+    var von = s.fenster.von, bis = s.fenster.bis;
     Object.keys(VW.ma).forEach(function (n) {
-      if (!VW.ma[n] || !window.Quant) return;
-      var werte = KC().maReihe(s.kerzen, Number(n), window.Quant.sma);
+      if (!VW.ma[n]) return;
+      var ganz = KC().maReihe(alle, Number(n), window.Quant.sma);
+      var werte = ganz.slice(von, bis + 1);
       if (werte.some(function (v) { return v != null; })) {
         linien.push({ werte: werte, farbe: f[VW_MA_FARBE[n]], breite: 1.3 });
       }
     });
-    var bs = KC().baender(s.sitzungen);
-    KC().zeichnen(ctx, s.kerzen, sk, { farben: f, baender: bs, linien: linien, kreuz: VW.kreuz });
-    vwBandBeschriften(ctx, sk, bs, f);
-    vwAchsen(ctx, sk, s.kerzen, f);
-    vwQuelleZeichnen(s, bs);
+    /* SMA 50/200 als Chartbild-Schalter - dieselbe Rechnung, andere Beschriftung.
+     * Volle 50/200 Kerzen oder gar nicht: frueher schrumpften die Fenster still auf
+     * einen Bruchteil der Reihe, und als "SMA 200" wurde ein SMA 10 gezeichnet. */
+    if (indAn.ma) {
+      [[50, 'ma50'], [200, 'ma200']].forEach(function (paar) {
+        if (alle.length < paar[0] + 5) return;
+        var ganz = KC().maReihe(alle, paar[0], window.Quant.sma);
+        linien.push({ werte: ganz.slice(von, bis + 1), farbe: f[paar[1]], breite: 1.4 });
+      });
+    }
+    if (indAn.linie && window.Quant.emaSeries) {
+      var closes = alle.map(function (k) { return k[1]; });
+      var ema = window.Quant.emaSeries(closes, 20);
+      linien.push({ werte: ema.slice(von, bis + 1), farbe: f.linie, breite: 1 });
+    }
+    return linien;
+  }
+
+  /** Unterstuetzung und Widerstand als Hoch/Tief der letzten 20 und 60 Kerzen.
+   *  Dieselbe Groesse, die der Donchian-Detektor benutzt - was man sieht, ist genau
+   *  das, worauf die Automatik reagieren wuerde. */
+  function vwZonenZeichnen(ctx, sk, kerzen, f) {
+    if (!indAn.sr) return;
+    ctx.save();
+    ctx.font = '10px system-ui, sans-serif';
+    [[20, f.zone20], [60, f.zone60]].forEach(function (paar) {
+      var nn = paar[0];
+      if (kerzen.length < nn + 2) return;
+      var hoch = -Infinity, tief = Infinity;
+      for (var i = kerzen.length - nn; i < kerzen.length; i++) {
+        var hh = kerzen[i][3] != null ? kerzen[i][3] : kerzen[i][1];
+        var ll = kerzen[i][4] != null ? kerzen[i][4] : kerzen[i][1];
+        if (hh > hoch) hoch = hh;
+        if (ll < tief) tief = ll;
+      }
+      [[hoch, 'Widerstand'], [tief, 'Unterstützung']].forEach(function (z) {
+        if (z[0] > sk.hoch || z[0] < sk.tief) return;
+        var y = sk.y(z[0]);
+        ctx.strokeStyle = paar[1];
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(sk.links, y);
+        ctx.lineTo(sk.breite - sk.rechts, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = paar[1];
+        ctx.fillText(z[1] + ' ' + nn + ' · ' + U.nf2.format(z[0]), sk.links + 3, y - 3);
+      });
+    });
+    ctx.restore();
+  }
+
+  /** Kanaele und Kanal-Abschnitte, Anzeige wie in der alten Ansicht - nur auf
+   *  Leinwand statt SVG. Gerechnet wird nichts Neues: Q.kanaele und
+   *  Q.kanalSegmente sind dieselben Funktionen wie bisher.
+   *
+   *  Der Kanal ist ANZEIGE. Als Handelsbedingung ist er gemessen und verworfen
+   *  (Abschnittskanaele, 22.08.2026); die Leiste sagt das im Tooltip aus dem
+   *  Studienregister, nicht aus einem festen Satz. */
+  function vwKanaeleZeichnen(ctx, sk, kerzen, f) {
+    if (!Q || kerzen.length < 40) {
+      var kInfoLeer = document.getElementById('vwKanalInfo');
+      if (kInfoLeer && (indAn.kanal || indAn.segmente)) {
+        kInfoLeer.textContent = 'Nur ' + kerzen.length + ' Kerzen im Bild – für einen Kanal zu wenig.';
+      } else if (kInfoLeer) { kInfoLeer.textContent = ''; }
+      return;
+    }
+    var texte = [];
+    function kante(von, bis, p1, p2, farbe, breite, strich, deck) {
+      ctx.save();
+      ctx.strokeStyle = farbe;
+      ctx.lineWidth = breite;
+      ctx.globalAlpha = deck;
+      if (strich) ctx.setLineDash(strich);
+      ctx.beginPath();
+      ctx.moveTo(sk.x(von), sk.y(p1));
+      ctx.lineTo(sk.x(bis), sk.y(p2));
+      ctx.stroke();
+      ctx.restore();
+    }
+    if (indAn.segmente && Q.kanalSegmente) {
+      Q.kanalSegmente(kerzen).forEach(function (sg, si) {
+        var m1 = sg.achse, m2 = sg.achse + sg.steigung * (sg.n - 1);
+        var o1 = m1 + (sg.oben - sg.mitteJetzt), o2 = sg.oben;
+        var u1 = m1 + (sg.unten - sg.mitteJetzt), u2 = sg.unten;
+        var farbe = sg.trend === 'auf' ? f.auf : sg.trend === 'ab' ? f.ab : f.acc;
+        /* #80 (Wilhelms Weg 2): angezeigt und gewichtet wird das PERZENTIL gegen
+         * Rauschen, nicht die Roh-Guete - deren Nullpunkt liegt bei ~75-94. */
+        var pS = Q.gueteZufallsAnteil(sg.guete, sg.n);
+        var deck = 0.30 + Math.min(0.5, (pS == null ? 50 : pS) / 100 * 0.5);
+        kante(sg.von, sg.bis, m1, m2, farbe, 1.2, null, deck);
+        kante(sg.von, sg.bis, o1, o2, farbe, 1, [4, 3], deck);
+        kante(sg.von, sg.bis, u1, u2, farbe, 1, [4, 3], deck);
+        /* Auf einer Leinwand gibt es kein <title> wie im SVG - die Einordnung des
+         * Abschnitts stuende sonst nirgends. Sie gehoert in die Zeile darunter:
+         * die Roh-Guete allein ist kein Mass (Rauschen-Median 75-94), das
+         * Perzentil ist es. */
+        texte.push('A' + (si + 1) + ' ' + (sg.trend === 'auf' ? 'aufwärts' : sg.trend === 'ab' ? 'abwärts' : 'seitwärts') +
+          ' über ' + sg.n + ' Kerzen (' +
+          (pS == null ? 'Ordnung nicht einordbar' : 'besser als ' + pS + ' % des Zufalls, Roh-Güte ' + sg.guete + '/100') + ')');
+        ctx.save();
+        ctx.fillStyle = farbe;
+        ctx.globalAlpha = 0.9;
+        ctx.font = '9px system-ui, sans-serif';
+        ctx.fillText('A' + (si + 1) + ' ' + (sg.trend === 'auf' ? '▲' : sg.trend === 'ab' ? '▼' : '▬'),
+          sk.x((sg.von + sg.bis) / 2) - 8, sk.y(Math.max(o1, o2)) - 3);
+        ctx.restore();
+      });
+    }
+    if (indAn.kanal && Q.kanaele) {
+      var kListe = Q.kanaele(kerzen) || [];
+      kListe.forEach(function (kk) {
+        var m1 = kk.achse, m2 = kk.achse + kk.steigung * (kk.n - 1);
+        var o1 = m1 + (kk.oben - kk.mitteJetzt), o2 = kk.oben;
+        var u1 = m1 + (kk.unten - kk.mitteJetzt), u2 = kk.unten;
+        var pK = Q.gueteZufallsAnteil(kk.guete, kk.n);
+        var deck = 0.25 + Math.min(0.55, (pK == null ? 50 : pK) / 100 * 0.55);
+        kante(kk.von, kk.bis, m1, m2, f.kanal, 1.2, null, deck);
+        kante(kk.von, kk.bis, o1, o2, f.kanal, 1, [5, 4], deck);
+        kante(kk.von, kk.bis, u1, u2, f.kanal, 1, [5, 4], deck);
+        texte.push(kk.name + ': ' + (kk.trend === 'auf' ? 'aufwärts' : kk.trend === 'ab' ? 'abwärts' : 'seitwärts') +
+          ' (' + (pK == null ? 'nicht einordbar' : 'besser als ' + pK + ' % des Zufalls') +
+          (kk.wendeBestaetigt ? ', beginnt an echtem Wendepunkt' : '') + ')');
+      });
+    }
+    /* Golden/Death Cross als Kreise auf der SMA50 - dieselbe Stelle wie frueher. */
+    if (indAn.cross50200 && window.Quant && kerzen.length >= 210) {
+      var s50 = KC().maReihe(kerzen, 50, window.Quant.sma);
+      var s200 = KC().maReihe(kerzen, 200, window.Quant.sma);
+      var kreuze = 0;
+      ctx.save();
+      ctx.lineWidth = 2;
+      for (var ci = 1; ci < kerzen.length; ci++) {
+        if (s50[ci] == null || s200[ci] == null || s50[ci - 1] == null || s200[ci - 1] == null) continue;
+        var golden = s50[ci - 1] <= s200[ci - 1] && s50[ci] > s200[ci];
+        var death = s50[ci - 1] >= s200[ci - 1] && s50[ci] < s200[ci];
+        if (!golden && !death) continue;
+        kreuze++;
+        ctx.strokeStyle = golden ? f.auf : f.ab;
+        ctx.beginPath();
+        ctx.arc(sk.x(ci), sk.y(s50[ci]), 5, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+      if (kreuze) texte.push(kreuze + ' Kreuzung' + (kreuze === 1 ? '' : 'en') + ' SMA50/200 im Bild');
+    }
+    var kInfo = document.getElementById('vwKanalInfo');
+    if (kInfo) {
+      kInfo.textContent = texte.length ? texte.join(' · ')
+        : ((indAn.kanal || indAn.segmente || indAn.cross50200) ? 'Nichts davon im gezeigten Ausschnitt.' : '');
+    }
+    vwKanalVerzug(kerzen);
+  }
+
+  /** Wie spaet ist der Kanal?
+   *
+   *  Ein Regressionskanal beschreibt, was war - er kann der Bewegung nur nachlaufen.
+   *  Wie weit, stand bis zum 20.08.2026 nirgends, und man sieht es dem Bild nicht an:
+   *  am AMD-Chart meldete er am Tageshoch "aufwaerts" und am Tagestief "abwaerts".
+   *  Diese Zeile rechnet es aus, statt es dem Auge zu ueberlassen - gerade weil sie
+   *  oft unbequem ausfaellt. */
+  function vwKanalVerzug(kerzen) {
+    var el = document.getElementById('vwKanalVerzug');
+    if (!el) return;
+    if (!indAn.kanal || !Q || !Q.kanalVerzug) { el.innerHTML = ''; return; }
+    var fen = Math.min(200, Math.max(40, Math.floor(kerzen.length / 3)));
+    var vz = kerzen.length >= fen + 12 ? Q.kanalVerzug(kerzen, { fenster: fen, maxRueck: 150 }) : null;
+    if (!vz) { el.innerHTML = ''; return; }
+    if (vz.ohneRichtung) {
+      el.innerHTML = '<b>Kanal-Verzug:</b> Der Kanal steht seitwärts – ohne Richtung gibt es keinen Verzug zu messen.';
+      return;
+    }
+    var richt = vz.trend === 'auf' ? 'aufwärts' : 'abwärts';
+    var wort = vz.trend === 'auf' ? 'Tief' : 'Hoch';
+    var txt = '<b>Kanal-Verzug:</b> „' + richt + '" wird seit ' + vz.gemeldetVor + ' Kerzen gemeldet, ' +
+      'zuerst bei ' + U.nf2.format(vz.gemeldetBei) + '. Das ' + wort + ', an dem die Bewegung begann, ' +
+      'lag ' + vz.verzugKerzen + ' Kerzen davor bei ' + U.nf2.format(vz.wendeBei) + '.';
+    if (vz.anteilVerpasst != null) {
+      txt += ' <b style="color:' + (vz.anteilVerpasst >= 50 ? 'var(--down)' : 'var(--warn)') + ';">' +
+        vz.anteilVerpasst + ' % der Bewegung waren beim Melden schon vorbei.</b>';
+    }
+    if (vz.gekappt) txt += ' <span style="opacity:.7;">(Richtung hält länger als das Suchfenster – der Verzug ist mindestens so groß.)</span>';
+    el.innerHTML = txt;
+  }
+
+  /** Die Indikator-Spur unter dem Chart. Gerechnet wird der RSI von window.Quant -
+   *  der Viewer hat keine eigene Formel dafuer. */
+  function vwSpurZeichnen(s, f) {
+    var c = document.getElementById('vwIndi');
+    var wrap = document.getElementById('vwIndiWrap');
+    if (!c || !wrap) return;
+    var an = !!indAn.rsi;
+    wrap.hidden = !an;
+    if (!an) return;
+    var breite = Math.max(320, c.clientWidth || 900);
+    var hoehe = Math.max(60, c.clientHeight || 90);
+    var dpr = window.devicePixelRatio || 1;
+    if (c.width !== Math.round(breite * dpr) || c.height !== Math.round(hoehe * dpr)) {
+      c.width = Math.round(breite * dpr); c.height = Math.round(hoehe * dpr);
+    }
+    var ctx = c.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (!window.Quant || typeof window.Quant.rsi !== 'function') return;
+    /* Ueber die ganze geladene Reihe, dann geschnitten - wie die Durchschnitte.
+     * Ein RSI, der beim linken Bildrand neu anfaengt, misst 14 andere Kerzen. */
+    var closes = s.alle.map(function (k) { return k[1]; });
+    var reihe = [];
+    for (var i = 0; i < closes.length; i++) {
+      reihe.push(i < 14 ? null : window.Quant.rsi(closes.slice(0, i + 1), 14));
+    }
+    KC().spurZeichnen(ctx, reihe.slice(s.fenster.von, s.fenster.bis + 1),
+      { breite: breite, hoehe: hoehe },
+      { name: 'RSI 14', schwellen: [30, 70], tief: 0, hoch: 100, farbe: f.ma20, farben: f });
   }
 
   /* Ein graues Band ohne Wort ist ein grauer Fleck. Beschriftet wird nur, was breit
@@ -1295,7 +1196,7 @@
      * sechsmal "10:30" ueber drei Tage). */
     var kc = KC();
     var marken = kc && kc.achsenBeschriftung
-      ? kc.achsenBeschriftung(kerzen, { intervallMs: kc.INTERVALL_MS[VW.zeitrahmen], zone: 'America/New_York' })
+      ? kc.achsenBeschriftung(kerzen, { intervallMs: kc.INTERVALL_MS[VW.kerze] || 86400000, zone: 'America/New_York' })
       : [];
     marken.forEach(function (m) {
       ctx.fillText(m.text, sk.x(m.i) - 18, sk.hoehe - 6);
@@ -1303,61 +1204,239 @@
     ctx.restore();
   }
 
-  /* DIE FUSSZEILE IST NIE STUMM. Sie sagt, woher die Kerzen kommen, wie viele
-   * gezeigt werden und ob eine laufende dabei ist. */
+  /* DIE FUSSZEILE IST NIE STUMM - aber sie ist auch keine Textwand mehr.
+   *
+   * Vorher stand dort alles nebeneinander: "449 doppelte Kerzen an der Naht
+   * verworfen (Archiv gewinnt) · 260 von 695 · letzte Kerze laeuft noch ... · 12
+   * ausserboersliche Abschnitte grau hinterlegt · nur regulaere Sitzung". Das ist
+   * richtig und trotzdem unlesbar. Jetzt sagt sie EINEN Satz - Quelle, Zeitraum,
+   * Kerze, Zahl -, und die Einzelheiten liegen hinter dem i-Knopf daneben. */
   function vwQuelleZeichnen(s, bs) {
     var e = document.getElementById('vwQuelle');
     if (!e) return;
-    var teile = [VW.quelleText || 'Quelle unbekannt'];
-    if (s && s.kerzen.length) {
-      teile.push(s.kerzen.length + ' von ' + s.gesamt + ' Kerzen im Bild');
-    }
-    if (s && s.laufend) teile.push('letzte Kerze läuft noch (gestrichelt) – sie wird nicht ins Archiv geschrieben');
-    if (bs && bs.length) teile.push(bs.length + ' außerbörsliche Abschnitte grau hinterlegt');
-    if (VW.nurRegulaer) teile.push('nur reguläre Sitzung');
-    e.textContent = teile.join(' · ');
+    var satz = (VW.quelleText || 'Quelle unbekannt') +
+      ' · ' + VW.zeitraum + ' in ' + VW.kerze + '-Kerzen · ' +
+      (s && s.kerzen.length ? s.kerzen.length + ' von ' + s.gesamt + ' im Bild' : 'keine Kerzen');
+    if (VW.nachgeladen) satz += ' · ' + VW.nachgeladen;
+    e.textContent = satz;
+    var d = document.getElementById('vwQuelleDetail');
+    if (!d) return;
+    var zeilen = (VW.quelleDetails || []).slice();
+    if (s && s.laufend) zeilen.push('Die letzte Kerze läuft noch (gestrichelt) – sie wird nicht ins Archiv geschrieben.');
+    if (bs && bs.length) zeilen.push(bs.length + ' außerbörsliche Abschnitte grau hinterlegt.');
+    zeilen.push(VW.nurRegulaer ? 'Nur die reguläre Sitzung wird gezeigt.' : 'Vor- und nachbörsliche Kerzen werden mitgezeigt.');
+    if (SIG_FEHLER) zeilen.push(SIG_FEHLER + ' Detektor-Abbrüche – die Signal-Liste ist unvollständig.');
+    d.innerHTML = '<ul>' + zeilen.map(function (z) { return '<li>' + U.esc(z) + '</li>'; }).join('') + '</ul>';
   }
 
-  /* ---- Fadenkreuz ---- */
+  /* ---- Fadenkreuz: die Statuszeile oben links ----
+   * TradingView zeigt dort Zeit, O/H/L/C, Aenderung und Volumen der Kerze unter dem
+   * Zeiger. Genau das steht hier - aus der Kerze gelesen, nicht nachgerechnet. */
   function vwKreuzAn(ev) {
     var c = document.getElementById('vwChart');
     if (!c || !VW.skala || !VW.sichtbar) return;
     var r = c.getBoundingClientRect();
     var x = ev.clientX - r.left, y = ev.clientY - r.top;
+    if (VW.ziehen) { vwZiehenBewegen(x); return; }
     var i = VW.skala.index(x);
     var k = VW.sichtbar.kerzen[i];
     if (!k) return;
     VW.kreuz = { index: i, y: y };
-    var ro = document.getElementById('vwKreuz');
-    if (ro) {
-      var sitz = VW.sichtbar.sitzungen[i];
-      ro.textContent = vwZeitpunkt(k[0]) + ' · ' + U.nf2.format(k[1]) +
-        (window.KerzenChart.istLaufend(k) ? ' (läuft)' : '') +
-        (sitz === 'vor' || sitz === 'nach' ? ' · ' + KC().bandText(sitz) : '') +
-        ' · Fadenkreuz ' + U.nf2.format(VW.skala.kurs(y));
-    }
+    vwStatusZeile(i, k);
+    vwMarkeTipp(ev, i);
     vwZeichnen();
+  }
+  function vwStatusZeile(i, k) {
+    var ro = document.getElementById('vwKreuz');
+    if (!ro) return;
+    var vor = i > 0 ? VW.sichtbar.kerzen[i - 1] : null;
+    var o = k[5] != null ? k[5] : k[1];
+    var h = k[3] != null ? k[3] : Math.max(o, k[1]);
+    var t = k[4] != null ? k[4] : Math.min(o, k[1]);
+    var pct = vor && vor[1] ? (k[1] / vor[1] - 1) * 100 : null;
+    var sitz = VW.sichtbar.sitzungen[i];
+    var teile = [
+      vwZeitpunkt(k[0]),
+      'O ' + U.nf2.format(o), 'H ' + U.nf2.format(h),
+      'L ' + U.nf2.format(t), 'C ' + U.nf2.format(k[1])
+    ];
+    var txt = teile.join(' · ');
+    if (k[2] != null) txt += ' · Vol ' + U.nf0.format(k[2]);
+    if (KC().istLaufend(k)) txt += ' · läuft';
+    if (sitz === 'vor' || sitz === 'nach') txt += ' · ' + KC().bandText(sitz);
+    ro.innerHTML = U.esc(txt) +
+      (pct != null ? ' · <span style="color:' + (pct >= 0 ? 'var(--up)' : 'var(--down)') + ';">' +
+        U.signTxt(pct, ' %') + '</span>' : '');
+  }
+  /** Der Tooltip an einer Signal-Marke. Er traegt das Urteil WOERTLICH aus dem
+   *  Studienregister - kein Signal wird als Empfehlung gezeichnet. */
+  function vwMarkeTipp(ev, i) {
+    var tip = document.getElementById('tip');
+    if (!tip) return;
+    var hier = VW.punkte.filter(function (p) {
+      var k = VW.sichtbar.kerzen[i];
+      return k && p.t === k[0];
+    });
+    if (!hier.length) { tip.style.display = 'none'; return; }
+    tip.innerHTML = hier.map(function (p) {
+      var u = urteilZu((SIGNALE[p.schluessel] || {}).urteil);
+      return '<span class="tv">' + U.esc(p.name) + ' · ' + (p.dir === 'call' ? '▲ Kauf' : '▼ Verkauf') + '</span><br>' +
+        '<span class="tt">' + U.esc(new Date(p.t).toLocaleString('de-DE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })) +
+        ' · ' + U.esc(U.nf2.format(p.preis)) + '</span><br>' +
+        '<span class="tt">' + U.esc(u.text) + '</span>';
+    }).join('<hr>');
+    tip.style.display = 'block';
+    tip.style.left = Math.min(window.innerWidth - 260, ev.clientX + 14) + 'px';
+    tip.style.top = (ev.clientY + 14) + 'px';
   }
   function vwKreuzAus() {
     VW.kreuz = null;
+    VW.ziehen = null;
     var ro = document.getElementById('vwKreuz');
     if (ro) ro.textContent = '';
+    var tip = document.getElementById('tip');
+    if (tip) tip.style.display = 'none';
     vwZeichnen();
   }
 
-  /* ---- Tastatur: blaettern und zoomen ---- */
+  /* ---- Maus: Rad zoomt, Ziehen blaettert, Doppelklick setzt zurueck ---- */
+  function vwRad(ev) {
+    var c = document.getElementById('vwChart');
+    if (!c || !VW.sichtbar || !VW.skala) return;
+    ev.preventDefault();                        // die Seite soll nicht mitscrollen
+    var r = c.getBoundingClientRect();
+    var anteil = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
+    vwZoomen(ev.deltaY < 0, anteil);
+  }
+  function vwZiehenStart(ev) {
+    if (!VW.sichtbar) return;
+    var c = document.getElementById('vwChart');
+    var r = c.getBoundingClientRect();
+    VW.ziehen = { x: ev.clientX - r.left, von: VW.sichtbar.fenster.von };
+  }
+  function vwZiehenBewegen(x) {
+    if (!VW.ziehen || !VW.skala) return;
+    var dx = x - VW.ziehen.x;
+    var kerzen = Math.round(-dx / Math.max(1, VW.skala.dx));
+    var s = VW.sichtbar;
+    var f = KC().blaettern(s.gesamt, VW.ziehen.von, s.fenster.anzahl, kerzen);
+    VW.fensterVon = f.von;
+    VW.fensterN = f.anzahl;
+    vwZeichnen();
+    if (f.von === 0 && kerzen < 0) vwMehrLaden();
+  }
+  function vwZiehenEnde() { VW.ziehen = null; }
+
+  /* ---- Tastatur: blaettern und zoomen. Sie bleibt, was sie war. ---- */
   function vwTaste(ev) {
     var s = VW.sichtbar;
     if (!s) return;
-    var schritt = Math.max(1, Math.round(VW.fensterN / 10));
-    var bis = VW.fensterBis == null ? s.gesamt - 1 : VW.fensterBis;
-    if (ev.key === 'ArrowLeft') { VW.fensterBis = Math.max(VW.fensterN - 1, bis - schritt); }
-    else if (ev.key === 'ArrowRight') { VW.fensterBis = Math.min(s.gesamt - 1, bis + schritt); }
-    else if (ev.key === '+' || ev.key === '=') { VW.fensterN = Math.max(20, Math.round(VW.fensterN * 0.75)); }
-    else if (ev.key === '-' || ev.key === '_') { VW.fensterN = Math.min(s.gesamt, Math.round(VW.fensterN / 0.75)); }
+    var schritt = Math.max(1, Math.round(s.fenster.anzahl / 10));
+    if (ev.key === 'ArrowLeft') vwBlaettern(-schritt);
+    else if (ev.key === 'ArrowRight') vwBlaettern(schritt);
+    else if (ev.key === '+' || ev.key === '=') vwZoomen(true, 0.5);
+    else if (ev.key === '-' || ev.key === '_') vwZoomen(false, 0.5);
+    else if (ev.key === 'Home') vwZurueck();
     else return;
     ev.preventDefault();
+  }
+
+  /* ---- Die Signal-Liste unter dem Chart ----
+   * Ohne sie muss man mit der Maus auf winzige Dreiecke zielen; ein Klick auf eine
+   * Zeile springt zur Kerze. */
+  function vwSignalListe() {
+    var el = document.getElementById('vwSigListe');
+    var zEl = document.getElementById('vwSigZahl');
+    if (zEl) {
+      var etwasAn = Object.keys(sigAn).some(function (k) { return sigAn[k]; });
+      zEl.textContent = !etwasAn ? ''
+        : VW.punkte.length ? VW.punkte.length + ' Signale in der geladenen Reihe'
+        : (VW.fest.length < 40 ? 'Nur ' + VW.fest.length + ' Kerzen – die meisten Signale brauchen mehr Vorlauf.'
+                               : 'kein Signal in dieser Reihe');
+    }
+    if (!el) return;
+    if (!VW.punkte.length) {
+      el.innerHTML = '<div class="empty" style="padding:10px 0;">Keine Signale eingeblendet. Oben in „Einblenden“ Häkchen setzen.</div>';
+      return;
+    }
+    // Neueste zuerst - die interessieren beim Pruefen am meisten
+    var mitIndex = VW.punkte.map(function (p, i) { return { p: p, i: i }; })
+      .sort(function (a, b) { return b.p.t - a.p.t; }).slice(0, 200);
+    el.innerHTML =
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">' +
+        VW.punkte.length + ' Signale · Zeile anklicken, um zur Kerze zu springen' +
+        (SIG_FEHLER ? ' · ACHTUNG: ' + SIG_FEHLER + ' Detektor-Abbrüche – die Liste ist unvollständig' : '') +
+        (VW.punkte.length > 200 ? ' · die 200 jüngsten' : '') + '</div>' +
+      '<div style="max-height:260px; overflow:auto;"><table class="tbl"><thead><tr>' +
+        '<th>Zeitpunkt</th><th>Signal</th><th>Richtung</th><th style="text-align:right;">Kurs</th><th>Belegstand laut Studienregister</th>' +
+      '</tr></thead><tbody>' +
+      mitIndex.map(function (x) {
+        var p = x.p;
+        var u = urteilZu((SIGNALE[p.schluessel] || {}).urteil);
+        return '<tr data-zeile="' + x.i + '" style="cursor:pointer;' +
+          (GEWAEHLT === x.i ? ' background:var(--grid);' : '') + '">' +
+          '<td>' + U.esc(new Date(p.t).toLocaleString('de-DE', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' })) + '</td>' +
+          '<td><span style="display:inline-block; width:9px; height:9px; border-radius:var(--r-klein); background:' + p.farbe + '; margin-right:6px;"></span>' + U.esc(p.name) + '</td>' +
+          '<td style="color:' + (p.dir === 'call' ? 'var(--up)' : 'var(--down)') + ';">' +
+            (p.dir === 'call' ? '▲ Kauf' : '▼ Verkauf') + '</td>' +
+          '<td style="text-align:right;">' + U.esc(U.nf2.format(p.preis)) + '</td>' +
+          '<td style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(u.text) + '</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<div id="vwSigDetail" class="hinweis" style="margin-top:8px;"></div>';
+    el.querySelectorAll('[data-zeile]').forEach(function (tr) {
+      tr.addEventListener('click', function () {
+        var i = parseInt(tr.getAttribute('data-zeile'), 10);
+        GEWAEHLT = (GEWAEHLT === i) ? null : i;
+        if (GEWAEHLT != null) vwSpringeZu(VW.punkte[GEWAEHLT]);
+        else vwZeichnen();
+      });
+    });
+    vwSignalDetail();
+  }
+
+  /** Zur Kerze eines Signals springen: das Fenster so legen, dass sie darin liegt. */
+  function vwSpringeZu(p) {
+    if (!p) return;
+    var alle = vwBasis().kerzen;
+    var i = -1;
+    for (var j = 0; j < alle.length; j++) { if (alle[j][0] === p.t) { i = j; break; } }
+    if (i < 0) { vwZeichnen(); return; }
+    var n = Math.min(alle.length, VW.fensterN || vwFensterVorgabe());
+    VW.fensterVon = Math.max(0, Math.min(alle.length - n, i - Math.round(n / 2)));
+    VW.fensterN = n;
     vwZeichnen();
+  }
+
+  /** Was das gewaehlte Signal aussagt - und was danach tatsaechlich passiert ist. */
+  function vwSignalDetail() {
+    var el = document.getElementById('vwSigDetail');
+    if (!el) return;
+    if (GEWAEHLT == null || !VW.punkte[GEWAEHLT]) { el.innerHTML = ''; return; }
+    var p = VW.punkte[GEWAEHLT];
+    var bars = vwBasis().kerzen;
+    var idx = -1;
+    for (var i = 0; i < bars.length; i++) { if (bars[i][0] === p.t) { idx = i; break; } }
+    var danach = '';
+    if (idx >= 0) {
+      // Was danach kam - in Signalrichtung gerechnet, damit "+" immer "richtig gelegen" heisst
+      var zeilen = [4, 8, 16, 26].map(function (h) {
+        if (idx + h >= bars.length) return null;
+        var r = (bars[idx + h][1] / bars[idx][1] - 1) * 100;
+        var inRichtung = p.dir === 'call' ? r : -r;
+        return '<span style="display:inline-block; min-width:104px;">nach ' + h + ' Kerzen: <b style="color:' +
+          (inRichtung >= 0 ? 'var(--up)' : 'var(--down)') + '">' +
+          (inRichtung >= 0 ? '+' : '') + inRichtung.toFixed(2) + ' %</b></span>';
+      }).filter(Boolean);
+      danach = zeilen.length
+        ? '<div style="margin-top:6px;"><span style="color:var(--muted);">Was danach kam, in Signalrichtung:</span><br>' + zeilen.join(' ') + '</div>'
+        : '<div style="margin-top:6px; color:var(--muted);">Das Signal ist zu jung – die Entwicklung danach liegt noch nicht vor.</div>';
+    }
+    var u = urteilZu((SIGNALE[p.schluessel] || {}).urteil);
+    el.innerHTML =
+      '<b>' + U.esc(p.name) + '</b> · ' + U.esc(SIGNAL_ERKLAERT[p.name] || 'Keine Erläuterung hinterlegt.') +
+      danach +
+      '<div style="margin-top:6px;">Belegstand laut Studienregister: <b>' + U.esc(u.text) + '</b>' +
+      (u.quelle ? ' <span style="color:var(--muted);">(' + U.esc(u.quelle) + ')</span>' : '') + '</div>';
   }
 
   /* ---- Der Kopf des Viewers ---- */
@@ -1438,6 +1517,13 @@
     var zeilen = [];
     for (var i = 0; i < KC().ZEITRAHMEN.length; i++) {
       var zr = KC().ZEITRAHMEN[i];
+      /* 1W und 1M fuehrt das Archiv nicht - sie werden aus Tageskerzen GEBILDET.
+       * "keine Kerzen" waere hier zwar wahr, aber irrefuehrend: es klingt nach einer
+       * Luecke, und in Wahrheit ist es eine Ableitung. */
+      if (KC().AUS_TAGESKERZEN[zr]) {
+        zeilen.push({ zr: zr, gebildet: true });
+        continue;
+      }
       var r = null;
       try { r = await window.api.archivKerzen(sym, zr, 20); } catch (e2) { r = null; }
       if (vwArchivKarte.fuer !== sym) return;     // inzwischen anderer Wert
@@ -1445,7 +1531,9 @@
                     grund: (r && r.grund) || '', quelle: (r && r.quelle) || '' });
     }
     e.innerHTML = '<dl class="kv">' + zeilen.map(function (z) {
-      var wert = z.ok
+      var wert = z.gebildet
+        ? 'aus Tageskerzen gebildet'
+        : z.ok
         ? (z.quelle === 'alpaca' ? 'Alpaca' : 'Archiv') + ' bis ' + U.esc(vwZeitpunkt(z.bis))
         : U.esc(z.grund || 'nichts da');
       return '<dt>' + U.esc(z.zr) + '</dt><dd>' + wert + '</dd>';
@@ -1528,7 +1616,11 @@
 
   /* ---- Verdrahtung, einmal ---- */
   function vwBauen() {
-    vwZeitrahmenBauen();
+    vwZeitraumBauen();
+    vwKerzeBauen();
+    vwEinblendenBauen();
+    vwZoomBauen();
+    vwWahlZeichnen();
     var leiste = document.getElementById('vwLeiste');
     if (leiste && !leiste.__bereit) {
       leiste.__bereit = true;
@@ -1536,6 +1628,7 @@
         cb.checked = !!VW.ma[cb.getAttribute('data-ma')];
         cb.addEventListener('change', function () {
           VW.ma[cb.getAttribute('data-ma')] = cb.checked;
+          vwMerken();
           vwZeichnen();
         });
       });
@@ -1544,9 +1637,23 @@
         nr.addEventListener('change', function () {
           VW.nurRegulaer = nr.checked;
           try { window.api.storeSet(VW_STORE, VW.nurRegulaer); } catch (e) { /* ohne Speicher geht es auch */ }
+          /* Die Filterung aendert die Reihe, auf der die Signale sitzen - also neu
+           * rechnen, sonst zeigen die Marken auf Kerzen, die nicht mehr da sind. */
+          vwPunkteRechnen();
           vwZeichnen();
         });
       }
+    }
+    var mehr = document.getElementById('vwQuelleMehr');
+    if (mehr && !mehr.__bereit) {
+      mehr.__bereit = true;
+      mehr.addEventListener('click', function () {
+        var d = document.getElementById('vwQuelleDetail');
+        if (!d) return;
+        var auf = d.hidden;
+        d.hidden = !auf;
+        mehr.setAttribute('aria-expanded', auf ? 'true' : 'false');
+      });
     }
     var c = document.getElementById('vwChart');
     if (c && !c.__bereit) {
@@ -1554,6 +1661,10 @@
       c.addEventListener('mousemove', vwKreuzAn);
       c.addEventListener('mouseleave', vwKreuzAus);
       c.addEventListener('keydown', vwTaste);
+      c.addEventListener('wheel', vwRad, { passive: false });
+      c.addEventListener('mousedown', vwZiehenStart);
+      c.addEventListener('mouseup', vwZiehenEnde);
+      c.addEventListener('dblclick', vwZurueck);
       window.addEventListener('resize', function () { if (CUR) vwZeichnen(); });
     }
     if (!VW.takt) {
@@ -1569,7 +1680,19 @@
       }, VW_TAKT_MS);
     }
   }
-  /* Der gemerkte Zustand des Umschalters. Vorgabe: an. */
+
+  /** Was der Viewer sich merkt: Zeitraum, Kerzenlaenge, Schalter, Durchschnitte.
+   *  Alles in EINEM Schreibvorgang je Feld - der Store ist die einzige Wahrheit
+   *  ueber die zuletzt gewaehlte Ansicht. */
+  function vwMerken() {
+    if (!window.api || typeof window.api.storeSet !== 'function') return;
+    try {
+      window.api.storeSet(VW_STORE_ZEITRAUM, VW.zeitraum);
+      window.api.storeSet(VW_STORE_KERZE, VW.kerze);
+      window.api.storeSet(VW_STORE_SCHALTER, { sig: sigAn, ind: indAn, ma: VW.ma });
+    } catch (e) { /* ohne Speicher bleibt es bei der Vorgabe */ }
+  }
+  /* Der gemerkte Zustand. Vorgaben: regulaere Sitzung an, 1 Jahr in Tageskerzen. */
   (function () {
     if (!window.api || typeof window.api.storeGet !== 'function') return;
     window.api.storeGet(VW_STORE).then(function (v) {
@@ -1577,7 +1700,36 @@
       var nr = document.getElementById('vwNurRegulaer');
       if (nr) nr.checked = VW.nurRegulaer;
     }).catch(function () { /* ohne Speicher bleibt es bei der Vorgabe */ });
+    window.api.storeGet(VW_STORE_ZEITRAUM).then(function (v) {
+      if (!KC() || KC().ZEITRAEUME.indexOf(v) < 0) return;
+      VW.zeitraum = v;
+      return window.api.storeGet(VW_STORE_KERZE);
+    }).then(function (k) {
+      if (!KC()) return;
+      /* Eine gemerkte Kerze, die zum gemerkten Zeitraum nicht passt, wird NICHT
+       * uebernommen - sonst startet der Viewer in einem Zustand, den seine eigene
+       * Ausgrau-Regel verbietet. */
+      VW.kerze = KC().kerzeFuer(VW.zeitraum, KC().KERZEN.indexOf(k) >= 0 ? k : null);
+      vwWahlZeichnen();
+    }).catch(function () { /* ohne Speicher bleibt es bei der Vorgabe */ });
+    window.api.storeGet(VW_STORE_SCHALTER).then(function (s) {
+      if (!s || typeof s !== 'object') return;
+      Object.keys(s.sig || {}).forEach(function (k) { if (SIGNALE[k]) sigAn[k] = !!s.sig[k]; });
+      Object.keys(s.ind || {}).forEach(function (k) { if (INDIKATOREN[k]) indAn[k] = !!s.ind[k]; });
+      Object.keys(s.ma || {}).forEach(function (k) { if (VW.ma[k] !== undefined) VW.ma[k] = !!s.ma[k]; });
+      vwSchalterZeichnen();
+    }).catch(function () { /* ohne Speicher bleibt es bei der Vorgabe */ });
   })();
+  /** Die Haekchen auf den gemerkten Stand bringen. */
+  function vwSchalterZeichnen() {
+    var el = document.getElementById('vwEinblenden');
+    if (el) {
+      el.querySelectorAll('input[data-sig]').forEach(function (cb) { cb.checked = !!sigAn[cb.getAttribute('data-sig')]; });
+      el.querySelectorAll('input[data-ind]').forEach(function (cb) { cb.checked = !!indAn[cb.getAttribute('data-ind')]; });
+    }
+    var l = document.getElementById('vwLeiste');
+    if (l) l.querySelectorAll('input[data-ma]').forEach(function (cb) { cb.checked = !!VW.ma[cb.getAttribute('data-ma')]; });
+  }
 
   /* Der Kurs fuer Kopf und laufende Kerze kommt aus DERSELBEN Sammelrunde wie die
    * Marktkarte (window.Marktwerte.quotesHolen). Ein eigener Abruf je geoeffnetem Wert
@@ -1598,8 +1750,13 @@
    *  aufgerufen; die Reihenfolge ist Absicht: erst zeichnen, was ohne Netz geht. */
   function vwOeffnen() {
     vwBauen();
+    vwSchalterZeichnen();
     vwArchivKarte.fuer = null;
-    VW.fensterBis = null;
+    VW.fensterVon = null;
+    VW.fensterN = vwFensterVorgabe();
+    VW.nachgeladen = '';
+    VW.punkte = [];
+    GEWAEHLT = null;
     VW.tages = null;
     vwBelegstand();
     vwKopfZeichnen();
