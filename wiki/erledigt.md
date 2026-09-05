@@ -11,6 +11,8 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 05.09. | Viewer 8b — Chart-Einstellungen | Dialog mit vier Reitern über den Dialogstapel, reines Modul mit 41 Feldern, 0 tote Felder, Farbwechsel am Canvas gemessen, Kontrast beider Themen; 273 Klinken, 15 Gegenproben; 205k/300k | `uebergabe/viewer-8b-2026-09-05.md` |
+| 05.09. | Viewer 8a — Reparatur und Grundbedienung | Zeitraum × Kerze, Maus-Zoom, MA über die ganze Reihe (260/260 statt 61/260), Signale im Kerzenchart, Fußzeile ein Satz; 75 Klinken, 10 Gegenproben; 215k/300k | `uebergabe/viewer-8a-2026-09-05.md` |
 | 04.09. | Oberfläche Stufe 7 — Schein-Finder | Zwei Karten, acht Listen mit Bereichen, drei gemessene Voreinstellungen, Live-Filter, sieben Spalten + Schalter, Stufen-Pillen; reines Modul `scheinwahl.js`; 98 Klinken, 8 Gegenproben; 210k/250k | `uebergabe/scheinfinder-ui-2026-09-04.md` |
 | 04.09. | Belegwort, Einheiten, verwaister Eintrag, Nachbilden (FA2/U4/U5/U6/FA1) | „belegt" → „gemessen" + Belegwort-Sperrklinke über alle Module (0 Fehlalarme); Nachbilden-Knopf nur bei Scheinen; 16 → 9 Blöcke > 240; 13 Gegenproben; 370k/200k | `uebergabe/belegwort-nachbilden-2026-09-04.md` |
 | 04.09. | Dialoge in Ordnung (B1/U1/U2) | `dialogstapel.js`, Rückweg je Dialog, Titel 1.240 → 21; Dialog-Sonde repariert und mit Ketten + Positivkontrolle: 8 → 0 Befunde; 285k/250k | `uebergabe/dialoge-2026-09-04.md` |

@@ -98,6 +98,9 @@ tags: [lehre]
 
 ## Werkzeug-eigene Fallen
 
+- **`git worktree remove` folgt der Junction.** Ein Wegwerf-Worktree mit `node_modules` als Junction: das Entfernen brach mit „Filename too long" ab — nachdem es durch die Junction `node_modules/.bin` des ECHTEN Repos gelöscht hatte. Junction vor dem Entfernen lösen (`rmdir` auf den Link, nicht `rm -rf`). *Fundstelle: `uebergabe/viewer-8a-2026-09-05.md` §7.*
+- **`window.prompt` gibt es in Electron nicht** — der Knopf tut nichts und sieht aus wie ein Knopf. *Fundstelle: `viewer-8b` §5.3.*
+- **Die Kunst-Reihe war eine Gerade.** Kein Detektor schlug je an; die Probe „Signal-Schalter → Marken" wäre grün gewesen, ohne eine Marke gesehen zu haben. Kunstdaten müssen die Fälle enthalten, die die Probe behauptet. *Fundstelle: `viewer-8a` §2.4.*
 - **Heredocs fressen Backslashes — zum vierten Mal in einer Nacht.** `/\s+/g` kam als `/s+/g` im Renderer an und löschte jedes „s" aus einer Messung („Wa hat gewirkt?"); ein anderer Heredoc brach mitten in der Datei ab; ein Regex verlor beim Einbetten in eine Zeichenkette seine Fluchtzeichen (NaN statt Pixel). Drei Übergaben in Folge meldeten es. **Regel: Skripte mit regulären Ausdrücken werden mit dem Datei-Werkzeug geschrieben, nie über einen bash-Heredoc; Patch-Skripte ebenso.** Aufgefallen ist es an den Namen, nicht an einem Fehler.
 - **Electron-Pfad ohne Anführungszeichen in Bash:** `tools\ui-probe.js` wird zu `toolsui-probe.js`, Electron startet und **hängt ohne Fehlerzeile**. Schrägstrich oder Anführungszeichen. (Voll-QS 04.09., drei verlorene Läufe.)
 - **Windows unterscheidet keine Groß-/Kleinschreibung in Dateinamen:** ein Teilbericht `regeln.md` überschrieb die Steuerdatei `REGELN.md`, während vier Agenten liefen.
