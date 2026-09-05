@@ -1050,12 +1050,22 @@
     ctx.save();
     ctx.fillStyle = f.text || FARBEN.text;
     ctx.font = '10px system-ui, sans-serif';
-    (o.schwellen || []).forEach(function (s) {
-      if (zahl(s)) ctx.fillText(String(s), breite - rechts + 4, Y(s) + 3);
-    });
+    /* Die Zahlen an der Skala sind abschaltbar (Einstellung "Indikatorwerte an der
+     * Skala", 8b). Die LINIEN bleiben: sie sind die Struktur des Indikators - eine
+     * RSI-Spur ohne die 30er- und 70er-Marke waere eine andere Anzeige, keine
+     * aufgeraeumte. Weg gehen nur die Zahlen daneben. Der NAME der Spur bleibt
+     * ebenfalls stehen; eine unbeschriftete Kurve unter dem Chart ist ein Raetsel. */
+    var beschriftet = 0;
+    if (o.beschriftung !== false) {
+      (o.schwellen || []).forEach(function (s) {
+        if (!zahl(s)) return;
+        beschriftet++;
+        ctx.fillText(String(s), breite - rechts + 4, Y(s) + 3);
+      });
+    }
     if (o.name) ctx.fillText(String(o.name), links + 2, oben + 10);
     ctx.restore();
-    return { punkte: punkte, schwellen: (o.schwellen || []).length };
+    return { punkte: punkte, schwellen: (o.schwellen || []).length, beschriftet: beschriftet };
   }
 
   var KerzenChart = {

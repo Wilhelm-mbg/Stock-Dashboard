@@ -18708,9 +18708,28 @@ console.log('\n81) Chart-Einstellungen: ein Dialog, eine Quelle der Vorgaben');
   ok(!/Date\.now\s*\(\)|Math\.random/.test(ohneK),
      '81.1 keine Uhr und kein Zufall im Modul - die Uhr kommt herein');
 
-  /* --- 81.2 Die Vorgaben stehen an EINER Stelle --- */
-  var dlgCE = htmlCE.slice(htmlCE.indexOf('id="chartSetModalBg"'), htmlCE.indexOf('id="chartSetModalBg"') + 12000);
-  ok(dlgCE.indexOf('id="chartSetModalBg"') === 0, '81.2 der Dialog steht im Markup');
+  /* --- 81.2 Die Vorgaben stehen an EINER Stelle ---
+   *
+   * Geschnitten wird von der Dialog-Kennung bis zum naechsten Block, NICHT ueber eine
+   * feste Zeichenzahl. Die erste Fassung nahm 12.000 Zeichen: der Dialog ist 1.341
+   * lang, die uebrigen 10.659 waren die Skriptliste am Dateiende. Sie war gruen und
+   * hat zu zwei Dritteln etwas anderes gemessen - dieselbe Form wie die Klinke, die
+   * ein fremdes `data-zeitraum` im Reiter Markt ansah (Abschnitt 80).
+   *
+   * Der Schnitt selbst wird geprueft: findet der Anker nichts, schnitte indexOf bei
+   * -1 bis zum Dateianfang, und die Zusicherung waere wieder eine ueber die ganze
+   * Datei. */
+  var dlgVon = htmlCE.indexOf('<div class="modal-bg" id="chartSetModalBg">');
+  var dlgBis = htmlCE.indexOf('<div id="tip">', dlgVon);
+  ok(dlgVon > 0, '81.2 der Dialog steht im Markup', dlgVon);
+  ok(dlgBis > dlgVon, '81.2 und sein Block laesst sich bis zum naechsten schneiden', dlgBis - dlgVon);
+  var dlgCE = htmlCE.slice(dlgVon, dlgBis);
+  ok(dlgCE.length < 3000,
+     '81.2 der Schnitt misst den DIALOG, nicht den Rest der Datei', dlgCE.length + ' Zeichen');
+  ok(/id="csOk"/.test(dlgCE) && /id="csReiter"/.test(dlgCE) && !/<script /.test(dlgCE),
+     '81.2 ... er enthaelt den ganzen Dialog und nichts dahinter');
+  gegen81('der alte Schnitt ueber 12.000 Zeichen haette die Skriptliste mitgemessen',
+          /<script /.test(htmlCE.slice(dlgVon, dlgVon + 12000)));
   ok(!/<input[^>]*\bvalue="[0-9#]/.test(dlgCE),
      '81.2 kein Eingabefeld des Dialogs traegt eine Zahl oder Farbe als Vorgabe');
   ok(!/#[0-9a-fA-F]{6}/.test(dlgCE), '81.2 und keine Hex-Farbe steht im Markup des Dialogs');
@@ -19106,6 +19125,74 @@ console.log('\n81) Chart-Einstellungen: ein Dialog, eine Quelle der Vorgaben');
   });
   gegen81('ein Feld auf einen erfundenen Pfad wuerde auffallen',
           alleFelder81.indexOf('skala.gibtesnicht') < 0);
+
+  /* --- 81.14b Jeder Schalter WIRKT auch ---
+   *
+   * 81.14 haelt die Zuordnung: jede Einstellung hat ein Feld, jedes Feld eine
+   * Einstellung. Das ist NICHT dasselbe wie "der Schalter tut etwas". Beim
+   * Nachmessen waren zwei von 33 nirgends gelesen - `skala.indikatorWerte` und
+   * `skala.bidAsk`. Beide standen im Dialog, beide liessen sich umlegen, und beide
+   * bewirkten nichts. Genau das ist der Fund "sechs tote Schalter" aus dem UI-Audit,
+   * nur in neu.
+   *
+   * Gesucht wird der VOLLE PFAD (`skala.indikatorWerte`), nicht der Blattname:
+   * `indikatorWerte` gibt es zweimal, unter `skala` und unter `statuszeile`. Wer nur
+   * das Blatt sucht, findet den einen und haelt den anderen fuer lebendig - dieser
+   * Test war in seiner ersten Fassung selbst so gebaut und meldete "kein toter
+   * Schalter", waehrend zwei tot waren. */
+  var kcCE = ohneKommentare(fs.readFileSync('markt/kerzenchart.js', 'utf8'));
+  var modWirkung81 = ohneKommentare(quelleCE).slice(ohneKommentare(quelleCE).indexOf('function lies('));
+  /* `symbol`, `skala` und `zeit` werden ueber den vollen Pfad gelesen
+   * (`voll.skala.modus`, `ein.skala.modus`, `e.zeit.linkenRandBehalten`). Gesucht
+   * wird deshalb ".gruppe.blatt" - NICHT der Blattname allein: `indikatorWerte` gibt
+   * es zweimal, unter `skala` und unter `statuszeile`. Wer nur das Blatt sucht,
+   * findet den einen und haelt den anderen fuer lebendig. Genau so war die erste
+   * Fassung dieser Klinke gebaut, und genau so hat sie zwei tote Schalter
+   * uebersehen. */
+  function gelesen81(pfad) {
+    var t = pfad.split('.');
+    var re = new RegExp('\\.' + t[0] + '\\.' + t[1] + '\\b');
+    return re.test(modWirkung81) || re.test(expCE) || re.test(kcCE);
+  }
+  /* `statuszeile` und `ereignisse` werden im Modul ueber eine Abkuerzung gelesen
+   * (`var z = voll.statuszeile`, `var g = voll.ereignisse`). Dort wird deshalb im
+   * KOERPER der jeweiligen Funktion gesucht - eng genug, dass ein fremdes Vorkommen
+   * nicht mitzaehlt. */
+  function rumpf81(name, bis) {
+    var von = modWirkung81.indexOf('function ' + name + '(');
+    if (von < 0) return '';
+    var ende = modWirkung81.indexOf('function ' + bis + '(', von);
+    return modWirkung81.slice(von, ende > von ? ende : von + 4000);
+  }
+  var rumpfStatus81 = rumpf81('statuszeile', 'statuszeileGrund') + rumpf81('statuszeileGrund', 'datumAus');
+  var rumpfEreig81 = rumpf81('marken', 'markenStand') + rumpf81('markenStand', 'optionen');
+  var ohneWirkung81 = [];
+  CE.FELDER.forEach(function (f) {
+    if (f.art === 'farbe') return;
+    var gruppe = f.pfad.split('.')[0], blatt = f.pfad.split('.')[1];
+    var re = new RegExp('\\b' + blatt + '\\b');
+    var lebt;
+    if (gruppe === 'statuszeile') lebt = re.test(rumpfStatus81) || gelesen81(f.pfad);
+    else if (gruppe === 'ereignisse') lebt = re.test(rumpfEreig81) || gelesen81(f.pfad);
+    else lebt = gelesen81(f.pfad);
+    if (!lebt) ohneWirkung81.push(f.pfad);
+  });
+  ok(ohneWirkung81.length === 0,
+     '81.14b jeder Schalter wird auch AUSGEWERTET - kein toter Schalter',
+     ohneWirkung81.join(', ') || (CE.FELDER.length - 8) + ' Schalter und Listen geprueft');
+  /* Die zwei, die beim Nachmessen wirklich tot waren - namentlich festgehalten,
+   * damit sie es nicht wieder werden. `skala.indikatorWerte` schaltet die Zahlen an
+   * der Indikator-Spur, `skala.bidAsk` die Geld-/Brief-Zeile. */
+  ok(/\.skala\.indikatorWerte\b/.test(expCE) && /beschriftung !== false/.test(kcCE),
+     '81.14b "Indikatorwerte an der Skala" schaltet die Zahlen der Indikator-Spur');
+  ok(/\.skala\.bidAsk\b/.test(expCE) && /vwBidAskZeichnen/.test(expCE),
+     '81.14b "Geld-/Briefkurs" schaltet eine Zeile, nicht nur sich selbst');
+  gegen81('ein Pfad, den es nirgends gibt, wuerde als tot gemeldet',
+          !gelesen81('skala.gibtesnicht'));
+  gegen81('der Blattname allein haette den toten Schalter uebersehen - es gibt ihn zweimal',
+          CE.FELDER.filter(function (f) {
+            return f.pfad && f.pfad.split('.')[1] === 'indikatorWerte';
+          }).length === 2);
 
   /* --- 81.15 Der Dialog geht ueber den Stapel und kennt keine Farbe selbst --- */
   var csQ = ohneKommentare(fs.readFileSync('chartset.js', 'utf8'));

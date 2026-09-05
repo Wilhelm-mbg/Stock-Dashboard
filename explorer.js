@@ -942,6 +942,56 @@
     return aus;
   }
 
+  /* ---- Geld-/Briefkurs (8b) ----
+   *
+   * KEIN ABRUF OHNE ZUGANG. Ist der Schalter aus oder kein Alpaca-Zugang
+   * eingerichtet, wird nichts geholt und die Zeile bleibt verborgen - der Grund
+   * steht im Dialog neben dem ausgegrauten Schalter, nicht hier als leere Zeile.
+   *
+   * MIT Zugang: hoechstens ein Abruf je BIDASK_TAKT. Ein Kurs je Neuzeichnen waere
+   * ein Abruf je Mausbewegung ueber dem Chart.
+   *
+   * Die Beschriftung nennt den FEED (markt/charteinstellungen.js). Der Gratis-Feed
+   * 'iex' ist nicht verzoegert, sondern unvollstaendig - "15 Min verzoegert" waere
+   * fuer ihn schlicht falsch. */
+  var BIDASK_TAKT = 60000;
+  function vwBidAskZeichnen() {
+    var e = document.getElementById('vwBidAsk');
+    if (!e) return;
+    var ein = vwEinst();
+    var zugang = !!(window.AlpAPI && window.AlpAPI.enabled && window.AlpAPI.enabled());
+    if (!ein || !ein.skala.bidAsk || !zugang) { e.hidden = true; e.textContent = ''; return; }
+    e.hidden = false;
+    var q = VW.bidAsk;
+    var beschriftung = CE() ? CE().bidAskBeschriftung(window.AlpAPI.FEED) : '';
+    if (q && q.sym === (CUR && CUR.sym) && q.bid != null) {
+      e.textContent = 'Geld ' + U.nf2.format(q.bid) + ' · Brief ' + U.nf2.format(q.ask) +
+        ' · Spanne ' + (q.spreadPct != null ? (q.spreadPct * 100).toFixed(3).replace('.', ',') + ' %' : '–') +
+        ' · ' + beschriftung;
+    } else {
+      e.textContent = (q && q.grund) ? (q.grund + ' · ' + beschriftung) : ('Geld/Brief wird geholt … · ' + beschriftung);
+    }
+    vwBidAskHolen();
+  }
+  async function vwBidAskHolen() {
+    var ein = vwEinst();
+    if (!ein || !ein.skala.bidAsk || !CUR) return;
+    if (!(window.AlpAPI && window.AlpAPI.enabled && window.AlpAPI.enabled())) return;
+    if (VW.bidAskLaeuft) return;
+    if (VW.bidAsk && VW.bidAsk.sym === CUR.sym && Date.now() - VW.bidAsk.at < BIDASK_TAKT) return;
+    VW.bidAskLaeuft = true;
+    var sym = CUR.sym;
+    var q = null;
+    try { q = await window.AlpAPI.quote(sym); } catch (err) { q = null; }
+    VW.bidAskLaeuft = false;
+    if (sym !== (CUR && CUR.sym)) return;
+    VW.bidAsk = q
+      ? { sym: sym, bid: q.bid, ask: q.ask, spreadPct: q.spreadPct, at: Date.now() }
+      : { sym: sym, bid: null, at: Date.now(),
+          grund: (window.AlpAPI.lastPriceError && window.AlpAPI.lastPriceError()) || 'Kein Geld-/Briefkurs verfügbar' };
+    vwBidAskZeichnen();
+  }
+
   /* ---- Ereignisse am Chart (8b): Dividende, Split, Quartalszahlen, Nachricht ----
    *
    * KEINE NEUE QUELLE. Die Kapitalmassnahmen liest die Leseauskunft
@@ -1068,6 +1118,7 @@
     vwAchsen(ctx, sk, s.kerzen, f, ein);
     vwSpurZeichnen(s, f);
     vwQuelleZeichnen(s, bs);
+    vwBidAskZeichnen();
     vwSignalListe();
   }
 
@@ -1303,9 +1354,12 @@
     for (var i = 0; i < closes.length; i++) {
       reihe.push(i < 14 ? null : window.Quant.rsi(closes.slice(0, i + 1), 14));
     }
-    KC().spurZeichnen(ctx, reihe.slice(s.fenster.von, s.fenster.bis + 1),
+    var einSpur = vwOptionen();
+    VW.spur = KC().spurZeichnen(ctx, reihe.slice(s.fenster.von, s.fenster.bis + 1),
       { breite: breite, hoehe: hoehe },
-      { name: 'RSI 14', schwellen: [30, 70], tief: 0, hoch: 100, farbe: f.ma20, farben: f });
+      { name: 'RSI 14', schwellen: [30, 70], tief: 0, hoch: 100, farbe: f.ma20, farben: f,
+        /* "Indikatorwerte an der Skala" (8b) - die Zahlen neben der Spur. */
+        beschriftung: einSpur ? einSpur.skala.indikatorWerte : true });
   }
 
   /* Ein graues Band ohne Wort ist ein grauer Fleck. Beschriftet wird nur, was breit
