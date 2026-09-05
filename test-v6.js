@@ -18628,6 +18628,28 @@ console.log('\n80) Aktien-Viewer 8a: Zeitraum und Kerze getrennt, Zoom, Signale 
   ok(/b\.disabled = !u\.ok;/.test(exp8) && /b\.setAttribute\('title', u\.grund\)/.test(exp8),
      '80.13 der gesperrte Knopf traegt seinen Grund als Tooltip');
 
+  /* --- 80.15 Uebergabepunkt an die Zeichenwerkzeuge (8c) ---
+   * Ziehen und Doppelklick sind in 8a belegt (blaettern, Zoom zurueck) und in 8c
+   * ebenfalls (Griff verschieben, Pinselzug beenden). Damit 8c die frische
+   * Maus-Bedienung nicht aufschneiden muss, fragen beide Gesten EIN Feld ab.
+   *
+   * Hier steht nur, dass die Abfragen da sind - das VERHALTEN misst die
+   * Oberflaechen-Probe (viewerPruefen: Feld setzen, ziehen, doppelklicken, das
+   * Fenster muss stehen bleiben; Gegenprobe mit false). explorer.js ist in Node
+   * nicht ladbar, eine Verhaltensklinke kann hier also gar nicht stehen. */
+  ok(/werkzeugAktiv: false/.test(exp8),
+     '80.15 der Uebergabepunkt ist deklariert und steht auf false - 8a setzt ihn nie selbst');
+  ok(/function vwZiehenStart\(ev\) \{[\s\S]{0,400}if \(VW\.werkzeugAktiv\) return;/.test(exp8),
+     '80.15 Ziehen fragt ihn ab, bevor es blaettert');
+  ok(/function vwZurueck\(ev\) \{\n *if \(ev && VW\.werkzeugAktiv\) return;/.test(exp8),
+     '80.15 der Doppelklick auch - der Knopf ↺ ruft ohne Ereignis auf und bleibt frei');
+  /* Und der Knopf ruft wirklich ohne Ereignis auf, sonst spraeche die Ausnahme ins Leere. */
+  ok(/if \(was === 'zurueck'\) \{ vwZurueck\(\); return; \}/.test(exp8),
+     '80.15 ... und ruft vwZurueck() ohne Argument - der ↺-Knopf haengt nicht am Werkzeug');
+  gegen80('ohne die Abfrage im Ziehen bliebe die Geste doppelt belegt - die Klinke sucht sie im Rumpf, nicht irgendwo in der Datei',
+     /function vwZiehenStart\(ev\) \{[\s\S]{0,400}if \(VW\.werkzeugAktiv\) return;/.test(exp8) &&
+     !/function vwZiehenBewegen\(x\) \{[\s\S]{0,200}werkzeugAktiv/.test(exp8));
+
   ok(g80 === rot80, '80.14 alle Gegenproben dieses Abschnitts schlagen an', rot80 + ' von ' + g80);
 })();
 

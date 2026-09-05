@@ -448,7 +448,14 @@
     letzterLauf: 0,
     tages: null,           // Tagesreihe aus dem eigenen Archiv (Volumen-Median)
     punkte: [],            // Signale ueber die GELADENE Reihe - nicht je Fenster
-    nachgeladen: ''        // Grund, falls der Zeitraum von selbst gewachsen ist
+    nachgeladen: '',       // Grund, falls der Zeitraum von selbst gewachsen ist
+    /* Uebergabepunkt an die Zeichenwerkzeuge (8c): solange ein Werkzeug die Maus
+     * haelt, gehoeren Ziehen und Doppelklick ihm, nicht dem Blaettern. Hier ist der
+     * Wert immer false - gesetzt wird er von der Werkzeugleiste, wenn es sie gibt.
+     * Es ist KEIN toter Schalter: die Oberflaechen-Probe (viewerPruefen) setzt das
+     * Feld selbst, zieht am Chart und misst, dass das Fenster dann stehen bleibt -
+     * mit Gegenprobe bei false. Verhalten, nicht Vorkommen. */
+    werkzeugAktiv: false
   };
   var VW_STORE = 'viewerNurRegulaer';
   var VW_STORE_ZEITRAUM = 'viewerZeitraum';
@@ -598,8 +605,14 @@
     });
   }
 
-  /** Zoom auf den Zeitraum zuruecksetzen - das ist der Doppelklick und der ↺-Knopf. */
-  function vwZurueck() {
+  /** Zoom auf den Zeitraum zuruecksetzen - das ist der Doppelklick und der ↺-Knopf.
+   *
+   *  Der Doppelklick tritt sich mit einem Zeichenwerkzeug (8c) auf die Fuesse: dort
+   *  beendet er einen Pinselzug. Solange `VW.werkzeugAktiv` gesetzt ist, gehoert die
+   *  Geste dem Werkzeug - der Knopf ↺ bleibt davon unberuehrt, er ruft `vwZurueck`
+   *  ohne Ereignis auf. */
+  function vwZurueck(ev) {
+    if (ev && VW.werkzeugAktiv) return;
     VW.fensterVon = null;
     VW.fensterN = vwFensterVorgabe();
     VW.nachgeladen = '';
@@ -793,10 +806,44 @@
   }
 
   /* ---- Zeichnen ---- */
+  /* ---- Chart-Einstellungen (8b) ----
+   *
+   * Das reine Modul liefert die Vorgaben, der Dialog (chartset.js) haelt den
+   * Stand. Hier steht NUR die Frage danach - keine Vorgabe, keine Farbe, kein
+   * Format. Fehlt das Modul (aelteres Paket), faellt alles auf die Vorgaben aus
+   * KerzenChart.FARBEN zurueck und der Viewer zeichnet wie vor 8b. */
+  function CE() { return window.ChartEinstellungen || null; }
+  function vwEinst() {
+    if (window.ChartSet && typeof window.ChartSet.stand === 'function') return window.ChartSet.stand();
+    return CE() ? CE().vorgabe() : null;
+  }
+  /** Welches Thema laeuft gerade? Der Farbsatz haengt daran - eine Farbe kann
+   *  nicht auf hellem UND dunklem Grund lesbar sein (die Rechnung steht im Kopf
+   *  von markt/charteinstellungen.js). */
+  function vwThema() {
+    var w = document.documentElement.getAttribute('data-theme');
+    if (w === 'dunkel' || w === 'dark') return 'dunkel';
+    if (w === 'hell' || w === 'light') return 'hell';
+    /* Kein Attribut: an der gemessenen Grundhelligkeit entscheiden, nicht raten. */
+    try {
+      var g = getComputedStyle(document.body).backgroundColor;
+      var m = String(g).match(/(\d+),\s*(\d+),\s*(\d+)/);
+      if (m) return (Number(m[1]) + Number(m[2]) + Number(m[3])) / 3 < 128 ? 'dunkel' : 'hell';
+    } catch (e) { /* ohne Messung bleibt es hell */ }
+    return 'hell';
+  }
+  /** Die Zeichenoptionen aus den Einstellungen - EIN Aufruf, damit nicht zwei
+   *  Stellen dieselbe Ableitung machen. */
+  function vwOptionen(zusatz) {
+    var c = CE(), e = vwEinst();
+    if (!c || !e) return null;
+    return c.optionen(e, Object.assign({ thema: vwThema() }, zusatz || {}));
+  }
+
   function vwFarben() {
     var s = getComputedStyle(document.documentElement);
     function v(name, ersatz) { var x = s.getPropertyValue(name); return (x && x.trim()) || ersatz; }
-    return {
+    var f = {
       auf: v('--up', '#16a34a'), ab: v('--down', '#dc2626'),
       band: 'rgba(148,163,184,0.13)', umsatz: 'rgba(148,163,184,0.5)',
       gitter: 'rgba(148,163,184,0.22)',
@@ -807,6 +854,13 @@
       zone20: v('--baseline', '#64748b'), zone60: v('--muted', '#94a3b8'),
       kanal: v('--series4', '#0ea5e9'), acc: v('--acc', '#2563eb')
     };
+    /* Die Farben, die der Nutzer einstellen kann, kommen aus den EINSTELLUNGEN und
+     * ueberschreiben die Semantikfarben. Alles Uebrige (Gitter, Umsatz, Baender,
+     * Kanaele, Durchschnitte) bleibt am Thema haengen - das sind keine
+     * Einstellungen, und eine Wahl ohne Frage dahinter waere keine. */
+    var o = vwOptionen();
+    if (o && o.farben) Object.keys(o.farben).forEach(function (k) { f[k] = o.farben[k]; });
+    return f;
   }
   var VW_MA_FARBE = { 20: 'ma20', 50: 'ma50', 200: 'ma200' };
 
@@ -905,7 +959,17 @@
       return;
     }
     if (hin) hin.textContent = '';
-    var sk = KC().skala(s.kerzen, { breite: breite, hoehe: hoehe });
+    var ein = vwOptionen({ intervallMs: KC().INTERVALL_MS[VW.kerze] || null });
+    /* Der Skalenmodus geht in die SKALA, nicht in den Zeichner: er entscheidet,
+     * WO ein Kurs liegt, nicht wie er aussieht. Der Platz rechts/links haengt an
+     * der Platzierung - steht die Achse links, braucht das Kursfeld dort Rand. */
+    var pl = ein ? ein.skala.platzierung : 'rechts';
+    var sk = KC().skala(s.kerzen, {
+      breite: breite, hoehe: hoehe,
+      modus: ein ? ein.skala.modus : 'linear',
+      links: pl === 'links' || pl === 'beide' ? 56 : 8,
+      rechts: pl === 'links' ? 10 : 64
+    });
     if (!sk) return;
     VW.skala = sk;
     VW.sichtbar = s;
@@ -915,14 +979,30 @@
     var marken = vwMarken(s.kerzen);
     /* Das Ergebnis des Zeichnens bleibt stehen - die Oberflaechen-Probe kann sonst
      * nur pruefen, dass ein Canvas Breite hat, nicht WAS darauf steht. */
+    var q = vwQuote();
+    var letzte = s.kerzen[s.kerzen.length - 1];
     VW.gezeichnet = KC().zeichnen(ctx, s.kerzen, sk, {
       farben: f, baender: bs, linien: linien, kreuz: VW.kreuz,
-      marken: marken, umsatz: indAn.volumen !== false
+      marken: marken, umsatz: indAn.volumen !== false,
+      darstellung: ein ? ein.darstellung : 'kerzen',
+      nachVortag: ein ? ein.nachVortag : false,
+      /* Die Kurslinie sitzt auf dem letzten SICHTBAREN Schluss - nicht auf dem
+       * Live-Kurs: der gehoert zur ausserboerslichen Linie, und zwei Linien mit
+       * derselben Bedeutung waeren eine zu viel. */
+      kurslinie: ein && ein.kurslinie && letzte
+        ? { wert: letzte[1], farbe: ein.kurslinie.farbe, muster: ein.kurslinie.muster } : null,
+      /* Der vor-/nachboersliche Kurs kommt aus den Quotes (Stufe 6), nicht aus den
+       * Kerzen - dort gibt es ihn oft noch gar nicht. Fehlt er, wird nichts
+       * gezeichnet statt eine Linie auf dem Schluss zu behaupten. */
+      ausserboerslichLinie: ein && ein.ausserboerslichLinie && q && (q.vorboerse != null || q.nachboerse != null)
+        ? { wert: q.nachboerse != null ? q.nachboerse : q.vorboerse, farbe: ein.ausserboerslichLinie.farbe } : null,
+      hochTief: !!(ein && ein.skala.hochTief),
+      ereignisse: vwEreignisMarken(s)
     });
     vwZonenZeichnen(ctx, sk, s.kerzen, f);
     vwKanaeleZeichnen(ctx, sk, s.kerzen, f);
     vwBandBeschriften(ctx, sk, bs, f);
-    vwAchsen(ctx, sk, s.kerzen, f);
+    vwAchsen(ctx, sk, s.kerzen, f, ein);
     vwSpurZeichnen(s, f);
     vwQuelleZeichnen(s, bs);
     vwSignalListe();
@@ -1182,26 +1262,89 @@
   /* Kurs- und Zeitachse. Die Zeit steht in New Yorker Zeit - der Wert wird dort
    * gehandelt, und eine deutsche Uhrzeit auf einer US-Sitzung waere eine
    * Umrechnung, die niemand im Kopf hat. */
-  function vwAchsen(ctx, sk, kerzen, f) {
+  function vwAchsen(ctx, sk, kerzen, f, ein) {
+    var c = CE(), e = vwEinst();
     ctx.save();
     ctx.fillStyle = f.kreuz;
     ctx.font = '10px system-ui, sans-serif';
     ctx.textAlign = 'left';
+    /* Die Kursbeschriftung. WIE eine Zahl aussieht - Stellen, Einheit, Prozent -
+     * entscheidet markt/charteinstellungen.js; hier steht nur, WO sie hinkommt.
+     * Die Basis fuer den Prozentmodus ist der erste sichtbare Schluss: "seit dem
+     * linken Rand". */
+    var basis = kerzen.length ? kerzen[0][1] : null;
+    var kurse = kerzen.map(function (k) { return k && k[1]; });
+    var pl = ein ? ein.skala.platzierung : 'rechts';
+    var seiten = pl === 'beide' ? ['rechts', 'links'] : [pl];
+    /* KEINE UEBERLAPPENDEN BESCHRIFTUNGEN: eine Beschriftung wird nur gesetzt, wenn
+     * sie mindestens eine Zeilenhoehe von der letzten entfernt ist. Bei einem
+     * flachen Bild lagen sonst fuenf Zahlen uebereinander. */
+    var mindest = ein && ein.skala.keineUeberlappung ? 12 : 0;
+    var gesetzt = [];
     for (var i = 0; i <= 4; i++) {
       var v = sk.tief + (sk.hoch - sk.tief) * i / 4;
-      ctx.fillText(U.nf2.format(v), sk.breite - sk.rechts + 4, sk.y(v) + 3);
+      var y = sk.y(v) + 3;
+      var frei = gesetzt.every(function (g) { return Math.abs(g - y) >= mindest; });
+      if (!frei) continue;
+      gesetzt.push(y);
+      var txt = c && e ? c.preisText(v, e, { einheit: vwEinheit(), kurs: kurse, basis: basis }) : U.nf2.format(v);
+      seiten.forEach(function (seite) {
+        if (seite === 'links') { ctx.textAlign = 'right'; ctx.fillText(txt, sk.links - 4, y); }
+        else { ctx.textAlign = 'left'; ctx.fillText(txt, sk.breite - sk.rechts + 4, y); }
+      });
+    }
+    ctx.textAlign = 'left';
+    /* Der COUNTDOWN zur naechsten Kerze - an der Kurslinie, und nur waehrend der
+     * Sitzung. Ausserhalb laeuft keine Kerze ab; eine mitzaehlende Zahl waere dort
+     * eine Behauptung ueber einen Handel, den es gerade nicht gibt. */
+    if (c && e && e.skala.countdown && kerzen.length) {
+      var iv = KC().INTERVALL_MS[VW.kerze];
+      var rest = c.countdown(Date.now(), iv, vwSitzungLaeuft());
+      if (rest != null) {
+        var ly = sk.y(kerzen[kerzen.length - 1][1]) + 3;
+        var ct = c.countdownText(rest);
+        ctx.save();
+        ctx.fillStyle = f.text;
+        if (pl === 'links') { ctx.textAlign = 'right'; ctx.fillText(ct, sk.links - 4, ly + 12); }
+        else { ctx.fillText(ct, sk.breite - sk.rechts + 4, ly + 12); }
+        ctx.restore();
+      }
     }
     /* Die Halte rechnet markt/kerzenchart.js - dort ist die Regel in Node pruefbar
      * und haengt an nichts, was auf dem Bildschirm steht (PM-Fund 04.09.2026:
-     * sechsmal "10:30" ueber drei Tage). */
+     * sechsmal "10:30" ueber drei Tage). Wie die Marke BESCHRIFTET wird (Wochentag,
+     * Datumsmuster, 12 Stunden, Zeitzone), sagen die Einstellungen. */
     var kc = KC();
     var marken = kc && kc.achsenBeschriftung
-      ? kc.achsenBeschriftung(kerzen, { intervallMs: kc.INTERVALL_MS[VW.kerze] || 86400000, zone: 'America/New_York' })
+      ? kc.achsenBeschriftung(kerzen, {
+        intervallMs: kc.INTERVALL_MS[VW.kerze] || 86400000,
+        zone: ein ? ein.achse.zone : 'America/New_York',
+        text: ein ? ein.achse.text : null
+      })
       : [];
     marken.forEach(function (m) {
       ctx.fillText(m.text, sk.x(m.i) - 18, sk.hoehe - 6);
     });
     ctx.restore();
+  }
+  /** Die Einheit an der Preisskala. Sie kommt aus den Stammdaten, wenn es sie gibt -
+   *  geraten wird nichts; ohne Angabe steht keine Einheit da. */
+  function vwEinheit() {
+    return (CUR && CUR.waehrung) || 'USD';
+  }
+  /** Laeuft gerade eine regulaere Sitzung? Dieselbe Rechnung wie ueberall sonst
+   *  (boerse.js + Quant.minutenSeitOeffnung) - keine zweite Zeitrechnung. */
+  function vwSitzungLaeuft() {
+    if (!window.Boerse || !window.Quant) return false;
+    var jetzt = Date.now();
+    var laenge = window.Boerse.sitzungsMinuten(jetzt);
+    return KC().sitzungAusMinuten(window.Quant.minutenSeitOeffnung(jetzt), laenge) === 'regulaer';
+  }
+  /** Die Quote-Antwort zum offenen Wert - oder null. Kein Abruf. */
+  function vwQuote() {
+    var MW = window.Marktwerte;
+    if (!MW || typeof MW.quote !== 'function' || !CUR) return null;
+    return MW.quote(CUR.sym);
   }
 
   /* DIE FUSSZEILE IST NIE STUMM - aber sie ist auch keine Textwand mehr.
@@ -1309,6 +1452,11 @@
     vwZoomen(ev.deltaY < 0, anteil);
   }
   function vwZiehenStart(ev) {
+    /* Ziehen blaettert - es sei denn, ein Zeichenwerkzeug (8c) haelt die Maus. Dort
+     * verschiebt dasselbe Ziehen den Griff einer Zeichnung, und beides zugleich
+     * hiesse: das Bild wandert unter der Linie weg, die man gerade zieht.
+     * `VW.werkzeugAktiv` setzt 8c; hier ist es die Vorgabe false. */
+    if (VW.werkzeugAktiv) return;
     if (!VW.sichtbar) return;
     var c = document.getElementById('vwChart');
     var r = c.getBoundingClientRect();

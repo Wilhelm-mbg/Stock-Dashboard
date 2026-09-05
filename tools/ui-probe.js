@@ -450,6 +450,44 @@ async function viewerPruefen(win, js) {
     funde.push('Viewer: schon eine blosse Mausbewegung blaettert - das Fadenkreuz verschiebt das Bild');
   }
 
+  /* ---- Der Uebergabepunkt an die Zeichenwerkzeuge (8c) ----
+   * Haelt ein Werkzeug die Maus, gehoeren Ziehen und Doppelklick ihm. Geprueft wird
+   * das VERHALTEN: Feld setzen, ziehen, doppelklicken - das Fenster muss stehen
+   * bleiben. Ohne diese Probe waere `werkzeugAktiv` ein Schalter, den niemand
+   * stellt und den niemand misst. */
+  const werkzeug = await js("(function () {" +
+    " var c = document.getElementById('vwChart');" +
+    " var r = c.getBoundingClientRect();" +
+    " var V = window.__viewer;" +
+    " var mitte = { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, bubbles: true };" +
+    " function ziehen() {" +
+    "   c.dispatchEvent(new MouseEvent('mousedown', mitte));" +
+    "   c.dispatchEvent(new MouseEvent('mousemove', { clientX: mitte.clientX + 140, clientY: mitte.clientY, bubbles: true }));" +
+    "   c.dispatchEvent(new MouseEvent('mouseup', mitte));" +
+    "   return V.sichtbar.fenster.von;" +
+    " }" +
+    " V.werkzeugAktiv = true;" +
+    " var vorher = V.sichtbar.fenster.von;" +
+    " var mitWerkzeug = ziehen();" +
+    " c.dispatchEvent(new MouseEvent('dblclick', mitte));" +
+    " var nachDoppelklick = V.sichtbar.fenster.von;" +
+    " V.werkzeugAktiv = false;" +
+    " var ohneWerkzeug = ziehen();" +
+    " return { vorher: vorher, mitWerkzeug: mitWerkzeug," +
+    "   nachDoppelklick: nachDoppelklick, ohneWerkzeug: ohneWerkzeug }; })()");
+  console.log('    Werkzeug haelt die Maus: Fensteranfang ' + werkzeug.vorher +
+    ' · ziehen ' + werkzeug.mitWerkzeug + ' · doppelklicken ' + werkzeug.nachDoppelklick +
+    ' · Werkzeug los, ziehen ' + werkzeug.ohneWerkzeug);
+  if (werkzeug.mitWerkzeug !== werkzeug.vorher || werkzeug.nachDoppelklick !== werkzeug.vorher) {
+    funde.push('Viewer: bei aktivem Zeichenwerkzeug blaettert/zoomt der Chart trotzdem (' +
+      werkzeug.vorher + ' -> ' + werkzeug.mitWerkzeug + '/' + werkzeug.nachDoppelklick + ')');
+  }
+  /* Gegenprobe: ohne Werkzeug muss dieselbe Geste wieder wirken - sonst haette die
+   * Klinke oben auch ein kaputtes Ziehen fuer "richtig gesperrt" gehalten. */
+  if (werkzeug.ohneWerkzeug === werkzeug.vorher) {
+    funde.push('Viewer: ohne Werkzeug blaettert das Ziehen nicht mehr - die Sperre haelt zu viel fest');
+  }
+
   /* ---- Signal-Schalter: werden wirklich Marken gezeichnet? ----
    * Die Kunst-Reihe traegt seit dem 05.09.2026 Bewegung; auf der alten Geraden
    * schlug kein Detektor an, und ein leerer Chart haette hier bestanden. */
