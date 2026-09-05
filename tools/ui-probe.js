@@ -361,15 +361,30 @@ async function viewerPruefen(win, js) {
    * 5J muss auf Wochenkerzen umstellen, 1M auf Stundenkerzen. Zwei verschiedene
    * Ziele: eine Klinke, die nur EINEN Wert prueft, koennte auch eine Konstante sein. */
   async function zeitraumKlick(wohin) {
+    const t0 = Date.now();
     await js("(function () { var b = document.querySelector('#vwZeitraum [data-zeitraum=\"" + wohin + "\"]'); if (b) b.click(); return 'ok'; })()");
-    await new Promise((r) => setTimeout(r, 2500));
-    return js("(function () { var V = window.__viewer || {};" +
-      " return { zeitraum: V.zeitraum, kerze: V.kerze, fest: (V.fest || []).length," +
-      "   quelle: (document.getElementById('vwQuelle') || {}).textContent || '' }; })()");
+    /* Gewartet wird auf das ERGEBNIS, nicht auf eine feste Zeit: sonst misst die
+     * Zahl unten die Wartepause und nicht das Laden. */
+    let fertig = null;
+    for (let i = 0; i < 60; i++) {
+      await new Promise((r) => setTimeout(r, 100));
+      fertig = await js("(function () { var V = window.__viewer || {};" +
+        " return { zeitraum: V.zeitraum, kerze: V.kerze, laeuft: !!V.laeuft, fest: (V.fest || []).length," +
+        "   quelle: (document.getElementById('vwQuelle') || {}).textContent || '' }; })()");
+      if (fertig.zeitraum === wohin && !fertig.laeuft && fertig.fest) break;
+    }
+    fertig.ms = Date.now() - t0;
+    return fertig;
   }
   const n5J = await zeitraumKlick('5J');
+  const nMax = await zeitraumKlick('Max');
   const n1M = await zeitraumKlick('1M');
-  console.log('    Zeitraum 5J -> Kerze ' + n5J.kerze + ' (' + n5J.fest + ' Kerzen) · 1M -> Kerze ' + n1M.kerze + ' (' + n1M.fest + ' Kerzen)');
+  console.log('    Zeitraum 5J -> Kerze ' + n5J.kerze + ' (' + n5J.fest + ' Kerzen, ' + n5J.ms + ' ms)' +
+    ' · Max -> ' + nMax.kerze + ' (' + nMax.fest + ' Kerzen, ' + nMax.ms + ' ms)' +
+    ' · 1M -> Kerze ' + n1M.kerze + ' (' + n1M.fest + ' Kerzen, ' + n1M.ms + ' ms)');
+  if (nMax.zeitraum !== 'Max' || nMax.kerze !== '1M') {
+    funde.push('Viewer: Max setzt nicht die Monatskerze vor (' + nMax.zeitraum + '/' + nMax.kerze + ')');
+  }
   if (n5J.zeitraum !== '5J' || n5J.kerze !== '1W') {
     funde.push('Viewer: 5J setzt nicht die Wochenkerze vor (' + n5J.zeitraum + '/' + n5J.kerze + ')');
   }
