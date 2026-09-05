@@ -51,7 +51,11 @@ function saeen(testroot, jetzt) {
    * ebenfalls unter %TEMP%: der echte Datenordner wird nicht angefasst. Ohne diesen
    * Bestand zeigt die Archiv-Grafik fuenf leere Balken und belegt nichts. */
   const dd = path.join(testroot, 'downloads', 'Markt-Dashboard-Daten');
-  KD.archiv(jetzt).concat(KD.marktArchiv(jetzt)).forEach((f) => {
+  /* Dazu die Kapitalmassnahmen (Viewer 8b): eine Dividende, ein Split. Ohne sie
+   * stuende am Chart "keine Daten" - richtig, aber die Marken selbst waeren dann
+   * nie gezeichnet worden, und die Probe waere gruen, ohne eine gesehen zu haben.
+   * Dieselbe Fehlerform wie die Kunst-Gerade, auf der kein Detektor anschlug. */
+  KD.archiv(jetzt).concat(KD.marktArchiv(jetzt)).concat(KD.massnahmen(jetzt)).forEach((f) => {
     const ziel = path.join(dd, f.pfad.replace(/\//g, path.sep));
     fs.mkdirSync(path.dirname(ziel), { recursive: true });
     fs.writeFileSync(ziel, JSON.stringify(f.inhalt));

@@ -1,7 +1,7 @@
 'use strict';
 /* ================= Dialog-Stapel: wer liegt oben, und wohin geht der Fokus =========
  *
- * Wozu es diese Datei gibt (QS-Fund B1, 04.09.2026): Die App hat sechs Dialoge, und
+ * Wozu es diese Datei gibt (QS-Fund B1, 04.09.2026): Die App hat sieben Dialoge, und
  * ihre Ordnung stand bis heute NUR im Markup - alle sechs trugen dasselbe
  * `z-index: 100`, also entschied die Reihenfolge im Dokument, wer oben liegt. Der
  * einzige Weg zu "Was ist neu" fuehrt aber durch die App-Einstellungen, und
@@ -39,7 +39,7 @@
   /* Der Boden. Darueber liegen in index.html das Kurzinfo-Faehnchen (110), das
    * Hinweisfenster (120) und das Erklaerfenster (130) - letzteres AUSDRUECKLICH ueber
    * den Dialogen, weil ein i-Knopf auch in einem Dialog stehen kann. Der Stapel darf
-   * diese drei also nicht ueberholen: bei sechs Dialogen reicht er bis 106. */
+   * diese drei also nicht ueberholen: bei sieben Dialogen reicht er bis 107. */
   var BASIS = 100;
 
   function neu(opt) {

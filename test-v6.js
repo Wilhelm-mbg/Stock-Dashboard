@@ -17558,7 +17558,13 @@ console.log('\n75) Laufband, Marktglocke, Kleinkram');
      '75.9 bei Tagesbalken steht das Datum mit Jahr, wie vorher', tagM.map(function (m) { return m.text; }).join(' '));
   ok(KC75.achsenBeschriftung([], { intervallMs: 3600000 }).length === 0,
      '75.9 ohne Kerzen keine Beschriftung');
-  ok(/kc\.achsenBeschriftung\(kerzen, \{ intervallMs: kc\.INTERVALL_MS\[VW\.kerze\]/.test(exp75),
+  /* Der Aufruf steht seit 8b ueber mehrere Zeilen (er reicht Zone und Textform aus
+   * den Einstellungen mit herein). Gemessen wird deshalb der AUFRUFBLOCK statt einer
+   * Zeile - und zwar strenger als vorher: das Intervall muss aus der Kerzenlaenge
+   * kommen UND der Zeitraum darf im Block ueberhaupt nicht vorkommen. */
+  var abBlock75 = exp75.slice(exp75.indexOf('kc.achsenBeschriftung(kerzen'),
+                              exp75.indexOf('kc.achsenBeschriftung(kerzen') + 320);
+  ok(/intervallMs:\s*kc\.INTERVALL_MS\[VW\.kerze\]/.test(abBlock75) && !/VW\.zeitraum/.test(abBlock75),
      '75.9 und der Viewer benutzt sie - mit der KERZENLAENGE, nicht mit dem Zeitraum');
 
   /* ---- 75.10 Gegenproben ----
@@ -17661,13 +17667,15 @@ console.log('\n76) Dialoge: ein Stapel statt sechs Einzelfaelle (QS-Funde B1, U1
   ok(zuA && zuA.her === 'knopfA', '76.1 A kennt weiterhin SEINEN eigenen Ausloeser', String(zuA && zuA.her));
   ok(zuA.oben === null && st.tiefe() === 0, '76.1 danach ist der Stapel leer');
 
-  /* Sechs Dialoge, sechs verschiedene Ebenen - und alle unter den drei Fenstern, die
-   * ueber den Dialogen liegen muessen (#tip 110, #hoverInfo 120, #infoPop 130). */
+  /* Sieben Dialoge, sieben verschiedene Ebenen - und alle unter den drei Fenstern,
+   * die ueber den Dialogen liegen muessen (#tip 110, #hoverInfo 120, #infoPop 130).
+   * Der siebte (Chart-Einstellungen) kam mit dem Viewer 8b dazu; die Obergrenze ist
+   * damit 107, und die naechsten drei Ebenen sind der Abstand, den es noch gibt. */
   var st6 = DS.neu();
-  ['erststartModalBg', 'wasNeuModalBg', 'aiModalBg', 'ticketModalBg', 'setModalBg', 'diagModalBg']
+  ['erststartModalBg', 'wasNeuModalBg', 'aiModalBg', 'ticketModalBg', 'setModalBg', 'diagModalBg', 'chartSetModalBg']
     .forEach(function (k) { st6.oeffnen(k, 'knopf-' + k); });
   var ebenen = st6.ordnung().map(function (e) { return e.ebene; });
-  ok(new Set(ebenen).size === 6, '76.1 sechs offene Dialoge -> sechs VERSCHIEDENE Ebenen', ebenen.join(','));
+  ok(new Set(ebenen).size === 7, '76.1 sieben offene Dialoge -> sieben VERSCHIEDENE Ebenen', ebenen.join(','));
   ok(Math.max.apply(null, ebenen) < 110,
      '76.1 der Stapel ueberholt #tip/#hoverInfo/#infoPop nicht', 'hoechste ' + Math.max.apply(null, ebenen));
   ok(Math.min.apply(null, ebenen) > 40, '76.1 ... und liegt ueber dem klebenden Cockpit (40)');
@@ -17677,7 +17685,7 @@ console.log('\n76) Dialoge: ein Stapel statt sechs Einzelfaelle (QS-Funde B1, U1
   /* Zweimal oeffnen darf den Stapel nicht verdoppeln - ein doppelter Eintrag faellt
    * erst beim Schliessen auf: der Dialog waere weg, der Stapel nicht. */
   st6.oeffnen('wasNeuModalBg', 'knopf-neu');
-  ok(st6.tiefe() === 6, '76.1 ein zweites Oeffnen verdoppelt den Eintrag nicht', st6.tiefe());
+  ok(st6.tiefe() === 7, '76.1 ein zweites Oeffnen verdoppelt den Eintrag nicht', st6.tiefe());
   ok(st6.oberster() === 'wasNeuModalBg', '76.1 ... es holt den Dialog nach oben');
   ok(st6.herkunft('wasNeuModalBg') === 'knopf-neu', '76.1 ... mit dem neuen Ausloeser');
   st6.oeffnen('wasNeuModalBg');
@@ -17730,21 +17738,23 @@ console.log('\n76) Dialoge: ein Stapel statt sechs Einzelfaelle (QS-Funde B1, U1
 
   /* ---- 76.3 Markup: die Ordnung steht NICHT mehr im Markup ---- */
   var bgAnzahl = (html.match(/<div class="modal-bg" id="/g) || []).length;
-  ok(bgAnzahl === 6, '76.3 sechs Dialoge im Markup', bgAnzahl);
+  /* Sieben seit dem Viewer 8b (Chart-Einstellungen). Die Zahl steht hier fest und
+   * nicht als "mindestens": ein Dialog, der versehentlich dazukommt, soll auffallen. */
+  ok(bgAnzahl === 7, '76.3 sieben Dialoge im Markup', bgAnzahl);
   ok(/\.modal-bg \{[^}]*z-index: 100/.test(html),
      '76.3 z-index: 100 bleibt als BODEN stehen (ueber dem klebenden Cockpit)');
   ok(!/<div class="modal-bg"[^>]*style="[^"]*z-index/.test(html),
      '76.3 ... aber kein Dialog traegt seine Ebene im Markup - die Ordnung kommt aus dem Stapel');
   var kreuze = (html.match(/class="btn ghost close"/g) || []).length;
   var benannt = (html.match(/class="btn ghost close" aria-label="Schließen"/g) || []).length;
-  ok(kreuze === benannt && kreuze === 5,
+  ok(kreuze === benannt && kreuze === 6,
      '76.3 jedes Schliessen-Kreuz hat einen Namen fuer die Vorlesehilfe', benannt + ' von ' + kreuze);
   /* aria-labelledby muss auf etwas zeigen, das es gibt - und der Name muss kurz sein.
    * Die Laenge selbst misst die Sonde zur Laufzeit; hier faellt nur auf, wenn ein
    * Dialog seinen Namen ganz verliert. */
   var lbs = (html.match(/role="dialog" aria-modal="true" aria-labelledby="([^"]+)"/g) || [])
     .map(function (m) { return m.replace(/.*aria-labelledby="|"$/g, ''); });
-  ok(lbs.length === 6, '76.3 jeder der sechs Dialoge hat einen Namen fuer die Vorlesehilfe', lbs.join(','));
+  ok(lbs.length === 7, '76.3 jeder der sieben Dialoge hat einen Namen fuer die Vorlesehilfe', lbs.join(','));
   var lbFehlt = lbs.filter(function (k) { return html.indexOf('id="' + k + '"') === -1; });
   ok(lbFehlt.length === 0, '76.3 ... und jeder Name zeigt auf eine Kennung, die es gibt', lbFehlt.join(','));
 
@@ -17767,10 +17777,21 @@ console.log('\n76) Dialoge: ein Stapel statt sechs Einzelfaelle (QS-Funde B1, U1
    * die Zeile `if (!drin) befunde.push(...)` stand in einem Kommentar, der nie
    * geschlossen wurde. Sie war gruen und hat nichts gemessen. Deshalb wird hier NACH
    * dem Entfernen der Kommentare gesucht - genau so, wie der Auswerter es sieht. */
-  ['erststartModalBg', 'wasNeuModalBg', 'aiModalBg', 'ticketModalBg', 'setModalBg', 'diagModalBg']
+  ['erststartModalBg', 'wasNeuModalBg', 'aiModalBg', 'ticketModalBg', 'setModalBg', 'diagModalBg',
+   'chartSetModalBg']
     .forEach(function (k) {
       ok(new RegExp("id: '" + k + "'").test(sondeCode), '76.5 die Sonde faehrt ' + k);
     });
+  /* Die Liste oben und das Markup muessen DIESELBEN Dialoge nennen. Sonst waechst
+   * die App um einen Dialog, die Sonde faehrt ihn nicht - und bleibt gruen. Genau
+   * diese Form hatte der Fund "die Sonde fuhr nur fuenf". */
+  var sondeIds = (sondeCode.match(/id: '(\w+ModalBg)'/g) || [])
+    .map(function (m) { return m.replace(/^id: '/, '').replace(/'$/, ''); });
+  var markupIds = (html.match(/<div class="modal-bg" id="(\w+)"/g) || [])
+    .map(function (m) { return m.replace(/.*id="|"/g, ''); });
+  ok(markupIds.every(function (k) { return sondeIds.indexOf(k) >= 0; }),
+     '76.5 die Sonde faehrt JEDEN Dialog, den das Markup fuehrt - kein neuer bleibt ungemessen',
+     markupIds.filter(function (k) { return sondeIds.indexOf(k) < 0; }).join(',') || sondeIds.length + ' von ' + markupIds.length);
   ok(/elementFromPoint/.test(sondeCode),
      '76.5 Sichtbarkeit wird am Bildschirm gemessen, nicht am Markup');
   ok(/NICHT in den Dialog/.test(sondeCode),
@@ -18651,6 +18672,491 @@ console.log('\n80) Aktien-Viewer 8a: Zeitraum und Kerze getrennt, Zoom, Signale 
      !/function vwZiehenBewegen\(x\) \{[\s\S]{0,200}werkzeugAktiv/.test(exp8));
 
   ok(g80 === rot80, '80.14 alle Gegenproben dieses Abschnitts schlagen an', rot80 + ' von ' + g80);
+})();
+
+/* ================= 81) Chart-Einstellungen nach TradingView-Muster (Viewer 8b) =========
+ *
+ * Der Dialog bringt vier Dutzend Vorgaben ins Programm. Die Gefahr ist nicht, dass
+ * eine davon falsch ist - die Gefahr ist, dass jede an drei Stellen steht: im
+ * Markup als value="...", im Renderer als Literal und im Speicher als gemerkter
+ * Wert. Genau das war der Schein-Finder (Abschnitt 79.1).
+ *
+ * Dieser Abschnitt haelt deshalb dreierlei fest:
+ *   (a) die Vorgaben stehen an EINER Stelle und das Markup traegt keine Zahl,
+ *   (b) das Modul ist rein und seine Rechnungen sind durchgespielt, nicht abgetastet,
+ *   (c) der Renderer benutzt es wirklich - Farbe und Format kommen aus optionen().
+ */
+console.log('\n81) Chart-Einstellungen: ein Dialog, eine Quelle der Vorgaben');
+(function () {
+  var CE = require('./markt/charteinstellungen.js');
+  var KC = require('./markt/kerzenchart.js');
+  var B = require('./boerse.js');
+  var htmlCE = fs.readFileSync('index.html', 'utf8');
+  var expCE = fs.readFileSync('explorer.js', 'utf8');
+  var quelleCE = fs.readFileSync('markt/charteinstellungen.js', 'utf8');
+  var shellCE = fs.readFileSync('app-shell.js', 'utf8');
+  var g81 = 0, rot81 = 0;
+  function gegen81(was, ergebnis) { g81++; if (ergebnis) rot81++; ok(ergebnis, '   Gegenprobe: ' + was); }
+
+  /* --- 81.1 Das Modul ist rein --- */
+  var ohneK = ohneKommentare(quelleCE);
+  ok(!/\bdocument\b/.test(ohneK), '81.1 charteinstellungen.js kennt kein document');
+  ok(!/\bwindow\./.test(ohneK), '81.1 und kein window.');
+  ok(!/\brequire\s*\(/.test(ohneK), '81.1 und laedt nichts nach');
+  ok(!/\bfetch\s*\(|XMLHttpRequest|localStorage|window\.api/.test(ohneK),
+     '81.1 kein Netz, kein Speicher');
+  ok(!/Date\.now\s*\(\)|Math\.random/.test(ohneK),
+     '81.1 keine Uhr und kein Zufall im Modul - die Uhr kommt herein');
+
+  /* --- 81.2 Die Vorgaben stehen an EINER Stelle --- */
+  var dlgCE = htmlCE.slice(htmlCE.indexOf('id="chartSetModalBg"'), htmlCE.indexOf('id="chartSetModalBg"') + 12000);
+  ok(dlgCE.indexOf('id="chartSetModalBg"') === 0, '81.2 der Dialog steht im Markup');
+  ok(!/<input[^>]*\bvalue="[0-9#]/.test(dlgCE),
+     '81.2 kein Eingabefeld des Dialogs traegt eine Zahl oder Farbe als Vorgabe');
+  ok(!/#[0-9a-fA-F]{6}/.test(dlgCE), '81.2 und keine Hex-Farbe steht im Markup des Dialogs');
+  ok(!/<option\b/.test(dlgCE),
+     '81.2 keine Auswahlliste steht im Markup - sie werden aus den Tabellen des Moduls gebaut');
+  gegen81('eine Farbe im Dialog-Markup wuerde gefunden', /#[0-9a-fA-F]{6}/.test('<input value="#006300">'));
+
+  /* --- 81.3 gueltig() weist kaputte Objekte MIT GRUND ab --- */
+  ok(CE.gueltig(CE.vorgabe()).ok === true, '81.3 die Vorgabe selbst ist gueltig');
+  function kaputt(bau) { var e = CE.vorgabe(); bau(e); return CE.gueltig(e); }
+  var rFarbe = kaputt(function (e) { e.farben.hell.aufKoerper = 'rot'; });
+  ok(rFarbe.ok === false && rFarbe.feld === 'farben.hell.aufKoerper' && /Hex/.test(rFarbe.grund),
+     '81.3 eine Farbe, die kein Hex ist, faellt durch - mit Feld und Grund', rFarbe.grund);
+  var rP = kaputt(function (e) { e.symbol.praezision = 9; });
+  ok(rP.ok === false && rP.feld === 'symbol.praezision' && /0–6/.test(rP.grund),
+     '81.3 Praezision ausserhalb 0-6 faellt durch', rP.grund);
+  var rP2 = kaputt(function (e) { e.symbol.praezision = 2.5; });
+  ok(rP2.ok === false, '81.3 und eine halbe Stelle auch');
+  ok(kaputt(function (e) { e.symbol.praezision = 'auto'; }).ok === true,
+     '81.3 "auto" bleibt erlaubt - es ist die Vorgabe');
+  var rZ = kaputt(function (e) { e.symbol.zeitzone = 'moskau'; });
+  ok(rZ.ok === false && rZ.feld === 'symbol.zeitzone' && /moskau/.test(rZ.grund),
+     '81.3 eine unbekannte Zeitzone faellt durch und wird BENANNT', rZ.grund);
+  ok(kaputt(function (e) { e.skala.modus = 'wurzel'; }).ok === false, '81.3 unbekannter Skalenmodus faellt durch');
+  ok(kaputt(function (e) { e.statuszeile.deckkraft = 1.4; }).ok === false, '81.3 Deckkraft ueber 1 faellt durch');
+  ok(kaputt(function (e) { e.statuszeile.ohlc = 'ja'; }).ok === false, '81.3 ein Schalter, der kein Schalter ist, faellt durch');
+  ok(CE.gueltig(null).ok === false && CE.gueltig(42).ok === false && CE.gueltig([]).ok === false,
+     '81.3 und was gar kein Einstellungsobjekt ist, erst recht');
+  gegen81('ein Objekt OHNE Fehler wuerde nicht abgewiesen', CE.gueltig(CE.vorgabe()).ok === true);
+
+  /* --- 81.4 Auffuellen: alte Staende und fremde Felder --- */
+  var alt = CE.auffuellen({ symbol: { darstellung: 'linie' } });
+  ok(alt.symbol.darstellung === 'linie', '81.4 ein gemerkter Wert ueberlebt das Auffuellen');
+  ok(alt.zeit.datumsformat === CE.VORGABE.zeit.datumsformat,
+     '81.4 was in einem alten Stand fehlt, kommt aus der Vorgabe - nicht undefined');
+  ok(CE.gueltig(alt).ok === true, '81.4 und das Ergebnis ist gueltig');
+  var fremd = CE.auffuellen({ symbol: { darstellung: 'kerzen', erfunden: 7 } });
+  ok(fremd.symbol.erfunden === undefined, '81.4 ein fremdes Feld wird nicht mitgeschleppt');
+  var uebern = CE.uebernehmen({ symbol: { zeitzone: 'moskau' } });
+  ok(uebern.ok === false && /zeitzone/.test(uebern.grund) &&
+     uebern.einstellungen.symbol.zeitzone === CE.VORGABE.symbol.zeitzone,
+     '81.4 ein kaputter Stand faellt GANZ auf die Vorgabe zurueck - und sagt warum', uebern.grund);
+
+  /* --- 81.5 optionen() ist deterministisch und traegt jede Farbe --- */
+  var oA = CE.optionen(CE.vorgabe(), { thema: 'dunkel' });
+  var oB = CE.optionen(CE.vorgabe(), { thema: 'dunkel' });
+  ok(JSON.stringify(oA.farben) === JSON.stringify(oB.farben) &&
+     JSON.stringify(oA.skala) === JSON.stringify(oB.skala),
+     '81.5 zweimal dieselbe Eingabe gibt zweimal dasselbe Ergebnis');
+  ok(oA.farben.auf === CE.VORGABE.farben.dunkel.aufKoerper &&
+     oA.farben.ab === CE.VORGABE.farben.dunkel.abKoerper,
+     '81.5 das dunkle Thema bekommt die dunklen Farben');
+  var oH = CE.optionen(CE.vorgabe(), { thema: 'hell' });
+  ok(oH.farben.auf === CE.VORGABE.farben.hell.aufKoerper,
+     '81.5 und das helle die hellen - EIN Objekt, zwei Saetze');
+  ok(oA.farben.auf !== oH.farben.auf,
+     '81.5 die beiden Saetze sind wirklich verschieden (eine Farbe kann nicht beides)');
+  CE.FARBFELDER.forEach(function (f) {
+    ok(typeof oA.farben[f] === 'string' && /^#[0-9a-f]{6}$/i.test(oA.farben[f]),
+       '81.5 optionen() traegt ' + f + ' als Farbe heraus', oA.farben[f]);
+  });
+  ok(oA.kurslinie && Array.isArray(oA.kurslinie.muster),
+     '81.5 die Kurslinie bringt ihr Strichmuster mit - der Renderer erfindet keines');
+  var ausK = CE.vorgabe(); ausK.skala.kurslinie = false;
+  ok(CE.optionen(ausK, { thema: 'hell' }).kurslinie === null,
+     '81.5 abgeschaltet heisst null, nicht eine Linie mit Breite 0');
+
+  /* --- 81.6 Der Kontrast der Vorgabefarben, in BEIDEN Themen ---
+   * Dieselbe Formel wie in 75.6 und in tools/a11y-probe.js. Gehalten wird gegen
+   * --surface, --panel und --page: der Chart sitzt in einem Panel auf der Seite,
+   * und beide Gruende kommen unter ihm vor. */
+  function leuchte81(hex) {
+    var c = [1, 3, 5].map(function (i) {
+      var v = parseInt(hex.substr(i, 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function kontrast81(a, b) {
+    var l1 = leuchte81(a), l2 = leuchte81(b);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  }
+  /* Geschnitten wird am ANFANG des dunklen Blocks, nicht an einem Token darin:
+   * --page steht dort VOR --surface und faellt sonst in die helle Haelfte. Genau so
+   * ist die erste Fassung dieser Klinke rot geworden - und zwar zu Recht. */
+  var schnitt81 = htmlCE.indexOf(':root[data-theme="dark"]');
+  ok(schnitt81 > 0, '81.6 die zwei Themenbloecke lassen sich trennen');
+  function token81(quelle, name) {
+    var m = quelle.match(new RegExp('--' + name + ':\\s*(#[0-9a-fA-F]{6})'));
+    return m ? m[1] : null;
+  }
+  var block81 = { hell: htmlCE.slice(0, schnitt81), dunkel: htmlCE.slice(schnitt81) };
+  CE.THEMEN.forEach(function (thema) {
+    ['surface', 'panel', 'page'].forEach(function (gname) {
+      var grund = token81(block81[thema], gname);
+      ok(!!grund, '81.6 --' + gname + ' ist im ' + thema + 'en Thema gesetzt', String(grund));
+      CE.FARBFELDER.forEach(function (f) {
+        var farbe = CE.VORGABE.farben[thema][f];
+        var k = kontrast81(farbe, grund);
+        ok(k >= 4.5, '81.6 ' + thema + ' ' + f + ' auf --' + gname + ': ' + k.toFixed(2) + ' >= 4,5',
+           farbe + ' auf ' + grund);
+      });
+    });
+  });
+  /* Und die Vorgaben sind wirklich die Semantikfarben der App - sonst waeren es
+   * zwei Wahrheiten ueber dieselbe Bedeutung. */
+  CE.THEMEN.forEach(function (thema) {
+    ok(CE.VORGABE.farben[thema].aufKoerper === token81(block81[thema], 'up'),
+       '81.6 die Vorgabe "steigend" (' + thema + ') IST --up der App',
+       CE.VORGABE.farben[thema].aufKoerper + ' / ' + token81(block81[thema], 'up'));
+    ok(CE.VORGABE.farben[thema].abKoerper === token81(block81[thema], 'down'),
+       '81.6 die Vorgabe "fallend" (' + thema + ') IST --down der App',
+       CE.VORGABE.farben[thema].abKoerper + ' / ' + token81(block81[thema], 'down'));
+  });
+  gegen81('eine Farbe unter der Schwelle wuerde gefunden',
+          kontrast81('#8fbf8f', '#f1f1ee') < 4.5);
+  gegen81('EINE Farbe fuer beide Themen ist rechnerisch unmoeglich',
+          (kontrast81('#16a34a', '#f1f1ee') < 4.5) || (kontrast81('#16a34a', '#222220') < 4.5));
+
+  /* --- 81.6b Die Warnung, wenn der Nutzer selbst danebengreift ---
+   * Die Vorgaben halten (81.6). Wer eine eigene Farbe waehlt oder die Vorlage
+   * "Hell" im dunklen Thema benutzt, kann darunter fallen - und soll es nicht
+   * erst am unsichtbaren Chart merken. */
+  ok(Math.abs(CE.kontrast('#000000', '#ffffff') - 21) < 0.01,
+     '81.6b die Kontrastrechnung des Moduls stimmt (Schwarz auf Weiss = 21)');
+  ok(Math.abs(CE.kontrast('#767676', '#ffffff') - 4.54) < 0.02,
+     '81.6b und trifft den bekannten Grenzfall #767676 auf Weiss',
+     CE.kontrast('#767676', '#ffffff').toFixed(2));
+  ok(CE.schwacheFarben(CE.vorgabe(), 'hell', token81(block81.hell, 'panel')).length === 0,
+     '81.6b die Vorgabe im hellen Thema loest keine Warnung aus');
+  ok(CE.schwacheFarben(CE.vorgabe(), 'dunkel', token81(block81.dunkel, 'panel')).length === 0,
+     '81.6b und im dunklen auch nicht');
+  var warn81 = CE.kontrastWarnung(CE.vorlage('hell'), 'dunkel', token81(block81.dunkel, 'panel'));
+  ok(warn81.length > 20 && /:1/.test(warn81),
+     '81.6b die Vorlage "Hell" im dunklen Thema warnt - mit Zahl', warn81);
+  ok(CE.schwacheFarben(CE.vorgabe(), 'hell', 'rgba(0,0,0,0.1)').length === 0,
+     '81.6b ist der Grund unbrauchbar, wird NICHT geraten - keine erfundene Warnung');
+  gegen81('eine schwache Farbe wuerde gefunden',
+          CE.kontrast('#8fbf8f', '#f1f1ee') < CE.KONTRAST_MIN);
+
+  /* --- 81.7 Countdown zur naechsten Kerze (Uhr-Attrappe) --- */
+  var jetzt81 = Date.UTC(2026, 8, 4, 14, 17);           // 10:17 New York (Sommerzeit)
+  ok(CE.countdown(jetzt81, 3600000) === 43 * 60000,
+     '81.7 1h-Kerze um 10:17 ET: 43 Minuten bis zur naechsten', CE.countdown(jetzt81, 3600000) / 60000);
+  ok(CE.countdownText(CE.countdown(jetzt81, 3600000)) === '43 min',
+     '81.7 und der Text sagt "43 min"');
+  ok(CE.countdown(Date.UTC(2026, 8, 4, 14, 0), 3600000) === 3600000,
+     '81.7 genau auf der Grenze beginnt eine volle Kerze - nicht null');
+  ok(CE.countdown(jetzt81, 300000) === 3 * 60000, '81.7 dieselbe Uhr, 5m-Kerze: 3 Minuten');
+  ok(CE.countdown(jetzt81, 3600000, false) === null,
+     '81.7 ausserhalb der Sitzung gibt es keinen Countdown - null, nicht 0');
+  ok(CE.countdown(jetzt81, 0) === null && CE.countdown(NaN, 3600000) === null,
+     '81.7 unbrauchbare Eingaben geben null');
+  gegen81('ein Countdown, der die Kerzenlaenge ignoriert, traefe die 43 nicht',
+          (3600000 - (jetzt81 % 900000)) !== 43 * 60000);
+
+  /* --- 81.8 Achsenbeschriftung: Wochentag, Datumsformat, 12 Stunden --- */
+  var eA = CE.vorgabe();
+  var tA = CE.achsenText(eA);
+  ok(tA(jetzt81, null, 'tagJahr') === '04.09.26', '81.8 Vorgabe-Datum: 04.09.26', tA(jetzt81, null, 'tagJahr'));
+  ok(tA(jetzt81, null, 'uhr') === '10:17', '81.8 Vorgabe-Uhr in New Yorker Zeit: 10:17', tA(jetzt81, null, 'uhr'));
+  var eW = CE.vorgabe(); eW.zeit.wochentag = true;
+  ok(CE.achsenText(eW)(jetzt81, null, 'tagJahr') === 'Fr 04.09.26',
+     '81.8 mit Wochentag: Fr 04.09.26', CE.achsenText(eW)(jetzt81, null, 'tagJahr'));
+  var eF = CE.vorgabe(); eF.zeit.datumsformat = 'jjjj-mm-tt';
+  ok(CE.achsenText(eF)(jetzt81, null, 'tagJahr') === '2026-09-04', '81.8 zweites Muster: 2026-09-04');
+  var eF2 = CE.vorgabe(); eF2.zeit.datumsformat = 'tt.mm.jjjj';
+  ok(CE.achsenText(eF2)(jetzt81, null, 'tagJahr') === '04.09.2026', '81.8 drittes Muster: 04.09.2026');
+  ok(CE.DATUMSFORMATE.length === 3, '81.8 es sind genau drei Muster - jede weitere Wahl braucht eine Frage dahinter');
+  var e12 = CE.vorgabe(); e12.zeit.stunden12 = true;
+  ok(CE.achsenText(e12)(jetzt81, null, 'uhr') === '10:17 AM', '81.8 12 Stunden: 10:17 AM');
+  ok(CE.achsenText(e12)(Date.UTC(2026, 8, 4, 20, 5), null, 'uhr') === '4:05 PM', '81.8 und nachmittags 4:05 PM');
+  ok(CE.achsenText(e12)(Date.UTC(2026, 8, 4, 16, 0), null, 'uhr') === '12:00 PM', '81.8 Mittag ist 12:00 PM, nicht 0:00 PM');
+  gegen81('ohne Wochentagsschalter stuende kein Wochentag da', tA(jetzt81, null, 'tagJahr').indexOf('Fr') < 0);
+
+  /* --- 81.9 Zeitzonen: dieselbe Kerze, drei Beschriftungen - und boerse.js
+   * behaelt recht. Die Sitzungsrechnung bleibt bei Quant.minutenSeitOeffnung;
+   * geprueft wird, dass die neue Beschriftung sie NICHT widerspricht. */
+  var eBerlin = CE.vorgabe(); eBerlin.symbol.zeitzone = 'berlin';
+  var eUtc = CE.vorgabe(); eUtc.symbol.zeitzone = 'utc';
+  ok(CE.achsenText(eBerlin)(jetzt81, null, 'uhr') === '16:17', '81.9 dieselbe Kerze in Berlin: 16:17');
+  ok(CE.achsenText(eUtc)(jetzt81, null, 'uhr') === '14:17', '81.9 und in UTC: 14:17');
+  ok(CE.ZEITZONEN.length === 3, '81.9 drei Zeitzonen, mehr nicht');
+  [Date.UTC(2026, 8, 4, 13, 30), Date.UTC(2026, 8, 4, 14, 17), Date.UTC(2026, 0, 15, 14, 30),
+   Date.UTC(2026, 0, 15, 19, 0)].forEach(function (ms) {
+    var t = CE.zeitTeile(ms, 'America/New_York');
+    var min = t.stunde * 60 + t.minute - (9 * 60 + 30);
+    ok(min === Q.minutenSeitOeffnung(ms),
+       '81.9 die Beschriftung und Quant.minutenSeitOeffnung sagen dasselbe (' + new Date(ms).toISOString() + ')',
+       min + ' / ' + Q.minutenSeitOeffnung(ms));
+  });
+  ok(B.sitzungsMinuten(Date.UTC(2026, 8, 4)) === 390,
+     '81.9 und die Sitzungslaenge kommt weiter aus boerse.js - keine zweite Rechnung');
+  gegen81('eine Beschriftung ohne Zeitzone wuerde von Quant abweichen',
+          (new Date(jetzt81).getUTCHours() * 60 + new Date(jetzt81).getUTCMinutes() - 570) !== Q.minutenSeitOeffnung(jetzt81));
+
+  /* --- 81.10 Praezision ---
+   * Der Boden ist der Punkt: 171.4 heisst 171,40. Ohne ihn wechselte die Skala
+   * zwischen "171,4" und "171,45" die Stellenzahl - bei jeder Kerze. */
+  ok(CE.stellenAusKurs(171.4) === 2 && CE.stellenAusKurs(7) === 2,
+     '81.10 "auto" haelt bei Kursen ab 1 mindestens zwei Stellen (Cent)',
+     CE.stellenAusKurs(171.4) + ' / ' + CE.stellenAusKurs(7));
+  ok(CE.stellenAusKurs([170.2, 171.456]) === 3,
+     '81.10 und zaehlt ueber ALLE sichtbaren Werte, nicht ueber einen',
+     CE.stellenAusKurs([170.2, 171.456]));
+  ok(CE.stellenAusKurs(0.00123) === 5,
+     '81.10 unter einem Dollar braucht es mehr Stellen', CE.stellenAusKurs(0.00123));
+  ok(CE.stellenAusKurs(0.000123456789) === 6, '81.10 gedeckelt bei sechs');
+  ok(CE.stellenAusKurs(null) === 2 && CE.stellenAusKurs([]) === 2,
+     '81.10 ohne Werte wird nicht geraten - zwei Stellen');
+  var eP = CE.vorgabe(); eP.symbol.praezision = 4;
+  ok(CE.praezision(eP, 123.45) === 4, '81.10 eine feste Wahl schlaegt den Kurs');
+  ok(CE.praezision(CE.vorgabe(), 123.456) === 3, '81.10 und "auto" folgt ihm');
+  gegen81('ohne Boden stuende "171,4" statt "171,40" da',
+          String(171.4).split('.')[1].length === 1);
+
+  /* --- 81.10b Statuszeile und Preisskala: jeder Schalter laesst genau einen Teil weg --- */
+  var d81 = { name: 'Kunst AG', kuerzel: 'KUNSTA', zeit: '04.09.26 10:17',
+    o: 170.2, h: 172.5, l: 169.8, c: 171.4, vorher: 169.0, volumen: 1234567,
+    indikatoren: [{ name: 'MA20', wert: 168.42 }],
+    sitzung: { schluss: 169.0, aenderung: -1.2, spanne: 3.4 } };
+  function arten81(e) {
+    return CE.statuszeile(d81, e, { einheit: 'USD' }).map(function (t) { return t.art; });
+  }
+  var voll81 = arten81(CE.vorgabe());
+  ['titel', 'zeit', 'ohlc', 'aenderung', 'volumen', 'indikator'].forEach(function (a) {
+    ok(voll81.indexOf(a) >= 0, '81.10b die Statuszeile traegt "' + a + '"');
+  });
+  ok(voll81.indexOf('sitzung') < 0, '81.10b die letzte Sitzung ist Vorgabe-AUS');
+  [['statuszeile.ohlc', 'ohlc'], ['statuszeile.volumen', 'volumen'],
+   ['statuszeile.aenderung', 'aenderung']].forEach(function (paar) {
+    var e = CE.vorgabe();
+    CE.schreib(e, paar[0], false);
+    ok(arten81(e).indexOf(paar[1]) < 0, '81.10b der Schalter ' + paar[0] + ' nimmt "' + paar[1] + '" weg');
+  });
+  var eS = CE.vorgabe(); eS.statuszeile.letzteSitzung = true;
+  ok(arten81(eS).indexOf('sitzung') >= 0, '81.10b und angeschaltet steht sie da');
+  var zeile81 = CE.statuszeile(d81, CE.vorgabe(), { einheit: 'USD' });
+  ok(/O 170,20/.test(zeile81[2].text) && /USD/.test(zeile81[2].text),
+     '81.10b die OHLC-Werte tragen zwei Stellen und die Einheit', zeile81[2].text);
+  ok(CE.statuszeile({ kuerzel: 'X' }, CE.vorgabe(), {})[1].text.indexOf(CE.OHNE) >= 0,
+     '81.10b fehlende Werte werden zu Gedankenstrichen - nicht zu Null');
+  ok(CE.statuszeile(d81, (function () { var e = CE.vorgabe(); e.statuszeile.titel = 'kuerzel'; return e; })(),
+     {})[0].text === 'KUNSTA', '81.10b der Titel folgt der Wahl');
+  ok(CE.preisText(171.4, CE.vorgabe(), { einheit: 'USD', kurs: 171.4 }) === '171,40 USD',
+     '81.10b die Preisskala haengt die Einheit an');
+  /* EINE Skala, EINE Genauigkeit. Die erste Fassung nahm die Stellen aus dem
+   * gerade beschrifteten Wert, wenn `kurs` eine LISTE war - auf der Aufnahme stand
+   * "121,71" ueber "116,335". Gemessen wird deshalb, dass alle Marken derselben
+   * Skala gleich viele Nachkommastellen tragen. */
+  var achse81 = [121.71, 116.335, 110.96, 105.585, 100.21];
+  var stellen81 = achse81.map(function (v) {
+    var t = CE.preisText(v, CE.vorgabe(), { kurs: achse81 });
+    return (t.split(',')[1] || '').length;
+  });
+  ok(new Set(stellen81).size === 1,
+     '81.10b alle Marken EINER Skala tragen dieselbe Stellenzahl', stellen81.join('/'));
+  ok(stellen81[0] === 3,
+     '81.10b und zwar die, die der genaueste sichtbare Kurs braucht', stellen81[0]);
+  gegen81('aus dem EINZELWERT gerechnet waeren es verschiedene',
+          new Set(achse81.map(function (v) { return CE.stellenAusKurs(v); })).size > 1);
+  var eE = CE.vorgabe(); eE.skala.einheit = false;
+  ok(CE.preisText(171.4, eE, { einheit: 'USD', kurs: 171.4 }) === '171,40',
+     '81.10b und ohne den Schalter nicht');
+  var eZ = CE.vorgabe(); eZ.skala.modus = 'prozent';
+  ok(CE.preisText(171.4, eZ, { basis: 169.0 }) === '+1,42 %',
+     '81.10b im Prozentmodus rechnet die Skala gegen die Basis',
+     CE.preisText(171.4, eZ, { basis: 169.0 }));
+  ok(CE.preisText(171.4, eZ, {}) === CE.OHNE,
+     '81.10b ohne Basis wird nicht geraten');
+  ok(CE.statuszeileGrund(CE.vorgabe(), '#f1f1ee') === 'rgba(241,241,238,0.75)',
+     '81.10b der Hintergrund der Zeile kommt aus Grund und Deckkraft',
+     CE.statuszeileGrund(CE.vorgabe(), '#f1f1ee'));
+  ok(CE.statuszeileGrund(CE.vorlage('nuechtern'), '#f1f1ee') === null,
+     '81.10b abgeschaltet heisst null');
+
+  /* --- 81.11 Ereignis-Marken aus der Massnahmen-Datei --- */
+  var datei81 = {
+    sym: 'KUNSTA',
+    saetze: [
+      { _art: 'cash_dividends', ex_date: '2026-08-14', rate: 0.24 },
+      { _art: 'forward_splits', ex_date: '2026-05-11', old_rate: 1, new_rate: 2 },
+      { _art: 'spin_offs', ex_date: '2026-03-02' }
+    ]
+  };
+  var mk = CE.marken({ massnahmen: datei81, earnings: [Date.UTC(2026, 7, 20)], nachrichten: [] }, CE.vorgabe());
+  var div81 = mk.filter(function (m) { return m.art === 'dividende'; });
+  var spl81 = mk.filter(function (m) { return m.art === 'split'; });
+  ok(div81.length === 1 && div81[0].zeitMs === Date.UTC(2026, 7, 14),
+     '81.11 die Dividende sitzt auf ihrem Ex-Tag');
+  ok(/0\.24/.test(div81[0].tooltip), '81.11 und ihr Tooltip nennt den Betrag', div81[0].tooltip);
+  ok(spl81.length === 1 && /2:1/.test(spl81[0].tooltip),
+     '81.11 der Split steht EXAKT so da, wie die Tabelle ihn fuehrt', spl81[0].tooltip);
+  ok(mk.filter(function (m) { return m.art === 'earnings'; }).length === 1,
+     '81.11 der Earnings-Termin wird zur Marke');
+  ok(mk.every(function (m) { return m.tooltip && m.tooltip.length > 0; }),
+     '81.11 jede Marke traegt einen Tooltip');
+  var sortiert81 = mk.map(function (m) { return m.zeitMs; });
+  ok(JSON.stringify(sortiert81) === JSON.stringify(sortiert81.slice().sort(function (a, b) { return a - b; })),
+     '81.11 die Marken kommen aufsteigend');
+  var eAus = CE.vorgabe(); eAus.ereignisse.splits = false;
+  ok(CE.marken({ massnahmen: datei81 }, eAus).filter(function (m) { return m.art === 'split'; }).length === 0,
+     '81.11 jeder Schalter wirkt einzeln');
+  var stand81 = CE.markenStand({ massnahmen: null, earnings: null, nachrichten: null }, CE.vorgabe());
+  ok(stand81.dividenden === 'keine Daten' && stand81.splits === 'keine Daten',
+     '81.11 ohne Datei steht "keine Daten" da - nicht eine leere Liste');
+  ok(CE.markenStand({ massnahmen: datei81, earnings: [] }, CE.vorgabe()).dividenden === '1',
+     '81.11 mit Datei steht die Zahl da');
+  ok(CE.markenStand({ massnahmen: datei81 }, eAus).splits === 'aus',
+     '81.11 und abgeschaltet heisst "aus", nicht "keine Daten"');
+  var viele81 = [];
+  for (var n81 = 0; n81 < 40; n81++) viele81.push({ t: Date.UTC(2026, 8, 1) + n81 * 3600000, title: 'Meldung ' + n81 });
+  var eN = CE.vorgabe(); eN.ereignisse.nachrichten = true;
+  ok(CE.marken({ nachrichten: viele81 }, eN).length === CE.NACHRICHTEN_MAX,
+     '81.11 die Nachrichten-Marken sind gedeckelt', CE.NACHRICHTEN_MAX);
+  gegen81('ein Satz OHNE Datum ergibt keine Marke',
+          CE.marken({ massnahmen: { saetze: [{ _art: 'cash_dividends' }] } }, CE.vorgabe()).length === 0);
+
+  /* --- 81.12 Vorlagen --- */
+  ok(CE.VORLAGEN.length === 4, '81.12 vier eingebaute Vorlagen');
+  CE.VORLAGEN.forEach(function (v) {
+    ok(CE.gueltig(v.bauen()).ok === true, '81.12 die Vorlage "' + v.text + '" ist gueltig');
+  });
+  ok(JSON.stringify(CE.vorlage('standard')) === JSON.stringify(CE.vorgabe()),
+     '81.12 "Standard" IST die Vorgabe - keine zweite Abschrift');
+  ok(CE.vorlage('nuechtern').symbol.darstellung === 'linie',
+     '81.12 "Nuechtern" zeichnet nur eine Linie');
+  ok(CE.vorlage('nuechtern').ereignisse.dividenden === false,
+     '81.12 und nimmt die Marken weg');
+  ok(CE.vorlage('gibtesnicht') === null, '81.12 eine unbekannte Vorlage gibt null, nicht die Vorgabe');
+  gegen81('"Nuechtern" unterscheidet sich wirklich von "Standard"',
+          JSON.stringify(CE.vorlage('nuechtern')) !== JSON.stringify(CE.vorlage('standard')));
+
+  /* --- 81.13 Bid/Ask: die Beschriftung haengt am Feed --- */
+  var alpCE = ohneKommentare(fs.readFileSync('alpaca.js', 'utf8'));
+  var feedM = alpCE.match(/var FEED\s*=\s*'([a-z]+)'/);
+  ok(!!feedM, '81.13 alpaca.js nennt seinen Feed an einer Stelle', feedM && feedM[1]);
+  ok(CE.bidAskBeschriftung(feedM[1]).length > 0 && !/15 Min/.test(CE.bidAskBeschriftung('iex')),
+     '81.13 der Gratis-Feed iex wird NICHT als "15 Min verzoegert" beschriftet - er ist unvollstaendig, nicht verzoegert',
+     CE.bidAskBeschriftung('iex'));
+  ok(/15 Min/.test(CE.bidAskBeschriftung('sip')),
+     '81.13 fuer SIP steht die Verzoegerung da', CE.bidAskBeschriftung('sip'));
+  ok(CE.bidAskMoeglich(false).an === false && CE.bidAskMoeglich(false).grund.length > 10,
+     '81.13 ohne Zugang ist die Zeile aus - mit Grund', CE.bidAskMoeglich(false).grund);
+  ok(CE.bidAskMoeglich(true).an === true, '81.13 mit Zugang geht sie an');
+  gegen81('eine feste Beschriftung wuerde beim Feed-Wechsel stehen bleiben',
+          CE.bidAskBeschriftung('iex') !== CE.bidAskBeschriftung('sip'));
+
+  /* --- 81.14 Die Feldtabelle deckt JEDE Einstellung ab, und keine zweimal ---
+   * Das ist die Klinke gegen den Fund aus dem UI-Audit: sechs Schalter ohne
+   * Wirkung. Ein Schalter, den es im Dialog gibt, aber nicht in den Einstellungen,
+   * ist tot; eine Einstellung ohne Feld ist unerreichbar. Beides faellt hier auf. */
+  function blaetter81(o, vor, aus) {
+    Object.keys(o).forEach(function (k) {
+      var p = vor ? vor + '.' + k : k;
+      var v = o[k];
+      if (v && typeof v === 'object' && !Array.isArray(v)) blaetter81(v, p, aus);
+      else aus.push(p);
+    });
+    return aus;
+  }
+  var alleFelder81 = blaetter81(CE.VORGABE, '', []).filter(function (p) { return p !== 'fassung'; });
+  var bedient81 = {};
+  CE.FELDER.forEach(function (f) {
+    if (f.art === 'farbe') {
+      CE.THEMEN.forEach(function (t) {
+        var p = 'farben.' + t + '.' + f.feld;
+        bedient81[p] = (bedient81[p] || 0) + 1;
+      });
+    } else {
+      bedient81[f.pfad] = (bedient81[f.pfad] || 0) + 1;
+    }
+  });
+  var fehlt81 = alleFelder81.filter(function (p) { return !bedient81[p]; });
+  var doppelt81 = Object.keys(bedient81).filter(function (p) { return bedient81[p] > 1; });
+  var fremd81 = Object.keys(bedient81).filter(function (p) { return alleFelder81.indexOf(p) < 0; });
+  ok(fehlt81.length === 0, '81.14 jede Einstellung hat ein Feld im Dialog - keine unerreichbare',
+     fehlt81.join(', ') || alleFelder81.length + ' Blaetter');
+  ok(doppelt81.length === 0, '81.14 und keine wird von zwei Feldern bedient', doppelt81.join(', ') || 'keine');
+  ok(fremd81.length === 0, '81.14 kein Feld zeigt auf eine Einstellung, die es nicht gibt - kein toter Schalter',
+     fremd81.join(', ') || 'keines');
+  CE.FELDER.forEach(function (f) {
+    ok(CE.REITER.some(function (r) { return r.wert === f.reiter; }),
+       '81.14 das Feld "' + f.text + '" liegt auf einem Reiter, den es gibt', f.reiter);
+    if (f.art === 'liste') {
+      ok(Array.isArray(CE[f.liste]) && CE[f.liste].length > 0,
+         '81.14 die Liste ' + f.liste + ' fuer "' + f.text + '" gibt es');
+    }
+  });
+  CE.REITER.forEach(function (r) {
+    ok(CE.FELDER.some(function (f) { return f.reiter === r.wert; }),
+       '81.14 der Reiter "' + r.text + '" ist nicht leer');
+  });
+  gegen81('ein Feld auf einen erfundenen Pfad wuerde auffallen',
+          alleFelder81.indexOf('skala.gibtesnicht') < 0);
+
+  /* --- 81.15 Der Dialog geht ueber den Stapel und kennt keine Farbe selbst --- */
+  var csQ = ohneKommentare(fs.readFileSync('chartset.js', 'utf8'));
+  ok(/window\.openModal\(DIALOG/.test(csQ),
+     '81.15 der Dialog wird ueber openModal geoeffnet - nicht ueber classList.add');
+  ok(!/classList\.add\('open'\)/.test(csQ),
+     '81.15 und niemand haengt "open" an der Verwaltung vorbei an');
+  ok(!/#[0-9a-fA-F]{6}/.test(csQ), '81.15 in chartset.js steht keine Farbe');
+  ok(!/window\.prompt|[^.\w]prompt\(/.test(csQ),
+     '81.15 und kein prompt() - Electron unterstuetzt es nicht, der Knopf haette nichts getan');
+  ok(/CE\.FELDER\.forEach/.test(csQ) && /CE\.REITER\.forEach/.test(csQ),
+     '81.15 Reiter und Felder kommen aus der Tabelle des Moduls');
+  ok(/CE\.gueltig\(probe\)/.test(csQ),
+     '81.15 jede Aenderung wird geprueft, bevor sie uebernommen wird');
+  ok(/function abbrechen\(\)/.test(csQ) && /stand = vorher/.test(csQ),
+     '81.15 Abbrechen stellt den Stand von vor dem Oeffnen wieder her');
+  ok(/storeSet\(STORE_STAND/.test(csQ) && /storeGet\(STORE_STAND\)/.test(csQ),
+     '81.15 der Stand wird gemerkt und wieder geladen');
+  var skriptCS = htmlCE.indexOf('src="chartset.js"');
+  var skriptCE = htmlCE.indexOf('src="markt/charteinstellungen.js"');
+  ok(skriptCS > 0, '81.15 chartset.js wird geladen - sonst faehrt der Dialog im Paket nicht mit');
+  ok(skriptCE > 0, '81.15 und markt/charteinstellungen.js auch');
+  ok(skriptCE < skriptCS, '81.15 das Modul steht VOR dem Dialog - er greift beim Laden darauf zu',
+     skriptCE + ' < ' + skriptCS);
+
+  /* --- 81.16 Die Leseauskunft `archiv-massnahmen` LIEST NUR --- */
+  var mainCE = ohneKommentare(fs.readFileSync('main.js', 'utf8'));
+  var mVon = mainCE.indexOf("ipcMain.handle('archiv-massnahmen'");
+  ok(mVon > 0, '81.16 die Leseauskunft archiv-massnahmen gibt es', mVon);
+  var mBis = mainCE.indexOf('ipcMain.handle(', mVon + 20);
+  ok(mBis > mVon, '81.16 und ihr Block laesst sich schneiden', mBis - mVon);
+  var mHandler = mainCE.slice(mVon, mBis);
+  ok(!/writeFileSync|appendFileSync|mkdirSync|rmSync|unlinkSync|renameSync|createWriteStream/.test(mHandler),
+     '81.16 kein Schreibverb im Block - die Auskunft liest');
+  ok(!/https?:\/\/|fetch\(|net\.request/.test(mHandler),
+     '81.16 und sie ruft nichts ab - keine neue Datenquelle');
+  ok(/replace\(\/\[\^A-Z0-9\.\^-\]\/g/.test(mHandler),
+     '81.16 das Kuerzel wird gefiltert, bevor daraus ein Dateiname wird');
+  ok(/path\.dirname\(Kerzen\.ordnerVon/.test(mHandler) && !/E:\//.test(mHandler),
+     '81.16 kein fester Laufwerksbuchstabe');
+  ok(/alpacaOrdnerName\(/.test(mHandler),
+     '81.16 der Ordnername kommt aus derselben Abbildung wie bei den Kerzen');
+  ok(/grund: 'keine Daten'/.test(mHandler),
+     '81.16 fehlt die Datei, heisst das "keine Daten" - nicht eine leere Liste');
+  var preCE = fs.readFileSync('preload.js', 'utf8');
+  ok(/archivMassnahmen: \(sym\) => ipcRenderer\.invoke\('archiv-massnahmen'/.test(preCE),
+     '81.16 preload.js reicht sie durch - und nichts, was schriebe');
+  gegen81('ein Schreibverb im Block wuerde gefunden',
+          /writeFileSync/.test('fs.writeFileSync(x)'));
+
+  ok(g81 === rot81, '81.x alle Gegenproben dieses Abschnitts schlagen an', rot81 + ' von ' + g81);
 })();
 
 Promise.all(offeneProben).then(function () {

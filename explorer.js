@@ -511,7 +511,12 @@
        * Bild denselben Anfang, nur genauer - es springt nicht ans Reihenende. Die
        * Zahl der sichtbaren Kerzen waechst dabei im selben Verhaeltnis wie die
        * Aufloesung, sonst zeigte "feiner" pltzlich einen kuerzeren Ausschnitt. */
-      var altZeit = vwLinkeZeit();
+      /* Ob der Rand stehen bleibt, ist seit 8b eine EINSTELLUNG. Aus heisst: das
+       * Bild springt wie frueher ans Reihenende. Der Schalter setzt hier an und
+       * nicht beim Anwenden - sonst merkte sich der Viewer eine Zeit, die er nie
+       * benutzt, und ein spaeteres Anschalten spraenge an eine alte Stelle. */
+      var e = vwEinst();
+      var altZeit = (!e || e.zeit.linkenRandBehalten) ? vwLinkeZeit() : null;
       VW.kerze = neu;
       VW.__linkeZeit = altZeit;
       VW.nachgeladen = '';
@@ -937,6 +942,61 @@
     return aus;
   }
 
+  /* ---- Ereignisse am Chart (8b): Dividende, Split, Quartalszahlen, Nachricht ----
+   *
+   * KEINE NEUE QUELLE. Die Kapitalmassnahmen liest die Leseauskunft
+   * `archiv-massnahmen` aus der Datei, die die Vollsammlung schreibt; der
+   * Ergebnistermin kommt aus derselben Antwort, die die Termin-Karte ohnehin holt;
+   * die Nachrichten sind die, die der Explorer schon geladen hat.
+   *
+   * KEINE DATEN IST NICHT KEINE DIVIDENDE. `VW.ereignisse.<art>` ist `null`,
+   * solange nichts vorliegt, und ein Array, sobald etwas vorliegt - auch ein
+   * leeres. Das Modul macht daraus "keine Daten" bzw. eine Zahl; ein Chart ohne
+   * Marken saehe sonst aus wie ein Wert ohne Ausschuettung. */
+  function vwEreignisSetzen(art, wert) {
+    VW.ereignisse = VW.ereignisse || {};
+    VW.ereignisse[art] = wert;
+    vwZeichnen();
+  }
+  async function vwMassnahmenLaden() {
+    if (!CUR || !window.api || typeof window.api.archivMassnahmen !== 'function') return;
+    var sym = CUR.sym;
+    var r = null;
+    try { r = await window.api.archivMassnahmen(sym); } catch (e) { r = null; }
+    if (sym !== (CUR && CUR.sym)) return;
+    /* Nur ein OK macht aus "wir wissen nichts" ein "es gab nichts". */
+    vwEreignisSetzen('massnahmen', r && r.ok ? { saetze: r.saetze || [], stand: r.stand } : null);
+  }
+  /** Die Quellen, so wie markt/charteinstellungen.js sie erwartet. */
+  function vwEreignisQuellen() {
+    var q = VW.ereignisse || {};
+    return {
+      massnahmen: q.massnahmen || null,
+      earnings: q.earnings || null,
+      nachrichten: Array.isArray(CURDATA.news) && CURDATA.news.length ? CURDATA.news : null
+    };
+  }
+  /** Aus den Zeitpunkten werden Marken auf SICHTBAREN Kerzen. Ein Ereignis
+   *  ausserhalb des Fensters bekommt keine Marke - es gehoert nicht ins Bild.
+   *  Gesucht wird die erste Kerze, die nicht vor dem Ereignis liegt: eine
+   *  Dividende am Ex-Tag sitzt auf der Kerze dieses Tages, nicht auf der davor. */
+  function vwEreignisMarken(s) {
+    var c = CE(), e = vwEinst();
+    if (!c || !e || !s || !s.kerzen.length) return [];
+    var liste = c.marken(vwEreignisQuellen(), e);
+    var ks = s.kerzen;
+    var aus = [];
+    VW.ereignisTipps = [];
+    liste.forEach(function (m) {
+      if (m.zeitMs < ks[0][0] || m.zeitMs > ks[ks.length - 1][0] + 86400000) return;
+      var i = 0;
+      while (i < ks.length - 1 && ks[i][0] < m.zeitMs) i++;
+      aus.push({ index: i, kurz: m.kurz, art: m.art, linie: m.linie });
+      VW.ereignisTipps.push({ index: i, art: m.art, text: m.tooltip });
+    });
+    return aus;
+  }
+
   function vwZeichnen() {
     var c = document.getElementById('vwChart');
     if (!c || !KC()) return;
@@ -975,6 +1035,9 @@
     VW.sichtbar = s;
     var f = vwFarben();
     var linien = vwLinien(s);
+    /* Die Linien bleiben stehen: die Statuszeile liest ihre Werte an der Kerze
+     * unter dem Zeiger AB - sie rechnet sie nicht ein zweites Mal. */
+    VW.gezeichneteLinien = linien;
     var bs = KC().baender(s.sitzungen);
     var marken = vwMarken(s.kerzen);
     /* Das Ergebnis des Zeichnens bleibt stehen - die Oberflaechen-Probe kann sonst
@@ -1027,7 +1090,7 @@
       var ganz = KC().maReihe(alle, Number(n), window.Quant.sma);
       var werte = ganz.slice(von, bis + 1);
       if (werte.some(function (v) { return v != null; })) {
-        linien.push({ werte: werte, farbe: f[VW_MA_FARBE[n]], breite: 1.3 });
+        linien.push({ werte: werte, farbe: f[VW_MA_FARBE[n]], breite: 1.3, name: 'MA' + n });
       }
     });
     /* SMA 50/200 als Chartbild-Schalter - dieselbe Rechnung, andere Beschriftung.
@@ -1037,13 +1100,13 @@
       [[50, 'ma50'], [200, 'ma200']].forEach(function (paar) {
         if (alle.length < paar[0] + 5) return;
         var ganz = KC().maReihe(alle, paar[0], window.Quant.sma);
-        linien.push({ werte: ganz.slice(von, bis + 1), farbe: f[paar[1]], breite: 1.4 });
+        linien.push({ werte: ganz.slice(von, bis + 1), farbe: f[paar[1]], breite: 1.4, name: 'SMA' + paar[0] });
       });
     }
     if (indAn.linie && window.Quant.emaSeries) {
       var closes = alle.map(function (k) { return k[1]; });
       var ema = window.Quant.emaSeries(closes, 20);
-      linien.push({ werte: ema.slice(von, bis + 1), farbe: f.linie, breite: 1 });
+      linien.push({ werte: ema.slice(von, bis + 1), farbe: f.linie, breite: 1, name: 'EMA20' });
     }
     return linien;
   }
@@ -1340,12 +1403,6 @@
     var laenge = window.Boerse.sitzungsMinuten(jetzt);
     return KC().sitzungAusMinuten(window.Quant.minutenSeitOeffnung(jetzt), laenge) === 'regulaer';
   }
-  /** Die Quote-Antwort zum offenen Wert - oder null. Kein Abruf. */
-  function vwQuote() {
-    var MW = window.Marktwerte;
-    if (!MW || typeof MW.quote !== 'function' || !CUR) return null;
-    return MW.quote(CUR.sym);
-  }
 
   /* DIE FUSSZEILE IST NIE STUMM - aber sie ist auch keine Textwand mehr.
    *
@@ -1398,18 +1455,77 @@
     var t = k[4] != null ? k[4] : Math.min(o, k[1]);
     var pct = vor && vor[1] ? (k[1] / vor[1] - 1) * 100 : null;
     var sitz = VW.sichtbar.sitzungen[i];
-    var teile = [
-      vwZeitpunkt(k[0]),
-      'O ' + U.nf2.format(o), 'H ' + U.nf2.format(h),
-      'L ' + U.nf2.format(t), 'C ' + U.nf2.format(k[1])
-    ];
-    var txt = teile.join(' · ');
-    if (k[2] != null) txt += ' · Vol ' + U.nf0.format(k[2]);
+    /* WELCHE Teile hier stehen, sagen die Einstellungen (8b) - und zwar EINE
+     * Stelle: markt/charteinstellungen.js. Frueher stand die Liste hier, und
+     * jeder neue Schalter haette sie ein zweites Mal beschrieben. */
+    var c = CE(), e = vwEinst();
+    var txt;
+    if (c && e) {
+      txt = c.statuszeile({
+        name: CUR ? CUR.name : '', kuerzel: CUR ? CUR.sym : '',
+        zeit: vwZeitpunkt(k[0]), o: o, h: h, l: t, c: k[1],
+        vorher: vor ? vor[1] : null, volumen: k[2],
+        indikatoren: vwIndikatorWerte(i),
+        sitzung: vwLetzteSitzung()
+      }, e, { einheit: vwEinheit(), kurs: VW.sichtbar.kerzen.map(function (x) { return x && x[1]; }) })
+        .filter(function (teil) { return teil.art !== 'aenderung'; })
+        .map(function (teil) { return teil.text; }).join(' · ');
+    } else {
+      txt = [vwZeitpunkt(k[0]), 'O ' + U.nf2.format(o), 'H ' + U.nf2.format(h),
+             'L ' + U.nf2.format(t), 'C ' + U.nf2.format(k[1])].join(' · ');
+      if (k[2] != null) txt += ' · Vol ' + U.nf0.format(k[2]);
+    }
     if (KC().istLaufend(k)) txt += ' · läuft';
     if (sitz === 'vor' || sitz === 'nach') txt += ' · ' + KC().bandText(sitz);
+    /* Die Aenderung steht farbig da - deshalb geht sie nicht durch die
+     * Textliste, sondern kommt hier als eigenes Stueck Markup dazu. Der Schalter
+     * ist derselbe. */
+    var zeigAend = !c || !e || e.statuszeile.aenderung;
     ro.innerHTML = U.esc(txt) +
-      (pct != null ? ' · <span style="color:' + (pct >= 0 ? 'var(--up)' : 'var(--down)') + ';">' +
+      (zeigAend && pct != null ? ' · <span style="color:' + (pct >= 0 ? 'var(--up)' : 'var(--down)') + ';">' +
         U.signTxt(pct, ' %') + '</span>' : '');
+    /* Der Hintergrund der Zeile: an/aus und Deckkraft aus den Einstellungen,
+     * die FARBE vom gemessenen Grund - eine feste Farbe waere im anderen Thema
+     * falsch. */
+    var grund = c && e ? c.statuszeileGrund(e, vwGrundHex()) : null;
+    ro.style.background = grund || '';
+    ro.style.padding = grund ? '2px 6px' : '';
+    ro.style.borderRadius = grund ? 'var(--r-klein)' : '';
+  }
+  /** Die Indikatorwerte an dieser Kerze - aus den Reihen, die ohnehin gezeichnet
+   *  werden. Hier wird nichts nachgerechnet. */
+  function vwIndikatorWerte(i) {
+    var aus = [];
+    (VW.gezeichneteLinien || []).forEach(function (L) {
+      var v = L.werte && L.werte[i];
+      if (v != null) aus.push({ name: L.name, wert: v });
+    });
+    return aus;
+  }
+  /** Schluss, Aenderung und Spanne der zuletzt ABGESCHLOSSENEN Sitzung - aus den
+   *  Tageskerzen, die die Kopfzeile ohnehin hat. Ohne sie: null, nicht geraten. */
+  function vwLetzteSitzung() {
+    var t = VW.tages;
+    if (!t || !Array.isArray(t) || t.length < 2) return null;
+    var letzte = t[t.length - 1], vor = t[t.length - 2];
+    if (!letzte || !vor || !vor[1]) return null;
+    var hoch = letzte[3] != null ? letzte[3] : letzte[1];
+    var tief = letzte[4] != null ? letzte[4] : letzte[1];
+    return { schluss: letzte[1], aenderung: (letzte[1] / vor[1] - 1) * 100, spanne: hoch - tief };
+  }
+  /** Die gemessene Hintergrundfarbe des Chart-Panels als Hex - oder null. */
+  function vwGrundHex() {
+    try {
+      var el = document.getElementById('vwChart');
+      var p = el && el.closest ? el.closest('.panel') : null;
+      var m = String(getComputedStyle(p || document.body).backgroundColor)
+        .match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)$/);
+      if (!m || (m[4] !== undefined && Number(m[4]) < 0.9)) return null;
+      return '#' + [1, 2, 3].map(function (i) {
+        var h = Number(m[i]).toString(16);
+        return h.length < 2 ? '0' + h : h;
+      }).join('');
+    } catch (e) { return null; }
   }
   /** Der Tooltip an einer Signal-Marke. Er traegt das Urteil WOERTLICH aus dem
    *  Studienregister - kein Signal wird als Empfehlung gezeichnet. */
@@ -1420,14 +1536,21 @@
       var k = VW.sichtbar.kerzen[i];
       return k && p.t === k[0];
     });
-    if (!hier.length) { tip.style.display = 'none'; return; }
-    tip.innerHTML = hier.map(function (p) {
+    /* Die Ereignis-Marken (8b) haengen an DEMSELBEN Faehnchen - zwei Fenster
+     * uebereinander fuer dieselbe Kerze waeren keins. Die Ereignisse stehen unten,
+     * hinter einem Strich: das Signal ist die Aussage, das Ereignis der Umstand. */
+    var ereig = (VW.ereignisTipps || []).filter(function (x) { return x.index === i; });
+    if (!hier.length && !ereig.length) { tip.style.display = 'none'; return; }
+    var bloecke = hier.map(function (p) {
       var u = urteilZu((SIGNALE[p.schluessel] || {}).urteil);
       return '<span class="tv">' + U.esc(p.name) + ' · ' + (p.dir === 'call' ? '▲ Kauf' : '▼ Verkauf') + '</span><br>' +
         '<span class="tt">' + U.esc(new Date(p.t).toLocaleString('de-DE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })) +
         ' · ' + U.esc(U.nf2.format(p.preis)) + '</span><br>' +
         '<span class="tt">' + U.esc(u.text) + '</span>';
-    }).join('<hr>');
+    }).concat(ereig.map(function (x) {
+      return '<span class="tt">' + U.esc(x.text) + '</span>';
+    }));
+    tip.innerHTML = bloecke.join('<hr>');
     tip.style.display = 'block';
     tip.style.left = Math.min(window.innerWidth - 260, ev.clientX + 14) + 'px';
     tip.style.top = (ev.clientY + 14) + 'px';
@@ -1702,6 +1825,9 @@
         if (eigen) {
           text = 'Ergebnistermin: <b>' + U.esc(new Date(eigen.zeit).toLocaleDateString('de-DE')) + '</b>' +
             (eigen.art ? ' (' + U.esc(eigen.art) + ')' : '');
+          /* Derselbe Termin wird zur Ereignis-Marke am Chart (8b) - aus DIESER
+           * Antwort, nicht aus einem zweiten Abruf. */
+          vwEreignisSetzen('earnings', [eigen.zeit]);
         }
       }
       if (!text) {
@@ -1711,6 +1837,7 @@
         if (sym !== (CUR && CUR.sym)) return;
         if (a && a.ok && a.aktuell && a.aktuell.termin) {
           text = 'Nächster Ergebnistermin: <b>' + U.esc(new Date(a.aktuell.termin).toLocaleDateString('de-DE')) + '</b>';
+          vwEreignisSetzen('earnings', [a.aktuell.termin]);
         } else {
           /* PM-Fund am Viewer-Foto (04.09.2026): ohne Netz stand hier
            * "Kein Ergebnistermin gefunden (Cannot read properties of null (reading
@@ -1764,6 +1891,14 @@
 
   /* ---- Verdrahtung, einmal ---- */
   function vwBauen() {
+    /* Der Einstellungen-Dialog wird EINMAL verdrahtet und sein gemerkter Stand
+     * einmal geladen. Beides hier und nicht beim Laden der Datei: das Markup steht
+     * erst, wenn der Reiter gebaut ist. */
+    if (window.ChartSet && !window.ChartSet.__bereit) {
+      window.ChartSet.__bereit = true;
+      window.ChartSet.verdrahten();
+      window.ChartSet.laden();
+    }
     vwZeitraumBauen();
     vwKerzeBauen();
     vwEinblendenBauen();
@@ -1790,6 +1925,28 @@
           vwPunkteRechnen();
           vwZeichnen();
         });
+      }
+    }
+    /* Der Zahnrad-Knopf ueber dem Chart (8b). Der Dialog geht ueber den STAPEL
+     * (chartset.js ruft window.openModal) - wer daran vorbei oeffnet, bekommt keine
+     * Ebene, und der naechste Dialog steht falsch (QS-Fund B1). */
+    var zahn = document.getElementById('vwEinstellungen');
+    if (zahn && !zahn.__bereit) {
+      zahn.__bereit = true;
+      zahn.addEventListener('click', function () {
+        if (!window.ChartSet) return;
+        window.ChartSet.oeffnen(zahn, {
+          thema: vwThema(),
+          alpacaZugang: !!(window.AlpAPI && window.AlpAPI.enabled && window.AlpAPI.enabled()),
+          feed: window.AlpAPI ? window.AlpAPI.FEED : '',
+          ereignisQuellen: vwEreignisQuellen()
+        });
+      });
+      if (window.ChartSet && typeof window.ChartSet.beiAenderung === 'function') {
+        /* Jede Aenderung im Dialog zeichnet sofort neu - sonst waehlt man Farben
+         * blind. Das gilt auch fuer "Abbrechen": dort wird der alte Stand
+         * zurueckgemeldet, und dieses Neuzeichnen macht ihn sichtbar. */
+        window.ChartSet.beiAenderung(function () { vwZeichnen(); });
       }
     }
     var mehr = document.getElementById('vwQuelleMehr');
@@ -1906,12 +2063,16 @@
     VW.punkte = [];
     GEWAEHLT = null;
     VW.tages = null;
+    /* Die Ereignisse gehoeren dem Wert - beim Wechsel sind sie UNBEKANNT, nicht
+     * leer. Sonst zeigte der neue Wert die Dividenden des alten. */
+    VW.ereignisse = {};
     vwBelegstand();
     vwKopfZeichnen();
     vwLaden();
     vwQuoteHolen();
     vwTagesreihe().then(vwKopfZeichnen);
     vwTermine();
+    vwMassnahmenLaden();
   }
   /* Nur fuer Proben und die Selbstpruefung - kein Bedienweg. */
   window.__viewer = VW;

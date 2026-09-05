@@ -143,6 +143,12 @@
   }
 
   window.AlpAPI = {
+    /* Welcher Feed gefragt wird. Er steht als Wort heraus, damit die Anzeige ihn
+     * BENENNEN kann statt zu raten: 'iex' ist der Gratis-Feed und liefert nur die
+     * IEX-Boerse (unvollstaendig, nicht verzoegert), 'sip' waere der Gesamtmarkt
+     * mit 15 Minuten Verzug. Wer den Wert oben aendert, aendert damit auch die
+     * Beschriftung am Chart - eine feste Beschriftung waere danach falsch. */
+    FEED: FEED,
     enabled: function () { return cfg().on; },
     lastError: function () { return lastError; },
     lastPriceError: function () { return letzterKursFehler; },

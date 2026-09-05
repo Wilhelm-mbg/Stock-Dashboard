@@ -1892,6 +1892,35 @@ async function holeTerminFenster(vonMs, bisMs) {
     req.end();
   });
 }
+/* Kapitalmassnahmen eines Werts - NUR LESEN, kein Abruf.
+ *
+ * Die Datei schreibt die Vollsammlung (tools/alpaca-vollsammlung.js --massnahmen);
+ * der Viewer liest sie fuer die Ereignis-Marken am Chart (Dividende, Split, 8b).
+ * Es gibt hier keine Gegenauskunft, die schriebe, und keinen Netzzugriff.
+ *
+ * FEHLT DIE DATEI, HEISST DAS "keine Daten" - nicht "keine Dividende". Der
+ * Unterschied ist der ganze Punkt: ein Chart ohne Marken saehe sonst aus wie ein
+ * Wert ohne Ausschuettung, und niemand koennte die beiden Faelle trennen.
+ *
+ * Der Ordnername ist nicht immer das Kuerzel (dieselbe Abbildung wie bei den
+ * Kerzen ueber _symbole.json), und die Alpaca-Wurzel wird aus dem Archivzeiger
+ * abgeleitet - kein fester Laufwerksbuchstabe. */
+ipcMain.handle('archiv-massnahmen', async (_ev, symbol) => {
+  try {
+    const sym = String(symbol || '').toUpperCase().replace(/[^A-Z0-9.^-]/g, '').slice(0, 12);
+    if (!sym) return { ok: false, grund: 'Kein Kürzel' };
+    const wurzel = path.dirname(Kerzen.ordnerVon('60m'));
+    const ord = alpacaOrdnerName(path.join(wurzel, 'alpaca1m'), sym);
+    const datei = path.join(wurzel, 'alpaca-massnahmen', ord + '.json');
+    if (!fs.existsSync(datei)) return { ok: false, grund: 'keine Daten', sym: sym };
+    const roh = JSON.parse(fs.readFileSync(datei, 'utf8'));
+    return { ok: true, sym: sym, stand: roh.stand || null,
+             saetze: Array.isArray(roh.saetze) ? roh.saetze : [] };
+  } catch (e) {
+    return { ok: false, grund: String((e && e.message) || e).slice(0, 160), sym: null };
+  }
+});
+
 ipcMain.handle('earnings-kalender', async (_ev, tage) => {
   /* Der Zeitraum beginnt HEUTE (UTC) - nicht "jetzt": ein Termin von heute frueh
    * gehoert in die Liste, auch wenn er schon vorbei ist. Wer sonst um 16 Uhr

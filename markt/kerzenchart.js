@@ -392,19 +392,48 @@
     var breiteKerze = Math.max(1, Math.floor(dx * 0.7));
     var volMax = 0;
     (kerzen || []).forEach(function (k) { if (zahl(k[2]) && k[2] > volMax) volMax = k[2]; });
+    /* SKALENMODUS (Einstellung aus 8b). 'log' setzt die Kurse auf ihren Logarithmus -
+     * gleiche PROZENTUALE Schritte werden dann gleich hoch, und das ist bei einer
+     * Reihe ueber fuenf Jahre der Unterschied zwischen einer lesbaren Kurve und
+     * einer flachen Linie mit einem Haken am Ende.
+     *
+     * NUR wenn die ganze Spanne ueber null liegt: log(0) ist -unendlich, und eine
+     * Skala mit einer Unendlichkeit darin zeichnet nichts Brauchbares. Faellt sie
+     * nicht, wird STILL auf linear zurueckgeschaltet - aber sk.modus sagt es, damit
+     * die Beschriftung nicht behauptet, sie sei logarithmisch.
+     *
+     * 'prozent' steht bewusst NICHT hier: prozentual ist eine monotone, lineare
+     * Umrechnung derselben Kurse (v/basis - 1). Die Punkte lägen exakt gleich; nur
+     * die BESCHRIFTUNG ist eine andere, und die macht charteinstellungen.js. Wer
+     * dafuer hier eine zweite Rechnung einbaute, haette zwei Wege zu demselben
+     * Bild - und irgendwann zwei verschiedene Bilder. */
+    var modus = m.modus === 'log' && sp.tief > 0 ? 'log' : 'linear';
+    var lHoch = modus === 'log' ? Math.log(sp.hoch) : 0;
+    var lTief = modus === 'log' ? Math.log(sp.tief) : 0;
+    if (modus === 'log' && !(lHoch > lTief)) { modus = 'linear'; }
     var sk = {
       n: n, dx: dx, kerzeBreite: breiteKerze,
       links: links, rechts: rechts, oben: oben, unten: unten,
       breite: breite, hoehe: hoehe,
       feldBreite: feldBreite, kursHoehe: kursHoehe, volHoehe: volHoehe,
-      hoch: sp.hoch, tief: sp.tief, volMax: volMax,
+      hoch: sp.hoch, tief: sp.tief, volMax: volMax, modus: modus,
       x: function (i) { return links + (i + 0.5) * dx; },
       index: function (px) {
         var i = Math.floor((px - links) / dx);
         return i < 0 ? 0 : (i >= n ? n - 1 : i);
       },
-      y: function (v) { return oben + (sp.hoch - v) / (sp.hoch - sp.tief) * kursHoehe; },
-      kurs: function (py) { return sp.hoch - (py - oben) / kursHoehe * (sp.hoch - sp.tief); },
+      y: function (v) {
+        if (!zahl(v)) return oben;
+        if (modus === 'log') {
+          if (!(v > 0)) return oben + kursHoehe;
+          return oben + (lHoch - Math.log(v)) / (lHoch - lTief) * kursHoehe;
+        }
+        return oben + (sp.hoch - v) / (sp.hoch - sp.tief) * kursHoehe;
+      },
+      kurs: function (py) {
+        if (modus === 'log') return Math.exp(lHoch - (py - oben) / kursHoehe * (lHoch - lTief));
+        return sp.hoch - (py - oben) / kursHoehe * (sp.hoch - sp.tief);
+      },
       /* Umsatzbalken wachsen von der Unterkante nach oben. */
       volY: function (v) {
         if (!(volMax > 0) || !zahl(v)) return oben + kursHoehe + volHoehe;
@@ -606,6 +635,12 @@
     if (!ks.length) return [];
     var o = opt || {};
     var zone = o.zone || 'America/New_York';
+    /* Wer die Beschriftung anders schreiben will (Wochentag, anderes Datumsmuster,
+     * 12-Stunden-Uhr - alles Einstellungen aus 8b), reicht seine eigene Funktion
+     * herein. Die REGEL, WO eine Marke steht, bleibt hier: sie haengt an der Zahl
+     * der Kerzen und am Tageswechsel, nicht am Format. Zwei Regeln fuer dieselbe
+     * Frage waeren zwei Antworten. */
+    var txt = typeof o.text === 'function' ? o.text : achsenText;
     var ziel = o.ziel > 0 ? o.ziel : 6;
     var schritt = Math.max(1, Math.floor(ks.length / ziel));
     /* Zwei Kerzen ist der kleinste Abstand, bei dem zwei Beschriftungen nicht
@@ -615,7 +650,7 @@
     var i, j;
     if (!((o.intervallMs || 86400000) < 86400000)) {
       for (i = 0; i < ks.length; i += schritt) {
-        marken.push({ i: i, text: achsenText(ks[i][0], zone, 'tagJahr'), tag: true });
+        marken.push({ i: i, text: txt(ks[i][0], zone, 'tagJahr'), tag: true });
       }
       return marken;
     }
@@ -629,7 +664,7 @@
     }
     wechsel.forEach(function (w) {
       if (marken.length && w - marken[marken.length - 1].i < abstand) return;
-      marken.push({ i: w, text: achsenText(ks[w][0], zone, 'tagKurz'), tag: true });
+      marken.push({ i: w, text: txt(ks[w][0], zone, 'tagKurz'), tag: true });
     });
     /* Danach die Uhrzeiten - aber nur, wo kein Datum steht. */
     for (j = 0; j < ks.length; j += schritt) {
@@ -637,7 +672,7 @@
       for (i = 0; i < marken.length; i++) {
         if (Math.abs(marken[i].i - j) < abstand) { belegt = true; break; }
       }
-      if (!belegt) marken.push({ i: j, text: achsenText(ks[j][0], zone, 'uhr'), tag: false });
+      if (!belegt) marken.push({ i: j, text: txt(ks[j][0], zone, 'uhr'), tag: false });
     }
     marken.sort(function (a, b) { return a.i - b.i; });
     return marken;
@@ -654,6 +689,16 @@
     var o = opt || {};
     var f = {};
     Object.keys(FARBEN).forEach(function (k) { f[k] = (o.farben && o.farben[k]) || FARBEN[k]; });
+    /* Koerper, Rahmen und Docht je Richtung (Einstellungen aus 8b). Sie stehen NICHT
+     * in FARBEN: FARBEN ist der Notnagel dieses Zeichners, die Vorgaben der
+     * Einstellungen stehen an EINER anderen Stelle (markt/charteinstellungen.js).
+     * Hier wird nur aufgefuellt, was der Aufrufer nicht mitbringt - und zwar aus
+     * seiner eigenen Koerperfarbe, nicht aus einer zweiten Farbtabelle. */
+    ['auf', 'ab'].forEach(function (r) {
+      ['Koerper', 'Rahmen', 'Docht'].forEach(function (teil) {
+        f[r + teil] = (o.farben && o.farben[r + teil]) || f[r];
+      });
+    });
     ctx.clearRect(0, 0, sk.breite, sk.hoehe);
 
     /* (a) Die Baender der ausserboerslichen Sitzungen ZUERST - sie liegen hinter
@@ -684,38 +729,118 @@
     });
     ctx.restore();
 
-    /* (c) Die Kerzen. Docht als Linie, Koerper als Rechteck; eine Kerze ohne
-     *     Bewegung bekommt einen Strich, kein Rechteck der Hoehe null. */
+    /* (c) Der Kursverlauf. VIER DARSTELLUNGEN (Einstellung aus 8b) - und sie sind
+     *     nicht dasselbe Bild in anderer Farbe:
+     *
+     *       kerzen   Koerper, Rahmen, Docht - zeigt Eroeffnung UND Schluss.
+     *       balken   OHLC-Balken: Senkrechte Hoch-Tief, Nase links (Eroeffnung),
+     *                Nase rechts (Schluss). Bei engen Faechern lesbarer als Kerzen.
+     *       linie    nur die Schlusskurse. Was innerhalb der Kerze geschah, wird
+     *                dabei WEGGELASSEN - das ist eine Aussage, keine Verzierung.
+     *       flaeche  dieselbe Linie mit Fuellung darunter.
+     *
+     *     DIE FARBE steht in drei Feldern je Richtung (Koerper, Rahmen, Docht), weil
+     *     das Vorbild sie einzeln fuehrt. Fehlt eines, gilt die Koerperfarbe - so
+     *     zeichnet ein Aufrufer aus Stufe 6, der nur `auf`/`ab` kennt, unveraendert
+     *     weiter.
+     *
+     *     WOGEGEN gefaerbt wird, ist eine Einstellung: gegen die Eroeffnung
+     *     DERSELBEN Kerze (Vorgabe) oder gegen den Schluss der VORIGEN
+     *     (`nachVortag`). Das sind zwei verschiedene Aussagen: die erste sagt "im
+     *     Verlauf dieser Kerze ging es hoch", die zweite "gegenueber dem letzten
+     *     Stand ist es hoeher". Die erste Kerze hat keine Vorgaengerin - sie faellt
+     *     dann auf die Eroeffnung zurueck, statt eine Vorgaengerin zu erfinden. */
+    function farbeVon(k, i, teil) {
+      var eroeff = zahl(k[5]) ? k[5] : k[1];
+      var bezug = eroeff;
+      if (o.nachVortag && i > 0 && kerzeOk(kerzen[i - 1])) bezug = kerzen[i - 1][1];
+      var auf = k[1] >= bezug;
+      return f[(auf ? 'auf' : 'ab') + teil];
+    }
+    var darstellung = o.darstellung || 'kerzen';
     var gezeichnet = 0;
-    kerzen.forEach(function (k, i) {
-      if (!kerzeOk(k)) return;
-      gezeichnet++;
-      var o1 = zahl(k[5]) ? k[5] : k[1];
-      var c = k[1];
-      var h = zahl(k[3]) ? k[3] : Math.max(o1, c);
-      var t = zahl(k[4]) ? k[4] : Math.min(o1, c);
-      var farbe = c >= o1 ? f.auf : f.ab;
-      var x = sk.x(i);
-      ctx.save();
-      /* Die laufende Kerze gestrichelt: sie ist noch nicht fertig, und das darf
-       * man ihr ansehen. */
-      if (istLaufend(k)) { ctx.setLineDash([3, 3]); }
-      ctx.strokeStyle = farbe;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x, sk.y(h));
-      ctx.lineTo(x, sk.y(t));
-      ctx.stroke();
-      var yo = sk.y(o1), yc = sk.y(c);
-      var oben = Math.min(yo, yc), hoehe = Math.max(1, Math.abs(yc - yo));
-      if (istLaufend(k)) {
-        ctx.strokeRect(x - sk.kerzeBreite / 2, oben, sk.kerzeBreite, hoehe);
-      } else {
-        ctx.fillStyle = farbe;
-        ctx.fillRect(x - sk.kerzeBreite / 2, oben, sk.kerzeBreite, hoehe);
+    if (darstellung === 'linie' || darstellung === 'flaeche') {
+      /* Eine Linie ueber die Schlusskurse. Die Farbe ist die des LETZTEN Schrittes:
+       * eine Linie, die je Abschnitt die Farbe wechselte, waere ein Flickenteppich
+       * und sagte nichts, was die Kurve nicht schon zeigt. */
+      var pfad = [];
+      kerzen.forEach(function (k, i) {
+        if (!kerzeOk(k)) return;
+        gezeichnet++;
+        pfad.push({ x: sk.x(i), y: sk.y(k[1]) });
+      });
+      if (pfad.length) {
+        var letzteFarbe = farbeVon(kerzen[kerzen.length - 1], kerzen.length - 1, 'Koerper');
+        var boden = sk.oben + sk.kursHoehe;
+        ctx.save();
+        if (darstellung === 'flaeche') {
+          ctx.beginPath();
+          ctx.moveTo(pfad[0].x, boden);
+          pfad.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+          ctx.lineTo(pfad[pfad.length - 1].x, boden);
+          ctx.closePath();
+          ctx.globalAlpha = 0.18;
+          ctx.fillStyle = letzteFarbe;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+        ctx.strokeStyle = letzteFarbe;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        pfad.forEach(function (p, i) { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); });
+        ctx.stroke();
+        ctx.restore();
       }
-      ctx.restore();
-    });
+    } else {
+      kerzen.forEach(function (k, i) {
+        if (!kerzeOk(k)) return;
+        gezeichnet++;
+        var o1 = zahl(k[5]) ? k[5] : k[1];
+        var c = k[1];
+        var h = zahl(k[3]) ? k[3] : Math.max(o1, c);
+        var t = zahl(k[4]) ? k[4] : Math.min(o1, c);
+        var x = sk.x(i);
+        ctx.save();
+        /* Die laufende Kerze gestrichelt: sie ist noch nicht fertig, und das darf
+         * man ihr ansehen. */
+        if (istLaufend(k)) { ctx.setLineDash([3, 3]); }
+        ctx.strokeStyle = farbeVon(k, i, 'Docht');
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, sk.y(h));
+        ctx.lineTo(x, sk.y(t));
+        ctx.stroke();
+        var yo = sk.y(o1), yc = sk.y(c);
+        if (darstellung === 'balken') {
+          /* Nasen statt Koerper. Sie sind halb so breit wie ein Kerzenkoerper -
+           * links und rechts zusammen ergeben sie dieselbe Breite. */
+          var nase = Math.max(1, Math.round(sk.kerzeBreite / 2));
+          ctx.strokeStyle = farbeVon(k, i, 'Rahmen');
+          ctx.beginPath();
+          ctx.moveTo(x - nase, yo); ctx.lineTo(x, yo);
+          ctx.moveTo(x, yc); ctx.lineTo(x + nase, yc);
+          ctx.stroke();
+        } else {
+          var oben = Math.min(yo, yc), hoehe = Math.max(1, Math.abs(yc - yo));
+          if (istLaufend(k)) {
+            ctx.strokeStyle = farbeVon(k, i, 'Rahmen');
+            ctx.strokeRect(x - sk.kerzeBreite / 2, oben, sk.kerzeBreite, hoehe);
+          } else {
+            ctx.fillStyle = farbeVon(k, i, 'Koerper');
+            ctx.fillRect(x - sk.kerzeBreite / 2, oben, sk.kerzeBreite, hoehe);
+            /* Der Rahmen nur, wenn er sich vom Koerper unterscheidet - sonst
+             * malt man dieselbe Farbe zweimal und macht den Koerper einen
+             * Bildpunkt breiter, als er ist. */
+            var rahmen = farbeVon(k, i, 'Rahmen');
+            if (rahmen !== farbeVon(k, i, 'Koerper') && sk.kerzeBreite >= 3) {
+              ctx.strokeStyle = rahmen;
+              ctx.strokeRect(x - sk.kerzeBreite / 2, oben, sk.kerzeBreite, hoehe);
+            }
+          }
+        }
+        ctx.restore();
+      });
+    }
 
     /* (d) Die gleitenden Durchschnitte. Jede Reihe eine Linie, Luecken (null)
      *     unterbrechen sie - eine durchgezogene Linie ueber eine Luecke waere eine
@@ -779,6 +904,78 @@
       ctx.restore();
     });
 
+    /* (d3) Die waagerechten Linien: Kurslinie des Symbols, Vor-/Nachboersenkurs,
+     *      Hoch und Tief des Zeitraums. Alle drei sind Schalter aus 8b, alle drei
+     *      kommen als WERT herein - dieser Zeichner sucht sich keinen Kurs.
+     *
+     *      Der Vor-/Nachboersenkurs stammt aus den Quotes (Stufe 6), nicht aus den
+     *      Kerzen: er liegt gerade ausserhalb der Sitzung und hat deshalb oft noch
+     *      gar keine Kerze. Fehlt er, wird nichts gezeichnet - eine Linie auf dem
+     *      letzten Schluss waere eine Behauptung ueber einen Handel, den es nicht
+     *      gab. */
+    var querlinien = 0;
+    function quer(wert, farbe, muster, breit) {
+      if (!zahl(wert)) return;
+      var y = sk.y(wert);
+      if (!zahl(y) || y < sk.oben - 1 || y > sk.oben + sk.kursHoehe + 1) return;
+      querlinien++;
+      ctx.save();
+      ctx.strokeStyle = farbe;
+      ctx.lineWidth = breit || 1;
+      if (muster && muster.length) ctx.setLineDash(muster);
+      ctx.beginPath();
+      ctx.moveTo(sk.links, y);
+      ctx.lineTo(sk.breite - sk.rechts, y);
+      ctx.stroke();
+      ctx.restore();
+    }
+    if (o.kurslinie && zahl(o.kurslinie.wert)) {
+      quer(o.kurslinie.wert, o.kurslinie.farbe || f.kreuz, o.kurslinie.muster, 1.2);
+    }
+    if (o.ausserboerslichLinie && zahl(o.ausserboerslichLinie.wert)) {
+      quer(o.ausserboerslichLinie.wert, o.ausserboerslichLinie.farbe || f.kreuz, [2, 4], 1);
+    }
+    if (o.hochTief) {
+      quer(sk.hoch, f.kreuz, [1, 4], 1);
+      quer(sk.tief, f.kreuz, [1, 4], 1);
+    }
+
+    /* (d4) Ereignis-Marken: Dividende, Split, Quartalszahlen, Nachricht.
+     *
+     *      Sie sitzen UNTER dem Kursbild am Rand der Umsatzflaeche, nicht auf den
+     *      Kerzen: dort sitzen schon die Signal-Marken, und zwei Zeichensprachen
+     *      auf demselben Platz sind keine. Auch hier wird nichts gerechnet - was
+     *      eine Dividende ist und wann sie war, sagt die Massnahmen-Datei.
+     *
+     *      Der Buchstabe steht IM Kaestchen (D/S/E/N); der ganze Text haengt am
+     *      Tooltip, den der Aufrufer aus derselben Liste baut. */
+    var ereignisse = 0;
+    (o.ereignisse || []).forEach(function (ev) {
+      if (!ev || !zahl(ev.index) || ev.index < 0 || ev.index >= kerzen.length) return;
+      ereignisse++;
+      var ex = sk.x(ev.index);
+      var ey = sk.oben + sk.kursHoehe + sk.volHoehe - 6;
+      ctx.save();
+      if (ev.linie) {
+        ctx.strokeStyle = f.kreuz;
+        ctx.setLineDash([2, 4]);
+        ctx.beginPath();
+        ctx.moveTo(ex, sk.oben);
+        ctx.lineTo(ex, ey - 6);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.fillStyle = ev.farbe || f.kreuz;
+      ctx.beginPath();
+      ctx.arc(ex, ey, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = f.text;
+      ctx.font = '9px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(ev.kurz || '?').slice(0, 1), ex, ey + 3);
+      ctx.restore();
+    });
+
     /* (e) Das Fadenkreuz - nur wenn eines gesetzt ist. */
     if (o.kreuz && zahl(o.kreuz.index)) {
       var xk = sk.x(o.kreuz.index);
@@ -791,7 +988,8 @@
       ctx.stroke();
       ctx.restore();
     }
-    return { kerzen: gezeichnet, baender: bs.length, linien: linien, mitUmsatz: mitUmsatz, marken: marken };
+    return { kerzen: gezeichnet, baender: bs.length, linien: linien, mitUmsatz: mitUmsatz,
+             marken: marken, darstellung: darstellung, querlinien: querlinien, ereignisse: ereignisse };
   }
 
   /* ---------------------------------------------------------------------------

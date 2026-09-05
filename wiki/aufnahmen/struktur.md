@@ -127,7 +127,8 @@ Dialoge (gehören zu keinem Reiter)
 ├─ Analyse  [#aiModalBg]
 ├─ Trade nachbilden  [#ticketModalBg]
 ├─ App-Einstellungen  [#setModalBg]
-└─ Diagnosedaten teilen?  [#diagModalBg]
+├─ Diagnosedaten teilen?  [#diagModalBg]
+└─ Chart-Einstellungen  [#chartSetModalBg]
 ```
 
 ## Heute
@@ -167,7 +168,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 7419 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 7462 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -271,7 +272,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Betrieb
 
-`#sub-betrieb` · 34 Blöcke · 17084 Zeichen sichtbarer Text
+`#sub-betrieb` · 34 Blöcke · 17088 Zeichen sichtbarer Text
 
 - ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
   - ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
@@ -329,3 +330,4 @@ Modaldialoge am Ende von `index.html`. Sie gehören zu **keinem** Reiter — die
 - **Trade nachbilden**  [#ticketModalBg]  · Titel aus `#ticketTitle`
 - **App-Einstellungen**  [#setModalBg]  · Titel aus `#setTitle`
 - **Diagnosedaten teilen?**  [#diagModalBg]  · Titel aus `#diagTitle`
+- **Chart-Einstellungen**  [#chartSetModalBg]  · Titel aus `#csTitle`

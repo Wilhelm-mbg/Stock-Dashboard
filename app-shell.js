@@ -507,7 +507,7 @@
    *
    * Seit dem QS-Fund B1 (04.09.2026) gibt es dafuer EINEN Stapel statt sechs
    * Einzelfaelle. Vorher war die Reihenfolge zweimal beantwortet und beide Antworten
-   * waren dieselbe: alle sechs Dialoge trugen `z-index: 100`, also entschied die
+   * waren dieselbe: alle Dialoge trugen `z-index: 100`, also entschied die
    * Reihenfolge im Dokument. Wer aus den App-Einstellungen "Was ist neu" oeffnete,
    * bekam einen Dialog, der aufging und unsichtbar blieb - `setModalBg` steht im
    * Markup HINTER `wasNeuModalBg`. Und der Fokus-Merker war global: das Schliessen
@@ -544,7 +544,7 @@
    * Diagnose-Frage beim ersten Start), und eine Sonde oder ein spaeterer Umbau kann
    * `open` an dieser Verwaltung vorbei wegnehmen. Ein Eintrag, der dann stehen
    * bliebe, wuerde als offen weitergezaehlt - der naechste Dialog bekaeme eine
-   * Ebene zu hoch, und bei sechs Dialogen unter drei Fenstern (110/120/130) ist der
+   * Ebene zu hoch, und bei sieben Dialogen unter drei Fenstern (110/120/130) ist der
    * Abstand nicht beliebig gross. */
   function stapelAbgleichen() {
     STAPEL.liste().forEach(function (kennung) {
@@ -572,7 +572,7 @@
     return document.querySelector('.modal-bg.open');
   }
 
-  /* Wohin der Fokus beim Oeffnen geht (QS-Fund U1: fuenf von sechs Dialogen
+  /* Wohin der Fokus beim Oeffnen geht (QS-Fund U1: fuenf von damals sechs Dialogen
    * fokussierten das Schliessen-Kreuz, weil es als erstes Kind im Markup steht).
    * Wer einen Dialog oeffnet, will ihn benutzen, nicht schliessen.
    *
@@ -663,7 +663,7 @@
     if (!her || her === document.body || bg.contains(her)) her = null;
     /* Erst abgleichen, dann stapeln: ein Dialog, dem jemand `open` von aussen
      * weggenommen hat, wuerde sonst als offen weitergezaehlt, und der naechste
-     * bekaeme eine Ebene zu hoch. Bei sechs Dialogen und drei Fenstern darueber
+     * bekaeme eine Ebene zu hoch. Bei sieben Dialogen und drei Fenstern darueber
      * (110/120/130) ist das kein theoretischer Abstand. */
     stapelAbgleichen();
     var erg = STAPEL.oeffnen(id, her);

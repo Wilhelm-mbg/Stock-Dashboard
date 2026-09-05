@@ -72,6 +72,8 @@ contextBridge.exposeInMainWorld('api', {
   /* Kerzen aus dem eigenen Archiv fuer den Aktien-Viewer (Stufe 6). NUR LESEN -
    * es gibt keine Gegenauskunft, die schriebe. */
   archivKerzen: (sym, zeitrahmen, anzahl) => ipcRenderer.invoke('archiv-kerzen', sym, zeitrahmen, anzahl),
+  /* Kapitalmassnahmen fuer die Ereignis-Marken des Viewers (8b). NUR LESEN. */
+  archivMassnahmen: (sym) => ipcRenderer.invoke('archiv-massnahmen', sym),
   sammlerStart: (intervall) => ipcRenderer.invoke('sammler-start', intervall),
   sammlerStop: () => ipcRenderer.invoke('sammler-stop'),
   sammlerEinstellen: (e) => ipcRenderer.invoke('sammler-einstellen', e),

@@ -555,7 +555,42 @@ function scheinKurse(jetzt) {
    hier: eine versehentlich liegengebliebene Datei nennt ihre Herkunft selbst. */
 var KUNST_SCHEIN_SYMBOL = 'KUNSTS';
 
+/* ================= Kapitalmassnahmen fuer die Ereignis-Marken (Viewer 8b) ==========
+ *
+ * Der Chart kann Dividenden und Splits als Marke zeigen. Ohne Datei stuende dort
+ * "keine Daten" - richtig, aber es liesse die Marken selbst ungeprueft. Deshalb
+ * bekommt KUNSTA je EINE Dividende und EINEN Split, beide innerhalb der Reihe, die
+ * das Kunst-Archiv fuehrt.
+ *
+ * DIESELBE FORM WIE DIE ECHTE DATEI (tools/alpaca-vollsammlung.js --massnahmen):
+ * `saetze` mit `_art` und `ex_date`, Split ueber old_rate/new_rate. Eine Attrappe
+ * in einer anderen Form wuerde eine Leseauskunft pruefen, die es nicht gibt.
+ *
+ * Die Tage haengen an `jetzt` und liegen 30 bzw. 60 Handelstage zurueck - das
+ * Kunst-Archiv fuehrt genug Tageskerzen, damit beide im Bild liegen koennen.
+ * Deterministisch: derselbe Zeitpunkt gibt dieselbe Datei. */
+function massnahmen(jetzt) {
+  var now = jetzt || Date.now();
+  function tagText(vorTagen) {
+    var d = new Date(now - vorTagen * 86400000);
+    return d.getUTCFullYear() + '-' + ('0' + (d.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + d.getUTCDate()).slice(-2);
+  }
+  return [{
+    pfad: 'alpaca-massnahmen/' + KUNST_SYMBOLE[0] + '.json',
+    inhalt: {
+      sym: KUNST_SYMBOLE[0],
+      quelle: 'Kunstdaten fuer eine Oberflaechen-Probe - keine Messung',
+      stand: new Date(now).toISOString(),
+      saetze: [
+        { _art: 'cash_dividends', ex_date: tagText(30), rate: 0.24 },
+        { _art: 'forward_splits', ex_date: tagText(60), old_rate: 1, new_rate: 2 }
+      ]
+    }
+  }];
+}
+
 module.exports = { bauen: bauen, kostenmessung: kostenmessung, archiv: archiv,
+                   massnahmen: massnahmen,
                    newsstand: newsstand,
                    marktStammdaten: marktStammdaten, marktArchiv: marktArchiv,
                    marktKurse: marktKurse, marktstand: marktstand,

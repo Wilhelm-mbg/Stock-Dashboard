@@ -614,6 +614,180 @@ async function viewerPruefen(win, js) {
       funde.push('F8: bei ' + x[0] + ' px steht die Stoerungsmeldung nicht in ihrer eigenen Zeile');
     }
   });
+
+  /* ================= Chart-Einstellungen (Viewer 8b) =================
+   *
+   * Was hier gemessen wird und warum es nur HIER geht:
+   *   - Der Dialog geht ueber den Stapel auf und liegt SICHTBAR obenauf
+   *     (elementFromPoint, nicht classList - das war QS-Fund B1).
+   *   - Alle vier Reiter schalten ihren Inhalt um. Ein Reiter, der nichts tut,
+   *     sieht im Quelltext genauso aus wie einer, der etwas tut.
+   *   - Eine geaenderte Farbe kommt WIRKLICH auf die Leinwand. Gezaehlt werden
+   *     Bildpunkte - dass ein Feld seinen Wert geaendert hat, sagt nichts darueber,
+   *     ob der Chart neu gezeichnet wurde.
+   *   - Ok und Abbrechen sind UNTERSCHIEDEN: nach Abbrechen muss die Farbe weg
+   *     sein. Ein Abbrechen, das uebernimmt, ist schlimmer als keines.
+   */
+  await js("(function () { var b = document.querySelector('nav.tabs [data-tab=\"werkzeuge\"]'); if (b) b.click(); " +
+           "var p = document.querySelector('#wzPills [data-sub=\"explorer\"]'); if (p) p.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 500));
+
+  /* Die Zahl der Bildpunkte einer Farbe auf der Leinwand. Toleranz 8 je Kanal:
+   * der Zeichner malt mit Kantenglaettung, ein exakter Vergleich faende deshalb
+   * auch dann nichts, wenn die Farbe da ist. */
+  const PIXELZAEHLER =
+    "function zaehl(r0, g0, b0) {" +
+    " var c = document.getElementById('vwChart'); if (!c) return -1;" +
+    " var d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, n = 0;" +
+    " for (var i = 0; i < d.length; i += 4) {" +
+    "   if (Math.abs(d[i] - r0) < 8 && Math.abs(d[i+1] - g0) < 8 && Math.abs(d[i+2] - b0) < 8) n++;" +
+    " } return n; }";
+
+  const cs0 = await js("(function () {" + PIXELZAEHLER +
+    " var z = document.getElementById('vwEinstellungen');" +
+    " return { knopf: !!z, magenta: zaehl(255, 0, 255) }; })()");
+  if (!cs0.knopf) funde.push('8b: der Zahnrad-Knopf ueber dem Chart fehlt');
+  console.log('    8b: Zahnrad da=' + cs0.knopf + ', Magenta-Punkte vorher=' + cs0.magenta);
+  if (cs0.magenta > 0) funde.push('8b: die Probefarbe steht schon vor der Aenderung auf der Leinwand (' + cs0.magenta + ')');
+
+  /* Geoeffnet wird mit einem ECHTEN Mausklick: element.click() fokussiert den Knopf
+   * nicht, und die Fokus-Rueckgabe waere danach nicht gemessen, sondern geglaubt. */
+  /* IN DEN BLICK ROLLEN, DANN messen. Ein sendInputEvent nimmt Fenster-Koordinaten:
+   * liegt der Knopf unter der Kante, trifft der Klick eine andere Stelle - und die
+   * Probe meldete "der Knopf oeffnet nichts", obwohl niemand ihn gedrueckt hat. */
+  const zPos = await js("(function () { var z = document.getElementById('vwEinstellungen');" +
+    " if (!z) return null; z.scrollIntoView({ block: 'center' });" +
+    " var r = z.getBoundingClientRect();" +
+    " return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2)," +
+    "   imBild: r.top >= 0 && r.bottom <= window.innerHeight," +
+    "   chartSet: typeof window.ChartSet, modul: typeof window.ChartEinstellungen }; })()");
+  console.log('    8b: Knopf bei ' + (zPos ? zPos.x + '/' + zPos.y + ' imBild=' + zPos.imBild +
+    ' ChartSet=' + zPos.chartSet + ' Modul=' + zPos.modul : 'nicht gefunden'));
+  if (zPos && zPos.chartSet !== 'object') funde.push('8b: window.ChartSet fehlt - chartset.js faehrt nicht mit');
+  if (zPos && !zPos.imBild) funde.push('8b: der Zahnrad-Knopf laesst sich nicht in den Blick rollen');
+  async function zahnradKlicken() {
+    if (!zPos) return;
+    win.webContents.sendInputEvent({ type: 'mouseDown', x: zPos.x, y: zPos.y, button: 'left', clickCount: 1 });
+    win.webContents.sendInputEvent({ type: 'mouseUp', x: zPos.x, y: zPos.y, button: 'left', clickCount: 1 });
+    await new Promise((r) => setTimeout(r, 450));
+  }
+  await zahnradKlicken();
+
+  const cs1 = await js("(function () {" +
+    " var bg = document.getElementById('chartSetModalBg'); if (!bg) return { da: false, reiter: [] };" +
+    " var kasten = bg.querySelector('.modal'); var r = kasten.getBoundingClientRect();" +
+    " var oben = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);" +
+    " return { da: true, offen: bg.classList.contains('open')," +
+    "   ebene: bg.style.zIndex || ''," +
+    "   obenauf: !!(oben && bg.contains(oben))," +
+    "   reiter: Array.prototype.map.call(bg.querySelectorAll('#csReiter button[data-reiter]')," +
+    "     function (b) { return b.getAttribute('data-reiter'); })," +
+    "   felder: bg.querySelectorAll('#csInhalt .csZeile').length }; })()");
+  console.log('    8b: Dialog offen=' + cs1.offen + ', Ebene ' + cs1.ebene + ', obenauf=' + cs1.obenauf +
+    ', Reiter ' + (cs1.reiter || []).join('/') + ', Felder im ersten Reiter ' + cs1.felder);
+  if (!cs1.offen) funde.push('8b: der Zahnrad-Knopf oeffnet den Einstellungen-Dialog nicht');
+  if (cs1.offen && !cs1.obenauf) funde.push('8b: der Dialog ist offen, liegt aber nicht sichtbar obenauf');
+  if (cs1.offen && !cs1.ebene) funde.push('8b: der Dialog hat keine Ebene aus dem Stapel bekommen');
+  if ((cs1.reiter || []).length !== 4) funde.push('8b: ' + (cs1.reiter || []).length + ' Reiter statt vier');
+  if (!cs1.felder) funde.push('8b: der erste Reiter ist leer');
+
+  /* Jeder Reiter muss den Inhalt WECHSELN. Verglichen werden die Beschriftungen -
+   * die Zahl der Zeilen allein koennte zufaellig gleich sein. */
+  const reiterStand = [];
+  for (const rn of (cs1.reiter || [])) {
+    await js("(function () { var b = document.getElementById('csReiter-" + rn + "'); if (b) b.click(); return 'ok'; })()");
+    await new Promise((r) => setTimeout(r, 150));
+    const st = await js("(function () {" +
+      " var i = document.getElementById('csInhalt');" +
+      " var gewaehlt = document.querySelector('#csReiter button[aria-selected=\"true\"]');" +
+      " return { zeilen: i.querySelectorAll('.csZeile').length," +
+      "   text: Array.prototype.map.call(i.querySelectorAll('.csZeile > label')," +
+      "     function (l) { return (l.textContent || '').trim(); }).join('|')," +
+      "   aktiv: gewaehlt ? gewaehlt.getAttribute('data-reiter') : null }; })()");
+    reiterStand.push({ reiter: rn, zeilen: st.zeilen, aktiv: st.aktiv, text: st.text });
+    if (st.aktiv !== rn) funde.push('8b: Klick auf Reiter ' + rn + ' setzt aria-selected nicht (' + st.aktiv + ')');
+    if (!st.zeilen) funde.push('8b: Reiter ' + rn + ' zeigt keine Felder');
+  }
+  console.log('    8b: Reiter-Felder ' + reiterStand.map(function (r) { return r.reiter + '=' + r.zeilen; }).join(' '));
+  const texte = reiterStand.map(function (r) { return r.text; });
+  if (new Set(texte).size !== texte.length) funde.push('8b: zwei Reiter zeigen denselben Inhalt - einer schaltet nicht');
+
+  /* Die Farbe. Gesetzt wird ueber das Feld, das die Feldtabelle gebaut hat - nicht
+   * ueber den Speicher: gemessen werden soll der WEG durch den Dialog. */
+  async function farbeSetzen() {
+    return js("(function () {" +
+      " var b = document.getElementById('csReiter-symbol'); if (b) b.click();" +
+      " var f = document.querySelectorAll('#csInhalt input[type=\"color\"]');" +
+      " if (!f.length) return { ok: false, felder: 0 };" +
+      /* ALLE sechs Farbfelder des Reiters, nicht nur das erste: die Koerper der
+       * Kunst-Kerzen sind ein bis zwei Bildpunkte hoch, die Dochte dagegen lang.
+       * Mit nur einem Feld hing die Messung an sechs Bildpunkten - richtig, aber
+       * zu knapp, um eine Regression sicher zu fangen. */
+      " for (var i = 0; i < f.length; i++) {" +
+      "   f[i].value = '#ff00ff';" +
+      "   f[i].dispatchEvent(new Event('input', { bubbles: true }));" +
+      " }" +
+      " return { ok: true, wert: f[0].value, felder: f.length }; })()");
+  }
+  const gesetzt = await farbeSetzen();
+  await new Promise((r) => setTimeout(r, 400));
+  const cs2 = await js("(function () {" + PIXELZAEHLER + " return zaehl(255, 0, 255); })()");
+  console.log('    8b: Farbfelder ' + gesetzt.felder + ', nach der Aenderung Magenta-Punkte=' + cs2);
+  if (!gesetzt.ok) funde.push('8b: im Reiter Symbol gibt es kein Farbfeld');
+  if (!(cs2 > 0)) funde.push('8b: die geaenderte Farbe erscheint NICHT auf der Leinwand (' + cs2 + ' Punkte)');
+
+  /* ABBRECHEN muss sie wieder wegnehmen. */
+  await js("(function () { var b = document.getElementById('csAbbrechen'); if (b) b.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 400));
+  const cs3 = await js("(function () {" + PIXELZAEHLER +
+    " var bg = document.getElementById('chartSetModalBg');" +
+    " return { magenta: zaehl(255, 0, 255), offen: bg.classList.contains('open') }; })()");
+  console.log('    8b: nach Abbrechen Magenta-Punkte=' + cs3.magenta + ', Dialog offen=' + cs3.offen);
+  if (cs3.offen) funde.push('8b: Abbrechen schliesst den Dialog nicht');
+  if (cs3.magenta > 0) funde.push('8b: Abbrechen nimmt die Farbe nicht zurueck (' + cs3.magenta + ' Punkte)');
+
+  /* OK muss sie behalten - sonst waeren beide Knoepfe dasselbe. */
+  await zahnradKlicken();
+  await farbeSetzen();
+  await new Promise((r) => setTimeout(r, 250));
+  await js("(function () { var b = document.getElementById('csOk'); if (b) b.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 400));
+  const cs4 = await js("(function () {" + PIXELZAEHLER +
+    " var bg = document.getElementById('chartSetModalBg');" +
+    " return { magenta: zaehl(255, 0, 255), offen: bg.classList.contains('open') }; })()");
+  console.log('    8b: nach Ok Magenta-Punkte=' + cs4.magenta + ', Dialog offen=' + cs4.offen);
+  if (cs4.offen) funde.push('8b: Ok schliesst den Dialog nicht');
+  if (!(cs4.magenta > 0)) funde.push('8b: Ok uebernimmt die Farbe nicht (' + cs4.magenta + ' Punkte)');
+  if (cs4.magenta > 0 && cs3.magenta > 0) funde.push('8b: Ok und Abbrechen sind nicht unterschieden');
+
+  /* Zurueck auf den Standard - die folgenden Aufnahmen sollen nicht magenta sein. */
+  await zahnradKlicken();
+  await js("(function () { var b = document.getElementById('csZuruecksetzen'); if (b) b.click();" +
+           " var o = document.getElementById('csOk'); if (o) o.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 400));
+  const cs5 = await js("(function () {" + PIXELZAEHLER + " return zaehl(255, 0, 255); })()");
+  if (cs5 > 0) funde.push('8b: Zuruecksetzen laesst die Probefarbe stehen (' + cs5 + ' Punkte)');
+
+  /* Die Ereignis-Marken: das Kunst-Archiv fuehrt eine Dividende und einen Split.
+   * Ohne sie waere der Schalter gruen, ohne je eine Marke gezeichnet zu haben. */
+  await js("(function () { var b = document.querySelector('#vwKerze [data-kerze=\"1T\"]'); if (b && !b.disabled) b.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 1800));
+  const ereig = await js("(function () { var V = window.__viewer || {};" +
+    " return { gezeichnet: (V.gezeichnet || {}).ereignisse || 0," +
+    "   tipps: (V.ereignisTipps || []).length," +
+    "   ganz: JSON.stringify(V.gezeichnet || null)," +
+    "   sichtbar: V.sichtbar ? V.sichtbar.kerzen.length : 0," +
+    "   quellen: V.ereignisse ? Object.keys(V.ereignisse).join(',') : '' }; })()");
+  console.log('    8b: Zeichenergebnis ' + ereig.ganz + ', sichtbar ' + ereig.sichtbar);
+  console.log('    8b: Ereignis-Marken gezeichnet=' + ereig.gezeichnet + ', Tooltips=' + ereig.tipps +
+    ', Quellen=' + ereig.quellen);
+  if (!(ereig.gezeichnet > 0)) {
+    funde.push('8b: keine Ereignis-Marke gezeichnet, obwohl das Kunst-Archiv Dividende und Split fuehrt');
+  }
+  if (ereig.tipps !== ereig.gezeichnet) {
+    funde.push('8b: ' + ereig.gezeichnet + ' Marken, aber ' + ereig.tipps + ' Tooltips - jede Marke braucht einen');
+  }
+
   return funde;
 }
 

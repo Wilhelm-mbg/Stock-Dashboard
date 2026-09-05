@@ -24,7 +24,7 @@
  *
  * Diese Fassung misst deshalb drei Dinge, nicht eins:
  *
- *   TEIL A - jeden der sechs Dialoge einzeln: sichtbar obenauf, Fokus hinein, Fokus
+ *   TEIL A - jeden der sieben Dialoge einzeln: sichtbar obenauf, Fokus hinein, Fokus
  *            NICHT auf dem Schliessen-Kreuz, ein Name unter 120 Zeichen, Fokusfalle
  *            vor- und rueckwaerts, Escape schliesst, Fokus kehrt zum Ausloeser zurueck.
  *   TEIL B - die Kette, an der B1 haengt: Kopfzeile -> App-Einstellungen ->
@@ -75,15 +75,18 @@ BrowserWindow.prototype.loadFile = function (fp, opts) {
   return origLoadFile.call(this, fp, opts);
 };
 
-/* Alle sechs Dialoge. Die erste Fassung fuehrte fuenf - erststartModalBg fehlte, und
- * damit ausgerechnet der, den jeder Nutzer als ersten sieht. */
+/* Alle sieben Dialoge. Die erste Fassung fuehrte fuenf - erststartModalBg fehlte, und
+ * damit ausgerechnet der, den jeder Nutzer als ersten sieht. Der siebte kam mit dem
+ * Aktien-Viewer 8b dazu (Chart-Einstellungen); er wird ueber denselben Stapel
+ * geoeffnet wie die anderen und muss deshalb dieselben sieben Fragen bestehen. */
 const DIALOGE = [
   { id: 'erststartModalBg', name: 'Kurz gesagt' },
   { id: 'wasNeuModalBg', name: 'Was ist neu' },
   { id: 'aiModalBg', name: 'Analyse' },
   { id: 'ticketModalBg', name: 'Trade nachbilden' },
   { id: 'setModalBg', name: 'App-Einstellungen' },
-  { id: 'diagModalBg', name: 'Diagnose' }
+  { id: 'diagModalBg', name: 'Diagnose' },
+  { id: 'chartSetModalBg', name: 'Chart-Einstellungen' }
 ];
 
 /* Ab hier ist ein "Name" keiner mehr. Der Diagnose-Dialog liess aria-labelledby auf
