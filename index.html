@@ -921,7 +921,11 @@
   .vwBand { position: relative; width: 150px; height: 6px; border-radius: var(--r-klein); background: var(--border); }
   .vwBand i { position: absolute; top: -3px; width: 2px; height: 12px; background: var(--ink); }
   .vwWrap { position: relative; margin-top: 6px; }
-  #vwChart { width: 100%; height: 420px; display: block; cursor: crosshair; }
+  /* Die Hoehe des Kursbilds steht EINMAL: der Kerzen-Canvas und die Werkzeugleiste
+     daneben haengen beide daran. Zwei Zahlen liefen beim naechsten Umbau auseinander,
+     und die Leiste waere entweder laenger als das Bild oder haette einen toten Rand. */
+  .vwWrap, .vwZeichenFeld { --vw-bildhoehe: 420px; }
+  #vwChart { width: 100%; height: var(--vw-bildhoehe); display: block; cursor: crosshair; }
   #vwChart:focus-visible { outline: 2px solid var(--btn); outline-offset: 2px; }
   .vwKreuz { position: absolute; top: 4px; left: 8px; pointer-events: none; font-size: var(--fs-neben);
              color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -935,9 +939,41 @@
   .vwZoom button:hover { border-color: var(--btn); color: var(--ink); }
   .vwGruppe { color: var(--muted); font-size: var(--fs-neben); font-weight: 600; }
   #vwIndi { width: 100%; height: 90px; display: block; }
+  /* ---- Zeichenwerkzeuge (Aktien-Viewer 8c, 05.09.2026) ----
+     Die Leiste steht senkrecht links neben dem Chart, wie im Vorbild. Auf schmalen
+     Fenstern legt sie sich waagerecht darüber: eine 28 px schmale Spalte neben einem
+     340 px hohen Chart ist kein Werkzeugkasten mehr, sondern ein Streifen. */
+  .vwZeichenFeld { display: flex; gap: 6px; align-items: stretch; margin-top: 6px; }
+  .vwZeichenFeld .vwWrap { flex: 1; min-width: 0; margin-top: 0; }
+  .vwWerkzeuge { display: flex; flex-direction: column; gap: 1px; flex: 0 0 auto;
+                 max-height: var(--vw-bildhoehe); overflow-y: auto; overflow-x: hidden; }
+  .vwWerkzeuge button { background: none; border: 1px solid transparent; border-radius: var(--r-normal);
+                        color: var(--ink-2); cursor: pointer; width: 28px; height: 22px; line-height: 1;
+                        font-size: var(--fs-neben); }
+  .vwWerkzeuge button:hover { border-color: var(--border); color: var(--ink); }
+  .vwWerkzeuge button[aria-pressed="true"] { background: var(--btn); color: var(--btn-ink); border-color: var(--btn); }
+  .vwWerkzeuge hr { border: 0; border-top: 1px solid var(--border); margin: 3px 2px; width: auto; }
+  /* Das Fibonacci-Untermenü klappt in DERSELBEN Spalte auf, nicht daneben: in einer
+     28 px schmalen Leiste liefen fünf Knöpfe sonst quer aus dem Feld heraus. */
+  #vzFibListe:not([hidden]) { display: flex; flex-direction: column; gap: 2px; }
+  /* Die Zeichenebene liegt deckungsgleich über dem Kerzen-Canvas und lässt jede
+     Maus durch – wer greift, entscheidet der Treffertest, nicht die Ebene. */
+  .vwEbene { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .vwMess { position: absolute; z-index: 2; pointer-events: none; font-size: var(--fs-neben);
+            background: var(--btn); color: var(--btn-ink); border-radius: var(--r-normal);
+            padding: 4px 8px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .vwStil { position: absolute; z-index: 3; top: 4px; right: 8px; display: flex; gap: 6px;
+            align-items: center; background: var(--panel); border: 1px solid var(--border);
+            border-radius: var(--r-normal); padding: 4px 6px; font-size: var(--fs-neben); }
+  .vwStil input[type="color"] { width: 26px; height: 20px; padding: 0; border: none; background: none; }
+  @media (max-width: 760px) {
+    .vwZeichenFeld { flex-direction: column; }
+    .vwWerkzeuge { flex-direction: row; flex-wrap: wrap; max-height: none; }
+    .vwWerkzeuge hr { width: 100%; }
+  }
   #vwQuelleDetail { margin-top: 4px; }
   #vwQuelleDetail ul { margin: 0; padding-left: 18px; }
-  @media (max-width: 1100px) { .vwBand { width: 90px; } #vwChart { height: 340px; } }
+  @media (max-width: 1100px) { .vwBand { width: 90px; } .vwWrap, .vwZeichenFeld { --vw-bildhoehe: 340px; } }
   /* ---- Chart-Einstellungen (Aktien-Viewer 8b, 05.09.2026) ----
      Links die Reiter, rechts der Inhalt - dasselbe Muster wie im Vorbild. Unter
      760 px wandern die Reiter über den Inhalt, sonst steht die Liste schmaler als
@@ -1936,10 +1972,30 @@
       <!-- Einblenden: Signale, Kanäle, Indikatoren. Aus SIGNALE/INDIKATOREN
            gebaut - die Erklärtexte und die Urteile stehen dort an einer Stelle. -->
       <div class="chartleiste" id="vwEinblenden" role="group" aria-label="Einblenden"></div>
-      <div class="vwWrap">
-        <canvas id="vwChart" tabindex="0" role="img"
-                aria-label="Kerzenchart des gewählten Werts – Pfeiltasten blättern, Plus und Minus zoomen"></canvas>
-        <div id="vwKreuz" class="vwKreuz"></div>
+      <!-- Zeichenwerkzeuge (Viewer 8c): senkrechte Leiste links neben dem Chart,
+           wie im Vorbild. Die Knöpfe stehen NICHT hier – explorer.js baut sie aus
+           markt/zeichnungen.js (ARTEN), damit Beschriftung, Tastenkürzel und
+           Punktzahl aus EINER Tabelle kommen. Gezeichnet wird nur angezeigt:
+           aus keiner Linie folgt ein Handel. -->
+      <div class="vwZeichenFeld">
+        <div class="vwWerkzeuge" id="vwWerkzeuge" role="toolbar"
+             aria-orientation="vertical" aria-label="Zeichenwerkzeuge"></div>
+        <div class="vwWrap">
+          <canvas id="vwChart" tabindex="0" role="img"
+                  aria-label="Kerzenchart des gewählten Werts – Pfeiltasten blättern, Plus und Minus zoomen"></canvas>
+          <!-- Die Zeichenebene: ein zweiter Canvas gleicher Größe ÜBER dem
+               Kerzen-Canvas, damit der Kerzenchart aus 8a/8b unverändert bleibt.
+               Sie lässt Mausereignisse durch (pointer-events: none) – wer greift,
+               ist eine Frage des Treffertests, nicht der Ebene. -->
+          <canvas id="vwEbene" class="vwEbene" aria-hidden="true"></canvas>
+          <div id="vwKreuz" class="vwKreuz"></div>
+          <!-- Die Messbox: Text im DOM, nicht auf dem Canvas – sonst liest sie
+               weder die Vorlesehilfe noch die Oberflächen-Probe. -->
+          <div id="vwMess" class="vwMess" role="status" hidden></div>
+          <!-- Stil der ausgewählten Zeichnung. Leer im Markup, gefüllt aus dem
+               Modul (Farben, Breiten, Linienarten). -->
+          <div id="vwStil" class="vwStil" role="group" aria-label="Stil der Zeichnung" hidden></div>
+        </div>
       </div>
       <!-- Die Indikator-Spur: eigene Skala, dieselbe x-Achse. Verborgen,
            solange niemand sie einblendet. -->
@@ -3017,6 +3073,9 @@
 <!-- Erst die Vorgaben, dann der Dialog, der sie liest (Viewer 8b). -->
 <script src="markt/charteinstellungen.js"></script>
 <script src="chartset.js"></script>
+<!-- Die Zeichnungen (Viewer 8c) rechnen mit der Skala aus kerzenchart.js und
+     brauchen sie deshalb vor sich. -->
+<script src="markt/zeichnungen.js"></script>
 <script src="marktui.js"></script>
 <script src="strategiebaukasten.js"></script>
 <script src="scoreboard.js"></script>

@@ -19246,6 +19246,297 @@ console.log('\n81) Chart-Einstellungen: ein Dialog, eine Quelle der Vorgaben');
   ok(g81 === rot81, '81.x alle Gegenproben dieses Abschnitts schlagen an', rot81 + ' von ' + g81);
 })();
 
+/* ================= 82) Zeichenwerkzeuge im Chart (Viewer 8c) ====================
+ *
+ * Zeichnungen sind der erste Teil des Viewers, in dem der BENUTZER Daten anlegt.
+ * Alles andere zeigt, was gemessen oder geholt wurde; hier entsteht etwas, das
+ * bleiben soll. Daraus folgen die drei Fragen dieses Abschnitts:
+ *
+ *   (a) Rechnet das Modul richtig? Fibonacci, Messwerkzeug, Magnet, Treffertest -
+ *       durchgespielt, nicht abgetastet.
+ *   (b) Ueberlebt eine Zeichnung das Zoomen? Sie liegt in DATEN-Koordinaten; die
+ *       Probe projiziert dieselbe Zeichnung mit zwei verschiedenen Skalen und
+ *       verlangt andere Pixel bei gleichen Daten. Ohne die erste Haelfte waere die
+ *       zweite wertlos - eine Zeichnung, die sich nie bewegt, haelt jede Invariante.
+ *   (c) Haengt die Leiste wirklich am Modul? Kein Werkzeugname, kein Tastenkuerzel
+ *       und keine Punktzahl darf im Renderer noch einmal stehen.
+ *
+ * WAS HIER NICHT GEPRUEFT WERDEN KANN und deshalb in tools/ui-probe.js steht: dass
+ * zwei Klicks im laufenden Bild eine Linie ergeben, dass das Rad sie mitnimmt und
+ * dass ein Wert-Wechsel sie wiederfindet. Das braucht ein Fenster; eine Textmarke
+ * waere dort die falsche Messung.
+ *
+ * GEHANDELT WIRD AUS EINER ZEICHNUNG NICHTS - das haelt 82.9 fest. */
+console.log('\n82) Zeichenwerkzeuge: Daten-Koordinaten, Fibonacci, Treffertest');
+(function () {
+  var Z = require('./markt/zeichnungen.js');
+  var KCz = require('./markt/kerzenchart.js');
+  var quelleZ = fs.readFileSync('markt/zeichnungen.js', 'utf8');
+  var expZ = fs.readFileSync('explorer.js', 'utf8');
+  var htmlZ = fs.readFileSync('index.html', 'utf8');
+  var probeZ = fs.readFileSync('tools/ui-probe.js', 'utf8');
+  var g82 = 0, rot82 = 0;
+  function gegen82(was, ergebnis) { g82++; if (ergebnis) rot82++; ok(ergebnis, '   Gegenprobe: ' + was); }
+
+  /* --- 82.1 Das Modul ist rein --- */
+  var ohneZ = ohneKommentare(quelleZ);
+  ok(!/\bdocument\b/.test(ohneZ), '82.1 zeichnungen.js kennt kein document');
+  ok(!/\bwindow\.[a-zA-Z]/.test(ohneZ), '82.1 und kein window.irgendwas');
+  ok(!/\brequire\s*\(|\bfetch\s*\(|XMLHttpRequest|localStorage|window\.api/.test(ohneZ),
+     '82.1 kein Netz, kein Speicher, keine Abhaengigkeit');
+  ok(!/writeFileSync|appendFileSync|storeSet/.test(ohneZ), '82.1 und es schreibt nichts');
+  /* Keine eigene Skala: der Kurs geht durch die hereingereichte. Stuende hier eine
+   * zweite Umrechnung, faende 8b's Skalenmodus (logarithmisch) sie nie. */
+  ok(!/function\s+(skala|spanneVon)\s*\(/.test(ohneZ),
+     '82.1 das Modul baut KEINE zweite Skala - es benutzt die des Kerzencharts');
+  ok(/sk\.y\(/.test(ohneZ) && /sk\.kurs\(/.test(ohneZ),
+     '82.1 und rechnet Kurse ausschliesslich ueber sk.y / sk.kurs');
+  gegen82('das Muster fuer "kein document" wuerde ein document finden',
+          /\bdocument\b/.test('var x = document.body;'));
+
+  /* --- 82.2 Der Katalog: eine Tabelle fuer Leiste, Tastatur und Punktzahl --- */
+  ok(Z.ART_LISTE.length === 13, '82.2 dreizehn Werkzeuge im Katalog', Z.ART_LISTE.length);
+  ok(!Z.ARTEN.elliott && !Z.ARTEN.gann && !Z.ARTEN.xabcd && !Z.ARTEN.kreis,
+     '82.2 Elliott, Gann, harmonische Muster und Kreise sind NICHT gebaut (Entscheid 05.09.)');
+  ok(Z.ARTEN.fibRetracement.taste.code === 'KeyF' && Z.ARTEN.fibRetracement.taste.alt === true,
+     '82.2 Alt+F ist das Fibonacci-Kuerzel wie im Vorbild');
+  ok(Z.ARTEN.rechteck.taste.code === 'KeyR' && Z.ARTEN.rechteck.taste.alt === true &&
+     Z.ARTEN.rechteck.taste.shift === true,
+     '82.2 Alt+Umschalt+R ist das Rechteck wie im Vorbild');
+  ok(Z.ARTEN.messung.fluechtig === true,
+     '82.2 das Messwerkzeug ist fluechtig - eine Messung ist eine Frage, keine Zeichnung');
+  ok(Z.ARTEN.pinsel.punkte === 0, '82.2 der Pinsel hat keine feste Punktzahl');
+
+  /* --- 82.3 Fibonacci, durchgerechnet ---
+   * Die Zahl aus dem Auftrag: 100 -> 200, das Niveau 61,8 liegt bei 138,2. */
+  var fibP1 = { t: 1000, kurs: 100 }, fibP2 = { t: 2000, kurs: 200 };
+  var niv = Z.fibNiveaus(fibP1, fibP2);
+  function niveau(liste, n) { return liste.filter(function (x) { return x.niveau === n; })[0].kurs; }
+  ok(Math.abs(niveau(niv, 61.8) - 138.2) < 1e-9,
+     '82.3 Retracement 100->200: 61,8 liegt bei 138,2', niveau(niv, 61.8));
+  ok(niveau(niv, 0) === 200 && niveau(niv, 100) === 100,
+     '82.3 Niveau 0 auf dem zweiten Punkt, Niveau 100 auf dem ersten');
+  ok(niv.length === 9 && Z.FIB_NIVEAUS.join() === '0,23.6,38.2,50,61.8,78.6,100,161.8,261.8',
+     '82.3 neun Niveaus in der Vorgabe', niv.length);
+  var erw = Z.fibErweiterung(fibP1, fibP2, { t: 3000, kurs: 150 });
+  ok(niveau(erw, 0) === 150 && niveau(erw, 100) === 250 &&
+     Math.abs(niveau(erw, 61.8) - 211.8) < 1e-9,
+     '82.3 trendbasierte Erweiterung traegt die Bewegung 1->2 von Punkt 3 aus ab',
+     niveau(erw, 61.8));
+  gegen82('eine falsche Fibonacci-Rechnung faellt hier auf',
+          Math.abs(200 - 0.618 * 100 - 138.2) < 1e-9);
+
+  /* Kerzen fuer alles, was einen Index braucht: Tagesabstand mit Wochenendluecke,
+   * damit sich Zeit und Index NICHT proportional verhalten - genau daran scheitert
+   * eine Rechnung, die in Millisekunden statt in Kerzen denkt. */
+  var kz = [], tz = Date.UTC(2026, 0, 5, 14, 30);
+  for (var iz = 0; iz < 120; iz++) {
+    var b = 100 + Math.sin(iz / 9) * 12;
+    kz.push([tz, b, 1000 + iz * 10, b + 2, b - 2, b - 0.5]);
+    tz += 86400000 * ((iz % 5 === 4) ? 3 : 1);
+  }
+  var zzn = Z.fibZeitzonen(kz, { t: kz[10][0], kurs: 100 }, { t: kz[13][0], kurs: 100 });
+  ok(zzn[0].index === 10 && zzn[1].index === 13 && zzn[2].index === 16 && zzn[4].index === 25,
+     '82.3 Zeitzonen zaehlen in KERZEN: Schritt 3 gibt 10, 13, 16, 19, 25',
+     zzn.slice(0, 5).map(function (x) { return x.index; }).join(','));
+  var fae = Z.fibFaecher(kz, { t: kz[10][0], kurs: 100 }, { t: kz[20][0], kurs: 200 });
+  ok(Math.abs(fae[0].steigung - 10) < 1e-9 &&
+     Math.abs(fae.filter(function (x) { return x.niveau === 100; })[0].steigung) < 1e-12,
+     '82.3 Faecher: Niveau 0 laeuft durch Punkt 2, Niveau 100 waagerecht aus Punkt 1',
+     fae[0].steigung);
+  var kan = Z.fibKanal(kz, { t: kz[0][0], kurs: 100 }, { t: kz[10][0], kurs: 110 }, { t: kz[5][0], kurs: 115 });
+  var kan100 = kan.filter(function (x) { return x.niveau === 100; })[0];
+  ok(Math.abs(kan100.von.kurs - 110) < 1e-9 && Math.abs(kan100.bis.kurs - 120) < 1e-9 &&
+     Math.abs(kan[0].steigung - kan100.steigung) < 1e-12,
+     '82.3 Kanal: Niveau 100 liegt parallel durch Punkt 3, gleiche Steigung',
+     kan100.von.kurs + '/' + kan100.bis.kurs);
+
+  /* --- 82.4 Messwerkzeug: genau die Box aus dem Vorbild --- */
+  var mess = Z.messung(kz, { t: kz[10][0], kurs: 100 }, { t: kz[20][0], kurs: 110 });
+  var sollVol = 0;
+  for (var vz = 10; vz <= 20; vz++) sollVol += kz[vz][2];
+  ok(mess.diff === 10 && Math.abs(mess.prozent - 10) < 1e-9 && mess.kerzen === 10,
+     '82.4 Differenz 10, 10 % und zehn Kerzen Spanne', mess.diff + '/' + mess.prozent + '/' + mess.kerzen);
+  ok(mess.volumen === sollVol && mess.volumenKerzen === 11,
+     '82.4 Volumen summiert die 11 Kerzen des Abschnitts - Spanne und Summenzahl sind ZWEI Zahlen',
+     mess.volumen + ' aus ' + mess.volumenKerzen);
+  ok(Z.messung([[1, 1, null, 1, 1, 1]], { t: 1, kurs: 1 }, { t: 1, kurs: 1 }).volumen === null,
+     '82.4 ohne Volumen kommt null zurueck - nicht 0');
+  ok(Z.dauerText(45 * 60000) === '45 Min' && Z.dauerText(3 * 3600000 + 45 * 60000) === '3 Std 45 Min' &&
+     Z.dauerText(2 * 86400000 + 3600000) === '2 T 1 Std',
+     '82.4 die Dauer steht als Wort daneben');
+
+  /* --- 82.5 Magnet: schwach faengt nur in der Naehe, stark immer --- */
+  var nahe = { t: kz[50][0] + 3600000, kurs: kz[50][3] + 0.05 };
+  var weit = { t: kz[50][0] + 3600000, kurs: kz[50][3] + 8 };
+  ok(Z.fangen(kz, nahe, 'aus', 0.5).kurs === nahe.kurs,
+     '82.5 aus: der Punkt bleibt, wo er gesetzt wurde');
+  var sn = Z.fangen(kz, nahe, 'schwach', 0.5);
+  ok(sn.gefangen === true && sn.kurs === kz[50][3] && sn.t === kz[50][0],
+     '82.5 schwach faengt in der Naehe - auf den Kerzenwert UND den Stempel');
+  ok(!Z.fangen(kz, weit, 'schwach', 0.5).gefangen,
+     '82.5 schwach faengt weit weg NICHT - sonst waere es der starke Magnet');
+  ok(Z.fangen(kz, weit, 'stark', 0.5).kurs === kz[50][3],
+     '82.5 stark faengt auch weit weg');
+  gegen82('der schwache Magnet faengt wirklich nur nach Abstand, nicht immer',
+          Z.fangen(kz, weit, 'schwach', 0.5).kurs === weit.kurs);
+
+  /* --- 82.6 Die Zoom-Invariante ---
+   * DIESELBE Zeichnung, ZWEI Skalen. Die Pixel muessen wandern (sonst misst die
+   * Invariante Stillstand), die Daten muessen stehen. */
+  var skA = KCz.skala(kz, { breite: 900, hoehe: 420 });
+  var skB = KCz.skala(kz, { breite: 1440, hoehe: 700 });
+  var linieZ = Z.neu('linie', [{ t: kz[30][0], kurs: 105 }, { t: kz[80][0], kurs: 95 }]);
+  var prA = Z.projektion(kz, skA), prB = Z.projektion(kz, skB);
+  var xA = prA.x(linieZ.punkte[0].t), xB = prB.x(linieZ.punkte[0].t);
+  ok(Math.abs(xA - xB) > 1, '82.6 zwei Skalen geben verschiedene Pixel',
+     xA.toFixed(1) + ' vs ' + xB.toFixed(1));
+  ok(Math.abs(prA.t(xA) - linieZ.punkte[0].t) < 1 && Math.abs(prB.t(xB) - linieZ.punkte[0].t) < 1,
+     '82.6 und beide geben denselben Zeitstempel zurueck');
+  ok(Math.abs(prA.kurs(prA.y(105)) - 105) < 1e-9 && Math.abs(prB.kurs(prB.y(105)) - 105) < 1e-9,
+     '82.6 und denselben Kurs');
+  ok(Z.indexVonZeit(kz, kz[42][0]) === 42 &&
+     Math.abs(Z.indexVonZeit(kz, (kz[42][0] + kz[43][0]) / 2) - 42.5) < 1e-9,
+     '82.6 der Bruchindex teilt zwischen zwei Kerzen linear');
+  ok(Math.abs(Z.indexVonZeit(kz, Z.zeitVonIndex(kz, 77.25)) - 77.25) < 1e-9,
+     '82.6 Index -> Zeit -> Index ist verlustfrei');
+  gegen82('die Pixel-Haelfte der Invariante misst wirklich eine Verschiebung',
+          Math.abs(xA - xB) > 1);
+
+  /* --- 82.7 Treffertest: die richtige Zeichnung, und Griffe zuerst --- */
+  var l1 = Z.neu('linie', [{ t: kz[10][0], kurs: 100 }, { t: kz[60][0], kurs: 100 }]);
+  var l2 = Z.neu('horizontale', [{ t: kz[0][0], kurs: 112 }]);
+  var listeZ = [l1, l2];
+  var mx = (prA.x(kz[10][0]) + prA.x(kz[60][0])) / 2;
+  var trM = Z.treffer(listeZ, mx, prA.y(100), kz, skA);
+  ok(trM && trM.id === l1.id && trM.griff === null,
+     '82.7 die Linie wird auf ihrer Mitte getroffen - nicht die Horizontale darueber');
+  var trH = Z.treffer(listeZ, 400, prA.y(112), kz, skA);
+  ok(trH && trH.id === l2.id, '82.7 die Horizontale ueber die ganze Breite');
+  var trG = Z.treffer(listeZ, prA.x(kz[10][0]), prA.y(100), kz, skA);
+  ok(trG && trG.griff === 0,
+     '82.7 am Endpunkt gewinnt der GRIFF - wer ihn anfasst, will ihn verschieben');
+  ok(Z.treffer(listeZ, mx, prA.y(60), kz, skA) === null, '82.7 daneben trifft nichts');
+  l1.sichtbar = false;
+  ok(Z.treffer(listeZ, mx, prA.y(100), kz, skA) === null,
+     '82.7 was unsichtbar ist, wird nicht getroffen');
+  l1.sichtbar = true;
+  gegen82('der Treffertest findet die Linie ueberhaupt, wenn sie sichtbar ist',
+          !!Z.treffer(listeZ, mx, prA.y(100), kz, skA));
+
+  /* --- 82.8 Aendern und Speichern --- */
+  var lv = Z.neu('linie', [{ t: 1000, kurs: 10 }, { t: 2000, kurs: 20 }]);
+  Z.verschieben(lv, 500, -5);
+  ok(lv.punkte[0].t === 1500 && lv.punkte[1].kurs === 15, '82.8 Verschieben trifft alle Punkte');
+  lv.gesperrt = true;
+  ok(Z.verschieben(lv, 100, 1) === false && Z.punktSetzen(lv, 0, { t: 9, kurs: 9 }) === false,
+     '82.8 Gesperrtes bewegt sich nicht - weder ganz noch am Griff');
+  var runde = Z.ausText(Z.alsText([l1, l2]));
+  ok(runde.liste.length === 2 && runde.liste[0].punkte[1].kurs === 100 && !runde.verworfen.length,
+     '82.8 die Runde durch Text und zurueck ist verlustfrei');
+  var halb = Z.ausListe([{ id: 'x', art: 'linie', punkte: [{ t: 1, kurs: 1 }],
+                           stil: { farbe: '#000000', breite: 1, linienart: 'voll' } }]);
+  ok(!halb.liste.length && /braucht 2 Punkte/.test(halb.verworfen[0].grund),
+     '82.8 eine Linie mit einem Punkt faellt MIT GRUND durch - nicht still',
+     JSON.stringify(halb.verworfen));
+  ok(/Hexwert/.test(Z.gueltig({ id: 'a', art: 'linie', punkte: [{ t: 1, kurs: 1 }, { t: 2, kurs: 2 }],
+                                stil: { farbe: 'rot', breite: 1, linienart: 'voll' } }).grund),
+     '82.8 eine Farbe, die kein Hexwert ist, faellt mit Grund durch');
+  ok(/unbekannte Art/.test(Z.gueltig({ id: 'a', art: 'gann', punkte: [{ t: 1, kurs: 1 }] }).grund),
+     '82.8 eine unbekannte Art faellt mit Grund durch');
+  ok(Z.ausText('{kaputt').verworfen[0].grund === 'kein lesbares JSON',
+     '82.8 und kaputtes JSON nennt seinen Grund');
+  gegen82('die Pruefung laesst eine richtige Zeichnung durch',
+          Z.gueltig(l1).ok === true);
+
+  /* --- 82.9 Gezeichnet wird an einer Attrappe, gehandelt wird nichts --- */
+  var rufeZ = [];
+  var attrappeZ = {
+    clearRect: function () { rufeZ.push('clearRect'); }, save: function () {}, restore: function () {},
+    beginPath: function () {}, moveTo: function () {}, lineTo: function () {},
+    stroke: function () { rufeZ.push('stroke'); }, fill: function () { rufeZ.push('fill'); },
+    fillRect: function () {}, closePath: function () {}, setLineDash: function () {},
+    fillText: function () { rufeZ.push('fillText'); }
+  };
+  var fibZ = Z.neu('fibRetracement', [{ t: kz[20][0], kurs: 95 }, { t: kz[60][0], kurs: 115 }]);
+  var ergZ = Z.zeichnen(attrappeZ, [l1, l2, fibZ], kz, skA, {});
+  ok(ergZ.zeichnungen === 3 && ergZ.segmente === 1 + 1 + (Z.FIB_NIVEAUS.length + 1),
+     '82.9 drei Zeichnungen: Linie, Horizontale, neun Fibonacci-Niveaus samt Hilfslinie',
+     ergZ.zeichnungen + '/' + ergZ.segmente);
+  ok(rufeZ[0] === 'clearRect', '82.9 die Ebene wird zuerst geleert - sonst stapeln sich die Bilder');
+  ok(Z.zeichnen(attrappeZ, [Z.neu('linie', [{ t: kz[1][0], kurs: 100 }])], kz, skA, {}).zeichnungen === 0,
+     '82.9 eine halb gesetzte Zeichnung wird nicht gemalt');
+  /* Aus einer Zeichnung folgt kein Handel. Weder das Modul noch der Zeichenteil des
+   * Renderers darf eine Order kennen - das ist keine Formalie: der Viewer ist die
+   * Stelle, an der jemand eine Linie fuer ein Signal halten koennte. */
+  ok(!/\border\b|kaufen|verkaufen|signal|alarm/i.test(ohneZ),
+     '82.9 das Modul kennt weder Order noch Signal noch Alarm');
+  var vzTeil = expZ.slice(expZ.indexOf('function ZN()'), expZ.indexOf('/* ---- Verdrahtung, einmal ---- */'));
+  ok(vzTeil.length > 2000 && !/DepotAPI|orderSenden|kaufen\(|verkaufen\(/.test(ohneKommentare(vzTeil)),
+     '82.9 und der Zeichenteil des Renderers ruft nichts Handelndes auf', vzTeil.length + ' Zeichen');
+
+  /* --- 82.10 Die Leiste haengt am Modul, nicht an einer zweiten Liste ---
+   * Gerichtet auf die VERWENDUNG: das Markup ist leer und der Renderer baut die
+   * Knoepfe aus ARTEN. Stuende die Werkzeugliste ein zweites Mal im Renderer,
+   * liefe sie beim naechsten Werkzeug auseinander. */
+  ok(/id="vwWerkzeuge"[^>]*role="toolbar"/.test(htmlZ),
+     '82.10 die Werkzeugleiste steht als role="toolbar" im Markup');
+  ok(/<div class="vwWerkzeuge" id="vwWerkzeuge"[^>]*>\s*<\/div>/.test(htmlZ),
+     '82.10 und sie ist LEER - kein Werkzeugname im Markup');
+  ok(/id="vwEbene"/.test(htmlZ) && /\.vwEbene\s*\{[^}]*pointer-events:\s*none/.test(htmlZ),
+     '82.10 die Zeichenebene liegt als zweiter Canvas darueber und laesst die Maus durch');
+  Z.ART_LISTE.forEach(function (a) {
+    if (htmlZ.indexOf('data-werkzeug="' + a + '"') >= 0) {
+      ok(false, '82.10 das Werkzeug ' + a + ' steht fest im Markup statt aus ARTEN zu kommen');
+    }
+  });
+  ok(!/data-werkzeug="/.test(htmlZ), '82.10 kein einziger Werkzeugknopf steht fest im Markup');
+  ok(/ART_LISTE/.test(vzTeil) && /ARTEN\[/.test(vzTeil),
+     '82.10 der Renderer baut Leiste und Tastatur aus ARTEN/ART_LISTE');
+  /* Kein Tastenkuerzel darf im Renderer noch einmal stehen: die Kuerzel sind Daten
+   * in ARTEN, und eine zweite Liste waere genau der tote Schalter aus 81.14b. */
+  ok(!/altKey\s*&&\s*ev\.code\s*===\s*'Key/.test(ohneKommentare(vzTeil)),
+     '82.10 die Kuerzel werden aus der Tabelle gelesen, nicht als Zweige geschrieben');
+  ok(/ARTEN\[Z\.ART_LISTE\[i\]\]\.taste/.test(vzTeil),
+     '82.10 und zwar in einer Schleife ueber den Katalog');
+
+  /* --- 82.11 Der Uebergabepunkt an 8a wird wirklich gestellt ---
+   * 8a fragt `VW.werkzeugAktiv`, bevor es blaettert oder zurueckstellt. Wer das Feld
+   * setzt, muss es auch wieder loslassen - ein haengendes Feld legt den Chart still.
+   * Die Klinke richtet sich auf die RECHNUNG, nicht auf ein Vorkommen. */
+  ok(/VW\.werkzeugAktiv\s*=\s*VZ\.werkzeug\s*!==\s*'zeiger'/.test(vzTeil),
+     '82.11 werkzeugAktiv wird aus dem Zustand GERECHNET, nicht an zwei Stellen gesetzt');
+  ok((ohneKommentare(vzTeil).match(/VW\.werkzeugAktiv\s*=/g) || []).length === 1,
+     '82.11 und zwar an genau EINER Stelle',
+     (ohneKommentare(vzTeil).match(/VW\.werkzeugAktiv\s*=/g) || []).length);
+  ok(/addEventListener\('mousedown', vzMausRunter, true\)/.test(expZ),
+     '82.11 der Horcher sitzt in der CAPTURE-Phase - sonst liest 8a das Feld vor dem Treffertest');
+  /* Die Oberflaechen-Probe fasst denselben Punkt am VERHALTEN an - und zwar ueber die
+   * echte Leiste, nicht ueber ein von Hand gesetztes Feld. */
+  ok(/knopfLinie\.click\(\)/.test(probeZ) && /werkzeug\.gestellt/.test(probeZ),
+     '82.11 die Oberflaechen-Probe fährt den echten Weg ueber den Knopf');
+  gegen82('die Zaehlung der Setz-Stellen wuerde eine zweite finden',
+          (('VW.werkzeugAktiv = a; VW.werkzeugAktiv = b;').match(/VW\.werkzeugAktiv\s*=/g) || []).length === 2);
+
+  /* --- 82.12 Speichern je Wert, und der Datei-Weg steht an einer Stelle --- */
+  ok(/viewerZeichnungen/.test(expZ), '82.12 die Zeichnungen liegen unter viewerZeichnungen im Store');
+  ok(/alle\[VZ\.sym\]/.test(vzTeil),
+     '82.12 und zwar je Kuerzel - nicht als eine Liste fuer alle Werte');
+  var shellZ = fs.readFileSync('app-shell.js', 'utf8');
+  var depotZ = fs.readFileSync('depot.js', 'utf8');
+  ok(/U\.dateiSpeichern\s*=\s*function/.test(shellZ),
+     '82.12 der Datei-Weg wohnt in U - erreichbar fuer alle, die etwas ausgeben');
+  ok(/function dateiSpeichern\(blob, name\) \{ return window\.U\.dateiSpeichern\(blob, name\); \}/.test(depotZ),
+     '82.12 depot.js reicht ihn durch, statt ihn ein zweites Mal zu bauen');
+  ok((depotZ.match(/URL\.createObjectURL/g) || []).length === 0,
+     '82.12 und es gibt nur noch EINE Stelle, die eine Objekt-URL anlegt',
+     (depotZ.match(/URL\.createObjectURL/g) || []).length);
+  ok(/revokeObjectURL/.test(shellZ),
+     '82.12 die eine Stelle gibt die Objekt-URL auch wieder frei');
+
+  ok(g82 === rot82, '82.x alle Gegenproben dieses Abschnitts schlagen an', rot82 + ' von ' + g82);
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

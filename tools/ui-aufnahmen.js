@@ -485,6 +485,40 @@ async function lauf(win) {
         await js("(function () { if (!window.Explorer) return 'kein Explorer';" +
           " window.Explorer.oeffne('" + (KI2.viewerSymbol ? KI2.viewerSymbol() : 'KUNSTA') + "', 'Kunst A'); return 'ok'; })()");
         await schlaf(3500);
+        /* Die Zeichenwerkzeuge (8c) stuenden sonst als leere Leiste auf dem Bild.
+         * Gezeichnet wird ueber die ECHTEN Knoepfe und echte Klicks - eine Zeichnung
+         * ins Modell zu schieben waere ein zweiter Weg und zeigte nicht, was der
+         * Benutzer sieht. Zuletzt das Messwerkzeug: seine Box verschwindet beim
+         * naechsten Klick, sie muss also die letzte Handlung sein. */
+        const gemalt = await js("(function () {" +
+          " var c = document.getElementById('vwChart');" +
+          " var leiste = document.getElementById('vwWerkzeuge');" +
+          " if (!c || !leiste) return 'keine Leiste';" +
+          " var r = c.getBoundingClientRect();" +
+          " function klick(dx, dy) {" +
+          "   var o = { clientX: r.left + dx, clientY: r.top + dy, bubbles: true, button: 0 };" +
+          "   c.dispatchEvent(new MouseEvent('mousedown', o));" +
+          "   c.dispatchEvent(new MouseEvent('mouseup', o));" +
+          "   c.dispatchEvent(new MouseEvent('click', o));" +
+          " }" +
+          " function werkzeug(a) {" +
+          "   var b = leiste.querySelector('button[data-werkzeug=\"' + a + '\"]');" +
+          "   if (b) b.click();" +
+          "   return !!b;" +
+          " }" +
+          " var fibKnopf = document.getElementById('vzFib');" +
+          " if (fibKnopf) fibKnopf.click();" +
+          " if (!werkzeug('fibRetracement')) return 'kein Fibonacci';" +
+          " klick(r.width * 0.18, r.height * 0.30);" +
+          " klick(r.width * 0.46, r.height * 0.68);" +
+          " if (!werkzeug('messung')) return 'kein Messwerkzeug';" +
+          " klick(r.width * 0.62, r.height * 0.30);" +
+          " klick(r.width * 0.82, r.height * 0.62);" +
+          " return (window.__zeichnungen ? window.__zeichnungen.liste.length : -1) + ' Zeichnungen, Messbox ' +" +
+          "   (document.getElementById('vwMess') && !document.getElementById('vwMess').hidden ? 'sichtbar' : 'aus');" +
+          " })()");
+        console.log('  Zeichenwerkzeuge: ' + gemalt);
+        await schlaf(400);
       }
       if (KUNSTDATEN && sub === 'scheine') {
         const KI = require(path.join(__dirname, 'kunstinstanz.js'));

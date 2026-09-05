@@ -452,13 +452,23 @@ async function viewerPruefen(win, js) {
 
   /* ---- Der Uebergabepunkt an die Zeichenwerkzeuge (8c) ----
    * Haelt ein Werkzeug die Maus, gehoeren Ziehen und Doppelklick ihm. Geprueft wird
-   * das VERHALTEN: Feld setzen, ziehen, doppelklicken - das Fenster muss stehen
-   * bleiben. Ohne diese Probe waere `werkzeugAktiv` ein Schalter, den niemand
-   * stellt und den niemand misst. */
+   * das VERHALTEN: ziehen, doppelklicken - das Fenster muss stehen bleiben.
+   *
+   * BIS ZUM EINBAU VON 8C setzte diese Probe `V.werkzeugAktiv` von Hand, weil es noch
+   * kein Werkzeug gab, das es stellt. Seit es die Leiste gibt, waere das die falsche
+   * Messung: 8c rechnet das Feld bei jedem Mausdruck aus seinem eigenen Zustand neu,
+   * ein von aussen gesetztes Feld wird dabei ueberschrieben - die Probe haette also
+   * einen Wert geprueft, den im Betrieb niemand so setzt. Jetzt wird der ECHTE Weg
+   * gefahren: auf den Knopf "Linie" klicken, ziehen, doppelklicken. Das ist strenger,
+   * nicht schwaecher - es haengt die Leiste mit in die Klinke. */
   const werkzeug = await js("(function () {" +
     " var c = document.getElementById('vwChart');" +
     " var r = c.getBoundingClientRect();" +
     " var V = window.__viewer;" +
+    " var leiste = document.getElementById('vwWerkzeuge');" +
+    " var knopfLinie = leiste && leiste.querySelector('button[data-werkzeug=\"linie\"]');" +
+    " var knopfZeiger = leiste && leiste.querySelector('button[data-werkzeug=\"zeiger\"]');" +
+    " if (!knopfLinie || !knopfZeiger) return { fehlt: true };" +
     " var mitte = { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, bubbles: true };" +
     " function ziehen() {" +
     "   c.dispatchEvent(new MouseEvent('mousedown', mitte));" +
@@ -466,15 +476,28 @@ async function viewerPruefen(win, js) {
     "   c.dispatchEvent(new MouseEvent('mouseup', mitte));" +
     "   return V.sichtbar.fenster.von;" +
     " }" +
-    " V.werkzeugAktiv = true;" +
+    " knopfLinie.click();" +
+    " var gestellt = V.werkzeugAktiv;" +
     " var vorher = V.sichtbar.fenster.von;" +
     " var mitWerkzeug = ziehen();" +
     " c.dispatchEvent(new MouseEvent('dblclick', mitte));" +
     " var nachDoppelklick = V.sichtbar.fenster.von;" +
-    " V.werkzeugAktiv = false;" +
+    " knopfZeiger.click();" +
+    " var losgelassen = V.werkzeugAktiv;" +
     " var ohneWerkzeug = ziehen();" +
-    " return { vorher: vorher, mitWerkzeug: mitWerkzeug," +
+    " return { vorher: vorher, mitWerkzeug: mitWerkzeug, gestellt: gestellt," +
+    "   losgelassen: losgelassen," +
     "   nachDoppelklick: nachDoppelklick, ohneWerkzeug: ohneWerkzeug }; })()");
+  if (werkzeug.fehlt) {
+    funde.push('Viewer: die Zeichenleiste fehlt - der Uebergabepunkt laesst sich nicht messen');
+  }
+  /* Dass die Leiste das Feld ueberhaupt stellt (und wieder loslaesst), gehoert
+   * mitgeprueft: sonst bestuende die Klinke auch dann, wenn Ziehen aus einem ganz
+   * anderen Grund nicht wirkt. */
+  if (!werkzeug.fehlt && (werkzeug.gestellt !== true || werkzeug.losgelassen !== false)) {
+    funde.push('Viewer: die Leiste stellt werkzeugAktiv nicht (gestellt=' +
+      werkzeug.gestellt + ', nach Zeiger=' + werkzeug.losgelassen + ')');
+  }
   console.log('    Werkzeug haelt die Maus: Fensteranfang ' + werkzeug.vorher +
     ' · ziehen ' + werkzeug.mitWerkzeug + ' · doppelklicken ' + werkzeug.nachDoppelklick +
     ' · Werkzeug los, ziehen ' + werkzeug.ohneWerkzeug);
@@ -487,6 +510,154 @@ async function viewerPruefen(win, js) {
   if (werkzeug.ohneWerkzeug === werkzeug.vorher) {
     funde.push('Viewer: ohne Werkzeug blaettert das Ziehen nicht mehr - die Sperre haelt zu viel fest');
   }
+
+  /* ---- Zeichenwerkzeuge (8c) am laufenden Bild ----
+   *
+   * Der ganze Weg: Knopf klicken, zwei Klicks ins Chart, Objekt im Speicher, Farbe auf
+   * der Ebene. Danach die Frage, um die es bei Zeichnungen eigentlich geht - ueberlebt
+   * eine Linie das Zoomen? Gemessen wird beides: die PIXEL muessen sich verschieben
+   * (sonst haette der Zoom gar nicht gewirkt und die Probe bestuende blind) und die
+   * DATEN muessen gleich bleiben. */
+  async function ebeneMalt() {
+    return js("(function () {" +
+      " var e = document.getElementById('vwEbene');" +
+      " if (!e || !e.width) return 0;" +
+      " var d = e.getContext('2d').getImageData(0, 0, e.width, e.height).data;" +
+      " var n = 0; for (var i = 3; i < d.length; i += 4) if (d[i] > 8) n++;" +
+      " return n; })()");
+  }
+  async function lageVonPunkt1() {
+    return js("(function () {" +
+      " var VZ = window.__zeichnungen, V = window.__viewer, Z = window.Zeichnungen;" +
+      " if (!VZ || !VZ.liste.length || !V.skala) return null;" +
+      " var p = VZ.liste[0].punkte[0];" +
+      " var pr = Z.projektion(V.sichtbar.kerzen, V.skala);" +
+      " return { t: p.t, kurs: p.kurs, x: pr.x(p.t), y: pr.y(p.kurs) }; })()");
+  }
+  const vorGezeichnet = await ebeneMalt();
+  const gezeichnet8c = await js("(function () {" +
+    " var c = document.getElementById('vwChart');" +
+    " var leiste = document.getElementById('vwWerkzeuge');" +
+    " var VZ = window.__zeichnungen;" +
+    " if (!c || !leiste || !VZ) return { fehlt: true };" +
+    " var r = c.getBoundingClientRect();" +
+    " function klick(dx, dy) {" +
+    "   var o = { clientX: r.left + dx, clientY: r.top + dy, bubbles: true, button: 0 };" +
+    "   c.dispatchEvent(new MouseEvent('mousedown', o));" +
+    "   c.dispatchEvent(new MouseEvent('mouseup', o));" +
+    "   c.dispatchEvent(new MouseEvent('click', o));" +
+    " }" +
+    " var knopf = leiste.querySelector('button[data-werkzeug=\"linie\"]');" +
+    " if (!knopf) return { fehlt: true };" +
+    " knopf.click();" +
+    " var nachEinem = (klick(120, 120), VZ.liste.length);" +
+    " klick(360, 260);" +
+    " return { fehlt: false, nachEinem: nachEinem, anzahl: VZ.liste.length," +
+    "   punkte: VZ.liste.length ? VZ.liste[0].punkte.length : 0," +
+    "   art: VZ.liste.length ? VZ.liste[0].art : ''," +
+    "   werkzeugDanach: VZ.werkzeug }; })()");
+  const nachGezeichnet = await ebeneMalt();
+  const lageVor = await lageVonPunkt1();
+  if (gezeichnet8c.fehlt) {
+    funde.push('Viewer: die Zeichenleiste fehlt - mit zwei Klicks laesst sich nichts zeichnen');
+  } else {
+    console.log('    8c: nach einem Klick ' + gezeichnet8c.nachEinem + ' Zeichnungen, nach zweien ' +
+      gezeichnet8c.anzahl + ' (' + gezeichnet8c.art + ', ' + gezeichnet8c.punkte +
+      ' Punkte), Werkzeug danach ' + gezeichnet8c.werkzeugDanach +
+      ' · Ebene ' + vorGezeichnet + ' -> ' + nachGezeichnet + ' Punkte');
+    /* Der erste Klick darf noch NICHTS ablegen - sonst waere jede halb gesetzte
+     * Linie schon eine Zeichnung, und ein Fehlklick liesse sich nicht abbrechen. */
+    if (gezeichnet8c.nachEinem !== 0) {
+      funde.push('Viewer 8c: schon der erste Klick legt eine Zeichnung an (' + gezeichnet8c.nachEinem + ')');
+    }
+    if (gezeichnet8c.anzahl !== 1 || gezeichnet8c.punkte !== 2 || gezeichnet8c.art !== 'linie') {
+      funde.push('Viewer 8c: zwei Klicks ergeben keine Linie mit zwei Punkten (' +
+        gezeichnet8c.anzahl + '/' + gezeichnet8c.punkte + '/' + gezeichnet8c.art + ')');
+    }
+    if (nachGezeichnet <= vorGezeichnet) {
+      funde.push('Viewer 8c: auf der Zeichenebene ist nichts zu sehen (' +
+        vorGezeichnet + ' -> ' + nachGezeichnet + ')');
+    }
+  }
+  /* Rad-Zoom: die Linie muss ihm folgen. */
+  await js("(function () {" +
+    " var c = document.getElementById('vwChart');" +
+    " var r = c.getBoundingClientRect();" +
+    " c.dispatchEvent(new WheelEvent('wheel', { deltaY: -240," +
+    "   clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, bubbles: true, cancelable: true }));" +
+    " return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 250));
+  const lageNach = await lageVonPunkt1();
+  if (lageVor && lageNach) {
+    console.log('    8c: Punkt 1 vor dem Zoom x=' + Math.round(lageVor.x) +
+      ', danach x=' + Math.round(lageNach.x) + ' · Zeitstempel gleich=' + (lageVor.t === lageNach.t));
+    if (lageVor.t !== lageNach.t || lageVor.kurs !== lageNach.kurs) {
+      funde.push('Viewer 8c: das Zoomen hat die DATEN der Zeichnung veraendert - sie liegt in Pixeln, nicht in Daten');
+    }
+    /* Gegenprobe zur Klinke oben: haette der Zoom gar nichts bewegt, waere
+     * "Daten unveraendert" wertlos - dann misst die Probe nur Stillstand. */
+    if (Math.abs(lageVor.x - lageNach.x) < 1) {
+      funde.push('Viewer 8c: der Rad-Zoom hat die Linie nicht verschoben - die Zoom-Klinke misst nichts');
+    }
+  } else if (!gezeichnet8c.fehlt) {
+    funde.push('Viewer 8c: nach dem Zoomen ist die Zeichnung nicht mehr auffindbar');
+  }
+  /* Entf loescht die ausgewaehlte Zeichnung. */
+  const nachEntf = await js("(function () {" +
+    " var feld = document.querySelector('.vwZeichenFeld');" +
+    " var VZ = window.__zeichnungen;" +
+    " if (!feld || !VZ) return -1;" +
+    " VZ.ausgewaehlt = VZ.liste.length ? VZ.liste[0].id : null;" +
+    " feld.dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', bubbles: true }));" +
+    " return VZ.liste.length; })()");
+  console.log('    8c: nach Entf ' + nachEntf + ' Zeichnungen');
+  if (!gezeichnet8c.fehlt && nachEntf !== 0) {
+    funde.push('Viewer 8c: Entf loescht die ausgewaehlte Zeichnung nicht (' + nachEntf + ')');
+  }
+  /* Wert wechseln und zurueck: die Zeichnungen gehoeren dem Kuerzel. */
+  await js("(function () {" +
+    " var c = document.getElementById('vwChart');" +
+    " var leiste = document.getElementById('vwWerkzeuge');" +
+    " var r = c.getBoundingClientRect();" +
+    " function klick(dx, dy) {" +
+    "   var o = { clientX: r.left + dx, clientY: r.top + dy, bubbles: true, button: 0 };" +
+    "   c.dispatchEvent(new MouseEvent('mousedown', o));" +
+    "   c.dispatchEvent(new MouseEvent('mouseup', o));" +
+    "   c.dispatchEvent(new MouseEvent('click', o));" +
+    " }" +
+    " leiste.querySelector('button[data-werkzeug=\"horizontale\"]').click();" +
+    " klick(200, 180);" +
+    " return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 200));
+  const vorWechsel = await js("(function () { return window.__zeichnungen.liste.length; })()");
+  await js("(function () { window.Explorer.oeffne('KUNSTB', 'Kunst B'); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 2500));
+  const beimAnderen = await js("(function () { return window.__zeichnungen.liste.length; })()");
+  await js("(function () { window.Explorer.oeffne('" + sym + "', 'Kunst A'); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 2500));
+  const zurueck = await js("(function () {" +
+    " var VZ = window.__zeichnungen;" +
+    " return { anzahl: VZ.liste.length, sym: VZ.sym," +
+    "   art: VZ.liste.length ? VZ.liste[0].art : '' }; })()");
+  console.log('    8c: bei KUNSTA ' + vorWechsel + ' Zeichnungen, bei KUNSTB ' + beimAnderen +
+    ', zurueck bei KUNSTA ' + zurueck.anzahl + ' (' + zurueck.art + ')');
+  if (vorWechsel !== 1) {
+    funde.push('Viewer 8c: die Horizontale wurde nicht angelegt (' + vorWechsel + ')');
+  }
+  /* Gegenprobe: der ANDERE Wert darf sie nicht zeigen - sonst haengen die
+   * Zeichnungen am Programm statt am Kuerzel, und der Rueckweg bewiese nichts. */
+  if (beimAnderen !== 0) {
+    funde.push('Viewer 8c: der andere Wert zeigt fremde Zeichnungen (' + beimAnderen + ')');
+  }
+  if (zurueck.anzahl !== 1 || zurueck.art !== 'horizontale') {
+    funde.push('Viewer 8c: nach dem Rueckwechsel ist die Zeichnung nicht wieder da (' +
+      zurueck.anzahl + '/' + zurueck.art + ')');
+  }
+  /* Aufraeumen: die Probe laesst keine Zeichnung im Speicher der Instanz stehen. */
+  await js("(function () {" +
+    " var p = document.getElementById('vzPapierkorb');" +
+    " if (p) { p.click(); p.click(); }" +
+    " return window.__zeichnungen.liste.length; })()");
 
   /* ---- Signal-Schalter: werden wirklich Marken gezeichnet? ----
    * Die Kunst-Reihe traegt seit dem 05.09.2026 Bewegung; auf der alten Geraden

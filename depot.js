@@ -4653,16 +4653,12 @@
   };
 
   /* ================= Datei-Download ================= */
-  /** Blob als Datei anbieten und die Objekt-URL wieder freigeben – ohne revokeObjectURL
-   *  hält der Renderer jeden je exportierten Datenbestand bis zum Neustart im Speicher. */
-  function dateiSpeichern(blob, name) {
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = name;
-    a.click();
-    setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
-  }
+  /** Blob als Datei anbieten. Die Rechnung steht seit dem 05.09.2026 in U
+   *  (app-shell.js): der Aktien-Viewer gibt seine Zeichnungen ebenfalls als Datei
+   *  aus, und zwei Kopien derselben acht Zeilen waeren zwei Orte, an denen man das
+   *  Freigeben der Objekt-URL vergessen kann. Hier bleibt nur der Name stehen, den
+   *  backtestui.js und berichte.js als Abhaengigkeit hereingereicht bekommen. */
+  function dateiSpeichern(blob, name) { return window.U.dateiSpeichern(blob, name); }
 
   /* ================= CSV-Export ================= */
   function exportCsv() {

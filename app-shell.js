@@ -197,6 +197,19 @@
     if (x == null || !isFinite(x)) return '–';
     return x.toFixed(stellen == null ? 2 : stellen).replace('.', ',');
   };
+  /* Eine Datei zum Herunterladen anbieten. Sie stand bis zum 05.09.2026 privat in
+   * depot.js und war damit fuer den Aktien-Viewer (8c, Zeichnungen ausgeben) nicht
+   * erreichbar - eine zweite Kopie waere ein zweiter Ort gewesen, an dem man das
+   * Freigeben der Objekt-URL vergessen kann. Ohne `revokeObjectURL` haelt der
+   * Renderer jeden je ausgegebenen Datenbestand bis zum Neustart im Speicher. */
+  U.dateiSpeichern = function (blob, name) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+  };
   window.U = U;
 
   /* ---- Reiter ----

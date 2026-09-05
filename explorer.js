@@ -1120,6 +1120,11 @@
     vwQuelleZeichnen(s, bs);
     vwBidAskZeichnen();
     vwSignalListe();
+    /* Zuletzt die Zeichenebene (8c): sie liegt ueber den Kerzen und wird aus
+     * DATEN-Koordinaten neu projiziert - dieselbe Skala, kein zweiter Massstab.
+     * Deshalb steht der Aufruf hier und nicht an den Tasten: jeder Weg, der den
+     * Chart neu zeichnet, zeichnet die Linien mit. */
+    vzZeichnen();
   }
 
   /** Die Linien im Kursbild: gleitende Durchschnitte und die Leitlinie.
@@ -1943,6 +1948,586 @@
     } catch (e) { /* ohne Tagesarchiv bleibt das relative Volumen unbekannt */ }
   }
 
+  /* ================= Zeichenwerkzeuge (Aktien-Viewer 8c, 05.09.2026) ==============
+   *
+   * Wilhelm zeichnet im Chart: Linien, Rechtecke, Fibonacci, ein Messwerkzeug. Die
+   * RECHNUNG steht in markt/zeichnungen.js und ist dort in Node pruefbar; hier steht
+   * nur, was sie mit Maus, Tastatur und Bildschirm zu tun hat.
+   *
+   * DREI ENTSCHEIDUNGEN, die alles andere nach sich ziehen:
+   *
+   * 1. DATEN-KOORDINATEN. Eine Zeichnung merkt sich Zeitstempel und Kurs, nie Pixel.
+   *    Beim Zoomen und Blaettern wird sie neu projiziert - aus derselben Skala, die
+   *    auch die Kerzen setzt (`VW.skala`). Es gibt keine zweite Skala.
+   *
+   * 2. EIGENE EBENE. Gezeichnet wird auf einem zweiten Canvas ueber dem Kerzen-
+   *    Canvas. Der Kerzenchart aus 8a/8b bleibt dadurch unveraendert - kein
+   *    Zeichenwerkzeug kann eine Kerze verschieben.
+   *
+   * 3. DIE MAUS GEHOERT IMMER NUR EINEM. 8a blaettert mit Ziehen und setzt den Zoom
+   *    per Doppelklick zurueck; beides fragt vorher `VW.werkzeugAktiv` (8a hat den
+   *    Uebergabepunkt gebaut, explorer.js vwZiehenStart/vwZurueck). Dieses Feld wird
+   *    HIER gesetzt, und zwar in der Capture-Phase auf dem Wrapper: der Horcher
+   *    laeuft vor dem des Canvas, der Treffertest steht also fest, bevor 8a das Feld
+   *    liest. So muss niemand die Reihenfolge zweier Registrierungen erraten.
+   *
+   * GEHANDELT WIRD AUS EINER ZEICHNUNG NICHTS. Eine Linie ist eine Linie; sie ist
+   * kein Signal, keine Bedingung und kein Auftrag. Gemessen ist an keinem dieser
+   * Niveaus etwas. */
+  function ZN() { return window.Zeichnungen; }
+  var VZ = {
+    werkzeug: 'zeiger',       // 'zeiger' oder eine Art aus ARTEN
+    magnet: 'aus',
+    liste: [],                // die Zeichnungen des offenen Werts
+    entwurf: null,            // was gerade gesetzt wird
+    vorschau: null,           // der Punkt unter dem Zeiger (Gummiband)
+    ausgewaehlt: null,        // id
+    griff: null,              // {id, nr} - welcher Punkt haengt an der Maus
+    schieben: null,           // {id, t, kurs} - Ausgangslage beim Verschieben
+    mess: null,               // das Ergebnis des Messwerkzeugs, bis zum naechsten Klick
+    fibOffen: false,
+    papierkorbScharf: false,
+    sym: null
+  };
+  var VZ_STORE = 'viewerZeichnungen';
+  var VZ_MAGNET_STORE = 'viewerMagnet';
+  /* Wie nah der Zeiger an einer Kerze sein muss, damit der schwache Magnet fasst -
+   * in Pixeln gedacht, in Kurs umgerechnet. Eine feste Kursspanne waere bei einem
+   * 5-$-Wert die halbe Tagesspanne und bei einem 900-$-Wert ein Nichts. */
+  var VZ_MAGNET_PX = 10;
+
+  /* ---- Die Leiste. Kein Wort und kein Kuerzel steht hier: beides kommt aus
+   * ARTEN, damit Leiste und Tastatur nicht auseinanderlaufen. ---- */
+  function vzTastenWort(t) {
+    if (!t) return '';
+    return ' (' + (t.alt ? 'Alt+' : '') + (t.shift ? 'Umschalt+' : '') +
+      t.code.replace('Key', '') + ')';
+  }
+  function vzKnopf(art) {
+    var a = ZN().ARTEN[art];
+    return '<button type="button" data-werkzeug="' + art + '" aria-pressed="false"' +
+      ' title="' + U.esc(a.name + vzTastenWort(a.taste)) + '"' +
+      ' aria-label="' + U.esc(a.name) + '">' + U.esc(a.zeichen) + '</button>';
+  }
+  function vzLeisteBauen() {
+    var el = document.getElementById('vwWerkzeuge');
+    if (!el || el.__bereit || !ZN()) return;
+    el.__bereit = true;
+    var Z = ZN();
+    var einfach = Z.ART_LISTE.filter(function (a) { return !Z.ARTEN[a].fib; });
+    var fib = Z.ART_LISTE.filter(function (a) { return Z.ARTEN[a].fib; });
+    var h = '<button type="button" data-werkzeug="zeiger" aria-pressed="true"' +
+      ' title="Zeiger – auswählen und verschieben (Esc)" aria-label="Zeiger">➚</button><hr>';
+    h += einfach.map(vzKnopf).join('');
+    /* Fibonacci als Untermenue: fuenf Werkzeuge einzeln in der Leiste waeren eine
+     * Spalte, die hoeher ist als der Chart. */
+    h += '<button type="button" id="vzFib" aria-expanded="false" aria-controls="vzFibListe"' +
+      ' title="Fibonacci-Werkzeuge' + vzTastenWort(Z.ARTEN.fibRetracement.taste) + '"' +
+      ' aria-label="Fibonacci-Werkzeuge">F</button>';
+    h += '<span id="vzFibListe" hidden>' + fib.map(vzKnopf).join('') + '</span><hr>';
+    h += '<button type="button" id="vzMagnet" title="Magnet: fängt Punkte auf Kerzenwerten"' +
+      ' aria-label="Magnet"></button>';
+    h += '<button type="button" id="vzSperren" aria-pressed="false"' +
+      ' title="Alle Zeichnungen sperren – gesperrt lässt sich nichts verschieben"' +
+      ' aria-label="Zeichnungen sperren">🔒</button>';
+    h += '<button type="button" id="vzAusblenden" aria-pressed="false"' +
+      ' title="Alle Zeichnungen ausblenden" aria-label="Zeichnungen ausblenden">👁</button>';
+    h += '<button type="button" id="vzPapierkorb"' +
+      ' title="Alle Zeichnungen dieses Werts löschen" aria-label="Zeichnungen löschen">🗑</button><hr>';
+    /* Ausgeben nimmt denselben Weg wie jeder andere Export der App; zum Einlesen gibt
+     * es in diesem Programm keinen Dateidialog, deshalb der verborgene Dateiwaehler. */
+    h += '<button type="button" id="vzAus" title="Zeichnungen als JSON-Datei ausgeben"' +
+      ' aria-label="Zeichnungen ausgeben">⤓</button>';
+    h += '<button type="button" id="vzEin" title="Zeichnungen aus einer JSON-Datei dazuladen"' +
+      ' aria-label="Zeichnungen einlesen">⤒</button>';
+    h += '<input type="file" id="vzDatei" accept="application/json,.json" hidden' +
+      ' aria-label="JSON-Datei mit Zeichnungen">';
+    el.innerHTML = h;
+    el.addEventListener('click', function (ev) {
+      var b = ev.target && ev.target.closest ? ev.target.closest('button') : null;
+      if (!b) return;
+      if (b.hasAttribute('data-werkzeug')) { vzWerkzeug(b.getAttribute('data-werkzeug')); return; }
+      if (b.id === 'vzFib') { vzFibListe(!VZ.fibOffen); return; }
+      if (b.id === 'vzMagnet') { vzMagnetWeiter(); return; }
+      if (b.id === 'vzSperren') { vzAlle('gesperrt'); return; }
+      if (b.id === 'vzAusblenden') { vzAlle('sichtbar'); return; }
+      if (b.id === 'vzPapierkorb') { vzPapierkorb(); return; }
+      if (b.id === 'vzAus') { vzAusgeben(); return; }
+      if (b.id === 'vzEin') {
+        var d = document.getElementById('vzDatei');
+        if (d) d.click();
+        return;
+      }
+    });
+    var datei = document.getElementById('vzDatei');
+    if (datei) {
+      datei.addEventListener('change', function () {
+        var f = datei.files && datei.files[0];
+        if (!f) return;
+        var leser = new FileReader();
+        leser.onload = function () {
+          var g = vzEinlesen(String(leser.result || ''));
+          /* Auch hier: was durchfaellt, wird gesagt. Eine Datei, die halb ankommt,
+           * ohne dass es jemand merkt, ist schlimmer als eine, die abgewiesen wird. */
+          VZ.verworfenText = (g && g.verworfen.length)
+            ? g.verworfen.length + ' Zeichnungen aus der Datei waren unlesbar: ' +
+              g.verworfen.map(function (v) { return v.grund; }).join('; ')
+            : '';
+          vzZeichnen();
+        };
+        leser.readAsText(f);
+        datei.value = '';           // dieselbe Datei soll erneut waehlbar bleiben
+      });
+    }
+    vzLeisteStand();
+  }
+  function vzFibListe(auf) {
+    VZ.fibOffen = !!auf;
+    var l = document.getElementById('vzFibListe'), b = document.getElementById('vzFib');
+    if (l) l.hidden = !VZ.fibOffen;
+    if (b) b.setAttribute('aria-expanded', VZ.fibOffen ? 'true' : 'false');
+  }
+  /** Der Stand der Leiste - abgelesen, nie doppelt gefuehrt. */
+  function vzLeisteStand() {
+    var el = document.getElementById('vwWerkzeuge');
+    if (!el || !ZN()) return;
+    [].slice.call(el.querySelectorAll('button[data-werkzeug]')).forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-werkzeug') === VZ.werkzeug ? 'true' : 'false');
+    });
+    var m = document.getElementById('vzMagnet');
+    if (m) {
+      /* Der Magnet hat drei Stufen, nicht zwei - ein aria-pressed waere hier
+       * gelogen. Deshalb sagt die Beschriftung, welche Stufe gerade gilt. */
+      m.textContent = VZ.magnet === 'stark' ? '🧲' : (VZ.magnet === 'schwach' ? '🧲' : '⊘');
+      m.style.opacity = VZ.magnet === 'aus' ? '' : '1';
+      m.setAttribute('aria-label', 'Magnet: ' + VZ.magnet);
+      m.setAttribute('title', 'Magnet: ' + VZ.magnet +
+        ' – aus fängt nie, schwach nur nahe an Eröffnung/Hoch/Tief/Schluss, stark immer');
+    }
+    var alle = VZ.liste;
+    var s = document.getElementById('vzSperren');
+    if (s) s.setAttribute('aria-pressed', alle.length && alle.every(function (z) { return z.gesperrt; }) ? 'true' : 'false');
+    var a = document.getElementById('vzAusblenden');
+    if (a) a.setAttribute('aria-pressed', alle.length && alle.every(function (z) { return !z.sichtbar; }) ? 'true' : 'false');
+    var p = document.getElementById('vzPapierkorb');
+    if (p) p.setAttribute('title', VZ.papierkorbScharf
+      ? 'Noch einmal klicken: ' + alle.length + ' Zeichnungen werden gelöscht'
+      : 'Alle Zeichnungen dieses Werts löschen');
+  }
+  function vzWerkzeug(art) {
+    VZ.werkzeug = (art === VZ.werkzeug && art !== 'zeiger') ? 'zeiger' : art;
+    VZ.entwurf = null;
+    VZ.vorschau = null;
+    VZ.papierkorbScharf = false;
+    if (VZ.werkzeug !== 'zeiger') { VZ.ausgewaehlt = null; vzStilLeiste(); }
+    vzHalten();
+    vzLeisteStand();
+    vzZeichnen();
+  }
+  function vzMagnetWeiter() {
+    var M = ZN().MAGNET_MODI;
+    VZ.magnet = M[(M.indexOf(VZ.magnet) + 1) % M.length];
+    try { window.api.storeSet(VZ_MAGNET_STORE, VZ.magnet); } catch (e) { /* ohne Speicher gilt die Vorgabe */ }
+    vzLeisteStand();
+  }
+  /** Sperren und Ausblenden gelten fuer ALLE - wie im Vorbild. Umgeschaltet wird auf
+   *  den Gegenzustand der Mehrheit: sind alle gesperrt, entsperrt der Knopf. */
+  function vzAlle(feld) {
+    if (!VZ.liste.length) return;
+    if (feld === 'gesperrt') {
+      var zu = !VZ.liste.every(function (z) { return z.gesperrt; });
+      VZ.liste.forEach(function (z) { z.gesperrt = zu; });
+      if (zu) { VZ.ausgewaehlt = null; vzStilLeiste(); }
+    } else {
+      var weg = VZ.liste.every(function (z) { return !z.sichtbar; });
+      VZ.liste.forEach(function (z) { z.sichtbar = weg; });
+    }
+    vzMerken();
+    vzLeisteStand();
+    vzZeichnen();
+  }
+  /** Der Papierkorb loescht ALLES - und fragt deshalb zweimal. Ein Klick daneben
+   *  darf keine Stunde Arbeit kosten; ein Rueckgaengig gibt es hier nicht. */
+  function vzPapierkorb() {
+    if (!VZ.liste.length) return;
+    if (!VZ.papierkorbScharf) {
+      VZ.papierkorbScharf = true;
+      setTimeout(function () { VZ.papierkorbScharf = false; vzLeisteStand(); }, 4000);
+      vzLeisteStand();
+      return;
+    }
+    VZ.papierkorbScharf = false;
+    VZ.liste = [];
+    VZ.ausgewaehlt = null;
+    VZ.entwurf = null;
+    vzStilLeiste();
+    vzMerken();
+    vzLeisteStand();
+    vzZeichnen();
+  }
+
+  /* ---- Von der Maus zu einem Punkt in Daten-Koordinaten ---- */
+  function vzPunkt(ev) {
+    var c = document.getElementById('vwChart');
+    if (!c || !VW.skala || !VW.sichtbar || !ZN()) return null;
+    var r = c.getBoundingClientRect();
+    var p = ZN().punktAusPixel(VW.sichtbar.kerzen, VW.skala,
+      ev.clientX - r.left, ev.clientY - r.top);
+    if (!p) return null;
+    /* Die Fangweite steht in Pixeln in der Hand und muss in Kurs umgerechnet
+     * werden - ueber dieselbe Skala, sonst faengt der Magnet auf einem
+     * logarithmischen Bild oben anders als unten. */
+    var y = ev.clientY - r.top;
+    var toleranz = Math.abs(VW.skala.kurs(y) - VW.skala.kurs(y + VZ_MAGNET_PX));
+    return ZN().fangen(VW.sichtbar.kerzen, p, VZ.magnet, toleranz);
+  }
+
+  /** Haelt ein Werkzeug gerade die Maus? Diese eine Zeile entscheidet, ob 8a
+   *  blaettern darf - sie wird nach JEDER Zustandsaenderung neu gerechnet, damit das
+   *  Feld nicht irgendwo haengen bleibt und den Chart dauerhaft lahmlegt. */
+  function vzHalten() {
+    VW.werkzeugAktiv = VZ.werkzeug !== 'zeiger' || !!VZ.griff || !!VZ.schieben;
+  }
+
+  /* ---- Maus. Der Horcher sitzt in der CAPTURE-Phase auf dem Wrapper und laeuft
+   * damit vor dem des Canvas: wenn 8a `VW.werkzeugAktiv` liest, steht der
+   * Treffertest schon fest. ---- */
+  function vzMausRunter(ev) {
+    if (!ZN() || !VW.skala || ev.button !== 0) return;
+    if (VZ.werkzeug === 'pinsel') {
+      var p0 = vzPunkt(ev);
+      if (p0) { VZ.entwurf = ZN().neu('pinsel', [p0], vzStil()); vzHalten(); }
+      return;
+    }
+    if (VZ.werkzeug !== 'zeiger') { vzHalten(); return; }
+    /* Zeiger: was liegt unter dem Zeiger? Ein Treffer haelt die Maus fest, ein
+     * Fehlschlag laesst sie los - dann blaettert der Chart wie ohne 8c. */
+    var c = document.getElementById('vwChart');
+    var r = c.getBoundingClientRect();
+    var tr = ZN().treffer(VZ.liste, ev.clientX - r.left, ev.clientY - r.top,
+      VW.sichtbar.kerzen, VW.skala);
+    if (!tr) {
+      VZ.ausgewaehlt = null; VZ.griff = null; VZ.schieben = null;
+      vzStilLeiste(); vzHalten(); vzZeichnen();
+      return;
+    }
+    VZ.ausgewaehlt = tr.id;
+    if (!tr.zeichnung.gesperrt) {
+      var p = vzPunkt(ev);
+      if (tr.griff != null) VZ.griff = { id: tr.id, nr: tr.griff };
+      else if (p) VZ.schieben = { id: tr.id, t: p.t, kurs: p.kurs };
+    }
+    vzStilLeiste();
+    vzHalten();
+    vzZeichnen();
+  }
+  function vzBewegen(ev) {
+    if (!ZN() || !VW.skala) return;
+    var p = vzPunkt(ev);
+    if (!p) return;
+    if (VZ.griff) {
+      var zg = vzFinden(VZ.griff.id);
+      if (zg) { ZN().punktSetzen(zg, VZ.griff.nr, p); vzZeichnen(); }
+      return;
+    }
+    if (VZ.schieben) {
+      var zs = vzFinden(VZ.schieben.id);
+      if (zs) {
+        ZN().verschieben(zs, p.t - VZ.schieben.t, p.kurs - VZ.schieben.kurs);
+        VZ.schieben.t = p.t; VZ.schieben.kurs = p.kurs;
+        vzZeichnen();
+      }
+      return;
+    }
+    if (VZ.entwurf && VZ.werkzeug === 'pinsel') {
+      VZ.entwurf.punkte.push(p);
+      vzZeichnen();
+      return;
+    }
+    /* Gummiband: der Entwurf zeigt schon, was er wird, bevor der letzte Klick
+     * sitzt. Ohne das setzt man den zweiten Punkt einer Linie blind. */
+    if (VZ.entwurf) { VZ.vorschau = p; vzZeichnen(); }
+  }
+  function vzMausHoch() {
+    if (VZ.entwurf && VZ.werkzeug === 'pinsel') {
+      if (VZ.entwurf.punkte.length >= 2) vzFertig(VZ.entwurf);
+      VZ.entwurf = null;
+    }
+    if (VZ.griff || VZ.schieben) vzMerken();
+    VZ.griff = null;
+    VZ.schieben = null;
+    vzHalten();
+  }
+  /** Der Einzelklick setzt die Punkte. 8a hat am Chart bewusst keinen Klick-Horcher,
+   *  der Weg ist also frei. Gezeichnet wird Klick-Klick, nicht mit Ziehen: eine Linie
+   *  ueber ein halbes Bild laesst sich mit gedrueckter Taste kaum treffen. */
+  function vzKlick(ev) {
+    if (!ZN() || !VW.skala || VZ.werkzeug === 'zeiger' || VZ.werkzeug === 'pinsel') return;
+    /* Die Messbox verschwindet beim naechsten Klick - wie im Vorbild. */
+    if (VZ.mess) { VZ.mess = null; vzMessBox(); }
+    var p = vzPunkt(ev);
+    if (!p) return;
+    if (!VZ.entwurf) VZ.entwurf = ZN().neu(VZ.werkzeug, [p], vzStil());
+    else VZ.entwurf.punkte.push(p);
+    VZ.vorschau = null;
+    var soll = ZN().ARTEN[VZ.werkzeug].punkte;
+    if (VZ.entwurf.punkte.length >= soll) { vzFertig(VZ.entwurf); VZ.entwurf = null; }
+    vzZeichnen();
+  }
+  /** Eine fertige Zeichnung. Das Messwerkzeug ist FLUECHTIG: es wird nicht in die
+   *  Liste aufgenommen und nicht gespeichert - eine Messung ist eine Frage, keine
+   *  Zeichnung. Danach springt das Werkzeug zurueck auf den Zeiger, wie im Vorbild. */
+  function vzFertig(z) {
+    var A = ZN().ARTEN[z.art];
+    if (A.fluechtig) {
+      VZ.mess = { zeichnung: z, ergebnis: ZN().messung(VW.sichtbar.kerzen, z.punkte[0], z.punkte[1]) };
+      vzMessBox();
+    } else if (z.art === 'text') {
+      /* Beschriftet wird im Stil-Popover, nicht in einem Fenster: `window.prompt`
+       * gibt es in Electron nicht (es meldet nur, dass es nicht unterstuetzt wird),
+       * und ein eigener Dialog fuer ein Wort waere schwerer als die Sache. Der Text
+       * bleibt so ausserdem spaeter aenderbar - im Vorbild auch. */
+      VZ.liste.push(z);
+      VZ.ausgewaehlt = z.id;
+      VZ.textFokus = z.id;
+    } else {
+      VZ.liste.push(z);
+      VZ.ausgewaehlt = z.id;
+    }
+    vzMerken();
+    vzWerkzeug('zeiger');
+    vzStilLeiste();
+  }
+  function vzFinden(id) {
+    for (var i = 0; i < VZ.liste.length; i++) if (VZ.liste[i].id === id) return VZ.liste[i];
+    return null;
+  }
+  function vzStil() {
+    var f = vwFarben();
+    return { farbe: /^#[0-9a-fA-F]{6}$/.test(f.ma20) ? f.ma20 : ZN().STIL_VORGABE.farbe,
+             breite: ZN().STIL_VORGABE.breite, linienart: ZN().STIL_VORGABE.linienart };
+  }
+
+  /* ---- Tastatur. Esc bricht ab, Entf loescht, die Kuerzel stehen in ARTEN. ---- */
+  function vzTaste(ev) {
+    if (!ZN()) return;
+    if (ev.key === 'Escape') {
+      if (VZ.entwurf) { VZ.entwurf = null; VZ.vorschau = null; }
+      else if (VZ.werkzeug !== 'zeiger') { vzWerkzeug('zeiger'); return; }
+      else if (VZ.mess) { VZ.mess = null; vzMessBox(); }
+      else { VZ.ausgewaehlt = null; vzStilLeiste(); }
+      ev.preventDefault();
+      vzZeichnen();
+      return;
+    }
+    if ((ev.key === 'Delete' || ev.key === 'Backspace') && VZ.ausgewaehlt) {
+      vzLoeschen(VZ.ausgewaehlt);
+      ev.preventDefault();
+      return;
+    }
+    var Z = ZN();
+    for (var i = 0; i < Z.ART_LISTE.length; i++) {
+      var t = Z.ARTEN[Z.ART_LISTE[i]].taste;
+      if (!t || t.code !== ev.code) continue;
+      if (!!t.alt !== !!ev.altKey || !!t.shift !== !!ev.shiftKey) continue;
+      ev.preventDefault();
+      if (Z.ARTEN[Z.ART_LISTE[i]].fib) vzFibListe(true);
+      vzWerkzeug(Z.ART_LISTE[i]);
+      return;
+    }
+  }
+  function vzLoeschen(id) {
+    VZ.liste = VZ.liste.filter(function (z) { return z.id !== id; });
+    if (VZ.ausgewaehlt === id) VZ.ausgewaehlt = null;
+    VZ.griff = null; VZ.schieben = null;
+    vzStilLeiste();
+    vzMerken();
+    vzHalten();
+    vzLeisteStand();
+    vzZeichnen();
+  }
+
+  /* ---- Das Stil-Popover der ausgewaehlten Zeichnung ---- */
+  function vzStilLeiste() {
+    var el = document.getElementById('vwStil');
+    if (!el || !ZN()) return;
+    var z = VZ.ausgewaehlt ? vzFinden(VZ.ausgewaehlt) : null;
+    if (!z || z.gesperrt) { el.hidden = true; el.innerHTML = ''; return; }
+    if (el.__fuer !== z.id) {
+      el.__fuer = z.id;
+      el.innerHTML =
+        '<span>' + U.esc(ZN().ARTEN[z.art].name) + '</span>' +
+        (z.art === 'text'
+          ? '<input type="text" id="vzText" aria-label="Beschriftung" placeholder="Beschriftung" size="14" value="' +
+            U.esc(z.text || '') + '">'
+          : '') +
+        '<input type="color" id="vzFarbe" aria-label="Farbe" value="' + U.esc(z.stil.farbe) + '">' +
+        '<label>Breite <select id="vzBreite" aria-label="Linienbreite">' +
+          [1, 1.5, 2, 3, 4].map(function (b) {
+            return '<option value="' + b + '"' + (b === z.stil.breite ? ' selected' : '') + '>' + U.dez(b, 1) + '</option>';
+          }).join('') +
+        '</select></label>' +
+        '<label>Art <select id="vzLinienart" aria-label="Linienart">' +
+          ZN().LINIENARTEN.map(function (a) {
+            return '<option value="' + a + '"' + (a === z.stil.linienart ? ' selected' : '') + '>' + a + '</option>';
+          }).join('') +
+        '</select></label>' +
+        '<button type="button" id="vzWeg" aria-label="Diese Zeichnung löschen" title="Löschen (Entf)">✕</button>';
+    }
+    el.hidden = false;
+    /* Ein frisch gesetztes Textfeld bekommt den Schreibzeiger - sonst steht eine
+     * leere Beschriftung im Chart und niemand weiss, wo man sie eintippt. */
+    if (VZ.textFokus === z.id) {
+      VZ.textFokus = null;
+      var tf = document.getElementById('vzText');
+      if (tf) tf.focus();
+    }
+    if (!el.__bereit) {
+      el.__bereit = true;
+      el.addEventListener('input', function (ev) {
+        var z2 = VZ.ausgewaehlt ? vzFinden(VZ.ausgewaehlt) : null;
+        if (!z2 || !ev.target.id) return;
+        if (ev.target.id === 'vzText') z2.text = ev.target.value;
+        if (ev.target.id === 'vzFarbe') z2.stil.farbe = ev.target.value;
+        if (ev.target.id === 'vzBreite') z2.stil.breite = Number(ev.target.value);
+        if (ev.target.id === 'vzLinienart') z2.stil.linienart = ev.target.value;
+        vzMerken();
+        vzZeichnen();
+      });
+      el.addEventListener('click', function (ev) {
+        if (ev.target && ev.target.id === 'vzWeg' && VZ.ausgewaehlt) vzLoeschen(VZ.ausgewaehlt);
+      });
+    }
+  }
+
+  /* ---- Die Messbox. Text im DOM, nicht auf dem Canvas: sonst liest ihn weder die
+   * Vorlesehilfe noch eine Probe. ---- */
+  function vzMessBox() {
+    var el = document.getElementById('vwMess');
+    if (!el) return;
+    if (!VZ.mess || !VZ.mess.ergebnis || !VW.skala || !ZN()) { el.hidden = true; el.textContent = ''; return; }
+    var e = VZ.mess.ergebnis;
+    var teile = [
+      (e.diff >= 0 ? '+' : '−') + U.dez(Math.abs(e.diff), 2) +
+        (e.prozent == null ? '' : ' (' + (e.prozent >= 0 ? '+' : '−') + U.dez(Math.abs(e.prozent), 2) + ' %)'),
+      e.kerzen + ' Kerzen',
+      e.dauerText
+    ];
+    if (e.volumen != null) teile.push(U.nf0 ? U.nf0.format(e.volumen) + ' Stück' : e.volumen + ' Stück');
+    el.textContent = teile.join(' · ');
+    el.hidden = false;
+    var pr = ZN().projektion(VW.sichtbar.kerzen, VW.skala);
+    var p2 = VZ.mess.zeichnung.punkte[1];
+    var x = pr.x(p2.t), y = pr.y(p2.kurs);
+    if (isFinite(x) && isFinite(y)) {
+      /* Die Box wird an ihrer WIRKLICHEN Breite gehalten, nicht an einer geschaetzten:
+       * bei langem Volumen ("168.000 Stück") stiess eine feste Zahl ueber den rechten
+       * Rand, und der letzte Wert stand halb ausserhalb des Bildes. */
+      var bb = el.offsetWidth || 180;
+      el.style.left = Math.max(0, Math.min(VW.skala.breite - bb - 4, x - bb / 2)) + 'px';
+      el.style.top = Math.max(0, y + (e.aufwaerts ? -34 : 12)) + 'px';
+    }
+  }
+
+  /* ---- Zeichnen auf der eigenen Ebene ---- */
+  function vzZeichnen() {
+    var c = document.getElementById('vwChart');
+    var e = document.getElementById('vwEbene');
+    if (!c || !e || !ZN() || !VW.skala || !VW.sichtbar) return;
+    var breite = Math.max(320, c.clientWidth || 900);
+    var hoehe = Math.max(200, c.clientHeight || 420);
+    var dpr = window.devicePixelRatio || 1;
+    if (e.width !== Math.round(breite * dpr) || e.height !== Math.round(hoehe * dpr)) {
+      e.width = Math.round(breite * dpr); e.height = Math.round(hoehe * dpr);
+    }
+    var ctx = e.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    /* Ohne Kerzen gibt es nichts zu projizieren - die Ebene wird geleert statt die
+     * Zeichnungen des vorigen Werts auf einem leeren Bild stehen zu lassen. */
+    if (!VW.sichtbar.kerzen || !VW.sichtbar.kerzen.length) {
+      ctx.clearRect(0, 0, breite, hoehe);
+      return;
+    }
+    /* Der Entwurf wird MITGEZEICHNET, aber nicht gespeichert - und das Gummiband
+     * haengt als zusaetzlicher Punkt daran, ohne ihn zu veraendern. */
+    var zuMalen = VZ.liste.slice();
+    if (VZ.entwurf) {
+      var vor = VZ.entwurf;
+      if (VZ.vorschau && vor.punkte.length < (ZN().ARTEN[vor.art].punkte || 99)) {
+        vor = { id: vor.id, art: vor.art, stil: vor.stil, text: vor.text,
+                gesperrt: false, sichtbar: true,
+                punkte: vor.punkte.concat([VZ.vorschau]) };
+      }
+      zuMalen.push(vor);
+    }
+    if (VZ.mess) zuMalen.push(VZ.mess.zeichnung);
+    VZ.gezeichnet = ZN().zeichnen(ctx, zuMalen, VW.sichtbar.kerzen, VW.skala, {
+      ausgewaehlt: VZ.ausgewaehlt,
+      kursWort: function (v) { return U.nf2.format(v); }
+    });
+    if (VZ.verworfenText) {
+      var hin = document.getElementById('vwHinweis');
+      if (hin) hin.textContent = VZ.verworfenText;
+    }
+    vzMessBox();
+  }
+
+  /* ---- Speichern je Wert. Die Zeichnungen haengen am KUERZEL, nicht am
+   * Zeitrahmen: sie stehen in Daten-Koordinaten und gelten deshalb auf dem
+   * Minutenchart genauso wie auf dem Wochenchart. ---- */
+  function vzMerken() {
+    if (!window.api || typeof window.api.storeSet !== 'function' || !VZ.sym || !ZN()) return;
+    var alle = VZ.alleWerte || {};
+    if (VZ.liste.length) alle[VZ.sym] = VZ.liste;
+    else delete alle[VZ.sym];
+    VZ.alleWerte = alle;
+    try { window.api.storeSet(VZ_STORE, alle); } catch (err) { /* ohne Speicher bleibt es bei der Sitzung */ }
+  }
+  async function vzLaden(sym) {
+    VZ.sym = sym;
+    VZ.liste = [];
+    VZ.ausgewaehlt = null;
+    VZ.entwurf = null;
+    VZ.mess = null;
+    if (!window.api || typeof window.api.storeGet !== 'function' || !ZN()) return;
+    try {
+      var alle = await window.api.storeGet(VZ_STORE);
+      VZ.alleWerte = (alle && typeof alle === 'object') ? alle : {};
+      var g = ZN().ausListe(VZ.alleWerte[sym] || []);
+      VZ.liste = g.liste;
+      /* Was durchfaellt, verschwindet nicht still: der Hinweis ueber dem Chart sagt
+       * es, sonst sucht jemand eine Linie, die das Programm weggeworfen hat. Er wird
+       * in vzZeichnen() gesetzt, weil vwZeichnen() das Feld vorher leert. */
+      VZ.verworfenText = g.verworfen.length
+        ? g.verworfen.length + ' gespeicherte Zeichnungen waren unlesbar und wurden nicht geladen: ' +
+          g.verworfen.map(function (v) { return v.grund; }).join('; ')
+        : '';
+    } catch (e) { /* ohne Speicher faengt der Wert bei null Zeichnungen an */ }
+    vzLeisteStand();
+    vzZeichnen();
+  }
+
+  /* ---- Ausgeben und Einlesen. Ausgegeben wird ueber denselben Weg wie jeder
+   * andere Export der App (U.dateiSpeichern); eingelesen wird ueber das
+   * Einfuege-Muster, das die App fuer den Depotauszug schon benutzt - einen
+   * Dateidialog zum OEFFNEN gibt es in diesem Programm nicht. ---- */
+  function vzAusgeben() {
+    if (!ZN() || !VZ.sym) return;
+    U.dateiSpeichern(new Blob([ZN().alsText(VZ.liste)], { type: 'application/json' }),
+      'zeichnungen-' + VZ.sym + '.json');
+  }
+  function vzEinlesen(text) {
+    if (!ZN()) return null;
+    var g = ZN().ausText(text);
+    if (g.liste.length) {
+      VZ.liste = VZ.liste.concat(g.liste);
+      vzMerken();
+      vzLeisteStand();
+      vzZeichnen();
+    }
+    return g;
+  }
+
   /* ---- Verdrahtung, einmal ---- */
   function vwBauen() {
     /* Der Einstellungen-Dialog wird EINMAL verdrahtet und sein gemerkter Stand
@@ -2026,6 +2611,21 @@
       c.addEventListener('dblclick', vwZurueck);
       window.addEventListener('resize', function () { if (CUR) vwZeichnen(); });
     }
+    /* Die Zeichenwerkzeuge (8c). Der Maus-Horcher sitzt in der CAPTURE-Phase auf dem
+     * Wrapper und laeuft damit VOR dem Ziehen-Horcher des Canvas: `VW.werkzeugAktiv`
+     * steht fest, bevor 8a es liest. Die Tastatur haengt am ganzen Feld, damit die
+     * Kuerzel auch greifen, wenn der Fokus in der Werkzeugleiste steht. */
+    vzLeisteBauen();
+    var feld = document.querySelector('.vwZeichenFeld');
+    var wrap = feld ? feld.querySelector('.vwWrap') : null;
+    if (wrap && !wrap.__zeichnen) {
+      wrap.__zeichnen = true;
+      wrap.addEventListener('mousedown', vzMausRunter, true);
+      wrap.addEventListener('mousemove', vzBewegen);
+      wrap.addEventListener('click', vzKlick);
+      window.addEventListener('mouseup', vzMausHoch);
+      feld.addEventListener('keydown', vzTaste);
+    }
     if (!VW.takt) {
       /* Nur bei sichtbarem Fenster, Muster marktui.js. Die laufende Kerze ist eine
        * ANZEIGE - schlaeft das Fenster, sieht niemand hin, und der Takt kostet
@@ -2078,6 +2678,12 @@
       Object.keys(s.ma || {}).forEach(function (k) { if (VW.ma[k] !== undefined) VW.ma[k] = !!s.ma[k]; });
       vwSchalterZeichnen();
     }).catch(function () { /* ohne Speicher bleibt es bei der Vorgabe */ });
+    /* Der Magnet ist eine Gewohnheit, keine Ansicht - er gilt ueber alle Werte und
+     * wird deshalb einmal gemerkt, nicht je Kuerzel. */
+    window.api.storeGet(VZ_MAGNET_STORE).then(function (m) {
+      if (window.Zeichnungen && window.Zeichnungen.MAGNET_MODI.indexOf(m) >= 0) VZ.magnet = m;
+      vzLeisteStand();
+    }).catch(function () { /* ohne Speicher bleibt der Magnet aus */ });
   })();
   /** Die Haekchen auf den gemerkten Stand bringen. */
   function vwSchalterZeichnen() {
@@ -2127,9 +2733,14 @@
     vwTagesreihe().then(vwKopfZeichnen);
     vwTermine();
     vwMassnahmenLaden();
+    /* Die Zeichnungen gehoeren dem WERT: ein Wechsel laedt seine eigenen, ein
+     * Rueckwechsel findet sie wieder. Sie stehen in Daten-Koordinaten und gelten
+     * deshalb in jedem Zeitrahmen. */
+    vzLaden(CUR ? CUR.sym : null);
   }
   /* Nur fuer Proben und die Selbstpruefung - kein Bedienweg. */
   window.__viewer = VW;
+  window.__zeichnungen = VZ;
   window.__viewerLaden = vwLaden;
 
   // Oeffentliche Oeffnen-API: andere Module (z. B. die Dashboard-Heatmap) springen
