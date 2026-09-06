@@ -1079,7 +1079,21 @@
     return { n: sel.length, pnl: Math.round(sum * 100) / 100, pct: Math.round(sum / basis * 10000) / 100 };
   }
 
+  /* Der Live-Sammler (06.09.2026) nimmt Watchlist und offene Positionen in seine
+   * Menge auf. Nur Kuerzel gehen hinueber - kein Kurs, kein Bestand, keine Regel;
+   * der Hauptprozess entscheidet allein, wann und was er holt. Gemeldet wird bei
+   * jedem Speichern, also bei jeder Aenderung, und einmal nach dem Laden. */
+  function liveMengeMelden() {
+    if (!window.api || typeof window.api.liveMenge !== 'function' || !D) return;
+    try {
+      window.api.liveMenge({
+        watch: (D.watchlist || []).map(function (w) { return w && w.y; }).filter(Boolean),
+        positionen: (D.positions || []).map(function (p) { return p && p.sym; }).filter(Boolean)
+      });
+    } catch (e) { /* ohne Meldung bleibt die Menge, wie sie war */ }
+  }
   function save() {
+    liveMengeMelden();
     window.Berichte.exportAnalysis(false); // Analyse-Dateien im Downloads-Ordner aktuell halten (gedrosselt)
     /* Das Ergebnis wurde frueher nie geprueft: Volle Platte oder ein blockierendes
      * Programm hiess stilles Nicht-Speichern bei laufendem Handel - beim Beenden
@@ -6481,6 +6495,7 @@
       warnbandSetzen: warnbandSetzen, automatikDarf: automatikDarf
     });
     if (mig.repaired || mig.messNeu) save();
+    liveMengeMelden();
     render();
     var jS0 = document.getElementById('jobStatus');
     if (jS0) jS0.textContent = D.lastRun

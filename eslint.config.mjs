@@ -74,7 +74,7 @@ export default [
      deshalb stehen module und require hier ebenfalls zur Verfuegung. */
   {
     files: ['*.js', 'markt/*.js'],
-    ignores: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js', 'test-*.js', 'bt-worker.js'],
+    ignores: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js', 'alpacaarchiv.js', 'livesammler.js', 'test-*.js', 'bt-worker.js'],
     languageOptions: {
       ecmaVersion: 2022, sourceType: 'script',
       globals: { ...globals.browser, ...fensterGlobals, module: 'writable', require: 'readonly' }
@@ -84,9 +84,10 @@ export default [
 
   // Hauptprozess, Bruecke und das geteilte Kerzenmodul: Node.
   // kerzenquelle.js liegt in der Wurzel, weil tools/ nicht ausgeliefert wird - sie ist
-  // aber ein Node-Modul und kein Oberflaechenskript.
+  // aber ein Node-Modul und kein Oberflaechenskript. Dasselbe gilt seit dem 06.09.2026
+  // fuer alpacaarchiv.js (Schreibroutine des Alpaca-Archivs) und livesammler.js.
   {
-    files: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js'],
+    files: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js', 'alpacaarchiv.js', 'livesammler.js'],
     languageOptions: { ecmaVersion: 2022, sourceType: 'script', globals: { ...globals.node } },
     rules: echteFehler
   },

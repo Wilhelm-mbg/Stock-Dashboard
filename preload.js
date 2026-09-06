@@ -78,5 +78,11 @@ contextBridge.exposeInMainWorld('api', {
   sammlerStop: () => ipcRenderer.invoke('sammler-stop'),
   sammlerEinstellen: (e) => ipcRenderer.invoke('sammler-einstellen', e),
   onSammler: (cb) => ipcRenderer.on('sammler-fortschritt', (_ev, d) => cb(d)),
-  onSammlerHinweis: (cb) => ipcRenderer.on('sammler-hinweis', (_ev, d) => cb(d))
+  onSammlerHinweis: (cb) => ipcRenderer.on('sammler-hinweis', (_ev, d) => cb(d)),
+  /* Der Live-Sammler ueber Alpaca (06.09.2026): Stand lesen, die Live-Menge melden
+   * (Watchlist, Positionen, Viewer-Wert - nur Kuerzel), Funk nach jeder Runde. Nichts
+   * davon loest einen Abruf aus; der Zeitgeber wohnt im Hauptprozess. */
+  liveStand: () => ipcRenderer.invoke('live-stand'),
+  liveMenge: (teile) => ipcRenderer.send('live-menge', teile),
+  onLiveSammler: (cb) => ipcRenderer.on('live-sammler', (_ev, d) => cb(d))
 });

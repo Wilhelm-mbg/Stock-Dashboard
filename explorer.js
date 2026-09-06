@@ -107,6 +107,11 @@
   async function openDetail(hit) {
     var seq = ++openSeq;
     CUR = hit;
+    /* Der Live-Sammler (06.09.2026) nimmt den Wert im Viewer in seine Menge auf -
+     * nur das Kuerzel geht hinueber, der Hauptprozess entscheidet, wann er holt. */
+    if (window.api && typeof window.api.liveMenge === 'function') {
+      try { window.api.liveMenge({ viewer: hit && hit.sym ? hit.sym : null }); } catch (e) { /* ohne Meldung bleibt die Menge, wie sie war */ }
+    }
     var startEl = document.getElementById('expStart');
     if (startEl) startEl.style.display = 'none';
     document.getElementById('expDetail').style.display = 'block';
@@ -734,9 +739,17 @@
       var qn = (r.quellen || ['unbekannt']).map(function (q) {
         return q === 'unbekannt' ? 'Herkunft nicht vermerkt' : q;
       });
-      var quellName = r.quelle === 'alpaca' ? 'Alpaca-Minutenarchiv' : 'Archiv (' + qn.join(', ') + ')';
+      /* 'alpaca-verdichtet' (Live-Sammler, 06.09.2026): 5m/15m/1h aus den Alpaca-
+       * Minuten gebildet, weil die juenger sind als das App-Archiv. Die Fusszeile
+       * nennt das - und bis wann die Minuten reichen, nicht bis wann Yahoo reichte. */
+      var quellName = r.quelle === 'alpaca' ? 'Alpaca-Minutenarchiv'
+        : r.quelle === 'alpaca-verdichtet' ? 'Alpaca-Minuten, verdichtet, bis ' + vwZeitpunkt(r.bis)
+        : 'Archiv (' + qn.join(', ') + ')';
       teile.push(quellName);
-      details.push(quellName + ', bis ' + vwZeitpunkt(r.bis));
+      details.push(r.quelle === 'alpaca-verdichtet'
+        ? quellName + (r.abgeleitet ? ' (' + r.abgeleitet.kerzen + ' Kerzen aus ' + r.abgeleitet.minuten + ' Minuten' +
+            (r.abgeleitet.archivBis ? ', davor App-Archiv bis ' + vwZeitpunkt(r.abgeleitet.archivBis) : '') + ')' : '')
+        : quellName + ', bis ' + vwZeitpunkt(r.bis));
     } else {
       teile.push('Archiv: ' + ((r && r.grund) || 'nichts gefunden'));
       details.push('Archiv: ' + ((r && r.grund) || 'nichts gefunden'));
@@ -1864,7 +1877,7 @@
       var wert = z.gebildet
         ? 'aus Tageskerzen gebildet'
         : z.ok
-        ? (z.quelle === 'alpaca' ? 'Alpaca' : 'Archiv') + ' bis ' + U.esc(vwZeitpunkt(z.bis))
+        ? (z.quelle === 'alpaca' ? 'Alpaca' : z.quelle === 'alpaca-verdichtet' ? 'Alpaca (verdichtet)' : 'Archiv') + ' bis ' + U.esc(vwZeitpunkt(z.bis))
         : U.esc(z.grund || 'nichts da');
       return '<dt>' + U.esc(z.zr) + '</dt><dd>' + wert + '</dd>';
     }).join('') + '</dl>';

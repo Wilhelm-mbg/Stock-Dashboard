@@ -1355,6 +1355,11 @@ const Runde = require('./sammelrunde.js');
  * werden hier nur GELESEN - kein Sammeln, kein Schreiben. */
 const ArchivKern = require('./archiv.js');
 const Boerse = require('./boerse.js');
+/* Das Alpaca-Minutenarchiv (Format, Schreibroutine, Sperre) und die Rechnung des
+ * Live-Sammlers - beides in der Wurzel, weil Werkzeuge sie ohne Electron laden
+ * (06.09.2026, Auftrag Live-Sammler). */
+const AlpacaArchiv = require('./alpacaarchiv.js');
+const Live = require('./livesammler.js');
 /* Der Datenordner kommt von Electron, nicht aus einer Annahme ueber das
  * Benutzerverzeichnis: app.getPath('downloads') folgt einer Umleitung, os.homedir()
  * nicht. Und die isolierten Proben setzen ihn eigens um - ohne diese Zeile griffen
@@ -1449,6 +1454,9 @@ function sammlerStand() {
                seit: STILLSTAND[iv].seit };
     }).filter(function (s) { return s.male >= 2; }),
     marktOffen: Plan.marktOffen(Date.now()),
+    /* Der Live-Sammler steht im selben Stand - die Karte zeichnet beides aus einer
+     * Antwort (06.09.2026). */
+    live: liveStand(),
   };
 }
 
@@ -1525,6 +1533,183 @@ async function sammlerNachsehen(grundZeile) {
     if (erg.fehler) SAMMLER.letzterFehler = erg.fehler;
   } finally { NACHSEHEN_LAEUFT = false; }
 }
+
+/* ================= DER LIVE-SAMMLER UEBER ALPACA (06.09.2026) =================
+ *
+ * Wilhelm, 04.09.2026: "geht das nicht live?" Waehrend der US-Sitzung (Vor- und
+ * Nachboerse mit) holt die App alle fuenf Minuten die FERTIGEN 1m-Balken (SIP,
+ * adjustment=raw, gemessen 15 min Verzug + 1 min Sicherheit) fuer die Live-Menge -
+ * Universum top500, Watchlist, Werte mit offener Position, der Wert im Viewer - und
+ * haengt sie an die Jahresdateien unter alpaca1m/ an. Schreibroutine und Sperre
+ * sind die des Vollsammlungs-Werkzeugs (alpacaarchiv.js); der naechtliche Nachlauf
+ * teilt sich beides. Wer die Sperre hat, schreibt, der andere wartet.
+ *
+ * DIE RECHNUNG STEHT IN livesammler.js und ist ohne Electron pruefbar. Hier stehen
+ * nur die Dinge, die es ohne Electron nicht gibt: der Schluessel aus den
+ * App-Einstellungen (dieselbe Quelle wie alpaca.js: alpKey/alpSecret/alpEnabled,
+ * nur Text zaehlt), die Anfrage ueber alpFetch (derselbe Host-Zaun wie fuer die
+ * Kostenmessung), Platte, Sperre, Zeitgeber und der Funk ans Fenster.
+ *
+ * KEIN SCHLUESSEL VERLAESST DIESEN BLOCK: er steht in KEINER Adresse (livesammler.js
+ * baut sie ohne ihn), und jeder Text, der in Stand, Protokoll oder Fehlermeldung
+ * geht, laeuft durch ohneGeheimnis() - dasselbe Muster wie in alpaca.js.
+ *
+ * WAS HIER NICHT PASSIERT: kein Handel, keine Bewertung, kein Schreiben ins
+ * Yahoo-Archiv, kein Umhaengen der Strategien (die lesen weiter Yahoo; Z2 ist ein
+ * eigener Entscheid). Nur der Viewer liest die Alpaca-Minuten (archiv-kerzen). */
+const LIVE = {
+  laeuft: false,
+  letzte: null,           /* Ergebnis der letzten Runde (livesammler.runde) */
+  letzteRunde: null,      /* Zeitpunkt der letzten GELAUFENEN Runde */
+  bis: null,              /* juengster geschriebener Stempel */
+  runden: 0, kerzenHeute: 0, tag: null,
+  leere: { tag: null, je: {} },
+  menge: { watch: [], positionen: [], viewer: null },
+  naechste: null,
+};
+/* Der Zugang - dieselbe Quelle und dieselbe Regel wie alpaca.js cfg(): nur Text
+ * zaehlt, ein Sentinel-Objekt aus dem Einstellungsdialog ist kein Schluessel. */
+function alpacaZugang() {
+  const s = gespeicherteSettings();
+  const txt = (v) => (typeof v === 'string' ? v : '');
+  const key = txt(dechiffrieren(s.alpKey)), secret = txt(dechiffrieren(s.alpSecret));
+  return { key: key, secret: secret, on: !!(s.alpEnabled && key && secret) };
+}
+function ohneGeheimnis(text) {
+  let t = String(text == null ? '' : text);
+  const z = alpacaZugang();
+  if (z.key.length >= 4) t = t.split(z.key).join('[Schlüssel]');
+  if (z.secret.length >= 4) t = t.split(z.secret).join('[Geheimnis]');
+  return t;
+}
+function liveRohOrdner() { return AlpacaArchiv.rohOrdner(); }
+function liveMengeJetzt() {
+  const u = Kerzen.listeBauen('top500');
+  return Live.liveMenge({ universum: u.symbole, watch: LIVE.menge.watch,
+                          positionen: LIVE.menge.positionen, viewer: LIVE.menge.viewer });
+}
+/* Der Kalender der Quelle (_kalender.json der Vollsammlung) - er sagt, welche
+ * Minute vor-, regulaer oder nachboerslich ist, Halbtage eingeschlossen. Deckt er
+ * den heutigen Tag nicht (Jahreswechsel), wird er einmal nachgeholt: EINE Anfrage
+ * an /v2/calendar, ergaenzt, nicht ersetzt. */
+async function liveKalender(roh, jetzt) {
+  const kal = AlpacaArchiv.kalenderLesen(roh);
+  const heute = AlpacaArchiv.etTag(jetzt);
+  if (AlpacaArchiv.kalenderDeckt(kal, heute)) return kal.tage;
+  const jahr = Number(heute.slice(0, 4));
+  const z = alpacaZugang();
+  const r = await alpFetch('GET', 'https://paper-api.alpaca.markets/v2/calendar?start=' + jahr + '-01-01&end=' + (jahr + 1) + '-12-31',
+    { 'APCA-API-KEY-ID': z.key, 'APCA-API-SECRET-KEY': z.secret });
+  if (!r || !r.ok) throw new Error('Kalender: HTTP ' + (r ? r.status : 0));
+  const liste = JSON.parse(r.body);
+  if (!Array.isArray(liste)) throw new Error('Kalender: Antwort unlesbar');
+  const tage = Object.assign({}, (kal && kal.tage) || {});
+  liste.forEach((t) => { if (t && t.date) tage[t.date] = { open: t.open, close: t.close }; });
+  const von = (kal && kal.von && kal.von < jahr + '-01-01') ? kal.von : jahr + '-01-01';
+  AlpacaArchiv.kalenderSchreiben(roh, { geholt: new Date().toISOString(), von: von, bis: (jahr + 1) + '-12-31', tage: tage });
+  return tage;
+}
+function liveStand() {
+  const z = alpacaZugang();
+  const an = sammlerEinstellungen().live !== false;
+  const l = LIVE.letzte || {};
+  const st = {
+    moeglich: z.on, an: an, aktiv: z.on && an, laeuft: LIVE.laeuft,
+    werte: l.werte != null ? l.werte : null,
+    letzteRunde: LIVE.letzteRunde, bis: LIVE.bis,
+    anfragen: l.gelaufen ? l.anfragen : (l.anfragen || null),
+    bloecke: l.bloecke || 0, kerzen: l.kerzen || 0, dateien: l.dateien || 0,
+    verworfen: l.verworfen || null,
+    drossel: !!l.drossel, fehler: l.fehler || null, grund: l.grund || null, gelaufen: !!l.gelaufen,
+    zeit: l.zeit || null, dauerMs: l.dauerMs || null,
+    runden: LIVE.runden, kerzenHeute: LIVE.kerzenHeute,
+    fenster: Live.sitzungsfenster(Date.now()),
+    naechste: LIVE.naechste, takt: Live.TAKT_MS, deckel: Live.DECKEL_JE_RUNDE,
+  };
+  st.zeile = Live.panelZeile(st);
+  return st;
+}
+async function liveRunde(grundZeile) {
+  if (LIVE.laeuft) return;
+  LIVE.laeuft = true;
+  const jetzt = Date.now();
+  const heute = AlpacaArchiv.etTag(jetzt);
+  if (LIVE.tag !== heute) { LIVE.tag = heute; LIVE.kerzenHeute = 0; }
+  try {
+    const z = alpacaZugang();
+    const roh = liveRohOrdner();
+    const an = sammlerEinstellungen().live !== false;
+    const werte = (an && z.on) ? liveMengeJetzt() : [];
+    let kal = null;
+    if (an && z.on && Live.sitzungsfenster(jetzt).offen) kal = await liveKalender(roh, jetzt);
+    const jahr = Number(heute.slice(0, 4));
+    const kopf = { 'APCA-API-KEY-ID': z.key, 'APCA-API-SECRET-KEY': z.secret };
+    const erg = await Live.runde({
+      werte: werte, jetzt: () => Date.now(), an: an, schluessel: z.on,
+      sperre: {
+        lesen: () => AlpacaArchiv.sperreLesen(roh),
+        setzen: (was) => AlpacaArchiv.sperreSetzen(roh, was),
+        loesen: () => AlpacaArchiv.sperreLoesen(roh),
+      },
+      stempel: (sym) => AlpacaArchiv.letzterStempelReihe(roh, AlpacaArchiv.reiheFuer(roh, sym), jahr),
+      fetch: async (url) => {
+        const r = await alpFetch('GET', url, kopf);
+        return { status: r ? r.status : 0, body: r ? r.body : '' };
+      },
+      schreiben: (sym, j, kerzen) => {
+        const reihe = AlpacaArchiv.reiheFuer(roh, sym);
+        const ordner = path.join(roh, AlpacaArchiv.ordnerFuer(roh, reihe));
+        const w = AlpacaArchiv.jahrSchreiben(ordner, reihe, j, kerzen, kal, { herkunft: 'Live-Sammler' });
+        if (w && w.grund) w.grund = ohneGeheimnis(w.grund);
+        return w;
+      },
+      leere: LIVE.leere,
+      /* Der Vermerk "live" im Fortschritt der Vollsammlung, je Wert: letzter Stempel,
+       * letzte Runde, leere Runden - noch unter der Sperre geschrieben. */
+      abschluss: (r) => {
+        const F = AlpacaArchiv.fortschrittLesen(roh);
+        F.live = F.live || { werte: {} };
+        F.live.werte = F.live.werte || {};
+        F.live.stand = new Date().toISOString();
+        F.live.runde = { zeit: r.zeit, grund: r.grund ? ohneGeheimnis(r.grund) : null, werte: r.werte, bloecke: r.bloecke,
+          anfragen: r.anfragen, seiten: r.seiten, kerzen: r.kerzen, dateien: r.dateien, verworfen: r.verworfen,
+          drossel: r.drossel, fehler: r.fehler ? ohneGeheimnis(r.fehler) : null, ende: r.ende, bis: r.bis, deckel: r.deckel };
+        Object.keys(r.jeWert).forEach((sym) => {
+          F.live.werte[sym] = { stempel: r.jeWert[sym].stempel, runde: r.zeit, leer: r.jeWert[sym].leer };
+        });
+        AlpacaArchiv.fortschrittSchreiben(roh, F);
+        AlpacaArchiv.protokoll(roh, 'Live-Runde (' + (grundZeile || 'planmaessig') + '): ' + r.werte + ' Werte, ' + r.bloecke + ' Bloecke, ' +
+          r.anfragen + ' Anfragen, ' + r.kerzen + ' Kerzen in ' + r.dateien + ' Dateien' +
+          (r.bis ? ', bis ' + new Date(r.bis).toISOString() : '') +
+          (r.fehler ? ', ' + ohneGeheimnis(r.fehler) : '') + (r.grund ? ', ' + ohneGeheimnis(r.grund) : ''));
+      },
+    });
+    if (erg.fehler) erg.fehler = ohneGeheimnis(erg.fehler);
+    if (erg.grund) erg.grund = ohneGeheimnis(erg.grund);
+    LIVE.letzte = erg;
+    if (erg.gelaufen) {
+      LIVE.letzteRunde = erg.zeit; LIVE.runden++; LIVE.kerzenHeute += erg.kerzen;
+      if (erg.bis != null && (LIVE.bis == null || erg.bis > LIVE.bis)) LIVE.bis = erg.bis;
+    }
+  } catch (e) {
+    LIVE.letzte = { gelaufen: false, fehler: ohneGeheimnis((e && e.message) || e), zeit: jetzt, werte: null };
+  } finally {
+    LIVE.laeuft = false;
+    LIVE.naechste = Date.now() + Live.TAKT_MS;
+    sammlerFunk('live-sammler', liveStand());
+  }
+}
+ipcMain.handle('live-stand', async () => liveStand());
+/* Der Renderer meldet, was nur er weiss: Watchlist, offene Positionen, der Wert im
+ * Viewer. Jede Meldung ersetzt nur die Teile, die sie mitbringt. Nur Kuerzel kommen
+ * durch - die Menge geht spaeter in eine Adresse. */
+ipcMain.on('live-menge', (_ev, teile) => {
+  if (!teile || typeof teile !== 'object') return;
+  const liste = (v) => (Array.isArray(v) ? v : []).map((s) => String(s || '').toUpperCase().replace(/[^A-Z0-9.]/g, '').slice(0, 12)).filter(Boolean).slice(0, 2000);
+  if ('watch' in teile) LIVE.menge.watch = liste(teile.watch);
+  if ('positionen' in teile) LIVE.menge.positionen = liste(teile.positionen);
+  if ('viewer' in teile) LIVE.menge.viewer = teile.viewer ? String(teile.viewer).toUpperCase().replace(/[^A-Z0-9.]/g, '').slice(0, 12) : null;
+});
 
 /* ================= WIE VOLLSTAENDIG IST DAS ARCHIV (Stufe 4, 03.09.2026) =========
  *
@@ -1732,13 +1917,62 @@ function kopfLesen(pfad, bytes) {
 /* Der Ordnername im Alpaca-Archiv ist nicht immer das Kuerzel (Geraetenamen wie CON,
  * Gross-/Kleinschreibung). Die vollstaendige Abbildung fuehrt _symbole.json; ohne sie
  * gilt das Kuerzel selbst. */
-let alpacaAb = null;
+/* Bis zum 06.09.2026 las diese Stelle das Feld `ab` - die Datei traegt die Abbildung
+ * aber unter `ordner` (so schreibt sie die Vollsammlung). Der Rueckfall "Kuerzel =
+ * Ordner" verdeckte das; nur CON haette gefehlt. Jetzt liest alpacaarchiv.js die
+ * Datei, dieselbe Stelle, die auch der Live-Sammler benutzt. */
 function alpacaOrdnerName(wurzel, sym) {
-  if (alpacaAb === null) {
-    try { alpacaAb = (JSON.parse(fs.readFileSync(path.join(wurzel, '_symbole.json'), 'utf8')).ab) || {}; }
-    catch (e) { alpacaAb = {}; }
+  return AlpacaArchiv.ordnerFuer(wurzel, sym);
+}
+/* 5m / 15m / 1h AUS DEN ALPACA-MINUTEN (Live-Sammler, 06.09.2026).
+ *
+ * Das App-Archiv dieser Zeitrahmen kommt von Yahoo, nach Handelsschluss. Der
+ * Live-Sammler haengt die fertigen Alpaca-Minuten alle fuenf Minuten an; sind sie
+ * JUENGER als das App-Archiv des gewuenschten Zeitrahmens (um mindestens eine ganze
+ * Periode), werden die groeberen Kerzen daraus GEBILDET - die Rechnung steht in
+ * markt/kerzenchart.js (verdichtenMinuten, Sitzungsgitter), hier wird nur gelesen.
+ * Der aeltere Teil bleibt das App-Archiv, an der Naht gewinnt es (Paragraph 6);
+ * die Yahoo-Live-Naht des Viewers bleibt als Rueckfall fuer den Rest.
+ *
+ * Gelesen wird der Schwanz der Rohdatei (alpaca1m/, roh - dorthin schreibt der
+ * Live-Sammler; die bereinigte Kopie entsteht erst nachts). So viel Schwanz, wie die
+ * Minuten seit dem Ende des App-Archivs brauchen, hoechstens 8 MB. Die erste Kerze
+ * eines Schwanzes ist angeschnitten und faellt weg. NUR LESEN. */
+const VERDICHT_MAX_BYTES = 8 * 1024 * 1024;
+function alpacaVerdichtet(sym, zr, n, appBis) {
+  const faktor = KChart.MINUTEN_VERDICHTUNG[zr];
+  if (!faktor) return null;
+  const roh = path.join(path.dirname(Kerzen.ordnerVon('60m')), 'alpaca1m');
+  const reihe = AlpacaArchiv.reiheFuer(roh, sym);
+  const jahr = new Date().getUTCFullYear();
+  const alpacaBis = AlpacaArchiv.letzterStempelReihe(roh, reihe, jahr);
+  if (alpacaBis == null) return null;
+  if (appBis != null && alpacaBis < appBis + faktor * 60000) return null;
+  const minuten = appBis != null ? Math.ceil((alpacaBis - appBis) / 60000) + faktor * 2 : n * faktor * 2;
+  const bytes = Math.min(VERDICHT_MAX_BYTES, 64 * 1024 + minuten * 70);
+  let k1m = [], bereiche = [], dateien = [], gelesen = 0;
+  for (let j = jahr; j >= jahr - 1 && k1m.length < minuten; j--) {
+    const datei = AlpacaArchiv.jahrDatei(roh, reihe, j);
+    if (!fs.existsSync(datei)) continue;
+    const groesse = fs.statSync(datei).size;
+    const text = schwanzLesen(datei, bytes);
+    gelesen += Math.min(groesse, bytes);
+    let teil = KChart.kerzenAusText(text, 0);
+    if (groesse > bytes && teil.length) teil = teil.slice(1);
+    if (!teil.length) continue;
+    k1m = teil.concat(k1m);
+    bereiche = KChart.sitzungenAusText(text).concat(bereiche);
+    dateien.push(path.basename(path.dirname(datei)) + '/' + path.basename(datei));
   }
-  return alpacaAb[sym] || sym;
+  if (!k1m.length) return null;
+  if (appBis != null) k1m = k1m.filter((k) => k[0] > appBis);
+  const sitzJe = KChart.sitzungJeKerze(k1m, bereiche, null);
+  const v = KChart.verdichtenMinuten(k1m, zr, sitzJe);
+  if (!v.kerzen.length) return null;
+  return { kerzen: v.kerzen, bereiche: KChart.bereicheAus(v.kerzen, v.sitzungen), minuten: k1m.length,
+           unvollstaendig: v.unvollstaendig, angeschnitten: v.angeschnitten,
+           von: v.kerzen[0][0], bis: v.kerzen[v.kerzen.length - 1][0], minutenBis: alpacaBis,
+           ablage: 'alpaca-roh', dateien: dateien, gelesen: gelesen };
 }
 ipcMain.handle('archiv-kerzen', async (_ev, symbol, zeitrahmen, anzahl) => {
   try {
@@ -1785,23 +2019,48 @@ ipcMain.handle('archiv-kerzen', async (_ev, symbol, zeitrahmen, anzahl) => {
     /* (b) Das App-Archiv, Format 2. */
     const ordner = Kerzen.ordnerVon(iv);
     const datei = Kerzen.dateiFuer(sym, iv, ordner);
+    let kerzen = [], bereiche = [], kopfLaenge = 0;
+    if (fs.existsSync(datei)) {
+      const text = schwanzLesen(datei, kerzenSchwanz(n));
+      kerzen = KChart.kerzenAusText(text, n);
+      const kopf = kopfLesen(datei, KERZEN_KOPF);
+      bereiche = KChart.quellenAusText(kopf);
+      kopfLaenge = kopf.length;
+    }
+    /* (c) Sind die Alpaca-Minuten juenger als das App-Archiv dieses Zeitrahmens,
+     *     werden 5m/15m/1h daraus gebildet - der Viewer sieht den Nachmittag, bevor
+     *     der Yahoo-Sammler abends laeuft. Das App-Archiv bleibt fuer den aelteren
+     *     Teil und gewinnt an der Naht. */
+    const abg = alpacaVerdichtet(sym, zr, n, kerzen.length ? kerzen[kerzen.length - 1][0] : null);
+    if (abg) {
+      const z = KChart.zusammenfuehren(kerzen, abg.kerzen);
+      const alle = z.kerzen.slice(-n);
+      const vonA = alle[0][0], bisA = alle[alle.length - 1][0];
+      const quellenA = kerzen.length ? KChart.quellenIm(bereiche, vonA, Math.min(bisA, kerzen[kerzen.length - 1][0])) : [];
+      if (quellenA.indexOf('alpaca') === -1) quellenA.push('alpaca');
+      return { ok: true, sym: sym, zeitrahmen: zr, kerzen: alle, sitzungen: abg.bereiche,
+               quelle: 'alpaca-verdichtet', quellen: quellenA, ablage: abg.ablage,
+               dateien: (kerzen.length ? [path.basename(datei)] : []).concat(abg.dateien), intervall: iv,
+               von: vonA, bis: bisA,
+               abgeleitet: { aus: '1m', minuten: abg.minuten, kerzen: abg.kerzen.length, von: abg.von, bis: abg.bis,
+                             minutenBis: abg.minutenBis, unvollstaendig: abg.unvollstaendig, angeschnitten: abg.angeschnitten,
+                             archivBis: kerzen.length ? kerzen[kerzen.length - 1][0] : null, naht: z.naht, doppelt: z.doppelt },
+               gelesen: (kerzen.length ? Math.min(fs.statSync(datei).size, kerzenSchwanz(n)) + kopfLaenge : 0) + abg.gelesen,
+               ms: Date.now() - t0 };
+    }
     if (!fs.existsSync(datei)) {
       return { ok: false, grund: 'Im Archiv liegt für ' + sym + ' keine ' + iv + '-Reihe',
                quelle: null, datei: datei };
     }
-    const text = schwanzLesen(datei, kerzenSchwanz(n));
-    const kerzen = KChart.kerzenAusText(text, n);
     if (!kerzen.length) {
       return { ok: false, grund: 'Die Archivdatei ließ sich am Ende nicht lesen', quelle: null, datei: datei };
     }
-    const kopf = kopfLesen(datei, KERZEN_KOPF);
-    const bereiche = KChart.quellenAusText(kopf);
     const von = kerzen[0][0], bis = kerzen[kerzen.length - 1][0];
     return { ok: true, sym: sym, zeitrahmen: zr, kerzen: kerzen, sitzungen: [],
              quelle: 'archiv', quellen: KChart.quellenIm(bereiche, von, bis),
              dateien: [path.basename(datei)], intervall: iv,
              von: von, bis: bis,
-             gelesen: Math.min(fs.statSync(datei).size, kerzenSchwanz(n)) + kopf.length,
+             gelesen: Math.min(fs.statSync(datei).size, kerzenSchwanz(n)) + kopfLaenge,
              ms: Date.now() - t0 };
   } catch (e) { return { ok: false, grund: String((e && e.message) || e) }; }
 });
@@ -2130,5 +2389,11 @@ if (HAT_SPERRE) app.whenReady().then(() => {
    * Entscheidung selbst kostet kein Netz, sie liest nur das Archiv. */
   setTimeout(() => { sammlerNachsehen('nach dem Start').catch(() => {}); }, 60000);
   setInterval(() => { sammlerNachsehen('planmaessig').catch(() => {}); }, 20 * 60000);
+  /* LIVE-SAMMLER (06.09.2026): alle fuenf Minuten eine Runde; ob sie laeuft,
+   * entscheidet livesammler.js (Sitzungsfenster, Schluessel, Schalter, Sperre). Die
+   * erste anderthalb Minuten nach dem Start, damit Fenster und Renderer-Meldungen
+   * (Watchlist, Positionen) schon da sind. */
+  setTimeout(() => { liveRunde('nach dem Start').catch(() => {}); }, 90000);
+  setInterval(() => { liveRunde('planmaessig').catch(() => {}); }, Live.TAKT_MS);
 });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin' && !trayMode) app.quit(); });

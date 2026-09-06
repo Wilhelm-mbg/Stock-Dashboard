@@ -582,6 +582,116 @@
   }
 
   /* ---------------------------------------------------------------------------
+   * MINUTENKERZEN ZU 5m / 15m / 1h VERDICHTEN (Live-Sammler, 06.09.2026)
+   *
+   * Der Live-Sammler haengt die fertigen Alpaca-Minuten waehrend der Sitzung an das
+   * Archiv; das App-Archiv (Yahoo 5m/15m/60m) kommt erst nach Handelsschluss nach.
+   * Damit der Viewer am Nachmittag nicht am Vortag endet, werden die groeberen
+   * Kerzen aus den Minuten GEBILDET - dasselbe Muster wie 1W/1M aus Tageskerzen:
+   * Eroeffnung der ersten, Schluss der letzten, Hoch das hoechste, Tief das tiefste,
+   * Umsatz die Summe (bleibt null, wenn ueberall der Umsatz fehlt).
+   *
+   * DAS GITTER HAENGT AN DER SITZUNG, nicht an der vollen Stunde. Yahoos 60m-Kerzen
+   * liegen auf 09:30, 10:30 ... 15:30 (kerzenquelle.js aufGitter: Minute 30 oder 0),
+   * Vor- und Nachboerse auf 04:00, 05:00 ... bzw. 16:00, 17:00 ... Ein Gitter ab
+   * Mitternacht traefe 09:00-10:00 und mischte Vorboerse und regulaere Sitzung in
+   * einer Kerze. Deshalb: jede Kerze gehoert genau einer Sitzung, und die Perioden
+   * beginnen am Anfang IHRER Sitzung - 04:00 fuer 'vor', 09:30 fuer 'regulaer',
+   * 16:00 fuer 'nach' (13:00 an einem Halbtag, erkennbar an einer 'nach'-Kerze vor
+   * 16:00). Eine Kerze ohne Sitzung ('ausserhalb', 'unbekannt') faellt auf das
+   * Tagesgitter ab Mitternacht ET.
+   *
+   * UNVOLLSTAENDIGES WIRD NICHT GEZEIGT. Die letzte Periode ist nur dann eine Kerze,
+   * wenn ihr Ende erreicht ist (Ende <= juengster Minutenstempel + 1 min); die erste
+   * Periode nur, wenn sie nicht vor dem ersten gelieferten Stempel begonnen hat (der
+   * Aufrufer liest den Schwanz einer Datei - die Periode davor ist angeschnitten).
+   * Was fehlt, holt der Viewer als laufende Kerze bei Yahoo (die Naht, Abschnitt 3);
+   * eine halbe Stunde als ganze Kerze zu zeichnen waere die Zacke, die es nie gab.
+   *
+   * Rein: keine Uhr, kein Zufall, kein Netz. Die Zeitzone kommt ueber Intl, gemerkt
+   * je Stunde - ueber 100.000 Minuten sind das ein paar tausend Aufrufe, nicht
+   * hunderttausend. */
+  var MINUTEN_VERDICHTUNG = { '5m': 5, '15m': 15, '1h': 60 };
+  var ET_TEILE = null;
+  var etMerk = {};
+  function etVersatzMin(ms) {
+    var h = Math.floor(ms / 3600000);
+    if (etMerk[h] !== undefined) return etMerk[h];
+    try {
+      if (!ET_TEILE) {
+        ET_TEILE = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour12: false,
+          year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+      }
+      var t = {};
+      ET_TEILE.formatToParts(new Date(h * 3600000)).forEach(function (p) { t[p.type] = p.value; });
+      var wand = Date.UTC(+t.year, +t.month - 1, +t.day, (+t.hour) % 24, +t.minute);
+      return (etMerk[h] = Math.round((wand - h * 3600000) / 60000));
+    } catch (e) { return (etMerk[h] = 0); }
+  }
+  var SITZUNGS_ANKER = { vor: 4 * 60, regulaer: 9 * 60 + 30, nach: 16 * 60 };
+  var HALBTAG_SCHLUSS = 13 * 60;
+  /** Der Beginn der Periode (UTC ms), in die diese Minutenkerze faellt. */
+  function periodeMinuten(tsMs, sitzung, ivMin) {
+    var v = etVersatzMin(tsMs);
+    var lokal = tsMs + v * 60000;
+    var tagStart = Math.floor(lokal / 86400000) * 86400000;
+    var minDesTages = Math.floor((lokal - tagStart) / 60000);
+    var anker = SITZUNGS_ANKER[sitzung];
+    if (sitzung === 'nach' && minDesTages < SITZUNGS_ANKER.nach) anker = HALBTAG_SCHLUSS;
+    if (anker === undefined || minDesTages < anker) anker = 0;
+    var p = anker + Math.floor((minDesTages - anker) / ivMin) * ivMin;
+    return tagStart + p * 60000 - v * 60000;
+  }
+  /** Minutenkerzen -> Kerzen des Zeitrahmens, Sitzung je gebildeter Kerze mitgefuehrt.
+   *  Rueckgabe { kerzen, sitzungen, unvollstaendig, angeschnitten }. */
+  function verdichtenMinuten(kerzen, art, sitzungJe) {
+    var ivMin = MINUTEN_VERDICHTUNG[art];
+    var ks = (kerzen || []).filter(kerzeOk);
+    if (!ivMin) return { kerzen: ks.slice(), sitzungen: (sitzungJe || []).slice(), unvollstaendig: 0, angeschnitten: 0 };
+    var aus = [], sitz = [], akt = null, aktSitz = null, unvoll = 0, angeschnitten = 0;
+    var erster = ks.length ? ks[0][0] : null, letzter = null;
+    function abschliessen(vollstaendig) {
+      if (!akt) return;
+      if (akt.zeit < erster) angeschnitten++;
+      else if (!vollstaendig) unvoll++;
+      else { aus.push([akt.zeit, akt.zu, akt.umsatz, akt.hoch, akt.tief, akt.auf]); sitz.push(aktSitz); }
+      akt = null;
+    }
+    for (var i = 0; i < ks.length; i++) {
+      var k = ks[i];
+      var s = (sitzungJe && sitzungJe[i]) || 'unbekannt';
+      var p = periodeMinuten(k[0], s, ivMin);
+      if (akt && (p !== akt.zeit || s !== aktSitz)) abschliessen(true);
+      if (!akt) {
+        akt = { zeit: p, auf: zahl(k[5]) ? k[5] : k[1], zu: k[1],
+                hoch: zahl(k[3]) ? k[3] : k[1], tief: zahl(k[4]) ? k[4] : k[1],
+                umsatz: zahl(k[2]) ? k[2] : null };
+        aktSitz = s;
+      } else {
+        akt.zu = k[1];
+        var h = zahl(k[3]) ? k[3] : k[1], t = zahl(k[4]) ? k[4] : k[1];
+        if (h > akt.hoch) akt.hoch = h;
+        if (t < akt.tief) akt.tief = t;
+        if (zahl(k[2])) akt.umsatz = (akt.umsatz == null ? 0 : akt.umsatz) + k[2];
+      }
+      letzter = k[0];
+    }
+    if (akt) abschliessen(letzter != null && akt.zeit + ivMin * 60000 <= letzter + 60000);
+    return { kerzen: aus, sitzungen: sitz, unvollstaendig: unvoll, angeschnitten: angeschnitten };
+  }
+  /** Aus "Sitzung je Kerze" wieder Bereiche machen - fuer die Antwort der Leseauskunft,
+   *  in derselben Form, wie die Alpaca-Dateien sie tragen. */
+  function bereicheAus(kerzen, sitzungJe) {
+    var aus = [];
+    (kerzen || []).forEach(function (k, i) {
+      var s = (sitzungJe || [])[i] || 'unbekannt', l = aus[aus.length - 1];
+      if (l && l.sitzung === s) { l.bis = k[0]; return; }
+      aus.push({ von: k[0], bis: k[0], sitzung: s });
+    });
+    return aus;
+  }
+
+  /* ---------------------------------------------------------------------------
    * 6) Zeichnen
    *
    * `ctx` ist ein Canvas-Zeichenkontext - oder in der Pruefung eine Attrappe, die
@@ -1091,6 +1201,10 @@
     blaettern: blaettern,
     abschnittSchluessel: abschnittSchluessel,
     verdichten: verdichten,
+    MINUTEN_VERDICHTUNG: MINUTEN_VERDICHTUNG,
+    periodeMinuten: periodeMinuten,
+    verdichtenMinuten: verdichtenMinuten,
+    bereicheAus: bereicheAus,
     spurZeichnen: spurZeichnen,
     VOR_MIN: VOR_MIN, NACH_MIN: NACH_MIN,
     FARBEN: FARBEN,

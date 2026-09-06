@@ -56,6 +56,13 @@
 var fs = require('fs');
 var path = require('path');
 var KQ = require('../kerzenquelle.js');
+/* DAS FORMAT DES ARCHIVS WOHNT SEIT DEM 06.09.2026 IN alpacaarchiv.js (Wurzel, wird
+ * ausgeliefert): Ordnernamen, Jahresgrenzen, Kerze aus Balken, Sitzungen aus dem
+ * Kalender und DIE Schreibroutine jahrSchreiben(). Der Live-Sammler der App und der
+ * naechtliche Nachlauf schreiben dieselben Dateien - eine zweite Fassung hier waere
+ * eine zweite Wahrheit. Die Namen unten bleiben, damit kontrolle() und die Exporte
+ * weiter dasselbe pruefen wie vorher; sie zeigen nur auf das gemeinsame Modul. */
+var A = require('../alpacaarchiv.js');
 var M = require('./archiv-migration.js');
 var S = require('../studien/vorregistrierung-2026-09-02-spannen-historisch/schluessel.js');
 
@@ -69,7 +76,10 @@ var AB_JAHR = 2016;
 var LUECKE_TAGE = 20;          /* Handelstage Stille, ab denen ein Kuerzel als neu vergeben gilt */
 var MIND_BALKEN = 1;           /* weniger als das im ganzen Leben: der Wert kommt nicht vor */
 
-var WURZEL = process.env.MD_ALPACA_WURZEL || 'E:/Markt-Dashboard-Archiv';
+/* Die Wurzel kommt seit dem 06.09.2026 aus alpacaarchiv.js - MD_ALPACA_WURZEL gewinnt,
+ * sonst der Ordner neben den Yahoo-Archiven (Archivzeiger). Werkzeug und App teilen
+ * sich damit denselben Ordner und dieselbe Sperre (alpaca1m/_laeuft.json). */
+var WURZEL = A.wurzel();
 var ROH = path.join(WURZEL, 'alpaca1m');
 var BEREINIGT = path.join(WURZEL, 'alpaca1m-bereinigt');
 var MASSNAHMEN = path.join(WURZEL, 'alpaca-massnahmen');
@@ -122,17 +132,7 @@ function protokoll(zeile) {
  * Gross-/Kleinschreibung unterscheiden. Die Wahrheit steht ohnehin IM Datei-Rumpf
  * (huelle.sym), der Ordnername ist nur die Ablage - und alpaca1m/_symbole.json fuehrt
  * die vollstaendige Abbildung. */
-var GERAET = /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i;
-function kurzstempel(s) {
-  return require('crypto').createHash('sha1').update(s, 'utf8').digest('hex').slice(0, 6);
-}
-function ordnerName(sym) {
-  var s = String(sym);
-  var reihe = s.replace(/~2$/, ''), zweite = s !== reihe;
-  var sauber = /^[A-Z0-9.]+$/.test(reihe) && !GERAET.test(reihe) && !/\.$/.test(reihe);
-  var name = sauber ? reihe : reihe.replace(/[^A-Za-z0-9.]/g, '_') + '_' + kurzstempel(reihe);
-  return zweite ? name + '~2' : name;
-}
+var ordnerName = A.ordnerName;
 /** Die Abbildung ueber eine ganze Symbolliste - und der Beweis, dass sie eindeutig ist.
  *  Verglichen wird in Grossschreibung, weil Windows das auch tut. */
 function symbolAbbildung(symbole) {
@@ -200,9 +200,7 @@ async function hole(url, f) {
  *  Jahresdateien - einmal als Rand des alten Jahres, einmal als Anfang des neuen. Doppelte
  *  Kerzen in einem append-only-Archiv bekommt man nicht mehr heraus, ohne alles neu zu
  *  holen. Die Grenzen stossen deshalb genau aneinander: bis(j) + 1 === von(j+1). */
-function jahrGrenzen(jahr) {
-  return { von: M.nyNachUtc(jahr, 1, 1, 0, 0), bis: M.nyNachUtc(jahr + 1, 1, 1, 0, 0) - 1 };
-}
+var jahrGrenzen = A.jahrGrenzen;
 
 /* Der Gratis-Tarif verweigert die JUENGSTEN SIP-Daten - gemessen 03.09.2026, HTTP 403
  * "subscription does not permit querying recent SIP data", und zwar fuer die ganze
@@ -223,22 +221,11 @@ function jahrAbgeschlossen(jahr, jetzt) {
 }
 
 /** Alpaca-Balken -> Archivkerze [t, schluss, umsatz, hoch, tief, eroeffnung]. */
-function kerzeAus(b) {
-  var t = Date.parse(b && b.t);
-  if (!isFinite(t) || new Date(t).getUTCSeconds() !== 0) return null;
-  if (!KQ.kursOk(b.c) || !KQ.kursOk(b.h) || !KQ.kursOk(b.l) || !KQ.kursOk(b.o)) return null;
-  var v = typeof b.v === 'number' && isFinite(b.v) && b.v >= 0 ? b.v : 0;
-  return [t, b.c, v, b.h, b.l, b.o];
-}
+var kerzeAus = A.kerzeAus;
 /** Die iex-Falle (wiki/datenquellen.md): eine Schnittstelle, die lieber irgendetwas
  *  antwortet als nichts. Was ausserhalb des ANGEFRAGTEN Zeitraums liegt, faellt raus. */
-function imZeitraum(kerzen, von, bis) {
-  var drin = [], draussen = 0;
-  kerzen.forEach(function (k) { if (k[0] >= von && k[0] <= bis) drin.push(k); else draussen++; });
-  return { drin: drin, draussen: draussen };
-}
-var NY = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
-function etTag(ms) { return NY.format(new Date(ms)); }
+var imZeitraum = A.imZeitraum;
+var etTag = A.etTag;
 
 /** Sitzung je Kerze aus dem Kalender der Quelle - nicht aus "09:30 bis 16:00" im Kopf.
  *  Halbtage stehen im Kalender mit ihrem eigenen close.
@@ -248,34 +235,10 @@ function etTag(ms) { return NY.format(new Date(ms)); }
  *  Ihn 'regulaer' zu nennen waere eine Behauptung ueber eine Sitzung, die es nicht gab;
  *  ihn wegzuwerfen widerspraeche "alles sammeln". Er wird also behalten, benannt und
  *  gezaehlt. Ob er ueberhaupt vorkommt, sagt der Testlauf. */
-function sitzungJeKerze(kerzen, kal) {
-  var grenzen = {};
-  function fuer(tagEt) {
-    if (grenzen[tagEt] !== undefined) return grenzen[tagEt];
-    var e = kal[tagEt];
-    if (!e || !e.open || !e.close) return (grenzen[tagEt] = null);
-    var p = tagEt.split('-').map(Number), o = e.open.split(':').map(Number), c = e.close.split(':').map(Number);
-    return (grenzen[tagEt] = { auf: M.nyNachUtc(p[0], p[1], p[2], o[0], o[1]), zu: M.nyNachUtc(p[0], p[1], p[2], c[0], c[1]) });
-  }
-  return kerzen.map(function (k) {
-    var g = fuer(etTag(k[0]));
-    if (!g) return 'ausserhalb';
-    if (k[0] < g.auf) return 'vor';
-    if (k[0] >= g.zu) return 'nach';
-    return 'regulaer';
-  });
-}
+var sitzungJeKerze = A.sitzungJeKerze;
 /** Aus "jede Kerze hat eine Sitzung" wieder Bereiche machen - dieselbe Verdichtung wie
  *  bei den Quellen, damit die Huelle nicht so lang wird wie die Reihe. */
-function sitzungenVerdichten(serie, jeKerze) {
-  var aus = [];
-  for (var i = 0; i < serie.length; i++) {
-    var s = jeKerze[i], l = aus[aus.length - 1];
-    if (l && l.sitzung === s) { l.bis = serie[i][0]; continue; }
-    aus.push({ von: serie[i][0], bis: serie[i][0], sitzung: s });
-  }
-  return aus;
-}
+var sitzungenVerdichten = A.sitzungenVerdichten;
 /** Balken je Kalendertag zaehlen, getrennt nach Sitzung - Kontrolle 1 im Testlauf. */
 function jeTagZaehlen(serie, sitzungen) {
   var z = {};
@@ -557,15 +520,10 @@ function ankerFuer(sym, eintrag) {
 }
 
 /* ================= (4) Fortschritt ================= */
-function fortschrittLesen() {
-  try { return JSON.parse(fs.readFileSync(FORTSCHRITT, 'utf8')); }
-  catch (e) { return { begonnen: new Date().toISOString(), erledigt: {}, laufend: {}, leer: {}, abrufe: 0, wiederholt: 0, fehler: {}, kerzen: 0, bytes: 0 }; }
-}
+function fortschrittLesen() { return A.fortschrittLesen(ROH); }
 function fortschrittSchreiben(F) {
-  F.zuletzt = new Date().toISOString();
   F.abrufe = Z.abrufe; F.wiederholt = Z.wiederholt; F.fehler = Z.fehler;
-  fs.mkdirSync(path.dirname(FORTSCHRITT), { recursive: true });
-  M.atomarSchreiben(FORTSCHRITT, JSON.stringify(F));
+  A.fortschrittSchreiben(ROH, F);
 }
 
 /* ================= (5) Kalender ================= */
@@ -762,26 +720,21 @@ async function jahrHolen(a, kal, AB, LZ, opt) {
 
   if (!kerzen.length) return { ok: true, kerzen: 0, seiten: seiten, roh: alle.length, ausserhalb: iz.draussen, ausserhalbLeben: ausserhalbLeben + raus, geschrieben: false };
 
-  var sitz = sitzungJeKerze(kerzen, kal);
+  /* DIE SCHREIBROUTINE ist die gemeinsame (alpacaarchiv.js): Format 2 ueber satz(),
+   * `sitzungen` und `jahr` dahinter, atomar. Liegt die Datei schon - das laufende Jahr
+   * wird an einem spaeteren Tag neu geholt -, wird ANGEHAENGT: keine vorhandene Kerze
+   * wird ueberschrieben (append-only, Wilhelms Skalenkonvention), nur was juenger ist
+   * als der Bestand kommt dazu. So sieht eine Datei nach dem Vollauf plus zehn
+   * Live-Runden genauso aus wie nach einem einzigen Vollauf am Ende. */
   var ordner = path.join(ROH, AB.ab[a.sym] || ordnerName(a.sym));
-  fs.mkdirSync(ordner, { recursive: true });
-  var ziel = path.join(ordner, a.jahr + '.json');
-  var h = KQ.satz(a.sym, '1m', kerzen, {
-    quellen: [{ von: kerzen[0][0], bis: kerzen[kerzen.length - 1][0], quelle: 'alpaca' }],
-    waehrung: 'USD',
-    quelle: 'alpaca v2 stocks/bars, timeframe=1Min, feed=sip, adjustment=raw (Z1c Vollsammlung)',
-  });
-  /* satz() baut die Huelle mit festem Feldsatz - `sitzungen` und `jahr` werden danach
-   * angehaengt. kerzenquelle.js bleibt dabei UNBERUEHRT: das ist App-Code, und dieser
-   * Auftrag aendert keinen (die Quellenpflicht prueft satz() trotzdem mit). */
-  h.sitzungen = sitzungenVerdichten(kerzen, sitz);
-  h.jahr = a.jahr;
-  var text = JSON.stringify(h);
-  M.atomarSchreiben(ziel, text);
-  var z = { regulaer: 0, vor: 0, nach: 0, ausserhalb: 0 };
-  sitz.forEach(function (s) { z[s]++; });
-  return { ok: true, kerzen: kerzen.length, seiten: seiten, roh: alle.length, ausserhalb: iz.draussen,
-    ausserhalbLeben: ausserhalbLeben + raus, bytes: text.length, sitzungen: z, geschrieben: true, pfad: ziel };
+  var w = A.jahrSchreiben(ordner, a.sym, a.jahr, kerzen, kal, { herkunft: 'Z1c Vollsammlung' });
+  if (!w.ok) return { ok: false, grund: 'Schreiben: ' + w.grund, seiten: seiten };
+  /* "Nichts Neues, die Datei steht" ist kein leerer Wert - vor dem Anhang wurde die
+   * Datei in diesem Fall neu geschrieben und zaehlte als geschrieben. Das bleibt so. */
+  var steht = !w.geschrieben && w.uebersprungen > 0;
+  return { ok: true, kerzen: w.neu, uebersprungen: w.uebersprungen, seiten: seiten, roh: alle.length, ausserhalb: iz.draussen,
+    ausserhalbLeben: ausserhalbLeben + raus, bytes: w.bytes || 0, sitzungen: w.sitzungenZaehler || null,
+    geschrieben: w.geschrieben || steht, unveraendert: steht, pfad: w.pfad };
 }
 
 async function holen(opt) {

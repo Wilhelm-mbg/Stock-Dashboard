@@ -1082,6 +1082,54 @@ async function archivZeilePruefen(win, js) {
   return { funde };
 }
 
+/* ================= Live-Sammler: die Panel-Zeile aus Attrappen-Zahlen =================
+ * Der Live-Sammler laeuft in dieser Instanz nie (kein Schluessel, kein Netz). Ob die
+ * Karte seine Zeile ZEIGT, laesst sich trotzdem messen: zeichne() bekommt einen Stand
+ * mit erfundenen Zahlen, und danach muessen genau diese Zahlen im Panel stehen und
+ * der Schalter als Kaestchen da sein. Kein Abruf wird ausgeloest - zeichne() zeigt nur.
+ * window.api ist schreibgeschuetzt (contextBridge), deshalb geht der Weg ueber die
+ * Zeichenfunktion und nicht ueber eine Attrappe der Auskunft. */
+async function liveZeilePruefen(win, js) {
+  const funde = [];
+  await js("(function () { var b = document.querySelector('nav.tabs [data-tab=\"werkzeuge\"]'); if (b) b.click();" +
+    " var s = document.querySelector('#tab-werkzeuge .pills [data-sub=\"betrieb\"]'); if (s) s.click();" +
+    " var d = document.querySelector('#sub-betrieb details[data-klappe=\"archiv\"]'); if (d) d.open = true; })()");
+  await new Promise((r) => setTimeout(r, 1500));
+  const erg = await js("(function () {" +
+    " if (!window.Archivkarte || !window.Archivkarte.zeichne) return { da: false };" +
+    " var alt = window.Archivkarte.letzter();" +
+    " var st = alt ? JSON.parse(JSON.stringify(alt)) : { einstellungen: { universum: 'top500', intervalle: { '1m': 1, '5m': 7, '15m': 7, '60m': 1, '1d': 1 }, nachSchlussMinuten: 30, abstandMs: 1200 }, zeilen: [], stillstand: [] };" +
+    " st.einstellungen = st.einstellungen || {}; st.einstellungen.live = true;" +
+    " st.live = { moeglich: true, an: true, aktiv: true, werte: 512, letzteRunde: Date.now(), bis: Date.now() - 18 * 60000, anfragen: 3, takt: 300000, deckel: 150," +
+    "   zeile: 'Alpaca live: 512 Werte · letzte Runde 15:47 · bis 15:32 ET · Abrufe je Runde 3' };" +
+    " window.Archivkarte.zeichne(st, null);" +
+    " var z = document.getElementById('archLiveZeile'); var k = document.getElementById('archLiveAn');" +
+    " var sichtbar = z ? (z.getClientRects().length > 0) : false;" +
+    " return { da: true, zeile: z ? z.textContent : null, sichtbar: sichtbar, kasten: !!k, an: k ? k.checked : null, gesperrt: k ? k.disabled : null }; })()");
+  if (!erg || !erg.da) { funde.push('Live-Sammler: window.Archivkarte.zeichne fehlt - die Zeile ist nicht pruefbar'); return { funde }; }
+  console.log('  Live-Sammler-Zeile: "' + (erg.zeile || '') + '" sichtbar=' + erg.sichtbar + ' Kaestchen=' + erg.kasten + ' an=' + erg.an + ' gesperrt=' + erg.gesperrt);
+  if (!erg.zeile || erg.zeile.indexOf('512 Werte') === -1 || erg.zeile.indexOf('Abrufe je Runde 3') === -1) {
+    funde.push('Live-Sammler: die Panel-Zeile zeigt die Attrappen-Zahlen nicht ("' + (erg.zeile || '') + '")');
+  }
+  if (!erg.sichtbar) funde.push('Live-Sammler: die Panel-Zeile steht im DOM, ist aber nicht sichtbar');
+  if (!erg.kasten || erg.an !== true || erg.gesperrt !== false) {
+    funde.push('Live-Sammler: der Schalter fehlt oder steht falsch (da=' + erg.kasten + ', an=' + erg.an + ', gesperrt=' + erg.gesperrt + ')');
+  }
+  /* Positivkontrolle: ohne Zugang muss die Zeile den Grund nennen und der Schalter gesperrt sein. */
+  const ohne = await js("(function () { var st = JSON.parse(JSON.stringify(window.Archivkarte.letzter()));" +
+    " st.live = { moeglich: false, an: true, aktiv: false, zeile: 'Alpaca live: aus — kein Alpaca-Zugang in den App-Einstellungen' };" +
+    " window.Archivkarte.zeichne(st, null);" +
+    " var z = document.getElementById('archLiveZeile'); var k = document.getElementById('archLiveAn');" +
+    " return { zeile: z ? z.textContent : null, gesperrt: k ? k.disabled : null }; })()");
+  if (!ohne || !/kein Alpaca-Zugang/.test(String(ohne.zeile || '')) || ohne.gesperrt !== true) {
+    funde.push('Live-Sammler: ohne Zugang fehlt der Grund in der Zeile oder der Schalter ist nicht gesperrt');
+  }
+  /* Den echten Stand wiederherstellen, damit die naechste Sonde nicht die Attrappe misst. */
+  await js("(function () { if (window.Archivkarte && window.Archivkarte.laden) window.Archivkarte.laden(); })()");
+  await new Promise((r) => setTimeout(r, 800));
+  return { funde };
+}
+
 /* ================= Schein-Finder: filtert er wirklich ohne Neuladen? =================
  *
  * Der Kern der Stufe 7 laesst sich im Quelltext nicht pruefen: dass eine Drehung an
@@ -1372,6 +1420,8 @@ async function probe(win) {
    * Textmarke im Quelltext nicht sehen kann (04.09.2026). */
   (await laufbandPruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
   (await archivZeilePruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
+  /* Die Zeile des Live-Sammlers, aus Attrappen-Zahlen (06.09.2026). */
+  (await liveZeilePruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
   /* Der Schein-Finder: Live-Filter, Spalten, Voreinstellungen (Stufe 7, 04.09.2026). */
   (await scheinFinderPruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
 

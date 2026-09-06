@@ -19537,6 +19537,403 @@ console.log('\n82) Zeichenwerkzeuge: Daten-Koordinaten, Fibonacci, Treffertest')
   ok(g82 === rot82, '82.x alle Gegenproben dieses Abschnitts schlagen an', rot82 + ' von ' + g82);
 })();
 
+/* ================= 83) Der Live-Sammler ueber Alpaca (06.09.2026) ====================
+ *
+ * Wilhelm, 04.09.: "geht das nicht live?" Waehrend der Sitzung haengt die App alle
+ * fuenf Minuten die fertigen Alpaca-Minuten an das Archiv; der Viewer bildet daraus
+ * 5m/15m/1h. Drei Dinge muessen dabei stimmen, und jedes ist hier eine Rechnung:
+ *   (a) WANN geholt wird - Sitzungsfenster, fertig-Grenze, Deckel, Drossel -,
+ *   (b) WAS geschrieben wird - dieselbe Routine wie das Werkzeug, additiv, nie die
+ *       laufende Minute, nie eine vorhandene Kerze -,
+ *   (c) WER es liest - nur der Viewer; die Strategien bleiben auf Yahoo.
+ * Die Runde selbst laeuft hier mit Attrappen fuer Netz, Platte, Sperre und Uhr durch.
+ * Was ein Fenster braucht (die Zeile im Panel), steht in tools/ui-probe.js. */
+console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Verdichtung, Panel');
+(function () {
+  var L = require('./livesammler.js');
+  var AA = require('./alpacaarchiv.js');
+  var K83 = require('./markt/kerzenchart.js');
+  var P83 = require('./sammelplan.js');
+  var VS83 = require('./tools/alpaca-vollsammlung.js');
+  var pathM = require('path'), osM = require('os');
+  var quelleL = fs.readFileSync('livesammler.js', 'utf8'), ohneL = ohneKommentare(quelleL);
+  var quelleA = fs.readFileSync('alpacaarchiv.js', 'utf8'), ohneA = ohneKommentare(quelleA);
+  var mainL = fs.readFileSync('main.js', 'utf8'), mainO = ohneKommentare(mainL);
+  var vsL = ohneKommentare(fs.readFileSync('tools/alpaca-vollsammlung.js', 'utf8'));
+  var expL = fs.readFileSync('explorer.js', 'utf8');
+  var karteL = fs.readFileSync('archivkarte.js', 'utf8');
+  var preL = fs.readFileSync('preload.js', 'utf8');
+  var probeL = fs.readFileSync('tools/ui-probe.js', 'utf8');
+  var g83 = 0, rot83 = 0;
+  function gegen83(was, ergebnis) { g83++; if (ergebnis) rot83++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function et83(j, m, d, h, mi) { return AA.nyNachUtc(j, m, d, h, mi); }
+
+  /* --- 83.1 Das Modul ist rein: keine Platte, kein Netz, kein Fenster, keine eigene Uhr --- */
+  ok(!/require\('(fs|https|http|electron|child_process)'\)/.test(ohneL), '83.1 livesammler.js kennt weder Platte noch Netz');
+  ok(!/\bwindow\b|\bdocument\b|localStorage/.test(ohneL), '83.1 und kein Fenster');
+  ok((ohneL.match(/Date\.now\(\)/g) || []).length <= 1 && /o\.jetzt \|\|/.test(ohneL),
+     '83.1 die Uhr kommt herein (o.jetzt); Date.now steht hoechstens als Rueckfall', String((ohneL.match(/Date\.now\(\)/g) || []).length));
+  ok(!/APCA|alpKey|alpSecret/.test(ohneL), '83.1 kein Schluesselname im Modul - die Adresse traegt keinen Zugang');
+  gegen83('das Reinheits-Muster faende ein require(\'fs\')', /require\('(fs|https|http|electron|child_process)'\)/.test("var fs = require('fs');"));
+
+  /* --- 83.2 Die Live-Menge: Vereinigung ohne Doppelte --- */
+  var menge = L.liveMenge({ universum: ['aapl', 'MSFT', 'NVDA'], watch: ['AAPL', 'brk.b'], positionen: ['tsla', 'MSFT'], viewer: 'msft' });
+  ok(menge.join(' ') === 'AAPL BRK.B MSFT NVDA TSLA', '83.2 top500 + Watchlist + Positionen + Viewer, ohne Doppelte, in Grossschreibung, sortiert', menge.join(' '));
+  ok(L.liveMenge({ universum: ['AAPL', '', null, 'zu lang fuer ein kuerzel', 'A B'] }).join(' ') === 'AAPL', '83.2 was kein Kuerzel ist, faellt raus');
+  ok(L.liveMenge({ viewer: 'amd' }).join(' ') === 'AMD', '83.2 der Viewer-Wert allein ist eine Menge');
+  gegen83('ein naives Aneinanderhaengen zaehlte MSFT dreimal',
+          ['aapl', 'MSFT', 'NVDA'].concat(['AAPL', 'brk.b'], ['tsla', 'MSFT'], ['msft']).length === 8 && menge.length === 5);
+
+  /* --- 83.3 Die fertig-Grenze: jetzt minus 16 Minuten (gemessen 15 + 1 Sicherheit) --- */
+  var jetzt83 = et83(2026, 9, 8, 10, 0) + 37000;   /* Dienstag 10:00:37 ET */
+  ok(L.FERTIG_ABSTAND_MS === 16 * 60000, '83.3 der Abstand ist sechzehn Minuten', String(L.FERTIG_ABSTAND_MS / 60000));
+  ok(L.fertigGrenze(jetzt83) === et83(2026, 9, 8, 9, 44), '83.3 die Grenze liegt auf der vollen Minute 16 Minuten zurueck', new Date(L.fertigGrenze(jetzt83)).toISOString());
+  ok(et83(2026, 9, 8, 9, 45) > L.fertigGrenze(jetzt83) && et83(2026, 9, 8, 9, 44) <= L.fertigGrenze(jetzt83),
+     '83.3 der Balken 09:45 ist noch nicht fertig, 09:44 schon');
+  gegen83('mit nur 15 Minuten Abstand gaelte der Balken von 09:45 als fertig - die gemessene Verzoegerung liesse ihn fehlen',
+          et83(2026, 9, 8, 9, 45) <= Math.floor((jetzt83 - 15 * 60000) / 60000) * 60000);
+
+  /* --- 83.4 Das Sitzungsfenster: Feiertag, Wochenende, 03:00 ET - und die UTC-Tag-Falle --- */
+  ok(!L.sitzungsfenster(et83(2026, 11, 26, 10, 0)).offen, '83.4 Thanksgiving: keine Runde, auch mitten am Vormittag');
+  ok(!L.sitzungsfenster(et83(2026, 9, 12, 10, 0)).offen, '83.4 Samstag: keine Runde');
+  ok(!L.sitzungsfenster(et83(2026, 9, 8, 3, 0)).offen, '83.4 03:00 ET: keine Runde (Vorboerse beginnt 04:00)');
+  ok(L.sitzungsfenster(et83(2026, 9, 8, 10, 0)).zustand === 'regulaer', '83.4 Dienstag 10:00 ET: regulaer');
+  ok(L.sitzungsfenster(et83(2026, 9, 8, 19, 0)).zustand === 'nachboerslich', '83.4 19:00 ET: Nachboerse, die Runde laeuft');
+  ok(L.sitzungsfenster(et83(2026, 9, 8, 20, 10)).offen && !L.sitzungsfenster(et83(2026, 9, 8, 20, 20)).offen,
+     '83.4 um 20:10 ET liegt die Grenze noch in der Nachboerse (19:54), um 20:20 nicht mehr');
+  ok(!L.sitzungsfenster(et83(2026, 11, 27, 17, 30)).offen && L.sitzungsfenster(et83(2026, 11, 27, 13, 30)).offen,
+     '83.4 Halbtag 27.11.: 13:30 ist Nachboerse, 17:30 ist zu (Nachboerse endet vier Stunden nach 13:00)');
+  var frWinter = et83(2026, 12, 18, 20, 10);
+  ok(L.sitzungsfenster(frWinter).offen, '83.4 Freitag 20:10 ET im Winter (= Samstag 01:10 UTC) ist noch Nachboerse - der Handelstag wird am ET-Tag entschieden');
+  gegen83('die UTC-Tag-Rechnung hielte diesen Freitagabend fuer ein Wochenende',
+          require('./boerse.js').sitzungsMinuten(frWinter) === 0);
+
+  /* --- 83.5 start = letzter Stempel + 1 Minute je Wert; ohne Bestand ab Mitternacht ET --- */
+  ok(L.startFuer(et83(2026, 9, 3, 19, 59), jetzt83) === et83(2026, 9, 3, 20, 0), '83.5 eine Minute nach dem juengsten Stempel');
+  ok(L.startFuer(null, jetzt83) === et83(2026, 9, 8, 0, 0), '83.5 ohne Bestand ab Mitternacht ET des laufenden Tages - die Vergangenheit ist Sache des Nachlaufs');
+
+  /* --- 83.6 Der Abrufplan: Bloecke, Redundanz-Deckel, Deckelgroesse, aktuelle und ruhende Werte --- */
+  var stempel83 = { AAPL: et83(2026, 9, 3, 19, 59), MSFT: et83(2026, 9, 3, 19, 59), NEU: et83(2026, 9, 8, 9, 20), FRISCH: et83(2026, 9, 8, 9, 44), XYZ: null };
+  var leere83 = { tag: null, je: {} };
+  var plan83 = L.abrufplan(['AAPL', 'MSFT', 'NEU', 'FRISCH', 'XYZ'], stempel83, jetzt83, { leere: leere83 });
+  ok(plan83.bloecke.length === 2 && plan83.bloecke[0].symbole.join('+') === 'NEU+XYZ' && plan83.bloecke[1].symbole.join('+') === 'AAPL+MSFT',
+     '83.6 zwei Bloecke: NEU und XYZ (Stunden auseinander) teilen sich einen Abruf, AAPL und MSFT (Tage zurueck) bekommen einen eigenen',
+     plan83.bloecke.map(function (b) { return b.symbole.join('+') + '@' + new Date(b.start).toISOString().slice(5, 16); }).join(' '));
+  ok(plan83.bloecke.every(function (b) { return b.symbole.every(function (s) { return plan83.startJe[s] >= b.start; }) && b.redundanz <= L.REDUNDANZ_MAX; }),
+     '83.6 kein Block beginnt NACH dem Start eines Mitglieds, und keiner fragt mehr als ' + L.REDUNDANZ_MAX + ' Minuten doppelt');
+  ok(plan83.startJe.AAPL === et83(2026, 9, 3, 20, 0) && plan83.bloecke[1].start === plan83.startJe.AAPL, '83.6 der Start je Wert ist sein juengster Stempel plus eine Minute');
+  ok(plan83.aktuell === 1 && !plan83.startJe.FRISCH, '83.6 ein Wert, dessen Start hinter der Grenze liegt, ist aktuell und wird nicht gefragt');
+  ok(plan83.bloecke.every(function (b) { return b.ende === L.fertigGrenze(jetzt83); }), '83.6 jeder Block endet an der fertig-Grenze');
+  var viele83 = []; for (var v83 = 0; v83 < 450; v83++) viele83.push('W' + v83);
+  var planV = L.abrufplan(viele83, {}, jetzt83, { leere: { tag: null, je: {} } });
+  ok(planV.bloecke.length === 3 && planV.bloecke.every(function (b) { return b.symbole.length <= L.BLOCK; }),
+     '83.6 450 Werte mit gleichem Start werden drei Bloecke von hoechstens ' + L.BLOCK, planV.bloecke.map(function (b) { return b.symbole.length; }).join('+'));
+  /* Die gemessene Lage vom 06.09.: 155 verschiedene Minuten ueber vier Stunden. */
+  var streu = {}, streuW = [];
+  for (var st83 = 0; st83 < 155; st83++) { streuW.push('S' + st83); streu['S' + st83] = et83(2026, 9, 3, 16, 0) + st83 * 90000; }
+  var planS = L.abrufplan(streuW, streu, jetzt83, { leere: { tag: null, je: {} } });
+  ok(planS.bloecke.length <= 4 && planS.bloecke.every(function (b) { return b.redundanz <= L.REDUNDANZ_MAX; }),
+     '83.6 155 Werte auf 155 verschiedenen Minuten werden hoechstens vier Abrufe, nicht 155', planS.bloecke.length + ' Bloecke, Redundanz ' + planS.bloecke.map(function (b) { return Math.round(b.redundanz); }).join('/'));
+  leere83.je.XYZ = L.LEER_MAX;
+  var planR = L.abrufplan(['AAPL', 'XYZ'], stempel83, jetzt83, { leere: leere83 });
+  ok(planR.ruhend.length === 1 && planR.ruhend[0] === 'XYZ' && !planR.startJe.XYZ, '83.6 nach ' + L.LEER_MAX + ' leeren Runden ruht ein Wert');
+  var planT = L.abrufplan(['AAPL', 'XYZ'], stempel83, jetzt83 + 86400000, { leere: leere83 });
+  ok(planT.ruhend.length === 0 && leere83.tag === AA.etTag(jetzt83 + 86400000), '83.6 am naechsten ET-Tag wird er wieder gefragt');
+  gegen83('EIN Block fuer alle fuenf laege ueber dem Redundanz-Deckel - er holte fuer NEU und XYZ viereinhalb Tage noch einmal',
+          (plan83.startJe.NEU - plan83.startJe.AAPL) / 60000 + (plan83.startJe.XYZ - plan83.startJe.AAPL) / 60000 > L.REDUNDANZ_MAX);
+  gegen83('mit exaktem Start je Block waeren es fuer die 155 Werte 155 Abrufe',
+          L.abrufplan(streuW, streu, jetzt83, { leere: { tag: null, je: {} }, redundanzMax: 0 }).bloecke.length === 155);
+
+  /* --- 83.7 Die Adresse: SIP, roh, 1Min, Seite 10000, KEIN Schluessel --- */
+  var url83 = L.urlFuer(plan83.bloecke[0], null);
+  ok(/feed=sip/.test(url83) && /adjustment=raw/.test(url83) && /timeframe=1Min/.test(url83) && /limit=10000/.test(url83),
+     '83.7 SIP, adjustment=raw, 1Min, 10.000 je Seite');
+  ok(!/APCA|key|secret/i.test(url83) && /^https:\/\/data\.alpaca\.markets\/v2\/stocks\/bars\?/.test(url83), '83.7 die Adresse traegt keinen Zugang und zielt auf den Datendienst');
+  ok(/page_token=abc/.test(L.urlFuer(plan83.bloecke[0], 'abc')), '83.7 die naechste Seite geht ueber page_token');
+  gegen83('das Zugangs-Muster faende einen Schluessel in der Adresse', /APCA|key|secret/i.test(url83 + '&APCA-API-KEY-ID=x'));
+
+  /* --- 83.8 Sichten: die laufende Minute, Altes, Kaputtes, Fremdes --- */
+  var block83 = plan83.bloecke.filter(function (b) { return b.symbole.indexOf('AAPL') >= 0; })[0];
+  var iso = function (ms) { return new Date(ms).toISOString(); };
+  var g8 = L.sichten({
+    AAPL: [{ t: iso(jetzt83 - 2 * 60000 - 37000), o: 1, h: 2, l: 0.5, c: 1.5, v: 10 },      /* jetzt - 2 min: laeuft noch */
+           { t: iso(et83(2026, 9, 8, 9, 30)), o: 1, h: 2, l: 0.5, c: 1.5, v: 10 },             /* fertig */
+           { t: iso(et83(2026, 9, 3, 19, 59)), o: 1, h: 2, l: 0.5, c: 1.5, v: 10 },            /* steht schon in der Datei */
+           { t: iso(et83(2026, 9, 8, 9, 31)), o: 0, h: 2, l: 0.5, c: 1.5, v: 10 }],            /* Eroeffnung 0: Form */
+    ZZZ: [{ t: iso(et83(2026, 9, 8, 9, 30)), o: 1, h: 2, l: 0.5, c: 1.5, v: 10 }]
+  }, block83, plan83.startJe);
+  ok(g8.angenommen === 1 && g8.je.AAPL.length === 1 && g8.je.AAPL[0][0] === et83(2026, 9, 8, 9, 30), '83.8 genau der fertige Balken bleibt');
+  ok(g8.verworfen.laufend === 1, '83.8 der Balken von jetzt minus 2 Minuten wird VERWORFEN - die laufende Minute geht nie auf die Platte');
+  ok(g8.verworfen.alt === 1 && g8.verworfen.form === 1 && g8.verworfen.fremd === 1, '83.8 Altes, Kaputtes und Fremdes werden gezaehlt, nicht geschrieben', JSON.stringify(g8.verworfen));
+  gegen83('ohne Grenze wuerde der laufende Balken angenommen',
+          L.sichten({ AAPL: [{ t: iso(jetzt83 - 2 * 60000 - 37000), o: 1, h: 2, l: 0.5, c: 1.5, v: 10 }] },
+                    { symbole: ['AAPL'], start: 0, ende: jetzt83 + 1 }, {}).angenommen === 1);
+
+  /* --- 83.9 Die Runde mit Attrappen: ohne Schluessel, Drossel, Deckel, Sperre, laufende Minute --- */
+  function attrappe(o) {
+    var z = { fetches: 0, geschrieben: [], sperreSetzen: 0, sperreLoesen: 0, abschluss: 0, reihenfolge: [] };
+    var basis = {
+      werte: ['AAPL', 'MSFT'], jetzt: function () { return jetzt83; }, an: true, schluessel: true,
+      sperre: { lesen: function () { return { aktiv: false }; },
+                setzen: function () { z.sperreSetzen++; z.reihenfolge.push('setzen'); return true; },
+                loesen: function () { z.sperreLoesen++; z.reihenfolge.push('loesen'); return true; } },
+      stempel: function (s) { return stempel83[s] || null; },
+      fetch: function (url) {
+        z.fetches++;
+        var sym = decodeURIComponent(/symbols=([^&]+)/.exec(url)[1]).split(',');
+        var bars = {};
+        sym.forEach(function (s) {
+          bars[s] = [{ t: iso(et83(2026, 9, 8, 9, 30)), o: 1, h: 2, l: 0.5, c: 1.5, v: 10 },
+                     { t: iso(jetzt83 - 2 * 60000 - 37000), o: 1, h: 2, l: 0.5, c: 1.5, v: 10 }];
+        });
+        return Promise.resolve({ status: 200, body: JSON.stringify({ bars: bars, next_page_token: null }) });
+      },
+      schreiben: function (sym, jahr, kerzen) {
+        z.geschrieben.push({ sym: sym, jahr: jahr, stempel: kerzen.map(function (k) { return k[0]; }) });
+        return { ok: true, geschrieben: true, neu: kerzen.length, letzterStempel: kerzen[kerzen.length - 1][0] };
+      },
+      leere: { tag: null, je: {} },
+      abschluss: function () { z.abschluss++; z.reihenfolge.push('abschluss'); },
+    };
+    return { o: Object.assign(basis, o || {}), z: z };
+  }
+  var runde83 = probe((async function () {
+    var a1 = attrappe({ schluessel: false });
+    var r1 = await L.runde(a1.o);
+    ok(!r1.gelaufen && a1.z.fetches === 0 && /kein Alpaca-Zugang/.test(r1.grund), '83.9 ohne Schluessel: kein Abruf (Attrappe zaehlt 0), und der Grund steht da', r1.grund);
+    var a2 = attrappe({ an: false });
+    var r2 = await L.runde(a2.o);
+    ok(!r2.gelaufen && a2.z.fetches === 0 && r2.grund === 'ausgeschaltet', '83.9 Schalter aus: kein Abruf');
+    var a3 = attrappe({ jetzt: function () { return et83(2026, 9, 12, 10, 0); } });
+    var r3 = await L.runde(a3.o);
+    ok(!r3.gelaufen && a3.z.fetches === 0 && /ausserhalb der Sitzung/.test(r3.grund), '83.9 am Samstag: keine Runde', r3.grund);
+    var a4 = attrappe({ sperre: { lesen: function () { return { aktiv: true, was: 'Nachlauf' }; }, setzen: function () { throw new Error('darf nicht'); }, loesen: function () {} } });
+    var r4 = await L.runde(a4.o);
+    ok(!r4.gelaufen && a4.z.fetches === 0 && /Archivsperre/.test(r4.grund) && /Nachlauf/.test(r4.grund), '83.9 liegt die Sperre (Nachlauf), wartet die Runde - kein Abruf, kein Schreiben', r4.grund);
+    /* Die gute Runde: der laufende Balken wird verworfen, der fertige geschrieben, die Sperre gesetzt und geloest. */
+    var a5 = attrappe();
+    var r5 = await L.runde(a5.o);
+    ok(r5.gelaufen && a5.z.fetches === 1 && r5.anfragen === 1 && r5.kerzen === 2, '83.9 eine Runde: ein Sammelabruf fuer zwei Werte mit gleichem Start, zwei Kerzen geschrieben', JSON.stringify([a5.z.fetches, r5.kerzen]));
+    ok(r5.verworfen.laufend === 2 && a5.z.geschrieben.every(function (w) { return w.stempel.every(function (t) { return t <= L.fertigGrenze(jetzt83); }); }),
+       '83.9 der Balken von jetzt minus 2 Minuten kommt in KEINE Schreibung - nur Stempel bis zur Grenze', JSON.stringify(r5.verworfen));
+    ok(a5.z.sperreSetzen === 1 && a5.z.sperreLoesen === 1 && a5.z.reihenfolge.join(',') === 'setzen,abschluss,loesen',
+       '83.9 Sperre gesetzt, Abschluss (Fortschritts-Vermerk) NOCH UNTER der Sperre, dann geloest', a5.z.reihenfolge.join(','));
+    ok(r5.jeWert.AAPL && r5.jeWert.AAPL.neu === 1 && r5.jeWert.AAPL.leer === 0 && r5.jeWert.AAPL.stempel === et83(2026, 9, 8, 9, 30),
+       '83.9 je Wert: neue Kerzen, leere Runden und der neue Stempel', JSON.stringify(r5.jeWert.AAPL));
+    /* Drossel: 429 beim ersten Abruf -> Runde bricht ab, nichts geschrieben, kein Nachfassen; die naechste Runde laeuft regulaer. */
+    var a6 = attrappe({ werte: ['AAPL', 'MSFT', 'NEU'] });
+    var fetch6 = a6.o.fetch, n6 = 0;
+    a6.o.fetch = function (url) { n6++; if (n6 === 1) return Promise.resolve({ status: 429, body: '' }); return fetch6(url); };
+    var r6 = await L.runde(a6.o);
+    ok(r6.gelaufen && r6.drossel && r6.anfragen === 1 && a6.z.geschrieben.length === 0 && /429/.test(r6.fehler),
+       '83.9 bei 429 bricht die Runde ab: eine Anfrage, nichts geschrieben, kein Nachfassen', r6.fehler);
+    ok(a6.z.sperreLoesen === 1, '83.9 und die Sperre ist trotzdem wieder frei');
+    var r6b = await L.runde(a6.o);
+    ok(r6b.gelaufen && !r6b.drossel && r6b.anfragen === 2 && a6.z.geschrieben.length === 3, '83.9 die naechste Runde faengt regulaer an (zwei Bloecke, drei Werte geschrieben)', JSON.stringify([r6b.anfragen, a6.z.geschrieben.length]));
+    /* Deckel: mehr Bloecke als erlaubt -> die Runde hoert am Deckel auf, der Rest kommt in der naechsten. */
+    /* Sechs Werte, je zehn Tage auseinander - jeder ueber dem Redundanz-Deckel, also sechs Bloecke. */
+    var werte7 = [], stempel7 = {};
+    for (var i7 = 0; i7 < 6; i7++) { werte7.push('D' + i7); stempel7['D' + i7] = et83(2026, 9, 3, 19, 59) - i7 * 10 * 86400000; }
+    var a7 = attrappe({ werte: werte7, stempel: function (s) { return stempel7[s]; }, deckel: 4 });
+    var r7 = await L.runde(a7.o);
+    ok(r7.gelaufen && r7.bloecke === 6 && r7.anfragen === 4 && r7.deckel && a7.z.fetches === 4 && /Deckel von 4/.test(r7.grund),
+       '83.9 sechs Bloecke, Deckel 4: genau vier Anfragen, der Rest wartet auf die naechste Runde', JSON.stringify([r7.bloecke, r7.anfragen, a7.z.fetches]));
+    gegen83('ohne Deckel haette dieselbe Runde sechs Anfragen gestellt',
+            (await L.runde(attrappe({ werte: werte7, stempel: function (s) { return stempel7[s]; } }).o)).anfragen === 6);
+    ok(L.DECKEL_JE_RUNDE === 150, '83.9 der Deckel einer Runde ist 150 - Reserve fuer Kostenmessung und Viewer auf demselben Zugang');
+    ok(/if \(erg\.anfragen >= deckel\) \{ erg\.deckel = true; abbruch = true; break; \}/.test(ohneL) &&
+       ohneL.indexOf('if (erg.anfragen >= deckel)') < ohneL.indexOf('await o.fetch('),
+       '83.9 der Deckel wird VOR jeder Anfrage geprueft, nicht danach');
+  })());
+
+  /* --- 83.10 EINE Schreibroutine: ein Export, zwei Aufrufer, additiv --- */
+  ok(typeof AA.jahrSchreiben === 'function' && (ohneA.match(/function jahrSchreiben\(/g) || []).length === 1, '83.10 alpacaarchiv.js exportiert jahrSchreiben genau einmal');
+  ok(/A\.jahrSchreiben\(ordner, a\.sym, a\.jahr, kerzen, kal/.test(vsL), '83.10 das Werkzeug (Vollsammlung) schreibt sein Symbol-Jahr ueber diese Routine');
+  ok(/AlpacaArchiv\.jahrSchreiben\(ordner, reihe, j, kerzen, kal/.test(mainO), '83.10 der Live-Sammler in main.js ebenso');
+  var aufrufer = ['tools/alpaca-vollsammlung.js', 'main.js', 'livesammler.js', 'kerzenquelle.js', 'tools/alpaca-balken-holen.js', 'tools/archiv-migration.js']
+    .filter(function (d) { return /\.jahrSchreiben\(/.test(ohneKommentare(fs.readFileSync(d, 'utf8'))); });
+  ok(aufrufer.length === 2 && aufrufer.indexOf('main.js') >= 0 && aufrufer.indexOf('tools/alpaca-vollsammlung.js') >= 0,
+     '83.10 genau ZWEI Aufrufer - Werkzeug und App', aufrufer.join(', '));
+  /* Nur der ROHE Pfad (jahrHolen) ist gemeint: die bereinigte Kopie baut ableitenLauf
+   * weiter selbst - sie ist eine Ableitung mit anderem Kopf, kein zweiter Schreiber
+   * derselben Datei, und alpaca1m-bereinigt/ ruehrt dieser Auftrag nicht an. */
+  var jahrHolen83 = vsL.slice(vsL.indexOf('async function jahrHolen('), vsL.indexOf('async function holen('));
+  ok(jahrHolen83.length > 200 && !/KQ\.satz\(/.test(jahrHolen83) && !/\.sitzungen = /.test(jahrHolen83) && (ohneA.match(/h\.sitzungen = /g) || []).length === 1,
+     '83.10 das Werkzeug baut fuer die Rohdatei keine Huelle mehr selbst - `sitzungen` haengt nur alpacaarchiv.js an', jahrHolen83.length + ' Zeichen');
+  ok(/\.tmp-anhang/.test(ohneA) && /fs\.copyFileSync\(pfad, tmp\)/.test(ohneA) && /fs\.renameSync\(tmp, pfad\)/.test(ohneA) && /schwanzBefund\(tmp\)/.test(ohneA),
+     '83.10 der Anhang schreibt in eine Temp-Kopie, liest sie gegen und benennt erst dann um (atomar)');
+  /* VERHALTEN in einem Wegwerf-Ordner: anhaengen == vollstaendig schreiben, nichts wird ueberschrieben. */
+  var tmp83 = fs.mkdtempSync(pathM.join(osM.tmpdir(), 'kunst-livesammler-'));
+  var ordner83 = pathM.join(tmp83, 'alpaca1m', 'AAA');
+  var kal83 = { '2026-09-03': { open: '09:30', close: '16:00' }, '2026-09-04': { open: '09:30', close: '16:00' } };
+  function kz(h, mi, c, d) { return [et83(2026, 9, d || 3, h, mi), c, 100, c + 1, c - 1, c]; }
+  var w1 = AA.jahrSchreiben(ordner83, 'AAA', 2026, [kz(9, 28, 10), kz(9, 30, 11), kz(16, 5, 12)], kal83, { herkunft: 'Probe' });
+  var w2 = AA.jahrSchreiben(ordner83, 'AAA', 2026, [kz(16, 5, 99), kz(16, 6, 13), kz(4, 0, 14, 4), kz(9, 29, 5)], kal83);
+  var d83 = JSON.parse(fs.readFileSync(pathM.join(ordner83, '2026.json'), 'utf8'));
+  ok(w1.ok && w1.art === 'neu' && w1.neu === 3 && w2.ok && w2.art === 'anhang' && w2.neu === 2 && w2.uebersprungen === 2,
+     '83.10 neu: drei Kerzen; Anhang: zwei neue, zwei uebersprungen (eine vorhanden, eine aelter als der Bestand)', JSON.stringify([w1.neu, w2.neu, w2.uebersprungen]));
+  ok(d83.series.length === 5 && d83.series.every(function (k, i, a) { return i === 0 || a[i - 1][0] < k[0]; }), '83.10 die Datei traegt fuenf Kerzen in Zeitfolge');
+  ok(d83.series[2][1] === 12, '83.10 die vorhandene Kerze 16:05 behaelt ihren Wert - NIE ueberschrieben (99 kam nicht durch)');
+  ok(d83.quellen[0].bis === d83.series[4][0] && d83.quellen[0].von === d83.series[0][0] && d83.quellen[0].quelle === 'alpaca',
+     '83.10 der Quellenbereich im Kopf reicht bis zur neuen letzten Kerze - jede Kerze hat eine Quelle');
+  ok(d83.jahr === 2026 && d83.sitzungen.length === 4 && d83.sitzungen[3].sitzung === 'vor' && d83.sitzungen[2].bis === d83.series[3][0],
+     '83.10 die Sitzungsbereiche sind fortgeschrieben (nach bis 16:06, dann vor am 04.09.)', JSON.stringify(d83.sitzungen));
+  ok(KQ83ohneQuelle(d83) === 0, '83.10 kerzenquelle.js findet keine Kerze ohne Quelle in der angehaengten Datei', String(KQ83ohneQuelle(d83)));
+  function KQ83ohneQuelle(h) { return require('./kerzenquelle.js').ohneQuelle(h.series, h.quellen); }
+  var ordner83b = pathM.join(tmp83, 'alpaca1m', 'BBB');
+  AA.jahrSchreiben(ordner83b, 'AAA', 2026, [kz(9, 28, 10), kz(9, 30, 11), kz(16, 5, 12), kz(16, 6, 13), kz(4, 0, 14, 4)], kal83, { herkunft: 'Probe' });
+  var voll83 = JSON.parse(fs.readFileSync(pathM.join(ordner83b, '2026.json'), 'utf8'));
+  delete voll83.stand; var d83k = JSON.parse(JSON.stringify(d83)); delete d83k.stand;
+  ok(JSON.stringify(voll83) === JSON.stringify(d83k), '83.10 die angehaengte Datei ist BYTEGLEICH mit einem Vollschreiben derselben fuenf Kerzen (bis auf stand)');
+  ok(!AA.jahrSchreiben(ordner83, 'AAA', 2025, [kz(4, 1, 1, 4)], kal83).ok, '83.10 eine Kerze des falschen Jahres wird verweigert, nichts geschrieben');
+  var mtime83 = fs.statSync(pathM.join(ordner83, '2026.json')).mtimeMs;
+  var w3 = AA.jahrSchreiben(ordner83, 'AAA', 2026, [kz(16, 5, 1)], kal83);
+  ok(w3.ok && !w3.geschrieben && w3.uebersprungen === 1 && fs.statSync(pathM.join(ordner83, '2026.json')).mtimeMs === mtime83,
+     '83.10 nichts Neues: die Datei wird nicht angefasst');
+  gegen83('eine naive Vereinigung, bei der das Neue gewinnt, haette 16:05 auf 99 gesetzt',
+          (function () { var karte = {}; [kz(16, 5, 12), kz(16, 5, 99)].forEach(function (k) { karte[k[0]] = k; }); return karte[kz(16, 5, 0)[0]][1] === 99; })());
+  fs.rmSync(tmp83, { recursive: true, force: true });
+
+  /* --- 83.11 Die Sperre ist geteilt: ein Ordner, eine Datei, die aus kerzenquelle.js --- */
+  ok(/^var WURZEL = A\.wurzel\(\);/m.test(vsL) && /AlpacaArchiv\.rohOrdner\(\)/.test(mainO),
+     '83.11 Werkzeug und App leiten die Wurzel aus derselben Stelle ab (alpacaarchiv.wurzel)');
+  ok(/function sperreLesen\(roh, jetzt\) \{ return KQ\.sperreLesen\(roh, jetzt\); \}/.test(ohneA) &&
+     /function sperreSetzen\(roh, was\) \{ return KQ\.sperreSetzen\(roh, was\); \}/.test(ohneA) &&
+     /function sperreLoesen\(roh\) \{ return KQ\.sperreLoesen\(roh\); \}/.test(ohneA),
+     '83.11 die Sperre ist die aus kerzenquelle.js (pid, Rechner, Verwaisungsfrist), keine zweite');
+  ok(/lesen: \(\) => AlpacaArchiv\.sperreLesen\(roh\)/.test(mainO) && /setzen: \(was\) => AlpacaArchiv\.sperreSetzen\(roh, was\)/.test(mainO) && /loesen: \(\) => AlpacaArchiv\.sperreLoesen\(roh\)/.test(mainO),
+     '83.11 der Live-Sammler nimmt sie auf dem Rohordner');
+  var tmpS = fs.mkdtempSync(pathM.join(osM.tmpdir(), 'kunst-sperre-'));
+  var envAlt = process.env.MD_ALPACA_WURZEL;
+  process.env.MD_ALPACA_WURZEL = tmpS;
+  var rohS = AA.rohOrdner();
+  AA.sperreSetzen(rohS, 'Nachlauf-Attrappe');
+  var gesehen = require('./kerzenquelle.js').sperreLesen(pathM.join(tmpS, 'alpaca1m'));
+  ok(rohS === pathM.join(tmpS, 'alpaca1m') && gesehen.aktiv && gesehen.was === 'Nachlauf-Attrappe',
+     '83.11 eine Sperre, die der eine setzt, sieht der andere ueber kerzenquelle.js auf demselben Ordner');
+  AA.sperreLoesen(rohS);
+  ok(!AA.sperreLesen(rohS).aktiv, '83.11 und nach dem Loesen ist der Ordner frei');
+  if (envAlt === undefined) delete process.env.MD_ALPACA_WURZEL; else process.env.MD_ALPACA_WURZEL = envAlt;
+  fs.rmSync(tmpS, { recursive: true, force: true });
+  gegen83('eine Sperre auf einem ANDEREN Ordner saehe der Partner nicht',
+          !require('./kerzenquelle.js').sperreLesen(pathM.join(tmpS, 'woanders')).aktiv);
+
+  /* --- 83.12 Verdichtung 1m -> 5m/15m/1h gegen von Hand gerechnete Beispiele, Sitzungsgrenzen --- */
+  function m83(h, mi, c, d) { return [et83(2026, 9, d || 8, h, mi), c, 100, c + 1, c - 1, c - 0.5]; }
+  var k12 = [m83(9, 28, 1), m83(9, 29, 2), m83(9, 30, 3), m83(9, 31, 4), m83(9, 32, 5), m83(9, 33, 6), m83(9, 34, 7), m83(9, 35, 8)];
+  var s12 = ['vor', 'vor', 'regulaer', 'regulaer', 'regulaer', 'regulaer', 'regulaer', 'regulaer'];
+  var v5 = K83.verdichtenMinuten(k12, '5m', s12);
+  ok(v5.kerzen.length === 1 && v5.kerzen[0][0] === et83(2026, 9, 8, 9, 30) && v5.kerzen[0][5] === 2.5 && v5.kerzen[0][1] === 7 &&
+     v5.kerzen[0][3] === 8 && v5.kerzen[0][4] === 2 && v5.kerzen[0][2] === 500 && v5.sitzungen[0] === 'regulaer',
+     '83.12 5m: 09:30-09:34 wird EINE Kerze - Eroeffnung 2,5, Schluss 7, Hoch 8, Tief 2, Umsatz 500, regulaer', JSON.stringify(v5.kerzen[0]));
+  ok(v5.unvollstaendig === 1 && v5.angeschnitten === 1, '83.12 09:35 (angebrochen) und die vorboersliche 09:25-Periode (vor dem ersten Stempel) werden nicht gezeigt');
+  var kn = [m83(15, 30, 1), m83(15, 59, 2), m83(16, 0, 3), m83(16, 59, 4), m83(17, 0, 5)];
+  var v1 = K83.verdichtenMinuten(kn, '1h', ['regulaer', 'regulaer', 'nach', 'nach', 'nach']);
+  ok(v1.kerzen.length === 2 && v1.kerzen[0][0] === et83(2026, 9, 8, 15, 30) && v1.kerzen[1][0] === et83(2026, 9, 8, 16, 0) && v1.sitzungen.join(',') === 'regulaer,nach',
+     '83.12 1h: die Schlussstunde liegt auf 15:30 (Yahoos Gitter), die Nachboerse beginnt eine eigene Kerze um 16:00', v1.kerzen.map(function (k) { return new Date(k[0]).toISOString().slice(11, 16); }).join(' '));
+  var kh = [[et83(2026, 11, 27, 13, 5), 1, 1, 1, 1, 1], [et83(2026, 11, 27, 13, 59), 2, 1, 2, 1, 1], [et83(2026, 11, 27, 14, 0), 3, 1, 3, 1, 1], [et83(2026, 11, 27, 14, 59), 4, 1, 4, 1, 1]];
+  var vh = K83.verdichtenMinuten(kh, '1h', ['nach', 'nach', 'nach', 'nach']);
+  ok(vh.kerzen.length === 1 && vh.kerzen[0][0] === et83(2026, 11, 27, 14, 0) && vh.angeschnitten === 1,
+     '83.12 Halbtag: die Nachboerse rastet auf 13:00 ein - 14:00-14:59 ist eine Kerze, 13:00 war angeschnitten');
+  var v15 = K83.verdichtenMinuten([m83(9, 30, 1), m83(9, 44, 2), m83(9, 45, 3), m83(9, 59, 4), m83(10, 0, 5)], '15m', ['regulaer', 'regulaer', 'regulaer', 'regulaer', 'regulaer']);
+  ok(v15.kerzen.length === 2 && v15.kerzen[0][0] === et83(2026, 9, 8, 9, 30) && v15.kerzen[1][0] === et83(2026, 9, 8, 9, 45) && v15.kerzen[1][5] === 2.5,
+     '83.12 15m: 09:30 und 09:45, die 10:00-Periode ist angebrochen');
+  ok(K83.periodeMinuten(et83(2026, 9, 8, 9, 45), 'regulaer', 60) === et83(2026, 9, 8, 9, 30), '83.12 die Stundenperiode von 09:45 regulaer beginnt 09:30');
+  gegen83('ein Gitter ab Mitternacht legte 09:45 in eine 09:00-Kerze - und mischte Vorboerse und Sitzung',
+          K83.periodeMinuten(et83(2026, 9, 8, 9, 45), 'unbekannt', 60) === et83(2026, 9, 8, 9, 0));
+  var ber12 = K83.bereicheAus(v1.kerzen, v1.sitzungen);
+  ok(ber12.length === 2 && ber12[0].sitzung === 'regulaer' && ber12[1].von === et83(2026, 9, 8, 16, 0), '83.12 die Sitzungen werden als Bereiche mitgefuehrt');
+
+  /* --- 83.13 Die Leseauskunft bildet 5m/15m/1h aus den Alpaca-Minuten, wenn die juenger sind; die Fusszeile nennt es --- */
+  var hVon83 = mainO.indexOf("ipcMain.handle('archiv-kerzen'"), hBis83 = mainO.indexOf('ipcMain.handle(', hVon83 + 20);
+  var handler83 = mainO.slice(hVon83, hBis83);
+  var helfer83 = mainO.slice(mainO.indexOf('function alpacaVerdichtet('), hVon83);
+  ok(/alpacaVerdichtet\(sym, zr, n, kerzen\.length \? kerzen\[kerzen\.length - 1\]\[0\] : null\)/.test(handler83) && /'alpaca-verdichtet'/.test(handler83),
+     '83.13 der Handler fragt die Ableitung und nennt die Quelle alpaca-verdichtet');
+  ok(/if \(alpacaBis == null\) return null;/.test(helfer83) && /if \(appBis != null && alpacaBis < appBis \+ faktor \* 60000\) return null;/.test(helfer83),
+     '83.13 abgeleitet wird NUR, wenn die Alpaca-Minuten um mindestens eine Periode juenger sind als das App-Archiv');
+  ok(/KChart\.verdichtenMinuten\(k1m, zr, sitzJe\)/.test(helfer83) && /KChart\.sitzungJeKerze\(k1m, bereiche, null\)/.test(helfer83),
+     '83.13 gerechnet wird in markt/kerzenchart.js, mit den Sitzungen der Datei');
+  ok(!/writeFileSync|appendFileSync|mkdirSync|renameSync|jahrSchreiben|sperreSetzen/.test(helfer83 + handler83), '83.13 die Auskunft liest weiter nur');
+  ok(/KChart\.zusammenfuehren\(kerzen, abg\.kerzen\)/.test(handler83), '83.13 an der Naht gewinnt das App-Archiv (zusammenfuehren, Archiv zuerst)');
+  ok(/teil = teil\.slice\(1\)/.test(helfer83) && /VERDICHT_MAX_BYTES = 8 \* 1024 \* 1024/.test(mainO), '83.13 die erste Kerze eines Schwanzes ist angeschnitten und faellt weg; hoechstens 8 MB werden gelesen');
+  ok(/'Alpaca-Minuten, verdichtet, bis ' \+ vwZeitpunkt\(r\.bis\)/.test(expL), '83.13 die Fusszeile des Viewers sagt "Alpaca-Minuten, verdichtet, bis …"');
+  ok(/'alpaca-verdichtet' \? 'Alpaca \(verdichtet\)'/.test(expL), '83.13 und die Karte "Im Archiv" nennt es ebenso');
+  gegen83('der Schnitt des Handlers faende ohne die Marke nichts', mainO.indexOf("ipcMain.handle('archiv-kerzen-gibt-es-nicht'") === -1);
+
+  /* --- 83.14 Die Panel-Zeile aus Daten --- */
+  var st14 = { moeglich: true, an: true, werte: 512, letzteRunde: jetzt83, bis: jetzt83 - 18 * 60000, anfragen: 3 };
+  var zeile14 = L.panelZeile(st14);
+  ok(/^Alpaca live: 512 Werte · letzte Runde \d\d:\d\d · bis 09:42 ET · Abrufe je Runde 3$/.test(zeile14), '83.14 die Zeile traegt Werte, Runde, Stempel in ET und Abrufe', zeile14);
+  ok(/Drossel \(429\)/.test(L.panelZeile(Object.assign({}, st14, { drossel: true }))) && /Fehler: HTTP 500/.test(L.panelZeile(Object.assign({}, st14, { fehler: 'HTTP 500' }))),
+     '83.14 Drossel und Fehler stehen in der Zeile');
+  ok(L.panelZeile({ moeglich: false }) === 'Alpaca live: aus — kein Alpaca-Zugang in den App-Einstellungen', '83.14 ohne Schluessel sagt die Zeile, warum');
+  ok(/Schalter/.test(L.panelZeile({ moeglich: true, an: false })), '83.14 mit Schalter aus ebenso');
+  var Karte83 = require('./archivkarte.js');
+  var html14 = Karte83.liveBlockHtml(Object.assign({ zeile: zeile14, takt: 300000, deckel: 150 }, st14), { live: true });
+  ok(/id="archLiveZeile"/.test(html14) && html14.indexOf(zeile14) >= 0 && /id="archLiveAn" checked>/.test(html14),
+     '83.14 die Karte zeigt genau diese Zeile und den Schalter (an)');
+  ok(/id="archLiveAn"( checked)? disabled>/.test(Karte83.liveBlockHtml({ moeglich: false, zeile: 'x' }, { live: true })), '83.14 ohne Zugang ist der Schalter gesperrt');
+  ok(/h \+= liveBlockHtml\(st\.live, e\);/.test(karteL) && /live: liveStand\(\),/.test(mainO), '83.14 der Live-Stand kommt mit dem Sammler-Stand und wird gezeichnet');
+  ok(/api\.onLiveSammler\(function \(live\)/.test(karteL) && /sammlerFunk\('live-sammler', liveStand\(\)\)/.test(mainO), '83.14 nach jeder Runde funkt der Hauptprozess, die Karte zeichnet neu');
+  gegen83('eine andere Zahl gaebe eine andere Zeile', L.panelZeile(Object.assign({}, st14, { werte: 513 })) !== zeile14);
+
+  /* --- 83.15 Der Schalter in den Sammler-Einstellungen (sammler.json), Vorgabe an --- */
+  ok(P83.VORGABE.live === true && P83.einstellungen(null).live === true, '83.15 Vorgabe: Live-Sammler an');
+  ok(P83.einstellungen({ live: false }).live === false && P83.einstellungen({ live: 0 }).live === false && P83.einstellungen({ live: 'ja' }).live === true,
+     '83.15 der Schalter wird gelesen und ist ein Ja/Nein');
+  ok(/sammlerEinstellungen\(\)\.live !== false/.test(mainO) && (mainO.match(/sammlerEinstellungen\(\)\.live !== false/g) || []).length >= 2,
+     '83.15 main.js fragt den Schalter vor jeder Runde und im Stand');
+  ok(/api\.sammlerEinstellen\(neu\)/.test(karteL) && /\{ live: !!liveAn\.checked \}/.test(karteL), '83.15 die Karte schreibt den Schalter ueber sammler-einstellen (dieselbe Datei wie alle Sammler-Werte)');
+  ['liveStand', 'liveMenge', 'onLiveSammler'].forEach(function (n) { ok(preL.indexOf(n + ':') !== -1, '83.15 preload reicht ' + n + ' durch'); });
+  ok(/ipcMain\.handle\('live-stand'/.test(mainO) && /ipcMain\.on\('live-menge'/.test(mainO), '83.15 main.js beantwortet live-stand und nimmt live-menge an');
+  ok(/window\.api\.liveMenge\(\{ viewer: hit && hit\.sym \? hit\.sym : null \}\)/.test(expL), '83.15 der Viewer meldet seinen Wert');
+  var depotL = ohneKommentare(fs.readFileSync('depot.js', 'utf8'));
+  ok(/function liveMengeMelden\(\)/.test(depotL) && /window\.api\.liveMenge\(\{/.test(depotL) && /function save\(\) \{\s*liveMengeMelden\(\);/.test(depotL),
+     '83.15 das Depot meldet Watchlist und Positionen bei jedem Speichern');
+  ok(!/liveMenge\(\{[^}]*(kurs|entry|qty|pnl)/.test(depotL), '83.15 und nur Kuerzel - kein Kurs, kein Bestand geht hinueber');
+  gegen83('das Muster faende einen Bestand in der Meldung', /liveMenge\(\{[^}]*(kurs|entry|qty|pnl)/.test("liveMenge({ qty: 5 })"));
+
+  /* --- 83.16 Die Strategien bleiben auf Yahoo: nur die Leseauskunft und der Viewer lesen alpaca1m --- */
+  var oberflaeche = fs.readdirSync('.').filter(function (d) { return /\.js$/.test(d) && !/^(main|preload|kerzenquelle|sammelplan|alpacaarchiv|livesammler|bt-worker)\.js$/.test(d) && !/^test-/.test(d); })
+    .concat(fs.readdirSync('markt').map(function (d) { return 'markt/' + d; }).filter(function (d) { return /\.js$/.test(d); }));
+  var lesen16 = oberflaeche.filter(function (d) { return /alpaca1m/.test(ohneKommentare(fs.readFileSync(d, 'utf8'))); });
+  ok(lesen16.length === 0, '83.16 kein Oberflaechen- oder Strategiemodul kennt den Ordner alpaca1m', lesen16.join(', ') || 'keines');
+  var verdichtet16 = oberflaeche.filter(function (d) { return /alpaca-verdichtet/.test(ohneKommentare(fs.readFileSync(d, 'utf8'))); });
+  ok(verdichtet16.join(',') === 'explorer.js', '83.16 die abgeleiteten Kerzen kennt nur der Viewer (explorer.js)', verdichtet16.join(','));
+  var stellen16 = [];
+  var re16 = /alpaca1m/g, m16;
+  while ((m16 = re16.exec(mainO))) stellen16.push(m16.index);
+  var regionA = [mainO.indexOf('function alpacaVerdichtet('), mainO.indexOf('ipcMain.handle(', mainO.indexOf("ipcMain.handle('archiv-massnahmen'") + 20)];
+  ok(regionA[0] > 0 && regionA[1] > regionA[0] && stellen16.length > 0 && stellen16.every(function (i) { return i >= regionA[0] && i < regionA[1]; }),
+     '83.16 in main.js steht alpaca1m nur in der Leseauskunft (archiv-kerzen/-massnahmen) - der Live-Sammler geht ueber alpacaarchiv.rohOrdner()', stellen16.length + ' Stellen');
+  var sammelTeil16 = mainO.slice(mainO.indexOf('const SAMMLER = {'), mainO.indexOf("ipcMain.handle('sammler-einstellen'"));
+  ok(!/intradayScan|autopilotRing|SETUPS|demoOrder|openPosition|closePosition/.test(sammelTeil16), '83.16 der Live-Sammler handelt nichts und fasst keine Handelslogik an');
+  var requireA = ['depot.js', 'strategien.js', 'quant.js', 'explorer.js', 'renderer.js', 'app-shell.js', 'kosten.js', 'momentum.js', 'drift.js']
+    .filter(function (d) { return fs.existsSync(d) && /alpacaarchiv|livesammler/.test(ohneKommentare(fs.readFileSync(d, 'utf8'))); });
+  ok(requireA.length === 0, '83.16 kein Renderer-Modul haengt an alpacaarchiv.js oder livesammler.js', requireA.join(',') || 'keines');
+  gegen83('die Suche faende alpaca1m in einem Modul, das es nennt', /alpaca1m/.test(ohneKommentare("var p = 'alpaca1m/AAPL';")));
+
+  /* --- 83.17 Zeitgeber, Schluessel und der Vermerk im Fortschritt --- */
+  ok(L.TAKT_MS === 5 * 60000 && /setInterval\(\(\) => \{ liveRunde\('planmaessig'\)\.catch\(\(\) => \{\}\); \}, Live\.TAKT_MS\);/.test(mainO),
+     '83.17 alle fuenf Minuten eine Runde, der Takt kommt aus dem Modul');
+  ok(/if \(LIVE\.laeuft\) return;/.test(mainO), '83.17 zwei Runden laufen nie verschraenkt');
+  ok(/const key = txt\(dechiffrieren\(s\.alpKey\)\), secret = txt\(dechiffrieren\(s\.alpSecret\)\);/.test(mainO) && /on: !!\(s\.alpEnabled && key && secret\)/.test(mainO),
+     '83.17 der Schluessel kommt aus den App-Einstellungen, nur Text zaehlt - dieselbe Regel wie alpaca.js');
+  ok(/'APCA-API-KEY-ID': z\.key, 'APCA-API-SECRET-KEY': z\.secret/.test(mainO) && /alpFetch\('GET', url, kopf\)/.test(mainO),
+     '83.17 der Zugang geht als Kopfzeile ueber alpFetch (derselbe Host-Zaun wie die Kostenmessung), nie in die Adresse');
+  ok(/erg\.fehler = ohneGeheimnis\(erg\.fehler\)/.test(mainO) && /erg\.grund = ohneGeheimnis\(erg\.grund\)/.test(mainO) && /w\.grund = ohneGeheimnis\(w\.grund\)/.test(mainO),
+     '83.17 Fehler, Grund und Schreibbefund laufen durch ohneGeheimnis()');
+  ok(/F\.live\.werte\[sym\] = \{ stempel: r\.jeWert\[sym\]\.stempel, runde: r\.zeit, leer: r\.jeWert\[sym\]\.leer \};/.test(mainO) && /AlpacaArchiv\.fortschrittSchreiben\(roh, F\)/.test(mainO),
+     '83.17 der Vermerk "live" je Wert (letzter Stempel, letzte Runde, leere Runden) steht im Fortschritt der Vollsammlung');
+  ok(ohneL.indexOf('o.abschluss(erg)') > 0 && ohneL.indexOf('o.abschluss(erg)') < ohneL.indexOf('} finally {'), '83.17 und wird noch unter der Sperre geschrieben');
+  ok(/liveZeilePruefen\(win, js\)/.test(probeL) && /archLiveZeile/.test(probeL) && /512 Werte/.test(probeL), '83.17 die Oberflaechen-Probe misst die Zeile mit Attrappen-Zahlen');
+  gegen83('das Schluessel-Muster faende einen Schluessel in einer Adresse', /APCA-API-KEY-ID=/.test('https://x/?APCA-API-KEY-ID=abc'));
+
+  ok(g83 === rot83, '83.x alle Gegenproben dieses Abschnitts schlagen an (synchron)', rot83 + ' von ' + g83);
+  void runde83; void VS83;
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

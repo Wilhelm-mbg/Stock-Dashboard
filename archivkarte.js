@@ -137,6 +137,24 @@
     return '';
   }
 
+  /* ================= DER LIVE-SAMMLER (06.09.2026) =================
+   * Eine Zeile aus DATEN (der Satz kommt fertig aus livesammler.js panelZeile - der
+   * Hauptprozess rechnet, die Karte zeigt) und ein Schalter. Ohne Alpaca-Zugang in
+   * den App-Einstellungen bleibt der Schalter ausgegraut und die Zeile sagt warum. */
+  function liveBlockHtml(live, e) {
+    if (!live) return '';
+    var an = e && e.live !== false;
+    var h = '<div class="panel arch-live" style="padding:8px 10px; margin-bottom:10px; font-size:var(--fs-neben); line-height:1.6;">' +
+      '<div id="archLiveZeile"' + (live.fehler || live.drossel ? ' style="color:var(--down);"' : '') + '>' + U.esc(live.zeile || '') + '</div>' +
+      '<label style="display:inline-flex; align-items:center; gap:6px; margin-top:4px;' + (live.moeglich ? '' : ' color:var(--muted);') + '">' +
+      '<input type="checkbox" id="archLiveAn"' + (an ? ' checked' : '') + (live.moeglich ? '' : ' disabled') + '> ' +
+      'Live-Sammler (Alpaca, alle ' + Math.round((live.takt || 300000) / 60000) + ' Minuten während der Sitzung, höchstens ' +
+      (live.deckel || 150) + ' Abrufe je Runde)</label>' +
+      (live.laeuft ? ' <span style="color:var(--series);">· Runde läuft</span>' : '') +
+      '</div>';
+    return h;
+  }
+
   function grafikHtml(st, ab) {
     if (!ab || !ab.tage || !ab.tage.length) {
       return '<div class="loading" id="archivGrafik">Sehe nach, welche Handelstage im Archiv liegen …</div>';
@@ -254,6 +272,7 @@
       h += '<div class="panel" style="padding:8px 10px; margin-bottom:10px; color:var(--down);">' +
         'Letzter Versuch schlug fehl: ' + U.esc(st.letzterFehler) + '</div>';
     }
+    h += liveBlockHtml(st.live, e);
 
     /* EINE Grafik statt der Tabelle (Stufe 4). Die fünf Knoepfe stehen darunter -
      * sie bleiben verdrahtet, nur ihr Ort hat sich geändert. */
@@ -287,6 +306,15 @@
 
     var stop = el('archStop');
     if (stop) stop.onclick = function () { if (api && api.sammlerStop) api.sammlerStop().then(laden); };
+    /* Der Schalter schreibt in die Sammler-Einstellungen (sammler.json) - denselben
+     * Ort wie alle anderen Sammler-Werte, ueber dieselbe Auskunft. */
+    var liveAn = el('archLiveAn');
+    if (liveAn) liveAn.onchange = function () {
+      if (!api || !api.sammlerEinstellen) return;
+      var neu = Object.assign({}, st.einstellungen || {}, { live: !!liveAn.checked });
+      liveAn.disabled = true;
+      api.sammlerEinstellen(neu).then(laden).catch(function () { laden(); });
+    };
     Array.prototype.forEach.call(k.querySelectorAll('.arch-hol'), function (b) {
       b.onclick = function () {
         if (!api || !api.sammlerStart) return;
@@ -319,6 +347,14 @@
   }
 
   if (api && api.onSammler) api.onSammler(function (st) { if (st) zeichne(st); });
+  /* Nach jeder Live-Runde funkt der Hauptprozess nur den Live-Stand - die Karte
+   * setzt ihn in den gemerkten Stand ein und zeichnet neu, ohne das Archiv erneut
+   * von der Platte zu lesen. */
+  if (api && api.onLiveSammler) api.onLiveSammler(function (live) {
+    if (!live || !LETZTER) return;
+    LETZTER.live = live;
+    zeichne(LETZTER);
+  });
 
   /* Geladen wird, wenn die Unterseite aufgeht - nicht beim Start der App. Der Stand
    * liest das Archiv von der Platte (bis zu 60 Dateien je Aufloesung); das gehoert
@@ -328,18 +364,23 @@
    * sondern die erste Klappe unter Werkzeuge -> Betrieb. Die Shell meldet das
    * Aufklappen mit demselben Ereignis und demselben Namen 'archiv' - der Ausloeser
    * hier bleibt deshalb Wort fuer Wort stehen. */
-  document.addEventListener('sub-changed', function (ev) {
-    if (ev && ev.detail && ev.detail.sub === 'archiv') laden();
-  });
-  /* Und wenn die Klappe beim Start schon offen ist: dann kommt kein Ereignis mehr,
-   * das diese Datei hoert. Vor dem Umzug war das der gemerkte Pillen-Ort, heute
-   * waere es ein <details open> - beides wird hier gleich behandelt. */
-  document.addEventListener('DOMContentLoaded', function () {
-    var s = document.getElementById('sub-archiv');
-    if (!s) return;
-    var kl = s.closest ? s.closest('details[data-klappe]') : null;
-    if ((kl && kl.open) || s.classList.contains('active')) laden();
-  });
+  /* In Node (test-v6) gibt es kein document - dann bleibt es bei den reinen Teilen
+   * unten; die Zuhoerer haengen nur im Fenster. */
+  if (typeof document !== 'undefined') {
+    document.addEventListener('sub-changed', function (ev) {
+      if (ev && ev.detail && ev.detail.sub === 'archiv') laden();
+    });
+    /* Und wenn die Klappe beim Start schon offen ist: dann kommt kein Ereignis mehr,
+     * das diese Datei hoert. Vor dem Umzug war das der gemerkte Pillen-Ort, heute
+     * waere es ein <details open> - beides wird hier gleich behandelt. */
+    document.addEventListener('DOMContentLoaded', function () {
+      var s = document.getElementById('sub-archiv');
+      if (!s) return;
+      var kl = s.closest ? s.closest('details[data-klappe]') : null;
+      if ((kl && kl.open) || s.classList.contains('active')) laden();
+    });
+  }
 
-  root.Archivkarte = { laden: laden, zeichne: zeichne, letzter: function () { return LETZTER; } };
+  root.Archivkarte = { laden: laden, zeichne: zeichne, letzter: function () { return LETZTER; }, liveBlockHtml: liveBlockHtml };
+  if (typeof module !== 'undefined' && module.exports) module.exports = root.Archivkarte;
 })(typeof window !== 'undefined' ? window : globalThis);

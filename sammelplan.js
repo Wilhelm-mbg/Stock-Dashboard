@@ -54,6 +54,8 @@ var VORGABE = {
   intervalle: { '1m': 1, '5m': 7, '15m': 7, '60m': 1, '1d': 1 },
   nachSchlussMinuten: 30,
   abstandMs: Q.ABSTAND_MS,
+  /* Live-Sammler ueber Alpaca (06.09.2026): an, sobald ein Zugang eingerichtet ist. */
+  live: true,
 };
 
 /* Welche Intervalle die App selbst holt.
@@ -99,6 +101,10 @@ function einstellungen(roh) {
     intervalle: {},
     nachSchlussMinuten: Math.round(zahl(roh.nachSchlussMinuten, 0, 720, VORGABE.nachSchlussMinuten)),
     abstandMs: Math.round(zahl(roh.abstandMs, 300, 60000, VORGABE.abstandMs)),
+    /* Der Live-Sammler ueber Alpaca (06.09.2026): Vorgabe AN. Ob er wirklich laeuft,
+     * entscheidet zusaetzlich der Alpaca-Zugang in den App-Einstellungen - ohne
+     * Schluessel bleibt er aus und sagt es im Panel. */
+    live: roh.live === undefined ? VORGABE.live : !!roh.live,
   };
   ERLAUBTE_INTERVALLE.forEach(function (iv) {
     var q = roh.intervalle && roh.intervalle[iv];
