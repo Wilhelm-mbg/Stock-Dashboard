@@ -1101,14 +1101,16 @@ async function liveZeilePruefen(win, js) {
     " var st = alt ? JSON.parse(JSON.stringify(alt)) : { einstellungen: { universum: 'top500', intervalle: { '1m': 1, '5m': 7, '15m': 7, '60m': 1, '1d': 1 }, nachSchlussMinuten: 30, abstandMs: 1200 }, zeilen: [], stillstand: [] };" +
     " st.einstellungen = st.einstellungen || {}; st.einstellungen.live = true;" +
     " st.live = { moeglich: true, an: true, aktiv: true, werte: 512, letzteRunde: Date.now(), bis: Date.now() - 18 * 60000, anfragen: 3, takt: 300000, deckel: 150," +
-    "   zeile: 'Alpaca live: 512 Werte · letzte Runde 15:47 · bis 15:32 ET · Abrufe je Runde 3' };" +
+    "   schreibBytes: 12582912, schreibMs: 800," +
+    "   zeile: 'Alpaca live: 512 Werte · letzte Runde 15:47 · bis 15:32 ET · Abrufe je Runde 3 · geschrieben 12 MB in 0,8 s' };" +
     " window.Archivkarte.zeichne(st, null);" +
     " var z = document.getElementById('archLiveZeile'); var k = document.getElementById('archLiveAn');" +
     " var sichtbar = z ? (z.getClientRects().length > 0) : false;" +
     " return { da: true, zeile: z ? z.textContent : null, sichtbar: sichtbar, kasten: !!k, an: k ? k.checked : null, gesperrt: k ? k.disabled : null }; })()");
   if (!erg || !erg.da) { funde.push('Live-Sammler: window.Archivkarte.zeichne fehlt - die Zeile ist nicht pruefbar'); return { funde }; }
   console.log('  Live-Sammler-Zeile: "' + (erg.zeile || '') + '" sichtbar=' + erg.sichtbar + ' Kaestchen=' + erg.kasten + ' an=' + erg.an + ' gesperrt=' + erg.gesperrt);
-  if (!erg.zeile || erg.zeile.indexOf('512 Werte') === -1 || erg.zeile.indexOf('Abrufe je Runde 3') === -1) {
+  if (!erg.zeile || erg.zeile.indexOf('512 Werte') === -1 || erg.zeile.indexOf('Abrufe je Runde 3') === -1 ||
+      erg.zeile.indexOf('geschrieben 12 MB') === -1) {
     funde.push('Live-Sammler: die Panel-Zeile zeigt die Attrappen-Zahlen nicht ("' + (erg.zeile || '') + '")');
   }
   if (!erg.sichtbar) funde.push('Live-Sammler: die Panel-Zeile steht im DOM, ist aber nicht sichtbar');

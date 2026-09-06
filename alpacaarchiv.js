@@ -18,18 +18,21 @@
  *   - eine Kerze, die aelter ist als die juengste der Datei, wird nicht eingefuegt
  *     (der Anhang ist ein Anhang, kein Einsortieren - wer Luecken fuellen will,
  *     schreibt die Datei neu, und das tut kein Aufrufer von hier);
- *   - geschrieben wird atomar: Kopie in eine Temp-Datei, dort angehaengt, dann
- *     umbenannt. Ein Absturz mittendrin hinterlaesst die alte Datei unversehrt.
+ *   - eine NEUE Datei entsteht atomar (Temp-Datei, dann umbenannt); ein ANHANG geht
+ *     seit dem 07.09.2026 an Ort und Stelle, mit einem Reparaturjournal davor. Ein
+ *     Absturz mittendrin ist damit nicht folgenlos, aber vollstaendig zuruecknehmbar
+ *     (siehe "DAS REPARATURJOURNAL" weiter unten).
  *
  * WARUM ANHAENGEN STATT NEU SCHREIBEN. AAPL/2026.json traegt im September 133.770
  * Kerzen auf 6,7 MB. Der Live-Sammler haengt alle fuenf Minuten an rund 500 solcher
  * Dateien an. Die Datei jedes Mal zu lesen, zu zerlegen, zu erweitern und neu zu
  * serialisieren kostete ~100 ms Rechenzeit im Hauptprozess JE DATEI - 50 s je Runde,
  * in der die Oberflaeche auf jede Auskunft warten muesste. Der Anhang liest nur den
- * Schwanz (~100 KB), kopiert die Datei auf Betriebssystem-Ebene und schreibt die neuen
- * Kerzen dahinter. Der Kopf der Datei (quellen.bis, stand) wird an Ort und Stelle
- * ueberschrieben - beide Felder sind gleich lang wie vorher (13-stellige
- * Millisekunden, 24 Zeichen ISO-Zeit), sonst wird verweigert.
+ * Schwanz (~100 KB) und schreibt die neuen Kerzen dahinter - an Ort und Stelle. Der
+ * Kopf der Datei (quellen.bis, stand) wird ebenfalls an Ort und Stelle ueberschrieben,
+ * und zwar nur die zwei betroffenen Spannen: beide Felder sind gleich lang wie vorher
+ * (13-stellige Millisekunden, 24 Zeichen ISO-Zeit), sonst wird verweigert. Geschrieben
+ * werden je Anhang also Journal + zwei Spannen + neuer Schwanz - nicht die Datei.
  *
  * Alles Simulation mit virtuellem Kapital. Keine Anlageberatung.
  */
@@ -108,19 +111,29 @@ function jahrDatei(roh, sym, jahr) {
  * frischer Balken. In die Datei des erloschenen Traegers geschrieben, staenden zwei
  * Unternehmen in einer Reihe, still. Die Lebenszeit-Datei wird je Aenderungszeit
  * gemerkt, wie die Abbildung der Ordnernamen. */
-var LEBENSZEIT = { pfad: null, mtime: 0, werte: {} };
-function lebenszeitLesen(roh) {
+var LEBENSZEIT = { pfad: null, mtime: 0, werte: {}, stand: null };
+/** Die ganze Lebenszeit-Datei { stand, werte } - `stand` sagt, wie alt die Auskunft
+ *  ist, und daran misst der Live-Sammler, welche Reihe erloschen ist (livesammler.js
+ *  gefuehrteReihen). Ohne Datei: { stand: null, werte: {} }. */
+function lebenszeitDatei(roh) {
   var p = metaPfad(roh, 'lebenszeit');
   var mtime = 0;
   try { mtime = fs.statSync(p).mtimeMs; } catch (e) { mtime = 0; }
   if (LEBENSZEIT.pfad !== p || LEBENSZEIT.mtime !== mtime) {
-    var werte = {};
+    var werte = {}, stand = null;
     if (mtime) {
-      try { werte = (JSON.parse(fs.readFileSync(p, 'utf8')) || {}).werte || {}; } catch (e) { werte = {}; }
+      try {
+        var j = JSON.parse(fs.readFileSync(p, 'utf8')) || {};
+        werte = j.werte || {};
+        stand = j.stand || null;
+      } catch (e) { werte = {}; stand = null; }
     }
-    LEBENSZEIT = { pfad: p, mtime: mtime, werte: werte };
+    LEBENSZEIT = { pfad: p, mtime: mtime, werte: werte, stand: stand };
   }
-  return LEBENSZEIT.werte;
+  return { stand: LEBENSZEIT.stand, werte: LEBENSZEIT.werte };
+}
+function lebenszeitLesen(roh) {
+  return lebenszeitDatei(roh).werte;
 }
 function reiheFuer(roh, sym) {
   var lz = lebenszeitLesen(roh);
@@ -134,6 +147,10 @@ function letzterStempelReihe(roh, reihe, jahr) {
     if (!fs.existsSync(p)) continue;
     var b = schwanzBefund(p);
     if (b.ok && b.letzterStempel != null) return b.letzterStempel;
+    /* Liegt ein Journal, ist der Stand dieser Reihe unbekannt - dann NICHT auf das
+     * Vorjahr ausweichen: dessen Stempel waere aelter und der Aufrufer hielte ihn
+     * fuer den Stand der Reihe. Lieber gar keine Auskunft. */
+    if (b.journal) return null;
   }
   return null;
 }
@@ -280,6 +297,148 @@ function atomarSchreiben(pfad, text) {
   fs.renameSync(tmp, pfad);
 }
 
+/* ================= DAS REPARATURJOURNAL (07.09.2026) =================
+ *
+ * Der Anhang schrieb bis heute in eine KOPIE der Jahresdatei und benannte sie um.
+ * Das ist unbestreitbar sicher und kostet je Runde so viel Schreiblast, wie alle
+ * beruehrten Dateien zusammen wiegen: bei 500 Werten ~1,9 GB alle fuenf Minuten, bei
+ * allen gefuehrten Werten das Sechsfache - auf einer Festplatte (E: ist keine SSD)
+ * ist das die Grenze. Deshalb schreibt der Anhang jetzt AN ORT UND STELLE, und die
+ * Absturzsicherung liegt in einem Journal daneben.
+ *
+ * DIE REGEL: das Journal steht VOLLSTAENDIG auf der Platte (fsync), bevor am ersten
+ * Datenbyte etwas geaendert wird. Es traegt die alten Bytes JEDER Stelle, die gleich
+ * anders wird - die zwei Kopf-Spannen (quellen, stand) und den alten Schwanz ab
+ * `schnitt` - und die alte Dateilaenge. Damit ist der Zustand VOR dem Anhang aus dem
+ * Journal allein wiederherstellbar, byteidentisch.
+ *
+ * DREI ZUSTAENDE nach einem Absturz:
+ *   - kein Journal            -> die Datei ist unberuehrt oder fertig. Nichts zu tun.
+ *   - Journal unvollstaendig  -> es fiel vor dem ersten Datenbyte; die Datei ist
+ *                                unberuehrt. Das Journal faellt weg, sonst nichts.
+ *   - Journal vollstaendig    -> die Datei kann zerrissen sein. Kuerzen auf die alte
+ *                                Laenge, Stuecke zurueckschreiben, fsync, Journal weg.
+ *
+ * WER REPARIERT: nur ein Schreiber unter der Sperre - jahrSchreiben zu Beginn, und
+ * als Durchgang der Nachlauf, das Holen der Vollsammlung. Ein LESER repariert nie
+ * (er haelt keine Sperre); er sieht das Journal, meldet ok:false und der Viewer
+ * faellt auf das App-Archiv zurueck. Die Datei liegt eine Runde lang zerrissen -
+ * das ist der Preis, und er ist bezahlbar, weil das Archiv additiv ist: kein Byte
+ * geht verloren, es wird nur spaeter angehaengt. */
+var JOURNAL_SUFFIX = '.journal';
+function journalPfad(pfad) { return pfad + JOURNAL_SUFFIX; }
+function sha256(buf) { return require('crypto').createHash('sha256').update(buf).digest('hex'); }
+/** Ein Stueck einer Datei lesen - ohne sie ganz zu lesen. */
+function teilLesen(pfad, pos, laenge) {
+  var fd = fs.openSync(pfad, 'r');
+  try {
+    var buf = Buffer.alloc(laenge);
+    var n = fs.readSync(fd, buf, 0, laenge, pos);
+    return n === laenge ? buf : buf.slice(0, n);
+  } finally { fs.closeSync(fd); }
+}
+/** Das Journal schreiben und auf die Platte zwingen. Aufbau: eine Kopfzeile JSON,
+ *  ein Zeilenumbruch, dann die alten Bytes der Stuecke hintereinander. Die Kopfzeile
+ *  traegt Laenge und Pruefsumme der Nutzlast - ein halb geschriebenes Journal ist
+ *  daran erkennbar und bedeutet: die Datei wurde noch nicht angefasst.
+ *  stuecke: [{ pos, alt: Buffer }] - Rueckgabe: geschriebene Bytes. */
+function journalSchreiben(pfad, laenge, schnitt, stuecke) {
+  var nutzlast = Buffer.concat(stuecke.map(function (s) { return s.alt; }));
+  var kopf = JSON.stringify({ v: 1, datei: path.basename(pfad), laenge: laenge, schnitt: schnitt,
+    stuecke: stuecke.map(function (s) { return { pos: s.pos, len: s.alt.length }; }),
+    nutzlast: nutzlast.length, sha256: sha256(nutzlast), stand: new Date().toISOString() });
+  var kopfBuf = Buffer.from(kopf + '\n', 'utf8');
+  var fd = fs.openSync(journalPfad(pfad), 'w');
+  try {
+    fs.writeSync(fd, kopfBuf, 0, kopfBuf.length, 0);
+    if (nutzlast.length) fs.writeSync(fd, nutzlast, 0, nutzlast.length, kopfBuf.length);
+    fs.fsyncSync(fd);
+  } finally { fs.closeSync(fd); }
+  return kopfBuf.length + nutzlast.length;
+}
+/** Ein Journal lesen und pruefen. { ok:false, grund } heisst: unvollstaendig oder
+ *  unlesbar - und damit: die Datei wurde nicht angefasst. */
+function journalLesen(jp) {
+  var roh;
+  try { roh = fs.readFileSync(jp); } catch (e) { return { ok: false, grund: 'Journal nicht lesbar: ' + (e && e.message) }; }
+  var nl = roh.indexOf(0x0a);
+  if (nl < 0) return { ok: false, grund: 'Journal ohne Kopfzeile - unvollstaendig' };
+  var k;
+  try { k = JSON.parse(roh.slice(0, nl).toString('utf8')); } catch (e) { return { ok: false, grund: 'Journal-Kopf nicht lesbar' }; }
+  if (!k || k.v !== 1 || !Array.isArray(k.stuecke) || typeof k.laenge !== 'number') return { ok: false, grund: 'Journal-Kopf unbekannter Form' };
+  var nutz = roh.slice(nl + 1);
+  if (nutz.length !== k.nutzlast) return { ok: false, grund: 'Journal unvollstaendig (' + nutz.length + ' von ' + k.nutzlast + ' Bytes)' };
+  if (sha256(nutz) !== k.sha256) return { ok: false, grund: 'Journal-Nutzlast passt nicht zur Pruefsumme' };
+  var stuecke = [], ab = 0;
+  for (var i = 0; i < k.stuecke.length; i++) {
+    var s = k.stuecke[i];
+    if (typeof s.pos !== 'number' || typeof s.len !== 'number' || ab + s.len > nutz.length) return { ok: false, grund: 'Journal: Stueck ' + i + ' passt nicht' };
+    stuecke.push({ pos: s.pos, bytes: nutz.slice(ab, ab + s.len) });
+    ab += s.len;
+  }
+  return { ok: true, kopf: k, stuecke: stuecke };
+}
+/** Liegt zu dieser Jahresdatei ein Journal, wird der Zustand VOR dem Anhang
+ *  wiederhergestellt. Nur unter der Sperre aufrufen. */
+function journalReparieren(pfad) {
+  var jp = journalPfad(pfad);
+  if (!fs.existsSync(jp)) return { ok: true, repariert: false };
+  var j = journalLesen(jp);
+  if (!j.ok) {
+    /* Ein unvollstaendiges Journal fiel VOR dem ersten Datenbyte - die Datei ist
+     * unberuehrt. Es faellt weg, damit der naechste Anhang nicht daran haengen bleibt. */
+    try { fs.unlinkSync(jp); } catch (e) { /* dann liegt es beim naechsten Mal wieder an */ }
+    return { ok: true, repariert: false, unvollstaendig: true, grund: j.grund };
+  }
+  var fd;
+  try { fd = fs.openSync(pfad, 'r+'); }
+  catch (e) { return { ok: false, grund: 'Datei zum Reparieren nicht zu oeffnen: ' + (e && e.message) }; }
+  try {
+    fs.ftruncateSync(fd, j.kopf.laenge);
+    for (var i = 0; i < j.stuecke.length; i++) {
+      var s = j.stuecke[i];
+      if (s.bytes.length) fs.writeSync(fd, s.bytes, 0, s.bytes.length, s.pos);
+    }
+    fs.fsyncSync(fd);
+  } catch (e) {
+    return { ok: false, grund: 'Reparatur misslang: ' + (e && e.message) };
+  } finally { fs.closeSync(fd); }
+  fs.unlinkSync(jp);
+  return { ok: true, repariert: true, laenge: j.kopf.laenge, stuecke: j.stuecke.length };
+}
+/** Alle liegenden Journale eines Rohordners finden - fuer --pruefen (Befund) und
+ *  fuer den Durchgang vor einem Lauf. Meta-Dateien (fuehrender Unterstrich) fallen aus. */
+function journaleFinden(roh) {
+  var aus = [];
+  var ordner;
+  try { ordner = fs.readdirSync(roh); } catch (e) { return aus; }
+  ordner.forEach(function (o) {
+    if (o.charAt(0) === '_') return;
+    var voll = path.join(roh, o);
+    try { if (!fs.statSync(voll).isDirectory()) return; } catch (e) { return; }
+    var namen;
+    try { namen = fs.readdirSync(voll); } catch (e) { return; }
+    namen.forEach(function (n) {
+      if (/^\d{4}\.json\.journal$/.test(n)) aus.push(o + '/' + n);
+    });
+  });
+  return aus.sort();
+}
+/** Ein Durchgang ueber den ganzen Rohordner: jedes liegende Journal zurueckspielen.
+ *  Nur unter der Sperre aufrufen (Nachlauf, Vollsammlung). */
+function journaleReparieren(roh) {
+  var aus = { gefunden: 0, repariert: [], unvollstaendig: [], fehler: [] };
+  journaleFinden(roh).forEach(function (rel) {
+    aus.gefunden++;
+    var pfad = path.join(roh, rel.slice(0, -JOURNAL_SUFFIX.length));
+    var r = journalReparieren(pfad);
+    if (!r.ok) aus.fehler.push(rel + ': ' + r.grund);
+    else if (r.repariert) aus.repariert.push(rel);
+    else aus.unvollstaendig.push(rel);
+  });
+  return aus;
+}
+
 /* ================= Den Schwanz einer Jahresdatei lesen ================= */
 var MARKE = Buffer.from('],"sitzungen":');
 var SCHWANZ_BYTES = 96 * 1024;
@@ -297,8 +456,17 @@ function schwanzLesen(pfad, bytes) {
  *  und die Byte-Stelle, an der die Reihe endet (dort wird angehaengt). Findet sich die
  *  Marke im Schwanz nicht, wird mehr gelesen - bis zur ganzen Datei. Eine Datei, die
  *  nicht so aussieht wie beschrieben, bekommt {ok:false, grund} und wird NICHT
- *  angefasst: raten waere hier der Weg, eine Reihe zu verstuemmeln. */
-function schwanzBefund(pfad, bytes) {
+ *  angefasst: raten waere hier der Weg, eine Reihe zu verstuemmeln.
+ *
+ *  LIEGT EIN JOURNAL, ist die Datei moeglicherweise zerrissen: der Befund ist dann
+ *  {ok:false, journal:true}, und zwar fuer JEDEN Leser - der Viewer faellt darauf
+ *  auf das App-Archiv zurueck, ohne die Datei anzufassen. Nur das Gegenlesen des
+ *  Anhangs selbst geht mit { ohneJournal: true } daran vorbei; dort liegt das
+ *  Journal mit Absicht noch, weil es erst nach dem Gegenlesen faellt. */
+function schwanzBefund(pfad, bytes, opt) {
+  if (!(opt && opt.ohneJournal) && fs.existsSync(journalPfad(pfad))) {
+    return { ok: false, journal: true, grund: 'Reparaturjournal liegt - die Datei ist moeglicherweise zerrissen' };
+  }
   bytes = bytes || SCHWANZ_BYTES;
   for (;;) {
     var s;
@@ -337,6 +505,10 @@ function letzterStempel(pfad) {
 
 /* ================= Den Kopf an Ort und Stelle nachfuehren ================= */
 var KOPF_BYTES = 64 * 1024;
+/** Liefert den nachgefuehrten Kopfpuffer UND die Spannen, die sich darin geaendert
+ *  haben: je { pos, alt, neu } mit gleicher Laenge (quellen und stand werden nur
+ *  gleich lang ersetzt, sonst wird verweigert). Der Anhang an Ort und Stelle schreibt
+ *  nur diese Spannen - nicht die ganzen 64 KB - und legt die alten Bytes ins Journal. */
 function kopfNachfuehren(pfad, size, neuBis, stand) {
   var fd = fs.openSync(pfad, 'r');
   var buf;
@@ -345,6 +517,8 @@ function kopfNachfuehren(pfad, size, neuBis, stand) {
     buf = Buffer.alloc(len);
     fs.readSync(fd, buf, 0, len, 0);
   } finally { fs.closeSync(fd); }
+  var altKopf = Buffer.from(buf);        /* die Bytes, BEVOR etwas ersetzt wird */
+  var spannen = [];
   var qi = buf.indexOf('"quellen":[');
   if (qi < 0) return { ok: false, grund: 'Kopf ohne quellen' };
   var qa = qi + '"quellen":'.length;
@@ -359,14 +533,17 @@ function kopfNachfuehren(pfad, size, neuBis, stand) {
   var neuText = JSON.stringify(arr);
   if (Buffer.byteLength(neuText, 'utf8') !== qe + 1 - qa) return { ok: false, grund: 'Kopf: quellen liesse sich nicht gleich lang ersetzen' };
   buf.write(neuText, qa, 'utf8');
+  spannen.push({ pos: qa, alt: altKopf.slice(qa, qe + 1), neu: Buffer.from(neuText, 'utf8') });
   var si = buf.indexOf('"stand":"');
   if (si >= 0) {
     var sa = si + '"stand":"'.length;
     var se = buf.indexOf('"', sa);
-    if (se - sa === stand.length) buf.write(stand, sa, 'utf8');
-    else return { ok: false, grund: 'Kopf: stand liesse sich nicht gleich lang ersetzen' };
+    if (se - sa === stand.length) {
+      buf.write(stand, sa, 'utf8');
+      spannen.push({ pos: sa, alt: altKopf.slice(sa, se), neu: Buffer.from(stand, 'utf8') });
+    } else return { ok: false, grund: 'Kopf: stand liesse sich nicht gleich lang ersetzen' };
   }
-  return { ok: true, buf: buf };
+  return { ok: true, buf: buf, spannen: spannen };
 }
 
 /* ================= DIE Schreibroutine ================= */
@@ -391,12 +568,18 @@ function kerzenPruefen(kerzen, jahr) {
  *  kerzen   [t, schluss, umsatz, hoch, tief, eroeffnung], beliebige Reihenfolge
  *  kal      { 'YYYY-MM-DD': {open, close} } - der Kalender der Quelle
  *  opt      { herkunft }  Text fuer den Kopf einer NEUEN Datei
+ *           { abbruchBei } NUR fuer den Test: 'nach-journal' | 'im-schwanz' |
+ *                          'vor-journal-loeschen' - wirft dort, wie ein Absturz
  *
  *  Rueckgabe { ok, geschrieben, art:'neu'|'anhang', neu, uebersprungen, letzterStempel,
- *             bytes, pfad, sitzungenZaehler } oder { ok:false, grund }.
+ *             bytes, pfad, sitzungenZaehler, geschriebenBytes, ms } oder { ok:false, grund }.
+ *  `bytes` ist die GROESSE der Datei danach, `geschriebenBytes` die tatsaechlich
+ *  geschriebene Menge (Journal + Kopf-Spannen + Schwanz) - die zwei Zahlen liegen beim
+ *  Anhang um Groessenordnungen auseinander, und die zweite ist die Last auf der Platte.
  *  Nichts wird geschrieben, wenn keine Kerze neuer ist als der Bestand. */
 function jahrSchreiben(ordner, sym, jahr, kerzen, kal, opt) {
   opt = opt || {};
+  var t0 = Date.now();
   var fehler = kerzenPruefen(kerzen, jahr);
   if (fehler) return { ok: false, grund: fehler };
   if (!kal || typeof kal !== 'object') return { ok: false, grund: 'ohne Kalender keine Sitzung - nichts geschrieben' };
@@ -406,6 +589,12 @@ function jahrSchreiben(ordner, sym, jahr, kerzen, kal, opt) {
   var reihe = Object.keys(karte).map(Number).sort(function (a, b) { return a - b; }).map(function (t) { return karte[t]; });
   var pfad = path.join(ordner, jahr + '.json');
   var stand = new Date().toISOString();
+
+  /* Ein Journal aus einem abgebrochenen Anhang wird ZUERST zurueckgespielt - hier,
+   * unter der Sperre des Aufrufers, also ohne zweiten Schreiber. Erst danach sagt
+   * der Schwanzbefund die Wahrheit ueber den Bestand. */
+  var rep = journalReparieren(pfad);
+  if (!rep.ok) return { ok: false, grund: 'Reparaturjournal liess sich nicht zurueckspielen: ' + rep.grund, pfad: pfad };
 
   if (!fs.existsSync(pfad)) {
     if (!reihe.length) return { ok: true, geschrieben: false, art: 'neu', neu: 0, uebersprungen: kerzen.length - reihe.length, letzterStempel: null, pfad: pfad };
@@ -422,7 +611,8 @@ function jahrSchreiben(ordner, sym, jahr, kerzen, kal, opt) {
     var text = JSON.stringify(h);
     atomarSchreiben(pfad, text);
     return { ok: true, geschrieben: true, art: 'neu', neu: reihe.length, uebersprungen: kerzen.length - reihe.length,
-      letzterStempel: reihe[reihe.length - 1][0], bytes: text.length, pfad: pfad, sitzungenZaehler: sitzungenZaehlen(sitz) };
+      letzterStempel: reihe[reihe.length - 1][0], bytes: text.length, pfad: pfad, sitzungenZaehler: sitzungenZaehlen(sitz),
+      geschriebenBytes: Buffer.byteLength(text, 'utf8'), ms: Date.now() - t0 };
   }
 
   var b = schwanzBefund(pfad);
@@ -430,39 +620,63 @@ function jahrSchreiben(ordner, sym, jahr, kerzen, kal, opt) {
   if (b.jahr !== undefined && b.jahr !== jahr) return { ok: false, grund: 'Datei traegt Jahr ' + b.jahr + ', verlangt ' + jahr, pfad: pfad };
   var neu = b.leer ? reihe : reihe.filter(function (k) { return k[0] > b.letzterStempel; });
   var uebersprungen = kerzen.length - neu.length;
-  if (!neu.length) return { ok: true, geschrieben: false, art: 'anhang', neu: 0, uebersprungen: uebersprungen, letzterStempel: b.letzterStempel, pfad: pfad };
+  if (!neu.length) return { ok: true, geschrieben: false, art: 'anhang', neu: 0, uebersprungen: uebersprungen, letzterStempel: b.letzterStempel, pfad: pfad,
+    geschriebenBytes: 0, ms: Date.now() - t0 };
   var sitzNeu = sitzungJeKerze(neu, kal);
   var bereiche = sitzungenAnhaengen(b.sitzungen, neu, sitzNeu);
   var kopf = kopfNachfuehren(pfad, b.groesse, neu[neu.length - 1][0], stand);
   if (!kopf.ok) return { ok: false, grund: kopf.grund, pfad: pfad };
   var schwanz = (b.leer ? '' : ',') + neu.map(function (k) { return JSON.stringify(k); }).join(',') +
     '],"sitzungen":' + JSON.stringify(bereiche) + ',"jahr":' + jahr + '}';
-  var tmp = pfad + '.tmp-anhang';
-  fs.copyFileSync(pfad, tmp);
-  fs.truncateSync(tmp, b.schnitt);
-  var fd = fs.openSync(tmp, 'r+');
+  var schwanzBuf = Buffer.from(schwanz, 'utf8');
+
+  /* 1) JOURNAL VOR DEN DATEN. Alles, was gleich anders wird, wird vorher gesichert:
+   *    die zwei Kopf-Spannen und der alte Schwanz ab `schnitt`. fsync, dann erst Daten. */
+  var stuecke = kopf.spannen.map(function (s) { return { pos: s.pos, alt: s.alt }; })
+    .concat([{ pos: b.schnitt, alt: teilLesen(pfad, b.schnitt, b.groesse - b.schnitt) }]);
+  var journalBytes = journalSchreiben(pfad, b.groesse, b.schnitt, stuecke);
+  /* Abbruch-Haken: NUR aus dem Test erreichbar (opt.abbruchBei). Ein Wurf hier ist
+   * ein Absturz mitten im Anhang - genau der Fall, fuer den das Journal da ist. */
+  if (opt.abbruchBei === 'nach-journal') throw new Error('Abbruch-Probe: nach-journal');
+
+  /* 2) DIE DATEN, an Ort und Stelle: nur die Kopf-Spannen (nicht die 64 KB), der neue
+   *    Schwanz ab `schnitt`, dann die Laenge setzen und fsync. */
+  var kopfBytes = 0;
+  var fd = fs.openSync(pfad, 'r+');
   try {
-    fs.writeSync(fd, kopf.buf, 0, kopf.buf.length, 0);
-    fs.writeSync(fd, schwanz, b.schnitt, 'utf8');
+    kopf.spannen.forEach(function (s) { fs.writeSync(fd, s.neu, 0, s.neu.length, s.pos); kopfBytes += s.neu.length; });
+    if (opt.abbruchBei === 'im-schwanz') {
+      var halb = Math.max(1, Math.floor(schwanzBuf.length / 2));
+      fs.writeSync(fd, schwanzBuf, 0, halb, b.schnitt);
+      fs.fsyncSync(fd);
+      throw new Error('Abbruch-Probe: im-schwanz');
+    }
+    fs.writeSync(fd, schwanzBuf, 0, schwanzBuf.length, b.schnitt);
+    fs.ftruncateSync(fd, b.schnitt + schwanzBuf.length);
+    fs.fsyncSync(fd);
   } finally { fs.closeSync(fd); }
-  /* Gegenlesen, BEVOR umbenannt wird: der Schwanz der Temp-Datei muss sich genauso
-   * lesen lassen wie der einer frisch geschriebenen. Sonst bleibt die alte Datei. */
-  var probe = schwanzBefund(tmp);
+
+  /* 3) Gegenlesen, BEVOR das Journal faellt: der Schwanz muss sich lesen lassen wie
+   *    der einer frisch geschriebenen Datei. Sonst wird zurueckgespielt. */
+  var probe = schwanzBefund(pfad, undefined, { ohneJournal: true });
   if (!probe.ok || probe.letzterStempel !== neu[neu.length - 1][0]) {
-    try { fs.unlinkSync(tmp); } catch (e) { /* die Temp-Datei ist ohnehin verworfen */ }
-    return { ok: false, grund: 'Anhang liess sich nicht gegenlesen: ' + (probe.grund || 'anderer Stempel'), pfad: pfad };
+    var zurueck = journalReparieren(pfad);
+    return { ok: false, pfad: pfad, grund: 'Anhang liess sich nicht gegenlesen: ' + (probe.grund || 'anderer Stempel') +
+      (zurueck.repariert ? ' - der Stand vor dem Anhang ist zurueckgespielt' : ' - das Journal blieb liegen: ' + (zurueck.grund || '?')) };
   }
-  fs.renameSync(tmp, pfad);
+  if (opt.abbruchBei === 'vor-journal-loeschen') throw new Error('Abbruch-Probe: vor-journal-loeschen');
+  fs.unlinkSync(journalPfad(pfad));
   return { ok: true, geschrieben: true, art: 'anhang', neu: neu.length, uebersprungen: uebersprungen,
-    letzterStempel: neu[neu.length - 1][0], bytes: b.schnitt + Buffer.byteLength(schwanz, 'utf8'), pfad: pfad,
-    sitzungenZaehler: sitzungenZaehlen(sitzNeu) };
+    letzterStempel: neu[neu.length - 1][0], bytes: b.schnitt + schwanzBuf.length, pfad: pfad,
+    sitzungenZaehler: sitzungenZaehlen(sitzNeu),
+    geschriebenBytes: journalBytes + kopfBytes + schwanzBuf.length, ms: Date.now() - t0 };
 }
 
 module.exports = {
   wurzel: wurzel, rohOrdner: rohOrdner, bereinigtOrdner: bereinigtOrdner, massnahmenOrdner: massnahmenOrdner,
   META: META, metaPfad: metaPfad,
   GERAET: GERAET, kurzstempel: kurzstempel, ordnerName: ordnerName, ordnerFuer: ordnerFuer, abbildung: abbildung, jahrDatei: jahrDatei,
-  lebenszeitLesen: lebenszeitLesen, reiheFuer: reiheFuer, letzterStempelReihe: letzterStempelReihe, protokoll: protokoll,
+  lebenszeitLesen: lebenszeitLesen, lebenszeitDatei: lebenszeitDatei, reiheFuer: reiheFuer, letzterStempelReihe: letzterStempelReihe, protokoll: protokoll,
   nyTeile: nyTeile, nyNachUtc: nyNachUtc, etTag: etTag, jahrGrenzen: jahrGrenzen, jahrVon: jahrVon,
   kerzeAus: kerzeAus, imZeitraum: imZeitraum,
   sitzungJeKerze: sitzungJeKerze, sitzungenVerdichten: sitzungenVerdichten, sitzungenAnhaengen: sitzungenAnhaengen, sitzungenZaehlen: sitzungenZaehlen,
@@ -470,5 +684,11 @@ module.exports = {
   fortschrittLesen: fortschrittLesen, fortschrittSchreiben: fortschrittSchreiben,
   sperreLesen: sperreLesen, sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen,
   atomarSchreiben: atomarSchreiben, schwanzBefund: schwanzBefund, letzterStempel: letzterStempel,
+  /* kopfNachfuehren ist exportiert, damit test-v6.js Abschnitt 85 die ALTE
+   * Kopier-Routine als Pruef-Referenz nachbauen kann, ohne die Kopf-Rechnung zu
+   * verdoppeln - verglichen wird der Schreibweg, nicht der Inhalt des Kopfes. */
+  kopfNachfuehren: kopfNachfuehren,
+  JOURNAL_SUFFIX: JOURNAL_SUFFIX, journalPfad: journalPfad, journalLesen: journalLesen,
+  journalReparieren: journalReparieren, journaleFinden: journaleFinden, journaleReparieren: journaleReparieren,
   QUELLE_TEXT: QUELLE_TEXT, jahrSchreiben: jahrSchreiben,
 };

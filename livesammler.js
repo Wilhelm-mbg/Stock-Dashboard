@@ -46,9 +46,10 @@ function zahl(v) { return typeof v === 'number' && isFinite(v); }
 function minute(ms) { return Math.floor(ms / 60000) * 60000; }
 
 /* ================= 1) Die Live-Menge =================
- * Universum top500 + Watchlist + Werte mit offener Position + der im Viewer geoeffnete
- * Wert - Vereinigung ohne Doppelte, in Grossschreibung, sortiert (dieselbe Menge in
- * anderer Reihenfolge ist dieselbe Menge). Was kein Kuerzel ist, faellt raus. */
+ * Alle Reihen, die das Archiv heute noch fuehrt, + Watchlist + Werte mit offener
+ * Position + der im Viewer geoeffnete Wert - Vereinigung ohne Doppelte, in
+ * Grossschreibung, sortiert (dieselbe Menge in anderer Reihenfolge ist dieselbe
+ * Menge). Was kein Kuerzel ist, faellt raus. */
 function liveMenge(teile) {
   teile = teile || {};
   var satz = {};
@@ -59,6 +60,46 @@ function liveMenge(teile) {
     });
   }
   nimm(teile.universum); nimm(teile.watch); nimm(teile.positionen); nimm(teile.viewer);
+  return Object.keys(satz).sort();
+}
+
+/* Welche Reihen fuehrt das Archiv HEUTE noch? Die Antwort steht in der Lebenszeit-Datei
+ * des Archivs (alpaca1m/_lebenszeit.json), nicht in einer Namensliste - eine Namensliste
+ * waere der Stichtag, an dem sie gebaut wurde, und ein Wert, den das Archiv fuehrt, aber
+ * die Liste nicht kennt, fiele still heraus.
+ *
+ * DREI FILTER, jeder mit Grund:
+ *   - keine Reihe mit `fehler` und keine ohne Jahre: Phase L hat fuer sie nichts gefunden;
+ *     die Quelle hat zu ihr nichts zu sagen.
+ *   - nicht die Erstbelegung eines wiederverwendeten Kuerzels (`wiederverwendet`): die
+ *     Quelle liefert "AAC" nur noch fuer die laufende Reihe AAC~2; in die Datei des
+ *     erloschenen Traegers geschrieben, staenden zwei Unternehmen in einer Reihe.
+ *   - nicht ERLOSCHEN: der letzte Tagesbalken der Lebenszeit liegt hoechstens
+ *     ERLOSCHEN_TAGE vor dem STAND DER DATEI - gemessen am Stand der Datei, nicht an
+ *     "heute", damit eine alte Lebenszeit-Datei nicht die ganze Menge leerraeumt.
+ *     Gemessen am 07.09.2026: 8.055 laufende Reihen, davon 3.067 nicht erloschen; die
+ *     Zahl steht zwischen 3 und 14 Tagen still (3.043 bis 3.047), der Schnitt liegt also
+ *     nicht auf einer Flanke.
+ *
+ * Zurueck kommt das KUERZEL, wie die Quelle es kennt (ohne ~2) - die Zuordnung Kuerzel
+ * -> Reihe macht der Aufrufer ueber alpacaarchiv.reiheFuer. Ein erloschener Wert, der
+ * durchrutscht, kostet hoechstens LEER_MAX Runden: danach ruht er bis zum naechsten Tag. */
+var ERLOSCHEN_TAGE = 30;
+function gefuehrteReihen(lz, opt) {
+  opt = opt || {};
+  var werte = (lz && lz.werte) || {};
+  var stand = Date.parse((lz && lz.stand) || '');
+  if (!isFinite(stand)) stand = null;
+  var tage = opt.erloschenTage != null ? opt.erloschenTage : ERLOSCHEN_TAGE;
+  var grenze = stand != null ? stand - tage * 86400000 : null;
+  var satz = {};
+  Object.keys(werte).forEach(function (reihe) {
+    var l = werte[reihe];
+    if (!l || l.fehler || !l.jahre || !l.jahre.length) return;
+    if (l.wiederverwendet) return;
+    if (grenze != null && !(zahl(l.letzter) && l.letzter >= grenze)) return;
+    satz[reihe.replace(/~2$/, '')] = 1;
+  });
   return Object.keys(satz).sort();
 }
 
@@ -218,7 +259,11 @@ async function runde(o) {
   var t0 = jetzt();
   var erg = { gelaufen: false, grund: null, zeit: t0, werte: (o.werte || []).length, bloecke: 0, anfragen: 0, seiten: 0,
     kerzen: 0, dateien: 0, verworfen: { laufend: 0, alt: 0, form: 0, fremd: 0 }, drossel: false, fehler: null,
-    deckel: false, ende: null, bis: null, jeWert: {}, aktuell: 0, ruhend: 0, dauerMs: 0 };
+    deckel: false, ende: null, bis: null, jeWert: {}, aktuell: 0, ruhend: 0, dauerMs: 0,
+    /* Was diese Runde WIRKLICH auf die Platte geschrieben hat (Journal + Kopf-Spannen +
+     * Schwanz je Datei) und wie lange das dauerte - seit dem Anhang an Ort und Stelle
+     * ist das die Zahl, an der man den Umbau sieht. */
+    schreibBytes: 0, schreibMs: 0 };
   function fertig() { erg.dauerMs = jetzt() - t0; return erg; }
   if (!o.an) { erg.grund = 'ausgeschaltet'; return fertig(); }
   if (!o.schluessel) { erg.grund = 'kein Alpaca-Zugang in den App-Einstellungen'; return fertig(); }
@@ -267,6 +312,8 @@ async function runde(o) {
           var w = o.schreiben(sym, jahr, jeJahr[jahr]);
           if (w && w.ok) {
             if (w.geschrieben) { erg.dateien++; neu += w.neu || 0; }
+            if (zahl(w.geschriebenBytes)) erg.schreibBytes += w.geschriebenBytes;
+            if (zahl(w.ms)) erg.schreibMs += w.ms;
             if (zahl(w.letzterStempel)) letzter = w.letzterStempel;
           } else if (w && w.grund) {
             erg.fehler = (erg.fehler ? erg.fehler + ' | ' : '') + sym + ' ' + jahr + ': ' + w.grund;
@@ -297,6 +344,15 @@ function uhr(ms, zone) {
     return new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: zone || undefined });
   } catch (e) { return new Date(ms).toISOString().slice(11, 16); }
 }
+/** Bytes als Menge, wie ein Mensch sie liest: unter einem Megabyte in KB, darueber in
+ *  MB mit einer Nachkommastelle bis 10 MB. Komma, kein Punkt. */
+function menge(bytes) {
+  if (!zahl(bytes) || bytes <= 0) return '0 KB';
+  if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+  var mb = bytes / (1024 * 1024);
+  return (mb < 10 ? mb.toFixed(1) : String(Math.round(mb))).replace('.', ',') + ' MB';
+}
+function sekunden(ms) { return (zahl(ms) ? ms / 1000 : 0).toFixed(1).replace('.', ',') + ' s'; }
 function panelZeile(st) {
   st = st || {};
   if (!st.moeglich) return 'Alpaca live: aus — kein Alpaca-Zugang in den App-Einstellungen';
@@ -305,6 +361,9 @@ function panelZeile(st) {
   t += ' · letzte Runde ' + (zahl(st.letzteRunde) ? uhr(st.letzteRunde) : 'noch keine');
   t += ' · bis ' + (zahl(st.bis) ? uhr(st.bis, 'America/New_York') + ' ET' : '–');
   t += ' · Abrufe je Runde ' + (zahl(st.anfragen) ? st.anfragen : '–');
+  /* Nur wenn die Runde WIRKLICH geschrieben hat - eine Runde ohne neue Kerze soll
+   * nicht "geschrieben 0 KB" melden. */
+  if (zahl(st.schreibBytes) && st.schreibBytes > 0) t += ' · geschrieben ' + menge(st.schreibBytes) + ' in ' + sekunden(st.schreibMs);
   if (st.drossel) t += ' · Drossel (429)';
   else if (st.fehler) t += ' · Fehler: ' + st.fehler;
   else if (st.grund && !st.gelaufen) t += ' · ' + st.grund;
@@ -313,8 +372,9 @@ function panelZeile(st) {
 
 module.exports = {
   TAKT_MS: TAKT_MS, FERTIG_ABSTAND_MS: FERTIG_ABSTAND_MS, DECKEL_JE_RUNDE: DECKEL_JE_RUNDE, BLOCK: BLOCK, SEITE: SEITE, LEER_MAX: LEER_MAX,
-  REDUNDANZ_MAX: REDUNDANZ_MAX,
-  liveMenge: liveMenge, fertigGrenze: fertigGrenze, zustandUm: zustandUm, sitzungsfenster: sitzungsfenster,
+  REDUNDANZ_MAX: REDUNDANZ_MAX, ERLOSCHEN_TAGE: ERLOSCHEN_TAGE,
+  liveMenge: liveMenge, gefuehrteReihen: gefuehrteReihen, menge: menge,
+  fertigGrenze: fertigGrenze, zustandUm: zustandUm, sitzungsfenster: sitzungsfenster,
   startFuer: startFuer, abrufplan: abrufplan, urlFuer: urlFuer, sichten: sichten, nachJahren: nachJahren,
   runde: runde, panelZeile: panelZeile,
 };

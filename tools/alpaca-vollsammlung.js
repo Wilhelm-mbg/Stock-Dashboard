@@ -759,6 +759,13 @@ async function holen(opt) {
   var AB = symbolAbbildung(Object.keys(jeSymbol));
   if (AB.doppelt.length) throw new Error('Ordnernamen nicht eindeutig: ' + AB.doppelt.join(' | '));
   fs.mkdirSync(ROH, { recursive: true });
+  /* Ein Durchgang ueber liegende Reparaturjournale, bevor ein Byte geholt wird: eine
+   * Datei, die aus einem abgestuerzten Anhang zerrissen daliegt, wird erst auf den
+   * Stand VOR dem Anhang gebracht - sonst faende der Schwanzbefund nichts Brauchbares
+   * und die Reihe bekaeme einen falschen Stand. */
+  var jH = A.journaleReparieren(ROH);
+  if (jH.gefunden) sag('Reparaturjournale: ' + jH.gefunden + ' gefunden, ' + jH.repariert.length + ' zurueckgespielt, ' +
+    jH.unvollstaendig.length + ' unvollstaendig (Datei war unberuehrt)' + (jH.fehler.length ? ', FEHLER: ' + jH.fehler.join(' | ') : ''));
   /* ERGAENZEN, nicht ersetzen. Ein Lauf mit --symbole kennt nur seine Handvoll Werte;
    * schriebe er die Abbildung neu, waeren nach einem Teillauf 8.000 Zuordnungen weg -
    * und mit ihnen die einzige Stelle, an der "CON_7679a0" wieder zu CON wird. */
@@ -1093,6 +1100,10 @@ function pruefen(opt) {
   /* Das Manifest (06.09.2026): jede Datei ein Eintrag, jeder Eintrag eine Datei; Bytes
    * immer, Pruefsummen mit --hash. Ueber die GANZE Wurzel, unabhaengig von --ordner. */
   K.manifest = { roh: MF.manifestPruefen(ROH, { hash: !!opt.hash }), bereinigt: fs.existsSync(BEREINIGT) ? MF.manifestPruefen(BEREINIGT, { hash: !!opt.hash }) : { vorhanden: false } };
+  /* Liegende Reparaturjournale (07.09.2026): --pruefen REPARIERT nicht - es haelt keine
+   * Sperre und ist eine Auskunft. Es nennt sie als Befund; zurueckgespielt werden sie
+   * vom naechsten Schreiber (jahrSchreiben, --nachholen, das Holen der Vollsammlung). */
+  K.journale = { liegen: A.journaleFinden(ROH) };
   return K;
 }
 
@@ -1235,6 +1246,16 @@ async function nachholen(opt) {
    * erloschene erste bekommt von der Quelle nichts mehr, das ihr gehoert. */
   var reihen = Object.keys(LZ).filter(function (s) { var l = LZ[s]; return l && !l.fehler && l.jahre && l.jahre.length && !l.wiederverwendet; });
   if (opt.symbole) reihen = reihen.filter(function (s) { return opt.symbole.indexOf(s) >= 0 || opt.symbole.indexOf(s.replace(/~2$/, '')) >= 0; });
+  /* ERST DIE SPERRE, DANN DIE STEMPEL. Die Reihenfolge ist kein Geschmack: liegt ein
+   * Reparaturjournal (der Live-Sammler stuerzte mitten im Anhang ab), meldet der
+   * Schwanzbefund die Datei als zerrissen und die Reihe faellt als "ohne Datei" aus dem
+   * Lauf. Also: Sperre nehmen, Journale zurueckspielen, DANN die Stempel lesen. */
+  if (!(await sperreWarten(opt.warteMin))) return { fehler: 'Sperre blieb belegt', reihen: reihen.length, bloecke: 0 };
+  A.sperreSetzen(ROH, 'Nachlauf --nachholen, ' + reihen.length + ' Reihen');
+  try {
+  var jN = A.journaleReparieren(ROH);
+  if (jN.gefunden) sag('Reparaturjournale: ' + jN.gefunden + ' gefunden, ' + jN.repariert.length + ' zurueckgespielt, ' +
+    jN.unvollstaendig.length + ' unvollstaendig (Datei war unberuehrt)' + (jN.fehler.length ? ', FEHLER: ' + jN.fehler.join(' | ') : ''));
   var reiheVon = {}, stempel = {}, ohneDatei = 0;
   reihen.forEach(function (r) {
     var sym = r.replace(/~2$/, '');
@@ -1249,13 +1270,11 @@ async function nachholen(opt) {
   var plan = Live.abrufplan(werte, stempel, jetzt, { ende: ende, leere: F.nachholen.leere });
   sag('Nachlauf: ' + reihen.length + ' Reihen, ' + werte.length + ' mit Datei, ' + ohneDatei + ' ohne, ' + plan.aktuell + ' aktuell, ' +
     plan.ruhend.length + ' ruhend, ' + plan.bloecke.length + ' Bloecke bis ' + new Date(ende).toISOString());
-  if (!(await sperreWarten(opt.warteMin))) return { fehler: 'Sperre blieb belegt', bloecke: plan.bloecke.length };
-  A.sperreSetzen(ROH, 'Nachlauf --nachholen, ' + werte.length + ' Werte');
   var erg = { begonnen: new Date(jetzt).toISOString(), ende: ende, reihen: reihen.length, mitDatei: werte.length, ohneDatei: ohneDatei,
+    journale: { gefunden: jN.gefunden, repariert: jN.repariert.length, unvollstaendig: jN.unvollstaendig.length, fehler: jN.fehler },
     aktuell: plan.aktuell, ruhend: plan.ruhend.length, bloecke: plan.bloecke.length, anfragen: 0, kerzen: 0, dateien: 0,
     verworfen: { laufend: 0, alt: 0, form: 0, fremd: 0 }, fehler: [], beruehrt: [] };
   var beruehrt = {};
-  try {
     for (var bi = 0; bi < plan.bloecke.length; bi++) {
       var block = plan.bloecke[bi];
       var token = null, bars = {}, kaputt = null;
@@ -1321,6 +1340,18 @@ async function selbsttestNachholen() {
              OHNE: { balken: 0, jahre: [] } } }));
   M.atomarSchreiben(SYMBOLE, JSON.stringify({ stand: new Date().toISOString(), gruppe: { AAA: 'universum' }, ordner: { AAA: 'AAA' } }));
   A.jahrSchreiben(path.join(ROH, 'AAA'), 'AAA', 2026, [[t1, 1, 1, 1, 1, 1], [t2, 2, 1, 2, 1, 2]], tage, { herkunft: 'Selbsttest' });
+  /* Ein ABGEBROCHENER Anhang (Absturz mitten im Schwanz) laesst die Datei zerrissen und
+   * ein Journal daneben liegen - genau der Zustand, den der Nachlauf beim Start
+   * vorfindet, wenn die App mitten in einer Live-Runde gestorben ist. Ohne die
+   * Reparatur meldete der Schwanzbefund "zerrissen", die Reihe fiele als "ohne Datei"
+   * aus dem Lauf und es wuerde nichts gefragt - daran misst sich die Klinke. */
+  var pfadA = path.join(ROH, 'AAA', '2026.json');
+  var vorAbbruch = require('crypto').createHash('sha256').update(fs.readFileSync(pfadA)).digest('hex');
+  try {
+    A.jahrSchreiben(path.join(ROH, 'AAA'), 'AAA', 2026, [[M.nyNachUtc(2026, 9, 3, 16, 30), 77, 1, 77, 77, 77]], tage, { abbruchBei: 'im-schwanz' });
+  } catch (e) { /* der Abbruch ist gewollt */ }
+  var zerrissen = { journalLag: fs.existsSync(A.journalPfad(pfadA)), befund: A.schwanzBefund(pfadA).ok,
+    sha256Vorher: vorAbbruch };
   var gefragt = [];
   var kunstFetch = function (url) {
     gefragt.push({ start: Date.parse(decodeURIComponent(/start=([^&]+)/.exec(url)[1])), ende: Date.parse(decodeURIComponent(/end=([^&]+)/.exec(url)[1])), symbole: decodeURIComponent(/symbols=([^&]+)/.exec(url)[1]) });
@@ -1333,7 +1364,8 @@ async function selbsttestNachholen() {
   };
   var erg = await nachholen({ jetzt: jetzt, fetch: kunstFetch, warteMin: 0.01 });
   var h = KQ.huelleLesen(path.join(ROH, 'AAA', '2026.json'));
-  return { gefragt: gefragt, erg: { anfragen: erg.anfragen, kerzen: erg.kerzen, dateien: erg.dateien, ohneDatei: erg.ohneDatei, verworfen: erg.verworfen, fehler: erg.fehler, ende: erg.ende },
+  return { gefragt: gefragt, zerrissen: zerrissen, journale: erg.journale,
+    erg: { anfragen: erg.anfragen, kerzen: erg.kerzen, dateien: erg.dateien, ohneDatei: erg.ohneDatei, verworfen: erg.verworfen, fehler: erg.fehler, ende: erg.ende },
     stempelVorher: t2, kerzenDanach: h ? h.series.map(function (k) { return k[0]; }) : null, sitzungen: h ? h.sitzungen : null,
     sperreDanach: A.sperreLesen(ROH).aktiv, fortschritt: fortschrittLesen().nachholen ? Object.keys(fortschrittLesen().nachholen) : null };
 }

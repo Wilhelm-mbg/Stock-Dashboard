@@ -19578,7 +19578,7 @@ console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Ver
 
   /* --- 83.2 Die Live-Menge: Vereinigung ohne Doppelte --- */
   var menge = L.liveMenge({ universum: ['aapl', 'MSFT', 'NVDA'], watch: ['AAPL', 'brk.b'], positionen: ['tsla', 'MSFT'], viewer: 'msft' });
-  ok(menge.join(' ') === 'AAPL BRK.B MSFT NVDA TSLA', '83.2 top500 + Watchlist + Positionen + Viewer, ohne Doppelte, in Grossschreibung, sortiert', menge.join(' '));
+  ok(menge.join(' ') === 'AAPL BRK.B MSFT NVDA TSLA', '83.2 gefuehrte Reihen + Watchlist + Positionen + Viewer, ohne Doppelte, in Grossschreibung, sortiert', menge.join(' '));
   ok(L.liveMenge({ universum: ['AAPL', '', null, 'zu lang fuer ein kuerzel', 'A B'] }).join(' ') === 'AAPL', '83.2 was kein Kuerzel ist, faellt raus');
   ok(L.liveMenge({ viewer: 'amd' }).join(' ') === 'AMD', '83.2 der Viewer-Wert allein ist eine Menge');
   gegen83('ein naives Aneinanderhaengen zaehlte MSFT dreimal',
@@ -19760,8 +19760,14 @@ console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Ver
   var jahrHolen83 = vsL.slice(vsL.indexOf('async function jahrHolen('), vsL.indexOf('async function holen('));
   ok(jahrHolen83.length > 200 && !/KQ\.satz\(/.test(jahrHolen83) && !/\.sitzungen = /.test(jahrHolen83) && (ohneA.match(/h\.sitzungen = /g) || []).length === 1,
      '83.10 das Werkzeug baut fuer die Rohdatei keine Huelle mehr selbst - `sitzungen` haengt nur alpacaarchiv.js an', jahrHolen83.length + ' Zeichen');
-  ok(/\.tmp-anhang/.test(ohneA) && /fs\.copyFileSync\(pfad, tmp\)/.test(ohneA) && /fs\.renameSync\(tmp, pfad\)/.test(ohneA) && /schwanzBefund\(tmp\)/.test(ohneA),
-     '83.10 der Anhang schreibt in eine Temp-Kopie, liest sie gegen und benennt erst dann um (atomar)');
+  /* Seit dem 07.09.2026 schreibt der Anhang AN ORT UND STELLE (Abschnitt 85). Die
+   * Klinke zielt darum auf das neue Verhalten und ist schaerfer als die alte: kein
+   * Kopieren, kein Umbenennen im Anhang-Zweig, und das Journal steht VOR den Daten. */
+  var anhangTeil83 = ohneA.slice(ohneA.indexOf('var schwanzBuf = Buffer.from(schwanz'), ohneA.indexOf('module.exports'));
+  ok(anhangTeil83.length > 200 && !/copyFileSync|renameSync|tmp-anhang/.test(anhangTeil83) &&
+     anhangTeil83.indexOf('journalSchreiben(pfad') < anhangTeil83.indexOf("fs.openSync(pfad, 'r+')") &&
+     /fs\.fsyncSync\(fd\)/.test(anhangTeil83) && /schwanzBefund\(pfad, undefined, \{ ohneJournal: true \}\)/.test(anhangTeil83),
+     '83.10 der Anhang geht an Ort und Stelle: Journal (mit fsync) VOR dem ersten Datenbyte, kein Kopieren, kein Umbenennen', anhangTeil83.length + ' Zeichen');
   /* VERHALTEN in einem Wegwerf-Ordner: anhaengen == vollstaendig schreiben, nichts wird ueberschrieben. */
   var tmp83 = fs.mkdtempSync(pathM.join(osM.tmpdir(), 'kunst-livesammler-'));
   var ordner83 = pathM.join(tmp83, 'alpaca1m', 'AAA');
@@ -20005,6 +20011,16 @@ console.log('\n84) Nacharbeiten: Nachlauf ab dem letzten Stempel, Manifest, Luec
        '84.3 der Balken VOR dem Stempel kam nicht in die Datei, die zwei danach schon (2 + 2 = 4 Kerzen, in Zeitfolge)', JSON.stringify(oN.kerzenDanach));
     ok(oN.erg.verworfen.laufend === 1 && oN.erg.kerzen === 2 && oN.erg.dateien === 1, '84.3 der Balken hinter dem Ende faellt weg');
     ok(oN.sperreDanach === false && oN.fortschritt && oN.fortschritt.indexOf('letzter') >= 0, '84.3 Sperre wieder frei, der Fortschritt traegt den Lauf');
+    /* Seit dem 07.09.2026 faengt der Selbsttest mit einer ZERRISSENEN Datei an (ein
+     * abgebrochener Anhang, Journal daneben) - genau der Zustand nach einem Absturz
+     * der App mitten in einer Live-Runde. Ohne die Reparatur beim Start meldete der
+     * Schwanzbefund "zerrissen", die Reihe fiele als "ohne Datei" aus dem Lauf, und
+     * die zwei Zusicherungen oben (gefragt ab Stempel + 1 min, 4 Kerzen danach)
+     * waeren nicht zu erfuellen - sie sind die Gegenprobe dieser Klinke. */
+    ok(oN.zerrissen && oN.zerrissen.journalLag === true && oN.zerrissen.befund === false,
+       '84.3 der Selbsttest startet mit einer zerrissenen Datei und einem liegenden Journal', JSON.stringify(oN.zerrissen && { j: oN.zerrissen.journalLag, b: oN.zerrissen.befund }));
+    ok(oN.journale && oN.journale.gefunden === 1 && oN.journale.repariert === 1 && oN.journale.fehler.length === 0 && oN.erg.ohneDatei === 0,
+       '84.3 VERHALTEN: der Nachlauf spielt es beim Start zurueck - danach hat die Reihe wieder eine Datei', JSON.stringify(oN.journale));
   }
   fs.rmSync(tmpN, { recursive: true, force: true });
   gegen84('ein Abruf ab Jahresanfang laege vor dem Stempel - das Muster unterscheidet die beiden', oN ? oN.gefragt[0].start !== AA84.jahrGrenzen(2026).von : false);
@@ -20068,6 +20084,316 @@ console.log('\n84) Nacharbeiten: Nachlauf ab dem letzten Stempel, Manifest, Luec
   ok(!/ALPACA_KEY|ALPACA_SECRET/.test(nacharb84), '84.6 die Nacharbeiten brauchen keinen Zugang und lesen keinen');
 
   ok(g84 === rot84, '84.x alle Gegenproben dieses Abschnitts schlagen an', rot84 + ' von ' + g84);
+})();
+
+/* ================= 85) Anhang an Ort und Stelle mit Reparaturjournal (07.09.2026) ====
+ *
+ * Bis zum 06.09. schrieb der Anhang in eine KOPIE der Jahresdatei und benannte sie um.
+ * Sicher, und je Live-Runde so viel Schreiblast wie alle beruehrten Dateien zusammen
+ * wiegen (500 Werte: ~1,8 GB alle fuenf Minuten). Wilhelms Entscheid vom 06.09. -
+ * Live-Menge ALLE Werte - waere damit das Sechsfache auf einer Festplatte gewesen.
+ * Also: Anhang an Ort und Stelle, und die Absturzsicherung liegt in einem Journal.
+ *
+ * Was hier gemessen wird, ist nicht "der Code sieht anders aus", sondern:
+ *   (a) das Ergebnis ist BYTEIDENTISCH mit dem, was die alte Routine geschrieben haette
+ *       (die alte Routine steht als Pruef-Referenz hier im Test, nicht im Produktcode),
+ *   (b) ein Absturz an drei Stellen ist vollstaendig zuruecknehmbar - byteidentisch,
+ *   (c) die Schreibmenge ist um Groessenordnungen kleiner (zaehlende fs-Attrappe),
+ *   (d) ein LESER faellt bei zerrissener Datei zurueck und fasst sie nicht an,
+ *   (e) die Live-Menge kommt aus dem Archiv, nicht aus einer Namensliste. */
+console.log('\n85) Anhang an Ort und Stelle: Journal, Abbruch, Schreibmenge, Leser, Live-Menge');
+(function () {
+  var AA = require('./alpacaarchiv.js');
+  var L85 = require('./livesammler.js');
+  var pathM = require('path'), osM = require('os'), cryptoM = require('crypto');
+  var ohneA85 = ohneKommentare(fs.readFileSync('alpacaarchiv.js', 'utf8'));
+  var ohneL85 = ohneKommentare(fs.readFileSync('livesammler.js', 'utf8'));
+  var mainO85 = ohneKommentare(fs.readFileSync('main.js', 'utf8'));
+  var vs85 = ohneKommentare(fs.readFileSync('tools/alpaca-vollsammlung.js', 'utf8'));
+  var probe85 = fs.readFileSync('tools/ui-probe.js', 'utf8');
+  var g85 = 0, rot85 = 0;
+  function gegen85(was, ergebnis) { g85++; if (ergebnis) rot85++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function et85(j, m, d, h, mi) { return AA.nyNachUtc(j, m, d, h, mi); }
+  function sha(p) { return cryptoM.createHash('sha256').update(fs.readFileSync(p)).digest('hex'); }
+  /* `stand` ist eine Uhrzeit und darf zwischen zwei Laeufen abweichen - fuer den
+   * Vergleich zweier Wege wird sie unkenntlich gemacht, alles andere bleibt Byte. */
+  function ohneStand(p) { return fs.readFileSync(p, 'utf8').replace(/"stand":"[^"]{24}"/, '"stand":"@"'); }
+  function shaOhneStand(p) { return cryptoM.createHash('sha256').update(ohneStand(p)).digest('hex'); }
+  var kal85 = {};
+  ['2026-09-02', '2026-09-03', '2026-09-04', '2026-09-08', '2026-09-09'].forEach(function (t) { kal85[t] = { open: '09:30', close: '16:00' }; });
+  function k85(d, h, mi, c) { return [et85(2026, 9, d, h, mi), c, 100, c + 1, c - 1, c]; }
+  var tmp85 = fs.mkdtempSync(pathM.join(osM.tmpdir(), 'kunst-anhang-'));
+
+  /* DIE ALTE ROUTINE - Pruef-Referenz, wortgleich zum Stand vom 06.09.2026: Kopie in
+   * eine Temp-Datei, dort kuerzen, ganzen Kopfpuffer und Schwanz schreiben, umbenennen.
+   * Die Kopf-Rechnung kommt aus dem Modul (kopfNachfuehren), damit hier nicht eine
+   * zweite Wahrheit ueber den Kopf entsteht; verglichen wird der SCHREIBWEG. */
+  function kopierAnhang(pfad, jahr, kerzen, kal, stand) {
+    var b = AA.schwanzBefund(pfad, undefined, { ohneJournal: true });
+    var karte = {};
+    kerzen.forEach(function (k) { if (karte[k[0]] === undefined) karte[k[0]] = k; });
+    var reihe = Object.keys(karte).map(Number).sort(function (a, c) { return a - c; }).map(function (t) { return karte[t]; });
+    var neu = b.leer ? reihe : reihe.filter(function (k) { return k[0] > b.letzterStempel; });
+    var sitzNeu = AA.sitzungJeKerze(neu, kal);
+    var bereiche = AA.sitzungenAnhaengen(b.sitzungen, neu, sitzNeu);
+    var kopf = AA.kopfNachfuehren(pfad, b.groesse, neu[neu.length - 1][0], stand);
+    var schwanz = (b.leer ? '' : ',') + neu.map(function (k) { return JSON.stringify(k); }).join(',') +
+      '],"sitzungen":' + JSON.stringify(bereiche) + ',"jahr":' + jahr + '}';
+    var tmp = pfad + '.tmp-anhang';
+    fs.copyFileSync(pfad, tmp);
+    fs.truncateSync(tmp, b.schnitt);
+    var fd = fs.openSync(tmp, 'r+');
+    try {
+      fs.writeSync(fd, kopf.buf, 0, kopf.buf.length, 0);
+      fs.writeSync(fd, schwanz, b.schnitt, 'utf8');
+    } finally { fs.closeSync(fd); }
+    fs.renameSync(tmp, pfad);
+  }
+  /* Eine zaehlende fs-Attrappe: sie misst, wie viele Bytes WIRKLICH auf die Platte
+   * gehen - einschliesslich copyFileSync, das ohne diesen Umweg unsichtbar bliebe. */
+  function zaehlerAn() {
+    var z = { bytes: 0, rufe: 0 };
+    var w = fs.writeSync, wf = fs.writeFileSync, cf = fs.copyFileSync, af = fs.appendFileSync;
+    fs.writeSync = function (fd, daten, a, b, c) {
+      z.rufe++;
+      if (typeof daten === 'string') z.bytes += Buffer.byteLength(daten, 'utf8');
+      else z.bytes += (typeof b === 'number' ? b : daten.length);
+      return w.apply(fs, arguments);
+    };
+    fs.writeFileSync = function (p, d) { z.rufe++; z.bytes += (typeof d === 'string' ? Buffer.byteLength(d, 'utf8') : d.length); return wf.apply(fs, arguments); };
+    fs.copyFileSync = function (q) { z.rufe++; try { z.bytes += fs.statSync(q).size; } catch (e) { /* dann zaehlt der Ruf allein */ } return cf.apply(fs, arguments); };
+    fs.appendFileSync = function (p, d) { z.rufe++; z.bytes += (typeof d === 'string' ? Buffer.byteLength(d, 'utf8') : d.length); return af.apply(fs, arguments); };
+    z.aus = function () { fs.writeSync = w; fs.writeFileSync = wf; fs.copyFileSync = cf; fs.appendFileSync = af; return z.bytes; };
+    return z;
+  }
+
+  /* --- 85.1 Der Ablauf: Journal vor den Daten, weg nach dem Erfolg, Ergebnis bytegleich --- */
+  var ordA = pathM.join(tmp85, 'A', 'AAA'), ordB = pathM.join(tmp85, 'B', 'AAA');
+  var basis85 = [k85(3, 9, 28, 10), k85(3, 9, 30, 11), k85(3, 16, 5, 12)];
+  var wNeu = AA.jahrSchreiben(ordA, 'AAA', 2026, basis85, kal85, { herkunft: 'Probe' });
+  var pfadA = pathM.join(ordA, '2026.json');
+  fs.mkdirSync(ordB, { recursive: true });
+  var pfadB = pathM.join(ordB, '2026.json');
+  fs.copyFileSync(pfadA, pfadB);                 /* beide Wege starten byteidentisch */
+  ok(wNeu.ok && wNeu.art === 'neu' && wNeu.geschriebenBytes === fs.statSync(pfadA).size && typeof wNeu.ms === 'number',
+     '85.1 eine NEUE Datei entsteht wie bisher atomar; geschriebenBytes ist ihre Groesse, ms steht dabei', JSON.stringify([wNeu.geschriebenBytes, typeof wNeu.ms]));
+  ok(!fs.existsSync(AA.journalPfad(pfadA)), '85.1 nach einem erfolgreichen Schreiben liegt kein Journal');
+  var anhang85 = [k85(3, 16, 6, 13), k85(4, 4, 0, 14)];
+  var wAn = AA.jahrSchreiben(ordA, 'AAA', 2026, anhang85, kal85);
+  ok(wAn.ok && wAn.art === 'anhang' && wAn.neu === 2 && !fs.existsSync(AA.journalPfad(pfadA)),
+     '85.1 nach dem Anhang ist das Journal wieder weg', JSON.stringify([wAn.neu, wAn.geschriebenBytes]));
+  ok(wAn.geschriebenBytes > 0 && wAn.geschriebenBytes < wAn.bytes * 3 && typeof wAn.ms === 'number',
+     '85.1 der Anhang meldet geschriebenBytes (Journal + Kopf-Spannen + Schwanz) und ms', JSON.stringify([wAn.geschriebenBytes, wAn.bytes]));
+  var standA = JSON.parse(fs.readFileSync(pfadA, 'utf8')).stand;
+  kopierAnhang(pfadB, 2026, anhang85, kal85, standA);
+  ok(sha(pfadA) === sha(pfadB), '85.1 BYTEIDENTISCH: der Anhang an Ort und Stelle schreibt dieselbe Datei wie die alte Kopier-Routine (SHA-256)',
+     sha(pfadA).slice(0, 12) + ' / ' + sha(pfadB).slice(0, 12));
+  gegen85('eine geaenderte Kerze gaebe eine andere Pruefsumme - der Vergleich ist nicht blind',
+          (function () { var p = pfadB + '.probe'; fs.writeFileSync(p, fs.readFileSync(pfadB, 'utf8').replace('],"sitzungen"', ',[1,2,3,4,5,6]],"sitzungen"')); var anders = sha(p) !== sha(pfadA); fs.unlinkSync(p); return anders; })());
+
+  /* Das Journal liegt VOR dem ersten Datenbyte - gemessen am Abbruch-Haken. */
+  var ordC = pathM.join(tmp85, 'C', 'AAA');
+  AA.jahrSchreiben(ordC, 'AAA', 2026, basis85, kal85, { herkunft: 'Probe' });
+  var pfadC = pathM.join(ordC, '2026.json');
+  var shaC0 = sha(pfadC), groesseC0 = fs.statSync(pfadC).size;
+  var warfC = false;
+  try { AA.jahrSchreiben(ordC, 'AAA', 2026, anhang85, kal85, { abbruchBei: 'nach-journal' }); } catch (e) { warfC = /nach-journal/.test(String(e && e.message)); }
+  ok(warfC && fs.existsSync(AA.journalPfad(pfadC)) && sha(pfadC) === shaC0,
+     '85.1 nach dem Journal, vor dem ersten Datenbyte: das Journal liegt, die Datei ist noch unberuehrt');
+  var jC = AA.journalLesen(AA.journalPfad(pfadC));
+  ok(jC.ok && jC.kopf.laenge === groesseC0 && jC.stuecke.length === 3 && jC.stuecke[jC.stuecke.length - 1].pos === jC.kopf.schnitt,
+     '85.1 das Journal traegt alte Laenge, Schnitt und drei Stuecke: zwei Kopf-Spannen und den alten Schwanz', JSON.stringify([jC.kopf.laenge, jC.kopf.schnitt, jC.stuecke.length]));
+  ok(jC.stuecke[jC.stuecke.length - 1].bytes.toString('utf8').indexOf('],"sitzungen":') === 0,
+     '85.1 und das dritte Stueck sind genau die alten Bytes ab dem Schnitt');
+
+  /* --- 85.2 Abbruch an drei Stellen: die Reparatur stellt den Zustand VORHER her --- */
+  ['nach-journal', 'im-schwanz', 'vor-journal-loeschen'].forEach(function (stelle, i) {
+    var ord = pathM.join(tmp85, 'D' + i, 'AAA');
+    AA.jahrSchreiben(ord, 'AAA', 2026, basis85, kal85, { herkunft: 'Probe' });
+    var p = pathM.join(ord, '2026.json');
+    var vorher = sha(p);
+    var warf = false;
+    try { AA.jahrSchreiben(ord, 'AAA', 2026, anhang85, kal85, { abbruchBei: stelle }); } catch (e) { warf = true; }
+    ok(warf && fs.existsSync(AA.journalPfad(p)), '85.2 [' + stelle + '] der Abbruch laesst ein Journal liegen');
+    var leser = AA.schwanzBefund(p);
+    ok(!leser.ok && leser.journal === true && /Reparaturjournal/.test(leser.grund),
+       '85.2 [' + stelle + '] ein LESER sieht die Datei als moeglicherweise zerrissen und meldet ok:false', leser.grund);
+    var rep = AA.journalReparieren(p);
+    ok(rep.ok && rep.repariert && sha(p) === vorher,
+       '85.2 [' + stelle + '] die Reparatur stellt den Zustand VOR dem Anhang BYTEIDENTISCH her (SHA-256)');
+    ok(!fs.existsSync(AA.journalPfad(p)), '85.2 [' + stelle + '] und raeumt das Journal weg');
+    /* Der naechste Anhang gelingt und ist bytegleich mit einem ungestoerten Anhang. */
+    var w = AA.jahrSchreiben(ord, 'AAA', 2026, anhang85, kal85);
+    ok(w.ok && w.neu === 2 && shaOhneStand(p) === shaOhneStand(pfadA),
+       '85.2 [' + stelle + '] der naechste Anhang gelingt und ist bytegleich mit einem ungestoerten (bis auf stand)');
+  });
+  /* Gegenprobe: OHNE Journal bliebe die zerrissene Datei zerrissen. */
+  var ordE = pathM.join(tmp85, 'E', 'AAA');
+  AA.jahrSchreiben(ordE, 'AAA', 2026, basis85, kal85, { herkunft: 'Probe' });
+  var pfadE = pathM.join(ordE, '2026.json');
+  var shaE0 = sha(pfadE), vorE = AA.schwanzBefund(pfadE);
+  try { AA.jahrSchreiben(ordE, 'AAA', 2026, anhang85, kal85, { abbruchBei: 'im-schwanz' }); } catch (e) { /* gewollt */ }
+  fs.unlinkSync(AA.journalPfad(pfadE));          /* das Journal wegnehmen - mehr nicht */
+  var ohneJ = AA.schwanzBefund(pfadE);
+  /* Der halb geschriebene Schwanz laesst die Datei nicht kaputt aussehen - GEMESSEN:
+   * sie ist gueltiges JSON, sie liefert einen Stempel (den NEUEN, den es nicht gibt),
+   * und die Sitzungsbereiche sind still verstuemmelt (eine Grenze verlor eine Ziffer,
+   * 'regulaer' wurde zu 'nach'). Genau deshalb reicht "die Datei sieht heil aus" als
+   * Absturzsicherung nicht - es braucht die alten Bytes. */
+  gegen85('ohne Journal ist der Zustand nicht wiederherstellbar - und die zerrissene Datei laege da wie eine heile: gueltiges JSON, ein Stempel, verstuemmelte Sitzungsbereiche',
+          sha(pfadE) !== shaE0 && ohneJ.ok && JSON.stringify(ohneJ.sitzungen) !== JSON.stringify(vorE.sitzungen));
+
+  /* --- 85.3 Schreibmenge: eine 4-MB-Datei, ein Anhang - gezaehlt, nicht behauptet --- */
+  var ordF = pathM.join(tmp85, 'F', 'AAA');
+  var kalF = {}, vieleF = [];
+  var t0F = et85(2026, 1, 2, 0, 0);
+  for (var iF = 0; iF < 145000; iF++) vieleF.push([t0F + iF * 60000, 10, 100, 11, 9, 10]);
+  for (var dF = 0; dF < 110; dF++) kalF[AA.etTag(t0F + dF * 86400000)] = { open: '09:30', close: '16:00' };
+  AA.jahrSchreiben(ordF, 'AAA', 2026, vieleF, kalF, { herkunft: 'Probe' });
+  var pfadF = pathM.join(ordF, '2026.json');
+  var groesseF = fs.statSync(pfadF).size;
+  var neuF = [];
+  for (var jF = 1; jF <= 5; jF++) neuF.push([t0F + (145000 + jF) * 60000, 10, 100, 11, 9, 10]);
+  var zF = zaehlerAn();
+  var wF = AA.jahrSchreiben(ordF, 'AAA', 2026, neuF, kalF);
+  var gezaehltF = zF.aus();
+  ok(groesseF > 4 * 1024 * 1024 && wF.ok && wF.neu === 5, '85.3 die Probedatei wiegt ' + (groesseF / 1048576).toFixed(1) + ' MB, fuenf Kerzen kommen dazu');
+  ok(gezaehltF <= wF.geschriebenBytes + 8 * 1024,
+     '85.3 der Anhang schreibt hoechstens (Journal + Kopf-Spannen + Schwanz) + 8 KB', gezaehltF + ' gezaehlt, ' + wF.geschriebenBytes + ' gemeldet');
+  ok(gezaehltF < groesseF / 20, '85.3 und damit weniger als ein Zwanzigstel der Datei', (gezaehltF / 1024).toFixed(0) + ' KB gegen ' + (groesseF / 1048576).toFixed(1) + ' MB');
+  var pfadG = pathM.join(tmp85, 'G', 'AAA', '2026.json');
+  fs.mkdirSync(pathM.dirname(pfadG), { recursive: true });
+  fs.copyFileSync(pfadF, pfadG);
+  var neuG = [[t0F + 145010 * 60000, 10, 100, 11, 9, 10]];
+  var zG = zaehlerAn();
+  kopierAnhang(pfadG, 2026, neuG, kalF, new Date().toISOString());
+  var gezaehltG = zG.aus();
+  gegen85('die alte Kopier-Routine liegt um Groessenordnungen darueber (' + (gezaehltG / 1048576).toFixed(1) + ' MB gegen ' + (gezaehltF / 1024).toFixed(0) + ' KB)',
+          gezaehltG > groesseF && gezaehltG > gezaehltF * 50);
+
+  /* --- 85.4 Der Leser repariert nicht: er meldet, faellt zurueck und fasst nichts an --- */
+  var rohH = pathM.join(tmp85, 'H', 'alpaca1m');
+  var ordH = pathM.join(rohH, 'AAA');
+  AA.jahrSchreiben(ordH, 'AAA', 2026, basis85, kal85, { herkunft: 'Probe' });
+  var pfadH = pathM.join(ordH, '2026.json');
+  try { AA.jahrSchreiben(ordH, 'AAA', 2026, anhang85, kal85, { abbruchBei: 'im-schwanz' }); } catch (e) { /* gewollt */ }
+  var mtimeH = fs.statSync(pfadH).mtimeMs, groesseH = fs.statSync(pfadH).size;
+  var stempelH = AA.letzterStempel(pfadH);
+  var reiheH = AA.letzterStempelReihe(rohH, 'AAA', 2026);
+  ok(stempelH === null && reiheH === null, '85.4 der Leser bekommt keinen Stempel - weder aus der Datei noch aus der Reihe', JSON.stringify([stempelH, reiheH]));
+  ok(fs.statSync(pfadH).mtimeMs === mtimeH && fs.statSync(pfadH).size === groesseH && fs.existsSync(AA.journalPfad(pfadH)),
+     '85.4 und er hat die Datei nicht angefasst - kein Reparieren ohne Sperre');
+  ok(AA.journaleFinden(rohH).join(',') === 'AAA/2026.json.journal', '85.4 journaleFinden nennt das liegende Journal als Befund', AA.journaleFinden(rohH).join(','));
+  ok(/K\.journale = \{ liegen: A\.journaleFinden\(ROH\) \}/.test(vs85), '85.4 --pruefen listet liegende Journale als Befund und repariert nichts (es haelt keine Sperre)');
+  var pruefTeil85 = vs85.slice(vs85.indexOf('function pruefen('), vs85.indexOf('function gegenYahoo('));
+  ok(pruefTeil85.length > 200 && !/journaleReparieren|journalReparieren/.test(pruefTeil85), '85.4 und in --pruefen steht kein Reparieren', pruefTeil85.length + ' Zeichen');
+  var helferV = mainO85.slice(mainO85.indexOf('function alpacaVerdichtet('), mainO85.indexOf("ipcMain.handle('archiv-kerzen'"));
+  ok(helferV.indexOf('if (alpacaBis == null) return null;') > 0 &&
+     helferV.indexOf('if (alpacaBis == null) return null;') < helferV.indexOf('schwanzLesen(datei'),
+     '85.4 der Viewer-Zweig steigt aus, BEVOR er die Datei liest - er faellt auf das App-Archiv zurueck');
+  var jH2 = AA.journaleReparieren(rohH);
+  ok(jH2.gefunden === 1 && jH2.repariert.length === 1 && AA.schwanzBefund(pfadH).ok,
+     '85.4 der Durchgang journaleReparieren(roh) raeumt es weg - dann liest sich die Datei wieder', JSON.stringify(jH2.repariert));
+  ok(/var jH = A\.journaleReparieren\(ROH\);/.test(vs85) && /var jN = A\.journaleReparieren\(ROH\);/.test(vs85),
+     '85.4 das Holen der Vollsammlung und der Nachlauf machen diesen Durchgang beim Start');
+  var nachTeil85 = vs85.slice(vs85.indexOf('async function nachholen('), vs85.indexOf('async function selbsttestNachholen('));
+  ok(nachTeil85.indexOf('A.sperreSetzen(ROH') < nachTeil85.indexOf('A.journaleReparieren(ROH)') &&
+     nachTeil85.indexOf('A.journaleReparieren(ROH)') < nachTeil85.indexOf('A.letzterStempelReihe(ROH, r, jahr)'),
+     '85.4 im Nachlauf in dieser Reihenfolge: Sperre, Reparatur, DANN die Stempel lesen - sonst fiele die Reihe als "ohne Datei" aus dem Lauf');
+  /* Ein unvollstaendiges Journal (es fiel VOR dem ersten Datenbyte) faellt weg, ohne
+   * dass an der Datei etwas geschieht - sonst haenge jeder weitere Anhang daran. */
+  var ordI = pathM.join(tmp85, 'I', 'AAA');
+  AA.jahrSchreiben(ordI, 'AAA', 2026, basis85, kal85, { herkunft: 'Probe' });
+  var pfadI = pathM.join(ordI, '2026.json');
+  var shaI0 = sha(pfadI);
+  fs.writeFileSync(AA.journalPfad(pfadI), '{"v":1,"laenge":9,"schnitt":1,"stuecke":[{"pos":0,"len":99}],"nutzlast":99,"sha256":"x"}\nzu kurz');
+  var repI = AA.journalReparieren(pfadI);
+  ok(repI.ok && !repI.repariert && repI.unvollstaendig && sha(pfadI) === shaI0 && !fs.existsSync(AA.journalPfad(pfadI)),
+     '85.4 ein unvollstaendiges Journal wird erkannt, weggeraeumt - und die Datei bleibt, wie sie ist', repI.grund);
+  gegen85('haette die Reparatur das unvollstaendige Journal ANGEWENDET, waere die Datei auf 9 Bytes gekuerzt worden', 9 < shaI0.length && fs.statSync(pfadI).size > 9);
+
+  /* --- 85.5 Die Live-Menge kommt aus dem Archiv, nicht aus einer Namensliste --- */
+  var lzP = { stand: '2026-09-03T20:00:00.000Z', werte: {
+    AAPL: { balken: 9, jahre: [2025, 2026], letzter: Date.parse('2026-09-03T20:00:00.000Z') },
+    ALT: { balken: 9, jahre: [2024], letzter: Date.parse('2024-05-01T20:00:00.000Z') },
+    KAPUTT: { fehler: 'keine Antwort', jahre: [] },
+    OHNE: { balken: 0, jahre: [] },
+    AAC: { balken: 9, jahre: [2019], letzter: Date.parse('2019-05-01T20:00:00.000Z'), wiederverwendet: { schnitt: 1 } },
+    'AAC~2': { balken: 9, jahre: [2026], letzter: Date.parse('2026-09-02T20:00:00.000Z') },
+  } };
+  var gef = L85.gefuehrteReihen(lzP);
+  ok(gef.join(' ') === 'AAC AAPL', '85.5 gefuehrt sind nur die laufenden Reihen - und das Kuerzel steht ohne ~2 da, so wie die Quelle es kennt', gef.join(' '));
+  ok(L85.gefuehrteReihen({ werte: lzP.werte }).indexOf('ALT') >= 0,
+     '85.5 ohne Stand in der Datei wird nichts als erloschen verworfen - eine fehlende Angabe raeumt die Menge nicht leer');
+  ok(L85.gefuehrteReihen({ stand: lzP.stand, werte: lzP.werte }, { erloschenTage: 3000 }).indexOf('ALT') >= 0 && L85.ERLOSCHEN_TAGE === 30,
+     '85.5 die Grenze ist ein Wert des Moduls (30 Tage), keine feste Zahl im Ablauf');
+  ok(L85.gefuehrteReihen({ stand: null, werte: {} }).length === 0 && L85.gefuehrteReihen(null).length === 0,
+     '85.5 ohne Lebenszeit-Datei ist die Menge leer - dann sammelt die App nur Watchlist, Positionen und den Viewer-Wert');
+  var liveTeil85 = mainO85.slice(mainO85.indexOf('function liveMengeJetzt()'), mainO85.indexOf('async function liveKalender('));
+  ok(/Live\.gefuehrteReihen\(AlpacaArchiv\.lebenszeitDatei\(liveRohOrdner\(\)\)\)/.test(liveTeil85) && !/listeBauen/.test(liveTeil85),
+     '85.5 liveMengeJetzt liest die Lebenszeit-Datei des Archivs - keine Namensliste mehr');
+  var liveBereich85 = mainO85.slice(mainO85.indexOf('const LIVE = {'), mainO85.indexOf("ipcMain.on('live-menge'"));
+  ok(!/top500|listeBauen|\b500\b/.test(liveBereich85), '85.5 im ganzen Live-Sammler-Block steht weder top500 noch die Zahl 500');
+  ok(!/top500/.test(ohneL85), '85.5 und livesammler.js kennt das Wort nicht mehr');
+  gegen85('das Muster faende top500, wenn es dort staende', /top500|listeBauen|\b500\b/.test("const u = Kerzen.listeBauen('top500');"));
+  var werte85 = [], stempel85 = {}, jetzt85 = et85(2026, 9, 8, 10, 0);
+  for (var v85 = 0; v85 < 3232; v85++) { werte85.push('W' + v85); stempel85['W' + v85] = et85(2026, 9, 8, 9, 0); }
+  var plan85 = L85.abrufplan(werte85, stempel85, jetzt85, {});
+  ok(plan85.bloecke.length >= 17 && plan85.bloecke.length === Math.ceil(3232 / L85.BLOCK) && plan85.anfragenMindestens <= L85.DECKEL_JE_RUNDE,
+     '85.5 3.232 gleich weite Werte werden ' + plan85.bloecke.length + ' Bloecke - mindestens 17, und weit unter dem Deckel von ' + L85.DECKEL_JE_RUNDE);
+  ok(plan85.bloecke.every(function (b) { return b.symbole.length <= L85.BLOCK; }) && plan85.ruhend.length === 0,
+     '85.5 kein Block ist groesser als ' + L85.BLOCK + ' Kuerzel');
+  var leere85 = { tag: null, je: {} };
+  L85.abrufplan(werte85, stempel85, jetzt85, { leere: leere85 });
+  werte85.slice(0, 1000).forEach(function (s) { leere85.je[s] = L85.LEER_MAX; });
+  var planR85 = L85.abrufplan(werte85, stempel85, jetzt85, { leere: leere85 });
+  ok(planR85.ruhend.length === 1000 && planR85.bloecke.length === Math.ceil(2232 / L85.BLOCK),
+     '85.5 tausend erloschene Werte ruhen nach ' + L85.LEER_MAX + ' leeren Runden und kosten keinen eigenen Block mehr', planR85.bloecke.length + ' Bloecke');
+
+  /* --- 85.6 Die Schreibmenge steht in Runde, Fortschritt, Protokoll und Panel-Zeile --- */
+  ok(L85.menge(0) === '0 KB' && L85.menge(512 * 1024) === '512 KB' && L85.menge(12 * 1048576) === '12 MB' && L85.menge(1572864) === '1,5 MB',
+     '85.6 Mengen lesen sich wie Mengen: KB unter einem MB, darueber MB mit Komma', [L85.menge(512 * 1024), L85.menge(1572864), L85.menge(12 * 1048576)].join(' '));
+  var st86 = { moeglich: true, an: true, werte: 3232, letzteRunde: jetzt85, bis: jetzt85 - 18 * 60000, anfragen: 17,
+    schreibBytes: 12 * 1048576, schreibMs: 800 };
+  var zeile86 = L85.panelZeile(st86);
+  ok(/· geschrieben 12 MB in 0,8 s/.test(zeile86) && /3232 Werte/.test(zeile86), '85.6 die Panel-Zeile nennt die geschriebene Menge und die Zeit', zeile86);
+  ok(L85.panelZeile(Object.assign({}, st86, { schreibBytes: 0 })).indexOf('geschrieben') === -1,
+     '85.6 eine Runde ohne neue Kerze meldet NICHT "geschrieben 0 KB"');
+  gegen85('eine andere Menge gaebe eine andere Zeile', L85.panelZeile(Object.assign({}, st86, { schreibBytes: 13 * 1048576 })) !== zeile86);
+  ok(/if \(zahl\(w\.geschriebenBytes\)\) erg\.schreibBytes \+= w\.geschriebenBytes;/.test(ohneL85) && /schreibBytes: 0, schreibMs: 0/.test(ohneL85),
+     '85.6 die Runde summiert die Schreibmenge aus den Schreibbefunden, nicht aus einer Schaetzung');
+  ok(/schreibBytes: r\.schreibBytes, schreibMs: r\.schreibMs/.test(mainO85) && /schreibBytes: l\.schreibBytes \|\| 0/.test(mainO85),
+     '85.6 _fortschritt.json (live.runde) und der Stand tragen sie mit');
+  ok(/geschrieben ' \+ Live\.menge\(r\.schreibBytes\) \+ ' in ' \+ Math\.round\(r\.schreibMs\)/.test(mainO85),
+     '85.6 und die Protokollzeile je Live-Runde nennt sie');
+  ok(/schreibBytes/.test(probe85) && /geschrieben 12 MB/.test(probe85), '85.6 die Oberflaechen-Probe misst die neue Zeile mit');
+  /* VERHALTEN: eine Runde mit Attrappen summiert, was die Schreibroutine meldet. */
+  var geschrieben86 = [];
+  var r86 = null;
+  probe((async function () {
+    r86 = await L85.runde({
+      werte: ['AAA', 'BBB'], jetzt: function () { return et85(2026, 9, 8, 10, 0); }, an: true, schluessel: true,
+      sperre: { lesen: function () { return { aktiv: false }; }, setzen: function () {}, loesen: function () {} },
+      stempel: function () { return et85(2026, 9, 8, 9, 40); },
+      fetch: async function () {
+        return { status: 200, body: JSON.stringify({ bars: {
+          AAA: [{ t: new Date(et85(2026, 9, 8, 9, 41)).toISOString(), o: 1, h: 1, l: 1, c: 1, v: 1 }],
+          BBB: [{ t: new Date(et85(2026, 9, 8, 9, 42)).toISOString(), o: 1, h: 1, l: 1, c: 1, v: 1 }] } }) };
+      },
+      schreiben: function (sym, j, kerzen) {
+        geschrieben86.push(sym);
+        return { ok: true, geschrieben: true, neu: kerzen.length, letzterStempel: kerzen[kerzen.length - 1][0], geschriebenBytes: 40960, ms: 7 };
+      },
+      leere: { tag: null, je: {} },
+    });
+    ok(r86.gelaufen && r86.schreibBytes === 81920 && r86.schreibMs === 14 && geschrieben86.length === 2,
+       '85.6 VERHALTEN: zwei Dateien zu je 40 KB ergeben 80 KB und 14 ms in der Runde', JSON.stringify([r86.schreibBytes, r86.schreibMs]));
+    ok(L85.panelZeile({ moeglich: true, an: true, werte: 2, anfragen: r86.anfragen, schreibBytes: r86.schreibBytes, schreibMs: r86.schreibMs }).indexOf('geschrieben 80 KB in 0,0 s') > 0,
+       '85.6 und genau diese Zahlen stehen in der Zeile');
+  })());
+
+  ok(g85 === rot85, '85.x alle Gegenproben dieses Abschnitts schlagen an (synchron)', rot85 + ' von ' + g85);
+  fs.rmSync(tmp85, { recursive: true, force: true });
 })();
 
 Promise.all(offeneProben).then(function () {

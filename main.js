@@ -1539,8 +1539,10 @@ async function sammlerNachsehen(grundZeile) {
  * Wilhelm, 04.09.2026: "geht das nicht live?" Waehrend der US-Sitzung (Vor- und
  * Nachboerse mit) holt die App alle fuenf Minuten die FERTIGEN 1m-Balken (SIP,
  * adjustment=raw, gemessen 15 min Verzug + 1 min Sicherheit) fuer die Live-Menge -
- * Universum top500, Watchlist, Werte mit offener Position, der Wert im Viewer - und
- * haengt sie an die Jahresdateien unter alpaca1m/ an. Schreibroutine und Sperre
+ * ALLE Reihen, die das Archiv heute noch fuehrt (Wilhelms Entscheid vom 06.09.2026,
+ * seit dem Anhang an Ort und Stelle bezahlbar), dazu Watchlist, Werte mit offener
+ * Position, der Wert im Viewer - und haengt sie an die Jahresdateien unter alpaca1m/
+ * an. Schreibroutine und Sperre
  * sind die des Vollsammlungs-Werkzeugs (alpacaarchiv.js); der naechtliche Nachlauf
  * teilt sich beides. Wer die Sperre hat, schreibt, der andere wartet.
  *
@@ -1583,9 +1585,15 @@ function ohneGeheimnis(text) {
   return t;
 }
 function liveRohOrdner() { return AlpacaArchiv.rohOrdner(); }
+/* Die Live-Menge kommt aus dem ARCHIV, nicht aus einer Namensliste: die Lebenszeit-
+ * Datei des Alpaca-Archivs sagt, welche Reihen es heute noch fuehrt (livesammler.js
+ * gefuehrteReihen: kein Fehler, Jahre vorhanden, nicht die erloschene Erstbelegung
+ * eines wiederverwendeten Kuerzels, letzter Tagesbalken nicht laenger als 30 Tage vor
+ * dem Stand der Datei). Fehlt die Datei, bleiben Watchlist, Positionen und der Wert im
+ * Viewer - die App sammelt dann weniger, aber nie das Falsche. */
 function liveMengeJetzt() {
-  const u = Kerzen.listeBauen('top500');
-  return Live.liveMenge({ universum: u.symbole, watch: LIVE.menge.watch,
+  const gefuehrt = Live.gefuehrteReihen(AlpacaArchiv.lebenszeitDatei(liveRohOrdner()));
+  return Live.liveMenge({ universum: gefuehrt, watch: LIVE.menge.watch,
                           positionen: LIVE.menge.positionen, viewer: LIVE.menge.viewer });
 }
 /* Der Kalender der Quelle (_kalender.json der Vollsammlung) - er sagt, welche
@@ -1619,6 +1627,7 @@ function liveStand() {
     letzteRunde: LIVE.letzteRunde, bis: LIVE.bis,
     anfragen: l.gelaufen ? l.anfragen : (l.anfragen || null),
     bloecke: l.bloecke || 0, kerzen: l.kerzen || 0, dateien: l.dateien || 0,
+    schreibBytes: l.schreibBytes || 0, schreibMs: l.schreibMs || 0,
     verworfen: l.verworfen || null,
     drossel: !!l.drossel, fehler: l.fehler || null, grund: l.grund || null, gelaufen: !!l.gelaufen,
     zeit: l.zeit || null, dauerMs: l.dauerMs || null,
@@ -1673,6 +1682,7 @@ async function liveRunde(grundZeile) {
         F.live.stand = new Date().toISOString();
         F.live.runde = { zeit: r.zeit, grund: r.grund ? ohneGeheimnis(r.grund) : null, werte: r.werte, bloecke: r.bloecke,
           anfragen: r.anfragen, seiten: r.seiten, kerzen: r.kerzen, dateien: r.dateien, verworfen: r.verworfen,
+          schreibBytes: r.schreibBytes, schreibMs: r.schreibMs,
           drossel: r.drossel, fehler: r.fehler ? ohneGeheimnis(r.fehler) : null, ende: r.ende, bis: r.bis, deckel: r.deckel };
         Object.keys(r.jeWert).forEach((sym) => {
           F.live.werte[sym] = { stempel: r.jeWert[sym].stempel, runde: r.zeit, leer: r.jeWert[sym].leer };
@@ -1680,6 +1690,7 @@ async function liveRunde(grundZeile) {
         AlpacaArchiv.fortschrittSchreiben(roh, F);
         AlpacaArchiv.protokoll(roh, 'Live-Runde (' + (grundZeile || 'planmaessig') + '): ' + r.werte + ' Werte, ' + r.bloecke + ' Bloecke, ' +
           r.anfragen + ' Anfragen, ' + r.kerzen + ' Kerzen in ' + r.dateien + ' Dateien' +
+          (r.schreibBytes ? ', geschrieben ' + Live.menge(r.schreibBytes) + ' in ' + Math.round(r.schreibMs) + ' ms' : '') +
           (r.bis ? ', bis ' + new Date(r.bis).toISOString() : '') +
           (r.fehler ? ', ' + ohneGeheimnis(r.fehler) : '') + (r.grund ? ', ' + ohneGeheimnis(r.grund) : ''));
       },
