@@ -5,6 +5,10 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 06.09.2026 Release v8.43.0 (Wache): Aktien-Viewer fragt Zeitraum und Kerzenlänge
+  getrennt und lässt sich mit der Maus zoomen und blättern; dazu ein
+  Einstellungen-Dialog nach TradingView-Muster und Zeichenwerkzeuge im Kerzenchart
+  (Linien, Rechtecke, Fibonacci, Messwerkzeug, Magnet), je Wert gespeichert.
 - 05.09.2026 Release v8.42.0 (Wache): Laufband mit Schlagzeilen läuft im Reiter Markt
   wieder (samt Glocke zur US-Börsenöffnung/-schließung), Schein-Finder fragt jetzt in
   Auswahllisten statt in neun freien Zahlenfeldern.
