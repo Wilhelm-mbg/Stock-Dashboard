@@ -124,7 +124,9 @@ function abrufplan(werte, stempelJe, jetzt, opt) {
   opt = opt || {};
   var block = opt.block || BLOCK;
   var redundanzMax = opt.redundanzMax != null ? opt.redundanzMax : REDUNDANZ_MAX;
-  var ende = fertigGrenze(jetzt);
+  /* opt.ende: der Nachlauf (tools/alpaca-vollsammlung.js --nachholen) fragt nicht bis
+   * zur fertig-Grenze, sondern bis zum letzten abgeschlossenen Handelstag. */
+  var ende = opt.ende != null ? opt.ende : fertigGrenze(jetzt);
   var leere = opt.leere || { tag: null, je: {} };
   var heute = A.etTag(jetzt);
   if (leere.tag !== heute) { leere.tag = heute; leere.je = {}; }

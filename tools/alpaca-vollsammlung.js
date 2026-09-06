@@ -1090,6 +1090,9 @@ function pruefen(opt) {
       if (!kal[t]) K.placebo.feiertageGeprueft++;
     }
   });
+  /* Das Manifest (06.09.2026): jede Datei ein Eintrag, jeder Eintrag eine Datei; Bytes
+   * immer, Pruefsummen mit --hash. Ueber die GANZE Wurzel, unabhaengig von --ordner. */
+  K.manifest = { roh: MF.manifestPruefen(ROH, { hash: !!opt.hash }), bereinigt: fs.existsSync(BEREINIGT) ? MF.manifestPruefen(BEREINIGT, { hash: !!opt.hash }) : { vorhanden: false } };
   return K;
 }
 
@@ -1136,6 +1139,203 @@ function gegenYahoo(sym, opt) {
     aus.vergleiche[iv] = e;
   });
   return aus;
+}
+
+/* ================= (11b) Manifest, Lueckenliste, Zusammenfassung (06.09.2026) =================
+ * Ein Durchlauf ueber alle Dateien (tools/alpaca-manifest.js): Pruefsummen beider
+ * Wurzeln, je Wert die Luecke gegen Kalender x Lebenszeit, die Minuten-Lebenszeit in
+ * _lebenszeit.json, die Zahlen fuers Wiki. Kein Netz. Mit --nur-bereinigt --ausgabe
+ * <pfad> dient derselbe Durchlauf als Sicherungsliste vor einem Schreibschritt. */
+var MF = require('./alpaca-manifest.js');
+function metaLesen() {
+  var kal = {}, LZ = null, ordnerZuSym = {}, gruppe = {};
+  try { kal = JSON.parse(fs.readFileSync(KALENDER, 'utf8')).tage || {}; } catch (e) { kal = {}; }
+  try { LZ = JSON.parse(fs.readFileSync(LEBENSZEIT, 'utf8')); } catch (e) { LZ = null; }
+  try { var sm = JSON.parse(fs.readFileSync(SYMBOLE, 'utf8')); gruppe = sm.gruppe || {}; Object.keys(sm.ordner || {}).forEach(function (s) { ordnerZuSym[sm.ordner[s]] = s; }); } catch (e) { /* ohne Abbildung gilt Ordner = Kuerzel */ }
+  return { kal: kal, LZ: LZ, werte: (LZ && LZ.werte) || {}, ordnerZuSym: ordnerZuSym, gruppe: gruppe };
+}
+function manifestLauf(opt) {
+  opt = opt || {};
+  var meta = metaLesen();
+  var gemeinsam = { kal: meta.kal, lebenszeit: meta.werte, ordnerZuSym: meta.ordnerZuSym, nur: opt.nur, sag: sag };
+  var aus = {};
+  if (opt.nurBereinigt) {
+    var b0 = MF.manifestSchreiben(BEREINIGT, Object.assign({ ausgabe: opt.ausgabe }, gemeinsam));
+    delete b0.jeDatei;
+    return { bereinigt: b0 };
+  }
+  sag('Manifest alpaca1m/ ...');
+  var r = MF.manifestSchreiben(ROH, Object.assign({ ausgabe: opt.ausgabe }, gemeinsam));
+  aus.roh = { pfad: r.pfad, dateien: r.dateien, kerzen: r.kerzen, bytes: r.bytes };
+  if (!opt.nur && !opt.ausgabe) {
+    var lk = MF.lueckenRechnen(r.jeDatei, meta.kal, meta.werte, meta.gruppe);
+    M.atomarSchreiben(path.join(ROH, '_luecken.json'), JSON.stringify({ stand: new Date().toISOString(), zusammenfassung: lk.zusammenfassung, werte: lk.werte }));
+    aus.luecken = lk.zusammenfassung;
+    /* Die Minuten-Lebenszeit kommt in die Lebenszeit-Datei DAZU - nichts wird geloescht. */
+    if (meta.LZ && meta.LZ.werte) {
+      Object.keys(lk.minuten).forEach(function (s) { if (meta.LZ.werte[s]) Object.assign(meta.LZ.werte[s], lk.minuten[s]); });
+      meta.LZ.minutenStand = new Date().toISOString();
+      M.atomarSchreiben(LEBENSZEIT, JSON.stringify(meta.LZ));
+      aus.lebenszeitErgaenzt = Object.keys(lk.minuten).length;
+    }
+    var zs = MF.zusammenfassung(r.jeDatei, meta.werte, meta.gruppe, fortschrittLesen());
+    M.atomarSchreiben(path.join(ROH, '_zusammenfassung.json'), JSON.stringify(zs, null, 1));
+    aus.zusammenfassung = zs;
+    if (fs.existsSync(BEREINIGT)) {
+      sag('Manifest alpaca1m-bereinigt/ ...');
+      var b = MF.manifestSchreiben(BEREINIGT, gemeinsam);
+      aus.bereinigt = { pfad: b.pfad, dateien: b.dateien, kerzen: b.kerzen, bytes: b.bytes };
+    }
+  }
+  return aus;
+}
+
+/* ================= (14) Der taegliche Nachlauf statt Vollauf (06.09.2026) =================
+ * Der Neustart vom 04.09. holte 3.461 Symbol-Jahre (2,3 h) noch einmal, weil das laufende
+ * Jahr nie als fertig gilt. Der Nachlauf fragt je Wert nur AB DEM LETZTEN STEMPEL der
+ * Jahresdatei (Schwanz lesen, kein Zerlegen) bis zum letzten abgeschlossenen Handelstag -
+ * Sammelabrufe wie der Live-Sammler (livesammler.js: Plan, Sichten), Schreiben mit der
+ * gemeinsamen Routine, Sperre geteilt mit der App. Ein Abbruch verliert nichts: jeder
+ * Anhang verschiebt den Stempel, der naechste Lauf macht dort weiter. */
+var Live = require('../livesammler.js');
+/** Bis wann der Nachlauf fragt. NIE den laufenden Handelstag vor Schluss + 30 Minuten:
+ *  davor endet die Frage bei Mitternacht ET (also gestern 20:00, dem Ende der
+ *  Nachboerse); danach bei jetzt minus 30 Minuten (SIP-Sperre und Nachkorrektur),
+ *  hoechstens 20:30 ET. Ohne Kalendereintrag (Wochenende, Feiertag) gilt dasselbe. */
+function nachholEnde(jetzt, kal) {
+  var heute = etTag(jetzt);
+  var p = heute.split('-').map(Number);
+  var mitternacht = M.nyNachUtc(p[0], p[1], p[2], 0, 0);
+  var e = kal && kal[heute];
+  if (e && e.close) {
+    var c = e.close.split(':').map(Number);
+    if (jetzt < M.nyNachUtc(p[0], p[1], p[2], c[0], c[1]) + 30 * 60000) return mitternacht - 1;
+  }
+  return Math.min(jetzt - SIP_ABSTAND_MS, M.nyNachUtc(p[0], p[1], p[2], 20, 30));
+}
+async function sperreWarten(maxMin) {
+  var t0 = Date.now();
+  for (;;) {
+    var sp = A.sperreLesen(ROH);
+    if (!sp.aktiv) return true;
+    if ((Date.now() - t0) / 60000 > (maxMin || 60)) return false;
+    sag('Sperre liegt (' + (sp.was || '?') + ') - warte ...');
+    await pause(30000);
+  }
+}
+async function nachholen(opt) {
+  opt = opt || {};
+  var meta = metaLesen();
+  var jetzt = opt.jetzt || Date.now();
+  var jahr = Number(etTag(jetzt).slice(0, 4));
+  var kal = await kalenderHolen(AB_JAHR, jahr, opt.fetch);
+  var ende = nachholEnde(jetzt, kal);
+  var LZ = meta.werte;
+  /* Ein wiederverwendetes Kuerzel: nur die laufende Reihe (~2) wird gefragt; die
+   * erloschene erste bekommt von der Quelle nichts mehr, das ihr gehoert. */
+  var reihen = Object.keys(LZ).filter(function (s) { var l = LZ[s]; return l && !l.fehler && l.jahre && l.jahre.length && !l.wiederverwendet; });
+  if (opt.symbole) reihen = reihen.filter(function (s) { return opt.symbole.indexOf(s) >= 0 || opt.symbole.indexOf(s.replace(/~2$/, '')) >= 0; });
+  var reiheVon = {}, stempel = {}, ohneDatei = 0;
+  reihen.forEach(function (r) {
+    var sym = r.replace(/~2$/, '');
+    reiheVon[sym] = r;
+    var t = A.letzterStempelReihe(ROH, r, jahr);
+    if (t == null) { ohneDatei++; return; }
+    stempel[sym] = t;
+  });
+  var werte = Object.keys(stempel);
+  var F = fortschrittLesen();
+  F.nachholen = F.nachholen || { leere: { tag: null, je: {} }, laeufe: [] };
+  var plan = Live.abrufplan(werte, stempel, jetzt, { ende: ende, leere: F.nachholen.leere });
+  sag('Nachlauf: ' + reihen.length + ' Reihen, ' + werte.length + ' mit Datei, ' + ohneDatei + ' ohne, ' + plan.aktuell + ' aktuell, ' +
+    plan.ruhend.length + ' ruhend, ' + plan.bloecke.length + ' Bloecke bis ' + new Date(ende).toISOString());
+  if (!(await sperreWarten(opt.warteMin))) return { fehler: 'Sperre blieb belegt', bloecke: plan.bloecke.length };
+  A.sperreSetzen(ROH, 'Nachlauf --nachholen, ' + werte.length + ' Werte');
+  var erg = { begonnen: new Date(jetzt).toISOString(), ende: ende, reihen: reihen.length, mitDatei: werte.length, ohneDatei: ohneDatei,
+    aktuell: plan.aktuell, ruhend: plan.ruhend.length, bloecke: plan.bloecke.length, anfragen: 0, kerzen: 0, dateien: 0,
+    verworfen: { laufend: 0, alt: 0, form: 0, fremd: 0 }, fehler: [], beruehrt: [] };
+  var beruehrt = {};
+  try {
+    for (var bi = 0; bi < plan.bloecke.length; bi++) {
+      var block = plan.bloecke[bi];
+      var token = null, bars = {}, kaputt = null;
+      do {
+        var r = await hole(Live.urlFuer(block, token), opt.fetch);
+        erg.anfragen++;
+        if (r.status !== 200 || !r.daten) { kaputt = 'HTTP ' + r.status; break; }
+        Object.keys(r.daten.bars || {}).forEach(function (s) { bars[s] = (bars[s] || []).concat(r.daten.bars[s] || []); });
+        token = r.daten.next_page_token || null;
+      } while (token);
+      if (kaputt) { erg.fehler.push('Block ' + bi + ' (' + block.symbole.length + ' Werte): ' + kaputt); continue; }
+      var g = Live.sichten(bars, block, plan.startJe);
+      Object.keys(g.verworfen).forEach(function (k) { erg.verworfen[k] += g.verworfen[k]; });
+      block.symbole.forEach(function (sym) {
+        var reihe = reiheVon[sym];
+        var jeJahr = Live.nachJahren(g.je[sym] || []);
+        var neu = 0;
+        Object.keys(jeJahr).map(Number).sort().forEach(function (j) {
+          var ordner = path.join(ROH, A.ordnerFuer(ROH, reihe));
+          var w = A.jahrSchreiben(ordner, reihe, j, jeJahr[j], kal, { herkunft: 'Nachlauf' });
+          if (!w.ok) { erg.fehler.push(reihe + ' ' + j + ': ' + w.grund); return; }
+          if (w.geschrieben) { erg.dateien++; neu += w.neu; beruehrt[path.basename(ordner) + '/' + j + '.json'] = 1; }
+        });
+        erg.kerzen += neu;
+        plan.leere.je[sym] = neu > 0 ? 0 : (plan.leere.je[sym] || 0) + 1;
+      });
+      if ((bi + 1) % 25 === 0 || bi + 1 === plan.bloecke.length) {
+        F.nachholen.leere = plan.leere;
+        fortschrittSchreiben(F);
+        sag('  ' + (bi + 1) + '/' + plan.bloecke.length + ' Bloecke, ' + erg.anfragen + ' Anfragen, ' + erg.kerzen.toLocaleString('de-DE') + ' Kerzen in ' + erg.dateien + ' Dateien');
+      }
+    }
+    erg.beruehrt = Object.keys(beruehrt);
+    /* Das Manifest der beruehrten Dateien nachfuehren - wenn es eines gibt. */
+    if (fs.existsSync(path.join(ROH, '_manifest.json'))) {
+      erg.manifest = MF.manifestNachfuehren(ROH, erg.beruehrt, { kal: kal, ordnerZuSym: meta.ordnerZuSym });
+    }
+    erg.beendet = new Date().toISOString();
+    F.nachholen.leere = plan.leere;
+    F.nachholen.letzter = Object.assign({}, erg, { beruehrt: erg.beruehrt.length, fehler: erg.fehler.slice(0, 50) });
+    F.nachholen.laeufe = (F.nachholen.laeufe || []).concat([{ begonnen: erg.begonnen, beendet: erg.beendet, anfragen: erg.anfragen, kerzen: erg.kerzen, dateien: erg.dateien, fehler: erg.fehler.length }]).slice(-60);
+    fortschrittSchreiben(F);
+    protokoll('Nachlauf: ' + erg.bloecke + ' Bloecke, ' + erg.anfragen + ' Anfragen, ' + erg.kerzen + ' Kerzen in ' + erg.dateien + ' Dateien bis ' + new Date(ende).toISOString() + ', ' + erg.fehler.length + ' Fehler');
+  } finally { A.sperreLoesen(ROH); }
+  erg.beruehrt = erg.beruehrt.length;
+  return erg;
+}
+
+/** Selbsttest des Nachlaufs in einem Wegwerf-Ordner (MD_ALPACA_WURZEL), Quelle erfunden:
+ *  eine Reihe mit zwei Kerzen liegt da; die Kunst-Quelle liefert einen Balken VOR dem
+ *  letzten Stempel und zwei danach. Gemessen wird, ab wann gefragt wurde und was danach
+ *  in der Datei steht. Aufgerufen von test-v6.js im Kindprozess. */
+async function selbsttestNachholen() {
+  if (!/kunst|tmp|temp/i.test(WURZEL)) throw new Error('Selbsttest verweigert: MD_ALPACA_WURZEL zeigt nicht auf einen Wegwerf-Ordner (' + WURZEL + ')');
+  fs.mkdirSync(ROH, { recursive: true });
+  var jetzt = M.nyNachUtc(2026, 9, 8, 18, 0);   /* Dienstag 18:00 ET: Schluss + 30 min ist vorbei */
+  var tage = {};
+  ['2026-09-03', '2026-09-04', '2026-09-08'].forEach(function (t) { tage[t] = { open: '09:30', close: '16:00' }; });
+  M.atomarSchreiben(KALENDER, JSON.stringify({ geholt: new Date().toISOString(), von: AB_JAHR + '-01-01', bis: '2026-12-31', tage: tage }));
+  var t1 = M.nyNachUtc(2026, 9, 3, 15, 58), t2 = M.nyNachUtc(2026, 9, 3, 15, 59);
+  M.atomarSchreiben(LEBENSZEIT, JSON.stringify({ stand: new Date().toISOString(), bisJahr: 2026,
+    werte: { AAA: { balken: 2, jahre: [2026], erster: M.nyNachUtc(2026, 9, 3, 9, 30), letzter: M.nyNachUtc(2026, 9, 8, 16, 0) },
+             OHNE: { balken: 0, jahre: [] } } }));
+  M.atomarSchreiben(SYMBOLE, JSON.stringify({ stand: new Date().toISOString(), gruppe: { AAA: 'universum' }, ordner: { AAA: 'AAA' } }));
+  A.jahrSchreiben(path.join(ROH, 'AAA'), 'AAA', 2026, [[t1, 1, 1, 1, 1, 1], [t2, 2, 1, 2, 1, 2]], tage, { herkunft: 'Selbsttest' });
+  var gefragt = [];
+  var kunstFetch = function (url) {
+    gefragt.push({ start: Date.parse(decodeURIComponent(/start=([^&]+)/.exec(url)[1])), ende: Date.parse(decodeURIComponent(/end=([^&]+)/.exec(url)[1])), symbole: decodeURIComponent(/symbols=([^&]+)/.exec(url)[1]) });
+    var bars = { AAA: [
+      { t: new Date(M.nyNachUtc(2026, 9, 3, 15, 30)).toISOString(), o: 9, h: 9, l: 9, c: 9, v: 9 },    /* vor dem Stempel: darf nicht geschrieben werden */
+      { t: new Date(M.nyNachUtc(2026, 9, 4, 9, 30)).toISOString(), o: 3, h: 3, l: 3, c: 3, v: 3 },
+      { t: new Date(M.nyNachUtc(2026, 9, 8, 15, 0)).toISOString(), o: 4, h: 4, l: 4, c: 4, v: 4 },
+      { t: new Date(M.nyNachUtc(2026, 9, 8, 17, 45)).toISOString(), o: 5, h: 5, l: 5, c: 5, v: 5 } ] };  /* hinter dem Ende (jetzt-30): faellt */
+    return Promise.resolve({ status: 200, text: function () { return Promise.resolve(JSON.stringify({ bars: bars, next_page_token: null })); }, headers: { get: function () { return null; } } });
+  };
+  var erg = await nachholen({ jetzt: jetzt, fetch: kunstFetch, warteMin: 0.01 });
+  var h = KQ.huelleLesen(path.join(ROH, 'AAA', '2026.json'));
+  return { gefragt: gefragt, erg: { anfragen: erg.anfragen, kerzen: erg.kerzen, dateien: erg.dateien, ohneDatei: erg.ohneDatei, verworfen: erg.verworfen, fehler: erg.fehler, ende: erg.ende },
+    stempelVorher: t2, kerzenDanach: h ? h.series.map(function (k) { return k[0]; }) : null, sitzungen: h ? h.sitzungen : null,
+    sperreDanach: A.sperreLesen(ROH).aktiv, fortschritt: fortschrittLesen().nachholen ? Object.keys(fortschrittLesen().nachholen) : null };
 }
 
 /* ================= (12) Selbsttest der reinen Bausteine (ohne Netz) ================= */
@@ -1362,6 +1562,27 @@ async function selbsttestSchreiben() {
 /* ================= (13) Einsprung ================= */
 function arg(name, std) { var i = process.argv.indexOf(name); return i >= 0 && process.argv[i + 1] != null ? process.argv[i + 1] : std; }
 function hat(name) { return process.argv.indexOf(name) >= 0; }
+/** Eine Liste hinter einem Schalter - durch Komma ODER Leerzeichen getrennt, bis zum
+ *  naechsten Schalter. cmd.exe zerlegt "--symbole A,B,C" am Komma in drei Argumente
+ *  (Komma-Falle, wiki/fehlerformen.md): ein Werkzeug, das nur das erste nimmt, laeuft
+ *  ueber einen von fuenf Werten und sieht aus wie einer ueber alle. */
+function liste(name) {
+  var i = process.argv.indexOf(name);
+  if (i < 0) return null;
+  var aus = [];
+  for (var k = i + 1; k < process.argv.length && !/^--/.test(process.argv[k]); k++) {
+    process.argv[k].split(',').forEach(function (s) { s = s.trim(); if (s) aus.push(s); });
+  }
+  return aus.length ? aus : null;
+}
+/** Laut werden, wenn ein verlangter Wert nicht vorkommt - still uebergangen saehe der
+ *  Lauf aus wie einer ueber alles. */
+function unbekannteMelden(verlangt, bekannt, was) {
+  if (!verlangt) return [];
+  var fehlt = verlangt.filter(function (s) { return bekannt.indexOf(s) === -1; });
+  if (fehlt.length) sag('ACHTUNG: ' + fehlt.length + ' von ' + verlangt.length + ' verlangten ' + was + ' gibt es hier nicht: ' + fehlt.join(' '));
+  return fehlt;
+}
 
 /* Die zehn Werte des Testlaufs. Fest verdrahtet, damit der Lauf wiederholbar ist:
  * MNST (Split 2:1 im Fenster), SPGI (Abspaltung), ARM (der Wert, an dem die Balken-Probe
@@ -1373,6 +1594,7 @@ var TESTWERTE = ['MNST', 'SPGI', 'ARM', 'BRK.B', 'AAPL', 'MU', 'ORCL', 'CON', 'H
 async function main() {
   if (hat('--kontrolle')) { var k = kontrolle(); process.exit(k.gefallen ? 1 : 0); }
   if (hat('--selbsttest-schreiben')) { sag(JSON.stringify(await selbsttestSchreiben())); return; }
+  if (hat('--selbsttest-nachholen')) { sag(JSON.stringify(await selbsttestNachholen())); return; }
 
   if (hat('--zaehlen')) {
     var z = zaehlen({ balkenJeTag: Number(arg('--balken-je-tag', 0)) || undefined });
@@ -1380,14 +1602,22 @@ async function main() {
     return;
   }
   if (hat('--ableiten')) {
-    var a = ableitenLauf({ ordner: arg('--ordner', null) ? arg('--ordner', '').split(',') : null });
+    var ordA = liste('--ordner');
+    if (ordA) unbekannteMelden(ordA, fs.existsSync(ROH) ? fs.readdirSync(ROH) : [], 'Ordnern');
+    var a = ableitenLauf({ ordner: ordA });
     sag(JSON.stringify(a, null, 1));
     return;
   }
+  if (hat('--manifest')) {
+    sag(JSON.stringify(manifestLauf({ nurBereinigt: hat('--nur-bereinigt'), ausgabe: arg('--ausgabe', null), nur: liste('--nur') }), null, 1));
+    return;
+  }
   if (hat('--pruefen')) {
-    var p = pruefen({ ordner: arg('--ordner', null) ? arg('--ordner', '').split(',') : null });
+    var ordP = liste('--ordner');
+    if (ordP) unbekannteMelden(ordP, fs.existsSync(ROH) ? fs.readdirSync(ROH) : [], 'Ordnern');
+    var p = pruefen({ ordner: ordP, hash: hat('--hash') });
     sag(JSON.stringify(p, null, 1));
-    (arg('--gegen-yahoo', '') ? arg('--gegen-yahoo', '').split(',') : []).forEach(function (s) {
+    (liste('--gegen-yahoo') || []).forEach(function (s) {
       sag(JSON.stringify(gegenYahoo(s), null, 1));
     });
     return;
@@ -1466,9 +1696,16 @@ async function main() {
     sag(JSON.stringify(erg, null, 1));
     return;
   }
-  if (hat('--lebenszeit')) { sag(JSON.stringify(await lebenszeit({ universum: U, bisJahr: bisJahr, symbole: arg('--symbole', null) ? arg('--symbole', '').split(',') : null }), null, 1).slice(0, 4000)); return; }
-  if (hat('--massnahmen')) { sag(JSON.stringify(await massnahmen({ universum: U, bisJahr: bisJahr, symbole: arg('--symbole', null) ? arg('--symbole', '').split(',') : null }), null, 1)); return; }
-  if (hat('--holen')) { sag(JSON.stringify(await holen({ universum: U, bisJahr: bisJahr, nurJahr: Number(arg('--jahr', 0)) || null, symbole: arg('--symbole', null) ? arg('--symbole', '').split(',') : null }), null, 1)); return; }
+  var symL = liste('--symbole');
+  if (symL) {
+    var bekannt = [];
+    try { bekannt = Object.keys(JSON.parse(fs.readFileSync(LEBENSZEIT, 'utf8')).werte || {}); } catch (e) { bekannt = (U.alle || []).map(function (w) { return w.sym; }); }
+    unbekannteMelden(symL, bekannt, 'Werten');
+  }
+  if (hat('--nachholen')) { sag(JSON.stringify(await nachholen({ symbole: symL }), null, 1)); return; }
+  if (hat('--lebenszeit')) { sag(JSON.stringify(await lebenszeit({ universum: U, bisJahr: bisJahr, symbole: symL }), null, 1).slice(0, 4000)); return; }
+  if (hat('--massnahmen')) { sag(JSON.stringify(await massnahmen({ universum: U, bisJahr: bisJahr, symbole: symL }), null, 1)); return; }
+  if (hat('--holen')) { sag(JSON.stringify(await holen({ universum: U, bisJahr: bisJahr, nurJahr: Number(arg('--jahr', 0)) || null, symbole: symL }), null, 1)); return; }
 
   sag('Kein Modus gewaehlt. Siehe Kopf der Datei.');
 }
@@ -1481,6 +1718,7 @@ module.exports = {
   auf5m: auf5m, median: median, tagesmedian: tagesmedian, nurQuelle: nurQuelle, ringAufgaben: ringAufgaben,
   universumLesen: universumLesen, ankerFuer: ankerFuer, zaehlen: zaehlen, pruefen: pruefen, gegenYahoo: gegenYahoo,
   ableitenLauf: ableitenLauf, kontrolle: kontrolle, selbsttestSchreiben: selbsttestSchreiben,
+  nachholEnde: nachholEnde, nachholen: nachholen, manifestLauf: manifestLauf, liste: liste,
   stichprobeZiehen: stichprobeZiehen, saatZufall: saatZufall, lebenszeit: lebenszeit, massnahmen: massnahmen, holen: holen,
   ROH: ROH, BEREINIGT: BEREINIGT, MASSNAHMEN: MASSNAHMEN, FORTSCHRITT: FORTSCHRITT, LEBENSZEIT: LEBENSZEIT,
   AB_JAHR: AB_JAHR, RATE_JE_MIN: RATE_JE_MIN, TESTWERTE: TESTWERTE, LUECKE_TAGE: LUECKE_TAGE,

@@ -19934,6 +19934,142 @@ console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Ver
   void runde83; void VS83;
 })();
 
+/* ================= 84) Nacharbeiten zur Vollsammlung (06.09.2026) ====================
+ * Der taegliche Nachlauf statt eines Vollaufs (der Neustart vom 04.09. holte 3.461
+ * Symbol-Jahre noch einmal), das Manifest mit Pruefsummen, die Lueckenliste je Wert
+ * und die Komma-Falle der Wrapper. Alles ohne Netz; der Nachlauf laeuft im Kindprozess
+ * gegen eine erfundene Quelle in einem Wegwerf-Ordner. */
+console.log('\n84) Nacharbeiten: Nachlauf ab dem letzten Stempel, Manifest, Lueckenliste, Komma-Falle');
+(function () {
+  var VS84 = require('./tools/alpaca-vollsammlung.js');
+  var MF84 = require('./tools/alpaca-manifest.js');
+  var AA84 = require('./alpacaarchiv.js');
+  var vs84 = ohneKommentare(fs.readFileSync('tools/alpaca-vollsammlung.js', 'utf8'));
+  /* Die rem-Zeilen der Wrapper fallen weg, bevor gesucht wird - ein Kommentar, der die
+   * alte Falle BESCHREIBT, darf die Klinke nicht rot machen (Sperrklinke frisst ihren
+   * Kommentar, wiki/fehlerformen.md). */
+  function ohneRem(t) { return String(t).replace(/^\s*rem\b.*$/gmi, ''); }
+  var nacht84 = ohneRem(fs.readFileSync('tools/vollsammlung-nacht.cmd', 'utf8'));
+  var nachhol84 = ohneRem(fs.readFileSync('tools/vollsammlung-nachholen.cmd', 'utf8'));
+  var nacharb84 = ohneRem(fs.readFileSync('tools/vollsammlung-nacharbeiten.cmd', 'utf8'));
+  var pathM = require('path'), osM = require('os'), cryptoM = require('crypto');
+  var g84 = 0, rot84 = 0;
+  function gegen84(was, ergebnis) { g84++; if (ergebnis) rot84++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function et84(j, m, d, h, mi) { return AA84.nyNachUtc(j, m, d, h, mi); }
+
+  /* --- 84.1 Bis wann der Nachlauf fragt: nie den laufenden Tag vor Schluss + 30 min --- */
+  var kal84 = { '2026-09-08': { open: '09:30', close: '16:00' }, '2026-11-27': { open: '09:30', close: '13:00' } };
+  ok(VS84.nachholEnde(et84(2026, 9, 8, 15, 0), kal84) === et84(2026, 9, 8, 0, 0) - 1, '84.1 um 15:00 ET endet die Frage bei Mitternacht ET - der laufende Tag wird vor Schluss + 30 min nicht gefragt');
+  ok(VS84.nachholEnde(et84(2026, 9, 8, 16, 20), kal84) === et84(2026, 9, 8, 0, 0) - 1, '84.1 um 16:20 ebenso (Schluss + 30 min ist 16:30)');
+  ok(VS84.nachholEnde(et84(2026, 9, 8, 17, 0), kal84) === et84(2026, 9, 8, 16, 30), '84.1 um 17:00 ET bis jetzt minus 30 Minuten');
+  ok(VS84.nachholEnde(et84(2026, 9, 8, 23, 0), kal84) === et84(2026, 9, 8, 20, 30), '84.1 spaet abends hoechstens bis 20:30 ET (Nachboerse zu)');
+  ok(VS84.nachholEnde(et84(2026, 11, 27, 13, 40), kal84) === et84(2026, 11, 27, 13, 10), '84.1 Halbtag: Schluss 13:00 + 30 min ist vorbei, also bis jetzt minus 30');
+  ok(VS84.nachholEnde(et84(2026, 9, 12, 12, 0), kal84) === et84(2026, 9, 12, 11, 30), '84.1 Samstag: kein Schluss, also bis jetzt minus 30 (Freitags Nachboerse ist damit drin)');
+  gegen84('ohne die Regel fragte 15:00 ET bis jetzt minus 30 in den laufenden Tag hinein', et84(2026, 9, 8, 14, 30) > et84(2026, 9, 8, 0, 0) - 1);
+
+  /* --- 84.2 Die Komma-Falle: Listen durch Komma UND Leerzeichen, laut bei Unbekanntem --- */
+  var argvAlt = process.argv;
+  process.argv = ['node', 'x', '--symbole', 'A,B', 'C', '--ordner', 'D'];
+  var lA = VS84.liste('--symbole'), lB = VS84.liste('--ordner'), lC = VS84.liste('--nix');
+  process.argv = argvAlt;
+  ok(lA.join(' ') === 'A B C' && lB.join(' ') === 'D' && lC === null, '84.2 Listen durch Komma und Leerzeichen, bis zum naechsten Schalter', lA.join(' ') + ' | ' + lB.join(' '));
+  ok(!/%2 %3 %4 %5/.test(nacht84) && /:sammeln/.test(nacht84) && /--%MODUS%%REST%/.test(nacht84), '84.2 vollsammlung-nacht.cmd sammelt alle Argumente ein - der Deckel %2 %3 %4 %5 ist weg');
+  ok(/function unbekannteMelden/.test(vs84) && /ACHTUNG: /.test(vs84) && (vs84.match(/unbekannteMelden\(/g) || []).length >= 4, '84.2 ein verlangter Wert, den es nicht gibt, wird laut gemeldet');
+  ok(!/arg\('--symbole'/.test(vs84) && !/arg\('--ordner'/.test(vs84) && !/arg\('--gegen-yahoo'/.test(vs84), '84.2 kein Listen-Schalter liest mehr nur das erste Argument');
+  gegen84('die alte Lesart (split am Komma auf dem ERSTEN Argument) saehe von "A,B C" nur A und B', 'A,B'.split(',').length === 2 && lA.length === 3);
+
+  /* --- 84.3 Der Nachlauf: ab dem letzten Stempel, gemeinsame Routine, geteilte Sperre; Verhalten im Kindprozess --- */
+  ok(/A\.letzterStempelReihe\(ROH, r, jahr\)/.test(vs84) && /Live\.abrufplan\(werte, stempel, jetzt, \{ ende: ende, leere: F\.nachholen\.leere \}\)/.test(vs84),
+     '84.3 der Nachlauf fragt ab dem letzten Stempel der Jahresdatei (Schwanz); Plan und Sichten sind die des Live-Sammlers');
+  ok(/if \(t == null\) \{ ohneDatei\+\+; return; \}/.test(vs84), '84.3 ohne Datei wird nichts gefragt - kein Vollauf durch die Hintertuer');
+  ok(/await sperreWarten\(/.test(vs84) && /A\.sperreSetzen\(ROH, 'Nachlauf --nachholen/.test(vs84) && /finally \{ A\.sperreLoesen\(ROH\); \}/.test(vs84),
+     '84.3 die Sperre ist die geteilte: warten, setzen, in finally loesen');
+  ok(/A\.jahrSchreiben\(ordner, reihe, j, jeJahr\[j\], kal, \{ herkunft: 'Nachlauf' \}\)/.test(vs84), '84.3 geschrieben wird mit der gemeinsamen Routine');
+  ok(/RATE_JE_MIN = 170/.test(vs84) && /hole\(Live\.urlFuer\(block, token\), opt\.fetch\)/.test(vs84), '84.3 Sammelabrufe ueber die 170/min-Bremse des Werkzeugs, SIP roh (urlFuer)');
+  ok(/manifestNachfuehren\(ROH, erg\.beruehrt/.test(vs84), '84.3 beruehrte Dateien werden im Manifest nachgefuehrt');
+  ok(/node --max-old-space-size=4096 tools\\alpaca-vollsammlung\.js --nachholen/.test(nachhol84) && !/echo[^\n]*ALPACA_(KEY|SECRET)%/.test(nachhol84),
+     '84.3 Wrapper: ruft --nachholen mit 4-GB-Heap, gibt den Zugang nie aus');
+  ok(/\/SC DAILY \/ST 23:30/.test(fs.readFileSync('tools/vollsammlung-nachholen.cmd', 'utf8')),
+     '84.3 und der Befehl fuer die Aufgabe (taeglich 23:30) steht im Kopf des Wrappers');
+  var tmpN = fs.mkdtempSync(pathM.join(osM.tmpdir(), 'kunst-nachholen-'));
+  var resN = require('child_process').spawnSync(process.execPath, [__dirname + '/tools/alpaca-vollsammlung.js', '--selbsttest-nachholen'],
+    { cwd: __dirname, encoding: 'utf8', timeout: 60000, env: Object.assign({}, process.env, { MD_ALPACA_WURZEL: tmpN }) });
+  var oN = null;
+  try { var zN = String(resN.stdout || '').trim().split('\n'); oN = JSON.parse(zN[zN.length - 1]); } catch (e) { oN = null; }
+  ok(oN !== null, '84.3 der Nachlauf-Selbsttest laeuft durch', String(resN.stderr || '').slice(0, 200));
+  if (oN) {
+    ok(oN.gefragt.length === 1 && oN.gefragt[0].start === oN.stempelVorher + 60000,
+       '84.3 VERHALTEN: gefragt wird genau ab letzter Stempel + 1 Minute, nie davor', new Date(oN.gefragt[0].start).toISOString());
+    ok(oN.gefragt[0].ende === et84(2026, 9, 8, 17, 30) && oN.erg.ende === oN.gefragt[0].ende, '84.3 und bis jetzt minus 30 Minuten (Dienstag 18:00 ET)');
+    ok(oN.erg.verworfen.alt === 1 && oN.kerzenDanach.length === 4 && oN.kerzenDanach[1] === oN.stempelVorher && oN.kerzenDanach[2] > oN.stempelVorher,
+       '84.3 der Balken VOR dem Stempel kam nicht in die Datei, die zwei danach schon (2 + 2 = 4 Kerzen, in Zeitfolge)', JSON.stringify(oN.kerzenDanach));
+    ok(oN.erg.verworfen.laufend === 1 && oN.erg.kerzen === 2 && oN.erg.dateien === 1, '84.3 der Balken hinter dem Ende faellt weg');
+    ok(oN.sperreDanach === false && oN.fortschritt && oN.fortschritt.indexOf('letzter') >= 0, '84.3 Sperre wieder frei, der Fortschritt traegt den Lauf');
+  }
+  fs.rmSync(tmpN, { recursive: true, force: true });
+  gegen84('ein Abruf ab Jahresanfang laege vor dem Stempel - das Muster unterscheidet die beiden', oN ? oN.gefragt[0].start !== AA84.jahrGrenzen(2026).von : false);
+
+  /* --- 84.4 Das Manifest: jede Datei ein Eintrag, jeder Eintrag eine Datei --- */
+  var tmpM = fs.mkdtempSync(pathM.join(osM.tmpdir(), 'kunst-manifest-'));
+  var rohM = pathM.join(tmpM, 'alpaca1m');
+  var kalM = { '2026-09-03': { open: '09:30', close: '16:00' }, '2026-09-04': { open: '09:30', close: '16:00' } };
+  function kM(h, mi, c, d) { return [et84(2026, 9, d || 3, h, mi), c, 100, c + 1, c - 1, c]; }
+  AA84.jahrSchreiben(pathM.join(rohM, 'AAA'), 'AAA', 2026, [kM(9, 28, 1), kM(9, 30, 2), kM(16, 5, 3)], kalM, { herkunft: 'Probe' });
+  AA84.jahrSchreiben(pathM.join(rohM, 'BBB'), 'BBB', 2026, [kM(9, 30, 1), kM(9, 31, 2)], kalM, { herkunft: 'Probe' });
+  var lzM = { AAA: { erster: et84(2026, 9, 3, 9, 30), letzter: et84(2026, 9, 4, 16, 0) }, BBB: { erster: et84(2026, 9, 3, 9, 30), letzter: et84(2026, 9, 4, 16, 0) } };
+  var manM = MF84.manifestSchreiben(rohM, { kal: kalM, lebenszeit: lzM, ordnerZuSym: {} });
+  var mj = JSON.parse(fs.readFileSync(pathM.join(rohM, '_manifest.json'), 'utf8'));
+  var eA = mj.eintraege['AAA/2026.json'];
+  ok(manM.dateien === 2 && Object.keys(mj.eintraege).length === 2 && eA.kerzen === 3 && mj.eintraege['BBB/2026.json'].kerzen === 2,
+     '84.4 zwei Dateien, zwei Eintraege, Kerzen gezaehlt ohne JSON.parse');
+  ok(eA.sha256 === cryptoM.createHash('sha256').update(fs.readFileSync(pathM.join(rohM, 'AAA', '2026.json'))).digest('hex') && eA.bytes === fs.statSync(pathM.join(rohM, 'AAA', '2026.json')).size,
+     '84.4 die Pruefsumme ist die SHA-256 der Datei, die Bytes stimmen');
+  ok(eA.erster === kM(9, 28, 0)[0] && eA.letzter === kM(16, 5, 0)[0] && eA.quelle === 'alpaca' && eA.sitzungen.vor === 1 && eA.sitzungen.regulaer === 1 && eA.sitzungen.nach === 1 && eA.tage === 1 &&
+     eA.lebenszeit.von === '2026-09-03' && eA.lebenszeit.bis === '2026-09-04',
+     '84.4 erster/letzter Stempel, Quelle, Sitzungen je Kerze, Tage und Lebenszeitfenster stehen im Eintrag', JSON.stringify(eA.sitzungen));
+  var p1 = MF84.manifestPruefen(rohM, { hash: true });
+  ok(p1.vorhanden && p1.gleich === 2 && !p1.fehlende.length && !p1.neue.length && !p1.veraenderte.length, '84.4 gegen die Platte: alles gleich');
+  AA84.jahrSchreiben(pathM.join(rohM, 'AAA'), 'AAA', 2026, [kM(9, 30, 4, 4)], kalM);          /* veraendert */
+  AA84.jahrSchreiben(pathM.join(rohM, 'CCC'), 'CCC', 2026, [kM(9, 30, 1)], kalM, { herkunft: 'Probe' }); /* neu */
+  fs.rmSync(pathM.join(rohM, 'BBB'), { recursive: true, force: true });                      /* fehlend */
+  var p2 = MF84.manifestPruefen(rohM, { hash: true });
+  ok(p2.fehlende.join() === 'BBB/2026.json' && p2.neue.join() === 'CCC/2026.json' && p2.veraenderte.length === 1 && p2.veraenderte[0].datei === 'AAA/2026.json' && p2.gleich === 0,
+     '84.4 fehlende, neue und veraenderte Dateien werden je einzeln genannt', JSON.stringify([p2.fehlende, p2.neue, p2.veraenderte.map(function (v) { return v.datei; })]));
+  var nf = MF84.manifestNachfuehren(rohM, ['AAA/2026.json', 'BBB/2026.json', 'CCC/2026.json'], { kal: kalM });
+  var p3 = MF84.manifestPruefen(rohM, { hash: true });
+  ok(nf.nachgefuehrt === 2 && p3.gleich === 2 && !p3.fehlende.length && !p3.neue.length && !p3.veraenderte.length && JSON.parse(fs.readFileSync(pathM.join(rohM, '_manifest.json'), 'utf8')).eintraege['AAA/2026.json'].kerzen === 4,
+     '84.4 nachfuehren (Nachlauf): der geloeschte Eintrag geht, der neue kommt, der veraenderte stimmt wieder - mit 4 Kerzen');
+  gegen84('mit nur den Bytes (ohne --hash) bliebe eine gleich grosse, aber andere Datei unentdeckt - die Klinke prueft mit Hash',
+          (function () { var pf = pathM.join(rohM, 'CCC', '2026.json'); var t = fs.readFileSync(pf, 'utf8'); fs.writeFileSync(pf, t.replace(/"stand":"(\d{4})/, '"stand":"$1').split('').reverse().join('').split('').reverse().join('').replace(/"waehrung":"USD"/, '"waehrung":"EUR"')); var a = MF84.manifestPruefen(rohM).veraenderte.length, b = MF84.manifestPruefen(rohM, { hash: true }).veraenderte.length; return a === 0 && b === 1; })());
+  fs.rmSync(tmpM, { recursive: true, force: true });
+
+  /* --- 84.5 Die Lueckenliste: Kalender x Lebenszeit (Tagesbalken) gegen Minutentage --- */
+  var kalL = {};
+  ['2026-09-01', '2026-09-02', '2026-09-03', '2026-09-04', '2026-09-08'].forEach(function (t) { kalL[t] = { open: '09:30', close: '16:00' }; });
+  var tageL = {}; ['2026-09-01', '2026-09-03', '2026-09-08'].forEach(function (t) { tageL[MF84.tagNr(t)] = 1; });
+  var lzL = { AAA: { erster: et84(2026, 9, 1, 9, 30), letzter: et84(2026, 9, 8, 16, 0) }, LEER: { erster: et84(2026, 9, 1, 9, 30), letzter: et84(2026, 9, 2, 16, 0) } };
+  var lk = MF84.lueckenRechnen([{ sym: 'AAA', jahr: 2026, tage: tageL, kerzen: 3, sitzungen: {}, bytes: 1 }], kalL, lzL, { AAA: 'verschwunden', LEER: 'universum' });
+  ok(lk.werte.AAA.soll === 5 && lk.werte.AAA.ist === 3 && lk.werte.AAA.fehlend.join(' ') === '2026-09-02 2026-09-04' && lk.werte.AAA.anteil === 0.4,
+     '84.5 Soll 5 (Kalender x Lebenszeit), Ist 3 Minutentage, die zwei fehlenden Tage benannt, Anteil 0,4', JSON.stringify(lk.werte.AAA));
+  ok(lk.werte.AAA.ersterMinutentag === '2026-09-01' && lk.werte.AAA.letzterMinutentag === '2026-09-08' && lk.minuten.AAA.minutentage === 3,
+     '84.5 erster/letzter Minutentag je Wert - fuer _lebenszeit.json (Tagesbalken != Minutenbalken)');
+  ok(lk.werte.LEER.soll === 2 && lk.werte.LEER.ist === 0 && lk.zusammenfassung.ohneMinuten.join() === 'LEER', '84.5 ein Wert mit Tagesbalken, aber ohne einen Minutentag, wird als solcher gezaehlt');
+  ok(lk.zusammenfassung.verschwunden.werte === 1 && lk.zusammenfassung.verschwunden.mitMinuten === 1 && lk.zusammenfassung.verschwunden.fehlendeTage === 2,
+     '84.5 die Verschwundenen werden getrennt gezaehlt - die Restluecke der Ueberlebensverzerrung auf Minutenbasis');
+  gegen84('ohne die Lebenszeit-Grenze zaehlte ein Handelstag vor dem ersten Tagesbalken als Luecke',
+          (function () { var k2 = Object.assign({ '2026-08-31': { open: '09:30', close: '16:00' } }, kalL); return MF84.lueckenRechnen([{ sym: 'AAA', jahr: 2026, tage: tageL, kerzen: 3, sitzungen: {}, bytes: 1 }], k2, lzL, {}).werte.AAA.soll === 5 && Object.keys(k2).length === 6; })());
+
+  /* --- 84.6 Die Verdrahtung der Modi und die Aufgabe --- */
+  ok(/hat\('--manifest'\)/.test(vs84) && /_luecken\.json/.test(vs84) && /_zusammenfassung\.json/.test(vs84) && /meta\.LZ\.minutenStand/.test(vs84),
+     '84.6 --manifest schreibt Manifest, Lueckenliste, Minuten-Lebenszeit (ergaenzt, nicht ersetzt) und Zusammenfassung');
+  ok(/K\.manifest = \{ roh: MF\.manifestPruefen\(ROH/.test(vs84), '84.6 --pruefen vergleicht gegen das Manifest (beide Wurzeln)');
+  ok(/--nur-bereinigt --ausgabe/.test(nacharb84) && /sicherung-bereinigt-vor-ableiten/.test(nacharb84) && nacharb84.indexOf('--nur-bereinigt') < nacharb84.indexOf('--ableiten'),
+     '84.6 die Aufgabe schreibt die Sicherungsliste (Hashes) VOR dem Ableiten');
+  ok(!/ALPACA_KEY|ALPACA_SECRET/.test(nacharb84), '84.6 die Nacharbeiten brauchen keinen Zugang und lesen keinen');
+
+  ok(g84 === rot84, '84.x alle Gegenproben dieses Abschnitts schlagen an', rot84 + ' von ' + g84);
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

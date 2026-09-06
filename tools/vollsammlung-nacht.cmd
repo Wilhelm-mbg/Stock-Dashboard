@@ -35,8 +35,22 @@ if not defined ALPACA_KEY (
 
 set "MODUS=%~1"
 if "%MODUS%"=="" set "MODUS=holen"
+shift
+
+rem  Alle weiteren Argumente einsammeln, nicht nur vier (%2 %3 %4 %5 war der Deckel). UND:
+rem  cmd.exe trennt Argumente auch am KOMMA - aus "--symbole A,B,C" werden vier Argumente;
+rem  ein Lauf ueber 1 von 5 Werten sieht aus wie einer ueber alle (wiki/fehlerformen.md).
+rem  Das Werkzeug nimmt Listen darum auch durch Leerzeichen getrennt an und wird laut,
+rem  wenn ein verlangter Wert nicht vorkommt; hier wird nur dafuer gesorgt, dass alles ankommt.
+set "REST="
+:sammeln
+if "%~1"=="" goto weiter
+set "REST=%REST% %1"
+shift
+goto sammeln
+:weiter
 
 echo Vollsammlung: Modus %MODUS%, Start %DATE% %TIME%
-node tools\alpaca-vollsammlung.js --%MODUS% %2 %3 %4 %5
+node --max-old-space-size=4096 tools\alpaca-vollsammlung.js --%MODUS%%REST%
 echo Ende %DATE% %TIME%  (Rueckgabewert %ERRORLEVEL%)
 endlocal
