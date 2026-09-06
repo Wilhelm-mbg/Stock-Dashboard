@@ -9,6 +9,8 @@ trägt das Ergebnis in die betroffene Wiki-Seite ein — mit Fundstelle.*
 
 ## Läuft / als Nächstes
 
+*Seit 06.09.: Aufträge, die nacheinander laufen müssen, werden zu einem **Sammelauftrag** gebündelt — ein Chat, mehrere Teile, je Teil Commit und Übergabe (Wilhelm: „nicht immer zig Chats starten"). Aktuell: `uebergabe/auftrag-sammel-2026-09-06.md` = Nr. 4 → 6 → 19, 700k.*
+
 | # | Auftrag | Zustand |
 |---|---|---|
 | 1 | **Release mit Sammler-Fix, Markt-Takt 1 Min, Grundmenge alle Stammdaten** | ✅ **GELIEFERT und vom PM abgenommen 04.09. 10:45** (Commit 76a5c26, `uebergabe/sammler-verhungern-2026-09-04.md`; eigener Lauf 3.487 grün, UI-Probe grün). **Release durch die Wache fällig.** Danach Wilhelms Klick „Daten holen" in der Marktkarte (Stammdaten bis 4.000 Werte, gemessen ~17 Min, einmalig). Die neue Buchführung (`versucht`) greift erst in der ausgelieferten App; bis dahin läuft der Sammler der installierten v8.39.0 weiter gegen die Wand. Register: [erledigt.md](erledigt.md). |
