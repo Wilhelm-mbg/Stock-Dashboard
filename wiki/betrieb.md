@@ -51,7 +51,9 @@ schtasks /Create /TN "Markt-Dashboard <Name>" /TR "\"<wrapper.cmd>\"" /SC ONCE /
 schtasks /Run /TN "Markt-Dashboard <Name>"
 ```
 
-Der Wrapper macht `cd /d <Repo>` und leitet die Ausgabe in eine Logdatei; kein `&&` in `/TR`. Schlüssel aus dem Benutzerprofil sieht die Aufgabe von selbst. Prüfen: `schtasks /Query /TN … /FO LIST`, `Get-Process node`, Fortschrittsdatei des Werkzeugs. **Der PM fährt Läufe selbst** (Wilhelm 03.09.: „starte du doch bitte einfach die cmd") — Migration, Nachholer, Prüfungen, Nachtlauf, Tagesarchiv-Nachlauf.
+Der Wrapper macht `cd /d <Repo>` und leitet die Ausgabe in eine Logdatei; kein `&&` in `/TR`. Schlüssel aus dem Benutzerprofil sieht die Aufgabe von selbst.
+
+**Stehende Aufgaben (Stand 06.09.2026):** „Markt-Dashboard Tageslauf 1d" (Yahoo-Tageskerzen), „Markt-Dashboard Alpaca-Nachholen" (**täglich 23:30**, `tools/vollsammlung-nachholen.cmd`, holt je Wert ab dem letzten Stempel bis zum letzten fertigen Handelstag, teilt die Sperre mit dem Live-Sammler der App, führt das Manifest nach; legt der PM nach Abnahme von Nr. 6 an, Log `Markt-Dashboard-Daten/nachholen.log`). Einmal-Aufgaben (bleiben stehen, laufen nur per `/Run`): Vollsammlung, Vollsammlung Pruefen, Nacharbeiten, Stammdaten, Probe Live-Verzoegerung. Der Live-Sammler selbst läuft **in der App** (Hauptprozess, 90 s nach Start, dann alle 5 Min), nicht als Aufgabe. Prüfen: `schtasks /Query /TN … /FO LIST`, `Get-Process node`, Fortschrittsdatei des Werkzeugs. **Der PM fährt Läufe selbst** (Wilhelm 03.09.: „starte du doch bitte einfach die cmd") — Migration, Nachholer, Prüfungen, Nachtlauf, Tagesarchiv-Nachlauf.
 
 Ein PM-Weckruf im **Hintergrund** (Cron in der Sitzung) ist erlaubt, wenn er auf einen Lauf wartet; ein Weckruf, der alle fünf Minuten den Kontext neu liest, nicht (Token-Sparbetrieb).
 

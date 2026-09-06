@@ -92,3 +92,4 @@ Nur was **weitergilt**, jüngste zuerst. Aufgehobenes steht mit Datum der Aufheb
 - **Server-Nutzung** (R620 als Webserver, R720xd als Storage) — vertagt.
 - **Vor Z2: Leser direkt ans Alpaca-Archiv oder ans Yahoo-Dateiarchiv?** — ändert die Messbasis; Formular nach der Vollsammlung.
 - **Zweiter Yahoo-Abruf für die 90 ungeprüften Alpaca-Bereiche?** ([offene-auftraege.md](offene-auftraege.md), Baustellen)
+- **Live-Sammler: Live-Menge × Kopiervolumen** (06.09., aus der Übergabe zu Nr. 4, Fragen 1 und 4): heute top500 + Watchlist + Positionen + Viewer-Wert; der Anhang kopiert die Jahresdatei (Temp + rename) — ≈ 1,9 GB je Runde × 80 Runden am Tag, und `E:` ist die WD-**HDD**. „Alle 3.232" hieße ~17 Blöcke je Runde und 6× Kopiervolumen — nur mit Anhang an Ort und Stelle + Reparaturjournal tragbar (Folgeauftrag ~150k). Formular an Wilhelm 06.09. 23:05; Empfehlung des PM: eine Woche top500 laufen lassen und die Rundendauer in `alpaca1m/_lauf.log` messen, dann entscheiden.
