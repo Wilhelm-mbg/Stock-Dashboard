@@ -167,7 +167,7 @@ Bedienoberfläche verschwindet, liegt in Betrieb in einer Klappe.
 | **7 Schein-Finder** | Bedienung: zwei Karten (Basiswert · Was für ein Schein), Auswahllisten mit Bereichen statt freier Zahlen, drei Voreinstellungen, Live-Filter, Tabelle sieben Spalten + Schalter, Stufe als Pille, Risiko-Begründung aufklappbar, Einstellungen im Store; Rechnung unangetastet | ✅ **geliefert 04.09.** (`uebergabe/scheinfinder-ui-2026-09-04.md`): reines Modul `scheinwahl.js`, Voreinstellungen an vier Basiswerten gemessen, 0 Zahlen im Markup; vom PM abgenommen 05.09. |
 | **8a Viewer — Reparatur und Grundbedienung** | Zeitraum × Kerze, Maus-Zoom, MA über die ganze Reihe, Signale/Kanäle/Indikatoren im Kerzenchart, Fadenkreuz-Statuszeile | ✅ **geliefert 05.09.** (`uebergabe/viewer-8a-2026-09-05.md`), abgenommen |
 | **8b Viewer — Chart-Einstellungen** | Dialog mit Reitern Symbol · Statuszeile · Skala und Linien · Ereignisse · Vorlagen, reines Modul `markt/charteinstellungen.js` | ✅ **geliefert 05.09.** (`uebergabe/viewer-8b-2026-09-05.md`), abgenommen |
-| **8c Viewer — Zeichenwerkzeuge** | Linie, Horizontale, Rechteck, Pfeil, Text, Pinsel, Messwerkzeug, Magnet, Fibonacci; reines Modul `markt/zeichnungen.js`, je Wert gespeichert | 🔵 **beauftragt 05.09.** (`…8c…`) |
+| **8c Viewer — Zeichenwerkzeuge** | Linie, Horizontale, Rechteck, Pfeil, Text, Pinsel, Messwerkzeug, Magnet, Fibonacci; reines Modul `markt/zeichnungen.js`, je Wert gespeichert | ✅ **geliefert 05.09.** (`uebergabe/viewer-8c-2026-09-05.md`), abgenommen 06.09. |
 
 ## 5. Sperrklinken an der Navigation (test-v6.js, Zeilen Stand 02.09.)
 

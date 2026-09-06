@@ -11,6 +11,8 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 05.09. | Alpaca-Vollsammlung Z1c — der Vollauf | 47.419 Dateien, 2,62 Mrd Minutenkerzen, 120,6 GB, 0 Fehler, 2016–2026, Universum + 5.082 Verschwundene; erstes Archiv ohne Überlebensverzerrung | `E:/Markt-Dashboard-Archiv/alpaca1m/_fortschritt.json`, `_lauf.log`, [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §5 |
+| 05.09. | Viewer 8c — Zeichenwerkzeuge | 14 Werkzeuge, reines Modul in Daten-Koordinaten, Fibonacci, Messbox, Magnet, Store je Kürzel; 74 Klinken, 7 Gegenproben; 300k/350k | `uebergabe/viewer-8c-2026-09-05.md` |
 | 05.09. | Viewer 8b — Chart-Einstellungen | Dialog mit vier Reitern über den Dialogstapel, reines Modul mit 41 Feldern, 0 tote Felder, Farbwechsel am Canvas gemessen, Kontrast beider Themen; 273 Klinken, 15 Gegenproben; 205k/300k | `uebergabe/viewer-8b-2026-09-05.md` |
 | 05.09. | Viewer 8a — Reparatur und Grundbedienung | Zeitraum × Kerze, Maus-Zoom, MA über die ganze Reihe (260/260 statt 61/260), Signale im Kerzenchart, Fußzeile ein Satz; 75 Klinken, 10 Gegenproben; 215k/300k | `uebergabe/viewer-8a-2026-09-05.md` |
 | 04.09. | Oberfläche Stufe 7 — Schein-Finder | Zwei Karten, acht Listen mit Bereichen, drei gemessene Voreinstellungen, Live-Filter, sieben Spalten + Schalter, Stufen-Pillen; reines Modul `scheinwahl.js`; 98 Klinken, 8 Gegenproben; 210k/250k | `uebergabe/scheinfinder-ui-2026-09-04.md` |
