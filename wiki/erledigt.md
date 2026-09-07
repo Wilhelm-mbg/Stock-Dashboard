@@ -11,6 +11,7 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 07.09. | Glocke wie an der NYSE (Nr. 19) | Elektrische Klingel aus einem reinen Plan (`markt/glocke.js`), Öffnung 8 s / Schluss 10 s + Hammer, Probe-Auswahl und Lautstärke; Suite 4.744 → 4.794; WAV zum Anhören liegt bei | `uebergabe/nyse-glocke-2026-09-05.md`, 7d53944 |
 | 07.09. | Anhang an Ort und Stelle + Live-Menge alle (Nr. 23) | Journal statt Temp-Kopie: Schreibvolumen je Runde 8 GB → 156 MB, Reparatur byteidentisch nach Abbruch an drei Stellen; Live-Menge 3.067 geführte Reihen aus der Lebenszeit; Suite 4.680 → 4.744 | `uebergabe/anhang-an-ort-2026-09-07.md`, 23e55ae |
 | 07.09. | QS Live-Sammler + Nachlauf (Nr. 24, nur lesen) | 38 Befunde (1/11/26 nach Schwere), Dienstag-Blocker Ruhe-Regel, Sperr-Race reproduziert, Kette/Manifest/Lücken/Lebenszeit unabhängig bestätigt; Proben je Punkt liegen bei | `uebergabe/qs-live-sammler-2026-09-06.md` + `-anhang/` |
 | 06./07.09. | Nacharbeiten zur Vollsammlung (Nr. 6) | `--nachholen` (Tagesnachlauf ab letztem Stempel), `--manifest` (SHA-256 je Datei), Lückenliste (3,25 % fehlend, Verschwundene 8,0 %), `--ableiten` alle (7.184 Kopien), Komma-Falle behoben; Suite 4.636 → 4.680; abgenommen mit Auflagen F7/F8 | `uebergabe/vollsammlung-nacharbeiten-2026-09-06.md`, a8b7d44 + 7d472e7 |
