@@ -143,3 +143,9 @@ tags: [lehre]
   erfundenen Daten hinterließ ein vollständig ausgefülltes `ERGEBNIS.md` im Studienordner.
   **Werkzeuge, die Berichte schreiben, benennen die Datei nach der Herkunft der Zahlen** —
   nicht nach der Absicht des Aufrufers.
+
+## Junction aus der Git-Bash „gelöst" — und doch nicht (07.09.2026)
+Der QS-Chat hat die Falle „`git worktree remove` folgt der Junction" gekannt und `cmd /c rmdir <link>` **aus der Git-Bash** aufgerufen: `cmd` zeigte nur sein Banner, Rückgabewert 0, die Junction stand noch — `git worktree remove` löschte durch sie hindurch `node_modules/.bin/` des echten Repos (zum zweiten Mal, nach 8a am 05.09.). Regel: Junctions **nur aus PowerShell** lösen (`cmd /c rmdir "<link>"` dort, oder `(Get-Item <link>).Delete()`), danach `Test-Path <link>` = False **und** die Zahl der Einträge in `node_modules/.bin` prüfen, **bevor** irgendetwas Rekursives läuft. Aus der Git-Bash sind `cmd //c` und `mklink //J` unzuverlässig (MSYS-Pfadumschreibung). Reparatur: `npm install --no-audit --no-fund --ignore-scripts`, danach `git checkout -- package-lock.json`.
+
+## Der Agentenschwarm zählt nicht mit (07.09.2026)
+Ein QS-Chat mit eingeschaltetem Ultracode startete einen Workflow mit 44 Agenten (je Prüfpunkt ein Prüfer, je Befund ein Gegenprüfer): **~4,2 Mio Token außerhalb des Sitzungszählers** bei 116k im Zähler, und 39 Agenten brachen am Nutzungslimit ab — die Gegenprüfer-Stufe fiel aus, der Chat musste die Schwere-1-Reproduktion selbst fahren. Das Ergebnis war gut, aber die Budgetregel (N Agenten = N × Klassenwert) gilt auch für Workflows: Agentenzahl in den Auftrag schreiben, oder Ultracode für QS-Chats aus.
