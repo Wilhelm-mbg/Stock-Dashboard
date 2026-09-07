@@ -1325,7 +1325,7 @@
   });
 
   // ---- Einstellungen ----
-  var SETTINGS = { tray: false, capKey: '', capId: '', capPass: '', capEnabled: false,
+  var SETTINGS = { tray: false, alpLive: false, capKey: '', capId: '', capPass: '', capEnabled: false,
                    alpKey: '', alpSecret: '', alpEnabled: false, kiVeto: false, kiRules: '', updateRepo: '' };
   /* Die geheimen Felder beider Broker-Anbindungen - Capital.com-Demo und Alpaca-Paper.
    * EINE Liste: Laden, Dialog, Speichern und Sentinel-Abbau laufen alle darueber. */
@@ -1343,6 +1343,14 @@
       SETTINGS = Object.assign(SETTINGS, s);
     }
     settingsGeladen = true;
+    /* Der Live-Sammler startet erst, wenn die Einstellungen da sind - vorher waere
+     * sein Schalter unbekannt, und ein Sammler, der eine Sekunde lang laeuft, weil
+     * die Voreinstellung noch nicht ueberschrieben war, holt Verkehr ohne Auftrag.
+     * Die Uhr laeuft danach dauerhaft; ob sie etwas tut, entscheidet anSetzen(). */
+    if (window.AlpacaSammler) {
+      window.AlpacaSammler.anSetzen(!!SETTINGS.alpLive);
+      window.AlpacaSammler.verdrahten();
+    }
     // Kostenpflichtige API abgeschafft: einen evtl. noch gespeicherten Key einmalig
     // von der Platte löschen – einen KI-Pfad gibt es nicht mehr.
     if (SETTINGS.apiKey || SETTINGS.model) {

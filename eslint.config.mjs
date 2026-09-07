@@ -31,6 +31,10 @@ const fensterGlobals = {
      dialogstapel.js, damit test-v6 sie ohne Fenster durchspielen kann; app-shell.js
      holt sie sich hierueber. */
   Dialogstapel: 'readonly',
+  /* Live-Sammler (07.09.2026): die Regeln (AlpacaLive) und der Umlauf
+     (AlpacaSammler). Beide sind UMD-Module - main.js holt AlpacaLive per require,
+     der Renderer beide ueber window. */
+  AlpacaLive: 'readonly', AlpacaSammler: 'readonly',
   openModal: 'readonly', getSettings: 'readonly', saveSettings: 'readonly'
 };
 

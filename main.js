@@ -1712,9 +1712,16 @@ const KChart = require('./markt/kerzenchart.js');
  * Datei, und das Muster lief ueber alles. Rund 120 Byte je Kerze sind grosszuegig
  * gemessen (eine 1m-Kerze wiegt etwa 50).
  */
-function kerzenSchwanz(n) {
-  return Math.min(512 * 1024, 64 * 1024 + Math.max(0, n) * 120);
+/* `deckel`: die halbe Megabyte war fuer Kerzen gemessen, die auch gezeigt werden.
+ * Seit 5m/15m/1h aus MINUTEN verdichtet werden (Live-Sammler, 07.09.2026), sind fuer
+ * 400 Stundenkerzen rund 24.000 Minuten zu lesen - die passen dort nicht hinein, und
+ * ein zu knapper Schwanz laesst die Verdichtung an der 50-%-Huerde scheitern und
+ * faellt still auf Yahoo zurueck. Der Aufrufer, der Minuten verdichtet, hebt den
+ * Deckel deshalb; eine 1m-Kerze wiegt rund 50 Byte, 120 sind grosszuegig gemessen. */
+function kerzenSchwanz(n, deckel) {
+  return Math.min(deckel || 512 * 1024, 64 * 1024 + Math.max(0, n) * 120);
 }
+const SCHWANZ_MINUTEN = 4 * 1024 * 1024;
 const KERZEN_KOPF = 32 * 1024;
 const KERZEN_MAX = 5000;
 function kopfLesen(pfad, bytes) {
@@ -1752,20 +1759,39 @@ ipcMain.handle('archiv-kerzen', async (_ev, symbol, zeitrahmen, anzahl) => {
     if (!iv) return { ok: false, grund: 'Für ' + zr + ' führt das Archiv keine Kerzen', quelle: null };
 
     /* (a) Minutenkerzen: erst das Alpaca-Archiv. Es reicht Jahre zurueck, wo das
-     *     App-Archiv sieben Tage fuehrt (rollendes Fenster der Quelle). */
-    if (iv === '1m') {
+     *     App-Archiv sieben Tage fuehrt (rollendes Fenster der Quelle).
+     *
+     *     SEIT DEM LIVE-SAMMLER (07.09.2026) GILT DAS AUCH FUER 5m/15m/1h. Bis dahin
+     *     wechselte der Viewer mit der Kerzenlaenge die QUELLE: 1m aus Alpaca, 5m aus
+     *     Yahoo. Zwei Reihen desselben Wertes, zwei Bereinigungen (Yahoo bereinigt
+     *     Intraday die Kurse und nicht die Umsaetze, wiki/datenquellen.md), zwei
+     *     Umsatzbegriffe - und der Sprung sass zwischen zwei Knoepfen, die wie eine
+     *     Einstellung derselben Sache aussehen. Verdichtet wird in
+     *     markt/kerzenchart.js ausMinuten(), auf demselben Gitter wie das App-Archiv.
+     *
+     *     WANN TROTZDEM YAHOO: wenn Alpaca fuer diesen Wert zu duenn ist. Ein Wert mit
+     *     zwanzig Stunden Minutenhistorie ergaebe zwanzig Stundenkerzen, wo 400
+     *     verlangt sind. Dann ist die laengere Yahoo-Reihe die bessere Antwort - und
+     *     die Fusszeile nennt, welche von beiden es geworden ist. */
+    const ausMin = KChart.AUS_MINUTEN[zr] ? KChart.AUS_MINUTEN[zr] / 60000 : 0;
+    if (iv === '1m' || ausMin) {
       const wurzel = path.dirname(Kerzen.ordnerVon('60m'));
       const ord = alpacaOrdnerName(path.join(wurzel, 'alpaca1m'), sym);
       const jahr = new Date().getUTCFullYear();
+      /* Wie viele MINUTEN fuer n verdichtete Kerzen zu lesen sind. Der Zuschlag deckt
+       * die Nacht ab: eine Stundenkerze der Sitzung braucht 60 Minutenkerzen, aber
+       * zwischen zwei Handelstagen liegen 17,5 Stunden ohne eine einzige. */
+      const nMin = ausMin ? Math.min(KERZEN_MAX * 60, n * ausMin) : n;
       let kerzen = [], sitzungen = [], dateien = [], gelesen = 0, ablage = '';
-      for (let j = jahr; j >= jahr - 1 && kerzen.length < n; j--) {
+      for (let j = jahr; j >= jahr - 1 && kerzen.length < nMin; j--) {
         let datei = path.join(wurzel, 'alpaca1m-bereinigt', ord, j + '.json');
         let art = 'alpaca-bereinigt';
         if (!fs.existsSync(datei)) { datei = path.join(wurzel, 'alpaca1m', ord, j + '.json'); art = 'alpaca-roh'; }
         if (!fs.existsSync(datei)) continue;
-        const text = schwanzLesen(datei, kerzenSchwanz(n));
-        gelesen += Math.min(fs.statSync(datei).size, kerzenSchwanz(n));
-        const teil = KChart.kerzenAusText(text, n);
+        const deckel = ausMin ? SCHWANZ_MINUTEN : undefined;
+        const text = schwanzLesen(datei, kerzenSchwanz(nMin, deckel));
+        gelesen += Math.min(fs.statSync(datei).size, kerzenSchwanz(nMin, deckel));
+        const teil = KChart.kerzenAusText(text, nMin);
         if (!teil.length) continue;
         kerzen = teil.concat(kerzen);
         sitzungen = KChart.sitzungenAusText(text).concat(sitzungen);
@@ -1773,13 +1799,28 @@ ipcMain.handle('archiv-kerzen', async (_ev, symbol, zeitrahmen, anzahl) => {
         ablage = art;
       }
       if (kerzen.length) {
-        kerzen = kerzen.slice(-n);
-        return { ok: true, sym: sym, zeitrahmen: zr, kerzen: kerzen, sitzungen: sitzungen,
-                 quelle: 'alpaca', ablage: ablage, dateien: dateien,
-                 von: kerzen[0][0], bis: kerzen[kerzen.length - 1][0],
-                 gelesen: gelesen, ms: Date.now() - t0 };
+        let verdichtet = null;
+        if (ausMin) {
+          verdichtet = KChart.ausMinuten(kerzen, zr, { sitzungen: sitzungen });
+          /* ZU DUENN IST KEINE ANTWORT. Liefert Alpaca deutlich weniger als verlangt,
+           * ist die laengere Yahoo-Reihe die bessere - der Viewer soll nicht bei
+           * jedem Wechsel der Kerzenlaenge die Zeitspanne verlieren. */
+          if (verdichtet.kerzen.length < Math.max(2, Math.ceil(n * 0.5))) verdichtet = null;
+        }
+        if (!ausMin || verdichtet) {
+          const reihe = verdichtet ? verdichtet.kerzen.slice(-n) : kerzen.slice(-n);
+          const marken = verdichtet
+            ? KChart.sitzungenVerdichtet(reihe, sitzungen)
+            : sitzungen;
+          return { ok: true, sym: sym, zeitrahmen: zr, kerzen: reihe, sitzungen: marken,
+                   quelle: 'alpaca', ablage: ablage, dateien: dateien,
+                   ausMinuten: !!verdichtet, minuten: verdichtet ? kerzen.length : null,
+                   geankert: verdichtet ? verdichtet.geankert : null,
+                   von: reihe[0][0], bis: reihe[reihe.length - 1][0],
+                   gelesen: gelesen, ms: Date.now() - t0 };
+        }
       }
-      /* Kein Alpaca-Jahr da - weiter zum App-Archiv, das 1m ebenfalls fuehrt. */
+      /* Kein Alpaca-Jahr da oder zu duenn - weiter zum App-Archiv. */
     }
 
     /* (b) Das App-Archiv, Format 2. */
@@ -1918,6 +1959,183 @@ ipcMain.handle('archiv-massnahmen', async (_ev, symbol) => {
              saetze: Array.isArray(roh.saetze) ? roh.saetze : [] };
   } catch (e) {
     return { ok: false, grund: String((e && e.message) || e).slice(0, 160), sym: null };
+  }
+});
+
+/* ================= LIVE-SAMMLER: die Schreibseite ================================
+ *
+ * Die REGELN stehen in alpacalive.js (reines Modul, ohne Electron pruefbar), der
+ * UMLAUF im Renderer (alpacasammler.js) - und hier steht nur das, was es ohne den
+ * Hauptprozess nicht gibt: die Platte.
+ *
+ * WARUM DER RENDERER ABRUFT UND NICHT DIESE SEITE. Die Alpaca-Schluessel kommen
+ * ausschliesslich aus window.getSettings() - so steht es im Kopf von alpaca.js, und
+ * es ist keine Formalie: die Geheimnisse liegen im Store verschluesselt, und je
+ * weniger Wege sie kennen, desto weniger Wege koennen sie verlieren. Der Renderer
+ * ruft ueber alpFetch() ab (dessen Host-Liste data.alpaca.markets ohnehin schon
+ * fuehrt) und reicht KERZEN herueber, keine Schluessel.
+ *
+ * DIE SPERRE IST GETEILT. alpaca1m/ bekommt mit dem naechtlichen Nachlauf
+ * (--nachholen, Auftrag Nr. 6) einen zweiten Schreiber. Beide nehmen dieselbe
+ * Sperre - kerzenquelle.js sperreSetzen(), _laeuft.json im Archivordner, mit
+ * Prozessnummer und Verwaisungsfrist. Ohne sie liest der eine, waehrend der andere
+ * schreibt, und schreibt danach seinen alten Stand zurueck: die Datei sieht
+ * hinterher gesund aus und hat eine halbe Stunde verloren.
+ *
+ * ANGEHAENGT WIRD NUR, WAS NEU IST. Was schon dasteht, wird verglichen und GEZAEHLT
+ * (alpacalive.einordnen) - nie ersetzt. Der Grund steht dort ausfuehrlich: ob die
+ * Quelle SIP-Balken nach 15 Minuten noch korrigiert, ist nicht gemessen, und bis
+ * das gemessen ist, darf sich eine Reihe unter einer laufenden Messung nicht
+ * aendern. */
+const AlpLive = require('./alpacalive.js');
+
+function alpacaWurzel() { return path.join(path.dirname(Kerzen.ordnerVon('60m')), 'alpaca1m'); }
+
+/* Der Kalender der QUELLE, den die Vollsammlung mitgeschrieben hat. Er kennt
+ * Halbtage mit ihrem eigenen Schluss und auch eine ungeplante Schliessung. Fehlt er,
+ * rechnet boerse.js die Grenzen - das steht dann im Ergebnis des Umlaufs, damit
+ * hinterher nicht zu raten ist, worauf eine Sitzungsmarke beruht. */
+let alpacaKalender;
+function alpacaGrenzen() {
+  if (alpacaKalender === undefined) {
+    try { alpacaKalender = JSON.parse(fs.readFileSync(path.join(alpacaWurzel(), '_kalender.json'), 'utf8')); }
+    catch (e) { alpacaKalender = null; }
+  }
+  const tage = alpacaKalender && (alpacaKalender.tage || alpacaKalender);
+  if (tage && typeof tage === 'object' && Object.keys(tage).length) {
+    return { fuer: AlpLive.grenzenAusKalender(tage), herkunft: 'kalender' };
+  }
+  return { fuer: AlpLive.grenzenAusBoerse(Boerse), herkunft: 'boerse' };
+}
+
+function alpacaJahrDatei(sym, jahr) {
+  const w = alpacaWurzel();
+  return path.join(w, alpacaOrdnerName(w, sym), jahr + '.json');
+}
+
+/** Der juengste Stempel einer Reihe - aus dem SCHWANZ der Datei, nicht aus dem
+ *  Volltext. alpaca1m/AAPL/2026.json traegt 133.770 Kerzen auf 6,7 MB; ihn alle
+ *  fuenf Minuten fuer 500 Werte ganz zu lesen waere ein Gigabyte je Umlauf. */
+function alpacaLetzterStempel(sym) {
+  const jahr = new Date().getUTCFullYear();
+  for (let j = jahr; j >= jahr - 1; j--) {
+    const datei = alpacaJahrDatei(sym, j);
+    if (!fs.existsSync(datei)) continue;
+    const kerzen = KChart.kerzenAusText(schwanzLesen(datei, 64 * 1024), 5);
+    if (kerzen.length) return kerzen[kerzen.length - 1][0];
+  }
+  return null;
+}
+
+ipcMain.handle('alpaca-live-stempel', async (_ev, symbole) => {
+  try {
+    const liste = AlpLive.werteliste({ top500: symbole });
+    const aus = {};
+    liste.forEach((s) => { aus[s] = alpacaLetzterStempel(s); });
+    return { ok: true, stempel: aus, herkunft: alpacaGrenzen().herkunft,
+             wurzel: fs.existsSync(alpacaWurzel()) };
+  } catch (e) {
+    return { ok: false, grund: String((e && e.message) || e).slice(0, 160) };
+  }
+});
+
+/** Frische Balken eines Wertes anhaengen. `kerzen` sind fertige Archivkerzen
+ *  [zeit, schluss, umsatz, hoch, tief, eroeffnung] - der Renderer hat sie schon
+ *  durch alpacalive.kerzeAus() und imFenster() geschickt.
+ *
+ *  EINE JAHRESDATEI JE AUFRUF, und die Jahresgrenze ist die ET-Mitternacht (dieselbe
+ *  Regel wie in der Vollsammlung): mit UTC-Mitternacht fielen die Nachboersen-Balken
+ *  des 31.12. in ZWEI Jahresdateien, und doppelte Kerzen bekommt man aus einem
+ *  append-only-Archiv nicht mehr heraus. */
+function alpacaAnhaengen(sym, kerzen, grenzen) {
+  const nachJahr = {};
+  kerzen.forEach((k) => {
+    const jahr = Number(AlpLive.etTag(k[0]).slice(0, 4));
+    (nachJahr[jahr] || (nachJahr[jahr] = [])).push(k);
+  });
+  let neu = 0, gleich = 0, abweichend = [];
+  Object.keys(nachJahr).forEach((jn) => {
+    const jahr = Number(jn);
+    const datei = alpacaJahrDatei(sym, jahr);
+    const alt = fs.existsSync(datei) ? Kerzen.huelleLesen(datei) : null;
+    const bestand = alt && Array.isArray(alt.series) ? alt.series : [];
+    const erg = AlpLive.einordnen(bestand, nachJahr[jn]);
+    gleich += erg.gleich;
+    erg.abweichend.forEach((a) => abweichend.push({ sym: sym, zeit: a.zeit, felder: a.felder }));
+    if (!erg.dazu.length) return;
+    const serie = AlpLive.anhaengen(bestand, erg.dazu);
+    /* Die Quellenbereiche muessen JEDE Kerze abdecken - satz() wirft sonst, und das
+     * ist der Sinn von Format 2. Der Bestand behaelt seine Bereiche, die neuen
+     * bekommen ihren eigenen. */
+    const bereiche = (alt && Array.isArray(alt.quellen) ? alt.quellen.slice() : [])
+      .concat([{ von: erg.dazu[0][0], bis: erg.dazu[erg.dazu.length - 1][0], quelle: 'alpaca' }]);
+    const h = Kerzen.satz(sym, '1m', serie, {
+      quellen: bereiche,
+      waehrung: (alt && alt.waehrung) || 'USD',
+      quelle: 'alpaca v2 stocks/bars, timeframe=1Min, feed=sip, adjustment=raw (Live-Sammler)',
+    });
+    /* Die Sitzungsbereiche werden FORTGESCHRIEBEN, nicht neu gerechnet: der Kalender
+     * reicht nur so weit zurueck wie die Vollsammlung, und eine Kerze von 2016 bekaeme
+     * sonst 'ausserhalb' - eine stille Verschlechterung richtiger Marken. */
+    const jeKerze = AlpLive.sitzungJeKerze(erg.dazu, grenzen.fuer);
+    h.sitzungen = AlpLive.sitzungenFortschreiben(
+      (alt && Array.isArray(alt.sitzungen)) ? alt.sitzungen : [],
+      AlpLive.sitzungenVerdichten(erg.dazu, jeKerze));
+    h.jahr = jahr;
+    fs.mkdirSync(path.dirname(datei), { recursive: true });
+    schreibAtomar(datei, JSON.stringify(h));
+    neu += erg.dazu.length;
+  });
+  return { neu: neu, gleich: gleich, abweichend: abweichend };
+}
+
+ipcMain.handle('alpaca-live-anhaengen', async (_ev, saetze) => {
+  const wurzel = alpacaWurzel();
+  if (!fs.existsSync(wurzel)) {
+    return { ok: false, grund: 'Kein Alpaca-Minutenarchiv (' + wurzel + ') – erst die Vollsammlung' };
+  }
+  /* Die geteilte Sperre. Laeuft der Nachlauf, wird NICHT geschrieben - der naechste
+   * Umlauf kommt in fuenf Minuten, und die Balken sind dann immer noch da. */
+  const sp = Kerzen.sperreLesen(wurzel);
+  if (sp.aktiv) return { ok: false, gesperrt: true, grund: 'Am Archiv schreibt gerade ' + (sp.was || 'ein anderer Lauf') };
+  if (!Kerzen.sperreSetzen(wurzel, 'Live-Sammler')) {
+    return { ok: false, grund: 'Sperre nicht setzbar' };
+  }
+  try {
+    const grenzen = alpacaGrenzen();
+    let neu = 0, gleich = 0, werte = 0;
+    const abweichend = [];
+    const fehler = [];
+    (Array.isArray(saetze) ? saetze : []).forEach((s) => {
+      const sym = String((s && s.sym) || '').toUpperCase().replace(/[^A-Z0-9.]/g, '').slice(0, 12);
+      const kerzen = (s && Array.isArray(s.kerzen) ? s.kerzen : [])
+        .filter((k) => Array.isArray(k) && k.length === 6 && typeof k[0] === 'number' && isFinite(k[0]));
+      if (!sym || !kerzen.length) return;
+      try {
+        const e = alpacaAnhaengen(sym, kerzen, grenzen);
+        neu += e.neu; gleich += e.gleich;
+        e.abweichend.forEach((a) => abweichend.push(a));
+        if (e.neu) werte++;
+      } catch (e2) {
+        fehler.push(sym + ': ' + String((e2 && e2.message) || e2).slice(0, 120));
+      }
+    });
+    /* Die Nachpruefung gehoert auf die PLATTE, nicht nur ins Fenster. Sie ist eine
+     * Messung ueber Tage - "seit dem 07.09. kein einziger nachtraeglich geaenderter
+     * Balken" ist ein Beleg, "die Anzeige stand auf 0" ist keiner. */
+    if (abweichend.length) {
+      Kerzen.laufProtokoll(wurzel, JSON.stringify({
+        was: 'live-abweichung', stand: new Date().toISOString(), faelle: abweichend.slice(0, 200),
+      }));
+    }
+    return { ok: true, neu: neu, gleich: gleich, werte: werte,
+             abweichend: abweichend.length, abweichendFaelle: abweichend.slice(0, 20),
+             sitzungsherkunft: grenzen.herkunft,
+             fehler: fehler.length ? fehler.slice(0, 5).join('; ') : null };
+  } catch (e) {
+    return { ok: false, grund: String((e && e.message) || e).slice(0, 160) };
+  } finally {
+    Kerzen.sperreLoesen(wurzel);
   }
 });
 

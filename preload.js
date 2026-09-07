@@ -78,5 +78,10 @@ contextBridge.exposeInMainWorld('api', {
   sammlerStop: () => ipcRenderer.invoke('sammler-stop'),
   sammlerEinstellen: (e) => ipcRenderer.invoke('sammler-einstellen', e),
   onSammler: (cb) => ipcRenderer.on('sammler-fortschritt', (_ev, d) => cb(d)),
-  onSammlerHinweis: (cb) => ipcRenderer.on('sammler-hinweis', (_ev, d) => cb(d))
+  onSammlerHinweis: (cb) => ipcRenderer.on('sammler-hinweis', (_ev, d) => cb(d)),
+  /* Live-Sammler (07.09.2026): zwei Wege, und beide tragen KEINE Schluessel. Der
+   * Renderer fragt, wie weit die Reihen sind, und reicht fertige Kerzen herueber;
+   * abgerufen wird ueber alpFetch, wo die Schluessel ohnehin schon hingehoeren. */
+  alpacaLiveStempel: (symbole) => ipcRenderer.invoke('alpaca-live-stempel', symbole),
+  alpacaLiveAnhaengen: (saetze) => ipcRenderer.invoke('alpaca-live-anhaengen', saetze)
 });
