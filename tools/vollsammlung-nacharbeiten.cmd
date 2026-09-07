@@ -19,14 +19,30 @@ rem ============================================================================
 cd /d "%~dp0.."
 set "LOG=studien\alpaca-vollsammlung-2026-09\nacharbeiten-2026-09-06.log"
 
+rem  JEDER SCHRITT ZAEHLT (07.09.2026): die vier Schritte hingen unbedingt aneinander -
+rem  ein gescheitertes --ableiten hielt --manifest nicht auf, und das Protokoll trug nur
+rem  den Rueckgabewert des LETZTEN Schritts. Jetzt bricht die Kette beim ersten Fehler
+rem  ab, und der Wert geht nach aussen.
 echo Nacharbeiten: Start %DATE% %TIME% >> "%LOG%"
 echo == 1. Sicherungsliste bereinigt (vorher) >> "%LOG%"
 node --max-old-space-size=4096 tools\alpaca-vollsammlung.js --manifest --nur-bereinigt --ausgabe studien\alpaca-vollsammlung-2026-09\sicherung-bereinigt-vor-ableiten-2026-09-06.json >> "%LOG%" 2>&1
+set "RC=%ERRORLEVEL%"
+if not "%RC%"=="0" goto :fehler
 echo == 2. ableiten  %DATE% %TIME% >> "%LOG%"
 node --max-old-space-size=4096 tools\alpaca-vollsammlung.js --ableiten >> "%LOG%" 2>&1
+set "RC=%ERRORLEVEL%"
+if not "%RC%"=="0" goto :fehler
 echo == 3. manifest  %DATE% %TIME% >> "%LOG%"
 node --max-old-space-size=4096 tools\alpaca-vollsammlung.js --manifest >> "%LOG%" 2>&1
+set "RC=%ERRORLEVEL%"
+if not "%RC%"=="0" goto :fehler
 echo == 4. pruefen MNST SPGI AAPL + gegen-yahoo  %DATE% %TIME% >> "%LOG%"
 node --max-old-space-size=4096 tools\alpaca-vollsammlung.js --pruefen --ordner MNST SPGI AAPL --gegen-yahoo MNST SPGI AAPL >> "%LOG%" 2>&1
-echo Nacharbeiten: ENDE %DATE% %TIME%  (Rueckgabewert %ERRORLEVEL%) >> "%LOG%"
-endlocal
+set "RC=%ERRORLEVEL%"
+if not "%RC%"=="0" goto :fehler
+echo Nacharbeiten: ENDE %DATE% %TIME%  (Rueckgabewert %RC%) >> "%LOG%"
+endlocal & exit /b 0
+
+:fehler
+echo Nacharbeiten: ABGEBROCHEN %DATE% %TIME%  (Rueckgabewert %RC%) >> "%LOG%"
+endlocal & exit /b %RC%

@@ -33,7 +33,12 @@ if not defined ALPACA_KEY (
   exit /b 2
 )
 
+rem  RUECKGABEWERT (07.09.2026): %ERRORLEVEL% wird SOFORT nach node gesichert - das echo
+rem  davor setzt ihn sonst selbst auf 0 -, und `endlocal & exit /b %RC%` gibt ihn nach
+rem  aussen weiter. Ohne diese zwei Zeilen meldete die Aufgabenplanung "Letztes Ergebnis
+rem  0x0", auch wenn der Nachlauf an der Sperre gescheitert war.
 echo Nachholen: Start %DATE% %TIME% >> "%LOG%"
 node --max-old-space-size=4096 tools\alpaca-vollsammlung.js --nachholen >> "%LOG%" 2>&1
-echo Nachholen: Ende %DATE% %TIME%  (Rueckgabewert %ERRORLEVEL%) >> "%LOG%"
-endlocal
+set "RC=%ERRORLEVEL%"
+echo Nachholen: Ende %DATE% %TIME%  (Rueckgabewert %RC%) >> "%LOG%"
+endlocal & exit /b %RC%

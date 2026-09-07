@@ -39,11 +39,21 @@ var FERTIG_ABSTAND_MS = 16 * 60000; /* gemessen 15 min Verzug + 1 min Sicherheit
 var DECKEL_JE_RUNDE = 150;          /* Anfragen je Runde; 200/min gelten dem ganzen Zugang, Reserve fuer Kostenmessung und Viewer */
 var BLOCK = 200;                    /* Kuerzel je Sammelabruf (symbols=...) */
 var SEITE = 10000;                  /* Balken je Seite (limit) */
-var LEER_MAX = 3;                   /* leere Runden in Folge, dann ruht der Wert bis zum naechsten Tag */
+var LEER_MAX = 3;                   /* leere Runden in Folge, dann ruht der Wert bis zum Sitzungswechsel */
+var FEHLER_MAX = 5;                 /* Meldungen in erg.fehler, danach nur noch "und k weitere" */
+var KOERPER_MAX = 60;               /* Zeichen aus dem Antwortrumpf, wenn der Status nichts sagt */
 var DATEN = 'https://data.alpaca.markets/v2';
 
 function zahl(v) { return typeof v === 'number' && isFinite(v); }
 function minute(ms) { return Math.floor(ms / 60000) * 60000; }
+/* F15: bei Status 0 (Timeout, ECONNRESET, gesperrter Host) und bei 4xx sagt die Zahl
+ * allein nichts. Die ersten Zeichen des Rumpfes sagen es - der Aufrufer schickt sie
+ * durch ohneGeheimnis(), bevor sie irgendwo landen. */
+function koerper(r) {
+  var t = r && typeof r.body === 'string' ? r.body.replace(/\s+/g, ' ').trim() : '';
+  if (!t) return '';
+  return ' - ' + t.slice(0, KOERPER_MAX) + (t.length > KOERPER_MAX ? '...' : '');
+}
 
 /* ================= 1) Die Live-Menge =================
  * Alle Reihen, die das Archiv heute noch fuehrt, + Watchlist + Werte mit offener
@@ -120,14 +130,26 @@ function zustandUm(ms) {
   var laenge = Boerse.sitzungsMinuten(etMittag);
   return MU.sitzungszustand(ny.minutenSeitMitternacht - Plan.OEFFNET, laenge);
 }
-/** Laeuft eine Runde? Ja, solange die fertig-Grenze noch in einer Sitzung liegt
- *  (Vor-/Nachboerse mit). Um 20:10 ET ist die Boerse zu, aber die Balken bis 19:54
- *  sind gerade erst fertig - die Runde laeuft; um 20:17 liegt auch die Grenze hinter
- *  20:00, und es ist Schluss bis zur naechsten Vorboerse. */
+/** Laeuft eine Runde? Ja, solange die Grenze der VORIGEN Runde noch in einer Sitzung
+ *  lag (Vor-/Nachboerse mit).
+ *
+ *  WARUM DIE VORIGE GRENZE (07.09.2026). Bis heute galt die Grenze der laufenden Runde,
+ *  und damit war um 20:16:00 ET Schluss: die letzte Runde des Tages fiel irgendwo in
+ *  [20:11, 20:15] und fragte je nach Phase des Fuenf-Minuten-Takts nur bis 19:55 bis
+ *  19:59. Gemessen am 03.09.: 133 von 489 Werten hatten Balken in 19:56-19:59; im Mittel
+ *  blieben 2,0 Minuten je Tag bis zum Folgetag ungefragt. Jetzt bleibt das Fenster
+ *  offen, solange `grenze - TAKT_MS` noch in einer Sitzung lag - Schluss ist damit
+ *  spaetestens 20:21 (Halbtag 17:21), und die Runde um 20:16-20:20 holt den Rest.
+ *  `zustand` bleibt der Zustand der EIGENEN Grenze - die Ruhe-Regel fragt ihn. */
 function sitzungsfenster(jetzt) {
-  var z = zustandUm(fertigGrenze(jetzt));
-  var offen = !!(z && z.zustand && z.zustand !== 'geschlossen');
-  return { offen: offen, zustand: z ? z.zustand : null, text: z ? z.text : 'unbekannt', grenze: fertigGrenze(jetzt) };
+  var grenze = fertigGrenze(jetzt);
+  var z = zustandUm(grenze);
+  var zVorige = zustandUm(grenze - TAKT_MS);
+  var offenJetzt = !!(z && z.zustand && z.zustand !== 'geschlossen');
+  var offenVorige = !!(zVorige && zVorige.zustand && zVorige.zustand !== 'geschlossen');
+  return { offen: offenJetzt || offenVorige, zustand: z ? z.zustand : null,
+    text: z ? z.text : 'unbekannt', grenze: grenze,
+    nachlese: !offenJetzt && offenVorige };
 }
 
 /* ================= 3) Der Abrufplan ================= */
@@ -158,8 +180,24 @@ function startFuer(letzterStempel, jetzt) {
  *  und die wird nie ueberschrieben.
  *
  *  Werte, deren Start hinter der Grenze liegt, sind aktuell und fehlen im Plan; Werte,
- *  die LEER_MAX Runden in Folge nichts brachten, ruhen bis zum naechsten ET-Tag (ein
- *  erloschener Wert wuerde sonst jede Runde einen eigenen Abruf kosten). */
+ *  die LEER_MAX Runden in Folge nichts brachten, ruhen - bis zum naechsten
+ *  SITZUNGSABSCHNITT (ein erloschener Wert wuerde sonst jede Runde einen eigenen Abruf
+ *  kosten).
+ *
+ *  DIE RUHE-REGEL, NEU GEFASST AM 07.09.2026. Sie war fuer erloschene Werte gedacht und
+ *  traf die halbe Boerse: die erste Runde faellt auf 04:16 ET, und in der Vorboerse
+ *  handeln die meisten Werte gar nicht. Nachgefahren mit den echten Minuten des 03.09.:
+ *  von 3.263 Werten ruhten 3.172 schon VOR 09:30, 96,2 % der regulaeren Balken waeren
+ *  live nie geholt worden - darunter LLY, JPM, V, UNH, BRK.B. Zwei Aenderungen:
+ *    - GEZAEHLT wird eine leere Runde erst, wenn die fertig-Grenze im REGULAEREN Handel
+ *      liegt - oder wenn der Wert an diesem ET-Tag schon einen Balken geliefert hat
+ *      (dann ist Stille eine Aussage ueber den Wert, nicht ueber die Tageszeit).
+ *    - AUFGEHOBEN wird die Ruhe beim SITZUNGSWECHSEL (vor -> regulaer -> nach), nicht
+ *      erst am naechsten ET-Tag. Wer die Vorboerse verschlafen hat, ist um 09:30 wieder
+ *      dabei. `gesehen` (erster Balken des Tages) laeuft weiter am ET-Tag.
+ *  opt.sitzung: der Zustand der eigenen fertig-Grenze ('vorboerslich' | 'regulaer' |
+ *  'nachboerslich' | ...). Ohne Angabe bleibt es beim alten Verhalten (jede leere Runde
+ *  zaehlt) - so rechnet der Nachlauf, der genau einmal je Nacht fragt. */
 var REDUNDANZ_MAX = 5000;           /* doppelt angefragte Minuten je Block, ueber alle Mitglieder */
 function abrufplan(werte, stempelJe, jetzt, opt) {
   opt = opt || {};
@@ -170,7 +208,11 @@ function abrufplan(werte, stempelJe, jetzt, opt) {
   var ende = opt.ende != null ? opt.ende : fertigGrenze(jetzt);
   var leere = opt.leere || { tag: null, je: {} };
   var heute = A.etTag(jetzt);
-  if (leere.tag !== heute) { leere.tag = heute; leere.je = {}; }
+  if (!leere.je) leere.je = {};
+  if (!leere.gesehen) leere.gesehen = {};
+  if (leere.tag !== heute) { leere.tag = heute; leere.je = {}; leere.gesehen = {}; leere.sitzung = null; }
+  if (opt.sitzung !== undefined && leere.sitzung !== opt.sitzung) { leere.sitzung = opt.sitzung; leere.je = {}; }
+  var zaehltLeere = opt.sitzung === undefined || opt.sitzung === 'regulaer';
   var startJe = {}, aktuell = 0, ruhend = [], offen = [];
   (werte || []).forEach(function (sym) {
     if ((leere.je[sym] || 0) >= LEER_MAX) { ruhend.push(sym); return; }
@@ -195,15 +237,58 @@ function abrufplan(werte, stempelJe, jetzt, opt) {
     cur = { symbole: [sym], start: s, ende: ende, redundanz: 0 };
     bloecke.push(cur);
   });
+  /* DIE ZEITSCHEIBE AM DECKEL (07.09.2026).
+   * Bis heute lief der Deckel je Seite: mitten in der Seitenfolge eines Blocks war
+   * Schluss, und weil ein angerissener Block nichts schreiben darf, fiel er ganz weg -
+   * mit identischem Plan in der naechsten Runde. Nachgefahren am 06.09.: ein Block, der
+   * 160 Seiten braucht, kostete bei Deckel 150 in DREI Runden 450 Anfragen und brachte
+   * null Kerzen; ab etwa acht Handelstagen Rueckstand steht der Sammler still.
+   * Jetzt wird die ZEIT gekappt, nicht die Seitenfolge: ein Block bekommt so viele
+   * Minuten, wie in die verbleibenden Seiten passen (Symbole x Minuten <= Rest x SEITE).
+   * Was er holt, wird geschrieben, der Stempel wandert, und die naechste Runde macht an
+   * derselben Stelle weiter. Bloecke, fuer die kein Rest mehr bleibt, entfallen in
+   * dieser Runde - sie stehen in `verschoben`. */
+  var verschoben = 0, zeitscheiben = 0;
+  if (zahl(opt.deckel) && opt.deckel > 0) {
+    var rest = opt.deckel, behalten = [];
+    for (var bi2 = 0; bi2 < bloecke.length; bi2++) {
+      var bl = bloecke[bi2];
+      var minuten = Math.floor((bl.ende - bl.start) / 60000) + 1;
+      var seiten = Math.max(1, Math.ceil(bl.symbole.length * minuten / SEITE));
+      if (seiten > rest) {
+        var passt = Math.floor(rest * SEITE / bl.symbole.length);
+        if (passt < 1) break;
+        bl.ende = bl.start + (passt - 1) * 60000;
+        bl.zeitscheibe = true;
+        zeitscheiben++;
+        seiten = rest;
+      }
+      rest -= seiten;
+      behalten.push(bl);
+      if (rest <= 0) break;
+    }
+    verschoben = bloecke.length - behalten.length;
+    bloecke = behalten;
+  }
   return { bloecke: bloecke, startJe: startJe, ende: ende, aktuell: aktuell, ruhend: ruhend, leere: leere,
+           zaehltLeere: zaehltLeere, zeitscheiben: zeitscheiben, verschoben: verschoben,
            anfragenMindestens: bloecke.length };
 }
 /** Die Adresse eines Abrufs. KEIN Schluessel darin - der geht als Kopfzeile mit, und
- *  zwar erst im Hauptprozess. sort=asc, damit die Seiten in Zeitfolge kommen. */
-function urlFuer(block, token) {
+ *  zwar erst im Hauptprozess. sort=asc, damit die Seiten in Zeitfolge kommen.
+ *
+ *  opt.ohneEnd laesst `end` weg. GEMESSEN am 07.09.2026 07:39 mit echtem Schluessel
+ *  (uebergabe/probe-end-2026-09-07.json): `end = jetzt - 16 min` -> 200, `- 31 min` ->
+ *  200, `- 14 min` -> 403 ("subscription does not permit querying recent SIP data"),
+ *  ohne `end` -> 200; `end` ist EINSCHLIESSLICH (14:00-15:00 ET = 61 Balken). Der
+ *  Abstand von 16 Minuten ist also richtig. Der Gurt zum Hosentraeger: antwortet die
+ *  Quelle trotzdem einmal mit 403 auf eine Anfrage MIT `end`, wiederholt die Runde
+ *  denselben Block OHNE `end` - sichten() wirft alles hinter der Grenze ohnehin weg. */
+function urlFuer(block, token, opt) {
+  opt = opt || {};
   return DATEN + '/stocks/bars?symbols=' + encodeURIComponent(block.symbole.join(',')) +
     '&timeframe=1Min&start=' + encodeURIComponent(new Date(block.start).toISOString()) +
-    '&end=' + encodeURIComponent(new Date(block.ende).toISOString()) +
+    (opt.ohneEnd ? '' : '&end=' + encodeURIComponent(new Date(block.ende).toISOString())) +
     '&limit=' + SEITE + '&feed=sip&adjustment=raw&sort=asc' +
     (token ? '&page_token=' + encodeURIComponent(token) : '');
 }
@@ -218,10 +303,14 @@ function sichten(bars, block, startJe) {
   var je = {}, verworfen = { laufend: 0, alt: 0, form: 0, fremd: 0 }, angenommen = 0;
   var drin = {};
   block.symbole.forEach(function (s) { drin[s] = 1; });
+  /* Was die Quelle unter einem Kuerzel liefert, muss keine Liste sein: `null`, ein
+   * Objekt, eine Zahl - alles schon gesehen. Frueher warf das (`.length`, `.forEach`)
+   * und riss die ganze Runde mit. Jetzt ist es einfach nichts. */
+  function liste(v) { return Array.isArray(v) ? v : []; }
   Object.keys(bars || {}).forEach(function (sym) {
-    if (!drin[sym]) { verworfen.fremd += (bars[sym] || []).length; return; }
+    if (!drin[sym]) { verworfen.fremd += liste(bars[sym]).length; return; }
     var start = startJe && zahl(startJe[sym]) ? startJe[sym] : block.start;
-    (bars[sym] || []).forEach(function (b) {
+    liste(bars[sym]).forEach(function (b) {
       var k = A.kerzeAus(b);
       if (!k) { verworfen.form++; return; }
       if (k[0] > block.ende) { verworfen.laufend++; return; }
@@ -263,8 +352,21 @@ async function runde(o) {
     /* Was diese Runde WIRKLICH auf die Platte geschrieben hat (Journal + Kopf-Spannen +
      * Schwanz je Datei) und wie lange das dauerte - seit dem Anhang an Ort und Stelle
      * ist das die Zahl, an der man den Umbau sieht. */
-    schreibBytes: 0, schreibMs: 0 };
+    schreibBytes: 0, schreibMs: 0,
+    /* Seiten JE BLOCK (nicht nur die Summe), Schreibfehler getrennt vom Leer-Zaehler,
+     * Bloecke ohne einen einzigen Balken der Quelle, uebersprungene Kerzen, und ob die
+     * Runde `end` weglassen musste. */
+    seitenJeBlock: [], fehlerJe: 0, quellenLeer: 0, uebersprungen: 0, ohneEnd: false,
+    zeitscheiben: 0, verschoben: 0 };
   function fertig() { erg.dauerMs = jetzt() - t0; return erg; }
+  /* F18: `erg.fehler` war eine unbegrenzte Kette - 500 Schreibfehler sind 33 KB je
+   * Runde in Panel-Zeile, _lauf.log und _fortschritt.json. Die ersten FEHLER_MAX
+   * Meldungen stehen da, der Rest wird gezaehlt. */
+  var fehlerListe = [], fehlerMehr = 0;
+  function fehlerNotieren(text) {
+    if (fehlerListe.length < FEHLER_MAX) fehlerListe.push(text); else fehlerMehr++;
+    erg.fehler = fehlerListe.join(' | ') + (fehlerMehr ? ' | und ' + fehlerMehr + ' weitere' : '');
+  }
   if (!o.an) { erg.grund = 'ausgeschaltet'; return fertig(); }
   if (!o.schluessel) { erg.grund = 'kein Alpaca-Zugang in den App-Einstellungen'; return fertig(); }
   var f = sitzungsfenster(t0);
@@ -274,62 +376,102 @@ async function runde(o) {
   if (sp && sp.aktiv) { erg.grund = 'Archivsperre liegt (' + (sp.was || 'anderer Schreiber') + ') - Runde wartet'; return fertig(); }
   var stempelJe = {};
   (o.werte || []).forEach(function (s) { stempelJe[s] = o.stempel ? o.stempel(s) : null; });
-  var plan = abrufplan(o.werte, stempelJe, t0, { leere: o.leere, block: o.block });
-  erg.aktuell = plan.aktuell; erg.ruhend = plan.ruhend.length; erg.ende = plan.ende; erg.bloecke = plan.bloecke.length;
-  if (!plan.bloecke.length) { erg.grund = 'nichts faellig'; return fertig(); }
   var deckel = o.deckel || DECKEL_JE_RUNDE;
-  if (o.sperre && o.sperre.setzen) o.sperre.setzen('Live-Sammler, ' + erg.werte + ' Werte');
+  var plan = abrufplan(o.werte, stempelJe, t0, { leere: o.leere, block: o.block, sitzung: f.zustand, deckel: deckel });
+  erg.aktuell = plan.aktuell; erg.ruhend = plan.ruhend.length; erg.ende = plan.ende; erg.bloecke = plan.bloecke.length;
+  erg.zeitscheiben = plan.zeitscheiben || 0; erg.verschoben = plan.verschoben || 0;
+  if (!plan.bloecke.length) { erg.grund = 'nichts faellig'; return fertig(); }
+  /* F37: liefert die Sperre `false`, hat sie ein anderer - dann wird die Runde
+   * AUSGELASSEN. Frueher lief sie ohne Sperre weiter ("laeuft trotzdem"), und genau
+   * das ist der Zustand, gegen den die Sperre gebaut wurde. */
+  if (o.sperre && o.sperre.setzen && o.sperre.setzen('Live-Sammler, ' + erg.werte + ' Werte') === false) {
+    erg.grund = 'Archivsperre liess sich nicht setzen - Runde ausgelassen';
+    return fertig();
+  }
   erg.gelaufen = true;
+  var ohneEnd = !!o.ohneEnd, ohneEndVersucht = false;
+  erg.ohneEnd = ohneEnd;
   try {
     for (var bi = 0; bi < plan.bloecke.length; bi++) {
       var block = plan.bloecke[bi];
-      var token = null, bars = {}, abbruch = false;
+      var token = null, bars = {}, abbruch = false, nochmal = false, seitenBlock = 0, rohBalken = 0;
       do {
         if (erg.anfragen >= deckel) { erg.deckel = true; abbruch = true; break; }
-        var r = await o.fetch(urlFuer(block, token));
-        erg.anfragen++; erg.seiten++;
-        if (!r || r.status === 429) { erg.drossel = true; erg.fehler = 'Drossel der Quelle (429) - Runde abgebrochen, keine Wiederholung'; abbruch = true; break; }
-        if (r.status !== 200) { erg.fehler = 'HTTP ' + r.status + ' - Runde abgebrochen'; abbruch = true; break; }
+        var r = await o.fetch(urlFuer(block, token, { ohneEnd: ohneEnd }));
+        erg.anfragen++; erg.seiten++; seitenBlock++;
+        if (!r || r.status === 429) { erg.drossel = true; fehlerNotieren('Drossel der Quelle (429) - Runde abgebrochen, keine Wiederholung'); abbruch = true; break; }
+        /* F14: 403 auf eine Anfrage MIT `end` - denselben Block ohne `end` wiederholen
+         * und es fuer die Sitzung merken. Sichten verwirft alles hinter der Grenze. */
+        if (r.status === 403 && !ohneEnd && !ohneEndVersucht) {
+          ohneEnd = true; ohneEndVersucht = true; erg.ohneEnd = true;
+          fehlerNotieren('HTTP 403 mit end - Block wird ohne end wiederholt' + koerper(r));
+          nochmal = true; break;
+        }
+        if (r.status !== 200) { fehlerNotieren('HTTP ' + r.status + ' - Runde abgebrochen' + koerper(r)); abbruch = true; break; }
         var daten = null;
         try { daten = JSON.parse(r.body); } catch (e) { daten = null; }
-        if (!daten || typeof daten !== 'object') { erg.fehler = 'Antwort unlesbar - Runde abgebrochen'; abbruch = true; break; }
+        if (!daten || typeof daten !== 'object') { fehlerNotieren('Antwort unlesbar - Runde abgebrochen'); abbruch = true; break; }
         Object.keys(daten.bars || {}).forEach(function (sym) {
-          bars[sym] = (bars[sym] || []).concat(daten.bars[sym] || []);
+          var liste = Array.isArray(daten.bars[sym]) ? daten.bars[sym] : [];
+          rohBalken += liste.length;
+          bars[sym] = (bars[sym] || []).concat(liste);
         });
         token = daten.next_page_token || null;
       } while (token);
+      if (nochmal) { bi--; continue; }        /* derselbe Block, diesmal ohne `end` */
       /* Was VOR dem Abbruch vollstaendig da ist, wird geschrieben - ein Block mit
        * angerissener Seitenfolge nicht: seine Werte kaemen halb an, und der naechste
        * Start laege hinter einer Luecke. */
       if (abbruch) break;
+      erg.seitenJeBlock.push(seitenBlock);
+      /* F4: ein Block, der fuer KEINEN seiner Werte einen Balken bringt, ist ein
+       * Quellenfehler ("Quelle antwortet leer mit 200", wiki/fehlerformen.md) und keine
+       * Aussage ueber die Werte. Er zaehlt NICHT auf den Leer-Zaehler - sonst legen
+       * drei stille Antworten der Quelle die ganze Live-Menge still. */
+      var quellenLeer = rohBalken === 0;
+      if (quellenLeer) {
+        erg.quellenLeer++;
+        fehlerNotieren('Quelle ohne einen einzigen Balken fuer ' + block.symbole.length + ' Werte (Block ' + (bi + 1) + ')');
+      }
       var g = sichten(bars, block, plan.startJe);
       Object.keys(g.verworfen).forEach(function (k) { erg.verworfen[k] += g.verworfen[k]; });
       block.symbole.forEach(function (sym) {
         var kerzen = g.je[sym] || [];
-        var neu = 0, letzter = null;
+        var neu = 0, letzter = null, schreibFehler = false;
         var jeJahr = nachJahren(kerzen);
         Object.keys(jeJahr).map(Number).sort().forEach(function (jahr) {
-          var w = o.schreiben(sym, jahr, jeJahr[jahr]);
+          /* F5: ein werfender Schreibvorgang kostet DIESEN Wert, nicht die Runde. */
+          var w;
+          try { w = o.schreiben(sym, jahr, jeJahr[jahr]); }
+          catch (e) { w = { ok: false, grund: 'Ausnahme: ' + String((e && e.message) || e).slice(0, 200) }; }
           if (w && w.ok) {
             if (w.geschrieben) { erg.dateien++; neu += w.neu || 0; }
             if (zahl(w.geschriebenBytes)) erg.schreibBytes += w.geschriebenBytes;
             if (zahl(w.ms)) erg.schreibMs += w.ms;
             if (zahl(w.letzterStempel)) letzter = w.letzterStempel;
+            if (zahl(w.uebersprungen)) erg.uebersprungen += w.uebersprungen;
           } else if (w && w.grund) {
-            erg.fehler = (erg.fehler ? erg.fehler + ' | ' : '') + sym + ' ' + jahr + ': ' + w.grund;
+            schreibFehler = true;
+            fehlerNotieren(sym + ' ' + jahr + ': ' + w.grund);
           }
         });
         erg.kerzen += neu;
-        if (neu > 0) { plan.leere.je[sym] = 0; if (letzter > (erg.bis || 0)) erg.bis = letzter; }
-        else plan.leere.je[sym] = (plan.leere.je[sym] || 0) + 1;
-        erg.jeWert[sym] = { neu: neu, stempel: zahl(letzter) ? letzter : (stempelJe[sym] || null), leer: plan.leere.je[sym] };
+        if (neu > 0) { plan.leere.je[sym] = 0; plan.leere.gesehen[sym] = 1; if (letzter > (erg.bis || 0)) erg.bis = letzter; }
+        /* F16: ein Schreibfehler ist kein "leerer" Wert. Er wird getrennt gezaehlt -
+         * sonst ruht der Wert nach drei Fehlschlaegen, und die Meldung verschwindet. */
+        else if (schreibFehler) erg.fehlerJe++;
+        else if (!quellenLeer && (plan.zaehltLeere || plan.leere.gesehen[sym])) {
+          plan.leere.je[sym] = (plan.leere.je[sym] || 0) + 1;
+        }
+        erg.jeWert[sym] = { neu: neu, stempel: zahl(letzter) ? letzter : (stempelJe[sym] || null), leer: plan.leere.je[sym] || 0 };
       });
     }
     if (erg.deckel) erg.grund = 'Deckel von ' + deckel + ' Anfragen erreicht - Rest in der naechsten Runde';
+    else if (erg.verschoben) erg.grund = 'Deckel von ' + deckel + ' Anfragen: ' + erg.verschoben + ' Bloecke in der naechsten Runde';
     /* Der Abschluss (Fortschritts-Vermerk, Protokoll) laeuft NOCH UNTER DER SPERRE -
      * sonst koennte der Nachlauf dazwischen starten, seinen Fortschritt lesen und
      * den Vermerk dieser Runde spaeter mit einer aelteren Fassung ueberschreiben. */
-    if (typeof o.abschluss === 'function') { try { o.abschluss(erg); } catch (e) { erg.fehler = (erg.fehler ? erg.fehler + ' | ' : '') + 'Abschluss: ' + String(e && e.message || e); } }
+    if (typeof o.abschluss === 'function') { try { o.abschluss(erg); } catch (e) { fehlerNotieren('Abschluss: ' + String(e && e.message || e)); } }
   } finally {
     if (o.sperre && o.sperre.loesen) o.sperre.loesen();
   }
@@ -358,12 +500,26 @@ function panelZeile(st) {
   if (!st.moeglich) return 'Alpaca live: aus — kein Alpaca-Zugang in den App-Einstellungen';
   if (!st.an) return 'Alpaca live: aus — Schalter „Live-Sammler" ist aus';
   var t = 'Alpaca live: ' + (st.werte || 0) + ' Werte';
+  /* AKTUELL UND RUHEND (07.09.2026): "3.067 Werte" allein verschweigt, dass davon
+   * vielleicht 3.000 ruhen. Die zwei Zahlen stehen jetzt daneben - aktuell = auf dem
+   * neuesten Stand, ruhend = nach LEER_MAX leeren Runden zurueckgestellt. */
+  if (zahl(st.aktuell) && st.aktuell > 0) t += ' · ' + st.aktuell + ' aktuell';
+  if (zahl(st.ruhend) && st.ruhend > 0) t += ' · ' + st.ruhend + ' ruhend';
   t += ' · letzte Runde ' + (zahl(st.letzteRunde) ? uhr(st.letzteRunde) : 'noch keine');
   t += ' · bis ' + (zahl(st.bis) ? uhr(st.bis, 'America/New_York') + ' ET' : '–');
   t += ' · Abrufe je Runde ' + (zahl(st.anfragen) ? st.anfragen : '–');
   /* Nur wenn die Runde WIRKLICH geschrieben hat - eine Runde ohne neue Kerze soll
    * nicht "geschrieben 0 KB" melden. */
   if (zahl(st.schreibBytes) && st.schreibBytes > 0) t += ' · geschrieben ' + menge(st.schreibBytes) + ' in ' + sekunden(st.schreibMs);
+  /* Der Deckel wird gemeldet wie die Drossel - er war bisher unsichtbar, obwohl er
+   * Bloecke in die naechste Runde schiebt. */
+  /* `deckel` heisst im Stand der App die ZAHL, im Ergebnis einer Runde das ERREICHT -
+   * hier wird beides angenommen, damit die Zeile aus beidem gebaut werden kann. */
+  var deckelErreicht = st.deckelErreicht !== undefined ? !!st.deckelErreicht : st.deckel === true;
+  var deckelWert = zahl(st.deckel) ? st.deckel : DECKEL_JE_RUNDE;
+  if (deckelErreicht) t += ' · Deckel (' + deckelWert + ' Abrufe)';
+  else if (zahl(st.verschoben) && st.verschoben > 0) t += ' · Deckel: ' + st.verschoben + ' Bloecke in der naechsten Runde';
+  if (st.ohneEnd) t += ' · ohne end (403 der Quelle)';
   if (st.drossel) t += ' · Drossel (429)';
   else if (st.fehler) t += ' · Fehler: ' + st.fehler;
   else if (st.grund && !st.gelaufen) t += ' · ' + st.grund;
@@ -372,7 +528,7 @@ function panelZeile(st) {
 
 module.exports = {
   TAKT_MS: TAKT_MS, FERTIG_ABSTAND_MS: FERTIG_ABSTAND_MS, DECKEL_JE_RUNDE: DECKEL_JE_RUNDE, BLOCK: BLOCK, SEITE: SEITE, LEER_MAX: LEER_MAX,
-  REDUNDANZ_MAX: REDUNDANZ_MAX, ERLOSCHEN_TAGE: ERLOSCHEN_TAGE,
+  FEHLER_MAX: FEHLER_MAX, REDUNDANZ_MAX: REDUNDANZ_MAX, ERLOSCHEN_TAGE: ERLOSCHEN_TAGE,
   liveMenge: liveMenge, gefuehrteReihen: gefuehrteReihen, menge: menge,
   fertigGrenze: fertigGrenze, zustandUm: zustandUm, sitzungsfenster: sitzungsfenster,
   startFuer: startFuer, abrufplan: abrufplan, urlFuer: urlFuer, sichten: sichten, nachJahren: nachJahren,

@@ -642,9 +642,35 @@
     var p = anker + Math.floor((minDesTages - anker) / ivMin) * ivMin;
     return tagStart + p * 60000 - v * 60000;
   }
+  /* DIE LETZTE PERIODE EINER SITZUNG (07.09.2026).
+   * Eine Periode galt bisher nur als geschlossen, wenn ein Balken kam, der ihre volle
+   * Laenge deckt: fuer die 15:30-Stundenkerze also einer um 16:30. Die 15:30-Periode ist
+   * aber nur eine halbe Stunde lang - die Sitzung endet um 16:00 -, und so verschwand
+   * sie zwischen Handelsschluss und dem ersten fertigen Nachboersen-Balken; bei Werten
+   * ohne Nachboersenhandel bis zum naechtlichen Yahoo-Lauf. Dasselbe am Halbtag (12:30)
+   * und in der Vorboerse (09:00).
+   * Jetzt schliesst eine Periode auch, wenn der juengste Minutenstempel die LETZTE
+   * MINUTE IHRER SITZUNG ist. Welche das ist, sagt der Aufrufer (opt.sitzungsEnde aus
+   * dem Kalender der Quelle); ohne ihn gelten die Regelzeiten - Vorboerse bis 09:29,
+   * regulaer bis 15:59 (Halbtag 12:59), nachboerslich bis 19:59 (Halbtag 16:59). */
+  var SITZUNGS_ENDE = { vor: [9 * 60 + 29], regulaer: [15 * 60 + 59, 12 * 60 + 59], nach: [19 * 60 + 59, 16 * 60 + 59] };
+  function minuteDesTages(tsMs) {
+    var lokal = tsMs + etVersatzMin(tsMs) * 60000;
+    return Math.floor((lokal - Math.floor(lokal / 86400000) * 86400000) / 60000);
+  }
+  function istSitzungsEnde(tsMs, sitzung, opt) {
+    var m = minuteDesTages(tsMs);
+    if (opt && typeof opt.sitzungsEnde === 'function') {
+      var e = opt.sitzungsEnde(sitzung, tsMs);
+      return zahl(e) && m === e;
+    }
+    var liste = SITZUNGS_ENDE[sitzung];
+    return !!liste && liste.indexOf(m) >= 0;
+  }
   /** Minutenkerzen -> Kerzen des Zeitrahmens, Sitzung je gebildeter Kerze mitgefuehrt.
-   *  Rueckgabe { kerzen, sitzungen, unvollstaendig, angeschnitten }. */
-  function verdichtenMinuten(kerzen, art, sitzungJe) {
+   *  Rueckgabe { kerzen, sitzungen, unvollstaendig, angeschnitten }.
+   *  opt.sitzungsEnde(sitzung, tsMs) -> Minute des ET-Tages, an der diese Sitzung endet. */
+  function verdichtenMinuten(kerzen, art, sitzungJe, opt) {
     var ivMin = MINUTEN_VERDICHTUNG[art];
     var ks = (kerzen || []).filter(kerzeOk);
     if (!ivMin) return { kerzen: ks.slice(), sitzungen: (sitzungJe || []).slice(), unvollstaendig: 0, angeschnitten: 0 };
@@ -676,7 +702,8 @@
       }
       letzter = k[0];
     }
-    if (akt) abschliessen(letzter != null && akt.zeit + ivMin * 60000 <= letzter + 60000);
+    if (akt) abschliessen(letzter != null && (akt.zeit + ivMin * 60000 <= letzter + 60000 ||
+                                              istSitzungsEnde(letzter, aktSitz, opt)));
     return { kerzen: aus, sitzungen: sitz, unvollstaendig: unvoll, angeschnitten: angeschnitten };
   }
   /** Aus "Sitzung je Kerze" wieder Bereiche machen - fuer die Antwort der Leseauskunft,

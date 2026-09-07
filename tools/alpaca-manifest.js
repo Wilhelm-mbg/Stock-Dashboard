@@ -157,6 +157,24 @@ function manifestSchreiben(wurzel, opt) {
 
 /** Manifest gegen die Platte halten: fehlende, veraenderte (Bytes; mit opt.hash auch
  *  SHA-256), neue Dateien. Jede Datei ein Eintrag, jeder Eintrag eine Datei. */
+/** Der `stand` aus dem Kopf einer Jahresdatei, ohne sie ganz zu lesen. */
+function standAus(pfad) {
+  var fd;
+  try { fd = fs.openSync(pfad, 'r'); } catch (e) { return null; }
+  try {
+    var buf = Buffer.alloc(4096);
+    var n = fs.readSync(fd, buf, 0, 4096, 0);
+    var m = /"stand"\s*:\s*"([^"]{10,40})"/.exec(buf.slice(0, n).toString('utf8'));
+    return m ? m[1] : null;
+  } catch (e) { return null; } finally { fs.closeSync(fd); }
+}
+/* SEIT DEM LIVE-SAMMLER IST "VERAENDERT" NICHT MEHR "VERDAECHTIG" (07.09.2026).
+ * Die App haengt waehrend der Sitzung alle fuenf Minuten an - jede live gepflegte Datei
+ * ist danach groesser als im Manifest, und `--pruefen` meldete sie bis zum naechsten
+ * Manifestlauf von Hand als abweichend. Ein Dauer-Fehlalarm macht die Pruefung wertlos.
+ * Traegt die Datei einen JUENGEREN `stand` als das Manifest, ist sie fortgeschrieben,
+ * nicht veraendert - sie kommt in `nachgewachsen`. Wer alt oder gleich alt ist und
+ * trotzdem abweicht, bleibt ein Befund. */
 function manifestPruefen(wurzel, opt) {
   opt = opt || {};
   var mp = path.join(wurzel, '_manifest.json');
@@ -165,22 +183,28 @@ function manifestPruefen(wurzel, opt) {
   var liste = jahresdateien(wurzel);
   var da = {};
   liste.forEach(function (d) { da[d.rel] = d; });
-  var fehlende = [], veraenderte = [], neue = [], gleich = 0;
+  var fehlende = [], veraenderte = [], nachgewachsen = [], neue = [], gleich = 0;
+  var manStand = Date.parse(man.stand || '');
+  function einordnen(rel, pfad, satz) {
+    var s = Date.parse(standAus(pfad) || '');
+    if (isFinite(s) && isFinite(manStand) && s > manStand) { satz.stand = new Date(s).toISOString(); nachgewachsen.push(satz); return; }
+    veraenderte.push(satz);
+  }
   Object.keys(man.eintraege).forEach(function (rel) {
     var d = da[rel];
     if (!d) { fehlende.push(rel); return; }
     var e = man.eintraege[rel];
     var groesse = fs.statSync(d.pfad).size;
-    if (groesse !== e.bytes) { veraenderte.push({ datei: rel, bytesVorher: e.bytes, bytesJetzt: groesse }); return; }
+    if (groesse !== e.bytes) { einordnen(rel, d.pfad, { datei: rel, bytesVorher: e.bytes, bytesJetzt: groesse }); return; }
     if (opt.hash) {
       var h = crypto.createHash('sha256').update(fs.readFileSync(d.pfad)).digest('hex');
-      if (h !== e.sha256) { veraenderte.push({ datei: rel, bytesVorher: e.bytes, bytesJetzt: groesse, hash: 'abweichend' }); return; }
+      if (h !== e.sha256) { einordnen(rel, d.pfad, { datei: rel, bytesVorher: e.bytes, bytesJetzt: groesse, hash: 'abweichend' }); return; }
     }
     gleich++;
   });
   liste.forEach(function (d) { if (!man.eintraege[d.rel]) neue.push(d.rel); });
   return { vorhanden: true, stand: man.stand, eintraege: Object.keys(man.eintraege).length, dateien: liste.length,
-           gleich: gleich, fehlende: fehlende, veraenderte: veraenderte, neue: neue, hashGeprueft: !!opt.hash };
+           gleich: gleich, fehlende: fehlende, veraenderte: veraenderte, nachgewachsen: nachgewachsen, neue: neue, hashGeprueft: !!opt.hash };
 }
 
 /** Einzelne Eintraege nachfuehren (Nachlauf: nur die beruehrten Dateien). */

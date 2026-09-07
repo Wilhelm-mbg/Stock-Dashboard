@@ -172,20 +172,67 @@ function sperreLesen(ordner, jetzt) {
     alterStunden: alter, start: j.start, was: j.was || null,
     grundVerwaist: alter >= VERWAIST_STUNDEN ? 'aelter als ' + VERWAIST_STUNDEN + ' Stunden' : null };
 }
+/* Der Inhalt einer Sperrdatei. rechner dazu: ohne ihn wuerde eine Sperre von einer
+ * Netzfreigabe an der hiesigen Prozesstabelle gemessen, wo ihre Nummer nichts bedeutet. */
+function sperreInhalt(was) {
+  return JSON.stringify({ start: new Date().toISOString(), was: was || null,
+    pid: process.pid, rechner: os.hostname() }, null, 1);
+}
+/* EXKLUSIV ANLEGEN, NICHT NUR SCHREIBEN (07.09.2026).
+ * Bis heute war die Sperre "lesen, dann schreiben" - zwischen den beiden Schritten
+ * liegt bei der Live-Runde fast eine Sekunde (500 Schwaenze werden gelesen), und in
+ * dieser Sekunde sahen zwei Prozesse dieselbe freie Sperre und nahmen sie beide.
+ * Nachgefahren am 06.09. mit zwei Prozessen: BEIDE hatten sie in 20 von 20 Runden.
+ * `flag: 'wx'` legt die Datei an ODER wirft EEXIST - das entscheidet das Dateisystem,
+ * nicht der Ablauf hier. Bei EEXIST wird gelesen: liegt eine LEBENDE fremde Sperre,
+ * ist es nicht unsere Runde; ist sie verwaist, wird sie weggeraeumt und EINMAL neu
+ * versucht - kommt dann wieder EEXIST, war jemand anders schneller, und auch das ist
+ * eine Antwort. */
 function sperreSetzen(ordner, was) {
   try {
     fs.mkdirSync(ordner, { recursive: true });
-    /* rechner dazu: ohne ihn wuerde eine Sperre von einer Netzfreigabe an der
-     * hiesigen Prozesstabelle gemessen, wo ihre Nummer nichts bedeutet. */
-    fs.writeFileSync(sperrePfad(ordner), JSON.stringify(
-      { start: new Date().toISOString(), was: was || null, pid: process.pid,
-        rechner: os.hostname() }, null, 1));
-    return true;
-  } catch (e) { return false; }   // ohne Sperre laeuft der Abruf trotzdem
+    var text = sperreInhalt(was);
+    for (var versuch = 0; versuch < 2; versuch++) {
+      try { fs.writeFileSync(sperrePfad(ordner), text, { flag: 'wx' }); return true; }
+      catch (e) {
+        if (e.code !== 'EEXIST' || versuch > 0) return false;
+        if (sperreLesen(ordner).aktiv) return false;      /* fremder lebender Schreiber */
+        try { fs.unlinkSync(sperrePfad(ordner)); } catch (e2) { return false; }
+      }
+    }
+    return false;
+  } catch (e) { return false; }
 }
+/** Gehoert diese Sperre uns? pid UND Rechner muessen stimmen - eine fremde
+ *  Prozessnummer von einem anderen Rechner ist eine beliebige Zahl. */
+function sperreEigen(ordner) {
+  var j = null;
+  try { j = JSON.parse(fs.readFileSync(sperrePfad(ordner), 'utf8')); } catch (e) { return false; }
+  return !!(j && j.pid === process.pid && (!j.rechner || j.rechner === os.hostname()));
+}
+/* NUR DIE EIGENE SPERRE LOESEN - ODER EINE, DIE NIEMANDEM MEHR GEHOERT.
+ * Vorher loeschte `sperreLoesen` jede Sperre, die dalag - auch die des anderen
+ * Schreibers, der gerade mitten in einer Jahresdatei war. Weg damit ist eine LEBENDE
+ * fremde Sperre; sie bleibt liegen und faellt ueber pid-Pruefung und Frist. Eine
+ * verwaiste (unlesbar, ohne Zeitstempel, toter Prozess, ueber der Frist) darf weiter
+ * jeder wegraeumen - sperreLesen zaehlt sie ohnehin nicht mehr als aktiv, und ein
+ * Aufraeumen bleibt ein Aufraeumen. */
 function sperreLoesen(ordner) {
-  try { if (fs.existsSync(sperrePfad(ordner))) fs.unlinkSync(sperrePfad(ordner)); return true; }
-  catch (e) { return false; }
+  try {
+    if (!fs.existsSync(sperrePfad(ordner))) return true;
+    if (!sperreEigen(ordner) && sperreLesen(ordner).aktiv) return false;
+    fs.unlinkSync(sperrePfad(ordner));
+    return true;
+  } catch (e) { return false; }
+}
+/** Die eigene Sperre auffrischen (neuer Zeitstempel), damit ein langer Lauf nicht
+ *  nach VERWAIST_STUNDEN fuer tot erklaert wird, waehrend er schreibt. */
+function sperreAuffrischen(ordner, was) {
+  try {
+    if (!sperreEigen(ordner)) return false;
+    fs.writeFileSync(sperrePfad(ordner), sperreInhalt(was));
+    return true;
+  } catch (e) { return false; }
 }
 
 function yahooName(sym) { return sym.replace(/\./g, '-'); }
@@ -1254,4 +1301,5 @@ module.exports = {
   archivUeberblick: archivUeberblick, fensterLuecke: fensterLuecke, sammle: sammle,
   laufProtokoll: laufProtokoll,
   sperreLesen: sperreLesen, sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen,
+  sperreEigen: sperreEigen, sperreAuffrischen: sperreAuffrischen,
 };

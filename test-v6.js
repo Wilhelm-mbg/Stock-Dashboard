@@ -19601,10 +19601,17 @@ console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Ver
   ok(!L.sitzungsfenster(et83(2026, 9, 8, 3, 0)).offen, '83.4 03:00 ET: keine Runde (Vorboerse beginnt 04:00)');
   ok(L.sitzungsfenster(et83(2026, 9, 8, 10, 0)).zustand === 'regulaer', '83.4 Dienstag 10:00 ET: regulaer');
   ok(L.sitzungsfenster(et83(2026, 9, 8, 19, 0)).zustand === 'nachboerslich', '83.4 19:00 ET: Nachboerse, die Runde laeuft');
-  ok(L.sitzungsfenster(et83(2026, 9, 8, 20, 10)).offen && !L.sitzungsfenster(et83(2026, 9, 8, 20, 20)).offen,
-     '83.4 um 20:10 ET liegt die Grenze noch in der Nachboerse (19:54), um 20:20 nicht mehr');
-  ok(!L.sitzungsfenster(et83(2026, 11, 27, 17, 30)).offen && L.sitzungsfenster(et83(2026, 11, 27, 13, 30)).offen,
-     '83.4 Halbtag 27.11.: 13:30 ist Nachboerse, 17:30 ist zu (Nachboerse endet vier Stunden nach 13:00)');
+  /* NEU GEZIELT AM 07.09.2026 (F6/F23). Vorher stand hier "20:10 offen, 20:20 zu" - das
+   * schrieb die Kante 20:16 fest, an der 0-4 Balken je Tag ungefragt blieben. Das
+   * Fenster bleibt jetzt offen, solange die Grenze der VORIGEN Runde in einer Sitzung
+   * lag; Schluss ist 20:21:00, letzte offene Sekunde 20:20:59. Die Klinke ist damit
+   * nicht weicher, sondern genauer: sie nennt die Kante auf die Sekunde. */
+  ok(L.sitzungsfenster(et83(2026, 9, 8, 20, 10)).offen && L.sitzungsfenster(et83(2026, 9, 8, 20, 20)).offen &&
+     L.sitzungsfenster(et83(2026, 9, 8, 20, 20) + 59000).offen && !L.sitzungsfenster(et83(2026, 9, 8, 20, 21)).offen,
+     '83.4 offen bis 20:20:59 ET (die Runde um 20:16-20:20 holt 19:56-19:59 nach), zu ab 20:21:00');
+  ok(!L.sitzungsfenster(et83(2026, 11, 27, 17, 30)).offen && L.sitzungsfenster(et83(2026, 11, 27, 13, 30)).offen &&
+     L.sitzungsfenster(et83(2026, 11, 27, 17, 20)).offen && !L.sitzungsfenster(et83(2026, 11, 27, 17, 21)).offen,
+     '83.4 Halbtag 27.11.: 13:30 ist Nachboerse, zu ab 17:21 (vier Stunden nach 13:00, plus die Nachlese-Runde)');
   var frWinter = et83(2026, 12, 18, 20, 10);
   ok(L.sitzungsfenster(frWinter).offen, '83.4 Freitag 20:10 ET im Winter (= Samstag 01:10 UTC) ist noch Nachboerse - der Handelstag wird am ET-Tag entschieden');
   gegen83('die UTC-Tag-Rechnung hielte diesen Freitagabend fuer ein Wochenende',
@@ -19738,8 +19745,18 @@ console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Ver
     for (var i7 = 0; i7 < 6; i7++) { werte7.push('D' + i7); stempel7['D' + i7] = et83(2026, 9, 3, 19, 59) - i7 * 10 * 86400000; }
     var a7 = attrappe({ werte: werte7, stempel: function (s) { return stempel7[s]; }, deckel: 4 });
     var r7 = await L.runde(a7.o);
-    ok(r7.gelaufen && r7.bloecke === 6 && r7.anfragen === 4 && r7.deckel && a7.z.fetches === 4 && /Deckel von 4/.test(r7.grund),
-       '83.9 sechs Bloecke, Deckel 4: genau vier Anfragen, der Rest wartet auf die naechste Runde', JSON.stringify([r7.bloecke, r7.anfragen, a7.z.fetches]));
+    /* NEU GEZIELT AM 07.09.2026 (F3). Vorher hiess die Klinke "sechs Bloecke, genau vier
+     * Anfragen" - sie schrieb damit fest, dass der Deckel MITTEN in der Seitenfolge
+     * zuschlaegt und der angerissene Block ganz wegfaellt (drei Runden, 450 Anfragen,
+     * null Kerzen). Jetzt kappt der Plan die ZEIT: es werden nur so viele Bloecke
+     * geplant, wie in den Deckel passen, der Rest steht in `verschoben`. Gemessen wird
+     * jetzt dasselbe Versprechen - "nie mehr als der Deckel" - plus das neue: keine
+     * Anfrage laeuft ins Leere. */
+    ok(r7.gelaufen && r7.bloecke === 2 && r7.verschoben === 4 && r7.anfragen <= 4 && a7.z.fetches === r7.anfragen && !r7.deckel &&
+       /Deckel von 4 Anfragen: 4 Bloecke/.test(r7.grund),
+       '83.9 sechs Bloecke, Deckel 4: der Plan nimmt nur, was hineinpasst (2 Bloecke), vier warten auf die naechste Runde - keine Anfrage ins Leere',
+       JSON.stringify([r7.bloecke, r7.verschoben, r7.anfragen, a7.z.fetches, r7.grund]));
+    ok(a7.z.geschrieben.length === 2, '83.9 und was geholt wurde, ist auch geschrieben (frueher fiel der angerissene Block ganz weg)', String(a7.z.geschrieben.length));
     gegen83('ohne Deckel haette dieselbe Runde sechs Anfragen gestellt',
             (await L.runde(attrappe({ werte: werte7, stempel: function (s) { return stempel7[s]; } }).o)).anfragen === 6);
     ok(L.DECKEL_JE_RUNDE === 150, '83.9 der Deckel einer Runde ist 150 - Reserve fuer Kostenmessung und Viewer auf demselben Zugang');
@@ -20051,8 +20068,22 @@ console.log('\n84) Nacharbeiten: Nachlauf ab dem letzten Stempel, Manifest, Luec
   AA84.jahrSchreiben(pathM.join(rohM, 'CCC'), 'CCC', 2026, [kM(9, 30, 1)], kalM, { herkunft: 'Probe' }); /* neu */
   fs.rmSync(pathM.join(rohM, 'BBB'), { recursive: true, force: true });                      /* fehlend */
   var p2 = MF84.manifestPruefen(rohM, { hash: true });
-  ok(p2.fehlende.join() === 'BBB/2026.json' && p2.neue.join() === 'CCC/2026.json' && p2.veraenderte.length === 1 && p2.veraenderte[0].datei === 'AAA/2026.json' && p2.gleich === 0,
-     '84.4 fehlende, neue und veraenderte Dateien werden je einzeln genannt', JSON.stringify([p2.fehlende, p2.neue, p2.veraenderte.map(function (v) { return v.datei; })]));
+  /* NEU GEZIELT AM 07.09.2026 (F12). Vorher stand hier "AAA ist veraendert". Seit der
+   * Live-Sammler waehrend der Sitzung anhaengt, ist JEDE live gepflegte Datei groesser
+   * als im Manifest - ein Dauer-Fehlalarm. Eine Datei, die einen JUENGEREN `stand` traegt
+   * als das Manifest, ist fortgeschrieben und heisst jetzt `nachgewachsen`; nur wer
+   * ohne juengeren Stand abweicht, bleibt ein Befund. Die Klinke misst beide Toepfe. */
+  ok(p2.fehlende.join() === 'BBB/2026.json' && p2.neue.join() === 'CCC/2026.json' && p2.gleich === 0 &&
+     p2.veraenderte.length === 0 && p2.nachgewachsen.length === 1 && p2.nachgewachsen[0].datei === 'AAA/2026.json',
+     '84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund',
+     JSON.stringify([p2.fehlende, p2.neue, p2.veraenderte.map(function (v) { return v.datei; }), p2.nachgewachsen.map(function (v) { return v.datei; })]));
+  /* Gegenprobe: dieselbe Abweichung mit einem ALTEN `stand` bleibt ein Befund. */
+  var altPfad84 = pathM.join(rohM, 'AAA', '2026.json');
+  fs.writeFileSync(altPfad84, fs.readFileSync(altPfad84, 'utf8').replace(/"stand":"[^"]*"/, '"stand":"2001-01-01T00:00:00.000Z"'));
+  var p2b = MF84.manifestPruefen(rohM, { hash: true });
+  ok(p2b.veraenderte.length === 1 && p2b.veraenderte[0].datei === 'AAA/2026.json' && p2b.nachgewachsen.length === 0,
+     '84.4 Gegenprobe: dieselbe Datei mit altem `stand` ist weiter "veraendert" - die Regel prueft den Stand, nicht den Namen',
+     JSON.stringify([p2b.veraenderte.map(function (v) { return v.datei; }), p2b.nachgewachsen.length]));
   var nf = MF84.manifestNachfuehren(rohM, ['AAA/2026.json', 'BBB/2026.json', 'CCC/2026.json'], { kal: kalM });
   var p3 = MF84.manifestPruefen(rohM, { hash: true });
   ok(nf.nachgefuehrt === 2 && p3.gleich === 2 && !p3.fehlende.length && !p3.neue.length && !p3.veraenderte.length && JSON.parse(fs.readFileSync(pathM.join(rohM, '_manifest.json'), 'utf8')).eintraege['AAA/2026.json'].kerzen === 4,
@@ -20567,6 +20598,391 @@ console.log('\n86) Die Boersenglocke: Plan, Streuung, Kopfraum, Verdrahtung');
   ok(dateien86.length === 0, '86.10 auch neben dem Modul liegt keine Audiodatei', dateien86.join(', ') || 'keine');
 
   ok(g86 === rot86, '86.x alle Gegenproben dieses Abschnitts schlagen an', rot86 + ' von ' + g86);
+})();
+
+/* ================= 87) Nachbesserung Live-Sammler nach der QS (07.09.2026) ===========
+ *
+ * Ein unabhaengiger Pruef-Chat hat den Live-Sammler und den Nachlauf in der Nacht zum
+ * 07.09. auseinandergenommen (uebergabe/qs-live-sammler-2026-09-06.md, 38 Befunde). Die
+ * zwoelf, die vor dem ersten echten Handelstag behoben wurden, stehen hier als Klinke -
+ * jede mit einer Gegenprobe, die zeigt, dass die Klinke den Fehler auch faende.
+ *
+ * Der Auftrag nannte diesen Abschnitt "86"; die Nummer war beim Schreiben des Auftrags
+ * noch frei, ist aber inzwischen die Glocke. Deshalb 87.
+ *
+ * Die Nummern F.. sind die der QS-Uebergabe:
+ *   F1  Sperre nicht atomar, Loesen ohne Eigentuemer, --holen ohne Sperre
+ *   F2  Ruhe-Regel legt in der Vorboerse 96 % der Menge still
+ *   F3  Deckel mitten im Block -> Stillstand      F4  leere 200 = Quellenfehler
+ *   F5  Ausnahme im Schreibweg toetet die Runde   F6  Fenster schliesst zu frueh
+ *   F7  Fortschritt ueberschrieben                F8/F32 Rueckgabewerte
+ *   F9  letzte Periode einer Sitzung              F10 Reihenwahl im 1m-Viewer
+ *   F13 Raster in Sekunden statt Millisekunden    F14 403 bei `end`
+ *   F16 Schreibfehler zaehlt als leer             F18 Fehlerkette unbegrenzt
+ *   F19 Deckel unsichtbar   F20 Seiten je Block   F21 bars[sym] keine Liste
+ *   F31 Kalender ueber einen geteilten Temp-Namen F37 sperre.setzen()=false ignoriert
+ */
+console.log('\n87) Nachbesserung nach der QS: Ruhe-Regel, Sperre, Fenster, Deckel, Schreibweg');
+(function () {
+  var L87 = require('./livesammler.js');
+  var A87 = require('./alpacaarchiv.js');
+  var KQ87 = require('./kerzenquelle.js');
+  var K87 = require('./markt/kerzenchart.js');
+  var os87 = require('os'), path87 = require('path'), cp87 = require('child_process');
+  var mainQ87 = fs.readFileSync('main.js', 'utf8');
+  var liveQ87 = ohneKommentare(fs.readFileSync('livesammler.js', 'utf8'));
+  var toolQ87 = ohneKommentare(fs.readFileSync('tools/alpaca-vollsammlung.js', 'utf8'));
+  var wrapper87 = fs.readFileSync('tools/vollsammlung-nachholen.cmd', 'utf8');
+  var wrapper87b = fs.readFileSync('tools/vollsammlung-nacharbeiten.cmd', 'utf8');
+  var g87 = 0, rot87 = 0;
+  function gegen87(was, ergebnis) { g87++; if (ergebnis) rot87++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function et87(j, m, d, h, mi) { return A87.nyNachUtc(j, m, d, h, mi); }
+  var wegwerf87 = fs.mkdtempSync(path87.join(os87.tmpdir(), 'md-87-'));
+
+  /* --- 87.1 F2 Die Ruhe-Regel: erst im regulaeren Handel, und der Sitzungswechsel weckt --- */
+  var leere87 = { tag: null, sitzung: null, je: {}, gesehen: {} };
+  var vor87 = et87(2026, 9, 8, 5, 0), reg87 = et87(2026, 9, 8, 11, 0);
+  var st87 = { AAA: et87(2026, 9, 3, 19, 59) };
+  var pV = L87.abrufplan(['AAA'], st87, vor87, { leere: leere87, sitzung: 'vorboerslich' });
+  ok(pV.zaehltLeere === false, '87.1 in der Vorboerse zaehlt eine leere Runde NICHT - dort handelt der halbe Markt gar nicht');
+  var pR = L87.abrufplan(['AAA'], st87, reg87, { leere: leere87, sitzung: 'regulaer' });
+  ok(pR.zaehltLeere === true, '87.1 im regulaeren Handel zaehlt sie');
+  ok(L87.abrufplan(['AAA'], st87, reg87, { leere: leere87 }).zaehltLeere === true,
+     '87.1 ohne Angabe der Sitzung bleibt es beim alten Verhalten - so rechnet der Nachlauf, der einmal je Nacht fragt');
+  /* Der Sitzungswechsel raeumt den Zaehler ab: drei leere Runden in der Vorboerse, dann 09:30. */
+  var leereW = { tag: null, sitzung: null, je: {}, gesehen: {} };
+  L87.abrufplan(['AAA'], st87, vor87, { leere: leereW, sitzung: 'vorboerslich' });
+  leereW.je.AAA = L87.LEER_MAX;
+  ok(L87.abrufplan(['AAA'], st87, vor87, { leere: leereW, sitzung: 'vorboerslich' }).ruhend.join() === 'AAA',
+     '87.1 wer LEER_MAX leere Runden hinter sich hat, ruht - das bleibt');
+  var pW = L87.abrufplan(['AAA'], st87, reg87, { leere: leereW, sitzung: 'regulaer' });
+  ok(pW.ruhend.length === 0 && pW.bloecke.length === 1,
+     '87.1 beim SITZUNGSWECHSEL faellt die Ruhe - um 09:30 ist wieder jeder dabei, nicht erst am naechsten ET-Tag');
+  /* `gesehen` laeuft am ET-Tag weiter, nicht je Sitzung. */
+  leereW.gesehen.AAA = 1;
+  L87.abrufplan(['AAA'], st87, reg87 + 3600000, { leere: leereW, sitzung: 'nachboerslich' });
+  ok(leereW.gesehen.AAA === 1, '87.1 wer heute schon einen Balken hatte, bleibt "gesehen" - ueber den Sitzungswechsel hinweg');
+  L87.abrufplan(['AAA'], st87, reg87 + 86400000, { leere: leereW, sitzung: 'regulaer' });
+  ok(!leereW.gesehen.AAA, '87.1 am naechsten ET-Tag faengt "gesehen" von vorn an');
+  gegen87('die alte Regel (ohne Sitzung, jede leere Runde zaehlt) haette in der Vorboerse ruhen lassen',
+          L87.abrufplan(['AAA'], st87, vor87, { leere: { tag: A87.etTag(vor87), je: { AAA: L87.LEER_MAX } } }).ruhend.join() === 'AAA');
+
+  /* --- 87.2 F1 Die Sperre: exklusiv anlegen, nur die eigene loesen --- */
+  var sp87 = path87.join(wegwerf87, 'sperre');
+  fs.mkdirSync(sp87, { recursive: true });
+  ok(KQ87.sperreSetzen(sp87, 'erster') === true, '87.2 die erste Sperre wird gesetzt');
+  ok(KQ87.sperreSetzen(sp87, 'zweiter') === false,
+     '87.2 die zweite bekommt FALSE - `wx` laesst das Dateisystem entscheiden, nicht die Reihenfolge von lesen und schreiben');
+  var roh87 = JSON.parse(fs.readFileSync(path87.join(sp87, '_laeuft.json'), 'utf8'));
+  ok(roh87.was === 'erster' && roh87.pid === process.pid && roh87.rechner === os87.hostname(),
+     '87.2 in der Datei steht der ERSTE, mit Prozessnummer und Rechner', roh87.was);
+  ok(KQ87.sperreEigen(sp87) === true, '87.2 und sie gilt als die eigene');
+  /* Eine fremde, LEBENDE Sperre wird nicht geloest. */
+  var kind87 = cp87.spawn(process.execPath, ['-e', 'setTimeout(function(){}, 60000)'], { stdio: 'ignore' });
+  fs.writeFileSync(path87.join(sp87, '_laeuft.json'), JSON.stringify({ start: new Date().toISOString(), was: 'fremd', pid: kind87.pid, rechner: os87.hostname() }));
+  ok(KQ87.sperreEigen(sp87) === false && KQ87.sperreLoesen(sp87) === false && fs.existsSync(path87.join(sp87, '_laeuft.json')),
+     '87.2 eine fremde LEBENDE Sperre wird nicht geloest - genau das zerriss am 06.09. die Jahresdatei');
+  ok(KQ87.sperreSetzen(sp87, 'ich') === false, '87.2 und sie wird auch nicht ueberschrieben');
+  kind87.kill();
+  /* Eine verwaiste (toter Prozess) darf jeder wegraeumen - sonst blockiert ein Absturz fuer immer. */
+  fs.writeFileSync(path87.join(sp87, '_laeuft.json'), JSON.stringify({ start: new Date(Date.now() - 9 * 3600000).toISOString(), was: 'verwaist', pid: 999999, rechner: os87.hostname() }));
+  ok(KQ87.sperreSetzen(sp87, 'nachfolger') === true && JSON.parse(fs.readFileSync(path87.join(sp87, '_laeuft.json'), 'utf8')).was === 'nachfolger',
+     '87.2 eine verwaiste Sperre wird weggeraeumt und neu gesetzt');
+  ok(KQ87.sperreAuffrischen(sp87, 'nachfolger, 100/200') === true && JSON.parse(fs.readFileSync(path87.join(sp87, '_laeuft.json'), 'utf8')).was === 'nachfolger, 100/200',
+     '87.2 die eigene Sperre laesst sich auffrischen - ein Vollauf laeuft laenger als die Verwaisungsfrist');
+  ok(KQ87.sperreLoesen(sp87) === true && !fs.existsSync(path87.join(sp87, '_laeuft.json')), '87.2 die eigene wird geloest');
+  gegen87('die alte Fassung (writeFileSync ohne wx) haette die zweite Sperre gesetzt', (function () {
+    fs.writeFileSync(path87.join(sp87, '_laeuft.json'), '{"was":"a"}');
+    fs.writeFileSync(path87.join(sp87, '_laeuft.json'), '{"was":"b"}');
+    var d = JSON.parse(fs.readFileSync(path87.join(sp87, '_laeuft.json'), 'utf8'));
+    try { fs.unlinkSync(path87.join(sp87, '_laeuft.json')); } catch (e) { /* weg ist weg */ }
+    return d.was === 'b';
+  })());
+  /* Auf den RUMPF der Funktion gezielt, nicht auf eine Schreibweise: --holen muss warten,
+   * setzen und in einem finally loesen - alle drei innerhalb von holen(). */
+  var holenRumpf87 = toolQ87.slice(toolQ87.indexOf('async function holen('), toolQ87.indexOf('async function nachholen('));
+  ok(holenRumpf87.length > 500 && /await sperreWarten\(/.test(holenRumpf87) && /A\.sperreSetzen\(ROH,/.test(holenRumpf87) &&
+     /finally \{ A\.sperreLoesen\(ROH\); \}/.test(holenRumpf87),
+     '87.2 auch --holen der Vollsammlung wartet, setzt und loest dieselbe Sperre (frueher schrieb es ganz ohne)',
+     holenRumpf87.length + ' Zeichen');
+
+  /* --- 87.3 F1b Das Reparaturjournal traegt seinen Eigentuemer --- */
+  var jOrd87 = path87.join(wegwerf87, 'journal', 'AAA');
+  var kal87 = {}; kal87[A87.etTag(et87(2026, 9, 8, 10, 0))] = { open: '09:30', close: '16:00' };
+  function k87(h, mi, v) { return [et87(2026, 9, 8, h, mi), 10, v == null ? 100 : v, 11, 9, 10]; }
+  A87.jahrSchreiben(jOrd87, 'AAA', 2026, [k87(9, 30), k87(9, 31)], kal87, { herkunft: 'Probe 87' });
+  var jPfad87 = path87.join(jOrd87, '2026.json');
+  var vorherBytes87 = fs.readFileSync(jPfad87);
+  try { A87.jahrSchreiben(jOrd87, 'AAA', 2026, [k87(9, 32)], kal87, { abbruchBei: 'im-schwanz' }); } catch (e) { /* der Absturz ist der Zweck */ }
+  ok(fs.existsSync(A87.journalPfad(jPfad87)), '87.3 der abgebrochene Anhang laesst ein Journal liegen');
+  var jGelesen87 = A87.journalLesen(A87.journalPfad(jPfad87));
+  ok(jGelesen87.ok && jGelesen87.kopf.pid === process.pid && jGelesen87.kopf.rechner === os87.hostname(),
+     '87.3 die Kopfzeile nennt Prozessnummer und Rechner', String(jGelesen87.ok && jGelesen87.kopf.pid));
+  ok(A87.journalFremdLebend({ pid: process.pid, rechner: os87.hostname() }) === false, '87.3 das eigene Journal ist nicht fremd');
+  ok(A87.journalFremdLebend({ pid: 999999, rechner: os87.hostname() }) === false, '87.3 das eines toten Prozesses ist Freiwild - dafuer ist es da');
+  ok(A87.journalFremdLebend({ pid: 12, rechner: 'ein-anderer-rechner' }) === false, '87.3 eine fremde Nummer von einem anderen Rechner sagt nichts - es entscheidet die Frist');
+  var kind87b = cp87.spawn(process.execPath, ['-e', 'setTimeout(function(){}, 60000)'], { stdio: 'ignore' });
+  ok(A87.journalFremdLebend({ pid: kind87b.pid, rechner: os87.hostname() }) === true,
+     '87.3 aber das Journal eines LEBENDEN fremden Prozesses bleibt unangetastet - er steckt gerade mitten im Anhang');
+  kind87b.kill();
+  var rep87 = A87.journalReparieren(jPfad87);
+  ok(rep87.ok && rep87.repariert && Buffer.compare(fs.readFileSync(jPfad87), vorherBytes87) === 0,
+     '87.3 zurueckgespielt ist die Datei BYTEGLEICH mit dem Stand vor dem Anhang');
+  gegen87('ohne Eigentuemer im Kopf koennte man das Journal eines Lebenden nicht erkennen',
+          A87.journalFremdLebend({ rechner: os87.hostname() }) === false);
+
+  /* --- 87.4 F13 Das Raster: Millisekunden, dieselbe Regel wie die Vollpruefung --- */
+  ok(A87.kerzeAus({ t: '2026-09-03T13:30:00.000Z', o: 1, h: 2, l: 0.5, c: 1.5, v: 10 }) !== null, '87.4 ein Balken auf der vollen Minute wird angenommen');
+  ok(A87.kerzeAus({ t: '2026-09-03T13:30:00.500Z', o: 1, h: 2, l: 0.5, c: 1.5, v: 10 }) === null,
+     '87.4 einer 500 ms daneben NICHT - sonst staenden zwei Kerzen in einer Minute und die Folgeminute gaelte fuer immer als alt');
+  ok(A87.kerzeAus({ t: '2026-09-03T13:31:00.999Z', o: 1, h: 2, l: 0.5, c: 1.5, v: 10 }) === null, '87.4 auch 999 ms daneben nicht');
+  gegen87('die alte Regel (nur Sekunden) haette 13:30:00.500 angenommen',
+          new Date(Date.parse('2026-09-03T13:30:00.500Z')).getUTCSeconds() === 0);
+
+  /* --- 87.5 F6 Das Fenster: offen, solange die Grenze der VORIGEN Runde in einer Sitzung lag --- */
+  ok(L87.sitzungsfenster(et87(2026, 9, 8, 20, 15)).offen && L87.sitzungsfenster(et87(2026, 9, 8, 20, 20) + 59000).offen,
+     '87.5 20:15 und 20:20:59 ET sind offen - die letzte Runde des Tages holt 19:56-19:59 nach');
+  ok(!L87.sitzungsfenster(et87(2026, 9, 8, 20, 21)).offen, '87.5 20:21:00 ist zu');
+  ok(L87.sitzungsfenster(et87(2026, 9, 8, 20, 18)).nachlese === true,
+     '87.5 diese letzte Runde weiss, dass sie eine Nachlese ist (die eigene Grenze liegt schon hinter der Sitzung)');
+  ok(!L87.sitzungsfenster(et87(2026, 9, 8, 4, 11)).offen && L87.sitzungsfenster(et87(2026, 9, 8, 4, 16)).offen,
+     '87.5 vorne oeffnet nichts frueher: 04:11 zu, 04:16 offen');
+  ok(!L87.sitzungsfenster(et87(2026, 9, 12, 10, 0)).offen && !L87.sitzungsfenster(et87(2026, 9, 7, 10, 0)).offen,
+     '87.5 Samstag und Labor Day bleiben zu - die Nachlese verlaengert keinen geschlossenen Tag');
+  ok(L87.sitzungsfenster(et87(2026, 11, 27, 17, 20)).offen && !L87.sitzungsfenster(et87(2026, 11, 27, 17, 21)).offen,
+     '87.5 Halbtag 27.11.: zu ab 17:21');
+  gegen87('mit der alten Regel (nur die eigene Grenze) waere 20:16 schon zu gewesen',
+          L87.zustandUm(L87.fertigGrenze(et87(2026, 9, 8, 20, 16))).zustand === 'geschlossen');
+
+  /* --- 87.6 F9 Die letzte Periode einer Sitzung schliesst mit der Sitzung --- */
+  function min87(vonH, vonM, bisH, bisM) {
+    var a = [], t = et87(2026, 9, 8, vonH, vonM), e = et87(2026, 9, 8, bisH, bisM);
+    for (; t <= e; t += 60000) a.push([t, 10, 100, 11, 9, 10]);
+    return a;
+  }
+  var mReg87 = min87(9, 30, 15, 59), sReg87 = mReg87.map(function () { return 'regulaer'; });
+  var vReg87 = K87.verdichtenMinuten(mReg87, '1h', sReg87);
+  var letzte87 = vReg87.kerzen[vReg87.kerzen.length - 1];
+  ok(letzte87 && letzte87[0] === et87(2026, 9, 8, 15, 30) && vReg87.unvollstaendig === 0,
+     '87.6 15:59 ist der letzte Balken der Sitzung -> die 15:30-Stundenkerze steht sofort, ohne Nachboersen-Balken',
+     letzte87 ? new Date(letzte87[0]).toISOString() : 'keine');
+  var mVor87 = min87(4, 0, 9, 29), vVor87 = K87.verdichtenMinuten(mVor87, '1h', mVor87.map(function () { return 'vor'; }));
+  ok(vVor87.kerzen[vVor87.kerzen.length - 1][0] === et87(2026, 9, 8, 9, 0) && vVor87.unvollstaendig === 0,
+     '87.6 Vorboerse bis 09:29 -> die 09:00-Kerze steht');
+  var mHalb87 = min87(9, 30, 12, 59), vHalb87 = K87.verdichtenMinuten(mHalb87, '1h', mHalb87.map(function () { return 'regulaer'; }));
+  ok(vHalb87.kerzen[vHalb87.kerzen.length - 1][0] === et87(2026, 9, 8, 12, 30) && vHalb87.unvollstaendig === 0,
+     '87.6 Halbtag bis 12:59 -> die 12:30-Kerze steht');
+  var mHalb2 = K87.verdichtenMinuten(mHalb87, '1h', mHalb87.map(function () { return 'regulaer'; }),
+    { sitzungsEnde: function () { return 15 * 60 + 59; } });
+  ok(mHalb2.kerzen[mHalb2.kerzen.length - 1][0] === et87(2026, 9, 8, 11, 30) && mHalb2.unvollstaendig === 1,
+     '87.6 sagt der Aufrufer (Kalender) ein anderes Sitzungsende, gilt seins - dann ist 12:30 unvollstaendig');
+  var mMitte87 = min87(9, 30, 15, 42), vMitte87 = K87.verdichtenMinuten(mMitte87, '1h', mMitte87.map(function () { return 'regulaer'; }));
+  ok(vMitte87.kerzen[vMitte87.kerzen.length - 1][0] === et87(2026, 9, 8, 14, 30) && vMitte87.unvollstaendig === 1,
+     '87.6 endet die Reihe MITTEN in der Sitzung (15:42), bleibt die 15:30-Kerze unvollstaendig - die Regel oeffnet keine Tuer fuer halbe Perioden');
+  gegen87('die alte Regel haette fuer 15:30 einen Balken um 16:30 verlangt',
+          et87(2026, 9, 8, 15, 30) + 60 * 60000 > et87(2026, 9, 8, 15, 59) + 60000);
+
+  /* --- 87.7 F10 Der 1m-Viewer liest die laufende Reihe --- */
+  ok(/const alpRoh = path\.join\(wurzel, 'alpaca1m'\);\s*\n\s*const ord = alpacaOrdnerName\(alpRoh, AlpacaArchiv\.reiheFuer\(alpRoh, sym\)\);/.test(mainQ87),
+     '87.7 Zweig (a) geht durch reiheFuer, bevor er den Ordner bildet - sonst liest er bei AAC/CAPA/JONE die ERLOSCHENE Reihe');
+  var reiheStellen87 = (mainQ87.match(/AlpacaArchiv\.reiheFuer\(/g) || []).length;
+  ok(reiheStellen87 >= 4, '87.7 alle Leser und der Schreiber gehen ueber dieselbe Zuordnung', String(reiheStellen87) + ' Stellen');
+  gegen87('das Muster faende die alte Form ohne reiheFuer',
+          /const ord = alpacaOrdnerName\(path\.join\(wurzel, 'alpaca1m'\), sym\);/.test("const ord = alpacaOrdnerName(path.join(wurzel, 'alpaca1m'), sym);"));
+
+  /* --- 87.8 F19/F20 Die Panel-Zeile nennt aktuell, ruhend und den Deckel --- */
+  var zeile87 = L87.panelZeile({ moeglich: true, an: true, gelaufen: true, werte: 3067, aktuell: 2900, ruhend: 40,
+    letzteRunde: et87(2026, 9, 8, 11, 0), bis: et87(2026, 9, 8, 10, 44), anfragen: 17, deckel: 150 });
+  ok(/3067 Werte/.test(zeile87) && /2900 aktuell/.test(zeile87) && /40 ruhend/.test(zeile87),
+     '87.8 die Zeile nennt Menge, aktuell und ruhend - "3.067 Werte" allein verschweigt, dass 3.000 davon schlafen', zeile87);
+  var zeileD87 = L87.panelZeile({ moeglich: true, an: true, gelaufen: true, werte: 200, anfragen: 150, deckel: 150, deckelErreicht: true });
+  ok(/Deckel \(150 Abrufe\)/.test(zeileD87), '87.8 der Deckel wird gemeldet wie die Drossel', zeileD87);
+  var zeileV87 = L87.panelZeile({ moeglich: true, an: true, gelaufen: true, werte: 200, anfragen: 4, deckel: 4, verschoben: 4 });
+  ok(/Deckel: 4 Bloecke in der naechsten Runde/.test(zeileV87), '87.8 und ebenso, dass Bloecke verschoben wurden', zeileV87);
+  var zeileE87 = L87.panelZeile({ moeglich: true, an: true, gelaufen: true, werte: 5, anfragen: 1, deckel: 150, ohneEnd: true });
+  ok(/ohne end \(403 der Quelle\)/.test(zeileE87), '87.8 und dass die Quelle `end` verweigert hat', zeileE87);
+  ok(!/Deckel/.test(zeile87), '87.8 ohne Deckel steht kein Deckel da - `deckel` ist im Stand die ZAHL, nicht das Erreicht');
+  gegen87('die alte Zeile nannte weder aktuell noch ruhend noch den Deckel',
+          !/aktuell|ruhend|Deckel/.test('Alpaca live: 3067 Werte · letzte Runde 17:00 · bis 10:44 ET · Abrufe je Runde 17'));
+
+  /* --- 87.9 F8/F32 Die Wrapper geben ihren Rueckgabewert weiter --- */
+  function zeilen87(text) { return text.split(/\r?\n/).map(function (z) { return z.trim(); }); }
+  var zN87 = zeilen87(wrapper87);
+  var iNode87 = zN87.findIndex(function (z) { return /^node .*--nachholen/.test(z); });
+  ok(iNode87 > 0 && /^set "RC=%ERRORLEVEL%"$/.test(zN87[iNode87 + 1]),
+     '87.9 im Nachlauf-Wrapper wird %ERRORLEVEL% in der Zeile NACH node gesichert - jedes echo dazwischen setzte ihn auf 0',
+     zN87[iNode87 + 1]);
+  ok(/endlocal & exit \/b %RC%/.test(wrapper87) && !/Rueckgabewert %ERRORLEVEL%/.test(wrapper87),
+     '87.9 und mit `endlocal & exit /b %RC%` nach aussen gereicht');
+  var zA87 = zeilen87(wrapper87b);
+  var nodeZeilen87 = zA87.map(function (z, i) { return /^node /.test(z) ? i : -1; }).filter(function (i) { return i >= 0; });
+  ok(nodeZeilen87.length === 4 && nodeZeilen87.every(function (i) { return /^set "RC=%ERRORLEVEL%"$/.test(zA87[i + 1]) && /^if not "%RC%"=="0" goto :fehler$/.test(zA87[i + 2]); }),
+     '87.9 in der Nacharbeiten-Kette sichert und prueft JEDER der vier Schritte seinen Wert - ein gescheitertes --ableiten haelt --manifest auf',
+     nodeZeilen87.length + ' Schritte');
+  ok(/^:fehler$/m.test(wrapper87b) && /endlocal & exit \/b %RC%/.test(wrapper87b) && /endlocal & exit \/b 0/.test(wrapper87b),
+     '87.9 und die Kette hat einen Ausgang fuer den Fehlerfall');
+  ok(/process\.exitCode = 1/.test(toolQ87) && /protokoll\('Nachlauf ausgefallen: Sperre belegt/.test(fs.readFileSync('tools/alpaca-vollsammlung.js', 'utf8')),
+     '87.9 das Werkzeug selbst setzt bei Fehlern exitCode 1 und schreibt "Nachlauf ausgefallen: Sperre belegt" ins Protokoll');
+  gegen87('das alte Muster (echo mit %ERRORLEVEL%, danach endlocal ohne exit /b) faellt durch',
+          !(/^set "RC=%ERRORLEVEL%"$/m.test('node x\r\necho Ende (Rueckgabewert %ERRORLEVEL%)\r\nendlocal')));
+
+  /* --- 87.10 F28 Eine leere Wurzel ist kein erfolgreicher Nachlauf --- */
+  ok(/Keine _lebenszeit\.json unter ' \+ ROH \+ ' - leere oder falsche Wurzel/.test(toolQ87),
+     '87.10 ohne _lebenszeit.json bricht der Nachlauf mit Fehlertext ab, statt "0 Reihen, alles gut" zu melden');
+  var nachRumpf87 = toolQ87.slice(toolQ87.indexOf('async function nachholen('));
+  nachRumpf87 = nachRumpf87.slice(0, nachRumpf87.indexOf('async function selbsttestNachholen('));
+  ok(nachRumpf87.indexOf('!Object.keys(meta.LZ.werte).length') > 0 &&
+     nachRumpf87.indexOf('!Object.keys(meta.LZ.werte).length') < nachRumpf87.indexOf('A.sperreSetzen(ROH,'),
+     '87.10 und zwar BEVOR er eine Sperre setzt oder eine Meta-Datei am falschen Ort anlegt');
+
+  /* --- 87.11 F31 Der Temp-Name gehoert dem Prozess --- */
+  var atomOrd87 = path87.join(wegwerf87, 'atomar');
+  var atomPfad87 = path87.join(atomOrd87, '_kalender.json');
+  A87.atomarSchreiben(atomPfad87, '{"a":1}');
+  ok(fs.readFileSync(atomPfad87, 'utf8') === '{"a":1}' && fs.readdirSync(atomOrd87).length === 1,
+     '87.11 atomarSchreiben laesst nichts liegen', fs.readdirSync(atomOrd87).join(', '));
+  ok(/var tmp = pfad \+ '\.tmp-' \+ process\.pid \+ '-' \+ \(\+\+TMP_ZAEHLER\);/.test(fs.readFileSync('alpacaarchiv.js', 'utf8')),
+     '87.11 der Zwischenname traegt Prozessnummer und Zaehler - zwei Schreiber teilen ihn nicht mehr');
+  gegen87('der feste Name `.tmp-schreiben` waere fuer beide derselbe gewesen',
+          ('x.json' + '.tmp-schreiben') === ('x.json' + '.tmp-schreiben'));
+
+  /* --- 87.12 F21 Was die Quelle unter einem Kuerzel liefert, muss keine Liste sein --- */
+  var block87 = { symbole: ['AAA', 'BBB'], start: et87(2026, 9, 8, 9, 0), ende: et87(2026, 9, 8, 10, 0) };
+  var s87 = L87.sichten({ AAA: null, BBB: { keine: 'liste' }, CCC: 7 }, block87, {});
+  ok(s87.angenommen === 0 && s87.verworfen.fremd === 0, '87.12 null, ein Objekt und eine Zahl werfen nicht mehr - sie sind einfach nichts', JSON.stringify(s87.verworfen));
+  var s87b = L87.sichten({ AAA: [{ t: new Date(et87(2026, 9, 8, 9, 30)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }] }, block87, {});
+  ok(s87b.angenommen === 1, '87.12 eine echte Liste kommt weiter durch');
+  gegen87('die alte Fassung haette bei bars.AAA = null die Runde geworfen', (function () {
+    try { (null).forEach(function () {}); return false; } catch (e) { return true; }
+  })());
+
+  /* --- 87.13 F14 403 mit `end` -> derselbe Block ohne `end` --- */
+  var urlMit87 = L87.urlFuer(block87, null), urlOhne87 = L87.urlFuer(block87, null, { ohneEnd: true });
+  ok(/&end=/.test(urlMit87) && !/&end=/.test(urlOhne87) && /start=/.test(urlOhne87),
+     '87.13 urlFuer laesst `end` auf Wunsch weg, alles andere bleibt');
+  ok(/LIVE\.ohneEnd/.test(mainQ87) && /ohneEnd: LIVE\.ohneEnd/.test(mainQ87) && /if \(erg\.ohneEnd\) LIVE\.ohneEnd = true;/.test(mainQ87),
+     '87.13 main.js merkt sich das fuer die Sitzung und reicht es in die naechste Runde');
+  gegen87('ohne den Schalter traegt jede Adresse `end`', /&end=/.test(L87.urlFuer(block87, null, {})));
+
+  /* --- 87.14 F18 Die Fehlerkette ist gekappt --- */
+  ok(L87.FEHLER_MAX === 5, '87.14 hoechstens fuenf Meldungen', String(L87.FEHLER_MAX));
+
+  var runde87 = probe((async function () {
+    function att87(o) {
+      var z = { fetches: 0, urls: [], geschrieben: [], setzen: 0, loesen: 0 };
+      var basis = {
+        werte: ['AAA', 'BBB'], an: true, schluessel: true,
+        jetzt: function () { return et87(2026, 9, 8, 11, 0) + 37000; },
+        sperre: { lesen: function () { return { aktiv: false }; }, setzen: function () { z.setzen++; return true; }, loesen: function () { z.loesen++; return true; } },
+        stempel: function () { return et87(2026, 9, 8, 10, 0); },
+        fetch: function (url) { z.fetches++; z.urls.push(url); return Promise.resolve({ status: 200, body: '{"bars":{}}' }); },
+        schreiben: function (sym, jahr, kerzen) { z.geschrieben.push(sym); return { ok: true, geschrieben: true, neu: kerzen.length, letzterStempel: kerzen[kerzen.length - 1][0] }; },
+        leere: { tag: null, sitzung: null, je: {}, gesehen: {} },
+      };
+      return { o: Object.assign(basis, o || {}), z: z };
+    }
+    /* F4: ein Block ohne einen einzigen Balken ist ein Quellenfehler, kein leer++ */
+    var a1 = att87();
+    var r1 = await L87.runde(a1.o);
+    ok(r1.gelaufen && r1.quellenLeer === 1 && /ohne einen einzigen Balken/.test(r1.fehler) && !r1.jeWert.AAA.leer,
+       '87.15 F4: 200 mit leerem Rumpf ist ein QUELLENFEHLER - kein Wert zaehlt eine leere Runde', JSON.stringify([r1.quellenLeer, r1.jeWert.AAA.leer]));
+    var r1b = await L87.runde(a1.o); var r1c = await L87.runde(a1.o); var r1d = await L87.runde(a1.o);
+    ok(r1d.gelaufen && a1.z.fetches === 4 && r1d.ruhend === 0,
+       '87.15 F4: auch nach vier stillen Antworten wird weiter gefragt - drei stille Runden legten frueher die ganze Menge still',
+       JSON.stringify([a1.z.fetches, r1b.ruhend, r1c.ruhend, r1d.ruhend]));
+    /* Gegenprobe: liefert die Quelle fuer EINEN Wert Balken, zaehlt der andere sehr wohl leer. */
+    var a2 = att87({ fetch: function (url) { a2.z.fetches++; return Promise.resolve({ status: 200, body: JSON.stringify({ bars: { AAA: [{ t: new Date(et87(2026, 9, 8, 10, 30)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }] } }) }); } });
+    var r2 = await L87.runde(a2.o);
+    ok(r2.quellenLeer === 0 && r2.jeWert.AAA.leer === 0 && r2.jeWert.BBB.leer === 1 && !r2.fehler,
+       '87.15 F4 Gegenprobe: bringt der Block fuer EINEN Wert Balken, ist es kein Quellenfehler - und der stille Wert zaehlt', JSON.stringify(r2.jeWert));
+    /* F5/F16/F18: ein werfender Schreibvorgang kostet den Wert, nicht die Runde */
+    var a3 = att87({
+      werte: ['AAA', 'BBB'],
+      fetch: function () { a3.z.fetches++; return Promise.resolve({ status: 200, body: JSON.stringify({ bars: { AAA: [{ t: new Date(et87(2026, 9, 8, 10, 30)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }], BBB: [{ t: new Date(et87(2026, 9, 8, 10, 31)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }] } }) }); },
+      schreiben: function (sym) { if (sym === 'AAA') { var e = new Error('EPERM: operation not permitted, rename'); e.code = 'EPERM'; throw e; } a3.z.geschrieben.push(sym); return { ok: true, geschrieben: true, neu: 1, letzterStempel: et87(2026, 9, 8, 10, 31) }; },
+      abschluss: function () { a3.z.abschluss = (a3.z.abschluss || 0) + 1; },
+    });
+    var r3 = await L87.runde(a3.o);
+    ok(r3 && r3.gelaufen && a3.z.geschrieben.join() === 'BBB' && a3.z.abschluss === 1 && a3.z.loesen === 1,
+       '87.15 F5: AAA wirft - BBB wird trotzdem geschrieben, der Abschluss findet statt, die Sperre wird geloest',
+       JSON.stringify([a3.z.geschrieben, a3.z.abschluss, a3.z.loesen]));
+    ok(r3.fehlerJe === 1 && r3.jeWert.AAA.leer === 0 && /EPERM/.test(r3.fehler),
+       '87.15 F16: der Schreibfehler wird als Fehler gezaehlt, NICHT als leere Runde - sonst ruht der Wert nach drei Fehlschlaegen und die Meldung verschwindet',
+       JSON.stringify([r3.fehlerJe, r3.jeWert.AAA.leer]));
+    /* F18: viele Fehler, kurze Kette */
+    var viele87 = []; for (var i87 = 0; i87 < 40; i87++) viele87.push('W' + i87);
+    var barsViele = {}; viele87.forEach(function (s) { barsViele[s] = [{ t: new Date(et87(2026, 9, 8, 10, 30)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }]; });
+    var a4 = att87({ werte: viele87, fetch: function () { a4.z.fetches++; return Promise.resolve({ status: 200, body: JSON.stringify({ bars: barsViele }) }); },
+      schreiben: function () { return { ok: false, grund: 'Marke "sitzungen" nicht gefunden - nicht das Format des Alpaca-Archivs' }; } });
+    var r4 = await L87.runde(a4.o);
+    ok(r4.fehler.split(' | ').length === L87.FEHLER_MAX + 1 && /und 35 weitere/.test(r4.fehler) && r4.fehler.length < 600 && r4.fehlerJe === 40,
+       '87.15 F18: 40 Schreibfehler werden fuenf Meldungen plus "und 35 weitere" - frueher waren 500 Fehler 33 KB je Runde in Panel, Protokoll und Fortschritt',
+       r4.fehler.length + ' Zeichen, fehlerJe ' + r4.fehlerJe);
+    /* F37: liefert die Sperre false, wird die Runde ausgelassen */
+    var a5 = att87({ sperre: { lesen: function () { return { aktiv: false }; }, setzen: function () { a5.z.setzen++; return false; }, loesen: function () { a5.z.loesen++; return true; } } });
+    var r5 = await L87.runde(a5.o);
+    ok(!r5.gelaufen && a5.z.fetches === 0 && /nicht setzen/.test(r5.grund) && a5.z.loesen === 0,
+       '87.15 F37: sperre.setzen() = false -> kein Abruf, kein Schreiben, und die fremde Sperre wird nicht geloest', r5.grund);
+    /* F14: 403 mit end -> derselbe Block noch einmal ohne end */
+    var a6 = att87({ fetch: function (url) {
+      a6.z.fetches++; a6.z.urls.push(url);
+      if (/&end=/.test(url)) return Promise.resolve({ status: 403, body: '{"message":"subscription does not permit querying recent SIP data"}' });
+      return Promise.resolve({ status: 200, body: JSON.stringify({ bars: { AAA: [{ t: new Date(et87(2026, 9, 8, 10, 30)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }] } }) });
+    } });
+    var r6 = await L87.runde(a6.o);
+    ok(r6.gelaufen && r6.ohneEnd === true && a6.z.fetches === 2 && !/&end=/.test(a6.z.urls[1]) && r6.kerzen === 1,
+       '87.15 F14: auf 403 mit `end` wiederholt die Runde denselben Block OHNE `end` und bekommt ihre Kerzen',
+       JSON.stringify([a6.z.fetches, r6.ohneEnd, r6.kerzen]));
+    ok(/subscription does not permit/.test(r6.fehler),
+       '87.15 F15: der Grund aus dem Rumpf steht in der Meldung - "HTTP 403" allein sagt nicht, warum', r6.fehler);
+    /* F20: Seiten je Block, nicht nur die Summe */
+    var seiten87 = 0;
+    var a7 = att87({ werte: ['AAA'], fetch: function (url) {
+      a7.z.fetches++; seiten87++;
+      return Promise.resolve({ status: 200, body: JSON.stringify({ bars: { AAA: [{ t: new Date(et87(2026, 9, 8, 10, 30 + seiten87)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }] }, next_page_token: seiten87 < 3 ? 'S' + (seiten87 + 1) : null }) });
+    } });
+    var r7 = await L87.runde(a7.o);
+    ok(r7.seitenJeBlock.join() === '3' && r7.seiten === 3,
+       '87.15 F20: die Seiten werden JE BLOCK gezaehlt, nicht nur als Kopie der Anfragen', JSON.stringify(r7.seitenJeBlock));
+    /* F3: die Zeitscheibe am Deckel - was geholt wird, wird geschrieben */
+    var werteZ = [], stempelZ = {};
+    for (var iz = 0; iz < 6; iz++) { werteZ.push('Z' + iz); stempelZ['Z' + iz] = et87(2026, 9, 3, 19, 59) - iz * 10 * 86400000; }
+    var planZ = L87.abrufplan(werteZ, stempelZ, et87(2026, 9, 8, 11, 0), { leere: { tag: null, je: {} }, deckel: 4 });
+    var seitenZ = planZ.bloecke.reduce(function (s, b) { return s + Math.ceil(b.symbole.length * (Math.floor((b.ende - b.start) / 60000) + 1) / L87.SEITE); }, 0);
+    ok(seitenZ <= 4 && planZ.verschoben === 4 && planZ.bloecke.length === 2,
+       '87.15 F3: der Plan nimmt nur so viele Bloecke, wie in den Deckel passen - der Rest steht als verschoben da',
+       JSON.stringify([seitenZ, planZ.bloecke.length, planZ.verschoben]));
+    /* Ein EINZELNER Block ueber dem Deckel wird in der Zeit gekappt, nicht verworfen. */
+    var vieleS = [], stempelS = {};
+    for (var is = 0; is < 200; is++) { vieleS.push('S' + is); stempelS['S' + is] = et87(2026, 8, 26, 19, 59); }
+    var planS87 = L87.abrufplan(vieleS, stempelS, et87(2026, 9, 8, 11, 0), { leere: { tag: null, je: {} }, deckel: 150 });
+    ok(planS87.bloecke.length === 1 && planS87.zeitscheiben === 1 && planS87.bloecke[0].zeitscheibe === true &&
+       planS87.bloecke[0].ende < L87.fertigGrenze(et87(2026, 9, 8, 11, 0)) &&
+       Math.ceil(200 * (Math.floor((planS87.bloecke[0].ende - planS87.bloecke[0].start) / 60000) + 1) / L87.SEITE) <= 150,
+       '87.15 F3: ein Block, der mehr Seiten braucht als der Deckel hergibt, bekommt eine ZEITSCHEIBE statt einer abgerissenen Seitenfolge',
+       JSON.stringify([planS87.bloecke.length, planS87.zeitscheiben, new Date(planS87.bloecke[0].ende).toISOString()]));
+    gegen87('ohne Deckel im Plan braeuchte derselbe Block mehr als 150 Seiten',
+            Math.ceil(200 * (Math.floor((L87.fertigGrenze(et87(2026, 9, 8, 11, 0)) - et87(2026, 8, 26, 20, 0)) / 60000) + 1) / L87.SEITE) > 150);
+    /* F2 im Ablauf: in der Vorboerse zaehlt keine leere Runde, im regulaeren Handel schon */
+    var a8 = att87({ jetzt: function () { return et87(2026, 9, 8, 5, 0); }, stempel: function () { return et87(2026, 9, 8, 4, 0); },
+      fetch: function () { a8.z.fetches++; return Promise.resolve({ status: 200, body: JSON.stringify({ bars: { AAA: [{ t: new Date(et87(2026, 9, 8, 4, 5)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }] } }) }); } });
+    var r8 = await L87.runde(a8.o);
+    ok(r8.gelaufen && r8.jeWert.BBB.leer === 0 && a8.o.leere.gesehen.AAA === 1,
+       '87.15 F2: in der Vorboerse zaehlt BBB keine leere Runde - AAA ist "gesehen", weil es einen Balken brachte', JSON.stringify(r8.jeWert.BBB));
+    var r8b = await L87.runde(a8.o); var r8c = await L87.runde(a8.o); var r8d = await L87.runde(a8.o);
+    ok(r8d.gelaufen && r8d.ruhend === 0 && r8d.jeWert.BBB.leer === 0,
+       '87.15 F2: auch nach vier Vorboersen-Runden ohne Balken ruht BBB nicht - genau das legte am 03.09. 96 % der Menge still',
+       JSON.stringify([r8b.ruhend, r8c.ruhend, r8d.ruhend]));
+    /* Gegenprobe: dieselbe Stille im regulaeren Handel zaehlt sehr wohl. */
+    var a9 = att87({ jetzt: function () { return et87(2026, 9, 8, 11, 0); }, stempel: function () { return et87(2026, 9, 8, 10, 0); },
+      fetch: function () { a9.z.fetches++; return Promise.resolve({ status: 200, body: JSON.stringify({ bars: { AAA: [{ t: new Date(et87(2026, 9, 8, 10, 30)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }] } }) }); } });
+    var r9 = await L87.runde(a9.o);
+    ok(r9.jeWert.BBB.leer === 1, '87.15 F2 Gegenprobe: im regulaeren Handel ist Stille eine Aussage ueber den Wert - sie zaehlt', String(r9.jeWert.BBB.leer));
+
+    try { fs.rmSync(wegwerf87, { recursive: true, force: true }); } catch (e) { /* Wegwerf bleibt liegen */ }
+    ok(g87 === rot87, '87.x alle Gegenproben dieses Abschnitts schlagen an', rot87 + ' von ' + g87);
+  })());
+  void runde87;
 })();
 
 Promise.all(offeneProben).then(function () {

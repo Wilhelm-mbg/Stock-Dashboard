@@ -198,9 +198,14 @@ function jahrVon(ms) { return Number(etTag(ms).slice(0, 4)); }
 
 /* ================= Balken der Quelle ================= */
 /** Alpaca-Balken -> Archivkerze [t, schluss, umsatz, hoch, tief, eroeffnung]. */
+/* DAS RASTER IN MILLISEKUNDEN (07.09.2026). Bis heute fragte der Annehmer nur nach den
+ * SEKUNDEN - ein Stempel 13:30:00.500 kam durch, und dann standen zwei Kerzen in einer
+ * Minute; startFuer traegt die Kruemmung weiter und die Folgeminute gilt fuer immer als
+ * "alt". Die Vollpruefung (tools/alpaca-vollsammlung.js) prueft laengst `t % 60000`.
+ * Jetzt tragen Annehmer und Pruefung dieselbe Regel. */
 function kerzeAus(b) {
   var t = Date.parse(b && b.t);
-  if (!isFinite(t) || new Date(t).getUTCSeconds() !== 0) return null;
+  if (!isFinite(t) || t % 60000 !== 0) return null;
   if (!KQ.kursOk(b.c) || !KQ.kursOk(b.h) || !KQ.kursOk(b.l) || !KQ.kursOk(b.o)) return null;
   var v = typeof b.v === 'number' && isFinite(b.v) && b.v >= 0 ? b.v : 0;
   return [t, b.c, v, b.h, b.l, b.o];
@@ -288,13 +293,22 @@ function fortschrittSchreiben(roh, F) {
 function sperreLesen(roh, jetzt) { return KQ.sperreLesen(roh, jetzt); }
 function sperreSetzen(roh, was) { return KQ.sperreSetzen(roh, was); }
 function sperreLoesen(roh) { return KQ.sperreLoesen(roh); }
+function sperreAuffrischen(roh, was) { return KQ.sperreAuffrischen(roh, was); }
 
-/* ================= Atomar schreiben ================= */
+/* ================= Atomar schreiben =================
+ * DER TEMP-NAME GEHOERT DEM PROZESS (07.09.2026). Ein fester Name je Zieldatei
+ * (`.tmp-schreiben`) ist genau dann eine Falle, wenn zwei Schreiber dieselbe Meta-Datei
+ * anfassen: der Live-Sammler holt am Jahreswechsel den Kalender, der Nachlauf schreibt
+ * ihn - beide ueber denselben Zwischennamen, und der zweite rename findet den Inhalt
+ * des ersten vor. Prozessnummer und ein laufender Zaehler machen den Namen eindeutig;
+ * geraet ein Lauf trotzdem in die Quere, betrifft es nur seine eigene Zwischendatei. */
+var TMP_ZAEHLER = 0;
 function atomarSchreiben(pfad, text) {
   fs.mkdirSync(path.dirname(pfad), { recursive: true });
-  var tmp = pfad + '.tmp-schreiben';
+  var tmp = pfad + '.tmp-' + process.pid + '-' + (++TMP_ZAEHLER);
   fs.writeFileSync(tmp, text);
-  fs.renameSync(tmp, pfad);
+  try { fs.renameSync(tmp, pfad); }
+  catch (e) { try { fs.unlinkSync(tmp); } catch (e2) { /* dann liegt sie da */ } throw e; }
 }
 
 /* ================= DAS REPARATURJOURNAL (07.09.2026) =================
@@ -341,12 +355,17 @@ function teilLesen(pfad, pos, laenge) {
  *  ein Zeilenumbruch, dann die alten Bytes der Stuecke hintereinander. Die Kopfzeile
  *  traegt Laenge und Pruefsumme der Nutzlast - ein halb geschriebenes Journal ist
  *  daran erkennbar und bedeutet: die Datei wurde noch nicht angefasst.
- *  stuecke: [{ pos, alt: Buffer }] - Rueckgabe: geschriebene Bytes. */
+ *  stuecke: [{ pos, alt: Buffer }] - Rueckgabe: geschriebene Bytes.
+ *  DIE KOPFZEILE TRAEGT DEN EIGENTUEMER (pid + Rechner, 07.09.2026): schreiben zwei
+ *  Prozesse dieselbe Datei - was unter der Sperre nicht vorkommen darf, aber am
+ *  06.09. mit zwei Schreibern ohne Sperre nachgefahren wurde -, darf keiner das
+ *  Journal des anderen zurueckspielen oder wegraeumen. */
 function journalSchreiben(pfad, laenge, schnitt, stuecke) {
   var nutzlast = Buffer.concat(stuecke.map(function (s) { return s.alt; }));
   var kopf = JSON.stringify({ v: 1, datei: path.basename(pfad), laenge: laenge, schnitt: schnitt,
     stuecke: stuecke.map(function (s) { return { pos: s.pos, len: s.alt.length }; }),
-    nutzlast: nutzlast.length, sha256: sha256(nutzlast), stand: new Date().toISOString() });
+    nutzlast: nutzlast.length, sha256: sha256(nutzlast), stand: new Date().toISOString(),
+    pid: process.pid, rechner: require('os').hostname() });
   var kopfBuf = Buffer.from(kopf + '\n', 'utf8');
   var fd = fs.openSync(journalPfad(pfad), 'w');
   try {
@@ -378,12 +397,24 @@ function journalLesen(jp) {
   }
   return { ok: true, kopf: k, stuecke: stuecke };
 }
+/** Gehoert dieses Journal einem ANDEREN, LEBENDEN Prozess auf diesem Rechner? Dann
+ *  steckt er gerade mitten in seinem Anhang, und niemand darf ihm hineinregieren. Ein
+ *  Journal ohne pid (alte Fassung), von einem anderen Rechner oder von einem toten
+ *  Prozess ist Freiwild - genau dafuer ist es da. */
+function journalFremdLebend(kopf) {
+  if (!kopf || typeof kopf.pid !== 'number' || kopf.pid === process.pid) return false;
+  if (kopf.rechner && kopf.rechner !== require('os').hostname()) return false;
+  return KQ.prozessLebt(kopf.pid) === true;
+}
 /** Liegt zu dieser Jahresdatei ein Journal, wird der Zustand VOR dem Anhang
  *  wiederhergestellt. Nur unter der Sperre aufrufen. */
 function journalReparieren(pfad) {
   var jp = journalPfad(pfad);
   if (!fs.existsSync(jp)) return { ok: true, repariert: false };
   var j = journalLesen(jp);
+  if (j.ok && journalFremdLebend(j.kopf)) {
+    return { ok: false, fremd: true, grund: 'Reparaturjournal gehoert dem laufenden Prozess ' + j.kopf.pid + ' - nicht angefasst' };
+  }
   if (!j.ok) {
     /* Ein unvollstaendiges Journal fiel VOR dem ersten Datenbyte - die Datei ist
      * unberuehrt. Es faellt weg, damit der naechste Anhang nicht daran haengen bleibt. */
@@ -427,12 +458,13 @@ function journaleFinden(roh) {
 /** Ein Durchgang ueber den ganzen Rohordner: jedes liegende Journal zurueckspielen.
  *  Nur unter der Sperre aufrufen (Nachlauf, Vollsammlung). */
 function journaleReparieren(roh) {
-  var aus = { gefunden: 0, repariert: [], unvollstaendig: [], fehler: [] };
+  var aus = { gefunden: 0, repariert: [], unvollstaendig: [], fremd: [], fehler: [] };
   journaleFinden(roh).forEach(function (rel) {
     aus.gefunden++;
     var pfad = path.join(roh, rel.slice(0, -JOURNAL_SUFFIX.length));
     var r = journalReparieren(pfad);
-    if (!r.ok) aus.fehler.push(rel + ': ' + r.grund);
+    if (r.fremd) aus.fremd.push(rel + ': ' + r.grund);
+    else if (!r.ok) aus.fehler.push(rel + ': ' + r.grund);
     else if (r.repariert) aus.repariert.push(rel);
     else aus.unvollstaendig.push(rel);
   });
@@ -576,8 +608,25 @@ function kerzenPruefen(kerzen, jahr) {
  *  `bytes` ist die GROESSE der Datei danach, `geschriebenBytes` die tatsaechlich
  *  geschriebene Menge (Journal + Kopf-Spannen + Schwanz) - die zwei Zahlen liegen beim
  *  Anhang um Groessenordnungen auseinander, und die zweite ist die Last auf der Platte.
- *  Nichts wird geschrieben, wenn keine Kerze neuer ist als der Bestand. */
+ *  Nichts wird geschrieben, wenn keine Kerze neuer ist als der Bestand.
+ *
+ *  EIN WERFENDER DATEISCHRITT IST EIN ERGEBNIS, KEIN ABSTURZ (07.09.2026). Bis heute
+ *  verliess eine Ausnahme aus einem der Dateischritte (EPERM, weil ein Leser die Datei
+ *  haelt; ENOSPC; ENOENT auf einem Journal, das ein anderer schon weggeraeumt hat) die
+ *  ganze Live-Runde an derselben Stelle: der Rest des Blocks und alle folgenden Bloecke
+ *  entfielen, der Abschluss-Vermerk fiel aus, das Ergebnis der Runde ging verloren. Ein
+ *  Fehler an EINER Datei darf diesen Wert kosten, nicht die Runde. Die Abbruch-Haken der
+ *  Pruefung (opt.abbruchBei) sollen weiter durchschlagen - sie stellen den Absturz dar,
+ *  fuer den das Journal gebaut ist. */
 function jahrSchreiben(ordner, sym, jahr, kerzen, kal, opt) {
+  try { return jahrSchreibenAusfuehren(ordner, sym, jahr, kerzen, kal, opt); }
+  catch (e) {
+    if (/Abbruch-Probe/.test(String((e && e.message) || ''))) throw e;
+    return { ok: false, pfad: path.join(ordner, jahr + '.json'),
+      grund: 'Schreibvorgang abgebrochen: ' + ((e && e.code) ? e.code + ' ' : '') + String((e && e.message) || e).slice(0, 200) };
+  }
+}
+function jahrSchreibenAusfuehren(ordner, sym, jahr, kerzen, kal, opt) {
   opt = opt || {};
   var t0 = Date.now();
   var fehler = kerzenPruefen(kerzen, jahr);
@@ -665,7 +714,10 @@ function jahrSchreiben(ordner, sym, jahr, kerzen, kal, opt) {
       (zurueck.repariert ? ' - der Stand vor dem Anhang ist zurueckgespielt' : ' - das Journal blieb liegen: ' + (zurueck.grund || '?')) };
   }
   if (opt.abbruchBei === 'vor-journal-loeschen') throw new Error('Abbruch-Probe: vor-journal-loeschen');
-  fs.unlinkSync(journalPfad(pfad));
+  /* Das eigene Journal faellt - und nur das eigene. Ist es schon weg (ein zweiter
+   * Schreiber ohne Sperre hat es weggeraeumt), ist das kein Grund, die Runde zu
+   * beenden: die Daten stehen, das Gegenlesen war gruen. */
+  try { fs.unlinkSync(journalPfad(pfad)); } catch (e) { if (e.code !== 'ENOENT') throw e; }
   return { ok: true, geschrieben: true, art: 'anhang', neu: neu.length, uebersprungen: uebersprungen,
     letzterStempel: neu[neu.length - 1][0], bytes: b.schnitt + schwanzBuf.length, pfad: pfad,
     sitzungenZaehler: sitzungenZaehlen(sitzNeu),
@@ -682,13 +734,14 @@ module.exports = {
   sitzungJeKerze: sitzungJeKerze, sitzungenVerdichten: sitzungenVerdichten, sitzungenAnhaengen: sitzungenAnhaengen, sitzungenZaehlen: sitzungenZaehlen,
   kalenderLesen: kalenderLesen, kalenderDeckt: kalenderDeckt, kalenderSchreiben: kalenderSchreiben,
   fortschrittLesen: fortschrittLesen, fortschrittSchreiben: fortschrittSchreiben,
-  sperreLesen: sperreLesen, sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen,
+  sperreLesen: sperreLesen, sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen, sperreAuffrischen: sperreAuffrischen,
   atomarSchreiben: atomarSchreiben, schwanzBefund: schwanzBefund, letzterStempel: letzterStempel,
   /* kopfNachfuehren ist exportiert, damit test-v6.js Abschnitt 85 die ALTE
    * Kopier-Routine als Pruef-Referenz nachbauen kann, ohne die Kopf-Rechnung zu
    * verdoppeln - verglichen wird der Schreibweg, nicht der Inhalt des Kopfes. */
   kopfNachfuehren: kopfNachfuehren,
   JOURNAL_SUFFIX: JOURNAL_SUFFIX, journalPfad: journalPfad, journalLesen: journalLesen,
+  journalFremdLebend: journalFremdLebend,
   journalReparieren: journalReparieren, journaleFinden: journaleFinden, journaleReparieren: journaleReparieren,
   QUELLE_TEXT: QUELLE_TEXT, jahrSchreiben: jahrSchreiben,
 };

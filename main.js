@@ -1565,9 +1565,12 @@ const LIVE = {
   letzteRunde: null,      /* Zeitpunkt der letzten GELAUFENEN Runde */
   bis: null,              /* juengster geschriebener Stempel */
   runden: 0, kerzenHeute: 0, tag: null,
-  leere: { tag: null, je: {} },
+  leere: { tag: null, sitzung: null, je: {}, gesehen: {} },
   menge: { watch: [], positionen: [], viewer: null },
   naechste: null,
+  /* Hat die Quelle einmal mit 403 auf eine Anfrage MIT `end` geantwortet, laesst der
+   * Sammler `end` fuer den Rest der Sitzung weg (livesammler.js, urlFuer). */
+  ohneEnd: false,
 };
 /* Der Zugang - dieselbe Quelle und dieselbe Regel wie alpaca.js cfg(): nur Text
  * zaehlt, ein Sentinel-Objekt aus dem Einstellungsdialog ist kein Schluessel. */
@@ -1628,6 +1631,12 @@ function liveStand() {
     anfragen: l.gelaufen ? l.anfragen : (l.anfragen || null),
     bloecke: l.bloecke || 0, kerzen: l.kerzen || 0, dateien: l.dateien || 0,
     schreibBytes: l.schreibBytes || 0, schreibMs: l.schreibMs || 0,
+    /* Wie viele Werte der Live-Menge aktuell sind und wie viele ruhen - ohne die
+     * zwei Zahlen sagt "3.067 Werte" nichts darueber, wie viele davon gefragt werden. */
+    aktuell: l.aktuell || 0, ruhend: l.ruhend || 0,
+    fehlerJe: l.fehlerJe || 0, quellenLeer: l.quellenLeer || 0,
+    deckelErreicht: !!l.deckel, verschoben: l.verschoben || 0, zeitscheiben: l.zeitscheiben || 0,
+    ohneEnd: !!LIVE.ohneEnd,
     verworfen: l.verworfen || null,
     drossel: !!l.drossel, fehler: l.fehler || null, grund: l.grund || null, gelaufen: !!l.gelaufen,
     zeit: l.zeit || null, dauerMs: l.dauerMs || null,
@@ -1654,7 +1663,7 @@ async function liveRunde(grundZeile) {
     const jahr = Number(heute.slice(0, 4));
     const kopf = { 'APCA-API-KEY-ID': z.key, 'APCA-API-SECRET-KEY': z.secret };
     const erg = await Live.runde({
-      werte: werte, jetzt: () => Date.now(), an: an, schluessel: z.on,
+      werte: werte, jetzt: () => Date.now(), an: an, schluessel: z.on, ohneEnd: LIVE.ohneEnd,
       sperre: {
         lesen: () => AlpacaArchiv.sperreLesen(roh),
         setzen: (was) => AlpacaArchiv.sperreSetzen(roh, was),
@@ -1697,6 +1706,7 @@ async function liveRunde(grundZeile) {
     });
     if (erg.fehler) erg.fehler = ohneGeheimnis(erg.fehler);
     if (erg.grund) erg.grund = ohneGeheimnis(erg.grund);
+    if (erg.ohneEnd) LIVE.ohneEnd = true;      /* fuer den Rest der Sitzung */
     LIVE.letzte = erg;
     if (erg.gelaufen) {
       LIVE.letzteRunde = erg.zeit; LIVE.runden++; LIVE.kerzenHeute += erg.kerzen;
@@ -2000,7 +2010,13 @@ ipcMain.handle('archiv-kerzen', async (_ev, symbol, zeitrahmen, anzahl) => {
      *     App-Archiv sieben Tage fuehrt (rollendes Fenster der Quelle). */
     if (iv === '1m') {
       const wurzel = path.dirname(Kerzen.ordnerVon('60m'));
-      const ord = alpacaOrdnerName(path.join(wurzel, 'alpaca1m'), sym);
+      /* ERST DIE REIHE, DANN DER ORDNER (07.09.2026). Ein wiederverwendetes Kuerzel
+       * (AAC, CAPA, JONE) fuehrt zwei Reihen: die erloschene unter `AAC` und die
+       * laufende unter `AAC~2`. Der Live-Sammler schreibt nach `reiheFuer`, 5m/15m/1h
+       * lesen ueber `reiheFuer` - nur dieser Zweig las `ordnerFuer(sym)` und damit den
+       * Ordner der ERLOSCHENEN Reihe. Jetzt lesen alle drei dasselbe. */
+      const alpRoh = path.join(wurzel, 'alpaca1m');
+      const ord = alpacaOrdnerName(alpRoh, AlpacaArchiv.reiheFuer(alpRoh, sym));
       const jahr = new Date().getUTCFullYear();
       let kerzen = [], sitzungen = [], dateien = [], gelesen = 0, ablage = '';
       for (let j = jahr; j >= jahr - 1 && kerzen.length < n; j--) {

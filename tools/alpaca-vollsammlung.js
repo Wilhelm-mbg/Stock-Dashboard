@@ -519,11 +519,35 @@ function ankerFuer(sym, eintrag) {
   return { ms: null, herkunft: 'keiner' };
 }
 
-/* ================= (4) Fortschritt ================= */
-function fortschrittLesen() { return A.fortschrittLesen(ROH); }
-function fortschrittSchreiben(F) {
-  F.abrufe = Z.abrufe; F.wiederholt = Z.wiederholt; F.fehler = Z.fehler;
-  A.fortschrittSchreiben(ROH, F);
+/* ================= (4) Fortschritt =================
+ * DIE DATEI GEHOERT DREIEN (07.09.2026): der Vollsammlung, dem Nachlauf und der
+ * Live-Runde der App (F.live). Zwei Fehler steckten darin:
+ *   - der Nachlauf schrieb die Fassung zurueck, die er beim START gelesen hatte, und
+ *     loeschte damit alles, was in der Zwischenzeit dazugekommen war;
+ *   - `F.abrufe = Z.abrufe` ERSETZTE den Gesamtzaehler (287.038 aus der Vollsammlung)
+ *     durch die Zahl dieses einen Laufs.
+ * Jetzt wird beim Schreiben FRISCH GELESEN und nur der eigene Zweig hineingesetzt; die
+ * Zaehler laufen additiv weiter: der Stand beim Start dieses Prozesses plus das, was
+ * er selbst getan hat. */
+var Z_BASIS = null;
+var EIGENE_ZWEIGE = ['begonnen', 'erledigt', 'laufend', 'leer', 'kerzen', 'bytes', 'nachholen'];
+function fortschrittLesen() {
+  var F = A.fortschrittLesen(ROH);
+  if (Z_BASIS === null) {
+    Z_BASIS = { abrufe: F.abrufe || 0, wiederholt: F.wiederholt || 0, fehler: Object.assign({}, F.fehler || {}) };
+  }
+  return F;
+}
+function fortschrittSchreiben(F, nurZweige) {
+  var frisch = A.fortschrittLesen(ROH);
+  if (Z_BASIS === null) Z_BASIS = { abrufe: 0, wiederholt: 0, fehler: {} };
+  (nurZweige || EIGENE_ZWEIGE).forEach(function (k) { if (F[k] !== undefined) frisch[k] = F[k]; });
+  frisch.abrufe = (Z_BASIS.abrufe || 0) + (Z.abrufe || 0);
+  frisch.wiederholt = (Z_BASIS.wiederholt || 0) + (Z.wiederholt || 0);
+  var fh = Object.assign({}, Z_BASIS.fehler);
+  Object.keys(Z.fehler || {}).forEach(function (k) { fh[k] = (fh[k] || 0) + Z.fehler[k]; });
+  frisch.fehler = fh;
+  A.fortschrittSchreiben(ROH, frisch);
 }
 
 /* ================= (5) Kalender ================= */
@@ -759,6 +783,15 @@ async function holen(opt) {
   var AB = symbolAbbildung(Object.keys(jeSymbol));
   if (AB.doppelt.length) throw new Error('Ordnernamen nicht eindeutig: ' + AB.doppelt.join(' | '));
   fs.mkdirSync(ROH, { recursive: true });
+  /* --holen SCHREIBT UNTER DERSELBEN SPERRE wie Nachlauf und Live-Sammler (07.09.2026).
+   * Bis heute schrieb es ganz ohne Sperre: waehrend eines Vollaufs konnte die App
+   * mitten in dieselbe Jahresdatei anhaengen. Wer die Sperre nicht bekommt, holt
+   * nichts - das ist eine Antwort, kein Fehler des Archivs. */
+  if (!(await sperreWarten(opt.warteMin))) return { fehler: 'Sperre blieb belegt', aufgaben: aufgaben.length, gefahren: 0 };
+  if (!A.sperreSetzen(ROH, 'Vollsammlung --holen, ' + aufgaben.length + ' Aufgaben')) {
+    return { fehler: 'Sperre liess sich nicht setzen', aufgaben: aufgaben.length, gefahren: 0 };
+  }
+  try {
   /* Ein Durchgang ueber liegende Reparaturjournale, bevor ein Byte geholt wird: eine
    * Datei, die aus einem abgestuerzten Anhang zerrissen daliegt, wird erst auf den
    * Stand VOR dem Anhang gebracht - sonst faende der Schwanzbefund nichts Brauchbares
@@ -811,6 +844,10 @@ async function holen(opt) {
     F.bytes = (F.bytes || 0) + (r.bytes || 0);
     if (i % 25 === 0 || i === offen.length) {
       fortschrittSchreiben(F);
+      /* Die eigene Sperre auffrischen: ein Vollauf laeuft laenger als die
+       * Verwaisungsfrist von sechs Stunden, und eine fuer tot erklaerte Sperre ist
+       * keine. */
+      A.sperreAuffrischen(ROH, 'Vollsammlung --holen, ' + i + '/' + offen.length);
       var proMin = i / Math.max(1 / 60, (Date.now() - begonnen) / 60000);
       sag('  ' + i + '/' + offen.length + '  Dateien ' + geschrieben + '  leer ' + leer + '  Fehler ' + fehler +
         '  Kerzen ' + kerzen.toLocaleString('de-DE') + '  ' + (bytes / 1e9).toFixed(2) + ' GB' +
@@ -820,6 +857,7 @@ async function holen(opt) {
   fortschrittSchreiben(F);
   protokoll('Holen fertig: ' + geschrieben + ' Dateien, ' + kerzen + ' Kerzen, ' + (bytes / 1e9).toFixed(2) + ' GB, ' + fehler + ' Fehler');
   return { aufgaben: aufgaben.length, gefahren: i, geschrieben: geschrieben, leer: leer, fehler: fehler, kerzen: kerzen, bytes: bytes };
+  } finally { A.sperreLoesen(ROH); }
 }
 
 /* ================= (9) Phase A: die bereinigte Kopie ================= */
@@ -1237,6 +1275,13 @@ async function sperreWarten(maxMin) {
 async function nachholen(opt) {
   opt = opt || {};
   var meta = metaLesen();
+  /* F28: eine leere oder falsche Wurzel (fehlender archiv60m-pfad.txt-Zeiger, nicht
+   * eingehaengtes E:) sah bisher aus wie ein erfolgreicher Nachlauf mit null Reihen -
+   * und legte am falschen Ort Meta-Dateien an. Ohne Lebenszeit gibt es kein Archiv. */
+  if (!meta.LZ || !meta.LZ.werte || !Object.keys(meta.LZ.werte).length) {
+    /* KEIN Protokoll hier: es laege im selben falschen Ordner. */
+    return { fehler: 'Keine _lebenszeit.json unter ' + ROH + ' - leere oder falsche Wurzel, nichts geholt', reihen: 0, bloecke: 0 };
+  }
   var jetzt = opt.jetzt || Date.now();
   var jahr = Number(etTag(jetzt).slice(0, 4));
   var kal = await kalenderHolen(AB_JAHR, jahr, opt.fetch);
@@ -1250,8 +1295,16 @@ async function nachholen(opt) {
    * Reparaturjournal (der Live-Sammler stuerzte mitten im Anhang ab), meldet der
    * Schwanzbefund die Datei als zerrissen und die Reihe faellt als "ohne Datei" aus dem
    * Lauf. Also: Sperre nehmen, Journale zurueckspielen, DANN die Stempel lesen. */
-  if (!(await sperreWarten(opt.warteMin))) return { fehler: 'Sperre blieb belegt', reihen: reihen.length, bloecke: 0 };
-  A.sperreSetzen(ROH, 'Nachlauf --nachholen, ' + reihen.length + ' Reihen');
+  if (!(await sperreWarten(opt.warteMin))) {
+    /* Frueher endete das still mit Rueckgabewert 0: die Aufgabenplanung meldete
+     * "Letztes Ergebnis 0x0", und dass die Nacht ausgefallen war, stand nirgends. */
+    protokoll('Nachlauf ausgefallen: Sperre belegt (' + reihen.length + ' Reihen, nichts geholt)');
+    return { fehler: 'Sperre blieb belegt', reihen: reihen.length, bloecke: 0 };
+  }
+  if (!A.sperreSetzen(ROH, 'Nachlauf --nachholen, ' + reihen.length + ' Reihen')) {
+    protokoll('Nachlauf ausgefallen: Sperre liess sich nicht setzen (' + reihen.length + ' Reihen, nichts geholt)');
+    return { fehler: 'Sperre liess sich nicht setzen', reihen: reihen.length, bloecke: 0 };
+  }
   try {
   var jN = A.journaleReparieren(ROH);
   if (jN.gefunden) sag('Reparaturjournale: ' + jN.gefunden + ' gefunden, ' + jN.repariert.length + ' zurueckgespielt, ' +
@@ -1303,7 +1356,8 @@ async function nachholen(opt) {
       });
       if ((bi + 1) % 25 === 0 || bi + 1 === plan.bloecke.length) {
         F.nachholen.leere = plan.leere;
-        fortschrittSchreiben(F);
+        fortschrittSchreiben(F, ['nachholen']);
+        A.sperreAuffrischen(ROH, 'Nachlauf --nachholen, ' + reihen.length + ' Reihen');
         sag('  ' + (bi + 1) + '/' + plan.bloecke.length + ' Bloecke, ' + erg.anfragen + ' Anfragen, ' + erg.kerzen.toLocaleString('de-DE') + ' Kerzen in ' + erg.dateien + ' Dateien');
       }
     }
@@ -1316,7 +1370,7 @@ async function nachholen(opt) {
     F.nachholen.leere = plan.leere;
     F.nachholen.letzter = Object.assign({}, erg, { beruehrt: erg.beruehrt.length, fehler: erg.fehler.slice(0, 50) });
     F.nachholen.laeufe = (F.nachholen.laeufe || []).concat([{ begonnen: erg.begonnen, beendet: erg.beendet, anfragen: erg.anfragen, kerzen: erg.kerzen, dateien: erg.dateien, fehler: erg.fehler.length }]).slice(-60);
-    fortschrittSchreiben(F);
+    fortschrittSchreiben(F, ['nachholen']);
     protokoll('Nachlauf: ' + erg.bloecke + ' Bloecke, ' + erg.anfragen + ' Anfragen, ' + erg.kerzen + ' Kerzen in ' + erg.dateien + ' Dateien bis ' + new Date(ende).toISOString() + ', ' + erg.fehler.length + ' Fehler');
   } finally { A.sperreLoesen(ROH); }
   erg.beruehrt = erg.beruehrt.length;
@@ -1734,10 +1788,23 @@ async function main() {
     try { bekannt = Object.keys(JSON.parse(fs.readFileSync(LEBENSZEIT, 'utf8')).werte || {}); } catch (e) { bekannt = (U.alle || []).map(function (w) { return w.sym; }); }
     unbekannteMelden(symL, bekannt, 'Werten');
   }
-  if (hat('--nachholen')) { sag(JSON.stringify(await nachholen({ symbole: symL }), null, 1)); return; }
+  /* RUECKGABEWERTE (07.09.2026, F8/F32). Ein Nachlauf, der an der Sperre scheitert oder
+   * dessen Bloecke alle mit 403 zurueckkommen, endete bisher mit 0 - die Aufgabenplanung
+   * sah "Letztes Ergebnis 0x0" und die Wahrheit stand nur im Log. Jetzt: 1. */
+  if (hat('--nachholen')) {
+    var eN = await nachholen({ symbole: symL });
+    sag(JSON.stringify(eN, null, 1));
+    if (eN && eN.fehler && (typeof eN.fehler === 'string' || eN.fehler.length)) process.exitCode = 1;
+    return;
+  }
   if (hat('--lebenszeit')) { sag(JSON.stringify(await lebenszeit({ universum: U, bisJahr: bisJahr, symbole: symL }), null, 1).slice(0, 4000)); return; }
   if (hat('--massnahmen')) { sag(JSON.stringify(await massnahmen({ universum: U, bisJahr: bisJahr, symbole: symL }), null, 1)); return; }
-  if (hat('--holen')) { sag(JSON.stringify(await holen({ universum: U, bisJahr: bisJahr, nurJahr: Number(arg('--jahr', 0)) || null, symbole: symL }), null, 1)); return; }
+  if (hat('--holen')) {
+    var eH = await holen({ universum: U, bisJahr: bisJahr, nurJahr: Number(arg('--jahr', 0)) || null, symbole: symL });
+    sag(JSON.stringify(eH, null, 1));
+    if (eH && (eH.fehler === undefined ? false : (typeof eH.fehler === 'string' ? true : eH.fehler > 0))) process.exitCode = 1;
+    return;
+  }
 
   sag('Kein Modus gewaehlt. Siehe Kopf der Datei.');
 }
