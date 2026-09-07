@@ -2845,9 +2845,27 @@
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
       <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Darstellung &amp; Töne</div>
       <label style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setLaufband" checked style="margin-top:3px;"><span><b>Laufband bewegen:</b> die Schlagzeilen oben im Reiter Markt laufen von rechts nach links. Aus: dieselben Meldungen stehen still und lassen sich seitwärts schieben.</span></label>
-      <label style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text); margin-top:10px;"><input type="checkbox" id="setGlocke" checked style="margin-top:3px;"><span><b>Glocke zu Öffnung und Schluss:</b> ein kurzer Ton, wenn die US-Börse aufmacht (15:30 Uhr Berlin) und wenn sie schließt (22:00 Uhr). An Feiertagen bleibt es still. Der Ton löst nichts aus – er sagt nur Bescheid.</span></label>
+      <label style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text); margin-top:10px;"><input type="checkbox" id="setGlocke" checked style="margin-top:3px;"><span><b>Glocke zu Öffnung und Schluss:</b> die Börsenglocke – eine Klingel, die acht Sekunden durchläutet, wenn die US-Börse aufmacht (15:30 Uhr Berlin), und zehn Sekunden plus drei Hammerschläge, wenn sie schließt (22:00 Uhr). An Feiertagen bleibt es still. Der Ton löst nichts aus – er sagt nur Bescheid.</span></label>
+      <!-- Probe und Lautstärke (05.09.2026): beide Ereignisse müssen hörbar sein –
+           die Öffnung ohne Hammer, der Schluss mit –, und zehn Sekunden Klingel
+           sind lauter als der alte 1,2-Sekunden-Ton. -->
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
         <button class="btn ghost" id="glockeProbeBtn" type="button">Probe</button>
+        <label style="font-size:var(--fs-neben); color:var(--ink-2); display:flex; align-items:center; gap:4px;">
+          <span>Probe von</span>
+          <select id="glockeProbeEreignis" style="font-size:var(--fs-neben);">
+            <option value="oeffnung">Öffnung</option>
+            <option value="schluss">Schluss</option>
+          </select>
+        </label>
+        <label style="font-size:var(--fs-neben); color:var(--ink-2); display:flex; align-items:center; gap:4px;">
+          <span>Lautstärke</span>
+          <select id="setGlockeLaut" style="font-size:var(--fs-neben);">
+            <option value="leise">leise</option>
+            <option value="mittel">mittel</option>
+            <option value="laut">laut</option>
+          </select>
+        </label>
         <span id="glockeProbeStatus" style="font-size:var(--fs-neben); color:var(--muted);"></span>
       </div>
     </div>
@@ -3042,6 +3060,9 @@
 <script src="kurse.js"></script>
 <script src="boerse.js"></script>
 <script src="vormarkt.js"></script>
+<!-- Der Plan der Boersenglocke (Anschlaege, Frequenzen, Pegel) - renderer.js setzt
+     ihn nur in Web-Audio-Knoten um und muss ihn deshalb vor sich haben. -->
+<script src="markt/glocke.js"></script>
 <script src="renderer.js"></script>
 <script src="dialogstapel.js"></script>
 <script src="app-shell.js"></script>

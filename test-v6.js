@@ -17368,8 +17368,8 @@ console.log('\n75) Laufband, Marktglocke, Kleinkram');
      '75.2 der erste Blick laeuft vor dem Takt - er setzt die Marke, ohne zu laeuten');
   ok(/hinweisSetzen\('glocke', ereignis === 'oeffnung' \? '/.test(ren),
      '75.2 jedes Ereignis wird auch SICHTBAR - in der Hinweis-Kette an #err');
-  ok(/if \(glockeAn\(\)\) glockeTon\(\);/.test(ren) &&
-     ren.indexOf("hinweisSetzen('glocke'") < ren.indexOf('if (glockeAn()) glockeTon();'),
+  ok(/if \(glockeAn\(\)\) glockeTon\(ereignis\);/.test(ren) &&
+     ren.indexOf("hinweisSetzen('glocke'") < ren.indexOf('if (glockeAn()) glockeTon(ereignis);'),
      '75.2 der Hinweis kommt auch bei ausgeschalteter Glocke - er haengt nicht am Ton');
   ok(!/glockeTakt|glockeTon/.test(dep75.replace(/glockeProbe/g, '')),
      '75.2 der Handel kennt die Glocke nicht - sie loest nichts aus und nichts loest sie aus');
@@ -17379,22 +17379,24 @@ console.log('\n75) Laufband, Marktglocke, Kleinkram');
      '75.3 Web Audio, kein <audio> und keine Datei');
   var dateien75 = fs.readdirSync(__dirname).filter(function (f) { return /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(f); });
   ok(dateien75.length === 0, '75.3 im Paket liegt keine Audiodatei', dateien75.join(', ') || 'keine');
-  var teile75 = (ren.match(/\{ f: [\d.]+, a: [\d.]+, t: [\d.]+ \}/g) || []);
-  ok(teile75.length >= 2 && teile75.length <= 3,
-     '75.3 zwei bis drei abklingende Teiltoene', teile75.length + ' Teiltoene');
-  var laengste = Math.max.apply(null, (ren.match(/t: ([\d.]+) \}/g) || [])
-    .map(function (x) { return Number(x.match(/[\d.]+/)[0]); }));
-  ok(laengste > 0.8 && laengste <= 1.5, '75.3 und er ist rund 1,2 s lang', laengste + ' s');
+  /* Seit dem 07.09.2026 ist der Klang die BOERSENGLOCKE (Abschnitt 86): die Teiltoene
+   * stehen nicht mehr hier, sondern als Plan in markt/glocke.js, und der Renderer setzt
+   * ihn nur um. Die Klinke zielt darum auf das neue Verhalten und ist schaerfer als die
+   * alte: KEIN Frequenz-Literal mehr im Renderer, jede Zahl kommt aus dem Plan. */
+  var tonBlock75 = ren.slice(ren.indexOf('function glockeTon(ereignis)'), ren.indexOf('function glockeAn()'));
+  ok(tonBlock75.length > 500 && /window\.Glocke\.plan\(ereignis/.test(tonBlock75) &&
+     !/\{ f: [\d.]+/.test(tonBlock75) && !/frequency\.setValueAtTime\([\d.]+/.test(tonBlock75),
+     '75.3 der Renderer traegt keine eigenen Frequenzen mehr - er spielt den Plan aus markt/glocke.js', tonBlock75.length + ' Zeichen');
   ok(/huelle\.gain\.setValueAtTime\(0\.0001, t0\)/.test(ren),
      '75.3 die Huellkurve startet nicht bei 0 - von 0 kommt eine exponentielle Rampe nie weg');
-  ok(/catch \(e\) \{ return false; \}/.test(ren.slice(ren.indexOf('function glockeTon()'), ren.indexOf('function glockeAn()'))),
+  ok(/catch \(e\) \{ return false; \}/.test(tonBlock75),
      '75.3 und ein fehlgeschlagener Ton reisst keinen Bildschirm mit');
 
   /* ---- 75.4 Die beiden Schalter und der Probe-Knopf sind verdrahtet ---- */
   ok(/id="setLaufband"/.test(htm) && /id="setGlocke"/.test(htm) && /id="glockeProbeBtn"/.test(htm),
      '75.4 die zwei Schalter und der Probe-Knopf stehen im Einstellungs-Dialog');
-  ok(/anzeige: \{ laufband: true, glocke: true \}/.test(dep75), '75.4 Vorgabe fuer beide: AN');
-  ok(/return \{ laufband: a\.laufband !== false, glocke: a\.glocke !== false \};/.test(dep75),
+  ok(/anzeige: \{ laufband: true, glocke: true, glockeLaut: 'mittel' \}/.test(dep75), '75.4 Vorgabe fuer beide Schalter: AN (die Lautstaerke steht daneben, Abschnitt 86)');
+  ok(/laufband: a\.laufband !== false, glocke: a\.glocke !== false/.test(dep75),
      '75.4 und ein Store ohne den Schluessel liest ebenfalls AN - keine Migration noetig');
   ['setLaufband', 'setGlocke'].forEach(function (id) {
     var stelle = dep75.indexOf("getElementById('" + id + "')");
@@ -17407,12 +17409,12 @@ console.log('\n75) Laufband, Marktglocke, Kleinkram');
      '75.4 angewandt wird als Attribut am Wurzelelement - eine Quelle fuer CSS und Renderer');
   var probeStelle = dep75.indexOf("getElementById('glockeProbeBtn')");
   var probeBlk = dep75.slice(probeStelle, probeStelle + 700);
-  ok(probeStelle > 0 && /window\.Dash\.glockeProbe\(\)/.test(probeBlk),
-     '75.4 der Probe-Knopf spielt DENSELBEN Ton wie der Betrieb, keinen zweiten');
+  ok(probeStelle > 0 && /window\.Dash\.glockeProbe\(ev \? ev\.value : 'oeffnung'\)/.test(probeBlk),
+     '75.4 der Probe-Knopf spielt DENSELBEN Ton wie der Betrieb, keinen zweiten (seit 07.09. mit dem gewaehlten Ereignis)');
   ok(!/anzeigeStand\(\)\.glocke|data-glocke/.test(probeBlk),
      '75.4 und er spielt ihn auch bei ausgeschalteter Glocke - sonst hoerte man sie nie vorher');
-  ok(/glockeProbe: function \(\) \{ return glockeTon\(\); \}/.test(ren),
-     '75.4 renderer.js gibt den Ton als Griff heraus');
+  ok(/glockeProbe: function \(ereignis\) \{ return glockeTon\(ereignis\); \}/.test(ren),
+     '75.4 renderer.js gibt den Ton als Griff heraus - mit dem Ereignis, das die Probe waehlt');
 
   /* ---- 75.5 Das Band: laeuft, pausiert bei Hover und Fokus, Tempo aus der Breite ---- */
   ok(/#newsTicker:hover \.tickSpur \{ animation-play-state: paused; \}/.test(htm),
@@ -20394,6 +20396,177 @@ console.log('\n85) Anhang an Ort und Stelle: Journal, Abbruch, Schreibmenge, Les
 
   ok(g85 === rot85, '85.x alle Gegenproben dieses Abschnitts schlagen an (synchron)', rot85 + ' von ' + g85);
   fs.rmSync(tmp85, { recursive: true, force: true });
+})();
+
+/* ================= 86) Die Glocke klingt wie an der NYSE (07.09.2026) ==============
+ *
+ * Wilhelm, 05.09.2026: Der bisherige Ton war eine Kirchenglocke - drei abklingende
+ * Sinus-Teiltoene, 1,2 s, EIN Anschlag. Gemeint ist die Boersenglocke: eine
+ * elektrische Klingel, acht bis zehn Sekunden schnell und metallisch, zum Schluss
+ * die drei Hammerschlaege des Gavels. Nichts davon ist aufgenommen - der Klang wird
+ * erzeugt, es liegt keine Audiodatei im Paket (Klinke 75.3 bleibt).
+ *
+ * PRUEFBAR IST ER, WEIL DIE RECHNUNG VOM ABSPIELEN GETRENNT IST: markt/glocke.js
+ * liefert den PLAN (Anschlaege mit Zeit, Frequenzen, Pegel, Abklingzeit; Nachhall;
+ * Hammer), renderer.js setzt ihn in Web-Audio-Knoten um. Hier wird der Plan
+ * nachgerechnet - Zahl der Anschlaege je Sekunde, Dauer, Hammer nur zum Schluss,
+ * Streuung innerhalb der Grenzen, Spitzenpegel unter dem Kopfraum, Reproduzierbarkeit. */
+console.log('\n86) Die Boersenglocke: Plan, Streuung, Kopfraum, Verdrahtung');
+(function () {
+  var G = require('./markt/glocke.js');
+  var ren86 = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var htm86 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var dep86 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var quelle86 = fs.readFileSync(__dirname + '/markt/glocke.js', 'utf8');
+  var ohneG86 = ohneKommentare(quelle86);
+  var g86 = 0, rot86 = 0;
+  function gegen86(was, ergebnis) { g86++; if (ergebnis) rot86++; ok(ergebnis, '   Gegenprobe: ' + was); }
+
+  /* --- 86.1 Das Modul ist rein: kein Fenster, kein Ton, keine Platte --- */
+  ok(!/\bwindow\.|document|localStorage|AudioContext|createOscillator/.test(ohneG86),
+     '86.1 markt/glocke.js kennt weder Fenster noch AudioContext - es beschreibt einen Klang, es erzeugt keinen');
+  ok(!/require\('(fs|https|http|electron|child_process)'\)/.test(ohneG86), '86.1 und weder Platte noch Netz');
+  gegen86('das Muster faende einen AudioContext, wenn einer dastuende', /AudioContext/.test('new AudioContext()'));
+
+  /* --- 86.2 Der Plan zur Oeffnung: 8 s, 8-10 Anschlaege je Sekunde, KEIN Hammer --- */
+  var pO = G.plan('oeffnung', { zufall: G.saatZufall(11) });
+  ok(pO.ereignis === 'oeffnung' && pO.dauer === 8 && G.DAUER.oeffnung === 8,
+     '86.2 die Oeffnung laeutet acht Sekunden', pO.dauer + ' s');
+  ok(pO.schlaegeJeSekunde >= 8 && pO.schlaegeJeSekunde <= 10 && pO.anschlaege.length === 72,
+     '86.2 mit ' + pO.schlaegeJeSekunde.toFixed(1) + ' Anschlaegen je Sekunde (gefordert 8 bis 10)', pO.anschlaege.length + ' Anschlaege');
+  ok(pO.hammer.length === 0, '86.2 und ohne Hammerschlaege - die gehoeren dem Handelsschluss');
+  ok(pO.anschlaege.every(function (a) { return a.t >= 0 && a.t <= pO.dauer; }) &&
+     pO.anschlaege.every(function (a, i, arr) { return i === 0 || arr[i - 1].t <= a.t; }),
+     '86.2 alle Anschlaege liegen im Fenster und in Zeitfolge');
+
+  /* --- 86.3 Der Plan zum Schluss: 10 s, danach GENAU DREI Hammerschlaege --- */
+  var pS = G.plan('schluss', { zufall: G.saatZufall(11) });
+  ok(pS.dauer === 10 && pS.anschlaege.length === 90 && pS.schlaegeJeSekunde === 9,
+     '86.3 der Schluss laeutet zehn Sekunden', pS.anschlaege.length + ' Anschlaege');
+  ok(pS.hammer.length === 3 && pS.hammer.every(function (h) { return h.t > pS.dauer; }),
+     '86.3 danach genau drei Hammerschlaege - NACH dem Klingeln, nicht hinein', pS.hammer.map(function (h) { return h.t.toFixed(2); }).join(' '));
+  var abstaende86 = [pS.hammer[1].t - pS.hammer[0].t, pS.hammer[2].t - pS.hammer[1].t];
+  ok(abstaende86.every(function (d) { return Math.abs(d - 0.12) < 1e-9; }),
+     '86.3 im Abstand von 120 ms', abstaende86.map(function (d) { return Math.round(d * 1000); }).join('/') + ' ms');
+  ok(pS.hammer.every(function (h) { return h.tiefpass < 1000 && h.koerper.f < 200; }),
+     '86.3 dumpf: gefiltertes Rauschen unter 1 kHz mit tiefem Koerper', pS.hammer[0].tiefpass + ' Hz / ' + pS.hammer[0].koerper.f + ' Hz');
+  gegen86('ein Ereignisname, den es nicht gibt, faellt auf die Oeffnung zurueck - und die hat keinen Hammer',
+          G.plan('irgendwas', { zufall: G.saatZufall(1) }).hammer.length === 0);
+
+  /* --- 86.4 Frequenzen und Abklingzeiten in den Grenzen des Auftrags --- */
+  var alle86 = pS.anschlaege.concat(pO.anschlaege);
+  ok(alle86.every(function (a) { return a.teile[0].f >= G.GRUND_MIN && a.teile[0].f <= G.GRUND_MAX; }),
+     '86.4 jeder Grundton liegt zwischen ' + G.GRUND_MIN + ' und ' + G.GRUND_MAX + ' Hz',
+     Math.round(Math.min.apply(null, alle86.map(function (a) { return a.teile[0].f; }))) + '-' +
+     Math.round(Math.max.apply(null, alle86.map(function (a) { return a.teile[0].f; }))) + ' Hz');
+  ok(alle86.every(function (a) { return a.teile.length >= 3 && a.teile.length <= 4; }),
+     '86.4 zwei bis drei Obertoene ueber dem Grundton', alle86[0].teile.length + ' Teiltoene');
+  ok(G.VERHAELTNIS.every(function (v, i) { return i === 0 ? v === 1 : Math.abs(v - Math.round(v)) > 0.1; }),
+     '86.4 und sie sind INHARMONISCH - keine ganzzahligen Vielfachen, sonst klaenge es nach Saite statt nach Schale',
+     G.VERHAELTNIS.join(' / '));
+  ok(alle86.every(function (a) { return a.abkling >= 0.04 - 1e-9 && a.abkling <= 0.08 + 1e-9; }),
+     '86.4 jeder Anschlag verklingt in 40 bis 80 ms',
+     Math.round(Math.min.apply(null, alle86.map(function (a) { return a.abkling * 1000; }))) + '-' +
+     Math.round(Math.max.apply(null, alle86.map(function (a) { return a.abkling * 1000; }))) + ' ms');
+  ok(alle86.every(function (a) { return a.teile.every(function (t, i) { return i === 0 || t.abkling < a.teile[i - 1].abkling; }); }),
+     '86.4 die hohen Teiltoene verklingen schneller als der Grundton - daher das "Ping"');
+  ok(pS.nachhall.teile.length >= 1 && pS.nachhall.dauer >= pS.dauer &&
+     pS.nachhall.teile.every(function (t) { return t.a < pS.anschlaege[0].teile[0].a / 2; }),
+     '86.4 der Nachhall der Schale laeuft ueber die ganze Dauer und ist deutlich leiser als ein Anschlag');
+  ok(pS.huelle.ein > 0 && pS.huelle.aus > 0 && pS.gesamt > pS.hammer[2].t,
+     '86.4 ein- und ausgeblendet wird sanft, und das Ganze endet nach dem letzten Hammerschlag',
+     JSON.stringify([pS.huelle.ein, pS.huelle.aus, +pS.gesamt.toFixed(2)]));
+
+  /* --- 86.5 Die Streuung: innerhalb der Grenzen, aber vorhanden (sonst ein Summer) --- */
+  var toene86 = alle86.map(function (a) { return a.teile[0].f; });
+  var staerken86 = alle86.map(function (a) { return a.staerke; });
+  ok(Math.max.apply(null, toene86) > Math.min.apply(null, toene86) &&
+     toene86.every(function (f) { return Math.abs(f / G.GRUND - 1) <= G.TON_STREUUNG + 1e-9; }),
+     '86.5 die Tonhoehe streut, aber nur innerhalb von ' + (G.TON_STREUUNG * 100) + ' %');
+  ok(Math.max.apply(null, staerken86) > Math.min.apply(null, staerken86) &&
+     staerken86.every(function (s) { return Math.abs(s - 1) <= G.STAERKE_STREUUNG + 1e-9; }),
+     '86.5 die Anschlagstaerke ebenso', staerken86.filter(function (s) { return s !== 1; }).length + ' von ' + staerken86.length + ' weichen ab');
+  var takt86 = [];
+  for (var i86 = 1; i86 < pS.anschlaege.length; i86++) takt86.push(pS.anschlaege[i86].t - pS.anschlaege[i86 - 1].t);
+  ok(Math.max.apply(null, takt86) - Math.min.apply(null, takt86) > 0.005,
+     '86.5 und die Abstaende sind nicht alle gleich - ein exaktes Raster klaenge wie ein Summer, nicht wie eine Klingel',
+     Math.round(Math.min.apply(null, takt86) * 1000) + '-' + Math.round(Math.max.apply(null, takt86) * 1000) + ' ms');
+  gegen86('ohne Streuung waeren alle Abstaende gleich - die Klinke unterscheidet das',
+          (function () { var g = [0.111, 0.111, 0.111]; return Math.max.apply(null, g) - Math.min.apply(null, g) < 0.005; })());
+
+  /* --- 86.6 Reproduzierbarkeit: dieselbe Quelle, derselbe Plan --- */
+  var a86 = G.plan('schluss', { zufall: G.saatZufall(42) });
+  var b86 = G.plan('schluss', { zufall: G.saatZufall(42) });
+  var c86 = G.plan('schluss', { zufall: G.saatZufall(43) });
+  ok(JSON.stringify(a86) === JSON.stringify(b86), '86.6 zwei Laeufe mit derselben Zufallsquelle geben denselben Plan');
+  ok(JSON.stringify(a86) !== JSON.stringify(c86), '86.6 zwei mit verschiedener nicht');
+  gegen86('waere die Quelle egal, waeren auch die beiden verschiedenen Saaten gleich',
+          a86.anschlaege[0].t !== c86.anschlaege[0].t || a86.anschlaege[1].t !== c86.anschlaege[1].t);
+
+  /* --- 86.7 Der Kopfraum: der Spitzenpegel bleibt unter 0,8 --- */
+  ['leise', 'mittel', 'laut'].forEach(function (l) {
+    var p = G.plan('schluss', { lautstaerke: l, zufall: G.saatZufall(5) });
+    ok(p.lautstaerke === l && p.spitze * p.meister < 0.8 && p.spitze * p.meister > 0,
+       '86.7 [' + l + '] Spitze mal Meister-Gain bleibt unter 0,8', (p.spitze * p.meister).toFixed(3));
+  });
+  ok(G.plan('schluss', { lautstaerke: 'laut', zufall: G.saatZufall(5) }).meister >
+     G.plan('schluss', { lautstaerke: 'leise', zufall: G.saatZufall(5) }).meister * 2,
+     '86.7 laut ist deutlich lauter als leise - die Stufe wirkt auf den Meister-Gain, nicht auf die Teiltoene');
+  ok(G.plan('schluss', { lautstaerke: 'unsinn', zufall: G.saatZufall(5) }).lautstaerke === G.VORGABE_LAUT && G.VORGABE_LAUT === 'mittel',
+     '86.7 eine unbekannte Stufe faellt auf die Vorgabe mittel zurueck');
+  gegen86('ohne den Meister-Gain laege die Summe der Anschlaege ueber der Grenze',
+          G.plan('schluss', { zufall: G.saatZufall(5) }).spitze > 0.8);
+
+  /* --- 86.8 renderer.js spielt den Plan und rechnet nicht selbst --- */
+  var ton86 = ren86.slice(ren86.indexOf('function glockeTon(ereignis)'), ren86.indexOf('function glockeAn()'));
+  ok(/window\.Glocke\.plan\(ereignis, \{ lautstaerke: glockeLaut\(\) \}\)/.test(ton86),
+     '86.8 der Renderer holt den Plan mit Ereignis und Lautstaerke');
+  ok(!/\b(2500|3000|3500|1\.83|2\.71|3\.42|587\.33|1174\.66|1760)\b/.test(ton86) &&
+     (ton86.match(/frequency\.setValueAtTime\((teil\.f|ha\.tiefpass|ha\.koerper\.f), t0\)|frequency\.setValueAtTime\(teil\.f, start\)/g) || []).length >= 3,
+     '86.8 jede Frequenz im Renderer kommt aus dem Plan - kein eigenes Literal mehr');
+  ok(/p\.anschlaege\.forEach/.test(ton86) && /p\.nachhall\.teile\.forEach/.test(ton86) && /p\.hammer\.forEach/.test(ton86),
+     '86.8 Anschlaege, Nachhall und Hammer kommen alle aus dem Plan');
+  ok(/meister\.gain\.exponentialRampToValueAtTime\(p\.meister, start \+ p\.huelle\.ein\)/.test(ton86) &&
+     /meister\.gain\.exponentialRampToValueAtTime\(0\.0001, start \+ p\.gesamt\)/.test(ton86),
+     '86.8 ein Meister-Gain mit Ein- und Ausblenden, Pegel aus dem Plan');
+  ok(/<script src="markt\/glocke\.js"><\/script>/.test(htm86) &&
+     htm86.indexOf('markt/glocke.js') < htm86.indexOf('<script src="renderer.js">'),
+     '86.8 und das Modul wird vor dem Renderer geladen');
+  gegen86('das Literal-Muster faende eine Frequenz, wenn eine dastuende', /\b(2500|3000|3500)\b/.test('osz.frequency.setValueAtTime(3000, t0);'));
+
+  /* --- 86.9 Probe-Auswahl und Lautstaerke: verdrahtet und im Store --- */
+  ok(/id="glockeProbeEreignis"/.test(htm86) && /value="oeffnung"/.test(htm86) && /value="schluss"/.test(htm86),
+     '86.9 neben dem Probe-Knopf steht die Auswahl Oeffnung/Schluss - beide sind hoerbar');
+  ok(/id="setGlockeLaut"/.test(htm86) && /value="leise"/.test(htm86) && /value="mittel"/.test(htm86) && /value="laut"/.test(htm86),
+     '86.9 und eine Liste fuer die Lautstaerke mit drei Stufen');
+  ok(/anzeige: \{ laufband: true, glocke: true, glockeLaut: 'mittel' \}/.test(dep86),
+     '86.9 Vorgabe im Store: mittel');
+  ok(/a\.glockeLaut === 'leise' \|\| a\.glockeLaut === 'laut'/.test(dep86) && /glockeLaut: laut/.test(dep86),
+     '86.9 ein Store ohne den Schluessel - und jeder Unsinn darin - liest mittel; keine Migration noetig');
+  var lautBlk86 = dep86.slice(dep86.indexOf("getElementById('setGlockeLaut')"), dep86.indexOf("getElementById('setGlockeLaut')") + 420);
+  ok(dep86.indexOf("getElementById('setGlockeLaut')") > 0 && /addEventListener\('change'/.test(lautBlk86) &&
+     /save\(\);/.test(lautBlk86) && /anzeigeAnwenden\(\);/.test(lautBlk86),
+     '86.9 die Liste liest den Store, schreibt ihn und wendet ihn an - derselbe Weg wie die zwei Schalter');
+  ok(/w\.setAttribute\('data-glocke-laut', st\.glockeLaut\);/.test(dep86) &&
+     /getAttribute\('data-glocke-laut'\)/.test(ren86),
+     '86.9 angewandt als Attribut am Wurzelelement, von dort liest der Renderer - eine Quelle');
+  var probeBlk86 = dep86.slice(dep86.indexOf("getElementById('glockeProbeBtn')"), dep86.indexOf("getElementById('glockeProbeBtn')") + 900);
+  ok(/window\.Dash\.glockeProbe\(ev \? ev\.value : 'oeffnung'\)/.test(probeBlk86),
+     '86.9 der Probe-Knopf spielt das GEWAEHLTE Ereignis - denselben Klang wie im Betrieb');
+  ok(!/data-glocke"|anzeigeStand\(\)\.glocke\b/.test(probeBlk86),
+     '86.9 und weiter auch bei ausgeschalteter Glocke');
+  gegen86('das Muster faende den Schalter, wenn die Probe ihn abfragte', /anzeigeStand\(\)\.glocke\b/.test('if (anzeigeStand().glocke) spiele();'));
+
+  /* --- 86.10 Der Auslöser bleibt, wie er war --- */
+  ok(/window\.MarktUebersicht\.glockenEreignis\(glockeZustand, z\.zustand\)/.test(ren86) &&
+     /if \(glockeAn\(\)\) glockeTon\(ereignis\);/.test(ren86),
+     '86.10 ausgeloest wird weiter ueber glockenEreignis - nur das Ereignis geht jetzt an den Ton mit');
+  ok(!/setInterval|Date\.now|glockenEreignis/.test(ohneG86),
+     '86.10 und markt/glocke.js kennt weder Uhr noch Ausloeser - es weiss nur, wie es klingen soll');
+  var dateien86 = fs.readdirSync(__dirname + '/markt').filter(function (f) { return /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(f); });
+  ok(dateien86.length === 0, '86.10 auch neben dem Modul liegt keine Audiodatei', dateien86.join(', ') || 'keine');
+
+  ok(g86 === rot86, '86.x alle Gegenproben dieses Abschnitts schlagen an', rot86 + ' von ' + g86);
 })();
 
 Promise.all(offeneProben).then(function () {

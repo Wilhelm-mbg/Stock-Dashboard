@@ -1127,39 +1127,111 @@
    * erste Blick laeutet nie (glockenEreignis gibt gegen null immer null zurueck) -
    * ein Neustart um 09:31 laeutet also nicht nach. Die Marke lebt nur in der
    * Sitzung; sie gehoert nicht in den Store, weil sie nichts ueber das Depot sagt. */
-  var GLOCKE_TEILE = [
-    { f: 587.33, a: 0.50, t: 1.20 },    // Grundton (d5) - er traegt den Ton
-    { f: 1174.66, a: 0.20, t: 0.70 },   // Oktave darueber, verklingt schneller
-    { f: 1760.00, a: 0.10, t: 0.35 }    // kurzer heller Teilton: das Anschlagen
-  ];
   var glockeCtx = null;
   var glockeZustand = null;
 
-  /* Der Ton wird ERZEUGT, nicht abgespielt: keine Audiodatei im Paket, keine
-   * Lizenzfrage, und drei Sinus-Teiltoene mit abklingender Huellkurve sind das,
-   * woraus eine Glocke besteht. Wirft irgendetwas davon, bleibt es still - ein
-   * fehlgeschlagener Ton darf keinen Bildschirm mitnehmen. */
-  function glockeTon() {
+  /* DER KLANG IST DIE BOERSENGLOCKE, NICHT EINE KIRCHENGLOCKE (Wilhelm, 05.09.2026).
+   * Eine elektrische Klingel, acht bis zehn Sekunden schnell durchgeklingelt, zum
+   * Schluss drei Hammerschlaege. NICHTS DAVON IST AUFGENOMMEN - keine Audiodatei im
+   * Paket, keine Lizenzfrage.
+   *
+   * HIER STEHT KEINE ZAHL DES KLANGS. Welche Anschlaege wann mit welchen Frequenzen,
+   * Pegeln und Abklingzeiten kommen, rechnet markt/glocke.js als PLAN; dieser Block
+   * setzt ihn nur in Knoten um. Der Grund ist derselbe wie bei glockenEreignis: eine
+   * Rechnung, die nur im Renderer steht, laesst sich in Node nicht pruefen - und ein
+   * Klang, den niemand nachrechnet, driftet.
+   *
+   * Wirft irgendetwas davon, bleibt es still - ein fehlgeschlagener Ton darf keinen
+   * Bildschirm mitnehmen. */
+  function glockeLaut() {
+    var v = document.documentElement.getAttribute('data-glocke-laut');
+    return (window.Glocke && window.Glocke.LAUTSTAERKE && window.Glocke.LAUTSTAERKE[v] !== undefined)
+      ? v : (window.Glocke ? window.Glocke.VORGABE_LAUT : null);
+  }
+  function glockeTon(ereignis) {
     try {
       var AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return false;
+      if (!AC || !window.Glocke) return false;
       if (!glockeCtx) glockeCtx = new AC();
       if (glockeCtx.state === 'suspended' && glockeCtx.resume) glockeCtx.resume();
-      var t0 = glockeCtx.currentTime + 0.02;
-      GLOCKE_TEILE.forEach(function (teil) {
-        var osz = glockeCtx.createOscillator();
-        var huelle = glockeCtx.createGain();
+      var ctx = glockeCtx;
+      var p = window.Glocke.plan(ereignis, { lautstaerke: glockeLaut() });
+      var start = ctx.currentTime + 0.02;
+
+      /* Ein Meister-Gain fuer alles, mit sanftem Ein- und Ausblenden. Der Pegel kommt
+       * aus dem Plan (er haelt den Kopfraum ein), nicht von hier. */
+      var meister = ctx.createGain();
+      meister.gain.setValueAtTime(0.0001, start);
+      meister.gain.exponentialRampToValueAtTime(p.meister, start + p.huelle.ein);
+      meister.gain.setValueAtTime(p.meister, start + p.gesamt - p.huelle.aus);
+      meister.gain.exponentialRampToValueAtTime(0.0001, start + p.gesamt);
+      meister.connect(ctx.destination);
+
+      /* Die Anschlaege: je Teilton eine Sinusschwingung mit abklingender Huellkurve.
+       * Exponentiell, weil ein Ton so verklingt - linear klaenge wie ein Abwuergen.
+       * Der Startwert darf nicht 0 sein: von 0 kommt eine exponentielle Rampe nie weg. */
+      p.anschlaege.forEach(function (an) {
+        var t0 = start + an.t;
+        an.teile.forEach(function (teil) {
+          var osz = ctx.createOscillator();
+          var huelle = ctx.createGain();
+          osz.type = 'sine';
+          osz.frequency.setValueAtTime(teil.f, t0);
+          huelle.gain.setValueAtTime(0.0001, t0);
+          huelle.gain.exponentialRampToValueAtTime(teil.a, t0 + teil.abkling * 0.08);
+          huelle.gain.exponentialRampToValueAtTime(0.0001, t0 + teil.abkling);
+          osz.connect(huelle);
+          huelle.connect(meister);
+          osz.start(t0);
+          osz.stop(t0 + teil.abkling + 0.02);
+        });
+      });
+
+      /* Der Nachhall der Schale: steht, solange geklingelt wird, und verklingt
+       * danach - ohne ihn waeren es einzelne Klicks statt eines Koerpers. */
+      p.nachhall.teile.forEach(function (teil) {
+        var osz = ctx.createOscillator();
+        var huelle = ctx.createGain();
         osz.type = 'sine';
-        osz.frequency.setValueAtTime(teil.f, t0);
-        /* Exponentiell, weil ein Ton so verklingt - linear klaenge wie ein Abwuergen.
-         * Der Startwert darf nicht 0 sein: von 0 kommt eine exponentielle Rampe nie weg. */
-        huelle.gain.setValueAtTime(0.0001, t0);
-        huelle.gain.exponentialRampToValueAtTime(teil.a, t0 + 0.012);
-        huelle.gain.exponentialRampToValueAtTime(0.0001, t0 + teil.t);
+        osz.frequency.setValueAtTime(teil.f, start);
+        huelle.gain.setValueAtTime(0.0001, start);
+        huelle.gain.exponentialRampToValueAtTime(teil.a, start + p.huelle.ein);
+        huelle.gain.setValueAtTime(teil.a, start + p.dauer);
+        huelle.gain.exponentialRampToValueAtTime(0.0001, start + p.nachhall.dauer);
         osz.connect(huelle);
-        huelle.connect(glockeCtx.destination);
-        osz.start(t0);
-        osz.stop(t0 + teil.t + 0.05);
+        huelle.connect(meister);
+        osz.start(start);
+        osz.stop(start + p.nachhall.dauer + 0.02);
+      });
+
+      /* Die Hammerschlaege (nur zum Schluss): gefiltertes Rauschen mit tiefem
+       * Koerper - Holz auf Holz, kein Ton. */
+      p.hammer.forEach(function (ha) {
+        var t0 = start + ha.t;
+        var laenge = Math.max(1, Math.round(ha.dauer * ctx.sampleRate));
+        var puffer = ctx.createBuffer(1, laenge, ctx.sampleRate);
+        var kanal = puffer.getChannelData(0);
+        for (var i = 0; i < laenge; i++) kanal[i] = Math.random() * 2 - 1;
+        var rauschen = ctx.createBufferSource();
+        rauschen.buffer = puffer;
+        var tief = ctx.createBiquadFilter();
+        tief.type = 'lowpass';
+        tief.frequency.setValueAtTime(ha.tiefpass, t0);
+        var hHuelle = ctx.createGain();
+        hHuelle.gain.setValueAtTime(ha.a, t0);
+        hHuelle.gain.exponentialRampToValueAtTime(0.0001, t0 + ha.dauer);
+        rauschen.connect(tief); tief.connect(hHuelle); hHuelle.connect(meister);
+        rauschen.start(t0);
+        var koerper = ctx.createOscillator();
+        var kHuelle = ctx.createGain();
+        koerper.type = 'sine';
+        koerper.frequency.setValueAtTime(ha.koerper.f, t0);
+        kHuelle.gain.setValueAtTime(0.0001, t0);
+        kHuelle.gain.exponentialRampToValueAtTime(ha.koerper.a, t0 + ha.koerper.abkling * 0.1);
+        kHuelle.gain.exponentialRampToValueAtTime(0.0001, t0 + ha.koerper.abkling * 4);
+        koerper.connect(kHuelle); kHuelle.connect(meister);
+        koerper.start(t0);
+        koerper.stop(t0 + ha.koerper.abkling * 4 + 0.02);
       });
       return true;
     } catch (e) { return false; }
@@ -1182,7 +1254,7 @@
      * Ereignis, kein Zustand, und die Hinweis-Kette traegt sonst Zustaende. */
     hinweisSetzen('glocke', ereignis === 'oeffnung' ? 'Börse geöffnet' : 'Börse geschlossen');
     setTimeout(function () { hinweisSetzen('glocke', null); }, 60000);
-    if (glockeAn()) glockeTon();
+    if (glockeAn()) glockeTon(ereignis);
     return ereignis;
   }
   /* Der erste Aufruf laeutet nie - er merkt sich nur, wo die App hereingekommen ist. */
@@ -1427,8 +1499,10 @@
     quote: function (ySym) { return Q[ySym]; },
     marketOpen: usMarketOpen,
     /* Der Probe-Knopf in den App-Einstellungen und die UI-Probe greifen hier an:
-     * derselbe Ton und dieselbe Messung, die im Betrieb laufen - keine zweite. */
-    glockeProbe: function () { return glockeTon(); },
+     * derselbe Ton und dieselbe Messung, die im Betrieb laufen - keine zweite.
+     * Das Ereignis kommt von der Auswahl neben dem Knopf, damit beides hoerbar ist:
+     * die Oeffnung ohne Hammer, der Schluss mit. */
+    glockeProbe: function (ereignis) { return glockeTon(ereignis); },
     bandTempo: bandTempo
   };
 

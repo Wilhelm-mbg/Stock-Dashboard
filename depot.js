@@ -46,7 +46,7 @@
       /* Darstellung und Toene (Wilhelm, 04.09.2026). Beide Vorgaben: AN. Ein
        * bestehender Store hat den Schluessel nicht - deshalb liest anzeigeStand()
        * ueberall mit '!== false' und braucht keine Migration. */
-      anzeige: { laufband: true, glocke: true },
+      anzeige: { laufband: true, glocke: true, glockeLaut: 'mittel' },
       risk: { maxPos: 8, dayLossPct: 3, exposurePct: 40 },
       dayKey: '', dayStartEq: 0,
       lastRun: 0, nextId: 1
@@ -4412,7 +4412,10 @@
    * braucht der Schalter keine Migration und kein Nachtragen beim Laden. */
   function anzeigeStand() {
     var a = (D && D.anzeige) || {};
-    return { laufband: a.laufband !== false, glocke: a.glocke !== false };
+    /* Die Lautstaerke der Glocke (05.09.2026): nur die drei bekannten Stufen zaehlen,
+       alles andere - und ein Store ohne den Schluessel - ist 'mittel'. */
+    var laut = (a.glockeLaut === 'leise' || a.glockeLaut === 'laut') ? a.glockeLaut : 'mittel';
+    return { laufband: a.laufband !== false, glocke: a.glocke !== false, glockeLaut: laut };
   }
   /* Ein Attribut am Wurzelelement, aus dem CSS und Renderer lesen. Das Ereignis
    * danach ist fuer alles, was sich nicht per CSS erledigt (der Hinweistext des
@@ -4422,6 +4425,7 @@
     var w = document.documentElement;
     w.setAttribute('data-laufband', st.laufband ? 'an' : 'aus');
     w.setAttribute('data-glocke', st.glocke ? 'an' : 'aus');
+    w.setAttribute('data-glocke-laut', st.glockeLaut);
     try { document.dispatchEvent(new CustomEvent('anzeige-geaendert')); }
     catch (e) { /* ohne Ereignis bleibt es beim Stand des naechsten Aufbaus */ }
   }
@@ -7355,18 +7359,37 @@
         anzeigeAnwenden();
       });
     }
+    /* Die Lautstaerke der Glocke (05.09.2026): drei Stufen, Vorgabe mittel. Sie geht
+     * denselben Weg wie die Schalter - Store, Attribut am Wurzelelement, von dort
+     * liest renderer.js. Zehn Sekunden Klingel sind lauter als der alte kurze Ton;
+     * wer sie leiser will, soll sie nicht abschalten muessen. */
+    var gL = document.getElementById('setGlockeLaut');
+    if (gL) {
+      gL.value = anzeigeStand().glockeLaut;
+      gL.addEventListener('change', function () {
+        if (!D.anzeige) D.anzeige = {};
+        D.anzeige.glockeLaut = gL.value;
+        save();
+        anzeigeAnwenden();
+      });
+    }
     /* Die Probe spielt den Ton IMMER - auch bei ausgeschalteter Glocke. Sie ist eine
      * Hoerprobe, keine Vorschau des Schalters: wer wissen will, wie es klingt, bevor
      * er ihn anmacht, kaeme sonst nie dazu. Gespielt wird derselbe Ton wie im
-     * Betrieb (window.Dash.glockeProbe), nicht ein zweiter. */
+     * Betrieb (window.Dash.glockeProbe), nicht ein zweiter - und das Ereignis kommt
+     * aus der Auswahl daneben, damit beide hoerbar sind (Schluss hat die Hammerschlaege). */
     var gP = document.getElementById('glockeProbeBtn');
     if (gP) {
       gP.addEventListener('click', function () {
         var st = document.getElementById('glockeProbeStatus');
-        var ok = !!(window.Dash && window.Dash.glockeProbe && window.Dash.glockeProbe());
+        var ev = document.getElementById('glockeProbeEreignis');
+        var ok = !!(window.Dash && window.Dash.glockeProbe && window.Dash.glockeProbe(ev ? ev.value : 'oeffnung'));
         if (st) {
-          st.textContent = ok ? 'Ton gespielt.' : 'Der Ton lässt sich auf diesem Rechner nicht erzeugen.';
-          setTimeout(function () { st.textContent = ''; }, 5000);
+          /* Die Klingel laeuft acht bis elf Sekunden - der Hinweis darf nicht vorher
+             verschwinden, sonst sieht es aus, als waere nichts passiert. */
+          var sek = window.Glocke ? Math.ceil(window.Glocke.plan(ev ? ev.value : 'oeffnung').gesamt) : 12;
+          st.textContent = ok ? 'Glocke läutet (' + sek + ' s).' : 'Der Ton lässt sich auf diesem Rechner nicht erzeugen.';
+          setTimeout(function () { st.textContent = ''; }, (sek + 1) * 1000);
         }
       });
     }
