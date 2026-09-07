@@ -16513,7 +16513,6 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
   var mengeQuelle = /function menge\(zahl, einzahl, mehrzahl\) \{[\s\S]*?\n  \}/.exec(ark);
   ok(!!mengeQuelle, 'F11: die Einzahl/Mehrzahl-Funktion ist auffindbar');
   if (mengeQuelle) {
-    /* eslint-disable-next-line no-new-func */
     var menge = new Function('return (' + mengeQuelle[0].replace(/^function/, 'function') + ');')();
     ok(menge(1, 'Minute', 'Minuten') === '1 Minute', 'F11: 1 -> Einzahl', menge(1, 'Minute', 'Minuten'));
     ok(menge(2, 'Minute', 'Minuten') === '2 Minuten', 'F11: 2 -> Mehrzahl', menge(2, 'Minute', 'Minuten'));
@@ -16947,9 +16946,18 @@ console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelr
    * Stundenreihe war der Ausschnitt groesser als die Datei, und das Zerlegen kostete
    * MEHR als JSON.parse (Faktor 0,6). Mit der Staffelung: 9,5-fach / 4,2-fach /
    * 1,7-fach schneller als der Volltext. */
-  ok(/function kerzenSchwanz\(n\)/.test(mainQ) &&
-     /Math\.min\(512 \* 1024, 64 \* 1024 \+ Math\.max\(0, n\) \* 120\)/.test(mainQ),
+  /* Seit dem Live-Sammler (07.09.2026) nimmt kerzenSchwanz einen zweiten Parameter:
+   * 5m/15m/1h werden aus MINUTEN verdichtet, und fuer 400 Stundenkerzen sind rund
+   * 24.000 Minuten zu lesen - die passen nicht in eine halbe Megabyte. Die Staffelung
+   * selbst ist unveraendert, und der Vorgabedeckel ebenfalls; geprueft wird deshalb
+   * beides getrennt, damit ein spaeterer Umbau an einer der zwei Zahlen auffaellt. */
+  ok(/function kerzenSchwanz\(n, deckel\)/.test(mainQ) &&
+     /Math\.min\(deckel \|\| 512 \* 1024, 64 \* 1024 \+ Math\.max\(0, n\) \* 120\)/.test(mainQ),
      'der Ausschnitt richtet sich nach der Zahl der verlangten Kerzen, plus Polster fuer die Sitzungsbereiche');
+  ok(/const SCHWANZ_MINUTEN = 4 \* 1024 \* 1024/.test(mainQ),
+     'und wer Minuten verdichtet, hebt den Deckel - sonst faellt die Verdichtung still auf Yahoo zurueck');
+  ok(/kerzenSchwanz\(nMin, deckel\)/.test(mainQ) && /ausMin \? SCHWANZ_MINUTEN : undefined/.test(mainQ),
+     'der gehobene Deckel gilt NUR dem Minutenweg - die uebrigen Leser bleiben bei der halben Megabyte');
   ok(/kerzenSchwanz\(n\)/.test(handler) && !/KERZEN_SCHWANZ/.test(mainQ),
      'und der Handler benutzt sie - die feste Zahl gibt es nicht mehr');
   ok(/alpaca1m-bereinigt/.test(handler) && /alpaca1m/.test(handler),
@@ -19535,6 +19543,329 @@ console.log('\n82) Zeichenwerkzeuge: Daten-Koordinaten, Fibonacci, Treffertest')
      '82.12 die eine Stelle gibt die Objekt-URL auch wieder frei');
 
   ok(g82 === rot82, '82.x alle Gegenproben dieses Abschnitts schlagen an', rot82 + ' von ' + g82);
+})();
+
+
+/* ================================================================================
+ * 83) LIVE-SAMMLER (Auftrag Nr. 4, 07.09.2026)
+ *
+ * Der Sammler haengt waehrend der Sitzung fertige SIP-Minutenbalken an alpaca1m/ an.
+ * Vier Regeln tragen ihn, und jede hat hier ihre Gegenprobe:
+ *   (1) nur SIP, und nur was 16 Minuten alt ist
+ *   (2) anhaengen statt ueberschreiben - Abweichungen werden GEZAEHLT
+ *   (3) die Sperre ist mit dem naechtlichen Nachlauf geteilt
+ *   (4) der Deckel gilt dem ganzen Zugang
+ * Dazu der Viewer: 5m/15m/1h werden aus denselben Minuten verdichtet statt aus einer
+ * zweiten Quelle geholt.
+ * ============================================================================== */
+console.log('83) Live-Sammler: Fenster, Deckel, append-only, Verdichtung');
+(function () {
+  var AL = require('./alpacalive.js');
+  var AS = require('./alpacasammler.js');
+  var KC = require('./markt/kerzenchart.js');
+  var KQ = require('./kerzenquelle.js');
+  var Boerse = require('./boerse.js');
+
+  var g83 = 0, rot83 = 0;
+  function gegen83(was, ergebnis) { g83++; if (ergebnis) rot83++; ok(ergebnis, '   Gegenprobe: ' + was); }
+
+  /* ---------- (A) Das Fenster: 16 Minuten, nicht 15 ---------- */
+  var jetzt = Date.UTC(2026, 8, 4, 18, 3, 27, 500);      // Freitag, 14:03 ET
+  var f0 = AL.fenster(null, jetzt);
+  ok(f0.bis === Date.UTC(2026, 8, 4, 17, 47),
+     '83.1 bis = jetzt minus 16 Minuten, auf die volle Minute abgerundet',
+     new Date(f0.bis).toISOString());
+  ok(AL.SIP_VERZUG_MS > 15 * 60000,
+     '83.2 der Abstand ist GROESSER als die gemessene Sperre der Quelle (15 min)',
+     AL.SIP_VERZUG_MS / 60000 + ' min');
+  gegen83('mit 15 min laege das Fenster GENAU auf der Sperre - eine nachgehende Uhr holte HTTP 403',
+          AL.fenster(null, jetzt, { verzug: 15 * 60000 }).bis > f0.bis);
+  ok(f0.von === f0.bis - AL.ERSTFENSTER_MS,
+     '83.3 ohne Datei steigt der Sammler hoechstens eine Sitzung zurueck ein - die Historie ist Sache der Vollsammlung');
+
+  var frisch = f0.bis - 3 * 60000;
+  var f1 = AL.fenster(frisch, jetzt);
+  ok(f1.von === f0.bis - AL.NACHPRUEF_MS,
+     '83.4 bei einer frischen Reihe zieht die Nachpruefung den Anfang auf die letzte halbe Stunde zurueck');
+  ok(f1.nachgeprueft === true,
+     '83.5 und der Umlauf weiss, dass er nachprueft - sonst waere die Null spaeter nicht deutbar');
+  gegen83('ohne Nachpruefung finge das Fenster erst hinter der juengsten Kerze an',
+          AL.fenster(frisch, jetzt, { nachpruef: 0 }).von === frisch + 60000);
+  ok(AL.fenster(f0.bis, jetzt).leer === true,
+     '83.6 hat die Reihe schon alles Fertige, wird gar nicht erst gefragt');
+  ok(AL.fenster(f0.bis - 60000, jetzt).leer === false,
+     '83.6b fehlt auch nur eine Minute, wird gefragt');
+  gegen83('der Merker war zuerst als "bis < von" gebaut und konnte NIE anschlagen - die Nachpruefung zieht von immer vor bis',
+          AL.fenster(f0.bis, jetzt).bis >= AL.fenster(f0.bis, jetzt).von);
+
+  /* Am Wochenende steht ALLES weiter als RUNDE_MAX_MS zurueck - der Sammler wird von
+   * selbst still, ohne einen Kalender zu befragen. Das ist keine Absicht, sondern
+   * eine Folge des Deckels; sie wird hier festgehalten, damit sie nicht unbemerkt
+   * verschwindet, wenn jemand RUNDE_MAX_MS hochsetzt. */
+  var montag = Date.UTC(2026, 8, 7, 18, 0);        // Montag, Boerse zu (14:00 ET, aber Reihen von Freitag)
+  var stillG = AL.gruppieren(['AAA'], { AAA: montag - 3 * 24 * 3600000 }, montag);
+  ok(stillG.gruppen.length === 0 && stillG.zurueckgestellt.length === 1,
+     '83.6c ueber ein Wochenende stellt der Deckel alles zurueck - der Sammler fragt gar nicht erst');
+
+  ok(AL.faellig(0, jetzt) === true, '83.7 der erste Blick auf die Uhr ist immer faellig');
+  ok(AL.faellig(jetzt - 4 * 60000, jetzt) === false,
+     '83.8 nach vier Minuten noch nicht - der Takt haengt am letzten LAUF, nicht am Wecker');
+  ok(AL.faellig(jetzt - 5 * 60000, jetzt) === true, '83.9 nach fuenf Minuten schon');
+
+  /* ---------- (B) Welche Werte ---------- */
+  var wl = AL.werteliste({
+    top500: ['AAPL', 'MSFT', 'NVDA', 'BTC-USD', 'aapl'],
+    watchlist: ['MSFT', 'AMD'],
+    positionen: ['NVDA'],
+    viewer: 'TSLA',
+  });
+  ok(wl[0] === 'NVDA' && wl[1] === 'TSLA',
+     '83.10 Positionen zuerst, dann der Wert im Viewer - was hinten steht, faellt unter dem Deckel zuerst weg',
+     wl.slice(0, 4).join(','));
+  ok(wl.filter(function (s) { return s === 'MSFT'; }).length === 1,
+     '83.11 ein Wert, der in zwei Listen steht, wird EINMAL geholt');
+  ok(wl.indexOf('BTC-USD') === -1,
+     '83.12 Krypto bleibt draussen - dieses Archiv fuehrt keines');
+  gegen83('ohne den Filter kaeme BTC-USD durch (das Kuerzel steht in der Eingabe)',
+          ['AAPL', 'MSFT', 'NVDA', 'BTC-USD'].indexOf('BTC-USD') >= 0);
+  ok(AL.werteliste({ top500: ['A', 'B', 'C'] }, 2).length === 2,
+     '83.13 der Deckel schneidet ab');
+
+  /* ---------- (C) Gruppieren: ein Nachzuegler darf das Fenster nicht aufreissen ----
+   * Das ist die teuerste Falle des ganzen Auftrags. /v2/stocks/bars nimmt viele
+   * Kuerzel, aber nur EINEN Zeitraum - wer den weitesten nimmt, den irgendein Wert
+   * braucht, laesst ihn alle bezahlen. */
+  var stempel = { AAA: f0.bis - 2 * 60000, BBB: f0.bis - 3 * 60000, CCC: f0.bis - 3 * 3600000,
+                  DDD: f0.bis - 40 * 24 * 3600000 };
+  var gr = AL.gruppieren(['AAA', 'BBB', 'CCC', 'DDD'], stempel, jetzt);
+  var frischG = gr.gruppen.filter(function (x) { return x.art === 'frisch'; })[0];
+  var lueckeG = gr.gruppen.filter(function (x) { return x.art === 'luecke'; })[0];
+  ok(frischG && frischG.symbole.length === 2 && frischG.von === f0.bis - AL.NACHPRUEF_MS,
+     '83.14 die beiden aktuellen Werte laufen in EINEM 30-Minuten-Fenster');
+  ok(lueckeG && lueckeG.symbole.join(',') === 'CCC',
+     '83.15 der Wert mit drei Stunden Rueckstand bekommt sein eigenes, weiteres Fenster');
+  gegen83('ohne Gruppen zoege CCC das Fenster der frischen Werte um Stunden auf',
+          Math.min(stempel.CCC + 60000, f0.bis - AL.NACHPRUEF_MS) < frischG.von);
+  ok(gr.zurueckgestellt.indexOf('DDD') >= 0,
+     '83.16 vierzig Tage Rueckstand sind Sache des naechtlichen Nachlaufs - und werden GENANNT');
+  gegen83('DDD ist nicht etwa still verschwunden, sondern steht in zurueckgestellt',
+          gr.zurueckgestellt.length === 1);
+
+  var viele = {}; var vieleSym = [];
+  for (var vi = 0; vi < 60; vi++) { vieleSym.push('V' + vi); viele['V' + vi] = f0.bis - 2 * 3600000; }
+  var gr2 = AL.gruppieren(vieleSym, viele, jetzt);
+  ok(gr2.gruppen.filter(function (x) { return x.art === 'luecke'; })[0].symbole.length === AL.LUECKE_JE_RUNDE,
+     '83.17 hoechstens ' + AL.LUECKE_JE_RUNDE + ' Luecken je Umlauf - der Rest wartet fuenf Minuten',
+     gr2.zurueckgestellt.length + ' zurueckgestellt');
+
+  /* ---------- (D) Der Deckel ---------- */
+  var f500 = []; for (var i5 = 0; i5 < 500; i5++) f500.push('S' + i5);
+  var plan = AL.planen(f500);
+  ok(plan.buendel.length === 5 && plan.passt,
+     '83.18 500 Werte kosten fuenf Buendel, nicht 500 Anfragen', plan.abrufe + ' Abrufe');
+  ok(plan.abrufe <= AL.DECKEL_JE_MIN, '83.19 und bleiben unter dem Deckel von ' + AL.DECKEL_JE_MIN + '/min');
+  ok(AL.DECKEL_JE_MIN < 200,
+     '83.20 der Deckel liegt UNTER der Grenze der Quelle - kosten.js und der Nachlauf teilen den Zugang');
+  gegen83('ein Wert je Anfrage spraengte den Deckel', AL.planen(f500, { buendel: 1 }).passt === false);
+
+  /* ---------- (E) Anhaengen, nicht ueberschreiben ---------- */
+  var t0 = Date.UTC(2026, 8, 4, 17, 30);
+  var bestand = [[t0, 10, 100, 10.2, 9.8, 10], [t0 + 60000, 11, 200, 11.2, 10.8, 11]];
+  var neu = [
+    [t0 + 60000, 11, 200, 11.2, 10.8, 11],          // unveraendert
+    [t0 + 120000, 12, 300, 12.2, 11.8, 12],         // neu
+  ];
+  var ein = AL.einordnen(bestand, neu);
+  ok(ein.dazu.length === 1 && ein.dazu[0][0] === t0 + 120000, '83.21 nur der neue Stempel kommt dazu');
+  ok(ein.gleich === 1, '83.22 der schon vorhandene, unveraenderte Balken wird als geprueft GEZAEHLT');
+  ok(ein.abweichend.length === 0, '83.23 und nichts weicht ab');
+
+  var geaendert = [[t0 + 60000, 11.5, 250, 11.6, 10.8, 11]];
+  var ein2 = AL.einordnen(bestand, geaendert);
+  ok(ein2.abweichend.length === 1 && ein2.dazu.length === 0,
+     '83.24 ein nachtraeglich geaenderter Balken wird gezaehlt und NICHT angewandt');
+  ok(ein2.abweichend[0].felder.join(',') === 'schluss,umsatz,hoch',
+     '83.25 und die geaenderten Felder stehen beim Namen', ein2.abweichend[0].felder.join(','));
+  var nachher = AL.anhaengen(bestand, ein2.dazu);
+  ok(nachher[1][1] === 11,
+     '83.26 die Datei behaelt ihren Wert - eine Reihe, die sich unter einer Messung aendert, ist wandernder Grund');
+  gegen83('wuerde der frische Balken gewinnen, staende dort 11,5',
+          geaendert[0][1] === 11.5 && nachher[1][1] === 11);
+  ok(AL.unterschied(bestand[0], bestand[0]).length === 0, '83.27 gleich ist gleich');
+  var verbunden = AL.anhaengen(bestand, [[t0 - 60000, 9, 50, 9.1, 8.9, 9]]);
+  ok(verbunden.length === 3 && verbunden[0][0] < verbunden[1][0] && verbunden[1][0] < verbunden[2][0],
+     '83.28 die Reihe bleibt aufsteigend, auch wenn ein aelterer Balken nachkommt');
+
+  /* ---------- (F) Was gar nicht erst angenommen wird ---------- */
+  ok(AL.kerzeAus({ t: '2026-09-04T17:30:00Z', o: 1, h: 2, l: 0.5, c: 1.5, v: 10 }) !== null,
+     '83.29 ein sauberer Balken wird angenommen');
+  ok(AL.kerzeAus({ t: '2026-09-04T17:30:30Z', o: 1, h: 2, l: 0.5, c: 1.5, v: 10 }) === null,
+     '83.30 ein Stempel mit Sekunden ist keine Minutenkerze');
+  ok(AL.kerzeAus({ t: '2026-09-04T17:30:00Z', o: 0, h: 2, l: 0.5, c: 1.5, v: 10 }) === null,
+     '83.31 ein Kurs 0 faellt raus - "== null" allein liesse ihn durch');
+  var im = AL.imFenster([[t0, 1, 1, 1, 1, 1], [t0 + 99 * 60000, 1, 1, 1, 1, 1]], t0, t0 + 60000);
+  ok(im.drin.length === 1 && im.draussen === 1,
+     '83.32 was ausserhalb des ANGEFRAGTEN Fensters liegt, faellt raus (die iex-Falle) - und wird gezaehlt');
+
+  /* ---------- (G) Der Viewer verdichtet aus denselben Minuten ---------- */
+  var auf = Date.UTC(2026, 8, 4, 13, 30);           // 09:30 ET im Sommer
+  var minuten = [];
+  for (var mv = 0; mv < 30; mv++) minuten.push([Date.UTC(2026, 8, 4, 13, 0) + mv * 60000, 100, 50, 100.5, 99.5, 100]);
+  for (var mr = 0; mr < 120; mr++) minuten.push([auf + mr * 60000, 101 + mr, 10, 102 + mr, 100 + mr, 101 + mr]);
+  var sitz = [{ von: Date.UTC(2026, 8, 4, 13, 0), bis: auf - 60000, sitzung: 'vor' },
+              { von: auf, bis: auf + 119 * 60000, sitzung: 'regulaer' }];
+
+  ['5m', '15m', '1h'].forEach(function (zr) {
+    var iv = zr === '1h' ? '60m' : zr;
+    var r = KC.ausMinuten(minuten, zr, { sitzungen: sitz });
+    var daneben = r.kerzen.filter(function (k) { return !KQ.aufGitter(k[0], iv); });
+    ok(daneben.length === 0,
+       '83.33 ' + zr + ' sitzt auf demselben Gitter wie das App-Archiv (kerzenquelle aufGitter ' + iv + ')',
+       r.kerzen.length + ' Kerzen');
+  });
+
+  var std = KC.ausMinuten(minuten, '1h', { sitzungen: sitz });
+  var ersteReg = std.kerzen.filter(function (k) { return k[0] >= auf; })[0];
+  ok(std.geankert === true && ersteReg[0] === auf,
+     '83.34 die erste Stundenkerze der Sitzung liegt auf der EROEFFNUNG (09:30 ET), nicht auf der vollen Stunde',
+     new Date(ersteReg[0]).toISOString());
+  var ohneAnker = KC.ausMinuten(minuten, '1h', {});
+  gegen83('ohne die Sitzungsbereiche faellt die Eroeffnung in den 13:00-Eimer - der erste Kurs des Tages verschwaende',
+          ohneAnker.geankert === false &&
+          ohneAnker.kerzen.filter(function (k) { return k[0] === auf; }).length === 0);
+
+  var f5 = KC.ausMinuten(minuten.slice(30, 35), '5m', { sitzungen: sitz }).kerzen[0];
+  ok(f5[5] === 101 && f5[1] === 105 && f5[3] === 106 && f5[4] === 100 && f5[2] === 50,
+     '83.35 Eroeffnung der ersten, Schluss der letzten, Hoch das hoechste, Tief das tiefste, Umsatz die Summe',
+     JSON.stringify(f5));
+  ok(KC.ausMinuten(minuten, '1T', {}).kerzen.length === minuten.length,
+     '83.36 aus Minuten wird KEIN Handelstag gebaut - der offizielle Schluss kommt aus der Schlussauktion');
+
+  var marken = KC.sitzungenVerdichtet(std.kerzen, sitz);
+  ok(marken.length && marken[0].sitzung === 'vor',
+     '83.37 die Sitzungsmarken werden mitverdichtet - sonst saehe der Chart nach dem Wechsel keine Vorboerse mehr');
+  ok(marken.filter(function (b) { return b.sitzung === 'regulaer'; }).length === 1,
+     '83.38 und die regulaere Sitzung bleibt ein zusammenhaengender Bereich');
+
+  /* ---------- (H) Sitzungen: Kalender schlaegt Rechnung ---------- */
+  var kal = { '2026-09-04': { open: '09:30', close: '13:00' } };   // kuenstlicher Halbtag
+  var gK = AL.grenzenAusKalender(kal);
+  var gB = AL.grenzenAusBoerse(Boerse);
+  var spaet = [[Date.UTC(2026, 8, 4, 17, 30), 1, 1, 1, 1, 1]];     // 13:30 ET
+  ok(AL.sitzungJeKerze(spaet, gK)[0] === 'nach',
+     '83.39 der Kalender der Quelle kennt den Halbtag - 13:30 ET ist dort nachboerslich');
+  gegen83('boerse.js rechnet denselben Tag als vollen Handelstag und sagt "regulaer" - deshalb hat der Kalender Vorrang',
+          AL.sitzungJeKerze(spaet, gB)[0] === 'regulaer');
+  ok(AL.sitzungJeKerze([[Date.UTC(2026, 8, 5, 17, 30), 1, 1, 1, 1, 1]], gK)[0] === 'ausserhalb',
+     '83.40 ein Balken an einem Tag ohne Sitzung heisst "ausserhalb" - nicht "regulaer" und nicht weggeworfen');
+
+  var fort = AL.sitzungenFortschreiben(
+    [{ von: 100, bis: 200, sitzung: 'regulaer' }],
+    [{ von: 300, bis: 400, sitzung: 'regulaer' }]);
+  ok(fort.length === 1 && fort[0].bis === 400,
+     '83.41 derselbe Sitzungsbereich waechst mit, statt ein zweiter danebenzustehen');
+  var fort2 = AL.sitzungenFortschreiben(
+    [{ von: 100, bis: 200, sitzung: 'regulaer' }],
+    [{ von: 300, bis: 400, sitzung: 'nach' }]);
+  ok(fort2.length === 2, '83.42 eine andere Sitzung bekommt einen eigenen Bereich');
+
+  /* ---------- (I) Der Umlauf, mit Attrappen ---------- */
+  probe((async function () {
+    /* ERST WARTEN, DANN AUSGEBEN. Der Leck-Test der Spannen-Studie haengt
+     * process.stdout.write um; wer waehrenddessen ok() ruft, dessen Zeilen landen in
+     * SEINEM Puffer und sind fort. Genau das ist hier beim ersten Lauf passiert:
+     * 83.49, 83.50 und die Gegenproben-Summe fehlten still in der Ausgabe, waehrend
+     * die Zusicherungen selbst gruen waren - dieselbe Stille, gegen die die Liste
+     * `offeneProben` gebaut wurde. Block 35 wartet aus demselben Grund. */
+    if (leckDurchreiche) { try { await leckDurchreiche; } catch (e) { /* der Leck-Test meldet sich selbst */ } }
+    AS.zuruecksetzen();
+    var geschrieben = [];
+    var basis = {
+      jetzt: jetzt,
+      werte: { positionen: ['AAA'], top500: ['BBB'] },
+      stempel: async function () { return { ok: true, stempel: { AAA: f0.bis - 2 * 60000, BBB: f0.bis - 2 * 60000 } }; },
+      balken: async function (syms, von, bis) {
+        var bars = {};
+        syms.forEach(function (s) { bars[s] = [{ t: new Date(bis).toISOString(), o: 1, h: 2, l: 0.5, c: 1.5, v: 7 }]; });
+        return { ok: true, bars: bars, token: null };
+      },
+      anhaengen: async function (s) { geschrieben.push(s); return { ok: true, neu: s.length, gleich: 3, abweichend: 0 }; },
+    };
+    var b = await AS.runde(basis);
+    ok(b.werte === 2 && b.neu === 2 && b.abrufe === 1,
+       '83.43 ein voller Umlauf: zwei Werte, ein Buendel, ein Abruf, zwei Kerzen abgelegt',
+       JSON.stringify({ werte: b.werte, abrufe: b.abrufe, neu: b.neu }));
+    ok(b.nachgeprueft === 3 && b.abweichend === 0,
+       '83.44 und die Nachpruefung wird mitgefuehrt, auch wenn sie 0 ergibt - gerade dann');
+
+    var ausserhalb = Object.assign({}, basis, {
+      balken: async function (syms) {
+        var bars = {};
+        syms.forEach(function (s) { bars[s] = [{ t: '2020-07-30T14:00:00Z', o: 1, h: 2, l: 0.5, c: 1.5, v: 7 }]; });
+        return { ok: true, bars: bars, token: null };
+      },
+    });
+    var b2 = await AS.runde(ausserhalb);
+    ok(b2.neu === 0,
+       '83.45 die iex-Falle im Umlauf: Balken aus einem fremden Jahr kommen nicht auf die Platte');
+
+    var gesperrt = Object.assign({}, basis, {
+      anhaengen: async function () { return { ok: false, gesperrt: true, grund: 'Am Archiv schreibt gerade der Nachlauf' }; },
+    });
+    var b3 = await AS.runde(gesperrt);
+    ok(b3.gesperrt === true && b3.neu === 0,
+       '83.46 laeuft der naechtliche Nachlauf, schreibt der Live-Sammler NICHT - die Sperre ist geteilt');
+
+    var kaputt = Object.assign({}, basis, {
+      balken: async function () { return { ok: false, grund: 'HTTP 500' }; },
+    });
+    var b4 = await AS.runde(kaputt);
+    ok(b4.fehler === 'HTTP 500' && b4.neu === 0, '83.47 ein gefallener Abruf wird benannt, nicht verschluckt');
+
+    AS.zuruecksetzen();
+    AS.anSetzen(true);
+    var r1 = await AS.blick(basis);
+    var r2 = await AS.blick(basis);
+    ok(r1 && !r2, '83.48 zwei Blicke im selben Takt fahren EINEN Umlauf');
+    var r3 = await AS.blick(Object.assign({}, basis, { jetzt: jetzt + AL.TAKT_MS }));
+    ok(!!r3, '83.49 fuenf Minuten spaeter faehrt der naechste');
+    AS.zuruecksetzen();
+    var aus = await AS.blick(basis);
+    ok(aus === null, '83.50 ausgeschaltet faehrt gar keiner');
+
+    ok(g83 === rot83, '83.x alle Gegenproben dieses Abschnitts schlagen an', rot83 + ' von ' + g83);
+  })());
+
+  /* ---------- (J) Was im Quelltext stehen MUSS ---------- */
+  var alpZ = ohneKommentare(fs.readFileSync('./alpaca.js', 'utf8'));
+  var mainZ = ohneKommentare(fs.readFileSync('./main.js', 'utf8'));
+  var samZ = ohneKommentare(fs.readFileSync('./alpacasammler.js', 'utf8'));
+
+  ok(/balken:\s*async function/.test(alpZ) && /feed=sip/.test(alpZ),
+     '83.51 der Balken-Abruf fragt SIP - ausdruecklich, nicht ueber die FEED-Variable');
+  ok(/adjustment=raw/.test(alpZ),
+     '83.52 und roh - eine bereinigte Kerze mitten in einer rohen Reihe waere ein Skalenbruch');
+  var balkenBlock = alpZ.slice(alpZ.indexOf('balken:'), alpZ.indexOf('balken:') + 900);
+  ok(alpZ.indexOf('balken:') > 0 && !/feed=.\s*\+\s*FEED|feed=iex/.test(balkenBlock),
+     '83.53 der Live-Weg benutzt NIE iex - dessen Luecken und IEX-Umsatz wuerden das Archiv verseuchen');
+  ok(/sperreSetzen\(wurzel, 'Live-Sammler'\)/.test(mainZ) && /sperreLoesen\(wurzel\)/.test(mainZ),
+     '83.54 main.js nimmt die geteilte Sperre und gibt sie im finally wieder her');
+  ok(/sperreLesen\(wurzel\)/.test(mainZ),
+     '83.55 und sieht vorher nach, ob schon jemand schreibt');
+  ok(/alpaca-live-anhaengen/.test(mainZ) && !/alpKey|alpSecret/.test(samZ),
+     '83.56 ueber die Bruecke gehen Kerzen, nie Schluessel');
+  ok(/AlpLive\.einordnen/.test(mainZ) && /erg\.dazu/.test(mainZ),
+     '83.57 geschrieben wird nur, was neu ist');
+  ok(/laufProtokoll/.test(mainZ),
+     '83.58 die Abweichungen gehen auf die PLATTE - eine Anzeige, die niemand sieht, belegt nichts');
+
+  var zeileAus = AL.standZeile({ an: false }, jetzt);
+  ok(/Nachlauf/.test(zeileAus),
+     '83.59 ausgeschaltet nennt die Zeile den naechtlichen Nachlauf als das, was dann noch sammelt');
+  var zeileAn = AL.standZeile({ an: true, letzter: { ende: jetzt - 60000, neu: 12, werte: 3, nachgeprueft: 30, abweichend: 0 } }, jetzt);
+  ok(/15 Minuten/.test(zeileAn),
+     '83.60 und eingeschaltet BENENNT sie den Verzug - wer ihn nicht kennt, sucht einen Fehler', zeileAn.slice(0, 80));
+  ok(/nachgeprüft/.test(zeileAn), '83.61 die Nachpruefung steht in der Zeile, nicht nur im Protokoll');
 })();
 
 Promise.all(offeneProben).then(function () {

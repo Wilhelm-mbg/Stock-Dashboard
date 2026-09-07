@@ -206,6 +206,36 @@
       }
     },
 
+    /** Fertige Minutenbalken fuer den Live-Sammler.
+     *
+     *  HIER STEHT feed=sip UND NICHT FEED - das ist die einzige Stelle im Modul, die
+     *  vom Gratis-Feed abweicht, und sie tut es mit Absicht. Gemessen am 04.09.2026
+     *  (wiki/datenquellen.md): iex liefert 35 bis 52 von 75 moeglichen Minutenbalken,
+     *  und sein Umsatz ist der des IEX allein. Fuer die laufende ANZEIGE reicht das;
+     *  ins ARCHIV gehoerte damit eine Reihe, die aussieht wie die der Vollsammlung und
+     *  es nicht ist - und das saehe hinterher niemand mehr. sip ist vollstaendig und
+     *  konsolidiert, kostet aber 15 Minuten Verzug; die Fenster rechnet alpacalive.js.
+     *
+     *  adjustment=raw, weil das Archiv roh sammelt und die bereinigte Kopie LOKAL
+     *  ableitet (Wilhelms Entscheid "beides", wiki/entscheide.md). Ein bereinigter
+     *  Abruf mitten in eine rohe Reihe waere ein Skalenbruch in der Datei.
+     *
+     *  Rueckgabe: {ok, bars, token} oder {ok:false, grund}. */
+    balken: async function (symbole, vonMs, bisMs, token) {
+      var syms = (Array.isArray(symbole) ? symbole : [symbole]).join(',');
+      var url = DATEN + '/stocks/bars?symbols=' + encodeURIComponent(syms) +
+        '&timeframe=1Min&start=' + encodeURIComponent(new Date(vonMs).toISOString()) +
+        '&end=' + encodeURIComponent(new Date(bisMs).toISOString()) +
+        '&limit=10000&feed=sip&adjustment=raw' +
+        (token ? '&page_token=' + encodeURIComponent(token) : '');
+      var res = await call('GET', url);
+      if (!res.ok) return { ok: false, grund: fehlerText(res), status: res.status };
+      try {
+        var j = JSON.parse(res.body) || {};
+        return { ok: true, bars: j.bars || {}, token: j.next_page_token || null };
+      } catch (e) { return { ok: false, grund: 'Antwort unlesbar' }; }
+    },
+
     /** Kauf zum Markt (Paper). stueck ganzzahlig; dir bleibt des Vertrags wegen dabei,
      *  Leerverkaeufe setzt diese App nicht ab. */
     openPosition: async function (sym, dir, stueck) {

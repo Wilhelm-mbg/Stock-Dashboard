@@ -230,6 +230,25 @@
       'Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort.' +
       '</div>';
 
+    /* ---- Live-Sammler (07.09.2026) ----
+     * Eine Zeile und ein Schalter. Die Zeile kommt WOERTLICH aus alpacalive.js
+     * standZeile() - der Satz steht dort und nicht hier, sonst gaebe es ihn zweimal
+     * und irgendwann in zwei Fassungen (dieselbe Falle wie beim Belegwort, QS-FA2).
+     * Dass das Archiv der Boerse eine Viertelstunde hinterherlaeuft, steht IN dem
+     * Satz: es ist kein Fehler, aber wer es nicht weiss, sucht einen. */
+    if (root.AlpacaSammler) {
+      var lz = root.AlpacaSammler.zustand();
+      h += '<div class="panel" id="liveSammlerZeile" style="padding:8px 10px; margin-bottom:10px;">' +
+        '<label style="display:flex; align-items:center; gap:8px; cursor:pointer;">' +
+        '<input type="checkbox" id="liveSammlerAn"' + (lz.an ? ' checked' : '') + '>' +
+        '<b>Live-Sammler (Alpaca)</b></label>' +
+        '<div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-top:6px; max-width:72ch;">' +
+        U.esc(root.AlpacaSammler.zeile(Date.now())) + '</div>' +
+        '<div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-top:4px; max-width:72ch;">' +
+        U.esc(root.AlpacaSammler.nachpruefung()) + '</div>' +
+        '</div>';
+    }
+
     if (st.laeuft) {
       var f = st.fortschritt || {};
       var anteil = f.von ? Math.round(100 * f.nr / f.von) : 0;
@@ -297,6 +316,22 @@
         }).catch(function () { laden(); });
       };
     });
+
+    /* Der Schalter. Er merkt sich seinen Stand in den Einstellungen, damit er einen
+     * Neustart ueberlebt - ein Sammler, den man jeden Morgen neu einschalten muss,
+     * ist keiner. */
+    var ls = el('liveSammlerAn');
+    if (ls && root.AlpacaSammler) {
+      ls.onchange = function () {
+        root.AlpacaSammler.anSetzen(ls.checked);
+        try {
+          var s = root.getSettings();
+          s.alpLive = ls.checked;
+          root.saveSettings(s);
+        } catch (e) { /* ohne Store bleibt der Schalter fuer diese Sitzung gesetzt */ }
+        if (LETZTER) zeichne(LETZTER, LETZTE_ABDECKUNG);
+      };
+    }
   }
 
   function laden() {

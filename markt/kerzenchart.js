@@ -582,6 +582,145 @@
   }
 
   /* ---------------------------------------------------------------------------
+   * 5b) 5m / 15m / 1h AUS MINUTENKERZEN (Live-Sammler, 07.09.2026)
+   *
+   * WARUM UEBERHAUPT. Das Alpaca-Archiv fuehrt Minuten und sonst nichts - Jahre
+   * davon, ohne Ueberlebensverzerrung. Das App-Archiv fuehrt 5m/15m/60m, aber nur
+   * das rollende Fenster der Quelle (60 Tage bei 5m/15m, 730 bei 60m) und nur fuer
+   * Werte, die es heute noch gibt. Bis hierher wechselte der Viewer bei "5m" also
+   * die QUELLE, nicht nur die Kerzenlaenge: 1m kam aus Alpaca, 5m aus Yahoo. Zwei
+   * Reihen desselben Wertes, zwei Bereinigungen, zwei Umsatzbegriffe - und der
+   * Sprung sass ausgerechnet zwischen zwei Knoepfen, die nach einer Einstellung
+   * derselben Sache aussehen.
+   *
+   * DAS GITTER IST NICHT VERHANDELBAR. Es muss dasselbe sein, auf dem das App-Archiv
+   * liegt, sonst zeigt derselbe Wert je nach Herkunft um Minuten versetzte Kerzen.
+   * kerzenquelle.js aufGitter() sagt: 5m auf Vielfachen von 5, 15m auf Vielfachen
+   * von 15, 60m auf Minute :30 ODER :00.
+   *
+   * DIE :30 IST DER GRUND FUER DEN GANZEN AUFWAND. Die US-Sitzung beginnt 09:30 ET,
+   * und Yahoos Stundenkerzen liegen deshalb auf 09:30, 10:30, 11:30 ... Wer schlicht
+   * auf die volle Stunde abrundet, legt die Eroeffnungskerze in denselben Eimer wie
+   * die letzte Vorboersenstunde - der erste Kurs des Tages verschwindet dann in
+   * einer Kerze, die um 09:00 beginnt und die es bei Yahoo nicht gibt.
+   *
+   * WOHER DER ANKER KOMMT, OHNE EINEN KALENDER ZU FRAGEN: aus den Daten selbst. Die
+   * Alpaca-Dateien tragen ihre `sitzungen`-Bereiche mit (regulaer/vor/nach, aus dem
+   * Kalender der Quelle, Halbtage inbegriffen). Die erste REGULAERE Minute eines
+   * ET-Tages ist die Eroeffnung - und damit der Anker der Stundeneimer dieses Tages.
+   * Ein zweiter Kalender waere hier eine zweite Wahrheit ueber denselben Tag.
+   * Fehlen die Bereiche, wird auf die volle Stunde abgerundet und das im Ergebnis
+   * gesagt (`geankert: false`) - geraten wird nicht.
+   *
+   * WAS DIE VERDICHTUNG NICHT TUT: sie fuellt nichts auf. Eine Minute ohne Balken
+   * ist eine Minute ohne Handel; ein Eimer ohne eine einzige Minute entsteht gar
+   * nicht. Eine 5m-Kerze aus zwei Minuten ist deshalb moeglich und richtig - sie
+   * traegt `n`, damit die Fusszeile sagen kann, worauf sie beruht.
+   * ------------------------------------------------------------------------- */
+
+  /** Auf welche Zeitrahmen sich Minutenkerzen verdichten lassen. 1T steht bewusst
+   *  NICHT dabei: ein Handelstag aus Minuten waere ohne die Auktionen nur die Summe
+   *  der Handelsstunden, und der offizielle Schluss kommt aus der Schlussauktion. */
+  var AUS_MINUTEN = { '5m': 300000, '15m': 900000, '1h': 3600000 };
+
+  /** Die Eroeffnungsminute je ET-Tag aus den Sitzungsbereichen einer Alpaca-Datei.
+   *  Ergebnis: { 'JJJJ-MM-TT': ms } - nur fuer Tage, die einen `regulaer`-Bereich
+   *  haben. Die Bereiche sind verdichtet, ihr `von` ist also genau die erste Kerze
+   *  des Bereichs; faellt ein Tag in mehrere regulaere Bereiche (eine Luecke mitten
+   *  in der Sitzung teilt sie), gewinnt der frueheste. */
+  function eroeffnungenAus(sitzungen, zone) {
+    var aus = {};
+    (sitzungen || []).forEach(function (b) {
+      if (!b || b.sitzung !== 'regulaer' || !zahl(b.von)) return;
+      var t = tagSchluessel(b.von, zone || 'America/New_York');
+      if (aus[t] == null || b.von < aus[t]) aus[t] = b.von;
+    });
+    return aus;
+  }
+
+  /** Der Eimer, in den ein Stempel faellt.
+   *  Bei 5m/15m ist es das schlichte Vielfache - 09:30 ist durch 5 und durch 15
+   *  teilbar, die Sitzung faengt also von selbst auf dem Gitter an.
+   *  Bei 1h zaehlt der Abstand zur EROEFFNUNG dieses Tages, sofern sie bekannt ist
+   *  und der Stempel nicht davor liegt. */
+  function eimerVon(ms, dauer, eroeffnung) {
+    if (dauer === 3600000 && zahl(eroeffnung) && ms >= eroeffnung) {
+      return eroeffnung + Math.floor((ms - eroeffnung) / dauer) * dauer;
+    }
+    return Math.floor(ms / dauer) * dauer;
+  }
+
+  /** Minutenkerzen zu 5m/15m/1h verdichten.
+   *
+   *  Eroeffnung der ersten Minute, Schluss der letzten, Hoch das hoechste, Tief das
+   *  tiefste, Umsatz die Summe - dieselbe Rechnung wie verdichten() fuer 1W/1M,
+   *  nur auf einem anderen Eimer.
+   *
+   *  Rueckgabe: { kerzen, n, geankert, tage } - `n` je Kerze steht in einer eigenen
+   *  Liste statt in der Kerze, weil eine Kerze GENAU sechs Felder hat (kerzenquelle
+   *  satz() wirft sonst) und diese Reihe nie auf die Platte geht. */
+  function ausMinuten(minuten, zeitrahmen, opt) {
+    opt = opt || {};
+    var dauer = AUS_MINUTEN[zeitrahmen];
+    if (!dauer) return { kerzen: (minuten || []).slice(), n: [], geankert: false, eimer: null };
+    var zone = opt.zone || 'America/New_York';
+    var ks = (minuten || []).filter(kerzeOk).slice().sort(function (a, b) { return a[0] - b[0]; });
+    var eroeff = opt.sitzungen ? eroeffnungenAus(opt.sitzungen, zone) : {};
+    var geankert = dauer === 3600000 && Object.keys(eroeff).length > 0;
+    var aus = [], zaehl = [], akt = null, aktEimer = null;
+    ks.forEach(function (k) {
+      var e = eimerVon(k[0], dauer, eroeff[tagSchluessel(k[0], zone)]);
+      if (akt && e === aktEimer) {
+        akt.zu = k[1];
+        var h = zahl(k[3]) ? k[3] : k[1], t = zahl(k[4]) ? k[4] : k[1];
+        if (h > akt.hoch) akt.hoch = h;
+        if (t < akt.tief) akt.tief = t;
+        if (zahl(k[2])) akt.umsatz = (akt.umsatz == null ? 0 : akt.umsatz) + k[2];
+        akt.n++;
+        return;
+      }
+      if (akt) { aus.push(fertig(akt)); zaehl.push(akt.n); }
+      aktEimer = e;
+      akt = { zeit: e, auf: zahl(k[5]) ? k[5] : k[1], zu: k[1],
+              hoch: zahl(k[3]) ? k[3] : k[1], tief: zahl(k[4]) ? k[4] : k[1],
+              umsatz: zahl(k[2]) ? k[2] : null, n: 1 };
+    });
+    if (akt) { aus.push(fertig(akt)); zaehl.push(akt.n); }
+    return { kerzen: aus, n: zaehl, geankert: geankert, eimer: dauer };
+    function fertig(a) { return [a.zeit, a.zu, a.umsatz, a.hoch, a.tief, a.auf]; }
+  }
+
+  /** Die Sitzungsbereiche mitverdichten: eine verdichtete Kerze traegt die Sitzung
+   *  ihrer ERSTEN Minute. Ohne das saehe der Chart nach dem Wechsel von 1m auf 5m
+   *  keine Vorboerse mehr - die Bereiche stehen auf Minutenstempeln, die es dann
+   *  nicht mehr gibt. */
+  function sitzungenVerdichtet(kerzen, sitzungen) {
+    if (!(sitzungen && sitzungen.length && kerzen && kerzen.length)) return [];
+    var aus = [];
+    kerzen.forEach(function (k) {
+      var s = sitzungFuer(k[0], sitzungen);
+      var l = aus[aus.length - 1];
+      if (l && l.sitzung === s) { l.bis = k[0]; return; }
+      aus.push({ von: k[0], bis: k[0], sitzung: s });
+    });
+    return aus;
+  }
+  /** In welchen Bereich faellt dieser Stempel? Die Bereiche sind aufsteigend und
+   *  luckenlos ueber die Reihe; ein Stempel VOR dem ersten Bereich (die verdichtete
+   *  Kerze beginnt frueher als ihre erste Minute, wenn der Eimer zurueckreicht)
+   *  bekommt den ersten. */
+  function sitzungFuer(ms, bereiche) {
+    var letzte = bereiche[0] ? bereiche[0].sitzung : 'regulaer';
+    for (var i = 0; i < bereiche.length; i++) {
+      var b = bereiche[i];
+      if (ms < b.von) return i === 0 ? b.sitzung : letzte;
+      if (ms <= b.bis) return b.sitzung;
+      letzte = b.sitzung;
+    }
+    return letzte;
+  }
+
+  /* ---------------------------------------------------------------------------
    * 6) Zeichnen
    *
    * `ctx` ist ein Canvas-Zeichenkontext - oder in der Pruefung eine Attrappe, die
@@ -1091,6 +1230,12 @@
     blaettern: blaettern,
     abschnittSchluessel: abschnittSchluessel,
     verdichten: verdichten,
+    AUS_MINUTEN: AUS_MINUTEN,
+    eroeffnungenAus: eroeffnungenAus,
+    eimerVon: eimerVon,
+    ausMinuten: ausMinuten,
+    sitzungenVerdichtet: sitzungenVerdichtet,
+    sitzungFuer: sitzungFuer,
     spurZeichnen: spurZeichnen,
     VOR_MIN: VOR_MIN, NACH_MIN: NACH_MIN,
     FARBEN: FARBEN,
