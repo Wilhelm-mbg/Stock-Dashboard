@@ -347,3 +347,108 @@ liest, lese diesen Absatz noch einmal.
 
 *Commit 1 dieser Studie ist diese Datei. Jede Abweichung davon steht als datierter Nachtrag unter dieser Linie,
 nie darüber.*
+
+## 13. NACHTRAG 1 — 07.09.2026, vor dem Pilot und vor jeder Auswertung
+
+**Anlass:** adversarische Prüfung der Vorregistrierung (drei Blickwinkel, jeder Fund von einem Skeptiker
+gegengelesen; Rohfassungen in der Übergabe genannt) und die Laufzeitprobe an AAPL/2016 (eine Jahresdatei lief in
+den 900-s-Wachhund). Gerechnet wurde bis hier **keine Rendite** außer den Gleichheits- und Laufzeitproben unten.
+Was hier steht, ersetzt die genannten Stellen oben; alles andere bleibt.
+
+1. **Bonferroni (§6.3, §9) — Rechenfehler.** Nach der eigenen Formel `z_Bonf(k) = Φ⁻¹(1 − 0,025/k)` gilt
+   **k = 1 ⇒ 1,96, k = 5 ⇒ 2,58, k = 10 ⇒ 2,81, k = 20 ⇒ 3,02, k = 50 ⇒ 3,29**; 2,81 und 3,29 gehörten zu k = 10
+   und k = 50. §9 rechnete `delta80` deshalb mit 3,65 statt **3,42** — alle Plan-`delta80` waren 6,8 % zu groß.
+   Korrigierte Planwerte (sd und MDE_B unverändert): Rechnung A **1m 0,039 / 5m 0,058 / 15m 0,081**; Rechnung B
+   **1 h 0,040 / 3 h 0,069 / bis Schluss 0,080**; dünn **0,065 / 0,091 / 0,103**. Geänderte Zelle: **15m gegen
+   50–250 (0,0854): ✗ (knapp) → ✓ (knapp)**; 5m gegen 250–1000 wird klar ✓. Der „Folge"-Absatz bleibt.
+   `auswerten.js` rechnet die Normalquantile selbst und prüft sich an diesen Werten (test.js).
+2. **Vorzeichen der Marktbereinigung (§3, §7a).** Der Topf ist der **ungerichtete Long-Ertrag**. Richtig:
+   `m = dir · (rohLong − Topf) − K`, also `roh_gerichtet − dir · Topf − K`. Der Placebo-Nullpunkt wird ebenso
+   gerichtet geprüft: `dir_p · (rohLong_p − Topf)`. Die **Intraday-Drift** wird aus der Topf-Tagesreihe
+   berichtet (Placebo A hat mit Zufallsrichtung per Symmetrie Erwartung null und misst keine Drift).
+3. **Placebo-Band (§7a) — Einheit und Skala.** Zwei Ebenen: je **Konfiguration** (Detektor × ZR × H)
+   `|t| < 3` für `dir_p · (rohLong_p − Topf)`; **gepoolt** je (ZR, H) über alle 13 Detektoren `|t| < 3` **und**
+   `|Mittel| < 0,01 Pp`. Fällt die gepoolte Prüfung, bekommt kein Kandidat dieses (ZR, H) „belegt"; fällt nur
+   die eigene, nur dieser Kandidat nicht. Eine absolute Schranke allein hätte einen sauberen Placebo mit se ≈ 0,01
+   in jedem vierten Fall durchfallen lassen.
+4. **Placebo B — gepaart (neu, §7a).** Zu jedem echten Signal wird eine andere zulässige Kerze **desselben
+   30-Minuten-Fensters desselben Tages** mit **derselben Richtung** gezogen (ohne Kursblick, deterministisch).
+   `Kandidat − Placebo B` ist die tageszeit- und tagesneutrale Differenz (Augusts „Kontrolle je Tageszeit-
+   Versatz") und steht **nachrichtlich** in der Kandidatentafel; sie erzeugt kein Urteil. Placebo A bleibt der
+   Maschinen-Nullpunkt (Erwartung exakt null gegen den Topf).
+5. **Tor 1 (§6.1) — welche Größe.** Das **netto** Tagesmittel der Entdeckung muss ≥ 4 × MDE_B sein (und > 0).
+   Netto ist der Endpunkt; brutto steht daneben.
+6. **K_Kandidat (§6.2) — aus der Bestätigung, ergebnisfrei.** Signalgewichtetes Mittel der Klassenhürden über
+   die **Signalzahlen je Klasse in der Bestätigungsmenge** (Zählung, keine Rendite), nicht über die Entdeckung;
+   der Klassenmix wandert über die Jahre (nominale Schwellen, `fehlerformen.md`).
+7. **Urteilseinheit und Signaltag (§4, §6).** Einheit ist die **Konfiguration** (234), Klassen gepoolt, jede
+   Hürde je Signal; die Klassenzerlegung steht **nachrichtlich** daneben und erzeugt kein Urteil und keinen
+   Test. **Signaltag** = ET-Tag mit ≥ 1 gewertetem Signal der Konfiguration (Klasse bekannt, Einstieg vorhanden,
+   Horizont beobachtet). Signale ohne Klasse / ohne Einstieg / ohne Horizont zählen für keinen Signaltag; ihre
+   Zahl wird ausgewiesen.
+8. **Wertpapierart (§8) — der ETF-Ausschluss traf 31 von 732.** Die Gruppe `universum` enthält 732
+   Nicht-Aktien (666 ETF, 32 ETV, 16 FUND, 7 ETN …, dazu das Nasdaq-Testsymbol ZVZZT). Zulässig sind nur Reihen
+   mit Wertpapierart **CS oder ADRC** aus `Markt-Dashboard-Daten/massive/wertpapierarten.json`, geprüft über
+   `studien/messmaschine/strategien/wertpapierart.js` (Testkürzel ausgeschlossen); fehlt die Karte, bricht der
+   Lauf ab. Ausgeschlossene werden je Art gezählt. Erwartung: ~2.500 Aktien im Universum plus die Verschwundenen.
+9. **80-%-Regel (§1, §2) — die Datenvorbedingung der Detektoren.** Wie `messgeschirr.js ladeUniversum`: ein
+   ET-Tag geht nur in die Detektion, wenn er **≥ 80 % der 1m-Sollkerzen** der Sitzung trägt (312 von 390, 168
+   von 210 am Halbtag). Dünne Tage werden gezählt (`tageDuenn`), auf allen drei Zeitrahmen ausgelassen und
+   fließen nur in den 20-Tage-Umsatz ein. Die Detektions-Reihe je (Datei, ZR) wird nur aus dichten Tagen gebaut.
+10. **Zeitrahmen explizit (§1).** Statt `auto` werden je Zeitrahmen gesetzt: 1m `rsi2 mtf:true`, `reversion
+    tagesreihe:true`, `wendepunkt-trendwechsel tagesreihe:true`; 5m/15m alle `false`. Zusätzlich muss
+    `barMinVon(bars)` dem Soll (1/5/15) entsprechen, sonst wird (Datei, ZR) ausgelassen und gezählt
+    (`zeitrahmenNichtErkannt`).
+11. **Aufruf-Fensterung und Vorfilter (Laufzeit, §11).** Gemessen an AAPL/2016: `vwap-abstand` mit `bars[0..i]`
+    kostet **52 ms je Aufruf** (1m; 78 Minuten je Jahresdatei), `kanaltrend` 1,25 ms, alle anderen 0,03–0,3 ms.
+    Deshalb: (a) `vwap-abstand` bekommt ein Fenster, das **an einem Tagesanfang beginnt und ≥ 110 Kerzen vor i
+    enthält** (die VWAP setzt je UTC-Tag neu auf, `reversionSignal` braucht 80 Abstände + Periode 20);
+    Gleichheitsprobe 1m: 400 Indizes, **0 Abweichungen**, 0,74 ms je Aufruf — ein Fenster nur ab dem Vortag
+    war auf 15m **falsch** (0 statt 22 Signale), daher die 110-Kerzen-Regel; test.js prüft alle drei Zeitrahmen.
+    (b) `kanaltrend` wird nur gerufen, wenn `Q.signalCross` auf demselben 261er-Fenster eine Kreuzung meldet —
+    `einstiegSignal` verlangt genau das (`if (!tsig.crossed) return null`). Die Detektoren selbst bleiben
+    unverändert; beides sind Eigenschaften des Aufrufs, beide mit Gleichheitsprobe Signal für Signal.
+12. **Einstiegsfenster-Hürde (§3) — zweite Nettogröße, nachrichtlich.** Die Quelle misst die Eröffnungsspanne
+    1,8–2,7× und die Schlussspanne 0,63–0,73× der Mittagsspanne (`kosten.md`); mehrere Detektoren feuern an der
+    Eröffnung. Je Signal wird zusätzlich die Hürde **nach dem Einstiegsfenster** summiert: Einstiegskerze vor
+    10:00 ET → `K_mitte × Verhältnis (2,68 / 2,46 / 2,07 / 1,81)`, ab 15:30 ET → `K_schluss ab 2021 (0,1025 /
+    0,0540 / 0,0409 / 0,0329)`, sonst `K_mitte`. Der Endpunkt bleibt `K_mitte` (Auftrag); **„belegt" verlangt
+    zusätzlich netto_Fenster > 0**, sonst „belegt, aber Eröffnungskosten". Zellen tragen dafür eine vierte
+    Summe (`h2`).
+13. **lebend (§0.1, §7c).** Eine Schwelle: letzter Balken **≥ 2026-08-17 ET**; §0.1 zählte zur Orientierung mit
+    ≥ 2026-08-01 (3.074) — der Lauf weist die Zahl aus. Ein erloschener Träger eines wiederverwendeten Kürzels ist
+    **nie** lebend (sein Kürzel hat heute Balken, er nicht). „Lebend" ist die Näherung für „am 31.08.2026
+    gelistet"; gelistete Reihen ohne Balken seit dem 17.08. gelten als nicht lebend. „Verschwunden" heißt nicht
+    „gestorben": Namenswechsel und Fusionen aus `alpaca-massnahmen` werden je Reihe als **Ende-Art**
+    nachrichtlich mitgeführt.
+14. **„Bis Schluss" (§2)** ist der Schlusskurs der **letzten regulären Kerze (15:59)** — der 16:00-Balken zählt
+    als `nach`; die Schlussauktion selbst ist nicht in den Minutenbalken. Näherung, ausgewiesen.
+15. **Gegenprobe geteilter Kurs (§2, §11).** Der Scheineffekt hat je Familie ein Vorzeichen: **Dip-Detektoren
+    positiv** (Kauf am tiefen Schluss, Rückprall), **Ausbruchs-Detektoren negativ**. test.js führt die Probe an
+    einem Dip-Detektor (positiv erwartet).
+16. **Cooldown (§2):** gesperrt ist jede Kerze mit `t_i − t_letztesSignal < 60 min` (Stempelabstand).
+17. **Zahl der Abweichungen vom August (§1):** es sind **zehn** Detektoren mit neuen Zeitrahmen, nicht acht
+    (zusätzlich `orb` und `wendepunkt-trendwechsel` auf 15m).
+18. **„Gleichheit gegen die App" (§1, §11), präzisiert:** geprüft wird Gleichheit des Tabellen-Mantels mit der
+    `quant.js`-Funktion (`rsi2`, `reversion`, `squeeze`, `donchian`, `kapitulation`, `rsi2seit`) bzw. mit der im
+    August aus `depot.js` extrahierten reinen Funktion (`orb`, `wendepunkt-trendwechsel`). Die App-Gleichheit der
+    Extraktion hat die August-Phase 1 belegt; `vwap-abstand` und `kanaltrend` sind Studien-Definitionen ohne
+    Live-Pendant (Tabelle).
+19. **Umsatzklasse (§3), präzisiert:** Tagesumsatz = letzter regulärer Schluss × Σ reguläre Stück (**nur
+    Sitzung**; die Hürdenmessung schichtete nach Tagesdaten mit Gesamtvolumen — Klassen fallen hier etwas
+    niedriger aus, ausgewiesen); Fenster = **20 Balkentage** der Reihe (Tage mit regulären Kerzen), nicht
+    Kalendertage; `Liquide.medianUmsatz(ums, d−1, 20)` nimmt genau die Tage d−20 … d−1.
+20. **Obergrenzen (§6) für alle Konfigurationen** mit ≥ 30 Bestätigungs-Signaltagen — auch für die, die kein
+    Kandidat sind: „widerlegt als Größe" ist eine Größenaussage, kein Test, und erzeugt keine Multiplizität.
+21. **Rechnung B (§9), Vorbehalt:** σ_Markt ≈ 0,9 Pp/Tag ist ein Ansatz ohne Fundstelle; die Wiki-Anker
+    (`aufloesungswand.md`: Tag 1,474, mehrtägig 2,8) legen bis ~1,2 nahe — dann wären die B-Werte um ein Drittel
+    größer. nTage_B = 894 gilt nur für dichte Detektoren; die realisierten `se_B` und Signaltage stehen im
+    Bericht neben beiden Planrechnungen. **Der Bericht rundet auf 4 Nachkommastellen; verglichen wird
+    ungerundet.**
+22. **Topf und Placebos folgen denselben Ausschlüssen** (Klasse < 5 Mio $, Maßnahmenfenster, dünne Tage,
+    Zulässigkeit, Horizont nur mit Ausstieg) wie die Kandidaten.
+23. **Laufzeit und Vollauf.** Die Laufzeitprobe steht in der Übergabe; `nacht.cmd` unterstützt `k/n`-Teile für
+    mehrere Prozesse (16 Kerne), `auswerten.js` legt die Teile zusammen. Der Vollauf startet nicht aus diesem Chat.
+
+Konfigurationskennung nach diesem Nachtrag: `signale-minuten-2026-09-06/v2` (drei Zellenreihen je Kandidat:
+Kandidat, Placebo A, Placebo B; vier Summen je Zelle).
