@@ -72,7 +72,7 @@ function selbsttestQuantil() {
 /* ---------- Laden und Zusammenlegen ---------- */
 /** Feldweise Addition zweier Speicher (Teil-Laeufe), alle sieben Felder. */
 function addiere(sp, s2) {
-  ['n', 's', 's2', 'h2', 'tn', 'ts', 'ts2'].forEach(function (f) { var a = sp[f], b = s2[f]; for (var i = 0; i < a.length; i++) a[i] += b[i]; });
+  ['n', 's', 's2', 'h2', 'tn', 'ts', 'ts2', 'kn', 'ks', 'kcb'].forEach(function (f) { var a = sp[f], b = s2[f]; for (var i = 0; i < a.length; i++) a[i] += b[i]; });
 }
 /** Rekursive Summe zweier Fortschritts-Teile: Zahlen addieren, Felder elementweise, Objekte je Schluessel, Rest bleibt (erster gewinnt). */
 function summiere(a, b) {
@@ -238,6 +238,24 @@ function drift(sp, ctx, zi, h) {
 
 /* ---------- Die ganze Auswertung ---------- */
 /** Rechnet alle 234 Konfigurationen in beiden Sichten, Kontrollen, Tore, Urteile, Differenzen, Signalanteil, se_B gegen Plan. */
+/** Cent-Boden je (Zeitrahmen, Klasse) aus den Kurszellen (Nachtrag 3): Signale mit Einstieg, mittlerer roher
+ *  Einstiegskurs, Anteil der Signale, deren Cent-Boden ueber der Huerde ihrer Klasse liegt. Leer, wenn der Lauf
+ *  die Kurszellen nicht fuehrt (Fassung vor Nachtrag 3) - "nicht gefuehrt" ist nicht "null". */
+function centBoden(sp, kal) {
+  if (!sp.kn) return [];
+  var nT = kal.tage.length, aus = [];
+  K.ZEITRAHMEN.forEach(function (zr, zi) {
+    K.KLASSEN.forEach(function (kl, ki) {
+      var n = 0, s = 0, cb = 0;
+      for (var di = 0; di < K.N_DET; di++) for (var dir = 0; dir < 2; dir++) for (var t = 0; t < nT; t++) for (var le = 0; le < 2; le++) {
+        var idx = K.kursZelle(nT, K.kandIndex(di, zi), dir, t, ki, le);
+        n += sp.kn[idx]; s += sp.ks[idx]; cb += sp.kcb[idx];
+      }
+      if (n > 0) aus.push({ zr: zr.key, klasse: kl.name, n: n, mittelKurs: s / n, bodenBeimMittel: K.centBodenPp(s / n), huerde: kl.huerde, anteilUeber: cb / n });
+    });
+  });
+  return aus;
+}
 function auswerte(sp, F, kal) {
   var ctx = { iBes: kal.idx[K.BESTAETIGUNG_AB], iReg: kal.idx[K.REGIME_AB] };
   if (ctx.iBes == null) throw new Error('BESTAETIGUNG_AB ' + K.BESTAETIGUNG_AB + ' ist kein Kalendertag.');
@@ -294,7 +312,7 @@ function auswerte(sp, F, kal) {
   zahlen.placeboPoolGefallen = kontrollen.filter(function (k) { return !k.imBand && k.placebo.nTage > 0; }).length;
   zahlen.seVerhaeltnisGeprueft = konf.filter(function (c) { return c.seVerhaeltnis.bereinigt != null; }).length;
   zahlen.seVerhaeltnisAuffaellig = konf.filter(function (c) { return c.seVerhaeltnis.auffaellig; }).length;
-  return { ctx: ctx, konf: konf, kontrollen: kontrollen, zahlen: zahlen, ueberleben: ueberleben(konf, F), signalanteil: signalanteil(F), klassenmix: klassenmix(sp, ctx), seB: seBGegenPlan(konf, z1) };
+  return { ctx: ctx, konf: konf, kontrollen: kontrollen, zahlen: zahlen, ueberleben: ueberleben(konf, F), signalanteil: signalanteil(F), klassenmix: klassenmix(sp, ctx), seB: seBGegenPlan(konf, z1), centBoden: centBoden(sp, kal) };
 }
 /** Urteil nach §6 und Nachtrag (5, 6, 12, 20): Groessenaussage fuer alle mit >= 30 Bes-Tagen; Wort, Herabstufungen, handelbar. */
 function urteil(c, z2, poolOk, eigenOk) {
@@ -454,7 +472,15 @@ function markdown(E, F, herkunft, kal, pilot) {
   o.push(tabelle(['Zaehler', 'Wert'], flach(Z)));
   o.push('Reihen ausgeschlossen nach Wertpapierart (F.reihenAusgeschlossen):\n');
   o.push(tabelle(['Art', 'Reihen'], flach(F.reihenAusgeschlossen || {})));
-  if ((F.ausgelassen || []).length) o.push(tabelle(['Ausgelassen', 'Grund'], F.ausgelassen.map(function (a) { return [a.datei, a.grund]; })));
+  if ((F.ausgelassen || []).length) {
+    o.push(tabelle(['Ausgelassen', 'Grund'], F.ausgelassen.map(function (a) { return [a.datei, a.grund]; })));
+    /* Nachtrag 3, Frage 5: damit spaeter niemand die ausgelassenen Dateien fuer einen Sammelfehler haelt. */
+    o.push('> **„Datei fehlt" ist kein Sammelfehler.** Der PM hat am 07.09.2026 alle 8.058 Reihen gegen die ' +
+      'Lueckenliste geprueft (nur gelesen): **340 Reihen nennen in `_lebenszeit.json` Jahre ohne Datei - und alle ' +
+      '340 sind in `_luecken.json` als fehlende Tage erfasst**, keine einzige ungedeckt (AATC 2023-2025, 583 Tage; ' +
+      'ABVE 2016-2020, 1.230 Tage; SMCI 2019, 349 Tage). Das Messgeraet verhaelt sich richtig, wenn es solche ' +
+      'Dateien protokolliert und weitergeht; die Lueckenliste ist die Stelle, an der die Sammlung sie fuehrt.\n');
+  }
   o.push('## 1. Kontrollen zuerst (§7, Nachtrag 2-3)\n\nPlacebo A gepoolt je (Zeitrahmen, Haltedauer) ueber alle 13 Detektoren und beide Richtungen, Mass je Signal dir_p · (rohLong_p − Topf); Band |t| < 3 und |Mittel| < 0,01 Pp, ueber alle Tage des Fensters. Faellt das gepoolte Band, wird in diesem (ZR, H) nichts „belegt" (nur „belegt-aber-nullpunkt-verschoben"). Eigen = je (Detektor, ZR, H) nur |t| < 3, faellt nur dieser Kandidat. Intraday-Drift = Topf-Tagesmittel (Long-Ertrag aller zulaessigen Kerzen), Placebo A misst per Zufallsrichtung keine Drift.\n');
   o.push(tabelle(['ZR', 'H', 'Placebo nTage', 'nSig', 'Mittel−Topf (Pp)', 'se', 't', 'im Band', 'eigen geprueft', 'eigen gefallen', 'Drift nTage', 'Drift Tagesmittel (Pp)', 'Drift sd', 'Drift t', 'Drift Bes nTage', 'Drift Bes Mittel', 'Topf Kerzen'],
     E.kontrollen.map(function (k) { var p = k.placebo, d = k.drift; return [k.zr, k.h, ganz(p.nTage), ganz(p.nSig), pp(p.gegenTopf), pp(p.se), tw(p.t), jn(k.imBand), ganz(k.eigenGeprueft), ganz(k.eigenGefallen), ganz(d.nTage), pp(d.mittel), pp(d.sd), tw(d.t), ganz(d.nTageB), pp(d.mittelB), ganz(d.kerzen)]; })));
@@ -518,6 +544,22 @@ function markdown(E, F, herkunft, kal, pilot) {
   o.push('Dünne Tage, je Zeitrahmen verworfen (F.zaehler.tageDuenn): ' + Object.keys(F.zaehler.tageDuenn || {}).map(function (k) { return k + ' ' + ganz(F.zaehler.tageDuenn[k]); }).join(', ') +
     '. Rechenzeit je Zeitrahmen (F.zaehler.msJeZr, Sekunden): ' + (Object.keys(F.zaehler.msJeZr || {}).length ? Object.keys(F.zaehler.msJeZr).map(function (k) { return k + ' ' + ganz(Math.round(F.zaehler.msJeZr[k] / 1000)); }).join(', ') : 'nicht im Lauf gefuehrt (Fassung vor Nachtrag 2)') + '.\n');
 
+  /* Nachtrag 3 (PM 07.09.): den Cent-Boden-Vorbehalt beziffern statt ihn zu behaupten. */
+  o.push('## 5c. Cent-Boden: wie teuer ist die Signalpopulation wirklich (Nachtrag 3)\n');
+  o.push('Die kleinste Preisstufe ist 1 Cent; als Boden je Umlauf sind ' + (K.CENT_BODEN_USD * 100) + ' Cent angesetzt, in Pp ' +
+    '`100 × ' + K.CENT_BODEN_USD + ' / Kurs`. **Einstiegskurse sind auf den damals gehandelten (rohen) Preis ' +
+    'zurueckgerechnet** - der split-bereinigte Kurs waere fuer diese Frage falsch (COKE 2016: 18,04 statt 180,40 $). ' +
+    'Ausgewiesen wird beides: der mittlere Einstiegskurs **und** der Anteil der Signale, deren Cent-Boden ueber der ' +
+    'Huerde ihrer Klasse liegt. Nur die zweite Zahl sagt etwas ueber die Faelle, auf die es ankommt: bei einem 3-$-' +
+    'Papier ist der Boden ' + pp(K.centBodenPp(3)) + ' Pp und damit groesser als jede Kante, die diese Studie sucht.\n');
+  if (E.centBoden.length) {
+    o.push(tabelle(['ZR', 'Klasse', 'Signale mit Einstieg', 'mittlerer Einstiegskurs', 'Cent-Boden beim Mittelkurs', 'Huerde', 'Anteil ueber dem Boden', 'Hinweis'],
+      E.centBoden.map(function (c) {
+        return [c.zr, c.klasse, ganz(c.n), tw(c.mittelKurs) + ' $', pp(c.bodenBeimMittel), pp(c.huerde), tw(100 * c.anteilUeber) + ' %',
+          c.anteilUeber > 0.2 ? 'ACHTUNG: die Huerde ist dort zu einem grossen Teil eine Preisaussage' : ''];
+      })));
+  } else o.push('**Kurszaehler nicht im Lauf vorhanden** (Fassung vor Nachtrag 3) - der Cent-Boden bleibt unbeziffert.\n');
+
   o.push('## 6. Signalanteil und Klassenmix (§4, vorab gezaehlt)\n');
   o.push(tabelle(['Detektor', 'ZR', 'Reihen gesamt', 'Reihen mit Signal', 'Signale', 'Median je Reihe', 'Median je Reihe mit Signal'], E.signalanteil.map(function (s) { return [s.det, s.zr, ganz(s.reihenGesamt), ganz(s.reihenMitSignal), ganz(s.summe), ganz(s.medianJeReihe), ganz(s.medianJeReiheMitSignal)]; })));
   o.push('Klassenmix der gewerteten Signale je Zeitrahmen (Kandidaten-Zellen, Haltedauer schluss), Klassen ' + K.KLASSEN.map(function (k) { return k.name; }).join(' / ') + ':\n');
@@ -547,7 +589,7 @@ function lauf(a) {
     zaehler: G.F.zaehler, dateien: G.F.dateien, bytes: G.F.bytes, kerzenRegulaer: G.F.kerzenRegulaer, ausgelassen: G.F.ausgelassen, reihenAusgeschlossen: G.F.reihenAusgeschlossen, doppeltErledigt: G.F.doppeltErledigt,
     kalender: { nTage: kal.tage.length, bestaetigungAb: K.BESTAETIGUNG_AB, regimeAb: K.REGIME_AB, iBes: E.ctx.iBes, iReg: E.ctx.iReg, nEnt: kal.nEnt, nBes: kal.nBes },
     konstanten: { zPower80: Z_POWER80, minBesTage: MIN_BES_TAGE, tor1Faktor: TOR1_FAKTOR, bandT: BAND_T, bandPp: BAND_PP, jedeKlasseZu: JEDE_KLASSE_ZU, planA: PLAN_A, planB: PLAN_B },
-    zahlen: E.zahlen, kontrollen: E.kontrollen, konfigurationen: E.konf, ueberleben: E.ueberleben, signalanteil: E.signalanteil, klassenmix: E.klassenmix, seB: E.seB };
+    zahlen: E.zahlen, kontrollen: E.kontrollen, konfigurationen: E.konf, ueberleben: E.ueberleben, signalanteil: E.signalanteil, klassenmix: E.klassenmix, seB: E.seB, centBoden: E.centBoden };
   fs.writeFileSync(path.join(ordner[0], jsonName), JSON.stringify(json, null, 1));
   fs.writeFileSync(path.join(ordner[0], mdName), markdown(E, G.F, G.herkunft, kal, pilot));
   console.log((pilot ? 'PILOT ' : '') + 'geschrieben: ' + path.join(ordner[0], mdName) + ' und ' + jsonName + ' | ' + G.F.dateien + ' Dateien | k1=' + E.zahlen.k1 + ' k2=' + E.zahlen.k2 + ' | belegt ' + E.zahlen.urteile.belegt + ' | ' + Math.round((Date.now() - t0) / 1000) + ' s');

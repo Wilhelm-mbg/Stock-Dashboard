@@ -171,11 +171,32 @@ function ladeJahr(R, jahr) {
     if (!(k[1] > 0) || !(k[5] > 0)) { verworfen.ohneKurs++; continue; }               // Schluss und Eroeffnung muessen Kurse sein
     aus.push(k); letzt = t;
   }
-  var angewandt = new Set();
+  var angewandt = new Set(), rueck = [];
   var mm = j.massnahmen;
-  if (Array.isArray(mm)) mm.forEach(function (m) { var ex = m.ex_date || m.ex || m.datum; if (m._art && ex) angewandt.add(m._art + '|' + ex); else if (m.art && ex) angewandt.add(m.art + '|' + ex); });
+  if (Array.isArray(mm)) mm.forEach(function (m) {
+    var ex = m.ex_date || m.ex || m.datum; if (!ex) return;
+    if (m._art) angewandt.add(m._art + '|' + ex); else if (m.art) angewandt.add(m.art + '|' + ex);
+    /* Rueckrechnung auf den ROHEN Kurs (Nachtrag 3): die Kopie teilt Kurse vor dem Ex-Tag durch den Faktor
+     * (alpaca1m-bereinigt/_regel.json). Fuer Renditen ist das richtig, fuer den CENT-BODEN nicht: der Boden
+     * haengt am Kurs, der damals wirklich gehandelt wurde. roh(t) = bereinigt(t) x Produkt der Faktoren
+     * aller Massnahmen mit Ex-Tag NACH t. */
+    if (m.faktor > 0) rueck.push({ exMs: etTagMs(ex), faktor: m.faktor });
+  });
   else if (mm && typeof mm === 'object') Object.keys(mm).forEach(function (kk) { var m = mm[kk]; var ex = (m && (m.ex_date || m.ex || m.datum)) || kk; var art = (m && (m._art || m.art)) || ''; if (ex) angewandt.add(art + '|' + ex); });
-  return { ok: true, kerzen: aus, quelle: d.quelle, pfad: d.pfad, angewandt: angewandt, bytes: g.bytes, kerzenGesamt: serie.length, verworfen: verworfen, massnahmenKopf: mm == null ? null : mm };
+  rueck.sort(function (a, b) { return a.exMs - b.exMs; });
+  return { ok: true, kerzen: aus, quelle: d.quelle, pfad: d.pfad, angewandt: angewandt, bytes: g.bytes, kerzenGesamt: serie.length, verworfen: verworfen,
+    massnahmenKopf: mm == null ? null : mm, rueck: rueck, rohFaktor: rohFaktorFunktion(rueck) };
+}
+
+/** Faktor, mit dem ein bereinigter Kurs zum Stempel t auf den damals gehandelten Rohkurs zurueckgerechnet wird
+ *  (Produkt aller Massnahmen-Faktoren mit Ex-Tag nach t). Ohne Massnahmen immer 1 - dann IST die Datei roh. */
+function rohFaktorFunktion(rueck) {
+  if (!rueck || !rueck.length) return function () { return 1; };
+  return function (t) {
+    var f = 1;
+    for (var i = 0; i < rueck.length; i++) if (rueck[i].exMs > t) f *= rueck[i].faktor;
+    return f;
+  };
 }
 
 /* ---------- Tage und Verdichtung ---------- */
@@ -206,6 +227,6 @@ function verdichte(kerzen1m, zrKey) {
   return KC.verdichtenMinuten(mit, zrKey, sitz).kerzen.filter(function (k) { return k[0] <= letzt; });
 }
 
-module.exports = { meta: meta, reihen: reihen, ordnerFuer: ordnerFuer, ladeJahr: ladeJahr, dateiPfad: dateiPfad, tageAus: tageAus, verdichte: verdichte,
+module.exports = { meta: meta, reihen: reihen, ordnerFuer: ordnerFuer, ladeJahr: ladeJahr, dateiPfad: dateiPfad, tageAus: tageAus, verdichte: verdichte, rohFaktorFunktion: rohFaktorFunktion,
   massnahmenFuer: massnahmenFuer, ausschlussTage: ausschlussTage, unklareAbspaltungen: unklareAbspaltungen,
   tagVon: tagVon, schlussMs: schlussMs, etVersatzStunden: etVersatzStunden, etTagMs: etTagMs };

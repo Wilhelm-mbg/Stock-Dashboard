@@ -348,6 +348,19 @@ abschnitt(1, 'POSITIVKONTROLLE - gepflanzte Kante wird in Groesse und Richtung w
   KUNST.gepflanzt = mp; KUNST.wahl = wahl; KUNST.tage = tage;
   pruefe(z1m(mp.stat.tageGewertet) === tage.length - K.UMSATZ_FENSTER && z1m(mp.Z.tageOhneKlasse) === K.UMSATZ_FENSTER && z1m(mp.Z.tageDuenn) === 0 && z1m(mp.Z.tageOhneKalender) === 0, '1h messeDatei wertet auf 1m ' + z1m(mp.stat.tageGewertet) + ' Tage (Soll ' + (tage.length - K.UMSATZ_FENSTER) + '), ohne Klasse ' + z1m(mp.Z.tageOhneKlasse) + ', duenn ' + z1m(mp.Z.tageDuenn) + ', ohne Kalender ' + z1m(mp.Z.tageOhneKalender));
   pruefe((mp.stat.signale[wahl.key] || [])[0] === pass2.signale.length, '1i Signalmenge: messeDatei ' + (mp.stat.signale[wahl.key] || [])[0] + ' = naive Nachrechnung ' + pass2.signale.length + ' (' + wahl.key + ' 1m)');
+
+  /* Kurszellen (Nachtrag 3): Zahl und Summe gegen die naive Rechnung, Cent-Boden-Zaehler gegen die Klassenhuerde.
+   * NUR die Zellen des gewaehlten Kandidaten auf 1m - delta.kurs traegt alle 39 Kandidaten (der erste Anlauf
+   * dieser Pruefung verglich 3.647 Signale aller Detektoren mit 516 eines einzigen und war zu Recht rot). */
+  var nT = K.kalender().tage.length, kandIdx = K.kandIndex(K.DETEKTOR_KEYS.indexOf(wahl.key), 0);
+  var von = kandIdx * 2 * nT * K.N_K * 2, bis = (kandIdx + 1) * 2 * nT * K.N_K * 2;
+  var kn = 0, ks = 0, kcb = 0;
+  mp.delta.kurs.forEach(function (v, idx) { if (idx >= von && idx < bis) { kn += v[0]; ks += v[1]; kcb += v[2]; } });
+  var einstiege = pass2.signale.map(function (s) { return pf.kerzen[s.i + 1] ? pf.kerzen[s.i + 1][5] : 0; }).filter(function (x) { return x > 0; });
+  var sollSumme = einstiege.reduce(function (a, b) { return a + b; }, 0);
+  var sollUeber = einstiege.filter(function (k) { return K.centBodenPp(k) > K.KLASSEN[1].huerde; }).length;   // Kunst-Reihe ist Klasse 50-250
+  pruefe(kn === einstiege.length && Math.abs(ks - sollSumme) < 1e-6 && kcb === sollUeber,
+    '1z Kurszellen (' + wahl.key + ' 1m): ' + kn + ' Signale mit Einstieg (naiv ' + einstiege.length + '), Summe ' + f4(ks) + ' (naiv ' + f4(sollSumme) + '), ueber dem Cent-Boden ' + kcb + ' (naiv ' + sollUeber + '); mittlerer Kurs ' + f4(ks / kn) + ' $, Boden ' + f4(K.centBodenPp(ks / kn)) + ' Pp gegen Huerde ' + f4(K.KLASSEN[1].huerde));
   var zNetto = tagesreiheAusZellen(mp.eintraege, 0, dI, 0, 0, null, true), nNetto = tagesreiheNaiv(pass2.signale, r2, true);
   var diff = Math.abs(mittel(zNetto.mittelJeTag) - mittel(nNetto.mittelJeTag));
   pruefe(zNetto.n === nNetto.n && zNetto.tage.length === nNetto.tage.length && diff < 0.01, '1j Netto-Tagesmittel 1h: Zellen ' + f4(mittel(zNetto.mittelJeTag)) + ' Pp (n ' + zNetto.n + ', ' + zNetto.tage.length + ' Tage) vs naiv ' + f4(mittel(nNetto.mittelJeTag)) + ' (n ' + nNetto.n + ', ' + nNetto.tage.length + ' Tage), |Diff| ' + diff.toExponential(2));
@@ -570,6 +583,20 @@ abschnitt(7, 'KLASSEN UND HUERDEN gegen kosten.js, liquide.js und wiki/kosten.md
   pruefe(hf && hfHalb, '7h huerdeFenster: erste 30 Sitzungsminuten Eroeffnung (' + K.KLASSEN.map(function (k) { return f4(k.huerdeEroeffnung); }).join('/') + '), letzte 30 Schluss (Volltag ab 15:30, Halbtag ab 12:30), sonst mitte');
   var eroeff = K.KLASSEN.every(function (k) { return k.huerdeEroeffnung === k.huerde * k.eroeffnungFaktor; });
   pruefe(eroeff, '7i huerdeEroeffnung = huerde x eroeffnungFaktor ungerundet (Nachtrag 21: verglichen wird ungerundet)');
+
+  /* ---- Cent-Boden (Nachtrag 3, PM-Frage 7) ---- */
+  var cb3 = K.centBodenPp(3), cb180 = K.centBodenPp(180);
+  pruefe(Math.abs(cb3 - 100 * K.CENT_BODEN_USD / 3) < 1e-12 && Math.abs(cb180 - 100 * K.CENT_BODEN_USD / 180) < 1e-12 && cb3 > K.KLASSEN[0].huerde && cb180 < K.KLASSEN[3].huerde,
+    '7j Cent-Boden = 100 x ' + K.CENT_BODEN_USD + ' / Kurs: bei 3 $ ' + f4(cb3) + ' Pp (ueber der Huerde 5-50 ' + f4(K.KLASSEN[0].huerde) + '), bei 180 $ ' + f4(cb180) + ' Pp (unter ab1000 ' + f4(K.KLASSEN[3].huerde) + ')');
+  var ucb = K.ueberCentBoden(3, 0) === true && K.ueberCentBoden(180, 0) === false && K.ueberCentBoden(0, 0) === true;
+  pruefe(ucb, '7k ueberCentBoden vergleicht gegen die Huerde DER KLASSE (3 $ in 5-50 ja, 180 $ nein, Kurs 0 gilt als ueber dem Boden)');
+
+  /* Rueckrechnung auf den rohen Kurs: die bereinigte Kopie teilt vor dem Ex-Tag durch den Faktor. */
+  var rf = L.rohFaktorFunktion([{ exMs: L.etTagMs('2020-08-31'), faktor: 4 }]);
+  var vor = rf(L.etTagMs('2020-01-02')), nach = rf(L.etTagMs('2020-12-31'));
+  pruefe(vor === 4 && nach === 1, '7l rohFaktor: vor dem Ex-Tag ' + vor + ' (Kurs x4), danach ' + nach + ' - AAPL Januar 2020 bereinigt 73,94 => roh 295,75 $');
+  var rf0 = L.rohFaktorFunktion([]);
+  pruefe(rf0(0) === 1 && rf0(Date.now ? 1e12 : 1e12) === 1, '7m rohFaktor ohne Massnahmen ist immer 1 (die Rohdatei IST dann die bereinigte)');
 });
 
 /* ====================================================================================== */

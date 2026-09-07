@@ -541,3 +541,36 @@ steht vor der ersten Urteilszahl. Der Pilot ist gelaufen (kein Befund, k₁ = 0)
 
 Der Pilot wurde nach diesem Nachtrag ein drittes Mal gefahren, damit die Zähler aus Punkt 1 und 2 echte Zahlen tragen;
 an Zellen, Endpunkten und Urteilsregeln ändert Nachtrag 2 nichts (die Kennung bleibt `v3`).
+
+## 15. NACHTRAG 3 — 07.09.2026, nach der Abnahme (PM-Antworten 5–7), vor dem Vollauf
+
+Der PM hat das Messgerät abgenommen (eigener Lauf: 76 OK) und die drei restlichen Fragen entschieden.
+
+1. **Archiv-Lücke ist keine (Frage 5).** Der PM hat alle 8.058 Reihen gegen die Lückenliste geprüft: **340 Reihen
+   nennen Jahre ohne Datei, alle 340 sind in `_luecken.json` erfasst** (AATC 2023–2025 mit 583 Tagen, ABVE
+   2016–2020 mit 1.230, SMCI 2019 mit 349). Das Messgerät verhält sich richtig, wenn es „Datei fehlt" protokolliert
+   und weitergeht. Der Satz steht ab jetzt in jedem Bericht neben der Liste der ausgelassenen Dateien, damit später
+   niemand sie für einen Sammelfehler hält. Keine Änderung am Gerät, kein Auftrag an die Vollsammlung.
+2. **Pflanzform abgenommen (Frage 6).** Die Positivkontrolle pflanzt in der Eröffnung der Ausstiegskerze, nicht im
+   Block i+2…i+61. Bedingung des PM: die Block-Variante bleibt **nachrichtlich** im Testbericht mit dem Grund, warum
+   sie negativ aussieht — sie steht dort (472 gepflanzt, davon 55 in Pass 2 übrig, 430 neue Signale im angehobenen
+   Block mit −0,25 Pp, weil der Rücksprung bei i+62 in ihrem Ausstiegsfenster liegt).
+3. **Cent-Boden wird beziffert (Frage 7), zwei Größen statt einer.** Je Signal mit Einstieg werden zusätzlich
+   gezählt: **Summe des Einstiegskurses** und die **Zahl der Signale, deren Cent-Boden über der Hürde ihrer Klasse
+   liegt** (`100 × 0,005 / Kurs > K_Klasse`). Der Mittelwert allein sagt nichts über die Fälle, auf die es ankommt:
+   bei einem 3-$-Papier ist der Boden 0,1667 Pp und damit größer als jede Kante, die diese Studie sucht.
+   Umgesetzt als drei zusätzliche Zellenfelder (Zahl, Summe Kurs, Zahl über dem Boden) je (Kandidat, Richtung,
+   ET-Tag, Klasse, lebend) — **ohne Haltedauer**, weil der Einstiegskurs nicht davon abhängt: 40 MB statt 241 MB,
+   die Zellendatei wächst von 486 auf 526 MB. Bericht: neuer Abschnitt 5c.
+   **Der Kurs wird auf den damals gehandelten (rohen) Preis zurückgerechnet.** Die bereinigte Kopie teilt Kurse vor
+   einem Split durch den Faktor; für Renditen ist das richtig, für den Cent-Boden falsch. Beim ersten Probelauf fiel
+   auf: COKE 2016 stand mit **18,04 $** in der Datei und mit **180,40 $** an der Börse (10:1-Split 2025) — der
+   gemessene Boden wäre zehnfach zu groß gewesen. Zurückgerechnet wird mit dem Produkt der Faktoren aller Maßnahmen
+   nach dem Kerzenstempel (`lesen.js rohFaktorFunktion`), geprüft an AAPL 2020: Januar bereinigt 73,94 → roh
+   295,75 $, nach dem Split unverändert 132,58 $.
+
+Der Cent-Boden ist eine **Beschreibung der Signalpopulation, kein Endpunkt und kein Filter**: kein Signal wird
+deswegen ausgeschlossen, kein Urteil ändert sich. Er sagt, für welche Zellen die Klassenhürde in Wahrheit eine
+Preisaussage ist (`wiki/kosten.md`, „Der Cent-Boden"). Kennung → `v4`; die Zellen der bisherigen Läufe sind damit
+nicht mehr lesbar, der Pilot wurde ein weiteres Mal gefahren. `test.js` prüft die neuen Größen gegen eine
+unabhängige naive Rechnung (Prüfung 1z) und die Rückrechnung gegen bekannte Kurse (7j–7m).

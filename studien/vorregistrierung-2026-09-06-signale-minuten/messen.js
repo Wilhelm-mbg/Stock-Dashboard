@@ -68,16 +68,20 @@ function mulberry32(seed) { var a = seed >>> 0; return function () { a = (a + 0x
 
 /* ---------- Zellenspeicher ---------- */
 function Speicher(nTage) {
-  var z = K.zellenZahl(nTage), tz = K.topfZahl(nTage);
+  var z = K.zellenZahl(nTage), tz = K.topfZahl(nTage), kz = K.kursZahl(nTage);
   this.nTage = nTage;
   this.n = new Float64Array(z); this.s = new Float64Array(z); this.s2 = new Float64Array(z); this.h2 = new Float64Array(z);
   this.tn = new Float64Array(tz); this.ts = new Float64Array(tz); this.ts2 = new Float64Array(tz);
+  /* Cent-Boden (Nachtrag 3): Zahl der Signale mit Einstieg, Summe der Einstiegskurse, Zahl der Signale,
+   * deren Cent-Boden ueber der Klassenhuerde liegt. Nur Kandidaten, ohne Haltedauer. */
+  this.kn = new Float64Array(kz); this.ks = new Float64Array(kz); this.kcb = new Float64Array(kz);
 }
-Speicher.prototype.felder = function () { return [this.n, this.s, this.s2, this.h2, this.tn, this.ts, this.ts2]; };
+Speicher.prototype.felder = function () { return [this.n, this.s, this.s2, this.h2, this.tn, this.ts, this.ts2, this.kn, this.ks, this.kcb]; };
 Speicher.prototype.uebernehme = function (delta) {
   var self = this;
   delta.zellen.forEach(function (v, idx) { self.n[idx] += v[0]; self.s[idx] += v[1]; self.s2[idx] += v[2]; self.h2[idx] += v[3]; });
   delta.topf.forEach(function (v, idx) { self.tn[idx] += v[0]; self.ts[idx] += v[1]; self.ts2[idx] += v[2]; });
+  delta.kurs.forEach(function (v, idx) { self.kn[idx] += v[0]; self.ks[idx] += v[1]; self.kcb[idx] += v[2]; });
 };
 /** Schreibt die Felder und dahinter den Zellenstand (8 Byte). Der Stand steht auch in _fortschritt.json;
  *  stirbt der Prozess zwischen den beiden renames, passen die Staende nicht zusammen und lade() verweigert -
@@ -101,9 +105,10 @@ Speicher.lade = function (pfad, nTage, stand) {
   sp.stand = gelesen;
   return sp;
 };
-function Delta() { this.zellen = new Map(); this.topf = new Map(); }
+function Delta() { this.zellen = new Map(); this.topf = new Map(); this.kurs = new Map(); }
 Delta.prototype.add = function (idx, r, h) { var v = this.zellen.get(idx); if (!v) { v = [0, 0, 0, 0]; this.zellen.set(idx, v); } v[0]++; v[1] += r; v[2] += r * r; v[3] += h; };
 Delta.prototype.addTopf = function (idx, r) { var v = this.topf.get(idx); if (!v) { v = [0, 0, 0]; this.topf.set(idx, v); } v[0]++; v[1] += r; v[2] += r * r; };
+Delta.prototype.addKurs = function (idx, kurs, ueber) { var v = this.kurs.get(idx); if (!v) { v = [0, 0, 0]; this.kurs.set(idx, v); } v[0]++; v[1] += kurs; if (ueber) v[2]++; };
 
 /* ---------- Ertrag (§2/§3): Einstieg Eroeffnung i+1, Ausstieg Eroeffnung der Kerze nach Ablauf bzw. Schluss ---------- */
 /** Ausstiegsindizes je Haltedauer fuer alle Kerzen eines Tages: exit[h][i - von] = j oder -1. */
@@ -266,6 +271,7 @@ function istDicht(d, zrMin) { return (d.bis - d.von + 1) >= K.DICHTE_MIN * (d.so
 function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
   var kal = ctx.kal, nTage = kal.tage.length, dets = ctx.dets, Z = leererZaehler();   // Zaehler lokal: ganz oder gar nicht (Review F3)
   var kerzen = g.kerzen, lebend = R.lebend;
+  var rohFaktor = g.rohFaktor || function () { return 1; };     // bereinigt -> damals gehandelter Kurs (Cent-Boden)
   var stat = { signale: {}, signaleGesamt: 0, tage: 0, tageGewertet: {}, tageGewertetKlasse: {}, zaehler: Z };
   dets.forEach(function (D) { stat.signale[D.key] = [0, 0, 0]; });
   if (!kerzen.length) return stat;
@@ -341,6 +347,12 @@ function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
           k++; stat.signale[D.key][zi]++; stat.signaleGesamt++;
           var dir = s.dir > 0 ? 1 : -1, dirIdx = dir > 0 ? 0 : 1, beob = 0, hf = hVon(i2);
           echte.push([i2, dir]);
+          /* Cent-Boden (Nachtrag 3): einmal je Signal mit Einstieg, unabhaengig von der Haltedauer, und auf dem
+           * ROHEN Kurs - der Boden haengt am damals gehandelten Preis, nicht am split-bereinigten. */
+          if (i2 + 1 <= d.bis && bars[i2 + 1][5] > 0) {
+            var ek = bars[i2 + 1][5] * rohFaktor(bars[i2 + 1][0]);
+            delta.addKurs(K.kursZelle(nTage, kand, dirIdx, tagIdx, klasse, lebend), ek, K.ueberCentBoden(ek, klasse));
+          }
           for (var h2 = 0; h2 < K.N_H; h2++) {
             var r = ertrag(bars, i2, h2, d.bis, exit, dir);
             if (r !== r) { Z.ohneHorizont[h2]++; continue; }

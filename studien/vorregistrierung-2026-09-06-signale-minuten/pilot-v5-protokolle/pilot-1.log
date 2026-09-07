@@ -1,0 +1,55 @@
+2026-09-07T09:34:06.776Z  START signale-minuten-2026-09-06/v4/13x3x3x4x3+kurs | 5 Reihen (7299 Aktien, ausgeschlossen {"ETF":694,"ETN":7,"ETV":35,"FUND":16,"ETS":4,"ohne Art":1,"TEST":1,"UNIT":1}) | 13 Detektoren | Tage 2680 | Bestaetigung ab 2023-02-07 | PILOT | Teil 1/4
+2026-09-07T09:34:06.908Z  AATC/2016       roh           8823 reg. Kerzen        0/0/0 von 250  Tagen gewertet (1m/5m/15m)        0 Signale  7 ms lesen  123 ms rechnen
+2026-09-07T09:34:07.009Z  AATC/2017       roh           4157 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  3 ms lesen  65 ms rechnen
+2026-09-07T09:34:07.088Z  AATC/2018       roh           4853 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  4 ms lesen  60 ms rechnen
+2026-09-07T09:34:07.121Z  AATC/2019       roh           1342 reg. Kerzen        0/0/0 von 228  Tagen gewertet (1m/5m/15m)        0 Signale  2 ms lesen  20 ms rechnen
+2026-09-07T09:34:07.202Z  AATC/2020       roh           4709 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  4 ms lesen  71 ms rechnen
+2026-09-07T09:34:08.112Z  AATC/2021       roh          16526 reg. Kerzen      0/10/11 von 252  Tagen gewertet (1m/5m/15m)      292 Signale  8 ms lesen  890 ms rechnen
+2026-09-07T09:34:08.245Z  AATC/2022       roh           5517 reg. Kerzen        0/0/0 von 250  Tagen gewertet (1m/5m/15m)        0 Signale  5 ms lesen  73 ms rechnen
+2026-09-07T09:34:08.259Z  AUSGELASSEN AATC/2023: Datei fehlt
+2026-09-07T09:34:08.280Z  AUSGELASSEN AATC/2024: Datei fehlt
+2026-09-07T09:34:08.281Z  AUSGELASSEN AATC/2025: Datei fehlt
+2026-09-07T09:34:08.690Z  ADAP/2016       roh          45570 reg. Kerzen        0/0/0 von 252  Tagen gewertet (1m/5m/15m)        0 Signale  22 ms lesen  386 ms rechnen
+2026-09-07T09:34:09.185Z  ADAP/2017       roh          48063 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  18 ms lesen  358 ms rechnen
+2026-09-07T09:34:20.402Z  ADAP/2018       roh          66831 reg. Kerzen     17/48/48 von 251  Tagen gewertet (1m/5m/15m)     1838 Signale  35 ms lesen  11071 ms rechnen
+2026-09-07T09:34:21.304Z  ADAP/2019       roh          54645 reg. Kerzen        0/0/0 von 252  Tagen gewertet (1m/5m/15m)        0 Signale  29 ms lesen  647 ms rechnen
+2026-09-07T09:35:04.301Z  ADAP/2020       roh          71433 reg. Kerzen   79/128/128 von 253  Tagen gewertet (1m/5m/15m)     6019 Signale  51 ms lesen  42777 ms rechnen
+2026-09-07T09:35:28.971Z  ADAP/2021       roh          73198 reg. Kerzen     45/72/72 von 252  Tagen gewertet (1m/5m/15m)     3485 Signale  47 ms lesen  24394 ms rechnen
+2026-09-07T09:35:29.846Z  ADAP/2022       roh          52694 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  37 ms lesen  602 ms rechnen
+2026-09-07T09:35:30.705Z  ADAP/2023       roh          52662 reg. Kerzen        0/0/0 von 250  Tagen gewertet (1m/5m/15m)        0 Signale  34 ms lesen  641 ms rechnen
+2026-09-07T09:35:31.786Z  ADAP/2024       roh          69211 reg. Kerzen        0/0/0 von 252  Tagen gewertet (1m/5m/15m)        0 Signale  45 ms lesen  847 ms rechnen
+2026-09-07T09:35:40.118Z  ADAP/2025       roh          54441 reg. Kerzen     13/13/13 von 205  Tagen gewertet (1m/5m/15m)      801 Signale  36 ms lesen  8064 ms rechnen
+2026-09-07T09:35:40.632Z  CRVL/2016       bereinigt    25207 reg. Kerzen        0/0/0 von 252  Tagen gewertet (1m/5m/15m)        0 Signale  18 ms lesen  304 ms rechnen
+2026-09-07T09:35:40.929Z  CRVL/2017       bereinigt    15109 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  15 ms lesen  199 ms rechnen
+2026-09-07T09:35:41.138Z  CRVL/2018       bereinigt    13078 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  12 ms lesen  155 ms rechnen
+2026-09-07T09:35:43.988Z  CRVL/2019       bereinigt    24999 reg. Kerzen      0/33/79 von 252  Tagen gewertet (1m/5m/15m)     1272 Signale  17 ms lesen  2788 ms rechnen
+2026-09-07T09:35:44.365Z  CRVL/2020       bereinigt    21932 reg. Kerzen        0/0/0 von 253  Tagen gewertet (1m/5m/15m)        0 Signale  20 ms lesen  261 ms rechnen
+2026-09-07T09:35:44.714Z  CRVL/2021       bereinigt    13235 reg. Kerzen        0/0/5 von 252  Tagen gewertet (1m/5m/15m)       39 Signale  10 ms lesen  269 ms rechnen
+2026-09-07T09:35:46.026Z  CRVL/2022       bereinigt    14666 reg. Kerzen       0/1/58 von 251  Tagen gewertet (1m/5m/15m)      529 Signale  13 ms lesen  1251 ms rechnen
+2026-09-07T09:35:47.172Z  CRVL/2023       bereinigt    12340 reg. Kerzen       0/1/59 von 250  Tagen gewertet (1m/5m/15m)      520 Signale  10 ms lesen  1098 ms rechnen
+2026-09-07T09:35:47.501Z  CRVL/2024       bereinigt     7776 reg. Kerzen       0/1/11 von 252  Tagen gewertet (1m/5m/15m)       94 Signale  8 ms lesen  286 ms rechnen
+2026-09-07T09:35:54.557Z  CRVL/2025       roh          27037 reg. Kerzen     0/68/239 von 250  Tagen gewertet (1m/5m/15m)     3289 Signale  18 ms lesen  7011 ms rechnen
+2026-09-07T09:36:02.462Z  CRVL/2026       roh          23447 reg. Kerzen    0/113/166 von 166  Tagen gewertet (1m/5m/15m)     3445 Signale  15 ms lesen  7794 ms rechnen
+2026-09-07T09:37:47.293Z  MSFT/2016       roh          98041 reg. Kerzen  232/232/232 von 252  Tagen gewertet (1m/5m/15m)    10932 Signale  63 ms lesen  104695 ms rechnen
+2026-09-07T09:39:37.969Z  MSFT/2017       roh          97530 reg. Kerzen  251/251/251 von 251  Tagen gewertet (1m/5m/15m)    11027 Signale  77 ms lesen  110275 ms rechnen
+2026-09-07T09:41:33.901Z  MSFT/2018       roh          96572 reg. Kerzen  249/249/249 von 251  Tagen gewertet (1m/5m/15m)    12387 Signale  81 ms lesen  115520 ms rechnen
+2026-09-07T09:43:26.189Z  MSFT/2019       roh          97740 reg. Kerzen  252/252/252 von 252  Tagen gewertet (1m/5m/15m)    11549 Signale  86 ms lesen  111861 ms rechnen
+2026-09-07T09:45:27.916Z  MSFT/2020       roh          98254 reg. Kerzen  253/253/253 von 253  Tagen gewertet (1m/5m/15m)    12987 Signale  80 ms lesen  121332 ms rechnen
+2026-09-07T09:47:24.771Z  MSFT/2021       roh          98100 reg. Kerzen  252/252/252 von 252  Tagen gewertet (1m/5m/15m)    11667 Signale  82 ms lesen  116439 ms rechnen
+2026-09-07T09:49:23.262Z  MSFT/2022       roh          97710 reg. Kerzen  251/251/251 von 251  Tagen gewertet (1m/5m/15m)    13178 Signale  97 ms lesen  118046 ms rechnen
+2026-09-07T09:51:16.305Z  MSFT/2023       roh          97140 reg. Kerzen  250/250/250 von 250  Tagen gewertet (1m/5m/15m)    12209 Signale  93 ms lesen  112620 ms rechnen
+2026-09-07T09:53:10.007Z  MSFT/2024       roh          97740 reg. Kerzen  252/252/252 von 252  Tagen gewertet (1m/5m/15m)    11606 Signale  87 ms lesen  113299 ms rechnen
+2026-09-07T09:55:04.494Z  MSFT/2025       roh          96960 reg. Kerzen  250/250/250 von 250  Tagen gewertet (1m/5m/15m)    11632 Signale  94 ms lesen  114065 ms rechnen
+2026-09-07T09:56:22.086Z  MSFT/2026       roh          64740 reg. Kerzen  166/166/166 von 166  Tagen gewertet (1m/5m/15m)     8363 Signale  91 ms lesen  77189 ms rechnen
+2026-09-07T09:58:05.365Z  UNH/2016        roh          98020 reg. Kerzen  232/232/232 von 252  Tagen gewertet (1m/5m/15m)    10737 Signale  49 ms lesen  103011 ms rechnen
+2026-09-07T09:59:53.353Z  UNH/2017        roh          97292 reg. Kerzen  251/251/251 von 251  Tagen gewertet (1m/5m/15m)    11003 Signale  59 ms lesen  107589 ms rechnen
+2026-09-07T10:01:44.209Z  UNH/2018        roh          97161 reg. Kerzen  251/251/251 von 251  Tagen gewertet (1m/5m/15m)    11981 Signale  64 ms lesen  110476 ms rechnen
+2026-09-07T10:03:35.761Z  UNH/2019        roh          97612 reg. Kerzen  252/252/252 von 252  Tagen gewertet (1m/5m/15m)    12251 Signale  59 ms lesen  111190 ms rechnen
+2026-09-07T10:05:35.770Z  UNH/2020        roh          98132 reg. Kerzen  253/253/253 von 253  Tagen gewertet (1m/5m/15m)    13099 Signale  55 ms lesen  119623 ms rechnen
+2026-09-07T10:07:25.603Z  UNH/2021        roh          96833 reg. Kerzen  250/250/250 von 252  Tagen gewertet (1m/5m/15m)    11651 Signale  61 ms lesen  109441 ms rechnen
+2026-09-07T10:09:19.310Z  UNH/2022        roh          96637 reg. Kerzen  249/249/249 von 251  Tagen gewertet (1m/5m/15m)    12426 Signale  54 ms lesen  113319 ms rechnen
+2026-09-07T10:11:09.453Z  UNH/2023        roh          96645 reg. Kerzen  250/250/250 von 250  Tagen gewertet (1m/5m/15m)    11681 Signale  55 ms lesen  109745 ms rechnen
+2026-09-07T10:13:00.264Z  UNH/2024        roh          97158 reg. Kerzen  252/252/252 von 252  Tagen gewertet (1m/5m/15m)    12018 Signale  52 ms lesen  110446 ms rechnen
+2026-09-07T10:14:55.477Z  UNH/2025        roh          96921 reg. Kerzen  250/250/250 von 250  Tagen gewertet (1m/5m/15m)    12872 Signale  86 ms lesen  114823 ms rechnen
+2026-09-07T10:16:12.378Z  UNH/2026        roh          64740 reg. Kerzen  166/166/166 von 166  Tagen gewertet (1m/5m/15m)     8298 Signale  60 ms lesen  76503 ms rechnen
+2026-09-07T10:16:14.164Z  ENDE vollstaendig | 50 Dateien | 0.18 GB | 2.911.179 reg. Kerzen | lesen 2 s, rechnen 2514 s | ausgelassen 3 | Detektorfehler {}

@@ -74,6 +74,16 @@ function huerdeFenster(klasse, minutenSeit0930, sollMin) {
   return k.huerde;
 }
 
+/* ---------- Cent-Boden (Nachtrag 3, PM 07.09.) ----------
+ * Die kleinste zulaessige Preisstufe ist 1 Cent; der PM setzt als Boden je Umlauf 0,5 Cent (wiki/kosten.md:
+ * "Sobald ein Wert am Cent-Boden steht, misst die Spanne in Pp nur noch seinen Kurs"). In Pp: 100 x 0,005 / Kurs.
+ * Bei 3 $ sind das 0,167 Pp - mehr als jede Klassenhuerde, also mehr als jede Kante, die diese Studie sucht.
+ * Gemessen wird beides: der mittlere Einstiegskurs je Zelle UND die Zahl der Signale, deren Cent-Boden ueber
+ * der Huerde ihrer Klasse liegt. Der Mittelwert allein sagt nichts ueber die Faelle, auf die es ankommt. */
+var CENT_BODEN_USD = 0.005;
+function centBodenPp(kurs) { return kurs > 0 ? 100 * CENT_BODEN_USD / kurs : Infinity; }
+function ueberCentBoden(kurs, klasse) { return centBodenPp(kurs) > KLASSEN[klasse].huerde; }
+
 /* ---------- Kapitalmassnahmen (§8) ---------- */
 var MASSNAHMEN_FENSTER_TAGE = 10;                            // +- Handelstage um den Ex-Tag
 var MASSNAHMEN_ARTEN = ['forward_splits', 'reverse_splits', 'unit_splits', 'spin_offs'];
@@ -149,9 +159,17 @@ function topfZelle(nTage, zrIdx, h, tag, klasse, lebend) {
   return (((zrIdx * N_H + h) * nTage + tag) * N_K + klasse) * 2 + lebend;
 }
 function topfZahl(nTage) { return N_ZR * N_H * nTage * N_K * 2; }
+/* Kurs-Zellen (Nachtrag 3): nur Kandidaten (kein Placebo) und OHNE Haltedauer - der Einstiegskurs eines Signals
+ * haengt nicht davon ab, wie lange gehalten wird. Drei Felder (n, Summe Kurs, Zahl ueber Cent-Boden) je
+ * (Kandidat, Richtung, ET-Tag, Klasse, lebend): 40 MB statt 241 MB bei voller Dimensionalitaet.
+ * Kurs-n zaehlt Signale MIT Einstieg, nicht Beobachtungen je Horizont - deshalb ein eigener Zaehler. */
+function kursZelle(nTage, kand, dirIdx, tag, klasse, lebend) {
+  return ((((kand * 2 + dirIdx) * nTage + tag) * N_K + klasse) * 2) + lebend;
+}
+function kursZahl(nTage) { return N_KAND * 2 * nTage * N_K * 2; }
 
 /* Kennung der Konfiguration, damit ein Checkpoint nie mit einer anderen Studie verwechselt wird. */
-var KONFIG_KENNUNG = 'signale-minuten-2026-09-06/v3/' + N_DET + 'x' + N_ZR + 'x' + N_H + 'x' + N_K + 'x' + ARTEN.length;
+var KONFIG_KENNUNG = 'signale-minuten-2026-09-06/v4/' + N_DET + 'x' + N_ZR + 'x' + N_H + 'x' + N_K + 'x' + ARTEN.length + '+kurs';
 
 module.exports = {
   REPO: REPO, HIER: HIER, ORTE: ORTE, archivWurzel: archivWurzel,
@@ -159,11 +177,13 @@ module.exports = {
   MIN_REST_MIN: MIN_REST_MIN, COOLDOWN_MIN: COOLDOWN_MIN, DICHTE_MIN: DICHTE_MIN, PAAR_FENSTER_MIN: PAAR_FENSTER_MIN,
   ZEITRAHMEN: ZEITRAHMEN, HALTEDAUERN: HALTEDAUERN, RICHTUNGEN: RICHTUNGEN,
   KLASSEN: KLASSEN, UMSATZ_FENSTER: UMSATZ_FENSTER, klasseIndex: klasseIndex, huerdeFenster: huerdeFenster,
+  CENT_BODEN_USD: CENT_BODEN_USD, centBodenPp: centBodenPp, ueberCentBoden: ueberCentBoden,
   MASSNAHMEN_FENSTER_TAGE: MASSNAHMEN_FENSTER_TAGE, MASSNAHMEN_ARTEN: MASSNAHMEN_ARTEN, ENDE_ARTEN: ENDE_ARTEN,
   DETEKTOR_KEYS: DETEKTOR_KEYS, FAMILIEN: FAMILIEN, detektoren: detektoren, paramsFuer: paramsFuer, PARAM_JE_ZR: PARAM_JE_ZR,
   FENSTER_MIN_KERZEN: FENSTER_MIN_KERZEN, GEFENSTERT: GEFENSTERT,
   kalender: kalender,
   N_DET: N_DET, N_ZR: N_ZR, N_H: N_H, N_K: N_K, N_KAND: N_KAND, N_REIHEN: N_REIHEN, ARTEN: ARTEN,
   kandIndex: kandIndex, reiheIndex: reiheIndex, zelle: zelle, zellenZahl: zellenZahl, topfZelle: topfZelle, topfZahl: topfZahl,
+  kursZelle: kursZelle, kursZahl: kursZahl,
   KONFIG_KENNUNG: KONFIG_KENNUNG,
 };

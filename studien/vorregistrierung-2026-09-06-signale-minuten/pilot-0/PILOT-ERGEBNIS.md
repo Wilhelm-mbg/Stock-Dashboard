@@ -1,15 +1,15 @@
-# PILOT-ERGEBNIS: Signalstudie Minuten (signale-minuten-2026-09-06/v3/13x3x3x4x3)
+# PILOT-ERGEBNIS: Signalstudie Minuten (signale-minuten-2026-09-06/v4/13x3x3x4x3+kurs)
 
-Erzeugt 2026-09-07T09:11:39.337Z von `auswerten.js`. **PILOT / UNVOLLSTAENDIG - diese Zahlen sind kein Befund ueber den Markt.** Alles Simulation mit virtuellem Kapital, keine Anlageberatung. Pp = Prozentpunkte, Tagesmittel ungewichtet ueber Signaltage; Bericht rundet auf 4 Nachkommastellen, verglichen wurde ungerundet.
+Erzeugt 2026-09-07T10:59:04.501Z von `auswerten.js`. **PILOT / UNVOLLSTAENDIG - diese Zahlen sind kein Befund ueber den Markt.** Alles Simulation mit virtuellem Kapital, keine Anlageberatung. Pp = Prozentpunkte, Tagesmittel ungewichtet ueber Signaltage; Bericht rundet auf 4 Nachkommastellen, verglichen wurde ungerundet.
 
 ## 0. Herkunft und Zaehler
 
 | Ordner | Dateien | Reihen | GB | pilot | beendet | Teil | Reihen-Argument | Zellenstand | Kennung |
 |---|---|---|---|---|---|---|---|---|---|
-| C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\vorregistrierung-2026-09-06-signale-minuten\pilot-0 | 50 | 5 | 0,29 | ja | vollstaendig | 0/4 | AAPL MSFT NVDA AMZN JPM XOM PG HD COST UNH COKE NEU CRVL WINA DJCO AATC ABVE AC ADAP ACCD | 1 | signale-minuten-2026-09-06/v3/13x3x3x4x3 |
-| C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\vorregistrierung-2026-09-06-signale-minuten\pilot-1 | 50 | 5 | 0,18 | ja | vollstaendig | 1/4 | AAPL MSFT NVDA AMZN JPM XOM PG HD COST UNH COKE NEU CRVL WINA DJCO AATC ABVE AC ADAP ACCD | 1 | signale-minuten-2026-09-06/v3/13x3x3x4x3 |
-| C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\vorregistrierung-2026-09-06-signale-minuten\pilot-2 | 50 | 5 | 0,11 | ja | vollstaendig | 2/4 | AAPL MSFT NVDA AMZN JPM XOM PG HD COST UNH COKE NEU CRVL WINA DJCO AATC ABVE AC ADAP ACCD | 1 | signale-minuten-2026-09-06/v3/13x3x3x4x3 |
-| C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\vorregistrierung-2026-09-06-signale-minuten\pilot-3 | 54 | 5 | 0,25 | ja | vollstaendig | 3/4 | AAPL MSFT NVDA AMZN JPM XOM PG HD COST UNH COKE NEU CRVL WINA DJCO AATC ABVE AC ADAP ACCD | 1 | signale-minuten-2026-09-06/v3/13x3x3x4x3 |
+| C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\vorregistrierung-2026-09-06-signale-minuten\pilot-0 | 50 | 5 | 0,29 | ja | vollstaendig | 0/4 | AAPL MSFT NVDA AMZN JPM XOM PG HD COST UNH COKE NEU CRVL WINA DJCO AATC ABVE AC ADAP ACCD | 1 | signale-minuten-2026-09-06/v4/13x3x3x4x3+kurs |
+| C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\vorregistrierung-2026-09-06-signale-minuten\pilot-1 | 50 | 5 | 0,18 | ja | vollstaendig | 1/4 | AAPL MSFT NVDA AMZN JPM XOM PG HD COST UNH COKE NEU CRVL WINA DJCO AATC ABVE AC ADAP ACCD | 1 | signale-minuten-2026-09-06/v4/13x3x3x4x3+kurs |
+| C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\vorregistrierung-2026-09-06-signale-minuten\pilot-2 | 50 | 5 | 0,11 | ja | vollstaendig | 2/4 | AAPL MSFT NVDA AMZN JPM XOM PG HD COST UNH COKE NEU CRVL WINA DJCO AATC ABVE AC ADAP ACCD | 1 | signale-minuten-2026-09-06/v4/13x3x3x4x3+kurs |
+| C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\vorregistrierung-2026-09-06-signale-minuten\pilot-3 | 54 | 5 | 0,25 | ja | vollstaendig | 3/4 | AAPL MSFT NVDA AMZN JPM XOM PG HD COST UNH COKE NEU CRVL WINA DJCO AATC ABVE AC ADAP ACCD | 1 | signale-minuten-2026-09-06/v4/13x3x3x4x3+kurs |
 
 | Groesse | Wert |
 |---|---|
@@ -21,7 +21,7 @@ Erzeugt 2026-09-07T09:11:39.337Z von `auswerten.js`. **PILOT / UNVOLLSTAENDIG - 
 | doppelt erledigte Dateien ueber die Teile | 0 |
 | ausgelassen (Dateien) | 5 |
 | davon Wachhund | 0 |
-| ms lesen / rechnen | 10.964 / 12.682.400 |
+| ms lesen / rechnen | 9.786 / 12.650.227 |
 | Kalender: Tage / Entdeckung / Bestaetigung ab / Regime ab | 2.680 / 1.786 / 2023-02-07 / 2021-01-01 |
 
 F.zaehler vollstaendig:
@@ -51,9 +51,9 @@ F.zaehler vollstaendig:
 | tageGewertetKlasse.1m|250-1000 | 9.883 |
 | tageGewertetKlasse.5m|250-1000 | 9.883 |
 | tageGewertetKlasse.15m|250-1000 | 9.883 |
-| msJeZr.1m | 11.063.430 |
-| msJeZr.5m | 1.119.723 |
-| msJeZr.15m | 449.548 |
+| msJeZr.1m | 11.036.972 |
+| msJeZr.5m | 1.115.745 |
+| msJeZr.15m | 447.538 |
 | zeitrahmenNichtErkannt | {} |
 | aufrufe.rsi2 | 1.935.597 |
 | aufrufe.rsi2seit | 10.272.195 |
@@ -113,6 +113,8 @@ Reihen ausgeschlossen nach Wertpapierart (F.reihenAusgeschlossen):
 | AATC/2025 | Datei fehlt |
 | ABVE/2019 | Datei fehlt |
 | ABVE/2020 | Datei fehlt |
+
+> **„Datei fehlt" ist kein Sammelfehler.** Der PM hat am 07.09.2026 alle 8.058 Reihen gegen die Lueckenliste geprueft (nur gelesen): **340 Reihen nennen in `_lebenszeit.json` Jahre ohne Datei - und alle 340 sind in `_luecken.json` als fehlende Tage erfasst**, keine einzige ungedeckt (AATC 2023-2025, 583 Tage; ABVE 2016-2020, 1.230 Tage; SMCI 2019, 349 Tage). Das Messgeraet verhaelt sich richtig, wenn es solche Dateien protokolliert und weitergeht; die Lueckenliste ist die Stelle, an der die Sammlung sie fuehrt.
 
 ## 1. Kontrollen zuerst (§7, Nachtrag 2-3)
 
@@ -695,7 +697,26 @@ Gewertete Reihen-Tage = Tage mit ≥ 80 % der Sollkerzen DIESES Zeitrahmens, mit
 | 15m | 250-1000 | 8 | 9.883 |  |
 | 15m | ab1000 | 10 | 16.606 |  |
 
-Dünne Tage, je Zeitrahmen verworfen (F.zaehler.tageDuenn): 1m 20.440, 5m 17.068, 15m 12.180. Rechenzeit je Zeitrahmen (F.zaehler.msJeZr, Sekunden): 1m 11.063, 5m 1.120, 15m 450.
+Dünne Tage, je Zeitrahmen verworfen (F.zaehler.tageDuenn): 1m 20.440, 5m 17.068, 15m 12.180. Rechenzeit je Zeitrahmen (F.zaehler.msJeZr, Sekunden): 1m 11.037, 5m 1.116, 15m 448.
+
+## 5c. Cent-Boden: wie teuer ist die Signalpopulation wirklich (Nachtrag 3)
+
+Die kleinste Preisstufe ist 1 Cent; als Boden je Umlauf sind 0.5 Cent angesetzt, in Pp `100 × 0.005 / Kurs`. **Einstiegskurse sind auf den damals gehandelten (rohen) Preis zurueckgerechnet** - der split-bereinigte Kurs waere fuer diese Frage falsch (COKE 2016: 18,04 statt 180,40 $). Ausgewiesen wird beides: der mittlere Einstiegskurs **und** der Anteil der Signale, deren Cent-Boden ueber der Huerde ihrer Klasse liegt. Nur die zweite Zahl sagt etwas ueber die Faelle, auf die es ankommt: bei einem 3-$-Papier ist der Boden 0,1667 Pp und damit groesser als jede Kante, die diese Studie sucht.
+
+| ZR | Klasse | Signale mit Einstieg | mittlerer Einstiegskurs | Cent-Boden beim Mittelkurs | Huerde | Anteil ueber dem Boden | Hinweis |
+|---|---|---|---|---|---|---|---|
+| 1m | 5-50 | 20.904 | 19,07 $ | 0,0262 | 0,1569 | 4,67 % |  |
+| 1m | 50-250 | 3.429 | 153,94 $ | 0,0032 | 0,0854 | 0,00 % |  |
+| 1m | 250-1000 | 224.838 | 210,46 $ | 0,0024 | 0,0647 | 0,00 % |  |
+| 1m | ab1000 | 411.540 | 416,36 $ | 0,0012 | 0,0449 | 0,00 % |  |
+| 5m | 5-50 | 29.740 | 74,46 $ | 0,0067 | 0,1569 | 2,39 % |  |
+| 5m | 50-250 | 7.310 | 311,69 $ | 0,0016 | 0,0854 | 0,00 % |  |
+| 5m | 250-1000 | 147.792 | 211,43 $ | 0,0024 | 0,0647 | 0,00 % |  |
+| 5m | ab1000 | 268.434 | 417,21 $ | 0,0012 | 0,0449 | 0,00 % |  |
+| 15m | 5-50 | 39.082 | 254,23 $ | 0,0020 | 0,1569 | 0,87 % |  |
+| 15m | 50-250 | 4.710 | 363,63 $ | 0,0014 | 0,0854 | 0,00 % |  |
+| 15m | 250-1000 | 83.408 | 209,70 $ | 0,0024 | 0,0647 | 0,00 % |  |
+| 15m | ab1000 | 145.456 | 415,33 $ | 0,0012 | 0,0449 | 0,00 % |  |
 
 ## 6. Signalanteil und Klassenmix (§4, vorab gezaehlt)
 
