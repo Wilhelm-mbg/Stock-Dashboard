@@ -3,7 +3,7 @@ tags: [bauplan]
 ---
 # Struktur der Oberfläche — mit Aufnahmen
 
-*Erzeugt am 2026-09-05 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.42.0** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
+*Erzeugt am 2026-09-06 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.43.0** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
 
 **Was hier steht:** ▪ = Überschrift `h2`, · = Überschrift `h3`, ▸ = Klappe (`<details>`). Die Einrückung ist die echte Verschachtelung: eine Klappe **in** einer Klappe steht eine Stufe weiter rechts. `[#kennung]` ist die `id` des Blocks. „verborgen“ heißt: der Block steht in der Seite, ist aber ausgeblendet, bis etwas passiert (z. B. Explorer → „Kennzahlen“ erst nach dem Öffnen eines Werts).
 
@@ -88,12 +88,12 @@ Werkzeuge (data-tab="werkzeuge")
 └─ Betrieb (data-sub="betrieb", #sub-betrieb)
    │  ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
    │    ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
-   │  ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.09.26 · Marktlage 05.09.26“
+   │  ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 06.09.26 · Marktlage 06.09.26“
    │    · Autopilot & Datensammlung  [#abAutopilot]
    │    · Autopilot – die App verbessert sich selbst  [in #sub-auswertung]
    │    ▸ Klappe: Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)  [in #sub-auswertung]
-   │  ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 03.09.26“
-   │  ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 05.09.26“
+   │  ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 04.09.26“
+   │  ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 06.09.26“
    │    · Mittelfrist – Momentum & Ergebnis-Drift  [#abMittelfrist]
    │    · Momentum im Querschnitt · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
    │    · Was jetzt zu halten wäre  [in #sub-mittelfrist]
@@ -168,7 +168,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 7396 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 7418 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -202,7 +202,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Radar
 
-`#sub-beobachtung` · 3 Blöcke · 2674 Zeichen sichtbarer Text
+`#sub-beobachtung` · 3 Blöcke · 2710 Zeichen sichtbarer Text
 
 - ▪ Spekulations-Radar – Gerüchte aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. Gehandelt wird hiervon nichts.
 - ▪ Insider-Käufe – meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat (SEC Form 4). Gehandelt wird hiervon nichts.
@@ -272,16 +272,16 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Betrieb
 
-`#sub-betrieb` · 34 Blöcke · 17088 Zeichen sichtbarer Text
+`#sub-betrieb` · 34 Blöcke · 17231 Zeichen sichtbarer Text
 
 - ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
   - ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
-- ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.09.26 · Marktlage 05.09.26“
+- ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 06.09.26 · Marktlage 06.09.26“
   - · Autopilot & Datensammlung  [#abAutopilot]
   - · Autopilot – die App verbessert sich selbst  [in #sub-auswertung]
   - ▸ Klappe: Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)  [in #sub-auswertung]
-- ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 03.09.26“
-- ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 05.09.26“
+- ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 04.09.26“
+- ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 06.09.26“
   - · Mittelfrist – Momentum & Ergebnis-Drift  [#abMittelfrist]
   - · Momentum im Querschnitt · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
   - · Was jetzt zu halten wäre  [in #sub-mittelfrist]
