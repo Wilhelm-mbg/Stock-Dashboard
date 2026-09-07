@@ -54,3 +54,6 @@ zu müssen, **steht in keiner Sperrklinke.** Bislang Disziplin ohne Zwang.
 Eine Bedingung (z. B. SPY>EMA200) wird über **alle** Signale einer Strategie gemessen und hat
 deshalb viel mehr Beobachtungen als ein einzelner Einstieg. Das erklärt, warum unsere einzigen
 zwei validierten Dinge Bedingungen sind — siehe [belegstand.md](belegstand.md).
+
+## Fehlende Jahresdateien sind erfasst (nachgemessen 07.09.2026, PM)
+Der Studien-Chat fand Reihen, für die `_lebenszeit.json` Jahre nennt, die im Archivordner fehlen (AATC 2023–2025, ABVE 2016–2020), und fragte, ob das ein Sammelfehler ist. Nachgemessen über alle **8.058** Reihen mit der Ordnerregel `alpacaarchiv.ordnerFuer` (nur gelesen): **340 Reihen** betroffen, **340 von 340 in `alpaca1m/_luecken.json` als fehlende Tage erfasst**, keine einzige ungedeckt. Die Quelle liefert für diese Zeiträume nichts (illiquide Vorzüge, Bezugsrechte, Kürzelwechsel) — das ist ein Befund über den Handel, kein Loch in der Sammlung. Wer beim Messen „Datei fehlt" protokolliert, macht es richtig; die Zahl gehört in den Bericht, damit ein Nullbefund dort nicht als „nichts da" gelesen wird. Skript: `pruef-luecke-2.js` im PM-Kratzordner.
