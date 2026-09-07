@@ -1,0 +1,19 @@
+
+!!! WERTPAPIERART: Referenzkarte vorhanden, aber ohne Eintrag fuer GCI (erster Fall dieses Laufs; weitere werden nicht gemeldet) - solche Symbole fallen STILL aus dem Universum heraus.
+
+2026-09-07T06:13:54.977Z  START signale-minuten-2026-09-06/v3/13x3x3x4x3 | 5 Reihen (7299 Aktien, ausgeschlossen {"ETF":694,"ETN":7,"ETV":35,"FUND":16,"ETS":4,"ohne Art":1,"TEST":1,"UNIT":1}) | 13 Detektoren | Tage 2680 | Bestaetigung ab 2023-02-07 | PILOT | Teil 1/4
+2026-09-07T06:13:55.111Z  AATC/2016       roh           8823 reg. Kerzen        0/0/0 von 250  Tagen gewertet (1m/5m/15m)        0 Signale  9 ms lesen  122 ms rechnen
+2026-09-07T06:13:55.216Z  AATC/2017       roh           4157 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  3 ms lesen  70 ms rechnen
+2026-09-07T06:13:55.297Z  AATC/2018       roh           4853 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  4 ms lesen  61 ms rechnen
+2026-09-07T06:13:55.363Z  AATC/2019       roh           1342 reg. Kerzen        0/0/0 von 228  Tagen gewertet (1m/5m/15m)        0 Signale  1 ms lesen  25 ms rechnen
+2026-09-07T06:13:55.423Z  AATC/2020       roh           4709 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  3 ms lesen  52 ms rechnen
+2026-09-07T06:13:56.231Z  AATC/2021       roh          16526 reg. Kerzen      0/10/11 von 252  Tagen gewertet (1m/5m/15m)      292 Signale  11 ms lesen  782 ms rechnen
+2026-09-07T06:13:56.344Z  AATC/2022       roh           5517 reg. Kerzen        0/0/0 von 250  Tagen gewertet (1m/5m/15m)        0 Signale  5 ms lesen  63 ms rechnen
+2026-09-07T06:13:56.361Z  AUSGELASSEN AATC/2023: Datei fehlt
+2026-09-07T06:13:56.377Z  AUSGELASSEN AATC/2024: Datei fehlt
+2026-09-07T06:13:56.377Z  AUSGELASSEN AATC/2025: Datei fehlt
+2026-09-07T06:13:56.787Z  ADAP/2016       roh          45570 reg. Kerzen        0/0/0 von 252  Tagen gewertet (1m/5m/15m)        0 Signale  23 ms lesen  386 ms rechnen
+2026-09-07T06:13:57.291Z  ADAP/2017       roh          48063 reg. Kerzen        0/0/0 von 251  Tagen gewertet (1m/5m/15m)        0 Signale  21 ms lesen  358 ms rechnen
+2026-09-07T06:14:08.425Z  ADAP/2018       roh          66831 reg. Kerzen     17/48/48 von 251  Tagen gewertet (1m/5m/15m)     1838 Signale  31 ms lesen  10992 ms rechnen
+2026-09-07T06:14:09.324Z  ADAP/2019       roh          54645 reg. Kerzen        0/0/0 von 252  Tagen gewertet (1m/5m/15m)        0 Signale  27 ms lesen  626 ms rechnen
+2026-09-07T06:14:52.543Z  ADAP/2020       roh          71433 reg. Kerzen   79/128/128 von 253  Tagen gewertet (1m/5m/15m)     6019 Signale  44 ms lesen  42978 ms rechnen

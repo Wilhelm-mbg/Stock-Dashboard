@@ -1,0 +1,15 @@
+
+!!! WERTPAPIERART: Referenzkarte vorhanden, aber ohne Eintrag fuer GCI (erster Fall dieses Laufs; weitere werden nicht gemeldet) - solche Symbole fallen STILL aus dem Universum heraus.
+
+2026-09-07T06:13:55.003Z  START signale-minuten-2026-09-06/v3/13x3x3x4x3 | 5 Reihen (7299 Aktien, ausgeschlossen {"ETF":694,"ETN":7,"ETV":35,"FUND":16,"ETS":4,"ohne Art":1,"TEST":1,"UNIT":1}) | 13 Detektoren | Tage 2680 | Bestaetigung ab 2023-02-07 | PILOT | Teil 2/4
+2026-09-07T06:13:55.007Z  AUSGELASSEN ABVE/2016: Datei fehlt
+2026-09-07T06:13:55.007Z  AUSGELASSEN ABVE/2017: Datei fehlt
+2026-09-07T06:13:55.008Z  AUSGELASSEN ABVE/2018: Datei fehlt
+2026-09-07T06:13:55.039Z  AUSGELASSEN ABVE/2019: Datei fehlt
+2026-09-07T06:13:55.043Z  AUSGELASSEN ABVE/2020: Datei fehlt
+2026-09-07T06:13:55.110Z  ABVE/2021       roh           3792 reg. Kerzen        0/0/0 von 180  Tagen gewertet (1m/5m/15m)        0 Signale  6 ms lesen  60 ms rechnen
+2026-09-07T06:13:55.153Z  ABVE/2022       roh           1401 reg. Kerzen        0/0/0 von 214  Tagen gewertet (1m/5m/15m)        0 Signale  2 ms lesen  25 ms rechnen
+2026-09-07T06:13:55.175Z  ABVE/2023       roh            628 reg. Kerzen        0/0/0 von 148  Tagen gewertet (1m/5m/15m)        0 Signale  1 ms lesen  16 ms rechnen
+2026-09-07T06:13:55.311Z  ABVE/2024       roh          12130 reg. Kerzen        0/0/0 von 232  Tagen gewertet (1m/5m/15m)        0 Signale  8 ms lesen  126 ms rechnen
+2026-09-07T06:14:12.643Z  ABVE/2025       roh          53213 reg. Kerzen     32/44/44 von 250  Tagen gewertet (1m/5m/15m)     2264 Signale  39 ms lesen  17268 ms rechnen
+2026-09-07T06:14:13.310Z  ABVE/2026       roh          34514 reg. Kerzen        0/0/0 von 103  Tagen gewertet (1m/5m/15m)        0 Signale  26 ms lesen  455 ms rechnen

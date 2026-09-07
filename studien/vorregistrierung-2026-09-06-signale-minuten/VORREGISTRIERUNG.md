@@ -452,3 +452,60 @@ Was hier steht, ersetzt die genannten Stellen oben; alles andere bleibt.
 
 Konfigurationskennung nach diesem Nachtrag: `signale-minuten-2026-09-06/v2` (drei Zellenreihen je Kandidat:
 Kandidat, Placebo A, Placebo B; vier Summen je Zelle).
+
+**Nachtrag 1a (07.09.2026, 07:55, nach drei Minuten Pilot, vor jeder Auswertung) — zu Punkt 9:** Die
+80-%-Regel gilt **je Zeitrahmen** (August: Soll 390 / 78 / 26 Kerzen), nicht „1m für alle drei". Der erste
+Pilotanlauf zeigte: CRVL/2025 mit 27.037 regulären 1m-Kerzen (≈ 108 je Tag) hatte 0 von 250 gewerteten Tagen,
+ABVE 0 von 103, COKE 17 von 166 — die Klasse 5–50 wäre auf 1m **und** 5m/15m leer gewesen, obwohl ihre 5m-Kerzen
+dicht sind. Jetzt: ein Tag geht in die Detektion eines Zeitrahmens, wenn er ≥ 80 % der Sollkerzen **dieses**
+Zeitrahmens trägt; dünne Tage werden je Zeitrahmen gezählt (`tageDuenn[zr]`). Der Pilot wurde abgebrochen und
+neu gestartet; keine Zahl des Anlaufs wurde angesehen außer den Zeilen des Laufprotokolls (Tage gewertet).
+
+**Nachtrag 1b (07.09.2026, während des Piloten, vor jeder Auswertung) — ausgewiesene Abweichungen aus der
+vollständigen Gegenprobe (58 Gegenproben, 53 Funde bestehen, 5 widerlegt; Liste in der Übergabe-Ablage):**
+
+1. **Abweichung von der Mühle** (`CLAUDE.md`: „Überschuss gegen eine Kontrolle, die als Erwartung gebaut ist"):
+   der primäre Endpunkt ist der rohe Netto-Ertrag (Auftrag §3); die Kontrolle (Topf, Placebo B) steht daneben und
+   stuft nur herab. Das ist eine bewusste Abweichung, keine Vergesslichkeit — die Frage lautet „lohnt es sich
+   heute", und die Kassa-Hürde wird gegen den Ertrag gehalten, nicht gegen einen Überschuss.
+2. **Rauschboden nicht geprüft:** Placebo A prüft den Nullpunkt, nicht den Standardfehler. Ein zu großer oder zu
+   kleiner `se_B` würde Tor 1/2 und `delta80` verschieben, ohne aufzufallen. Nachrichtlich vergleicht
+   `auswerten.js` `se_B` des Placebo A mit dem des Kandidaten je Konfiguration (Verhältnis; Erwartung ≈ 1 bei
+   gleicher Signalzahl) — kein Urteilskriterium, Auffälligkeiten werden berichtet.
+3. **Cent-Boden nicht beziffert:** die Zellen tragen keinen Einstiegskurs; ob die Signalpopulation billiger ist
+   als der Klassenmedian (und die Hürde damit unterschätzt), kann diese Fassung nicht sagen. Offen für den PM:
+   eine fünfte Summe (Σ Einstiegskurs) kostet ~80 MB und einen Neustart des Piloten.
+4. **Sonderdividenden** liegen als Kurslücke im 261-Kerzen-Rückblick roher und bereinigter Reihen (die Kopie
+   bereinigt keine Dividenden, Yahoo intraday auch nicht) — die App-Detektoren leben damit; hier ebenso, nicht
+   ausgeschlossen.
+5. **Einstiegslatenz** (t_{i+1} − Kerzenende) ist auf dichten Tagen null und wird nicht summiert; die 80-%-Regel
+   je Zeitrahmen begrenzt sie auf ≤ 20 % der Sitzung als Lücke.
+6. **Fundstellen zu „seit 2021 anders":** Kosten: `wiki/kosten.md`, Tabelle „Das K der Kostenformel" (K 2016–2020
+   gegen K ab 2021, z. B. 5–50: 0,1107 → 0,1569); Übernachtdrift: Gedächtnis `uebernachtdrift-eingang-kollabiert`
+   (Regimeschnitt 2021 gehört vor die Messung). `fehlerformen.md` nennt beides nicht ausdrücklich — das Zitat oben
+   war ungenau.
+7. **Jahresanker der Hürden-Klassen:** die Spannen-Studie ordnete Symbole ihrer Klasse **je Jahr** zu, diese
+   Studie **je Wert-Tag** (20 Balkentage). Dieselbe Regel (`liquide.js`), anderer Zeitanker — ausgewiesen.
+8. **Wendepunkt-Rückblick:** `wendepunkt-trendwechsel` auf 5m/15m ist „fortlaufend" (Wendepunkte über die
+   ganze Reihe); sein Rückblick ist nicht 261 Kerzen. Ein Kurssprung, der älter als 10 Handelstage ist, bleibt in
+   seiner Wendepunktliste. Das Maßnahmenfenster ±10 Tage gilt trotzdem für alle Detektoren gleich — ausgewiesen.
+9. **Randperioden der Verdichtung:** `verdichtenMinuten` verwirft die erste Periode eines Arrays, wenn sie vor dem
+   ersten Stempel begann, und die letzte, wenn sie unvollständig ist. Die Arrays hier beginnen an Tagesanfängen
+   (Warmlauf) und enden am 31.08.2026 16:00; betroffen ist höchstens eine 5m-/15m-Kerze am Anfang eines
+   Symbol-Jahres ohne Warmlauf.
+10. **Tor 2 mit z_Bonf(k₁), Urteil mit z_Bonf(k₂):** k₁ ≥ k₂, der Torwert ist die konservativere Schwelle;
+    beide Zahlen stehen im Bericht.
+
+**Nachtrag 1c (07.09.2026, nach dem Code-Review von konfig/lesen/messen, vor jeder Auswertung; Kennung → v3):**
+Der Review (Rohfassung `review-code.md` in der Übergabe-Ablage) fand keinen schweren, sechs mittlere Fehler; alle
+eingebaut. Zur Registrierung gehört einer: **die Randperiode der Verdichtung (1b.9) trat je JAHRESDATEI auf**, nicht
+nur am Fensterende — fehlt am letzten Handelstag eines Jahres die 15:59-Kerze (dünne Reihen), verlor
+`verdichtenMinuten` den letzten 5m-/15m-Eimer, „bis Schluss" wäre der Schluss des vorletzten Eimers gewesen.
+Behoben mit einem Sentinel einen Tag später, der den Eimer schließt und dann weggefiltert wird (`lesen.js verdichte`).
+Die übrigen betreffen den Bau, nicht die Messgröße: Zellen- und Fortschrittsdatei tragen denselben Stand und die
+Fortsetzung verweigert bei Abweichung (kein doppeltes Einrechnen nach hartem Kill); Zähler kommen wie die Zellen je
+Datei ganz oder gar nicht; ein Detektor, der auf > 1 % seiner Aufrufe wirft, bricht den Lauf mit Meldung ab statt
+als „0 Signale" zu erscheinen; der Warmlauf nach Fortsetzung kettet zwei Vorjahre (bitidentisch zum Lauf am Stück);
+Warmlauf 16 statt 12 Handelstage; Schlussfenster der Einstiegshürde am Halbtag ab 12:30; Lese-Verluste (nicht
+regulär, ohne Kurs, außerhalb) werden gezählt; `huerdeEroeffnung` ungerundet. Der Pilot wurde mit der v3-Fassung
+neu gestartet; die Laufzeiten des v2-Anlaufs (identische Rechenlast) liegen als Protokolle bei.

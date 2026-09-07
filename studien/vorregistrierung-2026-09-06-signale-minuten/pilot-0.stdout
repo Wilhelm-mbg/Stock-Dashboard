@@ -1,0 +1,14 @@
+
+!!! WERTPAPIERART: Referenzkarte vorhanden, aber ohne Eintrag fuer GCI (erster Fall dieses Laufs; weitere werden nicht gemeldet) - solche Symbole fallen STILL aus dem Universum heraus.
+
+2026-09-07T06:13:54.960Z  START signale-minuten-2026-09-06/v3/13x3x3x4x3 | 5 Reihen (7299 Aktien, ausgeschlossen {"ETF":694,"ETN":7,"ETV":35,"FUND":16,"ETS":4,"ohne Art":1,"TEST":1,"UNIT":1}) | 13 Detektoren | Tage 2680 | Bestaetigung ab 2023-02-07 | PILOT | Teil 0/4
+2026-09-07T06:15:38.930Z  AAPL/2016       bereinigt    98041 reg. Kerzen  232/232/232 von 252  Tagen gewertet (1m/5m/15m)    11003 Signale  89 ms lesen  103879 ms rechnen
+2026-09-07T06:17:32.580Z  AAPL/2017       bereinigt    97530 reg. Kerzen  251/251/251 von 251  Tagen gewertet (1m/5m/15m)    11114 Signale  86 ms lesen  113200 ms rechnen
+2026-09-07T06:19:25.914Z  AAPL/2018       bereinigt    96572 reg. Kerzen  249/249/249 von 251  Tagen gewertet (1m/5m/15m)    12161 Signale  100 ms lesen  112906 ms rechnen
+2026-09-07T06:21:15.522Z  AAPL/2019       bereinigt    97740 reg. Kerzen  252/252/252 von 252  Tagen gewertet (1m/5m/15m)    11896 Signale  89 ms lesen  109215 ms rechnen
+2026-09-07T06:23:12.836Z  AAPL/2020       bereinigt    98254 reg. Kerzen  253/253/253 von 253  Tagen gewertet (1m/5m/15m)    13234 Signale  117 ms lesen  116902 ms rechnen
+2026-09-07T06:25:08.407Z  AAPL/2021       roh          98100 reg. Kerzen  252/252/252 von 252  Tagen gewertet (1m/5m/15m)    12307 Signale  103 ms lesen  115178 ms rechnen
+2026-09-07T06:27:03.970Z  AAPL/2022       roh          97710 reg. Kerzen  251/251/251 von 251  Tagen gewertet (1m/5m/15m)    13404 Signale  90 ms lesen  115137 ms rechnen
+2026-09-07T06:28:55.831Z  AAPL/2023       roh          97140 reg. Kerzen  250/250/250 von 250  Tagen gewertet (1m/5m/15m)    11730 Signale  106 ms lesen  111439 ms rechnen
+2026-09-07T06:30:50.058Z  AAPL/2024       roh          97740 reg. Kerzen  252/252/252 von 252  Tagen gewertet (1m/5m/15m)    11843 Signale  107 ms lesen  113784 ms rechnen
+2026-09-07T06:32:43.134Z  AAPL/2025       roh          96960 reg. Kerzen  250/250/250 von 250  Tagen gewertet (1m/5m/15m)    12056 Signale  112 ms lesen  112634 ms rechnen

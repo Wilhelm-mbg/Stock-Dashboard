@@ -160,22 +160,22 @@ function ladeJahr(R, jahr) {
   var vonMs = etTagMs(K.FENSTER.von), bisMs = etTagMs(K.FENSTER.bis) + 86400000 - 1;
   var reg = (j.sitzungen || []).filter(function (b) { return b.sitzung === 'regulaer'; });
   var aus = [], bi = 0, letzt = -1;
+  var verworfen = { unsortiert: 0, ausserFenster: 0, lebenszeit: 0, nichtRegulaer: 0, ohneKurs: 0 };   // stille Verluste zaehlen (Review F8)
   for (var i = 0; i < serie.length; i++) {
     var k = serie[i], t = k[0];
-    if (!(t > letzt)) continue;                                   // Reihenfolge und Doppelstempel: nur aufsteigend
-    if (t < vonMs || t > bisMs) continue;
-    if (R.schnittMs != null && t > R.schnittMs) continue;
-    if (R.abMs != null && t < R.abMs) continue;
+    if (!(t > letzt)) { verworfen.unsortiert++; continue; }        // Reihenfolge und Doppelstempel: nur aufsteigend
+    if (t < vonMs || t > bisMs) { verworfen.ausserFenster++; continue; }
+    if ((R.schnittMs != null && t > R.schnittMs) || (R.abMs != null && t < R.abMs)) { verworfen.lebenszeit++; continue; }
     while (bi < reg.length && reg[bi].bis < t) bi++;
-    if (bi >= reg.length || t < reg[bi].von) continue;             // nicht regulaer
-    if (!(k[1] > 0) || !(k[5] > 0)) continue;                      // Schluss und Eroeffnung muessen Kurse sein
+    if (bi >= reg.length || t < reg[bi].von) { verworfen.nichtRegulaer++; continue; }   // nicht regulaer
+    if (!(k[1] > 0) || !(k[5] > 0)) { verworfen.ohneKurs++; continue; }               // Schluss und Eroeffnung muessen Kurse sein
     aus.push(k); letzt = t;
   }
   var angewandt = new Set();
   var mm = j.massnahmen;
   if (Array.isArray(mm)) mm.forEach(function (m) { var ex = m.ex_date || m.ex || m.datum; if (m._art && ex) angewandt.add(m._art + '|' + ex); else if (m.art && ex) angewandt.add(m.art + '|' + ex); });
   else if (mm && typeof mm === 'object') Object.keys(mm).forEach(function (kk) { var m = mm[kk]; var ex = (m && (m.ex_date || m.ex || m.datum)) || kk; var art = (m && (m._art || m.art)) || ''; if (ex) angewandt.add(art + '|' + ex); });
-  return { ok: true, kerzen: aus, quelle: d.quelle, pfad: d.pfad, angewandt: angewandt, bytes: g.bytes, kerzenGesamt: serie.length, massnahmenKopf: mm == null ? null : mm };
+  return { ok: true, kerzen: aus, quelle: d.quelle, pfad: d.pfad, angewandt: angewandt, bytes: g.bytes, kerzenGesamt: serie.length, verworfen: verworfen, massnahmenKopf: mm == null ? null : mm };
 }
 
 /* ---------- Tage und Verdichtung ---------- */
@@ -196,9 +196,14 @@ function tageAus(kerzen) {
 }
 /** 5m/15m aus regulaeren 1m-Kerzen - die Funktion des Viewers, Gitter je Sitzung (Anker 09:30). */
 function verdichte(kerzen1m, zrKey) {
-  if (zrKey === '1m') return kerzen1m;
-  var sitz = new Array(kerzen1m.length); for (var i = 0; i < sitz.length; i++) sitz[i] = 'regulaer';
-  return KC.verdichtenMinuten(kerzen1m, zrKey, sitz).kerzen;
+  if (zrKey === '1m' || !kerzen1m.length) return kerzen1m;
+  /* Viewer-Semantik: der letzte Eimer des Arrays wird nur geschlossen, wenn sein Ende erreicht ist - fehlt
+   * die 15:59-Kerze (duenne Reihen), fiele die letzte 5m-/15m-Kerze jeder JAHRESDATEI weg (Review F1). Ein
+   * Sentinel einen Tag spaeter schliesst den Eimer; er selbst wird danach weggefiltert. */
+  var letzt = kerzen1m[kerzen1m.length - 1][0];
+  var mit = kerzen1m.concat([[letzt + 86400000, kerzen1m[kerzen1m.length - 1][1]]]);
+  var sitz = new Array(mit.length); for (var i = 0; i < sitz.length; i++) sitz[i] = 'regulaer';
+  return KC.verdichtenMinuten(mit, zrKey, sitz).kerzen.filter(function (k) { return k[0] <= letzt; });
 }
 
 module.exports = { meta: meta, reihen: reihen, ordnerFuer: ordnerFuer, ladeJahr: ladeJahr, dateiPfad: dateiPfad, tageAus: tageAus, verdichte: verdichte,

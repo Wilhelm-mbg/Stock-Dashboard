@@ -57,7 +57,7 @@ var KLASSEN = [
   { name: '250-1000', von: 250e6, bis: 1e9,      huerde: 0.0647, huerdeSchluss: 0.0409, eroeffnungFaktor: 2.07 },
   { name: 'ab1000',   von: 1e9,   bis: Infinity, huerde: 0.0449, huerdeSchluss: 0.0329, eroeffnungFaktor: 1.81 },
 ];
-KLASSEN.forEach(function (k) { k.huerdeEroeffnung = Math.round(k.huerde * k.eroeffnungFaktor * 10000) / 10000; });
+KLASSEN.forEach(function (k) { k.huerdeEroeffnung = k.huerde * k.eroeffnungFaktor; });   // ungerundet (Nachtrag 21)
 var UMSATZ_FENSTER = 20;                                     // liquide.js KORB.fenster; §3: Balkentage d-20..d-1
 function klasseIndex(medianUsd) {
   if (!(medianUsd >= 0) || !isFinite(medianUsd)) return -1;
@@ -65,11 +65,12 @@ function klasseIndex(medianUsd) {
   return -1;
 }
 /** Huerde nach dem Einstiegsfenster (Nachtrag 1, nachrichtliche zweite Nettogroesse):
- *  Einstiegskerze beginnt vor 10:00 ET => eroeffnung; ab 15:30 ET => schluss; sonst mitte. */
-function huerdeFenster(klasse, minutenSeit0930) {
+ *  Einstiegskerze beginnt in den ersten 30 Sitzungsminuten => eroeffnung; in den letzten 30 (Halbtag: ab
+ *  12:30) => schluss; sonst mitte. sollMin = Sitzungsminuten des Tages (390, Halbtag 210). */
+function huerdeFenster(klasse, minutenSeit0930, sollMin) {
   var k = KLASSEN[klasse];
   if (minutenSeit0930 < 30) return k.huerdeEroeffnung;
-  if (minutenSeit0930 >= 360) return k.huerdeSchluss;
+  if (minutenSeit0930 >= (sollMin || 390) - 30) return k.huerdeSchluss;
   return k.huerde;
 }
 
@@ -150,7 +151,7 @@ function topfZelle(nTage, zrIdx, h, tag, klasse, lebend) {
 function topfZahl(nTage) { return N_ZR * N_H * nTage * N_K * 2; }
 
 /* Kennung der Konfiguration, damit ein Checkpoint nie mit einer anderen Studie verwechselt wird. */
-var KONFIG_KENNUNG = 'signale-minuten-2026-09-06/v2/' + N_DET + 'x' + N_ZR + 'x' + N_H + 'x' + N_K + 'x' + ARTEN.length;
+var KONFIG_KENNUNG = 'signale-minuten-2026-09-06/v3/' + N_DET + 'x' + N_ZR + 'x' + N_H + 'x' + N_K + 'x' + ARTEN.length;
 
 module.exports = {
   REPO: REPO, HIER: HIER, ORTE: ORTE, archivWurzel: archivWurzel,

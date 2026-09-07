@@ -73,19 +73,26 @@ Speicher.prototype.uebernehme = function (delta) {
   delta.zellen.forEach(function (v, idx) { self.n[idx] += v[0]; self.s[idx] += v[1]; self.s2[idx] += v[2]; self.h2[idx] += v[3]; });
   delta.topf.forEach(function (v, idx) { self.tn[idx] += v[0]; self.ts[idx] += v[1]; self.ts2[idx] += v[2]; });
 };
-Speicher.prototype.schreibe = function (pfad) {
+/** Schreibt die Felder und dahinter den Zellenstand (8 Byte). Der Stand steht auch in _fortschritt.json;
+ *  stirbt der Prozess zwischen den beiden renames, passen die Staende nicht zusammen und lade() verweigert -
+ *  statt bis zu 200 Dateien ein zweites Mal einzurechnen (Review F2). */
+Speicher.prototype.schreibe = function (pfad, stand) {
   var teile = this.felder().map(function (a) { return Buffer.from(a.buffer, a.byteOffset, a.byteLength); });
+  teile.push(Buffer.from(new Float64Array([stand || 0]).buffer));
   var tmp = pfad + '.tmp';
   fs.writeFileSync(tmp, Buffer.concat(teile));
   fs.renameSync(tmp, pfad);
 };
-Speicher.lade = function (pfad, nTage) {
+Speicher.lade = function (pfad, nTage, stand) {
   var sp = new Speicher(nTage), buf = fs.readFileSync(pfad), off = 0;
   sp.felder().forEach(function (a) {
     if (off + a.byteLength > buf.length) throw new Error('_zellen.bin zu kurz - passt nicht zur Konfiguration');
     a.set(new Float64Array(buf.buffer.slice(buf.byteOffset + off, buf.byteOffset + off + a.byteLength))); off += a.byteLength;
   });
-  if (off !== buf.length) throw new Error('_zellen.bin zu lang - passt nicht zur Konfiguration');
+  if (buf.length - off !== 8) throw new Error('_zellen.bin ohne Stand-Schwanz - passt nicht zur Konfiguration');
+  var gelesen = new Float64Array(buf.buffer.slice(buf.byteOffset + off, buf.byteOffset + off + 8))[0];
+  if (stand != null && gelesen !== stand) throw new Error('_zellen.bin (Stand ' + gelesen + ') passt nicht zu _fortschritt.json (Stand ' + stand + ') - Checkpoint unvollstaendig, nicht fortsetzen');
+  sp.stand = gelesen;
   return sp;
 };
 function Delta() { this.zellen = new Map(); this.topf = new Map(); }
@@ -152,8 +159,20 @@ function protokoll(ordner, zeile) {
   try { fs.appendFileSync(path.join(ordner, '_lauf.log'), s + '\n'); } catch (e) { /* Log ist Komfort */ }
 }
 function leererZaehler() {
-  return { tageOhneKlasse: 0, tageMassnahmen: 0, tageOhneKalender: 0, tageDuenn: 0, tageGewertet: 0, zeitrahmenNichtErkannt: {},
-    aufrufe: {}, fehler: {}, signaleGesamt: {}, ohneHorizont: [0, 0, 0], ohneEinstieg: 0, placeboAGezogen: 0, placeboBGezogen: 0, placeboBOhnePartner: 0 };
+  return { tageOhneKlasse: {}, tageMassnahmen: {}, tageOhneKalender: {}, tageDuenn: {}, tageGewertet: {}, zeitrahmenNichtErkannt: {},
+    aufrufe: {}, fehler: {}, signaleGesamt: {}, ohneHorizont: [0, 0, 0], ohneEinstieg: 0, placeboAGezogen: 0, placeboBGezogen: 0, placeboBOhnePartner: 0,
+    lesenVerworfen: { unsortiert: 0, ausserFenster: 0, lebenszeit: 0, nichtRegulaer: 0, ohneKurs: 0 } };
+}
+/** Zaehler b in a einrechnen (Zahlen addieren, Objekte je Schluessel, Felder elementweise) - damit die Zaehler
+ *  einer Datei wie ihre Zellen ganz oder gar nicht ankommen (Review F3). */
+function zaehlerAddieren(a, b) {
+  Object.keys(b).forEach(function (k) {
+    var v = b[k];
+    if (typeof v === 'number') a[k] = (a[k] || 0) + v;
+    else if (Array.isArray(v)) { a[k] = a[k] || []; for (var i = 0; i < v.length; i++) a[k][i] = (a[k][i] || 0) + v[i]; }
+    else if (v && typeof v === 'object') { a[k] = a[k] || {}; zaehlerAddieren(a[k], v); }
+  });
+  return a;
 }
 function leererFortschritt(a) {
   var kal = K.kalender();
@@ -164,7 +183,7 @@ function leererFortschritt(a) {
 }
 function fortschrittSchreiben(ordner, F, sp) {
   F.zellenStand++;
-  sp.schreibe(path.join(ordner, '_zellen.bin'));
+  sp.schreibe(path.join(ordner, '_zellen.bin'), F.zellenStand);
   var tmp = path.join(ordner, '_fortschritt.json.tmp');
   F.stand = new Date().toISOString();
   fs.writeFileSync(tmp, JSON.stringify(F));
@@ -176,17 +195,21 @@ function messeReihe(R, ctx) {
   var F = ctx.F;
   var jahre = R.jahre.filter(function (j) { return j >= +K.FENSTER.von.slice(0, 4) && j <= +K.FENSTER.bis.slice(0, 4); });
   var massnahmen = L.massnahmenFuer(R);
-  var warm = null;              // { kerzen1m: letzte ~12 dichte Handelstage des Vorjahres, tagesUmsatz: [[t, schluss, stueck] ...] }
-  var WARM_TAGE = 12;
+  var warm = null;              // { kerzen1m: letzte WARM_TAGE Handelstage des Vorjahres, tagesUmsatz: [[t, schluss, stueck] ...] }
+  var WARM_TAGE = 16;           // 261 Kerzen auf 15m sind 10 Tage; Halbtage und je Zeitrahmen duenne Tage brauchen Spielraum (Review F6)
   for (var ji = 0; ji < jahre.length; ji++) {
     var jahr = jahre[ji], key = R.reihe + '/' + jahr;
     if (ctx.abbruch()) return;
     if (F.erledigt[key]) { warm = null; continue; }
     if (ctx.a.max && F.dateien >= ctx.a.max) return;
     var t0 = Date.now();
-    if (warm == null && ji > 0) {                                         // Warmlauf aus dem Vorjahr nachholen (eine Datei)
-      var v = L.ladeJahr(R, jahre[ji - 1]);
-      warm = v.ok ? warmlaufAus(v.kerzen, WARM_TAGE) : { kerzen1m: [], tagesUmsatz: [] };
+    if (warm == null && ji > 0) {
+      /* Warmlauf nach Fortsetzung nachholen: dieselbe Kette wie im Normalpfad (Review F5) - die Umsatz-Kette
+       * reicht ueber zwei Vorjahre, sonst haette ein kurzes Vorjahr (Notierung ab Dezember) an den ersten
+       * Tagen "ohne Klasse", wo der Lauf am Stueck eine Klasse hatte. */
+      var vv = ji > 1 ? L.ladeJahr(R, jahre[ji - 2]) : null, v = L.ladeJahr(R, jahre[ji - 1]);
+      var w0 = (vv && vv.ok) ? warmlaufAus(vv.kerzen, WARM_TAGE) : null;
+      warm = v.ok ? warmlaufAus(v.kerzen, WARM_TAGE, w0) : (w0 ? { kerzen1m: [], tagesUmsatz: w0.tagesUmsatz } : { kerzen1m: [], tagesUmsatz: [] });
     }
     if (warm == null) warm = { kerzen1m: [], tagesUmsatz: [] };
     var g = L.ladeJahr(R, jahr);
@@ -201,57 +224,69 @@ function messeReihe(R, ctx) {
       warm = warmlaufAus(g.kerzen, WARM_TAGE, warm); continue;
     }
     ctx.sp.uebernehme(delta);
+    zaehlerAddieren(F.zaehler, stat.zaehler); zaehlerAddieren(F.zaehler.lesenVerworfen, g.verworfen || {});
+    /* Ein Detektor, der auf mehr als 1 % seiner Aufrufe wirft, ist kaputt, nicht selten: Abbruch mit Meldung
+     * statt "0 Signale" im Bericht (Review F4). */
+    Object.keys(stat.zaehler.fehler || {}).forEach(function (dk) {
+      if (stat.zaehler.fehler[dk] > 0.01 * (stat.zaehler.aufrufe[dk] || 0)) throw new Error('Detektor ' + dk + ' wirft auf ' + stat.zaehler.fehler[dk] + ' von ' + stat.zaehler.aufrufe[dk] + ' Aufrufen in ' + key + ' - systematischer Fehler, Lauf abgebrochen');
+    });
     F.erledigt[key] = 1; F.dateien++; F.bytes += g.bytes; F.kerzenRegulaer += g.kerzen.length;
     F.ms.lesen += tLesen; F.ms.rechnen += Date.now() - t0 - tLesen;
-    var sig = F.signale[R.reihe] || (F.signale[R.reihe] = { lebend: R.lebend, gruppe: R.gruppe, art: R.art, ende: massnahmen.ende || null, tage: 0, tageGewertet: 0, det: {} });
-    sig.tage += stat.tage; sig.tageGewertet += stat.tageGewertet;
+    var sig = F.signale[R.reihe] || (F.signale[R.reihe] = { lebend: R.lebend, gruppe: R.gruppe, art: R.art, ende: massnahmen.ende || null, tage: 0, tageGewertet: {}, det: {} });
+    sig.tage += stat.tage; Object.keys(stat.tageGewertet).forEach(function (zk) { sig.tageGewertet[zk] = (sig.tageGewertet[zk] || 0) + stat.tageGewertet[zk]; });
     Object.keys(stat.signale).forEach(function (dk) { var z = sig.det[dk] || (sig.det[dk] = [0, 0, 0]); for (var q = 0; q < 3; q++) z[q] += stat.signale[dk][q]; });
-    protokoll(ctx.ordner, key.padEnd(16) + g.quelle.padEnd(10) + String(g.kerzen.length).padStart(8) + ' reg. Kerzen  ' + String(stat.tageGewertet).padStart(4) + '/' + String(stat.tage).padEnd(4) + ' Tage gewertet  ' + String(stat.signaleGesamt).padStart(7) + ' Signale  ' + tLesen + ' ms lesen  ' + (Date.now() - t0 - tLesen) + ' ms rechnen');
+    var gew = K.ZEITRAHMEN.map(function (zr) { return stat.tageGewertet[zr.key] || 0; }).join('/');
+    protokoll(ctx.ordner, key.padEnd(16) + g.quelle.padEnd(10) + String(g.kerzen.length).padStart(8) + ' reg. Kerzen  ' + gew.padStart(11) + ' von ' + String(stat.tage).padEnd(4) + ' Tagen gewertet (1m/5m/15m)  ' + String(stat.signaleGesamt).padStart(7) + ' Signale  ' + tLesen + ' ms lesen  ' + (Date.now() - t0 - tLesen) + ' ms rechnen');
     warm = warmlaufAus(g.kerzen, WARM_TAGE, warm);
     ctx.dateiFertig();
   }
 }
-/** Warmlauf fuer das Folgejahr: die letzten `tage` DICHTEN Handelstage als 1m-Kerzen (Rueckblick der
- *  Detektoren) plus die Tagesumsaetze ALLER Tage (die Klasse zaehlt Balkentage, dicht oder nicht). */
+/** Warmlauf fuer das Folgejahr: die letzten `tage` Handelstage als 1m-Kerzen (Rueckblick der Detektoren;
+ *  die 80-%-Regel wird je Zeitrahmen erst beim Bau der Detektions-Reihe angewandt) plus die Tagesumsaetze
+ *  aller Tage (die Klasse zaehlt Balkentage, dicht oder nicht). */
 function warmlaufAus(kerzen1m, tage, vorher) {
   var T = L.tageAus(kerzen1m), ums = (vorher ? vorher.tagesUmsatz : []).slice();
   T.forEach(function (d) { var v = 0; for (var q = d.von; q <= d.bis; q++) v += kerzen1m[q][2] || 0; ums.push([kerzen1m[d.von][0], kerzen1m[d.bis][1], v]); });
-  var dicht = T.filter(function (d) { return istDicht(d); }).slice(-tage), aus = [];
-  dicht.forEach(function (d) { for (var q = d.von; q <= d.bis; q++) aus.push(kerzen1m[q]); });
-  return { kerzen1m: aus, tagesUmsatz: ums.slice(-(K.UMSATZ_FENSTER + 5)) };
+  var von = T.length > tage ? T[T.length - tage].von : 0;
+  return { kerzen1m: kerzen1m.slice(von), tagesUmsatz: ums.slice(-(K.UMSATZ_FENSTER + 5)) };
 }
-/** 80-%-Regel (Nachtrag 1, August ladeUniversum): ein Tag zaehlt nur mit >= 80 % der 1m-Sollkerzen. */
-function istDicht(d) { return (d.bis - d.von + 1) >= K.DICHTE_MIN * d.sollMin; }
+/** 80-%-Regel (Nachtrag 1a, August ladeUniversum): Tag d des Zeitrahmens mit Kerzenlaenge zrMin ist dicht,
+ *  wenn er >= 80 % der Sollkerzen (sollMin / zrMin) traegt. */
+function istDicht(d, zrMin) { return (d.bis - d.von + 1) >= K.DICHTE_MIN * (d.sollMin / (zrMin || 1)); }
 
 /** Eine Datei: alle Zeitrahmen, Detektoren, Placebos, Topf. Schreibt nur in `delta`. */
 function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
-  var kal = ctx.kal, nTage = kal.tage.length, dets = ctx.dets, Z = ctx.F.zaehler;
+  var kal = ctx.kal, nTage = kal.tage.length, dets = ctx.dets, Z = leererZaehler();   // Zaehler lokal: ganz oder gar nicht (Review F3)
   var kerzen = g.kerzen, lebend = R.lebend;
-  var stat = { signale: {}, signaleGesamt: 0, tage: 0, tageGewertet: 0 };
+  var stat = { signale: {}, signaleGesamt: 0, tage: 0, tageGewertet: {}, zaehler: Z };
   dets.forEach(function (D) { stat.signale[D.key] = [0, 0, 0]; });
   if (!kerzen.length) return stat;
   /* Umsatzklasse je Tag (§3): 20 Balkentage davor, Liquide.medianUmsatz, Klassengrenzen aus konfig. */
   var T1 = L.tageAus(kerzen);
-  var ums = warm.tagesUmsatz.slice(), klasseJeTag = {}, dichtJeTag = {};
+  var ums = warm.tagesUmsatz.slice(), klasseJeTag = {};
   T1.forEach(function (d) { var v = 0; for (var q = d.von; q <= d.bis; q++) v += kerzen[q][2] || 0; ums.push([kerzen[d.von][0], kerzen[d.bis][1], v]); });
   var basis = ums.length - T1.length;
   T1.forEach(function (d, q) {
     var idx = basis + q;                                               // Index des Tages in ums; Vortage = idx-20..idx-1
     klasseJeTag[d.tag] = (idx - K.UMSATZ_FENSTER < 0) ? -1 : K.klasseIndex(Liquide.medianUmsatz(ums, idx - 1, K.UMSATZ_FENSTER));
-    dichtJeTag[d.tag] = istDicht(d);
   });
   stat.tage = T1.length;
   var sperrTage = L.ausschlussTage(R, massnahmen, g.quelle, g.angewandt);
-  /* Nur dichte Tage gehen in die Detektion (80-%-Regel) - so liegt auch barMinVon auf dem Soll. */
-  var dicht1m = [];
-  T1.forEach(function (d) { if (dichtJeTag[d.tag]) for (var q = d.von; q <= d.bis; q++) dicht1m.push(kerzen[q]); else Z.tageDuenn++; });
-  if (!dicht1m.length) return stat;
-  var jahrStartMs = dicht1m[0][0];
-  var alle1m = warm.kerzen1m.length ? warm.kerzen1m.concat(dicht1m) : dicht1m;
+  var jahrStartMs = kerzen[0][0];
+  var alle1m = warm.kerzen1m.length ? warm.kerzen1m.concat(kerzen) : kerzen;
 
   for (var zi = 0; zi < K.ZEITRAHMEN.length; zi++) {
     var zr = K.ZEITRAHMEN[zi], barMs = zr.min * 60000;
-    var bars = L.verdichte(alle1m, zr.key);
+    /* 80-%-Regel JE ZEITRAHMEN (August: soll 390/78/26; Nachtrag 1a): ein Tag geht nur in die Detektion
+     * dieses Zeitrahmens, wenn er >= 80 % der Sollkerzen des Zeitrahmens traegt. Eine duenne 1m-Reihe kann
+     * auf 5m/15m dicht sein - genau dort liegt die Klasse 5-50. Die Detektions-Reihe besteht nur aus dichten
+     * Tagen, damit barMinVon auf dem Soll liegt und kein Detektor ueber Luecken hinweg rechnet. */
+    var roh = L.verdichte(alle1m, zr.key), Troh = L.tageAus(roh), bars = [];
+    Troh.forEach(function (d) {
+      var dicht = (d.bis - d.von + 1) >= K.DICHTE_MIN * (d.sollMin / zr.min);
+      if (dicht) for (var q = d.von; q <= d.bis; q++) bars.push(roh[q]);
+      else if (roh[d.von][0] >= jahrStartMs) Z.tageDuenn[zr.key] = (Z.tageDuenn[zr.key] || 0) + 1;
+    });
     if (bars.length < 60) continue;
     if (TAB.helfer.barMinVon(bars) !== zr.min) { Z.zeitrahmenNichtErkannt[zr.key] = (Z.zeitrahmenNichtErkannt[zr.key] || 0) + 1; continue; }
     var T = L.tageAus(bars);
@@ -262,17 +297,17 @@ function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
       if (bars[d.von][0] < jahrStartMs) continue;                        // Warmlauf: nur Rueckblick, keine Messung
       if (Date.now() > frist) { var e = new Error('Wachhund'); e.wachhund = true; throw e; }
       var tagIdx = kal.idx[d.tag];
-      if (tagIdx === undefined) { if (zi === 0) Z.tageOhneKalender++; continue; }
+      if (tagIdx === undefined) { Z.tageOhneKalender[zr.key] = (Z.tageOhneKalender[zr.key] || 0) + 1; continue; }
       var klasse = klasseJeTag[d.tag]; if (klasse == null) klasse = -1;
-      if (klasse < 0) { if (zi === 0) Z.tageOhneKlasse++; continue; }
-      if (sperrTage.has(d.tag)) { if (zi === 0) Z.tageMassnahmen++; continue; }
-      if (zi === 0) { Z.tageGewertet++; stat.tageGewertet++; }
+      if (klasse < 0) { Z.tageOhneKlasse[zr.key] = (Z.tageOhneKlasse[zr.key] || 0) + 1; continue; }
+      if (sperrTage.has(d.tag)) { Z.tageMassnahmen[zr.key] = (Z.tageMassnahmen[zr.key] || 0) + 1; continue; }
+      Z.tageGewertet[zr.key] = (Z.tageGewertet[zr.key] || 0) + 1; stat.tageGewertet[zr.key] = (stat.tageGewertet[zr.key] || 0) + 1;
       /* zulaessige Kerzen: Ende der Kerze + MIN_REST vor dem Sitzungsschluss, und eine Folgekerze existiert */
       var zul = [], fensterVon = {};
       for (var i = d.von; i < d.bis; i++) if (bars[i][0] + barMs + K.MIN_REST_MIN * 60000 <= d.schluss) { zul.push(i); var w = Math.floor((bars[i][0] - d.auf) / (K.PAAR_FENSTER_MIN * 60000)); (fensterVon[w] = fensterVon[w] || []).push(i); }
       if (!zul.length) continue;
       var exit = ausstiege(bars, d.von, d.bis);
-      var hVon = function (i) { return K.huerdeFenster(klasse, (bars[i + 1][0] - d.auf) / 60000); };   // Huerde nach Einstiegsfenster
+      var hVon = function (i) { return K.huerdeFenster(klasse, (bars[i + 1][0] - d.auf) / 60000, d.sollMin); };   // Huerde nach Einstiegsfenster (Halbtag: Schluss ab 12:30)
       /* Topf (§7b): jede zulaessige Kerze, Long-Ertrag je Haltedauer */
       for (var q = 0; q < zul.length; q++) for (var h = 0; h < K.N_H; h++) {
         var rt = ertrag(bars, zul[q], h, d.bis, exit, 1);
@@ -344,7 +379,7 @@ function lauf(a) {
   if (!a.neu && fs.existsSync(fp) && fs.existsSync(zp)) {
     F = JSON.parse(fs.readFileSync(fp, 'utf8'));
     if (F.kennung !== K.KONFIG_KENNUNG || F.nTage !== kal.tage.length) { console.error('Fortschritt in ' + ordner + ' gehoert zu einer anderen Konfiguration (' + F.kennung + ') - Abbruch.'); process.exit(4); }
-    sp = Speicher.lade(zp, kal.tage.length);
+    sp = Speicher.lade(zp, kal.tage.length, F.zellenStand);
     protokoll(ordner, 'FORTSETZUNG: ' + Object.keys(F.erledigt).length + ' Dateien erledigt, Zellenstand ' + F.zellenStand);
   } else {
     if (a.neu && fs.existsSync(fp)) protokoll(ordner, 'NEU: vorhandener Fortschritt in ' + ordner + ' wird ueberschrieben');
@@ -362,14 +397,17 @@ function lauf(a) {
   var seitCheckpoint = 0, tStart = Date.now();
   var ctx = { a: a, kal: kal, dets: dets, F: F, sp: sp, ordner: ordner,
     abbruch: function () { return stop || (a.max && F.dateien >= a.max); },
-    dateiFertig: function () { if (++seitCheckpoint >= a.checkpoint) { fortschrittSchreiben(ordner, F, sp); seitCheckpoint = 0; protokoll(ordner, 'CHECKPOINT ' + F.dateien + ' Dateien, ' + Math.round((Date.now() - tStart) / 60000) + ' min'); } } };
-  for (var ri = 0; ri < reihen.length && !ctx.abbruch(); ri++) messeReihe(reihen[ri], ctx);
-  F.beendet = ctx.abbruch() ? (stop ? 'SIGINT' : 'max erreicht') : 'vollstaendig';
+    dateiFertig: function () { if (++seitCheckpoint >= a.checkpoint) { fortschrittSchreiben(ordner, F, sp); seitCheckpoint = 0; protokoll(ordner, 'CHECKPOINT ' + F.dateien + ' Dateien, ' + Math.round((Date.now() - tStart) / 60000) + ' min, Detektorfehler ' + JSON.stringify(F.zaehler.fehler)); } } };
+  var abbruchFehler = null;
+  try { for (var ri = 0; ri < reihen.length && !ctx.abbruch(); ri++) messeReihe(reihen[ri], ctx); }
+  catch (e) { abbruchFehler = e; protokoll(ordner, 'ABBRUCH: ' + (e && e.message)); }
+  F.beendet = abbruchFehler ? 'Abbruch: ' + abbruchFehler.message : (ctx.abbruch() ? (stop ? 'SIGINT' : 'max erreicht') : 'vollstaendig');
   fortschrittSchreiben(ordner, F, sp);
-  protokoll(ordner, 'ENDE ' + F.beendet + ' | ' + F.dateien + ' Dateien | ' + (F.bytes / 1e9).toFixed(2) + ' GB | ' + F.kerzenRegulaer.toLocaleString('de-DE') + ' reg. Kerzen | lesen ' + Math.round(F.ms.lesen / 1000) + ' s, rechnen ' + Math.round(F.ms.rechnen / 1000) + ' s | ausgelassen ' + F.ausgelassen.length);
+  protokoll(ordner, 'ENDE ' + F.beendet + ' | ' + F.dateien + ' Dateien | ' + (F.bytes / 1e9).toFixed(2) + ' GB | ' + F.kerzenRegulaer.toLocaleString('de-DE') + ' reg. Kerzen | lesen ' + Math.round(F.ms.lesen / 1000) + ' s, rechnen ' + Math.round(F.ms.rechnen / 1000) + ' s | ausgelassen ' + F.ausgelassen.length + ' | Detektorfehler ' + JSON.stringify(F.zaehler.fehler));
+  if (abbruchFehler) process.exitCode = 5;
   return F;
 }
 
 module.exports = { lauf: lauf, argumente: argumente, messeDatei: messeDatei, ausstiege: ausstiege, ertrag: ertrag, rufe: rufe, fensterAnfang: fensterAnfang, istDicht: istDicht,
-  Speicher: Speicher, Delta: Delta, fnv: fnv, mulberry32: mulberry32, warmlaufAus: warmlaufAus, leererZaehler: leererZaehler };
+  Speicher: Speicher, Delta: Delta, fnv: fnv, mulberry32: mulberry32, warmlaufAus: warmlaufAus, leererZaehler: leererZaehler, zaehlerAddieren: zaehlerAddieren };
 if (require.main === module) lauf(argumente(process.argv.slice(2)));
