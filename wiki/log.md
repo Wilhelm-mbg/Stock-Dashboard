@@ -5,6 +5,10 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 07.09.2026 Release v8.44.0 (Wache): Live-Sammler holt jetzt alle im Archiv geführten
+  Werte statt nur der Top-500 und sammelt zuverlässiger (Sperre, Fehler pro Wert statt
+  pro Runde, kein Datenverlust bei Quellen-Aussetzern); die Börsenglocke klingt jetzt
+  wie am NYSE-Parkett mit einstellbarer Lautstärke.
 - 06.09.2026 Release v8.43.0 (Wache): Aktien-Viewer fragt Zeitraum und Kerzenlänge
   getrennt und lässt sich mit der Maus zoomen und blättern; dazu ein
   Einstellungen-Dialog nach TradingView-Muster und Zeichenwerkzeuge im Kerzenchart
