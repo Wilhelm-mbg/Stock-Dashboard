@@ -22,7 +22,7 @@ OK    1l Groesse stimmt: Netto-Tagesmittel 0.3827 Pp bei Soll 0.4146 (+0,50 gepf
 OK    1m Gegenprobe: die Pflanzung sitzt nur in der 1h-Ausstiegskerze - 3h 0.0295 Pp und bis Schluss 0.0086 Pp bleiben nahe null
 OK    1n ohne Pflanzung nahe null: Rohertrag je Signal 0.0195 Pp, Tagesmittel 0.0184 (n 468, 90 Tage)
 OK    1o Signalmenge ohne Pflanzung: messeDatei 516 = naiv 516
-   (103.6 s)
+   (109.0 s)
 
 == 2. PLACEBO A und B auf der Zufallsreihe ohne Pflanzung
 OK    2a jede Placebo-Zelle hat einen Topf derselben (ZR, H, Tag, Klasse, lebend): 0 ohne
@@ -54,7 +54,7 @@ OK    4 squeeze (5m, mtf/tagesreihe {"period":20,"kSigma":2}): 6430 Indizes, 682
 OK    4 donchian (5m, mtf/tagesreihe {"period":20,"confirmBps":15}): 6507 Indizes, 109 Signale, 0 Abweichungen
 OK    4 kapitulation (5m, mtf/tagesreihe {}): 19288 Indizes, 32 Signale, 0 Abweichungen
 OK    4 rsi2seit (5m, mtf/tagesreihe {}): 19288 Indizes, 239 Signale, 0 Abweichungen
-   (1.5 s)
+   (1.4 s)
 
 == 5. AUFRUF-FENSTERUNG UND VORFILTER (Nachtrag 11) an AAPL/2024 auf 1m, 5m, 15m
 OK    5 vwap-abstand 1m: 400 Indizes, 15 Signale (volles Praefix), 0 Abweichungen
@@ -100,7 +100,7 @@ OK    9d _zellen.bin (a+b) und (c) BYTEIDENTISCH bis auf den Stand-Schwanz (4862
 OK    9e _fortschritt.json: dateien 4 = 4, Signalzahlen je Reihe und erledigte Dateien gleich
 OK    9f beide Kunst-Reihen (AAPL, MSFT) haben Signale und auf 1m je 14/14 gewertete Tage (Soll 14: 2023 nach 20 Balkentagen, 2024 ganz dank Warmlauf der Umsaetze)
 OK    9g manipulierte kennung: Rueckgabewert 4 und Meldung "andere Konfiguration" mit der fremden Kennung
-   (41.8 s)
+   (44.6 s)
 
 == 10. RANDREGELN ueber messeDatei (Fenster, Klasse < 5 Mio $, duenner Tag, Halbtag)
 OK    10a Kerzen an 3 Tagen nach 2026-08-31 (2026-09-01, 2026-09-02, 2026-09-03): tageOhneKalender 1m 3, keine Zelle ausserhalb (0), Topf-Tage im Fenster 23 = erwartet 23
@@ -109,7 +109,7 @@ OK    10c duenner Tag 2024-03-08 (250 von 390 Kerzen): tageDuenn je Zeitrahmen 1
 OK    10d Halbtag 2024-07-03: Detektor "ab 12:30 ET" liefert dort 0 Zellen auf allen Zeitrahmen (an Volltagen 1m 12 Schluss-Beobachtungen), Detektor "12:00 ET" liefert auf 1m 1 Schluss-Beobachtung (je Zeitrahmen eine: 3) und 0 fuer 1h (kein Ausstieg vor 13:00); 5 Tage auf 1m gewertet
 OK    10e tageAus am Halbtag: sollMin 210, Schluss = 13:00 ET, Anfang = 09:30 ET
 OK    10f Halbtag zulaessig: 180 Kerzen, letzte um 12:29 ET; 1h-Ertrag dort ohne Beobachtung (NaN), um 11:29 beobachtet (0.0986), bis Schluss beobachtet (0.2109)
-   (1.0 s)
+   (0.9 s)
 
 == 11. ET-TAG = UTC-TAG fuer alle regulaeren AAPL-1m-Kerzen
 OK    11 97740 Kerzen an 252 Tagen: L.tagVon = ET-Datum (Intl America/New_York) in allen Faellen, 0 Abweichungen
@@ -123,7 +123,3 @@ OK    12d reihen.ausgeschlossen zaehlt ETF 694 > 600 (ausgeschlossen je Art: {"E
    (0.0 s)
 
 76 OK, 0 FEHLT, 0 UEBERSPRUNGEN
-
-real	3m17.175s
-user	0m0.000s
-sys	0m0.031s

@@ -42,10 +42,16 @@ var TAB = require(path.join(K.REPO, 'studien', 'signalstudie-2026-08', 'detektor
 
 /* ---------- Argumente ---------- */
 function argumente(argv) {
-  var a = { aus: null, reihen: null, teil: null, max: 0, checkpoint: 200, wachhund: 900, neu: false };
+  var a = { aus: null, reihen: null, teil: null, max: 0, checkpoint: 200, wachhund: 900, neu: false, zeitrahmen: null };
   for (var i = 0; i < argv.length; i++) {
     var x = argv[i];
     if (x === '--aus') a.aus = argv[++i];
+    else if (x === '--zeitrahmen') {
+      /* Nachtrag 2 (PM-Auslegung): Aufteilung des Vollaufs nach ZEITRAHMEN, nie nach Umsatzklasse.
+       * "1m" oder "5m,15m" (cmd.exe trennt am Komma - deshalb auch als Folge einzelner Argumente erlaubt). */
+      a.zeitrahmen = [];
+      while (i + 1 < argv.length && argv[i + 1].slice(0, 2) !== '--') String(argv[++i]).split(',').forEach(function (z) { if (z) a.zeitrahmen.push(z); });
+    }
     else if (x === '--reihen') { a.reihen = []; while (i + 1 < argv.length && argv[i + 1].slice(0, 2) !== '--') a.reihen.push(argv[++i]); }
     else if (x === '--teil') { var p = String(argv[++i]).split('/'); a.teil = { k: +p[0], n: +p[1] }; }
     else if (x === '--max') a.max = +argv[++i];
@@ -159,7 +165,7 @@ function protokoll(ordner, zeile) {
   try { fs.appendFileSync(path.join(ordner, '_lauf.log'), s + '\n'); } catch (e) { /* Log ist Komfort */ }
 }
 function leererZaehler() {
-  return { tageOhneKlasse: {}, tageMassnahmen: {}, tageOhneKalender: {}, tageDuenn: {}, tageGewertet: {}, zeitrahmenNichtErkannt: {},
+  return { tageOhneKlasse: {}, tageMassnahmen: {}, tageOhneKalender: {}, tageDuenn: {}, tageGewertet: {}, tageGewertetKlasse: {}, msJeZr: {}, zeitrahmenNichtErkannt: {},
     aufrufe: {}, fehler: {}, signaleGesamt: {}, ohneHorizont: [0, 0, 0], ohneEinstieg: 0, placeboAGezogen: 0, placeboBGezogen: 0, placeboBOhnePartner: 0,
     lesenVerworfen: { unsortiert: 0, ausserFenster: 0, lebenszeit: 0, nichtRegulaer: 0, ohneKurs: 0 } };
 }
@@ -176,7 +182,7 @@ function zaehlerAddieren(a, b) {
 }
 function leererFortschritt(a) {
   var kal = K.kalender();
-  return { kennung: K.KONFIG_KENNUNG, begonnen: new Date().toISOString(), pilot: !!a.reihen, reihenArg: a.reihen, teil: a.teil,
+  return { kennung: K.KONFIG_KENNUNG, begonnen: new Date().toISOString(), pilot: !!a.reihen, reihenArg: a.reihen, teil: a.teil, zeitrahmen: a.zeitrahmen || K.ZEITRAHMEN.map(function (z) { return z.key; }),
     nTage: kal.tage.length, bestaetigungAb: kal.bestaetigungAb, zellenStand: 0,
     erledigt: {}, ausgelassen: [], signale: {}, dateien: 0, bytes: 0, kerzenRegulaer: 0, ms: { lesen: 0, rechnen: 0 },
     reihenAusgeschlossen: null, zaehler: leererZaehler() };
@@ -232,8 +238,10 @@ function messeReihe(R, ctx) {
     });
     F.erledigt[key] = 1; F.dateien++; F.bytes += g.bytes; F.kerzenRegulaer += g.kerzen.length;
     F.ms.lesen += tLesen; F.ms.rechnen += Date.now() - t0 - tLesen;
-    var sig = F.signale[R.reihe] || (F.signale[R.reihe] = { lebend: R.lebend, gruppe: R.gruppe, art: R.art, ende: massnahmen.ende || null, tage: 0, tageGewertet: {}, det: {} });
-    sig.tage += stat.tage; Object.keys(stat.tageGewertet).forEach(function (zk) { sig.tageGewertet[zk] = (sig.tageGewertet[zk] || 0) + stat.tageGewertet[zk]; });
+    var sig = F.signale[R.reihe] || (F.signale[R.reihe] = { lebend: R.lebend, gruppe: R.gruppe, art: R.art, ende: massnahmen.ende || null, tage: 0, tageGewertet: {}, tageGewertetKlasse: {}, det: {} });
+    sig.tage += stat.tage;
+    Object.keys(stat.tageGewertet).forEach(function (zk) { sig.tageGewertet[zk] = (sig.tageGewertet[zk] || 0) + stat.tageGewertet[zk]; });
+    Object.keys(stat.tageGewertetKlasse).forEach(function (zk) { sig.tageGewertetKlasse[zk] = (sig.tageGewertetKlasse[zk] || 0) + stat.tageGewertetKlasse[zk]; });
     Object.keys(stat.signale).forEach(function (dk) { var z = sig.det[dk] || (sig.det[dk] = [0, 0, 0]); for (var q = 0; q < 3; q++) z[q] += stat.signale[dk][q]; });
     var gew = K.ZEITRAHMEN.map(function (zr) { return stat.tageGewertet[zr.key] || 0; }).join('/');
     protokoll(ctx.ordner, key.padEnd(16) + g.quelle.padEnd(10) + String(g.kerzen.length).padStart(8) + ' reg. Kerzen  ' + gew.padStart(11) + ' von ' + String(stat.tage).padEnd(4) + ' Tagen gewertet (1m/5m/15m)  ' + String(stat.signaleGesamt).padStart(7) + ' Signale  ' + tLesen + ' ms lesen  ' + (Date.now() - t0 - tLesen) + ' ms rechnen');
@@ -258,7 +266,7 @@ function istDicht(d, zrMin) { return (d.bis - d.von + 1) >= K.DICHTE_MIN * (d.so
 function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
   var kal = ctx.kal, nTage = kal.tage.length, dets = ctx.dets, Z = leererZaehler();   // Zaehler lokal: ganz oder gar nicht (Review F3)
   var kerzen = g.kerzen, lebend = R.lebend;
-  var stat = { signale: {}, signaleGesamt: 0, tage: 0, tageGewertet: {}, zaehler: Z };
+  var stat = { signale: {}, signaleGesamt: 0, tage: 0, tageGewertet: {}, tageGewertetKlasse: {}, zaehler: Z };
   dets.forEach(function (D) { stat.signale[D.key] = [0, 0, 0]; });
   if (!kerzen.length) return stat;
   /* Umsatzklasse je Tag (§3): 20 Balkentage davor, Liquide.medianUmsatz, Klassengrenzen aus konfig. */
@@ -277,6 +285,8 @@ function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
 
   for (var zi = 0; zi < K.ZEITRAHMEN.length; zi++) {
     var zr = K.ZEITRAHMEN[zi], barMs = zr.min * 60000;
+    if (ctx.zeitrahmen && ctx.zeitrahmen.indexOf(zr.key) === -1) continue;      // Aufteilung nach Zeitrahmen (Nachtrag 2)
+    var tZr = Date.now();
     /* 80-%-Regel JE ZEITRAHMEN (August: soll 390/78/26; Nachtrag 1a): ein Tag geht nur in die Detektion
      * dieses Zeitrahmens, wenn er >= 80 % der Sollkerzen des Zeitrahmens traegt. Eine duenne 1m-Reihe kann
      * auf 5m/15m dicht sein - genau dort liegt die Klasse 5-50. Die Detektions-Reihe besteht nur aus dichten
@@ -302,6 +312,10 @@ function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
       if (klasse < 0) { Z.tageOhneKlasse[zr.key] = (Z.tageOhneKlasse[zr.key] || 0) + 1; continue; }
       if (sperrTage.has(d.tag)) { Z.tageMassnahmen[zr.key] = (Z.tageMassnahmen[zr.key] || 0) + 1; continue; }
       Z.tageGewertet[zr.key] = (Z.tageGewertet[zr.key] || 0) + 1; stat.tageGewertet[zr.key] = (stat.tageGewertet[zr.key] || 0) + 1;
+      /* Nachtrag 2 Punkt 2: je Zeitrahmen x Klasse ausweisen, wie viele Reihen-Tage die 80-%-Regel passieren -
+       * damit ein Nullbefund als "nicht gemessen" und nicht als "nichts da" gelesen wird. */
+      var zk = zr.key + '|' + K.KLASSEN[klasse].name;
+      Z.tageGewertetKlasse[zk] = (Z.tageGewertetKlasse[zk] || 0) + 1; stat.tageGewertetKlasse[zk] = (stat.tageGewertetKlasse[zk] || 0) + 1;
       /* zulaessige Kerzen: Ende der Kerze + MIN_REST vor dem Sitzungsschluss, und eine Folgekerze existiert */
       var zul = [], fensterVon = {};
       for (var i = d.von; i < d.bis; i++) if (bars[i][0] + barMs + K.MIN_REST_MIN * 60000 <= d.schluss) { zul.push(i); var w = Math.floor((bars[i][0] - d.auf) / (K.PAAR_FENSTER_MIN * 60000)); (fensterVon[w] = fensterVon[w] || []).push(i); }
@@ -364,6 +378,7 @@ function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
         }
       }
     }
+    Z.msJeZr[zr.key] = (Z.msJeZr[zr.key] || 0) + (Date.now() - tZr);   // Rechenzeit je Zeitrahmen (Nachtrag 2 Punkt 1)
   }
   return stat;
 }
@@ -395,7 +410,12 @@ function lauf(a) {
   var stop = false;
   process.on('SIGINT', function () { stop = true; protokoll(ordner, 'SIGINT - nach dieser Datei wird gesichert und beendet'); });
   var seitCheckpoint = 0, tStart = Date.now();
-  var ctx = { a: a, kal: kal, dets: dets, F: F, sp: sp, ordner: ordner,
+  if (a.zeitrahmen) {
+    var unbekannt = a.zeitrahmen.filter(function (z) { return !K.ZEITRAHMEN.some(function (x) { return x.key === z; }); });
+    if (unbekannt.length) { console.error('Unbekannte Zeitrahmen: ' + unbekannt.join(' ') + ' (erlaubt: ' + K.ZEITRAHMEN.map(function (x) { return x.key; }).join(' ') + ')'); process.exit(6); }
+    protokoll(ordner, 'ZEITRAHMEN-TEIL: nur ' + a.zeitrahmen.join(' ') + ' - die uebrigen Zeitrahmen muessen in einem eigenen Lauf gemessen und beim Auswerten zusammengelegt werden');
+  }
+  var ctx = { a: a, kal: kal, dets: dets, F: F, sp: sp, ordner: ordner, zeitrahmen: a.zeitrahmen,
     abbruch: function () { return stop || (a.max && F.dateien >= a.max); },
     dateiFertig: function () { if (++seitCheckpoint >= a.checkpoint) { fortschrittSchreiben(ordner, F, sp); seitCheckpoint = 0; protokoll(ordner, 'CHECKPOINT ' + F.dateien + ' Dateien, ' + Math.round((Date.now() - tStart) / 60000) + ' min, Detektorfehler ' + JSON.stringify(F.zaehler.fehler)); } } };
   var abbruchFehler = null;

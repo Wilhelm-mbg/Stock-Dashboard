@@ -509,3 +509,35 @@ als „0 Signale" zu erscheinen; der Warmlauf nach Fortsetzung kettet zwei Vorja
 Warmlauf 16 statt 12 Handelstage; Schlussfenster der Einstiegshürde am Halbtag ab 12:30; Lese-Verluste (nicht
 regulär, ohne Kurs, außerhalb) werden gezählt; `huerdeEroeffnung` ungerundet. Der Pilot wurde mit der v3-Fassung
 neu gestartet; die Laufzeiten des v2-Anlaufs (identische Rechenlast) liegen als Protokolle bei.
+
+## 14. NACHTRAG 2 — 07.09.2026, 09:43 (PM-Auslegung der vier Fragen, vor jeder Urteilszahl)
+
+Der Projekt-Manager hat die vier offenen Fragen der Zwischen-Übergabe (§8) entschieden. Grundsatz des PM, wörtlich:
+**„nichts Vorregistriertes wird nachträglich geändert"** — was hier steht, ist Auslegung, keine neue Regel, und sie
+steht vor der ersten Urteilszahl. Der Pilot ist gelaufen (kein Befund, k₁ = 0), der Vollauf nicht.
+
+1. **Aufteilung des Vollaufs: nach Zeitrahmen, nie nach Umsatzklasse.** Passt der Lauf in acht Teile à ≤ 12 h, läuft
+   er so; sonst **erst 1m über alles, dann 5m/15m**. Begründung des PM: eine Teilung nach Umsatzklasse wäre eine
+   **Auswahl auf einer Größe, die im Urteil vorkommt** (die Hürde hängt an der Klasse); die Reihenfolge der
+   Zeitrahmen ist dagegen unkritisch. Umgesetzt als `messen.js --zeitrahmen 1m` bzw. `--zeitrahmen 5m,15m`; der
+   gewählte Satz steht in `_fortschritt.json`, und `auswerten.js` **warnt im Kopf des Berichts**, wenn die
+   zusammengelegten Teile nicht alle drei Zeitrahmen decken („0 Signale" wäre sonst als Nullbefund lesbar).
+   Rechenzeit je Zeitrahmen wird mitgeschrieben (`msJeZr`).
+2. **80-%-Regel je Zeitrahmen bleibt unverändert.** Dass die Klasse 5–50 Mio $ auf 1m weitgehend herausfällt, ist ein
+   **Befund über die Daten**, kein Mangel der Regel: dünne Minutenreihen tragen die Detektoren nicht; die
+   1m-Definition für dünne Reihen aufzuweichen wäre eine andere Studie. Der Bericht weist deshalb je **Zeitrahmen ×
+   Umsatzklasse** aus, wie viele Reihen und wie viele Reihen-Tage die Regel passieren (Abschnitt 5b), und markiert
+   leere Zellen als **„nicht gemessen"**, nicht als „nichts da". Fehlt der Zähler (Lauf vor diesem Nachtrag), sagt der
+   Bericht das, statt Nullen zu drucken.
+3. **Endpunkt-Vorrang bleibt wie registriert, und der Unterschied kommt in den Bericht.** Über belegt / widerlegt /
+   nicht entscheidbar entscheidet allein der rohe Netto-Ertrag; marktbereinigt und Einstiegsfenster-Hürde stufen nur
+   herab. Dazu steht ab jetzt als eigener Absatz in Abschnitt 2 des Berichts: **belegt ≠ handelbar**, und die Spalte
+   `handelbar` ist die, die Wilhelm liest (sie verlangt zusätzlich `delta80 ≤ K_Kandidat` und die Einstiegsfenster-Hürde).
+4. **Short ist nie „handelbar".** Die Wertpapierleihe ist im Haus **nicht gemessen** — Kosten unbekannt, Verfügbarkeit
+   bei illiquiden und verschwundenen Werten oft gar nicht gegeben. **Kein erfundener Leihsatz.** Short-Konfigurationen
+   tragen dieselbe Kassa-Hürde als **Untergrenze**, können „belegt" werden, und stehen in der Spalte `handelbar`
+   ausnahmslos auf **„nein (Leihe)"** — unabhängig von der Zahl. PM: „Ein Long-Kandidat mit halb so großer Kante ist
+   mehr wert als ein Short, den wir nicht eröffnen können."
+
+Der Pilot wurde nach diesem Nachtrag ein drittes Mal gefahren, damit die Zähler aus Punkt 1 und 2 echte Zahlen tragen;
+an Zellen, Endpunkten und Urteilsregeln ändert Nachtrag 2 nichts (die Kennung bleibt `v3`).

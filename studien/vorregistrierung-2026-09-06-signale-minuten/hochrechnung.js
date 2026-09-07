@@ -57,3 +57,33 @@ Object.keys(uni).sort().forEach(function (k) {
   console.log('  ' + k.padEnd(26) + String(g.dateien).padStart(6) + ' Dateien ' + (g.bytes / 1e9).toFixed(1).padStart(6) + ' GB x ' + rate.toFixed(0).padStart(5) + ' s/GB = ' + (s / 3600).toFixed(1).padStart(7) + ' h');
 });
 console.log('Vollauf: ' + summeDateien + ' Dateien, ' + summeGB.toFixed(1) + ' GB => ' + (summe / 3600).toFixed(1) + ' Prozess-Stunden; bei 8 Teilen ' + (summe / 3600 / 8).toFixed(1) + ' h, bei 12 Teilen ' + (summe / 3600 / 12).toFixed(1) + ' h (Pilotraten unter Parallellast gemessen)');
+
+/* Aufteilung nach ZEITRAHMEN (Nachtrag 2 Punkt 1): der Anteil je Zeitrahmen kommt aus msJeZr der
+ * Fortschrittsdateien der Pilotordner, nicht aus einer Schaetzung. */
+var ms = {};
+ordner.forEach(function (o) {
+  var p = path.resolve(K.HIER, o), kandidaten = [];
+  if (fs.existsSync(path.join(p, '_fortschritt.json'))) kandidaten.push(path.join(p, '_fortschritt.json'));
+  else if (fs.statSync(p).isDirectory()) fs.readdirSync(p).forEach(function (f) {
+    var q = path.join(p, f, '_fortschritt.json');
+    if (fs.existsSync(q)) { kandidaten.push(q); return; }
+    /* Geschnittene Protokolle (protokoll-schneiden.js) heissen wie ihr Laufordner: pilot-0.log -> ../pilot-0/ */
+    if (/\.log$/.test(f)) { var r = path.join(path.dirname(p), f.replace(/\.log$/, ''), '_fortschritt.json'); if (fs.existsSync(r)) kandidaten.push(r); }
+  });
+  kandidaten.forEach(function (q) {
+    var f = JSON.parse(fs.readFileSync(q, 'utf8'));
+    Object.keys((f.zaehler || {}).msJeZr || {}).forEach(function (z) { ms[z] = (ms[z] || 0) + f.zaehler.msJeZr[z]; });
+  });
+});
+if (!Object.keys(ms).length) {
+  console.log('Anteil je Zeitrahmen: nicht bestimmbar - die Fortschrittsdateien fuehren msJeZr nicht (Lauf vor Nachtrag 2).');
+} else {
+  var msGes = Object.keys(ms).reduce(function (a, z) { return a + ms[z]; }, 0);
+  console.log('Anteil je Zeitrahmen (aus msJeZr des Piloten):');
+  Object.keys(ms).forEach(function (z) {
+    var anteil = ms[z] / msGes;
+    console.log('  ' + z.padEnd(5) + (anteil * 100).toFixed(1).padStart(5) + ' % => ' + (summe * anteil / 3600).toFixed(1).padStart(7) + ' h Vollauf; 8 Teile ' + (summe * anteil / 3600 / 8).toFixed(1) + ' h, 12 Teile ' + (summe * anteil / 3600 / 12).toFixed(1) + ' h');
+  });
+  var ohne1m = Object.keys(ms).filter(function (z) { return z !== '1m'; }).reduce(function (a, z) { return a + ms[z]; }, 0) / msGes;
+  console.log('  Teilung nach Nachtrag 2: erst 1m (' + (summe * (ms['1m'] || 0) / msGes / 3600).toFixed(1) + ' h), dann 5m+15m (' + (summe * ohne1m / 3600).toFixed(1) + ' h)');
+}

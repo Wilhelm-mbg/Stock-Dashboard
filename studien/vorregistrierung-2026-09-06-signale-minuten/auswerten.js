@@ -95,10 +95,15 @@ function ladeLaeufe(ordner, kal) {
     if (!sp) sp = s; else { addiere(sp, s); s = null; }
     Object.keys(f.erledigt || {}).forEach(function (k) { if (erledigt[k]) doppelt++; erledigt[k] = 1; });
     herkunft.push({ ordner: o, dateien: f.dateien, bytes: f.bytes, reihen: Object.keys(f.signale || {}).length, pilot: !!f.pilot, beendet: f.beendet || 'offen',
-      teil: f.teil || null, reihenArg: f.reihenArg || null, zellenStand: f.zellenStand, kennung: f.kennung, begonnen: f.begonnen, stand: f.stand });
+      teil: f.teil || null, reihenArg: f.reihenArg || null, zeitrahmen: f.zeitrahmen || null, zellenStand: f.zellenStand, kennung: f.kennung, begonnen: f.begonnen, stand: f.stand });
     F = F ? summiere(F, f) : f;
   });
   F.nTage = kal.tage.length; F.doppeltErledigt = doppelt;
+  /* Nachtrag 2 Punkt 1: wird der Vollauf nach Zeitrahmen geteilt, muessen die Teile zusammen alle drei decken -
+   * sonst waere ein fehlender Zeitrahmen als "0 Signale" lesbar. */
+  F.zeitrahmenGedeckt = {};
+  herkunft.forEach(function (h) { (h.zeitrahmen || K.ZEITRAHMEN.map(function (z) { return z.key; })).forEach(function (z) { F.zeitrahmenGedeckt[z] = (F.zeitrahmenGedeckt[z] || 0) + 1; }); });
+  F.zeitrahmenFehlend = K.ZEITRAHMEN.map(function (z) { return z.key; }).filter(function (z) { return !F.zeitrahmenGedeckt[z]; });
   F.pilotIrgendwo = herkunft.some(function (h) { return h.pilot; });
   F.unvollstaendig = herkunft.some(function (h) { return h.beendet !== 'vollstaendig'; });
   return { sp: sp, F: F, herkunft: herkunft };
@@ -301,6 +306,10 @@ function urteil(c, z2, poolOk, eigenOk) {
     else c.groesse = 'offen';
   }
   c.handelbar = false; c.herabstufungen = [];
+  /* Nachtrag 2 Punkt 4 (PM): Short bekommt dieselbe Kassa-Huerde als UNTERGRENZE - die Wertpapierleihe ist im Haus
+   * nicht gemessen (Kosten unbekannt, bei illiquiden und verschwundenen Werten oft gar nicht verfuegbar). Kein
+   * erfundener Leihsatz: die Short-Seite kann "belegt" werden, "handelbar" nie. */
+  c.leiheUngemessen = c.richtung === 'short';
   if (e.nSig === 0 && b.nSig === 0) { c.urteil = '0 Signale'; return; }
   if (c.mdeB == null || e.nTage === 0) { c.urteil = 'nicht entscheidbar'; c.grund = 'Tor 1 nicht pruefbar (se_B oder Entdeckung fehlt)'; return; }
   if (!c.tor1) { c.urteil = 'kein Kandidat'; return; }
@@ -319,7 +328,10 @@ function urteil(c, z2, poolOk, eigenOk) {
   if (!poolOk || !eigenOk) c.urteil = 'belegt-aber-nullpunkt-verschoben';
   else if (!(b.markt.mittel > 0)) c.urteil = 'belegt, aber Marktzeit';
   else if (!(b.nettoF.mittel > 0)) c.urteil = 'belegt, aber Eroeffnungskosten';
-  else { c.urteil = 'belegt'; c.handelbar = c.delta80 <= c.kKand; }
+  else { c.urteil = 'belegt'; c.handelbar = !c.leiheUngemessen && c.delta80 <= c.kKand; }
+  if (c.leiheUngemessen) c.handelbarGrund = 'nein (Leihe)';
+  else if (!c.handelbar && c.urteil === 'belegt') c.handelbarGrund = 'nein (delta80 > K_kand)';
+  else c.handelbarGrund = c.handelbar ? 'ja' : 'nein';
 }
 /** Rauschboden (Nachtrag 1b.2, nachrichtlich): se_B Placebo A / se_B Kandidat (brutto); bereinigt um die Signalzahl
  *  (se ~ 1/sqrt(Signale je Tag): x sqrt(nSig_P / nSig_K)), Erwartung ~ 1; auffaellig ausserhalb [0,5; 2]. Kein Urteil. */
@@ -424,6 +436,12 @@ function markdown(E, F, herkunft, kal, pilot) {
   var Z = F.zaehler || {}, wachhund = (F.ausgelassen || []).filter(function (a) { return /^Wachhund/.test(a.grund || ''); }).length, z = E.zahlen, o = [];
   o.push('# ' + (pilot ? 'PILOT-ERGEBNIS' : 'ERGEBNIS') + ': Signalstudie Minuten (' + K.KONFIG_KENNUNG + ')\n');
   o.push('Erzeugt ' + new Date().toISOString() + ' von `auswerten.js`. ' + (pilot ? '**PILOT / UNVOLLSTAENDIG - diese Zahlen sind kein Befund ueber den Markt.** ' : '') + 'Alles Simulation mit virtuellem Kapital, keine Anlageberatung. Pp = Prozentpunkte, Tagesmittel ungewichtet ueber Signaltage; Bericht rundet auf 4 Nachkommastellen, verglichen wurde ungerundet.\n');
+  if (F.zeitrahmenFehlend && F.zeitrahmenFehlend.length) {
+    o.push('> **⚠ UNVOLLSTAENDIG NACH ZEITRAHMEN:** kein Teillauf hat ' + F.zeitrahmenFehlend.join(', ') +
+      ' gemessen. Alle Zeilen dieses Zeitrahmens stehen auf "0 Signale" - das ist **nicht gemessen**, nicht ' +
+      '"kein Signal". Der fehlende Zeitrahmen muss in einem eigenen Lauf gemessen und hier zusammengelegt werden ' +
+      '(Nachtrag 2 Punkt 1).\n');
+  }
   o.push('## 0. Herkunft und Zaehler\n');
   o.push(tabelle(['Ordner', 'Dateien', 'Reihen', 'GB', 'pilot', 'beendet', 'Teil', 'Reihen-Argument', 'Zellenstand', 'Kennung'],
     herkunft.map(function (h) { return [h.ordner, ganz(h.dateien), ganz(h.reihen), tw((h.bytes || 0) / 1e9), jn(h.pilot), h.beendet, h.teil ? h.teil.k + '/' + h.teil.n : '–', h.reihenArg ? h.reihenArg.join(' ') : '–', ganz(h.zellenStand), h.kennung]; })));
@@ -442,19 +460,27 @@ function markdown(E, F, herkunft, kal, pilot) {
     E.kontrollen.map(function (k) { var p = k.placebo, d = k.drift; return [k.zr, k.h, ganz(p.nTage), ganz(p.nSig), pp(p.gegenTopf), pp(p.se), tw(p.t), jn(k.imBand), ganz(k.eigenGeprueft), ganz(k.eigenGefallen), ganz(d.nTage), pp(d.mittel), pp(d.sd), tw(d.t), ganz(d.nTageB), pp(d.mittelB), ganz(d.kerzen)]; })));
   o.push('Gepoolte Placebo-Baender gefallen: **' + ganz(z.placeboPoolGefallen) + '** von ' + ganz(E.kontrollen.length) + '. Einzel-Placebos gefallen: **' + ganz(z.placeboEigenGefallen) + '**. Signalzellen ohne Topfzelle (aus der Marktgewichtung gefallen): ' + ganz(z.ohneTopf) + '.\n');
   o.push('Rauschboden (Nachtrag 1b.2, nachrichtlich): se_B(Placebo A, beide Richtungen, brutto) / se_B(Kandidat, brutto), bereinigt um die Signalzahl (× √(nSig_P/nSig_K), Erwartung ≈ 1); auffaellig ausserhalb [0,5; 2]: **' + ganz(z.seVerhaeltnisAuffaellig) + '** von ' + ganz(z.seVerhaeltnisGeprueft) + ' geprueften Konfigurationen - kein Urteilskriterium, Spalte „se PlA/Kand" in der Tafel.\n');
-  o.push('## 2. Urteile in Zahlen (§6, Nachtrag 5-6, 20)\n');
+  o.push('## 2. Urteile in Zahlen (§6, Nachtrag 5-6, 20, 2)\n');
+  /* Nachtrag 2 Punkt 3 (PM): der Satz gehoert in den Bericht, nicht in eine Fussnote. */
+  o.push('> **Belegt ist nicht handelbar.** Ueber belegt / widerlegt / nicht entscheidbar entscheidet allein der rohe ' +
+    'Netto-Ertrag (Ertrag minus Kassa-Huerde der Umsatzklasse, Fenster `mitte` ab 2021). Marktbereinigung und ' +
+    'Einstiegsfenster-Huerde koennen ein "belegt" nur **herabstufen**, nie erzeugen. **Die Spalte, die zaehlt, ist ' +
+    '`handelbar`**: sie verlangt zusaetzlich, dass die Kante ueber der Aufloesungswand liegt (delta80 ≤ K_kand) und ' +
+    'dass sie nach der Huerde des tatsaechlichen Einstiegsfensters steht. Short-Konfigurationen sind **nie** ' +
+    'handelbar - die Wertpapierleihe ist nicht gemessen (Nachtrag 2 Punkt 4).\n');
   var uz = [['Konfigurationen', ganz(z.konfigurationen)], ['k1 (Tor 1 bestanden, Sicht alle)', ganz(z.k1)], ['z_Bonf(max(k1,1)) fuer delta80', tw(z.zBonfK1)], ['k2 (beide Tore)', ganz(z.k2)], ['z_Bonf(max(k2,1)) = Schwelle fuer t_B', tw(z.zBonfK2)]];
   URTEILE.forEach(function (u) { uz.push(['Urteil: ' + u, ganz(z.urteile[u])]); });
-  uz.push(['handelbar (belegt und delta80 ≤ K_kand)', ganz(z.handelbar)]);
+  uz.push(['handelbar (belegt, delta80 ≤ K_kand, kein Short)', ganz(z.handelbar)]);
+  uz.push(['davon Short (nie handelbar, Leihe nicht gemessen)', ganz(E.konf.filter(function (c) { return c.leiheUngemessen && c.urteil.indexOf('belegt') === 0; }).length) + ' belegte Shorts']);
   Object.keys(z.groesse).forEach(function (g) { uz.push(['Groessenaussage (alle mit ≥ 30 Bes-Tagen): ' + g, ganz(z.groesse[g])]); });
   o.push(tabelle(['Groesse', 'Wert'], uz));
   o.push('## 3. Kandidatentafel - alle ' + z.konfigurationen + ' Konfigurationen, sortiert nach Entdeckungs-t (netto) absteigend\n\nEnt = Entdeckung (Tage < ' + K.BESTAETIGUNG_AB + '), Bes = Bestaetigung (Tage ≥ ' + K.BESTAETIGUNG_AB + ' und ≥ ' + K.REGIME_AB + '). netto = brutto − K_mitte der Klasse je Signal; nettoF = brutto − Einstiegsfenster-Huerde (Nachtrag 12); markt = brutto − dir·Topf (Nachtrag 2). K_kand aus den Signalzahlen je Klasse der Bestaetigung. Placebo A eigen ueber alle Tage; Kand−PlaceboB gepaart je Tag in der Bestaetigung (nachrichtlich). B2 = Vorzeichen Tagesmittel vs. signalgewichtet weichen ab. Short braucht Leihe, die Huerde ist dort eine Untergrenze.\n');
   var sortiert = E.konf.slice().sort(function (a, b) { var ta = a.alle.ent.netto.t, tb = b.alle.ent.netto.t; if (ta == null && tb == null) return 0; if (ta == null) return 1; if (tb == null) return -1; return tb - ta; });
-  o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Ent nTage', 'Ent nSig', 'Ent brutto', 'Ent netto', 'Ent t', 'MDE_B', 'Tor1', 'K_kand', 'delta80', 'Tor2', 'Bes nTage', 'Bes nSig', 'Bes brutto', 'Bes netto', 'Bes nettoF', 'Bes markt', 'Bes t', 'obere Grenze', 'PlA Mittel', 'PlA t', 'se PlA/Kand', 'Kand−PlB', 'Kand−PlB t', 'B2', 'Urteil', 'Groesse'],
+  o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Ent nTage', 'Ent nSig', 'Ent brutto', 'Ent netto', 'Ent t', 'MDE_B', 'Tor1', 'K_kand', 'delta80', 'Tor2', 'Bes nTage', 'Bes nSig', 'Bes brutto', 'Bes netto', 'Bes nettoF', 'Bes markt', 'Bes t', 'obere Grenze', 'PlA Mittel', 'PlA t', 'se PlA/Kand', 'Kand−PlB', 'Kand−PlB t', 'B2', 'Urteil', 'handelbar', 'Groesse'],
     sortiert.map(function (c) { var e = c.alle.ent, b = c.alle.bes, p = c.placeboA, q = c.alle.placeboB.bes, v = c.seVerhaeltnis;
       return [c.det, c.zr, c.richtung, c.h, ganz(e.nTage), ganz(e.nSig), pp(e.brutto.mittel), pp(e.netto.mittel), tw(e.netto.t), pp(c.mdeB), jn(c.tor1), pp(c.kKand), pp(c.delta80), jn(c.tor2),
         ganz(b.nTage), ganz(b.nSig), pp(b.brutto.mittel), pp(b.netto.mittel), pp(b.nettoF.mittel), pp(b.markt.mittel), tw(b.netto.t), pp(b.brutto.obere), pp(p.gegenTopf), tw(p.t), tw(v.bereinigt) + (v.auffaellig ? ' !' : ''), pp(q.mittel), tw(q.t),
-        (e.netto.b2 || b.netto.b2) ? 'B2' : '', c.urteil + (c.handelbar ? ', handelbar' : '') + (c.herabstufungen.length ? ' [' + c.herabstufungen.join('; ') + ']' : ''), c.groesse]; })));
+        (e.netto.b2 || b.netto.b2) ? 'B2' : '', c.urteil + (c.herabstufungen.length ? ' [' + c.herabstufungen.join('; ') + ']' : ''), c.handelbarGrund, c.groesse]; })));
   o.push('## 4. Ueberlebensverzerrung (§7c): Bestaetigungs-Brutto-Tagesmittel Sicht alle − Sicht lebend\n\nNegativ = ein Archiv nur aus Lebenden haette die Familie beschoenigt (August-Anker Dip −3,78 Pp je Signaltag, Yahoo). Die Verschwundenen sind eine andere Grundgesamtheit (kleiner, billiger) - deshalb zusaetzlich je Umsatzklasse (Tagesreihen je Klasse). Mittel ueber die Konfigurationen der Familie mit beiden Sichten.\n');
   o.push(tabelle(['Familie', 'ZR', 'H', 'Konfigurationen', 'Differenz (Pp)'], E.ueberleben.jeZrH.map(function (u) { return [u.familie, u.zr, u.h, ganz(u.nKonf), pp(u.differenz)]; })));
   o.push(tabelle(['Familie', 'Umsatzklasse', 'Konfigurationen', 'Differenz (Pp)'], E.ueberleben.jeKlasse.map(function (u) { return [u.familie, u.klasse, ganz(u.nKonf), pp(u.differenz)]; })));
@@ -463,6 +489,35 @@ function markdown(E, F, herkunft, kal, pilot) {
   o.push('## 5. Regimeschnitt der Entdeckung (§5, Diagnose, kein Filter): ≤ 2020 gegen ≥ 2021\n');
   o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', '≤2020 nTage', '≤2020 brutto', '≤2020 netto', '≤2020 t', '≥2021 nTage', '≥2021 brutto', '≥2021 netto', '≥2021 t'],
     sortiert.filter(function (c) { return c.alle.ent.nSig > 0; }).map(function (c) { var a = c.alle.entBis2020, b = c.alle.entAb2021; return [c.det, c.zr, c.richtung, c.h, ganz(a.nTage), pp(a.brutto.mittel), pp(a.netto.mittel), tw(a.netto.t), ganz(b.nTage), pp(b.brutto.mittel), pp(b.netto.mittel), tw(b.netto.t)]; })));
+  /* Nachtrag 2 Punkt 2 (PM): je Zeitrahmen x Klasse ausweisen, wie viele Reihen und Reihen-Tage die 80-%-Regel
+   * passieren - damit ein Nullbefund dort als "nicht gemessen" und nicht als "nichts da" gelesen wird. */
+  o.push('## 5b. Was die 80-%-Regel passiert hat, je Zeitrahmen × Umsatzklasse (Nachtrag 1a und 2)\n');
+  o.push('Gewertete Reihen-Tage = Tage mit ≥ 80 % der Sollkerzen DIESES Zeitrahmens, mit bekannter Umsatzklasse und ' +
+    'ausserhalb eines Kapitalmassnahmen-Fensters. **Eine Zelle mit wenigen Reihen-Tagen traegt keinen Nullbefund:** ' +
+    'dort steht "nicht gemessen", nicht "nichts da". Dünne Minutenreihen tragen die Detektoren nicht - das ist ein ' +
+    'Befund über die Daten, kein Mangel der Regel.\n');
+  /* "Zaehler fehlt" und "0 Tage" sind zwei verschiedene Aussagen (fehlerformen.md: "0 gefunden" vs "nichts zu
+   * durchsuchen") - ein Lauf vor Nachtrag 2 fuehrt den Zaehler nicht und darf hier keine Null zeigen. */
+  var hatZaehler = Object.keys((F.zaehler || {}).tageGewertetKlasse || {}).length > 0;
+  if (!hatZaehler) {
+    o.push('**Zaehler nicht im Lauf vorhanden:** dieser Messlauf stammt aus einer Fassung vor Nachtrag 2 und fuehrt ' +
+      '`tageGewertetKlasse` nicht. Die Tabelle bliebe leer - sie wird deshalb nicht gedruckt. Ein neuer Lauf ' +
+      'schreibt sie mit. Ersatzweise unten die Zahl der je Zeitrahmen verworfenen duennen Tage.\n');
+  } else {
+    var zk = [];
+    K.ZEITRAHMEN.forEach(function (zr) {
+      K.KLASSEN.forEach(function (kl) {
+        var schl = zr.key + '|' + kl.name;
+        var tage = F.zaehler.tageGewertetKlasse[schl] || 0;
+        var reihen = Object.keys(F.signale || {}).filter(function (r) { return ((F.signale[r].tageGewertetKlasse || {})[schl] || 0) > 0; });
+        zk.push([zr.key, kl.name, ganz(reihen.length), ganz(tage), tage === 0 ? 'nicht gemessen (kein Tag hat die Regel passiert)' : (tage < 1000 ? 'duenn - kein Nullbefund' : '')]);
+      });
+    });
+    o.push(tabelle(['ZR', 'Klasse (Mio $)', 'Reihen mit gewerteten Tagen', 'gewertete Reihen-Tage', 'Hinweis'], zk));
+  }
+  o.push('Dünne Tage, je Zeitrahmen verworfen (F.zaehler.tageDuenn): ' + Object.keys(F.zaehler.tageDuenn || {}).map(function (k) { return k + ' ' + ganz(F.zaehler.tageDuenn[k]); }).join(', ') +
+    '. Rechenzeit je Zeitrahmen (F.zaehler.msJeZr, Sekunden): ' + (Object.keys(F.zaehler.msJeZr || {}).length ? Object.keys(F.zaehler.msJeZr).map(function (k) { return k + ' ' + ganz(Math.round(F.zaehler.msJeZr[k] / 1000)); }).join(', ') : 'nicht im Lauf gefuehrt (Fassung vor Nachtrag 2)') + '.\n');
+
   o.push('## 6. Signalanteil und Klassenmix (§4, vorab gezaehlt)\n');
   o.push(tabelle(['Detektor', 'ZR', 'Reihen gesamt', 'Reihen mit Signal', 'Signale', 'Median je Reihe', 'Median je Reihe mit Signal'], E.signalanteil.map(function (s) { return [s.det, s.zr, ganz(s.reihenGesamt), ganz(s.reihenMitSignal), ganz(s.summe), ganz(s.medianJeReihe), ganz(s.medianJeReiheMitSignal)]; })));
   o.push('Klassenmix der gewerteten Signale je Zeitrahmen (Kandidaten-Zellen, Haltedauer schluss), Klassen ' + K.KLASSEN.map(function (k) { return k.name; }).join(' / ') + ':\n');
