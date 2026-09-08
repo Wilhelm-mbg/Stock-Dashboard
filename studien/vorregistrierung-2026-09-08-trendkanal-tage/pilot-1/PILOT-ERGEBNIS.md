@@ -2,7 +2,7 @@
 
 > **PILOT- ODER TEILLAUF.** Zahlen aus 19 Reihen. Nichts hier ist ein Befund ueber den Markt; die Datei heisst deshalb nicht ERGEBNIS.md.
 
-Erzeugt 2026-09-08T15:59:27.266Z von auswerten.js. Kennung `trendkanal-tage-2026-09-08/v1/4x2x2x4x4x4+topf61+kurs`, Schluss-Kandidat `c1`. Alles Simulation, keine Anlageberatung.
+Erzeugt 2026-09-08T16:03:10.640Z von auswerten.js. Kennung `trendkanal-tage-2026-09-08/v1/4x2x2x4x4x4+topf61+kurs`, Schluss-Kandidat `c1`. Alles Simulation, keine Anlageberatung.
 
 ## 0. Herkunft und Zaehler
 
@@ -17,6 +17,8 @@ Erzeugt 2026-09-08T15:59:27.266Z von auswerten.js. Kennung `trendkanal-tage-2026
 | zulaessige Reihen-Tage (Klasse, kein Massnahmenfenster) | 32.488 |
 | davon je Klasse 5-50 / 50-250 / 250-1000 / ab1000 | 7.947 / 615 / 6.195 / 17.731 |
 | Reihen-Tage ohne Klasse / im Massnahmenfenster | 11.585 / 7 |
+| davon ohne 16:00-Kerze (Schluss = 15:59-Rueckfall) je Klasse | 1.344 (16,9 %) / 5 (0,8 %) / 1.475 (23,8 %) / 713 (4,0 %) |
+| davon ohne 09:30-Kerze (Eroeffnung = erste Kerze) je Klasse | 0 (0,0 %) / 0 (0,0 %) / 0 (0,0 %) / 0 (0,0 %) |
 | K1: Aufrufe / Linien / ausgebaut | 32.473 / 28.188 / 25.252 |
 | K2 ausgebaut (Reihen-Tage) | 15.282 |
 | E1 Kandidaten / ohne Bestaetigungstag / abgelehnt | 9.720 / 0 / 1.331 |
@@ -32,7 +34,7 @@ Erzeugt 2026-09-08T15:59:27.266Z von auswerten.js. Kennung `trendkanal-tage-2026
 | Placebo B gezogen / ohne Partner | 7.187 / 209 |
 | Topf fehlt / SPY fehlt (Trades) | 44 / 0 |
 | Regime-Tage ueber / unter / unbekannt | 2.072 / 408 / 200 |
-| ms laden / Topf / messen | 110 / 51 / 1.861 |
+| ms laden / Topf / messen | 111 / 48 / 1.825 |
 
 Fehlende Jahresdateien sind in `alpaca1m/_luecken.json` erfasst (PM 07.09.2026: 340 Reihen, alle erfasst) - "Datei fehlt" ist ein Befund ueber den Handel, kein Loch der Sammlung.
 

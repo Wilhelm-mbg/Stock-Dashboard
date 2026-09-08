@@ -143,7 +143,7 @@ function protokoll(ordner, zeile) {
   try { fs.appendFileSync(path.join(ordner, '_lauf.log'), s + '\n'); } catch (e) { /* Log ist Komfort */ }
 }
 function leererZaehler() {
-  return { reihenTageZulaessig: 0, reihenTageOhneKlasse: 0, reihenTageMassnahmen: 0, tageGewertetKlasse: [0, 0, 0, 0], k1Aufrufe: 0, k1Linien: 0, k1Ausgebaut: 0, k2Ausgebaut: 0,
+  return { reihenTageZulaessig: 0, reihenTageOhneKlasse: 0, reihenTageMassnahmen: 0, tageGewertetKlasse: [0, 0, 0, 0], c16fehltKlasse: [0, 0, 0, 0], oSpaetKlasse: [0, 0, 0, 0], k1Aufrufe: 0, k1Linien: 0, k1Ausgebaut: 0, k2Ausgebaut: 0,
     e1Kandidaten: 0, e1OhneBestaetigungstag: 0, e1Abgelehnt: 0, e2Kandidaten: 0, cooldown: 0, ohneKlasse: 0, ohneEinstieg: 0, einstiegMassnahmen: 0,
     signale: 0, regimeUeber: 0, regimeUnbekannt: 0, ohneHorizont: [0, 0, 0, 0], zensiert: [0, 0, 0, 0], delist: [0, 0, 0, 0], gebrochen: 0, gekappt: 0,
     placeboAGezogen: 0, placeboAOhnePartner: 0, placeboBGezogen: 0, placeboBOhnePartner: 0, spyFehlt: 0, topfFehlt: 0 };
@@ -159,6 +159,9 @@ function topfUndListen(reihen, sp, nTage, Z) {
       if (k < 0) { Z.reihenTageOhneKlasse++; continue; }
       if (S.flags[p] & K.FLAG.massnahmen) { Z.reihenTageMassnahmen++; continue; }
       Z.reihenTageZulaessig++; Z.tageGewertetKlasse[k]++;
+      /* Nachtrag 2 Punkt 2: an wie vielen zulaessigen Wert-Tagen je Klasse fehlt die 16:00-Kerze (Schluss = 15:59-Rueckfall) bzw. die 09:30-Kerze */
+      if (S.flags[p] & K.FLAG.c16fehlt) Z.c16fehltKlasse[k]++;
+      if (S.flags[p] & K.FLAG.oSpaet) Z.oSpaetKlasse[k]++;
       var tag = S.tag[p];
       zul[tag].push(ri); zulK[tag][k].push(ri);
       for (var d = 1; d <= K.POT_MAX_DAUER; d++) {
