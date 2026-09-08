@@ -11,6 +11,7 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 08.09. | Signalstudie Minuten, Vollauf 5m/15m (Nr. 25, Teil 2) | 144 Konfigurationen über 2,37 Mrd Kerzen: 0 bestehen das Entdeckungstor, 0 belegt, Placebos sauber, delta80 bis 0,016 Pp — die bekannten Intraday-Detektoren sind auf 5m/15m unter Kassa-Kosten gemessen tot; 1m offen | `studien/vorregistrierung-2026-09-06-signale-minuten/ergebnis-5m15m-2026-09-08/ERGEBNIS.md`, [belegstand.md](belegstand.md) |
 | 07.09. | Nachbesserung Live-Sammler + Nachlauf (Nr. 26) | 12 QS-Befunde behoben: nicht geholte Balken am ersten Handelstag von 96,2 % auf 0,00 %, gleichzeitiger Sperrbesitz von 20/20 auf 0/20, dazu Fehlerpfade, Fenster, Deckel, Chart und Wrapper; Suite 4.794 → 4.879 | `uebergabe/nachbesserung-live-sammler-2026-09-07.md`, c03739d |
 | 07.09. | Signalstudie Minuten: Vorregistrierung + Messgerät (Nr. 25) | 234 Konfigurationen vorregistriert, Messgerät gebaut und mit 76 Prüfungen belegt (Positivkontrolle exakt, Placebo im Band, „geteilter Kurs" vermieden), Pilot über 20 Reihen ohne Abbruch; Vollauf steht aus | `uebergabe/signalstudie-minuten-2026-09-06.md`, 2455d58 |
 | 07.09. | Glocke wie an der NYSE (Nr. 19) | Elektrische Klingel aus einem reinen Plan (`markt/glocke.js`), Öffnung 8 s / Schluss 10 s + Hammer, Probe-Auswahl und Lautstärke; Suite 4.744 → 4.794; WAV zum Anhören liegt bei | `uebergabe/nyse-glocke-2026-09-05.md`, 7d53944 |

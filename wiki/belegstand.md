@@ -13,6 +13,7 @@ tags: [befund]
 > Klassen**. Von den 31 sind damit **2 wieder offen** (beide glockendruck, belegte Klasse),
 > 14 endgültig zu, 15 unentschieden mangels belegter Klasse. **„Wieder offen" ist eine
 > Größenaussage, kein Ertragsbeleg** — die Zahl der belegten Kanten bleibt **NULL**.
+> **Neu am 08.09.:** Die **Signalstudie auf Minutenbasis** (5m/15m, 45.096 Dateien, 2,37 Mrd Kerzen, 7.299 Reihen mit 4.993 Verschwundenen, Kassa-Hürde je Klasse) findet **0 von 144 Konfigurationen**, die auch nur das Entdeckungstor bestehen — bei sauberen Placebos und einer Auflösung, die eine Kante von 0,02 Pp gesehen hätte. Die bekannten Intraday-Detektoren sind auf 5- und 15-Minuten-Basis unter Kassa-Kosten **gemessen tot**. 1m ist nicht gemessen. Abschnitt „Signalstudie Minuten" unten.
 
 ## Widerlegt (gemessen tot)
 
@@ -193,3 +194,26 @@ sie sind selbst kein Einstieg.**
 
 Siehe [messmethodik.md](messmethodik.md) für die Frage, warum eine Bedingung leichter zu belegen
 ist als eine Strategie.
+
+## Signalstudie Minuten, 5m/15m — **NEIN mit Auflösung** (08.09.2026)
+
+Vorregistriert vor der ersten Rechnung (Studienordner, Nachträge 1–3), Messgerät mit 81 eigenen Prüfungen abgenommen, Vollauf 07.09. 20:34 – 08.09. 13:15 in acht Teilen. Ergebnis: `studien/vorregistrierung-2026-09-06-signale-minuten/ergebnis-5m15m-2026-09-08/ERGEBNIS.md`.
+
+| Größe | Wert |
+|---|---|
+| Daten | 45.096 Symbol-Jahre, 122 GB, **2,37 Mrd** reguläre Minutenkerzen, 7.299 Aktien (nur CS/ADRC), davon **4.993 verschwunden** |
+| Konfigurationen | 13 Detektoren der August-Studie × 5m/15m × long/short × 1 h / 3 h / bis Schluss = **144** (dazu 90 auf 1m: **nicht gemessen**) |
+| Kosten | Kassa-Hürde je Umsatzklasse des Wert-Tages (0,157 / 0,085 / 0,065 / 0,045 Pp je Umlauf) |
+| Tor 1 bestanden (k₁) | **0** — Entdeckung ≥ 4 × MDE der Bestätigung: niemand |
+| belegt / handelbar | **0 / 0** |
+| Größenaussagen | 97 „in jeder Klasse zu", 32 „in seiner Klasse zu", **15 „offen"** — alle 15 mit **negativem** Netto in der Bestätigung |
+| Bestes Brutto | vwap-abstand 5m long bis Schluss 0,152 Pp je Signal (Entdeckung), Hürde 0,120 → Netto +0,024 bei t = 1,4; Bestätigung Netto **−0,014**. Kapitulation 5m long 3 h: Brutto 0,148, Bestätigung Netto −0,038 |
+| Placebo | 9 von 9 gepoolte Bänder gehalten, 0 von 144 Einzel-Placebos gefallen; Intraday-Drift ≈ 0 |
+| Auflösung realisiert | dichteste Konfiguration (rsi2 long 5m 1 h): se_B 0,0057 Pp, MDE_B 0,011, **delta80 0,016** (Plan 0,058); Median delta80 0,022–0,060 |
+| Überlebensverzerrung | Differenz alle − lebend: Dip −0,002 … −0,009 Pp, Ausbruch +0,001 … +0,004, Wende ±0,01 — das Archiv mit den Verschwundenen schließt die Lücke ([ueberlebensverzerrung.md](ueberlebensverzerrung.md)) |
+| Cent-Boden | 0,2–2,6 % der Signale je Klasse darüber — irrelevant |
+| Ausgelassen | 83 Dateien („Datei fehlt", alle in `_luecken.json`), 0 Wachhund, 0 Detektorfehler |
+
+**Lesart.** Die Kante gibt es brutto (0,13–0,15 Pp je Signal bei den besten Konfigurationen), die Kassa-Kosten sind größer, und in der Bestätigung ab 2023 schrumpft das Brutto weiter. Das ist dieselbe Lehre wie im August ([signalstudie-2026-08](../studien/signalstudie-2026-08/BERICHT.md): Produkthürde), jetzt aber mit einem Messgerät, das scharf genug war: **das Nein ist gemessen, nicht Blindheit.** Für 1m gilt weiterhin „nicht gemessen".
+
+**Was das Ergebnis nicht sagt:** nichts über neue Detektoren oder andere Parameter, nichts über Übernacht, 60m, CFD oder Scheine; die notierte Spanne ist eine Untergrenze der Kosten (Schlupf, Tiefe nicht enthalten) — ein realer Handel wäre also eher schlechter.
