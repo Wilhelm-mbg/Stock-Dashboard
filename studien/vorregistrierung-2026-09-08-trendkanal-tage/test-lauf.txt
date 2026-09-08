@@ -1,0 +1,94 @@
+== 0. Selbstpruefung der Hilfen: Zellenlayout, Normalquantil, Kennung
+OK    0a Zelle ist injektiv und rueckrechenbar (3000 Stichproben, 0 Fehler); Zellen 5488640, Felder 7
+OK    0b Topfzelle im Bereich, letzte Zelle = topfZahl-1
+OK    0c z_Bonf(1/5/10) = 1.96 / 2.58 / 2.81
+OK    0d Familie 64 Konfigurationen (4 Linien x 2 Einstiege x 2 Richtungen x 4 Ausstiege), Kennung trendkanal-tage-2026-09-08/v1/4x2x2x4x4x4+topf61+kurs
+OK    0e Kalender 2.680 Tage 2016-01-04..2026-08-31, Bestaetigung ab 2023-02-07 (894 Tage) - wie registriert
+   (0.0 s)
+== 1. KANAELE = App-Funktionen an echten Tageskerzen (AAPL)
+OK    1a AAPL Tageskerzen: 2680 Tage aus tage-pilot/AAPL.json
+OK    1b K1 = letzter Abschnitt von Q.kanalSegmente(250 Tage): 60 Tage geprueft, 0 Abweichungen (oben/unten/steigung/trend/guete/n/Beruehrungen/ausgebaut), 48 ausgebaut
+OK    1c K2: Steigung, sd, Mitte, R2 (3 Stellen), t (1 Stelle) = Q.channelFit an 200 Tagen (0 Abweichungen); Linien bei mitte +-2 sd, nicht an den Quantilen der App (0 zufaellig gleiche)
+OK    1d K3: oben/unten = hoch/tief aus Q.donchianSignal(bars[0..i], N) fuer N = 20 und 55 (200 Tage, 0 Abweichungen)
+OK    1e Praefix-Probe: Linien am Tag 299 identisch mit ganzer Reihe und mit bars[0..299] (K1/K2/K3-20) - kein Blick nach vorn
+   (0.0 s)
+== 2. KLASSEN, HUERDEN, KALENDER gegen kosten.js, liquide.js, wiki/kosten.md
+OK    2a K.KLASSEN-Grenzen = kosten.js UMSATZ_KLASSEN (5-50 5000000-50000000, 50-250 50000000-250000000, 250-1000 250000000-1000000000, ab1000 1000000000-Infinity)
+OK    2b klasseIndex: -1 unter 5 Mio $ und bei NaN, Grenzen zur oberen Klasse
+OK    2c Klasse aus Liquide.medianUmsatz (sortiert[n>>1], Fenster 20 = KORB.fenster 20); Tag d nimmt d-20..d-1
+OK    2d reiheAusDatei: Klasse ab Tag 20 (Klasse 1 = 50-250), Tag 19 ohne; Umsatz des Tages selbst zaehlt nicht
+OK    2e Huerden = wiki/kosten.md "K ab 2021 (massgeblich)": 5-50 0.1569, 50-250 0.0854, 250-1000 0.0647, ab1000 0.0449
+OK    2f Eroeffnungsfaktoren = wiki/kosten.md "Eroeffnung/Mitte": 2.68 / 2.46 / 2.07 / 1.81
+OK    2g Placebo-Schranke und "in jeder Klasse zu" = Huerde ab1000 (0.0449)
+OK    2h Schluss-Wahl c1 (Nachtrag 2), Gleichstand nach P95
+   (0.0 s)
+== 3. TAGESKERZEN gegen Yahoo an 20 Werten (§1.2, Nachtrag 2)
+OK    3a Kreuzprobe ueber 20 Werte, 38233 Tage (Spruenge 70, 16:00-Kerze fehlt 5835)
+OK    3b Wahl nach Regel = c1 (konfig c1): Schluss Median 0.0000 P95 0.2891 Pp, Eroeffnung Median 0.0000 P95 0.0749 - Toleranz Median <= 0,03, P95 <= 0,30
+OK    3c der 15:59-Schluss (c3) liegt weiter vom amtlichen Schluss als c1 (Median 0.0214, P95 0.4772)
+   (0.6 s)
+== 4. UEBERLAPPUNGS-BEWEIS (§7): naiv zu klein, Hansen-Hodrick trifft (Simulation ohne Kante)
+OK    4a H=5 mit Marktfaktor: naive Tagesrechnung/wahr = 0.67 (erwartet ~0.63, Schranke 0.73) - zu klein bei ueberlappenden Fenstern
+OK    4b H=5 mit Marktfaktor: Hansen-Hodrick/wahr = 1.02 (in [0,88; 1,12], 0 mal HH<=0) - trifft die Wahrheit aus 400 Wiederholungen (wahr 0.2013 Pp)
+OK    4c H=5 mit Marktfaktor: Block-H/wahr = 0.90 und Newey-West/wahr = 0.92 liegen zwischen naiv und HH, beide zu tief - deshalb nicht primaer
+OK    4d H=5 nur Eigenrauschen (jeden Tag andere Reihen): Hansen-Hodrick/wahr = 1.00 trifft ebenfalls; naiv/wahr 0.91 (nachrichtlich: die Ueberlappung kostet hier wenig)
+OK    4a H=10 mit Marktfaktor: naive Tagesrechnung/wahr = 0.49 (erwartet ~0.48, Schranke 0.58) - zu klein bei ueberlappenden Fenstern
+OK    4b H=10 mit Marktfaktor: Hansen-Hodrick/wahr = 0.98 (in [0,88; 1,12], 0 mal HH<=0) - trifft die Wahrheit aus 400 Wiederholungen (wahr 0.3886 Pp)
+OK    4c H=10 mit Marktfaktor: Block-H/wahr = 0.84 und Newey-West/wahr = 0.85 liegen zwischen naiv und HH, beide zu tief - deshalb nicht primaer
+OK    4d H=10 nur Eigenrauschen (jeden Tag andere Reihen): Hansen-Hodrick/wahr = 0.99 trifft ebenfalls; naiv/wahr 0.81 (nachrichtlich: die Ueberlappung kostet hier wenig)
+OK    4a H=20 mit Marktfaktor: naive Tagesrechnung/wahr = 0.37 (erwartet ~0.35, Schranke 0.45) - zu klein bei ueberlappenden Fenstern
+OK    4b H=20 mit Marktfaktor: Hansen-Hodrick/wahr = 0.98 (in [0,88; 1,12], 0 mal HH<=0) - trifft die Wahrheit aus 400 Wiederholungen (wahr 0.7405 Pp)
+OK    4c H=20 mit Marktfaktor: Block-H/wahr = 0.83 und Newey-West/wahr = 0.83 liegen zwischen naiv und HH, beide zu tief - deshalb nicht primaer
+OK    4d H=20 nur Eigenrauschen (jeden Tag andere Reihen): Hansen-Hodrick/wahr = 0.97 trifft ebenfalls; naiv/wahr 0.68 (nachrichtlich: die Ueberlappung kostet hier wenig)
+   (5.1 s)
+== 5. POSITIVKONTROLLE (§11e): gepflanzte Kante in der Ausstiegs-Eroeffnung wird in Groesse und Richtung wiedergefunden
+OK    5a Kunst-Satz: 40 Reihen ab 2021, 962 K2/E2-Long-Signale (eigene Nachrechnung), 591 Ausstiegs-Eroeffnungen gepflanzt (+2 %), 370 uebersprungen (Ausstieg beruehrt anderen Trade)
+OK    5b messen.js zaehlt K2/E2 long: 962 = eigene Nachrechnung 962; nach der Pflanzung unveraendert 962 (Signale rechnen auf Schluessen)
+OK    5c Roh-Mittel H5 steigt um 1.2413 Pp bei Soll 1.2325 (= 100·delta·Anteil gepflanzt 0.62; n 959 Trades, ohne Pflanzung 0.2086)
+OK    5d Ueberschuss gegen den Topf steigt um 1.1627 Pp = 0.94 x roh (erwartet 1 - 1/N_zulaessig ~ 0.97: die gepflanzte Reihe ist selbst im Topf)
+OK    5e Gegenprobe: die Pflanzung sitzt nur in der H5-Ausstiegskerze - H10 0.0000, H20 0.0000 Pp Aenderung
+OK    5f ohne Pflanzung nahe null: roh 0.2086, Ueberschuss 0.1395 Pp (n 959; Short-Seite n 967)
+   (11.9 s)
+== 6. PLACEBO NULL auf Zufallsreihen, Bestaetigung kann ablehnen, Kontrollen der Auswertung
+OK    6a Placebo A gepoolt je (Einstieg, Ausstieg): |t| < 3 ueberall - E1/H5 -0.0077 (t -0.09, n 5292); E1/H10 -0.0241 (t -0.20, n 5271); E1/H20 0.1572 (t 1.03, n 5240); E1/bruch -0.0523 (t -0.28, n 5150); E2/H5 -0.0861 (t -1.03, n 6446); E2/H10 0.1045 (t 0.93, n 6424); E2/H20 0.0022 (t 0.01, n 6358); E2/bruch -0.0651 (t -0.69, n 6423)
+OK    6b Kandidaten auf Zufallsreihen: Ueberschuss brutto |t| > 3 bei 0 von 64 (netto > 4 bei 0, > 3 bei 0 - netto ist wegen der Huerde negativ)
+OK    6c Bestaetigung kann ablehnen: 2934 von 14907 E1-Kandidaten abgelehnt (20 %)
+OK    6d Zaehler: Cooldown 15325, Placebo A gezogen 11780 = Signale 11780, Placebo B 11700 + ohne Partner 80 = Signale
+OK    6e jede E1/long/H5-Konfiguration hat Entdeckungs- und Bestaetigungstage, n_eff und HH-se (K1 479T/95.80, K2 92T/18.40, K3-20 513T/102.60, K3-55 351T/70.20)
+OK    6f auf Zufallsreihen: Tor 1 bei 1 von 64 (<= 2 erlaubt), belegt 0, handelbar 0
+OK    6g Regime aus SPY-EMA200: 612 ueber, 609 unter, 1459 unbekannt (= 1259 Tage vor dem Satz + Vorlauf 200); Regime-Variante 259 <= alle 639 Trades
+OK    6h Bericht auf Kunstdaten heisst PILOT-ERGEBNIS und traegt die Warnung
+   (0.6 s)
+== 7. GEGENPROBE GETEILTER KURS (§4): Signalkurs als Einstieg erzeugt den Scheineffekt, richtiger Einstieg nicht
+OK    7a E2 (Ruecklauf, n 5441): Einstieg zum Signalschluss statt Eroeffnung i+1 hebt den Ertrag um 0.2215 Pp (gepaartes t 16.51) - Scheineffekt positiv, wie behauptet
+OK    7b E1 (Ausbruch, n 6539): Einstieg zum Bestaetigungsschluss statt Eroeffnung i+2 senkt den Ertrag um -0.1380 Pp (gepaartes t -11.47) - Scheineffekt negativ
+OK    7c RICHTIG nahe null auf Zufallsreihen: E2 0.1426, E1 0.0815 Pp
+   (1.1 s)
+== 8. DELISTING-AUSSTIEG, ZENSUR, MASSNAHMENFENSTER, KLASSE < 5 Mio $ (§2, §5)
+OK    8a nicht lebende Reihe endet vor dem Ausstieg: Ausstieg = letzter Schluss (delist, Dauer 2, r 4.6950 Pp)
+OK    8b lebende Reihe am Fensterende: kein Ausstieg = keine Beobachtung (zensiert), fruehere Trades beobachtet
+OK    8c Topf folgt der Delisting-Regel: Dauer 1 = naechste Eroeffnung, Dauer 5 und 40 = letzter Schluss (4.6950 Pp)
+OK    8d Topf der lebenden Reihe am Fensterende: zensiert, keine Zelle (n 0)
+OK    8e Massnahmenfenster an jedem Tag: 0 zulaessige Reihen-Tage, 648 im Fenster gezaehlt (+ 20 Vorlauftage ohne Klasse), 0 Signale
+OK    8f Umsatz unter 5 Mio $ an jedem Tag: 668 von 668 Tagen ohne Klasse - wird nicht gewertet
+OK    8g Kanalbruch ohne Bruch: Kappung am Tag e+60 (Dauer 60)
+OK    8h Kanalbruch am Einstiegstag (Schluss unter der Linie): Ausstieg zur Eroeffnung des Folgetags (pos 62)
+   (0.0 s)
+== 9. FORTSETZBARKEIT der Aggregation (tagesbalken.js) in Kindprozessen auf einem Mini-Archiv
+OK    9a Lauf (a) --max 1: eine Reihe (SPY zuerst), beendet "max erreicht", Rueckgabe 0
+OK    9b Lauf (b) Fortsetzung: protokolliert FORTSETZUNG mit 1 erledigten, danach 3 Reihen, beendet "vollstaendig", Beginn-Stempel behalten
+OK    9c Lauf (c) am Stueck: alle drei Tagesdateien byteidentisch mit (a)+(b)
+OK    9d AAPL/2024 Tagesdatei: 252 Tage, 2024-01-02 O 187,17 / C1 185,51 / C2 185,60 / C3 185,525 / V 76.174.064 (Formatprobe §0.1)
+OK    9e fremde Kennung im Ausgabeordner: Abbruch mit Rueckgabe 4
+OK    9f --neu ueberschreibt und sagt es
+OK    9g messen.js ohne SPY.json: Abbruch mit Rueckgabe 3 (keine Marktreihe)
+   (2.1 s)
+== 10. SPERRKLINKEN: kein Netz, kein Schluessel, kein Schreiben ins Archiv, kein Yahoo als Messbasis
+OK    10a kein Netzmodul, kein fetch in 6 Dateien
+OK    10b kein Schluessel-Zugriff
+OK    10c kein writeFileSync auf das Archiv (Orte/Archivwurzel)
+OK    10d archiv1d (Yahoo) kommt in messen/kanaele/tagesbalken nicht vor - nur in kreuzprobe.js
+OK    10e auswerten.js nennt die Datei nach der Herkunft (pilot oder unvollstaendig -> PILOT-ERGEBNIS)
+OK    10f nacht.cmd ruft tagesbalken.js und messen.js und startet nichts von selbst
+   (0.0 s)
+71 OK, 0 FEHLT, 0 UEBERSPRUNGEN
