@@ -453,3 +453,36 @@ dem 95.-/5.-Quantil der Residuen mit einem Boden von 0,25 sd (`upOff = max(quant
 selbst (Steigung, Achse, sd der Residuen mit N−2, R², t der Steigung) und setzt die Linien bei `mitte_i ± 2 · sd`;
 `test.js` hält Steigung, sd, R² (auf 3 Stellen) und t (auf 1 Stelle) gegen `Q.channelFit(closes, 40, i)` — die
 Gerade ist dieselbe, nur die Linienlage folgt dem Auftrag. Sonst ändert sich nichts.
+
+## 17. NACHTRAG 2 — 08.09.2026, nach der Kreuzprobe, vor der ersten Zelle
+
+**Anlass:** Die Kreuzprobe nach §1.2 ist gelaufen (`kreuzprobe.js`, 20 Werte, 38.233 Tage mit Yahoo-Gegenstück; 14
+lebende Pilot-Aktien alle Jahre, GE/TSLA/F/BAC/INTC/KO nur 2024). Es wurde keine Rendite gerechnet; `messen.js` hatte
+bis hier keine Zelle geschrieben (Syntaxfehler im Dateikopf, behoben).
+
+| Größe | Eröffnung O | **C1** 16:00-Eröffnung | C2 16:00-Schluss | C3 15:59-Schluss |
+|---|---|---|---|---|
+| Median \|Δ\| (Pp) | **0,0000** | **0,0000** | 0,0000 | 0,0214 |
+| P95 (Pp) | 0,075 | **0,289** | 0,339 | 0,477 |
+| Anteil > 0,1 Pp | 3,4 % | **9,5 %** | 13,9 % | 20,2 % |
+| Toleranz (Median ≤ 0,03, P95 ≤ 0,30) | eingehalten | **eingehalten** | verfehlt (P95) | verfehlt |
+
+1. **Die Gleichstandsregel war falsch gebaut.** C1 und C2 treffen den Yahoo-Schluss an mehr als der Hälfte der Tage
+   exakt — beide Mediane sind 0,0000, der Median ist dort blind. Die registrierte Regel „bei Gleichstand C2 vor C1"
+   hätte C2 gewählt und die Toleranz verfehlt, obwohl C1 sie einhält: ein Kontrollkriterium, das den besseren Kandidaten
+   durchfallen lässt (`fehlerformen.md`, „Kontrollkriterium falsch gebaut"). **Korrektur, vor der ersten Zelle:** bei
+   Gleichstand der Mediane entscheidet das kleinere P95, dann der kleinere Anteil > 0,1 Pp, erst dann der Vorrang.
+   Beide Ergebnisse stehen im Bericht (`kreuzprobe-pilot.json`, Feld `urspruenglicheRegel`). **Gewählt: C1 — die
+   Eröffnung der 16:00-Kerze, der Kandidat des Auftrags.** Der eine gesehene Tag (AAPL 2024-01-02, §0.1) war die
+   Ausnahme, nicht die Regel; AAPL über alle Tage: C1 Median 0,0039 / C2 0,0313 Pp.
+2. **Befund über die Quelle, nachrichtlich:** an **5.835 von 38.233 Tagen (15 %) fehlt die 16:00-Kerze** — dort gilt der
+   Rückfall C3 (Flag `c16fehlt`). Konzentriert in illiquiden Reihen (DJCO 70 %, NEU 2016–2019 fast jeder Tag, WINA), aber
+   auch bei NYSE-Großwerten in einzelnen Jahren (PG 2022: 213 von 251 Tagen, XOM 2019: 122 von 252; HD ab 2021 null).
+   Für die Signale ist der Schluss damit an 15 % der Tage der 15:59-Kurs (Median-Abweichung 0,02 Pp, P95 0,48). Die
+   Auswertung weist den Anteil je Umsatzklasse aus. Kein Grund für eine Änderung der Messgröße.
+3. **Skalenfehler bestätigt, wie erwartet:** GE 2024 mit 52 Tagen |Δ| > 5 Pp vor der Vernova-Abspaltung (Yahoo bereinigt
+   Abspaltungen, Alpaca roh — `yahoo-bereinigt-alpaca-roh`), DJCO 13, WINA 3, COKE/XOM je 1 — 70 Sprungtage gesamt,
+   getrennt gezählt, nicht im Median. Stück: Sitzung + Auktion = **95,4 %** des Yahoo-Tagesvolumens (Median; P5 0,50,
+   P95 1,13).
+4. **Kleine Abweichung von §1.3:** die Tagesdatei trägt **keine** Spalte `klasse`; die Umsatzklasse rechnet `messen.js`
+   aus dem gewählten Schluss-Kandidaten, damit die Tagesdateien von der Wahl unabhängig bleiben.
