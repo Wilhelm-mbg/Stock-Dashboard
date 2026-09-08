@@ -444,3 +444,12 @@ Absatz noch einmal.
 
 *Commit 1 dieser Studie ist diese Datei. Jede Abweichung davon steht als datierter Nachtrag unter dieser Linie,
 nie darüber.*
+
+## 16. NACHTRAG 1 — 08.09.2026, vor dem ersten Code, vor jeder Rechnung
+
+**K2 (§3) — die App-Funktion legt die Linien anders, als §3 behauptet.** `Q.channelFit` liefert `upper/lower` aus
+dem 95.-/5.-Quantil der Residuen mit einem Boden von 0,25 sd (`upOff = max(quant(res, 0,95), 0,25 · sd)`), nicht bei
+±2 Standardabweichungen. Der Auftrag setzt **±2 sd**. Deshalb rechnet `kanaele.js` die Regression über 40 Schlüsse
+selbst (Steigung, Achse, sd der Residuen mit N−2, R², t der Steigung) und setzt die Linien bei `mitte_i ± 2 · sd`;
+`test.js` hält Steigung, sd, R² (auf 3 Stellen) und t (auf 1 Stelle) gegen `Q.channelFit(closes, 40, i)` — die
+Gerade ist dieselbe, nur die Linienlage folgt dem Auftrag. Sonst ändert sich nichts.
