@@ -1,0 +1,14 @@
+tage/
+tage-*/
+pilot*/
+voll*/
+probe*/
+_fortschritt.json
+_fortschritt.json.tmp
+_zellen.bin
+_zellen.bin.tmp
+_lauf.log
+nacht-*.log
+*.stdout
+pilot-ergebnis.json
+PILOT-ERGEBNIS.md
