@@ -5,6 +5,9 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 09.09.2026 Release v8.44.1 (Wache): Live-Sammler hängt die Oberfläche während der
+  US-Sitzung nicht mehr für Minuten auf (Tagesablage statt synchroner Jahresdatei-
+  Anhänge); der Abrufplan holt nach einem Wochenende wieder genug Blöcke je Runde.
 - 07.09.2026 Release v8.44.0 (Wache): Live-Sammler holt jetzt alle im Archiv geführten
   Werte statt nur der Top-500 und sammelt zuverlässiger (Sperre, Fehler pro Wert statt
   pro Runde, kein Datenverlust bei Quellen-Aussetzern); die Börsenglocke klingt jetzt
