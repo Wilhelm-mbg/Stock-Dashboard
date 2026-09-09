@@ -53,6 +53,10 @@ schtasks /Run /TN "Markt-Dashboard <Name>"
 
 Der Wrapper macht `cd /d <Repo>` und leitet die Ausgabe in eine Logdatei; kein `&&` in `/TR`. Schlüssel aus dem Benutzerprofil sieht die Aufgabe von selbst.
 
+**Live-Sammler bis zum Release von Nr. 30 AUS (09.09.2026):** Werkzeuge → Klappe „Kursarchiv" → Häkchen „Live-Sammler (Alpaca, alle 5 Minuten …)" raus; die laufende Runde endet noch (bis 4 min), die nächste fällt aus („ausgeschaltet"). Grund: die Runde blockiert den Hauptprozess ~235 von 300 s (Nr. 30). Das Archiv füllt der Nachlauf 23:30. Nach dem Release wieder an — und der PM misst mit der Responding-Sonde nach.
+
+**Lange Läufe und Abmelden:** Aufgaben für Studien (ohne Schlüssel) mit `schtasks /Create /RU <Benutzer> /NP …` anlegen, sonst beendet ein Abmelden oder ein Ausschalten mit Schnellstart alle Teile (08.09. 20:42, 1m-Lauf). Der Nachlauf mit Schlüsseln bleibt interaktiv.
+
 **Stehende Aufgaben (Stand 06.09.2026):** „Markt-Dashboard Tageslauf 1d" (Yahoo-Tageskerzen), „Markt-Dashboard Alpaca-Nachholen" (**täglich 23:30**, `tools/vollsammlung-nachholen.cmd`, holt je Wert ab dem letzten Stempel bis zum letzten fertigen Handelstag, teilt die Sperre mit dem Live-Sammler der App, führt das Manifest nach; **angelegt 07.09. 19:10**, Log `Markt-Dashboard-Daten/nachholen.log`). Einmal-Aufgaben (bleiben stehen, laufen nur per `/Run`): Vollsammlung, Vollsammlung Pruefen, Nacharbeiten, Stammdaten, Probe Live-Verzoegerung. Der Live-Sammler selbst läuft **in der App** (Hauptprozess, 90 s nach Start, dann alle 5 Min), nicht als Aufgabe. Prüfen: `schtasks /Query /TN … /FO LIST`, `Get-Process node`, Fortschrittsdatei des Werkzeugs. **Der PM fährt Läufe selbst** (Wilhelm 03.09.: „starte du doch bitte einfach die cmd") — Migration, Nachholer, Prüfungen, Nachtlauf, Tagesarchiv-Nachlauf.
 
 Ein PM-Weckruf im **Hintergrund** (Cron in der Sitzung) ist erlaubt, wenn er auf einen Lauf wartet; ein Weckruf, der alle fünf Minuten den Kontext neu liest, nicht (Token-Sparbetrieb).
