@@ -199,6 +199,67 @@ function startFuer(letzterStempel, jetzt) {
  *  'nachboerslich' | ...). Ohne Angabe bleibt es beim alten Verhalten (jede leere Runde
  *  zaehlt) - so rechnet der Nachlauf, der genau einmal je Nacht fragt. */
 var REDUNDANZ_MAX = 5000;           /* doppelt angefragte Minuten je Block, ueber alle Mitglieder */
+/* SITZUNGSMINUTEN AUS DEM KALENDER (Nr. 27b, 09.09.2026).
+ * Die Zeitscheibe am Deckel schaetzte die Seiten eines Blocks aus WANDUHR-Minuten
+ * zwischen Start und Ende. Nach dem Feiertagswochenende (Stempel Freitag 19:59, Runde
+ * Dienstag 04:16) sind das 3.500 Minuten, in denen die Quelle fuer keine einzige einen
+ * Balken hat - der Plan hielt jeden Block fuer 70 Seiten schwer und nahm in der
+ * Vorboerse nur 2-4 Bloecke je Runde (08.09.: "Deckel: 26 Bloecke in der naechsten
+ * Runde" bei 16 Anfragen). Gezaehlt werden jetzt die Minuten, in denen ueberhaupt
+ * gehandelt wird: je Handelstag des Kalenders von 04:00 ET bis Schluss + 240 min
+ * (dieselben Grenzen wie markt/uebersicht.js und markt/kerzenchart.js). Ohne Kalender
+ * bleibt die Wanduhr - so rechnet der Nachlauf, der keinen Deckel hat. */
+var VOR_MIN = 330, NACH_MIN = 240;
+function tagesfenster(tagEt, kal) {
+  var e = kal && kal[tagEt];
+  if (!e || !e.open || !e.close) return null;
+  var p = tagEt.split('-').map(Number), o = e.open.split(':').map(Number), c = e.close.split(':').map(Number);
+  var auf = A.nyNachUtc(p[0], p[1], p[2], o[0], o[1]) - VOR_MIN * 60000;
+  var zu = A.nyNachUtc(p[0], p[1], p[2], c[0], c[1]) + NACH_MIN * 60000;
+  return { auf: auf, zu: zu };
+}
+/** Die Handelstage des Kalenders, die [von, bis] beruehren - als Fenster in Zeitfolge. */
+function fensterIn(von, bis, kal) {
+  var aus = [], gesehen = {};
+  for (var t = von; t <= bis + 86400000; t += 86400000) {
+    var tag = A.etTag(t);
+    if (gesehen[tag]) continue;
+    gesehen[tag] = 1;
+    var f = tagesfenster(tag, kal);
+    if (f) aus.push(f);
+  }
+  aus.sort(function (a, b) { return a.auf - b.auf; });
+  return aus;
+}
+/** Wie viele Minutenstempel in [von, bis] liegen in einer Sitzung (vor, regulaer, nach)? */
+function sitzungsminuten(von, bis, kal) {
+  if (!zahl(von) || !zahl(bis) || bis < von || !kal) return 0;
+  var summe = 0;
+  fensterIn(von, bis, kal).forEach(function (f) {
+    var a = Math.max(von, f.auf), b = Math.min(bis, f.zu - 60000);
+    if (b >= a) summe += Math.floor((b - a) / 60000) + 1;
+  });
+  return summe;
+}
+/** Der Stempel, an dem ab `start` genau n Sitzungsminuten erreicht sind - oder null,
+ *  wenn der Kalender nicht so weit reicht. */
+function endeNachSitzungsminuten(start, n, kal) {
+  if (!zahl(start) || !(n >= 1) || !kal) return null;
+  var rest = n, gesehen = {};
+  for (var t = start, i = 0; i < 400; t += 86400000, i++) {   /* Tag fuer Tag, hoechstens gut ein Jahr */
+    var tag = A.etTag(t);
+    if (gesehen[tag]) continue;
+    gesehen[tag] = 1;
+    var f = tagesfenster(tag, kal);
+    if (!f) continue;
+    var a = Math.max(start, f.auf), b = f.zu - 60000;
+    if (b < a) continue;
+    var da = Math.floor((b - a) / 60000) + 1;
+    if (da >= rest) return a + (rest - 1) * 60000;
+    rest -= da;
+  }
+  return null;
+}
 function abrufplan(werte, stempelJe, jetzt, opt) {
   opt = opt || {};
   var block = opt.block || BLOCK;
@@ -253,12 +314,16 @@ function abrufplan(werte, stempelJe, jetzt, opt) {
     var rest = opt.deckel, behalten = [];
     for (var bi2 = 0; bi2 < bloecke.length; bi2++) {
       var bl = bloecke[bi2];
-      var minuten = Math.floor((bl.ende - bl.start) / 60000) + 1;
-      var seiten = Math.max(1, Math.ceil(bl.symbole.length * minuten / SEITE));
+      /* Nr. 27b: mit Kalender zaehlen nur Sitzungsminuten (ein Wochenende ist keine
+       * Seite wert); ohne Kalender die Wanduhr wie bisher. */
+      var minuten = opt.kalender ? sitzungsminuten(bl.start, bl.ende, opt.kalender) : Math.floor((bl.ende - bl.start) / 60000) + 1;
+      var seiten = Math.max(1, Math.ceil(bl.symbole.length * Math.max(1, minuten) / SEITE));
       if (seiten > rest) {
         var passt = Math.floor(rest * SEITE / bl.symbole.length);
         if (passt < 1) break;
-        bl.ende = bl.start + (passt - 1) * 60000;
+        var neuEnde = opt.kalender ? endeNachSitzungsminuten(bl.start, passt, opt.kalender) : null;
+        if (neuEnde == null) neuEnde = bl.start + (passt - 1) * 60000;
+        bl.ende = Math.min(bl.ende, neuEnde);
         bl.zeitscheibe = true;
         zeitscheiben++;
         seiten = rest;
@@ -334,12 +399,25 @@ function nachJahren(kerzen) {
  *  o.jetzt       () -> ms
  *  o.an          Schalter aus den Sammler-Einstellungen
  *  o.schluessel  true, wenn Alpaca-Zugang in den App-Einstellungen steht
- *  o.sperre      { lesen() -> {aktiv, was}, setzen(was), loesen() }
- *  o.stempel     (sym) -> juengster Stempel der Reihe oder null
+ *  o.sperre      { lesen() -> {aktiv, was}, setzen(was), loesen() } - OPTIONAL. Seit dem
+ *                09.09.2026 gibt die App keine Sperre mehr herein: die Runde schreibt
+ *                nur noch die Tagesablage, die kein zweiter Prozess anfasst. Wer eine
+ *                Sperre hereingibt (Proben), bekommt das alte Verhalten.
+ *  o.stempel     (sym) -> juengster Stempel der Reihe oder null - darf ein Promise sein
  *  o.fetch       async (url) -> { status, body }   (Schluessel setzt der Aufrufer)
- *  o.schreiben   (sym, jahr, kerzen) -> { ok, geschrieben, neu, uebersprungen, letzterStempel, grund }
+ *  o.schreiben   (sym, jahr, kerzen) -> { ok, geschrieben, neu, uebersprungen, letzterStempel,
+ *                geschriebenBytes, ms, grund } - darf ein Promise sein
+ *  o.abschluss   (erg) - darf ein Promise sein; wird abgewartet, bevor die Runde endet
+ *  o.kalender    { 'YYYY-MM-DD': {open, close} } fuer die Zeitscheibe (Nr. 27b)
  *  o.leere       { tag, je }  Zustand ueber Runden hinweg (wird fortgeschrieben)
  *  o.deckel, o.block  fuer Proben
+ *
+ *  JEDE VERRICHTUNG WIRD ABGEWARTET (09.09.2026): Stempel, Schreiben und Abschluss
+ *  laufen in der App ueber fs.promises, damit der Hauptprozess frei bleibt. Ein
+ *  `forEach` mit `await` darin wartet nicht - deshalb stehen hier for-Schleifen, und
+ *  die Werte eines Blocks werden nacheinander geschrieben (Nebenlaeufigkeit 1, der
+ *  Auftrag erlaubt hoechstens 4). Synchrone Verrichtungen (Proben) gehen weiter durch,
+ *  `await` auf einen Wert ist ein Wert.
  *
  *  Kein Nachfassen in derselben Runde: 429 oder ein anderer Fehler beendet die Runde
  *  mit Meldung, die naechste Runde faengt regulaer an (der Plan rechnet neu). */
@@ -375,9 +453,12 @@ async function runde(o) {
   var sp = o.sperre && o.sperre.lesen ? o.sperre.lesen() : { aktiv: false };
   if (sp && sp.aktiv) { erg.grund = 'Archivsperre liegt (' + (sp.was || 'anderer Schreiber') + ') - Runde wartet'; return fertig(); }
   var stempelJe = {};
-  (o.werte || []).forEach(function (s) { stempelJe[s] = o.stempel ? o.stempel(s) : null; });
+  var werteListe = o.werte || [];
+  for (var wi = 0; wi < werteListe.length; wi++) {
+    stempelJe[werteListe[wi]] = o.stempel ? await o.stempel(werteListe[wi]) : null;
+  }
   var deckel = o.deckel || DECKEL_JE_RUNDE;
-  var plan = abrufplan(o.werte, stempelJe, t0, { leere: o.leere, block: o.block, sitzung: f.zustand, deckel: deckel });
+  var plan = abrufplan(o.werte, stempelJe, t0, { leere: o.leere, block: o.block, sitzung: f.zustand, deckel: deckel, kalender: o.kalender });
   erg.aktuell = plan.aktuell; erg.ruhend = plan.ruhend.length; erg.ende = plan.ende; erg.bloecke = plan.bloecke.length;
   erg.zeitscheiben = plan.zeitscheiben || 0; erg.verschoben = plan.verschoben || 0;
   if (!plan.bloecke.length) { erg.grund = 'nichts faellig'; return fertig(); }
@@ -435,14 +516,18 @@ async function runde(o) {
       }
       var g = sichten(bars, block, plan.startJe);
       Object.keys(g.verworfen).forEach(function (k) { erg.verworfen[k] += g.verworfen[k]; });
-      block.symbole.forEach(function (sym) {
+      for (var si = 0; si < block.symbole.length; si++) {
+        var sym = block.symbole[si];
         var kerzen = g.je[sym] || [];
         var neu = 0, letzter = null, schreibFehler = false;
         var jeJahr = nachJahren(kerzen);
-        Object.keys(jeJahr).map(Number).sort().forEach(function (jahr) {
-          /* F5: ein werfender Schreibvorgang kostet DIESEN Wert, nicht die Runde. */
+        var jahre = Object.keys(jeJahr).map(Number).sort();
+        for (var ji = 0; ji < jahre.length; ji++) {
+          var jahr = jahre[ji];
+          /* F5: ein werfender Schreibvorgang kostet DIESEN Wert, nicht die Runde -
+           * das gilt fuer eine Ausnahme wie fuer eine abgewiesene Zusage. */
           var w;
-          try { w = o.schreiben(sym, jahr, jeJahr[jahr]); }
+          try { w = await o.schreiben(sym, jahr, jeJahr[jahr]); }
           catch (e) { w = { ok: false, grund: 'Ausnahme: ' + String((e && e.message) || e).slice(0, 200) }; }
           if (w && w.ok) {
             if (w.geschrieben) { erg.dateien++; neu += w.neu || 0; }
@@ -454,7 +539,7 @@ async function runde(o) {
             schreibFehler = true;
             fehlerNotieren(sym + ' ' + jahr + ': ' + w.grund);
           }
-        });
+        }
         erg.kerzen += neu;
         if (neu > 0) { plan.leere.je[sym] = 0; plan.leere.gesehen[sym] = 1; if (letzter > (erg.bis || 0)) erg.bis = letzter; }
         /* F16: ein Schreibfehler ist kein "leerer" Wert. Er wird getrennt gezaehlt -
@@ -464,14 +549,13 @@ async function runde(o) {
           plan.leere.je[sym] = (plan.leere.je[sym] || 0) + 1;
         }
         erg.jeWert[sym] = { neu: neu, stempel: zahl(letzter) ? letzter : (stempelJe[sym] || null), leer: plan.leere.je[sym] || 0 };
-      });
+      }
     }
     if (erg.deckel) erg.grund = 'Deckel von ' + deckel + ' Anfragen erreicht - Rest in der naechsten Runde';
     else if (erg.verschoben) erg.grund = 'Deckel von ' + deckel + ' Anfragen: ' + erg.verschoben + ' Bloecke in der naechsten Runde';
-    /* Der Abschluss (Fortschritts-Vermerk, Protokoll) laeuft NOCH UNTER DER SPERRE -
-     * sonst koennte der Nachlauf dazwischen starten, seinen Fortschritt lesen und
-     * den Vermerk dieser Runde spaeter mit einer aelteren Fassung ueberschreiben. */
-    if (typeof o.abschluss === 'function') { try { o.abschluss(erg); } catch (e) { fehlerNotieren('Abschluss: ' + String(e && e.message || e)); } }
+    /* Der Abschluss (Stand der Runde, Protokoll) wird ABGEWARTET, und zwar vor dem
+     * finally - wer eine Sperre hereingibt, bekommt ihn noch unter ihr. */
+    if (typeof o.abschluss === 'function') { try { await o.abschluss(erg); } catch (e) { fehlerNotieren('Abschluss: ' + String(e && e.message || e)); } }
   } finally {
     if (o.sperre && o.sperre.loesen) o.sperre.loesen();
   }
@@ -532,5 +616,6 @@ module.exports = {
   liveMenge: liveMenge, gefuehrteReihen: gefuehrteReihen, menge: menge,
   fertigGrenze: fertigGrenze, zustandUm: zustandUm, sitzungsfenster: sitzungsfenster,
   startFuer: startFuer, abrufplan: abrufplan, urlFuer: urlFuer, sichten: sichten, nachJahren: nachJahren,
+  tagesfenster: tagesfenster, sitzungsminuten: sitzungsminuten, endeNachSitzungsminuten: endeNachSitzungsminuten,
   runde: runde, panelZeile: panelZeile,
 };

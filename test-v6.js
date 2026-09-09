@@ -19768,11 +19768,16 @@ console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Ver
   /* --- 83.10 EINE Schreibroutine: ein Export, zwei Aufrufer, additiv --- */
   ok(typeof AA.jahrSchreiben === 'function' && (ohneA.match(/function jahrSchreiben\(/g) || []).length === 1, '83.10 alpacaarchiv.js exportiert jahrSchreiben genau einmal');
   ok(/A\.jahrSchreiben\(ordner, a\.sym, a\.jahr, kerzen, kal/.test(vsL), '83.10 das Werkzeug (Vollsammlung) schreibt sein Symbol-Jahr ueber diese Routine');
-  ok(/AlpacaArchiv\.jahrSchreiben\(ordner, reihe, j, kerzen, kal/.test(mainO), '83.10 der Live-Sammler in main.js ebenso');
-  var aufrufer = ['tools/alpaca-vollsammlung.js', 'main.js', 'livesammler.js', 'kerzenquelle.js', 'tools/alpaca-balken-holen.js', 'tools/archiv-migration.js']
+  /* NEU GEZIELT am 09.09.2026 (Abschnitt 88): die App schreibt KEINE Jahresdatei mehr -
+   * die Live-Runde legt eine Tagesablage an, das Jahr schreibt allein der Nachlauf, und
+   * der ruft dieselbe Routine. Die alte Zusicherung "der Live-Sammler in main.js ebenso"
+   * waere heute genau der Fehler (Blockade des Hauptprozesses). */
+  ok(!/\.jahrSchreiben\(/.test(mainO) && /A\.jahrSchreiben\(ordner, reihe, j, jeJahr\[j\], kal, \{ herkunft: 'Nachlauf' \}\)/.test(vsL),
+     '83.10 die App schreibt seit dem 09.09.2026 keine Jahresdatei mehr; der Nachlauf schreibt sie ueber dieselbe Routine');
+  var aufrufer = ['tools/alpaca-vollsammlung.js', 'main.js', 'livesammler.js', 'liveablage.js', 'kerzenquelle.js', 'tools/alpaca-balken-holen.js', 'tools/archiv-migration.js']
     .filter(function (d) { return /\.jahrSchreiben\(/.test(ohneKommentare(fs.readFileSync(d, 'utf8'))); });
-  ok(aufrufer.length === 2 && aufrufer.indexOf('main.js') >= 0 && aufrufer.indexOf('tools/alpaca-vollsammlung.js') >= 0,
-     '83.10 genau ZWEI Aufrufer - Werkzeug und App', aufrufer.join(', '));
+  ok(aufrufer.length === 1 && aufrufer[0] === 'tools/alpaca-vollsammlung.js',
+     '83.10 genau EIN Aufrufer - das Werkzeug (Vollsammlung und Nachlauf); weder App noch Tagesablage', aufrufer.join(', '));
   /* Nur der ROHE Pfad (jahrHolen) ist gemeint: die bereinigte Kopie baut ableitenLauf
    * weiter selbst - sie ist eine Ableitung mit anderem Kopf, kein zweiter Schreiber
    * derselben Datei, und alpaca1m-bereinigt/ ruehrt dieser Auftrag nicht an. */
@@ -19826,8 +19831,13 @@ console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Ver
      /function sperreSetzen\(roh, was\) \{ return KQ\.sperreSetzen\(roh, was\); \}/.test(ohneA) &&
      /function sperreLoesen\(roh\) \{ return KQ\.sperreLoesen\(roh\); \}/.test(ohneA),
      '83.11 die Sperre ist die aus kerzenquelle.js (pid, Rechner, Verwaisungsfrist), keine zweite');
-  ok(/lesen: \(\) => AlpacaArchiv\.sperreLesen\(roh\)/.test(mainO) && /setzen: \(was\) => AlpacaArchiv\.sperreSetzen\(roh, was\)/.test(mainO) && /loesen: \(\) => AlpacaArchiv\.sperreLoesen\(roh\)/.test(mainO),
-     '83.11 der Live-Sammler nimmt sie auf dem Rohordner');
+  /* NEU GEZIELT am 09.09.2026 (Abschnitt 88): die Live-Runde nimmt KEINE Sperre mehr -
+   * sie schreibt nur noch die Tagesablage, die kein zweiter Prozess anfasst. Die Sperre
+   * teilen sich weiter Nachlauf und Vollsammlung (87.2). Die alte Zusicherung "der
+   * Live-Sammler nimmt sie auf dem Rohordner" waere heute genau der Fehler. */
+  var rundeText83 = mainO.slice(mainO.indexOf('async function liveRunde('), mainO.indexOf("ipcMain.handle('live-stand'"));
+  ok(rundeText83.length > 1000 && !/sperre/i.test(rundeText83) && /A\.sperreSetzen\(ROH,/.test(vsL) && /A\.sperreLoesen\(ROH\)/.test(vsL),
+     '83.11 die Live-Runde nimmt seit dem 09.09.2026 keine Sperre (nur Tagesablage); Nachlauf und Vollsammlung teilen sie weiter');
   var tmpS = fs.mkdtempSync(pathM.join(osM.tmpdir(), 'kunst-sperre-'));
   var envAlt = process.env.MD_ALPACA_WURZEL;
   process.env.MD_ALPACA_WURZEL = tmpS;
@@ -19907,8 +19917,9 @@ console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Ver
   ok(P83.VORGABE.live === true && P83.einstellungen(null).live === true, '83.15 Vorgabe: Live-Sammler an');
   ok(P83.einstellungen({ live: false }).live === false && P83.einstellungen({ live: 0 }).live === false && P83.einstellungen({ live: 'ja' }).live === true,
      '83.15 der Schalter wird gelesen und ist ein Ja/Nein');
-  ok(/sammlerEinstellungen\(\)\.live !== false/.test(mainO) && (mainO.match(/sammlerEinstellungen\(\)\.live !== false/g) || []).length >= 2,
-     '83.15 main.js fragt den Schalter vor jeder Runde und im Stand');
+  /* Neu gezielt 09.09.2026: im Stand synchron, vor jeder Runde ASYNCHRON (F4). */
+  ok(/sammlerEinstellungen\(\)\.live !== false/.test(mainO) && /const an = \(await sammlerEinstellungenAsync\(\)\)\.live !== false;/.test(mainO),
+     '83.15 main.js fragt den Schalter im Stand (synchron) und vor jeder Runde (asynchron gelesen)');
   ok(/api\.sammlerEinstellen\(neu\)/.test(karteL) && /\{ live: !!liveAn\.checked \}/.test(karteL), '83.15 die Karte schreibt den Schalter ueber sammler-einstellen (dieselbe Datei wie alle Sammler-Werte)');
   ['liveStand', 'liveMenge', 'onLiveSammler'].forEach(function (n) { ok(preL.indexOf(n + ':') !== -1, '83.15 preload reicht ' + n + ' durch'); });
   ok(/ipcMain\.handle\('live-stand'/.test(mainO) && /ipcMain\.on\('live-menge'/.test(mainO), '83.15 main.js beantwortet live-stand und nimmt live-menge an');
@@ -19947,10 +19958,14 @@ console.log('\n83) Live-Sammler: Sitzungsfenster, Abrufplan, Schreibroutine, Ver
      '83.17 der Schluessel kommt aus den App-Einstellungen, nur Text zaehlt - dieselbe Regel wie alpaca.js');
   ok(/'APCA-API-KEY-ID': z\.key, 'APCA-API-SECRET-KEY': z\.secret/.test(mainO) && /alpFetch\('GET', url, kopf\)/.test(mainO),
      '83.17 der Zugang geht als Kopfzeile ueber alpFetch (derselbe Host-Zaun wie die Kostenmessung), nie in die Adresse');
-  ok(/erg\.fehler = ohneGeheimnis\(erg\.fehler\)/.test(mainO) && /erg\.grund = ohneGeheimnis\(erg\.grund\)/.test(mainO) && /w\.grund = ohneGeheimnis\(w\.grund\)/.test(mainO),
-     '83.17 Fehler, Grund und Schreibbefund laufen durch ohneGeheimnis()');
-  ok(/F\.live\.werte\[sym\] = \{ stempel: r\.jeWert\[sym\]\.stempel, runde: r\.zeit, leer: r\.jeWert\[sym\]\.leer \};/.test(mainO) && /AlpacaArchiv\.fortschrittSchreiben\(roh, F\)/.test(mainO),
-     '83.17 der Vermerk "live" je Wert (letzter Stempel, letzte Runde, leere Runden) steht im Fortschritt der Vollsammlung');
+  /* Seit dem 09.09.2026 bekommt ohneGeheimnis() den schon gelesenen Zugang mit (kein
+   * zweites Lesen der Einstellungen je Meldung) - die Klinke verlangt genau das. */
+  ok(/erg\.fehler = ohneGeheimnis\(erg\.fehler, z\)/.test(mainO) && /erg\.grund = ohneGeheimnis\(erg\.grund, z\)/.test(mainO) && /w\.grund = ohneGeheimnis\(w\.grund, zz\)/.test(mainO),
+     '83.17 Fehler, Grund und Schreibbefund laufen durch ohneGeheimnis(), mit dem gelesenen Zugang');
+  /* Neu gezielt 09.09.2026 (F2): der Vermerk steht in _livestand.json, nicht mehr in
+   * der 4,3 MB grossen _fortschritt.json der Vollsammlung. */
+  ok(/stand\.werte\[sym\] = \{ stempel: r\.jeWert\[sym\]\.stempel, runde: r\.zeit, leer: r\.jeWert\[sym\]\.leer \};/.test(mainO) && /await Liveablage\.standSchreiben\(roh, stand\)/.test(mainO),
+     '83.17 der Vermerk je Wert (letzter Stempel, letzte Runde, leere Runden) steht in _livestand.json (asynchron, atomar)');
   ok(ohneL.indexOf('o.abschluss(erg)') > 0 && ohneL.indexOf('o.abschluss(erg)') < ohneL.indexOf('} finally {'), '83.17 und wird noch unter der Sperre geschrieben');
   ok(/liveZeilePruefen\(win, js\)/.test(probeL) && /archLiveZeile/.test(probeL) && /512 Werte/.test(probeL), '83.17 die Oberflaechen-Probe misst die Zeile mit Attrappen-Zahlen');
   gegen83('das Schluessel-Muster faende einen Schluessel in einer Adresse', /APCA-API-KEY-ID=/.test('https://x/?APCA-API-KEY-ID=abc'));
@@ -20362,9 +20377,13 @@ console.log('\n85) Anhang an Ort und Stelle: Journal, Abbruch, Schreibmenge, Les
      '85.5 die Grenze ist ein Wert des Moduls (30 Tage), keine feste Zahl im Ablauf');
   ok(L85.gefuehrteReihen({ stand: null, werte: {} }).length === 0 && L85.gefuehrteReihen(null).length === 0,
      '85.5 ohne Lebenszeit-Datei ist die Menge leer - dann sammelt die App nur Watchlist, Positionen und den Viewer-Wert');
-  var liveTeil85 = mainO85.slice(mainO85.indexOf('function liveMengeJetzt()'), mainO85.indexOf('async function liveKalender('));
-  ok(/Live\.gefuehrteReihen\(AlpacaArchiv\.lebenszeitDatei\(liveRohOrdner\(\)\)\)/.test(liveTeil85) && !/listeBauen/.test(liveTeil85),
-     '85.5 liveMengeJetzt liest die Lebenszeit-Datei des Archivs - keine Namensliste mehr');
+  /* Neu gezielt 09.09.2026: die Lebenszeit-Datei wird in der Runde ASYNCHRON gelesen
+   * (jsonGemerkt) und der reinen Rechnung liveMengeAus gegeben - keine Namensliste. */
+  var liveTeil85 = mainO85.slice(mainO85.indexOf('function liveMengeAus(lz)'), mainO85.indexOf('async function liveKalender('));
+  var rundeTeil85 = mainO85.slice(mainO85.indexOf('async function liveRunde('), mainO85.indexOf("ipcMain.handle('live-stand'"));
+  ok(/Live\.gefuehrteReihen\(lz \|\| \{ stand: null, werte: \{\} \}\)/.test(liveTeil85) && !/listeBauen/.test(liveTeil85) &&
+     /const lz = await Liveablage\.jsonGemerkt\(AlpacaArchiv\.metaPfad\(roh, 'lebenszeit'\), LIVESTAND\.merk\.lebenszeit\);/.test(rundeTeil85) && /werte = liveMengeAus\(lz\);/.test(rundeTeil85),
+     '85.5 die Live-Menge kommt aus der Lebenszeit-Datei des Archivs (asynchron gelesen, gemerkt) - keine Namensliste');
   var liveBereich85 = mainO85.slice(mainO85.indexOf('const LIVE = {'), mainO85.indexOf("ipcMain.on('live-menge'"));
   ok(!/top500|listeBauen|\b500\b/.test(liveBereich85), '85.5 im ganzen Live-Sammler-Block steht weder top500 noch die Zahl 500');
   ok(!/top500/.test(ohneL85), '85.5 und livesammler.js kennt das Wort nicht mehr');
@@ -20396,7 +20415,7 @@ console.log('\n85) Anhang an Ort und Stelle: Journal, Abbruch, Schreibmenge, Les
   ok(/if \(zahl\(w\.geschriebenBytes\)\) erg\.schreibBytes \+= w\.geschriebenBytes;/.test(ohneL85) && /schreibBytes: 0, schreibMs: 0/.test(ohneL85),
      '85.6 die Runde summiert die Schreibmenge aus den Schreibbefunden, nicht aus einer Schaetzung');
   ok(/schreibBytes: r\.schreibBytes, schreibMs: r\.schreibMs/.test(mainO85) && /schreibBytes: l\.schreibBytes \|\| 0/.test(mainO85),
-     '85.6 _fortschritt.json (live.runde) und der Stand tragen sie mit');
+     '85.6 _livestand.json (runde; bis 08.09. _fortschritt.json) und der Stand tragen sie mit');
   ok(/geschrieben ' \+ Live\.menge\(r\.schreibBytes\) \+ ' in ' \+ Math\.round\(r\.schreibMs\)/.test(mainO85),
      '85.6 und die Protokollzeile je Live-Runde nennt sie');
   ok(/schreibBytes/.test(probe85) && /geschrieben 12 MB/.test(probe85), '85.6 die Oberflaechen-Probe misst die neue Zeile mit');
@@ -20785,8 +20804,13 @@ console.log('\n87) Nachbesserung nach der QS: Ruhe-Regel, Sperre, Fenster, Decke
   /* --- 87.7 F10 Der 1m-Viewer liest die laufende Reihe --- */
   ok(/const alpRoh = path\.join\(wurzel, 'alpaca1m'\);\s*\n\s*const ord = alpacaOrdnerName\(alpRoh, AlpacaArchiv\.reiheFuer\(alpRoh, sym\)\);/.test(mainQ87),
      '87.7 Zweig (a) geht durch reiheFuer, bevor er den Ordner bildet - sonst liest er bei AAC/CAPA/JONE die ERLOSCHENE Reihe');
+  /* Neu gezielt 09.09.2026: die Leser (Viewer, zwei Zweige) gehen ueber reiheFuer, der
+   * Schreiber (Live-Runde) ueber die reine reiheAus mit der asynchron gelesenen
+   * Lebenszeit - und reiheFuer ruft reiheAus: eine Regel, zwei Wege zur Platte. */
   var reiheStellen87 = (mainQ87.match(/AlpacaArchiv\.reiheFuer\(/g) || []).length;
-  ok(reiheStellen87 >= 4, '87.7 alle Leser und der Schreiber gehen ueber dieselbe Zuordnung', String(reiheStellen87) + ' Stellen');
+  var aQ87 = ohneKommentare(fs.readFileSync('alpacaarchiv.js', 'utf8'));
+  ok(reiheStellen87 >= 2 && /AlpacaArchiv\.reiheAus\(lzWerte, sym\)/.test(mainQ87) && /function reiheFuer\(roh, sym\) \{\s*return reiheAus\(lebenszeitLesen\(roh\), sym\);/.test(aQ87),
+     '87.7 alle Leser (reiheFuer) und der Schreiber (reiheAus) gehen ueber dieselbe Zuordnung', String(reiheStellen87) + ' Leser-Stellen');
   gegen87('das Muster faende die alte Form ohne reiheFuer',
           /const ord = alpacaOrdnerName\(path\.join\(wurzel, 'alpaca1m'\), sym\);/.test("const ord = alpacaOrdnerName(path.join(wurzel, 'alpaca1m'), sym);"));
 
@@ -20983,6 +21007,299 @@ console.log('\n87) Nachbesserung nach der QS: Ruhe-Regel, Sperre, Fenster, Decke
     ok(g87 === rot87, '87.x alle Gegenproben dieses Abschnitts schlagen an', rot87 + ' von ' + g87);
   })());
   void runde87;
+})();
+
+/* ================= 88) Live-Sammler ohne Bremse (09.09.2026) ====================
+ *
+ * DER BEFUND (PM, 08.09.2026, gemessen): "Markt-Dashboard (Keine Rueckmeldung)" fuer
+ * ~235 von 300 Sekunden jeder Live-Runde. Die Runde schrieb 2.750 Jahresdateien
+ * synchron im Hauptprozess (Journal, zwei fsync, Gegenlesen je Datei), las vorher
+ * 3.067 Schwaenze fuer die Stempel und danach 4,3 MB Fortschritt. Eine Zeitangabe in
+ * einem Log ist eine Blockade der Oberflaeche, wenn der Pfad der Hauptprozess ist.
+ *
+ * DIE ANTWORT, je Festlegung eine Klinke:
+ *   F1  die Runde schreibt eine TAGESABLAGE je Reihe (_live.jsonl, anhaengen, kein
+ *       Journal, kein fsync; neuer ET-Tag ersetzt die Datei) - das Jahr schreibt
+ *       allein der Nachlauf;
+ *   F2  "wo weiterholen" kommt aus _livestand.json (Speicher; verfaellt am ET-Tag),
+ *       keine Jahresdatei wird gelesen, _fortschritt.json nicht mehr angefasst;
+ *   F3  der Viewer liest Jahresdatei-Schwanz PLUS Tagesablage, Jahr gewinnt,
+ *       Sitzungen der Tageskerzen aus dem Kalender;
+ *   F4  im Funktionstext von liveRunde kein fs.*Sync(, keine der verbotenen Namen,
+ *       keine Sperre - der Text OHNE Kommentare (Testmarken-Falle: der Kommentar
+ *       darf sie nennen, der Code nicht);
+ *   F5  livesammler.js wartet jede Verrichtung ab (for, nicht forEach) und zaehlt am
+ *       Deckel Sitzungsminuten aus dem Kalender (Nr. 27b);
+ *   F6  Manifest, Pruefung, Journalsuche uebersehen _live.jsonl und _livestand.json;
+ *   die Kunst-Quelle ist nur erreichbar, wenn die App nicht gepackt ist UND die
+ *   Umgebungsvariable steht.
+ * Die Antwortzeit selbst misst tools/ui-probe.js (Kunst-Runde mit 2.000 Reihen:
+ * vorher max 1.737 ms, nachher max 5 ms). */
+console.log('\n88) Live-Sammler ohne Bremse: Tagesablage, Stand im Speicher, freier Hauptprozess, Kalenderminuten');
+(function () {
+  var L88 = require('./livesammler.js');
+  var LA88 = require('./liveablage.js');
+  var A88 = require('./alpacaarchiv.js');
+  var MF88 = require('./tools/alpaca-manifest.js');
+  var path88 = require('path'), os88 = require('os');
+  var mainRoh88 = fs.readFileSync('main.js', 'utf8');
+  var mainQ88 = ohneKommentare(mainRoh88);
+  var liveQ88 = ohneKommentare(fs.readFileSync('livesammler.js', 'utf8'));
+  var ablQ88 = ohneKommentare(fs.readFileSync('liveablage.js', 'utf8'));
+  var probeQ88 = ohneKommentare(fs.readFileSync('tools/ui-probe.js', 'utf8'));
+  var vsQ88 = ohneKommentare(fs.readFileSync('tools/alpaca-vollsammlung.js', 'utf8'));
+  var mfQ88 = ohneKommentare(fs.readFileSync('tools/alpaca-manifest.js', 'utf8'));
+  var g88 = 0, rot88 = 0;
+  function gegen88(was, ergebnis) { g88++; if (ergebnis) rot88++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function et88(j, m, d, h, mi) { return A88.nyNachUtc(j, m, d, h, mi); }
+  function fnText(name, bis) { var a = mainQ88.indexOf(name); var e = a < 0 ? -1 : mainQ88.indexOf(bis, a + 1); return a >= 0 && e > a ? mainQ88.slice(a, e) : ''; }
+  var wegwerf88 = fs.mkdtempSync(path88.join(os88.tmpdir(), 'md-88-'));
+
+  /* --- 88.1 F4: der Funktionstext von liveRunde - ohne Kommentare --- */
+  var rundeText = fnText('async function liveRunde(', "ipcMain.handle('live-stand'");
+  ok(rundeText.length > 1500, '88.1 der Funktionstext von liveRunde ist gefunden (Kommentare entfernt)', rundeText.length + ' Zeichen');
+  var VERBOTEN = ['jahrSchreiben', 'letzterStempelReihe', 'fortschrittLesen', 'fortschrittSchreiben', 'sperreSetzen', 'sperreLesen', 'sperreLoesen', 'sperreAuffrischen',
+    'readFileSync', 'writeFileSync', 'appendFileSync', 'existsSync', 'statSync', 'openSync', 'writeSync', 'fsyncSync', 'renameSync',
+    'lebenszeitDatei', 'lebenszeitLesen', 'reiheFuer', 'ordnerFuer', 'kalenderLesen', 'kalenderSchreiben', 'AlpacaArchiv.protokoll', 'gespeicherteSettings', 'sammlerEinstellungen()'];
+  ok(!/\bfs\.[A-Za-z]+Sync\(/.test(rundeText), '88.1 F4: kein fs.*Sync( im Funktionstext von liveRunde');
+  VERBOTEN.forEach(function (n) { ok(rundeText.indexOf(n) === -1, '88.1 F4: liveRunde ruft nicht ' + n); });
+  var kalText = fnText('async function liveKalender(', 'function liveStand(');
+  var zugText = fnText('async function alpacaZugangAsync(', 'function ohneGeheimnis(');
+  var samText = fnText('async function sammlerEinstellungenAsync(', 'const SAMMLER = {');
+  var ladText = fnText('function liveStandLaden(', 'function liveMengeAus(');
+  [['liveKalender', kalText], ['alpacaZugangAsync', zugText], ['sammlerEinstellungenAsync', samText], ['liveStandLaden', ladText]].forEach(function (x) {
+    ok(x[1].length > 50 && !/Sync\(/.test(x[1]) && /Liveablage\./.test(x[1]), '88.1 F4: ' + x[0] + ' geht ueber fs.promises (liveablage.js), nichts synchron', x[1].length + ' Zeichen');
+  });
+  ok(/stempel: \(sym\) => \{ const w = stand\.werte\[sym\]; return \(w && typeof w\.stempel === 'number'\) \? w\.stempel : null; \}/.test(rundeText),
+     '88.1 F2: der Stempel kommt aus dem Speicher (_livestand.json), nicht aus der Jahresdatei');
+  ok(/await Liveablage\.anhaengen\(pfad, reihe, heute, kerzen, LIVESTAND\.ablage\)/.test(rundeText), '88.1 F1: geschrieben wird die Tagesablage');
+  ok(/await Liveablage\.standSchreiben\(roh, stand\)/.test(rundeText) && /await Liveablage\.protokoll\(roh, /.test(rundeText), '88.1 F2/F4: Stand und Protokollzeile asynchron im Abschluss');
+  ok(!/sperre:/.test(rundeText), '88.1 F4: die Runde gibt keine Sperre herein - die gehoert Nachlauf und Vollsammlung');
+  ok(/kalender: kal/.test(rundeText) && /kal = await liveKalender\(roh, jetzt, z\)/.test(rundeText), '88.1 Nr. 27b: der Kalender geht in die Runde (Zeitscheibe)');
+  ok(/AlpacaArchiv\.reiheAus\(lzWerte, sym\)/.test(rundeText) && /AlpacaArchiv\.ordnerAus\(abb, reihe\)/.test(rundeText) && /Liveablage\.jsonGemerkt\(AlpacaArchiv\.metaPfad\(roh, 'lebenszeit'\)/.test(rundeText),
+     '88.1 Lebenszeit und Ordner-Abbildung: asynchron gelesen, nach Aenderungszeit gemerkt, reine Regeln aus alpacaarchiv.js');
+  ok(!/liveMengeJetzt|_fortschritt|F\.live\b/.test(mainQ88), '88.1 F2: _fortschritt.json wird von der Live-Runde nicht mehr angefasst (kein F.live in main.js)');
+  var aQ88 = ohneKommentare(fs.readFileSync('alpacaarchiv.js', 'utf8'));
+  ok(/function reiheFuer\(roh, sym\) \{\s*return reiheAus\(lebenszeitLesen\(roh\), sym\);/.test(aQ88) && /function ordnerFuer\(roh, sym\) \{\s*return ordnerAus\(abbildung\(roh\), sym\);/.test(aQ88),
+     '88.1 eine Wahrheit: reiheFuer/ordnerFuer rufen dieselben reinen Regeln wie die Live-Runde');
+  gegen88('das Sync-Muster faende den alten Schreibweg', /\bfs\.[A-Za-z]+Sync\(/.test("fs.writeSync(fd, schwanzBuf, 0, schwanzBuf.length, b.schnitt); fs.fsyncSync(fd);"));
+  gegen88('die Namensliste faende den alten Anhang', VERBOTEN.some(function (n) { return "const w = AlpacaArchiv.jahrSchreiben(ordner, reihe, j, kerzen, kal, { herkunft: 'Live-Sammler' });".indexOf(n) >= 0; }));
+  gegen88('die Namensliste faende den alten Stempel-Weg', "stempel: (sym) => AlpacaArchiv.letzterStempelReihe(roh, AlpacaArchiv.reiheFuer(roh, sym), jahr),".indexOf('letzterStempelReihe') >= 0);
+  var rundeMitKommentar = mainRoh88.slice(mainRoh88.indexOf('async function liveRunde('), mainRoh88.indexOf("ipcMain.handle('live-stand'"));
+  gegen88('MIT Kommentaren stuenden verbotene Namen im Text (der Kommentar nennt sie) - die Klinke misst den Code, nicht den Kommentar',
+          VERBOTEN.some(function (n) { return rundeMitKommentar.indexOf(n) >= 0; }));
+
+  /* --- 88.2 Die Kunst-Quelle: nur NICHT gepackt UND Umgebungsvariable --- */
+  var kunstText = fnText('function liveKunst(', 'async function liveRunde(');
+  ok(/if \(app\.isPackaged \|\| !process\.env\.MD_LIVE_KUNST\) return null;/.test(kunstText), '88.2 der Stub ist nur erreichbar, wenn die App NICHT gepackt ist UND MD_LIVE_KUNST gesetzt ist - beide Bedingungen in EINER Verwendung');
+  ok(/global\.__mdLiveKunst/.test(kunstText) && /typeof k\.fetch === 'function' && typeof k\.jetzt === 'function'/.test(kunstText), '88.2 und er verlangt fetch und jetzt am Rueckruf-Objekt');
+  ok(/const kunst = liveKunst\(\);/.test(rundeText) && /fetch: kunst \? async \(url\) => kunst\.fetch\(url\) : async \(url\) => \{/.test(rundeText) && /const zugang = z\.on \|\| !!kunst;/.test(rundeText) && /const uhr = kunst \? kunst\.jetzt : \(\) => Date\.now\(\);/.test(rundeText),
+     '88.2 die Runde nimmt Quelle, Uhr und Zugang nur ueber liveKunst()');
+  ok(/process\.env\.MD_LIVE_KUNST = '1';/.test(probeQ88) && /global\.__mdLiveKunst = \{ fetch: fetch, jetzt: jetzt/.test(probeQ88), '88.2 die Probe setzt beides');
+  ok(!/MD_LIVE_KUNST|__mdLiveKunst/.test(ohneKommentare(fs.readFileSync('preload.js', 'utf8')) + ohneKommentare(fs.readFileSync('index.html', 'utf8'))), '88.2 kein Weg aus dem Renderer zur Kunst-Quelle');
+  gegen88('eine Fassung mit nur EINER Bedingung fiele durch', !/if \(app\.isPackaged \|\| !process\.env\.MD_LIVE_KUNST\) return null;/.test("function liveKunst() { if (!process.env.MD_LIVE_KUNST) return null; return global.__mdLiveKunst; }"));
+
+  /* --- 88.3 Der Leser der Tagesablage (rein) --- */
+  var kopf88 = LA88.kopfZeile('AAA', '2026-09-08');
+  function k88(h, mi, c) { return [et88(2026, 9, 8, h, mi), c, 100, c + 1, c - 1, c]; }
+  var text88 = kopf88 + '\n' + LA88.kerzenText([k88(9, 30, 10), k88(9, 31, 11)]);
+  var z1 = LA88.zerlegen(text88, '2026-09-08');
+  ok(z1.ok && z1.kerzen.length === 2 && z1.kopf.reihe === 'AAA' && z1.verworfen.unvollstaendig === 0, '88.3 Kopf und zwei Kerzen');
+  var z2 = LA88.zerlegen(text88 + JSON.stringify(k88(9, 32, 12)).slice(0, -3), '2026-09-08');
+  ok(z2.ok && z2.kerzen.length === 2 && z2.verworfen.unvollstaendig === 1, '88.3 die unvollstaendige letzte Zeile (angerissener Anhang) wird verworfen, der Rest bleibt', JSON.stringify(z2.verworfen));
+  var z2b = LA88.zerlegen(text88 + JSON.stringify(k88(9, 32, 12)), '2026-09-08');
+  ok(z2b.kerzen.length === 2 && z2b.verworfen.unvollstaendig === 1, '88.3 auch eine vollstaendig AUSSEHENDE letzte Zeile ohne Zeilenende zaehlt als angerissen - sie koennte gekuerzt sein');
+  var z3 = LA88.zerlegen(LA88.kopfZeile('AAA', '2026-09-07') + '\n' + LA88.kerzenText([k88(9, 30, 10)]), '2026-09-08');
+  ok(!z3.ok && z3.kerzen.length === 0 && /anderer Tag/.test(z3.grund), '88.3 ein Kopf mit fremdem Tag macht die Datei unsichtbar (gestern)', z3.grund);
+  var z4 = LA88.zerlegen(kopf88 + '\n' + LA88.kerzenText([k88(9, 31, 11), k88(9, 30, 10), k88(9, 30, 99)]) + 'kaputt\n[1,2]\n', '2026-09-08');
+  ok(z4.ok && z4.kerzen.length === 2 && z4.kerzen[0][0] < z4.kerzen[1][0] && z4.kerzen[0][1] === 10 && z4.verworfen.doppelt === 1 && z4.verworfen.form === 2,
+     '88.3 doppelter Stempel: der erste gewinnt; Zeilen ohne Kerzenform werden gezaehlt; Ausgabe in Zeitfolge', JSON.stringify(z4.verworfen));
+  ok(!LA88.zerlegen('', '2026-09-08').ok && !LA88.zerlegen('{"v":2,"tag":"2026-09-08","reihe":"A"}\n', '2026-09-08').ok, '88.3 leer oder fremde Fassung: nichts');
+  ok(LA88.zerlegen(text88, null).ok, '88.3 ohne verlangten Tag nimmt der Leser jeden Tag (fuer Werkzeuge)');
+  gegen88('ein naiver Leser (JSON.parse je Zeile) haette an der angerissenen Zeile geworfen',
+          (function () { try { (text88 + JSON.stringify(k88(9, 32, 12)).slice(0, -3)).split('\n').slice(1).forEach(function (l) { JSON.parse(l); }); return false; } catch (e) { return true; } })());
+
+  /* --- 88.4 F3: Jahr + Tag zusammenfuehren - die Jahresdatei gewinnt --- */
+  var jahrK = [k88(9, 30, 10), k88(9, 31, 11), k88(9, 32, 12)];
+  var tagK = [k88(9, 31, 99), k88(9, 32, 99), k88(9, 33, 13), k88(9, 34, 14)];
+  var zf = LA88.zusammenfuehren(jahrK, tagK);
+  ok(zf.kerzen.length === 5 && zf.kerzen[2][1] === 12 && zf.ausTag === 2 && zf.verworfen === 2 && zf.bis === k88(9, 34, 0)[0] && zf.jahrBis === k88(9, 32, 0)[0],
+     '88.4 fuenf Kerzen: 09:32 behaelt den Wert der Jahresdatei (99 kam nicht durch), zwei vom Tag, alpacaBis = Maximum', JSON.stringify([zf.ausJahr, zf.ausTag, zf.verworfen]));
+  ok(zf.kerzen.every(function (k, i, a) { return i === 0 || a[i - 1][0] < k[0]; }), '88.4 in Zeitfolge, ohne Doppel');
+  ok(LA88.zusammenfuehren([], tagK).kerzen.length === 4 && LA88.zusammenfuehren(jahrK, []).kerzen.length === 3 && LA88.zusammenfuehren(jahrK, [k88(9, 20, 1)]).ausTag === 0,
+     '88.4 ohne Jahr alles vom Tag, ohne Tag alles vom Jahr, eine Tageskerze VOR dem Jahresende faellt weg');
+  gegen88('eine Vereinigung, bei der der Tag gewinnt, setzte 09:32 auf 99', (function () { var m = {}; jahrK.concat(tagK).forEach(function (k) { m[k[0]] = k; }); return m[k88(9, 32, 0)[0]][1] === 99; })());
+  var verdText = fnText('function alpacaVerdichtet(', "ipcMain.handle('archiv-kerzen'");
+  var kerzenA88 = mainQ88.indexOf("ipcMain.handle('archiv-kerzen'");
+  var kerzenText88 = mainQ88.slice(kerzenA88, mainQ88.indexOf('ipcMain.handle(', kerzenA88 + 10));
+  ok(/const tagK = tagesablageHeute\(roh, ord\);/.test(verdText) && /tagesablageAnhaengen\(k1m, bereiche, tagK, roh\)/.test(verdText) && /Math\.max\(jahrBis, tagBis\)/.test(verdText),
+     '88.4 F3: alpacaVerdichtet liest Jahresdatei-Schwanz plus Tagesablage, alpacaBis ist das Maximum');
+  ok(kerzenText88.length > 500 && /const tagK = tagesablageHeute\(alpRoh, ord\);/.test(kerzenText88) && /tagesablageAnhaengen\(kerzen, sitzungen, tagK, alpRoh\)/.test(kerzenText88), '88.4 F3: der 1m-Zweig ebenso');
+  var anhText = fnText('function tagesablageAnhaengen(', 'function alpacaVerdichtet(');
+  ok(/Liveablage\.zusammenfuehren\(kerzen, tagK\)/.test(anhText) && /AlpacaArchiv\.sitzungJeKerze\(neu, kal \? kal\.tage : \{\}\)/.test(anhText) && /AlpacaArchiv\.sitzungenAnhaengen\(bereiche, neu, je\)/.test(anhText),
+     '88.4 F3: die Sitzungen der Tageskerzen kommen aus dem Kalender (_kalender.json), nicht aus einer Uhr');
+  ok(/Liveablage\.lesenSync\(Liveablage\.pfadFuer\(roh, ord\), AlpacaArchiv\.etTag\(Date\.now\(\)\)\)/.test(fnText('function tagesablageHeute(', 'function tagesablageAnhaengen(')), '88.4 F3: nur die Datei mit dem HEUTIGEN ET-Tag zaehlt');
+  ok(/jahrBis != null && j >= jahr - 1/.test(verdText), '88.4 F3: liegt ein Reparaturjournal (kein Jahresstempel), bleibt die Jahresdatei zu und die Tagesablage reicht');
+  /* Die Sitzungen der Tageskerzen, gerechnet wie main.js es tut: Kalender -> sitzungJeKerze -> sitzungenAnhaengen. */
+  var kalS = { '2026-09-08': { open: '09:30', close: '16:00' } };
+  var altB = [{ von: k88(9, 28, 0)[0], bis: k88(9, 29, 0)[0], sitzung: 'vor' }, { von: k88(9, 30, 0)[0], bis: k88(9, 32, 0)[0], sitzung: 'regulaer' }];
+  var neuK = [k88(9, 33, 13), k88(16, 0, 14)];
+  var bS = A88.sitzungenAnhaengen(altB, neuK, A88.sitzungJeKerze(neuK, kalS));
+  ok(bS.length === 3 && bS[1].bis === k88(9, 33, 0)[0] && bS[2].sitzung === 'nach' && bS[2].von === k88(16, 0, 0)[0], '88.4 F3: 09:33 verlaengert den regulaeren Bereich, 16:00 eroeffnet "nach" - aus dem Kalender, nicht geraten', JSON.stringify(bS));
+
+  var runde88 = probe((async function () {
+    /* --- 88.5 F1: die Tagesablage auf der Platte (fs.promises, Wegwerf-Ordner) --- */
+    var roh88 = path88.join(wegwerf88, 'alpaca1m');
+    var ord88 = path88.join(roh88, 'AAA');
+    var pfad88 = LA88.pfadFuer(roh88, 'AAA');
+    var zustand88 = { tagJe: {} };
+    var w1 = await LA88.anhaengen(pfad88, 'AAA', '2026-09-08', [k88(9, 31, 11), k88(9, 30, 10)], zustand88);
+    ok(w1.ok && w1.geschrieben && w1.art === 'neu' && w1.neu === 2 && w1.letzterStempel === k88(9, 31, 0)[0] && w1.geschriebenBytes > 0 && typeof w1.ms === 'number',
+       '88.5 erste Kerzen des Tages: neue Datei mit Kopf, Rueckgabe in der Form von jahrSchreiben', JSON.stringify(w1));
+    var t1 = fs.readFileSync(pfad88, 'utf8');
+    ok(t1.split('\n')[0] === LA88.kopfZeile('AAA', '2026-09-08') && t1.split('\n').length === 4 && /\n$/.test(t1) && JSON.parse(t1.split('\n')[1])[0] < JSON.parse(t1.split('\n')[2])[0],
+       '88.5 Kopfzeile, zwei Kerzenzeilen in Zeitfolge, Zeilenende', JSON.stringify(t1.split('\n')[0]));
+    var w2 = await LA88.anhaengen(pfad88, 'AAA', '2026-09-08', [k88(9, 32, 12)], zustand88);
+    var t2 = fs.readFileSync(pfad88, 'utf8');
+    ok(w2.ok && w2.art === 'anhang' && w2.neu === 1 && t2.indexOf(t1) === 0 && t2.length === t1.length + w2.geschriebenBytes,
+       '88.5 der zweite Aufruf HAENGT AN: die alten Bytes bleiben, geschriebenBytes ist genau der Zuwachs', JSON.stringify([w2.art, w2.geschriebenBytes]));
+    ok(LA88.zerlegen(t2, '2026-09-08').kerzen.length === 3, '88.5 der Leser sieht drei Kerzen');
+    var w3 = await LA88.anhaengen(pfad88, 'AAA', '2026-09-08', [[et88(2026, 9, 9, 9, 30), 1, 1, 1, 1, 1]], zustand88);
+    ok(w3.ok && !w3.geschrieben && w3.uebersprungen === 1 && fs.readFileSync(pfad88, 'utf8') === t2, '88.5 eine Kerze eines anderen ET-Tags wird uebersprungen, die Datei nicht angefasst');
+    var w4 = await LA88.anhaengen(pfad88, 'AAA', '2026-09-09', [[et88(2026, 9, 9, 9, 30), 1, 1, 1, 1, 1]], zustand88);
+    var t4 = fs.readFileSync(pfad88, 'utf8');
+    ok(w4.ok && w4.art === 'neu' && t4.split('\n')[0] === LA88.kopfZeile('AAA', '2026-09-09') && t4.indexOf('2026-09-08') === -1 && LA88.zerlegen(t4, '2026-09-09').kerzen.length === 1,
+       '88.5 Tageswechsel: die Datei ist ERSETZT - neuer Kopf, die Kerzen von gestern sind weg', t4.split('\n')[0]);
+    ok(fs.readdirSync(ord88).filter(function (n) { return /tmp-/.test(n); }).length === 0, '88.5 kein Zwischenname liegt herum (atomar: schreiben, dann umbenennen)');
+    ok(!LA88.zerlegen(t4, '2026-09-08').ok, '88.5 und fuer einen Leser von gestern ist sie unsichtbar');
+    var w5 = await LA88.anhaengen(pfad88, 'AAA', '2026-09-09', [[et88(2026, 9, 9, 9, 31), 1, 1, 1, 1, 1]], { tagJe: {} });
+    ok(w5.ok && w5.art === 'anhang' && LA88.zerlegen(fs.readFileSync(pfad88, 'utf8'), '2026-09-09').kerzen.length === 2, '88.5 ohne gemerkten Zustand entscheidet der Kopf der Datei: gleicher Tag heisst anhaengen');
+    ok((await LA88.kopfLesen(pfad88)).tag === '2026-09-09' && (await LA88.kopfLesen(pfad88 + '.gibt.es.nicht')) === null, '88.5 kopfLesen liest nur die erste Zeile; ohne Datei null');
+    fs.writeFileSync(path88.join(wegwerf88, 'datei.txt'), 'x');
+    var w6 = await LA88.anhaengen(path88.join(wegwerf88, 'datei.txt', '_live.jsonl'), 'AAA', '2026-09-09', [[et88(2026, 9, 9, 9, 32), 1, 1, 1, 1, 1]], { tagJe: {} });
+    ok(w6 && w6.ok === false && /Tagesablage:/.test(w6.grund), '88.5 ein werfender Dateischritt kommt als { ok:false, grund } zurueck, nicht als Ausnahme', w6.grund);
+    ok(!/Sync\(/.test(ablQ88.slice(0, ablQ88.indexOf('function lesenSync('))), '88.5 im Schreibweg von liveablage.js steht nichts Synchrones (nur der Viewer-Leser lesenSync)');
+    ok(!/fsync|journal/i.test(ablQ88.slice(ablQ88.indexOf('async function anhaengen('), ablQ88.indexOf('async function standLesen('))) && /fsp\.appendFile\(pfad, text\)/.test(ablQ88),
+       '88.5 F1: kein Journal, kein fsync - appendFile');
+    gegen88('ohne die Tagesregel haette der zweite Tag angehaengt statt ersetzt', LA88.zerlegen(t2 + LA88.kerzenText([[et88(2026, 9, 9, 9, 30), 1, 1, 1, 1, 1]]), '2026-09-08').kerzen.length === 4);
+
+    /* --- 88.6 F2: _livestand.json rund, Tageswechsel laesst die Stempel verfallen --- */
+    ok((await LA88.standLesen(roh88)) === null, '88.6 ohne Datei: kein Stand');
+    var st0 = LA88.standFuerTag(null, '2026-09-08');
+    ok(st0.v === 1 && st0.tag === '2026-09-08' && Object.keys(st0.werte).length === 0, '88.6 aus nichts wird ein leerer Stand fuer den Tag');
+    st0.werte.AAA = { stempel: k88(9, 32, 0)[0], runde: et88(2026, 9, 8, 9, 50), leer: 0 };
+    st0.runde = { zeit: et88(2026, 9, 8, 9, 50), kerzen: 3 };
+    await LA88.standSchreiben(roh88, st0);
+    var st1 = await LA88.standLesen(roh88);
+    ok(st1 && st1.v === 1 && st1.tag === '2026-09-08' && st1.werte.AAA.stempel === k88(9, 32, 0)[0] && st1.runde.kerzen === 3 && typeof st1.stand === 'string',
+       '88.6 rund: geschrieben, gelesen, gleich', JSON.stringify(st1.werte));
+    ok(fs.readdirSync(roh88).filter(function (n) { return /tmp-/.test(n); }).length === 0 && fs.existsSync(path88.join(roh88, '_livestand.json')), '88.6 atomar, unter dem Namen _livestand.json');
+    ok(LA88.standFuerTag(st1, '2026-09-08') === st1, '88.6 derselbe Tag: der Stand bleibt, wie er ist');
+    var st3 = LA88.standFuerTag(st1, '2026-09-09');
+    ok(st3.tag === '2026-09-09' && Object.keys(st3.werte).length === 0 && st3.verfallen === '2026-09-08' && st3.runde && st3.runde.kerzen === 3,
+       '88.6 neuer ET-Tag: die Stempel VERFALLEN, die letzte Runde bleibt zur Anzeige');
+    var s0 = L88.startFuer(null, et88(2026, 9, 9, 10, 0));
+    ok(s0 === et88(2026, 9, 9, 0, 0) && s0 < et88(2026, 9, 9, 4, 0), '88.6 verfallen heisst: die Runde holt ab Mitternacht ET des Tages - nicht ab "jetzt", und vor dem Sitzungsbeginn 04:00', new Date(s0).toISOString());
+    gegen88('mit Stempel holte startFuer erst eine Minute danach', L88.startFuer(k88(9, 32, 0)[0], et88(2026, 9, 9, 10, 0)) === k88(9, 33, 0)[0]);
+    ok(/const stand = Liveablage\.standFuerTag\(LIVESTAND\.stand, heute\);/.test(rundeText) && /LIVESTAND\.stand = stand;/.test(rundeText), '88.6 main.js laesst den Stand je Runde am ET-Tag verfallen');
+    ok(/liveStandLaden\(liveRohOrdner\(\)\)/.test(mainQ88) && /await liveStandLaden\(roh\);/.test(rundeText), '88.6 beim Start asynchron geladen, die erste Runde wartet darauf');
+
+    /* --- 88.7 Nr. 27b: die Zeitscheibe zaehlt Sitzungsminuten aus dem Kalender --- */
+    var kal88 = { '2026-09-04': { open: '09:30', close: '16:00' }, '2026-09-08': { open: '09:30', close: '16:00' } };   /* 05./06. Wochenende, 07.09. Labor Day */
+    var fr = et88(2026, 9, 4, 20, 0), di = et88(2026, 9, 8, 10, 44);
+    ok(L88.sitzungsminuten(fr, di, kal88) === 405 && Math.floor((di - fr) / 60000) + 1 === 5205, '88.7 Freitag 20:00 bis Dienstag 10:44 nach dem Feiertagswochenende: 405 Sitzungsminuten, 5.205 Wanduhr-Minuten');
+    ok(L88.sitzungsminuten(et88(2026, 9, 8, 4, 0), et88(2026, 9, 8, 19, 59), kal88) === 960 && L88.sitzungsminuten(et88(2026, 9, 8, 3, 59), et88(2026, 9, 8, 20, 0), kal88) === 960,
+       '88.7 ein ganzer Handelstag hat 960 (04:00 bis 19:59), davor und danach zaehlt nichts');
+    ok(L88.sitzungsminuten(et88(2026, 9, 5, 10, 0), et88(2026, 9, 7, 10, 0), kal88) === 0, '88.7 Wochenende und Feiertag: null');
+    ok(L88.sitzungsminuten(et88(2026, 11, 27, 0, 0), et88(2026, 11, 27, 23, 59), { '2026-11-27': { open: '09:30', close: '13:00' } }) === 780, '88.7 Halbtag: 04:00 bis 16:59 = 780');
+    ok(L88.endeNachSitzungsminuten(fr, 100, kal88) === et88(2026, 9, 8, 5, 39) && L88.endeNachSitzungsminuten(fr, 405, kal88) === di && L88.endeNachSitzungsminuten(fr, 5, {}) === null,
+       '88.7 der Endstempel nach n Sitzungsminuten ueberspringt das Wochenende; ohne Kalender null');
+    var werteK = [], stempelK = {};
+    for (var ik = 0; ik < 3200; ik++) { werteK.push('K' + ik); stempelK['K' + ik] = et88(2026, 9, 4, 19, 59); }
+    var jetztK = et88(2026, 9, 8, 11, 0);
+    var planMit = L88.abrufplan(werteK, stempelK, jetztK, { leere: { tag: null, je: {} }, deckel: 150, kalender: kal88 });
+    var planOhne = L88.abrufplan(werteK, stempelK, jetztK, { leere: { tag: null, je: {} }, deckel: 150 });
+    ok(planMit.bloecke.length === 16 && planMit.verschoben === 0 && planMit.zeitscheiben === 0, '88.7 MIT Kalender nimmt die Runde alle 16 Bloecke (16 x 9 Seiten = 144 <= 150)', JSON.stringify([planMit.bloecke.length, planMit.verschoben, planMit.zeitscheiben]));
+    ok(planOhne.verschoben >= 10 && planOhne.bloecke.length <= 3, '88.7 OHNE Kalender (Wanduhr) blieben 2-3 Bloecke - der Befund vom 08.09. ("26 Bloecke in der naechsten Runde")', JSON.stringify([planOhne.bloecke.length, planOhne.verschoben]));
+    gegen88('die Wanduhr-Rechnung haelt jeden Block fuer ueber 100 Seiten schwer', Math.ceil(200 * 5205 / L88.SEITE) > 100);
+    var planZ = L88.abrufplan(werteK.slice(0, 200), stempelK, jetztK, { leere: { tag: null, je: {} }, deckel: 1, kalender: kal88 });
+    ok(planZ.bloecke.length === 1 && planZ.zeitscheiben === 1 && planZ.bloecke[0].ende === et88(2026, 9, 8, 4, 49), '88.7 die Zeitscheibe (Deckel 1, 200 Werte = 50 Minuten) endet Dienstag 04:49 ET - ab Sitzungsbeginn, nicht ab Freitag', new Date(planZ.bloecke[0].ende).toISOString());
+    var planZo = L88.abrufplan(werteK.slice(0, 200), stempelK, jetztK, { leere: { tag: null, je: {} }, deckel: 1 });
+    gegen88('ohne Kalender endete dieselbe Scheibe Freitag 20:49 - 50 Minuten, in denen niemand handelt', planZo.bloecke[0].ende === et88(2026, 9, 4, 20, 49));
+    var urlsK = [];
+    var rK = await L88.runde({ werte: werteK.slice(0, 200), jetzt: function () { return jetztK; }, an: true, schluessel: true, kalender: kal88, deckel: 1,
+      stempel: function (s) { return stempelK[s]; }, fetch: function (u) { urlsK.push(u); return Promise.resolve({ status: 200, body: '{"bars":{}}' }); },
+      schreiben: function () { return { ok: true, geschrieben: false, neu: 0 }; }, leere: { tag: null, je: {}, gesehen: {} } });
+    ok(rK.gelaufen && urlsK.length === 1 && urlsK[0].indexOf('end=' + encodeURIComponent(new Date(et88(2026, 9, 8, 4, 49)).toISOString())) > 0, '88.7 durch die Runde: o.kalender kommt an, die Anfrage endet Dienstag 04:49 ET', urlsK[0]);
+    ok(/kalender: o\.kalender/.test(liveQ88) && /opt\.kalender \? sitzungsminuten\(bl\.start, bl\.ende, opt\.kalender\)/.test(liveQ88), '88.7 im Text: die Runde reicht den Kalender an den Plan, die Zeitscheibe fragt ihn');
+    var nachholText88 = vsQ88.slice(vsQ88.indexOf('async function nachholen('), vsQ88.indexOf('async function selbsttestNachholen('));
+    ok(/Live\.abrufplan\(werte, stempel, jetzt, \{ ende: ende, leere: F\.nachholen\.leere \}\)/.test(nachholText88), '88.7 F6: der Nachlauf plant ohne Deckel und ohne Kalender - fuer ihn aendert sich nichts');
+
+    /* --- 88.8 F6: Manifest, Pruefung, Journalsuche uebersehen _live.jsonl und _livestand.json --- */
+    var wurzel88 = path88.join(wegwerf88, 'archiv', 'alpaca1m');
+    var kalM = { '2026-09-08': { open: '09:30', close: '16:00' } };
+    var wj = A88.jahrSchreiben(path88.join(wurzel88, 'BBB'), 'BBB', 2026, [k88(9, 30, 10), k88(9, 31, 11)], kalM, { herkunft: 'Probe' });
+    ok(wj.ok, '88.8 Mini-Archiv: eine Jahresdatei');
+    await LA88.anhaengen(LA88.pfadFuer(wurzel88, 'BBB'), 'BBB', '2026-09-08', [k88(9, 32, 12)], { tagJe: {} });
+    await LA88.standSchreiben(wurzel88, LA88.standFuerTag(null, '2026-09-08'));
+    var liste88 = MF88.jahresdateien(wurzel88);
+    ok(liste88.length === 1 && liste88[0].rel === 'BBB/2026.json', '88.8 das Manifest-Werkzeug sieht nur die Jahresdatei', JSON.stringify(liste88.map(function (d) { return d.rel; })));
+    MF88.manifestSchreiben(wurzel88, { kal: kalM, lebenszeit: {}, ordnerZuSym: {} });
+    var pr88 = MF88.manifestPruefen(wurzel88, { hash: true });
+    ok(pr88.vorhanden && pr88.dateien === 1 && pr88.gleich === 1 && !pr88.fehlende.length && !pr88.veraenderte.length && !pr88.neue.length && !pr88.nachgewachsen.length,
+       '88.8 --pruefen: 0 Verstoesse, obwohl Tagesablage und Stand daneben liegen', JSON.stringify(pr88));
+    await LA88.anhaengen(LA88.pfadFuer(wurzel88, 'BBB'), 'BBB', '2026-09-08', [k88(9, 33, 13)], { tagJe: {} });
+    var pr88b = MF88.manifestPruefen(wurzel88, { hash: true });
+    ok(pr88b.gleich === 1 && !pr88b.veraenderte.length && !pr88b.nachgewachsen.length, '88.8 ein Anhang an die Tagesablage ist fuer --pruefen unsichtbar');
+    ok(A88.journaleFinden(wurzel88).length === 0, '88.8 die Journalsuche findet nichts');
+    ok(!/^\d{4}\.json$/.test('_live.jsonl') && !/^\d{4}\.json$/.test('_livestand.json') && /^\d{4}\.json$/.test('2026.json'), '88.8 das Muster der Werkzeuge: Jahresdateien ja, Tagesablage und Stand nein');
+    var musterVS = (vsQ88.match(/\^\(?\\d\{4\}\)?\\\.json\$/g) || []).length, musterMF = (mfQ88.match(/\^\(?\\d\{4\}\)?\\\.json\$/g) || []).length;
+    ok(musterVS >= 5 && musterMF >= 1, '88.8 Vollsammlung (5 Stellen, eine davon mit Klammer) und Manifest zaehlen mit genau diesem Muster', musterVS + ' + ' + musterMF);
+    ok(!/_live\.jsonl|_livestand|iveablage/.test(vsQ88 + mfQ88), '88.8 F6: Nachlauf, Vollsammlung und Manifest kennen die Tagesablage nicht - unveraendert');
+    var jm88 = fs.readFileSync(path88.join(wurzel88, 'BBB', '2026.json'), 'utf8');
+    ok(JSON.parse(jm88).series.length === 2, '88.8 die Jahresdatei traegt weiter zwei Kerzen - die Tagesablage hat sie nicht angefasst');
+    gegen88('ein Muster ohne Anker faende die Tagesablage', /\.json/.test('_livestand.json'));
+    gegen88('eine Jahresdatei, die sich aendert, sieht --pruefen sehr wohl', (function () {
+      A88.jahrSchreiben(path88.join(wurzel88, 'BBB'), 'BBB', 2026, [k88(9, 40, 1)], kalM);
+      var p = MF88.manifestPruefen(wurzel88, {});
+      return p.veraenderte.length + p.nachgewachsen.length === 1;
+    })());
+
+    /* --- 88.9 F5: jede Verrichtung wird abgewartet --- */
+    var reihenfolge = [], abschlussFertig = false;
+    function balken88(h, mi) { return { t: new Date(et88(2026, 9, 8, h, mi)).toISOString(), o: 1, h: 2, l: 1, c: 1.5, v: 3 }; }
+    var rA = await L88.runde({ werte: ['AAA', 'BBB'], jetzt: function () { return et88(2026, 9, 8, 11, 0); }, an: true, schluessel: true,
+      stempel: function (s) { return new Promise(function (res) { setTimeout(function () { reihenfolge.push('stempel ' + s); res(et88(2026, 9, 8, 10, 0)); }, 2); }); },
+      fetch: function () { return Promise.resolve({ status: 200, body: JSON.stringify({ bars: { AAA: [balken88(10, 30)], BBB: [balken88(10, 31)] } }) }); },
+      schreiben: function (sym, jahr, kerzen) { return new Promise(function (res) { setTimeout(function () { reihenfolge.push('schreiben ' + sym); res({ ok: true, geschrieben: true, neu: kerzen.length, letzterStempel: kerzen[kerzen.length - 1][0], geschriebenBytes: 100, ms: 2 }); }, 3); }); },
+      abschluss: function () { return new Promise(function (res) { setTimeout(function () { reihenfolge.push('abschluss'); abschlussFertig = true; res(); }, 3); }); },
+      leere: { tag: null, je: {}, gesehen: {} } });
+    ok(rA.gelaufen && rA.kerzen === 2 && rA.dateien === 2 && rA.schreibBytes === 200 && rA.schreibMs === 4 && abschlussFertig && reihenfolge.join(',') === 'stempel AAA,stempel BBB,schreiben AAA,schreiben BBB,abschluss',
+       '88.9 Stempel, Schreiben und Abschluss als Zusagen: alle abgewartet, in Reihenfolge, die Summen stimmen', reihenfolge.join(','));
+    ok(rA.jeWert.AAA.stempel === et88(2026, 9, 8, 10, 30) && rA.bis === et88(2026, 9, 8, 10, 31), '88.9 die Stempel je Wert kommen aus den abgewarteten Schreibbefunden');
+    var rB = await L88.runde({ werte: ['AAA', 'BBB'], jetzt: function () { return et88(2026, 9, 8, 11, 0); }, an: true, schluessel: true,
+      stempel: function () { return et88(2026, 9, 8, 10, 0); },
+      fetch: function () { return Promise.resolve({ status: 200, body: JSON.stringify({ bars: { AAA: [balken88(10, 30)], BBB: [balken88(10, 31)] } }) }); },
+      schreiben: function (sym, jahr, kerzen) { return sym === 'AAA' ? Promise.reject(new Error('EBUSY: resource busy')) : Promise.resolve({ ok: true, geschrieben: true, neu: kerzen.length, letzterStempel: kerzen[kerzen.length - 1][0] }); },
+      leere: { tag: null, je: {}, gesehen: {} } });
+    ok(rB.gelaufen && rB.kerzen === 1 && rB.fehlerJe === 1 && /AAA 2026: Ausnahme: EBUSY/.test(rB.fehler) && rB.jeWert.BBB.neu === 1, '88.9 eine abgewiesene Zusage beim Schreiben kostet den Wert, nicht die Runde', rB.fehler);
+    ok(/for \(var si = 0; si < block\.symbole\.length; si\+\+\)/.test(liveQ88) && /w = await o\.schreiben\(sym, jahr, jeJahr\[jahr\]\);/.test(liveQ88) && /await o\.abschluss\(erg\)/.test(liveQ88) && /await o\.stempel\(werteListe\[wi\]\)/.test(liveQ88),
+       '88.9 im Text: for-Schleifen mit await um jede Verrichtung');
+    var rundeTextL = liveQ88.slice(liveQ88.indexOf('async function runde('), liveQ88.indexOf('function uhr('));
+    ok(!/forEach\(function \([^)]*\) \{[^}]*o\.(schreiben|stempel|abschluss)/.test(rundeTextL) && !/Promise\.all/.test(rundeTextL), '88.9 keine Verrichtung in einem forEach, kein Promise.all ueber die Werte (Nebenlaeufigkeit 1, erlaubt bis 4)');
+    gegen88('ein forEach mit await darin waere vor dem ersten Schreiben fertig', (function () { var n = 0; ['a', 'b'].forEach(async function () { await new Promise(function (r) { setTimeout(r, 1); }); n++; }); return n === 0; })());
+
+    /* --- 88.10 Die Probe und die Namen --- */
+    ok(/function liveRundePruefen\(win, js\)/.test(probeQ88) && /window\.api\.liveStand\(\)/.test(probeQ88) && /setTimeout\(r, 100\)/.test(probeQ88) && /s\.max >= 100 \|\| s\.p99 >= 50/.test(probeQ88) && /KONTROLL_SPERRE_MS/.test(probeQ88) && /driftMesser\(\)/.test(probeQ88),
+       '88.10 die Oberflaechen-Probe misst die Antwortzeit alle 100 ms (Soll max < 100, p99 < 50), den Zeitgeber-Drift und hat eine Positivkontrolle');
+    ok(/const N = 2000;/.test(probeQ88) && /st\.dateien >= KUNST_LIVE\.N \* 0\.95/.test(probeQ88) && /die Jahresdatei wurde angefasst/.test(probeQ88),
+       '88.10 mit 2.000 Kunst-Reihen; eine Runde, die nichts schrieb, belegt nichts; die Jahresdatei muss unberuehrt bleiben');
+    ok(/livestand: '_livestand\.json'/.test(aQ88) && LA88.STAND === '_livestand.json' && LA88.DATEI === '_live.jsonl' && LA88.PROTOKOLL === A88.META.protokoll,
+       '88.10 die Namen: _live.jsonl je Reihe, _livestand.json im Rohordner, dasselbe Protokoll wie die Vollsammlung');
+    ok(g88 === rot88, '88.x alle Gegenproben dieses Abschnitts schlagen an', rot88 + ' von ' + g88);
+    try { fs.rmSync(wegwerf88, { recursive: true, force: true }); } catch (e) { /* Wegwerf bleibt liegen */ }
+  })());
+  void runde88;
 })();
 
 Promise.all(offeneProben).then(function () {

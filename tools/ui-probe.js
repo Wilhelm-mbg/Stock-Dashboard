@@ -65,6 +65,88 @@ BrowserWindow.prototype.loadFile = function (fp, opts) {
 const KUNSTDATEN = process.argv.indexOf('--leer') === -1;
 if (KUNSTDATEN) require(path.join(__dirname, 'kunstinstanz.js')).saeen(TESTROOT);
 
+/* ================= Die Kunst-Runde des Live-Sammlers (09.09.2026) =================
+ *
+ * DER BEFUND, DEN DIESE SONDE FESTHAELT: am 08.09.2026 stand das Fenster der App
+ * "(Keine Rueckmeldung)" fuer rund 235 von 300 Sekunden jeder Live-Runde - die Runde
+ * schrieb 2.750 Jahresdateien SYNCHRON im Hauptprozess (Journal, fsync, Gegenlesen).
+ * Ein Textmarken-Test kann das nicht sehen, eine Logzeile ("geschrieben 148 MB in
+ * 232.000 ms") hat es zwei Tage lang niemandem gesagt. Gemessen wird deshalb das, was
+ * der Nutzer spuert: die ANTWORTZEIT des Hauptprozesses auf eine IPC-Anfrage
+ * (`live-stand`, alle 100 ms aus dem Renderer), WAEHREND eine Runde laeuft.
+ *
+ * DIE RUNDE IST ECHT, DIE QUELLE NICHT: main.js nimmt eine Kunst-Quelle an, aber nur
+ * wenn die App nicht gepackt ist UND MD_LIVE_KUNST gesetzt ist (beides steht hier).
+ * Sie liefert je Block fuenf Minuten je Wert aus dem Nichts, kein Netz, kein
+ * Schluessel. Die Live-Menge sind 2.000 Kunst-Reihen im Temp-Archiv dieser Instanz
+ * (Jahresdatei, Tagesablage, _livestand.json, Lebenszeit, Kalender) - also die
+ * Groessenordnung der echten Menge, auf C: statt E:.
+ *
+ * Die Uhr der Runde steht auf Dienstag, 08.09.2026, 11:00 ET (regulaere Sitzung) und
+ * laeuft von dort weiter - eine Sonde, die um 03:00 ET liefe, saehe "ausserhalb der
+ * Sitzung" und belegte nichts. Deshalb prueft die Auswertung ZUERST, ob die Runde
+ * gelaufen ist und geschrieben hat: eine schnelle Antwort auf eine Runde, die nichts
+ * tat, ist kein Beleg (Nullbefund vom toten Werkzeug, wiki/fehlerformen.md). */
+const KUNST_LIVE = KUNSTDATEN ? (function () {
+  const AA = require(path.join(WURZEL, 'alpacaarchiv.js'));
+  const LS = require(path.join(WURZEL, 'livesammler.js'));
+  const ROH = path.join(TESTROOT, 'downloads', 'Markt-Dashboard-Daten', 'alpaca1m');
+  const N = 2000;
+  const TAG = '2026-09-08';
+  const T0 = AA.nyNachUtc(2026, 9, 8, 11, 0);
+  const echt0 = Date.now();
+  const jetzt = () => T0 + (Date.now() - echt0);
+  const grenze = LS.fertigGrenze(T0);
+  const stempel = grenze - 5 * 60000;
+  const tage = {};
+  ['2026-09-03', '2026-09-04', '2026-09-08', '2026-09-09', '2026-09-10'].forEach((t) => { tage[t] = { open: '09:30', close: '16:00' }; });
+  fs.mkdirSync(ROH, { recursive: true });
+  fs.writeFileSync(path.join(ROH, '_kalender.json'), JSON.stringify({ geholt: new Date().toISOString(), von: '2026-01-01', bis: '2027-12-31', tage: tage }));
+  const lz = { stand: '2026-09-08T00:00:00.000Z', werte: {} };
+  const stand = { v: 1, tag: TAG, stand: new Date(T0 - 300000).toISOString(), werte: {} };
+  const reihen = [];
+  const t1 = Date.now();
+  for (let i = 1; i <= N; i++) {
+    const sym = 'K' + String(i).padStart(4, '0');
+    reihen.push(sym);
+    lz.werte[sym] = { jahre: [2026], letzter: AA.nyNachUtc(2026, 9, 4, 0, 0) };
+    const kerzen = [];
+    for (let m = 0; m < 60; m++) { const t = stempel - (59 - m) * 60000; kerzen.push([t, 100 + (i % 7), 1000 + m, 101 + (i % 7), 99 + (i % 7), 100 + (i % 7)]); }
+    const w = AA.jahrSchreiben(path.join(ROH, sym), sym, 2026, kerzen, tage, { herkunft: 'Kunst-Probe' });
+    if (!w || !w.ok) throw new Error('Kunst-Archiv: ' + sym + ' liess sich nicht anlegen: ' + (w && w.grund));
+    stand.werte[sym] = { stempel: stempel, runde: T0 - 300000, leer: 0 };
+    const zeilen = [JSON.stringify({ v: 1, reihe: sym, tag: TAG })].concat(kerzen.slice(-5).map((k) => JSON.stringify(k)));
+    fs.writeFileSync(path.join(ROH, sym, '_live.jsonl'), zeilen.join('\n') + '\n');
+  }
+  fs.writeFileSync(path.join(ROH, '_lebenszeit.json'), JSON.stringify(lz));
+  fs.writeFileSync(path.join(ROH, '_livestand.json'), JSON.stringify(stand));
+  const saatMs = Date.now() - t1;
+  /* Die Quelle: liest die Adresse wie Alpaca (symbols, start, end, limit, page_token)
+   * und liefert je Wert eine Kerze je Minute im angefragten Fenster - 30 ms "Netz". */
+  let abrufe = 0, balken = 0;
+  async function fetch(url) {
+    abrufe++;
+    const q = {};
+    String(url).split('?')[1].split('&').forEach((p) => { const i = p.indexOf('='); q[p.slice(0, i)] = decodeURIComponent(p.slice(i + 1)); });
+    const syms = String(q.symbols || '').split(',').filter(Boolean);
+    const von = Date.parse(q.start), bis = q.end ? Date.parse(q.end) : jetzt();
+    const seite = Number(q.limit) || 10000, ab = Number(q.page_token || 0);
+    const alle = [];
+    syms.forEach((s) => { for (let t = Math.ceil(von / 60000) * 60000; t <= bis; t += 60000) alle.push([s, t]); });
+    const bars = {};
+    alle.slice(ab, ab + seite).forEach((x) => {
+      (bars[x[0]] = bars[x[0]] || []).push({ t: new Date(x[1]).toISOString(), o: 100, h: 101, l: 99, c: 100.5, v: 1234 });
+      balken++;
+    });
+    const next = ab + seite < alle.length ? String(ab + seite) : null;
+    await new Promise((r) => setTimeout(r, 30));
+    return { status: 200, body: JSON.stringify({ bars: bars, next_page_token: next }) };
+  }
+  process.env.MD_LIVE_KUNST = '1';
+  global.__mdLiveKunst = { fetch: fetch, jetzt: jetzt, zaehler: () => ({ abrufe: abrufe, balken: balken }) };
+  return { ROH: ROH, N: N, T0: T0, stempel: stempel, grenze: grenze, reihen: reihen, saatMs: saatMs };
+})() : null;
+
 const konsoleFehler = [];
 
 /* ================= BEKANNTE ABWEICHUNGEN MIT FUNDSTELLE =================
@@ -1132,6 +1214,114 @@ async function liveZeilePruefen(win, js) {
   return { funde };
 }
 
+/* ================= Live-Runde: bleibt der Hauptprozess frei? (09.09.2026) =================
+ * Der Renderer fragt alle 100 ms `live-stand` ueber IPC und stoppt die Antwortzeit;
+ * gleichzeitig laeuft im Hauptprozess eine Runde ueber die Kunst-Quelle. Soll:
+ * Maximum unter 100 ms, p99 unter 50 ms. Vorher (alter Schreibpfad, 08.09.2026)
+ * lagen die Antworten bei mehreren Sekunden.
+ *
+ * ZWEI KONTROLLEN, ohne die die Zahl nichts belegt: (1) die Runde muss gelaufen sein
+ * und geschrieben haben - eine Runde, die "ausserhalb der Sitzung" sagt, blockiert
+ * nichts und beweist nichts; (2) die Sonde selbst muss eine Blockade SEHEN koennen:
+ * nach der Runde sperrt der Hauptprozess absichtlich 150 ms, und eine der Proben muss
+ * das zeigen. Sonst misst die Schleife vielleicht gar nicht (Fokus weg, Renderer
+ * pausiert) und meldet "schnell", weil sie nichts gemessen hat. */
+function messSchleife(name) {
+  return "window." + name + " = { proben: [], laeuft: true, fehler: 0 };" +
+    "(async function () { while (window." + name + ".laeuft) { var t0 = performance.now();" +
+    " try { await window.api.liveStand(); } catch (e) { window." + name + ".fehler++; }" +
+    " window." + name + ".proben.push(performance.now() - t0);" +
+    " await new Promise(function (r) { setTimeout(r, 100); }); } })(); 'ok'";
+}
+function messStatistik(proben) {
+  const s = (proben || []).slice().sort((a, b) => a - b);
+  if (!s.length) return { n: 0, max: null, p99: null, mittel: null };
+  const p99 = s[Math.min(s.length - 1, Math.max(0, Math.ceil(0.99 * s.length) - 1))];
+  const mittel = s.reduce((a, b) => a + b, 0) / s.length;
+  return { n: s.length, max: Math.round(s[s.length - 1]), p99: Math.round(p99), mittel: Math.round(mittel * 10) / 10 };
+}
+/* Der zweite Messer sitzt IM Hauptprozess: ein Zeitgeber alle 10 ms; kommt er
+ * spaeter, als er soll, hat etwas den Hauptprozess so lange angehalten. Das misst die
+ * Blockade DIREKT und ohne die Aufloesung der IPC-Schleife (die sieht eine Sperre von
+ * B ms nur als B minus bis zu 100 ms, weil sie nur alle 100 ms fragt). */
+function driftMesser() {
+  const d = { max: 0, summe: 0, ticks: 0, letzter: Date.now(), timer: null };
+  d.timer = setInterval(() => {
+    const t = Date.now(), stall = t - d.letzter - 10;
+    d.letzter = t; d.ticks++;
+    if (stall > 0) { d.summe += stall; if (stall > d.max) d.max = stall; }
+  }, 10);
+  d.stop = () => { clearInterval(d.timer); return { max: d.max, summe: d.summe, ticks: d.ticks }; };
+  return d;
+}
+const KONTROLL_SPERRE_MS = 400;
+async function liveRundePruefen(win, js) {
+  const funde = [];
+  if (!KUNST_LIVE) return { funde: funde };
+  const k = global.__mdLiveKunst;
+  if (!k || typeof k.runde !== 'function') {
+    funde.push('Live-Runde: main.js hat die Kunst-Quelle nicht angenommen (kein `runde` am Rueckruf-Objekt) - die Runde ist nicht messbar');
+    return { funde: funde };
+  }
+  /* Was die Runde auf der Platte hinterlaesst: die Jahresdatei bleibt byteidentisch
+   * (Groesse und Aenderungszeit), die Tagesablage waechst, der Stand wird neu geschrieben. */
+  const jahrPfad = path.join(KUNST_LIVE.ROH, 'K0001', '2026.json');
+  const tagPfad = path.join(KUNST_LIVE.ROH, 'K0001', '_live.jsonl');
+  const standPfad = path.join(KUNST_LIVE.ROH, '_livestand.json');
+  const vorher = { jahr: fs.statSync(jahrPfad), tag: fs.statSync(tagPfad).size, stand: fs.statSync(standPfad).mtimeMs };
+  await js(messSchleife('__ipcMess'));
+  await new Promise((r) => setTimeout(r, 300));
+  const drift = driftMesser();
+  const t0 = Date.now();
+  const st = await k.runde('Kunst-Probe');
+  const rundeMs = Date.now() - t0;
+  const dr = drift.stop();
+  const nachher = { jahr: fs.statSync(jahrPfad), tag: fs.statSync(tagPfad).size, stand: fs.statSync(standPfad).mtimeMs };
+  const tagText = fs.readFileSync(tagPfad, 'utf8');
+  console.log('    Platte: Jahresdatei K0001/2026.json ' + vorher.jahr.size + ' -> ' + nachher.jahr.size + ' Bytes (mtime ' +
+    (vorher.jahr.mtimeMs === nachher.jahr.mtimeMs ? 'gleich' : 'GEAENDERT') + '), Tagesablage ' + vorher.tag + ' -> ' + nachher.tag +
+    ' Bytes (' + (tagText.split('\n').length - 1) + ' Zeilen), _livestand.json ' + (nachher.stand > vorher.stand ? 'neu geschrieben' : 'NICHT geschrieben'));
+  if (nachher.jahr.size !== vorher.jahr.size || nachher.jahr.mtimeMs !== vorher.jahr.mtimeMs) funde.push('Live-Runde: die Jahresdatei wurde angefasst (' + vorher.jahr.size + ' -> ' + nachher.jahr.size + ' Bytes) - das Jahr schreibt allein der Nachlauf');
+  if (!(nachher.tag > vorher.tag) || !/\n$/.test(tagText)) funde.push('Live-Runde: die Tagesablage ist nicht gewachsen oder endet ohne Zeilenende');
+  if (!(nachher.stand > vorher.stand)) funde.push('Live-Runde: _livestand.json wurde nach der Runde nicht geschrieben');
+  await new Promise((r) => setTimeout(r, 300));
+  const mess = await js("(function () { window.__ipcMess.laeuft = false; return { proben: window.__ipcMess.proben.slice(), fehler: window.__ipcMess.fehler }; })()");
+  const z = k.zaehler ? k.zaehler() : { abrufe: null, balken: null };
+  const s = messStatistik(mess && mess.proben);
+  console.log('  Live-Runde (Kunst-Quelle, ' + KUNST_LIVE.N + ' Reihen, Saat ' + KUNST_LIVE.saatMs + ' ms): gelaufen=' + !!(st && st.gelaufen) +
+    (st && st.grund ? ' grund="' + st.grund + '"' : '') + (st && st.fehler ? ' fehler="' + String(st.fehler).slice(0, 120) + '"' : ''));
+  console.log('    Runde: ' + rundeMs + ' ms, Anfragen ' + (st ? st.anfragen : '?') + ' (Quelle zaehlt ' + z.abrufe + ', ' + z.balken + ' Balken), ' +
+    (st ? st.kerzen : '?') + ' Kerzen in ' + (st ? st.dateien : '?') + ' Dateien, geschrieben ' +
+    (st ? Math.round((st.schreibBytes || 0) / 1024) : '?') + ' KB in ' + (st ? Math.round(st.schreibMs || 0) : '?') + ' ms');
+  console.log('    Antwortzeit live-stand waehrend der Runde: n=' + s.n + ', max ' + s.max + ' ms, p99 ' + s.p99 + ' ms, Mittel ' + s.mittel + ' ms, IPC-Fehler ' + (mess ? mess.fehler : '?'));
+  console.log('    Laengste Blockade des Hauptprozesses (Zeitgeber-Drift, 10 ms): ' + dr.max + ' ms, Summe ' + dr.summe + ' ms ueber ' + dr.ticks + ' Ticks');
+  if (!st || !st.gelaufen || !(st.kerzen > 0) || !(st.dateien >= KUNST_LIVE.N * 0.95)) {
+    funde.push('Live-Runde: die Kunst-Runde hat nicht gearbeitet (gelaufen=' + !!(st && st.gelaufen) + ', Kerzen ' + (st ? st.kerzen : '?') +
+      ', Dateien ' + (st ? st.dateien : '?') + ' von ' + KUNST_LIVE.N + (st && st.grund ? ', ' + st.grund : '') + ') - die Antwortzeit belegt nichts');
+  }
+  if (s.n < 5) funde.push('Live-Runde: nur ' + s.n + ' Proben - die Messschleife lief nicht (Renderer pausiert?)');
+  if (s.n && (s.max >= 100 || s.p99 >= 50)) {
+    funde.push('Live-Runde blockiert den Hauptprozess: Antwortzeit max ' + s.max + ' ms, p99 ' + s.p99 + ' ms (Soll: max < 100, p99 < 50) bei ' +
+      (st ? st.dateien : '?') + ' Dateien');
+  }
+  if (dr.max >= 100) funde.push('Live-Runde: der Hauptprozess stand am Stueck ' + dr.max + ' ms (Zeitgeber-Drift, Soll < 100)');
+  /* Positivkontrolle BEIDER Messer: eine absichtliche Sperre im Hauptprozess. Die
+   * IPC-Schleife fragt alle 100 ms und sieht davon mindestens Sperre minus 100 ms. */
+  await js(messSchleife('__ipcMess2'));
+  await new Promise((r) => setTimeout(r, 250));
+  const drift2 = driftMesser();
+  await new Promise((r) => setTimeout(r, 30));
+  const ende = Date.now() + KONTROLL_SPERRE_MS;
+  while (Date.now() < ende) { /* absichtlich: der Hauptprozess steht */ }
+  await new Promise((r) => setTimeout(r, 300));
+  const dr2 = drift2.stop();
+  const kontrolle = messStatistik(await js("(function () { window.__ipcMess2.laeuft = false; return window.__ipcMess2.proben.slice(); })()"));
+  console.log('    Positivkontrolle (' + KONTROLL_SPERRE_MS + ' ms Sperre im Hauptprozess): IPC n=' + kontrolle.n + ', max ' + kontrolle.max + ' ms; Drift max ' + dr2.max + ' ms');
+  if (!(kontrolle.max >= KONTROLL_SPERRE_MS - 120)) funde.push('Live-Runde: die IPC-Sonde sieht eine absichtliche ' + KONTROLL_SPERRE_MS + '-ms-Sperre nicht (max ' + kontrolle.max + ' ms) - sie misst nicht, was sie behauptet');
+  if (!(dr2.max >= KONTROLL_SPERRE_MS - 30)) funde.push('Live-Runde: der Drift-Messer sieht eine absichtliche ' + KONTROLL_SPERRE_MS + '-ms-Sperre nicht (max ' + dr2.max + ' ms)');
+  return { funde: funde, stand: st, statistik: s, rundeMs: rundeMs, drift: dr };
+}
+
 /* ================= Schein-Finder: filtert er wirklich ohne Neuladen? =================
  *
  * Der Kern der Stufe 7 laesst sich im Quelltext nicht pruefen: dass eine Drehung an
@@ -1318,6 +1508,9 @@ async function probe(win) {
   if (!tabs || !tabs.length) throw new Error('keine Reiter gefunden');
   const probleme = [];
   let pillen = 0;
+  /* Die Live-Runde ZUERST, vor jedem Klick: die Sonde misst die Antwortzeit des
+   * Hauptprozesses, und die soll nichts anderes neben sich haben (09.09.2026). */
+  (await liveRundePruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
   for (const tab of tabs) {
     const okTab = await js("(function () {" +
       "var b = document.querySelector('nav.tabs [data-tab=\"" + tab + "\"]'); if (!b) return 'kein Knopf';" +

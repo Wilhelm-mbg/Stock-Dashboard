@@ -1174,9 +1174,10 @@ ipcMain.handle('universum-eingefroren', async () => {
 });
 
 // ---- Gespeicherte Einstellungen (userData/store/settings.json) ----
+function settingsPfad() { return path.join(app.getPath('userData'), 'store', 'settings.json'); }
 function gespeicherteSettings() {
   try {
-    const f = path.join(app.getPath('userData'), 'store', 'settings.json');
+    const f = settingsPfad();
     if (fs.existsSync(f)) return JSON.parse(fs.readFileSync(f, 'utf8')) || {};
   } catch (e) { /* defekte Datei: Defaults */ }
   return {};
@@ -1360,6 +1361,7 @@ const Boerse = require('./boerse.js');
  * (06.09.2026, Auftrag Live-Sammler). */
 const AlpacaArchiv = require('./alpacaarchiv.js');
 const Live = require('./livesammler.js');
+const Liveablage = require('./liveablage.js');
 /* Der Datenordner kommt von Electron, nicht aus einer Annahme ueber das
  * Benutzerverzeichnis: app.getPath('downloads') folgt einer Umleitung, os.homedir()
  * nicht. Und die isolierten Proben setzen ihn eigens um - ohne diese Zeile griffen
@@ -1409,6 +1411,11 @@ function sammlerDatei() {
 function sammlerEinstellungen() {
   try { return Plan.einstellungen(JSON.parse(fs.readFileSync(sammlerDatei(), 'utf8'))); }
   catch (e) { return Plan.einstellungen(null); }
+}
+/* Dieselbe Regel, die Datei asynchron gelesen - fuer die Live-Runde, die im
+ * Hauptprozess keine Datei mehr synchron anfasst (09.09.2026, F4). */
+async function sammlerEinstellungenAsync() {
+  return Plan.einstellungen(await Liveablage.jsonLesen(sammlerDatei()));
 }
 
 /* Ein Lauf zur Zeit. Nicht weil zwei nicht gingen, sondern weil zwei gleichzeitig
@@ -1574,41 +1581,71 @@ const LIVE = {
 };
 /* Der Zugang - dieselbe Quelle und dieselbe Regel wie alpaca.js cfg(): nur Text
  * zaehlt, ein Sentinel-Objekt aus dem Einstellungsdialog ist kein Schluessel. */
-function alpacaZugang() {
-  const s = gespeicherteSettings();
+function zugangAus(s) {
+  s = s || {};
   const txt = (v) => (typeof v === 'string' ? v : '');
   const key = txt(dechiffrieren(s.alpKey)), secret = txt(dechiffrieren(s.alpSecret));
   return { key: key, secret: secret, on: !!(s.alpEnabled && key && secret) };
 }
-function ohneGeheimnis(text) {
+function alpacaZugang() { return zugangAus(gespeicherteSettings()); }
+/* Dieselbe Regel, die Datei asynchron gelesen - fuer die Live-Runde (F4). */
+async function alpacaZugangAsync() { return zugangAus((await Liveablage.jsonLesen(settingsPfad())) || {}); }
+/* `z` darf mitkommen: wer den Zugang schon hat, liest die Einstellungen nicht noch
+ * einmal von der Platte (die Live-Runde ruft das je Fehlermeldung). */
+function ohneGeheimnis(text, z) {
   let t = String(text == null ? '' : text);
-  const z = alpacaZugang();
+  z = z || alpacaZugang();
   if (z.key.length >= 4) t = t.split(z.key).join('[Schlüssel]');
   if (z.secret.length >= 4) t = t.split(z.secret).join('[Geheimnis]');
   return t;
 }
 function liveRohOrdner() { return AlpacaArchiv.rohOrdner(); }
+/* DER STAND DER LIVE-RUNDE LEBT IM SPEICHER (09.09.2026, F2). Bis heute las die Runde
+ * je Wert den Schwanz der Jahresdatei ("wo weiterholen", 3.067 Dateien je Runde) und
+ * schrieb den Vermerk in die 4,3 MB grosse _fortschritt.json - beides synchron im
+ * Hauptprozess. Jetzt: alpaca1m/_livestand.json, eine Datei, beim Start asynchron
+ * gelesen, nach jeder Runde asynchron und atomar geschrieben (liveablage.js). Dazu die
+ * gemerkten Meta-Dateien (Lebenszeit, Symbol-Abbildung, Kalender), je Aenderungszeit
+ * einmal zerlegt, und der Zustand der Tagesablage (welcher Tag steht in welcher Datei). */
+const LIVESTAND = {
+  geladen: null,           /* Zusage des ersten Lesens von _livestand.json */
+  stand: null,             /* { v, tag, stand, runde, werte: { SYM: { stempel, runde, leer } } } */
+  ablage: { tagJe: {} },   /* liveablage.anhaengen merkt sich je Datei den Tag */
+  merk: { lebenszeit: {}, symbole: {}, kalender: null },
+};
+function liveStandLaden(roh) {
+  if (!LIVESTAND.geladen) {
+    LIVESTAND.geladen = Liveablage.standLesen(roh).then((s) => { if (!LIVESTAND.stand) LIVESTAND.stand = s; return s; }, () => null);
+  }
+  return LIVESTAND.geladen;
+}
 /* Die Live-Menge kommt aus dem ARCHIV, nicht aus einer Namensliste: die Lebenszeit-
  * Datei des Alpaca-Archivs sagt, welche Reihen es heute noch fuehrt (livesammler.js
  * gefuehrteReihen: kein Fehler, Jahre vorhanden, nicht die erloschene Erstbelegung
  * eines wiederverwendeten Kuerzels, letzter Tagesbalken nicht laenger als 30 Tage vor
  * dem Stand der Datei). Fehlt die Datei, bleiben Watchlist, Positionen und der Wert im
- * Viewer - die App sammelt dann weniger, aber nie das Falsche. */
-function liveMengeJetzt() {
-  const gefuehrt = Live.gefuehrteReihen(AlpacaArchiv.lebenszeitDatei(liveRohOrdner()));
+ * Viewer - die App sammelt dann weniger, aber nie das Falsche. `lz` ist der Inhalt der
+ * Datei, asynchron gelesen und nach Aenderungszeit gemerkt. */
+function liveMengeAus(lz) {
+  const gefuehrt = Live.gefuehrteReihen(lz || { stand: null, werte: {} });
   return Live.liveMenge({ universum: gefuehrt, watch: LIVE.menge.watch,
                           positionen: LIVE.menge.positionen, viewer: LIVE.menge.viewer });
 }
 /* Der Kalender der Quelle (_kalender.json der Vollsammlung) - er sagt, welche
  * Minute vor-, regulaer oder nachboerslich ist, Halbtage eingeschlossen. Deckt er
  * den heutigen Tag nicht (Jahreswechsel), wird er einmal nachgeholt: EINE Anfrage
- * an /v2/calendar, ergaenzt, nicht ersetzt. */
-async function liveKalender(roh, jetzt) {
-  const kal = AlpacaArchiv.kalenderLesen(roh);
+ * an /v2/calendar, ergaenzt, nicht ersetzt. Gelesen und geschrieben wird asynchron,
+ * und der gelesene Kalender bleibt im Speicher, solange er den Tag deckt. */
+async function liveKalender(roh, jetzt, z) {
   const heute = AlpacaArchiv.etTag(jetzt);
+  let kal = LIVESTAND.merk.kalender;
+  if (!AlpacaArchiv.kalenderDeckt(kal, heute)) {
+    kal = await Liveablage.jsonLesen(AlpacaArchiv.metaPfad(roh, 'kalender'));
+    LIVESTAND.merk.kalender = kal;
+  }
   if (AlpacaArchiv.kalenderDeckt(kal, heute)) return kal.tage;
   const jahr = Number(heute.slice(0, 4));
-  const z = alpacaZugang();
+  z = z || alpacaZugang();
   const r = await alpFetch('GET', 'https://paper-api.alpaca.markets/v2/calendar?start=' + jahr + '-01-01&end=' + (jahr + 1) + '-12-31',
     { 'APCA-API-KEY-ID': z.key, 'APCA-API-SECRET-KEY': z.secret });
   if (!r || !r.ok) throw new Error('Kalender: HTTP ' + (r ? r.status : 0));
@@ -1617,7 +1654,9 @@ async function liveKalender(roh, jetzt) {
   const tage = Object.assign({}, (kal && kal.tage) || {});
   liste.forEach((t) => { if (t && t.date) tage[t.date] = { open: t.open, close: t.close }; });
   const von = (kal && kal.von && kal.von < jahr + '-01-01') ? kal.von : jahr + '-01-01';
-  AlpacaArchiv.kalenderSchreiben(roh, { geholt: new Date().toISOString(), von: von, bis: (jahr + 1) + '-12-31', tage: tage });
+  const neu = { geholt: new Date().toISOString(), von: von, bis: (jahr + 1) + '-12-31', tage: tage };
+  await Liveablage.atomar(AlpacaArchiv.metaPfad(roh, 'kalender'), JSON.stringify(neu));
+  LIVESTAND.merk.kalender = neu;
   return tage;
 }
 function liveStand() {
@@ -1647,65 +1686,97 @@ function liveStand() {
   st.zeile = Live.panelZeile(st);
   return st;
 }
+/* DIE KUNST-QUELLE (09.09.2026) - nur fuer die Probe tools/ui-probe.js.
+ * Erreichbar NUR, wenn die App nicht gepackt ist UND MD_LIVE_KUNST gesetzt ist; im
+ * gepackten Build gibt es diesen Weg nicht. Die Probe legt vor dem Laden von main.js
+ * ein Rueckruf-Objekt global.__mdLiveKunst ab: fetch(url) -> {status, body} (liefert
+ * je Block Kerzen aus dem Nichts, kein Netz) und jetzt() -> ms (eine Uhr mitten in
+ * einer Sitzung); main.js haengt `runde` daran, damit die Probe eine Runde anstossen
+ * und ihr Ende abwarten kann. Kein Schluessel wird dafuer gebraucht. */
+function liveKunst() {
+  if (app.isPackaged || !process.env.MD_LIVE_KUNST) return null;
+  const k = global.__mdLiveKunst;
+  return (k && typeof k.fetch === 'function' && typeof k.jetzt === 'function') ? k : null;
+}
+/* DIE RUNDE HAELT DEN HAUPTPROZESS NICHT AN (09.09.2026, F4). In dieser Funktion und
+ * in allen Rueckrufen, die sie an Live.runde gibt, gibt es keinen synchronen
+ * Dateizugriff: keine Jahresdatei wird gelesen oder geschrieben, kein Fortschritt der
+ * Vollsammlung angefasst, keine Sperre gesetzt (die gehoert Nachlauf und Vollsammlung;
+ * die Tagesablage braucht sie nicht - zwei Schreiber gibt es dort nicht). Alles geht
+ * ueber fs.promises in liveablage.js, die Werte eines Blocks nacheinander. test-v6.js
+ * Abschnitt 88 haelt den Funktionstext gegen genau diese Liste. */
 async function liveRunde(grundZeile) {
   if (LIVE.laeuft) return;
   LIVE.laeuft = true;
-  const jetzt = Date.now();
+  const kunst = liveKunst();
+  const uhr = kunst ? kunst.jetzt : () => Date.now();
+  const jetzt = uhr();
   const heute = AlpacaArchiv.etTag(jetzt);
   if (LIVE.tag !== heute) { LIVE.tag = heute; LIVE.kerzenHeute = 0; }
+  let z = { key: '', secret: '', on: false };
+  /* Was hier NICHT vorkommt (Klinke 88.1 prueft den Text ohne diesen Kommentar):
+   * jahrSchreiben, letzterStempelReihe, fortschrittLesen, fortschrittSchreiben,
+   * sperreSetzen, sperreLesen, sperreLoesen, und kein fs.*Sync( - der Hauptprozess
+   * wartet auf keine Platte. */
   try {
-    const z = alpacaZugang();
     const roh = liveRohOrdner();
-    const an = sammlerEinstellungen().live !== false;
-    const werte = (an && z.on) ? liveMengeJetzt() : [];
-    let kal = null;
-    if (an && z.on && Live.sitzungsfenster(jetzt).offen) kal = await liveKalender(roh, jetzt);
-    const jahr = Number(heute.slice(0, 4));
+    z = await alpacaZugangAsync();
+    const zz = z;
+    const zugang = z.on || !!kunst;
+    const an = (await sammlerEinstellungenAsync()).live !== false;
+    /* F2: der Stand aus dem Speicher (beim Start einmal von der Platte); ein neuer
+     * ET-Tag laesst die Stempel verfallen - die Runde holt dann ab Mitternacht ET. */
+    await liveStandLaden(roh);
+    const stand = Liveablage.standFuerTag(LIVESTAND.stand, heute);
+    LIVESTAND.stand = stand;
+    let werte = [], kal = null, lzWerte = {}, abb = {};
+    if (an && zugang) {
+      const lz = await Liveablage.jsonGemerkt(AlpacaArchiv.metaPfad(roh, 'lebenszeit'), LIVESTAND.merk.lebenszeit);
+      lzWerte = (lz && lz.werte) || {};
+      abb = AlpacaArchiv.ordnerAbbildungAus(await Liveablage.jsonGemerkt(AlpacaArchiv.metaPfad(roh, 'symbole'), LIVESTAND.merk.symbole));
+      werte = liveMengeAus(lz);
+      if (Live.sitzungsfenster(jetzt).offen) kal = await liveKalender(roh, jetzt, z);
+    }
     const kopf = { 'APCA-API-KEY-ID': z.key, 'APCA-API-SECRET-KEY': z.secret };
     const erg = await Live.runde({
-      werte: werte, jetzt: () => Date.now(), an: an, schluessel: z.on, ohneEnd: LIVE.ohneEnd,
-      sperre: {
-        lesen: () => AlpacaArchiv.sperreLesen(roh),
-        setzen: (was) => AlpacaArchiv.sperreSetzen(roh, was),
-        loesen: () => AlpacaArchiv.sperreLoesen(roh),
-      },
-      stempel: (sym) => AlpacaArchiv.letzterStempelReihe(roh, AlpacaArchiv.reiheFuer(roh, sym), jahr),
-      fetch: async (url) => {
+      werte: werte, jetzt: uhr, an: an, schluessel: zugang, ohneEnd: LIVE.ohneEnd, kalender: kal,
+      /* F2: "wo weiterholen" aus dem Speicher - keine Jahresdatei wird gelesen. */
+      stempel: (sym) => { const w = stand.werte[sym]; return (w && typeof w.stempel === 'number') ? w.stempel : null; },
+      fetch: kunst ? async (url) => kunst.fetch(url) : async (url) => {
         const r = await alpFetch('GET', url, kopf);
         return { status: r ? r.status : 0, body: r ? r.body : '' };
       },
-      schreiben: (sym, j, kerzen) => {
-        const reihe = AlpacaArchiv.reiheFuer(roh, sym);
-        const ordner = path.join(roh, AlpacaArchiv.ordnerFuer(roh, reihe));
-        const w = AlpacaArchiv.jahrSchreiben(ordner, reihe, j, kerzen, kal, { herkunft: 'Live-Sammler' });
-        if (w && w.grund) w.grund = ohneGeheimnis(w.grund);
+      /* F1: in die Tagesablage der Reihe - anhaengen, kein Journal, kein fsync; ein
+       * neuer Tag ersetzt die Datei. Die Jahresdatei schreibt allein der Nachlauf. */
+      schreiben: async (sym, _jahr, kerzen) => {
+        const reihe = AlpacaArchiv.reiheAus(lzWerte, sym);
+        const pfad = Liveablage.pfadFuer(roh, AlpacaArchiv.ordnerAus(abb, reihe));
+        const w = await Liveablage.anhaengen(pfad, reihe, heute, kerzen, LIVESTAND.ablage);
+        if (w && w.grund) w.grund = ohneGeheimnis(w.grund, zz);
         return w;
       },
       leere: LIVE.leere,
-      /* Der Vermerk "live" im Fortschritt der Vollsammlung, je Wert: letzter Stempel,
-       * letzte Runde, leere Runden - noch unter der Sperre geschrieben. */
-      abschluss: (r) => {
-        const F = AlpacaArchiv.fortschrittLesen(roh);
-        F.live = F.live || { werte: {} };
-        F.live.werte = F.live.werte || {};
-        F.live.stand = new Date().toISOString();
-        F.live.runde = { zeit: r.zeit, grund: r.grund ? ohneGeheimnis(r.grund) : null, werte: r.werte, bloecke: r.bloecke,
+      /* Der Abschluss: der Stand der Runde und je Wert (Stempel, Runde, leere Runden)
+       * nach _livestand.json, eine Zeile ins Protokoll - beides asynchron, atomar. */
+      abschluss: async (r) => {
+        stand.tag = heute;
+        stand.runde = { zeit: r.zeit, grund: r.grund ? ohneGeheimnis(r.grund, zz) : null, werte: r.werte, bloecke: r.bloecke,
           anfragen: r.anfragen, seiten: r.seiten, kerzen: r.kerzen, dateien: r.dateien, verworfen: r.verworfen,
           schreibBytes: r.schreibBytes, schreibMs: r.schreibMs,
-          drossel: r.drossel, fehler: r.fehler ? ohneGeheimnis(r.fehler) : null, ende: r.ende, bis: r.bis, deckel: r.deckel };
+          drossel: r.drossel, fehler: r.fehler ? ohneGeheimnis(r.fehler, zz) : null, ende: r.ende, bis: r.bis, deckel: r.deckel };
         Object.keys(r.jeWert).forEach((sym) => {
-          F.live.werte[sym] = { stempel: r.jeWert[sym].stempel, runde: r.zeit, leer: r.jeWert[sym].leer };
+          stand.werte[sym] = { stempel: r.jeWert[sym].stempel, runde: r.zeit, leer: r.jeWert[sym].leer };
         });
-        AlpacaArchiv.fortschrittSchreiben(roh, F);
-        AlpacaArchiv.protokoll(roh, 'Live-Runde (' + (grundZeile || 'planmaessig') + '): ' + r.werte + ' Werte, ' + r.bloecke + ' Bloecke, ' +
+        await Liveablage.standSchreiben(roh, stand);
+        await Liveablage.protokoll(roh, 'Live-Runde (' + (grundZeile || 'planmaessig') + '): ' + r.werte + ' Werte, ' + r.bloecke + ' Bloecke, ' +
           r.anfragen + ' Anfragen, ' + r.kerzen + ' Kerzen in ' + r.dateien + ' Dateien' +
           (r.schreibBytes ? ', geschrieben ' + Live.menge(r.schreibBytes) + ' in ' + Math.round(r.schreibMs) + ' ms' : '') +
           (r.bis ? ', bis ' + new Date(r.bis).toISOString() : '') +
-          (r.fehler ? ', ' + ohneGeheimnis(r.fehler) : '') + (r.grund ? ', ' + ohneGeheimnis(r.grund) : ''));
+          (r.fehler ? ', ' + ohneGeheimnis(r.fehler, zz) : '') + (r.grund ? ', ' + ohneGeheimnis(r.grund, zz) : ''));
       },
     });
-    if (erg.fehler) erg.fehler = ohneGeheimnis(erg.fehler);
-    if (erg.grund) erg.grund = ohneGeheimnis(erg.grund);
+    if (erg.fehler) erg.fehler = ohneGeheimnis(erg.fehler, z);
+    if (erg.grund) erg.grund = ohneGeheimnis(erg.grund, z);
     if (erg.ohneEnd) LIVE.ohneEnd = true;      /* fuer den Rest der Sitzung */
     LIVE.letzte = erg;
     if (erg.gelaufen) {
@@ -1713,12 +1784,22 @@ async function liveRunde(grundZeile) {
       if (erg.bis != null && (LIVE.bis == null || erg.bis > LIVE.bis)) LIVE.bis = erg.bis;
     }
   } catch (e) {
-    LIVE.letzte = { gelaufen: false, fehler: ohneGeheimnis((e && e.message) || e), zeit: jetzt, werte: null };
+    LIVE.letzte = { gelaufen: false, fehler: ohneGeheimnis((e && e.message) || e, z), zeit: jetzt, werte: null };
   } finally {
     LIVE.laeuft = false;
     LIVE.naechste = Date.now() + Live.TAKT_MS;
     sammlerFunk('live-sammler', liveStand());
   }
+}
+/* Die Probe darf eine Runde anstossen und bekommt den Stand danach - nur ueber die
+ * Kunst-Quelle, also nie im gepackten Build. */
+{
+  const k = liveKunst();
+  if (k) k.runde = async (grund) => {
+    while (LIVE.laeuft) await new Promise((r) => setTimeout(r, 50));   /* die Zeitgeber-Runde ausreden lassen */
+    await liveRunde(grund || 'Kunst-Probe');
+    return liveStand();
+  };
 }
 ipcMain.handle('live-stand', async () => liveStand());
 /* Der Renderer meldet, was nur er weiss: Watchlist, offene Positionen, der Wert im
@@ -1960,19 +2041,56 @@ function alpacaOrdnerName(wurzel, sym) {
  * Minuten seit dem Ende des App-Archivs brauchen, hoechstens 8 MB. Die erste Kerze
  * eines Schwanzes ist angeschnitten und faellt weg. NUR LESEN. */
 const VERDICHT_MAX_BYTES = 8 * 1024 * 1024;
+/* DIE LESER SEHEN HEUTE (09.09.2026, F3). Seit die Live-Runde nicht mehr in die
+ * Jahresdatei schreibt, stehen die Minuten des laufenden Tages in der Tagesablage
+ * alpaca1m/<ORD>/_live.jsonl (liveablage.js). Beide Viewer-Zweige lesen Jahresdatei-
+ * Schwanz PLUS Tagesablage und fuehren nach Stempel zusammen - die Jahresdatei
+ * gewinnt (nach dem Nachlauf stehen dieselben Kerzen in beiden). Die Sitzungen der
+ * Tageskerzen kommen aus dem Kalender der Quelle (_kalender.json, sitzungJeKerze),
+ * nicht aus einer Uhr. Nur die Datei mit dem HEUTIGEN ET-Tag im Kopf zaehlt. */
+const KAL_MERK = { pfad: null, mtime: 0, kal: null };
+function kalenderGemerkt(roh) {
+  const p = AlpacaArchiv.metaPfad(roh, 'kalender');
+  let mtime = 0;
+  try { mtime = fs.statSync(p).mtimeMs; } catch (e) { mtime = 0; }
+  if (KAL_MERK.pfad !== p || KAL_MERK.mtime !== mtime) {
+    KAL_MERK.pfad = p; KAL_MERK.mtime = mtime; KAL_MERK.kal = mtime ? AlpacaArchiv.kalenderLesen(roh) : null;
+  }
+  return KAL_MERK.kal;
+}
+function tagesablageHeute(roh, ord) {
+  const t = Liveablage.lesenSync(Liveablage.pfadFuer(roh, ord), AlpacaArchiv.etTag(Date.now()));
+  return t.ok ? t.kerzen : [];
+}
+/** Tageskerzen an die gelesenen Kerzen und Sitzungsbereiche haengen; die Jahresdatei
+ *  gewinnt. Rueckgabe { kerzen, bereiche, ausTag } - ausTag 0 heisst: nichts Neues. */
+function tagesablageAnhaengen(kerzen, bereiche, tagK, roh) {
+  const z = Liveablage.zusammenfuehren(kerzen, tagK);
+  if (!z.ausTag) return { kerzen: kerzen, bereiche: bereiche, ausTag: 0 };
+  const neu = z.kerzen.slice(kerzen.length);
+  const kal = kalenderGemerkt(roh);
+  const je = AlpacaArchiv.sitzungJeKerze(neu, kal ? kal.tage : {});
+  return { kerzen: z.kerzen, bereiche: AlpacaArchiv.sitzungenAnhaengen(bereiche, neu, je), ausTag: z.ausTag };
+}
 function alpacaVerdichtet(sym, zr, n, appBis) {
   const faktor = KChart.MINUTEN_VERDICHTUNG[zr];
   if (!faktor) return null;
   const roh = path.join(path.dirname(Kerzen.ordnerVon('60m')), 'alpaca1m');
   const reihe = AlpacaArchiv.reiheFuer(roh, sym);
+  const ord = AlpacaArchiv.ordnerFuer(roh, reihe);
   const jahr = new Date().getUTCFullYear();
-  const alpacaBis = AlpacaArchiv.letzterStempelReihe(roh, reihe, jahr);
+  const jahrBis = AlpacaArchiv.letzterStempelReihe(roh, reihe, jahr);
+  const tagK = tagesablageHeute(roh, ord);
+  const tagBis = tagK.length ? tagK[tagK.length - 1][0] : null;
+  const alpacaBis = jahrBis == null ? tagBis : (tagBis == null ? jahrBis : Math.max(jahrBis, tagBis));
   if (alpacaBis == null) return null;
   if (appBis != null && alpacaBis < appBis + faktor * 60000) return null;
   const minuten = appBis != null ? Math.ceil((alpacaBis - appBis) / 60000) + faktor * 2 : n * faktor * 2;
   const bytes = Math.min(VERDICHT_MAX_BYTES, 64 * 1024 + minuten * 70);
   let k1m = [], bereiche = [], dateien = [], gelesen = 0;
-  for (let j = jahr; j >= jahr - 1 && k1m.length < minuten; j--) {
+  /* jahrBis null bei vorhandener Datei heisst: ein Reparaturjournal liegt - dann
+   * bleibt die Jahresdatei zu (sie kann zerrissen sein), die Tagesablage reicht. */
+  for (let j = jahr; jahrBis != null && j >= jahr - 1 && k1m.length < minuten; j--) {
     const datei = AlpacaArchiv.jahrDatei(roh, reihe, j);
     if (!fs.existsSync(datei)) continue;
     const groesse = fs.statSync(datei).size;
@@ -1984,6 +2102,10 @@ function alpacaVerdichtet(sym, zr, n, appBis) {
     k1m = teil.concat(k1m);
     bereiche = KChart.sitzungenAusText(text).concat(bereiche);
     dateien.push(path.basename(path.dirname(datei)) + '/' + path.basename(datei));
+  }
+  if (tagK.length) {
+    const t = tagesablageAnhaengen(k1m, bereiche, tagK, roh);
+    if (t.ausTag) { k1m = t.kerzen; bereiche = t.bereiche; dateien.push(ord + '/' + Liveablage.DATEI); gelesen += tagK.length * 50; }
   }
   if (!k1m.length) return null;
   if (appBis != null) k1m = k1m.filter((k) => k[0] > appBis);
@@ -2032,6 +2154,18 @@ ipcMain.handle('archiv-kerzen', async (_ev, symbol, zeitrahmen, anzahl) => {
         sitzungen = KChart.sitzungenAusText(text).concat(sitzungen);
         dateien.push(path.basename(path.dirname(datei)) + '/' + path.basename(datei));
         ablage = art;
+      }
+      /* F3 (09.09.2026): dazu die Tagesablage des Live-Sammlers - heute, roh; die
+       * Jahresdatei gewinnt bei Doppelung, die Sitzungen kommen aus dem Kalender. */
+      const tagK = tagesablageHeute(alpRoh, ord);
+      if (tagK.length) {
+        const t = tagesablageAnhaengen(kerzen, sitzungen, tagK, alpRoh);
+        if (t.ausTag) {
+          kerzen = t.kerzen; sitzungen = t.bereiche;
+          dateien.push(ord + '/' + Liveablage.DATEI);
+          if (!ablage) ablage = 'alpaca-roh';
+          gelesen += tagK.length * 50;
+        }
       }
       if (kerzen.length) {
         kerzen = kerzen.slice(-n);
@@ -2420,6 +2554,9 @@ if (HAT_SPERRE) app.whenReady().then(() => {
    * entscheidet livesammler.js (Sitzungsfenster, Schluessel, Schalter, Sperre). Die
    * erste anderthalb Minuten nach dem Start, damit Fenster und Renderer-Meldungen
    * (Watchlist, Positionen) schon da sind. */
+  /* Der Stand der Live-Runde (_livestand.json) wird beim Start asynchron gelesen -
+   * die erste Runde wartet auf diese Zusage, der Hauptprozess nicht (09.09.2026). */
+  try { liveStandLaden(liveRohOrdner()).catch(() => {}); } catch (e) { /* ohne Archiv-Zeiger: die Runde liest spaeter */ }
   setTimeout(() => { liveRunde('nach dem Start').catch(() => {}); }, 90000);
   setInterval(() => { liveRunde('planmaessig').catch(() => {}); }, Live.TAKT_MS);
 });

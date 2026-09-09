@@ -74,7 +74,7 @@ export default [
      deshalb stehen module und require hier ebenfalls zur Verfuegung. */
   {
     files: ['*.js', 'markt/*.js'],
-    ignores: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js', 'alpacaarchiv.js', 'livesammler.js', 'test-*.js', 'bt-worker.js'],
+    ignores: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js', 'alpacaarchiv.js', 'livesammler.js', 'liveablage.js', 'test-*.js', 'bt-worker.js'],
     languageOptions: {
       ecmaVersion: 2022, sourceType: 'script',
       globals: { ...globals.browser, ...fensterGlobals, module: 'writable', require: 'readonly' }
@@ -87,7 +87,7 @@ export default [
   // aber ein Node-Modul und kein Oberflaechenskript. Dasselbe gilt seit dem 06.09.2026
   // fuer alpacaarchiv.js (Schreibroutine des Alpaca-Archivs) und livesammler.js.
   {
-    files: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js', 'alpacaarchiv.js', 'livesammler.js'],
+    files: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js', 'alpacaarchiv.js', 'livesammler.js', 'liveablage.js'],
     languageOptions: { ecmaVersion: 2022, sourceType: 'script', globals: { ...globals.node } },
     rules: echteFehler
   },

@@ -56,6 +56,10 @@ function massnahmenOrdner() { return path.join(wurzel(), 'alpaca-massnahmen'); }
 var META = {
   fortschritt: '_fortschritt.json', lebenszeit: '_lebenszeit.json', symbole: '_symbole.json',
   kalender: '_kalender.json', protokoll: '_lauf.log', manifest: '_manifest.json', luecken: '_luecken.json',
+  /* Der Stand der Live-Runde (09.09.2026, liveablage.js): je Reihe Stempel, letzte
+   * Runde, Leer-Zaehler. Frueher stand das unter `live` in _fortschritt.json - dessen
+   * Zweig `live` bleibt dort stehen, veraltet, und wird von niemandem gelesen. */
+  livestand: '_livestand.json',
 };
 function metaPfad(roh, was) { return path.join(roh, META[was]); }
 
@@ -83,6 +87,18 @@ function ordnerName(sym) {
 /* Die Abbildung aus _symbole.json, gemerkt je Aenderungszeit der Datei. Ohne Datei gilt
  * die Regel oben - fuer alles ausser CON und den drei Kollisionen ist das dasselbe. */
 var ABBILDUNG = { pfad: null, mtime: 0, ordner: {} };
+/* DIE REGELN OHNE PLATTE (09.09.2026): `ordnerAbbildungAus` macht aus dem Inhalt von
+ * _symbole.json die Abbildung, `ordnerAus` und `reiheAus` wenden sie und die Lebenszeit
+ * auf ein Kuerzel an. `ordnerFuer` und `reiheFuer` lesen die Dateien (synchron, mit
+ * Merken nach Aenderungszeit) und rufen dieselben Regeln - die Live-Runde der App liest
+ * die Dateien asynchron (liveablage.jsonGemerkt) und ruft die Regeln direkt: eine
+ * Wahrheit, zwei Wege zur Platte. */
+function ordnerAbbildungAus(j) {
+  return (j && typeof j === 'object' && (j.ordner || j.ab)) || {};
+}
+function ordnerAus(abb, sym) {
+  return (abb && abb[sym]) || ordnerName(sym);
+}
 function abbildung(roh) {
   var p = metaPfad(roh, 'symbole');
   var mtime = 0;
@@ -90,17 +106,15 @@ function abbildung(roh) {
   if (ABBILDUNG.pfad !== p || ABBILDUNG.mtime !== mtime) {
     var ord = {};
     if (mtime) {
-      try {
-        var j = JSON.parse(fs.readFileSync(p, 'utf8'));
-        ord = (j && (j.ordner || j.ab)) || {};
-      } catch (e) { ord = {}; }
+      try { ord = ordnerAbbildungAus(JSON.parse(fs.readFileSync(p, 'utf8'))); }
+      catch (e) { ord = {}; }
     }
     ABBILDUNG = { pfad: p, mtime: mtime, ordner: ord };
   }
   return ABBILDUNG.ordner;
 }
 function ordnerFuer(roh, sym) {
-  return abbildung(roh)[sym] || ordnerName(sym);
+  return ordnerAus(abbildung(roh), sym);
 }
 function jahrDatei(roh, sym, jahr) {
   return path.join(roh, ordnerFuer(roh, sym), jahr + '.json');
@@ -135,9 +149,13 @@ function lebenszeitDatei(roh) {
 function lebenszeitLesen(roh) {
   return lebenszeitDatei(roh).werte;
 }
+/** Die Reihe zu einem Kuerzel aus den Lebenszeit-WERTEN (rein): fuehrt die Lebenszeit
+ *  eine zweite Reihe "SYM~2", ist das die laufende. */
+function reiheAus(lzWerte, sym) {
+  return (lzWerte && lzWerte[sym + '~2']) ? sym + '~2' : sym;
+}
 function reiheFuer(roh, sym) {
-  var lz = lebenszeitLesen(roh);
-  return lz[sym + '~2'] ? sym + '~2' : sym;
+  return reiheAus(lebenszeitLesen(roh), sym);
 }
 /** Der juengste Stempel einer Reihe: aus der Jahresdatei des laufenden Jahres, sonst
  *  aus der des Vorjahres (Januar), sonst null. Nur der Schwanz wird gelesen. */
@@ -728,6 +746,7 @@ module.exports = {
   wurzel: wurzel, rohOrdner: rohOrdner, bereinigtOrdner: bereinigtOrdner, massnahmenOrdner: massnahmenOrdner,
   META: META, metaPfad: metaPfad,
   GERAET: GERAET, kurzstempel: kurzstempel, ordnerName: ordnerName, ordnerFuer: ordnerFuer, abbildung: abbildung, jahrDatei: jahrDatei,
+  ordnerAbbildungAus: ordnerAbbildungAus, ordnerAus: ordnerAus, reiheAus: reiheAus,
   lebenszeitLesen: lebenszeitLesen, lebenszeitDatei: lebenszeitDatei, reiheFuer: reiheFuer, letzterStempelReihe: letzterStempelReihe, protokoll: protokoll,
   nyTeile: nyTeile, nyNachUtc: nyNachUtc, etTag: etTag, jahrGrenzen: jahrGrenzen, jahrVon: jahrVon,
   kerzeAus: kerzeAus, imZeitraum: imZeitraum,
