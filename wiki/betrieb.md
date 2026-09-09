@@ -53,7 +53,7 @@ schtasks /Run /TN "Markt-Dashboard <Name>"
 
 Der Wrapper macht `cd /d <Repo>` und leitet die Ausgabe in eine Logdatei; kein `&&` in `/TR`. Schlüssel aus dem Benutzerprofil sieht die Aufgabe von selbst.
 
-**Live-Sammler bis zum Release von Nr. 30 AUS (09.09.2026):** Werkzeuge → Klappe „Kursarchiv" → Häkchen „Live-Sammler (Alpaca, alle 5 Minuten …)" raus; die laufende Runde endet noch (bis 4 min), die nächste fällt aus („ausgeschaltet"). Grund: die Runde blockiert den Hauptprozess ~235 von 300 s (Nr. 30). Das Archiv füllt der Nachlauf 23:30. Nach dem Release wieder an — und der PM misst mit der Responding-Sonde nach.
+**Live-Sammler bis zum Release von Nr. 30 AUS (09.09.2026; Nr. 30 ist seit 12:30 abgenommen, Release durch die Wache):** Werkzeuge → Klappe „Kursarchiv" → Häkchen „Live-Sammler (Alpaca, alle 5 Minuten …)" raus; die laufende Runde endet noch (bis 4 min), die nächste fällt aus („ausgeschaltet"). Grund: die Runde blockiert den Hauptprozess ~235 von 300 s (Nr. 30). Das Archiv füllt der Nachlauf 23:30. Nach dem Release wieder an — und der PM misst mit der Responding-Sonde nach.
 
 **Lange Läufe und Abmelden:** die Studien-Aufgaben laufen „nur bei Anmeldung" — ein Abmelden oder Ausschalten (auch Schnellstart) beendet alle Teile (08.09. 20:42, 1m-Lauf). Abmeldefest (S4U) ließ sich ohne Adminrechte nicht registrieren; **solange ein Lauf läuft: nicht abmelden, nicht ausschalten.** Wilhelm kann die Aufgaben in der Aufgabenplanung selbst auf „unabhängig von der Anmeldung" stellen (Kennwort). Laufzeitgrenze der Aufgaben jetzt 7 Tage statt 3.
 
