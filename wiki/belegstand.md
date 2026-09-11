@@ -197,7 +197,10 @@ sie sind selbst kein Einstieg.**
 Siehe [messmethodik.md](messmethodik.md) für die Frage, warum eine Bedingung leichter zu belegen
 ist als eine Strategie.
 
-## Signalstudie Minuten, 5m/15m — **NEIN mit Auflösung** (08.09.2026)
+## Signalstudie Minuten, 5m/15m — **NEIN mit Auflösung** (08.09.2026) · **1m nachgemessen 11.09.: ebenfalls NEIN, Familie geschlossen**
+
+> **Nachtrag 11.09.2026 — der 1m-Lauf** (acht Teile, 09.09. 09:57 – 11.09. 07:57 mit drei Unterbrechungen, 45.096 Dateien, 2,37 Mrd Kerzen, Rückgabewert 0 überall): 75 Konfigurationen auf 1m gemessen, **k₁ = 0, belegt 0, handelbar 0**; Größenaussagen **64 „in jeder Klasse zu", 9 „in seiner Klasse zu", nur 2 „offen"** (Kapitulation long bis Schluss: Entdeckung netto +0,04 Pp bei t 1,7, Bestätigung netto **+0,003** bei t 0,1, obere Grenze 0,16; Kapitulation long 3 h: Bestätigung −0,03). Placebos 0 von 3 Bändern gefallen, 0 Einzel-Placebos. Die Auflösung auf 1m ist die feinste der Studie (delta80 der dichten Regeln 0,05–0,08 Pp) — das Nein ist gemessen, nicht Blindheit.
+> **Gesamtbericht über alle 16 Teile** (`ergebnis-gesamt-2026-09-11/ERGEBNIS.md`): 234 Konfigurationen (13 Detektoren × 1m/5m/15m × long/short × 1 h / 3 h / bis Schluss), **k₁ = 0, k₂ = 0, belegt 0, handelbar 0**; 161 „in jeder Klasse zu", 41 „in seiner Klasse zu", 17 „offen" — **alle 17 in der Bestätigung netto ≤ +0,003 Pp**, 16 davon negativ. Damit ist die Frage „bekannte Regeln, schnell gehandelt, Kassa-Kosten" auf allen drei Minuten-Zeitrahmen abschließend beantwortet: **Nein.** Berichtskopien `ergebnis-1m-2026-09-11/`, Zellen (4 GB) unter `E:/Markt-Dashboard-Archiv/studien-zellen/signale-minuten-1m-2026-09-11/`.
 
 Vorregistriert vor der ersten Rechnung (Studienordner, Nachträge 1–3), Messgerät mit 81 eigenen Prüfungen abgenommen, Vollauf 07.09. 20:34 – 08.09. 13:15 in acht Teilen. Ergebnis: `studien/vorregistrierung-2026-09-06-signale-minuten/ergebnis-5m15m-2026-09-08/ERGEBNIS.md`.
 
