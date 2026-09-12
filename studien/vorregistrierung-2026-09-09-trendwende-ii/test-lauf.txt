@@ -2,9 +2,10 @@
 == 0. Zellendecoder und Layout
 OK    0a Decoder invertiert K.zelle/K.reiheIndex/K.kandIndex (2000 Stichproben, 0 Fehler)
 OK    0b Layout (Nachtrag 3): 8 Detektoren, 5 Haltedauern (naechste = Uebernacht), 24 Kandidaten, 72 Zellenreihen, 225 Konfigurationen
-OK    0c Kennung trendwende-ii-2026-09-09/v2/8x3x2x5x4x3+kurs+luecke+schein+jahre
-OK    0d Zellenspeicher 535 MB je Prozess (Registrierung §10, Nachtrag 3: ≈ 535)
-OK    0e Kurszellen tragen VIER Felder (n, Σ Kurs, ueber Cent-Boden, Σ Einstiegsluecke): 11 Felder im _zellen.bin, kursZelle bleibt im Bereich (0 Fehler)
+OK    0c Kennung trendwende-ii-2026-09-09/v3/8x3x2x5x4x3+kurs+luecke+haltezeit+schein+jahre
+OK    0d Zellenspeicher 620 MB je Prozess (Registrierung §10, Nachtrag 4: ≈ 620)
+OK    0e Kurszellen tragen VIER Felder (n, Σ Kurs, ueber Cent-Boden, Σ Einstiegsluecke); _zellen.bin traegt nach Nachtrag 4 14 Felder, kursZelle bleibt im Bereich (0 Fehler)
+OK    0f NACHTRAG 4: Haltezeitzellen (Kandidat x Richtung x HALTEDAUER x Tag x Klasse x lebend) eineindeutig (0 Fehler), Topf traegt Σ Haltezeit als viertes Feld
    (0.0 s)
 
 == 1. POSITIVKONTROLLE - gepflanzte Kante am 1h-Ausstieg wird in Groesse und Richtung wiedergefunden
@@ -23,7 +24,7 @@ OK    1k Gegenprobe: die Pflanzung sitzt nur in der 1h-Ausstiegskerze - 15m -0.0
 OK    1l Kurszellen: 404 Signale mit Einstieg (naiv 404), Summe 41171.9904 (naiv 41171.9904)
 OK    1m ohne Pflanzung nahe null: Rohertrag je Signal 0.0020 Pp, Tagesmittel 0.0032 (n 380)
 OK    1n Uebernacht ohne Pflanzung: n 400 (< schluss-n 404, letzter Tag offen), Rohertrag -0.0102 Pp nahe null; offen 528
-   (17.1 s)
+   (13.3 s)
 
 == 1b. EINSTIEGSLUECKE (Nachtrag 3): gepflanzte Luecke +0,3 Pp an der Einstiegskerze gegen die Handrechnung
 OK    1b-a Pflanzung der Einstiegsluecke an 404 Einstiegskerzen; Signalmenge unveraendert (404 = 404)
@@ -32,7 +33,16 @@ OK    1b-c POSITIVKONTROLLE ohne Pflanzung: W7 feuert am Extrem, die Einstiegslu
 OK    1b-c2 NULLKONTROLLE auf derselben Reihe: ein Detektor zu fester Tageszeit (12:00) hat Luecke -0.0045 Pp ≈ 0 (n 90) - die Luecke haengt am Einstieg am Extrem, nicht am Messverfahren
 OK    1b-d auswerten.luecken: luecke_B je Signal 0.3000 = Tagesmittel 0.3000 = 0.3000; netto_B lueckenbereinigt -0.2500 = netto 0.0500 − 0.3000 (60 Bestaetigungstage)
 OK    1b-e die Luecke haengt an der Richtung: die Gegenrichtung derselben Kurszellen ist leer (nSig 0)
-   (1.7 s)
+   (1.2 s)
+
+== 1c. HALTEZEIT und UHRZEIT-VERSATZ (Nachtrag 4): feste Haltedauern ≈ 0, frueher Detektor gross, gleichmaessiges Gitter ≈ 0
+OK    1c-a feste Haltedauern: Haltezeit von Kandidat und Topf = die Haltedauer, |Versatz| ≤ 0.05 (0 Fehler) - 15m 15.00/15.00 min (Versatz 0.0000), 1h 60.00/60.00 min (Versatz 0.0000), 3h 180.00/180.00 min (Versatz 0.0000)
+OK    1c-b "Detektor feuert nur in der ersten Stunde": haltezeit_kand 389.00 min gegen Topf 209.50 min => uhrzeit_versatz 0.8568 >> 0.15
+OK    1c-c "Detektor feuert gleichmaessig ueber den Tag": haltezeit_kand 209.00 min gegen Topf 209.50 min => uhrzeit_versatz -0.0024, Betrag ≤ 0.15 - das Tor greift hier NICHT
+OK    1c-d "naechste Eroeffnung" = "bis Schluss" in Sitzungsminuten (389.00 = 389.00): die Nachtpause ist fuer jeden Einstieg des Tages gleich lang und kann keinen Versatz erzeugen
+OK    1c-e auswerten.haltezeitWerte: 6 Bestaetigungstage, kand 300.00 min / topf 200.00 min => Versatz 0.5000 = 0,5; der Topf zaehlt NUR die Zellen mit Signal (fremde Klasse und Tage vor der Bestaetigung bleiben draussen)
+OK    1c-f Gegenrichtung derselben Zellen ist leer => Versatz null (das Tor greift dort nicht, statt blind zu sperren)
+   (0.5 s)
 
 == 2. PLACEBO A und B auf der Zufallsreihe ohne Pflanzung (alle 15 Zellen ZR x H)
 OK    2a jede Placebo-Zelle hat einen Topf derselben (ZR, H, Tag, Klasse, lebend): 0 ohne
@@ -51,7 +61,7 @@ OK    3a W7 hat >= 30 Long-Signale auf der Zufallsreihe (203)
 OK    3b FALSCH (Einstieg Signalschluss) 0.2414 Pp > +0,05 und 0.2404 ueber RICHTIG - der Scheineffekt entsteht in behaupteter Richtung
 OK    3c RICHTIG (Einstieg Eroeffnung i+1) nahe null: 0.0010 Pp
 OK    3d messen.js-Zelle (W7 1m long 1h) 0.0010 Pp bei n 193 = eigene Rechnung 0.0010 bei n 193
-   (0.2 s)
+   (0.1 s)
 
 == 4. DETEKTOR-GLEICHHEIT: W2/W3 gegen die August-Funktionen, W2 gegen signalPraefix, W1a gegen hauptstudie.js detect()
 
@@ -65,7 +75,7 @@ OK    4d detect() in hauptstudie.js gefunden
 OK    4e W1a zeilengleich zu detect() (AAPL/2024 1m, S 0,5 / F 6): 382 von 390 Signalen identisch (Index und Richtung), Abweichungen 9 = 2.31 % (zulaessig ≤ 3 %, Nachtrag 1; nur die Cooldown-Zustandsregel)
 OK    4f alle 8 detect-Signale, die der Scan nicht hat, liegen in einem Abschnitt, in dem die Bedingung frueher stand (Cooldown-Zustandsregel): 8 erklaert; 1 Scan-Signale ohne detect-Gegenstueck liegen im detect-Cooldown eines solchen Signals: 1 erklaert
 OK    4g Laufregeln (Minuten-Cooldown, Zulaessigkeit je Tag) gegen Kerzen-Cooldown ab dem 21. Tag: 348 gegen 347 Signale, 7 verschieden (2.02 %, nur Tagesgrenze; zulaessig ≤ 5 %)
-   (2.2 s)
+   (1.7 s)
 
 == 5. KLINKE NACHTRAG 3: der Trendfolge-Detektor (kanaltrend) ist aus dieser Studie gestrichen
 OK    5a detektoren.js fuehrt 8 Detektoren, keinen mit Schluessel W8 und keinen mit der Funktion `kanaltrend`
@@ -83,7 +93,7 @@ OK    6 W4: 1070 Stichproben, 11 Signale, 0 Abweichungen zwischen vollem und Pra
 OK    6 W5: 1279 Stichproben, 251 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
 OK    6 W6: 1265 Stichproben, 275 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
 OK    6 W7: 1300 Stichproben, 309 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
-   (81.1 s)
+   (68.7 s)
 
 == 7. KLASSEN, KASSA-HUERDEN (kosten.js, liquide.js, wiki/kosten.md) und SCHEIN-HUERDEN (BERICHT.md)
 OK    7a K.KLASSEN-Grenzen = kosten.js UMSATZ_KLASSEN: 5-50, 50-250, 250-1000, ab1000
@@ -116,7 +126,7 @@ OK    9e Uebernacht ueber die Jahresgrenze: offen 2148, in der Folgedatei verbuc
 OK    9f Topf-Zelle naechste am letzten 2023-Tag (1m, Klasse 50-250, nicht lebend, beide Reihen): n 720 = naiv 720, Summe -855.4029 = naiv -855.4029 (Ausstieg = Eroeffnung des ersten 2024-Tages, AAPL 100.2145)
 OK    9g Fortsetzung mitten in MSFT: fortsetzungOhneUebernacht 1, alle Nicht-Uebernacht-Zellen identisch mit (c), Uebernacht-Zellen um 87 Beobachtungen (Topf 456) kleiner - gezaehlt, nicht geschaetzt
 OK    9h manipulierte Kennung: Rueckgabewert 4 und Meldung "andere Konfiguration"
-   (26.6 s)
+   (29.1 s)
 
 == 10. RANDREGELN ueber messeDatei (Fenster, Klasse < 5 Mio $, duenner Tag, Halbtag, Uebernacht-Luecke)
 OK    10a Kerzen an 3 Tagen nach 2026-08-31: tageOhneKalender 3, keine Zelle ausserhalb
@@ -141,10 +151,18 @@ OK    12f "nur im letzten Jahr lebendig" (Tor 1 verfehlt, letzte 250: 60 Tage, u
 OK    12g < 10 Signaltage in den letzten 250: Tor nicht pruefbar => nicht belegt: Aktualitaets-Tor
 OK    12h Short: belegt, als Aktie "nein (Leihe)", mit Schein BV 1,0 handelbar (Put braucht keine Leihe)
 OK    12h2 Nachtrag 3.3: die Flagge heisst bei Short "handelbar mit Put", bei Long "handelbar mit Schein"
-OK    12i "belegt, aber Luecke": netto_B 0,06, luecke_B 0,08 => lueckenbereinigt -0.0200 (t -1.67) => nicht belegt: Einstiegsluecke, Vermerk Extrem-Einstieg, nichts handelbar
-OK    12j kleine Luecke (0,02 von netto 0,06): lueckenbereinigt 0.0400, t 3.33 ≥ z_Bonf => belegt, handelbar
-OK    12k lueckenbereinigt positiv, aber t 1,5 < z_Bonf 1,96 => nicht belegt: Einstiegsluecke (das Tor verlangt beides)
-OK    12l "nicht belegt: Einstiegsluecke" steht in der Urteilsliste des Berichts
+OK    12i "belegt, aber Luecke": u_B 0,06, luecke_B 0,08 => u_B lueckenbereinigt -0.0200 (t -1.67) => nicht belegt: Einstiegsluecke, Vermerk Extrem-Einstieg, nichts handelbar
+OK    12j kleine Luecke (0,02 von u_B 0,06): u_B lueckenbereinigt 0.0400, t 3.33 ≥ z_Bonf => belegt, handelbar
+OK    12k u_B lueckenbereinigt positiv, aber t 1,5 < z_Bonf 1,96 => nicht belegt: Einstiegsluecke (das Tor verlangt beides)
+OK    12m NACHTRAG 4.1: netto_B lueckenbereinigt −0,01 (t −0,5), u_B lueckenbereinigt 0.0400 (t 3.33) => belegt - das Tor rechnet auf u, die netto-Spalte entscheidet nicht mehr
+OK    12m2 umgekehrt: netto-bereinigt gut (t 5,0), u-bereinigt −0,01 => nicht belegt: Einstiegsluecke
+OK    12n "feuert frueh am Tag", H = bis Schluss: haltezeit_kand 389 min gegen Topf 209 min (Versatz 0,86 > 0.15) => nicht belegt: Uhrzeit-Versatz, nichts handelbar
+OK    12n2 kleiner Versatz (0,05), H = naechste Eroeffnung => belegt (das Tor greift nicht)
+OK    12n3 derselbe Versatz 0,86 bei H = 1h => belegt - bei festen Haltedauern gilt das Tor nicht (dort ist der Versatz konstruktionsgemaess 0)
+OK    12n4 ohne Versatz-Wert (keine Haltezeitzellen) sperrt das Tor nicht blind => belegt
+OK    12o Spiegel-Spalten: u_spiegel(long) = u_B(short) = 0.1300 und umgekehrt; u_summe 0.3000 = Handrechnung ueber die 2 gemeinsamen Tage (Tag 1 und Tag 9 fallen raus)
+OK    12o2 ohne Gegenrichtung (W3 nur long) bleiben die Spiegel-Spalten leer; die Tagesreihen werden nach der Rechnung weggeraeumt
+OK    12l "nicht belegt: Einstiegsluecke" und "nicht belegt: Uhrzeit-Versatz" stehen in der Urteilsliste des Berichts
    (0.0 s)
 
 == 13. HANSEN-HODRICK L = 2 (Uebernacht) und REGIME (SPY EMA200 gegen naive Rechnung)
@@ -169,5 +187,4 @@ OK    15e SE_ERWARTET_NAECHSTE 0.0038 (null bis zum Piloten, danach aus PILOT-ER
 OK    15f Normalquantile z_Bonf(1/5/10/20) = 1,96 / 2,58 / 2,81 / 3,02
    (0.0 s)
 
-112 OK, 0 FEHLT, 0 UEBERSPRUNGEN
-EXIT 0
+127 OK, 0 FEHLT, 0 UEBERSPRUNGEN

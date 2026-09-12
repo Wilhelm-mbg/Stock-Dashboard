@@ -93,6 +93,11 @@ var BAND_T = 3, BAND_PP = 0.045;                             // Placebo intraday
 var SE_ERWARTET_NAECHSTE = 0.0038;                           // Uebernacht-Placebo: |Mittel| < 3 x se_erwartet; Pilot 12.09.2026 (Nachtrag 2): se gepoolt 1m 0,0017 / 5m 0,0023 / 15m 0,0038 - der groesste Wert
 var JEDE_KLASSE_ZU = KLASSEN[KLASSEN.length - 1].huerde;    // 0,0449
 var AKTUELL_TAGE = 250, AKTUELL_MIN_TAGE = 10, AKTUELL_T_MIN = -2;   // Aktualitaets-Tor (§7.4)
+/* NACHTRAG 4 (§19.3): Tor "Uhrzeit-Versatz". |haltezeit_kand / haltezeit_topf − 1| > 0,15 verhindert `belegt` fuer die
+ * Haltedauern, deren Haltezeit an der Uhrzeit haengt ("bis Schluss", "naechste Eroeffnung"). VERSATZ_TOLERANZ ist die
+ * Pruefschranke fuer die festen Haltedauern (dort ist der Versatz konstruktionsgemaess 0, Gitterluecken ausgenommen). */
+var UHRZEIT_VERSATZ_MAX = 0.15, UHRZEIT_TOR_H = ['schluss', 'naechste'], VERSATZ_TOLERANZ = 0.05;
+function uhrzeitTorGilt(hKey) { return UHRZEIT_TOR_H.indexOf(hKey) !== -1; }
 var VORWAERTS_MIN_TAGE = 30, VORWAERTS_T = 2.0;                        // Kandidat fuer den Vorwaertstest (§7)
 var JAHRE = []; for (var jj = 2016; jj <= 2026; jj++) JAHRE.push(jj);
 var JAHR_MIN_TAGE = 10, TREND_MIN_TAGE = 30, TREND_MIN_JAHRE = 4;     // Jahresscheiben (§9)
@@ -117,9 +122,13 @@ function topfZahl(nTage) { return N_ZR * N_H * nTage * N_K * 2; }
  * gemessen in Handelsrichtung: dir · (Eroeffnung_{i+1} − Schluss_i) / Schluss_i · 100 (die Richtung steckt im Index). */
 function kursZelle(nTage, kand, dirIdx, tag, klasse, lebend) { return ((((kand * 2 + dirIdx) * nTage + tag) * N_K + klasse) * 2) + lebend; }
 function kursZahl(nTage) { return N_KAND * 2 * nTage * N_K * 2; }
+/* Haltezeitzelle (NACHTRAG 4, §19.2): wie die Kurszelle, aber MIT Haltedauer - die Haltezeit haengt an ihr. Zwei
+ * Felder (Zahl der Beobachtungen, Σ Haltezeit in Sitzungsminuten). Nur Kandidaten, keine Placebos. */
+function hzZelle(nTage, kand, dirIdx, h, tag, klasse, lebend) { return ((((((kand * 2 + dirIdx) * N_H + h) * nTage + tag) * N_K + klasse) * 2)) + lebend; }
+function hzZahl(nTage) { return N_KAND * 2 * N_H * nTage * N_K * 2; }
 var N_KONFIG = (2 * N_DET - Object.keys(NUR_LONG).length) * N_ZR * N_H;   // 225 (Nachtrag 3: ohne W8)
 
-var KONFIG_KENNUNG = 'trendwende-ii-2026-09-09/v2/' + N_DET + 'x' + N_ZR + 'x2x' + N_H + 'x' + N_K + 'x' + ARTEN.length + '+kurs+luecke+schein+jahre';
+var KONFIG_KENNUNG = 'trendwende-ii-2026-09-09/v3/' + N_DET + 'x' + N_ZR + 'x2x' + N_H + 'x' + N_K + 'x' + ARTEN.length + '+kurs+luecke+haltezeit+schein+jahre';
 
 module.exports = {
   REPO: REPO, HIER: HIER, MINUTEN: MINUTEN, KANAL: KANAL, KM: KM, ORTE: ORTE, archivWurzel: archivWurzel,
@@ -133,9 +142,10 @@ module.exports = {
   DETEKTOR_KEYS: DETEKTOR_KEYS, NUR_LONG: NUR_LONG, FAMILIEN: FAMILIEN, PARAM_JE_ZR: PARAM_JE_ZR, detektoren: detektoren, paramsFuer: paramsFuer,
   Z_POWER80: Z_POWER80, TOR1_FAKTOR: TOR1_FAKTOR, MIN_BES_TAGE: MIN_BES_TAGE, BAND_T: BAND_T, BAND_PP: BAND_PP, SE_ERWARTET_NAECHSTE: SE_ERWARTET_NAECHSTE, JEDE_KLASSE_ZU: JEDE_KLASSE_ZU,
   AKTUELL_TAGE: AKTUELL_TAGE, AKTUELL_MIN_TAGE: AKTUELL_MIN_TAGE, AKTUELL_T_MIN: AKTUELL_T_MIN, VORWAERTS_MIN_TAGE: VORWAERTS_MIN_TAGE, VORWAERTS_T: VORWAERTS_T,
+  UHRZEIT_VERSATZ_MAX: UHRZEIT_VERSATZ_MAX, UHRZEIT_TOR_H: UHRZEIT_TOR_H, VERSATZ_TOLERANZ: VERSATZ_TOLERANZ, uhrzeitTorGilt: uhrzeitTorGilt,
   JAHRE: JAHRE, JAHR_MIN_TAGE: JAHR_MIN_TAGE, TREND_MIN_TAGE: TREND_MIN_TAGE, TREND_MIN_JAHRE: TREND_MIN_JAHRE, EMA_N: EMA_N, HH_LAG_UEBERNACHT: HH_LAG_UEBERNACHT, lagVon: lagVon, PLAN: PLAN,
   kalender: kalender,
   N_DET: N_DET, N_ZR: N_ZR, N_H: N_H, N_K: N_K, N_KAND: N_KAND, N_REIHEN: N_REIHEN, ARTEN: ARTEN, N_KONFIG: N_KONFIG,
-  kandIndex: kandIndex, reiheIndex: reiheIndex, zelle: zelle, zellenZahl: zellenZahl, topfZelle: topfZelle, topfZahl: topfZahl, kursZelle: kursZelle, kursZahl: kursZahl,
+  kandIndex: kandIndex, reiheIndex: reiheIndex, zelle: zelle, zellenZahl: zellenZahl, topfZelle: topfZelle, topfZahl: topfZahl, kursZelle: kursZelle, kursZahl: kursZahl, hzZelle: hzZelle, hzZahl: hzZahl,
   KONFIG_KENNUNG: KONFIG_KENNUNG,
 };

@@ -12,6 +12,8 @@
  *   - Jahresscheiben je Konfiguration (Kalenderjahr, letzte 250 Handelstage), Trendzeile, Regime SPY ueber/unter EMA200;
  *   - NACHTRAG 3 (12.09.2026): Einstiegsluecke aus den Kurszellen (luecke_B, netto_B lueckenbereinigt), verschaerftes
  *     Tor fuer `belegt`/`handelbar`, Vermerk "Extrem-Einstieg", Schein-Flagge heisst bei Short "handelbar mit Put".
+ *   - NACHTRAG 4 (12.09.2026): Luecken-Tor sitzt auf u_B statt netto_B; Haltezeit von Kandidat und Topf aus den neuen
+ *     Zellen, `uhrzeit_versatz` und das Tor darauf fuer "schluss"/"naechste"; Spiegel-Spalten als reine Diagnose.
  *
  * Aufruf (von hier):  node auswerten.js --aus <ordner> [--aus <ordner2> ...]
  *   Der Bericht landet im ERSTEN Ordner: PILOT-ERGEBNIS.md / pilot-ergebnis.json, wenn irgendein Lauf pilot=true oder
@@ -26,7 +28,8 @@ var M = require('./messen.js');
 var L = require(path.join(K.MINUTEN, 'lesen.js'));
 var KA = require(path.join(K.KANAL, 'auswerten.js'));          // momente(paare, L): Hansen-Hodrick, Newey-West, Block
 
-var URTEILE = ['0 Signale', 'kein Kandidat', 'nicht entscheidbar', 'widerlegt als Groesse', 'nicht belegt: Aktualitaets-Tor', 'nicht belegt: Einstiegsluecke', 'belegt', 'belegt-aber-nullpunkt-verschoben', 'belegt, aber Eroeffnungskosten'];
+var URTEILE = ['0 Signale', 'kein Kandidat', 'nicht entscheidbar', 'widerlegt als Groesse', 'nicht belegt: Aktualitaets-Tor', 'nicht belegt: Einstiegsluecke', 'nicht belegt: Uhrzeit-Versatz', 'belegt', 'belegt-aber-nullpunkt-verschoben', 'belegt, aber Eroeffnungskosten'];
+function istZahl(x) { return typeof x === 'number' && x === x; }
 var KLASSE_ZAEHL_H = 3;                                          // Klassenmix aus der Haltedauer 'schluss'
 
 /* ---------- Argumente ---------- */
@@ -197,13 +200,58 @@ function luecken(sp, ctx, kand, dirIdx, reihe, Lag) {
   zl.forEach(function (z) { jeTag[z.t] = z.mittel; });
   var besZ = zl.filter(nurBes(ctx));
   besZ.forEach(function (z) { N += z.n; S += z.n * z.mittel; });
-  var paare = [], ohneKurs = 0;
+  var paare = [], paareU = [], ohneKurs = 0, ohneU = 0;
   reihe.filter(nurBes(ctx)).forEach(function (z) {
-    if (jeTag[z.t] === undefined || z.netto !== z.netto) { ohneKurs++; return; }
-    paare.push({ t: z.t, x: z.netto - jeTag[z.t] });
+    if (jeTag[z.t] === undefined) { ohneKurs++; ohneU++; return; }
+    if (istZahl(z.netto)) paare.push({ t: z.t, x: z.netto - jeTag[z.t] }); else ohneKurs++;
+    /* NACHTRAG 4.1: dasselbe auf der HAUPTGROESSE u - darauf sitzt das Tor. Tage ohne Topf haben kein u. */
+    if (istZahl(z.u)) paareU.push({ t: z.t, x: z.u - jeTag[z.t] }); else ohneU++;
   });
-  return { jeSignal: N > 0 ? S / N : null, nSig: N, nTage: besZ.length, ohneKurs: ohneKurs,
-    tagesmittel: momente(besZ.map(function (z) { return { t: z.t, x: z.mittel }; }), Lag), bereinigt: momente(paare, Lag) };
+  return { jeSignal: N > 0 ? S / N : null, nSig: N, nTage: besZ.length, ohneKurs: ohneKurs, ohneU: ohneU,
+    tagesmittel: momente(besZ.map(function (z) { return { t: z.t, x: z.mittel }; }), Lag), bereinigt: momente(paare, Lag), bereinigtU: momente(paareU, Lag) };
+}
+
+/* ---------- Haltezeit und Uhrzeit-Versatz (NACHTRAG 4, 12.09.2026, §19.2/§19.3) ----------
+ * Haltezeitzellen tragen (Zahl, Σ Haltezeit in Sitzungsminuten) je (Kandidat, Richtung, HALTEDAUER, Tag, Klasse,
+ * lebend); der Topf traegt Σ Haltezeit als viertes Feld. Der Topf wird auf GENAU DIE Zellen eingeschraenkt, in denen
+ * der Kandidat an diesem Tag Signale hat - sonst misst der Versatz den Tagesmix (Halbtage, Jahre) statt der Uhrzeit. */
+function haltezeitWerte(sp, ctx, kand, dirIdx, zi, h, sicht) {
+  var nTage = sp.nTage, lVon = sicht === 'lebend' ? 1 : 0;
+  var aus = { nTage: 0, nKand: 0, nTopf: 0, kand: null, topf: null, versatz: null };
+  if (!sp.hzn || !sp.thz) return aus;
+  var sK = 0, sT = 0, basisH = ((kand * 2 + dirIdx) * K.N_H + h) * nTage, basisT = (zi * K.N_H + h) * nTage;
+  for (var t = 0; t < nTage; t++) {
+    if (!(t >= ctx.iBes && t >= ctx.iReg)) continue;
+    var bh = (basisH + t) * K.N_K * 2, bt = (basisT + t) * K.N_K * 2, mit = false;
+    for (var k = 0; k < K.N_K; k++) for (var l = lVon; l <= 1; l++) {
+      var i = bh + k * 2 + l, n = sp.hzn[i];
+      if (!(n > 0)) continue;
+      mit = true; aus.nKand += n; sK += sp.hzs[i];
+      var it = bt + k * 2 + l; aus.nTopf += sp.tn[it]; sT += sp.thz[it];
+    }
+    if (mit) aus.nTage++;
+  }
+  aus.kand = aus.nKand > 0 ? sK / aus.nKand : null;
+  aus.topf = aus.nTopf > 0 ? sT / aus.nTopf : null;
+  aus.versatz = (aus.kand != null && aus.topf > 0) ? aus.kand / aus.topf - 1 : null;
+  return aus;
+}
+/** Spiegel-Spalten (NACHTRAG 4.4): Werte der Gegenrichtung und das Tagesmittel von (u_long,t + u_short,t) ueber die
+ *  Tage, an denen BEIDE Richtungen ein Signal haben. REINE DIAGNOSE - daraus folgt kein Urteil. Verbraucht `uBesTag`
+ *  (die Tagesreihe von u in der Bestaetigung) und raeumt sie danach weg, damit die JSON-Ausgabe nicht aufblaeht. */
+function spiegelSpalten(konf) {
+  var jeSchluessel = {};
+  konf.forEach(function (c) { jeSchluessel[c.det + '|' + c.zr + '|' + c.h + '|' + c.richtung] = c; });
+  konf.forEach(function (c) {
+    var g = jeSchluessel[c.det + '|' + c.zr + '|' + c.h + '|' + (c.richtung === 'long' ? 'short' : 'long')];
+    if (!g) { c.spiegel = { vorhanden: false, u: null, t: null, nTage: 0, summe: { mittel: null, se: null, t: null } }; return; }
+    var jeTag = {}; (g.uBesTag || []).forEach(function (p) { jeTag[p.t] = p.x; });
+    var paare = (c.uBesTag || []).filter(function (p) { return jeTag[p.t] !== undefined; }).map(function (p) { return { t: p.t, x: p.x + jeTag[p.t] }; });
+    var m = momente(paare, K.lagVon(c.hi));
+    c.spiegel = { vorhanden: true, u: g.alle.bes.u.mittel, t: g.alle.bes.u.t, nTage: paare.length, summe: { mittel: m.mittel, se: m.se, t: m.t } };
+  });
+  konf.forEach(function (c) { delete c.uBesTag; });
+  return konf;
 }
 function klassenDifferenz(sp, ctx, r, dirIdx, h, zi, Lag) {
   var aus = [];
@@ -320,9 +368,12 @@ function auswerte(sp, F, kal, regimeInfo) {
       unter: statistik(reihe.filter(function (z) { return z.t >= ctx.iBes && z.t >= ctx.iReg && ctx.regime[z.t] === 0; }), Lag) } : null;
     var jahre = jahresscheiben(reihe, Lag, ctx, hKey);
     var lue = luecken(sp, ctx, K.kandIndex(dI, zi), dirIdx, reihe, Lag);
+    var hzW = haltezeitWerte(sp, ctx, K.kandIndex(dI, zi), dirIdx, zi, h, 'alle');
+    var uBesTag = reihe.filter(nurBes(ctx)).filter(function (z) { return istZahl(z.u); }).map(function (z) { return { t: z.t, x: z.u }; });
     delete alle.placeboAZeilen; delete alle.reihe; delete lebend.placeboAZeilen; delete lebend.reihe;
     konf.push({ det: dets[dI], zr: K.ZEITRAHMEN[zi].key, richtung: K.RICHTUNGEN[dirIdx].key, h: hKey, dI: dI, zi: zi, dirIdx: dirIdx, hi: h, lag: Lag,
-      luecke: { jeSignal: lue.jeSignal, nSig: lue.nSig, nTage: lue.nTage, ohneKurs: lue.ohneKurs, tagesmittel: lue.tagesmittel }, nettoBereinigt: lue.bereinigt,
+      luecke: { jeSignal: lue.jeSignal, nSig: lue.nSig, nTage: lue.nTage, ohneKurs: lue.ohneKurs, ohneU: lue.ohneU, tagesmittel: lue.tagesmittel }, nettoBereinigt: lue.bereinigt, uBereinigt: lue.bereinigtU,
+      haltezeit: hzW, uBesTag: uBesTag,
       alle: alle, lebend: { ent: lebend.ent, bes: lebend.bes, placeboB: lebend.placeboB },
       differenzLebend: alle.bes.brutto.mittel != null && lebend.bes.brutto.mittel != null ? alle.bes.brutto.mittel - lebend.bes.brutto.mittel : null,
       differenzLebendKlasse: klassenDifferenz(sp, ctx, K.reiheIndex(K.kandIndex(dI, zi), 0), dirIdx, h, zi, Lag),
@@ -330,6 +381,7 @@ function auswerte(sp, F, kal, regimeInfo) {
       regime: reg, jahre: jahre, trend: trend(jahre),
       schein: { bv1: scheinWerte(alle.bes, 'bv1', hKey), standard: scheinWerte(alle.bes, 'standard', hKey), ent: { bv1: scheinWerte(alle.ent, 'bv1', hKey), standard: scheinWerte(alle.ent, 'standard', hKey) } } });
   }
+  spiegelSpalten(konf);
   /* Kontrollen zuerst: Placebo A gepoolt je (ZR, H), eigen je (Detektor, ZR, H), Topf-Drift. */
   var kontrollen = [], poolOk = {}, eigenOk = {}, eigen = {};
   for (var z2 = 0; z2 < K.N_ZR; z2++) for (var h2 = 0; h2 < K.N_H; h2++) {
@@ -370,6 +422,12 @@ function auswerte(sp, F, kal, regimeInfo) {
   zahlen.torLueckeBestanden = konf.filter(function (c) { return c.torLuecke; }).length;
   zahlen.extremEinstieg = konf.filter(function (c) { return c.extremEinstieg; }).length;
   zahlen.lueckeOhneKursTage = konf.reduce(function (a, c) { return a + (c.luecke ? c.luecke.ohneKurs : 0); }, 0);
+  zahlen.uhrzeitTorGilt = konf.filter(function (c) { return K.uhrzeitTorGilt(c.h); }).length;
+  zahlen.uhrzeitTorGefallen = konf.filter(function (c) { return !c.torUhrzeit; }).length;
+  zahlen.versatzOhneWert = konf.filter(function (c) { return !c.haltezeit || c.haltezeit.versatz == null; }).length;
+  var vFest = konf.filter(function (c) { return !K.uhrzeitTorGilt(c.h) && c.haltezeit && c.haltezeit.versatz != null; }).map(function (c) { return Math.abs(c.haltezeit.versatz); }).sort(function (a, b) { return a - b; });
+  zahlen.versatzFestMax = vFest.length ? vFest[vFest.length - 1] : null;
+  zahlen.versatzFestMedian = vFest.length ? vFest[vFest.length >> 1] : null;
   zahlen.handelbarPut = konf.filter(function (c) { return c.richtung === 'short' && (c.handelbarSchein.bv1 || c.handelbarSchein.standard); }).length;
   zahlen.vorwaerts = konf.filter(function (c) { return c.vorwaerts; }).length;
   zahlen.groesse = { 'in seiner Klasse zu': 0, 'in jeder Klasse zu': 0, 'offen': 0, 'ohne (< 30 Bes-Tage)': 0 };
@@ -403,9 +461,15 @@ function urteil(c, z2, poolOk, eigenOk) {
   /* NACHTRAG 3.1: Einstiegsluecke. `belegt` (und damit jedes `handelbar`) verlangt zusaetzlich, dass das um die
    * Luecke bereinigte Netto positiv und selbst signifikant ist - sonst steckt die Groesse im Einstieg am Extrem
    * (Bid-Ask-Bounce), nicht in einer Wende. Vermerk "Extrem-Einstieg", wo die Luecke mehr als die Haelfte des Brutto ist. */
-  var lb = c.luecke || {}, nb = c.nettoBereinigt || {}, lm = lb.tagesmittel || {};
-  c.torLuecke = nb.mittel != null && nb.mittel > 0 && nb.t != null && nb.t >= z2;
+  var lb = c.luecke || {}, nb = c.nettoBereinigt || {}, ub = c.uBereinigt || {}, lm = lb.tagesmittel || {};
+  /* NACHTRAG 4.1 (Entscheid PM): das Tor sitzt auf u_B, nicht auf netto_B - `belegt` faellt ueber u, und ein Tor auf
+   * einer Groesse mit drei- bis sechsfacher se waere ein zweiter, schwaecherer Test unter falschem Namen. Die
+   * netto-Spalten bleiben im Bericht, entscheiden aber nichts. */
+  c.torLuecke = ub.mittel != null && ub.mittel > 0 && ub.t != null && ub.t >= z2;
   c.extremEinstieg = b.brutto.mittel != null && b.brutto.mittel > 0 && lm.mittel != null && lm.mittel > 0.5 * b.brutto.mittel;
+  /* NACHTRAG 4.3: Tor "Uhrzeit-Versatz" - nur fuer die Haltedauern, deren Haltezeit an der Uhrzeit haengt. */
+  var hzv = c.haltezeit ? c.haltezeit.versatz : null;
+  c.torUhrzeit = !(K.uhrzeitTorGilt(c.h) && hzv != null && Math.abs(hzv) > K.UHRZEIT_VERSATZ_MAX);
   if (e.nSig === 0 && b.nSig === 0) c.urteil = '0 Signale';
   else if (c.mdeB == null || e.nTage === 0) { c.urteil = 'nicht entscheidbar'; c.grund = 'Tor 1 nicht pruefbar (se_B oder Entdeckung fehlt)'; }
   else if (!c.tor1) c.urteil = 'kein Kandidat';
@@ -421,7 +485,10 @@ function urteil(c, z2, poolOk, eigenOk) {
       c.grund = c.aktuell.nTage < K.AKTUELL_MIN_TAGE ? 'letzte ' + K.AKTUELL_TAGE + ' Tage: < ' + K.AKTUELL_MIN_TAGE + ' Signaltage' : 'letzte ' + K.AKTUELL_TAGE + ' Tage: u ' + (c.aktuell.u.mittel != null ? c.aktuell.u.mittel.toFixed(4) : '–') + ', t ' + (c.aktuell.u.t != null ? c.aktuell.u.t.toFixed(2) : '–');
     } else if (!c.torLuecke) {
       c.urteil = 'nicht belegt: Einstiegsluecke';
-      c.grund = 'netto_B lueckenbereinigt ' + (nb.mittel != null ? nb.mittel.toFixed(4) : '–') + ' (t ' + (nb.t != null ? nb.t.toFixed(2) : '–') + ' < z_Bonf ' + z2.toFixed(2) + '), Luecke ' + (lm.mittel != null ? lm.mittel.toFixed(4) : '–') + (c.extremEinstieg ? ', Extrem-Einstieg' : '');
+      c.grund = 'u_B lueckenbereinigt ' + (ub.mittel != null ? ub.mittel.toFixed(4) : '–') + ' (t ' + (ub.t != null ? ub.t.toFixed(2) : '–') + ' < z_Bonf ' + z2.toFixed(2) + '), Luecke ' + (lm.mittel != null ? lm.mittel.toFixed(4) : '–') + (c.extremEinstieg ? ', Extrem-Einstieg' : '');
+    } else if (!c.torUhrzeit) {
+      c.urteil = 'nicht belegt: Uhrzeit-Versatz';
+      c.grund = 'haltezeit_kand ' + c.haltezeit.kand.toFixed(1) + ' min gegen Topf ' + c.haltezeit.topf.toFixed(1) + ' min: Versatz ' + hzv.toFixed(3) + ', Betrag > ' + K.UHRZEIT_VERSATZ_MAX + ' bei H = ' + c.h;
     } else {
       if (!poolOk) c.herabstufungen.push('Placebo gepoolt (ZR, H) gefallen');
       if (!eigenOk) c.herabstufungen.push('Placebo eigen gefallen');
@@ -440,6 +507,7 @@ function urteil(c, z2, poolOk, eigenOk) {
   var a = c.aktuell;
   c.vorwaerts = c.urteil !== 'belegt' && a.nTage >= K.VORWAERTS_MIN_TAGE && a.u.mittel != null && a.u.mittel > 0 && a.u.t != null && a.u.t >= K.VORWAERTS_T;
   if (c.urteil === 'nicht belegt: Einstiegsluecke') c.handelbarGrund = 'nein (Einstiegsluecke' + (c.extremEinstieg ? ', Extrem-Einstieg' : '') + ')';
+  else if (c.urteil === 'nicht belegt: Uhrzeit-Versatz') c.handelbarGrund = 'nein (Uhrzeit-Versatz)';
   else if (c.leiheUngemessen) c.handelbarGrund = 'nein (Leihe)';
   else if (c.urteil === 'belegt' && !c.handelbar) c.handelbarGrund = c.delta80 <= c.kKand ? 'nein (netto roh <= 0)' : 'nein (delta80 > K_kand)';
   else c.handelbarGrund = c.handelbar ? 'ja' : 'nein';
@@ -561,12 +629,18 @@ function markdown(E, F, herkunft, kal, pilot) {
     E.kontrollen.map(function (k) { var p = k.placebo, d = k.drift; return [k.zr, k.h, k.schranke, ganz(p.nTage), ganz(p.nSig), pp(p.gegenTopf), pp(p.se), tw(p.t), jn(k.imBand), ganz(k.eigenGeprueft), ganz(k.eigenGefallen), ganz(d.nTage), pp(d.mittel), pp(d.sd), tw(d.t), pp(d.mittelB), ganz(d.kerzen)]; })));
   o.push('Gepoolte Placebo-Baender gefallen: **' + ganz(z.placeboPoolGefallen) + '** von ' + ganz(E.kontrollen.length) + '. Einzel-Placebos gefallen: **' + ganz(z.placeboEigenGefallen) + '**. Signalzellen ohne Topfzelle: ' + ganz(z.ohneTopf) + '. Uebernacht-Zeilen mit HH ≤ 0 (Block-se, Marke HH<0): ' + ganz(z.hh0) + '.\n');
   o.push('## 2. Urteile in Zahlen (§7)\n');
-  o.push('> **Einstiegsluecke (Nachtrag 3, vor dem Vollauf registriert):** `luecke_B` ist die mittlere Luecke zwischen dem Schluss der Signalkerze und der Eroeffnung der Einstiegskerze, in Handelsrichtung und in Pp - gemessen je Kurszelle, also je (Detektor, ZR, Richtung) fuer alle Haltedauern dieselbe. `netto_B lueckenbereinigt` = netto_B − luecke_B je Signaltag. **`belegt` verlangt zusaetzlich lueckenbereinigt > 0 mit t ≥ z_Bonf(k2)**; sonst steht „nicht belegt: Einstiegsluecke". Der Vermerk **Extrem-Einstieg** steht, wo die Luecke mehr als die Haelfte des Brutto ausmacht - dort ist der Einstieg am Extrem (Bid-Ask-Bounce) die naheliegendere Erklaerung als eine Wende.\n');
+  o.push('> **Einstiegsluecke (Nachtrag 3, vor dem Vollauf registriert):** `luecke_B` ist die mittlere Luecke zwischen dem Schluss der Signalkerze und der Eroeffnung der Einstiegskerze, in Handelsrichtung und in Pp - gemessen je Kurszelle, also je (Detektor, ZR, Richtung) fuer alle Haltedauern dieselbe. `u_B lueckenbereinigt` = u_B − luecke_B je Signaltag. **NACHTRAG 4.1: `belegt` verlangt zusaetzlich `u_B lueckenbereinigt` > 0 mit t ≥ z_Bonf(k2)** - das Tor sitzt auf der Hauptgroesse u, nicht mehr auf netto (dessen se ist drei- bis sechsmal groesser; ein Tor darauf waere ein zweiter, schwaecherer Test unter falschem Namen). Die netto-Spalten bleiben im Bericht und entscheiden nichts. Sonst steht „nicht belegt: Einstiegsluecke". Der Vermerk **Extrem-Einstieg** steht, wo die Luecke mehr als die Haelfte des Brutto ausmacht.\n');
+  o.push('> **Uhrzeit-Versatz (Nachtrag 4, vor der ersten Zelle der Kennung v3 registriert):** `haltezeit_kand` und `haltezeit_topf` sind die mittleren Haltezeiten in **Sitzungsminuten** (Einstieg bis Ausstieg) von Kandidat und Topf, gemessen ueber **dieselben Signaltage und Zellen**; `uhrzeit_versatz` = haltezeit_kand / haltezeit_topf − 1. Fuer die festen Haltedauern ist er konstruktionsgemaess 0. Fuer **' + K.UHRZEIT_TOR_H.join(' und ') + '** haengt die Haltezeit an der UHRZEIT des Signals: ein Detektor, der frueher am Tag feuert als sein Topf, traegt mehr Tagesdrift - in beiden Richtungen. **Eine Zeile mit |uhrzeit_versatz| > ' + K.UHRZEIT_VERSATZ_MAX + ' kann fuer diese beiden Haltedauern nicht `belegt` werden** („nicht belegt: Uhrzeit-Versatz"). Fuer „naechste Eroeffnung" zaehlt die Nachtpause null Sitzungsminuten - sie ist fuer jeden Einstieg desselben Tages gleich lang und kann keinen Versatz erzeugen.\n');
+  o.push('> **Spiegel-Spalten sind DIAGNOSE, kein Tor (Nachtrag 4.4):** `u_spiegel` / `t_spiegel` sind u_B und t_B derselben (Detektor, ZR, Haltedauer) in der Gegenrichtung, `u_summe` das Tagesmittel von (u_long + u_short) ueber die Tage, an denen beide Richtungen feuern. **Daraus folgt kein Urteil** - long und short feuern zu verschiedenen Zeitpunkten; beide positiv ist fuer sich genommen weder Widerspruch noch Beweis.\n');
   o.push('> **Belegt ist nicht handelbar.** Ueber belegt / widerlegt / nicht entscheidbar entscheidet u (Ueberschuss gegen den Topf minus Kassa-Huerde). `handelbar` (Aktie) verlangt zusaetzlich Aufloesung (delta80 ≤ K_kand), rohes Netto > 0 und Einstiegsfenster-Huerde; Short als Aktie nie (Leihe). **`handelbar mit Schein`** verlangt belegt, Aufloesung, Einstiegsfenster und netto_schein_B > 0 - ohne Leihe-Veto (ein Put braucht keine Leihe). Das **Aktualitaets-Tor** (letzte ' + K.AKTUELL_TAGE + ' Handelstage ab ' + E.ctx.aktuellAb + ': u > 0 und t > ' + K.AKTUELL_T_MIN + ') ist Voraussetzung fuer belegt.\n');
   var uz = [['Konfigurationen', ganz(z.konfigurationen)], ['k1 (Tor 1 bestanden)', ganz(z.k1)], ['z_Bonf(max(k1,1)) fuer delta80', tw(z.zBonfK1)], ['k2 (beide Tore)', ganz(z.k2)], ['z_Bonf(max(k2,1)) = Schwelle fuer t_B', tw(z.zBonfK2)], ['Aktualitaets-Tor bestanden (alle Konfigurationen)', ganz(z.torAktBestanden)]];
   URTEILE.forEach(function (u) { uz.push(['Urteil: ' + u, ganz(z.urteile[u])]); });
-  uz.push(['Luecken-Tor bestanden (netto_B lueckenbereinigt > 0 und t ≥ z_Bonf, alle Konfigurationen)', ganz(z.torLueckeBestanden)]);
+  uz.push(['Luecken-Tor bestanden (u_B lueckenbereinigt > 0 und t ≥ z_Bonf, alle Konfigurationen)', ganz(z.torLueckeBestanden)]);
   uz.push(['Vermerk „Extrem-Einstieg" (luecke_B > halbes Brutto_B)', ganz(z.extremEinstieg)]);
+  uz.push(['Uhrzeit-Tor: Zeilen, fuer die es ueberhaupt gilt (H = ' + K.UHRZEIT_TOR_H.join(' / ') + ')', ganz(z.uhrzeitTorGilt)]);
+  uz.push(['Uhrzeit-Tor gefallen (|uhrzeit_versatz| > ' + K.UHRZEIT_VERSATZ_MAX + ')', ganz(z.uhrzeitTorGefallen)]);
+  uz.push(['|uhrzeit_versatz| bei den FESTEN Haltedauern: Median / Maximum (Soll ≈ 0, Pruefschranke ' + K.VERSATZ_TOLERANZ + ')', pp(z.versatzFestMedian) + ' / ' + pp(z.versatzFestMax)]);
+  uz.push(['Zeilen ohne Versatz-Wert (Tor greift dort nicht)', ganz(z.versatzOhneWert)]);
   uz.push(['Bestaetigungs-Signaltage ohne Kurszelle (aus der Lueckenrechnung gefallen, Summe ueber alle Konfigurationen)', ganz(z.lueckeOhneKursTage)]);
   uz.push(['handelbar (Aktie)', ganz(z.handelbar)]); uz.push(['handelbar mit Schein BV 1,0', ganz(z.handelbarSchein.bv1)]); uz.push(['handelbar mit Standard-Schein', ganz(z.handelbarSchein.standard)]);
   uz.push(['davon Short: Flagge „handelbar mit Put" (Kassa-Short bleibt nie handelbar)', ganz(z.handelbarPut)]);
@@ -577,17 +651,31 @@ function markdown(E, F, herkunft, kal, pilot) {
   o.push(tabelle(['Groesse', 'Wert'], uz));
   var sortiert = E.konf.slice().sort(function (a, b) { var ta = a.alle.ent.u.t, tb = b.alle.ent.u.t; if (ta == null && tb == null) return 0; if (ta == null) return 1; if (tb == null) return -1; return tb - ta; });
   o.push('## 3. Kandidatentafel - alle ' + z.konfigurationen + ' Konfigurationen, sortiert nach Entdeckungs-t (u) absteigend\n\nEnt = Entdeckung, Bes = Bestaetigung (≥ ' + K.BESTAETIGUNG_AB + '). u = dir·(rLong − Topf) − K; netto = r − K (roh); uF = mit Einstiegsfenster-Huerde. Schein = Brutto − Schein-Huerde der Haltedauer (BV 1,0 / Standard). Akt = letzte ' + K.AKTUELL_TAGE + ' Handelstage. HH = Uebernacht-se mit Block-Rueckfall.\n');
-  o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Ent nTage', 'Ent nSig', 'Ent brutto', 'Ent u', 'Ent t', 'MDE_B', 'Tor1', 'K_kand', 'delta80', 'Tor2', 'Bes nTage', 'Bes nSig', 'Bes brutto', 'Bes netto', 'Bes u', 'Bes uF', 'Bes t', 'obere Grenze brutto', 'luecke_B (je Signal)', 'luecke_B (Tagesmittel)', 'netto_B lueckenbereinigt', 't lueckenbereinigt', 'TorLuecke', 'Extrem-Einstieg', 'Schein BV1 netto', 'Schein BV1 t', 'Schein Std netto', 'Akt nTage', 'Akt u', 'Akt t', 'TorAkt', 'PlA Mittel', 'PlA t', 'Kand−PlB', 'B2', 'Urteil', 'handelbar', 'Schein-Flagge', 'Flagge BV1', 'Flagge Std', 'Groesse', 'Schein-Groesse', 'Vorwaerts'],
-    sortiert.map(function (c) { var e = c.alle.ent, b = c.alle.bes, p = c.placeboA, q = c.alle.placeboB.bes, a = c.aktuell, lu = c.luecke || {}, lm = lu.tagesmittel || {}, nb = c.nettoBereinigt || {};
+  o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Ent nTage', 'Ent nSig', 'Ent brutto', 'Ent u', 'Ent t', 'MDE_B', 'Tor1', 'K_kand', 'delta80', 'Tor2', 'Bes nTage', 'Bes nSig', 'Bes brutto', 'Bes netto', 'Bes u', 'Bes uF', 'Bes t', 'obere Grenze brutto', 'luecke_B (je Signal)', 'luecke_B (Tagesmittel)', 'u_B lueckenbereinigt', 't u-bereinigt', 'netto_B lueckenbereinigt', 't netto-bereinigt', 'TorLuecke', 'Extrem-Einstieg', 'haltezeit_kand (min)', 'haltezeit_topf (min)', 'uhrzeit_versatz', 'TorUhrzeit', 'u_spiegel', 't_spiegel', 'u_summe', 'se_summe', 't_summe', 'Schein BV1 netto', 'Schein BV1 t', 'Schein Std netto', 'Akt nTage', 'Akt u', 'Akt t', 'TorAkt', 'PlA Mittel', 'PlA t', 'Kand−PlB', 'B2', 'Urteil', 'handelbar', 'Schein-Flagge', 'Flagge BV1', 'Flagge Std', 'Groesse', 'Schein-Groesse', 'Vorwaerts'],
+    sortiert.map(function (c) { var e = c.alle.ent, b = c.alle.bes, p = c.placeboA, q = c.alle.placeboB.bes, a = c.aktuell, lu = c.luecke || {}, lm = lu.tagesmittel || {}, nb = c.nettoBereinigt || {}, ub = c.uBereinigt || {}, hz = c.haltezeit || {}, sp2 = c.spiegel || { summe: {} };
       return [c.det, c.zr, c.richtung, c.h, ganz(e.nTage), ganz(e.nSig), pp(e.brutto.mittel), pp(e.u.mittel), tw(e.u.t), pp(c.mdeB), jn(c.tor1), pp(c.kKand), pp(c.delta80), jn(c.tor2),
         ganz(b.nTage), ganz(b.nSig), pp(b.brutto.mittel), pp(b.netto.mittel), pp(b.u.mittel), pp(b.uF.mittel), tw(b.u.t) + (b.u.hh0 ? ' HH<0' : ''), pp(b.brutto.obere),
-        pp(lu.jeSignal), pp(lm.mittel), pp(nb.mittel), tw(nb.t), jn(c.torLuecke), c.extremEinstieg ? 'Extrem-Einstieg' : '',
+        pp(lu.jeSignal), pp(lm.mittel), pp(ub.mittel), tw(ub.t), pp(nb.mittel), tw(nb.t), jn(c.torLuecke), c.extremEinstieg ? 'Extrem-Einstieg' : '',
+        tw(hz.kand), tw(hz.topf), hz.versatz == null ? '–' : tw(hz.versatz), K.uhrzeitTorGilt(c.h) ? jn(c.torUhrzeit) : 'gilt nicht',
+        pp(sp2.u), tw(sp2.t), pp(sp2.summe.mittel), pp(sp2.summe.se), tw(sp2.summe.t),
         pp(c.schein.bv1.mittel), tw(c.schein.bv1.t), pp(c.schein.standard.mittel),
         ganz(a.nTage), pp(a.u.mittel), tw(a.u.t), jn(c.torAkt), pp(p.gegenTopf), tw(p.t), pp(q.mittel), (e.u.b2 || b.u.b2) ? 'B2' : '', c.urteil + (c.herabstufungen.length ? ' [' + c.herabstufungen.join('; ') + ']' : '') + (c.grund ? ' (' + c.grund + ')' : ''), c.handelbarGrund, c.flagge, jn(c.handelbarSchein.bv1), jn(c.handelbarSchein.standard), c.groesse, c.scheinGroesse, jn(c.vorwaerts)]; })));
   o.push('## 3b. Kandidaten fuer den Vorwaertstest (§7) - Rangliste, kein Befund\n\nNicht belegt, aber in den letzten ' + K.AKTUELL_TAGE + ' Handelstagen ≥ ' + K.VORWAERTS_MIN_TAGE + ' Signaltage, u > 0 und t ≥ ' + K.VORWAERTS_T + '. Bei ' + z.konfigurationen + ' Konfigurationen sind ≈ ' + Math.round(0.023 * z.konfigurationen) + ' solche Zeilen durch Zufall zu erwarten. Geprueft werden sie an den Daten ab 2026-09-01 (eigener Auftrag).\n');
   var vw = E.konf.filter(function (c) { return c.vorwaerts; }).sort(function (a, b) { return b.aktuell.u.t - a.aktuell.u.t; });
   o.push(vw.length ? tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Akt nTage', 'Akt nSig', 'Akt u', 'Akt se', 'Akt t', 'Akt brutto', 'Schein BV1 (Akt)', 'Schein Std (Akt)', 'Bes u', 'Bes t', 'luecke_B', 'netto_B lueckenbereinigt', 'Extrem-Einstieg', 'Urteil'],
     vw.map(function (c) { var a = c.aktuell, lm = (c.luecke || {}).tagesmittel || {}, nb = c.nettoBereinigt || {}; return [c.det, c.zr, c.richtung, c.h, ganz(a.nTage), ganz(a.nSig), pp(a.u.mittel), pp(a.u.se), tw(a.u.t), pp(a.brutto.mittel), pp(a.brutto.mittel != null ? a.brutto.mittel - K.scheinHuerde('bv1', c.h) : null), pp(a.brutto.mittel != null ? a.brutto.mittel - K.scheinHuerde('standard', c.h) : null), pp(c.alle.bes.u.mittel), tw(c.alle.bes.u.t), pp(lm.mittel), pp(nb.mittel), c.extremEinstieg ? 'Extrem-Einstieg' : '', c.urteil]; })) : 'Keine Konfiguration erfuellt die Kriterien.\n');
+  /* NACHTRAG 4 (§19.0): die Probe auf die Hypothese des PM - beidseitig positive Zellen mit ihren Haltezeiten. */
+  o.push('### 3c. Beidseitig positive Zellen (u_B > 0 und t ≥ 2 in BEIDEN Richtungen) mit Haltezeit und Uhrzeit-Versatz\n\nDas ist die Probe auf die Hypothese aus Nachtrag 4: feuert ein Detektor systematisch frueher am Tag als sein Topf, traegt er mehr Tagesdrift - und zwar in beiden Richtungen. Erwartet war ein deutlich positiver Versatz bei „bis Schluss" und „naechste Eroeffnung". Kein Urteil aus dieser Tafel, sie zeigt nur die Zahlen nebeneinander.\n');
+  var beide = [];
+  E.konf.forEach(function (c) {
+    if (c.richtung !== 'long') return;
+    var g = E.konf.filter(function (x) { return x.det === c.det && x.zr === c.zr && x.h === c.h && x.richtung === 'short'; })[0];
+    if (!g) return;
+    var a = c.alle.bes.u, b2 = g.alle.bes.u;
+    if (!(a.mittel > 0 && a.t >= 2 && b2.mittel > 0 && b2.t >= 2)) return;
+    [c, g].forEach(function (x) { var hz = x.haltezeit || {}; beide.push([x.det, x.zr, x.richtung, x.h, pp(x.alle.bes.u.mittel), tw(x.alle.bes.u.t), tw(hz.kand), tw(hz.topf), hz.versatz == null ? '–' : tw(hz.versatz), K.uhrzeitTorGilt(x.h) ? jn(x.torUhrzeit) : 'gilt nicht', x.urteil]); });
+  });
+  o.push(beide.length ? tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'u_B', 't_B', 'haltezeit_kand (min)', 'haltezeit_topf (min)', 'uhrzeit_versatz', 'TorUhrzeit', 'Urteil'], beide) : 'Keine Zelle ist in beiden Richtungen positiv mit t ≥ 2.\n');
   o.push('## 4. Jahresscheiben (§9a) - Pflichttabelle: u je Kalenderjahr und letzte ' + K.AKTUELL_TAGE + ' Handelstage, je Konfiguration\n\nSicht alle, Klassen gepoolt, aus den Zellen je ET-Tag. t nur ab ' + K.JAHR_MIN_TAGE + ' Signaltagen im Jahr („zu duenn" sonst). Uebernacht-se Hansen-Hodrick Lag 1. Kein Urteil aus dieser Tabelle.\n');
   var jz = [];
   E.konf.forEach(function (c) { c.jahre.forEach(function (j) { jz.push([c.det, c.zr, c.richtung, c.h, j.jahr, ganz(j.nTage), ganz(j.nSig), pp(j.u), pp(j.se), j.duenn ? 'zu duenn' : tw(j.t) + (j.hh0 ? ' HH<0' : ''), pp(j.brutto), pp(j.netto), pp(j.schein1)]); }); });
@@ -637,7 +725,7 @@ function lauf(a) {
   var json = { erzeugt: new Date().toISOString(), kennung: K.KONFIG_KENNUNG, pilot: pilot, herkunft: G.herkunft,
     zaehler: G.F.zaehler, dateien: G.F.dateien, bytes: G.F.bytes, kerzenRegulaer: G.F.kerzenRegulaer, ausgelassen: G.F.ausgelassen, reihenAusgeschlossen: G.F.reihenAusgeschlossen, doppeltErledigt: G.F.doppeltErledigt,
     kalender: { nTage: kal.tage.length, bestaetigungAb: K.BESTAETIGUNG_AB, regimeAb: K.REGIME_AB, iBes: E.ctx.iBes, iReg: E.ctx.iReg, aktuellAb: E.ctx.aktuellAb },
-    konstanten: { zPower80: K.Z_POWER80, minBesTage: K.MIN_BES_TAGE, tor1Faktor: K.TOR1_FAKTOR, bandT: K.BAND_T, bandPp: K.BAND_PP, seErwartetNaechste: K.SE_ERWARTET_NAECHSTE, jedeKlasseZu: K.JEDE_KLASSE_ZU, aktuell: [K.AKTUELL_TAGE, K.AKTUELL_MIN_TAGE, K.AKTUELL_T_MIN], vorwaerts: [K.VORWAERTS_MIN_TAGE, K.VORWAERTS_T], scheine: K.SCHEINE.map(function (s) { return { key: s.key, kurz: s.kurz, tag: s.tag }; }), plan: K.PLAN },
+    konstanten: { zPower80: K.Z_POWER80, minBesTage: K.MIN_BES_TAGE, tor1Faktor: K.TOR1_FAKTOR, bandT: K.BAND_T, bandPp: K.BAND_PP, seErwartetNaechste: K.SE_ERWARTET_NAECHSTE, jedeKlasseZu: K.JEDE_KLASSE_ZU, aktuell: [K.AKTUELL_TAGE, K.AKTUELL_MIN_TAGE, K.AKTUELL_T_MIN], vorwaerts: [K.VORWAERTS_MIN_TAGE, K.VORWAERTS_T], uhrzeitVersatzMax: K.UHRZEIT_VERSATZ_MAX, uhrzeitTorH: K.UHRZEIT_TOR_H, versatzToleranz: K.VERSATZ_TOLERANZ, scheine: K.SCHEINE.map(function (s) { return { key: s.key, kurz: s.kurz, tag: s.tag }; }), plan: K.PLAN },
     zahlen: E.zahlen, kontrollen: E.kontrollen, konfigurationen: E.konf, ueberleben: E.ueberleben, signalanteil: E.signalanteil, klassenmix: E.klassenmix, seB: E.seB, centBoden: E.centBoden, jahresKurz: E.jahresKurz, regime: E.regimeInfo };
   fs.writeFileSync(path.join(ordner[0], jsonName), JSON.stringify(json, null, 1));
   fs.writeFileSync(path.join(ordner[0], mdName), markdown(E, G.F, G.herkunft, kal, pilot));
@@ -645,8 +733,8 @@ function lauf(a) {
   return json;
 }
 
-module.exports = { lauf: lauf, argumente: argumente, normalQuantil: normalQuantil, zBonf: zBonf, selbsttestQuantil: selbsttestQuantil, ladeLaeufe: ladeLaeufe,
+module.exports = { lauf: lauf, argumente: argumente, normalQuantil: normalQuantil, zBonf: zBonf, selbsttestQuantil: selbsttestQuantil, ladeLaeufe: ladeLaeufe, haltezeitWerte: haltezeitWerte,
   tagesreihe: tagesreihe, poole: poole, momente: momente, momenteVon: momenteVon, statistik: statistik, scheinWerte: scheinWerte, imBand: imBand, auswerte: auswerte, urteil: urteil, markdown: markdown,
-  lueckeReihe: lueckeReihe, luecken: luecken, centBoden: centBoden,
+  lueckeReihe: lueckeReihe, luecken: luecken, centBoden: centBoden, spiegelSpalten: spiegelSpalten,
   spyRegime: spyRegime, regimeAusSchluessen: regimeAusSchluessen, jahresscheiben: jahresscheiben, scheibe: scheibe, trend: trend, familie: familie, URTEILE: URTEILE };
 if (require.main === module) lauf(argumente(process.argv.slice(2)));

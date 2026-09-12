@@ -10,7 +10,8 @@
  * W1a gegen hauptstudie.js detect(), Schein-Konstanten gegen BERICHT.md, Uebernacht-Ausstieg ueber Dateigrenzen, Jahres-
  * scheiben gegen Handrechnung, Aktualitaets-Tor und Vorwaertstest an konstruierten Faellen, Hansen-Hodrick L = 2, Regime,
  * NACHTRAG 3: Einstiegsluecke gegen eine gepflanzte Luecke und gegen die Handrechnung, das Luecken-Tor an konstruierten
- * Faellen, die Klinke gegen den gestrichenen Trendfolge-Detektor,
+ * Faellen, die Klinke gegen den gestrichenen Trendfolge-Detektor, NACHTRAG 4: Haltezeit und Uhrzeit-Versatz (feste
+ * Haltedauern, frueher Detektor, gleichmaessiges Gitter), das Luecken-Tor auf u statt netto, die Spiegel-Spalten,
  * Konstruktionsfaelle W4-W7, Klinken (kein Netz, kein Schluessel, kein Schreiben ins Archiv, kein Yahoo).
  *
  * Jede Zeile der Ausgabe ist 'OK ...', 'FEHLT ...' oder 'UEBERSPRUNGEN ...'. Eine Ausnahme in einer Pruefung ist FEHLT.
@@ -127,6 +128,39 @@ function tagesreiheAusZellen(eintraege, art, det, zr, h, dirIdx, netto) {
   return { tage: tage, mittelJeTag: tage.map(function (t) { return je[t].s / je[t].n; }), n: n, jeSignal: n ? s / n : NaN, je: je };
 }
 
+/* ---------- Haltezeit aus dem Delta, von Hand aggregiert (NACHTRAG 4; unabhaengig von auswerten.js) ---------- */
+function dekodiereHz(idx) {
+  var nTage = K.kalender().tage.length, r = idx;
+  var lebend = r % 2; r = (r - lebend) / 2;
+  var klasse = r % K.N_K; r = (r - klasse) / K.N_K;
+  var tag = r % nTage; r = (r - tag) / nTage;
+  var h = r % K.N_H; r = (r - h) / K.N_H;
+  var dirIdx = r % 2;
+  return { kand: (r - dirIdx) / 2, dirIdx: dirIdx, h: h, tag: tag, klasse: klasse, lebend: lebend };
+}
+function dekodiereTopfIdx(idx) {
+  var nTage = K.kalender().tage.length, r = idx;
+  var lebend = r % 2; r = (r - lebend) / 2;
+  var klasse = r % K.N_K; r = (r - klasse) / K.N_K;
+  var tag = r % nTage; r = (r - tag) / nTage;
+  var h = r % K.N_H;
+  return { zr: (r - h) / K.N_H, h: h, tag: tag, klasse: klasse, lebend: lebend };
+}
+/** Mittlere Haltezeit von Kandidat und Topf ueber genau die Zellen, in denen der Kandidat Signale hat. */
+function haltezeitAusDelta(delta, kand, dirIdx, h, zi) {
+  var zellen = {}, nK = 0, sK = 0, nT = 0, sT = 0;
+  delta.hz.forEach(function (v, idx) {
+    var e = dekodiereHz(idx);
+    if (e.kand !== kand || e.dirIdx !== dirIdx || e.h !== h) return;
+    zellen[e.tag + '|' + e.klasse + '|' + e.lebend] = 1; nK += v[0]; sK += v[1];
+  });
+  delta.topf.forEach(function (v, idx) {
+    var e = dekodiereTopfIdx(idx);
+    if (e.zr !== zi || e.h !== h || !zellen[e.tag + '|' + e.klasse + '|' + e.lebend]) return;
+    nT += v[0]; sT += v[3];
+  });
+  return { nK: nK, nT: nT, kand: nK ? sK / nK : null, topf: nT ? sT / nT : null, versatz: (nK && nT) ? (sK / nK) / (sT / nT) - 1 : null };
+}
 /* ---------- Naive Nachrechnung der Regeln (unabhaengig von messen.js) ---------- */
 function zerlegeTage(kerzen) {
   var aus = [], s = 0;
@@ -217,16 +251,27 @@ abschnitt(0, 'Zellendecoder und Layout', function () {
   }
   pruefe(fehler === 0, '0a Decoder invertiert K.zelle/K.reiheIndex/K.kandIndex (2000 Stichproben, ' + fehler + ' Fehler)');
   pruefe(K.N_DET === 8 && K.N_H === 5 && K.N_KAND === 24 && K.N_REIHEN === 72 && K.N_KONFIG === 225 && K.H_UEBERNACHT === 4 && K.HALTEDAUERN[4].uebernacht === true, '0b Layout (Nachtrag 3): 8 Detektoren, 5 Haltedauern (naechste = Uebernacht), 24 Kandidaten, 72 Zellenreihen, 225 Konfigurationen');
-  pruefe(/^trendwende-ii-2026-09-09\/v2\/8x3x2x5x4x3\+kurs\+luecke\+schein\+jahre$/.test(K.KONFIG_KENNUNG), '0c Kennung ' + K.KONFIG_KENNUNG);
-  var mb = (K.zellenZahl(nTage) * 4 + K.topfZahl(nTage) * 3 + K.kursZahl(nTage) * 4) * 8 / 1e6;
-  pruefe(mb > 450 && mb < 700, '0d Zellenspeicher ' + mb.toFixed(0) + ' MB je Prozess (Registrierung §10, Nachtrag 3: ≈ 535)');
+  pruefe(/^trendwende-ii-2026-09-09\/v3\/8x3x2x5x4x3\+kurs\+luecke\+haltezeit\+schein\+jahre$/.test(K.KONFIG_KENNUNG), '0c Kennung ' + K.KONFIG_KENNUNG);
+  var mb = (K.zellenZahl(nTage) * 4 + K.topfZahl(nTage) * 4 + K.kursZahl(nTage) * 4 + K.hzZahl(nTage) * 2) * 8 / 1e6;
+  pruefe(mb > 450 && mb < 750, '0d Zellenspeicher ' + mb.toFixed(0) + ' MB je Prozess (Registrierung §10, Nachtrag 4: ≈ 620)');
   var sp0 = new M.Speicher(10), fehlerK = 0, rng2 = rngNeu(7);
   for (var q2 = 0; q2 < 500; q2++) {
     var kand = Math.floor(rng2() * K.N_KAND), di2 = Math.floor(rng2() * 2), tg = Math.floor(rng2() * 10), kl2 = Math.floor(rng2() * K.N_K), le2 = Math.floor(rng2() * 2);
     var ix = K.kursZelle(10, kand, di2, tg, kl2, le2);
     if (!(ix >= 0 && ix < K.kursZahl(10))) fehlerK++;
   }
-  pruefe(sp0.felder().length === 11 && sp0.kl && sp0.kl.length === K.kursZahl(10) && fehlerK === 0, '0e Kurszellen tragen VIER Felder (n, Σ Kurs, ueber Cent-Boden, Σ Einstiegsluecke): ' + sp0.felder().length + ' Felder im _zellen.bin, kursZelle bleibt im Bereich (' + fehlerK + ' Fehler)');
+  pruefe(sp0.felder().length === 14 && sp0.kl && sp0.kl.length === K.kursZahl(10) && fehlerK === 0, '0e Kurszellen tragen VIER Felder (n, Σ Kurs, ueber Cent-Boden, Σ Einstiegsluecke); _zellen.bin traegt nach Nachtrag 4 ' + sp0.felder().length + ' Felder, kursZelle bleibt im Bereich (' + fehlerK + ' Fehler)');
+  /* NACHTRAG 4: Haltezeitzellen (mit Haltedauer) und das vierte Topffeld */
+  var fehlerH = 0, gesehen = {}, rng3 = rngNeu(11);
+  for (var q3 = 0; q3 < 800; q3++) {
+    var kd = Math.floor(rng3() * K.N_KAND), dx = Math.floor(rng3() * 2), hh = Math.floor(rng3() * K.N_H), tg3 = Math.floor(rng3() * 10), kl3 = Math.floor(rng3() * K.N_K), le3 = Math.floor(rng3() * 2);
+    var ih = K.hzZelle(10, kd, dx, hh, tg3, kl3, le3), schl = [kd, dx, hh, tg3, kl3, le3].join('|');
+    if (!(ih >= 0 && ih < K.hzZahl(10))) fehlerH++;
+    if (gesehen[ih] !== undefined && gesehen[ih] !== schl) fehlerH++;                    // eineindeutig: kein Kategorie-Ueberlauf
+    gesehen[ih] = schl;
+  }
+  pruefe(fehlerH === 0 && sp0.hzn.length === K.hzZahl(10) && sp0.hzs.length === K.hzZahl(10) && sp0.thz.length === K.topfZahl(10) && K.hzZahl(10) === K.kursZahl(10) * K.N_H,
+    '0f NACHTRAG 4: Haltezeitzellen (Kandidat x Richtung x HALTEDAUER x Tag x Klasse x lebend) eineindeutig (' + fehlerH + ' Fehler), Topf traegt Σ Haltezeit als viertes Feld');
 });
 
 /* ====================================================================================== */
@@ -331,6 +376,53 @@ abschnitt('1b', 'EINSTIEGSLUECKE (Nachtrag 3): gepflanzte Luecke +0,3 Pp an der 
   pruefe(lu2.jeSignal === null && lu2.nSig === 0 && lu2.bereinigt.n === 0, '1b-e die Luecke haengt an der Richtung: die Gegenrichtung derselben Kurszellen ist leer (nSig ' + lu2.nSig + ')');
 });
 
+/* ====================================================================================== */
+abschnitt('1c', 'HALTEZEIT und UHRZEIT-VERSATZ (Nachtrag 4): feste Haltedauern ≈ 0, frueher Detektor gross, gleichmaessiges Gitter ≈ 0', function () {
+  if (!KUNST.rohKerzen) { fehlt('1c keine Kunst-Reihe aus Abschnitt 1'); return; }
+  var roh = KUNST.rohKerzen;
+  /* Zwei konstruierte Detektoren auf derselben Reihe: einer feuert NUR in der ersten Stunde, einer auf einem
+   * gleichmaessigen Gitter ueber den Tag, dessen Uhrzeit-Mittel dem des Topfs entspricht (zulaessig sind bei 390
+   * Minuten Sitzung und 30 Minuten Restfrist die Minuten 0..359, Mittel 179,5 - das Gitter 60/120/180/240/300 hat
+   * Mittel 180). Der Cooldown von 60 Minuten laesst genau diese Abstaende zu. */
+  var frueh = { key: 'kunst-frueh', params: {}, signal: function (bars, i) { return minutenSeitAuf(bars[i][0]) < 60 ? { dir: 1 } : null; } };
+  var gitter = { key: 'kunst-gitter', params: {}, signal: function (bars, i) { var m = minutenSeitAuf(bars[i][0]); return (m >= 60 && m <= 300 && m % 60 === 0) ? { dir: 1 } : null; } };
+  var m = messe(roh, [frueh, gitter]);
+  var kandFrueh = K.kandIndex(0, 0), kandGitter = K.kandIndex(1, 0);         // beide auf 1m (zi = 0)
+  var hzF = {}, hzG = {};
+  [H15, H1H, H3H, HS, HN].forEach(function (h) { hzF[h] = haltezeitAusDelta(m.delta, kandFrueh, 0, h, 0); hzG[h] = haltezeitAusDelta(m.delta, kandGitter, 0, h, 0); });
+  /* (1) feste Haltedauern: Haltezeit = die Haltedauer selbst, bei Kandidat UND Topf => Versatz 0 */
+  var sollMin = [15, 60, 180], fehlerFest = 0, txtFest = [];
+  [H15, H1H, H3H].forEach(function (h, q) {
+    [hzF[h], hzG[h]].forEach(function (x) {
+      if (!(Math.abs(x.kand - sollMin[q]) < 1e-9 && Math.abs(x.topf - sollMin[q]) < 1e-9 && Math.abs(x.versatz) <= K.VERSATZ_TOLERANZ)) fehlerFest++;
+    });
+    txtFest.push(K.HALTEDAUERN[h].key + ' ' + f2(hzF[h].kand) + '/' + f2(hzF[h].topf) + ' min (Versatz ' + f4(hzF[h].versatz) + ')');
+  });
+  pruefe(fehlerFest === 0, '1c-a feste Haltedauern: Haltezeit von Kandidat und Topf = die Haltedauer, |Versatz| ≤ ' + K.VERSATZ_TOLERANZ + ' (' + fehlerFest + ' Fehler) - ' + txtFest.join(', '));
+  /* (2) der FRUEHE Detektor: eine Kerze nach der Eroeffnung gekauft, bis zum Schluss gehalten => 389 von 390 Minuten */
+  var versatzF = hzF[HS].versatz;
+  pruefe(hzF[HS].kand > 380 && hzF[HS].topf > 150 && hzF[HS].topf < 250 && versatzF > 0.5,
+    '1c-b "Detektor feuert nur in der ersten Stunde": haltezeit_kand ' + f2(hzF[HS].kand) + ' min gegen Topf ' + f2(hzF[HS].topf) + ' min => uhrzeit_versatz ' + f4(versatzF) + ' >> ' + K.UHRZEIT_VERSATZ_MAX);
+  /* (3) das gleichmaessige Gitter: Versatz ≈ 0 */
+  var versatzG = hzG[HS].versatz;
+  pruefe(Math.abs(versatzG) <= K.UHRZEIT_VERSATZ_MAX, '1c-c "Detektor feuert gleichmaessig ueber den Tag": haltezeit_kand ' + f2(hzG[HS].kand) + ' min gegen Topf ' + f2(hzG[HS].topf) + ' min => uhrzeit_versatz ' + f4(versatzG) + ', Betrag ≤ ' + K.UHRZEIT_VERSATZ_MAX + ' - das Tor greift hier NICHT');
+  /* (4) 'naechste Eroeffnung' traegt dieselbe Sitzungs-Haltezeit wie 'bis Schluss' (die Nacht zaehlt null Minuten) */
+  pruefe(Math.abs(hzF[HN].kand - hzF[HS].kand) < 1e-9 && Math.abs(hzF[HN].topf - hzF[HS].topf) < 1e-9 && hzF[HN].nK > 0,
+    '1c-d "naechste Eroeffnung" = "bis Schluss" in Sitzungsminuten (' + f2(hzF[HN].kand) + ' = ' + f2(hzF[HS].kand) + '): die Nachtpause ist fuer jeden Einstieg des Tages gleich lang und kann keinen Versatz erzeugen');
+  /* (5) auswerten.haltezeitWerte gegen die Handrechnung an konstruierten Zellen (nTage 10) */
+  var nT10 = 10, spH = { nTage: nT10, hzn: new Float64Array(K.hzZahl(nT10)), hzs: new Float64Array(K.hzZahl(nT10)), tn: new Float64Array(K.topfZahl(nT10)), thz: new Float64Array(K.topfZahl(nT10)) };
+  for (var t10 = 0; t10 < nT10; t10++) {
+    var ih = K.hzZelle(nT10, 3, 0, HS, t10, 1, 1), it = K.topfZelle(nT10, 1, HS, t10, 1, 1);
+    if (t10 >= 4) { spH.hzn[ih] = 2; spH.hzs[ih] = 2 * 300; }                  // Kandidat: 300 min je Signal ab Tag 4
+    spH.tn[it] = 10; spH.thz[it] = 10 * 200;                                   // Topf: 200 min - auch an den Tagen OHNE Signal
+    var itFremd = K.topfZelle(nT10, 1, HS, t10, 2, 1); spH.tn[itFremd] = 99; spH.thz[itFremd] = 99 * 5;   // andere Klasse: darf nicht einfliessen
+  }
+  var hw = A.haltezeitWerte(spH, { iBes: 4, iReg: 0 }, 3, 0, 1, HS, 'alle');
+  pruefe(hw.nTage === 6 && hw.nKand === 12 && hw.nTopf === 60 && Math.abs(hw.kand - 300) < 1e-12 && Math.abs(hw.topf - 200) < 1e-12 && Math.abs(hw.versatz - 0.5) < 1e-12,
+    '1c-e auswerten.haltezeitWerte: ' + hw.nTage + ' Bestaetigungstage, kand ' + f2(hw.kand) + ' min / topf ' + f2(hw.topf) + ' min => Versatz ' + f4(hw.versatz) + ' = 0,5; der Topf zaehlt NUR die Zellen mit Signal (fremde Klasse und Tage vor der Bestaetigung bleiben draussen)');
+  var hwLeer = A.haltezeitWerte(spH, { iBes: 4, iReg: 0 }, 3, 1, 1, HS, 'alle');
+  pruefe(hwLeer.versatz === null && hwLeer.nKand === 0, '1c-f Gegenrichtung derselben Zellen ist leer => Versatz null (das Tor greift dort nicht, statt blind zu sperren)');
+});
 /* ====================================================================================== */
 abschnitt(2, 'PLACEBO A und B auf der Zufallsreihe ohne Pflanzung (alle 15 Zellen ZR x H)', function () {
   if (!KUNST.roh) { fehlt('2 kein ungepflanzter Lauf'); return; }
@@ -669,13 +761,17 @@ abschnitt(12, 'JAHRESSCHEIBEN gegen Handrechnung, TREND, AKTUALITAETS-TOR und VO
   var jsDuenn = A.jahresscheiben(reihe.filter(function (z) { return ctx.jahr[z.t] >= 2024 || z.t % 40 === 0; }), 1, ctx, '1h');
   pruefe(jsDuenn.filter(function (x) { return x.duenn; }).length === 8 && A.trend(jsDuenn).steigung === null, '12c Jahre mit < ' + K.JAHR_MIN_TAGE + ' Signaltagen sind "zu duenn" (ohne t); Trend mit < ' + K.TREND_MIN_JAHRE + ' vollen Jahren = null');
   /* Aktualitaets-Tor: konstruierte Konfigurationen durch A.urteil */
-  function konf(entU, entT, besU, besT, aktU, aktT, aktN, tor2, luecke) {
+  function konf(entU, entT, besU, besT, aktU, aktT, aktN, tor2, luecke, o) {
+    o = o || {};
     var mk = function (u, t, n) { var se = t ? Math.abs(u / t) : 0.01; return { nTage: n, nSig: n, kKand: 0.0854, brutto: { mittel: u + 0.0854, se: se, obere: u + 0.0854 + 1.96 * se, t: t }, netto: { mittel: u }, nettoF: { mittel: u }, uBrutto: { mittel: u + 0.0854 }, u: { mittel: u, se: se, t: t, mde: 2 * se, hh0: false }, uF: { mittel: u } }; };
     var e = mk(entU, entT, 900), b = mk(besU, besT, 800), a = mk(aktU, aktT, aktN);
-    /* Nachtrag 3: netto_B lueckenbereinigt = netto_B − luecke; t mit derselben se wie die Bestaetigung */
-    var lue = luecke || 0, seB = b.u.se, ber = b.netto.mittel - lue;
-    return { richtung: 'long', h: '1h', alle: { ent: e, bes: b, ohneTopf: 0 }, aktuell: { nTage: aktN, u: a.u, brutto: a.brutto, netto: a.netto }, mdeB: b.u.mde, kKand: 0.0854, tor1: true, tor2: tor2, delta80: 0.02, torAkt: aktN >= K.AKTUELL_MIN_TAGE && aktU > 0 && aktT > K.AKTUELL_T_MIN,
-      luecke: { jeSignal: lue, nSig: 800, nTage: 800, ohneKurs: 0, tagesmittel: { mittel: lue, se: seB, t: seB > 0 ? lue / seB : null, n: 800 } }, nettoBereinigt: { mittel: ber, se: seB, t: seB > 0 ? ber / seB : null, n: 800 },
+    /* Nachtrag 3/4: lueckenbereinigt = Groesse − luecke je Tag; t mit derselben se wie die Bestaetigung.
+     * Das TOR sitzt seit Nachtrag 4.1 auf u; die netto-Variante ist nur noch Spalte. */
+    var lue = luecke || 0, seB = b.u.se, ber = b.netto.mittel - lue, berU = b.u.mittel - lue;
+    return { richtung: 'long', h: o.h || '1h', alle: { ent: e, bes: b, ohneTopf: 0 }, aktuell: { nTage: aktN, u: a.u, brutto: a.brutto, netto: a.netto }, mdeB: b.u.mde, kKand: 0.0854, tor1: true, tor2: tor2, delta80: 0.02, torAkt: aktN >= K.AKTUELL_MIN_TAGE && aktU > 0 && aktT > K.AKTUELL_T_MIN,
+      luecke: { jeSignal: lue, nSig: 800, nTage: 800, ohneKurs: 0, ohneU: 0, tagesmittel: { mittel: lue, se: seB, t: seB > 0 ? lue / seB : null, n: 800 } },
+      nettoBereinigt: { mittel: ber, se: seB, t: seB > 0 ? ber / seB : null, n: 800 }, uBereinigt: { mittel: berU, se: seB, t: seB > 0 ? berU / seB : null, n: 800 },
+      haltezeit: o.haltezeit || { nTage: 800, nKand: 800, nTopf: 9000, kand: 200, topf: 200, versatz: o.versatz == null ? 0 : o.versatz },
       schein: { bv1: { mittel: besU + 0.0854 - 0.05, obere: 0.2 }, standard: { mittel: besU + 0.0854 - 0.23, obere: 0.0 } } };
   }
   var c1 = konf(0.08, 6, 0.06, 5, -0.03, -2.5, 120, true); A.urteil(c1, 1.96, true, true);
@@ -692,13 +788,38 @@ abschnitt(12, 'JAHRESSCHEIBEN gegen Handrechnung, TREND, AKTUALITAETS-TOR und VO
   /* Nachtrag 3.1: das Luecken-Tor. Dieselbe Konfiguration wie 12e, nur mit einer Einstiegsluecke davor. */
   var c6 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.08); A.urteil(c6, 1.96, true, true);
   pruefe(c6.urteil === 'nicht belegt: Einstiegsluecke' && !c6.torLuecke && c6.extremEinstieg && !c6.handelbar && !c6.handelbarSchein.bv1 && !c6.handelbarSchein.standard,
-    '12i "belegt, aber Luecke": netto_B 0,06, luecke_B 0,08 => lueckenbereinigt ' + f4(c6.nettoBereinigt.mittel) + ' (t ' + f2(c6.nettoBereinigt.t) + ') => ' + c6.urteil + ', Vermerk Extrem-Einstieg, nichts handelbar');
+    '12i "belegt, aber Luecke": u_B 0,06, luecke_B 0,08 => u_B lueckenbereinigt ' + f4(c6.uBereinigt.mittel) + ' (t ' + f2(c6.uBereinigt.t) + ') => ' + c6.urteil + ', Vermerk Extrem-Einstieg, nichts handelbar');
   var c7 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.02); A.urteil(c7, 1.96, true, true);
-  pruefe(c7.urteil === 'belegt' && c7.torLuecke && !c7.extremEinstieg && c7.handelbar && Math.abs(c7.nettoBereinigt.mittel - 0.04) < 1e-12,
-    '12j kleine Luecke (0,02 von netto 0,06): lueckenbereinigt ' + f4(c7.nettoBereinigt.mittel) + ', t ' + f2(c7.nettoBereinigt.t) + ' ≥ z_Bonf => ' + c7.urteil + ', handelbar');
-  var c8 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.0); c8.nettoBereinigt = { mittel: 0.06, se: 0.012, t: 1.5, n: 800 }; A.urteil(c8, 1.96, true, true);
-  pruefe(c8.urteil === 'nicht belegt: Einstiegsluecke' && !c8.handelbar, '12k lueckenbereinigt positiv, aber t 1,5 < z_Bonf 1,96 => ' + c8.urteil + ' (das Tor verlangt beides)');
-  pruefe(A.URTEILE.indexOf('nicht belegt: Einstiegsluecke') !== -1 && A.URTEILE.indexOf('belegt') !== -1, '12l "nicht belegt: Einstiegsluecke" steht in der Urteilsliste des Berichts');
+  pruefe(c7.urteil === 'belegt' && c7.torLuecke && !c7.extremEinstieg && c7.handelbar && Math.abs(c7.uBereinigt.mittel - 0.04) < 1e-12,
+    '12j kleine Luecke (0,02 von u_B 0,06): u_B lueckenbereinigt ' + f4(c7.uBereinigt.mittel) + ', t ' + f2(c7.uBereinigt.t) + ' ≥ z_Bonf => ' + c7.urteil + ', handelbar');
+  var c8 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.0); c8.uBereinigt = { mittel: 0.06, se: 0.012, t: 1.5, n: 800 }; A.urteil(c8, 1.96, true, true);
+  pruefe(c8.urteil === 'nicht belegt: Einstiegsluecke' && !c8.handelbar, '12k u_B lueckenbereinigt positiv, aber t 1,5 < z_Bonf 1,96 => ' + c8.urteil + ' (das Tor verlangt beides)');
+  /* NACHTRAG 4.1: das Tor sitzt auf u. Eine Zeile mit gutem u-bereinigten Wert und schlechtem netto-bereinigten
+   * Wert bleibt belegt - die netto-Spalte entscheidet NICHTS mehr (das war Frage 1 der Uebergabe). */
+  var c9 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.02); c9.nettoBereinigt = { mittel: -0.01, se: 0.02, t: -0.5, n: 800 }; A.urteil(c9, 1.96, true, true);
+  pruefe(c9.urteil === 'belegt' && c9.torLuecke && c9.handelbar, '12m NACHTRAG 4.1: netto_B lueckenbereinigt −0,01 (t −0,5), u_B lueckenbereinigt ' + f4(c9.uBereinigt.mittel) + ' (t ' + f2(c9.uBereinigt.t) + ') => ' + c9.urteil + ' - das Tor rechnet auf u, die netto-Spalte entscheidet nicht mehr');
+  var c10 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.0); c10.nettoBereinigt = { mittel: 0.06, se: 0.012, t: 5.0, n: 800 }; c10.uBereinigt = { mittel: -0.01, se: 0.012, t: -0.8, n: 800 }; A.urteil(c10, 1.96, true, true);
+  pruefe(c10.urteil === 'nicht belegt: Einstiegsluecke' && !c10.handelbar && /u_B lueckenbereinigt/.test(c10.grund), '12m2 umgekehrt: netto-bereinigt gut (t 5,0), u-bereinigt −0,01 => ' + c10.urteil);
+  /* NACHTRAG 4.3: das Uhrzeit-Tor - nur fuer "bis Schluss" und "naechste Eroeffnung". */
+  var c11 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.0, { h: 'schluss', versatz: 0.86, haltezeit: { nTage: 800, nKand: 800, nTopf: 9000, kand: 389, topf: 209, versatz: 0.86 } }); A.urteil(c11, 1.96, true, true);
+  pruefe(c11.urteil === 'nicht belegt: Uhrzeit-Versatz' && !c11.torUhrzeit && !c11.handelbar && !c11.handelbarSchein.bv1 && c11.handelbarGrund === 'nein (Uhrzeit-Versatz)',
+    '12n "feuert frueh am Tag", H = bis Schluss: haltezeit_kand 389 min gegen Topf 209 min (Versatz 0,86 > ' + K.UHRZEIT_VERSATZ_MAX + ') => ' + c11.urteil + ', nichts handelbar');
+  var c12 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.0, { h: 'naechste', versatz: 0.05 }); A.urteil(c12, 1.96, true, true);
+  pruefe(c12.urteil === 'belegt' && c12.torUhrzeit, '12n2 kleiner Versatz (0,05), H = naechste Eroeffnung => ' + c12.urteil + ' (das Tor greift nicht)');
+  var c13 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.0, { h: '1h', versatz: 0.86 }); A.urteil(c13, 1.96, true, true);
+  pruefe(c13.urteil === 'belegt' && c13.torUhrzeit && !K.uhrzeitTorGilt('1h'), '12n3 derselbe Versatz 0,86 bei H = 1h => ' + c13.urteil + ' - bei festen Haltedauern gilt das Tor nicht (dort ist der Versatz konstruktionsgemaess 0)');
+  var c14 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.0, { h: 'schluss', haltezeit: { nTage: 0, nKand: 0, nTopf: 0, kand: null, topf: null, versatz: null } }); A.urteil(c14, 1.96, true, true);
+  pruefe(c14.urteil === 'belegt' && c14.torUhrzeit, '12n4 ohne Versatz-Wert (keine Haltezeitzellen) sperrt das Tor nicht blind => ' + c14.urteil);
+  /* NACHTRAG 4.4: Spiegel-Spalten - Diagnose, kein Tor. */
+  var lg = { det: 'W7', zr: '5m', h: 'schluss', hi: HS, richtung: 'long', alle: { bes: { u: { mittel: 0.18, t: 13.0 } } }, uBesTag: [{ t: 1, x: 0.2 }, { t: 2, x: 0.1 }, { t: 3, x: 0.3 }] };
+  var sh = { det: 'W7', zr: '5m', h: 'schluss', hi: HS, richtung: 'short', alle: { bes: { u: { mittel: 0.13, t: 10.4 } } }, uBesTag: [{ t: 2, x: 0.15 }, { t: 3, x: 0.05 }, { t: 9, x: 0.9 }] };
+  var nur = { det: 'W3', zr: '5m', h: 'schluss', hi: HS, richtung: 'long', alle: { bes: { u: { mittel: 0.02, t: 1.0 } } }, uBesTag: [{ t: 1, x: 0.02 }] };
+  A.spiegelSpalten([lg, sh, nur]);
+  var sollSumme = [0.1 + 0.15, 0.3 + 0.05];
+  pruefe(lg.spiegel.u === 0.13 && f2(lg.spiegel.t) === '10.40' && sh.spiegel.u === 0.18 && lg.spiegel.nTage === 2 && Math.abs(lg.spiegel.summe.mittel - mittel(sollSumme)) < 1e-12 && Math.abs(sh.spiegel.summe.mittel - mittel(sollSumme)) < 1e-12,
+    '12o Spiegel-Spalten: u_spiegel(long) = u_B(short) = ' + f4(lg.spiegel.u) + ' und umgekehrt; u_summe ' + f4(lg.spiegel.summe.mittel) + ' = Handrechnung ueber die ' + lg.spiegel.nTage + ' gemeinsamen Tage (Tag 1 und Tag 9 fallen raus)');
+  pruefe(nur.spiegel.vorhanden === false && nur.spiegel.u === null && lg.uBesTag === undefined, '12o2 ohne Gegenrichtung (W3 nur long) bleiben die Spiegel-Spalten leer; die Tagesreihen werden nach der Rechnung weggeraeumt');
+  pruefe(A.URTEILE.indexOf('nicht belegt: Einstiegsluecke') !== -1 && A.URTEILE.indexOf('nicht belegt: Uhrzeit-Versatz') !== -1 && A.URTEILE.indexOf('belegt') !== -1, '12l "nicht belegt: Einstiegsluecke" und "nicht belegt: Uhrzeit-Versatz" stehen in der Urteilsliste des Berichts');
 });
 
 /* ====================================================================================== */
