@@ -1,0 +1,9 @@
+pilot*/_zellen.bin
+pilot*/_zellen.bin.tmp
+pilot*/_fortschritt.json.tmp
+pilot*/_lauf.log
+pilot*/pilot-ergebnis.json
+probe*/
+voll*/
+nacht-*.log
+pilot-*.stdout
