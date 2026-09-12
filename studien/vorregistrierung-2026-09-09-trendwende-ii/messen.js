@@ -472,7 +472,8 @@ function lauf(a) {
   if (a.reihen) { var soll = new Set(a.reihen); reihen = alle.filter(function (R) { return soll.has(R.reihe); }); var fehlen = a.reihen.filter(function (r) { return !alle.some(function (R) { return R.reihe === r; }); }); if (fehlen.length) protokoll(ordner, 'WARNUNG: verlangte Reihen ohne Balken/keine Aktie: ' + fehlen.join(' ')); }
   if (a.teil) reihen = reihen.filter(function (R, i) { return i % a.teil.n === a.teil.k; });
   var dets = K.detektoren();
-  protokoll(ordner, 'START ' + K.KONFIG_KENNUNG + ' | ' + reihen.length + ' Reihen (' + alle.length + ' Aktien, ausgeschlossen ' + JSON.stringify(alle.ausgeschlossen) + ') | ' + dets.length + ' Detektoren | ' + K.N_H + ' Haltedauern | Tage ' + kal.tage.length + ' | Bestaetigung ab ' + kal.bestaetigungAb + (a.reihen ? ' | PILOT' : '') + (a.teil ? ' | Teil ' + a.teil.k + '/' + a.teil.n : ''));
+  protokoll(ordner, 'START ' + K.KONFIG_KENNUNG + ' | ' + reihen.length + ' Reihen (' + alle.length + ' Aktien, ausgeschlossen ' + JSON.stringify(alle.ausgeschlossen) + ') | ' + dets.length + ' Detektoren | ' + K.N_H + ' Haltedauern | Tage ' + kal.tage.length + ' | Bestaetigung ab ' + kal.bestaetigungAb + (a.reihen ? ' | PILOT' : '') + (a.teil ? ' | Teil ' + a.teil.k + '/' + a.teil.n : '')
+    + ' | verzoegerter Einstieg: ' + (K.VERZOEGERT_AN ? 'k = ' + K.VERZOEGERT_K.join(', ') : 'AUS') + ' (TW2_VERZOEGERT=' + (process.env.TW2_VERZOEGERT == null ? '<nicht gesetzt>' : process.env.TW2_VERZOEGERT) + ')');
   var stop = false;
   process.on('SIGINT', function () { stop = true; protokoll(ordner, 'SIGINT - nach dieser Datei wird gesichert und beendet'); });
   var seitCheckpoint = 0, tStart = Date.now();

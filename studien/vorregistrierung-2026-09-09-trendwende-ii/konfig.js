@@ -132,9 +132,26 @@ var N_KONFIG = (2 * N_DET - Object.keys(NUR_LONG).length) * N_ZR * N_H;   // 225
  * Kennung v3 angefasst wird. Vier Felder je Zelle: n, Σ r, Zahl der Haltezeiten, Σ Haltezeit (Sitzungsminuten).
  * Der Schalter ist fuer einen VOLLAUF AUS: nacht.cmd setzt TW2_VERZOEGERT=0 (je k kostet die Art so viel wie eine
  * ganze Zellenart - die Vorrechnung steht im Bericht). */
-var VERZOEGERT_K = [1, 5];
-var VERZOEGERT_AN = String(process.env.TW2_VERZOEGERT == null ? '1' : process.env.TW2_VERZOEGERT) !== '0';
-var N_VZ = VERZOEGERT_AN ? VERZOEGERT_K.length : 0;
+/* NACHTRAG 5.1c: TW2_VERZOEGERT nennt die k-Werte selbst. Nicht gesetzt => [1,5] (wie Pilot 4), '0' => aus,
+ * sonst eine Komma-Liste ganzer Zahlen > 0, z. B. '1' oder '1,5'. Jeder andere Wert ist ein HARTER ABBRUCH -
+ * nie stillschweigend etwas anderes messen als bestellt. (cmd.exe trennt am Komma: in nacht.cmd quoten.) */
+function verzoegertAus(roh) {
+  if (roh == null || roh === '') return [1, 5];
+  var s = String(roh).trim();
+  if (s === '0') return [];
+  var teile = s.split(','), ks = [];
+  for (var i = 0; i < teile.length; i++) {
+    var x = teile[i].trim();
+    if (!/^[1-9][0-9]*$/.test(x)) throw new Error('TW2_VERZOEGERT="' + s + '" ist ungueltig: "' + x + '" ist keine ganze Zahl > 0. Erlaubt: leer (=1,5), 0 (aus) oder eine Komma-Liste wie 1 oder 1,5. Abbruch, nichts gerechnet.');
+    var v = +x;
+    if (ks.indexOf(v) !== -1) throw new Error('TW2_VERZOEGERT="' + s + '" ist ungueltig: k = ' + v + ' steht doppelt. Abbruch, nichts gerechnet.');
+    ks.push(v);
+  }
+  return ks;
+}
+var VERZOEGERT_K = verzoegertAus(process.env.TW2_VERZOEGERT);
+var VERZOEGERT_AN = VERZOEGERT_K.length > 0;
+var N_VZ = VERZOEGERT_K.length;
 function vzZelle(nTage, vk, kand, dirIdx, h, tag, klasse, lebend) { return ((((((vk * N_KAND + kand) * 2 + dirIdx) * N_H + h) * nTage + tag) * N_K + klasse) * 2) + lebend; }
 function vzZahl(nTage) { return N_VZ * N_KAND * 2 * N_H * nTage * N_K * 2; }
 
@@ -158,6 +175,6 @@ module.exports = {
   kalender: kalender,
   N_DET: N_DET, N_ZR: N_ZR, N_H: N_H, N_K: N_K, N_KAND: N_KAND, N_REIHEN: N_REIHEN, ARTEN: ARTEN, N_KONFIG: N_KONFIG,
   kandIndex: kandIndex, reiheIndex: reiheIndex, zelle: zelle, zellenZahl: zellenZahl, topfZelle: topfZelle, topfZahl: topfZahl, kursZelle: kursZelle, kursZahl: kursZahl, hzZelle: hzZelle, hzZahl: hzZahl,
-  VERZOEGERT_K: VERZOEGERT_K, VERZOEGERT_AN: VERZOEGERT_AN, N_VZ: N_VZ, vzZelle: vzZelle, vzZahl: vzZahl,
+  VERZOEGERT_K: VERZOEGERT_K, VERZOEGERT_AN: VERZOEGERT_AN, N_VZ: N_VZ, vzZelle: vzZelle, vzZahl: vzZahl, verzoegertAus: verzoegertAus,
   KONFIG_KENNUNG: KONFIG_KENNUNG,
 };

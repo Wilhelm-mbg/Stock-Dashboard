@@ -20,8 +20,10 @@ rem
 rem  Diese Datei startet NICHTS von selbst - der PM legt die Aufgabe an, wenn die Platte frei ist.
 rem ===================================================================================
 
-rem  NACHTRAG 5 (VORREGISTRIERUNG §20.1): die Zellen des verzoegerten Einstiegs sind im VOLLAUF AUS.
-set "TW2_VERZOEGERT=0"
+rem  NACHTRAG 5.1 (VORREGISTRIERUNG §21): im Vollauf laeuft k = 1 MIT, k = 5 nicht (Entscheid des PM nach Pilot 4).
+rem  Der Wert MUSS gequotet stehen - cmd.exe trennt sonst am Komma. "0" schaltet ab, "1,5" nimmt beide k.
+rem  Welche k tatsaechlich laufen, steht in der START-Zeile des Protokolls.
+set "TW2_VERZOEGERT=1"
 
 cd /d "%~dp0..\.."
 

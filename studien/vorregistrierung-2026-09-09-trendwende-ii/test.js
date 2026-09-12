@@ -251,7 +251,8 @@ abschnitt(0, 'Zellendecoder und Layout', function () {
   }
   pruefe(fehler === 0, '0a Decoder invertiert K.zelle/K.reiheIndex/K.kandIndex (2000 Stichproben, ' + fehler + ' Fehler)');
   pruefe(K.N_DET === 8 && K.N_H === 5 && K.N_KAND === 24 && K.N_REIHEN === 72 && K.N_KONFIG === 225 && K.H_UEBERNACHT === 4 && K.HALTEDAUERN[4].uebernacht === true, '0b Layout (Nachtrag 3): 8 Detektoren, 5 Haltedauern (naechste = Uebernacht), 24 Kandidaten, 72 Zellenreihen, 225 Konfigurationen');
-  pruefe(/^trendwende-ii-2026-09-09\/v4\/8x3x2x5x4x3\+kurs\+luecke\+haltezeit\+schein\+jahre(\+verzoegert1-5)?$/.test(K.KONFIG_KENNUNG) && (K.VERZOEGERT_AN === /verzoegert/.test(K.KONFIG_KENNUNG)), '0c Kennung ' + K.KONFIG_KENNUNG);
+  var sollSuffix = K.VERZOEGERT_AN ? '+verzoegert' + K.VERZOEGERT_K.join('-') : '';
+  pruefe(K.KONFIG_KENNUNG === 'trendwende-ii-2026-09-09/v4/8x3x2x5x4x3+kurs+luecke+haltezeit+schein+jahre' + sollSuffix, '0c Kennung ' + K.KONFIG_KENNUNG + ' (k = ' + (K.VERZOEGERT_AN ? K.VERZOEGERT_K.join(', ') : 'aus') + ')');
   var mb = (K.zellenZahl(nTage) * 4 + K.topfZahl(nTage) * 4 + K.kursZahl(nTage) * 4 + K.hzZahl(nTage) * 2) * 8 / 1e6;
   pruefe(mb > 450 && mb < 750, '0d Zellenspeicher ' + mb.toFixed(0) + ' MB je Prozess (Registrierung §10, Nachtrag 4: ≈ 620)');
   var sp0 = new M.Speicher(10), fehlerK = 0, rng2 = rngNeu(7);
@@ -940,42 +941,50 @@ abschnitt(16, 'VERZOEGERTER EINSTIEG (Nachtrag 5): Sprung in der Einstiegskerze,
   var mS = messe(gepflanzt, [fest]), kandS = K.kandIndex(0, 0);
   var sollVoll = G / (1 - G) * 100, fehlerS = [], okS = true;
   [H15, H1H, H3H, HS, HN].forEach(function (h) {
-    var a0 = k0Aus(mS.eintraege, kandS, 0, h), a1 = vzAus(mS.delta, 0, kandS, 0, h), a5 = vzAus(mS.delta, 1, kandS, 0, h);
+    var a0 = k0Aus(mS.eintraege, kandS, 0, h);
     if (!(a0.n > 0 && Math.abs(a0.mittel - sollVoll) < 1e-9)) { okS = false; fehlerS.push(K.HALTEDAUERN[h].key + ' k0 ' + f4(a0.mittel)); }
-    if (!(a1.n > 0 && Math.abs(a1.mittel) < 1e-12)) { okS = false; fehlerS.push(K.HALTEDAUERN[h].key + ' k1 ' + f4(a1.mittel)); }
-    if (!(a5.n > 0 && Math.abs(a5.mittel) < 1e-12)) { okS = false; fehlerS.push(K.HALTEDAUERN[h].key + ' k5 ' + f4(a5.mittel)); }
+    K.VERZOEGERT_K.forEach(function (kk, vk) {
+      var a = vzAus(mS.delta, vk, kandS, 0, h);
+      if (!(a.n > 0 && Math.abs(a.mittel) < 1e-12)) { okS = false; fehlerS.push(K.HALTEDAUERN[h].key + ' k' + kk + ' ' + f4(a.mittel)); }
+    });
   });
-  pruefe(okS, '16b Sprung von ' + (G * 100) + ' % in der Einstiegskerze (1m, alle fuenf Haltedauern): k = 0 zeigt ' + f4(sollVoll) + ' Pp, k = 1 und k = 5 zeigen exakt 0' + (fehlerS.length ? ' | ABWEICHUNG ' + fehlerS.join(', ') : ''));
+  pruefe(okS, '16b Sprung von ' + (G * 100) + ' % in der Einstiegskerze (1m, alle fuenf Haltedauern): k = 0 zeigt ' + f4(sollVoll) + ' Pp, k = ' + K.VERZOEGERT_K.join(' und k = ') + ' zeigen exakt 0' + (fehlerS.length ? ' | ABWEICHUNG ' + fehlerS.join(', ') : ''));
 
   /* --- 16c: konstante Drift: k = 1 hat genau eine Kerze weniger Drift --- */
   var Dk = 0.00002;
   var drift = reiheBauen(tage, Dk, null);
   var mD = messe(drift, [fest]), fehlerD = [], okD = true;
   [H15, H1H, H3H, HS, HN].forEach(function (h) {
-    var a0 = k0Aus(mD.eintraege, kandS, 0, h), a1 = vzAus(mD.delta, 0, kandS, 0, h), a5 = vzAus(mD.delta, 1, kandS, 0, h);
-    var v1 = (1 + a0.mittel / 100) / (1 + a1.mittel / 100), v5 = (1 + a0.mittel / 100) / (1 + a5.mittel / 100);
-    if (!(a0.n > 0 && a1.n > 0 && Math.abs(v1 - (1 + Dk)) < 1e-12)) { okD = false; fehlerD.push(K.HALTEDAUERN[h].key + ' k1 ' + (v1 - 1).toExponential(3)); }
-    if (!(a5.n > 0 && Math.abs(v5 - Math.pow(1 + Dk, 5)) < 1e-12)) { okD = false; fehlerD.push(K.HALTEDAUERN[h].key + ' k5 ' + (v5 - 1).toExponential(3)); }
+    var a0 = k0Aus(mD.eintraege, kandS, 0, h);
+    if (!(a0.n > 0)) { okD = false; fehlerD.push(K.HALTEDAUERN[h].key + ' k0 leer'); return; }
+    K.VERZOEGERT_K.forEach(function (kk, vk) {
+      var a = vzAus(mD.delta, vk, kandS, 0, h), v = (1 + a0.mittel / 100) / (1 + a.mittel / 100);
+      if (!(a.n > 0 && Math.abs(v - Math.pow(1 + Dk, kk)) < 1e-12)) { okD = false; fehlerD.push(K.HALTEDAUERN[h].key + ' k' + kk + ' ' + (v - 1).toExponential(3)); }
+    });
   });
-  pruefe(okD, '16c konstante Drift ' + Dk + ' je Kerze: (1+r_k0)/(1+r_k1) = 1+d und (1+r_k0)/(1+r_k5) = (1+d)^5, exakt, alle fuenf Haltedauern' + (fehlerD.length ? ' | ABWEICHUNG ' + fehlerD.join(', ') : ''));
+  pruefe(okD, '16c konstante Drift ' + Dk + ' je Kerze: (1+r_k0)/(1+r_k' + K.VERZOEGERT_K.join(') bzw. (1+r_k') + ') = (1+d)^k, exakt, alle fuenf Haltedauern' + (fehlerD.length ? ' | ABWEICHUNG ' + fehlerD.join(', ') : ''));
 
   /* --- 16d: Haltezeit sinkt um genau k Kerzen (feste Haltedauern) --- */
   var hzF = [], okH = true;
   [[H15, 15], [H1H, 60], [H3H, 180]].forEach(function (x) {
-    var a1 = vzAus(mD.delta, 0, kandS, 0, x[0]), a5 = vzAus(mD.delta, 1, kandS, 0, x[0]);
-    if (!(Math.abs(a1.hz - (x[1] - 1)) < 1e-9 && Math.abs(a5.hz - (x[1] - 5)) < 1e-9)) okH = false;
-    hzF.push(K.HALTEDAUERN[x[0]].key + ' k1 ' + f4(a1.hz) + ' k5 ' + f4(a5.hz));
+    K.VERZOEGERT_K.forEach(function (kk, vk) {
+      var a = vzAus(mD.delta, vk, kandS, 0, x[0]);
+      if (!(Math.abs(a.hz - (x[1] - kk)) < 1e-9)) okH = false;
+      hzF.push(K.HALTEDAUERN[x[0]].key + ' k' + kk + ' ' + f4(a.hz));
+    });
   });
   pruefe(okH, '16d haltezeit_kand(k) = haltezeit_kand(0) − k Kerzen (1m): ' + hzF.join(' · '));
 
   /* --- 16e: "entfaellt" - 15m-Zeitrahmen mit H = 15m laesst bei k = 1 keine Zelle zu --- */
   var kand15 = K.kandIndex(0, 2);                      // derselbe Detektor auf dem 15m-Zeitrahmen
-  var zellen15 = vzAus(mD.delta, 0, kand15, 0, H15).n, zellen15k5 = vzAus(mD.delta, 1, kand15, 0, H15).n;
   var ent = mD.Z.vzEntfaellt || {};
-  var e1 = ent['k1|15m|15m|aufOderHinterAusstieg'] || 0, e5 = ent['k5|15m|15m|aufOderHinterAusstieg'] || 0;
-  var k0Zellen15 = k0Aus(mD.eintraege, kand15, 0, H15).n;
-  pruefe(zellen15 === 0 && zellen15k5 === 0 && e1 === k0Zellen15 && e5 === k0Zellen15 && k0Zellen15 > 0,
-    '16e entfaellt: 15m-Zeitrahmen mit H = 15m gibt bei k = 1 und k = 5 keine Zelle (0 und 0), gezaehlt als aufOderHinterAusstieg ' + e1 + ' / ' + e5 + ' = ' + k0Zellen15 + ' Signale bei k = 0');
+  var k0Zellen15 = k0Aus(mD.eintraege, kand15, 0, H15).n, okE = k0Zellen15 > 0, txtE = [];
+  K.VERZOEGERT_K.forEach(function (kk, vk) {
+    var n = vzAus(mD.delta, vk, kand15, 0, H15).n, e = ent['k' + kk + '|15m|15m|aufOderHinterAusstieg'] || 0;
+    if (!(n === 0 && e === k0Zellen15)) okE = false;
+    txtE.push('k' + kk + ': ' + n + ' Zellen, ' + e + ' entfallen');
+  });
+  pruefe(okE, '16e entfaellt: 15m-Zeitrahmen mit H = 15m gibt keine Zelle (' + txtE.join(' · ') + ') bei ' + k0Zellen15 + ' Signalen mit k = 0');
   var e1m = ent['k1|1m|15m|aufOderHinterAusstieg'] || 0;
   pruefe(e1m === 0 && vzAus(mD.delta, 0, kandS, 0, H15).n === k0Aus(mD.eintraege, kandS, 0, H15).n,
     '16e2 auf 1m entfaellt bei H = 15m nichts (' + e1m + ' Faelle); die Zellenzahl ist dieselbe wie bei k = 0');
@@ -1079,6 +1088,45 @@ abschnitt(16, 'VERZOEGERTER EINSTIEG (Nachtrag 5): Sprung in der Einstiegskerze,
   var spV = new M.Speicher(10);
   pruefe(fehlerI === 0 && spV.vzn.length === K.vzZahl(10) && spV.vzs.length === K.vzZahl(10) && spV.vzhn.length === K.vzZahl(10) && spV.vzhs.length === K.vzZahl(10) && K.vzZahl(10) === K.N_VZ * K.hzZahl(10),
     '16h vzZelle eineindeutig (800 Ziehungen, 0 Kollisionen); vier Felder der Laenge ' + K.vzZahl(10) + ' = ' + K.N_VZ + ' x hzZahl');
+});
+
+/* ====================================================================================== */
+abschnitt(17, 'SCHALTER TW2_VERZOEGERT (Nachtrag 5.1): welche k laufen, steht in Kennung und Protokoll - Ungueltiges bricht ab', function () {
+  /* Jeder Wert in einem EIGENEN Prozess: die k-Liste wird beim Laden von konfig.js festgelegt. */
+  function mitWert(v) {
+    var umg = {}; Object.keys(process.env).forEach(function (k) { umg[k] = process.env[k]; });
+    if (v === null) delete umg.TW2_VERZOEGERT; else umg.TW2_VERZOEGERT = v;
+    var skript = "var K = require(process.argv[1]);" +
+      "process.stdout.write(JSON.stringify({ k: K.VERZOEGERT_K, an: K.VERZOEGERT_AN, n: K.N_VZ, kennung: K.KONFIG_KENNUNG, zahl: K.vzZahl(10) }));";
+    try {
+      var aus = cp.execFileSync(process.execPath, ['-e', skript, path.join(K.HIER, 'konfig.js')], { env: umg, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+      return { ok: true, wert: JSON.parse(aus) };
+    } catch (e) {
+      return { ok: false, meldung: String(e.stderr || e.message) };
+    }
+  }
+  var nicht = mitWert(null), aus0 = mitWert('0'), nur1 = mitWert('1'), beide = mitWert('1,5');
+  pruefe(nicht.ok && JSON.stringify(nicht.wert.k) === '[1,5]' && nicht.wert.n === 2 && /\+verzoegert1-5$/.test(nicht.wert.kennung),
+    '17a TW2_VERZOEGERT nicht gesetzt => k = [1,5], Kennung ' + nicht.wert.kennung.slice(-14));
+  pruefe(aus0.ok && JSON.stringify(aus0.wert.k) === '[]' && aus0.wert.an === false && aus0.wert.zahl === 0 && !/verzoegert/.test(aus0.wert.kennung),
+    '17b TW2_VERZOEGERT=0 => aus, 0 Zellen, Kennung ohne +verzoegert (' + (aus0.ok ? aus0.wert.kennung.slice(-20) : 'FEHLER') + ')');
+  pruefe(nur1.ok && JSON.stringify(nur1.wert.k) === '[1]' && nur1.wert.n === 1 && /\+verzoegert1$/.test(nur1.wert.kennung) && nur1.wert.zahl === beide.wert.zahl / 2,
+    '17c TW2_VERZOEGERT=1 => k = [1], N_VZ 1, Kennung endet auf +verzoegert1, halb so viele Zellen wie bei [1,5]');
+  pruefe(beide.ok && JSON.stringify(beide.wert.k) === '[1,5]' && /\+verzoegert1-5$/.test(beide.wert.kennung),
+    '17d TW2_VERZOEGERT=1,5 => k = [1,5], Kennung endet auf +verzoegert1-5 (cmd.exe-Kommafalle: der Wert muss gequotet sein)');
+  var schlecht = ['2x', '1,1', '-1', '1,5,0', '1.5', ' '].map(mitWert);
+  var alleAb = schlecht.every(function (s) { return !s.ok && /ungueltig/.test(s.meldung) && /Abbruch, nichts gerechnet/.test(s.meldung); });
+  pruefe(alleAb, '17e ungueltige Werte (2x, 1,1, -1, 1,5,0, 1.5, Leerzeichen) brechen HART ab und nennen den Grund - nie stillschweigend etwas anderes');
+  /* nacht.cmd: der Vollauf faehrt k = 1, der Wert ist gequotet, und das Protokoll weist die k aus. */
+  var nacht = fs.readFileSync(path.join(K.HIER, 'nacht.cmd'), 'utf8');
+  var mess = fs.readFileSync(path.join(K.HIER, 'messen.js'), 'utf8');
+  pruefe(/set "TW2_VERZOEGERT=1"/.test(nacht) && !/set "TW2_VERZOEGERT=0"/.test(nacht),
+    '17f nacht.cmd setzt TW2_VERZOEGERT=1 (gequotet) - der Vollauf faehrt k = 1 mit, k = 5 nicht');
+  pruefe(/verzoegerter Einstieg: /.test(mess) && /K\.VERZOEGERT_K\.join/.test(mess),
+    '17g die START-Zeile des Protokolls weist aus, welche k tatsaechlich laufen');
+  /* Die Hauptzellen haengen NICHT am Schalter: Zellen-, Topf-, Kurs- und Haltezeitgroessen sind in allen drei Faellen gleich. */
+  var gl = mitWert('0').ok && mitWert('1').ok;
+  pruefe(gl && K.zellenZahl(10) > 0, '17h die Groessen der Haupttafel haengen nicht am Schalter (Zellen, Topf, Kurs, Haltezeit unveraendert)');
 });
 /* ====================================================================================== */
 console.log('\n' + ERG.ok + ' OK, ' + ERG.fehlt + ' FEHLT, ' + ERG.ueber + ' UEBERSPRUNGEN');
