@@ -20,6 +20,9 @@ rem
 rem  Diese Datei startet NICHTS von selbst - der PM legt die Aufgabe an, wenn die Platte frei ist.
 rem ===================================================================================
 
+rem  NACHTRAG 5 (VORREGISTRIERUNG §20.1): die Zellen des verzoegerten Einstiegs sind im VOLLAUF AUS.
+set "TW2_VERZOEGERT=0"
+
 cd /d "%~dp0..\.."
 
 set "TEIL=%~1"

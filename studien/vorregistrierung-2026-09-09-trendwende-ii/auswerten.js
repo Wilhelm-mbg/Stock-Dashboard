@@ -236,6 +236,70 @@ function haltezeitWerte(sp, ctx, kand, dirIdx, zi, h, sicht) {
   aus.versatz = (aus.kand != null && aus.topf > 0) ? aus.kand / aus.topf - 1 : null;
   return aus;
 }
+/* ---------- Verzoegerter Einstieg (NACHTRAG 5, 12.09.2026, §20) ----------
+ * Eigene Zellen je (k, Kandidat, Richtung, Haltedauer, Tag, Klasse, lebend) mit n, Σr, Zahl Haltezeiten, Σ Haltezeit.
+ * Der AUSSTIEG ist derselbe wie bei k = 0; Placebo B und Topf bleiben bei k = 0 (§20.1). Entscheidend ist Kand−PlB. */
+function vzReihe(sp, vk, kand, dirIdx, h, zi, sicht) {
+  var nTage = sp.nTage, dir = dirIdx === 0 ? 1 : -1, aus = [], lVon = sicht === 'lebend' ? 1 : 0;
+  aus.nHzBes = 0; aus.sHzBes = 0;
+  if (!sp.vzn || !sp.vzn.length) { aus.leer = true; return aus; }
+  var basisZ = ((((vk * K.N_KAND + kand) * 2 + dirIdx) * K.N_H) + h) * nTage, basisT = (zi * K.N_H + h) * nTage;
+  for (var t = 0; t < nTage; t++) {
+    var bz = (basisZ + t) * K.N_K * 2, bt = (basisT + t) * K.N_K * 2;
+    var n = 0, s = 0, nh = 0, mN = 0, mS = 0, nhM = 0, nHz = 0, sHz = 0;
+    for (var k = 0; k < K.N_K; k++) for (var l = lVon; l <= 1; l++) {
+      var i = bz + k * 2 + l, nz = sp.vzn[i];
+      if (!(nz > 0)) continue;
+      n += nz; s += sp.vzs[i]; nh += nz * K.KLASSEN[k].huerde; nHz += sp.vzhn[i]; sHz += sp.vzhs[i];
+      var it = bt + k * 2 + l;
+      if (sp.tn[it] > 0) { mN += nz; mS += sp.vzs[i] - dir * nz * sp.ts[it] / sp.tn[it]; nhM += nz * K.KLASSEN[k].huerde; }
+    }
+    if (!(n > 0)) continue;
+    aus.push({ t: t, n: n, s: s, nh: nh, mN: mN, mS: mS, nhM: nhM, nHz: nHz, sHz: sHz, roh: s / n, u: mN > 0 ? (mS - nhM) / mN : NaN });
+  }
+  return aus;
+}
+/** Eine k-Zeile in der Bestaetigung: brutto_B, u_B, t_B, Kand−PlB (gepaart gegen das UNVERZOEGERTE Placebo B) und
+ *  haltezeit_kand. `entfaellt` ist wahr, wenn die Zellen leer sind (§20.1). */
+function verzoegertZeile(sp, ctx, vk, dI, zi, dirIdx, h, Lag) {
+  var kand = K.kandIndex(dI, zi), reihe = vzReihe(sp, vk, kand, dirIdx, h, zi, 'alle');
+  var plB = tagesreihe(sp, K.reiheIndex(kand, 2), dirIdx, h, zi, 'alle', null), jeTagB = {};
+  plB.forEach(function (z) { jeTagB[z.t] = z.roh; });
+  var bes = reihe.filter(nurBes(ctx)), nHz = 0, sHz = 0, nSig = 0;
+  bes.forEach(function (z) { nHz += z.nHz; sHz += z.sHz; nSig += z.n; });
+  var paare = reihe.filter(function (z) { return jeTagB[z.t] !== undefined; }).map(function (z) { return { t: z.t, x: z.roh - jeTagB[z.t] }; }).filter(nurBes(ctx));
+  return { k: K.VERZOEGERT_K[vk], entfaellt: bes.length === 0, nTage: bes.length, nSig: nSig,
+    brutto: momenteVon(bes, 'roh', Lag), u: momenteVon(bes, 'u', Lag), kandPlB: momente(paare, Lag),
+    haltezeit: nHz > 0 ? sHz / nHz : null };
+}
+/** Die Tafel des Auftrags: alle W7-Zeilen, alle Kandidatenzeilen (k1) der uebrigen Detektoren, die belegten Zeilen.
+ *  Je Zeile k = 0 (aus der Haupttafel, unveraendert) und je ein Eintrag fuer jedes registrierte k. */
+function verzoegertTafel(sp, ctx, konf) {
+  if (!K.VERZOEGERT_AN || !sp.vzn || !sp.vzn.length) return [];
+  return konf.filter(function (c) { return c.det === 'W7' || c.tor1 || c.urteil === 'belegt'; }).map(function (c) {
+    var Lag = K.lagVon(c.hi), b = c.alle.bes;
+    var k0 = { k: 0, entfaellt: false, nTage: b.nTage, nSig: b.nSig, brutto: b.brutto, u: b.u, kandPlB: c.alle.placeboB.bes, haltezeit: (c.haltezeit || {}).kand };
+    var stufen = [k0];
+    for (var vk = 0; vk < K.VERZOEGERT_K.length; vk++) stufen.push(verzoegertZeile(sp, ctx, vk, c.dI, c.zi, c.dirIdx, c.hi, Lag));
+    /* Vorregistrierte Entscheidungsregel (§20.3), mechanisch angewandt - die Deutung steht im Bericht. */
+    var d0 = k0.kandPlB ? k0.kandPlB.mittel : null, dLetzt = stufen[stufen.length - 1].kandPlB, fall = 'ohne Wert';
+    if (d0 != null && dLetzt && dLetzt.mittel != null && !stufen[stufen.length - 1].entfaellt) {
+      var anteil = d0 === 0 ? null : dLetzt.mittel / d0;
+      if (anteil == null) fall = 'ohne Wert';
+      else if (d0 <= 0) fall = 'Bezugswert nicht positiv';
+      else if (dLetzt.mittel <= d0 / 3) fall = 'Einstiegskurs traegt';
+      else if (dLetzt.mittel >= 2 * d0 / 3) fall = 'Einstiegskurs widerlegt';
+      else fall = 'dazwischen';
+      var s1 = stufen[1];
+      var schrittGross = (!s1.entfaellt && s1.kandPlB && s1.kandPlB.mittel != null) ? ((d0 - s1.kandPlB.mittel) >= Math.max.apply(null, stufen.slice(1).map(function (x, q) {
+        var vor = stufen[q].kandPlB, jetzt = x.kandPlB; return (!x.entfaellt && vor && jetzt && vor.mittel != null && jetzt.mittel != null) ? (vor.mittel - jetzt.mittel) : -Infinity; }))) : null;
+      c.vzAnteil = anteil; c.vzSchrittGross = schrittGross;
+      if (fall === 'Einstiegskurs traegt' && schrittGross === false) fall = 'Einstiegskurs traegt (aber groesster Schritt nicht bei k=1)';
+    }
+    c.vzFall = fall;
+    return { det: c.det, zr: c.zr, richtung: c.richtung, h: c.h, urteil: c.urteil, tor1: c.tor1, stufen: stufen, anteil: c.vzAnteil == null ? null : c.vzAnteil, fall: fall };
+  });
+}
 /** Spiegel-Spalten (NACHTRAG 4.4): Werte der Gegenrichtung und das Tagesmittel von (u_long,t + u_short,t) ueber die
  *  Tage, an denen BEIDE Richtungen ein Signal haben. REINE DIAGNOSE - daraus folgt kein Urteil. Verbraucht `uBesTag`
  *  (die Tagesreihe von u in der Bestaetigung) und raeumt sie danach weg, damit die JSON-Ausgabe nicht aufblaeht. */
@@ -439,7 +503,10 @@ function auswerte(sp, F, kal, regimeInfo) {
   zahlen.hh0 = konf.filter(function (c) { return c.alle.bes.u.hh0; }).length;
   zahlen.trendPositivT2 = konf.filter(function (c) { return c.trend.t != null && c.trend.t >= 2; }).length;
   zahlen.trendNegativT2 = konf.filter(function (c) { return c.trend.t != null && c.trend.t <= -2; }).length;
-  return { ctx: { iBes: ctx.iBes, iReg: ctx.iReg, nTage: ctx.nTage, aktuellAb: ctx.aktuellAb }, konf: konf, kontrollen: kontrollen, zahlen: zahlen, ueberleben: ueberleben(konf, F), signalanteil: signalanteil(F), klassenmix: klassenmix(sp, ctx),
+  var vzTafel = verzoegertTafel(sp, ctx, konf);            // NACHTRAG 5 (§20)
+  zahlen.vzZeilen = vzTafel.length;
+  zahlen.vzFaelle = {}; vzTafel.forEach(function (r) { zahlen.vzFaelle[r.fall] = (zahlen.vzFaelle[r.fall] || 0) + 1; });
+  return { vzTafel: vzTafel, ctx: { iBes: ctx.iBes, iReg: ctx.iReg, nTage: ctx.nTage, aktuellAb: ctx.aktuellAb }, konf: konf, kontrollen: kontrollen, zahlen: zahlen, ueberleben: ueberleben(konf, F), signalanteil: signalanteil(F), klassenmix: klassenmix(sp, ctx),
     seB: seBGegenPlan(konf, z1), centBoden: centBoden(sp, kal), jahresKurz: jahresKurz(konf), regimeInfo: regimeInfo ? { spyTage: regimeInfo.spyTage, ueber: regimeInfo.ueber, unter: regimeInfo.unter, unbekannt: regimeInfo.unbekannt, dateien: regimeInfo.dateien } : null };
 }
 /** Urteil (§7): Groessenaussagen fuer alle mit >= 30 Bes-Tagen; Wort; Herabstufungen; handelbar; handelbar mit Schein; Vorwaertstest. */
@@ -677,6 +744,27 @@ function markdown(E, F, herkunft, kal, pilot) {
     [c, g].forEach(function (x) { var hz = x.haltezeit || {}; beide.push([x.det, x.zr, x.richtung, x.h, pp(x.alle.bes.u.mittel), tw(x.alle.bes.u.t), tw(hz.kand), tw(hz.topf), v3(hz.versatz), K.uhrzeitTorGilt(x.h) ? jn(x.torUhrzeit) : 'gilt nicht', x.urteil]); });
   });
   o.push(beide.length ? tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'u_B', 't_B', 'haltezeit_kand (min)', 'haltezeit_topf (min)', 'uhrzeit_versatz', 'TorUhrzeit', 'Urteil'], beide) : 'Keine Zelle ist in beiden Richtungen positiv mit t ≥ 2.\n');
+  /* ---- 3d. Verzoegerter Einstieg (NACHTRAG 5, §20) ---- */
+  var vzT = E.vzTafel || [];
+  o.push('### 3d. Verzoegerter Einstieg (Nachtrag 5, vor der Auswertung registriert)\n\nEinstieg = Eroeffnung der Kerze i+1+k, **Ausstieg unveraendert** (aus der Signalkerze bestimmt). Placebo B und Topf bleiben bei k = 0; deshalb ist `Kand−PlB(k) = Kand−PlB(0) − Ertrag der ersten k Kerzen` und **nur diese Spalte entscheidet**. `u_B` ist bei k > 0 eine gemischte Groesse (verzoegerter Kandidat gegen unverzoegerten Topf) und steht zur Anschauung. `haltezeit_kand` sinkt um k Kerzen - das ist gewollt. Zeilen: alle W7, alle Kandidatenzeilen (k1) der uebrigen Detektoren, die belegten Zeilen.\n\n**Vorregistrierte Regel (§20.3):** `Kand−PlB(k=5) ≤ ⅓ · Kand−PlB(k=0)` und groesster Schritt bei k = 1 ⇒ *Einstiegskurs traegt*; `≥ ⅔` ⇒ *Einstiegskurs widerlegt*; sonst *dazwischen*, kein Urteil aus dem Piloten.\n');
+  if (!vzT.length) o.push('Keine Zellen des verzoegerten Einstiegs in diesem Lauf (Schalter aus).\n');
+  else {
+    var vzR = [];
+    vzT.forEach(function (r) { r.stufen.forEach(function (s) {
+      vzR.push([r.det, r.zr, r.richtung, r.h, String(s.k), s.entfaellt ? 'entfaellt' : ganz(s.nTage), s.entfaellt ? '–' : ganz(s.nSig),
+        s.entfaellt ? '–' : pp(s.brutto ? s.brutto.mittel : null), s.entfaellt ? '–' : pp(s.u ? s.u.mittel : null), s.entfaellt ? '–' : tw(s.u ? s.u.t : null),
+        s.entfaellt ? '–' : pp(s.kandPlB ? s.kandPlB.mittel : null), s.entfaellt ? '–' : tw(s.kandPlB ? s.kandPlB.t : null),
+        s.entfaellt ? '–' : tw(s.haltezeit), s.k === 0 ? r.fall + (r.anteil != null ? ' (Anteil ' + r.anteil.toFixed(3) + ')' : '') : '']);
+    }); });
+    o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'k', 'Bes nTage', 'Bes nSig', 'brutto_B', 'u_B', 't_B', 'Kand−PlB', 't(Kand−PlB)', 'haltezeit_kand (min)', 'Fall (§20.3)'], vzR));
+    var fz = E.zahlen.vzFaelle || {};
+    o.push('\nFaelle nach der vorregistrierten Regel ueber ' + vzT.length + ' Zeilen: ' + Object.keys(fz).map(function (k) { return k + ' ' + fz[k]; }).join(' · ') + '.\n');
+    var ent = (G.F.zaehler || {}).vzEntfaellt || {};
+    var eK = Object.keys(ent).sort();
+    o.push('\n**„entfaellt"-Faelle je (k, Zeitrahmen, Haltedauer, Grund)** - gezaehlt beim Messen, nicht geschaetzt:\n');
+    o.push(eK.length ? tabelle(['k', 'ZR', 'H', 'Grund', 'Faelle'], eK.map(function (k) { var p2 = k.split('|'); return [p2[0], p2[1], p2[2], p2[3], ganz(ent[k])]; })) : 'Kein Fall.\n');
+    o.push('\nVerzoegerte Zellen gebucht ' + ganz((G.F.zaehler || {}).vzGebucht) + ' · uebernacht offen ' + ganz((G.F.zaehler || {}).vzOffen) + ' · davon verbucht ' + ganz((G.F.zaehler || {}).vzVerbucht) + ' · verfallen ' + ganz((G.F.zaehler || {}).vzVerfallen) + '.\n');
+  }
   o.push('## 4. Jahresscheiben (§9a) - Pflichttabelle: u je Kalenderjahr und letzte ' + K.AKTUELL_TAGE + ' Handelstage, je Konfiguration\n\nSicht alle, Klassen gepoolt, aus den Zellen je ET-Tag. t nur ab ' + K.JAHR_MIN_TAGE + ' Signaltagen im Jahr („zu duenn" sonst). Uebernacht-se Hansen-Hodrick Lag 1. Kein Urteil aus dieser Tabelle.\n');
   var jz = [];
   E.konf.forEach(function (c) { c.jahre.forEach(function (j) { jz.push([c.det, c.zr, c.richtung, c.h, j.jahr, ganz(j.nTage), ganz(j.nSig), pp(j.u), pp(j.se), j.duenn ? 'zu duenn' : tw(j.t) + (j.hh0 ? ' HH<0' : ''), pp(j.brutto), pp(j.netto), pp(j.schein1)]); }); });
@@ -723,7 +811,7 @@ function lauf(a) {
   var regime = null; try { regime = spyRegime(kal); } catch (e) { console.error('Regime (SPY) nicht lesbar: ' + e.message); }
   var E = auswerte(G.sp, G.F, kal, regime);
   var mdName = pilot ? 'PILOT-ERGEBNIS.md' : 'ERGEBNIS.md', jsonName = pilot ? 'pilot-ergebnis.json' : 'ergebnis.json';
-  var json = { erzeugt: new Date().toISOString(), kennung: K.KONFIG_KENNUNG, pilot: pilot, herkunft: G.herkunft,
+  var json = { vzTafel: E.vzTafel || [], vzEntfaellt: (G.F.zaehler || {}).vzEntfaellt || {}, erzeugt: new Date().toISOString(), kennung: K.KONFIG_KENNUNG, pilot: pilot, herkunft: G.herkunft,
     zaehler: G.F.zaehler, dateien: G.F.dateien, bytes: G.F.bytes, kerzenRegulaer: G.F.kerzenRegulaer, ausgelassen: G.F.ausgelassen, reihenAusgeschlossen: G.F.reihenAusgeschlossen, doppeltErledigt: G.F.doppeltErledigt,
     kalender: { nTage: kal.tage.length, bestaetigungAb: K.BESTAETIGUNG_AB, regimeAb: K.REGIME_AB, iBes: E.ctx.iBes, iReg: E.ctx.iReg, aktuellAb: E.ctx.aktuellAb },
     konstanten: { zPower80: K.Z_POWER80, minBesTage: K.MIN_BES_TAGE, tor1Faktor: K.TOR1_FAKTOR, bandT: K.BAND_T, bandPp: K.BAND_PP, seErwartetNaechste: K.SE_ERWARTET_NAECHSTE, jedeKlasseZu: K.JEDE_KLASSE_ZU, aktuell: [K.AKTUELL_TAGE, K.AKTUELL_MIN_TAGE, K.AKTUELL_T_MIN], vorwaerts: [K.VORWAERTS_MIN_TAGE, K.VORWAERTS_T], uhrzeitVersatzMax: K.UHRZEIT_VERSATZ_MAX, uhrzeitTorH: K.UHRZEIT_TOR_H, versatzToleranz: K.VERSATZ_TOLERANZ, scheine: K.SCHEINE.map(function (s) { return { key: s.key, kurz: s.kurz, tag: s.tag }; }), plan: K.PLAN },
@@ -735,6 +823,7 @@ function lauf(a) {
 }
 
 module.exports = { lauf: lauf, argumente: argumente, normalQuantil: normalQuantil, zBonf: zBonf, selbsttestQuantil: selbsttestQuantil, ladeLaeufe: ladeLaeufe, haltezeitWerte: haltezeitWerte,
+  vzReihe: vzReihe, verzoegertZeile: verzoegertZeile, verzoegertTafel: verzoegertTafel,
   tagesreihe: tagesreihe, poole: poole, momente: momente, momenteVon: momenteVon, statistik: statistik, scheinWerte: scheinWerte, imBand: imBand, auswerte: auswerte, urteil: urteil, markdown: markdown,
   lueckeReihe: lueckeReihe, luecken: luecken, centBoden: centBoden, spiegelSpalten: spiegelSpalten,
   spyRegime: spyRegime, regimeAusSchluessen: regimeAusSchluessen, jahresscheiben: jahresscheiben, scheibe: scheibe, trend: trend, familie: familie, URTEILE: URTEILE };

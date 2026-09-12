@@ -127,8 +127,19 @@ function kursZahl(nTage) { return N_KAND * 2 * nTage * N_K * 2; }
 function hzZelle(nTage, kand, dirIdx, h, tag, klasse, lebend) { return ((((((kand * 2 + dirIdx) * N_H + h) * nTage + tag) * N_K + klasse) * 2)) + lebend; }
 function hzZahl(nTage) { return N_KAND * 2 * N_H * nTage * N_K * 2; }
 var N_KONFIG = (2 * N_DET - Object.keys(NUR_LONG).length) * N_ZR * N_H;   // 225 (Nachtrag 3: ohne W8)
+/* NACHTRAG 5 (§20): VERZOEGERTER EINSTIEG, nur fuer den Piloten. Einstieg = Eroeffnung der Kerze i+1+k des
+ * Zeitrahmens, AUSSTIEG UNVERAENDERT (aus der Signalkerze i bestimmt). Eigene Felder, damit keine Zelle der
+ * Kennung v3 angefasst wird. Vier Felder je Zelle: n, Σ r, Zahl der Haltezeiten, Σ Haltezeit (Sitzungsminuten).
+ * Der Schalter ist fuer einen VOLLAUF AUS: nacht.cmd setzt TW2_VERZOEGERT=0 (je k kostet die Art so viel wie eine
+ * ganze Zellenart - die Vorrechnung steht im Bericht). */
+var VERZOEGERT_K = [1, 5];
+var VERZOEGERT_AN = String(process.env.TW2_VERZOEGERT == null ? '1' : process.env.TW2_VERZOEGERT) !== '0';
+var N_VZ = VERZOEGERT_AN ? VERZOEGERT_K.length : 0;
+function vzZelle(nTage, vk, kand, dirIdx, h, tag, klasse, lebend) { return ((((((vk * N_KAND + kand) * 2 + dirIdx) * N_H + h) * nTage + tag) * N_K + klasse) * 2) + lebend; }
+function vzZahl(nTage) { return N_VZ * N_KAND * 2 * N_H * nTage * N_K * 2; }
 
-var KONFIG_KENNUNG = 'trendwende-ii-2026-09-09/v3/' + N_DET + 'x' + N_ZR + 'x2x' + N_H + 'x' + N_K + 'x' + ARTEN.length + '+kurs+luecke+haltezeit+schein+jahre';
+var KONFIG_KENNUNG = 'trendwende-ii-2026-09-09/v4/' + N_DET + 'x' + N_ZR + 'x2x' + N_H + 'x' + N_K + 'x' + ARTEN.length + '+kurs+luecke+haltezeit+schein+jahre'
+  + (VERZOEGERT_AN ? '+verzoegert' + VERZOEGERT_K.join('-') : '');
 
 module.exports = {
   REPO: REPO, HIER: HIER, MINUTEN: MINUTEN, KANAL: KANAL, KM: KM, ORTE: ORTE, archivWurzel: archivWurzel,
@@ -147,5 +158,6 @@ module.exports = {
   kalender: kalender,
   N_DET: N_DET, N_ZR: N_ZR, N_H: N_H, N_K: N_K, N_KAND: N_KAND, N_REIHEN: N_REIHEN, ARTEN: ARTEN, N_KONFIG: N_KONFIG,
   kandIndex: kandIndex, reiheIndex: reiheIndex, zelle: zelle, zellenZahl: zellenZahl, topfZelle: topfZelle, topfZahl: topfZahl, kursZelle: kursZelle, kursZahl: kursZahl, hzZelle: hzZelle, hzZahl: hzZahl,
+  VERZOEGERT_K: VERZOEGERT_K, VERZOEGERT_AN: VERZOEGERT_AN, N_VZ: N_VZ, vzZelle: vzZelle, vzZahl: vzZahl,
   KONFIG_KENNUNG: KONFIG_KENNUNG,
 };

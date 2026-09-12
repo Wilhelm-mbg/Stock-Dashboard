@@ -58,20 +58,23 @@ function mulberry32(seed) { var a = seed >>> 0; return function () { a = (a + 0x
 
 /* ---------- Zellenspeicher (wie dort) ---------- */
 function Speicher(nTage) {
-  var z = K.zellenZahl(nTage), tz = K.topfZahl(nTage), kz = K.kursZahl(nTage), hz = K.hzZahl(nTage);
+  var z = K.zellenZahl(nTage), tz = K.topfZahl(nTage), kz = K.kursZahl(nTage), hz = K.hzZahl(nTage), vz = K.vzZahl(nTage);
   this.nTage = nTage;
   this.n = new Float64Array(z); this.s = new Float64Array(z); this.s2 = new Float64Array(z); this.h2 = new Float64Array(z);
   this.tn = new Float64Array(tz); this.ts = new Float64Array(tz); this.ts2 = new Float64Array(tz); this.thz = new Float64Array(tz);
   this.kn = new Float64Array(kz); this.ks = new Float64Array(kz); this.kcb = new Float64Array(kz); this.kl = new Float64Array(kz);
   this.hzn = new Float64Array(hz); this.hzs = new Float64Array(hz);
+  /* NACHTRAG 5: verzoegerter Einstieg (Laenge 0, wenn der Schalter aus ist - dann ist die Datei byteweise die alte). */
+  this.vzn = new Float64Array(vz); this.vzs = new Float64Array(vz); this.vzhn = new Float64Array(vz); this.vzhs = new Float64Array(vz);
 }
-Speicher.prototype.felder = function () { return [this.n, this.s, this.s2, this.h2, this.tn, this.ts, this.ts2, this.thz, this.kn, this.ks, this.kcb, this.kl, this.hzn, this.hzs]; };
+Speicher.prototype.felder = function () { return [this.n, this.s, this.s2, this.h2, this.tn, this.ts, this.ts2, this.thz, this.kn, this.ks, this.kcb, this.kl, this.hzn, this.hzs, this.vzn, this.vzs, this.vzhn, this.vzhs]; };
 Speicher.prototype.uebernehme = function (delta) {
   var self = this;
   delta.zellen.forEach(function (v, idx) { self.n[idx] += v[0]; self.s[idx] += v[1]; self.s2[idx] += v[2]; self.h2[idx] += v[3]; });
   delta.topf.forEach(function (v, idx) { self.tn[idx] += v[0]; self.ts[idx] += v[1]; self.ts2[idx] += v[2]; self.thz[idx] += v[3]; });
   delta.kurs.forEach(function (v, idx) { self.kn[idx] += v[0]; self.ks[idx] += v[1]; self.kcb[idx] += v[2]; self.kl[idx] += v[3]; });
   delta.hz.forEach(function (v, idx) { self.hzn[idx] += v[0]; self.hzs[idx] += v[1]; });
+  delta.vz.forEach(function (v, idx) { self.vzn[idx] += v[0]; self.vzs[idx] += v[1]; self.vzhn[idx] += v[2]; self.vzhs[idx] += v[3]; });
 };
 Speicher.prototype.schreibe = function (pfad, stand) {
   var teile = this.felder().map(function (a) { return Buffer.from(a.buffer, a.byteOffset, a.byteLength); });
@@ -92,13 +95,15 @@ Speicher.lade = function (pfad, nTage, stand) {
   sp.stand = gelesen;
   return sp;
 };
-function Delta() { this.zellen = new Map(); this.topf = new Map(); this.kurs = new Map(); this.hz = new Map(); }
+function Delta() { this.zellen = new Map(); this.topf = new Map(); this.kurs = new Map(); this.hz = new Map(); this.vz = new Map(); }
 Delta.prototype.add = function (idx, r, h) { var v = this.zellen.get(idx); if (!v) { v = [0, 0, 0, 0]; this.zellen.set(idx, v); } v[0]++; v[1] += r; v[2] += r * r; v[3] += h; };
 /** Topf: n, Σr, Σr², Σ Haltezeit in Sitzungsminuten (NACHTRAG 4). */
 Delta.prototype.addTopf = function (idx, r, hz) { var v = this.topf.get(idx); if (!v) { v = [0, 0, 0, 0]; this.topf.set(idx, v); } v[0]++; v[1] += r; v[2] += r * r; if (hz === hz && hz != null) v[3] += hz; };
 /** Haltezeitzelle des Kandidaten (NACHTRAG 4): Zahl der Beobachtungen und Σ Haltezeit in Sitzungsminuten. */
 Delta.prototype.addHz = function (idx, hz) { if (!(hz === hz) || hz == null) return; var v = this.hz.get(idx); if (!v) { v = [0, 0]; this.hz.set(idx, v); } v[0]++; v[1] += hz; };
 /** Kurszelle: n, Σ Einstiegskurs (roh), Zahl ueber dem Cent-Boden, Σ Einstiegsluecke in Pp (Nachtrag 3). */
+/** NACHTRAG 5: Zelle des verzoegerten Einstiegs: n, Σ r, Zahl der Haltezeiten, Σ Haltezeit. */
+Delta.prototype.addVz = function (idx, r, hz) { var v = this.vz.get(idx); if (!v) { v = [0, 0, 0, 0]; this.vz.set(idx, v); } v[0]++; v[1] += r; if (hz === hz && hz != null) { v[2]++; v[3] += hz; } };
 Delta.prototype.addKurs = function (idx, kurs, ueber, luecke) { var v = this.kurs.get(idx); if (!v) { v = [0, 0, 0, 0]; this.kurs.set(idx, v); } v[0]++; v[1] += kurs; if (ueber) v[2]++; if (luecke === luecke && luecke != null) v[3] += luecke; };
 
 /* ---------- Ertrag (§3): Einstieg Eroeffnung i+1, Ausstieg Eroeffnung der Kerze nach Ablauf / Schluss / naechste Eroeffnung ---------- */
@@ -147,6 +152,23 @@ function haltezeit(bars, i, h, bis, exit, barMs) {
   return (bars[j][0] - te) / 60000;
 }
 
+/** NACHTRAG 5 (§20.1): Ausstieg einer Signalkerze i - UNVERAENDERT gegenueber k = 0, also aus i bestimmt und vom
+ *  Einstieg unabhaengig. Rueckgabe {kurs, zeitMs} bzw. {offen:true, zeitMs} (Uebernacht, Folgetag noch nicht da)
+ *  bzw. null (kein Ausstieg). Die Zeit ist die des Ausstiegsmoments: Beginn der Ausstiegskerze bei festen
+ *  Haltedauern, Ende der letzten regulaeren Kerze bei 'schluss'/'naechste' (wie haltezeit()). */
+function ausstiegVon(bars, i, h, bis, exit, naechste, barMs) {
+  var H = K.HALTEDAUERN[h];
+  if (H.uebernacht) {
+    var zt = bars[bis][0] + barMs;
+    if (naechste === undefined) return { offen: true, zeitMs: zt };
+    return (naechste > 0) ? { kurs: naechste, zeitMs: zt } : null;
+  }
+  if (H.min == null) return (bars[bis][1] > 0) ? { kurs: bars[bis][1], zeitMs: bars[bis][0] + barMs } : null;
+  var j = exit[h][i - exit.von];
+  if (j < 0) return null;
+  return (bars[j][5] > 0) ? { kurs: bars[j][5], zeitMs: bars[j][0] } : null;
+}
+
 /* ---------- Detektoraufruf: Parameter je Zeitrahmen, Vorfilter ---------- */
 function rufe(D, params, bars, i) {
   if (D.vorfilter === 'signalCross') {
@@ -168,6 +190,7 @@ function leererZaehler() {
   return { tageOhneKlasse: {}, tageMassnahmen: {}, tageOhneKalender: {}, tageDuenn: {}, tageGewertet: {}, tageGewertetKlasse: {}, msJeZr: {}, zeitrahmenNichtErkannt: {},
     aufrufe: {}, fehler: {}, signaleGesamt: {}, ohneHorizont: [0, 0, 0, 0, 0], ohneEinstieg: 0, placeboAGezogen: 0, placeboBGezogen: 0, placeboBOhnePartner: 0,
     uebernachtOffen: 0, uebernachtVerbucht: 0, uebernachtVerfallen: 0, ohneNaechsterTag: 0, fortsetzungOhneUebernacht: 0, lueckeOhneSchluss: 0, ohneHaltezeit: 0,
+    vzGebucht: 0, vzOffen: 0, vzVerbucht: 0, vzVerfallen: 0, vzEntfaellt: {},
     lesenVerworfen: { unsortiert: 0, ausserFenster: 0, lebenszeit: 0, nichtRegulaer: 0, ohneKurs: 0 } };
 }
 function zaehlerAddieren(a, b) {
@@ -195,7 +218,7 @@ function fortschrittSchreiben(ordner, F, sp) {
   fs.renameSync(tmp, path.join(ordner, '_fortschritt.json'));
 }
 /** Offene Uebernacht-Beitraege eines Warmlaufs verfallen lassen (gezaehlt, nie geschaetzt). */
-function verfalle(F, warm) { if (warm && warm.offen && warm.offen.length) { F.zaehler.uebernachtVerfallen += warm.offen.length; warm.offen = []; } }
+function verfalle(F, warm) { if (warm && warm.offen && warm.offen.length) { warm.offen.forEach(function (e) { if (e.vz) F.zaehler.vzVerfallen++; else F.zaehler.uebernachtVerfallen++; }); warm.offen = []; } }
 
 /** Eine Reihe ueber ihre Jahre; ruft je Datei `dateiFertig()` und prueft `abbruch()`. */
 function messeReihe(R, ctx) {
@@ -291,10 +314,12 @@ function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
     warm.offen.forEach(function (e) {
       if (o > 0) {
         var r = e.dir * (o - e.ein) / e.ein * 100;
+        if (e.vz) { delta.addVz(e.idx, r, e.hz); Z.vzVerbucht++; Z.vzGebucht++; return; }      // NACHTRAG 5: eigene Zaehler, die alten bleiben unberuehrt
         if (e.topf) delta.addTopf(e.idx, r, e.hz);
         else { delta.add(e.idx, r, e.hf); if (e.hzIdx != null) delta.addHz(e.hzIdx, e.hz); }   // Haltezeit reist mit dem offenen Beitrag mit
         Z.uebernachtVerbucht++;
-      } else Z.uebernachtVerfallen++;
+      } else if (e.vz) Z.vzVerfallen++;
+      else Z.uebernachtVerfallen++;
     });
   }
   var sperrTage = L.ausschlussTage(R, massnahmen, g.quelle, g.angewandt);
@@ -349,6 +374,23 @@ function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
         }
         return beob;
       };
+      /** NACHTRAG 5 (§20.1): verzoegerter Einstieg. Einstieg = Eroeffnung von i+1+k, Ausstieg UNVERAENDERT aus i.
+       *  Entsteht keine Zelle (Einstieg hinter dem Tagesende oder auf/hinter dem Ausstieg), wird der Grund gezaehlt. */
+      var verbucheVz = function (i, dir, dirIdx, kand) {
+        for (var vk = 0; vk < K.VERZOEGERT_K.length; vk++) {
+          var kk = K.VERZOEGERT_K[vk], ie = i + 1 + kk;
+          for (var h = 0; h < K.N_H; h++) {
+            var grund = null, au = null;
+            if (ie > d.bis) grund = 'nachTagesende';
+            else if (!(bars[ie][5] > 0)) grund = 'ohneEinstiegskurs';
+            else { au = ausstiegVon(bars, i, h, d.bis, exit, nOffen, barMs); if (!au) grund = 'ohneAusstieg'; else if (bars[ie][0] >= au.zeitMs) grund = 'aufOderHinterAusstieg'; }
+            if (grund) { var sl = 'k' + kk + '|' + zr.key + '|' + K.HALTEDAUERN[h].key + '|' + grund; Z.vzEntfaellt[sl] = (Z.vzEntfaellt[sl] || 0) + 1; continue; }
+            var vidx = K.vzZelle(nTage, vk, kand, dirIdx, h, tagIdx, klasse, lebend), vein = bars[ie][5], vhz = (au.zeitMs - bars[ie][0]) / 60000;
+            if (au.offen) { stat.offen.push({ vz: true, idx: vidx, ein: vein, dir: dir, hz: vhz }); Z.vzOffen++; continue; }
+            delta.addVz(vidx, dir * (au.kurs - vein) / vein * 100, vhz); Z.vzGebucht++;
+          }
+        }
+      };
       /* Topf (§7b dort): jede zulaessige Kerze, Long-Ertrag je Haltedauer */
       for (var q = 0; q < zul.length; q++) verbuche(zul[q], 1, 0, true, function (h) { return K.topfZelle(nTage, zi, h, tagIdx, klasse, lebend); });
       /* Kandidaten */
@@ -377,6 +419,7 @@ function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
           var beob = verbuche(i2, dir, hf, false, function (h) { return K.zelle(nTage, reihe0, dirIdx, h, tagIdx, klasse, lebend); },
             (function (kd, dx) { return function (h) { return K.hzZelle(nTage, kd, dx, h, tagIdx, klasse, lebend); }; })(kand, dirIdx));
           if (!beob) Z.ohneEinstieg++;
+          if (K.VERZOEGERT_AN) verbucheVz(i2, dir, dirIdx, kand);
         }
         Z.signaleGesamt[D.key] = (Z.signaleGesamt[D.key] || 0) + k;
         if (!k) continue;
@@ -451,6 +494,6 @@ function lauf(a) {
   return F;
 }
 
-module.exports = { lauf: lauf, argumente: argumente, messeDatei: messeDatei, ausstiege: ausstiege, ertrag: ertrag, haltezeit: haltezeit, rufe: rufe, istDicht: istDicht, OFFEN: OFFEN,
+module.exports = { lauf: lauf, argumente: argumente, messeDatei: messeDatei, ausstiege: ausstiege, ausstiegVon: ausstiegVon, ertrag: ertrag, haltezeit: haltezeit, rufe: rufe, istDicht: istDicht, OFFEN: OFFEN,
   Speicher: Speicher, Delta: Delta, fnv: fnv, mulberry32: mulberry32, warmlaufAus: warmlaufAus, leererZaehler: leererZaehler, zaehlerAddieren: zaehlerAddieren };
 if (require.main === module) lauf(argumente(process.argv.slice(2)));

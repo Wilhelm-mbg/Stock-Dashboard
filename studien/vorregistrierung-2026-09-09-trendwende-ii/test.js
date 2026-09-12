@@ -251,7 +251,7 @@ abschnitt(0, 'Zellendecoder und Layout', function () {
   }
   pruefe(fehler === 0, '0a Decoder invertiert K.zelle/K.reiheIndex/K.kandIndex (2000 Stichproben, ' + fehler + ' Fehler)');
   pruefe(K.N_DET === 8 && K.N_H === 5 && K.N_KAND === 24 && K.N_REIHEN === 72 && K.N_KONFIG === 225 && K.H_UEBERNACHT === 4 && K.HALTEDAUERN[4].uebernacht === true, '0b Layout (Nachtrag 3): 8 Detektoren, 5 Haltedauern (naechste = Uebernacht), 24 Kandidaten, 72 Zellenreihen, 225 Konfigurationen');
-  pruefe(/^trendwende-ii-2026-09-09\/v3\/8x3x2x5x4x3\+kurs\+luecke\+haltezeit\+schein\+jahre$/.test(K.KONFIG_KENNUNG), '0c Kennung ' + K.KONFIG_KENNUNG);
+  pruefe(/^trendwende-ii-2026-09-09\/v4\/8x3x2x5x4x3\+kurs\+luecke\+haltezeit\+schein\+jahre(\+verzoegert1-5)?$/.test(K.KONFIG_KENNUNG) && (K.VERZOEGERT_AN === /verzoegert/.test(K.KONFIG_KENNUNG)), '0c Kennung ' + K.KONFIG_KENNUNG);
   var mb = (K.zellenZahl(nTage) * 4 + K.topfZahl(nTage) * 4 + K.kursZahl(nTage) * 4 + K.hzZahl(nTage) * 2) * 8 / 1e6;
   pruefe(mb > 450 && mb < 750, '0d Zellenspeicher ' + mb.toFixed(0) + ' MB je Prozess (Registrierung §10, Nachtrag 4: ≈ 620)');
   var sp0 = new M.Speicher(10), fehlerK = 0, rng2 = rngNeu(7);
@@ -260,7 +260,9 @@ abschnitt(0, 'Zellendecoder und Layout', function () {
     var ix = K.kursZelle(10, kand, di2, tg, kl2, le2);
     if (!(ix >= 0 && ix < K.kursZahl(10))) fehlerK++;
   }
-  pruefe(sp0.felder().length === 14 && sp0.kl && sp0.kl.length === K.kursZahl(10) && fehlerK === 0, '0e Kurszellen tragen VIER Felder (n, Σ Kurs, ueber Cent-Boden, Σ Einstiegsluecke); _zellen.bin traegt nach Nachtrag 4 ' + sp0.felder().length + ' Felder, kursZelle bleibt im Bereich (' + fehlerK + ' Fehler)');
+  /* NACHTRAG 5: vier weitere Felder. Ist der Schalter aus, sind sie LEER - die Datei ist dann byteweise die der Kennung v3. */
+  var vzBytes = sp0.vzn.length + sp0.vzs.length + sp0.vzhn.length + sp0.vzhs.length, sollVz = K.VERZOEGERT_AN ? 4 * K.vzZahl(10) : 0;
+  pruefe(sp0.felder().length === 18 && vzBytes === sollVz && sp0.kl && sp0.kl.length === K.kursZahl(10) && fehlerK === 0, '0e Kurszellen tragen VIER Felder (n, Σ Kurs, ueber Cent-Boden, Σ Einstiegsluecke); _zellen.bin traegt nach Nachtrag 5 ' + sp0.felder().length + ' Felder, davon ' + vzBytes + ' Zellen des verzoegerten Einstiegs (Schalter ' + (K.VERZOEGERT_AN ? 'an' : 'aus') + ', Soll ' + sollVz + '), kursZelle bleibt im Bereich (' + fehlerK + ' Fehler)');
   /* NACHTRAG 4: Haltezeitzellen (mit Haltedauer) und das vierte Topffeld */
   var fehlerH = 0, gesehen = {}, rng3 = rngNeu(11);
   for (var q3 = 0; q3 < 800; q3++) {
@@ -883,6 +885,162 @@ abschnitt(15, 'KLINKEN: kein Netz, kein Schluessel, kein Schreiben ins Archiv, k
   A.selbsttestQuantil(); ok('15f Normalquantile z_Bonf(1/5/10/20) = 1,96 / 2,58 / 2,81 / 3,02');
 });
 
+
+/* ====================================================================================== */
+abschnitt(16, 'VERZOEGERTER EINSTIEG (Nachtrag 5): Sprung in der Einstiegskerze, konstante Drift, entfaellt, Bitgleichheit von k = 0', function () {
+  if (!K.VERZOEGERT_AN) { ueber('16 Schalter TW2_VERZOEGERT aus - die k-Zellen sind in diesem Prozess abgeschaltet'); return; }
+  /* --- flache bzw. exakt geometrische Kunstreihe, ohne Rundung: jede Kerze traegt genau einen Preis --- */
+  function reiheBauen(tage, d, pflanzung) {
+    var aus = [], n = 0, start = 100;
+    tage.forEach(function (tag) {
+      var t0 = auf0930(tag), m = sollMinVon(tag);
+      for (var q = 0; q < m; q++) { var p = start * Math.pow(1 + d, n); aus.push([t0 + q * MIN, p, 2564, p, p, p]); n++; }
+    });
+    if (pflanzung) aus.forEach(function (b) { if (pflanzung.ms[b[0]]) b[5] = b[1] * (1 - pflanzung.g); });
+    return aus;
+  }
+  function dekodiereVz(idx) {
+    var nTage = K.kalender().tage.length, r = idx;
+    var lebend = r % 2; r = (r - lebend) / 2;
+    var klasse = r % K.N_K; r = (r - klasse) / K.N_K;
+    var tag = r % nTage; r = (r - tag) / nTage;
+    var h = r % K.N_H; r = (r - h) / K.N_H;
+    var dirIdx = r % 2; r = (r - dirIdx) / 2;
+    var kand = r % K.N_KAND;
+    return { vk: (r - kand) / K.N_KAND, kand: kand, det: Math.floor(kand / K.N_ZR), zr: kand % K.N_ZR, dirIdx: dirIdx, h: h, tag: tag, klasse: klasse, lebend: lebend };
+  }
+  /** Mittel und Zahl der k-Zellen einer (kand, dirIdx, h, vk); dazu die mittlere Haltezeit. */
+  function vzAus(delta, vk, kand, dirIdx, h) {
+    var n = 0, s = 0, nh = 0, sh = 0;
+    delta.vz.forEach(function (v, idx) {
+      var e = dekodiereVz(idx);
+      if (e.vk !== vk || e.kand !== kand || e.dirIdx !== dirIdx || e.h !== h) return;
+      n += v[0]; s += v[1]; nh += v[2]; sh += v[3];
+    });
+    return { n: n, mittel: n ? s / n : NaN, hz: nh ? sh / nh : NaN };
+  }
+  function k0Aus(eintraege, kand, dirIdx, h) {
+    var n = 0, s = 0;
+    eintraege.forEach(function (e) { if (e.art !== 0 || e.kand !== kand || e.dirIdx !== dirIdx || e.h !== h) return; n += e.n; s += e.s; });
+    return { n: n, mittel: n ? s / n : NaN };
+  }
+
+  var tage = K.kalender().tage.filter(function (t) { return t >= '2024-02-01' && t <= '2024-05-31'; });
+  var signalMinute = 150;
+  /* Ein Detektor, der auf eine feste Tageszeit feuert - er sieht den Kurs NICHT an, damit der Sprung die einzige
+   * Quelle des Effekts ist. In beiden Prozessen (Schalter an/aus) exakt derselbe Detektor. */
+  var fest = { key: 'kunst-fest', params: {}, signal: function (bars, i) { return minutenSeitAuf(bars[i][0]) === signalMinute ? { dir: 1 } : null; } };
+
+  /* --- 16b: bekannter Sprung GENAU in der Einstiegskerze: voller Effekt bei k = 0, null bei k = 1 --- */
+  var G = 0.01;
+  var flach = reiheBauen(tage, 0, null);
+  var einstiegMs = {};
+  flach.forEach(function (b) { if (minutenSeitAuf(b[0]) === signalMinute + 1) einstiegMs[b[0]] = 1; });
+  var gepflanzt = reiheBauen(tage, 0, { ms: einstiegMs, g: G });
+  var mS = messe(gepflanzt, [fest]), kandS = K.kandIndex(0, 0);
+  var sollVoll = G / (1 - G) * 100, fehlerS = [], okS = true;
+  [H15, H1H, H3H, HS, HN].forEach(function (h) {
+    var a0 = k0Aus(mS.eintraege, kandS, 0, h), a1 = vzAus(mS.delta, 0, kandS, 0, h), a5 = vzAus(mS.delta, 1, kandS, 0, h);
+    if (!(a0.n > 0 && Math.abs(a0.mittel - sollVoll) < 1e-9)) { okS = false; fehlerS.push(K.HALTEDAUERN[h].key + ' k0 ' + f4(a0.mittel)); }
+    if (!(a1.n > 0 && Math.abs(a1.mittel) < 1e-12)) { okS = false; fehlerS.push(K.HALTEDAUERN[h].key + ' k1 ' + f4(a1.mittel)); }
+    if (!(a5.n > 0 && Math.abs(a5.mittel) < 1e-12)) { okS = false; fehlerS.push(K.HALTEDAUERN[h].key + ' k5 ' + f4(a5.mittel)); }
+  });
+  pruefe(okS, '16b Sprung von ' + (G * 100) + ' % in der Einstiegskerze (1m, alle fuenf Haltedauern): k = 0 zeigt ' + f4(sollVoll) + ' Pp, k = 1 und k = 5 zeigen exakt 0' + (fehlerS.length ? ' | ABWEICHUNG ' + fehlerS.join(', ') : ''));
+
+  /* --- 16c: konstante Drift: k = 1 hat genau eine Kerze weniger Drift --- */
+  var Dk = 0.00002;
+  var drift = reiheBauen(tage, Dk, null);
+  var mD = messe(drift, [fest]), fehlerD = [], okD = true;
+  [H15, H1H, H3H, HS, HN].forEach(function (h) {
+    var a0 = k0Aus(mD.eintraege, kandS, 0, h), a1 = vzAus(mD.delta, 0, kandS, 0, h), a5 = vzAus(mD.delta, 1, kandS, 0, h);
+    var v1 = (1 + a0.mittel / 100) / (1 + a1.mittel / 100), v5 = (1 + a0.mittel / 100) / (1 + a5.mittel / 100);
+    if (!(a0.n > 0 && a1.n > 0 && Math.abs(v1 - (1 + Dk)) < 1e-12)) { okD = false; fehlerD.push(K.HALTEDAUERN[h].key + ' k1 ' + (v1 - 1).toExponential(3)); }
+    if (!(a5.n > 0 && Math.abs(v5 - Math.pow(1 + Dk, 5)) < 1e-12)) { okD = false; fehlerD.push(K.HALTEDAUERN[h].key + ' k5 ' + (v5 - 1).toExponential(3)); }
+  });
+  pruefe(okD, '16c konstante Drift ' + Dk + ' je Kerze: (1+r_k0)/(1+r_k1) = 1+d und (1+r_k0)/(1+r_k5) = (1+d)^5, exakt, alle fuenf Haltedauern' + (fehlerD.length ? ' | ABWEICHUNG ' + fehlerD.join(', ') : ''));
+
+  /* --- 16d: Haltezeit sinkt um genau k Kerzen (feste Haltedauern) --- */
+  var hzF = [], okH = true;
+  [[H15, 15], [H1H, 60], [H3H, 180]].forEach(function (x) {
+    var a1 = vzAus(mD.delta, 0, kandS, 0, x[0]), a5 = vzAus(mD.delta, 1, kandS, 0, x[0]);
+    if (!(Math.abs(a1.hz - (x[1] - 1)) < 1e-9 && Math.abs(a5.hz - (x[1] - 5)) < 1e-9)) okH = false;
+    hzF.push(K.HALTEDAUERN[x[0]].key + ' k1 ' + f4(a1.hz) + ' k5 ' + f4(a5.hz));
+  });
+  pruefe(okH, '16d haltezeit_kand(k) = haltezeit_kand(0) − k Kerzen (1m): ' + hzF.join(' · '));
+
+  /* --- 16e: "entfaellt" - 15m-Zeitrahmen mit H = 15m laesst bei k = 1 keine Zelle zu --- */
+  var kand15 = K.kandIndex(0, 2);                      // derselbe Detektor auf dem 15m-Zeitrahmen
+  var zellen15 = vzAus(mD.delta, 0, kand15, 0, H15).n, zellen15k5 = vzAus(mD.delta, 1, kand15, 0, H15).n;
+  var ent = mD.Z.vzEntfaellt || {};
+  var e1 = ent['k1|15m|15m|aufOderHinterAusstieg'] || 0, e5 = ent['k5|15m|15m|aufOderHinterAusstieg'] || 0;
+  var k0Zellen15 = k0Aus(mD.eintraege, kand15, 0, H15).n;
+  pruefe(zellen15 === 0 && zellen15k5 === 0 && e1 === k0Zellen15 && e5 === k0Zellen15 && k0Zellen15 > 0,
+    '16e entfaellt: 15m-Zeitrahmen mit H = 15m gibt bei k = 1 und k = 5 keine Zelle (0 und 0), gezaehlt als aufOderHinterAusstieg ' + e1 + ' / ' + e5 + ' = ' + k0Zellen15 + ' Signale bei k = 0');
+  var e1m = ent['k1|1m|15m|aufOderHinterAusstieg'] || 0;
+  pruefe(e1m === 0 && vzAus(mD.delta, 0, kandS, 0, H15).n === k0Aus(mD.eintraege, kandS, 0, H15).n,
+    '16e2 auf 1m entfaellt bei H = 15m nichts (' + e1m + ' Faelle); die Zellenzahl ist dieselbe wie bei k = 0');
+
+  /* --- 16f: die k-Zellen aendern KEINE k = 0-Zahl: Zellen, Topf, Kurs- und Haltezeitzellen bitgleich --- */
+  function fingerabdruck(delta) {
+    function m2a(m) { var a = []; m.forEach(function (v, idx) { a.push(idx + ':' + v.join(',')); }); a.sort(); return a.join('|'); }
+    return JSON.stringify({ zellen: m2a(delta.zellen), topf: m2a(delta.topf), kurs: m2a(delta.kurs), hz: m2a(delta.hz) });
+  }
+  var pfad = path.join(KRATZ, 'vz-sonde');
+  fs.mkdirSync(pfad, { recursive: true });
+  fs.writeFileSync(path.join(pfad, 'kerzen.json'), JSON.stringify(drift));
+  var sonde = [
+    "var fs = require('fs'), path = require('path');",
+    "var K = require(process.argv[2]); var M = require(process.argv[3]);",
+    "var kerzen = JSON.parse(fs.readFileSync(process.argv[4], 'utf8'));",
+    "var MS = {}; JSON.parse(process.argv[5]).forEach(function (t) { MS[t] = 1; });",
+    "var fest = { key: 'kunst-fest', params: {}, signal: function (bars, i) { return MS[bars[i][0]] ? { dir: 1 } : null; } };",
+    "var R = { reihe: 'KUNST', ordner: 'KUNST', lebend: 1, jahre: [2024], gruppe: 'kunst', art: 'CS', schnittMs: null, abMs: null };",
+    "var g = { ok: true, kerzen: kerzen, quelle: 'roh', angewandt: new Set(), bytes: 0 };",
+    "var massnahmen = []; massnahmen.ende = null;",
+    "var ctx = { kal: K.kalender(), dets: [fest], F: { zaehler: M.leererZaehler() } };",
+    "var delta = new M.Delta();",
+    "M.messeDatei(R, g, { kerzen1m: [], tagesUmsatz: [] }, massnahmen, delta, ctx, Date.now() + 600000);",
+    "function m2a(m) { var a = []; m.forEach(function (v, idx) { a.push(idx + ':' + v.join(',')); }); a.sort(); return a.join('|'); }",
+    "process.stdout.write(JSON.stringify({ zellen: m2a(delta.zellen), topf: m2a(delta.topf), kurs: m2a(delta.kurs), hz: m2a(delta.hz) }) + '\\nVZ ' + delta.vz.size + ' KENNUNG ' + K.KONFIG_KENNUNG);",
+  ].join('\n');
+  fs.writeFileSync(path.join(pfad, 'sonde.js'), sonde);
+  var signalMs = [];
+  drift.forEach(function (b) { if (minutenSeitAuf(b[0]) === signalMinute) signalMs.push(b[0]); });
+  var umg = {}; Object.keys(process.env).forEach(function (k) { umg[k] = process.env[k]; }); umg.TW2_VERZOEGERT = '0';
+  var roh = cp.execFileSync(process.execPath, [path.join(pfad, 'sonde.js'), path.join(K.HIER, 'konfig.js'), path.join(K.HIER, 'messen.js'), path.join(pfad, 'kerzen.json'), JSON.stringify(signalMs)], { env: umg, encoding: 'utf8', maxBuffer: 1 << 28 });
+  var teile = roh.split('\n'), ausSonde = teile[0], schwanz = teile[1] || '';
+  var gleich = ausSonde === fingerabdruck(mD.delta);
+  pruefe(gleich && /VZ 0 /.test(schwanz) && !/verzoegert/.test(schwanz),
+    '16f Bitgleichheit: derselbe Lauf mit TW2_VERZOEGERT=0 liefert Zellen, Topf, Kurs- und Haltezeitzellen zeichengleich (' + ausSonde.length + ' Zeichen) und 0 k-Zellen; Kennung ohne +verzoegert');
+  var ohneVz = JSON.parse(ausSonde);
+  pruefe(ohneVz.zellen.length > 0 && ohneVz.topf.length > 0 && ohneVz.hz.length > 0,
+    '16f2 die Sonde hat wirklich gemessen (Zellen, Topf und Haltezeitzellen sind nicht leer) - sonst waere 16f eine Gleichheit von nichts');
+
+  /* --- 16g: Placebo A und Placebo B sind unveraendert (sie kommen aus derselben Zellenmenge) --- */
+  var hierA = 0, hierB = 0, sondeA = 0, sondeB = 0;
+  mD.eintraege.forEach(function (e) { if (e.art === 1) hierA += e.n; if (e.art === 2) hierB += e.n; });
+  JSON.parse(ausSonde).zellen.split('|').forEach(function (s) {
+    if (!s) return;
+    var p = s.split(':'), e = dekodiere(+p[0]), v = +p[1].split(',')[0];
+    if (e.art === 1) sondeA += v; if (e.art === 2) sondeB += v;
+  });
+  pruefe(hierA > 0 && hierB > 0 && sondeA === hierA && sondeB === hierB,
+    '16g Placebo A (' + hierA + ' Beobachtungen) und Placebo B (' + hierB + ') unveraendert gegenueber dem Lauf ohne k-Zellen (' + sondeA + ' / ' + sondeB + ')');
+
+  /* --- 16h: Indexabbildung der k-Zellen ist eineindeutig und der Speicher traegt die Felder --- */
+  var gesehen = {}, fehlerI = 0, rngV = rngNeu(23);
+  for (var q = 0; q < 800; q++) {
+    var vk = Math.floor(rngV() * K.N_VZ), kd = Math.floor(rngV() * K.N_KAND), dx = Math.floor(rngV() * 2), hh = Math.floor(rngV() * K.N_H);
+    var tg = Math.floor(rngV() * 10), kl = Math.floor(rngV() * K.N_K), le = Math.floor(rngV() * 2);
+    var iv = K.vzZelle(10, vk, kd, dx, hh, tg, kl, le), sl = [vk, kd, dx, hh, tg, kl, le].join('|');
+    if (iv < 0 || iv >= K.vzZahl(10)) fehlerI++;
+    if (gesehen[iv] !== undefined && gesehen[iv] !== sl) fehlerI++;
+    gesehen[iv] = sl;
+  }
+  var spV = new M.Speicher(10);
+  pruefe(fehlerI === 0 && spV.vzn.length === K.vzZahl(10) && spV.vzs.length === K.vzZahl(10) && spV.vzhn.length === K.vzZahl(10) && spV.vzhs.length === K.vzZahl(10) && K.vzZahl(10) === K.N_VZ * K.hzZahl(10),
+    '16h vzZelle eineindeutig (800 Ziehungen, 0 Kollisionen); vier Felder der Laenge ' + K.vzZahl(10) + ' = ' + K.N_VZ + ' x hzZahl');
+});
 /* ====================================================================================== */
 console.log('\n' + ERG.ok + ' OK, ' + ERG.fehlt + ' FEHLT, ' + ERG.ueber + ' UEBERSPRUNGEN');
 process.exitCode = ERG.fehlt ? 1 : 0;
