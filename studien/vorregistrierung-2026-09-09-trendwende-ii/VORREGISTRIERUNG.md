@@ -805,3 +805,44 @@ Uhrzeit-Tor, Placebo-Bänder, Kosten- und Schein-Hürden, Jahresscheiben, Regime
 Dichteregel, Cooldown, Detektoren (8, W8 bleibt gestrichen). Der Pilot `pilot-4/` läuft über **dieselben 19 Reihen**;
 seine Zahlen sind wie bisher **kein Befund**. Kein Vollauf, kein Push, keine Version, kein Wiki-Eintrag aus diesem
 Chat. Die Speicher-Vorrechnung für den Vollauf steht im Bericht.
+
+### 5.6 Welcher Fall eingetreten ist — zuerst die Zuordnung, dann die Deutung (Pilot 4, 12.09.2026)
+
+**Die Zuordnung nach §20.3, mechanisch, über die 30 W7-Zeilen (die zehn k₁-Zeilen und die beiden belegten Zeilen
+sind sämtlich W7-Zeilen und darin enthalten):**
+
+| Fall nach §20.3 | Zeilen |
+|---|---:|
+| **Einstiegskurs-Erklärung widerlegt** (`Kand−PlB(k=5) ≥ ⅔ · Kand−PlB(k=0)`) | **18** |
+| dazwischen | 3 |
+| ⅓-Schranke erfüllt, **aber größter Schritt nicht bei k = 1** | 3 |
+| k = 5 entfällt strukturell, Regel nicht anwendbar | 6 |
+
+**Die zweite Bedingung des Falls „Einstiegskurs trägt" — der größte Einzelschritt liegt zwischen k = 0 und k = 1 —
+ist in KEINER einzigen der 30 Zeilen erfüllt.** Fall 1 ist damit nirgends vollständig eingetreten.
+
+**Beide belegten Zeilen fallen unter „widerlegt":** W7 1m long „bis Schluss" 0,0833 → 0,0812 (Anteil 0,974);
+W7 5m long 3h 0,1337 → 0,1068 (Anteil 0,799).
+
+**Die erste Kerze trägt fast nichts.** Der Schritt k = 0 → k = 1 als Anteil an `Kand−PlB(k=0)`: auf 1m zwischen
+−6,6 % und +0,6 % (in 7 von 10 Zeilen **negativ**, die Verzögerung vergrößert die Differenz), auf 5m zwischen
+−1,9 % und +4,4 %, auf 15m zwischen +2,3 % und +8,4 %. Der Betrag wächst mit der **Dauer** der ausgelassenen Kerze,
+nicht mit ihrer Zahl — genau das Gegenteil eines Beitrags, der im Einstiegskurs sitzt.
+
+**Damit ist die Erwartung des messenden Chats aus §20.3 (Fall 1) widerlegt.** Das steht hier, bevor gedeutet wird.
+
+### 5.7 Was daraus folgt (Deutung, nach der Zuordnung geschrieben)
+
+Der Überschuss von W7 gegenüber dem gepaarten Placebo B sitzt **nicht** im Einstiegskurs. Er baut sich über die
+Haltezeit auf: auf 15m kostet das Auslassen von 75 Minuten rund 79 % der Differenz, auf 5m kostet das Auslassen von
+25 Minuten rund 22 %, auf 1m kostet das Auslassen von 5 Minuten rund 2,5 %. Die drei Zeilen mit erfüllter
+⅓-Schranke sind **alle** 15m-Zeilen; dort nimmt k = 5 dem Kandidaten 75 von rund 235 Minuten Haltezeit, während das
+Placebo seine volle Haltezeit behält. Diese drei Zeilen sind deshalb **kein** Beleg für den Einstiegskurs, sondern
+eine Nebenwirkung der vorregistrierten Wahl k = 5 (die je Zeitrahmen 5, 25 oder 75 Minuten bedeutet).
+
+**Nach der vorregistrierten Regel ist W7 damit ein ernster Kandidat, und der Vollauf muss k = 1 mitführen.** Was der
+Pilot NICHT sagt: warum sich die Differenz über die Haltezeit aufbaut. Bounce, Stale Price und Auswahl am Extrem sind
+als Erklärungen ausgeschlossen, soweit sie im Einstiegskurs sitzen; eine Erklärung, die über Stunden wirkt, ist es
+nicht. Die nächste zu messende Größe wäre deshalb ein **mitverzögerter Topf und ein mitverzögertes Placebo B** —
+damit ließe sich trennen, ob die Differenz mit der Haltezeit des Kandidaten oder mit der des Vergleichs zusammenhängt.
+Gemessen wird das erst nach einem Auftrag.

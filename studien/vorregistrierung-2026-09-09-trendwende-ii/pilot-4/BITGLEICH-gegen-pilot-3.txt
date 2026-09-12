@@ -1,0 +1,13 @@
+Bitgleichheit der Haupttafel k = 0: Pilot 3 (trendwende-ii-2026-09-09/v3/8x3x2x5x4x3+kurs+luecke+haltezeit+schein+jahre) gegen Pilot 4 (trendwende-ii-2026-09-09/v4/8x3x2x5x4x3+kurs+luecke+haltezeit+schein+jahre+verzoegert1-5)
+Konfigurationen: 225 / 225, nur in 3: 0, nur in 4: 0
+Verglichene Blaetter: 278866 | ungleich: 0 | groesste Abweichung: 0
+  zahlen         Blaetter      44 ungleich 0
+  kontrollen     Blaetter     390 ungleich 0
+  ueberleben     Blaetter     280 ungleich 0
+  signalanteil   Blaetter     168 ungleich 0
+  klassenmix     Blaetter      39 ungleich 0
+  seB            Blaetter     240 ungleich 0
+  centBoden      Blaetter      96 ungleich 0
+  jahresKurz     Blaetter     180 ungleich 0
+  regime         Blaetter       5 ungleich 0
+GESAMT: 280308 Blaetter verglichen, 0 ungleich, groesste Abweichung 0.0  => BITGLEICH (Abweichung 0,0)
