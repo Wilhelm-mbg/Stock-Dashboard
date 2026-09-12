@@ -11,6 +11,7 @@
  *   node tools/release.js --hoch              Entwurf, Assets, veroeffentlichen, gegenpruefen.
  *   node tools/release.js --alles [--minor]   Die drei Schritte nacheinander.
  *   node tools/release.js --aufraeumen        Baubaum sicher wegraeumen.
+ *   node tools/release.js --paket-qs [dist]   Ein fertiges dist nachzaehlen. Nur lesen.
  *
  * WARUM ES DIESES SKRIPT GIBT: Jeder Release lief bisher als Handarbeit, und jedes Mal
  * ist dieselbe Falle zugeschnappt - mal fehlte die node_modules-Junction, mal wurde aus
@@ -22,6 +23,7 @@
  *   - bauen, wenn die Tests rot sind
  *   - eine Nummer vergeben, die es als Tag schon gibt
  *   - telemetrie.json committen
+ *   - ein Paket ausliefern, dem Fremdmodule aus dem Produktionsbaum fehlen (Paket-QS)
  *   - veroeffentlichen, ohne danach zu pruefen, was wirklich oben liegt
  */
 const fs = require('fs');
@@ -248,6 +250,230 @@ function naechsteVersion(minor) {
   return teile.join('.');
 }
 
+/* -------------------------------------------------- Paket-QS (12.09.2026) */
+/** WAS HIER SCHIEFGING: Die Release-QS zaehlte bisher "alle 57 Skripte im asar" -
+ *  die EIGENEN Dateien. Fremdmodule hat sie nie angesehen. Am 12.09.2026 kam heraus,
+ *  was das kostet: 8.44.0 und 8.44.1 liegen OHNE graceful-fs, builder-util-runtime,
+ *  lazy-val, js-yaml, lodash.escaperegexp, lodash.isequal und tiny-typed-emitter im
+ *  Paket. Die installierte App meldet unter Einstellungen -> Automatische Updates
+ *  "Update-Modul nicht ladbar: Cannot find module 'graceful-fs'" und kann sich
+ *  deshalb nicht mehr selbst aktualisieren - ausgerechnet der eine Fehler, den kein
+ *  Update mehr heilen kann. Dieselbe Fehlerform wie "Build lieferte Module nicht
+ *  aus" (Momentum 8.2x): damals wurde sie fuer die eigenen Dateien geschlossen,
+ *  nicht fuer die fremden.
+ *
+ *  ZWEI Proben, weil jede fuer sich eine Luecke laesst:
+ *    1. VOLLZAEHLIGKEIT - jedes Paket des Produktionsbaums liegt mit mindestens
+ *       seiner package.json im Archiv. Faengt auch die Pakete, die heute noch
+ *       niemand laedt (ein Pfad in electron-updater, den erst der naechste Fehlerfall
+ *       betritt) - eine Ladeprobe allein sieht die nie.
+ *    2. DIE HARTE PROBE - ein Kind-Prozess fuehrt AUS DEM GEBAUTEN ARCHIV genau die
+ *       Zeile aus, an der die App scheitert: require('electron-updater'). Sie faengt
+ *       den Fall, den eine Namensliste nicht sehen kann: package.json da, Rest halb.
+ *  Kein Netz, kein Start der App - ELECTRON_RUN_AS_NODE laesst die Electron-Binaerdatei
+ *  als blosses Node laufen; nur so ist das asar ueberhaupt lesbar (Node allein kann es
+ *  nicht). Es ist dieselbe Binaerdatei, die spaeter beim Anwender laeuft. */
+
+/** Der Produktionsbaum, dedupliziert nach Namen.
+ *
+ *  Gezaehlt wird der QUELLBAUM (REPO), nicht der Baubaum: dessen node_modules ist nur
+ *  eine Junction hierher, und eine Erwartung, die aus dem Geprueften selbst stammt,
+ *  prueft nichts.
+ *
+ *  --all ist kein Beiwerk. OHNE es zeigt "npm ls" nur die oberste Ebene, und
+ *  electron-updater steht dann ohne ein einziges Kind da. Genau diese Ausgabe wurde am
+ *  12.09.2026 fuer einen kaputten Abhaengigkeitsbaum gehalten - der Baum war in
+ *  Ordnung, die Tiefe war 0. Wer hier --all streicht, bekommt eine Pruefung, die
+ *  nichts mehr prueft und trotzdem gruen ist. */
+function produktionsPakete() {
+  let roh = '';
+  try {
+    roh = execSync('npm ls --omit=dev --all --json', {
+      cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024
+    });
+  } catch (e) {
+    /* npm ls endet bei jeder Auffaelligkeit mit != 0, schreibt den Baum aber trotzdem. */
+    roh = (e && e.stdout) || '';
+  }
+  let baum = null;
+  try { baum = JSON.parse(roh); } catch (e) { baum = null; }
+  if (!baum || typeof baum !== 'object') {
+    schluss('"npm ls --omit=dev --all --json" lieferte keinen lesbaren Baum.\n' +
+            'Ohne ihn laesst sich nicht sagen, was ins Paket gehoert: erst "npm ci" im ' +
+            'Quellverzeichnis, dann wieder bauen.');
+  }
+  const namen = [];
+  const gesehen = Object.create(null);
+  (function sammeln(knoten) {
+    const kinder = (knoten && knoten.dependencies) || null;
+    if (!kinder) return;
+    Object.keys(kinder).forEach(function (name) {
+      const k = kinder[name] || {};
+      /* Fehlendes zaehlt nicht als Soll - es kann gar nicht eingepackt werden, und
+       * eine Pruefung, die daran haengenbleibt, verdeckt den echten Befund. */
+      if (k.missing) return;
+      const schluessel = name + '@' + (k.version || '?');
+      if (gesehen[schluessel]) return;
+      gesehen[schluessel] = true;
+      if (namen.indexOf(name) === -1) namen.push(name);
+      sammeln(k);
+    });
+  })(baum);
+  namen.sort();
+  if (!namen.length) {
+    schluss('Der Produktionsbaum ist leer - das kann nicht stimmen, solange package.json ' +
+            'Abhaengigkeiten nennt. Erst "npm ci" im Quellverzeichnis.');
+  }
+  return namen;
+}
+
+/** Aus einem Archiv-Eintrag den Paketnamen - oder null, wenn die Zeile keiner ist.
+ *
+ *  Gezaehlt wird NUR die package.json: ein Ordner ohne sie ist fuer Nodes Aufloesung
+ *  kein Paket, und "irgendeine Datei unter node_modules/x/" wuerde ein halb
+ *  eingepacktes Modul als vollstaendig durchgehen lassen. Verschachtelte Kopien
+ *  (node_modules/a/node_modules/b) zaehlen unter ihrem eigenen Namen - genau die
+ *  lagen in 8.44.1 drin, waehrend die an die Wurzel gehobenen fehlten.
+ *  Eigene Funktion, damit die Testreihe sie aufrufen kann, statt einen Text zu suchen. */
+function paketNameAusPfad(eintrag) {
+  const p = String(eintrag).split('\\').join('/').replace(/^\//, '');
+  const m = /(?:^|\/)node_modules\/(@[^/]+\/[^/]+|[^/]+)\/package\.json$/.exec(p);
+  return m ? m[1] : null;
+}
+
+/** Welche Pakete liegen im gebauten Archiv? */
+function archivPakete(archiv) {
+  let asar = null;
+  try { asar = require('@electron/asar'); }
+  catch (e) {
+    schluss('@electron/asar laesst sich nicht laden (' + (e && e.message) + ').\n' +
+            'Ohne den Packer ist das gebaute Archiv nicht nachzuzaehlen: npm ci im Quellverzeichnis.');
+  }
+  const drin = Object.create(null);
+  asar.listPackage(archiv).forEach(function (e) {
+    const name = paketNameAusPfad(e);
+    if (name) drin[name] = true;
+  });
+  return drin;
+}
+
+/** Der Quelltext der Ladeprobe.
+ *
+ *  WARUM EINE ATTRAPPE FUER "electron": Mit ELECTRON_RUN_AS_NODE laeuft die
+ *  Electron-Binaerdatei als blosses Node. Sie kann das asar lesen (Node allein kann
+ *  das nicht) - aber das eingebaute Modul "electron" gibt es in diesem Betrieb nicht,
+ *  und electron-updater greift beim Laden danach (ElectronAppAdapter). Ohne Attrappe
+ *  scheitert die Probe IMMER an "Cannot find module 'electron'", und zwar erst NACH
+ *  den eingepackten Modulen - der Befund waere wertlos. Die Attrappe stellt genau das
+ *  bereit, was beim Laden angefasst wird; alles andere bleibt echt, insbesondere jedes
+ *  Modul aus dem Paket.
+ *
+ *  Kein Netz: geladen wird nur, nichts abgerufen. Kein Fenster, kein Start der App. */
+function probeQuelle(modul) {
+  return [
+    "'use strict';",
+    "const Modul = require('module');",
+    "const os = require('os');",
+    'const app = {',
+    '  isPackaged: true,',
+    "  getVersion: function () { return '0.0.0'; },",
+    "  getName: function () { return 'paket-qs'; },",
+    '  getPath: function () { return os.tmpdir(); },',
+    '  getAppPath: function () { return os.tmpdir(); },',
+    '  whenReady: function () { return Promise.resolve(); },',
+    '  on: function () { return app; },',
+    '  once: function () { return app; },',
+    '  quit: function () { },',
+    '  relaunch: function () { }',
+    '};',
+    'const attrappe = {',
+    '  app: app,',
+    '  ipcMain: { on: function () { }, handle: function () { } },',
+    '  net: {}, session: {},',
+    '  autoUpdater: { emit: function () { }, on: function () { } },',
+    '  Notification: function () { this.show = function () { }; }',
+    '};',
+    'const echt = Modul._load;',
+    'Modul._load = function (name) {',
+    "  return name === 'electron' ? attrappe : echt.apply(this, arguments);",
+    '};',
+    'const u = require(' + JSON.stringify(modul) + ');',
+    'if (!u || !u.autoUpdater || typeof u.NsisUpdater !== \'function\') {',
+    "  console.error('Error: electron-updater geladen, aber ohne autoUpdater/NsisUpdater');",
+    '  process.exit(3);',
+    '}',
+    "console.log('geladen');",
+    ''
+  ].join('\n');
+}
+
+function paketQs(dist) {
+  titel('Paket-QS: liegen die Fremdmodule wirklich im Paket?');
+  const entpackt = path.join(dist, 'win-unpacked');
+  const archiv = path.join(entpackt, 'resources', 'app.asar');
+  if (!fs.existsSync(archiv)) {
+    schluss('Das gebaute Archiv fehlt: ' + archiv + '\nOhne es ist nicht zu pruefen, was ausgeliefert wuerde.');
+  }
+
+  const soll = produktionsPakete();
+  const ist = archivPakete(archiv);
+  const fehlend = soll.filter(function (n) { return !ist[n]; });
+  console.log('  Produktionsbaum ' + soll.length + ' Paket(e), im Archiv ' + Object.keys(ist).length);
+  if (fehlend.length) {
+    schluss('Im Paket fehlen ' + fehlend.length + ' Paket(e) aus dem Produktionsbaum:\n  ' +
+            fehlend.join('\n  ') + '\n' +
+            'Genau so entstanden 8.44.0 und 8.44.1: electron-builder hat nur gepackt, was es ' +
+            'fuer den Produktionsbaum hielt. Die App laedt diese Module zur Laufzeit und ' +
+            'scheitert beim Anwender - ein Paket, das sich nicht selbst aktualisieren kann, ' +
+            'wird nicht ausgeliefert.\nErst "npm ci" im Quellverzeichnis, dann neu bauen; ' +
+            'bleibt es dabei, liegt es an electron-builder und nicht am Baum.');
+  }
+  console.log('  ok: alle ' + soll.length + ' Pakete des Produktionsbaums liegen im Archiv');
+
+  /* --- die harte Probe: dieselbe Zeile, an der main.js scheitert --- */
+  const pj = JSON.parse(fs.readFileSync(path.join(REPO, 'package.json'), 'utf8'));
+  let exe = path.join(entpackt, (pj.build && pj.build.productName || pj.productName || pj.name) + '.exe');
+  if (!fs.existsSync(exe)) {
+    /* Der Name kann sich aendern; elevate.exe liefert NSIS mit und ist nicht gemeint. */
+    const kandidaten = fs.readdirSync(entpackt).filter(function (f) {
+      return /\.exe$/i.test(f) && f.toLowerCase() !== 'elevate.exe';
+    });
+    if (kandidaten.length !== 1) {
+      schluss('In ' + entpackt + ' ist die Electron-Binaerdatei nicht eindeutig (' +
+              (kandidaten.join(', ') || 'keine gefunden') + ') - die Ladeprobe braucht sie.');
+    }
+    exe = path.join(entpackt, kandidaten[0]);
+  }
+  const probe = path.join(os.tmpdir(), 'paket-qs-' + process.pid + '.js');
+  const modul = archiv.split('\\').join('/') + '/node_modules/electron-updater';
+  fs.writeFileSync(probe, probeQuelle(modul), 'utf8');
+  try {
+    execFileSync(exe, [probe], {
+      env: Object.assign({}, process.env, { ELECTRON_RUN_AS_NODE: '1' }),
+      encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 120000
+    });
+    console.log('  ok: require(\'electron-updater\') laedt vollstaendig aus dem gebauten Archiv');
+  } catch (e) {
+    const roh = ((e && e.stderr) || '').toString() + '\n' + ((e && e.message) || '');
+    /* Die ERSTE Zeile des Node-Auswurfs ist der Dateikopf ("node:internal/..."), nicht
+     * der Fehler - sie allein gemeldet, steht der Leser vor einem Raetsel. */
+    const treffer = /^\s*(?:[A-Za-z]*Error):.*$/m.exec(roh);
+    const meldung = (treffer ? treffer[0] : (roh.split('\n').filter(Boolean)[0] || '(keine Ausgabe)')).trim();
+    const fehlt = /Cannot find module '([^']+)'/.exec(roh);
+    schluss('Aus dem gebauten Archiv laesst sich electron-updater NICHT laden:\n  ' + meldung +
+            (fehlt ? '\n  Es fehlt: ' + fehlt[1] : '') +
+            '\nDas ist derselbe Weg, den main.js beim Update-Knopf geht - und bei einem fehlenden ' +
+            'Modul woertlich der Fehler, den die installierte App am 12.09.2026 zeigte. Ein Paket, ' +
+            'das sich nicht selbst aktualisieren kann, wird nicht ausgeliefert.\n' +
+            (fehlt ? 'Erst "npm ci" im Quellverzeichnis, dann neu bauen.'
+                   : 'Es fehlt KEIN Modul - dann ist womoeglich die Attrappe fuer "electron" zu duenn ' +
+                     'geworden (electron-updater greift beim Laden weiter als frueher). Dann ist die ' +
+                     'Attrappe zu erweitern, nicht die Probe zu streichen.'));
+  } finally {
+    try { fs.unlinkSync(probe); } catch (e2) { /* Wegwerf bleibt liegen */ }
+  }
+}
+
 function bauen(minor) {
   sperreSetzen('bauen', naechsteVersion(minor));
   try { return bauenKern(minor); } finally { sperreLoesen(); }
@@ -373,6 +599,12 @@ function bauenKern(minor) {
   const setup = path.join(dist, 'Markt-Dashboard-Setup.exe');
   const yml = path.join(dist, 'latest.yml');
   if (!fs.existsSync(setup) || !fs.existsSync(yml)) schluss('Im dist fehlt Setup.exe oder latest.yml.');
+
+  /* VOR dem Bau-Stand und damit vor allem, was --hoch spaeter akzeptiert: ein Paket,
+   * dem Fremdmodule fehlen, bekommt gar nicht erst die Bescheinigung, aus der es
+   * hochgeladen werden darf. */
+  paketQs(dist);
+
   /* Riegel 2: der Stand, aus dem DIESES Paket entstand - --hoch verlangt ihn. */
   bauStandSchreiben(dist, neu);
   console.log('\n  fertig: ' + setup + '  (' + Math.round(fs.statSync(setup).size / 1048576) + ' MB)');
@@ -527,6 +759,14 @@ function darfAusliefern(was) {
 }
 if (arg.indexOf('--aufraeumen') !== -1) { baubaumWeg(); console.log('Baubaum weg.'); }
 else if (arg.indexOf('--pruefen') !== -1) { pruefen(); }
+/* Nachzaehlen darf jeder: es liest nur und veroeffentlicht nichts. Gedacht fuer den
+ * Fall, dass ein Bau an der Paket-QS abbricht - dann laesst sich das dist ansehen,
+ * ohne den ganzen Lauf zu wiederholen. */
+else if (arg.indexOf('--paket-qs') !== -1) {
+  const wo = arg[arg.indexOf('--paket-qs') + 1];
+  paketQs(wo && wo.charAt(0) !== '-' ? path.resolve(wo) : path.join(BAUBAUM, 'dist'));
+  console.log('\n  Paket-QS bestanden.');
+}
 else if (arg.indexOf('--bauen') !== -1) { darfAusliefern('--bauen'); bauen(minor); }
 else if (arg.indexOf('--hoch') !== -1) { darfAusliefern('--hoch'); hoch(); }
 else if (arg.indexOf('--alles') !== -1) { darfAusliefern('--alles'); pruefen(); bauen(minor); hoch(); }
