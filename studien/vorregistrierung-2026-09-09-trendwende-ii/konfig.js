@@ -88,7 +88,7 @@ var Z_POWER80 = 0.8416;
 var TOR1_FAKTOR = 4;
 var MIN_BES_TAGE = 30;
 var BAND_T = 3, BAND_PP = 0.045;                             // Placebo intraday gepoolt: |t| < 3 und |Mittel| < 0,045 Pp (Auftrag §2d)
-var SE_ERWARTET_NAECHSTE = null;                             // Uebernacht-Placebo: |Mittel| < 3 x se_erwartet - aus dem Piloten, als Nachtrag eingetragen
+var SE_ERWARTET_NAECHSTE = 0.0038;                           // Uebernacht-Placebo: |Mittel| < 3 x se_erwartet; Pilot 12.09.2026 (Nachtrag 2): se gepoolt 1m 0,0017 / 5m 0,0023 / 15m 0,0038 - der groesste Wert
 var JEDE_KLASSE_ZU = KLASSEN[KLASSEN.length - 1].huerde;    // 0,0449
 var AKTUELL_TAGE = 250, AKTUELL_MIN_TAGE = 10, AKTUELL_T_MIN = -2;   // Aktualitaets-Tor (§7.4)
 var VORWAERTS_MIN_TAGE = 30, VORWAERTS_T = 2.0;                        // Kandidat fuer den Vorwaertstest (§7)

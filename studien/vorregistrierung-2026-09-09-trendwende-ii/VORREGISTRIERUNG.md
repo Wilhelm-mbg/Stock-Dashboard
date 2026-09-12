@@ -409,3 +409,39 @@ Stellen oben; alles andere bleibt.
    fortsetzungOhneUebernacht` stehen in `_fortschritt.json` und im Bericht; `ohneHorizont` hat fünf Felder.
 
 Kennung unverändert `trendwende-ii-2026-09-09/v1/9x3x2x5x4x3+kurs+schein+jahre`.
+
+## 17. NACHTRAG 2 — 12.09.2026, nach dem Piloten (19 Reihen, ein Prozess, 13:20–13:50), vor dem Vollauf
+
+Der Pilot (`pilot-1/`, `PILOT-ERGEBNIS.md`) ist gelaufen: 193 Dateien, 11,2 Mio reguläre Kerzen, 30 Minuten, 0 Detektorfehler,
+8 ausgelassene Dateien (AATC 2023–2025, ABVE 2016–2020 — die bekannten Archivlücken), Übernacht offen/verbucht/verfallen
+56.824 / 51.151 / 5.673 (verfallen = letzte Datei je Reihe), gepoolte Placebo-Bänder 0 von 15 gefallen, Einzel-Placebos 4
+von 135. **Die Zahlen des Piloten sind kein Befund** (19 Reihen, davon 5 illiquide und 5 verschwundene; Tagesmittel über so
+wenige Reihen tragen das Marktbeta ungedämpft).
+
+1. **`se_erwartet` für den Übernacht-Placebo (§8):** gepoolte Placebo-A-se der Haltedauer `naechste` im Piloten: 1m 0,0017,
+   5m 0,0023, 15m 0,0038 Pp. Gesetzt wird der **größte Wert, 0,0038** (`konfig.js SE_ERWARTET_NAECHSTE`), Schranke also
+   |Mittel| < 0,0114 Pp neben |t| < 3. Im Vollauf (≈ 7.300 Reihen) wird die se kleiner sein; die Schranke aus dem Piloten
+   ist damit die weitere und eine echte Vorab-Zahl.
+2. **Hochrechnung (§14):** 2.900–3.000 s je GB Pilotrate (1m trägt 83 % der Rechenzeit); 122 GB ⇒ ≈ 100 Prozess-Stunden,
+   in 8 Teilen 12–13 h nominal, unter Parallellast (acht Prozesse, eine Platte) eher **ein Tag**; Rahmen 1–2 Tage.
+3. **Beobachtung, keine Regeländerung — W7 (RSI-Divergenz):** im Piloten ist W7 auf 5m/15m in **beiden** Richtungen gegen den
+   Topf positiv (u_B 0,11–0,22 Pp, t 6–13), auch **über Nacht** (long und short je +0,13…+0,22). Beide Richtungen positiv
+   heißt: der **Einstiegskurs** ist verzerrt, nicht der Markt vorhersagbar — W7 feuert exakt am 60-Kerzen-Extrem, und die
+   Eröffnung der Folgekerze liegt dann mit hoher Wahrscheinlichkeit noch auf derselben Seite der Spanne (Bid-Ask-Bounce am
+   Extrem; die Kassa-Hürde deckt den Median der Spanne zur Mittagszeit, nicht die Spanne am Extrem). Der Placebo (zufällige
+   Kerzen) kann das nicht sehen; die Gegenprobe „geteilter Kurs" prüft nur den Signalschluss. Beleg im Piloten: die gepaarte
+   Differenz Kandidat − Placebo B (gleiches 30-Minuten-Fenster, gleiche Richtung, anderer Einstieg) ist für W7 5m long
+   **bei „bis Schluss" und „nächste Eröffnung" gleich groß** (+0,129 / +0,129 Pp, t 22 / 21; short +0,113 / +0,113) — eine
+   Größe, die vom Ausstieg nicht abhängt, sitzt im Einstieg. **Die registrierte Einstiegsregel bleibt unverändert** (sie ist die der Minutenstudie). Vorschlag an den PM, vor dem Vollauf zu entscheiden: eine
+   **nachrichtliche Robustheitszeile „Einstieg Eröffnung i+2"** (eine Kerze später) als vierte Art in der Zellentabelle
+   (+27 Reihen, ≈ 740 MB je Prozess) oder als Kurszellen-Feld „Σ Eröffnung i+1 − Schluss i" (Einstiegslücke S9 der
+   Messmaschine, 8 Byte je Kurszelle). Ohne eine davon kann der Vollauf für W7 (und jede Regel, die am Extrem feuert)
+   Bounce und Wende nicht trennen; ein „belegt" für W7 wäre dann mit diesem Vorbehalt zu lesen.
+4. **Zähler `fortsetzungOhneUebernacht`** zählt auch die erste Datei nach einer **Archivlücke** (Vorjahr fehlt, Warmlauf neu
+   gebaut) — im Piloten 1 (ABVE/2021 nach fehlenden 2016–2020). Bedeutung unverändert: keine Übernacht-Übergabe in diese
+   Datei, gezählt, nicht geschätzt.
+5. **Realisierte se_B (u, Bestätigung, Median über die Konfigurationen, 19 Reihen):** 1m 0,004–0,018, 5m 0,010–0,035,
+   15m 0,018–0,067 Pp — im Vollauf um etwa √(7.300/19) kleiner für die idiosynkratische Komponente; die Planzahlen aus §11
+   bleiben stehen, der Vollauf schreibt seine se_B daneben.
+
+Kennung unverändert. Der Vollauf startet nicht aus diesem Chat.
