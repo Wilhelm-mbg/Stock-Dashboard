@@ -21302,6 +21302,146 @@ console.log('\n88) Live-Sammler ohne Bremse: Tagesablage, Stand im Speicher, fre
   void runde88;
 })();
 
+console.log('\n89) Paket-QS: die Fremdmodule muessen im Paket liegen (Sperrklinke zu 8.44.0/8.44.1)');
+(function () {
+  /* WOZU: Am 12.09.2026 stand fest, dass 8.44.0 und 8.44.1 ohne graceful-fs,
+   * builder-util-runtime, lazy-val, js-yaml, lodash.escaperegexp, lodash.isequal und
+   * tiny-typed-emitter ausgeliefert wurden. Die App meldete beim Update-Knopf
+   * "Cannot find module 'graceful-fs'" und konnte sich nicht mehr selbst
+   * aktualisieren - der eine Fehler, den kein Update heilt. Die Release-QS hatte
+   * "alle 57 Skripte im asar" gezaehlt: die EIGENEN Dateien, nie die fremden.
+   *
+   * Diese Sperrklinke haelt zwei Dinge fest:
+   *   a) dass die Paket-QS ueberhaupt noch in tools/release.js steht, und
+   *   b) dass der Produktionsbaum dieses Verzeichnisses den Updater samt Unterbau
+   *      hergibt - ein kaputter Baum wird HIER rot, in der Suite, und nicht erst
+   *      hinterher beim Anwender.
+   *
+   * Gesucht wird im CODE, nicht im Kommentar: der Kopf von release.js beschreibt die
+   * Paket-QS in Prosa und traegt alle Stichworte, die eine Suche nach Text finden
+   * wuerde - eine Pruefung, die daran haengt, bliebe gruen, auch wenn nur noch die
+   * Erklaerung da waere. */
+  var relQ89 = fs.readFileSync(__dirname + '/tools/release.js', 'utf8');
+  var codeQ89 = ohneKommentare(relQ89);
+
+  /* --- a) Die Paket-QS steht im Skript und haengt im Bau --- */
+  ok(/function paketQs\(/.test(codeQ89), '89.1 release.js kennt die Paket-QS');
+  var bauKern89 = codeQ89.slice(codeQ89.indexOf('function bauenKern('), codeQ89.indexOf('function sha512('));
+  ok(bauKern89.length > 100 && /\bpaketQs\(dist\)/.test(bauKern89),
+     '89.1 --bauen ruft sie auf - vor dem Bau-Stand, also vor allem, was --hoch akzeptiert');
+
+  /* Der Soll-Stand kommt aus npm, und zwar mit --all. OHNE --all zeigt npm ls nur die
+   * oberste Ebene: electron-updater stuende ohne ein einziges Kind da, die Liste waere
+   * leer und die Pruefung immer gruen. Genau diese Ausgabe wurde am 12.09. fuer einen
+   * kaputten Baum gehalten. */
+  /* Nach der AUSFUEHRENDEN Zeile gesucht, nicht nach dem Wortlaut: "npm ls --omit=dev
+   * --all --json" steht auch in der Abbruchmeldung daneben. Faende die Pruefung die,
+   * bliebe sie gruen, waehrend der Aufruf laengst weg waere. */
+  var lsZeile89 = codeQ89.split(String.fromCharCode(10)).filter(function (z) {
+    return z.indexOf('npm ls') > -1 && /exec(Sync|FileSync)\(/.test(z);
+  })[0] || '';
+  ok(lsZeile89.indexOf('--omit=dev') > -1 && lsZeile89.indexOf('--all') > -1 && lsZeile89.indexOf('--json') > -1,
+     '89.2 der Soll-Stand wird mit "npm ls --omit=dev --all --json" geholt', lsZeile89.trim().slice(0, 70));
+  ok(/require\('@electron\/asar'\)/.test(codeQ89) && /listPackage\(/.test(codeQ89),
+     '89.2 der Ist-Stand wird aus dem gebauten asar gelesen');
+
+  /* Die harte Probe: dieselbe Zeile, an der main.js scheitert, ausgefuehrt aus dem
+   * gebauten Archiv. Node allein kann ein asar nicht lesen - deshalb die
+   * Electron-Binaerdatei als blosses Node (kein Fenster, kein Start der App). */
+  ok(/ELECTRON_RUN_AS_NODE/.test(codeQ89) && codeQ89.indexOf('/node_modules/electron-updater') > -1,
+     '89.3 die harte Probe laedt electron-updater aus dem Archiv, mit ELECTRON_RUN_AS_NODE');
+  /* Der Quelltext der Probe wird ausgeschnitten und AUFGERUFEN - was er erzeugt, ist
+   * die Zusicherung, nicht wie er aussieht. */
+  var vonP89 = relQ89.indexOf('function probeQuelle(');
+  var bisP89 = relQ89.indexOf('\n}', vonP89) + 2;
+  ok(vonP89 > -1 && bisP89 > 1, '89.3 der Quelltext der Ladeprobe ist auffindbar');
+  var probeQ89x = new Function(relQ89.slice(vonP89, bisP89) + '\nreturn probeQuelle;')()('/pfad/app.asar/node_modules/electron-updater');
+  ok(probeQ89x.indexOf('"/pfad/app.asar/node_modules/electron-updater"') > -1,
+     '89.3 die Probe laedt genau das Modul aus dem uebergebenen Archiv');
+  /* Mit ELECTRON_RUN_AS_NODE gibt es das eingebaute Modul "electron" nicht, und
+   * electron-updater greift beim Laden danach - ohne Attrappe scheitert die Probe
+   * IMMER, und zwar erst NACH den eingepackten Modulen. Genau EIN Name darf abgefangen
+   * werden: wer hier weitere eintraegt, macht die Probe blind fuer das, wofuer sie da
+   * ist - ein fehlendes Paket wuerde dann durch die Attrappe ersetzt. */
+  ok(/Modul\._load/.test(probeQ89x) && (probeQ89x.match(/name === '[^']+'/g) || []).join() === "name === 'electron'",
+     '89.3 abgefangen wird genau "electron" - jedes Paket aus dem Archiv wird echt geladen',
+     (probeQ89x.match(/name === '[^']+'/g) || []).join());
+
+  /* Die Zuordnung Pfad -> Paketname wird aus dem Quelltext geschnitten und einzeln
+   * aufgerufen - dieselbe Bauart wie bei gehoertInsPaket in Abschnitt 45. Ein Test,
+   * der dafuer erst ein Archiv bauen muesste, waere in einem Verzeichnis mit
+   * paralleler Arbeit die falsche Idee. */
+  var von89 = relQ89.indexOf('function paketNameAusPfad(');
+  var bis89 = relQ89.indexOf('\n}', von89) + 2;
+  ok(von89 > -1 && bis89 > 1, '89.4 release.js ordnet Archiv-Eintraege einem Paketnamen zu');
+  var nameAus89 = new Function(relQ89.slice(von89, bis89) + '\nreturn paketNameAusPfad;')();
+  [['node_modules/graceful-fs/package.json', 'graceful-fs'],
+   ['/node_modules/graceful-fs/package.json', 'graceful-fs'],
+   ['node_modules\\graceful-fs\\package.json', 'graceful-fs'],
+   ['node_modules/electron-updater/node_modules/fs-extra/package.json', 'fs-extra'],
+   ['node_modules/@electron/asar/package.json', '@electron/asar']].forEach(function (f) {
+    ok(nameAus89(f[0]) === f[1], '89.4 ' + f[0] + ' -> ' + f[1], nameAus89(f[0]));
+  });
+  /* Und die Gegenprobe: eine beliebige Datei aus einem Modul belegt NICHT, dass das
+   * Modul vollstaendig drin ist. Zaehlte sie mit, ginge ein halb eingepacktes Paket
+   * als heil durch - und genau davon handelt dieser Abschnitt. */
+  ['node_modules/graceful-fs/index.js', 'node_modules/graceful-fs/lib/package.json.bak',
+   'package.json', 'daten/universum-2026.json'].forEach(function (f) {
+    ok(nameAus89(f) === null, '89.4 kein Paketbeleg: ' + f, String(nameAus89(f)));
+  });
+
+  /* --- b) Der Produktionsbaum dieses Verzeichnisses --- */
+  /* Der Updater bringt acht Abhaengigkeiten mit (builder-util-runtime, fs-extra,
+   * js-yaml, lazy-val, lodash.escaperegexp, lodash.isequal, semver,
+   * tiny-typed-emitter). Stehen sie hier nicht, packt electron-builder sie auch
+   * nicht ein - dann ist der Baum kaputt und der naechste Release waere es auch.
+   *
+   * Kein Absturz, wenn npm nicht erreichbar ist: ein Absturz schreibt weder ❌ noch
+   * "FEHLGESCHLAGEN", und wer die Ausgabe nach diesen Worten absucht, haelt den Lauf
+   * fuer gruen (die Falle vom 25.08., siehe Abschnitt 45). */
+  var lsRoh89 = null;
+  try {
+    lsRoh89 = require('child_process').execSync('npm ls --omit=dev --all --json', {
+      cwd: __dirname, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024
+    });
+  } catch (e) { lsRoh89 = (e && e.stdout) || null; }   /* npm ls endet bei Auffaelligkeiten != 0, liefert aber JSON */
+  var baum89 = null;
+  try { baum89 = JSON.parse(lsRoh89); } catch (e) { baum89 = null; }
+  if (!baum89) {
+    console.log('  ℹ  "npm ls --omit=dev --all --json" war hier nicht lesbar - der Baum wurde nicht geprueft.');
+    console.log('     Ohne npm ist das kein Befund ueber das Paket; im Bau laeuft dieselbe Abfrage nochmal.');
+  } else {
+    var upd89 = ((baum89.dependencies || {})['electron-updater']) || null;
+    ok(!!upd89, '89.5 der Produktionsbaum kennt electron-updater');
+    var kinder89 = Object.keys((upd89 && upd89.dependencies) || {});
+    ok(kinder89.length >= 8,
+       '89.5 electron-updater bringt seinen Unterbau mit (>= 8 Abhaengigkeiten)', kinder89.length + ': ' + kinder89.join(','));
+    /* Namentlich die, die in 8.44.0/8.44.1 fehlten - eine Zahl allein saehe nicht,
+     * wenn acht andere an ihre Stelle traeten. */
+    ['builder-util-runtime', 'fs-extra', 'js-yaml', 'lazy-val', 'lodash.escaperegexp',
+     'lodash.isequal', 'semver', 'tiny-typed-emitter'].forEach(function (n) {
+      ok(kinder89.indexOf(n) > -1, '89.5 im Baum: ' + n);
+    });
+    /* graceful-fs war der Name in der Fehlermeldung der App - es haengt unter
+     * fs-extra, nicht direkt unter dem Updater. */
+    var fsx89 = (upd89 && upd89.dependencies && upd89.dependencies['fs-extra']) || {};
+    ok(Object.keys(fsx89.dependencies || {}).indexOf('graceful-fs') > -1,
+       '89.5 graceful-fs haengt unter fs-extra - der Name aus der Fehlermeldung vom 12.09.');
+  }
+
+  /* --- Und der Hinweis in der App --- */
+  /* Die Meldung "Update-Modul nicht ladbar" bleibt: sie war richtig und hat den
+   * Fehler sichtbar gemacht. Sie sagt jetzt zusaetzlich, was zu tun ist - eine App,
+   * der das Update-Modul fehlt, kann sich nicht selbst reparieren. */
+  var mainQ89 = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var mCode89 = ohneKommentare(mainQ89);
+  ok(/Update-Modul nicht ladbar/.test(mCode89), '89.6 die Meldung "Update-Modul nicht ladbar" bleibt');
+  ok(/Paketfehler/.test(mCode89) && /GitHub-Releases/.test(mCode89),
+     '89.6 und sie nennt den Ausweg: Paketfehler, Setup von GitHub-Releases installieren');
+  ok((mCode89.match(/UPD_PAKETFEHLER/g) || []).length >= 3,
+     '89.6 derselbe Hinweis an beiden Stellen, aus einer Quelle', (mCode89.match(/UPD_PAKETFEHLER/g) || []).length);
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

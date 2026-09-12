@@ -2469,6 +2469,13 @@ function updSend(patch) {
   }
 }
 let updFehler = null;
+/* Die Meldung "Update-Modul nicht ladbar" war richtig und hat den Fehler am
+ * 12.09.2026 ueberhaupt erst sichtbar gemacht (8.44.0/8.44.1 wurden ohne
+ * graceful-fs & Co. gepackt, siehe Paket-QS in tools/release.js). Sie sagte aber
+ * nicht, was zu tun ist: Ein Paket, dem das Update-Modul fehlt, kann sich
+ * bauartbedingt NICHT selbst reparieren - die Fassung von Hand ist der einzige Weg
+ * heraus. Genau das steht ab jetzt dabei. */
+const UPD_PAKETFEHLER = 'Paketfehler – bitte Setup von GitHub-Releases installieren.';
 function setupUpdater() {
   // WICHTIG: Ein bereits eingerichteter Updater wird ZURÜCKGEGEBEN, nicht mit null quittiert.
   // Vorher meldete der Knopf "Update-Modul nicht verfügbar", sobald der Start-Timer den
@@ -2479,7 +2486,7 @@ function setupUpdater() {
     autoUpd = require('electron-updater').autoUpdater;
   } catch (e) {
     updFehler = (e && e.message) ? e.message : String(e);
-    updSend({ state: 'error', version: null, pct: 0, msg: 'Update-Modul fehlt: ' + updFehler });
+    updSend({ state: 'error', version: null, pct: 0, msg: 'Update-Modul fehlt: ' + updFehler + ' – ' + UPD_PAKETFEHLER });
     return null;
   }
   const updAus = gespeicherteSettings().autoUpdate === false;   // Opt-out gilt ab dem Start
@@ -2510,7 +2517,7 @@ ipcMain.handle('update-check', async () => {
   const u = setupUpdater();
   if (!u) return { ok: false, packaged: app.isPackaged,
     msg: !app.isPackaged ? 'Läuft aus dem Quellcode – Updates gibt es nur in der installierten Version.'
-      : ('Update-Modul nicht ladbar' + (updFehler ? ': ' + updFehler : '')) };
+      : ('Update-Modul nicht ladbar' + (updFehler ? ': ' + updFehler : '') + ' – ' + UPD_PAKETFEHLER) };
   try { await u.checkForUpdates(); return { ok: true }; }
   catch (e) { updSend({ state: 'error', msg: 'Update-Fehler: ' + ((e && e.message) || e) }); return { ok: false, msg: String((e && e.message) || e) }; }
 });
