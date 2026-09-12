@@ -360,3 +360,11 @@ Wilhelm hat den Connector [Bigdata.com](https://bigdata.com) freigeschaltet (Anb
 **Probe 12.09. (drei Anfragen):** Activision Blizzard, Delisting Oktober 2023 → sofort das 8-K vom 13.10.2023 mit Item 3.01 (Übernahme durch Microsoft, 95 $ je Aktie). Celgene, November 2019 → Nachrichten (The Fly, MT Newswires, Benzinga) mit Bedingungen der Übernahme. Whole Foods, 8-K August 2017 → **leer** (0 Treffer, 4.000 Web-Einheiten verbraucht). Historie ab ~2019 belegt, 2017 nicht — vor einer Studie mit älteren Ereignissen die Tiefe je Quellart mit einer Stichprobe prüfen.
 
 **Wofür er taugt:** (1) Verschwundene Reihen einordnen (Übernahme / Insolvenz / stilles Delisting) — Tageskerzen-Frage, die die Kanalstudie aufgeworfen hat (Delisting-Ausstiege mit +29 Pp waren Übernahmen); (2) Ereignisdaten für „Information statt Muster" (Quartalszahlen-Termine, Übernahmeankündigungen, Indexaufnahmen) — **Momentaufnahme von heute, keine Point-in-Time-Historie**: jede Registrierung muss ausweisen, wann ein Ereignis bekannt war; (3) Stimmung als Bedingung — nur mit vorab notiertem Erwartungswert. **Wofür nicht:** Kurse (haben wir besser), Live-Signale in der App, alles, was Guthaben in Schleifen verbraucht.
+
+### EDGAR als Quelle für Delisting-Gründe (12.09.2026)
+
+Der Lauf der Gründe-Tafel (9.027 Anfragen, 5,7/s, alles gecacht unter `studien/verschwundene-gruende-2026-09-12/edgar/`) hat zwei Dinge festgelegt, die jede spätere EDGAR-Arbeit übernehmen sollte:
+
+- **Kürzel → CIK NICHT über `company_tickers.json`.** Die Datei trägt den *heutigen* Besitzer eines Kürzels; bei wiederverwendeten Kürzeln zeigt sie auf die falsche Firma (AAC → Ares Acquisition Corp III statt der erloschenen Reihe). Richtig ist die **zeitgefensterte Volltextsuche** um den letzten Balken herum. Siehe [[kuerzel-wechseln-den-besitzer]] — dieselbe Falle, andere Ebene.
+- **Formulare kommen später als das Ereignis.** Form 25 wird regelmäßig Wochen nach dem letzten Handelstag eingereicht; eine Prüfung „Datum ≤ letzter Balken + 30 Tage" gilt für **Ereignisse**, nicht für **Einreichungen** (dort das Laufsfenster).
+- Bigdata.com wurde nur als Stichprobe auf die Unbekannten angesetzt: 9 Abfragen, **25,2 von 250 erlaubten Einheiten** (Guthaben 975,86 → 950,61). Für die Masse taugt EDGAR, weil es vollständig, kostenlos und Point-in-Time ist.

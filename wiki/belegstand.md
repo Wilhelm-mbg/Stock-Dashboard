@@ -248,3 +248,25 @@ Vorregistriert vor der ersten Rechnung (`studien/vorregistrierung-2026-09-08-tre
 ### Jahresscheiben (12.09.2026, nachrichtlich, post hoc — kein Urteil)
 
 Auf Wilhelms Frage „nur ein Handelsjahr betrachten?" wurden alle Zellen der Minutenstudie und der Kanalstudie je Kalenderjahr und für die letzten 250 Handelstage gelesen (`ergebnis-5m15m-2026-09-08/JAHRESSCHEIBEN.md`, `ergebnis-1m-2026-09-11/JAHRESSCHEIBEN.md`, `trendkanal-tage/ergebnis-2026-09-09/JAHRESSCHEIBEN.md`). Befund: **kein Jahr, in dem eine Familie der Minutenstudie im Mittel positiv wäre**; letzte 250 Tage −0,085 / −0,148 / −0,136 Pp netto (Dip / Ausbruch / Wende auf 5m/15m), auf 1m −0,099 / −0,139 / −0,101; positive Konfigurationen 0–2 %, nur in den Crash-Jahren 2020 und 2022 mehr (Dip 41 % bzw. 33 %). Kanalstudie: 2020 als einziges Jahr mit t > 2 beim Rücklauf-Kauf (+3,9 Pp) — der Ausreißer, der die Donchian-55-Entdeckung trug. Die Zeitachse zeigt Ausreißer-Jahre, keine junge Kante. Ab jetzt Pflichttabelle jeder Studie, mit Aktualitäts-Tor (entscheide.md 09.09.).
+
+### Warum die Verschwundenen verschwunden sind — und warum das die Delisting-Gewinne erklärt (12.09.2026)
+
+Tafel: `studien/verschwundene-gruende-2026-09-12/` (EDGAR-belegt, 4,2 % unbekannt). Sie beantwortet die Frage, die die Kanalstudie aufgeworfen hatte: dort brachten Delisting-Ausstiege bei Ausbruch-Long im Mittel **+29 Pp**, und es war offen, ob das Übernahmeprämien sind.
+
+**Antwort: nein, jedenfalls nicht am Ausstieg.** Der Median-Aufschlag zwischen dem gezahlten Barpreis und dem letzten Kurs im Archiv beträgt über 787 Barfusionen **+0,029 Pp** — praktisch null (ATVI 95,00 gegen 94,42; TWTR 54,20 gegen 53,80; VMW 142,50 gegen 142,52). **Die Prämie wird am Ankündigungstag bezahlt, Wochen vorher.** Wer am Tag des Delistings aussteigt, bekommt nichts geschenkt.
+
+Woher die +29 Pp dann kommen, zeigt der **Endlauf** (Rendite der letzten 60 Balkentage vor dem letzten Balken, aus denselben Tagesdateien; kein Trade, nur die Bewegung, in die ein Delisting-Ausstieg hineinlief):
+
+| Grund | Reihen | Median Endlauf (Pp) | Mittel (Pp) |
+|---|---:|---:|---:|
+| Übernahme | 1.635 | +4,91 | +22,74 |
+| Aktientausch | 309 | +1,92 | +6,39 |
+| SPAC-Ende | 273 | +4,74 | +6,06 |
+| Kürzelwechsel | 1.301 | −2,46 | +16,07 |
+| freiwillig | 309 | +1,30 | −1,29 |
+| **Zwangs-Delisting** | 544 | **−21,44** | −17,69 |
+| **Insolvenz** | 357 | **−72,97** | −56,78 |
+
+**Lesart:** Die Delisting-Gewinne der Kanalstudie sind der *Anlauf* zur Übernahme, nicht der Ausstieg — und ihm steht der Endlauf der Insolvenzen mit −73 Pp gegenüber. Wer die Verschwundenen aus einer Messung lässt, schneidet beide Enden weg und sieht weder das eine noch das andere. Das ist die quantitative Fassung von [[ueberlebensverzerrung-ist-der-killer]]. **Für Strategien folgt daraus nichts Handelbares:** die Prämie liegt vor dem Ereignis, und wer sie fangen will, misst Ankündigungen, nicht Kurse.
+
+**Zwei Nebenbefunde, die Messungen betreffen:** (1) 153 Insolvenzen standen im Maßnahmen-Archiv als „Umbenennung" (Q-Kürzel wie AMRS→AMRSQ) — genau die Fälle mit −73 Pp Endlauf; wer Kürzelwechsel pauschal als „lebt weiter" führt, verliert sie. (2) Am **21.03.2025 enden 77 Reihen auf einmal** (nächsthäufigster Tag: 13) — zu gutem Teil eine Grenze der Sammlung, kein Marktereignis; 37 davon sind unbelegt.
