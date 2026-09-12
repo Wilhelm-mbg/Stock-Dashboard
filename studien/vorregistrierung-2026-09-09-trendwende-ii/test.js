@@ -1027,6 +1027,45 @@ abschnitt(16, 'VERZOEGERTER EINSTIEG (Nachtrag 5): Sprung in der Einstiegskerze,
   pruefe(hierA > 0 && hierB > 0 && sondeA === hierA && sondeB === hierB,
     '16g Placebo A (' + hierA + ' Beobachtungen) und Placebo B (' + hierB + ') unveraendert gegenueber dem Lauf ohne k-Zellen (' + sondeA + ' / ' + sondeB + ')');
 
+
+  /* --- 16i: die AUSWERTUNG der k-Zellen gegen eine Handrechnung ---
+   * Konstruierter Speicher: bekannte k-Zellen, bekannter Topf, bekanntes Placebo B. Geprueft werden brutto_B, u_B,
+   * Kand−PlB und haltezeit_kand - jede Zahl gegen eine Rechnung, die ohne auswerten.js auskommt. */
+  var nTv = K.kalender().tage.length, spH = new M.Speicher(nTv), ctxH = { iBes: 100, iReg: 0 };
+  var KL = 1, LE = 1, ZI = 0, HH = H1H, KANDH = K.kandIndex(0, ZI), DIRH = 0, VKH = 0;
+  var sollRoh = [], sollU = [], sollDiff = [], nJeTag = 3, topfMittel = 0.02, huerde = K.KLASSEN[KL].huerde;
+  for (var tv = 80; tv < 160; tv++) {
+    var rK = 0.30 + (tv % 3) * 0.01, rP = 0.11 + (tv % 2) * 0.02, hzV = 47;
+    var iv = K.vzZelle(nTv, VKH, KANDH, DIRH, HH, tv, KL, LE);
+    spH.vzn[iv] = nJeTag; spH.vzs[iv] = nJeTag * rK; spH.vzhn[iv] = nJeTag; spH.vzhs[iv] = nJeTag * hzV;
+    var it = K.topfZelle(nTv, ZI, HH, tv, KL, LE);
+    spH.tn[it] = 10; spH.ts[it] = 10 * topfMittel;
+    var ib = K.zelle(nTv, K.reiheIndex(KANDH, 2), DIRH, HH, tv, KL, LE);
+    spH.n[ib] = nJeTag; spH.s[ib] = nJeTag * rP; spH.h2[ib] = 0;
+    if (tv >= ctxH.iBes) { sollRoh.push(rK); sollU.push(rK - topfMittel - huerde); sollDiff.push(rK - rP); }
+  }
+  var zeile = A.verzoegertZeile(spH, ctxH, VKH, 0, ZI, DIRH, HH, 1);
+  var okA = zeile.nTage === sollRoh.length && zeile.nSig === sollRoh.length * nJeTag
+    && Math.abs(zeile.brutto.mittel - mittel(sollRoh)) < 1e-12
+    && Math.abs(zeile.u.mittel - mittel(sollU)) < 1e-12
+    && Math.abs(zeile.kandPlB.mittel - mittel(sollDiff)) < 1e-12
+    && Math.abs(zeile.haltezeit - 47) < 1e-12 && zeile.entfaellt === false && zeile.leer === false;
+  pruefe(okA, '16i auswerten.verzoegertZeile gegen die Handrechnung: nTage ' + zeile.nTage + ', brutto_B ' + f4(zeile.brutto.mittel) + ' = ' + f4(mittel(sollRoh)) + ', u_B ' + f4(zeile.u.mittel) + ' = brutto − Topf ' + topfMittel + ' − K ' + f4(huerde) + ', Kand−PlB ' + f4(zeile.kandPlB.mittel) + ' = ' + f4(mittel(sollDiff)) + ', haltezeit ' + f4(zeile.haltezeit));
+  var zeileVor = A.verzoegertZeile(spH, ctxH, VKH, 0, ZI, DIRH, H3H, 1);
+  pruefe(zeileVor.leer === true && zeileVor.nTage === 0 && zeileVor.entfaellt === false,
+    '16i2 eine Haltedauer ohne k-Zellen heisst „leer\", nicht „entfaellt\" (nTage ' + zeileVor.nTage + ')');
+
+  /* --- 16j: das strukturelle „entfaellt\" trifft genau die Paare, bei denen der Einstieg den Ausstieg erreicht --- */
+  var sollEnt = [], istEnt = [], fehlerE = 0;
+  for (var zz = 0; zz < K.N_ZR; zz++) for (var hh2 = 0; hh2 < K.N_H; hh2++) K.VERZOEGERT_K.forEach(function (kk) {
+    var Hd = K.HALTEDAUERN[hh2], soll = (Hd.min != null && !Hd.uebernacht) && kk >= Math.ceil(Hd.min / K.ZEITRAHMEN[zz].min);
+    var ist = A.vzEntfaelltStrukturell(zz, hh2, kk);
+    if (soll !== ist) fehlerE++;
+    if (ist) istEnt.push(K.ZEITRAHMEN[zz].key + '/' + Hd.key + '/k' + kk);
+    if (soll) sollEnt.push(1);
+  });
+  pruefe(fehlerE === 0 && istEnt.length === sollEnt.length && istEnt.length > 0,
+    '16j strukturell entfallende Paare (' + istEnt.length + '): ' + istEnt.join(', '));
   /* --- 16h: Indexabbildung der k-Zellen ist eineindeutig und der Speicher traegt die Felder --- */
   var gesehen = {}, fehlerI = 0, rngV = rngNeu(23);
   for (var q = 0; q < 800; q++) {
