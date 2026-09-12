@@ -6,9 +6,11 @@
  * HERKUNFT: Kopie von studien/vorregistrierung-2026-09-06-signale-minuten/test.js (81 Pruefungen, abgenommen 07.09.2026);
  * die Pruefungen der unveraenderten Fremdmodule (Verdichtung, lesen.js) bleiben dort. Hier mitgetragen und angepasst:
  * Zellendecoder, Positivkontrolle, Placebo A/B, geteilter Kurs, Detektor-Gleichheit, Vorfilter, Klassen/Huerden, August-
- * Konstanten, Fortsetzbarkeit in Kindprozessen, Randregeln, ET-Tag, Wertpapierart. NEU: Praefix-Probe aller neun Detektoren,
+ * Konstanten, Fortsetzbarkeit in Kindprozessen, Randregeln, ET-Tag, Wertpapierart. NEU: Praefix-Probe aller acht Detektoren,
  * W1a gegen hauptstudie.js detect(), Schein-Konstanten gegen BERICHT.md, Uebernacht-Ausstieg ueber Dateigrenzen, Jahres-
  * scheiben gegen Handrechnung, Aktualitaets-Tor und Vorwaertstest an konstruierten Faellen, Hansen-Hodrick L = 2, Regime,
+ * NACHTRAG 3: Einstiegsluecke gegen eine gepflanzte Luecke und gegen die Handrechnung, das Luecken-Tor an konstruierten
+ * Faellen, die Klinke gegen den gestrichenen Trendfolge-Detektor,
  * Konstruktionsfaelle W4-W7, Klinken (kein Netz, kein Schluessel, kein Schreiben ins Archiv, kein Yahoo).
  *
  * Jede Zeile der Ausgabe ist 'OK ...', 'FEHLT ...' oder 'UEBERSPRUNGEN ...'. Eine Ausnahme in einer Pruefung ist FEHLT.
@@ -214,10 +216,17 @@ abschnitt(0, 'Zellendecoder und Layout', function () {
     if (K.reiheIndex(e.kand, e.art) !== reihe || K.kandIndex(e.det, e.zr) !== e.kand) fehler++;
   }
   pruefe(fehler === 0, '0a Decoder invertiert K.zelle/K.reiheIndex/K.kandIndex (2000 Stichproben, ' + fehler + ' Fehler)');
-  pruefe(K.N_DET === 9 && K.N_H === 5 && K.N_KAND === 27 && K.N_REIHEN === 81 && K.N_KONFIG === 255 && K.H_UEBERNACHT === 4 && K.HALTEDAUERN[4].uebernacht === true, '0b Layout: 9 Detektoren, 5 Haltedauern (naechste = Uebernacht), 27 Kandidaten, 81 Zellenreihen, 255 Konfigurationen');
-  pruefe(/^trendwende-ii-2026-09-09\/v1\/9x3x2x5x4x3\+kurs\+schein\+jahre$/.test(K.KONFIG_KENNUNG), '0c Kennung ' + K.KONFIG_KENNUNG);
-  var mb = (K.zellenZahl(nTage) * 4 + K.topfZahl(nTage) * 3 + K.kursZahl(nTage) * 3) * 8 / 1e6;
-  pruefe(mb > 500 && mb < 700, '0d Zellenspeicher ' + mb.toFixed(0) + ' MB je Prozess (Registrierung §10: ≈ 590)');
+  pruefe(K.N_DET === 8 && K.N_H === 5 && K.N_KAND === 24 && K.N_REIHEN === 72 && K.N_KONFIG === 225 && K.H_UEBERNACHT === 4 && K.HALTEDAUERN[4].uebernacht === true, '0b Layout (Nachtrag 3): 8 Detektoren, 5 Haltedauern (naechste = Uebernacht), 24 Kandidaten, 72 Zellenreihen, 225 Konfigurationen');
+  pruefe(/^trendwende-ii-2026-09-09\/v2\/8x3x2x5x4x3\+kurs\+luecke\+schein\+jahre$/.test(K.KONFIG_KENNUNG), '0c Kennung ' + K.KONFIG_KENNUNG);
+  var mb = (K.zellenZahl(nTage) * 4 + K.topfZahl(nTage) * 3 + K.kursZahl(nTage) * 4) * 8 / 1e6;
+  pruefe(mb > 450 && mb < 700, '0d Zellenspeicher ' + mb.toFixed(0) + ' MB je Prozess (Registrierung §10, Nachtrag 3: ≈ 535)');
+  var sp0 = new M.Speicher(10), fehlerK = 0, rng2 = rngNeu(7);
+  for (var q2 = 0; q2 < 500; q2++) {
+    var kand = Math.floor(rng2() * K.N_KAND), di2 = Math.floor(rng2() * 2), tg = Math.floor(rng2() * 10), kl2 = Math.floor(rng2() * K.N_K), le2 = Math.floor(rng2() * 2);
+    var ix = K.kursZelle(10, kand, di2, tg, kl2, le2);
+    if (!(ix >= 0 && ix < K.kursZahl(10))) fehlerK++;
+  }
+  pruefe(sp0.felder().length === 11 && sp0.kl && sp0.kl.length === K.kursZahl(10) && fehlerK === 0, '0e Kurszellen tragen VIER Felder (n, Σ Kurs, ueber Cent-Boden, Σ Einstiegsluecke): ' + sp0.felder().length + ' Felder im _zellen.bin, kursZelle bleibt im Bereich (' + fehlerK + ' Fehler)');
 });
 
 /* ====================================================================================== */
@@ -269,6 +278,57 @@ abschnitt(1, 'POSITIVKONTROLLE - gepflanzte Kante am 1h-Ausstieg wird in Groesse
   pruefe(z0.n > 0 && Math.abs(z0.jeSignal) < 0.05 && Math.abs(mittel(z0.mittelJeTag)) < 0.05, '1m ohne Pflanzung nahe null: Rohertrag je Signal ' + f4(z0.jeSignal) + ' Pp, Tagesmittel ' + f4(mittel(z0.mittelJeTag)) + ' (n ' + z0.n + ')');
   var zN = tagesreiheAusZellen(m0.eintraege, 0, dI, 0, HN, null, false), zS = tagesreiheAusZellen(m0.eintraege, 0, dI, 0, HS, null, false);
   pruefe(zN.n > 0 && zN.n < zS.n && Math.abs(zN.jeSignal) < 0.1, '1n Uebernacht ohne Pflanzung: n ' + zN.n + ' (< schluss-n ' + zS.n + ', letzter Tag offen), Rohertrag ' + f4(zN.jeSignal) + ' Pp nahe null; offen ' + m0.stat.offen.length);
+});
+
+/* ====================================================================================== */
+abschnitt('1b', 'EINSTIEGSLUECKE (Nachtrag 3): gepflanzte Luecke +0,3 Pp an der Einstiegskerze gegen die Handrechnung', function () {
+  if (!KUNST.rohKerzen) { fehlt('1b keine Kunst-Reihe aus Abschnitt 1'); return; }
+  var roh = KUNST.rohKerzen, D = det('W7'), p = K.paramsFuer(D, '1m'), SOLL = 0.3;
+  var vor = naiveSignale(roh, D, p);                     // W7 sieht nur Schlusskurse - die Pflanzung der Eroeffnung darf die Signalmenge nicht aendern
+  var kerzen = kopiere(roh), belegt = new Set();
+  vor.signale.forEach(function (sg) {
+    if (sg.i + 1 > sg.bis || belegt.has(sg.i + 1)) return;
+    var o = kerzen[sg.i][1] * (1 + sg.dir * SOLL / 100);
+    kerzen[sg.i + 1][5] = o; if (o > kerzen[sg.i + 1][3]) kerzen[sg.i + 1][3] = o; if (o < kerzen[sg.i + 1][4]) kerzen[sg.i + 1][4] = o;
+    belegt.add(sg.i + 1);
+  });
+  var nach = naiveSignale(kerzen, D, p);
+  var gleich = nach.signale.length === vor.signale.length && nach.signale.every(function (s, q) { return s.i === vor.signale[q].i && s.dir === vor.signale[q].dir; });
+  pruefe(gleich && belegt.size >= 30, '1b-a Pflanzung der Einstiegsluecke an ' + belegt.size + ' Einstiegskerzen; Signalmenge unveraendert (' + nach.signale.length + ' = ' + vor.signale.length + ')');
+  var m = messe(kerzen, [D]), nT = K.kalender().tage.length, kn = 0, kl = 0;
+  var von = K.kursZelle(nT, 0, 0, 0, 0, 0), bis = K.kursZelle(nT, 1, 0, 0, 0, 0);      // nur Kandidat 0 = (W7, 1m); 5m/15m werden aus den gepflanzten Kerzen neu verdichtet
+  m.delta.kurs.forEach(function (v, idx) { if (idx >= von && idx < bis) { kn += v[0]; kl += v[3]; } });
+  var naivEinstiege = vor.signale.filter(function (sg) { return sg.i + 1 <= sg.bis && kerzen[sg.i + 1][5] > 0; }).length;
+  pruefe(kn === naivEinstiege && kn > 0 && Math.abs(kl / kn - SOLL) < 1e-9, '1b-b luecke_B aus den Kurszellen (W7 1m, beide Richtungen): ' + f4(kl / kn) + ' Pp bei Soll ' + f4(SOLL) + ' (n ' + kn + ' = naiv ' + naivEinstiege + ')');
+  /* Ohne Pflanzung: die Kunst-Reihe traegt Mikrorauschen auf jeder Eroeffnung und jedem Schluss (sigmaN 0,0012). W7
+   * feuert am 60-Kerzen-EXTREM, also dort, wo das Rauschen des Schlusses extrem ist - die Eroeffnung der Folgekerze
+   * zieht im Mittel zurueck. Das ist der Bid-Ask-Bounce in Reinform: POSITIVKONTROLLE fuer die Spalte. Die Nullkontrolle
+   * ist ein Detektor, der zu einer festen Tageszeit feuert, also nicht auf den Kurs sieht - dort muss die Luecke null sein. */
+  var fest = { key: 'kunst-fest', params: {}, signal: function (bars, i) { return minutenSeitAuf(bars[i][0]) === 150 ? { dir: 1 } : null; } };
+  var mOhne = messe(roh, [D, fest]), knO = 0, klO = 0, knF = 0, klF = 0;
+  var vonF = K.kursZelle(nT, K.kandIndex(1, 0), 0, 0, 0, 0), bisF = K.kursZelle(nT, K.kandIndex(1, 0) + 1, 0, 0, 0, 0);
+  mOhne.delta.kurs.forEach(function (v, idx) {
+    if (idx >= von && idx < bis) { knO += v[0]; klO += v[3]; }
+    if (idx >= vonF && idx < bisF) { knF += v[0]; klF += v[3]; }
+  });
+  pruefe(knO === kn && klO / knO > 0.1, '1b-c POSITIVKONTROLLE ohne Pflanzung: W7 feuert am Extrem, die Einstiegsluecke der Kunst-Reihe ist ' + f4(klO / knO) + ' Pp > 0,1 (n ' + knO + ') - genau der Bounce, den die Spalte sichtbar machen soll');
+  pruefe(knF >= 50 && Math.abs(klF / knF) < 0.03, '1b-c2 NULLKONTROLLE auf derselben Reihe: ein Detektor zu fester Tageszeit (12:00) hat Luecke ' + f4(klF / knF) + ' Pp ≈ 0 (n ' + knF + ') - die Luecke haengt am Einstieg am Extrem, nicht am Messverfahren');
+  /* Auswertung: luecke_B je Signal, Tagesmittel und netto_B lueckenbereinigt = netto − 0,3 gegen die Handrechnung */
+  var spF = { nTage: nT, kn: new Float64Array(K.kursZahl(nT)), kl: new Float64Array(K.kursZahl(nT)) };
+  var ctxF = { iBes: 20, iReg: 0 }, reiheF = [], sollNetto = [];
+  for (var t = 5; t < 80; t++) {
+    var ix = K.kursZelle(nT, 0, 0, t, 1, 1);
+    spF.kn[ix] = 4; spF.kl[ix] = 4 * SOLL;
+    var netto = 0.05 + (t % 2 ? 0.012 : -0.012);
+    reiheF.push({ t: t, n: 4, netto: netto });
+    if (t >= ctxF.iBes) sollNetto.push(netto);
+  }
+  var lu = A.luecken(spF, ctxF, 0, 0, reiheF, 1);
+  var sollBer = mittel(sollNetto) - SOLL;
+  pruefe(Math.abs(lu.jeSignal - SOLL) < 1e-12 && Math.abs(lu.tagesmittel.mittel - SOLL) < 1e-12 && lu.nTage === sollNetto.length && lu.ohneKurs === 0 && Math.abs(lu.bereinigt.mittel - sollBer) < 1e-12,
+    '1b-d auswerten.luecken: luecke_B je Signal ' + f4(lu.jeSignal) + ' = Tagesmittel ' + f4(lu.tagesmittel.mittel) + ' = ' + f4(SOLL) + '; netto_B lueckenbereinigt ' + f4(lu.bereinigt.mittel) + ' = netto ' + f4(mittel(sollNetto)) + ' − ' + f4(SOLL) + ' (' + lu.nTage + ' Bestaetigungstage)');
+  var lu2 = A.luecken(spF, ctxF, 0, 1, reiheF, 1);
+  pruefe(lu2.jeSignal === null && lu2.nSig === 0 && lu2.bereinigt.n === 0, '1b-e die Luecke haengt an der Richtung: die Gegenrichtung derselben Kurszellen ist leer (nSig ' + lu2.nSig + ')');
 });
 
 /* ====================================================================================== */
@@ -325,15 +385,14 @@ abschnitt(3, 'GEGENPROBE GETEILTER KURS - Signalschluss als Einstieg erzeugt den
 });
 
 /* ====================================================================================== */
-abschnitt(4, 'DETEKTOR-GLEICHHEIT: W2/W3/W8 gegen die August-Funktionen, W2 gegen signalPraefix, W1a gegen hauptstudie.js detect()', function () {
+abschnitt(4, 'DETEKTOR-GLEICHHEIT: W2/W3 gegen die August-Funktionen, W2 gegen signalPraefix, W1a gegen hauptstudie.js detect()', function () {
   var b = aapl2024().bars['5m'];
   var quelle = fs.readFileSync(path.join(K.REPO, 'studien', 'signalstudie-2026-08', 'detektoren', '_tabelle.js'), 'utf8');
   function konst(name) { var m = quelle.match(new RegExp('var ' + name + ' = (\\{[^}]*\\});')); if (!m) throw new Error(name + ' nicht in _tabelle.js'); return new Function('return ' + m[1])(); }
-  var P_KAPI = konst('P_KAPI'), P_KT = konst('P_KANALTREND');
+  var P_KAPI = konst('P_KAPI');
   function dirTab(s) { return s && s.dir ? (s.dir > 0 ? 1 : -1) : 0; }
-  pruefe(det('W2').signal === TAB.filter(function (x) { return x.key === 'wendepunkt-trendwechsel'; })[0].signal && det('W3').signal === TAB.filter(function (x) { return x.key === 'kapitulation'; })[0].signal && det('W8').signal === TAB.filter(function (x) { return x.key === 'kanaltrend'; })[0].signal, '4a W2/W3/W8 sind DIESELBEN Funktionsobjekte wie in der August-Tabelle (require, keine Kopie)');
-  [{ key: 'W3', ref: function (i) { var s = Q.einstiegSignal(b, i, P_KAPI); return s && s.dir === 'call' ? 1 : 0; } },
-   { key: 'W8', ref: function (i) { var s = Q.einstiegSignal(b, i, Object.assign({}, P_KT, { MINQ: 60 })); return s && s.dir ? (s.dir === 'call' ? 1 : -1) : 0; } }].forEach(function (f) {
+  pruefe(det('W2').signal === TAB.filter(function (x) { return x.key === 'wendepunkt-trendwechsel'; })[0].signal && det('W3').signal === TAB.filter(function (x) { return x.key === 'kapitulation'; })[0].signal, '4a W2/W3 sind DIESELBEN Funktionsobjekte wie in der August-Tabelle (require, keine Kopie)');
+  [{ key: 'W3', ref: function (i) { var s = Q.einstiegSignal(b, i, P_KAPI); return s && s.dir === 'call' ? 1 : 0; } }].forEach(function (f) {
     var D = det(f.key), p = K.paramsFuer(D, '5m'), n = 0, sig = 0, abw = 0;
     for (var i = 260; i < b.length; i += 1) { var a = dirTab(D.signal(b, i, p)), r = f.ref(i); n++; if (a) sig++; if (a !== r) abw++; }
     var txt = '4b ' + f.key + ' gegen Q.einstiegSignal (5m, ' + n + ' Indizes): ' + sig + ' Signale, ' + abw + ' Abweichungen';
@@ -394,21 +453,21 @@ abschnitt(4, 'DETEKTOR-GLEICHHEIT: W2/W3/W8 gegen die August-Funktionen, W2 gege
 });
 
 /* ====================================================================================== */
-abschnitt(5, 'VORFILTER W8 (signalCross) gegen den vollen Aufruf auf 1m, 5m, 15m', function () {
-  var Adat = aapl2024();
-  K.ZEITRAHMEN.forEach(function (zr) {
-    var b = Adat.bars[zr.key], Dk = det('W8'), pk = K.paramsFuer(Dk, zr.key), schritt = Math.max(1, Math.floor(b.length / 3000)), menge = new Set();
-    for (var j = 261; j < b.length; j += schritt) menge.add(j);
-    for (var q = 261; q < b.length; q += Math.max(1, Math.floor(schritt / 4))) { var s = M.rufe(Dk, pk, b, q); if (s && s.dir) menge.add(q); }
-    var abw = 0, sig = 0, n = 0;
-    menge.forEach(function (i) { var a = M.rufe(Dk, pk, b, i), r = Dk.signal(b, i, pk); n++; var da = a && a.dir ? a.dir : 0, dr = r && r.dir ? r.dir : 0; if (dr) sig++; if (da !== dr) abw++; });
-    var txt = '5 W8 ' + zr.key + ': ' + n + ' Indizes, ' + sig + ' Signale (voller Aufruf), ' + abw + ' Abweichungen';
-    if (sig === 0 && abw === 0) ueber(txt + ' - nur null verglichen'); else pruefe(n >= 400 && abw === 0, txt);
-  });
+abschnitt(5, 'KLINKE NACHTRAG 3: der Trendfolge-Detektor (kanaltrend) ist aus dieser Studie gestrichen', function () {
+  /* Geprueft wird die EIGENSCHAFT, nicht der Text: kein Tabelleneintrag, kein Schluessel, keine Familie, kein
+   * Vorfilter-Verbraucher, keine Konfiguration - und die August-Tabelle selbst ist unveraendert (die Streichung
+   * ist unsere, keine fremde). Kommentare und Nachtragstexte duerfen den Namen weiter nennen. */
+  var tab = DT.TABELLE, ausAugust = TAB.filter(function (x) { return x.key === 'kanaltrend'; })[0];
+  var inTab = tab.filter(function (d) { return d.key === 'W8' || (ausAugust && d.signal === ausAugust.signal); });
+  pruefe(inTab.length === 0 && tab.length === 8 && K.DETEKTOR_KEYS.indexOf('W8') === -1 && K.DETEKTOR_KEYS.length === 8, '5a detektoren.js fuehrt ' + tab.length + ' Detektoren, keinen mit Schluessel W8 und keinen mit der Funktion `kanaltrend`');
+  var familien = Object.keys(K.FAMILIEN), alleInFamilien = familien.reduce(function (a, f) { return a.concat(K.FAMILIEN[f]); }, []);
+  pruefe(familien.indexOf('trendfolge-referenz') === -1 && alleInFamilien.length === K.DETEKTOR_KEYS.length && alleInFamilien.every(function (k) { return K.DETEKTOR_KEYS.indexOf(k) !== -1; }), '5b Familien (' + familien.join(', ') + ') decken genau die ' + K.DETEKTOR_KEYS.length + ' Detektoren, ohne Trendfolge-Referenz');
+  pruefe(K.detektoren().length === 8 && K.N_KONFIG === 225 && K.N_KAND === 24, '5c konfig.detektoren() liefert 8 Detektoren, ' + K.N_KONFIG + ' Konfigurationen (15 Detektor-Richtungen x 3 x 5)');
+  pruefe(!!ausAugust && typeof ausAugust.signal === 'function' && tab.every(function (d) { return !d.vorfilter; }), '5d die August-Tabelle fuehrt `kanaltrend` unveraendert weiter (nur hier nicht mehr gezogen); kein Detektor dieser Studie verlangt noch einen Vorfilter');
 });
 
 /* ====================================================================================== */
-abschnitt(6, 'PRAEFIX-PROBE aller neun Detektoren: signal(bars.slice(0, i+1), i) = signal(bars, i), >= 1.000 Stichproben je Detektor', function () {
+abschnitt(6, 'PRAEFIX-PROBE aller acht Detektoren: signal(bars.slice(0, i+1), i) = signal(bars, i), >= 1.000 Stichproben je Detektor', function () {
   var Adat = aapl2024(), kunst = KUNST.rohKerzen || kunstReihe(K.kalender().tage.filter(function (t) { return t >= '2024-01-01'; }).slice(0, 40), 5);
   var quellen = [['AAPL 1m', Adat.bars['1m'], '1m'], ['AAPL 5m', Adat.bars['5m'], '5m'], ['AAPL 15m', Adat.bars['15m'], '15m'], ['Kunst 1m', kunst, '1m']];
   DETS.forEach(function (D) {
@@ -610,10 +669,13 @@ abschnitt(12, 'JAHRESSCHEIBEN gegen Handrechnung, TREND, AKTUALITAETS-TOR und VO
   var jsDuenn = A.jahresscheiben(reihe.filter(function (z) { return ctx.jahr[z.t] >= 2024 || z.t % 40 === 0; }), 1, ctx, '1h');
   pruefe(jsDuenn.filter(function (x) { return x.duenn; }).length === 8 && A.trend(jsDuenn).steigung === null, '12c Jahre mit < ' + K.JAHR_MIN_TAGE + ' Signaltagen sind "zu duenn" (ohne t); Trend mit < ' + K.TREND_MIN_JAHRE + ' vollen Jahren = null');
   /* Aktualitaets-Tor: konstruierte Konfigurationen durch A.urteil */
-  function konf(entU, entT, besU, besT, aktU, aktT, aktN, tor2) {
+  function konf(entU, entT, besU, besT, aktU, aktT, aktN, tor2, luecke) {
     var mk = function (u, t, n) { var se = t ? Math.abs(u / t) : 0.01; return { nTage: n, nSig: n, kKand: 0.0854, brutto: { mittel: u + 0.0854, se: se, obere: u + 0.0854 + 1.96 * se, t: t }, netto: { mittel: u }, nettoF: { mittel: u }, uBrutto: { mittel: u + 0.0854 }, u: { mittel: u, se: se, t: t, mde: 2 * se, hh0: false }, uF: { mittel: u } }; };
     var e = mk(entU, entT, 900), b = mk(besU, besT, 800), a = mk(aktU, aktT, aktN);
+    /* Nachtrag 3: netto_B lueckenbereinigt = netto_B − luecke; t mit derselben se wie die Bestaetigung */
+    var lue = luecke || 0, seB = b.u.se, ber = b.netto.mittel - lue;
     return { richtung: 'long', h: '1h', alle: { ent: e, bes: b, ohneTopf: 0 }, aktuell: { nTage: aktN, u: a.u, brutto: a.brutto, netto: a.netto }, mdeB: b.u.mde, kKand: 0.0854, tor1: true, tor2: tor2, delta80: 0.02, torAkt: aktN >= K.AKTUELL_MIN_TAGE && aktU > 0 && aktT > K.AKTUELL_T_MIN,
+      luecke: { jeSignal: lue, nSig: 800, nTage: 800, ohneKurs: 0, tagesmittel: { mittel: lue, se: seB, t: seB > 0 ? lue / seB : null, n: 800 } }, nettoBereinigt: { mittel: ber, se: seB, t: seB > 0 ? ber / seB : null, n: 800 },
       schein: { bv1: { mittel: besU + 0.0854 - 0.05, obere: 0.2 }, standard: { mittel: besU + 0.0854 - 0.23, obere: 0.0 } } };
   }
   var c1 = konf(0.08, 6, 0.06, 5, -0.03, -2.5, 120, true); A.urteil(c1, 1.96, true, true);
@@ -626,6 +688,17 @@ abschnitt(12, 'JAHRESSCHEIBEN gegen Handrechnung, TREND, AKTUALITAETS-TOR und VO
   pruefe(c4.urteil === 'nicht belegt: Aktualitaets-Tor' && /Signaltage/.test(c4.grund), '12g < ' + K.AKTUELL_MIN_TAGE + ' Signaltage in den letzten 250: Tor nicht pruefbar => ' + c4.urteil);
   var c5 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true); c5.richtung = 'short'; A.urteil(c5, 1.96, true, true);
   pruefe(c5.urteil === 'belegt' && !c5.handelbar && c5.handelbarGrund === 'nein (Leihe)' && c5.handelbarSchein.bv1, '12h Short: belegt, als Aktie "nein (Leihe)", mit Schein BV 1,0 handelbar (Put braucht keine Leihe)');
+  pruefe(c5.flagge === 'handelbar mit Put' && c2.flagge === 'handelbar mit Schein', '12h2 Nachtrag 3.3: die Flagge heisst bei Short "' + c5.flagge + '", bei Long "' + c2.flagge + '"');
+  /* Nachtrag 3.1: das Luecken-Tor. Dieselbe Konfiguration wie 12e, nur mit einer Einstiegsluecke davor. */
+  var c6 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.08); A.urteil(c6, 1.96, true, true);
+  pruefe(c6.urteil === 'nicht belegt: Einstiegsluecke' && !c6.torLuecke && c6.extremEinstieg && !c6.handelbar && !c6.handelbarSchein.bv1 && !c6.handelbarSchein.standard,
+    '12i "belegt, aber Luecke": netto_B 0,06, luecke_B 0,08 => lueckenbereinigt ' + f4(c6.nettoBereinigt.mittel) + ' (t ' + f2(c6.nettoBereinigt.t) + ') => ' + c6.urteil + ', Vermerk Extrem-Einstieg, nichts handelbar');
+  var c7 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.02); A.urteil(c7, 1.96, true, true);
+  pruefe(c7.urteil === 'belegt' && c7.torLuecke && !c7.extremEinstieg && c7.handelbar && Math.abs(c7.nettoBereinigt.mittel - 0.04) < 1e-12,
+    '12j kleine Luecke (0,02 von netto 0,06): lueckenbereinigt ' + f4(c7.nettoBereinigt.mittel) + ', t ' + f2(c7.nettoBereinigt.t) + ' ≥ z_Bonf => ' + c7.urteil + ', handelbar');
+  var c8 = konf(0.08, 6, 0.06, 5, 0.05, 1.0, 120, true, 0.0); c8.nettoBereinigt = { mittel: 0.06, se: 0.012, t: 1.5, n: 800 }; A.urteil(c8, 1.96, true, true);
+  pruefe(c8.urteil === 'nicht belegt: Einstiegsluecke' && !c8.handelbar, '12k lueckenbereinigt positiv, aber t 1,5 < z_Bonf 1,96 => ' + c8.urteil + ' (das Tor verlangt beides)');
+  pruefe(A.URTEILE.indexOf('nicht belegt: Einstiegsluecke') !== -1 && A.URTEILE.indexOf('belegt') !== -1, '12l "nicht belegt: Einstiegsluecke" steht in der Urteilsliste des Berichts');
 });
 
 /* ====================================================================================== */

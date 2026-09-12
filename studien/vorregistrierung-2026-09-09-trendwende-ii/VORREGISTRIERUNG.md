@@ -445,3 +445,110 @@ wenige Reihen tragen das Marktbeta ungedämpft).
    bleiben stehen, der Vollauf schreibt seine se_B daneben.
 
 Kennung unverändert. Der Vollauf startet nicht aus diesem Chat.
+
+## 18. NACHTRAG 3 — 12.09.2026, Entscheide des PM zu §6 der Übergabe; **vor jeder Zelle der Kennung v2**
+
+Grundlage: `uebergabe/auftrag-trendwende-ii-nachtrag3-2026-09-12.md` (PM, 12.09.2026) — die sechs offenen Fragen der
+Übergabe vom 12.09. sind entschieden. Dieser Nachtrag steht **vor der ersten neuen Zelle**: er ist geschrieben und
+committet, bevor eine einzige Zahl der neuen Kennung **ausgewertet** wurde (der Pilotlauf `pilot-2/` schrieb ab
+16:15 Uhr Zellen; `auswerten.js` wurde darauf erst nach diesem Commit aufgerufen — kein Wert aus v2 war vorher zu sehen).
+Die Entscheide selbst stammen aus dem schriftlichen Auftrag des PM und nicht aus einem Ergebnis.
+
+Kennung neu: **`trendwende-ii-2026-09-09/v2/8x3x2x5x4x3+kurs+luecke+schein+jahre`**. Zellen der Kennung v1 (`pilot-1/`)
+passen nicht mehr — `messen.js`/`auswerten.js` brechen bei fremder Kennung ab, es wird nichts vermischt.
+
+### 3.1 Einstiegslücke als fünftes Kurszellen-Feld (Entscheid 1 zu W7 / „Einstieg am Extrem")
+
+**Gemessen wird je Kurszelle** — also je (Kandidat = Detektor × Zeitrahmen, Richtung, ET-Tag, Umsatzklasse, lebend) —
+zusätzlich zu n, Σ Einstiegskurs und „über dem Cent-Boden" die **Einstiegslücke**
+
+> `luecke = dir · (Eröffnung_{i+1} − Schluss_i) / Schluss_i · 100` in Pp, summiert (8 Byte je Kurszelle, Feld `kl`).
+
+- **In Handelsrichtung** (`dir`), damit long und short dieselbe Vorzeichenlage haben: positiv heißt „der Kurs ist
+  zwischen Signalschluss und Einstieg schon in die behauptete Richtung gesprungen". Die Richtung steckt ohnehin im
+  Zellenindex; die Größe ist damit je Konfiguration direkt lesbar.
+- **Verhältnis, deshalb ohne `rohFaktor`**: Splits und Ausschüttungen kürzen sich in Zähler und Nenner. Der Cent-Boden
+  bleibt am **rohen** Kurs (Nachtrag 1 der Minutenstudie), die Lücke ist eine Rendite und wird an den bereinigten Kursen
+  gerechnet — beides steht in derselben Zelle, mit verschiedenen Feldern.
+- Ist `Schluss_i` nicht positiv, wird nichts addiert und der Zähler `lueckeOhneSchluss` erhöht (nie geschätzt).
+- Die Kurszelle kennt **keine Haltedauer**: alle fünf Haltedauern einer (Detektor, ZR, Richtung) tragen dieselbe Lücke.
+  Das ist gewollt — die Lücke sitzt im Einstieg, und genau das ist die Beobachtung, die geprüft wird (Nachtrag 2.3).
+- **Keine Robustheitszeile „Einstieg Eröffnung i+2"** (Entscheid des PM: zu teuer für das, was sie sagt).
+
+**Im Bericht je Konfiguration zwei neue Spalten** (Bestätigungszeitraum, Sicht „alle"):
+
+| Spalte | Definition |
+|---|---|
+| `luecke_B (je Signal)` | Σ Lücke / Σ n über die Bestätigungstage — das vom PM verlangte **Mittel je Signal** |
+| `luecke_B (Tagesmittel)` | ungewichtetes Mittel der Tagesmittel der Lücke über die Bestätigungstage |
+| `netto_B lueckenbereinigt` | Tagesmittel von **(netto_t − luecke_t)** über die Bestätigungstage, se/t wie jede andere Zeile (Lag 1, übernacht Hansen-Hodrick) |
+| `t lueckenbereinigt` | t dieser Tagesreihe |
+
+**Präzisierung zur Formel des Entscheids** („`netto_B_lueckenbereinigt` = netto_B − luecke_B"): netto_B ist in dieser
+Studie ein **Tagesmittel über Signaltage**, das Mittel je Signal ist eine andere Skala (Obergrenzen-Übergabe vom 02.09.:
+„Protokolle tragen zwei Skalen"). Die Differenz wird deshalb **je Tag** gebildet und dann gemittelt; nur so hat sie
+überhaupt eine se und ein t — und das Tor verlangt ein t. Beide Lückenmaße stehen im Bericht nebeneinander; sie
+unterscheiden sich nur durch die Gewichtung der Tage.
+
+**Verschärftes Tor, vorregistriert vor dem Vollauf:** `belegt` — und damit jedes `handelbar` / `handelbar mit Schein` —
+verlangt **zusätzlich zu allen bisherigen Bedingungen**
+
+> `netto_B lueckenbereinigt > 0` **und** `t` darauf `≥ z_Bonf(k2)`.
+
+Fällt eine Zeile nur an dieser Bedingung, lautet das Urteil **`nicht belegt: Einstiegsluecke`** (neuer Wert in der
+Urteilsliste, Reihenfolge im Urteilsbaum: nach dem Aktualitäts-Tor, vor den Placebo-Herabstufungen). Wo
+`luecke_B (Tagesmittel) > ½ · brutto_B` ist, trägt die Zeile zusätzlich den Vermerk **„Extrem-Einstieg"**.
+
+**Was das Tor nicht ist:** kein Kostenmodell. Die Lücke ist nicht Teil des gemessenen Ertrags (der läuft von der
+Eröffnung i+1 bis zum Ausstieg); sie ist das Maß dafür, **wie weit der Einstieg vom Extrem entfernt liegt**, an dem die
+Regel feuert. Ist das gemessene Netto nicht größer als diese Lücke, ist die mechanische Erklärung (Spanne am Extrem,
+Bid-Ask-Bounce) mindestens so gut wie die behauptete Wende — und die Studie sagt dann nicht „belegt". Das ist eine
+**Verschärfung**, nie eine Lockerung: keine Zeile kann durch die neue Spalte belegt werden, die es vorher nicht war.
+
+### 3.2 Der Trendfolge-Detektor ist gestrichen (Entscheid 2, vormals W8)
+
+Der bis hierher als „W8 / Kanaltrend (Referenz Trendfolge)" mitgeführte Detektor ist **aus der Studie entfernt**.
+Begründung: er ist nach Code (`kanaltrend` der August-Tabelle, `Q.einstiegSignal` mit `MINQ 60`) eine **EMA20-Kreuzung
+in Kanalrichtung** — Trendfolge, kein Wende-Detektor; die Umschreibung der Vorregistrierung §2 („Rücklauf gegen den
+Abschnittskanal") trifft keine August-Funktion. Eine Referenzzeile, die die Frage der Studie nicht stellt, kostet
+Bonferroni-Breite und lädt zur Fehldeutung ein.
+
+Folgen: **8 Detektoren**, 24 Kandidaten (8 × 3 Zeitrahmen), 72 Zellenreihen, **15 Detektor-Richtungen × 3 × 5 = 225
+Konfigurationen** (vorher 255), Zellenspeicher ≈ 535 MB je Prozess (vorher ≈ 590), Familie „trendfolge-referenz"
+entfällt. Die August-Tabelle selbst bleibt unangetastet (`kanaltrend` steht dort weiter; diese Studie zieht ihn nur
+nicht mehr). Der `signalCross`-Vorfilter bleibt als Code in `messen.js`, wird aber von keinem Detektor mehr verlangt.
+`test.js` hält die Streichung als **Klinke über Eigenschaften** fest (kein Tabelleneintrag, kein Schlüssel, keine
+Familie, kein Vorfilter-Verbraucher, 225 Konfigurationen) — nicht über Textsuche, damit Kommentare und dieser Nachtrag
+den Namen weiter nennen dürfen.
+
+### 3.3 Short „handelbar mit Schein" ohne Leihe-Veto, Flagge heißt „handelbar mit Put" (Entscheid 3)
+
+Bestätigt: ein Put braucht keine Wertpapierleihe, deshalb gilt das Leihe-Veto nur für den **Kassa-Short** — der bleibt
+**„nie handelbar"** (Minutenstudie Nachtrag 2.4). Für Short-Konfigurationen heißt die Schein-Flagge im Bericht
+**„handelbar mit Put"** (Spalte „Schein-Flagge"; Long: „handelbar mit Schein"); die Zählung in §2 weist die
+Put-Zeilen getrennt aus. Die gemessenen Hürden sind unverändert die Tabellenwerte aus `BERICHT.md` (BV 1,0: 0,05 / 0,16;
+Standard: 0,23 / 0,42 Pp je Umlauf) — ein Put ist dort so teuer wie ein Call.
+
+### 3.4 Ablage der 1m-Jahresscheiben (Entscheid 4)
+
+Erledigt durch den PM (Verschiebung nach `ergebnis-1m-2026-09-11/JAHRESSCHEIBEN.md`); für diese Studie ohne Folge.
+
+### 3.5 `se_erwartet` bleibt eine Zahl (Entscheid 5)
+
+Bestätigt: **0,0038 Pp** (der größte der drei Zeitrahmen aus Pilot 1) gilt für alle Zeitrahmen als Schranke des
+Übernacht-Placebos (|Mittel| < 3 · se_erwartet = 0,0114 Pp neben |t| < 3) — bewusst die **weitere** Schranke, und eine
+Zahl aus einem Lauf mit alter Kennung, also vor dem Vollauf feststehend. Sie wird **nicht** aus `pilot-2/` neu gesetzt.
+
+### 3.6 Zähler `fortsetzungOhneUebernacht` behält seinen Namen (Entscheid 6)
+
+Bestätigt. Bedeutung (unverändert, hier ausgeschrieben): der Zähler steht für **jede Datei, in die keine offenen
+Übernacht-Beiträge der Vordatei übergeben werden konnten** — nach einer Fortsetzung aus dem Checkpoint *und* nach einer
+Archivlücke (Vorjahr fehlt, Warmlauf neu gebaut). Er zählt Dateien, nicht Beiträge; die verlorenen Beiträge selbst
+stehen in `uebernachtVerfallen`.
+
+### 3.7 Was sich nicht ändert
+
+Einstiegsregel (Eröffnung i+1), Hauptgröße u, Tore 1 und 2, Bonferroni, Aktualitäts-Tor, Placebo-Bänder, Kosten- und
+Schein-Hürden, Jahresscheiben, Regime, Haltedauern, Kalender, Klassen, Dichteregel, Cooldown, Zellenlayout im Übrigen.
+Der Pilot `pilot-2/` läuft über **dieselben 19 Reihen** wie Pilot 1; seine Zahlen sind wie dort **kein Befund**.
+Der Vollauf startet nicht aus diesem Chat.

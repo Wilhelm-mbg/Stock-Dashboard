@@ -1,5 +1,5 @@
 'use strict';
-/* MESSEN - Trendwende II: ein Durchlauf je Datei ueber alle 27 Kandidaten (9 Detektoren x 3 Zeitrahmen), zwei
+/* MESSEN - Trendwende II: ein Durchlauf je Datei ueber alle 24 Kandidaten (8 Detektoren x 3 Zeitrahmen, Nachtrag 3), zwei
  * Placebos und den Topf, fuenf Haltedauern (VORREGISTRIERUNG §1-§4, §10).
  *
  * HERKUNFT: Kopie von studien/vorregistrierung-2026-09-06-signale-minuten/messen.js (v4, 07.09.2026, abgenommen mit
@@ -10,7 +10,11 @@
  *     Kalender-Handelstags der Reihe. Am letzten Tag einer Jahresdatei bleiben die Beitraege OFFEN und werden mit dem
  *     Warmlauf in die Folgedatei uebergeben (dort verbucht: "ganz oder gar nicht" je Datei). Nach einer Fortsetzung
  *     aus dem Checkpoint fehlt die Uebergabe fuer eine Datei je Reihe (gezaehlt fortsetzungOhneUebernacht).
- *   - kein gefensterter Detektor (vwap-abstand ist nicht dabei); der signalCross-Vorfilter fuer W8/kanaltrend bleibt.
+ *   - kein gefensterter Detektor (vwap-abstand ist nicht dabei). Der signalCross-Vorfilter in rufe() bleibt als Code
+ *     stehen, wird aber seit NACHTRAG 3 (12.09.2026) von keinem Detektor mehr verlangt (der Trendfolge-Detektor ist
+ *     gestrichen); er greift nur ueber die Eigenschaft `vorfilter` eines Tabelleneintrags.
+ *   - NACHTRAG 3: viertes Kurszellen-Feld `kl` = Σ Einstiegsluecke in Pp (dir · (Eroeffnung i+1 − Schluss i) / Schluss i
+ *     · 100); Kennung v2, alte _zellen.bin passen nicht mehr (Kennungs- und Laengenpruefung schlagen an).
  *
  * Aufruf (aus der Repo-Wurzel oder von hier):
  *   node --max-old-space-size=4096 messen.js --aus <ordner> [--reihen A B C] [--teil k/n] [--max N]
@@ -56,14 +60,14 @@ function Speicher(nTage) {
   this.nTage = nTage;
   this.n = new Float64Array(z); this.s = new Float64Array(z); this.s2 = new Float64Array(z); this.h2 = new Float64Array(z);
   this.tn = new Float64Array(tz); this.ts = new Float64Array(tz); this.ts2 = new Float64Array(tz);
-  this.kn = new Float64Array(kz); this.ks = new Float64Array(kz); this.kcb = new Float64Array(kz);
+  this.kn = new Float64Array(kz); this.ks = new Float64Array(kz); this.kcb = new Float64Array(kz); this.kl = new Float64Array(kz);
 }
-Speicher.prototype.felder = function () { return [this.n, this.s, this.s2, this.h2, this.tn, this.ts, this.ts2, this.kn, this.ks, this.kcb]; };
+Speicher.prototype.felder = function () { return [this.n, this.s, this.s2, this.h2, this.tn, this.ts, this.ts2, this.kn, this.ks, this.kcb, this.kl]; };
 Speicher.prototype.uebernehme = function (delta) {
   var self = this;
   delta.zellen.forEach(function (v, idx) { self.n[idx] += v[0]; self.s[idx] += v[1]; self.s2[idx] += v[2]; self.h2[idx] += v[3]; });
   delta.topf.forEach(function (v, idx) { self.tn[idx] += v[0]; self.ts[idx] += v[1]; self.ts2[idx] += v[2]; });
-  delta.kurs.forEach(function (v, idx) { self.kn[idx] += v[0]; self.ks[idx] += v[1]; self.kcb[idx] += v[2]; });
+  delta.kurs.forEach(function (v, idx) { self.kn[idx] += v[0]; self.ks[idx] += v[1]; self.kcb[idx] += v[2]; self.kl[idx] += v[3]; });
 };
 Speicher.prototype.schreibe = function (pfad, stand) {
   var teile = this.felder().map(function (a) { return Buffer.from(a.buffer, a.byteOffset, a.byteLength); });
@@ -87,7 +91,8 @@ Speicher.lade = function (pfad, nTage, stand) {
 function Delta() { this.zellen = new Map(); this.topf = new Map(); this.kurs = new Map(); }
 Delta.prototype.add = function (idx, r, h) { var v = this.zellen.get(idx); if (!v) { v = [0, 0, 0, 0]; this.zellen.set(idx, v); } v[0]++; v[1] += r; v[2] += r * r; v[3] += h; };
 Delta.prototype.addTopf = function (idx, r) { var v = this.topf.get(idx); if (!v) { v = [0, 0, 0]; this.topf.set(idx, v); } v[0]++; v[1] += r; v[2] += r * r; };
-Delta.prototype.addKurs = function (idx, kurs, ueber) { var v = this.kurs.get(idx); if (!v) { v = [0, 0, 0]; this.kurs.set(idx, v); } v[0]++; v[1] += kurs; if (ueber) v[2]++; };
+/** Kurszelle: n, Σ Einstiegskurs (roh), Zahl ueber dem Cent-Boden, Σ Einstiegsluecke in Pp (Nachtrag 3). */
+Delta.prototype.addKurs = function (idx, kurs, ueber, luecke) { var v = this.kurs.get(idx); if (!v) { v = [0, 0, 0, 0]; this.kurs.set(idx, v); } v[0]++; v[1] += kurs; if (ueber) v[2]++; if (luecke === luecke && luecke != null) v[3] += luecke; };
 
 /* ---------- Ertrag (§3): Einstieg Eroeffnung i+1, Ausstieg Eroeffnung der Kerze nach Ablauf / Schluss / naechste Eroeffnung ---------- */
 /** Ausstiegsindizes je Haltedauer fuer alle Kerzen eines Tages: exit[h][i - von] = j oder -1 (Uebernacht: -1, eigener Weg). */
@@ -144,7 +149,7 @@ function protokoll(ordner, zeile) {
 function leererZaehler() {
   return { tageOhneKlasse: {}, tageMassnahmen: {}, tageOhneKalender: {}, tageDuenn: {}, tageGewertet: {}, tageGewertetKlasse: {}, msJeZr: {}, zeitrahmenNichtErkannt: {},
     aufrufe: {}, fehler: {}, signaleGesamt: {}, ohneHorizont: [0, 0, 0, 0, 0], ohneEinstieg: 0, placeboAGezogen: 0, placeboBGezogen: 0, placeboBOhnePartner: 0,
-    uebernachtOffen: 0, uebernachtVerbucht: 0, uebernachtVerfallen: 0, ohneNaechsterTag: 0, fortsetzungOhneUebernacht: 0,
+    uebernachtOffen: 0, uebernachtVerbucht: 0, uebernachtVerfallen: 0, ohneNaechsterTag: 0, fortsetzungOhneUebernacht: 0, lueckeOhneSchluss: 0,
     lesenVerworfen: { unsortiert: 0, ausserFenster: 0, lebenszeit: 0, nichtRegulaer: 0, ohneKurs: 0 } };
 }
 function zaehlerAddieren(a, b) {
@@ -336,7 +341,11 @@ function messeDatei(R, g, warm, massnahmen, delta, ctx, frist) {
           echte.push([i2, dir]);
           if (i2 + 1 <= d.bis && bars[i2 + 1][5] > 0) {
             var ek = bars[i2 + 1][5] * rohFaktor(bars[i2 + 1][0]);
-            delta.addKurs(K.kursZelle(nTage, kand, dirIdx, tagIdx, klasse, lebend), ek, K.ueberCentBoden(ek, klasse));
+            /* Einstiegsluecke (Nachtrag 3): dir · (Eroeffnung i+1 − Schluss i) / Schluss i · 100, in Pp und in
+             * Handelsrichtung. Verhaeltnis, also von der Bereinigung unabhaengig - deshalb ohne rohFaktor. */
+            var lue = bars[i2][1] > 0 ? dir * (bars[i2 + 1][5] - bars[i2][1]) / bars[i2][1] * 100 : NaN;
+            if (!(lue === lue)) Z.lueckeOhneSchluss++;
+            delta.addKurs(K.kursZelle(nTage, kand, dirIdx, tagIdx, klasse, lebend), ek, K.ueberCentBoden(ek, klasse), lue);
           }
           var reihe0 = K.reiheIndex(kand, 0);
           var beob = verbuche(i2, dir, hf, false, function (h) { return K.zelle(nTage, reihe0, dirIdx, h, tagIdx, klasse, lebend); });

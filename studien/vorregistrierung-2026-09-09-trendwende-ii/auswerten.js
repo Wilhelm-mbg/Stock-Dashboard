@@ -9,7 +9,9 @@
  *   - se ueber momente() der Kanalstudie (studien/vorregistrierung-2026-09-08-trendkanal-tage/auswerten.js, per require):
  *     intraday L = 1 (naiv), Uebernacht Hansen-Hodrick Rechteck bis Lag 1 (L = 2);
  *   - Schein-Zeilen (zwei Produkte), "handelbar mit Schein"; Aktualitaets-Tor; Kandidaten fuer den Vorwaertstest;
- *   - Jahresscheiben je Konfiguration (Kalenderjahr, letzte 250 Handelstage), Trendzeile, Regime SPY ueber/unter EMA200.
+ *   - Jahresscheiben je Konfiguration (Kalenderjahr, letzte 250 Handelstage), Trendzeile, Regime SPY ueber/unter EMA200;
+ *   - NACHTRAG 3 (12.09.2026): Einstiegsluecke aus den Kurszellen (luecke_B, netto_B lueckenbereinigt), verschaerftes
+ *     Tor fuer `belegt`/`handelbar`, Vermerk "Extrem-Einstieg", Schein-Flagge heisst bei Short "handelbar mit Put".
  *
  * Aufruf (von hier):  node auswerten.js --aus <ordner> [--aus <ordner2> ...]
  *   Der Bericht landet im ERSTEN Ordner: PILOT-ERGEBNIS.md / pilot-ergebnis.json, wenn irgendein Lauf pilot=true oder
@@ -24,7 +26,7 @@ var M = require('./messen.js');
 var L = require(path.join(K.MINUTEN, 'lesen.js'));
 var KA = require(path.join(K.KANAL, 'auswerten.js'));          // momente(paare, L): Hansen-Hodrick, Newey-West, Block
 
-var URTEILE = ['0 Signale', 'kein Kandidat', 'nicht entscheidbar', 'widerlegt als Groesse', 'nicht belegt: Aktualitaets-Tor', 'belegt', 'belegt-aber-nullpunkt-verschoben', 'belegt, aber Eroeffnungskosten'];
+var URTEILE = ['0 Signale', 'kein Kandidat', 'nicht entscheidbar', 'widerlegt als Groesse', 'nicht belegt: Aktualitaets-Tor', 'nicht belegt: Einstiegsluecke', 'belegt', 'belegt-aber-nullpunkt-verschoben', 'belegt, aber Eroeffnungskosten'];
 var KLASSE_ZAEHL_H = 3;                                          // Klassenmix aus der Haltedauer 'schluss'
 
 /* ---------- Argumente ---------- */
@@ -174,6 +176,35 @@ function rechneSicht(sp, ctx, dI, zi, dirIdx, h, sicht, Lag) {
     ohneTopf: reihe.ohneTopf, placeboAZeilen: plA, reihe: reihe,
   };
 }
+/* ---------- Einstiegsluecke (NACHTRAG 3, 12.09.2026) ----------
+ * Kurszellen tragen seit Kennung v2 Σ dir·(Eroeffnung i+1 − Schluss i)/Schluss i·100 je (Kandidat, Richtung, Tag,
+ * Klasse, lebend) - ohne Haltedauer, die Luecke haengt nur am EINSTIEG. Alle fuenf Haltedauern einer (Detektor, ZR,
+ * Richtung) teilen deshalb dieselbe Luecke. */
+function lueckeReihe(sp, kand, dirIdx, sicht) {
+  var nTage = sp.nTage, lVon = sicht === 'lebend' ? 1 : 0, aus = [], basis = (kand * 2 + dirIdx) * nTage;
+  if (!sp.kl) return aus;
+  for (var t = 0; t < nTage; t++) {
+    var b = (basis + t) * K.N_K * 2, n = 0, s = 0;
+    for (var k = 0; k < K.N_K; k++) for (var l = lVon; l <= 1; l++) { var i = b + k * 2 + l; n += sp.kn[i]; s += sp.kl[i]; }
+    if (n > 0) aus.push({ t: t, n: n, mittel: s / n });
+  }
+  return aus;
+}
+/** Luecke in der Bestaetigung und das lueckenbereinigte Netto je Signaltag: netto_t − luecke_t (gleiche Skala, sonst
+ *  gibt es kein t); daneben das vom PM verlangte Mittel je Signal. */
+function luecken(sp, ctx, kand, dirIdx, reihe, Lag) {
+  var zl = lueckeReihe(sp, kand, dirIdx, 'alle'), jeTag = {}, N = 0, S = 0;
+  zl.forEach(function (z) { jeTag[z.t] = z.mittel; });
+  var besZ = zl.filter(nurBes(ctx));
+  besZ.forEach(function (z) { N += z.n; S += z.n * z.mittel; });
+  var paare = [], ohneKurs = 0;
+  reihe.filter(nurBes(ctx)).forEach(function (z) {
+    if (jeTag[z.t] === undefined || z.netto !== z.netto) { ohneKurs++; return; }
+    paare.push({ t: z.t, x: z.netto - jeTag[z.t] });
+  });
+  return { jeSignal: N > 0 ? S / N : null, nSig: N, nTage: besZ.length, ohneKurs: ohneKurs,
+    tagesmittel: momente(besZ.map(function (z) { return { t: z.t, x: z.mittel }; }), Lag), bereinigt: momente(paare, Lag) };
+}
 function klassenDifferenz(sp, ctx, r, dirIdx, h, zi, Lag) {
   var aus = [];
   for (var k = 0; k < K.N_K; k++) {
@@ -259,12 +290,12 @@ function centBoden(sp, kal) {
   var nT = kal.tage.length, aus = [];
   K.ZEITRAHMEN.forEach(function (zr, zi) {
     K.KLASSEN.forEach(function (kl, ki) {
-      var n = 0, s = 0, cb = 0;
+      var n = 0, s = 0, cb = 0, lu = 0;
       for (var di = 0; di < K.N_DET; di++) for (var dir = 0; dir < 2; dir++) for (var t = 0; t < nT; t++) for (var le = 0; le < 2; le++) {
         var idx = K.kursZelle(nT, K.kandIndex(di, zi), dir, t, ki, le);
-        n += sp.kn[idx]; s += sp.ks[idx]; cb += sp.kcb[idx];
+        n += sp.kn[idx]; s += sp.ks[idx]; cb += sp.kcb[idx]; lu += sp.kl ? sp.kl[idx] : 0;
       }
-      if (n > 0) aus.push({ zr: zr.key, klasse: kl.name, n: n, mittelKurs: s / n, bodenBeimMittel: K.centBodenPp(s / n), huerde: kl.huerde, anteilUeber: cb / n });
+      if (n > 0) aus.push({ zr: zr.key, klasse: kl.name, n: n, mittelKurs: s / n, bodenBeimMittel: K.centBodenPp(s / n), huerde: kl.huerde, anteilUeber: cb / n, luecke: lu / n });
     });
   });
   return aus;
@@ -288,8 +319,10 @@ function auswerte(sp, F, kal, regimeInfo) {
       ueber: statistik(reihe.filter(function (z) { return z.t >= ctx.iBes && z.t >= ctx.iReg && ctx.regime[z.t] === 1; }), Lag),
       unter: statistik(reihe.filter(function (z) { return z.t >= ctx.iBes && z.t >= ctx.iReg && ctx.regime[z.t] === 0; }), Lag) } : null;
     var jahre = jahresscheiben(reihe, Lag, ctx, hKey);
+    var lue = luecken(sp, ctx, K.kandIndex(dI, zi), dirIdx, reihe, Lag);
     delete alle.placeboAZeilen; delete alle.reihe; delete lebend.placeboAZeilen; delete lebend.reihe;
     konf.push({ det: dets[dI], zr: K.ZEITRAHMEN[zi].key, richtung: K.RICHTUNGEN[dirIdx].key, h: hKey, dI: dI, zi: zi, dirIdx: dirIdx, hi: h, lag: Lag,
+      luecke: { jeSignal: lue.jeSignal, nSig: lue.nSig, nTage: lue.nTage, ohneKurs: lue.ohneKurs, tagesmittel: lue.tagesmittel }, nettoBereinigt: lue.bereinigt,
       alle: alle, lebend: { ent: lebend.ent, bes: lebend.bes, placeboB: lebend.placeboB },
       differenzLebend: alle.bes.brutto.mittel != null && lebend.bes.brutto.mittel != null ? alle.bes.brutto.mittel - lebend.bes.brutto.mittel : null,
       differenzLebendKlasse: klassenDifferenz(sp, ctx, K.reiheIndex(K.kandIndex(dI, zi), 0), dirIdx, h, zi, Lag),
@@ -334,6 +367,10 @@ function auswerte(sp, F, kal, regimeInfo) {
   zahlen.handelbar = konf.filter(function (c) { return c.handelbar; }).length;
   zahlen.handelbarSchein = { bv1: konf.filter(function (c) { return c.handelbarSchein.bv1; }).length, standard: konf.filter(function (c) { return c.handelbarSchein.standard; }).length };
   zahlen.torAktBestanden = konf.filter(function (c) { return c.torAkt; }).length;
+  zahlen.torLueckeBestanden = konf.filter(function (c) { return c.torLuecke; }).length;
+  zahlen.extremEinstieg = konf.filter(function (c) { return c.extremEinstieg; }).length;
+  zahlen.lueckeOhneKursTage = konf.reduce(function (a, c) { return a + (c.luecke ? c.luecke.ohneKurs : 0); }, 0);
+  zahlen.handelbarPut = konf.filter(function (c) { return c.richtung === 'short' && (c.handelbarSchein.bv1 || c.handelbarSchein.standard); }).length;
   zahlen.vorwaerts = konf.filter(function (c) { return c.vorwaerts; }).length;
   zahlen.groesse = { 'in seiner Klasse zu': 0, 'in jeder Klasse zu': 0, 'offen': 0, 'ohne (< 30 Bes-Tage)': 0 };
   zahlen.scheinGroesse = { 'fuer jeden Schein zu': 0, 'fuer den Standard-Schein zu': 0, 'offen': 0, 'ohne (< 30 Bes-Tage)': 0 };
@@ -361,7 +398,14 @@ function urteil(c, z2, poolOk, eigenOk) {
   }
   c.handelbar = false; c.handelbarSchein = { bv1: false, standard: false }; c.herabstufungen = []; c.vorwaerts = false;
   c.leiheUngemessen = c.richtung === 'short';                   // Minutenstudie Nachtrag 2.4: Short als Aktie nie handelbar
+  c.flagge = c.richtung === 'short' ? 'handelbar mit Put' : 'handelbar mit Schein';   // Nachtrag 3.3: Name der Schein-Flagge
   c.grund = '';
+  /* NACHTRAG 3.1: Einstiegsluecke. `belegt` (und damit jedes `handelbar`) verlangt zusaetzlich, dass das um die
+   * Luecke bereinigte Netto positiv und selbst signifikant ist - sonst steckt die Groesse im Einstieg am Extrem
+   * (Bid-Ask-Bounce), nicht in einer Wende. Vermerk "Extrem-Einstieg", wo die Luecke mehr als die Haelfte des Brutto ist. */
+  var lb = c.luecke || {}, nb = c.nettoBereinigt || {}, lm = lb.tagesmittel || {};
+  c.torLuecke = nb.mittel != null && nb.mittel > 0 && nb.t != null && nb.t >= z2;
+  c.extremEinstieg = b.brutto.mittel != null && b.brutto.mittel > 0 && lm.mittel != null && lm.mittel > 0.5 * b.brutto.mittel;
   if (e.nSig === 0 && b.nSig === 0) c.urteil = '0 Signale';
   else if (c.mdeB == null || e.nTage === 0) { c.urteil = 'nicht entscheidbar'; c.grund = 'Tor 1 nicht pruefbar (se_B oder Entdeckung fehlt)'; }
   else if (!c.tor1) c.urteil = 'kein Kandidat';
@@ -375,6 +419,9 @@ function urteil(c, z2, poolOk, eigenOk) {
     } else if (!c.torAkt) {
       c.urteil = 'nicht belegt: Aktualitaets-Tor';
       c.grund = c.aktuell.nTage < K.AKTUELL_MIN_TAGE ? 'letzte ' + K.AKTUELL_TAGE + ' Tage: < ' + K.AKTUELL_MIN_TAGE + ' Signaltage' : 'letzte ' + K.AKTUELL_TAGE + ' Tage: u ' + (c.aktuell.u.mittel != null ? c.aktuell.u.mittel.toFixed(4) : '–') + ', t ' + (c.aktuell.u.t != null ? c.aktuell.u.t.toFixed(2) : '–');
+    } else if (!c.torLuecke) {
+      c.urteil = 'nicht belegt: Einstiegsluecke';
+      c.grund = 'netto_B lueckenbereinigt ' + (nb.mittel != null ? nb.mittel.toFixed(4) : '–') + ' (t ' + (nb.t != null ? nb.t.toFixed(2) : '–') + ' < z_Bonf ' + z2.toFixed(2) + '), Luecke ' + (lm.mittel != null ? lm.mittel.toFixed(4) : '–') + (c.extremEinstieg ? ', Extrem-Einstieg' : '');
     } else {
       if (!poolOk) c.herabstufungen.push('Placebo gepoolt (ZR, H) gefallen');
       if (!eigenOk) c.herabstufungen.push('Placebo eigen gefallen');
@@ -392,7 +439,8 @@ function urteil(c, z2, poolOk, eigenOk) {
   }
   var a = c.aktuell;
   c.vorwaerts = c.urteil !== 'belegt' && a.nTage >= K.VORWAERTS_MIN_TAGE && a.u.mittel != null && a.u.mittel > 0 && a.u.t != null && a.u.t >= K.VORWAERTS_T;
-  if (c.leiheUngemessen) c.handelbarGrund = 'nein (Leihe)';
+  if (c.urteil === 'nicht belegt: Einstiegsluecke') c.handelbarGrund = 'nein (Einstiegsluecke' + (c.extremEinstieg ? ', Extrem-Einstieg' : '') + ')';
+  else if (c.leiheUngemessen) c.handelbarGrund = 'nein (Leihe)';
   else if (c.urteil === 'belegt' && !c.handelbar) c.handelbarGrund = c.delta80 <= c.kKand ? 'nein (netto roh <= 0)' : 'nein (delta80 > K_kand)';
   else c.handelbarGrund = c.handelbar ? 'ja' : 'nein';
 }
@@ -508,15 +556,20 @@ function markdown(E, F, herkunft, kal, pilot) {
   o.push('F.zaehler vollstaendig:\n'); o.push(tabelle(['Zaehler', 'Wert'], flach(Z)));
   o.push('Reihen ausgeschlossen nach Wertpapierart:\n'); o.push(tabelle(['Art', 'Reihen'], flach(F.reihenAusgeschlossen || {})));
   if ((F.ausgelassen || []).length) { o.push(tabelle(['Ausgelassen', 'Grund'], F.ausgelassen.map(function (a) { return [a.datei, a.grund]; }))); o.push('> „Datei fehlt" ist kein Sammelfehler (Minutenstudie Nachtrag 3, Frage 5: alle 340 Reihen mit Jahren ohne Datei stehen in `_luecken.json`).\n'); }
-  o.push('## 1. Kontrollen zuerst (§8)\n\nPlacebo A gepoolt je (Zeitrahmen, Haltedauer) ueber alle neun Detektoren und beide Richtungen, Mass je Signal dir_p · (rohLong_p − Topf). Schranke intraday |t| < 3 und |Mittel| < ' + K.BAND_PP + ' Pp; Uebernacht |t| < 3 und |Mittel| < 3·se_erwartet' + (K.SE_ERWARTET_NAECHSTE == null ? ' (**se_erwartet noch nicht notiert - nur das t-Kriterium wirkt**)' : ' (se_erwartet ' + pp(K.SE_ERWARTET_NAECHSTE) + ')') + '. Faellt das gepoolte Band, wird in diesem (ZR, H) nichts „belegt". Eigen = je (Detektor, ZR, H) nur |t| < 3. Drift = Topf-Tagesmittel.\n');
+  o.push('## 1. Kontrollen zuerst (§8)\n\nPlacebo A gepoolt je (Zeitrahmen, Haltedauer) ueber alle acht Detektoren und beide Richtungen, Mass je Signal dir_p · (rohLong_p − Topf). Schranke intraday |t| < 3 und |Mittel| < ' + K.BAND_PP + ' Pp; Uebernacht |t| < 3 und |Mittel| < 3·se_erwartet' + (K.SE_ERWARTET_NAECHSTE == null ? ' (**se_erwartet noch nicht notiert - nur das t-Kriterium wirkt**)' : ' (se_erwartet ' + pp(K.SE_ERWARTET_NAECHSTE) + ')') + '. Faellt das gepoolte Band, wird in diesem (ZR, H) nichts „belegt". Eigen = je (Detektor, ZR, H) nur |t| < 3. Drift = Topf-Tagesmittel.\n');
   o.push(tabelle(['ZR', 'H', 'Schranke', 'Placebo nTage', 'nSig', 'Mittel−Topf (Pp)', 'se', 't', 'im Band', 'eigen geprueft', 'eigen gefallen', 'Drift nTage', 'Drift Tagesmittel', 'Drift sd', 'Drift t', 'Drift Bes Mittel', 'Topf Kerzen'],
     E.kontrollen.map(function (k) { var p = k.placebo, d = k.drift; return [k.zr, k.h, k.schranke, ganz(p.nTage), ganz(p.nSig), pp(p.gegenTopf), pp(p.se), tw(p.t), jn(k.imBand), ganz(k.eigenGeprueft), ganz(k.eigenGefallen), ganz(d.nTage), pp(d.mittel), pp(d.sd), tw(d.t), pp(d.mittelB), ganz(d.kerzen)]; })));
   o.push('Gepoolte Placebo-Baender gefallen: **' + ganz(z.placeboPoolGefallen) + '** von ' + ganz(E.kontrollen.length) + '. Einzel-Placebos gefallen: **' + ganz(z.placeboEigenGefallen) + '**. Signalzellen ohne Topfzelle: ' + ganz(z.ohneTopf) + '. Uebernacht-Zeilen mit HH ≤ 0 (Block-se, Marke HH<0): ' + ganz(z.hh0) + '.\n');
   o.push('## 2. Urteile in Zahlen (§7)\n');
+  o.push('> **Einstiegsluecke (Nachtrag 3, vor dem Vollauf registriert):** `luecke_B` ist die mittlere Luecke zwischen dem Schluss der Signalkerze und der Eroeffnung der Einstiegskerze, in Handelsrichtung und in Pp - gemessen je Kurszelle, also je (Detektor, ZR, Richtung) fuer alle Haltedauern dieselbe. `netto_B lueckenbereinigt` = netto_B − luecke_B je Signaltag. **`belegt` verlangt zusaetzlich lueckenbereinigt > 0 mit t ≥ z_Bonf(k2)**; sonst steht „nicht belegt: Einstiegsluecke". Der Vermerk **Extrem-Einstieg** steht, wo die Luecke mehr als die Haelfte des Brutto ausmacht - dort ist der Einstieg am Extrem (Bid-Ask-Bounce) die naheliegendere Erklaerung als eine Wende.\n');
   o.push('> **Belegt ist nicht handelbar.** Ueber belegt / widerlegt / nicht entscheidbar entscheidet u (Ueberschuss gegen den Topf minus Kassa-Huerde). `handelbar` (Aktie) verlangt zusaetzlich Aufloesung (delta80 ≤ K_kand), rohes Netto > 0 und Einstiegsfenster-Huerde; Short als Aktie nie (Leihe). **`handelbar mit Schein`** verlangt belegt, Aufloesung, Einstiegsfenster und netto_schein_B > 0 - ohne Leihe-Veto (ein Put braucht keine Leihe). Das **Aktualitaets-Tor** (letzte ' + K.AKTUELL_TAGE + ' Handelstage ab ' + E.ctx.aktuellAb + ': u > 0 und t > ' + K.AKTUELL_T_MIN + ') ist Voraussetzung fuer belegt.\n');
   var uz = [['Konfigurationen', ganz(z.konfigurationen)], ['k1 (Tor 1 bestanden)', ganz(z.k1)], ['z_Bonf(max(k1,1)) fuer delta80', tw(z.zBonfK1)], ['k2 (beide Tore)', ganz(z.k2)], ['z_Bonf(max(k2,1)) = Schwelle fuer t_B', tw(z.zBonfK2)], ['Aktualitaets-Tor bestanden (alle Konfigurationen)', ganz(z.torAktBestanden)]];
   URTEILE.forEach(function (u) { uz.push(['Urteil: ' + u, ganz(z.urteile[u])]); });
+  uz.push(['Luecken-Tor bestanden (netto_B lueckenbereinigt > 0 und t ≥ z_Bonf, alle Konfigurationen)', ganz(z.torLueckeBestanden)]);
+  uz.push(['Vermerk „Extrem-Einstieg" (luecke_B > halbes Brutto_B)', ganz(z.extremEinstieg)]);
+  uz.push(['Bestaetigungs-Signaltage ohne Kurszelle (aus der Lueckenrechnung gefallen, Summe ueber alle Konfigurationen)', ganz(z.lueckeOhneKursTage)]);
   uz.push(['handelbar (Aktie)', ganz(z.handelbar)]); uz.push(['handelbar mit Schein BV 1,0', ganz(z.handelbarSchein.bv1)]); uz.push(['handelbar mit Standard-Schein', ganz(z.handelbarSchein.standard)]);
+  uz.push(['davon Short: Flagge „handelbar mit Put" (Kassa-Short bleibt nie handelbar)', ganz(z.handelbarPut)]);
   uz.push(['Kandidaten fuer den Vorwaertstest (nicht belegt, letzte ' + K.AKTUELL_TAGE + ': ≥ ' + K.VORWAERTS_MIN_TAGE + ' Tage, u > 0, t ≥ ' + K.VORWAERTS_T + ')', ganz(z.vorwaerts)]);
   Object.keys(z.groesse).forEach(function (g) { uz.push(['Groessenaussage Kassa: ' + g, ganz(z.groesse[g])]); });
   Object.keys(z.scheinGroesse).forEach(function (g) { uz.push(['Groessenaussage Schein: ' + g, ganz(z.scheinGroesse[g])]); });
@@ -524,15 +577,17 @@ function markdown(E, F, herkunft, kal, pilot) {
   o.push(tabelle(['Groesse', 'Wert'], uz));
   var sortiert = E.konf.slice().sort(function (a, b) { var ta = a.alle.ent.u.t, tb = b.alle.ent.u.t; if (ta == null && tb == null) return 0; if (ta == null) return 1; if (tb == null) return -1; return tb - ta; });
   o.push('## 3. Kandidatentafel - alle ' + z.konfigurationen + ' Konfigurationen, sortiert nach Entdeckungs-t (u) absteigend\n\nEnt = Entdeckung, Bes = Bestaetigung (≥ ' + K.BESTAETIGUNG_AB + '). u = dir·(rLong − Topf) − K; netto = r − K (roh); uF = mit Einstiegsfenster-Huerde. Schein = Brutto − Schein-Huerde der Haltedauer (BV 1,0 / Standard). Akt = letzte ' + K.AKTUELL_TAGE + ' Handelstage. HH = Uebernacht-se mit Block-Rueckfall.\n');
-  o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Ent nTage', 'Ent nSig', 'Ent brutto', 'Ent u', 'Ent t', 'MDE_B', 'Tor1', 'K_kand', 'delta80', 'Tor2', 'Bes nTage', 'Bes nSig', 'Bes brutto', 'Bes netto', 'Bes u', 'Bes uF', 'Bes t', 'obere Grenze brutto', 'Schein BV1 netto', 'Schein BV1 t', 'Schein Std netto', 'Akt nTage', 'Akt u', 'Akt t', 'TorAkt', 'PlA Mittel', 'PlA t', 'Kand−PlB', 'B2', 'Urteil', 'handelbar', 'Schein BV1', 'Schein Std', 'Groesse', 'Schein-Groesse', 'Vorwaerts'],
-    sortiert.map(function (c) { var e = c.alle.ent, b = c.alle.bes, p = c.placeboA, q = c.alle.placeboB.bes, a = c.aktuell;
+  o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Ent nTage', 'Ent nSig', 'Ent brutto', 'Ent u', 'Ent t', 'MDE_B', 'Tor1', 'K_kand', 'delta80', 'Tor2', 'Bes nTage', 'Bes nSig', 'Bes brutto', 'Bes netto', 'Bes u', 'Bes uF', 'Bes t', 'obere Grenze brutto', 'luecke_B (je Signal)', 'luecke_B (Tagesmittel)', 'netto_B lueckenbereinigt', 't lueckenbereinigt', 'TorLuecke', 'Extrem-Einstieg', 'Schein BV1 netto', 'Schein BV1 t', 'Schein Std netto', 'Akt nTage', 'Akt u', 'Akt t', 'TorAkt', 'PlA Mittel', 'PlA t', 'Kand−PlB', 'B2', 'Urteil', 'handelbar', 'Schein-Flagge', 'Flagge BV1', 'Flagge Std', 'Groesse', 'Schein-Groesse', 'Vorwaerts'],
+    sortiert.map(function (c) { var e = c.alle.ent, b = c.alle.bes, p = c.placeboA, q = c.alle.placeboB.bes, a = c.aktuell, lu = c.luecke || {}, lm = lu.tagesmittel || {}, nb = c.nettoBereinigt || {};
       return [c.det, c.zr, c.richtung, c.h, ganz(e.nTage), ganz(e.nSig), pp(e.brutto.mittel), pp(e.u.mittel), tw(e.u.t), pp(c.mdeB), jn(c.tor1), pp(c.kKand), pp(c.delta80), jn(c.tor2),
-        ganz(b.nTage), ganz(b.nSig), pp(b.brutto.mittel), pp(b.netto.mittel), pp(b.u.mittel), pp(b.uF.mittel), tw(b.u.t) + (b.u.hh0 ? ' HH<0' : ''), pp(b.brutto.obere), pp(c.schein.bv1.mittel), tw(c.schein.bv1.t), pp(c.schein.standard.mittel),
-        ganz(a.nTage), pp(a.u.mittel), tw(a.u.t), jn(c.torAkt), pp(p.gegenTopf), tw(p.t), pp(q.mittel), (e.u.b2 || b.u.b2) ? 'B2' : '', c.urteil + (c.herabstufungen.length ? ' [' + c.herabstufungen.join('; ') + ']' : '') + (c.grund ? ' (' + c.grund + ')' : ''), c.handelbarGrund, jn(c.handelbarSchein.bv1), jn(c.handelbarSchein.standard), c.groesse, c.scheinGroesse, jn(c.vorwaerts)]; })));
+        ganz(b.nTage), ganz(b.nSig), pp(b.brutto.mittel), pp(b.netto.mittel), pp(b.u.mittel), pp(b.uF.mittel), tw(b.u.t) + (b.u.hh0 ? ' HH<0' : ''), pp(b.brutto.obere),
+        pp(lu.jeSignal), pp(lm.mittel), pp(nb.mittel), tw(nb.t), jn(c.torLuecke), c.extremEinstieg ? 'Extrem-Einstieg' : '',
+        pp(c.schein.bv1.mittel), tw(c.schein.bv1.t), pp(c.schein.standard.mittel),
+        ganz(a.nTage), pp(a.u.mittel), tw(a.u.t), jn(c.torAkt), pp(p.gegenTopf), tw(p.t), pp(q.mittel), (e.u.b2 || b.u.b2) ? 'B2' : '', c.urteil + (c.herabstufungen.length ? ' [' + c.herabstufungen.join('; ') + ']' : '') + (c.grund ? ' (' + c.grund + ')' : ''), c.handelbarGrund, c.flagge, jn(c.handelbarSchein.bv1), jn(c.handelbarSchein.standard), c.groesse, c.scheinGroesse, jn(c.vorwaerts)]; })));
   o.push('## 3b. Kandidaten fuer den Vorwaertstest (§7) - Rangliste, kein Befund\n\nNicht belegt, aber in den letzten ' + K.AKTUELL_TAGE + ' Handelstagen ≥ ' + K.VORWAERTS_MIN_TAGE + ' Signaltage, u > 0 und t ≥ ' + K.VORWAERTS_T + '. Bei ' + z.konfigurationen + ' Konfigurationen sind ≈ ' + Math.round(0.023 * z.konfigurationen) + ' solche Zeilen durch Zufall zu erwarten. Geprueft werden sie an den Daten ab 2026-09-01 (eigener Auftrag).\n');
   var vw = E.konf.filter(function (c) { return c.vorwaerts; }).sort(function (a, b) { return b.aktuell.u.t - a.aktuell.u.t; });
-  o.push(vw.length ? tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Akt nTage', 'Akt nSig', 'Akt u', 'Akt se', 'Akt t', 'Akt brutto', 'Schein BV1 (Akt)', 'Schein Std (Akt)', 'Bes u', 'Bes t', 'Urteil'],
-    vw.map(function (c) { var a = c.aktuell; return [c.det, c.zr, c.richtung, c.h, ganz(a.nTage), ganz(a.nSig), pp(a.u.mittel), pp(a.u.se), tw(a.u.t), pp(a.brutto.mittel), pp(a.brutto.mittel != null ? a.brutto.mittel - K.scheinHuerde('bv1', c.h) : null), pp(a.brutto.mittel != null ? a.brutto.mittel - K.scheinHuerde('standard', c.h) : null), pp(c.alle.bes.u.mittel), tw(c.alle.bes.u.t), c.urteil]; })) : 'Keine Konfiguration erfuellt die Kriterien.\n');
+  o.push(vw.length ? tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Akt nTage', 'Akt nSig', 'Akt u', 'Akt se', 'Akt t', 'Akt brutto', 'Schein BV1 (Akt)', 'Schein Std (Akt)', 'Bes u', 'Bes t', 'luecke_B', 'netto_B lueckenbereinigt', 'Extrem-Einstieg', 'Urteil'],
+    vw.map(function (c) { var a = c.aktuell, lm = (c.luecke || {}).tagesmittel || {}, nb = c.nettoBereinigt || {}; return [c.det, c.zr, c.richtung, c.h, ganz(a.nTage), ganz(a.nSig), pp(a.u.mittel), pp(a.u.se), tw(a.u.t), pp(a.brutto.mittel), pp(a.brutto.mittel != null ? a.brutto.mittel - K.scheinHuerde('bv1', c.h) : null), pp(a.brutto.mittel != null ? a.brutto.mittel - K.scheinHuerde('standard', c.h) : null), pp(c.alle.bes.u.mittel), tw(c.alle.bes.u.t), pp(lm.mittel), pp(nb.mittel), c.extremEinstieg ? 'Extrem-Einstieg' : '', c.urteil]; })) : 'Keine Konfiguration erfuellt die Kriterien.\n');
   o.push('## 4. Jahresscheiben (§9a) - Pflichttabelle: u je Kalenderjahr und letzte ' + K.AKTUELL_TAGE + ' Handelstage, je Konfiguration\n\nSicht alle, Klassen gepoolt, aus den Zellen je ET-Tag. t nur ab ' + K.JAHR_MIN_TAGE + ' Signaltagen im Jahr („zu duenn" sonst). Uebernacht-se Hansen-Hodrick Lag 1. Kein Urteil aus dieser Tabelle.\n');
   var jz = [];
   E.konf.forEach(function (c) { c.jahre.forEach(function (j) { jz.push([c.det, c.zr, c.richtung, c.h, j.jahr, ganz(j.nTage), ganz(j.nSig), pp(j.u), pp(j.se), j.duenn ? 'zu duenn' : tw(j.t) + (j.hh0 ? ' HH<0' : ''), pp(j.brutto), pp(j.netto), pp(j.schein1)]); }); });
@@ -554,7 +609,7 @@ function markdown(E, F, herkunft, kal, pilot) {
   var zk = [];
   K.ZEITRAHMEN.forEach(function (zr) { K.KLASSEN.forEach(function (kl) { var schl = zr.key + '|' + kl.name, tage = (Z.tageGewertetKlasse || {})[schl] || 0; var reihen = Object.keys(F.signale || {}).filter(function (r) { return ((F.signale[r].tageGewertetKlasse || {})[schl] || 0) > 0; }); zk.push([zr.key, kl.name, ganz(reihen.length), ganz(tage), tage === 0 ? 'nicht gemessen' : (tage < 1000 ? 'duenn - kein Nullbefund' : '')]); }); });
   o.push(tabelle(['ZR', 'Klasse (Mio $)', 'Reihen mit gewerteten Tagen', 'gewertete Reihen-Tage', 'Hinweis'], zk));
-  o.push(E.centBoden.length ? tabelle(['ZR', 'Klasse', 'Signale mit Einstieg', 'mittlerer Einstiegskurs (roh)', 'Cent-Boden beim Mittelkurs', 'Huerde', 'Anteil ueber dem Boden'], E.centBoden.map(function (c) { return [c.zr, c.klasse, ganz(c.n), tw(c.mittelKurs) + ' $', pp(c.bodenBeimMittel), pp(c.huerde), tw(100 * c.anteilUeber) + ' %']; })) : 'Kurszellen leer.\n');
+  o.push(E.centBoden.length ? tabelle(['ZR', 'Klasse', 'Signale mit Einstieg', 'mittlerer Einstiegskurs (roh)', 'Cent-Boden beim Mittelkurs', 'Huerde', 'Anteil ueber dem Boden', 'mittlere Einstiegsluecke (Pp, alle Detektoren)'], E.centBoden.map(function (c) { return [c.zr, c.klasse, ganz(c.n), tw(c.mittelKurs) + ' $', pp(c.bodenBeimMittel), pp(c.huerde), tw(100 * c.anteilUeber) + ' %', pp(c.luecke)]; })) : 'Kurszellen leer.\n');
   o.push(tabelle(['Detektor', 'ZR', 'Reihen gesamt', 'Reihen mit Signal', 'Signale', 'Median je Reihe', 'Median je Reihe mit Signal'], E.signalanteil.map(function (s) { return [s.det, s.zr, ganz(s.reihenGesamt), ganz(s.reihenMitSignal), ganz(s.summe), ganz(s.medianJeReihe), ganz(s.medianJeReiheMitSignal)]; })));
   o.push('Klassenmix der Signale je Zeitrahmen (Kandidaten, Haltedauer schluss), Klassen ' + K.KLASSEN.map(function (k) { return k.name; }).join(' / ') + ':\n');
   o.push(tabelle(['ZR', 'gesamt', 'Bestaetigung', 'lebend'], E.klassenmix.map(function (m) { return [m.zr, m.gesamt.map(ganz).join(' / '), m.bestaetigung.map(ganz).join(' / '), m.lebend.map(ganz).join(' / ')]; })));
@@ -562,7 +617,7 @@ function markdown(E, F, herkunft, kal, pilot) {
   o.push(tabelle(['ZR', 'H', 'Konf.', 'dicht: Detektor', 'dicht nSig_B', 'dicht nTage_B', 'dicht se_B', 'dicht delta80', 'Median se_B', 'Median MDE_B', 'Median delta80', 'Plan sd / MDE / delta80'],
     E.seB.map(function (s) { var d = s.dicht || {}; return [s.zr, s.h, ganz(s.nKonf), d.det ? d.det + ' ' + d.richtung : '–', ganz(d.nSigB), ganz(d.nTageB), pp(d.seB), pp(d.delta80), pp(s.median.seB), pp(s.median.mdeB), pp(s.median.delta80), s.plan ? pp(s.plan.sd) + ' / ' + pp(s.plan.mde) + ' / ' + pp(s.plan.delta80) : '–']; })));
   o.push('## 9. Was diese Zahlen nicht sagen (VORREGISTRIERUNG §15)\n');
-  o.push('- Nichts ueber Parameter-Varianten der Detektoren; nicht die effektiven Kosten; Schein-Huerden sind Tabellenwerte.\n- Kein Ja aus der Entdeckung, aus Jahresscheiben, aus der Regime-Sicht oder aus der Vorwaertstest-Liste.\n- Nichts ueber Haltedauern ueber eine Nacht hinaus, CFD, 60m, die Zeit vor 2016.\n- Fuer blinde Zellen (§11) kein Nein - nur Obergrenzen; „nicht entscheidbar" ist der Befund, kein Nein.\n' + (pilot ? '- **Dies ist ein Pilot- oder Teillauf.** Nichts hier ist ein Befund ueber den Markt.\n' : ''));
+  o.push('- Nichts ueber Parameter-Varianten der Detektoren; nicht die effektiven Kosten; Schein-Huerden sind Tabellenwerte.\n- Die Einstiegsluecke ist **kein Kostenmodell**: sie misst, wie weit der Einstieg vom Extrem entfernt liegt, an dem die Regel feuert. Eine kleine Luecke beweist keine Kante, eine grosse beweist keinen Fehler - sie verhindert nur, dass ein Bounce als Wende durchgeht (Nachtrag 3.1).\n- Kein Ja aus der Entdeckung, aus Jahresscheiben, aus der Regime-Sicht oder aus der Vorwaertstest-Liste.\n- Nichts ueber Haltedauern ueber eine Nacht hinaus, CFD, 60m, die Zeit vor 2016.\n- Fuer blinde Zellen (§11) kein Nein - nur Obergrenzen; „nicht entscheidbar" ist der Befund, kein Nein.\n' + (pilot ? '- **Dies ist ein Pilot- oder Teillauf.** Nichts hier ist ein Befund ueber den Markt.\n' : ''));
   return o.join('\n');
 }
 
@@ -592,5 +647,6 @@ function lauf(a) {
 
 module.exports = { lauf: lauf, argumente: argumente, normalQuantil: normalQuantil, zBonf: zBonf, selbsttestQuantil: selbsttestQuantil, ladeLaeufe: ladeLaeufe,
   tagesreihe: tagesreihe, poole: poole, momente: momente, momenteVon: momenteVon, statistik: statistik, scheinWerte: scheinWerte, imBand: imBand, auswerte: auswerte, urteil: urteil, markdown: markdown,
+  lueckeReihe: lueckeReihe, luecken: luecken, centBoden: centBoden,
   spyRegime: spyRegime, regimeAusSchluessen: regimeAusSchluessen, jahresscheiben: jahresscheiben, scheibe: scheibe, trend: trend, familie: familie, URTEILE: URTEILE };
 if (require.main === module) lauf(argumente(process.argv.slice(2)));

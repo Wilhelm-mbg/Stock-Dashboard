@@ -52,14 +52,16 @@ function schein(key) { return SCHEINE.filter(function (s) { return s.key === key
 /** Schein-Huerde je Produkt und Haltedauer: 'schluss' und 'naechste' = Tageswert, sonst 3-h-Wert. */
 function scheinHuerde(key, hKey) { var s = schein(key); return (hKey === 'schluss' || hKey === 'naechste') ? s.tag : s.kurz; }
 
-/* ---------- Detektoren (§2) ---------- */
-var DETEKTOR_KEYS = ['W1a', 'W1b', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'];
+/* ---------- Detektoren (§2) ----------
+ * NACHTRAG 3 (12.09.2026, Entscheid PM): der Trendfolge-Detektor (August-Funktion `kanaltrend`, hier bis dahin W8)
+ * ist gestrichen - er ist nach Code eine EMA20-Kreuzung in Kanalrichtung, also Trendfolge und kein Wende-Detektor.
+ * Damit acht Detektoren, 15 Detektor-Richtungen, 225 Konfigurationen. */
+var DETEKTOR_KEYS = ['W1a', 'W1b', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7'];
 var NUR_LONG = { W3: true };
 var FAMILIEN = {
   'wende-winkel': ['W1a', 'W1b', 'W2'],
   'wende-struktur': ['W4', 'W5', 'W6', 'W7'],
   dip: ['W3'],
-  'trendfolge-referenz': ['W8'],
 };
 /* Zeitrahmen EXPLIZIT (Nachtrag 1.10 dort): W2 auf 1m Tagesreihe, 5m/15m fortlaufend. */
 var PARAM_JE_ZR = {
@@ -111,11 +113,13 @@ function zelle(nTage, reihe, dirIdx, h, tag, klasse, lebend) { return ((((reihe 
 function zellenZahl(nTage) { return N_REIHEN * 2 * N_H * nTage * N_K * 2; }
 function topfZelle(nTage, zrIdx, h, tag, klasse, lebend) { return (((zrIdx * N_H + h) * nTage + tag) * N_K + klasse) * 2 + lebend; }
 function topfZahl(nTage) { return N_ZR * N_H * nTage * N_K * 2; }
+/* Kurszelle: n, Σ Einstiegskurs (roh), Zahl ueber dem Cent-Boden und - NACHTRAG 3 - Σ EINSTIEGSLUECKE in Pp,
+ * gemessen in Handelsrichtung: dir · (Eroeffnung_{i+1} − Schluss_i) / Schluss_i · 100 (die Richtung steckt im Index). */
 function kursZelle(nTage, kand, dirIdx, tag, klasse, lebend) { return ((((kand * 2 + dirIdx) * nTage + tag) * N_K + klasse) * 2) + lebend; }
 function kursZahl(nTage) { return N_KAND * 2 * nTage * N_K * 2; }
-var N_KONFIG = (2 * N_DET - Object.keys(NUR_LONG).length) * N_ZR * N_H;   // 255
+var N_KONFIG = (2 * N_DET - Object.keys(NUR_LONG).length) * N_ZR * N_H;   // 225 (Nachtrag 3: ohne W8)
 
-var KONFIG_KENNUNG = 'trendwende-ii-2026-09-09/v1/' + N_DET + 'x' + N_ZR + 'x2x' + N_H + 'x' + N_K + 'x' + ARTEN.length + '+kurs+schein+jahre';
+var KONFIG_KENNUNG = 'trendwende-ii-2026-09-09/v2/' + N_DET + 'x' + N_ZR + 'x2x' + N_H + 'x' + N_K + 'x' + ARTEN.length + '+kurs+luecke+schein+jahre';
 
 module.exports = {
   REPO: REPO, HIER: HIER, MINUTEN: MINUTEN, KANAL: KANAL, KM: KM, ORTE: ORTE, archivWurzel: archivWurzel,

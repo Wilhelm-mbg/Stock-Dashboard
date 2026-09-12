@@ -1,5 +1,5 @@
 'use strict';
-/* DETEKTOREN der Studie Trendwende II (VORREGISTRIERUNG.md §2) - neun Familien der Wende, jede eine reine
+/* DETEKTOREN der Studie Trendwende II (VORREGISTRIERUNG.md §2, Nachtrag 3) - acht Familien der Wende, jede eine reine
  * Funktion signal(bars, i, params) -> {dir:+1|-1} | null nach dem Muster von
  * studien/signalstudie-2026-08/detektoren/_tabelle.js. Alle sehen nur bars[0..i]; die einzigen Caches sind
  * Datencaches (Wendepunktlisten, RSI-Reihe, Tagesanfaenge je Reihe), die das Ergebnis nicht von der
@@ -11,7 +11,7 @@
  * HERKUNFT:
  *   W1a/W1b  Felix' Winkel-Detektor (Issue #33), zeilengleich zu detect() in studien/33-winkel-detektor/hauptstudie.js
  *            (Neubewertung 22.08.2026); die Zustandsregeln dort (Cooldown 60 Kerzen, MIN_REST 30) uebernimmt der Lauf.
- *   W2, W3, W8  die August-Tabelle per require, unveraendert (wendepunkt-trendwechsel, kapitulation, kanaltrend).
+ *   W2, W3   die August-Tabelle per require, unveraendert (wendepunkt-trendwechsel, kapitulation).
  *   W4-W7    neu nach den Definitionen der Vorregistrierung §2 (Auftrag 09.09.2026).
  *
  * Alles Simulation mit virtuellem Kapital. Keine Anlageberatung.
@@ -169,8 +169,13 @@ function rsiDiv(bars, i, p) {
   return null;
 }
 
-/* ---------- Tabelle ---------- */
-var W2 = tabEintrag('wendepunkt-trendwechsel'), W3 = tabEintrag('kapitulation'), W8 = tabEintrag('kanaltrend');
+/* ---------- Tabelle ----------
+ * NACHTRAG 3 (12.09.2026, Entscheid PM): der Trendfolge-Detektor aus der August-Tabelle (`kanaltrend`, hier bis
+ * dahin als Referenzzeile gefuehrt) ist gestrichen. Begruendung: er ist nach Code eine EMA20-Kreuzung in
+ * Kanalrichtung - Trendfolge, kein Wende-Detektor; die Umschreibung der Vorregistrierung ("Ruecklauf gegen den
+ * Abschnittskanal") trifft keine August-Funktion. Die August-Tabelle selbst bleibt unberuehrt (nur nicht mehr
+ * hierher gezogen). test.js haelt das als Klinke ueber die Tabelleneigenschaften fest, nicht ueber Text. */
+var W2 = tabEintrag('wendepunkt-trendwechsel'), W3 = tabEintrag('kapitulation');
 var TABELLE = [
   { key: 'W1a', name: 'Winkel, Schwelle', familie: 'wende-winkel', params: { S: 0.5, F: 6, vortrend: 0.5 }, signal: winkel, richtungen: ['long', 'short'],
     herkunft: 'Felix (#33): studien/33-winkel-detektor/hauptstudie.js detect(), OOS-Zelle S 0,5 / F 6; Vortrend-Schwelle 0,5' },
@@ -188,8 +193,6 @@ var TABELLE = [
     herkunft: 'August-Familie, Definition Vorregistrierung §2' },
   { key: 'W7', name: 'RSI-Divergenz', familie: 'wende-struktur', params: { fenster: 60, n: 14 }, signal: rsiDiv, richtungen: ['long', 'short'],
     herkunft: 'August-Familie, Definition Vorregistrierung §2 (RSI wie quant.js rsi)' },
-  { key: 'W8', name: 'Kanaltrend (Referenz Trendfolge)', familie: 'trendfolge-referenz', params: W8.params, signal: W8.signal, richtungen: ['long', 'short'], vorfilter: 'signalCross',
-    herkunft: 'August-Tabelle kanaltrend (Q.einstiegSignal ENTRY kanaltrend, MINQ 60; gegen-kanaltrend.js ruft dieselbe Funktion)' },
 ];
 
 module.exports = { TABELLE: TABELLE, W: { winkel: winkel, klimax: klimax, dow: dow, vUmkehr: vUmkehr, rsiDiv: rsiDiv },
