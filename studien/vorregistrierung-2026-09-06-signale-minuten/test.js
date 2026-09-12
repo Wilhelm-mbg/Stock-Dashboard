@@ -760,5 +760,28 @@ abschnitt(12, 'WERTPAPIERART (Nachtrag 8): L.reihen() nur CS/ADRC, kein Testkuer
 });
 
 /* ====================================================================================== */
+abschnitt(13, 'JAHRESSCHEIBEN (--jahre, additiv, Trendwende II Phase 2): Handrechnung auf Kunst-Zellen, Standard unveraendert', function () {
+  var A = require('./auswerten.js'), kal = K.kalender(), nT = kal.tage.length;
+  var a0 = A.argumente(['--aus', 'x']), a1 = A.argumente(['--aus', 'x', '--jahre', 'y.md', '--fortschritt', 'f']);
+  pruefe(a0.jahre === null && a0.fortschritt === undefined && a1.jahre === 'y.md' && a1.fortschritt === 'f' && a1.aus.length === 1 && a1.aus[0] === 'x', '13a --jahre und --fortschritt sind optional (Standard: altes Verhalten) und nehmen Pfade');
+  /* Kunst-Zellen: rsi2 / 1m / long / 1h, Klasse ab1000 (Huerde 0,0449), lebend, an jedem dritten Tag n = 2 mit bekanntem Netto v */
+  var sp = new M.Speicher(nT), rng = rngNeu(2), soll = { letzte: [] }, hu = K.KLASSEN[3].huerde, reihe = K.reiheIndex(K.kandIndex(0, 0), 0);
+  for (var t = 0; t < nT; t += 3) {
+    var v = 0.05 * gauss(rng) + (t >= nT - 250 ? 0.02 : 0), idx = K.zelle(nT, reihe, 0, 0, t, 3, 1);
+    sp.n[idx] = 2; sp.s[idx] = 2 * (v + hu); sp.s2[idx] = 2 * (v + hu) * (v + hu); sp.h2[idx] = 2 * hu;
+    var j = kal.tage[t].slice(0, 4); (soll[j] = soll[j] || []).push(v); if (t >= nT - 250) soll.letzte.push(v);
+  }
+  var J = A.jahresscheiben(sp, kal), z = J.filter(function (x) { return x.det === 'rsi2' && x.zr === '1m' && x.richtung === 'long' && x.h === '1h'; })[0], fehler = 0, geprueft = 0;
+  z.jahre.forEach(function (s) {
+    var w = s.jahr === 'letzte 250' ? soll.letzte : soll[s.jahr]; if (!w) return; geprueft++;
+    var m = mittel(w), se = sd(w) / Math.sqrt(w.length);
+    if (s.nTage !== w.length || s.nSig !== 2 * w.length || Math.abs(s.netto - m) > 1e-9 || Math.abs(s.se - se) > 1e-9 || Math.abs(s.t - m / se) > 1e-6 || Math.abs(s.brutto - (m + hu)) > 1e-9) fehler++;
+  });
+  var leer = J.filter(function (x) { return x !== z; }).every(function (x) { return x.jahre.every(function (s) { return s.nTage === 0; }); });
+  var tr = A.jahresTrend(z.jahre);
+  pruefe(geprueft === 12 && fehler === 0 && leer && J.length === 234 && tr.n === 11 && tr.se > 0, '13b Jahresscheiben rsi2/1m/long/1h: 11 Jahre + letzte 250 = Handrechnung (nTage, nSig, netto, se, t, brutto; ' + fehler + ' Fehler), alle anderen 233 Konfigurationen leer; Trend ueber ' + tr.n + ' Jahre (Steigung ' + f4(tr.steigung) + ', t ' + f2(tr.t) + ')');
+});
+
+/* ====================================================================================== */
 console.log('\n' + ERG.ok + ' OK, ' + ERG.fehlt + ' FEHLT, ' + ERG.ueber + ' UEBERSPRUNGEN');
 process.exitCode = ERG.fehlt ? 1 : 0;

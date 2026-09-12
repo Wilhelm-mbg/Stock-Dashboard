@@ -42,8 +42,16 @@ var URTEILE = ['0 Signale', 'kein Kandidat', 'nicht entscheidbar', 'widerlegt al
 /* ---------- Argumente ---------- */
 /** Liest die --aus-Ordner (mehrfach erlaubt). */
 function argumente(argv) {
-  var a = { aus: [] };
-  for (var i = 0; i < argv.length; i++) if (argv[i] === '--aus' && argv[i + 1]) a.aus.push(argv[++i]);
+  var a = { aus: [], jahre: null };
+  for (var i = 0; i < argv.length; i++) {
+    if (argv[i] === '--aus' && argv[i + 1]) a.aus.push(argv[++i]);
+    /* additiv (Trendwende II, Phase 2, Auftrag 09.09.2026 §3): --jahre <pfad> schreibt NUR die Jahresscheiben an diesen Pfad
+     * (post hoc, nachrichtlich); ERGEBNIS.md/ergebnis.json werden dann nicht angefasst. Ohne --jahre: altes Verhalten. */
+    else if (argv[i] === '--jahre' && argv[i + 1]) a.jahre = argv[++i];
+    /* additiv: liegen die gesicherten Teile getrennt (zellen-teil-k.bin auf E:, fortschritt-teil-k.json im ergebnis-Ordner),
+     * nennt --fortschritt <ordner> den Ort der Fortschrittsdateien; ohne die Option werden sie neben den Zellen gesucht. */
+    else if (argv[i] === '--fortschritt' && argv[i + 1]) a.fortschritt = argv[++i];
+  }
   return a;
 }
 
@@ -82,11 +90,21 @@ function summiere(a, b) {
   return a === undefined ? b : a;
 }
 /** Liest alle --aus-Ordner, prueft Kennung und Kalenderlaenge, summiert Zellen und Zaehler; zaehlt doppelt erledigte Dateien. */
-function ladeLaeufe(ordner, kal) {
-  var sp = null, F = null, herkunft = [], erledigt = {}, doppelt = 0;
+function ladeLaeufe(ordner, kal, fortschrittOrdner) {
+  var sp = null, F = null, herkunft = [], erledigt = {}, doppelt = 0, paare = [];
   ordner.forEach(function (o) {
-    var fp = path.join(o, '_fortschritt.json'), zp = path.join(o, '_zellen.bin');
-    if (!fs.existsSync(fp) || !fs.existsSync(zp)) throw new Error('In ' + o + ' fehlt _fortschritt.json oder _zellen.bin.');
+    var fp0 = path.join(o, '_fortschritt.json'), zp0 = path.join(o, '_zellen.bin');
+    if (fs.existsSync(fp0) && fs.existsSync(zp0)) { paare.push({ o: o, fp: fp0, zp: zp0 }); return; }
+    /* additiv (Trendwende II, Phase 2): gesicherte Teile heissen zellen-teil-k.bin (studien-zellen auf E:) und
+     * fortschritt-teil-k.json (daneben oder, per --fortschritt, im ergebnis-Ordner des Repos) - jedes Paar ist ein Teillauf.
+     * Ohne solche Dateien wie bisher: Abbruch. */
+    var fo = fortschrittOrdner || o;
+    var teile = fs.existsSync(fo) && fs.statSync(fo).isDirectory() ? fs.readdirSync(fo).filter(function (n) { return /^fortschritt-teil-\d+\.json$/.test(n); }).sort() : [];
+    if (!teile.length) throw new Error('In ' + o + ' fehlt _fortschritt.json oder _zellen.bin' + (fortschrittOrdner ? ' (und in ' + fo + ' keine fortschritt-teil-k.json)' : '') + '.');
+    teile.forEach(function (n) { var zn = n.replace(/^fortschritt-teil-(\d+)\.json$/, 'zellen-teil-$1.bin'); if (!fs.existsSync(path.join(o, zn))) throw new Error('In ' + o + ' fehlt ' + zn + ' zu ' + n + '.'); paare.push({ o: path.join(o, zn.replace(/\.bin$/, '')), fp: path.join(fo, n), zp: path.join(o, zn) }); });
+  });
+  paare.forEach(function (pz) {
+    var o = pz.o, fp = pz.fp, zp = pz.zp;
     var f = JSON.parse(fs.readFileSync(fp, 'utf8'));
     if (f.kennung !== K.KONFIG_KENNUNG) throw new Error('Kennung in ' + o + ' ist "' + f.kennung + '", diese Auswertung erwartet "' + K.KONFIG_KENNUNG + '" - anderer Stand der Studie, Abbruch.');
     if (f.nTage !== kal.tage.length) throw new Error('nTage ' + f.nTage + ' in ' + o + ' passt nicht zum Kalender (' + kal.tage.length + ') - Abbruch.');
@@ -427,6 +445,56 @@ function seBGegenPlan(konf, z1) {
   return aus;
 }
 
+/* ---------- Jahresscheiben (additiv, Trendwende II Phase 2, Auftrag 09.09.2026 §3): post hoc, nachrichtlich, KEIN Urteil ----------
+ * Je Konfiguration (Detektor x ZR x Richtung x H, Sicht alle, Klassen gepoolt) Mittel, se, t, n je Kalenderjahr 2016-2026 und fuer
+ * die letzten 250 Handelstage des Kalenders, aus den Zellen je ET-Tag ohne neue Messung; dazu die OLS-Steigung des Jahresmittels
+ * (nur Jahre mit >= 30 Signaltagen, ab 4 Jahren). Endpunkt wie in dieser Studie: netto = brutto - K_mitte; markt daneben. */
+var JAHRE_AB = 2016, JAHRE_BIS = 2026, JAHRE_LETZTE = 250, JAHRE_MIN_TAGE = 10, TREND_MIN_TAGE = 30, TREND_MIN_JAHRE = 4;
+function jahresTrend(js) {
+  var p = js.filter(function (j) { return /^\d{4}$/.test(j.jahr) && j.nTage >= TREND_MIN_TAGE && j.netto != null && j.netto === j.netto; }).map(function (j) { return { x: +j.jahr - JAHRE_AB, y: j.netto }; });
+  var n = p.length; if (n < TREND_MIN_JAHRE) return { n: n, steigung: null, se: null, t: null };
+  var sx = 0, sy = 0; p.forEach(function (q) { sx += q.x; sy += q.y; }); var mx = sx / n, my = sy / n, sxx = 0, sxy = 0;
+  p.forEach(function (q) { sxx += (q.x - mx) * (q.x - mx); sxy += (q.x - mx) * (q.y - my); });
+  if (!(sxx > 0)) return { n: n, steigung: null, se: null, t: null };
+  var b = sxy / sxx, a0 = my - b * mx, ss = 0; p.forEach(function (q) { var r = q.y - a0 - b * q.x; ss += r * r; });
+  var se = n > 2 ? Math.sqrt(ss / (n - 2) / sxx) : null;
+  return { n: n, steigung: b, se: se, t: se > 0 ? b / se : null };
+}
+function jahresscheiben(sp, kal) {
+  var nTage = kal.tage.length, jahr = kal.tage.map(function (t) { return +t.slice(0, 4); }), aus = [];
+  function scheibe(z, name) { var st = statistik(z), duenn = st.nTage < JAHRE_MIN_TAGE; return { jahr: name, nTage: st.nTage, nSig: st.nSig, netto: st.netto.mittel, se: st.netto.se, t: duenn ? null : st.netto.t, duenn: duenn, brutto: st.brutto.mittel, markt: st.markt.mittel }; }
+  for (var dI = 0; dI < K.N_DET; dI++) for (var zi = 0; zi < K.N_ZR; zi++) for (var dirIdx = 0; dirIdx < 2; dirIdx++) for (var h = 0; h < K.N_H; h++) {
+    var reihe = tagesreihe(sp, K.reiheIndex(K.kandIndex(dI, zi), 0), dirIdx, h, zi, 'alle', null), js = [];
+    for (var j = JAHRE_AB; j <= JAHRE_BIS; j++) js.push(scheibe(reihe.filter((function (jj) { return function (z) { return jahr[z.t] === jj; }; })(j)), String(j)));
+    js.push(scheibe(reihe.filter(function (z) { return z.t >= nTage - JAHRE_LETZTE; }), 'letzte ' + JAHRE_LETZTE));
+    aus.push({ det: K.DETEKTOR_KEYS[dI], zr: K.ZEITRAHMEN[zi].key, richtung: K.RICHTUNGEN[dirIdx].key, h: K.HALTEDAUERN[h].key, familie: familie(K.DETEKTOR_KEYS[dI]), jahre: js, trend: jahresTrend(js) });
+  }
+  return aus;
+}
+function jahresscheibenMarkdown(J, F, herkunft, kal, pilot) {
+  var o = [], nTage = kal.tage.length;
+  o.push('# JAHRESSCHEIBEN (nachrichtlich, post hoc): Signalstudie Minuten (' + K.KONFIG_KENNUNG + ')\n');
+  o.push('Erzeugt ' + new Date().toISOString() + ' von `auswerten.js --jahre` (additive Option, Trendwende II Phase 2, Auftrag 09.09.2026 §3). **Rueckwirkende Lesung der fertigen Zellen - kein Tor, kein Urteil, keine Aenderung an ERGEBNIS.md.** ' + (pilot ? '**PILOT / UNVOLLSTAENDIG.** ' : '') + 'Endpunkt wie in der Studie: netto = brutto − K_mitte (Tagesmittel ueber Signaltage, se = sd/√n, Sicht alle, Klassen gepoolt); markt = brutto − dir·Topf daneben. Jahre mit < ' + JAHRE_MIN_TAGE + ' Signaltagen: „zu duenn" (ohne t). Letzte ' + JAHRE_LETZTE + ' Handelstage ab ' + kal.tage[nTage - JAHRE_LETZTE] + '. Alles Simulation mit virtuellem Kapital, keine Anlageberatung.\n');
+  o.push(tabelle(['Ordner', 'Dateien', 'Reihen', 'beendet', 'Zeitrahmen', 'Kennung'], herkunft.map(function (h) { return [h.ordner, ganz(h.dateien), ganz(h.reihen), h.beendet, (h.zeitrahmen || []).join(' '), h.kennung]; })));
+  if (F.zeitrahmenFehlend && F.zeitrahmenFehlend.length) o.push('> **⚠ Kein Teillauf hat ' + F.zeitrahmenFehlend.join(', ') + ' gemessen** - Zeilen dieses Zeitrahmens sind „nicht gemessen", nicht „nichts da".\n');
+  o.push('## 1. Jahresscheiben je Konfiguration\n');
+  var z = [];
+  J.forEach(function (c) { c.jahre.forEach(function (j) { z.push([c.det, c.zr, c.richtung, c.h, j.jahr, ganz(j.nTage), ganz(j.nSig), pp(j.netto), pp(j.se), j.duenn ? 'zu duenn' : tw(j.t), pp(j.brutto), pp(j.markt)]); }); });
+  o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Jahr', 'nTage', 'nSig', 'netto', 'se', 't', 'brutto', 'markt'], z));
+  o.push('## 2. Trend ueber die Jahre (OLS-Steigung des Jahresmittels netto, Pp/Jahr; nur Jahre mit ≥ ' + TREND_MIN_TAGE + ' Signaltagen, ab ' + TREND_MIN_JAHRE + ' Jahren)\n');
+  o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'Jahre', 'Steigung', 'se', 't'], J.map(function (c) { return [c.det, c.zr, c.richtung, c.h, ganz(c.trend.n), pp(c.trend.steigung), pp(c.trend.se), tw(c.trend.t)]; })));
+  o.push('## 3. Kurztafel Jahr × Familie: Mittel von netto ueber die Konfigurationen der Familie (Jahre mit ≥ ' + JAHRE_MIN_TAGE + ' Signaltagen), Anteil netto > 0\n');
+  var namen = []; for (var j = JAHRE_AB; j <= JAHRE_BIS; j++) namen.push(String(j)); namen.push('letzte ' + JAHRE_LETZTE);
+  var kz = [];
+  namen.forEach(function (jn) { Object.keys(K.FAMILIEN).forEach(function (f) {
+    var w = []; J.forEach(function (c) { if (c.familie !== f) return; var s = c.jahre.filter(function (x) { return x.jahr === jn; })[0]; if (s && !s.duenn && s.netto != null && s.netto === s.netto) w.push(s.netto); });
+    kz.push([jn, f, ganz(w.length), w.length ? pp(w.reduce(function (a, b) { return a + b; }, 0) / w.length) : '–', w.length ? tw(100 * w.filter(function (x) { return x > 0; }).length / w.length) + ' %' : '–']);
+  }); });
+  o.push(tabelle(['Jahr', 'Familie', 'Konfigurationen', 'Mittel netto (Pp)', 'Anteil > 0'], kz));
+  o.push('## 4. Was diese Tabelle nicht sagt\n\n- Kein Urteil: Tore, Bonferroni, Placebo-Baender und Aktualitaets-Tor sind nicht Teil dieser Lesung (die Studie war ohne sie registriert).\n- Jahresmittel sind Ranglisten aus ' + J.length + ' × 12 Zellen; bei so vielen Zellen sind einzelne |t| > 2 durch Zufall zu erwarten.\n- Die Kassa-Huerde ist die heutige (ab 2021) fuer alle Jahre - wie in der Studie.\n');
+  return o.join('\n');
+}
+
 /* ---------- Ausgabe ---------- */
 function pp(x) { return x == null || x !== x ? '–' : x.toFixed(4).replace('.', ','); }
 function tw(x) { return x == null || x !== x ? '–' : x.toFixed(2).replace('.', ','); }
@@ -581,8 +649,15 @@ function lauf(a) {
   if (kal.bestaetigungAb !== K.BESTAETIGUNG_AB) { console.error('Kalender-Split ' + kal.bestaetigungAb + ' != registriert ' + K.BESTAETIGUNG_AB + ' - Abbruch.'); process.exit(3); }
   var ordner = a.aus.map(function (o) { return path.resolve(K.HIER, o); });
   var t0 = Date.now(), G;
-  try { G = ladeLaeufe(ordner, kal); } catch (e) { console.error('ABBRUCH: ' + e.message); process.exit(4); }
+  try { G = ladeLaeufe(ordner, kal, a.fortschritt ? path.resolve(K.HIER, a.fortschritt) : null); } catch (e) { console.error('ABBRUCH: ' + e.message); process.exit(4); }
   var pilot = G.F.pilotIrgendwo || G.F.unvollstaendig;
+  if (a.jahre) {
+    /* additiv (Trendwende II, Phase 2): nur die Jahresscheiben an den angegebenen Pfad; ERGEBNIS.md / ergebnis.json bleiben unberuehrt. */
+    var J = jahresscheiben(G.sp, kal), jp = path.resolve(K.HIER, a.jahre);
+    fs.writeFileSync(jp, jahresscheibenMarkdown(J, G.F, G.herkunft, kal, pilot));
+    console.log('JAHRESSCHEIBEN geschrieben: ' + jp + ' | ' + J.length + ' Konfigurationen | ' + G.F.dateien + ' Dateien | ' + Math.round((Date.now() - t0) / 1000) + ' s');
+    return { jahre: J };
+  }
   var E = auswerte(G.sp, G.F, kal);
   var mdName = pilot ? 'PILOT-ERGEBNIS.md' : 'ERGEBNIS.md', jsonName = pilot ? 'pilot-ergebnis.json' : 'ergebnis.json';
   var json = { erzeugt: new Date().toISOString(), kennung: K.KONFIG_KENNUNG, pilot: pilot, herkunft: G.herkunft,
@@ -598,5 +673,5 @@ function lauf(a) {
 
 module.exports = { lauf: lauf, argumente: argumente, normalQuantil: normalQuantil, zBonf: zBonf, selbsttestQuantil: selbsttestQuantil,
   ladeLaeufe: ladeLaeufe, summiere: summiere, tagesreihe: tagesreihe, poole: poole, momente: momente, statistik: statistik, auswerte: auswerte, urteil: urteil, markdown: markdown,
-  URTEILE: URTEILE, MIN_BES_TAGE: MIN_BES_TAGE, Z_POWER80: Z_POWER80 };
+  URTEILE: URTEILE, MIN_BES_TAGE: MIN_BES_TAGE, Z_POWER80: Z_POWER80, jahresscheiben: jahresscheiben, jahresscheibenMarkdown: jahresscheibenMarkdown, jahresTrend: jahresTrend };
 if (require.main === module) lauf(argumente(process.argv.slice(2)));

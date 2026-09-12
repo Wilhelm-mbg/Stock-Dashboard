@@ -441,5 +441,27 @@ abschnitt(10, 'SPERRKLINKEN: kein Netz, kein Schluessel, kein Schreiben ins Arch
   pruefe(/startet NICHTS von selbst/.test(nacht) && /tagesbalken\.js/.test(nacht) && /messen\.js/.test(nacht), '10f nacht.cmd ruft tagesbalken.js und messen.js und startet nichts von selbst');
 });
 
+/* ====================================================================================== */
+abschnitt(11, 'JAHRESSCHEIBEN (--jahre, additiv, Trendwende II Phase 2): Handrechnung auf Kunst-Zellen, Standard unveraendert', function () {
+  var a0 = A.argumente(['--aus', 'x']), a1 = A.argumente(['--aus', 'x', '--jahre', 'y.md']);
+  pruefe(a0.jahre === null && a1.jahre === 'y.md' && a1.aus.length === 1 && a1.aus[0] === 'x', '11a --jahre ist optional (Standard null, altes Verhalten) und nimmt einen Ausgabepfad');
+  /* Kunst-Zellen: K1/E1 (konf 0), long, H5 (a 0), Klasse ab1000 (Huerde 0,0449), lebend, jeder dritte Einstiegstag n = 1 mit bekanntem u netto v */
+  var sp = new M.Speicher(N_TAGE), hu = K.KLASSEN[3].huerde, soll = { letzte: [] };
+  for (var t = 0; t < N_TAGE; t += 3) {
+    var v = 0.03 * Math.sin(t) + (t >= N_TAGE - 250 ? 0.02 : 0), idx = K.zelle(N_TAGE, 0, 0, 0, 0, t, 3, 1);
+    sp.f.n[idx] = 1; sp.f.su[idx] = v + hu; sp.f.sr[idx] = v + hu + 0.01; sp.f.ss[idx] = v; sp.f.sd[idx] = 5;
+    var j = KAL.tage[t].slice(0, 4); (soll[j] = soll[j] || []).push({ t: t, x: v }); if (t >= N_TAGE - 250) soll.letzte.push({ t: t, x: v });
+  }
+  var J = A.jahresscheiben(sp, KAL), z = J.filter(function (c) { return c.linie === 'K1' && c.einstieg === 'E1' && c.richtung === 'long' && c.ausstieg === 'H5'; })[0], fehler = 0, geprueft = 0;
+  z.jahre.forEach(function (s) {
+    var w = s.jahr === 'letzte 250' ? soll.letzte : soll[s.jahr]; if (!w) return; geprueft++;
+    var m = A.momente(w, 5);                                                          // dieselbe Hansen-Hodrick-Rechnung (Lag 4) wie die Studie (§7, Pruefung 4)
+    if (s.nTage !== w.length || s.nSig !== w.length || Math.abs(s.uNetto - m.mittel) > 1e-9 || Math.abs(s.se - m.se) > 1e-9 || (s.t != null && Math.abs(s.t - m.t) > 1e-6) || Math.abs(s.rohNetto - (m.mittel + 0.01)) > 1e-9) fehler++;
+  });
+  var leer = J.filter(function (c) { return c !== z; }).every(function (c) { return c.jahre.every(function (s) { return s.nTage === 0; }); });
+  var tr = A.jahresTrend(z.jahre);
+  pruefe(geprueft === 12 && fehler === 0 && leer && J.length === 64 && z.lag === 5 && tr.n === 11 && tr.se > 0, '11b Jahresscheiben K1/E1/long/H5: 11 Jahre + letzte 250 = Handrechnung mit momente(·, 5) (nTage, nTrades, u netto, se, t, roh netto; ' + fehler + ' Fehler), alle anderen 63 Konfigurationen leer; Trend ueber ' + tr.n + ' Jahre (t ' + f2(tr.t) + ')');
+});
+
 console.log('\n' + ERG.ok + ' OK, ' + ERG.fehlt + ' FEHLT, ' + ERG.ueber + ' UEBERSPRUNGEN');
 process.exitCode = ERG.fehlt ? 1 : 0;

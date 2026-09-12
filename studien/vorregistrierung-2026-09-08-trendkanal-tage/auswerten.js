@@ -27,7 +27,9 @@ var M = require('./messen.js');
 
 var URTEILE = ['0 Signale', 'kein Kandidat', 'nicht entscheidbar', 'widerlegt als Groesse', 'belegt', 'belegt-aber-nullpunkt-verschoben', 'belegt, aber Marktzeit'];
 
-function argumente(argv) { var a = { aus: [] }; for (var i = 0; i < argv.length; i++) if (argv[i] === '--aus' && argv[i + 1]) a.aus.push(argv[++i]); return a; }
+/* --jahre <pfad> (additiv, Trendwende II Phase 2, Auftrag 09.09.2026 §3): schreibt NUR die Jahresscheiben an diesen Pfad, post hoc,
+ * nachrichtlich; ERGEBNIS.md/ergebnis.json bleiben unberuehrt. Ohne --jahre: altes Verhalten. */
+function argumente(argv) { var a = { aus: [], jahre: null }; for (var i = 0; i < argv.length; i++) { if (argv[i] === '--aus' && argv[i + 1]) a.aus.push(argv[++i]); else if (argv[i] === '--jahre' && argv[i + 1]) a.jahre = argv[++i]; } return a; }
 
 /* ---------- Normalquantil (Acklam) und Bonferroni ---------- */
 function normalQuantil(p) {
@@ -309,6 +311,55 @@ function seBGegenPlan(konf, z1) {
 }
 function klassenmix(F) { var Z = F.zaehler || {}; return { reihenTageZulaessig: Z.reihenTageZulaessig, tageGewertetKlasse: Z.tageGewertetKlasse, ohneKlasse: Z.reihenTageOhneKlasse, massnahmen: Z.reihenTageMassnahmen }; }
 
+/* ---------- Jahresscheiben (additiv, Trendwende II Phase 2, Auftrag 09.09.2026 §3): post hoc, nachrichtlich, KEIN Urteil ----------
+ * Je Konfiguration (Linie x Einstieg x Richtung x Ausstieg, Sicht alle, Klassen gepoolt): nTage, nTrades, u netto (Mittel), se
+ * (Hansen-Hodrick Lag H-1 wie §7), t je Kalenderjahr 2016-2026 und fuer die letzten 250 Handelstage; OLS-Steigung des Jahresmittels
+ * (nur Jahre mit >= 30 Einstiegstagen, ab 4 Jahren). Aus den Zellen je Einstiegstag, ohne neue Messung. */
+var JAHRE_AB = 2016, JAHRE_BIS = 2026, JAHRE_LETZTE = 250, JAHRE_MIN_TAGE = 10, TREND_MIN_TAGE = 30, TREND_MIN_JAHRE = 4;
+function jahresTrend(js) {
+  var p = js.filter(function (j) { return /^\d{4}$/.test(j.jahr) && j.nTage >= TREND_MIN_TAGE && j.uNetto != null && j.uNetto === j.uNetto; }).map(function (j) { return { x: +j.jahr - JAHRE_AB, y: j.uNetto }; });
+  var n = p.length; if (n < TREND_MIN_JAHRE) return { n: n, steigung: null, se: null, t: null };
+  var sx = 0, sy = 0; p.forEach(function (q) { sx += q.x; sy += q.y; }); var mx = sx / n, my = sy / n, sxx = 0, sxy = 0;
+  p.forEach(function (q) { sxx += (q.x - mx) * (q.x - mx); sxy += (q.x - mx) * (q.y - my); });
+  if (!(sxx > 0)) return { n: n, steigung: null, se: null, t: null };
+  var b = sxy / sxx, a0 = my - b * mx, ss = 0; p.forEach(function (q) { var r = q.y - a0 - b * q.x; ss += r * r; });
+  var se = n > 2 ? Math.sqrt(ss / (n - 2) / sxx) : null;
+  return { n: n, steigung: b, se: se, t: se > 0 ? b / se : null };
+}
+function jahresscheiben(sp, kal) {
+  var nTage = kal.tage.length, jahr = kal.tage.map(function (t) { return +t.slice(0, 4); }), aus = [];
+  function scheibe(z, L, name) { var st = statistik(z, L), duenn = st.nTage < JAHRE_MIN_TAGE; return { jahr: name, nTage: st.nTage, nSig: st.nSig, uNetto: st.uNetto.mittel, se: st.uNetto.se, t: duenn ? null : st.uNetto.t, duenn: duenn, hh0: !!st.uNetto.hh0, uBrutto: st.uBrutto.mittel, rohNetto: st.rohNetto.mittel }; }
+  for (var li = 0; li < K.N_L; li++) for (var ei = 0; ei < K.N_E; ei++) for (var dirIdx = 0; dirIdx < 2; dirIdx++) for (var a = 0; a < K.N_A; a++) {
+    var kf = K.konfIndex(li, ei), L = lagVon(a), reihe = tagesreihe(sp, 0, kf, dirIdx, a, 'alle', null), js = [];
+    for (var j = JAHRE_AB; j <= JAHRE_BIS; j++) js.push(scheibe(reihe.filter((function (jj) { return function (z) { return jahr[z.t] === jj; }; })(j)), L, String(j)));
+    js.push(scheibe(reihe.filter(function (z) { return z.t >= nTage - JAHRE_LETZTE; }), L, 'letzte ' + JAHRE_LETZTE));
+    aus.push({ linie: K.LINIEN[li].key, einstieg: K.EINSTIEGE[ei].key, richtung: K.RICHTUNGEN[dirIdx].key, ausstieg: K.AUSSTIEGE[a].key, lag: L, jahre: js, trend: jahresTrend(js) });
+  }
+  return aus;
+}
+function jahresscheibenMarkdown(J, F, herkunft, kal, pilot) {
+  var o = [], nTage = kal.tage.length;
+  o.push('# JAHRESSCHEIBEN (nachrichtlich, post hoc): Trendkanal auf Tagesbasis (' + K.KONFIG_KENNUNG + ')\n');
+  o.push('Erzeugt ' + new Date().toISOString() + ' von `auswerten.js --jahre` (additive Option, Trendwende II Phase 2, Auftrag 09.09.2026 §3). **Rueckwirkende Lesung der fertigen Zellen - kein Tor, kein Urteil, keine Aenderung an ERGEBNIS.md.** ' + (pilot ? '**PILOT / UNVOLLSTAENDIG.** ' : '') + 'Hauptgroesse wie in der Studie: u netto = dir·(rLong − Topf) − K_mitte, Tagesmittel ueber Einstiegstage, se Hansen-Hodrick (Rechteck bis Lag H−1, Kanalbruch 60), Sicht alle, Klassen gepoolt. Jahre mit < ' + JAHRE_MIN_TAGE + ' Einstiegstagen: „zu duenn" (ohne t). Letzte ' + JAHRE_LETZTE + ' Handelstage ab ' + kal.tage[nTage - JAHRE_LETZTE] + '. Alles Simulation mit virtuellem Kapital, keine Anlageberatung.\n');
+  o.push(tabelle(['Ordner', 'Reihen', 'Tagesdateien', 'beendet', 'Schluss', 'Kennung'], herkunft.map(function (h) { return [h.ordner, ganz(h.reihen), ganz(h.dateien), h.beendet, h.schluss, h.kennung]; })));
+  o.push('## 1. Jahresscheiben je Konfiguration\n');
+  var z = [];
+  J.forEach(function (c) { c.jahre.forEach(function (j) { z.push([c.linie, c.einstieg, c.richtung, c.ausstieg, j.jahr, ganz(j.nTage), ganz(j.nSig), pp(j.uNetto), pp(j.se) + (j.hh0 ? ' HH<0' : ''), j.duenn ? 'zu duenn' : tw(j.t), pp(j.uBrutto), pp(j.rohNetto)]); }); });
+  o.push(tabelle(['Linie', 'Einstieg', 'Richtung', 'Ausstieg', 'Jahr', 'nTage', 'nTrades', 'u netto', 'se HH', 't', 'u brutto', 'roh netto'], z));
+  o.push('## 2. Trend ueber die Jahre (OLS-Steigung des Jahresmittels u netto, Pp/Jahr; nur Jahre mit ≥ ' + TREND_MIN_TAGE + ' Einstiegstagen, ab ' + TREND_MIN_JAHRE + ' Jahren)\n');
+  o.push(tabelle(['Linie', 'Einstieg', 'Richtung', 'Ausstieg', 'Jahre', 'Steigung', 'se', 't'], J.map(function (c) { return [c.linie, c.einstieg, c.richtung, c.ausstieg, ganz(c.trend.n), pp(c.trend.steigung), pp(c.trend.se), tw(c.trend.t)]; })));
+  o.push('## 3. Kurztafel Jahr × Einstieg: Mittel von u netto ueber die Konfigurationen (Jahre mit ≥ ' + JAHRE_MIN_TAGE + ' Einstiegstagen), Anteil > 0\n');
+  var namen = []; for (var j = JAHRE_AB; j <= JAHRE_BIS; j++) namen.push(String(j)); namen.push('letzte ' + JAHRE_LETZTE);
+  var kz = [];
+  namen.forEach(function (jn) { K.EINSTIEGE.forEach(function (E) {
+    var w = []; J.forEach(function (c) { if (c.einstieg !== E.key) return; var s = c.jahre.filter(function (x) { return x.jahr === jn; })[0]; if (s && !s.duenn && s.uNetto != null && s.uNetto === s.uNetto) w.push(s.uNetto); });
+    kz.push([jn, E.key + ' ' + E.name, ganz(w.length), w.length ? pp(w.reduce(function (a, b) { return a + b; }, 0) / w.length) : '–', w.length ? tw(100 * w.filter(function (x) { return x > 0; }).length / w.length) + ' %' : '–']);
+  }); });
+  o.push(tabelle(['Jahr', 'Einstieg', 'Konfigurationen', 'Mittel u netto (Pp)', 'Anteil > 0'], kz));
+  o.push('## 4. Was diese Tabelle nicht sagt\n\n- Kein Urteil: Tore, Bonferroni, Placebo-Baender und Aktualitaets-Tor sind nicht Teil dieser Lesung (die Studie war ohne sie registriert).\n- Jahresmittel sind Ranglisten aus ' + J.length + ' × 12 Zellen; einzelne |t| > 2 sind bei so vielen Zellen durch Zufall zu erwarten; ueberlappende Haltedauern machen die Jahre zudem intern abhaengig (se HH beruecksichtigt das je Jahr, nicht ueber die Jahresgrenze).\n- Die Kassa-Huerde ist die heutige (ab 2021) fuer alle Jahre - wie in der Studie.\n');
+  return o.join('\n');
+}
+
 /* ---------- Ausgabe ---------- */
 function pp(x) { return x == null || x !== x ? '–' : x.toFixed(4).replace('.', ','); }
 function tw(x) { return x == null || x !== x ? '–' : x.toFixed(2).replace('.', ','); }
@@ -395,7 +446,15 @@ function lauf(a) {
   if (!a.aus.length) { console.error('Pflichtargument --aus <ordner> fehlt.'); process.exit(2); }
   selbsttestQuantil();
   var kal = K.kalender(), ordner = a.aus.map(function (o) { return path.resolve(K.HIER, o); });
-  var L = ladeLaeufe(ordner, kal), E = auswerte(L.sp, L.F, kal);
+  var L = ladeLaeufe(ordner, kal);
+  if (a.jahre) {
+    /* additiv (Trendwende II, Phase 2): nur die Jahresscheiben an den angegebenen Pfad; ERGEBNIS.md / ergebnis.json bleiben unberuehrt. */
+    var J = jahresscheiben(L.sp, kal), jp = path.resolve(K.HIER, a.jahre);
+    fs.writeFileSync(jp, jahresscheibenMarkdown(J, L.F, L.herkunft, kal, L.pilot));
+    console.log('JAHRESSCHEIBEN geschrieben: ' + jp + ' | ' + J.length + ' Konfigurationen | ' + L.F.reihen + ' Reihen');
+    return { jahre: J };
+  }
+  var E = auswerte(L.sp, L.F, kal);
   var pilot = L.pilot, name = pilot ? 'PILOT-ERGEBNIS' : 'ERGEBNIS';
   var md = markdown(E, L.F, L.herkunft, kal, pilot);
   fs.writeFileSync(path.join(ordner[0], name + '.md'), md);
@@ -408,5 +467,5 @@ function lauf(a) {
 }
 
 module.exports = { lauf: lauf, argumente: argumente, normalQuantil: normalQuantil, zBonf: zBonf, selbsttestQuantil: selbsttestQuantil, ladeLaeufe: ladeLaeufe, tagesreihe: tagesreihe, poole: poole, momente: momente, statistik: statistik,
-  auswerte: auswerte, urteil: urteil, markdown: markdown, lagVon: lagVon, URTEILE: URTEILE };
+  auswerte: auswerte, urteil: urteil, markdown: markdown, lagVon: lagVon, URTEILE: URTEILE, jahresscheiben: jahresscheiben, jahresscheibenMarkdown: jahresscheibenMarkdown, jahresTrend: jahresTrend };
 if (require.main === module) lauf(argumente(process.argv.slice(2)));
