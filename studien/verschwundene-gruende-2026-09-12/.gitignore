@@ -1,0 +1,4 @@
+# Der EDGAR-Cache. Rund 60 MB in zehntausend kleinen Dateien, nur Rohantworten der
+# Behoerde - er macht den Lauf fortsetzbar, gehoert aber nicht in die Geschichte des
+# Repos. Loeschen kostet einen neuen Durchgang (rund eine Stunde), keine Erkenntnis.
+edgar/
