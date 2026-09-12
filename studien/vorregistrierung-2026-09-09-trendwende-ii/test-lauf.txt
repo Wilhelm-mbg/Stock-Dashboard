@@ -24,7 +24,7 @@ OK    1k Gegenprobe: die Pflanzung sitzt nur in der 1h-Ausstiegskerze - 15m -0.0
 OK    1l Kurszellen: 404 Signale mit Einstieg (naiv 404), Summe 41171.9904 (naiv 41171.9904)
 OK    1m ohne Pflanzung nahe null: Rohertrag je Signal 0.0020 Pp, Tagesmittel 0.0032 (n 380)
 OK    1n Uebernacht ohne Pflanzung: n 400 (< schluss-n 404, letzter Tag offen), Rohertrag -0.0102 Pp nahe null; offen 576
-   (18.7 s)
+   (17.9 s)
 
 == 1b. EINSTIEGSLUECKE (Nachtrag 3): gepflanzte Luecke +0,3 Pp an der Einstiegskerze gegen die Handrechnung
 OK    1b-a Pflanzung der Einstiegsluecke an 404 Einstiegskerzen; Signalmenge unveraendert (404 = 404)
@@ -33,7 +33,7 @@ OK    1b-c POSITIVKONTROLLE ohne Pflanzung: W7 feuert am Extrem, die Einstiegslu
 OK    1b-c2 NULLKONTROLLE auf derselben Reihe: ein Detektor zu fester Tageszeit (12:00) hat Luecke -0.0045 Pp ≈ 0 (n 90) - die Luecke haengt am Einstieg am Extrem, nicht am Messverfahren
 OK    1b-d auswerten.luecken: luecke_B je Signal 0.3000 = Tagesmittel 0.3000 = 0.3000; netto_B lueckenbereinigt -0.2500 = netto 0.0500 − 0.3000 (60 Bestaetigungstage)
 OK    1b-e die Luecke haengt an der Richtung: die Gegenrichtung derselben Kurszellen ist leer (nSig 0)
-   (1.8 s)
+   (1.6 s)
 
 == 1c. HALTEZEIT und UHRZEIT-VERSATZ (Nachtrag 4): feste Haltedauern ≈ 0, frueher Detektor gross, gleichmaessiges Gitter ≈ 0
 OK    1c-a feste Haltedauern: Haltezeit von Kandidat und Topf = die Haltedauer, |Versatz| ≤ 0.05 (0 Fehler) - 15m 15.00/15.00 min (Versatz 0.0000), 1h 60.00/60.00 min (Versatz 0.0000), 3h 180.00/180.00 min (Versatz 0.0000)
@@ -61,7 +61,7 @@ OK    3a W7 hat >= 30 Long-Signale auf der Zufallsreihe (203)
 OK    3b FALSCH (Einstieg Signalschluss) 0.2414 Pp > +0,05 und 0.2404 ueber RICHTIG - der Scheineffekt entsteht in behaupteter Richtung
 OK    3c RICHTIG (Einstieg Eroeffnung i+1) nahe null: 0.0010 Pp
 OK    3d messen.js-Zelle (W7 1m long 1h) 0.0010 Pp bei n 193 = eigene Rechnung 0.0010 bei n 193
-   (0.2 s)
+   (0.3 s)
 
 == 4. DETEKTOR-GLEICHHEIT: W2/W3 gegen die August-Funktionen, W2 gegen signalPraefix, W1a gegen hauptstudie.js detect()
 
@@ -93,7 +93,7 @@ OK    6 W4: 1070 Stichproben, 11 Signale, 0 Abweichungen zwischen vollem und Pra
 OK    6 W5: 1279 Stichproben, 251 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
 OK    6 W6: 1265 Stichproben, 275 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
 OK    6 W7: 1300 Stichproben, 309 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
-   (102.9 s)
+   (98.0 s)
 
 == 7. KLASSEN, KASSA-HUERDEN (kosten.js, liquide.js, wiki/kosten.md) und SCHEIN-HUERDEN (BERICHT.md)
 OK    7a K.KLASSEN-Grenzen = kosten.js UMSATZ_KLASSEN: 5-50, 50-250, 250-1000, ab1000
@@ -126,7 +126,7 @@ OK    9e Uebernacht ueber die Jahresgrenze: offen 2148, in der Folgedatei verbuc
 OK    9f Topf-Zelle naechste am letzten 2023-Tag (1m, Klasse 50-250, nicht lebend, beide Reihen): n 720 = naiv 720, Summe -855.4029 = naiv -855.4029 (Ausstieg = Eroeffnung des ersten 2024-Tages, AAPL 100.2145)
 OK    9g Fortsetzung mitten in MSFT: fortsetzungOhneUebernacht 1, alle Nicht-Uebernacht-Zellen identisch mit (c), Uebernacht-Zellen um 87 Beobachtungen (Topf 456) kleiner - gezaehlt, nicht geschaetzt
 OK    9h manipulierte Kennung: Rueckgabewert 4 und Meldung "andere Konfiguration"
-   (42.8 s)
+   (43.0 s)
 
 == 10. RANDREGELN ueber messeDatei (Fenster, Klasse < 5 Mio $, duenner Tag, Halbtag, Uebernacht-Luecke)
 OK    10a Kerzen an 3 Tagen nach 2026-08-31: tageOhneKalender 3, keine Zelle ausserhalb
@@ -134,7 +134,7 @@ OK    10b Reihe mit ~1 Mio $ Tagesumsatz: 0 Zellen, 0 Topf, tageOhneKlasse 30
 OK    10c duenner Tag 2024-03-08: tageDuenn je ZR 1/1/1, kein Topf an diesem Tag, 9 dichte Tage gewertet
 OK    10d fehlender Kalendertag 2024-03-11: Vortag ohne Uebernacht-Topf (0), ohneNaechsterTag 489, letzter Tag offen 486
 OK    10e Halbtag 2024-07-03: "ab 12:30" 0 Zellen; "12:00" auf 1m: 15m 1, 1h 0, 3h 0 (kein Ausstieg vor 13:00), schluss 1, naechste 1 (Beobachtungen: 1/0/0/1/1)
-   (1.1 s)
+   (1.2 s)
 
 == 11. ET-TAG = UTC-TAG (AAPL 1m) und WERTPAPIERART (L.reihen nur CS/ADRC)
 OK    11a 97740 Kerzen: L.tagVon = ET-Datum, 0 Abweichungen
@@ -197,6 +197,6 @@ OK    16f Bitgleichheit: derselbe Lauf mit TW2_VERZOEGERT=0 liefert Zellen, Topf
 OK    16f2 die Sonde hat wirklich gemessen (Zellen, Topf und Haltezeitzellen sind nicht leer) - sonst waere 16f eine Gleichheit von nichts
 OK    16g Placebo A (864 Beobachtungen) und Placebo B (957) unveraendert gegenueber dem Lauf ohne k-Zellen (864 / 957)
 OK    16h vzZelle eineindeutig (800 Ziehungen, 0 Kollisionen); vier Felder der Laenge 38400 = 2 x hzZahl
-   (2.2 s)
+   (2.4 s)
 
 136 OK, 0 FEHLT, 0 UEBERSPRUNGEN

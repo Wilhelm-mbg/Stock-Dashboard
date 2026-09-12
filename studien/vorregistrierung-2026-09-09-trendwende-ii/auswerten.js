@@ -261,6 +261,13 @@ function vzReihe(sp, vk, kand, dirIdx, h, zi, sicht) {
 }
 /** Eine k-Zeile in der Bestaetigung: brutto_B, u_B, t_B, Kand−PlB (gepaart gegen das UNVERZOEGERTE Placebo B) und
  *  haltezeit_kand. `entfaellt` ist wahr, wenn die Zellen leer sind (§20.1). */
+/** Strukturelles "entfaellt" (§20.1): der verzoegerte Einstieg liegt auf oder hinter dem Ausstieg. Haengt nur an
+ *  (Zeitrahmen, Haltedauer, k) - bei 'schluss'/'naechste' nie, dort endet der Handel am Tagesende. */
+function vzEntfaelltStrukturell(zi, h, k) {
+  var H = K.HALTEDAUERN[h];
+  if (H.min == null || H.uebernacht) return false;
+  return k >= Math.ceil(H.min / K.ZEITRAHMEN[zi].min);
+}
 function verzoegertZeile(sp, ctx, vk, dI, zi, dirIdx, h, Lag) {
   var kand = K.kandIndex(dI, zi), reihe = vzReihe(sp, vk, kand, dirIdx, h, zi, 'alle');
   var plB = tagesreihe(sp, K.reiheIndex(kand, 2), dirIdx, h, zi, 'alle', null), jeTagB = {};
@@ -268,7 +275,7 @@ function verzoegertZeile(sp, ctx, vk, dI, zi, dirIdx, h, Lag) {
   var bes = reihe.filter(nurBes(ctx)), nHz = 0, sHz = 0, nSig = 0;
   bes.forEach(function (z) { nHz += z.nHz; sHz += z.sHz; nSig += z.n; });
   var paare = reihe.filter(function (z) { return jeTagB[z.t] !== undefined; }).map(function (z) { return { t: z.t, x: z.roh - jeTagB[z.t] }; }).filter(nurBes(ctx));
-  return { k: K.VERZOEGERT_K[vk], entfaellt: bes.length === 0, nTage: bes.length, nSig: nSig,
+  return { k: K.VERZOEGERT_K[vk], entfaellt: vzEntfaelltStrukturell(zi, h, K.VERZOEGERT_K[vk]), leer: bes.length === 0, nTage: bes.length, nSig: nSig,
     brutto: momenteVon(bes, 'roh', Lag), u: momenteVon(bes, 'u', Lag), kandPlB: momente(paare, Lag),
     haltezeit: nHz > 0 ? sHz / nHz : null };
 }
@@ -282,8 +289,9 @@ function verzoegertTafel(sp, ctx, konf) {
     var stufen = [k0];
     for (var vk = 0; vk < K.VERZOEGERT_K.length; vk++) stufen.push(verzoegertZeile(sp, ctx, vk, c.dI, c.zi, c.dirIdx, c.hi, Lag));
     /* Vorregistrierte Entscheidungsregel (§20.3), mechanisch angewandt - die Deutung steht im Bericht. */
-    var d0 = k0.kandPlB ? k0.kandPlB.mittel : null, dLetzt = stufen[stufen.length - 1].kandPlB, fall = 'ohne Wert';
-    if (d0 != null && dLetzt && dLetzt.mittel != null && !stufen[stufen.length - 1].entfaellt) {
+    var d0 = k0.kandPlB ? k0.kandPlB.mittel : null, letzt = stufen[stufen.length - 1], dLetzt = letzt.kandPlB, fall = 'ohne Wert';
+    if (letzt.entfaellt) fall = 'k = ' + letzt.k + ' entfaellt (strukturell) - Regel nicht anwendbar';
+    else if (d0 != null && dLetzt && dLetzt.mittel != null && !letzt.leer) {
       var anteil = d0 === 0 ? null : dLetzt.mittel / d0;
       if (anteil == null) fall = 'ohne Wert';
       else if (d0 <= 0) fall = 'Bezugswert nicht positiv';
@@ -291,8 +299,8 @@ function verzoegertTafel(sp, ctx, konf) {
       else if (dLetzt.mittel >= 2 * d0 / 3) fall = 'Einstiegskurs widerlegt';
       else fall = 'dazwischen';
       var s1 = stufen[1];
-      var schrittGross = (!s1.entfaellt && s1.kandPlB && s1.kandPlB.mittel != null) ? ((d0 - s1.kandPlB.mittel) >= Math.max.apply(null, stufen.slice(1).map(function (x, q) {
-        var vor = stufen[q].kandPlB, jetzt = x.kandPlB; return (!x.entfaellt && vor && jetzt && vor.mittel != null && jetzt.mittel != null) ? (vor.mittel - jetzt.mittel) : -Infinity; }))) : null;
+      var schrittGross = (!s1.entfaellt && !s1.leer && s1.kandPlB && s1.kandPlB.mittel != null) ? ((d0 - s1.kandPlB.mittel) >= Math.max.apply(null, stufen.slice(1).map(function (x, q) {
+        var vor = stufen[q].kandPlB, jetzt = x.kandPlB; return (!x.entfaellt && !x.leer && vor && jetzt && vor.mittel != null && jetzt.mittel != null) ? (vor.mittel - jetzt.mittel) : -Infinity; }))) : null;
       c.vzAnteil = anteil; c.vzSchrittGross = schrittGross;
       if (fall === 'Einstiegskurs traegt' && schrittGross === false) fall = 'Einstiegskurs traegt (aber groesster Schritt nicht bei k=1)';
     }
@@ -751,19 +759,20 @@ function markdown(E, F, herkunft, kal, pilot) {
   else {
     var vzR = [];
     vzT.forEach(function (r) { r.stufen.forEach(function (s) {
-      vzR.push([r.det, r.zr, r.richtung, r.h, String(s.k), s.entfaellt ? 'entfaellt' : ganz(s.nTage), s.entfaellt ? '–' : ganz(s.nSig),
-        s.entfaellt ? '–' : pp(s.brutto ? s.brutto.mittel : null), s.entfaellt ? '–' : pp(s.u ? s.u.mittel : null), s.entfaellt ? '–' : tw(s.u ? s.u.t : null),
-        s.entfaellt ? '–' : pp(s.kandPlB ? s.kandPlB.mittel : null), s.entfaellt ? '–' : tw(s.kandPlB ? s.kandPlB.t : null),
-        s.entfaellt ? '–' : tw(s.haltezeit), s.k === 0 ? r.fall + (r.anteil != null ? ' (Anteil ' + r.anteil.toFixed(3) + ')' : '') : '']);
+      var stumm = s.entfaellt || s.leer;
+      vzR.push([r.det, r.zr, r.richtung, r.h, String(s.k), s.entfaellt ? 'entfaellt' : ganz(s.nTage), stumm ? '–' : ganz(s.nSig),
+        stumm ? '–' : pp(s.brutto ? s.brutto.mittel : null), stumm ? '–' : pp(s.u ? s.u.mittel : null), stumm ? '–' : tw(s.u ? s.u.t : null),
+        stumm ? '–' : pp(s.kandPlB ? s.kandPlB.mittel : null), stumm ? '–' : tw(s.kandPlB ? s.kandPlB.t : null),
+        stumm ? '–' : tw(s.haltezeit), s.k === 0 ? r.fall + (r.anteil != null ? ' (Anteil ' + r.anteil.toFixed(3) + ')' : '') : '']);
     }); });
     o.push(tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'k', 'Bes nTage', 'Bes nSig', 'brutto_B', 'u_B', 't_B', 'Kand−PlB', 't(Kand−PlB)', 'haltezeit_kand (min)', 'Fall (§20.3)'], vzR));
     var fz = E.zahlen.vzFaelle || {};
     o.push('\nFaelle nach der vorregistrierten Regel ueber ' + vzT.length + ' Zeilen: ' + Object.keys(fz).map(function (k) { return k + ' ' + fz[k]; }).join(' · ') + '.\n');
-    var ent = (G.F.zaehler || {}).vzEntfaellt || {};
+    var ent = Z.vzEntfaellt || {};
     var eK = Object.keys(ent).sort();
     o.push('\n**„entfaellt"-Faelle je (k, Zeitrahmen, Haltedauer, Grund)** - gezaehlt beim Messen, nicht geschaetzt:\n');
     o.push(eK.length ? tabelle(['k', 'ZR', 'H', 'Grund', 'Faelle'], eK.map(function (k) { var p2 = k.split('|'); return [p2[0], p2[1], p2[2], p2[3], ganz(ent[k])]; })) : 'Kein Fall.\n');
-    o.push('\nVerzoegerte Zellen gebucht ' + ganz((G.F.zaehler || {}).vzGebucht) + ' · uebernacht offen ' + ganz((G.F.zaehler || {}).vzOffen) + ' · davon verbucht ' + ganz((G.F.zaehler || {}).vzVerbucht) + ' · verfallen ' + ganz((G.F.zaehler || {}).vzVerfallen) + '.\n');
+    o.push('\nVerzoegerte Zellen gebucht ' + ganz(Z.vzGebucht) + ' · uebernacht offen ' + ganz(Z.vzOffen) + ' · davon verbucht ' + ganz(Z.vzVerbucht) + ' · verfallen ' + ganz(Z.vzVerfallen) + '.\n');
   }
   o.push('## 4. Jahresscheiben (§9a) - Pflichttabelle: u je Kalenderjahr und letzte ' + K.AKTUELL_TAGE + ' Handelstage, je Konfiguration\n\nSicht alle, Klassen gepoolt, aus den Zellen je ET-Tag. t nur ab ' + K.JAHR_MIN_TAGE + ' Signaltagen im Jahr („zu duenn" sonst). Uebernacht-se Hansen-Hodrick Lag 1. Kein Urteil aus dieser Tabelle.\n');
   var jz = [];
@@ -823,7 +832,7 @@ function lauf(a) {
 }
 
 module.exports = { lauf: lauf, argumente: argumente, normalQuantil: normalQuantil, zBonf: zBonf, selbsttestQuantil: selbsttestQuantil, ladeLaeufe: ladeLaeufe, haltezeitWerte: haltezeitWerte,
-  vzReihe: vzReihe, verzoegertZeile: verzoegertZeile, verzoegertTafel: verzoegertTafel,
+  vzReihe: vzReihe, verzoegertZeile: verzoegertZeile, verzoegertTafel: verzoegertTafel, vzEntfaelltStrukturell: vzEntfaelltStrukturell,
   tagesreihe: tagesreihe, poole: poole, momente: momente, momenteVon: momenteVon, statistik: statistik, scheinWerte: scheinWerte, imBand: imBand, auswerte: auswerte, urteil: urteil, markdown: markdown,
   lueckeReihe: lueckeReihe, luecken: luecken, centBoden: centBoden, spiegelSpalten: spiegelSpalten,
   spyRegime: spyRegime, regimeAusSchluessen: regimeAusSchluessen, jahresscheiben: jahresscheiben, scheibe: scheibe, trend: trend, familie: familie, URTEILE: URTEILE };
