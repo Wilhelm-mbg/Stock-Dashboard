@@ -846,3 +846,36 @@ als Erklärungen ausgeschlossen, soweit sie im Einstiegskurs sitzen; eine Erklä
 nicht. Die nächste zu messende Größe wäre deshalb ein **mitverzögerter Topf und ein mitverzögertes Placebo B** —
 damit ließe sich trennen, ob die Differenz mit der Haltezeit des Kandidaten oder mit der des Vergleichs zusammenhängt.
 Gemessen wird das erst nach einem Auftrag.
+
+## 21. NACHTRAG 5.1 — 12.09.2026, Entscheid des PM nach Pilot 4; **vor der ersten Zelle des Vollaufs**
+
+### 5.1a Im Vollauf läuft k = 1 mit, k = 5 nicht
+
+**Entscheid des PM.** Begründung fürs Protokoll: von 225 Konfigurationen überleben zwei, beide W7. Ohne die
+k = 1-Zeile **im selben Lauf** trägt jedes „belegt" für W7 wieder genau den Vorbehalt, den die Nachträge 4 und 5 in
+zwei Runden ausgeräumt haben — und ein zweiter Vollauf kostet eine ganze Nacht. Die **+20 % Rechenzeit** für k = 1
+allein (89,5 Prozess-Stunden für beide k gegen 64,4 ohne; rund 77 h mit k = 1 allein) sind dagegen billig.
+
+k = 5 hat seinen Zweck erfüllt und ist als Zeile je Zeitrahmen verschieden lang (5 / 25 / 75 Minuten) — für einen
+Vollauf ist er die schlechtere Größe. Er bleibt im Messgerät und ist über die Umgebungsvariable jederzeit wieder
+zuschaltbar; für den Vollauf ist er **aus**.
+
+### 5.1b Der Vergleich ist konservativ — der gemessene Anteil ist eine Untergrenze
+
+**Placebo B und Topf bleiben bei k = 0** (§20.1). Der verzögerte Kandidat verliert damit gegenüber seinem Vergleich
+zusätzlich **Haltezeit und damit Drift**: `Kand−PlB(k=1)` fällt schon deshalb etwas kleiner aus als
+`Kand−PlB(k=0)`, auch wenn im Einstiegskurs gar nichts sitzt. Der in Pilot 4 gemessene **Anteil**
+`Kand−PlB(k=1) / Kand−PlB(k=0)` ist deshalb eine **Untergrenze**: der wahre Anteil ist eher größer, die
+Einstiegskurs-Erklärung also eher noch schwächer als gemessen. Das schneidet in die Richtung, in der schon der
+Befund liegt — es kann ihn nicht erzeugen, nur abschwächen.
+
+**Der mitverzögerte Topf und das mitverzögerte Placebo B stehen auf der Liste für NACH dem Vollauf.** Erst damit
+wäre trennbar, ob die Differenz an der Haltezeit des Kandidaten oder an der des Vergleichs hängt. Vor dem Vollauf
+wird das nicht gemessen und nicht behauptet.
+
+### 5.1c Der Schalter nennt die k-Werte
+
+`TW2_VERZOEGERT` bestimmt die Liste selbst: **nicht gesetzt ⇒ [1, 5]** (wie bisher), **`0` ⇒ aus**, **`1` ⇒ [1]**,
+**`1,5` ⇒ [1, 5]**. Jeder andere Wert ist ein **harter Abbruch mit Meldung** — nie stillschweigend etwas anderes.
+Die Kennung trägt die Liste: `+verzoegert1` bzw. `+verzoegert1-5`. `nacht.cmd` setzt `TW2_VERZOEGERT=1` (gequotet,
+weil `cmd.exe` am Komma trennt) und weist in einer Protokollzeile aus, welche k **tatsächlich** laufen.
