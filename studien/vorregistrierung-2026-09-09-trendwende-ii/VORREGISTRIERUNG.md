@@ -715,3 +715,93 @@ Schein-Hürden, Jahresscheiben, Regime, Haltedauern, Kalender, Klassen, Dichtere
 gestrichen), Zellenlayout im Übrigen. Speicher je Prozess steigt von ≈ 535 MB auf **≈ 620 MB** (Haltezeitzellen
 2 × 41 MB, Topf-Haltezeit 2,6 MB). Der Pilot `pilot-3/` läuft über **dieselben 19 Reihen**; seine Zahlen sind wie
 bisher **kein Befund**. Der Vollauf startet nicht aus diesem Chat.
+
+## 20. NACHTRAG 5 — 12.09.2026, Entscheid des PM zum Nachtrag-4-Bericht; **vor der ersten Zelle der Kennung v4**
+
+Geschrieben nach Pilot 3 und **vor jeder Zahl des verzögerten Einstiegs**. Der Nachtrag registriert zwei zusätzliche
+Zellenarten und — in §20.3 — die Vorhersage, an der die Deutung hängt.
+
+### 5.0 Warum: nach der Uhrzeit ist der Einstiegskurs die letzte offene Erklärung für W7
+
+Pilot 3 hat die Uhrzeit-Hypothese widerlegt: W7 long und W7 short feuern praktisch zur gleichen Tageszeit
+(Haltezeit 246,45 gegen 246,59 Minuten bei einem Topf von 207), und `Drift_Topf × Versatz` ist rund 1 % von u — der
+Short-Überschuss besteht **trotz** des Nachteils, den die gleichgerichtete Haltezeit-Abweichung ihm zufügt. Damit ist
+auch die Vorzeichen-Präzisierung aus §19.0b (long +, short −) widerlegt.
+
+Übrig bleibt eine Größe, die vom **Ausstieg nicht abhängt**: der **Einstiegskurs**. Die Einstiegslücke aus Nachtrag 3
+misst nur den Sprung Signalschluss → Einstiegseröffnung (0,004 Pp) und fasst den Einstiegskurs selbst nicht an. Die
+Diagnose `u_long + u_short` = 0,3143 Pp bei se 0,0213 (t 14,8; W7 5m „bis Schluss") ist unter **jeder** Erklärung, die
+den Einstieg nicht betrifft, null zu erwarten. Von 225 Konfigurationen sind zwei belegt, beide W7 — die Frage
+„Einstiegskurs oder Wende" ist deshalb nicht die Randfrage, sondern die Frage. Kein Vollauf vor ihrer Antwort.
+
+### 5.1 Zwei zusätzliche Zellenarten: Kandidat mit verzögertem Einstieg, k = 1 und k = 5
+
+- **Einstieg** = Eröffnung der Kerze **i+1+k** desselben Zeitrahmens (k = 0 ist die registrierte Regel und bleibt
+  unverändert die Haupttafel).
+- **Der Ausstieg bleibt unverändert**: dieselbe Ausstiegsregel, derselbe Ausstiegs*zeitpunkt* und derselbe
+  Ausstiegs*kurs* wie bei k = 0 — bestimmt aus der **Signalkerze i**, nicht aus der Einstiegskerze. Nur so ist
+  `k=0 − k=1` sauber der Kursbeitrag der ersten Kerze; das Ausstiegsrauschen kürzt sich paarweise heraus.
+- Die **Haltezeit sinkt** entsprechend um k Kerzen. Das ist gewollt und wird als `haltezeit_kand` je k mitberichtet.
+- **„entfällt"**: liegt der verzögerte Einstieg **auf oder hinter dem Ausstieg** (Einstiegszeit ≥ Ausstiegszeit, z. B.
+  15m-Zeitrahmen mit H = 15m und k = 1) oder hinter der letzten zulässigen Kerze des Tages, entsteht **keine** Zelle.
+  Die Zeile trägt im Bericht „entfällt", und ein Zähler weist die Fälle je (k, Zeitrahmen, Haltedauer, Grund) aus.
+- **Placebo B bleibt bei k = 0.** Damit gilt exakt
+  `Kand−PlB(k) = Kand−PlB(0) − (Ertrag der ersten k Kerzen nach dem Signal)`, und die Differenz ist genau der
+  Kursbeitrag dieser Kerzen. Ein mitverzögertes Placebo würde zusätzlich dessen eigene erste k Kerzen abziehen und die
+  Frage verwischen.
+- **Der Topf bleibt bei k = 0.** `u_B` der k-Zeilen ist deshalb eine gemischte Größe (verzögerter Kandidat gegen
+  unverzögerten Topf) und steht nur zur Anschauung im Bericht. **Entscheidend ist allein `Kand−PlB`** — gepaart über
+  denselben Signaltag, gleiche Richtung, gleiches 30-Minuten-Fenster, auf der Brutto-Skala, wie in der Haupttafel.
+- **Speicher:** die k-Zellen hängen an einem Schalter `VERZOEGERT_AN` in `konfig.js` (Umgebungsvariable
+  `TW2_VERZOEGERT=0` schaltet sie ab). **Für einen Vollauf ist der Schalter aus**; `nacht.cmd` setzt ihn auf 0.
+- **Kennung v4.** Die k-Zellen liegen in eigenen Feldern (`vzn`, `vzs`, `vzhn`, `vzhs`) und fassen keine Zelle der
+  Kennung v3 an. Die Haupttafel (k = 0) muss **bitgleich zu Pilot 3** sein; die Abweichung wird ausgewiesen.
+
+### 5.2 Was der Bericht zeigt
+
+Neuer Abschnitt „Verzögerter Einstieg", je Zeile k = 0 / 1 / 5 mit `brutto_B`, `u_B`, `t_B`, `Kand−PlB` und
+`haltezeit_kand`. Enthalten: alle 30 W7-Zeilen, alle Kandidatenzeilen (k₁, also Tor 1 bestanden) der übrigen
+Detektoren und die beiden belegten Zeilen. Die Haupttafel bleibt k = 0.
+
+### 5.3 Vorregistrierte Vorhersage — geschrieben VOR der Auswertung
+
+Maß: `Kand−PlB` je Konfiguration. Heute (k = 0, W7 5m long) über alle fünf Haltedauern nahezu konstant:
+0,1115 / 0,1242 / 0,1337 / 0,1291 / 0,1290 Pp (15m / 1h / 3h / Schluss / nächste).
+
+- **Einstiegskurs-Erklärung trägt:** `Kand−PlB(k=5) ≤ ⅓ · Kand−PlB(k=0)`, **und** der größte Einzelschritt liegt
+  zwischen k = 0 und k = 1.
+- **Einstiegskurs-Erklärung widerlegt:** `Kand−PlB(k=5) ≥ ⅔ · Kand−PlB(k=0)`. Dann ist W7 ein ernster Kandidat, und
+  der Vollauf muss k = 1 mitführen.
+- **Dazwischen:** kein Urteil aus dem Piloten. Es wird **zuerst hingeschrieben**, welcher der drei Fälle eingetreten
+  ist, **danach** gedeutet.
+
+Trifft nichts davon zu oder passiert etwas Drittes (z. B. `Kand−PlB(k)` wechselt das Vorzeichen, oder die Zeilen
+entfallen so häufig, dass die Reste nicht vergleichbar sind), wird das hingeschrieben und benannt, was als Nächstes zu
+messen wäre — es wird **nicht** stillschweigend etwas anderes geprüft.
+
+**Erwartung des messenden Chats (vorab, nicht bindend, zum Danebenstellen):** Fall 1. Begründung: W7 ist ein
+Extrem-Detektor; die Konstanz von `Kand−PlB` über fünf Haltedauern, die sich um den Faktor 25 unterscheiden, ist mit
+einer Wende im Kursverlauf schwer vereinbar, mit einem einmaligen Beitrag am Einstieg dagegen genau zu erwarten. Der
+Bounce-Befund aus Nachtrag 3 hat die *Lücke* gemessen (Schluss i → Eröffnung i+1) und war klein; die erste ganze
+Kerze ist die nächstgrößere Einheit derselben Art. Trifft Fall 2 zu, ist diese Erwartung widerlegt und das steht so
+im Bericht.
+
+### 5.4 Prüfungen (vor dem Piloten grün)
+
+Die 127 Prüfungen der Nachträge 1–4 bleiben grün. Neu mindestens:
+
+1. Konstruierte Reihe mit einem **bekannten Sprung genau in der Einstiegskerze**: voller Effekt bei k = 0, **null**
+   bei k = 1.
+2. Reihe mit **konstanter Drift**: bei k = 1 genau **eine Kerze weniger** Drift.
+3. Placebo A und Placebo B **unverändert** gegenüber dem Lauf ohne k-Zellen.
+4. Die k-Zellen ändern **keine** k = 0-Zahl: Zellen, Topf, Kurs- und Haltezeitzellen bitgleich mit und ohne Schalter.
+5. „entfällt"-Fälle gezählt, je Grund, und gegen die Handrechnung (15m/H=15m, k = 1 ⇒ alles entfällt).
+6. `haltezeit_kand(k) = haltezeit_kand(0) − k · Kerzenlänge` bei festen Haltedauern.
+
+### 5.5 Was sich nicht ändert
+
+Einstiegsregel der Haupttafel (Eröffnung i+1), Hauptgröße u, Tore 1 und 2, Bonferroni, Aktualitäts-Tor, Lücken-Tor,
+Uhrzeit-Tor, Placebo-Bänder, Kosten- und Schein-Hürden, Jahresscheiben, Regime, Haltedauern, Kalender, Klassen,
+Dichteregel, Cooldown, Detektoren (8, W8 bleibt gestrichen). Der Pilot `pilot-4/` läuft über **dieselben 19 Reihen**;
+seine Zahlen sind wie bisher **kein Befund**. Kein Vollauf, kein Push, keine Version, kein Wiki-Eintrag aus diesem
+Chat. Die Speicher-Vorrechnung für den Vollauf steht im Bericht.
