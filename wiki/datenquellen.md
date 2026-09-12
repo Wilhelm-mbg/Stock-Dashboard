@@ -352,3 +352,11 @@ spannen?, waehrung, boerse, stand, series }` — Kerze `[zeit, schluss, umsatz, 
 `zusammenfuehren()` werfen sonst). Dateien ohne `quellen` (Format 1) werden weiter gelesen, ihr Bestand
 gilt als `yahoo` (Marke `abgeleitet: 'bestand'`). Krypto (`-USD`) liegt unter `archiv<iv>/krypto/`.
 *Fundstelle: `studien/archiv-zusammenfuehrung-2026-09/Z1-BEFUND.md` §2, test-v6 Block 63 „Format 2".*
+
+## Bigdata.com (Claude-Connector, seit 12.09.2026) — Nachschlagewerk, keine Kursquelle
+
+Wilhelm hat den Connector [Bigdata.com](https://bigdata.com) freigeschaltet (Anbieter RavenPack). Er ist nur aus Claude-Sitzungen erreichbar, **nicht aus der App**. Freigeschaltete Inhalte laut `bigdata_help`: SEC-Meldungen, Earnings-Transkripte, Premium-Nachrichten, Stimmung je Firma, Firmen-Kalender (Earnings, Delistings ab 2025), Wirtschaftskalender, Fundamentaldaten, ESG, Fondsbestände, Knowledge Graph, offenes Web. **Abrechnung: Guthaben (Pay-as-you-go, Stand 12.09.: 1.000), jede Anfrage verbraucht Kontingent** — der PM lädt nie nach und fragt nur, was eine Studie wirklich braucht.
+
+**Probe 12.09. (drei Anfragen):** Activision Blizzard, Delisting Oktober 2023 → sofort das 8-K vom 13.10.2023 mit Item 3.01 (Übernahme durch Microsoft, 95 $ je Aktie). Celgene, November 2019 → Nachrichten (The Fly, MT Newswires, Benzinga) mit Bedingungen der Übernahme. Whole Foods, 8-K August 2017 → **leer** (0 Treffer, 4.000 Web-Einheiten verbraucht). Historie ab ~2019 belegt, 2017 nicht — vor einer Studie mit älteren Ereignissen die Tiefe je Quellart mit einer Stichprobe prüfen.
+
+**Wofür er taugt:** (1) Verschwundene Reihen einordnen (Übernahme / Insolvenz / stilles Delisting) — Tageskerzen-Frage, die die Kanalstudie aufgeworfen hat (Delisting-Ausstiege mit +29 Pp waren Übernahmen); (2) Ereignisdaten für „Information statt Muster" (Quartalszahlen-Termine, Übernahmeankündigungen, Indexaufnahmen) — **Momentaufnahme von heute, keine Point-in-Time-Historie**: jede Registrierung muss ausweisen, wann ein Ereignis bekannt war; (3) Stimmung als Bedingung — nur mit vorab notiertem Erwartungswert. **Wofür nicht:** Kurse (haben wir besser), Live-Signale in der App, alles, was Guthaben in Schleifen verbraucht.
