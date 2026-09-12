@@ -58,6 +58,13 @@ function main() {
     return subCache[cik];
   }
 
+  /* Der Rest, den EDGAR nicht aufloest, soweit der Bigdata-Connector ihn beantwortet hat.
+   * Greift NUR, wo sonst 'unbekannt' stuende - eine Nachrichtenmeldung ueberstimmt keine
+   * Kapitalmassnahme und kein Pflichtformular. */
+  var BD = {};
+  try { BD = JSON.parse(fs.readFileSync(path.join(__dirname, 'bigdata-ergebnis.json'), 'utf8')); } catch (e) { BD = {}; }
+  var bdFunde = BD.funde || {};
+
   var tafel = [], zaehler = {}, wegZ = {};
   V.reihen.forEach(function (R) {
     var z = zuord[R.reihe] || {};
@@ -68,6 +75,11 @@ function main() {
     if (!bestaetigt) { f = leer(); }
     var E = R.massnahmeEnde;
     var u = urteil(R, E, f, S, bestaetigt, hatBalken, lebendAb);
+    if (u.grund === 'unbekannt' && bdFunde[R.reihe]) {
+      var b = bdFunde[R.reihe];
+      u = { grund: b.grund, datum: b.datum, quelle: b.quelle, beleg: 'bigdata', preis_je_aktie: (b.preis_je_aktie == null ? null : b.preis_je_aktie),
+        nachfolger: b.nachfolger || null, belegtext: b.text || null };
+    }
     u.reihe = R.reihe; u.ordner = R.ordner; u.art = R.art; u.gruppe = R.gruppe;
     u.letzter_balken = R.letzterBalken;
     u.letzter_kurs_archiv = R.letzterKursArchiv;
@@ -84,6 +96,7 @@ function main() {
   var out = { kennung: 'verschwundene-gruende-2026-09-12/v1', stand: new Date().toISOString(),
     lebendAb: V.lebendAb, fenster: { vorTage: VOR, nachTage: NACH },
     edgar: { anfragen: Z.anfragen || null, fehler: Z.fehler || null, sekunden: Z.sekunden || null, rate: Z.rate || null, rateMax: Z.rateMax || null },
+    bigdata: (BD.deckel ? { vorher: BD.vorher, nachher: BD.nachher, verbraucht: BD.verbraucht, deckel: BD.deckel, abfragen: BD.abfragen } : null),
     zaehler: zaehler, belegarten: wegZ, n: tafel.length, reihen: tafel };
   fs.writeFileSync(path.join(__dirname, 'verschwundene-gruende.json'), JSON.stringify(out));
   console.log(JSON.stringify(zaehler, null, 1));

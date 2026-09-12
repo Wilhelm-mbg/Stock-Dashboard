@@ -196,5 +196,6 @@ function main() {
   }).catch(function (e) { console.error('ABBRUCH', e); process.exit(1); });
 }
 
-module.exports = { RATE: RATE, RATE_MAX: RATE_MAX, UA: UA, FORMULARE: FORMULARE, waehle: waehle, VOR_TAGE: VOR_TAGE, NACH_TAGE: NACH_TAGE };
+module.exports = { RATE: RATE, RATE_MAX: RATE_MAX, UA: UA, FORMULARE: FORMULARE, waehle: waehle, VOR_TAGE: VOR_TAGE, NACH_TAGE: NACH_TAGE,
+  holeJson: holeJson, einreichungen: einreichungen, anfragen: function () { return ANFRAGEN; } };
 if (require.main === module) main();

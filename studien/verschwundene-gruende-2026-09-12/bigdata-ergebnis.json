@@ -1,0 +1,31 @@
+{
+ "stand": "2026-09-12",
+ "quelle": "Bigdata.com-Connector der Sitzung, bigdata_search (smart), max_chunks 2-3",
+ "vorher": 975.8594,
+ "nachher": 950.6124,
+ "verbraucht": 25.247,
+ "deckel": 250,
+ "abfragen": 9,
+ "hinweis": "Der Deckel war NICHT die bindende Grenze - 9 Abfragen kosteten 25,2 Einheiten, also gut 2,8 je Abfrage statt der veranschlagten 5. Gebremst hat das Token-Budget der Sitzung: jede Antwort traegt Belegtexte, und 50 davon haetten den Bericht verdraengt. Gezogen wurde deshalb eine Stichprobe von 12 aus 216, abgefragt wurden 9 davon.",
+ "funde": {
+  "HOT": { "grund": "uebernahme", "datum": "2016-09-23", "preis_je_aktie": null,
+    "quelle": "bigdata:B35E526D8289464686427693F1A657F2",
+    "text": "Starwood Hotels & Resorts (NYSE: HOT) ging am 23.09.2016 in Marriott International auf; Delisting von der NYSE vor Handelsbeginn desselben Tages. Bar- und Aktienanteil, Barsatz nicht im Beleg." },
+  "TARO": { "grund": "uebernahme", "datum": "2024-06-24", "preis_je_aktie": 43.00,
+    "quelle": "bigdata:7BA66E6AA06C50B1B9B6EF1697884D67",
+    "text": "Sun Pharmaceutical erwarb die restlichen 21,52 % von Taro Pharmaceutical Industries (NYSE: TARO) zu 43 $ je Aktie; Vollzug 24.06.2024, Taro seither privat." },
+  "PDVW": { "grund": "umbenennung-ticker", "datum": "2019-06-17", "nachfolger": "ATEX", "preis_je_aktie": null,
+    "quelle": "bigdata:2E63737037AFA8433E177C789BF785CE",
+    "text": "pdvWireless benannte sich in Anterix um; Kuerzelwechsel auf ATEX zum 17.06.2019, bis dahin Handel unter PDVW." },
+  "CEL": { "grund": "freiwillig", "datum": "2021-02-09", "preis_je_aktie": null,
+    "quelle": "bigdata:7409C2C66DF25A26FC67D4726BA0E30E",
+    "text": "Cellcom Israel meldete das Ende des Handels an der NYSE zum 09.02.2021 und berichtet seither nur noch in Israel; die Aktie lebt an der TASE weiter." }
+ },
+ "ohne_fund": {
+  "DNAI": "Firma als ProNAi Therapeutics (NASDAQ: DNAI) benannt, der Ausgang steht in keinem gelieferten Beleg - bleibt unbekannt.",
+  "AATC": "keine Treffer im Fenster",
+  "ONCR": "keine Treffer im Fenster",
+  "KANG": "keine Treffer im Fenster"
+ },
+ "nicht_abgefragt": ["MFS", "ALKSV", "CRU", "STAB"]
+}

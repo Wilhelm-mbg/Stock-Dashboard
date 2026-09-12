@@ -1,0 +1,14 @@
+{
+ "hinweis": "Die Zaehler in edgar-zuordnung.json werden bei jedem Wiederanlauf zurueckgesetzt - sie zaehlen den LETZTEN Durchgang, nicht die Summe. Diese Datei haelt die Summe aus edgar-lauf.log fest.",
+ "durchgaenge": [
+  { "was": "Durchgang 1 (Volltextsuche ohne Formularfilter + Einreichungen)", "anfragen": 7962, "fehlversuche": 272, "sekunden": 1395 },
+  { "was": "Wiederanlauf fuer 3 offene Reihen", "anfragen": 5, "fehlversuche": 0, "sekunden": 1 },
+  { "was": "Durchgang 2 (Formular-gefilterte Suche + Kandidatenpruefung, 560 Reihen)", "anfragen": 1060, "fehlversuche": 0, "sekunden": 184 }
+ ],
+ "anfragen": 9027,
+ "fehler": 272,
+ "sekunden": 1580,
+ "rate": 6,
+ "rateMax": 8,
+ "cache": { "cik": 4288, "kuerzel": 4996, "kuerzel2": 560 }
+}

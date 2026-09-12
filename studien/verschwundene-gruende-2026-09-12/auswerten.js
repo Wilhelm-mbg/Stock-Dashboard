@@ -16,6 +16,9 @@ function tz(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 function main() {
   var T = JSON.parse(fs.readFileSync(path.join(__dirname, 'verschwundene-gruende.json'), 'utf8'));
   var R = T.reihen;
+  /* Die Zaehler in edgar-zuordnung.json gelten nur fuer den LETZTEN Durchgang - ein
+   * Wiederanlauf setzt sie zurueck. Die Summe aller Durchgaenge steht in lauf-bilanz.json. */
+  try { T.edgar = JSON.parse(fs.readFileSync(path.join(__dirname, 'lauf-bilanz.json'), 'utf8')); } catch (e) { /* dann eben der letzte Durchgang */ }
 
   /* --- Zaehler je Kategorie und Jahr --- */
   var jahre = {}, proKat = {};
@@ -171,6 +174,30 @@ function main() {
     L.push('| Bigdata verbraucht | ' + z(T.bigdata.verbraucht, 4) + ' von hoechstens ' + T.bigdata.deckel + ' |');
     L.push('| Bigdata-Abfragen | ' + (T.bigdata.abfragen || 0) + ' |');
   }
+  L.push('');
+  L.push('## 6. Was diese Tafel NICHT sagt');
+  L.push('');
+  var umb = R.filter(function (x) { return x.grund === 'umbenennung-ticker'; });
+  var imArchiv = umb.filter(function (x) { return x.nachfolger_im_archiv === 1; }).length;
+  var haeuf = {}; R.forEach(function (x) { haeuf[x.letzter_balken] = (haeuf[x.letzter_balken] || 0) + 1; });
+  var spitze = Object.keys(haeuf).sort(function (a, b) { return haeuf[b] - haeuf[a]; })[0];
+  L.push('1. **`umbenennung-ticker` ist keine Aussage ueber den Aktionaer.** ' + tz(umb.length) + ' Reihen tragen sie;');
+  L.push('   bei ' + tz(imArchiv) + ' hat der Nachfolger im Archiv wieder Balken, bei ' + tz(umb.length - imArchiv) + ' nicht — fast durchweg Kuerzel auf');
+  L.push('   `-F` oder `-Y`, also der Gang in den Freiverkehr (AAMC→AAMCF, ABB→ABBNY). Das Papier blieb handelbar,');
+  L.push('   aber das Archiv sieht es nicht mehr. Das Feld `nachfolger_im_archiv` trennt beides; eine Studie, die');
+  L.push('   Ueberlebensverzerrung misst, muss sich entscheiden, welche der beiden Gruppen sie fortschreibt.');
+  L.push('2. **Ein Tag traegt ' + tz(haeuf[spitze]) + ' Reihen.** Am ' + spitze + ' endet das Archiv fuer ' + tz(haeuf[spitze]) + ' Reihen auf einmal — der');
+  L.push('   naechsthaeufigste Tag hat 13. Das ist keine Firmengeschichte, das ist eine **Sammlungsgrenze** der Quelle');
+  L.push('   (40 dieser Reihen hatten laut EDGAR ohnehin ein Zwangs-Delisting, der Rest nicht). Wer "verschwunden" als');
+  L.push('   Ereignis liest, liest an diesem Tag eine Eigenschaft des Sammlers als Eigenschaft des Marktes.');
+  L.push('3. **Barpreise gibt es erst ab 2020.** Von ' + tz(proKat.uebernahme) + ' Uebernahmen tragen ' + tz(ueb.length) + ' einen Barsatz; vor 2020 keine.');
+  L.push('   Das Massnahmen-Archiv fuehrt `cash_mergers` erst ab dann brauchbar. `aufschlag_pp` ist also eine Aussage');
+  L.push('   ueber 2020–2026, nicht ueber das ganze Fenster.');
+  L.push('4. **Der Rest ist eine Stichprobe, keine Liste.** Von ' + tz(proKat.unbekannt || 0) + ' unbekannten Reihen wurden 12 gezogen und 9');
+  L.push('   ueber Bigdata.com abgefragt (4 aufgeloest, 4 ohne Treffer, 1 nur mit Firmennamen). Der Deckel von 250');
+  L.push('   Einheiten war nicht die bindende Grenze — 9 Abfragen kosteten 25,2. Gebremst hat das Token-Budget.');
+  L.push('5. **Die Kategorie ist der Mechanismus, nicht das Schicksal.** `uebernahme` sagt, dass Geld floss, nicht');
+  L.push('   dass sich der Kauf gelohnt hat; `zwangs-delisting` sagt, dass eine Boersenregel gerissen ist, nicht warum.');
   L.push('');
   fs.writeFileSync(path.join(__dirname, 'ERGEBNIS.md'), L.join('\n') + '\n');
   console.log('ERGEBNIS.md geschrieben. Kategorien:', JSON.stringify(proKat));

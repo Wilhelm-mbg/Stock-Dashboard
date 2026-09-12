@@ -1,0 +1,30 @@
+200/4996  Anfragen 304  Fehler 2  63s
+400/4996  Anfragen 378  Fehler 18  65s
+600/4996  Anfragen 762  Fehler 34  132s
+600/4996  Anfragen 6  Fehler 0  0s
+800/4996  Anfragen 361  Fehler 7  64s
+1000/4996  Anfragen 737  Fehler 22  129s
+1200/4996  Anfragen 1108  Fehler 29  193s
+1400/4996  Anfragen 1467  Fehler 32  257s
+1600/4996  Anfragen 1836  Fehler 40  320s
+1800/4996  Anfragen 2219  Fehler 63  387s
+2000/4996  Anfragen 2586  Fehler 76  451s
+2200/4996  Anfragen 2958  Fehler 91  517s
+2400/4996  Anfragen 3332  Fehler 107  582s
+FEHLER KCAP: FTS ohne Aggregation: HTTP 500
+2600/4996  Anfragen 3708  Fehler 129  648s
+2800/4996  Anfragen 4077  Fehler 148  713s
+3000/4996  Anfragen 4455  Fehler 165  779s
+3200/4996  Anfragen 4811  Fehler 180  842s
+3400/4996  Anfragen 5162  Fehler 185  902s
+FEHLER PBPB: FTS ohne Aggregation: HTTP 500
+3600/4996  Anfragen 5513  Fehler 202  964s
+FEHLER PSTB: FTS ohne Aggregation: HTTP 500
+3800/4996  Anfragen 5868  Fehler 215  1026s
+4000/4996  Anfragen 6219  Fehler 229  1089s
+4200/4996  Anfragen 6559  Fehler 236  1150s
+4400/4996  Anfragen 6914  Fehler 246  1213s
+4600/4996  Anfragen 7280  Fehler 264  1277s
+4800/4996  Anfragen 7641  Fehler 267  1339s
+FERTIG  Anfragen 7962  Fehler 272  1395s
+FERTIG  Anfragen 5  Fehler 0  1s

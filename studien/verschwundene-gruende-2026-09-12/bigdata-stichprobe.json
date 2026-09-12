@@ -1,0 +1,70 @@
+{
+ "stand": "2026-09-12T16:53:00.387Z",
+ "grundgesamtheit": 216,
+ "gezogen": 12,
+ "startwert": 20260912,
+ "deckel": 250,
+ "kostenJeAbfrage": 5,
+ "reihen": [
+  {
+   "reihe": "HOT",
+   "letzter_balken": "2016-09-22",
+   "letzter_kurs_archiv": 77.11
+  },
+  {
+   "reihe": "DNAI",
+   "letzter_balken": "2017-01-09",
+   "letzter_kurs_archiv": 1.56
+  },
+  {
+   "reihe": "TARO",
+   "letzter_balken": "2024-06-21",
+   "letzter_kurs_archiv": 42.97
+  },
+  {
+   "reihe": "AATC",
+   "letzter_balken": "2025-03-21",
+   "letzter_kurs_archiv": 3.63
+  },
+  {
+   "reihe": "MFS",
+   "letzter_balken": "2017-03-03",
+   "letzter_kurs_archiv": 19.04
+  },
+  {
+   "reihe": "ONCR",
+   "letzter_balken": "2025-03-21",
+   "letzter_kurs_archiv": 0.1206
+  },
+  {
+   "reihe": "PDVW",
+   "letzter_balken": "2019-06-14",
+   "letzter_kurs_archiv": 47.33
+  },
+  {
+   "reihe": "CEL",
+   "letzter_balken": "2021-02-08",
+   "letzter_kurs_archiv": 3.77
+  },
+  {
+   "reihe": "ALKSV",
+   "letzter_balken": "2023-11-15",
+   "letzter_kurs_archiv": 22.64
+  },
+  {
+   "reihe": "KANG",
+   "letzter_balken": "2019-01-18",
+   "letzter_kurs_archiv": 20.53
+  },
+  {
+   "reihe": "CRU",
+   "letzter_balken": "2022-11-30",
+   "letzter_kurs_archiv": 10.03
+  },
+  {
+   "reihe": "STAB",
+   "letzter_balken": "2025-03-21",
+   "letzter_kurs_archiv": 0.0911
+  }
+ ]
+}
