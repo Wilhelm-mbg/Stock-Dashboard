@@ -552,3 +552,138 @@ Einstiegsregel (Eröffnung i+1), Hauptgröße u, Tore 1 und 2, Bonferroni, Aktua
 Schein-Hürden, Jahresscheiben, Regime, Haltedauern, Kalender, Klassen, Dichteregel, Cooldown, Zellenlayout im Übrigen.
 Der Pilot `pilot-2/` läuft über **dieselben 19 Reihen** wie Pilot 1; seine Zahlen sind wie dort **kein Befund**.
 Der Vollauf startet nicht aus diesem Chat.
+
+## 19. NACHTRAG 4 — 12.09.2026, Entscheide des PM zu §9 der Übergabe; **vor der ersten Zelle der Kennung v3**
+
+Grundlage: `uebergabe/auftrag-trendwende-ii-nachtrag4-2026-09-12.md` (PM, 12.09.2026). Dieser Nachtrag ist geschrieben
+und committet, **bevor eine einzige neue Zelle gerechnet wurde** (eigener Commit vor jeder Änderung an `konfig.js`,
+`messen.js`, `auswerten.js`, `test.js`). Die Entscheide stammen aus dem schriftlichen Auftrag des PM, nicht aus einem
+Ergebnis.
+
+Kennung neu: **`trendwende-ii-2026-09-09/v3/8x3x2x5x4x3+kurs+luecke+haltezeit+schein+jahre`**. Zellen der Kennung v2
+(`pilot-2/`) passen nicht mehr — Kennungs- und Längenprüfung brechen ab, es wird nichts vermischt.
+
+### 4.0 Warum: die Bounce-Vermutung ist gefallen, die Uhrzeit des Topfs ist die neue Verdächtige
+
+Nachtrag 3 hat die Einstiegslücke gemessen. Sie ist bei W7 **klein** (0,002–0,013 Pp, 2–6 % des Bruttos) und erklärt
+den Befund nicht. Entscheidend ist das **Profil über die Haltedauern** (u_B in der Bestätigung, `pilot-2/`):
+
+| Konfiguration | 15m | 1h | 3h | bis Schluss | nächste Eröffnung |
+|---|---|---|---|---|---|
+| W7 5m long | −0,0285 | 0,0288 | 0,1138 | 0,1854 | 0,1666 |
+| W7 5m short | −0,0367 | 0,0079 | 0,0662 | 0,1270 | 0,1304 |
+| W7 15m long | −0,0457 | 0,0227 | 0,0975 | 0,2074 | 0,2210 |
+| W7 15m short | −0,0498 | 0,0053 | 0,0719 | 0,1526 | 0,1537 |
+
+Ein Bid-Ask-Bounce am Einstieg wäre **sofort da und über die Haltedauern flach**; dieses Profil ist bei 15 Minuten
+negativ, bei einer Stunde null und wächst bis zum Schluss. Die Vermutung des PM aus Nachtrag 3 ist damit widerlegt.
+
+**Die neue, vorab benannte Verdächtige: die Uhrzeitverteilung des Topfs.** Für „bis Schluss" und „nächste Eröffnung"
+hängt die tatsächliche Haltezeit an der **Uhrzeit des Signals** — ein Signal um 10:00 hält sechs Stunden, eines um
+15:30 eine halbe. Der Topf derselben Zelle mittelt über **alle** zulässigen Kerzen des Tages, also über eine andere
+Uhrzeitverteilung. Feuert ein Detektor systematisch früher am Tag als der Durchschnitt, trägt er mehr Tagesdrift als
+sein Topf — **in beiden Richtungen** (long verdient die Drift, short wird gegen einen Topf gemessen, der weniger Drift
+enthält). Genau das zeigt der Pilot: acht Zellen sind beidseitig positiv mit t ≥ 2, alle acht W7, und der Effekt wächst
+mit der verbleibenden Tageszeit. Das ist kein Beweis; es ist die einzige Erklärung, die zum Profil passt, und sie ist
+**messbar**. Sie kann auch scheitern — dann steht das im Bericht (§4.6).
+
+### 4.1 Das Lücken-Tor sitzt auf `u_B`, nicht auf `netto_B` (Entscheid 1)
+
+Das Urteil `belegt` fällt über die Hauptgröße **u** (§5). Ein Tor auf `netto` ist ein Tor auf einer anderen Skala, deren
+se drei- bis sechsmal größer ist — also ein zweiter, schwächerer Test unter falschem Namen; dieselbe Fehlerform wie der
+Einheitenfehler bei delta80 (Lehre „Die Auflösungswand"). Ab Kennung v3 gilt deshalb:
+
+> **`u_B lueckenbereinigt`** = Tagesmittel von **(u_t − luecke_t)** über die Bestätigungstage, se/t wie jede andere
+> Zeile (Lag 1, übernacht Hansen-Hodrick). **`belegt` — und damit jedes `handelbar` — verlangt
+> `u_B lueckenbereinigt > 0` und `t ≥ z_Bonf(k₂)`.**
+
+Die Differenz wird weiter **je Tag** gebildet und dann gemittelt (Skalenregel aus Nachtrag 3.1). Tage ohne Topf (u ist
+dort NaN) fallen aus der Rechnung und werden als `ohneU` gezählt. `netto_B lueckenbereinigt` und sein t **bleiben als
+Spalten im Bericht, entscheiden aber nichts mehr**. Der Urteilswert heißt unverändert `nicht belegt: Einstiegsluecke`;
+der Vermerk „Extrem-Einstieg" bleibt am Brutto. Es bleibt eine reine Verschärfung gegenüber „ohne Tor": keine Zeile
+kann durch die Spalte belegt werden, die es sonst nicht wäre.
+
+### 4.2 Neue Zellenfelder: Haltezeit von Kandidat und Topf (Entscheid 2)
+
+Zwei neue Felder je **Haltezeitzelle** = (Kandidat = Detektor × Zeitrahmen, Richtung, **Haltedauer**, ET-Tag,
+Umsatzklasse, lebend): **Σ Haltezeit in Sitzungsminuten** und die **Zahl der Beobachtungen** dazu. Für den Topf ein
+viertes Feld je Topfzelle (ZR, Haltedauer, Tag, Klasse, lebend): **Σ Haltezeit**; die Zahl ist das vorhandene `tn`.
+
+**Definition der Haltezeit** (Einstieg bis Ausstieg, in Minuten der regulären Sitzung):
+
+- Einstieg: Beginn der Einstiegskerze `i+1` (dort wird zur Eröffnung gekauft).
+- Feste Haltedauern (15m / 1h / 3h): bis zum Beginn der Ausstiegskerze `j` — konstruktionsgemäß genau H, solange das
+  Gitter lückenlos ist.
+- „bis Schluss": bis zum **Ende der letzten regulären Kerze des Tages** (nicht bis zum Kalender-Schluss — die
+  Haltezeit soll den tatsächlichen Ausstieg messen, auch an dünnen Tagen).
+- „nächste Eröffnung": **dieselbe Zahl wie „bis Schluss"**. Die Nachtpause zählt **null Sitzungsminuten**, und am
+  Folgetag wird zur Eröffnung ausgestiegen, also vor der ersten Sitzungsminute. Das ist gewollt: die Nacht ist für
+  jeden Einstieg desselben Tages gleich lang und kann deshalb keinen Versatz zwischen Kandidat und Topf erzeugen.
+- Übernacht-Beiträge, die über eine Dateigrenze übergeben werden, tragen ihre Haltezeit mit; verfallen sie, verfällt
+  auch die Haltezeit — Zähler und Ertragszelle bleiben deckungsgleich.
+- Placebo A und B bekommen **keine** Haltezeitzellen (sie werden für den Versatz nicht gebraucht; Placebo B liegt
+  ohnehin im selben 30-Minuten-Fenster wie sein Kandidat).
+
+**Im Bericht je Konfiguration drei neue Spalten** (Bestätigungszeitraum, Sicht „alle", Klassen gepoolt):
+
+| Spalte | Definition |
+|---|---|
+| `haltezeit_kand` | Σ Haltezeit / Σ n der Kandidatenzellen über die Bestätigungs-Signaltage, in Minuten |
+| `haltezeit_topf` | dasselbe aus den Topfzellen, **über genau dieselben Signaltage** |
+| `uhrzeit_versatz` | `haltezeit_kand / haltezeit_topf − 1` |
+
+Der Topf wird bewusst auf **dieselben Tage** eingeschränkt: sonst misst der Versatz auch den Tagesmix (Halbtage,
+Jahre) statt der Uhrzeit. Fehlt einer der beiden Werte, steht „–" und das Tor greift nicht.
+
+### 4.3 Vorregistriertes Tor „Uhrzeit-Versatz" (Entscheid 3)
+
+> Eine Konfiguration mit **|uhrzeit_versatz| > 0,15** kann für die Haltedauern **„bis Schluss" und „nächste Eröffnung"
+> nicht `belegt`** werden. Urteil: **`nicht belegt: Uhrzeit-Versatz`** (neuer Wert der Urteilsliste, im Urteilsbaum
+> **nach** dem Lücken-Tor, vor den Placebo-Herabstufungen), eigene Spalte im Bericht.
+
+Begründung steht in §4.0: bei diesen beiden Haltedauern ist die Haltezeit eine Funktion der Uhrzeit, und ein Kandidat,
+der 15 % länger (oder kürzer) hält als sein Topf, wird gegen einen **anders exponierten** Vergleich gemessen. Der
+Überschuss u ist dann keine Wende, sondern ein Stück Tagesdrift. Für 15m/1h/3h greift das Tor **nicht** — dort ist die
+Haltezeit beider Seiten die Haltedauer selbst. Die Schwelle 0,15 ist eine Setzung vor der Messung: sie liegt weit über
+dem, was Gitterlücken erzeugen können (Prüfung: |Versatz| ≤ 0,05 bei festen Haltedauern), und weit unter dem, was ein
+systematischer Uhrzeitversatz erzeugen würde (eine Stunde von rund 195 Minuten mittlerer Resthaltezeit sind bereits
+0,31). Auch dieses Tor ist eine reine Verschärfung.
+
+### 4.4 Spiegel-Spalten als Diagnose — ausdrücklich **kein Tor** (Entscheid 4)
+
+Je Zeile zusätzlich die Werte der Gegenrichtung und die Summe beider Richtungen:
+
+| Spalte | Definition |
+|---|---|
+| `u_spiegel` / `t_spiegel` | u_B und t_B derselben (Detektor, ZR, Haltedauer) in der **Gegenrichtung** |
+| `u_summe` / `se` / `t` | Tagesmittel von **(u_long,t + u_short,t)** über die Tage, an denen **beide** Richtungen ein Signal haben; se/t wie sonst |
+
+**Aus diesen Spalten folgt kein Urteil.** Long und short feuern zu verschiedenen Zeitpunkten; dass beide positiv sind,
+ist für sich genommen kein Widerspruch und kein Beweis. Die Spalten dienen dem Leser und der nächsten Diagnose. Für
+`W3` (nur long) bleiben sie leer.
+
+### 4.5 Prüfungen zu diesem Nachtrag (vor dem Piloten grün)
+
+1. `uhrzeit_versatz` ≈ 0 bei festen Haltedauern — **Toleranz |Versatz| ≤ 0,05**, gemessen an der Kunst-Reihe.
+2. Konstruierter Fall **„Detektor feuert nur in der ersten Stunde"** ⇒ Versatz deutlich positiv, Tor greift bei
+   „bis Schluss" / „nächste Eröffnung".
+3. Konstruierter Fall **„Detektor feuert gleichverteilt über den Tag"** ⇒ Versatz ≈ 0, Tor greift nicht.
+4. Das Lücken-Tor rechnet auf **u** (Handrechnung an einer konstruierten Zelle); die netto-Spalte entscheidet nicht
+   mehr — eine Zeile mit gutem u-bereinigten Wert und schlechtem netto-bereinigten Wert bleibt `belegt`.
+5. Die Spiegel-Spalten stimmen mit der jeweils anderen Zeile überein (u_spiegel(long) = u_B(short) und umgekehrt).
+6. Alle Prüfungen der Nachträge 1–3 bleiben grün.
+
+### 4.6 Was passiert, wenn die Hypothese nicht trägt
+
+Ist der Versatz im Piloten klein und greift das Tor nicht, dann ist **die Hypothese des PM widerlegt** — und genau das
+steht dann im Bericht und in der Übergabe, mit dem gemessenen Versatz. Es wird **nicht** still auf eine andere
+Erklärung ausgewichen; die nächste zu messende Größe wird benannt, aber erst nach einem Auftrag gemessen. Ein
+widerlegter PM ist ein Ergebnis, kein Makel.
+
+### 4.7 Was sich nicht ändert
+
+Einstiegsregel (Eröffnung i+1), Hauptgröße u, Tore 1 und 2, Bonferroni, Aktualitäts-Tor, Placebo-Bänder, Kosten- und
+Schein-Hürden, Jahresscheiben, Regime, Haltedauern, Kalender, Klassen, Dichteregel, Cooldown, Detektoren (8, W8 bleibt
+gestrichen), Zellenlayout im Übrigen. Speicher je Prozess steigt von ≈ 535 MB auf **≈ 620 MB** (Haltezeitzellen
+2 × 41 MB, Topf-Haltezeit 2,6 MB). Der Pilot `pilot-3/` läuft über **dieselben 19 Reihen**; seine Zahlen sind wie
+bisher **kein Befund**. Der Vollauf startet nicht aus diesem Chat.
