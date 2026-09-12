@@ -587,6 +587,34 @@ enthält). Genau das zeigt der Pilot: acht Zellen sind beidseitig positiv mit t 
 mit der verbleibenden Tageszeit. Das ist kein Beweis; es ist die einzige Erklärung, die zum Profil passt, und sie ist
 **messbar**. Sie kann auch scheitern — dann steht das im Bericht (§4.6).
 
+### 4.0b Präzisierung des Mechanismus — die Vorzeichen (geschrieben während des Piloten, **vor jeder Auswertung**)
+
+Beim Nachrechnen der Vorzeichen fällt auf, dass die Begründung des PM in einem Punkt zu kurz greift; die Prüfgröße
+bleibt dieselbe, die **Vorhersage** wird dadurch aber schärfer und widerlegbarer. Es ist
+
+> `u = dir · (r_Kandidat − r_Topf)`  (die Kosten spielen hier keine Rolle),
+
+also `u_long = E[r_kand] − E[r_topf]` und `u_short = −(E[r_kand] − E[r_topf])`. Trägt der Kandidat **nur** eine andere
+Haltezeit als sein Topf und ist die Tagesdrift μ je Minute, dann ist `E[r] ≈ μ·T` und
+
+- `u_long ≈ μ · (T_kand − T_topf)`,
+- `u_short ≈ μ · (T_topf − T_kand)`.
+
+**Eine in beiden Richtungen gleiche Haltezeit-Abweichung erzeugt also entgegengesetzte Vorzeichen, nicht zwei
+positive.** Der Satz des Auftrags („long profitiert, short wird mit einem Topf verglichen, der weniger Drift enthält")
+trifft nicht zu: enthält der Topf weniger Drift als der Kandidat, wird der Short **bestraft**, nicht belohnt.
+
+Damit der Mechanismus den beobachteten Befund (beide Richtungen positiv) erzeugt, muss die Uhrzeitverteilung **zwischen
+den Richtungen verschieden** sein:
+
+> **Vorhersage, vorab und prüfbar:** `uhrzeit_versatz` ist bei **W7 long positiv** (das 60-Kerzen-Tief liegt früher am
+> Tag) und bei **W7 short negativ** (das 60-Kerzen-Hoch liegt später am Tag) — beide dem Betrag nach groß. Das ist
+> genau das Muster, das eine steigende Tagesdrift bei einem Extremwert-Detektor erzeugt.
+
+Das vorregistrierte Tor steht auf **|uhrzeit_versatz|** und deckt beide Vorzeichen ab; an ihm ändert sich nichts.
+Trifft die Vorhersage nicht zu — sind beide Versätze klein oder haben sie dasselbe Vorzeichen —, ist die Hypothese des
+PM widerlegt, und zwar unabhängig davon, ob das Tor irgendwo greift.
+
 ### 4.1 Das Lücken-Tor sitzt auf `u_B`, nicht auf `netto_B` (Entscheid 1)
 
 Das Urteil `belegt` fällt über die Hauptgröße **u** (§5). Ein Tor auf `netto` ist ein Tor auf einer anderen Skala, deren
