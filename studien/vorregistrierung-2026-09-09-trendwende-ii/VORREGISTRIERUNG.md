@@ -825,7 +825,7 @@ ist in KEINER einzigen der 30 Zeilen erfüllt.** Fall 1 ist damit nirgends volls
 W7 5m long 3h 0,1337 → 0,1068 (Anteil 0,799).
 
 **Die erste Kerze trägt fast nichts.** Der Schritt k = 0 → k = 1 als Anteil an `Kand−PlB(k=0)`: auf 1m zwischen
-−6,6 % und +0,6 % (in 7 von 10 Zeilen **negativ**, die Verzögerung vergrößert die Differenz), auf 5m zwischen
+−6,6 % und +0,6 % (in **9 von 10** Zeilen negativ, die Verzögerung vergrößert die Differenz), auf 5m zwischen
 −1,9 % und +4,4 %, auf 15m zwischen +2,3 % und +8,4 %. Der Betrag wächst mit der **Dauer** der ausgelassenen Kerze,
 nicht mit ihrer Zahl — genau das Gegenteil eines Beitrags, der im Einstiegskurs sitzt.
 
