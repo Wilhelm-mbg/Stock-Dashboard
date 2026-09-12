@@ -592,6 +592,7 @@ function pp(x) { return x == null || x !== x ? '–' : x.toFixed(4).replace('.',
 function tw(x) { return x == null || x !== x ? '–' : x.toFixed(2).replace('.', ','); }
 function ganz(x) { if (x == null || x !== x) return '–'; var s = String(Math.round(x)), aus = ''; while (s.replace('-', '').length > 3) { aus = '.' + s.slice(-3) + aus; s = s.slice(0, -3); } return s + aus; }
 function jn(b) { return b ? 'ja' : 'nein'; }
+function v3(x) { return x == null || x !== x ? '–' : x.toFixed(3).replace('.', ','); }   // uhrzeit_versatz: drei Stellen, die Schwelle ist 0,15
 function tabelle(kopf, zeilen) {
   var aus = ['| ' + kopf.join(' | ') + ' |', '|' + kopf.map(function () { return '---'; }).join('|') + '|'];
   zeilen.forEach(function (z) { aus.push('| ' + z.join(' | ') + ' |'); });
@@ -639,7 +640,7 @@ function markdown(E, F, herkunft, kal, pilot) {
   uz.push(['Vermerk „Extrem-Einstieg" (luecke_B > halbes Brutto_B)', ganz(z.extremEinstieg)]);
   uz.push(['Uhrzeit-Tor: Zeilen, fuer die es ueberhaupt gilt (H = ' + K.UHRZEIT_TOR_H.join(' / ') + ')', ganz(z.uhrzeitTorGilt)]);
   uz.push(['Uhrzeit-Tor gefallen (|uhrzeit_versatz| > ' + K.UHRZEIT_VERSATZ_MAX + ')', ganz(z.uhrzeitTorGefallen)]);
-  uz.push(['|uhrzeit_versatz| bei den FESTEN Haltedauern: Median / Maximum (Soll ≈ 0, Pruefschranke ' + K.VERSATZ_TOLERANZ + ')', pp(z.versatzFestMedian) + ' / ' + pp(z.versatzFestMax)]);
+  uz.push(['|uhrzeit_versatz| bei den FESTEN Haltedauern: Median / Maximum (Soll ≈ 0, Pruefschranke ' + K.VERSATZ_TOLERANZ + ')', v3(z.versatzFestMedian) + ' / ' + v3(z.versatzFestMax)]);
   uz.push(['Zeilen ohne Versatz-Wert (Tor greift dort nicht)', ganz(z.versatzOhneWert)]);
   uz.push(['Bestaetigungs-Signaltage ohne Kurszelle (aus der Lueckenrechnung gefallen, Summe ueber alle Konfigurationen)', ganz(z.lueckeOhneKursTage)]);
   uz.push(['handelbar (Aktie)', ganz(z.handelbar)]); uz.push(['handelbar mit Schein BV 1,0', ganz(z.handelbarSchein.bv1)]); uz.push(['handelbar mit Standard-Schein', ganz(z.handelbarSchein.standard)]);
@@ -656,7 +657,7 @@ function markdown(E, F, herkunft, kal, pilot) {
       return [c.det, c.zr, c.richtung, c.h, ganz(e.nTage), ganz(e.nSig), pp(e.brutto.mittel), pp(e.u.mittel), tw(e.u.t), pp(c.mdeB), jn(c.tor1), pp(c.kKand), pp(c.delta80), jn(c.tor2),
         ganz(b.nTage), ganz(b.nSig), pp(b.brutto.mittel), pp(b.netto.mittel), pp(b.u.mittel), pp(b.uF.mittel), tw(b.u.t) + (b.u.hh0 ? ' HH<0' : ''), pp(b.brutto.obere),
         pp(lu.jeSignal), pp(lm.mittel), pp(ub.mittel), tw(ub.t), pp(nb.mittel), tw(nb.t), jn(c.torLuecke), c.extremEinstieg ? 'Extrem-Einstieg' : '',
-        tw(hz.kand), tw(hz.topf), hz.versatz == null ? '–' : tw(hz.versatz), K.uhrzeitTorGilt(c.h) ? jn(c.torUhrzeit) : 'gilt nicht',
+        tw(hz.kand), tw(hz.topf), v3(hz.versatz), K.uhrzeitTorGilt(c.h) ? jn(c.torUhrzeit) : 'gilt nicht',
         pp(sp2.u), tw(sp2.t), pp(sp2.summe.mittel), pp(sp2.summe.se), tw(sp2.summe.t),
         pp(c.schein.bv1.mittel), tw(c.schein.bv1.t), pp(c.schein.standard.mittel),
         ganz(a.nTage), pp(a.u.mittel), tw(a.u.t), jn(c.torAkt), pp(p.gegenTopf), tw(p.t), pp(q.mittel), (e.u.b2 || b.u.b2) ? 'B2' : '', c.urteil + (c.herabstufungen.length ? ' [' + c.herabstufungen.join('; ') + ']' : '') + (c.grund ? ' (' + c.grund + ')' : ''), c.handelbarGrund, c.flagge, jn(c.handelbarSchein.bv1), jn(c.handelbarSchein.standard), c.groesse, c.scheinGroesse, jn(c.vorwaerts)]; })));
@@ -673,7 +674,7 @@ function markdown(E, F, herkunft, kal, pilot) {
     if (!g) return;
     var a = c.alle.bes.u, b2 = g.alle.bes.u;
     if (!(a.mittel > 0 && a.t >= 2 && b2.mittel > 0 && b2.t >= 2)) return;
-    [c, g].forEach(function (x) { var hz = x.haltezeit || {}; beide.push([x.det, x.zr, x.richtung, x.h, pp(x.alle.bes.u.mittel), tw(x.alle.bes.u.t), tw(hz.kand), tw(hz.topf), hz.versatz == null ? '–' : tw(hz.versatz), K.uhrzeitTorGilt(x.h) ? jn(x.torUhrzeit) : 'gilt nicht', x.urteil]); });
+    [c, g].forEach(function (x) { var hz = x.haltezeit || {}; beide.push([x.det, x.zr, x.richtung, x.h, pp(x.alle.bes.u.mittel), tw(x.alle.bes.u.t), tw(hz.kand), tw(hz.topf), v3(hz.versatz), K.uhrzeitTorGilt(x.h) ? jn(x.torUhrzeit) : 'gilt nicht', x.urteil]); });
   });
   o.push(beide.length ? tabelle(['Detektor', 'ZR', 'Richtung', 'H', 'u_B', 't_B', 'haltezeit_kand (min)', 'haltezeit_topf (min)', 'uhrzeit_versatz', 'TorUhrzeit', 'Urteil'], beide) : 'Keine Zelle ist in beiden Richtungen positiv mit t ≥ 2.\n');
   o.push('## 4. Jahresscheiben (§9a) - Pflichttabelle: u je Kalenderjahr und letzte ' + K.AKTUELL_TAGE + ' Handelstage, je Konfiguration\n\nSicht alle, Klassen gepoolt, aus den Zellen je ET-Tag. t nur ab ' + K.JAHR_MIN_TAGE + ' Signaltagen im Jahr („zu duenn" sonst). Uebernacht-se Hansen-Hodrick Lag 1. Kein Urteil aus dieser Tabelle.\n');
