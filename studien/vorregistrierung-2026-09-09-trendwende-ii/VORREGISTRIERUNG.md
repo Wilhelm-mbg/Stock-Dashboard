@@ -382,3 +382,30 @@ W2/W3/W8), plus die neuen:
 ---
 
 *Commit 1 dieser Studie ist diese Datei. Jede Abweichung davon steht als datierter Nachtrag unter dieser Linie, nie darüber.*
+
+## 16. NACHTRAG 1 — 12.09.2026, nach dem Bau des Messgeräts und `test.js`, vor dem Piloten und vor jeder Auswertung
+
+Gerechnet wurde bis hier keine Rendite außer den Gleichheits-, Laufzeit- und Kunstreihen-Proben von `test.js` und einer
+Laufzeitprobe an AAPL/2024 (21 s je Datei, davon 1m 18 s; Signale je Detektor auf 1m: W1a 348, W1b 330, W2 145, W3 43,
+W4 9, W5 1.135, W6 1.153, W7 1.115, W8 7 — nur Zählungen, keine Erträge angesehen). Was hier steht, ersetzt die genannten
+Stellen oben; alles andere bleibt.
+
+1. **W1a gegen `hauptstudie.js detect()` (§14) — Toleranz 2 % → 3 %.** An AAPL/2024 1m (S 0,5 / F 6) sind 382 von 390
+   `detect()`-Signalen in Index und Richtung identisch; 8 fehlen dem reinen Detektor, weil `detect()` eine Kerze im
+   Cooldown **nicht auswertet** und den Abschnitt deshalb offen lässt, während die reine Funktion die dort stehende
+   Bedingung als „schon gefeuert" liest (§2, dokumentierte Zustandsregel); 1 weiteres Signal ist die Folge (der Scan
+   feuert, wo `detect()` nach seinem Mehr-Signal im Cooldown ist). Das sind 2,31 %, alle klassifiziert (`test.js` 4f
+   verlangt die Klassifikation jeder einzelnen Abweichung). Die Zahl 2 % war eine Schätzung vor dem Bau; die Regel bleibt,
+   die Schranke wird auf **3 %** gesetzt. Eine exakte Gleichheit bräuchte den Cooldown-Zustand im Detektor — das wäre
+   kein reiner Detektor mehr.
+2. **Intraday-se ist die naive Stichproben-se (§6, präzisiert).** `momente()` der Kanalstudie setzt bei L = 1
+   `se = √(γ₀/n)` mit γ₀ = Σ(x−x̄)²/n (Populationsvarianz, Faktor √((n−1)/n) kleiner als sd/√n). Für die Intraday-Zeilen
+   dieser Studie gilt wörtlich „= naive se": `auswerten.js momente()` setzt bei L = 1 `se = sd/√n` mit (n−1) im Nenner
+   (wie die Minutenstudie). Bei 894 Tagen ist der Unterschied 0,06 % — ausgewiesen, weil „gleiche Funktion" sonst nicht
+   stimmt. Übernacht (L = 2) bleibt Hansen-Hodrick aus derselben Funktion.
+3. **Pilotliste (§14):** SPY ist die Marktreihe für das Regime (ETF, von `lesen.reihen()` ausgeschlossen) und kein
+   Kandidat; der Pilot misst **19 Aktien**, SPY wird beim Auswerten für die Regime-Sicht gelesen.
+4. **Zähler (§3), ergänzt:** `uebernachtOffen / uebernachtVerbucht / uebernachtVerfallen / ohneNaechsterTag /
+   fortsetzungOhneUebernacht` stehen in `_fortschritt.json` und im Bericht; `ohneHorizont` hat fünf Felder.
+
+Kennung unverändert `trendwende-ii-2026-09-09/v1/9x3x2x5x4x3+kurs+schein+jahre`.

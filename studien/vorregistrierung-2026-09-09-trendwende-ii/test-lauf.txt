@@ -1,0 +1,158 @@
+
+== 0. Zellendecoder und Layout
+OK    0a Decoder invertiert K.zelle/K.reiheIndex/K.kandIndex (2000 Stichproben, 0 Fehler)
+OK    0b Layout: 9 Detektoren, 5 Haltedauern (naechste = Uebernacht), 27 Kandidaten, 81 Zellenreihen, 255 Konfigurationen
+OK    0c Kennung trendwende-ii-2026-09-09/v1/9x3x2x5x4x3+kurs+schein+jahre
+OK    0d Zellenspeicher 591 MB je Prozess (Registrierung §10: ≈ 590)
+   (0.0 s)
+
+== 1. POSITIVKONTROLLE - gepflanzte Kante am 1h-Ausstieg wird in Groesse und Richtung wiedergefunden
+OK    1a Kunst-Reihe: 110 Kalendertage, 42900 Kerzen, keine Gerade (sd Minutenrenditen 0.1696 Pp)
+   W7 ohne Pflanzung: 404 Signale auf 90 Tagen
+OK    1b ein schlussbasierter Detektor feuert auf >= 30 Signaltagen der Kunst-Reihe
+OK    1c Umsatzklasse der Kunst-Reihe ist 50-250
+OK    1d Pflanzung am Ausstieg: 370 von 404 Signalen gepflanzt; Signalmenge nach der Pflanzung identisch (404)
+OK    1e gepflanzte Signale tragen die Kante: Mittel 0.5045 Pp bei Soll 0.5000 (n 370; 10 ungepflanzte nahe null: -0.0925)
+OK    1f messeDatei wertet auf 1m 90 Tage (Soll 90), ohne Klasse 20, duenn 0
+OK    1g Signalmenge: messeDatei 404 = naive Nachrechnung 404 (W7 1m)
+OK    1h Netto-Tagesmittel 1h: Zellen 0.4046 Pp (n 380, 90 Tage) = naiv 0.4046 (n 380), |Diff| 0.00e+0
+OK    1i Richtung stimmt: Rohertrag long 0.4855 Pp (n 193), short 0.4922 Pp (n 187) - beide in Signalrichtung positiv
+OK    1j Groesse stimmt: Netto-Tagesmittel 0.4046 Pp bei Soll 0.4146
+OK    1k Gegenprobe: die Pflanzung sitzt nur in der 1h-Ausstiegskerze - 15m -0.0056, 3h 0.0108, schluss -0.0052, naechste -0.0102 Pp bleiben nahe null
+OK    1l Kurszellen: 404 Signale mit Einstieg (naiv 404), Summe 41171.9904 (naiv 41171.9904)
+OK    1m ohne Pflanzung nahe null: Rohertrag je Signal 0.0020 Pp, Tagesmittel 0.0032 (n 380)
+OK    1n Uebernacht ohne Pflanzung: n 400 (< schluss-n 404, letzter Tag offen), Rohertrag -0.0102 Pp nahe null; offen 555
+   (21.5 s)
+
+== 2. PLACEBO A und B auf der Zufallsreihe ohne Pflanzung (alle 15 Zellen ZR x H)
+OK    2a jede Placebo-Zelle hat einen Topf derselben (ZR, H, Tag, Klasse, lebend): 0 ohne
+   Placebo A gegen Topf: 1m/15m -0.0074 (t -1.67, 90 Tage) | 1m/1h -0.0024 (t -0.49, 90 Tage) | 1m/3h -0.0093 (t -1.01, 90 Tage) | 1m/schluss 0.0017 (t 0.35, 90 Tage) | 1m/naechste 0.0012 (t 0.24, 89 Tage) | 5m/15m 0.0040 (t 0.66, 90 Tage) | 5m/1h -0.0016 (t -0.19, 90 Tage) | 5m/3h -0.0138 (t -1.04, 89 Tage) | 5m/schluss -0.0110 (t -1.49, 90 Tage) | 5m/naechste -0.0109 (t -1.46, 89 Tage) | 15m/15m 0.0026 (t 0.25, 89 Tage) | 15m/1h 0.0167 (t 1.02, 89 Tage) | 15m/3h 0.0052 (t 0.30, 80 Tage) | 15m/schluss -0.0034 (t -0.33, 89 Tage) | 15m/naechste -0.0025 (t -0.25, 88 Tage)
+OK    2b Placebo A gepoolt je (ZR, H): |Tagesmittel| < 0,05 Pp und |t| < 3 in allen 15 Zellen
+OK    2c Placebo A: Ziehungen je (Kandidat, Tag) = Signale des Tages in 905 von 905 Paaren
+OK    2d Zaehler placeboAGezogen 2614 = Signale aus den Zellen 2614 = stat.signaleGesamt 2614
+OK    2e Placebo B: je (Kandidat, Tag) hoechstens so viele Ziehungen wie Signale, Fehlbetrag 0 = ohnePartner 0, Richtung nie ueber der der Signale
+OK    2f Placebo B: gezogen 2614 + ohne Partner 0 = Signale 2614
+OK    2g Uebernacht-Zellen: 7743 Beobachtungen (< schluss 7842), am letzten Tag 0 (offen: 555 Beitraege inkl. Topf)
+   (0.0 s)
+
+== 3. GEGENPROBE GETEILTER KURS - Signalschluss als Einstieg erzeugt den Scheineffekt (W7 long am 60-Kerzen-Tief)
+OK    3a W7 hat >= 30 Long-Signale auf der Zufallsreihe (203)
+   W7 long 1m: n 193, richtig 0.0010 Pp, falsch 0.2414 Pp
+OK    3b FALSCH (Einstieg Signalschluss) 0.2414 Pp > +0,05 und 0.2404 ueber RICHTIG - der Scheineffekt entsteht in behaupteter Richtung
+OK    3c RICHTIG (Einstieg Eroeffnung i+1) nahe null: 0.0010 Pp
+OK    3d messen.js-Zelle (W7 1m long 1h) 0.0010 Pp bei n 193 = eigene Rechnung 0.0010 bei n 193
+   (0.1 s)
+
+== 4. DETEKTOR-GLEICHHEIT: W2/W3/W8 gegen die August-Funktionen, W2 gegen signalPraefix, W1a gegen hauptstudie.js detect()
+
+!!! WERTPAPIERART: Referenzkarte vorhanden, aber ohne Eintrag fuer GCI (erster Fall dieses Laufs; weitere werden nicht gemeldet) - solche Symbole fallen STILL aus dem Universum heraus.
+
+OK    4a W2/W3/W8 sind DIESELBEN Funktionsobjekte wie in der August-Tabelle (require, keine Kopie)
+OK    4b W3 gegen Q.einstiegSignal (5m, 19288 Indizes): 32 Signale, 0 Abweichungen
+OK    4b W8 gegen Q.einstiegSignal (5m, 19288 Indizes): 10 Signale, 0 Abweichungen
+OK    4c W2 (5m): jedes der 26 Tabellen-Signale hat dieselbe Richtung wie signalPraefix (Q.trendwechsel auf bars[0..i]); 705 Indizes, 0 Abweichungen
+OK    4d detect() in hauptstudie.js gefunden
+   detect(): 390 Signale; Scan A: 383; gemeinsam 382; nur detect 8, nur Scan 1
+OK    4e W1a zeilengleich zu detect() (AAPL/2024 1m, S 0,5 / F 6): 382 von 390 Signalen identisch (Index und Richtung), Abweichungen 9 = 2.31 % (zulaessig ≤ 3 %, Nachtrag 1; nur die Cooldown-Zustandsregel)
+OK    4f alle 8 detect-Signale, die der Scan nicht hat, liegen in einem Abschnitt, in dem die Bedingung frueher stand (Cooldown-Zustandsregel): 8 erklaert; 1 Scan-Signale ohne detect-Gegenstueck liegen im detect-Cooldown eines solchen Signals: 1 erklaert
+OK    4g Laufregeln (Minuten-Cooldown, Zulaessigkeit je Tag) gegen Kerzen-Cooldown ab dem 21. Tag: 348 gegen 347 Signale, 7 verschieden (2.02 %, nur Tagesgrenze; zulaessig ≤ 5 %)
+   (24.6 s)
+
+== 5. VORFILTER W8 (signalCross) gegen den vollen Aufruf auf 1m, 5m, 15m
+OK    5 W8 1m: 3049 Indizes, 3 Signale (voller Aufruf), 0 Abweichungen
+OK    5 W8 5m: 3225 Indizes, 10 Signale (voller Aufruf), 0 Abweichungen
+OK    5 W8 15m: 3135 Indizes, 14 Signale (voller Aufruf), 0 Abweichungen
+   (9.5 s)
+
+== 6. PRAEFIX-PROBE aller neun Detektoren: signal(bars.slice(0, i+1), i) = signal(bars, i), >= 1.000 Stichproben je Detektor
+OK    6 W1a: 1145 Stichproben, 89 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
+OK    6 W1b: 1143 Stichproben, 88 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
+OK    6 W2: 1110 Stichproben, 52 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
+OK    6 W3: 1081 Stichproben, 22 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
+OK    6 W4: 1070 Stichproben, 11 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
+OK    6 W5: 1279 Stichproben, 251 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
+OK    6 W6: 1265 Stichproben, 275 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
+OK    6 W7: 1300 Stichproben, 309 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
+OK    6 W8: 1127 Stichproben, 77 Signale, 0 Abweichungen zwischen vollem und Praefix-Aufruf
+   (81.6 s)
+
+== 7. KLASSEN, KASSA-HUERDEN (kosten.js, liquide.js, wiki/kosten.md) und SCHEIN-HUERDEN (BERICHT.md)
+OK    7a K.KLASSEN-Grenzen = kosten.js UMSATZ_KLASSEN: 5-50, 50-250, 250-1000, ab1000
+OK    7b klasseIndex: -1 unter 5 Mio $ und bei NaN, Grenzen zur oberen Klasse
+OK    7c Liquide.medianUmsatz = sortiert[n>>1]; UMSATZ_FENSTER 20 = KORB.fenster
+OK    7d huerde (mitte ab 2021) gegen kosten.md "Das K der Kostenformel": 5-50 0.1569, 50-250 0.0854, 250-1000 0.0647, ab1000 0.0449
+OK    7e huerdeSchluss gegen kosten.md "Die Schluss-Huerde je Klasse": 5-50 0.1025, 50-250 0.0540, 250-1000 0.0409, ab1000 0.0329
+OK    7f eroeffnungFaktor gegen kosten.md "Je Klasse x Fenster": 5-50 2.6800, 50-250 2.4600, 250-1000 2.0700, ab1000 1.8100
+OK    7g huerdeFenster: Eroeffnung / mitte / Schluss (Halbtag ab 12:30)
+OK    7h Cent-Boden 100 x 0,005 / Kurs, Vergleich gegen die Huerde der Klasse
+OK    7i BERICHT.md: Tabelle "Produkt | Hebel | 3 h | 1 Tag" gefunden (Zeile 114)
+OK    7j Schein BV 1,0 ATM 60 T: Hebel 9.8, 3 h 0.05, 1 Tag 0.16 = BERICHT.md Zeile "Schein ATM 60 T, BV 1,0" (9,8 / 0,05 / 0,16)
+OK    7j Standard-Schein ATM 21 T: Hebel 16.2, 3 h 0.23, 1 Tag 0.42 = BERICHT.md Zeile "Schein ATM 21 T (Standard)" (16,2 / 0,23 / 0,42)
+OK    7k scheinHuerde: 15m/1h/3h = 3-h-Wert, schluss/naechste = Tageswert (BV 1,0: 0,05 / 0,16; Standard: 0,23 / 0,42)
+OK    7l scheinWerte: Brutto 0,30 − 0,23 = 0,07, t 0,70, obere Grenze 0,266
+   (0.0 s)
+
+== 8. AUGUST-KONSTANTEN gegen messgeschirr.js; Haltedauern
+OK    8a COOLDOWN_MIN 60, MIN_REST_MIN 30 = messgeschirr 1m; DICHTE_MIN 0,8
+OK    8b HALTEDAUERN 15m / 1h / 3h / schluss / naechste (Uebernacht)
+OK    8c Lag fuer momente(): intraday 1 (naiv), Uebernacht 2 (Hansen-Hodrick bis Lag 1)
+   (0.0 s)
+
+== 9. FORTSETZBARKEIT in Kindprozessen (Mini-Archiv, Uebernacht ueber die Jahresgrenze, Fortsetzung, fremde Kennung)
+OK    9a Lauf (a) --max 2: Rueckgabe 0, 2 Dateien, beendet "max erreicht"
+OK    9b Lauf (b) Fortsetzung nach AAPL: 4 Dateien, "vollstaendig"
+OK    9c Lauf (c) am Stueck: 4 Dateien
+OK    9d _zellen.bin (a+b) und (c) BYTEIDENTISCH bis auf den Stand-Schwanz (Summe n 11304) - die Fortsetzung an der Reihengrenze verliert nichts
+OK    9e Uebernacht ueber die Jahresgrenze: offen 2214, in der Folgedatei verbucht 1110, verfallen 1104 (letzte Datei je Reihe), Fortsetzungen ohne Uebergabe 0
+OK    9f Topf-Zelle naechste am letzten 2023-Tag (1m, Klasse 50-250, nicht lebend, beide Reihen): n 720 = naiv 720, Summe -855.4029 = naiv -855.4029 (Ausstieg = Eroeffnung des ersten 2024-Tages, AAPL 100.2145)
+OK    9g Fortsetzung mitten in MSFT: fortsetzungOhneUebernacht 1, alle Nicht-Uebernacht-Zellen identisch mit (c), Uebernacht-Zellen um 114 Beobachtungen (Topf 456) kleiner - gezaehlt, nicht geschaetzt
+OK    9h manipulierte Kennung: Rueckgabewert 4 und Meldung "andere Konfiguration"
+   (31.1 s)
+
+== 10. RANDREGELN ueber messeDatei (Fenster, Klasse < 5 Mio $, duenner Tag, Halbtag, Uebernacht-Luecke)
+OK    10a Kerzen an 3 Tagen nach 2026-08-31: tageOhneKalender 3, keine Zelle ausserhalb
+OK    10b Reihe mit ~1 Mio $ Tagesumsatz: 0 Zellen, 0 Topf, tageOhneKlasse 30
+OK    10c duenner Tag 2024-03-08: tageDuenn je ZR 1/1/1, kein Topf an diesem Tag, 9 dichte Tage gewertet
+OK    10d fehlender Kalendertag 2024-03-11: Vortag ohne Uebernacht-Topf (0), ohneNaechsterTag 489, letzter Tag offen 474
+OK    10e Halbtag 2024-07-03: "ab 12:30" 0 Zellen; "12:00" auf 1m: 15m 1, 1h 0, 3h 0 (kein Ausstieg vor 13:00), schluss 1, naechste 1 (Beobachtungen: 1/0/0/1/1)
+   (0.6 s)
+
+== 11. ET-TAG = UTC-TAG (AAPL 1m) und WERTPAPIERART (L.reihen nur CS/ADRC)
+OK    11a 97740 Kerzen: L.tagVon = ET-Datum, 0 Abweichungen
+OK    11b 7299 Aktien-Reihen, ETF ausgeschlossen 694, SPY nicht darunter (Marktreihe nur fuers Regime)
+   (0.1 s)
+
+== 12. JAHRESSCHEIBEN gegen Handrechnung, TREND, AKTUALITAETS-TOR und VORWAERTSTEST an konstruierten Faellen
+OK    12a Jahresscheiben 2016..2026 und letzte 250: nTage, Mittel, se, t = Handrechnung (0 Fehler; letzte 250: u 0.0966 = 0.0966)
+OK    12b Trend: Steigung 0.0100 Pp/Jahr = 0,01 (11 Jahre, se 5.0e-6, t 1999.24)
+OK    12c Jahre mit < 10 Signaltagen sind "zu duenn" (ohne t); Trend mit < 4 vollen Jahren = null
+OK    12d "2025 gestorben": Entdeckung t 6, Bestaetigung t 5, letzte 250 Tage u −0,03 / t −2,5 => nicht belegt: Aktualitaets-Tor (kein handelbar)
+OK    12e lebendig (letzte 250: u +0,05, t 1,0): belegt, handelbar, mit Schein BV 1,0 ja (0,0654 − 0,05 > 0), Standard nein
+OK    12f "nur im letzten Jahr lebendig" (Tor 1 verfehlt, letzte 250: 60 Tage, u +0,06, t 2,4): kein Kandidat, Kandidat fuer den Vorwaertstest
+OK    12g < 10 Signaltage in den letzten 250: Tor nicht pruefbar => nicht belegt: Aktualitaets-Tor
+OK    12h Short: belegt, als Aktie "nein (Leihe)", mit Schein BV 1,0 handelbar (Put braucht keine Leihe)
+   (0.0 s)
+
+== 13. HANSEN-HODRICK L = 2 (Uebernacht) und REGIME (SPY EMA200 gegen naive Rechnung)
+OK    13a MA(1)-Reihe: L=1 se = naiv (Kanal-momente selbst: Faktor sqrt((n-1)/n)); L=2 se_HH/se_naiv = 1.42 (Soll ≈ √2 = 1,41)
+OK    13b unabhaengige Reihe: L=2 se_HH/se_naiv = 1.01 ≈ 1
+OK    13c Regime = naive EMA200 (0 Abweichungen), Vorlauf 200 Tage unbekannt, ueber 1388 / unter 1092
+   (0.0 s)
+
+== 14. KONSTRUKTIONSFAELLE W4, W5, W6 und RSI = quant.js rsi
+OK    14a W4: Klimax-Kerze => short; davor 0; mit 2,9x Volumen oder Schluss ueber der Vorspanne kein Signal
+OK    14b W5: tieferes Hoch (101,5 < 102) an der Bestaetigungskerze 30 => short, nicht an 29/31; hoeheres Hoch => kein Signal
+OK    14c W6: Anstieg 100 -> 102, Ruecklauf erreicht 50 % erstmals bei 100,9 (Kerze 28) => short genau dort, nicht davor/danach
+OK    14d RSI(14)-Reihe = Q.rsi an 1000 Indizes (0 Abweichungen); unter 14 Kerzen null/NaN
+   (0.0 s)
+
+== 15. KLINKEN: kein Netz, kein Schluessel, kein Schreiben ins Archiv, kein Yahoo; Pilot heisst nie voll
+OK    15a keine Netzmodule, keine Schluessel, kein Yahoo in konfig.js, detektoren.js, messen.js, auswerten.js, hochrechnung.js
+OK    15b kein Schreibaufruf mit Archivpfad (ORTE/archivWurzel) in den Werkzeugen
+OK    15c --reihen setzt pilot=true; auswerten.js schreibt dann PILOT-ERGEBNIS.md, nie ERGEBNIS.md
+OK    15d nacht.cmd zeigt auf diesen Ordner, schtasks-Zeilen ohne &&, Checkpoint 200 / Wachhund 900
+OK    15e SE_ERWARTET_NAECHSTE null (null bis zum Piloten, danach aus PILOT-ERGEBNIS.md)
+OK    15f Normalquantile z_Bonf(1/5/10/20) = 1,96 / 2,58 / 2,81 / 3,02
+   (0.0 s)
+
+101 OK, 0 FEHLT, 0 UEBERSPRUNGEN
