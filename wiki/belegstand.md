@@ -270,3 +270,26 @@ Woher die +29 Pp dann kommen, zeigt der **Endlauf** (Rendite der letzten 60 Balk
 **Lesart:** Die Delisting-Gewinne der Kanalstudie sind der *Anlauf* zur Übernahme, nicht der Ausstieg — und ihm steht der Endlauf der Insolvenzen mit −73 Pp gegenüber. Wer die Verschwundenen aus einer Messung lässt, schneidet beide Enden weg und sieht weder das eine noch das andere. Das ist die quantitative Fassung von [[ueberlebensverzerrung-ist-der-killer]]. **Für Strategien folgt daraus nichts Handelbares:** die Prämie liegt vor dem Ereignis, und wer sie fangen will, misst Ankündigungen, nicht Kurse.
 
 **Zwei Nebenbefunde, die Messungen betreffen:** (1) 153 Insolvenzen standen im Maßnahmen-Archiv als „Umbenennung" (Q-Kürzel wie AMRS→AMRSQ) — genau die Fälle mit −73 Pp Endlauf; wer Kürzelwechsel pauschal als „lebt weiter" führt, verliert sie. (2) Am **21.03.2025 enden 77 Reihen auf einmal** (nächsthäufigster Tag: 13) — zu gutem Teil eine Grenze der Sammlung, kein Marktereignis; 37 davon sind unbelegt.
+
+### W7 (RSI-Divergenz) hat drei Artefakt-Erklärungen überlebt — Pilotstand, kein Beleg (12.09.2026)
+
+**Achtung, das sind 19 Aktien.** Der Pilot entscheidet über das Messgerät, nie über die Kante; der Vollauf über 7.299 Aktien läuft seit dem 12.09. 21:52. Trotzdem gehört der Stand hierher, weil es der erste Fall im Projekt ist, in dem eine Regel alle vorregistrierten Gegenproben übersteht.
+
+Geprüft und **widerlegt** wurden drei Erklärungen, jede vom PM vermutet und jede an den bestellten Zahlen gestorben:
+
+| Erklärung | Messung | Befund |
+|---|---|---|
+| Spannen-Rückprall am Signalschluss | Einstiegslücke je Kurszelle (Nachtrag 3) | 0,004 Pp = 2–6 % des Bruttos |
+| Uhrzeit des Vergleichstopfs | Haltezeit Kandidat gegen Topf (Nachtrag 4) | Versatz in **beiden** Richtungen +0,19 ⇒ müsste den Short **bestrafen**; Beitrag ≈ 1 % von u |
+| Verzerrter Einstiegskurs | Einstieg 1 und 5 Kerzen später, Ausstieg fest (Nachtrag 5) | 18 von 24 Zeilen „widerlegt"; erste Kerze auf 1m in 9 von 10 Zeilen **negativ** |
+
+**Stärkste Konfiguration: W7, 5m, long, 3 h Haltedauer.** u in jedem Kalenderjahr positiv:
+
+| Jahr | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 | letzte 250 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| u (Pp) | 0,085 | 0,035 | 0,134 | 0,101 | 0,281 | 0,178 | 0,267 | 0,156 | 0,103 | 0,121 | 0,080 | **0,110** |
+| t | 4,13 | 2,16 | 4,81 | 4,04 | 4,99 | 5,32 | 6,63 | 4,97 | 3,36 | 3,81 | 2,32 | **3,52** |
+
+Bestätigungszeitraum: brutto 0,1433 · **netto (Aktie) 0,0842** · u 0,1138 bei t 7,35 · Schein BV 1 netto 0,0933 (t 4,04) · Standard-Schein zu. Aktualitäts-Tor bestanden, Lücken-Tor bestanden, Uhrzeit-Tor gilt nicht (feste Haltedauer).
+
+Die zweite belegte Zeile (W7 1m long bis Schluss, u 0,0359 bei t 6,35) ist in den **letzten 250 Tagen schon netto negativ** (u 0,0132 bei t 1,19, netto −0,0423) — sie zeigt, wie schnell das kippt. Offen bleibt nach dem Vollauf der **mitverzögerte Topf** (Placebo B und Topf laufen bisher bei k = 0 mit).
