@@ -879,3 +879,118 @@ wird das nicht gemessen und nicht behauptet.
 **`1,5` ⇒ [1, 5]**. Jeder andere Wert ist ein **harter Abbruch mit Meldung** — nie stillschweigend etwas anderes.
 Die Kennung trägt die Liste: `+verzoegert1` bzw. `+verzoegert1-5`. `nacht.cmd` setzt `TW2_VERZOEGERT=1` (gequotet,
 weil `cmd.exe` am Komma trennt) und weist in einer Protokollzeile aus, welche k **tatsächlich** laufen.
+
+## 22. NACHTRAG 6 — 13.09.2026, Auswertung je Umsatzklasse; **nachträglich, hypothesenerzeugend, kein Beleg**
+
+### 6.0 Der Status dieser Frage — zuerst und unmissverständlich
+
+Der Vollauf ist durch und **ausgewertet**: k₁ = 0, k₂ = 0, **belegt 0** über alle 225 Konfigurationen. Erst
+**danach** entsteht die Frage, ob dieses Nein an der **Kassa-Hürde der illiquiden Masse** hängt — auf 5m liegen
+26,3 von 44,0 Mio Signalen in der billigsten Klasse `5-50` (Hürde 0,1569 Pp je Umlauf), nur 0,6 Mio in `ab1000`
+(0,0449). Der gepoolte Wert `K_kand` ist damit fast der Wert der illiquiden Masse.
+
+Diese Auswertung ist deshalb **post hoc**. Sie ist **hypothesenerzeugend, nicht bestätigend**. Es gilt, vor der
+ersten Zahl festgelegt:
+
+1. **Die Testzahl steigt von 225 auf 225 × 4 = 900.** Die Bonferroni-Schwelle steigt entsprechend.
+2. **Kein Ergebnis in einer Klasse ist „belegt".** Das höchste erreichbare Urteil einer Klassenzeile heißt
+   **„Kandidat für den Vorwärtstest ab 2026-09-01"**. Das Wort „belegt" kommt in der Klassentafel nicht vor.
+3. **Alle vier Klassen werden berichtet**, auch die leeren und die schlechten — nicht nur die, die gut aussieht.
+4. **Es wird nichts neu gemessen.** `_zellen.bin` der acht Vollauf-Ordner wird **nur gelesen**; kein Archivzugriff,
+   keine neue Kerze, kein Detektorlauf. `voll-0/ERGEBNIS.md` und `voll-0/ergebnis.json` bleiben **unberührt**.
+
+### 6.1 Was gerechnet wird — dieselben Größen, nur mit `nurKlasse`
+
+Die Zellen tragen die Umsatzklasse seit jeher als Dimension (`N_K` = 4). `tagesreihe(..., nurKlasse)` existiert im
+Messgerät bereits. Je Konfiguration (225) und je Klasse (4) werden **genau dieselben** Größen gebildet wie in der
+Haupttafel, nur über die Zellen **einer** Klasse:
+
+- `u = dir·(r_long − Topf) − K` mit dem **Topf derselben Klasse** — die Topfzelle trägt den Klassenindex, die
+  Klassentrennung greift also auf beiden Seiten der Differenz. Das ist ausdrücklich **kein** Vergleich der Klasse
+  gegen den gepoolten Topf.
+- `K_kand` der Klasse ist konstruktionsgemäß exakt die Hürde der Klasse: 0,1569 / 0,0854 / 0,0647 / 0,0449 Pp
+  (`konfig.js` → Minutenstudie `KLASSEN`). Der Bericht weist sie aus und prüft sie gegen `konfig.js`.
+- Entdeckung (`t < iBes`), Bestätigung (`t ≥ iBes` **und** `t ≥ iReg`), letzte 250 Tage, Jahresscheiben, Schein BV1
+  und Standard-Schein: dieselben Filter, dieselben Funktionen, dieselbe `se` (`momente`, intraday L = 1, übernacht
+  Hansen-Hodrick L = 2).
+- **Tor 1** je Klassenzeile: `u_Entdeckung > 0` und `u_Entdeckung ≥ 4 · MDE_B` mit `MDE_B = 2 · se_B` **derselben
+  Klassenzeile**. `delta80 = (z + 0,8416) · se_B`; **Tor 2**: `delta80 < K_kand` der Klasse.
+
+### 6.2 Die Schwelle — beide Zahlen, die strengere entscheidet
+
+Der Hauptlauf benutzt die **adaptive** Bonferroni-Schwelle `z_Bonf(k₁)` über die Zahl der Kandidaten. Der Auftrag
+verlangt die Schwelle über **900 Tests**. Beide werden ausgewiesen:
+
+- `z_adaptiv = z_Bonf(max(k₁ᴷ, 1))` mit `k₁ᴷ` = Zahl der Klassenzeilen, die Tor 1 bestehen — dieselbe Mechanik wie
+  im Hauptlauf, damit die Zahlen vergleichbar bleiben;
+- `z_900 = z_Bonf(900)` = Normalquantil von `1 − 0,025/900` — die Schwelle über alle 900 Tests.
+
+**Für das Etikett „Kandidat für den Vorwärtstest" gilt die strengere der beiden**, also `max(z_adaptiv, z_900)`.
+`delta80` wird mit derselben strengeren Schwelle gerechnet und daneben mit `z_adaptiv` ausgewiesen.
+
+### 6.3 Die Pflichttabelle vorne
+
+Vor jeder Detailtafel steht: je Klasse die **Zahl der Konfigurationen mit Tor 1 bestanden** (aus 225) und die
+**beste Zeile je Klasse** mit allen Kernzahlen. Dazu eine Zeile, die die Ausgangsfrage direkt beantwortet:
+**lebt W7 5m long 3h in der Klasse `ab1000` (Hürde 0,0449) oder `250-1000` (0,0647)?** Wenn ja, mit welchem `u`
+und welchem `t`; wenn nein, **wie weit daneben** — als Abstand zu Tor 1 in Einheiten von `MDE_B` und als Abstand
+`u − K_kand` in Pp. Alle vier Klassen von W7 5m long 3h stehen als eigener Block da, nicht nur die beste.
+
+### 6.4 Detailtafel `ERGEBNIS-KLASSEN.md`
+
+Neue Datei im Studienordner (nicht in `voll-0`, damit `voll-0/ERGEBNIS.md` unberührt bleibt und die Tafel
+versionierbar ist). Je Konfiguration **und je Klasse** eine Zeile mit: nTage, nSig, brutto, `K_kand`, `u`, `se`,
+`t`, `MDE_B`, Tor 1, `delta80`, Bestätigung, letzte 250 Tage, Schein BV1, Schein Standard. **Sortiert nach dem
+`t` der Entdeckung**, absteigend. 900 Zeilen; Zeilen ohne Signal in der Klasse stehen als solche da und werden
+gezählt, nicht weggelassen.
+
+### 6.5 Placebo je Klasse — beide Kriterien getrennt
+
+Das gepoolte Placebo-Band A je (Zeitrahmen, Haltedauer) wird zusätzlich **je Klasse** gebildet: 3 × 5 × 4 = 60
+Bänder. Im Kopf stehen **Größe des Mittels** und **t getrennt**, jedes mit seiner Schranke (|t| < 3; intraday
+|Mittel| < 0,045 Pp, übernacht |Mittel| < 3 · 0,0038). Wo ein Band **nur über t** fällt, steht das ausdrücklich als
+solches da, mit dem **Verhältnis Mittel/Schranke**. Hintergrund ist der Befund des Hauptlaufs: 3 von 15 gepoolten
+Bändern fielen allein über `t`, bei Mitteln von −0,0005 bis −0,0013 Pp gegen eine Schranke von 0,045 — ein
+Fünfunddreißigstel. Bei 41–71 Mio Signalen ist |t| < 3 keine sinnvolle Schranke mehr; das ist ein Methodenbefund,
+kein Urteilsgrund, und wird als solcher berichtet.
+
+### 6.6 Jahresscheiben und letzte 250 Tage
+
+Für **jede Zeile, die in ihrer Klasse Tor 1 besteht**, stehen die Jahresscheiben 2016–2026 und die Scheibe „letzte
+250 Tage" vollständig da (dieselbe Pflichttabelle wie im Hauptbericht, §9a). Ohne sie wüssten wir wieder nicht, ob
+eine Kante noch lebt. Besteht keine Zeile Tor 1, wird das als Zahl 0 ausgewiesen und die Tabelle entfällt.
+
+Für dieselben Zeilen werden zusätzlich das **Aktualitäts-Tor**, die **Einstiegslücke** und der
+**Uhrzeit-Versatz** je Klasse gerechnet (die Kurs- und Haltezeitzellen tragen den Klassenindex). Sie entscheiden
+hier nichts — kein Klassenergebnis wird „belegt" —, sondern sagen, ob ein Vorwärtstest-Kandidat überhaupt eine
+saubere Zeile wäre.
+
+### 6.7 Prüfungen — vorab festgelegt, alle im Bericht
+
+1. **Positivkontrolle Zerlegung, exakt.** Je Konfiguration und Tag muss gelten
+   `u_gepoolt,t = Σ_k mN_{k,t} · u_{k,t} / Σ_k mN_{k,t}` (dieselbe Identität für `brutto` mit `n`). Ausgewiesen wird
+   die **maximale absolute Abweichung** über alle Konfigurationen und Tage. Erwartung: Fließkommarauschen
+   (< 1e-9). Eine größere Abweichung ist ein **Abbruchgrund**, kein Befund.
+2. **Positivkontrolle gegen den Hauptlauf.** Dasselbe neue Werkzeug rechnet die **gepoolte** Tafel (alle Klassen)
+   und hält sie Zeile für Zeile gegen `voll-0/ergebnis.json`: nTage, nSig, brutto, `u`, `se`, `t`, `K_kand`,
+   `MDE_B`, Tor 1. Erwartung: **bitgleich** bis auf Fließkommarauschen. Das ist der Nachweis, dass der neue
+   Lesepfad derselbe ist — ohne ihn ist keine Klassenzahl zu glauben.
+3. **Aggregat-Abweichung.** Zusätzlich wird die **signalgewichtete** Rückaddition der Klassenmittel gegen das
+   gepoolte Mittel gestellt. Diese Zahl ist **nicht** null (die Tagesgewichte wandern), und genau deshalb wird sie
+   ausgewiesen statt verschwiegen: sie misst, wie stark der Klassenmix über die Zeit schwankt.
+4. **Hürde gegen `konfig.js`.** Die vier `K_kand` der Tafel werden gegen `KLASSEN[k].huerde` geprüft.
+5. **Kennung.** Die acht Vollauf-Ordner tragen `…+verzoegert1`; der Auswertungslauf braucht deshalb
+   `TW2_VERZOEGERT=1`, sonst bricht die Kennungsprüfung ab. Dafür gibt es `auswerten.cmd`, damit der nächste sich
+   das nicht wieder einfängt.
+6. **Die alten 147 Prüfungen** aus `test.js` bleiben grün (`TW2_VERZOEGERT=1`).
+
+### 6.8 Was diese Auswertung nicht sagen kann
+
+Sie kann **kein** Nein des Hauptlaufs aufheben. Findet sie in einer liquiden Klasse eine Zeile, die Tor 1 und Tor 2
+besteht, ist das eine **Hypothese für einen Vorwärtstest ab 2026-09-01** — mit vorab festgelegter Klasse,
+Konfiguration und Richtung, gemessen an neuen Tagen. Findet sie nichts, ist die Erklärung „die Hürde der
+illiquiden Masse hat W7 erschlagen" **widerlegt**, und das gepoolte Nein steht ohne diesen Vorbehalt da.
+
+Die Klassen sind außerdem **keine unabhängigen Stichproben derselben Kante**: dieselbe Reihe wechselt über die
+Jahre die Klasse (`UMSATZ_FENSTER` = 20 Balkentage), und die liquiden Klassen sind dünn besetzt. Ein Fund in einer
+dünnen Klasse ist die **schwächste** Art von Fund, die diese Studie hergeben kann.
