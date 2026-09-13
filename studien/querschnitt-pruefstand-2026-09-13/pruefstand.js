@@ -224,7 +224,13 @@ function lauf(T, rangFn, opt) {
     var pf = {};
     ['long', 'kurz', 'uni'].forEach(function (key) {
       var mitglieder = key === 'long' ? lang : key === 'kurz' ? kurz : uni;
-      pf[key] = halte(T, mitglieder, a, aEnde, totalverlust, z);
+      /* Eigener Zaehler je Portfolio: "Tote im gehaltenen Dezil" ist eine andere Zahl als "Tote im
+       * Universum", und §3.6 berichtet die erste. Ein gemeinsamer Zaehler haette beide vermischt. */
+      var zz = { tote: 0, toteTotalverlust: 0, luecken: 0 };
+      pf[key] = halte(T, mitglieder, a, aEnde, totalverlust, zz);
+      pf[key].zaehler = zz;
+      if (key === 'long') { z.tote += zz.tote; z.toteTotalverlust += zz.toteTotalverlust; z.luecken += zz.luecken; }
+      else { z['tote_' + key] = (z['tote_' + key] || 0) + zz.tote; }
     });
     /* Umschlag und Kosten je Portfolio (§2.5) */
     var kosten = {};

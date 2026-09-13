@@ -1,10 +1,77 @@
 {
- "stand": "2026-09-13T22:19:46.085Z",
+ "stand": "2026-09-13T22:26:54.130Z",
  "aus": "voll",
  "kunst": "kunst",
- "n": 9,
+ "n": 31,
  "rot": 0,
  "abschnitte": [
+  {
+   "nr": 5,
+   "titel": "Universum an drei Stichtagen gegen eine unabhaengige Rechnung (Rohpanel gelesen)",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "Universum an 3 Stichtagen identisch: 3",
+     "extra": ""
+    },
+    {
+     "ok": true,
+     "text": "ohne Cent-Boden 297 >= mit 215",
+     "extra": "Positivkontrolle des Schnitts"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 7,
+   "titel": "Umschlag und Kostenabzug von Hand an EINER Umschichtung",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "Umschlag 0.400000",
+     "extra": "von Hand 0,5 * (4*0,1 + 4*0,1) = 0,400000"
+    },
+    {
+     "ok": true,
+     "text": "Kosten 0.02291000 Pp",
+     "extra": "von Hand 0.02291000 Pp"
+    },
+    {
+     "ok": true,
+     "text": "voller Umlauf kostet 0.064700 Pp",
+     "extra": "Huerde der Klasse 250-1000 = 0.0647"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 9,
+   "titel": "se: unabhaengige Rechnung und ein Satz, an dem HH und naiv verschieden ausfallen MUESSEN",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "naive se 0.0264020125 gegen Handrechnung 0.0264020125"
+    },
+    {
+     "ok": true,
+     "text": "HH/naiv = 1.949 bei rho = 0,6",
+     "extra": "theoretisch ~2.00 - ohne diesen Fall prueft der Abschnitt nichts"
+    },
+    {
+     "ok": true,
+     "text": "HH trifft die Theorie auf 2.6 % genau"
+    },
+    {
+     "ok": true,
+     "text": "weisses Rauschen: HH/naiv = 1.007",
+     "extra": "Gegenprobe zu (b)"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
   {
    "nr": 10,
    "titel": "Die drei Kontrollen am Kunstsatz (Maschine mit bekannter Antwort)",
@@ -52,6 +119,86 @@
      "ok": true,
      "text": "vor 2020 (dort gibt es keine Kante): -0.0251 Pp",
      "extra": "Gegenprobe - waere sie hier auch gross, misst der Rahmen theta statt der Kante"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 11,
+   "titel": "Leck-Sperrklinke: meldet das Leck UND laesst die saubere Rangfunktion in Ruhe",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "Leck-Probe: 81152 Verstoesse gemeldet",
+     "extra": "null waere eine kaputte Klinke"
+    },
+    {
+     "ok": true,
+     "text": "Lauf als UNGUELTIG markiert"
+    },
+    {
+     "ok": true,
+     "text": "Klinke nennt Beispiele: K000@2017-01-03 (erlaubt bis 2016-12-30)"
+    },
+    {
+     "ok": true,
+     "text": "saubere Rangfunktion: 0 Verstoesse",
+     "extra": "Gegenprobe - eine Klinke, die immer meldet, meldet nichts"
+    },
+    {
+     "ok": true,
+     "text": "sauberer Lauf ist gueltig"
+    },
+    {
+     "ok": true,
+     "text": "Orakel OHNE Schluessel wird gemeldet: 81152 Verstoesse"
+    },
+    {
+     "ok": true,
+     "text": "Orakel MIT Schluessel: 0 Verstoesse, gueltig"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 12,
+   "titel": "Jahresscheiben addieren sich zum Gesamtzeitraum",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "Perioden in Jahresscheiben 493 = Gesamt 493"
+    },
+    {
+     "ok": true,
+     "text": "gewichtetes Mittel der Jahre -0.0284142244 = Gesamtmittel -0.0284142244"
+    },
+    {
+     "ok": true,
+     "text": "Regimeschnitt 85 + 408 + 0 = 493"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 13,
+   "titel": "Sperrklinke: kein Universumskriterium liest `rendite` (Ausschluss auf die Zielgroesse)",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "Zugriffe auf rendite/renditeOC im Universumsfilter: 0",
+     "extra": ""
+    },
+    {
+     "ok": true,
+     "text": "Positivkontrolle: die Klinke findet einen eingebauten Zugriff (1)"
+    },
+    {
+     "ok": true,
+     "text": "nur Datenqualitaets-Marken im Filter: M_QUELLE_REIN,M_STEMPEL_TAG,M_MASSNAHME_NAH,M_DICHTE_OK",
+     "extra": ""
     }
    ],
    "rot": 0,
