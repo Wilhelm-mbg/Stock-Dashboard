@@ -59,6 +59,8 @@ Der Wrapper macht `cd /d <Repo>` und leitet die Ausgabe in eine Logdatei; kein `
 
 **Kein Fenster mehr (12.09.2026):** alle Studien-Aufgaben und der Nachlauf rufen ihre .cmd über `powershell.exe -NoProfile -WindowStyle Hidden -Command "& <pfad>\nacht.cmd k/8 1m; exit $LASTEXITCODE"` auf — nichts zu schließen. Ein von Hand beendeter Lauf zeigt in der Aufgabenplanung 0x800710E0 („vom Operator abgelehnt").
 
+**Ein Lauf gilt erst als gestartet, wenn die erste Ausgabedatei auf der Platte liegt.** Prozessliste und Fortschrittsprotokoll beweisen das nicht (siehe Fehlerform vom 14.09.). Nach dem Start also warten, bis der erste Prüfpunkt geschrieben ist, und die Datei mit Größe und Zeitstempel ansehen. Dasselbe gilt für den Abschluss: nicht „der Prozess ist weg", sondern die Endmeldung **und** die Datei.
+
 **Aufgaben anlegen: `powershell -File` trennt am Komma wie cmd.exe.** `-File skript.ps1 -Teile 1,2,3,4,5,6,7` kam als **eine** Zahl `1234567` an; die Aufgabe lief an, meldete „0 Reihen" und Rückgabewert 0 — ein Lauf über nichts, der wie Erfolg aussieht. Richtig ist `-Command` mit einer Schleife im Skript selbst (`foreach ($k in 1..7)`), oder je ein Aufruf pro Wert. Gegenprobe ist immer die **START-Zeile im Laufprotokoll**: sie nennt die Reihenzahl des Teils.
 
 **Lange Läufe und Abmelden:** die Studien-Aufgaben laufen „nur bei Anmeldung" — ein Abmelden oder Ausschalten (auch Schnellstart) beendet alle Teile (08.09. 20:42, 1m-Lauf). Abmeldefest (S4U) ließ sich ohne Adminrechte nicht registrieren; **solange ein Lauf läuft: nicht abmelden, nicht ausschalten.** Wilhelm kann die Aufgaben in der Aufgabenplanung selbst auf „unabhängig von der Anmeldung" stellen (Kennwort). Laufzeitgrenze der Aufgaben jetzt 7 Tage statt 3.
