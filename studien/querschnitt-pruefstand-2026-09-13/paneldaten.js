@@ -184,8 +184,10 @@ function lauf(a) {
   if (a.max) meine = meine.slice(0, a.max);
   var ordner = path.join(a.aus, 'teil-' + (a.teil ? a.teil.k : 0));
   fs.mkdirSync(ordner, { recursive: true });
-  var log = fs.createWriteStream(path.join(ordner, '_lauf.log'), { flags: 'a' });
-  function sag(s) { var z = new Date().toISOString() + ' ' + s; log.write(z + '\n'); process.stdout.write(z + '\n'); }
+  /* Anhaengen statt Schreibstrom: der Strom materialisierte die Datei nie, und der einzige Laufnachweis
+   * war die umgeleitete Standardausgabe. Ein Lauf muss auf der Platte sichtbar sein, waehrend er laeuft. */
+  var logPfad = path.join(ordner, '_lauf.log');
+  function sag(s) { var z = new Date().toISOString() + ' ' + s; try { fs.appendFileSync(logPfad, z + '\n'); } catch (e) { /* Ordner weg: Ausgabe reicht */ } process.stdout.write(z + '\n'); }
   sag('START Teil ' + (a.teil ? a.teil.k + '/' + a.teil.n : 'ganz') + ' | Reihen ' + meine.length + ' | Kennung ' + K.KONFIG_KENNUNG);
 
   var z = { reihen: 0, zeilen: 0, dateien: 0, bytes: 0, kerzenGesehen: 0, stempelkerzen: 0, stempeltage: 0,
@@ -254,7 +256,7 @@ function lauf(a) {
   z.jahre = Object.keys(jeJahr).map(function (j) { return { jahr: +j, n: jeJahr[j].n }; }).sort(function (x, y) { return x.jahr - y.jahr; });
   fs.writeFileSync(path.join(ordner, '_teil.json'), JSON.stringify(z, null, 1));
   sag('FERTIG | Reihen ' + z.reihen + ' | Zeilen ' + z.zeilen + ' | ' + z.sekunden.toFixed(0) + ' s');
-  log.end();
+
 }
 
 /* ---------- Vereinen ---------- */

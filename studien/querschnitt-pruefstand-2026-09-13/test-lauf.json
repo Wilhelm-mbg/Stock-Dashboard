@@ -1,204 +1,122 @@
 {
- "stand": "2026-09-13T22:26:54.130Z",
+ "stand": "2026-09-13T23:35:38.201Z",
  "aus": "voll",
  "kunst": "kunst",
- "n": 31,
+ "n": 16,
  "rot": 0,
  "abschnitte": [
   {
-   "nr": 5,
-   "titel": "Universum an drei Stichtagen gegen eine unabhaengige Rechnung (Rohpanel gelesen)",
+   "nr": 1,
+   "titel": "Panel-Zeilenzahl gegen die Archivdateien (Manifest)",
    "pruefungen": [
     {
      "ok": true,
-     "text": "Universum an 3 Stichtagen identisch: 3",
+     "text": "Archivdateien der Panelreihen: 45107",
+     "extra": "erwartet > 40.000"
+    },
+    {
+     "ok": true,
+     "text": "Panelzeilen 9899585 <= Manifest-Tage 9911812",
+     "extra": "Verhaeltnis 0.9988"
+    },
+    {
+     "ok": true,
+     "text": "Panel deckt 99.9 % der Manifest-Tage",
+     "extra": "unter 90 % waere ein stiller Verlust"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 2,
+   "titel": "Stichprobe 20 Reihen: Schluss, Eroeffnung, Rendite, Umsatz gegen die Minutendateien",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "Handrechnungen ausgefuehrt: 60",
+     "extra": "Positivkontrolle: eine Null hier waere ein toter Test"
+    },
+    {
+     "ok": true,
+     "text": "Abweichungen Schluss/Eroeffnung/Umsatz: 0",
      "extra": ""
-    },
-    {
-     "ok": true,
-     "text": "ohne Cent-Boden 297 >= mit 215",
-     "extra": "Positivkontrolle des Schnitts"
     }
    ],
    "rot": 0,
    "fehler": null
   },
   {
-   "nr": 7,
-   "titel": "Umschlag und Kostenabzug von Hand an EINER Umschichtung",
+   "nr": 3,
+   "titel": "Splitfaktoren: COKE 2016 roh 180,40 $ (nicht 18,04), MNST-Split 2026 Faktor 2",
    "pruefungen": [
     {
      "ok": true,
-     "text": "Umschlag 0.400000",
-     "extra": "von Hand 0,5 * (4*0,1 + 4*0,1) = 0,400000"
+     "text": "COKE 2016-01-04 im Panel"
     },
     {
      "ok": true,
-     "text": "Kosten 0.02291000 Pp",
-     "extra": "von Hand 0.02291000 Pp"
+     "text": "COKE 2016-01-04 rohe Eroeffnung 180.4000 $",
+     "extra": "Soll 180,40 - der bekannte Fall"
     },
     {
      "ok": true,
-     "text": "voller Umlauf kostet 0.064700 Pp",
-     "extra": "Huerde der Klasse 250-1000 = 0.0647"
+     "text": "COKE 2016-01-04 bereinigte Eroeffnung 18.0400 $",
+     "extra": "Soll 18,04 - beide Skalen muessen stimmen"
+    },
+    {
+     "ok": true,
+     "text": "MNST um den Split 2026-08-11 im Panel"
+    },
+    {
+     "ok": true,
+     "text": "MNST Faktorsprung 2.000000",
+     "extra": "Soll genau 2,000000"
+    },
+    {
+     "ok": true,
+     "text": "MNST Rendite am Ex-Tag -0.4047 Pp",
+     "extra": "ein Sprung von -50 Pp waere die nicht angewandte Bereinigung"
     }
    ],
    "rot": 0,
    "fehler": null
   },
   {
-   "nr": 9,
-   "titel": "se: unabhaengige Rechnung und ein Satz, an dem HH und naiv verschieden ausfallen MUESSEN",
+   "nr": 4,
+   "titel": "Dollarumsatz ist gegen die Bereinigung invariant (an Reihen MIT Massnahme)",
    "pruefungen": [
     {
      "ok": true,
-     "text": "naive se 0.0264020125 gegen Handrechnung 0.0264020125"
+     "text": "Reihen mit Bereinigungsfaktor > 1,5 gefunden: 6",
+     "extra": "Positivkontrolle - ohne sie prueft der Abschnitt nichts"
     },
     {
      "ok": true,
-     "text": "HH/naiv = 1.949 bei rho = 0,6",
-     "extra": "theoretisch ~2.00 - ohne diesen Fall prueft der Abschnitt nichts"
-    },
-    {
-     "ok": true,
-     "text": "HH trifft die Theorie auf 2.6 % genau"
-    },
-    {
-     "ok": true,
-     "text": "weisses Rauschen: HH/naiv = 1.007",
-     "extra": "Gegenprobe zu (b)"
+     "text": "Umsatz roh gegen bereinigt: 0 Abweichungen",
+     "extra": "Kurs geteilt x Stueck malgenommen = unveraendert"
     }
    ],
    "rot": 0,
    "fehler": null
   },
   {
-   "nr": 10,
-   "titel": "Die drei Kontrollen am Kunstsatz (Maschine mit bekannter Antwort)",
+   "nr": 6,
+   "titel": "Gleichgewichtetes Universum gegen SPY: Korrelation der Tagesrenditen",
    "pruefungen": [
     {
      "ok": true,
-     "text": "Orakel(Tag) Woche brutto 3.147 Pp",
-     "extra": "Schranke 2"
+     "text": "gemeinsame Tage: 2433"
     },
     {
      "ok": true,
-     "text": "Orakel Mittel/sd 2.83",
-     "extra": "Schranke 1 (Nachtrag 4)"
+     "text": "Korrelation gleichgewichtetes Universum / SPY = 0.9516",
+     "extra": "Schranke 0,90 - GLEICHHEIT der Mittel waere falsch (SPY ist kapitalgewichtet, 500 Werte)"
     },
     {
      "ok": true,
-     "text": "Orakel(Periode) Woche brutto 8.139 Pp",
-     "extra": "Schranke 5"
-    },
-    {
-     "ok": true,
-     "text": "Zufall Woche |t| = 0.28",
-     "extra": "Schranke 3"
-    },
-    {
-     "ok": true,
-     "text": "Kantenbeginn 2020-01-01 liegt bei Kalenderindex 1006 (2020-01-02)"
-    },
-    {
-     "ok": true,
-     "text": "Perioden mit Kante 336, ohne Kante 157",
-     "extra": "beide Faelle muessen im Satz sein"
-    },
-    {
-     "ok": true,
-     "text": "Soll-Kante ab 2020 (aus den gehaltenen Mitgliedern) 0.4841 Pp je Woche",
-     "extra": "Positivkontrolle - ein Soll nahe null pruefte nichts"
-    },
-    {
-     "ok": true,
-     "text": "gemessen 0.4142 Pp je Woche gegen Soll 0.4841",
-     "extra": "Abweichung -0.0699 Pp"
-    },
-    {
-     "ok": true,
-     "text": "vor 2020 (dort gibt es keine Kante): -0.0251 Pp",
-     "extra": "Gegenprobe - waere sie hier auch gross, misst der Rahmen theta statt der Kante"
-    }
-   ],
-   "rot": 0,
-   "fehler": null
-  },
-  {
-   "nr": 11,
-   "titel": "Leck-Sperrklinke: meldet das Leck UND laesst die saubere Rangfunktion in Ruhe",
-   "pruefungen": [
-    {
-     "ok": true,
-     "text": "Leck-Probe: 81152 Verstoesse gemeldet",
-     "extra": "null waere eine kaputte Klinke"
-    },
-    {
-     "ok": true,
-     "text": "Lauf als UNGUELTIG markiert"
-    },
-    {
-     "ok": true,
-     "text": "Klinke nennt Beispiele: K000@2017-01-03 (erlaubt bis 2016-12-30)"
-    },
-    {
-     "ok": true,
-     "text": "saubere Rangfunktion: 0 Verstoesse",
-     "extra": "Gegenprobe - eine Klinke, die immer meldet, meldet nichts"
-    },
-    {
-     "ok": true,
-     "text": "sauberer Lauf ist gueltig"
-    },
-    {
-     "ok": true,
-     "text": "Orakel OHNE Schluessel wird gemeldet: 81152 Verstoesse"
-    },
-    {
-     "ok": true,
-     "text": "Orakel MIT Schluessel: 0 Verstoesse, gueltig"
-    }
-   ],
-   "rot": 0,
-   "fehler": null
-  },
-  {
-   "nr": 12,
-   "titel": "Jahresscheiben addieren sich zum Gesamtzeitraum",
-   "pruefungen": [
-    {
-     "ok": true,
-     "text": "Perioden in Jahresscheiben 493 = Gesamt 493"
-    },
-    {
-     "ok": true,
-     "text": "gewichtetes Mittel der Jahre -0.0284142244 = Gesamtmittel -0.0284142244"
-    },
-    {
-     "ok": true,
-     "text": "Regimeschnitt 85 + 408 + 0 = 493"
-    }
-   ],
-   "rot": 0,
-   "fehler": null
-  },
-  {
-   "nr": 13,
-   "titel": "Sperrklinke: kein Universumskriterium liest `rendite` (Ausschluss auf die Zielgroesse)",
-   "pruefungen": [
-    {
-     "ok": true,
-     "text": "Zugriffe auf rendite/renditeOC im Universumsfilter: 0",
-     "extra": ""
-    },
-    {
-     "ok": true,
-     "text": "Positivkontrolle: die Klinke findet einen eingebauten Zugriff (1)"
-    },
-    {
-     "ok": true,
-     "text": "nur Datenqualitaets-Marken im Filter: M_QUELLE_REIN,M_STEMPEL_TAG,M_MASSNAHME_NAH,M_DICHTE_OK",
-     "extra": ""
+     "text": "um einen Tag versetzt: -0.1122",
+     "extra": "Positivkontrolle - bleibt sie hoch, misst der Test die Datumszuordnung nicht"
     }
    ],
    "rot": 0,
