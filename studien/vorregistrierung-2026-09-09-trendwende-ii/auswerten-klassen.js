@@ -146,8 +146,16 @@ function rechne(sp, F, kal) {
      * Tagesmittel von u_long,t + u_short,t ueber die Tage, an denen BEIDE Richtungen ein Signal haben.
      * REINE DIAGNOSE - daraus folgt kein Urteil. Nachgetragen, nachdem die Tor-1-Zeilen sichtbar waren; als
      * Diagnose ausdruecklich so gekennzeichnet. */
-    klassen.forEach(function (kl) { kl._uBesTag = kl._reihe.filter(nurBes(ctx)).filter(function (z) { return z.u === z.u; }).map(function (z) { return { t: z.t, x: z.u }; }); });
-    zGepoolt._uBesTag = gepoolt.filter(nurBes(ctx)).filter(function (z) { return z.u === z.u; }).map(function (z) { return { t: z.t, x: z.u }; });
+    var tagPaare = function (zl) {
+      return zl.filter(nurBes(ctx)).filter(function (z) { return z.u === z.u; })
+        .map(function (z) { return { t: z.t, u: z.u, ub: z.uBrutto, k: z.nhM / z.mN, roh: z.roh }; });
+    };
+    klassen.forEach(function (kl) { kl._uBesTag = tagPaare(kl._reihe); });
+    zGepoolt._uBesTag = tagPaare(gepoolt);
+    [zGepoolt].concat(klassen).forEach(function (kl, q) {
+      kl.haltezeit = q === 0 ? A.haltezeitWerte(sp, ctx, kand, dirIdx, zi, h, 'alle') : haltezeitKlasse(sp, ctx, kand, dirIdx, zi, h, q - 1);
+      kl.haltezeitStd = kl.haltezeit && kl.haltezeit.kand != null ? kl.haltezeit.kand / 60 : (K.HALTEDAUERN[h].min ? K.HALTEDAUERN[h].min / 60 : null);
+    });
     klassen.forEach(function (kl) { delete kl._reihe; delete kl._bes; });
     delete zGepoolt._reihe; delete zGepoolt._bes;
     konf.push({ det: dets[dI], zr: K.ZEITRAHMEN[zi].key, richtung: K.RICHTUNGEN[dirIdx].key, h: hKey, dI: dI, zi: zi, dirIdx: dirIdx, hi: h, lag: Lag,
@@ -161,11 +169,27 @@ function rechne(sp, F, kal) {
     var g = jeSchluessel[c.det + '|' + c.zr + '|' + c.h + '|' + (c.richtung === 'long' ? 'short' : 'long')], Lag = K.lagVon(c.hi);
     [c.gepoolt].concat(c.klassen).forEach(function (kl, q) {
       var gk = g ? (q === 0 ? g.gepoolt : g.klassen[q - 1]) : null;
-      if (!gk) { kl.spiegel = { vorhanden: false, u: null, summe: null, summeT: null, nTage: 0 }; return; }
-      var jeTag = {}; (gk._uBesTag || []).forEach(function (p) { jeTag[p.t] = p.x; });
-      var paare = (kl._uBesTag || []).filter(function (p) { return jeTag[p.t] !== undefined; }).map(function (p) { return { t: p.t, x: p.x + jeTag[p.t] }; });
-      var m = A.momente(paare, Lag);
-      kl.spiegel = { vorhanden: true, u: gk.u, summe: m.mittel, summeSe: m.se, summeT: m.t, nTage: paare.length };
+      if (!gk) { kl.spiegel = { vorhanden: false, u: null, summe: null, summeT: null, trennung: null, nTage: 0 }; return; }
+      var jeTag = {}; (gk._uBesTag || []).forEach(function (p) { jeTag[p.t] = p; });
+      var beide = (kl._uBesTag || []).filter(function (p) { return jeTag[p.t] !== undefined; });
+      /* NACHTRAG 6.1: u traegt die Huerde. u_long + u_short = [r(long) − r(short)] − K_long − K_short.
+       * Die ROHE TRENNUNG ist die Summe der uBrutto-Werte; K_long/K_short werden getrennt ausgewiesen. */
+      var sum = [], tre = [], dir = [], kL = 0, kS = 0, identMax = 0;
+      beide.forEach(function (p) {
+        var o = jeTag[p.t];
+        sum.push({ t: p.t, x: p.u + o.u });
+        tre.push({ t: p.t, x: p.ub + o.ub });
+        dir.push({ t: p.t, x: p.roh + o.roh });
+        kL += p.k; kS += o.k;
+        var d = Math.abs((p.u + o.u) + p.k + o.k - (p.ub + o.ub));
+        if (d > identMax) identMax = d;
+      });
+      var mS = A.momente(sum, Lag), mT = A.momente(tre, Lag), mD = A.momente(dir, Lag), n = beide.length;
+      kl.spiegel = { vorhanden: true, u: gk.u, summe: mS.mittel, summeSe: mS.se, summeT: mS.t,
+        kLong: n > 0 ? kL / n : null, kShort: n > 0 ? kS / n : null,
+        trennung: mT.mittel, trennungSe: mT.se, trennungT: mT.t,
+        direkt: mD.mittel, identMax: identMax, nTage: n,
+        jeStunde: (mT.mittel != null && kl.haltezeitStd > 0) ? mT.mittel / kl.haltezeitStd : null };
     });
   });
   konf.forEach(function (c) { [c.gepoolt].concat(c.klassen).forEach(function (kl) { delete kl._uBesTag; }); });
@@ -231,7 +255,6 @@ function rechne(sp, F, kal) {
     reihe.filter(nurBes(ctx)).forEach(function (z) { if (jeTag[z.t] !== undefined && z.u === z.u) paareU.push({ t: z.t, x: z.u - jeTag[z.t] }); });
     var bu = A.momente(paareU, Lag);
     kl.luecke = { jeSignal: N > 0 ? S / N : null, uBereinigt: bu.mittel, uBereinigtT: bu.t, torLuecke: bu.mittel != null && bu.mittel > 0 && bu.t != null && bu.t >= zStreng2 };
-    kl.haltezeit = haltezeitKlasse(sp, ctx, kand, c.dirIdx, c.zi, c.hi, kl.klasseIdx);
     kl.torUhrzeit = !(K.uhrzeitTorGilt(hKey) && kl.haltezeit.versatz != null && Math.abs(kl.haltezeit.versatz) > K.UHRZEIT_VERSATZ_MAX);
     /* Ueberlebensverzerrung je Klasse: brutto(alle) − brutto(nur lebende Reihen) in der Bestaetigung. */
     var lebB = A.statistik(A.tagesreihe(sp, K.reiheIndex(kand, 0), c.dirIdx, c.hi, c.zi, 'lebend', kl.klasseIdx).filter(nurBes(ctx)), Lag);
@@ -345,12 +368,12 @@ function bericht(E, herkunft, kal, pruef, msGesamt) {
   else {
     T.push('Die Frage war: **lebt W7 in der Klasse `ab1000` (Hürde 0,0449) oder `250-1000` (0,0647)?**');
     T.push('');
-    T.push(tabelle(['Sicht', 'nTage_B', 'nSig_B', 'brutto_B', 'K_kand', 'u_E', 'MDE_B', '4·MDE_B', 'u_E/MDE_B', 'Tor 1', 'u_B', 'se_B', 't_B', 'delta80', 'Tor 2', 'letzte 250: u / t', 'Spiegel-Summe'],
+    T.push(tabelle(['Sicht', 'nTage_B', 'nSig_B', 'brutto_B', 'K_kand', 'u_E', 'MDE_B', '4·MDE_B', 'u_E/MDE_B', 'Tor 1', 'u_B', 'se_B', 't_B', 'delta80', 'Tor 2', 'letzte 250: u / t', 'rohe Trennung'],
       [w7.gepoolt].concat(w7.klassen).map(function (z) {
         return [z.klasse, ganz(z.besTage), ganz(z.besSig), pp(z.brutto), pp(z.kKand), pp(z.entU), pp(z.mdeB),
           pp(z.mdeB != null ? K.TOR1_FAKTOR * z.mdeB : null), tw(z.tor1Abstand), jn(z.tor1), pp(z.u), pp(z.se), tw(z.t),
           pp(z.delta80), jn(z.tor2), pp(z.aktU) + ' / ' + tw(z.aktT),
-          z.spiegel && z.spiegel.summe != null ? pp(z.spiegel.summe) + ' (t ' + tw(z.spiegel.summeT) + ')' : '–'];
+          z.spiegel && z.spiegel.trennung != null ? pp(z.spiegel.trennung) + ' (t ' + tw(z.spiegel.trennungT) + ')' : '–'];
       })));
     T.push('');
     var liq = w7.klassen[3], mid = w7.klassen[2];
@@ -393,13 +416,14 @@ function bericht(E, herkunft, kal, pruef, msGesamt) {
     ' Nach den Regeln des Hauptlaufs (§19.3) wäre keine dieser Zeilen „belegt" — unabhängig von ihrem `t`.' +
     ' **Ob** der Versatz die Höhe erklärt, ist damit nicht gesagt (siehe 3.), **dass** der Vergleich für diese' +
     ' Zeilen nicht sauber ist, schon.');
-  T.push('3. **Long und Short gewinnen gleichzeitig — und das spricht hier NICHT gegen den Fund.** Die Spiegel-Summe');
-  T.push('   `u_long + u_short` ist rechnerisch `r̄(nach Long-Signalen) − r̄(nach Short-Signalen)`: der Topf **kürzt sich');
-  T.push('   heraus**. Sie ist damit immun gegen einen falschen Vergleich, und sie ist groß, positiv und wächst monoton');
-  T.push('   mit der Liquidität (Tafel unten). Der Versatz kann sie nicht erzeugen: längeres Halten schiebt `u_long`');
-  T.push('   hinauf und `u_short` hinunter, nicht beides hinauf. **Der Detektor trennt die beiden Folgemengen also');
-  T.push('   wirklich.** Was die Summe *nicht* sagt: ob die **Höhe** von `u` stimmt — die hängt am Topf, und genau dort');
-  T.push('   sitzt der Versatz.');
+  T.push('3. **Long und Short gewinnen gleichzeitig — und das spricht hier NICHT gegen den Fund.** Wegen');
+  T.push('   `u = dir·(r − Topf) − K` gilt `u_long + u_short = [r̄(nach Long) − r̄(nach Short)] − K_long − K_short`:');
+  T.push('   der **Topf kürzt sich heraus**, die **Hürde bleibt doppelt drin**. Die rohe Trennung');
+  T.push('   `r̄(Long) − r̄(Short)` ist damit immun gegen einen falschen Vergleich, und sie ist in **jeder** Zelle');
+  T.push('   positiv (Tafel unten). Der Versatz kann sie nicht erzeugen: längeres Halten schiebt `u_long` hinauf und');
+  T.push('   `u_short` hinunter, nicht beides hinauf. **Der Detektor trennt die beiden Folgemengen wirklich.**');
+  T.push('   Was die Trennung *nicht* sagt: ob die **Höhe** von `u` stimmt — die hängt am Topf, und dort sitzt der');
+  T.push('   Versatz.');
   var sauberNichtEntsch = t1z.filter(function (x) { return x.kl.torUhrzeit && x.kl.luecke && x.kl.luecke.torLuecke && !x.kl.tor2; });
   T.push('4. **Die saubersten Zeilen sind nicht entscheidbar — nicht negativ.** ' + sauberNichtEntsch.length + ' Zeilen bestehen Tor 1,');
   T.push('   das Uhrzeit-Versatz-Tor und das Lücken-Tor, fallen aber über **Tor 2** (`delta80 ≥ K_kand`): ' +
@@ -412,13 +436,13 @@ function bericht(E, herkunft, kal, pruef, msGesamt) {
   T.push('');
   T.push('**Die ' + kandZ.length + ' Zeilen mit dem höchsten Etikett — mit den Toren des Hauptlaufs danebengestellt:**');
   T.push('');
-  T.push(tabelle(['Det', 'ZR', 'Ri', 'H', 'Klasse', 'nSig_B', 'u_B', 't_B', 'K_kand', 'delta80', 'letzte 250: u / t', 'Versatz', 'Uhrzeit-Tor', 'Lücken-Tor', 'sauber', 'Spiegel-Summe (t)', 'Überlebens-Differenz'],
+  T.push(tabelle(['Det', 'ZR', 'Ri', 'H', 'Klasse', 'nSig_B', 'u_B', 't_B', 'K_kand', 'delta80', 'letzte 250: u / t', 'Versatz', 'Uhrzeit-Tor', 'Lücken-Tor', 'sauber', 'Trennung (t)', 'Überlebens-Differenz'],
     kandZ.sort(function (a, b) { return b.kl.t - a.kl.t; }).map(function (x) {
       var k = x.kl, c = x.c, s = k.spiegel || {};
       return [c.det, c.zr, c.richtung, c.h, k.klasse, ganz(k.besSig), pp(k.u), tw(k.t), pp(k.kKand), pp(k.delta80),
         pp(k.aktU) + ' / ' + tw(k.aktT), tw(k.haltezeit ? k.haltezeit.versatz : null), jn(k.torUhrzeit),
         jn(k.luecke && k.luecke.torLuecke), k.sauber ? '**ja**' : 'nein',
-        s.summe == null ? '–' : pp(s.summe) + ' (' + tw(s.summeT) + ')', pp(k.differenzLebend)];
+        s.trennung == null ? '–' : pp(s.trennung) + ' (' + tw(s.trennungT) + ')', pp(k.differenzLebend)];
     })));
   T.push('');
   var sauber = kandZ.filter(function (x) { return x.kl.sauber; });
@@ -434,8 +458,20 @@ function bericht(E, herkunft, kal, pruef, msGesamt) {
   }
   T.push('');
   T.push('**Spiegel-Diagnose (nachgetragen, nachdem die Tor-1-Zeilen sichtbar waren — reine Diagnose, kein Urteil).**');
-  T.push('`u_long + u_short` über die Tage mit Signal in beiden Richtungen, je Klasse, für die Konfigurationen mit');
-  T.push('mindestens einer Tor-1-Zeile:');
+  T.push('');
+  T.push('> **Korrektur vom 13.09.2026 (NACHTRAG 6.1, Fund des PM).** In der ersten Fassung dieses Berichts stand hier,');
+  T.push('> die Spiegel-Summe sei „rechnerisch `r̄(Long) − r̄(Short)`, der Topf kürzt sich heraus" — und daraus der Satz:');
+  T.push('> *„Der Detektor zeigt auf kurzer Sicht in die falsche Richtung und dreht mit der Haltedauer."* **Das war');
+  T.push('> falsch.** Der Topf kürzt sich heraus, die **Hürde nicht**: `u_long + u_short = Trennung − K_long − K_short`.');
+  T.push('> Bei gepooltem `K ≈ 0,122` sind das **0,244 Pp konstanter Abzug**, unabhängig von der Haltedauer — genau');
+  T.push('> daher stammte das „stark negativ bei 15m und 1h". Die rohe Trennung ist in **allen** gemessenen Zellen');
+  T.push('> positiv und wächst monoton mit der Haltedauer; es gibt **keinen Vorzeichenwechsel**. Die Tafeln unten führen');
+  T.push('> `Trennung` deshalb als eigene Spalte, und jeder Vergleich über Haltedauern oder Klassen benutzt sie.');
+  T.push('');
+  T.push('`u_long + u_short` und die rohe Trennung über die Tage mit Signal in beiden Richtungen, je Klasse, für die');
+  T.push('Konfigurationen mit mindestens einer Tor-1-Zeile. **`Trennung = Summe + K_long + K_short`** — und weil `K` je');
+  T.push('Klasse zwischen 0,1569 und 0,0449 liegt, vergleicht ein Vergleich der *Summen* über Klassen zwei');
+  T.push('verschiedene Abzüge. Maßgeblich ist die Spalte `Trennung`:');
   T.push('');
   var spKeys = {}; t1z.forEach(function (x) { spKeys[x.c.det + '|' + x.c.zr + '|' + x.c.h] = true; });
   var spZeilen = [];
@@ -444,16 +480,80 @@ function bericht(E, herkunft, kal, pruef, msGesamt) {
     if (!c) return;
     [c.gepoolt].concat(c.klassen).forEach(function (kl) {
       var sp = kl.spiegel || {};
-      spZeilen.push([teile[0], teile[1], teile[2], kl.klasse, pp(kl.u), pp(sp.u), sp.summe == null ? '–' : pp(sp.summe), tw(sp.summeT), ganz(sp.nTage)]);
+      spZeilen.push([teile[0], teile[1], teile[2], kl.klasse, pp(kl.u), pp(sp.u), sp.summe == null ? '–' : pp(sp.summe),
+        sp.kLong == null ? '–' : pp(sp.kLong + sp.kShort), sp.trennung == null ? '–' : '**' + pp(sp.trennung) + '**',
+        tw(sp.trennungT), tw(kl.haltezeitStd), pp(sp.jeStunde), ganz(sp.nTage)]);
     });
   });
-  T.push(tabelle(['Det', 'ZR', 'H', 'Klasse', 'u_long', 'u_short', 'Summe', 't', 'nTage'], spZeilen));
+  T.push(tabelle(['Det', 'ZR', 'H', 'Klasse', 'u_long', 'u_short', 'Summe', 'K_l + K_s', 'Trennung', 't', 'Haltezeit (h)', 'Trennung je h', 'nTage'], spZeilen));
   T.push('');
-  T.push('Zwei Muster stehen darin, beide gegen die Deutung „reines Rauschen": die Summe wächst **monoton mit der');
-  T.push('Liquiditätsklasse** (in `5-50` liegt sie bei null oder negativ, in `ab1000` bei +0,24 bis +0,42 Pp), und sie');
-  T.push('wächst **monoton mit der Haltedauer** — im Hauptlauf ist dieselbe Summe bei 15m und 1h stark **negativ**');
-  T.push('(bis −0,21 Pp, |t| > 40), bei 3h nahe null, bei „schluss" positiv. Der Detektor zeigt auf kurzer Sicht in');
-  T.push('die **falsche** Richtung und dreht mit der Haltedauer. Das ist zu erklären, bevor daraus etwas wird.');
+  /* Monotonie mit der Liquiditaet - an der ROHEN Trennung nachgerechnet (Auftrag des PM, Punkt 2). */
+  var monoS = 0, monoT = 0, monoN = 0;
+  Object.keys(spKeys).forEach(function (s) {
+    var teile = s.split('|'), c = E.konf.filter(function (q) { return q.det === teile[0] && q.zr === teile[1] && q.h === teile[2] && q.richtung === 'long'; })[0];
+    if (!c) return;
+    var su = c.klassen.map(function (kl) { return kl.spiegel ? kl.spiegel.summe : null; });
+    var tr = c.klassen.map(function (kl) { return kl.spiegel ? kl.spiegel.trennung : null; });
+    var steigt = function (w) { for (var i = 1; i < w.length; i++) if (!(w[i] != null && w[i - 1] != null && w[i] > w[i - 1])) return false; return true; };
+    monoN++; if (steigt(su)) monoS++; if (steigt(tr)) monoT++;
+  });
+  T.push('**Steht die Zunahme mit der Liquidität?** In **' + monoS + ' von ' + monoN + '** Konfigurationen wächst die *Summe*');
+  T.push('monoton über die vier Klassen — in **' + monoT + ' von ' + monoN + '** die *rohe Trennung*. Die Monotonie der Summe ist');
+  T.push('also weitgehend die Hürde: von `5-50` nach `ab1000` fällt `K_l + K_s` um 0,2240 Pp, und genau diesen Betrag');
+  T.push('gewinnt die Summe mechanisch dazu.');
+  T.push('');
+  var hoch = 0, verh = [];
+  Object.keys(spKeys).forEach(function (s) {
+    var teile = s.split('|'), c = E.konf.filter(function (q) { return q.det === teile[0] && q.zr === teile[1] && q.h === teile[2] && q.richtung === 'long'; })[0];
+    if (!c) return;
+    var tr = c.klassen.map(function (kl) { return kl.spiegel ? kl.spiegel.trennung : null; });
+    if (tr.every(function (x) { return x != null; })) {
+      var rest = (tr[0] + tr[1] + tr[2]) / 3;
+      if (tr[3] > Math.max(tr[0], tr[1], tr[2])) hoch++;
+      verh.push(tr[3] / rest);
+    }
+  });
+  verh.sort(function (a, b) { return a - b; });
+  T.push('**Was von der Monotonie bleibt:** `ab1000` ist in **' + hoch + ' von ' + verh.length + '** Konfigurationen die höchste der vier');
+  T.push('Klassen, mit dem **' + tw(verh[0]) + '- bis ' + tw(verh[verh.length - 1]) + '-fachen** des Mittels der drei übrigen. Die drei billigeren');
+  T.push('Klassen liegen dagegen dicht beieinander und ordnen sich nicht durchgehend. Die Aussage „die Trennung wächst');
+  T.push('**monoton** mit der Liquidität" ist damit **zurückgenommen**; es bleibt die schwächere, aber saubere Aussage:');
+  T.push('**`ab1000` trennt deutlich besser als der Rest, der Rest trennt gleich gut.**');
+  T.push('');
+  /* W7 ueber alle fuenf Haltedauern, gepoolt - die Tafel des PM, hier aus den Zellen nachgerechnet. */
+  var w7g = [];
+  K.ZEITRAHMEN.forEach(function (zr) {
+    var z1 = [zr.key], z2 = [zr.key + ' je h'];
+    K.HALTEDAUERN.forEach(function (H) {
+      var c = E.konf.filter(function (q) { return q.det === 'W7' && q.zr === zr.key && q.h === H.key && q.richtung === 'long'; })[0];
+      var sp = c ? c.gepoolt.spiegel : null;
+      z1.push(sp && sp.trennung != null ? pp(sp.trennung) : '–');
+      z2.push(sp && sp.jeStunde != null ? pp(sp.jeStunde) : '–');
+    });
+    w7g.push(z1); w7g.push(z2);
+  });
+  T.push('**W7 gepoolt, rohe Trennung über alle fünf Haltedauern** (Pp, und darunter je Stunde Haltezeit;');
+  T.push('für „naechste" zählt die Haltezeit nur Sitzungsminuten, die Nacht steckt nicht darin). Der PM hat dieselbe');
+  T.push('Tafel unabhängig aus `voll-0/ERGEBNIS.md` gerechnet; die Werte stimmen bis auf ≤ 0,001 Pp überein — der Rest');
+  T.push('ist der hier engere Tagesausschnitt (nur Tage mit `u` in **beiden** Richtungen):');
+  T.push('');
+  T.push(tabelle(['ZR'].concat(K.HALTEDAUERN.map(function (H) { return H.key; })), w7g));
+  T.push('');
+  T.push('**Die offene Frage, richtig gestellt.** Es gibt keinen Vorzeichenwechsel: die Trennung ist auf jeder Sicht');
+  T.push('positiv und wächst mit der Haltedauer. Sie wächst aber **unterproportional** — je Stunde Haltezeit **fällt**');
+  T.push('sie: auf 5m von 0,173 Pp/h (15 Minuten) über 0,121 (eine Stunde) auf 0,074 (drei Stunden und bis Schluss),');
+  T.push('auf 15m von 0,183 über 0,121 auf 0,074. Der Vorsprung entsteht also **früh** und läuft dann aus. (Auf 1m ist');
+  T.push('die Trennung insgesamt klein und je Stunde über alle Stufen flach bei 0,03–0,05 Pp/h — dort ist von dem');
+  T.push('frühen Vorsprung nichts zu sehen, was zu der Lesart passt, dass er im Einstiegskurs sitzt.)');
+  T.push('');
+  T.push('Das ist genau das Profil, das eine **Wende** von einer **Mikrostruktur-Erholung** unterscheidet. Eine echte');
+  T.push('Wende müsste ihren Vorsprung über die Haltedauer **mindestens proportional** ausbauen — die Richtung ändert');
+  T.push('sich, der neue Trend läuft weiter. Ein Rückprall aus dem Spannen-/Extrem-Einstieg dagegen ist nach Minuten');
+  T.push('fertig; alles Spätere ist nur noch Marktdrift, die der Topf abzieht. Der gemessene Verlauf sieht aus wie das');
+  T.push('zweite. **Messbar wäre das mit den vorhandenen Zellen nicht** — dafür bräuchte es die Trennung auf einem');
+  T.push('feineren Raster der Haltedauer (1, 3, 5, 10, 30 Minuten) plus den bereits gebauten verzögerten Einstieg');
+  T.push('`k` als Hebel: verschwindet der frühe Teil der Trennung, wenn der Einstieg um k Kerzen wandert, sitzt sie im');
+  T.push('Einstiegskurs; bleibt er, ist sie eine Eigenschaft der Kursreihe nach dem Signal.');
   T.push('');
   T.push('## 3. Prüfungen');
   T.push('');
@@ -518,6 +618,27 @@ function bericht(E, herkunft, kal, pruef, msGesamt) {
   T.push(huerdeOk ? '**Bestanden** — `K_kand` einer Klassenzeile ist konstruktionsgemäß exakt die Hürde der Klasse.'
     : '**NICHT bestanden** — die Hürde in den Zellen weicht von `konfig.js` ab.');
   T.push('');
+  T.push('### 3.5 Positivkontrolle: die Hürden-Identität der Spiegel-Summe');
+  T.push('');
+  T.push('Behauptet wird `u_long,t + u_short,t + K_long,t + K_short,t = Trennung_t` für jeden Tag mit Signal in beiden');
+  T.push('Richtungen. Geprüft über alle Konfigurationen und Klassen:');
+  T.push('');
+  var identMax = 0, dirMax = 0, dirZ = [];
+  E.konf.forEach(function (c) { [c.gepoolt].concat(c.klassen).forEach(function (kl) {
+    var s = kl.spiegel; if (!s || !s.vorhanden) return;
+    if (s.identMax > identMax) identMax = s.identMax;
+    if (s.trennung != null && s.direkt != null) { var d = Math.abs(s.trennung - s.direkt); if (d > dirMax) dirMax = d; dirZ.push(d); }
+  }); });
+  dirZ.sort(function (a, b) { return a - b; });
+  T.push('- maximale absolute Abweichung der Identität je Tag: **' + identMax.toExponential(3) + '** Pp — ' +
+    (identMax < 1e-9 ? 'bestanden, Fließkommarauschen.' : '**NICHT bestanden**.'));
+  T.push('- `Trennung` gegen die direkt aus `roh` gerechnete Differenz `r̄(Long) − r̄(Short)` derselben Tage:');
+  T.push('  Median ' + pp(dirZ[dirZ.length >> 1]) + ', Maximum **' + pp(dirMax) + '** Pp.');
+  T.push('');
+  T.push('Die zweite Zeile ist **nicht** null und darf es nicht sein: `Trennung` zieht den Topf je Zelle ab und');
+  T.push('gewichtet ihn mit den Zellenzahlen der jeweiligen Richtung; Long und Short verteilen sich verschieden auf');
+  T.push('lebende und erloschene Reihen, also bleibt ein kleiner Rest. Er misst diese Gewichtung, nicht den Markt.');
+  T.push('');
   T.push('## 4. Placebo A je Klasse — beide Kriterien getrennt');
   T.push('');
   T.push('Schranken: `|t| < ' + K.BAND_T + '`; Größe intraday `|Mittel| < ' + pp(K.BAND_PP) + '` Pp, übernacht');
@@ -560,7 +681,7 @@ function bericht(E, herkunft, kal, pruef, msGesamt) {
       T.push('Einstiegslücke je Signal ' + pp(kl.luecke.jeSignal) + ', u_B lückenbereinigt ' + pp(kl.luecke.uBereinigt) + ' (t ' + tw(kl.luecke.uBereinigtT) + ')' +
         ', Haltezeit Kandidat ' + tw(kl.haltezeit.kand) + ' min gegen Topf ' + tw(kl.haltezeit.topf) + ' min (Versatz ' + tw(kl.haltezeit.versatz) +
         ', Uhrzeit-Tor ' + jn(kl.torUhrzeit) + '), Überlebens-Differenz brutto ' + pp(kl.differenzLebend) +
-        ', Spiegel-Summe ' + (kl.spiegel && kl.spiegel.summe != null ? pp(kl.spiegel.summe) + ' (t ' + tw(kl.spiegel.summeT) + ')' : '–') + '.');
+        ', rohe Trennung ' + (kl.spiegel && kl.spiegel.trennung != null ? pp(kl.spiegel.trennung) + ' (t ' + tw(kl.spiegel.trennungT) + ', je Stunde ' + pp(kl.spiegel.jeStunde) + ')' : '–') + '.');
       T.push('');
       T.push(tabelle(['Jahr', 'nTage', 'nSig', 'u', 'se', 't', 'brutto', 'netto', 'Schein BV1', 'dünn'],
         kl.jahre.map(function (j) { return [j.jahr, ganz(j.nTage), ganz(j.nSig), pp(j.u), pp(j.se), tw(j.t), pp(j.brutto), pp(j.netto), pp(j.schein1), jn(j.duenn)]; })));
@@ -612,10 +733,11 @@ function bericht(E, herkunft, kal, pruef, msGesamt) {
   T.push('   und sie kann kein „belegt" vergeben. Sie verschiebt nichts an `ERGEBNIS.md`.');
   T.push('3. **Alles hängt an einem Detektor.** Alle ' + t1z.length + ' Tor-1-Zeilen gehören zu **W7**, keinem der sieben anderen.');
   T.push('   Das macht den Fund nicht falsch, aber es ist keine Aussage über „Wenden", sondern über diese eine Funktion.');
-  T.push('4. **Die offene Frage ist das Vorzeichen über die Haltedauer.** Derselbe Detektor trennt die Folgemengen auf');
-  T.push('   15m und 1h in die **entgegengesetzte** Richtung (Spiegel-Summe bis −0,21 Pp) und dreht mit der Haltedauer.');
-  T.push('   Eine Wende, die auf einer Stunde das Gegenteil und auf einem Tag das Behauptete tut, ist entweder zwei');
-  T.push('   verschiedene Sachen oder eine Eigenschaft des Messfensters. Diese Frage steht vor jedem Vorwärtstest.');
+  T.push('4. **Die offene Frage ist der Verlauf über die Haltedauer, nicht das Vorzeichen.** Die rohe Trennung ist auf');
+  T.push('   jeder Sicht positiv und wächst mit der Haltedauer, aber **je Stunde fällt sie**: der Vorsprung entsteht');
+  T.push('   früh und läuft aus. Das ist das Profil eines Rückpralls, nicht das einer Wende, die einen neuen Trend');
+  T.push('   eröffnet. Zu messen wäre es auf einem feineren Haltedauer-Raster zusammen mit dem verzögerten Einstieg.');
+  T.push('   (Die frühere Lesart „das Vorzeichen dreht" war ein Rechenfehler in der Deutung — siehe §2b, Korrektur.)');
   T.push('5. **Für die Methode:** Umsatzklassen gehören in jede künftige Vorregistrierung dieser Familie als');
   T.push('   **vorab festgelegte** Schnittdimension — nicht als nachträgliche Suche. Ein gepoolter `K_kand`, der fast');
   T.push('   der Wert der billigsten Klasse ist, ist keine Kostenannahme, sondern ein Mischungsartefakt.');

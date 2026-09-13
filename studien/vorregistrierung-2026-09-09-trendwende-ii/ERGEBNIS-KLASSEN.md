@@ -39,13 +39,13 @@ Zur Kontrolle dieselbe Spalte nach dem **t der Bestätigung** sortiert (eine and
 
 Die Frage war: **lebt W7 in der Klasse `ab1000` (Hürde 0,0449) oder `250-1000` (0,0647)?**
 
-| Sicht | nTage_B | nSig_B | brutto_B | K_kand | u_E | MDE_B | 4·MDE_B | u_E/MDE_B | Tor 1 | u_B | se_B | t_B | delta80 | Tor 2 | letzte 250: u / t | Spiegel-Summe |
+| Sicht | nTage_B | nSig_B | brutto_B | K_kand | u_E | MDE_B | 4·MDE_B | u_E/MDE_B | Tor 1 | u_B | se_B | t_B | delta80 | Tor 2 | letzte 250: u / t | rohe Trennung |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| gepoolt | 894 | 1.405.550 | 0,1242 | 0,1222 | 0,0162 | 0,0182 | 0,0727 | 0,89 | nein | -0,0005 | 0,0091 | -0,06 | 0,0443 | nein | -0,0089 / -0,54 | -0,0199 (t -1,49) |
-| 5-50 | 894 | 778.082 | 0,1303 | 0,1569 | -0,0033 | 0,0192 | 0,0768 | -0,17 | nein | -0,0297 | 0,0096 | -3,10 | 0,0468 | nein | -0,0562 / -3,51 | -0,0785 (t -5,84) |
-| 50-250 | 894 | 460.586 | 0,1254 | 0,0854 | 0,0495 | 0,0183 | 0,0732 | 2,70 | nein | 0,0321 | 0,0092 | 3,51 | 0,0446 | nein | 0,0248 / 1,43 | 0,0427 (t 3,06) |
-| 250-1000 | 894 | 140.452 | 0,1255 | 0,0647 | 0,0744 | 0,0209 | 0,0838 | 3,55 | nein | 0,0485 | 0,0105 | 4,63 | 0,0510 | nein | 0,0433 / 2,03 | 0,0825 (t 5,12) |
-| ab1000 | 892 | 26.430 | 0,1990 | 0,0449 | 0,1807 | 0,0330 | 0,1320 | 5,48 | ja | 0,1283 | 0,0165 | 7,78 | 0,0804 | nein | 0,1171 / 3,71 | 0,2363 (t 9,30) |
+| gepoolt | 894 | 1.405.550 | 0,1242 | 0,1222 | 0,0162 | 0,0182 | 0,0727 | 0,89 | nein | -0,0005 | 0,0091 | -0,06 | 0,0443 | nein | -0,0089 / -0,54 | 0,2224 (t 16,72) |
+| 5-50 | 894 | 778.082 | 0,1303 | 0,1569 | -0,0033 | 0,0192 | 0,0768 | -0,17 | nein | -0,0297 | 0,0096 | -3,10 | 0,0468 | nein | -0,0562 / -3,51 | 0,2353 (t 17,51) |
+| 50-250 | 894 | 460.586 | 0,1254 | 0,0854 | 0,0495 | 0,0183 | 0,0732 | 2,70 | nein | 0,0321 | 0,0092 | 3,51 | 0,0446 | nein | 0,0248 / 1,43 | 0,2135 (t 15,32) |
+| 250-1000 | 894 | 140.452 | 0,1255 | 0,0647 | 0,0744 | 0,0209 | 0,0838 | 3,55 | nein | 0,0485 | 0,0105 | 4,63 | 0,0510 | nein | 0,0433 / 2,03 | 0,2119 (t 13,15) |
+| ab1000 | 892 | 26.430 | 0,1990 | 0,0449 | 0,1807 | 0,0330 | 0,1320 | 5,48 | ja | 0,1283 | 0,0165 | 7,78 | 0,0804 | nein | 0,1171 / 3,71 | 0,3261 (t 12,83) |
 
 **ab1000: Tor 1 bestanden** — u_E 0,1807 = 5,48 × MDE_B, u_B 0,1283 (t 7,78).
 
@@ -65,13 +65,14 @@ die in den liquiden Klassen sichtbar ist. Der Verdacht des PM trifft zu.
 
 1. **Ein einziger Detektor.** Alle 15 Tor-1-Zeilen kommen von 1 der 8 Detektoren: W7 15. Eine Kante, die nur ein Detektor sieht, ist keine Eigenschaft des Marktes, sondern eine Eigenschaft dieses Detektors.
 2. **Eine einzige Haltedauer-Familie.** schluss 12, 3h 3 — und **10 der 15** Zeilen fallen über das **Uhrzeit-Versatz-Tor** des Hauptlaufs (`|Haltezeit_kand / Haltezeit_topf − 1| > 0.15`): sie halten 15–20 % länger als ihr Vergleich. Nach den Regeln des Hauptlaufs (§19.3) wäre keine dieser Zeilen „belegt" — unabhängig von ihrem `t`. **Ob** der Versatz die Höhe erklärt, ist damit nicht gesagt (siehe 3.), **dass** der Vergleich für diese Zeilen nicht sauber ist, schon.
-3. **Long und Short gewinnen gleichzeitig — und das spricht hier NICHT gegen den Fund.** Die Spiegel-Summe
-   `u_long + u_short` ist rechnerisch `r̄(nach Long-Signalen) − r̄(nach Short-Signalen)`: der Topf **kürzt sich
-   heraus**. Sie ist damit immun gegen einen falschen Vergleich, und sie ist groß, positiv und wächst monoton
-   mit der Liquidität (Tafel unten). Der Versatz kann sie nicht erzeugen: längeres Halten schiebt `u_long`
-   hinauf und `u_short` hinunter, nicht beides hinauf. **Der Detektor trennt die beiden Folgemengen also
-   wirklich.** Was die Summe *nicht* sagt: ob die **Höhe** von `u` stimmt — die hängt am Topf, und genau dort
-   sitzt der Versatz.
+3. **Long und Short gewinnen gleichzeitig — und das spricht hier NICHT gegen den Fund.** Wegen
+   `u = dir·(r − Topf) − K` gilt `u_long + u_short = [r̄(nach Long) − r̄(nach Short)] − K_long − K_short`:
+   der **Topf kürzt sich heraus**, die **Hürde bleibt doppelt drin**. Die rohe Trennung
+   `r̄(Long) − r̄(Short)` ist damit immun gegen einen falschen Vergleich, und sie ist in **jeder** Zelle
+   positiv (Tafel unten). Der Versatz kann sie nicht erzeugen: längeres Halten schiebt `u_long` hinauf und
+   `u_short` hinunter, nicht beides hinauf. **Der Detektor trennt die beiden Folgemengen wirklich.**
+   Was die Trennung *nicht* sagt: ob die **Höhe** von `u` stimmt — die hängt am Topf, und dort sitzt der
+   Versatz.
 4. **Die saubersten Zeilen sind nicht entscheidbar — nicht negativ.** 3 Zeilen bestehen Tor 1,
    das Uhrzeit-Versatz-Tor und das Lücken-Tor, fallen aber über **Tor 2** (`delta80 ≥ K_kand`): W7 5m long 3h/ab1000 (u 0,1283, t 7,78, delta80 0,0804 gegen K 0,0449); W7 5m short 3h/ab1000 (u 0,1077, t 6,30, delta80 0,0833 gegen K 0,0449); W7 15m long 3h/ab1000 (u 0,1445, t 6,13, delta80 0,1149 gegen K 0,0449).
    In der liquidesten Klasse ist die Hürde klein (0,0449) — und die Stichprobe so dünn, dass die auflösbare
@@ -81,15 +82,15 @@ die in den liquiden Klassen sichtbar ist. Der Verdacht des PM trifft zu.
 
 **Die 7 Zeilen mit dem höchsten Etikett — mit den Toren des Hauptlaufs danebengestellt:**
 
-| Det | ZR | Ri | H | Klasse | nSig_B | u_B | t_B | K_kand | delta80 | letzte 250: u / t | Versatz | Uhrzeit-Tor | Lücken-Tor | sauber | Spiegel-Summe (t) | Überlebens-Differenz |
+| Det | ZR | Ri | H | Klasse | nSig_B | u_B | t_B | K_kand | delta80 | letzte 250: u / t | Versatz | Uhrzeit-Tor | Lücken-Tor | sauber | Trennung (t) | Überlebens-Differenz |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| W7 | 15m | long | schluss | 250-1000 | 115.972 | 0,1261 | 10,58 | 0,0647 | 0,0580 | 0,1101 / 4,95 | 0,16 | nein | ja | nein | 0,2207 (10,03) | -0,0062 |
-| W7 | 5m | long | schluss | 250-1000 | 209.639 | 0,0924 | 9,26 | 0,0647 | 0,0486 | 0,0788 / 4,25 | 0,18 | nein | ja | nein | 0,1606 (9,52) | -0,0036 |
-| W7 | 15m | long | schluss | 50-250 | 386.251 | 0,0877 | 7,99 | 0,0854 | 0,0535 | 0,0542 / 2,89 | 0,16 | nein | ja | nein | 0,1522 (7,77) | -0,0040 |
-| W7 | 5m | long | schluss | 50-250 | 692.359 | 0,0707 | 7,42 | 0,0854 | 0,0464 | 0,0430 / 2,62 | 0,18 | nein | ja | nein | 0,1182 (7,38) | -0,0019 |
-| W7 | 5m | short | schluss | 250-1000 | 230.699 | 0,0682 | 6,80 | 0,0647 | 0,0488 | 0,0434 / 2,39 | 0,19 | nein | ja | nein | 0,1606 (9,52) | -0,0005 |
-| W7 | 1m | long | schluss | ab1000 | 86.521 | 0,0415 | 6,07 | 0,0449 | 0,0333 | 0,0116 / 0,94 | 0,06 | ja | ja | **ja** | 0,0751 (6,45) | 0,0005 |
-| W7 | 1m | short | schluss | ab1000 | 92.107 | 0,0336 | 4,99 | 0,0449 | 0,0328 | 0,0113 / 0,87 | 0,06 | ja | ja | **ja** | 0,0751 (6,45) | 0,0003 |
+| W7 | 15m | long | schluss | 250-1000 | 115.972 | 0,1261 | 10,58 | 0,0647 | 0,0580 | 0,1101 / 4,95 | 0,16 | nein | ja | nein | 0,3501 (15,91) | -0,0062 |
+| W7 | 5m | long | schluss | 250-1000 | 209.639 | 0,0924 | 9,26 | 0,0647 | 0,0486 | 0,0788 / 4,25 | 0,18 | nein | ja | nein | 0,2900 (17,19) | -0,0036 |
+| W7 | 15m | long | schluss | 50-250 | 386.251 | 0,0877 | 7,99 | 0,0854 | 0,0535 | 0,0542 / 2,89 | 0,16 | nein | ja | nein | 0,3230 (16,49) | -0,0040 |
+| W7 | 5m | long | schluss | 50-250 | 692.359 | 0,0707 | 7,42 | 0,0854 | 0,0464 | 0,0430 / 2,62 | 0,18 | nein | ja | nein | 0,2890 (18,04) | -0,0019 |
+| W7 | 5m | short | schluss | 250-1000 | 230.699 | 0,0682 | 6,80 | 0,0647 | 0,0488 | 0,0434 / 2,39 | 0,19 | nein | ja | nein | 0,2900 (17,19) | -0,0005 |
+| W7 | 1m | long | schluss | ab1000 | 86.521 | 0,0415 | 6,07 | 0,0449 | 0,0333 | 0,0116 / 0,94 | 0,06 | ja | ja | **ja** | 0,1649 (14,16) | 0,0005 |
+| W7 | 1m | short | schluss | ab1000 | 92.107 | 0,0336 | 4,99 | 0,0449 | 0,0328 | 0,0113 / 0,87 | 0,06 | ja | ja | **ja** | 0,1649 (14,16) | 0,0003 |
 
 **2 Zeilen besteht auch die übrigen Tore des Hauptlaufs** (Uhrzeit-Versatz, Einstiegslücke): W7 1m long schluss / ab1000, W7 1m short schluss / ab1000.
 Das ist **kein Beleg** (§6.0) — es ist die Liste, aus der ein **Vorwärtstest ab 2026-09-01** vorab
@@ -97,42 +98,89 @@ festgelegt werden könnte: Detektor, Zeitrahmen, Richtung, Haltedauer und **Klas
 ersten neuen Handelstag fest. Vor einem solchen Test gehört die Spiegel-Summe erklärt, nicht weggelassen.
 
 **Spiegel-Diagnose (nachgetragen, nachdem die Tor-1-Zeilen sichtbar waren — reine Diagnose, kein Urteil).**
-`u_long + u_short` über die Tage mit Signal in beiden Richtungen, je Klasse, für die Konfigurationen mit
-mindestens einer Tor-1-Zeile:
 
-| Det | ZR | H | Klasse | u_long | u_short | Summe | t | nTage |
-|---|---|---|---|---|---|---|---|---|
-| W7 | 1m | schluss | gepoolt | -0,0447 | -0,0516 | -0,0963 | -12,96 | 894 |
-| W7 | 1m | schluss | 5-50 | -0,0865 | -0,0966 | -0,1831 | -21,81 | 894 |
-| W7 | 1m | schluss | 50-250 | -0,0218 | -0,0281 | -0,0499 | -6,84 | 894 |
-| W7 | 1m | schluss | 250-1000 | -0,0017 | -0,0076 | -0,0093 | -1,26 | 894 |
-| W7 | 1m | schluss | ab1000 | 0,0415 | 0,0336 | 0,0751 | 6,45 | 894 |
-| W7 | 5m | 3h | gepoolt | -0,0005 | -0,0194 | -0,0199 | -1,49 | 894 |
-| W7 | 5m | 3h | 5-50 | -0,0297 | -0,0488 | -0,0785 | -5,84 | 894 |
-| W7 | 5m | 3h | 50-250 | 0,0321 | 0,0106 | 0,0427 | 3,06 | 894 |
-| W7 | 5m | 3h | 250-1000 | 0,0485 | 0,0340 | 0,0825 | 5,12 | 894 |
-| W7 | 5m | 3h | ab1000 | 0,1283 | 0,1077 | 0,2363 | 9,30 | 892 |
-| W7 | 5m | schluss | gepoolt | 0,0398 | 0,0200 | 0,0599 | 3,76 | 894 |
-| W7 | 5m | schluss | 5-50 | 0,0105 | -0,0073 | 0,0032 | 0,20 | 894 |
-| W7 | 5m | schluss | 50-250 | 0,0707 | 0,0475 | 0,1182 | 7,38 | 894 |
-| W7 | 5m | schluss | 250-1000 | 0,0924 | 0,0682 | 0,1606 | 9,52 | 894 |
-| W7 | 5m | schluss | ab1000 | 0,1960 | 0,1411 | 0,3371 | 13,15 | 894 |
-| W7 | 15m | 3h | gepoolt | -0,0070 | -0,0138 | -0,0207 | -1,30 | 894 |
-| W7 | 15m | 3h | 5-50 | -0,0436 | -0,0534 | -0,0970 | -5,99 | 894 |
-| W7 | 15m | 3h | 50-250 | 0,0363 | 0,0250 | 0,0612 | 3,54 | 894 |
-| W7 | 15m | 3h | 250-1000 | 0,0610 | 0,0543 | 0,1156 | 5,58 | 893 |
-| W7 | 15m | 3h | ab1000 | 0,1445 | 0,1214 | 0,2628 | 7,59 | 837 |
-| W7 | 15m | schluss | gepoolt | 0,0499 | 0,0267 | 0,0766 | 4,00 | 894 |
-| W7 | 15m | schluss | 5-50 | 0,0168 | -0,0115 | 0,0054 | 0,27 | 894 |
-| W7 | 15m | schluss | 50-250 | 0,0877 | 0,0644 | 0,1522 | 7,77 | 894 |
-| W7 | 15m | schluss | 250-1000 | 0,1261 | 0,0946 | 0,2207 | 10,03 | 894 |
-| W7 | 15m | schluss | ab1000 | 0,2345 | 0,1779 | 0,4182 | 11,50 | 856 |
+> **Korrektur vom 13.09.2026 (NACHTRAG 6.1, Fund des PM).** In der ersten Fassung dieses Berichts stand hier,
+> die Spiegel-Summe sei „rechnerisch `r̄(Long) − r̄(Short)`, der Topf kürzt sich heraus" — und daraus der Satz:
+> *„Der Detektor zeigt auf kurzer Sicht in die falsche Richtung und dreht mit der Haltedauer."* **Das war
+> falsch.** Der Topf kürzt sich heraus, die **Hürde nicht**: `u_long + u_short = Trennung − K_long − K_short`.
+> Bei gepooltem `K ≈ 0,122` sind das **0,244 Pp konstanter Abzug**, unabhängig von der Haltedauer — genau
+> daher stammte das „stark negativ bei 15m und 1h". Die rohe Trennung ist in **allen** gemessenen Zellen
+> positiv und wächst monoton mit der Haltedauer; es gibt **keinen Vorzeichenwechsel**. Die Tafeln unten führen
+> `Trennung` deshalb als eigene Spalte, und jeder Vergleich über Haltedauern oder Klassen benutzt sie.
 
-Zwei Muster stehen darin, beide gegen die Deutung „reines Rauschen": die Summe wächst **monoton mit der
-Liquiditätsklasse** (in `5-50` liegt sie bei null oder negativ, in `ab1000` bei +0,24 bis +0,42 Pp), und sie
-wächst **monoton mit der Haltedauer** — im Hauptlauf ist dieselbe Summe bei 15m und 1h stark **negativ**
-(bis −0,21 Pp, |t| > 40), bei 3h nahe null, bei „schluss" positiv. Der Detektor zeigt auf kurzer Sicht in
-die **falsche** Richtung und dreht mit der Haltedauer. Das ist zu erklären, bevor daraus etwas wird.
+`u_long + u_short` und die rohe Trennung über die Tage mit Signal in beiden Richtungen, je Klasse, für die
+Konfigurationen mit mindestens einer Tor-1-Zeile. **`Trennung = Summe + K_long + K_short`** — und weil `K` je
+Klasse zwischen 0,1569 und 0,0449 liegt, vergleicht ein Vergleich der *Summen* über Klassen zwei
+verschiedene Abzüge. Maßgeblich ist die Spalte `Trennung`:
+
+| Det | ZR | H | Klasse | u_long | u_short | Summe | K_l + K_s | Trennung | t | Haltezeit (h) | Trennung je h | nTage |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| W7 | 1m | schluss | gepoolt | -0,0447 | -0,0516 | -0,0963 | 0,2221 | **0,1258** | 16,86 | 3,71 | 0,0339 | 894 |
+| W7 | 1m | schluss | 5-50 | -0,0865 | -0,0966 | -0,1831 | 0,3138 | **0,1307** | 15,58 | 3,72 | 0,0352 | 894 |
+| W7 | 1m | schluss | 50-250 | -0,0218 | -0,0281 | -0,0499 | 0,1708 | **0,1209** | 16,59 | 3,70 | 0,0327 | 894 |
+| W7 | 1m | schluss | 250-1000 | -0,0017 | -0,0076 | -0,0093 | 0,1294 | **0,1201** | 16,25 | 3,70 | 0,0324 | 894 |
+| W7 | 1m | schluss | ab1000 | 0,0415 | 0,0336 | 0,0751 | 0,0898 | **0,1649** | 14,16 | 3,69 | 0,0447 | 894 |
+| W7 | 5m | 3h | gepoolt | -0,0005 | -0,0194 | -0,0199 | 0,2423 | **0,2224** | 16,72 | 3,00 | 0,0741 | 894 |
+| W7 | 5m | 3h | 5-50 | -0,0297 | -0,0488 | -0,0785 | 0,3138 | **0,2353** | 17,51 | 3,00 | 0,0784 | 894 |
+| W7 | 5m | 3h | 50-250 | 0,0321 | 0,0106 | 0,0427 | 0,1708 | **0,2135** | 15,32 | 3,00 | 0,0712 | 894 |
+| W7 | 5m | 3h | 250-1000 | 0,0485 | 0,0340 | 0,0825 | 0,1294 | **0,2119** | 13,15 | 3,00 | 0,0706 | 894 |
+| W7 | 5m | 3h | ab1000 | 0,1283 | 0,1077 | 0,2363 | 0,0898 | **0,3261** | 12,83 | 3,00 | 0,1087 | 892 |
+| W7 | 5m | schluss | gepoolt | 0,0398 | 0,0200 | 0,0599 | 0,2427 | **0,3026** | 18,98 | 4,06 | 0,0746 | 894 |
+| W7 | 5m | schluss | 5-50 | 0,0105 | -0,0073 | 0,0032 | 0,3138 | **0,3170** | 19,22 | 4,05 | 0,0782 | 894 |
+| W7 | 5m | schluss | 50-250 | 0,0707 | 0,0475 | 0,1182 | 0,1708 | **0,2890** | 18,04 | 4,06 | 0,0713 | 894 |
+| W7 | 5m | schluss | 250-1000 | 0,0924 | 0,0682 | 0,1606 | 0,1294 | **0,2900** | 17,19 | 4,07 | 0,0712 | 894 |
+| W7 | 5m | schluss | ab1000 | 0,1960 | 0,1411 | 0,3371 | 0,0898 | **0,4269** | 16,65 | 4,13 | 0,1033 | 894 |
+| W7 | 15m | 3h | gepoolt | -0,0070 | -0,0138 | -0,0207 | 0,2436 | **0,2229** | 13,91 | 3,00 | 0,0743 | 894 |
+| W7 | 15m | 3h | 5-50 | -0,0436 | -0,0534 | -0,0970 | 0,3138 | **0,2168** | 13,38 | 3,00 | 0,0722 | 894 |
+| W7 | 15m | 3h | 50-250 | 0,0363 | 0,0250 | 0,0612 | 0,1708 | **0,2320** | 13,42 | 3,00 | 0,0773 | 894 |
+| W7 | 15m | 3h | 250-1000 | 0,0610 | 0,0543 | 0,1156 | 0,1294 | **0,2450** | 11,83 | 3,00 | 0,0817 | 893 |
+| W7 | 15m | 3h | ab1000 | 0,1445 | 0,1214 | 0,2628 | 0,0898 | **0,3526** | 10,18 | 3,00 | 0,1175 | 837 |
+| W7 | 15m | schluss | gepoolt | 0,0499 | 0,0267 | 0,0766 | 0,2444 | **0,3210** | 16,75 | 3,89 | 0,0826 | 894 |
+| W7 | 15m | schluss | 5-50 | 0,0168 | -0,0115 | 0,0054 | 0,3138 | **0,3192** | 15,93 | 3,87 | 0,0824 | 894 |
+| W7 | 15m | schluss | 50-250 | 0,0877 | 0,0644 | 0,1522 | 0,1708 | **0,3230** | 16,49 | 3,89 | 0,0830 | 894 |
+| W7 | 15m | schluss | 250-1000 | 0,1261 | 0,0946 | 0,2207 | 0,1294 | **0,3501** | 15,91 | 3,92 | 0,0894 | 894 |
+| W7 | 15m | schluss | ab1000 | 0,2345 | 0,1779 | 0,4182 | 0,0898 | **0,5080** | 13,96 | 3,97 | 0,1280 | 856 |
+
+**Steht die Zunahme mit der Liquidität?** In **5 von 5** Konfigurationen wächst die *Summe*
+monoton über die vier Klassen — in **2 von 5** die *rohe Trennung*. Die Monotonie der Summe ist
+also weitgehend die Hürde: von `5-50` nach `ab1000` fällt `K_l + K_s` um 0,2240 Pp, und genau diesen Betrag
+gewinnt die Summe mechanisch dazu.
+
+**Was von der Monotonie bleibt:** `ab1000` ist in **5 von 5** Konfigurationen die höchste der vier
+Klassen, mit dem **1,33- bis 1,54-fachen** des Mittels der drei übrigen. Die drei billigeren
+Klassen liegen dagegen dicht beieinander und ordnen sich nicht durchgehend. Die Aussage „die Trennung wächst
+**monoton** mit der Liquidität" ist damit **zurückgenommen**; es bleibt die schwächere, aber saubere Aussage:
+**`ab1000` trennt deutlich besser als der Rest, der Rest trennt gleich gut.**
+
+**W7 gepoolt, rohe Trennung über alle fünf Haltedauern** (Pp, und darunter je Stunde Haltezeit;
+für „naechste" zählt die Haltezeit nur Sitzungsminuten, die Nacht steckt nicht darin). Der PM hat dieselbe
+Tafel unabhängig aus `voll-0/ERGEBNIS.md` gerechnet; die Werte stimmen bis auf ≤ 0,001 Pp überein — der Rest
+ist der hier engere Tagesausschnitt (nur Tage mit `u` in **beiden** Richtungen):
+
+| ZR | 15m | 1h | 3h | schluss | naechste |
+|---|---|---|---|---|---|
+| 1m | 0,0119 | 0,0275 | 0,1075 | 0,1258 | 0,1458 |
+| 1m je h | 0,0474 | 0,0275 | 0,0358 | 0,0339 | 0,0393 |
+| 5m | 0,0435 | 0,1214 | 0,2224 | 0,3026 | 0,3552 |
+| 5m je h | 0,1733 | 0,1213 | 0,0741 | 0,0746 | 0,0875 |
+| 15m | 0,0457 | 0,1209 | 0,2229 | 0,3210 | 0,5125 |
+| 15m je h | 0,1825 | 0,1208 | 0,0743 | 0,0826 | 0,1319 |
+
+**Die offene Frage, richtig gestellt.** Es gibt keinen Vorzeichenwechsel: die Trennung ist auf jeder Sicht
+positiv und wächst mit der Haltedauer. Sie wächst aber **unterproportional** — je Stunde Haltezeit **fällt**
+sie: auf 5m von 0,173 Pp/h (15 Minuten) über 0,121 (eine Stunde) auf 0,074 (drei Stunden und bis Schluss),
+auf 15m von 0,183 über 0,121 auf 0,074. Der Vorsprung entsteht also **früh** und läuft dann aus. (Auf 1m ist
+die Trennung insgesamt klein und je Stunde über alle Stufen flach bei 0,03–0,05 Pp/h — dort ist von dem
+frühen Vorsprung nichts zu sehen, was zu der Lesart passt, dass er im Einstiegskurs sitzt.)
+
+Das ist genau das Profil, das eine **Wende** von einer **Mikrostruktur-Erholung** unterscheidet. Eine echte
+Wende müsste ihren Vorsprung über die Haltedauer **mindestens proportional** ausbauen — die Richtung ändert
+sich, der neue Trend läuft weiter. Ein Rückprall aus dem Spannen-/Extrem-Einstieg dagegen ist nach Minuten
+fertig; alles Spätere ist nur noch Marktdrift, die der Topf abzieht. Der gemessene Verlauf sieht aus wie das
+zweite. **Messbar wäre das mit den vorhandenen Zellen nicht** — dafür bräuchte es die Trennung auf einem
+feineren Raster der Haltedauer (1, 3, 5, 10, 30 Minuten) plus den bereits gebauten verzögerten Einstieg
+`k` als Hebel: verschwindet der frühe Teil der Trennung, wenn der Einstieg um k Kerzen wandert, sitzt sie im
+Einstiegskurs; bleibt er, ist sie eine Eigenschaft der Kursreihe nach dem Signal.
 
 ## 3. Prüfungen
 
@@ -196,6 +244,19 @@ Zeit wandert — genau der Effekt, um den es in dieser Auswertung geht.
 | ab1000 | 0,0449 | 0,044900 | ja |
 
 **Bestanden** — `K_kand` einer Klassenzeile ist konstruktionsgemäß exakt die Hürde der Klasse.
+
+### 3.5 Positivkontrolle: die Hürden-Identität der Spiegel-Summe
+
+Behauptet wird `u_long,t + u_short,t + K_long,t + K_short,t = Trennung_t` für jeden Tag mit Signal in beiden
+Richtungen. Geprüft über alle Konfigurationen und Klassen:
+
+- maximale absolute Abweichung der Identität je Tag: **7.105e-15** Pp — bestanden, Fließkommarauschen.
+- `Trennung` gegen die direkt aus `roh` gerechnete Differenz `r̄(Long) − r̄(Short)` derselben Tage:
+  Median 0,0004, Maximum **0,0126** Pp.
+
+Die zweite Zeile ist **nicht** null und darf es nicht sein: `Trennung` zieht den Topf je Zelle ab und
+gewichtet ihn mit den Zellenzahlen der jeweiligen Richtung; Long und Short verteilen sich verschieden auf
+lebende und erloschene Reihen, also bleibt ein kleiner Rest. Er misst diese Gewichtung, nicht den Markt.
 
 ## 4. Placebo A je Klasse — beide Kriterien getrennt
 
@@ -278,7 +339,7 @@ an der Methode schon: für Bänder dieser Dichte ist die Größenschranke das tr
 
 u_E 0,0597 (4,37 × MDE_B), u_B 0,0415 (t 6,07), K_kand 0,0449, delta80 0,0333, Tor 2 ja — Etikett: **Kandidat fuer den Vorwaertstest**.
 
-Einstiegslücke je Signal 0,0032, u_B lückenbereinigt 0,0380 (t 5,56), Haltezeit Kandidat 221,29 min gegen Topf 209,23 min (Versatz 0,06, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0005, Spiegel-Summe 0,0751 (t 6,45).
+Einstiegslücke je Signal 0,0032, u_B lückenbereinigt 0,0380 (t 5,56), Haltezeit Kandidat 221,29 min gegen Topf 209,23 min (Versatz 0,06, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0005, rohe Trennung 0,1649 (t 14,16, je Stunde 0,0447).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -301,7 +362,7 @@ Trend über die Jahre: Steigung 0,0003 Pp/Jahr (t 0,07, 11 Jahre).
 
 u_E 0,0595 (4,42 × MDE_B), u_B 0,0336 (t 4,99), K_kand 0,0449, delta80 0,0328, Tor 2 ja — Etikett: **Kandidat fuer den Vorwaertstest**.
 
-Einstiegslücke je Signal 0,0029, u_B lückenbereinigt 0,0306 (t 4,56), Haltezeit Kandidat 222,61 min gegen Topf 209,23 min (Versatz 0,06, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0003, Spiegel-Summe 0,0751 (t 6,45).
+Einstiegslücke je Signal 0,0029, u_B lückenbereinigt 0,0306 (t 4,56), Haltezeit Kandidat 222,61 min gegen Topf 209,23 min (Versatz 0,06, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0003, rohe Trennung 0,1649 (t 14,16, je Stunde 0,0444).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -324,7 +385,7 @@ Trend über die Jahre: Steigung 0,0002 Pp/Jahr (t 0,03, 11 Jahre).
 
 u_E 0,1807 (5,48 × MDE_B), u_B 0,1283 (t 7,78), K_kand 0,0449, delta80 0,0804, Tor 2 nein — Etikett: **nicht entscheidbar** (Tor 2: delta80 >= K_kand).
 
-Einstiegslücke je Signal 0,0019, u_B lückenbereinigt 0,1259 (t 7,59), Haltezeit Kandidat 180,00 min gegen Topf 180,00 min (Versatz -0,00, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0000, Spiegel-Summe 0,2363 (t 9,30).
+Einstiegslücke je Signal 0,0019, u_B lückenbereinigt 0,1259 (t 7,59), Haltezeit Kandidat 180,00 min gegen Topf 180,00 min (Versatz -0,00, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0000, rohe Trennung 0,3261 (t 12,83, je Stunde 0,1087).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -347,7 +408,7 @@ Trend über die Jahre: Steigung -0,0007 Pp/Jahr (t -0,11, 11 Jahre).
 
 u_E 0,0833 (4,37 × MDE_B), u_B 0,0707 (t 7,42), K_kand 0,0854, delta80 0,0464, Tor 2 ja — Etikett: **Kandidat fuer den Vorwaertstest**.
 
-Einstiegslücke je Signal 0,0086, u_B lückenbereinigt 0,0611 (t 6,46), Haltezeit Kandidat 243,38 min gegen Topf 207,04 min (Versatz 0,18, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0019, Spiegel-Summe 0,1182 (t 7,38).
+Einstiegslücke je Signal 0,0086, u_B lückenbereinigt 0,0611 (t 6,46), Haltezeit Kandidat 243,38 min gegen Topf 207,04 min (Versatz 0,18, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0019, rohe Trennung 0,2890 (t 18,04, je Stunde 0,0713).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -370,7 +431,7 @@ Trend über die Jahre: Steigung 0,0052 Pp/Jahr (t 0,80, 11 Jahre).
 
 u_E 0,1149 (5,76 × MDE_B), u_B 0,0924 (t 9,26), K_kand 0,0647, delta80 0,0486, Tor 2 ja — Etikett: **Kandidat fuer den Vorwaertstest**.
 
-Einstiegslücke je Signal 0,0033, u_B lückenbereinigt 0,0890 (t 8,94), Haltezeit Kandidat 244,47 min gegen Topf 207,12 min (Versatz 0,18, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0036, Spiegel-Summe 0,1606 (t 9,52).
+Einstiegslücke je Signal 0,0033, u_B lückenbereinigt 0,0890 (t 8,94), Haltezeit Kandidat 244,47 min gegen Topf 207,12 min (Versatz 0,18, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0036, rohe Trennung 0,2900 (t 17,19, je Stunde 0,0712).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -393,7 +454,7 @@ Trend über die Jahre: Steigung 0,0046 Pp/Jahr (t 0,68, 11 Jahre).
 
 u_E 0,2241 (6,81 × MDE_B), u_B 0,1960 (t 11,92), K_kand 0,0449, delta80 0,0801, Tor 2 nein — Etikett: **nicht entscheidbar** (Tor 2: delta80 >= K_kand).
 
-Einstiegslücke je Signal 0,0019, u_B lückenbereinigt 0,1936 (t 11,74), Haltezeit Kandidat 247,95 min gegen Topf 207,11 min (Versatz 0,20, Uhrzeit-Tor nein), Überlebens-Differenz brutto 0,0007, Spiegel-Summe 0,3371 (t 13,15).
+Einstiegslücke je Signal 0,0019, u_B lückenbereinigt 0,1936 (t 11,74), Haltezeit Kandidat 247,95 min gegen Topf 207,11 min (Versatz 0,20, Uhrzeit-Tor nein), Überlebens-Differenz brutto 0,0007, rohe Trennung 0,4269 (t 16,65, je Stunde 0,1033).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -416,7 +477,7 @@ Trend über die Jahre: Steigung 0,0029 Pp/Jahr (t 0,41, 11 Jahre).
 
 u_E 0,1404 (4,11 × MDE_B), u_B 0,1077 (t 6,30), K_kand 0,0449, delta80 0,0833, Tor 2 nein — Etikett: **nicht entscheidbar** (Tor 2: delta80 >= K_kand).
 
-Einstiegslücke je Signal 0,0012, u_B lückenbereinigt 0,1065 (t 6,23), Haltezeit Kandidat 180,00 min gegen Topf 180,00 min (Versatz 0,00, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0002, Spiegel-Summe 0,2363 (t 9,30).
+Einstiegslücke je Signal 0,0012, u_B lückenbereinigt 0,1065 (t 6,23), Haltezeit Kandidat 180,00 min gegen Topf 180,00 min (Versatz 0,00, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0002, rohe Trennung 0,3261 (t 12,83, je Stunde 0,1087).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -439,7 +500,7 @@ Trend über die Jahre: Steigung 0,0020 Pp/Jahr (t 0,26, 11 Jahre).
 
 u_E 0,0996 (4,97 × MDE_B), u_B 0,0682 (t 6,80), K_kand 0,0647, delta80 0,0488, Tor 2 ja — Etikett: **Kandidat fuer den Vorwaertstest**.
 
-Einstiegslücke je Signal 0,0028, u_B lückenbereinigt 0,0654 (t 6,53), Haltezeit Kandidat 245,82 min gegen Topf 207,11 min (Versatz 0,19, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0005, Spiegel-Summe 0,1606 (t 9,52).
+Einstiegslücke je Signal 0,0028, u_B lückenbereinigt 0,0654 (t 6,53), Haltezeit Kandidat 245,82 min gegen Topf 207,11 min (Versatz 0,19, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0005, rohe Trennung 0,2900 (t 17,19, je Stunde 0,0708).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -462,7 +523,7 @@ Trend über die Jahre: Steigung 0,0036 Pp/Jahr (t 0,46, 11 Jahre).
 
 u_E 0,1954 (6,41 × MDE_B), u_B 0,1411 (t 9,25), K_kand 0,0449, delta80 0,0743, Tor 2 nein — Etikett: **nicht entscheidbar** (Tor 2: delta80 >= K_kand).
 
-Einstiegslücke je Signal 0,0012, u_B lückenbereinigt 0,1399 (t 9,16), Haltezeit Kandidat 248,39 min gegen Topf 207,11 min (Versatz 0,20, Uhrzeit-Tor nein), Überlebens-Differenz brutto 0,0003, Spiegel-Summe 0,3371 (t 13,15).
+Einstiegslücke je Signal 0,0012, u_B lückenbereinigt 0,1399 (t 9,16), Haltezeit Kandidat 248,39 min gegen Topf 207,11 min (Versatz 0,20, Uhrzeit-Tor nein), Überlebens-Differenz brutto 0,0003, rohe Trennung 0,4269 (t 16,65, je Stunde 0,1031).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -485,7 +546,7 @@ Trend über die Jahre: Steigung 0,0008 Pp/Jahr (t 0,08, 11 Jahre).
 
 u_E 0,1961 (4,16 × MDE_B), u_B 0,1445 (t 6,13), K_kand 0,0449, delta80 0,1149, Tor 2 nein — Etikett: **nicht entscheidbar** (Tor 2: delta80 >= K_kand).
 
-Einstiegslücke je Signal 0,0002, u_B lückenbereinigt 0,1443 (t 6,12), Haltezeit Kandidat 180,00 min gegen Topf 180,00 min (Versatz 0,00, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0002, Spiegel-Summe 0,2628 (t 7,59).
+Einstiegslücke je Signal 0,0002, u_B lückenbereinigt 0,1443 (t 6,12), Haltezeit Kandidat 180,00 min gegen Topf 180,00 min (Versatz 0,00, Uhrzeit-Tor ja), Überlebens-Differenz brutto 0,0002, rohe Trennung 0,3526 (t 10,18, je Stunde 0,1175).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -508,7 +569,7 @@ Trend über die Jahre: Steigung 0,0002 Pp/Jahr (t 0,02, 11 Jahre).
 
 u_E 0,1068 (4,86 × MDE_B), u_B 0,0877 (t 7,99), K_kand 0,0854, delta80 0,0535, Tor 2 ja — Etikett: **Kandidat fuer den Vorwaertstest**.
 
-Einstiegslücke je Signal 0,0037, u_B lückenbereinigt 0,0827 (t 7,57), Haltezeit Kandidat 233,60 min gegen Topf 202,09 min (Versatz 0,16, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0040, Spiegel-Summe 0,1522 (t 7,77).
+Einstiegslücke je Signal 0,0037, u_B lückenbereinigt 0,0827 (t 7,57), Haltezeit Kandidat 233,60 min gegen Topf 202,09 min (Versatz 0,16, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0040, rohe Trennung 0,3230 (t 16,49, je Stunde 0,0830).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -531,7 +592,7 @@ Trend über die Jahre: Steigung 0,0048 Pp/Jahr (t 0,61, 11 Jahre).
 
 u_E 0,1483 (6,22 × MDE_B), u_B 0,1261 (t 10,58), K_kand 0,0647, delta80 0,0580, Tor 2 ja — Etikett: **Kandidat fuer den Vorwaertstest**.
 
-Einstiegslücke je Signal 0,0012, u_B lückenbereinigt 0,1243 (t 10,45), Haltezeit Kandidat 234,95 min gegen Topf 202,10 min (Versatz 0,16, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0062, Spiegel-Summe 0,2207 (t 10,03).
+Einstiegslücke je Signal 0,0012, u_B lückenbereinigt 0,1243 (t 10,45), Haltezeit Kandidat 234,95 min gegen Topf 202,10 min (Versatz 0,16, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0062, rohe Trennung 0,3501 (t 15,91, je Stunde 0,0894).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -554,7 +615,7 @@ Trend über die Jahre: Steigung 0,0063 Pp/Jahr (t 0,81, 11 Jahre).
 
 u_E 0,2928 (6,14 × MDE_B), u_B 0,2345 (t 9,83), K_kand 0,0449, delta80 0,1162, Tor 2 nein — Etikett: **nicht entscheidbar** (Tor 2: delta80 >= K_kand).
 
-Einstiegslücke je Signal 0,0002, u_B lückenbereinigt 0,2344 (t 9,83), Haltezeit Kandidat 238,11 min gegen Topf 202,15 min (Versatz 0,18, Uhrzeit-Tor nein), Überlebens-Differenz brutto 0,0003, Spiegel-Summe 0,4182 (t 11,50).
+Einstiegslücke je Signal 0,0002, u_B lückenbereinigt 0,2344 (t 9,83), Haltezeit Kandidat 238,11 min gegen Topf 202,15 min (Versatz 0,18, Uhrzeit-Tor nein), Überlebens-Differenz brutto 0,0003, rohe Trennung 0,5080 (t 13,96, je Stunde 0,1280).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -577,7 +638,7 @@ Trend über die Jahre: Steigung 0,0030 Pp/Jahr (t 0,34, 11 Jahre).
 
 u_E 0,1194 (4,31 × MDE_B), u_B 0,0946 (t 6,83), K_kand 0,0647, delta80 0,0675, Tor 2 nein — Etikett: **nicht entscheidbar** (Tor 2: delta80 >= K_kand).
 
-Einstiegslücke je Signal 0,0004, u_B lückenbereinigt 0,0936 (t 6,78), Haltezeit Kandidat 237,03 min gegen Topf 202,09 min (Versatz 0,17, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0019, Spiegel-Summe 0,2207 (t 10,03).
+Einstiegslücke je Signal 0,0004, u_B lückenbereinigt 0,0936 (t 6,78), Haltezeit Kandidat 237,03 min gegen Topf 202,09 min (Versatz 0,17, Uhrzeit-Tor nein), Überlebens-Differenz brutto -0,0019, rohe Trennung 0,3501 (t 15,91, je Stunde 0,0886).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -600,7 +661,7 @@ Trend über die Jahre: Steigung 0,0060 Pp/Jahr (t 0,62, 11 Jahre).
 
 u_E 0,1745 (4,17 × MDE_B), u_B 0,1779 (t 8,51), K_kand 0,0449, delta80 0,1018, Tor 2 nein — Etikett: **nicht entscheidbar** (Tor 2: delta80 >= K_kand).
 
-Einstiegslücke je Signal -0,0003, u_B lückenbereinigt 0,1780 (t 8,53), Haltezeit Kandidat 239,85 min gegen Topf 202,11 min (Versatz 0,19, Uhrzeit-Tor nein), Überlebens-Differenz brutto 0,0004, Spiegel-Summe 0,4182 (t 11,50).
+Einstiegslücke je Signal -0,0003, u_B lückenbereinigt 0,1780 (t 8,53), Haltezeit Kandidat 239,85 min gegen Topf 202,11 min (Versatz 0,19, Uhrzeit-Tor nein), Überlebens-Differenz brutto 0,0004, rohe Trennung 0,5080 (t 13,96, je Stunde 0,1271).
 
 | Jahr | nTage | nSig | u | se | t | brutto | netto | Schein BV1 | dünn |
 |---|---|---|---|---|---|---|---|---|---|
@@ -1550,10 +1611,11 @@ Das ist der Grund der Frage: der gepoolte `K_kand` ist fast der Wert der illiqui
    und sie kann kein „belegt" vergeben. Sie verschiebt nichts an `ERGEBNIS.md`.
 3. **Alles hängt an einem Detektor.** Alle 15 Tor-1-Zeilen gehören zu **W7**, keinem der sieben anderen.
    Das macht den Fund nicht falsch, aber es ist keine Aussage über „Wenden", sondern über diese eine Funktion.
-4. **Die offene Frage ist das Vorzeichen über die Haltedauer.** Derselbe Detektor trennt die Folgemengen auf
-   15m und 1h in die **entgegengesetzte** Richtung (Spiegel-Summe bis −0,21 Pp) und dreht mit der Haltedauer.
-   Eine Wende, die auf einer Stunde das Gegenteil und auf einem Tag das Behauptete tut, ist entweder zwei
-   verschiedene Sachen oder eine Eigenschaft des Messfensters. Diese Frage steht vor jedem Vorwärtstest.
+4. **Die offene Frage ist der Verlauf über die Haltedauer, nicht das Vorzeichen.** Die rohe Trennung ist auf
+   jeder Sicht positiv und wächst mit der Haltedauer, aber **je Stunde fällt sie**: der Vorsprung entsteht
+   früh und läuft aus. Das ist das Profil eines Rückpralls, nicht das einer Wende, die einen neuen Trend
+   eröffnet. Zu messen wäre es auf einem feineren Haltedauer-Raster zusammen mit dem verzögerten Einstieg.
+   (Die frühere Lesart „das Vorzeichen dreht" war ein Rechenfehler in der Deutung — siehe §2b, Korrektur.)
 5. **Für die Methode:** Umsatzklassen gehören in jede künftige Vorregistrierung dieser Familie als
    **vorab festgelegte** Schnittdimension — nicht als nachträgliche Suche. Ein gepoolter `K_kand`, der fast
    der Wert der billigsten Klasse ist, ist keine Kostenannahme, sondern ein Mischungsartefakt.
@@ -1572,4 +1634,4 @@ Das ist der Grund der Frage: der gepoolte `K_kand` ist fast der Wert der illiqui
 | voll-7 | 5.576 | 912 | vollstaendig | trendwende-ii-2026-09-09/v4/8x3x2x5x4x3+kurs+luecke+haltezeit+schein+jahre+verzoegert1 |
 
 Kalender 2.680 Tage, Bestätigung ab 2023-02-07 (Index 1786), Regime ab 2021-01-01 (Index 1259), letzte 250 Tage ab 2025-09-03.
-Auswertung 11 s, erzeugt 2026-09-13T09:37:15.953Z.
+Auswertung 12 s, erzeugt 2026-09-13T09:45:44.034Z.

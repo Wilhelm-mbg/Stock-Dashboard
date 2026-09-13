@@ -994,3 +994,34 @@ illiquiden Masse hat W7 erschlagen" **widerlegt**, und das gepoolte Nein steht o
 Die Klassen sind außerdem **keine unabhängigen Stichproben derselben Kante**: dieselbe Reihe wechselt über die
 Jahre die Klasse (`UMSATZ_FENSTER` = 20 Balkentage), und die liquiden Klassen sind dünn besetzt. Ein Fund in einer
 dünnen Klasse ist die **schwächste** Art von Fund, die diese Studie hergeben kann.
+
+## 23. NACHTRAG 6.1 — 13.09.2026, Korrektur der Spiegel-Deutung (Fund des PM), **nach den Zahlen**
+
+Die Spiegel-Summe wurde im ersten Klassenbericht falsch gedeutet. Die Korrektur ist **definitorisch**, nicht eine
+neue Testwahl: sie ändert keine Schwelle, kein Tor und kein Urteil, sondern nennt eine Größe richtig.
+
+**Die Identität.** Aus `u = dir·(r − Topf) − K` folgt
+
+> `u_long + u_short = [r̄(nach Long) − r̄(nach Short)] − K_long − K_short`
+
+Der **Topf kürzt sich heraus**, die **Hürde bleibt doppelt drin**. Bei gepooltem `K ≈ 0,122` sind das **0,244 Pp**
+konstanter Abzug, unabhängig von der Haltedauer. Daher — und nur daher — war die Summe bei den kurzen Haltedauern
+negativ. Der daraus gezogene Satz „der Detektor zeigt auf kurzer Sicht in die falsche Richtung und dreht mit der
+Haltedauer" ist **falsch und zurückgenommen**: die rohe Trennung ist in allen fünfzehn gemessenen Zellen positiv
+und wächst monoton mit der Haltedauer.
+
+**Festgelegt für diesen und jeden künftigen Bericht:**
+
+1. Die berichtete Diagnosegröße heißt **`Trennung` = `u_long + u_short + K_long + K_short`** und steht als eigene
+   Spalte neben der Summe; `K_long + K_short` wird daneben ausgewiesen, damit der Abzug sichtbar ist.
+2. **Jeder Vergleich über verschiedene Haltedauern oder verschiedene Klassen benutzt `Trennung`, nie die Summe.**
+   `K` unterscheidet sich je Klasse zwischen 0,1569 und 0,0449; ein Vergleich der Summen über Klassen vergleicht
+   also auch zwei verschiedene Abzüge. Die im ersten Bericht behauptete monotone Zunahme der Summe mit der
+   Liquidität wird an der rohen Trennung nachgerechnet, und das Ergebnis wird berichtet, wie es ausfällt.
+3. **Positivkontrolle** dazu: `u_long,t + u_short,t + K_long,t + K_short,t` gegen `uBrutto_long,t + uBrutto_short,t`
+   je Tag (Soll: Fließkommarauschen), und die so gebildete `Trennung` zusätzlich gegen die direkt aus den
+   `roh`-Zellen gerechnete Differenz derselben Tage (Soll: klein, aber nicht null — der Rest misst die
+   Zellengewichtung des Topfes über lebende und erloschene Reihen und wird ausgewiesen).
+4. Die offene Frage wird neu gestellt: nicht „warum dreht das Vorzeichen", sondern **die Trennung wächst mit der
+   Haltedauer, je Stunde fällt sie**. Der Bericht nennt, was dieses Profil von einer echten Wende unterscheidet
+   und was dafür zu messen wäre.
