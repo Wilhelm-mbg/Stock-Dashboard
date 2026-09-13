@@ -1,0 +1,61 @@
+{
+ "stand": "2026-09-13T22:19:46.085Z",
+ "aus": "voll",
+ "kunst": "kunst",
+ "n": 9,
+ "rot": 0,
+ "abschnitte": [
+  {
+   "nr": 10,
+   "titel": "Die drei Kontrollen am Kunstsatz (Maschine mit bekannter Antwort)",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "Orakel(Tag) Woche brutto 3.147 Pp",
+     "extra": "Schranke 2"
+    },
+    {
+     "ok": true,
+     "text": "Orakel Mittel/sd 2.83",
+     "extra": "Schranke 1 (Nachtrag 4)"
+    },
+    {
+     "ok": true,
+     "text": "Orakel(Periode) Woche brutto 8.139 Pp",
+     "extra": "Schranke 5"
+    },
+    {
+     "ok": true,
+     "text": "Zufall Woche |t| = 0.28",
+     "extra": "Schranke 3"
+    },
+    {
+     "ok": true,
+     "text": "Kantenbeginn 2020-01-01 liegt bei Kalenderindex 1006 (2020-01-02)"
+    },
+    {
+     "ok": true,
+     "text": "Perioden mit Kante 336, ohne Kante 157",
+     "extra": "beide Faelle muessen im Satz sein"
+    },
+    {
+     "ok": true,
+     "text": "Soll-Kante ab 2020 (aus den gehaltenen Mitgliedern) 0.4841 Pp je Woche",
+     "extra": "Positivkontrolle - ein Soll nahe null pruefte nichts"
+    },
+    {
+     "ok": true,
+     "text": "gemessen 0.4142 Pp je Woche gegen Soll 0.4841",
+     "extra": "Abweichung -0.0699 Pp"
+    },
+    {
+     "ok": true,
+     "text": "vor 2020 (dort gibt es keine Kante): -0.0251 Pp",
+     "extra": "Gegenprobe - waere sie hier auch gross, misst der Rahmen theta statt der Kante"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  }
+ ]
+}

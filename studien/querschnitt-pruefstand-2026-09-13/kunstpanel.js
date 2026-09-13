@@ -8,7 +8,8 @@
  * Der Satz enthaelt AUSDRUECKLICH die Faelle, die die Proben behaupten (Fehlerform "Die Kunst-Reihe war
  * eine Gerade"):
  *   - 300 Reihen mit Querschnittsstreuung ~2 Pp je Tag, dazu ein Markt-Faktor (gemeinsame Tage!),
- *   - eine EINGEPFLANZTE Kante: die Reihen mit gerader Nummer bekommen ab 2020 +0,05 Pp je Tag,
+ *   - eine EINGEPFLANZTE, EXAKT VORHERSAGBARE Kante: jede Reihe traegt ein festes theta_s und driftet ab
+ *     2020 taeglich um 0,05 Pp x theta_s,
  *   - Umsaetze so, dass beide Universumsklassen und beide Cent-Boden-Seiten besetzt sind,
  *   - 12 Reihen, die mitten im Satz sterben, mit allen vier Ausbuchungsgruenden,
  *   - eine Reihe mit Luecken, eine mit fehlender Schlussauktionskerze, eine unter dem Cent-Boden,
@@ -25,7 +26,19 @@ var P = require('./paneldaten.js');
 var ST = require('./statistik.js');
 
 var N_REIHEN = 300;
+/* Die eingepflanzte Kante (§4 Pruefung 10): jede Reihe traegt einen FESTEN, verborgenen Wert theta_s
+ * (standardnormal, deterministisch aus dem Kuerzel), und ab KANTE_AB driftet sie taeglich um
+ * KANTE_PP * theta_s. Eine Rangfunktion, die theta_s liefert, muss dann genau
+ * KANTE_PP * (theta des Long-Dezils - theta des Universums) * Handelstage je Periode verdienen - eine
+ * Vorhersage auf die zweite Stelle, nicht ein "ungefaehr positiv".
+ * Frueher stand hier "gerade Kuerzelnummer": untauglich, weil das Dezil dann immer dieselben 17 Reihen
+ * war UND die Nummer ueber den Umsatz mit der Umsatzklasse und dem Cent-Boden verkoppelt war. */
 var KANTE_AB = '2020-01-01', KANTE_PP = 0.05;
+function theta(name) {
+  var r = ST.mulberry32(ST.fnv('kunst-theta|' + name));
+  var u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
 var TOTE = [
   { i: 10, tag: '2018-06-15', grund: 'insolvenz' }, { i: 11, tag: '2018-06-15', grund: 'zwangs-delisting' },
   { i: 12, tag: '2019-03-20', grund: 'uebernahme' }, { i: 13, tag: '2019-03-20', grund: 'unbekannt' },
@@ -41,7 +54,12 @@ function bauen(aus, opt) {
   var kal = K.kalender();
   var von = kal.idx[opt.von || '2016-01-04'], bis = kal.idx[opt.bis || '2026-06-30'];
   if (von == null || bis == null) throw new Error('Kunstpanel: Kalendergrenzen fehlen');
-  var kanteAb = kal.idx[KANTE_AB];
+  /* KANTE_AB ist ein KALENDERDATUM, kein Handelstag: 2020-01-01 ist ein Feiertag, `kal.idx` kennt ihn
+   * nicht, und `tg >= undefined` ist IMMER falsch - die Kante wurde dadurch nie eingepflanzt, und die
+   * Positivkontrolle mass brav null. Gefunden hat es die Positivkontrolle selbst, nicht der Verdacht. */
+  var kanteAb = null;
+  for (var ka = 0; ka < kal.tage.length; ka++) if (kal.tage[ka] >= KANTE_AB) { kanteAb = ka; break; }
+  if (kanteAb == null) throw new Error('Kunstpanel: kein Handelstag ab ' + KANTE_AB);
   var namen = []; for (var i = 0; i < N_REIHEN; i++) namen.push('K' + String(i).padStart(3, '0'));
   namen.push('SPY');
   var spyIdx = N_REIHEN;
@@ -85,7 +103,7 @@ function bauen(aus, opt) {
        * die Probe behauptet (Fehlerform "Die Kunst-Reihe war eine Gerade"). */
       var nacht = (sy === spyIdx) ? 0.3 * normal() : 1.0 * normal();
       var sitzung = (sy === spyIdx) ? 0.6 * normal() : 1.8 * normal();
-      var kante = (sy !== spyIdx && sy % 2 === 0 && tg >= kanteAb) ? KANTE_PP : 0;
+      var kante = (sy !== spyIdx && tg >= kanteAb) ? KANTE_PP * theta(namen[sy]) : 0;
       var oc = markt[tg] + sitzung + kante;                             /* Eroeffnung -> Schluss */
       var alt = kurs[sy];
       var eroeff = alt * (1 + nacht / 100);
@@ -133,8 +151,8 @@ if (require.main === module) {
   var aus = process.argv[2] || 'kunst';
   fs.mkdirSync(aus, { recursive: true });
   var st = bauen(aus);
-  process.stdout.write('Kunstpanel: ' + st.zeilen + ' Zeilen, ' + st.symbole.length + ' Reihen, ' + st.jahre.length + ' Jahre, Kante +' + KANTE_PP + ' Pp/Tag ab ' + KANTE_AB + ' fuer gerade Nummern\n');
+  process.stdout.write('Kunstpanel: ' + st.zeilen + ' Zeilen, ' + st.symbole.length + ' Reihen, ' + st.jahre.length + ' Jahre, Kante ' + KANTE_PP + ' x theta_s je Tag ab ' + KANTE_AB + '\n');
 }
 
-module.exports = { bauen: bauen, N_REIHEN: N_REIHEN, KANTE_AB: KANTE_AB, KANTE_PP: KANTE_PP, TOTE: TOTE,
+module.exports = { bauen: bauen, theta: theta, N_REIHEN: N_REIHEN, KANTE_AB: KANTE_AB, KANTE_PP: KANTE_PP, TOTE: TOTE,
   LUECKEN_REIHE: LUECKEN_REIHE, ERSATZ_REIHE: ERSATZ_REIHE, CENT_REIHE: CENT_REIHE, KLEIN_REIHE: KLEIN_REIHE };
