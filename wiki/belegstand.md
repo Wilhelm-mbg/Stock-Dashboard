@@ -297,3 +297,28 @@ Geprüft und **widerlegt** wurden drei Erklärungen, jede vom PM vermutet und je
 Bestätigungszeitraum: brutto 0,1433 · **netto (Aktie) 0,0842** · u 0,1138 bei t 7,35 · Schein BV 1 netto 0,0933 (t 4,04) · Standard-Schein zu. Aktualitäts-Tor bestanden, Lücken-Tor bestanden, Uhrzeit-Tor gilt nicht (feste Haltedauer).
 
 Die zweite belegte Zeile (W7 1m long bis Schluss, u 0,0359 bei t 6,35) ist in den **letzten 250 Tagen schon netto negativ** (u 0,0132 bei t 1,19, netto −0,0423) — sie zeigt, wie schnell das kippt. Offen bleibt nach dem Vollauf der **mitverzögerte Topf** (Placebo B und Topf laufen bisher bei k = 0 mit).
+
+### Nachtrag 13.09.: dieselben Zellen je Umsatzklasse — die Kante ist überall gleich groß, nur der Preis nicht
+
+Bericht `studien/vorregistrierung-2026-09-09-trendwende-ii/ERGEBNIS-KLASSEN.md` (keine neue Messung, dieselben `_zellen.bin`). **Nachträglich gestellte Frage** — kann per Registrierung nie „belegt" ergeben, höchstens einen Kandidaten für den Vorwärtstest; Testzahl 900 statt 225.
+
+| Klasse | Hürde je Umlauf | Tor 1 bestanden (von 225) | W7 5m long 3h: u_B | t |
+|---|---:|---:|---:|---:|
+| 5-50 | 0,1569 | **0** | −0,0297 | −3,10 |
+| 50-250 | 0,0854 | 2 | 0,0321 | 3,51 |
+| 250-1000 | 0,0647 | 4 | 0,0485 | 4,63 |
+| **ab1000** | **0,0449** | **9** | **0,1283** | **7,78** |
+| *gepoolt* | *0,1222* | *0* | *−0,0005* | *−0,06* |
+
+**Der eigentliche Befund steht erst da, wenn man die Kosten herausrechnet.** Die rohe Trennung `r̄(nach Long) − r̄(nach Short)` = Spiegel-Summe + K_long + K_short, W7 5m:
+
+| | 5-50 | 50-250 | 250-1000 | ab1000 |
+|---|---:|---:|---:|---:|
+| bis Schluss | 0,317 | 0,289 | 0,290 | **0,427** |
+| drei Stunden | 0,235 | 0,214 | 0,212 | **0,326** |
+
+**Die drei billigeren Klassen trennen gleich gut.** Was sich zwischen ihnen um das Dreieinhalbfache unterscheidet, ist die Spanne, nicht die Kante. Die scheinbare Monotonie der Spiegel-Summe über die Klassen war zum größten Teil die fallende Hürde (`K_l+K_s` fällt von 0,314 auf 0,090). Nur `ab1000` trennt wirklich schärfer (Faktor 1,33–1,54) — auf 26.430 Signalen.
+
+**Warum trotzdem kein Ja:** die drei saubersten Zeilen (Tor 1, Uhrzeit-Tor, Lücken-Tor bestanden) fallen über **Tor 2**, die Auflösungswand — in der liquidesten Klasse ist die Hürde klein (0,0449) und die Stichprobe dünn, die auflösbare Differenz (0,0804) also größer als die Hürde. Das ist „nicht entscheidbar", nicht „nein". Dazu: alle 15 Zeilen kommen von **einem** Detektor, 10 fallen über das Uhrzeit-Tor, und die beiden Zeilen, die jedes Tor bestehen, haben in den letzten 250 Tagen t < 1.
+
+**Profil, das gegen Wilhelms Ziel spricht:** die Trennung **je Stunde** fällt (5m: 0,173 → 0,121 → 0,074 Pp/h von 15 min über 1 h auf 3 h). Der Vorsprung entsteht früh und läuft aus — das Profil eines **Rückpralls**, nicht einer Wende, die einen neuen Trend eröffnet. Für „jeden Trend mitnehmen" ist das die falsche Sorte Signal, und es ist genau die Sorte, der die Spanne am meisten wehtut.
