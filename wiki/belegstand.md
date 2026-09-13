@@ -271,7 +271,11 @@ Woher die +29 Pp dann kommen, zeigt der **Endlauf** (Rendite der letzten 60 Balk
 
 **Zwei Nebenbefunde, die Messungen betreffen:** (1) 153 Insolvenzen standen im Maßnahmen-Archiv als „Umbenennung" (Q-Kürzel wie AMRS→AMRSQ) — genau die Fälle mit −73 Pp Endlauf; wer Kürzelwechsel pauschal als „lebt weiter" führt, verliert sie. (2) Am **21.03.2025 enden 77 Reihen auf einmal** (nächsthäufigster Tag: 13) — zu gutem Teil eine Grenze der Sammlung, kein Marktereignis; 37 davon sind unbelegt.
 
-### W7 (RSI-Divergenz) hat drei Artefakt-Erklärungen überlebt — Pilotstand, kein Beleg (12.09.2026)
+### W7 (RSI-Divergenz): drei Artefakt-Erklärungen überlebt, am Vollauf gescheitert (12./13.09.2026)
+
+> **Nachtrag 13.09., der alles darunter einordnet:** der Vollauf über **7.299 Aktien** ist durch und sagt **Nein** — 225 Konfigurationen, **k₁ = 0, belegt 0**, keine passiert Tor 1. Die Zahlen darunter stammen aus dem Piloten über **19 Reihen** und sind nicht falsch, sie gelten nur für ein anderes Universum. Entscheidend ist die **Kassa-Hürde**: 0,0593 im Piloten gegen **0,1222** im Vollauf, weil 60 % der Signale aus der illiquidesten Klasse kommen (0,157 Pp je Umlauf). Dazu fällt der rohe Überschuss von 0,2160 auf 0,1384. Aus u = 0,1567 wird 0,0162 gegen eine Schranke von 0,0728. **Die Artefakt-Gegenproben bleiben gültig** — W7 ist kein Messfehler, es ist zu klein für die Spanne. Offen: dieselbe Rechnung **je Umsatzklasse** (läuft).
+
+#### Der Pilotstand vom 12.09. (19 Reihen)
 
 **Achtung, das sind 19 Aktien.** Der Pilot entscheidet über das Messgerät, nie über die Kante; der Vollauf über 7.299 Aktien läuft seit dem 12.09. 21:52. Trotzdem gehört der Stand hierher, weil es der erste Fall im Projekt ist, in dem eine Regel alle vorregistrierten Gegenproben übersteht.
 
