@@ -415,4 +415,38 @@ den sie sich beziehen.
 
 ## Nachträge
 
-*(bisher keine)*
+### Nachtrag 1 (13.09.2026, vor dem Vollauf): „letzter vollständiger Handelstag"
+
+§1.1 sagt „bis zum letzten vollständigen Handelstag im Archiv", ohne die Regel zu nennen. Sie lautet:
+
+> Der **letzte vollständige Handelstag** ist der letzte Tag, dessen Zeilenzahl im Panel mindestens **80 %**
+> des Medians der **fünf** vorhergehenden Handelstage erreicht. Alle Tage danach fallen aus dem Panel und
+> werden in `panel/_stand.json` (`unvollstaendigeTage`) mit Zeilenzahl und Vergleichsmedian aufgeführt.
+
+Grund: der Live-Sammler der App schreibt während der Sitzung in dasselbe Archiv; der laufende Tag hat je
+Reihe unterschiedlich viele Kerzen und **keine** Schlussauktionskerze. Eine feste Uhrzeitregel wäre eine
+Behauptung über die Uhr des Rechners, die Zeilenzahl ist eine Messung am Bestand.
+
+### Nachtrag 2 (13.09.2026, vor dem Vollauf): zwei Rendite-Spalten statt einer
+
+Die Tafel führt **zwei** bereinigte Renditen je Zeile, beide in Pp:
+`rendite` = Schluss(t−1) → Schluss(t) und `renditeOC` = Eröffnung(t) → Schluss(t).
+Grund: §2.4 braucht am Ausführungstag `Eröffnung → Schluss` und am letzten Tag der Periode
+`Schluss → Eröffnung`; letzteres ist aus beiden Spalten exakt rekonstruierbar
+(`(1+rendite/100)/(1+renditeOC/100) − 1`), ohne dass eine Preisrechnung an der Nutzungsstelle nötig wird.
+
+### Nachtrag 3 (13.09.2026, **Fund im Piloten, vor jeder Ergebniszahl**): roh ≠ Dateikurs
+
+Der Pilot über 6 Reihen zeigte `COKE 2016-01-04` Eröffnung **18,04 $** statt der bekannten **180,40 $** —
+Prüfung 3 der Vorregistrierung, an ihrem ersten Lauf rot. Ursache: der Rückrechnungsfaktor aus dem
+Dateikopf wurde gespeichert, aber nie angewandt; zugleich wurde die **Rendite** durch denselben Faktor
+geteilt, was am Ex-Tag einen Kurssprung erzeugt hätte, den die Bereinigung gerade entfernt.
+
+**Festgeschrieben, damit es nicht wiederkommt:** die Kurse **in der Datei** sind die **bereinigte** Reihe
+(jede Jahresdatei ist auf die heutige Skala bereinigt, die Reihe ist über Jahresgrenzen stetig).
+`roh = Dateikurs · faktor`, `bereinigt = Dateikurs`. Renditen rechnen mit `Dateikurs`, jede Preisaussage
+mit `Dateikurs · faktor`. Der Dollarumsatz ist gegen die Bereinigung invariant und trägt keinen Faktor.
+
+Nach dem Fix: `COKE 2016-01-04` roh **180,40 $**, `AAPL 2016-01-04` roh **105,35 $** (= der Wert in der
+Rohdatei), `MNST` über den Split 2026-08-11 roh 91,43 → 45,53 $ bei einer Rendite von **−0,40 Pp**
+(nicht −50 %).
