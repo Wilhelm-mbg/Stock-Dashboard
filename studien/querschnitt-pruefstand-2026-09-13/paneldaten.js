@@ -53,12 +53,14 @@ function leseBlock(pfad) {
 
 /* ---------- Argumente ---------- */
 function argumente(argv) {
-  var a = { aus: null, teil: null, max: 0, reihen: null, vereinen: false };
+  var a = { aus: null, teil: null, max: 0, reihen: null, vereinen: false, checkpoint: 50, neu: false };
   for (var i = 0; i < argv.length; i++) {
     var x = argv[i];
     if (x === '--aus') a.aus = argv[++i];
     else if (x === '--teil') { var p = String(argv[++i]).split('/'); a.teil = { k: +p[0], n: +p[1] }; }
     else if (x === '--max') a.max = +argv[++i];
+    else if (x === '--checkpoint') a.checkpoint = +argv[++i];
+    else if (x === '--neu') a.neu = true;
     else if (x === '--vereinen') a.vereinen = true;
     else if (x === '--reihen') { a.reihen = []; while (i + 1 < argv.length && String(argv[i + 1]).slice(0, 2) !== '--') String(argv[++i]).split(',').forEach(function (s) { if (s) a.reihen.push(s); }); }
   }
@@ -190,6 +192,32 @@ function lauf(a) {
     dateiFehler: {}, dateienNichtRein: 0, doppelteTage: 0, luecken: 0,
     schlussErsatz: {}, eroeffnungErsatz: {}, tageJeJahr: {}, ohneZeilen: 0 };
   var jeJahr = {};                                            // jahr -> {sp, n, cap}
+
+  /* FORTSETZBARKEIT. Der erste Vollauf wurde nach 11 Minuten still getoetet (die Prozesse sterben mit der
+   * Sitzung, die sie gestartet hat - bekannte Falle), und weil nichts geschrieben war, war alles weg.
+   * Jetzt: alle `checkpoint` Reihen werden die Jahresbloecke UND _fortschritt.json geschrieben; ein
+   * Neustart ohne --neu liest beides und ueberspringt, was schon drin ist. */
+  var fortPfad = path.join(ordner, '_fortschritt.json'), erledigt = {};
+  if (!a.neu && fs.existsSync(fortPfad)) {
+    try {
+      var fj = JSON.parse(fs.readFileSync(fortPfad, 'utf8'));
+      if (fj.kennung === K.KONFIG_KENNUNG) {
+        erledigt = fj.erledigt || {};
+        Object.keys(fj.zaehler || {}).forEach(function (kk) { z[kk] = fj.zaehler[kk]; });
+        fs.readdirSync(ordner).filter(function (f) { return /^\d{4}\.bin$/.test(f); }).forEach(function (f) {
+          var b = leseBlock(path.join(ordner, f)), jahr = f.slice(0, 4);
+          var e = jeJahr[jahr] = { cap: Math.max(4096, b.n), n: b.n, sp: leer(Math.max(4096, b.n)) };
+          SPALTEN.forEach(function (s) { e.sp[s.name].set(b[s.name].subarray(0, b.n)); });
+        });
+      }
+    } catch (e) { erledigt = {}; jeJahr = {}; }
+  }
+  function checkpoint() {
+    Object.keys(jeJahr).forEach(function (j) { schreibeBlock(path.join(ordner, j + '.bin'), jeJahr[j].sp, jeJahr[j].n, { jahr: +j, teil: a.teil ? a.teil.k : 0 }); });
+    var tmp = fortPfad + '.tmp';
+    fs.writeFileSync(tmp, JSON.stringify({ kennung: K.KONFIG_KENNUNG, stand: new Date().toISOString(), erledigt: erledigt, zaehler: z }));
+    fs.renameSync(tmp, fortPfad);
+  }
   function anhaenge(jahr, symIdx, r) {
     var e = jeJahr[jahr];
     if (!e) e = jeJahr[jahr] = { cap: 4096, n: 0, sp: leer(4096) };
@@ -201,21 +229,27 @@ function lauf(a) {
     e.sp.umsatzReg[i] = r.umsatzReg; e.sp.umsatzAuktion[i] = r.umsatzAuktion;
   }
 
-  var t0 = Date.now();
+  var t0 = Date.now(), schonDa = Object.keys(erledigt).length, seitCp = 0, bytesVorher = z.bytes;
+  if (schonDa) sag('Fortsetzung: ' + schonDa + ' Reihen schon erledigt, ' + z.zeilen + ' Zeilen im Block');
   for (var i = 0; i < meine.length; i++) {
     var R = meine[i];
+    if (erledigt[R.reihe] !== undefined) continue;
     var zeilen = null;
     try { zeilen = reiheBauen(R, kal, z); }
-    catch (e) { z.dateiFehler['AUSNAHME ' + R.reihe + ': ' + e.message] = 1; sag('FEHLER ' + R.reihe + ': ' + e.message); continue; }
+    catch (e) { z.dateiFehler['AUSNAHME ' + R.reihe + ': ' + e.message] = 1; sag('FEHLER ' + R.reihe + ': ' + e.message); erledigt[R.reihe] = -1; continue; }
     z.reihen++;
-    if (!zeilen || !zeilen.length) { z.ohneZeilen++; continue; }
-    for (var q = 0; q < zeilen.length; q++) { anhaenge(zeilen[q].jahr, R.idx, zeilen[q]); z.zeilen++; }
-    if ((i + 1) % 100 === 0) {
-      var dt = (Date.now() - t0) / 1000;
-      sag((i + 1) + '/' + meine.length + ' | Zeilen ' + z.zeilen + ' | ' + (z.bytes / 1e9).toFixed(1) + ' GB | ' + dt.toFixed(0) + ' s | ' + (z.bytes / 1e6 / dt).toFixed(0) + ' MB/s | Rest ~' + ((dt / (i + 1)) * (meine.length - i - 1) / 60).toFixed(0) + ' min');
+    if (!zeilen || !zeilen.length) { z.ohneZeilen++; erledigt[R.reihe] = 0; seitCp++; }
+    else {
+      for (var q = 0; q < zeilen.length; q++) { anhaenge(zeilen[q].jahr, R.idx, zeilen[q]); z.zeilen++; }
+      erledigt[R.reihe] = zeilen.length; seitCp++;
+    }
+    if (seitCp >= a.checkpoint) {
+      seitCp = 0; checkpoint();
+      var dt = (Date.now() - t0) / 1000, fertig = Object.keys(erledigt).length;
+      sag(fertig + '/' + meine.length + ' | Zeilen ' + z.zeilen + ' | ' + (z.bytes / 1e9).toFixed(1) + ' GB | ' + dt.toFixed(0) + ' s | ' + ((z.bytes - bytesVorher) / 1e6 / dt).toFixed(1) + ' MB/s | Rest ~' + ((dt / Math.max(1, fertig - schonDa)) * (meine.length - fertig) / 60).toFixed(0) + ' min');
     }
   }
-  Object.keys(jeJahr).forEach(function (j) { schreibeBlock(path.join(ordner, j + '.bin'), jeJahr[j].sp, jeJahr[j].n, { jahr: +j, teil: a.teil ? a.teil.k : 0 }); });
+  checkpoint();
   z.sekunden = (Date.now() - t0) / 1000;
   z.jahre = Object.keys(jeJahr).map(function (j) { return { jahr: +j, n: jeJahr[j].n }; }).sort(function (x, y) { return x.jahr - y.jahr; });
   fs.writeFileSync(path.join(ordner, '_teil.json'), JSON.stringify(z, null, 1));
