@@ -89,9 +89,17 @@ var AKTUELL_TAGE = 250;
 var EMA_N = 200;                                             // Regime SPY ueber/unter EMA200 (§2.7)
 
 /* ---------- Kontrollen (§3) ---------- */
-var ORAKEL_MIN_PP = 2.0, ORAKEL_MIN_T = 20, ORAKEL_H_MIN_PP_WOCHE = 5.0;
-var ZUFALL_SCHRANKE = { woche: 0.10, monat: 0.25 };          // Pp je Periode, brutto wie netto
-var ZUFALL_ZIEHUNGEN = 12, ZUFALL_MAX_FEHLER = 3;
+/* NACHTRAG 4 (13.09., am Kunstsatz gefunden, vor dem echten Panel): die t-Schranke des Orakels war ohne
+ * Ruecksicht auf die Zahl der Perioden gesetzt (monatlich ~113 statt ~495) und fiel bei einwandfreier
+ * Maschine. Skalenfrei formuliert: der Effekt muss mindestens EINE Perioden-Standardabweichung gross sein;
+ * t steht daneben, mit einem absoluten Boden. Die Pp-Schranken bleiben unveraendert. */
+var ORAKEL_MIN_PP = 2.0, ORAKEL_MIN_SD = 1.0, ORAKEL_T_BODEN = 8, ORAKEL_H_MIN_PP_WOCHE = 5.0;
+var ORAKEL_MIN_T_ALT = 20;                                   // gefallenes Kriterium, bleibt ausgewiesen
+/* NACHTRAG 4: die Pp-Schranke gilt fuer das MITTEL der zwoelf Ziehungen (dort 7,0 / 4,1 se); die EINZELNE
+ * Ziehung wird skalenfrei nach |t| < 3 beurteilt. Gemessene se je Ziehung: 0,050 Pp (Woche, n 495) und
+ * 0,21 Pp (Monat, n 113) - die alte Einzelschranke 0,25 Pp sass bei 1,2 se, also im Rauschen. */
+var ZUFALL_SCHRANKE = { woche: 0.10, monat: 0.25 };          // Pp, Mittel der Ziehungen, brutto wie netto
+var ZUFALL_T_EINZELN = 3, ZUFALL_ZIEHUNGEN = 12, ZUFALL_MAX_FEHLER = 3;
 var ZUFALL_SAAT = 'querschnitt-2026-09-13';
 var MOM_UEBERSPRINGEN = 21, MOM_FENSTER = 252;               // 12-1: Schluss(t-21) / Schluss(t-252)
 
@@ -136,8 +144,10 @@ module.exports = {
   DEZIL: DEZIL, dezilGroesse: dezilGroesse, FREQUENZEN: FREQUENZEN, huerdeVon: huerdeVon,
   SE_ABWEICHUNG_MARKE: SE_ABWEICHUNG_MARKE, JAHRE: JAHRE, JAHR_MIN_PERIODEN: JAHR_MIN_PERIODEN,
   AKTUELL_TAGE: AKTUELL_TAGE, EMA_N: EMA_N,
-  ORAKEL_MIN_PP: ORAKEL_MIN_PP, ORAKEL_MIN_T: ORAKEL_MIN_T, ORAKEL_H_MIN_PP_WOCHE: ORAKEL_H_MIN_PP_WOCHE,
-  ZUFALL_SCHRANKE: ZUFALL_SCHRANKE, ZUFALL_ZIEHUNGEN: ZUFALL_ZIEHUNGEN, ZUFALL_MAX_FEHLER: ZUFALL_MAX_FEHLER, ZUFALL_SAAT: ZUFALL_SAAT,
+  ORAKEL_MIN_PP: ORAKEL_MIN_PP, ORAKEL_MIN_SD: ORAKEL_MIN_SD, ORAKEL_T_BODEN: ORAKEL_T_BODEN,
+  ORAKEL_MIN_T_ALT: ORAKEL_MIN_T_ALT, ORAKEL_H_MIN_PP_WOCHE: ORAKEL_H_MIN_PP_WOCHE,
+  ZUFALL_SCHRANKE: ZUFALL_SCHRANKE, ZUFALL_T_EINZELN: ZUFALL_T_EINZELN, ZUFALL_ZIEHUNGEN: ZUFALL_ZIEHUNGEN,
+  ZUFALL_MAX_FEHLER: ZUFALL_MAX_FEHLER, ZUFALL_SAAT: ZUFALL_SAAT,
   MOM_UEBERSPRINGEN: MOM_UEBERSPRINGEN, MOM_FENSTER: MOM_FENSTER,
   TOTALVERLUST_GRUENDE: TOTALVERLUST_GRUENDE, EMPFINDLICHKEIT: EMPFINDLICHKEIT, GRUENDE_DATEI: GRUENDE_DATEI, gruende: gruende,
   istStempelkerze: istStempelkerze,

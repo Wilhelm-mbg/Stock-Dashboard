@@ -450,3 +450,36 @@ mit `Dateikurs · faktor`. Der Dollarumsatz ist gegen die Bereinigung invariant 
 Nach dem Fix: `COKE 2016-01-04` roh **180,40 $**, `AAPL 2016-01-04` roh **105,35 $** (= der Wert in der
 Rohdatei), `MNST` über den Split 2026-08-11 roh 91,43 → 45,53 $ bei einer Rendite von **−0,40 Pp**
 (nicht −50 %).
+
+### Nachtrag 4 (13.09.2026, **am Kunstsatz gefunden, vor dem echten Panel**): zwei Kontrollschranken lagen im Rauschen
+
+Der Prüfrahmen wurde zuerst auf einem **Kunstpanel** mit bekannter Antwort gefahren (300 Reihen, 11 Jahre,
+eingepflanzte Kante, zwölf sterbende Reihen mit allen Ausbuchungsgründen). Der Rahmen selbst arbeitet:
+die Leck-Klinke meldete **83.224** Verstöße bei der Leck-Probe und **0** bei der sauberen Probe, das
+Orakel fand +3,18 Pp je Woche (t = 65) und +8,16 Pp je Woche in der Perioden-Fassung.
+
+**Zwei registrierte Schranken fielen — und beide zu Unrecht:**
+
+1. **Orakel, `t ≥ 20` für *jede* Frequenz.** Monatlich gibt es nur ~113 Perioden statt ~495; derselbe
+   Effekt liefert dort t = 14,3 statt 65. Die Schranke war ohne Rücksicht auf n gesetzt.
+   **Korrektur, skalenfrei formuliert:** der Orakel-Effekt muss **mindestens eine Perioden-Standard­abweichung**
+   groß sein, `|Mittel| / sd ≥ 1,0`, mit einem absoluten Boden von `t ≥ 8`. Das gemessene t steht daneben.
+   Gemessen am Kunstsatz: Mittel/sd = 2,93 (wöchentlich) und 1,35 (monatlich) — beide über 1,0.
+   Die Pp-Schranken (≥ 2,0 Pp je Periode brutto und netto; ≥ 5,0 Pp Perioden-Fassung wöchentlich)
+   bleiben **unverändert**; sie sind die Schranke in der Einheit der Sache.
+
+2. **Zufall, `|Mittel je Periode| < 0,25 Pp` als Kriterium für die *einzelne* Ziehung (monatlich).**
+   Gemessen liegt die se einer einzelnen monatlichen Ziehung bei **0,21 Pp** — die Schranke sitzt damit bei
+   **1,2 se**, also im Rauschen. Ein **sauberer** Placebo verfehlte sie in **4 von 12** Ziehungen, alle mit
+   |t| ≤ 1,73. Das ist die bekannte Fehlerform *„Absolute Schranke aus einer anderen Skala übernommen" /
+   „ein Kriterium, das einen sauberen Placebo durchfallen lässt, ist selbst der Fehler"*.
+   **Korrektur:** die Pp-Schranken (0,10 / 0,25 Pp) gelten wie in §3.2 geschrieben für das **Mittel der
+   zwölf Ziehungen** — dort sind sie 7,0 se bzw. 4,1 se und damit außerhalb des Rauschens. Für die
+   **einzelne** Ziehung gilt das skalenfreie `|t| < 3`; mehr als drei Ziehungen mit `|t| ≥ 3` lassen die
+   Kontrolle fallen.
+
+**Die gefallenen Kriterien bleiben ausgewiesen** (Regel aus `wiki/fehlerformen.md`). Die Korrektur wird
+vor dem Lauf auf dem echten Panel committet; am Kunstsatz bestehen danach alle drei Kontrollen.
+
+Gemessene se je Ziehung am Kunstsatz, als Beleg für die Herleitung:
+wöchentlich 0,047–0,052 Pp (n = 495), monatlich 0,192–0,240 Pp (n = 113).
