@@ -34,7 +34,8 @@ function will(a, name) { return !a.nur || a.nur.indexOf(name) !== -1; }
 function zeile(T, B, feld) {
   var h = PR.kennzahlen(B.haupt.perioden, B.haupt.tage, B.lag, feld);
   return { n: h.n, mittel: h.mittel, se: h.se, t: h.t, sd: h.sd,
-    tagN: h.tagN, tagSeNaiv: h.tagSeNaiv, tagSeHH: h.tagSeHH, tagSeNW: h.tagSeNW, marke: h.marke };
+    tagN: h.tagN, tagMittel: h.tagMittel, tagT: h.tagT,
+    tagSeNaiv: h.tagSeNaiv, tagSeHH: h.tagSeHH, tagSeNW: h.tagSeNW, marke: h.marke };
 }
 function jahresscheiben(B, feld) {
   var aus = [];
@@ -63,9 +64,27 @@ function aktuell(T, B, feld) {
   return { abTag: T.kal.tage[Math.max(0, abTag)], n: k.n, mittel: k.mittel, se: k.se, t: k.t };
 }
 
+/** TEIL 2 (§T2.1): die Reihe der Periodenrenditen mit Datum. Ohne sie ist keine Zeitreihenpruefung
+ *  gegen eine fremde Reihe moeglich - kontrollen.json speicherte bisher nur Aggregate. Es wird nichts
+ *  neu gerechnet, die Reihe wird NEBEN die bestehenden Zahlen geschrieben.
+ *  `monat` ist der Kalendermonat des AUSFUEHRUNGSTAGS (§T2.2.3), nicht des Signaltags. */
+function periodenreihe(T, B) {
+  return B.haupt.perioden.map(function (p, i) {
+    /* B.kurz und B.longShort entstehen in derselben Schleife aus denselben Perioden - gleiche
+     * Reihenfolge, gleiche Laenge. Sie stehen als DIAGNOSE daneben (Long-Short verlangt Leihe). */
+    var kz = B.kurz.perioden[i], ls = B.longShort.perioden[i];
+    return { signaltag: T.kal.tage[p.t], ausfuehrungstag: T.kal.tage[p.a], monat: T.kal.tage[p.a].slice(0, 7),
+      brutto: p.brutto, netto: p.netto, umschlag: p.umschlag, kosten: p.kosten,
+      eigenBrutto: p.eigenBrutto, uniBrutto: p.uniBrutto,
+      kurzBrutto: kz ? kz.brutto : null, lsBrutto: ls ? ls.brutto : null,
+      nUni: p.nUni, k: p.k, regime: p.regime };
+  });
+}
+
 function auswerten(T, B) {
   var brutto = zeile(T, B, 'brutto'), netto = zeile(T, B, 'netto');
   return {
+    perioden_reihe: periodenreihe(T, B),
     freq: B.freq, empfindlichkeit: B.empfindlichkeit, lag: B.lag,
     verstoesse: B.verstoesse, beispiele: B.beispiele, ungueltig: B.ungueltig,
     perioden: B.haupt.perioden.length,
@@ -223,4 +242,5 @@ function haupt() {
 }
 
 if (require.main === module) haupt();
-module.exports = { auswerten: auswerten, fahre: fahre, jahresscheiben: jahresscheiben };
+module.exports = { auswerten: auswerten, fahre: fahre, jahresscheiben: jahresscheiben,
+  periodenreihe: periodenreihe, zeile: zeile, regimeschnitt: regimeschnitt, aktuell: aktuell };

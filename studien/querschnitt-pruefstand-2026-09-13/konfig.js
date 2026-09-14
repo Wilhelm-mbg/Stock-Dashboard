@@ -126,7 +126,26 @@ function gruende() {
 /** kerze = [zeit, schluss, umsatz, hoch, tief, eroeffnung]. */
 function istStempelkerze(k) { return k[2] === 0 && k[1] === k[3] && k[1] === k[4] && k[1] === k[5]; }
 
+/* ---------- TEIL 2 (VORREGISTRIERUNG-TEIL2.md, 15.09.2026) ---------- */
+/* Fenster der vier vorregistrierten Rangfunktionen (§T2.3), in PANELZEILEN der jeweiligen Reihe. */
+var K1_FENSTER = 5;                                          // Kurzfrist-Umkehr: Schluss(t)/Schluss(t-5)
+var K2_FENSTER = 60;                                         // tiefe Volatilitaet: sd der 60 Tagesrenditen t..t-59
+var K3_FENSTER = 250;                                        // 52-Wochen-Hoch: Maximum ueber t-249..t
+var K4_FENSTER = 60, K4_MIN_TAGE = 40;                        // Umsatzschock: Median ueber t-60..t-1
+/* Testzahl und Bonferroni (§T2.3): 4 Rangfunktionen x 2 Frequenzen = 8, zweiseitig alpha 0,05.
+ * alpha/8 = 0,00625 => kritischer Betrag z = Phi^-1(1 - 0,00625/2) = Phi^-1(0,996875) = 2,7344.
+ * test.js rechnet diesen Wert gegen eine unabhaengige Normalverteilungsrechnung nach. */
+var TESTZAHL = 8, BONFERRONI_ALPHA = 0.05, BONFERRONI_T = 2.734;
+/* Mischhuerde je Umlauf fuer die Kostenvorpruefung (§T2.3.2), GEMESSEN in Teil 1:
+ * Momentum monatlich Umschlag 0,293 => Kosten 0,0184 Pp => 0,0628 Pp je Umlauf. */
+var HUERDE_MISCH_PP = 0.063;
+/* Schranken des Aussen-Pruefsteins (§T2.2.4) */
+var AUSSEN_RHO_STARK = 0.5, AUSSEN_RHO_SCHWACH = 0.2, AUSSEN_JAHR_MIN_MONATE = 6;
+/* Tore fuer das Zielportfolio (§T2.4) */
+var TOR_JAHRE_NEGATIV_MAX = 3, TOR_JAHR_ANTEIL_MAX = 0.60;
+
 var KONFIG_KENNUNG = 'querschnitt-pruefstand-2026-09-13/v1';
+var KONFIG_KENNUNG_TEIL2 = 'querschnitt-pruefstand-2026-09-13/teil2/v1';
 
 module.exports = {
   REPO: REPO, HIER: HIER, TW: TW, MINUTEN: MINUTEN, GRUENDE: GRUENDE, KT: KT, KM: KM,
@@ -151,5 +170,12 @@ module.exports = {
   MOM_UEBERSPRINGEN: MOM_UEBERSPRINGEN, MOM_FENSTER: MOM_FENSTER,
   TOTALVERLUST_GRUENDE: TOTALVERLUST_GRUENDE, EMPFINDLICHKEIT: EMPFINDLICHKEIT, GRUENDE_DATEI: GRUENDE_DATEI, gruende: gruende,
   istStempelkerze: istStempelkerze,
-  KONFIG_KENNUNG: KONFIG_KENNUNG,
+  K1_FENSTER: K1_FENSTER, K2_FENSTER: K2_FENSTER, K3_FENSTER: K3_FENSTER,
+  K4_FENSTER: K4_FENSTER, K4_MIN_TAGE: K4_MIN_TAGE,
+  TESTZAHL: TESTZAHL, BONFERRONI_ALPHA: BONFERRONI_ALPHA, BONFERRONI_T: BONFERRONI_T,
+  HUERDE_MISCH_PP: HUERDE_MISCH_PP,
+  AUSSEN_RHO_STARK: AUSSEN_RHO_STARK, AUSSEN_RHO_SCHWACH: AUSSEN_RHO_SCHWACH,
+  AUSSEN_JAHR_MIN_MONATE: AUSSEN_JAHR_MIN_MONATE,
+  TOR_JAHRE_NEGATIV_MAX: TOR_JAHRE_NEGATIV_MAX, TOR_JAHR_ANTEIL_MAX: TOR_JAHR_ANTEIL_MAX,
+  KONFIG_KENNUNG: KONFIG_KENNUNG, KONFIG_KENNUNG_TEIL2: KONFIG_KENNUNG_TEIL2,
 };

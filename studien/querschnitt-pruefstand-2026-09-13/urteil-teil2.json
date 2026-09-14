@@ -1,0 +1,589 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/teil2/v1",
+ "stand": "2026-09-14T22:28:57.785Z",
+ "panel": "querschnitt-pruefstand-2026-09-13/panel/v1",
+ "letzterTag": "2026-09-11",
+ "testzahl": 8,
+ "bonferroniT": 2.734,
+ "aussenUrteil": "teilweise",
+ "aussenRho": 0.4131686400855274,
+ "zeilen": {
+  "k1-kurzfrist-umkehr/woche": {
+   "bestanden": false,
+   "gefallen": [
+    "T-3",
+    "T-4",
+    "T-6"
+   ],
+   "tore": [
+    {
+     "key": "T-0",
+     "name": "Maschine (0 Leck-Verstoesse)",
+     "ok": true,
+     "wert": "0 Verstoesse"
+    },
+    {
+     "key": "T-1",
+     "name": "Aussen-Pruefstein nicht gefallen",
+     "ok": true,
+     "wert": "rho >= 0,2"
+    },
+    {
+     "key": "T-2",
+     "name": "Vorzeichen netto > 0",
+     "ok": true,
+     "wert": "+0.1508 Pp"
+    },
+    {
+     "key": "T-3",
+     "name": "Perioden-t >= 2.734",
+     "ok": false,
+     "wert": "+1.19"
+    },
+    {
+     "key": "T-4",
+     "name": "Tagesreihe Hansen-Hodrick t >= 2.734",
+     "ok": false,
+     "wert": "+1.21"
+    },
+    {
+     "key": "T-5",
+     "name": "letzte 250 Handelstage netto > 0",
+     "ok": true,
+     "wert": "+0.2957 Pp"
+    },
+    {
+     "key": "T-6",
+     "name": "hoechstens 3 negative Jahre und kein Jahr > 60 %",
+     "ok": false,
+     "wert": "4 negativ, groesstes Jahr 33 %"
+    },
+    {
+     "key": "T-7",
+     "name": "netto > 0 in allen drei Ausbuchungsvarianten",
+     "ok": true,
+     "wert": "+0.137 / +0.151"
+    },
+    {
+     "key": "T-8",
+     "name": "netto > 0 auch mit der Eroeffnungs-Huerde",
+     "ok": true,
+     "wert": "+0.099 Pp"
+    }
+   ],
+   "netto": 0.15078825597230375,
+   "t": 1.1937820149419331,
+   "tagT": 1.2139516007723392,
+   "umschlag": 0.8456871486408614,
+   "kosten": 0.052391918223729184
+  },
+  "k1-kurzfrist-umkehr/monat": {
+   "bestanden": false,
+   "gefallen": [
+    "T-3",
+    "T-4",
+    "T-6"
+   ],
+   "tore": [
+    {
+     "key": "T-0",
+     "name": "Maschine (0 Leck-Verstoesse)",
+     "ok": true,
+     "wert": "0 Verstoesse"
+    },
+    {
+     "key": "T-1",
+     "name": "Aussen-Pruefstein nicht gefallen",
+     "ok": true,
+     "wert": "rho >= 0,2"
+    },
+    {
+     "key": "T-2",
+     "name": "Vorzeichen netto > 0",
+     "ok": true,
+     "wert": "+0.2329 Pp"
+    },
+    {
+     "key": "T-3",
+     "name": "Perioden-t >= 2.734",
+     "ok": false,
+     "wert": "+0.47"
+    },
+    {
+     "key": "T-4",
+     "name": "Tagesreihe Hansen-Hodrick t >= 2.734",
+     "ok": false,
+     "wert": "+0.46"
+    },
+    {
+     "key": "T-5",
+     "name": "letzte 250 Handelstage netto > 0",
+     "ok": true,
+     "wert": "+1.8139 Pp"
+    },
+    {
+     "key": "T-6",
+     "name": "hoechstens 3 negative Jahre und kein Jahr > 60 %",
+     "ok": false,
+     "wert": "4 negativ, groesstes Jahr 64 %"
+    },
+    {
+     "key": "T-7",
+     "name": "netto > 0 in allen drei Ausbuchungsvarianten",
+     "ok": true,
+     "wert": "+0.173 / +0.233"
+    },
+    {
+     "key": "T-8",
+     "name": "netto > 0 auch mit der Eroeffnungs-Huerde",
+     "ok": true,
+     "wert": "+0.184 Pp"
+    }
+   ],
+   "netto": 0.23288698981991002,
+   "t": 0.4734312518421439,
+   "tagT": 0.46143964194046105,
+   "umschlag": 0.8552667771465655,
+   "kosten": 0.05313433741291565
+  },
+  "k2-tiefe-volatilitaet/woche": {
+   "bestanden": false,
+   "gefallen": [
+    "T-2",
+    "T-3",
+    "T-4",
+    "T-5",
+    "T-6",
+    "T-7",
+    "T-8"
+   ],
+   "tore": [
+    {
+     "key": "T-0",
+     "name": "Maschine (0 Leck-Verstoesse)",
+     "ok": true,
+     "wert": "0 Verstoesse"
+    },
+    {
+     "key": "T-1",
+     "name": "Aussen-Pruefstein nicht gefallen",
+     "ok": true,
+     "wert": "rho >= 0,2"
+    },
+    {
+     "key": "T-2",
+     "name": "Vorzeichen netto > 0",
+     "ok": false,
+     "wert": "-0.1176 Pp"
+    },
+    {
+     "key": "T-3",
+     "name": "Perioden-t >= 2.734",
+     "ok": false,
+     "wert": "-1.23"
+    },
+    {
+     "key": "T-4",
+     "name": "Tagesreihe Hansen-Hodrick t >= 2.734",
+     "ok": false,
+     "wert": "-1.35"
+    },
+    {
+     "key": "T-5",
+     "name": "letzte 250 Handelstage netto > 0",
+     "ok": false,
+     "wert": "-0.3074 Pp"
+    },
+    {
+     "key": "T-6",
+     "name": "hoechstens 3 negative Jahre und kein Jahr > 60 %",
+     "ok": false,
+     "wert": "7 negativ, groesstes Jahr —"
+    },
+    {
+     "key": "T-7",
+     "name": "netto > 0 in allen drei Ausbuchungsvarianten",
+     "ok": false,
+     "wert": "-0.114 / -0.118"
+    },
+    {
+     "key": "T-8",
+     "name": "netto > 0 auch mit der Eroeffnungs-Huerde",
+     "ok": false,
+     "wert": "-0.125 Pp"
+    }
+   ],
+   "netto": -0.11760020257085538,
+   "t": -1.2327515726397487,
+   "tagT": -1.35098513202667,
+   "umschlag": 0.15173279778573331,
+   "kosten": 0.009719736567886382
+  },
+  "k2-tiefe-volatilitaet/monat": {
+   "bestanden": false,
+   "gefallen": [
+    "T-2",
+    "T-3",
+    "T-4",
+    "T-5",
+    "T-6",
+    "T-7",
+    "T-8"
+   ],
+   "tore": [
+    {
+     "key": "T-0",
+     "name": "Maschine (0 Leck-Verstoesse)",
+     "ok": true,
+     "wert": "0 Verstoesse"
+    },
+    {
+     "key": "T-1",
+     "name": "Aussen-Pruefstein nicht gefallen",
+     "ok": true,
+     "wert": "rho >= 0,2"
+    },
+    {
+     "key": "T-2",
+     "name": "Vorzeichen netto > 0",
+     "ok": false,
+     "wert": "-0.3219 Pp"
+    },
+    {
+     "key": "T-3",
+     "name": "Perioden-t >= 2.734",
+     "ok": false,
+     "wert": "-0.91"
+    },
+    {
+     "key": "T-4",
+     "name": "Tagesreihe Hansen-Hodrick t >= 2.734",
+     "ok": false,
+     "wert": "-0.92"
+    },
+    {
+     "key": "T-5",
+     "name": "letzte 250 Handelstage netto > 0",
+     "ok": false,
+     "wert": "-0.9432 Pp"
+    },
+    {
+     "key": "T-6",
+     "name": "hoechstens 3 negative Jahre und kein Jahr > 60 %",
+     "ok": false,
+     "wert": "5 negativ, groesstes Jahr —"
+    },
+    {
+     "key": "T-7",
+     "name": "netto > 0 in allen drei Ausbuchungsvarianten",
+     "ok": false,
+     "wert": "-0.307 / -0.322"
+    },
+    {
+     "key": "T-8",
+     "name": "netto > 0 auch mit der Eroeffnungs-Huerde",
+     "ok": false,
+     "wert": "-0.337 Pp"
+    }
+   ],
+   "netto": -0.32185643822237775,
+   "t": -0.9082650664625224,
+   "tagT": -0.9151464113994847,
+   "umschlag": 0.3202529435695594,
+   "kosten": 0.020506106661151498
+  },
+  "k3-nahe-52w-hoch/woche": {
+   "bestanden": false,
+   "gefallen": [
+    "T-2",
+    "T-3",
+    "T-4",
+    "T-6",
+    "T-7",
+    "T-8"
+   ],
+   "tore": [
+    {
+     "key": "T-0",
+     "name": "Maschine (0 Leck-Verstoesse)",
+     "ok": true,
+     "wert": "0 Verstoesse"
+    },
+    {
+     "key": "T-1",
+     "name": "Aussen-Pruefstein nicht gefallen",
+     "ok": true,
+     "wert": "rho >= 0,2"
+    },
+    {
+     "key": "T-2",
+     "name": "Vorzeichen netto > 0",
+     "ok": false,
+     "wert": "-0.0656 Pp"
+    },
+    {
+     "key": "T-3",
+     "name": "Perioden-t >= 2.734",
+     "ok": false,
+     "wert": "-0.73"
+    },
+    {
+     "key": "T-4",
+     "name": "Tagesreihe Hansen-Hodrick t >= 2.734",
+     "ok": false,
+     "wert": "-0.85"
+    },
+    {
+     "key": "T-5",
+     "name": "letzte 250 Handelstage netto > 0",
+     "ok": true,
+     "wert": "+0.0266 Pp"
+    },
+    {
+     "key": "T-6",
+     "name": "hoechstens 3 negative Jahre und kein Jahr > 60 %",
+     "ok": false,
+     "wert": "5 negativ, groesstes Jahr —"
+    },
+    {
+     "key": "T-7",
+     "name": "netto > 0 in allen drei Ausbuchungsvarianten",
+     "ok": false,
+     "wert": "-0.063 / -0.066"
+    },
+    {
+     "key": "T-8",
+     "name": "netto > 0 auch mit der Eroeffnungs-Huerde",
+     "ok": false,
+     "wert": "-0.097 Pp"
+    }
+   ],
+   "netto": -0.06564068095507425,
+   "t": -0.7253677444219024,
+   "tagT": -0.8457459610715807,
+   "umschlag": 0.5336450969896677,
+   "kosten": 0.03287440214493378
+  },
+  "k3-nahe-52w-hoch/monat": {
+   "bestanden": false,
+   "gefallen": [
+    "T-2",
+    "T-3",
+    "T-4",
+    "T-5",
+    "T-6",
+    "T-7",
+    "T-8"
+   ],
+   "tore": [
+    {
+     "key": "T-0",
+     "name": "Maschine (0 Leck-Verstoesse)",
+     "ok": true,
+     "wert": "0 Verstoesse"
+    },
+    {
+     "key": "T-1",
+     "name": "Aussen-Pruefstein nicht gefallen",
+     "ok": true,
+     "wert": "rho >= 0,2"
+    },
+    {
+     "key": "T-2",
+     "name": "Vorzeichen netto > 0",
+     "ok": false,
+     "wert": "-0.2419 Pp"
+    },
+    {
+     "key": "T-3",
+     "name": "Perioden-t >= 2.734",
+     "ok": false,
+     "wert": "-0.75"
+    },
+    {
+     "key": "T-4",
+     "name": "Tagesreihe Hansen-Hodrick t >= 2.734",
+     "ok": false,
+     "wert": "-0.70"
+    },
+    {
+     "key": "T-5",
+     "name": "letzte 250 Handelstage netto > 0",
+     "ok": false,
+     "wert": "-1.5411 Pp"
+    },
+    {
+     "key": "T-6",
+     "name": "hoechstens 3 negative Jahre und kein Jahr > 60 %",
+     "ok": false,
+     "wert": "4 negativ, groesstes Jahr —"
+    },
+    {
+     "key": "T-7",
+     "name": "netto > 0 in allen drei Ausbuchungsvarianten",
+     "ok": false,
+     "wert": "-0.227 / -0.242"
+    },
+    {
+     "key": "T-8",
+     "name": "netto > 0 auch mit der Eroeffnungs-Huerde",
+     "ok": false,
+     "wert": "-0.282 Pp"
+    }
+   ],
+   "netto": -0.24185302338991982,
+   "t": -0.751896952062939,
+   "tagT": -0.7014715681108247,
+   "umschlag": 0.7442815136100372,
+   "kosten": 0.045835995407419054
+  },
+  "k4-umsatzschock-richtung/woche": {
+   "bestanden": false,
+   "gefallen": [
+    "T-2",
+    "T-3",
+    "T-4",
+    "T-6",
+    "T-7",
+    "T-8"
+   ],
+   "tore": [
+    {
+     "key": "T-0",
+     "name": "Maschine (0 Leck-Verstoesse)",
+     "ok": true,
+     "wert": "0 Verstoesse"
+    },
+    {
+     "key": "T-1",
+     "name": "Aussen-Pruefstein nicht gefallen",
+     "ok": true,
+     "wert": "rho >= 0,2"
+    },
+    {
+     "key": "T-2",
+     "name": "Vorzeichen netto > 0",
+     "ok": false,
+     "wert": "-0.1727 Pp"
+    },
+    {
+     "key": "T-3",
+     "name": "Perioden-t >= 2.734",
+     "ok": false,
+     "wert": "-2.36"
+    },
+    {
+     "key": "T-4",
+     "name": "Tagesreihe Hansen-Hodrick t >= 2.734",
+     "ok": false,
+     "wert": "-2.32"
+    },
+    {
+     "key": "T-5",
+     "name": "letzte 250 Handelstage netto > 0",
+     "ok": true,
+     "wert": "+0.1857 Pp"
+    },
+    {
+     "key": "T-6",
+     "name": "hoechstens 3 negative Jahre und kein Jahr > 60 %",
+     "ok": false,
+     "wert": "7 negativ, groesstes Jahr —"
+    },
+    {
+     "key": "T-7",
+     "name": "netto > 0 in allen drei Ausbuchungsvarianten",
+     "ok": false,
+     "wert": "-0.170 / -0.173"
+    },
+    {
+     "key": "T-8",
+     "name": "netto > 0 auch mit der Eroeffnungs-Huerde",
+     "ok": false,
+     "wert": "-0.225 Pp"
+    }
+   ],
+   "netto": -0.1727024082803484,
+   "t": -2.361621618909538,
+   "tagT": -2.3171367853230684,
+   "umschlag": 0.86108510970612,
+   "kosten": 0.053334210717908455
+  },
+  "k4-umsatzschock-richtung/monat": {
+   "bestanden": false,
+   "gefallen": [
+    "T-2",
+    "T-3",
+    "T-4",
+    "T-5",
+    "T-6",
+    "T-7",
+    "T-8"
+   ],
+   "tore": [
+    {
+     "key": "T-0",
+     "name": "Maschine (0 Leck-Verstoesse)",
+     "ok": true,
+     "wert": "0 Verstoesse"
+    },
+    {
+     "key": "T-1",
+     "name": "Aussen-Pruefstein nicht gefallen",
+     "ok": true,
+     "wert": "rho >= 0,2"
+    },
+    {
+     "key": "T-2",
+     "name": "Vorzeichen netto > 0",
+     "ok": false,
+     "wert": "-0.4461 Pp"
+    },
+    {
+     "key": "T-3",
+     "name": "Perioden-t >= 2.734",
+     "ok": false,
+     "wert": "-1.65"
+    },
+    {
+     "key": "T-4",
+     "name": "Tagesreihe Hansen-Hodrick t >= 2.734",
+     "ok": false,
+     "wert": "-1.53"
+    },
+    {
+     "key": "T-5",
+     "name": "letzte 250 Handelstage netto > 0",
+     "ok": false,
+     "wert": "-0.4989 Pp"
+    },
+    {
+     "key": "T-6",
+     "name": "hoechstens 3 negative Jahre und kein Jahr > 60 %",
+     "ok": false,
+     "wert": "6 negativ, groesstes Jahr —"
+    },
+    {
+     "key": "T-7",
+     "name": "netto > 0 in allen drei Ausbuchungsvarianten",
+     "ok": false,
+     "wert": "-0.432 / -0.446"
+    },
+    {
+     "key": "T-8",
+     "name": "netto > 0 auch mit der Eroeffnungs-Huerde",
+     "ok": false,
+     "wert": "-0.497 Pp"
+    }
+   ],
+   "netto": -0.4460602079379957,
+   "t": -1.6454722562588961,
+   "tagT": -1.5333332028080975,
+   "umschlag": 0.8978820146981702,
+   "kosten": 0.05578196205222612
+  }
+ },
+ "bestanden": [],
+ "befunde": [],
+ "zielportfolios": []
+}
