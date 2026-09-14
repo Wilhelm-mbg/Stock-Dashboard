@@ -483,3 +483,20 @@ vor dem Lauf auf dem echten Panel committet; am Kunstsatz bestehen danach alle d
 
 Gemessene se je Ziehung am Kunstsatz, als Beleg für die Herleitung:
 wöchentlich 0,047–0,052 Pp (n = 495), monatlich 0,192–0,240 Pp (n = 113).
+
+### Nachtrag 5 (15.09.2026, **nach der Abnahme von Teil 1, vor der ersten Zahl von Teil 2**): das gefallene Orakel-Kriterium und der Geltungsbereich der Verhältnis-Schranken
+
+Teil 1 meldete **ORAKEL GEFALLEN** (`orakelTag/monat`, `Mittel/sd = 0,82 < 1,0`). **Dieser Befund bleibt
+als gefallen im Protokoll stehen.** Er wird nicht umdatiert und nicht nachträglich bestanden gerechnet.
+
+**Korrektur für die Zukunft, ausdrücklich nachträglich beschlossen** (PM-Entscheid bei der Abnahme):
+die **Verhältnis- und t-Kriterien** (`|Mittel|/sd ≥ 1,0`, `t ≥ 8`, und das in Nachtrag 4 bereits
+gefallene `t ≥ 20`) gelten **nur für die Orakel-Fassung, deren Sichtweite der Haltedauer entspricht**.
+Bei `orakelTag/monat` sieht die Rangfunktion **einen** Tag, gehalten wird **21** — die restlichen 20 Tage
+blähen die Perioden-Streuung `sd` auf, ohne den Effekt zu vergrößern; das Verhältnis misst dort die
+Verdünnung der Sichtweite, nicht die Verrohrung. **Die Pp-Schranke gilt für alle Fassungen und bleibt das
+Hauptkriterium.** Beleg aus denselben Zahlen: `orakelPeriode/monat` — Sichtweite = Haltedauer — liefert
++19,635 Pp bei t = 26,6.
+
+Die vollständige Vorregistrierung von Teil 2 (Außen-Prüfstein gegen Kenneth Frenchs `Mom`, vier
+vorregistrierte Rangfunktionen, Tore, Kostenvorprüfung) steht in **`VORREGISTRIERUNG-TEIL2.md`**.
