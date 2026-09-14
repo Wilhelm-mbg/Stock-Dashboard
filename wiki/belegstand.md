@@ -322,3 +322,18 @@ Bericht `studien/vorregistrierung-2026-09-09-trendwende-ii/ERGEBNIS-KLASSEN.md` 
 **Warum trotzdem kein Ja:** die drei saubersten Zeilen (Tor 1, Uhrzeit-Tor, Lücken-Tor bestanden) fallen über **Tor 2**, die Auflösungswand — in der liquidesten Klasse ist die Hürde klein (0,0449) und die Stichprobe dünn, die auflösbare Differenz (0,0804) also größer als die Hürde. Das ist „nicht entscheidbar", nicht „nein". Dazu: alle 15 Zeilen kommen von **einem** Detektor, 10 fallen über das Uhrzeit-Tor, und die beiden Zeilen, die jedes Tor bestehen, haben in den letzten 250 Tagen t < 1.
 
 **Profil, das gegen Wilhelms Ziel spricht:** die Trennung **je Stunde** fällt (5m: 0,173 → 0,121 → 0,074 Pp/h von 15 min über 1 h auf 3 h). Der Vorsprung entsteht früh und läuft aus — das Profil eines **Rückpralls**, nicht einer Wende, die einen neuen Trend eröffnet. Für „jeden Trend mitnehmen" ist das die falsche Sorte Signal, und es ist genau die Sorte, der die Spanne am meisten wehtut.
+
+### Querschnitt über Tage, erste vier Kandidaten: NEIN (15.09.2026)
+
+Bericht `studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL2.md`. Universum liquide (Klassen 250-1000 und ab1000, ~220 Werte), Top-Dezil gegen das gleichgewichtete Universum, Umschichtung wöchentlich und monatlich, Kosten gemessen, 2017-02 bis 2026-08. Testzahl 8, Bonferroni |t| ≥ 2,734.
+
+| Rangfunktion | Woche: netto / t | Monat: netto / t | Umschlag |
+|---|---:|---:|---:|
+| Kurzfrist-Umkehr (5 Tage) | +0,151 / 1,19 | +0,233 / 0,47 | 85–86 % |
+| tiefe Volatilität (60 Tage) | −0,118 / −1,23 | −0,322 / −0,91 | 15–32 % |
+| nahe am 52-Wochen-Hoch | −0,066 / −0,73 | −0,242 / −0,75 | 53–74 % |
+| Umsatzschock mit Richtung | −0,173 / **−2,36** | −0,446 / −1,65 | 86–90 % |
+
+**Sechs von acht Zeilen zeigen in die falsche Richtung** — das ist kein knappes Verfehlen, sondern in der registrierten Richtung widerlegt. Die einzige Zeile mit richtigem Vorzeichen ist die **Kurzfrist-Umkehr**, also die Fortsetzung des W7-Befunds aus Trendwende II — aber bei t 1,19 und 0,47 weit von jeder Aussage entfernt. **Kein Zielportfolio geschrieben.**
+
+**Warum dieser Nullbefund mehr wert ist als die vier davor:** die Maschine ist von außen geprüft. Das Orakel findet seine Kante (t 8,8 bis 52,9), die Leck-Klinke meldet 111.406 Verstöße im präparierten Fall und 0 in allen acht Kandidatenläufen, und die Momentum-Reihe läuft mit Kenneth Frenchs veröffentlichtem Faktor mit — als Long-Short gerechnet ρ = 0,73. Ein „nichts gefunden" heißt hier zum ersten Mal wirklich „da ist nichts", nicht „wir haben nicht hingesehen".
