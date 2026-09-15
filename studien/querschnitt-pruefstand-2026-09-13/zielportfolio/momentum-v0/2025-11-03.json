@@ -1,0 +1,496 @@
+{
+ "variante": "v0",
+ "anlass": "umschichtung",
+ "datum": "2025-11-03",
+ "signaltag": "2025-10-31",
+ "monat": "2025-11",
+ "einsatzquote": 1,
+ "regime": "ueber",
+ "volatilitaet60": null,
+ "bremseEinsatz": 1,
+ "n": 96,
+ "universum": 969,
+ "positionen": [
+  {
+   "kuerzel": "BE",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "HOOD",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "OKLO",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "RKLB",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "IREN",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "PLTR",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "IONQ",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "INOD",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "OUST",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "APP",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "KTOS",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "MP",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "SSRM",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "CRDO",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "CLS",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "EOSE",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "JOBY",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "METC",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "APLD",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "LEU",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "SATS",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "RBLX",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "TTMI",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "ACHR",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "VSAT",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "SOUN",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "LMND",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "NVTS",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "ALAB",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "WDC",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "GH",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "CDE",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "QS",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "UUUU",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "HIMS",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "PGY",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "LITE",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "CIFR",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "WBD",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "NGD",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "STX",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "NET",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "AU",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "SOFI",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "GFI",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "AMSC",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "NXT",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "ASTS",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "RDDT",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "TLN",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "IDCC",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "TPR",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "CIEN",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "KGC",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "SEZL",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "IAG",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "COMM",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "HUT",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "SEDG",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "SBSW",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "BBIO",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "SYM",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "INSM",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "REZI",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "SRAD",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "DB",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "CVI",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "XPEV",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "RMBS",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "SNOW",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "GEV",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "DK",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "W",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "URBN",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "NNE",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "TME",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "LQDA",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "TEM",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "RBRK",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "AS",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "SE",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "HWM",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "BTDR",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "NRG",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "CELH",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "BABA",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "AEM",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "CVNA",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "AVGO",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "U",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "SHOP",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "LRCX",
+   "gewicht": 0.010416666666666666,
+   "klasse": "ab1000"
+  },
+  {
+   "kuerzel": "EQX",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "NTES",
+   "gewicht": 0.010416666666666666,
+   "klasse": "50-250"
+  },
+  {
+   "kuerzel": "IBKR",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  },
+  {
+   "kuerzel": "SMR",
+   "gewicht": 0.010416666666666666,
+   "klasse": "250-1000"
+  }
+ ],
+ "hinweis": "Simulationsausgabe des Querschnitts-Pruefstands Teil 3 (querschnitt-pruefstand-2026-09-13/teil3/v1), Variante V0 Grundlinie. Keine Anlageempfehlung."
+}

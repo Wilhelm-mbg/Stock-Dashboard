@@ -144,8 +144,36 @@ var AUSSEN_RHO_STARK = 0.5, AUSSEN_RHO_SCHWACH = 0.2, AUSSEN_JAHR_MIN_MONATE = 6
 /* Tore fuer das Zielportfolio (§T2.4) */
 var TOR_JAHRE_NEGATIV_MAX = 3, TOR_JAHR_ANTEIL_MAX = 0.60;
 
+/* ---------- TEIL 3 (VORREGISTRIERUNG-TEIL3.md, 16.09.2026) ---------- */
+/* Erweitertes Universum (§T3.2): 50-250, 250-1000, ab1000. K.UNIVERSUM_KLASSEN bleibt fuer Teil 1/2 [2, 3]. */
+var UNIVERSUM_KLASSEN_TEIL3 = [1, 2, 3];
+/* V2 Volatilitaetsbremse (§T3.3): e = min(1, ZIEL / sigma), sigma = sd der V0-Tagesrenditen ueber FENSTER Tage x sqrt(252). */
+var V2_VOL_ZIEL = 15, V2_VOL_FENSTER = 60, HANDELSTAGE_JAHR = 252;
+var KASSE_ZINS = 0;                                          // Kasse verzinst sich mit null (§T3.2)
+/* MDE-Konvention (§T3.4): MDE80 = (z_0.975 + z_0.80) * se = (1.95996 + 0.84162) * se. test-teil3 rechnet nach. */
+var MDE_FAKTOR = 2.8016;
+/* Gepaarte Vergleiche (§T3.5): "signifikant schlechter" = t < -1.96 (naiv auf Monaten UND Hansen-Hodrick auf Tagen). */
+var PAAR_T_SCHLECHTER = -1.96, PAAR_LAG_TAGE = 21, SCHLECHTESTES_FENSTER_MONATE = 12;
+/* Krisenfenster (§T3.4), nach Kalendermonat des Ausfuehrungstags, einschliesslich. */
+var KRISEN = [
+  { key: '2018Q4', name: 'Q4 2018', von: '2018-10', bis: '2018-12', monate: 3 },
+  { key: '2020crash', name: 'Crash 2020', von: '2020-02', bis: '2020-04', monate: 3 },
+  { key: '2020-11_2021-06', name: 'Momentum-Einbruch 2020-11 bis 2021-06', von: '2020-11', bis: '2021-06', monate: 8 },
+  { key: '2022', name: 'Baisse 2022', von: '2022-01', bis: '2022-10', monate: 10 },
+];
+/* Kontrollen monatlich auf dem erweiterten Universum (§T3.6). orakelTag: nur die Pp-Schranke (ORAKEL_MIN_PP);
+ * orakelPeriode/monat (horizontgleich): Pp-Schranke, Mittel/sd >= ORAKEL_MIN_SD, t >= ORAKEL_T_BODEN. */
+var ORAKEL_PERIODE_MONAT_MIN_PP = 5.0;
+/* Dividendenzeile (§T3.7): Teil-2-Messung uebertragen; SPY-Rendite ist ANNAHME mit Spanne. */
+var DIVIDENDE_LUECKE_DEZIL_UNI_PP = -0.0744, DIVIDENDE_DEZIL_JAHR = 0.83;
+var SPY_DIVIDENDE_JAHR = { min: 1.3, mitte: 1.6, max: 1.9 };
+/* Vorpruefung (§T3.8): Erwartungen, gegen die die Messung gehalten wird. */
+var VORPRUEFUNG_TEIL3 = { umschlagV0: 0.293, kostenV0Spanne: [0.0184, 0.0250], mdeV0UniSpanne: [0.91, 1.74],
+  paarSe: { v1: 0.23, v2: 0.14, v3: 0.27 }, seAbweichungFaktor: 1.5 };
+
 var KONFIG_KENNUNG = 'querschnitt-pruefstand-2026-09-13/v1';
 var KONFIG_KENNUNG_TEIL2 = 'querschnitt-pruefstand-2026-09-13/teil2/v1';
+var KONFIG_KENNUNG_TEIL3 = 'querschnitt-pruefstand-2026-09-13/teil3/v1';
 
 module.exports = {
   REPO: REPO, HIER: HIER, TW: TW, MINUTEN: MINUTEN, GRUENDE: GRUENDE, KT: KT, KM: KM,
@@ -178,4 +206,10 @@ module.exports = {
   AUSSEN_JAHR_MIN_MONATE: AUSSEN_JAHR_MIN_MONATE,
   TOR_JAHRE_NEGATIV_MAX: TOR_JAHRE_NEGATIV_MAX, TOR_JAHR_ANTEIL_MAX: TOR_JAHR_ANTEIL_MAX,
   KONFIG_KENNUNG: KONFIG_KENNUNG, KONFIG_KENNUNG_TEIL2: KONFIG_KENNUNG_TEIL2,
+  UNIVERSUM_KLASSEN_TEIL3: UNIVERSUM_KLASSEN_TEIL3, V2_VOL_ZIEL: V2_VOL_ZIEL, V2_VOL_FENSTER: V2_VOL_FENSTER,
+  HANDELSTAGE_JAHR: HANDELSTAGE_JAHR, KASSE_ZINS: KASSE_ZINS, MDE_FAKTOR: MDE_FAKTOR,
+  PAAR_T_SCHLECHTER: PAAR_T_SCHLECHTER, PAAR_LAG_TAGE: PAAR_LAG_TAGE, SCHLECHTESTES_FENSTER_MONATE: SCHLECHTESTES_FENSTER_MONATE,
+  KRISEN: KRISEN, ORAKEL_PERIODE_MONAT_MIN_PP: ORAKEL_PERIODE_MONAT_MIN_PP,
+  DIVIDENDE_LUECKE_DEZIL_UNI_PP: DIVIDENDE_LUECKE_DEZIL_UNI_PP, DIVIDENDE_DEZIL_JAHR: DIVIDENDE_DEZIL_JAHR,
+  SPY_DIVIDENDE_JAHR: SPY_DIVIDENDE_JAHR, VORPRUEFUNG_TEIL3: VORPRUEFUNG_TEIL3, KONFIG_KENNUNG_TEIL3: KONFIG_KENNUNG_TEIL3,
 };

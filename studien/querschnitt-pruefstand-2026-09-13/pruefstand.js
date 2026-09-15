@@ -90,9 +90,11 @@ function Tafel(aus) {
 /* =========================================================================================
  * 2. Universum je Umschichtungstag (§2.1) - Punkt-in-Zeit
  * ========================================================================================= */
-/** ohneCentBoden: registrierte Empfindlichkeit (§2.1), Punkt 3 faellt weg. */
+/** ohneCentBoden: registrierte Empfindlichkeit (§2.1), Punkt 3 faellt weg.
+ *  klassen (TEIL 3, §T3.1): erlaubte Umsatzklassen; Vorgabe unveraendert K.UNIVERSUM_KLASSEN. */
 function universum(T, tag, opt) {
   opt = opt || {};
+  var klassen = opt.klassen || K.UNIVERSUM_KLASSEN;
   var g = T.g, aus = [], a = T.tagVon[tag], b = T.tagBis[tag], z = { klasse: 0, quelle: 0, cent: 0, vortage: 0, qualitaet: 0, ausfuehrung: 0 };
   if (a < 0) return { liste: [], verworfen: z, aTag: null };
   var aTag = null; for (var tt = tag + 1; tt <= T.maxTag; tt++) if (T.tagVon[tt] >= 0) { aTag = tt; break; }
@@ -100,7 +102,7 @@ function universum(T, tag, opt) {
   for (var i = a; i < b; i++) {
     if (T.stand.symbole[g.sym[i]].referenz) continue;
     var kl = g.klasse[i];
-    if (K.UNIVERSUM_KLASSEN.indexOf(kl) === -1) { z.klasse++; continue; }
+    if (klassen.indexOf(kl) === -1) { z.klasse++; continue; }
     if (!(g.marken[i] & K.M_QUELLE_REIN)) { z.quelle++; continue; }
     if (!opt.ohneCentBoden && !K.centBodenOk(g.rohSchluss[i], kl)) { z.cent++; continue; }
     if (T.posInReihe[i] < K.MIN_VORTAGE) { z.vortage++; continue; }

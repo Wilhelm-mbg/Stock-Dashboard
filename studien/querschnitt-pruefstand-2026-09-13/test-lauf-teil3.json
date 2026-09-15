@@ -1,0 +1,24 @@
+{
+ "stand": "2026-09-15T22:38:01.557Z",
+ "aus": "voll",
+ "gruen": 15,
+ "rot": 0,
+ "uebersprungen": 0,
+ "zeilen": [
+  " OK  T3-P0 MDE-Faktor 2.8016 = z(0.975) + z(0.80), unabhaengig ueber erf-Naeherung und Bisektion - z(0.975) 1.95996 + z(0.80) 0.84162 = 2.80158",
+  " OK  T3-P2 Kunstfall V1: Wechsel zum Schluss von Tag 4 -> Nacht 4/5 alt, Tag 5 neu; Kosten und Umschlag von Hand - Nacht 0.497512 Pp alt, Tag 0.5 x 0 neu; Kosten 3 x 0.02245 Pp; Umschlag 0.5/0.5/0.5",
+  " OK  T3-P2b derselbe Kunstfall als V0 ist ungeschaltet: Tag 5 = 1.0, keine Schaltung, Periode B kostenfrei - V0 unveraendert",
+  " OK  T3-P3 Kunstfall V2: 60 Tage +-1 bis t => sigma sqrt(60/59)*sqrt(252) = 16.0085 %, e = 0.93700; Tag t+1 (+50) bleibt draussen - sigma 16.0085, e 0.93700, Kosten 0.5 x e x h",
+  " OK  T3-P3b Anlaufregel: weniger als 60 V0-Tage => e = 1 und Anlauf gezaehlt - e = 1, Anlauf 1",
+  " OK  T3-P4 Sperrklinke der Ueberlagerung: praeparierte V1- und V2-Faelle melden Verstoesse und ungueltig, saubere Laeufe 0 - V1 praepariert 8 Verstoesse (Regime@2020-01-02 (erlaubt bis 2020-01-01)), V2 praepariert 1, sauber 0",
+  " OK  T3-P5 Max. Rueckgang 100->120->90->130 = 25 %; schlechtestes 12er-Fenster; Sharpe von Hand - MDD 25 %, Fenster -11.3615 %, Sharpe 6.7823",
+  " OK  T3-P6 Vollliquidation kostet 0.5 * sum(w_i h_i); Einsatz 1 -> 0.6 genau 0.4 davon - voll 0.032575 Pp, 1 -> 0.6: 0.013030 Pp",
+  " OK  T3-P9 Krisenfenster enthalten 3 / 3 / 8 / 10 Kalendermonate - 2018Q4 3, 2020crash 3, 2020-11_2021-06 8, 2022 10",
+  " OK  T3-P1 V0 als Ueberlagerung (e = 1) reproduziert die Tagesreihe der Maschine (brutto/netto 1e-9), Perioden brutto (1e-9), Kosten (1e-12) - 2409 Tage, 115 Perioden, max |Abw| 1.1e-14 / 1.1e-14 / 7.1e-15",
+  " OK  T3-P8 jedes Dezilmitglied hat Klasse 1/2/3, SPY nie darunter; K.UNIVERSUM_KLASSEN unveraendert [2, 3] - 8937 Mitgliedschaften, Klassen 50-250/250-1000/ab1000: 5897/2292/748",
+  " OK  T3-P12 momentum12_1/monat mit klassen [2, 3] liefert die Teil-2-Zahl netto +1.609984 Pp (1e-9) - netto 1.609984309 Pp, mit und ohne opt.klassen identisch",
+  " OK  T3-P7 gepaarte Differenzreihe: gleiche n und Monate wie V0; Mittel der Differenzen = Differenz der Mittel - v1 -0.7838, v2 -1.1275, v3 -1.4363 Pp je Monat ueber 115 Monate",
+  " OK  T3-P10 Zielportfolio-Dateien: Gewichte summieren zum Einsatz, N = Dezilgroesse, Klassen 50-250/250-1000/ab1000, Daten aus dem Lauf - 115 Dateien (115 Umschichtungen, 0 Regimewechsel), Variante v0",
+  " OK  T3-P11 test.js (47) und test-teil2.js (20) laufen nach den Ergaenzungen gruen - test.js 47/0 rot, test-teil2.js 20/0 rot"
+ ]
+}
