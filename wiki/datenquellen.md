@@ -368,3 +368,14 @@ Der Lauf der Gründe-Tafel (9.027 Anfragen, 5,7/s, alles gecacht unter `studien/
 - **Kürzel → CIK NICHT über `company_tickers.json`.** Die Datei trägt den *heutigen* Besitzer eines Kürzels; bei wiederverwendeten Kürzeln zeigt sie auf die falsche Firma (AAC → Ares Acquisition Corp III statt der erloschenen Reihe). Richtig ist die **zeitgefensterte Volltextsuche** um den letzten Balken herum. Siehe [[kuerzel-wechseln-den-besitzer]] — dieselbe Falle, andere Ebene.
 - **Formulare kommen später als das Ereignis.** Form 25 wird regelmäßig Wochen nach dem letzten Handelstag eingereicht; eine Prüfung „Datum ≤ letzter Balken + 30 Tage" gilt für **Ereignisse**, nicht für **Einreichungen** (dort das Laufsfenster).
 - Bigdata.com wurde nur als Stichprobe auf die Unbekannten angesetzt: 9 Abfragen, **25,2 von 250 erlaubten Einheiten** (Guthaben 975,86 → 950,61). Für die Masse taugt EDGAR, weil es vollständig, kostenlos und Point-in-Time ist.
+
+### SEC Financial Statement Data Sets (FSDS) — Bilanzdaten punkt-in-zeit (16.09.2026)
+
+Quartalsweise ZIPs (`sub.txt`, `num.txt`, `tag.txt`, `pre.txt`) aus den XBRL-Einreichungen, kostenlos, ab 2009. Machbarkeit geprüft in `studien/fundamental-machbarkeit-2026-09-16/` (Leser `fsds-lesen.js`, Rohdaten unter `E:/Markt-Dashboard-Archiv/edgar-fsds/`). **Taugt** für die liquiden Klassen (Deckung 86–100 %). Was jede spätere Nutzung übernehmen muss:
+
+- **Punkt-in-Zeit heißt `filed`, nicht `period`.** Zwischen Bilanzstichtag und Veröffentlichung liegen im Median 39 Tage (10-Q), 91 (10-K), 116 (20-F). Eine Kennzahl darf erst ab dem Handelstag **nach** `filed` in eine Rangfunktion — alles andere ist ein Leck.
+- **FSDS rundet Stichtage aufs Monatsende** (Apple 30.03. → 31.03.). Für Renditefenster den echten Stichtag aus dem Filing nehmen oder die Rundung kennen.
+- **Erste Veröffentlichung gilt.** 4,3–4,8 % der mehrfach berichteten Werte werden später anders dargestellt; die SEC-Endpunkte `frames` und `companyfacts` liefern die **späteste** Fassung und sind damit für Rückrechnungen unbrauchbar (100 von 275 Stichproben aus späteren Filings).
+- **Tag-Wildwuchs:** dieselbe Größe unter verschiedenen XBRL-Tags; für Umsatz decken die fünf häufigsten 97–99 %, `SalesRevenueNet` ist tot. Zuordnungstabelle ≈ 15 Tags, Zins-Tags nur bei Finanz-SIC. Umsatzkosten nur 64–74 % gedeckt, F&E 37–93 % je Klasse.
+- **Aktienzahl** aus `dei` fehlt in `num.txt`; Mehrklassenaktien nur in `segments`.
+- Fehlende liquide Reihen: ADR/kanadische Werte (20-F/40-F außerhalb des Quartalsrasters) und verschwundene Reihen mit CIK-Wechsel.
