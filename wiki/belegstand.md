@@ -339,3 +339,22 @@ Bericht `studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL2.md`. Universum
 **Warum dieser Nullbefund mehr wert ist als die vier davor:** die Maschine ist von außen geprüft. Das Orakel findet seine Kante (t 8,8 bis 52,9), die Leck-Klinke meldet 111.406 Verstöße im präparierten Fall und 0 in allen acht Kandidatenläufen, und die Momentum-Reihe läuft mit Kenneth Frenchs veröffentlichtem Faktor mit — als Long-Short gerechnet ρ = 0,73. Ein „nichts gefunden" heißt hier zum ersten Mal wirklich „da ist nichts", nicht „wir haben nicht hingesehen".
 
 > **ZURÜCKGENOMMEN 15.09. (PM, auf Wilhelms Nachfrage):** Der Satz darüber ist falsch. Die **Mindestgröße, die diese acht Zeilen mit 80 % Wahrscheinlichkeit gefunden hätten**, liegt bei **11,6 bis 23,5 % je Jahr** über dem Universum nach Kosten (MDE = (2,734 + 0,8416) · se; Woche 0,26–0,45 Pp je Woche, Monat 0,97–1,76 Pp je Monat). Eine Kante von 4 % im Jahr war damit **unsichtbar**. Der haltbare Satz lautet: *da ist nichts in der Größenordnung von zwölf Prozent aufwärts*. Eine geprüfte Maschine schützt nicht vor zu wenig Auflösung — das sind zwei verschiedene Dinge. Rechnung dazu: für eine 4-%-Kante bräuchte man bei der Streuung eines 22-Werte-Dezils gegen das Universum (sd ≈ 5,3 Pp je Monat) rund **270 Jahre** Daten; häufiger umschichten hilft nicht, die Wochenstreuung skaliert mit. **Weitere Rangfunktionen in dieser Bauart sind deshalb sinnlos.** Auswege: Streuung drücken (markt- und branchenneutraler Vergleich statt gegen das Universum), oder die Ereignis-Achse, wo Effekte je Ereignis 1–5 Pp groß sind und pro Ereignis einmal bezahlt werden.
+
+### Trend reiten: Momentum lebt auf 782 Werten — die Absicherungen kosten mehr, als sie schützen (16.09.2026)
+
+Bericht `studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL3.md`. Universum Klassen 50-250 / 250-1000 / ab1000 (~782 Werte je Umschichtung), Momentum 12-1, monatlich, oberstes Dezil (78 Werte), long only, Kosten gemessen (0,026 Pp/Monat bei 32 % Umschlag), 2017-02 bis 2026-08.
+
+| Variante | netto Pp/Monat | Δ zu V0 | t (gepaart) | MDD | Zeit im Markt | Urteil |
+|---|---:|---:|---:|---:|---:|---|
+| **V0** Momentum pur | **+2,14** | — | — | 37,4 % | 100 % | Grundlinie |
+| V1 Regime-Schalter (SPY > EMA200) | +1,36 | −0,78 | −2,06 | **37,6 %** | 30–100 % | nicht bestanden |
+| V2 Volatilitätsbremse (15 %-Ziel) | +1,02 | −1,13 | −2,70 | 30,6 % | 58 % | nicht bestanden |
+| V3 beides | +0,71 | −1,44 | −2,82 | **21,0 %** | ~30 % | nicht bestanden |
+
+**Was steht:** Momentum ist extern verankert — die Long-Short-Reihe läuft mit Kenneth Frenchs `Mom` bei **ρ = 0,81** (Teil 2 auf 220 Werten: 0,73). V0 gegen das Universum +1,12 Pp/Monat bei t 2,26 und MDE 1,39 — für sich allein **nicht** aufgelöst; die Existenz des Effekts trägt die Literatur, nicht unsere Stichprobe.
+
+**Was nicht steht: die Absicherung.** Alle drei Varianten verlieren signifikant Rendite (0,8 bis 1,4 Pp/Monat). V1 schützt nicht einmal — der Regime-Schalter pendelt (66 Schaltungen, 22 allein 2022) und hat am Ende den **größeren** Rückgang. V3 halbiert den Rückgang (21 statt 37 %), zahlt dafür aber zwei Drittel der Rendite.
+
+**Der strukturelle Befund, der Wilhelms Crash-Frage beantwortet:** im Fenster 2020-11 bis 2021-06 ist V1 **identisch** mit V0, weil SPY die ganze Zeit über seiner EMA200 stand. Ein Marktregime-Schalter kann gegen einen Momentum-Einbruch prinzipiell nicht schützen — der passiert, wenn der Markt *steigt* und die Verlierer explodieren. Was er kann: den echten Crash abfedern (2020-02…04: Rückgang 19 statt 37 %). Was er kostet: jede Seitwärtsphase (2022: −10,2 % gegen +1,2 %).
+
+**Zielportfolio:** `zielportfolio/momentum-v0/<monat>.json`, 115 Dateien — die Schnittstelle zum Momentum-Buch des Mittelfrist-Depots (das bisher auf 193 Werten läuft; 51 der 78 Dezilwerte liegen in der Klasse 50-250). **Offener Entscheid:** Rendite (V0) gegen Rückgang (V3).
