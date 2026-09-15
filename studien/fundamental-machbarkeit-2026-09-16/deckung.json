@@ -1,0 +1,1024 @@
+{
+ "stand": "2026-09-15T22:30:24.607Z",
+ "kennung": "fundamental-machbarkeit-2026-09-16/deckung/v1",
+ "panelKennung": "fundamental-machbarkeit-2026-09-16/panel/v1",
+ "quartale": {
+  "2019q2": {
+   "quartal": "2019q2",
+   "einreichungen": 7034,
+   "formen": {
+    "10-Q": 5385,
+    "10-K": 998,
+    "10-Q/A": 135,
+    "10-K/A": 104,
+    "20-F": 365,
+    "40-F": 17,
+    "20-F/A": 20,
+    "40-F/A": 6,
+    "10-KT": 3,
+    "10-QT": 1
+   },
+   "registranten": 6032,
+   "registrantenImPanel": 3185,
+   "numZeilen": 2816279,
+   "numZielzeilen": 73232,
+   "tafel": {
+    "50-250": {
+     "aktiv": 610,
+     "mitCik": 610,
+     "aufEdgar": 527,
+     "mitFiling": 523,
+     "mitUsStandard": 502,
+     "mitAuslaend": 21,
+     "finanz": 93,
+     "umsatz": 511,
+     "umsatzkosten": 325,
+     "vermoegen": 522,
+     "fue": 161,
+     "aktien": 439,
+     "kern": 438,
+     "nichtFinanz": 430,
+     "nfKern": 362,
+     "nfBrutto": 308,
+     "nfFue": 160,
+     "alle": 125
+    },
+    "gesamt": {
+     "aktiv": 3982,
+     "mitCik": 3969,
+     "aufEdgar": 3185,
+     "mitFiling": 3146,
+     "mitUsStandard": 2970,
+     "mitAuslaend": 176,
+     "finanz": 743,
+     "umsatz": 2844,
+     "umsatzkosten": 1620,
+     "vermoegen": 3138,
+     "fue": 1062,
+     "aktien": 2655,
+     "kern": 2487,
+     "nichtFinanz": 2403,
+     "nfKern": 1888,
+     "nfBrutto": 1539,
+     "nfFue": 1051,
+     "alle": 658
+    },
+    "250-1000": {
+     "aktiv": 128,
+     "mitCik": 128,
+     "aufEdgar": 121,
+     "mitFiling": 121,
+     "mitUsStandard": 118,
+     "mitAuslaend": 3,
+     "finanz": 15,
+     "umsatz": 119,
+     "umsatzkosten": 72,
+     "vermoegen": 121,
+     "fue": 50,
+     "aktien": 98,
+     "kern": 98,
+     "nichtFinanz": 106,
+     "nfKern": 85,
+     "nfBrutto": 69,
+     "nfFue": 50,
+     "alle": 33
+    },
+    "unter5": {
+     "aktiv": 1207,
+     "mitCik": 1203,
+     "aufEdgar": 955,
+     "mitFiling": 947,
+     "mitUsStandard": 898,
+     "mitAuslaend": 49,
+     "finanz": 218,
+     "umsatz": 831,
+     "umsatzkosten": 424,
+     "vermoegen": 944,
+     "fue": 374,
+     "aktien": 835,
+     "kern": 752,
+     "nichtFinanz": 729,
+     "nfKern": 556,
+     "nfBrutto": 399,
+     "nfFue": 371,
+     "alle": 179
+    },
+    "jung": {
+     "aktiv": 655,
+     "mitCik": 651,
+     "aufEdgar": 406,
+     "mitFiling": 394,
+     "mitUsStandard": 347,
+     "mitAuslaend": 47,
+     "finanz": 151,
+     "umsatz": 290,
+     "umsatzkosten": 150,
+     "vermoegen": 393,
+     "fue": 116,
+     "aktien": 299,
+     "kern": 238,
+     "nichtFinanz": 243,
+     "nfKern": 154,
+     "nfBrutto": 141,
+     "nfFue": 114,
+     "alle": 59
+    },
+    "5-50": {
+     "aktiv": 1365,
+     "mitCik": 1360,
+     "aufEdgar": 1159,
+     "mitFiling": 1144,
+     "mitUsStandard": 1089,
+     "mitAuslaend": 55,
+     "finanz": 264,
+     "umsatz": 1076,
+     "umsatzkosten": 634,
+     "vermoegen": 1141,
+     "fue": 347,
+     "aktien": 968,
+     "kern": 945,
+     "nichtFinanz": 880,
+     "nfKern": 717,
+     "nfBrutto": 607,
+     "nfFue": 342,
+     "alle": 249
+    },
+    "ab1000": {
+     "aktiv": 17,
+     "mitCik": 17,
+     "aufEdgar": 17,
+     "mitFiling": 17,
+     "mitUsStandard": 16,
+     "mitAuslaend": 1,
+     "finanz": 2,
+     "umsatz": 17,
+     "umsatzkosten": 15,
+     "vermoegen": 17,
+     "fue": 14,
+     "aktien": 16,
+     "kern": 16,
+     "nichtFinanz": 15,
+     "nfKern": 14,
+     "nfBrutto": 15,
+     "nfFue": 14,
+     "alle": 13
+    }
+   },
+   "abstand": {
+    "alle": {
+     "n": 6769,
+     "min": -230,
+     "p10": 31,
+     "p50": 40,
+     "p90": 105,
+     "max": 2673,
+     "mittel": 65.7
+    },
+    "jeForm": {
+     "quartal": {
+      "n": 5386,
+      "min": -230,
+      "p10": 30,
+      "p50": 39,
+      "p90": 46,
+      "max": 2585,
+      "mittel": 53.2
+     },
+     "jahr": {
+      "n": 1001,
+      "min": 21,
+      "p10": 60,
+      "p50": 91,
+      "p90": 114,
+      "max": 2673,
+      "mittel": 115.6
+     },
+     "auslaend": {
+      "n": 382,
+      "min": 36,
+      "p10": 91,
+      "p50": 116,
+      "p90": 130,
+      "max": 246,
+      "mittel": 111
+     }
+    },
+    "jeKlasse": {
+     "ab1000": {
+      "n": 17,
+      "min": 16,
+      "p10": 21,
+      "p50": 26,
+      "p90": 31,
+      "max": 66,
+      "mittel": 28.3
+     },
+     "50-250": {
+      "n": 533,
+      "min": 16,
+      "p10": 25,
+      "p50": 33,
+      "p90": 43,
+      "max": 120,
+      "mittel": 36.5
+     },
+     "inaktiv": {
+      "n": 681,
+      "min": 18,
+      "p10": 32,
+      "p50": 40,
+      "p90": 92,
+      "max": 430,
+      "mittel": 52.9
+     },
+     "250-1000": {
+      "n": 124,
+      "min": 10,
+      "p10": 23,
+      "p50": 31,
+      "p90": 40,
+      "max": 158,
+      "mittel": 33.7
+     },
+     "5-50": {
+      "n": 1162,
+      "min": 15,
+      "p10": 29,
+      "p50": 37,
+      "p90": 45,
+      "max": 156,
+      "mittel": 39.3
+     },
+     "unter5": {
+      "n": 1002,
+      "min": 10,
+      "p10": 31,
+      "p50": 39,
+      "p90": 81,
+      "max": 170,
+      "mittel": 45.1
+     },
+     "jung": {
+      "n": 440,
+      "min": 15,
+      "p10": 33,
+      "p50": 44,
+      "p90": 105,
+      "max": 686,
+      "mittel": 58.4
+     }
+    },
+    "negativ": 1,
+    "ueber45": 1952,
+    "ueber90": 1248,
+    "ueber180": 165,
+    "p95": 120,
+    "p99": 501
+   },
+   "neudarstellungen": {
+    "schluessel": 71109,
+    "mehrfach": 1856,
+    "gleich": 1777,
+    "verschieden": 79,
+    "verschiedenImPanel": 33,
+    "jeGruppe": {
+     "umsatz": 11,
+     "aktien": 43,
+     "vermoegen": 18,
+     "fue": 2,
+     "umsatzkosten": 5
+    },
+    "beispiele": [
+     {
+      "reihe": "TTNP",
+      "key": "910267|WeightedAverageNumberOfDilutedSharesOutstanding|us-gaap/2018|20181231|4|shares",
+      "werte": [
+       {
+        "adsh": "0001144204-19-017459",
+        "form": "10-K",
+        "filed": "2019-04-01",
+        "wert": "11960000.0000"
+       },
+       {
+        "adsh": "0001144204-19-017559",
+        "form": "10-K/A",
+        "filed": "2019-04-02",
+        "wert": "5688000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "AWSM",
+      "key": "1274032|CommonStockSharesOutstanding|us-gaap/2018|20181231|0|shares",
+      "werte": [
+       {
+        "adsh": "0001564590-19-011746",
+        "form": "10-K",
+        "filed": "2019-04-16",
+        "wert": "7792918.0000"
+       },
+       {
+        "adsh": "0001564590-19-019471",
+        "form": "10-Q",
+        "filed": "2019-05-15",
+        "wert": "7793000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "AYRO",
+      "key": "1086745|CommonStockSharesOutstanding|us-gaap/2018|20171231|0|shares",
+      "werte": [
+       {
+        "adsh": "0001654954-19-007698",
+        "form": "10-Q/A",
+        "filed": "2019-06-27",
+        "wert": "374285.0000"
+       },
+       {
+        "adsh": "0001654954-19-004352",
+        "form": "10-K/A",
+        "filed": "2019-04-12",
+        "wert": "9800364.0000"
+       },
+       {
+        "adsh": "0001654954-19-007472",
+        "form": "10-Q/A",
+        "filed": "2019-06-19",
+        "wert": "347285.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "TTNP",
+      "key": "910267|WeightedAverageNumberOfSharesOutstandingBasic|us-gaap/2018|20181231|4|shares",
+      "werte": [
+       {
+        "adsh": "0001144204-19-017459",
+        "form": "10-K",
+        "filed": "2019-04-01",
+        "wert": "11960000.0000"
+       },
+       {
+        "adsh": "0001144204-19-017559",
+        "form": "10-K/A",
+        "filed": "2019-04-02",
+        "wert": "5688000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "SGRP",
+      "key": "1004989|Assets|us-gaap/2018|20181231|0|USD",
+      "werte": [
+       {
+        "adsh": "0001437749-19-007194",
+        "form": "10-K",
+        "filed": "2019-04-15",
+        "wert": "68929000.0000"
+       },
+       {
+        "adsh": "0001437749-19-007807",
+        "form": "10-K/A",
+        "filed": "2019-04-24",
+        "wert": "69095000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "AMMA",
+      "key": "1674227|CommonStockSharesOutstanding|us-gaap/2018|20181231|0|shares",
+      "werte": [
+       {
+        "adsh": "0001144204-19-017404",
+        "form": "10-K",
+        "filed": "2019-04-01",
+        "wert": "17494852.0000"
+       },
+       {
+        "adsh": "0001144204-19-028215",
+        "form": "10-Q/A",
+        "filed": "2019-05-24",
+        "wert": "5838149.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "AYRO",
+      "key": "1086745|InterestIncomeExpenseNet|us-gaap/2018|20180331|1|USD",
+      "werte": [
+       {
+        "adsh": "0001654954-19-004352",
+        "form": "10-K/A",
+        "filed": "2019-04-12",
+        "wert": "-1082397.0000"
+       },
+       {
+        "adsh": "0001654954-19-005963",
+        "form": "10-Q",
+        "filed": "2019-05-15",
+        "wert": "-1082217.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "AYRO",
+      "key": "1086745|InterestIncomeExpenseNet|us-gaap/2018|20180630|2|USD",
+      "werte": [
+       {
+        "adsh": "0001654954-19-007472",
+        "form": "10-Q/A",
+        "filed": "2019-06-19",
+        "wert": "-1081499.0000"
+       },
+       {
+        "adsh": "0001654954-19-004352",
+        "form": "10-K/A",
+        "filed": "2019-04-12",
+        "wert": "-1082097.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "BIN",
+      "key": "1089531|Revenues|us-gaap/2018|20180331|1|USD",
+      "werte": [
+       {
+        "adsh": "0001144204-19-026547",
+        "form": "10-Q",
+        "filed": "2019-05-15",
+        "wert": "539524055.0000"
+       },
+       {
+        "adsh": "0001144204-19-017761",
+        "form": "10-K",
+        "filed": "2019-04-02",
+        "wert": "539500000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "ETRM",
+      "key": "1371217|Assets|us-gaap/2018|20181231|0|USD",
+      "werte": [
+       {
+        "adsh": "0001558370-19-005143",
+        "form": "10-K",
+        "filed": "2019-05-16",
+        "wert": "46272666.0000"
+       },
+       {
+        "adsh": "0001558370-19-005220",
+        "form": "10-Q",
+        "filed": "2019-05-20",
+        "wert": "46273000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "BYU",
+      "key": "1556266|CommonStockSharesOutstanding|us-gaap/2018|20181231|0|shares",
+      "werte": [
+       {
+        "adsh": "0001213900-19-009149",
+        "form": "10-Q",
+        "filed": "2019-05-20",
+        "wert": "5023906.0000"
+       },
+       {
+        "adsh": "0001213900-19-005814",
+        "form": "10-K",
+        "filed": "2019-04-05",
+        "wert": "25119532.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "SITO",
+      "key": "1157817|Assets|us-gaap/2018|20181231|0|USD",
+      "werte": [
+       {
+        "adsh": "0001213900-19-008864",
+        "form": "10-Q",
+        "filed": "2019-05-15",
+        "wert": "22875634.0000"
+       },
+       {
+        "adsh": "0001213900-19-005545",
+        "form": "10-K",
+        "filed": "2019-04-01",
+        "wert": "22564412.0000"
+       }
+      ]
+     }
+    ]
+   },
+   "sekunden": 4.02
+  },
+  "2024q2": {
+   "quartal": "2024q2",
+   "einreichungen": 7183,
+   "formen": {
+    "10-Q": 5406,
+    "10-K": 1033,
+    "10-K/A": 104,
+    "20-F": 503,
+    "20-F/A": 21,
+    "10-Q/A": 92,
+    "40-F": 19,
+    "40-F/A": 3,
+    "10-KT": 2
+   },
+   "registranten": 6168,
+   "registrantenImPanel": 3346,
+   "numZeilen": 3426170,
+   "numZielzeilen": 81184,
+   "tafel": {
+    "50-250": {
+     "aktiv": 698,
+     "mitCik": 697,
+     "aufEdgar": 629,
+     "mitFiling": 623,
+     "mitUsStandard": 597,
+     "mitAuslaend": 26,
+     "finanz": 114,
+     "umsatz": 601,
+     "umsatzkosten": 391,
+     "vermoegen": 623,
+     "fue": 196,
+     "aktien": 541,
+     "kern": 534,
+     "nichtFinanz": 509,
+     "nfKern": 437,
+     "nfBrutto": 374,
+     "nfFue": 192,
+     "alle": 155
+    },
+    "gesamt": {
+     "aktiv": 3700,
+     "mitCik": 3677,
+     "aufEdgar": 3152,
+     "mitFiling": 3116,
+     "mitUsStandard": 2923,
+     "mitAuslaend": 193,
+     "finanz": 713,
+     "umsatz": 2634,
+     "umsatzkosten": 1627,
+     "vermoegen": 3114,
+     "fue": 1145,
+     "aktien": 2659,
+     "kern": 2417,
+     "nichtFinanz": 2403,
+     "nfKern": 1896,
+     "nfBrutto": 1535,
+     "nfFue": 1124,
+     "alle": 743
+    },
+    "jung": {
+     "aktiv": 552,
+     "mitCik": 540,
+     "aufEdgar": 408,
+     "mitFiling": 400,
+     "mitUsStandard": 364,
+     "mitAuslaend": 36,
+     "finanz": 183,
+     "umsatz": 180,
+     "umsatzkosten": 102,
+     "vermoegen": 400,
+     "fue": 101,
+     "aktien": 258,
+     "kern": 169,
+     "nichtFinanz": 217,
+     "nfKern": 112,
+     "nfBrutto": 90,
+     "nfFue": 97,
+     "alle": 58
+    },
+    "unter5": {
+     "aktiv": 818,
+     "mitCik": 813,
+     "aufEdgar": 658,
+     "mitFiling": 646,
+     "mitUsStandard": 597,
+     "mitAuslaend": 49,
+     "finanz": 116,
+     "umsatz": 523,
+     "umsatzkosten": 310,
+     "vermoegen": 646,
+     "fue": 323,
+     "aktien": 586,
+     "kern": 498,
+     "nichtFinanz": 530,
+     "nfKern": 390,
+     "nfBrutto": 291,
+     "nfFue": 321,
+     "alle": 161
+    },
+    "250-1000": {
+     "aktiv": 219,
+     "mitCik": 219,
+     "aufEdgar": 207,
+     "mitFiling": 207,
+     "mitUsStandard": 200,
+     "mitAuslaend": 7,
+     "finanz": 33,
+     "umsatz": 204,
+     "umsatzkosten": 134,
+     "vermoegen": 207,
+     "fue": 82,
+     "aktien": 174,
+     "kern": 174,
+     "nichtFinanz": 174,
+     "nfKern": 144,
+     "nfBrutto": 128,
+     "nfFue": 81,
+     "alle": 65
+    },
+    "5-50": {
+     "aktiv": 1374,
+     "mitCik": 1369,
+     "aufEdgar": 1212,
+     "mitFiling": 1202,
+     "mitUsStandard": 1129,
+     "mitAuslaend": 73,
+     "finanz": 261,
+     "umsatz": 1089,
+     "umsatzkosten": 659,
+     "vermoegen": 1200,
+     "fue": 415,
+     "aktien": 1067,
+     "kern": 1009,
+     "nichtFinanz": 941,
+     "nfKern": 784,
+     "nfBrutto": 622,
+     "nfFue": 406,
+     "alle": 279
+    },
+    "ab1000": {
+     "aktiv": 39,
+     "mitCik": 39,
+     "aufEdgar": 38,
+     "mitFiling": 38,
+     "mitUsStandard": 36,
+     "mitAuslaend": 2,
+     "finanz": 6,
+     "umsatz": 37,
+     "umsatzkosten": 31,
+     "vermoegen": 38,
+     "fue": 28,
+     "aktien": 33,
+     "kern": 33,
+     "nichtFinanz": 32,
+     "nfKern": 29,
+     "nfBrutto": 30,
+     "nfFue": 27,
+     "alle": 25
+    }
+   },
+   "abstand": {
+    "alle": {
+     "n": 6963,
+     "min": -238,
+     "p10": 31,
+     "p50": 40,
+     "p90": 107,
+     "max": 1394,
+     "mittel": 55.3
+    },
+    "jeForm": {
+     "quartal": {
+      "n": 5406,
+      "min": -238,
+      "p10": 30,
+      "p50": 39,
+      "p90": 45,
+      "max": 1394,
+      "mittel": 41.3
+     },
+     "jahr": {
+      "n": 1035,
+      "min": 15,
+      "p10": 60,
+      "p50": 92,
+      "p90": 117,
+      "max": 1120,
+      "mittel": 98
+     },
+     "auslaend": {
+      "n": 522,
+      "min": 37,
+      "p10": 93,
+      "p50": 117,
+      "p90": 136,
+      "max": 482,
+      "mittel": 115.7
+     }
+    },
+    "jeKlasse": {
+     "ab1000": {
+      "n": 38,
+      "min": 21,
+      "p10": 24,
+      "p50": 31,
+      "p90": 39,
+      "max": 109,
+      "mittel": 32.8
+     },
+     "250-1000": {
+      "n": 209,
+      "min": 10,
+      "p10": 23,
+      "p50": 31,
+      "p90": 39,
+      "max": 131,
+      "mittel": 33.5
+     },
+     "inaktiv": {
+      "n": 1001,
+      "min": 19,
+      "p10": 31,
+      "p50": 43,
+      "p90": 107,
+      "max": 440,
+      "mittel": 56.2
+     },
+     "50-250": {
+      "n": 631,
+      "min": 16,
+      "p10": 25,
+      "p50": 33,
+      "p90": 44,
+      "max": 121,
+      "mittel": 36.8
+     },
+     "unter5": {
+      "n": 745,
+      "min": 23,
+      "p10": 32,
+      "p50": 43,
+      "p90": 106,
+      "max": 250,
+      "mittel": 54.7
+     },
+     "5-50": {
+      "n": 1224,
+      "min": -238,
+      "p10": 26,
+      "p50": 37,
+      "p90": 53,
+      "max": 151,
+      "mittel": 40.1
+     },
+     "jung": {
+      "n": 543,
+      "min": 26,
+      "p10": 38,
+      "p50": 50,
+      "p90": 110,
+      "max": 482,
+      "mittel": 69.3
+     }
+    },
+    "negativ": 2,
+    "ueber45": 2043,
+    "ueber90": 1362,
+    "ueber180": 46,
+    "p95": 120,
+    "p99": 164
+   },
+   "neudarstellungen": {
+    "schluessel": 79443,
+    "mehrfach": 1528,
+    "gleich": 1455,
+    "verschieden": 73,
+    "verschiedenImPanel": 36,
+    "jeGruppe": {
+     "aktien": 46,
+     "vermoegen": 10,
+     "fue": 5,
+     "umsatzkosten": 4,
+     "umsatz": 8
+    },
+    "beispiele": [
+     {
+      "reihe": "I",
+      "key": "1529113|Assets|us-gaap/2023|20231231|0|USD",
+      "werte": [
+       {
+        "adsh": "0001628280-24-016449",
+        "form": "10-K",
+        "filed": "2024-04-16",
+        "wert": "23769000.0000"
+       },
+       {
+        "adsh": "0001628280-24-024396",
+        "form": "10-Q",
+        "filed": "2024-05-20",
+        "wert": "509000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "AURC",
+      "key": "1835856|ResearchAndDevelopmentExpense|us-gaap/2023|20230331|1|USD",
+      "werte": [
+       {
+        "adsh": "0001628280-24-023537",
+        "form": "10-Q",
+        "filed": "2024-05-15",
+        "wert": "14446000.0000"
+       },
+       {
+        "adsh": "0001628280-24-015134",
+        "form": "10-K",
+        "filed": "2024-04-08",
+        "wert": "23606000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "FPAY",
+      "key": "1397047|WeightedAverageNumberOfSharesOutstandingBasic|us-gaap/2023|20231231|4|shares",
+      "werte": [
+       {
+        "adsh": "0001213900-24-028705",
+        "form": "10-K",
+        "filed": "2024-04-01",
+        "wert": "16260349.0000"
+       },
+       {
+        "adsh": "0001213900-24-029807",
+        "form": "10-K/A",
+        "filed": "2024-04-03",
+        "wert": "21705406.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "ZOM",
+      "key": "1684144|CostOfRevenue|us-gaap/2023|20231231|4|USD",
+      "werte": [
+       {
+        "adsh": "0001558370-24-007597",
+        "form": "10-Q",
+        "filed": "2024-05-09",
+        "wert": "1647000.0000"
+       },
+       {
+        "adsh": "0001558370-24-004517",
+        "form": "10-K",
+        "filed": "2024-04-01",
+        "wert": "7868000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "ACDC",
+      "key": "1881487|Assets|us-gaap/2023|20231231|0|USD",
+      "werte": [
+       {
+        "adsh": "0000950170-24-057774",
+        "form": "10-Q",
+        "filed": "2024-05-10",
+        "wert": "3070700000.0000"
+       },
+       {
+        "adsh": "0000950170-24-044411",
+        "form": "10-K/A",
+        "filed": "2024-04-15",
+        "wert": "1340800000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "KORE",
+      "key": "1855457|RevenueFromContractWithCustomerExcludingAssessedTax|us-gaap/2023|20231231|4|USD",
+      "werte": [
+       {
+        "adsh": "0001855457-24-000048",
+        "form": "10-Q",
+        "filed": "2024-05-15",
+        "wert": "65975000.0000"
+       },
+       {
+        "adsh": "0001855457-24-000015",
+        "form": "10-K",
+        "filed": "2024-04-15",
+        "wert": "276610000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "GOEV",
+      "key": "1750153|CommonStockSharesOutstanding|us-gaap/2023|20231231|0|shares",
+      "werte": [
+       {
+        "adsh": "0001628280-24-023563",
+        "form": "10-Q",
+        "filed": "2024-05-15",
+        "wert": "37591000.0000"
+       },
+       {
+        "adsh": "0001628280-24-014075",
+        "form": "10-K",
+        "filed": "2024-04-01",
+        "wert": "864587000.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "CDTX",
+      "key": "1610618|WeightedAverageNumberOfDilutedSharesOutstanding|us-gaap/2023|20230331|1|shares",
+      "werte": [
+       {
+        "adsh": "0001610618-24-000073",
+        "form": "10-Q",
+        "filed": "2024-05-15",
+        "wert": "5059514.0000"
+       },
+       {
+        "adsh": "0001610618-24-000041",
+        "form": "10-K",
+        "filed": "2024-04-22",
+        "wert": "101189396.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "ABLLL",
+      "key": "1814287|CommonStockSharesOutstanding|us-gaap/2023|20231231|0|shares",
+      "werte": [
+       {
+        "adsh": "0001814287-24-000034",
+        "form": "10-Q",
+        "filed": "2024-05-13",
+        "wert": "63388823.0000"
+       },
+       {
+        "adsh": "0001814287-24-000035",
+        "form": "10-K/A",
+        "filed": "2024-05-30",
+        "wert": "63242173.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "CDTX",
+      "key": "1610618|CommonStockSharesOutstanding|us-gaap/2023|20231231|0|shares",
+      "werte": [
+       {
+        "adsh": "0001610618-24-000041",
+        "form": "10-K",
+        "filed": "2024-04-22",
+        "wert": "90601999.0000"
+       },
+       {
+        "adsh": "0001610618-24-000073",
+        "form": "10-Q",
+        "filed": "2024-05-15",
+        "wert": "4530113.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "FPAY",
+      "key": "1397047|WeightedAverageNumberOfDilutedSharesOutstanding|us-gaap/2023|20231231|4|shares",
+      "werte": [
+       {
+        "adsh": "0001213900-24-029807",
+        "form": "10-K/A",
+        "filed": "2024-04-03",
+        "wert": "21705406.0000"
+       },
+       {
+        "adsh": "0001213900-24-028705",
+        "form": "10-K",
+        "filed": "2024-04-01",
+        "wert": "16260349.0000"
+       }
+      ]
+     },
+     {
+      "reihe": "CDTX",
+      "key": "1610618|WeightedAverageNumberOfSharesOutstandingBasic|us-gaap/2023|20230331|1|shares",
+      "werte": [
+       {
+        "adsh": "0001610618-24-000041",
+        "form": "10-K",
+        "filed": "2024-04-22",
+        "wert": "78640086.0000"
+       },
+       {
+        "adsh": "0001610618-24-000073",
+        "form": "10-Q",
+        "filed": "2024-05-15",
+        "wert": "3932050.0000"
+       }
+      ]
+     }
+    ]
+   },
+   "sekunden": 4.86
+  }
+ }
+}

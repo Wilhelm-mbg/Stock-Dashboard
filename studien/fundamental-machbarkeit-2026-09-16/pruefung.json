@@ -1,0 +1,673 @@
+{
+ "stand": "2026-09-15T22:33:34.409Z",
+ "kennung": "fundamental-machbarkeit-2026-09-16/pruefung/v1",
+ "A": {
+  "2019q2": [
+   {
+    "reihe": "AAPL",
+    "cik": "320193",
+    "klasse": "ab1000",
+    "sicherheit": "tabelle",
+    "adsh": "0000320193-19-000066",
+    "form": "10-Q",
+    "period": "2019-03-31",
+    "filed": "2019-05-01",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "fsds": 58015000000,
+      "api": 58015000000,
+      "apiFiled": "2019-05-01",
+      "apiEnd": "2019-03-30",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2018-12-30"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 341998000000,
+      "api": 341998000000,
+      "apiFiled": "2019-05-01",
+      "apiEnd": "2019-03-30",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   },
+   {
+    "reihe": "ABBV",
+    "cik": "1551152",
+    "klasse": "250-1000",
+    "sicherheit": "tabelle",
+    "adsh": "0001551152-19-000016",
+    "form": "10-Q",
+    "period": "2019-03-31",
+    "filed": "2019-05-03",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "Revenues",
+      "fsds": 7828000000,
+      "api": 7828000000,
+      "apiFiled": "2019-05-03",
+      "apiEnd": "2019-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2019-01-01"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 56769000000,
+      "api": 56769000000,
+      "apiFiled": "2019-05-03",
+      "apiEnd": "2019-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   },
+   {
+    "reihe": "A",
+    "cik": "1090872",
+    "klasse": "50-250",
+    "sicherheit": "tabelle",
+    "adsh": "0001090872-19-000010",
+    "form": "10-Q",
+    "period": "2019-04-30",
+    "filed": "2019-05-30",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "fsds": 1238000000,
+      "api": 1238000000,
+      "apiFiled": "2019-05-30",
+      "apiEnd": "2019-04-30",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2019-02-01"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 9022000000,
+      "api": 9022000000,
+      "apiFiled": "2019-05-30",
+      "apiEnd": "2019-04-30",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   },
+   {
+    "reihe": "AAOI",
+    "cik": "1158114",
+    "klasse": "5-50",
+    "sicherheit": "tabelle",
+    "adsh": "0001558370-19-004668",
+    "form": "10-Q",
+    "period": "2019-03-31",
+    "filed": "2019-05-09",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "fsds": 52719000,
+      "api": 52719000,
+      "apiFiled": "2019-05-09",
+      "apiEnd": "2019-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2019-01-01"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 491205000,
+      "api": 491205000,
+      "apiFiled": "2019-05-09",
+      "apiEnd": "2019-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   },
+   {
+    "reihe": "ABUS",
+    "cik": "1447028",
+    "klasse": "unter5",
+    "sicherheit": "tabelle",
+    "adsh": "0001447028-19-000015",
+    "form": "10-Q",
+    "period": "2019-03-31",
+    "filed": "2019-05-06",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "Revenues",
+      "fsds": 679000,
+      "api": 679000,
+      "apiFiled": "2019-05-06",
+      "apiEnd": "2019-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2019-01-01"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 209216000,
+      "api": 209216000,
+      "apiFiled": "2019-05-06",
+      "apiEnd": "2019-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   }
+  ],
+  "2024q2": [
+   {
+    "reihe": "AAPL",
+    "cik": "320193",
+    "klasse": "ab1000",
+    "sicherheit": "tabelle",
+    "adsh": "0000320193-24-000069",
+    "form": "10-Q",
+    "period": "2024-03-31",
+    "filed": "2024-05-03",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "fsds": 90753000000,
+      "api": 90753000000,
+      "apiFiled": "2024-05-03",
+      "apiEnd": "2024-03-30",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2023-12-31"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 337411000000,
+      "api": 337411000000,
+      "apiFiled": "2024-05-03",
+      "apiEnd": "2024-03-30",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   },
+   {
+    "reihe": "AAL",
+    "cik": "6201",
+    "klasse": "250-1000",
+    "sicherheit": "tabelle",
+    "adsh": "0000006201-24-000032",
+    "form": "10-Q",
+    "period": "2024-03-31",
+    "filed": "2024-04-25",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "fsds": 12570000000,
+      "api": 12570000000,
+      "apiFiled": "2024-04-25",
+      "apiEnd": "2024-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2024-01-01"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 64384000000,
+      "api": 64384000000,
+      "apiFiled": "2024-04-25",
+      "apiEnd": "2024-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   },
+   {
+    "reihe": "A",
+    "cik": "1090872",
+    "klasse": "50-250",
+    "sicherheit": "tabelle",
+    "adsh": "0001090872-24-000021",
+    "form": "10-Q",
+    "period": "2024-04-30",
+    "filed": "2024-06-03",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "fsds": 1573000000,
+      "api": 1573000000,
+      "apiFiled": "2024-06-03",
+      "apiEnd": "2024-04-30",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2024-02-01"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 10856000000,
+      "api": 10856000000,
+      "apiFiled": "2024-06-03",
+      "apiEnd": "2024-04-30",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   },
+   {
+    "reihe": "AAOI",
+    "cik": "1158114",
+    "klasse": "5-50",
+    "sicherheit": "tabelle",
+    "adsh": "0001437749-24-015696",
+    "form": "10-Q",
+    "period": "2024-03-31",
+    "filed": "2024-05-09",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "fsds": 40673000,
+      "api": 40673000,
+      "apiFiled": "2024-05-09",
+      "apiEnd": "2024-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2024-01-01"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 350916000,
+      "api": 350916000,
+      "apiFiled": "2024-05-09",
+      "apiEnd": "2024-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   },
+   {
+    "reihe": "ABUS",
+    "cik": "1447028",
+    "klasse": "unter5",
+    "sicherheit": "tabelle",
+    "adsh": "0001447028-24-000038",
+    "form": "10-Q",
+    "period": "2024-03-31",
+    "filed": "2024-05-02",
+    "felder": [
+     {
+      "gruppe": "umsatz",
+      "tag": "Revenues",
+      "fsds": 1532000,
+      "api": 1532000,
+      "apiFiled": "2024-05-02",
+      "apiEnd": "2024-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": "2024-01-01"
+     },
+     {
+      "gruppe": "vermoegen",
+      "tag": "Assets",
+      "fsds": 150290000,
+      "api": 150290000,
+      "apiFiled": "2024-05-02",
+      "apiEnd": "2024-03-31",
+      "apiForm": "10-Q",
+      "stimmt": 1,
+      "apiStart": null
+     }
+    ]
+   }
+  ]
+ },
+ "B": {
+  "2019q2": [
+   {
+    "reihe": "AAPL",
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "zeitraeume": 57,
+    "mehrfachBerichtet": 46,
+    "verschieden": 0,
+    "beispiel": null
+   },
+   {
+    "reihe": "AAPL",
+    "tag": "Assets",
+    "zeitraeume": 70,
+    "mehrfachBerichtet": 18,
+    "verschieden": 3,
+    "beispiel": {
+     "zeitraum": "..2008-09-27|USD",
+     "filings": [
+      "10-Q 2009-07-22 39572000000",
+      "10-K 2009-10-27 39572000000",
+      "10-K/A 2010-01-25 36171000000",
+      "10-K 2010-10-27 36171000000"
+     ]
+    }
+   },
+   {
+    "reihe": "ABBV",
+    "tag": "Revenues",
+    "zeitraeume": 81,
+    "mehrfachBerichtet": 61,
+    "verschieden": 0,
+    "beispiel": null
+   },
+   {
+    "reihe": "ABBV",
+    "tag": "Assets",
+    "zeitraeume": 55,
+    "mehrfachBerichtet": 14,
+    "verschieden": 1,
+    "beispiel": {
+     "zeitraum": "..2014-12-31|USD",
+     "filings": [
+      "10-K 2015-02-20 27547000000",
+      "10-Q 2015-05-08 27547000000",
+      "10-Q 2015-08-07 27513000000",
+      "10-Q 2015-11-06 27513000000",
+      "10-K 2016-02-19 27513000000"
+     ]
+    }
+   },
+   {
+    "reihe": "A",
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "zeitraeume": 57,
+    "mehrfachBerichtet": 45,
+    "verschieden": 0,
+    "beispiel": null
+   },
+   {
+    "reihe": "A",
+    "tag": "Assets",
+    "zeitraeume": 71,
+    "mehrfachBerichtet": 19,
+    "verschieden": 2,
+    "beispiel": {
+     "zeitraum": "..2014-10-31|USD",
+     "filings": [
+      "10-K 2014-12-22 10831000000",
+      "10-Q 2015-03-10 10831000000",
+      "10-Q 2015-06-05 10831000000",
+      "10-Q 2015-09-02 10831000000",
+      "10-K 2015-12-21 10815000000"
+     ]
+    }
+   },
+   {
+    "reihe": "AAOI",
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "zeitraeume": 61,
+    "mehrfachBerichtet": 49,
+    "verschieden": 0,
+    "beispiel": null
+   },
+   {
+    "reihe": "AAOI",
+    "tag": "Assets",
+    "zeitraeume": 53,
+    "mehrfachBerichtet": 17,
+    "verschieden": 1,
+    "beispiel": {
+     "zeitraum": "..2017-12-31|USD",
+     "filings": [
+      "10-K 2018-02-28 452984000",
+      "10-Q 2018-05-08 452984000",
+      "10-Q 2018-08-08 452984000",
+      "10-Q 2018-11-08 452984000",
+      "10-K 2019-02-26 452948000"
+     ]
+    }
+   },
+   {
+    "reihe": "ABUS",
+    "tag": "Revenues",
+    "zeitraeume": 96,
+    "mehrfachBerichtet": 82,
+    "verschieden": 4,
+    "beispiel": {
+     "zeitraum": "2012-01-01..2012-12-31|USD",
+     "filings": [
+      "6-K 2014-03-06 14105186",
+      "10-K 2014-03-28 14105186",
+      "10-K 2015-03-13 14105000"
+     ]
+    }
+   },
+   {
+    "reihe": "ABUS",
+    "tag": "Assets",
+    "zeitraeume": 55,
+    "mehrfachBerichtet": 16,
+    "verschieden": 1,
+    "beispiel": {
+     "zeitraum": "..2012-12-31|CAD",
+     "filings": [
+      "20-F 2013-03-27 52328318",
+      "6-K 2014-03-06 52595191",
+      "10-K 2014-03-28 52595191"
+     ]
+    }
+   }
+  ],
+  "2024q2": [
+   {
+    "reihe": "AAPL",
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "zeitraeume": 57,
+    "mehrfachBerichtet": 46,
+    "verschieden": 0,
+    "beispiel": null
+   },
+   {
+    "reihe": "AAPL",
+    "tag": "Assets",
+    "zeitraeume": 70,
+    "mehrfachBerichtet": 18,
+    "verschieden": 3,
+    "beispiel": {
+     "zeitraum": "..2008-09-27|USD",
+     "filings": [
+      "10-Q 2009-07-22 39572000000",
+      "10-K 2009-10-27 39572000000",
+      "10-K/A 2010-01-25 36171000000",
+      "10-K 2010-10-27 36171000000"
+     ]
+    }
+   },
+   {
+    "reihe": "AAL",
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "zeitraeume": 61,
+    "mehrfachBerichtet": 48,
+    "verschieden": 0,
+    "beispiel": null
+   },
+   {
+    "reihe": "AAL",
+    "tag": "Assets",
+    "zeitraeume": 66,
+    "mehrfachBerichtet": 17,
+    "verschieden": 2,
+    "beispiel": {
+     "zeitraum": "..2014-12-31|USD",
+     "filings": [
+      "10-K 2015-02-25 43771000000",
+      "10-Q 2015-04-24 43771000000",
+      "10-Q 2015-07-24 43771000000",
+      "10-Q 2015-10-23 43771000000",
+      "10-K 2016-02-24 43225000000"
+     ]
+    }
+   },
+   {
+    "reihe": "A",
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "zeitraeume": 57,
+    "mehrfachBerichtet": 45,
+    "verschieden": 0,
+    "beispiel": null
+   },
+   {
+    "reihe": "A",
+    "tag": "Assets",
+    "zeitraeume": 71,
+    "mehrfachBerichtet": 19,
+    "verschieden": 2,
+    "beispiel": {
+     "zeitraum": "..2014-10-31|USD",
+     "filings": [
+      "10-K 2014-12-22 10831000000",
+      "10-Q 2015-03-10 10831000000",
+      "10-Q 2015-06-05 10831000000",
+      "10-Q 2015-09-02 10831000000",
+      "10-K 2015-12-21 10815000000"
+     ]
+    }
+   },
+   {
+    "reihe": "AAOI",
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "zeitraeume": 61,
+    "mehrfachBerichtet": 49,
+    "verschieden": 0,
+    "beispiel": null
+   },
+   {
+    "reihe": "AAOI",
+    "tag": "Assets",
+    "zeitraeume": 53,
+    "mehrfachBerichtet": 17,
+    "verschieden": 1,
+    "beispiel": {
+     "zeitraum": "..2017-12-31|USD",
+     "filings": [
+      "10-K 2018-02-28 452984000",
+      "10-Q 2018-05-08 452984000",
+      "10-Q 2018-08-08 452984000",
+      "10-Q 2018-11-08 452984000",
+      "10-K 2019-02-26 452948000"
+     ]
+    }
+   },
+   {
+    "reihe": "ABUS",
+    "tag": "Revenues",
+    "zeitraeume": 96,
+    "mehrfachBerichtet": 82,
+    "verschieden": 4,
+    "beispiel": {
+     "zeitraum": "2012-01-01..2012-12-31|USD",
+     "filings": [
+      "6-K 2014-03-06 14105186",
+      "10-K 2014-03-28 14105186",
+      "10-K 2015-03-13 14105000"
+     ]
+    }
+   },
+   {
+    "reihe": "ABUS",
+    "tag": "Assets",
+    "zeitraeume": 55,
+    "mehrfachBerichtet": 16,
+    "verschieden": 1,
+    "beispiel": {
+     "zeitraum": "..2012-12-31|CAD",
+     "filings": [
+      "20-F 2013-03-27 52328318",
+      "6-K 2014-03-06 52595191",
+      "10-K 2014-03-28 52595191"
+     ]
+    }
+   }
+  ]
+ },
+ "C": {
+  "2019q2": {
+   "frame": "CY2019Q1I",
+   "stichtag": "2019-03-31",
+   "frameRegistranten": 5806,
+   "panelCiksAktiv": 3498,
+   "panelCiksImFrame": 2789,
+   "fsdsCiksMitAssetsAmStichtag": 2532,
+   "beide": 2514,
+   "nurFrame": 275,
+   "nurFrameSpaeterEingereicht": 101,
+   "nurFrameAndererStichtag": 153,
+   "nurFrameKeinFiling": 21,
+   "nurFsds": 18,
+   "nurFsdsBeispiele": [
+    "CP/16875",
+    "IMO/49938",
+    "SONY/313838",
+    "HMC/715153",
+    "VOD/839923"
+   ],
+   "nurFrameBeispiele": [
+    "AIR/1750 0001104659-19-016320 ",
+    "ADI/6281 0000006281-19-000089 ",
+    "APOG/6845 0000006845-21-000010 ",
+    "SSI/6885 0000006885-19-000148 ",
+    "AMAT/6951 0000006951-19-000019 "
+   ]
+  },
+  "2024q2": {
+   "frame": "CY2024Q1I",
+   "stichtag": "2024-03-31",
+   "frameRegistranten": 5849,
+   "panelCiksAktiv": 3458,
+   "panelCiksImFrame": 2856,
+   "fsdsCiksMitAssetsAmStichtag": 2575,
+   "beide": 2551,
+   "nurFrame": 305,
+   "nurFrameSpaeterEingereicht": 100,
+   "nurFrameAndererStichtag": 168,
+   "nurFrameKeinFiling": 37,
+   "nurFsds": 24,
+   "nurFsdsBeispiele": [
+    "CP/16875",
+    "IMO/49938",
+    "SONY/313838",
+    "HMC/715153",
+    "VOD/839923"
+   ],
+   "nurFrameBeispiele": [
+    "AIR/1750 0001104659-24-037408 ",
+    "ADI/6281 0000006281-24-000132 ",
+    "APOG/6845 0000006845-26-000023 ",
+    "AMAT/6951 0000006951-24-000022 ",
+    "EPAC/6955 0000006955-24-000037 "
+   ]
+  }
+ },
+ "anfragen": 0
+}

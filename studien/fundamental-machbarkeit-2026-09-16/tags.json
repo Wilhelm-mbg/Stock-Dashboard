@@ -1,0 +1,531 @@
+{
+ "stand": "2026-09-15T22:30:33.732Z",
+ "kennung": "fundamental-machbarkeit-2026-09-16/tags/v1",
+ "quartale": {
+  "2019q2": {
+   "alle": {
+    "filings": 6769,
+    "ohneUmsatzzeile": 1047,
+    "mitZeile": 5722,
+    "firmeneigen": 250,
+    "verschiedeneTags": 114,
+    "top": [
+     {
+      "tag": "Revenues",
+      "n": 2221,
+      "anteil": 38.8
+     },
+     {
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "n": 1957,
+      "anteil": 34.2
+     },
+     {
+      "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+      "n": 681,
+      "anteil": 11.9
+     },
+     {
+      "tag": "<firmeneigen>",
+      "n": 250,
+      "anteil": 4.4
+     },
+     {
+      "tag": "Revenue",
+      "n": 119,
+      "anteil": 2.1
+     },
+     {
+      "tag": "OperatingLeasesIncomeStatementLeaseRevenue",
+      "n": 63,
+      "anteil": 1.1
+     },
+     {
+      "tag": "SalesRevenueNet",
+      "n": 37,
+      "anteil": 0.6
+     },
+     {
+      "tag": "GainLossOnSalesOfLoansNet",
+      "n": 36,
+      "anteil": 0.6
+     },
+     {
+      "tag": "OtherIncome",
+      "n": 28,
+      "anteil": 0.5
+     },
+     {
+      "tag": "OperatingLeaseLeaseIncome",
+      "n": 21,
+      "anteil": 0.4
+     },
+     {
+      "tag": "SalesRevenueGoodsNet",
+      "n": 19,
+      "anteil": 0.3
+     },
+     {
+      "tag": "RevenueFromRelatedParties",
+      "n": 16,
+      "anteil": 0.3
+     }
+    ],
+    "rest": 274,
+    "labels": [
+     {
+      "label": "revenue",
+      "n": 1030
+     },
+     {
+      "label": "revenues",
+      "n": 1013
+     },
+     {
+      "label": "net sales",
+      "n": 711
+     },
+     {
+      "label": "total revenues",
+      "n": 539
+     },
+     {
+      "label": "total revenue",
+      "n": 388
+     },
+     {
+      "label": "sales",
+      "n": 218
+     },
+     {
+      "label": "net revenues",
+      "n": 162
+     },
+     {
+      "label": "net revenue",
+      "n": 120
+     }
+    ]
+   },
+   "panel": {
+    "filings": 3047,
+    "ohneUmsatzzeile": 351,
+    "mitZeile": 2696,
+    "firmeneigen": 96,
+    "verschiedeneTags": 76,
+    "top": [
+     {
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "n": 1213,
+      "anteil": 45
+     },
+     {
+      "tag": "Revenues",
+      "n": 772,
+      "anteil": 28.6
+     },
+     {
+      "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+      "n": 324,
+      "anteil": 12
+     },
+     {
+      "tag": "<firmeneigen>",
+      "n": 96,
+      "anteil": 3.6
+     },
+     {
+      "tag": "Revenue",
+      "n": 57,
+      "anteil": 2.1
+     },
+     {
+      "tag": "SalesRevenueNet",
+      "n": 21,
+      "anteil": 0.8
+     },
+     {
+      "tag": "OperatingLeasesIncomeStatementLeaseRevenue",
+      "n": 20,
+      "anteil": 0.7
+     },
+     {
+      "tag": "OtherIncome",
+      "n": 16,
+      "anteil": 0.6
+     },
+     {
+      "tag": "OperatingLeaseLeaseIncome",
+      "n": 13,
+      "anteil": 0.5
+     },
+     {
+      "tag": "SalesRevenueGoodsNet",
+      "n": 11,
+      "anteil": 0.4
+     },
+     {
+      "tag": "GainLossOnSalesOfLoansNet",
+      "n": 11,
+      "anteil": 0.4
+     },
+     {
+      "tag": "RegulatedAndUnregulatedOperatingRevenue",
+      "n": 8,
+      "anteil": 0.3
+     }
+    ],
+    "rest": 134,
+    "labels": [
+     {
+      "label": "net sales",
+      "n": 433
+     },
+     {
+      "label": "revenues",
+      "n": 420
+     },
+     {
+      "label": "revenue",
+      "n": 414
+     },
+     {
+      "label": "total revenues",
+      "n": 269
+     },
+     {
+      "label": "total revenue",
+      "n": 182
+     },
+     {
+      "label": "net revenues",
+      "n": 99
+     },
+     {
+      "label": "sales",
+      "n": 75
+     },
+     {
+      "label": "net revenue",
+      "n": 60
+     }
+    ]
+   },
+   "werteSicht": {
+    "filings": 2958,
+    "top": [
+     {
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "n": 1176,
+      "anteil": 39.8
+     },
+     {
+      "tag": "Revenues",
+      "n": 1148,
+      "anteil": 38.8
+     },
+     {
+      "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+      "n": 290,
+      "anteil": 9.8
+     },
+     {
+      "tag": "InterestAndDividendIncomeOperating",
+      "n": 235,
+      "anteil": 7.9
+     },
+     {
+      "tag": "RevenuesNetOfInterestExpense",
+      "n": 35,
+      "anteil": 1.2
+     },
+     {
+      "tag": "InterestIncomeExpenseNet",
+      "n": 25,
+      "anteil": 0.8
+     },
+     {
+      "tag": "SalesRevenueNet",
+      "n": 23,
+      "anteil": 0.8
+     },
+     {
+      "tag": "RegulatedAndUnregulatedOperatingRevenue",
+      "n": 13,
+      "anteil": 0.4
+     },
+     {
+      "tag": "SalesRevenueGoodsNet",
+      "n": 6,
+      "anteil": 0.2
+     },
+     {
+      "tag": "OperatingLeasesIncomeStatementLeaseRevenue",
+      "n": 4,
+      "anteil": 0.1
+     },
+     {
+      "tag": "SalesRevenueServicesNet",
+      "n": 2,
+      "anteil": 0.1
+     },
+     {
+      "tag": "RealEstateRevenueNet",
+      "n": 1,
+      "anteil": 0
+     }
+    ]
+   }
+  },
+  "2024q2": {
+   "alle": {
+    "filings": 6963,
+    "ohneUmsatzzeile": 1415,
+    "mitZeile": 5548,
+    "firmeneigen": 177,
+    "verschiedeneTags": 82,
+    "top": [
+     {
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "n": 2628,
+      "anteil": 47.4
+     },
+     {
+      "tag": "Revenues",
+      "n": 1718,
+      "anteil": 31
+     },
+     {
+      "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+      "n": 490,
+      "anteil": 8.8
+     },
+     {
+      "tag": "<firmeneigen>",
+      "n": 177,
+      "anteil": 3.2
+     },
+     {
+      "tag": "Revenue",
+      "n": 141,
+      "anteil": 2.5
+     },
+     {
+      "tag": "OperatingLeaseLeaseIncome",
+      "n": 69,
+      "anteil": 1.2
+     },
+     {
+      "tag": "GainLossOnSalesOfLoansNet",
+      "n": 37,
+      "anteil": 0.7
+     },
+     {
+      "tag": "RevenueFromContractsWithCustomers",
+      "n": 28,
+      "anteil": 0.5
+     },
+     {
+      "tag": "OtherIncome",
+      "n": 24,
+      "anteil": 0.4
+     },
+     {
+      "tag": "SellingAndMarketingExpense",
+      "n": 20,
+      "anteil": 0.4
+     },
+     {
+      "tag": "RegulatedAndUnregulatedOperatingRevenue",
+      "n": 15,
+      "anteil": 0.3
+     },
+     {
+      "tag": "DebtSecuritiesAvailableForSaleRealizedGainLoss",
+      "n": 11,
+      "anteil": 0.2
+     }
+    ],
+    "rest": 190,
+    "labels": [
+     {
+      "label": "revenue",
+      "n": 1095
+     },
+     {
+      "label": "revenues",
+      "n": 827
+     },
+     {
+      "label": "net sales",
+      "n": 640
+     },
+     {
+      "label": "total revenues",
+      "n": 534
+     },
+     {
+      "label": "total revenue",
+      "n": 484
+     },
+     {
+      "label": "sales",
+      "n": 168
+     },
+     {
+      "label": "net revenues",
+      "n": 165
+     },
+     {
+      "label": "net revenue",
+      "n": 135
+     }
+    ]
+   },
+   "panel": {
+    "filings": 3260,
+    "ohneUmsatzzeile": 552,
+    "mitZeile": 2708,
+    "firmeneigen": 76,
+    "verschiedeneTags": 60,
+    "top": [
+     {
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "n": 1494,
+      "anteil": 55.2
+     },
+     {
+      "tag": "Revenues",
+      "n": 681,
+      "anteil": 25.1
+     },
+     {
+      "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+      "n": 210,
+      "anteil": 7.8
+     },
+     {
+      "tag": "<firmeneigen>",
+      "n": 76,
+      "anteil": 2.8
+     },
+     {
+      "tag": "Revenue",
+      "n": 69,
+      "anteil": 2.5
+     },
+     {
+      "tag": "OperatingLeaseLeaseIncome",
+      "n": 26,
+      "anteil": 1
+     },
+     {
+      "tag": "RevenueFromContractsWithCustomers",
+      "n": 18,
+      "anteil": 0.7
+     },
+     {
+      "tag": "OtherIncome",
+      "n": 16,
+      "anteil": 0.6
+     },
+     {
+      "tag": "GainLossOnSalesOfLoansNet",
+      "n": 11,
+      "anteil": 0.4
+     },
+     {
+      "tag": "RegulatedAndUnregulatedOperatingRevenue",
+      "n": 10,
+      "anteil": 0.4
+     },
+     {
+      "tag": "RevenuesNetOfInterestExpense",
+      "n": 6,
+      "anteil": 0.2
+     },
+     {
+      "tag": "NoninterestIncome",
+      "n": 5,
+      "anteil": 0.2
+     }
+    ],
+    "rest": 86,
+    "labels": [
+     {
+      "label": "revenue",
+      "n": 478
+     },
+     {
+      "label": "net sales",
+      "n": 403
+     },
+     {
+      "label": "revenues",
+      "n": 332
+     },
+     {
+      "label": "total revenues",
+      "n": 302
+     },
+     {
+      "label": "total revenue",
+      "n": 245
+     },
+     {
+      "label": "net revenues",
+      "n": 82
+     },
+     {
+      "label": "sales",
+      "n": 69
+     },
+     {
+      "label": "net revenue",
+      "n": 67
+     }
+    ]
+   },
+   "werteSicht": {
+    "filings": 2795,
+    "top": [
+     {
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "n": 1444,
+      "anteil": 51.7
+     },
+     {
+      "tag": "Revenues",
+      "n": 949,
+      "anteil": 34
+     },
+     {
+      "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+      "n": 185,
+      "anteil": 6.6
+     },
+     {
+      "tag": "InterestAndDividendIncomeOperating",
+      "n": 151,
+      "anteil": 5.4
+     },
+     {
+      "tag": "RevenuesNetOfInterestExpense",
+      "n": 34,
+      "anteil": 1.2
+     },
+     {
+      "tag": "InterestIncomeExpenseNet",
+      "n": 19,
+      "anteil": 0.7
+     },
+     {
+      "tag": "RegulatedAndUnregulatedOperatingRevenue",
+      "n": 13,
+      "anteil": 0.5
+     }
+    ]
+   }
+  }
+ }
+}
