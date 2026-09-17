@@ -1,0 +1,22 @@
+{
+ "stand": "2026-09-17T23:12:23.394Z",
+ "ergebnis": null,
+ "gruen": 10,
+ "rot": 0,
+ "uebersprungen": 3,
+ "zeilen": [
+  " OK  T4-P0 z_Bonf(2) = 2,2414, MDE-Faktoren 2,8016 und 3,0830 ueber eine eigene erf-Naeherung - z 2.2414, Faktoren 2.8016 / 3.0830 / PM 3.3393",
+  " OK  T4-P1 aEnde ist der H-te Panel-Handelstag nach a, auch ueber leere Tage; reicht die Tafel nicht: null - Luecken uebersprungen, Ende der Tafel = null",
+  " OK  T4-P2 A auf der Kunst-Tafel: -5 % gegen SPY +6 % => A; 0 % => nicht A; genau -10 Pp => A (Grenze eingeschlossen) - X A, Y nicht A, Z A (Grenze -10.000000000000009), W nicht A, V nicht A",
+  " OK  T4-P3 B mit Kunst-Leser: fm > 0 => B, fm <= 0 => nicht B, fm null => ohne Fundament, filed = t => ohne Fundament (nie nicht-B) - B / nicht B / ohne / ohne; fm = 0 => nicht B",
+  " OK  T4-P4 HH-se (Lag 6 => Autokovarianzen 1..5) gegen eine unabhaengige Rechnung, 1e-9; t und MDE folgen - se HH 0.3310, se naiv 0.1325, t 2.883",
+  " OK  T4-P5 Placebo: |AB| und |AnB| je Monat bleiben, gleiche Saat gleiche Seiten, andere Saat andere - 15/19 erhalten, deterministisch, permutiert",
+  " OK  T4-P6 Orakel: Gewinner/Verlierer nach Eroeffnung(a)->Eroeffnung(aEnde); Korb eines Mitglieds = o(aEnde)/o(a)-1, Korb aus zweien taeglich gleichgewichtet - Einzelkorb -2.526 %, Zweierkorb -2.264 %",
+  " OK  T4-P7 Kosten je Seite = Summe w_i x Huerde(Klasse am Signaltag) = 2 x umschlagKosten aus dem Nichts - Kosten 0.06515 Pp = (0.0854 + 0.0449) / 2",
+  " OK  T4-P8 Auswahl unter Sicht ohne Schluessel: sauber 0 Verstoesse, praeparierte Fassung (t+1) > 0 und ungueltig - sauber 0, praepariert 5",
+  " OK  T4-P9 Leser: klinke(sym, tag, {filed: tag}) wirft, {filed: tag-1} liefert; fundamentalAm am Einreichungstag null, am Folgetag Zeile - fundamentaltafel-2026-09-16/v1, 158516 Zeilen; 0000320193-20-000052 filed 2020-05-01 erst am 2020-05-02",
+  "  -  T4-P10 Ergebnis: Urteil folgt der Regel §T4.6 aus den eigenen Zahlen; MDE = Faktor x se; n konsistent; Kontrollen mit Schranken (uebersprungen)",
+  "  -  T4-P11 test.js (47), test-teil2.js (20), test-teil3.js (15) laufen nach dem Konfig-Block gruen (uebersprungen)",
+  "  -  T4-P12 Sektorname jedes Sektor-Eintrags liegt in den SIC-Divisionen oder ist \"unbekannt\" (uebersprungen)"
+ ]
+}

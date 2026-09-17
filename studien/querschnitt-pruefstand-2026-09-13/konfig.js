@@ -171,6 +171,27 @@ var SPY_DIVIDENDE_JAHR = { min: 1.3, mitte: 1.6, max: 1.9 };
 var VORPRUEFUNG_TEIL3 = { umschlagV0: 0.293, kostenV0Spanne: [0.0184, 0.0250], mdeV0UniSpanne: [0.91, 1.74],
   paarSe: { v1: 0.23, v2: 0.14, v3: 0.27 }, seAbweichungFaktor: 1.5 };
 
+/* ---------- TEIL 4 (VORREGISTRIERUNG-TEIL4.md, 18.09.2026) ---------- */
+/* Horizonte in Panel-Handelstagen nach dem Ausfuehrungstag a (§T4.2). HH-Lag L = ceil(H/21): momente(paare, L)
+ * nimmt die Autokovarianzen der Lags 1..L-1 (120 Tage: 1..5, 250 Tage: 1..11), Kalendermonat als Index (§T4.5). */
+var TEIL4_HORIZONTE = [{ key: 'h120', name: '120 Handelstage', tage: 120, lag: 6, haupt: true },
+  { key: 'h250', name: '250 Handelstage', tage: 250, lag: 12, haupt: false }];
+var TEIL4_A_ZEILEN = 250, TEIL4_A_SCHWELLE_PP = -10;        // A: r - r_SPY <= -10 Pp ueber 250 Panelzeilen (§T4.3)
+var TEIL4_FUNDAMENT_MAX_ALTER_TAGE = 456;                  // Aktualitaets-Tor des Lesers (dessen Vorgabe), ausgewiesen
+var TEIL4_MIN_JE_SEITE = 10, TEIL4_SEKTOR_MIN_JE_SEITE = 5;  // §T4.4
+var TEIL4_QUINTIL = 5;                                     // Test 2: oberstes Fuenftel nach fm
+/* Testzahl 2 (§T4.0): z_Bonf(2) = Phi^-1(1 - 0,05/4) = 2,2414; MDE-Faktor dazu = z_Bonf(2) + z_0,80 = 3,0830. */
+var TEIL4_TESTZAHL = 2, TEIL4_BONFERRONI_T = 2.2414, TEIL4_MDE_FAKTOR_BONF = 3.0830;
+var TEIL4_VORHERSAGE_PP = 2.0;                             // Test 1: Delta >= +2 Pp je 120 Tage (§T4.4)
+var TEIL4_MIN_PERIODEN = 6;                                // darunter "duenn" (§T4.5)
+var TEIL4_PLACEBO = { ziehungen: 12, saat: 'teil4-placebo-2026-09-18', schrankePp: 0.5, tEinzeln: 3, maxFehler: 3 };
+var TEIL4_ORAKEL = { minPp: 20, minSd: 1.0, tBoden: 8 };
+/* Vorpruefung des PM (16.09.), §T4.8: Erwartungen, Faktor des PM (z_Bonf(4) + z_0,80 = 3,340) und die Meldegrenze. */
+var TEIL4_VORPRUEFUNG = { aMittel: 324, uniMittel: 783, monate: 117, paarSd: { h120: 3.22, h250: 6.8 },
+  mde: { h120: [1.0, 2.4], h250: [2.1, 7.3] }, mdeFaktorPM: 3.3393, faktorGrenze: 1.5, saat: 'teil4-vorpruefung-2026-09-18' };
+var FUNDAMENTAL_LESER = path.join(REPO, 'studien', 'fundamental-machbarkeit-2026-09-16', 'fundamental-lesen.js');
+var KONFIG_KENNUNG_TEIL4 = 'querschnitt-pruefstand-2026-09-13/teil4/v1';
+
 var KONFIG_KENNUNG = 'querschnitt-pruefstand-2026-09-13/v1';
 var KONFIG_KENNUNG_TEIL2 = 'querschnitt-pruefstand-2026-09-13/teil2/v1';
 var KONFIG_KENNUNG_TEIL3 = 'querschnitt-pruefstand-2026-09-13/teil3/v1';
@@ -212,4 +233,10 @@ module.exports = {
   KRISEN: KRISEN, ORAKEL_PERIODE_MONAT_MIN_PP: ORAKEL_PERIODE_MONAT_MIN_PP,
   DIVIDENDE_LUECKE_DEZIL_UNI_PP: DIVIDENDE_LUECKE_DEZIL_UNI_PP, DIVIDENDE_DEZIL_JAHR: DIVIDENDE_DEZIL_JAHR,
   SPY_DIVIDENDE_JAHR: SPY_DIVIDENDE_JAHR, VORPRUEFUNG_TEIL3: VORPRUEFUNG_TEIL3, KONFIG_KENNUNG_TEIL3: KONFIG_KENNUNG_TEIL3,
+  TEIL4_HORIZONTE: TEIL4_HORIZONTE, TEIL4_A_ZEILEN: TEIL4_A_ZEILEN, TEIL4_A_SCHWELLE_PP: TEIL4_A_SCHWELLE_PP,
+  TEIL4_FUNDAMENT_MAX_ALTER_TAGE: TEIL4_FUNDAMENT_MAX_ALTER_TAGE, TEIL4_MIN_JE_SEITE: TEIL4_MIN_JE_SEITE,
+  TEIL4_SEKTOR_MIN_JE_SEITE: TEIL4_SEKTOR_MIN_JE_SEITE, TEIL4_QUINTIL: TEIL4_QUINTIL, TEIL4_TESTZAHL: TEIL4_TESTZAHL,
+  TEIL4_BONFERRONI_T: TEIL4_BONFERRONI_T, TEIL4_MDE_FAKTOR_BONF: TEIL4_MDE_FAKTOR_BONF, TEIL4_VORHERSAGE_PP: TEIL4_VORHERSAGE_PP,
+  TEIL4_MIN_PERIODEN: TEIL4_MIN_PERIODEN, TEIL4_PLACEBO: TEIL4_PLACEBO, TEIL4_ORAKEL: TEIL4_ORAKEL,
+  TEIL4_VORPRUEFUNG: TEIL4_VORPRUEFUNG, FUNDAMENTAL_LESER: FUNDAMENTAL_LESER, KONFIG_KENNUNG_TEIL4: KONFIG_KENNUNG_TEIL4,
 };
