@@ -358,3 +358,15 @@ Bericht `studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL3.md`. Universum
 **Der strukturelle Befund, der Wilhelms Crash-Frage beantwortet:** im Fenster 2020-11 bis 2021-06 ist V1 **identisch** mit V0, weil SPY die ganze Zeit über seiner EMA200 stand. Ein Marktregime-Schalter kann gegen einen Momentum-Einbruch prinzipiell nicht schützen — der passiert, wenn der Markt *steigt* und die Verlierer explodieren. Was er kann: den echten Crash abfedern (2020-02…04: Rückgang 19 statt 37 %). Was er kostet: jede Seitwärtsphase (2022: −10,2 % gegen +1,2 %).
 
 **Zielportfolio:** `zielportfolio/momentum-v0/<monat>.json`, 115 Dateien — die Schnittstelle zum Momentum-Buch des Mittelfrist-Depots (das bisher auf 193 Werten läuft; 51 der 78 Dezilwerte liegen in der Klasse 50-250). **Offener Entscheid:** Rendite (V0) gegen Rückgang (V3).
+
+### „Gedrückt, aber liefert": NEIN — und zwar mit Auflösung (18.09.2026)
+
+Bericht `studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL4.md`. Frage (Wilhelm 16.09.): Werte, deren Kurs zwölf Monate hinter dem Markt liegt (A), aber deren Gewinne beschleunigen (B, Fundamental-Momentum aus den SEC-Bilanzen, punkt-in-zeit) — schlagen sie die gedrückten Werte, die nicht liefern?
+
+| | Δ netto je 120 Tage | se (HH) | t | MDE₈₀ | 95-%-Obergrenze |
+|---|---:|---:|---:|---:|---:|
+| A∧B gegen A∧¬B, gepaart, 111 Monate | **−0,84 Pp** | 1,18 | −0,71 | 3,32 | **+1,48 Pp** |
+
+**Das ist der erste Nullbefund dieses Projekts, der etwas ausschließt.** Die Literatur nennt 3–6 Pp je 120 Tage; die Obergrenze liegt bei 1,48. Nicht „nicht gefunden", sondern **„nicht in dieser Größe vorhanden"** — in liquiden US-Werten 2017–2026, mit Bilanzzahlen ab dem Einreichungstag. Die Eichung bestätigt es: das Fundamental-Momentum allein (B-Quintil gegen Pool) bringt +1,18 Pp bei MDE 2,30 — auch für sich nichts Auflösbares.
+
+**Was das für Wilhelms Idee heißt:** „liefert schon, bevor der Kurs es zeigt" ist am Markt **nicht** übersehen — jedenfalls nicht in dem, was in den Bilanzen steht. Die Zahl ist im Kurs, wenn sie im 10-Q steht. Was dieser Test nicht prüft: Informationen, die **nicht** in Bilanzen stehen (Produkte, Verträge, Patente) — das ist Einzelfirmen-Recherche, keine Messung. Alle Kontrollen bestanden: Orakel +38 Pp (t 18), Placebo −0,24, Leck-Klinken 0 Verstöße bei 92.191 Leser-Zugriffen, Vorprüfung des PM reproduziert.
