@@ -48,7 +48,22 @@ function kalender() {
 }
 
 /* ---------- Panelformat (§1.2) ---------- */
-var PANEL_KENNUNG = 'querschnitt-pruefstand-2026-09-13/panel/v1';
+/* v2 (18.09.2026, Panel-Reparatur): `faktor` ist roh/bereinigt ueber ALLE eigenen Splits der Quelle (beide
+ * Richtungen, auch ohne bereinigte Kopie), fremde unit_splits einer Kopie werden nicht als Bereinigung gezaehlt;
+ * wiederverwendete Kuerzel sind am Wechseltag getrennt (Reihe S endet, S~2 beginnt). v1 bleibt lesbar (Vergleich). */
+var PANEL_KENNUNG = 'querschnitt-pruefstand-2026-09-13/panel/v2';
+var PANEL_KENNUNG_V1 = 'querschnitt-pruefstand-2026-09-13/panel/v1';
+/* Eigene Splits der Quelle: forward/reverse mit symbol == Reihe; unit_splits nur, wenn old_symbol == new_symbol == Reihe
+ * (Neuemission nach Insolvenz, WOLF 2025). Ein unit_split mit anderem old_symbol ist der Umtausch eines FREMDEN Papiers
+ * (CYBR -> PANW 2,2005) und kein Skalenwechsel dieser Reihe. */
+var SPLIT_ARTEN_EIGEN = ['forward_splits', 'reverse_splits'];
+/* Kuerzelwechsel: ein name_changes-Satz der Quelle, der die Reihe beruehrt, trennt die Reihe nur, wenn zwischen dem
+ * letzten Tag davor und dem ersten Tag ab dem Wechseldatum mindestens so viele Handelstage OHNE Balken liegen.
+ * Gemessen am v1-Panel (kuerzelwechsel-diagnose.json): Umbenennungen derselben Firma haben Luecke 0 (506 Faelle) oder
+ * 1-4 (technische Kuerzel .WI/-D), echte Wiedervergaben 85-1.742; dazwischen (20-59) liegen beide Formen gemischt -
+ * die drei bekannten Wiedervergaben darunter (ROCC 56, PANA 37, PMGM 21) bleiben ausgewiesen ungetrennt. */
+var WECHSEL_MIN_LUECKE_TAGE = 60;
+var ENDE_GRUND_KUERZEL = 'kuerzel-neu-vergeben';
 var SPALTEN = ['sym', 'tag', 'roh_schluss', 'roh_eroeffnung', 'faktor', 'rendite', 'umsatz_reg', 'umsatz_auktion', 'klasse', 'marken', 'kerzen'];
 var M_QUELLE_REIN = 1, M_SCHLUSS_ERSATZ = 2, M_DICHTE_OK = 4, M_MASSNAHME_NAH = 8,
     M_LETZTER_TAG = 16, M_STEMPEL_TAG = 32, M_EROEFFNUNG_ERSATZ = 64, M_KEINE_RENDITE = 128;
@@ -203,7 +218,8 @@ module.exports = {
   ueberCentBoden: ueberCentBoden, centBodenOk: centBodenOk, mindestKurs: mindestKurs,
   MASSNAHMEN_FENSTER_TAGE: MASSNAHMEN_FENSTER_TAGE, MASSNAHMEN_ARTEN: MASSNAHMEN_ARTEN, DICHTE_MIN: DICHTE_MIN,
   FENSTER_VON: FENSTER_VON, FENSTER_BIS_MAX: FENSTER_BIS_MAX, REFERENZ: REFERENZ, kalender: kalender,
-  PANEL_KENNUNG: PANEL_KENNUNG, SPALTEN: SPALTEN, MARKEN_NAMEN: MARKEN_NAMEN,
+  PANEL_KENNUNG: PANEL_KENNUNG, PANEL_KENNUNG_V1: PANEL_KENNUNG_V1, SPALTEN: SPALTEN, MARKEN_NAMEN: MARKEN_NAMEN,
+  SPLIT_ARTEN_EIGEN: SPLIT_ARTEN_EIGEN, WECHSEL_MIN_LUECKE_TAGE: WECHSEL_MIN_LUECKE_TAGE, ENDE_GRUND_KUERZEL: ENDE_GRUND_KUERZEL,
   M_QUELLE_REIN: M_QUELLE_REIN, M_SCHLUSS_ERSATZ: M_SCHLUSS_ERSATZ, M_DICHTE_OK: M_DICHTE_OK,
   M_MASSNAHME_NAH: M_MASSNAHME_NAH, M_LETZTER_TAG: M_LETZTER_TAG, M_STEMPEL_TAG: M_STEMPEL_TAG,
   M_EROEFFNUNG_ERSATZ: M_EROEFFNUNG_ERSATZ, M_KEINE_RENDITE: M_KEINE_RENDITE,

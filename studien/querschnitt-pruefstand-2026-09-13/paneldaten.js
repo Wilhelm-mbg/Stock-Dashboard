@@ -17,8 +17,12 @@ var fs = require('fs');
 var path = require('path');
 var K = require('./konfig.js');
 var LP = require('./lesen-panel.js');
+var TR = require('./kuerzelwechsel.js');
 
 /* ---------- Spaltenformat ---------- */
+/* v2 (18.09.2026): `faktor` = roh / bereinigt ueber alle EIGENEN Splits der Quelle (lesen-panel.js eigeneSplits) - in
+ * v1 stand hier nur der Kopf-Faktor der bereinigten Kopie, und Reihen OHNE Kopie (GE, AMC, DD, XRX: wegen einer
+ * Abspaltung ohne Kursfaktor) trugen ihre Splits roh. `rendite` ist die Rendite der BEREINIGTEN Reihe. */
 var SPALTEN = [
   { name: 'sym', typ: 'u16' }, { name: 'tag', typ: 'u16' }, { name: 'marken', typ: 'u8' }, { name: 'klasse', typ: 'i8' },
   { name: 'kerzen', typ: 'u16' }, { name: 'rohSchluss', typ: 'f64' }, { name: 'rohEroeffnung', typ: 'f64' },
@@ -36,11 +40,12 @@ function schreibeBlock(pfad, sp, n, kopfExtra) {
   fs.writeFileSync(tmp, Buffer.concat(teile));
   fs.renameSync(tmp, pfad);
 }
-function leseBlock(pfad) {
+function leseBlock(pfad, kennung) {
   var buf = fs.readFileSync(pfad);
   var kl = buf.readUInt32LE(0);
   var kopf = JSON.parse(buf.slice(4, 4 + kl).toString('utf8'));
-  if (kopf.kennung !== K.PANEL_KENNUNG) throw new Error('Panelkennung passt nicht: ' + kopf.kennung + ' statt ' + K.PANEL_KENNUNG + ' (' + pfad + ')');
+  var soll = kennung || K.PANEL_KENNUNG;
+  if (kopf.kennung !== soll) throw new Error('Panelkennung passt nicht: ' + kopf.kennung + ' statt ' + soll + ' (' + pfad + ')');
   var off = 4 + kl, n = kopf.n, sp = { n: n, kopf: kopf };
   SPALTEN.forEach(function (s) {
     var C = TYP[s.typ], by = n * C.BYTES_PER_ELEMENT;
@@ -79,10 +84,28 @@ function symbole() {
     if (!e) throw new Error('Referenzreihe ' + r + ' fehlt in _lebenszeit.json - Regime und Pruefung 6 waeren blind. Abbruch.');
     R.push({ reihe: r, ordner: LP.ordnerFuer(r), lebend: 1, jahre: (e.jahre || []).slice().sort(), gruppe: 'referenz', art: 'ETF', schnittMs: null, abMs: null, referenz: true });
   });
+  /* KUERZELWECHSEL (v2, 18.09.2026): je entschiedener Trennung (kuerzelwechsel-kandidaten.json, Luecke >=
+   * K.WECHSEL_MIN_LUECKE_TAGE) eine Nachfolge-Reihe S~2 fuer die Balken ab dem Wechseltag - die alte Reihe endet
+   * davor (lebt 0, Ende-Grund kuerzel-neu-vergeben), die neue beginnt mit 0 Vortagen. Deterministisch aus der Datei,
+   * damit alle Teile dieselbe Symboltabelle bauen. */
+  var W = TR.laden();
+  var vorhanden = {}; R.forEach(function (x) { vorhanden[x.reihe] = x; });
+  Object.keys(W.trennungen).sort().forEach(function (reihe) {
+    var t = W.trennungen[reihe], base = vorhanden[reihe];
+    if (!base) return;
+    var name = t.basis + '~2'; if (vorhanden[name]) name = t.basis + '~3';
+    base.trennung = { tag: t.tag, letzterVor: t.letzterVor, luecke: t.luecke, regel: t.regel, datum: t.datum,
+      old_symbol: t.old_symbol, new_symbol: t.new_symbol, nachfolger: name };
+    base.lebendVorTrennung = base.lebend; base.lebend = 0;
+    var neu = { reihe: name, ordner: base.ordner, lebend: base.lebendVorTrennung, jahre: base.jahre, gruppe: base.gruppe,
+      art: base.art, schnittMs: base.schnittMs, abMs: base.abMs, referenz: false, vorgaenger: reihe, wechsel: base.trennung };
+    R.push(neu); vorhanden[name] = neu;
+  });
   R.sort(function (a, b) { return a.reihe < b.reihe ? -1 : a.reihe > b.reihe ? 1 : 0; });
   if (R.length > 65535) throw new Error('mehr als 65535 Reihen - Uint16 fuer sym reicht nicht');
   var idx = {}; R.forEach(function (r, i) { r.idx = i; idx[r.reihe] = i; });
-  SYM = { liste: R, idx: idx, referenz: K.REFERENZ.slice(), ausgeschlossen: LP.reihen().ausgeschlossen };
+  R.forEach(function (r) { if (r.trennung) r.trennung.idx = idx[r.trennung.nachfolger]; });
+  SYM = { liste: R, idx: idx, referenz: K.REFERENZ.slice(), ausgeschlossen: LP.reihen().ausgeschlossen, trennungen: W };
   return SYM;
 }
 
@@ -127,9 +150,25 @@ function reiheBauen(R, kal, z) {
   tage = sauber;
 
   var nah = massnahmeNahTage(R, angewandtJeJahr, kal);
-  var umsatzFenster = [], zeilen = [];
+  return zeilenAus(tage, R, kal, z, nah, quelleReinJeJahr);
+}
+
+/* ---------- Tageszeilen einer Reihe (rein, ohne Platte - test.js prueft Roundtrip und Trennung hieran) ---------- */
+/** tage: aufsteigend, je Tag {tag, dateiSchluss, dateiEroeffnung, faktor (Kopf: roh = datei x faktor),
+ *  bFaktor (roh / bereinigt), umsatzReg, umsatzAuktion, kerzen, schlussErsatz, eroeffnungErsatz, dichteOk, stempelTag}.
+ *  R.idx ist die Reihe; R.trennung (falls gesetzt) gibt die Zeilen ab R.trennung.tag der Reihe R.trennung.idx. */
+function zeilenAus(tage, R, kal, z, nah, quelleReinJeJahr) {
+  var umsatzFenster = [], zeilen = [], symIdx = R.idx, start = 0, tr = R.trennung || null;
+  quelleReinJeJahr = quelleReinJeJahr || {};
   for (var d = 0; d < tage.length; d++) {
     var T = tage[d], jahr = +T.tag.slice(0, 4);
+    /* KUERZELWECHSEL (v2): ab dem entschiedenen Tag gehoeren die Zeilen dem Nachfolger. Die alte Reihe endet mit
+     * LETZTER_TAG davor, der Nachfolger beginnt ohne Vortag (keine Rendite, leeres Umsatzfenster, 0 Vortage). */
+    if (tr && symIdx === R.idx && T.tag >= tr.tag) {
+      if (T.tag !== tr.tag || !zeilen.length || zeilen[zeilen.length - 1].tagText !== tr.letzterVor) z.trennungAbweichung++;
+      if (zeilen.length) zeilen[zeilen.length - 1].marken |= K.M_LETZTER_TAG;
+      symIdx = tr.idx; start = d; umsatzFenster = []; z.trennungen++;
+    }
     var marken = 0;
     if (quelleReinJeJahr[jahr]) marken |= K.M_QUELLE_REIN;
     if (T.schlussErsatz) marken |= K.M_SCHLUSS_ERSATZ;
@@ -142,14 +181,16 @@ function reiheBauen(R, kal, z) {
     if (T.eroeffnungErsatz) z.eroeffnungErsatz[jahr] = (z.eroeffnungErsatz[jahr] || 0) + 1;
     z.tageJeJahr[jahr] = (z.tageJeJahr[jahr] || 0) + 1;
 
-    /* Rendite (BEREINIGT, §1.4): die Dateikurse SIND die bereinigte Reihe - jede Jahresdatei ist auf die
-     * heutige Skala bereinigt, die Reihe ist ueber Jahresgrenzen stetig. Nicht durch `faktor` teilen: das
-     * waere eine zweite Bereinigung und erzeugte am Ex-Tag genau den Sprung, den die Bereinigung entfernt.
+    /* Rendite (BEREINIGT, §1.4, Fassung v2): roh = datei x Kopf-Faktor, bereinigt = roh / bFaktor. Die v1-Annahme
+     * "die Dateikurse SIND die bereinigte Reihe" galt nur fuer Reihen mit Kopie; ohne Kopie (GE, AMC, DD, XRX) blieb
+     * der Split roh, und mit fremdem unit_split im Kopf (PANW) war die Kopie selbst falsch. Gerechnet als
+     * datei x (faktor / bFaktor), damit Tage ohne Unterschied (faktor == bFaktor) BITGLEICH zu v1 bleiben.
      * Vortag ist der VORTAG DER REIHE im Panel; Luecken werden ueberbrueckt, aber gezaehlt. */
     var rendite = NaN;
-    if (d > 0) {
+    if (d > start) {
       var V = tage[d - 1];
-      if (V.dateiSchluss > 0 && T.dateiSchluss > 0) rendite = 100 * (T.dateiSchluss / V.dateiSchluss - 1);
+      var bT = T.dateiSchluss * (T.faktor / T.bFaktor), bV = V.dateiSchluss * (V.faktor / V.bFaktor);
+      if (bV > 0 && bT > 0) rendite = 100 * (bT / bV - 1);
       var abstand = kal.idx[T.tag] - kal.idx[V.tag];
       if (abstand > 1) z.luecken++;
     }
@@ -165,8 +206,8 @@ function reiheBauen(R, kal, z) {
     umsatzFenster.push(T.umsatzReg + T.umsatzAuktion);
     if (umsatzFenster.length > K.UMSATZ_FENSTER) umsatzFenster.shift();
 
-    zeilen.push({ tag: kal.idx[T.tag], jahr: jahr, marken: marken, klasse: klasse, kerzen: Math.min(65535, T.kerzen),
-      rohSchluss: rohSchluss, rohEroeffnung: rohEroeffnung, faktor: T.faktor, rendite: rendite, renditeOC: renditeOC,
+    zeilen.push({ tag: kal.idx[T.tag], tagText: T.tag, symIdx: symIdx, jahr: jahr, marken: marken, klasse: klasse, kerzen: Math.min(65535, T.kerzen),
+      rohSchluss: rohSchluss, rohEroeffnung: rohEroeffnung, faktor: T.bFaktor, rendite: rendite, renditeOC: renditeOC,
       umsatzReg: T.umsatzReg, umsatzAuktion: T.umsatzAuktion });
   }
   return zeilen;
@@ -192,7 +233,8 @@ function lauf(a) {
 
   var z = { reihen: 0, zeilen: 0, dateien: 0, bytes: 0, kerzenGesehen: 0, stempelkerzen: 0, stempeltage: 0,
     dateiFehler: {}, dateienNichtRein: 0, doppelteTage: 0, luecken: 0,
-    schlussErsatz: {}, eroeffnungErsatz: {}, tageJeJahr: {}, ohneZeilen: 0 };
+    schlussErsatz: {}, eroeffnungErsatz: {}, tageJeJahr: {}, ohneZeilen: 0,
+    trennungen: 0, trennungAbweichung: 0, nachfolgerUebersprungen: 0 };
   var jeJahr = {};                                            // jahr -> {sp, n, cap}
 
   /* FORTSETZBARKEIT. Der erste Vollauf wurde nach 11 Minuten still getoetet (die Prozesse sterben mit der
@@ -236,13 +278,15 @@ function lauf(a) {
   for (var i = 0; i < meine.length; i++) {
     var R = meine[i];
     if (erledigt[R.reihe] !== undefined) continue;
+    /* Nachfolge-Reihen (S~2 aus einer Trennung) haben keine eigenen Dateien: ihre Zeilen schreibt die Vorgaenger-Reihe. */
+    if (R.vorgaenger) { z.nachfolgerUebersprungen++; erledigt[R.reihe] = 0; continue; }
     var zeilen = null;
     try { zeilen = reiheBauen(R, kal, z); }
     catch (e) { z.dateiFehler['AUSNAHME ' + R.reihe + ': ' + e.message] = 1; sag('FEHLER ' + R.reihe + ': ' + e.message); erledigt[R.reihe] = -1; continue; }
     z.reihen++;
     if (!zeilen || !zeilen.length) { z.ohneZeilen++; erledigt[R.reihe] = 0; seitCp++; }
     else {
-      for (var q = 0; q < zeilen.length; q++) { anhaenge(zeilen[q].jahr, R.idx, zeilen[q]); z.zeilen++; }
+      for (var q = 0; q < zeilen.length; q++) { anhaenge(zeilen[q].jahr, zeilen[q].symIdx, zeilen[q]); z.zeilen++; }
       erledigt[R.reihe] = zeilen.length; seitCp++;
     }
     if (seitCp >= a.checkpoint) {
@@ -313,10 +357,17 @@ function vereinen(a) {
   gesamt.letzterVollTag = letzterVoll == null ? null : kal.tage[letzterVoll];
   gesamt.unvollstaendigeTage = wegTage.reverse();
   gesamt.symbole = S.liste.map(function (r) {
-    var g = K.gruende().karte[r.reihe] || null;
-    return { reihe: r.reihe, ordner: r.ordner, lebend: r.lebend, art: r.art || null, referenz: !!r.referenz,
+    /* Der Ende-Grund der Grundstudie beschreibt die LETZTEN Balken des Kuerzels - nach einer Trennung also den
+     * Nachfolger (HCP: Uebernahme HashiCorp 2025 gehoert zu HCP~2); die alte Reihe endet mit kuerzel-neu-vergeben. */
+    var g = K.gruende().karte[r.vorgaenger || r.reihe] || null;
+    var e = { reihe: r.reihe, ordner: r.ordner, lebend: r.lebend, art: r.art || null, referenz: !!r.referenz,
       ende_grund: g ? g.grund : null, ende_datum: g ? g.datum : null };
+    if (r.trennung) { e.lebend = 0; e.ende_grund = K.ENDE_GRUND_KUERZEL; e.ende_datum = r.trennung.letzterVor; e.kuerzelwechsel = r.trennung; }
+    if (r.vorgaenger) { e.vorgaenger = r.vorgaenger; e.kuerzelwechsel = r.wechsel; }
+    return e;
   });
+  gesamt.kuerzelwechsel = { kennung: S.trennungen.kennung, entschiedenAus: S.trennungen.entschiedenAus, n: Object.keys(S.trennungen.trennungen).length,
+    minLuecke: K.WECHSEL_MIN_LUECKE_TAGE, trennungenGebaut: gesamt.zaehler.trennungen || 0, abweichungen: gesamt.zaehler.trennungAbweichung || 0 };
   gesamt.tage = kal.tage;
   gesamt.ausgeschlosseneArten = S.ausgeschlossen;
   gesamt.gruendeKennung = K.gruende().kennung;
@@ -325,11 +376,13 @@ function vereinen(a) {
 }
 
 /* ---------- Panel lesen (fuer pruefstand.js und test.js) ---------- */
-function ladePanel(aus) {
-  var panel = path.join(aus, 'panel');
+/** opt.ordner: anderer Panelordner (z. B. voll/panel-v1), opt.kennung: dessen Kennung (K.PANEL_KENNUNG_V1) - nur fuer
+ *  den Vergleich vorher/nachher; ohne opt liest es <aus>/panel mit der aktuellen Kennung. */
+function ladePanel(aus, opt) {
+  var panel = (opt && opt.ordner) || path.join(aus, 'panel'), kn = opt && opt.kennung;
   var stand = JSON.parse(fs.readFileSync(path.join(panel, '_stand.json'), 'utf8'));
   var jahre = {};
-  stand.jahre.forEach(function (j) { jahre[j.jahr] = leseBlock(path.join(panel, j.jahr + '.bin')); });
+  stand.jahre.forEach(function (j) { jahre[j.jahr] = leseBlock(path.join(panel, j.jahr + '.bin'), kn); });
   return { stand: stand, jahre: jahre };
 }
 
@@ -341,4 +394,4 @@ if (require.main === module) {
 }
 
 module.exports = { SPALTEN: SPALTEN, leer: leer, schreibeBlock: schreibeBlock, leseBlock: leseBlock,
-  symbole: symbole, reiheBauen: reiheBauen, ladePanel: ladePanel, median: median, argumente: argumente, vereinen: vereinen };
+  symbole: symbole, reiheBauen: reiheBauen, zeilenAus: zeilenAus, ladePanel: ladePanel, median: median, argumente: argumente, vereinen: vereinen };

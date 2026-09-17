@@ -41,6 +41,38 @@ function leseJson(pfad) {
   }
 }
 
+/* ---------- Eigene Splits der Quelle (v2, 18.09.2026) ---------- */
+var EIGENE = {};
+/** Splits, die die SKALA DIESER REIHE aendern, aus alpaca-massnahmen/<ORDNER>.json: [{art, ex, exMs, faktor}] mit
+ *  faktor = new_rate/old_rate (Konvention der Ableitung, tools/alpaca-vollsammlung.js faktorAus). UNABHAENGIG davon,
+ *  ob eine bereinigte Kopie sie angewandt hat: GE hat wegen einer Abspaltung ohne Kursfaktor gar keine Kopie
+ *  (_regel.json ohneKopieWeilAbspaltung), und die Rohdatei traegt den Rueckwaerts-Split 1:8 (2021-08-02) roh -
+ *  Kopf ohne `massnahmen`, rohFaktor 1, Panel v1 rechnete +675,6 %. Eigen = forward/reverse mit symbol == Reihe
+ *  (bei allen 1.739 Saetzen des Universums gesetzt) oder unit_splits mit old_symbol == new_symbol == Reihe. */
+function eigeneSplits(R) {
+  var basis = R.reihe.replace(/~2$/, ''), schl = R.ordner.replace(/~2$/, '');
+  if (EIGENE[schl]) return EIGENE[schl];
+  var aus = []; aus.fehlt = false; aus.fremdeUnit = 0;
+  try {
+    var j = JSON.parse(fs.readFileSync(path.join(K.ORTE.massnahmen(), schl + '.json'), 'utf8'));
+    (j.saetze || []).forEach(function (s) {
+      var art = String(s._art || '');
+      if (!/split/.test(art)) return;
+      var eigen = (K.SPLIT_ARTEN_EIGEN.indexOf(art) !== -1 && String(s.symbol || '') === basis) ||
+                  (art === 'unit_splits' && String(s.old_symbol || '') === basis && String(s.new_symbol || '') === basis);
+      if (!eigen) { if (art === 'unit_splits') aus.fremdeUnit++; return; }
+      var ex = s.ex_date || s.effective_date || s.process_date; if (!ex) return;
+      var alt = Number(s.old_rate), neu = Number(s.new_rate);
+      if (!(isFinite(alt) && isFinite(neu) && alt > 0 && neu > 0)) return;
+      var f = neu / alt; if (Math.abs(f - 1) < 1e-9) return;
+      aus.push({ art: art, ex: ex, exMs: L.etTagMs(ex), faktor: f });
+    });
+  } catch (e) { aus.fehlt = true; }
+  aus.sort(function (a, b) { return a.exMs - b.exMs; });
+  EIGENE[schl] = aus;
+  return aus;
+}
+
 /* ---------- Eine Symbol-Jahr-Datei zu Tageszeilen verdichten ---------- */
 /**
  * Ergebnis: { ok, tage: [ {tag, dateiSchluss, dateiEroeffnung, faktor, umsatzReg, umsatzAuktion, kerzen,
@@ -53,7 +85,7 @@ function leseJson(pfad) {
  * Wer hier `dateiKurs / faktor` rechnet, bekommt am Ex-Tag einen Kurssprung, der keiner ist.
  * Umsatz in $ ist gegen die Bereinigung invariant (Kurs geteilt, Stueck malgenommen) - deshalb ohne Faktor.
  */
-function ladeJahr(R, jahr, kal) {
+function ladeJahr(R, jahr, kal, opt) {
   var d = dateiPfad(R, jahr);
   if (!fs.existsSync(d.pfad)) return { ok: false, grund: 'Datei fehlt', pfad: d.pfad };
   var g = leseJson(d.pfad);
@@ -81,6 +113,19 @@ function ladeJahr(R, jahr, kal) {
   rueck.sort(function (a, b) { return a.exMs - b.exMs; });
   var rohFaktor = L.rohFaktorFunktion(rueck);
 
+  /* BEREINIGUNGSFAKTOR (v2, 18.09.2026): roh / bereinigt = Produkt aller EIGENEN Splits der Quelle mit Ex-Tag nach t
+   * (beide Richtungen, mit oder ohne Kopie) mal der im Kopf angewandten ABSPALTUNGSFAKTOREN (gemessen, nur in Kopien).
+   * NICHT darin: fremde unit_splits, die eine Kopie angewandt hat (CYBR -> PANW 2,2005 stand im Kopf der PANW-Kopie
+   * und erzeugte am 11.02.2026 +119,7 %) - die stecken nur in rohFaktor, weil die Kopie damit geteilt hat. */
+  var legit = (opt && opt.eigeneSplits) || eigeneSplits(R);
+  var legitListe = legit.map(function (e) { return { exMs: e.exMs, faktor: e.faktor }; });
+  if (Array.isArray(mm)) mm.forEach(function (m) {
+    var ex = m.ex_date || m.ex || m.datum, art = String(m._art || m.art || '');
+    if (ex && /spin/.test(art) && m.faktor > 0) legitListe.push({ exMs: L.etTagMs(ex), faktor: m.faktor });
+  });
+  legitListe.sort(function (a, b) { return a.exMs - b.exMs; });
+  var bFaktor = L.rohFaktorFunktion(legitListe);
+
   /* Sitzungsbereiche, aufsteigend. Wir brauchen 'regulaer' fuer Umsatz/Kerzen und ALLE Kerzen fuer die
    * Schlussauktion - deshalb wird nicht vorab gefiltert. */
   var sitz = (j.sitzungen || []).slice().sort(function (a, b) { return a.von - b.von; });
@@ -104,6 +149,7 @@ function ladeJahr(R, jahr, kal) {
       akt.dichteOk = (akt.kerzen >= K.DICHTE_MIN * sollMin) ? 1 : 0;
       akt.stempelTag = (akt.stempelKerzen === akt.kerzen) ? 1 : 0;
       akt.faktor = rohFaktor(akt.ersteReg[0]);
+      akt.bFaktor = bFaktor(akt.ersteReg[0]);
       delete akt.ersteReg; delete akt.letzteReg; delete akt.auktionKerze;
       tage.push(akt);
     }
@@ -136,11 +182,13 @@ function ladeJahr(R, jahr, kal) {
     if (u === soll || u === soll.replace(/^0/, '')) { akt.auktionKerze = k; akt.umsatzAuktion += k[1] * k[2]; }
   }
   schliesse();
-  return { ok: true, tage: tage, quelleRein: quelleRein, angewandt: angewandt, zaehler: z, pfad: d.pfad, quelle: d.quelle, bytes: g.bytes };
+  return { ok: true, tage: tage, quelleRein: quelleRein, angewandt: angewandt, zaehler: z, pfad: d.pfad, quelle: d.quelle, bytes: g.bytes,
+    eigeneSplits: legit, legitListe: legitListe };
 }
 
 module.exports = {
   reihen: L.reihen, meta: L.meta, ordnerFuer: L.ordnerFuer, massnahmenFuer: L.massnahmenFuer,
   ausschlussTage: L.ausschlussTage, unklareAbspaltungen: L.unklareAbspaltungen,
   etTagMs: L.etTagMs, tagVon: tagVon, etUhr: etUhr, dateiPfad: dateiPfad, ladeJahr: ladeJahr, leseJson: leseJson,
+  eigeneSplits: eigeneSplits,
 };

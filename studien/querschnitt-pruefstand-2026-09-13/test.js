@@ -73,7 +73,7 @@ abschnitt(2, 'Stichprobe 20 Reihen: Schluss, Eroeffnung, Rendite, Umsatz gegen d
   if (!panelDa(A.aus)) return pr(false, 'kein Panel - uebersprungen');
   var T = tafelVoll(), kal = T.kal;
   /* Zweiter Leseweg: rohe Datei, eigene Tagesbildung, KEIN lesen-panel.js. */
-  function handRechnung(ordner, jahr, tagEt) {
+  function handRechnung(ordner, basis, jahr, tagEt) {
     var pB = path.join(K.ORTE.bereinigt(), ordner, jahr + '.json');
     var pfad = fs.existsSync(pB) ? pB : path.join(K.ORTE.roh(), ordner, jahr + '.json');
     if (!fs.existsSync(pfad)) return null;
@@ -92,12 +92,27 @@ abschnitt(2, 'Stichprobe 20 Reihen: Schluss, Eroeffnung, Rendite, Umsatz gegen d
       if (u === soll || u === soll.replace(/^0/, '')) { auk = k; umsAuk += k[1] * k[2]; }
     });
     if (!reg.length) return null;
-    /* Faktor unabhaengig aus dem Kopf */
+    /* Kopf-Faktor unabhaengig aus dem Kopf: roh = datei x f */
     var f = 1, mm = j.massnahmen;
     if (Array.isArray(mm)) mm.forEach(function (m) { var ex = m.ex_date || m.ex || m.datum; if (m.faktor > 0 && ex > tagEt) f *= m.faktor; });
+    /* Bereinigungsfaktor (v2) unabhaengig: eigene Splits der Massnahmendatei (forward/reverse mit symbol == Reihe,
+     * unit_splits nur old == new == Reihe) mit Ex-Tag NACH dem Tag, mal Abspaltungsfaktoren aus dem Kopf. */
+    var fb = 1;
+    try {
+      var mj = JSON.parse(fs.readFileSync(path.join(K.ORTE.massnahmen(), String(ordner).replace(/~2$/, '') + '.json'), 'utf8'));
+      (mj.saetze || []).forEach(function (s) {
+        var art = String(s._art || ''), ex = s.ex_date || s.effective_date || s.process_date;
+        var eigen = ((art === 'forward_splits' || art === 'reverse_splits') && String(s.symbol || '') === basis) ||
+                    (art === 'unit_splits' && String(s.old_symbol || '') === basis && String(s.new_symbol || '') === basis);
+        if (!eigen || !ex || !(ex > tagEt)) return;
+        var alt = Number(s.old_rate), neu = Number(s.new_rate);
+        if (alt > 0 && neu > 0 && Math.abs(neu / alt - 1) >= 1e-9) fb *= neu / alt;
+      });
+    } catch (e) { /* keine Massnahmendatei: keine eigenen Splits */ }
+    if (Array.isArray(mm)) mm.forEach(function (m) { var ex = m.ex_date || m.ex || m.datum; if (/spin/.test(String(m._art || m.art || '')) && m.faktor > 0 && ex > tagEt) fb *= m.faktor; });
     return { dateiSchluss: auk ? auk[5] : reg[reg.length - 1][1], dateiEroeffnung: reg[0][5],
       rohSchluss: (auk ? auk[5] : reg[reg.length - 1][1]) * f, rohEroeffnung: reg[0][5] * f,
-      umsatz: umsReg + umsAuk, kerzen: reg.length, faktor: f, ersatz: auk ? 0 : 1 };
+      umsatz: umsReg + umsAuk, kerzen: reg.length, faktor: f, bFaktor: fb, ersatz: auk ? 0 : 1 };
   }
   /* 20 Reihen: die 10 umsatzstaerksten und 10 zufaellige (deterministisch). */
   var kandidaten = [];
@@ -115,12 +130,12 @@ abschnitt(2, 'Stichprobe 20 Reihen: Schluss, Eroeffnung, Rendite, Umsatz gegen d
     /* drei Tage je Reihe: erster, mittlerer, letzter */
     [start, Math.floor((start + ende) / 2), ende - 1].forEach(function (pos) {
       var z = T.symZeilen[pos], tagEt = kal.tage[T.g.tag[z]], jahr = +tagEt.slice(0, 4);
-      var ordner = T.stand.symbole[sym].ordner;
-      var h = handRechnung(ordner, jahr, tagEt);
+      var ordner = T.stand.symbole[sym].ordner, basis = T.stand.symbole[sym].reihe.replace(/~[23]$/, '');
+      var h = handRechnung(ordner, basis, jahr, tagEt);
       if (!h) return;
       geprueft++;
       var dS = Math.abs(h.rohSchluss - T.g.rohSchluss[z]) / Math.max(1e-9, h.rohSchluss);
-      var dO = Math.abs(h.rohEroeffnung - (T.g.bEroeffnung[z] * h.faktor)) / Math.max(1e-9, h.rohEroeffnung);
+      var dO = Math.abs(h.rohEroeffnung - (T.g.bEroeffnung[z] * h.bFaktor)) / Math.max(1e-9, h.rohEroeffnung);
       var dU = Math.abs(h.umsatz - T.g.umsatz[z]) / Math.max(1, h.umsatz);
       if (dS > 1e-9 || dO > 1e-6 || dU > 1e-6) abw.push(T.stand.symbole[sym].reihe + ' ' + tagEt + ' dS ' + dS.toExponential(2) + ' dO ' + dO.toExponential(2) + ' dU ' + dU.toExponential(2));
     });
@@ -422,6 +437,86 @@ abschnitt(13, 'Sperrklinke: kein Universumskriterium liest `rendite` (Ausschluss
   var benutzt = (ohneKommentar.match(/K\.M_[A-Z_]+/g) || []).map(function (s) { return s.slice(2); });
   var fremd = benutzt.filter(function (m) { return erlaubt.indexOf(m) === -1; });
   pr(fremd.length === 0, 'nur Datenqualitaets-Marken im Filter: ' + benutzt.join(',') , fremd.join(','));
+});
+
+/* =======================================================================================
+ * 14  Faktor-Roundtrip je Richtung (v2): konstruierte Reihe mit 1:4 und 4:1, bereinigte Rendite am Split-Tag = 0
+ * ======================================================================================= */
+abschnitt(14, 'Faktor-Roundtrip (v2): Rueckwaerts 1:4 und Vorwaerts 4:1 auf konstruierten Tagen, Rendite am Split-Tag 0', function (pr) {
+  var kal = K.kalender();
+  /* Tage aus dem echten Kalender, damit kal.idx greift; Kurse konstruiert. Rohdatei (Kopf-Faktor 1), Split am Tag 3. */
+  var tage = kal.tage.slice(100, 106);
+  function bau(kursVor, kursNach, bFaktorVor) {
+    return tage.map(function (t, i) {
+      var vor = i < 3;
+      return { tag: t, dateiSchluss: vor ? kursVor : kursNach, dateiEroeffnung: vor ? kursVor : kursNach, faktor: 1, bFaktor: vor ? bFaktorVor : 1,
+        umsatzReg: 1e6, umsatzAuktion: 0, kerzen: 390, schlussErsatz: 0, eroeffnungErsatz: 0, dichteOk: 1, stempelTag: 0 };
+    });
+  }
+  var z = { luecken: 0, stempeltage: 0, schlussErsatz: {}, eroeffnungErsatz: {}, tageJeJahr: {}, trennungen: 0, trennungAbweichung: 0 };
+  /* Rueckwaerts 1:4: roh 10 -> 40, Quelle old_rate 4, new_rate 1 => faktor 0,25; bereinigt davor 10/0,25 = 40. */
+  var rw = P.zeilenAus(bau(10, 40, 0.25), { idx: 0 }, kal, z, new Set());
+  pr(Math.abs(rw[3].rendite) < 1e-6, 'Rueckwaerts 1:4 (roh 10 -> 40, bFaktor 0,25): Rendite am Split-Tag ' + rw[3].rendite.toExponential(2) + ' %', 'Soll 0');
+  pr(Math.abs(rw[2].rohSchluss - 10) < 1e-12 && Math.abs(rw[2].faktor - 0.25) < 1e-12, 'roh davor bleibt 10 $, Spalte faktor 0,25 (roh/bereinigt)', 'Cent-Boden rechnet roh');
+  var rwRoh = 100 * (40 / 10 - 1);
+  pr(Math.abs(rwRoh - 300) < 1e-9, 'Positivkontrolle: ohne Faktor waere es +300 %', rwRoh.toFixed(1));
+  /* Vorwaerts 4:1: roh 100 -> 25, Quelle old 1, new 4 => faktor 4; bereinigt davor 100/4 = 25. */
+  var vw = P.zeilenAus(bau(100, 25, 4), { idx: 0 }, kal, z, new Set());
+  pr(Math.abs(vw[3].rendite) < 1e-6, 'Vorwaerts 4:1 (roh 100 -> 25, bFaktor 4): Rendite am Split-Tag ' + vw[3].rendite.toExponential(2) + ' %', 'Soll 0');
+  /* Kopie mit angewandtem Split (Kopf-Faktor 4 == bFaktor 4): datei x (4/4) ist BITGLEICH datei - v1-Zeilen bleiben. */
+  var kp = bau(25, 25, 4); kp.forEach(function (t, i) { if (i < 3) t.faktor = 4; });
+  var kz = P.zeilenAus(kp, { idx: 0 }, kal, z, new Set());
+  pr(kz[3].rendite === 0 && kz[2].rohSchluss === 100, 'Kopie (Kopf 4, eigen 4): Rendite exakt 0, roh 100 $ - bitgleich zu v1', kz[3].rendite + ' / ' + kz[2].rohSchluss);
+  /* Fremder unit_split im Kopf (PANW/CYBR 2,2005): Kopf-Faktor 2,2005, eigen 1 => bereinigt = roh, kein Sprung. */
+  var fr = bau(100, 100, 1); fr.forEach(function (t, i) { if (i < 3) { t.faktor = 2.2005; t.dateiSchluss = 100 / 2.2005; t.dateiEroeffnung = t.dateiSchluss; } });
+  var fz = P.zeilenAus(fr, { idx: 0 }, kal, z, new Set());
+  pr(Math.abs(fz[3].rendite) < 1e-9, 'fremder unit_split im Kopf (2,2005), nicht eigen: Rendite am Tag ' + fz[3].rendite.toExponential(2) + ' % (v1: +120 %)', 'Soll 0');
+});
+
+/* =======================================================================================
+ * 15  Kuerzelwechsel (v2): Trennung am Wechseltag - alte Reihe endet, Nachfolger beginnt ohne Vortag
+ * ======================================================================================= */
+abschnitt(15, 'Kuerzelwechsel (v2): konstruierte Reihe mit Trennung - LETZTER_TAG davor, KEINE_RENDITE danach, eigene Reihe', function (pr) {
+  var kal = K.kalender();
+  var tage = kal.tage.slice(200, 204).concat(kal.tage.slice(800, 804));   // Luecke von ~600 Handelstagen
+  var T = tage.map(function (t, i) { return { tag: t, dateiSchluss: i < 4 ? 30 : 80, dateiEroeffnung: i < 4 ? 30 : 80, faktor: 1, bFaktor: 1,
+    umsatzReg: 1e6, umsatzAuktion: 0, kerzen: 390, schlussErsatz: 0, eroeffnungErsatz: 0, dichteOk: 1, stempelTag: 0 }; });
+  var z = { luecken: 0, stempeltage: 0, schlussErsatz: {}, eroeffnungErsatz: {}, tageJeJahr: {}, trennungen: 0, trennungAbweichung: 0 };
+  var R = { idx: 5, trennung: { tag: tage[4], letzterVor: tage[3], idx: 9 } };
+  var zl = P.zeilenAus(T, R, kal, z, new Set());
+  pr(zl.length === 8 && z.trennungen === 1 && z.trennungAbweichung === 0, 'eine Trennung, keine Abweichung, 8 Zeilen', JSON.stringify({ tr: z.trennungen, abw: z.trennungAbweichung, n: zl.length }));
+  pr(zl.slice(0, 4).every(function (r) { return r.symIdx === 5; }) && zl.slice(4).every(function (r) { return r.symIdx === 9; }), 'Zeilen 1-4 Reihe 5, Zeilen 5-8 Nachfolger 9');
+  pr((zl[3].marken & K.M_LETZTER_TAG) !== 0 && (zl[7].marken & K.M_LETZTER_TAG) !== 0, 'LETZTER_TAG auf dem letzten Tag der alten Reihe UND am Reihenende');
+  pr((zl[4].marken & K.M_KEINE_RENDITE) !== 0 && !(zl[4].rendite === zl[4].rendite), 'erster Tag des Nachfolgers ohne Rendite (v1: +166,7 % von 30 auf 80)');
+  pr(zl[4].klasse === -1 && zl[5].klasse === -1, 'Umsatzfenster beginnt neu: Klasse -1 am Anfang des Nachfolgers');
+  var ohne = P.zeilenAus(T, { idx: 5 }, kal, z, new Set());
+  pr(Math.abs(ohne[4].rendite - 100 * (80 / 30 - 1)) < 1e-4, 'Positivkontrolle: ohne Trennung +' + ohne[4].rendite.toFixed(1) + ' % ueber die Luecke');
+  /* Abweichung wird gezaehlt, wenn der entschiedene Tag nicht der erste Tag ab dem Wechsel ist. */
+  var z2 = { luecken: 0, stempeltage: 0, schlussErsatz: {}, eroeffnungErsatz: {}, tageJeJahr: {}, trennungen: 0, trennungAbweichung: 0 };
+  P.zeilenAus(T, { idx: 5, trennung: { tag: tage[5], letzterVor: tage[3], idx: 9 } }, kal, z2, new Set());
+  pr(z2.trennungAbweichung === 1, 'Zaehler: entschiedener Tag ungleich erstem Tag ab Wechsel wird als Abweichung gezaehlt', z2.trennungAbweichung);
+});
+
+/* =======================================================================================
+ * 16  Am echten Panel (v2): bekannte Artefakte weg, bekannte echte Spruenge da
+ * ======================================================================================= */
+abschnitt(16, 'Echtes Panel (v2): GE 02.08.2021 und AMC 24.08.2023 bereinigt (|r| < 20 %), GME 27.01.2021 bleibt (> 100 %), HCP getrennt', function (pr) {
+  if (!panelDa(A.aus)) return pr(false, 'kein Panel - uebersprungen');
+  var T = tafelVoll();
+  function r(reihe, tag) { var s = T.symIdx[reihe]; if (s === undefined) return null; var z = T.zeileVon(s, T.kal.idx[tag]); return z < 0 ? null : T.g.rendite[z]; }
+  var ge = r('GE', '2021-08-02'), amc = r('AMC', '2023-08-24'), gme = r('GME', '2021-01-27'), panw = r('PANW', '2026-02-11');
+  pr(ge != null && Math.abs(ge) < 20, 'GE 2021-08-02 (Rueckwaerts 1:8): Rendite ' + (ge == null ? 'fehlt' : ge.toFixed(2) + ' %'), 'v1: +675,6 %');
+  pr(amc != null && Math.abs(amc) < 20, 'AMC 2023-08-24 (Rueckwaerts 1:10): Rendite ' + (amc == null ? 'fehlt' : amc.toFixed(2) + ' %'), 'v1: +633,2 %');
+  pr(panw == null || Math.abs(panw) < 20, 'PANW 2026-02-11 (fremder unit_split CYBR im Kopf): Rendite ' + (panw == null ? 'fehlt' : panw.toFixed(2) + ' %'), 'v1: +119,7 %');
+  pr(gme != null && gme > 100, 'Positivkontrolle GME 2021-01-27 (echt): Rendite ' + (gme == null ? 'fehlt' : gme.toFixed(2) + ' %'), 'v1: +137,7 %');
+  var alt = T.symIdx['HCP'], neu = T.symIdx['HCP~2'];
+  pr(alt !== undefined && neu !== undefined, 'HCP getrennt: Reihen HCP und HCP~2 vorhanden', JSON.stringify({ alt: alt, neu: neu }));
+  if (alt !== undefined && neu !== undefined) {
+    var sa = T.stand.symbole[alt], sn = T.stand.symbole[neu];
+    pr(sa.ende_grund === K.ENDE_GRUND_KUERZEL && sa.lebend === 0 && sn.vorgaenger === 'HCP', 'HCP endet mit ' + sa.ende_grund + ' am ' + sa.ende_datum + ', HCP~2 (' + sn.ende_grund + ' ' + sn.ende_datum + ') folgt');
+    var e = T.symStart[neu] < T.symStart[neu + 1] ? T.symZeilen[T.symStart[neu]] : -1;
+    pr(e >= 0 && (T.g.marken[e] & K.M_KEINE_RENDITE) !== 0 && T.posInReihe[e] === 0, 'erste Zeile von HCP~2 (' + (e >= 0 ? T.kal.tage[T.g.tag[e]] : '-') + ') ohne Rendite, Vortage 0');
+  }
 });
 
 /* =======================================================================================
