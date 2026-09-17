@@ -1,0 +1,12 @@
+# Die Tafel selbst (290 MB) und alle Arbeitsdateien bleiben auf der Platte - ins Repo kommen nur Skripte, Bericht und _stand.json.
+fundamentaltafel/
+*.log
+*.json
+!_stand.json
+# Arbeitsdateien der Machbarkeit (bereits vor dieser Regel eingecheckt, bleiben versioniert):
+!panel.json
+!deckung.json
+!deckung-reihen.json
+!pruefung.json
+!tags.json
+laden-start.vbs
