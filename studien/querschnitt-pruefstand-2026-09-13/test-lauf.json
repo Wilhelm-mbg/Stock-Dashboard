@@ -1,5 +1,5 @@
 {
- "stand": "2026-09-14T22:29:14.581Z",
+ "stand": "2026-09-17T23:22:48.758Z",
  "aus": "voll",
  "kunst": "kunst",
  "n": 47,
@@ -16,12 +16,12 @@
     },
     {
      "ok": true,
-     "text": "Panelzeilen 9899585 <= Manifest-Tage 9914061",
-     "extra": "Verhaeltnis 0.9985"
+     "text": "Panelzeilen 9899585 <= Manifest-Tage 9916310",
+     "extra": "Verhaeltnis 0.9983"
     },
     {
      "ok": true,
-     "text": "Panel deckt 99.9 % der Manifest-Tage",
+     "text": "Panel deckt 99.8 % der Manifest-Tage",
      "extra": "unter 90 % waere ein stiller Verlust"
     }
    ],
