@@ -1,0 +1,405 @@
+{
+ "reihen": 7299,
+ "dateiFehlt": 0,
+ "splitSaetze": 2072,
+ "symbolGleich": 1739,
+ "symbolAnders": 0,
+ "symbolFehlt": 333,
+ "ohneRate": 0,
+ "eigeneOhneKopieJahr": 145,
+ "reihenOhneKopieMitSplit": {
+  "ACAT": [
+   "reverse 2025-10-28 f 0.1000"
+  ],
+  "ADXS": [
+   "reverse 2019-03-29 f 0.0667",
+   "reverse 2022-06-06 f 0.0125"
+  ],
+  "AGE": [
+   "reverse 2024-03-15 f 0.0284"
+  ],
+  "AGLE": [
+   "reverse 2023-09-08 f 0.0400"
+  ],
+  "AIV": [
+   "forward 2020-12-15 f 9.2950",
+   "reverse 2019-02-21 f 0.9698",
+   "reverse 2020-12-01 f 0.8076"
+  ],
+  "ALCE": [
+   "reverse 2026-08-20 f 0.0004"
+  ],
+  "AMC": [
+   "reverse 2023-08-24 f 0.1000"
+  ],
+  "ANTH": [
+   "reverse 2017-05-01 f 0.1250"
+  ],
+  "APCX": [
+   "reverse 2022-01-05 f 0.1053"
+  ],
+  "APLD": [
+   "reverse 2022-04-13 f 0.1667"
+  ],
+  "ASNS": [
+   "reverse 2019-03-14 f 0.1667"
+  ],
+  "ATEC": [
+   "reverse 2016-08-25 f 0.0833"
+  ],
+  "AULT": [
+   "reverse 2023-05-18 f 0.0033",
+   "reverse 2024-01-17 f 0.0400"
+  ],
+  "AWSM": [
+   "reverse 2020-10-14 f 0.1000"
+  ],
+  "BAS": [
+   "reverse 2016-12-27 f 0.0018"
+  ],
+  "BBIG": [
+   "reverse 2023-05-11 f 0.0500"
+  ],
+  "BBX": [
+   "reverse 2020-07-23 f 0.2000"
+  ],
+  "BLBX": [
+   "reverse 2023-04-11 f 0.2500"
+  ],
+  "BLUE": [
+   "reverse 2024-12-13 f 0.0500"
+  ],
+  "BN": [
+   "forward 2025-10-10 f 1.5000"
+  ],
+  "BSPM": [
+   "reverse 2016-02-05 f 0.1429"
+  ],
+  "BXC": [
+   "reverse 2016-06-14 f 0.1000"
+  ],
+  "BYRN": [
+   "reverse 2021-04-27 f 0.1000"
+  ],
+  "CCUR": [
+   "reverse 2021-04-22 f 0.0003"
+  ],
+  "CENTA": [
+   "forward 2024-02-09 f 1.2500"
+  ],
+  "CFNB": [
+   "reverse 2026-06-12 f 0.0200"
+  ],
+  "CFX": [
+   "reverse 2022-04-05 f 0.3333"
+  ],
+  "CGG": [
+   "reverse 2016-07-20 f 0.0313"
+  ],
+  "CMLS": [
+   "reverse 2016-10-13 f 0.1250"
+  ],
+  "CNTM": [
+   "reverse 2026-04-20 f 0.0313"
+  ],
+  "CRC": [
+   "reverse 2016-06-01 f 0.1000"
+  ],
+  "CRGE": [
+   "reverse 2020-07-08 f 0.0010"
+  ],
+  "CRTD": [
+   "reverse 2026-02-24 f 0.0500"
+  ],
+  "CTIC": [
+   "reverse 2017-01-03 f 0.1000"
+  ],
+  "CVLB": [
+   "reverse 2020-10-14 f 0.2000"
+  ],
+  "DAC": [
+   "reverse 2019-05-02 f 0.0714"
+  ],
+  "DD": [
+   "reverse 2019-06-03 f 0.4725",
+   "reverse 2026-06-24 f 0.3333"
+  ],
+  "DNMR": [
+   "reverse 2024-11-13 f 0.0250"
+  ],
+  "DPSI": [
+   "reverse 2021-12-20 f 0.5000"
+  ],
+  "EFSH": [
+   "reverse 2022-08-03 f 0.2500",
+   "reverse 2023-09-11 f 0.0400",
+   "reverse 2024-01-08 f 0.2500",
+   "reverse 2024-07-08 f 0.0769",
+   "reverse 2024-11-11 f 0.0667"
+  ],
+  "ESEAV": [
+   "reverse 2018-05-25 f 0.2000"
+  ],
+  "EVFM": [
+   "reverse 2023-05-18 f 0.0080"
+  ],
+  "FGF": [
+   "reverse 2024-11-01 f 0.0400"
+  ],
+  "FNF": [
+   "reverse 2017-10-02 f 0.3066"
+  ],
+  "FOXO": [
+   "reverse 2026-07-01 f 0.0003"
+  ],
+  "GALE": [
+   "reverse 2018-01-02 f 0.0333"
+  ],
+  "GE": [
+   "reverse 2021-08-02 f 0.1250"
+  ],
+  "GMGI": [
+   "reverse 2020-06-26 f 0.0067"
+  ],
+  "GOV": [
+   "reverse 2019-01-02 f 0.2500"
+  ],
+  "GRFS": [
+   "forward 2016-01-04 f 2.0000"
+  ],
+  "GRTX": [
+   "reverse 2026-07-13 f 0.0050"
+  ],
+  "HALL": [
+   "reverse 2023-01-03 f 0.1000"
+  ],
+  "HCCC": [
+   "reverse 2020-10-06 f 0.0500"
+  ],
+  "HGEN": [
+   "reverse 2020-09-14 f 0.2000"
+  ],
+  "HON": [
+   "forward 2016-10-03 f 1.0053",
+   "forward 2018-10-01 f 1.0110",
+   "forward 2018-10-29 f 1.0320",
+   "reverse 2026-06-29 f 0.5000"
+  ],
+  "HTZ": [
+   "reverse 2016-07-01 f 0.0667"
+  ],
+  "IDXG": [
+   "reverse 2026-08-27 f 0.2000"
+  ],
+  "IGAP": [
+   "reverse 2021-08-13 f 0.0769"
+  ],
+  "IMNP": [
+   "reverse 2017-04-13 f 0.0500"
+  ],
+  "IMUC": [
+   "reverse 2020-09-16 f 0.1000"
+  ],
+  "INPX": [
+   "reverse 2018-02-06 f 0.0333",
+   "reverse 2018-09-04 f 0.3333",
+   "reverse 2018-11-02 f 0.0250",
+   "reverse 2020-01-07 f 0.0222",
+   "reverse 2022-10-07 f 0.0133",
+   "reverse 2024-03-13 f 0.0100"
+  ],
+  "IO": [
+   "reverse 2016-02-05 f 0.0667"
+  ],
+  "ISIG": [
+   "reverse 2021-01-04 f 0.1429"
+  ],
+  "JHG": [
+   "reverse 2017-05-30 f 0.1000"
+  ],
+  "JONE": [
+   "reverse 2018-09-10 f 0.0500"
+  ],
+  "LILAK": [
+   "reverse 2016-06-21 f 0.1248"
+  ],
+  "LPTV": [
+   "reverse 2022-09-21 f 0.3333"
+  ],
+  "MAXN": [
+   "reverse 2024-10-09 f 0.0100"
+  ],
+  "MDWT": [
+   "reverse 2020-08-28 f 0.0020"
+  ],
+  "MGTA": [
+   "reverse 2023-09-12 f 0.0625"
+  ],
+  "MHUA": [
+   "reverse 2025-11-24 f 0.0100"
+  ],
+  "MNI": [
+   "reverse 2016-06-07 f 0.1000"
+  ],
+  "MOBQ": [
+   "reverse 2020-09-09 f 0.0025"
+  ],
+  "MT": [
+   "reverse 2017-05-22 f 0.3333"
+  ],
+  "MTL": [
+   "reverse 2016-01-12 f 0.5000"
+  ],
+  "NAVB": [
+   "reverse 2019-04-26 f 0.0500"
+  ],
+  "NGG": [
+   "reverse 2017-05-22 f 0.9167"
+  ],
+  "NMM": [
+   "reverse 2019-05-21 f 0.0667"
+  ],
+  "OP": [
+   "reverse 2022-12-22 f 0.1000",
+   "reverse 2023-06-08 f 0.0500",
+   "reverse 2025-08-25 f 0.0400"
+  ],
+  "OREX": [
+   "reverse 2016-07-12 f 0.1000"
+  ],
+  "PACD": [
+   "reverse 2016-05-25 f 0.1000"
+  ],
+  "PETV": [
+   "reverse 2020-12-30 f 0.2500"
+  ],
+  "PIRS": [
+   "reverse 2024-04-23 f 0.0125"
+  ],
+  "PMVC": [
+   "reverse 2024-03-12 f 0.0228"
+  ],
+  "PRPH": [
+   "reverse 2025-12-22 f 0.1000"
+  ],
+  "PTX": [
+   "reverse 2016-10-14 f 0.1000"
+  ],
+  "QBAK": [
+   "forward 2026-04-29 f 3.0000"
+  ],
+  "RACE": [
+   "reverse 2016-01-04 f 0.1000"
+  ],
+  "RAD": [
+   "reverse 2019-04-22 f 0.0500"
+  ],
+  "RBCN": [
+   "reverse 2017-05-05 f 0.1000"
+  ],
+  "REXX": [
+   "reverse 2017-05-15 f 0.1000"
+  ],
+  "RHE": [
+   "reverse 2019-01-02 f 0.0833"
+  ],
+  "RNVA": [
+   "reverse 2020-08-03 f 0.0001",
+   "reverse 2021-07-19 f 0.0010",
+   "reverse 2022-03-16 f 0.0001"
+  ],
+  "RPTX": [
+   "reverse 2020-06-12 f 0.1650"
+  ],
+  "RVYL": [
+   "reverse 2026-01-02 f 0.0286"
+  ],
+  "SCON": [
+   "reverse 2021-09-09 f 0.2650"
+  ],
+  "SEII": [
+   "reverse 2020-10-13 f 0.0200"
+  ],
+  "SERV": [
+   "reverse 2018-10-01 f 0.5000"
+  ],
+  "SGBX": [
+   "reverse 2020-02-06 f 0.0500",
+   "reverse 2024-05-02 f 0.0500",
+   "reverse 2025-09-08 f 0.0156"
+  ],
+  "SGD": [
+   "reverse 2024-10-08 f 0.0500"
+  ],
+  "SING": [
+   "reverse 2021-03-26 f 0.0133"
+  ],
+  "SONG": [
+   "reverse 2025-10-30 f 0.0000",
+   "reverse 2025-12-22 f 0.0000"
+  ],
+  "SONN": [
+   "reverse 2022-09-19 f 0.0714",
+   "reverse 2023-09-01 f 0.0455",
+   "reverse 2024-09-30 f 0.1250"
+  ],
+  "STAR": [
+   "reverse 2023-03-31 f 0.1600"
+  ],
+  "STLY": [
+   "reverse 2021-07-21 f 0.0833"
+  ],
+  "TBLT": [
+   "reverse 2024-01-02 f 0.0154"
+  ],
+  "TEAR": [
+   "reverse 2017-02-27 f 0.1000"
+  ],
+  "TNDM": [
+   "reverse 2017-10-10 f 0.1000"
+  ],
+  "TURN": [
+   "reverse 2021-01-04 f 0.3333"
+  ],
+  "TWER": [
+   "reverse 2016-07-07 f 0.0500"
+  ],
+  "TYDE": [
+   "reverse 2023-04-04 f 0.0200"
+  ],
+  "VBIX": [
+   "reverse 2022-09-06 f 0.0357",
+   "reverse 2025-03-14 f 0.2500"
+  ],
+  "WETG": [
+   "forward 2020-08-31 f 3.0000"
+  ],
+  "WINR": [
+   "reverse 2020-11-20 f 0.1250"
+  ],
+  "XOMA": [
+   "reverse 2016-10-18 f 0.0500"
+  ],
+  "XRX": [
+   "forward 2017-01-03 f 1.5180",
+   "reverse 2017-06-15 f 0.2500"
+  ],
+  "ZEST": [
+   "reverse 2020-12-17 f 0.2000"
+  ]
+ },
+ "fremdeInAnwendbar": [
+  "CYBR unit_splits 2026-02-11 CYBR->PANW f 2.2005",
+  "DEVS unit_splits 2024-11-07 FIACU->DEVS f 0.9692",
+  "DEVS unit_splits 2024-11-11 FIACU->DEVS f 0.9692",
+  "DHAI unit_splits 2024-02-09 ATAKU->DHAI f 1.1000",
+  "NLSP unit_splits 2025-10-31 NLSP->NCEL f 0.1000",
+  "NUKK unit_splits 2023-12-26 BRLIU->NUKK f 1.5400",
+  "PANW unit_splits 2026-02-11 CYBR->PANW f 2.2005",
+  "WOLF unit_splits 2025-09-29 WOLF->WOLF f 0.0084"
+ ],
+ "eigeneNichtInAnwendbar": [],
+ "unitSplitsEigen": [],
+ "vor2016": 0,
+ "reihenOhneKopieMitSplitN": 117
+}
