@@ -246,9 +246,11 @@ pruef('T4-P11 test.js (47), test-teil2.js (20), test-teil3.js (15) laufen nach d
   var m2 = /gruen (\d+), rot (\d+)/.exec(r2.stdout || '');
   if (!m2 || +m2[2] !== 0 || +m2[1] !== 20) throw new Error('test-teil2.js: ' + (m2 ? m2[0] : 'keine Summenzeile'));
   var r3 = cp.spawnSync(process.execPath, ['--max-old-space-size=6144', path.join(__dirname, 'test-teil3.js'), '--aus', opt.aus, '--ergebnis', path.join(__dirname, 'teil3-ergebnis.json'), '--zielportfolio', path.join(__dirname, 'zielportfolio', 'momentum-v0')], { cwd: __dirname, encoding: 'utf8', maxBuffer: 1 << 26 });
+  /* test-teil3 ohne --maschine: 14 Kunst-/Datenpruefungen gruen, T3-P11 (startet selbst test.js/test-teil2) uebersprungen -
+   * die beiden laufen hier ohnehin direkt. */
   var m3 = /gruen (\d+), rot (\d+)/.exec(r3.stdout || '');
-  if (!m3 || +m3[2] !== 0 || +m3[1] !== 15) throw new Error('test-teil3.js: ' + (m3 ? m3[0] : 'keine Summenzeile'));
-  return 'test.js 47/0, test-teil2.js 20/0, test-teil3.js 15/0 rot';
+  if (!m3 || +m3[2] !== 0 || +m3[1] < 14) throw new Error('test-teil3.js: ' + (m3 ? m3[0] : 'keine Summenzeile'));
+  return 'test.js 47/0, test-teil2.js 20/0, test-teil3.js ' + m3[1] + '/0 rot (T3-P11 dort uebersprungen)';
 });
 pruef('T4-P12 Sektorname jedes Sektor-Eintrags liegt in den SIC-Divisionen oder ist "unbekannt"', function () {
   var E = ergebnis(); if (!E) return 'skip';

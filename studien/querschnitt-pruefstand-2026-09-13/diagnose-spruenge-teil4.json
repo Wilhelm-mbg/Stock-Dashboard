@@ -1,0 +1,510 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/teil4/v1/diagnose-spruenge",
+ "stand": "2026-09-17T23:22:33.058Z",
+ "vorwaerts": {
+  "AAPL": [
+   {
+    "tag": "2020-08-28",
+    "roh": 499.23,
+    "faktor": 4,
+    "bSchluss": 124.8075,
+    "rendite": -0.1619870364665985,
+    "marken": 5
+   },
+   {
+    "tag": "2020-08-31",
+    "roh": 128.85,
+    "faktor": 1,
+    "bSchluss": 128.85,
+    "rendite": 3.238987922668457,
+    "marken": 5
+   },
+   {
+    "tag": "2020-09-01",
+    "roh": 134.2,
+    "faktor": 1,
+    "bSchluss": 134.2,
+    "rendite": 4.1521148681640625,
+    "marken": 5
+   }
+  ],
+  "NVDA": [
+   {
+    "tag": "2024-06-07",
+    "roh": 1208.88,
+    "faktor": 10,
+    "bSchluss": 120.888,
+    "rendite": -0.04382302239537239,
+    "marken": 5
+   },
+   {
+    "tag": "2024-06-10",
+    "roh": 121.65,
+    "faktor": 1,
+    "bSchluss": 121.65,
+    "rendite": 0.6303355097770691,
+    "marken": 5
+   },
+   {
+    "tag": "2024-06-11",
+    "roh": 120.89,
+    "faktor": 1,
+    "bSchluss": 120.89,
+    "rendite": -0.6247431039810181,
+    "marken": 5
+   }
+  ],
+  "GE": [
+   {
+    "tag": "2021-07-30",
+    "roh": 12.97,
+    "faktor": 1,
+    "bSchluss": 12.97,
+    "rendite": -2.481203079223633,
+    "marken": 13
+   },
+   {
+    "tag": "2021-08-02",
+    "roh": 100.6,
+    "faktor": 1,
+    "bSchluss": 100.6,
+    "rendite": 675.6361083984375,
+    "marken": 13
+   }
+  ],
+  "XRX": [
+   {
+    "tag": "2017-06-14",
+    "roh": 6.94,
+    "faktor": 1,
+    "bSchluss": 6.94,
+    "rendite": -0.9985734820365906,
+    "marken": 13
+   },
+   {
+    "tag": "2017-06-15",
+    "roh": 27.79,
+    "faktor": 1,
+    "bSchluss": 27.79,
+    "rendite": 300.4322814941406,
+    "marken": 77
+   }
+  ]
+ },
+ "sprungtage": {
+  "n": 44,
+  "mitMassnahmeMarke": 6,
+  "faktorUngleichEins": 3,
+  "jeJahr": {
+   "2016": 3,
+   "2017": 2,
+   "2018": 2,
+   "2019": 3,
+   "2020": 8,
+   "2021": 13,
+   "2022": 2,
+   "2023": 3,
+   "2024": 2,
+   "2025": 2,
+   "2026": 4
+  },
+  "top40": [
+   {
+    "tag": "2025-08-29",
+    "kuerzel": "BBBY",
+    "klasse": 1,
+    "rendite": 12030.4931640625,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-08-02",
+    "kuerzel": "GE",
+    "klasse": 2,
+    "rendite": 675.6361083984375,
+    "faktor": 1,
+    "marken": 13,
+    "massnahmeNah": true
+   },
+   {
+    "tag": "2023-08-24",
+    "kuerzel": "AMC",
+    "klasse": 1,
+    "rendite": 633.1632690429688,
+    "faktor": 1,
+    "marken": 13,
+    "massnahmeNah": true
+   },
+   {
+    "tag": "2020-01-27",
+    "kuerzel": "OVV",
+    "klasse": 1,
+    "rendite": 358.5751953125,
+    "faktor": 1,
+    "marken": 7,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-01-27",
+    "kuerzel": "AMC",
+    "klasse": 1,
+    "rendite": 296.6000061035156,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2016-07-01",
+    "kuerzel": "HRI",
+    "klasse": 1,
+    "rendite": 198.55465698242188,
+    "faktor": 1,
+    "marken": 69,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2026-06-24",
+    "kuerzel": "DD",
+    "klasse": 1,
+    "rendite": 195.2860565185547,
+    "faktor": 1,
+    "marken": 13,
+    "massnahmeNah": true
+   },
+   {
+    "tag": "2026-08-19",
+    "kuerzel": "MRNA",
+    "klasse": 2,
+    "rendite": 177.48411560058594,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2019-06-03",
+    "kuerzel": "DD",
+    "klasse": 2,
+    "rendite": 144.83775329589844,
+    "faktor": 1,
+    "marken": 13,
+    "massnahmeNah": true
+   },
+   {
+    "tag": "2021-12-09",
+    "kuerzel": "HCP",
+    "klasse": 1,
+    "rendite": 138.0273895263672,
+    "faktor": 1,
+    "marken": 65,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-01-27",
+    "kuerzel": "GME",
+    "klasse": 1,
+    "rendite": 137.69493103027344,
+    "faktor": 4,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2024-02-27",
+    "kuerzel": "VKTX",
+    "klasse": 1,
+    "rendite": 122.19334411621094,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2026-02-11",
+    "kuerzel": "PANW",
+    "klasse": 3,
+    "rendite": 119.74424743652344,
+    "faktor": 1,
+    "marken": 13,
+    "massnahmeNah": true
+   },
+   {
+    "tag": "2021-11-02",
+    "kuerzel": "CAR",
+    "klasse": 1,
+    "rendite": 108.80088806152344,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2025-11-14",
+    "kuerzel": "CDTX",
+    "klasse": 1,
+    "rendite": 105.35899353027344,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-02-24",
+    "kuerzel": "GME",
+    "klasse": 2,
+    "rendite": 103.93595886230469,
+    "faktor": 4,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-06-02",
+    "kuerzel": "AMC",
+    "klasse": 2,
+    "rendite": 100.28169250488281,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-10-13",
+    "kuerzel": "LLL",
+    "klasse": 1,
+    "rendite": -98.66182708740234,
+    "faktor": 1,
+    "marken": 67,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2022-10-04",
+    "kuerzel": "BHVN",
+    "klasse": 1,
+    "rendite": -94.53227996826172,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2022-01-28",
+    "kuerzel": "ALR",
+    "klasse": 1,
+    "rendite": -94.37144470214844,
+    "faktor": 1,
+    "marken": 3,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-05-07",
+    "kuerzel": "ATHN",
+    "klasse": 1,
+    "rendite": -92.88148498535156,
+    "faktor": 1,
+    "marken": 67,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-03-16",
+    "kuerzel": "MON",
+    "klasse": 2,
+    "rendite": -92.35232543945312,
+    "faktor": 1,
+    "marken": 67,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-10-21",
+    "kuerzel": "PX",
+    "klasse": 1,
+    "rendite": -92.27635192871094,
+    "faktor": 1,
+    "marken": 69,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-04-16",
+    "kuerzel": "ANAC",
+    "klasse": 1,
+    "rendite": -90.03024291992188,
+    "faktor": 1,
+    "marken": 67,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2020-04-01",
+    "kuerzel": "ARNC",
+    "klasse": 1,
+    "rendite": -89.75716400146484,
+    "faktor": 1,
+    "marken": 69,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2016-05-16",
+    "kuerzel": "WRK",
+    "klasse": 1,
+    "rendite": -84.47911071777344,
+    "faktor": 1,
+    "marken": 7,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2020-07-01",
+    "kuerzel": "DNB",
+    "klasse": 1,
+    "rendite": -82.5112075805664,
+    "faktor": 1,
+    "marken": 65,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2019-04-09",
+    "kuerzel": "NVS",
+    "klasse": 1,
+    "rendite": -82.42916107177734,
+    "faktor": 1,
+    "marken": 7,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2017-12-05",
+    "kuerzel": "DLPH",
+    "klasse": 1,
+    "rendite": -82.15422058105469,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2018-07-10",
+    "kuerzel": "KDP",
+    "klasse": 1,
+    "rendite": -82.04754638671875,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2026-02-27",
+    "kuerzel": "RNA",
+    "klasse": 1,
+    "rendite": -79.739013671875,
+    "faktor": 1,
+    "marken": 13,
+    "massnahmeNah": true
+   },
+   {
+    "tag": "2016-05-02",
+    "kuerzel": "CYH",
+    "klasse": 1,
+    "rendite": -79.37544250488281,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2020-04-02",
+    "kuerzel": "LK",
+    "klasse": 2,
+    "rendite": -75.57251739501953,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2019-09-24",
+    "kuerzel": "AABA",
+    "klasse": 2,
+    "rendite": -72.4435043334961,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2020-03-09",
+    "kuerzel": "OVV",
+    "klasse": 1,
+    "rendite": -72.32704162597656,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2024-06-28",
+    "kuerzel": "LB",
+    "klasse": 2,
+    "rendite": -71.0299072265625,
+    "faktor": 1,
+    "marken": 65,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2021-07-23",
+    "kuerzel": "TAL",
+    "klasse": 2,
+    "rendite": -70.90643310546875,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2018-01-19",
+    "kuerzel": "ADT",
+    "klasse": 1,
+    "rendite": -70.46212768554688,
+    "faktor": 1,
+    "marken": 69,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2020-12-22",
+    "kuerzel": "XL",
+    "klasse": 1,
+    "rendite": -69.57804870605469,
+    "faktor": 1,
+    "marken": 5,
+    "massnahmeNah": false
+   },
+   {
+    "tag": "2020-07-01",
+    "kuerzel": "IAC",
+    "klasse": 2,
+    "rendite": -67.00370788574219,
+    "faktor": 1.2138064500489358,
+    "marken": 5,
+    "massnahmeNah": false
+   }
+  ]
+ },
+ "test1OhneGE": {
+  "betroffeneMonate": [
+   {
+    "monat": "2021-03",
+    "seite": "AB",
+    "dNetto": 12.049121246397918,
+    "dNettoOhneGE": 3.7760483991668323,
+    "wirkung": 8.273072847231086
+   }
+  ],
+  "mit": {
+   "n": 111,
+   "mittel": -0.8363781759782515,
+   "se": 1.1841312611162853,
+   "t": -0.7063221818751702,
+   "mde": 3.317462141143385
+  },
+  "ohne": {
+   "n": 111,
+   "mittel": -0.9109103637911438,
+   "se": 1.2045693647565554,
+   "t": -0.7562124610194113,
+   "mde": 3.3747215323019657
+  },
+  "wirkungAufMittel": 0.07453218781289228
+ },
+ "test1OhneSprungtage": {
+  "ausgeschlosseneMitgliedMonate": 16,
+  "mitgliedMonate": 29011,
+  "n": 111,
+  "mittel": -0.9350292983347224,
+  "se": 1.1960871616154927,
+  "t": -0.7817401008399981,
+  "mde": 3.350957791981964,
+  "wirkungAufMittel": 0.09865112235647089
+ }
+}
