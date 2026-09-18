@@ -54,3 +54,49 @@ Quelle: `AGENTS.md` (Zeilen 1–26) und `skills/ponytail/SKILL.md` des Ponytail-
 - `/ponytail-debt` — sammelt alle `ponytail:`-Kommentare zu einem Register, damit „später“ nicht „nie“ wird.
 
 Nicht übernommen: `/ponytail` (Modus-Umschalter, s. Nr. 24), `/ponytail-audit` (Repo-weiter Überbau-Bericht — doppelt die nächtliche Auditor-Rolle und würde die 21.000 Zeilen Gegenproben in `test-v6.js` als Überbau melden), `/ponytail-gain` (Werbetafel des Projekts), `/ponytail-help`.
+
+## Messbasis für den Vergleich am 25.09.2026
+
+Erhoben am 18.09.2026 (HEAD 4729bfc, vor dem Ponytail-Commit) mit `node tools/ponytail-messbasis.js <repo> <uebergabe-ordner> 2026-09-11 2026-09-18` (liest nur, schreibt nichts).
+
+### 1. Zeilen je Commit, 11.–18.09.2026
+
+Befehl im Werkzeug: `git log --since=2026-09-11 --until=2026-09-18T23:59:59 --numstat`. 83 Commits. Zeilen = eingefügt + gelöscht je Commit (Binärdateien zählen 0).
+
+| Gruppe | Commits | Median | Mittel |
+|---|---|---|---|
+| nur `wiki/` berührt | 32 | 5,5 | 12,8 |
+| mit Code (`*.js`, `*.cmd`, `*.html`, `*.mjs`), alle Dateien des Commits gezählt | 32 | 1.587 | 13.070 |
+| dieselben Code-Commits, nur Zeilen in Code-Dateien gezählt | 32 | 279,5 | 449,4 |
+| sonstige (weder nur wiki noch Code: JSON, Protokolle, Notizen) | 19 | 115 | 559 |
+
+Lesehinweis: Das Mittel der Code-Commits tragen vier Datei-Ablagen (ee1f3fd +102.584, a03494a +72.677, ad23ca9 +71.310, bdfee67 +60.976 — Panel- und Studiendaten als JSON neben dem Code). Die Zeile „nur Zeilen in Code-Dateien“ ist die Größe, auf die Ponytail zielt; der Median ist gegen die Ablagen robust. Die Tafel je Commit (Hash, Datum, +/−, Klasse) druckt das Werkzeug mit aus.
+
+### 2. Token je Sitzung aus den Übergaben, 11.–18.09.2026
+
+Quelle: `C:/Users/Wilhe/Downloads/Markt-Dashboard-Daten/uebergabe/*.md` ohne das Präfix `auftrag-`, Datum im Dateinamen im Fenster; Pflichtzeile „Tokenverbrauch“/„Verbrauch“. Genommen wird die erste Zahl, die die Übergabe selbst als ihren Verbrauch nennt; das Maß ist nicht einheitlich (Kontextmaß gegen kumulierten Sitzungszähler), die Spalte „Maß“ hält es fest. Fehlt die Zeile: „ohne Angabe“, nicht geschätzt.
+
+| Datum | Übergabe | Budget | Verbrauch | Maß |
+|---|---|---|---|---|
+| 12.09. | pr-text-paket-qs | — | ohne Angabe | — |
+| 12.09. | release-wache-1200 | — | ohne Angabe | — |
+| 12.09. | trendwende-ii-nachtrag3 | 120k | ≈105k | Kontextmaß |
+| 12.09. | trendwende-ii-nachtrag4 | 130k | ≈120k | Kontextmaß |
+| 12.09. | trendwende-ii-nachtrag5 | 150k | ≈105k | geschätzt |
+| 12.09. | updater-paket | 120k | ≈220k | kumuliert |
+| 12.09. | verschwundene-gruende | 150k | ≈105k | — |
+| 13.09. | querschnitt-pruefstand-teil1 | 250k | ≈450k | — |
+| 13.09. | trendwende-ii-klassen | 120k (+16k Nachschlag) | ≈94k | — |
+| 15.09. | querschnitt-pruefstand-teil2 | 250k | ≈95k | geschätzt |
+| 16.09. | chancen-karte | 150k | ≈320k | Zähler kumuliert (Kontext ≈150–160k) |
+| 16.09. | fundamental-machbarkeit | 120k | ≈125k | — |
+| 16.09. | fundamentaltafel | 150k+30k | ≈253k | Zähler (eigener Anteil ≈182k) |
+| 16.09. | querschnitt-pruefstand-teil3 | 250k | ≈370k | — |
+| 18.09. | panel-rueckwaerts-splits | — | ohne Angabe | — |
+| 18.09. | querschnitt-pruefstand-teil4 | 250k | ≈355k | Zähler (Kontext ≈160k) |
+
+16 Übergaben, 13 mit Angabe, 3 ohne. Verbrauch: Median **125k**, Mittel **209k**; Budget: Median 150k, Mittel 172k; 7 von 13 über Budget. (`trendwende-ii-2026-09-09.md` trägt das Datum 09.09. im Namen und zählt nicht, obwohl sie am 12.09. zuletzt geschrieben wurde: ≈710k gegen 450k.)
+
+### 3. Vergleichsregel für den 25.09.
+
+Gleiche Fenster (19.–25.09. gegen 11.–18.09.), gleiche Trennung (nur wiki / mit Code / nur Code-Zeilen / sonstige), gleiche Quellen und dasselbe Werkzeug (`node tools/ponytail-messbasis.js <repo> <uebergabe-ordner> 2026-09-19 2026-09-25`), Übergaben nach Datum im Dateinamen, „ohne Angabe“ bleibt „ohne Angabe“ — verglichen werden die Mediane; ein Mittel, das eine Datei-Ablage trägt, ist kein Befund. Vorbehalt: eine Woche mit anderen Aufträgen misst auch die Aufträge, nicht nur Ponytail — der Vergleich ist ein Hinweis, keine Messung mit Kontrolle.
