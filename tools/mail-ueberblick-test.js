@@ -9,6 +9,8 @@
  *   4 aktuell, gelesen, multipart mit text/plain, text/html und PDF-Anhang   -> Treffer (Anhang!)
  *   5 aktuell, X-Mozilla-Status2 0x00200000 (auf dem Server gelöscht)        -> übersprungen
  *   6 aktuell, nur HTML in base64                                            -> Treffer (Text aus HTML)
+ * Dazu weitere Ordner (Finanzen, Projekte.sbd/Alpha: mitlesen; Trash, Papierkorb,
+ * [Gmail].sbd/Alle Nachrichten: ausnehmen) - siehe unten.
  * Ein zweites Konto hat eine winzige INBOX -> muss als NICHT LESBAR gemeldet werden.
  * Das echte Profil wird nie angefasst (--profil zeigt auf den Temp-Ordner).
  *
@@ -98,6 +100,27 @@ mails.splice(1, 0, mails.splice(3, 1)[0]);
 fs.writeFileSync(path.join(imap, 'INBOX'), mails.join('\n') + '\n', 'latin1');
 fs.writeFileSync(path.join(leer, 'INBOX'), '');
 
+// Weitere Ordner desselben Kontos (Entscheid 19.09.2026: alle Ordner lesen):
+//   Finanzen               -> aktuelle Mail, muss als Ordner "Finanzen" erscheinen
+//   Projekte.sbd/Alpha     -> Unterordner, muss als "Projekte/Alpha" erscheinen
+//   Trash, Papierkorb      -> aktuelle Mails, dürfen NICHT erscheinen
+//   [Gmail].sbd/Alle Nachrichten -> Kopie jeder Mail, darf NICHT erscheinen (sonst doppelt)
+//   INBOX.msf, msgFilterRules.dat -> kein Postfach
+function einfach(stunden, absender, betreff, text) {
+  return [fromZeile(vor(stunden)), 'X-Mozilla-Status: 0000', 'X-Mozilla-Status2: 00000000',
+    `From: ${absender}`, `Subject: ${betreff}`, `Date: ${rfc(vor(stunden))}`,
+    'Content-Type: text/plain; charset=utf-8', '', text, ''].join('\n') + '\n';
+}
+fs.writeFileSync(path.join(imap, 'Finanzen'), einfach(6, 'bank@example.com', 'Kontoauszug bereit', 'Ordnermail Finanzen.'), 'latin1');
+fs.mkdirSync(path.join(imap, 'Projekte.sbd'));
+fs.writeFileSync(path.join(imap, 'Projekte.sbd', 'Alpha'), einfach(7, 'team@example.com', 'Alpha Status', 'Ordnermail Alpha.'), 'latin1');
+fs.writeFileSync(path.join(imap, 'Trash'), einfach(1, 'muell@example.com', 'Papierkorb-Mail', 'Weg damit.'), 'latin1');
+fs.writeFileSync(path.join(imap, 'Papierkorb'), einfach(1, 'muell@example.com', 'Papierkorb-Mail zwei', 'Weg damit.'), 'latin1');
+fs.mkdirSync(path.join(imap, '[Gmail].sbd'));
+fs.writeFileSync(path.join(imap, '[Gmail].sbd', 'Alle Nachrichten'), einfach(2, 'doppelt@example.com', 'Alle-Nachrichten-Kopie', 'Doppelt.'), 'latin1');
+fs.writeFileSync(path.join(imap, 'INBOX.msf'), 'Index, kein Postfach');
+fs.writeFileSync(path.join(imap, 'msgFilterRules.dat'), 'version="9"');
+
 let fehler = 0;
 function pruefe(bedingung, text) { if (!bedingung) { fehler++; console.log('FEHLT: ' + text); } else console.log('ok: ' + text); }
 
@@ -107,7 +130,12 @@ const dateien = fs.readdirSync(ziel).filter(f => f.startsWith('neu-'));
 pruefe(dateien.length === 1, 'genau eine neu-Datei geschrieben');
 const inhalt = fs.readFileSync(path.join(ziel, dateien[0]), 'utf8');
 const treffer = (inhalt.match(/^#\d+  Konto: /gm) || []).length;
-pruefe(treffer === 3, `drei Treffer (gefunden ${treffer})`);
+pruefe(treffer === 5, `fünf Treffer: drei aus INBOX, Finanzen, Projekte/Alpha (gefunden ${treffer})`);
+pruefe(/Ordner: Finanzen\n[\s\S]*?Betreff: Kontoauszug bereit/.test(inhalt), 'Ordner Finanzen gelesen und benannt');
+pruefe(/Ordner: Projekte\/Alpha\n/.test(inhalt), 'Unterordner Projekte.sbd/Alpha als Projekte/Alpha');
+pruefe(!inhalt.includes('Papierkorb-Mail'), 'Trash und Papierkorb ausgenommen');
+pruefe(!inhalt.includes('Alle-Nachrichten-Kopie'), '[Gmail]-Systemordner ausgenommen (keine Doppelung)');
+pruefe(/test@example\.com: 5 neue Mails aus 3 Ordnern \(INBOX 3, Finanzen 1, Projekte\/Alpha 1\)/.test(inhalt), 'Kontenblock zählt je Ordner');
 pruefe(inhalt.includes('Betreff: Rechnung überfällig'), 'RFC-2047-Betreff dekodiert');
 pruefe(inhalt.includes('Absender: Jürgen Test <juergen@example.com>'), 'RFC-2047-Absender dekodiert');
 pruefe(inhalt.includes('Bitte überweisen Sie bis Freitag.'), 'quoted-printable UTF-8 dekodiert');
@@ -121,7 +149,7 @@ pruefe(!inhalt.includes('Alte Mail'), 'alte Mail außerhalb des Fensters');
 pruefe(/Betreff: Rechnung überfällig[\s\S]*?Status: ungelesen/.test(inhalt), 'ungelesen erkannt');
 pruefe(/Betreff: Bescheid\n[\s\S]*?Status: gelesen/.test(inhalt), 'gelesen erkannt');
 pruefe(inhalt.includes('leer@example.com: NICHT LESBAR'), 'leeres Konto als NICHT LESBAR gemeldet');
-pruefe(/test@example\.com: 3 neue/.test(ausgabe), 'Konsole zählt 3 neue für das Testkonto');
+pruefe(/test@example\.com: 5 neue \(4 ungelesen\) aus 3 Ordnern/.test(ausgabe), 'Konsole zählt 5 neue aus 3 Ordnern für das Testkonto');
 const mb = ausgabe.match(/gelesen (\d+) von (\d+) MB/);
 pruefe(mb && Number(mb[1]) < Number(mb[2]), `nur der Dateischwanz gelesen, nicht die ganze Datei (${mb ? mb[1] + ' von ' + mb[2] + ' MB' : 'keine Angabe'})`);
 
