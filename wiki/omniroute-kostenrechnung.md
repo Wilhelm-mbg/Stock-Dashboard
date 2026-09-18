@@ -70,3 +70,20 @@ Anbieter durch Wilhelm, Brücke mit Datenschranke und Stichproben-Prüfung, Vorr
 
 Heute **kein Anbieter**. Backup bleibt Backup. Wieder aufrufen, wenn ein Auftrag der Art aus §4 kommt — dann ist die
 Rechnung eine andere (Ersparnis > 50 % des Auftrags statt 5 % der Woche).
+
+## 6. Nachfrage Wilhelms (19.09.): „Sicher, dass wir so nicht die Massen-Signalmessungen machen könnten?"
+
+Sicher. Die Messungen sind keine Sprachmodell-Arbeit. Trendwende II, die Minuten-Signalstudie, der Querschnitts-Prüfstand
+laufen als `node`-Skripte über das Archiv auf E: — 2,37 Mrd Kerzen, 457 Prozess-Stunden für den 1m-Lauf, sechs bis acht
+Teile parallel über die Aufgabenplanung. Dabei fällt **kein einziges Token** an. Ein Modell hinter OmniRoute könnte weder
+die Kerzen fassen (das wären Dutzende Milliarden Token je Lauf) noch Statistik zuverlässig rechnen; es würde nur raten.
+
+Die Token der Studien stecken an drei anderen Stellen: **das Instrument entwerfen** (Vorregistrierung, Tore, Placebos,
+MDE), **es bauen und prüfen** (Code, Sperrklinken, Gegenproben — genau dort saßen die zwölf Messwerkzeug-Fallen und die
+Fehlerformen dieser Woche) und **die Ergebnisse lesen und beurteilen**. Das ist Urteilsarbeit; ein schwächeres Modell
+vervielfacht dort die Fehler, und jede seiner Antworten müsste ohnehin von einem Claude-Agenten geprüft werden.
+
+Wenn die **Rechenzeit** der Engpass ist, hilft kein Modell-Gateway, sondern mehr Rechner: Nachtläufe (machen wir), mehr
+parallele Teile (die Platte auf E: ist die Grenze, 5–6 MB/s je Teil), oder eine gemietete Maschine mit schneller SSD für
+die Dauer eines Laufs. Das wäre das echte „Auslagern" einer Messung — zu klären erst, wenn ein Lauf länger als eine Nacht
+braucht; bisher hat jeder in eine Nacht gepasst, außer dem 1m-Vollauf (drei Nächte, Nr. 5 der Signalstudie).
