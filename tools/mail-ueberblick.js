@@ -411,6 +411,8 @@ function neuDateiSchreiben(ziel, jetzt, schwelle, konten, treffer, protokoll) {
     if (k.status === 'ok') {
       const p = protokoll.find(x => x.konto === k.name);
       zeilen.push(`  ${k.name}: ${p.treffer} neue Mails (Datei ${(p.dateiGroesse / 1048576).toFixed(1)} MB, gelesen ${(p.gelesenBytes / 1048576).toFixed(1)} MB, ${p.nachrichtenImSchwanz} Mails geprüft, ${p.geloeschtUebersprungen} gelöschte übersprungen${p.obergrenze ? ', LESEGRENZE ERREICHT - evtl. unvollständig' : ''})`);
+    } else if (k.status === 'ohne') {
+      zeilen.push(`  ${k.name}: kein Posteingang (normal)`);
     } else {
       zeilen.push(`  ${k.name}: NICHT LESBAR - ${k.grund}`);
     }
