@@ -1,0 +1,3 @@
+# Mail-Überblick: Werkzeug zum Lesen der Thunderbird-Posteingänge (19.09.2026)
+
+Neu ist `tools/mail-ueberblick.js`. Es liest die Offline-Kopien der Thunderbird-Postfächer auf diesem PC, sammelt die Mails der letzten 24 Stunden aus allen Konten und legt sie als Textdatei unter `Markt-Dashboard-Daten\mail\` ab. Daraus schreibt die Routine „Mail-Überblick" in der Claude-Desktop-App jeden Morgen um 8 Uhr eine kurze Zusammenfassung (handeln, lesen, Rest). Das Werkzeug liest nur; es antwortet, verschiebt, markiert und löscht nichts. Für die App selbst ändert sich nichts, `tools/` wird nicht ausgeliefert. Der Selbsttest `tools/mail-ueberblick-test.js` prüft das Werkzeug an einem Mini-Postfach im Temp-Ordner.
