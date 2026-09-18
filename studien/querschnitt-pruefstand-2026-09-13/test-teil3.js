@@ -247,12 +247,13 @@ pruef('T3-P10 Zielportfolio-Dateien: Gewichte summieren zum Einsatz, N = Dezilgr
 });
 
 /* ================= T3-P11: die Maschinenpruefungen bleiben gruen ================= */
-pruef('T3-P11 test.js (47) und test-teil2.js (20) laufen nach den Ergaenzungen gruen', function () {
+pruef('T3-P11 test.js (67: 47 + 20 der Panel-Reparatur v2) und test-teil2.js (20) laufen nach den Ergaenzungen gruen', function () {
   if (!opt.maschine || !opt.aus) return 'skip';
   var ref = 'C:/Users/Wilhe/Downloads/Markt-Dashboard-Daten/referenz/F-F_Momentum_Factor.csv';
   var r1 = cp.spawnSync(process.execPath, ['--max-old-space-size=6144', path.join(__dirname, 'test.js'), '--aus', opt.aus, '--kunst', 'kunst'], { cwd: __dirname, encoding: 'utf8', maxBuffer: 1 << 26 });
   var m1 = /(\d+) Pruefungen, (\d+) rot/.exec(r1.stdout || '');
-  if (!m1 || +m1[2] !== 0 || +m1[1] !== 47) throw new Error('test.js: ' + (m1 ? m1[0] : 'keine Summenzeile') + (r1.stderr ? ' / ' + r1.stderr.slice(0, 200) : ''));
+  /* 67 seit der Panel-Reparatur v2 (18.09.2026): Abschnitte 14-16 (Faktor-Roundtrip, Kuerzelwechsel, echtes Panel). */
+  if (!m1 || +m1[2] !== 0 || +m1[1] !== 67) throw new Error('test.js: ' + (m1 ? m1[0] : 'keine Summenzeile') + (r1.stderr ? ' / ' + r1.stderr.slice(0, 200) : ''));
   var r2 = cp.spawnSync(process.execPath, [path.join(__dirname, 'test-teil2.js'), '--referenz', ref, '--kandidaten', path.join(opt.aus, 'kandidaten-voll.json'), '--momentum', path.join(__dirname, 'momentum-perioden.json')], { cwd: __dirname, encoding: 'utf8', maxBuffer: 1 << 26 });
   var m2 = /gruen (\d+), rot (\d+)/.exec(r2.stdout || '');
   if (!m2 || +m2[2] !== 0 || +m2[1] !== 20) throw new Error('test-teil2.js: ' + (m2 ? m2[0] : 'keine Summenzeile'));

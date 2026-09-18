@@ -236,12 +236,13 @@ pruef('T4-P10 Ergebnis: Urteil folgt der Regel §T4.6 aus den eigenen Zahlen; MD
   wahr(vp.bestanden === vOk, 'Vorpruefung-Regel');
   return 'n ' + H.n + ', Delta ' + r.mittel.toFixed(3) + ', MDE ' + r.mde.toFixed(3) + ', belegt ' + belegt;
 });
-pruef('T4-P11 test.js (47), test-teil2.js (20), test-teil3.js (15) laufen nach dem Konfig-Block gruen', function () {
+pruef('T4-P11 test.js (67: 47 + 20 der Panel-Reparatur v2), test-teil2.js (20), test-teil3.js (15) laufen nach dem Konfig-Block gruen', function () {
   if (!opt.maschine || !opt.aus) return 'skip';
   var ref = 'C:/Users/Wilhe/Downloads/Markt-Dashboard-Daten/referenz/F-F_Momentum_Factor.csv';
   var r1 = cp.spawnSync(process.execPath, ['--max-old-space-size=6144', path.join(__dirname, 'test.js'), '--aus', opt.aus, '--kunst', 'kunst'], { cwd: __dirname, encoding: 'utf8', maxBuffer: 1 << 26 });
   var m1 = /(\d+) Pruefungen, (\d+) rot/.exec(r1.stdout || '');
-  if (!m1 || +m1[2] !== 0 || +m1[1] !== 47) throw new Error('test.js: ' + (m1 ? m1[0] : 'keine Summenzeile') + (r1.stderr ? ' / ' + r1.stderr.slice(0, 200) : ''));
+  /* 67 seit der Panel-Reparatur v2 (18.09.2026): Abschnitte 14-16 (Faktor-Roundtrip, Kuerzelwechsel, echtes Panel). */
+  if (!m1 || +m1[2] !== 0 || +m1[1] !== 67) throw new Error('test.js: ' + (m1 ? m1[0] : 'keine Summenzeile') + (r1.stderr ? ' / ' + r1.stderr.slice(0, 200) : ''));
   var r2 = cp.spawnSync(process.execPath, [path.join(__dirname, 'test-teil2.js'), '--referenz', ref, '--kandidaten', path.join(opt.aus, 'kandidaten-voll.json'), '--momentum', path.join(__dirname, 'momentum-perioden.json')], { cwd: __dirname, encoding: 'utf8', maxBuffer: 1 << 26 });
   var m2 = /gruen (\d+), rot (\d+)/.exec(r2.stdout || '');
   if (!m2 || +m2[2] !== 0 || +m2[1] !== 20) throw new Error('test-teil2.js: ' + (m2 ? m2[0] : 'keine Summenzeile'));
