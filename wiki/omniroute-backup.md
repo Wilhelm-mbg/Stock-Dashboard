@@ -33,6 +33,7 @@ sie unter `C:\Users\Wilhe\AppData\Roaming\…` eingeblendet (`realpath` aus Node
 Nachgemessen mit einem Prozess **außerhalb** des App-Kontexts (WMI `Win32_Process.Create`, einmalig, nichts
 Bleibendes): **`C:\Users\Wilhe\AppData\Roaming\npm` existiert dort nicht, `where omniroute` findet nichts.**
 Physisch liegt alles in `…\LocalCache\Roaming\npm\` (`node_modules\omniroute`, Startdateien `omniroute.cmd`/`.ps1`).
+Größe dieses Paketordners nach der Nachinstallation mit nativen Modulen: **2,6 GB** (Messung des Chats, 18.09. 15:25; belegt Platz auf C:, nicht im Repo).
 
 Folge: Der Befehl `omniroute` ist **nur aus Prozessen der Claude-App** (Werkzeug-Chats) aufrufbar, nicht aus
 Wilhelms eigener PowerShell. Der Datenordner `C:\Users\Wilhe\.omniroute\` liegt dagegen im echten Profil (nicht
