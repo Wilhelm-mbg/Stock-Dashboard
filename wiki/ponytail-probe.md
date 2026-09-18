@@ -1,0 +1,56 @@
+# Ponytail-Probe 18.–25.09.2026
+
+**Entscheid Wilhelm, 18.09.2026:** Ponytail (https://github.com/DietrichGebert/ponytail, MIT, Copyright (c) 2026 DietrichGebert, Stand e3ba2aa vom 14.09.2026) eine Woche im Markt-Dashboard ausprobieren. Eingebaut als eigener Abschnitt am Ende von `CLAUDE.md` („Ponytail — Probe 18.–25.09.2026“); dazu die beiden Werkzeug-Skills `/ponytail-review` und `/ponytail-debt` unter `.claude/skills/`.
+
+## Warum der Anweisungsblock und nicht das Plugin
+
+Das Projekt sieht für Claude Code das Plugin vor (`/plugin marketplace add DietrichGebert/ponytail`, `/plugin install ponytail@ponytail`). Es erfüllt zwar die Bedingung des Auftrags (keine Abhängigkeit in `package.json`, kein Start mit der App), aber:
+
+- es installiert sich in den **Benutzerordner** (`~/.claude/`), gilt also für jedes Projekt von Wilhelm, nicht nur für dieses Repo;
+- es startet bei jedem Prompt zwei Node-Hooks (`SessionStart`, `UserPromptSubmit`, `SubagentStart`), schreibt `~/.claude/.ponytail-active` und bietet einen `statusLine`-Eintrag in `~/.claude/settings.json` an;
+- die beiden `/plugin`-Befehle brauchen eine interaktive Sitzung — **Wilhelms Hand**.
+
+Das Projekt nennt die Anweisungsdatei ausdrücklich als vollwertige Form („instruction-only“, `AGENTS.md` kopieren). Der Unterschied zum Plugin: keine Stufen (`lite/full/ultra`), keine Ein-/Ausschaltbefehle. Für die Probe ist das gewollt: eine feste Stufe („full“) lässt sich messen, drei umschaltbare nicht. Will Wilhelm das Plugin trotzdem, sind es die zwei Befehle oben in einer eigenen Sitzung; der Block in `CLAUDE.md` bleibt dann trotzdem die Repo-Fassung mit den Streichungen.
+
+## Jede Regel gegen CLAUDE.md geprüft
+
+Quelle: `AGENTS.md` (Zeilen 1–26) und `skills/ponytail/SKILL.md` des Ponytail-Repos. Repo-Regeln schlagen Ponytail; jede Abweichung steht hier.
+
+| Nr. | Regel (Kurzfassung) | übernommen | Grund | Wortlaut im Repo (`CLAUDE.md`, Abschnitt Ponytail) |
+|---|---|---|---|---|
+| 1 | Leitbild: fauler Senior, faul = sparsam, nicht nachlässig | ja | kein Widerspruch | „Du bist ein fauler Senior-Entwickler …“ |
+| 2 | Sprosse 1: Muss das gebaut werden? (YAGNI) | ja | deckt sich mit „Erst fragen statt Umweg“ | Sprosse 1 |
+| 3 | Sprosse 2: Gibt es das im Repo schon? | ja | deckt sich mit den Klinken „Markup an genau einer Stelle“, `U.kachel()` | Sprosse 2 |
+| 4 | Sprosse 3: Standardbibliothek | ja, mit 4 zusammengelegt | Node-Stdlib und Browser/Electron sind hier dieselbe Frage | Sprosse 3 |
+| 5 | Sprosse 4: native Plattform-Funktion | ja, mit 3 zusammengelegt | s. o. | Sprosse 3 |
+| 6 | Sprosse 5: schon installierte Abhängigkeit | ja, verschärft | Repo: keine Änderung an `package.json`, keine neuen Abhängigkeiten | Sprosse 4 („Neue kommen nicht dazu“) |
+| 7 | Sprosse 6: eine Zeile | ja | — | Sprosse 5 |
+| 8 | Sprosse 7: Minimum, das funktioniert | ja | — | Sprosse 6 |
+| 9 | Leiter läuft erst nach dem Verstehen | ja | deckt sich mit „Zuerst PROJEKTSTAND.md lesen“ und dem Lesen der berührten Klinken | „Die Leiter läuft, NACHDEM …“ |
+| 10 | Fehler = Ursache, alle Aufrufer suchen | ja | deckt sich mit der Fehlerform-Kultur (`wiki/fehlerformen.md`) | „Fehlerbehebung = Ursache …“ |
+| 11 | Keine unverlangten Abstraktionen | ja | — | Regel 1 |
+| 12 | Keine neue Abhängigkeit, wenn vermeidbar | ja, verschärft | Repo: nie ohne Wilhelms Entscheid | Regel 2 |
+| 13 | Kein Boilerplate, kein Gerüst für später | ja | — | Regel 1 |
+| 14 | Löschen vor Hinzufügen, langweilig vor clever, wenigste Dateien | ja, mit Ausnahme | Sperrklinken, Gegenproben und Fehlerform-Kommentare sind Bestand; Release-Notiz, Übergabe, Vorregistrierung sind Pflichtdateien (CLAUDE.md „Ausliefern“, „Messen“) | Regel 3 |
+| 15 | Kürzester funktionierender Diff, erst nach Verstehen | ja | — | Regel 4 |
+| 16 | Komplexe Aufträge hinterfragen | ja, eingeschränkt | Rückfrage in einem Satz/Formular (Memory „Erst fragen statt Umweg“); Wilhelms Hand-Entscheid wird respektiert | Regel 5 |
+| 17 | Von zwei Stdlib-Optionen die randfall-korrekte | ja | — | Regel 6 |
+| 18 | `ponytail:`-Kommentar für bewusste Abkürzungen | ja, angepasst | Kommentar auf Deutsch; darf keinen Bezeichner nennen, den eine Klinke verbietet (Testmarken-Falle, Fehlerform „Sperrklinke frisst ihren Kommentar“) | Regel 7 |
+| 19 | Nicht faul bei Verstehen, Eingabeprüfung, Datenverlust, Sicherheit, Barrierefreiheit, Verlangtem | ja, konkretisiert | Vertrauensgrenzen und Datenverlust-Pfade des Repos benannt (Yahoo, Alpaca, EDGAR, Issues, Archiv E:, Store) | „Nicht faul bei …“ |
+| 20 | Nicht faul bei Hardware-Kalibrierung (Uhr driftet, Sensor liest falsch) | **nein** | Repo hat keine Hardware; Zeitstempel-Drift ist durch eigene Klinken geregelt (Stempel-Kerzen, Drift-Messer der IPC-Sonde) | gestrichen |
+| 21 | EINE lauffähige Prüfung je nicht-trivialer Logik: assert-Demo oder kleine Testdatei, kein Framework | **angepasst** | Repo-Instrument ist `test-v6.js` (bzw. `test.js` der Studie) mit Gegenprobe je Klinke; lose Testdateien laufen in `npm test` und CI nicht; Messungen brauchen den Placebo | „… Zusicherung in `test-v6.js` … mit Gegenprobe … zusätzlich ihren Placebo“ |
+| 22 | Triviale Einzeiler brauchen keinen Test | **angepasst** | keine eigene Zusicherung nötig, aber `npm test` muss grün sein — eine Klinke, die den Einzeiler trifft, entscheidet, nicht das Eigenurteil „trivial“ | (implizit: „kein eigenes Testgerüst … nur dafür“) |
+| 23 | Gilt auch für Agenten am Ponytail-Repo selbst | **nein** | betrifft nur das Ponytail-Repo | gestrichen |
+| 24 | SKILL.md: Stufen `lite/full/ultra`, Umschalten per `/ponytail`, „stop ponytail“ | **nein** | ohne Plugin keine Modi; feste Stufe „full“ ist messbar, drei umschaltbare nicht; „ultra“ (Löschen vor allem, Anforderung anfechten) ist mit den Sperrklinken nicht verträglich | gestrichen; Probe endet am 25.09. mit Wilhelms Entscheid |
+| 25 | SKILL.md: Ausgabe „Code zuerst, dann höchstens drei Zeilen“ | ja, eingeschränkt | gilt für unverlangte Prosa; Übergabe-Datei mit Tokenverbrauch, Release-Notiz, Commit-Text für Anwender und Vorregistrierung sind vom Repo verlangt und bleiben voll | „Ausgabe im Chat …“ |
+| 26 | SKILL.md: Besteht der Nutzer auf der vollen Fassung, wird sie gebaut | ja | deckt sich mit „Hand-Entscheid respektiert“ | Regel 5, zweiter Satz |
+| 27 | SKILL.md: „Pair with Caveman“ (knappe Prosa) | **nein** | zweites Fremdregelwerk; Übergaben und Notizen müssen für Anwender lesbar bleiben | gestrichen |
+
+Übernommen 21 von 27 (davon 7 angepasst oder eingeschränkt), gestrichen 6.
+
+## Die beiden Werkzeug-Skills
+
+- `/ponytail-review` — Diff auf Überbau prüfen, gibt eine Streichliste zurück, ändert nichts. Ergänzt das eingebaute `/simplify`, das Änderungen anwendet. Angepasst: Sperrklinken, Gegenproben und Placebo sind nie „yagni“.
+- `/ponytail-debt` — sammelt alle `ponytail:`-Kommentare zu einem Register, damit „später“ nicht „nie“ wird.
+
+Nicht übernommen: `/ponytail` (Modus-Umschalter, s. Nr. 24), `/ponytail-audit` (Repo-weiter Überbau-Bericht — doppelt die nächtliche Auditor-Rolle und würde die 21.000 Zeilen Gegenproben in `test-v6.js` als Überbau melden), `/ponytail-gain` (Werbetafel des Projekts), `/ponytail-help`.
