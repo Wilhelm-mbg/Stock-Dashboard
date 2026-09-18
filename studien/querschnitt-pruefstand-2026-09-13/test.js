@@ -96,8 +96,9 @@ abschnitt(2, 'Stichprobe 20 Reihen: Schluss, Eroeffnung, Rendite, Umsatz gegen d
     var f = 1, mm = j.massnahmen;
     if (Array.isArray(mm)) mm.forEach(function (m) { var ex = m.ex_date || m.ex || m.datum; if (m.faktor > 0 && ex > tagEt) f *= m.faktor; });
     /* Bereinigungsfaktor (v2) unabhaengig: eigene Splits der Massnahmendatei (forward/reverse mit symbol == Reihe,
-     * unit_splits nur old == new == Reihe) mit Ex-Tag NACH dem Tag, mal Abspaltungsfaktoren aus dem Kopf. */
-    var fb = 1;
+     * unit_splits nur old == new == Reihe) mit Ex-Tag NACH dem Tag, mal Abspaltungsfaktoren aus dem Kopf. Die Split-Sperre
+     * (v2.1) rechnet der Aufrufer an der Tafel nach (Rohkurse der Reihe um den Ex-Tag): hier nur die Kandidaten. */
+    var fb = 1, eigene = [];
     try {
       var mj = JSON.parse(fs.readFileSync(path.join(K.ORTE.massnahmen(), String(ordner).replace(/~2$/, '') + '.json'), 'utf8'));
       (mj.saetze || []).forEach(function (s) {
@@ -106,13 +107,25 @@ abschnitt(2, 'Stichprobe 20 Reihen: Schluss, Eroeffnung, Rendite, Umsatz gegen d
                     (art === 'unit_splits' && String(s.old_symbol || '') === basis && String(s.new_symbol || '') === basis);
         if (!eigen || !ex || !(ex > tagEt)) return;
         var alt = Number(s.old_rate), neu = Number(s.new_rate);
-        if (alt > 0 && neu > 0 && Math.abs(neu / alt - 1) >= 1e-9) fb *= neu / alt;
+        if (alt > 0 && neu > 0 && Math.abs(neu / alt - 1) >= 1e-9) eigene.push({ ex: ex, faktor: neu / alt });
       });
     } catch (e) { /* keine Massnahmendatei: keine eigenen Splits */ }
     if (Array.isArray(mm)) mm.forEach(function (m) { var ex = m.ex_date || m.ex || m.datum; if (/spin/.test(String(m._art || m.art || '')) && m.faktor > 0 && ex > tagEt) fb *= m.faktor; });
     return { dateiSchluss: auk ? auk[5] : reg[reg.length - 1][1], dateiEroeffnung: reg[0][5],
       rohSchluss: (auk ? auk[5] : reg[reg.length - 1][1]) * f, rohEroeffnung: reg[0][5] * f,
-      umsatz: umsReg + umsAuk, kerzen: reg.length, faktor: f, bFaktor: fb, ersatz: auk ? 0 : 1 };
+      umsatz: umsReg + umsAuk, kerzen: reg.length, faktor: f, bSpin: fb, eigene: eigene, ersatz: auk ? 0 : 1 };
+  }
+  /* Split-Sperre unabhaengig an der Tafel: Rohschluss der Reihe am letzten Tag vor und ersten Tag ab dem Ex-Tag. */
+  function sperreAnTafel(sym, e) {
+    var soll = -Math.log(e.faktor);
+    if (!(Math.abs(soll) >= K.SPLIT_SPERRE_MIN_LOG)) return true;
+    var exIdx = kal.idx[e.ex]; if (exIdx === undefined) { for (var q = 0; q < kal.tage.length; q++) if (kal.tage[q] >= e.ex) { exIdx = q; break; } }
+    if (exIdx === undefined) return true;
+    var a = T.symStart[sym], b = T.symStart[sym + 1], vor = -1, ab = -1;
+    for (var p = a; p < b; p++) { var zz = T.symZeilen[p]; if (T.g.tag[zz] < exIdx) vor = zz; else { ab = zz; break; } }
+    if (vor < 0 || ab < 0) return true;
+    var ist = Math.log(T.g.rohSchluss[ab] / T.g.rohSchluss[vor]);
+    return Math.abs(ist - soll) <= (1 - K.SPLIT_SPERRE_ANTEIL) * Math.abs(soll);
   }
   /* 20 Reihen: die 10 umsatzstaerksten und 10 zufaellige (deterministisch). */
   var kandidaten = [];
@@ -134,6 +147,8 @@ abschnitt(2, 'Stichprobe 20 Reihen: Schluss, Eroeffnung, Rendite, Umsatz gegen d
       var h = handRechnung(ordner, basis, jahr, tagEt);
       if (!h) return;
       geprueft++;
+      var fb = h.bSpin; h.eigene.forEach(function (e) { if (sperreAnTafel(sym, e)) fb *= e.faktor; });
+      h.bFaktor = fb;
       var dS = Math.abs(h.rohSchluss - T.g.rohSchluss[z]) / Math.max(1e-9, h.rohSchluss);
       var dO = Math.abs(h.rohEroeffnung - (T.g.bEroeffnung[z] * h.bFaktor)) / Math.max(1e-9, h.rohEroeffnung);
       var dU = Math.abs(h.umsatz - T.g.umsatz[z]) / Math.max(1, h.umsatz);
@@ -471,6 +486,14 @@ abschnitt(14, 'Faktor-Roundtrip (v2): Rueckwaerts 1:4 und Vorwaerts 4:1 auf kons
   var fr = bau(100, 100, 1); fr.forEach(function (t, i) { if (i < 3) { t.faktor = 2.2005; t.dateiSchluss = 100 / 2.2005; t.dateiEroeffnung = t.dateiSchluss; } });
   var fz = P.zeilenAus(fr, { idx: 0 }, kal, z, new Set());
   pr(Math.abs(fz[3].rendite) < 1e-9, 'fremder unit_split im Kopf (2,2005), nicht eigen: Rendite am Tag ' + fz[3].rendite.toExponential(2) + ' % (v1: +120 %)', 'Soll 0');
+  /* Split-Sperre (v2.1): Quellsatz ohne Sprung in der Rohreihe wird abgelehnt (HON 2:1 bei Rohverhaeltnis 0,985), mit Sprung
+   * angenommen (GE 1:8 bei 7,76), kleiner Faktor (Stockdividende 1,03) immer angenommen. */
+  var hon = P.splitSperre(bau(100, 98.5, 1), [{ ex: tage[3], faktor: 0.5, art: 'reverse_splits' }], 'HON');
+  pr(hon.abgelehnt.length === 1 && hon.akzeptiert.length === 0, 'Sperre: reverse 2:1 ohne Sprung (roh 100 -> 98,5) abgelehnt', JSON.stringify(hon.abgelehnt[0]));
+  var ge = P.splitSperre(bau(12.95, 100.6, 1), [{ ex: tage[3], faktor: 0.125, art: 'reverse_splits' }], 'GE');
+  pr(ge.akzeptiert.length === 1 && ge.abgelehnt.length === 0, 'Sperre: reverse 1:8 mit Sprung (roh 12,95 -> 100,6) angenommen');
+  var sd = P.splitSperre(bau(100, 99, 1), [{ ex: tage[3], faktor: 1.03, art: 'forward_splits' }], 'SD');
+  pr(sd.akzeptiert.length === 1, 'Sperre: Faktor 1,03 (Stockdividende) trotz Rausch immer angenommen');
 });
 
 /* =======================================================================================
@@ -504,9 +527,11 @@ abschnitt(16, 'Echtes Panel (v2): GE 02.08.2021 und AMC 24.08.2023 bereinigt (|r
   if (!panelDa(A.aus)) return pr(false, 'kein Panel - uebersprungen');
   var T = tafelVoll();
   function r(reihe, tag) { var s = T.symIdx[reihe]; if (s === undefined) return null; var z = T.zeileVon(s, T.kal.idx[tag]); return z < 0 ? null : T.g.rendite[z]; }
-  var ge = r('GE', '2021-08-02'), amc = r('AMC', '2023-08-24'), gme = r('GME', '2021-01-27'), panw = r('PANW', '2026-02-11');
+  var ge = r('GE', '2021-08-02'), amc = r('AMC', '2023-08-24'), gme = r('GME', '2021-01-27'), panw = r('PANW', '2026-02-11'), hon = r('HON', '2026-06-29');
   pr(ge != null && Math.abs(ge) < 20, 'GE 2021-08-02 (Rueckwaerts 1:8): Rendite ' + (ge == null ? 'fehlt' : ge.toFixed(2) + ' %'), 'v1: +675,6 %');
-  pr(amc != null && Math.abs(amc) < 20, 'AMC 2023-08-24 (Rueckwaerts 1:10): Rendite ' + (amc == null ? 'fehlt' : amc.toFixed(2) + ' %'), 'v1: +633,2 %');
+  /* AMC: roh 1,96 x 10 = 19,60 -> 14,37 ist der echte Kurssturz am Tag der APE-Umwandlung (-26,7 %); Artefakt war +633 %. */
+  pr(amc != null && amc < 0 && amc > -40, 'AMC 2023-08-24 (Rueckwaerts 1:10): Rendite ' + (amc == null ? 'fehlt' : amc.toFixed(2) + ' %') + ' - echter Kurssturz, kein Artefakt', 'v1: +633,2 %');
+  pr(hon == null || Math.abs(hon) < 20, 'HON 2026-06-29 (Quellsatz reverse 2:1 OHNE Sprung in der Rohreihe, Sperre): Rendite ' + (hon == null ? 'fehlt' : hon.toFixed(2) + ' %'), 'ohne Sperre -50,8 %');
   pr(panw == null || Math.abs(panw) < 20, 'PANW 2026-02-11 (fremder unit_split CYBR im Kopf): Rendite ' + (panw == null ? 'fehlt' : panw.toFixed(2) + ' %'), 'v1: +119,7 %');
   pr(gme != null && gme > 100, 'Positivkontrolle GME 2021-01-27 (echt): Rendite ' + (gme == null ? 'fehlt' : gme.toFixed(2) + ' %'), 'v1: +137,7 %');
   var alt = T.symIdx['HCP'], neu = T.symIdx['HCP~2'];

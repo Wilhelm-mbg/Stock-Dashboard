@@ -170,9 +170,11 @@ function messung(a) {
   var L23 = PR.lauf(T, RF.momentum12_1, { freq: 'monat', empfindlichkeit: 'haupt', klassen: [2, 3] });
   var B23 = PR.bewerte(T, L23, { regime: regime });
   var n23 = PR.kennzahlen(B23.haupt.perioden, null, 21, 'netto').mittel;
-  B.regression23 = { netto: n23, erwartet: 1.609984309418836, abweichung: Math.abs(n23 - 1.609984309418836), bestanden: Math.abs(n23 - 1.609984309418836) <= 1e-9 };
-  if (!B.regression23.bestanden) B.befunde.push('REGRESSION: klassen [2,3] liefert ' + n23 + ' statt 1.609984309418836');
-  sag('Regression [2,3]: netto ' + f4(n23) + ' Pp (Teil 2: 1.6100) => ' + (B.regression23.bestanden ? 'identisch' : 'ABWEICHUNG'));
+  /* Erwartung je Panel-Kennung (K.REGRESSION23_ERWARTET): die Teil-2-Zahl des Kontrollenlaufs DESSELBEN Panels. */
+  var erw23 = K.REGRESSION23_ERWARTET[T.stand.kennung];
+  B.regression23 = { netto: n23, erwartet: erw23 == null ? null : erw23, panel: T.stand.kennung, abweichung: erw23 == null ? null : Math.abs(n23 - erw23), bestanden: erw23 != null && Math.abs(n23 - erw23) <= 1e-9 };
+  if (!B.regression23.bestanden) B.befunde.push('REGRESSION: klassen [2,3] liefert ' + n23 + ' statt ' + (erw23 == null ? 'UNBEKANNT (keine Erwartung fuer ' + T.stand.kennung + ')' : erw23));
+  sag('Regression [2,3]: netto ' + f4(n23) + ' Pp (Teil 2 fuer ' + T.stand.kennung + ': ' + (erw23 == null ? '-' : f4(erw23)) + ') => ' + (B.regression23.bestanden ? 'identisch' : 'ABWEICHUNG'));
   sichern();
 
   /* Klassenmix und Mitglieder je Periode (§T3.2) */

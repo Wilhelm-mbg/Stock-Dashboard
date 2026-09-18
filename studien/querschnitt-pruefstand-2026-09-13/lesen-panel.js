@@ -125,6 +125,10 @@ function ladeJahr(R, jahr, kal, opt) {
   });
   legitListe.sort(function (a, b) { return a.exMs - b.exMs; });
   var bFaktor = L.rohFaktorFunktion(legitListe);
+  /* Nur die Abspaltungsfaktoren des Kopfs (bSpin): paneldaten.js setzt den Tagesfaktor nach der Split-Sperre daraus und den
+   * AKZEPTIERTEN eigenen Splits neu zusammen. */
+  var spinListe = legitListe.filter(function (e) { return legit.every(function (s) { return s.exMs !== e.exMs || s.faktor !== e.faktor; }); });
+  var bSpin = L.rohFaktorFunktion(spinListe);
 
   /* Sitzungsbereiche, aufsteigend. Wir brauchen 'regulaer' fuer Umsatz/Kerzen und ALLE Kerzen fuer die
    * Schlussauktion - deshalb wird nicht vorab gefiltert. */
@@ -150,6 +154,7 @@ function ladeJahr(R, jahr, kal, opt) {
       akt.stempelTag = (akt.stempelKerzen === akt.kerzen) ? 1 : 0;
       akt.faktor = rohFaktor(akt.ersteReg[0]);
       akt.bFaktor = bFaktor(akt.ersteReg[0]);
+      akt.bSpin = bSpin(akt.ersteReg[0]);
       delete akt.ersteReg; delete akt.letzteReg; delete akt.auktionKerze;
       tage.push(akt);
     }

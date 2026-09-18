@@ -149,8 +149,38 @@ function reiheBauen(R, kal, z) {
   for (var q = 0; q < tage.length; q++) { if (q && tage[q].tag === tage[q - 1].tag) { z.doppelteTage++; continue; } sauber.push(tage[q]); }
   tage = sauber;
 
+  /* SPLIT-SPERRE (v2.1): eigene Splits nur mit Sprung in der Rohreihe; Tagesfaktor daraus neu zusammensetzen. */
+  var sp = splitSperre(tage, LP.eigeneSplits(R), R.reihe);
+  z.splitAkzeptiert += sp.akzeptiert.length; z.splitAbgelehnt += sp.abgelehnt.length;
+  sp.abgelehnt.forEach(function (e) { if (z.splitAbgelehntListe.length < 500) z.splitAbgelehntListe.push(e); });
+  for (var t2 = 0; t2 < tage.length; t2++) {
+    var T2 = tage[t2], b = T2.bSpin == null ? 1 : T2.bSpin;
+    for (var s2 = 0; s2 < sp.akzeptiert.length; s2++) if (sp.akzeptiert[s2].ex > T2.tag) b *= sp.akzeptiert[s2].faktor;
+    T2.bFaktor = b;
+  }
   var nah = massnahmeNahTage(R, angewandtJeJahr, kal);
   return zeilenAus(tage, R, kal, z, nah, quelleReinJeJahr);
+}
+
+/* ---------- Split-Sperre (rein, testbar) ---------- */
+/** tage aufsteigend mit {tag, dateiSchluss, faktor}; eigene = [{ex, faktor}] (Quelle). Ein Split gilt, wenn die Rohreihe
+ *  (dateiSchluss x Kopf-Faktor) vom letzten Tag vor dem Ex-Tag zum ersten Tag ab dem Ex-Tag mindestens
+ *  K.SPLIT_SPERRE_ANTEIL des erwarteten log-Sprungs -ln(faktor) zeigt. Kleine Faktoren (|ln| < K.SPLIT_SPERRE_MIN_LOG)
+ *  und Splits ohne Tag davor oder danach (nicht pruefbar, nicht verzerrend) gelten immer. */
+function splitSperre(tage, eigene, reihe) {
+  var akzeptiert = [], abgelehnt = [];
+  (eigene || []).forEach(function (e) {
+    var soll = -Math.log(e.faktor);
+    if (!(Math.abs(soll) >= K.SPLIT_SPERRE_MIN_LOG)) { akzeptiert.push(e); return; }
+    var iT = -1; for (var q = 0; q < tage.length; q++) if (tage[q].tag >= e.ex) { iT = q; break; }
+    if (iT <= 0) { akzeptiert.push(e); return; }
+    var rT = tage[iT].dateiSchluss * tage[iT].faktor, rV = tage[iT - 1].dateiSchluss * tage[iT - 1].faktor;
+    if (!(rT > 0 && rV > 0)) { akzeptiert.push(e); return; }
+    var ist = Math.log(rT / rV);
+    if (Math.abs(ist - soll) <= (1 - K.SPLIT_SPERRE_ANTEIL) * Math.abs(soll)) akzeptiert.push(e);
+    else abgelehnt.push({ reihe: reihe, ex: e.ex, art: e.art, faktor: e.faktor, rohVerhaeltnis: rT / rV, erwartet: 1 / e.faktor, tagVor: tage[iT - 1].tag, tagAb: tage[iT].tag });
+  });
+  return { akzeptiert: akzeptiert, abgelehnt: abgelehnt };
 }
 
 /* ---------- Tageszeilen einer Reihe (rein, ohne Platte - test.js prueft Roundtrip und Trennung hieran) ---------- */
@@ -234,7 +264,7 @@ function lauf(a) {
   var z = { reihen: 0, zeilen: 0, dateien: 0, bytes: 0, kerzenGesehen: 0, stempelkerzen: 0, stempeltage: 0,
     dateiFehler: {}, dateienNichtRein: 0, doppelteTage: 0, luecken: 0,
     schlussErsatz: {}, eroeffnungErsatz: {}, tageJeJahr: {}, ohneZeilen: 0,
-    trennungen: 0, trennungAbweichung: 0, nachfolgerUebersprungen: 0 };
+    trennungen: 0, trennungAbweichung: 0, nachfolgerUebersprungen: 0, splitAkzeptiert: 0, splitAbgelehnt: 0, splitAbgelehntListe: [] };
   var jeJahr = {};                                            // jahr -> {sp, n, cap}
 
   /* FORTSETZBARKEIT. Der erste Vollauf wurde nach 11 Minuten still getoetet (die Prozesse sterben mit der
@@ -314,10 +344,12 @@ function vereinen(a) {
     teile: teile.length, zeilen: 0, jahre: [], zeilenJeTag: {}, zaehler: {} };
   /* Zaehler der Teile addieren */
   var addiere = function (ziel, q) { Object.keys(q).forEach(function (k) { if (typeof q[k] === 'number') ziel[k] = (ziel[k] || 0) + q[k]; else if (q[k] && typeof q[k] === 'object' && !Array.isArray(q[k])) { ziel[k] = ziel[k] || {}; addiere(ziel[k], q[k]); } }); };
+  var abgelehnt = [];
   teile.forEach(function (t) {
     var p = path.join(a.aus, t, '_teil.json');
-    if (fs.existsSync(p)) addiere(gesamt.zaehler, JSON.parse(fs.readFileSync(p, 'utf8')));
+    if (fs.existsSync(p)) { var tj = JSON.parse(fs.readFileSync(p, 'utf8')); addiere(gesamt.zaehler, tj); abgelehnt = abgelehnt.concat(tj.splitAbgelehntListe || []); }
   });
+  gesamt.zaehler.splitAbgelehntListe = abgelehnt.sort(function (x, y) { return x.reihe < y.reihe ? -1 : x.reihe > y.reihe ? 1 : x.ex < y.ex ? -1 : 1; });
   var jahre = {};
   teile.forEach(function (t) {
     fs.readdirSync(path.join(a.aus, t)).filter(function (f) { return /^\d{4}\.bin$/.test(f); }).forEach(function (f) {
@@ -325,7 +357,9 @@ function vereinen(a) {
     });
   });
   Object.keys(jahre).sort().forEach(function (j) {
-    var bloecke = jahre[j].map(leseBlock), n = 0;
+    /* NICHT `map(leseBlock)`: seit v2 hat leseBlock einen zweiten Parameter (Kennung), und map reicht den Index durch
+     * ("Panelkennung passt nicht: ... statt 1", 18.09.2026, erster Vereinen-Lauf). */
+    var bloecke = jahre[j].map(function (p) { return leseBlock(p); }), n = 0;
     bloecke.forEach(function (b) { n += b.n; });
     var sp = leer(n), off = 0;
     bloecke.forEach(function (b) { SPALTEN.forEach(function (s) { sp[s.name].set(b[s.name].subarray(0, b.n), off); }); off += b.n; });
@@ -394,4 +428,4 @@ if (require.main === module) {
 }
 
 module.exports = { SPALTEN: SPALTEN, leer: leer, schreibeBlock: schreibeBlock, leseBlock: leseBlock,
-  symbole: symbole, reiheBauen: reiheBauen, zeilenAus: zeilenAus, ladePanel: ladePanel, median: median, argumente: argumente, vereinen: vereinen };
+  symbole: symbole, reiheBauen: reiheBauen, zeilenAus: zeilenAus, splitSperre: splitSperre, ladePanel: ladePanel, median: median, argumente: argumente, vereinen: vereinen };

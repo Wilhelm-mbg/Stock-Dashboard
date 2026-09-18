@@ -195,12 +195,14 @@ pruef('T3-P8 jedes Dezilmitglied hat Klasse 1/2/3, SPY nie darunter; K.UNIVERSUM
   L0.perioden.forEach(function (p) { p.long.mitglieder.forEach(function (s) { n++; if (s === spy) throw new Error('SPY im Dezil'); var zl = TAFEL.zeileVon(s, p.t); var kl = zl >= 0 ? TAFEL.g.klasse[zl] : -1; if (z[kl] === undefined) throw new Error('Klasse ' + kl + ' im Dezil'); z[kl]++; }); });
   return n + ' Mitgliedschaften, Klassen 50-250/250-1000/ab1000: ' + z[1] + '/' + z[2] + '/' + z[3];
 });
-pruef('T3-P12 momentum12_1/monat mit klassen [2, 3] liefert die Teil-2-Zahl netto +1.609984 Pp (1e-9)', function () {
+pruef('T3-P12 momentum12_1/monat mit klassen [2, 3] liefert die Teil-2-Zahl des Panels (K.REGRESSION23_ERWARTET je Kennung, v1 +1.609984 Pp, 1e-9)', function () {
   var T = tafel(); if (!T) return 'skip';
   var L = PR.lauf(TAFEL, RF.momentum12_1, { freq: 'monat', empfindlichkeit: 'haupt', klassen: [2, 3] });
   var B = PR.bewerte(TAFEL, L, { regime: PR.spyRegime(TAFEL) });
   var n = PR.kennzahlen(B.haupt.perioden, null, 21, 'netto').mittel;
-  gleich(n, 1.609984309418836, 1e-9, 'netto');
+  var erw = K.REGRESSION23_ERWARTET[TAFEL.stand.kennung];
+  if (erw == null) throw new Error('keine Teil-2-Erwartung fuer Panel ' + TAFEL.stand.kennung + ' (K.REGRESSION23_ERWARTET)');
+  gleich(n, erw, 1e-9, 'netto');
   var L2 = PR.lauf(TAFEL, RF.momentum12_1, { freq: 'monat', empfindlichkeit: 'haupt' });
   var n2 = PR.kennzahlen(PR.bewerte(TAFEL, L2, { regime: PR.spyRegime(TAFEL) }).haupt.perioden, null, 21, 'netto').mittel;
   gleich(n2, n, 0, 'Vorgabe = [2,3]');
@@ -253,7 +255,7 @@ pruef('T3-P11 test.js (67: 47 + 20 der Panel-Reparatur v2) und test-teil2.js (20
   var r1 = cp.spawnSync(process.execPath, ['--max-old-space-size=6144', path.join(__dirname, 'test.js'), '--aus', opt.aus, '--kunst', 'kunst'], { cwd: __dirname, encoding: 'utf8', maxBuffer: 1 << 26 });
   var m1 = /(\d+) Pruefungen, (\d+) rot/.exec(r1.stdout || '');
   /* 67 seit der Panel-Reparatur v2 (18.09.2026): Abschnitte 14-16 (Faktor-Roundtrip, Kuerzelwechsel, echtes Panel). */
-  if (!m1 || +m1[2] !== 0 || +m1[1] !== 67) throw new Error('test.js: ' + (m1 ? m1[0] : 'keine Summenzeile') + (r1.stderr ? ' / ' + r1.stderr.slice(0, 200) : ''));
+  if (!m1 || +m1[2] !== 0 || +m1[1] !== 71) throw new Error('test.js: ' + (m1 ? m1[0] : 'keine Summenzeile') + (r1.stderr ? ' / ' + r1.stderr.slice(0, 200) : ''));
   var r2 = cp.spawnSync(process.execPath, [path.join(__dirname, 'test-teil2.js'), '--referenz', ref, '--kandidaten', path.join(opt.aus, 'kandidaten-voll.json'), '--momentum', path.join(__dirname, 'momentum-perioden.json')], { cwd: __dirname, encoding: 'utf8', maxBuffer: 1 << 26 });
   var m2 = /gruen (\d+), rot (\d+)/.exec(r2.stdout || '');
   if (!m2 || +m2[2] !== 0 || +m2[1] !== 20) throw new Error('test-teil2.js: ' + (m2 ? m2[0] : 'keine Summenzeile'));

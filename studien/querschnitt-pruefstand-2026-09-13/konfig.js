@@ -64,6 +64,17 @@ var SPLIT_ARTEN_EIGEN = ['forward_splits', 'reverse_splits'];
  * die drei bekannten Wiedervergaben darunter (ROCC 56, PANA 37, PMGM 21) bleiben ausgewiesen ungetrennt. */
 var WECHSEL_MIN_LUECKE_TAGE = 60;
 var ENDE_GRUND_KUERZEL = 'kuerzel-neu-vergeben';
+/* SPERRE fuer eigene Splits (v2.1, 18.09.2026, erster Vollbau): drei Quellsaetze hatten KEINEN Sprung in der Rohreihe
+ * (HON reverse 2:1 am 29.06.2026 bei Rohverhaeltnis 0,985 -> -50,8 %; FNF 2017 0,725 statt 3,26; INPX 2018 1,012 statt 3,0)
+ * - blind angewandt erzeugten sie den Sprung, den sie entfernen sollten. Ein Split gilt nur, wenn ln(roh_T/roh_V) am
+ * Ex-Tag mindestens SPLIT_SPERRE_ANTEIL des erwarteten -ln(faktor) betraegt (Vorzeichen inklusive). Faktoren innerhalb
+ * exp(+-SPLIT_SPERRE_MIN_LOG) (Stockdividenden, ~+-10 %) werden immer angewandt: dort ist der Tagesrausch groesser als der
+ * Sprung, und mehr als +-10 % kann so ein Satz nicht verzerren. Das ist eine PLAUSIBILITAETSSPERRE, kein Schaetzen des
+ * Faktors aus den Kursen - der Faktor kommt weiterhin nur aus der Quelle. */
+var SPLIT_SPERRE_MIN_LOG = 0.1, SPLIT_SPERRE_ANTEIL = 0.5;
+/* Teil-2-Zahl fuer die Regressionsprobe T3-P12 / teil3.js: momentum 12-1 monatlich, Klassen [2,3], netto Pp je Monat aus dem
+ * Kontrollenlauf DESSELBEN Panels (kontrollen-voll.json = v1). Je Panel-Kennung gepinnt; fehlt der Eintrag, ist die Probe rot. */
+var REGRESSION23_ERWARTET = { 'querschnitt-pruefstand-2026-09-13/panel/v1': 1.609984309418836 };
 var SPALTEN = ['sym', 'tag', 'roh_schluss', 'roh_eroeffnung', 'faktor', 'rendite', 'umsatz_reg', 'umsatz_auktion', 'klasse', 'marken', 'kerzen'];
 var M_QUELLE_REIN = 1, M_SCHLUSS_ERSATZ = 2, M_DICHTE_OK = 4, M_MASSNAHME_NAH = 8,
     M_LETZTER_TAG = 16, M_STEMPEL_TAG = 32, M_EROEFFNUNG_ERSATZ = 64, M_KEINE_RENDITE = 128;
@@ -220,6 +231,7 @@ module.exports = {
   FENSTER_VON: FENSTER_VON, FENSTER_BIS_MAX: FENSTER_BIS_MAX, REFERENZ: REFERENZ, kalender: kalender,
   PANEL_KENNUNG: PANEL_KENNUNG, PANEL_KENNUNG_V1: PANEL_KENNUNG_V1, SPALTEN: SPALTEN, MARKEN_NAMEN: MARKEN_NAMEN,
   SPLIT_ARTEN_EIGEN: SPLIT_ARTEN_EIGEN, WECHSEL_MIN_LUECKE_TAGE: WECHSEL_MIN_LUECKE_TAGE, ENDE_GRUND_KUERZEL: ENDE_GRUND_KUERZEL,
+  SPLIT_SPERRE_MIN_LOG: SPLIT_SPERRE_MIN_LOG, SPLIT_SPERRE_ANTEIL: SPLIT_SPERRE_ANTEIL, REGRESSION23_ERWARTET: REGRESSION23_ERWARTET,
   M_QUELLE_REIN: M_QUELLE_REIN, M_SCHLUSS_ERSATZ: M_SCHLUSS_ERSATZ, M_DICHTE_OK: M_DICHTE_OK,
   M_MASSNAHME_NAH: M_MASSNAHME_NAH, M_LETZTER_TAG: M_LETZTER_TAG, M_STEMPEL_TAG: M_STEMPEL_TAG,
   M_EROEFFNUNG_ERSATZ: M_EROEFFNUNG_ERSATZ, M_KEINE_RENDITE: M_KEINE_RENDITE,
