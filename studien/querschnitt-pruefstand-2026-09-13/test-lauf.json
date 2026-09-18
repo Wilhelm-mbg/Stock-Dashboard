@@ -1,8 +1,8 @@
 {
- "stand": "2026-09-17T23:22:48.758Z",
+ "stand": "2026-09-18T13:05:32.859Z",
  "aus": "voll",
  "kunst": "kunst",
- "n": 47,
+ "n": 71,
  "rot": 0,
  "abschnitte": [
   {
@@ -16,12 +16,12 @@
     },
     {
      "ok": true,
-     "text": "Panelzeilen 9899585 <= Manifest-Tage 9916310",
-     "extra": "Verhaeltnis 0.9983"
+     "text": "Panelzeilen 9904017 <= Manifest-Tage 9916310",
+     "extra": "Verhaeltnis 0.9988"
     },
     {
      "ok": true,
-     "text": "Panel deckt 99.8 % der Manifest-Tage",
+     "text": "Panel deckt 99.9 % der Manifest-Tage",
      "extra": "unter 90 % waere ein stiller Verlust"
     }
    ],
@@ -124,7 +124,7 @@
    "pruefungen": [
     {
      "ok": true,
-     "text": "gemeinsame Tage: 2433"
+     "text": "gemeinsame Tage: 2437"
     },
     {
      "ok": true,
@@ -133,7 +133,7 @@
     },
     {
      "ok": true,
-     "text": "um einen Tag versetzt: -0.1122",
+     "text": "um einen Tag versetzt: -0.1121",
      "extra": "Positivkontrolle - bleibt sie hoch, misst der Test die Datumszuordnung nicht"
     }
    ],
@@ -151,8 +151,8 @@
     },
     {
      "ok": true,
-     "text": "Kosten 0.02390000 Pp",
-     "extra": "von Hand 0.02390000 Pp"
+     "text": "Kosten 0.02489000 Pp",
+     "extra": "von Hand 0.02489000 Pp"
     },
     {
      "ok": true,
@@ -247,7 +247,7 @@
    "pruefungen": [
     {
      "ok": true,
-     "text": "Leck-Probe: 111406 Verstoesse gemeldet",
+     "text": "Leck-Probe: 111762 Verstoesse gemeldet",
      "extra": "null waere eine kaputte Klinke"
     },
     {
@@ -269,7 +269,7 @@
     },
     {
      "ok": true,
-     "text": "Orakel OHNE Schluessel wird gemeldet: 111406 Verstoesse"
+     "text": "Orakel OHNE Schluessel wird gemeldet: 111762 Verstoesse"
     },
     {
      "ok": true,
@@ -285,15 +285,15 @@
    "pruefungen": [
     {
      "ok": true,
-     "text": "Perioden in Jahresscheiben 505 = Gesamt 505"
+     "text": "Perioden in Jahresscheiben 506 = Gesamt 506"
     },
     {
      "ok": true,
-     "text": "gewichtetes Mittel der Jahre 0.0379033565 = Gesamtmittel 0.0379033565"
+     "text": "gewichtetes Mittel der Jahre 0.0408398058 = Gesamtmittel 0.0408398058"
     },
     {
      "ok": true,
-     "text": "Regimeschnitt 422 + 83 + 0 = 505"
+     "text": "Regimeschnitt 423 + 83 + 0 = 506"
     }
    ],
    "rot": 0,
@@ -316,6 +316,141 @@
      "ok": true,
      "text": "nur Datenqualitaets-Marken im Filter: M_QUELLE_REIN,M_STEMPEL_TAG,M_MASSNAHME_NAH,M_DICHTE_OK",
      "extra": ""
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 14,
+   "titel": "Faktor-Roundtrip (v2): Rueckwaerts 1:4 und Vorwaerts 4:1 auf konstruierten Tagen, Rendite am Split-Tag 0",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "Rueckwaerts 1:4 (roh 10 -> 40, bFaktor 0,25): Rendite am Split-Tag 0.00e+0 %",
+     "extra": "Soll 0"
+    },
+    {
+     "ok": true,
+     "text": "roh davor bleibt 10 $, Spalte faktor 0,25 (roh/bereinigt)",
+     "extra": "Cent-Boden rechnet roh"
+    },
+    {
+     "ok": true,
+     "text": "Positivkontrolle: ohne Faktor waere es +300 %",
+     "extra": "300.0"
+    },
+    {
+     "ok": true,
+     "text": "Vorwaerts 4:1 (roh 100 -> 25, bFaktor 4): Rendite am Split-Tag 0.00e+0 %",
+     "extra": "Soll 0"
+    },
+    {
+     "ok": true,
+     "text": "Kopie (Kopf 4, eigen 4): Rendite exakt 0, roh 100 $ - bitgleich zu v1",
+     "extra": "0 / 100"
+    },
+    {
+     "ok": true,
+     "text": "fremder unit_split im Kopf (2,2005), nicht eigen: Rendite am Tag 0.00e+0 % (v1: +120 %)",
+     "extra": "Soll 0"
+    },
+    {
+     "ok": true,
+     "text": "Sperre: reverse 2:1 ohne Sprung (roh 100 -> 98,5) abgelehnt",
+     "extra": "{\"reihe\":\"HON\",\"ex\":\"2016-06-01\",\"art\":\"reverse_splits\",\"faktor\":0.5,\"rohVerhaeltnis\":0.985,\"erwartet\":2,\"tagVor\":\"2016-05-31\",\"tagAb\":\"2016-06-01\"}"
+    },
+    {
+     "ok": true,
+     "text": "Sperre: reverse 1:8 mit Sprung (roh 12,95 -> 100,6) angenommen"
+    },
+    {
+     "ok": true,
+     "text": "Sperre: Faktor 1,03 (Stockdividende) trotz Rausch immer angenommen"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 15,
+   "titel": "Kuerzelwechsel (v2): konstruierte Reihe mit Trennung - LETZTER_TAG davor, KEINE_RENDITE danach, eigene Reihe",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "eine Trennung, keine Abweichung, 8 Zeilen",
+     "extra": "{\"tr\":1,\"abw\":0,\"n\":8}"
+    },
+    {
+     "ok": true,
+     "text": "Zeilen 1-4 Reihe 5, Zeilen 5-8 Nachfolger 9"
+    },
+    {
+     "ok": true,
+     "text": "LETZTER_TAG auf dem letzten Tag der alten Reihe UND am Reihenende"
+    },
+    {
+     "ok": true,
+     "text": "erster Tag des Nachfolgers ohne Rendite (v1: +166,7 % von 30 auf 80)"
+    },
+    {
+     "ok": true,
+     "text": "Umsatzfenster beginnt neu: Klasse -1 am Anfang des Nachfolgers"
+    },
+    {
+     "ok": true,
+     "text": "Positivkontrolle: ohne Trennung +166.7 % ueber die Luecke"
+    },
+    {
+     "ok": true,
+     "text": "Zaehler: entschiedener Tag ungleich erstem Tag ab Wechsel wird als Abweichung gezaehlt",
+     "extra": 1
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 16,
+   "titel": "Echtes Panel (v2): GE 02.08.2021 und AMC 24.08.2023 bereinigt (|r| < 20 %), GME 27.01.2021 bleibt (> 100 %), HCP getrennt",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "GE 2021-08-02 (Rueckwaerts 1:8): Rendite -3.05 %",
+     "extra": "v1: +675,6 %"
+    },
+    {
+     "ok": true,
+     "text": "AMC 2023-08-24 (Rueckwaerts 1:10): Rendite -26.68 % - echter Kurssturz, kein Artefakt",
+     "extra": "v1: +633,2 %"
+    },
+    {
+     "ok": true,
+     "text": "HON 2026-06-29 (Quellsatz reverse 2:1 OHNE Sprung in der Rohreihe, Sperre): Rendite -1.53 %",
+     "extra": "ohne Sperre -50,8 %"
+    },
+    {
+     "ok": true,
+     "text": "PANW 2026-02-11 (fremder unit_split CYBR im Kopf): Rendite -0.14 %",
+     "extra": "v1: +119,7 %"
+    },
+    {
+     "ok": true,
+     "text": "Positivkontrolle GME 2021-01-27 (echt): Rendite 137.69 %",
+     "extra": "v1: +137,7 %"
+    },
+    {
+     "ok": true,
+     "text": "HCP getrennt: Reihen HCP und HCP~2 vorhanden",
+     "extra": "{\"alt\":3047,\"neu\":3048}"
+    },
+    {
+     "ok": true,
+     "text": "HCP endet mit kuerzel-neu-vergeben am 2019-11-04, HCP~2 (uebernahme 2025-02-28) folgt"
+    },
+    {
+     "ok": true,
+     "text": "erste Zeile von HCP~2 (2021-12-09) ohne Rendite, Vortage 0"
     }
    ],
    "rot": 0,

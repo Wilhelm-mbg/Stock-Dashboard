@@ -1,0 +1,703 @@
+{
+ "stand": "2026-09-18T13:01:46.359Z",
+ "dateien": {
+  "t3v1": "teil3-ergebnis.json",
+  "t3v2": "teil3-ergebnis-v2.json",
+  "k1v1": "kontrollen-voll.json",
+  "k1v2": "voll/kontrollen-v2.json",
+  "t4v1": "teil4-ergebnis.json",
+  "t4v2": "teil4-ergebnis-v2.json",
+  "aussenV2": "aussen-pruefstein-teil3-v2.json"
+ },
+ "tafeln": {
+  "Teil 3, V0 Momentum 12-1 monatlich, Klassen 1-3 (Pp je Monat)": [
+   {
+    "name": "netto Mittel",
+    "pfad": "varianten.v0.kennzahlen.netto.mittel",
+    "v1": 2.1422235476125793,
+    "v2": 2.1295794801966434,
+    "delta": -0.012644067415935822
+   },
+   {
+    "name": "netto se",
+    "pfad": "varianten.v0.kennzahlen.netto.se",
+    "v1": 0.7742690786606337,
+    "v2": 0.7730431310269409,
+    "delta": -0.00122594763369277
+   },
+   {
+    "name": "netto t",
+    "pfad": "varianten.v0.kennzahlen.netto.t",
+    "v1": 2.778877278534977,
+    "v2": 2.766856416605598,
+    "delta": -0.012020861929379123
+   },
+   {
+    "name": "netto MDE80",
+    "pfad": "varianten.v0.kennzahlen.netto.mde",
+    "v1": 2.169192250775631,
+    "v2": 2.1657576358850776,
+    "delta": -0.0034346148905535223
+   },
+   {
+    "name": "brutto Mittel",
+    "pfad": "varianten.v0.kennzahlen.brutto.mittel",
+    "v1": 2.1682979702082754,
+    "v2": 2.1557381730461964,
+    "delta": -0.012559797162079
+   },
+   {
+    "name": "Tage netto: Mittel je Monat (HH)",
+    "pfad": "varianten.v0.kennzahlen.tageNetto.mittelMonat",
+    "v1": 2.24080787842876,
+    "v2": 2.2289308078501504,
+    "delta": -0.01187707057860976
+   },
+   {
+    "name": "Tage netto: t (HH)",
+    "pfad": "varianten.v0.kennzahlen.tageNetto.t",
+    "v1": 3.034410800172289,
+    "v2": 3.0141598072303704,
+    "delta": -0.02025099294191879
+   },
+   {
+    "name": "MDD netto (%)",
+    "pfad": "varianten.v0.kennzahlen.mdd.mdd",
+    "v1": 37.4353232076616,
+    "v2": 37.435323207661575,
+    "delta": -2.1316282072803006e-14
+   },
+   {
+    "name": "Endstand netto (x)",
+    "pfad": "varianten.v0.kennzahlen.mdd.endstand",
+    "v1": 7.853292840958083,
+    "v2": 7.754158292503584,
+    "delta": -0.09913454845449898
+   },
+   {
+    "name": "Sharpe",
+    "pfad": "varianten.v0.kennzahlen.sharpe",
+    "v1": 0.8937469569565217,
+    "v2": 0.8898807881075538,
+    "delta": -0.0038661688489679547
+   },
+   {
+    "name": "schlechtestes 12-Monats-Fenster (Pp)",
+    "pfad": "varianten.v0.kennzahlen.fenster12.wert",
+    "v1": -22.51952592900256,
+    "v2": -22.94643612255294,
+    "delta": -0.4269101935503805
+   },
+   {
+    "name": "Umschlag Mittel",
+    "pfad": "varianten.v0.kennzahlen.umschlagMittel",
+    "v1": 0.3195762699733418,
+    "v2": 0.3208027367085397,
+    "delta": 0.0012264667351978842
+   },
+   {
+    "name": "Kosten Mittel (Pp)",
+    "pfad": "varianten.v0.kennzahlen.kostenMittel",
+    "v1": 0.026074422595696044,
+    "v2": 0.02615869284955283,
+    "delta": 0.00008427025385678716
+   },
+   {
+    "name": "Perioden n",
+    "pfad": "varianten.v0.kennzahlen.n",
+    "v1": 115,
+    "v2": 115,
+    "delta": 0
+   },
+   {
+    "name": "Universum netto Mittel",
+    "pfad": "benchmarks.uni.kennzahlen.netto.mittel",
+    "v1": 1.0400501277026308,
+    "v2": 1.0292502249306958,
+    "delta": -0.010799902771934988
+   },
+   {
+    "name": "Universum Sharpe",
+    "pfad": "benchmarks.uni.kennzahlen.sharpe",
+    "v1": 0.6506734574654679,
+    "v2": 0.6436485894066278,
+    "delta": -0.007024868058840061
+   },
+   {
+    "name": "SPY netto Mittel",
+    "pfad": "benchmarks.spy.kennzahlen.netto.mittel",
+    "v1": 1.167506156368539,
+    "v2": 1.167506156368539,
+    "delta": 0
+   },
+   {
+    "name": "Maschine V0 (Long-Uni) netto Mittel",
+    "pfad": "maschineV0.netto.mittel",
+    "v1": 1.1021734199099482,
+    "v2": 1.100329255265948,
+    "delta": -0.001844164644000168
+   },
+   {
+    "name": "Maschine V0 netto t",
+    "pfad": "maschineV0.netto.t",
+    "v1": 2.2366169538268545,
+    "v2": 2.2303532024634927,
+    "delta": -0.00626375136336188
+   },
+   {
+    "name": "Orakel(Tag) Mittel/sd",
+    "pfad": "kontrollen.orakel.nachrichtlich.orakelTagMittelDurchSd",
+    "v1": 1.102255322100196,
+    "v2": 1.1065077297901897,
+    "delta": 0.004252407689993687
+   },
+   {
+    "name": "Orakel(Tag) t",
+    "pfad": "kontrollen.orakel.nachrichtlich.orakelTagT",
+    "v1": 11.92315729809614,
+    "v2": 11.96915582925934,
+    "delta": 0.04599853116319963
+   },
+   {
+    "name": "French-rho (Urteil, lsBrutto)",
+    "pfad": "urteil.aussen.rho",
+    "v1": 0.8120990169610793,
+    "v2": null,
+    "delta": null
+   }
+  ],
+  "aussenV2": {
+   "rho": 0.8173595171923785,
+   "n": 114,
+   "beta": 1.5848656952186528,
+   "urteil": "bestanden"
+  },
+  "urteilTeil3": {
+   "v1": {
+    "toreMaschine": true,
+    "bestanden": {
+     "v1": false,
+     "v2": false,
+     "v3": false
+    },
+    "absicherungTraegt": false,
+    "gewaehlt": "v0",
+    "grund": "keine Variante besteht den gepaarten Vergleich - V0 wird geschrieben, die Absicherung traegt nicht",
+    "aussen": {
+     "rho": 0.8120990169610793,
+     "urteil": "bestanden",
+     "feld": "lsBrutto",
+     "n": 114,
+     "besterVersatz": 0,
+     "befunde": []
+    },
+    "zielportfolioGeschrieben": true
+   },
+   "v2": {
+    "toreMaschine": false,
+    "bestanden": {
+     "v1": false,
+     "v2": false,
+     "v3": false
+    },
+    "absicherungTraegt": false,
+    "gewaehlt": "v0",
+    "grund": "keine Variante besteht den gepaarten Vergleich - V0 wird geschrieben, die Absicherung traegt nicht",
+    "aussen": null,
+    "zielportfolioGeschrieben": false
+   },
+   "befundeV2": [
+    "REGRESSION: klassen [2,3] liefert 1.6694766839043451 statt UNBEKANNT (keine Erwartung fuer querschnitt-pruefstand-2026-09-13/panel/v2)"
+   ]
+  },
+  "Teil 1, Kontrollen (Orakel, Zufall, Momentum) - Pp je Periode": [
+   {
+    "name": "orakel orakelTag/woche netto.mittel",
+    "pfad": "laeufe.orakel.orakelTag/woche.netto.mittel",
+    "v1": 3.2030350232465237,
+    "v2": 3.1972215318722963,
+    "delta": -0.005813491374227375
+   },
+   {
+    "name": "orakel orakelTag/woche brutto.mittel",
+    "pfad": "laeufe.orakel.orakelTag/woche.brutto.mittel",
+    "v1": 3.252180199882623,
+    "v2": 3.2463658609543007,
+    "delta": -0.005814338928322282
+   },
+   {
+    "name": "orakel orakelTag/woche netto.t",
+    "pfad": "laeufe.orakel.orakelTag/woche.netto.t",
+    "v1": 26.153938610614812,
+    "v2": 26.13706711002862,
+    "delta": -0.016871500586191246
+   },
+   {
+    "name": "orakel orakelTag/woche mittelDurchSd",
+    "pfad": "laeufe.orakel.orakelTag/woche.mittelDurchSd",
+    "v1": 1.1808245067191745,
+    "v2": 1.1789239613690012,
+    "delta": -0.001900545350173255
+   },
+   {
+    "name": "orakel orakelTag/woche perioden",
+    "pfad": "laeufe.orakel.orakelTag/woche.perioden",
+    "v1": 505,
+    "v2": 506,
+    "delta": 1
+   },
+   {
+    "name": "orakel orakelPeriode/woche netto.mittel",
+    "pfad": "laeufe.orakel.orakelPeriode/woche.netto.mittel",
+    "v1": 8.823475933014922,
+    "v2": 8.822733842319312,
+    "delta": -0.0007420906956099316
+   },
+   {
+    "name": "orakel orakelPeriode/woche brutto.mittel",
+    "pfad": "laeufe.orakel.orakelPeriode/woche.brutto.mittel",
+    "v1": 8.873908160297683,
+    "v2": 8.8731780257849,
+    "delta": -0.0007301345127821435
+   },
+   {
+    "name": "orakel orakelPeriode/woche netto.t",
+    "pfad": "laeufe.orakel.orakelPeriode/woche.netto.t",
+    "v1": 52.58921334985908,
+    "v2": 52.68278707277507,
+    "delta": 0.0935737229159912
+   },
+   {
+    "name": "orakel orakelPeriode/woche perioden",
+    "pfad": "laeufe.orakel.orakelPeriode/woche.perioden",
+    "v1": 505,
+    "v2": 506,
+    "delta": 1
+   },
+   {
+    "name": "orakel orakelTag/monat netto.mittel",
+    "pfad": "laeufe.orakel.orakelTag/monat.netto.mittel",
+    "v1": 3.889473559486146,
+    "v2": 3.9217010626367195,
+    "delta": 0.03222750315057343
+   },
+   {
+    "name": "orakel orakelTag/monat brutto.mittel",
+    "pfad": "laeufe.orakel.orakelTag/monat.brutto.mittel",
+    "v1": 3.9369856291608594,
+    "v2": 3.9692317954204857,
+    "delta": 0.032246166259626285
+   },
+   {
+    "name": "orakel orakelTag/monat netto.t",
+    "pfad": "laeufe.orakel.orakelTag/monat.netto.t",
+    "v1": 8.730404166437976,
+    "v2": 8.802380089658934,
+    "delta": 0.07197592322095758
+   },
+   {
+    "name": "orakel orakelTag/monat mittelDurchSd",
+    "pfad": "laeufe.orakel.orakelTag/monat.mittelDurchSd",
+    "v1": 0.8168304645185074,
+    "v2": 0.8234785482493336,
+    "delta": 0.00664808373082626
+   },
+   {
+    "name": "orakel orakelTag/monat perioden",
+    "pfad": "laeufe.orakel.orakelTag/monat.perioden",
+    "v1": 116,
+    "v2": 116,
+    "delta": 0
+   },
+   {
+    "name": "orakel orakelPeriode/monat netto.mittel",
+    "pfad": "laeufe.orakel.orakelPeriode/monat.netto.mittel",
+    "v1": 19.58827462386959,
+    "v2": 19.296487668676,
+    "delta": -0.2917869551935901
+   },
+   {
+    "name": "orakel orakelPeriode/monat brutto.mittel",
+    "pfad": "laeufe.orakel.orakelPeriode/monat.brutto.mittel",
+    "v1": 19.635422032593926,
+    "v2": 19.343631835861512,
+    "delta": -0.29179019673241413
+   },
+   {
+    "name": "orakel orakelPeriode/monat netto.t",
+    "pfad": "laeufe.orakel.orakelPeriode/monat.netto.t",
+    "v1": 26.50657843864907,
+    "v2": 27.421813629488337,
+    "delta": 0.9152351908392689
+   },
+   {
+    "name": "orakel orakelPeriode/monat perioden",
+    "pfad": "laeufe.orakel.orakelPeriode/monat.perioden",
+    "v1": 116,
+    "v2": 116,
+    "delta": 0
+   },
+   {
+    "name": "zufall woche/voll0 netto.mittel",
+    "pfad": "laeufe.zufall.woche/voll0.netto.mittel",
+    "v1": -0.049795766253528544,
+    "v2": -0.048358621078273815,
+    "delta": 0.0014371451752547282
+   },
+   {
+    "name": "zufall woche/voll0 brutto.mittel",
+    "pfad": "laeufe.zufall.woche/voll0.brutto.mittel",
+    "v1": 0.003571176356770999,
+    "v2": 0.004995223707017125,
+    "delta": 0.0014240473502461263
+   },
+   {
+    "name": "zufall woche/voll0 netto.t",
+    "pfad": "laeufe.zufall.woche/voll0.netto.t",
+    "v1": -1.0897732800807145,
+    "v2": -1.0593004666577155,
+    "delta": 0.030472813422999012
+   },
+   {
+    "name": "zufall woche/voll0 perioden",
+    "pfad": "laeufe.zufall.woche/voll0.perioden",
+    "v1": 505,
+    "v2": 506,
+    "delta": 1
+   },
+   {
+    "name": "zufall woche mittelBrutto",
+    "pfad": "laeufe.zufall.woche.mittelBrutto",
+    "v1": 0.003174155057713997,
+    "v2": 0.001879177259434943,
+    "delta": -0.0012949777982790539
+   },
+   {
+    "name": "zufall monat/voll0 netto.mittel",
+    "pfad": "laeufe.zufall.monat/voll0.netto.mittel",
+    "v1": -0.041141898355197826,
+    "v2": -0.027479222073737368,
+    "delta": 0.013662676281460458
+   },
+   {
+    "name": "zufall monat/voll0 brutto.mittel",
+    "pfad": "laeufe.zufall.monat/voll0.brutto.mittel",
+    "v1": 0.009149175888933584,
+    "v2": 0.022822333002704687,
+    "delta": 0.013673157113771104
+   },
+   {
+    "name": "zufall monat/voll0 netto.t",
+    "pfad": "laeufe.zufall.monat/voll0.netto.t",
+    "v1": -0.21944011255026752,
+    "v2": -0.14576812559491015,
+    "delta": 0.07367198695535737
+   },
+   {
+    "name": "zufall monat/voll0 perioden",
+    "pfad": "laeufe.zufall.monat/voll0.perioden",
+    "v1": 116,
+    "v2": 116,
+    "delta": 0
+   },
+   {
+    "name": "zufall monat mittelBrutto",
+    "pfad": "laeufe.zufall.monat.mittelBrutto",
+    "v1": -0.018929239588728723,
+    "v2": 0.00434449936377451,
+    "delta": 0.02327373895250323
+   },
+   {
+    "name": "momentum woche/haupt netto.mittel",
+    "pfad": "laeufe.momentum.woche/haupt.netto.mittel",
+    "v1": 0.3930593278117333,
+    "v2": 0.38539850309129353,
+    "delta": -0.007660824720439774
+   },
+   {
+    "name": "momentum woche/haupt brutto.mittel",
+    "pfad": "laeufe.momentum.woche/haupt.brutto.mittel",
+    "v1": 0.39960706058828865,
+    "v2": 0.3919288755387559,
+    "delta": -0.007678185049532771
+   },
+   {
+    "name": "momentum woche/haupt netto.t",
+    "pfad": "laeufe.momentum.woche/haupt.netto.t",
+    "v1": 2.5013899632250314,
+    "v2": 2.4487168667721084,
+    "delta": -0.05267309645292295
+   },
+   {
+    "name": "momentum woche/haupt perioden",
+    "pfad": "laeufe.momentum.woche/haupt.perioden",
+    "v1": 504,
+    "v2": 505,
+    "delta": 1
+   },
+   {
+    "name": "momentum monat/haupt netto.mittel",
+    "pfad": "laeufe.momentum.monat/haupt.netto.mittel",
+    "v1": 1.609984309418836,
+    "v2": 1.6694766839043451,
+    "delta": 0.05949237448550915
+   },
+   {
+    "name": "momentum monat/haupt brutto.mittel",
+    "pfad": "laeufe.momentum.monat/haupt.brutto.mittel",
+    "v1": 1.6221158825031659,
+    "v2": 1.6816993510049596,
+    "delta": 0.059583468501793746
+   },
+   {
+    "name": "momentum monat/haupt netto.t",
+    "pfad": "laeufe.momentum.monat/haupt.netto.t",
+    "v1": 2.6041848150815516,
+    "v2": 2.697800760354403,
+    "delta": 0.09361594527285133
+   },
+   {
+    "name": "momentum monat/haupt perioden",
+    "pfad": "laeufe.momentum.monat/haupt.perioden",
+    "v1": 115,
+    "v2": 115,
+    "delta": 0
+   },
+   {
+    "name": "momentum monat/streng netto.mittel",
+    "pfad": "laeufe.momentum.monat/streng.netto.mittel",
+    "v1": 1.6245470552220154,
+    "v2": 1.684039429707525,
+    "delta": 0.05949237448550959
+   },
+   {
+    "name": "momentum monat/streng brutto.mittel",
+    "pfad": "laeufe.momentum.monat/streng.brutto.mittel",
+    "v1": 1.6366786283063453,
+    "v2": 1.6962620968081394,
+    "delta": 0.05958346850179419
+   },
+   {
+    "name": "momentum monat/streng netto.t",
+    "pfad": "laeufe.momentum.monat/streng.netto.t",
+    "v1": 2.629529527738318,
+    "v2": 2.7232364513033156,
+    "delta": 0.09370692356499744
+   },
+   {
+    "name": "momentum monat/streng perioden",
+    "pfad": "laeufe.momentum.monat/streng.perioden",
+    "v1": 115,
+    "v2": 115,
+    "delta": 0
+   },
+   {
+    "name": "momentum monat/milde netto.mittel",
+    "pfad": "laeufe.momentum.monat/milde.netto.mittel",
+    "v1": 1.609984309418836,
+    "v2": 1.6694766839043451,
+    "delta": 0.05949237448550915
+   },
+   {
+    "name": "momentum monat/milde brutto.mittel",
+    "pfad": "laeufe.momentum.monat/milde.brutto.mittel",
+    "v1": 1.6221158825031659,
+    "v2": 1.6816993510049596,
+    "delta": 0.059583468501793746
+   },
+   {
+    "name": "momentum monat/milde netto.t",
+    "pfad": "laeufe.momentum.monat/milde.netto.t",
+    "v1": 2.6041848150815516,
+    "v2": 2.697800760354403,
+    "delta": 0.09361594527285133
+   },
+   {
+    "name": "momentum monat/milde perioden",
+    "pfad": "laeufe.momentum.monat/milde.perioden",
+    "v1": 115,
+    "v2": 115,
+    "delta": 0
+   },
+   {
+    "name": "momentum monat/ohneCentBoden netto.mittel",
+    "pfad": "laeufe.momentum.monat/ohneCentBoden.netto.mittel",
+    "v1": 1.594561895918231,
+    "v2": 1.6347657496915675,
+    "delta": 0.04020385377333646
+   },
+   {
+    "name": "momentum monat/ohneCentBoden brutto.mittel",
+    "pfad": "laeufe.momentum.monat/ohneCentBoden.brutto.mittel",
+    "v1": 1.6068658126989896,
+    "v2": 1.6471554947860287,
+    "delta": 0.04028968208703909
+   },
+   {
+    "name": "momentum monat/ohneCentBoden netto.t",
+    "pfad": "laeufe.momentum.monat/ohneCentBoden.netto.t",
+    "v1": 2.574966837743228,
+    "v2": 2.6439419677309175,
+    "delta": 0.06897512998768951
+   },
+   {
+    "name": "momentum monat/ohneCentBoden perioden",
+    "pfad": "laeufe.momentum.monat/ohneCentBoden.perioden",
+    "v1": 115,
+    "v2": 115,
+    "delta": 0
+   }
+  ],
+  "kontrollenUrteil": {
+   "v1": {
+    "bestanden": false,
+    "befunde": [
+     "ORAKEL GEFALLEN: Orakel(Tag) monat Mittel/sd 0.82 < 1"
+    ]
+   },
+   "v2": {
+    "bestanden": false,
+    "befunde": [
+     "ORAKEL GEFALLEN: Orakel(Tag) monat Mittel/sd 0.82 < 1"
+    ]
+   }
+  },
+  "Teil 4, Test 1 gepaart (Pp je 120/250 Tage) und Test 2": [
+   {
+    "name": "Test 1 h120 netto Mittel",
+    "pfad": "test1.h120.netto.mittel",
+    "v1": -0.8363781759782515,
+    "v2": -0.909106237505106,
+    "delta": -0.07272806152685451
+   },
+   {
+    "name": "Test 1 h120 netto se (HH)",
+    "pfad": "test1.h120.netto.se",
+    "v1": 1.1841312611162853,
+    "v2": 1.1977221705010281,
+    "delta": 0.013590909384742833
+   },
+   {
+    "name": "Test 1 h120 netto t",
+    "pfad": "test1.h120.netto.t",
+    "v1": -0.7063221818751702,
+    "v2": -0.7590293140560394,
+    "delta": -0.0527071321808692
+   },
+   {
+    "name": "Test 1 h120 MDE80",
+    "pfad": "test1.h120.netto.mde",
+    "v1": 3.317462141143385,
+    "v2": 3.3555384328756803,
+    "delta": 0.03807629173229543
+   },
+   {
+    "name": "Test 1 h120 n",
+    "pfad": "test1.h120.n",
+    "v1": 111,
+    "v2": 111,
+    "delta": 0
+   },
+   {
+    "name": "Test 1 h250 netto Mittel",
+    "pfad": "test1.h250.netto.mittel",
+    "v1": -1.3572484897509736,
+    "v2": -2.1439553157167834,
+    "delta": -0.7867068259658099
+   },
+   {
+    "name": "Test 1 h250 netto t",
+    "pfad": "test1.h250.netto.t",
+    "v1": -1.1889458127905104,
+    "v2": -1.2926361770850114,
+    "delta": -0.10369036429450107
+   },
+   {
+    "name": "Test 2 h120 netto Mittel",
+    "pfad": "test2.h120.netto.mittel",
+    "v1": null,
+    "v2": null,
+    "delta": null
+   },
+   {
+    "name": "Test 2 h120 netto t",
+    "pfad": "test2.h120.netto.t",
+    "v1": null,
+    "v2": null,
+    "delta": null
+   },
+   {
+    "name": "Vorpruefung A je Monat",
+    "pfad": "vorpruefung.aMittel",
+    "v1": 324.2307692307692,
+    "v2": 324.05128205128204,
+    "delta": -0.1794871794871824
+   },
+   {
+    "name": "Vorpruefung Universum je Monat",
+    "pfad": "vorpruefung.uniMittel",
+    "v1": 782.6068376068376,
+    "v2": 782.3162393162393,
+    "delta": -0.29059829059838194
+   },
+   {
+    "name": "Vorpruefung Paar-sd h120",
+    "pfad": "vorpruefung.horizonte.h120.paarSd",
+    "v1": 2.9522291132197203,
+    "v2": 3.079070048841139,
+    "delta": 0.12684093562141863
+   }
+  ],
+  "urteilTeil4": {
+   "v1": {
+    "toreMaschine": true,
+    "test1": {
+     "n": 111,
+     "deltaNetto": -0.8363781759782515,
+     "deltaBrutto": -0.836478201835138,
+     "se": 1.1841312611162853,
+     "seNaiv": 0.5806696383739021,
+     "t": -0.7063221818751702,
+     "mde": 3.317462141143385,
+     "mdeBonf": 3.6506766780215076,
+     "zBonf": 2.2414,
+     "vorhersagePp": 2,
+     "vorhersageErreicht": false,
+     "deltaGeMde": false,
+     "tGeZBonf": false,
+     "aktuellN": 6,
+     "aktuellMittel": -2.334274785728869,
+     "aktuellNichtNegativ": false,
+     "belegt": false
+    },
+    "satz": "nicht belegt: nichts oberhalb von 3.32 Pp je 120 Tage (gemessen -0.84 Pp, t -0.71)",
+    "kandidatenGeschrieben": false
+   },
+   "v2": {
+    "toreMaschine": true,
+    "test1": {
+     "n": 111,
+     "deltaNetto": -0.909106237505106,
+     "deltaBrutto": -0.9091919121195392,
+     "se": 1.1977221705010281,
+     "seNaiv": 0.5651985181894258,
+     "t": -0.7590293140560394,
+     "mde": 3.3555384328756803,
+     "mdeBonf": 3.69257745165467,
+     "zBonf": 2.2414,
+     "vorhersagePp": 2,
+     "vorhersageErreicht": false,
+     "deltaGeMde": false,
+     "tGeZBonf": false,
+     "aktuellN": 6,
+     "aktuellMittel": -1.6516732293759897,
+     "aktuellNichtNegativ": false,
+     "belegt": false
+    },
+    "satz": "nicht belegt: nichts oberhalb von 3.36 Pp je 120 Tage (gemessen -0.91 Pp, t -0.76)",
+    "kandidatenGeschrieben": false
+   },
+   "befundeV2": []
+  }
+ }
+}

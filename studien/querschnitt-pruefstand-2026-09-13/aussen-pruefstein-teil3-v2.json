@@ -1,0 +1,343 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/teil2/v1",
+ "stand": "2026-09-18T13:01:46.238Z",
+ "referenzDatei": "F-F_Momentum_Factor.csv",
+ "referenzMonate": 1195,
+ "unsereQuelle": "teil3-v0-perioden-v2.json",
+ "unsereReihe": "momentum-12-1",
+ "unserFeld": "lsBrutto",
+ "hinweis": "Es werden nur ABGELEITETE Groessen berichtet; die Werte der Referenzreihe stehen nicht in dieser Datei.",
+ "befunde": [],
+ "versatz": {
+  "0": {
+   "n": 114,
+   "rho": 0.8173595171923785
+  },
+  "1": {
+   "n": 113,
+   "rho": -0.09191186285301665
+  },
+  "-1": {
+   "n": 115,
+   "rho": -0.10625926480877658
+  }
+ },
+ "besterVersatz": 0,
+ "haupt": {
+  "n": 114,
+  "von": "2017-02",
+  "bis": "2026-07",
+  "rho": 0.8173595171923785,
+  "rhoSpearman": 0.8012191047483962,
+  "beta": 1.5848656952186528,
+  "seBeta": 0.10555754425647111,
+  "tBeta": 15.014234239553124,
+  "alpha": 1.1029871290607236,
+  "vorzeichenGleich": 94,
+  "vorzeichenAnteil": 0.8245614035087719
+ },
+ "schranken": {
+  "stark": 0.5,
+  "schwach": 0.2
+ },
+ "urteil": "bestanden",
+ "jahre": [
+  {
+   "jahr": 2017,
+   "n": 11,
+   "rho": 0.8774857998366783,
+   "unsereSumme": 2.653863319716919,
+   "duenn": false
+  },
+  {
+   "jahr": 2018,
+   "n": 12,
+   "rho": 0.9340676409810764,
+   "unsereSumme": 7.777606623595929,
+   "duenn": false
+  },
+  {
+   "jahr": 2019,
+   "n": 12,
+   "rho": 0.8387352917859383,
+   "unsereSumme": 1.7199714513989193,
+   "duenn": false
+  },
+  {
+   "jahr": 2020,
+   "n": 12,
+   "rho": 0.9565246189620322,
+   "unsereSumme": 38.65901738943435,
+   "duenn": false
+  },
+  {
+   "jahr": 2021,
+   "n": 12,
+   "rho": 0.771888739066642,
+   "unsereSumme": 14.340927928110133,
+   "duenn": false
+  },
+  {
+   "jahr": 2022,
+   "n": 12,
+   "rho": 0.4260149327369241,
+   "unsereSumme": 56.524905681123826,
+   "duenn": false
+  },
+  {
+   "jahr": 2023,
+   "n": 12,
+   "rho": 0.9125249802528156,
+   "unsereSumme": -13.172205058123453,
+   "duenn": false
+  },
+  {
+   "jahr": 2024,
+   "n": 12,
+   "rho": 0.7439251276635563,
+   "unsereSumme": 38.85718740237793,
+   "duenn": false
+  },
+  {
+   "jahr": 2025,
+   "n": 12,
+   "rho": 0.777901873980538,
+   "unsereSumme": 27.491672637094283,
+   "duenn": false
+  },
+  {
+   "jahr": 2026,
+   "n": 7,
+   "rho": 0.9344704722783214,
+   "unsereSumme": 6.215246758276848,
+   "duenn": false
+  }
+ ],
+ "einbruch2021": [
+  {
+   "monat": "2020-01",
+   "momVorzeichen": "+",
+   "unser": 10.408266739007487,
+   "gleich": true
+  },
+  {
+   "monat": "2020-02",
+   "momVorzeichen": "-",
+   "unser": 8.219957877355412,
+   "gleich": false
+  },
+  {
+   "monat": "2020-03",
+   "momVorzeichen": "+",
+   "unser": 18.383124675938625,
+   "gleich": true
+  },
+  {
+   "monat": "2020-04",
+   "momVorzeichen": "-",
+   "unser": -10.52053965812506,
+   "gleich": true
+  },
+  {
+   "monat": "2020-05",
+   "momVorzeichen": "+",
+   "unser": 4.095837962240324,
+   "gleich": true
+  },
+  {
+   "monat": "2020-06",
+   "momVorzeichen": "-",
+   "unser": 1.398781304013454,
+   "gleich": false
+  },
+  {
+   "monat": "2020-07",
+   "momVorzeichen": "+",
+   "unser": 18.57805419516093,
+   "gleich": true
+  },
+  {
+   "monat": "2020-08",
+   "momVorzeichen": "+",
+   "unser": -0.1318176912082265,
+   "gleich": false
+  },
+  {
+   "monat": "2020-09",
+   "momVorzeichen": "+",
+   "unser": 8.641698849448119,
+   "gleich": true
+  },
+  {
+   "monat": "2020-10",
+   "momVorzeichen": "-",
+   "unser": -5.320743723124679,
+   "gleich": true
+  },
+  {
+   "monat": "2020-11",
+   "momVorzeichen": "-",
+   "unser": -14.973289167945325,
+   "gleich": true
+  },
+  {
+   "monat": "2020-12",
+   "momVorzeichen": "-",
+   "unser": -0.12031397332671645,
+   "gleich": true
+  },
+  {
+   "monat": "2021-01",
+   "momVorzeichen": "+",
+   "unser": 27.286958813846653,
+   "gleich": true
+  },
+  {
+   "monat": "2021-02",
+   "momVorzeichen": "-",
+   "unser": -14.310183582450819,
+   "gleich": true
+  },
+  {
+   "monat": "2021-03",
+   "momVorzeichen": "-",
+   "unser": -8.98437548549498,
+   "gleich": true
+  },
+  {
+   "monat": "2021-04",
+   "momVorzeichen": "+",
+   "unser": -5.985203671942202,
+   "gleich": false
+  },
+  {
+   "monat": "2021-05",
+   "momVorzeichen": "+",
+   "unser": -3.469599462707606,
+   "gleich": false
+  },
+  {
+   "monat": "2021-06",
+   "momVorzeichen": "+",
+   "unser": 10.335552609717041,
+   "gleich": true
+  },
+  {
+   "monat": "2021-07",
+   "momVorzeichen": "-",
+   "unser": -2.049562903872186,
+   "gleich": true
+  },
+  {
+   "monat": "2021-08",
+   "momVorzeichen": "+",
+   "unser": 1.4962576986475113,
+   "gleich": true
+  },
+  {
+   "monat": "2021-09",
+   "momVorzeichen": "+",
+   "unser": 1.0563617229273206,
+   "gleich": true
+  },
+  {
+   "monat": "2021-10",
+   "momVorzeichen": "+",
+   "unser": 5.175671587366921,
+   "gleich": true
+  },
+  {
+   "monat": "2021-11",
+   "momVorzeichen": "+",
+   "unser": 6.519754967292414,
+   "gleich": true
+  },
+  {
+   "monat": "2021-12",
+   "momVorzeichen": "-",
+   "unser": -2.7307043652199354,
+   "gleich": true
+  }
+ ],
+ "einbruch2021Zusammenfassung": {
+  "monate": 24,
+  "vorzeichenGleich": 19,
+  "unsereSumme2021": 14.340927928110133,
+  "momJahr2021Vorzeichen": "-"
+ },
+ "diagnoseHinweis": "Alles unter \"diagnose\" wurde NACH dem Urteil gerechnet und ist nicht vorregistriert.",
+ "diagnose": {
+  "felder": {
+   "brutto": {
+    "n": 114,
+    "rho": 0.5090695519010692,
+    "beta": 0.6638976385861132,
+    "seBeta": 0.10606683331605946
+   },
+   "lsBrutto": {
+    "n": 114,
+    "rho": 0.8173595171923785,
+    "beta": 1.5848656952186528,
+    "seBeta": 0.10555754425647111
+   },
+   "kurzBrutto": {
+    "n": 114,
+    "rho": -0.766731906594707,
+    "beta": -0.9209680566325391,
+    "seBeta": 0.0728626589216806
+   }
+  },
+  "jahrWeggelassen": [
+   {
+    "ohneJahr": 2017,
+    "n": 103,
+    "rho": 0.8183775730688169
+   },
+   {
+    "ohneJahr": 2018,
+    "n": 102,
+    "rho": 0.8155408743056548
+   },
+   {
+    "ohneJahr": 2019,
+    "n": 102,
+    "rho": 0.8165415580503813
+   },
+   {
+    "ohneJahr": 2020,
+    "n": 102,
+    "rho": 0.7912457522561066
+   },
+   {
+    "ohneJahr": 2021,
+    "n": 102,
+    "rho": 0.833078898895487
+   },
+   {
+    "ohneJahr": 2022,
+    "n": 102,
+    "rho": 0.8352050312713947
+   },
+   {
+    "ohneJahr": 2023,
+    "n": 102,
+    "rho": 0.8138933255814438
+   },
+   {
+    "ohneJahr": 2024,
+    "n": 102,
+    "rho": 0.8219935497342943
+   },
+   {
+    "ohneJahr": 2025,
+    "n": 102,
+    "rho": 0.8254777653763145
+   },
+   {
+    "ohneJahr": 2026,
+    "n": 107,
+    "rho": 0.8024243980447352
+   }
+  ]
+ }
+}

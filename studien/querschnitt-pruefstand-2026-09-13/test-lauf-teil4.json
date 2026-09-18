@@ -1,9 +1,9 @@
 {
- "stand": "2026-09-17T23:22:50.440Z",
- "ergebnis": "teil4-ergebnis.json",
- "gruen": 13,
+ "stand": "2026-09-18T13:01:00.887Z",
+ "ergebnis": "teil4-ergebnis-v2.json",
+ "gruen": 12,
  "rot": 0,
- "uebersprungen": 0,
+ "uebersprungen": 1,
  "zeilen": [
   " OK  T4-P0 z_Bonf(2) = 2,2414, MDE-Faktoren 2,8016 und 3,0830 ueber eine eigene erf-Naeherung - z 2.2414, Faktoren 2.8016 / 3.0830 / PM 3.3393",
   " OK  T4-P1 aEnde ist der H-te Panel-Handelstag nach a, auch ueber leere Tage; reicht die Tafel nicht: null - Luecken uebersprungen, Ende der Tafel = null",
@@ -15,8 +15,8 @@
   " OK  T4-P7 Kosten je Seite = Summe w_i x Huerde(Klasse am Signaltag) = 2 x umschlagKosten aus dem Nichts - Kosten 0.06515 Pp = (0.0854 + 0.0449) / 2",
   " OK  T4-P8 Auswahl unter Sicht ohne Schluessel: sauber 0 Verstoesse, praeparierte Fassung (t+1) > 0 und ungueltig - sauber 0, praepariert 5",
   " OK  T4-P9 Leser: klinke(sym, tag, {filed: tag}) wirft, {filed: tag-1} liefert; fundamentalAm am Einreichungstag null, am Folgetag Zeile - fundamentaltafel-2026-09-16/v1, 158516 Zeilen; 0000320193-20-000052 filed 2020-05-01 erst am 2020-05-02",
-  " OK  T4-P10 Ergebnis: Urteil folgt der Regel §T4.6 aus den eigenen Zahlen; MDE = Faktor x se; n konsistent; Kontrollen mit Schranken - n 111, Delta -0.836, MDE 3.317, belegt false",
-  " OK  T4-P11 test.js (47), test-teil2.js (20), test-teil3.js (15) laufen nach dem Konfig-Block gruen - test.js 47/0, test-teil2.js 20/0, test-teil3.js 14/0 rot (T3-P11 dort uebersprungen)",
+  " OK  T4-P10 Ergebnis: Urteil folgt der Regel §T4.6 aus den eigenen Zahlen; MDE = Faktor x se; n konsistent; Kontrollen mit Schranken - n 111, Delta -0.909, MDE 3.356, belegt false",
+  "  -  T4-P11 test.js (67: 47 + 20 der Panel-Reparatur v2), test-teil2.js (20), test-teil3.js (15) laufen nach dem Konfig-Block gruen (uebersprungen)",
   " OK  T4-P12 Sektorname jedes Sektor-Eintrags liegt in den SIC-Divisionen oder ist \"unbekannt\" - 6 Sektoren im Hauptfenster"
  ]
 }
