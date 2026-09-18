@@ -157,6 +157,33 @@ const probe = execFileSync(process.execPath, [WERKZEUG, '--probe', '--profil', p
 pruefe(probe.includes('Konto: test@example.com') && probe.includes('Ihre Bestellung ist unterwegs'), '--probe nennt Konto und jüngste Mail');
 pruefe(probe.includes('leer@example.com') && probe.includes('NICHT LESBAR'), '--probe meldet leeres Konto');
 
-fs.rmSync(basis, { recursive: true, force: true });
-console.log(fehler ? `\n${fehler} Befund(e)` : '\nAlles gut.');
-process.exitCode = fehler ? 1 : 0;
+/* ---- Leseserver (tools/mail-server.js): liest die neu-Datei zurück und liefert sie als JSON */
+const server = require('./mail-server.js');
+const tage = server.tageListen(ziel);
+pruefe(tage.length === 1 && tage[0].neu && !tage[0].bericht, 'Server listet den Tag mit neu-Datei, ohne Bericht');
+const tag = server.tagLaden(ziel, tage[0].datum);
+pruefe(tag.mails.length === 5, `Server liest alle fünf Mails zurück (gefunden ${tag.mails.length})`);
+const fin = tag.mails.find(m => m.ordner === 'Finanzen');
+pruefe(fin && fin.absender === 'bank@example.com' && fin.text === 'Ordnermail Finanzen.' && fin.gelesen === false, 'Ordner, Absender, Text und Status stimmen');
+const bescheid = tag.mails.find(m => m.betreff === 'Bescheid');
+pruefe(bescheid && bescheid.anhaenge.length === 1 && bescheid.anhaenge[0] === 'Bescheid.pdf' && bescheid.gelesen, 'Anhangsliste und gelesen-Status stimmen');
+pruefe(tag.konten.some(z => /leer@example\.com: NICHT LESBAR/.test(z)), 'Kontenblock kommt mit');
+const http = require('http');
+process.exitCode = 1;   // bis die Schlusszeile unten geschrieben ist: ein stiller Abbruch darf nicht grün aussehen
+const laufende = server.start(server.argumente(['--port', '0', '--ordner', ziel]));
+const s0 = laufende[0];
+new Promise((resolve, reject) => { s0.on('listening', resolve); s0.on('error', reject); }).then(() => new Promise((resolve, reject) => {
+  http.get(`http://127.0.0.1:${s0.address().port}/api/tag/${tage[0].datum}`, res => {
+    let b = ''; res.on('data', c => { b += c; }); res.on('end', () => resolve({ status: res.statusCode, body: b }));
+  }).on('error', reject);
+})).then(a => {
+  pruefe(a.status === 200 && JSON.parse(a.body).mails.length === 5, 'HTTP /api/tag liefert 200 und fünf Mails');
+  return new Promise((resolve) => http.get(`http://127.0.0.1:${s0.address().port}/api/tag/2000-01-01`, r => { r.resume(); resolve(r.statusCode); }));
+}).then(code => {
+  pruefe(code === 404, 'unbekannter Tag: 404');
+}).catch(e => { fehler++; console.log('FEHLT: Server-Anfrage: ' + e.message); }).finally(() => {
+  laufende.forEach(s => s.close());
+  fs.rmSync(basis, { recursive: true, force: true });
+  console.log(fehler ? `\n${fehler} Befund(e)` : '\nAlles gut.');
+  process.exitCode = fehler ? 1 : 0;
+});

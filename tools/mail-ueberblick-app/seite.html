@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mail-Überblick</title>
+<style>
+  :root { color-scheme: light dark;
+    --bg: #f5f6f8; --karte: #fff; --text: #1a1d21; --grau: #6b7280; --linie: #e2e5ea;
+    --akzent: #2563eb; --handeln: #b91c1c; --lesen: #1d4ed8; --rest: #6b7280; --badge: #eef2ff; }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg: #101214; --karte: #1a1d21; --text: #e8eaed; --grau: #9aa3ad; --linie: #2a2f36;
+    --akzent: #60a5fa; --handeln: #f87171; --lesen: #93c5fd; --rest: #9aa3ad; --badge: #26304a; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--karte); border-bottom: 1px solid var(--linie); padding: env(safe-area-inset-top) 12px 0; }
+  .zeile { display: flex; align-items: center; gap: 8px; padding: 10px 0; }
+  .zeile h1 { font-size: 18px; margin: 0; flex: 1; }
+  button, select, input { font: inherit; color: inherit; background: var(--bg); border: 1px solid var(--linie); border-radius: 8px; padding: 6px 10px; }
+  button { cursor: pointer; }
+  button.aktiv { background: var(--akzent); color: #fff; border-color: var(--akzent); }
+  .reiter { display: flex; gap: 6px; padding-bottom: 8px; }
+  .reiter button { flex: 1; }
+  main { padding: 12px; max-width: 780px; margin: 0 auto; }
+  .karte { background: var(--karte); border: 1px solid var(--linie); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+  .karte.mail { cursor: pointer; }
+  .kopf { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .kopf .absender { font-weight: 600; flex: 1; min-width: 40%; }
+  .kopf .datum { color: var(--grau); font-size: 13px; white-space: nowrap; }
+  .betreff { margin-top: 2px; }
+  .badge { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--badge); color: var(--text); margin-right: 4px; }
+  .badge.ungelesen { background: var(--handeln); color: #fff; }
+  .text { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--linie); white-space: pre-wrap; word-break: break-word; font-size: 14px; color: var(--text); }
+  .offen .text { display: block; }
+  .anhang { color: var(--grau); font-size: 13px; margin-top: 6px; }
+  pre.bericht { white-space: pre-wrap; word-break: break-word; margin: 0; font: 14px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  .b-handeln { color: var(--handeln); font-weight: 700; }
+  .b-lesen { color: var(--lesen); font-weight: 700; }
+  .b-rest { color: var(--rest); font-weight: 700; }
+  .b-titel { font-weight: 700; font-size: 16px; }
+  .hinweis { color: var(--grau); font-size: 14px; }
+  .fehler { color: var(--handeln); }
+  .gruppe { margin: 14px 0 6px; font-size: 13px; color: var(--grau); text-transform: uppercase; letter-spacing: .04em; }
+  .leer { text-align: center; color: var(--grau); padding: 30px 0; }
+  #suche { width: 100%; margin-bottom: 10px; }
+  .fuss { color: var(--grau); font-size: 12px; text-align: center; padding: 20px 0; }
+  .fuss a { color: var(--akzent); }
+</style>
+</head>
+<body>
+<header>
+  <div class="zeile">
+    <button id="zurueck" title="Vortag">‹</button>
+    <h1 id="titel">Mail-Überblick</h1>
+    <button id="vor" title="Folgetag">›</button>
+    <button id="neu" title="Neu laden">↻</button>
+  </div>
+  <div class="reiter">
+    <button data-reiter="bericht" class="aktiv">Bericht</button>
+    <button data-reiter="mails">Mails</button>
+    <button data-reiter="lauf">Lauf</button>
+  </div>
+</header>
+<main>
+  <div id="inhalt"><div class="leer">Lade …</div></div>
+  <div class="fuss">Quelle: Thunderbird lokal auf wilhelm-pc, nur gelesen. <a href="#" id="adresse">Serveradresse ändern</a></div>
+</main>
+<script>
+(function () {
+  'use strict';
+  var tage = [], index = 0, reiter = 'bericht', tag = null, filter = '';
+  var inhalt = document.getElementById('inhalt');
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function deutsch(d) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d); return m ? m[3] + '.' + m[2] + '.' + m[1] : d; }
+  function kurz(konto) { return /gms/i.test(konto) ? 'gms' : /muehlberg/i.test(konto) ? 'muehlberg' : konto; }
+
+  function lade(url) {
+    return fetch(url, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  function zeigeFehler(e) {
+    inhalt.innerHTML = '<div class="karte"><div class="fehler">Server nicht erreichbar: ' + esc(e.message) + '</div>' +
+      '<div class="hinweis">Läuft der PC und der Mail-Überblick-Server? Ist das Handy im Tailscale-Netz?</div></div>';
+  }
+  function start() {
+    inhalt.innerHTML = '<div class="leer">Lade …</div>';
+    lade('/api/tage').then(function (t) {
+      tage = t; index = 0;
+      if (!tage.length) { inhalt.innerHTML = '<div class="leer">Noch kein Tag vorhanden.</div>'; return; }
+      return ladeTag();
+    }).catch(zeigeFehler);
+  }
+  function ladeTag() {
+    var d = tage[index].datum;
+    document.getElementById('titel').textContent = deutsch(d);
+    document.getElementById('zurueck').disabled = index >= tage.length - 1;
+    document.getElementById('vor').disabled = index <= 0;
+    return lade('/api/tag/' + d).then(function (t) { tag = t; zeichne(); }).catch(zeigeFehler);
+  }
+
+  function berichtHtml(text) {
+    if (!text) return '<div class="leer">Für diesen Tag gibt es noch keinen Bericht (die Routine schreibt ihn um 8 Uhr).</div>';
+    var zeilen = text.split('\n').map(function (z, i) {
+      var k = i === 0 ? 'b-titel' : /^HANDELN/.test(z) ? 'b-handeln' : /^LESEN/.test(z) ? 'b-lesen' : /^REST/.test(z) ? 'b-rest' : '';
+      return k ? '<span class="' + k + '">' + esc(z) + '</span>' : esc(z);
+    });
+    return '<div class="karte"><pre class="bericht">' + zeilen.join('\n') + '</pre></div>';
+  }
+  function mailsHtml(mails) {
+    var f = filter.toLowerCase();
+    var liste = mails.filter(function (m) { return !f || (m.absender + ' ' + m.betreff + ' ' + m.ordner + ' ' + m.text).toLowerCase().indexOf(f) >= 0; });
+    var html = '<input id="suche" type="search" placeholder="Suchen in Absender, Betreff, Text …" value="' + esc(filter) + '">';
+    if (!liste.length) return html + '<div class="leer">' + (mails.length ? 'Nichts gefunden.' : 'Keine Mails in den letzten 24 Stunden.') + '</div>';
+    var konto = null;
+    liste.forEach(function (m) {
+      if (m.konto !== konto) { konto = m.konto; html += '<div class="gruppe">' + esc(konto) + '</div>'; }
+      html += '<div class="karte mail" data-nr="' + m.nr + '">' +
+        '<div class="kopf"><span class="absender">' + esc(m.absender || '(ohne Absender)') + '</span><span class="datum">' + esc(m.datum) + '</span></div>' +
+        '<div class="betreff">' + esc(m.betreff) + '</div>' +
+        '<div style="margin-top:4px"><span class="badge">' + esc(kurz(m.konto)) + '</span><span class="badge">' + esc(m.ordner) + '</span>' +
+        (m.gelesen ? '' : '<span class="badge ungelesen">ungelesen</span>') +
+        (m.anhaenge.length ? '<span class="badge">📎 ' + m.anhaenge.length + '</span>' : '') + '</div>' +
+        '<div class="text">' + esc(m.text || '(kein Text)') + (m.anhaenge.length ? '<div class="anhang">Anhänge: ' + esc(m.anhaenge.join('; ')) + '</div>' : '') + '</div>' +
+        '</div>';
+    });
+    return html;
+  }
+  function laufHtml(t) {
+    var html = '<div class="karte"><div class="hinweis">Stand ' + esc(t.stand || '?') + ', Fenster seit ' + esc(t.fenster || '?') + '</div></div>';
+    if (!t.konten.length) return html + '<div class="leer">Kein Lauf-Protokoll für diesen Tag.</div>';
+    html += '<div class="karte">' + t.konten.map(function (z) { return '<div style="margin:6px 0">' + esc(z) + '</div>'; }).join('') + '</div>';
+    html += '<div class="karte hinweis">Die Zahlen stammen aus tools/mail-ueberblick.js: je Ordner wird nur das Dateiende gelesen, gelöschte Mails werden übersprungen, das Fenster sind 24 Stunden vor dem Lauf.</div>';
+    return html;
+  }
+  function zeichne() {
+    if (!tag) return;
+    inhalt.innerHTML = reiter === 'bericht' ? berichtHtml(tag.bericht) : reiter === 'mails' ? mailsHtml(tag.mails) : laufHtml(tag);
+    var s = document.getElementById('suche');
+    if (s) { s.addEventListener('input', function () { filter = s.value; var pos = s.selectionStart; zeichne(); var n = document.getElementById('suche'); n.focus(); n.setSelectionRange(pos, pos); }); }
+  }
+
+  inhalt.addEventListener('click', function (e) {
+    var k = e.target.closest('.karte.mail');
+    if (k) k.classList.toggle('offen');
+  });
+  document.querySelectorAll('.reiter button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.reiter button').forEach(function (x) { x.classList.remove('aktiv'); });
+      b.classList.add('aktiv'); reiter = b.dataset.reiter; zeichne();
+    });
+  });
+  document.getElementById('zurueck').addEventListener('click', function () { if (index < tage.length - 1) { index++; ladeTag(); } });
+  document.getElementById('vor').addEventListener('click', function () { if (index > 0) { index--; ladeTag(); } });
+  document.getElementById('neu').addEventListener('click', start);
+  document.getElementById('adresse').addEventListener('click', function (e) {
+    e.preventDefault();
+    if (window.App && App.setzeAdresse) { var n = prompt('Serveradresse', location.origin + '/'); if (n) App.setzeAdresse(n); }
+    else alert('Nur in der Android-App änderbar. Im Browser einfach eine andere Adresse aufrufen.');
+  });
+  start();
+})();
+</script>
+</body>
+</html>
