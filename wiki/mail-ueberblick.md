@@ -3,7 +3,7 @@ tags: [bauplan]
 ---
 # Mail-Überblick: Thunderbird lesen, Ticket-Board am Handy (19.09.2026)
 
-**Eigenes Repo seit 19.09.2026:** `C:\Users\Wilhe\Downloads\Mail-Ueberblick` (Wilhelms Entscheid, Chat vom 19.09.). Bis Commit `ce64aa9` lag alles hier unter `tools/mail-ueberblick.js`, `tools/mail-server.js`, `tools/mail-ueberblick-test.js`, `tools/mail-ueberblick-app/`; mit dem Folge-Commit ist es aus diesem Repo entfernt. Diese Seite ist der Knoten, der dorthin zeigt; die Wahrheit steht im anderen Repo (`README.md`, `CLAUDE.md`) und in der Übergabe `uebergabe/mail-ueberblick-2026-09-19.md`.
+**Eigenes Repo seit 19.09.2026:** `C:\Users\Wilhe\Downloads\Mail-Ueberblick`, auf GitHub privat als https://github.com/Wilhelm-mbg/Mail-Ueberblick (Wilhelms Entscheid, Chat vom 19.09.). Bis Commit `ce64aa9` lag alles hier unter `tools/mail-ueberblick.js`, `tools/mail-server.js`, `tools/mail-ueberblick-test.js`, `tools/mail-ueberblick-app/`; mit dem Folge-Commit ist es aus diesem Repo entfernt. Diese Seite ist der Knoten, der dorthin zeigt; die Wahrheit steht im anderen Repo (`README.md`, `CLAUDE.md`) und in der Übergabe `uebergabe/mail-ueberblick-2026-09-19.md`.
 
 ## Was es ist
 
