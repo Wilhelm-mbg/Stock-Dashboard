@@ -1332,6 +1332,21 @@ ipcMain.handle('store-set', async (_ev, name, value) => {
   } catch (e) { return { ok: false, msg: String(e.message || e) }; }
 });
 
+/* ================= DAS NACHRICHTEN-ARCHIV (19.09.2026, Nr. 43) =================
+ * Der Renderer holt die Schlagzeilen (fetch-text, RSS) und reicht sie hierher; der
+ * Hauptprozess haengt sie ueber fs.promises an <Daten>/nachrichten/<SYM>/<jahr>.jsonl
+ * (nachrichtenablage.js). Nichts hiervon ist synchron - die Lehre der Live-Runde vom
+ * 08.09.2026 (wiki/fehlerformen.md, "Die Dauer im Log ist eine Blockade"). Das
+ * Universum kommt aus <Daten>/nachrichten-universum.json; fehlt sie, bekommt der
+ * Renderer null und nimmt seine alte Liste. Die Migration der alten Store-Schluessel
+ * laeuft einmal, angestossen vom Renderer, der sich das merkt. */
+const Nachrichten = require('./nachrichtenablage.js');
+const NACHRICHTEN = { zustand: { bekannt: {} } };
+function datenOrdner() { return path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten'); }
+ipcMain.handle('nachrichten-universum', async () => Nachrichten.universumLesen(datenOrdner()));
+ipcMain.handle('nachrichten-anhaengen', async (_ev, sym, eintraege) => Nachrichten.anhaengen(datenOrdner(), String(sym || ''), eintraege, NACHRICHTEN.zustand));
+ipcMain.handle('nachrichten-migration', async () => Nachrichten.migrieren(path.join(app.getPath('userData'), 'store'), datenOrdner(), NACHRICHTEN.zustand));
+
 /* ================= DIE APP SAMMELT SELBST (26.08.2026) =================
  *
  * Bis heute kamen die Intraday-Archive nur aus tools/yahoo-60m-holen.js, das jemand

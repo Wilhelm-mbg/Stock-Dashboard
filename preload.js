@@ -82,6 +82,12 @@ contextBridge.exposeInMainWorld('api', {
   /* Der Live-Sammler ueber Alpaca (06.09.2026): Stand lesen, die Live-Menge melden
    * (Watchlist, Positionen, Viewer-Wert - nur Kuerzel), Funk nach jeder Runde. Nichts
    * davon loest einen Abruf aus; der Zeitgeber wohnt im Hauptprozess. */
+  /* Das Nachrichten-Archiv (19.09.2026): Universum lesen, Schlagzeilen anhaengen,
+   * alte Store-Schluessel einmal uebernehmen. Geschrieben wird im Hauptprozess,
+   * asynchron (nachrichtenablage.js); der Renderer haelt nichts davon im Store. */
+  nachrichtenUniversum: () => ipcRenderer.invoke('nachrichten-universum'),
+  nachrichtenAnhaengen: (sym, eintraege) => ipcRenderer.invoke('nachrichten-anhaengen', sym, eintraege),
+  nachrichtenMigration: () => ipcRenderer.invoke('nachrichten-migration'),
   liveStand: () => ipcRenderer.invoke('live-stand'),
   liveMenge: (teile) => ipcRenderer.send('live-menge', teile),
   onLiveSammler: (cb) => ipcRenderer.on('live-sammler', (_ev, d) => cb(d))

@@ -1725,10 +1725,17 @@
   }
 
   /* ================= News je Symbol ================= */
+  /** Schlagzeilen holen UND archivieren - EIN Weg zur Quelle. Liefert den Status
+   *  mit: { status, leer, items }. `leer` ist eine 200-Antwort ohne ein einziges
+   *  <item> - die Quelle kann so antworten, ohne einen Fehler zu melden (Fehlerform
+   *  "Quelle antwortet leer mit 200"); ohne eigenen Zaehler bleibt das unsichtbar.
+   *  Der Archivname traegt den Punkt (BRK.B), Yahoo den Strich - dieselbe Umsetzung
+   *  wie yahooName in kerzenquelle.js. */
   async function getSymbolNews(sym) {
-    var url = 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=' + encodeURIComponent(sym) + '&region=US&lang=en-US';
+    var url = 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=' + encodeURIComponent(String(sym).replace(/\./g, '-')) + '&region=US&lang=en-US';
     var res = await window.api.fetchText(url);
-    if (!res.ok) return [];
+    var aus = { status: (res && res.status) || 0, leer: false, items: [] };
+    if (!res || !res.ok) return aus;
     try {
       var doc = new DOMParser().parseFromString(res.body, 'text/xml');
       var nodes = doc.querySelectorAll('item');
@@ -1741,9 +1748,11 @@
           t: Date.parse((n.querySelector('pubDate') || {}).textContent || '') || 0
         });
       }
-      archiviereNews(sym, items);
-      return items;
-    } catch (e) { return []; }
+      aus.leer = nodes.length === 0;
+      aus.items = items;
+      await archiviereNews(sym, items);
+      return aus;
+    } catch (e) { return aus; }
   }
 
   /** Schlagzeilen mit Zeitstempel wegschreiben, damit das News-Sentiment irgendwann
@@ -1753,8 +1762,10 @@
    *  Live-Entscheidung unbelegt - weder widerlegt noch belegt.
    *
    *  Gespeichert wird nur, was die Auswertung braucht: Titel und Zeitpunkt. Keine
-   *  URLs, keine Texte. Ein Schluessel je Symbol, gedeckelt auf 400 Eintraege -
-   *  das sind bei vier Abrufen am Tag rund drei Jahre. */
+   *  URLs, keine Texte. Seit dem 19.09.2026 (Nr. 43) je Symbol und Jahr eine
+   *  JSON-Zeilen-Datei unter Markt-Dashboard-Daten/nachrichten/, ohne Deckel,
+   *  geschrieben im Hauptprozess (nachrichtenablage.js); der Store haelt nur noch
+   *  den Stand des Laufs. */
   /* ===== DAS ARCHIV LAEUFT EIGENSTAENDIG (31.08.2026) =====
    * DER BEFUND, der das noetig machte: Seit dem 21.08.2026 kam im Archiv nichts mehr an -
    * alle 17 Store-Schluessel trugen denselben Stand. Die Quelle war es nicht: der
@@ -1777,55 +1788,68 @@
    * Schlagzeilen und schreibt sie weg. Das Sentiment-Gewicht steht seit dem 31.08. auf 0
    * (siehe quant.js); gesammelt wird trotzdem weiter, denn genau das ist die Bedingung
    * dafuer, dass die Frage irgendwann beantwortbar wird. */
+  /* AUSBAU 19.09.2026 (Nr. 43): das Universum kommt aus der Datei
+   * Markt-Dashboard-Daten/nachrichten-universum.json (Klassen 1-3 des Tages-Panels,
+   * rund 1.100 Werte, tools/nachrichten-universum.js); fehlt sie, bleibt es bei
+   * universe() - Rueckfall, nie ein Fehler. Takt alle 6 Stunden (NEWS_ARCHIV_TAKT_MS):
+   * 1.100 Werte mal 1,2 s Pause sind rund 22 Minuten je Lauf, vier Laeufe am Tag
+   * rund 4.400 Anfragen. Der Stand des Laufs zaehlt mit, was die Quelle tat:
+   * Symbole, mit Meldungen, leer-200, Fehler, Dauer - ein Lauf, der nichts sammelt,
+   * muss von aussen von einem Lauf ohne Neuigkeiten unterscheidbar sein. */
+  var NEWS_ARCHIV_TAKT_MS = 6 * 3600000;
+  var NEWS_ARCHIV_PAUSE_MS = 1200;
   var newsArchivLaeuft = false;
   async function newsArchivLauf() {
     if (newsArchivLaeuft || !D) return;
     newsArchivLaeuft = true;
-    var n = 0;
+    var t0 = Date.now();
+    var z = { symbole: 0, mitMeldungen: 0, leer200: 0, fehler: 0, quelle: 'universe()' };
     try {
       var syms = universe();
+      var uni = await window.api.nachrichtenUniversum();
+      if (uni && Array.isArray(uni.symbole) && uni.symbole.length) { syms = uni.symbole; z.quelle = uni.quelle || uni.kennung || 'Datei'; }
+      z.symbole = syms.length;
+      /* Migration der alten Store-Schluessel: einmal, dann nie wieder in den Store. */
+      if (!D.newsArchivMigriert) {
+        var m = await window.api.nachrichtenMigration();
+        D.newsArchivMigriert = { at: Date.now(), symbole: (m && m.symbole) || 0, uebernommen: (m && m.uebernommen) || 0 };
+        save();
+      }
       for (var i = 0; i < syms.length; i++) {
         /* getSymbolNews archiviert selbst - EIN Weg zur Quelle, nicht zwei.
          * Ein zweiter Abrufpfad waere die naechste Stelle, an der zwei Fassungen
          * derselben Regel auseinanderlaufen. */
-        var items = await getSymbolNews(syms[i]);
-        if (items && items.length) n++;
-        await new Promise(function (r) { setTimeout(r, 1200); });   // schonend zur Quelle
+        var r = await getSymbolNews(syms[i]);
+        if (r.items.length) z.mitMeldungen++;
+        else if (r.leer) z.leer200++;
+        else if (r.status !== 200) z.fehler++;
+        await new Promise(function (res) { setTimeout(res, NEWS_ARCHIV_PAUSE_MS); });   // schonend zur Quelle
       }
-      D.newsArchivStand = { at: Date.now(), symbole: syms.length, mitMeldungen: n };
+      z.at = Date.now(); z.dauerS = Math.round((z.at - t0) / 1000);
+      D.newsArchivStand = z;
       save();
     } catch (e) {
       /* Anders als im stillen catch von archiviereNews wird ein Fehlschlag hier
        * FESTGEHALTEN. Ein Archiv, das schweigend nichts tut, ist der Fehler, den
        * dieser ganze Block behebt. */
-      D.newsArchivStand = { at: Date.now(), fehler: String((e && e.message) || e) };
+      z.at = Date.now(); z.dauerS = Math.round((z.at - t0) / 1000); z.abbruch = String((e && e.message) || e);
+      D.newsArchivStand = z;
       save();
     }
     newsArchivLaeuft = false;
   }
 
+  /** Schlagzeilen an die Tagesablage reichen: [ms, titel] je Meldung, der Hauptprozess
+   *  haengt an und erkennt Doppelte (nachrichtenablage.js). Kein Store, kein Deckel. */
   async function archiviereNews(sym, items) {
     if (!items || !items.length) return;
     try {
-      var key = 'newsarchiv_' + sym;
-      var alt = await window.api.storeGet(key);
-      var liste = (alt && alt.items) || [];
-      // Doppelte am Titel erkennen: derselbe Artikel taucht bei jedem Abruf wieder auf,
-      // der Zeitstempel schwankt dabei manchmal um Minuten.
-      var bekannt = {};
-      liste.forEach(function (x) { bekannt[x[1]] = 1; });
-      var neu = 0;
+      var liste = [];
       items.forEach(function (it) {
         var titel = (it.title || '').trim();
-        if (!titel || bekannt[titel]) return;
-        bekannt[titel] = 1;
-        liste.push([it.t || Date.now(), titel]);
-        neu++;
+        if (titel) liste.push([it.t || Date.now(), titel]);
       });
-      if (!neu) return;
-      liste.sort(function (a, b) { return a[0] - b[0]; });
-      if (liste.length > 400) liste = liste.slice(-400);
-      await window.api.storeSet(key, { stand: Date.now(), items: liste });
+      if (liste.length) await window.api.nachrichtenAnhaengen(sym, liste);
     } catch (e) { /* Archiv ist Beiwerk - ein Fehler hier darf den Abruf nicht kippen */ }
   }
 
@@ -2124,7 +2148,7 @@
         if (!hist || hist.length < 120) continue;
         var spot = spotOf(sym, hist);
         schattenUpdate(sym, spot, now, false);
-        var news = await getSymbolNews(sym);
+        var news = (await getSymbolNews(sym)).items;
         var closes = hist.map(function (p) { return p[1]; });
 
         var sent = Q.sentiment(news, now);
@@ -7423,12 +7447,12 @@
 
     /* News-Archiv: EIGENER Takt, bewusst ohne hourlyEnabled-Bedingung. Bis zum
      * 31.08.2026 hing das Archiv am Stunden-Scheduler darueber und stand deshalb
-     * seit dem 21.08. still - Begruendung bei newsArchivLauf(). Stuendlich, wie der
-     * alte Pfad; der Deckel von 400 Eintraegen je Symbol traegt das ueber Jahre. */
+     * seit dem 21.08. still - Begruendung bei newsArchivLauf(). Seit dem 19.09.2026
+     * alle sechs Stunden (NEWS_ARCHIV_TAKT_MS): rund 1.100 Werte je Lauf, ohne Deckel. */
     setInterval(function () {
-      if (Date.now() - ((D.newsArchivStand && D.newsArchivStand.at) || 0) >= 3600000) newsArchivLauf();
+      if (Date.now() - ((D.newsArchivStand && D.newsArchivStand.at) || 0) >= NEWS_ARCHIV_TAKT_MS) newsArchivLauf();
     }, 5 * 60000);
-    if (Date.now() - ((D.newsArchivStand && D.newsArchivStand.at) || 0) >= 3600000) setTimeout(newsArchivLauf, 30000);
+    if (Date.now() - ((D.newsArchivStand && D.newsArchivStand.at) || 0) >= NEWS_ARCHIV_TAKT_MS) setTimeout(newsArchivLauf, 30000);
 
     // Herzschlag: solange gemessen wird, Kopfzeile alle 5 s auffrischen (seit/letzte Aktivität)
     setInterval(function () { if (pilotRunning) renderPilot(); }, 5000);
