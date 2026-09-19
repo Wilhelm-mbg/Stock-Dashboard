@@ -1,0 +1,68 @@
+{
+ "stand": "2026-09-19T07:37:55.181Z",
+ "dateien": [
+  {
+   "datei": "20260804143000.gkg.csv",
+   "zeilen": 1658
+  },
+  {
+   "datei": "20260804150000.gkg.csv",
+   "zeilen": 1413
+  }
+ ],
+ "zeilen": 3071,
+ "spaltenMin": 27,
+ "spaltenMax": 27,
+ "mitOrganisation": 2287,
+ "mitPubdate": 0,
+ "mitTitel": 3065,
+ "ton": {
+  "n": 3071,
+  "min": -17.7777777777778,
+  "max": 14.0350877192982,
+  "mittel": -0.731
+ },
+ "treffer": {
+  "AAPL": {
+   "genau": 1,
+   "weit": 3,
+   "zeilen": [
+    {
+     "id": "20260804143000-1098",
+     "date": "20260804143000",
+     "quelle": "stuff.tv",
+     "genau": false,
+     "orgs": "",
+     "tone": "1.58371040723982,2.94117647058824,1.35746606334842,4.29864253393665",
+     "pubdate": null,
+     "titel": "Your Apple Watch's sleep scores are higher than other fitness trackers. Here's why that's "
+    },
+    {
+     "id": "20260804143000-1451",
+     "date": "20260804143000",
+     "quelle": "wctrib.com",
+     "genau": false,
+     "orgs": "",
+     "tone": "-9.91105463786531,1.01651842439644,10.9275730622618,11.9440914866582",
+     "pubdate": null,
+     "titel": "Both suspects in Appleton, Minnesota, standoff await sentencing"
+    },
+    {
+     "id": "20260804150000-766",
+     "date": "20260804150000",
+     "quelle": "benzinga.com",
+     "genau": true,
+     "orgs": "",
+     "tone": "-1.27226463104326,3.18066157760814,4.4529262086514,7.63358778625954",
+     "pubdate": null,
+     "titel": "How To Trade SPY, QQQ, AAPL, MSFT, NVDA, GOOGL, META, And TSLA"
+    }
+   ]
+  },
+  "AAON": {
+   "genau": 0,
+   "weit": 0,
+   "zeilen": []
+  }
+ }
+}

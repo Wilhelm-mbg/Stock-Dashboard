@@ -1,0 +1,2625 @@
+{
+ "stand": "2026-09-19T07:40:48.504Z",
+ "dateien": [
+  {
+   "datei": "all_kopf.csv",
+   "bytes": 20969347,
+   "kopf": [
+    "Date",
+    "Article_title",
+    "Stock_symbol",
+    "Url",
+    "Publisher",
+    "Author",
+    "Article",
+    "Lsa_summary",
+    "Luhn_summary",
+    "Textrank_summary",
+    "Lexrank_summary"
+   ],
+   "saetze": 88609,
+   "felderUngleich": 0,
+   "monate": {
+    "2020-06": 404,
+    "2020-05": 1525,
+    "2020-04": 1568,
+    "2020-03": 1666,
+    "2020-02": 1391,
+    "2020-01": 1056,
+    "2019-12": 900,
+    "2019-11": 1057,
+    "2019-10": 1101,
+    "2019-09": 795,
+    "2019-08": 947,
+    "2019-07": 725,
+    "2019-06": 608,
+    "2019-05": 825,
+    "2019-03": 571,
+    "2019-02": 564,
+    "2019-01": 576,
+    "2018-11": 967,
+    "2018-10": 1036,
+    "2018-09": 755,
+    "2018-08": 1006,
+    "2018-07": 739,
+    "2018-06": 560,
+    "2018-05": 856,
+    "2018-04": 617,
+    "2018-03": 645,
+    "2018-02": 818,
+    "2018-01": 642,
+    "2017-12": 524,
+    "2017-11": 803,
+    "2017-09": 525,
+    "2017-08": 727,
+    "2017-07": 535,
+    "2017-06": 854,
+    "2017-05": 751,
+    "2017-03": 667,
+    "2017-02": 679,
+    "2017-01": 690,
+    "2016-12": 607,
+    "2016-11": 934,
+    "2016-09": 660,
+    "2016-08": 832,
+    "2016-07": 610,
+    "2016-06": 649,
+    "2016-05": 790,
+    "2016-04": 726,
+    "2016-03": 728,
+    "2016-02": 744,
+    "2016-01": 695,
+    "2015-12": 529,
+    "2015-11": 642,
+    "2015-10": 595,
+    "2015-09": 519,
+    "2015-08": 660,
+    "2015-06": 779,
+    "2015-05": 789,
+    "2015-04": 676,
+    "2015-03": 649,
+    "2015-02": 689,
+    "2015-01": 676,
+    "2014-12": 703,
+    "2014-11": 760,
+    "2014-10": 879,
+    "2014-09": 664,
+    "2014-08": 718,
+    "2014-07": 780,
+    "2014-06": 678,
+    "2014-05": 711,
+    "2014-04": 791,
+    "2014-03": 473,
+    "2014-02": 570,
+    "2014-01": 508,
+    "2013-12": 503,
+    "2013-11": 527,
+    "2013-10": 647,
+    "2013-09": 451,
+    "2013-08": 622,
+    "2013-06": 557,
+    "2013-05": 684,
+    "2013-03": 599,
+    "2013-02": 604,
+    "2013-01": 629,
+    "2012-11": 573,
+    "2012-10": 655,
+    "2012-09": 516,
+    "2012-08": 653,
+    "2012-07": 612,
+    "2012-06": 543,
+    "2012-05": 653,
+    "2012-04": 592,
+    "2012-03": 640,
+    "2012-02": 608,
+    "2012-01": 608,
+    "2011-12": 568,
+    "2011-11": 658,
+    "2011-10": 687,
+    "2011-09": 474,
+    "2011-08": 808,
+    "2011-07": 806,
+    "2011-06": 696,
+    "2011-05": 854,
+    "2011-04": 660,
+    "2011-03": 565,
+    "2011-02": 550,
+    "2011-01": 946,
+    "2010-12": 918,
+    "2010-11": 832,
+    "2010-10": 619,
+    "2010-09": 539,
+    "2010-08": 495,
+    "2010-06": 357,
+    "2010-05": 384,
+    "2010-04": 282,
+    "2010-03": 300,
+    "2010-02": 264,
+    "2009-12": 210,
+    "2009-11": 136,
+    "2009-10": 94,
+    "2009-09": 135,
+    "2009-08": 612,
+    "2009-07": 5,
+    "2009-06": 2,
+    "2009-04": 1,
+    "2019-04": 675,
+    "2018-12": 710,
+    "2017-10": 733,
+    "2017-04": 626,
+    "2016-10": 697,
+    "2015-07": 703,
+    "2013-07": 622,
+    "2013-04": 708,
+    "2012-12": 484,
+    "2010-07": 369,
+    "2010-01": 260,
+    "2009-05": 1
+   },
+   "stempel": {
+    "mitUhrzeit": 3153,
+    "mitternacht": 85456,
+    "leer": 0
+   },
+   "ohneSymbol": 0,
+   "min": "2009-04-29 00:00:00 UTC",
+   "max": "2020-06-10 11:17:32 UTC",
+   "symboleAnzahl": 333,
+   "publisherTop": [
+    "Paul Quintaro:14880",
+    "Lisa Levin:12349",
+    "Benzinga Newsdesk:9714",
+    "Charles Gross:5635",
+    "Monica Gerson:5426",
+    "Eddie Staley:3776"
+   ],
+   "abdeckungBereich": {
+    "von": "A",
+    "bis": "ARAY",
+    "symboleImTeilstueck": 333
+   },
+   "abdeckung": {
+    "2020-06": {
+     "1": {
+      "panelImBereich": 36,
+      "mitZeile": 26,
+      "anteil": 0.722
+     },
+     "2": {
+      "panelImBereich": 10,
+      "mitZeile": 8,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 3,
+      "anteil": 1
+     }
+    },
+    "2020-05": {
+     "1": {
+      "panelImBereich": 36,
+      "mitZeile": 32,
+      "anteil": 0.889
+     },
+     "2": {
+      "panelImBereich": 10,
+      "mitZeile": 9,
+      "anteil": 0.9
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 3,
+      "anteil": 1
+     }
+    },
+    "2020-04": {
+     "1": {
+      "panelImBereich": 36,
+      "mitZeile": 32,
+      "anteil": 0.889
+     },
+     "2": {
+      "panelImBereich": 10,
+      "mitZeile": 9,
+      "anteil": 0.9
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 3,
+      "anteil": 1
+     }
+    },
+    "2020-03": {
+     "1": {
+      "panelImBereich": 36,
+      "mitZeile": 32,
+      "anteil": 0.889
+     },
+     "2": {
+      "panelImBereich": 10,
+      "mitZeile": 9,
+      "anteil": 0.9
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 2,
+      "anteil": 0.667
+     }
+    },
+    "2020-02": {
+     "1": {
+      "panelImBereich": 36,
+      "mitZeile": 32,
+      "anteil": 0.889
+     },
+     "2": {
+      "panelImBereich": 10,
+      "mitZeile": 9,
+      "anteil": 0.9
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 1,
+      "anteil": 0.333
+     }
+    },
+    "2020-01": {
+     "1": {
+      "panelImBereich": 36,
+      "mitZeile": 32,
+      "anteil": 0.889
+     },
+     "2": {
+      "panelImBereich": 10,
+      "mitZeile": 9,
+      "anteil": 0.9
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 1,
+      "anteil": 0.333
+     }
+    },
+    "2019-12": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 26,
+      "anteil": 0.788
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 12,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 1,
+      "anteil": 0.333
+     }
+    },
+    "2019-11": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 23,
+      "anteil": 0.697
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 12,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-10": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 28,
+      "anteil": 0.848
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 12,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-09": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 24,
+      "anteil": 0.727
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 12,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-08": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 22,
+      "anteil": 0.667
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 11,
+      "anteil": 0.733
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-07": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 24,
+      "anteil": 0.727
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 12,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-06": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 21,
+      "anteil": 0.636
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 12,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-05": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 25,
+      "anteil": 0.758
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 12,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-03": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 18,
+      "anteil": 0.545
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 11,
+      "anteil": 0.733
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-02": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 24,
+      "anteil": 0.727
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 12,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-01": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 23,
+      "anteil": 0.697
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 12,
+      "anteil": 0.8
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-11": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 26,
+      "anteil": 0.813
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-10": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 27,
+      "anteil": 0.844
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-09": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 22,
+      "anteil": 0.688
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-08": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 24,
+      "anteil": 0.75
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-07": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 27,
+      "anteil": 0.844
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 9,
+      "anteil": 0.692
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-06": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 18,
+      "anteil": 0.563
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 9,
+      "anteil": 0.692
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-05": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 25,
+      "anteil": 0.781
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-04": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 25,
+      "anteil": 0.781
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-03": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 22,
+      "anteil": 0.688
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-02": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 24,
+      "anteil": 0.75
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-01": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 23,
+      "anteil": 0.719
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-12": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 23,
+      "anteil": 0.719
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-11": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 25,
+      "anteil": 0.781
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-09": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 21,
+      "anteil": 0.656
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-08": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 23,
+      "anteil": 0.719
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-07": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 20,
+      "anteil": 0.625
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-06": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 25,
+      "anteil": 0.781
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-05": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 25,
+      "anteil": 0.781
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-03": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 22,
+      "anteil": 0.688
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-02": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 25,
+      "anteil": 0.781
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-01": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 25,
+      "anteil": 0.781
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 9,
+      "anteil": 0.692
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-12": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 23,
+      "anteil": 0.676
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 7,
+      "anteil": 0.636
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-11": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 23,
+      "anteil": 0.676
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 8,
+      "anteil": 0.727
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-09": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 23,
+      "anteil": 0.676
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 8,
+      "anteil": 0.727
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-08": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 25,
+      "anteil": 0.735
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 7,
+      "anteil": 0.636
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-07": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 23,
+      "anteil": 0.676
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 7,
+      "anteil": 0.636
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-06": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 23,
+      "anteil": 0.676
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 8,
+      "anteil": 0.727
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-05": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 23,
+      "anteil": 0.676
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 6,
+      "anteil": 0.545
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-04": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 28,
+      "anteil": 0.824
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 8,
+      "anteil": 0.727
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-03": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 24,
+      "anteil": 0.706
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 8,
+      "anteil": 0.727
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-02": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 26,
+      "anteil": 0.765
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 8,
+      "anteil": 0.727
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-01": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 22,
+      "anteil": 0.647
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 8,
+      "anteil": 0.727
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2019-04": {
+     "1": {
+      "panelImBereich": 33,
+      "mitZeile": 22,
+      "anteil": 0.667
+     },
+     "2": {
+      "panelImBereich": 15,
+      "mitZeile": 11,
+      "anteil": 0.733
+     },
+     "3": {
+      "panelImBereich": 3,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2018-12": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 25,
+      "anteil": 0.781
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-10": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 25,
+      "anteil": 0.781
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2017-04": {
+     "1": {
+      "panelImBereich": 32,
+      "mitZeile": 23,
+      "anteil": 0.719
+     },
+     "2": {
+      "panelImBereich": 13,
+      "mitZeile": 10,
+      "anteil": 0.769
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    },
+    "2016-10": {
+     "1": {
+      "panelImBereich": 34,
+      "mitZeile": 23,
+      "anteil": 0.676
+     },
+     "2": {
+      "panelImBereich": 11,
+      "mitZeile": 8,
+      "anteil": 0.727
+     },
+     "3": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     }
+    }
+   },
+   "abdeckungJeJahr": {
+    "2016": {
+     "1": 0.701,
+     "2": 0.689,
+     "3": 0,
+     "monate": 12
+    },
+    "2017": {
+     "1": 0.734,
+     "2": 0.763,
+     "3": 0,
+     "monate": 12
+    },
+    "2018": {
+     "1": 0.75,
+     "2": 0.756,
+     "3": 0,
+     "monate": 12
+    },
+    "2019": {
+     "1": 0.707,
+     "2": 0.783,
+     "3": 0.028,
+     "monate": 12
+    },
+    "2020": {
+     "1": 0.861,
+     "2": 0.883,
+     "3": 0.722,
+     "monate": 6
+    }
+   },
+   "symboleTop": [
+    "AA:2739",
+    "AGN:2408",
+    "ADBE:1999",
+    "APC:1680",
+    "AIG:1608",
+    "AKS:1572",
+    "ANF:1527",
+    "AEO:1487"
+   ]
+  },
+  {
+   "datei": "nasdaq_kopf.csv",
+   "bytes": 20939885,
+   "kopf": [
+    "Unnamed: 0",
+    "Date",
+    "Article_title",
+    "Stock_symbol",
+    "Url",
+    "Publisher",
+    "Author",
+    "Article",
+    "Lsa_summary",
+    "Luhn_summary",
+    "Textrank_summary",
+    "Lexrank_summary"
+   ],
+   "saetze": 3214,
+   "felderUngleich": 0,
+   "monate": {
+    "2023-12": 58,
+    "2023-11": 79,
+    "2023-10": 132,
+    "2023-09": 96,
+    "2023-08": 134,
+    "2023-07": 153,
+    "2023-06": 79,
+    "2023-05": 170,
+    "2023-04": 173,
+    "2023-03": 146,
+    "2023-02": 119,
+    "2023-01": 198,
+    "2022-12": 87,
+    "2022-11": 87,
+    "2022-10": 121,
+    "2022-09": 25,
+    "2022-08": 23,
+    "2022-07": 30,
+    "2022-06": 17,
+    "2022-05": 36,
+    "2022-04": 55,
+    "2022-03": 48,
+    "2022-02": 24,
+    "2022-01": 29,
+    "2021-12": 24,
+    "2021-11": 10,
+    "2021-10": 22,
+    "2021-09": 20,
+    "2021-08": 13,
+    "2021-07": 17,
+    "2021-06": 13,
+    "2021-05": 11,
+    "2021-04": 22,
+    "2021-03": 17,
+    "2021-02": 8,
+    "2021-01": 11,
+    "2020-12": 9,
+    "2020-11": 1,
+    "2020-10": 14,
+    "2020-09": 4,
+    "2020-08": 10,
+    "2014-04": 44,
+    "2014-03": 17,
+    "2014-02": 7,
+    "2014-01": 40,
+    "2013-12": 14,
+    "2013-11": 12,
+    "2013-10": 37,
+    "2013-09": 27,
+    "2013-08": 12,
+    "2013-07": 40,
+    "2013-06": 11,
+    "2013-05": 15,
+    "2013-04": 23,
+    "2013-03": 7,
+    "2013-02": 15,
+    "2013-01": 35,
+    "2012-12": 14,
+    "2012-11": 6,
+    "2012-10": 40,
+    "2012-09": 16,
+    "2012-08": 13,
+    "2012-07": 31,
+    "2012-06": 22,
+    "2012-05": 16,
+    "2012-04": 27,
+    "2012-03": 14,
+    "2012-02": 10,
+    "2012-01": 33,
+    "2011-12": 6,
+    "2011-11": 6,
+    "2011-10": 12,
+    "2011-09": 1,
+    "2011-08": 3,
+    "2011-07": 14,
+    "2011-06": 13,
+    "2011-05": 13,
+    "2011-04": 21,
+    "2011-03": 5,
+    "2011-02": 3,
+    "2011-01": 14,
+    "2010-12": 3,
+    "2010-11": 3,
+    "2010-10": 19,
+    "2010-09": 6,
+    "2010-08": 6,
+    "2010-07": 19,
+    "2010-06": 5,
+    "2010-05": 4,
+    "2010-04": 8,
+    "2010-03": 3,
+    "2010-02": 2,
+    "2010-01": 2,
+    "2009-12": 2,
+    "2009-11": 1,
+    "2009-10": 3,
+    "2020-02": 1,
+    "2019-05": 1,
+    "2019-04": 9,
+    "2019-03": 1,
+    "2019-01": 3,
+    "2018-11": 3,
+    "2018-10": 5,
+    "2018-09": 3,
+    "2018-12": 1,
+    "2018-08": 1,
+    "2018-05": 1,
+    "2018-04": 1,
+    "2017-12": 1,
+    "2017-11": 1,
+    "2017-09": 1,
+    "2017-08": 1,
+    "2017-06": 1,
+    "2017-05": 2,
+    "2017-03": 2,
+    "2017-02": 3,
+    "2017-01": 2,
+    "2016-09": 2,
+    "2016-08": 2,
+    "2016-06": 3,
+    "2016-03": 1,
+    "2015-12": 3,
+    "2015-09": 3,
+    "2015-06": 3,
+    "2015-03": 3,
+    "2015-02": 1,
+    "2014-12": 2,
+    "2014-10": 1,
+    "2014-09": 3,
+    "2014-07": 1,
+    "2014-06": 1,
+    "2014-05": 1
+   },
+   "stempel": {
+    "mitUhrzeit": 7,
+    "mitternacht": 3207,
+    "leer": 0
+   },
+   "ohneSymbol": 0,
+   "min": "2009-10-07 00:00:00 UTC",
+   "max": "2023-12-16 23:00:00 UTC",
+   "symboleAnzahl": 6,
+   "publisherTop": [
+    ":3214"
+   ],
+   "abdeckungBereich": {
+    "von": "A",
+    "bis": "AAL",
+    "symboleImTeilstueck": 6
+   },
+   "abdeckung": {
+    "2023-12": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-11": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-10": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-09": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-08": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-07": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-06": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-05": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-04": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-03": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-02": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2023-01": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 2,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-12": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-11": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-10": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-09": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-08": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-07": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-06": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-05": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-04": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-03": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-02": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2022-01": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 1,
+      "anteil": 1
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-12": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-11": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-10": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-09": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-08": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-07": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-06": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-05": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-04": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-03": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-02": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2021-01": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2020-12": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2020-11": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2020-10": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2020-09": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2020-08": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 1,
+      "anteil": 0.5
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2020-02": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2019-05": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2019-04": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2019-03": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2019-01": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2018-11": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2018-10": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2018-09": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2018-12": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2018-08": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2018-05": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2018-04": {
+     "1": {
+      "panelImBereich": 2,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2017-12": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2017-11": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2017-09": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2017-08": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2017-06": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2017-05": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2017-03": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2017-02": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2017-01": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2016-09": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2016-08": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2016-06": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    },
+    "2016-03": {
+     "1": {
+      "panelImBereich": 1,
+      "mitZeile": 0,
+      "anteil": 0
+     },
+     "2": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     },
+     "3": {
+      "panelImBereich": 0,
+      "mitZeile": 0,
+      "anteil": null
+     }
+    }
+   },
+   "abdeckungJeJahr": {
+    "2016": {
+     "1": 0,
+     "2": 0,
+     "3": 0,
+     "monate": 4
+    },
+    "2017": {
+     "1": 0,
+     "2": 0,
+     "3": 0,
+     "monate": 9
+    },
+    "2018": {
+     "1": 0,
+     "2": 0,
+     "3": 0,
+     "monate": 7
+    },
+    "2019": {
+     "1": 0,
+     "2": 0,
+     "3": 0,
+     "monate": 4
+    },
+    "2020": {
+     "1": 0.417,
+     "2": 0,
+     "3": 0,
+     "monate": 6
+    },
+    "2021": {
+     "1": 0.5,
+     "2": 0,
+     "3": 0,
+     "monate": 12
+    },
+    "2022": {
+     "1": 0.333,
+     "2": 1,
+     "3": 0,
+     "monate": 12
+    },
+    "2023": {
+     "1": 1,
+     "2": 0,
+     "3": 0,
+     "monate": 12
+    }
+   },
+   "symboleTop": [
+    "AA:1525",
+    "AAL:1177",
+    "A:379",
+    "AADR:77",
+    "AACG:49",
+    "AAAU:7"
+   ]
+  }
+ ],
+ "suche": {
+  "AAPL": {
+   "zeilen": 441,
+   "beispiele": [
+    "2020-06-10 07:33:26 UTC | JJ Kinahan | Tech Stocks And FAANGS Strong Again To Start Day As Market Awaits Fed",
+    "2020-06-10 04:14:08 UTC | Lisa Levin | 10 Biggest Price Target Changes For Wednesday",
+    "2020-06-10 03:53:47 UTC | Benzinga Newsdesk | Benzinga Pro's Top 5 Stocks To Watch For Wed., Jun. 10, 2020: AAPL, BAC, NIO, SO",
+    "2020-06-10 03:19:25 UTC | Benzinga Newsdesk | Deutsche Bank Maintains Buy on Apple, Raises Price Target to $350",
+    "2020-06-10 02:27:11 UTC | Neer Varshney | Apple To Let Users Trade In Their Mac Computers For Credit At US, Canada Stores:",
+    "2020-06-09 20:52:01 UTC | Neer Varshney | Big Tech Reaches New Record Heights At The Stock Market",
+    "2020-06-09 11:14:07 UTC | Tanzeel Akhtar | Why Apple's Stock Is Trading Higher Today",
+    "2020-06-09 09:58:46 UTC | Shanthi Rexaline | Apple Could Announce In-House Chips For Macs At WWDC: Report",
+    "2020-06-09 08:41:02 UTC | Benzinga Newsdesk | Apple shares are trading higher despite market weakness, not currently seeing co",
+    "2020-06-09 07:11:34 UTC | Benzinga Newsdesk | Sonos Shares Spike To Session High, Now Up 9.5%, As Citron's Andrew Left, Curren",
+    "2020-06-02 00:00:00 UTC | Benzinga Newsdesk | 'Apple is tracking iPhones stolen by looters' -Earlier NY Post Article",
+    "2020-06-02 00:00:00 UTC | Neer Varshney | MoneyGram Shares Jump 50% As Western Union Reportedly Looks For Acquisition",
+    "2020-06-02 00:00:00 UTC | Benzinga Newsdesk | Hearing Susquehanna Check Suggests Total iPhone 12 Builds Tracking To 10M, Below",
+    "2020-06-02 00:00:00 UTC | Neer Varshney | Tesla CEO Musk Says Other Three Officers Should Be Charged In Floyd's Murder Cas",
+    "2020-06-02 00:00:00 UTC | Lisa Levin | A Peek Into The Markets: US Stock Futures Up; Crude Oil Rises Over 2%",
+    "2020-06-02 00:00:00 UTC | Neer Varshney | Pepper Spray, Books On Racism, 'I Can't Breathe' Merchandise Are Top Sellers On ",
+    "2020-06-01 00:00:00 UTC | Shivdeep Dhaliwal | Apple Cuts iPhone Prices in China To Push Sales As Country Reopens Economy",
+    "2020-06-01 00:00:00 UTC | Wayne Duggan | Gun, Security Stocks Trade Higher After Weekend Protests Turn Violent And Destru",
+    "2020-06-01 00:00:00 UTC | Craig Jones | Carter Worth And Mike Khouw's Apple Trade",
+    "2020-06-01 00:00:00 UTC | Shivdeep Dhaliwal | Apple Pays Hacker From India $100,000 For Discovering Serious 'Sign In With Appl"
+   ]
+  },
+  "AAON": {
+   "zeilen": 121,
+   "beispiele": [
+    "2020-05-15 03:03:57 UTC | Benzinga Newsdesk | AAON Raises Semi-Annual Dividend From $0.16 To $0.19/Share",
+    "2020-05-07 04:21:40 UTC | Benzinga Newsdesk | AAON Says Gary D. Fields Will Become CEO",
+    "2020-05-07 03:40:09 UTC | Benzinga Newsdesk | AAON Announces Gary D. Fields To Become CEO",
+    "2020-05-07 03:31:17 UTC | Benzinga Newsdesk | AAON Q1 EPS $0.410 Beats $0.350 Estimate, Sales $137.480M Beat $125.080M Estimat",
+    "2020-04-07 08:40:13 UTC | Benzinga Newsdesk | Hearing Lakewood Capital Out With Short Call On AAON, Unconfirmed",
+    "2020-03-16 01:03:45 UTC | Lisa Levin | 144 Biggest Movers From Friday",
+    "2020-03-13 10:15:18 UTC | Benzinga Newsdesk | AAON Reports $20M Buyback",
+    "2020-03-12 08:10:12 UTC | Lisa Levin | Stocks That Hit 52-Week Lows On Thursday",
+    "2020-02-27 07:40:10 UTC | Benzinga Newsdesk | AAON shares are trading higher after the company reported better-than-expected Q",
+    "2020-02-27 03:30:30 UTC | Benzinga Newsdesk | AAON Q4 EPS $0.33 Beats $0.29 Estimate, Sales $122.574M Beat $122.53M Estimate",
+    "2020-02-14 00:00:00 UTC | Lisa Levin | Stocks That Hit 52-Week Highs On Friday",
+    "2020-02-11 00:00:00 UTC | Lisa Levin | Stocks That Hit 52-Week Highs On Tuesday",
+    "2020-01-31 00:00:00 UTC | Lisa Levin | Stocks That Hit 52-Week Highs On Friday",
+    "2020-01-29 00:00:00 UTC | Lisa Levin | Stocks That Hit 52-Week Highs On Wednesday",
+    "2020-01-24 00:00:00 UTC | Lisa Levin | Stocks That Hit 52-Week Highs On Friday",
+    "2020-01-17 00:00:00 UTC | Lisa Levin | Stocks That Hit 52-Week Highs On Friday",
+    "2019-10-31 00:00:00 UTC | Benzinga Newsdesk | AAON Q3 EPS $0.26 Down From $0.27 YoY, Sales $113.5M Up From $112.937M YoY",
+    "2019-10-31 00:00:00 UTC | Benzinga Newsdesk | AAON Earlier Reported Q3 EPS $0.26 Down From $0.27 YoY, Sales $113.5M Up From $1",
+    "2019-08-01 00:00:00 UTC | Benzinga Newsdesk | AAON Q2 EPS $0.25 Misses $0.27 Estimate, Sales $119.4M Miss $128.36M Estimate",
+    "2019-05-06 00:00:00 UTC | Benzinga_Newsdesk | UPDATE: DA Davidson Downgrades AAON To Underperform As Firm Is Concerned 'a bubb"
+   ]
+  },
+  "AAP": {
+   "zeilen": 825,
+   "beispiele": [
+    "2020-06-10 05:07:08 UTC | Benzinga Newsdesk | Advance Auto Parts Reports Multiyear Partnership With NASCAR, No Terms Disclosed",
+    "2020-05-21 03:55:11 UTC | vishwanath@benzinga.com | Morgan Stanley Maintains Overweight on Advance Auto Parts, Raises Price Target t",
+    "2020-05-20 06:50:37 UTC | Vick Meyer | Guggenheim Maintains Buy on Advance Auto Parts, Raises Price Target to $158",
+    "2020-05-20 05:15:35 UTC | vishwanath@benzinga.com | Wedbush Maintains Outperform on Advance Auto Parts, Raises Price Target to $150",
+    "2020-05-20 04:38:57 UTC | vishwanath@benzinga.com | UBS Maintains Buy on Advance Auto Parts, Raises Price Target to $154",
+    "2020-05-20 03:47:46 UTC | vishwanath@benzinga.com | Nomura Instinet Maintains Neutral on Advance Auto Parts, Raises Price Target to ",
+    "2020-05-19 08:48:07 UTC | Lisa Levin | 44 Stocks Moving In Tuesday's Mid-Day Session",
+    "2020-05-19 06:54:27 UTC | Vick Meyer | CFRA Maintains Hold on Advance Auto Parts, Lowers Price Target to $135",
+    "2020-05-19 03:21:03 UTC | Benzinga Newsdesk | Advance Auto Parts shares are trading higher despite reporting worse-than-expect",
+    "2020-05-19 03:20:54 UTC | Lisa Levin | 28 Stocks Moving in Tuesday's Pre-Market Session",
+    "2020-05-19 00:00:00 UTC | Benzinga Insights | Recap: Advance Auto Parts Q1 Earnings",
+    "2020-05-19 00:00:00 UTC | Benzinga Newsdesk | Advance Auto Parts Q1 Adj. EPS $0.910 Misses $1.750 Estimate, Sales $2.700B Miss",
+    "2020-05-19 00:00:00 UTC | Lisa Levin | A Peek Into The Markets: US Stock Futures Edge Lower Following Monday's Rally",
+    "2020-05-19 00:00:00 UTC | Lisa Levin | Earnings Scheduled For May 19, 2020",
+    "2020-05-19 00:00:00 UTC | Lisa Levin | 6 Stocks To Watch For May 19, 2020",
+    "2020-05-14 00:00:00 UTC | vishwanath@benzinga.com | Wells Fargo Maintains Equal-Weight on Advance Auto Parts, Raises Price Target to",
+    "2020-05-11 00:00:00 UTC | vishwanath@benzinga.com | UBS Maintains Buy on Advance Auto Parts, Raises Price Target to $140",
+    "2020-04-21 00:00:00 UTC | Lisa Levin | Benzinga's Top Upgrades, Downgrades For April 21, 2020",
+    "2020-04-21 00:00:00 UTC | Vick Meyer | Guggenheim Upgrades Advance Auto Parts to Buy, Announces $153 Price Target",
+    "2020-04-20 00:00:00 UTC | vishwanath@benzinga.com | B of A Securities Maintains Buy on Advance Auto Parts, Raises Price Target to $1"
+   ]
+  },
+  "ACGL": {
+   "zeilen": 269,
+   "beispiele": [
+    "2020-06-10 06:22:11 UTC | Benzinga Newsdesk | Shares of several financial services companies are trading lower as markets sell",
+    "2020-06-09 06:34:41 UTC | Benzinga Newsdesk | Shares of several financial services companies are trading lower as equities sel",
+    "2020-06-05 06:05:06 UTC | Benzinga Newsdesk | Shares of several financial services companies are trading higher following stro",
+    "2020-06-02 07:19:32 UTC | Benzinga Newsdesk | Shares of several global financial services companies are trading higher, potent",
+    "2020-06-01 06:57:16 UTC | Benzinga Newsdesk | Shares of several financial services companies are trading higher as equities ga",
+    "2020-05-29 07:58:14 UTC | Benzinga Newsdesk | Shares of several financial services companies are trading lower amid market vol",
+    "2020-05-27 05:54:26 UTC | Benzinga Newsdesk | Shares of several financial services companies are trading higher amid economic ",
+    "2020-05-23 11:14:37 UTC | Nelson Hem | Notable Insider Buys This Past Week: Berkshire Hathaway, Sysco And More",
+    "2020-05-22 11:15:47 UTC | Benzinga Newsdesk | Arch Capital shares are trading higher after B of A Securities reinstated a Buy ",
+    "2020-05-22 07:35:52 UTC | Vick Meyer | B of A Securities Reinstates Buy on Arch Capital Group, Announces $39 Price Targ",
+    "2020-05-20 00:00:00 UTC | Benzinga Newsdesk | Shares of several financial services companies are trading higher as equities ga",
+    "2020-05-18 00:00:00 UTC | vishwanath@benzinga.com | Morgan Stanley Maintains Equal-Weight on Arch Capital Group, Lowers Price Target",
+    "2020-05-14 00:00:00 UTC | Benzinga Insights | Stocks That Hit 52-Week Lows On Thursday",
+    "2020-05-11 00:00:00 UTC | vishwanath@benzinga.com | UBS Maintains Buy on Arch Capital Group, Lowers Price Target to $39",
+    "2020-05-05 00:00:00 UTC | Benzinga Newsdesk | Shares of several global financial services are trading higher amid positive inv",
+    "2020-05-05 00:00:00 UTC | Vick Meyer | JP Morgan Maintains Neutral on Arch Capital Group, Lowers Price Target to $30",
+    "2020-05-04 00:00:00 UTC | Benzinga Newsdesk | Arch Capital Group Q1 EPS $0.320 Misses $0.440 Estimate",
+    "2020-05-04 00:00:00 UTC | Benzinga Insights | Stocks That Hit 52-Week Lows On Monday",
+    "2020-04-30 00:00:00 UTC | Benzinga Newsdesk | Shares of several global financial services companies are trading lower amid mar",
+    "2020-04-21 00:00:00 UTC | Benzinga Newsdesk | Shares of several global financial services companies are trading lower on conti"
+   ]
+  },
+  "ACHC": {
+   "zeilen": 320,
+   "beispiele": [
+    "2020-05-18 06:23:42 UTC | Benzinga Newsdesk | Shares of several healthcare companies are trading higher in sympathy with the o",
+    "2020-05-13 08:49:41 UTC | Benzinga Newsdesk | Shares of several companies in the broader healthcare sector are trading lower a",
+    "2020-05-07 04:04:22 UTC | Vick Meyer | Deutsche Bank Maintains Hold on Acadia Healthcare Co, Lowers Price Target to $28",
+    "2020-05-06 07:22:13 UTC | Vick Meyer | Baird Maintains Neutral on Acadia Healthcare Co, Lowers Price Target of $30",
+    "2020-05-06 04:21:33 UTC | Vick Meyer | Credit Suisse Maintains Neutral on Acadia Healthcare Co, Lowers Price Target to ",
+    "2020-05-06 03:17:34 UTC | vishwanath@benzinga.com | Raymond James Reiterates Outperform on Acadia Healthcare Co, Lowers Price Target",
+    "2020-05-06 01:26:42 UTC | Lisa Levin | 70 Biggest Movers From Yesterday",
+    "2020-05-05 08:26:32 UTC | Benzinga Newsdesk | Acadia Healthcare Co shares are trading higher after the company reported better",
+    "2020-05-05 08:22:49 UTC | Lisa Levin | 51 Stocks Moving In Tuesday's Mid-Day Session",
+    "2020-05-04 12:18:40 UTC | Benzinga Newsdesk | Acadia Healthcare Withdraws Full-Year 2020 Guidance",
+    "2020-05-04 00:00:00 UTC | Benzinga Newsdesk | Acadia Healthcare Co Q1 EPS $0.420 Beats $0.380 Estimate, Sales $782.800M Miss $",
+    "2020-04-27 00:00:00 UTC | Benzinga Newsdesk | Shares of several healthcare companies are trading higher as equities gain stren",
+    "2020-04-15 00:00:00 UTC | Benzinga Newsdesk | Shares of several healthcare companies are trading lower amid overall market wea",
+    "2020-04-09 00:00:00 UTC | Benzinga Newsdesk | Shares of several healthcare companies are trading higher amid overall market st",
+    "2020-04-08 00:00:00 UTC | Benzinga Newsdesk | Shares of several healthcare companies are trading higher amid overall market st",
+    "2020-04-07 00:00:00 UTC | Benzinga Newsdesk | Shares of several healthcare companies are trading higher amid optimism that cor",
+    "2020-04-06 00:00:00 UTC | Benzinga Newsdesk | Shares of several healthcare companies are trading higher as markets gain amid o",
+    "2020-03-27 00:00:00 UTC | Lisa Levin | 90 Biggest Movers From Yesterday",
+    "2020-03-26 00:00:00 UTC | Benzinga Newsdesk | Shares of several healthcare companies are trading higher following Senate passa",
+    "2020-03-19 00:00:00 UTC | Benzinga Newsdesk | Acadia Healthcare To Temporarily Suspend Sale Process Of UK Business Amid Corona"
+   ]
+  }
+ }
+}
