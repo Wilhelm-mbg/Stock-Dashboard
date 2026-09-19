@@ -220,3 +220,36 @@ einzige Quelle mit Minutenstempel **und** Ticker wäre.
 ---
 
 *Verbrauch: siehe Übergabe. Leseagenten (Haiku): GDELT 66.930, FNSPID 80.041, Literatur 80.567 Token.*
+
+---
+
+## 7. Gegenprobe des PM (19.09.2026) — die MDE aus Zufallsdezilen ist ein Boden, kein Maß
+
+**Nachgerechnet** (`pm-mde-boden.js`, Kratzordner; eigene Ziehung, monatliche Signaltage ab 2017, 21 Handelstage, Panel v2.1):
+Paar-sd Zufallsdezil gegen Universum Klasse 1 **1,44 Pp** (Chat 1,33), Klasse 2 **2,33** (2,23), Klassen 1–3 gepoolt 1,20;
+MDE₈₀ Klasse 1 **0,37 Pp** (Chat 0,35), Klasse 2 **0,60** (0,58), gepoolt 0,31; Klasse 3 nur 23 Monate mit ≥ 50 Papieren
+→ 2,84 (Chat 1,69 über 84 dünnere Monate). **Die Zahlen des Chats sind reproduziert.**
+
+**Aber:** ein Zufallsdezil hat keine Faktorneigung. Ein echtes Dezil hat sie — und darum eine viel größere Streuung. Beleg aus
+unseren eigenen Messungen: das Momentum-Dezil aus Teil 3 (Klassen 1–3, dieselben 21 Tage, dieselben Monate) hat gegen das
+Universum eine realisierte **se von 0,49 Pp** (Δ +1,10, t 2,23, n 115, Panel v2.1) — gegen den Zufallsboden 0,112 Pp ein
+**Faktor 4,45**. Ein Stimmungsdezil ist vermutlich weniger geballt als Momentum (Faktor eher 2–4), aber kein Zufallsdezil.
+Realistische MDE₈₀ je Monat also: **Klasse 1 ≈ 0,8–1,6 Pp, Klasse 2 ≈ 1,2–2,7 Pp, Klasse 3 > 5 Pp.** Gegen die Arbeitsannahme
+1 Pp je Monat ist damit **keine Klasse sicher auflösbar** — das Gitter in §4 gilt nur für den Boden.
+
+**Und das Entscheidende steht in §3 selbst:** die Literatur misst Tage. Tetlock 2007 (≈ 9,5 bp am Folgetag, verschwindet
+innerhalb einer Woche) und Ke/Kelly/Xiu 2019 (Abklingen ≈ 5 Tage) beschreiben ein **Signal mit Tagen Halbwertszeit**. Eine
+monatliche Querschnittsmessung mit 21 Tagen Haltedauer misst davon fast nichts — erwartete Größe nahe null, egal wie fein die
+Auflösung. Das richtige Instrument wäre eine **Tages- bis Wochenmessung (1–5 Handelstage)** mit der gemessenen Kassa-Hürde
+je Umlauf (0,157 / 0,085 / 0,065 / 0,045 Pp) — also genau das Feld, in dem die Minutenstudien und Trendwende II nichts über
+den Kosten fanden, nur mit einer anderen Signalfamilie (Text statt Kurs). Ob dort etwas bleibt, sagt erst eine
+Vorregistrierung mit Kostenprüfung **vor** dem Urteil; die Ke/Kelly/Xiu-Zahl (Tagesrendite des Long-Short) ist dafür die
+Messlatte und noch nicht belegt (PDF liegt lokal, `pdftoppm` fehlt — Wilhelms Hand oder Zweitquelle).
+
+**Was von der Machbarkeit unabhängig vom Design steht:** (1) das eigene Archiv trägt heute nichts (17 Symbole, keins in
+Klasse 1, Deckel 400 frisst Historie) — der Ausbau ist ein **Datenschritt**, der jedem Design dient; (2) GDELT ist die einzige
+freie Quelle mit Minutenstempel und Ton-Maß, aber ohne Ticker — die Abdeckungsprobe ist der nächste sinnvolle Schritt, die
+Namensliste gibt es (EDGAR `company_tickers.json`, Stammdaten der App); (3) FNSPID nur Tagesstempel → für ein Tagesdesign
+unbrauchbar (Leck), für ein Monatsdesign zu wenig Fenster; (4) Bigdata nicht finanzierbar.
+
+**Verbrauch laut Abrechnung:** Studien-Chat 248k (Selbstschätzung 95k, Faktor 2,6) + Haiku-Leseagenten 228k.
