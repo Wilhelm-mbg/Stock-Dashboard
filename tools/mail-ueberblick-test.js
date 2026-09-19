@@ -168,6 +168,24 @@ pruefe(fin && fin.absender === 'bank@example.com' && fin.text === 'Ordnermail Fi
 const bescheid = tag.mails.find(m => m.betreff === 'Bescheid');
 pruefe(bescheid && bescheid.anhaenge.length === 1 && bescheid.anhaenge[0] === 'Bescheid.pdf' && bescheid.gelesen, 'Anhangsliste und gelesen-Status stimmen');
 pruefe(tag.konten.some(z => /leer@example\.com: NICHT LESBAR/.test(z)), 'Kontenblock kommt mit');
+/* ---- Ticket-Board: Einordnung (per Nr.) + Zustand in tickets.json, Schlüssel MAIL-n bleiben stabil */
+fs.writeFileSync(path.join(ziel, 'einordnung-' + tage[0].datum + '.json'), JSON.stringify([
+  { nr: fin.nr, klasse: 'handeln', kurz: 'Kontoauszug prüfen', aufgabe: 'bis Freitag' },
+  { nr: bescheid.nr, klasse: 'lesen', kurz: 'Bescheid ohne Frist' }
+]));
+const board1 = server.boardLaden(ziel);
+pruefe(board1.tickets.length === 5 && board1.tickets.every(t => /^MAIL-\d+$/.test(t.schluessel) && t.status === 'offen'), 'Board: fünf Tickets, alle offen, mit Schlüssel MAIL-n');
+const tFin = board1.tickets.find(t => t.nr === fin.nr);
+pruefe(tFin && tFin.prioritaet === 'hoch' && tFin.aufgabe === 'bis Freitag' && tFin.prioritaetQuelle === 'routine', 'Einordnung handeln -> Priorität hoch, Aufgabe dabei');
+pruefe(board1.tickets.find(t => t.nr === bescheid.nr).prioritaet === 'mittel', 'Einordnung lesen -> mittel');
+pruefe(board1.tickets.filter(t => t.prioritaet === null).length === 3, 'ohne Einordnung: keine Priorität');
+const geaendert = server.ticketAendern(ziel, tFin.id, { status: 'erledigt', notiz: 'gemacht', prioritaet: 'niedrig' });
+pruefe(geaendert && geaendert.status === 'erledigt' && geaendert.notiz === 'gemacht', 'Ticket ändern: Status und Notiz gespeichert');
+pruefe(server.ticketAendern(ziel, tFin.id, { status: 'quatsch' }).fehler, 'unbekannter Status wird abgewiesen');
+pruefe(server.ticketAendern(ziel, '0000000000000000', { status: 'offen' }) === null, 'unbekanntes Ticket -> null');
+const board2 = server.boardLaden(ziel);
+const tFin2 = board2.tickets.find(t => t.id === tFin.id);
+pruefe(tFin2.schluessel === tFin.schluessel && tFin2.status === 'erledigt' && tFin2.prioritaet === 'niedrig' && tFin2.prioritaetQuelle === 'wilhelm', 'Zustand überlebt das Neuladen, Schlüssel bleibt, eigene Priorität schlägt Routine');
 const http = require('http');
 process.exitCode = 1;   // bis die Schlusszeile unten geschrieben ist: ein stiller Abbruch darf nicht grün aussehen
 const laufende = server.start(server.argumente(['--port', '0', '--ordner', ziel]));

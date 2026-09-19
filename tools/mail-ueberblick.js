@@ -341,6 +341,7 @@ function nachrichtAuswerten(buf, konto, zeichen) {
     datum, abgelegt,
     absender: kopfDekodieren(kopf['from'] || ''),
     an: kopfDekodieren(kopf['to'] || ''),
+    messageId: (kopf['message-id'] || '').trim(),   // stabiler Schlüssel für das Ticket-Board
     betreff: kopfDekodieren(kopf['subject'] || '') || '(kein Betreff)',
     gelesen: (status & FLAG_GELESEN) !== 0,
     geloescht: (status & FLAG_GELOESCHT) !== 0 || (status2 & FLAG2_IMAP_GELOESCHT) !== 0,
@@ -460,6 +461,7 @@ function neuDateiSchreiben(ziel, jetzt, schwelle, konten, treffer, protokoll) {
     zeilen.push('='.repeat(78));
     zeilen.push(`#${nr}  Konto: ${n.konto}`);
     zeilen.push(`Ordner: ${n.ordner}`);
+    zeilen.push(`Message-ID: ${n.messageId || '-'}`);
     zeilen.push(`Datum: ${stempel(n.datum)}`);
     zeilen.push(`Absender: ${n.absender}`);
     zeilen.push(`Betreff: ${n.betreff}`);
