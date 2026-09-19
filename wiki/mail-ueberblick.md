@@ -36,6 +36,10 @@ Am Handy zeigt eine Android-App (WebView um eine Seite, die ein kleiner Node-Ser
 - `Theme.DeviceDefault.DayNight.NoActionBar` gibt es im Android-Framework nicht (nur AppCompat); `Theme.DeviceDefault.DayNight` mit `windowNoTitle`.
 - Zweiter Sammellauf am selben Tag verschiebt die Mail-Nummern (Fenster rückt weiter). Einordnung hängt deshalb an der Message-ID.
 
+## Zweites Repo: Management-Tool (19.09.2026, Nachmittag)
+
+Wilhelm hat den Mail-Überblick zum **Live-Management-Tool** erweitert: Ticket-Board mit Priorität, Bearbeiter, SLA-Ampel (1/3/7 Tage je Priorität, überschreibbar), Haushaltstickets mit Wiederholung, Kalender (Fristen, Paketankunft, Termine), Zustellungen (Status, Zustellversuche), Belege, Einkaufsliste, Einnahmen/Ausgaben – als **Electron-Desktop-App mit Installer** und am Handy. Eigenes Repo `C:\Users\Wilhe\Downloads\Management-Tool`, privat auf GitHub als Wilhelm-mbg/Management-Tool. Das Repo Mail-Ueberblick sammelt nur noch (`sammeln.js`) und trägt die Routine, die ab jetzt je Mail auch Bestellstatus, Ankunft und Beleg-Betrag als Felder liefert. Entscheide per Formular: Electron statt Edge-Fenster, SLA je Priorität, Bearbeiter ohne Login (Login = Stufe 3), Haushalt mit Wiederholungen, Einkauf, Ausgaben und Einnahmen. Fundstelle: Übergabe `mail-ueberblick-2026-09-19.md`, Abschnitt 6e.
+
 ## Was nicht hierher gehört
 
 Das Repo `Stock-Dashboard` liefert die App aus, misst Handelsideen und trägt Sperrklinken; der Mail-Überblick hat damit nichts zu tun außer dem gemeinsamen Datenordner `Markt-Dashboard-Daten` und der Übergabe-Gewohnheit. Änderungen am Mail-Überblick gehören ins andere Repo, nicht hierher.
