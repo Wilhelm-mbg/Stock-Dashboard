@@ -21442,6 +21442,132 @@ console.log('\n89) Paket-QS: die Fremdmodule muessen im Paket liegen (Sperrklink
      '89.6 derselbe Hinweis an beiden Stellen, aus einer Quelle', (mCode89.match(/UPD_PAKETFEHLER/g) || []).length);
 })();
 
+console.log('\n90) Nachrichten-Archiv ohne Deckel (Nr. 43, 19.09.2026): Universum aus Datei, Tagesablage im Hauptprozess, eigener Takt');
+(function () {
+  /* WOZU: Bis zum 19.09.2026 lagen Schlagzeilen fuer 17 Symbole als Store-Schluessel,
+   * gedeckelt auf 400 Eintraege je Symbol. Eine Messung des Nachrichten-Sentiments
+   * braucht die Klassen 1-3 des Tages-Panels (rund 1.000 Werte) und keinen Deckel.
+   * Geprueft wird das VERHALTEN des Moduls in einem Wegwerf-Ordner und - als
+   * Sperrklinke - der Schreibpfad in der App: asynchron im Hauptprozess, nie im
+   * Renderer, nie synchron (Fehlerform 08.09.2026), und der Takt haengt an keiner
+   * Strategie (Fehlerform 31.08.2026: das Archiv ritt auf der Strategie mit). */
+  var N90 = require('./nachrichtenablage.js');
+  var fs90 = require('fs'), path90 = require('path'), os90 = require('os');
+  var g90 = 0, rot90 = 0;
+  function gegen90(was, ergebnis) { g90++; if (ergebnis) rot90++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  var depotQ90 = ohneKommentare(fs90.readFileSync(__dirname + '/depot.js', 'utf8'));
+  var mainQ90 = ohneKommentare(fs90.readFileSync(__dirname + '/main.js', 'utf8'));
+  var preQ90 = ohneKommentare(fs90.readFileSync(__dirname + '/preload.js', 'utf8'));
+  var modulQ90 = ohneKommentare(fs90.readFileSync(__dirname + '/nachrichtenablage.js', 'utf8'));
+  function fn90(quelle, von, bis) { var a = quelle.indexOf(von); var e = a < 0 ? -1 : quelle.indexOf(bis, a + 1); return a >= 0 && e > a ? quelle.slice(a, e) : ''; }
+
+  /* --- 90.1 Verhalten im Wegwerf-Ordner --- */
+  probe((async function () {
+    var d = fs90.mkdtempSync(path90.join(os90.tmpdir(), 'md-90-'));
+    try {
+      var t = Date.UTC(2026, 8, 19, 12);
+      ok((await N90.universumLesen(d)) === null, '90.1 ohne Universum-Datei kommt null - der Aufrufer nimmt seine alte Liste (Rueckfall, kein Fehler)');
+      fs90.writeFileSync(path90.join(d, N90.UNIVERSUM_DATEI), '{ kaputt');
+      ok((await N90.universumLesen(d)) === null, '90.1 eine unlesbare Universum-Datei ist ebenfalls null, wirft nicht');
+      fs90.writeFileSync(path90.join(d, N90.UNIVERSUM_DATEI), JSON.stringify({ kennung: 'k', quelle: 'q', symbole: ['AAPL', 'BRK.B', 'AAPL', 'aapl', '../x', '', 7] }));
+      var u = await N90.universumLesen(d);
+      ok(u && u.kennung === 'k' && u.quelle === 'q' && JSON.stringify(u.symbole) === '["AAPL","BRK.B"]',
+         '90.1 die Universum-Datei wird gelesen: nur gueltige, eindeutige Symbole (Kleinschrift, Pfade, Zahlen fallen)', JSON.stringify(u && u.symbole));
+      gegen90('eine Datei ohne Symbole ist null', (fs90.writeFileSync(path90.join(d, N90.UNIVERSUM_DATEI), '{"symbole":[]}'), (await N90.universumLesen(d)) === null));
+
+      /* Deckel weg: 401 Eintraege bleiben alle liegen. */
+      var z = { bekannt: {} }, viele = [];
+      for (var i = 0; i < 401; i++) viele.push([t + i * 1000, 'Meldung ' + i]);
+      var r1 = await N90.anhaengen(d, 'MSFT', viele, z);
+      var gelesen = await N90.lesen(d, 'MSFT');
+      ok(r1.ok && r1.neu === 401 && gelesen.length === 401 && gelesen[0][1] === 'Meldung 0' && gelesen[400][1] === 'Meldung 400',
+         '90.1 der Deckel ist weg: der 401. Eintrag bleibt, der erste auch', JSON.stringify([r1.neu, gelesen.length]));
+      var pfad = N90.pfadFuer(d, 'MSFT', 2026);
+      var vorher = fs90.readFileSync(pfad, 'utf8');
+      ok(/^\[\d+,"Meldung 0"\]\n/.test(vorher) && /\n$/.test(vorher) && vorher.split('\n').length === 402, '90.1 die Datei ist JSON-Zeilen: eine Zeile je Meldung, Zeilenende am Schluss');
+
+      /* Nur anhaengen: ein zweiter Anhang laesst die alten Bytes unangetastet. */
+      var r2 = await N90.anhaengen(d, 'MSFT', [[t + 500000, 'Neu'], [t + 1000, 'Meldung 1'], [t + 60000, 'Meldung 2']], z);
+      var nachher = fs90.readFileSync(pfad, 'utf8');
+      ok(r2.ok && r2.neu === 1 && r2.doppelt === 2 && nachher.indexOf(vorher) === 0 && nachher.length > vorher.length,
+         '90.1 nur anhaengend: die alten Bytes stehen unveraendert am Anfang, Doppelte (gleicher Titel, Stempel um Minuten verschoben) werden nicht doppelt', JSON.stringify([r2.neu, r2.doppelt]));
+      var r3 = await N90.anhaengen(d, 'MSFT', [[t + 3 * 86400000, 'Meldung 1']], z);
+      ok(r3.ok && r3.neu === 1, '90.1 derselbe Titel Tage spaeter ist eine neue Meldung (Serien wie "Stock Market Today")');
+      /* Neustart der App: der Zustand ist leer, die Doppelten stehen auf der Platte. */
+      var r4 = await N90.anhaengen(d, 'MSFT', [[t + 500001, 'Neu'], [t + 300005, 'Meldung 300']], { bekannt: {} });
+      ok(r4.ok && r4.neu === 0 && r4.doppelt === 2, '90.1 nach einem Neustart erkennt das Modul die Doppelten aus der Datei', JSON.stringify(r4));
+      var r4b = await N90.anhaengen(d, 'MSFT', [[t + 2005, 'Meldung 2']], { bekannt: {} });
+      ok(r4b.ok && r4b.neu === 1, '90.1 (bekannte Grenze, ponytail) das Erinnerungsfenster hat ' + N90.FENSTER + ' Titel - der dritte von 403 faellt nach einem Neustart hindurch', JSON.stringify(r4b));
+      gegen90('ein leerer Titel oder ein Stempel vor 2000 ist kein Eintrag', !N90.eintragOk([t, '']) && !N90.eintragOk([5, 'x']) && N90.eintragOk([t, 'x']));
+
+      /* Jahr = Jahr der Meldung; unbrauchbare Eintraege fallen, statt zu stuerzen. */
+      var r5 = await N90.anhaengen(d, 'MSFT', [[Date.UTC(2025, 11, 31, 23), 'Silvester'], [5, 'Stempel 1970'], ['x', 'kein Stempel'], [t, ''], [t]], z);
+      var dateien = await N90.jahresDateien(d, 'MSFT');
+      ok(r5.ok && r5.neu === 1 && r5.verworfen === 4 && JSON.stringify(dateien) === '["2025.jsonl","2026.jsonl"]',
+         '90.1 das Jahr ist das der Meldung; Stempel vor 2000, fehlende Titel, fremde Formen werden verworfen', JSON.stringify([r5, dateien]));
+      var r6 = await N90.anhaengen(d, '../MSFT', [[t, 'x']], z);
+      ok(!r6.ok && /unzulaessig/.test(r6.grund), '90.1 ein Symbol mit Pfadzeichen wird abgewiesen - ein Ergebnis, kein Absturz');
+
+      /* Migration: die alten Store-Schluessel einmal uebernehmen, nichts doppelt. */
+      var st = path90.join(d, 'store'); fs90.mkdirSync(st);
+      fs90.writeFileSync(path90.join(st, 'newsarchiv_NVDA.json'), JSON.stringify({ stand: 1, items: [[t, 'n1'], [t + 1, 'n2']] }));
+      fs90.writeFileSync(path90.join(st, 'newsarchiv_MSFT.json'), JSON.stringify({ items: [[t + 500002, 'Neu'], [t + 9, 'aus dem Store']] }));
+      fs90.writeFileSync(path90.join(st, 'settings.json'), '{"x":1}');
+      var m1 = await N90.migrieren(st, d, z);
+      ok(m1.symbole === 2 && m1.uebernommen === 3 && m1.doppelt === 1 && m1.fehler.length === 0,
+         '90.1 Migration: zwei Schluessel, drei Eintraege uebernommen, der schon vorhandene nicht doppelt; settings.json bleibt unberuehrt', JSON.stringify(m1));
+      ok((await N90.lesen(d, 'NVDA')).length === 2 && fs90.existsSync(path90.join(st, 'newsarchiv_NVDA.json')),
+         '90.1 die Store-Datei bleibt liegen (lesbar), die Jahresdatei traegt ihre Eintraege');
+      var m2 = await N90.migrieren(st, d, z);
+      gegen90('eine zweite Migration uebernimmt nichts mehr (alles doppelt)', m2.uebernommen === 0 && m2.doppelt === 4);
+      ok((await N90.migrieren(path90.join(d, 'gibt-es-nicht'), d, z)).symbole === 0, '90.1 ohne Store-Ordner ist die Migration leer, kein Fehler');
+      ok(g90 >= 5 && rot90 === g90, '90.x alle Gegenproben dieses Abschnitts schlagen an', rot90 + ' von ' + g90);
+    } finally {
+      try { fs90.rmSync(d, { recursive: true, force: true }); } catch (e) { /* Wegwerf bleibt liegen */ }
+    }
+  })());
+
+  /* --- 90.2 Sperrklinke: der Schreibpfad ist asynchron im Hauptprozess --- */
+  ok(!/Sync\(/.test(modulQ90) && (modulQ90.match(/fsp\.(appendFile|readFile|readdir|mkdir)\(/g) || []).length >= 5,
+     '90.2 nachrichtenablage.js kennt keinen synchronen Dateizugriff - alles ueber fs.promises', (modulQ90.match(/fsp\.\w+\(/g) || []).length + ' Aufrufe');
+  gegen90('ein Modul mit writeFileSync fiele durch', /Sync\(/.test(modulQ90 + "\nfs.writeFileSync(p, s);"));
+  var handler90 = fn90(mainQ90, "const Nachrichten = require('./nachrichtenablage.js');", "const Kerzen = require('./kerzenquelle.js');");
+  ok(handler90.length > 100 && /ipcMain\.handle\('nachrichten-universum'/.test(handler90) && /ipcMain\.handle\('nachrichten-anhaengen'/.test(handler90) &&
+     /ipcMain\.handle\('nachrichten-migration'/.test(handler90) && !/Sync\(/.test(handler90) && !/storeDir\(\)/.test(handler90),
+     '90.2 main.js: drei Auskuenfte (Universum, Anhaengen, Migration), keine davon synchron, keine ueber storeDir()', handler90.length + ' Zeichen');
+  ok(/Nachrichten\.anhaengen\(datenOrdner\(\), String\(sym \|\| ''\), eintraege, NACHRICHTEN\.zustand\)/.test(handler90) &&
+     /path\.join\(app\.getPath\('downloads'\), 'Markt-Dashboard-Daten'\)/.test(handler90),
+     '90.2 geschrieben wird in den Datenordner (Downloads/Markt-Dashboard-Daten), mit einem Zustand je App-Lauf');
+  ['nachrichtenUniversum', 'nachrichtenAnhaengen', 'nachrichtenMigration'].forEach(function (b) {
+    ok(new RegExp(b + ": \\([^)]*\\) => ipcRenderer\\.invoke\\('nachrichten-").test(preQ90), '90.2 preload.js reicht ' + b + ' als invoke durch');
+  });
+
+  /* --- 90.3 depot.js: kein Store, kein Deckel, Universum aus der Datei, Takt ohne Strategie --- */
+  var archiv90 = fn90(depotQ90, 'async function archiviereNews(sym, items)', 'function spotOf(sym, hist)');
+  ok(archiv90.length > 100 && /window\.api\.nachrichtenAnhaengen\(sym, liste\)/.test(archiv90) && !/storeSet|storeGet|slice\(-400\)|newsarchiv_/.test(archiv90),
+     '90.3 archiviereNews reicht an den Hauptprozess durch - kein Store, kein Deckel, kein Schluessel newsarchiv_', archiv90.length + ' Zeichen');
+  var newsTeil90 = fn90(depotQ90, 'async function getSymbolNews(sym)', 'function spotOf(sym, hist)');
+  ok(newsTeil90.length > 1000 && !/slice\(-400\)/.test(newsTeil90) && !/newsarchiv_/.test(depotQ90) && !/storeSet\('newsarchiv/.test(depotQ90),
+     '90.3 im ganzen News-Teil (getSymbolNews bis spotOf) kein Deckel von 400, nirgends in depot.js ein Store-Schluessel newsarchiv_', newsTeil90.length + ' Zeichen');
+  gegen90('der alte Rumpf mit slice(-400) fiele durch', /slice\(-400\)/.test(archiv90 + 'if (liste.length > 400) liste = liste.slice(-400);'));
+  var lauf90 = fn90(depotQ90, 'async function newsArchivLauf()', 'async function archiviereNews');
+  ok(lauf90.length > 300 && /var syms = universe\(\);/.test(lauf90) && /await window\.api\.nachrichtenUniversum\(\)/.test(lauf90) &&
+     /if \(uni && Array\.isArray\(uni\.symbole\) && uni\.symbole\.length\) \{ syms = uni\.symbole;/.test(lauf90),
+     '90.3 der Lauf nimmt das Universum aus der Datei und faellt ohne Datei auf universe() zurueck', lauf90.length + ' Zeichen');
+  ok(/if \(!D\.newsArchivMigriert\) \{/.test(lauf90) && /await window\.api\.nachrichtenMigration\(\)/.test(lauf90) && /D\.newsArchivMigriert = \{/.test(lauf90),
+     '90.3 die Migration laeuft genau einmal - der Renderer merkt sich das im Store');
+  ok(/leer200/.test(lauf90) && /fehler/.test(lauf90) && /dauerS/.test(lauf90) && /mitMeldungen/.test(lauf90) && /D\.newsArchivStand = z;/.test(lauf90),
+     '90.3 der Stand des Laufs zaehlt Symbole, mit Meldungen, leer-200, Fehler und Dauer (Fehlerform "Quelle antwortet leer mit 200")');
+  ok(/aus\.leer = nodes\.length === 0;/.test(depotQ90) && /await archiviereNews\(sym, items\);/.test(depotQ90),
+     '90.3 getSymbolNews meldet eine leere 200-Antwort als leer und archiviert selbst - EIN Weg zur Quelle');
+  ok(/var NEWS_ARCHIV_TAKT_MS = 6 \* 3600000;/.test(depotQ90) && /var NEWS_ARCHIV_PAUSE_MS = 1200;/.test(depotQ90),
+     '90.3 Takt alle sechs Stunden, Pause 1,2 s je Symbol (Lastmessung 19.09.2026)');
+  var takt90 = (depotQ90.match(/setInterval\(function \(\) \{\s*\n\s*if \(Date\.now\(\) - \(\(D\.newsArchivStand[\s\S]{0,200}?\}, 5 \* 60000\);/) || [''])[0];
+  ok(takt90 && /NEWS_ARCHIV_TAKT_MS\) newsArchivLauf\(\);/.test(takt90) && takt90.indexOf('hourlyEnabled') === -1 && lauf90.indexOf('hourlyEnabled') === -1,
+     '90.3 der Takt fragt weder nach hourlyEnabled noch nach einer Strategie - weder im Zeitgeber noch im Lauf');
+  gegen90('ein Takt mit hourlyEnabled fiele durch', (takt90 + ' && D.hourlyEnabled !== false').indexOf('hourlyEnabled') !== -1);
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
