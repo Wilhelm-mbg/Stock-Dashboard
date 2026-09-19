@@ -51,7 +51,20 @@ var ALLERWELT = ['american', 'first', 'united', 'general', 'national', 'internat
   'houston', 'atlanta', 'seattle', 'portland', 'orlando', 'canada', 'canadian', 'china', 'japan', 'india',
   'europe', 'european', 'america', 'americas', 'asia', 'africa', 'australia', 'brazil', 'mexico', 'israel',
   'british', 'french', 'german', 'swiss', 'dutch', 'spanish', 'italian', 'korea', 'korean', 'taiwan',
-  'group', 'holdings', 'trust', 'company', 'corporation', 'limited', 'bank', 'banc', 'bancorporation'];
+  'group', 'holdings', 'trust', 'company', 'corporation', 'limited', 'bank', 'banc', 'bancorporation',
+  /* Nach dem Vorlauf 2025-06-02 ergaenzt (Handpruefung, pruefung-vorlauf.json): Personennamen ("Morgan" 10 von 10 falsch),
+   * Zeitungen ("Express"), Gattungswoerter ("Gaming", "Martin Corporation") - und aus der Durchsicht ALLER 606 Kurzformen
+   * der Karte alle Vor-/Nachnamen, Orte und Alltagswoerter. Die Vorlauf-Fehlerquote ist VOR dieser Ergaenzung gemessen. */
+  'morgan', 'martin', 'express', 'gaming', 'academy', 'advance', 'alaska', 'arthur', 'aurora', 'automatic', 'baker', 'block',
+  'bread', 'bristol', 'builders', 'cardinal', 'carrier', 'carters', 'chart', 'check', 'chemical', 'childrens', 'church', 'clear',
+  'cooper', 'deutsche', 'discover', 'discovery', 'edison', 'edwards', 'enterprise', 'equity', 'exact', 'extra', 'fifth', 'floor',
+  'fortune', 'gates', 'genuine', 'globe', 'harley', 'harris', 'hartford', 'hello', 'henry', 'huntington', 'illinois',
+  'interactive', 'jackson', 'kansas', 'knight', 'legend', 'louisiana', 'magna', 'match', 'michael', 'monday', 'monster',
+  'neighborhood', 'norfolk', 'oscar', 'packaging', 'parker', 'parsons', 'people', 'performance', 'permian', 'phillips',
+  'plains', 'polaris', 'price', 'principal', 'quest', 'range', 'restaurant', 'revolution', 'robert', 'rocket', 'royalty',
+  'service', 'shake', 'signet', 'simon', 'smith', 'southwest', 'stanley', 'steel', 'strategy', 'stride', 'toast', 'toronto',
+  'trade', 'travel', 'trump', 'unity', 'uranium', 'victoria', 'viking', 'warner', 'wells', 'wendy', 'westinghouse',
+  'whiting', 'willis', 'wheaton'];
 var AW = {}; ALLERWELT.forEach(function (w) { AW[w] = 1; });
 
 /** Kurzform: erstes Wort des normalisierten Namens, wenn >= 5 Buchstaben und kein Allerweltswort; sonst null. */

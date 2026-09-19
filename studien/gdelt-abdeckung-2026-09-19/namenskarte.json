@@ -1,6 +1,6 @@
 {
  "kennung": "gdelt-abdeckung-2026-09-19/namenskarte/v1",
- "stand": "2026-09-19T08:11:24.457Z",
+ "stand": "2026-09-19T08:19:45.485Z",
  "panel": "querschnitt-pruefstand-2026-09-13/panel/v2",
  "stichtage": {
   "2025-01-02": {
@@ -45,7 +45,7 @@
   "edgarFts": 102,
   "ohneNamen": 22,
   "vollVerschieden": 1,
-  "mitKurz": 606,
+  "mitKurz": 502,
   "kuerzelWiederverwendet": 3
  },
  "ohneNamen": [
@@ -232,7 +232,6 @@
   "rockwell -> COL,ROK",
   "corpay -> CPAY,FLT",
   "lumen -> CTL,LUMN",
-  "discovery -> DISCA,DISCK",
   "everest -> EG,RE",
   "spirit -> SAVE,SPR"
  ],
@@ -317,7 +316,7 @@
   "AAP": {
    "voll": "advance auto parts",
    "voll2": null,
-   "kurz": "advance",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -499,7 +498,7 @@
   "ADP": {
    "voll": "automatic data processing",
    "voll2": null,
-   "kurz": "automatic",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": 1,
@@ -695,7 +694,7 @@
   "AJG": {
    "voll": "arthur j gallagher",
    "voll2": null,
-   "kurz": "arthur",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": null,
@@ -751,7 +750,7 @@
   "ALK": {
    "voll": "alaska air",
    "voll2": null,
-   "kurz": "alaska",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -919,7 +918,7 @@
   "AOS": {
    "voll": "smith a o",
    "voll2": null,
-   "kurz": "smith",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -1143,7 +1142,7 @@
   "ASO": {
    "voll": "academy sports outdoors",
    "voll2": null,
-   "kurz": "academy",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -1213,7 +1212,7 @@
   "AUR": {
    "voll": "aurora innovation",
    "voll2": null,
-   "kurz": "aurora",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -1675,7 +1674,7 @@
   "BKR": {
    "voll": "baker hughes",
    "voll2": null,
-   "kurz": "baker",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -1689,7 +1688,7 @@
   "BLDR": {
    "voll": "builders firstsource",
    "voll2": null,
-   "kurz": "builders",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -1717,7 +1716,7 @@
   "BMY": {
    "voll": "bristol myers squibb",
    "voll2": null,
-   "kurz": "bristol",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": 2,
@@ -2011,7 +2010,7 @@
   "CAH": {
    "voll": "cardinal health",
    "voll2": null,
-   "kurz": "cardinal",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -2025,7 +2024,7 @@
   "CARR": {
    "voll": "carrier global",
    "voll2": null,
-   "kurz": "carrier",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": null,
@@ -2305,7 +2304,7 @@
   "CHD": {
    "voll": "church dwight",
    "voll2": null,
-   "kurz": "church",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -2711,7 +2710,7 @@
   "COO": {
    "voll": "cooper",
    "voll2": null,
-   "kurz": "cooper",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -3369,7 +3368,7 @@
   "DJT": {
    "voll": "trump media technology",
    "voll2": null,
-   "kurz": "trump",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": null,
@@ -3705,7 +3704,7 @@
   "EIX": {
    "voll": "edison international",
    "voll2": null,
-   "kurz": "edison",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -3747,7 +3746,7 @@
   "ELS": {
    "voll": "equity lifestyle properties",
    "voll2": null,
-   "kurz": "equity",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -3859,7 +3858,7 @@
   "EPD": {
    "voll": "enterprise products partners l p",
    "voll2": null,
-   "kurz": "enterprise",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -4041,7 +4040,7 @@
   "EW": {
    "voll": "edwards lifesciences",
    "voll2": null,
-   "kurz": "edwards",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": 1,
@@ -4069,7 +4068,7 @@
   "EXAS": {
    "voll": "exact sciences",
    "voll2": null,
-   "kurz": "exact",
+   "kurz": null,
    "quelle": "edgar-fts",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -4139,7 +4138,7 @@
   "EXR": {
    "voll": "extra space storage",
    "voll2": null,
-   "kurz": "extra",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -4195,7 +4194,7 @@
   "FBIN": {
    "voll": "fortune brands innovations",
    "voll2": null,
-   "kurz": "fortune",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -4293,7 +4292,7 @@
   "FITB": {
    "voll": "fifth third bancorp",
    "voll2": null,
-   "kurz": "fifth",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -4405,7 +4404,7 @@
   "FND": {
    "voll": "floor decor",
    "voll2": null,
-   "kurz": "floor",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -4741,7 +4740,7 @@
   "GL": {
    "voll": "globe life",
    "voll2": null,
-   "kurz": "globe",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -4755,7 +4754,7 @@
   "GLPI": {
    "voll": "gaming leisure properties",
    "voll2": null,
-   "kurz": "gaming",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -4867,7 +4866,7 @@
   "GPC": {
    "voll": "genuine parts",
    "voll2": null,
-   "kurz": "genuine",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -4937,7 +4936,7 @@
   "GTES": {
    "voll": "gates industrial",
    "voll2": null,
-   "kurz": "gates",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -4965,7 +4964,7 @@
   "GTLS": {
    "voll": "chart industries",
    "voll2": null,
-   "kurz": "chart",
+   "kurz": null,
    "quelle": "edgar-fts",
    "klasse2025": 1,
    "klasse2018": null,
@@ -5049,7 +5048,7 @@
   "HBAN": {
    "voll": "huntington bancshares",
    "voll2": null,
-   "kurz": "huntington",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -5119,7 +5118,7 @@
   "HIG": {
    "voll": "hartford insurance",
    "voll2": null,
-   "kurz": "hartford",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -5273,7 +5272,7 @@
   "HSIC": {
    "voll": "henry schein",
    "voll2": null,
-   "kurz": "henry",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -5371,7 +5370,7 @@
   "IBKR": {
    "voll": "interactive brokers",
    "voll2": null,
-   "kurz": "interactive",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -5693,7 +5692,7 @@
   "ITW": {
    "voll": "illinois tool works",
    "voll2": null,
-   "kurz": "illinois",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -5847,7 +5846,7 @@
   "JXN": {
    "voll": "jackson financial",
    "voll2": null,
-   "kurz": "jackson",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -6043,7 +6042,7 @@
   "KNX": {
    "voll": "knight swift transportation",
    "voll2": null,
-   "kurz": "knight",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -6141,7 +6140,7 @@
   "LEGN": {
    "voll": "legend biotech",
    "voll2": null,
-   "kurz": "legend",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -6351,7 +6350,7 @@
   "LPX": {
    "voll": "louisiana pacific",
    "voll2": null,
-   "kurz": "louisiana",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -6379,7 +6378,7 @@
   "LRN": {
    "voll": "stride",
    "voll2": null,
-   "kurz": "stride",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -6435,7 +6434,7 @@
   "LUV": {
    "voll": "southwest airlines",
    "voll2": null,
-   "kurz": "southwest",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -6701,7 +6700,7 @@
   "MGA": {
    "voll": "magna international",
    "voll2": null,
-   "kurz": "magna",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -6771,7 +6770,7 @@
   "MNDY": {
    "voll": "monday com",
    "voll2": null,
-   "kurz": "monday",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -6785,7 +6784,7 @@
   "MNST": {
    "voll": "monster beverage",
    "voll2": null,
-   "kurz": "monster",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -6897,7 +6896,7 @@
   "MS": {
    "voll": "morgan stanley",
    "voll2": null,
-   "kurz": "morgan",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": 2,
@@ -6925,7 +6924,7 @@
   "MSTR": {
    "voll": "strategy",
    "voll2": null,
-   "kurz": "strategy",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 3,
    "klasse2018": null,
@@ -6953,7 +6952,7 @@
   "MTCH": {
    "voll": "match group",
    "voll2": null,
-   "kurz": "match",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -7219,7 +7218,7 @@
   "NSC": {
    "voll": "norfolk southern",
    "voll2": null,
-   "kurz": "norfolk",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": 1,
@@ -7625,7 +7624,7 @@
   "OSCR": {
    "voll": "oscar health",
    "voll2": null,
-   "kurz": "oscar",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -7695,7 +7694,7 @@
   "PAA": {
    "voll": "plains all american pipeline",
    "voll2": null,
-   "kurz": "plains",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -7919,7 +7918,7 @@
   "PFG": {
    "voll": "principal financial",
    "voll2": null,
-   "kurz": "principal",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -7933,7 +7932,7 @@
   "PFGC": {
    "voll": "performance food",
    "voll2": null,
-   "kurz": "performance",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -8115,7 +8114,7 @@
   "PR": {
    "voll": "permian resources",
    "voll2": null,
-   "kurz": "permian",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -8143,7 +8142,7 @@
   "PSN": {
    "voll": "parsons",
    "voll2": null,
-   "kurz": "parsons",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -8171,7 +8170,7 @@
   "PSX": {
    "voll": "phillips 66",
    "voll2": null,
-   "kurz": "phillips",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": 1,
@@ -8297,7 +8296,7 @@
   "QSR": {
    "voll": "restaurant brands international",
    "voll2": null,
-   "kurz": "restaurant",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -8395,7 +8394,7 @@
   "RHI": {
    "voll": "robert half",
    "voll2": null,
-   "kurz": "robert",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -8451,7 +8450,7 @@
   "RKLB": {
    "voll": "rocket lab",
    "voll2": null,
-   "kurz": "rocket",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": null,
@@ -8535,7 +8534,7 @@
   "RPRX": {
    "voll": "royalty pharma",
    "voll2": null,
-   "kurz": "royalty",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -8549,7 +8548,7 @@
   "RRC": {
    "voll": "range resources",
    "voll2": null,
-   "kurz": "range",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -8605,7 +8604,7 @@
   "RVMD": {
    "voll": "revolution medicines",
    "voll2": null,
-   "kurz": "revolution",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -8717,7 +8716,7 @@
   "SCI": {
    "voll": "service corp international",
    "voll2": null,
-   "kurz": "service",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -8787,7 +8786,7 @@
   "SHAK": {
    "voll": "shake shack",
    "voll2": null,
-   "kurz": "shake",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -8843,7 +8842,7 @@
   "SIG": {
    "voll": "signet jewelers",
    "voll2": null,
-   "kurz": "signet",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -9095,7 +9094,7 @@
   "SPG": {
    "voll": "simon property",
    "voll2": null,
-   "kurz": "simon",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -9137,7 +9136,7 @@
   "SQ": {
    "voll": "block",
    "voll2": null,
-   "kurz": "block",
+   "kurz": null,
    "quelle": "nachfolger:XYZ",
    "klasse2025": 2,
    "klasse2018": 2,
@@ -9193,7 +9192,7 @@
   "STLD": {
    "voll": "steel dynamics",
    "voll2": null,
-   "kurz": "steel",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -9305,7 +9304,7 @@
   "SWK": {
    "voll": "stanley black decker",
    "voll2": null,
-   "kurz": "stanley",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -9417,7 +9416,7 @@
   "TD": {
    "voll": "toronto dominion bank",
    "voll2": null,
-   "kurz": "toronto",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -9683,7 +9682,7 @@
   "TOST": {
    "voll": "toast",
    "voll2": null,
-   "kurz": "toast",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -9767,7 +9766,7 @@
   "TROW": {
    "voll": "price t rowe",
    "voll2": null,
-   "kurz": "price",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": 1,
@@ -9907,7 +9906,7 @@
   "TTD": {
    "voll": "trade desk",
    "voll2": null,
-   "kurz": "trade",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": null,
@@ -10019,7 +10018,7 @@
   "U": {
    "voll": "unity software",
    "voll2": null,
-   "kurz": "unity",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -10089,7 +10088,7 @@
   "UEC": {
    "voll": "uranium energy",
    "voll2": null,
-   "kurz": "uranium",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -10355,7 +10354,7 @@
   "VKTX": {
    "voll": "viking therapeutics",
    "voll2": null,
-   "kurz": "viking",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -10467,7 +10466,7 @@
   "VSCO": {
    "voll": "victoria s secret",
    "voll2": null,
-   "kurz": "victoria",
+   "kurz": null,
    "quelle": "nachfolger:VSXY",
    "klasse2025": 1,
    "klasse2018": null,
@@ -10551,7 +10550,7 @@
   "WAB": {
    "voll": "westinghouse air brake technologies",
    "voll2": null,
-   "kurz": "westinghouse",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -10593,7 +10592,7 @@
   "WBD": {
    "voll": "warner bros discovery",
    "voll2": null,
-   "kurz": "warner",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -10691,7 +10690,7 @@
   "WEN": {
    "voll": "wendy s",
    "voll2": null,
-   "kurz": "wendy",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -10705,7 +10704,7 @@
   "WFC": {
    "voll": "wells fargo company mn",
    "voll2": null,
-   "kurz": "wells",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 2,
    "klasse2018": 2,
@@ -10817,7 +10816,7 @@
   "WPM": {
    "voll": "wheaton precious metals",
    "voll2": null,
-   "kurz": "wheaton",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -11027,7 +11026,7 @@
   "YOU": {
    "voll": "clear secure",
    "voll2": null,
-   "kurz": "clear",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": 1,
    "klasse2018": null,
@@ -11461,7 +11460,7 @@
   "BFH": {
    "voll": "bread financial",
    "voll2": null,
-   "kurz": "bread",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -11657,7 +11656,7 @@
   "CHKP": {
    "voll": "check point software technologies",
    "voll2": null,
-   "kurz": "check",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -11783,7 +11782,7 @@
   "CRI": {
    "voll": "carters",
    "voll2": null,
-   "kurz": "carters",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -11895,7 +11894,7 @@
   "DB": {
    "voll": "deutsche bank aktiengesellschaft",
    "voll2": null,
-   "kurz": "deutsche",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -11909,7 +11908,7 @@
   "DFS": {
    "voll": "discover financial services",
    "voll2": null,
-   "kurz": "discover",
+   "kurz": null,
    "quelle": "edgar-fts",
    "klasse2025": null,
    "klasse2018": 1,
@@ -11923,7 +11922,7 @@
   "DGX": {
    "voll": "quest diagnostics",
    "voll2": null,
-   "kurz": "quest",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -12105,7 +12104,7 @@
   "ESRX": {
    "voll": "express scripts",
    "voll2": null,
-   "kurz": "express",
+   "kurz": null,
    "quelle": "edgar-fts",
    "klasse2025": null,
    "klasse2018": 1,
@@ -12399,7 +12398,7 @@
   "HOG": {
    "voll": "harley davidson",
    "voll2": null,
-   "kurz": "harley",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -12427,7 +12426,7 @@
   "HRS": {
    "voll": "harris",
    "voll2": null,
-   "kurz": "harris",
+   "kurz": null,
    "quelle": "edgar-fts",
    "klasse2025": null,
    "klasse2018": 1,
@@ -12469,7 +12468,7 @@
   "IAC": {
    "voll": "people",
    "voll2": null,
-   "kurz": "people",
+   "kurz": null,
    "quelle": "nachfolger:PPLI",
    "klasse2025": null,
    "klasse2018": 1,
@@ -12609,7 +12608,7 @@
   "KORS": {
    "voll": "michael kors",
    "voll2": null,
-   "kurz": "michael",
+   "kurz": null,
    "quelle": "edgar-fts",
    "klasse2025": null,
    "klasse2018": 1,
@@ -12623,7 +12622,7 @@
   "KSU": {
    "voll": "kansas city southern",
    "voll2": null,
-   "kurz": "kansas",
+   "kurz": null,
    "quelle": "edgar-fts",
    "klasse2025": null,
    "klasse2018": 1,
@@ -12847,7 +12846,7 @@
   "MLM": {
    "voll": "martin marietta materials",
    "voll2": null,
-   "kurz": "martin",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -12889,7 +12888,7 @@
   "MOMO": {
    "voll": "hello group",
    "voll2": null,
-   "kurz": "hello",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -13085,7 +13084,7 @@
   "OSTK": {
    "voll": "neighborhood intelligence",
    "voll2": null,
-   "kurz": "neighborhood",
+   "kurz": null,
    "quelle": "nachfolger:BYON>BBBY>NXH",
    "klasse2025": null,
    "klasse2018": 1,
@@ -13127,7 +13126,7 @@
   "PH": {
    "voll": "parker hannifin",
    "voll2": null,
-   "kurz": "parker",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -13141,7 +13140,7 @@
   "PII": {
    "voll": "polaris",
    "voll2": null,
-   "kurz": "polaris",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -13155,7 +13154,7 @@
   "PKG": {
    "voll": "packaging corp of america",
    "voll2": null,
-   "kurz": "packaging",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -13183,7 +13182,7 @@
   "PLCE": {
    "voll": "childrens place",
    "voll2": null,
-   "kurz": "childrens",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -13617,7 +13616,7 @@
   "SQM": {
    "voll": "chemical mining co of chile",
    "voll2": null,
-   "kurz": "chemical",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -13729,7 +13728,7 @@
   "TNL": {
    "voll": "travel leisure",
    "voll2": null,
-   "kurz": "travel",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
@@ -14037,7 +14036,7 @@
   "WLL": {
    "voll": "whiting petroleum",
    "voll2": null,
-   "kurz": "whiting",
+   "kurz": null,
    "quelle": "edgar-fts",
    "klasse2025": null,
    "klasse2018": 1,
@@ -14079,7 +14078,7 @@
   "WTW": {
    "voll": "willis towers watson",
    "voll2": null,
-   "kurz": "willis",
+   "kurz": null,
    "quelle": "beide",
    "klasse2025": null,
    "klasse2018": 1,
