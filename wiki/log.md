@@ -5,6 +5,10 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 19.09.2026 Neuer Knoten `mail-ueberblick.md` (Bauplan): der tägliche Mail-Überblick aus
+  Thunderbird mit Ticket-Board am Handy lebt seit heute im eigenen Repo `Mail-Ueberblick`;
+  die Dateien unter `tools/` sind aus diesem Repo entfernt. Index ergänzt.
+
 - 12.09.2026 Release v8.44.2 (Wache): App kann sich wieder selbst aktualisieren — den
   Fassungen 8.44.0/8.44.1 fehlten Update-Bausteine im Paket (einmalig von Hand über
   die Setup-Datei auf GitHub nachziehen); die Release-Routine prüft das jetzt vor
