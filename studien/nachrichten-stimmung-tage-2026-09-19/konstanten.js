@@ -7,7 +7,7 @@ var path = require('path');
 var K = require(path.join(__dirname, '..', 'querschnitt-pruefstand-2026-09-13', 'konfig.js'));
 
 module.exports = {
-  KENNUNG: 'nachrichten-stimmung-tage-2026-09-19/v0-entwurf',
+  KENNUNG: 'nachrichten-stimmung-tage-2026-09-19/v1',   // registriert 19.09.2026 (Wilhelms Freigabe), Inhalt = v0-entwurf a2290da
   KENNUNG_VORPRUEFUNG: 'nachrichten-stimmung-tage-2026-09-19/vorpruefung/v1',
   SAAT_VORPRUEFUNG: 'nachrichten-stimmung-tage-2026-09-19',
   KLASSEN: [2, 3],                              // Prüfstand-Indizes: 2 = 250-1000, 3 = ab1000 Mio $ Tagesumsatz (ABDECKUNG.md §f: ja / ja)

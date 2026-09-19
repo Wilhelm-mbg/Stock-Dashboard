@@ -1,4 +1,11 @@
-# Vorregistrierung (ENTWURF, nicht registriert) — Nachrichten-Stimmung aus GDELT als Tagesdesign (19.09.2026)
+# Vorregistrierung (REGISTRIERT v1) — Nachrichten-Stimmung aus GDELT als Tagesdesign (19.09.2026)
+
+> **Registriert am 19.09.2026 durch Wilhelms Freigabe (Formular „Freigeben"), Kennung `nachrichten-stimmung-tage-2026-09-19/v1`.**
+> Der Inhalt ist der geprüfte Entwurf `v0-entwurf` (Commit `a2290da`) **ohne inhaltliche Änderung**; geändert sind nur dieser Kopf,
+> die Kennung in `konstanten.js` und §10 (Entscheide). Ab hier gilt: jede Abweichung ist ein **Nachtrag mit Datum und Grund**,
+> nie eine stille Änderung. Entscheide zur Freigabe: (1) Vorregistrierung freigegeben; (2) **Datenbau noch nicht freigegeben** —
+> es wird nichts gezählt und nichts gemessen, bis Wilhelm die Nächte freigibt; (3) **E₁ = 0,10 Pp brutto je Halteperiode als
+> Arbeitsannahme freigegeben** (Ke/Kelly/Xiu-Zahl bleibt unbelegt, ausgewiesen als Annahme).
 
 **Auftrag Nr. 45.** Dieses Papier ist ein Entwurf, den Wilhelm freigibt oder ändert; registriert ist erst die freigegebene
 Fassung (Kennung dann `nachrichten-stimmung-tage-2026-09-19/v1`, dieser Entwurf trägt `v0-entwurf`). Es wurde **nichts gemessen**:
@@ -175,9 +182,12 @@ Autokorrelation bis √H — auch das steckt in der Spanne ×2–4, nicht im Bod
 ## 10. Was Wilhelm entscheiden muss
 
 1. **Freigabe** dieser Vorregistrierung (oder Änderung) — danach wird nichts mehr entschieden, nur gerechnet.
+   **→ Entschieden 19.09.2026: freigegeben, registriert als v1.**
 2. **Datenbau:** 2–3 Nächte GDELT-Vollstrom über `schtasks` (≈ 1,8 TB Durchsatz, 120 MB Ablage) — ja/nein, und in welchen Nächten.
+   **→ Entschieden 19.09.2026: noch nicht.** Offen; ohne Datenbau keine Messung.
 3. **Literaturzahl:** Ke/Kelly/Xiu-PDF öffnen und die Long-Short-Tagesrendite nachschlagen — oder E₁ = 0,10 Pp als Arbeitsannahme
    freigeben (sie entscheidet nichts, sie ordnet die Tafel ein).
+   **→ Entschieden 19.09.2026: E₁ = 0,10 Pp als Arbeitsannahme freigegeben.**
 
 ## 11. Was die Tafel nicht weiß
 
@@ -188,4 +198,5 @@ Klasse 1 und Klasse 0 nicht im Universum.
 
 ---
 
-*Entwurf geschrieben 2026-09-19, vor jeder Stimmungszahl. Nur Lesezugriff auf das Panel. Simulation, keine Anlageberatung.*
+*Entwurf geschrieben 2026-09-19, vor jeder Stimmungszahl; registriert als v1 am selben Tag, weiterhin vor jeder Stimmungszahl.
+Nur Lesezugriff auf das Panel. Simulation, keine Anlageberatung.*
