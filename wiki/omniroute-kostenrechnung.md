@@ -87,3 +87,32 @@ Wenn die **Rechenzeit** der Engpass ist, hilft kein Modell-Gateway, sondern mehr
 parallele Teile (die Platte auf E: ist die Grenze, 5–6 MB/s je Teil), oder eine gemietete Maschine mit schneller SSD für
 die Dauer eines Laufs. Das wäre das echte „Auslagern" einer Messung — zu klären erst, wenn ein Lauf länger als eine Nacht
 braucht; bisher hat jeder in eine Nacht gepasst, außer dem 1m-Vollauf (drei Nächte, Nr. 5 der Signalstudie).
+
+## 7. Nachfrage Wilhelms (19.09.): „Dir würde wirklich nichts zum Auslagern einfallen?"
+
+Doch — vier Dinge, geordnet nach Nutzen. Drei davon brauchen OmniRoute nicht.
+
+1. **Günstigere Claude-Modelle für Lese- und Verdichtungsarbeit — heute möglich.** Der Agenten-Rahmen kann Unteraufträge an
+   Haiku 4.5 oder Sonnet statt an Fable/Opus geben (gleiches Abo, gleiche Werkzeuge, gleiche Datengrenze, keine Nutzungs-
+   bedingungen Dritter). Alles aus §2 mit „auslagerbar" (25 Skills lesen, Bigdata-Rohdaten und SEC-Doku verdichten,
+   Abmeldegründe klassifizieren, ≈ 343k je Woche) würde dort laufen; der teure Agent liest nur die Zusammenfassung.
+   Muster: „Lese-Agent (Haiku) schreibt strukturierte Datei → Arbeits-Agent liest Datei". Wie viel Kontingent das spart,
+   misst die Ponytail-Woche mit (Token je Sitzung, getrennt nach Modell).
+2. **Zweitleser für Aufträge und Vorregistrierungen — heute möglich.** Bevor ein 250k-Agent startet, liest ein kleines
+   Modell den Auftrag gegen die Fehlerformen-Seite und listet Lücken (fehlende Definition, unklare Kennung, Kostenprüfung
+   am falschen Ort). 5–10k Token je Auftrag. Die zwei teuersten Fehler der Woche (Nachtrag 3.1 gestrichen: zwei Runden;
+   v2.0 ohne Sperre gebaut: ein Neubau) hätten je 200–250k gekostet — ein Zweitleser findet nicht jeden, aber jeden
+   gefundenen zahlt er zwanzigfach.
+3. **Massen-Text als neues Messobjekt — hier hätte ein Gratis-Modell hinter OmniRoute seinen Platz.** (a) Die
+   **Nachrichten-Stimmung** der App (Gewicht heute 0, „unbelegt", Archiv läuft seit 31.08. mit): tausende Schlagzeilen je
+   Woche mit einem günstigen Modell je Wert und Tag bewerten → eine messbare Spalte für den Querschnitts-Prüfstand, mit
+   Vorregistrierung, Placebo (Datum verschoben) und Orakel. (b) Die zurückgestellte **Ereignisstudie** (8-K/Form 4).
+   (c) **10-K-Textänderungen** („Lazy Prices": Jahr-zu-Jahr-Ähnlichkeit der Risikoabschnitte) — braucht gar kein Modell,
+   nur Textähnlichkeit in `node`. Das sind Studien, keine Ersparnisse; ohne Modell im Hintergrund unbezahlbar, mit
+   Gratis-Kontingent möglich (Anbieter = Wilhelms Hand).
+4. **Dauerläufer per Skript statt Modell.** Die nächtlichen Rollen (Auditor, Analytiker, Tüftler) und die Issue-Wache
+   sind derzeit **nicht** eingeplant — aktiv sind nur `mail-ueberblick` (täglich, private Post, nie an Dritte) und die
+   `release-wache` (von Hand). Kommen die Rollen zurück: Vorprüfung per Skript (gibt es neue Issues? neue Übergaben?),
+   Modell nur wecken, wenn es etwas gibt. Das spart Token ohne jedes Gateway.
+
+**Nicht auslagerbar bleibt:** Messungen (CPU), Code mit Sperrklinken, Urteile, Wiki, alles mit Mühlwerk-Daten.
