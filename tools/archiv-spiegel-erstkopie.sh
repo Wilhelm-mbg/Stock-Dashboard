@@ -19,6 +19,14 @@
 set -u
 set -o pipefail
 
+# Gestartet wird ueber Win32_Process.Create, also mit dem System-PATH - und der
+# kennt die Werkzeuge der Git-Bash NICHT. Ohne die naechste Zeile greift das
+# Skript nach C:\Windows\System32\tar.exe und System32\find.exe: die Kopie liefe
+# zwar (bsdtar schreibt einen gueltigen Strom), aber `date` und `wc` fehlen still
+# und `find -newermt` waere das voellig andere Windows-find -- die Nacharbeits-
+# liste aus §4 der Uebergabe bliebe leer, und niemand saehe es der Datei an.
+export PATH=/usr/bin:/bin:$PATH
+
 QUELLE=/e/Markt-Dashboard-Archiv
 ZIEL=/archiv/markt-dashboard/archiv-spiegel
 SERVER=root@192.168.0.11
@@ -26,6 +34,16 @@ SCHLUESSEL=/c/Users/Wilhe/.ssh/r620_claude
 LOG=/c/Users/Wilhe/Downloads/Markt-Dashboard-Daten/spiegel-erstkopie.log
 LISTE=/c/Users/Wilhe/Downloads/Markt-Dashboard-Daten/spiegel-erstkopie-dateien.txt
 NACHARBEIT=/c/Users/Wilhe/Downloads/Markt-Dashboard-Daten/spiegel-erstkopie-nacharbeit.txt
+
+# Sperrklinke gegen genau den Fall oben: lieber gar nicht laufen als mit den
+# falschen Werkzeugen. Die Kopie saehe sonst erfolgreich aus.
+if ! tar --version 2>/dev/null | head -1 | grep -q "GNU tar"; then
+  echo "ABBRUCH $(date -Iseconds 2>/dev/null): kein GNU tar im PATH ($(command -v tar))" >> "$LOG"
+  exit 3
+fi
+for werkzeug in find date wc ssh; do
+  command -v "$werkzeug" > /dev/null || { echo "ABBRUCH: $werkzeug fehlt im PATH" >> "$LOG"; exit 3; }
+done
 
 STARTSEK=$(date +%s)
 {
