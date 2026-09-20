@@ -10,3 +10,4 @@ _fortschritt.json.tmp
 _zellen.bin.tmp
 nacht-*.log
 *.stdout
+positivkontrolle-server.log
