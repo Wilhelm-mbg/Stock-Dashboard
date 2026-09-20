@@ -63,3 +63,28 @@ die Tatsache, der Nachlauf schreibt weiter dorthin. Kerne, Speicher und „PC mu
 6. **Erster Lauf als Abnahme:** einen Panel-Teil auf der VM bauen und bitgenau mit dem lokalen v2.1 vergleichen — erst dann gilt die
    VM als Messgerät.
 7. Kosten und Konto (falls Cloud) entscheidet und bucht Wilhelm; der PM bestellt nichts.
+
+---
+
+## Nachtrag 20.09.2026: die Maschine steht — und die Schätzung oben war in einem Punkt falsch
+
+Wilhelm hat geliefert: **Rechenknecht**, 192.168.0.11, LXC auf Proxmox (R620), Debian 13.6, **24 Kerne (Xeon E5-2650 v2),
+192 GB RAM**, `/archiv` mit 916 GB frei, Node/git/rsync/tmux vorhanden, Autostart mit dem Host. Der PM hat sie am 20.09.
+selbst vermessen (`pm-bench.js`, gleiche Last auf beiden Maschinen, gleiche Prüfsumme):
+
+| Maß | PC | Rechenknecht |
+|---|---|---|
+| ein Kern | 397 Mio Schritte/s | **104 Mio Schritte/s** (3,8× langsamer) |
+| voll parallel | ≈ 1,0–1,6 Mrd Schritte/s (16 Prozesse) | ≈ 0,8 Mrd Schritte/s (24 Prozesse) |
+| Platte des Archivs | HDD, im Panelbau 2,8–5,6 MB/s je Teil | **537 MB/s schreiben, 520 lesen** |
+| Speicher | 32 GB (GDELT scheiterte daran) | **192 GB, ohne cgroup-Grenze** |
+
+**Damit fällt die Zeile „Minuten-Signalstudie unter einem Tag" aus der Tafel oben** — sie unterstellte 32–64 *schnelle*
+Kerne. Rein rechengebundene Läufe werden auf dem Rechenknecht **nicht schneller**. Was bleibt, ist trotzdem viel: der
+Panelbau war **plattengebunden** (HDD gegen SSD ist der Faktor, nicht die CPU), der GDELT-Lauf war **speichergebunden**
+(vier statt sechs Teile, 0,3 GB frei), und beide sterben heute, wenn der PC ausgeht. Regel für alle Berichte vom Server:
+**wer „schneller" schreibt, schreibt dazu warum — Platte, Speicher oder Parallelität, nie „mehr CPU".**
+
+Nebenbefund: der Klon des öffentlichen Repos auf dem Server war **136 Commits alt**, weil wir nicht nach GitHub pushen.
+Aktuell gehalten wird der Server per **Push ins LAN** (`knecht` = `ssh://root@192.168.0.11/archiv/markt-dashboard/Stock-Dashboard`,
+dort `receive.denyCurrentBranch=updateInstead`). Push nach GitHub bleibt verboten.
