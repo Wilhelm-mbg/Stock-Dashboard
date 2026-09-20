@@ -16,6 +16,21 @@
 # Diese Liste ist KEIN Nebenprotokoll, sondern Pflichteingabe der sha256-Abnahme:
 # die dort genannten Dateien werden nachkopiert, bevor die Abweichungen gezaehlt
 # werden. Nicht gelistete Abweichungen sind ein Fund.
+#
+# FUND 20.09.2026 (Auftrag Nr. 46, Erstkopie rc=2 trotz vollstaendiger, byteidentischer
+# Daten): die Empfangsseite ("tar -C $ZIEL -xf -" auf dem Server, als root) versucht
+# standardmaessig, den Besitzer aus dem Archiv-Header wiederherzustellen (GNU tar
+# --same-owner ist die Vorgabe fuer root). Windows/Git-Bash traegt dort eine
+# Windows-UID (197609) ein, die der LXC-Container nicht als gueltig akzeptiert
+# ("Cannot change ownership ... Invalid argument") - pro Datei nur eine WARNUNG,
+# aber GNU tar sammelt sie und beendet sich am Ende trotzdem mit Status 2
+# ("Exiting with failure status due to previous errors"), OBWOHL jede Datei
+# vollstaendig geschrieben wurde (Beleg: alle vier Nacharbeits-Dateien byteidentisch
+# per sha256, siehe Uebergabe). Zwei Gegenmassnahmen, beide unten eingebaut:
+#   1. --no-same-owner auf der Empfangsseite: der Besitz einer Windows-Quelle ist auf
+#      dem Server ohnehin bedeutungslos, also gar nicht erst versuchen.
+#   2. Die STDERR der Empfangsseite (bisher nirgends erfasst - "Lücke im Skript", vom
+#      PM bemaengelt) mitschreiben, statt nur die nackte Rueckgabenummer zu haben.
 set -u
 set -o pipefail
 
@@ -34,6 +49,7 @@ SCHLUESSEL=/c/Users/Wilhe/.ssh/r620_claude
 LOG=/c/Users/Wilhe/Downloads/Markt-Dashboard-Daten/spiegel-erstkopie.log
 LISTE=/c/Users/Wilhe/Downloads/Markt-Dashboard-Daten/spiegel-erstkopie-dateien.txt
 NACHARBEIT=/c/Users/Wilhe/Downloads/Markt-Dashboard-Daten/spiegel-erstkopie-nacharbeit.txt
+FEHLER=/c/Users/Wilhe/Downloads/Markt-Dashboard-Daten/spiegel-erstkopie-fehler.txt
 
 # Sperrklinke gegen genau den Fall oben: lieber gar nicht laufen als mit den
 # falschen Werkzeugen. Die Kopie saehe sonst erfolgreich aus.
@@ -53,9 +69,12 @@ STARTSEK=$(date +%s)
 
 # tar -v schreibt die Namen nach stderr (stdout ist der Datenstrom) -> die
 # wachsende Liste ist der Nachweis, dass der Lauf wirklich Daten bewegt.
+# --no-same-owner auf der Empfangsseite (Fund oben); ihre STDERR geht nach $FEHLER,
+# damit ein Rueckgabewert != 0 nie wieder eine nackte Zahl ohne Ursache ist.
+: > "$FEHLER"
 tar -C "$QUELLE" -cvf - . 2> "$LISTE" \
   | ssh -i "$SCHLUESSEL" -o BatchMode=yes -o ServerAliveInterval=30 "$SERVER" \
-      "tar -C $ZIEL -xf -"
+      "tar -C $ZIEL --no-same-owner -xf -" 2>> "$FEHLER"
 RC=$?
 
 ENDESEK=$(date +%s)
@@ -65,6 +84,7 @@ find "$QUELLE" -type f -newermt "@$STARTSEK" > "$NACHARBEIT" 2>/dev/null
   echo "ENDE   $(date -Iseconds)  rc=$RC  Dauer=$((ENDESEK - STARTSEK))s"
   echo "Dateien im tar-Strom: $(wc -l < "$LISTE")"
   echo "Waehrend der Kopie geschrieben (Nacharbeit noetig): $(wc -l < "$NACHARBEIT")"
+  echo "Fehlerausgabe der Empfangsseite: $(wc -l < "$FEHLER") Zeile(n) -> $FEHLER"
   echo "Listen: $LISTE  /  $NACHARBEIT"
 } >> "$LOG"
 
