@@ -1,7 +1,7 @@
 {
- "kennung": "mehrfaktor-2026-09-22/zelle/v1",
+ "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
  "feld": "fue-marktwert",
- "stand": "2026-09-22T13:32:26.513Z",
+ "stand": "2026-09-22T20:27:28.920Z",
  "definition": "(roh.fue * 4 / roh.qtrs) / (roh.aktien * rohSchluss[t]): F&E des juengsten Filings (filed < t, Tor 456 Tage) auf Jahresrate durch Marktwert = Aktienzahl des Filings x unbereinigter Schlusskurs am Signaltag; Verhaeltnis, hoeher = besser; null ohne ausgewiesenes F&E, bei qtrs weder 1 noch 4, Aktienzahl fehlend oder <= 0, Kurs <= 0; nachrichtlich, nicht gewichtet",
  "quellen": [
   "Panel querschnitt-pruefstand-2026-09-13/panel/v2",
@@ -9,6 +9,7 @@
  ],
  "kunst": null,
  "schluessel": false,
+ "tafelKennung": "fundamentaltafel-2026-09-16/v1.1",
  "panel": {
   "kennung": "querschnitt-pruefstand-2026-09-13/panel/v2",
   "letzterTag": "2026-09-15",
@@ -568,7 +569,7 @@
     "SLB": 0.008577294646683265,
     "SLCA": null,
     "SLG": null,
-    "SLW": 0.022352912489032144,
+    "SLW": null,
     "SM": null,
     "SNI": null,
     "SNY": null,
@@ -1252,7 +1253,7 @@
     "SLB": 0.0089645716055344,
     "SLCA": null,
     "SLG": null,
-    "SLW": 0.020028694644331695,
+    "SLW": null,
     "SM": null,
     "SNA": null,
     "SNI": null,
@@ -1676,7 +1677,7 @@
     "GPN": null,
     "GPOR": null,
     "GPS": null,
-    "GRMN": 47.414800605595495,
+    "GRMN": 0.0474148006055955,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -1943,7 +1944,7 @@
     "SLB": 0.009064819640991938,
     "SLCA": null,
     "SLG": null,
-    "SLW": 0.022420785705091956,
+    "SLW": null,
     "SM": null,
     "SNA": null,
     "SNI": null,
@@ -2362,7 +2363,7 @@
     "GPN": null,
     "GPOR": null,
     "GPS": null,
-    "GRMN": 49.39670907039945,
+    "GRMN": 0.049396709070399454,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -2630,7 +2631,7 @@
     "SLB": 0.009597975699670615,
     "SLCA": null,
     "SLG": null,
-    "SLW": 0.024456758411834267,
+    "SLW": null,
     "SM": null,
     "SNI": null,
     "SNPS": 0.0783168866938266,
@@ -2945,7 +2946,7 @@
     "DAL": null,
     "DB": null,
     "DD": null,
-    "DDR": 0.10220089057936256,
+    "DDR": null,
     "DE": 0.03506334988128338,
     "DFS": null,
     "DG": null,
@@ -3047,7 +3048,7 @@
     "GPN": null,
     "GPOR": null,
     "GPS": null,
-    "GRMN": 47.88135565689502,
+    "GRMN": 0.04788135565689501,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -3306,7 +3307,7 @@
     "SKX": null,
     "SLB": 0.008376698129902143,
     "SLCA": null,
-    "SLW": 0.02648439140196587,
+    "SLW": null,
     "SM": null,
     "SNA": null,
     "SNI": null,
@@ -3629,7 +3630,7 @@
     "DAL": null,
     "DB": null,
     "DD": null,
-    "DDR": 0.07044095574952884,
+    "DDR": null,
     "DE": 0.03148195745373948,
     "DFS": null,
     "DG": null,
@@ -3722,7 +3723,7 @@
     "GAP": null,
     "GD": null,
     "GE": null,
-    "GEN": 44.613583447555214,
+    "GEN": 0.04461358344755522,
     "GG": null,
     "GGP": null,
     "GILD": 0.04409274442287168,
@@ -3736,7 +3737,7 @@
     "GPN": null,
     "GPOR": null,
     "GPS": null,
-    "GRMN": 49.25837807811353,
+    "GRMN": 0.04925837807811353,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -4036,7 +4037,7 @@
     "SWN": null,
     "SYF": null,
     "SYK": 0.014196169622045469,
-    "SYMC": 44.613583447555214,
+    "SYMC": 0.04461358344755522,
     "SYY": null,
     "T": null,
     "TAL": null,
@@ -4334,7 +4335,7 @@
     "DATA": null,
     "DB": null,
     "DD": null,
-    "DDR": 0.06464518090937772,
+    "DDR": null,
     "DE": 0.032536920980215864,
     "DFS": null,
     "DG": null,
@@ -4427,7 +4428,7 @@
     "GAP": null,
     "GD": null,
     "GE": null,
-    "GEN": 49.27470410625502,
+    "GEN": 0.04927470410625502,
     "GG": null,
     "GGP": null,
     "GILD": 0.040312296895953136,
@@ -4638,7 +4639,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.0067224391071670974,
+    "PF": null,
     "PFE": 0.03363480595887456,
     "PFG": null,
     "PFPT": 0.03179939925869409,
@@ -4742,7 +4743,7 @@
     "SWN": null,
     "SYF": null,
     "SYK": 0.014856576008022551,
-    "SYMC": 49.27470410625502,
+    "SYMC": 0.04927470410625502,
     "SYY": null,
     "T": null,
     "TAP": null,
@@ -5028,7 +5029,7 @@
     "DAL": null,
     "DB": null,
     "DD": null,
-    "DDR": 0.05978890878252691,
+    "DDR": null,
     "DE": 0.03151777723110692,
     "DFS": null,
     "DG": null,
@@ -5116,7 +5117,7 @@
     "GAP": null,
     "GD": null,
     "GE": null,
-    "GEN": 43.397759595986706,
+    "GEN": 0.043397759595986705,
     "GG": null,
     "GGP": null,
     "GILD": 0.03763901115727831,
@@ -5319,7 +5320,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.006839479544631298,
+    "PF": null,
     "PFE": 0.03438721697488324,
     "PFG": null,
     "PFPT": 0.03148225344676696,
@@ -5419,7 +5420,7 @@
     "SWKS": 0.019210454496384363,
     "SYF": null,
     "SYK": 0.013887035475951017,
-    "SYMC": 43.397759595986706,
+    "SYMC": 0.043397759595986705,
     "SYY": null,
     "T": null,
     "TAL": null,
@@ -6436,7 +6437,7 @@
     "GPN": null,
     "GPOR": null,
     "GPS": null,
-    "GRMN": 50.068097223676645,
+    "GRMN": 0.05006809722367664,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -7736,7 +7737,7 @@
     "GD": null,
     "GDDY": null,
     "GE": null,
-    "GEN": 53.44416417039778,
+    "GEN": 0.053444164170397775,
     "GG": null,
     "GGP": null,
     "GILD": 0.03205057247237669,
@@ -7748,7 +7749,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 45.16548532854265,
+    "GRMN": 0.04516548532854266,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -7806,7 +7807,7 @@
     "IVZ": null,
     "JAZZ": 0.022807681007868928,
     "JBHT": null,
-    "JBL": 5.709054619872023,
+    "JBL": 0.005709054619872023,
     "JBLU": null,
     "JCI": null,
     "JD": null,
@@ -8045,7 +8046,7 @@
     "SWN": null,
     "SYF": null,
     "SYK": 0.013585982285388654,
-    "SYMC": 53.44416417039778,
+    "SYMC": 0.053444164170397775,
     "SYY": null,
     "T": null,
     "TAL": null,
@@ -8413,7 +8414,7 @@
     "GD": null,
     "GDDY": null,
     "GE": null,
-    "GEN": 53.81389204428499,
+    "GEN": 0.053813892044284994,
     "GG": null,
     "GGP": null,
     "GILD": 0.03258691133696167,
@@ -8424,7 +8425,7 @@
     "GOOGL": 0.02255733148605293,
     "GPN": null,
     "GPS": null,
-    "GRMN": 46.4474750867764,
+    "GRMN": 0.046447475086776394,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -8480,7 +8481,7 @@
     "IVZ": null,
     "JACK": null,
     "JBHT": null,
-    "JBL": 6.111040488237545,
+    "JBL": 0.006111040488237544,
     "JBLU": null,
     "JCI": null,
     "JD": null,
@@ -8710,7 +8711,7 @@
     "SWN": null,
     "SYF": null,
     "SYK": 0.013412591815710988,
-    "SYMC": 53.81389204428499,
+    "SYMC": 0.053813892044284994,
     "SYY": null,
     "T": null,
     "TAL": null,
@@ -9089,7 +9090,7 @@
     "GD": null,
     "GDDY": null,
     "GE": null,
-    "GEN": 56.86255917398682,
+    "GEN": 0.05686255917398681,
     "GG": null,
     "GGP": null,
     "GILD": 0.02892190837308492,
@@ -9102,7 +9103,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 44.12065517974899,
+    "GRMN": 0.04412065517974899,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -9300,7 +9301,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.0052071279181383325,
+    "PF": null,
     "PFE": 0.03392717601930838,
     "PFG": null,
     "PG": null,
@@ -9395,7 +9396,7 @@
     "SWKS": 0.01880682054338051,
     "SYF": null,
     "SYK": 0.012853699901812015,
-    "SYMC": 56.86255917398682,
+    "SYMC": 0.05686255917398681,
     "SYY": null,
     "T": null,
     "TAL": null,
@@ -9807,7 +9808,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 46.378783030501545,
+    "GRMN": 0.046378783030501546,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -10023,7 +10024,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.005895202496114633,
+    "PF": null,
     "PFE": 0.03603763878867974,
     "PFG": null,
     "PG": null,
@@ -10554,7 +10555,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 46.8261154193593,
+    "GRMN": 0.04682611541935929,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -10777,7 +10778,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.005937220942993172,
+    "PF": null,
     "PFE": 0.03659285490696469,
     "PFG": null,
     "PFPT": 0.0229352177236015,
@@ -11307,7 +11308,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 46.08788373025937,
+    "GRMN": 0.04608788373025938,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -11522,7 +11523,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.005199372441378445,
+    "PF": null,
     "PFE": 0.03625154224107157,
     "PFG": null,
     "PFPT": 0.02169844860096092,
@@ -12248,7 +12249,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.007008006448649958,
+    "PF": null,
     "PFE": 0.032286559422991204,
     "PFG": null,
     "PFPT": 0.028594777772456417,
@@ -12786,7 +12787,7 @@
     "HSY": null,
     "HTHT": null,
     "HUN": 0.021549721799092817,
-    "I": 0.009175994569275306,
+    "I": null,
     "IAC": null,
     "IBKR": null,
     "IBM": 0.04364806858936436,
@@ -12950,7 +12951,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.006898827264427585,
+    "PF": null,
     "PFE": 0.032224333124543814,
     "PFG": null,
     "PFPT": 0.029532913791545913,
@@ -13498,7 +13499,7 @@
     "HUBS": null,
     "HUM": null,
     "HUN": 0.019517581464698383,
-    "I": 0.007331223731260736,
+    "I": null,
     "IAC": null,
     "IBKR": null,
     "IBM": 0.041549976712727255,
@@ -13663,7 +13664,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.006757077678695276,
+    "PF": null,
     "PFE": 0.02905630037446453,
     "PFG": null,
     "PFPT": 0.030594306114340847,
@@ -14088,7 +14089,7 @@
     "DVA": null,
     "DVMT": null,
     "DVN": null,
-    "DWDP": 233505.45037292026,
+    "DWDP": null,
     "DXC": null,
     "DXCM": 0.014622392210973858,
     "EA": null,
@@ -14199,7 +14200,7 @@
     "HSY": null,
     "HTHT": null,
     "HUN": 0.020955246130299317,
-    "I": 0.0014645083319731209,
+    "I": null,
     "IAC": null,
     "IBM": 0.040928210174878916,
     "ICE": null,
@@ -14358,7 +14359,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.006088974067833452,
+    "PF": null,
     "PFE": 0.029605376151790406,
     "PFG": null,
     "PFPT": 0.030912641679187548,
@@ -14771,7 +14772,7 @@
     "DVA": null,
     "DVMT": null,
     "DVN": null,
-    "DWDP": 251040.86353122594,
+    "DWDP": null,
     "DXC": null,
     "DXCM": 0.01596581151480034,
     "EA": null,
@@ -15033,7 +15034,7 @@
     "PE": null,
     "PEG": null,
     "PEP": null,
-    "PF": 0.006244786834767775,
+    "PF": null,
     "PFE": 0.027673137283708328,
     "PFG": null,
     "PFPT": 0.03646386618888161,
@@ -15455,7 +15456,7 @@
     "DVA": null,
     "DVMT": null,
     "DVN": null,
-    "DWDP": 279389.05096962414,
+    "DWDP": null,
     "DXC": null,
     "DXCM": 0.015702864541833995,
     "EA": null,
@@ -15573,7 +15574,7 @@
     "HUBS": null,
     "HUM": null,
     "HUN": 0.026808568925102257,
-    "I": 0.0012152980075606059,
+    "I": null,
     "IAC": null,
     "IBM": 0.047045566939270325,
     "IBN": null,
@@ -16201,7 +16202,7 @@
     "DVA": null,
     "DVMT": null,
     "DVN": null,
-    "DWDP": 252368.06495263873,
+    "DWDP": null,
     "DXC": null,
     "DXCM": 0.016522122825658955,
     "EA": null,
@@ -16321,7 +16322,7 @@
     "HSY": null,
     "HUM": null,
     "HUN": 0.03030137226585452,
-    "I": 0.03596094873013219,
+    "I": null,
     "IAC": null,
     "IBM": 0.0439004279993207,
     "IBN": null,
@@ -16957,7 +16958,7 @@
     "DUK": null,
     "DVA": null,
     "DVN": null,
-    "DWDP": 273661.04181951575,
+    "DWDP": null,
     "DXC": null,
     "DXCM": 0.01959330401768325,
     "EA": null,
@@ -17080,7 +17081,7 @@
     "HSY": null,
     "HUM": null,
     "HUN": 0.03155945455739886,
-    "I": 0.04060616794219671,
+    "I": null,
     "IAC": null,
     "IBM": 0.04771537100021662,
     "IBN": null,
@@ -17709,7 +17710,7 @@
     "DUK": null,
     "DVA": null,
     "DVN": null,
-    "DWDP": 279139.38260056125,
+    "DWDP": null,
     "DXC": null,
     "DXCM": 0.015917313843678633,
     "EA": null,
@@ -18429,7 +18430,7 @@
     "DUK": null,
     "DVA": null,
     "DVN": null,
-    "DWDP": 287964.0044994375,
+    "DWDP": null,
     "DXC": null,
     "DXCM": 0.015463717951696208,
     "EA": null,
@@ -18505,7 +18506,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 35.38728586861525,
+    "GRMN": 0.03538728586861525,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -18821,7 +18822,7 @@
     "TECK": null,
     "TEL": null,
     "TER": 0.041011602495273025,
-    "TEVA": 6537.192035176976,
+    "TEVA": 0.006537192035176974,
     "TFC": null,
     "TGT": null,
     "THO": null,
@@ -19143,7 +19144,7 @@
     "DUK": null,
     "DVA": null,
     "DVN": null,
-    "DWDP": 281886.58469443937,
+    "DWDP": null,
     "DXC": null,
     "DXCM": 0.01926620551262385,
     "EA": null,
@@ -19222,7 +19223,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 34.10274510938809,
+    "GRMN": 0.03410274510938809,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -19536,7 +19537,7 @@
     "TECK": null,
     "TEL": null,
     "TER": 0.04111445371000832,
-    "TEVA": 7102.750633640122,
+    "TEVA": 0.007102750633640123,
     "TFC": null,
     "TGT": null,
     "TIF": null,
@@ -19857,7 +19858,7 @@
     "DUK": null,
     "DVA": null,
     "DVN": null,
-    "DWDP": 411685.87510050926,
+    "DWDP": null,
     "DXC": null,
     "DXCM": 0.018705858108994174,
     "EA": null,
@@ -19931,7 +19932,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 37.43379016004278,
+    "GRMN": 0.037433790160042786,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -19966,7 +19967,7 @@
     "HSY": null,
     "HUM": null,
     "HUN": 0.03007369984307634,
-    "I": 0.03741288359906713,
+    "I": null,
     "IBM": 0.04583822307205572,
     "IBN": null,
     "ICE": null,
@@ -20239,7 +20240,7 @@
     "TECK": null,
     "TEL": null,
     "TER": 0.035243370455563146,
-    "TEVA": 7331.269859541872,
+    "TEVA": 0.007331269859541873,
     "TFC": null,
     "TGT": null,
     "TIF": null,
@@ -20559,7 +20560,7 @@
     "DOC": null,
     "DOCU": 0.02172103988553397,
     "DOV": null,
-    "DOW": 301084.23686405335,
+    "DOW": 0.3010842368640534,
     "DPZ": null,
     "DRI": null,
     "DTE": null,
@@ -20639,7 +20640,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 40.08938182895916,
+    "GRMN": 0.04008938182895916,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -21269,7 +21270,7 @@
     "DOC": null,
     "DOCU": 0.01691239859207227,
     "DOV": null,
-    "DOW": 287878.7878787879,
+    "DOW": 0.2878787878787879,
     "DPZ": null,
     "DRI": null,
     "DTE": null,
@@ -21350,7 +21351,7 @@
     "GPC": null,
     "GPN": null,
     "GPS": null,
-    "GRMN": 38.48359860386629,
+    "GRMN": 0.03848359860386629,
     "GS": null,
     "GSK": null,
     "GT": null,
@@ -23804,7 +23805,7 @@
     "ZBH": 0.016386895629069677,
     "ZEN": null,
     "ZION": null,
-    "ZS": 10.35675812001574,
+    "ZS": 0.010356758120015743,
     "ZTS": 0.00743017526969114
    }
   },
@@ -24478,7 +24479,7 @@
     "ZEN": null,
     "ZION": null,
     "ZNGA": 0.0918068418423369,
-    "ZS": 10.821661484514227,
+    "ZS": 0.010821661484514227,
     "ZTS": 0.007412985394715388
    }
   },
@@ -25143,7 +25144,7 @@
     "ZEN": null,
     "ZION": null,
     "ZNGA": 0.09433227276680246,
-    "ZS": 9.535436984592524,
+    "ZS": 0.009535436984592523,
     "ZTS": 0.007834785371958962
    }
   },
@@ -25805,7 +25806,7 @@
     "ZEN": null,
     "ZION": null,
     "ZNGA": 0.0947924301949332,
-    "ZS": 13.391827296997404,
+    "ZS": 0.013391827296997404,
     "ZTS": 0.007004876313922905
    }
   },
@@ -26493,7 +26494,7 @@
     "ZEN": null,
     "ZION": null,
     "ZNGA": 0.09781433652665088,
-    "ZS": 11.155142308463342,
+    "ZS": 0.011155142308463342,
     "ZTS": 0.0069340625554365235
    }
   },
@@ -27245,7 +27246,7 @@
     "ZEN": 0.023388784048729374,
     "ZION": null,
     "ZNGA": 0.07731993431505069,
-    "ZS": 12.009003144503355,
+    "ZS": 0.012009003144503356,
     "ZTS": 0.0069184117072882976
    }
   },
@@ -27398,7 +27399,7 @@
     "CHD": null,
     "CHGG": 0.03365330122110721,
     "CHKP": null,
-    "CHL": 0.0763634409548375,
+    "CHL": null,
     "CHRW": null,
     "CHTR": null,
     "CI": null,
@@ -28046,7 +28047,7 @@
     "ZEN": 0.029366042510214543,
     "ZION": null,
     "ZNGA": 0.0797218849372638,
-    "ZS": 10.335946540923066,
+    "ZS": 0.010335946540923067,
     "ZTO": null,
     "ZTS": 0.008574558978046194
    }
@@ -28204,7 +28205,7 @@
     "CHD": null,
     "CHGG": 0.02714514214198399,
     "CHKP": null,
-    "CHL": 0.07123837780350613,
+    "CHL": null,
     "CHRW": null,
     "CHTR": null,
     "CI": null,
@@ -28868,7 +28869,7 @@
     "ZION": null,
     "ZM": 0.002071296804387732,
     "ZNGA": 0.0743337851277108,
-    "ZS": 9.584522454327912,
+    "ZS": 0.009584522454327912,
     "ZTO": null,
     "ZTS": 0.007535768605500018
    }
@@ -29024,7 +29025,7 @@
     "CHD": null,
     "CHGG": 0.02050674584137209,
     "CHKP": null,
-    "CHL": 0.0691339198980898,
+    "CHL": null,
     "CHRW": null,
     "CHTR": null,
     "CI": null,
@@ -29691,7 +29692,7 @@
     "ZION": null,
     "ZM": 0.001406399774939667,
     "ZNGA": 0.08570952814124598,
-    "ZS": 5.82848472729756,
+    "ZS": 0.005828484727297561,
     "ZTO": null,
     "ZTS": 0.006515166423454652
    }
@@ -30499,7 +30500,7 @@
     "ZION": null,
     "ZM": 0.0014553790646642066,
     "ZNGA": 0.08483135674635615,
-    "ZS": 6.6369480578463556,
+    "ZS": 0.006636948057846356,
     "ZTO": null,
     "ZTS": 0.006569780035138979
    }
@@ -31309,7 +31310,7 @@
     "ZION": null,
     "ZM": 0.0014072103620389397,
     "ZNGA": 0.08165227237124617,
-    "ZS": 5.582184929329062,
+    "ZS": 0.005582184929329063,
     "ZTO": null,
     "ZTS": 0.005832954459103783
    }
@@ -31662,7 +31663,7 @@
     "ICE": null,
     "IFF": 0.024301847016194613,
     "ILMN": 0.012125365325523033,
-    "IMMU": 0.000016677246160411685,
+    "IMMU": 0.016677246160411687,
     "INCY": 0.056545818592552775,
     "INFY": null,
     "INTC": 0.06210827310807603,
@@ -31773,7 +31774,7 @@
     "MTB": null,
     "MTCH": null,
     "MU": 0.051016878804648585,
-    "MXIM": 23.773333300927376,
+    "MXIM": 0.023773333300927377,
     "MYL": 0.07803343755265572,
     "NBIX": 0.02999657023146303,
     "NBL": null,
@@ -31947,7 +31948,7 @@
     "TDOC": 0.0051942887990147945,
     "TEAM": null,
     "TEL": null,
-    "TER": 26.598373332048386,
+    "TER": 0.026598373332048383,
     "TEVA": 0.08652980855760578,
     "TFC": null,
     "TGT": null,
@@ -32059,7 +32060,7 @@
     "ZION": null,
     "ZM": 0.0008239908606839473,
     "ZNGA": 0.10484182408556798,
-    "ZS": 4.644114444844673,
+    "ZS": 0.004644114444844674,
     "ZTO": null,
     "ZTS": 0.005769274591612053
    }
@@ -32404,7 +32405,7 @@
     "ICE": null,
     "IFF": 0.025242837844950586,
     "ILMN": 0.013622580261716134,
-    "IMMU": 0.000008680337733045177,
+    "IMMU": 0.008680337733045178,
     "INCY": 0.05687617391052289,
     "INFY": null,
     "INTC": 0.060384364302434566,
@@ -32514,7 +32515,7 @@
     "MTCH": null,
     "MTN": null,
     "MU": 0.048717286604772946,
-    "MXIM": 23.795637958325766,
+    "MXIM": 0.023795637958325764,
     "MYL": 0.08172420824771376,
     "NBIX": 0.03562592863012359,
     "NBL": null,
@@ -32692,7 +32693,7 @@
     "TDOC": 0.005277141330157316,
     "TEAM": null,
     "TEL": null,
-    "TER": 27.923384549696554,
+    "TER": 0.02792338454969655,
     "TEVA": 0.09053670156688852,
     "TFC": null,
     "TGT": null,
@@ -33426,7 +33427,7 @@
     "TEAM": null,
     "TECK": null,
     "TEL": null,
-    "TER": 25.30848566209955,
+    "TER": 0.02530848566209955,
     "TEVA": 0.09331453218314532,
     "TFC": null,
     "TGT": null,
@@ -34444,7 +34445,7 @@
     "CHD": null,
     "CHGG": 0.015679386136003566,
     "CHKP": null,
-    "CHL": 0.14113091990291116,
+    "CHL": null,
     "CHRW": null,
     "CHTR": null,
     "CHWY": null,
@@ -35011,7 +35012,7 @@
     "UNM": null,
     "UNP": null,
     "UPS": null,
-    "UPWK": 0.000020366353967691822,
+    "UPWK": 0.020366353967691823,
     "URI": null,
     "USB": null,
     "USFD": null,
@@ -35871,7 +35872,7 @@
     "UNM": null,
     "UNP": null,
     "UPS": null,
-    "UPWK": 0.000015169795905884398,
+    "UPWK": 0.015169795905884399,
     "URI": null,
     "USB": null,
     "USFD": null,
@@ -36854,7 +36855,7 @@
     "ZG": null,
     "ZION": null,
     "ZM": 0.0014599850759073605,
-    "ZNGA": 60.71868049297749,
+    "ZNGA": 0.060718680492977496,
     "ZS": 0.005074533347005775,
     "ZTO": null,
     "ZTS": 0.006177607992798486
@@ -37766,7 +37767,7 @@
     "ZG": null,
     "ZION": null,
     "ZM": 0.0017720006951148506,
-    "ZNGA": 66.97594909339884,
+    "ZNGA": 0.06697594909339884,
     "ZS": 0.006993537430203038,
     "ZTO": null,
     "ZTS": 0.006169782292275559
@@ -38641,7 +38642,7 @@
     "ZG": null,
     "ZION": null,
     "ZM": 0.0018413747029606758,
-    "ZNGA": 66.03085103469613,
+    "ZNGA": 0.06603085103469612,
     "ZS": 0.006806877867582856,
     "ZTO": null,
     "ZTS": 0.005556041685514861
@@ -47051,7 +47052,7 @@
     "TEAM": null,
     "TECK": null,
     "TEL": null,
-    "TER": 23.00522314743117,
+    "TER": 0.02300522314743117,
     "TEVA": 0.11264383347816667,
     "TFC": null,
     "TGT": null,
@@ -47973,7 +47974,7 @@
     "TECK": null,
     "TEL": null,
     "TENB": 0.018190601242304077,
-    "TER": 22.647403658758396,
+    "TER": 0.0226474036587584,
     "TEVA": 0.09344999603779748,
     "TFC": null,
     "TGT": null,
@@ -48930,7 +48931,7 @@
     "TECK": null,
     "TEL": null,
     "TENB": 0.018968584365533052,
-    "TER": 24.265522178157767,
+    "TER": 0.024265522178157764,
     "TEVA": 0.10287168379776299,
     "TFC": null,
     "TGT": null,
@@ -49782,7 +49783,7 @@
     "SAVE": null,
     "SBAC": null,
     "SBLK": null,
-    "SBNY": 0.00019432051144753682,
+    "SBNY": null,
     "SBSW": null,
     "SBUX": null,
     "SCCO": null,
@@ -51505,7 +51506,7 @@
     "SAVE": null,
     "SBAC": null,
     "SBLK": null,
-    "SBNY": 0.00022460257510739195,
+    "SBNY": null,
     "SBUX": null,
     "SCCO": null,
     "SCHW": null,
@@ -52321,7 +52322,7 @@
     "SAP": null,
     "SBAC": null,
     "SBLK": null,
-    "SBNY": 0.0009732862383754735,
+    "SBNY": null,
     "SBUX": null,
     "SCCO": null,
     "SCHW": null,
@@ -52364,7 +52365,7 @@
     "SU": null,
     "SUI": null,
     "SW": null,
-    "SWAV": 0.000007819029593054463,
+    "SWAV": 0.007819029593054463,
     "SWCH": null,
     "SWK": null,
     "SWKS": 0.039114945014447226,
@@ -52722,7 +52723,7 @@
     "CVS": null,
     "CVX": null,
     "CYBR": null,
-    "CYTK": 52.14948649482144,
+    "CYTK": 0.052149486494821436,
     "CZR": null,
     "D": null,
     "DAL": null,
@@ -53133,7 +53134,7 @@
     "S": 0.03048330382827773,
     "SAP": null,
     "SBAC": null,
-    "SBNY": 0.0010649232023402428,
+    "SBNY": null,
     "SBUX": null,
     "SCCO": null,
     "SCHW": null,
@@ -53526,7 +53527,7 @@
     "CVS": null,
     "CVX": null,
     "CYBR": null,
-    "CYTK": 61.99954070133342,
+    "CYTK": 0.06199954070133342,
     "CZR": null,
     "D": null,
     "DAL": null,
@@ -53946,7 +53947,7 @@
     "SAIA": null,
     "SAP": null,
     "SBAC": null,
-    "SBNY": 0.0010446921903722742,
+    "SBNY": null,
     "SBUX": null,
     "SCCO": null,
     "SCHW": null,
@@ -54751,7 +54752,7 @@
     "S": 0.05275254375073212,
     "SAIA": null,
     "SAP": null,
-    "SBNY": 0.0004922549385464785,
+    "SBNY": null,
     "SBUX": null,
     "SCCO": null,
     "SCHW": null,
@@ -55525,7 +55526,7 @@
     "RY": null,
     "S": 0.0510989358811945,
     "SAP": null,
-    "SBNY": 0.0006000838678260332,
+    "SBNY": null,
     "SBUX": null,
     "SCCO": null,
     "SCHW": null,
@@ -56322,7 +56323,7 @@
     "S": 0.04706140934190922,
     "SAIA": null,
     "SAP": null,
-    "SBNY": 0.0005011918178735954,
+    "SBNY": null,
     "SBUX": null,
     "SCCO": null,
     "SCHW": null,
@@ -57105,7 +57106,7 @@
     "S": 0.04859735612199764,
     "SAP": null,
     "SBAC": null,
-    "SBNY": 0.0006030680341166164,
+    "SBNY": null,
     "SBUX": null,
     "SCCO": null,
     "SCHW": null,
@@ -57731,7 +57732,7 @@
     "MAS": null,
     "MAT": null,
     "MAXR": null,
-    "MBLY": 23957.725091025688,
+    "MBLY": 0.02395772509102569,
     "MCD": null,
     "MCHP": 0.024931646923301257,
     "MCK": null,
@@ -58524,7 +58525,7 @@
     "MAS": null,
     "MAT": null,
     "MAXR": null,
-    "MBLY": 27750.285416433657,
+    "MBLY": 0.027750285416433654,
     "MCD": null,
     "MCHP": 0.027359645973547123,
     "MCK": null,
@@ -63211,7 +63212,7 @@
     "NSC": null,
     "NTAP": 0.06444816260767182,
     "NTES": null,
-    "NTNX": 68.16514603952606,
+    "NTNX": 0.06816514603952606,
     "NTR": null,
     "NTRA": 0.06907749400560678,
     "NTRS": null,
@@ -63986,7 +63987,7 @@
     "NSC": null,
     "NTAP": 0.055733771261795566,
     "NTES": null,
-    "NTNX": 55.6220285012122,
+    "NTNX": 0.0556220285012122,
     "NTR": null,
     "NTRA": 0.04441246381586012,
     "NTRS": null,
@@ -64474,7 +64475,7 @@
     "CVS": null,
     "CVX": null,
     "CYBR": null,
-    "CYTK": 40.849880041712886,
+    "CYTK": 0.04084988004171289,
     "CZR": null,
     "D": null,
     "DAL": null,
@@ -65250,7 +65251,7 @@
     "CVS": null,
     "CVX": null,
     "CYBR": null,
-    "CYTK": 42.29282349672478,
+    "CYTK": 0.04229282349672478,
     "CZR": null,
     "D": null,
     "DAL": null,
@@ -68435,7 +68436,7 @@
     "CVNA": null,
     "CVS": null,
     "CVX": null,
-    "CYTK": 64.19107166171783,
+    "CYTK": 0.06419107166171782,
     "CZR": null,
     "D": null,
     "DAL": null,
@@ -69230,7 +69231,7 @@
     "CVNA": null,
     "CVS": null,
     "CVX": null,
-    "CYTK": 58.55512609785747,
+    "CYTK": 0.058555126097857464,
     "CZR": null,
     "D": null,
     "DAL": null,
@@ -70026,7 +70027,7 @@
     "CVNA": null,
     "CVS": null,
     "CVX": null,
-    "CYTK": 55.27903201122203,
+    "CYTK": 0.05527903201122203,
     "CZR": null,
     "D": null,
     "DAL": null,
@@ -70649,13 +70650,13 @@
    "2017": {
     "gesamt": {
      "n": 8049,
-     "mit": 1853,
-     "anteil": 0.23021493353211578
+     "mit": 1842,
+     "anteil": 0.2288483041371599
     },
     "50-250": {
      "n": 6615,
-     "mit": 1352,
-     "anteil": 0.20438397581254725
+     "mit": 1341,
+     "anteil": 0.20272108843537415
     },
     "250-1000": {
      "n": 1282,
@@ -70671,18 +70672,18 @@
    "2018": {
     "gesamt": {
      "n": 8492,
-     "mit": 2011,
-     "anteil": 0.2368111163447951
+     "mit": 1993,
+     "anteil": 0.23469147432878004
     },
     "50-250": {
      "n": 6797,
-     "mit": 1396,
-     "anteil": 0.2053847285567162
+     "mit": 1382,
+     "anteil": 0.20332499632190673
     },
     "250-1000": {
      "n": 1478,
-     "mit": 475,
-     "anteil": 0.32138024357239514
+     "mit": 471,
+     "anteil": 0.3186738836265223
     },
     "ab1000": {
      "n": 217,
@@ -70693,18 +70694,18 @@
    "2019": {
     "gesamt": {
      "n": 8324,
-     "mit": 2077,
-     "anteil": 0.24951946179721288
+     "mit": 2070,
+     "anteil": 0.24867851994233542
     },
     "50-250": {
      "n": 6615,
-     "mit": 1415,
-     "anteil": 0.21390778533635676
+     "mit": 1413,
+     "anteil": 0.21360544217687075
     },
     "250-1000": {
      "n": 1471,
-     "mit": 501,
-     "anteil": 0.3405846363018355
+     "mit": 496,
+     "anteil": 0.3371855880353501
     },
     "ab1000": {
      "n": 238,
@@ -70715,13 +70716,13 @@
    "2020": {
     "gesamt": {
      "n": 9060,
-     "mit": 2366,
-     "anteil": 0.2611479028697572
+     "mit": 2363,
+     "anteil": 0.2608167770419426
     },
     "50-250": {
      "n": 6766,
-     "mit": 1499,
-     "anteil": 0.22154892107596807
+     "mit": 1496,
+     "anteil": 0.22110552763819097
     },
     "250-1000": {
      "n": 1930,
@@ -70737,13 +70738,13 @@
    "2021": {
     "gesamt": {
      "n": 10176,
-     "mit": 2748,
-     "anteil": 0.27004716981132076
+     "mit": 2747,
+     "anteil": 0.2699488993710692
     },
     "50-250": {
      "n": 7231,
-     "mit": 1619,
-     "anteil": 0.22389710966671275
+     "mit": 1618,
+     "anteil": 0.22375881620799337
     },
     "250-1000": {
      "n": 2437,
@@ -70759,18 +70760,18 @@
    "2022": {
     "gesamt": {
      "n": 10302,
-     "mit": 2915,
-     "anteil": 0.28295476606484177
+     "mit": 2909,
+     "anteil": 0.2823723548825471
     },
     "50-250": {
      "n": 7111,
-     "mit": 1674,
-     "anteil": 0.23540992828012938
+     "mit": 1669,
+     "anteil": 0.2347067922936296
     },
     "250-1000": {
      "n": 2670,
-     "mit": 982,
-     "anteil": 0.36779026217228467
+     "mit": 981,
+     "anteil": 0.36741573033707864
     },
     "ab1000": {
      "n": 521,
@@ -70781,13 +70782,13 @@
    "2023": {
     "gesamt": {
      "n": 9246,
-     "mit": 2700,
-     "anteil": 0.2920181700194679
+     "mit": 2697,
+     "anteil": 0.2916937053861129
     },
     "50-250": {
      "n": 6807,
-     "mit": 1665,
-     "anteil": 0.24460114587924195
+     "mit": 1662,
+     "anteil": 0.24416042309387395
     },
     "250-1000": {
      "n": 2140,
@@ -70826,13 +70827,13 @@
   "gesamt": {
    "50-250": {
     "n": 52419,
-    "mit": 11727,
-    "anteil": 0.22371659131231042
+    "mit": 11688,
+    "anteil": 0.22297258627596864
    },
    "250-1000": {
     "n": 14986,
-    "mit": 5330,
-    "anteil": 0.35566528760176164
+    "mit": 5320,
+    "anteil": 0.3549979981315895
    },
    "ab1000": {
     "n": 2564,
@@ -70841,8 +70842,8 @@
    },
    "gesamt": {
     "n": 69969,
-    "mit": 18513,
-    "anteil": 0.26458860352441793
+    "mit": 18464,
+    "anteil": 0.2638882933870714
    }
   }
  },
@@ -70868,6 +70869,21 @@
     "longShortMinPp": 20,
     "teil4EinseitigPp": 20
    },
+   "ic": {
+    "mittel": 1,
+    "min": 1,
+    "max": 1,
+    "n": 92,
+    "toleranz": 1e-9,
+    "bestanden": true,
+    "bau": "x = y je Mitglied (halte mit einem Mitglied, Sicht mit Schluessel), beide Seiten gerankt; Urteil |IC - 1| < 1e-9 im Mittel und an jedem Signaltag"
+   },
+   "icDezilOrakel": {
+    "mittel": 0.9996979491795698,
+    "se": 0.0001244263358439157,
+    "n": 92,
+    "hinweis": "nachrichtlich: IC des Dezil-Orakels des Pruefstands (orakelPeriode: Eroeffnung/Eroeffnung, Tote ohne Totalverlust) gegen y - nicht 1, weil orakelPeriode nicht die Haltefunktion ist (Kopf der Datei)"
+   },
    "teil4Einseitig": {
     "minPp": 20,
     "erreicht": false,
@@ -70878,11 +70894,18 @@
   "placebo": {
    "versatz": {
     "bestanden": false,
-    "brutto": -2.3713994720278646,
-    "netto": -2.383577754211384,
-    "t": -4.838023836140771,
-    "se": 0.49284452077205837,
+    "brutto": -2.341224744036172,
+    "netto": -2.352930504550904,
+    "t": -4.71765613800063,
+    "se": 0.4989879295864857,
     "n": 92,
+    "ic": {
+     "mittel": -0.09289991937148295,
+     "se": 0.012449136287387757,
+     "t": -7.462358610821863,
+     "n": 92,
+     "hinweis": "nur Diagnose, wie der Versatz selbst"
+    },
     "ppInSchranke": false,
     "schranke": {
      "tEinzeln": 3,
@@ -70894,21 +70917,30 @@
    },
    "symbole": {
     "bestanden": true,
-    "brutto": -0.26854994087134726,
-    "netto": -0.338695470980241,
-    "t": -1.1825562923889386,
-    "se": 0.2283370864878204,
+    "dezilBestanden": true,
+    "brutto": -0.28921299882155826,
+    "netto": -0.3593500436424255,
+    "t": -1.2559093732012823,
+    "se": 0.23154356966362588,
     "n": 92,
+    "ic": {
+     "mittel": -0.003882884923041615,
+     "se": 0.00667759044889997,
+     "t": -0.5814799444133715,
+     "n": 92,
+     "bestanden": true
+    },
     "ppInSchranke": false,
     "schranke": {
      "tEinzeln": 3,
      "schrankePp": 0.25
     },
     "saat": "mehrfaktor-2026-09-22|placebo-symbole|<Signaltag>",
-    "bau": "Werte des Feldes je Signaltag unter den Universumsmitgliedern permutiert (fester Generator); Urteil |t| < 3"
+    "bau": "Werte des Feldes je Signaltag unter den Universumsmitgliedern permutiert (fester Generator); Urteil |t| < 3 fuer Dezil-Universum brutto UND fuer den IC"
    },
    "zufall": {
     "bestanden": true,
+    "dezilBestanden": true,
     "ziehungen": 12,
     "mittelBrutto": -0.016816282494735404,
     "mittelNettoPlusKosten": -0.009321509097186776,
@@ -70924,6 +70956,19 @@
      "tEinzeln": 3,
      "maxFehler": 3
     },
+    "ic": {
+     "mittel": -0.0005826372545316061,
+     "seEinzelnMittel": 0.003780024578917794,
+     "seDesMittels": 0.0010911991040907952,
+     "mdeBoden": 0.010590116860296091,
+     "fehlerEinzelnT": 0,
+     "bestanden": true,
+     "schranke": {
+      "mittelMax": 0.01,
+      "tEinzeln": 3,
+      "maxFehler": 3
+     }
+    },
     "einzeln": [
      {
       "ziehung": 0,
@@ -70934,7 +70979,14 @@
       "umschlag": 0.9059516282658856,
       "se": 0.1092124566675342,
       "t": -0.4292943128738178,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": -0.0013216184607917438,
+       "se": 0.003434314251076692,
+       "t": -0.3848274689415516,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 1,
@@ -70945,7 +70997,14 @@
       "umschlag": 0.8994892637412093,
       "se": 0.12070644767706255,
       "t": -1.6749923467557102,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": -0.0035525040223394395,
+       "se": 0.0038791632531241555,
+       "t": -0.9157913164593846,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 2,
@@ -70956,7 +71015,14 @@
       "umschlag": 0.907313101798602,
       "se": 0.09582359395978077,
       "t": -0.2890529254024122,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": 0.004551815287331113,
+       "se": 0.0037553120214339057,
+       "t": 1.2121004223753091,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 3,
@@ -70967,7 +71033,14 @@
       "umschlag": 0.900458372526256,
       "se": 0.12110162032462743,
       "t": 0.42930431415907844,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": -0.0016904548337827638,
+       "se": 0.0039165640271889455,
+       "t": -0.4316168003503985,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 4,
@@ -70978,7 +71051,14 @@
       "umschlag": 0.9031894561931544,
       "se": 0.10991541379897582,
       "t": 1.0989399284196761,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": 0.004885071796063073,
+       "se": 0.003551046890767047,
+       "t": 1.375670878569522,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 5,
@@ -70989,7 +71069,14 @@
       "umschlag": 0.9067351121144362,
       "se": 0.11844791578027437,
       "t": -1.1661899715686574,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": -0.0013869044201314542,
+       "se": 0.0035172064588884517,
+       "t": -0.3943198775342178,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 6,
@@ -71000,7 +71087,14 @@
       "umschlag": 0.9005517236330292,
       "se": 0.10828015569614803,
       "t": -0.17671994966754265,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": -0.000002584312496527065,
+       "se": 0.004146193077039646,
+       "t": -0.000623297672951653,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 7,
@@ -71011,7 +71105,14 @@
       "umschlag": 0.9047073453962973,
       "se": 0.1108604940200814,
       "t": 1.573350789821153,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": 0.0016037908484910692,
+       "se": 0.0041198987238609906,
+       "t": 0.3892791925205545,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 8,
@@ -71022,7 +71123,14 @@
       "umschlag": 0.9066462826564055,
       "se": 0.09974556006086138,
       "t": -0.016720151062801454,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": 0.0005774789536310855,
+       "se": 0.003458786772967188,
+       "t": 0.166959975140556,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 9,
@@ -71033,7 +71141,14 @@
       "umschlag": 0.9024906465037646,
       "se": 0.10677946762221303,
       "t": -0.011110307470752138,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": 0.0024529572561239527,
+       "se": 0.004185891930064172,
+       "t": 0.5860058733256278,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 10,
@@ -71044,7 +71159,14 @@
       "umschlag": 0.9015478411882938,
       "se": 0.11312897281463152,
       "t": -0.5654328902438321,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": -0.0050281117706473975,
+       "se": 0.0037464873702221036,
+       "t": -1.3420869400526807,
+       "n": 92,
+       "tOk": true
+      }
      },
      {
       "ziehung": 11,
@@ -71055,10 +71177,17 @@
       "umschlag": 0.898565755277731,
       "se": 0.11112597617360251,
       "t": -0.44318813070571156,
-      "tOk": true
+      "tOk": true,
+      "ic": {
+       "mittel": -0.00808058337583024,
+       "se": 0.0036494301703802307,
+       "t": -2.2142041355975124,
+       "n": 92,
+       "tOk": true
+      }
      }
     ],
-    "bau": "12 Zufallsfelder (zufallFabrik des Pruefstands, Saat mehrfaktor-2026-09-22#k) auf denselben Signaltagen; Mittel der Ziehungen brutto und netto+Kosten unter 0.25 Pp, hoechstens 3 Ziehungen mit |t| >= 3; MDE-Boden = 2.8016 x mittlere se einer Ziehung"
+    "bau": "12 Zufallsfelder (zufallFabrik des Pruefstands, Saat mehrfaktor-2026-09-22#k) auf denselben Signaltagen; Mittel der Ziehungen brutto und netto+Kosten unter 0.25 Pp, hoechstens 3 Ziehungen mit |t| >= 3; MDE-Boden = 2.8016 x mittlere se einer Ziehung. IC: |Mittel der Ziehungen| < 0.01, hoechstens 3 Ziehungen mit |t| >= 3; MDE-Boden(IC) = 2.8016 x mittlere se(IC) einer Ziehung"
    }
   },
   "leck": {
@@ -71075,13 +71204,13 @@
     "geoeffnet": true,
     "zugriffe": 69969,
     "verstoesse": 0,
-    "kennung": "fundamentaltafel-2026-09-16/v1",
+    "kennung": "fundamentaltafel-2026-09-16/v1.1",
     "protokoll": 69969,
     "zaehler": {
      "zugriffe": 69969,
-     "geliefert": 59774,
-     "null_ohneReihe": 80,
-     "null_ohneFiling": 10099,
+     "geliefert": 59189,
+     "null_ohneReihe": 908,
+     "null_ohneFiling": 9856,
      "null_veraltet": 16
     }
    },
@@ -71089,72 +71218,72 @@
   },
   "bestanden": true,
   "bestandenMitVersatz": false,
-  "regel": "bestanden = Orakel + Placebo Symbole + Zufall + Klinke; Placebo Versatz nur Diagnose (Vorregistrierung §9 (3), PM 22.09.2026)"
+  "regel": "bestanden = Orakel (Dezil-Schranken UND IC = 1) + Placebo Symbole (|t| < 3 fuer Dezil UND IC) + Zufall (Dezil-Schranken UND IC-Schranken) + Klinke; Placebo Versatz nur Diagnose (Vorregistrierung §9 (3), PM 22.09.2026; IC seit v1.1, Auftrag Nr. 61)"
  },
  "einzelmessung": {
   "perioden": 92,
   "universumMittel": 760.5326086956521,
-  "dezilMittel": 20.27173913043478,
-  "mitWertMittel": 201.22826086956522,
+  "dezilMittel": 20.217391304347824,
+  "mitWertMittel": 200.69565217391303,
   "dezilUni": {
    "brutto": {
     "n": 92,
-    "mittel": 0.48504513200027766,
-    "se": 0.492448842112512,
-    "t": 0.9903626361444833,
-    "sd": 4.723403361244066,
-    "tHH": 1.2491046413881652,
-    "seHHTag": 0.020330327576057204,
-    "mde80": 1.3796446760624137,
+    "mittel": 0.4692460237587367,
+    "se": 0.49707949309614546,
+    "t": 0.9491786739307044,
+    "sd": 4.767819005165603,
+    "tHH": 1.1710747141813855,
+    "seHHTag": 0.021054561634458284,
+    "mde80": 1.392617907858161,
     "marke": null
    },
    "netto": {
     "n": 92,
-    "mittel": 0.4728142571596271,
-    "se": 0.4923766713789199,
-    "t": 0.9655312025138132,
-    "sd": 4.722711123885623,
-    "tHH": 1.221007115435042,
-    "seHHTag": 0.020320420595135245,
-    "mde80": 1.379442482535182,
+    "mittel": 0.45799058017753225,
+    "se": 0.4969942354818398,
+    "t": 0.9265703775061974,
+    "sd": 4.767001242857024,
+    "tHH": 1.1461192186290319,
+    "seHHTag": 0.02104463244403521,
+    "mde80": 1.3923790501259223,
     "marke": null
    }
   },
   "longShort": {
    "brutto": {
     "n": 92,
-    "mittel": 0.5773158493743936,
-    "se": 0.5896475110293339,
-    "t": 0.984451281000515,
-    "sd": 5.655700242074728,
+    "mittel": 0.49402004937415617,
+    "se": 0.5684848768963069,
+    "t": 0.873773514476276,
+    "sd": 5.452715386291718,
     "tHH": null,
     "seHHTag": null,
-    "mde80": 1.651956466899782,
+    "mde80": 1.5926672311126935,
     "marke": null
    },
    "netto": {
     "n": 92,
-    "mittel": 0.5737364462140067,
-    "se": 0.5896444688709346,
-    "t": 0.9783526541019029,
-    "sd": 5.655671062716427,
+    "mittel": 0.4912036032967184,
+    "se": 0.5684237953518398,
+    "t": 0.8688854233000276,
+    "sd": 5.452129512698822,
     "tHH": null,
     "seHHTag": null,
-    "mde80": 1.6519479439888103,
+    "mde80": 1.5924961050577147,
     "marke": null
    }
   },
   "dezilUnten": {
-   "brutto": -0.092270717374116,
-   "netto": -0.10092218905438,
-   "dezilMittel": 19.967391304347824
+   "brutto": -0.024774025615419474,
+   "netto": -0.033213023119186474,
+   "dezilMittel": 19.92391304347826
   },
   "umschlag": {
-   "dezil": 0.22098449346017987,
+   "dezil": 0.20965842137736782,
    "universum": 0.07916784298244638
   },
   "kosten": {
-   "dezil": 0.019725648238199354,
+   "dezil": 0.018750216978753134,
    "universum": 0.007494773397548643
   },
   "jahre": {
@@ -71162,148 +71291,148 @@
     {
      "jahr": 2017,
      "n": 12,
-     "mittel": 0.8797574550699897,
-     "se": 0.7201176438344493,
-     "t": 1.2760091373904012,
+     "mittel": 0.9693443369561928,
+     "se": 0.8164088820125929,
+     "t": 1.2401226422864524,
      "duenn": false,
-     "mde80": 2.017481590966593
+     "mde80": 2.28725112384648
     },
     {
      "jahr": 2018,
      "n": 12,
-     "mittel": 1.2837941523048286,
-     "se": 0.8883512993262636,
-     "t": 1.5094020367776568,
+     "mittel": 1.5378957382884646,
+     "se": 0.8678316843089385,
+     "t": 1.8509115769749447,
      "duenn": false,
-     "mde80": 2.48880500019246
+     "mde80": 2.4313172467599222
     },
     {
      "jahr": 2019,
      "n": 12,
-     "mittel": 0.6722729389799463,
-     "se": 0.91400315857043,
-     "t": 0.7682316824579716,
+     "mittel": 1.0817762139238123,
+     "se": 0.8237840845974171,
+     "t": 1.3715710544263449,
      "duenn": false,
-     "mde80": 2.560671249050917
+     "mde80": 2.307913491408124
     },
     {
      "jahr": 2020,
      "n": 12,
-     "mittel": 1.6792873075426265,
-     "se": 1.3740449087224624,
-     "t": 1.276492768107427,
+     "mittel": 0.935239018733031,
+     "se": 1.3984601739759615,
+     "t": 0.6985006187619248,
      "duenn": false,
-     "mde80": 3.849524216276851
+     "mde80": 3.9179260234110536
     },
     {
      "jahr": 2021,
      "n": 12,
-     "mittel": 0.15965541128468175,
-     "se": 1.3664152255664437,
-     "t": 0.12203804189414967,
+     "mittel": 0.2930507276121972,
+     "se": 1.4285384622068455,
+     "t": 0.2142619961104966,
      "duenn": false,
-     "mde80": 3.8281488959469487
+     "mde80": 4.002193355718699
     },
     {
      "jahr": 2022,
      "n": 12,
-     "mittel": -2.3735560256581323,
-     "se": 1.0489852859185533,
-     "t": -2.3633300186719914,
+     "mittel": -2.454544695861666,
+     "se": 1.0880969985238815,
+     "t": -2.3561211234315085,
      "duenn": false,
-     "mde80": 2.938837177029419
+     "mde80": 3.048412551064507
     },
     {
      "jahr": 2023,
      "n": 12,
-     "mittel": 3.256809366033243,
-     "se": 2.409161973076514,
-     "t": 1.4119542313951927,
+     "mittel": 3.270532385433409,
+     "se": 2.3849384403332445,
+     "t": 1.4323051742263673,
      "duenn": false,
-     "mde80": 6.749508183771162
+     "mde80": 6.681643534437618
     },
     {
      "jahr": 2024,
      "n": 8,
-     "mittel": -2.759011890332582,
-     "se": 0.8186873366331443,
-     "t": -3.602727983036346,
+     "mittel": -3.053611314402689,
+     "se": 0.810795179614982,
+     "t": -4.026229917117346,
      "duenn": true,
-     "mde80": 2.293634442311417
+     "mde80": 2.271523775209334
     }
    ],
    "netto": [
     {
      "jahr": 2017,
      "n": 12,
-     "mittel": 0.864921244489994,
-     "se": 0.7200686844567484,
-     "t": 1.2545758431977492,
+     "mittel": 0.9571707999873081,
+     "se": 0.8162660633383363,
+     "t": 1.2247627828327372,
      "duenn": false,
-     "mde80": 2.0173444263740263
+     "mde80": 2.286851003048683
     },
     {
      "jahr": 2018,
      "n": 12,
-     "mittel": 1.2729225836464124,
-     "se": 0.888660795050647,
-     "t": 1.4960987193878137,
+     "mittel": 1.5283699415097065,
+     "se": 0.868106749977465,
+     "t": 1.838864104153526,
      "duenn": false,
-     "mde80": 2.489672083413893
+     "mde80": 2.432087870736866
     },
     {
      "jahr": 2019,
      "n": 12,
-     "mittel": 0.6595732807497267,
-     "se": 0.9137071445360225,
-     "t": 0.7539634859847276,
+     "mittel": 1.0711922660658262,
+     "se": 0.8235830917351253,
+     "t": 1.358483246870123,
      "duenn": false,
-     "mde80": 2.5598419361321207
+     "mde80": 2.3073503898051273
     },
     {
      "jahr": 2020,
      "n": 12,
-     "mittel": 1.6677052267944539,
-     "se": 1.3741990532058503,
-     "t": 1.267546572797514,
+     "mittel": 0.924467766117281,
+     "se": 1.3984814310614495,
+     "t": 0.6904454138235547,
      "duenn": false,
-     "mde80": 3.8499560674615103
+     "mde80": 3.917985577261757
     },
     {
      "jahr": 2021,
      "n": 12,
-     "mittel": 0.1456082219090212,
-     "se": 1.3655026027875927,
-     "t": 0.11137498195633529,
+     "mittel": 0.27917298268098106,
+     "se": 1.4279370707398704,
+     "t": 0.20420134511705923,
      "duenn": false,
-     "mde80": 3.8255920919697197
+     "mde80": 4.000508497384821
     },
     {
      "jahr": 2022,
      "n": 12,
-     "mittel": -2.3846128186775135,
-     "se": 1.0485795857888942,
-     "t": -2.375257818079607,
+     "mittel": -2.4646602121458394,
+     "se": 1.0873665127497363,
+     "t": -2.36742037258067,
      "duenn": false,
-     "mde80": 2.937700567546166
+     "mde80": 3.046366022119661
     },
     {
      "jahr": 2023,
      "n": 12,
-     "mittel": 3.246835878709635,
-     "se": 2.4086436476158966,
-     "t": 1.4079332480703193,
+     "mittel": 3.2601027386895116,
+     "se": 2.3842670492279825,
+     "t": 1.4281396283430061,
      "duenn": false,
-     "mde80": 6.748056043160696
+     "mde80": 6.679762565117116
     },
     {
      "jahr": 2024,
      "n": 8,
-     "mittel": -2.7720664690968846,
-     "se": 0.8185081228784368,
-     "t": -3.620567256384599,
+     "mittel": -3.066832752315542,
+     "se": 0.8108722327884569,
+     "t": -4.043278321680463,
      "duenn": true,
-     "mde80": 2.2931323570562285
+     "mde80": 2.271739647380141
     }
    ]
   },
@@ -71311,32 +71440,32 @@
    "brutto": {
     "abTag": "2023-08-03",
     "n": 12,
-    "mittel": -1.3374618099124003,
-    "se": 0.9921612616213636,
-    "t": -1.407970009347133,
-    "mde80": 2.7796389905584125
+    "mittel": -1.5338464202115614,
+    "se": 1.015991230665237,
+    "t": -1.576834807432179,
+    "mde80": 2.846401031831728
    },
    "netto": {
     "abTag": "2023-08-03",
     "n": 12,
-    "mittel": -1.3501843367295365,
-    "se": 0.9921705849442203,
-    "t": -1.4213498848639428,
-    "mde80": 2.7796651107797277
+    "mittel": -1.5465175053016447,
+    "se": 1.0161637577451819,
+    "t": -1.5895910880431532,
+    "mde80": 2.8468843836989017
    }
   },
   "regime": {
    "unterEMA200": {
     "n": 17,
-    "mittel": 1.979322658354648,
-    "se": 1.4458089077338159,
-    "t": 1.4111402177563988
+    "mittel": 1.9803451764277415,
+    "se": 1.4402249684543007,
+    "t": 1.41734321311572
    },
    "ueberEMA200": {
     "n": 75,
-    "mittel": 0.13133901955542235,
-    "se": 0.5047088429511324,
-    "t": 0.2619796923263827
+    "mittel": 0.1129235383608183,
+    "se": 0.5120858260880429,
+    "t": 0.222001799364466
    },
    "ohneRegime": 0
   },
@@ -71347,11 +71476,11 @@
   "zaehler": {
    "perioden": 92,
    "zuKlein": 0,
-   "tote": 10,
+   "tote": 8,
    "toteTotalverlust": 1,
    "luecken": 4,
    "universumSumme": 69969,
-   "mitWertSumme": 18513,
+   "mitWertSumme": 18464,
    "aufgefuellt": {
     "oben": 0,
     "unten": 0
@@ -71364,13 +71493,522 @@
     "qualitaet": 6816,
     "ausfuehrung": 13
    }
+  },
+  "ic": {
+   "n": 92,
+   "mittel": 0.0013292398729138452,
+   "sd": 0.11783306851929494,
+   "se": 0.012284946619423965,
+   "t": 0.10820070400730586,
+   "mde80": 0.03441750644897818,
+   "jahre": {
+    "2017": {
+     "n": 12,
+     "mittel": -0.0028561994138344405
+    },
+    "2018": {
+     "n": 12,
+     "mittel": 0.022226584530737673
+    },
+    "2019": {
+     "n": 12,
+     "mittel": 0.03141395049257715
+    },
+    "2020": {
+     "n": 12,
+     "mittel": -0.02833431579442884
+    },
+    "2021": {
+     "n": 12,
+     "mittel": 0.0401677295322267
+    },
+    "2022": {
+     "n": 12,
+     "mittel": -0.05660844918454309
+    },
+    "2023": {
+     "n": 12,
+     "mittel": 0.04060134150900677
+    },
+    "2024": {
+     "n": 8,
+     "mittel": -0.05462970396910367
+    }
+   },
+   "letzte12": {
+    "n": 12,
+    "mittel": -0.016237557713995595
+   },
+   "ohneIc": 0,
+   "monate": [
+    {
+     "tag": "2017-01-03",
+     "ic": -0.04181041832185134,
+     "n": 149
+    },
+    {
+     "tag": "2017-02-01",
+     "ic": 0.09461006358213353,
+     "n": 147
+    },
+    {
+     "tag": "2017-03-01",
+     "ic": -0.10570287310853554,
+     "n": 155
+    },
+    {
+     "tag": "2017-04-03",
+     "ic": -0.03397245936752688,
+     "n": 158
+    },
+    {
+     "tag": "2017-05-01",
+     "ic": 0.12757928387510514,
+     "n": 155
+    },
+    {
+     "tag": "2017-06-01",
+     "ic": -0.09969468644891588,
+     "n": 158
+    },
+    {
+     "tag": "2017-07-03",
+     "ic": 0.11048168415483137,
+     "n": 161
+    },
+    {
+     "tag": "2017-08-01",
+     "ic": -0.023448987403952466,
+     "n": 154
+    },
+    {
+     "tag": "2017-09-01",
+     "ic": 0.09142159745345244,
+     "n": 146
+    },
+    {
+     "tag": "2017-10-02",
+     "ic": -0.16240796046758685,
+     "n": 146
+    },
+    {
+     "tag": "2017-11-01",
+     "ic": -0.08410078014741813,
+     "n": 152
+    },
+    {
+     "tag": "2017-12-01",
+     "ic": 0.09277114323425131,
+     "n": 161
+    },
+    {
+     "tag": "2018-01-02",
+     "ic": -0.03703466655288343,
+     "n": 150
+    },
+    {
+     "tag": "2018-02-01",
+     "ic": 0.15248242703417544,
+     "n": 152
+    },
+    {
+     "tag": "2018-03-01",
+     "ic": -0.11119331745550119,
+     "n": 163
+    },
+    {
+     "tag": "2018-04-02",
+     "ic": -0.08087915353348828,
+     "n": 172
+    },
+    {
+     "tag": "2018-05-01",
+     "ic": 0.0013540156053462103,
+     "n": 168
+    },
+    {
+     "tag": "2018-06-01",
+     "ic": 0.04333748371717195,
+     "n": 161
+    },
+    {
+     "tag": "2018-07-02",
+     "ic": -0.004863997147453122,
+     "n": 161
+    },
+    {
+     "tag": "2018-08-01",
+     "ic": 0.013201110232450419,
+     "n": 171
+    },
+    {
+     "tag": "2018-09-04",
+     "ic": -0.11614200229161095,
+     "n": 163
+    },
+    {
+     "tag": "2018-10-01",
+     "ic": 0.2535527590081509,
+     "n": 163
+    },
+    {
+     "tag": "2018-11-01",
+     "ic": 0.09706740762280164,
+     "n": 183
+    },
+    {
+     "tag": "2018-12-03",
+     "ic": 0.05583694812969255,
+     "n": 186
+    },
+    {
+     "tag": "2019-01-02",
+     "ic": 0.08195848178401247,
+     "n": 183
+    },
+    {
+     "tag": "2019-02-01",
+     "ic": -0.08572839059800237,
+     "n": 173
+    },
+    {
+     "tag": "2019-03-01",
+     "ic": 0.05643948944971258,
+     "n": 178
+    },
+    {
+     "tag": "2019-04-01",
+     "ic": 0.06805861233923483,
+     "n": 177
+    },
+    {
+     "tag": "2019-05-01",
+     "ic": -0.2121338445102019,
+     "n": 174
+    },
+    {
+     "tag": "2019-06-03",
+     "ic": 0.03274858122322125,
+     "n": 175
+    },
+    {
+     "tag": "2019-07-01",
+     "ic": -0.021884919048397133,
+     "n": 173
+    },
+    {
+     "tag": "2019-08-01",
+     "ic": 0.010266782192310418,
+     "n": 169
+    },
+    {
+     "tag": "2019-09-03",
+     "ic": 0.11416429474436708,
+     "n": 160
+    },
+    {
+     "tag": "2019-10-01",
+     "ic": 0.22023988483754361,
+     "n": 163
+    },
+    {
+     "tag": "2019-11-01",
+     "ic": 0.03272646807884912,
+     "n": 177
+    },
+    {
+     "tag": "2019-12-02",
+     "ic": 0.08011196541827588,
+     "n": 168
+    },
+    {
+     "tag": "2020-01-02",
+     "ic": -0.14376572299188606,
+     "n": 168
+    },
+    {
+     "tag": "2020-02-03",
+     "ic": 0.06173085535154501,
+     "n": 175
+    },
+    {
+     "tag": "2020-03-02",
+     "ic": 0.10765402209106885,
+     "n": 200
+    },
+    {
+     "tag": "2020-04-01",
+     "ic": -0.023245901201661284,
+     "n": 213
+    },
+    {
+     "tag": "2020-05-01",
+     "ic": -0.045166786293497185,
+     "n": 213
+    },
+    {
+     "tag": "2020-06-01",
+     "ic": -0.1257154363561686,
+     "n": 208
+    },
+    {
+     "tag": "2020-07-01",
+     "ic": -0.09807827013857165,
+     "n": 199
+    },
+    {
+     "tag": "2020-08-03",
+     "ic": -0.2653271301416612,
+     "n": 205
+    },
+    {
+     "tag": "2020-09-01",
+     "ic": 0.027439013293285804,
+     "n": 202
+    },
+    {
+     "tag": "2020-10-01",
+     "ic": -0.003740397866576257,
+     "n": 197
+    },
+    {
+     "tag": "2020-11-02",
+     "ic": 0.17002964585225147,
+     "n": 193
+    },
+    {
+     "tag": "2020-12-01",
+     "ic": -0.0018256811312749588,
+     "n": 190
+    },
+    {
+     "tag": "2021-01-04",
+     "ic": 0.07221888495632692,
+     "n": 207
+    },
+    {
+     "tag": "2021-02-01",
+     "ic": 0.03565893002004641,
+     "n": 230
+    },
+    {
+     "tag": "2021-03-01",
+     "ic": 0.19613338217411738,
+     "n": 243
+    },
+    {
+     "tag": "2021-04-01",
+     "ic": -0.04984283938226171,
+     "n": 244
+    },
+    {
+     "tag": "2021-05-03",
+     "ic": 0.054236375172892315,
+     "n": 236
+    },
+    {
+     "tag": "2021-06-01",
+     "ic": 0.008773111047437573,
+     "n": 228
+    },
+    {
+     "tag": "2021-07-01",
+     "ic": -0.04396545007531555,
+     "n": 223
+    },
+    {
+     "tag": "2021-08-02",
+     "ic": 0.02507587801705449,
+     "n": 221
+    },
+    {
+     "tag": "2021-09-01",
+     "ic": 0.039200284002862566,
+     "n": 220
+    },
+    {
+     "tag": "2021-10-01",
+     "ic": -0.22441917400297784,
+     "n": 229
+    },
+    {
+     "tag": "2021-11-01",
+     "ic": 0.09178363826997614,
+     "n": 227
+    },
+    {
+     "tag": "2021-12-01",
+     "ic": 0.27715973418656165,
+     "n": 239
+    },
+    {
+     "tag": "2022-01-03",
+     "ic": 0.07263174889340347,
+     "n": 232
+    },
+    {
+     "tag": "2022-02-01",
+     "ic": -0.08819693723946272,
+     "n": 255
+    },
+    {
+     "tag": "2022-03-01",
+     "ic": 0.030825846875715268,
+     "n": 256
+    },
+    {
+     "tag": "2022-04-01",
+     "ic": -0.023275844206076764,
+     "n": 259
+    },
+    {
+     "tag": "2022-05-02",
+     "ic": -0.16351334482441218,
+     "n": 267
+    },
+    {
+     "tag": "2022-06-01",
+     "ic": 0.013032409119303385,
+     "n": 248
+    },
+    {
+     "tag": "2022-07-01",
+     "ic": -0.03312798971642913,
+     "n": 234
+    },
+    {
+     "tag": "2022-08-01",
+     "ic": -0.06049603923047907,
+     "n": 241
+    },
+    {
+     "tag": "2022-09-01",
+     "ic": -0.26475537016100736,
+     "n": 226
+    },
+    {
+     "tag": "2022-10-03",
+     "ic": 0.0007930336151868502,
+     "n": 227
+    },
+    {
+     "tag": "2022-11-01",
+     "ic": -0.06559527493373875,
+     "n": 232
+    },
+    {
+     "tag": "2022-12-01",
+     "ic": -0.09762362840652022,
+     "n": 232
+    },
+    {
+     "tag": "2023-01-03",
+     "ic": 0.29499475761485466,
+     "n": 216
+    },
+    {
+     "tag": "2023-02-01",
+     "ic": -0.20281721269336572,
+     "n": 224
+    },
+    {
+     "tag": "2023-03-01",
+     "ic": 0.040978213747478794,
+     "n": 225
+    },
+    {
+     "tag": "2023-04-03",
+     "ic": -0.23140420977921414,
+     "n": 228
+    },
+    {
+     "tag": "2023-05-01",
+     "ic": 0.20564548162115737,
+     "n": 229
+    },
+    {
+     "tag": "2023-06-01",
+     "ic": -0.01304419901448955,
+     "n": 232
+    },
+    {
+     "tag": "2023-07-03",
+     "ic": 0.08585942782859209,
+     "n": 234
+    },
+    {
+     "tag": "2023-08-01",
+     "ic": 0.06481689959818562,
+     "n": 235
+    },
+    {
+     "tag": "2023-09-01",
+     "ic": 0.030463134097614274,
+     "n": 212
+    },
+    {
+     "tag": "2023-10-02",
+     "ic": -0.11335042888723901,
+     "n": 216
+    },
+    {
+     "tag": "2023-11-01",
+     "ic": 0.11786932041156785,
+     "n": 225
+    },
+    {
+     "tag": "2023-12-01",
+     "ic": 0.20720491356293905,
+     "n": 221
+    },
+    {
+     "tag": "2024-01-02",
+     "ic": -0.02531912437964067,
+     "n": 227
+    },
+    {
+     "tag": "2024-02-01",
+     "ic": -0.06888508583650349,
+     "n": 223
+    },
+    {
+     "tag": "2024-03-01",
+     "ic": -0.07714802597596046,
+     "n": 232
+    },
+    {
+     "tag": "2024-04-01",
+     "ic": -0.15387317848959664,
+     "n": 219
+    },
+    {
+     "tag": "2024-05-01",
+     "ic": -0.1307716339106394,
+     "n": 230
+    },
+    {
+     "tag": "2024-06-03",
+     "ic": 0.11944575438985824,
+     "n": 235
+    },
+    {
+     "tag": "2024-07-01",
+     "ic": -0.13347056648646488,
+     "n": 229
+    },
+    {
+     "tag": "2024-08-01",
+     "ic": 0.032984228936117986,
+     "n": 248
+    }
+   ]
   }
  },
  "lauf": {
-  "sekunden": 5.166,
-  "maxRssMB": 1189.17578125,
-  "tafelLadeSekunden": 0.67,
-  "werteNull": 51456,
+  "sekunden": 5.574,
+  "maxRssMB": 1192.87109375,
+  "tafelLadeSekunden": 0.681,
+  "werteNull": 51505,
   "bilanzZugriffe": 69969,
   "node": "v24.18.0"
  }

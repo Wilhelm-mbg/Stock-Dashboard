@@ -1,0 +1,129 @@
+{
+ "kennung": "mehrfaktor-2026-09-22/vorpruefung/v1",
+ "stand": "2026-09-22T20:28:37.491Z",
+ "zellen": "zellen",
+ "felder": [
+  {
+   "feld": "momentum",
+   "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+   "tafel": null,
+   "nullpunkt": true,
+   "seDezil": 0.5328109096616243,
+   "mde80Dezil": 1.4927230445080066,
+   "seIc": 0.020131389008536036,
+   "mde80Ic": 0.05640009944631456,
+   "nIc": 92,
+   "umschlag": 0.31128028844808336
+  },
+  {
+   "feld": "schwankung",
+   "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+   "tafel": null,
+   "nullpunkt": true,
+   "seDezil": 0.38897141984512684,
+   "mde80Dezil": 1.0897423298381075,
+   "seIc": 0.024866951961668764,
+   "mde80Ic": 0.0696672526158112,
+   "nIc": 92,
+   "umschlag": 0.13995577401679152
+  },
+  {
+   "feld": "bewertung",
+   "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+   "tafel": "fundamentaltafel-2026-09-16/v1.1",
+   "nullpunkt": true,
+   "seDezil": 0.3717480070099367,
+   "mde80Dezil": 1.0414892164390388,
+   "seIc": 0.017657168285973628,
+   "mde80Ic": 0.049468322669983716,
+   "nIc": 92,
+   "umschlag": 0.14287912380686105
+  },
+  {
+   "feld": "ertragskraft",
+   "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+   "tafel": "fundamentaltafel-2026-09-16/v1.1",
+   "nullpunkt": true,
+   "seDezil": 0.23954337699693765,
+   "mde80Dezil": 0.6711047249946205,
+   "seIc": 0.011679470978410484,
+   "mde80Ic": 0.032721205893114814,
+   "nIc": 92,
+   "umschlag": 0.16441449398537336
+  },
+  {
+   "feld": "investition",
+   "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+   "tafel": "fundamentaltafel-2026-09-16/v1.1",
+   "nullpunkt": true,
+   "seDezil": 0.2600191293210738,
+   "mde80Dezil": 0.7284695927059204,
+   "seIc": 0.013492549441701711,
+   "mde80Ic": 0.03780072651587151,
+   "nIc": 92,
+   "umschlag": 0.20223538404992475
+  },
+  {
+   "feld": "sue",
+   "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+   "tafel": "fundamentaltafel-2026-09-16/v1.1",
+   "nullpunkt": true,
+   "seDezil": 0.16960698187123954,
+   "mde80Dezil": 0.4751709204104647,
+   "seIc": 0.009627715295296243,
+   "mde80Ic": 0.026973007171301955,
+   "nIc": 92,
+   "umschlag": 0.36500261546279594
+  },
+  {
+   "feld": "fue",
+   "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+   "tafel": "fundamentaltafel-2026-09-16/v1.1",
+   "nullpunkt": true,
+   "seDezil": 0.7513728938795738,
+   "mde80Dezil": 2.105046299493014,
+   "seIc": 0.020939759510382305,
+   "mde80Ic": 0.058664830244287064,
+   "nIc": 92,
+   "umschlag": 0.17487395391495328
+  }
+ ],
+ "erwartungIc": [
+  0.02,
+  0.03
+ ],
+ "erwartungDezil": [
+  0.3,
+  0.6
+ ],
+ "icBoden": {
+  "se": 0.0035,
+  "mde80": 0.01
+ },
+ "umschlagMittel": 0.21437737624068331,
+ "kosten": 0.017150190099254666,
+ "seIcMedian": 0.017657168285973628,
+ "seDezilMedian": 0.3717480070099367,
+ "mde80IcSchaetzung": 0.049468322669983716,
+ "mde80DezilSchaetzung": 1.0414892164390388,
+ "V1": {
+  "kanteHalbe": [
+   0.15,
+   0.3
+  ],
+  "kosten": 0.017150190099254666,
+  "bestanden": true,
+  "hinweis": "Information ueber die Handelbarkeit des Dezils; kein Tor fuer den IC-Test"
+ },
+ "V2": {
+  "erwarteterIc": [
+   0.02,
+   0.03
+  ],
+  "mde80IcSchaetzung": 0.049468322669983716,
+  "faktorZumBoden": 5.044905224563894,
+  "bestandenObereGrenze": false,
+  "bestandenUntereGrenze": false
+ },
+ "hinweis": "Nur se-Werte der Feldzellen; keine IC-Mittelwerte eines echten Feldes werden hier ausgewertet."
+}

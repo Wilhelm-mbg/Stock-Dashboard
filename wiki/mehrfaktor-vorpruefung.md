@@ -63,6 +63,29 @@ die Rangfolge der nächsten Monatsrenditen", ein Belegstand-Eintrag der Art „I
 auf die auflösbare Größe gesetzt. Kein Blick auf ein Ergebnis ist dabei geschehen: die IC-Böden stammen aus Kunstfeldern, die
 Vorprüfung aus den registrierten Einzelmessungen der Zellen.
 
+## 3a. Vorprüfung mit den v1.1-Zellen und dem IC (22.09.2026 22:28, nach Nr. 60 und Nr. 61)
+
+Alle 13 Zellen neu gebaut (Tafel v1.1, Maschine v1.1), PM-Nachrechnung identisch (13 × 69.969 Werte), Nullpunkt überall bestanden.
+Vom IC sind hier **nur se und MDE₈₀** genannt — kein Mittelwert eines echten Feldes (Registrierung steht noch aus).
+
+| Feld | se Dezil | MDE₈₀ Dezil | se IC | MDE₈₀ IC | Umschlag |
+|---|---|---|---|---|---|
+| momentum | 0,533 | 1,49 | 0,0201 | 0,056 | 31 % |
+| schwankung | 0,389 | 1,09 | 0,0249 | 0,070 | 14 % |
+| bewertung | 0,372 | 1,04 | 0,0177 | 0,050 | 14 % |
+| ertragskraft | 0,240 | 0,67 | 0,0117 | 0,033 | 16 % |
+| investition | 0,260 | 0,73 | 0,0135 | 0,038 | 20 % |
+| sue | 0,170 | 0,48 | 0,0096 | 0,027 | 37 % |
+| fue | 0,751 | 2,11 | 0,0209 | 0,059 | 18 % |
+
+- **V1** (Kosten, Information): 21,4 % × 0,080 = 0,017 Pp — bestanden.
+- **V2 (IC):** Median se(IC) 0,0177 = Faktor **5,0** über dem Kunstfeld-Boden ⇒ MDE₈₀(IC)-Schätzung **0,0495** gegen erwarteten IC 0,02–0,03
+  — **gefallen** mit dem registrierten Schätzer (Kombination streut wie ein Einzelfeld). Unter Unabhängigkeit der sieben IC-Reihen läge
+  die Schätzung bei 0,019, mit k_eff = 4 bei 0,025; die Wahrheit liegt dazwischen und zeigt sich erst im Lauf.
+- **Was das für das Urteil heißt:** ein Ja braucht IC ≥ MDE₈₀ des Laufs und t ≥ 3; ein Nein lautet „nicht entscheidbar unterhalb von
+  IC <MDE₈₀ des Laufs>" — mit etwas Glück bei 0,02–0,03, im schlechten Fall bei 0,05. Der Lauf ist damit ehrlich, aber nicht sicher
+  auflösend. Datei: `studien/mehrfaktor-2026-09-22/pruefung/vorpruefung-kombination.json` (K-P5).
+
 ## 4. Was danach passiert
 
 Tafel v1.1 (Nr. 60) → Zellen neu (Nachtrag 3, beide Zahlen) → ggf. Maschine um IC erweitern (Nr. 61, mit Kunstfeld-Prüfungen) →

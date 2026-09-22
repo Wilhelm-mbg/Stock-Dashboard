@@ -247,6 +247,19 @@ Auftrag §1a.1, kein Widerspruch) · 8 Umkehr-Zelle bauen · 9 F&E ohne Ausweis 
    (`orakelPeriode`) weicht davon minimal ab (IC 0,9997, kein Wert bitgleich; andere Rundung des Prüfstands) — es bleibt die Kontrolle der
    Dezilmessung; der IC-Orakel-Test benutzt y selbst und ist exakt 1 (Prüfung D1). Kunstfeld-Böden mit der fertigen Maschine: Zufall se 0,0035 /
    MDE₈₀ 0,0098, 12 Ziehungen MDE-Boden 0,0106, Kunstpanel-Kante IC 0,111 (t 11,3) ab 2020. Kein IC eines echten Feldes berechnet.
+5. **22.09.2026 22:28 (PM) — alle 13 Feldzellen neu gebaut auf Fundamentaltafel v1.1 (Nr. 60, `ee3158a`) und Maschine v1.1 (Nr. 61,
+   `f5b5cb2`); Nachtrag-3-Fassung des Vergleichs.** PM-Nachrechnung unabhängig von der Maschine: 69.969 Werte je Zelle identisch (0
+   Abweichungen, alle 13). Vorher/Nachher (v1 → v1.1): Panel-Felder unverändert (0 geänderte Werte); Tafel-Felder 34 (F&E) bis 787
+   (Größe, Bewertung) von 69.969 Werten geändert; Dezil oben − Universum netto verschiebt sich um höchstens 0,07 Pp (Bewertung-E/P
+   −0,148 → −0,080, Verschuldung 0,425 → 0,458, Investition 0,107 → 0,131), se und MDE₈₀ praktisch gleich; Abdeckung der Bilanzfelder
+   −0,8 Pp (verworfene Zuordnungen). Nullpunkt (vier Kontrollen) in allen 13 Zellen bestanden. **Vorprüfung §6** (`pruefung/vorpruefung-
+   kombination.json`, `pruefung/vorpruefung.js`; nur se-Werte, keine IC-Mittel): V1 bestanden (Umschlag 21,4 % ⇒ 0,017 Pp);
+   **V2 (IC) gefallen:** Median se(IC) der sieben Signalzellen 0,0177 (Faktor 5,0 über dem Kunstfeld-Boden 0,0035) ⇒ MDE₈₀(IC)-Schätzung
+   **0,0495** gegen erwarteten IC 0,02–0,03. Zur Einordnung (kein Tor): die Schätzung nimmt an, die Kombination streue wie ein
+   Einzelfeld; unter Unabhängigkeit der sieben IC-Reihen wäre es 0,0177/√7 ⇒ MDE₈₀ 0,019, mit k_eff = 4 wie in §6.1 ⇒ 0,025 — die
+   Wahrheit liegt dazwischen und zeigt sich erst im Lauf. **Folge nach §6.3a/§7:** der Lauf wird gefahren; ein Nein lautet „nicht
+   entscheidbar unterhalb von IC <MDE₈₀ aus dem Lauf>", ein Ja verlangt IC ≥ MDE₈₀ aus dem Lauf und t ≥ 3. Registrierung: Wilhelms
+   Formular; danach ändert sich an diesem Papier nichts mehr außer dem Ergebnisabschnitt.
 
 ---
 

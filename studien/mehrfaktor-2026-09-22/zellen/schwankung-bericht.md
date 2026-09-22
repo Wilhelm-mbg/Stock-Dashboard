@@ -1,6 +1,6 @@
 # Faktorzelle `schwankung`
 
-Erzeugt 2026-09-22T13:30:26.979Z von `zelle.js` (mehrfaktor-2026-09-22/zelle/v1). Panel `querschnitt-pruefstand-2026-09-13/panel/v2` (9904017 Zeilen, 7338 Reihen, bis 2026-09-15). Klassen 50-250 / 250-1000 / ab1000. Signaltage 92 (2017-01-03 … 2024-08-01), erster Panel-Handelstag je Kalendermonat; Ausfuehrung Eroeffnung des naechsten Handelstags; Halten bis zum Ausfuehrungstag des naechsten Signaltags. **Rückhaltefenster ab 2024-09-01: versiegelt (24 Signaltage zurückgehalten).** Lauf 2.7 s, RSS max 1047 MB. Alle Renditen sind Kursrenditen ohne Ausschüttungen. Simulation mit virtuellem Kapital, keine Anlageberatung.
+Erzeugt 2026-09-22T20:26:29.970Z von `zelle.js` (mehrfaktor-2026-09-22/zelle/v1.1). Panel `querschnitt-pruefstand-2026-09-13/panel/v2` (9904017 Zeilen, 7338 Reihen, bis 2026-09-15). Klassen 50-250 / 250-1000 / ab1000. Signaltage 92 (2017-01-03 … 2024-08-01), erster Panel-Handelstag je Kalendermonat; Ausfuehrung Eroeffnung des naechsten Handelstags; Halten bis zum Ausfuehrungstag des naechsten Signaltags. **Rückhaltefenster ab 2024-09-01: versiegelt (24 Signaltage zurückgehalten).** Lauf 3.7 s, RSS max 1047 MB. Alle Renditen sind Kursrenditen ohne Ausschüttungen. Simulation mit virtuellem Kapital, keine Anlageberatung.
 
 **Definition:** -sd(rendite) ueber die 252 Panelzeilen z, zurueck(z,1) .. zurueck(z,251) bis einschliesslich Signaltag (Stichproben-sd, Nenner 251), gedreht: hoeher = ruhiger; Einheit Pp der Panel-Spalte rendite; null bei fehlender Zeile am Signaltag, unvollstaendigem Fenster oder nicht endlicher Rendite  
 **Quellen:** Panel querschnitt-pruefstand-2026-09-13/panel/v2
@@ -31,18 +31,20 @@ Dezil oben gegen Universum, Pp je Monat; se = Hansen-Hodrick bei Lag 1 auf den n
 
 ### Jahresscheiben (netto, Dezil oben − Universum)
 
-| Jahr | n | brutto | netto | se | t | MDE₈₀ | |
-|---|---|---|---|---|---|---|---|
-| 2017 | 12 | -0.3341 | -0.3385 | 0.6008 | -0.59 | 1.6832 |  |
-| 2018 | 12 | 0.8866 | 0.8813 | 0.6428 | 1.43 | 1.8009 |  |
-| 2019 | 12 | -0.4344 | -0.4379 | 1.1549 | -0.40 | 3.2356 |  |
-| 2020 | 12 | -1.7955 | -1.8027 | 1.4309 | -1.32 | 4.0089 |  |
-| 2021 | 12 | -0.2300 | -0.2330 | 1.2183 | -0.20 | 3.4131 |  |
-| 2022 | 12 | 1.1840 | 1.1815 | 0.8858 | 1.39 | 2.4818 |  |
-| 2023 | 12 | -1.6832 | -1.6856 | 1.4252 | -1.24 | 3.9928 |  |
-| 2024 | 8 | 0.7894 | 0.7850 | 0.9241 | 0.91 | 2.5891 | dünn |
+| Jahr | n | brutto | netto | se | t | MDE₈₀ | IC (n) | |
+|---|---|---|---|---|---|---|---|---|
+| 2017 | 12 | -0.3341 | -0.3385 | 0.6008 | -0.59 | 1.6832 | 0.0225 (12) |  |
+| 2018 | 12 | 0.8866 | 0.8813 | 0.6428 | 1.43 | 1.8009 | 0.0631 (12) |  |
+| 2019 | 12 | -0.4344 | -0.4379 | 1.1549 | -0.40 | 3.2356 | -0.0399 (12) |  |
+| 2020 | 12 | -1.7955 | -1.8027 | 1.4309 | -1.32 | 4.0089 | -0.0994 (12) |  |
+| 2021 | 12 | -0.2300 | -0.2330 | 1.2183 | -0.20 | 3.4131 | 0.0623 (12) |  |
+| 2022 | 12 | 1.1840 | 1.1815 | 0.8858 | 1.39 | 2.4818 | 0.1279 (12) |  |
+| 2023 | 12 | -1.6832 | -1.6856 | 1.4252 | -1.24 | 3.9928 | -0.0428 (12) |  |
+| 2024 | 8 | 0.7894 | 0.7850 | 0.9241 | 0.91 | 2.5891 | 0.0969 (8) | dünn |
 
 **Letzte 250 Tage** (Signaltag ≥ 2023-08-03): netto 0.2161 Pp (se 0.8714, t 0.26, MDE₈₀ 2.4414, n 12), brutto 0.2200 Pp.
+
+**Rang-IC** (Spearman je Signaltag zwischen Rohwert (nur Mitglieder mit Wert) und Halteperioden-Rendite je Mitglied aus `halte`, brutto; se = sd/√n über die Signaltage): **Mittel 0.0206, se 0.0249, t 0.83, MDE₈₀ 0.0697, n 92**; letzte 12 Signaltage 0.0686 (n 12); Paare je Signaltag im Mittel 760.3.
 
 ## 2. Abdeckung (Anteil des Universums mit Wert)
 
@@ -62,13 +64,13 @@ Dezil oben gegen Universum, Pp je Monat; se = Hansen-Hodrick bei Lag 1 auf den n
 
 | Kontrolle | Ergebnis | Schranke | Urteil |
 |---|---|---|---|
-| Orakel (Rang nach künftiger Rendite, Schlüssel) | Dezil − Universum brutto 18.5915 Pp, sd 6.10, Mittel/sd 3.05, t 29.37, n 92; Long − Short 34.4045 Pp | Dezil − Universum ≥ 5 Pp (horizontgleich, Teil 3), Mittel/sd ≥ 1, t ≥ 8; Long − Short ≥ 20 Pp (Δ Teil 4); nachrichtlich einseitig 20 Pp: verfehlt | **bestanden** |
-| Placebo 1 — Werte +21 Handelstage (Zukunft, Schlüssel, als Placebo deklariert) | brutto 0.0325 Pp, t 0.08, n 92 | \|t\| < 3 (\|Mittel\| < 0.25 Pp: ja, nachrichtlich) | **bestanden** |
-| Placebo 2 — Symbole je Signaltag permutiert | brutto -0.0502 Pp, t -0.47, n 92 | \|t\| < 3 (\|Mittel\| < 0.25 Pp: ja, nachrichtlich) | **bestanden** |
-| Zufall × 12 | Mittel brutto -0.0168, netto+Kosten -0.0093 Pp; \|t\| ≥ 3 in 0; se je Ziehung 0.1104 Pp | \|Mittel\| < 0.25 Pp, ≤ 3 Ziehungen | **bestanden** |
+| Orakel (Rang nach künftiger Rendite, Schlüssel) | Dezil − Universum brutto 18.5915 Pp, sd 6.10, Mittel/sd 3.05, t 29.37, n 92; Long − Short 34.4045 Pp; IC (x = y aus `halte`) 1.0000000000, min 1.0000000000, n 92; nachrichtlich IC des Dezil-Orakels (orakelPeriode) gegen y 0.9997 | Dezil − Universum ≥ 5 Pp (horizontgleich, Teil 3), Mittel/sd ≥ 1, t ≥ 8; Long − Short ≥ 20 Pp (Δ Teil 4); \|IC − 1\| < 1e-9 (Mittel und jeder Signaltag); nachrichtlich einseitig 20 Pp: verfehlt | **bestanden** |
+| Placebo 1 — Werte +21 Handelstage (Zukunft, Schlüssel, als Placebo deklariert) | brutto 0.0325 Pp, t 0.08, n 92; IC 0.0328 (t 1.25, nur Diagnose) | \|t\| < 3 (\|Mittel\| < 0.25 Pp: ja, nachrichtlich) | **bestanden** |
+| Placebo 2 — Symbole je Signaltag permutiert | brutto -0.0502 Pp, t -0.47, n 92; IC -0.0005 (se 0.0035, t -0.15) | \|t\| < 3 für Dezil und IC (\|Mittel\| < 0.25 Pp: ja, nachrichtlich) | **bestanden** |
+| Zufall × 12 | Mittel brutto -0.0168, netto+Kosten -0.0093 Pp; \|t\| ≥ 3 in 0; se je Ziehung 0.1104 Pp. IC: Mittel -0.0006, se je Ziehung 0.0038, \|t\| ≥ 3 in 0 | \|Mittel\| < 0.25 Pp, ≤ 3 Ziehungen; IC: \|Mittel\| < 0.01, ≤ 3 Ziehungen | **bestanden** |
 | Leck-Klinke (Kurs und Bilanz) | Hauptlauf 0 Verstöße (sonst Abbruch); Positivkontrolle am 2017-01-03: Kurs 1, Bilanz 1; Leser nicht benutzt | Positivkontrolle je 1, Leser 0 | **bestanden** |
 
-**MDE-Boden aus den Zufallsdezilen:** 0.3094 Pp je Monat (2.8016 × mittlere se einer Ziehung; ein echtes Dezil streut stärker — Faktor 2–4, Momentum 4,45 nach `MACHBARKEIT.md` §7 der Stimmungsstudie). Umschlag eines Zufallsdezils 90.3 %.
+**MDE-Boden aus den Zufallsdezilen:** 0.3094 Pp je Monat (2.8016 × mittlere se einer Ziehung; ein echtes Dezil streut stärker — Faktor 2–4, Momentum 4,45 nach `MACHBARKEIT.md` §7 der Stimmungsstudie). Umschlag eines Zufallsdezils 90.3 %. **MDE-Boden des IC aus den Zufallsziehungen:** 0.0106 (2.8016 × mittlere se(IC) einer Ziehung; ein echtes Signal streut über die Zeit stärker, Faktor 2–4).
 
 Placebo 1 misst bei einem trägen Feld die Persistenz (≈ Einzelmessung) und bei einem Feld aus Vormonatsrenditen die Halteperiode selbst (≈ Orakel); die Erwartung ≈ 0 trägt nur für ein Feld ohne Zeitstruktur (Zufall). Ein Fall unter dieser Zeile ist deshalb erst ein Befund, wenn die Einzelmessung selbst unter der Schranke liegt.
 
@@ -77,4 +79,6 @@ Placebo 1 misst bei einem trägen Feld die Persistenz (≈ Einzelmessung) und be
 ## 4. Rang- und Dezilregel
 
 Rang je Signaltag über das Universum, aufsteigend nach Rohwert, Gleichstand = mittlerer Rang; fehlende Werte = mittlerer Rang (n+1)/2, vorhandene Ränge von 1..m auf 1..n gestreckt (R = (r − ½)·n/m + ½, bei voller Abdeckung identisch). Dezil oben = Rang > 0,9 n, unten = Rang ≤ 0,1 n. Werte in `schwankung.json` sind Rohgrößen, kein Rang; `null` bleibt `null`.
+
+**Rang-IC** (Vorregistrierung Nachtrag 3): je Signaltag Paare (x, y) — Feldzelle: Mitglieder mit Wert; Kombination: alle Mitglieder, Aufgefüllte mit mittlerem Rang —, beide Seiten frisch gerankt (Gleichstand = mittlerer Rang), Pearson der Ränge; kein IC unter 100 Paaren. y = Halteperioden-Rendite des Mitglieds aus derselben Haltefunktion wie Dezil und Universum (`halte` mit einem Mitglied: Eröffnung(a) → Eröffnung(a′), Tote = Totalverlust, brutto, Pp). Fundamentaltafel: nicht benutzt.
 
