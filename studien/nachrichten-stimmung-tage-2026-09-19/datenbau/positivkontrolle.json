@@ -1,0 +1,67 @@
+{
+ "kennung": "nachrichten-stimmung-tage-2026-09-19/gdelt/v1/positivkontrolle",
+ "stand": "2026-09-22T11:22:05.006Z",
+ "node": "v24.18.0",
+ "urteil": "bestanden",
+ "altGegenPc": {
+  "kernGleich": true,
+  "shaKernPc": "31bd0da09b3a38ddee00143ffd8ee375bd5b76899fb1e045df56d8ea21e75c91",
+  "shaKernServer": "31bd0da09b3a38ddee00143ffd8ee375bd5b76899fb1e045df56d8ea21e75c91",
+  "shaDateiPc": "561cd19689b6c4cda2c622d81f273f968599c3fb8826444b02c533cdcb2b0e26",
+  "shaDateiServer": "7ab82a98ac810ebd4e4209e27abf28604d489042b7d975d3c35c2851f3e4c7a9",
+  "stichprobeGleich": false,
+  "dauerS": {
+   "pc": 47.6,
+   "server": 82.4
+  },
+  "symbole": 462,
+  "trefferVoll": 13107
+ },
+ "neuGegenNr44": {
+  "symboleInBeidenKarten": 550,
+  "mitTrefferNr44": 305,
+  "gleich": 550,
+  "abweichungen": [],
+  "etEimer": [
+   "2025-06-01",
+   "2025-06-02"
+  ],
+  "artikelNeu": 6589,
+  "zaehler": {
+   "soll": 96,
+   "gefunden": 96,
+   "fehlend": 0,
+   "fehler": [],
+   "fehlendStempel": [],
+   "bytesZip": 520611063,
+   "bytesCsv": 1613625951,
+   "zeilen": 126979,
+   "falscheFeldzahl": 0,
+   "mitOrganisation": 89492,
+   "ohneTon": 0,
+   "stempelAusDatei": 0,
+   "stempelUngleichDatei": 0,
+   "treffer": 6589,
+   "trefferSpaet": 1156,
+   "trefferUebersetzt": 0,
+   "fremderTag": 0
+  },
+  "dauerS": 82.5
+ },
+ "neuEtTag": {
+  "soll": 96,
+  "dateien": 96,
+  "fehlend": 0,
+  "symbole": 324,
+  "treffer": 6966,
+  "spaet": 1533,
+  "fremderTag": 0,
+  "stempelAusDatei": 0,
+  "stempelUngleichDatei": 0,
+  "bytesZip": 553130545,
+  "dauerS": 94.7,
+  "sJeDatei": 0.99,
+  "mbJeS": 5.57,
+  "klinke": "bestanden"
+ }
+}
