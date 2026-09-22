@@ -233,3 +233,22 @@ hier stehen sie als Regel. Keine Änderung an Größen, Toren, Kontrollen oder S
    des **UTC**-Tags 2025-06-02 und legt jeden Artikel in seinen ET-Tag; je Symbol muss die Summe von `n + nSpaet` über die ET-Tage
    gleich der Artikelzahl „voll" von Nr. 44 sein. Grund: nach Punkt 1 umfasst der ET-Tag 2025-06-02 andere Dateien als der UTC-Tag
    von Nr. 44; ein Vergleich Tag gegen Tag wäre falsch rot.
+
+### Nachtrag 2 — 22.09.2026, Namenskarte v2 (Auftrag Nr. 47, Baustein 2; vor dem Vollauf)
+
+Grund: §2 nennt die Vereinigung der Monats-Universen, aber weder den Umgang mit wiederverwendeten Kürzeln (§9 Risiko 5) noch die
+Klasse eines Symbols, das zwischen den Klassen wandert. Entscheid des PM (22.09.): wiederverwendete Kürzel **ausschließen**.
+
+1. **Stichtage:** der **erste Handelstag** jedes Monats (erster Kalendertag mit Panelzeilen), 2017-01 … 2026-08 = **116 Stichtage**
+   (so steht es in §2; der Kalender-Erste wäre an Wochenenden und Feiertagen kein Handelstag).
+2. **Medienliste:** die 25 Kürzel von `MEDIEN` (gelesen aus `auswerten.js`, nicht abgeschrieben) fehlen in der Karte; 21 davon lagen
+   in mindestens einem Monats-Universum.
+3. **Wiederverwendete Kürzel ausgeschlossen:** jede Reihe, deren Basiskürzel im Panel mehr als eine Reihe hat (Trennung S / S~2 am
+   Wechseltag) oder deren Ende-Grund `kuerzel-neu-vergeben` ist. Grund: der Name kommt aus EDGAR/Stammdaten und ist der **heutige**
+   Besitzer des Kürzels. Betroffen: **2 Reihen** (`CTRA~2`, `FI~2`; 19 Stichtag-Einträge).
+4. **Klasse je Symbol** in der Karte = häufigste Klasse über die Stichtage (Gleichstand → 2); sie dient nur der Stichprobe je Klasse.
+   Die Klasse **im Signal** kommt weiter punkt-in-Zeit aus `universum(T, t, {klassen: [2, 3]})`; die Karte entscheidet nichts über das
+   Universum eines Tages, sie bestimmt nur, welche Namen gezählt werden.
+5. **Ergebnis:** **661 Symbole** (Klasse 2: 627, Klasse 3: 34 nach Mehrheit), davon **7 ohne Namen** (alle Klasse 2: EA, MON, PLAN,
+   SBNY, WORK, X, ZEN) — sie bleiben undefiniert, keine Handnachträge. Namensgleich mit Karte v1 für alle 550 Symbole in beiden Karten.
+   5 Namen gehören zwei Reihen (BRK.A/BRK.B, CPAY/FLT, DJT/DWAC, RDS.A/RDS.B, RTX/UTX) — der Artikel zählt für beide, wie Nr. 44.

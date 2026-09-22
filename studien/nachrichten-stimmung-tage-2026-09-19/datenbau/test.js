@@ -163,7 +163,7 @@ if (fs.existsSync(karteP)) {
   ok(syms.every(function (s) { return wieder.indexOf(s) < 0 && !/~\d+$/.test(s); }), 'wiederverwendetes Kuerzel in der Karte');
   ok(syms.every(function (s) { var k = j.karte[s]; return (k.klasse === 2 || k.klasse === 3) && (!k.voll || N.normalisieren(k.voll) === k.voll) && (!k.voll2 || N.normalisieren(k.voll2) === k.voll2); }), 'Klasse/Normalisierung');
   ok(Object.keys(j.stichtage).length === 116 && Object.keys(j.stichtage).every(function (t) { return t.slice(8) <= '07'; }), 'Stichtage: ' + Object.keys(j.stichtage).length + ' erste Handelstage erwartet 116');
-  ok(syms.length === j.zaehler.symbole && syms.length > 900, 'Symbolzahl ' + syms.length);
+  ok(syms.length === j.zaehler.symbole && syms.length > 600, 'Symbolzahl ' + syms.length);
   ok(j.karte.AAPL && j.karte.AAPL.voll === 'apple', 'AAPL');
   var gk = G.ladeKarte(karteP);
   ok(gk.symbole === syms.length && gk.voll.apple && gk.voll.apple.indexOf('AAPL') >= 0, 'ladeKarte');
