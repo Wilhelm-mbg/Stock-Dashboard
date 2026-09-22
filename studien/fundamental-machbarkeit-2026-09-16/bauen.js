@@ -16,30 +16,33 @@
  *  - 4-Quartals-Summen ueber die vier Stichtage D0..D3 (Monatsende, je 3 Monate zurueck) nur, wenn alle vier da sind;
  *    "vor" = D4..D7. Fundamental-Momentum = netto4Q/Vermoegen(D0) - netto4Q_vor/Vermoegen(D4) (Novy-Marx 2015).
  *
- * v1.1 (Auftrag Nr. 60, 22.09.2026, §2) - vier Datenkorrekturen, in dieser Reihenfolge im Bau:
- *  0. ZUORDNUNG (2b), vor allem anderen: jede Reihe mit sicherheit schwach/mittel wird ueber den Namen geprueft -
- *     Registrant (Spalte name des juengsten Filings der CIK in den sub-Auszuegen) gegen den Marktnamen der Reihe aus der
- *     Polygon-Referenzliste (massive/verschwundene.json, Feld name; unabhaengig von der EDGAR-Volltextsuche, die mit dem
- *     Kuerzel gesucht hat). Jaccard der normalisierten Token >= 0,5 ODER erstes Token gleich und >= 4 Zeichen =>
- *     bestaetigt, sonst verworfen (cik null). Verworfene CIKs bekommen keine Tafelzeilen, ausser eine andere Reihe traegt
- *     dieselbe CIK bestaetigt. Ohne Marktnamen: ungeprueft, unveraendert.
- *  1. EINHEIT (2c), vor dem Einfuegen in den Faktenspeicher: ein Filing, dessen eigener Assets-Wert (qtrs 0, ddate =
- *     period) gegen BEIDE Nachbar-Filings der CIK um mehr als Faktor 100 in derselben Richtung abweicht - oder am
- *     Reihenanfang/-ende gegen den einzigen Nachbarn UND den CIK-Median - ist einheitenverdaechtig; ohne Assets dieselbe
- *     Pruefung mit der Umsatz-Gruppe. Alle Fakten dieses adsh werden ausgelassen; die Zeile bleibt mit roh = null und
- *     marken.einheit = 'verdacht'. SPAC-Huellen weichen nur gegen den vorherigen Nachbarn ab und bleiben (gezaehlt).
- *  2. AKTIEN-SKALA (2a), nach aktienzahl(f), vor dem Schreiben: Regel A je CIK und Tag (Median von log10 ueber alle
- *     Filings mit diesem Tag; ab 3 Filings wird ein Wert mit Abstand >= 2,5 um 1000^k skaliert, k = round((m - l)/3),
- *     k in {-2,-1,1,2}); danach Regel B je Filing mit dem Aussenanker Marktwert = aktien x unbereinigter Schluss des
- *     Tages-Panels am letzten Handelstag <= filed (bis 10 Handelstage zurueck): Marktwert/Vermoegen < 1e-3 => 1000^k
- *     (k in {1,2}) mit dem Quotienten am naechsten an 1, sofern danach in [0,003; 300], sonst aktien = null; > 3000
- *     sinngemaess mit k in {-1,-2}. Kein Kurs / kein Vermoegen => keine Regel B (Marke). Verbleibende Spruenge > 30
- *     zwischen Nachbar-Filings werden gezaehlt, nicht korrigiert.
+ * v1.1 (Auftrag Nr. 60 vom 22.09.2026 §2 und Nachtrag Runde 2, Entscheide 1-3) - vier Datenkorrekturen, Reihenfolge im Bau:
+ *  0. ZUORDNUNG (2b), vor allem anderen, fuer jede Reihe mit sicherheit schwach/mittel/stark (tabelle bleibt ungeprueft):
+ *     Marktname der Reihe aus der Polygon-Referenzliste (massive/verschwundene.json: name, cik) gegen JEDEN Namen, den die
+ *     CIK je in den sub-Auszuegen trug. Polygon-CIK = zugeordnete CIK => bestaetigt ohne Namensvergleich; sonst passt ein
+ *     Name (Jaccard der normalisierten Token >= 0,5 oder erstes Token gleich, >= 6 Zeichen und nicht generisch) =>
+ *     bestaetigt (Marke polygonCikAnders, wenn Polygon eine andere CIK nennt); sonst verworfen (cik null, Grund mit
+ *     beiden CIKs). Verworfene CIKs bekommen keine Tafelzeilen, ausser eine andere Reihe traegt dieselbe CIK bestaetigt.
+ *  1. EINHEIT (2c), vor dem Einfuegen in den Faktenspeicher: der eigene Assets-Wert eines Filings (qtrs 0, ddate = period)
+ *     gegen beide Nachbar-Filings der CIK um mehr als Faktor 100 in derselben Richtung - oder am Reihenende ein Einbruch
+ *     unter 1/100 gegen den Vorgaenger UND den CIK-Median - macht das Filing einheitenverdaechtig; ohne Assets dieselbe
+ *     Pruefung mit der Umsatz-Gruppe. Nur der verdaechtige Fakt (das ausloesende Paar Tag/ddate/qtrs) wird ausgelassen;
+ *     Marke einheit 'verdacht' + einheitFakt. Vor-Boersengang-Huellen (Sprung nur gegen den Vorgaenger) bleiben, gezaehlt.
+ *  2. AKTIEN-SKALA (2a), nach aktienzahl(f), je CIK: Mehrheitsgroesse m = Median(log10 aktien) ueber alle Filings mit
+ *     Aktienzahl; |log10 aktien - m| < 1,25 = Mehrheit, sonst Abweichler. CIK-Faktor F aus der Mehrheit: q_med =
+ *     Median(Marktwert/Vermoegen) ueber Mehrheits-Filings mit Panel-Kurs (unbereinigter Schluss am letzten Handelstag
+ *     <= filed, bis 10 Handelstage zurueck) und Vermoegen >= 1 Mio $; q_med < 0,01 => F = 1000^k mit dem kleinsten
+ *     k in {1,2}, fuer das q_med * F >= 0,01 (sonst F = 1, skalaUnklar); ohne Mehrheits-Kurs F = 1, ohneAnker; kein
+ *     Abwaertszweig. F gilt fuer alle Mehrheits-Filings, auch ohne Kurs. Abweichler: k = round((m + log10 F - l)/3),
+ *     x 1000^k, nur wenn danach |l' - (m + log10 F)| < 1,25, sonst unveraendert + abweichlerUnklar. Waechter je Filing
+ *     (Kurs und Vermoegen >= 1 Mio $): Marktwert/Vermoegen < 1e-4 oder > 1e4 => aktien null, verworfen. Verbleibende
+ *     Spruenge > 30 zwischen Nachbar-Filings werden gezaehlt und gelistet (Reverse-Split-Wanderer sind Fund, kein Fehler).
  *  3. VORJAHRESBESTAND AUS DER HUELLE (2d): liegt Assets an einem der Vorjahres-Stichtage D4..D7 um mehr als Faktor
  *     1000 vom Vermoegen D0 entfernt, werden vermoegenVor (bei D4) und summe4q.*Vor null (damit roaVor, fm,
  *     umsatzWachstum); marken.d4 = 'huelle'.
- * Liest zusaetzlich: das Tages-Panel des Querschnitts-Pruefstands (v2.1, T.g.rohSchluss) und
- * ~/Downloads/Markt-Dashboard-Daten/massive/verschwundene.json. Beides nur lesend, kein Netz.
+ * Alle Vergleiche auf log10, auf 6 Stellen gerundet; Median = unteres mittleres Element; feste Token-Sortierung;
+ * Handproben mit fnv-Saat. Liest zusaetzlich (nur lesend, kein Netz): das Tages-Panel des Querschnitts-Pruefstands
+ * (v2.1, T.g.rohSchluss) und ~/Downloads/Markt-Dashboard-Daten/massive/verschwundene.json.
  *
  * Schreibt (fundamentaltafel/, nicht ins Repo): tafel-<jahr>.jsonl (Jahr = filed-Jahr, eine JSON-Zeile je Filing in
  * Rangordnung, ohne Zeitstempel - bitgleich reproduzierbar), _reihen.json (mit pruefung/grund je Reihe), _auslaend.json,
@@ -65,9 +68,14 @@ var MASSIVE_NAMEN = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten'
 var FLUESSE = ['umsatz', 'netto', 'operativ', 'umsatzkosten', 'fue'];
 var SUMMEN = ['umsatz', 'netto', 'operativ'];
 var WEG_CODE = { direkt: 'd', 'jahr-3q': 'j', 'jahr-ytd3': 'y', ytd2: '2', ytd3: '3', 'ytd3-2q': '4' };
-/* v1.1 Schwellen (Auftrag §2; alle Vergleiche auf log10, auf 6 Stellen gerundet) */
-var A_MIN_FILINGS = 3, A_ABSTAND = 2.5, B_UNTEN = 1e-3, B_OBEN = 3000, B_BAND = [0.003, 300], B_RUECKSCHRITT = 10;
-var EINHEIT_LOG = 2 /* Faktor 100 */, D4_LOG = 3 /* Faktor 1000 */, SPRUNG_LOG = Math.log10(30), JACCARD_MIN = 0.5, TOKEN_MIN = 4;
+/* v1.1 Schwellen (Auftrag §2 / Nachtrag Runde 2) */
+var JACCARD_MIN = 0.5, TOKEN_MIN = 6;
+var EINHEIT_LOG = 2 /* Faktor 100 */, D4_LOG = 3 /* Faktor 1000 */, SPRUNG_LOG = Math.log10(30);
+var MEHRHEIT_BAND = 1.25, ANKER_LOG = -2 /* q_med < 0,01 */, ANKER_VERMOEGEN_MIN = 1e6, WAECHTER_LOG = 4 /* 1e-4 .. 1e4 */, KURS_RUECKSCHRITT = 10;
+/* Sicherungen der Runde 2 (Werkzeug-Chat, im Bericht als Abweichung ausgewiesen): kein Emittent hat mehr Stueck als Apple
+ * (1,5e10) - eine Korrektur, die darueber fuehrt, ist falsch (SPN: Mehrheit 1,5e8 richtig, Anker aus der Insolvenzphase);
+ * Sprung-Einordnung nach dem Quotienten Marktwert/Vermoegen: [1e-3, 1e3] plausibel */
+var STUECK_MAX = 2e10, PLAUSIBEL_LOG = 3;
 
 /* ---------- Datumsrechnung auf Monatsenden (FSDS rundet period/ddate auf das Monatsende) ---------- */
 function monatsEnde(j, m) { while (m < 1) { m += 12; j--; } while (m > 12) { m -= 12; j++; } return j * 10000 + m * 100 + new Date(Date.UTC(j, m, 0)).getUTCDate(); }
@@ -90,27 +98,35 @@ function medianUnten(a) { var s = a.slice().sort(function (x, y) { return x - y;
 function fnv1a(s) { var h = 0x811c9dc5; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
-/* ---------- Namensvergleich (2b): Kleinschreibung, Satzzeichen weg, Rechtsformen/Fuellwoerter weg, feste Token-Sortierung ---------- */
+/* ---------- Namensvergleich (2b): Kleinschreibung, Klammern und SEC-Zusaetze weg, Polygon-Wertpapierzusaetze weg, Satzzeichen weg,
+ * Rechtsformen/Fuellwoerter weg, Token < 2 Zeichen weg; Mengenvergleich mit fester Sortierung, erstes Token in Namensreihenfolge ---------- */
 var FUELL = {};
 ('inc corp corporation co company ltd limited plc holdings holding group the trust lp llc nv sa ag incorporated ' +
- 'common stock class ordinary shares share depositary receipts adr ads each representing unit units of and').split(' ').forEach(function (w) { FUELL[w] = 1; });
+ 'common stock stk shares share class ordinary ord depositary depository receipts receipt adr ads adss sponsored spnsrd rep repstg representing each ' +
+ 'when issued ex distribution warrant warrants unit units right rights preferred pfd pft series ser new com cl of and de ' +
+ 'subordinate voting redeemable convertible mandatory cumulative').split(' ').forEach(function (w) { FUELL[w] = 1; });
+var GENERISCH = {};
+('american bank bancorp first united national general global capital financial energy china atlas pacific western southern northern eastern ' +
+ 'international industries technologies therapeutics pharmaceuticals acquisition holdings').split(' ').forEach(function (w) { GENERISCH[w] = 1; });
 function tokens(name) {
   var s = String(name || '').toLowerCase()
-    .replace(/\/[^/]*\//g, ' ')                       /* SEC-Zusaetze wie /MD/, /DE/ */
-    .replace(/\bamerican depositary\b/g, ' ')          /* ADR-Bezeichnung der Marktliste */
-    .replace(/\beach representing\b[\s\S]*$/, ' ')     /* "... each representing 10 ordinary shares" */
+    .replace(/\([^)]*\)/g, ' ')                        /* (DE), (Switzerland), (each representing ...) */
+    .replace(/\/[^/]*\//g, ' ')                        /* SEC-Zusaetze wie /MD/, /DE/ */
+    .replace(/\beach representing\b[\s\S]*$/, ' ')
+    .replace(/\bunits? (representing|repstg)\b[\s\S]*$/, ' ')
+    .replace(/\b(limited partner(ship)? interests?|of beneficial interest|american depositary|ex[- ]distribution|when issued)\b/g, ' ')
     .replace(/[^a-z0-9]+/g, ' ');
   var seen = {}, aus = [];
   s.split(' ').forEach(function (w) { if (w.length >= 2 && !FUELL[w] && !seen[w]) { seen[w] = 1; aus.push(w); } });
-  return aus;   /* Reihenfolge des Namens (fuer das erste Token); Mengenvergleich sortiert */
+  return aus;
 }
 function namenVergleich(markt, registrant) {
   var a = tokens(markt), b = tokens(registrant);
-  if (!a.length || !b.length) return { ok: null, jaccard: null, erstesToken: false, leer: true };
+  if (!a.length || !b.length) return { ok: false, jaccard: null, erstesToken: false, nurErstesToken: false, leer: true };
   var sa = a.slice().sort(), sb = b.slice().sort(), i = 0, j = 0, schnitt = 0;
   while (i < sa.length && j < sb.length) { if (sa[i] === sb[j]) { schnitt++; i++; j++; } else if (sa[i] < sb[j]) i++; else j++; }
   var jaccard = schnitt / (sa.length + sb.length - schnitt);
-  var erstes = a[0] === b[0] && a[0].length >= TOKEN_MIN;
+  var erstes = a[0] === b[0] && a[0].length >= TOKEN_MIN && !GENERISCH[a[0]];
   return { ok: jaccard >= JACCARD_MIN || erstes, jaccard: Math.round(jaccard * 1000) / 1000, erstesToken: erstes, nurErstesToken: erstes && jaccard < JACCARD_MIN, leer: false };
 }
 
@@ -120,7 +136,7 @@ async function main() {
   var panel = JSON.parse(fs.readFileSync(path.join(__dirname, 'panel.json'), 'utf8'));
   var quartale = fs.readdirSync(AUSZUG).filter(function (f) { return /^\d{4}q[1-4]-num\.tsv$/.test(f); }).map(function (f) { return f.slice(0, 6); }).sort();
 
-  /* ---------- 0) Vorlauf ueber sub: alle periodischen Berichte im Speicher, Registrantenname je CIK ---------- */
+  /* ---------- 0) Vorlauf ueber sub: alle periodischen Berichte im Speicher, alle Registrantennamen je CIK ---------- */
   var subJeQuartal = {}, nameJeCik = {}, panelCikRoh = {};
   panel.reihen.forEach(function (r) { if (r.cik) panelCikRoh[+r.cik] = 1; });
   for (var qi = 0; qi < quartale.length; qi++) {
@@ -138,45 +154,45 @@ async function main() {
   }
   console.log('Vorlauf sub:', Object.keys(nameJeCik).length, 'Panel-CIKs mit Filing, in', Math.round((Date.now() - t0) / 1000), 's');
 
-  /* ---------- 2b) Zuordnung pruefen: Marktname (Polygon-Referenzliste) gegen Registrant ---------- */
+  /* ---------- 2b) Zuordnung pruefen: Polygon-CIK als Zeuge, sonst Marktname gegen jeden Namen der CIK ---------- */
   var massive = JSON.parse(fs.readFileSync(MASSIVE_NAMEN, 'utf8'));
   var marktname = {};
   massive.eintraege.forEach(function (e) { if (e.sym && e.name && !marktname[e.sym]) marktname[e.sym] = { name: e.name, cik: e.cik ? parseInt(e.cik, 10) : null }; });
-  var zu = { quelleMarktname: 'Markt-Dashboard-Daten/massive/verschwundene.json (Polygon reference tickers active=false, Stand ' + massive.stand + '), Feld name; die EDGAR-Volltextzuordnung der Studie verschwundene-gruende-2026-09-12 suchte mit dem Kuerzel (edgar-lauf.js ftsKuerzel), ihr Feld name ist der gefundene Registrant und damit nicht unabhaengig; panel.json reihen[].name wurde deshalb NICHT als Marktname benutzt',
-    regel: 'Jaccard(Token) >= ' + JACCARD_MIN + ' oder erstes Token gleich und >= ' + TOKEN_MIN + ' Zeichen; Fuellwoerter: ' + Object.keys(FUELL).join(' '),
+  var zu = { quelleMarktname: 'Markt-Dashboard-Daten/massive/verschwundene.json (Polygon reference tickers active=false, Stand ' + massive.stand + '), Felder name und cik; die EDGAR-Volltextzuordnung der Studie verschwundene-gruende-2026-09-12 suchte mit dem Kuerzel (edgar-lauf.js ftsKuerzel), ihr Feld name ist der gefundene Registrant und damit nicht unabhaengig; panel.json reihen[].name wurde nicht benutzt',
+    regel: 'Polygon-CIK = CIK => bestaetigt; sonst ein Name der CIK (alle Namen aus sub.txt) mit Jaccard(Token) >= ' + JACCARD_MIN + ' oder erstem Token gleich, >= ' + TOKEN_MIN + ' Zeichen und nicht generisch => bestaetigt; sonst verworfen. Geprueft: schwach, mittel, stark; tabelle bleibt.',
+    fuellwoerter: Object.keys(FUELL).join(' '), generisch: Object.keys(GENERISCH).join(' '),
     jeStufe: {}, ohneCik: 0, ohneMarktname: 0, ohneRegistrant: 0, leerNachNormalisierung: 0, verworfenTop30: [], handproben20: [], nurErstesToken: { n: 0, beispiele: [] },
-    verworfenAberFruehererName: { n: 0, faelle: [] }, polygonCik: { verglichen: 0, gleich: 0, anders: 0, verworfenUndAnders: 0, bestaetigtUndAnders: 0 }, starkDiagnose: { geprueft: 0, passtNicht: 0, beispiele: [] } };
-  function stufe(s) { return zu.jeStufe[s] = zu.jeStufe[s] || { reihen: 0, bestaetigt: 0, verworfen: 0, ungeprueft: 0 }; }
-  var reihenJeCik = {}, reihenMeta = {}, ohneCik = 0, verworfen = [], bestaetigtSchwach = [];
+    polygonCik: { verglichen: 0, gleich: 0, anders: 0, ohne: 0, bestaetigtPolygonOhneName: 0, bestaetigtNameTrotzAnders: 0, verworfenMitAnders: 0, verworfenOhnePolygonCik: 0 } };
+  function stufe(s) { return zu.jeStufe[s] = zu.jeStufe[s] || { reihen: 0, bestaetigt: 0, bestaetigtPolygonCik: 0, bestaetigtName: 0, polygonCikAnders: 0, verworfen: 0, ungeprueft: 0 }; }
+  var reihenJeCik = {}, reihenMeta = {}, ohneCik = 0, verworfen = [], bestaetigtAnders = [];
   panel.reihen.forEach(function (r) {
     var cik = r.cik ? +r.cik : null, s = r.sicherheit || null;
     var meta = reihenMeta[r.reihe] = { basis: r.basis, cik: cik, sicherheit: s, lebend: r.lebend, erster: r.erster, letzter: r.letzter, pruefung: null };
     if (!cik) { ohneCik++; zu.ohneCik++; return; }
     var st = stufe(s); st.reihen++;
-    var m = marktname[r.reihe] || marktname[r.basis] || null, reg = nameJeCik[cik] && nameJeCik[cik].juengst;
-    var v = (m && reg) ? namenVergleich(m.name, reg.name) : null;
-    if (m && m.cik !== null && s !== 'tabelle') { zu.polygonCik.verglichen++; if (m.cik === cik) zu.polygonCik.gleich++; else zu.polygonCik.anders++; }
+    var m = marktname[r.reihe] || marktname[r.basis] || null, reg = nameJeCik[cik];
     if (s === 'tabelle') { meta.pruefung = 'tabelle'; }
-    else if (s !== 'schwach' && s !== 'mittel') {
-      meta.pruefung = 'ungeprueft'; st.ungeprueft++;
-      if (v && !v.leer) { zu.starkDiagnose.geprueft++; if (!v.ok) { zu.starkDiagnose.passtNicht++; if (zu.starkDiagnose.beispiele.length < 30) zu.starkDiagnose.beispiele.push({ reihe: r.reihe, marktname: m.name, registrant: reg.name, cik: cik }); } }
-    } else if (!m) { meta.pruefung = 'ungeprueft'; meta.ungeprueft = true; st.ungeprueft++; zu.ohneMarktname++; }
+    else if (!m) { meta.pruefung = 'ungeprueft'; meta.ungeprueft = true; st.ungeprueft++; zu.ohneMarktname++; }
     else if (!reg) { meta.pruefung = 'ungeprueft'; meta.ungeprueft = true; meta.grund = 'kein Filing der CIK im Auszug'; st.ungeprueft++; zu.ohneRegistrant++; }
-    else if (v.leer) { meta.pruefung = 'ungeprueft'; meta.ungeprueft = true; meta.grund = 'Name leer nach Normalisierung'; st.ungeprueft++; zu.leerNachNormalisierung++; }
     else {
-      meta.marktname = m.name; meta.registrant = reg.name; meta.jaccard = v.jaccard;
-      if (v.ok) {
-        meta.pruefung = 'bestaetigt'; st.bestaetigt++;
-        if (v.nurErstesToken) { zu.nurErstesToken.n++; if (zu.nurErstesToken.beispiele.length < 30) zu.nurErstesToken.beispiele.push({ reihe: r.reihe, sicherheit: s, marktname: m.name, registrant: reg.name, cik: cik, jaccard: v.jaccard }); }
-        if (m.cik !== null && m.cik !== cik) zu.polygonCik.bestaetigtUndAnders++;
-        if (s === 'schwach') bestaetigtSchwach.push({ reihe: r.reihe, marktname: m.name, registrant: reg.name, cik: cik, jaccard: v.jaccard, erstesToken: v.erstesToken });
-      } else {
-        meta.pruefung = 'verworfen'; meta.sicherheit = 'verworfen'; meta.cik = null; meta.grund = 'Name: ' + reg.name + ' ≠ ' + m.name; st.verworfen++;
-        var frueher = Object.keys(nameJeCik[cik].namen).filter(function (n) { var w = namenVergleich(m.name, n); return w.ok === true; });
-        var fall = { reihe: r.reihe, sicherheit: s, marktname: m.name, registrant: reg.name, cik: cik, filings: nameJeCik[cik].usStandard, jaccard: v.jaccard, polygonCik: m.cik, fruehererNamePasst: frueher.length ? frueher[0] : null };
-        verworfen.push(fall);
-        if (frueher.length) { zu.verworfenAberFruehererName.n++; if (zu.verworfenAberFruehererName.faelle.length < 30) zu.verworfenAberFruehererName.faelle.push(fall); }
-        if (m.cik !== null && m.cik !== cik) zu.polygonCik.verworfenUndAnders++;
+      var namen = Object.keys(reg.namen).sort(), treffer = null, leer = 0, bestes = { jaccard: -1, name: null };
+      namen.forEach(function (n) { var v = namenVergleich(m.name, n); if (v.leer) { leer++; return; } if (v.ok && !treffer) treffer = { name: n, v: v }; if (v.jaccard > bestes.jaccard) bestes = { jaccard: v.jaccard, name: n }; });
+      var polyGleich = m.cik !== null && m.cik === cik, polyAnders = m.cik !== null && m.cik !== cik;
+      if (m.cik === null) zu.polygonCik.ohne++; else { zu.polygonCik.verglichen++; if (polyGleich) zu.polygonCik.gleich++; else zu.polygonCik.anders++; }
+      meta.marktname = m.name; meta.registrant = reg.juengst.name; meta.polygonCik = m.cik;
+      if (polyGleich) {
+        meta.pruefung = 'bestaetigt'; meta.weg = 'polygonCik'; meta.namePasst = !!treffer; st.bestaetigt++; st.bestaetigtPolygonCik++;
+        if (!treffer) zu.polygonCik.bestaetigtPolygonOhneName++;
+      } else if (treffer) {
+        meta.pruefung = 'bestaetigt'; meta.weg = 'name'; meta.passenderName = treffer.name; meta.jaccard = treffer.v.jaccard; st.bestaetigt++; st.bestaetigtName++;
+        if (polyAnders) { meta.polygonCikAnders = true; st.polygonCikAnders++; zu.polygonCik.bestaetigtNameTrotzAnders++; bestaetigtAnders.push({ reihe: r.reihe, sicherheit: s, marktname: m.name, passenderName: treffer.name, registrant: reg.juengst.name, cik: cik, polygonCik: m.cik, jaccard: treffer.v.jaccard }); }
+        if (treffer.v.nurErstesToken) { zu.nurErstesToken.n++; if (zu.nurErstesToken.beispiele.length < 30) zu.nurErstesToken.beispiele.push({ reihe: r.reihe, sicherheit: s, marktname: m.name, passenderName: treffer.name, cik: cik, jaccard: treffer.v.jaccard }); }
+      } else if (leer === namen.length) { meta.pruefung = 'ungeprueft'; meta.ungeprueft = true; meta.grund = 'Name leer nach Normalisierung'; st.ungeprueft++; zu.leerNachNormalisierung++; }
+      else {
+        meta.pruefung = 'verworfen'; meta.sicherheit = 'verworfen'; meta.cik = null; st.verworfen++;
+        meta.grund = 'Name: ' + reg.juengst.name + (namen.length > 1 ? ' (+' + (namen.length - 1) + ' fruehere Namen)' : '') + ' ≠ ' + m.name + (polyAnders ? '; Polygon-CIK ' + m.cik + ' ≠ ' + cik : '');
+        if (polyAnders) zu.polygonCik.verworfenMitAnders++; else zu.polygonCik.verworfenOhnePolygonCik++;
+        verworfen.push({ reihe: r.reihe, sicherheit: s, marktname: m.name, registrant: reg.juengst.name, namenDerCik: namen.length, bestesJaccard: bestes.jaccard, bestesName: bestes.name, cik: cik, polygonCik: m.cik, filings: reg.usStandard });
         return;   /* keine Reihe fuer diese CIK aus dieser Zeile */
       }
     }
@@ -186,14 +202,14 @@ async function main() {
   verworfen.sort(function (a, b) { return b.filings - a.filings || (a.reihe < b.reihe ? -1 : 1); });
   zu.verworfenTop30 = verworfen.slice(0, 30);
   zu.verworfenGesamt = verworfen.length;
-  /* 20 Zufalls-Handproben bestaetigter schwacher Zuordnungen, feste Saat fnv('v11-handproben') */
-  bestaetigtSchwach.sort(function (a, b) { return a.reihe < b.reihe ? -1 : 1; });
-  var zufall = mulberry32(fnv1a('v11-handproben')), topf = bestaetigtSchwach.slice();
+  /* 20 Zufalls-Handproben bestaetigter Zuordnungen mit polygonCikAnders, feste Saat fnv('v11-handproben') */
+  bestaetigtAnders.sort(function (a, b) { return a.reihe < b.reihe ? -1 : 1; });
+  var zufall = mulberry32(fnv1a('v11-handproben')), topf = bestaetigtAnders.slice();
   while (zu.handproben20.length < 20 && topf.length) zu.handproben20.push(topf.splice(Math.floor(zufall() * topf.length), 1)[0]);
   zu.ciksMitReihe = Object.keys(reihenJeCik).length;
   var verworfeneCiks = {}; verworfen.forEach(function (f) { if (!reihenJeCik[f.cik]) verworfeneCiks[f.cik] = 1; });
   zu.ciksOhneReiheDurchVerwerfen = Object.keys(verworfeneCiks).length;
-  console.log('Zuordnung:', JSON.stringify(zu.jeStufe), 'CIKs ohne Reihe durch Verwerfen', zu.ciksOhneReiheDurchVerwerfen, 'Polygon-CIK anders', zu.polygonCik.anders);
+  console.log('Zuordnung:', JSON.stringify(zu.jeStufe), 'verworfen', verworfen.length, 'CIKs ohne Reihe', zu.ciksOhneReiheDurchVerwerfen, 'Polygon', JSON.stringify(zu.polygonCik));
 
   var z = { kennung: KENNUNG, quartale: quartale, panelReihen: panel.reihen.length, panelOhneCik: ohneCik, panelCiks: Object.keys(reihenJeCik).length,
     filings: { alleRegistranten: 0, usStandardAlle: 0, auslaendAlle: 0, panelUsStandard: 0, panelAuslaend: 0, filedVorPeriod: 0, periodUngueltig: 0, doppelteAdsh: 0, jeForm: {}, jeQuartal: {} },
@@ -241,16 +257,16 @@ async function main() {
   for (qi = 0; qi < quartale.length; qi++) {
     await tsv(path.join(AUSZUG, quartale[qi] + '-num.tsv'), function (n) {
       var r = rangVon[n.adsh]; if (r === undefined || n.uom !== 'USD' || +n.ddate !== filings[r].period) return;
-      var f = filings[r], e = eigen[r] = eigen[r] || { assets: null, umsatz: null, umsatzPrio: 99 };
+      var f = filings[r], e = eigen[r] = eigen[r] || { assets: null, umsatz: null, umsatzTag: null, umsatzPrio: 99 };
       if (n.tag === 'Assets') { if (n.qtrs === '0' && e.assets === null) { var v = parseFloat(n.value); if (isFinite(v)) e.assets = v; } return; }
       if (Z.TAG_GRUPPE[n.tag] !== 'umsatz' || +n.qtrs !== (Z.JAHRESFORM[f.art] ? 4 : 1)) return;
       if (Z.NUR_FINANZ[n.tag] && !Z.istFinanz(f.sic)) return;
-      var p = Z.TAG_PRIO[n.tag]; if (p < e.umsatzPrio) { var u = parseFloat(n.value); if (isFinite(u)) { e.umsatz = u; e.umsatzPrio = p; } }
+      var p = Z.TAG_PRIO[n.tag]; if (p < e.umsatzPrio) { var u = parseFloat(n.value); if (isFinite(u)) { e.umsatz = u; e.umsatzTag = n.tag; e.umsatzPrio = p; } }
     });
   }
-  var ei = { regel: 'eigener Wert des Filings (Assets qtrs 0 bzw. Umsatz-Gruppe qtrs Sollquartal, ddate = period, USD) gegen beide Nachbar-Filings der CIK > Faktor 100 in derselben Richtung; am Rand gegen den einzigen Nachbarn UND den CIK-Median',
-    verdacht: 0, verdachtAssets: 0, verdachtUmsatz: 0, einseitigVorher: 0, einseitigNachher: 0, ohneNachbar: 0, ohnePruefung: 0, faelle: [] };
-  var verdacht = {};
+  var ei = { regel: 'eigener Wert des Filings (Assets qtrs 0 bzw. Umsatz-Gruppe qtrs Sollquartal, ddate = period, USD) gegen beide Nachbar-Filings der CIK > Faktor 100 in derselben Richtung; am Reihenende Einbruch < 1/100 gegen den Vorgaenger UND den CIK-Median; nur der ausloesende Fakt wird ausgelassen',
+    verdacht: 0, verdachtAssets: 0, verdachtUmsatz: 0, jeGrund: {}, einseitig: 0, ohneNachbar: 0, ohnePruefung: 0, faelle: [] };
+  var verdacht = {}, verdachtFakt = {};
   var jeCik = {}; filings.forEach(function (f, i) { (jeCik[f.cik] = jeCik[f.cik] || []).push(i); });
   Object.keys(jeCik).forEach(function (c) {
     var idx = jeCik[c];   /* in Rangordnung (filings ist sortiert) */
@@ -262,21 +278,26 @@ async function main() {
         var l = logs[k], dv = k > 0 ? l - logs[k - 1] : null, dn = k < logs.length - 1 ? l - logs[k + 1] : null, ist = false, grund = null;
         if (dv === null && dn === null) { ei.ohneNachbar++; return; }
         if (dv !== null && dn !== null) { if (Math.abs(dv) > EINHEIT_LOG && Math.abs(dn) > EINHEIT_LOG && (dv > 0) === (dn > 0)) { ist = true; grund = 'beide Nachbarn'; } }
-        else { var d = dv !== null ? dv : dn; if (Math.abs(d) > EINHEIT_LOG && Math.abs(l - med) > EINHEIT_LOG) { ist = true; grund = (dv !== null ? 'Reihenende' : 'Reihenanfang') + ' + Median'; } }
-        if (dv !== null && Math.abs(dv) > EINHEIT_LOG) { ei.einseitigVorher++; if (!ist) ei.einseitigNachher++; }
+        else if (dn === null && dv < -EINHEIT_LOG && l - med < -EINHEIT_LOG) { ist = true; grund = 'Reihenende + Median'; }
+        if (dv !== null && Math.abs(dv) > EINHEIT_LOG && !ist) ei.einseitig++;
         if (!ist) return;
-        var f = filings[i]; verdacht[f.adsh] = 1; ei.verdacht++; if (feld === 'assets') ei.verdachtAssets++; else ei.verdachtUmsatz++;
-        ei.faelle.push({ adsh: f.adsh, cik: f.cik, sym: reihenJeCik[f.cik], form: f.form, period: iso(f.period), filed: iso(f.filed), feld: feld, wert: eigen[i][feld], vorher: k > 0 ? eigen[reihe[k - 1]][feld] : null, nachher: k < reihe.length - 1 ? eigen[reihe[k + 1]][feld] : null, medianCik: Math.round(Math.pow(10, med)), grund: grund });
+        var f = filings[i], tag = feld === 'assets' ? 'Assets' : eigen[i].umsatzTag, qtrs = feld === 'assets' ? 0 : (Z.JAHRESFORM[f.art] ? 4 : 1);
+        verdacht[f.adsh] = { tag: tag, k: f.period * 10 + qtrs };
+        /* der Fakt ist das Paar (Tag, ddate, qtrs) dieser CIK: dieselbe falsche Zahl steht oft schon als Vergleichszahl in einem
+         * frueher eingereichten Filing (BRAC/FRBN/DUET: 10-K/A nach dem naechsten 10-Q) - auch die wird ausgelassen, spaetere
+         * Neudarstellungen bleiben */
+        verdachtFakt[f.cik + '|' + tag + '|' + (f.period * 10 + qtrs)] = f.rang;
+        ei.verdacht++; if (feld === 'assets') ei.verdachtAssets++; else ei.verdachtUmsatz++; zaehl(ei.jeGrund, grund);
+        ei.faelle.push({ adsh: f.adsh, cik: f.cik, sym: reihenJeCik[f.cik], form: f.form, period: iso(f.period), filed: iso(f.filed), tag: tag, wert: eigen[i][feld], vorher: k > 0 ? eigen[reihe[k - 1]][feld] : null, nachher: k < reihe.length - 1 ? eigen[reihe[k + 1]][feld] : null, medianCik: Math.round(Math.pow(10, med)), grund: grund });
       });
     });
     idx.forEach(function (i) { if (!eigen[i] || (!(eigen[i].assets > 0) && !(eigen[i].umsatz > 0))) ei.ohnePruefung++; });
   });
   ei.faelle.sort(function (a, b) { return a.filed < b.filed ? -1 : a.filed > b.filed ? 1 : a.adsh < b.adsh ? -1 : 1; });
-  ei.einseitig = ei.einseitigNachher;   /* Huellen: Sprung nur gegen den vorherigen Nachbarn, nicht verdaechtig */
   z.v11.einheit = ei;
-  console.log('Einheit: verdaechtig', ei.verdacht, '(Assets', ei.verdachtAssets, 'Umsatz', ei.verdachtUmsatz + ') einseitig', ei.einseitig, 'ohne Pruefung', ei.ohnePruefung, 'in', Math.round((Date.now() - t0) / 1000), 's');
+  console.log('Einheit: verdaechtig', ei.verdacht, JSON.stringify(ei.jeGrund), 'einseitig', ei.einseitig, 'ohne Pruefung', ei.ohnePruefung, 'in', Math.round((Date.now() - t0) / 1000), 's');
 
-  /* ---------- B) Fakten: erste Veroeffentlichung gilt (Fakten verdaechtiger adsh werden uebersprungen) ---------- */
+  /* ---------- B) Fakten: erste Veroeffentlichung gilt (der ausloesende Fakt eines verdaechtigen Filings wird uebersprungen) ---------- */
   var store = new Map();   // cik -> Map(tag -> Map(ddate*10+qtrs -> {v, r, n, s, lv, lr}))
   var neu = [];
   function eintrag(cik, tag, k, anlegen) {
@@ -290,16 +311,19 @@ async function main() {
     await tsv(path.join(AUSZUG, qn + '-num.tsv'), function (n, nr) {
       var r = rangVon[n.adsh]; if (r === undefined) return;
       z.fakten.zeilen++;
-      if (verdacht[n.adsh]) { z.fakten.einheitVerdachtUebersprungen++; return; }
       var g = Z.TAG_GRUPPE[n.tag];
       if (n.uom !== Z.GRUPPEN[g].uom) { z.fakten.uomFalsch++; return; }
       var f = filings[r];
       if (Z.NUR_FINANZ[n.tag] && !Z.istFinanz(f.sic)) { z.fakten.zinsNichtFinanz++; return; }
       var qtrs = parseInt(n.qtrs, 10);
       if (!(qtrs >= 0 && qtrs <= 4) || !/^\d{8}$/.test(n.ddate)) { z.fakten.qtrsUngueltig++; return; }
+      var k = (+n.ddate) * 10 + qtrs, vd = verdacht[n.adsh];
+      if (vd && vd.tag === n.tag && vd.k === k) { z.fakten.einheitVerdachtUebersprungen++; return; }
+      var vr = verdachtFakt[f.cik + '|' + n.tag + '|' + k];
+      if (vr !== undefined && r < vr) { z.fakten.einheitVerdachtFruehereGleicheFakten = (z.fakten.einheitVerdachtFruehereGleicheFakten || 0) + 1; return; }
       var v = parseFloat(n.value);
       if (!isFinite(v)) { z.fakten.wertUngueltig++; return; }
-      zeilen.push({ r: r, nr: nr, cik: f.cik, tag: n.tag, k: (+n.ddate) * 10 + qtrs, v: v });
+      zeilen.push({ r: r, nr: nr, cik: f.cik, tag: n.tag, k: k, v: v });
     });
     zeilen.sort(function (a, b) { return a.r - b.r || a.nr - b.nr; });
     zeilen.forEach(function (x) {
@@ -357,7 +381,7 @@ async function main() {
     return null;
   }
 
-  /* ---------- 2a) Aktien-Skala: erst alle Aktienzahlen roh, dann Regel A je CIK und Tag, dann Regel B je Filing ---------- */
+  /* ---------- 2a) Aktien-Skala je CIK: Mehrheit, CIK-Faktor F, Abweichler, Waechter ---------- */
   var PR = require(path.join(PRUEFSTAND, 'pruefstand.js'));
   var T = PR.Tafel(path.join(PRUEFSTAND, 'voll'));
   function tagBis(isoTag) { var lo = 0, hi = T.maxTag + 1, tage = T.kal.tage; while (lo < hi) { var m = (lo + hi) >> 1; if (tage[m] <= isoTag) lo = m + 1; else hi = m; } return lo - 1; }
@@ -365,64 +389,91 @@ async function main() {
     var syms = reihenJeCik[cik] || [], t0 = tagBis(filedIso); if (t0 < 0) return null;
     for (var i = 0; i < syms.length; i++) {
       var si = T.symIdx[syms[i]]; if (si === undefined) si = T.symIdx[syms[i].replace(/~2$/, '')]; if (si === undefined) continue;
-      for (var t = t0; t > t0 - B_RUECKSCHRITT && t >= 0; t--) { var zl = T.zeileVon(si, t); if (zl >= 0 && T.g.rohSchluss[zl] > 0) return { kurs: T.g.rohSchluss[zl], sym: syms[i], tag: T.kal.tage[t] }; }
+      for (var t = t0; t > t0 - KURS_RUECKSCHRITT && t >= 0; t--) { var zl = T.zeileVon(si, t); if (zl >= 0 && T.g.rohSchluss[zl] > 0) return { kurs: T.g.rohSchluss[zl], sym: syms[i], tag: T.kal.tage[t] }; }
     }
     return null;
   }
-  var ak = new Array(filings.length), aktienKorr = new Array(filings.length), skalaMarke = new Array(filings.length), vermoegenD0 = new Array(filings.length);
-  var as = { regelA: 0, regelAAusserhalb: 0, regelAGruppenKlein: 0, regelB: 0, regelBVerworfen: 0, regelBNachA: 0, ohneKurs: 0, ohneVermoegen: 0, nichtPositiv: 0, quotientVerteilung: {},
-    spruengeVor30: 0, spruengeNach30: 0, spruengeNachTop30: [], regelBJeCik: { ciks: 0, isoliert: 0, isoliertBeispiele: [] }, beispieleA: [], beispieleB: [] };
+  var ak = new Array(filings.length), aktienKorr = new Array(filings.length), skalaMarke = new Array(filings.length), vermoegenD0 = new Array(filings.length), kursVon = new Array(filings.length);
+  var as = { regel: 'Mehrheit |log10 aktien - m| < ' + MEHRHEIT_BAND + '; F aus Median(Marktwert/Vermoegen) der Mehrheit mit Kurs und Vermoegen >= 1 Mio $, q_med < 0,01 => 1000^k (k in {1,2}), kein Abwaertszweig; Abweichler x 1000^round((m + log10 F - l)/3) nur wenn danach im Band; Waechter 1e-4 .. 1e4',
+    ciksMitAktien: 0, mehrheitZeilen: 0, abweichlerZeilen: 0, nichtPositiv: 0, ohneKurs: 0, ohneVermoegen: 0,
+    faktorCik: { ciks: 0, zeilen: 0, zeilenOhneKurs: 0, je: {}, liste: [] }, skalaUnklar: { ciks: 0, zeilen: 0, liste: [] }, ohneAnker: { ciks: 0, zeilen: 0 },
+    abweichler: { angeglichen: 0, kNull: 0, unklar: 0, kAusserhalb: 0, beiOhneAnker: 0, ankerWiderspricht: 0, ueberDeckel: 0, jeK: {}, abstandZu3k: { unter05: 0, bis1: 0, ueber1: 0 }, ueber1Beispiele: [], unklarJeCikTop: [] },
+    waechter: { verworfen: 0, beispiele: [] }, quotientNachher: {}, spruengeVor30: 0, spruengeNach30: 0, spruengeNachJeArt: { beideOhneMarke: 0, mitUnklar: 0, mitAngleichung: 0, sonst: 0 },
+    spruengeNachQuotient: { beidePlausibel: 0, eineSeiteUnplausibel: 0, ohneQuotient: 0, fehlerBeispiele: [] }, spruengeNachTop30: [], wanderer: { n: 0, liste: [] } };
+  as.skalaUnklar.ueberDeckel = 0;
+  var unklarJeCik = {};
   filings.forEach(function (f, i) {
-    if (verdacht[f.adsh]) { ak[i] = null; vermoegenD0[i] = null; return; }
     ak[i] = aktienzahl(f);
     var ev = fakt(f.cik, 'Assets', f.period, 0, f.rang); vermoegenD0[i] = ev ? ev.v : null;
+    if (ak[i] && ak[i].v > 0) { kursVon[i] = kursAm(f.cik, iso(f.filed)); if (!kursVon[i]) as.ohneKurs++; if (!(vermoegenD0[i] > 0)) as.ohneVermoegen++; }
   });
-  /* Regel A */
   Object.keys(jeCik).forEach(function (c) {
-    var gruppen = {};
-    jeCik[c].forEach(function (i) { var a = ak[i]; if (!a) return; if (!(a.v > 0)) { as.nichtPositiv++; return; } (gruppen[a.tag] = gruppen[a.tag] || []).push(i); });
-    Object.keys(gruppen).forEach(function (tag) {
-      var idx = gruppen[tag]; if (idx.length < A_MIN_FILINGS) { as.regelAGruppenKlein += idx.length; return; }
-      var m = medianUnten(idx.map(function (i) { return log6(ak[i].v); }));
-      idx.forEach(function (i) {
-        var l = log6(ak[i].v); if (Math.abs(l - m) < A_ABSTAND) return;
-        var k = Math.round((m - l) / 3);
-        if (k < -2 || k > 2 || k === 0) { as.regelAAusserhalb++; return; }
-        var faktor = Math.pow(1000, k);
-        aktienKorr[i] = ak[i].v * faktor; skalaMarke[i] = { regel: 'A', faktor: faktor }; as.regelA++;
-        if (as.beispieleA.length < 20) as.beispieleA.push({ adsh: filings[i].adsh, sym: reihenJeCik[c], tag: tag, roh: ak[i].v, korrigiert: aktienKorr[i], medianLog10: m });
-      });
+    var rows = jeCik[c].filter(function (i) { var a = ak[i]; if (!a) return false; if (!(a.v > 0)) { as.nichtPositiv++; return false; } return true; });
+    if (!rows.length) return;
+    as.ciksMitAktien++;
+    var ls = {}; rows.forEach(function (i) { ls[i] = log6(ak[i].v); });
+    var m = medianUnten(rows.map(function (i) { return ls[i]; }));
+    var mehrheit = rows.filter(function (i) { return Math.abs(ls[i] - m) < MEHRHEIT_BAND; }), abweichler = rows.filter(function (i) { return Math.abs(ls[i] - m) >= MEHRHEIT_BAND; });
+    as.mehrheitZeilen += mehrheit.length; as.abweichlerZeilen += abweichler.length;
+    /* CIK-Faktor F aus der Mehrheit */
+    var qs = mehrheit.filter(function (i) { return kursVon[i] && vermoegenD0[i] >= ANKER_VERMOEGEN_MIN; }).map(function (i) { return log6(ak[i].v * kursVon[i].kurs / vermoegenD0[i]); });
+    var F = 1, logF = 0, lq = null, unklar = false, unklarGrund = null, ohneAnker = qs.length === 0;
+    if (!ohneAnker) {
+      lq = medianUnten(qs);
+      if (lq < ANKER_LOG) {
+        var kk = lq + 3 >= ANKER_LOG ? 1 : lq + 6 >= ANKER_LOG ? 2 : 0;
+        if (!kk) { unklar = true; unklarGrund = 'auch 1e6 reicht nicht'; }
+        else if (Math.pow(10, m) * Math.pow(1000, kk) > STUECK_MAX) { unklar = true; unklarGrund = 'Mehrheit x F ueber ' + STUECK_MAX + ' Stueck'; as.skalaUnklar.ueberDeckel++; }
+        else { F = Math.pow(1000, kk); logF = 3 * kk; }
+      }
+    }
+    if (F !== 1) { as.faktorCik.ciks++; zaehl(as.faktorCik.je, String(F)); as.faktorCik.liste.push({ cik: +c, sym: reihenJeCik[c], faktor: F, quotientMehrheit: Math.pow(10, lq), mehrheitLog10: m, mehrheit: mehrheit.length, mitAnker: qs.length, abweichler: abweichler.length }); }
+    if (unklar) { as.skalaUnklar.ciks++; as.skalaUnklar.liste.push({ cik: +c, sym: reihenJeCik[c], grund: unklarGrund, quotientMehrheit: Math.pow(10, lq), mehrheitLog10: m, mehrheit: mehrheit.length, mitAnker: qs.length }); }
+    if (ohneAnker) as.ohneAnker.ciks++;
+    mehrheit.forEach(function (i) {
+      if (F !== 1) { aktienKorr[i] = ak[i].v * F; skalaMarke[i] = { faktorCik: F }; as.faktorCik.zeilen++; if (!kursVon[i]) as.faktorCik.zeilenOhneKurs++; }
+      else if (unklar) { skalaMarke[i] = { skalaUnklar: true, quotientMehrheit: Math.pow(10, lq) }; as.skalaUnklar.zeilen++; }
+      else if (ohneAnker) { skalaMarke[i] = { ohneAnker: true }; as.ohneAnker.zeilen++; }
+    });
+    abweichler.forEach(function (i) {
+      var l = ls[i], d = m + logF - l, k = Math.round(d / 3), faktor = Math.pow(1000, k), lNeu = log6(ak[i].v * faktor);
+      /* k bleibt wie in §2a auf {-2..2} begrenzt: Huellen-Platzhalter ("1 Aktie") wuerden sonst x 1e9 (4 Faelle, Runde 2) */
+      if (k > 2 || k < -2) { skalaMarke[i] = { faktorCik: F, abweichlerUnklar: true, kAusserhalb: k }; as.abweichler.unklar++; as.abweichler.kAusserhalb++; zaehl(unklarJeCik, c); return; }
+      /* Sicherung: ohne Anker ist nicht zu wissen, welcher Cluster stimmt (AVP: Mehrheit 101,34 in Millionen ohne Kurs, die
+       * richtigen 4,3e8 wurden in Runde 2 zuerst auf 433 gedrueckt) - dann keine Angleichung */
+      if (k !== 0 && ohneAnker) { skalaMarke[i] = { faktorCik: F, ohneAnker: true, abweichlerUnklar: true }; as.abweichler.unklar++; as.abweichler.beiOhneAnker++; zaehl(unklarJeCik, c); return; }
+      /* Sicherung: ein Abweichler mit eigenem Kurs wird nur angeglichen, wenn sein Quotient dadurch naeher an 1 rueckt (ein echter
+       * Reverse-Split hat vorher einen plausiblen Quotienten und wuerde sonst um 1000 verschoben); Deckel wie bei F */
+      if (k !== 0 && kursVon[i] && vermoegenD0[i] >= ANKER_VERMOEGEN_MIN) { var q0 = log6(ak[i].v * kursVon[i].kurs / vermoegenD0[i]); if (Math.abs(q0 + 3 * k) >= Math.abs(q0)) { skalaMarke[i] = { faktorCik: F, abweichlerUnklar: true, ankerWiderspricht: true }; as.abweichler.unklar++; as.abweichler.ankerWiderspricht++; zaehl(unklarJeCik, c); return; } }
+      if (k > 0 && ak[i].v * faktor > STUECK_MAX) { skalaMarke[i] = { faktorCik: F, abweichlerUnklar: true, ueberDeckel: true }; as.abweichler.unklar++; as.abweichler.ueberDeckel++; zaehl(unklarJeCik, c); return; }
+      if (Math.abs(lNeu - (m + logF)) < MEHRHEIT_BAND) {
+        aktienKorr[i] = ak[i].v * faktor; skalaMarke[i] = { faktorCik: F, faktorAbweichler: faktor };
+        if (k === 0) as.abweichler.kNull++; else as.abweichler.angeglichen++;
+        zaehl(as.abweichler.jeK, String(k));
+        var ab = Math.abs(d - 3 * k); if (ab < 0.5) as.abweichler.abstandZu3k.unter05++; else if (ab < 1) as.abweichler.abstandZu3k.bis1++; else { as.abweichler.abstandZu3k.ueber1++; if (as.abweichler.ueber1Beispiele.length < 30) as.abweichler.ueber1Beispiele.push({ adsh: filings[i].adsh, sym: reihenJeCik[c], filed: iso(filings[i].filed), tag: ak[i].tag, roh: ak[i].v, korrigiert: aktienKorr[i], mehrheitLog10: m + logF, abstand: Math.round(ab * 100) / 100 }); }
+      } else { skalaMarke[i] = { faktorCik: F, abweichlerUnklar: true }; as.abweichler.unklar++; zaehl(unklarJeCik, c); }
     });
   });
-  /* Regel B */
-  var bJeCik = {};
+  /* CIKs mit den meisten unklaren Abweichlern: dort liegt die Mehrheit auf einem Reverse-Split-Cluster (NBR, HOV) */
+  as.abweichler.unklarJeCikTop = Object.keys(unklarJeCik).map(function (c) { return { cik: +c, sym: reihenJeCik[c], unklar: unklarJeCik[c], zeilen: jeCik[c].length }; }).sort(function (a, b) { return b.unklar - a.unklar || a.cik - b.cik; }).slice(0, 25);
+  /* Waechter je Filing und Quotientenverteilung nach der Korrektur */
   filings.forEach(function (f, i) {
-    var a = ak[i]; if (!a) return;
+    var a = ak[i]; if (!a || !(a.v > 0)) return;
     var v = aktienKorr[i] !== undefined ? aktienKorr[i] : a.v;
-    if (!(v > 0)) return;
-    var k = kursAm(f.cik, iso(f.filed));
-    if (!k) { as.ohneKurs++; if (!skalaMarke[i]) skalaMarke[i] = { regel: 'B', ohneKurs: true }; return; }
-    var A0 = vermoegenD0[i];
-    if (!(A0 > 0)) { as.ohneVermoegen++; if (!skalaMarke[i]) skalaMarke[i] = { regel: 'B', ohneVermoegen: true }; return; }
-    var q = v * k.kurs / A0, lq = log6(q);
-    zaehl(as.quotientVerteilung, 'log10 ' + Math.floor(lq));
-    var bc = bJeCik[f.cik] = bJeCik[f.cik] || { anwendbar: 0, korrigiert: 0 }; bc.anwendbar++;
-    var ks = q < B_UNTEN ? [1, 2] : q > B_OBEN ? [-1, -2] : null;
-    if (!ks) return;
-    var bestK = ks[0], bestAbstand = Infinity;
-    ks.forEach(function (kk) { var d = Math.abs(lq + 3 * kk); if (d < bestAbstand) { bestAbstand = d; bestK = kk; } });
-    var faktor = Math.pow(1000, bestK), qNeu = q * faktor;
-    bc.korrigiert++;
-    var marke = { regel: 'B' };
-    if (qNeu >= B_BAND[0] && qNeu <= B_BAND[1]) { aktienKorr[i] = v * faktor; marke.faktor = faktor; as.regelB++; }
-    else { aktienKorr[i] = null; marke.verworfen = true; as.regelBVerworfen++; }
-    if (skalaMarke[i] && skalaMarke[i].regel === 'A') { marke.nachA = skalaMarke[i].faktor; as.regelBNachA++; }
-    skalaMarke[i] = marke;
-    if (as.beispieleB.length < 20) as.beispieleB.push({ adsh: f.adsh, sym: k.sym, kurs: k.kurs, kursTag: k.tag, aktienVorher: v, quotient: q, faktor: faktor, quotientNeu: qNeu, aktienNachher: aktienKorr[i] });
+    if (!kursVon[i] || !(vermoegenD0[i] >= ANKER_VERMOEGEN_MIN)) return;
+    var q = v * kursVon[i].kurs / vermoegenD0[i], lq = log6(q);
+    zaehl(as.quotientNachher, 'log10 ' + Math.floor(lq));
+    if (skalaMarke[i]) skalaMarke[i].quotient = q;
+    if (lq < -WAECHTER_LOG || lq > WAECHTER_LOG) {
+      var alt = skalaMarke[i] || {}, marke = { verworfen: true, quotient: q };
+      if (alt.faktorCik && alt.faktorCik !== 1) marke.faktorCik = alt.faktorCik; if (alt.faktorAbweichler) marke.faktorAbweichler = alt.faktorAbweichler;
+      aktienKorr[i] = null; skalaMarke[i] = marke; as.waechter.verworfen++;
+      if (as.waechter.beispiele.length < 30) as.waechter.beispiele.push({ adsh: f.adsh, sym: reihenJeCik[f.cik], filed: iso(f.filed), tag: a.tag, aktienVorher: v, kurs: kursVon[i].kurs, vermoegen: vermoegenD0[i], quotient: q });
+    }
   });
-  Object.keys(bJeCik).forEach(function (c) { var b = bJeCik[c]; if (!b.korrigiert) return; as.regelBJeCik.ciks++; if (b.anwendbar >= 5 && b.korrigiert < 0.2 * b.anwendbar) { as.regelBJeCik.isoliert++; if (as.regelBJeCik.isoliertBeispiele.length < 30) as.regelBJeCik.isoliertBeispiele.push({ cik: +c, sym: reihenJeCik[c], anwendbar: b.anwendbar, korrigiert: b.korrigiert }); } });
-  /* Spruenge > Faktor 30 zwischen Nachbar-Filings derselben CIK, vor und nach der Korrektur (Befund, keine Korrektur) */
+  /* Spruenge > Faktor 30 zwischen Nachbar-Filings derselben CIK, vor (roh) und nach der Korrektur - Befund, keine Korrektur */
   var spruenge = [];
+  function quotientVon(i, v) { return kursVon[i] && vermoegenD0[i] >= ANKER_VERMOEGEN_MIN ? log6(v * kursVon[i].kurs / vermoegenD0[i]) : null; }
   Object.keys(jeCik).forEach(function (c) {
     var vorher = null, nachher = null, vI = null;
     jeCik[c].forEach(function (i) {
@@ -430,14 +481,32 @@ async function main() {
       if (vorher !== null && Math.abs(log6(a.v) - log6(vorher)) > SPRUNG_LOG) as.spruengeVor30++;
       vorher = a.v;
       var n = aktienKorr[i] !== undefined ? aktienKorr[i] : a.v; if (!(n > 0)) return;
-      if (nachher !== null) { var d = Math.abs(log6(n) - log6(nachher)); if (d > SPRUNG_LOG) { as.spruengeNach30++; spruenge.push({ cik: +c, sym: reihenJeCik[c], von: { adsh: filings[vI].adsh, filed: iso(filings[vI].filed), aktien: nachher }, nach: { adsh: filings[i].adsh, filed: iso(filings[i].filed), aktien: n }, faktor: Math.round(Math.pow(10, d)) }); } }
+      if (nachher !== null) {
+        var d = Math.abs(log6(n) - log6(nachher));
+        if (d > SPRUNG_LOG) {
+          as.spruengeNach30++;
+          var s = { cik: +c, sym: reihenJeCik[c], von: { adsh: filings[vI].adsh, filed: iso(filings[vI].filed), aktien: nachher, marke: skalaMarke[vI] || null }, nach: { adsh: filings[i].adsh, filed: iso(filings[i].filed), aktien: n, marke: skalaMarke[i] || null }, faktor: Math.round(Math.pow(10, d)) };
+          spruenge.push(s);
+          /* Einordnung ueber den Aussenanker: ist eine Seite unplausibel (Quotient ausserhalb [1e-3, 1e3]), ist der Sprung ein Fehler */
+          var qa = quotientVon(vI, nachher), qb = quotientVon(i, n);
+          if (qa === null && qb === null) as.spruengeNachQuotient.ohneQuotient++;
+          else if ((qa !== null && Math.abs(qa) > PLAUSIBEL_LOG) || (qb !== null && Math.abs(qb) > PLAUSIBEL_LOG)) { as.spruengeNachQuotient.eineSeiteUnplausibel++; s.fehler = true; s.quotienten = [qa === null ? null : Math.pow(10, qa), qb === null ? null : Math.pow(10, qb)]; if (as.spruengeNachQuotient.fehlerBeispiele.length < 40) as.spruengeNachQuotient.fehlerBeispiele.push(s); }
+          else as.spruengeNachQuotient.beidePlausibel++;
+          var ma = skalaMarke[vI], mb = skalaMarke[i], ohne = function (x) { return !x || x.ohneAnker || (x.faktorCik && !x.faktorAbweichler && !x.abweichlerUnklar); };
+          if ((ma && ma.faktorAbweichler && ma.faktorAbweichler !== 1) || (mb && mb.faktorAbweichler && mb.faktorAbweichler !== 1)) as.spruengeNachJeArt.mitAngleichung++;
+          else if ((ma && ma.abweichlerUnklar) || (mb && mb.abweichlerUnklar)) as.spruengeNachJeArt.mitUnklar++;
+          else if (ohne(ma) && ohne(mb)) { as.spruengeNachJeArt.beideOhneMarke++; as.wanderer.n++; if (as.wanderer.liste.length < 40) as.wanderer.liste.push(s); }
+          else as.spruengeNachJeArt.sonst++;
+        }
+      }
       nachher = n; vI = i;
     });
   });
   spruenge.sort(function (a, b) { return b.faktor - a.faktor || (a.nach.adsh < b.nach.adsh ? -1 : 1); });
   as.spruengeNachTop30 = spruenge.slice(0, 30);
+  as.faktorCik.liste.sort(function (a, b) { return a.cik - b.cik; }); as.skalaUnklar.liste.sort(function (a, b) { return a.cik - b.cik; });
   z.v11.aktienSkala = as;
-  console.log('Aktien-Skala: A', as.regelA, 'B', as.regelB, 'B verworfen', as.regelBVerworfen, 'ohne Kurs', as.ohneKurs, 'ohne Vermoegen', as.ohneVermoegen, 'Spruenge>30 vor/nach', as.spruengeVor30, as.spruengeNach30, 'in', Math.round((Date.now() - t0) / 1000), 's');
+  console.log('Aktien-Skala: F!=1 CIKs', as.faktorCik.ciks, 'Zeilen', as.faktorCik.zeilen, 'skalaUnklar', as.skalaUnklar.ciks, 'ohneAnker', as.ohneAnker.ciks, 'Abweichler', JSON.stringify(as.abweichler.jeK), 'unklar', as.abweichler.unklar, 'Waechter', as.waechter.verworfen, 'Spruenge>30 vor/nach', as.spruengeVor30, as.spruengeNach30, 'in', Math.round((Date.now() - t0) / 1000), 's');
 
   FLUESSE.forEach(function (g) { z.roh[g] = 0; }); ['vermoegen', 'eigenkapital', 'aktien'].forEach(function (g) { z.roh[g] = 0; });
   z.roh.tags = {}; z.roh.eigenkapitalFallback = 0; z.roh.nettoFallback = 0; z.roh.aktienJeTag = {};
@@ -447,69 +516,56 @@ async function main() {
   var stroeme = {}, aktJahr = null, out = null, hashes = {};
   function oeffneJahr(j) { if (out) out.end(); aktJahr = j; out = fs.createWriteStream(path.join(ZIEL, 'tafel-' + j + '.jsonl.teil')); stroeme[j] = out; }
   var puffer = [];
-  var LEER8 = [null, null, null, null, null, null, null, null];
   for (var fi = 0; fi < filings.length; fi++) {
     var f = filings[fi], cik = f.cik, rang = f.rang, P = f.period, sollQ = Z.JAHRESFORM[f.art] ? 4 : 1;
-    var zeile;
-    if (verdacht[f.adsh]) {
-      /* 2c: alle Fakten des adsh ausgelassen - die Zeile bleibt, traegt aber nichts (Abdeckungszahlen ehrlich) */
-      var q0 = {}, w0 = {}, t0s = {}, s0 = {}, l0 = {};
-      SUMMEN.forEach(function (g) { q0[g] = LEER8.slice(); w0[g] = '--------'; t0s[g] = []; s0[g] = null; s0[g + 'Vor'] = null; l0[g] = 8; z.luecken[g].summe4q++; z.luecken[g].summe4qVor++; for (var k = 0; k < 8; k++) z.luecken[g].jeQuartal[k]++; });
-      zeile = { sym: reihenJeCik[cik], cik: cik, sic: f.sic, sektor: Z.sektorVonSic(f.sic), form: f.form, period: iso(P), filed: iso(f.filed), accepted: f.accepted, fy: f.fy, fp: f.fp, q: f.q, adsh: f.adsh,
-        roh: { umsatz: null, netto: null, operativ: null, umsatzkosten: null, fue: null, vermoegen: null, eigenkapital: null, aktien: null, qtrs: sollQ },
-        rohTags: { umsatz: null, netto: null, operativ: null, umsatzkosten: null, fue: null, eigenkapital: null, aktien: null },
-        quartale: q0, wege: w0, quartalsTags: t0s, summe4q: s0, vermoegenVor: null,
-        abgeleitet: { roa: null, roaVor: null, fm: null, umsatzWachstum: null },
-        marken: { luecken: l0, erstVonFrueher: 0, nettoFallback: 0, eigenkapitalFallback: 0, aktienFallback: null, aktienSkala: null, einheit: 'verdacht', d4: null } };
-    } else {
-      var roh = {}, rohTags = {}, erstVonFrueher = 0;
-      FLUESSE.forEach(function (g) { var e = erster(cik, Z.GRUPPEN[g].tags, P, sollQ, rang); roh[g] = e ? e.v : null; rohTags[g] = e ? e.tag : null; if (e) { z.roh[g]++; zaehl(z.roh.tags, e.tag); if (e.r < rang) erstVonFrueher++; } });
-      if (rohTags.netto && rohTags.netto !== 'NetIncomeLoss') z.roh.nettoFallback++;
-      var ev = fakt(cik, 'Assets', P, 0, rang); roh.vermoegen = ev ? ev.v : null; if (ev) { z.roh.vermoegen++; if (ev.r < rang) erstVonFrueher++; }
-      var ek = erster(cik, Z.GRUPPEN.eigenkapital.tags, P, 0, rang); roh.eigenkapital = ek ? ek.v : null; rohTags.eigenkapital = ek ? ek.tag : null; if (ek) { z.roh.eigenkapital++; if (ek.i > 0) z.roh.eigenkapitalFallback++; if (ek.r < rang) erstVonFrueher++; }
-      var akf = ak[fi], aktien = akf ? (aktienKorr[fi] !== undefined ? aktienKorr[fi] : akf.v) : null;
-      if (aktien === null) akf = null;   /* Regel B verworfen: Wert, Tag und Fallback-Marke weg wie bei "keine Aktienzahl" */
-      roh.aktien = aktien; rohTags.aktien = akf ? akf.tag : null; if (akf) { z.roh.aktien++; zaehl(z.roh.aktienJeTag, akf.tag); if (akf.r < rang) erstVonFrueher++; }
+    var roh = {}, rohTags = {}, erstVonFrueher = 0;
+    FLUESSE.forEach(function (g) { var e = erster(cik, Z.GRUPPEN[g].tags, P, sollQ, rang); roh[g] = e ? e.v : null; rohTags[g] = e ? e.tag : null; if (e) { z.roh[g]++; zaehl(z.roh.tags, e.tag); if (e.r < rang) erstVonFrueher++; } });
+    if (rohTags.netto && rohTags.netto !== 'NetIncomeLoss') z.roh.nettoFallback++;
+    var ev = fakt(cik, 'Assets', P, 0, rang); roh.vermoegen = ev ? ev.v : null; if (ev) { z.roh.vermoegen++; if (ev.r < rang) erstVonFrueher++; }
+    var ek = erster(cik, Z.GRUPPEN.eigenkapital.tags, P, 0, rang); roh.eigenkapital = ek ? ek.v : null; rohTags.eigenkapital = ek ? ek.tag : null; if (ek) { z.roh.eigenkapital++; if (ek.i > 0) z.roh.eigenkapitalFallback++; if (ek.r < rang) erstVonFrueher++; }
+    var akf = ak[fi], aktien = akf ? (aktienKorr[fi] !== undefined ? aktienKorr[fi] : akf.v) : null;
+    if (aktien === null) akf = null;   /* Waechter hat verworfen: Wert, Tag und Fallback-Marke weg wie bei "keine Aktienzahl" */
+    roh.aktien = aktien; rohTags.aktien = akf ? akf.tag : null; if (akf) { z.roh.aktien++; zaehl(z.roh.aktienJeTag, akf.tag); if (akf.r < rang) erstVonFrueher++; }
 
-      var quartaleW = {}, wege = {}, qTags = {}, summe = {}, luecken = {};
-      SUMMEN.forEach(function (g) {
-        var vs = [], code = '', tags = {}, n0 = 0, n4 = 0;
-        for (var k = 0; k < 8; k++) {
-          var qw = quartalswert(cik, Z.GRUPPEN[g].tags, zurueck(P, k), rang);
-          vs.push(qw ? qw.v : null); code += qw ? WEG_CODE[qw.weg] : '-';
-          if (qw) { tags[qw.tag] = 1; zaehl(z.wege[g], qw.weg); if (k < 4) n0++; else n4++; } else { z.luecken[g].jeQuartal[k]++; }
-        }
-        quartaleW[g] = vs; wege[g] = code; qTags[g] = Object.keys(tags).sort();
-        summe[g] = n0 === 4 ? vs[0] + vs[1] + vs[2] + vs[3] : null;
-        summe[g + 'Vor'] = n4 === 4 ? vs[4] + vs[5] + vs[6] + vs[7] : null;
-        luecken[g] = 8 - n0 - n4;
-      });
-      var A0 = roh.vermoegen, A4 = wert(cik, 'Assets', zurueck(P, 4), 0, rang);
-      /* 2d: Vorjahresbestand aus der Huelle */
-      var huelle = false, huelleD4 = false;
-      if (A0 > 0) for (var hk = 4; hk <= 7; hk++) { var Ak = hk === 4 ? A4 : wert(cik, 'Assets', zurueck(P, hk), 0, rang); if (Ak > 0 && Math.abs(log6(Ak) - log6(A0)) > D4_LOG) { huelle = true; if (hk === 4) huelleD4 = true; } }
-      if (huelle) {
-        d4.huelle++; if (huelleD4) { d4.huelleD4++; } else d4.huelleNurD5bisD7++;
-        if (d4.beispiele.length < 20) d4.beispiele.push({ adsh: f.adsh, sym: reihenJeCik[cik], form: f.form, period: iso(P), filed: iso(f.filed), vermoegen: A0, vermoegenVor: A4, nurD5bisD7: !huelleD4 });
-        if (huelleD4) A4 = null;
-        SUMMEN.forEach(function (g) { summe[g + 'Vor'] = null; });
+    var quartaleW = {}, wege = {}, qTags = {}, summe = {}, luecken = {};
+    SUMMEN.forEach(function (g) {
+      var vs = [], code = '', tags = {}, n0 = 0, n4 = 0;
+      for (var k = 0; k < 8; k++) {
+        var qw = quartalswert(cik, Z.GRUPPEN[g].tags, zurueck(P, k), rang);
+        vs.push(qw ? qw.v : null); code += qw ? WEG_CODE[qw.weg] : '-';
+        if (qw) { tags[qw.tag] = 1; zaehl(z.wege[g], qw.weg); if (k < 4) n0++; else n4++; } else { z.luecken[g].jeQuartal[k]++; }
       }
-      SUMMEN.forEach(function (g) { if (summe[g] === null) z.luecken[g].summe4q++; if (summe[g + 'Vor'] === null) z.luecken[g].summe4qVor++; });
-      var roa = (summe.netto !== null && A0 > 0) ? summe.netto / A0 : null;
-      var roaVor = (summe.nettoVor !== null && A4 > 0) ? summe.nettoVor / A4 : null;
-      var fm = (roa !== null && roaVor !== null) ? roa - roaVor : null;
-      var uw = (summe.umsatz !== null && summe.umsatzVor > 0) ? summe.umsatz / summe.umsatzVor - 1 : null;
-      if (summe.netto !== null) z.abgeleitet.summe4qNetto++; if (roa !== null) z.abgeleitet.roa++; if (fm !== null) z.abgeleitet.fm++; if (uw !== null) z.abgeleitet.umsatzWachstum++;
-
-      zeile = { sym: reihenJeCik[cik], cik: cik, sic: f.sic, sektor: Z.sektorVonSic(f.sic), form: f.form, period: iso(P), filed: iso(f.filed), accepted: f.accepted, fy: f.fy, fp: f.fp, q: f.q, adsh: f.adsh,
-        roh: { umsatz: roh.umsatz, netto: roh.netto, operativ: roh.operativ, umsatzkosten: roh.umsatzkosten, fue: roh.fue, vermoegen: roh.vermoegen, eigenkapital: roh.eigenkapital, aktien: roh.aktien, qtrs: sollQ },
-        rohTags: { umsatz: rohTags.umsatz, netto: rohTags.netto, operativ: rohTags.operativ, umsatzkosten: rohTags.umsatzkosten, fue: rohTags.fue, eigenkapital: rohTags.eigenkapital, aktien: rohTags.aktien },
-        quartale: quartaleW, wege: wege, quartalsTags: qTags,
-        summe4q: summe, vermoegenVor: A4,
-        abgeleitet: { roa: roa, roaVor: roaVor, fm: fm, umsatzWachstum: uw },
-        marken: { luecken: luecken, erstVonFrueher: erstVonFrueher, nettoFallback: rohTags.netto && rohTags.netto !== 'NetIncomeLoss' ? 1 : 0, eigenkapitalFallback: ek && ek.i > 0 ? ek.i : 0, aktienFallback: akf ? akf.i : null,
-          aktienSkala: skalaMarke[fi] || null, einheit: null, d4: huelle ? 'huelle' : null } };
+      quartaleW[g] = vs; wege[g] = code; qTags[g] = Object.keys(tags).sort();
+      summe[g] = n0 === 4 ? vs[0] + vs[1] + vs[2] + vs[3] : null;
+      summe[g + 'Vor'] = n4 === 4 ? vs[4] + vs[5] + vs[6] + vs[7] : null;
+      luecken[g] = 8 - n0 - n4;
+    });
+    var A0 = roh.vermoegen, A4 = wert(cik, 'Assets', zurueck(P, 4), 0, rang);
+    /* 2d: Vorjahresbestand aus der Huelle */
+    var huelle = false, huelleD4 = false;
+    if (A0 > 0) for (var hk = 4; hk <= 7; hk++) { var Ak = hk === 4 ? A4 : wert(cik, 'Assets', zurueck(P, hk), 0, rang); if (Ak > 0 && Math.abs(log6(Ak) - log6(A0)) > D4_LOG) { huelle = true; if (hk === 4) huelleD4 = true; } }
+    if (huelle) {
+      d4.huelle++; if (huelleD4) { d4.huelleD4++; } else d4.huelleNurD5bisD7++;
+      if (d4.beispiele.length < 20) d4.beispiele.push({ adsh: f.adsh, sym: reihenJeCik[cik], form: f.form, period: iso(P), filed: iso(f.filed), vermoegen: A0, vermoegenVor: A4, nurD5bisD7: !huelleD4 });
+      if (huelleD4) A4 = null;
+      SUMMEN.forEach(function (g) { summe[g + 'Vor'] = null; });
     }
+    SUMMEN.forEach(function (g) { if (summe[g] === null) z.luecken[g].summe4q++; if (summe[g + 'Vor'] === null) z.luecken[g].summe4qVor++; });
+    var roa = (summe.netto !== null && A0 > 0) ? summe.netto / A0 : null;
+    var roaVor = (summe.nettoVor !== null && A4 > 0) ? summe.nettoVor / A4 : null;
+    var fm = (roa !== null && roaVor !== null) ? roa - roaVor : null;
+    var uw = (summe.umsatz !== null && summe.umsatzVor > 0) ? summe.umsatz / summe.umsatzVor - 1 : null;
+    if (summe.netto !== null) z.abgeleitet.summe4qNetto++; if (roa !== null) z.abgeleitet.roa++; if (fm !== null) z.abgeleitet.fm++; if (uw !== null) z.abgeleitet.umsatzWachstum++;
+
+    var vd = verdacht[f.adsh];
+    var zeile = { sym: reihenJeCik[cik], cik: cik, sic: f.sic, sektor: Z.sektorVonSic(f.sic), form: f.form, period: iso(P), filed: iso(f.filed), accepted: f.accepted, fy: f.fy, fp: f.fp, q: f.q, adsh: f.adsh,
+      roh: { umsatz: roh.umsatz, netto: roh.netto, operativ: roh.operativ, umsatzkosten: roh.umsatzkosten, fue: roh.fue, vermoegen: roh.vermoegen, eigenkapital: roh.eigenkapital, aktien: roh.aktien, qtrs: sollQ },
+      rohTags: { umsatz: rohTags.umsatz, netto: rohTags.netto, operativ: rohTags.operativ, umsatzkosten: rohTags.umsatzkosten, fue: rohTags.fue, eigenkapital: rohTags.eigenkapital, aktien: rohTags.aktien },
+      quartale: quartaleW, wege: wege, quartalsTags: qTags,
+      summe4q: summe, vermoegenVor: A4,
+      abgeleitet: { roa: roa, roaVor: roaVor, fm: fm, umsatzWachstum: uw },
+      marken: { luecken: luecken, erstVonFrueher: erstVonFrueher, nettoFallback: rohTags.netto && rohTags.netto !== 'NetIncomeLoss' ? 1 : 0, eigenkapitalFallback: ek && ek.i > 0 ? ek.i : 0, aktienFallback: akf ? akf.i : null,
+        aktienSkala: skalaMarke[fi] || null, einheit: vd ? 'verdacht' : null, einheitFakt: vd ? vd.tag : null, d4: huelle ? 'huelle' : null } };
     var jahr = String(Math.floor(f.filed / 10000));
     if (jahr !== aktJahr) { if (out && puffer.length) { out.write(puffer.join('\n') + '\n'); puffer = []; } oeffneJahr(jahr); }
     puffer.push(JSON.stringify(zeile));

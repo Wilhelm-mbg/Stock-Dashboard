@@ -17,7 +17,7 @@ var fs = require('fs');
 var path = require('path');
 var V1 = path.join(__dirname, 'fundamentaltafel-v1'), V11 = path.join(__dirname, 'fundamentaltafel');
 var KLASSEN = ['ab1000', '250-1000', '50-250', '5-50', 'unter5', 'duenn'];
-var NEUE_MARKEN = { aktienSkala: 1, einheit: 1, d4: 1 };
+var NEUE_MARKEN = { aktienSkala: 1, einheit: 1, einheitFakt: 1, d4: 1 };
 var VOR_FELDER = ['vermoegenVor', 'summe4q.umsatzVor', 'summe4q.nettoVor', 'summe4q.operativVor', 'abgeleitet.roaVor', 'abgeleitet.fm', 'abgeleitet.umsatzWachstum'];
 
 function dateien(d) { return fs.readdirSync(d).filter(function (f) { return /^tafel-\d{4}\.jsonl$/.test(f); }).sort(); }
@@ -50,7 +50,7 @@ function main() {
   dateien(V1).forEach(function (f) { fs.readFileSync(path.join(V1, f), 'utf8').split('\n').forEach(function (l) { if (!l) return; var i = l.indexOf('"adsh":"'), j = l.indexOf('"', i + 8); v1.set(l.slice(i + 8, j), l); }); });
   console.log('v1 geladen:', v1.size, 'Zeilen in', Math.round((Date.now() - t0) / 1000), 's');
   var zl = { v11: 0, gleich: 0, nurV11: [], einheitVerdacht: 0, einheitFolge: 0, einheitFolgeBeispiele: [], symGeaendert: 0, symUnerklaert: [],
-    aktien: { geaendert: 0, regelA: 0, regelB: 0, verworfen: 0, unerklaert: [] }, d4: { geaendert: 0, huelle: 0, unerklaert: [] }, unerwartet: 0, unerwartetBeispiele: [], vermoegenVorNullDurchHuelle: 0 };
+    aktien: { geaendert: 0, faktorCik: 0, abweichler: 0, verworfen: 0, unerklaert: [] }, d4: { geaendert: 0, huelle: 0, unerklaert: [] }, unerwartet: 0, unerwartetBeispiele: [], vermoegenVorNullDurchHuelle: 0 };
   var verdachtJeCik = {};   // cik -> kleinstes filed eines verdaechtigen Filings (Folgeaenderungen nur danach)
   dateien(V11).forEach(function (f) { fs.readFileSync(path.join(V11, f), 'utf8').split('\n').forEach(function (l) { if (!l) return; var z = JSON.parse(l); if (z.marken.einheit === 'verdacht' && (!verdachtJeCik[z.cik] || z.filed < verdachtJeCik[z.cik])) verdachtJeCik[z.cik] = z.filed; }); });
   dateien(V11).forEach(function (f) {
@@ -61,25 +61,30 @@ function main() {
       v1.delete(b.adsh);
       if (la === l) { zl.gleich++; return; }
       var a = JSON.parse(la);
-      /* Marken ohne Wertaenderung: Regel A x Regel B = 1 (z. B. COP A 0,001 dann B 1000) bzw. Huelle bei schon leerem Vorjahresfenster */
-      if (b.marken.aktienSkala && b.marken.aktienSkala.faktor && gleichJson(a.roh.aktien, b.roh.aktien)) zl.aktienMarkeOhneWertaenderung = (zl.aktienMarkeOhneWertaenderung || 0) + 1;
+      /* Marken ohne Wertaenderung: Abweichler mit k = 0 (COP-Stueckwert bleibt) bzw. Huelle bei schon leerem Vorjahresfenster */
+      if (b.marken.aktienSkala && gleichJson(a.roh.aktien, b.roh.aktien)) { var mk = b.marken.aktienSkala, art = mk.abweichlerUnklar ? 'abweichlerUnklar' : mk.faktorAbweichler === 1 ? 'abweichlerKNull' : mk.ohneAnker ? 'ohneAnker' : mk.skalaUnklar ? 'skalaUnklar' : 'sonst'; zl.aktienMarkeOhneWertaenderung = zl.aktienMarkeOhneWertaenderung || {}; zl.aktienMarkeOhneWertaenderung[art] = (zl.aktienMarkeOhneWertaenderung[art] || 0) + 1; }
       if (b.marken.d4 === 'huelle' && VOR_FELDER.every(function (p) { return gleichJson(holen(a, p), holen(b, p)); })) zl.d4MarkeOhneWertaenderung = (zl.d4MarkeOhneWertaenderung || 0) + 1;
       var meta = ['cik', 'sic', 'sektor', 'form', 'period', 'filed', 'accepted', 'fy', 'fp', 'q'].every(function (k) { return gleichJson(a[k], b[k]); });
       var abw = [];
       if (!meta) abw.push('meta');
       if (!gleichJson(a.sym, b.sym)) { var erkl = a.sym.filter(function (s) { return !(r11.reihen[s] && r11.reihen[s].pruefung === 'verworfen'); }); if (gleichJson(erkl, b.sym)) zl.symGeaendert++; else { zl.symUnerklaert.push(b.adsh); abw.push('sym'); } }
-      if (b.marken.einheit === 'verdacht') { zl.einheitVerdacht++; if (abw.length) { zl.unerwartet++; if (zl.unerwartetBeispiele.length < 20) zl.unerwartetBeispiele.push({ adsh: b.adsh, felder: abw }); } return; }
-      /* Aktien */
+      /* Aktien: v1.1 = v1 x faktorCik x faktorAbweichler, oder null (Waechter) */
       var ak = b.marken.aktienSkala;
       if (!gleichJson(a.roh.aktien, b.roh.aktien) || !gleichJson(a.rohTags.aktien, b.rohTags.aktien) || !gleichJson(a.marken.aktienFallback, b.marken.aktienFallback)) {
         zl.aktien.geaendert++;
+        /* angewandt wird bei Abweichlern faktorAbweichler allein (schon gegen die korrigierte Mehrheit gerechnet), sonst faktorCik */
+        var faktor = ak ? (ak.faktorAbweichler ? ak.faktorAbweichler : (ak.faktorCik || 1)) : 1;
         if (ak && ak.verworfen && b.roh.aktien === null) zl.aktien.verworfen++;
-        else if (ak && ak.faktor && b.roh.aktien !== null && Math.abs(b.roh.aktien - a.roh.aktien * ak.faktor * (ak.nachA || 1)) <= 1e-6 * Math.abs(b.roh.aktien)) { if (ak.regel === 'A') zl.aktien.regelA++; else zl.aktien.regelB++; }
+        else if (ak && faktor !== 1 && b.roh.aktien !== null && Math.abs(b.roh.aktien - a.roh.aktien * faktor) <= 1e-6 * Math.abs(b.roh.aktien)) { if (ak.faktorAbweichler && ak.faktorAbweichler !== 1) zl.aktien.abweichler++; else zl.aktien.faktorCik++; }
         else { zl.aktien.unerklaert.push(b.adsh); abw.push('aktien'); }
       }
+      /* Einheit: nur der ausloesende Fakt fehlt - die Zeile selbst wird als Ganzes der Korrektur zugeschrieben (Folgefelder: roh, roa, fm ...) */
+      if (b.marken.einheit === 'verdacht') { zl.einheitVerdacht++; if (abw.length) { zl.unerwartet++; if (zl.unerwartetBeispiele.length < 20) zl.unerwartetBeispiele.push({ adsh: b.adsh, felder: abw }); } return; }
       /* D4 / Vorjahresfenster */
       var vorAnders = VOR_FELDER.filter(function (p) { return !gleichJson(holen(a, p), holen(b, p)); });
-      var folge = verdachtJeCik[b.cik] && b.filed > verdachtJeCik[b.cik];
+      /* Folgeaenderungen der Einheit: spaetere Zeilen der CIK (erste Veroeffentlichung rueckt nach) UND fruehere, die dieselbe
+       * falsche Zahl schon als Vergleichswert trugen (bauen.js verdachtFakt) */
+      var folge = verdachtJeCik[b.cik] !== undefined, folgeVor = folge && !(b.filed > verdachtJeCik[b.cik]);
       if (vorAnders.length) {
         zl.d4.geaendert++;
         if (b.marken.d4 === 'huelle') { zl.d4.huelle++; if (a.vermoegenVor !== null && b.vermoegenVor === null) zl.vermoegenVorNullDurchHuelle++; }
@@ -95,8 +100,8 @@ function main() {
         return !gleichJson(x, y);
       });
       if (!gleichJson(a.abgeleitet.roa, b.abgeleitet.roa)) rest.push('abgeleitet.roa');
-      if (rest.length) {
-        if (folge) { zl.einheitFolge++; if (zl.einheitFolgeBeispiele.length < 10) zl.einheitFolgeBeispiele.push({ adsh: b.adsh, cik: b.cik, filed: b.filed, verdachtAb: verdachtJeCik[b.cik], felder: rest }); }
+      if (rest.length || (vorAnders.length && b.marken.d4 !== 'huelle' && folge)) {
+        if (folge) { if (folgeVor) zl.einheitFruehere = (zl.einheitFruehere || 0) + 1; else zl.einheitFolge++; if (zl.einheitFolgeBeispiele.length < 10) zl.einheitFolgeBeispiele.push({ adsh: b.adsh, cik: b.cik, filed: b.filed, verdachtAb: verdachtJeCik[b.cik], vorher: folgeVor, felder: rest.concat(vorAnders.length ? ['vor'] : []) }); }
         else abw = abw.concat(rest);
       }
       if (abw.length) { zl.unerwartet++; if (zl.unerwartetBeispiele.length < 20) zl.unerwartetBeispiele.push({ adsh: b.adsh, cik: b.cik, felder: abw }); }
@@ -132,7 +137,7 @@ function main() {
   fs.writeFileSync(path.join(__dirname, 'vergleich-v1-v11.json'), JSON.stringify(E, null, 1));
 
   console.log(JSON.stringify({ reihen: { gesamt: reihen.gesamt, jePruefung: reihen.jePruefung, cikGeaendert: reihen.cikGeaendert, nichtVerworfen: reihen.cikGeaendertNichtVerworfen.length, ciksOhneReihe: reihen.ciksOhneReiheDurchVerwerfen },
-    zeilen: { v11: zl.v11, gleich: zl.gleich, nurV11: zl.nurV11.length, nurV1DurchZuordnung: weg.durchZuordnung, nurV1Unerklaert: weg.unerklaert.length, einheitVerdacht: zl.einheitVerdacht, einheitFolge: zl.einheitFolge, symGeaendert: zl.symGeaendert, aktien: { geaendert: zl.aktien.geaendert, A: zl.aktien.regelA, B: zl.aktien.regelB, verworfen: zl.aktien.verworfen, unerklaert: zl.aktien.unerklaert.length }, d4: { geaendert: zl.d4.geaendert, huelle: zl.d4.huelle, unerklaert: zl.d4.unerklaert.length }, unerwartet: zl.unerwartet }, sekunden: E.sekunden }, null, 1));
+    zeilen: { v11: zl.v11, gleich: zl.gleich, nurV11: zl.nurV11.length, nurV1DurchZuordnung: weg.durchZuordnung, nurV1Unerklaert: weg.unerklaert.length, einheitVerdacht: zl.einheitVerdacht, einheitFolge: zl.einheitFolge, einheitFruehere: zl.einheitFruehere || 0, symGeaendert: zl.symGeaendert, aktien: { geaendert: zl.aktien.geaendert, faktorCik: zl.aktien.faktorCik, abweichler: zl.aktien.abweichler, verworfen: zl.aktien.verworfen, markeOhneWert: zl.aktienMarkeOhneWertaenderung || {}, unerklaert: zl.aktien.unerklaert.length, unerklaertBeispiele: zl.aktien.unerklaert.slice(0, 9) }, d4: { geaendert: zl.d4.geaendert, huelle: zl.d4.huelle, markeOhneWert: zl.d4MarkeOhneWertaenderung || 0, unerklaert: zl.d4.unerklaert.length }, unerwartet: zl.unerwartet }, sekunden: E.sekunden }, null, 1));
   console.log('\n**Deckung „Aktien" je Klasse × Jahr, v1 gegen v1.1** (Prozent der aktiven Reihen der Klasse mit Aktienzahl in einem Filing des Jahres):\n');
   console.log('| Klasse | ' + kl.jahre.join(' | ') + ' |');
   console.log('| --- | ' + kl.jahre.map(function () { return '---:'; }).join(' | ') + ' |');

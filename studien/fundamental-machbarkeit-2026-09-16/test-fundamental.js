@@ -90,7 +90,7 @@ function p2(tafel, panel, leser) {
     var klassen = {}, wertOk = { umsatz: 0, vermoegen: 0, aktien: 0 }, wertErsteVeroeff = { umsatz: 0, vermoegen: 0, aktien: 0 }, wertAnders = [], fehltInTafel = [], nurTafel = 0;
     var verworfenFiledVorPeriod = [], regelAktien = 0, regelAktienBeispiele = [];
     /* v1.1: Abweichungen, die eine der vier Korrekturen erklaert */
-    var fehltDurchZuordnung = [], durchAktienSkala = { A: 0, B: 0, verworfen: 0 }, durchEinheit = { umsatz: 0, vermoegen: 0, aktien: 0 };
+    var fehltDurchZuordnung = [], durchAktienSkala = { faktorCik: 0, abweichler: 0, verworfen: 0 }, durchEinheit = { umsatz: 0, vermoegen: 0, aktien: 0 };
     var deckAdsh = {};
     deck.reihen[qn].forEach(function (r) {
       var k = r.klasse || 'inaktiv', c = klassen[k] = klassen[k] || { reihen: 0, mach: { us: 0, umsatz: 0, vermoegen: 0, aktien: 0 }, tafel: { us: 0, umsatz: 0, vermoegen: 0, aktien: 0 } };
@@ -115,8 +115,8 @@ function p2(tafel, panel, leser) {
           if (z.roh[g] !== null) hatT[g] = 1;
           if (!w[g]) return;
           if (gleich(z.roh[g], w[g].wert)) wertOk[g]++;
-          else if (z.marken.einheit === 'verdacht') durchEinheit[g]++;
-          else if (g === 'aktien' && z.marken.aktienSkala && (z.marken.aktienSkala.faktor || z.marken.aktienSkala.verworfen)) durchAktienSkala[z.marken.aktienSkala.verworfen ? 'verworfen' : z.marken.aktienSkala.regel]++;
+          else if (z.marken.einheit === 'verdacht' && z.roh[g] === null) durchEinheit[g]++;
+          else if (g === 'aktien' && z.marken.aktienSkala && (z.marken.aktienSkala.faktorCik || z.marken.aktienSkala.faktorAbweichler || z.marken.aktienSkala.verworfen)) durchAktienSkala[z.marken.aktienSkala.verworfen ? 'verworfen' : z.marken.aktienSkala.faktorAbweichler ? 'abweichler' : 'faktorCik']++;
           else if (z.marken.erstVonFrueher > 0 || z.roh[g] === null) wertErsteVeroeff[g]++;
           /* Aktienzahl: die Machbarkeit nahm bei gewichteten Zahlen die ERSTE Dateizeile (qtrs 1 oder YTD, Reihenfolge
            * der Quelle) und Bestandszahlen im Fenster [period, filed]; der Bau nimmt qtrs = Sollquartal bzw. genau period.
@@ -326,12 +326,15 @@ function p8(tafel, leser, bau) {
     console.log('  ' + s + ': Marktwert ' + (f.marktwert === null ? '-' : f.marktwert.toExponential(2)) + ' erwartet ' + ERWARTET[s].toExponential(1) + ' ' + (f.ok === null ? 'nicht pruefbar' : f.ok ? 'ok' : 'FALSCH') + (f.grund ? ' (' + f.grund + ')' : '') + ' [aktien ' + f.aktien + ' ' + f.tag + ' ' + JSON.stringify(f.marke) + ']');
   });
   var aapl = leser.alleFilings('AAPL').filter(function (z) { return z.filed === '2014-04-24' && z.form === '10-Q'; })[0];
-  var aaplOk = !!aapl && aapl.roh.aktien !== null && Math.abs(aapl.roh.aktien / 8.6e8 - 1) < 0.05 && !!aapl.marken.aktienSkala && aapl.marken.aktienSkala.regel === 'A';
+  var aaplM = aapl && aapl.marken.aktienSkala, aaplOk = !!aapl && aapl.roh.aktien !== null && Math.abs(aapl.roh.aktien / 8.6e8 - 1) < 0.05 && !!aaplM && ((aaplM.faktorCik || 1) * (aaplM.faktorAbweichler || 1) === 1000);
   if (!aaplOk) ok = false;
-  var as = bau.v11.aktienSkala, spruengeOk = as.spruengeNach30 < 0.05 * as.spruengeVor30;
+  /* Restspruenge > 30 nach der Korrektur (Runde 2): Reverse-Split-Wanderer bleiben (Fund, kein Fehler) und werden gelistet; gezaehlt
+   * wird, was der Aussenanker als Fehler ausweist - Spruenge, bei denen eine Seite einen Quotienten Marktwert/Vermoegen ausserhalb
+   * [1e-3, 1e3] hat - gegen die 10 % der v1-Spruenge. Der Anteil aller Restspruenge steht daneben. */
+  var as = bau.v11.aktienSkala, sq = as.spruengeNachQuotient, spruengeOk = sq.eineSeiteUnplausibel < 0.10 * as.spruengeVor30;
   if (!spruengeOk) ok = false;
-  pruefung('P8 Aktien-Skala', ok, { gegenprobe: faelle, aapl20140424: aapl ? { adsh: aapl.adsh, aktien: aapl.roh.aktien, marke: aapl.marken.aktienSkala, ok: aaplOk } : null, spruenge: { vor: as.spruengeVor30, nach: as.spruengeNach30, anteil: Math.round(1000 * as.spruengeNach30 / as.spruengeVor30) / 10, ok: spruengeOk }, zaehler: { regelA: as.regelA, regelB: as.regelB, regelBVerworfen: as.regelBVerworfen, ohneKurs: as.ohneKurs, ohneVermoegen: as.ohneVermoegen },
-    kurz: faelle.filter(function (f) { return f.ok; }).length + ' von ' + faelle.filter(function (f) { return f.ok !== null; }).length + ' Marktwerten ok, AAPL 2014 ' + (aaplOk ? 'ok' : 'FALSCH') + ', Spruenge>30 ' + as.spruengeVor30 + ' -> ' + as.spruengeNach30 + (spruengeOk ? ' ok' : ' NICHT < 5 %') });
+  pruefung('P8 Aktien-Skala', ok, { gegenprobe: faelle, aapl20140424: aapl ? { adsh: aapl.adsh, aktien: aapl.roh.aktien, marke: aapl.marken.aktienSkala, ok: aaplOk } : null, spruenge: { vor: as.spruengeVor30, nach: as.spruengeNach30, anteilAlle: Math.round(1000 * as.spruengeNach30 / as.spruengeVor30) / 10, nachQuotient: { beidePlausibel: sq.beidePlausibel, eineSeiteUnplausibel: sq.eineSeiteUnplausibel, ohneQuotient: sq.ohneQuotient }, anteilFehler: Math.round(1000 * sq.eineSeiteUnplausibel / as.spruengeVor30) / 10, ok: spruengeOk, jeArt: as.spruengeNachJeArt, wanderer: as.wanderer.n, wandererListe: as.wanderer.liste.slice(0, 30), fehlerBeispiele: sq.fehlerBeispiele.slice(0, 20) }, zaehler: { faktorCikCiks: as.faktorCik.ciks, faktorCikZeilen: as.faktorCik.zeilen, skalaUnklar: as.skalaUnklar.ciks, ohneAnkerCiks: as.ohneAnker.ciks, abweichler: as.abweichler, waechterVerworfen: as.waechter.verworfen, ohneKurs: as.ohneKurs, ohneVermoegen: as.ohneVermoegen },
+    kurz: faelle.filter(function (f) { return f.ok; }).length + ' von ' + faelle.filter(function (f) { return f.ok !== null; }).length + ' Marktwerten ok, AAPL 2014 ' + (aaplOk ? 'ok' : 'FALSCH') + ', Spruenge>30 ' + as.spruengeVor30 + ' -> ' + as.spruengeNach30 + ' (davon Fehler nach Anker ' + sq.eineSeiteUnplausibel + (spruengeOk ? ' ok' : ' NICHT < 10 %') + ', plausibel ' + sq.beidePlausibel + ', ohne Anker ' + sq.ohneQuotient + ')' });
 }
 
 /* ---------- v1.1: P9 Zuordnung ---------- */
@@ -346,7 +349,7 @@ function p9(leser, panel) {
 
 /* ---------- v1.1: P10 Einheit ---------- */
 function p10(tafel, bau) {
-  var hrc = tafel.filter(function (z) { return z.adsh === '0000047518-21-000084'; })[0], hrcOk = !!hrc && hrc.marken.einheit === 'verdacht' && hrc.roh.vermoegen === null;
+  var hrc = tafel.filter(function (z) { return z.adsh === '0000047518-21-000084'; })[0], hrcOk = !!hrc && hrc.marken.einheit === 'verdacht' && hrc.marken.einheitFakt === 'Assets' && hrc.roh.vermoegen === null && hrc.roh.umsatz !== null;   /* nur der Assets-Fakt fehlt, der Umsatz desselben adsh bleibt */
   var jeCik = {}; tafel.forEach(function (z) { if (z.roh.vermoegen > 0) (jeCik[z.cik] = jeCik[z.cik] || []).push(z); });   /* Dateireihenfolge = Rangordnung */
   var verstoesse = [], gepaart = 0;
   Object.keys(jeCik).forEach(function (c) {
@@ -358,39 +361,36 @@ function p10(tafel, bau) {
     }
   });
   var ei = bau.v11.einheit, verdachtZeilen = tafel.filter(function (z) { return z.marken.einheit === 'verdacht'; }).length;
-  pruefung('P10 Einheit', hrcOk && verstoesse.length === 0 && verdachtZeilen === ei.verdacht, { hrc: hrc ? { adsh: hrc.adsh, einheit: hrc.marken.einheit, vermoegen: hrc.roh.vermoegen } : null, innereZeilenGeprueft: gepaart, verstoesse: verstoesse.slice(0, 20), verstoesseN: verstoesse.length, verdachtZeilen: verdachtZeilen, verdachtJeGrund: ei.faelle.reduce(function (o, f) { o[f.grund] = (o[f.grund] || 0) + 1; return o; }, {}), huellenEinseitig: ei.einseitig, ohnePruefung: ei.ohnePruefung, faktenUebersprungen: bau.fakten.einheitVerdachtUebersprungen,
-    kurz: 'HRC ' + (hrcOk ? 'markiert' : 'NICHT markiert') + ', Spruenge gegen beide Nachbarn > 100: ' + verstoesse.length + ', verdaechtig ' + verdachtZeilen + ', Huellen (einseitig) ' + ei.einseitig });
+  pruefung('P10 Einheit', hrcOk && verstoesse.length === 0 && verdachtZeilen === ei.verdacht, { hrc: hrc ? { adsh: hrc.adsh, einheit: hrc.marken.einheit, einheitFakt: hrc.marken.einheitFakt, vermoegen: hrc.roh.vermoegen, umsatz: hrc.roh.umsatz } : null, innereZeilenGeprueft: gepaart, verstoesse: verstoesse.slice(0, 20), verstoesseN: verstoesse.length, verdachtZeilen: verdachtZeilen, verdachtJeGrund: ei.jeGrund, huellenEinseitig: ei.einseitig, ohnePruefung: ei.ohnePruefung, faktenUebersprungen: bau.fakten.einheitVerdachtUebersprungen, faelle: ei.faelle,
+    kurz: 'HRC ' + (hrcOk ? 'markiert (nur Assets)' : 'NICHT markiert') + ', Spruenge gegen beide Nachbarn > 100: ' + verstoesse.length + ', verdaechtig ' + verdachtZeilen + ', Fakten uebersprungen ' + bau.fakten.einheitVerdachtUebersprungen + ', Huellen (einseitig) ' + ei.einseitig });
 }
 
-/* ---------- v1.1: P11 Vorjahresbestand aus der Huelle ---------- */
-/* Der Auftrag erwartet AMCR und TW mit d4 'huelle'. Im Bau greift aber 2c VOR 2d: die Huellen-Filings beider Firmen
- * (AMCR 10-Q 2019-03-31 Assets 130 $, TW 10-Q 2019-03-31 Assets 100 $) sind die ERSTEN Filings ihrer CIK und fallen
- * unter "Reihenanfang + Median" - ihre Fakten fehlen im Speicher, 2d hat nichts mehr zu vergleichen. Gemessen wird deshalb
- * das Ergebnis, das der Auftrag will: jede v1-Zeile von AMCR/TW mit Huellen-Quotient ist in v1.1 bereinigt, und der Weg
- * (d4-Marke der Zeile oder Einheit-Marke eines frueheren Filings der CIK) wird ausgewiesen. */
+/* ---------- v1.1: P11 Vorjahresbestand aus der Huelle (Runde 2: Marke UND Ergebnis) ---------- */
+/* AMCR und TW muessen an den betroffenen Filings die Marke d4 'huelle' tragen (jede v1-Zeile mit Huellen-Quotient), und das
+ * Ergebnis muss stimmen: vermoegenVor null (Huelle an D4) oder plausibel (nur D5..D7), fm null; tafelweit kein Quotient mehr
+ * ausserhalb [1e-3, 1e3]. */
 function p11(tafel, leser) {
   var V1 = path.join(__dirname, 'fundamentaltafel-v1'), alt = {};
   if (fs.existsSync(V1)) fs.readdirSync(V1).filter(function (f) { return /^tafel-(2019|202\d)\.jsonl$/.test(f); }).forEach(function (f) { fs.readFileSync(path.join(V1, f), 'utf8').split('\n').forEach(function (l) { if (l.indexOf('"cik":1748790,') > 0 || l.indexOf('"cik":1758730,') > 0) { var z = JSON.parse(l); alt[z.adsh] = z; } }); });
   function huellenQuotient(z) { return z.vermoegenVor > 0 && z.roh.vermoegen > 0 && (z.vermoegenVor / z.roh.vermoegen < 1e-3 || z.vermoegenVor / z.roh.vermoegen > 1e3); }
-  var betroffen = {}, alleBereinigt = true, altVorhanden = Object.keys(alt).length > 0;
+  var betroffen = {}, alleOk = true, altVorhanden = Object.keys(alt).length > 0;
   ['AMCR', 'TW'].forEach(function (s) {
-    var rows = leser.alleFilings(s), verdachtAb = rows.filter(function (z) { return z.marken.einheit === 'verdacht'; }).map(function (z) { return z.filed; })[0] || null;
     var faelle = [];
-    rows.forEach(function (z) {
-      var a = alt[z.adsh], warHuelle = !!a && huellenQuotient(a);
-      if (!warHuelle && z.marken.d4 !== 'huelle') return;
-      var bereinigt = !huellenQuotient(z), weg = z.marken.d4 === 'huelle' ? 'd4' : (verdachtAb && z.filed > verdachtAb) ? 'einheit (Huellen-Filing ' + verdachtAb + ' ausgelassen)' : 'keiner';
-      if (!bereinigt || weg === 'keiner') alleBereinigt = false;
-      faelle.push({ adsh: z.adsh, form: z.form, period: z.period, filed: z.filed, v1: a ? { vermoegenVor: a.vermoegenVor, fm: a.abgeleitet.fm } : null, v11: { vermoegenVor: z.vermoegenVor, fm: z.abgeleitet.fm }, bereinigt: bereinigt, weg: weg });
+    leser.alleFilings(s).forEach(function (z) {
+      var a = alt[z.adsh], warHuelle = !!a && huellenQuotient(a), marke = z.marken.d4 === 'huelle';
+      if (!warHuelle && !marke) return;
+      var ergebnis = !huellenQuotient(z) && (z.vermoegenVor === null || z.vermoegenVor / z.roh.vermoegen >= 1e-3) && (a ? z.abgeleitet.fm === null || Math.abs(z.abgeleitet.fm) < 1 : true);
+      var okZeile = marke && ergebnis; if (!okZeile) alleOk = false;
+      faelle.push({ adsh: z.adsh, form: z.form, period: z.period, filed: z.filed, marke: marke, v1: a ? { vermoegenVor: a.vermoegenVor, fm: a.abgeleitet.fm } : null, v11: { vermoegenVor: z.vermoegenVor, fm: z.abgeleitet.fm }, ergebnisOk: ergebnis, ok: okZeile });
     });
     betroffen[s] = faelle;
-    if (!faelle.length) alleBereinigt = false;
+    if (!faelle.length) alleOk = false;
   });
   var verstoesse = [], huelle = 0, geprueft = 0;
   tafel.forEach(function (z) { if (z.marken.d4 === 'huelle') huelle++; if (!(z.vermoegenVor > 0) || !(z.roh.vermoegen > 0)) return; geprueft++; if (huellenQuotient(z)) verstoesse.push({ adsh: z.adsh, sym: z.sym, vermoegen: z.roh.vermoegen, vermoegenVor: z.vermoegenVor }); });
-  var ok = altVorhanden && alleBereinigt && verstoesse.length === 0;
-  pruefung('P11 D4 Huelle', ok, { hinweis: 'Auftrag §3 erwartet die Marke d4 an AMCR/TW; im Bau greift 2c (Reihenanfang + Median) vor 2d - gemessen wird das bereinigte Ergebnis samt Weg', v1Vorhanden: altVorhanden, AMCR: betroffen.AMCR, TW: betroffen.TW, zeilenMitHuelle: huelle, quotientenGeprueft: geprueft, verstoesse: verstoesse.slice(0, 20), verstoesseN: verstoesse.length,
-    kurz: 'AMCR ' + betroffen.AMCR.length + ' / TW ' + betroffen.TW.length + ' Huellen-Zeilen bereinigt (' + betroffen.AMCR.concat(betroffen.TW).map(function (f) { return f.weg.split(' ')[0]; }).join(',') + '), d4-Marke gesamt ' + huelle + ', Quotient ausserhalb [1e-3, 1e3]: ' + verstoesse.length + ' von ' + geprueft });
+  var ok = altVorhanden && alleOk && verstoesse.length === 0;
+  pruefung('P11 D4 Huelle', ok, { v1Vorhanden: altVorhanden, AMCR: betroffen.AMCR, TW: betroffen.TW, zeilenMitHuelle: huelle, quotientenGeprueft: geprueft, verstoesse: verstoesse.slice(0, 20), verstoesseN: verstoesse.length,
+    kurz: 'AMCR ' + betroffen.AMCR.filter(function (f) { return f.ok; }).length + '/' + betroffen.AMCR.length + ', TW ' + betroffen.TW.filter(function (f) { return f.ok; }).length + '/' + betroffen.TW.length + ' Zeilen mit Marke und Ergebnis, d4-Marke gesamt ' + huelle + ', Quotient ausserhalb [1e-3, 1e3]: ' + verstoesse.length + ' von ' + geprueft });
 }
 
 /* ---------- v1.1: P12 Leser unveraendert, Kennung ---------- */
