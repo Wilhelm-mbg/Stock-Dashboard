@@ -1,0 +1,47 @@
+{
+ "stand": "2026-09-22T12:47:56.336Z",
+ "aus": "C:\\Users\\Wilhe\\Downloads\\Stock-Dashboard\\studien\\querschnitt-pruefstand-2026-09-13\\voll",
+ "kunst": "C:\\Users\\Wilhe\\Downloads\\Stock-Dashboard\\studien\\querschnitt-pruefstand-2026-09-13\\kunst",
+ "gruen": 21,
+ "rot": 0,
+ "uebersprungen": 0,
+ "node": "v24.18.0",
+ "tafel": {
+  "sekunden": 0.637,
+  "rssMB": 992.89453125,
+  "zeilen": 9904017,
+  "reihen": 7338,
+  "bis": "2026-09-15"
+ },
+ "zufallLauf": {
+  "sekunden": 1.845,
+  "maxRssMB": 1048.73046875,
+  "tafelLadeSekunden": 0.637,
+  "werteNull": 0,
+  "bilanzZugriffe": 0,
+  "node": "v24.18.0"
+ },
+ "zeilen": [
+  " OK  A1 Rang: Gleichstand = mittlerer Rang (scipy rankdata average), Rangsumme n(n+1)/2 - 4,1,2.5,2.5,5 und 3,3,3,1 [0.0 s]",
+  " OK  A2 Rang mit Luecken: fehlend = exakt (n+1)/2, vorhandene auf 1..n gestreckt, Ordnung und Rangsumme bleiben - n 5/m 3, m gerade, alles fehlt, konstant, n 1000 mit 1/7 Luecken [0.0 s]",
+  " OK  A3 Dezile ueber den Rangwert: oben Rang > 0,9 n, unten <= 0,1 n; Gleichstand am Rand faellt nicht willkuerlich; konstant = leer - 10/10, Rand 11, n20 2/2, konstant leer, Luecken 20/20 [0.0 s]",
+  " OK  A4 Kombination: Gewichte 1/1 = Rangmittel; fehlendes Feld = mittlerer Rang und Zaehler +1; Kontrollgroesse nicht gewichtet, nur berichtet - Rangmittel, Auffuellung B = 3,5 mit Zaehler 1, Kontrolle c unveraendert, Gewichte 2/1 [0.0 s]",
+  " OK  A5 Kombination wirft bei fremden Signaltagen, fremdem Universum, fehlender Zelle, Kontrolle zugleich gewichtet, anderer Rueckhalte-Flagge - 8 Faelle werfen mit dem richtigen Grund [0.0 s]",
+  " OK  A6 Schranken und Festwerte kommen aus konfig.js des Pruefstands (Zufall, Orakel, MDE, Klassen, Lag); Rueckhalte ab 2024-09-01 - Zufall 0.25 Pp / |t| 3, Orakel 5 Pp / LS 20 / t 8, MDE x 2.8016 [0.0 s]",
+  " OK  B1 Tafel laedt (Panel v2.1), SPY-Regime liegt, Ladezeit und RSS werden ausgewiesen - 9904017 Zeilen, 7338 Reihen, bis 2026-09-15, 0.6 s, RSS 993 MB [0.6 s]",
+  " OK  B2 Signaltage: erster Panel-Handelstag je Monat ab 2017-01; ohne Flagge keiner ab 2024-09-01 (Klinke), mit Flagge bis 2026-08; Periodenende = Ausfuehrungstag des naechsten - 92 ohne / 116 mit Flagge, 2017-01-03 .. 2024-08-01 / 2026-08-03 [0.0 s]",
+  " OK  B3 panelTagNach zaehlt Panel-Handelstage (Placebo-Versatz +21), am Tafelende null - 2017-01-03 + 21 = 2017-02-02 [0.0 s]",
+  " OK  B4 Universum je Signaltag: nur Klassen 1-3, nie SPY, Ausfuehrungstag = naechster Handelstag; Zwischenspeicher liefert dasselbe Objekt - 2019-07-01: 690 Mitglieder, Korb ueber 23 Tage [0.0 s]",
+  " OK  B5 Werte-Funktion: null bleibt null (NaN intern), Zahl bleibt Zahl; undefined/NaN/Text/Infinity werfen; Zaehler stimmt - 367 null, 305 Nullen (0) unterschieden; 4 Fehlformen werfen [0.0 s]",
+  " OK  B6 Sperrklinke: ein Kurs-Zugriff auf t+1 wirft Error(\"Leck: ...\"); ein Bilanz-Zugriff nach dem Signaltag ebenso; die saubere Fassung laeuft - Kurs und Bilanz werfen, sauber 0 [0.0 s]",
+  " OK  B7 Kunstfeld LECK durch zelleBauen: die Klinke wirft, es entsteht keine Zelle (nur der Wurf wird erwartet) - Leck: 672 Zukunftszugriff(e) am Signaltag 2017-01-03 - A@2017-01-04 (erlaubt bis 2017-01-0 [0.1 s]",
+  " OK  B8 Kunstfeld ZUFALL: Einzelmessung ~0, Placebos ~0, Zufall bestanden, Orakel gross, Klinke 0 + Positivkontrolle; Zelle im Format §3; Laufzeit und RAM - brutto 0.0451 (t 0.39), netto -0.0201, MDE80 0.3244; Orakel 18.59 Pp (t 29.4, LS 34.4); Zufall se 0.1104; 1.8 s, RSS max 1049 MB [2.0 s]",
+  " OK  B9 Kunstfeld ORAKEL (mit Schluessel): Einzelmessung = eingebautes Orakel auf die letzte Stelle, und gross - Dezil-Universum 18.5915 Pp = Orakel 18.5915, t 29.4 [1.8 s]",
+  " OK  B10 Kunstfeld KONSTANT: alle Raenge gleich, Dezile leer, kein Absturz, Auffuellung 0; das eingebaute Orakel bleibt gross - Dezil 0/0, n 0, Orakel 18.59 Pp [1.6 s]",
+  " OK  B11 Kunstfeld mit LUECKEN (jedes dritte Symbol null): null bleibt null und wird nie 0, Abdeckung ~2/3 je Klasse, Dezil = 10 % der Symbole mit Wert, kein Aufgefuellter im Dezil - 23299 null / 46670 Zahlen, Abdeckung 66.7 %, Dezil 51.1 von 507.3 mit Wert [1.7 s]",
+  " OK  B12 Kombination zweier Kunstzellen durch dieselbe Maschine (messeZelle): laeuft, 92 Perioden, Universen decken sich; eine Zelle allein reproduziert ihre Einzelmessung exakt - Rundlauf exakt; Kombination n 92, brutto 0.0523 (t 0.46); Aufgefuellte im Dezil oben gleich gewichtet 8.1 %, schief 33.1 % [0.5 s]",
+  " OK  B13 Leser-Klinke (echte Fundamentaltafel): filed = tag wirft, filed = tag-1 liefert; ueber sicht.fundamentalAm kommt nur filed < Signaltag - fundamentaltafel-2026-09-16/v1: 686 geliefert, 116 ohne Filing am 2022-01-03 [1.7 s]",
+  " OK  B14 Regressionsklinke (§1a.7): Momentum 12-1 des Pruefstands, Klassen [2,3], trifft K.REGRESSION23_ERWARTET auf 1e-9 -> pruefung/regression.json - gemessen 1.6694766839043451 = Pin 1.6694766839043451 (querschnitt-pruefstand-2026-09-13/panel/v2) [0.1 s]",
+  " OK  C1 Kunstpanel: Feld theta_s findet die eingepflanzte Kante ab 2020 in der vorhergesagten Groesse (aus den gehaltenen Mitgliedern), davor nichts - ab 2020 gemessen 2.145 / Soll 1.839 Pp je Monat (n 56), davor -0.093 (t -0.38, n 36) [0.2 s]"
+ ]
+}
