@@ -200,3 +200,36 @@ Klasse 1 und Klasse 0 nicht im Universum.
 
 *Entwurf geschrieben 2026-09-19, vor jeder Stimmungszahl; registriert als v1 am selben Tag, weiterhin vor jeder Stimmungszahl.
 Nur Lesezugriff auf das Panel. Simulation, keine Anlageberatung.*
+
+---
+
+## 12. Nachträge (datiert, mit Grund)
+
+### Nachtrag 1 — 22.09.2026, Datenbau-Werkzeug (Auftrag Nr. 47, Baustein 1; vor dem Vollauf)
+
+Grund: §2 und §9 legen fest, *was* abgelegt wird, aber nicht, *wie* ein Artikel einem Tag zugeordnet wird; der Zweitleser
+(`uebergabe/auftrag-gdelt-datenbau-2026-09-22-zweitleser.md`) nannte drei Lücken. Der PM hat sie am 22.09. entschieden (Auftrag §1a);
+hier stehen sie als Regel. Keine Änderung an Größen, Toren, Kontrollen oder Schwellen.
+
+1. **Zuordnung nach dem ET-Kalendertag.** Ein Artikel gehört zu dem Tag, den `signal.js → stempelET` aus seinem Stempel macht —
+   nicht zum UTC-Datum des Dateinamens (Nr. 44 ordnete nach UTC). Die Datei-Menge eines ET-Tags sind alle 15-min-Dateien, deren
+   Stempel in diesen ET-Tag fällt: **96, am März-Umstelltag 92, am November-Umstelltag 100**. Die Schwelle „< 48 Dateien" (§2,
+   `MIN_DATEIEN_JE_TAG`) bleibt unverändert.
+2. **Stempel je Artikel** aus der Spalte `V2.1DATE` (Index 1, UTC, 14-stellig); ist sie das nicht (Codebook: 0 bei unbekannter
+   Quelle), gilt der Dateistempel, gezählt als `stempelAusDatei`. Ein Artikel, dessen Stempel an einem **anderen** ET-Tag liegt als die
+   Datei, wird in deren Tag **nicht** abgelegt und als `fremderTag` gezählt (Spaltenprobe: DATE = Dateistempel in 707/707 Zeilen).
+3. **Wochenenden und Feiertage** werden gezählt und abgelegt wie jeder ET-Tag, sind aber **keine Signaltage**; nichts wird auf den
+   folgenden Handelstag umgebucht (§2: „Artikel des Tages t"). Signaltage bleiben die Handelstage des Panels.
+4. **Ablage** (präzisiert §9): eine Datei je ET-Kalendertag `tage/<YYYY-MM-DD>.json`; je Symbol `ton` (Mittel ≤ 16:00:00 ET, null bei
+   n = 0 — die 3-Artikel-Schwelle wendet erst `tagesSignal` an), `n`, `nSpaet`, `tonAlle` (Mittel über n + nSpaet), `letzterStempel`
+   (**spätester UTC-Stempel unter den n Artikeln**, null bei n = 0 — der Beleg, an dem die Messung ihre Leck-Klinke nachprüfen kann);
+   je Tag `soll` (92/96/100), `dateien` (gefunden), `fehlend` (UTC-Stempel der 404-Dateien) und die Zähler wie Nr. 44.
+   Nachrichtlich je Tag: Treffer spät / übersetzt / fremder Tag.
+5. **Klinke des Datenbaus:** vor dem Schreiben jedes Tages prüft `pruefeTag`, dass jeder `letzterStempel` am ET-Tag und ≤ 16:00:00 ET
+   liegt; sonst wirft der Teil. Die Leck-Klinke der **Messung** bleibt `tagesSignal`.
+6. **Stichprobe für die Handprüfung** (§9 Risiko 2): Prioritäts-Reservoir **10 Treffer je Tag und Klasse**, Priorität
+   `fnv1a(GKGRECORDID|Symbol)` statt Zufall — der Lauf ist deterministisch und damit bytegleich wiederholbar.
+7. **Positivkontrolle 2 (Auftrag §3.2)** vergleicht über dieselbe Datei-Menge: die neue Fassung zählt im Kontrollmodus die 96 Dateien
+   des **UTC**-Tags 2025-06-02 und legt jeden Artikel in seinen ET-Tag; je Symbol muss die Summe von `n + nSpaet` über die ET-Tage
+   gleich der Artikelzahl „voll" von Nr. 44 sein. Grund: nach Punkt 1 umfasst der ET-Tag 2025-06-02 andere Dateien als der UTC-Tag
+   von Nr. 44; ein Vergleich Tag gegen Tag wäre falsch rot.
