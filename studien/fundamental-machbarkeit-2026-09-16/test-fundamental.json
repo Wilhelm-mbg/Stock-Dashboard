@@ -1,0 +1,2056 @@
+{
+ "kennung": "fundamentaltafel-2026-09-16/test/v1.1",
+ "stand": "2026-09-22T19:41:42.407Z",
+ "pruefungen": {
+  "P1a Sperrklinke konstruiert": {
+   "ok": true,
+   "geworfenBeiFiledGleichTag": true,
+   "geliefertBeiFiledVortag": true,
+   "sucheAmTag": "a",
+   "sucheDavor": null,
+   "sucheDanach": "b"
+  },
+  "P1b 1000 Zufallszugriffe": {
+   "ok": true,
+   "zugriffe": 1000,
+   "geliefert": 442,
+   "verstoesse": 0,
+   "protokollEintraege": 1000,
+   "protokollVerstoesse": 0,
+   "geworfen": 0,
+   "zaehler": {
+    "zugriffe": 1000,
+    "geliefert": 442,
+    "null_ohneReihe": 146,
+    "null_ohneFiling": 288,
+    "null_veraltet": 124
+   },
+   "kurz": "442 von 1000 geliefert, 0 Verstoesse"
+  },
+  "P2 Reproduktion Machbarkeit": {
+   "ok": true,
+   "2019q2": {
+    "klassen": {
+     "50-250": {
+      "reihen": 610,
+      "mach": {
+       "us": 502,
+       "umsatz": 500,
+       "vermoegen": 501,
+       "aktien": 428
+      },
+      "tafel": {
+       "us": 501,
+       "umsatz": 497,
+       "vermoegen": 498,
+       "aktien": 457
+      }
+     },
+     "250-1000": {
+      "reihen": 128,
+      "mach": {
+       "us": 118,
+       "umsatz": 118,
+       "vermoegen": 118,
+       "aktien": 97
+      },
+      "tafel": {
+       "us": 118,
+       "umsatz": 118,
+       "vermoegen": 118,
+       "aktien": 103
+      }
+     },
+     "unter5": {
+      "reihen": 1207,
+      "mach": {
+       "us": 898,
+       "umsatz": 806,
+       "vermoegen": 897,
+       "aktien": 815
+      },
+      "tafel": {
+       "us": 847,
+       "umsatz": 754,
+       "vermoegen": 845,
+       "aktien": 788
+      }
+     },
+     "jung": {
+      "reihen": 655,
+      "mach": {
+       "us": 347,
+       "umsatz": 266,
+       "vermoegen": 346,
+       "aktien": 279
+      },
+      "tafel": {
+       "us": 315,
+       "umsatz": 240,
+       "vermoegen": 307,
+       "aktien": 264
+      }
+     },
+     "5-50": {
+      "reihen": 1365,
+      "mach": {
+       "us": 1089,
+       "umsatz": 1063,
+       "vermoegen": 1087,
+       "aktien": 958
+      },
+      "tafel": {
+       "us": 1080,
+       "umsatz": 1052,
+       "vermoegen": 1077,
+       "aktien": 998
+      }
+     },
+     "ab1000": {
+      "reihen": 17,
+      "mach": {
+       "us": 16,
+       "umsatz": 16,
+       "vermoegen": 16,
+       "aktien": 15
+      },
+      "tafel": {
+       "us": 16,
+       "umsatz": 16,
+       "vermoegen": 16,
+       "aktien": 16
+      }
+     }
+    },
+    "usGleich": true,
+    "usAbweichung": 93,
+    "verworfenFiledVorPeriod": [],
+    "fehltDurchZuordnungN": 103,
+    "fehltDurchZuordnungReihen": 93,
+    "fehltDurchZuordnung": [
+     {
+      "reihe": "ACRX",
+      "adsh": "0001437749-19-009191",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-09"
+     },
+     {
+      "reihe": "ACTT",
+      "adsh": "0001213900-19-010243",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-06-06"
+     },
+     {
+      "reihe": "AETI",
+      "adsh": "0001564590-19-011739",
+      "form": "10-K",
+      "period": "2018-12-31",
+      "filed": "2019-04-16"
+     },
+     {
+      "reihe": "AETI",
+      "adsh": "0001564590-19-019825",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-20"
+     },
+     {
+      "reihe": "AMRH",
+      "adsh": "0001140361-19-009043",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-14"
+     },
+     {
+      "reihe": "APHB",
+      "adsh": "0001144204-19-023904",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-06"
+     },
+     {
+      "reihe": "AQXP",
+      "adsh": "0001193125-19-139021",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-07"
+     },
+     {
+      "reihe": "ASNA",
+      "adsh": "0001498301-19-000054",
+      "form": "10-Q",
+      "period": "2019-04-30",
+      "filed": "2019-06-12"
+     },
+     {
+      "reihe": "AVRO",
+      "adsh": "0001193125-19-145337",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-13"
+     },
+     {
+      "reihe": "AWSM",
+      "adsh": "0001564590-19-011746",
+      "form": "10-K",
+      "period": "2018-12-31",
+      "filed": "2019-04-16"
+     },
+     {
+      "reihe": "AWSM",
+      "adsh": "0001564590-19-019471",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-15"
+     },
+     {
+      "reihe": "BHTG",
+      "adsh": "0001144204-19-017441",
+      "form": "10-K",
+      "period": "2018-12-31",
+      "filed": "2019-04-01"
+     },
+     {
+      "reihe": "BHTG",
+      "adsh": "0001144204-19-026593",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-15"
+     },
+     {
+      "reihe": "BRPA",
+      "adsh": "0001654954-19-006096",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-15"
+     },
+     {
+      "reihe": "BWMC",
+      "adsh": "0001615774-19-007558",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-13"
+     },
+     {
+      "reihe": "BXS",
+      "adsh": "0001564590-19-018506",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-10"
+     },
+     {
+      "reihe": "CBLI",
+      "adsh": "0001318641-19-000019",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-15"
+     },
+     {
+      "reihe": "CCH",
+      "adsh": "0001271833-19-000007",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-04-30"
+     },
+     {
+      "reihe": "CCNI",
+      "adsh": "0001654954-19-004201",
+      "form": "10-K",
+      "period": "2018-12-31",
+      "filed": "2019-04-09"
+     },
+     {
+      "reihe": "CDAY",
+      "adsh": "0001564590-19-014828",
+      "form": "10-Q",
+      "period": "2019-03-31",
+      "filed": "2019-05-01"
+     }
+    ],
+    "fehltInTafel": [],
+    "fehltInTafelN": 0,
+    "nurTafel": 265,
+    "wertGleich": {
+     "umsatz": 2782,
+     "vermoegen": 2982,
+     "aktien": 2546
+    },
+    "wertDurchErsteVeroeffentlichung": {
+     "umsatz": 22,
+     "vermoegen": 7,
+     "aktien": 0
+    },
+    "wertDurchAktienSkala": {
+     "A": 17,
+     "B": 4,
+     "verworfen": 0
+    },
+    "wertDurchEinheit": {
+     "umsatz": 0,
+     "vermoegen": 5,
+     "aktien": 5
+    },
+    "regelunterschiedAktien": 37,
+    "regelunterschiedAktienBeispiele": [
+     {
+      "reihe": "ACN",
+      "adsh": "0001467373-19-000217",
+      "form": "10-Q",
+      "machbarkeit": {
+       "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+       "wert": 638439707
+      },
+      "tafel": 637831341,
+      "tafelTag": "WeightedAverageNumberOfSharesOutstandingBasic"
+     },
+     {
+      "reihe": "ALAC",
+      "adsh": "0001213900-19-005452",
+      "form": "10-K",
+      "machbarkeit": {
+       "tag": "CommonStockSharesOutstanding",
+       "wert": 0
+      },
+      "tafel": 4086448,
+      "tafelTag": "CommonStockSharesIssued"
+     },
+     {
+      "reihe": "AMAT",
+      "adsh": "0000006951-19-000019",
+      "form": "10-Q",
+      "machbarkeit": {
+       "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+       "wert": 950000000
+      },
+      "tafel": 942000000,
+      "tafelTag": "WeightedAverageNumberOfSharesOutstandingBasic"
+     },
+     {
+      "reihe": "ATU",
+      "adsh": "0000006955-19-000014",
+      "form": "10-Q",
+      "machbarkeit": {
+       "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+       "wert": 61137000
+      },
+      "tafel": 61243000,
+      "tafelTag": "WeightedAverageNumberOfSharesOutstandingBasic"
+     },
+     {
+      "reihe": "CCMP",
+      "adsh": "0001102934-19-000016",
+      "form": "10-Q",
+      "machbarkeit": {
+       "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+       "wert": 28065759
+      },
+      "tafel": 28997632,
+      "tafelTag": "WeightedAverageNumberOfSharesOutstandingBasic"
+     }
+    ],
+    "wertAnders": [],
+    "wertAndersN": 0
+   },
+   "2024q2": {
+    "klassen": {
+     "50-250": {
+      "reihen": 698,
+      "mach": {
+       "us": 597,
+       "umsatz": 590,
+       "vermoegen": 597,
+       "aktien": 530
+      },
+      "tafel": {
+       "us": 596,
+       "umsatz": 587,
+       "vermoegen": 593,
+       "aktien": 559
+      }
+     },
+     "jung": {
+      "reihen": 552,
+      "mach": {
+       "us": 364,
+       "umsatz": 165,
+       "vermoegen": 364,
+       "aktien": 242
+      },
+      "tafel": {
+       "us": 357,
+       "umsatz": 160,
+       "vermoegen": 356,
+       "aktien": 237
+      }
+     },
+     "unter5": {
+      "reihen": 818,
+      "mach": {
+       "us": 597,
+       "umsatz": 506,
+       "vermoegen": 597,
+       "aktien": 566
+      },
+      "tafel": {
+       "us": 592,
+       "umsatz": 496,
+       "vermoegen": 591,
+       "aktien": 567
+      }
+     },
+     "250-1000": {
+      "reihen": 219,
+      "mach": {
+       "us": 200,
+       "umsatz": 200,
+       "vermoegen": 200,
+       "aktien": 170
+      },
+      "tafel": {
+       "us": 200,
+       "umsatz": 200,
+       "vermoegen": 200,
+       "aktien": 185
+      }
+     },
+     "5-50": {
+      "reihen": 1374,
+      "mach": {
+       "us": 1129,
+       "umsatz": 1068,
+       "vermoegen": 1127,
+       "aktien": 1047
+      },
+      "tafel": {
+       "us": 1128,
+       "umsatz": 1066,
+       "vermoegen": 1124,
+       "aktien": 1077
+      }
+     },
+     "ab1000": {
+      "reihen": 39,
+      "mach": {
+       "us": 36,
+       "umsatz": 36,
+       "vermoegen": 36,
+       "aktien": 32
+      },
+      "tafel": {
+       "us": 36,
+       "umsatz": 36,
+       "vermoegen": 36,
+       "aktien": 33
+      }
+     }
+    },
+    "usGleich": true,
+    "usAbweichung": 14,
+    "verworfenFiledVorPeriod": [
+     {
+      "reihe": "PWSC",
+      "adsh": "0001835681-24-000069",
+      "form": "10-Q",
+      "period": "2024-12-31",
+      "filed": "2024-05-07"
+     }
+    ],
+    "fehltDurchZuordnungN": 17,
+    "fehltDurchZuordnungReihen": 13,
+    "fehltDurchZuordnung": [
+     {
+      "reihe": "AVRO",
+      "adsh": "0000950170-24-057091",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-09"
+     },
+     {
+      "reihe": "GAMC",
+      "adsh": "0001213900-24-045241",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-20"
+     },
+     {
+      "reihe": "MACK",
+      "adsh": "0000950170-24-053558",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-06"
+     },
+     {
+      "reihe": "OCN",
+      "adsh": "0001628280-24-020055",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-02"
+     },
+     {
+      "reihe": "OTIC",
+      "adsh": "0001869453-24-000023",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-09"
+     },
+     {
+      "reihe": "PMGM",
+      "adsh": "0001837607-24-000063",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-14"
+     },
+     {
+      "reihe": "SIOX",
+      "adsh": "0001213900-24-032308",
+      "form": "10-K",
+      "period": "2023-12-31",
+      "filed": "2024-04-12"
+     },
+     {
+      "reihe": "SIOX",
+      "adsh": "0001213900-24-050479",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-06-07"
+     },
+     {
+      "reihe": "TENK",
+      "adsh": "0001493152-24-014850",
+      "form": "10-K",
+      "period": "2023-12-31",
+      "filed": "2024-04-16"
+     },
+     {
+      "reihe": "TENK",
+      "adsh": "0001493152-24-020783",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-20"
+     },
+     {
+      "reihe": "TRIS",
+      "adsh": "0001637880-24-000037",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-09"
+     },
+     {
+      "reihe": "UNAM",
+      "adsh": "0001493152-24-012417",
+      "form": "10-K",
+      "period": "2023-12-31",
+      "filed": "2024-04-01"
+     },
+     {
+      "reihe": "UNAM",
+      "adsh": "0001493152-24-020743",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-20"
+     },
+     {
+      "reihe": "VBIV",
+      "adsh": "0001493152-24-014744",
+      "form": "10-K",
+      "period": "2023-12-31",
+      "filed": "2024-04-16"
+     },
+     {
+      "reihe": "VBIV",
+      "adsh": "0001493152-24-019796",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-15"
+     },
+     {
+      "reihe": "WAVD",
+      "adsh": "0001437749-24-016602",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-05-14"
+     },
+     {
+      "reihe": "X",
+      "adsh": "0000083246-24-000009",
+      "form": "10-Q",
+      "period": "2024-03-31",
+      "filed": "2024-04-30"
+     }
+    ],
+    "fehltInTafel": [],
+    "fehltInTafelN": 0,
+    "nurTafel": 186,
+    "wertGleich": {
+     "umsatz": 2698,
+     "vermoegen": 3167,
+     "aktien": 2707
+    },
+    "wertDurchErsteVeroeffentlichung": {
+     "umsatz": 18,
+     "vermoegen": 6,
+     "aktien": 1
+    },
+    "wertDurchAktienSkala": {
+     "A": 11,
+     "B": 5,
+     "verworfen": 0
+    },
+    "wertDurchEinheit": {
+     "umsatz": 0,
+     "vermoegen": 3,
+     "aktien": 3
+    },
+    "regelunterschiedAktien": 44,
+    "regelunterschiedAktienBeispiele": [
+     {
+      "reihe": "ACN",
+      "adsh": "0001467373-24-000196",
+      "form": "10-Q",
+      "machbarkeit": {
+       "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+       "wert": 628437255
+      },
+      "tafel": 628353267,
+      "tafelTag": "WeightedAverageNumberOfSharesOutstandingBasic"
+     },
+     {
+      "reihe": "AFRM",
+      "adsh": "0001820953-24-000014",
+      "form": "10-Q",
+      "machbarkeit": {
+       "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+       "wert": 307995889
+      },
+      "tafel": 312626728,
+      "tafelTag": "WeightedAverageNumberOfSharesOutstandingBasic"
+     },
+     {
+      "reihe": "AVT",
+      "adsh": "0000008858-24-000020",
+      "form": "10-Q",
+      "machbarkeit": {
+       "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+       "wert": 90726000
+      },
+      "tafel": 90430000,
+      "tafelTag": "WeightedAverageNumberOfSharesOutstandingBasic"
+     },
+     {
+      "reihe": "AYI",
+      "adsh": "0001144215-24-000044",
+      "form": "10-Q",
+      "machbarkeit": {
+       "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+       "wert": 30940000
+      },
+      "tafel": 30864000,
+      "tafelTag": "WeightedAverageNumberOfSharesOutstandingBasic"
+     },
+     {
+      "reihe": "AZEK",
+      "adsh": "0001628280-24-028198",
+      "form": "10-Q",
+      "machbarkeit": {
+       "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+       "wert": 146516971
+      },
+      "tafel": 145710663,
+      "tafelTag": "WeightedAverageNumberOfSharesOutstandingBasic"
+     }
+    ],
+    "wertAnders": [],
+    "wertAndersN": 0
+   }
+  },
+  "P3 Abstand filed-period und Rundung": {
+   "ok": true,
+   "abstand": {
+    "Q": {
+     "n": 109228,
+     "p5": 25,
+     "p10": 28,
+     "p50": 37,
+     "p90": 45,
+     "p95": 46,
+     "mittel": 37.73799758303732,
+     "ueber45": 6894,
+     "ueber90": 850
+    },
+    "K": {
+     "n": 37056,
+     "p5": 42,
+     "p10": 45,
+     "p50": 58,
+     "p90": 89,
+     "p95": 91,
+     "mittel": 63.62451424870466,
+     "ueber45": 33237,
+     "ueber90": 1962
+    },
+    "QA": {
+     "n": 1480,
+     "p5": 39,
+     "p10": 45,
+     "p50": 140,
+     "p90": 397,
+     "p95": 507,
+     "mittel": 189.37364864864864,
+     "ueber45": 1326,
+     "ueber90": 992
+    },
+    "KA": {
+     "n": 1208,
+     "p5": 60,
+     "p10": 71,
+     "p50": 149,
+     "p90": 385,
+     "p95": 441,
+     "mittel": 206.1746688741722,
+     "ueber45": 1203,
+     "ueber90": 988
+    },
+    "KT": {
+     "n": 78,
+     "p5": 50,
+     "p10": 56,
+     "p50": 74,
+     "p90": 113,
+     "p95": 128,
+     "mittel": 79.25641025641026,
+     "ueber45": 77,
+     "ueber90": 16
+    },
+    "QT": {
+     "n": 24,
+     "p5": 35,
+     "p10": 39,
+     "p50": 72,
+     "p90": 219,
+     "p95": 257,
+     "mittel": 96.5,
+     "ueber45": 13,
+     "ueber90": 9
+    },
+    "KTA": {
+     "n": 4,
+     "p5": 124,
+     "p10": 124,
+     "p50": 497,
+     "p90": 524,
+     "p95": 524,
+     "mittel": 354,
+     "ueber45": 4,
+     "ueber90": 4
+    }
+   },
+   "rundung": {
+    "jeArt": {
+     "K": {
+      "n": 37056,
+      "gerundet": 3696,
+      "ohneDatumImNamen": 2616,
+      "anteilGerundet": 10,
+      "rundungTage": {
+       "n": 3696,
+       "p5": 3,
+       "p10": 4,
+       "p50": null,
+       "p90": 3,
+       "p95": 3,
+       "mittel": null
+      }
+     },
+     "Q": {
+      "n": 109228,
+      "gerundet": 13014,
+      "ohneDatumImNamen": 9128,
+      "anteilGerundet": 11.9,
+      "rundungTage": {
+       "n": 13014,
+       "p5": 1,
+       "p10": 3,
+       "p50": null,
+       "p90": 3,
+       "p95": 3,
+       "mittel": null
+      }
+     },
+     "KA": {
+      "n": 1208,
+      "gerundet": 79,
+      "ohneDatumImNamen": 209,
+      "anteilGerundet": 6.5,
+      "rundungTage": {
+       "n": 79,
+       "p5": 1,
+       "p10": 2,
+       "p50": null,
+       "p90": 371530,
+       "p95": null,
+       "mittel": null
+      }
+     },
+     "QA": {
+      "n": 1480,
+      "gerundet": 126,
+      "ohneDatumImNamen": 337,
+      "anteilGerundet": 8.5,
+      "rundungTage": {
+       "n": 126,
+       "p5": 1,
+       "p10": 2,
+       "p50": 1,
+       "p90": null,
+       "p95": null,
+       "mittel": null
+      }
+     },
+     "KT": {
+      "n": 78,
+      "gerundet": 10,
+      "ohneDatumImNamen": 6,
+      "anteilGerundet": 12.8,
+      "rundungTage": {
+       "n": 10,
+       "p5": 1,
+       "p10": 3,
+       "p50": 5,
+       "p90": null,
+       "p95": 45,
+       "mittel": null
+      }
+     },
+     "KTA": {
+      "n": 4,
+      "gerundet": 0,
+      "ohneDatumImNamen": 0,
+      "anteilGerundet": 0,
+      "rundungTage": {
+       "n": 0,
+       "p5": null,
+       "p10": null,
+       "p50": null,
+       "p90": null,
+       "p95": null,
+       "mittel": null
+      }
+     },
+     "QT": {
+      "n": 24,
+      "gerundet": 0,
+      "ohneDatumImNamen": 1,
+      "anteilGerundet": 0,
+      "rundungTage": {
+       "n": 0,
+       "p5": null,
+       "p10": null,
+       "p50": null,
+       "p90": null,
+       "p95": null,
+       "mittel": null
+      }
+     }
+    },
+    "gesamt": {
+     "n": 149078,
+     "gerundet": 16925,
+     "ohneDatumImNamen": 12297,
+     "anteilGerundet": 11.4
+    }
+   },
+   "kurz": "10-Q Median 37 Tage, 10-K 58, gerundet 11.4 %"
+  },
+  "P4 Handrechnung Fundamental-Momentum": {
+   "ok": true,
+   "JPM": {
+    "cik": 19617,
+    "filings": [
+     {
+      "adsh": "0000019617-24-000453",
+      "form": "10-Q",
+      "period": "2024-06-30",
+      "filed": "2024-08-02",
+      "netto4Q": 54026000000,
+      "netto4QVor": 47839000000,
+      "vermoegen": 4143003000000,
+      "vermoegenVor": 3868240000000,
+      "roa": 0.013040299512213725,
+      "roaVor": 0.01236712303269704,
+      "fm": 0.0006731764795166843,
+      "tafelFm": 0.0006731764795166843,
+      "tafelWege": "ddjdddjd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000019617-24-000611",
+      "form": "10-Q",
+      "period": "2024-09-30",
+      "filed": "2024-10-30",
+      "netto4Q": 53773000000,
+      "netto4QVor": 51253000000,
+      "vermoegen": 4210048000000,
+      "vermoegenVor": 3898333000000,
+      "roa": 0.012772538460369099,
+      "roaVor": 0.013147414548731471,
+      "fm": -0.00037487608836237266,
+      "tafelFm": -0.00037487608836237266,
+      "tafelWege": "dddjdddj",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000019617-25-000270",
+      "form": "10-K",
+      "period": "2024-12-31",
+      "filed": "2025-02-14",
+      "netto4Q": 58471000000,
+      "netto4QVor": 49552000000,
+      "vermoegen": 4002814000000,
+      "vermoegenVor": 3875393000000,
+      "roa": 0.014607473642292647,
+      "roaVor": 0.012786316123293819,
+      "fm": 0.0018211575189988286,
+      "tafelFm": 0.0018211575189988286,
+      "tafelWege": "jdddjddd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000019617-25-000421",
+      "form": "10-Q",
+      "period": "2025-03-31",
+      "filed": "2025-05-01",
+      "netto4Q": 59695000000,
+      "netto4QVor": 50349000000,
+      "vermoegen": 4357856000000,
+      "vermoegenVor": 4090727000000,
+      "roa": 0.013698249781543952,
+      "roaVor": 0.012308081179702288,
+      "fm": 0.001390168601841664,
+      "tafelFm": 0.001390168601841664,
+      "tafelWege": "djdddjdd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000019617-25-000615",
+      "form": "10-Q",
+      "period": "2025-06-30",
+      "filed": "2025-08-05",
+      "netto4Q": 56533000000,
+      "netto4QVor": 54026000000,
+      "vermoegen": 4552482000000,
+      "vermoegenVor": 4143003000000,
+      "roa": 0.012418061180692202,
+      "roaVor": 0.013040299512213725,
+      "fm": -0.0006222383315215227,
+      "tafelFm": -0.0006222383315215227,
+      "tafelWege": "ddjdddjd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001628280-25-048859",
+      "form": "10-Q",
+      "period": "2025-09-30",
+      "filed": "2025-11-04",
+      "netto4Q": 58028000000,
+      "netto4QVor": 53773000000,
+      "vermoegen": 4560205000000,
+      "vermoegenVor": 4210048000000,
+      "roa": 0.012724866535605308,
+      "roaVor": 0.012772538460369099,
+      "fm": -0.000047671924763790716,
+      "tafelFm": -0.000047671924763790716,
+      "tafelWege": "dddjdddj",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001628280-26-008131",
+      "form": "10-K",
+      "period": "2025-12-31",
+      "filed": "2026-02-13",
+      "netto4Q": 57048000000,
+      "netto4QVor": 58471000000,
+      "vermoegen": 4424900000000,
+      "vermoegenVor": 4002814000000,
+      "roa": 0.01289249474564397,
+      "roaVor": 0.014607473642292647,
+      "fm": -0.0017149788966486779,
+      "tafelFm": -0.0017149788966486779,
+      "tafelWege": "jdddjddd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001628280-26-029344",
+      "form": "10-Q",
+      "period": "2026-03-31",
+      "filed": "2026-05-01",
+      "netto4Q": 58899000000,
+      "netto4QVor": 59695000000,
+      "vermoegen": 4900475000000,
+      "vermoegenVor": 4357856000000,
+      "roa": 0.012019038970712022,
+      "roaVor": 0.013698249781543952,
+      "fm": -0.0016792108108319298,
+      "tafelFm": -0.0016792108108319298,
+      "tafelWege": "djdddjdd",
+      "stimmt": true
+     }
+    ],
+    "ok": true
+   },
+   "AAPL": {
+    "cik": 320193,
+    "filings": [
+     {
+      "adsh": "0000320193-24-000081",
+      "form": "10-Q",
+      "period": "2024-06-30",
+      "filed": "2024-08-02",
+      "netto4Q": 101956000000,
+      "netto4QVor": 94760000000,
+      "vermoegen": 331612000000,
+      "vermoegenVor": 335038000000,
+      "roa": 0.30745570124120963,
+      "roaVor": 0.2828335890257225,
+      "fm": 0.024622112215487157,
+      "tafelFm": 0.024622112215487157,
+      "tafelWege": "dddjdddj",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000320193-24-000123",
+      "form": "10-K",
+      "period": "2024-09-30",
+      "filed": "2024-11-01",
+      "netto4Q": 93736000000,
+      "netto4QVor": 96995000000,
+      "vermoegen": 364980000000,
+      "vermoegenVor": 352583000000,
+      "roa": 0.25682503150857583,
+      "roaVor": 0.27509834563776475,
+      "fm": -0.018273314129188922,
+      "tafelFm": -0.018273314129188922,
+      "tafelWege": "jdddjddd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000320193-25-000008",
+      "form": "10-Q",
+      "period": "2024-12-31",
+      "filed": "2025-01-31",
+      "netto4Q": 96150000000,
+      "netto4QVor": 100913000000,
+      "vermoegen": 344085000000,
+      "vermoegenVor": 353514000000,
+      "roa": 0.27943676707790227,
+      "roaVor": 0.2854568701663866,
+      "fm": -0.00602010308848433,
+      "tafelFm": -0.00602010308848433,
+      "tafelWege": "djdddjdd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000320193-25-000057",
+      "form": "10-Q",
+      "period": "2025-03-31",
+      "filed": "2025-05-02",
+      "netto4Q": 97294000000,
+      "netto4QVor": 100389000000,
+      "vermoegen": 331233000000,
+      "vermoegenVor": 337411000000,
+      "roa": 0.29373281043857347,
+      "roaVor": 0.2975273479524971,
+      "fm": -0.0037945375139236126,
+      "tafelFm": -0.0037945375139236126,
+      "tafelWege": "ddjdddjd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000320193-25-000073",
+      "form": "10-Q",
+      "period": "2025-06-30",
+      "filed": "2025-08-01",
+      "netto4Q": 99280000000,
+      "netto4QVor": 101956000000,
+      "vermoegen": 331495000000,
+      "vermoegenVor": 331612000000,
+      "roa": 0.299491696707341,
+      "roaVor": 0.30745570124120963,
+      "fm": -0.00796400453386864,
+      "tafelFm": -0.00796400453386864,
+      "tafelWege": "dddjdddj",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000320193-25-000079",
+      "form": "10-K",
+      "period": "2025-09-30",
+      "filed": "2025-10-31",
+      "netto4Q": 112010000000,
+      "netto4QVor": 93736000000,
+      "vermoegen": 359241000000,
+      "vermoegenVor": 364980000000,
+      "roa": 0.3117962593356549,
+      "roaVor": 0.25682503150857583,
+      "fm": 0.05497122782707908,
+      "tafelFm": 0.05497122782707908,
+      "tafelWege": "jdddjddd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000320193-26-000006",
+      "form": "10-Q",
+      "period": "2025-12-31",
+      "filed": "2026-01-30",
+      "netto4Q": 117777000000,
+      "netto4QVor": 96150000000,
+      "vermoegen": 379297000000,
+      "vermoegenVor": 344085000000,
+      "roa": 0.3105139244444327,
+      "roaVor": 0.27943676707790227,
+      "fm": 0.03107715736653044,
+      "tafelFm": 0.03107715736653044,
+      "tafelWege": "djdddjdd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0000320193-26-000013",
+      "form": "10-Q",
+      "period": "2026-03-31",
+      "filed": "2026-05-01",
+      "netto4Q": 122575000000,
+      "netto4QVor": 97294000000,
+      "vermoegen": 371082000000,
+      "vermoegenVor": 331233000000,
+      "roa": 0.3303178273265747,
+      "roaVor": 0.29373281043857347,
+      "fm": 0.036585016888001254,
+      "tafelFm": 0.036585016888001254,
+      "tafelWege": "ddjdddjd",
+      "stimmt": true
+     }
+    ],
+    "ok": true
+   },
+   "AAOI": {
+    "cik": 1158114,
+    "filings": [
+     {
+      "adsh": "0001437749-24-024888",
+      "form": "10-Q",
+      "period": "2024-06-30",
+      "filed": "2024-08-06",
+      "netto4Q": -72097000,
+      "netto4QVor": -69115000,
+      "vermoegen": 348040000,
+      "vermoegenVor": 356877000,
+      "roa": -0.20715147684174232,
+      "roaVor": -0.19366616509329546,
+      "fm": -0.01348531174844686,
+      "tafelFm": -0.01348531174844686,
+      "tafelWege": "ddjdddjd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001437749-24-033913",
+      "form": "10-Q",
+      "period": "2024-09-30",
+      "filed": "2024-11-07",
+      "netto4Q": -80901000,
+      "netto4QVor": -62441000,
+      "vermoegen": 409972000,
+      "vermoegenVor": 373792000,
+      "roa": -0.19733298859434303,
+      "roaVor": -0.1670474488485575,
+      "fm": -0.030285539745785545,
+      "tafelFm": -0.030285539745785545,
+      "tafelWege": "dddjdddj",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001437749-25-005575",
+      "form": "10-K",
+      "period": "2024-12-31",
+      "filed": "2025-02-28",
+      "netto4Q": -186733000,
+      "netto4QVor": -56048000,
+      "vermoegen": 547032000,
+      "vermoegenVor": 389186000,
+      "roa": -0.3413566299594905,
+      "roaVor": -0.14401340233204687,
+      "fm": -0.19734322762744363,
+      "tafelFm": -0.19734322762744363,
+      "tafelWege": "jdddjddd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001437749-25-015518",
+      "form": "10-Q",
+      "period": "2025-03-31",
+      "filed": "2025-05-08",
+      "netto4Q": -172735000,
+      "netto4QVor": -62926000,
+      "vermoegen": 644668000,
+      "vermoegenVor": 350916000,
+      "roa": -0.26794412007420876,
+      "roaVor": -0.17931926728903783,
+      "fm": -0.08862485278517093,
+      "tafelFm": -0.08862485278517093,
+      "tafelWege": "djdddjdd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001437749-25-025450",
+      "form": "10-Q",
+      "period": "2025-06-30",
+      "filed": "2025-08-07",
+      "netto4Q": -155718000,
+      "netto4QVor": -72097000,
+      "vermoegen": 796850000,
+      "vermoegenVor": 348040000,
+      "roa": -0.19541695425738848,
+      "roaVor": -0.20715147684174232,
+      "fm": 0.01173452258435384,
+      "tafelFm": 0.01173452258435384,
+      "tafelWege": "ddjdddjd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001437749-25-033627",
+      "form": "10-Q",
+      "period": "2025-09-30",
+      "filed": "2025-11-06",
+      "netto4Q": -155897000,
+      "netto4QVor": -80901000,
+      "vermoegen": 978528000,
+      "vermoegenVor": 409972000,
+      "roa": -0.15931787337715425,
+      "roaVor": -0.19733298859434303,
+      "fm": 0.03801511521718878,
+      "tafelFm": 0.03801511521718878,
+      "tafelWege": "dddjdddj",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001437749-26-005875",
+      "form": "10-K",
+      "period": "2025-12-31",
+      "filed": "2026-02-26",
+      "netto4Q": -38228000,
+      "netto4QVor": -186733000,
+      "vermoegen": 1168423000,
+      "vermoegenVor": 547032000,
+      "roa": -0.03271760312831911,
+      "roaVor": -0.3413566299594905,
+      "fm": 0.3086390268311714,
+      "tafelFm": 0.3086390268311714,
+      "tafelWege": "jdddjddd",
+      "stimmt": true
+     },
+     {
+      "adsh": "0001437749-26-015620",
+      "form": "10-Q",
+      "period": "2026-03-31",
+      "filed": "2026-05-07",
+      "netto4Q": -43337000,
+      "netto4QVor": -172735000,
+      "vermoegen": 1565879000,
+      "vermoegenVor": 644668000,
+      "roa": -0.027675829358462564,
+      "roaVor": -0.26794412007420876,
+      "fm": 0.24026829071574618,
+      "tafelFm": 0.24026829071574618,
+      "tafelWege": "djdddjdd",
+      "stimmt": true
+     }
+    ],
+    "ok": true
+   }
+  },
+  "P5 Verteilung Fundamental-Momentum": {
+   "ok": true,
+   "gesamt": {
+    "zeilen": 149078,
+    "mitFm": 127111,
+    "mitSumme4qNetto": 136684,
+    "mitUmsatzWachstum": 117389
+   },
+   "jeJahr": {
+    "2014": {
+     "zeilen": 10814,
+     "mitFm": 2403,
+     "mitSumme4qNetto": 7243,
+     "mitUmsatzWachstum": 5886,
+     "fmVerteilung": {
+      "n": 2403,
+      "p5": -0.12980581299304206,
+      "p10": -0.06592594655392381,
+      "p50": 0.0006688802484771453,
+      "p90": 0.06873986496622253,
+      "p95": 0.1677528639170926,
+      "mittel": 0.0295454844560033
+     },
+     "roaVerteilung": {
+      "n": 7233,
+      "p5": -0.4338639123845964,
+      "p10": -0.18233842936930822,
+      "p50": 0.026120133368747186,
+      "p90": 0.11603032809575828,
+      "p95": 0.15495433789954338,
+      "mittel": -0.2271519216137554
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 5886,
+      "p5": -0.1465666474321985,
+      "p10": -0.07042011019283745,
+      "p50": 0.06867035400921773,
+      "p90": 0.35654834664483026,
+      "p95": 0.6223425143248649,
+      "mittel": 0.5915962480437436
+     },
+     "anteilLueckeFm": 77.8
+    },
+    "2015": {
+     "zeilen": 11566,
+     "mitFm": 10536,
+     "mitSumme4qNetto": 10832,
+     "mitUmsatzWachstum": 9863,
+     "fmVerteilung": {
+      "n": 10536,
+      "p5": -0.25475568817098737,
+      "p10": -0.10924116828679217,
+      "p50": -0.0001935405121883428,
+      "p90": 0.07893403379381331,
+      "p95": 0.20793923454721008,
+      "mittel": -0.15087598823214568
+     },
+     "roaVerteilung": {
+      "n": 10804,
+      "p5": -0.6108281526976755,
+      "p10": -0.31838788291711434,
+      "p50": 0.018326372992713485,
+      "p90": 0.10634869481147277,
+      "p95": 0.1453763322854589,
+      "mittel": -0.7662846097920749
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 9863,
+      "p5": -0.22527249341362598,
+      "p10": -0.11653702103140307,
+      "p50": 0.0594769538137232,
+      "p90": 0.4633897310622843,
+      "p95": 0.8573522172493373,
+      "mittel": 1.7600836130891666
+     },
+     "anteilLueckeFm": 8.9
+    },
+    "2016": {
+     "zeilen": 11710,
+     "mitFm": 10770,
+     "mitSumme4qNetto": 11011,
+     "mitUmsatzWachstum": 9903,
+     "fmVerteilung": {
+      "n": 10770,
+      "p5": -0.39621379481335167,
+      "p10": -0.16909326901253097,
+      "p50": -0.001335509322956209,
+      "p90": 0.07791701609069565,
+      "p95": 0.1915772431630305,
+      "mittel": 0.2646613221022767
+     },
+     "roaVerteilung": {
+      "n": 10999,
+      "p5": -0.8741379520050597,
+      "p10": -0.45537268555151134,
+      "p50": 0.011302185598866966,
+      "p90": 0.10044948818347808,
+      "p95": 0.14123643538309766,
+      "mittel": -0.6415611160467545
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 9903,
+      "p5": -0.403820861465352,
+      "p10": -0.22702298106489727,
+      "p50": 0.03751649194270423,
+      "p90": 0.38475039921948206,
+      "p95": 0.6514636553009538,
+      "mittel": 0.22135813915579092
+     },
+     "anteilLueckeFm": 8
+    },
+    "2017": {
+     "zeilen": 11897,
+     "mitFm": 10763,
+     "mitSumme4qNetto": 11065,
+     "mitUmsatzWachstum": 9985,
+     "fmVerteilung": {
+      "n": 10763,
+      "p5": -0.3025299517367763,
+      "p10": -0.12487848833042328,
+      "p50": 0.0003939485430115089,
+      "p90": 0.12575996788344398,
+      "p95": 0.3053196165848497,
+      "mittel": 0.24749293764379118
+     },
+     "roaVerteilung": {
+      "n": 11051,
+      "p5": -0.8804072339877143,
+      "p10": -0.44229005853199926,
+      "p50": 0.012383878396573145,
+      "p90": 0.1017237129595976,
+      "p95": 0.14535857075988126,
+      "mittel": -0.32512973146081636
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 9985,
+      "p5": -0.2835930936337294,
+      "p10": -0.14379849210119244,
+      "p50": 0.058636205130935704,
+      "p90": 0.38952181854916845,
+      "p95": 0.6979988439848155,
+      "mittel": 0.8657522617076462
+     },
+     "anteilLueckeFm": 9.5
+    },
+    "2018": {
+     "zeilen": 11816,
+     "mitFm": 10924,
+     "mitSumme4qNetto": 11182,
+     "mitUmsatzWachstum": 10029,
+     "fmVerteilung": {
+      "n": 10924,
+      "p5": -0.22846533036493422,
+      "p10": -0.09570661566463423,
+      "p50": 0.002219410094409611,
+      "p90": 0.12885632258943616,
+      "p95": 0.30374686741239737,
+      "mittel": 0.252661589693872
+     },
+     "roaVerteilung": {
+      "n": 11165,
+      "p5": -0.7923865091788814,
+      "p10": -0.3828506454417765,
+      "p50": 0.014551098016071991,
+      "p90": 0.11046220088793662,
+      "p95": 0.1511874146886378,
+      "mittel": -0.187560543429581
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 10029,
+      "p5": -0.2285035287339766,
+      "p10": -0.08831110088630845,
+      "p50": 0.09025288478259652,
+      "p90": 0.4529802885512526,
+      "p95": 0.8535194070884613,
+      "mittel": 0.7982170342055923
+     },
+     "anteilLueckeFm": 7.5
+    },
+    "2019": {
+     "zeilen": 11570,
+     "mitFm": 10776,
+     "mitSumme4qNetto": 11047,
+     "mitUmsatzWachstum": 9787,
+     "fmVerteilung": {
+      "n": 10776,
+      "p5": -0.28000469603487355,
+      "p10": -0.12864914803489289,
+      "p50": 0.0008257825396270624,
+      "p90": 0.10324937156125154,
+      "p95": 0.23281929285597036,
+      "mittel": 0.005405922288016166
+     },
+     "roaVerteilung": {
+      "n": 11037,
+      "p5": -0.8047128755117,
+      "p10": -0.4150199156966627,
+      "p50": 0.015146299483648882,
+      "p90": 0.11244856153581205,
+      "p95": 0.15287017299708425,
+      "mittel": -0.2091534797265494
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 9787,
+      "p5": -0.24,
+      "p10": -0.10506215478181202,
+      "p50": 0.0749240232582511,
+      "p90": 0.40470458056021985,
+      "p95": 0.7207378993813884,
+      "mittel": 1.6790548823182796
+     },
+     "anteilLueckeFm": 6.9
+    },
+    "2020": {
+     "zeilen": 11521,
+     "mitFm": 10620,
+     "mitSumme4qNetto": 10878,
+     "mitUmsatzWachstum": 9690,
+     "fmVerteilung": {
+      "n": 10620,
+      "p5": -0.33993686857541044,
+      "p10": -0.151784506400752,
+      "p50": -0.005014496981700603,
+      "p90": 0.1023284981162573,
+      "p95": 0.25200639042473666,
+      "mittel": -0.00653436268703896
+     },
+     "roaVerteilung": {
+      "n": 10869,
+      "p5": -0.8163693599160545,
+      "p10": -0.453818062994838,
+      "p50": 0.008642176650896581,
+      "p90": 0.09597392700209167,
+      "p95": 0.13862230752825763,
+      "mittel": -0.5273143737086333
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 9690,
+      "p5": -0.33620619642491445,
+      "p10": -0.2068690095846646,
+      "p50": 0.021653456139574034,
+      "p90": 0.3835256041141315,
+      "p95": 0.7084440419893874,
+      "mittel": 0.37822971415547535
+     },
+     "anteilLueckeFm": 7.8
+    },
+    "2021": {
+     "zeilen": 13545,
+     "mitFm": 10615,
+     "mitSumme4qNetto": 11191,
+     "mitUmsatzWachstum": 9598,
+     "fmVerteilung": {
+      "n": 10615,
+      "p5": -0.19490240255468094,
+      "p10": -0.10018662760262506,
+      "p50": 0.0052393461840190645,
+      "p90": 0.18549110124302415,
+      "p95": 0.4115838870701375,
+      "mittel": 0.08820543828135594
+     },
+     "roaVerteilung": {
+      "n": 11177,
+      "p5": -0.6188376923402993,
+      "p10": -0.36527446344125136,
+      "p50": 0.01114766734901196,
+      "p90": 0.1118650748958216,
+      "p95": 0.1581764937011949,
+      "mittel": -0.10611047282805407
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 9598,
+      "p5": -0.4489960796778979,
+      "p10": -0.2633379590827276,
+      "p50": 0.05196213911053649,
+      "p90": 0.47258620217545033,
+      "p95": 0.8897984721716987,
+      "mittel": 0.6661838189931898
+     },
+     "anteilLueckeFm": 21.6
+    },
+    "2022": {
+     "zeilen": 14313,
+     "mitFm": 11308,
+     "mitSumme4qNetto": 13065,
+     "mitUmsatzWachstum": 9877,
+     "fmVerteilung": {
+      "n": 11308,
+      "p5": -0.37668219598445485,
+      "p10": -0.17519905727599672,
+      "p50": 0.0028349473015664185,
+      "p90": 0.13809178299527433,
+      "p95": 0.2819581488380327,
+      "mittel": 0.0043958853618796204
+     },
+     "roaVerteilung": {
+      "n": 13055,
+      "p5": -0.7683062461880673,
+      "p10": -0.4181185112028092,
+      "p50": 0.015404797156218534,
+      "p90": 0.1244093172597406,
+      "p95": 0.17575212221980477,
+      "mittel": -0.1232069566998513
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 9877,
+      "p5": -0.2273020760901957,
+      "p10": -0.07847064971259365,
+      "p50": 0.15468807004742802,
+      "p90": 0.8752394867032334,
+      "p95": 1.5902617687678409,
+      "mittel": 1.9982372568405464
+     },
+     "anteilLueckeFm": 21
+    },
+    "2023": {
+     "zeilen": 12900,
+     "mitFm": 12053,
+     "mitSumme4qNetto": 12486,
+     "mitUmsatzWachstum": 9970,
+     "fmVerteilung": {
+      "n": 12053,
+      "p5": -0.5788880531788486,
+      "p10": -0.2598955090935358,
+      "p50": -0.003309129461958868,
+      "p90": 0.09826048811031046,
+      "p95": 0.22223445698205907,
+      "mittel": -0.19685067647168433
+     },
+     "roaVerteilung": {
+      "n": 12464,
+      "p5": -1.1191965420798373,
+      "p10": -0.5758637153532858,
+      "p50": 0.012688506868199157,
+      "p90": 0.1275933609958506,
+      "p95": 0.18022574926975535,
+      "mittel": -0.3523185454425402
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 9970,
+      "p5": -0.3684471818601961,
+      "p10": -0.18607983623336743,
+      "p50": 0.09641496190393384,
+      "p90": 0.5700470072932942,
+      "p95": 0.9620386742593543,
+      "mittel": 1.2061852169621718
+     },
+     "anteilLueckeFm": 6.6
+    },
+    "2024": {
+     "zeilen": 11804,
+     "mitFm": 11298,
+     "mitSumme4qNetto": 11446,
+     "mitUmsatzWachstum": 9557,
+     "fmVerteilung": {
+      "n": 11298,
+      "p5": -0.48247194177446406,
+      "p10": -0.18041670336920562,
+      "p50": -0.0010037304251836292,
+      "p90": 0.12816766720351305,
+      "p95": 0.309960251735393,
+      "mittel": -0.1905617514271854
+     },
+     "roaVerteilung": {
+      "n": 11434,
+      "p5": -1.235700018158707,
+      "p10": -0.5466774641038842,
+      "p50": 0.014317177224352754,
+      "p90": 0.11715430375136579,
+      "p95": 0.16134935416598933,
+      "mittel": -0.529659122080983
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 9557,
+      "p5": -0.3816852004535003,
+      "p10": -0.20311588691728766,
+      "p50": 0.04678006055802797,
+      "p90": 0.3502157974104312,
+      "p95": 0.6359994661812904,
+      "mittel": 0.35002194520638363
+     },
+     "anteilLueckeFm": 4.3
+    },
+    "2025": {
+     "zeilen": 10691,
+     "mitFm": 10264,
+     "mitSumme4qNetto": 10404,
+     "mitUmsatzWachstum": 8977,
+     "fmVerteilung": {
+      "n": 10264,
+      "p5": -0.38713052304621404,
+      "p10": -0.15271926668127292,
+      "p50": -0.0004515688808327395,
+      "p90": 0.12591472101715012,
+      "p95": 0.3276072367827654,
+      "mittel": -0.1102155255510533
+     },
+     "roaVerteilung": {
+      "n": 10389,
+      "p5": -1.0209424083769634,
+      "p10": -0.45697586348815555,
+      "p50": 0.017635543809460214,
+      "p90": 0.11775445356868168,
+      "p95": 0.16450970350709124,
+      "mittel": -0.657473728403172
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 8977,
+      "p5": -0.2992287660256411,
+      "p10": -0.14560322263888292,
+      "p50": 0.047963105303612696,
+      "p90": 0.30990968699740185,
+      "p95": 0.5964740450538688,
+      "mittel": 2.051086122298657
+     },
+     "anteilLueckeFm": 4
+    },
+    "2026": {
+     "zeilen": 4931,
+     "mitFm": 4781,
+     "mitSumme4qNetto": 4834,
+     "mitUmsatzWachstum": 4267,
+     "fmVerteilung": {
+      "n": 4781,
+      "p5": -0.3725847932187357,
+      "p10": -0.12682321315661582,
+      "p50": 0.000379180296227917,
+      "p90": 0.13400760396005393,
+      "p95": 0.36767783445172175,
+      "mittel": -0.20454405673451226
+     },
+     "roaVerteilung": {
+      "n": 4824,
+      "p5": -0.8603096247310019,
+      "p10": -0.4043907733561962,
+      "p50": 0.021507015579100435,
+      "p90": 0.12452796162766303,
+      "p95": 0.1750331898053033,
+      "mittel": -0.4343925090200763
+     },
+     "umsatzWachstumVerteilung": {
+      "n": 4267,
+      "p5": -0.2516004168527617,
+      "p10": -0.10157589008606716,
+      "p50": 0.0627061378811038,
+      "p90": 0.36764519151472874,
+      "p95": 0.6737588652482269,
+      "mittel": 24.529176813408352
+     },
+     "anteilLueckeFm": 3
+    }
+   },
+   "kurz": "FM in 85.3 % der Zeilen"
+  },
+  "P7 Handproben SEC-API": {
+   "ok": true,
+   "uebersprungen": true
+  },
+  "P8 Aktien-Skala": {
+   "ok": false,
+   "gegenprobe": [
+    {
+     "reihe": "MCD",
+     "erwartet": 200000000000,
+     "adsh": "0000063908-26-000035",
+     "filed": "2026-02-24",
+     "aktien": 713400000,
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "marke": {
+      "regel": "A",
+      "faktor": 1000000
+     },
+     "kurs": 333.05,
+     "marktwert": 237597870000,
+     "ok": true,
+     "kursTag": "2026-02-24"
+    },
+    {
+     "reihe": "KO",
+     "erwartet": 275000000000,
+     "adsh": "0001628280-26-010047",
+     "filed": "2026-02-20",
+     "aktien": 4303000000,
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "marke": null,
+     "kurs": 79.83,
+     "marktwert": 343508490000,
+     "ok": true,
+     "kursTag": "2026-02-20"
+    },
+    {
+     "reihe": "COP",
+     "erwartet": 125000000000,
+     "adsh": "0001163165-26-000009",
+     "filed": "2026-02-17",
+     "aktien": 1252042,
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "marke": {
+      "regel": "A",
+      "faktor": 0.001
+     },
+     "kurs": 108.85,
+     "marktwert": 136284771.7,
+     "ok": false,
+     "kursTag": "2026-02-17"
+    },
+    {
+     "reihe": "PCAR",
+     "erwartet": 55000000000,
+     "adsh": "0001193125-26-057025",
+     "filed": "2026-02-18",
+     "aktien": 525900000,
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "marke": null,
+     "kurs": 125.17,
+     "marktwert": 65826903000,
+     "ok": true,
+     "kursTag": "2026-02-18"
+    },
+    {
+     "reihe": "TEVA",
+     "erwartet": 25000000000,
+     "adsh": "0001193125-26-034532",
+     "filed": "2026-02-03",
+     "aktien": 1145000000,
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "marke": null,
+     "kurs": 36.25,
+     "marktwert": 41506250000,
+     "ok": true,
+     "kursTag": "2026-02-03"
+    },
+    {
+     "reihe": "AAPL",
+     "erwartet": 3500000000000,
+     "adsh": "0000320193-25-000079",
+     "filed": "2025-10-31",
+     "aktien": 14773260000,
+     "tag": "CommonStockSharesOutstanding",
+     "marke": null,
+     "kurs": 270.25,
+     "marktwert": 3992473515000,
+     "ok": true,
+     "kursTag": "2025-10-31"
+    },
+    {
+     "reihe": "BRK.A",
+     "erwartet": 1000000000000,
+     "adsh": "0000950170-25-025210",
+     "filed": "2025-02-24",
+     "aktien": null,
+     "tag": null,
+     "marke": null,
+     "kurs": null,
+     "marktwert": null,
+     "ok": null,
+     "grund": "Aktienzahl null (Mehrklassen-Emittent, Stueckzahl je Klasse in Segmenten) - nicht pruefbar"
+    },
+    {
+     "reihe": "BRK.B",
+     "erwartet": 1000000000000,
+     "adsh": "0000950170-25-025210",
+     "filed": "2025-02-24",
+     "aktien": null,
+     "tag": null,
+     "marke": null,
+     "kurs": null,
+     "marktwert": null,
+     "ok": null,
+     "grund": "Aktienzahl null (Mehrklassen-Emittent, Stueckzahl je Klasse in Segmenten) - nicht pruefbar"
+    }
+   ],
+   "aapl20140424": {
+    "adsh": "0001193125-14-157311",
+    "aktien": 861745000,
+    "marke": {
+     "regel": "A",
+     "faktor": 1000
+    },
+    "ok": true
+   },
+   "spruenge": {
+    "vor": 898,
+    "nach": 341,
+    "anteil": 38,
+    "ok": false
+   },
+   "zaehler": {
+    "regelA": 726,
+    "regelB": 173,
+    "regelBVerworfen": 0,
+    "ohneKurs": 29055,
+    "ohneVermoegen": 280
+   },
+   "kurz": "5 von 6 Marktwerten ok, AAPL 2014 ok, Spruenge>30 898 -> 341 NICHT < 5 %"
+  },
+  "P9 Zuordnung": {
+   "ok": true,
+   "X": {
+    "basis": "X",
+    "cik": null,
+    "sicherheit": "verworfen",
+    "lebend": 0,
+    "erster": "2016-01-04",
+    "letzter": "2025-06-17",
+    "pruefung": "verworfen",
+    "marktname": "United States Steel Corporation",
+    "registrant": "HSBC USA INC /MD/",
+    "jaccard": 0,
+    "grund": "Name: HSBC USA INC /MD/ ≠ United States Steel Corporation"
+   },
+   "festOk": true,
+   "tabelleAnders": [],
+   "tabelleAndersN": 0,
+   "jeStufe": {
+    "tabelle": {
+     "reihen": 2283,
+     "bestaetigt": 0,
+     "verworfen": 0,
+     "ungeprueft": 0
+    },
+    "schwach": {
+     "reihen": 1003,
+     "bestaetigt": 335,
+     "verworfen": 294,
+     "ungeprueft": 374
+    },
+    "mittel": {
+     "reihen": 2428,
+     "bestaetigt": 1648,
+     "verworfen": 682,
+     "ungeprueft": 98
+    },
+    "stark": {
+     "reihen": 1508,
+     "bestaetigt": 0,
+     "verworfen": 0,
+     "ungeprueft": 1508
+    }
+   },
+   "ciksOhneReiheDurchVerwerfen": 355,
+   "kurz": "X -> null (verworfen), F/T/A unveraendert true, Tabellen-Reihen veraendert 0"
+  },
+  "P10 Einheit": {
+   "ok": true,
+   "hrc": {
+    "adsh": "0000047518-21-000084",
+    "einheit": "verdacht",
+    "vermoegen": null
+   },
+   "innereZeilenGeprueft": 138279,
+   "verstoesse": [],
+   "verstoesseN": 0,
+   "verdachtZeilen": 368,
+   "verdachtJeGrund": {
+    "Reihenanfang + Median": 350,
+    "beide Nachbarn": 17,
+    "Reihenende + Median": 1
+   },
+   "huellenEinseitig": 474,
+   "ohnePruefung": 627,
+   "faktenUebersprungen": 3166,
+   "kurz": "HRC markiert, Spruenge gegen beide Nachbarn > 100: 0, verdaechtig 368, Huellen (einseitig) 474"
+  },
+  "P11 D4 Huelle": {
+   "ok": true,
+   "hinweis": "Auftrag §3 erwartet die Marke d4 an AMCR/TW; im Bau greift 2c (Reihenanfang + Median) vor 2d - gemessen wird das bereinigte Ergebnis samt Weg",
+   "v1Vorhanden": true,
+   "AMCR": [
+    {
+     "adsh": "0001748790-20-000018",
+     "form": "10-Q",
+     "period": "2020-03-31",
+     "filed": "2020-05-11",
+     "v1": {
+      "vermoegenVor": 130,
+      "fm": -3592307.3994861175
+     },
+     "v11": {
+      "vermoegenVor": null,
+      "fm": null
+     },
+     "bereinigt": true,
+     "weg": "einheit (Huellen-Filing 2019-05-09 ausgelassen)"
+    }
+   ],
+   "TW": [
+    {
+     "adsh": "0001558370-20-001170",
+     "form": "10-K",
+     "period": "2019-12-31",
+     "filed": "2020-02-21",
+     "v1": {
+      "vermoegenVor": 100,
+      "fm": -1594669.9752477463
+     },
+     "v11": {
+      "vermoegenVor": 4997139000,
+      "fm": -0.0071594061231597915
+     },
+     "bereinigt": true,
+     "weg": "einheit (Huellen-Filing 2019-05-20 ausgelassen)"
+    },
+    {
+     "adsh": "0001558370-20-002031",
+     "form": "10-K/A",
+     "period": "2019-12-31",
+     "filed": "2020-03-04",
+     "v1": {
+      "vermoegenVor": 100,
+      "fm": -1594669.9752477463
+     },
+     "v11": {
+      "vermoegenVor": 4997139000,
+      "fm": -0.0071594061231597915
+     },
+     "bereinigt": true,
+     "weg": "einheit (Huellen-Filing 2019-05-20 ausgelassen)"
+    },
+    {
+     "adsh": "0001558370-20-006433",
+     "form": "10-Q",
+     "period": "2020-03-31",
+     "filed": "2020-05-12",
+     "v1": {
+      "vermoegenVor": 100,
+      "fm": -1565109.9753704928
+     },
+     "v11": {
+      "vermoegenVor": null,
+      "fm": null
+     },
+     "bereinigt": true,
+     "weg": "einheit (Huellen-Filing 2019-05-20 ausgelassen)"
+    }
+   ],
+   "zeilenMitHuelle": 969,
+   "quotientenGeprueft": 132690,
+   "verstoesse": [],
+   "verstoesseN": 0,
+   "kurz": "AMCR 1 / TW 3 Huellen-Zeilen bereinigt (einheit,einheit,einheit,einheit), d4-Marke gesamt 969, Quotient ausserhalb [1e-3, 1e3]: 0 von 132690"
+  },
+  "P12 Leser unveraendert": {
+   "ok": true,
+   "kennung": "fundamentaltafel-2026-09-16/v1.1",
+   "leserKennung": "fundamentaltafel-2026-09-16/v1.1",
+   "p1bOk": true,
+   "geliefert": 442,
+   "verstoesse": 0,
+   "alteTafelAbgewiesen": true,
+   "kurz": "Kennung fundamentaltafel-2026-09-16/v1.1, P1b 442 geliefert / 0 Verstoesse, v1-Ordner abgewiesen true"
+  },
+  "P6 Determinismus": {
+   "ok": true,
+   "tafelDateien": 16,
+   "gleich": 16,
+   "anders": [],
+   "auszugGleich": 4,
+   "auszugAnders": [],
+   "zweitbauSekunden": 42,
+   "sekunden": 52,
+   "kurz": "16/16 Tafeldateien und 4/4 Auszugsdateien bitgleich"
+  }
+ },
+ "fehler": 1,
+ "tafel": {
+  "zeilen": 149078,
+  "kennung": "fundamentaltafel-2026-09-16/v1.1",
+  "dateien": [
+   "tafel-2014.jsonl",
+   "tafel-2015.jsonl",
+   "tafel-2016.jsonl",
+   "tafel-2017.jsonl",
+   "tafel-2018.jsonl",
+   "tafel-2019.jsonl",
+   "tafel-2020.jsonl",
+   "tafel-2021.jsonl",
+   "tafel-2022.jsonl",
+   "tafel-2023.jsonl",
+   "tafel-2024.jsonl",
+   "tafel-2025.jsonl",
+   "tafel-2026.jsonl"
+  ]
+ },
+ "sekunden": 71
+}

@@ -10,3 +10,8 @@ fundamentaltafel/
 !pruefung.json
 !tags.json
 laden-start.vbs
+# v1.1 (22.09.2026): Sicherung der Tafel v1 fuer den Vorher/Nachher-Vergleich (vergleich-v1-v11.js) - ebenfalls nur auf der Platte.
+fundamentaltafel-v1/
+# Abgabe v1.1: Vorher/Nachher-Tafel und Pruefergebnis kommen ins Repo.
+!vergleich-v1-v11.json
+!test-fundamental.json

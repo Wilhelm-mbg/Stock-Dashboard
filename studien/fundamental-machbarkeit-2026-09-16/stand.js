@@ -17,9 +17,15 @@ var TAFEL = path.join(__dirname, 'fundamentaltafel');
 var KLASSEN = ['ab1000', '250-1000', '50-250', '5-50', 'unter5', 'duenn'];
 var FELDER = ['mitCik', 'bericht', 'auslaend', 'umsatz', 'netto', 'operativ', 'vermoegen', 'eigenkapital', 'aktien', 'summe4qNetto', 'fm', 'umsatzWachstum'];
 
+/* v1.1-Zaehler ins Repo; die Liste aller einheitenverdaechtigen Filings (368) bleibt vollstaendig in _bau.json, hier die ersten 40 */
+function v11Kurz(v) { if (!v) return null; var k = JSON.parse(JSON.stringify(v)); if (k.einheit && k.einheit.faelle) { k.einheit.faelleGesamt = k.einheit.faelle.length; k.einheit.faelle = k.einheit.faelle.slice(0, 40); } return k; }
+
 function main() {
   var bau = JSON.parse(fs.readFileSync(path.join(TAFEL, '_bau.json'), 'utf8'));
   var kl = JSON.parse(fs.readFileSync(path.join(__dirname, 'klassen-jahr.json'), 'utf8'));
+  /* v1.1: klassen-jahr.json traegt die CIK des Panels vor der Namenspruefung; eine verworfene Reihe (bauen.js 2b) zaehlt
+   * hier nicht mehr als "mit CIK" */
+  var reihenMeta = JSON.parse(fs.readFileSync(path.join(TAFEL, '_reihen.json'), 'utf8')).reihen;
   var ausl = JSON.parse(fs.readFileSync(path.join(TAFEL, '_auslaend.json'), 'utf8')).ciks;
   /* je CIK und Jahr: was die Tafel hat */
   var hat = {}, sektoren = {}, sektorCik = {}, jeForm = {};
@@ -46,7 +52,7 @@ function main() {
       var k = y.klasse || 'duenn';
       [tafel[j][k], tafel[j].gesamt].forEach(function (z) {
         z.aktiv++;
-        if (!r.cik) return;
+        if (!r.cik || (reihenMeta[sym] && reihenMeta[sym].pruefung === 'verworfen')) return;
         z.mitCik++;
         var e = hat[+r.cik] && hat[+r.cik][j]; if (!e) return;
         FELDER.forEach(function (f) { if (f !== 'mitCik' && e[f]) z[f]++; });
@@ -58,7 +64,7 @@ function main() {
     regel: 'erste Veroeffentlichung gilt; nutzbar ab dem Handelstag NACH filed; 10-K/10-Q-Familie der Panel-CIKs; 20-F/40-F nur gezaehlt',
     panel: { reihen: bau.panelReihen, ohneCik: bau.panelOhneCik, ciks: bau.panelCiks, panelKennung: kl.panelKennung },
     filings: bau.filings, fakten: bau.fakten, zeilen: bau.zeilen, roh: bau.roh, wege: bau.wege, luecken: bau.luecken, abgeleitet: bau.abgeleitet, quartalsgrenzen: bau.quartalsgrenzen,
-    klassen: KLASSEN, felder: FELDER, deckung: tafel, hashes: bau.hashes, bauSekunden: bau.sekunden,
+    klassen: KLASSEN, felder: FELDER, deckung: tafel, hashes: bau.hashes, bauSekunden: bau.sekunden, v11: v11Kurz(bau.v11),
     sektoren: Object.keys(sektoren).sort().map(function (s) { return { sektor: s, zeilen: sektoren[s], ciks: Object.keys(sektorCik[s]).length }; }), zeilenJeForm: jeForm };
   fs.writeFileSync(path.join(__dirname, '_stand.json'), JSON.stringify(out, null, 1));
   kl.jahre.forEach(function (j) { var g = tafel[j].gesamt, a = tafel[j].ab1000, b = tafel[j]['50-250']; console.log(j, 'aktiv', g.aktiv, 'bericht', g.prozent.bericht + '%', 'fm', g.prozent.fm + '%', '| ab1000 bericht', a.prozent.bericht + '%', 'fm', a.prozent.fm + '%', '| 50-250 bericht', b.prozent.bericht + '%', 'fm', b.prozent.fm + '%'); });

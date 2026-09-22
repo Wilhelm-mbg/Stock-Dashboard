@@ -379,3 +379,98 @@ Leser: `var F = require('studien/fundamental-machbarkeit-2026-09-16/fundamental-
 `t.protokoll()` für die Sperrklinke, `t.zaehler` (geliefert / ohne Filing / veraltet / ohne Reihe), Option `{maxAlterTage: null}` schaltet das Aktualitäts-Tor ab.
 Nächster Auftrag (Prüfstand): Rangfunktion „gedrückt, aber liefert" über `abgeleitet.fm` und die Kursdrift, Vorregistrierung mit Klassen, Aktualitäts-Tor und Umgang mit `y`-Wegen.
 
+## 9. v1.1 (22.09.2026) — vier Datenkorrekturen, Auftrag Nr. 60
+
+**Anlass:** die neun Feld-Agenten der Mehrfaktor-Studie (Nr. 49–57) fanden in v1 vier Fehlerarten (Aktienzahlen in Tausend/Millionen,
+falsche Kürzel→CIK-Zuordnungen, Filings in falscher Einheit, Vorjahresbestand aus der Hülle). **Kennung** `fundamentaltafel-2026-09-16/v1.1`
+(`bauen.js`, `_reihen.json`, `_bau.json`; der Leser `fundamental-lesen.js` weist jede andere Tafel-Kennung ab). Bau 40 s, Zweitbau bitgleich
+(P6). Die Tafel v1 liegt unverändert unter `fundamentaltafel-v1/` (nur auf der Platte). Alle Zahlen dieses Abschnitts stammen aus `_bau.json`
+(Block `v11`, im Repo als `_stand.json` → `v11`), `test-fundamental.json` und `vergleich-v1-v11.json`; Regeln im Wortlaut:
+`uebergabe/auftrag-fundamentaltafel-v11-2026-09-22.md` §2. **v1.1: 149.078 Zeilen für 5.648 CIKs** (v1: 158.516 / 6.003), 2.162.421 Erst-Fakten,
+230.323 Neudarstellungen; FM in 127.111 Zeilen (85,3 %).
+
+**Regeln in Kurzform und Reihenfolge im Bau.** (2b) *Zuordnung, vor allem anderen:* jede Reihe mit `sicherheit` schwach/mittel wird über den
+Namen geprüft — Registrant (Spalte `name` des jüngsten Filings der CIK in den sub-Auszügen) gegen den Marktnamen der Reihe. Marktname aus
+`Markt-Dashboard-Daten/massive/verschwundene.json` (Polygon-Referenzliste `reference/tickers?active=false`, Stand 23.08.2026), Feld `name` —
+die EDGAR-Volltextzuordnung der Studie `verschwundene-gruende-2026-09-12` hat **mit dem Kürzel** gesucht (`edgar-lauf.js ftsKuerzel`), ihr Feld
+`name` ist der gefundene Registrant und damit nicht unabhängig; `panel.json → reihen[].name` wurde deshalb nicht benutzt. Normalisierung: Kleinschreibung,
+`/MD/`-Zusätze und Satzzeichen weg, Rechtsformen/Füllwörter (inc corp corporation co company ltd limited plc holdings holding group the trust lp llc nv sa
+ag incorporated) und Wertpapierbezeichnungen der Marktliste (common stock class ordinary shares share depositary receipts adr ads each representing unit
+units of and) entfernt, Token < 2 Zeichen weg. Jaccard ≥ 0,5 **oder** erstes Token gleich und ≥ 4 Zeichen ⇒ bestätigt, sonst verworfen (`cik: null`,
+`sicherheit: 'verworfen'`, `grund`); ohne Registrant ⇒ `ungeprueft`. Verworfene CIKs bekommen keine Tafelzeilen, außer eine andere Reihe trägt dieselbe
+CIK bestätigt. (2c) *Einheit, vor dem Einfügen in den Faktenspeicher:* eigener `Assets`-Wert des Filings (qtrs 0, ddate = period) gegen beide
+Nachbar-Filings der CIK > Faktor 100 in derselben Richtung, oder am Reihenanfang/-ende gegen den einzigen Nachbarn **und** den CIK-Median ⇒
+verdächtig; ohne Assets dieselbe Prüfung mit der Umsatz-Gruppe. Alle Fakten des adsh werden beim Laden übersprungen; die Zeile bleibt mit
+`roh` = null und `marken.einheit = 'verdacht'`. (2a) *Aktien-Skala, nach `aktienzahl(f)`:* Regel A je CIK und Tag (Median von log10 über alle Filings
+mit diesem Tag, unteres mittleres Element; ab 3 Filings wird ein Wert mit Abstand ≥ 2,5 um 1000^k skaliert, k = round((m − l)/3) ∈ {−2,−1,1,2});
+danach Regel B je Filing mit dem Außenanker Marktwert = aktien × unbereinigter Panel-Schluss (`T.g.rohSchluss`) am letzten Handelstag ≤ filed, bis 10
+Handelstage zurück, erstes Kürzel der Reihe mit Kurs: Marktwert/Vermögen < 10⁻³ ⇒ 1000^k mit k ∈ {1,2} und dem Quotienten am nächsten an 1, sofern danach
+in [0,003; 300], sonst `aktien = null`; > 3.000 sinngemäß mit k ∈ {−1,−2}; kein Kurs / kein Vermögen ⇒ Marke, keine Regel B. Verbleibende Sprünge > 30
+werden gezählt (Befund). (2d) *Vorjahresbestand aus der Hülle:* liegt `Assets` an D4 um mehr als Faktor 1000 vom Vermögen D0 entfernt, wird `vermoegenVor`
+null; reißt einer der Stichtage D4…D7 die Grenze, werden `summe4q.*Vor` null (damit `roaVor`, `fm`, `umsatzWachstum`); `marken.d4 = 'huelle'`.
+Marken je Zeile: `marken.aktienSkala` (null | {regel:'A', faktor} | {regel:'B', faktor[, nachA]} | {regel:'B', verworfen} | {regel:'B', ohneKurs} |
+{regel:'B', ohneVermoegen}), `marken.einheit` (null | 'verdacht'), `marken.d4` (null | 'huelle'); in `_reihen.json` je Reihe `pruefung`
+(bestaetigt | verworfen | ungeprueft | tabelle; null ohne CIK), bei verworfen `grund`, bei geprüften `marktname`, `registrant`, `jaccard`.
+
+**Zähler je Korrektur.**
+
+| Korrektur | Ergebnis |
+| --- | --- |
+| 2b Zuordnung | schwach 1.003: bestätigt 335, verworfen 294, ungeprüft 374; mittel 2.428: bestätigt 1.648, verworfen 682, ungeprüft 98; stark 1.508 ungeprüft (Regel), Tabelle 2.283, ohne CIK 77. Ungeprüft = 470 ohne Filing der CIK im Auszug + 2 leer nach Normalisierung (ohne Marktnamen: 0). **976 verworfen → 355 CIKs ohne Reihe → 9.438 Zeilen weniger**; `X` → null (HSBC USA INC /MD/ ≠ United States Steel Corporation). Diagnose: bei **693 der 976** passt ein *früherer* Name derselben CIK (Umfirmierung, SPAC-Fusion); Polygon-CIK gegen Zuordnungs-CIK: 4.814 verglichen, 3.875 gleich, 939 anders (verworfen ∧ anders 264, bestätigt ∧ anders 94); 62 nur über das erste Token bestätigt; unter den 1.494 „starken" Reihen passen 408 Namen ebenfalls nicht (nur gezählt). |
+| 2c Einheit | **368 verdächtig** (alle über Assets, 0 über Umsatz): 17 gegen beide Nachbarn, 1 Reihenende + Median (HRC 10-K filed 2021-11-12: 4.999,1 gegen 4,57 Mrd), **350 Reihenanfang + Median** (erste Filings von Vor-Börsengang-Hüllen: OGS 1 $, MDT 46.000 $, PLNT 1.000 $, AMCR 130 $, TW 100 $ …); einseitige Sprünge > 100 (Hüllen, bleiben) 474; ohne Nachbarn 12; ohne Prüfung 627; 3.166 Fakten übersprungen; 1.014 spätere Zeilen derselben CIKs mit Folgeänderung (erste Veröffentlichung rückt auf das nächste Filing). |
+| 2a Aktien-Skala | Regel A 726 (512 aufwärts, 214 abwärts, davon 33 danach von Regel B zurückgedreht), 4 außerhalb k, 834 Zeilen in Gruppen < 3 Filings; Regel B 173 (168 aufwärts, **5 abwärts — alle mit Vermögen < 1 Mio $**), verworfen 0; ohne Kurs 29.055 (20.463 vor 2016-01-04, 8.592 ohne Kurs am filed-Tag trotz Kürzel im Panel), ohne Vermögen 280, Aktienzahl ≤ 0: 196. **Sprünge > 30 zwischen Nachbar-Filings: 898 → 341** (165 beide Seiten mit Kurs, 47 an der Grenze 2015/2016, 123 sonst ohne Kurs, 7 ohne Vermögen). Zeilen mit Aktienzahl 133.735 (v1 142.258). |
+| 2d D4 Hülle | 969 Zeilen markiert (303 über D4, 666 nur über D5–D7); 595 davon mit Wertänderung gegen v1 (336 × `vermoegenVor` → null), 374 mit schon leerem Vorjahresfenster. Kein `vermoegenVor/vermoegen` außerhalb [10⁻³, 10³] mehr (0 von 132.690). |
+
+**Vorher/Nachher (`vergleich-v1-v11.js`, jede Zeile nach adsh):** 149.078 Zeilen v1.1, **0 unerwartet geändert**; nur in v1: 9.438 (alle durch
+verworfene Zuordnung), nur in v1.1: 0; `einheit: 'verdacht'` 368 + 1.014 Folgeänderungen; `sym`-Liste geändert 12.351 (verworfene Kürzel entfernt);
+`roh.aktien` geändert 833 (Regel A 692, Regel B 141, verworfen 0) + 33 Marken ohne Wertänderung (Regel A × Regel B = 1, z. B. COP); Vorjahresfelder
+geändert 1.051 (595 Hülle, Rest Folgeänderungen). Deckung „Aktien" (Definition §2) v1 gegen v1.1 — v1.1 liegt tiefer, weil verworfene Reihen ohne
+CIK zählen:
+
+| Klasse | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ab1000 v1 | 100 % | 91,7 % | 94,4 % | 89,5 % | 90,6 % | 87 % | 86,8 % | 82,6 % | 82,9 % | 88,3 % | 91,9 % |
+| ab1000 v1.1 | 100 % | 91,7 % | 94,4 % | 89,5 % | 90,6 % | 87 % | 86,8 % | 82,6 % | 82,9 % | 88,3 % | 91,9 % |
+| 250-1000 v1 | 82,8 % | 86 % | 82,5 % | 90,2 % | 82,5 % | 86,2 % | 89,7 % | 88,2 % | 88,8 % | 89,4 % | 88,8 % |
+| 250-1000 v1.1 | 80,2 % | 83,2 % | 81 % | 89,4 % | 81,4 % | 85,3 % | 89,2 % | 88,2 % | 88,8 % | 89,4 % | 88,8 % |
+| 50-250 v1 | 77,9 % | 77,9 % | 78,3 % | 79,1 % | 78,3 % | 78 % | 79,2 % | 81,5 % | 83 % | 81,4 % | 80,7 % |
+| 50-250 v1.1 | 75,1 % | 75,3 % | 76,2 % | 77,3 % | 76,5 % | 76,1 % | 77,7 % | 80,4 % | 82,2 % | 81 % | 80,7 % |
+| 5-50 v1 | 74,3 % | 74,9 % | 75,6 % | 76 % | 72,9 % | 74,7 % | 77,9 % | 78,6 % | 78,7 % | 80,3 % | 81,1 % |
+| 5-50 v1.1 | 70,3 % | 71,4 % | 71,9 % | 73 % | 69,9 % | 70,2 % | 76 % | 77,6 % | 78,3 % | 79,6 % | 80,8 % |
+| unter5 v1 | 72,4 % | 71,9 % | 69 % | 68,3 % | 64,8 % | 59,1 % | 63,6 % | 68,5 % | 69,7 % | 67,8 % | 66,3 % |
+| unter5 v1.1 | 60,1 % | 59,2 % | 56,3 % | 55,9 % | 53,5 % | 48,4 % | 55,7 % | 61,6 % | 66 % | 66,5 % | 65,9 % |
+| duenn v1 | 57,2 % | 50,9 % | 49,5 % | 41,8 % | 33,4 % | 38,6 % | 40,9 % | 35,2 % | 44,1 % | 41,1 % | 39,6 % |
+| duenn v1.1 | 44,9 % | 39,3 % | 35 % | 29,7 % | 20,7 % | 21,5 % | 26,8 % | 24,8 % | 31,6 % | 38,4 % | 33,8 % |
+| gesamt v1 | 73,1 % | 72,6 % | 71,9 % | 71,1 % | 67,7 % | 66,6 % | 69 % | 70,1 % | 74,1 % | 76,4 % | 78,8 % |
+| gesamt v1.1 | 65,1 % | 64,9 % | 64,3 % | 63,9 % | 61,2 % | 59,2 % | 63,5 % | 65,9 % | 71,6 % | 75,6 % | 78,3 % |
+
+**Prüfungen (`test-fundamental.js --ohne-api`, 79 s + Zweitbau 48 s):** P1a/P1b bestanden (442 von 1.000 geliefert — v1 532, weil 976 Reihen
+keine CIK mehr haben —, 0 Verstöße); P2 bestanden — Abweichungen zur Machbarkeit nur dort, wo eine Korrektur wirkt (2019q2: 93 Reihen / 103 Filings
+durch Zuordnung, Aktien-Skala 17 A + 4 B, Einheit 5; 2024q2: 13 / 17, 11 A + 5 B, 3; unerklärt 0); P3 (gerundet 11,4 %), P4 (24 von 24), P5 (85,3 %)
+bestanden; P6 Zweitbau 16/16 Tafeldateien und 4/4 Auszugsdateien bitgleich; **P7 übersprungen** (`--ohne-api`, kein Netz laut Auftrag);
+**P8 FEHLER**: Marktwerte am jüngsten 10-K vor 2026-03-01 — MCD 2,38·10¹¹ (Regel A ×10⁶), KO 3,44·10¹¹, PCAR 6,58·10¹⁰, TEVA 4,15·10¹⁰, AAPL 3,99·10¹²
+ok, **COP 1,36·10⁸ statt 1–1,5·10¹¹** (Regel A hat den richtigen Stück-Wert 1.252.042.000 an die Tausender-Mehrheit der CIK angeglichen, Faktor 0,001;
+Regel B fängt ihn bei Quotient 1,12·10⁻³ knapp nicht mehr), BRK.A/BRK.B nicht prüfbar (Aktienzahl null — Mehrklassen-Emittent, Stück je Klasse in
+Segmenten), AAPL 10-Q 2014-04-24 → 861.745.000 (Regel A ×1000) ok, **Sprünge > 30 nach Korrektur 341 von 898 = 38 % statt < 5 %**; P9 bestanden
+(`X` → null, F 37996 / T 732717 / A 1090872 unverändert, 0 Tabellen-Reihen verändert); P10 bestanden (HRC markiert, 0 Sprünge gegen beide Nachbarn > 100
+in der Tafel, 474 Hüllen einseitig); P11 bestanden — **gemessen als Ergebnis, nicht als Marke**: AMCR (1 Zeile, v1 FM −3,59·10⁶) und TW (3 Zeilen, v1 FM
+−1,59·10⁶) sind bereinigt, aber über 2c (ihre Hüllen-Filings 2019-03-31 mit Assets 130 $ bzw. 100 $ sind die ersten Filings der CIK und fielen unter
+„Reihenanfang + Median"), nicht über 2d; P12 bestanden (Kennung v1.1, der Leser weist `fundamentaltafel-v1/` ab).
+
+**Befunde und Grenzen (Regeln wie beauftragt gebaut, nicht abgewandelt — Entscheide siehe Übergabe):**
+
+- *2b:* die Regel „jüngstes Filing der CIK" verwirft Umfirmierungen und SPAC-Fusionen mit richtiger CIK (693 von 976; z. B. DPW → Hyperscale Data,
+  SONA → Primis, ACTD → Opal Fuels); Vergleich gegen **alle** Namen, die die CIK je in sub.txt trug, ließe 283 verworfen. Die Regel „erstes Token ≥ 4"
+  bestätigt „Bank …"/„American …" allein über das erste Wort (62 Fälle, z. B. AEL → American National Group). Plural/Tippfehler (RLH „Red Lions"
+  gegen „RED LION") fallen durch.
+- *2c:* die Randklausel „Reihenanfang + Median" trifft 350 erste Filings von Hüllen — das sind die SPAC-/Spin-off-Hüllen, die die Klausel „beide
+  Nachbarn" bewusst stehen lassen sollte; nur 18 Fälle sind isolierte Einheitenfehler (Erwartung 15–40). Bei HRC ist nur `Assets` D0 falsch, Umsatz
+  (3,02 Mrd) und Vorjahresbilanz (4,67 Mrd) desselben adsh sind richtig — die Regel „alle Fakten des adsh" wirft sie mit.
+- *2a:* Regel A gleicht an die **Mehrheit** an — steht die Mehrheit in Tausend (COP, AVP, ATRI …), wird der richtige Stück-Wert falsch (214 Abwärts-
+  Angleichungen); Regel B mit Schwelle 10⁻³ fängt Tausender-Fehler nur, wenn der wahre Quotient Marktwert/Vermögen < 1 ist (COP 1,1, ATRI/EVER/TEM
+  4–10 bleiben; 238 Zeilen im Band [10⁻³, 10⁻²), davon 3 CIKs durchgängig); Regel B abwärts (> 3.000) korrigierte 5-mal falsch, alle bei
+  Hüllen-Vermögen < 1 Mio $ (LG, STO, TRTN, SRAX); vor 2016-01-04 gibt es keinen Panel-Kurs — 20.463 Zeilen ohne Regel B, an der Grenze 2015/2016
+  entstehen 47 Sprünge (MCD 712,9 bleibt in den Zeilen 2014–2015 in Millionen); Regel A mit Abstand 2,5 verfehlt Einzelfehler in CIKs, deren
+  Aktienzahl über die Jahre selbst um Faktor > 100 wanderte (EKSO 60.832 zwischen 60 und 62 Mio).
+- *2d:* wirkt nur auf das Vorjahresfenster; sitzt die Hülle in D1…D3 (erste Filings nach einer Fusion), bleibt die laufende 4Q-Summe gemischt.
+

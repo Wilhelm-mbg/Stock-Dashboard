@@ -15,6 +15,17 @@
  *     Wert mit dem frueheren filed, die API fuehrt beide Filings, und der Eintrag mit `frame` (das, was
  *     companyfacts/frames liefern) traegt NICHT die Erstveroeffentlichung.
  *
+ * v1.1 (Auftrag Nr. 60, 22.09.2026, §3):
+ *  P8 Aktien-Skala: Marktwert (roh.aktien x unbereinigter Panel-Schluss am filed-Tag, unabhaengig nachgerechnet) am
+ *     juengsten 10-K vor 2026-03-01 fuer MCD, KO, COP, PCAR, TEVA, AAPL, BRK in der Groessenordnung (Faktor 3);
+ *     AAPL 10-Q filed 2014-04-24 nach Regel A auf ~8,6e8 Stueck; Spruenge > 30 nach Korrektur < 5 % der Spruenge davor.
+ *  P9 Zuordnung: X nicht mehr CIK 83246; F/T/A (Tickertabelle) unveraendert; keine Reihe mit sicherheit 'tabelle' veraendert.
+ *  P10 Einheit: HRC 10-K filed 2021-11-12 markiert; kein Filing mit Assets-Sprung gegen beide Nachbarn > 100 mehr in der
+ *     Tafel (roh.vermoegen je CIK in Rangordnung); Huellen-Zaehler ausgewiesen.
+ *  P11 D4: AMCR und TW mit d4 'huelle'; kein vermoegenVor/vermoegen ausserhalb [1e-3, 1e3] mehr.
+ *  P12 Leser unveraendert: Kennung v1.1, 1.000 Zufallszugriffe aus P1b ohne Verstoss.
+ *  P2 zaehlt seit v1.1 Abweichungen, die eine Korrektur erklaert (Reihe verworfen, Aktien-Skala, Einheit), getrennt.
+ *
  * Aufruf: node --max-old-space-size=6144 test-fundamental.js [--ohne-api] [--ohne-zweitbau]
  */
 var fs = require('fs');
@@ -34,7 +45,7 @@ var TMP = path.join(process.env.TEMP || process.env.TMP || __dirname, 'fundament
 var UA = 'Markt-Dashboard Studie (wilhelm.gms@gmail.com)';
 var ohneApi = process.argv.indexOf('--ohne-api') >= 0, ohneZweitbau = process.argv.indexOf('--ohne-zweitbau') >= 0;
 
-var E = { kennung: 'fundamentaltafel-2026-09-16/test/v1', stand: new Date().toISOString(), pruefungen: {}, fehler: 0 };
+var E = { kennung: 'fundamentaltafel-2026-09-16/test/v1.1', stand: new Date().toISOString(), pruefungen: {}, fehler: 0 };
 function pruefung(name, ok, details) { E.pruefungen[name] = Object.assign({ ok: !!ok }, details || {}); if (!ok) E.fehler++; console.log((ok ? 'OK      ' : 'FEHLER  ') + name + (details && details.kurz ? ' - ' + details.kurz : '')); }
 function quantil(a, p) { if (!a.length) return null; var s = a.slice().sort(function (x, y) { return x - y; }); return s[Math.min(s.length - 1, Math.max(0, Math.round(p * (s.length - 1))))]; }
 function statistik(a) { return { n: a.length, p5: quantil(a, 0.05), p10: quantil(a, 0.1), p50: quantil(a, 0.5), p90: quantil(a, 0.9), p95: quantil(a, 0.95), mittel: a.length ? a.reduce(function (x, y) { return x + y; }, 0) / a.length : null }; }
@@ -71,13 +82,15 @@ function p1(kal) {
 }
 
 /* ---------- P2 Reproduktion 2019q2 / 2024q2 ---------- */
-function p2(tafel, panel) {
+function p2(tafel, panel, leser) {
   var deck = JSON.parse(fs.readFileSync(path.join(__dirname, 'deckung-reihen.json'), 'utf8'));
   var jeAdsh = {}; tafel.forEach(function (z) { jeAdsh[z.adsh] = z; });
   var aus = {}, alleOk = true;
   Object.keys(deck.reihen).forEach(function (qn) {
     var klassen = {}, wertOk = { umsatz: 0, vermoegen: 0, aktien: 0 }, wertErsteVeroeff = { umsatz: 0, vermoegen: 0, aktien: 0 }, wertAnders = [], fehltInTafel = [], nurTafel = 0;
     var verworfenFiledVorPeriod = [], regelAktien = 0, regelAktienBeispiele = [];
+    /* v1.1: Abweichungen, die eine der vier Korrekturen erklaert */
+    var fehltDurchZuordnung = [], durchAktienSkala = { A: 0, B: 0, verworfen: 0 }, durchEinheit = { umsatz: 0, vermoegen: 0, aktien: 0 };
     var deckAdsh = {};
     deck.reihen[qn].forEach(function (r) {
       var k = r.klasse || 'inaktiv', c = klassen[k] = klassen[k] || { reihen: 0, mach: { us: 0, umsatz: 0, vermoegen: 0, aktien: 0 }, tafel: { us: 0, umsatz: 0, vermoegen: 0, aktien: 0 } };
@@ -92,12 +105,18 @@ function p2(tafel, panel) {
         var z = jeAdsh[f.adsh];
         /* Der Bau verwirft Filings mit filed < period (FSDS-Datenfehler, z. B. PWSC 10-Q period 2024-12-31 filed
          * 2024-05-07) - in der Machbarkeit standen sie noch drin. */
-        if (!z) { (f.filed < f.period ? verworfenFiledVorPeriod : fehltInTafel).push({ reihe: r.reihe, adsh: f.adsh, form: f.form, period: f.period, filed: f.filed }); return; }
+        if (!z) {
+          var m2 = leser.meta.reihen[r.reihe];
+          (f.filed < f.period ? verworfenFiledVorPeriod : (m2 && m2.pruefung === 'verworfen') ? fehltDurchZuordnung : fehltInTafel).push({ reihe: r.reihe, adsh: f.adsh, form: f.form, period: f.period, filed: f.filed });
+          return;
+        }
         inTafel++;
         ['umsatz', 'vermoegen', 'aktien'].forEach(function (g) {
           if (z.roh[g] !== null) hatT[g] = 1;
           if (!w[g]) return;
           if (gleich(z.roh[g], w[g].wert)) wertOk[g]++;
+          else if (z.marken.einheit === 'verdacht') durchEinheit[g]++;
+          else if (g === 'aktien' && z.marken.aktienSkala && (z.marken.aktienSkala.faktor || z.marken.aktienSkala.verworfen)) durchAktienSkala[z.marken.aktienSkala.verworfen ? 'verworfen' : z.marken.aktienSkala.regel]++;
           else if (z.marken.erstVonFrueher > 0 || z.roh[g] === null) wertErsteVeroeff[g]++;
           /* Aktienzahl: die Machbarkeit nahm bei gewichteten Zahlen die ERSTE Dateizeile (qtrs 1 oder YTD, Reihenfolge
            * der Quelle) und Bestandszahlen im Fenster [period, filed]; der Bau nimmt qtrs = Sollquartal bzw. genau period.
@@ -111,14 +130,16 @@ function p2(tafel, panel) {
       ['umsatz', 'vermoegen', 'aktien'].forEach(function (g) { if (hatM[g]) c.mach[g]++; if (hatT[g]) c.tafel[g]++; });
     });
     tafel.forEach(function (z) { if (z.q === qn && !deckAdsh[z.adsh]) nurTafel++; });
-    /* Reihen mit US-Standardbericht je Klasse: gleich bis auf die verworfenen Filings (filed < period) */
+    /* Reihen mit US-Standardbericht je Klasse: gleich bis auf die verworfenen Filings (filed < period) und - seit v1.1 -
+     * die Reihen, deren Kuerzel->CIK-Zuordnung die Namenspruefung verworfen hat (je Reihe hoechstens eine Abweichung) */
     var usAbweichung = 0; Object.keys(klassen).forEach(function (k) { usAbweichung += Math.abs(klassen[k].mach.us - klassen[k].tafel.us); });
-    var usGleich = usAbweichung <= verworfenFiledVorPeriod.length;
+    var reihenVerworfen = {}; fehltDurchZuordnung.forEach(function (f) { reihenVerworfen[f.reihe] = 1; });
+    var usGleich = usAbweichung <= verworfenFiledVorPeriod.length + Object.keys(reihenVerworfen).length;
     var wertAndersN = wertAnders.length;
     var ok = usGleich && fehltInTafel.length === 0 && wertAndersN === 0;
     if (!ok) alleOk = false;
-    aus[qn] = { klassen: klassen, usGleich: usGleich, usAbweichung: usAbweichung, verworfenFiledVorPeriod: verworfenFiledVorPeriod, fehltInTafel: fehltInTafel.slice(0, 20), fehltInTafelN: fehltInTafel.length, nurTafel: nurTafel, wertGleich: wertOk, wertDurchErsteVeroeffentlichung: wertErsteVeroeff, regelunterschiedAktien: regelAktien, regelunterschiedAktienBeispiele: regelAktienBeispiele, wertAnders: wertAnders.filter(Boolean), wertAndersN: wertAndersN };
-    console.log('  ' + qn + ' US-Standard je Klasse gleich: ' + usGleich + ' (verworfen filed<period: ' + verworfenFiledVorPeriod.length + '), fehlt in Tafel: ' + fehltInTafel.length + ', Werte gleich: ' + JSON.stringify(wertOk) + ', durch Erstveroeffentlichung anders: ' + JSON.stringify(wertErsteVeroeff) + ', Regelunterschied Aktienzahl: ' + regelAktien + ', unerklaert anders: ' + wertAndersN);
+    aus[qn] = { klassen: klassen, usGleich: usGleich, usAbweichung: usAbweichung, verworfenFiledVorPeriod: verworfenFiledVorPeriod, fehltDurchZuordnungN: fehltDurchZuordnung.length, fehltDurchZuordnungReihen: Object.keys(reihenVerworfen).length, fehltDurchZuordnung: fehltDurchZuordnung.slice(0, 20), fehltInTafel: fehltInTafel.slice(0, 20), fehltInTafelN: fehltInTafel.length, nurTafel: nurTafel, wertGleich: wertOk, wertDurchErsteVeroeffentlichung: wertErsteVeroeff, wertDurchAktienSkala: durchAktienSkala, wertDurchEinheit: durchEinheit, regelunterschiedAktien: regelAktien, regelunterschiedAktienBeispiele: regelAktienBeispiele, wertAnders: wertAnders.filter(Boolean), wertAndersN: wertAndersN };
+    console.log('  ' + qn + ' US-Standard je Klasse gleich: ' + usGleich + ' (verworfen filed<period: ' + verworfenFiledVorPeriod.length + ', Reihen durch Zuordnung verworfen: ' + Object.keys(reihenVerworfen).length + ' mit ' + fehltDurchZuordnung.length + ' Filings), fehlt in Tafel: ' + fehltInTafel.length + ', Werte gleich: ' + JSON.stringify(wertOk) + ', durch Erstveroeffentlichung anders: ' + JSON.stringify(wertErsteVeroeff) + ', durch Aktien-Skala: ' + JSON.stringify(durchAktienSkala) + ', durch Einheit: ' + JSON.stringify(durchEinheit) + ', Regelunterschied Aktienzahl: ' + regelAktien + ', unerklaert anders: ' + wertAndersN);
   });
   pruefung('P2 Reproduktion Machbarkeit', alleOk, aus);
 }
@@ -282,19 +303,122 @@ async function p7(tafel, leser) {
   pruefung('P7 Handproben SEC-API', gewaehlt.length === 20 && bestanden === 20, { kandidaten: kandidaten.length, geprueft: gewaehlt.length, bestanden: bestanden, frameTraegtNichtDenErsten: apiFrameSpaeter, frameGleichSpaeterem: faelle.filter(function (f) { return f.frameGleichSpaeterem; }).length, anfragen: anfragen, faelle: faelle, kurz: bestanden + ' von ' + gewaehlt.length + ' bestanden, frame ohne Erstwert in ' + apiFrameSpaeter });
 }
 
+/* ---------- v1.1: P8 Aktien-Skala (Gegenprobe Marktwert, unabhaengig ueber das Tages-Panel nachgerechnet) ---------- */
+var PRUEFSTAND = path.join(__dirname, '..', 'querschnitt-pruefstand-2026-09-13');
+function p8(tafel, leser, bau) {
+  var PR = require(path.join(PRUEFSTAND, 'pruefstand.js')), T = PR.Tafel(path.join(PRUEFSTAND, 'voll'));
+  var kalIdx = T.kal.idx;
+  function kursAm(syms, filed) {   /* eigener Weg: Kalenderindex des filed-Tags (oder des letzten Handelstags davor), dann bis 10 Handelstage zurueck */
+    var t = kalIdx[filed]; if (t === undefined) { var tage = T.kal.tage.slice(0, T.maxTag + 1).filter(function (d) { return d <= filed; }); if (!tage.length) return null; t = kalIdx[tage[tage.length - 1]]; }
+    for (var i = 0; i < syms.length; i++) { var si = T.symIdx[syms[i]] !== undefined ? T.symIdx[syms[i]] : T.symIdx[syms[i].replace(/~2$/, '')]; if (si === undefined) continue; for (var k = 0; k < 10 && t - k >= 0; k++) { var z = T.zeileVon(si, t - k); if (z >= 0) return { kurs: T.g.rohSchluss[z], sym: syms[i], tag: T.kal.tage[t - k] }; } }
+    return null;
+  }
+  var ERWARTET = { MCD: 2e11, KO: 2.75e11, COP: 1.25e11, PCAR: 5.5e10, TEVA: 2.5e10, AAPL: 3.5e12, 'BRK.A': 1e12, 'BRK.B': 1e12 };
+  var faelle = [], ok = true;
+  Object.keys(ERWARTET).forEach(function (s) {
+    var rows = leser.alleFilings(s).filter(function (z) { return z.form === '10-K' && z.filed < '2026-03-01'; }), z = rows[rows.length - 1];
+    var f = { reihe: s, erwartet: ERWARTET[s], adsh: z && z.adsh, filed: z && z.filed, aktien: z ? z.roh.aktien : null, tag: z ? z.rohTags.aktien : null, marke: z ? z.marken.aktienSkala : null, kurs: null, marktwert: null, ok: null };
+    if (!z) { f.ok = false; f.grund = 'keine 10-K-Zeile'; }
+    else if (z.roh.aktien === null) { f.ok = null; f.grund = 'Aktienzahl null (Mehrklassen-Emittent, Stueckzahl je Klasse in Segmenten) - nicht pruefbar'; }
+    else { var k = kursAm(z.sym, z.filed); if (!k) { f.ok = false; f.grund = 'kein Kurs'; } else { f.kurs = k.kurs; f.kursTag = k.tag; f.marktwert = z.roh.aktien * k.kurs; f.ok = f.marktwert >= ERWARTET[s] / 3 && f.marktwert <= ERWARTET[s] * 3; } }
+    if (f.ok === false) ok = false;
+    faelle.push(f);
+    console.log('  ' + s + ': Marktwert ' + (f.marktwert === null ? '-' : f.marktwert.toExponential(2)) + ' erwartet ' + ERWARTET[s].toExponential(1) + ' ' + (f.ok === null ? 'nicht pruefbar' : f.ok ? 'ok' : 'FALSCH') + (f.grund ? ' (' + f.grund + ')' : '') + ' [aktien ' + f.aktien + ' ' + f.tag + ' ' + JSON.stringify(f.marke) + ']');
+  });
+  var aapl = leser.alleFilings('AAPL').filter(function (z) { return z.filed === '2014-04-24' && z.form === '10-Q'; })[0];
+  var aaplOk = !!aapl && aapl.roh.aktien !== null && Math.abs(aapl.roh.aktien / 8.6e8 - 1) < 0.05 && !!aapl.marken.aktienSkala && aapl.marken.aktienSkala.regel === 'A';
+  if (!aaplOk) ok = false;
+  var as = bau.v11.aktienSkala, spruengeOk = as.spruengeNach30 < 0.05 * as.spruengeVor30;
+  if (!spruengeOk) ok = false;
+  pruefung('P8 Aktien-Skala', ok, { gegenprobe: faelle, aapl20140424: aapl ? { adsh: aapl.adsh, aktien: aapl.roh.aktien, marke: aapl.marken.aktienSkala, ok: aaplOk } : null, spruenge: { vor: as.spruengeVor30, nach: as.spruengeNach30, anteil: Math.round(1000 * as.spruengeNach30 / as.spruengeVor30) / 10, ok: spruengeOk }, zaehler: { regelA: as.regelA, regelB: as.regelB, regelBVerworfen: as.regelBVerworfen, ohneKurs: as.ohneKurs, ohneVermoegen: as.ohneVermoegen },
+    kurz: faelle.filter(function (f) { return f.ok; }).length + ' von ' + faelle.filter(function (f) { return f.ok !== null; }).length + ' Marktwerten ok, AAPL 2014 ' + (aaplOk ? 'ok' : 'FALSCH') + ', Spruenge>30 ' + as.spruengeVor30 + ' -> ' + as.spruengeNach30 + (spruengeOk ? ' ok' : ' NICHT < 5 %') });
+}
+
+/* ---------- v1.1: P9 Zuordnung ---------- */
+function p9(leser, panel) {
+  var m = leser.meta.reihen, x = m.X, xOk = !!x && (x.cik === null || x.cik === 1163302);
+  var fest = { F: 37996, T: 732717, A: 1090872 }, festOk = Object.keys(fest).every(function (s) { return m[s] && m[s].cik === fest[s] && m[s].pruefung === 'tabelle'; });
+  var tabelleAnders = [];
+  panel.reihen.forEach(function (r) { if (r.sicherheit !== 'tabelle') return; var e = m[r.reihe]; if (!e || e.cik !== +r.cik || e.sicherheit !== 'tabelle' || e.pruefung !== 'tabelle') tabelleAnders.push(r.reihe); });
+  var zu = leser.meta && JSON.parse(fs.readFileSync(path.join(TAFEL, '_bau.json'), 'utf8')).v11.zuordnung;
+  pruefung('P9 Zuordnung', xOk && festOk && tabelleAnders.length === 0, { X: x, festOk: festOk, tabelleAnders: tabelleAnders.slice(0, 20), tabelleAndersN: tabelleAnders.length, jeStufe: zu.jeStufe, ciksOhneReiheDurchVerwerfen: zu.ciksOhneReiheDurchVerwerfen, kurz: 'X -> ' + (x && x.cik) + ' (' + (x && x.pruefung) + '), F/T/A unveraendert ' + festOk + ', Tabellen-Reihen veraendert ' + tabelleAnders.length });
+}
+
+/* ---------- v1.1: P10 Einheit ---------- */
+function p10(tafel, bau) {
+  var hrc = tafel.filter(function (z) { return z.adsh === '0000047518-21-000084'; })[0], hrcOk = !!hrc && hrc.marken.einheit === 'verdacht' && hrc.roh.vermoegen === null;
+  var jeCik = {}; tafel.forEach(function (z) { if (z.roh.vermoegen > 0) (jeCik[z.cik] = jeCik[z.cik] || []).push(z); });   /* Dateireihenfolge = Rangordnung */
+  var verstoesse = [], gepaart = 0;
+  Object.keys(jeCik).forEach(function (c) {
+    var l = jeCik[c];
+    for (var i = 1; i < l.length - 1; i++) {
+      gepaart++;
+      var a = Math.log10(l[i].roh.vermoegen), dv = a - Math.log10(l[i - 1].roh.vermoegen), dn = a - Math.log10(l[i + 1].roh.vermoegen);
+      if (Math.abs(dv) > 2 && Math.abs(dn) > 2 && (dv > 0) === (dn > 0)) verstoesse.push({ adsh: l[i].adsh, sym: l[i].sym, vermoegen: l[i].roh.vermoegen, vorher: l[i - 1].roh.vermoegen, nachher: l[i + 1].roh.vermoegen });
+    }
+  });
+  var ei = bau.v11.einheit, verdachtZeilen = tafel.filter(function (z) { return z.marken.einheit === 'verdacht'; }).length;
+  pruefung('P10 Einheit', hrcOk && verstoesse.length === 0 && verdachtZeilen === ei.verdacht, { hrc: hrc ? { adsh: hrc.adsh, einheit: hrc.marken.einheit, vermoegen: hrc.roh.vermoegen } : null, innereZeilenGeprueft: gepaart, verstoesse: verstoesse.slice(0, 20), verstoesseN: verstoesse.length, verdachtZeilen: verdachtZeilen, verdachtJeGrund: ei.faelle.reduce(function (o, f) { o[f.grund] = (o[f.grund] || 0) + 1; return o; }, {}), huellenEinseitig: ei.einseitig, ohnePruefung: ei.ohnePruefung, faktenUebersprungen: bau.fakten.einheitVerdachtUebersprungen,
+    kurz: 'HRC ' + (hrcOk ? 'markiert' : 'NICHT markiert') + ', Spruenge gegen beide Nachbarn > 100: ' + verstoesse.length + ', verdaechtig ' + verdachtZeilen + ', Huellen (einseitig) ' + ei.einseitig });
+}
+
+/* ---------- v1.1: P11 Vorjahresbestand aus der Huelle ---------- */
+/* Der Auftrag erwartet AMCR und TW mit d4 'huelle'. Im Bau greift aber 2c VOR 2d: die Huellen-Filings beider Firmen
+ * (AMCR 10-Q 2019-03-31 Assets 130 $, TW 10-Q 2019-03-31 Assets 100 $) sind die ERSTEN Filings ihrer CIK und fallen
+ * unter "Reihenanfang + Median" - ihre Fakten fehlen im Speicher, 2d hat nichts mehr zu vergleichen. Gemessen wird deshalb
+ * das Ergebnis, das der Auftrag will: jede v1-Zeile von AMCR/TW mit Huellen-Quotient ist in v1.1 bereinigt, und der Weg
+ * (d4-Marke der Zeile oder Einheit-Marke eines frueheren Filings der CIK) wird ausgewiesen. */
+function p11(tafel, leser) {
+  var V1 = path.join(__dirname, 'fundamentaltafel-v1'), alt = {};
+  if (fs.existsSync(V1)) fs.readdirSync(V1).filter(function (f) { return /^tafel-(2019|202\d)\.jsonl$/.test(f); }).forEach(function (f) { fs.readFileSync(path.join(V1, f), 'utf8').split('\n').forEach(function (l) { if (l.indexOf('"cik":1748790,') > 0 || l.indexOf('"cik":1758730,') > 0) { var z = JSON.parse(l); alt[z.adsh] = z; } }); });
+  function huellenQuotient(z) { return z.vermoegenVor > 0 && z.roh.vermoegen > 0 && (z.vermoegenVor / z.roh.vermoegen < 1e-3 || z.vermoegenVor / z.roh.vermoegen > 1e3); }
+  var betroffen = {}, alleBereinigt = true, altVorhanden = Object.keys(alt).length > 0;
+  ['AMCR', 'TW'].forEach(function (s) {
+    var rows = leser.alleFilings(s), verdachtAb = rows.filter(function (z) { return z.marken.einheit === 'verdacht'; }).map(function (z) { return z.filed; })[0] || null;
+    var faelle = [];
+    rows.forEach(function (z) {
+      var a = alt[z.adsh], warHuelle = !!a && huellenQuotient(a);
+      if (!warHuelle && z.marken.d4 !== 'huelle') return;
+      var bereinigt = !huellenQuotient(z), weg = z.marken.d4 === 'huelle' ? 'd4' : (verdachtAb && z.filed > verdachtAb) ? 'einheit (Huellen-Filing ' + verdachtAb + ' ausgelassen)' : 'keiner';
+      if (!bereinigt || weg === 'keiner') alleBereinigt = false;
+      faelle.push({ adsh: z.adsh, form: z.form, period: z.period, filed: z.filed, v1: a ? { vermoegenVor: a.vermoegenVor, fm: a.abgeleitet.fm } : null, v11: { vermoegenVor: z.vermoegenVor, fm: z.abgeleitet.fm }, bereinigt: bereinigt, weg: weg });
+    });
+    betroffen[s] = faelle;
+    if (!faelle.length) alleBereinigt = false;
+  });
+  var verstoesse = [], huelle = 0, geprueft = 0;
+  tafel.forEach(function (z) { if (z.marken.d4 === 'huelle') huelle++; if (!(z.vermoegenVor > 0) || !(z.roh.vermoegen > 0)) return; geprueft++; if (huellenQuotient(z)) verstoesse.push({ adsh: z.adsh, sym: z.sym, vermoegen: z.roh.vermoegen, vermoegenVor: z.vermoegenVor }); });
+  var ok = altVorhanden && alleBereinigt && verstoesse.length === 0;
+  pruefung('P11 D4 Huelle', ok, { hinweis: 'Auftrag §3 erwartet die Marke d4 an AMCR/TW; im Bau greift 2c (Reihenanfang + Median) vor 2d - gemessen wird das bereinigte Ergebnis samt Weg', v1Vorhanden: altVorhanden, AMCR: betroffen.AMCR, TW: betroffen.TW, zeilenMitHuelle: huelle, quotientenGeprueft: geprueft, verstoesse: verstoesse.slice(0, 20), verstoesseN: verstoesse.length,
+    kurz: 'AMCR ' + betroffen.AMCR.length + ' / TW ' + betroffen.TW.length + ' Huellen-Zeilen bereinigt (' + betroffen.AMCR.concat(betroffen.TW).map(function (f) { return f.weg.split(' ')[0]; }).join(',') + '), d4-Marke gesamt ' + huelle + ', Quotient ausserhalb [1e-3, 1e3]: ' + verstoesse.length + ' von ' + geprueft });
+}
+
+/* ---------- v1.1: P12 Leser unveraendert, Kennung ---------- */
+function p12(leser) {
+  var p1b = E.pruefungen['P1b 1000 Zufallszugriffe'], ok = !!p1b && p1b.ok && leser.kennung === 'fundamentaltafel-2026-09-16/v1.1' && F.KENNUNG === leser.kennung;
+  var altOk = false; try { F.oeffne(path.join(__dirname, 'fundamentaltafel-v1')); } catch (e) { altOk = /Kennung/.test(e.message); }   /* die alte Tafel muss der Leser abweisen */
+  pruefung('P12 Leser unveraendert', ok && altOk, { kennung: leser.kennung, leserKennung: F.KENNUNG, p1bOk: !!p1b && p1b.ok, geliefert: p1b && p1b.geliefert, verstoesse: p1b && p1b.verstoesse, alteTafelAbgewiesen: altOk, kurz: 'Kennung ' + leser.kennung + ', P1b ' + (p1b && p1b.geliefert) + ' geliefert / ' + (p1b && p1b.verstoesse) + ' Verstoesse, v1-Ordner abgewiesen ' + altOk });
+}
+
 async function main() {
   var t0 = Date.now();
   fs.mkdirSync(TMP, { recursive: true });
   var kal = Object.keys(JSON.parse(fs.readFileSync('E:/Markt-Dashboard-Archiv/alpaca1m/_kalender.json', 'utf8')).tage).sort();
   var panel = JSON.parse(fs.readFileSync(path.join(__dirname, 'panel.json'), 'utf8'));
+  var bau = JSON.parse(fs.readFileSync(path.join(TAFEL, '_bau.json'), 'utf8'));
   var leser = p1(kal);
   var tafel = ladeTafel();
   E.tafel = { zeilen: tafel.length, kennung: leser.kennung, dateien: leser.dateien };
-  p2(tafel, panel);
+  p2(tafel, panel, leser);
   p3(tafel);
   p4(tafel, leser);
   p5(tafel);
   await p7(tafel, leser);
+  p8(tafel, leser, bau);
+  p9(leser, panel);
+  p10(tafel, bau);
+  p11(tafel, leser);
+  p12(leser);
   p6();
   E.sekunden = Math.round((Date.now() - t0) / 1000);
   fs.writeFileSync(path.join(__dirname, 'test-fundamental.json'), JSON.stringify(E, null, 1));

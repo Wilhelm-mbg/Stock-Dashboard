@@ -1,6 +1,6 @@
 {
- "kennung": "fundamentaltafel-2026-09-16/v1",
- "stand": "2026-09-17T22:47:21.537Z",
+ "kennung": "fundamentaltafel-2026-09-16/v1.1",
+ "stand": "2026-09-22T19:44:51.303Z",
  "quartale": [
   "2014q1",
   "2014q2",
@@ -58,15 +58,15 @@
  "panel": {
   "reihen": 7299,
   "ohneCik": 77,
-  "ciks": 6003,
+  "ciks": 5648,
   "panelKennung": "fundamental-machbarkeit-2026-09-16/panel/v1"
  },
  "filings": {
   "alleRegistranten": 328199,
   "usStandardAlle": 317633,
   "auslaendAlle": 10566,
-  "panelUsStandard": 158516,
-  "panelAuslaend": 4931,
+  "panelUsStandard": 149078,
+  "panelAuslaend": 4439,
   "filedVorPeriod": 3,
   "periodUngueltig": 0,
   "doppelteAdsh": 0,
@@ -89,8 +89,8 @@
     "alle": 6901,
     "usStandard": 6785,
     "auslaend": 116,
-    "panelUsStandard": 2642,
-    "panelAuslaend": 55,
+    "panelUsStandard": 2547,
+    "panelAuslaend": 50,
     "filedMin": 20140102,
     "filedMax": 20140331
    },
@@ -98,8 +98,8 @@
     "alle": 8199,
     "usStandard": 8011,
     "auslaend": 188,
-    "panelUsStandard": 2861,
-    "panelAuslaend": 67,
+    "panelUsStandard": 2740,
+    "panelAuslaend": 62,
     "filedMin": 20140401,
     "filedMax": 20140630
    },
@@ -107,8 +107,8 @@
     "alle": 7467,
     "usStandard": 7438,
     "auslaend": 29,
-    "panelUsStandard": 2853,
-    "panelAuslaend": 9,
+    "panelUsStandard": 2734,
+    "panelAuslaend": 8,
     "filedMin": 20140701,
     "filedMax": 20140930
    },
@@ -116,8 +116,8 @@
     "alle": 7445,
     "usStandard": 7440,
     "auslaend": 5,
-    "panelUsStandard": 2916,
-    "panelAuslaend": 3,
+    "panelUsStandard": 2793,
+    "panelAuslaend": 2,
     "filedMin": 20141001,
     "filedMax": 20141231
    },
@@ -125,8 +125,8 @@
     "alle": 6798,
     "usStandard": 6690,
     "auslaend": 108,
-    "panelUsStandard": 2876,
-    "panelAuslaend": 57,
+    "panelUsStandard": 2763,
+    "panelAuslaend": 51,
     "filedMin": 20150106,
     "filedMax": 20150331
    },
@@ -134,8 +134,8 @@
     "alle": 7917,
     "usStandard": 7732,
     "auslaend": 185,
-    "panelUsStandard": 3052,
-    "panelAuslaend": 78,
+    "panelUsStandard": 2916,
+    "panelAuslaend": 73,
     "filedMin": 20150401,
     "filedMax": 20150630
    },
@@ -143,8 +143,8 @@
     "alle": 7186,
     "usStandard": 7163,
     "auslaend": 23,
-    "panelUsStandard": 3055,
-    "panelAuslaend": 8,
+    "panelUsStandard": 2928,
+    "panelAuslaend": 7,
     "filedMin": 20150701,
     "filedMax": 20150930
    },
@@ -152,7 +152,7 @@
     "alle": 7027,
     "usStandard": 7018,
     "auslaend": 9,
-    "panelUsStandard": 3090,
+    "panelUsStandard": 2959,
     "panelAuslaend": 4,
     "filedMin": 20151001,
     "filedMax": 20151230
@@ -161,8 +161,8 @@
     "alle": 6368,
     "usStandard": 6269,
     "auslaend": 99,
-    "panelUsStandard": 3031,
-    "panelAuslaend": 57,
+    "panelUsStandard": 2909,
+    "panelAuslaend": 52,
     "filedMin": 20160104,
     "filedMax": 20160331
    },
@@ -170,8 +170,8 @@
     "alle": 7274,
     "usStandard": 7097,
     "auslaend": 177,
-    "panelUsStandard": 3159,
-    "panelAuslaend": 76,
+    "panelUsStandard": 3023,
+    "panelAuslaend": 71,
     "filedMin": 20160401,
     "filedMax": 20160630
    },
@@ -179,8 +179,8 @@
     "alle": 5975,
     "usStandard": 5963,
     "auslaend": 12,
-    "panelUsStandard": 2885,
-    "panelAuslaend": 6,
+    "panelUsStandard": 2754,
+    "panelAuslaend": 5,
     "filedMin": 20160701,
     "filedMax": 20160930
    },
@@ -188,8 +188,8 @@
     "alle": 6553,
     "usStandard": 6545,
     "auslaend": 8,
-    "panelUsStandard": 3156,
-    "panelAuslaend": 4,
+    "panelUsStandard": 3024,
+    "panelAuslaend": 3,
     "filedMin": 20161003,
     "filedMax": 20161230
    },
@@ -197,8 +197,8 @@
     "alle": 6076,
     "usStandard": 5964,
     "auslaend": 112,
-    "panelUsStandard": 3047,
-    "panelAuslaend": 58,
+    "panelUsStandard": 2923,
+    "panelAuslaend": 52,
     "filedMin": 20170104,
     "filedMax": 20170331
    },
@@ -206,8 +206,8 @@
     "alle": 6982,
     "usStandard": 6822,
     "auslaend": 160,
-    "panelUsStandard": 3191,
-    "panelAuslaend": 75,
+    "panelUsStandard": 3046,
+    "panelAuslaend": 70,
     "filedMin": 20170403,
     "filedMax": 20170630
    },
@@ -215,8 +215,8 @@
     "alle": 6308,
     "usStandard": 6289,
     "auslaend": 19,
-    "panelUsStandard": 3103,
-    "panelAuslaend": 8,
+    "panelUsStandard": 2961,
+    "panelAuslaend": 7,
     "filedMin": 20170703,
     "filedMax": 20170929
    },
@@ -224,7 +224,7 @@
     "alle": 6353,
     "usStandard": 6340,
     "auslaend": 13,
-    "panelUsStandard": 3115,
+    "panelUsStandard": 2967,
     "panelAuslaend": 6,
     "filedMin": 20171002,
     "filedMax": 20171229
@@ -233,17 +233,17 @@
     "alle": 5800,
     "usStandard": 5493,
     "auslaend": 307,
-    "panelUsStandard": 2925,
-    "panelAuslaend": 186,
-    "filedMin": 20180102,
+    "panelUsStandard": 2800,
+    "panelAuslaend": 172,
+    "filedMin": 20180103,
     "filedMax": 20180330
    },
    "2018q2": {
     "alle": 7222,
     "usStandard": 6841,
     "auslaend": 381,
-    "panelUsStandard": 3268,
-    "panelAuslaend": 186,
+    "panelUsStandard": 3099,
+    "panelAuslaend": 167,
     "filedMin": 20180402,
     "filedMax": 20180629
    },
@@ -251,8 +251,8 @@
     "alle": 6183,
     "usStandard": 6133,
     "auslaend": 50,
-    "panelUsStandard": 3103,
-    "panelAuslaend": 22,
+    "panelUsStandard": 2943,
+    "panelAuslaend": 21,
     "filedMin": 20180702,
     "filedMax": 20180928
    },
@@ -260,8 +260,8 @@
     "alle": 6188,
     "usStandard": 6143,
     "auslaend": 45,
-    "panelUsStandard": 3126,
-    "panelAuslaend": 19,
+    "panelUsStandard": 2974,
+    "panelAuslaend": 17,
     "filedMin": 20181001,
     "filedMax": 20181231
    },
@@ -269,8 +269,8 @@
     "alle": 5549,
     "usStandard": 5222,
     "auslaend": 327,
-    "panelUsStandard": 2870,
-    "panelAuslaend": 205,
+    "panelUsStandard": 2739,
+    "panelAuslaend": 190,
     "filedMin": 20190102,
     "filedMax": 20190329
    },
@@ -278,8 +278,8 @@
     "alle": 7034,
     "usStandard": 6626,
     "auslaend": 408,
-    "panelUsStandard": 3224,
-    "panelAuslaend": 192,
+    "panelUsStandard": 3044,
+    "panelAuslaend": 171,
     "filedMin": 20190401,
     "filedMax": 20190628
    },
@@ -287,8 +287,8 @@
     "alle": 5991,
     "usStandard": 5932,
     "auslaend": 59,
-    "panelUsStandard": 3052,
-    "panelAuslaend": 24,
+    "panelUsStandard": 2883,
+    "panelAuslaend": 22,
     "filedMin": 20190701,
     "filedMax": 20190930
    },
@@ -296,8 +296,8 @@
     "alle": 6013,
     "usStandard": 5955,
     "auslaend": 58,
-    "panelUsStandard": 3076,
-    "panelAuslaend": 27,
+    "panelUsStandard": 2904,
+    "panelAuslaend": 23,
     "filedMin": 20191001,
     "filedMax": 20191230
    },
@@ -305,8 +305,8 @@
     "alle": 5631,
     "usStandard": 5312,
     "auslaend": 319,
-    "panelUsStandard": 2916,
-    "panelAuslaend": 194,
+    "panelUsStandard": 2763,
+    "panelAuslaend": 180,
     "filedMin": 20200102,
     "filedMax": 20200331
    },
@@ -314,8 +314,8 @@
     "alle": 6348,
     "usStandard": 5925,
     "auslaend": 423,
-    "panelUsStandard": 3074,
-    "panelAuslaend": 202,
+    "panelUsStandard": 2895,
+    "panelAuslaend": 181,
     "filedMin": 20200401,
     "filedMax": 20200630
    },
@@ -323,8 +323,8 @@
     "alle": 5966,
     "usStandard": 5905,
     "auslaend": 61,
-    "panelUsStandard": 3084,
-    "panelAuslaend": 27,
+    "panelUsStandard": 2909,
+    "panelAuslaend": 24,
     "filedMin": 20200701,
     "filedMax": 20200930
    },
@@ -332,8 +332,8 @@
     "alle": 5922,
     "usStandard": 5868,
     "auslaend": 54,
-    "panelUsStandard": 3140,
-    "panelAuslaend": 23,
+    "panelUsStandard": 2954,
+    "panelAuslaend": 19,
     "filedMin": 20201001,
     "filedMax": 20201231
    },
@@ -341,8 +341,8 @@
     "alle": 5965,
     "usStandard": 5579,
     "auslaend": 386,
-    "panelUsStandard": 3149,
-    "panelAuslaend": 235,
+    "panelUsStandard": 2964,
+    "panelAuslaend": 214,
     "filedMin": 20210104,
     "filedMax": 20210331
    },
@@ -350,8 +350,8 @@
     "alle": 7337,
     "usStandard": 6882,
     "auslaend": 455,
-    "panelUsStandard": 3740,
-    "panelAuslaend": 198,
+    "panelUsStandard": 3463,
+    "panelAuslaend": 177,
     "filedMin": 20210401,
     "filedMax": 20210630
    },
@@ -359,8 +359,8 @@
     "alle": 6905,
     "usStandard": 6845,
     "auslaend": 60,
-    "panelUsStandard": 3721,
-    "panelAuslaend": 27,
+    "panelUsStandard": 3462,
+    "panelAuslaend": 26,
     "filedMin": 20210701,
     "filedMax": 20210930
    },
@@ -368,8 +368,8 @@
     "alle": 7026,
     "usStandard": 6955,
     "auslaend": 71,
-    "panelUsStandard": 3938,
-    "panelAuslaend": 27,
+    "panelUsStandard": 3656,
+    "panelAuslaend": 22,
     "filedMin": 20211001,
     "filedMax": 20211230
    },
@@ -377,8 +377,8 @@
     "alle": 6794,
     "usStandard": 6373,
     "auslaend": 421,
-    "panelUsStandard": 3717,
-    "panelAuslaend": 257,
+    "panelUsStandard": 3473,
+    "panelAuslaend": 236,
     "filedMin": 20220103,
     "filedMax": 20220331
    },
@@ -386,8 +386,8 @@
     "alle": 7897,
     "usStandard": 7352,
     "auslaend": 545,
-    "panelUsStandard": 4074,
-    "panelAuslaend": 243,
+    "panelUsStandard": 3798,
+    "panelAuslaend": 211,
     "filedMin": 20220401,
     "filedMax": 20220630
    },
@@ -395,8 +395,8 @@
     "alle": 6847,
     "usStandard": 6744,
     "auslaend": 103,
-    "panelUsStandard": 3772,
-    "panelAuslaend": 39,
+    "panelUsStandard": 3511,
+    "panelAuslaend": 34,
     "filedMin": 20220701,
     "filedMax": 20220930
    },
@@ -404,8 +404,8 @@
     "alle": 6868,
     "usStandard": 6792,
     "auslaend": 76,
-    "panelUsStandard": 3798,
-    "panelAuslaend": 32,
+    "panelUsStandard": 3531,
+    "panelAuslaend": 26,
     "filedMin": 20221003,
     "filedMax": 20221230
    },
@@ -413,8 +413,8 @@
     "alle": 6369,
     "usStandard": 5911,
     "auslaend": 458,
-    "panelUsStandard": 3360,
-    "panelAuslaend": 247,
+    "panelUsStandard": 3117,
+    "panelAuslaend": 229,
     "filedMin": 20230103,
     "filedMax": 20230331
    },
@@ -422,8 +422,8 @@
     "alle": 7488,
     "usStandard": 6935,
     "auslaend": 553,
-    "panelUsStandard": 3774,
-    "panelAuslaend": 251,
+    "panelUsStandard": 3482,
+    "panelAuslaend": 222,
     "filedMin": 20230403,
     "filedMax": 20230630
    },
@@ -431,8 +431,8 @@
     "alle": 6383,
     "usStandard": 6299,
     "auslaend": 84,
-    "panelUsStandard": 3429,
-    "panelAuslaend": 31,
+    "panelUsStandard": 3172,
+    "panelAuslaend": 29,
     "filedMin": 20230703,
     "filedMax": 20230929
    },
@@ -440,8 +440,8 @@
     "alle": 6360,
     "usStandard": 6281,
     "auslaend": 79,
-    "panelUsStandard": 3387,
-    "panelAuslaend": 30,
+    "panelUsStandard": 3129,
+    "panelAuslaend": 25,
     "filedMin": 20231002,
     "filedMax": 20231229
    },
@@ -449,8 +449,8 @@
     "alle": 5612,
     "usStandard": 5170,
     "auslaend": 442,
-    "panelUsStandard": 2908,
-    "panelAuslaend": 242,
+    "panelUsStandard": 2716,
+    "panelAuslaend": 220,
     "filedMin": 20240103,
     "filedMax": 20240329
    },
@@ -458,8 +458,8 @@
     "alle": 7183,
     "usStandard": 6637,
     "auslaend": 546,
-    "panelUsStandard": 3517,
-    "panelAuslaend": 228,
+    "panelUsStandard": 3241,
+    "panelAuslaend": 199,
     "filedMin": 20240401,
     "filedMax": 20240628
    },
@@ -467,8 +467,8 @@
     "alle": 6087,
     "usStandard": 5980,
     "auslaend": 107,
-    "panelUsStandard": 3226,
-    "panelAuslaend": 38,
+    "panelUsStandard": 2972,
+    "panelAuslaend": 37,
     "filedMin": 20240701,
     "filedMax": 20240930
    },
@@ -476,8 +476,8 @@
     "alle": 6016,
     "usStandard": 5910,
     "auslaend": 106,
-    "panelUsStandard": 3125,
-    "panelAuslaend": 33,
+    "panelUsStandard": 2875,
+    "panelAuslaend": 26,
     "filedMin": 20241001,
     "filedMax": 20241231
    },
@@ -485,8 +485,8 @@
     "alle": 5765,
     "usStandard": 5305,
     "auslaend": 460,
-    "panelUsStandard": 2869,
-    "panelAuslaend": 230,
+    "panelUsStandard": 2652,
+    "panelAuslaend": 211,
     "filedMin": 20250102,
     "filedMax": 20250331
    },
@@ -494,8 +494,8 @@
     "alle": 6542,
     "usStandard": 5964,
     "auslaend": 578,
-    "panelUsStandard": 3047,
-    "panelAuslaend": 212,
+    "panelUsStandard": 2792,
+    "panelAuslaend": 186,
     "filedMin": 20250401,
     "filedMax": 20250630
    },
@@ -503,8 +503,8 @@
     "alle": 5875,
     "usStandard": 5756,
     "auslaend": 119,
-    "panelUsStandard": 2886,
-    "panelAuslaend": 27,
+    "panelUsStandard": 2655,
+    "panelAuslaend": 24,
     "filedMin": 20250701,
     "filedMax": 20250930
    },
@@ -512,8 +512,8 @@
     "alle": 5825,
     "usStandard": 5721,
     "auslaend": 104,
-    "panelUsStandard": 2818,
-    "panelAuslaend": 30,
+    "panelUsStandard": 2592,
+    "panelAuslaend": 25,
     "filedMin": 20251001,
     "filedMax": 20251231
    },
@@ -521,8 +521,8 @@
     "alle": 5812,
     "usStandard": 5319,
     "auslaend": 493,
-    "panelUsStandard": 2616,
-    "panelAuslaend": 221,
+    "panelUsStandard": 2410,
+    "panelAuslaend": 203,
     "filedMin": 20260105,
     "filedMax": 20260331
    },
@@ -530,187 +530,187 @@
     "alle": 6567,
     "usStandard": 6002,
     "auslaend": 565,
-    "panelUsStandard": 2755,
-    "panelAuslaend": 175,
+    "panelUsStandard": 2521,
+    "panelAuslaend": 147,
     "filedMin": 20260401,
     "filedMax": 20260630
    }
   }
  },
  "fakten": {
-  "zeilen": 4958973,
-  "uomFalsch": 4088,
-  "zinsNichtFinanz": 41174,
-  "qtrsUngueltig": 1382,
-  "wertUngueltig": 8461,
-  "eingefuegt": 2290771,
-  "wiederholtGleich": 2361864,
-  "neudarstellungen": 251233,
+  "zeilen": 4693276,
+  "uomFalsch": 3935,
+  "zinsNichtFinanz": 38434,
+  "qtrsUngueltig": 1208,
+  "wertUngueltig": 6950,
+  "einheitVerdachtUebersprungen": 3166,
+  "eingefuegt": 2162421,
+  "wiederholtGleich": 2246839,
+  "neudarstellungen": 230323,
   "doppelImFiling": 0,
   "rangUmkehr": 0,
   "neuJeGruppe": {
-   "aktien": 44663,
-   "umsatz": 34736,
-   "netto": 54840,
-   "operativ": 33982,
-   "eigenkapital": 40754,
-   "vermoegen": 16683,
-   "umsatzkosten": 17790,
-   "fue": 7785
+   "aktien": 39701,
+   "umsatz": 33211,
+   "netto": 50153,
+   "operativ": 31486,
+   "eigenkapital": 36195,
+   "vermoegen": 15575,
+   "umsatzkosten": 16940,
+   "fue": 7062
   },
   "neuJeSpaeterForm": {
-   "Q": 135111,
-   "K": 96335,
-   "KA": 9297,
-   "QA": 10090,
-   "QT": 60,
-   "KT": 321,
-   "QTA": 8,
+   "Q": 122112,
+   "K": 90823,
+   "KA": 8526,
+   "QA": 8503,
+   "QT": 42,
+   "KT": 306,
    "KTA": 11
   }
  },
  "zeilen": {
-  "gesamt": 158516,
+  "gesamt": 149078,
   "jeJahr": {
-   "2014": 11272,
-   "2015": 12073,
-   "2016": 12231,
-   "2017": 12456,
-   "2018": 12422,
-   "2019": 12222,
-   "2020": 12214,
-   "2021": 14548,
-   "2022": 15361,
-   "2023": 13950,
-   "2024": 12776,
-   "2025": 11620,
-   "2026": 5371
+   "2014": 10814,
+   "2015": 11566,
+   "2016": 11710,
+   "2017": 11897,
+   "2018": 11816,
+   "2019": 11570,
+   "2020": 11521,
+   "2021": 13545,
+   "2022": 14313,
+   "2023": 12900,
+   "2024": 11804,
+   "2025": 10691,
+   "2026": 4931
   }
  },
  "roh": {
-  "umsatz": 138107,
-  "netto": 156726,
-  "operativ": 123390,
-  "umsatzkosten": 82512,
-  "fue": 54587,
-  "vermoegen": 157763,
-  "eigenkapital": 157446,
-  "aktien": 142258,
+  "umsatz": 131391,
+  "netto": 147212,
+  "operativ": 115441,
+  "umsatzkosten": 78447,
+  "fue": 50301,
+  "vermoegen": 148017,
+  "eigenkapital": 147675,
+  "aktien": 133735,
   "tags": {
-   "SalesRevenueNet": 16727,
-   "NetIncomeLoss": 143450,
-   "CostOfGoodsAndServicesSold": 40520,
-   "OperatingIncomeLoss": 123390,
-   "CostOfGoodsSold": 10327,
-   "SalesRevenueGoodsNet": 3940,
-   "ResearchAndDevelopmentExpense": 50918,
-   "Revenues": 52230,
-   "CostOfRevenue": 26475,
-   "CostOfServices": 1940,
-   "ProfitLoss": 10049,
-   "SalesRevenueServicesNet": 1705,
-   "OilAndGasRevenue": 316,
-   "NetIncomeLossAvailableToCommonStockholdersBasic": 3120,
-   "IncomeLossFromContinuingOperations": 107,
+   "SalesRevenueNet": 16213,
+   "NetIncomeLoss": 134443,
+   "CostOfGoodsAndServicesSold": 39129,
+   "OperatingIncomeLoss": 115441,
+   "CostOfGoodsSold": 10069,
+   "SalesRevenueGoodsNet": 3804,
+   "ResearchAndDevelopmentExpense": 46857,
+   "Revenues": 49376,
+   "CostOfRevenue": 24392,
+   "CostOfServices": 1847,
+   "ProfitLoss": 9690,
+   "SalesRevenueServicesNet": 1641,
+   "OilAndGasRevenue": 296,
+   "NetIncomeLossAvailableToCommonStockholdersBasic": 2980,
+   "IncomeLossFromContinuingOperations": 99,
    "ResearchAndDevelopmentExpenseSoftwareExcludingAcquiredInProcessCost": 527,
-   "ResearchAndDevelopmentExpenseExcludingAcquiredInProcessCost": 3142,
-   "RealEstateRevenueNet": 478,
+   "ResearchAndDevelopmentExpenseExcludingAcquiredInProcessCost": 2917,
+   "RealEstateRevenueNet": 477,
    "RegulatedAndUnregulatedOperatingRevenue": 627,
-   "RevenuesNetOfInterestExpense": 524,
-   "InterestAndDividendIncomeOperating": 9744,
-   "InterestIncomeExpenseNet": 1422,
+   "RevenuesNetOfInterestExpense": 452,
+   "InterestAndDividendIncomeOperating": 9486,
+   "InterestIncomeExpenseNet": 1375,
    "OperatingLeasesIncomeStatementLeaseRevenue": 399,
    "HealthCareOrganizationRevenue": 182,
    "RevenueMineralSales": 103,
-   "RevenueFromContractWithCustomerIncludingAssessedTax": 7035,
-   "RevenueFromContractWithCustomerExcludingAssessedTax": 42675,
-   "CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization": 3250
+   "RevenueFromContractWithCustomerIncludingAssessedTax": 6514,
+   "RevenueFromContractWithCustomerExcludingAssessedTax": 40446,
+   "CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization": 3010
   },
-  "eigenkapitalFallback": 9430,
-  "nettoFallback": 13276,
+  "eigenkapitalFallback": 8978,
+  "nettoFallback": 12769,
   "aktienJeTag": {
-   "WeightedAverageNumberOfSharesOutstandingBasic": 30316,
-   "CommonStockSharesOutstanding": 105265,
-   "CommonStockSharesIssued": 6234,
-   "WeightedAverageNumberOfDilutedSharesOutstanding": 376,
+   "WeightedAverageNumberOfSharesOutstandingBasic": 29211,
+   "CommonStockSharesOutstanding": 98021,
+   "CommonStockSharesIssued": 6089,
+   "WeightedAverageNumberOfDilutedSharesOutstanding": 347,
    "EntityCommonStockSharesOutstanding": 67
   }
  },
  "wege": {
   "umsatz": {
-   "direkt": 928135,
-   "jahr-3q": 125242,
-   "ytd3-2q": 21,
-   "jahr-ytd3": 8058,
-   "ytd3": 1113,
-   "ytd2": 830
+   "direkt": 886586,
+   "jahr-3q": 117189,
+   "ytd3-2q": 15,
+   "jahr-ytd3": 7013,
+   "ytd3": 872,
+   "ytd2": 707
   },
   "netto": {
-   "direkt": 1042259,
-   "jahr-ytd3": 5355,
-   "jahr-3q": 144413,
-   "ytd3-2q": 55,
-   "ytd3": 1847,
-   "ytd2": 1917
+   "direkt": 984936,
+   "jahr-ytd3": 4821,
+   "jahr-3q": 132374,
+   "ytd3-2q": 56,
+   "ytd3": 1457,
+   "ytd2": 1450
   },
   "operativ": {
-   "direkt": 767642,
-   "jahr-ytd3": 5494,
-   "ytd3-2q": 36,
-   "jahr-3q": 152985,
-   "ytd3": 1267,
-   "ytd2": 1274
+   "direkt": 721086,
+   "jahr-ytd3": 5052,
+   "ytd3-2q": 35,
+   "jahr-3q": 141457,
+   "ytd3": 1096,
+   "ytd2": 1123
   }
  },
  "luecken": {
   "umsatz": {
-   "summe4q": 32639,
-   "summe4qVor": 31437,
+   "summe4q": 28883,
+   "summe4qVor": 27928,
    "jeQuartal": [
-    21726,
-    25134,
-    27638,
-    28525,
-    21110,
-    24314,
-    27036,
-    29246
+    18904,
+    22083,
+    24403,
+    25233,
+    18415,
+    21386,
+    23902,
+    25916
    ]
   },
   "netto": {
-   "summe4q": 13126,
-   "summe4qVor": 16437,
+   "summe4q": 12394,
+   "summe4qVor": 15327,
    "jeQuartal": [
-    2042,
-    6093,
-    9552,
-    11570,
-    5410,
-    9247,
-    12685,
-    15683
+    2286,
+    6018,
+    9153,
+    10931,
+    4852,
+    8409,
+    11575,
+    14306
    ]
   },
   "operativ": {
-   "summe4q": 47440,
-   "summe4qVor": 49616,
+   "summe4q": 45043,
+   "summe4qVor": 47138,
    "jeQuartal": [
-    35998,
-    40176,
-    43704,
-    45602,
-    38017,
-    41933,
-    45456,
-    48544
+    34483,
+    38375,
+    41640,
+    43364,
+    36166,
+    39799,
+    43057,
+    45891
    ]
   }
  },
  "abgeleitet": {
-  "summe4qNetto": 145390,
-  "fm": 135156,
-  "umsatzWachstum": 122743,
-  "roa": 145173
+  "summe4qNetto": 136684,
+  "fm": 127111,
+  "umsatzWachstum": 117389,
+  "roa": 136501
  },
  "quartalsgrenzen": {
   "verletzt": 0
@@ -770,176 +770,176 @@
    },
    "250-1000": {
     "aktiv": 116,
-    "mitCik": 116,
-    "bericht": 103,
+    "mitCik": 113,
+    "bericht": 100,
     "auslaend": 5,
-    "umsatz": 101,
-    "netto": 103,
-    "operativ": 75,
-    "vermoegen": 103,
-    "eigenkapital": 103,
-    "aktien": 96,
-    "summe4qNetto": 100,
-    "fm": 100,
-    "umsatzWachstum": 98,
+    "umsatz": 98,
+    "netto": 100,
+    "operativ": 73,
+    "vermoegen": 100,
+    "eigenkapital": 100,
+    "aktien": 93,
+    "summe4qNetto": 97,
+    "fm": 97,
+    "umsatzWachstum": 95,
     "prozent": {
-     "mitCik": 100,
-     "bericht": 88.8,
+     "mitCik": 97.4,
+     "bericht": 86.2,
      "auslaend": 4.3,
-     "umsatz": 87.1,
-     "netto": 88.8,
-     "operativ": 64.7,
-     "vermoegen": 88.8,
-     "eigenkapital": 88.8,
-     "aktien": 82.8,
-     "summe4qNetto": 86.2,
-     "fm": 86.2,
-     "umsatzWachstum": 84.5
+     "umsatz": 84.5,
+     "netto": 86.2,
+     "operativ": 62.9,
+     "vermoegen": 86.2,
+     "eigenkapital": 86.2,
+     "aktien": 80.2,
+     "summe4qNetto": 83.6,
+     "fm": 83.6,
+     "umsatzWachstum": 81.9
     }
    },
    "50-250": {
     "aktiv": 579,
-    "mitCik": 579,
-    "bericht": 474,
-    "auslaend": 11,
-    "umsatz": 456,
-    "netto": 472,
-    "operativ": 367,
-    "vermoegen": 472,
-    "eigenkapital": 472,
-    "aktien": 451,
-    "summe4qNetto": 457,
-    "fm": 457,
-    "umsatzWachstum": 439,
+    "mitCik": 553,
+    "bericht": 455,
+    "auslaend": 9,
+    "umsatz": 438,
+    "netto": 453,
+    "operativ": 354,
+    "vermoegen": 453,
+    "eigenkapital": 453,
+    "aktien": 435,
+    "summe4qNetto": 438,
+    "fm": 438,
+    "umsatzWachstum": 421,
     "prozent": {
-     "mitCik": 100,
-     "bericht": 81.9,
-     "auslaend": 1.9,
-     "umsatz": 78.8,
-     "netto": 81.5,
-     "operativ": 63.4,
-     "vermoegen": 81.5,
-     "eigenkapital": 81.5,
-     "aktien": 77.9,
-     "summe4qNetto": 78.9,
-     "fm": 78.9,
-     "umsatzWachstum": 75.8
+     "mitCik": 95.5,
+     "bericht": 78.6,
+     "auslaend": 1.6,
+     "umsatz": 75.6,
+     "netto": 78.2,
+     "operativ": 61.1,
+     "vermoegen": 78.2,
+     "eigenkapital": 78.2,
+     "aktien": 75.1,
+     "summe4qNetto": 75.6,
+     "fm": 75.6,
+     "umsatzWachstum": 72.7
     }
    },
    "5-50": {
     "aktiv": 1379,
-    "mitCik": 1374,
-    "bericht": 1091,
-    "auslaend": 44,
-    "umsatz": 1042,
-    "netto": 1087,
-    "operativ": 858,
-    "vermoegen": 1086,
-    "eigenkapital": 1084,
-    "aktien": 1024,
-    "summe4qNetto": 1046,
-    "fm": 1036,
-    "umsatzWachstum": 985,
+    "mitCik": 1295,
+    "bericht": 1032,
+    "auslaend": 43,
+    "umsatz": 986,
+    "netto": 1028,
+    "operativ": 825,
+    "vermoegen": 1027,
+    "eigenkapital": 1025,
+    "aktien": 970,
+    "summe4qNetto": 988,
+    "fm": 979,
+    "umsatzWachstum": 930,
     "prozent": {
-     "mitCik": 99.6,
-     "bericht": 79.1,
-     "auslaend": 3.2,
-     "umsatz": 75.6,
-     "netto": 78.8,
-     "operativ": 62.2,
-     "vermoegen": 78.8,
-     "eigenkapital": 78.6,
-     "aktien": 74.3,
-     "summe4qNetto": 75.9,
-     "fm": 75.1,
-     "umsatzWachstum": 71.4
+     "mitCik": 93.9,
+     "bericht": 74.8,
+     "auslaend": 3.1,
+     "umsatz": 71.5,
+     "netto": 74.5,
+     "operativ": 59.8,
+     "vermoegen": 74.5,
+     "eigenkapital": 74.3,
+     "aktien": 70.3,
+     "summe4qNetto": 71.6,
+     "fm": 71,
+     "umsatzWachstum": 67.4
     }
    },
    "unter5": {
     "aktiv": 1835,
-    "mitCik": 1827,
-    "bericht": 1413,
-    "auslaend": 70,
-    "umsatz": 1270,
-    "netto": 1405,
-    "operativ": 1059,
-    "vermoegen": 1410,
-    "eigenkapital": 1409,
-    "aktien": 1329,
-    "summe4qNetto": 1346,
-    "fm": 1331,
-    "umsatzWachstum": 1165,
+    "mitCik": 1536,
+    "bericht": 1180,
+    "auslaend": 60,
+    "umsatz": 1082,
+    "netto": 1172,
+    "operativ": 888,
+    "vermoegen": 1177,
+    "eigenkapital": 1176,
+    "aktien": 1103,
+    "summe4qNetto": 1121,
+    "fm": 1109,
+    "umsatzWachstum": 1000,
     "prozent": {
-     "mitCik": 99.6,
-     "bericht": 77,
-     "auslaend": 3.8,
-     "umsatz": 69.2,
-     "netto": 76.6,
-     "operativ": 57.7,
-     "vermoegen": 76.8,
-     "eigenkapital": 76.8,
-     "aktien": 72.4,
-     "summe4qNetto": 73.4,
-     "fm": 72.5,
-     "umsatzWachstum": 63.5
+     "mitCik": 83.7,
+     "bericht": 64.3,
+     "auslaend": 3.3,
+     "umsatz": 59,
+     "netto": 63.9,
+     "operativ": 48.4,
+     "vermoegen": 64.1,
+     "eigenkapital": 64.1,
+     "aktien": 60.1,
+     "summe4qNetto": 61.1,
+     "fm": 60.4,
+     "umsatzWachstum": 54.5
     }
    },
    "duenn": {
     "aktiv": 292,
-    "mitCik": 292,
-    "bericht": 190,
-    "auslaend": 13,
-    "umsatz": 162,
-    "netto": 188,
-    "operativ": 134,
-    "vermoegen": 189,
-    "eigenkapital": 188,
-    "aktien": 167,
-    "summe4qNetto": 169,
-    "fm": 159,
-    "umsatzWachstum": 136,
+    "mitCik": 226,
+    "bericht": 149,
+    "auslaend": 7,
+    "umsatz": 131,
+    "netto": 146,
+    "operativ": 101,
+    "vermoegen": 147,
+    "eigenkapital": 146,
+    "aktien": 131,
+    "summe4qNetto": 135,
+    "fm": 125,
+    "umsatzWachstum": 108,
     "prozent": {
-     "mitCik": 100,
-     "bericht": 65.1,
-     "auslaend": 4.5,
-     "umsatz": 55.5,
-     "netto": 64.4,
-     "operativ": 45.9,
-     "vermoegen": 64.7,
-     "eigenkapital": 64.4,
-     "aktien": 57.2,
-     "summe4qNetto": 57.9,
-     "fm": 54.5,
-     "umsatzWachstum": 46.6
+     "mitCik": 77.4,
+     "bericht": 51,
+     "auslaend": 2.4,
+     "umsatz": 44.9,
+     "netto": 50,
+     "operativ": 34.6,
+     "vermoegen": 50.3,
+     "eigenkapital": 50,
+     "aktien": 44.9,
+     "summe4qNetto": 46.2,
+     "fm": 42.8,
+     "umsatzWachstum": 37
     }
    },
    "gesamt": {
     "aktiv": 4211,
-    "mitCik": 4198,
-    "bericht": 3281,
-    "auslaend": 143,
-    "umsatz": 3041,
-    "netto": 3265,
-    "operativ": 2500,
-    "vermoegen": 3270,
-    "eigenkapital": 3266,
-    "aktien": 3077,
-    "summe4qNetto": 3128,
-    "fm": 3093,
-    "umsatzWachstum": 2833,
+    "mitCik": 3733,
+    "bericht": 2926,
+    "auslaend": 124,
+    "umsatz": 2745,
+    "netto": 2909,
+    "operativ": 2248,
+    "vermoegen": 2914,
+    "eigenkapital": 2910,
+    "aktien": 2742,
+    "summe4qNetto": 2789,
+    "fm": 2758,
+    "umsatzWachstum": 2564,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 77.9,
-     "auslaend": 3.4,
-     "umsatz": 72.2,
-     "netto": 77.5,
-     "operativ": 59.4,
-     "vermoegen": 77.7,
-     "eigenkapital": 77.6,
-     "aktien": 73.1,
-     "summe4qNetto": 74.3,
-     "fm": 73.5,
-     "umsatzWachstum": 67.3
+     "mitCik": 88.6,
+     "bericht": 69.5,
+     "auslaend": 2.9,
+     "umsatz": 65.2,
+     "netto": 69.1,
+     "operativ": 53.4,
+     "vermoegen": 69.2,
+     "eigenkapital": 69.1,
+     "aktien": 65.1,
+     "summe4qNetto": 66.2,
+     "fm": 65.5,
+     "umsatzWachstum": 60.9
     }
    }
   },
@@ -975,176 +975,176 @@
    },
    "250-1000": {
     "aktiv": 107,
-    "mitCik": 107,
-    "bericht": 99,
+    "mitCik": 104,
+    "bericht": 96,
     "auslaend": 3,
-    "umsatz": 98,
-    "netto": 99,
-    "operativ": 73,
-    "vermoegen": 99,
-    "eigenkapital": 99,
-    "aktien": 92,
-    "summe4qNetto": 95,
-    "fm": 95,
-    "umsatzWachstum": 94,
+    "umsatz": 95,
+    "netto": 96,
+    "operativ": 71,
+    "vermoegen": 96,
+    "eigenkapital": 96,
+    "aktien": 89,
+    "summe4qNetto": 92,
+    "fm": 92,
+    "umsatzWachstum": 91,
     "prozent": {
-     "mitCik": 100,
-     "bericht": 92.5,
+     "mitCik": 97.2,
+     "bericht": 89.7,
      "auslaend": 2.8,
-     "umsatz": 91.6,
-     "netto": 92.5,
-     "operativ": 68.2,
-     "vermoegen": 92.5,
-     "eigenkapital": 92.5,
-     "aktien": 86,
-     "summe4qNetto": 88.8,
-     "fm": 88.8,
-     "umsatzWachstum": 87.9
+     "umsatz": 88.8,
+     "netto": 89.7,
+     "operativ": 66.4,
+     "vermoegen": 89.7,
+     "eigenkapital": 89.7,
+     "aktien": 83.2,
+     "summe4qNetto": 86,
+     "fm": 86,
+     "umsatzWachstum": 85
     }
    },
    "50-250": {
     "aktiv": 615,
-    "mitCik": 614,
-    "bericht": 506,
-    "auslaend": 18,
-    "umsatz": 486,
-    "netto": 504,
-    "operativ": 402,
-    "vermoegen": 503,
-    "eigenkapital": 504,
-    "aktien": 479,
-    "summe4qNetto": 490,
-    "fm": 486,
-    "umsatzWachstum": 469,
+    "mitCik": 584,
+    "bericht": 486,
+    "auslaend": 16,
+    "umsatz": 467,
+    "netto": 484,
+    "operativ": 386,
+    "vermoegen": 483,
+    "eigenkapital": 484,
+    "aktien": 463,
+    "summe4qNetto": 470,
+    "fm": 467,
+    "umsatzWachstum": 450,
     "prozent": {
-     "mitCik": 99.8,
-     "bericht": 82.3,
-     "auslaend": 2.9,
-     "umsatz": 79,
-     "netto": 82,
-     "operativ": 65.4,
-     "vermoegen": 81.8,
-     "eigenkapital": 82,
-     "aktien": 77.9,
-     "summe4qNetto": 79.7,
-     "fm": 79,
-     "umsatzWachstum": 76.3
+     "mitCik": 95,
+     "bericht": 79,
+     "auslaend": 2.6,
+     "umsatz": 75.9,
+     "netto": 78.7,
+     "operativ": 62.8,
+     "vermoegen": 78.5,
+     "eigenkapital": 78.7,
+     "aktien": 75.3,
+     "summe4qNetto": 76.4,
+     "fm": 75.9,
+     "umsatzWachstum": 73.2
     }
    },
    "5-50": {
     "aktiv": 1460,
-    "mitCik": 1456,
-    "bericht": 1170,
-    "auslaend": 39,
-    "umsatz": 1110,
-    "netto": 1162,
-    "operativ": 901,
-    "vermoegen": 1165,
-    "eigenkapital": 1162,
-    "aktien": 1093,
-    "summe4qNetto": 1117,
-    "fm": 1111,
-    "umsatzWachstum": 1052,
+    "mitCik": 1383,
+    "bericht": 1114,
+    "auslaend": 37,
+    "umsatz": 1057,
+    "netto": 1106,
+    "operativ": 869,
+    "vermoegen": 1109,
+    "eigenkapital": 1106,
+    "aktien": 1043,
+    "summe4qNetto": 1064,
+    "fm": 1056,
+    "umsatzWachstum": 1001,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 80.1,
-     "auslaend": 2.7,
-     "umsatz": 76,
-     "netto": 79.6,
-     "operativ": 61.7,
-     "vermoegen": 79.8,
-     "eigenkapital": 79.6,
-     "aktien": 74.9,
-     "summe4qNetto": 76.5,
-     "fm": 76.1,
-     "umsatzWachstum": 72.1
+     "mitCik": 94.7,
+     "bericht": 76.3,
+     "auslaend": 2.5,
+     "umsatz": 72.4,
+     "netto": 75.8,
+     "operativ": 59.5,
+     "vermoegen": 76,
+     "eigenkapital": 75.8,
+     "aktien": 71.4,
+     "summe4qNetto": 72.9,
+     "fm": 72.3,
+     "umsatzWachstum": 68.6
     }
    },
    "unter5": {
     "aktiv": 1752,
-    "mitCik": 1744,
-    "bericht": 1341,
-    "auslaend": 72,
-    "umsatz": 1215,
-    "netto": 1337,
-    "operativ": 1024,
-    "vermoegen": 1338,
-    "eigenkapital": 1338,
-    "aktien": 1260,
-    "summe4qNetto": 1272,
-    "fm": 1257,
-    "umsatzWachstum": 1096,
+    "mitCik": 1450,
+    "bericht": 1113,
+    "auslaend": 60,
+    "umsatz": 1023,
+    "netto": 1109,
+    "operativ": 855,
+    "vermoegen": 1110,
+    "eigenkapital": 1110,
+    "aktien": 1037,
+    "summe4qNetto": 1049,
+    "fm": 1036,
+    "umsatzWachstum": 932,
     "prozent": {
-     "mitCik": 99.5,
-     "bericht": 76.5,
-     "auslaend": 4.1,
-     "umsatz": 69.3,
-     "netto": 76.3,
-     "operativ": 58.4,
-     "vermoegen": 76.4,
-     "eigenkapital": 76.4,
-     "aktien": 71.9,
-     "summe4qNetto": 72.6,
-     "fm": 71.7,
-     "umsatzWachstum": 62.6
+     "mitCik": 82.8,
+     "bericht": 63.5,
+     "auslaend": 3.4,
+     "umsatz": 58.4,
+     "netto": 63.3,
+     "operativ": 48.8,
+     "vermoegen": 63.4,
+     "eigenkapital": 63.4,
+     "aktien": 59.2,
+     "summe4qNetto": 59.9,
+     "fm": 59.1,
+     "umsatzWachstum": 53.2
     }
    },
    "duenn": {
     "aktiv": 328,
-    "mitCik": 325,
-    "bericht": 202,
-    "auslaend": 10,
-    "umsatz": 162,
-    "netto": 201,
-    "operativ": 145,
-    "vermoegen": 201,
-    "eigenkapital": 199,
-    "aktien": 167,
-    "summe4qNetto": 165,
-    "fm": 159,
-    "umsatzWachstum": 131,
+    "mitCik": 256,
+    "bericht": 153,
+    "auslaend": 6,
+    "umsatz": 125,
+    "netto": 152,
+    "operativ": 105,
+    "vermoegen": 152,
+    "eigenkapital": 151,
+    "aktien": 129,
+    "summe4qNetto": 128,
+    "fm": 124,
+    "umsatzWachstum": 103,
     "prozent": {
-     "mitCik": 99.1,
-     "bericht": 61.6,
-     "auslaend": 3,
-     "umsatz": 49.4,
-     "netto": 61.3,
-     "operativ": 44.2,
-     "vermoegen": 61.3,
-     "eigenkapital": 60.7,
-     "aktien": 50.9,
-     "summe4qNetto": 50.3,
-     "fm": 48.5,
-     "umsatzWachstum": 39.9
+     "mitCik": 78,
+     "bericht": 46.6,
+     "auslaend": 1.8,
+     "umsatz": 38.1,
+     "netto": 46.3,
+     "operativ": 32,
+     "vermoegen": 46.3,
+     "eigenkapital": 46,
+     "aktien": 39.3,
+     "summe4qNetto": 39,
+     "fm": 37.8,
+     "umsatzWachstum": 31.4
     }
    },
    "gesamt": {
     "aktiv": 4274,
-    "mitCik": 4258,
-    "bericht": 3329,
-    "auslaend": 143,
-    "umsatz": 3082,
-    "netto": 3314,
-    "operativ": 2553,
-    "vermoegen": 3317,
-    "eigenkapital": 3313,
-    "aktien": 3102,
-    "summe4qNetto": 3150,
-    "fm": 3119,
-    "umsatzWachstum": 2853,
+    "mitCik": 3789,
+    "bericht": 2973,
+    "auslaend": 123,
+    "umsatz": 2778,
+    "netto": 2958,
+    "operativ": 2294,
+    "vermoegen": 2961,
+    "eigenkapital": 2958,
+    "aktien": 2772,
+    "summe4qNetto": 2814,
+    "fm": 2786,
+    "umsatzWachstum": 2588,
     "prozent": {
-     "mitCik": 99.6,
-     "bericht": 77.9,
-     "auslaend": 3.3,
-     "umsatz": 72.1,
-     "netto": 77.5,
-     "operativ": 59.7,
-     "vermoegen": 77.6,
-     "eigenkapital": 77.5,
-     "aktien": 72.6,
-     "summe4qNetto": 73.7,
-     "fm": 73,
-     "umsatzWachstum": 66.8
+     "mitCik": 88.7,
+     "bericht": 69.6,
+     "auslaend": 2.9,
+     "umsatz": 65,
+     "netto": 69.2,
+     "operativ": 53.7,
+     "vermoegen": 69.3,
+     "eigenkapital": 69.2,
+     "aktien": 64.9,
+     "summe4qNetto": 65.8,
+     "fm": 65.2,
+     "umsatzWachstum": 60.6
     }
    }
   },
@@ -1180,176 +1180,176 @@
    },
    "250-1000": {
     "aktiv": 137,
-    "mitCik": 137,
-    "bericht": 121,
+    "mitCik": 134,
+    "bericht": 119,
     "auslaend": 7,
-    "umsatz": 120,
-    "netto": 121,
-    "operativ": 88,
-    "vermoegen": 121,
-    "eigenkapital": 121,
-    "aktien": 113,
-    "summe4qNetto": 117,
-    "fm": 117,
-    "umsatzWachstum": 114,
+    "umsatz": 118,
+    "netto": 119,
+    "operativ": 87,
+    "vermoegen": 119,
+    "eigenkapital": 119,
+    "aktien": 111,
+    "summe4qNetto": 115,
+    "fm": 115,
+    "umsatzWachstum": 112,
     "prozent": {
-     "mitCik": 100,
-     "bericht": 88.3,
+     "mitCik": 97.8,
+     "bericht": 86.9,
      "auslaend": 5.1,
-     "umsatz": 87.6,
-     "netto": 88.3,
-     "operativ": 64.2,
-     "vermoegen": 88.3,
-     "eigenkapital": 88.3,
-     "aktien": 82.5,
-     "summe4qNetto": 85.4,
-     "fm": 85.4,
-     "umsatzWachstum": 83.2
+     "umsatz": 86.1,
+     "netto": 86.9,
+     "operativ": 63.5,
+     "vermoegen": 86.9,
+     "eigenkapital": 86.9,
+     "aktien": 81,
+     "summe4qNetto": 83.9,
+     "fm": 83.9,
+     "umsatzWachstum": 81.8
     }
    },
    "50-250": {
     "aktiv": 635,
-    "mitCik": 634,
-    "bericht": 526,
-    "auslaend": 55,
-    "umsatz": 516,
-    "netto": 523,
-    "operativ": 419,
-    "vermoegen": 522,
-    "eigenkapital": 522,
-    "aktien": 497,
-    "summe4qNetto": 512,
-    "fm": 507,
-    "umsatzWachstum": 488,
+    "mitCik": 605,
+    "bericht": 509,
+    "auslaend": 49,
+    "umsatz": 499,
+    "netto": 506,
+    "operativ": 405,
+    "vermoegen": 505,
+    "eigenkapital": 505,
+    "aktien": 484,
+    "summe4qNetto": 495,
+    "fm": 490,
+    "umsatzWachstum": 472,
     "prozent": {
-     "mitCik": 99.8,
-     "bericht": 82.8,
-     "auslaend": 8.7,
-     "umsatz": 81.3,
-     "netto": 82.4,
-     "operativ": 66,
-     "vermoegen": 82.2,
-     "eigenkapital": 82.2,
-     "aktien": 78.3,
-     "summe4qNetto": 80.6,
-     "fm": 79.8,
-     "umsatzWachstum": 76.9
+     "mitCik": 95.3,
+     "bericht": 80.2,
+     "auslaend": 7.7,
+     "umsatz": 78.6,
+     "netto": 79.7,
+     "operativ": 63.8,
+     "vermoegen": 79.5,
+     "eigenkapital": 79.5,
+     "aktien": 76.2,
+     "summe4qNetto": 78,
+     "fm": 77.2,
+     "umsatzWachstum": 74.3
     }
    },
    "5-50": {
     "aktiv": 1493,
-    "mitCik": 1489,
-    "bericht": 1212,
-    "auslaend": 142,
-    "umsatz": 1182,
-    "netto": 1206,
-    "operativ": 944,
-    "vermoegen": 1206,
-    "eigenkapital": 1200,
-    "aktien": 1129,
-    "summe4qNetto": 1154,
-    "fm": 1144,
-    "umsatzWachstum": 1083,
+    "mitCik": 1417,
+    "bericht": 1153,
+    "auslaend": 139,
+    "umsatz": 1124,
+    "netto": 1146,
+    "operativ": 910,
+    "vermoegen": 1146,
+    "eigenkapital": 1140,
+    "aktien": 1074,
+    "summe4qNetto": 1099,
+    "fm": 1090,
+    "umsatzWachstum": 1032,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 81.2,
-     "auslaend": 9.5,
-     "umsatz": 79.2,
-     "netto": 80.8,
-     "operativ": 63.2,
-     "vermoegen": 80.8,
-     "eigenkapital": 80.4,
-     "aktien": 75.6,
-     "summe4qNetto": 77.3,
-     "fm": 76.6,
-     "umsatzWachstum": 72.5
+     "mitCik": 94.9,
+     "bericht": 77.2,
+     "auslaend": 9.3,
+     "umsatz": 75.3,
+     "netto": 76.8,
+     "operativ": 61,
+     "vermoegen": 76.8,
+     "eigenkapital": 76.4,
+     "aktien": 71.9,
+     "summe4qNetto": 73.6,
+     "fm": 73,
+     "umsatzWachstum": 69.1
     }
    },
    "unter5": {
     "aktiv": 1647,
-    "mitCik": 1639,
-    "bericht": 1212,
-    "auslaend": 175,
-    "umsatz": 1107,
-    "netto": 1210,
-    "operativ": 941,
-    "vermoegen": 1209,
-    "eigenkapital": 1209,
-    "aktien": 1136,
-    "summe4qNetto": 1140,
-    "fm": 1110,
-    "umsatzWachstum": 970,
+    "mitCik": 1354,
+    "bericht": 993,
+    "auslaend": 140,
+    "umsatz": 911,
+    "netto": 991,
+    "operativ": 775,
+    "vermoegen": 990,
+    "eigenkapital": 990,
+    "aktien": 928,
+    "summe4qNetto": 930,
+    "fm": 907,
+    "umsatzWachstum": 806,
     "prozent": {
-     "mitCik": 99.5,
-     "bericht": 73.6,
-     "auslaend": 10.6,
-     "umsatz": 67.2,
-     "netto": 73.5,
-     "operativ": 57.1,
-     "vermoegen": 73.4,
-     "eigenkapital": 73.4,
-     "aktien": 69,
-     "summe4qNetto": 69.2,
-     "fm": 67.4,
-     "umsatzWachstum": 58.9
+     "mitCik": 82.2,
+     "bericht": 60.3,
+     "auslaend": 8.5,
+     "umsatz": 55.3,
+     "netto": 60.2,
+     "operativ": 47.1,
+     "vermoegen": 60.1,
+     "eigenkapital": 60.1,
+     "aktien": 56.3,
+     "summe4qNetto": 56.5,
+     "fm": 55.1,
+     "umsatzWachstum": 48.9
     }
    },
    "duenn": {
     "aktiv": 297,
-    "mitCik": 295,
-    "bericht": 187,
-    "auslaend": 22,
-    "umsatz": 135,
-    "netto": 185,
-    "operativ": 123,
-    "vermoegen": 185,
-    "eigenkapital": 184,
-    "aktien": 147,
-    "summe4qNetto": 148,
-    "fm": 132,
-    "umsatzWachstum": 109,
+    "mitCik": 225,
+    "bericht": 131,
+    "auslaend": 19,
+    "umsatz": 96,
+    "netto": 128,
+    "operativ": 81,
+    "vermoegen": 128,
+    "eigenkapital": 127,
+    "aktien": 104,
+    "summe4qNetto": 103,
+    "fm": 94,
+    "umsatzWachstum": 82,
     "prozent": {
-     "mitCik": 99.3,
-     "bericht": 63,
-     "auslaend": 7.4,
-     "umsatz": 45.5,
-     "netto": 62.3,
-     "operativ": 41.4,
-     "vermoegen": 62.3,
-     "eigenkapital": 62,
-     "aktien": 49.5,
-     "summe4qNetto": 49.8,
-     "fm": 44.4,
-     "umsatzWachstum": 36.7
+     "mitCik": 75.8,
+     "bericht": 44.1,
+     "auslaend": 6.4,
+     "umsatz": 32.3,
+     "netto": 43.1,
+     "operativ": 27.3,
+     "vermoegen": 43.1,
+     "eigenkapital": 42.8,
+     "aktien": 35,
+     "summe4qNetto": 34.7,
+     "fm": 31.6,
+     "umsatzWachstum": 27.6
     }
    },
    "gesamt": {
     "aktiv": 4227,
-    "mitCik": 4212,
-    "bericht": 3275,
-    "auslaend": 402,
-    "umsatz": 3077,
-    "netto": 3262,
-    "operativ": 2529,
-    "vermoegen": 3260,
-    "eigenkapital": 3253,
-    "aktien": 3039,
-    "summe4qNetto": 3088,
-    "fm": 3027,
-    "umsatzWachstum": 2781,
+    "mitCik": 3753,
+    "bericht": 2922,
+    "auslaend": 355,
+    "umsatz": 2765,
+    "netto": 2907,
+    "operativ": 2272,
+    "vermoegen": 2905,
+    "eigenkapital": 2898,
+    "aktien": 2718,
+    "summe4qNetto": 2759,
+    "fm": 2713,
+    "umsatzWachstum": 2521,
     "prozent": {
-     "mitCik": 99.6,
-     "bericht": 77.5,
-     "auslaend": 9.5,
-     "umsatz": 72.8,
-     "netto": 77.2,
-     "operativ": 59.8,
-     "vermoegen": 77.1,
-     "eigenkapital": 77,
-     "aktien": 71.9,
-     "summe4qNetto": 73.1,
-     "fm": 71.6,
-     "umsatzWachstum": 65.8
+     "mitCik": 88.8,
+     "bericht": 69.1,
+     "auslaend": 8.4,
+     "umsatz": 65.4,
+     "netto": 68.8,
+     "operativ": 53.7,
+     "vermoegen": 68.7,
+     "eigenkapital": 68.6,
+     "aktien": 64.3,
+     "summe4qNetto": 65.3,
+     "fm": 64.2,
+     "umsatzWachstum": 59.6
     }
    }
   },
@@ -1385,176 +1385,176 @@
    },
    "250-1000": {
     "aktiv": 123,
-    "mitCik": 123,
-    "bericht": 116,
+    "mitCik": 121,
+    "bericht": 115,
     "auslaend": 5,
-    "umsatz": 116,
-    "netto": 116,
-    "operativ": 89,
-    "vermoegen": 116,
-    "eigenkapital": 116,
-    "aktien": 111,
-    "summe4qNetto": 109,
-    "fm": 109,
-    "umsatzWachstum": 109,
+    "umsatz": 115,
+    "netto": 115,
+    "operativ": 88,
+    "vermoegen": 115,
+    "eigenkapital": 115,
+    "aktien": 110,
+    "summe4qNetto": 108,
+    "fm": 108,
+    "umsatzWachstum": 108,
     "prozent": {
-     "mitCik": 100,
-     "bericht": 94.3,
+     "mitCik": 98.4,
+     "bericht": 93.5,
      "auslaend": 4.1,
-     "umsatz": 94.3,
-     "netto": 94.3,
-     "operativ": 72.4,
-     "vermoegen": 94.3,
-     "eigenkapital": 94.3,
-     "aktien": 90.2,
-     "summe4qNetto": 88.6,
-     "fm": 88.6,
-     "umsatzWachstum": 88.6
+     "umsatz": 93.5,
+     "netto": 93.5,
+     "operativ": 71.5,
+     "vermoegen": 93.5,
+     "eigenkapital": 93.5,
+     "aktien": 89.4,
+     "summe4qNetto": 87.8,
+     "fm": 87.8,
+     "umsatzWachstum": 87.8
     }
    },
    "50-250": {
     "aktiv": 603,
-    "mitCik": 602,
-    "bericht": 508,
-    "auslaend": 57,
-    "umsatz": 506,
-    "netto": 506,
-    "operativ": 393,
-    "vermoegen": 506,
-    "eigenkapital": 506,
-    "aktien": 477,
-    "summe4qNetto": 492,
-    "fm": 491,
-    "umsatzWachstum": 487,
+    "mitCik": 581,
+    "bericht": 494,
+    "auslaend": 52,
+    "umsatz": 492,
+    "netto": 492,
+    "operativ": 386,
+    "vermoegen": 492,
+    "eigenkapital": 492,
+    "aktien": 466,
+    "summe4qNetto": 478,
+    "fm": 476,
+    "umsatzWachstum": 472,
     "prozent": {
-     "mitCik": 99.8,
-     "bericht": 84.2,
-     "auslaend": 9.5,
-     "umsatz": 83.9,
-     "netto": 83.9,
-     "operativ": 65.2,
-     "vermoegen": 83.9,
-     "eigenkapital": 83.9,
-     "aktien": 79.1,
-     "summe4qNetto": 81.6,
-     "fm": 81.4,
-     "umsatzWachstum": 80.8
+     "mitCik": 96.4,
+     "bericht": 81.9,
+     "auslaend": 8.6,
+     "umsatz": 81.6,
+     "netto": 81.6,
+     "operativ": 64,
+     "vermoegen": 81.6,
+     "eigenkapital": 81.6,
+     "aktien": 77.3,
+     "summe4qNetto": 79.3,
+     "fm": 78.9,
+     "umsatzWachstum": 78.3
     }
    },
    "5-50": {
     "aktiv": 1438,
-    "mitCik": 1434,
-    "bericht": 1153,
-    "auslaend": 155,
-    "umsatz": 1127,
-    "netto": 1151,
-    "operativ": 882,
-    "vermoegen": 1151,
-    "eigenkapital": 1148,
-    "aktien": 1093,
-    "summe4qNetto": 1121,
-    "fm": 1115,
-    "umsatzWachstum": 1062,
+    "mitCik": 1378,
+    "bericht": 1108,
+    "auslaend": 150,
+    "umsatz": 1084,
+    "netto": 1106,
+    "operativ": 857,
+    "vermoegen": 1106,
+    "eigenkapital": 1103,
+    "aktien": 1050,
+    "summe4qNetto": 1077,
+    "fm": 1071,
+    "umsatzWachstum": 1020,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 80.2,
-     "auslaend": 10.8,
-     "umsatz": 78.4,
-     "netto": 80,
-     "operativ": 61.3,
-     "vermoegen": 80,
-     "eigenkapital": 79.8,
-     "aktien": 76,
-     "summe4qNetto": 78,
-     "fm": 77.5,
-     "umsatzWachstum": 73.9
+     "mitCik": 95.8,
+     "bericht": 77.1,
+     "auslaend": 10.4,
+     "umsatz": 75.4,
+     "netto": 76.9,
+     "operativ": 59.6,
+     "vermoegen": 76.9,
+     "eigenkapital": 76.7,
+     "aktien": 73,
+     "summe4qNetto": 74.9,
+     "fm": 74.5,
+     "umsatzWachstum": 70.9
     }
    },
    "unter5": {
     "aktiv": 1626,
-    "mitCik": 1618,
-    "bericht": 1173,
-    "auslaend": 188,
-    "umsatz": 1056,
-    "netto": 1170,
-    "operativ": 903,
-    "vermoegen": 1169,
-    "eigenkapital": 1168,
-    "aktien": 1110,
-    "summe4qNetto": 1119,
-    "fm": 1104,
-    "umsatzWachstum": 937,
+    "mitCik": 1349,
+    "bericht": 966,
+    "auslaend": 154,
+    "umsatz": 872,
+    "netto": 963,
+    "operativ": 751,
+    "vermoegen": 962,
+    "eigenkapital": 961,
+    "aktien": 909,
+    "summe4qNetto": 917,
+    "fm": 901,
+    "umsatzWachstum": 780,
     "prozent": {
-     "mitCik": 99.5,
-     "bericht": 72.1,
-     "auslaend": 11.6,
-     "umsatz": 64.9,
-     "netto": 72,
-     "operativ": 55.5,
-     "vermoegen": 71.9,
-     "eigenkapital": 71.8,
-     "aktien": 68.3,
-     "summe4qNetto": 68.8,
-     "fm": 67.9,
-     "umsatzWachstum": 57.6
+     "mitCik": 83,
+     "bericht": 59.4,
+     "auslaend": 9.5,
+     "umsatz": 53.6,
+     "netto": 59.2,
+     "operativ": 46.2,
+     "vermoegen": 59.2,
+     "eigenkapital": 59.1,
+     "aktien": 55.9,
+     "summe4qNetto": 56.4,
+     "fm": 55.4,
+     "umsatzWachstum": 48
     }
    },
    "duenn": {
     "aktiv": 340,
-    "mitCik": 334,
-    "bericht": 199,
-    "auslaend": 23,
-    "umsatz": 120,
-    "netto": 197,
-    "operativ": 148,
-    "vermoegen": 199,
-    "eigenkapital": 196,
-    "aktien": 142,
-    "summe4qNetto": 147,
-    "fm": 130,
-    "umsatzWachstum": 100,
+    "mitCik": 251,
+    "bericht": 139,
+    "auslaend": 18,
+    "umsatz": 93,
+    "netto": 138,
+    "operativ": 100,
+    "vermoegen": 139,
+    "eigenkapital": 136,
+    "aktien": 101,
+    "summe4qNetto": 111,
+    "fm": 97,
+    "umsatzWachstum": 79,
     "prozent": {
-     "mitCik": 98.2,
-     "bericht": 58.5,
-     "auslaend": 6.8,
-     "umsatz": 35.3,
-     "netto": 57.9,
-     "operativ": 43.5,
-     "vermoegen": 58.5,
-     "eigenkapital": 57.6,
-     "aktien": 41.8,
-     "summe4qNetto": 43.2,
-     "fm": 38.2,
-     "umsatzWachstum": 29.4
+     "mitCik": 73.8,
+     "bericht": 40.9,
+     "auslaend": 5.3,
+     "umsatz": 27.4,
+     "netto": 40.6,
+     "operativ": 29.4,
+     "vermoegen": 40.9,
+     "eigenkapital": 40,
+     "aktien": 29.7,
+     "summe4qNetto": 32.6,
+     "fm": 28.5,
+     "umsatzWachstum": 23.2
     }
    },
    "gesamt": {
     "aktiv": 4149,
-    "mitCik": 4130,
-    "bericht": 3167,
-    "auslaend": 429,
-    "umsatz": 2943,
-    "netto": 3158,
-    "operativ": 2431,
-    "vermoegen": 3159,
-    "eigenkapital": 3152,
-    "aktien": 2950,
-    "summe4qNetto": 3006,
-    "fm": 2967,
-    "umsatzWachstum": 2713,
+    "mitCik": 3699,
+    "bericht": 2840,
+    "auslaend": 380,
+    "umsatz": 2674,
+    "netto": 2832,
+    "operativ": 2198,
+    "vermoegen": 2832,
+    "eigenkapital": 2825,
+    "aktien": 2653,
+    "summe4qNetto": 2709,
+    "fm": 2671,
+    "umsatzWachstum": 2477,
     "prozent": {
-     "mitCik": 99.5,
-     "bericht": 76.3,
-     "auslaend": 10.3,
-     "umsatz": 70.9,
-     "netto": 76.1,
-     "operativ": 58.6,
-     "vermoegen": 76.1,
-     "eigenkapital": 76,
-     "aktien": 71.1,
-     "summe4qNetto": 72.5,
-     "fm": 71.5,
-     "umsatzWachstum": 65.4
+     "mitCik": 89.2,
+     "bericht": 68.5,
+     "auslaend": 9.2,
+     "umsatz": 64.4,
+     "netto": 68.3,
+     "operativ": 53,
+     "vermoegen": 68.3,
+     "eigenkapital": 68.1,
+     "aktien": 63.9,
+     "summe4qNetto": 65.3,
+     "fm": 64.4,
+     "umsatzWachstum": 59.7
     }
    }
   },
@@ -1590,176 +1590,176 @@
    },
    "250-1000": {
     "aktiv": 183,
-    "mitCik": 183,
-    "bericht": 161,
-    "auslaend": 13,
-    "umsatz": 161,
-    "netto": 161,
-    "operativ": 131,
-    "vermoegen": 161,
-    "eigenkapital": 161,
-    "aktien": 151,
-    "summe4qNetto": 150,
-    "fm": 150,
-    "umsatzWachstum": 148,
+    "mitCik": 180,
+    "bericht": 159,
+    "auslaend": 12,
+    "umsatz": 159,
+    "netto": 159,
+    "operativ": 130,
+    "vermoegen": 159,
+    "eigenkapital": 159,
+    "aktien": 149,
+    "summe4qNetto": 148,
+    "fm": 148,
+    "umsatzWachstum": 146,
     "prozent": {
-     "mitCik": 100,
-     "bericht": 88,
-     "auslaend": 7.1,
-     "umsatz": 88,
-     "netto": 88,
-     "operativ": 71.6,
-     "vermoegen": 88,
-     "eigenkapital": 88,
-     "aktien": 82.5,
-     "summe4qNetto": 82,
-     "fm": 82,
-     "umsatzWachstum": 80.9
+     "mitCik": 98.4,
+     "bericht": 86.9,
+     "auslaend": 6.6,
+     "umsatz": 86.9,
+     "netto": 86.9,
+     "operativ": 71,
+     "vermoegen": 86.9,
+     "eigenkapital": 86.9,
+     "aktien": 81.4,
+     "summe4qNetto": 80.9,
+     "fm": 80.9,
+     "umsatzWachstum": 79.8
     }
    },
    "50-250": {
     "aktiv": 677,
-    "mitCik": 676,
-    "bericht": 564,
-    "auslaend": 68,
-    "umsatz": 558,
-    "netto": 561,
-    "operativ": 432,
-    "vermoegen": 561,
-    "eigenkapital": 561,
-    "aktien": 530,
-    "summe4qNetto": 542,
-    "fm": 542,
-    "umsatzWachstum": 528,
+    "mitCik": 654,
+    "bericht": 549,
+    "auslaend": 65,
+    "umsatz": 544,
+    "netto": 546,
+    "operativ": 424,
+    "vermoegen": 546,
+    "eigenkapital": 546,
+    "aktien": 518,
+    "summe4qNetto": 527,
+    "fm": 527,
+    "umsatzWachstum": 514,
     "prozent": {
-     "mitCik": 99.9,
-     "bericht": 83.3,
-     "auslaend": 10,
-     "umsatz": 82.4,
-     "netto": 82.9,
-     "operativ": 63.8,
-     "vermoegen": 82.9,
-     "eigenkapital": 82.9,
-     "aktien": 78.3,
-     "summe4qNetto": 80.1,
-     "fm": 80.1,
-     "umsatzWachstum": 78
+     "mitCik": 96.6,
+     "bericht": 81.1,
+     "auslaend": 9.6,
+     "umsatz": 80.4,
+     "netto": 80.6,
+     "operativ": 62.6,
+     "vermoegen": 80.6,
+     "eigenkapital": 80.6,
+     "aktien": 76.5,
+     "summe4qNetto": 77.8,
+     "fm": 77.8,
+     "umsatzWachstum": 75.9
     }
    },
    "5-50": {
     "aktiv": 1465,
-    "mitCik": 1461,
-    "bericht": 1166,
-    "auslaend": 152,
-    "umsatz": 1086,
-    "netto": 1162,
-    "operativ": 885,
-    "vermoegen": 1163,
-    "eigenkapital": 1161,
-    "aktien": 1068,
-    "summe4qNetto": 1091,
-    "fm": 1078,
-    "umsatzWachstum": 1009,
+    "mitCik": 1387,
+    "bericht": 1101,
+    "auslaend": 147,
+    "umsatz": 1043,
+    "netto": 1097,
+    "operativ": 842,
+    "vermoegen": 1098,
+    "eigenkapital": 1096,
+    "aktien": 1024,
+    "summe4qNetto": 1042,
+    "fm": 1035,
+    "umsatzWachstum": 971,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 79.6,
-     "auslaend": 10.4,
-     "umsatz": 74.1,
-     "netto": 79.3,
-     "operativ": 60.4,
-     "vermoegen": 79.4,
-     "eigenkapital": 79.2,
-     "aktien": 72.9,
-     "summe4qNetto": 74.5,
-     "fm": 73.6,
-     "umsatzWachstum": 68.9
+     "mitCik": 94.7,
+     "bericht": 75.2,
+     "auslaend": 10,
+     "umsatz": 71.2,
+     "netto": 74.9,
+     "operativ": 57.5,
+     "vermoegen": 74.9,
+     "eigenkapital": 74.8,
+     "aktien": 69.9,
+     "summe4qNetto": 71.1,
+     "fm": 70.6,
+     "umsatzWachstum": 66.3
     }
    },
    "unter5": {
     "aktiv": 1505,
-    "mitCik": 1498,
-    "bericht": 1063,
-    "auslaend": 177,
-    "umsatz": 918,
-    "netto": 1060,
-    "operativ": 812,
-    "vermoegen": 1061,
-    "eigenkapital": 1057,
-    "aktien": 975,
-    "summe4qNetto": 998,
-    "fm": 972,
-    "umsatzWachstum": 813,
+    "mitCik": 1243,
+    "bericht": 869,
+    "auslaend": 142,
+    "umsatz": 759,
+    "netto": 866,
+    "operativ": 677,
+    "vermoegen": 866,
+    "eigenkapital": 862,
+    "aktien": 805,
+    "summe4qNetto": 821,
+    "fm": 800,
+    "umsatzWachstum": 678,
     "prozent": {
-     "mitCik": 99.5,
-     "bericht": 70.6,
-     "auslaend": 11.8,
-     "umsatz": 61,
-     "netto": 70.4,
-     "operativ": 54,
-     "vermoegen": 70.5,
-     "eigenkapital": 70.2,
-     "aktien": 64.8,
-     "summe4qNetto": 66.3,
-     "fm": 64.6,
-     "umsatzWachstum": 54
+     "mitCik": 82.6,
+     "bericht": 57.7,
+     "auslaend": 9.4,
+     "umsatz": 50.4,
+     "netto": 57.5,
+     "operativ": 45,
+     "vermoegen": 57.5,
+     "eigenkapital": 57.3,
+     "aktien": 53.5,
+     "summe4qNetto": 54.6,
+     "fm": 53.2,
+     "umsatzWachstum": 45
     }
    },
    "duenn": {
     "aktiv": 401,
-    "mitCik": 397,
-    "bericht": 253,
-    "auslaend": 12,
-    "umsatz": 96,
-    "netto": 235,
-    "operativ": 148,
-    "vermoegen": 252,
-    "eigenkapital": 251,
-    "aktien": 134,
-    "summe4qNetto": 123,
-    "fm": 107,
-    "umsatzWachstum": 78,
+    "mitCik": 294,
+    "bericht": 167,
+    "auslaend": 7,
+    "umsatz": 67,
+    "netto": 132,
+    "operativ": 92,
+    "vermoegen": 135,
+    "eigenkapital": 134,
+    "aktien": 83,
+    "summe4qNetto": 85,
+    "fm": 77,
+    "umsatzWachstum": 61,
     "prozent": {
-     "mitCik": 99,
-     "bericht": 63.1,
-     "auslaend": 3,
-     "umsatz": 23.9,
-     "netto": 58.6,
-     "operativ": 36.9,
-     "vermoegen": 62.8,
-     "eigenkapital": 62.6,
-     "aktien": 33.4,
-     "summe4qNetto": 30.7,
-     "fm": 26.7,
-     "umsatzWachstum": 19.5
+     "mitCik": 73.3,
+     "bericht": 41.6,
+     "auslaend": 1.7,
+     "umsatz": 16.7,
+     "netto": 32.9,
+     "operativ": 22.9,
+     "vermoegen": 33.7,
+     "eigenkapital": 33.4,
+     "aktien": 20.7,
+     "summe4qNetto": 21.2,
+     "fm": 19.2,
+     "umsatzWachstum": 15.2
     }
    },
    "gesamt": {
     "aktiv": 4263,
-    "mitCik": 4247,
-    "bericht": 3237,
-    "auslaend": 424,
-    "umsatz": 2849,
-    "netto": 3209,
-    "operativ": 2433,
-    "vermoegen": 3228,
-    "eigenkapital": 3221,
-    "aktien": 2887,
-    "summe4qNetto": 2933,
-    "fm": 2878,
-    "umsatzWachstum": 2605,
+    "mitCik": 3790,
+    "bericht": 2875,
+    "auslaend": 375,
+    "umsatz": 2602,
+    "netto": 2830,
+    "operativ": 2190,
+    "vermoegen": 2834,
+    "eigenkapital": 2827,
+    "aktien": 2608,
+    "summe4qNetto": 2652,
+    "fm": 2616,
+    "umsatzWachstum": 2399,
     "prozent": {
-     "mitCik": 99.6,
-     "bericht": 75.9,
-     "auslaend": 9.9,
-     "umsatz": 66.8,
-     "netto": 75.3,
-     "operativ": 57.1,
-     "vermoegen": 75.7,
-     "eigenkapital": 75.6,
-     "aktien": 67.7,
-     "summe4qNetto": 68.8,
-     "fm": 67.5,
-     "umsatzWachstum": 61.1
+     "mitCik": 88.9,
+     "bericht": 67.4,
+     "auslaend": 8.8,
+     "umsatz": 61,
+     "netto": 66.4,
+     "operativ": 51.4,
+     "vermoegen": 66.5,
+     "eigenkapital": 66.3,
+     "aktien": 61.2,
+     "summe4qNetto": 62.2,
+     "fm": 61.4,
+     "umsatzWachstum": 56.3
     }
    }
   },
@@ -1795,176 +1795,176 @@
    },
    "250-1000": {
     "aktiv": 224,
-    "mitCik": 224,
-    "bericht": 203,
-    "auslaend": 18,
-    "umsatz": 202,
-    "netto": 203,
-    "operativ": 157,
-    "vermoegen": 203,
-    "eigenkapital": 203,
-    "aktien": 193,
-    "summe4qNetto": 193,
-    "fm": 189,
-    "umsatzWachstum": 187,
+    "mitCik": 221,
+    "bericht": 201,
+    "auslaend": 17,
+    "umsatz": 200,
+    "netto": 201,
+    "operativ": 156,
+    "vermoegen": 201,
+    "eigenkapital": 201,
+    "aktien": 191,
+    "summe4qNetto": 191,
+    "fm": 188,
+    "umsatzWachstum": 186,
     "prozent": {
-     "mitCik": 100,
-     "bericht": 90.6,
-     "auslaend": 8,
-     "umsatz": 90.2,
-     "netto": 90.6,
-     "operativ": 70.1,
-     "vermoegen": 90.6,
-     "eigenkapital": 90.6,
-     "aktien": 86.2,
-     "summe4qNetto": 86.2,
-     "fm": 84.4,
-     "umsatzWachstum": 83.5
+     "mitCik": 98.7,
+     "bericht": 89.7,
+     "auslaend": 7.6,
+     "umsatz": 89.3,
+     "netto": 89.7,
+     "operativ": 69.6,
+     "vermoegen": 89.7,
+     "eigenkapital": 89.7,
+     "aktien": 85.3,
+     "summe4qNetto": 85.3,
+     "fm": 83.9,
+     "umsatzWachstum": 83
     }
    },
    "50-250": {
     "aktiv": 791,
-    "mitCik": 790,
-    "bericht": 649,
-    "auslaend": 94,
-    "umsatz": 639,
-    "netto": 645,
-    "operativ": 507,
-    "vermoegen": 645,
-    "eigenkapital": 645,
-    "aktien": 617,
-    "summe4qNetto": 614,
-    "fm": 605,
-    "umsatzWachstum": 594,
+    "mitCik": 764,
+    "bericht": 630,
+    "auslaend": 89,
+    "umsatz": 622,
+    "netto": 626,
+    "operativ": 497,
+    "vermoegen": 626,
+    "eigenkapital": 626,
+    "aktien": 602,
+    "summe4qNetto": 597,
+    "fm": 587,
+    "umsatzWachstum": 578,
     "prozent": {
-     "mitCik": 99.9,
-     "bericht": 82,
-     "auslaend": 11.9,
-     "umsatz": 80.8,
-     "netto": 81.5,
-     "operativ": 64.1,
-     "vermoegen": 81.5,
-     "eigenkapital": 81.5,
-     "aktien": 78,
-     "summe4qNetto": 77.6,
-     "fm": 76.5,
-     "umsatzWachstum": 75.1
+     "mitCik": 96.6,
+     "bericht": 79.6,
+     "auslaend": 11.3,
+     "umsatz": 78.6,
+     "netto": 79.1,
+     "operativ": 62.8,
+     "vermoegen": 79.1,
+     "eigenkapital": 79.1,
+     "aktien": 76.1,
+     "summe4qNetto": 75.5,
+     "fm": 74.2,
+     "umsatzWachstum": 73.1
     }
    },
    "5-50": {
     "aktiv": 1685,
-    "mitCik": 1680,
-    "bericht": 1343,
-    "auslaend": 163,
-    "umsatz": 1268,
-    "netto": 1338,
-    "operativ": 1045,
-    "vermoegen": 1341,
-    "eigenkapital": 1335,
-    "aktien": 1259,
-    "summe4qNetto": 1229,
-    "fm": 1173,
-    "umsatzWachstum": 1078,
+    "mitCik": 1585,
+    "bericht": 1258,
+    "auslaend": 159,
+    "umsatz": 1192,
+    "netto": 1253,
+    "operativ": 990,
+    "vermoegen": 1255,
+    "eigenkapital": 1249,
+    "aktien": 1183,
+    "summe4qNetto": 1151,
+    "fm": 1108,
+    "umsatzWachstum": 1027,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 79.7,
-     "auslaend": 9.7,
-     "umsatz": 75.3,
-     "netto": 79.4,
-     "operativ": 62,
-     "vermoegen": 79.6,
-     "eigenkapital": 79.2,
-     "aktien": 74.7,
-     "summe4qNetto": 72.9,
-     "fm": 69.6,
-     "umsatzWachstum": 64
+     "mitCik": 94.1,
+     "bericht": 74.7,
+     "auslaend": 9.4,
+     "umsatz": 70.7,
+     "netto": 74.4,
+     "operativ": 58.8,
+     "vermoegen": 74.5,
+     "eigenkapital": 74.1,
+     "aktien": 70.2,
+     "summe4qNetto": 68.3,
+     "fm": 65.8,
+     "umsatzWachstum": 60.9
     }
    },
    "unter5": {
     "aktiv": 1698,
-    "mitCik": 1691,
-    "bericht": 1269,
-    "auslaend": 172,
-    "umsatz": 860,
-    "netto": 1265,
-    "operativ": 1035,
-    "vermoegen": 1263,
-    "eigenkapital": 1263,
-    "aktien": 1004,
-    "summe4qNetto": 1018,
-    "fm": 851,
-    "umsatzWachstum": 657,
+    "mitCik": 1391,
+    "bericht": 1022,
+    "auslaend": 142,
+    "umsatz": 717,
+    "netto": 1019,
+    "operativ": 834,
+    "vermoegen": 1017,
+    "eigenkapital": 1016,
+    "aktien": 821,
+    "summe4qNetto": 812,
+    "fm": 714,
+    "umsatzWachstum": 562,
     "prozent": {
-     "mitCik": 99.6,
-     "bericht": 74.7,
-     "auslaend": 10.1,
-     "umsatz": 50.6,
-     "netto": 74.5,
-     "operativ": 61,
-     "vermoegen": 74.4,
-     "eigenkapital": 74.4,
-     "aktien": 59.1,
-     "summe4qNetto": 60,
-     "fm": 50.1,
-     "umsatzWachstum": 38.7
+     "mitCik": 81.9,
+     "bericht": 60.2,
+     "auslaend": 8.4,
+     "umsatz": 42.2,
+     "netto": 60,
+     "operativ": 49.1,
+     "vermoegen": 59.9,
+     "eigenkapital": 59.8,
+     "aktien": 48.4,
+     "summe4qNetto": 47.8,
+     "fm": 42,
+     "umsatzWachstum": 33.1
     }
    },
    "duenn": {
     "aktiv": 549,
-    "mitCik": 546,
-    "bericht": 436,
-    "auslaend": 11,
-    "umsatz": 114,
-    "netto": 427,
-    "operativ": 322,
-    "vermoegen": 436,
-    "eigenkapital": 436,
-    "aktien": 212,
-    "summe4qNetto": 130,
-    "fm": 95,
-    "umsatzWachstum": 77,
+    "mitCik": 423,
+    "bericht": 330,
+    "auslaend": 4,
+    "umsatz": 72,
+    "netto": 285,
+    "operativ": 236,
+    "vermoegen": 288,
+    "eigenkapital": 288,
+    "aktien": 118,
+    "summe4qNetto": 70,
+    "fm": 54,
+    "umsatzWachstum": 49,
     "prozent": {
-     "mitCik": 99.5,
-     "bericht": 79.4,
-     "auslaend": 2,
-     "umsatz": 20.8,
-     "netto": 77.8,
-     "operativ": 58.7,
-     "vermoegen": 79.4,
-     "eigenkapital": 79.4,
-     "aktien": 38.6,
-     "summe4qNetto": 23.7,
-     "fm": 17.3,
-     "umsatzWachstum": 14
+     "mitCik": 77,
+     "bericht": 60.1,
+     "auslaend": 0.7,
+     "umsatz": 13.1,
+     "netto": 51.9,
+     "operativ": 43,
+     "vermoegen": 52.5,
+     "eigenkapital": 52.5,
+     "aktien": 21.5,
+     "summe4qNetto": 12.8,
+     "fm": 9.8,
+     "umsatzWachstum": 8.9
     }
    },
    "gesamt": {
     "aktiv": 4993,
-    "mitCik": 4977,
-    "bericht": 3941,
-    "auslaend": 462,
-    "umsatz": 3124,
-    "netto": 3919,
-    "operativ": 3099,
-    "vermoegen": 3929,
-    "eigenkapital": 3923,
-    "aktien": 3325,
-    "summe4qNetto": 3224,
-    "fm": 2953,
-    "umsatzWachstum": 2629,
+    "mitCik": 4430,
+    "bericht": 3482,
+    "auslaend": 415,
+    "umsatz": 2844,
+    "netto": 3425,
+    "operativ": 2746,
+    "vermoegen": 3428,
+    "eigenkapital": 3421,
+    "aktien": 2955,
+    "summe4qNetto": 2861,
+    "fm": 2691,
+    "umsatzWachstum": 2438,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 78.9,
-     "auslaend": 9.3,
-     "umsatz": 62.6,
-     "netto": 78.5,
-     "operativ": 62.1,
-     "vermoegen": 78.7,
-     "eigenkapital": 78.6,
-     "aktien": 66.6,
-     "summe4qNetto": 64.6,
-     "fm": 59.1,
-     "umsatzWachstum": 52.7
+     "mitCik": 88.7,
+     "bericht": 69.7,
+     "auslaend": 8.3,
+     "umsatz": 57,
+     "netto": 68.6,
+     "operativ": 55,
+     "vermoegen": 68.7,
+     "eigenkapital": 68.5,
+     "aktien": 59.2,
+     "summe4qNetto": 57.3,
+     "fm": 53.9,
+     "umsatzWachstum": 48.8
     }
    }
   },
@@ -2000,176 +2000,176 @@
    },
    "250-1000": {
     "aktiv": 232,
-    "mitCik": 232,
-    "bericht": 217,
+    "mitCik": 231,
+    "bericht": 216,
     "auslaend": 14,
-    "umsatz": 216,
-    "netto": 217,
+    "umsatz": 215,
+    "netto": 216,
     "operativ": 163,
-    "vermoegen": 217,
-    "eigenkapital": 217,
-    "aktien": 208,
-    "summe4qNetto": 211,
-    "fm": 211,
-    "umsatzWachstum": 210,
+    "vermoegen": 216,
+    "eigenkapital": 216,
+    "aktien": 207,
+    "summe4qNetto": 210,
+    "fm": 210,
+    "umsatzWachstum": 209,
     "prozent": {
-     "mitCik": 100,
-     "bericht": 93.5,
+     "mitCik": 99.6,
+     "bericht": 93.1,
      "auslaend": 6,
-     "umsatz": 93.1,
-     "netto": 93.5,
+     "umsatz": 92.7,
+     "netto": 93.1,
      "operativ": 70.3,
-     "vermoegen": 93.5,
-     "eigenkapital": 93.5,
-     "aktien": 89.7,
-     "summe4qNetto": 90.9,
-     "fm": 90.9,
-     "umsatzWachstum": 90.5
+     "vermoegen": 93.1,
+     "eigenkapital": 93.1,
+     "aktien": 89.2,
+     "summe4qNetto": 90.5,
+     "fm": 90.5,
+     "umsatzWachstum": 90.1
     }
    },
    "50-250": {
     "aktiv": 726,
-    "mitCik": 724,
-    "bericht": 599,
-    "auslaend": 95,
-    "umsatz": 592,
-    "netto": 597,
-    "operativ": 462,
-    "vermoegen": 596,
-    "eigenkapital": 597,
-    "aktien": 575,
-    "summe4qNetto": 582,
-    "fm": 579,
-    "umsatzWachstum": 564,
+    "mitCik": 709,
+    "bericht": 588,
+    "auslaend": 93,
+    "umsatz": 581,
+    "netto": 586,
+    "operativ": 457,
+    "vermoegen": 585,
+    "eigenkapital": 586,
+    "aktien": 564,
+    "summe4qNetto": 571,
+    "fm": 568,
+    "umsatzWachstum": 553,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 82.5,
-     "auslaend": 13.1,
-     "umsatz": 81.5,
-     "netto": 82.2,
-     "operativ": 63.6,
-     "vermoegen": 82.1,
-     "eigenkapital": 82.2,
-     "aktien": 79.2,
-     "summe4qNetto": 80.2,
-     "fm": 79.8,
-     "umsatzWachstum": 77.7
+     "mitCik": 97.7,
+     "bericht": 81,
+     "auslaend": 12.8,
+     "umsatz": 80,
+     "netto": 80.7,
+     "operativ": 62.9,
+     "vermoegen": 80.6,
+     "eigenkapital": 80.7,
+     "aktien": 77.7,
+     "summe4qNetto": 78.7,
+     "fm": 78.2,
+     "umsatzWachstum": 76.2
     }
    },
    "5-50": {
     "aktiv": 1508,
-    "mitCik": 1504,
-    "bericht": 1230,
-    "auslaend": 163,
-    "umsatz": 1179,
-    "netto": 1225,
-    "operativ": 934,
-    "vermoegen": 1226,
-    "eigenkapital": 1220,
-    "aktien": 1175,
-    "summe4qNetto": 1198,
-    "fm": 1180,
-    "umsatzWachstum": 1097,
+    "mitCik": 1467,
+    "bericht": 1199,
+    "auslaend": 161,
+    "umsatz": 1151,
+    "netto": 1194,
+    "operativ": 922,
+    "vermoegen": 1195,
+    "eigenkapital": 1189,
+    "aktien": 1146,
+    "summe4qNetto": 1167,
+    "fm": 1148,
+    "umsatzWachstum": 1068,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 81.6,
-     "auslaend": 10.8,
-     "umsatz": 78.2,
-     "netto": 81.2,
-     "operativ": 61.9,
-     "vermoegen": 81.3,
-     "eigenkapital": 80.9,
-     "aktien": 77.9,
-     "summe4qNetto": 79.4,
-     "fm": 78.2,
-     "umsatzWachstum": 72.7
+     "mitCik": 97.3,
+     "bericht": 79.5,
+     "auslaend": 10.7,
+     "umsatz": 76.3,
+     "netto": 79.2,
+     "operativ": 61.1,
+     "vermoegen": 79.2,
+     "eigenkapital": 78.8,
+     "aktien": 76,
+     "summe4qNetto": 77.4,
+     "fm": 76.1,
+     "umsatzWachstum": 70.8
     }
    },
    "unter5": {
     "aktiv": 1717,
-    "mitCik": 1709,
-    "bericht": 1306,
-    "auslaend": 220,
-    "umsatz": 927,
-    "netto": 1300,
-    "operativ": 1111,
-    "vermoegen": 1304,
-    "eigenkapital": 1301,
-    "aktien": 1092,
-    "summe4qNetto": 1256,
-    "fm": 1097,
-    "umsatzWachstum": 756,
+    "mitCik": 1505,
+    "bericht": 1142,
+    "auslaend": 187,
+    "umsatz": 812,
+    "netto": 1136,
+    "operativ": 990,
+    "vermoegen": 1141,
+    "eigenkapital": 1137,
+    "aktien": 956,
+    "summe4qNetto": 1099,
+    "fm": 923,
+    "umsatzWachstum": 668,
     "prozent": {
-     "mitCik": 99.5,
-     "bericht": 76.1,
-     "auslaend": 12.8,
-     "umsatz": 54,
-     "netto": 75.7,
-     "operativ": 64.7,
-     "vermoegen": 75.9,
-     "eigenkapital": 75.8,
-     "aktien": 63.6,
-     "summe4qNetto": 73.2,
-     "fm": 63.9,
-     "umsatzWachstum": 44
+     "mitCik": 87.7,
+     "bericht": 66.5,
+     "auslaend": 10.9,
+     "umsatz": 47.3,
+     "netto": 66.2,
+     "operativ": 57.7,
+     "vermoegen": 66.5,
+     "eigenkapital": 66.2,
+     "aktien": 55.7,
+     "summe4qNetto": 64,
+     "fm": 53.8,
+     "umsatzWachstum": 38.9
     }
    },
    "duenn": {
     "aktiv": 611,
-    "mitCik": 607,
-    "bericht": 506,
-    "auslaend": 23,
-    "umsatz": 103,
-    "netto": 498,
-    "operativ": 413,
-    "vermoegen": 504,
-    "eigenkapital": 505,
-    "aktien": 250,
-    "summe4qNetto": 405,
-    "fm": 144,
-    "umsatzWachstum": 70,
+    "mitCik": 479,
+    "bericht": 390,
+    "auslaend": 15,
+    "umsatz": 52,
+    "netto": 382,
+    "operativ": 321,
+    "vermoegen": 386,
+    "eigenkapital": 387,
+    "aktien": 164,
+    "summe4qNetto": 296,
+    "fm": 77,
+    "umsatzWachstum": 44,
     "prozent": {
-     "mitCik": 99.3,
-     "bericht": 82.8,
-     "auslaend": 3.8,
-     "umsatz": 16.9,
-     "netto": 81.5,
-     "operativ": 67.6,
-     "vermoegen": 82.5,
-     "eigenkapital": 82.7,
-     "aktien": 40.9,
-     "summe4qNetto": 66.3,
-     "fm": 23.6,
-     "umsatzWachstum": 11.5
+     "mitCik": 78.4,
+     "bericht": 63.8,
+     "auslaend": 2.5,
+     "umsatz": 8.5,
+     "netto": 62.5,
+     "operativ": 52.5,
+     "vermoegen": 63.2,
+     "eigenkapital": 63.3,
+     "aktien": 26.8,
+     "summe4qNetto": 48.4,
+     "fm": 12.6,
+     "umsatzWachstum": 7.2
     }
    },
    "gesamt": {
     "aktiv": 4832,
-    "mitCik": 4814,
-    "bericht": 3893,
-    "auslaend": 517,
-    "umsatz": 3052,
-    "netto": 3872,
-    "operativ": 3111,
-    "vermoegen": 3882,
-    "eigenkapital": 3875,
-    "aktien": 3333,
-    "summe4qNetto": 3686,
-    "fm": 3245,
-    "umsatzWachstum": 2729,
+    "mitCik": 4429,
+    "bericht": 3570,
+    "auslaend": 472,
+    "umsatz": 2846,
+    "netto": 3549,
+    "operativ": 2881,
+    "vermoegen": 3558,
+    "eigenkapital": 3550,
+    "aktien": 3070,
+    "summe4qNetto": 3377,
+    "fm": 2960,
+    "umsatzWachstum": 2574,
     "prozent": {
-     "mitCik": 99.6,
-     "bericht": 80.6,
-     "auslaend": 10.7,
-     "umsatz": 63.2,
-     "netto": 80.1,
-     "operativ": 64.4,
-     "vermoegen": 80.3,
-     "eigenkapital": 80.2,
-     "aktien": 69,
-     "summe4qNetto": 76.3,
-     "fm": 67.2,
-     "umsatzWachstum": 56.5
+     "mitCik": 91.7,
+     "bericht": 73.9,
+     "auslaend": 9.8,
+     "umsatz": 58.9,
+     "netto": 73.4,
+     "operativ": 59.6,
+     "vermoegen": 73.6,
+     "eigenkapital": 73.5,
+     "aktien": 63.5,
+     "summe4qNetto": 69.9,
+     "fm": 61.3,
+     "umsatzWachstum": 53.3
     }
    }
   },
@@ -2234,147 +2234,147 @@
    },
    "50-250": {
     "aktiv": 699,
-    "mitCik": 698,
-    "bericht": 593,
-    "auslaend": 85,
-    "umsatz": 585,
-    "netto": 591,
-    "operativ": 459,
-    "vermoegen": 591,
-    "eigenkapital": 591,
-    "aktien": 570,
-    "summe4qNetto": 581,
-    "fm": 580,
-    "umsatzWachstum": 561,
+    "mitCik": 688,
+    "bericht": 585,
+    "auslaend": 84,
+    "umsatz": 577,
+    "netto": 583,
+    "operativ": 457,
+    "vermoegen": 583,
+    "eigenkapital": 583,
+    "aktien": 562,
+    "summe4qNetto": 573,
+    "fm": 572,
+    "umsatzWachstum": 553,
     "prozent": {
-     "mitCik": 99.9,
-     "bericht": 84.8,
-     "auslaend": 12.2,
-     "umsatz": 83.7,
-     "netto": 84.5,
-     "operativ": 65.7,
-     "vermoegen": 84.5,
-     "eigenkapital": 84.5,
-     "aktien": 81.5,
-     "summe4qNetto": 83.1,
-     "fm": 83,
-     "umsatzWachstum": 80.3
+     "mitCik": 98.4,
+     "bericht": 83.7,
+     "auslaend": 12,
+     "umsatz": 82.5,
+     "netto": 83.4,
+     "operativ": 65.4,
+     "vermoegen": 83.4,
+     "eigenkapital": 83.4,
+     "aktien": 80.4,
+     "summe4qNetto": 82,
+     "fm": 81.8,
+     "umsatzWachstum": 79.1
     }
    },
    "5-50": {
     "aktiv": 1479,
-    "mitCik": 1475,
-    "bericht": 1214,
-    "auslaend": 177,
-    "umsatz": 1170,
-    "netto": 1212,
-    "operativ": 924,
-    "vermoegen": 1210,
-    "eigenkapital": 1206,
-    "aktien": 1163,
-    "summe4qNetto": 1185,
-    "fm": 1180,
-    "umsatzWachstum": 1106,
+    "mitCik": 1455,
+    "bericht": 1198,
+    "auslaend": 175,
+    "umsatz": 1154,
+    "netto": 1196,
+    "operativ": 920,
+    "vermoegen": 1194,
+    "eigenkapital": 1190,
+    "aktien": 1147,
+    "summe4qNetto": 1169,
+    "fm": 1164,
+    "umsatzWachstum": 1090,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 82.1,
-     "auslaend": 12,
-     "umsatz": 79.1,
-     "netto": 81.9,
-     "operativ": 62.5,
-     "vermoegen": 81.8,
-     "eigenkapital": 81.5,
-     "aktien": 78.6,
-     "summe4qNetto": 80.1,
-     "fm": 79.8,
-     "umsatzWachstum": 74.8
+     "mitCik": 98.4,
+     "bericht": 81,
+     "auslaend": 11.8,
+     "umsatz": 78,
+     "netto": 80.9,
+     "operativ": 62.2,
+     "vermoegen": 80.7,
+     "eigenkapital": 80.5,
+     "aktien": 77.6,
+     "summe4qNetto": 79,
+     "fm": 78.7,
+     "umsatzWachstum": 73.7
     }
    },
    "unter5": {
     "aktiv": 1414,
-    "mitCik": 1406,
-    "bericht": 1048,
-    "auslaend": 206,
-    "umsatz": 853,
-    "netto": 1048,
-    "operativ": 876,
-    "vermoegen": 1048,
-    "eigenkapital": 1045,
-    "aktien": 968,
-    "summe4qNetto": 1024,
-    "fm": 1011,
-    "umsatzWachstum": 742,
+    "mitCik": 1276,
+    "bericht": 944,
+    "auslaend": 182,
+    "umsatz": 773,
+    "netto": 944,
+    "operativ": 803,
+    "vermoegen": 944,
+    "eigenkapital": 941,
+    "aktien": 871,
+    "summe4qNetto": 920,
+    "fm": 908,
+    "umsatzWachstum": 673,
     "prozent": {
-     "mitCik": 99.4,
-     "bericht": 74.1,
-     "auslaend": 14.6,
-     "umsatz": 60.3,
-     "netto": 74.1,
-     "operativ": 62,
-     "vermoegen": 74.1,
-     "eigenkapital": 73.9,
-     "aktien": 68.5,
-     "summe4qNetto": 72.4,
-     "fm": 71.5,
-     "umsatzWachstum": 52.5
+     "mitCik": 90.2,
+     "bericht": 66.8,
+     "auslaend": 12.9,
+     "umsatz": 54.7,
+     "netto": 66.8,
+     "operativ": 56.8,
+     "vermoegen": 66.8,
+     "eigenkapital": 66.5,
+     "aktien": 61.6,
+     "summe4qNetto": 65.1,
+     "fm": 64.2,
+     "umsatzWachstum": 47.6
     }
    },
    "duenn": {
     "aktiv": 628,
-    "mitCik": 617,
-    "bericht": 468,
-    "auslaend": 14,
-    "umsatz": 126,
-    "netto": 466,
-    "operativ": 378,
-    "vermoegen": 466,
-    "eigenkapital": 467,
-    "aktien": 221,
-    "summe4qNetto": 440,
-    "fm": 404,
-    "umsatzWachstum": 79,
+    "mitCik": 516,
+    "bericht": 376,
+    "auslaend": 10,
+    "umsatz": 78,
+    "netto": 374,
+    "operativ": 308,
+    "vermoegen": 374,
+    "eigenkapital": 375,
+    "aktien": 156,
+    "summe4qNetto": 349,
+    "fm": 312,
+    "umsatzWachstum": 52,
     "prozent": {
-     "mitCik": 98.2,
-     "bericht": 74.5,
-     "auslaend": 2.2,
-     "umsatz": 20.1,
-     "netto": 74.2,
-     "operativ": 60.2,
-     "vermoegen": 74.2,
-     "eigenkapital": 74.4,
-     "aktien": 35.2,
-     "summe4qNetto": 70.1,
-     "fm": 64.3,
-     "umsatzWachstum": 12.6
+     "mitCik": 82.2,
+     "bericht": 59.9,
+     "auslaend": 1.6,
+     "umsatz": 12.4,
+     "netto": 59.6,
+     "operativ": 49,
+     "vermoegen": 59.6,
+     "eigenkapital": 59.7,
+     "aktien": 24.8,
+     "summe4qNetto": 55.6,
+     "fm": 49.7,
+     "umsatzWachstum": 8.3
     }
    },
    "gesamt": {
     "aktiv": 4430,
-    "mitCik": 4406,
-    "bericht": 3516,
-    "auslaend": 495,
-    "umsatz": 2927,
-    "netto": 3510,
-    "operativ": 2786,
-    "vermoegen": 3508,
-    "eigenkapital": 3502,
-    "aktien": 3106,
-    "summe4qNetto": 3418,
-    "fm": 3363,
-    "umsatzWachstum": 2675,
+    "mitCik": 4145,
+    "bericht": 3296,
+    "auslaend": 464,
+    "umsatz": 2775,
+    "netto": 3290,
+    "operativ": 2637,
+    "vermoegen": 3288,
+    "eigenkapital": 3282,
+    "aktien": 2920,
+    "summe4qNetto": 3199,
+    "fm": 3144,
+    "umsatzWachstum": 2555,
     "prozent": {
-     "mitCik": 99.5,
-     "bericht": 79.4,
-     "auslaend": 11.2,
-     "umsatz": 66.1,
-     "netto": 79.2,
-     "operativ": 62.9,
-     "vermoegen": 79.2,
-     "eigenkapital": 79.1,
-     "aktien": 70.1,
-     "summe4qNetto": 77.2,
-     "fm": 75.9,
-     "umsatzWachstum": 60.4
+     "mitCik": 93.6,
+     "bericht": 74.4,
+     "auslaend": 10.5,
+     "umsatz": 62.6,
+     "netto": 74.3,
+     "operativ": 59.5,
+     "vermoegen": 74.2,
+     "eigenkapital": 74.1,
+     "aktien": 65.9,
+     "summe4qNetto": 72.2,
+     "fm": 71,
+     "umsatzWachstum": 57.7
     }
    }
   },
@@ -2439,147 +2439,147 @@
    },
    "50-250": {
     "aktiv": 729,
-    "mitCik": 728,
-    "bericht": 629,
+    "mitCik": 722,
+    "bericht": 623,
     "auslaend": 86,
-    "umsatz": 621,
-    "netto": 627,
-    "operativ": 491,
-    "vermoegen": 626,
-    "eigenkapital": 626,
-    "aktien": 605,
-    "summe4qNetto": 613,
-    "fm": 611,
-    "umsatzWachstum": 590,
+    "umsatz": 615,
+    "netto": 621,
+    "operativ": 490,
+    "vermoegen": 620,
+    "eigenkapital": 620,
+    "aktien": 599,
+    "summe4qNetto": 607,
+    "fm": 605,
+    "umsatzWachstum": 585,
     "prozent": {
-     "mitCik": 99.9,
-     "bericht": 86.3,
+     "mitCik": 99,
+     "bericht": 85.5,
      "auslaend": 11.8,
-     "umsatz": 85.2,
-     "netto": 86,
-     "operativ": 67.4,
-     "vermoegen": 85.9,
-     "eigenkapital": 85.9,
-     "aktien": 83,
-     "summe4qNetto": 84.1,
-     "fm": 83.8,
-     "umsatzWachstum": 80.9
+     "umsatz": 84.4,
+     "netto": 85.2,
+     "operativ": 67.2,
+     "vermoegen": 85,
+     "eigenkapital": 85,
+     "aktien": 82.2,
+     "summe4qNetto": 83.3,
+     "fm": 83,
+     "umsatzWachstum": 80.2
     }
    },
    "5-50": {
     "aktiv": 1453,
-    "mitCik": 1448,
-    "bericht": 1191,
-    "auslaend": 195,
-    "umsatz": 1128,
-    "netto": 1188,
-    "operativ": 924,
-    "vermoegen": 1188,
-    "eigenkapital": 1186,
-    "aktien": 1143,
-    "summe4qNetto": 1168,
-    "fm": 1162,
-    "umsatzWachstum": 1075,
+    "mitCik": 1437,
+    "bericht": 1185,
+    "auslaend": 191,
+    "umsatz": 1123,
+    "netto": 1182,
+    "operativ": 923,
+    "vermoegen": 1182,
+    "eigenkapital": 1180,
+    "aktien": 1137,
+    "summe4qNetto": 1163,
+    "fm": 1156,
+    "umsatzWachstum": 1069,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 82,
-     "auslaend": 13.4,
-     "umsatz": 77.6,
-     "netto": 81.8,
-     "operativ": 63.6,
-     "vermoegen": 81.8,
-     "eigenkapital": 81.6,
-     "aktien": 78.7,
-     "summe4qNetto": 80.4,
-     "fm": 80,
-     "umsatzWachstum": 74
+     "mitCik": 98.9,
+     "bericht": 81.6,
+     "auslaend": 13.1,
+     "umsatz": 77.3,
+     "netto": 81.3,
+     "operativ": 63.5,
+     "vermoegen": 81.3,
+     "eigenkapital": 81.2,
+     "aktien": 78.3,
+     "summe4qNetto": 80,
+     "fm": 79.6,
+     "umsatzWachstum": 73.6
     }
    },
    "unter5": {
     "aktiv": 999,
-    "mitCik": 989,
-    "bericht": 728,
-    "auslaend": 155,
-    "umsatz": 609,
-    "netto": 727,
-    "operativ": 596,
-    "vermoegen": 727,
-    "eigenkapital": 725,
-    "aktien": 696,
-    "summe4qNetto": 715,
-    "fm": 703,
-    "umsatzWachstum": 544,
+    "mitCik": 945,
+    "bericht": 691,
+    "auslaend": 149,
+    "umsatz": 578,
+    "netto": 690,
+    "operativ": 581,
+    "vermoegen": 690,
+    "eigenkapital": 688,
+    "aktien": 659,
+    "summe4qNetto": 678,
+    "fm": 664,
+    "umsatzWachstum": 513,
     "prozent": {
-     "mitCik": 99,
-     "bericht": 72.9,
-     "auslaend": 15.5,
-     "umsatz": 61,
-     "netto": 72.8,
-     "operativ": 59.7,
-     "vermoegen": 72.8,
-     "eigenkapital": 72.6,
-     "aktien": 69.7,
-     "summe4qNetto": 71.6,
-     "fm": 70.4,
-     "umsatzWachstum": 54.5
+     "mitCik": 94.6,
+     "bericht": 69.2,
+     "auslaend": 14.9,
+     "umsatz": 57.9,
+     "netto": 69.1,
+     "operativ": 58.2,
+     "vermoegen": 69.1,
+     "eigenkapital": 68.9,
+     "aktien": 66,
+     "summe4qNetto": 67.9,
+     "fm": 66.5,
+     "umsatzWachstum": 51.4
     }
    },
    "duenn": {
     "aktiv": 399,
-    "mitCik": 389,
-    "bericht": 288,
-    "auslaend": 13,
-    "umsatz": 96,
-    "netto": 288,
-    "operativ": 222,
-    "vermoegen": 288,
-    "eigenkapital": 288,
-    "aktien": 176,
-    "summe4qNetto": 265,
-    "fm": 252,
-    "umsatzWachstum": 65,
+    "mitCik": 331,
+    "bericht": 239,
+    "auslaend": 5,
+    "umsatz": 59,
+    "netto": 236,
+    "operativ": 186,
+    "vermoegen": 236,
+    "eigenkapital": 236,
+    "aktien": 126,
+    "summe4qNetto": 215,
+    "fm": 205,
+    "umsatzWachstum": 45,
     "prozent": {
-     "mitCik": 97.5,
-     "bericht": 72.2,
-     "auslaend": 3.3,
-     "umsatz": 24.1,
-     "netto": 72.2,
-     "operativ": 55.6,
-     "vermoegen": 72.2,
-     "eigenkapital": 72.2,
-     "aktien": 44.1,
-     "summe4qNetto": 66.4,
-     "fm": 63.2,
-     "umsatzWachstum": 16.3
+     "mitCik": 83,
+     "bericht": 59.9,
+     "auslaend": 1.3,
+     "umsatz": 14.8,
+     "netto": 59.1,
+     "operativ": 46.6,
+     "vermoegen": 59.1,
+     "eigenkapital": 59.1,
+     "aktien": 31.6,
+     "summe4qNetto": 53.9,
+     "fm": 51.4,
+     "umsatzWachstum": 11.3
     }
    },
    "gesamt": {
     "aktiv": 3829,
-    "mitCik": 3803,
-    "bericht": 3066,
-    "auslaend": 465,
-    "umsatz": 2684,
-    "netto": 3060,
-    "operativ": 2407,
-    "vermoegen": 3059,
-    "eigenkapital": 3055,
-    "aktien": 2839,
-    "summe4qNetto": 2986,
-    "fm": 2952,
-    "umsatzWachstum": 2497,
+    "mitCik": 3684,
+    "bericht": 2968,
+    "auslaend": 447,
+    "umsatz": 2605,
+    "netto": 2959,
+    "operativ": 2354,
+    "vermoegen": 2958,
+    "eigenkapital": 2954,
+    "aktien": 2740,
+    "summe4qNetto": 2888,
+    "fm": 2854,
+    "umsatzWachstum": 2435,
     "prozent": {
-     "mitCik": 99.3,
-     "bericht": 80.1,
-     "auslaend": 12.1,
-     "umsatz": 70.1,
-     "netto": 79.9,
-     "operativ": 62.9,
-     "vermoegen": 79.9,
-     "eigenkapital": 79.8,
-     "aktien": 74.1,
-     "summe4qNetto": 78,
-     "fm": 77.1,
-     "umsatzWachstum": 65.2
+     "mitCik": 96.2,
+     "bericht": 77.5,
+     "auslaend": 11.7,
+     "umsatz": 68,
+     "netto": 77.3,
+     "operativ": 61.5,
+     "vermoegen": 77.3,
+     "eigenkapital": 77.1,
+     "aktien": 71.6,
+     "summe4qNetto": 75.4,
+     "fm": 74.5,
+     "umsatzWachstum": 63.6
     }
    }
   },
@@ -2644,147 +2644,147 @@
    },
    "50-250": {
     "aktiv": 812,
-    "mitCik": 810,
-    "bericht": 685,
+    "mitCik": 807,
+    "bericht": 682,
     "auslaend": 115,
-    "umsatz": 675,
-    "netto": 683,
+    "umsatz": 672,
+    "netto": 680,
     "operativ": 530,
-    "vermoegen": 682,
-    "eigenkapital": 682,
-    "aktien": 661,
-    "summe4qNetto": 677,
-    "fm": 673,
-    "umsatzWachstum": 654,
+    "vermoegen": 679,
+    "eigenkapital": 679,
+    "aktien": 658,
+    "summe4qNetto": 674,
+    "fm": 669,
+    "umsatzWachstum": 650,
     "prozent": {
-     "mitCik": 99.8,
-     "bericht": 84.4,
+     "mitCik": 99.4,
+     "bericht": 84,
      "auslaend": 14.2,
-     "umsatz": 83.1,
-     "netto": 84.1,
+     "umsatz": 82.8,
+     "netto": 83.7,
      "operativ": 65.3,
-     "vermoegen": 84,
-     "eigenkapital": 84,
-     "aktien": 81.4,
-     "summe4qNetto": 83.4,
-     "fm": 82.9,
-     "umsatzWachstum": 80.5
+     "vermoegen": 83.6,
+     "eigenkapital": 83.6,
+     "aktien": 81,
+     "summe4qNetto": 83,
+     "fm": 82.4,
+     "umsatzWachstum": 80
     }
    },
    "5-50": {
     "aktiv": 1211,
-    "mitCik": 1207,
-    "bericht": 1015,
-    "auslaend": 158,
-    "umsatz": 967,
-    "netto": 1013,
-    "operativ": 776,
-    "vermoegen": 1013,
-    "eigenkapital": 1012,
-    "aktien": 973,
-    "summe4qNetto": 1004,
-    "fm": 995,
-    "umsatzWachstum": 929,
+    "mitCik": 1197,
+    "bericht": 1007,
+    "auslaend": 156,
+    "umsatz": 959,
+    "netto": 1005,
+    "operativ": 773,
+    "vermoegen": 1005,
+    "eigenkapital": 1004,
+    "aktien": 964,
+    "summe4qNetto": 995,
+    "fm": 987,
+    "umsatzWachstum": 922,
     "prozent": {
-     "mitCik": 99.7,
-     "bericht": 83.8,
-     "auslaend": 13,
-     "umsatz": 79.9,
-     "netto": 83.6,
-     "operativ": 64.1,
-     "vermoegen": 83.6,
-     "eigenkapital": 83.6,
-     "aktien": 80.3,
-     "summe4qNetto": 82.9,
-     "fm": 82.2,
-     "umsatzWachstum": 76.7
+     "mitCik": 98.8,
+     "bericht": 83.2,
+     "auslaend": 12.9,
+     "umsatz": 79.2,
+     "netto": 83,
+     "operativ": 63.8,
+     "vermoegen": 83,
+     "eigenkapital": 82.9,
+     "aktien": 79.6,
+     "summe4qNetto": 82.2,
+     "fm": 81.5,
+     "umsatzWachstum": 76.1
     }
    },
    "unter5": {
     "aktiv": 650,
-    "mitCik": 640,
-    "bericht": 468,
+    "mitCik": 634,
+    "bericht": 462,
     "auslaend": 103,
-    "umsatz": 371,
-    "netto": 468,
+    "umsatz": 365,
+    "netto": 462,
     "operativ": 389,
-    "vermoegen": 467,
-    "eigenkapital": 467,
-    "aktien": 441,
-    "summe4qNetto": 457,
-    "fm": 438,
-    "umsatzWachstum": 334,
+    "vermoegen": 461,
+    "eigenkapital": 461,
+    "aktien": 432,
+    "summe4qNetto": 450,
+    "fm": 431,
+    "umsatzWachstum": 328,
     "prozent": {
-     "mitCik": 98.5,
-     "bericht": 72,
+     "mitCik": 97.5,
+     "bericht": 71.1,
      "auslaend": 15.8,
-     "umsatz": 57.1,
-     "netto": 72,
+     "umsatz": 56.2,
+     "netto": 71.1,
      "operativ": 59.8,
-     "vermoegen": 71.8,
-     "eigenkapital": 71.8,
-     "aktien": 67.8,
-     "summe4qNetto": 70.3,
-     "fm": 67.4,
-     "umsatzWachstum": 51.4
+     "vermoegen": 70.9,
+     "eigenkapital": 70.9,
+     "aktien": 66.5,
+     "summe4qNetto": 69.2,
+     "fm": 66.3,
+     "umsatzWachstum": 50.5
     }
    },
    "duenn": {
     "aktiv": 219,
-    "mitCik": 202,
-    "bericht": 126,
-    "auslaend": 12,
-    "umsatz": 57,
-    "netto": 125,
+    "mitCik": 197,
+    "bericht": 122,
+    "auslaend": 11,
+    "umsatz": 54,
+    "netto": 122,
     "operativ": 95,
-    "vermoegen": 125,
-    "eigenkapital": 125,
-    "aktien": 90,
-    "summe4qNetto": 118,
-    "fm": 110,
-    "umsatzWachstum": 48,
+    "vermoegen": 122,
+    "eigenkapital": 122,
+    "aktien": 84,
+    "summe4qNetto": 114,
+    "fm": 106,
+    "umsatzWachstum": 45,
     "prozent": {
-     "mitCik": 92.2,
-     "bericht": 57.5,
-     "auslaend": 5.5,
-     "umsatz": 26,
-     "netto": 57.1,
+     "mitCik": 90,
+     "bericht": 55.7,
+     "auslaend": 5,
+     "umsatz": 24.7,
+     "netto": 55.7,
      "operativ": 43.4,
-     "vermoegen": 57.1,
-     "eigenkapital": 57.1,
-     "aktien": 41.1,
-     "summe4qNetto": 53.9,
-     "fm": 50.2,
-     "umsatzWachstum": 21.9
+     "vermoegen": 55.7,
+     "eigenkapital": 55.7,
+     "aktien": 38.4,
+     "summe4qNetto": 52.1,
+     "fm": 48.4,
+     "umsatzWachstum": 20.5
     }
    },
    "gesamt": {
     "aktiv": 3244,
-    "mitCik": 3211,
-    "bericht": 2621,
-    "auslaend": 409,
-    "umsatz": 2395,
-    "netto": 2616,
-    "operativ": 2050,
-    "vermoegen": 2614,
-    "eigenkapital": 2613,
-    "aktien": 2479,
-    "summe4qNetto": 2578,
-    "fm": 2536,
-    "umsatzWachstum": 2281,
+    "mitCik": 3187,
+    "bericht": 2600,
+    "auslaend": 406,
+    "umsatz": 2375,
+    "netto": 2596,
+    "operativ": 2047,
+    "vermoegen": 2594,
+    "eigenkapital": 2593,
+    "aktien": 2452,
+    "summe4qNetto": 2555,
+    "fm": 2513,
+    "umsatzWachstum": 2261,
     "prozent": {
-     "mitCik": 99,
-     "bericht": 80.8,
-     "auslaend": 12.6,
-     "umsatz": 73.8,
-     "netto": 80.6,
-     "operativ": 63.2,
-     "vermoegen": 80.6,
-     "eigenkapital": 80.5,
-     "aktien": 76.4,
-     "summe4qNetto": 79.5,
-     "fm": 78.2,
-     "umsatzWachstum": 70.3
+     "mitCik": 98.2,
+     "bericht": 80.1,
+     "auslaend": 12.5,
+     "umsatz": 73.2,
+     "netto": 80,
+     "operativ": 63.1,
+     "vermoegen": 80,
+     "eigenkapital": 79.9,
+     "aktien": 75.6,
+     "summe4qNetto": 78.8,
+     "fm": 77.5,
+     "umsatzWachstum": 69.7
     }
    }
   },
@@ -2878,219 +2878,3564 @@
    },
    "5-50": {
     "aktiv": 949,
-    "mitCik": 945,
-    "bericht": 804,
+    "mitCik": 942,
+    "bericht": 801,
     "auslaend": 126,
-    "umsatz": 765,
-    "netto": 803,
-    "operativ": 604,
-    "vermoegen": 803,
-    "eigenkapital": 802,
-    "aktien": 770,
-    "summe4qNetto": 790,
-    "fm": 790,
-    "umsatzWachstum": 734,
+    "umsatz": 762,
+    "netto": 800,
+    "operativ": 603,
+    "vermoegen": 800,
+    "eigenkapital": 799,
+    "aktien": 767,
+    "summe4qNetto": 787,
+    "fm": 786,
+    "umsatzWachstum": 731,
     "prozent": {
-     "mitCik": 99.6,
-     "bericht": 84.7,
+     "mitCik": 99.3,
+     "bericht": 84.4,
      "auslaend": 13.3,
-     "umsatz": 80.6,
-     "netto": 84.6,
-     "operativ": 63.6,
-     "vermoegen": 84.6,
-     "eigenkapital": 84.5,
-     "aktien": 81.1,
-     "summe4qNetto": 83.2,
-     "fm": 83.2,
-     "umsatzWachstum": 77.3
+     "umsatz": 80.3,
+     "netto": 84.3,
+     "operativ": 63.5,
+     "vermoegen": 84.3,
+     "eigenkapital": 84.2,
+     "aktien": 80.8,
+     "summe4qNetto": 82.9,
+     "fm": 82.8,
+     "umsatzWachstum": 77
     }
    },
    "unter5": {
     "aktiv": 249,
-    "mitCik": 247,
-    "bericht": 189,
+    "mitCik": 246,
+    "bericht": 188,
     "auslaend": 27,
-    "umsatz": 147,
-    "netto": 189,
+    "umsatz": 146,
+    "netto": 188,
     "operativ": 162,
-    "vermoegen": 188,
-    "eigenkapital": 189,
-    "aktien": 165,
-    "summe4qNetto": 182,
-    "fm": 170,
-    "umsatzWachstum": 134,
+    "vermoegen": 187,
+    "eigenkapital": 188,
+    "aktien": 164,
+    "summe4qNetto": 181,
+    "fm": 168,
+    "umsatzWachstum": 133,
     "prozent": {
-     "mitCik": 99.2,
-     "bericht": 75.9,
+     "mitCik": 98.8,
+     "bericht": 75.5,
      "auslaend": 10.8,
-     "umsatz": 59,
-     "netto": 75.9,
+     "umsatz": 58.6,
+     "netto": 75.5,
      "operativ": 65.1,
-     "vermoegen": 75.5,
-     "eigenkapital": 75.9,
-     "aktien": 66.3,
-     "summe4qNetto": 73.1,
-     "fm": 68.3,
-     "umsatzWachstum": 53.8
+     "vermoegen": 75.1,
+     "eigenkapital": 75.5,
+     "aktien": 65.9,
+     "summe4qNetto": 72.7,
+     "fm": 67.5,
+     "umsatzWachstum": 53.4
     }
    },
    "duenn": {
     "aktiv": 139,
-    "mitCik": 128,
-    "bericht": 63,
+    "mitCik": 119,
+    "bericht": 54,
     "auslaend": 8,
-    "umsatz": 40,
-    "netto": 63,
-    "operativ": 41,
-    "vermoegen": 63,
-    "eigenkapital": 63,
-    "aktien": 55,
-    "summe4qNetto": 61,
-    "fm": 59,
-    "umsatzWachstum": 36,
+    "umsatz": 32,
+    "netto": 54,
+    "operativ": 38,
+    "vermoegen": 54,
+    "eigenkapital": 54,
+    "aktien": 47,
+    "summe4qNetto": 53,
+    "fm": 50,
+    "umsatzWachstum": 28,
     "prozent": {
-     "mitCik": 92.1,
-     "bericht": 45.3,
+     "mitCik": 85.6,
+     "bericht": 38.8,
      "auslaend": 5.8,
-     "umsatz": 28.8,
-     "netto": 45.3,
-     "operativ": 29.5,
-     "vermoegen": 45.3,
-     "eigenkapital": 45.3,
-     "aktien": 39.6,
-     "summe4qNetto": 43.9,
-     "fm": 42.4,
-     "umsatzWachstum": 25.9
+     "umsatz": 23,
+     "netto": 38.8,
+     "operativ": 27.3,
+     "vermoegen": 38.8,
+     "eigenkapital": 38.8,
+     "aktien": 33.8,
+     "summe4qNetto": 38.1,
+     "fm": 36,
+     "umsatzWachstum": 20.1
     }
    },
    "gesamt": {
     "aktiv": 2641,
-    "mitCik": 2622,
-    "bericht": 2193,
+    "mitCik": 2609,
+    "bericht": 2180,
     "auslaend": 300,
-    "umsatz": 2070,
-    "netto": 2189,
-    "operativ": 1698,
-    "vermoegen": 2186,
-    "eigenkapital": 2187,
-    "aktien": 2080,
-    "summe4qNetto": 2151,
-    "fm": 2134,
-    "umsatzWachstum": 1991,
+    "umsatz": 2058,
+    "netto": 2176,
+    "operativ": 1694,
+    "vermoegen": 2173,
+    "eigenkapital": 2174,
+    "aktien": 2068,
+    "summe4qNetto": 2139,
+    "fm": 2119,
+    "umsatzWachstum": 1979,
     "prozent": {
-     "mitCik": 99.3,
-     "bericht": 83,
+     "mitCik": 98.8,
+     "bericht": 82.5,
      "auslaend": 11.4,
-     "umsatz": 78.4,
-     "netto": 82.9,
-     "operativ": 64.3,
-     "vermoegen": 82.8,
-     "eigenkapital": 82.8,
-     "aktien": 78.8,
-     "summe4qNetto": 81.4,
-     "fm": 80.8,
-     "umsatzWachstum": 75.4
+     "umsatz": 77.9,
+     "netto": 82.4,
+     "operativ": 64.1,
+     "vermoegen": 82.3,
+     "eigenkapital": 82.3,
+     "aktien": 78.3,
+     "summe4qNetto": 81,
+     "fm": 80.2,
+     "umsatzWachstum": 74.9
     }
    }
   }
  },
  "hashes": {
   "_auslaend.json": {
-   "sha256": "b0b61a93ce77c478c8490717658d5b70c7c6786271ef83b37059dd073149d2a3",
-   "bytes": 448756
+   "sha256": "840c4424df79b81178892b2d3e53b562d0d32815595ed674c1822a845769ff36",
+   "bytes": 404120
   },
   "_neudarstellungen.json": {
-   "sha256": "fb99ef8c454c9f7220281b3f5a9e7cc01c649c267f18689b4b40ab6bd09fc4f3",
-   "bytes": 66096540
+   "sha256": "10191dc8293b1ad73dadf386ff3ad746a5e77630de5203a9df5d4c281f98568e",
+   "bytes": 60609802
   },
   "_reihen.json": {
-   "sha256": "fc1d1489ec02d24d81fa9a76597b2e584710ea889647236c57ce59413e1c9478",
-   "bytes": 959168
+   "sha256": "6aba9dc8406d889be4dc6f7834080320c35ef16e84603fc82d1f8d8d46fb15d0",
+   "bytes": 1511283
   },
   "tafel-2014.jsonl": {
-   "sha256": "6a087220df3149a522a86fc047427ba78b9355db40cd934792f4b3b9ad51c618",
-   "bytes": 15784519
+   "sha256": "21d79cbf24f74380918bc10fc668126e29ca481827a55a844906cae2eda78c87",
+   "bytes": 15880817
   },
   "tafel-2015.jsonl": {
-   "sha256": "74f95ccf416d92b0a502b708203301efd9e360875520913bfec5a7388f6055c8",
-   "bytes": 17721379
+   "sha256": "bfdc81eabdee2b0700ea0fbc6b2012526a8bdd188434805ea73885dcf71e9cb0",
+   "bytes": 17761400
   },
   "tafel-2016.jsonl": {
-   "sha256": "848b8dfee5cefe44dc45a49cb92db8343abe62817b0fa3138ac05a1752c2dda7",
-   "bytes": 18002692
+   "sha256": "9d03255a50e5e648582c6b320f98ca1ae391bd5d196a16f7270da421fed649e3",
+   "bytes": 17785421
   },
   "tafel-2017.jsonl": {
-   "sha256": "21773cc26d523c13a6493366f219264f501bf2dee3b375b9676e705d9b35b156",
-   "bytes": 18321756
+   "sha256": "6e9ce7004a5d8db1a32e73fc4b84651db5ddb3f27ff19354567503adb31dfcd1",
+   "bytes": 18056508
   },
   "tafel-2018.jsonl": {
-   "sha256": "6a005ea6bd90594e2306f08bd517a5ca321ea81133ff473b058daa6d5299f87d",
-   "bytes": 18499635
+   "sha256": "cec8d632250a092cfea49baa6836d334849500c077d4d4adc7c97cdf6a0659c1",
+   "bytes": 18160258
   },
   "tafel-2019.jsonl": {
-   "sha256": "4a3d24fdb92d5bd669c0994486f273eaa359848cafe73e02ca2578dbb5483281",
-   "bytes": 18506672
+   "sha256": "1ab023280cf88e9b2634997e3edad3b5fd0ca51da9efbfff3bff463dcd8c6e61",
+   "bytes": 18079547
   },
   "tafel-2020.jsonl": {
-   "sha256": "87b92daeb0230076bd1ed0e810984b4a815c1ee2105f737bcc8e647463882531",
-   "bytes": 18478537
+   "sha256": "c7c7f483bc543ddb1c02501b4aa4e18c343ec32d426c10c31bc588e129fdf020",
+   "bytes": 17990185
   },
   "tafel-2021.jsonl": {
-   "sha256": "1f58d7f53929433baee156224ec4b572678b0c38fd6ee3235285b3e460403449",
-   "bytes": 21459896
+   "sha256": "68a858fc0e1590b75a3ea9e246543621a7e422835e338a096123b8d1fae9fcb3",
+   "bytes": 20642679
   },
   "tafel-2022.jsonl": {
-   "sha256": "225535de70191aa2e82d5ba9e057bec45b8a8b3da60819050987246d2418701b",
-   "bytes": 22767178
+   "sha256": "fc49e43a17c8ea18e24a4adbdc5791f2ca63cf6ba72fa0211b3cf00fa1cb3917",
+   "bytes": 21880657
   },
   "tafel-2023.jsonl": {
-   "sha256": "2ab82c70c0fd7591e4016340df1dc1eb8fe3b6302b23c3c3fba2e0ff2c8714c5",
-   "bytes": 21014965
+   "sha256": "cebd495ff84a1df90dad90a652dc8a31a5da0777ae7c1ab617bb1fa98481b945",
+   "bytes": 20044084
   },
   "tafel-2024.jsonl": {
-   "sha256": "c9c7ef579bbefd3eae7a31dc97369b8357f14a4ef5303bda6748481d93a1076c",
-   "bytes": 19380076
+   "sha256": "9bca91da9d79572d35970dfcb0c8849ef468b029abd31abd5e93327e95821a89",
+   "bytes": 18454853
   },
   "tafel-2025.jsonl": {
-   "sha256": "d5a19823cd471d42c75d94d65da74026cbc71ba2e7aaa5350a8831b729e47283",
-   "bytes": 17705761
+   "sha256": "1baf5f60b1b7701b4ee1187b21c7770e5031facf1d44ade4ea337ce7a719785b",
+   "bytes": 16798150
   },
   "tafel-2026.jsonl": {
-   "sha256": "3669270a54d4b8ae0192844eb8d32267958a07f4f84511cf02a6392e967f3a8e",
-   "bytes": 8214411
+   "sha256": "e1831321a49c9e1362f28c19b07f4a6580ad9640cdc1b6f8eb13dc496d3c1ca8",
+   "bytes": 7784792
   }
  },
- "bauSekunden": 23,
+ "bauSekunden": 40,
+ "v11": {
+  "zuordnung": {
+   "quelleMarktname": "Markt-Dashboard-Daten/massive/verschwundene.json (Polygon reference tickers active=false, Stand 2026-08-23T17:13:33.203Z), Feld name; die EDGAR-Volltextzuordnung der Studie verschwundene-gruende-2026-09-12 suchte mit dem Kuerzel (edgar-lauf.js ftsKuerzel), ihr Feld name ist der gefundene Registrant und damit nicht unabhaengig; panel.json reihen[].name wurde deshalb NICHT als Marktname benutzt",
+   "regel": "Jaccard(Token) >= 0.5 oder erstes Token gleich und >= 4 Zeichen; Fuellwoerter: inc corp corporation co company ltd limited plc holdings holding group the trust lp llc nv sa ag incorporated common stock class ordinary shares share depositary receipts adr ads each representing unit units of and",
+   "jeStufe": {
+    "tabelle": {
+     "reihen": 2283,
+     "bestaetigt": 0,
+     "verworfen": 0,
+     "ungeprueft": 0
+    },
+    "schwach": {
+     "reihen": 1003,
+     "bestaetigt": 335,
+     "verworfen": 294,
+     "ungeprueft": 374
+    },
+    "mittel": {
+     "reihen": 2428,
+     "bestaetigt": 1648,
+     "verworfen": 682,
+     "ungeprueft": 98
+    },
+    "stark": {
+     "reihen": 1508,
+     "bestaetigt": 0,
+     "verworfen": 0,
+     "ungeprueft": 1508
+    }
+   },
+   "ohneCik": 77,
+   "ohneMarktname": 0,
+   "ohneRegistrant": 470,
+   "leerNachNormalisierung": 2,
+   "verworfenTop30": [
+    {
+     "reihe": "HCFT",
+     "sicherheit": "mittel",
+     "marktname": "Hunt Companies Finance Trust, Inc. Common Stock",
+     "registrant": "LUMENT FINANCE TRUST, INC.",
+     "cik": 1547546,
+     "filings": 60,
+     "jaccard": 0.25,
+     "polygonCik": null,
+     "fruehererNamePasst": "HUNT COMPANIES FINANCE TRUST, INC."
+    },
+    {
+     "reihe": "DPW",
+     "sicherheit": "schwach",
+     "marktname": "Ault Global Holdings, Inc.",
+     "registrant": "HYPERSCALE DATA, INC.",
+     "cik": 896493,
+     "filings": 59,
+     "jaccard": 0,
+     "polygonCik": 896493,
+     "fruehererNamePasst": "AULT GLOBAL HOLDINGS, INC."
+    },
+    {
+     "reihe": "NILE",
+     "sicherheit": "mittel",
+     "marktname": "BitNile Holdings, Inc.",
+     "registrant": "HYPERSCALE DATA, INC.",
+     "cik": 896493,
+     "filings": 59,
+     "jaccard": 0,
+     "polygonCik": 896493,
+     "fruehererNamePasst": "BITNILE HOLDINGS, INC."
+    },
+    {
+     "reihe": "NETE",
+     "sicherheit": "mittel",
+     "marktname": "Net Element, Inc.",
+     "registrant": "BOLLINGER INNOVATIONS, INC.",
+     "cik": 1499961,
+     "filings": 58,
+     "jaccard": 0,
+     "polygonCik": 1499961,
+     "fruehererNamePasst": "NET ELEMENT, INC."
+    },
+    {
+     "reihe": "GBOX",
+     "sicherheit": "mittel",
+     "marktname": "GreenBox POS Common Stock",
+     "registrant": "RYVYL INC.",
+     "cik": 1419275,
+     "filings": 57,
+     "jaccard": 0,
+     "polygonCik": 1419275,
+     "fruehererNamePasst": "GREENBOX POS, LLC"
+    },
+    {
+     "reihe": "HCHC",
+     "sicherheit": "mittel",
+     "marktname": "HC2 Holdings, Inc. Common Stock",
+     "registrant": "INNOVATE CORP.",
+     "cik": 1006837,
+     "filings": 56,
+     "jaccard": 0,
+     "polygonCik": 1006837,
+     "fruehererNamePasst": "HC2 HOLDINGS, INC."
+    },
+    {
+     "reihe": "AMDA",
+     "sicherheit": "mittel",
+     "marktname": "Amedica Corporation",
+     "registrant": "SINTX TECHNOLOGIES, INC.",
+     "cik": 1269026,
+     "filings": 55,
+     "jaccard": 0,
+     "polygonCik": 1269026,
+     "fruehererNamePasst": "AMEDICA CORP"
+    },
+    {
+     "reihe": "AMRH",
+     "sicherheit": "mittel",
+     "marktname": "Ameri Holdings, Inc. Common Stock",
+     "registrant": "ENVERIC BIOSCIENCES, INC.",
+     "cik": 890821,
+     "filings": 55,
+     "jaccard": 0,
+     "polygonCik": 890821,
+     "fruehererNamePasst": "AMERI HOLDINGS, INC."
+    },
+    {
+     "reihe": "ENOB",
+     "sicherheit": "mittel",
+     "marktname": "Enochian Biosciences Inc. Common Shares",
+     "registrant": "LUNAI BIOWORKS INC.",
+     "cik": 1527728,
+     "filings": 55,
+     "jaccard": 0,
+     "polygonCik": 1527728,
+     "fruehererNamePasst": "ENOCHIAN BIOSCIENCES INC"
+    },
+    {
+     "reihe": "NWGI",
+     "sicherheit": "mittel",
+     "marktname": "Newgioco Group, Inc. Common Stock",
+     "registrant": "ELYS GAME TECHNOLOGY, CORP.",
+     "cik": 1080319,
+     "filings": 55,
+     "jaccard": 0,
+     "polygonCik": null,
+     "fruehererNamePasst": "NEWGIOCO GROUP, INC."
+    },
+    {
+     "reihe": "SONA",
+     "sicherheit": "mittel",
+     "marktname": "Southern National Bancorp of Virginia, Inc.",
+     "registrant": "PRIMIS FINANCIAL CORP.",
+     "cik": 1325670,
+     "filings": 55,
+     "jaccard": 0,
+     "polygonCik": 1325670,
+     "fruehererNamePasst": "SOUTHERN NATIONAL BANCORP OF VIRGINIA INC"
+    },
+    {
+     "reihe": "ADHD",
+     "sicherheit": "schwach",
+     "marktname": "Alcobra Ltd.",
+     "registrant": "SUPERNUS PHARMACEUTICALS, INC.",
+     "cik": 1356576,
+     "filings": 54,
+     "jaccard": 0,
+     "polygonCik": 1566049,
+     "fruehererNamePasst": null
+    },
+    {
+     "reihe": "ROIA",
+     "sicherheit": "mittel",
+     "marktname": "Radio One Inc",
+     "registrant": "URBAN ONE, INC.",
+     "cik": 1041657,
+     "filings": 54,
+     "jaccard": 0.333,
+     "polygonCik": 1041657,
+     "fruehererNamePasst": "RADIO ONE, INC."
+    },
+    {
+     "reihe": "ROIAK",
+     "sicherheit": "mittel",
+     "marktname": "Radio One Inc",
+     "registrant": "URBAN ONE, INC.",
+     "cik": 1041657,
+     "filings": 54,
+     "jaccard": 0.333,
+     "polygonCik": 790526,
+     "fruehererNamePasst": "RADIO ONE, INC."
+    },
+    {
+     "reihe": "RTRX",
+     "sicherheit": "mittel",
+     "marktname": "Retrophin, Inc.",
+     "registrant": "TRAVERE THERAPEUTICS, INC.",
+     "cik": 1438533,
+     "filings": 54,
+     "jaccard": 0,
+     "polygonCik": 1438533,
+     "fruehererNamePasst": "RETROPHIN, INC."
+    },
+    {
+     "reihe": "APHB",
+     "sicherheit": "mittel",
+     "marktname": "AMPLIPHI BIOSCIENCES CORP",
+     "registrant": "ARMATA PHARMACEUTICALS, INC.",
+     "cik": 921114,
+     "filings": 53,
+     "jaccard": 0,
+     "polygonCik": 921114,
+     "fruehererNamePasst": "AMPLIPHI BIOSCIENCES CORP"
+    },
+    {
+     "reihe": "BASI",
+     "sicherheit": "schwach",
+     "marktname": "Bioanalytical Systems Inc",
+     "registrant": "INOTIV, INC.",
+     "cik": 720154,
+     "filings": 53,
+     "jaccard": 0,
+     "polygonCik": 720154,
+     "fruehererNamePasst": "BIOANALYTICAL SYSTEMS INC"
+    },
+    {
+     "reihe": "BVX",
+     "sicherheit": "schwach",
+     "marktname": "Bovie Medical Corporation",
+     "registrant": "APYX MEDICAL CORP",
+     "cik": 719135,
+     "filings": 53,
+     "jaccard": 0.333,
+     "polygonCik": 719135,
+     "fruehererNamePasst": "BOVIE MEDICAL CORP"
+    },
+    {
+     "reihe": "CVLB",
+     "sicherheit": "mittel",
+     "marktname": "Conversion Labs, Inc. Common",
+     "registrant": "LIFEMD, INC.",
+     "cik": 948320,
+     "filings": 53,
+     "jaccard": 0,
+     "polygonCik": 948320,
+     "fruehererNamePasst": "CONVERSION LABS, INC."
+    },
+    {
+     "reihe": "ENRJ",
+     "sicherheit": "mittel",
+     "marktname": "EnerJex Resources Inc.",
+     "registrant": "AGEAGLE AERIAL SYSTEMS INC.",
+     "cik": 8504,
+     "filings": 53,
+     "jaccard": 0,
+     "polygonCik": 8504,
+     "fruehererNamePasst": "ENERJEX RESOURCES, INC."
+    },
+    {
+     "reihe": "HDRA",
+     "sicherheit": "mittel",
+     "marktname": "Hydra Industries Acquisition Corp.",
+     "registrant": "INSPIRED ENTERTAINMENT, INC.",
+     "cik": 1615063,
+     "filings": 53,
+     "jaccard": 0,
+     "polygonCik": 1615063,
+     "fruehererNamePasst": "HYDRA INDUSTRIES ACQUISITION CORP."
+    },
+    {
+     "reihe": "ISIG",
+     "sicherheit": "mittel",
+     "marktname": "Insignia Systems Inc",
+     "registrant": "BLOOMIA HOLDINGS, INC.",
+     "cik": 875355,
+     "filings": 53,
+     "jaccard": 0,
+     "polygonCik": 875355,
+     "fruehererNamePasst": "INSIGNIA SYSTEMS INC/MN"
+    },
+    {
+     "reihe": "OCN",
+     "sicherheit": "mittel",
+     "marktname": "Ocwen Financial Corporation",
+     "registrant": "ONITY GROUP INC.",
+     "cik": 873860,
+     "filings": 53,
+     "jaccard": 0,
+     "polygonCik": 873860,
+     "fruehererNamePasst": "OCWEN FINANCIAL CORP"
+    },
+    {
+     "reihe": "RXII",
+     "sicherheit": "mittel",
+     "marktname": "RXI Pharmaceuticals Corporation",
+     "registrant": "PHIO PHARMACEUTICALS CORP.",
+     "cik": 1533040,
+     "filings": 53,
+     "jaccard": 0.333,
+     "polygonCik": 1533040,
+     "fruehererNamePasst": "RXI PHARMACEUTICALS CORP"
+    },
+    {
+     "reihe": "TPIV",
+     "sicherheit": "mittel",
+     "marktname": "TapImmune Inc. New",
+     "registrant": "MARKER THERAPEUTICS, INC.",
+     "cik": 1094038,
+     "filings": 53,
+     "jaccard": 0,
+     "polygonCik": 1094038,
+     "fruehererNamePasst": "TAPIMMUNE INC"
+    },
+    {
+     "reihe": "USAT",
+     "sicherheit": "mittel",
+     "marktname": "USA Technologies, Inc.",
+     "registrant": "CANTALOUPE, INC.",
+     "cik": 896429,
+     "filings": 53,
+     "jaccard": 0,
+     "polygonCik": 896429,
+     "fruehererNamePasst": "USA TECHNOLOGIES INC"
+    },
+    {
+     "reihe": "AIPT",
+     "sicherheit": "mittel",
+     "marktname": "Precision Therapeutics Inc. Common Stock",
+     "registrant": "AXE COMPUTE INC.",
+     "cik": 1446159,
+     "filings": 52,
+     "jaccard": 0,
+     "polygonCik": null,
+     "fruehererNamePasst": "PRECISION THERAPEUTICS INC."
+    },
+    {
+     "reihe": "AMEH",
+     "sicherheit": "mittel",
+     "marktname": "Apollo Medical Holdings, Inc. Common Stock",
+     "registrant": "ASTRANA HEALTH, INC.",
+     "cik": 1083446,
+     "filings": 52,
+     "jaccard": 0,
+     "polygonCik": 1083446,
+     "fruehererNamePasst": "APOLLO MEDICAL HOLDINGS, INC."
+    },
+    {
+     "reihe": "BBIG",
+     "sicherheit": "mittel",
+     "marktname": "Vinco Ventures, Inc. Common Stock",
+     "registrant": "CINEVERSE CORP.",
+     "cik": 1173204,
+     "filings": 52,
+     "jaccard": 0,
+     "polygonCik": 1717556,
+     "fruehererNamePasst": null
+    },
+    {
+     "reihe": "CIDM",
+     "sicherheit": "schwach",
+     "marktname": "Cinedigm Corp.",
+     "registrant": "CINEVERSE CORP.",
+     "cik": 1173204,
+     "filings": 52,
+     "jaccard": 0,
+     "polygonCik": 1173204,
+     "fruehererNamePasst": "CINEDIGM CORP."
+    }
+   ],
+   "handproben20": [
+    {
+     "reihe": "LGNDV",
+     "marktname": "Ligand Pharmaceuticals Incorporated Common Stock Ex-distribution When Issued",
+     "registrant": "LIGAND PHARMACEUTICALS INC",
+     "cik": 886163,
+     "jaccard": 0.333,
+     "erstesToken": true
+    },
+    {
+     "reihe": "BSGA",
+     "marktname": "Blue Safari Group Acquisition Corp. Class A Ordinary Share",
+     "registrant": "BLUE SAFARI GROUP ACQUISITION CORP",
+     "cik": 1853084,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "HIGA",
+     "marktname": "H.I.G. Acquisition Corp.",
+     "registrant": "H.I.G. ACQUISITION CORP.",
+     "cik": 1823776,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "ISO",
+     "marktname": "IsoPlexis Corporation Common Stock",
+     "registrant": "ISOPLEXIS CORP",
+     "cik": 1615055,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "TAST",
+     "marktname": "Carrols Restaurant Group, Inc.",
+     "registrant": "CARROLS RESTAURANT GROUP, INC.",
+     "cik": 809248,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "GPL",
+     "marktname": "Great Panther Mining Limited",
+     "registrant": "GREAT PANTHER MINING LTD",
+     "cik": 1300050,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "MOC",
+     "marktname": "Command Security Corporation",
+     "registrant": "COMMAND SECURITY CORP",
+     "cik": 864509,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "OACQ",
+     "marktname": "Origo Acquisition Corporation",
+     "registrant": "ORIGO ACQUISITION CORP",
+     "cik": 1619551,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "GGMC",
+     "marktname": "Glenfarne Merger Corp. Class A Common Stock",
+     "registrant": "GLENFARNE MERGER CORP.",
+     "cik": 1818880,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "CPUH",
+     "marktname": "Compute Health Acquisition Corp.",
+     "registrant": "COMPUTE HEALTH ACQUISITION CORP.",
+     "cik": 1828608,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "GSV",
+     "marktname": "Gold Standard Ventures Corp.",
+     "registrant": "GOLD STANDARD VENTURES CORP.",
+     "cik": 1321847,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "CLMS",
+     "marktname": "Calamos Asset Management, Inc.",
+     "registrant": "CALAMOS ASSET MANAGEMENT, INC. /DE/",
+     "cik": 1299033,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "ATLS",
+     "marktname": "ATLAS ENERGY GRP,LLC COM UNITS REPSTG LTD  (DE)",
+     "registrant": "ATLAS ENERGY GROUP, LLC",
+     "cik": 1623595,
+     "jaccard": 0.333,
+     "erstesToken": true
+    },
+    {
+     "reihe": "ASZ",
+     "marktname": "Austerlitz Acquisition Corporation II",
+     "registrant": "AUSTERLITZ ACQUISITION CORP II",
+     "cik": 1839191,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "HFBC",
+     "marktname": "HopFed Bancorp Inc",
+     "registrant": "HOPFED BANCORP INC",
+     "cik": 1041550,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "TBSA",
+     "marktname": "TB SA Acquisition Corp Class A Ordinary Share",
+     "registrant": "TB SA ACQUISITION CORP",
+     "cik": 1843764,
+     "jaccard": 1,
+     "erstesToken": false
+    },
+    {
+     "reihe": "SCG",
+     "marktname": "Scana",
+     "registrant": "SCANA CORP",
+     "cik": 754737,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "WMLP",
+     "marktname": "Westmoreland Resrc Partners, L.P",
+     "registrant": "WESTMORELAND RESOURCE PARTNERS, LP",
+     "cik": 1412347,
+     "jaccard": 0.5,
+     "erstesToken": true
+    },
+    {
+     "reihe": "UBA",
+     "marktname": "Urstadt Biddle Properties Inc. Class A",
+     "registrant": "URSTADT BIDDLE PROPERTIES INC",
+     "cik": 1029800,
+     "jaccard": 1,
+     "erstesToken": true
+    },
+    {
+     "reihe": "MSGN",
+     "marktname": "MSG Networks Inc.",
+     "registrant": "MSG NETWORKS INC.",
+     "cik": 1469372,
+     "jaccard": 1,
+     "erstesToken": false
+    }
+   ],
+   "nurErstesToken": {
+    "n": 62,
+    "beispiele": [
+     {
+      "reihe": "ABY",
+      "sicherheit": "mittel",
+      "marktname": "Atlantica Yield plc",
+      "registrant": "ATLANTICA SUSTAINABLE INFRASTRUCTURE PLC",
+      "cik": 1601072,
+      "jaccard": 0.25
+     },
+     {
+      "reihe": "AEL",
+      "sicherheit": "mittel",
+      "marktname": "American Equity Investment Life Holding Company",
+      "registrant": "AMERICAN NATIONAL GROUP INC.",
+      "cik": 1039828,
+      "jaccard": 0.2
+     },
+     {
+      "reihe": "AGNCB",
+      "sicherheit": "mittel",
+      "marktname": "AGNC Investment Corp. Depositary Shares representing 1/1000th Series B Preferred Stock",
+      "registrant": "AGNC INVESTMENT CORP.",
+      "cik": 1423689,
+      "jaccard": 0.4
+     },
+     {
+      "reihe": "ALKSV",
+      "sicherheit": "schwach",
+      "marktname": "Alkermes plc Ordinary Shares Ex-distribution When Issued",
+      "registrant": "ALKERMES PLC.",
+      "cik": 1520262,
+      "jaccard": 0.2
+     },
+     {
+      "reihe": "ALYA",
+      "sicherheit": "mittel",
+      "marktname": "Alithya Group inc. Class A Subordinate Voting Shares",
+      "registrant": "ALITHYA GROUP INC",
+      "cik": 1734520,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "AMSGP",
+      "sicherheit": "schwach",
+      "marktname": "Amsurg Corp. 5.25% Mandatory Convertible Pft Stk Ser A-1",
+      "registrant": "AMSURG CORP",
+      "cik": 895930,
+      "jaccard": 0.143
+     },
+     {
+      "reihe": "AMTG",
+      "sicherheit": "schwach",
+      "marktname": "APOLLO RESIDENTIAL MTG INC COM STK",
+      "registrant": "APOLLO RESIDENTIAL MORTGAGE, INC.",
+      "cik": 1515980,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "ARPI",
+      "sicherheit": "schwach",
+      "marktname": "AMERICAN RESIDENTIAL PPTYS INC  COM",
+      "registrant": "AMERICAN RESIDENTIAL PROPERTIES, INC.",
+      "cik": 1548981,
+      "jaccard": 0.4
+     },
+     {
+      "reihe": "ATLS",
+      "sicherheit": "schwach",
+      "marktname": "ATLAS ENERGY GRP,LLC COM UNITS REPSTG LTD  (DE)",
+      "registrant": "ATLAS ENERGY GROUP, LLC",
+      "cik": 1623595,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "AVOL",
+      "sicherheit": "mittel",
+      "marktname": "AVOLON HLDGS LTD SHS (CYM)",
+      "registrant": "AVOLON HOLDINGS LTD",
+      "cik": 1610128,
+      "jaccard": 0.25
+     },
+     {
+      "reihe": "AXLL",
+      "sicherheit": "mittel",
+      "marktname": "AXIALL CORP COM STK (DE)",
+      "registrant": "AXIALL CORP/DE/",
+      "cik": 805264,
+      "jaccard": 0.25
+     },
+     {
+      "reihe": "AZUR",
+      "sicherheit": "mittel",
+      "marktname": "AZURE MIDSTREAM PARTNERS LP COM UNT LTD PARTNER INT",
+      "registrant": "AZURE MIDSTREAM PARTNERS, LP",
+      "cik": 1575599,
+      "jaccard": 0.429
+     },
+     {
+      "reihe": "BNRE.A",
+      "sicherheit": "mittel",
+      "marktname": "Brookfield Reinsurance Ltd. Class A-1 Exchangeable Non-Voting Shares",
+      "registrant": "BROOKFIELD WEALTH SOLUTIONS LTD.",
+      "cik": 1837429,
+      "jaccard": 0.143
+     },
+     {
+      "reihe": "BPTS",
+      "sicherheit": "mittel",
+      "marktname": "Biophytis SA American Depositary Share (0.01 Euro)",
+      "registrant": "BIOPHYTIS SA",
+      "cik": 1768946,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "BXLT",
+      "sicherheit": "mittel",
+      "marktname": "BAXALTA INC COM STK (DE)",
+      "registrant": "BAXALTA INC",
+      "cik": 1620546,
+      "jaccard": 0.25
+     },
+     {
+      "reihe": "CJES",
+      "sicherheit": "mittel",
+      "marktname": "C&J ENERGY SVCS LTD",
+      "registrant": "C&J ENERGY SERVICES, INC.",
+      "cik": 1615817,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "CLDB",
+      "sicherheit": "mittel",
+      "marktname": "CORTLAND BNCP CRTLD OHIO",
+      "registrant": "CORTLAND BANCORP INC",
+      "cik": 774569,
+      "jaccard": 0.2
+     },
+     {
+      "reihe": "CPGX",
+      "sicherheit": "mittel",
+      "marktname": "COLUMBIA PIPELINE GROUP IN COM STK  (DE)",
+      "registrant": "COLUMBIA PIPELINE GROUP, INC.",
+      "cik": 1629995,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "CVC",
+      "sicherheit": "mittel",
+      "marktname": "CABLEVISION SYS CP NY GRP CL-A",
+      "registrant": "CABLEVISION SYSTEMS CORP /NY",
+      "cik": 1053112,
+      "jaccard": 0.286
+     },
+     {
+      "reihe": "CVETV",
+      "sicherheit": "mittel",
+      "marktname": "Covetrus, Inc. Common Stock When Issued",
+      "registrant": "COVETRUS, INC.",
+      "cik": 1752836,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "DWRE",
+      "sicherheit": "mittel",
+      "marktname": "DEMANDWARE INC COM STK (DE)",
+      "registrant": "DEMANDWARE INC",
+      "cik": 1301031,
+      "jaccard": 0.25
+     },
+     {
+      "reihe": "EEP",
+      "sicherheit": "mittel",
+      "marktname": "Enbridge Energy Partners",
+      "registrant": "ENBRIDGE INC",
+      "cik": 895728,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "EEQ",
+      "sicherheit": "mittel",
+      "marktname": "Enbridge Energy Management Llc",
+      "registrant": "ENBRIDGE INC",
+      "cik": 895728,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "EHLDV",
+      "sicherheit": "schwach",
+      "marktname": "Euroholdings Ltd. Common Stock When Issued",
+      "registrant": "EUROHOLDINGS LTD.",
+      "cik": 2032779,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "ENIA",
+      "sicherheit": "mittel",
+      "marktname": "Enel Am�ricas S.A. American Depositary Shares (Each representing 50 shares of Common Stock)",
+      "registrant": "ENEL AMERICAS S.A.",
+      "cik": 912505,
+      "jaccard": 0.25
+     },
+     {
+      "reihe": "FMD",
+      "sicherheit": "mittel",
+      "marktname": "FIRST MARBLEHEAD CORP COM STK NEW (DE)",
+      "registrant": "FIRST MARBLEHEAD CORP",
+      "cik": 1262279,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "HKIB",
+      "sicherheit": "schwach",
+      "marktname": "AMTD International Inc.",
+      "registrant": "AMTD IDEA GROUP",
+      "cik": 1769731,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "HONAV",
+      "sicherheit": "schwach",
+      "marktname": "Honeywell Aerospace Inc. Common Stock When Issued",
+      "registrant": "HONEYWELL INTERNATIONAL INC",
+      "cik": 773840,
+      "jaccard": 0.2
+     },
+     {
+      "reihe": "HONIV",
+      "sicherheit": "mittel",
+      "marktname": "Honeywell International Inc. Common Stock Ex Distribution When Issued",
+      "registrant": "HONEYWELL INTERNATIONAL INC",
+      "cik": 773840,
+      "jaccard": 0.333
+     },
+     {
+      "reihe": "IBKCO",
+      "sicherheit": "mittel",
+      "marktname": "IBERIABANK Corporation Depositary Shares Representing Series C Fixed to Floating",
+      "registrant": "IBERIABANK CORP",
+      "cik": 933141,
+      "jaccard": 0.2
+     }
+    ]
+   },
+   "verworfenAberFruehererName": {
+    "n": 693,
+    "faelle": [
+     {
+      "reihe": "AACQ",
+      "sicherheit": "mittel",
+      "marktname": "Artius Acquisition Inc. Class A Common Stock",
+      "registrant": "ORIGIN MATERIALS, INC.",
+      "cik": 1802457,
+      "filings": 25,
+      "jaccard": 0,
+      "polygonCik": 1802457,
+      "fruehererNamePasst": "ARTIUS ACQUISITION INC."
+     },
+     {
+      "reihe": "ABTL",
+      "sicherheit": "mittel",
+      "marktname": "Autobytel Inc",
+      "registrant": "AUTOWEB, INC.",
+      "cik": 1023364,
+      "filings": 36,
+      "jaccard": 0,
+      "polygonCik": 1023364,
+      "fruehererNamePasst": "AUTOBYTEL INC"
+     },
+     {
+      "reihe": "ACAX",
+      "sicherheit": "mittel",
+      "marktname": "Alset Capital Acquisition Corp. Class A Common Stock",
+      "registrant": "HWH INTERNATIONAL INC.",
+      "cik": 1897245,
+      "filings": 17,
+      "jaccard": 0,
+      "polygonCik": 1897245,
+      "fruehererNamePasst": "ALSET CAPITAL ACQUISITION CORP."
+     },
+     {
+      "reihe": "ACEV",
+      "sicherheit": "mittel",
+      "marktname": "ACE Convergence Acquisition Corp. Class A Ordinary Shares",
+      "registrant": "TEMPO AUTOMATION HOLDINGS, INC.",
+      "cik": 1813658,
+      "filings": 15,
+      "jaccard": 0,
+      "polygonCik": 1813658,
+      "fruehererNamePasst": "ACE CONVERGENCE ACQUISITION CORP."
+     },
+     {
+      "reihe": "ACND",
+      "sicherheit": "mittel",
+      "marktname": "Ascendant Digital Acquisition Corp.",
+      "registrant": "MARKETWISE, INC.",
+      "cik": 1805651,
+      "filings": 24,
+      "jaccard": 0,
+      "polygonCik": 1805651,
+      "fruehererNamePasst": "ASCENDANT DIGITAL ACQUISITION CORP."
+     },
+     {
+      "reihe": "ACPW",
+      "sicherheit": "mittel",
+      "marktname": "Active Power Inc",
+      "registrant": "P10 INDUSTRIES, INC.",
+      "cik": 1044435,
+      "filings": 13,
+      "jaccard": 0,
+      "polygonCik": 1044435,
+      "fruehererNamePasst": "ACTIVE POWER INC"
+     },
+     {
+      "reihe": "ACRX",
+      "sicherheit": "mittel",
+      "marktname": "AcelRx Pharmaceuticals, Inc",
+      "registrant": "TALPHERA, INC.",
+      "cik": 1427925,
+      "filings": 50,
+      "jaccard": 0,
+      "polygonCik": 1427925,
+      "fruehererNamePasst": "ACELRX PHARMACEUTICALS INC"
+     },
+     {
+      "reihe": "ACTC",
+      "sicherheit": "mittel",
+      "marktname": "ArcLight Clean Transition Corp. Class A Ordinary Shares",
+      "registrant": "PROTERRA INC",
+      "cik": 1820630,
+      "filings": 14,
+      "jaccard": 0,
+      "polygonCik": 1820630,
+      "fruehererNamePasst": "ARCLIGHT CLEAN TRANSITION CORP."
+     },
+     {
+      "reihe": "ACTD",
+      "sicherheit": "mittel",
+      "marktname": "ArcLight Clean Transition Corp. II Class A Ordinary Share",
+      "registrant": "OPAL FUELS INC.",
+      "cik": 1842279,
+      "filings": 25,
+      "jaccard": 0,
+      "polygonCik": 1842279,
+      "fruehererNamePasst": "ARCLIGHT CLEAN TRANSITION CORP. II"
+     },
+     {
+      "reihe": "ACTT",
+      "sicherheit": "mittel",
+      "marktname": "Act II Global Acquisition Corp. Class A Ordinary Shares",
+      "registrant": "WHOLE EARTH BRANDS, INC.",
+      "cik": 1753706,
+      "filings": 22,
+      "jaccard": 0,
+      "polygonCik": 1753706,
+      "fruehererNamePasst": "ACT II GLOBAL ACQUISITION CORP."
+     },
+     {
+      "reihe": "ACXM",
+      "sicherheit": "mittel",
+      "marktname": "Acxiom Holdings, Inc. Common Stock",
+      "registrant": "LIVERAMP HOLDINGS, INC.",
+      "cik": 733269,
+      "filings": 50,
+      "jaccard": 0,
+      "polygonCik": 733269,
+      "fruehererNamePasst": "ACXIOM CORP"
+     },
+     {
+      "reihe": "ACY",
+      "sicherheit": "mittel",
+      "marktname": "AeroCentury Corporation",
+      "registrant": "MEGA MATRIX CORP.",
+      "cik": 1036848,
+      "filings": 46,
+      "jaccard": 0,
+      "polygonCik": 1036848,
+      "fruehererNamePasst": "AEROCENTURY CORP"
+     },
+     {
+      "reihe": "ADEX",
+      "sicherheit": "mittel",
+      "marktname": "Adit EdTech Acquisition Corp",
+      "registrant": "GRIID INFRASTRUCTURE INC.",
+      "cik": 1830029,
+      "filings": 16,
+      "jaccard": 0,
+      "polygonCik": 1830029,
+      "fruehererNamePasst": "ADIT EDTECH ACQUISITION CORP."
+     },
+     {
+      "reihe": "ADMP",
+      "sicherheit": "mittel",
+      "marktname": "Adamis Pharmaceuticals Corporation",
+      "registrant": "DMK PHARMACEUTICALS CORP",
+      "cik": 887247,
+      "filings": 40,
+      "jaccard": 0.333,
+      "polygonCik": 887247,
+      "fruehererNamePasst": "ADAMIS PHARMACEUTICALS CORP"
+     },
+     {
+      "reihe": "ADOM",
+      "sicherheit": "mittel",
+      "marktname": "ADOMANI, Inc. Common Stock",
+      "registrant": "ENVIROTECH VEHICLES, INC.",
+      "cik": 1563568,
+      "filings": 41,
+      "jaccard": 0,
+      "polygonCik": 1563568,
+      "fruehererNamePasst": "ADOMANI, INC."
+     },
+     {
+      "reihe": "ADRA",
+      "sicherheit": "mittel",
+      "marktname": "Adara Acquisition Corp.",
+      "registrant": "ALLIANCE ENTERTAINMENT HOLDING CORP",
+      "cik": 1823584,
+      "filings": 23,
+      "jaccard": 0,
+      "polygonCik": 1823584,
+      "fruehererNamePasst": "ADARA ACQUISITION CORP."
+     },
+     {
+      "reihe": "ADRO",
+      "sicherheit": "mittel",
+      "marktname": "Aduro Biotech, Inc.",
+      "registrant": "CHINOOK THERAPEUTICS, INC.",
+      "cik": 1435049,
+      "filings": 34,
+      "jaccard": 0,
+      "polygonCik": 1435049,
+      "fruehererNamePasst": "ADURO BIOTECH, INC."
+     },
+     {
+      "reihe": "AEHA",
+      "sicherheit": "mittel",
+      "marktname": "Aesther Healthcare Acquisition Corp Class A Common Stock",
+      "registrant": "OCEAN BIOMEDICAL, INC.",
+      "cik": 1869974,
+      "filings": 17,
+      "jaccard": 0,
+      "polygonCik": 1869974,
+      "fruehererNamePasst": "AESTHER HEALTHCARE ACQUISITION CORP."
+     },
+     {
+      "reihe": "AERC",
+      "sicherheit": "mittel",
+      "marktname": "AeroClean Technologies, Inc. Common Stock",
+      "registrant": "MOLEKULE GROUP, INC.",
+      "cik": 1872356,
+      "filings": 9,
+      "jaccard": 0,
+      "polygonCik": 1872356,
+      "fruehererNamePasst": "AEROCLEAN TECHNOLOGIES, INC."
+     },
+     {
+      "reihe": "AETI",
+      "sicherheit": "mittel",
+      "marktname": "American Electric Technologies",
+      "registrant": "STABILIS SOLUTIONS, INC.",
+      "cik": 1043186,
+      "filings": 50,
+      "jaccard": 0,
+      "polygonCik": 1043186,
+      "fruehererNamePasst": "AMERICAN ELECTRIC TECHNOLOGIES INC"
+     },
+     {
+      "reihe": "AEZS",
+      "sicherheit": "mittel",
+      "marktname": "Aeterna Zentaris, Inc.",
+      "registrant": "COSCIENS BIOPHARMA INC.",
+      "cik": 1113423,
+      "filings": 0,
+      "jaccard": 0,
+      "polygonCik": 1113423,
+      "fruehererNamePasst": "AETERNA ZENTARIS INC."
+     },
+     {
+      "reihe": "AFIN",
+      "sicherheit": "mittel",
+      "marktname": "American Finance Trust, Inc. Class A",
+      "registrant": "NECESSITY RETAIL REIT, INC.",
+      "cik": 1568162,
+      "filings": 40,
+      "jaccard": 0,
+      "polygonCik": 1568162,
+      "fruehererNamePasst": "AMERICAN REALTY CAPITAL TRUST V, INC."
+     },
+     {
+      "reihe": "AGLE",
+      "sicherheit": "mittel",
+      "marktname": "Aeglea BioTherapeutics, Inc.",
+      "registrant": "SPYRE THERAPEUTICS, INC.",
+      "cik": 1636282,
+      "filings": 45,
+      "jaccard": 0,
+      "polygonCik": 1636282,
+      "fruehererNamePasst": "AEGLEA BIOTHERAPEUTICS, INC."
+     },
+     {
+      "reihe": "AHAC",
+      "sicherheit": "mittel",
+      "marktname": "Alpha Healthcare Acquisition Corp. Class A Common Stock",
+      "registrant": "HUMACYTE, INC.",
+      "cik": 1818382,
+      "filings": 24,
+      "jaccard": 0,
+      "polygonCik": 1818382,
+      "fruehererNamePasst": "ALPHA HEALTHCARE ACQUISITION CORP."
+     },
+     {
+      "reihe": "AHC",
+      "sicherheit": "mittel",
+      "marktname": "A.H. Belo Corporation",
+      "registrant": "DALLASNEWS CORP",
+      "cik": 1413898,
+      "filings": 50,
+      "jaccard": 0,
+      "polygonCik": 1413898,
+      "fruehererNamePasst": "A. H. BELO CORP"
+     },
+     {
+      "reihe": "AHP",
+      "sicherheit": "mittel",
+      "marktname": "Ashford Hospitality Prime, Inc.",
+      "registrant": "BRAEMAR HOTELS & RESORTS INC.",
+      "cik": 1574085,
+      "filings": 50,
+      "jaccard": 0,
+      "polygonCik": 1574085,
+      "fruehererNamePasst": "ASHFORD HOSPITALITY PRIME, INC."
+     },
+     {
+      "reihe": "AHPA",
+      "sicherheit": "mittel",
+      "marktname": "Avista Public Acquisition Corp. II Class A Ordinary Shares",
+      "registrant": "OMNIAB, INC.",
+      "cik": 1846253,
+      "filings": 21,
+      "jaccard": 0,
+      "polygonCik": 1846253,
+      "fruehererNamePasst": "AVISTA PUBLIC ACQUISITION CORP. II"
+     },
+     {
+      "reihe": "AIPT",
+      "sicherheit": "mittel",
+      "marktname": "Precision Therapeutics Inc. Common Stock",
+      "registrant": "AXE COMPUTE INC.",
+      "cik": 1446159,
+      "filings": 52,
+      "jaccard": 0,
+      "polygonCik": null,
+      "fruehererNamePasst": "PRECISION THERAPEUTICS INC."
+     },
+     {
+      "reihe": "AKG",
+      "sicherheit": "mittel",
+      "marktname": "Asanko Gold Inc.",
+      "registrant": "GALIANO GOLD INC.",
+      "cik": 1377757,
+      "filings": 0,
+      "jaccard": 0.333,
+      "polygonCik": 1377757,
+      "fruehererNamePasst": "ASANKO GOLD INC."
+     },
+     {
+      "reihe": "ALCC",
+      "sicherheit": "mittel",
+      "marktname": "AltC Acquisition Corp.",
+      "registrant": "OKLO INC.",
+      "cik": 1849056,
+      "filings": 21,
+      "jaccard": 0,
+      "polygonCik": 1849056,
+      "fruehererNamePasst": "ALTC ACQUISITION CORP."
+     }
+    ]
+   },
+   "polygonCik": {
+    "verglichen": 4814,
+    "gleich": 3875,
+    "anders": 939,
+    "verworfenUndAnders": 264,
+    "bestaetigtUndAnders": 94
+   },
+   "starkDiagnose": {
+    "geprueft": 1494,
+    "passtNicht": 408,
+    "beispiele": [
+     {
+      "reihe": "AACT",
+      "marktname": "Ares Acquisition Corporation II",
+      "registrant": "KODIAK AI, INC.",
+      "cik": 1853138
+     },
+     {
+      "reihe": "AADI",
+      "marktname": "Aadi Bioscience, Inc. Common Stock",
+      "registrant": "WHITEHAWK THERAPEUTICS, INC.",
+      "cik": 1422142
+     },
+     {
+      "reihe": "ABIO",
+      "marktname": "ARCA biopharma, Inc.",
+      "registrant": "ORUKA THERAPEUTICS, INC.",
+      "cik": 907654
+     },
+     {
+      "reihe": "ACAB",
+      "marktname": "Atlantic Coastal Acquisition Corp. II Class A Common Stock",
+      "registrant": "ABPRO HOLDINGS, INC.",
+      "cik": 1893219
+     },
+     {
+      "reihe": "ACE",
+      "marktname": "ACE LIMITED (SWITZERLAND)",
+      "registrant": "CHUBB CORP",
+      "cik": 20171
+     },
+     {
+      "reihe": "ACRO",
+      "marktname": "Acropolis Infrastructure Acquisition Corp.",
+      "registrant": "EOS ENERGY ENTERPRISES, INC.",
+      "cik": 1805077
+     },
+     {
+      "reihe": "ACST",
+      "marktname": "Acasti Pharma, Inc. Common Stock",
+      "registrant": "GRACE THERAPEUTICS, INC.",
+      "cik": 1444192
+     },
+     {
+      "reihe": "ADK",
+      "marktname": "Adcare Health Systems, Inc.",
+      "registrant": "REGIONAL HEALTH PROPERTIES, INC",
+      "cik": 1004724
+     },
+     {
+      "reihe": "ADXS",
+      "marktname": "Advaxis, Inc.",
+      "registrant": "AYALA PHARMACEUTICALS, INC.",
+      "cik": 1100397
+     },
+     {
+      "reihe": "AF",
+      "marktname": "Astoria Financial Corporation",
+      "registrant": "ORUKA THERAPEUTICS, INC.",
+      "cik": 907654
+     },
+     {
+      "reihe": "AGAE",
+      "marktname": "Allied Gaming & Entertainment Inc. Common Stock",
+      "registrant": "ALL IN FUTURETECH ALLIANCE, INC.",
+      "cik": 1708341
+     },
+     {
+      "reihe": "AGBA",
+      "marktname": "AGBA Group Holding Limited Ordinary Share",
+      "registrant": "TRILLER GROUP INC.",
+      "cik": 1769624
+     },
+     {
+      "reihe": "AGFY",
+      "marktname": "Agrify Corporation Common Stock",
+      "registrant": "RYTHM, INC.",
+      "cik": 1800637
+     },
+     {
+      "reihe": "AHH",
+      "marktname": "Armada Hoffler Properties, Inc.",
+      "registrant": "AH REALTY TRUST, INC.",
+      "cik": 1569187
+     },
+     {
+      "reihe": "AHI",
+      "marktname": "Advanced Health Intelligence Ltd. American Depositary Shares",
+      "registrant": "INCANNEX HEALTHCARE INC.",
+      "cik": 1873875
+     },
+     {
+      "reihe": "AIFE",
+      "marktname": "Aifeex Nexus Acquisition Corporation Class A Ordinary Shares",
+      "registrant": "PANTAGES CAPITAL ACQUISITION CORP",
+      "cik": 2030829
+     },
+     {
+      "reihe": "AIU",
+      "marktname": "Meta Data Limited American Depositary Shares, each representing ten (10) Class A Ordinary Shares",
+      "registrant": "CLEARDAY, INC.",
+      "cik": 895665
+     },
+     {
+      "reihe": "AJX",
+      "marktname": "Great Ajax Corp.",
+      "registrant": "RITHM PROPERTY TRUST INC.",
+      "cik": 1614806
+     },
+     {
+      "reihe": "ALJ",
+      "marktname": "Alon U S A Energy Inc",
+      "registrant": "DELEK US HOLDINGS, INC.",
+      "cik": 1351541
+     },
+     {
+      "reihe": "ALN",
+      "marktname": "American Lorain Corporation Common Stock",
+      "registrant": "PLANET GREEN HOLDINGS CORP.",
+      "cik": 1117057
+     },
+     {
+      "reihe": "ALRN",
+      "marktname": "Aileron Therapeutics, Inc. Common Stock",
+      "registrant": "REIN THERAPEUTICS, INC.",
+      "cik": 1420565
+     },
+     {
+      "reihe": "ALTS",
+      "marktname": "ALT5 Sigma Corporation Common Stock",
+      "registrant": "AI FINANCIAL CORP",
+      "cik": 862861
+     },
+     {
+      "reihe": "ALVR",
+      "marktname": "AlloVir, Inc. Common Stock",
+      "registrant": "KALARIS THERAPEUTICS, INC.",
+      "cik": 1754068
+     },
+     {
+      "reihe": "AMBC",
+      "marktname": "Ambac Financial Group, Inc.",
+      "registrant": "OCTAVE SPECIALTY GROUP INC",
+      "cik": 874501
+     },
+     {
+      "reihe": "AMCN",
+      "marktname": "AirMedia Group Inc.",
+      "registrant": "XYNOMIC PHARMACEUTICALS HOLDINGS, INC.",
+      "cik": 1697805
+     },
+     {
+      "reihe": "AMCO",
+      "marktname": "ARMCO METALS HOLDINGS INC COM STK NEW (NV)",
+      "registrant": "AMERICAN COASTAL INSURANCE CORP",
+      "cik": 1401521
+     },
+     {
+      "reihe": "AMRK",
+      "marktname": "A-Mark Precious Metals, Inc.",
+      "registrant": "GOLD.COM, INC.",
+      "cik": 1591588
+     },
+     {
+      "reihe": "AMSWA",
+      "marktname": "American Software, Inc.",
+      "registrant": "LOGILITY SUPPLY CHAIN SOLUTIONS, INC",
+      "cik": 713425
+     },
+     {
+      "reihe": "ANAC",
+      "marktname": "Arctos NorthStar Acquisition Corp.",
+      "registrant": "EVE HOLDING, INC.",
+      "cik": 1823652
+     },
+     {
+      "reihe": "ANTE",
+      "marktname": "AirNet Technology Inc. Ordinary Share",
+      "registrant": "YUEDA DIGITAL HOLDING",
+      "cik": 1413745
+     }
+    ]
+   },
+   "verworfenGesamt": 976,
+   "ciksMitReihe": 5648,
+   "ciksOhneReiheDurchVerwerfen": 355
+  },
+  "einheit": {
+   "regel": "eigener Wert des Filings (Assets qtrs 0 bzw. Umsatz-Gruppe qtrs Sollquartal, ddate = period, USD) gegen beide Nachbar-Filings der CIK > Faktor 100 in derselben Richtung; am Rand gegen den einzigen Nachbarn UND den CIK-Median",
+   "verdacht": 368,
+   "verdachtAssets": 368,
+   "verdachtUmsatz": 0,
+   "einseitigVorher": 492,
+   "einseitigNachher": 474,
+   "ohneNachbar": 12,
+   "ohnePruefung": 627,
+   "faelle": [
+    {
+     "adsh": "0001213900-14-000120",
+     "cik": 1487906,
+     "sym": [
+      "DGLT"
+     ],
+     "form": "10-Q",
+     "period": "2013-11-30",
+     "filed": "2014-01-09",
+     "feld": "assets",
+     "wert": 4300,
+     "vorher": null,
+     "nachher": 1593327,
+     "medianCik": 3358281,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001564590-14-000020",
+     "cik": 1580670,
+     "sym": [
+      "LGIH"
+     ],
+     "form": "10-Q/A",
+     "period": "2013-09-30",
+     "filed": "2014-01-13",
+     "feld": "assets",
+     "wert": 1000,
+     "vorher": null,
+     "nachher": 221009584,
+     "medianCik": 1636375618,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001104659-14-006638",
+     "cik": 1583771,
+     "sym": [
+      "HEPA",
+      "NJ"
+     ],
+     "form": "10-Q",
+     "period": "2013-12-31",
+     "filed": "2014-02-05",
+     "feld": "assets",
+     "wert": 8827,
+     "vorher": null,
+     "nachher": 2643495,
+     "medianCik": 11759829,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-14-000766",
+     "cik": 1527728,
+     "sym": [
+      "RENB"
+     ],
+     "form": "10-Q",
+     "period": "2013-12-31",
+     "filed": "2014-02-11",
+     "feld": "assets",
+     "wert": 22,
+     "vorher": null,
+     "nachher": 911466,
+     "medianCik": 83070534,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001078782-14-000204",
+     "cik": 827876,
+     "sym": [
+      "CLSK"
+     ],
+     "form": "10-Q",
+     "period": "2013-12-31",
+     "filed": "2014-02-14",
+     "feld": "assets",
+     "wert": 507,
+     "vorher": null,
+     "nachher": 628378,
+     "medianCik": 32912131,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001558891-14-000022",
+     "cik": 1549084,
+     "sym": [
+      "EKSO"
+     ],
+     "form": "10-Q",
+     "period": "2013-12-31",
+     "filed": "2014-02-19",
+     "feld": "assets",
+     "wert": 78,
+     "vorher": null,
+     "nachher": 21801054,
+     "medianCik": 24425024,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001587732-14-000005",
+     "cik": 1587732,
+     "sym": [
+      "OGS"
+     ],
+     "form": "10-K",
+     "period": "2013-12-31",
+     "filed": "2014-02-25",
+     "feld": "assets",
+     "wert": 1,
+     "vorher": null,
+     "nachher": 4382018000,
+     "medianCik": 5533182567,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001590976-14-000012",
+     "cik": 1590976,
+     "sym": [
+      "MBUU"
+     ],
+     "form": "10-Q",
+     "period": "2013-12-31",
+     "filed": "2014-03-11",
+     "feld": "assets",
+     "wert": 10,
+     "vorher": null,
+     "nachher": 80625000,
+     "medianCik": 479805255,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001019056-14-000651",
+     "cik": 1108236,
+     "sym": [
+      "AMRB"
+     ],
+     "form": "10-Q",
+     "period": "2014-03-31",
+     "filed": "2014-05-08",
+     "feld": "assets",
+     "wert": 603694,
+     "vorher": 592753000,
+     "nachher": 603694000,
+     "medianCik": 655622727,
+     "grund": "beide Nachbarn"
+    },
+    {
+     "adsh": "0001019056-14-000679",
+     "cik": 1163199,
+     "sym": [
+      "FNBG"
+     ],
+     "form": "10-Q",
+     "period": "2014-03-31",
+     "filed": "2014-05-13",
+     "feld": "assets",
+     "wert": 901548,
+     "vorher": 891930000,
+     "nachher": 901548000,
+     "medianCik": 1124348643,
+     "grund": "beide Nachbarn"
+    },
+    {
+     "adsh": "0001047469-14-005478",
+     "cik": 1176948,
+     "sym": [
+      "ARES",
+      "SDLP"
+     ],
+     "form": "10-Q",
+     "period": "2014-03-31",
+     "filed": "2014-06-10",
+     "feld": "assets",
+     "wert": 1000,
+     "vorher": null,
+     "nachher": 21592330000,
+     "medianCik": 18639574751,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001144204-14-050153",
+     "cik": 1606163,
+     "sym": [
+      "LMB"
+     ],
+     "form": "10-Q",
+     "period": "2014-06-30",
+     "filed": "2014-08-14",
+     "feld": "assets",
+     "wert": 396407,
+     "vorher": null,
+     "nachher": 46571143,
+     "medianCik": 258671749,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001144204-14-050321",
+     "cik": 1084752,
+     "sym": [
+      "INVT"
+     ],
+     "form": "10-Q",
+     "period": "2014-06-30",
+     "filed": "2014-08-14",
+     "feld": "assets",
+     "wert": 40520661000,
+     "vorher": 13906000,
+     "nachher": 40193707,
+     "medianCik": 19351427,
+     "grund": "beide Nachbarn"
+    },
+    {
+     "adsh": "0001193125-14-354862",
+     "cik": 39368,
+     "sym": [
+      "FUL"
+     ],
+     "form": "10-Q",
+     "period": "2014-08-31",
+     "filed": "2014-09-26",
+     "feld": "assets",
+     "wert": 1937518,
+     "vorher": 1960815000,
+     "nachher": 1869006000,
+     "medianCik": 4166102972,
+     "grund": "beide Nachbarn"
+    },
+    {
+     "adsh": "0001615892-14-000004",
+     "cik": 1615892,
+     "sym": [
+      "AXAR"
+     ],
+     "form": "10-Q",
+     "period": "2014-09-30",
+     "filed": "2014-11-14",
+     "feld": "assets",
+     "wert": 564222,
+     "vorher": null,
+     "nachher": 241601018,
+     "medianCik": 240290721,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-14-008397",
+     "cik": 1462223,
+     "sym": [
+      "RCRT"
+     ],
+     "form": "10-Q/A",
+     "period": "2013-09-30",
+     "filed": "2014-11-18",
+     "feld": "assets",
+     "wert": 331432,
+     "vorher": 3010,
+     "nachher": 1195,
+     "medianCik": 6480612,
+     "grund": "beide Nachbarn"
+    },
+    {
+     "adsh": "0001213900-14-008447",
+     "cik": 1462223,
+     "sym": [
+      "RCRT"
+     ],
+     "form": "10-Q",
+     "period": "2014-09-30",
+     "filed": "2014-11-19",
+     "feld": "assets",
+     "wert": 1195,
+     "vorher": 331432,
+     "nachher": 175686,
+     "medianCik": 6480612,
+     "grund": "beide Nachbarn"
+    },
+    {
+     "adsh": "0001213900-15-001120",
+     "cik": 1462223,
+     "sym": [
+      "RCRT"
+     ],
+     "form": "10-Q/A",
+     "period": "2013-12-31",
+     "filed": "2015-02-17",
+     "feld": "assets",
+     "wert": 175686,
+     "vorher": 1195,
+     "nachher": 310,
+     "medianCik": 6480612,
+     "grund": "beide Nachbarn"
+    },
+    {
+     "adsh": "0001613103-15-000008",
+     "cik": 1613103,
+     "sym": [
+      "MDT"
+     ],
+     "form": "10-Q",
+     "period": "2015-01-31",
+     "filed": "2015-02-27",
+     "feld": "assets",
+     "wert": 46000,
+     "vorher": null,
+     "nachher": 106685000000,
+     "medianCik": 91680083464,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001615774-15-000372",
+     "cik": 1619551,
+     "sym": [
+      "OACQ"
+     ],
+     "form": "10-K",
+     "period": "2014-11-30",
+     "filed": "2015-02-27",
+     "feld": "assets",
+     "wert": 237007,
+     "vorher": null,
+     "nachher": 43019864,
+     "medianCik": 32836964,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001295345-15-000048",
+     "cik": 797542,
+     "sym": [
+      "VBIX"
+     ],
+     "form": "10-K",
+     "period": "2014-12-31",
+     "filed": "2015-03-12",
+     "feld": "assets",
+     "wert": 1000,
+     "vorher": null,
+     "nachher": 554564,
+     "medianCik": 300706,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-15-002196",
+     "cik": 1614818,
+     "sym": [
+      "CCN"
+     ],
+     "form": "10-Q",
+     "period": "2015-01-31",
+     "filed": "2015-03-30",
+     "feld": "assets",
+     "wert": 434022,
+     "vorher": null,
+     "nachher": 100440575,
+     "medianCik": 100323806,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-15-002648",
+     "cik": 1620179,
+     "sym": [
+      "XELA"
+     ],
+     "form": "10-K",
+     "period": "2014-12-31",
+     "filed": "2015-04-13",
+     "feld": "assets",
+     "wert": 212377,
+     "vorher": null,
+     "nachher": 351272417,
+     "medianCik": 1037022072,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001144204-15-042666",
+     "cik": 1639669,
+     "sym": [
+      "ELEC"
+     ],
+     "form": "10-Q",
+     "period": "2015-05-31",
+     "filed": "2015-07-15",
+     "feld": "assets",
+     "wert": 367005,
+     "vorher": null,
+     "nachher": 201191137,
+     "medianCik": 201051353,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001193125-15-268067",
+     "cik": 1615153,
+     "sym": [
+      "FENX"
+     ],
+     "form": "10-Q/A",
+     "period": "2015-03-31",
+     "filed": "2015-07-29",
+     "feld": "assets",
+     "wert": 930362,
+     "vorher": null,
+     "nachher": 183421788,
+     "medianCik": 131570038,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001193125-15-310710",
+     "cik": 1637207,
+     "sym": [
+      "PLNT"
+     ],
+     "form": "10-Q",
+     "period": "2015-06-30",
+     "filed": "2015-09-02",
+     "feld": "assets",
+     "wert": 1000,
+     "vorher": null,
+     "nachher": 701143000,
+     "medianCik": 1849737069,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-15-006739",
+     "cik": 1642453,
+     "sym": [
+      "DSKE"
+     ],
+     "form": "10-Q",
+     "period": "2015-06-30",
+     "filed": "2015-09-03",
+     "feld": "assets",
+     "wert": 188000,
+     "vorher": null,
+     "nachher": 201823000,
+     "medianCik": 1129600823,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-15-006998",
+     "cik": 1625042,
+     "sym": [
+      "ECAC"
+     ],
+     "form": "10-Q",
+     "period": "2015-06-30",
+     "filed": "2015-09-15",
+     "feld": "assets",
+     "wert": 184988,
+     "vorher": null,
+     "nachher": 41390551,
+     "medianCik": 41240602,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001144204-15-058518",
+     "cik": 1641197,
+     "sym": [
+      "EACQ"
+     ],
+     "form": "10-Q/A",
+     "period": "2015-06-30",
+     "filed": "2015-10-08",
+     "feld": "assets",
+     "wert": 441467,
+     "vorher": null,
+     "nachher": 201216658,
+     "medianCik": 200278348,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001564590-15-008587",
+     "cik": 1644406,
+     "sym": [
+      "TWNK"
+     ],
+     "form": "10-Q/A",
+     "period": "2015-06-30",
+     "filed": "2015-10-23",
+     "feld": "assets",
+     "wert": 357618,
+     "vorher": null,
+     "nachher": 376599077,
+     "medianCik": 3289576572,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001639691-15-000007",
+     "cik": 1639691,
+     "sym": [
+      "LIVN"
+     ],
+     "form": "10-Q",
+     "period": "2015-09-30",
+     "filed": "2015-11-06",
+     "feld": "assets",
+     "wert": 76000,
+     "vorher": null,
+     "nachher": 357647076,
+     "medianCik": 2496962385,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001571049-15-009322",
+     "cik": 1645494,
+     "sym": [
+      "ARRS"
+     ],
+     "form": "10-Q",
+     "period": "2015-09-30",
+     "filed": "2015-11-16",
+     "feld": "assets",
+     "wert": 13211000,
+     "vorher": null,
+     "nachher": 4523516000,
+     "medianCik": 7366479761,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-15-009068",
+     "cik": 1648955,
+     "sym": [
+      "CLAC"
+     ],
+     "form": "10-Q",
+     "period": "2015-09-30",
+     "filed": "2015-11-24",
+     "feld": "assets",
+     "wert": 284021,
+     "vorher": null,
+     "nachher": 325900502,
+     "medianCik": 325859210,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-15-009170",
+     "cik": 1650575,
+     "sym": [
+      "BRQS"
+     ],
+     "form": "10-Q",
+     "period": "2015-09-30",
+     "filed": "2015-11-30",
+     "feld": "assets",
+     "wert": 412942,
+     "vorher": null,
+     "nachher": 60527519,
+     "medianCik": 60527537,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001144204-16-138994",
+     "cik": 1682325,
+     "sym": [
+      "GTYH"
+     ],
+     "form": "10-Q",
+     "period": "2016-09-30",
+     "filed": "2016-12-12",
+     "feld": "assets",
+     "wert": 179837,
+     "vorher": null,
+     "nachher": 553504760,
+     "medianCik": 434393182,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001681459-17-000013",
+     "cik": 1681459,
+     "sym": [
+      "FTI"
+     ],
+     "form": "10-K",
+     "period": "2016-12-31",
+     "filed": "2017-01-13",
+     "feld": "assets",
+     "wert": 74100,
+     "vorher": null,
+     "nachher": 29570500000,
+     "medianCik": 10253591234,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001477932-17-001780",
+     "cik": 1599407,
+     "sym": [
+      "EFSH"
+     ],
+     "form": "10-K",
+     "period": "2016-12-31",
+     "filed": "2017-04-17",
+     "feld": "assets",
+     "wert": 375,
+     "vorher": 100412,
+     "nachher": 8761119,
+     "medianCik": 18526569,
+     "grund": "beide Nachbarn"
+    },
+    {
+     "adsh": "0001193125-17-170190",
+     "cik": 1692787,
+     "sym": [
+      "KNTK"
+     ],
+     "form": "10-Q",
+     "period": "2017-03-31",
+     "filed": "2017-05-15",
+     "feld": "assets",
+     "wert": 602561,
+     "vorher": null,
+     "nachher": 379083680,
+     "medianCik": 2444736181,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-17-005570",
+     "cik": 1697152,
+     "sym": [
+      "CVON"
+     ],
+     "form": "10-Q",
+     "period": "2017-03-31",
+     "filed": "2017-05-19",
+     "feld": "assets",
+     "wert": 189568,
+     "vorher": null,
+     "nachher": 175017295,
+     "medianCik": 175586046,
+     "grund": "Reihenanfang + Median"
+    },
+    {
+     "adsh": "0001213900-17-005861",
+     "cik": 1698209,
+     "sym": [
+      "VEAC"
+     ],
+     "form": "10-Q",
+     "period": "2017-03-31",
+     "filed": "2017-05-25",
+     "feld": "assets",
+     "wert": 403801,
+     "vorher": null,
+     "nachher": 553981638,
+     "medianCik": 555237768,
+     "grund": "Reihenanfang + Median"
+    }
+   ],
+   "einseitig": 474,
+   "faelleGesamt": 368
+  },
+  "aktienSkala": {
+   "regelA": 726,
+   "regelAAusserhalb": 4,
+   "regelAGruppenKlein": 834,
+   "regelB": 173,
+   "regelBVerworfen": 0,
+   "regelBNachA": 33,
+   "ohneKurs": 29055,
+   "ohneVermoegen": 280,
+   "nichtPositiv": 196,
+   "quotientVerteilung": {
+    "log10 0": 48883,
+    "log10 -1": 48053,
+    "log10 -2": 4934,
+    "log10 1": 1844,
+    "log10 -3": 238,
+    "log10 -4": 152,
+    "log10 5": 3,
+    "log10 3": 8,
+    "log10 2": 73,
+    "log10 -7": 5,
+    "log10 -8": 6,
+    "log10 -5": 1,
+    "log10 -6": 4
+   },
+   "spruengeVor30": 898,
+   "spruengeNach30": 341,
+   "spruengeNachTop30": [
+    {
+     "cik": 1091748,
+     "sym": [
+      "AGII"
+     ],
+     "von": {
+      "adsh": "0001628280-24-036351",
+      "filed": "2024-08-09",
+      "aktien": 1256638730
+     },
+     "nach": {
+      "adsh": "0001628280-24-047747",
+      "filed": "2024-11-14",
+      "aktien": 13
+     },
+     "faktor": 96664498
+    },
+    {
+     "cik": 1660719,
+     "sym": [
+      "ARLZ"
+     ],
+     "von": {
+      "adsh": "0001140361-16-057746",
+      "filed": "2016-03-15",
+      "aktien": 1
+     },
+     "nach": {
+      "adsh": "0001558370-16-005753",
+      "filed": "2016-05-10",
+      "aktien": 63960319
+     },
+     "faktor": 63960375
+    },
+    {
+     "cik": 1504389,
+     "sym": [
+      "LG"
+     ],
+     "von": {
+      "adsh": "0001647488-15-000179",
+      "filed": "2015-11-23",
+      "aktien": 4072077779
+     },
+     "nach": {
+      "adsh": "0001662252-16-000079",
+      "filed": "2016-02-22",
+      "aktien": 67.828071
+     },
+     "faktor": 60035344
+    },
+    {
+     "cik": 1618921,
+     "sym": [
+      "WBA"
+     ],
+     "von": {
+      "adsh": "0001140361-14-046619",
+      "filed": "2014-12-30",
+      "aktien": 100
+     },
+     "nach": {
+      "adsh": "0001140361-15-014919",
+      "filed": "2015-04-09",
+      "aktien": 1054700000
+     },
+     "faktor": 10547001
+    },
+    {
+     "cik": 1710583,
+     "sym": [
+      "SWCH"
+     ],
+     "von": {
+      "adsh": "0001710583-17-000002",
+      "filed": "2017-11-14",
+      "aktien": 1
+     },
+     "nach": {
+      "adsh": "0001710583-18-000034",
+      "filed": "2018-04-02",
+      "aktien": 8073908
+     },
+     "faktor": 8073912
+    },
+    {
+     "cik": 8868,
+     "sym": [
+      "AVP"
+     ],
+     "von": {
+      "adsh": "0000008868-20-000009",
+      "filed": "2020-03-05",
+      "aktien": 770000000
+     },
+     "nach": {
+      "adsh": "0000008868-20-000021",
+      "filed": "2020-08-14",
+      "aktien": 101.34
+     },
+     "faktor": 7598187
+    },
+    {
+     "cik": 1755672,
+     "sym": [
+      "CTVA"
+     ],
+     "von": {
+      "adsh": "0001755672-19-000004",
+      "filed": "2019-05-31",
+      "aktien": 100
+     },
+     "nach": {
+      "adsh": "0001755672-19-000014",
+      "filed": "2019-08-06",
+      "aktien": 748815000
+     },
+     "faktor": 7488158
+    },
+    {
+     "cik": 1792044,
+     "sym": [
+      "VTRS"
+     ],
+     "von": {
+      "adsh": "0001193125-20-290294",
+      "filed": "2020-11-10",
+      "aktien": 100
+     },
+     "nach": {
+      "adsh": "0001792044-21-000009",
+      "filed": "2021-03-01",
+      "aktien": 601200000
+     },
+     "faktor": 6012000
+    },
+    {
+     "cik": 1504389,
+     "sym": [
+      "LG"
+     ],
+     "von": {
+      "adsh": "0001662252-16-000079",
+      "filed": "2016-02-22",
+      "aktien": 67.828071
+     },
+     "nach": {
+      "adsh": "0001662252-16-000212",
+      "filed": "2016-08-22",
+      "aktien": 216364262
+     },
+     "faktor": 3189899
+    },
+    {
+     "cik": 931148,
+     "sym": [
+      "SGL"
+     ],
+     "von": {
+      "adsh": "0000931148-17-000021",
+      "filed": "2017-10-25",
+      "aktien": 100
+     },
+     "nach": {
+      "adsh": "0000931148-18-000019",
+      "filed": "2018-08-03",
+      "aktien": 302225923
+     },
+     "faktor": 3022261
+    },
+    {
+     "cik": 2020795,
+     "sym": [
+      "UNIT"
+     ],
+     "von": {
+      "adsh": "0001410578-25-001548",
+      "filed": "2025-07-31",
+      "aktien": 100
+     },
+     "nach": {
+      "adsh": "0001628280-25-050663",
+      "filed": "2025-11-07",
+      "aktien": 234000000
+     },
+     "faktor": 2340001
+    },
+    {
+     "cik": 931148,
+     "sym": [
+      "SGL"
+     ],
+     "von": {
+      "adsh": "0000931148-17-000007",
+      "filed": "2017-02-27",
+      "aktien": 137152430
+     },
+     "nach": {
+      "adsh": "0000931148-17-000012",
+      "filed": "2017-04-27",
+      "aktien": 100
+     },
+     "faktor": 1371526
+    },
+    {
+     "cik": 1619250,
+     "sym": [
+      "STO",
+      "VLRX"
+     ],
+     "von": {
+      "adsh": "0001594062-16-000459",
+      "filed": "2016-05-03",
+      "aktien": 10.247
+     },
+     "nach": {
+      "adsh": "0001193125-16-679069",
+      "filed": "2016-08-11",
+      "aktien": 12678991
+     },
+     "faktor": 1237337
+    },
+    {
+     "cik": 1792044,
+     "sym": [
+      "VTRS"
+     ],
+     "von": {
+      "adsh": "0001193125-20-140498",
+      "filed": "2020-05-12",
+      "aktien": 100000000
+     },
+     "nach": {
+      "adsh": "0001193125-20-216755",
+      "filed": "2020-08-12",
+      "aktien": 100
+     },
+     "faktor": 1000000
+    },
+    {
+     "cik": 1660734,
+     "sym": [
+      "TRTN"
+     ],
+     "von": {
+      "adsh": "0001571049-16-016226",
+      "filed": "2016-06-23",
+      "aktien": 100000000
+     },
+     "nach": {
+      "adsh": "0001660734-16-000022",
+      "filed": "2016-08-15",
+      "aktien": 100
+     },
+     "faktor": 1000000
+    },
+    {
+     "cik": 8868,
+     "sym": [
+      "AVP"
+     ],
+     "von": {
+      "adsh": "0000008868-14-000052",
+      "filed": "2014-07-31",
+      "aktien": 434.62066699999997
+     },
+     "nach": {
+      "adsh": "0000008868-15-000013",
+      "filed": "2015-02-24",
+      "aktien": 434500000
+     },
+     "faktor": 999724
+    },
+    {
+     "cik": 8868,
+     "sym": [
+      "AVP"
+     ],
+     "von": {
+      "adsh": "0000008868-14-000013",
+      "filed": "2014-02-26",
+      "aktien": 433400000
+     },
+     "nach": {
+      "adsh": "0000008868-14-000023",
+      "filed": "2014-05-01",
+      "aktien": 434.446597
+     },
+     "faktor": 997592
+    },
+    {
+     "cik": 883980,
+     "sym": [
+      "FDC"
+     ],
+     "von": {
+      "adsh": "0001628280-15-008616",
+      "filed": "2015-11-10",
+      "aktien": 1000
+     },
+     "nach": {
+      "adsh": "0001628280-16-018404",
+      "filed": "2016-08-03",
+      "aktien": 899874086
+     },
+     "faktor": 899875
+    },
+    {
+     "cik": 1861449,
+     "sym": [
+      "BRDS"
+     ],
+     "von": {
+      "adsh": "0001193125-21-330157",
+      "filed": "2021-11-15",
+      "aktien": 100
+     },
+     "nach": {
+      "adsh": "0001861449-22-000037",
+      "filed": "2022-03-15",
+      "aktien": 84260800
+     },
+     "faktor": 842609
+    },
+    {
+     "cik": 1660734,
+     "sym": [
+      "TRTN"
+     ],
+     "von": {
+      "adsh": "0001660734-16-000022",
+      "filed": "2016-08-15",
+      "aktien": 100
+     },
+     "nach": {
+      "adsh": "0001660734-16-000034",
+      "filed": "2016-11-15",
+      "aktien": 69336000
+     },
+     "faktor": 693360
+    },
+    {
+     "cik": 1381531,
+     "sym": [
+      "UFS"
+     ],
+     "von": {
+      "adsh": "0001564590-21-054225",
+      "filed": "2021-11-04",
+      "aktien": 50400000
+     },
+     "nach": {
+      "adsh": "0001564590-22-009469",
+      "filed": "2022-03-10",
+      "aktien": 100
+     },
+     "faktor": 504001
+    },
+    {
+     "cik": 1760717,
+     "sym": [
+      "SCPL"
+     ],
+     "von": {
+      "adsh": "0001760717-19-000013",
+      "filed": "2019-06-18",
+      "aktien": 100
+     },
+     "nach": {
+      "adsh": "0001760717-19-000017",
+      "filed": "2019-08-01",
+      "aktien": 22700000
+     },
+     "faktor": 227000
+    },
+    {
+     "cik": 1874944,
+     "sym": [
+      "VCSA"
+     ],
+     "von": {
+      "adsh": "0001104659-21-140340",
+      "filed": "2021-11-17",
+      "aktien": 1000
+     },
+     "nach": {
+      "adsh": "0001874944-22-000004",
+      "filed": "2022-03-21",
+      "aktien": 214794000
+     },
+     "faktor": 214794
+    },
+    {
+     "cik": 1723128,
+     "sym": [
+      "AMRX"
+     ],
+     "von": {
+      "adsh": "0001723128-18-000013",
+      "filed": "2018-05-15",
+      "aktien": 1000
+     },
+     "nach": {
+      "adsh": "0001723128-18-000037",
+      "filed": "2018-11-07",
+      "aktien": 127247000
+     },
+     "faktor": 127247
+    },
+    {
+     "cik": 1677761,
+     "sym": [
+      "PKY"
+     ],
+     "von": {
+      "adsh": "0001677761-17-000014",
+      "filed": "2017-02-21",
+      "aktien": 1000
+     },
+     "nach": {
+      "adsh": "0001677761-17-000018",
+      "filed": "2017-03-15",
+      "aktien": 49111000
+     },
+     "faktor": 49111
+    },
+    {
+     "cik": 1720592,
+     "sym": [
+      "RPAY"
+     ],
+     "von": {
+      "adsh": "0001213900-18-010698",
+      "filed": "2018-08-10",
+      "aktien": 6468750
+     },
+     "nach": {
+      "adsh": "0001564590-22-019278",
+      "filed": "2022-05-10",
+      "aktien": 88607655000
+     },
+     "faktor": 13698
+    },
+    {
+     "cik": 1707925,
+     "sym": [
+      "AUS",
+      "LIN"
+     ],
+     "von": {
+      "adsh": "0001707925-18-000033",
+      "filed": "2018-11-09",
+      "aktien": 25000
+     },
+     "nach": {
+      "adsh": "0001628280-19-003050",
+      "filed": "2019-03-18",
+      "aktien": 330401000
+     },
+     "faktor": 13216
+    },
+    {
+     "cik": 1720201,
+     "sym": [
+      "IPIC"
+     ],
+     "von": {
+      "adsh": "0001213900-18-005338",
+      "filed": "2018-05-01",
+      "aktien": 100
+     },
+     "nach": {
+      "adsh": "0001213900-18-006270",
+      "filed": "2018-05-15",
+      "aktien": 1135437
+     },
+     "faktor": 11354
+    },
+    {
+     "cik": 1632970,
+     "sym": [
+      "AHR"
+     ],
+     "von": {
+      "adsh": "0001632970-16-000085",
+      "filed": "2016-05-04",
+      "aktien": 20833
+     },
+     "nach": {
+      "adsh": "0001632970-22-000020",
+      "filed": "2022-03-25",
+      "aktien": 200324561
+     },
+     "faktor": 9616
+    },
+    {
+     "cik": 1022899,
+     "sym": [
+      "PTIX"
+     ],
+     "von": {
+      "adsh": "0001437749-16-035574",
+      "filed": "2016-07-25",
+      "aktien": 400000000
+     },
+     "nach": {
+      "adsh": "0001437749-16-037450",
+      "filed": "2016-08-15",
+      "aktien": 86078
+     },
+     "faktor": 4647
+    }
+   ],
+   "regelBJeCik": {
+    "ciks": 37,
+    "isoliert": 19,
+    "isoliertBeispiele": [
+     {
+      "cik": 109657,
+      "sym": [
+       "SRAX"
+      ],
+      "anwendbar": 26,
+      "korrigiert": 1
+     },
+     {
+      "cik": 357294,
+      "sym": [
+       "HOV"
+      ],
+      "anwendbar": 39,
+      "korrigiert": 5
+     },
+     {
+      "cik": 898293,
+      "sym": [
+       "JBL"
+      ],
+      "anwendbar": 43,
+      "korrigiert": 1
+     },
+     {
+      "cik": 1040792,
+      "sym": [
+       "HMNY",
+       "SPA",
+       "TEAR"
+      ],
+      "anwendbar": 12,
+      "korrigiert": 2
+     },
+     {
+      "cik": 1071411,
+      "sym": [
+       "FSNN"
+      ],
+      "anwendbar": 13,
+      "korrigiert": 2
+     },
+     {
+      "cik": 1163739,
+      "sym": [
+       "NBR"
+      ],
+      "anwendbar": 42,
+      "korrigiert": 3
+     },
+     {
+      "cik": 1313275,
+      "sym": [
+       "BCOV"
+      ],
+      "anwendbar": 36,
+      "korrigiert": 5
+     },
+     {
+      "cik": 1499961,
+      "sym": [
+       "BINI",
+       "MULN"
+      ],
+      "anwendbar": 47,
+      "korrigiert": 2
+     },
+     {
+      "cik": 1514732,
+      "sym": [
+       "SAEX"
+      ],
+      "anwendbar": 17,
+      "korrigiert": 1
+     },
+     {
+      "cik": 1527541,
+      "sym": [
+       "WHLR"
+      ],
+      "anwendbar": 42,
+      "korrigiert": 3
+     },
+     {
+      "cik": 1619250,
+      "sym": [
+       "STO",
+       "VLRX"
+      ],
+      "anwendbar": 16,
+      "korrigiert": 2
+     },
+     {
+      "cik": 1648087,
+      "sym": [
+       "AREB",
+       "ROSS"
+      ],
+      "anwendbar": 23,
+      "korrigiert": 1
+     },
+     {
+      "cik": 1660734,
+      "sym": [
+       "TRTN"
+      ],
+      "anwendbar": 30,
+      "korrigiert": 1
+     },
+     {
+      "cik": 1751788,
+      "sym": [
+       "DOW"
+      ],
+      "anwendbar": 29,
+      "korrigiert": 1
+     },
+     {
+      "cik": 1766502,
+      "sym": [
+       "CHWY"
+      ],
+      "anwendbar": 22,
+      "korrigiert": 1
+     },
+     {
+      "cik": 1790169,
+      "sym": [
+       "FLGC"
+      ],
+      "anwendbar": 12,
+      "korrigiert": 2
+     },
+     {
+      "cik": 1821160,
+      "sym": [
+       "GHLD"
+      ],
+      "anwendbar": 21,
+      "korrigiert": 1
+     },
+     {
+      "cik": 1846017,
+      "sym": [
+       "BLFY"
+      ],
+      "anwendbar": 19,
+      "korrigiert": 1
+     },
+     {
+      "cik": 2000178,
+      "sym": [
+       "LOAR"
+      ],
+      "anwendbar": 9,
+      "korrigiert": 1
+     }
+    ]
+   },
+   "beispieleA": [
+    {
+     "adsh": "0001410578-25-000519",
+     "sym": [
+      "AIR"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 35.4,
+     "korrigiert": 35400000,
+     "medianLog10": 7.552668
+    },
+    {
+     "adsh": "0000008868-14-000023",
+     "sym": [
+      "AVP"
+     ],
+     "tag": "EntityCommonStockSharesOutstanding",
+     "roh": 434446597,
+     "korrigiert": 434.446597,
+     "medianLog10": 2.005781
+    },
+    {
+     "adsh": "0000008868-14-000052",
+     "sym": [
+      "AVP"
+     ],
+     "tag": "EntityCommonStockSharesOutstanding",
+     "roh": 434620667,
+     "korrigiert": 434.62066699999997,
+     "medianLog10": 2.005781
+    },
+    {
+     "adsh": "0001564590-19-004479",
+     "sym": [
+      "BMI"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 28993,
+     "korrigiert": 28993000,
+     "medianLog10": 7.461488
+    },
+    {
+     "adsh": "0001564590-20-005707",
+     "sym": [
+      "BMI"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 29028,
+     "korrigiert": 29028000,
+     "medianLog10": 7.461488
+    },
+    {
+     "adsh": "0001564590-21-008150",
+     "sym": [
+      "BMI"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 29052,
+     "korrigiert": 29052000,
+     "medianLog10": 7.461488
+    },
+    {
+     "adsh": "0001564590-22-006284",
+     "sym": [
+      "BMI"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 29144,
+     "korrigiert": 29144000,
+     "medianLog10": 7.461488
+    },
+    {
+     "adsh": "0000950170-23-003676",
+     "sym": [
+      "BMI"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 29218,
+     "korrigiert": 29218000,
+     "medianLog10": 7.461488
+    },
+    {
+     "adsh": "0000950170-24-016245",
+     "sym": [
+      "BMI"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 29284,
+     "korrigiert": 29284000,
+     "medianLog10": 7.461488
+    },
+    {
+     "adsh": "0000950170-25-020889",
+     "sym": [
+      "BMI"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 29356,
+     "korrigiert": 29356000,
+     "medianLog10": 7.461488
+    },
+    {
+     "adsh": "0000009346-16-000074",
+     "sym": [
+      "PTVCA",
+      "PTVCB"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 15084,
+     "korrigiert": 15084000,
+     "medianLog10": 7.174554
+    },
+    {
+     "adsh": "0000009346-17-000012",
+     "sym": [
+      "PTVCA",
+      "PTVCB"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 15096,
+     "korrigiert": 15096000,
+     "medianLog10": 7.174554
+    },
+    {
+     "adsh": "0000014707-15-000020",
+     "sym": [
+      "CAL"
+     ],
+     "tag": "CommonStockSharesOutstanding",
+     "roh": 43752031000,
+     "korrigiert": 43752031,
+     "medianLog10": 7.606347
+    },
+    {
+     "adsh": "0001078782-14-000182",
+     "sym": [
+      "LBMH"
+     ],
+     "tag": "CommonStockSharesOutstanding",
+     "roh": 52403,
+     "korrigiert": 52403000,
+     "medianLog10": 7.725634
+    },
+    {
+     "adsh": "0001078782-14-000898",
+     "sym": [
+      "LBMH"
+     ],
+     "tag": "CommonStockSharesOutstanding",
+     "roh": 52814,
+     "korrigiert": 52814000,
+     "medianLog10": 7.725634
+    },
+    {
+     "adsh": "0000021175-14-000021",
+     "sym": [
+      "CNA"
+     ],
+     "tag": "CommonStockSharesOutstanding",
+     "roh": 269717583000000,
+     "korrigiert": 269717583,
+     "medianLog10": 8.432934
+    },
+    {
+     "adsh": "0000021175-14-000038",
+     "sym": [
+      "CNA"
+     ],
+     "tag": "CommonStockSharesOutstanding",
+     "roh": 269923905000000,
+     "korrigiert": 269923905,
+     "medianLog10": 8.432934
+    },
+    {
+     "adsh": "0000021175-14-000054",
+     "sym": [
+      "CNA"
+     ],
+     "tag": "CommonStockSharesOutstanding",
+     "roh": 269946268000000,
+     "korrigiert": 269946268,
+     "medianLog10": 8.432934
+    },
+    {
+     "adsh": "0000021344-18-000023",
+     "sym": [
+      "KO"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 4265,
+     "korrigiert": 4265000000,
+     "medianLog10": 9.634477
+    },
+    {
+     "adsh": "0000021344-18-000032",
+     "sym": [
+      "KO"
+     ],
+     "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+     "roh": 4255,
+     "korrigiert": 4255000000,
+     "medianLog10": 9.634477
+    }
+   ],
+   "beispieleB": [
+    {
+     "adsh": "0001193125-16-468151",
+     "sym": "WSTC",
+     "kurs": 21.08,
+     "kursTag": "2016-02-18",
+     "aktienVorher": 83367,
+     "quotient": 0.0004865007271033051,
+     "faktor": 1000,
+     "quotientNeu": 0.4865007271033051,
+     "aktienNachher": 83367000
+    },
+    {
+     "adsh": "0001662252-16-000079",
+     "sym": "LG",
+     "kurs": 65.36,
+     "kursTag": "2016-02-22",
+     "aktienVorher": 67828071,
+     "quotient": 919187.7919469211,
+     "faktor": 0.000001,
+     "quotientNeu": 0.9191877919469211,
+     "aktienNachher": 67.828071
+    },
+    {
+     "adsh": "0001193125-16-472901",
+     "sym": "COP",
+     "kurs": 32.92,
+     "kursTag": "2016-02-23",
+     "aktienVorher": 1241919,
+     "quotient": 0.0004193916281646219,
+     "faktor": 1000,
+     "quotientNeu": 0.4193916281646219,
+     "aktienNachher": 1241919000
+    },
+    {
+     "adsh": "0001003297-16-000614",
+     "sym": "TORM",
+     "kurs": 3.6,
+     "kursTag": "2016-03-07",
+     "aktienVorher": 3014,
+     "quotient": 0.0002955867930696306,
+     "faktor": 1000,
+     "quotientNeu": 0.2955867930696306,
+     "aktienNachher": 3014000
+    },
+    {
+     "adsh": "0001171843-16-008877",
+     "sym": "WHLM",
+     "kurs": 7.1,
+     "kursTag": "2016-03-29",
+     "aktienVorher": 5852,
+     "quotient": 0.0009492620516335389,
+     "faktor": 1000,
+     "quotientNeu": 0.9492620516335389,
+     "aktienNachher": 5852000
+    },
+    {
+     "adsh": "0001594062-16-000436",
+     "sym": "STO",
+     "kurs": 16.13,
+     "kursTag": "2016-04-14",
+     "aktienVorher": 10247000,
+     "quotient": 8230.050789224717,
+     "faktor": 0.001,
+     "quotientNeu": 8.230050789224718,
+     "aktienNachher": 10247
+    },
+    {
+     "adsh": "0001615774-16-004959",
+     "sym": "FRED",
+     "kurs": 14.79,
+     "kursTag": "2016-04-14",
+     "aktienVorher": 36675,
+     "quotient": 0.0007425247634535777,
+     "faktor": 1000,
+     "quotientNeu": 0.7425247634535778,
+     "aktienNachher": 36675000
+    },
+    {
+     "adsh": "0001193125-16-574165",
+     "sym": "COP",
+     "kurs": 45.12,
+     "kursTag": "2016-05-03",
+     "aktienVorher": 1244557,
+     "quotient": 0.0005624778316004567,
+     "faktor": 1000,
+     "quotientNeu": 0.5624778316004567,
+     "aktienNachher": 1244557000
+    },
+    {
+     "adsh": "0001558370-16-005209",
+     "sym": "NBR",
+     "kurs": 8.99,
+     "kursTag": "2016-05-03",
+     "aktienVorher": 275851,
+     "quotient": 0.0002770736065515343,
+     "faktor": 1000,
+     "quotientNeu": 0.2770736065515343,
+     "aktienNachher": 275851000
+    },
+    {
+     "adsh": "0001594062-16-000459",
+     "sym": "STO",
+     "kurs": 16.86,
+     "kursTag": "2016-05-03",
+     "aktienVorher": 10247000,
+     "quotient": 314689.28961748636,
+     "faktor": 0.000001,
+     "quotientNeu": 0.3146892896174863,
+     "aktienNachher": 10.247
+    },
+    {
+     "adsh": "0001193125-16-579141",
+     "sym": "WSTC",
+     "kurs": 21.52,
+     "kursTag": "2016-05-05",
+     "aktienVorher": 82478,
+     "quotient": 0.0005038543071248231,
+     "faktor": 1000,
+     "quotientNeu": 0.503854307124823,
+     "aktienNachher": 82478000
+    },
+    {
+     "adsh": "0001003297-16-000713",
+     "sym": "TORM",
+     "kurs": 4.42,
+     "kursTag": "2016-05-09",
+     "aktienVorher": 3014,
+     "quotient": 0.00035266393117140964,
+     "faktor": 1000,
+     "quotientNeu": 0.35266393117140965,
+     "aktienNachher": 3014000
+    },
+    {
+     "adsh": "0001171843-16-010043",
+     "sym": "WHLM",
+     "kurs": 7.16,
+     "kursTag": "2016-05-13",
+     "aktienVorher": 5844,
+     "quotient": 0.0009295148391682957,
+     "faktor": 1000,
+     "quotientNeu": 0.9295148391682957,
+     "aktienNachher": 5844000
+    },
+    {
+     "adsh": "0001213900-16-013384",
+     "sym": "MDSY",
+     "kurs": 1.52,
+     "kursTag": "2016-05-13",
+     "aktienVorher": 18595,
+     "quotient": 0.000878240064630395,
+     "faktor": 1000,
+     "quotientNeu": 0.878240064630395,
+     "aktienNachher": 18595000
+    },
+    {
+     "adsh": "0001615774-16-005829",
+     "sym": "FRED",
+     "kurs": 15.23,
+     "kursTag": "2016-06-09",
+     "aktienVorher": 37073,
+     "quotient": 0.0007674192276901791,
+     "faktor": 1000,
+     "quotientNeu": 0.7674192276901791,
+     "aktienNachher": 37073000
+    },
+    {
+     "adsh": "0001193125-16-667631",
+     "sym": "COP",
+     "kurs": 39.79,
+     "kursTag": "2016-08-02",
+     "aktienVorher": 1244892,
+     "quotient": 0.0005156917221562871,
+     "faktor": 1000,
+     "quotientNeu": 0.5156917221562871,
+     "aktienNachher": 1244892000
+    },
+    {
+     "adsh": "0001558370-16-007247",
+     "sym": "NBR",
+     "kurs": 9.06,
+     "kursTag": "2016-08-03",
+     "aktienVorher": 276550,
+     "quotient": 0.0002894471717436019,
+     "faktor": 1000,
+     "quotientNeu": 0.2894471717436019,
+     "aktienNachher": 276550000
+    },
+    {
+     "adsh": "0001564590-16-022535",
+     "sym": "WSTC",
+     "kurs": 23.27,
+     "kursTag": "2016-08-04",
+     "aktienVorher": 82615,
+     "quotient": 0.0005420545051445032,
+     "faktor": 1000,
+     "quotientNeu": 0.5420545051445032,
+     "aktienNachher": 82615000
+    },
+    {
+     "adsh": "0001003297-16-000791",
+     "sym": "TORM",
+     "kurs": 5.3,
+     "kursTag": "2016-08-04",
+     "aktienVorher": 3542,
+     "quotient": 0.000497880917650179,
+     "faktor": 1000,
+     "quotientNeu": 0.49788091765017894,
+     "aktienNachher": 3542000
+    },
+    {
+     "adsh": "0001171843-16-011729",
+     "sym": "WHLM",
+     "kurs": 7.26,
+     "kursTag": "2016-08-12",
+     "aktienVorher": 5845,
+     "quotient": 0.0008936631286328026,
+     "faktor": 1000,
+     "quotientNeu": 0.8936631286328026,
+     "aktienNachher": 5845000
+    }
+   ]
+  },
+  "d4": {
+   "regel": "Assets an D4..D7 gegen Vermoegen D0 ausserhalb [1e-3, 1e3] => vermoegenVor (nur bei D4) und summe4q.*Vor null",
+   "huelle": 969,
+   "huelleD4": 303,
+   "huelleNurD5bisD7": 666,
+   "beispiele": [
+    {
+     "adsh": "0001140361-14-013049",
+     "sym": [
+      "OPHT"
+     ],
+     "form": "10-K",
+     "period": "2013-12-31",
+     "filed": "2014-03-17",
+     "vermoegen": 80353797,
+     "vermoegenVor": 4011,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001393905-14-000168",
+     "sym": [
+      "CEO",
+      "OMQS"
+     ],
+     "form": "10-K",
+     "period": "2013-12-31",
+     "filed": "2014-04-02",
+     "vermoegen": 2406238,
+     "vermoegenVor": 1005,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001140361-14-020013",
+     "sym": [
+      "OPHT"
+     ],
+     "form": "10-Q",
+     "period": "2014-03-31",
+     "filed": "2014-05-12",
+     "vermoegen": 72013067,
+     "vermoegenVor": null,
+     "nurD5bisD7": true
+    },
+    {
+     "adsh": "0001393905-14-000320",
+     "sym": [
+      "CEO",
+      "OMQS"
+     ],
+     "form": "10-Q",
+     "period": "2014-03-31",
+     "filed": "2014-05-20",
+     "vermoegen": 21101412,
+     "vermoegenVor": null,
+     "nurD5bisD7": true
+    },
+    {
+     "adsh": "0001140361-14-031792",
+     "sym": [
+      "OPHT"
+     ],
+     "form": "10-Q",
+     "period": "2014-06-30",
+     "filed": "2014-08-11",
+     "vermoegen": 61879461,
+     "vermoegenVor": null,
+     "nurD5bisD7": true
+    },
+    {
+     "adsh": "0001393905-14-000458",
+     "sym": [
+      "CEO",
+      "OMQS"
+     ],
+     "form": "10-Q",
+     "period": "2014-06-30",
+     "filed": "2014-08-14",
+     "vermoegen": 20896096,
+     "vermoegenVor": null,
+     "nurD5bisD7": true
+    },
+    {
+     "adsh": "0001140361-14-040806",
+     "sym": [
+      "OPHT"
+     ],
+     "form": "10-Q",
+     "period": "2014-09-30",
+     "filed": "2014-11-10",
+     "vermoegen": 53194125,
+     "vermoegenVor": null,
+     "nurD5bisD7": true
+    },
+    {
+     "adsh": "0001393905-14-000603",
+     "sym": [
+      "CEO",
+      "OMQS"
+     ],
+     "form": "10-Q",
+     "period": "2014-09-30",
+     "filed": "2014-11-12",
+     "vermoegen": 21909982,
+     "vermoegenVor": null,
+     "nurD5bisD7": true
+    },
+    {
+     "adsh": "0001078782-14-002282",
+     "sym": [
+      "LBMH"
+     ],
+     "form": "10-K",
+     "period": "2014-09-30",
+     "filed": "2014-12-15",
+     "vermoegen": 54329000,
+     "vermoegenVor": 49099,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001078782-14-002322",
+     "sym": [
+      "GMRE"
+     ],
+     "form": "10-K/A",
+     "period": "2014-08-31",
+     "filed": "2014-12-19",
+     "vermoegen": 22244759,
+     "vermoegenVor": 3519,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001255294-14-001293",
+     "sym": [
+      "CLSK"
+     ],
+     "form": "10-K",
+     "period": "2014-09-30",
+     "filed": "2014-12-19",
+     "vermoegen": 763254,
+     "vermoegenVor": 270,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001255294-15-000060",
+     "sym": [
+      "CLSK"
+     ],
+     "form": "10-Q",
+     "period": "2014-12-31",
+     "filed": "2015-02-04",
+     "vermoegen": 685877,
+     "vermoegenVor": null,
+     "nurD5bisD7": true
+    },
+    {
+     "adsh": "0001078782-15-000186",
+     "sym": [
+      "LBMH"
+     ],
+     "form": "10-Q",
+     "period": "2014-12-31",
+     "filed": "2015-02-09",
+     "vermoegen": 56494000,
+     "vermoegenVor": 51817,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001078782-15-000223",
+     "sym": [
+      "GMRE"
+     ],
+     "form": "10-Q",
+     "period": "2014-11-30",
+     "filed": "2015-02-13",
+     "vermoegen": 24746893,
+     "vermoegenVor": null,
+     "nurD5bisD7": true
+    },
+    {
+     "adsh": "0001213900-15-001122",
+     "sym": [
+      "RCRT"
+     ],
+     "form": "10-Q",
+     "period": "2014-12-31",
+     "filed": "2015-02-17",
+     "vermoegen": 310,
+     "vermoegenVor": 175686,
+     "nurD5bisD7": true
+    },
+    {
+     "adsh": "0001104659-15-015302",
+     "sym": [
+      "AGFS"
+     ],
+     "form": "10-K",
+     "period": "2014-12-31",
+     "filed": "2015-02-27",
+     "vermoegen": 221317716,
+     "vermoegenVor": 143875,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001193125-15-109883",
+     "sym": [
+      "PIRS"
+     ],
+     "form": "10-K",
+     "period": "2014-12-31",
+     "filed": "2015-03-30",
+     "vermoegen": 21884168,
+     "vermoegenVor": 90,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001193125-15-112118",
+     "sym": [
+      "CVRS"
+     ],
+     "form": "10-K",
+     "period": "2014-12-31",
+     "filed": "2015-03-30",
+     "vermoegen": 32836000,
+     "vermoegenVor": 5968,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001078782-15-000742",
+     "sym": [
+      "LBMH"
+     ],
+     "form": "10-Q",
+     "period": "2015-03-31",
+     "filed": "2015-05-11",
+     "vermoegen": 57333000,
+     "vermoegenVor": 51233,
+     "nurD5bisD7": false
+    },
+    {
+     "adsh": "0001255294-15-000287",
+     "sym": [
+      "CLSK"
+     ],
+     "form": "10-Q",
+     "period": "2015-03-31",
+     "filed": "2015-05-12",
+     "vermoegen": 877112,
+     "vermoegenVor": 628378,
+     "nurD5bisD7": true
+    }
+   ]
+  }
+ },
  "sektoren": [
   {
    "sektor": "Bau",
-   "zeilen": 2240,
-   "ciks": 66
+   "zeilen": 2217,
+   "ciks": 63
   },
   {
    "sektor": "Bergbau/Oel",
-   "zeilen": 6319,
-   "ciks": 209
+   "zeilen": 5899,
+   "ciks": 194
   },
   {
    "sektor": "Dienstleistungen",
-   "zeilen": 25979,
-   "ciks": 990
+   "zeilen": 24363,
+   "ciks": 913
   },
   {
    "sektor": "Einzelhandel",
-   "zeilen": 8193,
-   "ciks": 252
+   "zeilen": 7902,
+   "ciks": 241
   },
   {
    "sektor": "Finanzen/Immobilien",
-   "zeilen": 38276,
-   "ciks": 1868
+   "zeilen": 36336,
+   "ciks": 1706
   },
   {
    "sektor": "Grosshandel",
-   "zeilen": 3645,
-   "ciks": 111
+   "zeilen": 3492,
+   "ciks": 104
   },
   {
    "sektor": "Landwirtschaft",
@@ -3099,28 +6444,27 @@
   },
   {
    "sektor": "Transport/Versorger/Kommunikation",
-   "zeilen": 11346,
-   "ciks": 357
+   "zeilen": 10904,
+   "ciks": 337
   },
   {
    "sektor": "Verarbeitendes Gewerbe",
-   "zeilen": 61512,
-   "ciks": 1945
+   "zeilen": 57017,
+   "ciks": 1788
   },
   {
    "sektor": "ohne SIC",
-   "zeilen": 488,
-   "ciks": 35
+   "zeilen": 430,
+   "ciks": 31
   }
  ],
  "zeilenJeForm": {
-  "10-Q": 115987,
-  "10-K": 39352,
-  "10-Q/A": 1711,
-  "10-K/A": 1350,
-  "10-KT": 84,
-  "10-QT": 27,
-  "10-KT/A": 4,
-  "10-QT/A": 1
+  "10-Q": 109228,
+  "10-K": 37056,
+  "10-Q/A": 1480,
+  "10-K/A": 1208,
+  "10-KT": 78,
+  "10-QT": 24,
+  "10-KT/A": 4
  }
 }

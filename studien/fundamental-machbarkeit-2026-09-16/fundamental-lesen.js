@@ -25,12 +25,17 @@ var path = require('path');
 var Z = require('./zuordnung.js');
 
 var ISO = /^\d{4}-\d{2}-\d{2}$/;
+/* Kennungspruefung (v1.1, Auftrag Nr. 60): der Leser nimmt nur die Tafel, fuer die er gebaut ist - eine liegen gebliebene
+ * v1 (Aktienzahlen in Tausend, Huellen-Vorjahre) darf nicht still weitergelesen werden. Probe-Tafeln ohne Tafel-Kennung
+ * (test-fundamental.js P1a) bleiben lesbar. */
+var KENNUNG = 'fundamentaltafel-2026-09-16/v1.1';
 function tageZwischen(a, b) { return Math.round((Date.parse(b + 'T12:00:00Z') - Date.parse(a + 'T12:00:00Z')) / 86400000); }
 
 function oeffne(ordner, optionen) {
   ordner = ordner || path.join(__dirname, 'fundamentaltafel');
   var opt = Object.assign({ maxAlterTage: 456 }, optionen || {});
   var meta = JSON.parse(fs.readFileSync(path.join(ordner, '_reihen.json'), 'utf8'));
+  if (/^fundamentaltafel-/.test(meta.kennung || '') && meta.kennung !== KENNUNG) throw new Error('Tafel-Kennung ' + meta.kennung + ' passt nicht zum Leser (' + KENNUNG + '): ' + ordner);
   var jeCik = new Map(), nZeilen = 0, dateien = [];
   fs.readdirSync(ordner).filter(function (f) { return /^tafel-\d{4}\.jsonl$/.test(f); }).sort().forEach(function (f) {
     dateien.push(f);
@@ -87,4 +92,4 @@ function oeffne(ordner, optionen) {
 var standard = null;
 function fundamentalAm(sym, tag, o) { if (!standard) standard = oeffne(); return standard.fundamentalAm(sym, tag, o); }
 
-module.exports = { oeffne: oeffne, fundamentalAm: fundamentalAm, sektorVonSic: Z.sektorVonSic, tageZwischen: tageZwischen };
+module.exports = { oeffne: oeffne, fundamentalAm: fundamentalAm, sektorVonSic: Z.sektorVonSic, tageZwischen: tageZwischen, KENNUNG: KENNUNG };
