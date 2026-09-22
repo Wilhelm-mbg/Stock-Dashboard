@@ -206,6 +206,21 @@ Auftrag §1a.1, kein Widerspruch) · 8 Umkehr-Zelle bauen · 9 F&E ohne Ausweis 
    benannt: `ertragskraft-roa` (nachrichtlich), negatives Eigenkapital als Wert (Feld 5), sd n−1 (Feld 8), `vermoegenVor` als
    Zeilenfeld (Feld 7), Einheiten (Momentum, Umkehr, Investition in Pp; Schwankung in der Einheit der Panel-Spalte `rendite`).
    Keine Zahl eines Feldes war zu diesem Zeitpunkt gemessen.
+2. **22.09.2026 15:40 (PM), nach den Feldzellen, vor der Kombination — Fund über die Daten, keine Änderung an Formeln oder
+   Regeln.** Das Panel v2.1 klebt bei **101 Reihen** zwei Notierungen mit mehr als einem Jahr Lücke zu einer Reihe zusammen
+   (wiederverwendete Kürzel und Wiederzulassungen: SN = Sanchez Energy bis 2019 + SharkNinja ab 2023-07-31, dazu MBLY, DOW, CHK,
+   XL, DWAC, CART …; gefunden vom Momentum-Chat an SN mit 21.872 Pp am 2024-07-01, vom PM über alle Reihen gezählt). Folge: die
+   250-Vortage-Regel des Universums zählt Zeilen des alten Emittenten mit, Momentum und Schwankung rechnen über die Lücke.
+   Ausmaß in den Zellen: **57 Mitglied-Monate von 69.969** (0,08 %; im Mittel 0,6 je Signaltag, höchstens 3; 13 Symbole). Entscheid:
+   Zellen bleiben, der Fund geht als Panel-Nachbesserung (v2.2: Trennung an Lücken > 90 Tage über den `~2`-Mechanismus) in die
+   offene Liste (mit Nr. 41); die Kombination wird auf v2.1 gerechnet und der Fund im Bericht ausgewiesen. Wird v2.2 vor der
+   Kombination fertig, werden alle Zellen einmal neu gebaut (Sekunden) — als Nachtrag 3 mit beiden Zahlen.
+   **Zweiter Datenfund derselben Art (Fundamentaltafel):** einzelne Filings tragen Beträge in der falschen Einheit (HRC 10-K vom
+   2021-11-12: `vermoegen` 4.999,1 statt 4.999.100.000 — gefunden vom Ertragskraft-Chat; PM-Zählung über alle 158.516 Filings:
+   **15 isolierte Einbrüche/Spitzen um mehr als Faktor 100** bei 13 CIKs, dazu SPAC-Hüllen mit echten 1.000×-Sprüngen, die keine
+   Fehler sind). Wirkung: einzelne Symbol-Monate mit absurden Rohwerten in den Feldern 4, 5, 6, 7, 11 — der Rang ist dagegen
+   unempfindlich (das Symbol landet am Rand eines Dezils). Entscheid wie oben: Zellen bleiben; Tafel-Nachbesserung (Plausibilität
+   gegen Nachbar-Filings) als offener Punkt Nr. 59; im Kombinationsbericht ausgewiesen.
 
 ---
 
