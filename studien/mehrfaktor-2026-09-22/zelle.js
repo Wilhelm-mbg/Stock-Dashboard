@@ -429,8 +429,13 @@ function zelleBauen(feld, werte, opt) {
   sag(opt, '  Zufall x ' + ZU.ziehungen + ': Mittel brutto ' + f4(mB) + ', netto+Kosten ' + f4(mN) + ' Pp, |t|>=' + ZU.tEinzeln + ' in ' + fehler + ', se je Ziehung ' + f4(seE) + ' (MDE-Boden ' + f4(zufall.mdeBoden) + ' Pp) => ' + (zufall.bestanden ? 'bestanden' : 'GEFALLEN'));
 
   var leck = { klinke: klinke, leser: leserBefund, bestanden: klinke.bestanden && leserBefund.verstoesse === 0 };
+  /* Urteil: Orakel, Placebo Symbole, Zufall, Klinke. Placebo Versatz ist nur Diagnose (Vorregistrierung §9 (3), Entscheid des
+   * PM 22.09.): bei traegen Feldern ist er ~ Einzelmessung, bei Umkehr/SUE enthaelt er die Halteperiode. Das alte Aggregat
+   * (Versatz zaehlt mit) bleibt als bestandenMitVersatz sichtbar. */
   var nullpunkt = { orakel: orakel, placebo: { versatz: placeboVersatz, symbole: placeboSymbole, zufall: zufall }, leck: leck,
-    bestanden: orakel.bestanden && placeboVersatz.bestanden !== false && placeboSymbole.bestanden && zufall.bestanden && leck.bestanden };
+    bestanden: orakel.bestanden && placeboSymbole.bestanden && zufall.bestanden && leck.bestanden,
+    bestandenMitVersatz: orakel.bestanden && placeboVersatz.bestanden !== false && placeboSymbole.bestanden && zufall.bestanden && leck.bestanden,
+    regel: 'bestanden = Orakel + Placebo Symbole + Zufall + Klinke; Placebo Versatz nur Diagnose (Vorregistrierung §9 (3), PM 22.09.2026)' };
 
   /* (e) Zelle im Format von mehrfaktor-felder.md §3 */
   var sekunden = (Date.now() - t0) / 1000, rss = process.resourceUsage().maxRSS / 1024;

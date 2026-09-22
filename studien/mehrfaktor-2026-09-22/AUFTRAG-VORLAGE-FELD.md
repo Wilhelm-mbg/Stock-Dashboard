@@ -31,7 +31,7 @@ Feld einen Agenten. Ein Zweitleser liest die Vorlage einmal, nicht neunmal.*
 | Rohgröße je Symbol am Signaltag t | `<Formel aus §4, mit Richtung: höher = besser; „gedreht" = Vorzeichen −>` |
 | Einheit | `<Pp / Verhältnis / ln>` |
 | Datenquelle | `<Panel über sicht / Fundamentaltafel über sicht.fundamentalAm / beides>` |
-| Wert fehlt | **`null`** — nie 0, nie ein Ersatzwert; die Maschine füllt mit dem mittleren Rang auf und zählt es |
+| Wert fehlt | **`null`**, wenn die Rohgröße nicht berechenbar ist — nie 0, nie ein Ersatzwert; ein von der Tafel **ausgewiesener** Nullwert (z. B. `roh.fue` = 0) ist dagegen ein echter Wert (zählen, berichten). Die Maschine gibt Fehlenden den mittleren Rang (n+1)/2 und streckt die Ränge der Ausweiser auf 1…n (Entscheid §9 (7)): **Dezil oben = 10 % der Symbole mit Wert**, nie ein Aufgefüllter im Einzeldezil; Auffüllungen werden je Dezil gezählt |
 | Erwartete Abdeckung | `<aus §4; Bilanz ≈ 83 %, F&E ≈ 30–40 %>` |
 | Literatur (L-S je Monat, Obergrenze) | `<aus §4>` |
 
@@ -88,8 +88,10 @@ Flagge setzt nur der PM nach dem Urteil; deine Zelle trägt `rueckhalte: false`,
 - **Abdeckung** je Klasse und Jahr (Tabelle aus dem Bericht) und die Gründe für Lücken (kein Filing, Tor, Feld nicht ausgewiesen,
   zu kurze Reihe).
 - **Nullpunkt**: Orakel (Dezil − Universum, Long-Short, t, Schranke), Placebo Symbole, Zufall ×12 (Mittel, |t| ≥ 3-Fälle, se je
-  Ziehung, MDE-Boden), Placebo Versatz (mit dem Hinweis der Maschine — bei trägen Feldern ≈ Einzelmessung), Klinke (Positivkontrolle
-  Kurs/Bilanz, Leser-Zugriffe und Verstöße). **Fällt eine Kontrolle: melden, nicht reparieren, nicht nachlegen.**
+  Ziehung, MDE-Boden), Klinke (Positivkontrolle Kurs/Bilanz, Leser-Zugriffe und Verstöße) — diese vier bilden das Urteil
+  `nullpunkt.bestanden`. **Placebo Versatz** wird ausgewiesen, ist aber nur Diagnose (Entscheid §9 (3); bei trägen Feldern ≈
+  Einzelmessung, bei Umkehr/SUE ≈ Orakel) und geht nicht ins Urteil; die Maschine trägt das alte Aggregat als
+  `bestandenMitVersatz` mit. **Fällt eine der vier Kontrollen: melden, nicht reparieren, nicht nachlegen.**
 - **Einzelmessung** als Diagnose: Dezil oben − Universum brutto/netto, se, t, t_HH, **MDE₈₀**, Umschlag, Kosten, Dezilgröße,
   Auffüllungen je Dezil, Jahresscheiben, letzte 250 Tage. Formulierung immer „nichts oberhalb von X Pp" bzw. „X Pp bei MDE₈₀ Y" —
   nie „belegt", nie „Kante", nie „da ist nichts". Die Zelle ist kein Urteil.
@@ -119,7 +121,10 @@ Flagge setzt nur der PM nach dem Urteil; deine Zelle trägt `rueckhalte: false`,
 
 ## 7. Sonderabsatz F&E-Intensität (`fue`, Nr. 10)
 
-- `fue` (4Q-Summe) / `umsatz` (4Q-Summe); **nur Symbole, deren Filing F&E ausweist** — alle anderen `null`, nie 0 (Entscheid §9 (9)).
+- **Überholt durch Nachtrag §11 (1) der Vorregistrierung (22.09.):** die Tafel führt 4-Quartals-Summen nur für umsatz/netto/operativ;
+  die Formel ist `roh.fue / roh.umsatz` **desselben Filings** (gleiche `qtrs`, kein 4Q) — lies den Nachtrag vor dem Bau. Der Rest
+  dieses Absatzes gilt unverändert.
+- `fue` / `umsatz` (Rohfluss desselben Filings); **nur Symbole, deren Filing F&E ausweist** — alle anderen `null`, nie 0 (Entscheid §9 (9)).
   Erwartete Abdeckung 30–40 % des Universums, je Klasse und Jahr verschieden (Technologie/Pharma) — **die Abdeckungstafel ist der
   halbe Bericht**: welche Klassen, welche Jahre, wie viele Symbole je Signaltag (Dezil = 10 % der Ausweiser, also ≈ 25 Mitglieder).
 - Nachrichtlich zweite Zelle `fue-marktwert` = fue 4Q / Marktwert (Marktwert wie Feld 4: `aktien` × `rohSchluss`), nicht gewichtet.

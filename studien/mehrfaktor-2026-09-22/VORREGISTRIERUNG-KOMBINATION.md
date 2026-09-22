@@ -171,7 +171,7 @@ sie wird nicht zur Anpassung benutzt; eine Kante, die im Rechenfenster belegt un
    Abdeckung 100 %).
 10. **Freigabe der neun Feld-Agenten** nach `AUFTRAG-VORLAGE-FELD.md` (Budget je 120k).
 
-**Entschieden (PM, 22.09.2026 16:10, jeweils die Empfehlung der Übergabe Nr. 48 §4; Wilhelm kann jeden Punkt vor der Registrierung
+**Entschieden (PM, 22.09.2026 15:01, jeweils die Empfehlung der Übergabe Nr. 48 §4; Wilhelm kann jeden Punkt vor der Registrierung
 umstoßen):** 1 Prüfstand-Haltefenster Eröffnung(a) → Eröffnung(a′) · 2 horizontgleich 5 Pp + Long-Short 20 Pp, alles aus `konfig.js`
 (20 Pp einseitig war eine Schranke aus der falschen Skala, Fehlerform vom 09.09.) · 3 Placebo Versatz nur Diagnose; Nullpunkt =
 Orakel, Placebo Symbole, Zufall, Klinke · 4 nur B/M gewichtet, E/P nachrichtlich · 5 sd der acht Quartalsgewinne (n−1) · 6 t_HH ≥ 3 ·
@@ -198,7 +198,7 @@ Auftrag §1a.1, kein Widerspruch) · 8 Umkehr-Zelle bauen · 9 F&E ohne Ausweis 
 
 ## 11. Nachträge
 
-1. **22.09.2026 16:30 (PM), vor der ersten Feldzelle — Formeln 6 und 10 an die Tafel angepasst.** Grund: `bauen.js` bildet
+1. **22.09.2026 15:19 (PM), vor der ersten Feldzelle — Formeln 6 und 10 an die Tafel angepasst.** Grund: `bauen.js` bildet
    4-Quartals-Summen (`summe4q`, `quartale`) nur für `SUMMEN = ['umsatz', 'netto', 'operativ']`; `umsatzkosten` und `fue` gibt es
    nur als Rohfluss des Filings (`roh`, mit `roh.qtrs` 4 für 10-K, 1 für 10-Q). Ertragskraft daher als Bruttogewinn des jüngsten
    Filings auf Jahresrate (× 4/qtrs) durch `roh.vermoegen`; F&E-Intensität als `roh.fue / roh.umsatz` desselben Filings (Verhältnis,
