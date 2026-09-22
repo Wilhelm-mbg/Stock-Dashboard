@@ -26,6 +26,13 @@ if [ ! -r "$NETRC" ]; then
   exit 2
 fi
 
+# Der PM legt die Datei nur mit Platzhaltern an; Wilhelm ersetzt sie. Solange ein Platzhalter drinsteht, wird
+# gar nicht erst angemeldet — Fehlversuche können das iDRAC für diese Adresse sperren. grep -q gibt nichts aus.
+if grep -q -e BENUTZER_HIER -e PASSWORT_HIER "$NETRC"; then
+  echo "In $NETRC stehen noch Platzhalter — Wilhelm trägt Benutzer und Passwort ein."
+  exit 2
+fi
+
 rf() { curl -sk --netrc-file "$NETRC" -m 20 "$@"; }
 zustand() { rf "$SYS" | grep -o '"PowerState":"[A-Za-z]*"' | cut -d'"' -f4; }
 schalte() {   # $1 = ResetType; gibt den HTTP-Code aus
