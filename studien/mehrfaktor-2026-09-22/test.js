@@ -1,5 +1,6 @@
 'use strict';
-/* PRUEFUNGEN der Mehrfaktor-Maschine (Auftrag Nr. 48 §2) - nur mit KUNSTFELDERN; kein Feld der Studie wird gemessen.
+/* PRUEFUNGEN der Mehrfaktor-Maschine (Auftrag Nr. 48 §2; Block D: Rang-IC nach Auftrag Nr. 61 §3) - nur mit KUNSTFELDERN;
+ * kein Feld der Studie wird gemessen.
  *
  * Aufruf:  node --max-old-space-size=6144 test.js [--aus <panelordner>] [--kunst <kunstpanelordner>] [--nur A,B,...]
  *   --aus    Vorgabe: das echte Panel v2.1 (studien/querschnitt-pruefstand-2026-09-13/voll)
@@ -242,7 +243,7 @@ pruef('B9', 'Kunstfeld ORAKEL (mit Schluessel): Einzelmessung = eingebautes Orak
     return (z1 >= 0 && z2 >= 0 && g.bEroeffnung[z1] > 0 && g.bEroeffnung[z2] > 0) ? 100 * (g.bEroeffnung[z2] / g.bEroeffnung[z1] - 1) : null;
   }
   var r = Z.zelleBauen('kunst-orakel', orakelFeld, Object.assign({ kunst: 'orakel', schluessel: true, definition: 'kuenftige Rendite Eroeffnung(a) -> Eroeffnung(aEnde) (Kunstfeld mit Orakelschluessel)' }, OPT));
-  var e = r.zelle.einzelmessung.dezilUni.brutto, o = r.zelle.nullpunkt.orakel;
+  var e = r.zelle.einzelmessung.dezilUni.brutto, o = r.zelle.nullpunkt.orakel; merk.orakel = r;
   gleich(e.mittel, o.brutto, 0, 'Mittel identisch'); gleich(e.t, o.t, 0, 't identisch'); gleich(r.zelle.einzelmessung.longShort.brutto.mittel, o.longShort.brutto, 0, 'Long-Short identisch');
   wahr(e.mittel >= KONST.ORAKEL.minPp && r.zelle.schluessel === true && r.zelle.kunst === 'orakel', 'gross und gekennzeichnet');
   return 'Dezil-Universum ' + e.mittel.toFixed(4) + ' Pp = Orakel ' + o.brutto.toFixed(4) + ', t ' + e.t.toFixed(1);
@@ -250,7 +251,7 @@ pruef('B9', 'Kunstfeld ORAKEL (mit Schluessel): Einzelmessung = eingebautes Orak
 pruef('B10', 'Kunstfeld KONSTANT: alle Raenge gleich, Dezile leer, kein Absturz, Auffuellung 0; das eingebaute Orakel bleibt gross', function () {
   var T = tafel(); if (!T) return 'skip';
   var r = Z.zelleBauen('kunst-konstant', function () { return 7; }, Object.assign({ kunst: 'konstant', definition: 'konstant 7 (Kunstfeld)' }, OPT));
-  var e = r.zelle.einzelmessung;
+  var e = r.zelle.einzelmessung; merk.konstant = r;
   wahr(e.dezilMittel === 0 && e.dezilUnten.dezilMittel === 0 && e.dezilUni.brutto.n === 0 && e.dezilUni.brutto.mittel === null, 'Dezile leer: ' + e.dezilMittel + '/' + e.dezilUnten.dezilMittel);
   wahr(e.aufgefuellt.oben === 0 && e.aufgefuellt.unten === 0 && e.mitWertMittel > 100 && r.zelle.abdeckung.gesamt.gesamt.anteil === 1, 'nichts aufgefuellt, alles mit Wert');
   wahr(r.zelle.nullpunkt.orakel.bestanden && r.zelle.nullpunkt.leck.bestanden, 'Orakel/Klinke unabhaengig vom Feld');
@@ -319,8 +320,9 @@ pruef('B15', 'Kombination als Zelle (zelleAusKombination): voller Nullpunkt ohne
   var T = tafel(); if (!T || !merk.zufall || !merk.luecken) return 'skip';
   var za = merk.zufall.zelle, zb = merk.luecken.zelle;
   var k = Z.kombiniere({ 'kunst-zufall': za, 'kunst-luecken': zb }, ['kunst-zufall', 'kunst-luecken'], null, { kontrollen: [] });
-  var r = Z.zelleAusKombination(k, Object.assign({ feld: 'kunst-kombination' }, OPT)), m = Z.messeZelle(T, k), e = r.zelle.einzelmessung;
+  var r = Z.zelleAusKombination(k, Object.assign({ feld: 'kunst-kombination' }, OPT)), m = Z.messeZelle(T, k), e = r.zelle.einzelmessung; merk.kombination = r;
   gleich(e.dezilUni.brutto.mittel, m.brutto.mittel, 0, 'Mittel wie messeZelle'); gleich(e.dezilUni.netto.t, m.netto.t, 0, 't');
+  gleich(e.ic.mittel, m.ic.mittel, 0, 'IC wie messeZelle');
   wahr(e.aufgefuellt.oben === m.aufgefuellt.oben && e.aufgefuellt.unten === m.aufgefuellt.unten && e.aufgefuellt.oben > 0, 'Auffuellungen je Dezil ' + JSON.stringify(e.aufgefuellt));
   var n = r.zelle.nullpunkt;
   wahr(n.placebo.versatz.bestanden === null && /Feldzellen/.test(n.placebo.versatz.uebersprungen), 'Versatz uebersprungen');
@@ -374,8 +376,109 @@ pruef('C1', 'Kunstpanel: Feld theta_s findet die eingepflanzte Kante ab 2020 in 
   return 'ab 2020 gemessen ' + ab.ist.toFixed(3) + ' / Soll ' + ab.soll.toFixed(3) + ' Pp je Monat (n ' + ab.n + '), davor ' + vorT.mittel.toFixed(3) + ' (t ' + vorT.t.toFixed(2) + ', n ' + vor.n + ')';
 });
 
+/* =========================================================================================
+ * D. Rang-IC (Auftrag Nr. 61 §3) - Kunstfelder; y je Mitglied kommt aus der Haltefunktion der Maschine (Kopf von zelle.js, BEFUND)
+ * ========================================================================================= */
+/** Kunstfeld-Orakel des IC: liest mit Schluessel genau die Zahl y, die der IC benutzt (halteRendite = halte mit einem Mitglied). */
+function orakelHalte(sym, tag, sicht) { return Z.halteRendite(sicht, { sym: sicht.symIdx(sym) }); }
+function icT(monate) { var v = monate.filter(function (m) { return m.ic != null; }).map(function (m) { return m.ic; }), n = v.length, m = v.reduce(function (a, b) { return a + b; }, 0) / n, q = 0; v.forEach(function (x) { q += (x - m) * (x - m); }); var se = Math.sqrt(q / (n - 1)) / Math.sqrt(n); return { n: n, mittel: m, t: m / se }; }
+function keinNaN(o, pfad) { if (typeof o === 'number') { if (!isFinite(o)) throw new Error('NaN/Infinity bei ' + pfad); return; } if (o && typeof o === 'object') Object.keys(o).forEach(function (k) { keinNaN(o[k], pfad + '.' + k); }); }
+pruef('D1', 'IC Orakel: Kunstfeld liest y aus der Haltefunktion => IC = 1 auf 1e-9 an JEDEM Signaltag, sd 0, t null (kein Infinity); gedrehtes Orakel => -1; Nullpunkt-Orakel IC bestanden; Pruefstand-Orakel (B9) nur berichtet', function () {
+  var T = tafel(); if (!T) return 'skip';
+  var r = Z.zelleBauen('kunst-orakel-halte', orakelHalte, Object.assign({ kunst: 'orakel-halte', schluessel: true, definition: 'y des IC: Halteperioden-Rendite je Mitglied aus halte (Kunstfeld mit Orakelschluessel)' }, OPT));
+  var e = r.zelle.einzelmessung.ic, o = r.zelle.nullpunkt.orakel; merk.orakelHalte = r;
+  wahr(e.n === 92 && e.ohneIc === 0 && e.monate.length === 92, 'n ' + e.n + ', ohne IC ' + e.ohneIc);
+  e.monate.forEach(function (m) { gleich(m.ic, 1, 1e-9, 'Signaltag ' + m.tag); wahr(m.n >= KONST.MIN_UNIVERSUM && m.n === Object.keys(r.zelle.signaltage.filter(function (s) { return s.tag === m.tag; })[0].werte).length, 'Paare = Universum am ' + m.tag + ': ' + m.n); });
+  gleich(e.mittel, 1, 1e-9, 'Mittel'); wahr(e.sd === 0 && e.se === 0 && e.t === null && e.mde80 === 0 && e.letzte12.n === 12, 'sd 0, se 0, t null, MDE 0, letzte 12: ' + JSON.stringify({ sd: e.sd, t: e.t, l: e.letzte12 }));
+  wahr(o.ic.bestanden && o.bestanden && Math.abs(o.ic.min - 1) < 1e-9 && Math.abs(o.ic.max - 1) < 1e-9 && o.ic.n === 92, 'Nullpunkt-Orakel IC ' + JSON.stringify(o.ic));
+  wahr(o.icDezilOrakel.mittel < 1 - 1e-9 && o.icDezilOrakel.mittel > 0.99, 'Dezil-Orakel (orakelPeriode) gegen y ist NICHT exakt 1 (Befund): ' + o.icDezilOrakel.mittel);
+  var g = Z.zelleBauen('kunst-orakel-gedreht', function (sym, tag, sicht) { var v = orakelHalte(sym, tag, sicht); return v === null ? null : -v; }, Object.assign({ kunst: 'orakel-gedreht', schluessel: true, definition: '-y (gedrehtes Kunstfeld-Orakel)' }, OPT));
+  var ge = g.zelle.einzelmessung.ic; wahr(ge.n === 92, 'gedreht n'); ge.monate.forEach(function (m) { gleich(m.ic, -1, 1e-9, 'gedreht ' + m.tag); }); gleich(ge.mittel, -1, 1e-9, 'gedreht Mittel');
+  wahr(g.zelle.nullpunkt.orakel.ic.bestanden, 'Orakel-IC der Maschine haengt nicht vom Feld ab');
+  var b9 = merk.orakel ? merk.orakel.zelle.einzelmessung.ic : null;
+  return 'IC 1 exakt (max |IC-1| ' + Math.max.apply(null, e.monate.map(function (m) { return Math.abs(m.ic - 1); })).toExponential(1) + ') an 92 Signaltagen, gedreht -1; Dezil-Orakel gegen y ' + o.icDezilOrakel.mittel.toFixed(6) + (b9 ? ', B9-Orakelfeld (orakelPeriode-Formel) IC ' + b9.mittel.toFixed(6) : '') + '; ' + r.zelle.lauf.sekunden.toFixed(1) + ' s';
+});
+pruef('D2', 'IC Zufall: |Mittel| < 0,01, |t| < 3; 12 Ziehungen: mdeBoden(IC) zwischen 0,005 und 0,02, IC-Kontrollen bestanden; Placebo Symbole IC |t| < 3', function () {
+  var T = tafel(); if (!T || !merk.zufall) return 'skip';
+  var z = merk.zufall.zelle, e = z.einzelmessung.ic, zu = z.nullpunkt.placebo.zufall.ic, ps = z.nullpunkt.placebo.symbole;
+  wahr(e.n === 92 && Math.abs(e.mittel) < 0.01 && Math.abs(e.t) < 3, 'Einzelmessung IC ' + e.mittel + ' (t ' + e.t + ')');
+  ['n', 'mittel', 'sd', 'se', 't', 'mde80', 'jahre', 'letzte12', 'monate'].forEach(function (k) { wahr(e[k] != null, 'ic.' + k); });
+  gleich(e.mde80, KONST.MDE_FAKTOR * e.se, 1e-12, 'MDE80 = Faktor x se'); gleich(e.se, e.sd / Math.sqrt(e.n), 1e-12, 'se = sd/sqrt(n)');
+  wahr(zu.mdeBoden > 0.005 && zu.mdeBoden < 0.02 && zu.bestanden && zu.fehlerEinzelnT <= KONST.ZUFALL.maxFehler && Math.abs(zu.mittel) < 0.01, 'Zufall x 12 IC ' + JSON.stringify({ mittel: zu.mittel, se: zu.seEinzelnMittel, mde: zu.mdeBoden, fehler: zu.fehlerEinzelnT }));
+  wahr(z.nullpunkt.placebo.zufall.einzeln.every(function (x) { return x.ic && x.ic.n === 92 && typeof x.ic.t === 'number'; }), 'IC je Ziehung');
+  wahr(ps.ic.bestanden && Math.abs(ps.ic.t) < 3 && ps.bestanden && z.nullpunkt.bestanden, 'Placebo Symbole IC t ' + ps.ic.t);
+  wahr(typeof z.nullpunkt.placebo.versatz.ic.mittel === 'number', 'Versatz-IC als Diagnose vorhanden');
+  return 'IC ' + e.mittel.toFixed(4) + ' (se ' + e.se.toFixed(4) + ', t ' + e.t.toFixed(2) + ', MDE80 ' + e.mde80.toFixed(4) + '); Zufall x 12: Mittel ' + zu.mittel.toFixed(4) + ', se je Ziehung ' + zu.seEinzelnMittel.toFixed(4) + ', MDE-Boden ' + zu.mdeBoden.toFixed(4) + '; Symbole IC t ' + ps.ic.t.toFixed(2);
+});
+pruef('D3', 'IC Luecken: nur Mitglieder mit Wert sind Paare (n je Signaltag = mit Wert, ~2/3 des Universums), Ergebnis ~0', function () {
+  var T = tafel(); if (!T || !merk.luecken) return 'skip';
+  var z = merk.luecken.zelle, e = z.einzelmessung, ic = e.ic, mn = 0;
+  ic.monate.forEach(function (m) { mn += m.n; }); mn /= ic.monate.length;
+  gleich(mn, e.mitWertMittel, 1e-9, 'Paare = mit Wert'); wahr(mn / e.universumMittel > 0.6 && mn / e.universumMittel < 0.74, 'Anteil ' + (mn / e.universumMittel));
+  wahr(ic.n === 92 && Math.abs(ic.mittel) < 0.01 && Math.abs(ic.t) < 3, 'IC ~0: ' + ic.mittel + ' (t ' + ic.t + ')');
+  return 'Paare je Signaltag ' + mn.toFixed(1) + ' von ' + e.universumMittel.toFixed(1) + ' (' + (100 * mn / e.universumMittel).toFixed(1) + ' %), IC ' + ic.mittel.toFixed(4) + ' (t ' + ic.t.toFixed(2) + ')';
+});
+pruef('D4', 'IC Konstant: keine Streuung der Raenge => kein IC (n 0, mittel null, jeder Signaltag null), kein Wurf, kein NaN/Infinity in Zelle und Nullpunkt', function () {
+  var T = tafel(); if (!T || !merk.konstant) return 'skip';
+  var r = merk.konstant, ic = r.zelle.einzelmessung.ic;
+  wahr(ic.n === 0 && ic.mittel === null && ic.sd === null && ic.se === null && ic.t === null && ic.mde80 === null && ic.ohneIc === 92 && ic.letzte12.n === 0 && ic.letzte12.mittel === null, 'leer: ' + JSON.stringify({ n: ic.n, m: ic.mittel, o: ic.ohneIc }));
+  wahr(ic.monate.length === 92 && ic.monate.every(function (m) { return m.ic === null && m.n >= KONST.MIN_UNIVERSUM; }), 'jeder Signaltag null mit voller Paarzahl');
+  /* Die Zelle ist NaN-frei. In der Nullpunkt-Datei tragen die Periodenreihen der Dezilmessung bei leerem Dezil periode NaN (halteKorb,
+   * v1: "ein leerer Korb ist leer, kein Absturz"; JSON schreibt null) - das ist Dezil, nicht IC, und bleibt (Auftrag Nr. 61 §2.5).
+   * Geprueft werden deshalb die Urteile und der Zufall der Nullpunkt-Datei, nicht die Periodenreihen. */
+  keinNaN(r.zelle, 'zelle'); ['orakel', 'placeboVersatz', 'placeboSymbole'].forEach(function (k) { keinNaN(r.nullpunkt[k].urteil, 'nullpunkt.' + k + '.urteil'); }); keinNaN(r.nullpunkt.zufall, 'nullpunkt.zufall');
+  wahr(r.zelle.nullpunkt.orakel.ic.bestanden && r.zelle.nullpunkt.placebo.symbole.ic.n === 0, 'Orakel-IC 1 auch hier; permutierte Konstante hat keinen IC');
+  return 'n 0, mittel null, 92 Signaltage ohne IC, kein NaN';
+});
+pruef('D5', 'IC Kunstpanel: Feld theta_s traegt Rang-Information ab 2020 (IC > 0, t >= 3), davor |t| < 3', function () {
+  if (!panelDa(A.kunst)) return 'skip';
+  var KP = require(path.join(path.dirname(KONST.PANEL), 'kunstpanel.js'));
+  var TK = Z.tafel(A.kunst), tage = Z.signaltage(TK, {});
+  tage.forEach(function (s) { var e = Z.universumAm(TK, s, KONST.KLASSEN); s.U = e.U; s.uni = e.uni; s.a = e.U.aTag; s.y = e.y; });
+  var werte = tage.map(function (s) { return Z.werteAm(TK, s, function (sym) { return KP.theta(sym); }, {}).werte; });
+  var a = Z.auswertung(TK, Z.lauf(TK, tage, werte), tage), ab = icT(a.ic.monate.filter(function (m) { return m.tag >= KP.KANTE_AB; })), vor = icT(a.ic.monate.filter(function (m) { return m.tag < KP.KANTE_AB; }));
+  wahr(ab.n >= 40 && vor.n >= 30, 'Signaltage mit/ohne Kante ' + ab.n + '/' + vor.n);
+  wahr(ab.mittel > 0 && ab.t >= 3, 'ab ' + KP.KANTE_AB + ': IC ' + ab.mittel.toFixed(4) + ' (t ' + ab.t.toFixed(2) + ')');
+  wahr(Math.abs(vor.t) < 3, 'davor IC ' + vor.mittel.toFixed(4) + ' (t ' + vor.t.toFixed(2) + ') - waere er hier auch gross, misst der IC theta statt der Kante');
+  return 'ab 2020 IC ' + ab.mittel.toFixed(4) + ' (t ' + ab.t.toFixed(2) + ', n ' + ab.n + '), davor ' + vor.mittel.toFixed(4) + ' (t ' + vor.t.toFixed(2) + ', n ' + vor.n + ')';
+});
+pruef('D6', 'IC Kombination (zelleAusKombination): einzelmessung.ic vorhanden, Paare = Universum (Aufgefuellte dabei); Orakel + Zufall (1/1) => IC zwischen 0,5 und 0,9', function () {
+  var T = tafel(); if (!T || !merk.orakelHalte || !merk.zufall || !merk.kombination) return 'skip';
+  var kb = merk.kombination.zelle, ek = kb.einzelmessung, mk = 0; ek.ic.monate.forEach(function (m) { mk += m.n; }); mk /= ek.ic.monate.length;
+  gleich(mk, ek.universumMittel, 1e-9, 'Zufall+Luecken: Paare = Universum trotz Auffuellungen'); wahr(ek.aufgefuellt.oben > 0 && ek.ic.n === 92, 'Aufgefuellte dabei');
+  var k = Z.kombiniere({ 'kunst-orakel-halte': merk.orakelHalte.zelle, 'kunst-zufall': merk.zufall.zelle }, ['kunst-orakel-halte', 'kunst-zufall'], { 'kunst-orakel-halte': 1, 'kunst-zufall': 1 });
+  wahr(k.quellen.every(function (q) { return 'tafelKennung' in q && q.tafelKennung === null; }), 'Quellen tragen tafelKennung');
+  var r = Z.zelleAusKombination(k, Object.assign({ feld: 'kunst-kombination-orakel-zufall' }, OPT)), e = r.zelle.einzelmessung.ic;
+  wahr(e.n === 92 && e.mittel > 0.5 && e.mittel < 0.9 && e.t > 3, 'Orakel+Zufall IC ' + e.mittel + ' (t ' + e.t + ')');
+  var mo = 0; e.monate.forEach(function (m) { mo += m.n; }); mo /= e.monate.length; gleich(mo, r.zelle.einzelmessung.universumMittel, 1e-9, 'Paare = Universum');
+  wahr(r.zelle.nullpunkt.orakel.ic.bestanden && r.zelle.nullpunkt.bestanden, 'Nullpunkt der Kombination');
+  return 'Orakel+Zufall IC ' + e.mittel.toFixed(4) + ' (se ' + e.se.toFixed(4) + ', t ' + e.t.toFixed(1) + '; Erwartung 1/sqrt(2) = 0,71); Zufall+Luecken IC ' + ek.ic.mittel.toFixed(4) + ' mit ' + mk.toFixed(1) + ' Paaren = Universum';
+});
+pruef('D7', 'Leck: halteRendite ohne Orakelschluessel wirft Error("Leck: ...") durch zelleBauen, keine Zelle; B7 (Kurs-Leck) unveraendert', function () {
+  var T = tafel(); if (!T) return 'skip';
+  var g = null, pfad = path.join(ZIEL, 'kunst-leck-halte.json'); if (fs.existsSync(pfad)) fs.unlinkSync(pfad);
+  try { Z.zelleBauen('kunst-leck-halte', orakelHalte, Object.assign({ kunst: 'leck' }, OPT)); } catch (err) { g = err.message; }
+  wahr(g && /^Leck: /.test(g) && /halteRendite/.test(g), 'wirft: ' + g); wahr(!fs.existsSync(pfad), 'keine Zelle geschrieben');
+  return g.slice(0, 80);
+});
+pruef('D8', 'Format: kein NaN/Infinity in Zelle, Nullpunkt, Bericht (Zufall, Orakel, Kombination); Kennungen v1.1; tafelKennung null ohne Bilanz, gesetzt mit Bilanz; Bericht traegt IC-Zeile und IC-Spalte', function () {
+  var T = tafel(); if (!T || !merk.zufall || !merk.orakelHalte || !merk.kombination) return 'skip';
+  [merk.zufall, merk.orakelHalte, merk.kombination, merk.luecken].forEach(function (r) {
+    keinNaN(r.zelle, r.zelle.feld); keinNaN(r.nullpunkt, r.zelle.feld + '-nullpunkt');
+    wahr(!/NaN|Infinity/.test(r.bericht) && /\*\*Rang-IC\*\*/.test(r.bericht) && /\| IC \(n\) \|/.test(r.bericht) && /MDE-Boden des IC/.test(r.bericht), 'Bericht ' + r.zelle.feld);
+    wahr(r.zelle.kennung === 'mehrfaktor-2026-09-22/zelle/v1.1' && r.nullpunkt.kennung === 'mehrfaktor-2026-09-22/nullpunkt/v1.1' && r.zelle.tafelKennung === null, 'Kennung/tafelKennung ' + r.zelle.feld);
+  });
+  wahr(merk.kombination.zelle.definition.indexOf('Kombinationsrang') === 0 && /Kombinationsrang \(alle Mitglieder/.test(merk.kombination.bericht) && /Rohwert \(nur Mitglieder mit Wert\)/.test(merk.zufall.bericht), 'Bericht nennt die richtige x-Seite');
+  var kunstLeser = { kennung: 'kunst-tafel/v0', fundamentalAm: function (sym) { return { filed: '2000-01-01', abgeleitet: { fm: ST.fnv(sym) % 1000 } }; } };
+  var r = Z.zelleBauen('kunst-bilanz', function (sym, tag, sicht) { var f = sicht.fundamentalAm(sym, tag); return f ? f.abgeleitet.fm : null; }, Object.assign({ kunst: 'bilanz', leser: kunstLeser, von: '2019-01-01', bis: '2019-12-31', definition: 'Kunst-Bilanzwert ueber einen Kunst-Leser' }, OPT));
+  wahr(r.zelle.tafelKennung === 'kunst-tafel/v0' && r.zelle.lauf.bilanzZugriffe > 0 && r.zelle.signaltage.length === 12 && /kunst-tafel\/v0/.test(r.bericht), 'tafelKennung ' + r.zelle.tafelKennung);
+  keinNaN(r.zelle, 'kunst-bilanz'); keinNaN(r.nullpunkt, 'kunst-bilanz-nullpunkt');
+  wahr(KONST.KENNUNG_KOMBINATION === 'mehrfaktor-2026-09-22/kombination/v1.1' && KONST.KENNUNG_REGRESSION === 'mehrfaktor-2026-09-22/regression/v1.1' && KONST.IC.orakelToleranz === 1e-9 && KONST.IC.zufallMittelMax === 0.01, 'Kennungen/Konstanten');
+  return 'kein NaN in 5 Zellen; tafelKennung null / kunst-tafel/v0; Kennungen v1.1';
+});
+
 process.stdout.write('\n' + gruen + ' Pruefungen gruen, ' + rot + ' rot, ' + uebersprungen + ' uebersprungen\n');
 var lauf = { stand: new Date().toISOString(), aus: A.aus, kunst: A.kunst, gruen: gruen, rot: rot, uebersprungen: uebersprungen, node: process.version,
-  tafel: merk.tafel || null, zufallLauf: merk.zufall ? merk.zufall.zelle.lauf : null, zeilen: zeilen };
+  tafel: merk.tafel || null, zufallLauf: merk.zufall ? merk.zufall.zelle.lauf : null, orakelHalteLauf: merk.orakelHalte ? merk.orakelHalte.zelle.lauf : null, zeilen: zeilen };
 fs.writeFileSync(path.join(PRUEFUNG, 'test-lauf.json'), JSON.stringify(lauf, null, 1));
 process.exit(rot ? 1 : 0);

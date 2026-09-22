@@ -9,6 +9,18 @@
  * Dezile ueber den Rangwert, die Nullpunkt-Kontrollen je Feld (Orakel, Placebo Versatz, Placebo Symbole, Zufall, Klinke),
  * das Zellenformat, der Bericht und die Kombination.
  *
+ * Seit v1.1 (Auftrag Nr. 61, Vorregistrierung Nachtrag 3): der RANG-IC je Signaltag - Spearman = Pearson der Raenge zwischen
+ * x (Feldzelle: Rohwert, nur Mitglieder mit Wert; Kombination: Kombinationsrang, alle Mitglieder) und y (Halteperioden-Rendite
+ * des Mitglieds, brutto, Pp), beide Seiten frisch mit `raenge` gerankt (Gleichstand = mittlerer Rang); kein IC unter MIN_UNIVERSUM
+ * Paaren. Statistik ueber die Signaltage: Mittel, sd (n-1), se = sd/sqrt(n) (Monatsperioden ueberlappen nicht), t, MDE80,
+ * Jahresscheiben, letzte 12 Signaltage. Der IC steht in einzelmessung.ic, in jeder Nullpunkt-Kontrolle und im Bericht.
+ * BEFUND zum Ort von y (Uebergabe Nr. 61): `halte` fuehrt je Korb nur Tagesmittel und Periodenrendite, KEINE Zahl je Mitglied.
+ * y entsteht deshalb aus derselben Haltefunktion mit EINEM Mitglied je Aufruf (halteJeMitglied: Eroeffnung(a) -> Eroeffnung(aEnde),
+ * Tote nach Empfindlichkeit = Totalverlust, Luecke = 0 an dem Tag), einmal je Signaltag und Tafel zwischengespeichert (0,3 s).
+ * Das Dezil-Orakel des Pruefstands (orakelPeriode) rechnet Eroeffnung/Eroeffnung ohne Totalverlust und mit der letzten Zeile
+ * statt des Schlusses - es ist NICHT y (gemessen 22.09.: 0 von 69.969 Mitglied-Monaten exakt gleich, 1.229 ueber 1e-6 auseinander).
+ * IC-Orakel des Nullpunkts ist darum y selbst (Raenge identisch => 1 exakt); der IC des Dezil-Orakels steht nachrichtlich daneben.
+ *
  * Haltefenster: Eroeffnung des Ausfuehrungstags a (naechster Handelstag nach dem Signaltag t) bis Eroeffnung des Ausfuehrungstags
  * des naechsten Signaltags - das ist die Konvention der Haltefunktion `halte` und der Universumsregel (Punkt 6: Eroeffnungskurs
  * am Ausfuehrungstag). Der Auftrag nennt "Einstieg zum Schluss des Signaltags"; `halte` kann Schluss->Schluss nicht, und eine
@@ -47,10 +59,13 @@ var KO = require(path.join(PS, 'kontrollen.js'));
 var MONAT = K.FREQUENZEN.filter(function (f) { return f.key === 'monat'; })[0];
 /* Alles, was diese Studie als Zahl festlegt, steht hier genau einmal; Schranken kommen aus konfig.js des Pruefstands. */
 var KONST = {
-  KENNUNG: 'mehrfaktor-2026-09-22/zelle/v1',
-  KENNUNG_NULLPUNKT: 'mehrfaktor-2026-09-22/nullpunkt/v1',
-  KENNUNG_KOMBINATION: 'mehrfaktor-2026-09-22/kombination/v1',
-  KENNUNG_REGRESSION: 'mehrfaktor-2026-09-22/regression/v1',
+  KENNUNG: 'mehrfaktor-2026-09-22/zelle/v1.1',                /* v1.1: Rang-IC und tafelKennung dazu, Zahlen der Dezilmessung unveraendert */
+  KENNUNG_NULLPUNKT: 'mehrfaktor-2026-09-22/nullpunkt/v1.1',
+  KENNUNG_KOMBINATION: 'mehrfaktor-2026-09-22/kombination/v1.1',
+  KENNUNG_REGRESSION: 'mehrfaktor-2026-09-22/regression/v1.1',
+  /* Rang-IC (Auftrag Nr. 61 §2.2): Orakel-Toleranz auf |IC - 1|, Schranke fuer das Mittel der Zufallsziehungen (in IC-Einheiten;
+   * gemessene se des Mittels von 12 Ziehungen ~0,001, die Schranke liegt also weit ausserhalb des Rauschens), letzte Signaltage. */
+  IC: { orakelToleranz: 1e-9, zufallMittelMax: 0.01, letzte: 12 },
   PANEL: path.join(PS, 'voll'),                              // das echte Panel v2.1 (liegt auf C:)
   ZELLEN: path.join(__dirname, 'zellen'),
   SIGNAL_VON: '2017-01-01', SIGNAL_BIS: '2026-08-31',        // Signaltage 2017-01 .. 2026-08 (Auftrag §1.1)
@@ -152,7 +167,7 @@ function universumAm(T, s, klassen) {
   var key = klassen.join(',') + '|' + s.t + '|' + s.aEnde, e = T.$cache[key];
   if (!e) {
     var U = PR.universum(T, s.t, { klassen: klassen });
-    e = T.$cache[key] = { U: U, uni: halteKorb(T, U.liste, U.aTag, s.aEnde) };
+    e = T.$cache[key] = { U: U, uni: halteKorb(T, U.liste, U.aTag, s.aEnde), y: halteJeMitglied(T, U, s.aEnde) };
   }
   return e;
 }
@@ -168,6 +183,7 @@ function sichtFuer(T, s, o) {
   var fundVerstoesse = 0, fundZugriffe = 0, fundBeispiele = [];
   sicht.iso = T.kal.tage[zt];
   sicht.periode = { t: s.t, iso: s.iso, a: s.a, aEnde: s.aEnde };
+  sicht.schluessel = !!o.schluessel;                                        /* Klinke von halteRendite (Kunstfeld-Orakel) */
   sicht.symIdx = function (name) { var i = T.symIdx[name]; return i === undefined ? -1 : i; };
   sicht.name = function (i) { return T.symName[i]; };
   sicht.zeileAm = function (name) { var i = T.symIdx[name]; return i === undefined ? -1 : sicht.zeile(i, zt); };
@@ -233,6 +249,62 @@ function halteKorb(T, mitglieder, a, aEnde) {
 function gewichte(mitglieder) { var w = {}; mitglieder.forEach(function (e) { w[e.sym] = 1 / mitglieder.length; }); return w; }
 
 /* =========================================================================================
+ * 4a. Rang-IC (Auftrag Nr. 61 §1): y je Mitglied aus der Haltefunktion, IC je Signaltag, Statistik ueber die Signaltage
+ * ========================================================================================= */
+/** y je Universumsmitglied: dieselbe Haltefunktion wie Dezil und Universum (halte), mit einem Mitglied je Aufruf (Kopf der Datei,
+ *  BEFUND). Nie NaN: eine Reihe ohne Zeile im Fenster traegt 0 (Luecke), eine tote -100 oder ihre Rendite bis zur letzten Zeile. */
+function halteJeMitglied(T, U, aEnde) {
+  var y = new Float64Array(U.liste.length);
+  for (var i = 0; i < y.length; i++) y[i] = PR.halte(T, [U.liste[i]], U.aTag, aEnde, TOTALVERLUST, { tote: 0, toteTotalverlust: 0, luecken: 0 }).periode;
+  return y;
+}
+/** Fuer KUNSTFELDER mit Orakelschluessel (Positivkontrolle D1): genau die Zahl y, die der IC benutzt. Ohne Schluessel ein Leck -
+ *  die Sperrklinke der Sicht sieht einen Aufruf an die Haltefunktion nicht, deshalb prueft die Funktion den Schluessel selbst. */
+function halteRendite(sicht, mitglied) {
+  if (!sicht.schluessel) throw new Error('Leck: halteRendite liest die Halteperiode (Zukunft) - nur mit Orakelschluessel (Kunstfeld)');
+  var v = PR.halte(sicht.tafel, [mitglied], sicht.periode.a, sicht.periode.aEnde, TOTALVERLUST, { tote: 0, toteTotalverlust: 0, luecken: 0 }).periode;
+  return (v === v && isFinite(v)) ? v : null;
+}
+/** IC eines Signaltags: Paare = Mitglieder mit x (NaN = fehlt) UND y; beide Seiten frisch gerankt mit der Rangfunktion der Maschine
+ *  (bei m = n ist die Streckung die Identitaet, Gleichstand = mittlerer Rang), Pearson der Raenge. null unter MIN_UNIVERSUM Paaren
+ *  oder ohne Streuung einer Seite (konstantes Feld) - nie NaN. Identische Seiten ergeben 1 bis auf Rundung (~1e-16). */
+function ic(x, y) {
+  var xs = [], ys = [], i;
+  for (i = 0; i < x.length; i++) if (x[i] === x[i] && y[i] === y[i]) { xs.push(x[i]); ys.push(y[i]); }
+  var m = xs.length;
+  if (m < KONST.MIN_UNIVERSUM) return { ic: null, n: m };
+  var rx = raenge(xs).rang, ry = raenge(ys).rang, mx = 0, my = 0;
+  for (i = 0; i < m; i++) { mx += rx[i]; my += ry[i]; }
+  mx /= m; my /= m;
+  var sxy = 0, sxx = 0, syy = 0;
+  for (i = 0; i < m; i++) { var dx = rx[i] - mx, dy = ry[i] - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }
+  return { ic: (sxx > 0 && syy > 0) ? sxy / Math.sqrt(sxx * syy) : null, n: m };
+}
+/** IC-Reihe ueber dieselben Signaltage wie die Dezilmessung (Tage unter MIN_UNIVERSUM Mitgliedern uebersprungen wie in lauf). */
+function icLauf(T, tage, werteJeTag) {
+  var aus = [];
+  for (var i = 0; i < tage.length; i++) {
+    var s = tage[i]; if (s.U.liste.length < KONST.MIN_UNIVERSUM) continue;
+    if (!s.y) s.y = halteJeMitglied(T, s.U, s.aEnde);                        /* Tage, die eine Pruefung selbst verdrahtet hat */
+    var q = ic(werteJeTag[i], s.y); aus.push({ tag: s.iso, jahr: s.jahr, ic: q.ic, n: q.n });
+  }
+  return aus;
+}
+/** Statistik ueber die Signaltage mit IC: Mittel, sd (n-1), se = sd/sqrt(n) (Perioden ueberlappen nicht - naiv = HH bei Lag 1),
+ *  t = Mittel/se (null bei se 0, nie Infinity), MDE80 = MDE_FAKTOR x se, Jahresscheiben (n, Mittel), letzte 12 Signaltage. */
+function icStatistik(reihe) {
+  var mit = reihe.filter(function (e) { return e.ic != null; }), n = mit.length, s = 0, jahre = {};
+  mit.forEach(function (e) { s += e.ic; var j = jahre[e.jahr] || (jahre[e.jahr] = { n: 0, summe: 0 }); j.n++; j.summe += e.ic; });
+  var m = n ? s / n : null, sd = null, se = null, t = null;
+  if (n > 1) { var q = 0; mit.forEach(function (e) { q += (e.ic - m) * (e.ic - m); }); sd = Math.sqrt(q / (n - 1)); se = sd / Math.sqrt(n); t = se > 0 ? m / se : null; }
+  Object.keys(jahre).forEach(function (j) { jahre[j] = { n: jahre[j].n, mittel: jahre[j].summe / jahre[j].n }; });
+  var l = mit.slice(-KONST.IC.letzte);
+  return { n: n, mittel: m, sd: sd, se: se, t: t, mde80: se == null ? null : KONST.MDE_FAKTOR * se, jahre: jahre,
+    letzte12: { n: l.length, mittel: mittel(l.map(function (e) { return e.ic; })) }, ohneIc: reihe.length - n,
+    monate: reihe.map(function (e) { return { tag: e.tag, ic: e.ic, n: e.n }; }) };
+}
+
+/* =========================================================================================
  * 5. Ein Lauf: Werte je Signaltag -> Raenge -> Dezile -> Perioden (Form des Pruefstand-Laufs) -> Bewertung
  * ========================================================================================= */
 /** werteJeTag[i]: Float64Array ueber tage[i].U.liste (NaN = fehlt). Liefert das, was PR.bewerte erwartet.
@@ -263,7 +335,7 @@ function lauf(T, tage, werteJeTag, aufJeTag) {
     z.tote += pf.long.zaehler.tote; z.toteTotalverlust += pf.long.zaehler.toteTotalverlust; z.luecken += pf.long.zaehler.luecken;
   }
   return { perioden: perioden, zaehler: z, freq: 'monat', empfindlichkeit: KONST.EMPFINDLICHKEIT, lag: KONST.LAG,
-    verstoesse: 0, beispiele: [], ungueltig: false };
+    verstoesse: 0, beispiele: [], ungueltig: false, ic: icLauf(T, tage, werteJeTag) };
 }
 /** Bewertung mit dem Pruefstand (bewerte + auswerten aus kontrollen.js), dazu MDE80, "letzte 250 Tage" ab dem letzten
  *  geladenen Signaltag, Dezilgroessen und Auffuellungen. Hauptgroesse: Long-Dezil minus Universum je Monat. */
@@ -290,6 +362,7 @@ function auswertung(T, L, tage) {
   a.kostenUniMittel = mittel(L.perioden.map(function (p) { return p.kosten.uni.kosten; }));
   a.aufgefuellt = L.zaehler.aufgefuellt;
   a.perioden_reihe.forEach(function (e, i) { e.mitWert = L.perioden[i].mitWert; e.kKurz = L.perioden[i].kKurz; e.aufgefuellt = L.perioden[i].aufgefuellt; });
+  a.ic = icStatistik(L.ic);                                                 /* Rang-IC ueber dieselben Signaltage (Nr. 61) */
   return a;
 }
 /** Kurzform einer Messung fuer Zelle und Bericht (die volle liegt in der Nullpunkt-Datei bzw. einzelmessung). */
@@ -300,7 +373,7 @@ function kurz(a) {
     longShort: { brutto: k(a.longShortBrutto), netto: k(a.longShortNetto) },
     dezilUnten: { brutto: a.dezilUntenBrutto, netto: a.dezilUntenNetto, dezilMittel: a.dezilUntenMittel },
     umschlag: { dezil: a.umschlagMittel, universum: a.umschlagUniMittel }, kosten: { dezil: a.kostenMittel, universum: a.kostenUniMittel },
-    jahre: a.jahre, aktuell: a.aktuell, regime: a.regime, aufgefuellt: a.aufgefuellt, zaehler: a.zaehler };
+    jahre: a.jahre, aktuell: a.aktuell, regime: a.regime, aufgefuellt: a.aufgefuellt, zaehler: a.zaehler, ic: a.ic };
 }
 
 /* =========================================================================================
@@ -327,7 +400,7 @@ function zelleBauen(feld, werte, opt) {
   /* (a) Universum, Universumskorb, Werte je Signaltag - die Klinke zaehlt bei jedem Tag */
   var roh = [], zugriffe = 0, nNull = 0, abd = {};
   var protokollStart = (LESER && !opt.leser) ? LESER.protokoll().length : 0;   /* Protokoll des Lesers nur ab diesem Lauf */
-  tage.forEach(function (s) { var e = universumAm(T, s, klassen); s.U = e.U; s.uni = e.uni; s.a = e.U.aTag; });
+  tage.forEach(function (s) { var e = universumAm(T, s, klassen); s.U = e.U; s.uni = e.uni; s.a = e.U.aTag; s.y = e.y; });
   tage.forEach(function (s, i) {
     var w = werteAm(T, s, werte, lauefer);
     roh.push(w.werte); zugriffe += w.zugriffe; nNull += w.nNull;
@@ -376,11 +449,20 @@ function zelleBauen(feld, werte, opt) {
   if (!(mSd >= O.minSd)) tor.push('Mittel/sd ' + f2(mSd) + ' < ' + O.minSd);
   if (!(ob.t >= O.tBoden)) tor.push('t ' + f2(ob.t) + ' < ' + O.tBoden);
   if (!(ols.mittel >= O.longShortMinPp)) tor.push('Long-Short brutto ' + f4(ols.mittel) + ' < ' + O.longShortMinPp + ' Pp');
+  /* IC-Orakel: x = y (die Halteperioden-Rendite je Mitglied aus halte selbst) => Raenge identisch => IC 1 an jedem Signaltag.
+   * Der IC des Dezil-Orakels (orakelPeriode gegen y) steht nachrichtlich daneben - er misst den Abstand der beiden Konventionen. */
+  var icO = icStatistik(icLauf(T, tage, tage.map(function (s) { return s.y; }))), icOw = icO.monate.filter(function (m) { return m.ic != null; }).map(function (m) { return m.ic; });
+  var icMin = icOw.length ? Math.min.apply(null, icOw) : null, icTol = KONST.IC.orakelToleranz;
+  var orakelIc = { mittel: icO.mittel, min: icMin, max: icOw.length ? Math.max.apply(null, icOw) : null, n: icO.n, toleranz: icTol,
+    bestanden: icO.mittel != null && Math.abs(icO.mittel - 1) < icTol && Math.abs(icMin - 1) < icTol,
+    bau: 'x = y je Mitglied (halte mit einem Mitglied, Sicht mit Schluessel), beide Seiten gerankt; Urteil |IC - 1| < ' + icTol + ' im Mittel und an jedem Signaltag' };
+  if (!orakelIc.bestanden) tor.push('IC ' + f4(icO.mittel) + ' (min ' + f4(icMin) + ') != 1');
   var orakel = { bestanden: tor.length === 0, tor: tor, brutto: ob.mittel, netto: orakelM.netto.mittel, t: ob.t, sd: ob.sd, mittelDurchSd: mSd, n: ob.n,
-    longShort: { brutto: ols.mittel, t: ols.t, netto: orakelM.longShortNetto.mittel }, schranke: O,
+    longShort: { brutto: ols.mittel, t: ols.t, netto: orakelM.longShortNetto.mittel }, schranke: O, ic: orakelIc,
+    icDezilOrakel: { mittel: orakelM.ic.mittel, se: orakelM.ic.se, n: orakelM.ic.n, hinweis: 'nachrichtlich: IC des Dezil-Orakels des Pruefstands (orakelPeriode: Eroeffnung/Eroeffnung, Tote ohne Totalverlust) gegen y - nicht 1, weil orakelPeriode nicht die Haltefunktion ist (Kopf der Datei)' },
     teil4Einseitig: { minPp: O.teil4EinseitigPp, erreicht: ob.mittel >= O.teil4EinseitigPp, hinweis: 'nachrichtlich: die 20 Pp aus Teil 4 (120 Tage, zweiseitig) auf Dezil-Universum je Monat uebertragen' },
     bau: 'Rang nach realisierter Rendite Eroeffnung(a) -> Eroeffnung(aEnde) je Universumsmitglied (orakelPeriode des Pruefstands, Sicht mit Schluessel); Dezil oben gegen Universum und Long-Short' };
-  sag(opt, '  Orakel: Dezil-Universum brutto ' + f4(ob.mittel) + ' Pp (sd ' + f2(ob.sd) + ', Mittel/sd ' + f2(mSd) + ', t ' + f2(ob.t) + '), Long-Short ' + f4(ols.mittel) + ' Pp => ' + (orakel.bestanden ? 'bestanden' : 'GEFALLEN: ' + tor.join(' | ')) + ' (Teil-4-Wert 20 Pp einseitig: ' + (orakel.teil4Einseitig.erreicht ? 'erreicht' : 'verfehlt') + ', nachrichtlich)');
+  sag(opt, '  Orakel: Dezil-Universum brutto ' + f4(ob.mittel) + ' Pp (sd ' + f2(ob.sd) + ', Mittel/sd ' + f2(mSd) + ', t ' + f2(ob.t) + '), Long-Short ' + f4(ols.mittel) + ' Pp, IC ' + (icO.mittel == null ? '-' : icO.mittel.toFixed(12)) + ' (min ' + (icMin == null ? '-' : icMin.toFixed(12)) + '; Dezil-Orakel gegen y ' + f4(orakelM.ic.mittel) + ') => ' + (orakel.bestanden ? 'bestanden' : 'GEFALLEN: ' + tor.join(' | ')) + ' (Teil-4-Wert 20 Pp einseitig: ' + (orakel.teil4Einseitig.erreicht ? 'erreicht' : 'verfehlt') + ', nachrichtlich)');
 
   var PLb = KONST.PLACEBO, versatzOhne = 0, versatzW = null, versatzM = null, placeboVersatz;
   if (opt.ohneVersatz) {
@@ -395,6 +477,7 @@ function zelleBauen(feld, werte, opt) {
     });
     versatzM = auswertung(T, lauf(T, tage, versatzW), tage);
     placeboVersatz = { bestanden: !(Math.abs(versatzM.brutto.t) >= PLb.tEinzeln), brutto: versatzM.brutto.mittel, netto: versatzM.netto.mittel, t: versatzM.brutto.t, se: versatzM.brutto.se, n: versatzM.perioden,
+      ic: { mittel: versatzM.ic.mittel, se: versatzM.ic.se, t: versatzM.ic.t, n: versatzM.ic.n, hinweis: 'nur Diagnose, wie der Versatz selbst' },
       ppInSchranke: Math.abs(versatzM.brutto.mittel) < PLb.schrankePp, schranke: { tEinzeln: PLb.tEinzeln, schrankePp: PLb.schrankePp }, signaltageOhneVersatz: versatzOhne,
       bau: 'Werte des Feldes vom ' + KONST.PLACEBO_VERSATZ_TAGE + '. Panel-Handelstag nach dem Signaltag, gelesen mit Orakelschluessel, Signaltage und Universum unveraendert; Urteil |t| < ' + PLb.tEinzeln,
       hinweis: 'Bei einem traegen Feld ist der Versatzwert fast der Wert am Signaltag (Placebo ~ Einzelmessung), bei einem Feld aus Vormonatsrenditen enthaelt er die Halteperiode (Placebo ~ Orakel); die Erwartung ~0 gilt nur fuer ein Feld ohne Zeitstruktur.' };
@@ -406,27 +489,34 @@ function zelleBauen(feld, werte, opt) {
     for (var i = w.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var x = w[i]; w[i] = w[j]; w[j] = x; }
     return w;
   });
-  var symM = auswertung(T, lauf(T, tage, symW), tage);
-  var placeboSymbole = { bestanden: !(Math.abs(symM.brutto.t) >= PLb.tEinzeln), brutto: symM.brutto.mittel, netto: symM.netto.mittel, t: symM.brutto.t, se: symM.brutto.se, n: symM.perioden,
+  var symM = auswertung(T, lauf(T, tage, symW), tage), symIc = symM.ic;
+  var placeboSymbole = { bestanden: !(Math.abs(symM.brutto.t) >= PLb.tEinzeln) && !(Math.abs(symIc.t) >= PLb.tEinzeln), dezilBestanden: !(Math.abs(symM.brutto.t) >= PLb.tEinzeln),
+    brutto: symM.brutto.mittel, netto: symM.netto.mittel, t: symM.brutto.t, se: symM.brutto.se, n: symM.perioden,
+    ic: { mittel: symIc.mittel, se: symIc.se, t: symIc.t, n: symIc.n, bestanden: !(Math.abs(symIc.t) >= PLb.tEinzeln) },
     ppInSchranke: Math.abs(symM.brutto.mittel) < PLb.schrankePp, schranke: { tEinzeln: PLb.tEinzeln, schrankePp: PLb.schrankePp }, saat: KONST.ZUFALL.saat + '|placebo-symbole|<Signaltag>',
-    bau: 'Werte des Feldes je Signaltag unter den Universumsmitgliedern permutiert (fester Generator); Urteil |t| < ' + PLb.tEinzeln };
-  sag(opt, '  Placebo Symbole: brutto ' + f4(symM.brutto.mittel) + ' Pp (t ' + f2(symM.brutto.t) + ') => ' + (placeboSymbole.bestanden ? 'bestanden' : 'GEFALLEN'));
+    bau: 'Werte des Feldes je Signaltag unter den Universumsmitgliedern permutiert (fester Generator); Urteil |t| < ' + PLb.tEinzeln + ' fuer Dezil-Universum brutto UND fuer den IC' };
+  sag(opt, '  Placebo Symbole: brutto ' + f4(symM.brutto.mittel) + ' Pp (t ' + f2(symM.brutto.t) + '), IC ' + f4(symIc.mittel) + ' (t ' + f2(symIc.t) + ') => ' + (placeboSymbole.bestanden ? 'bestanden' : 'GEFALLEN'));
 
-  var ZU = KONST.ZUFALL, einzeln = [], mB = 0, mN = 0, fehler = 0;
+  var ZU = KONST.ZUFALL, einzeln = [], mB = 0, mN = 0, fehler = 0, fehlerIc = 0;
   for (var zi = 0; zi < ZU.ziehungen; zi++) {
     var fab = RF.zufallFabrik(ZU.saat + '#' + zi), zw = tage.map(function (s) { return fab({ tag: s.t }, s.U.liste, T); });
-    var zm = auswertung(T, lauf(T, tage, zw), tage), tOk = !(Math.abs(zm.brutto.t) >= ZU.tEinzeln);
-    if (!tOk) fehler++;
-    einzeln.push({ ziehung: zi, n: zm.perioden, brutto: zm.brutto.mittel, netto: zm.netto.mittel, kosten: zm.kostenMittel, umschlag: zm.umschlagMittel, se: zm.brutto.se, t: zm.brutto.t, tOk: tOk });
+    var zm = auswertung(T, lauf(T, tage, zw), tage), tOk = !(Math.abs(zm.brutto.t) >= ZU.tEinzeln), zic = zm.ic, icOk = !(Math.abs(zic.t) >= ZU.tEinzeln);
+    if (!tOk) fehler++; if (!icOk) fehlerIc++;
+    einzeln.push({ ziehung: zi, n: zm.perioden, brutto: zm.brutto.mittel, netto: zm.netto.mittel, kosten: zm.kostenMittel, umschlag: zm.umschlagMittel, se: zm.brutto.se, t: zm.brutto.t, tOk: tOk,
+      ic: { mittel: zic.mittel, se: zic.se, t: zic.t, n: zic.n, tOk: icOk } });
     mB += zm.brutto.mittel; mN += zm.netto.mittel + zm.kostenMittel;
   }
   mB /= ZU.ziehungen; mN /= ZU.ziehungen;
   var seE = mittel(einzeln.map(function (x) { return x.se; }));
-  var zufall = { bestanden: Math.abs(mB) < ZU.schrankePp && Math.abs(mN) < ZU.schrankePp && fehler <= ZU.maxFehler, ziehungen: ZU.ziehungen, mittelBrutto: mB, mittelNettoPlusKosten: mN,
+  var icM = mittel(einzeln.map(function (x) { return x.ic.mittel; })), icSe = mittel(einzeln.map(function (x) { return x.ic.se; }));
+  var zufallIc = { mittel: icM, seEinzelnMittel: icSe, seDesMittels: icSe == null ? null : icSe / Math.sqrt(ZU.ziehungen), mdeBoden: icSe == null ? null : KONST.MDE_FAKTOR * icSe, fehlerEinzelnT: fehlerIc,
+    bestanden: icM != null && Math.abs(icM) < KONST.IC.zufallMittelMax && fehlerIc <= ZU.maxFehler, schranke: { mittelMax: KONST.IC.zufallMittelMax, tEinzeln: ZU.tEinzeln, maxFehler: ZU.maxFehler } };
+  var zufall = { bestanden: Math.abs(mB) < ZU.schrankePp && Math.abs(mN) < ZU.schrankePp && fehler <= ZU.maxFehler && zufallIc.bestanden,
+    dezilBestanden: Math.abs(mB) < ZU.schrankePp && Math.abs(mN) < ZU.schrankePp && fehler <= ZU.maxFehler, ziehungen: ZU.ziehungen, mittelBrutto: mB, mittelNettoPlusKosten: mN,
     fehlerEinzelnT: fehler, seEinzelnMittel: seE, seDesMittels: seE == null ? null : seE / Math.sqrt(ZU.ziehungen), mdeBoden: seE == null ? null : KONST.MDE_FAKTOR * seE,
-    umschlagMittel: mittel(einzeln.map(function (x) { return x.umschlag; })), schranke: ZU, einzeln: einzeln,
-    bau: ZU.ziehungen + ' Zufallsfelder (zufallFabrik des Pruefstands, Saat ' + ZU.saat + '#k) auf denselben Signaltagen; Mittel der Ziehungen brutto und netto+Kosten unter ' + ZU.schrankePp + ' Pp, hoechstens ' + ZU.maxFehler + ' Ziehungen mit |t| >= ' + ZU.tEinzeln + '; MDE-Boden = ' + KONST.MDE_FAKTOR + ' x mittlere se einer Ziehung' };
-  sag(opt, '  Zufall x ' + ZU.ziehungen + ': Mittel brutto ' + f4(mB) + ', netto+Kosten ' + f4(mN) + ' Pp, |t|>=' + ZU.tEinzeln + ' in ' + fehler + ', se je Ziehung ' + f4(seE) + ' (MDE-Boden ' + f4(zufall.mdeBoden) + ' Pp) => ' + (zufall.bestanden ? 'bestanden' : 'GEFALLEN'));
+    umschlagMittel: mittel(einzeln.map(function (x) { return x.umschlag; })), schranke: ZU, ic: zufallIc, einzeln: einzeln,
+    bau: ZU.ziehungen + ' Zufallsfelder (zufallFabrik des Pruefstands, Saat ' + ZU.saat + '#k) auf denselben Signaltagen; Mittel der Ziehungen brutto und netto+Kosten unter ' + ZU.schrankePp + ' Pp, hoechstens ' + ZU.maxFehler + ' Ziehungen mit |t| >= ' + ZU.tEinzeln + '; MDE-Boden = ' + KONST.MDE_FAKTOR + ' x mittlere se einer Ziehung. IC: |Mittel der Ziehungen| < ' + KONST.IC.zufallMittelMax + ', hoechstens ' + ZU.maxFehler + ' Ziehungen mit |t| >= ' + ZU.tEinzeln + '; MDE-Boden(IC) = ' + KONST.MDE_FAKTOR + ' x mittlere se(IC) einer Ziehung' };
+  sag(opt, '  Zufall x ' + ZU.ziehungen + ': Mittel brutto ' + f4(mB) + ', netto+Kosten ' + f4(mN) + ' Pp, |t|>=' + ZU.tEinzeln + ' in ' + fehler + ', se je Ziehung ' + f4(seE) + ' (MDE-Boden ' + f4(zufall.mdeBoden) + ' Pp); IC Mittel ' + f4(icM) + ', se je Ziehung ' + f4(icSe) + ' (MDE-Boden ' + f4(zufallIc.mdeBoden) + '), |t|>=' + ZU.tEinzeln + ' in ' + fehlerIc + ' => ' + (zufall.bestanden ? 'bestanden' : 'GEFALLEN'));
 
   var leck = { klinke: klinke, leser: leserBefund, bestanden: klinke.bestanden && leserBefund.verstoesse === 0 };
   /* Urteil: Orakel, Placebo Symbole, Zufall, Klinke. Placebo Versatz ist nur Diagnose (Vorregistrierung §9 (3), Entscheid des
@@ -435,12 +525,15 @@ function zelleBauen(feld, werte, opt) {
   var nullpunkt = { orakel: orakel, placebo: { versatz: placeboVersatz, symbole: placeboSymbole, zufall: zufall }, leck: leck,
     bestanden: orakel.bestanden && placeboSymbole.bestanden && zufall.bestanden && leck.bestanden,
     bestandenMitVersatz: orakel.bestanden && placeboVersatz.bestanden !== false && placeboSymbole.bestanden && zufall.bestanden && leck.bestanden,
-    regel: 'bestanden = Orakel + Placebo Symbole + Zufall + Klinke; Placebo Versatz nur Diagnose (Vorregistrierung §9 (3), PM 22.09.2026)' };
+    regel: 'bestanden = Orakel (Dezil-Schranken UND IC = 1) + Placebo Symbole (|t| < ' + PLb.tEinzeln + ' fuer Dezil UND IC) + Zufall (Dezil-Schranken UND IC-Schranken) + Klinke; Placebo Versatz nur Diagnose (Vorregistrierung §9 (3), PM 22.09.2026; IC seit v1.1, Auftrag Nr. 61)' };
 
   /* (e) Zelle im Format von mehrfaktor-felder.md §3 */
   var sekunden = (Date.now() - t0) / 1000, rss = process.resourceUsage().maxRSS / 1024;
+  /* tafelKennung: Kennung des Fundamentaltafel-Lesers, wenn das Feld ihn in diesem Lauf benutzt hat (sonst null) - so ist ablesbar,
+   * auf welcher Tafel (v1, v1.1, ...) eine Zelle gebaut ist. Ein Kunst-Leser (opt.leser) traegt seine eigene Kennung oder null. */
+  var tafelKennung = zugriffe > 0 ? (leser(opt).kennung || null) : null;
   var zelle = { kennung: KONST.KENNUNG, feld: feld, stand: jetzt(), definition: opt.definition || null, quellen: opt.quellen || null,
-    kunst: opt.kunst || null, schluessel: !!opt.schluessel,
+    kunst: opt.kunst || null, schluessel: !!opt.schluessel, tafelKennung: tafelKennung,
     panel: { kennung: T.stand.kennung, letzterTag: T.kal.tage[T.maxTag], zeilen: T.g.n, reihen: T.nSym, ordner: T.$aus },
     klassen: klassen, signalregel: 'erster Panel-Handelstag je Kalendermonat; Ausfuehrung Eroeffnung des naechsten Handelstags; Halten bis zum Ausfuehrungstag des naechsten Signaltags',
     von: tage.von, bis: tage.bis, rueckhalte: tage.rueckhalte, rueckhalteAb: KONST.RUECKHALTE_AB,
@@ -506,11 +599,14 @@ function bericht(z, np) {
   zeile('');
   zeile('### Jahresscheiben (netto, Dezil oben − Universum)');
   zeile('');
-  zeile('| Jahr | n | brutto | netto | se | t | MDE₈₀ | |');
-  zeile('|---|---|---|---|---|---|---|---|');
-  e.jahre.netto.forEach(function (j, i) { var b = e.jahre.brutto[i]; zeile('| ' + j.jahr + ' | ' + j.n + ' | ' + f4(b.mittel) + ' | ' + f4(j.mittel) + ' | ' + f4(j.se) + ' | ' + f2(j.t) + ' | ' + f4(j.mde80) + ' | ' + (j.duenn ? 'dünn' : '') + ' |'); });
+  var eic = e.ic;
+  zeile('| Jahr | n | brutto | netto | se | t | MDE₈₀ | IC (n) | |');
+  zeile('|---|---|---|---|---|---|---|---|---|');
+  e.jahre.netto.forEach(function (j, i) { var b = e.jahre.brutto[i], ij = eic.jahre[j.jahr]; zeile('| ' + j.jahr + ' | ' + j.n + ' | ' + f4(b.mittel) + ' | ' + f4(j.mittel) + ' | ' + f4(j.se) + ' | ' + f2(j.t) + ' | ' + f4(j.mde80) + ' | ' + (ij ? f4(ij.mittel) + ' (' + ij.n + ')' : '—') + ' | ' + (j.duenn ? 'dünn' : '') + ' |'); });
   zeile('');
   zeile('**Letzte ' + KONST.AKTUELL_TAGE + ' Tage** (Signaltag ≥ ' + e.aktuell.netto.abTag + '): netto ' + f4(e.aktuell.netto.mittel) + ' Pp (se ' + f4(e.aktuell.netto.se) + ', t ' + f2(e.aktuell.netto.t) + ', MDE₈₀ ' + f4(e.aktuell.netto.mde80) + ', n ' + e.aktuell.netto.n + '), brutto ' + f4(e.aktuell.brutto.mittel) + ' Pp.');
+  zeile('');
+  zeile('**Rang-IC** (Spearman je Signaltag zwischen ' + (z.kunst === 'kombination-aus-kunstzellen' || /^Kombinationsrang/.test(z.definition || '') ? 'Kombinationsrang (alle Mitglieder, Aufgefüllte mit mittlerem Rang)' : 'Rohwert (nur Mitglieder mit Wert)') + ' und Halteperioden-Rendite je Mitglied aus `halte`, brutto; se = sd/√n über die Signaltage): **Mittel ' + f4(eic.mittel) + ', se ' + f4(eic.se) + ', t ' + f2(eic.t) + ', MDE₈₀ ' + f4(eic.mde80) + ', n ' + eic.n + '**' + (eic.ohneIc ? ' (' + eic.ohneIc + ' Signaltage ohne IC)' : '') + '; letzte ' + KONST.IC.letzte + ' Signaltage ' + f4(eic.letzte12.mittel) + ' (n ' + eic.letzte12.n + '); Paare je Signaltag im Mittel ' + f1(mittel(eic.monate.map(function (m) { return m.n; }))) + '.');
   zeile('');
   zeile('## 2. Abdeckung (Anteil des Universums mit Wert)');
   zeile('');
@@ -525,18 +621,18 @@ function bericht(z, np) {
   zeile('| Kontrolle | Ergebnis | Schranke | Urteil |');
   zeile('|---|---|---|---|');
   var o = n.orakel;
-  zeile('| Orakel (Rang nach künftiger Rendite, Schlüssel) | Dezil − Universum brutto ' + f4(o.brutto) + ' Pp, sd ' + f2(o.sd) + ', Mittel/sd ' + f2(o.mittelDurchSd) + ', t ' + f2(o.t) + ', n ' + o.n + '; Long − Short ' + f4(o.longShort.brutto) + ' Pp | Dezil − Universum ≥ ' + o.schranke.minPp + ' Pp (horizontgleich, Teil 3), Mittel/sd ≥ ' + o.schranke.minSd + ', t ≥ ' + o.schranke.tBoden + '; Long − Short ≥ ' + o.schranke.longShortMinPp + ' Pp (Δ Teil 4); nachrichtlich einseitig ' + o.teil4Einseitig.minPp + ' Pp: ' + (o.teil4Einseitig.erreicht ? 'erreicht' : 'verfehlt') + ' | **' + (o.bestanden ? 'bestanden' : 'GEFALLEN: ' + o.tor.join('; ')) + '** |');
+  zeile('| Orakel (Rang nach künftiger Rendite, Schlüssel) | Dezil − Universum brutto ' + f4(o.brutto) + ' Pp, sd ' + f2(o.sd) + ', Mittel/sd ' + f2(o.mittelDurchSd) + ', t ' + f2(o.t) + ', n ' + o.n + '; Long − Short ' + f4(o.longShort.brutto) + ' Pp; IC (x = y aus `halte`) ' + (o.ic.mittel == null ? '—' : o.ic.mittel.toFixed(10)) + ', min ' + (o.ic.min == null ? '—' : o.ic.min.toFixed(10)) + ', n ' + o.ic.n + '; nachrichtlich IC des Dezil-Orakels (orakelPeriode) gegen y ' + f4(o.icDezilOrakel.mittel) + ' | Dezil − Universum ≥ ' + o.schranke.minPp + ' Pp (horizontgleich, Teil 3), Mittel/sd ≥ ' + o.schranke.minSd + ', t ≥ ' + o.schranke.tBoden + '; Long − Short ≥ ' + o.schranke.longShortMinPp + ' Pp (Δ Teil 4); \\|IC − 1\\| < ' + o.ic.toleranz + ' (Mittel und jeder Signaltag); nachrichtlich einseitig ' + o.teil4Einseitig.minPp + ' Pp: ' + (o.teil4Einseitig.erreicht ? 'erreicht' : 'verfehlt') + ' | **' + (o.bestanden ? 'bestanden' : 'GEFALLEN: ' + o.tor.join('; ')) + '** |');
   var pv = n.placebo.versatz;
   if (pv.bestanden === null) zeile('| Placebo 1 — Werte +' + KONST.PLACEBO_VERSATZ_TAGE + ' Handelstage | übersprungen: ' + pv.uebersprungen + ' | — | — |');
-  else zeile('| Placebo 1 — Werte +' + KONST.PLACEBO_VERSATZ_TAGE + ' Handelstage (Zukunft, Schlüssel, als Placebo deklariert) | brutto ' + f4(pv.brutto) + ' Pp, t ' + f2(pv.t) + ', n ' + pv.n + (pv.signaltageOhneVersatz ? ', ' + pv.signaltageOhneVersatz + ' Signaltage ohne Versatzwerte' : '') + ' | \\|t\\| < ' + pv.schranke.tEinzeln + ' (\\|Mittel\\| < ' + pv.schranke.schrankePp + ' Pp: ' + (pv.ppInSchranke ? 'ja' : 'nein') + ', nachrichtlich) | **' + (pv.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
+  else zeile('| Placebo 1 — Werte +' + KONST.PLACEBO_VERSATZ_TAGE + ' Handelstage (Zukunft, Schlüssel, als Placebo deklariert) | brutto ' + f4(pv.brutto) + ' Pp, t ' + f2(pv.t) + ', n ' + pv.n + (pv.signaltageOhneVersatz ? ', ' + pv.signaltageOhneVersatz + ' Signaltage ohne Versatzwerte' : '') + '; IC ' + f4(pv.ic.mittel) + ' (t ' + f2(pv.ic.t) + ', nur Diagnose) | \\|t\\| < ' + pv.schranke.tEinzeln + ' (\\|Mittel\\| < ' + pv.schranke.schrankePp + ' Pp: ' + (pv.ppInSchranke ? 'ja' : 'nein') + ', nachrichtlich) | **' + (pv.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
   var ps = n.placebo.symbole;
-  zeile('| Placebo 2 — Symbole je Signaltag permutiert | brutto ' + f4(ps.brutto) + ' Pp, t ' + f2(ps.t) + ', n ' + ps.n + ' | \\|t\\| < ' + ps.schranke.tEinzeln + ' (\\|Mittel\\| < ' + ps.schranke.schrankePp + ' Pp: ' + (ps.ppInSchranke ? 'ja' : 'nein') + ', nachrichtlich) | **' + (ps.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
-  var zu = n.placebo.zufall;
-  zeile('| Zufall × ' + zu.ziehungen + ' | Mittel brutto ' + f4(zu.mittelBrutto) + ', netto+Kosten ' + f4(zu.mittelNettoPlusKosten) + ' Pp; \\|t\\| ≥ ' + zu.schranke.tEinzeln + ' in ' + zu.fehlerEinzelnT + '; se je Ziehung ' + f4(zu.seEinzelnMittel) + ' Pp | \\|Mittel\\| < ' + zu.schranke.schrankePp + ' Pp, ≤ ' + zu.schranke.maxFehler + ' Ziehungen | **' + (zu.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
+  zeile('| Placebo 2 — Symbole je Signaltag permutiert | brutto ' + f4(ps.brutto) + ' Pp, t ' + f2(ps.t) + ', n ' + ps.n + '; IC ' + f4(ps.ic.mittel) + ' (se ' + f4(ps.ic.se) + ', t ' + f2(ps.ic.t) + ') | \\|t\\| < ' + ps.schranke.tEinzeln + ' für Dezil und IC (\\|Mittel\\| < ' + ps.schranke.schrankePp + ' Pp: ' + (ps.ppInSchranke ? 'ja' : 'nein') + ', nachrichtlich) | **' + (ps.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
+  var zu = n.placebo.zufall, zic = zu.ic;
+  zeile('| Zufall × ' + zu.ziehungen + ' | Mittel brutto ' + f4(zu.mittelBrutto) + ', netto+Kosten ' + f4(zu.mittelNettoPlusKosten) + ' Pp; \\|t\\| ≥ ' + zu.schranke.tEinzeln + ' in ' + zu.fehlerEinzelnT + '; se je Ziehung ' + f4(zu.seEinzelnMittel) + ' Pp. IC: Mittel ' + f4(zic.mittel) + ', se je Ziehung ' + f4(zic.seEinzelnMittel) + ', \\|t\\| ≥ ' + zic.schranke.tEinzeln + ' in ' + zic.fehlerEinzelnT + ' | \\|Mittel\\| < ' + zu.schranke.schrankePp + ' Pp, ≤ ' + zu.schranke.maxFehler + ' Ziehungen; IC: \\|Mittel\\| < ' + zic.schranke.mittelMax + ', ≤ ' + zic.schranke.maxFehler + ' Ziehungen | **' + (zu.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
   var lk = n.leck;
   zeile('| Leck-Klinke (Kurs und Bilanz) | Hauptlauf 0 Verstöße (sonst Abbruch); Positivkontrolle am ' + lk.klinke.positivkontrolle.tag + ': Kurs ' + lk.klinke.positivkontrolle.kurs + ', Bilanz ' + lk.klinke.positivkontrolle.bilanz + '; Leser ' + (lk.leser.geoeffnet ? lk.leser.zugriffe + ' Zugriffe, ' + lk.leser.verstoesse + ' mit filed ≥ tag' : 'nicht benutzt') + ' | Positivkontrolle je 1, Leser 0 | **' + (lk.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
   zeile('');
-  zeile('**MDE-Boden aus den Zufallsdezilen:** ' + f4(zu.mdeBoden) + ' Pp je Monat (' + KONST.MDE_FAKTOR + ' × mittlere se einer Ziehung; ein echtes Dezil streut stärker — Faktor 2–4, Momentum 4,45 nach `MACHBARKEIT.md` §7 der Stimmungsstudie). Umschlag eines Zufallsdezils ' + pz(zu.umschlagMittel) + '.');
+  zeile('**MDE-Boden aus den Zufallsdezilen:** ' + f4(zu.mdeBoden) + ' Pp je Monat (' + KONST.MDE_FAKTOR + ' × mittlere se einer Ziehung; ein echtes Dezil streut stärker — Faktor 2–4, Momentum 4,45 nach `MACHBARKEIT.md` §7 der Stimmungsstudie). Umschlag eines Zufallsdezils ' + pz(zu.umschlagMittel) + '. **MDE-Boden des IC aus den Zufallsziehungen:** ' + f4(zic.mdeBoden) + ' (' + KONST.MDE_FAKTOR + ' × mittlere se(IC) einer Ziehung; ein echtes Signal streut über die Zeit stärker, Faktor 2–4).');
   zeile('');
   zeile('Placebo 1 misst bei einem trägen Feld die Persistenz (≈ Einzelmessung) und bei einem Feld aus Vormonatsrenditen die Halteperiode selbst (≈ Orakel); die Erwartung ≈ 0 trägt nur für ein Feld ohne Zeitstruktur (Zufall). Ein Fall unter dieser Zeile ist deshalb erst ein Befund, wenn die Einzelmessung selbst unter der Schranke liegt.');
   zeile('');
@@ -545,6 +641,8 @@ function bericht(z, np) {
   zeile('## 4. Rang- und Dezilregel');
   zeile('');
   zeile('Rang je Signaltag über das Universum, aufsteigend nach Rohwert, Gleichstand = mittlerer Rang; fehlende Werte = mittlerer Rang (n+1)/2, vorhandene Ränge von 1..m auf 1..n gestreckt (R = (r − ½)·n/m + ½, bei voller Abdeckung identisch). Dezil oben = Rang > 0,9 n, unten = Rang ≤ 0,1 n. Werte in `' + z.feld + '.json` sind Rohgrößen, kein Rang; `null` bleibt `null`.');
+  zeile('');
+  zeile('**Rang-IC** (Vorregistrierung Nachtrag 3): je Signaltag Paare (x, y) — Feldzelle: Mitglieder mit Wert; Kombination: alle Mitglieder, Aufgefüllte mit mittlerem Rang —, beide Seiten frisch gerankt (Gleichstand = mittlerer Rang), Pearson der Ränge; kein IC unter ' + KONST.MIN_UNIVERSUM + ' Paaren. y = Halteperioden-Rendite des Mitglieds aus derselben Haltefunktion wie Dezil und Universum (`halte` mit einem Mitglied: Eröffnung(a) → Eröffnung(a′), Tote = Totalverlust, brutto, Pp). Fundamentaltafel: ' + (z.tafelKennung ? '`' + z.tafelKennung + '`' : 'nicht benutzt') + '.');
   zeile('');
   return L.join('\n') + '\n';
 }
@@ -595,7 +693,7 @@ function kombiniere(zellen, felder, gewichteIn, opt) {
     return { tag: s.tag, werte: werte, aufgefuellt: aufM, kontrollen: kon };
   });
   return { kennung: KONST.KENNUNG_KOMBINATION, stand: jetzt(), felder: felder.slice(), gewichte: G, kontrollen: kontrollen, rueckhalte: ref.rueckhalte,
-    quellen: alle.map(function (f) { return { feld: f, kennung: zellen[f].kennung, stand: zellen[f].stand, kunst: zellen[f].kunst || null }; }),
+    quellen: alle.map(function (f) { return { feld: f, kennung: zellen[f].kennung, stand: zellen[f].stand, kunst: zellen[f].kunst || null, tafelKennung: zellen[f].tafelKennung || null }; }),
     signaltage: signaltage, zaehler: zaehler };
 }
 /** Eine Zelle oder Kombination (signaltage: [{tag, werte}]) mit derselben Maschine messen. Liefert die Auswertung (wie
@@ -608,7 +706,7 @@ function messeZelle(T, z, opt) {
   var fremd = 0, fehlt = 0, ohneTag = 0, auf = [];
   tage = tage.filter(function (s) { if (!jeTag[s.iso]) { ohneTag++; return false; } return true; });
   var werte = tage.map(function (s) {
-    var e = universumAm(T, s, klassen); s.U = e.U; s.uni = e.uni; s.a = e.U.aTag;
+    var e = universumAm(T, s, klassen); s.U = e.U; s.uni = e.uni; s.a = e.U.aTag; s.y = e.y;
     var m = jeTag[s.iso], am = aufJeTag[s.iso], aus = new Float64Array(s.U.liste.length), au = new Uint8Array(s.U.liste.length), da = 0;
     for (var q = 0; q < s.U.liste.length; q++) {
       var nm = T.symName[s.U.liste[q].sym], v = m[nm];
@@ -673,5 +771,6 @@ if (require.main === module) {
 
 module.exports = { KONST: KONST, K: K, PR: PR, RF: RF, ST: ST, tafel: tafel, leser: leser, signaltage: signaltage, monatsanfaenge: monatsanfaenge,
   panelTagNach: panelTagNach, universumAm: universumAm, sichtFuer: sichtFuer, werteAm: werteAm, raenge: raenge, dezile: dezile,
-  halteKorb: halteKorb, lauf: lauf, auswertung: auswertung, zelleBauen: zelleBauen, bericht: bericht, kombiniere: kombiniere,
+  halteKorb: halteKorb, halteRendite: halteRendite, ic: ic, icStatistik: icStatistik,
+  lauf: lauf, auswertung: auswertung, zelleBauen: zelleBauen, bericht: bericht, kombiniere: kombiniere,
   messeZelle: messeZelle, zelleAusKombination: zelleAusKombination, regression: regression };
