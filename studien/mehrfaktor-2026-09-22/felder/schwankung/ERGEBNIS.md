@@ -147,8 +147,7 @@ Kombination (Größe) messen es später. Die Abdeckung je Klasse (§2) ist davon
 ## 8. Laufzeit, RSS, Verbrauch
 
 Tafel 0,65 s, Lauf gesamt 2,7 s (Erwartung 5–15 s unterschritten: ein Aufruf von `zurueck` je Fensterzeile, kein Präfix), RSS max
-1.047 MB. Verbrauch: siehe Übergabe (Werkzeugzähler ≈ 240k kumulierte Eingabe-Token bis zum Commit, davon ≈ 70k je Werkzeugrunde
-Grundlast; Haiku-Unteragent 39.710 zusätzlich; Kontextgröße zum Schluss ≈ 85k, Selbstschätzung).
+1.047 MB. Verbrauch: Werkzeugzähler 184k beim ersten Commit (15.000.000 − 14.816.434; der Zähler misst den Kontextaufbau, also die einzige verfügbare Abrechnungszahl), ≈ 190k beim zweiten; davon ≈ 60k Systemkontext beim Start. Haiku-Unteragent 39.710 zusätzlich. Budget 120k um gut die Hälfte überschritten: Leseliste (7 Runden), Bau + Gegenprobe (2), Lauf, Nachrechnen der §1b-Größen, Klärung des nie feuernden Zählers, Berichtigung dieser Zeile.
 
 Dateien: `felder/schwankung/feld.js`, `felder/schwankung/ERGEBNIS.md`, `zellen/schwankung.json`, `zellen/schwankung-nullpunkt.json`,
 `zellen/schwankung-bericht.md` (die drei aus der Maschine). Nichts an `zelle.js`, `test.js`, `pruefung/`, fremden Feldern oder Zellen.
