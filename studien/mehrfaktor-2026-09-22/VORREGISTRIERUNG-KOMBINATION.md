@@ -70,13 +70,13 @@ Aktualitäts-Tor 456 Tage, Felder `roh`, `quartale` D0…D7, `summe4q`, `abgelei
 |---|---|---|---|---|---|
 | 1 | Momentum (`momentum`) | **Signal** | bSchluss(21 Panelzeilen vor t) / bSchluss(252 Zeilen vor t) − 1 (wie `momentum12_1` des Prüfstands) | Panel | ≈ 1 Pp (Jegadeesh/Titman 1993); Teil 3 Klassen 1–3: +1,1 Pp gegen Universum, t 2,3 |
 | 2 | Kurzfrist-Umkehr (`umkehr`) | **Kostenfrage, nicht gewichtet** | −(bSchluss(t) / bSchluss(21 Zeilen vor t) − 1) | Panel | ≈ 1 Pp (Jegadeesh 1990), Umschlag ~90 % ⇒ Kosten ≈ 0,07 Pp; die Zelle belegt nur Umschlag und Netto |
-| 3 | Niedrige Schwankung (`schwankung`) | **Signal** | −sd der Tagesrenditen über die 252 Zeilen bis t (Stichproben-sd, alle 252 vorhanden, sonst null) | Panel | 0,5–0,7 Pp (Ang et al. 2006, Frazzini/Pedersen 2014) |
+| 3 | Niedrige Schwankung (`schwankung`) | **Signal** | −sd der Tagesrenditen (`rendite`, Pp = 100 · (Schluss/Vorschluss − 1)) über die 252 Zeilen z, zurueck(z,1) … zurueck(z,251) bis einschließlich t (Stichproben-sd n−1, alle 252 vorhanden und endlich, sonst null); Einheit Pp | Panel | 0,5–0,7 Pp (Ang et al. 2006, Frazzini/Pedersen 2014) |
 | 4 | Größe (`groesse`) | **Kontrolle** | ln(Marktwert), Marktwert = `aktien` (jüngstes Filing) × rohSchluss(t); Split zwischen `filed` und t verzerrt um den Faktor — ausweisen | Tafel × Panel | Banz 1981; heute schwach |
-| 5 | Bewertung (`bewertung`) | **Signal** | Eigenkapital (D0, jüngstes Filing) / Marktwert (wie 4); E/P (netto 4Q / Marktwert) nachrichtlich als zweite Zelle `bewertung-ep`, nicht gewichtet — Entscheid §9 (4) | Tafel × Panel | 0,3–0,4 Pp (Fama/French 1992) |
-| 6 | Ertragskraft (`ertragskraft`) | **Signal** | (umsatz 4Q − umsatzkosten 4Q) / vermoegen (D0); ROA nachrichtlich | Tafel | 0,3–0,5 Pp (Novy-Marx 2013) |
-| 7 | Investition (`investition`) | **Signal** | −(vermoegen(D0) / vermoegen(D4) − 1) (Vermögenswachstum, gedreht) | Tafel | ≈ 0,3 Pp (Cooper/Gulen/Schill 2008, Fama/French 2015) |
-| 8 | Gewinnüberraschung (`sue`) | **Signal** | (netto Quartal D0 − netto D4) / sd(netto D0 … D7); null bei < 8 Quartalen oder sd = 0; Signal ab `filed` (der Leser liefert nur `filed` < t) — Nenner Entscheid §9 (5) | Tafel `quartale` | 0,5–1 Pp über 2–3 Monate (Bernard/Thomas 1989) |
-| 10 | F&E-Intensität (`fue`) | **Signal** | fue 4Q / umsatz 4Q; **nur Symbole mit ausgewiesenem F&E**, sonst null (nie 0); fue / Marktwert nachrichtlich `fue-marktwert` | Tafel | ≈ 0,5 Pp für F&E-starke Werte (Chan/Lakonishok/Sougiannis 2001) |
+| 5 | Bewertung (`bewertung`) | **Signal** | `roh.eigenkapital` (Bestand D0, jüngstes Filing) / Marktwert (wie 4); **negatives Eigenkapital ist ein Wert (unterstes Dezil), kein Fehler** — Anzahl berichten; E/P (`summe4q.netto` / Marktwert) nachrichtlich als zweite Zelle `bewertung-ep`, nicht gewichtet — Entscheid §9 (4) | Tafel × Panel | 0,3–0,4 Pp (Fama/French 1992) |
+| 6 | Ertragskraft (`ertragskraft`) | **Signal** | (`roh.umsatz` − `roh.umsatzkosten`) × 4 / `roh.qtrs` / `roh.vermoegen` — Bruttogewinn **des jüngsten Filings auf Jahresrate** (10-K qtrs 4, 10-Q qtrs 1), Verhältnis; null, wenn eine Größe fehlt oder vermoegen ≤ 0. *Nachtrag §11 (1): die Tafel führt 4-Quartals-Summen nur für umsatz/netto/operativ, nicht für umsatzkosten.* ROA (`abgeleitet.roa` = netto 4Q / vermoegen D0) nachrichtlich als zweite Zelle `ertragskraft-roa`, nicht gewichtet | Tafel | 0,3–0,5 Pp (Novy-Marx 2013) |
+| 7 | Investition (`investition`) | **Signal** | −100 · (`roh.vermoegen` / `vermoegenVor` − 1) in Pp (`vermoegenVor` = Assets am Stichtag D4, Zeilenfeld der Tafel; Vermögenswachstum, gedreht); null, wenn eines fehlt oder ≤ 0 | Tafel | ≈ 0,3 Pp (Cooper/Gulen/Schill 2008, Fama/French 2015) |
+| 8 | Gewinnüberraschung (`sue`) | **Signal** | (`quartale.netto[0]` − `quartale.netto[4]`) / sd(`quartale.netto[0…7]`, Stichproben-sd n−1); null bei einem fehlenden der acht Quartale oder sd = 0; Signal ab `filed` (der Leser liefert nur `filed` < t) — Nenner Entscheid §9 (5); Anteil der Quartalswege `y` berichten | Tafel `quartale` | 0,5–1 Pp über 2–3 Monate (Bernard/Thomas 1989) |
+| 10 | F&E-Intensität (`fue`) | **Signal** | `roh.fue` / `roh.umsatz` **desselben Filings** (gleiche `qtrs`, darum ohne Jahresrate), Verhältnis; **nur Symbole mit ausgewiesenem F&E** (`roh.fue` ≠ null; ein ausgewiesenes 0 ist ein Wert), sonst null (nie 0); null bei umsatz fehlend oder ≤ 0. *Nachtrag §11 (1).* Nachrichtlich `fue-marktwert` = `roh.fue` × 4 / `roh.qtrs` / Marktwert (Jahresrate), nicht gewichtet | Tafel | ≈ 0,5 Pp für F&E-starke Werte (Chan/Lakonishok/Sougiannis 2001) |
 | 11 | Verschuldung (`verschuldung`) | **Kontrolle** | (vermoegen − eigenkapital) / vermoegen (D0) | Tafel | Campbell/Hilscher/Szilagyi 2008: Notlage zahlt negativ |
 
 Nicht in Runde 1: 9 Fundamental-Momentum (überlappt mit 8; Auftrag schließt es aus), 12 Branchen-Momentum, 13–16 (Runde 2/3).
@@ -171,6 +171,15 @@ sie wird nicht zur Anpassung benutzt; eine Kante, die im Rechenfenster belegt un
    Abdeckung 100 %).
 10. **Freigabe der neun Feld-Agenten** nach `AUFTRAG-VORLAGE-FELD.md` (Budget je 120k).
 
+**Entschieden (PM, 22.09.2026 16:10, jeweils die Empfehlung der Übergabe Nr. 48 §4; Wilhelm kann jeden Punkt vor der Registrierung
+umstoßen):** 1 Prüfstand-Haltefenster Eröffnung(a) → Eröffnung(a′) · 2 horizontgleich 5 Pp + Long-Short 20 Pp, alles aus `konfig.js`
+(20 Pp einseitig war eine Schranke aus der falschen Skala, Fehlerform vom 09.09.) · 3 Placebo Versatz nur Diagnose; Nullpunkt =
+Orakel, Placebo Symbole, Zufall, Klinke · 4 nur B/M gewichtet, E/P nachrichtlich · 5 sd der acht Quartalsgewinne (n−1) · 6 t_HH ≥ 3 ·
+7 Streckung (Dezil = 10 % der Ausweiser; Aufgefüllte je Dezil gezählt — das ist die Umsetzung von „fehlend = mittlerer Rang" aus
+Auftrag §1a.1, kein Widerspruch) · 8 Umkehr-Zelle bauen · 9 F&E ohne Ausweis = null · 10 freigegeben 22.09. als Nr. 49–57
+(Aufträge `uebergabe/auftrag-mehrfaktor-feld-<feld>-2026-09-22.md`; Größe und Verschuldung als ein Agent, beide Kontrollen).
+**Wilhelms Formular:** die Registrierung selbst — nach den Zellen, mit der Vorprüfung §6 (Tore V1/V2) in der Hand.
+
 ---
 
 ## 10. Prüfungen der Kombination (vor dem Lauf, zusätzlich zu `test.js`)
@@ -189,7 +198,14 @@ sie wird nicht zur Anpassung benutzt; eine Kante, die im Rechenfenster belegt un
 
 ## 11. Nachträge
 
-*(leer — Änderungen nach der ersten Feldzelle stehen hier mit Datum und Grund)*
+1. **22.09.2026 16:30 (PM), vor der ersten Feldzelle — Formeln 6 und 10 an die Tafel angepasst.** Grund: `bauen.js` bildet
+   4-Quartals-Summen (`summe4q`, `quartale`) nur für `SUMMEN = ['umsatz', 'netto', 'operativ']`; `umsatzkosten` und `fue` gibt es
+   nur als Rohfluss des Filings (`roh`, mit `roh.qtrs` 4 für 10-K, 1 für 10-Q). Ertragskraft daher als Bruttogewinn des jüngsten
+   Filings auf Jahresrate (× 4/qtrs) durch `roh.vermoegen`; F&E-Intensität als `roh.fue / roh.umsatz` desselben Filings (Verhältnis,
+   qtrs kürzt sich). Das Feld und seine Richtung bleiben, nur die Operationalisierung folgt der Tafel. Mit demselben Nachtrag
+   benannt: `ertragskraft-roa` (nachrichtlich), negatives Eigenkapital als Wert (Feld 5), sd n−1 (Feld 8), `vermoegenVor` als
+   Zeilenfeld (Feld 7), Einheiten (Momentum, Umkehr, Investition in Pp; Schwankung in der Einheit der Panel-Spalte `rendite`).
+   Keine Zahl eines Feldes war zu diesem Zeitpunkt gemessen.
 
 ---
 
