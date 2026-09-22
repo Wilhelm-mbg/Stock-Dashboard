@@ -241,6 +241,12 @@ Auftrag §1a.1, kein Widerspruch) · 8 Umkehr-Zelle bauen · 9 F&E ohne Ausweis 
    Signaltage als Diagnose. Feldzellen tragen ihren IC (nur Mitglieder mit Wert) als Diagnose. Felder, Gewichte (alle 1), Kontrollen,
    Universum, Signaltage, Haltefenster, Rückhaltefenster: **unverändert**. Kosten (§6.2) bleiben als Information über die Handelbarkeit
    des Dezils, gehen nicht in das Urteil ein. §1, §6.3/3a, §7, §10 K-P5/K-P7 sind entsprechend gefasst.
+4. **22.09.2026 22:08 (PM), nach Abnahme der Maschine v1.1 (Nr. 61, `f5b5cb2`, 31 Prüfungen grün im eigenen Lauf) — Konvention von y
+   festgehalten, keine Änderung der Definition:** die Halteperioden-Rendite je Mitglied kommt aus der Haltefunktion `halte` der Maschine (ein
+   Mitglied je Aufruf, Totalverlust nach §3.6 Teil 1, brutto) — dieselbe Funktion wie die Dezilmessung. Das Dezil-Orakel des Prüfstands
+   (`orakelPeriode`) weicht davon minimal ab (IC 0,9997, kein Wert bitgleich; andere Rundung des Prüfstands) — es bleibt die Kontrolle der
+   Dezilmessung; der IC-Orakel-Test benutzt y selbst und ist exakt 1 (Prüfung D1). Kunstfeld-Böden mit der fertigen Maschine: Zufall se 0,0035 /
+   MDE₈₀ 0,0098, 12 Ziehungen MDE-Boden 0,0106, Kunstpanel-Kante IC 0,111 (t 11,3) ab 2020. Kein IC eines echten Feldes berechnet.
 
 ---
 
