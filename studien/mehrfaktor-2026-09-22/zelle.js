@@ -360,8 +360,10 @@ function zelleBauen(feld, werte, opt) {
   }
   sag(opt, '  Klinke: Positivkontrolle Kurs ' + klinke.positivkontrolle.kurs + ' / Bilanz ' + klinke.positivkontrolle.bilanz + ' Verstoesse (Soll je 1); Hauptlauf 0; Leser ' + (leserBefund.geoeffnet ? leserBefund.zugriffe + ' Zugriffe, ' + leserBefund.verstoesse + ' Verstoesse' : 'nicht benutzt'));
 
-  /* (c) Einzelmessung */
-  var haupt = auswertung(T, lauf(T, tage, roh), tage);
+  /* (c) Einzelmessung; opt.aufgefuellt (nur Kombination): je Signaltag {Symbol: Zahl aufgefuellter Felder} fuer den Dezil-Zaehler */
+  var aufJeTag = null;
+  if (opt.aufgefuellt) aufJeTag = tage.map(function (s) { var m = opt.aufgefuellt[s.iso] || {}, au = new Uint8Array(s.U.liste.length); for (var q = 0; q < au.length; q++) au[q] = m[T.symName[s.U.liste[q].sym]] || 0; return au; });
+  var haupt = auswertung(T, lauf(T, tage, roh, aufJeTag), tage);
   sag(opt, '  Einzelmessung: Dezil-Universum brutto ' + f4(haupt.brutto.mittel) + ' Pp (t ' + f2(haupt.brutto.t) + '), netto ' + f4(haupt.netto.mittel) + ' Pp (t ' + f2(haupt.netto.t) + ', MDE80 ' + f4(haupt.netto.mde80) + '), n ' + haupt.perioden + ', Universum ' + f1(haupt.universumMittel) + ', Dezil ' + f1(haupt.dezilMittel) + ', mit Wert ' + f1(haupt.mitWertMittel) + ', Umschlag ' + pz(haupt.umschlagMittel) + ' (' + ((Date.now() - t0) / 1000).toFixed(0) + ' s)');
 
   /* (d) Nullpunkt: Orakel (Positivkontrolle), Placebo Versatz, Placebo Symbole, Zufall x 12 */
@@ -380,17 +382,24 @@ function zelleBauen(feld, werte, opt) {
     bau: 'Rang nach realisierter Rendite Eroeffnung(a) -> Eroeffnung(aEnde) je Universumsmitglied (orakelPeriode des Pruefstands, Sicht mit Schluessel); Dezil oben gegen Universum und Long-Short' };
   sag(opt, '  Orakel: Dezil-Universum brutto ' + f4(ob.mittel) + ' Pp (sd ' + f2(ob.sd) + ', Mittel/sd ' + f2(mSd) + ', t ' + f2(ob.t) + '), Long-Short ' + f4(ols.mittel) + ' Pp => ' + (orakel.bestanden ? 'bestanden' : 'GEFALLEN: ' + tor.join(' | ')) + ' (Teil-4-Wert 20 Pp einseitig: ' + (orakel.teil4Einseitig.erreicht ? 'erreicht' : 'verfehlt') + ', nachrichtlich)');
 
-  var PLb = KONST.PLACEBO, versatzOhne = 0, versatzW = tage.map(function (s) {
-    var t21 = panelTagNach(T, s.t, KONST.PLACEBO_VERSATZ_TAGE);
-    if (t21 === null) { versatzOhne++; var leer = new Float64Array(s.U.liste.length); leer.fill(NaN); return leer; }
-    return werteAm(T, s, werte, { schluessel: true, zeilenTag: t21, leser: opt.leser }).werte;
-  });
-  var versatzM = auswertung(T, lauf(T, tage, versatzW), tage);
-  var placeboVersatz = { bestanden: !(Math.abs(versatzM.brutto.t) >= PLb.tEinzeln), brutto: versatzM.brutto.mittel, netto: versatzM.netto.mittel, t: versatzM.brutto.t, se: versatzM.brutto.se, n: versatzM.perioden,
-    ppInSchranke: Math.abs(versatzM.brutto.mittel) < PLb.schrankePp, schranke: { tEinzeln: PLb.tEinzeln, schrankePp: PLb.schrankePp }, signaltageOhneVersatz: versatzOhne,
-    bau: 'Werte des Feldes vom ' + KONST.PLACEBO_VERSATZ_TAGE + '. Panel-Handelstag nach dem Signaltag, gelesen mit Orakelschluessel, Signaltage und Universum unveraendert; Urteil |t| < ' + PLb.tEinzeln,
-    hinweis: 'Bei einem traegen Feld ist der Versatzwert fast der Wert am Signaltag (Placebo ~ Einzelmessung), bei einem Feld aus Vormonatsrenditen enthaelt er die Halteperiode (Placebo ~ Orakel); die Erwartung ~0 gilt nur fuer ein Feld ohne Zeitstruktur.' };
-  sag(opt, '  Placebo Versatz +' + KONST.PLACEBO_VERSATZ_TAGE + ': brutto ' + f4(versatzM.brutto.mittel) + ' Pp (t ' + f2(versatzM.brutto.t) + ') => ' + (placeboVersatz.bestanden ? 'bestanden' : 'GEFALLEN'));
+  var PLb = KONST.PLACEBO, versatzOhne = 0, versatzW = null, versatzM = null, placeboVersatz;
+  if (opt.ohneVersatz) {
+    /* Kombination aus fertigen Zellen: ihre Werte gibt es nur an den Signaltagen; der Versatz gehoert in die Feldzellen. */
+    placeboVersatz = { bestanden: null, uebersprungen: 'Placebo Versatz gehoert in die Feldzellen; eine Kombination hat an t + ' + KONST.PLACEBO_VERSATZ_TAGE + ' keine Werte', schranke: { tEinzeln: PLb.tEinzeln, schrankePp: PLb.schrankePp } };
+    sag(opt, '  Placebo Versatz: uebersprungen (Kombination)');
+  } else {
+    versatzW = tage.map(function (s) {
+      var t21 = panelTagNach(T, s.t, KONST.PLACEBO_VERSATZ_TAGE);
+      if (t21 === null) { versatzOhne++; var leer = new Float64Array(s.U.liste.length); leer.fill(NaN); return leer; }
+      return werteAm(T, s, werte, { schluessel: true, zeilenTag: t21, leser: opt.leser }).werte;
+    });
+    versatzM = auswertung(T, lauf(T, tage, versatzW), tage);
+    placeboVersatz = { bestanden: !(Math.abs(versatzM.brutto.t) >= PLb.tEinzeln), brutto: versatzM.brutto.mittel, netto: versatzM.netto.mittel, t: versatzM.brutto.t, se: versatzM.brutto.se, n: versatzM.perioden,
+      ppInSchranke: Math.abs(versatzM.brutto.mittel) < PLb.schrankePp, schranke: { tEinzeln: PLb.tEinzeln, schrankePp: PLb.schrankePp }, signaltageOhneVersatz: versatzOhne,
+      bau: 'Werte des Feldes vom ' + KONST.PLACEBO_VERSATZ_TAGE + '. Panel-Handelstag nach dem Signaltag, gelesen mit Orakelschluessel, Signaltage und Universum unveraendert; Urteil |t| < ' + PLb.tEinzeln,
+      hinweis: 'Bei einem traegen Feld ist der Versatzwert fast der Wert am Signaltag (Placebo ~ Einzelmessung), bei einem Feld aus Vormonatsrenditen enthaelt er die Halteperiode (Placebo ~ Orakel); die Erwartung ~0 gilt nur fuer ein Feld ohne Zeitstruktur.' };
+    sag(opt, '  Placebo Versatz +' + KONST.PLACEBO_VERSATZ_TAGE + ': brutto ' + f4(versatzM.brutto.mittel) + ' Pp (t ' + f2(versatzM.brutto.t) + ') => ' + (placeboVersatz.bestanden ? 'bestanden' : 'GEFALLEN'));
+  }
 
   var symW = tage.map(function (s, i) {
     var w = Float64Array.from(roh[i]), rnd = ST.mulberry32(ST.fnv(KONST.ZUFALL.saat + '|placebo-symbole|' + s.iso));
@@ -421,7 +430,7 @@ function zelleBauen(feld, werte, opt) {
 
   var leck = { klinke: klinke, leser: leserBefund, bestanden: klinke.bestanden && leserBefund.verstoesse === 0 };
   var nullpunkt = { orakel: orakel, placebo: { versatz: placeboVersatz, symbole: placeboSymbole, zufall: zufall }, leck: leck,
-    bestanden: orakel.bestanden && placeboVersatz.bestanden && placeboSymbole.bestanden && zufall.bestanden && leck.bestanden };
+    bestanden: orakel.bestanden && placeboVersatz.bestanden !== false && placeboSymbole.bestanden && zufall.bestanden && leck.bestanden };
 
   /* (e) Zelle im Format von mehrfaktor-felder.md §3 */
   var sekunden = (Date.now() - t0) / 1000, rss = process.resourceUsage().maxRSS / 1024;
@@ -437,7 +446,7 @@ function zelleBauen(feld, werte, opt) {
   var np = { kennung: KONST.KENNUNG_NULLPUNKT, feld: feld, stand: zelle.stand, zelleKennung: KONST.KENNUNG, panel: zelle.panel, rueckhalte: tage.rueckhalte,
     hinweis: 'Kontrollen der Maschine, KEINE Feldwerte: Orakel (Zukunft mit Schluessel), Placebo Versatz (Zukunft mit Schluessel, als Placebo deklariert), Placebo Symbole (permutiert), Zufall. Nichts hiervon ist ein Signal.',
     orakel: { urteil: orakel, messung: kurz(orakelM), perioden: orakelM.perioden_reihe },
-    placeboVersatz: { urteil: placeboVersatz, messung: kurz(versatzM), perioden: versatzM.perioden_reihe,
+    placeboVersatz: versatzM === null ? { urteil: placeboVersatz } : { urteil: placeboVersatz, messung: kurz(versatzM), perioden: versatzM.perioden_reihe,
       signaltage: tage.map(function (s, i) { var m = {}; for (var q = 0; q < s.U.liste.length; q++) { var v = versatzW[i][q]; m[T.symName[s.U.liste[q].sym]] = (v === v) ? v : null; } return { tag: s.iso, werteVom: (function () { var t21 = panelTagNach(T, s.t, KONST.PLACEBO_VERSATZ_TAGE); return t21 === null ? null : T.kal.tage[t21]; })(), werte: m }; }) },
     placeboSymbole: { urteil: placeboSymbole, messung: kurz(symM), perioden: symM.perioden_reihe },
     zufall: zufall, einzelmessungPerioden: haupt.perioden_reihe };
@@ -513,7 +522,8 @@ function bericht(z, np) {
   var o = n.orakel;
   zeile('| Orakel (Rang nach künftiger Rendite, Schlüssel) | Dezil − Universum brutto ' + f4(o.brutto) + ' Pp, sd ' + f2(o.sd) + ', Mittel/sd ' + f2(o.mittelDurchSd) + ', t ' + f2(o.t) + ', n ' + o.n + '; Long − Short ' + f4(o.longShort.brutto) + ' Pp | Dezil − Universum ≥ ' + o.schranke.minPp + ' Pp (horizontgleich, Teil 3), Mittel/sd ≥ ' + o.schranke.minSd + ', t ≥ ' + o.schranke.tBoden + '; Long − Short ≥ ' + o.schranke.longShortMinPp + ' Pp (Δ Teil 4); nachrichtlich einseitig ' + o.teil4Einseitig.minPp + ' Pp: ' + (o.teil4Einseitig.erreicht ? 'erreicht' : 'verfehlt') + ' | **' + (o.bestanden ? 'bestanden' : 'GEFALLEN: ' + o.tor.join('; ')) + '** |');
   var pv = n.placebo.versatz;
-  zeile('| Placebo 1 — Werte +' + KONST.PLACEBO_VERSATZ_TAGE + ' Handelstage (Zukunft, Schlüssel, als Placebo deklariert) | brutto ' + f4(pv.brutto) + ' Pp, t ' + f2(pv.t) + ', n ' + pv.n + (pv.signaltageOhneVersatz ? ', ' + pv.signaltageOhneVersatz + ' Signaltage ohne Versatzwerte' : '') + ' | \\|t\\| < ' + pv.schranke.tEinzeln + ' (\\|Mittel\\| < ' + pv.schranke.schrankePp + ' Pp: ' + (pv.ppInSchranke ? 'ja' : 'nein') + ', nachrichtlich) | **' + (pv.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
+  if (pv.bestanden === null) zeile('| Placebo 1 — Werte +' + KONST.PLACEBO_VERSATZ_TAGE + ' Handelstage | übersprungen: ' + pv.uebersprungen + ' | — | — |');
+  else zeile('| Placebo 1 — Werte +' + KONST.PLACEBO_VERSATZ_TAGE + ' Handelstage (Zukunft, Schlüssel, als Placebo deklariert) | brutto ' + f4(pv.brutto) + ' Pp, t ' + f2(pv.t) + ', n ' + pv.n + (pv.signaltageOhneVersatz ? ', ' + pv.signaltageOhneVersatz + ' Signaltage ohne Versatzwerte' : '') + ' | \\|t\\| < ' + pv.schranke.tEinzeln + ' (\\|Mittel\\| < ' + pv.schranke.schrankePp + ' Pp: ' + (pv.ppInSchranke ? 'ja' : 'nein') + ', nachrichtlich) | **' + (pv.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
   var ps = n.placebo.symbole;
   zeile('| Placebo 2 — Symbole je Signaltag permutiert | brutto ' + f4(ps.brutto) + ' Pp, t ' + f2(ps.t) + ', n ' + ps.n + ' | \\|t\\| < ' + ps.schranke.tEinzeln + ' (\\|Mittel\\| < ' + ps.schranke.schrankePp + ' Pp: ' + (ps.ppInSchranke ? 'ja' : 'nein') + ', nachrichtlich) | **' + (ps.bestanden ? 'bestanden' : 'GEFALLEN') + '** |');
   var zu = n.placebo.zufall;
@@ -608,6 +618,19 @@ function messeZelle(T, z, opt) {
   return a;
 }
 
+/** Die Kombination als Zelle: derselbe Weg wie ein Feld (Einzelmessung, Orakel, Placebo Symbole, Zufall, Klinke, Bericht),
+ *  Werte = Kombinationsrang je Signaltag, Auffuellungen aus den Bestandteilen; Placebo Versatz entfaellt (Feldzellen). */
+function zelleAusKombination(komb, opt) {
+  opt = opt || {};
+  var jeTag = {}, auf = {};
+  komb.signaltage.forEach(function (s) { jeTag[s.tag] = s.werte; auf[s.tag] = s.aufgefuellt || {}; });
+  function werte(sym, tag) { var m = jeTag[tag]; if (!m) throw new Error('Kombination hat keinen Signaltag ' + tag); var v = m[sym]; return (v === undefined || v === null) ? null : v; }
+  return zelleBauen(opt.feld || 'kombination', werte, Object.assign({
+    definition: 'Kombinationsrang = Summe w_f R_f / Summe w_f ueber ' + komb.felder.join(', ') + ' (Gewichte ' + JSON.stringify(komb.gewichte) + '); fehlendes Feld = mittlerer Rang; Kontrollen nur berichtet: ' + (komb.kontrollen.join(', ') || 'keine'),
+    quellen: komb.quellen.map(function (q) { return q.feld + ' (' + q.kennung + ', ' + q.stand + (q.kunst ? ', KUNST ' + q.kunst : '') + ')'; }),
+    rueckhalte: komb.rueckhalte, aufgefuellt: auf, ohneVersatz: true, kunst: komb.quellen.some(function (q) { return q.kunst; }) ? 'kombination-aus-kunstzellen' : null }, opt));
+}
+
 /* =========================================================================================
  * 9. Regressionsklinke (§1a.7): Momentum 12-1 des Pruefstands, Klassen [2,3], gegen die Teil-2-Zahl - kein Feld
  * ========================================================================================= */
@@ -624,7 +647,26 @@ function regression(T) {
     hinweis: 'Maschinenpruefung mit echten Daten, kein Feld: nur die Gleichheit mit K.REGRESSION23_ERWARTET zaehlt; keine weitere Kennzahl dieses Laufs wird berichtet.' };
 }
 
+/* =========================================================================================
+ * 10. Aufruf von der Kommandozeile (Feld-Agenten): node zelle.js --feld felder/<feld>/feld.js [--ziel <ordner>] [--aus <panel>]
+ *     Das Feldmodul exportiert { feld, definition, quellen, werte(sym, tag, sicht) [, klassen, kunst] } - Muster: pruefung/kunstfeld-zufall.js.
+ *     --rueckhalte oeffnet das Rueckhaltefenster: setzt NUR der PM nach dem Urteil (§1a.6).
+ * ========================================================================================= */
+if (require.main === module) {
+  var argv = process.argv.slice(2), A = { feld: null, ziel: null, aus: null, rueckhalte: false };
+  for (var ai = 0; ai < argv.length; ai++) {
+    if (argv[ai] === '--feld') A.feld = argv[++ai]; else if (argv[ai] === '--ziel') A.ziel = argv[++ai];
+    else if (argv[ai] === '--aus') A.aus = argv[++ai]; else if (argv[ai] === '--rueckhalte') A.rueckhalte = true;
+  }
+  if (!A.feld) { process.stderr.write('Aufruf: node --max-old-space-size=6144 zelle.js --feld felder/<feld>/feld.js [--ziel zellen] [--aus <panelordner>]\n'); process.exit(2); }
+  var M = require(path.resolve(A.feld));
+  if (!M || typeof M.werte !== 'function' || !M.feld) { process.stderr.write('Feldmodul muss { feld, definition, quellen, werte } exportieren: ' + A.feld + '\n'); process.exit(2); }
+  var R = zelleBauen(M.feld, M.werte, { definition: M.definition, quellen: M.quellen, klassen: M.klassen, kunst: M.kunst || null,
+    ziel: A.ziel ? path.resolve(A.ziel) : undefined, aus: A.aus || undefined, rueckhalte: A.rueckhalte });
+  process.stdout.write((R.zelle.nullpunkt.bestanden ? 'Nullpunkt bestanden' : 'NULLPUNKT NICHT BESTANDEN') + ' - ' + R.dateien.zelle + '\n');
+}
+
 module.exports = { KONST: KONST, K: K, PR: PR, RF: RF, ST: ST, tafel: tafel, leser: leser, signaltage: signaltage, monatsanfaenge: monatsanfaenge,
   panelTagNach: panelTagNach, universumAm: universumAm, sichtFuer: sichtFuer, werteAm: werteAm, raenge: raenge, dezile: dezile,
   halteKorb: halteKorb, lauf: lauf, auswertung: auswertung, zelleBauen: zelleBauen, bericht: bericht, kombiniere: kombiniere,
-  messeZelle: messeZelle, regression: regression };
+  messeZelle: messeZelle, zelleAusKombination: zelleAusKombination, regression: regression };

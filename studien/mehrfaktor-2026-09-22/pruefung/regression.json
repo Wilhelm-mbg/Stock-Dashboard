@@ -1,6 +1,6 @@
 {
  "kennung": "mehrfaktor-2026-09-22/regression/v1",
- "stand": "2026-09-22T12:47:56.151Z",
+ "stand": "2026-09-22T12:57:07.183Z",
  "panel": "querschnitt-pruefstand-2026-09-13/panel/v2",
  "letzterTag": "2026-09-15",
  "lauf": "PR.lauf(momentum12_1, monat, haupt, klassen [2,3]) -> bewerte -> kennzahlen(haupt.perioden, netto).mittel (wie T3-P12)",

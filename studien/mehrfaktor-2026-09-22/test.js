@@ -315,6 +315,33 @@ pruef('B14', 'Regressionsklinke (§1a.7): Momentum 12-1 des Pruefstands, Klassen
   return 'gemessen ' + r.gemessen + ' = Pin ' + r.erwartet + ' (' + r.panel + ')';
 });
 
+pruef('B15', 'Kombination als Zelle (zelleAusKombination): voller Nullpunkt ohne Versatz, Auffuellungen je Dezil wie messeZelle, Einzelmessung identisch', function () {
+  var T = tafel(); if (!T || !merk.zufall || !merk.luecken) return 'skip';
+  var za = merk.zufall.zelle, zb = merk.luecken.zelle;
+  var k = Z.kombiniere({ 'kunst-zufall': za, 'kunst-luecken': zb }, ['kunst-zufall', 'kunst-luecken'], null, { kontrollen: [] });
+  var r = Z.zelleAusKombination(k, Object.assign({ feld: 'kunst-kombination' }, OPT)), m = Z.messeZelle(T, k), e = r.zelle.einzelmessung;
+  gleich(e.dezilUni.brutto.mittel, m.brutto.mittel, 0, 'Mittel wie messeZelle'); gleich(e.dezilUni.netto.t, m.netto.t, 0, 't');
+  wahr(e.aufgefuellt.oben === m.aufgefuellt.oben && e.aufgefuellt.unten === m.aufgefuellt.unten && e.aufgefuellt.oben > 0, 'Auffuellungen je Dezil ' + JSON.stringify(e.aufgefuellt));
+  var n = r.zelle.nullpunkt;
+  wahr(n.placebo.versatz.bestanden === null && /Feldzellen/.test(n.placebo.versatz.uebersprungen), 'Versatz uebersprungen');
+  wahr(n.orakel.bestanden && n.placebo.symbole.bestanden && n.placebo.zufall.bestanden && n.leck.bestanden && n.bestanden === true, 'uebrige Kontrollen und Gesamturteil');
+  wahr(r.zelle.kunst === 'kombination-aus-kunstzellen' && /Kombinationsrang/.test(r.zelle.definition) && r.zelle.quellen.length === 2 && /Placebo 1 [^|]*\| übersprungen: /.test(r.bericht), 'Kennzeichnung, Quellen, Bericht');
+  var np = JSON.parse(fs.readFileSync(r.dateien.nullpunkt, 'utf8')); wahr(np.placeboVersatz.urteil.bestanden === null && !np.placeboVersatz.signaltage, 'Nullpunkt-Datei ohne Versatzwerte');
+  return 'brutto ' + e.dezilUni.brutto.mittel.toFixed(4) + ' (t ' + e.dezilUni.brutto.t.toFixed(2) + '), Aufgefuellte oben/unten ' + e.aufgefuellt.oben + '/' + e.aufgefuellt.unten + ', Nullpunkt ' + n.bestanden;
+});
+pruef('B16', 'Kommandozeile: node zelle.js --feld <modul> baut die Zelle aus einem Feldmodul (Muster pruefung/kunstfeld-zufall.js); ohne --feld Abbruch mit Hinweis', function () {
+  if (!panelDa(A.aus)) return 'skip';
+  var cp = require('child_process'), modul = path.join(PRUEFUNG, 'kunstfeld-zufall.js'), zelle = path.join(ZIEL, 'kunst-zufall-modul.json');
+  if (fs.existsSync(zelle)) fs.unlinkSync(zelle);
+  var r = cp.spawnSync(process.execPath, ['--max-old-space-size=6144', path.join(__dirname, 'zelle.js'), '--feld', modul, '--ziel', ZIEL, '--aus', A.aus], { cwd: __dirname, encoding: 'utf8', maxBuffer: 1 << 26 });
+  wahr(r.status === 0 && /Nullpunkt bestanden/.test(r.stdout), 'Lauf: Status ' + r.status + ' ' + (r.stderr || '').slice(0, 300));
+  var z = JSON.parse(fs.readFileSync(zelle, 'utf8'));
+  wahr(z.feld === 'kunst-zufall-modul' && z.kunst === 'zufall' && z.rueckhalte === false && z.signaltage.length === 92 && /Kunstfeld/.test(z.definition), 'Zelle aus dem Modul');
+  var r2 = cp.spawnSync(process.execPath, [path.join(__dirname, 'zelle.js')], { cwd: __dirname, encoding: 'utf8' });
+  wahr(r2.status === 2 && /--feld/.test(r2.stderr), 'ohne --feld: Status 2 mit Hinweis');
+  return 'Zelle ' + z.feld + ' mit ' + z.signaltage.length + ' Signaltagen, Nullpunkt ' + z.nullpunkt.bestanden;
+});
+
 /* =========================================================================================
  * C. Kunstpanel mit eingepflanzter Kante bekannter Groesse (Positivkontrolle auf eine KLEINE Kante)
  * ========================================================================================= */
