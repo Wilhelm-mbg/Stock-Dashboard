@@ -264,7 +264,9 @@ async function haupt() {
   var teil = String(a.teil || '1/1').split('/'), k = parseInt(teil[0], 10), n = parseInt(teil[1], 10);
   if (!(k >= 1 && n >= 1 && k <= n)) throw new Error('--teil k/n');
   tage = tage.filter(function (t, i) { return i % n === k - 1; });
-  var fortP = path.join(aus, '_fortschritt-' + k + '.json');
+  /* Fortschritt je Teilung n und Teil k: wird die Parallelitaet geaendert (alle Teile anhalten, mit neuem n starten), gilt
+   * ein Tag als erledigt, wenn seine Tagesdatei vollstaendig ist (gefunden + fehlend = soll) - gleich, welcher Teil sie schrieb. */
+  var fortP = path.join(aus, '_fortschritt-' + n + '-' + k + '.json');
   var fort = fs.existsSync(fortP) ? JSON.parse(fs.readFileSync(fortP, 'utf8')) : { kennung: KENNUNG, karte: karte.kennung, teil: k + '/' + n, von: tage[0], bis: tage[tage.length - 1], start: new Date().toISOString(), erledigtTage: {} };
   if (fort.teil !== k + '/' + n || fort.karte !== karte.kennung) throw new Error('Fortschritt passt nicht: ' + fort.teil + ' ' + fort.karte);
   var logP = path.join(aus, 'log-' + k + '.txt');
@@ -273,6 +275,10 @@ async function haupt() {
   for (var i = 0; i < tage.length; i++) {
     var tag = tage[i], tagP = path.join(aus, 'tage', tag + '.json');
     if (fort.erledigtTage[tag] && fs.existsSync(tagP)) continue;
+    if (fs.existsSync(tagP)) {
+      var alt = JSON.parse(fs.readFileSync(tagP, 'utf8')).zaehler;
+      if (alt.gefunden + alt.fehlend === alt.soll) { fort.erledigtTage[tag] = { dateien: alt.gefunden, fehlend: alt.fehlend, soll: alt.soll, vorher: true }; schreibeAtomar(fortP, fort); continue; }
+    }
     var erg = await zaehleETTag(tag, karte, opt, log);
     schreibeAtomar(tagP, erg);
     var z = erg.zaehler;
@@ -289,4 +295,4 @@ async function haupt() {
 module.exports = { KENNUNG: KENNUNG, entpacke: entpacke, zaehleText: zaehleText, karteAus: karteAus, ladeKarte: ladeKarte, symboleAblage: symboleAblage, pruefeTag: pruefeTag,
   stempelDesETTages: stempelDesETTages, stempelDesUTCTages: stempelDesUTCTages, tageVonBis: tageVonBis, neueZaehler: neueZaehler, fnvU: fnvU,
   SPALTEN: SPALTEN, SP_DATUM: SP_DATUM, SP_ORG: SP_ORG, SP_TON: SP_TON, SCHNITT: SCHNITT };
-if (require.main === module) haupt().catch(function (e) { process.stderr.write('ABBRUCH ' + (e.stack || e) + '\n'); process.exit(1); });
+if (require.main === module) haupt().catch(function (e) { process.stderr.write('ABBRUCH ' + (e.stack || e) + '\n'); process.exit(/Leck|Klinke/.test(String(e && e.message)) ? 3 : 1); });   // 3 = Klinke: systemd startet nicht neu
