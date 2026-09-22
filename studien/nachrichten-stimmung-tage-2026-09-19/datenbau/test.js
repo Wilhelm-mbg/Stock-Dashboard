@@ -169,5 +169,146 @@ if (fs.existsSync(karteP)) {
   ok(gk.symbole === syms.length && gk.voll.apple && gk.voll.apple.indexOf('AAPL') >= 0, 'ladeKarte');
 } else ok(true, 'Karte v2 noch nicht gebaut');
 
-process.stdout.write((rot ? 'ROT ' + rot + ' von ' : 'GRUEN ') + n + ' Pruefungen\n');
-process.exit(rot ? 1 : 0);
+/* ---------- 9. Schlanker Rohauszug (Nachtrag 3) ---------- */
+var zlib = require('zlib'), os = require('os');
+function teileB(buf, b) { var l = [], p = 0, q; while ((q = buf.indexOf(b, p)) >= 0) { l.push(buf.subarray(p, q)); p = q + 1; } l.push(buf.subarray(p)); return l; }
+/** Baut eine Zeile als Buffer; `felder` sind Buffer oder Strings, fehlende Spalten bleiben leer. */
+function zeileB(felder, spalten) {
+  var c = []; for (var i = 0; i < (spalten || G.SPALTEN); i++) c.push(Buffer.alloc(0));
+  Object.keys(felder).forEach(function (i) { c[i] = Buffer.isBuffer(felder[i]) ? felder[i] : Buffer.from(String(felder[i])); });
+  var aus = []; c.forEach(function (f, i) { if (i) aus.push(Buffer.from('\t')); aus.push(f); });
+  return Buffer.concat(aus);
+}
+/* Kunstdatei: mit/ohne Firma, falsche Feldzahl, CRLF, letzte Zeile ohne Zeilenende, ungueltige UTF-8-Bytes neben den Tabs. */
+var kaputt = Buffer.from([0xff, 0x41, 0xc3]);                                     // ungueltige Bytes, auch direkt vor einem Tab
+var kz = [
+  zeileB({ 0: '20250715120000-1', 1: '20250715120000', 3: Buffer.concat([Buffer.from('a.example'), kaputt]), 4: 'https://a.example/1', 14: Buffer.concat([Buffer.from('Apple Inc,10;'), kaputt, Buffer.from(',20')]), 15: '2.5,1,2,3,4,5,100' }),
+  zeileB({ 0: '20250715120000-2', 1: '20250715120000', 3: 'b.example', 4: 'https://b.example/2', 14: '', 15: '0,0,0,0,0,0,10' }),
+  zeileB({ 0: '20250715120000-3', 14: 'Falsche Feldzahl,1' }, G.SPALTEN - 1),
+  zeileB({ 0: '20250715120000-4', 14: 'Auch falsch,1' }, G.SPALTEN + 1),
+  Buffer.concat([zeileB({ 0: '20250715120000-5', 1: '20250715121500', 3: 'c.example', 4: 'https://c.example/5', 14: 'Keine Firma,3', 15: '-1,0,1,1,0,0,50' }), Buffer.from('\r')]),
+  Buffer.alloc(0),
+  zeileB({ 0: '20250715120000-6', 1: '20250715123000', 3: 'd.example', 4: 'https://d.example/6', 14: 'Microsoft Corp,7', 15: 'kein Ton' }),
+  zeileB({ 0: '20250715120000-7', 1: '20250715124500', 3: 'e.example', 4: 'https://e.example/7', 14: 'Apple,9', 15: '1,1,0,1,0,0,9' })
+];
+var kunst = Buffer.concat([kz[0], Buffer.from('\n'), kz[1], Buffer.from('\n'), kz[2], Buffer.from('\n'), kz[3], Buffer.from('\n'), kz[4], Buffer.from('\n'), kz[5], Buffer.from('\n'), kz[6], Buffer.from('\n'), kz[7]]);
+var kZ = { B: {}, z: G.neueZaehler(96) };
+G.zaehleText(kunst.toString('utf8'), KARTE, '20250715120000', kZ.B, kZ.z, 5);
+var ka = G.rohAuszug(kunst);
+ok(ka.zeilen === 4 && ka.zeilen === kZ.z.mitOrganisation, 'Auszug ' + ka.zeilen + ' Zeilen, mitOrganisation ' + kZ.z.mitOrganisation + ' (erwartet 4)');
+/* Feldinhalt bytegleich zur Quelle, Reihenfolge der Quelle, keine CR und keine Ersatzzeichen. */
+var aZeilen = ka.buf.length ? teileB(ka.buf, 10).slice(0, -1) : [];
+var quellZeilen = [kz[0], kz[4], kz[6], kz[7]], bytegleich = 0;
+aZeilen.forEach(function (z, i) {
+  var f = teileB(z, 9), s = teileB(quellZeilen[i].subarray(0, quellZeilen[i].length - (quellZeilen[i][quellZeilen[i].length - 1] === 13 ? 1 : 0)), 9);
+  if (f.length === 6 && G.ROH_SPALTEN.every(function (sp, j) { return f[j].equals(s[sp]); })) bytegleich++;
+});
+ok(bytegleich === 4 && aZeilen.length === 4, 'Feldinhalt bytegleich zur Quelle: ' + bytegleich + ' von ' + aZeilen.length);
+ok(ka.buf.indexOf(13) < 0 && ka.buf.indexOf(0xef) < 0 && ka.buf.indexOf(0xff) >= 0, 'Auszug traegt CR oder Ersatzzeichen statt der Quellbytes');
+ok(G.rohAuszug(Buffer.alloc(0)).zeilen === 0 && G.rohAuszug(Buffer.from('\n\n')).zeilen === 0, 'leere Datei');
+/* Roh-Klinke: Zeilenzahl muss zum Zaehler passen. */
+ok(wirft(function () { G.rohFuegeAn(G.rohNeu(), '20250715120000', kunst, 3); }, /Roh-Klinke/), 'Roh-Klinke bei abweichender Zeilenzahl');
+/* gzip mit mehreren Gliedern liest sich als eine Datei. */
+var g1 = zlib.gzipSync(Buffer.from('a\n')), g2 = zlib.gzipSync(Buffer.from('b\n'));
+ok(zlib.gunzipSync(Buffer.concat([g1, g2])).toString() === 'a\nb\n', 'mehrgliedriges gzip');
+
+/* ---------- 10. Ablage je UTC-Dateitag: Stuecke, Vereinen, abgebrochener Tag ---------- */
+function zipVon(csv) {
+  var roh = zlib.deflateRawSync(csv), nm = Buffer.from('gkg.csv');
+  var lok = Buffer.alloc(30); lok.writeUInt32LE(0x04034b50, 0); lok.writeUInt16LE(8, 8); lok.writeUInt32LE(roh.length, 18); lok.writeUInt32LE(csv.length, 22); lok.writeUInt16LE(nm.length, 26);
+  var cd = Buffer.alloc(46); cd.writeUInt32LE(0x02014b50, 0); cd.writeUInt16LE(8, 10); cd.writeUInt32LE(roh.length, 20); cd.writeUInt32LE(csv.length, 24); cd.writeUInt16LE(nm.length, 28); cd.writeUInt32LE(0, 42);
+  var eo = Buffer.alloc(22); eo.writeUInt32LE(0x06054b50, 0); eo.writeUInt16LE(1, 8); eo.writeUInt16LE(1, 10); eo.writeUInt32LE(46 + nm.length, 12); eo.writeUInt32LE(30 + nm.length + roh.length, 16);
+  return Buffer.concat([lok, nm, roh, cd, nm, eo]);
+}
+/* Je Datei 3 Zeilen, 2 davon mit Firma. Jede Viertelstunde :15 fehlt (404, 24 je UTC-Tag); ein Stempel bricht den Lauf ab. */
+function kunstDatei(st) {
+  return Buffer.concat([zeileB({ 0: st + '-1', 1: st, 3: 'q.example', 4: 'https://q.example/' + st, 14: 'Apple Inc,10', 15: '2,1,1,2,0,0,80' }), Buffer.from('\n'),
+    zeileB({ 0: st + '-2', 1: st, 3: 'q.example', 4: 'https://q.example/' + st + 'b', 14: '', 15: '0,0,0,0,0,0,9' }), Buffer.from('\n'),
+    zeileB({ 0: st + '-3', 1: st, 3: 'q.example', 4: 'https://q.example/' + st + 'c', 14: 'Foo Corp,1', 15: '-1,0,1,1,0,0,40' }), Buffer.from('\n')]);
+}
+var abbruchBei = null;
+function holeKunst(url) {
+  var st = /(\d{14})\.gkg/.exec(url)[1];
+  if (st === abbruchBei) return Promise.reject(new Error('Netz weg (Kunstabbruch)'));
+  if (st.slice(10, 12) === '15') return Promise.resolve({ status: 404, buf: null });
+  return Promise.resolve({ status: 200, buf: zipVon(kunstDatei(st)) });
+}
+var AUS = fs.mkdtempSync(path.join(os.tmpdir(), 'gdelt-roh-'));
+fs.mkdirSync(path.join(AUS, 'tage'), { recursive: true });
+fs.mkdirSync(path.join(AUS, 'roh', '_teile'), { recursive: true });
+function dateien(d) { return fs.existsSync(d) ? fs.readdirSync(d).sort() : []; }
+function stille() { }
+
+(async function () {
+  var opt = { reservoir: 5, dateienGesamt: 0, start: Date.now(), hole: holeKunst, abstand: 0 };
+  /* (a) Abgebrochener Tag: weder Tagesdatei noch Stueck, erst recht keine fertige .tsv.gz. */
+  abbruchBei = '20250716120000';
+  var geworfen = false;
+  try { await G.verarbeiteTag('2025-07-16', KARTE, opt, AUS, stille); } catch (e) { geworfen = true; }
+  abbruchBei = null;
+  ok(geworfen, 'Abbruch mitten im Tag wirft');
+  ok(dateien(path.join(AUS, 'tage')).length === 0, 'abgebrochener Tag hinterlaesst eine Tagesdatei');
+  ok(dateien(path.join(AUS, 'roh')).filter(function (f) { return /\.tsv\.gz$/.test(f); }).length === 0 && dateien(path.join(AUS, 'roh', '_teile')).length === 0,
+    'abgebrochener Tag hinterlaesst eine .tsv.gz oder ein Stueck: ' + dateien(path.join(AUS, 'roh')).concat(dateien(path.join(AUS, 'roh', '_teile'))).join(' '));
+
+  /* (b) Ein vollstaendiger ET-Tag legt zwei Stuecke, aber keinen fertigen UTC-Tag (beide Partner fehlen). */
+  var v15 = await G.verarbeiteTag('2025-07-15', KARTE, opt, AUS, stille);
+  ok(JSON.stringify(v15.roh) === JSON.stringify({ '2025-07-15': 'wartet', '2025-07-16': 'wartet' }), 'Stuecke des ET-Tags: ' + JSON.stringify(v15.roh));
+  ok(dateien(path.join(AUS, 'roh')).filter(function (f) { return /\.tsv\.gz$/.test(f); }).length === 0, 'halber UTC-Tag liegt als fertige .tsv.gz');
+  ok(v15.rohZeilen === 2 * v15.erg.zaehler.gefunden && v15.erg.zaehler.mitOrganisation === v15.rohZeilen, 'Zeilen im Auszug = Zeilen mit Firma: ' + v15.rohZeilen + ' / ' + v15.erg.zaehler.mitOrganisation);
+
+  /* (c) Der Partner macht den UTC-Tag 2025-07-16 fertig: 96 Stempel, Reihenfolge der Dateien, Inhalt bytegleich. */
+  var v16 = await G.verarbeiteTag('2025-07-16', KARTE, opt, AUS, stille);
+  ok(v16.roh['2025-07-16'] === 'vereint' && v16.roh['2025-07-17'] === 'wartet', 'Vereinen: ' + JSON.stringify(v16.roh));
+  var zielGz = path.join(AUS, 'roh', '2025-07-16.tsv.gz'), beleg = JSON.parse(fs.readFileSync(path.join(AUS, 'roh', '2025-07-16.json'), 'utf8'));
+  ok(fs.existsSync(zielGz) && beleg.soll === 96 && beleg.dateien + beleg.fehlend.length === 96 && beleg.fehlend.length === 24 && beleg.zeilen === 2 * beleg.dateien,
+    'Beleg des UTC-Tags: ' + JSON.stringify({ soll: beleg.soll, dateien: beleg.dateien, fehlend: beleg.fehlend.length, zeilen: beleg.zeilen }));
+  var gzZeilen = teileB(zlib.gunzipSync(fs.readFileSync(zielGz)), 10).slice(0, -1);
+  ok(gzZeilen.length === beleg.zeilen, 'Zeilen in der .tsv.gz: ' + gzZeilen.length + ' statt ' + beleg.zeilen);
+  ok(teileB(gzZeilen[0], 9)[1].toString() === '20250716000000' && teileB(gzZeilen[gzZeilen.length - 1], 9)[1].toString() === '20250716234500', 'Reihenfolge im Auszug (erste/letzte Datei des UTC-Tags)');
+  ok(gzZeilen.every(function (z) { return /^2025071\d{7}-[13]$/.test(teileB(z, 9)[0].toString()) && teileB(z, 9).length === 6; }), 'Auszug traegt fremde Zeilen oder falsche Feldzahl');
+  ok(teileB(gzZeilen[0], 9).map(function (f) { return f.toString(); }).join('|') === '20250716000000-1|20250716000000|q.example|https://q.example/20250716000000|Apple Inc,10|2,1,1,2,0,0,80', 'Erste Zeile: ' + teileB(gzZeilen[0], 9).join('|'));
+  ok(!dateien(path.join(AUS, 'roh', '_teile')).some(function (f) { return f.indexOf('2025-07-16_') === 0; }), 'Stuecke des fertigen UTC-Tags bleiben liegen');
+
+  /* (d) Sperre und .tmp aus einem Abbruch: der Nachlauf raeumt auf und vereint nach. */
+  fs.mkdirSync(path.join(AUS, 'roh', '_teile', '2025-07-15.sperre'));
+  fs.writeFileSync(path.join(AUS, 'roh', '2025-07-15.tsv.gz.tmp'), 'halb');
+  var v14 = await G.verarbeiteTag('2025-07-14', KARTE, opt, AUS, stille);
+  ok(v14.roh['2025-07-15'] === 'gesperrt' && !fs.existsSync(path.join(AUS, 'roh', '2025-07-15.tsv.gz')), 'Sperre haelt das Vereinen auf: ' + JSON.stringify(v14.roh));
+  var nl = G.rohNachlauf(AUS);
+  ok(nl.sperren === 1 && nl.tmp === 1 && nl.vereint === 1 && fs.existsSync(path.join(AUS, 'roh', '2025-07-15.tsv.gz')), 'Nachlauf: ' + JSON.stringify(nl));
+  ok(!fs.existsSync(path.join(AUS, 'roh', '2025-07-15.tsv.gz.tmp')) && JSON.parse(fs.readFileSync(path.join(AUS, 'roh', '2025-07-15.json'), 'utf8')).soll === 96, 'Nachlauf laesst .tmp liegen');
+  /* Ein wiederholter Tag legt kein Stueck mehr an, wenn der UTC-Tag schon fertig ist. */
+  fs.unlinkSync(path.join(AUS, 'tage', '2025-07-15.json'));
+  var w15 = await G.verarbeiteTag('2025-07-15', KARTE, opt, AUS, stille);
+  ok(w15.roh['2025-07-15'] === 'schon' && w15.roh['2025-07-16'] === 'schon' && !dateien(path.join(AUS, 'roh', '_teile')).some(function (f) { return f.indexOf('2025-07-15_') === 0 || f.indexOf('2025-07-16_') === 0; }),
+    'wiederholter Tag legt neue Stuecke: ' + JSON.stringify(w15.roh));
+  /* Schema-Datei. */
+  G.rohSchema(AUS);
+  var sch = JSON.parse(fs.readFileSync(path.join(AUS, 'roh', '_schema.json'), 'utf8'));
+  ok(sch.kennung === 'nachrichten-stimmung-tage-2026-09-19/gdelt-roh/v1' && sch.spalten.map(function (s) { return s.gkg; }).join(',') === '1,2,4,5,15,16', 'Schema: ' + JSON.stringify(sch.spalten.map(function (s) { return s.gkg; })));
+
+  /* (e) Echte Datei: Auszug = Zeilen mit Firma, jedes Feld bytegleich. */
+  if (fs.existsSync(probeP)) {
+    var pbuf = G.entpacke(fs.readFileSync(probeP)), pa = G.rohAuszug(pbuf);
+    var pz = { B: {}, z: G.neueZaehler(96) };
+    G.zaehleText(pbuf.toString('utf8'), KARTE, '20250602120000', pz.B, pz.z, 5);
+    ok(pa.zeilen === pz.z.mitOrganisation, 'echte Datei: Auszug ' + pa.zeilen + ' Zeilen, mitOrganisation ' + pz.z.mitOrganisation);
+    var qz = teileB(pbuf, 10).filter(function (z) { return z.length; }).map(function (z) { return z[z.length - 1] === 13 ? z.subarray(0, z.length - 1) : z; })
+      .map(function (z) { return teileB(z, 9); }).filter(function (f) { return f.length === G.SPALTEN && f[G.SP_ORG].length; });
+    var az = teileB(pa.buf, 10).slice(0, -1).map(function (z) { return teileB(z, 9); }), gleich = 0;
+    az.forEach(function (f, i) { if (f.length === 6 && G.ROH_SPALTEN.every(function (sp, j) { return f[j].equals(qz[i][sp]); })) gleich++; });
+    ok(qz.length === az.length && gleich === az.length, 'echte Datei bytegleich: ' + gleich + ' von ' + az.length + ' (Quelle ' + qz.length + ')');
+    var gz = zlib.gzipSync(pa.buf);
+    process.stdout.write('Rohauszug der Probe: ' + pa.zeilen + ' von ' + teileB(pbuf, 10).filter(function (z) { return z.length; }).length + ' Zeilen, '
+      + (pa.buf.length / 1048576).toFixed(2) + ' MB roh, ' + (gz.length / 1048576).toFixed(2) + ' MB gzip = '
+      + (100 * gz.length / fs.statSync(probeP).size).toFixed(1) + ' % der Zip-Datei\n');
+  }
+  fs.rmSync(AUS, { recursive: true, force: true });
+})().then(function () {
+  process.stdout.write((rot ? 'ROT ' + rot + ' von ' : 'GRUEN ') + n + ' Pruefungen\n');
+  process.exit(rot ? 1 : 0);
+}, function (e) {
+  process.stdout.write('ROT  Ausnahme: ' + (e.stack || e) + '\nROT ' + (rot + 1) + ' von ' + (n + 1) + ' Pruefungen\n');
+  process.exit(1);
+});

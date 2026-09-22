@@ -252,3 +252,32 @@ Klasse eines Symbols, das zwischen den Klassen wandert. Entscheid des PM (22.09.
 5. **Ergebnis:** **661 Symbole** (Klasse 2: 627, Klasse 3: 34 nach Mehrheit), davon **7 ohne Namen** (alle Klasse 2: EA, MON, PLAN,
    SBNY, WORK, X, ZEN) — sie bleiben undefiniert, keine Handnachträge. Namensgleich mit Karte v1 für alle 550 Symbole in beiden Karten.
    5 Namen gehören zwei Reihen (BRK.A/BRK.B, CPAY/FLT, DJT/DWAC, RDS.A/RDS.B, RTX/UTX) — der Artikel zählt für beide, wie Nr. 44.
+
+### Nachtrag 3 — 22.09.2026, schlanker Rohauszug (Auftrag Nr. 47 Nachtrag; vor dem Neustart des Vollaufs)
+
+Grund: §9 sagt „Nichts wird gespeichert außer dem Extrakt". Der Lauf lädt dafür 2,5–3,5 TB und wirft alles bis auf ≈ 0,3 GB Zähler
+weg; jede spätere Frage an denselben Datenstrom hieße erneut laden. Gemessen an drei echten Dateien (2017, 2021, 2025) und in der
+Prüfung an der Probe nachgerechnet: alle Zeilen mit Firmennennung, davon die Spalten 1, 2, 4, 5, 15, 16, gzip-komprimiert sind
+**≈ 2 % des Downloads** (Probe: 2,1 %), also ≈ 50–70 GB für 2017–2026 bei 723 GB freiem Platz. Entscheid Wilhelms (22.09., Formular):
+Lauf anhalten, umbauen, neu starten. **Die Messung ändert sich dadurch nicht** — weder Größen noch Tore, Kontrollen oder Schwellen;
+es liegt nur zusätzlich der Rohauszug. §9 gilt insoweit nicht mehr.
+
+1. **Was abgelegt wird:** jede GKG-Zeile mit genau 27 Feldern und **nichtleerer Spalte 15** (dieselbe Auswahl, die der Zähler
+   `mitOrganisation` zählt — kein Namensfilter, keine Normalisierung, keine Tonbedingung), davon die Spalten **1** (GKGRECORDID),
+   **2** (V2.1DATE), **4** (Quelle), **5** (Link), **15** (Firmen mit Offsets), **16** (Ton) — **bytegleich** aus der Quelle
+   geschnitten (auf den Bytes, nicht über den decodierten Text), Tab getrennt, Zeilenende LF, in Datei- und Quellreihenfolge.
+2. **Ablage je UTC-Dateitag:** `roh/<UTC-Tag>.tsv.gz` (gzip, ein Glied je Quelldatei) mit Beleg `roh/<UTC-Tag>.json` und einmalig
+   `roh/_schema.json`. **UTC-Dateitag, nicht ET-Tag** — der Auszug folgt den Dateien, nicht der Zuordnung der Messung (Nachtrag 1
+   Punkt 1 bleibt für die Zähler unverändert). Ein UTC-Tag besteht aus zwei Stücken: den frühen Stunden des ET-Tags U-1 und dem Rest
+   des ET-Tags U; sie stammen aus verschiedenen Teilen des Laufs.
+3. **Halbe Tage sind ausgeschlossen:** jeder ET-Tag legt seine Stücke erst nach **vollständiger** Zählung (`gefunden + fehlend = soll`)
+   und **vor** seiner Tagesdatei ab, über `.tmp` und Umbenennen; `roh/<UTC-Tag>.tsv.gz` entsteht erst, wenn **beide** Stücke vorliegen
+   (Sperre über `mkdir`, Umbenennen zuletzt) und die Stückzahlen zusammen 96 Dateistempel ergeben. Ein Abbruch hinterlässt höchstens
+   Stücke, nie eine fertige Datei. Die Randtage des Laufs (UTC 2017-01-01, 2026-09-01) bleiben Stücke — sie sind halb.
+4. **Roh-Klinke:** je Quelldatei muss die Zeilenzahl des Auszugs gleich dem Zuwachs von `mitOrganisation` sein, sonst endet der Teil
+   (Code 3, kein Neustart). Die Prüfungen (`test.js`, jetzt **91** statt 65) decken ab: Zeilenzahl = Zeilen mit Firma an Kunstdatei und
+   echter Datei, Feldinhalt bytegleich (auch bei ungültigen UTF-8-Bytes, CRLF, falscher Feldzahl, fehlendem Zeilenende), abgebrochener
+   Tag ohne fertige `.tsv.gz`, Vereinen, Sperre, Nachlauf, mehrgliedriges gzip.
+5. **Was gleich bleibt:** Zähler, Felder, Stichprobe und Tagesdateien sind unverändert; die 126 vor dem Umbau gezählten Tage werden
+   nach `tage-vor-umbau/` gelegt und neu gezählt — die neue Fassung ist deterministisch, also müssen die Tagesdateien bis auf das
+   Laufzeitfeld `dauerS` bytegleich sein (zweite Positivkontrolle).

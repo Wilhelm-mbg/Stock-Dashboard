@@ -5,6 +5,8 @@
 #          sh vollauf.sh stopp         haelt alle Teile an (angefangene Tage werden beim naechsten Start wiederholt)
 #          sh vollauf.sh stand         Einheiten, erledigte Tage, Groesse der Ablage
 # Parallelitaet aendern: stopp, dann start <neues n> - erledigte Tage erkennt das Werkzeug an ihrer vollstaendigen Tagesdatei.
+# start raeumt vorher den Rohauszug auf (--rohNachlauf: Sperren und .tmp eines Abbruchs weg, fertige Paare vereinen) - nur hier,
+# weil dabei kein Teil laufen darf.
 set -e
 NODE=/opt/node-v24.18.0/bin/node
 HIER=$(cd "$(dirname "$0")" && pwd)
@@ -14,8 +16,9 @@ BIS=2026-08-31
 case "$1" in
   start)
     N=${2:?Teilzahl fehlt}
-    mkdir -p "$AUS/tage"
+    mkdir -p "$AUS/tage" "$AUS/roh/_teile"
     "$NODE" "$HIER/test.js" "$AUS/kontrolle/probe.gkg.csv.zip"
+    "$NODE" "$HIER/gkg-tage.js" --rohNachlauf --aus "$AUS"   # Sperren/.tmp aus einem Abbruch weg, fertige Paare vereinen
     for k in $(seq 1 "$N"); do
       systemctl reset-failed "gdelt-datenbau-$k" 2>/dev/null || true
       systemd-run --unit="gdelt-datenbau-$k" --working-directory="$HIER" \
@@ -28,6 +31,7 @@ case "$1" in
   stand)
     systemctl list-units --no-legend 'gdelt-datenbau-*' | awk '{print $1, $3, $4}'
     echo "Tagesdateien: $(ls "$AUS/tage" | grep -c '\.json$') von 3530"
-    du -sh "$AUS/tage" ;;
+    echo "Rohauszug: $(ls "$AUS/roh" | grep -c '\.tsv\.gz$') UTC-Tage fertig, $(ls "$AUS/roh/_teile" | grep -c '\.tsv\.gz$') Stuecke offen"
+    du -sh "$AUS/tage" "$AUS/roh" ;;
   *) echo "sh vollauf.sh start <n> | stopp | stand"; exit 2 ;;
 esac

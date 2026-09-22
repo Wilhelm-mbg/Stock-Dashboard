@@ -18,11 +18,20 @@
  * Datei-Menge des ET-Tags D: alle 15-min-Stempel (UTC), deren ET-Kalendertag D ist - 96, am Maerz-Umstelltag 92, im
  * November 100. Ein Artikel, dessen DATE-Stempel an einem ANDEREN ET-Tag liegt, wird in D nicht gezaehlt (`fremderTag`).
  *
+ * Schlanker Rohauszug (Nachtrag 3, 22.09.): je Quelldatei alle Zeilen mit 27 Feldern und nichtleerer Spalte 15 (dieselbe Auswahl
+ * wie zaehler.mitOrganisation), davon die Spalten 1, 2, 4, 5, 15, 16 BYTEGLEICH (auf dem Buffer geschnitten), gzip je Datei ein
+ * Glied. Abgelegt je UTC-DATEITAG roh/<U>.tsv.gz (+ Beleg roh/<U>.json): ein UTC-Tag U besteht aus den fruehen Stunden des ET-Tags
+ * U-1 und dem Rest des ET-Tags U - zwei Teile, die verschiedene Prozesse liefern. Jeder ET-Tag legt nach VOLLSTAENDIGER Zaehlung
+ * seine zwei Stuecke atomar nach roh/_teile/ (vor der Tagesdatei); wer das zweite Stueck eines UTC-Tags liefert, vereint beide unter
+ * einer Sperre (mkdir) und benennt erst dann um. Ein halber UTC-Tag liegt also nie als roh/<U>.tsv.gz vor. Randtage des Laufs
+ * (UTC 2017-01-01, 2026-09-01) bleiben Stuecke. Aufraeumen nach Abbruch: --rohNachlauf (vollauf.sh start, vor den Teilen).
  * Fortsetzbar je Tag: <aus>/tage/<YYYY-MM-DD>.json (atomar) + <aus>/_fortschritt-<k>.json; Log <aus>/log-<k>.txt.
  * Aufruf:  node gkg-tage.js --von 2017-01-01 --bis 2026-08-31 --teil 3/12 --aus /pfad
  *          node gkg-tage.js --tag 2025-06-02 --aus /pfad                (ein ET-Tag)
  *          node gkg-tage.js --utcTag 2025-06-02 --aus /pfad             (Kontrolle: die 96 Dateien des UTC-Tags, alle
  *                                                                        ET-Tage getrennt -> <aus>/kontrolle-utc-<tag>.json)
+ *          node gkg-tage.js --rohNachlauf --aus /pfad                   (Rohauszug aufraeumen, nur ohne laufende Teile)
+ *          --ohneRoh schaltet den Rohauszug ab (Kontrollen, Vergleiche).
  * Simulation, keine Anlageberatung. */
 var fs = require('fs');
 var path = require('path');
@@ -42,6 +51,8 @@ var MAX_BYTES = 200 * 1024 * 1024;
 var RESERVOIR = 10;
 var SCHNITT = KONST.SCHNITT_ET;
 var SPALTEN = 27, SP_ID = 0, SP_DATUM = 1, SP_QUELLE = 3, SP_DOK = 4, SP_ORG = 14, SP_TON = 15;
+var ROH_KENNUNG = 'nachrichten-stimmung-tage-2026-09-19/gdelt-roh/v1';
+var ROH_SPALTEN = [SP_ID, SP_DATUM, SP_QUELLE, SP_DOK, SP_ORG, SP_TON];   // 0-basiert = GKG-Spalten 1, 2, 4, 5, 15, 16
 
 function argumente(a) {
   var o = {};
@@ -193,41 +204,147 @@ function pruefeTag(erg) {
   return true;
 }
 
+/* ---------- Schlanker Rohauszug (Nachtrag 3) ---------- */
+var TAB_B = Buffer.from('\t'), NL_B = Buffer.from('\n');
+/** Auszug einer entpackten GKG-Datei (Buffer): Zeilen mit genau 27 Feldern und nichtleerer Spalte 15; Spalten 1, 2, 4, 5, 15, 16
+ * bytegleich, tab-getrennt, '\n'. Die Spaltenpaare 1-2, 4-5, 15-16 liegen in der Quelle nebeneinander und werden samt ihrem Tab
+ * als ein Stueck uebernommen. Ein CR am Zeilenende gehoert zur letzten Spalte (27) und liegt nie im Auszug. */
+function rohAuszug(buf) {
+  var teile = [], zeilen = 0, pos = 0, len = buf.length, t = new Array(SPALTEN - 1);
+  while (pos < len) {
+    var ende = buf.indexOf(10, pos); if (ende < 0) ende = len;
+    var e = ende; if (e > pos && buf[e - 1] === 13) e--;
+    var k = 0, p = pos, q;
+    while (k < SPALTEN && (q = buf.indexOf(9, p)) >= 0 && q < e) { t[k++] = q; p = q + 1; }
+    if (k === SPALTEN - 1 && t[SP_ORG] > t[SP_ORG - 1] + 1) {
+      teile.push(buf.subarray(pos, t[SP_DATUM]), TAB_B, buf.subarray(t[SP_QUELLE - 1] + 1, t[SP_DOK]), TAB_B, buf.subarray(t[SP_ORG - 1] + 1, t[SP_TON]), NL_B);
+      zeilen++;
+    }
+    pos = ende + 1;
+  }
+  return { buf: Buffer.concat(teile), zeilen: zeilen };
+}
+function utcTagVon(stempel) { return stempel.slice(0, 4) + '-' + stempel.slice(4, 6) + '-' + stempel.slice(6, 8); }
+function tagDavor(tag) { return new Date(Date.parse(tag + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10); }
+function rohNeu() { return { tage: {} }; }
+function rohEimer(roh, st) {
+  var u = utcTagVon(st);
+  return roh.tage[u] || (roh.tage[u] = { soll: 0, dateien: 0, fehlend: [], fehler: [], von: st, bis: st, zeilen: 0, bytesRoh: 0, bytesGz: 0, ms: 0, gz: [] });
+}
+/** Eine gezaehlte Datei in den Auszug; `sollZeilen` = mitOrganisation-Zuwachs dieser Datei (Roh-Klinke: muss gleich sein). */
+function rohFuegeAn(roh, st, csv, sollZeilen) {
+  var t0 = process.hrtime.bigint(), a = rohAuszug(csv);
+  if (a.zeilen !== sollZeilen) throw new Error('Roh-Klinke: ' + st + ' Auszug ' + a.zeilen + ' Zeilen, Zaehler mitOrganisation ' + sollZeilen);
+  var e = rohEimer(roh, st), gz = a.zeilen ? zlib.gzipSync(a.buf) : null;
+  if (gz) e.gz.push(gz);
+  e.dateien++; e.zeilen += a.zeilen; e.bytesRoh += a.buf.length; e.bytesGz += gz ? gz.length : 0;
+  e.ms += Number(process.hrtime.bigint() - t0) / 1e6;
+}
+function rohOrdner(aus) { return { d: path.join(aus, 'roh'), T: path.join(aus, 'roh', '_teile') }; }
+function schreibeBufAtomar(p, buf) { fs.writeFileSync(p + '.tmp', buf); fs.renameSync(p + '.tmp', p); }
+/** Nach VOLLSTAENDIGER Zaehlung des ET-Tags: seine Stuecke (je UTC-Tag eines) atomar nach roh/_teile/, dann vereinen, wo moeglich.
+ * Ist roh/<U>.tsv.gz schon da (Tag nach Abbruch wiederholt), wird nichts neu gelegt - der Inhalt ist deterministisch derselbe. */
+function rohAblegen(aus, etTag, roh) {
+  var o = rohOrdner(aus), erg = {};
+  fs.mkdirSync(o.T, { recursive: true });
+  Object.keys(roh.tage).sort().forEach(function (u) {
+    var e = roh.tage[u], stueck = path.join(o.T, u + '_' + etTag);
+    if (fs.existsSync(path.join(o.d, u + '.tsv.gz'))) { erg[u] = 'schon'; return; }
+    schreibeBufAtomar(stueck + '.tsv.gz', Buffer.concat(e.gz));
+    schreibeAtomar(stueck + '.json', { kennung: ROH_KENNUNG, utcTag: u, etTag: etTag, soll: e.soll, dateien: e.dateien, fehlend: e.fehlend, fehler: e.fehler,
+      von: e.von, bis: e.bis, zeilen: e.zeilen, bytesRoh: e.bytesRoh, bytesGz: e.bytesGz, msRoh: Math.round(e.ms) });   // .json zuletzt = Stueck fertig
+    erg[u] = rohVereine(aus, u);
+  });
+  return erg;
+}
+/** UTC-Tag U = Stueck des ET-Tags U-1 (fruehe Stunden) + Stueck des ET-Tags U (Rest), in dieser Reihenfolge (Dateien chronologisch). */
+function rohVereine(aus, u) {
+  var o = rohOrdner(aus), ziel = path.join(o.d, u + '.tsv.gz');
+  var st = [tagDavor(u), u].map(function (et) { var b = path.join(o.T, u + '_' + et); return fs.existsSync(b + '.json') ? { b: b, meta: JSON.parse(fs.readFileSync(b + '.json', 'utf8')) } : null; });
+  if (fs.existsSync(ziel)) return 'schon';
+  if (!st[0] || !st[1]) return 'wartet';
+  if (st[0].meta.soll + st[1].meta.soll !== 96) throw new Error('Roh-Klinke: UTC-Tag ' + u + ' aus ' + (st[0].meta.soll + st[1].meta.soll) + ' Dateistempeln statt 96');
+  var sperre = path.join(o.T, u + '.sperre');
+  try { fs.mkdirSync(sperre); } catch (err) { if (err.code === 'EEXIST') return 'gesperrt'; throw err; }
+  try {
+    if (fs.existsSync(ziel)) return 'schon';
+    var gz = Buffer.concat(st.map(function (s) { return fs.readFileSync(s.b + '.tsv.gz'); }));
+    if (!gz.length) gz = zlib.gzipSync(Buffer.alloc(0));
+    var m = st.map(function (s) { return s.meta; });
+    schreibeAtomar(path.join(o.d, u + '.json'), { kennung: ROH_KENNUNG, utcTag: u, soll: 96, dateien: m[0].dateien + m[1].dateien, fehlend: m[0].fehlend.concat(m[1].fehlend),
+      fehler: m[0].fehler.concat(m[1].fehler), zeilen: m[0].zeilen + m[1].zeilen, bytesRoh: m[0].bytesRoh + m[1].bytesRoh, bytesGz: gz.length, stuecke: m });
+    schreibeBufAtomar(ziel, gz);                                                 // die .tsv.gz zuletzt = UTC-Tag fertig
+    st.forEach(function (s) { ['.tsv.gz', '.json'].forEach(function (x) { try { fs.unlinkSync(s.b + x); } catch (err) { /* schon weg */ } }); });
+    return 'vereint';
+  } finally { fs.rmdirSync(sperre); }
+}
+/** Aufraeumen nach Abbruch (nur ohne laufende Teile): Sperren und .tmp weg, fertige Paare vereinen, Reste fertiger Tage loeschen. */
+function rohNachlauf(aus) {
+  var o = rohOrdner(aus), n = { sperren: 0, tmp: 0, vereint: 0, wartet: [] };
+  fs.mkdirSync(o.T, { recursive: true });
+  [o.d, o.T].forEach(function (d) { fs.readdirSync(d).forEach(function (f) {
+    if (/\.sperre$/.test(f)) { fs.rmdirSync(path.join(d, f)); n.sperren++; } else if (/\.tmp$/.test(f)) { fs.unlinkSync(path.join(d, f)); n.tmp++; }
+  }); });
+  var tage = {}; fs.readdirSync(o.T).forEach(function (f) { var m = /^(\d{4}-\d\d-\d\d)_\d{4}-\d\d-\d\d\.json$/.exec(f); if (m) tage[m[1]] = 1; });
+  Object.keys(tage).sort().forEach(function (u) {
+    var r = rohVereine(aus, u);
+    if (r === 'vereint') n.vereint++;
+    else if (r === 'schon') fs.readdirSync(o.T).forEach(function (f) { if (f.indexOf(u + '_') === 0) fs.unlinkSync(path.join(o.T, f)); });
+    else n.wartet.push(u);
+  });
+  return n;
+}
+function rohSchema(aus) {
+  var p = path.join(aus, 'roh', '_schema.json');
+  if (fs.existsSync(p)) return;
+  schreibeAtomar(p, { kennung: ROH_KENNUNG, werkzeug: 'studien/nachrichten-stimmung-tage-2026-09-19/datenbau/gkg-tage.js (' + KENNUNG + ')', erstellt: new Date().toISOString(),
+    herkunft: 'GDELT GKG 2.1, http://data.gdeltproject.org/gdeltv2/<YYYYMMDDHHMMSS>.gkg.csv.zip (15-min-Dateien)',
+    spalten: [{ gkg: 1, name: 'GKGRECORDID' }, { gkg: 2, name: 'V2.1DATE (UTC, YYYYMMDDHHMMSS)' }, { gkg: 4, name: 'V2SOURCECOMMONNAME' }, { gkg: 5, name: 'V2DOCUMENTIDENTIFIER' },
+      { gkg: 15, name: 'V2ENHANCEDORGANIZATIONS (Name,Offset;...)' }, { gkg: 16, name: 'V1.5TONE (Ton,Pos,Neg,Polaritaet,Aktiv,SelbstGruppe,Woerter)' }],
+    auswahl: 'jede Zeile mit genau 27 Feldern und nichtleerer Spalte 15 (= Zaehler mitOrganisation); keine Namensfilter, kein Normalisieren',
+    inhalt: 'Feldbytes unveraendert aus der Quelle, Trenner Tab, Zeilenende LF, Zeilen in Datei- und Quellreihenfolge',
+    datei: 'roh/<UTC-Tag>.tsv.gz = die 96 Dateien des UTC-Dateitags (Tag aus dem Dateinamen, nicht aus V2.1DATE); gzip mit einem Glied je Quelldatei (mehrgliedrig, zcat/gunzip lesen es als eins)',
+    beleg: 'roh/<UTC-Tag>.json: soll, dateien, fehlend (404), fehler, zeilen, Bytes, Stuecke (ET-Tag U-1 fruehe Stunden, ET-Tag U Rest)',
+    vorregistrierung: 'VORREGISTRIERUNG.md Nachtrag 3 (22.09.2026)' });
+}
+
 function warte(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
 function neueZaehler(soll) {
   return { soll: soll, gefunden: 0, fehlend: 0, fehler: [], fehlendStempel: [], bytesZip: 0, bytesCsv: 0, zeilen: 0, falscheFeldzahl: 0, mitOrganisation: 0, ohneTon: 0,
     stempelAusDatei: 0, stempelUngleichDatei: 0, treffer: 0, trefferSpaet: 0, trefferUebersetzt: 0, fremderTag: 0 };
 }
 
-/** Holt und zaehlt eine Liste von Dateistempeln; Rueckgabe { B, zaehler }. */
-async function zaehleDateien(stempel, karte, opt, log) {
+/** Holt und zaehlt eine Liste von Dateistempeln; Rueckgabe { B, zaehler }. `roh` (optional) sammelt den schlanken Auszug. */
+async function zaehleDateien(stempel, karte, opt, log, roh) {
   var B = {}, zaehler = neueZaehler(stempel.length);
   for (var i = 0; i < stempel.length; i++) {
     var st = stempel[i], url = 'http://data.gdeltproject.org/gdeltv2/' + st + '.gkg.csv.zip';
-    var t1 = Date.now();
-    var r = await hole(url, 2);
-    if (r.status === 404) { zaehler.fehlend++; zaehler.fehlendStempel.push(st); }
-    else if (r.status !== 200) { zaehler.fehler.push(st + ':' + r.status); }
+    var t1 = Date.now(), eimer = roh ? rohEimer(roh, st) : null;
+    if (eimer) { eimer.soll++; if (st < eimer.von) eimer.von = st; if (st > eimer.bis) eimer.bis = st; }
+    var r = await (opt.hole || hole)(url, 2);
+    if (r.status === 404) { zaehler.fehlend++; zaehler.fehlendStempel.push(st); if (eimer) eimer.fehlend.push(st); }
+    else if (r.status !== 200) { zaehler.fehler.push(st + ':' + r.status); if (eimer) eimer.fehler.push(st); }
     else {
       zaehler.gefunden++; zaehler.bytesZip += r.buf.length;
+      var csv = null, vorOrg = zaehler.mitOrganisation;
       try {
-        var csv = entpacke(r.buf); zaehler.bytesCsv += csv.length;
+        csv = entpacke(r.buf); zaehler.bytesCsv += csv.length;
         zaehleText(csv.toString('utf8'), karte, st, B, zaehler, opt.reservoir);
-        csv = null;
-      } catch (e) { zaehler.fehler.push(st + ':' + e.message); }
-      r.buf = null;
+      } catch (e) { csv = null; zaehler.fehler.push(st + ':' + e.message); if (eimer) eimer.fehler.push(st); }
+      if (csv && roh) rohFuegeAn(roh, st, csv, zaehler.mitOrganisation - vorOrg);   // wirft bei Abweichung (Roh-Klinke)
+      csv = null; r.buf = null;
     }
     opt.dateienGesamt++;
     if (opt.dateienGesamt % 100 === 0) log('  fortschritt ' + opt.dateienGesamt + ' dateien, zuletzt ' + st + ', ' + ((Date.now() - opt.start) / 1000).toFixed(0) + ' s');
-    var rest = ABSTAND_MS - (Date.now() - t1); if (rest > 0) await warte(rest);
+    var rest = (opt.abstand != null ? opt.abstand : ABSTAND_MS) - (Date.now() - t1); if (rest > 0) await warte(rest);
   }
   return { B: B, zaehler: zaehler };
 }
 
 /** Ein ET-Tag: Datei-Menge des ET-Tags, Ablage nur des Eimers D; Artikel fremder ET-Tage werden gezaehlt, nicht abgelegt. */
-async function zaehleETTag(tag, karte, opt, log) {
+async function zaehleETTag(tag, karte, opt, log, roh) {
   var t0 = Date.now();
-  var r = await zaehleDateien(stempelDesETTages(tag), karte, opt, log), z = r.zaehler;
+  var r = await zaehleDateien(stempelDesETTages(tag), karte, opt, log, roh), z = r.zaehler;
   Object.keys(r.B).forEach(function (d) { if (d !== tag) Object.keys(r.B[d].symbole).forEach(function (sym) { var q = r.B[d].symbole[sym]; z.fremderTag += q.n + q.nSpaet; }); });
   var eimer = r.B[tag] || { symbole: {}, stich: {} };
   var erg = { kennung: KENNUNG, karte: karte.kennung, tag: tag, soll: z.soll, dateien: z.gefunden, fehlend: z.fehlendStempel,
@@ -243,15 +360,34 @@ function tageVonBis(von, bis) {
 }
 function schreibeAtomar(p, obj) { fs.writeFileSync(p + '.tmp', JSON.stringify(obj)); fs.renameSync(p + '.tmp', p); }
 
+/** Ein ET-Tag vollstaendig: zaehlen, bei vollstaendiger Datei-Menge den Rohauszug ablegen (VOR der Tagesdatei - so kann ein
+ * Abbruch nie einen erledigten Tag ohne Auszug hinterlassen), dann die Tagesdatei atomar schreiben. */
+async function verarbeiteTag(tag, karte, opt, aus, log) {
+  var roh = opt.ohneRoh ? null : rohNeu();
+  var erg = await zaehleETTag(tag, karte, opt, log, roh), z = erg.zaehler;
+  var vollstaendig = z.gefunden + z.fehlend === z.soll;                            // unvollstaendig = Tag wird wiederholt, kein Stueck
+  var ausgabe = roh && vollstaendig ? rohAblegen(aus, tag, roh) : null;
+  var rohZeilen = roh ? Object.keys(roh.tage).reduce(function (a, u) { return a + roh.tage[u].zeilen; }, 0) : 0;
+  schreibeAtomar(path.join(aus, 'tage', tag + '.json'), erg);                      // Tagesdatei zuletzt: erledigt heisst "Auszug liegt"
+  return { erg: erg, roh: ausgabe, rohZeilen: rohZeilen };
+}
+
 async function haupt() {
   var a = argumente(process.argv.slice(2));
   if (!a.aus) throw new Error('--aus <Ordner> fehlt');
   var aus = path.resolve(a.aus);
+  if (a.rohNachlauf) {
+    var nl = rohNachlauf(aus);
+    process.stdout.write('ROH-NACHLAUF sperren=' + nl.sperren + ' tmp=' + nl.tmp + ' vereint=' + nl.vereint + ' wartet=' + nl.wartet.length + (nl.wartet.length ? ' (' + nl.wartet.slice(0, 8).join(' ') + ')' : '') + '\n');
+    return;
+  }
   var karte = ladeKarte(a.karte ? path.resolve(a.karte) : null);
-  var opt = { reservoir: parseInt(a.reservoir, 10) || RESERVOIR, dateienGesamt: 0, start: Date.now() };
+  var opt = { reservoir: parseInt(a.reservoir, 10) || RESERVOIR, dateienGesamt: 0, start: Date.now(), ohneRoh: !!a.ohneRoh };
   fs.mkdirSync(path.join(aus, 'tage'), { recursive: true });
+  if (!opt.ohneRoh) { fs.mkdirSync(path.join(aus, 'roh', '_teile'), { recursive: true }); rohSchema(aus); }
 
   if (a.utcTag) {
+    opt.ohneRoh = true;
     var logK = function (s) { process.stdout.write(new Date().toISOString().slice(11, 19) + ' ' + s + '\n'); };
     var r = await zaehleDateien(stempelDesUTCTages(a.utcTag), karte, opt, logK);
     var eimer = {}; Object.keys(r.B).sort().forEach(function (d) { eimer[d] = symboleAblage(r.B[d]); });
@@ -279,20 +415,22 @@ async function haupt() {
       var alt = JSON.parse(fs.readFileSync(tagP, 'utf8')).zaehler;
       if (alt.gefunden + alt.fehlend === alt.soll) { fort.erledigtTage[tag] = { dateien: alt.gefunden, fehlend: alt.fehlend, soll: alt.soll, vorher: true }; schreibeAtomar(fortP, fort); continue; }
     }
-    var erg = await zaehleETTag(tag, karte, opt, log);
-    schreibeAtomar(tagP, erg);
-    var z = erg.zaehler;
+    var v = await verarbeiteTag(tag, karte, opt, aus, log);
+    var erg = v.erg, z = erg.zaehler;
     /* ERLEDIGT nur, wenn jede Datei gezaehlt oder als 404 bestaetigt ist; Netz-/HTTP-Fehler bleiben offen (Neustart wiederholt). */
     if (z.gefunden + z.fehlend === z.soll) { fort.erledigtTage[tag] = { dateien: z.gefunden, fehlend: z.fehlend, soll: z.soll }; if (fort.offeneTage) delete fort.offeneTage[tag]; }
     else { fort.offeneTage = fort.offeneTage || {}; fort.offeneTage[tag] = { dateien: z.gefunden, fehlend: z.fehlend, fehler: z.fehler.length }; }
     fort.stand = new Date().toISOString();
     schreibeAtomar(fortP, fort);
-    log(tag + ' dateien=' + z.gefunden + '/' + z.soll + ' fehlend=' + z.fehlend + (z.fehlend ? '(' + z.fehlendStempel.slice(0, 8).map(function (s) { return s.slice(8, 12); }).join(' ') + ')' : '') + ' fehler=' + z.fehler.length + (z.fehler.length ? '(' + z.fehler.slice(0, 3).join(' ') + ')' : '') + ' zeilen=' + z.zeilen + ' treffer=' + z.treffer + ' spaet=' + z.trefferSpaet + ' fremd=' + z.fremderTag + ' symbole=' + Object.keys(erg.symbole).length + ' zip=' + (z.bytesZip / 1048576).toFixed(0) + 'MB dauer=' + erg.dauerS + 's');
+    log(tag + ' dateien=' + z.gefunden + '/' + z.soll + ' fehlend=' + z.fehlend + (z.fehlend ? '(' + z.fehlendStempel.slice(0, 8).map(function (s) { return s.slice(8, 12); }).join(' ') + ')' : '') + ' fehler=' + z.fehler.length + (z.fehler.length ? '(' + z.fehler.slice(0, 3).join(' ') + ')' : '') + ' zeilen=' + z.zeilen + ' treffer=' + z.treffer + ' spaet=' + z.trefferSpaet + ' fremd=' + z.fremderTag + ' symbole=' + Object.keys(erg.symbole).length + ' zip=' + (z.bytesZip / 1048576).toFixed(0) + 'MB dauer=' + erg.dauerS + 's'
+      + (v.roh ? ' roh=' + v.rohZeilen + 'z/' + Object.keys(v.roh).map(function (u) { return u.slice(5) + ':' + v.roh[u]; }).join(',') : ''));
   }
   log('ENDE teil ' + k + '/' + n + ' tage=' + tage.length + ' dateien=' + opt.dateienGesamt + ' ' + ((Date.now() - opt.start) / 1000).toFixed(0) + ' s');
 }
 
 module.exports = { KENNUNG: KENNUNG, entpacke: entpacke, zaehleText: zaehleText, karteAus: karteAus, ladeKarte: ladeKarte, symboleAblage: symboleAblage, pruefeTag: pruefeTag,
   stempelDesETTages: stempelDesETTages, stempelDesUTCTages: stempelDesUTCTages, tageVonBis: tageVonBis, neueZaehler: neueZaehler, fnvU: fnvU,
-  SPALTEN: SPALTEN, SP_DATUM: SP_DATUM, SP_ORG: SP_ORG, SP_TON: SP_TON, SCHNITT: SCHNITT };
+  rohAuszug: rohAuszug, rohNeu: rohNeu, rohFuegeAn: rohFuegeAn, rohAblegen: rohAblegen, rohVereine: rohVereine, rohNachlauf: rohNachlauf, rohSchema: rohSchema,
+  utcTagVon: utcTagVon, tagDavor: tagDavor, verarbeiteTag: verarbeiteTag, zaehleETTag: zaehleETTag,
+  SPALTEN: SPALTEN, SP_ID: SP_ID, SP_DATUM: SP_DATUM, SP_QUELLE: SP_QUELLE, SP_DOK: SP_DOK, SP_ORG: SP_ORG, SP_TON: SP_TON, SCHNITT: SCHNITT, ROH_KENNUNG: ROH_KENNUNG, ROH_SPALTEN: ROH_SPALTEN };
 if (require.main === module) haupt().catch(function (e) { process.stderr.write('ABBRUCH ' + (e.stack || e) + '\n'); process.exit(/Leck|Klinke/.test(String(e && e.message)) ? 3 : 1); });   // 3 = Klinke: systemd startet nicht neu
