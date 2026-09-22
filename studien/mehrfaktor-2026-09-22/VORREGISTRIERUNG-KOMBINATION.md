@@ -14,13 +14,18 @@ Fundamentaltafel; kein Netz, kein Archiv auf E:.
 
 ## 1. Die Frage — eine Vorhersage, ein Test
 
-Liefert das **oberste Dezil der gleichgewichteten Rangkombination** der sieben Signalfelder (Momentum, niedrige Schwankung,
-Bewertung, Ertragskraft, Investition, Gewinnüberraschung, F&E-Intensität) gegen das Universum **netto** (Kassa-Hürde je Klasse ×
-Umschlag) eine positive Monatsrendite?
+*(Fassung nach Nachtrag 3, 22.09.2026, Wilhelms Entscheid „A": Teststatistik ist der Rang-Informationskoeffizient; Felder, Gewichte,
+Universum, Signaltage, Haltefenster unverändert.)*
 
-**Vorhersage:** Dezil oben − Universum, netto, **> 0 Pp je Monat** über die Signaltage 2017-01 … 2024-08; erwartete Größe nach
-§6: 0,3–0,6 Pp je Monat. **Ein** Test, **eine** registrierte Strategie. Long-Short, Dezil unten, Jahresscheiben, Regime,
-Kontrollgrößen und alle Einzelfelder sind Diagnose und entscheiden nichts.
+Trägt die **gleichgewichtete Rangkombination** der sieben Signalfelder (Momentum, niedrige Schwankung, Bewertung, Ertragskraft,
+Investition, Gewinnüberraschung, F&E-Intensität) **Information über die Rangfolge der nächsten Monatsrenditen** im Universum?
+
+**Vorhersage:** der **mittlere Spearman-IC** zwischen Kombinationsrang und Halteperioden-Rendite (brutto, Eröffnung(a) → Eröffnung(a′),
+alle Universumsmitglieder, Aufgefüllte mit mittlerem Rang; Definition Nachtrag 3) über die 92 Signaltage 2017-01 … 2024-08 ist
+**> 0**; erwartete Größe nach §6: **0,02–0,03** (Literatur für Mehrfaktor-Komposite 0,04–0,06, halbiert für Zerfall). **Ein** Test.
+Dezil oben − Universum (brutto/netto), Long-Short, Dezil unten, Jahresscheiben, Regime, Kontrollgrößen und alle Einzelfelder sind
+Diagnose und entscheiden nichts. Ein Ja heißt **„Information belegt, Handelbarkeit nicht entscheidbar"** (das Dezil netto wird mit
+seiner MDE₈₀ berichtet, nicht beurteilt) — der Belegstand führt das so, nicht als handelbare Kante.
 
 Warum die Kombination und nicht ein Feld (`wiki/faktoren-kombinieren.md` §2): fast jedes Nein dieses Monats kam von der
 Auflösungswand. Sieben schwache, teils unabhängige Signale mit je t ≈ 1–1,5 ergeben gleichgewichtet ein Signal mit t ≈ 2–3;
@@ -114,14 +119,14 @@ Ein Nullbefund ohne diese Vorprüfung ist keiner (Fehlerform „Kostenvorprüfun
 2. **Kosten.** Umschlag der Kombination aus der **Verweildauer im Dezil** (nicht aus der Trägheit der Kennzahlen): Schätzung =
    Mittel der Dezil-Umschläge der sieben Feldzellen (jede Zelle liefert ihn); Kosten = Umschlag × 0,080 Pp. Bei 40–60 % Umschlag
    0,03–0,05 Pp je Monat. **Tor V1:** erwartete Kante ×½ (0,15–0,3 Pp) > Kosten — sonst ist die Frage vor der Messung tot.
-3. **Auflösung.** Boden aus den Zufallsdezilen der Maschine (gemessen 22.09., 92 Signaltage, Klassen 1–3): se je Ziehung
-   **0,110 Pp**, **MDE₈₀-Boden 0,31 Pp** je Monat (bei 116 Signaltagen 0,28). Ein echtes Dezil streut stärker (Faktor 2–4;
-   Momentum Teil 3: 4,45 — `MACHBARKEIT.md` §7 der Stimmungsstudie): **×1 / ×2 / ×4 = 0,31 / 0,62 / 1,24 Pp.** Schätzung vor dem
-   Lauf: MDE₈₀ = 2,8016 × Median der se (netto) der sieben Feldzellen. **Tor V2:** erwartete Kante ×½ ≥ MDE₈₀-Schätzung. Fällt V2,
-   wird der Lauf trotzdem gefahren, aber das Urteil kann dann nur „belegt" oder **„nicht entscheidbar"** lauten — nie „kein Effekt".
-   Ehrlich vorab: bei Faktor 4 (1,24 Pp) ist die Frage mit 92 Monaten nicht auflösbar; bei Faktor 2 (0,62 Pp) am Rand. Die
-   Kombination hat weniger Faktorneigung als ein Einzeldezil, deshalb ist Faktor 2 die Arbeitsannahme — geprüft wird sie an den
-   Zellen, nicht behauptet.
+3. **Auflösung (Dezil, nur noch Diagnose).** Boden aus den Zufallsdezilen der Maschine (gemessen 22.09., 92 Signaltage, Klassen 1–3):
+   se je Ziehung **0,110 Pp**, **MDE₈₀-Boden 0,31 Pp** je Monat. Gemessen an den v1-Zellen (22.09.): Median der se (netto) der sieben
+   Feldzellen 0,372 ⇒ **MDE₈₀-Schätzung 1,04 Pp** — Tor V2 für das Dezil **gefallen** (Kante/2 = 0,15–0,30). Deshalb Nachtrag 3.
+3a. **Auflösung (IC, der Test).** Boden aus Kunstfeldern (22.09., `wiki/mehrfaktor-vorpruefung.md` §2): Zufall se **0,0035**,
+   **MDE₈₀-Boden 0,010**; Orakel IC exakt 1,0000. Ein echtes Signal streut über die Zeit stärker (Faktor 2–4): **×2 / ×4 = 0,020 / 0,039.**
+   Schätzung vor dem Lauf: MDE₈₀(IC) = 2,8016 × Median der se(IC) der sieben Feldzellen (aus den neu gebauten Zellen mit IC — die
+   se, nicht die IC-Werte, gehen in die Schätzung ein). **Tor V2:** erwarteter IC (0,02–0,03) ≥ MDE₈₀(IC)-Schätzung. Fällt V2, wird der
+   Lauf trotzdem gefahren, aber das Urteil kann dann nur „belegt" oder **„nicht entscheidbar unterhalb von IC X"** lauten — nie „kein Effekt".
 4. **Maschine je Zelle:** Orakel, Placebo Symbole, Zufall ×12, Leck-Klinke (Kurs und Bilanz) bestanden — sonst kommt die Zelle
    nicht in die Kombination (gemeldet, nicht repariert; Nachtrag nötig). Placebo Versatz wird ausgewiesen, aber nach §9 (3)
    behandelt.
@@ -130,11 +135,13 @@ Ein Nullbefund ohne diese Vorprüfung ist keiner (Fehlerform „Kostenvorprüfun
 
 ## 7. Urteil vorab
 
-**„belegt"**, wenn **alle** gelten: (a) Tore der Maschine (jede Feldzelle **und** die Kombinationszelle: Orakel, Placebo Symbole,
-Zufall, Klinke) bestanden; (b) Vorprüfung §6 dokumentiert; (c) Dezil oben − Universum **netto** ≥ MDE₈₀ (aus dem Lauf, 2,8016 ×
-se); (d) **t_HH ≥ 3** (Tor wie Teil 4; bei einem Test wäre z = 1,96 — Entscheid §9 (6)); (e) letzte 250 Tage im Mittel nicht
-negativ (wie Teil 4 §T4.6). Sonst **„nicht belegt: nichts oberhalb von <MDE₈₀> Pp je Monat"** — nie „da ist nichts"; fällt V2,
-lautet der Satz „nicht entscheidbar unterhalb von <MDE₈₀> Pp".
+*(Fassung nach Nachtrag 3.)* **„Information belegt"**, wenn **alle** gelten: (a) Tore der Maschine (jede Feldzelle **und** die
+Kombinationszelle: Orakel — Dezil und IC = 1 —, Placebo Symbole, Zufall, Klinke) bestanden; (b) Vorprüfung §6 dokumentiert
+(`pruefung/vorpruefung-kombination.json` vor dem Lauf); (c) **mittlerer IC ≥ MDE₈₀(IC)** aus dem Lauf (2,8016 × se); (d) **t ≥ 3**
+(Mittel/se über die 92 Signaltage; Entscheid §9 (6) sinngemäß); (e) die letzten 12 Signaltage im Mittel nicht negativ. Sonst
+**„nicht belegt: nichts oberhalb von IC <MDE₈₀>"** — nie „da ist nichts"; fällt V2 (§6.3a), lautet der Satz „nicht entscheidbar
+unterhalb von IC <MDE₈₀>". Das Dezil oben netto wird daneben **berichtet** (Wert, se, MDE₈₀, Umschlag, Kosten) und nicht beurteilt:
+die Handelbarkeit bleibt offen, solange das Dezil unter seiner MDE₈₀ liegt.
 
 Testzahl **1**. Keine zweite Gewichtung, kein Weglassen eines Feldes, keine andere Dezilbreite, kein anderes Haltefenster nach dem
 Blick auf die Zahlen. Neue Ideen bekommen eine Runde 2 mit eigener Vorregistrierung.
@@ -191,7 +198,9 @@ Auftrag §1a.1, kein Widerspruch) · 8 Umkehr-Zelle bauen · 9 F&E ohne Ausweis 
 - K-P4 Nullpunkt jeder Zelle: Orakel, Placebo Symbole, Zufall, Leck bestanden (Placebo Versatz nach §9 (3)).
 - K-P5 Vorprüfung §6 als Datei `pruefung/vorpruefung-kombination.json` **vor** dem Lauf (Erwartung, Umschlag, MDE-Schätzung, V1, V2).
 - K-P6 Kombinationszelle: Auffüllungen je Feld und je Dezil ausgewiesen; Anteil aufgefüllter Mitglieder im Dezil oben < 50 %.
-- K-P7 Urteil folgt §7 aus den eigenen Zahlen (MDE = 2,8016 × se, t, letzte 250 Tage); Satzform „nichts oberhalb von …".
+- K-P7 Urteil folgt §7 aus den eigenen Zahlen des IC (MDE₈₀ = 2,8016 × se, t, letzte 12 Signaltage); Satzform „nichts oberhalb von IC …";
+  das Dezil netto wird berichtet, nicht beurteilt (Nachtrag 3). Alle Zellen der Kombination tragen Kennung `…/zelle/v1.1` (mit IC) und
+  dieselbe `tafelKennung` (Fundamentaltafel v1.1).
 - K-P8 Rückhaltereihe erst nach dem Urteil, eigene Datei, Flagge in der Kennung.
 
 ---
@@ -221,6 +230,17 @@ Auftrag §1a.1, kein Widerspruch) · 8 Umkehr-Zelle bauen · 9 F&E ohne Ausweis 
    Fehler sind). Wirkung: einzelne Symbol-Monate mit absurden Rohwerten in den Feldern 4, 5, 6, 7, 11 — der Rang ist dagegen
    unempfindlich (das Symbol landet am Rand eines Dezils). Entscheid wie oben: Zellen bleiben; Tafel-Nachbesserung (Plausibilität
    gegen Nachbar-Filings) als offener Punkt Nr. 59; im Kombinationsbericht ausgewiesen.
+3. **22.09.2026 21:20 (PM, nach Wilhelms Entscheid „A" per Formular), vor der Registrierung und bevor ein IC eines echten Feldes
+   existiert — Teststatistik geändert: Rang-IC statt Dezil netto.** Grund: die Vorprüfung §6.3 an den v1-Zellen ergab MDE₈₀ 1,04 Pp
+   gegen eine erwartete Kante von 0,15–0,30 — der Dezil-Test kann die Frage mit 92 Monaten nicht entscheiden (nötig ≈ 2.500 Monate).
+   Der IC-Boden wurde **ausschließlich an Kunstfeldern** gemessen (Zufall se 0,0035, MDE₈₀ 0,010; Orakel 1,0000); kein IC eines echten
+   Feldes oder der Kombination war zu diesem Zeitpunkt berechnet. **Definition (bindend, Auftrag Nr. 61):** je Signaltag Spearman-IC
+   = Pearson-Korrelation der Ränge (Gleichstand = mittlerer Rang) zwischen Kombinationsrang (alle Universumsmitglieder, Aufgefüllte mit
+   mittlerem Rang) und Halteperioden-Rendite der Maschine (brutto, Eröffnung(a) → Eröffnung(a′), Tote = Totalverlust); Signaltag ohne
+   IC bei < 100 Paaren; Mittel über die Signaltage, se = sd/√n, t = Mittel/se, MDE₈₀ = 2,8016 × se; Jahresscheiben und letzte 12
+   Signaltage als Diagnose. Feldzellen tragen ihren IC (nur Mitglieder mit Wert) als Diagnose. Felder, Gewichte (alle 1), Kontrollen,
+   Universum, Signaltage, Haltefenster, Rückhaltefenster: **unverändert**. Kosten (§6.2) bleiben als Information über die Handelbarkeit
+   des Dezils, gehen nicht in das Urteil ein. §1, §6.3/3a, §7, §10 K-P5/K-P7 sind entsprechend gefasst.
 
 ---
 
