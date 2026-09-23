@@ -1,0 +1,3476 @@
+{
+ "kennung": "nachrichten-stimmung-tage-2026-09-19/gdelt/v1 abschluss",
+ "erstellt": "2026-09-23T20:48:59.520Z",
+ "ablage": "/archiv/markt-dashboard/studien-zellen/gdelt-2017-2026",
+ "kalender": {
+  "etTage": 3530,
+  "etVon": "2017-01-01",
+  "etBis": "2026-08-31",
+  "utcTage": 3531,
+  "utcVon": "2017-01-01",
+  "utcBis": "2026-09-01"
+ },
+ "tagesdateien": {
+  "erwartet": 3530,
+  "vorhanden": 3530,
+  "ungueltig": [],
+  "unvollstaendig": [],
+  "fehlerTage": [],
+  "summen": {
+   "fehler": 0,
+   "soll": 338876,
+   "gefunden": 331749,
+   "fehlend": 7127,
+   "zeilen": 547275171,
+   "falscheFeldzahl": 2822,
+   "mitOrganisation": 398550733,
+   "ohneTon": 0,
+   "stempelAusDatei": 0,
+   "stempelUngleichDatei": 0,
+   "treffer": 37775208,
+   "trefferSpaet": 11379001,
+   "trefferUebersetzt": 0,
+   "fremderTag": 0,
+   "bytesZip": 2184286121254,
+   "bytesCsv": 6830484570255
+  },
+  "nSumme": 26396207,
+  "nSpaetSumme": 11379001,
+  "symbolTage": 1129037,
+  "symboleGesamt": 599,
+  "fehlendJeJahr": {
+   "2017": 985,
+   "2018": 992,
+   "2019": 11,
+   "2020": 2585,
+   "2021": 610,
+   "2022": 87,
+   "2023": 172,
+   "2024": 2,
+   "2025": 1681,
+   "2026": 2
+  },
+  "fehlendJeStundeUTC": {
+   "10": 185,
+   "11": 188,
+   "12": 187,
+   "13": 220,
+   "14": 210,
+   "15": 201,
+   "16": 220,
+   "17": 251,
+   "18": 273,
+   "19": 286,
+   "20": 312,
+   "21": 332,
+   "22": 416,
+   "23": 419,
+   "02": 426,
+   "01": 413,
+   "03": 378,
+   "00": 403,
+   "04": 375,
+   "07": 262,
+   "08": 177,
+   "05": 400,
+   "06": 416,
+   "09": 177
+  },
+  "blockAusfaelle": [
+   {
+    "tag": "2017-06-28",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2017-07-06",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-07-13",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-07-14",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-07-16",
+    "fehlend": 12,
+    "soll": 96
+   },
+   {
+    "tag": "2017-11-16",
+    "fehlend": 15,
+    "soll": 96
+   },
+   {
+    "tag": "2017-11-18",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-11-19",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-11-22",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-11-23",
+    "fehlend": 13,
+    "soll": 96
+   },
+   {
+    "tag": "2017-11-24",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-11-25",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-11-26",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-01",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-03",
+    "fehlend": 14,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-04",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-05",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-07",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-08",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-10",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-11",
+    "fehlend": 12,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-12",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-14",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-15",
+    "fehlend": 12,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-16",
+    "fehlend": 12,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-17",
+    "fehlend": 14,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-18",
+    "fehlend": 10,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-19",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-20",
+    "fehlend": 12,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-21",
+    "fehlend": 12,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-22",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-25",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-26",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-27",
+    "fehlend": 10,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-28",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-29",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-30",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2017-12-31",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-02",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-04",
+    "fehlend": 10,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-05",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-10",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-12",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-15",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-17",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-18",
+    "fehlend": 13,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-20",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-22",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-23",
+    "fehlend": 12,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-24",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-25",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-29",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-30",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2018-01-31",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-02-08",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2018-02-13",
+    "fehlend": 10,
+    "soll": 96
+   },
+   {
+    "tag": "2018-02-14",
+    "fehlend": 12,
+    "soll": 96
+   },
+   {
+    "tag": "2018-02-15",
+    "fehlend": 10,
+    "soll": 96
+   },
+   {
+    "tag": "2018-02-22",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2018-02-27",
+    "fehlend": 14,
+    "soll": 96
+   },
+   {
+    "tag": "2018-03-04",
+    "fehlend": 14,
+    "soll": 96
+   },
+   {
+    "tag": "2018-03-08",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-03-13",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2018-03-23",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-04-01",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-04-13",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2018-04-15",
+    "fehlend": 12,
+    "soll": 96
+   },
+   {
+    "tag": "2018-04-20",
+    "fehlend": 10,
+    "soll": 96
+   },
+   {
+    "tag": "2018-04-25",
+    "fehlend": 11,
+    "soll": 96
+   },
+   {
+    "tag": "2018-04-26",
+    "fehlend": 14,
+    "soll": 96
+   },
+   {
+    "tag": "2018-04-29",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-05-08",
+    "fehlend": 10,
+    "soll": 96
+   },
+   {
+    "tag": "2018-05-22",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-06-08",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-06-10",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2018-06-19",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2018-07-15",
+    "fehlend": 29,
+    "soll": 96
+   },
+   {
+    "tag": "2018-08-21",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2020-09-24",
+    "fehlend": 16,
+    "soll": 96
+   },
+   {
+    "tag": "2020-09-25",
+    "fehlend": 17,
+    "soll": 96
+   },
+   {
+    "tag": "2020-09-26",
+    "fehlend": 17,
+    "soll": 96
+   },
+   {
+    "tag": "2020-09-27",
+    "fehlend": 24,
+    "soll": 96
+   },
+   {
+    "tag": "2020-09-28",
+    "fehlend": 19,
+    "soll": 96
+   },
+   {
+    "tag": "2020-09-29",
+    "fehlend": 17,
+    "soll": 96
+   },
+   {
+    "tag": "2020-09-30",
+    "fehlend": 15,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-01",
+    "fehlend": 17,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-02",
+    "fehlend": 24,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-03",
+    "fehlend": 37,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-04",
+    "fehlend": 30,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-05",
+    "fehlend": 26,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-06",
+    "fehlend": 30,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-07",
+    "fehlend": 36,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-08",
+    "fehlend": 25,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-09",
+    "fehlend": 40,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-11",
+    "fehlend": 22,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-12",
+    "fehlend": 39,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-13",
+    "fehlend": 33,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-14",
+    "fehlend": 36,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-15",
+    "fehlend": 47,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-16",
+    "fehlend": 72,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-17",
+    "fehlend": 31,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-18",
+    "fehlend": 28,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-19",
+    "fehlend": 48,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-20",
+    "fehlend": 41,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-21",
+    "fehlend": 42,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-22",
+    "fehlend": 53,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-23",
+    "fehlend": 68,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-24",
+    "fehlend": 64,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-25",
+    "fehlend": 50,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-26",
+    "fehlend": 48,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-27",
+    "fehlend": 56,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-28",
+    "fehlend": 50,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-29",
+    "fehlend": 60,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-30",
+    "fehlend": 73,
+    "soll": 96
+   },
+   {
+    "tag": "2020-10-31",
+    "fehlend": 75,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-01",
+    "fehlend": 61,
+    "soll": 100
+   },
+   {
+    "tag": "2020-11-02",
+    "fehlend": 51,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-03",
+    "fehlend": 66,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-04",
+    "fehlend": 53,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-05",
+    "fehlend": 62,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-06",
+    "fehlend": 81,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-07",
+    "fehlend": 83,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-08",
+    "fehlend": 74,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-09",
+    "fehlend": 55,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-10",
+    "fehlend": 61,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-11",
+    "fehlend": 62,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-12",
+    "fehlend": 68,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-13",
+    "fehlend": 88,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-14",
+    "fehlend": 87,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-15",
+    "fehlend": 82,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-16",
+    "fehlend": 65,
+    "soll": 96
+   },
+   {
+    "tag": "2020-11-17",
+    "fehlend": 53,
+    "soll": 96
+   },
+   {
+    "tag": "2021-07-29",
+    "fehlend": 14,
+    "soll": 96
+   },
+   {
+    "tag": "2021-07-30",
+    "fehlend": 19,
+    "soll": 96
+   },
+   {
+    "tag": "2021-07-31",
+    "fehlend": 16,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-01",
+    "fehlend": 16,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-02",
+    "fehlend": 13,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-03",
+    "fehlend": 16,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-04",
+    "fehlend": 14,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-05",
+    "fehlend": 19,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-06",
+    "fehlend": 27,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-07",
+    "fehlend": 36,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-08",
+    "fehlend": 32,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-09",
+    "fehlend": 33,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-10",
+    "fehlend": 33,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-11",
+    "fehlend": 27,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-12",
+    "fehlend": 25,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-13",
+    "fehlend": 32,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-14",
+    "fehlend": 50,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-15",
+    "fehlend": 53,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-16",
+    "fehlend": 46,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-17",
+    "fehlend": 44,
+    "soll": 96
+   },
+   {
+    "tag": "2021-08-18",
+    "fehlend": 41,
+    "soll": 96
+   },
+   {
+    "tag": "2022-11-10",
+    "fehlend": 28,
+    "soll": 96
+   },
+   {
+    "tag": "2022-11-11",
+    "fehlend": 55,
+    "soll": 96
+   },
+   {
+    "tag": "2023-03-21",
+    "fehlend": 8,
+    "soll": 96
+   },
+   {
+    "tag": "2023-03-22",
+    "fehlend": 94,
+    "soll": 96
+   },
+   {
+    "tag": "2023-03-23",
+    "fehlend": 43,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-12",
+    "fehlend": 9,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-14",
+    "fehlend": 40,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-15",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-16",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-17",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-18",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-19",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-20",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-21",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-22",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-23",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-24",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-25",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-26",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-27",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-28",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-29",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-06-30",
+    "fehlend": 96,
+    "soll": 96
+   },
+   {
+    "tag": "2025-07-01",
+    "fehlend": 89,
+    "soll": 96
+   }
+  ],
+  "tageOhneDatei": [
+   "2025-06-15",
+   "2025-06-16",
+   "2025-06-17",
+   "2025-06-18",
+   "2025-06-19",
+   "2025-06-20",
+   "2025-06-21",
+   "2025-06-22",
+   "2025-06-23",
+   "2025-06-24",
+   "2025-06-25",
+   "2025-06-26",
+   "2025-06-27",
+   "2025-06-28",
+   "2025-06-29",
+   "2025-06-30"
+  ],
+  "kennungen": {
+   "nachrichten-stimmung-tage-2026-09-19/gdelt/v1 | nachrichten-stimmung-tage-2026-09-19/namenskarte/v2": 3530
+  },
+  "nPlusNSpaetGleichTreffer": true
+ },
+ "fortschritt": {
+  "dateien": 20,
+  "offeneEintraege": [
+   "2017-03-22 (teil 1)",
+   "2017-03-23 (teil 2)",
+   "2017-03-24 (teil 3)",
+   "2017-03-05 (teil 4)",
+   "2017-03-06 (teil 5)",
+   "2017-03-08 (teil 7)",
+   "2017-03-09 (teil 8)",
+   "2017-03-30 (teil 9)",
+   "2017-03-31 (teil 10)",
+   "2017-03-13 (teil 12)",
+   "2017-03-15 (teil 14)",
+   "2017-04-05 (teil 15)",
+   "2017-04-06 (teil 16)",
+   "2017-04-07 (teil 17)",
+   "2017-03-20 (teil 19)"
+  ],
+  "nochOffen": []
+ },
+ "plausibilitaet": {
+  "2017": {
+   "tage": 365,
+   "treffer": {
+    "median": 16590,
+    "p5": 6173.8,
+    "p95": 24380
+   },
+   "mitOrganisation": {
+    "median": 192118,
+    "p5": 95964.4,
+    "p95": 270485
+   },
+   "grenze": 1659,
+   "ausreisser": []
+  },
+  "2018": {
+   "tage": 365,
+   "treffer": {
+    "median": 16167,
+    "p5": 6152,
+    "p95": 22279
+   },
+   "mitOrganisation": {
+    "median": 184588,
+    "p5": 93195,
+    "p95": 216711
+   },
+   "grenze": 1616.7,
+   "ausreisser": []
+  },
+  "2019": {
+   "tage": 365,
+   "treffer": {
+    "median": 13692,
+    "p5": 4544.2,
+    "p95": 18621.8
+   },
+   "mitOrganisation": {
+    "median": 150960,
+    "p5": 73763.6,
+    "p95": 180904
+   },
+   "grenze": 1369.2,
+   "ausreisser": []
+  },
+  "2020": {
+   "tage": 366,
+   "treffer": {
+    "median": 10996.5,
+    "p5": 3004.5,
+    "p95": 17413.25
+   },
+   "mitOrganisation": {
+    "median": 121262.5,
+    "p5": 44925.75,
+    "p95": 154309.5
+   },
+   "grenze": 1099.65,
+   "ausreisser": [
+    {
+     "tag": "2020-11-07",
+     "treffer": 542,
+     "gefunden": 13,
+     "soll": 96
+    },
+    {
+     "tag": "2020-11-08",
+     "treffer": 705,
+     "gefunden": 22,
+     "soll": 96
+    },
+    {
+     "tag": "2020-11-13",
+     "treffer": 971,
+     "gefunden": 8,
+     "soll": 96
+    },
+    {
+     "tag": "2020-11-14",
+     "treffer": 727,
+     "gefunden": 9,
+     "soll": 96
+    },
+    {
+     "tag": "2020-11-15",
+     "treffer": 675,
+     "gefunden": 14,
+     "soll": 96
+    }
+   ]
+  },
+  "2021": {
+   "tage": 365,
+   "treffer": {
+    "median": 11657,
+    "p5": 3810,
+    "p95": 17939
+   },
+   "mitOrganisation": {
+    "median": 100171,
+    "p5": 48316.6,
+    "p95": 125470.8
+   },
+   "grenze": 1165.7,
+   "ausreisser": []
+  },
+  "2022": {
+   "tage": 365,
+   "treffer": {
+    "median": 7917,
+    "p5": 2505.8,
+    "p95": 11251.400000000001
+   },
+   "mitOrganisation": {
+    "median": 87982,
+    "p5": 41602.8,
+    "p95": 103709.6
+   },
+   "grenze": 791.7,
+   "ausreisser": []
+  },
+  "2023": {
+   "tage": 365,
+   "treffer": {
+    "median": 10354,
+    "p5": 3345,
+    "p95": 15452.200000000003
+   },
+   "mitOrganisation": {
+    "median": 114914,
+    "p5": 44473.8,
+    "p95": 151108.8
+   },
+   "grenze": 1035.4,
+   "ausreisser": [
+    {
+     "tag": "2023-03-22",
+     "treffer": 422,
+     "gefunden": 2,
+     "soll": 96
+    }
+   ]
+  },
+  "2024": {
+   "tage": 366,
+   "treffer": {
+    "median": 11082.5,
+    "p5": 4737,
+    "p95": 15028.75
+   },
+   "mitOrganisation": {
+    "median": 109818.5,
+    "p5": 54052.25,
+    "p95": 126608.5
+   },
+   "grenze": 1108.25,
+   "ausreisser": []
+  },
+  "2025": {
+   "tage": 365,
+   "treffer": {
+    "median": 8601,
+    "p5": 2544,
+    "p95": 13271
+   },
+   "mitOrganisation": {
+    "median": 96771,
+    "p5": 38467.4,
+    "p95": 113590.6
+   },
+   "grenze": 860.1,
+   "ausreisser": [
+    {
+     "tag": "2025-06-15",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-16",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-17",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-18",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-19",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-20",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-21",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-22",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-23",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-24",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-25",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-26",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-27",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-28",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-29",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-06-30",
+     "treffer": 0,
+     "gefunden": 0,
+     "soll": 96
+    },
+    {
+     "tag": "2025-07-01",
+     "treffer": 143,
+     "gefunden": 7,
+     "soll": 96
+    }
+   ]
+  },
+  "2026": {
+   "tage": 243,
+   "treffer": {
+    "median": 7889,
+    "p5": 2926,
+    "p95": 10659.4
+   },
+   "mitOrganisation": {
+    "median": 85399,
+    "p5": 39433.7,
+    "p95": 100095.79999999999
+   },
+   "grenze": 788.9000000000001,
+   "ausreisser": []
+  }
+ },
+ "rohauszug": {
+  "erwartet": 3531,
+  "erster": "2017-01-01",
+  "letzter": "2026-09-01",
+  "vorhanden": 3529,
+  "fehlend": [
+   "2017-01-01",
+   "2026-09-01"
+  ],
+  "ohneBeleg": [],
+  "stuecke": [
+   {
+    "datei": "2017-01-01_2017-01-01",
+    "utcTag": "2017-01-01",
+    "etTag": "2017-01-01",
+    "rolle": "Rest des ET-Tags U (ab 04:00/05:00 UTC)",
+    "soll": 76,
+    "dateien": 76,
+    "fehlend": [],
+    "zeilen": 90360,
+    "bytesGz": 11594423,
+    "von": "20170101050000",
+    "bis": "20170101234500",
+    "randtag": true,
+    "partner": "2017-01-01_2016-12-31",
+    "partnerDa": false,
+    "utcTagFertig": false
+   },
+   {
+    "datei": "2026-09-01_2026-08-31",
+    "utcTag": "2026-09-01",
+    "etTag": "2026-08-31",
+    "rolle": "fruehe Stunden aus ET-Tag U-1 (bis 03:45/04:45 UTC)",
+    "soll": 16,
+    "dateien": 16,
+    "fehlend": [],
+    "zeilen": 11102,
+    "bytesGz": 1422854,
+    "von": "20260901000000",
+    "bis": "20260901034500",
+    "randtag": true,
+    "partner": "2026-09-01_2026-09-01",
+    "partnerDa": false,
+    "utcTagFertig": false
+   }
+  ],
+  "stueckeOhneBeleg": [],
+  "reste": [],
+  "randtage": [
+   "2017-01-01_2017-01-01",
+   "2026-09-01_2026-08-31"
+  ],
+  "fehlendOhneRandtage": []
+ },
+ "stichprobe": {
+  "schritt": 88,
+  "positionen": [
+   88,
+   176,
+   264,
+   352,
+   440,
+   528,
+   616,
+   704,
+   792,
+   880,
+   968,
+   1056,
+   1144,
+   1232,
+   1320,
+   1408,
+   1496,
+   1584,
+   1672,
+   1760,
+   1848,
+   1936,
+   2024,
+   2112,
+   2200,
+   2288,
+   2376,
+   2464,
+   2552,
+   2640,
+   2728,
+   2816,
+   2904,
+   2992,
+   3080,
+   3168,
+   3256,
+   3344,
+   3432,
+   3520
+  ],
+  "tage": [
+   {
+    "utcTag": "2017-03-29",
+    "position": 88,
+    "dateien": 95,
+    "fehlendBeleg": 1,
+    "fehlendTage": 1,
+    "stempel": 95,
+    "stempelSoll": 95,
+    "fremdeStempel": [],
+    "zeilen": 267488,
+    "zeilenBeleg": 267488,
+    "feldzahlen": {
+     "6": 267488
+    },
+    "stueckFrueh": {
+     "ist": 39100,
+     "beleg": 39100,
+     "etTag": "2017-03-28"
+    },
+    "stueckRest": {
+     "ist": 228388,
+     "beleg": 228388,
+     "etTag": "2017-03-29"
+    },
+    "mitOrganisationET": {
+     "tag": "2017-03-29",
+     "tagesdatei": 268265,
+     "ausStuecken": 268265
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2017-03-28",
+     "tagesdatei": 252483,
+     "ausStuecken": 252483
+    },
+    "zeilenJeStempel": {
+     "min": 5,
+     "max": 4361
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2017-06-25",
+    "position": 176,
+    "dateien": 91,
+    "fehlendBeleg": 5,
+    "fehlendTage": 5,
+    "stempel": 91,
+    "stempelSoll": 91,
+    "fremdeStempel": [],
+    "zeilen": 95522,
+    "zeilenBeleg": 95522,
+    "feldzahlen": {
+     "6": 95522
+    },
+    "stueckFrueh": {
+     "ist": 17731,
+     "beleg": 17731,
+     "etTag": "2017-06-24"
+    },
+    "stueckRest": {
+     "ist": 77791,
+     "beleg": 77791,
+     "etTag": "2017-06-25"
+    },
+    "mitOrganisationET": {
+     "tag": "2017-06-25",
+     "tagesdatei": 98583,
+     "ausStuecken": 98583
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2017-06-24",
+     "tagesdatei": 112954,
+     "ausStuecken": 112954
+    },
+    "zeilenJeStempel": {
+     "min": 1,
+     "max": 1651
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2017-09-21",
+    "position": 264,
+    "dateien": 95,
+    "fehlendBeleg": 1,
+    "fehlendTage": 1,
+    "stempel": 95,
+    "stempelSoll": 95,
+    "fremdeStempel": [],
+    "zeilen": 204578,
+    "zeilenBeleg": 204578,
+    "feldzahlen": {
+     "6": 204578
+    },
+    "stueckFrueh": {
+     "ist": 31660,
+     "beleg": 31660,
+     "etTag": "2017-09-20"
+    },
+    "stueckRest": {
+     "ist": 172918,
+     "beleg": 172918,
+     "etTag": "2017-09-21"
+    },
+    "mitOrganisationET": {
+     "tag": "2017-09-21",
+     "tagesdatei": 198971,
+     "ausStuecken": 198971
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2017-09-20",
+     "tagesdatei": 207613,
+     "ausStuecken": 207613
+    },
+    "zeilenJeStempel": {
+     "min": 5,
+     "max": 3406
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2017-12-18",
+    "position": 352,
+    "dateien": 84,
+    "fehlendBeleg": 12,
+    "fehlendTage": 12,
+    "stempel": 84,
+    "stempelSoll": 84,
+    "fremdeStempel": [],
+    "zeilen": 164446,
+    "zeilenBeleg": 164446,
+    "feldzahlen": {
+     "6": 164446
+    },
+    "stueckFrueh": {
+     "ist": 23580,
+     "beleg": 23580,
+     "etTag": "2017-12-17"
+    },
+    "stueckRest": {
+     "ist": 140866,
+     "beleg": 140866,
+     "etTag": "2017-12-18"
+    },
+    "mitOrganisationET": {
+     "tag": "2017-12-18",
+     "tagesdatei": 179359,
+     "ausStuecken": 179359
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2017-12-17",
+     "tagesdatei": 95661,
+     "ausStuecken": 95661
+    },
+    "zeilenJeStempel": {
+     "min": 144,
+     "max": 3230
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2018-03-16",
+    "position": 440,
+    "dateien": 95,
+    "fehlendBeleg": 1,
+    "fehlendTage": 1,
+    "stempel": 95,
+    "stempelSoll": 95,
+    "fremdeStempel": [],
+    "zeilen": 205921,
+    "zeilenBeleg": 205921,
+    "feldzahlen": {
+     "6": 205921
+    },
+    "stueckFrueh": {
+     "ist": 32020,
+     "beleg": 32020,
+     "etTag": "2018-03-15"
+    },
+    "stueckRest": {
+     "ist": 173901,
+     "beleg": 173901,
+     "etTag": "2018-03-16"
+    },
+    "mitOrganisationET": {
+     "tag": "2018-03-16",
+     "tagesdatei": 199640,
+     "ausStuecken": 199640
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2018-03-15",
+     "tagesdatei": 212107,
+     "ausStuecken": 212107
+    },
+    "zeilenJeStempel": {
+     "min": 1372,
+     "max": 3175
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2018-06-12",
+    "position": 528,
+    "dateien": 95,
+    "fehlendBeleg": 1,
+    "fehlendTage": 1,
+    "stempel": 95,
+    "stempelSoll": 95,
+    "fremdeStempel": [],
+    "zeilen": 210961,
+    "zeilenBeleg": 210961,
+    "feldzahlen": {
+     "6": 210961
+    },
+    "stueckFrueh": {
+     "ist": 30698,
+     "beleg": 30698,
+     "etTag": "2018-06-11"
+    },
+    "stueckRest": {
+     "ist": 180263,
+     "beleg": 180263,
+     "etTag": "2018-06-12"
+    },
+    "mitOrganisationET": {
+     "tag": "2018-06-12",
+     "tagesdatei": 209044,
+     "ausStuecken": 209044
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2018-06-11",
+     "tagesdatei": 199860,
+     "ausStuecken": 199860
+    },
+    "zeilenJeStempel": {
+     "min": 1435,
+     "max": 3355
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2018-09-08",
+    "position": 616,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 111011,
+    "zeilenBeleg": 111011,
+    "feldzahlen": {
+     "6": 111011
+    },
+    "stueckFrueh": {
+     "ist": 24954,
+     "beleg": 24954,
+     "etTag": "2018-09-07"
+    },
+    "stueckRest": {
+     "ist": 86057,
+     "beleg": 86057,
+     "etTag": "2018-09-08"
+    },
+    "mitOrganisationET": {
+     "tag": "2018-09-08",
+     "tagesdatei": 103721,
+     "ausStuecken": 103721
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2018-09-07",
+     "tagesdatei": 183740,
+     "ausStuecken": 183740
+    },
+    "zeilenJeStempel": {
+     "min": 725,
+     "max": 2118
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2018-12-05",
+    "position": 704,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 188455,
+    "zeilenBeleg": 188455,
+    "feldzahlen": {
+     "6": 188455
+    },
+    "stueckFrueh": {
+     "ist": 37046,
+     "beleg": 37046,
+     "etTag": "2018-12-04"
+    },
+    "stueckRest": {
+     "ist": 151409,
+     "beleg": 151409,
+     "etTag": "2018-12-05"
+    },
+    "mitOrganisationET": {
+     "tag": "2018-12-05",
+     "tagesdatei": 184768,
+     "ausStuecken": 184768
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2018-12-04",
+     "tagesdatei": 185696,
+     "ausStuecken": 185696
+    },
+    "zeilenJeStempel": {
+     "min": 1212,
+     "max": 2628
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2019-03-03",
+    "position": 792,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 84381,
+    "zeilenBeleg": 84381,
+    "feldzahlen": {
+     "6": 84381
+    },
+    "stueckFrueh": {
+     "ist": 16584,
+     "beleg": 16584,
+     "etTag": "2019-03-02"
+    },
+    "stueckRest": {
+     "ist": 67797,
+     "beleg": 67797,
+     "etTag": "2019-03-03"
+    },
+    "mitOrganisationET": {
+     "tag": "2019-03-03",
+     "tagesdatei": 88240,
+     "ausStuecken": 88240
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2019-03-02",
+     "tagesdatei": 86880,
+     "ausStuecken": 86880
+    },
+    "zeilenJeStempel": {
+     "min": 565,
+     "max": 1190
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2019-05-30",
+    "position": 880,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 171912,
+    "zeilenBeleg": 171912,
+    "feldzahlen": {
+     "6": 171912
+    },
+    "stueckFrueh": {
+     "ist": 24672,
+     "beleg": 24672,
+     "etTag": "2019-05-29"
+    },
+    "stueckRest": {
+     "ist": 147240,
+     "beleg": 147240,
+     "etTag": "2019-05-30"
+    },
+    "mitOrganisationET": {
+     "tag": "2019-05-30",
+     "tagesdatei": 170602,
+     "ausStuecken": 170602
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2019-05-29",
+     "tagesdatei": 172674,
+     "ausStuecken": 172674
+    },
+    "zeilenJeStempel": {
+     "min": 1126,
+     "max": 2604
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2019-08-26",
+    "position": 968,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 126987,
+    "zeilenBeleg": 126987,
+    "feldzahlen": {
+     "6": 126987
+    },
+    "stueckFrueh": {
+     "ist": 13337,
+     "beleg": 13337,
+     "etTag": "2019-08-25"
+    },
+    "stueckRest": {
+     "ist": 113650,
+     "beleg": 113650,
+     "etTag": "2019-08-26"
+    },
+    "mitOrganisationET": {
+     "tag": "2019-08-26",
+     "tagesdatei": 135851,
+     "ausStuecken": 135851
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2019-08-25",
+     "tagesdatei": 77818,
+     "ausStuecken": 77818
+    },
+    "zeilenJeStempel": {
+     "min": 681,
+     "max": 2127
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2019-11-22",
+    "position": 1056,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 145177,
+    "zeilenBeleg": 145177,
+    "feldzahlen": {
+     "6": 145177
+    },
+    "stueckFrueh": {
+     "ist": 29458,
+     "beleg": 29458,
+     "etTag": "2019-11-21"
+    },
+    "stueckRest": {
+     "ist": 115719,
+     "beleg": 115719,
+     "etTag": "2019-11-22"
+    },
+    "mitOrganisationET": {
+     "tag": "2019-11-22",
+     "tagesdatei": 139337,
+     "ausStuecken": 139337
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2019-11-21",
+     "tagesdatei": 158554,
+     "ausStuecken": 158554
+    },
+    "zeilenJeStempel": {
+     "min": 953,
+     "max": 2104
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2020-02-18",
+    "position": 1144,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 138100,
+    "zeilenBeleg": 138100,
+    "feldzahlen": {
+     "6": 138100
+    },
+    "stueckFrueh": {
+     "ist": 20697,
+     "beleg": 20697,
+     "etTag": "2020-02-17"
+    },
+    "stueckRest": {
+     "ist": 117403,
+     "beleg": 117403,
+     "etTag": "2020-02-18"
+    },
+    "mitOrganisationET": {
+     "tag": "2020-02-18",
+     "tagesdatei": 145352,
+     "ausStuecken": 145352
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2020-02-17",
+     "tagesdatei": 112052,
+     "ausStuecken": 112052
+    },
+    "zeilenJeStempel": {
+     "min": 808,
+     "max": 2284
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2020-05-16",
+    "position": 1232,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 79747,
+    "zeilenBeleg": 79747,
+    "feldzahlen": {
+     "6": 79747
+    },
+    "stueckFrueh": {
+     "ist": 18320,
+     "beleg": 18320,
+     "etTag": "2020-05-15"
+    },
+    "stueckRest": {
+     "ist": 61427,
+     "beleg": 61427,
+     "etTag": "2020-05-16"
+    },
+    "mitOrganisationET": {
+     "tag": "2020-05-16",
+     "tagesdatei": 71720,
+     "ausStuecken": 71720
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2020-05-15",
+     "tagesdatei": 131691,
+     "ausStuecken": 131691
+    },
+    "zeilenJeStempel": {
+     "min": 536,
+     "max": 1527
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2020-08-12",
+    "position": 1320,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 131691,
+    "zeilenBeleg": 131691,
+    "feldzahlen": {
+     "6": 131691
+    },
+    "stueckFrueh": {
+     "ist": 19131,
+     "beleg": 19131,
+     "etTag": "2020-08-11"
+    },
+    "stueckRest": {
+     "ist": 112560,
+     "beleg": 112560,
+     "etTag": "2020-08-12"
+    },
+    "mitOrganisationET": {
+     "tag": "2020-08-12",
+     "tagesdatei": 130802,
+     "ausStuecken": 130802
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2020-08-11",
+     "tagesdatei": 128528,
+     "ausStuecken": 128528
+    },
+    "zeilenJeStempel": {
+     "min": 865,
+     "max": 1958
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2020-11-08",
+    "position": 1408,
+    "dateien": 23,
+    "fehlendBeleg": 73,
+    "fehlendTage": 73,
+    "stempel": 23,
+    "stempelSoll": 23,
+    "fremdeStempel": [],
+    "zeilen": 17683,
+    "zeilenBeleg": 17683,
+    "feldzahlen": {
+     "6": 17683
+    },
+    "stueckFrueh": {
+     "ist": 944,
+     "beleg": 944,
+     "etTag": "2020-11-07"
+    },
+    "stueckRest": {
+     "ist": 16739,
+     "beleg": 16739,
+     "etTag": "2020-11-08"
+    },
+    "mitOrganisationET": {
+     "tag": "2020-11-08",
+     "tagesdatei": 16739,
+     "ausStuecken": 16739
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2020-11-07",
+     "tagesdatei": 11802,
+     "ausStuecken": 11802
+    },
+    "zeilenJeStempel": {
+     "min": 635,
+     "max": 944
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2021-02-04",
+    "position": 1496,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 130236,
+    "zeilenBeleg": 130236,
+    "feldzahlen": {
+     "6": 130236
+    },
+    "stueckFrueh": {
+     "ist": 24679,
+     "beleg": 24679,
+     "etTag": "2021-02-03"
+    },
+    "stueckRest": {
+     "ist": 105557,
+     "beleg": 105557,
+     "etTag": "2021-02-04"
+    },
+    "mitOrganisationET": {
+     "tag": "2021-02-04",
+     "tagesdatei": 130634,
+     "ausStuecken": 130634
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2021-02-03",
+     "tagesdatei": 129795,
+     "ausStuecken": 129795
+    },
+    "zeilenJeStempel": {
+     "min": 804,
+     "max": 1969
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2021-05-03",
+    "position": 1584,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 91372,
+    "zeilenBeleg": 91372,
+    "feldzahlen": {
+     "6": 91372
+    },
+    "stueckFrueh": {
+     "ist": 8208,
+     "beleg": 8208,
+     "etTag": "2021-05-02"
+    },
+    "stueckRest": {
+     "ist": 83164,
+     "beleg": 83164,
+     "etTag": "2021-05-03"
+    },
+    "mitOrganisationET": {
+     "tag": "2021-05-03",
+     "tagesdatei": 98933,
+     "ausStuecken": 98933
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2021-05-02",
+     "tagesdatei": 53141,
+     "ausStuecken": 53141
+    },
+    "zeilenJeStempel": {
+     "min": 401,
+     "max": 1554
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2021-07-30",
+    "position": 1672,
+    "dateien": 78,
+    "fehlendBeleg": 18,
+    "fehlendTage": 18,
+    "stempel": 78,
+    "stempelSoll": 78,
+    "fremdeStempel": [],
+    "zeilen": 89396,
+    "zeilenBeleg": 89396,
+    "feldzahlen": {
+     "6": 89396
+    },
+    "stueckFrueh": {
+     "ist": 9879,
+     "beleg": 9879,
+     "etTag": "2021-07-29"
+    },
+    "stueckRest": {
+     "ist": 79517,
+     "beleg": 79517,
+     "etTag": "2021-07-30"
+    },
+    "mitOrganisationET": {
+     "tag": "2021-07-30",
+     "tagesdatei": 87254,
+     "ausStuecken": 87254
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2021-07-29",
+     "tagesdatei": 99646,
+     "ausStuecken": 99646
+    },
+    "zeilenJeStempel": {
+     "min": 740,
+     "max": 1536
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2021-10-26",
+    "position": 1760,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 104695,
+    "zeilenBeleg": 104695,
+    "feldzahlen": {
+     "6": 104695
+    },
+    "stueckFrueh": {
+     "ist": 14555,
+     "beleg": 14555,
+     "etTag": "2021-10-25"
+    },
+    "stueckRest": {
+     "ist": 90140,
+     "beleg": 90140,
+     "etTag": "2021-10-26"
+    },
+    "mitOrganisationET": {
+     "tag": "2021-10-26",
+     "tagesdatei": 104889,
+     "ausStuecken": 104889
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2021-10-25",
+     "tagesdatei": 95670,
+     "ausStuecken": 95670
+    },
+    "zeilenJeStempel": {
+     "min": 557,
+     "max": 1650
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2022-01-22",
+    "position": 1848,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 57051,
+    "zeilenBeleg": 57051,
+    "feldzahlen": {
+     "6": 57051
+    },
+    "stueckFrueh": {
+     "ist": 15084,
+     "beleg": 15084,
+     "etTag": "2022-01-21"
+    },
+    "stueckRest": {
+     "ist": 41967,
+     "beleg": 41967,
+     "etTag": "2022-01-22"
+    },
+    "mitOrganisationET": {
+     "tag": "2022-01-22",
+     "tagesdatei": 50017,
+     "ausStuecken": 50017
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2022-01-21",
+     "tagesdatei": 96298,
+     "ausStuecken": 96298
+    },
+    "zeilenJeStempel": {
+     "min": 387,
+     "max": 1043
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2022-04-20",
+    "position": 1936,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 98587,
+    "zeilenBeleg": 98587,
+    "feldzahlen": {
+     "6": 98587
+    },
+    "stueckFrueh": {
+     "ist": 12740,
+     "beleg": 12740,
+     "etTag": "2022-04-19"
+    },
+    "stueckRest": {
+     "ist": 85847,
+     "beleg": 85847,
+     "etTag": "2022-04-20"
+    },
+    "mitOrganisationET": {
+     "tag": "2022-04-20",
+     "tagesdatei": 100212,
+     "ausStuecken": 100212
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2022-04-19",
+     "tagesdatei": 93199,
+     "ausStuecken": 93199
+    },
+    "zeilenJeStempel": {
+     "min": 565,
+     "max": 1635
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2022-07-17",
+    "position": 2024,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 40351,
+    "zeilenBeleg": 40351,
+    "feldzahlen": {
+     "6": 40351
+    },
+    "stueckFrueh": {
+     "ist": 5805,
+     "beleg": 5805,
+     "etTag": "2022-07-16"
+    },
+    "stueckRest": {
+     "ist": 34546,
+     "beleg": 34546,
+     "etTag": "2022-07-17"
+    },
+    "mitOrganisationET": {
+     "tag": "2022-07-17",
+     "tagesdatei": 41646,
+     "ausStuecken": 41646
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2022-07-16",
+     "tagesdatei": 44874,
+     "ausStuecken": 44874
+    },
+    "zeilenJeStempel": {
+     "min": 261,
+     "max": 681
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2022-10-13",
+    "position": 2112,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 95030,
+    "zeilenBeleg": 95030,
+    "feldzahlen": {
+     "6": 95030
+    },
+    "stueckFrueh": {
+     "ist": 12479,
+     "beleg": 12479,
+     "etTag": "2022-10-12"
+    },
+    "stueckRest": {
+     "ist": 82551,
+     "beleg": 82551,
+     "etTag": "2022-10-13"
+    },
+    "mitOrganisationET": {
+     "tag": "2022-10-13",
+     "tagesdatei": 94896,
+     "ausStuecken": 94896
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2022-10-12",
+     "tagesdatei": 95457,
+     "ausStuecken": 95457
+    },
+    "zeilenJeStempel": {
+     "min": 462,
+     "max": 1557
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2023-01-09",
+    "position": 2200,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 76853,
+    "zeilenBeleg": 76853,
+    "feldzahlen": {
+     "6": 76853
+    },
+    "stueckFrueh": {
+     "ist": 8624,
+     "beleg": 8624,
+     "etTag": "2023-01-08"
+    },
+    "stueckRest": {
+     "ist": 68229,
+     "beleg": 68229,
+     "etTag": "2023-01-09"
+    },
+    "mitOrganisationET": {
+     "tag": "2023-01-09",
+     "tagesdatei": 84140,
+     "ausStuecken": 84140
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2023-01-08",
+     "tagesdatei": 39771,
+     "ausStuecken": 39771
+    },
+    "zeilenJeStempel": {
+     "min": 321,
+     "max": 1487
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2023-04-07",
+    "position": 2288,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 124345,
+    "zeilenBeleg": 124345,
+    "feldzahlen": {
+     "6": 124345
+    },
+    "stueckFrueh": {
+     "ist": 18796,
+     "beleg": 18796,
+     "etTag": "2023-04-06"
+    },
+    "stueckRest": {
+     "ist": 105549,
+     "beleg": 105549,
+     "etTag": "2023-04-07"
+    },
+    "mitOrganisationET": {
+     "tag": "2023-04-07",
+     "tagesdatei": 121288,
+     "ausStuecken": 121288
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2023-04-06",
+     "tagesdatei": 147933,
+     "ausStuecken": 147933
+    },
+    "zeilenJeStempel": {
+     "min": 783,
+     "max": 1996
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2023-07-04",
+    "position": 2376,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 102540,
+    "zeilenBeleg": 102540,
+    "feldzahlen": {
+     "6": 102540
+    },
+    "stueckFrueh": {
+     "ist": 15164,
+     "beleg": 15164,
+     "etTag": "2023-07-03"
+    },
+    "stueckRest": {
+     "ist": 87376,
+     "beleg": 87376,
+     "etTag": "2023-07-04"
+    },
+    "mitOrganisationET": {
+     "tag": "2023-07-04",
+     "tagesdatei": 101401,
+     "ausStuecken": 101401
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2023-07-03",
+     "tagesdatei": 108467,
+     "ausStuecken": 108467
+    },
+    "zeilenJeStempel": {
+     "min": 770,
+     "max": 1656
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2023-09-30",
+    "position": 2464,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 72258,
+    "zeilenBeleg": 72258,
+    "feldzahlen": {
+     "6": 72258
+    },
+    "stueckFrueh": {
+     "ist": 14256,
+     "beleg": 14256,
+     "etTag": "2023-09-29"
+    },
+    "stueckRest": {
+     "ist": 58002,
+     "beleg": 58002,
+     "etTag": "2023-09-30"
+    },
+    "mitOrganisationET": {
+     "tag": "2023-09-30",
+     "tagesdatei": 67099,
+     "ausStuecken": 67099
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2023-09-29",
+     "tagesdatei": 119604,
+     "ausStuecken": 119604
+    },
+    "zeilenJeStempel": {
+     "min": 525,
+     "max": 1100
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2023-12-27",
+    "position": 2552,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 91615,
+    "zeilenBeleg": 91615,
+    "feldzahlen": {
+     "6": 91615
+    },
+    "stueckFrueh": {
+     "ist": 15010,
+     "beleg": 15010,
+     "etTag": "2023-12-26"
+    },
+    "stueckRest": {
+     "ist": 76605,
+     "beleg": 76605,
+     "etTag": "2023-12-27"
+    },
+    "mitOrganisationET": {
+     "tag": "2023-12-27",
+     "tagesdatei": 93105,
+     "ausStuecken": 93105
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2023-12-26",
+     "tagesdatei": 76316,
+     "ausStuecken": 76316
+    },
+    "zeilenJeStempel": {
+     "min": 513,
+     "max": 1515
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2024-03-24",
+    "position": 2640,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 56222,
+    "zeilenBeleg": 56222,
+    "feldzahlen": {
+     "6": 56222
+    },
+    "stueckFrueh": {
+     "ist": 8022,
+     "beleg": 8022,
+     "etTag": "2024-03-23"
+    },
+    "stueckRest": {
+     "ist": 48200,
+     "beleg": 48200,
+     "etTag": "2024-03-24"
+    },
+    "mitOrganisationET": {
+     "tag": "2024-03-24",
+     "tagesdatei": 58789,
+     "ausStuecken": 58789
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2024-03-23",
+     "tagesdatei": 61786,
+     "ausStuecken": 61786
+    },
+    "zeilenJeStempel": {
+     "min": 312,
+     "max": 1121
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2024-06-20",
+    "position": 2728,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 117256,
+    "zeilenBeleg": 117256,
+    "feldzahlen": {
+     "6": 117256
+    },
+    "stueckFrueh": {
+     "ist": 14491,
+     "beleg": 14491,
+     "etTag": "2024-06-19"
+    },
+    "stueckRest": {
+     "ist": 102765,
+     "beleg": 102765,
+     "etTag": "2024-06-20"
+    },
+    "mitOrganisationET": {
+     "tag": "2024-06-20",
+     "tagesdatei": 119819,
+     "ausStuecken": 119819
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2024-06-19",
+     "tagesdatei": 106101,
+     "ausStuecken": 106101
+    },
+    "zeilenJeStempel": {
+     "min": 727,
+     "max": 1846
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2024-09-16",
+    "position": 2816,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 102643,
+    "zeilenBeleg": 102643,
+    "feldzahlen": {
+     "6": 102643
+    },
+    "stueckFrueh": {
+     "ist": 10314,
+     "beleg": 10314,
+     "etTag": "2024-09-15"
+    },
+    "stueckRest": {
+     "ist": 92329,
+     "beleg": 92329,
+     "etTag": "2024-09-16"
+    },
+    "mitOrganisationET": {
+     "tag": "2024-09-16",
+     "tagesdatei": 107288,
+     "ausStuecken": 107288
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2024-09-15",
+     "tagesdatei": 57039,
+     "ausStuecken": 57039
+    },
+    "zeilenJeStempel": {
+     "min": 521,
+     "max": 1705
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2024-12-13",
+    "position": 2904,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 106388,
+    "zeilenBeleg": 106388,
+    "feldzahlen": {
+     "6": 106388
+    },
+    "stueckFrueh": {
+     "ist": 21082,
+     "beleg": 21082,
+     "etTag": "2024-12-12"
+    },
+    "stueckRest": {
+     "ist": 85306,
+     "beleg": 85306,
+     "etTag": "2024-12-13"
+    },
+    "mitOrganisationET": {
+     "tag": "2024-12-13",
+     "tagesdatei": 102432,
+     "ausStuecken": 102432
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2024-12-12",
+     "tagesdatei": 115878,
+     "ausStuecken": 115878
+    },
+    "zeilenJeStempel": {
+     "min": 610,
+     "max": 1753
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2025-03-11",
+    "position": 2992,
+    "dateien": 95,
+    "fehlendBeleg": 1,
+    "fehlendTage": 1,
+    "stempel": 95,
+    "stempelSoll": 95,
+    "fremdeStempel": [],
+    "zeilen": 110301,
+    "zeilenBeleg": 110301,
+    "feldzahlen": {
+     "6": 110301
+    },
+    "stueckFrueh": {
+     "ist": 15425,
+     "beleg": 15425,
+     "etTag": "2025-03-10"
+    },
+    "stueckRest": {
+     "ist": 94876,
+     "beleg": 94876,
+     "etTag": "2025-03-11"
+    },
+    "mitOrganisationET": {
+     "tag": "2025-03-11",
+     "tagesdatei": 110543,
+     "ausStuecken": 110543
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2025-03-10",
+     "tagesdatei": 102036,
+     "ausStuecken": 102036
+    },
+    "zeilenJeStempel": {
+     "min": 610,
+     "max": 1800
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2025-06-07",
+    "position": 3080,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 52343,
+    "zeilenBeleg": 52343,
+    "feldzahlen": {
+     "6": 52343
+    },
+    "stueckFrueh": {
+     "ist": 10832,
+     "beleg": 10832,
+     "etTag": "2025-06-06"
+    },
+    "stueckRest": {
+     "ist": 41511,
+     "beleg": 41511,
+     "etTag": "2025-06-07"
+    },
+    "mitOrganisationET": {
+     "tag": "2025-06-07",
+     "tagesdatei": 47244,
+     "ausStuecken": 47244
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2025-06-06",
+     "tagesdatei": 94659,
+     "ausStuecken": 94659
+    },
+    "zeilenJeStempel": {
+     "min": 328,
+     "max": 995
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2025-09-03",
+    "position": 3168,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 104095,
+    "zeilenBeleg": 104095,
+    "feldzahlen": {
+     "6": 104095
+    },
+    "stueckFrueh": {
+     "ist": 13953,
+     "beleg": 13953,
+     "etTag": "2025-09-02"
+    },
+    "stueckRest": {
+     "ist": 90142,
+     "beleg": 90142,
+     "etTag": "2025-09-03"
+    },
+    "mitOrganisationET": {
+     "tag": "2025-09-03",
+     "tagesdatei": 105695,
+     "ausStuecken": 105695
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2025-09-02",
+     "tagesdatei": 99746,
+     "ausStuecken": 99746
+    },
+    "zeilenJeStempel": {
+     "min": 566,
+     "max": 1741
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2025-11-30",
+    "position": 3256,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 42200,
+    "zeilenBeleg": 42200,
+    "feldzahlen": {
+     "6": 42200
+    },
+    "stueckFrueh": {
+     "ist": 7912,
+     "beleg": 7912,
+     "etTag": "2025-11-29"
+    },
+    "stueckRest": {
+     "ist": 34288,
+     "beleg": 34288,
+     "etTag": "2025-11-30"
+    },
+    "mitOrganisationET": {
+     "tag": "2025-11-30",
+     "tagesdatei": 44123,
+     "ausStuecken": 44123
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2025-11-29",
+     "tagesdatei": 47713,
+     "ausStuecken": 47713
+    },
+    "zeilenJeStempel": {
+     "min": 244,
+     "max": 631
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2026-02-26",
+    "position": 3344,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 101238,
+    "zeilenBeleg": 101238,
+    "feldzahlen": {
+     "6": 101238
+    },
+    "stueckFrueh": {
+     "ist": 18046,
+     "beleg": 18046,
+     "etTag": "2026-02-25"
+    },
+    "stueckRest": {
+     "ist": 83192,
+     "beleg": 83192,
+     "etTag": "2026-02-26"
+    },
+    "mitOrganisationET": {
+     "tag": "2026-02-26",
+     "tagesdatei": 102012,
+     "ausStuecken": 102012
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2026-02-25",
+     "tagesdatei": 102175,
+     "ausStuecken": 102175
+    },
+    "zeilenJeStempel": {
+     "min": 591,
+     "max": 1748
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2026-05-25",
+    "position": 3432,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 55601,
+    "zeilenBeleg": 55601,
+    "feldzahlen": {
+     "6": 55601
+    },
+    "stueckFrueh": {
+     "ist": 6346,
+     "beleg": 6346,
+     "etTag": "2026-05-24"
+    },
+    "stueckRest": {
+     "ist": 49255,
+     "beleg": 49255,
+     "etTag": "2026-05-25"
+    },
+    "mitOrganisationET": {
+     "tag": "2026-05-25",
+     "tagesdatei": 57352,
+     "ausStuecken": 57352
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2026-05-24",
+     "tagesdatei": 39692,
+     "ausStuecken": 39692
+    },
+    "zeilenJeStempel": {
+     "min": 318,
+     "max": 896
+    },
+    "nichtBestanden": [],
+    "ok": true
+   },
+   {
+    "utcTag": "2026-08-21",
+    "position": 3520,
+    "dateien": 96,
+    "fehlendBeleg": 0,
+    "fehlendTage": 0,
+    "stempel": 96,
+    "stempelSoll": 96,
+    "fremdeStempel": [],
+    "zeilen": 81952,
+    "zeilenBeleg": 81952,
+    "feldzahlen": {
+     "6": 81952
+    },
+    "stueckFrueh": {
+     "ist": 11009,
+     "beleg": 11009,
+     "etTag": "2026-08-20"
+    },
+    "stueckRest": {
+     "ist": 70943,
+     "beleg": 70943,
+     "etTag": "2026-08-21"
+    },
+    "mitOrganisationET": {
+     "tag": "2026-08-21",
+     "tagesdatei": 78967,
+     "ausStuecken": 78967
+    },
+    "mitOrganisationETVortag": {
+     "tag": "2026-08-20",
+     "tagesdatei": 83497,
+     "ausStuecken": 83497
+    },
+    "zeilenJeStempel": {
+     "min": 472,
+     "max": 1255
+    },
+    "nichtBestanden": [],
+    "ok": true
+   }
+  ],
+  "ok": 40,
+  "abweichungen": []
+ },
+ "groesse": {
+  "jeJahr": {
+   "2017": {
+    "utcTage": 364,
+    "bytesGz": 9081598613,
+    "bytesRoh": 24854397084,
+    "zeilen": 67008105,
+    "dateien": 33959,
+    "fehlend": 985,
+    "gb": 9.08
+   },
+   "2018": {
+    "utcTage": 365,
+    "bytesGz": 8177695057,
+    "bytesRoh": 22422790608,
+    "zeilen": 59955377,
+    "dateien": 34048,
+    "fehlend": 992,
+    "gb": 8.18
+   },
+   "2019": {
+    "utcTage": 365,
+    "bytesGz": 6677499710,
+    "bytesRoh": 18332086996,
+    "zeilen": 49468194,
+    "dateien": 35029,
+    "fehlend": 11,
+    "gb": 6.68
+   },
+   "2020": {
+    "utcTage": 366,
+    "bytesGz": 5346231868,
+    "bytesRoh": 14716744919,
+    "zeilen": 39036806,
+    "dateien": 32551,
+    "fehlend": 2585,
+    "gb": 5.35
+   },
+   "2021": {
+    "utcTage": 365,
+    "bytesGz": 4516717386,
+    "bytesRoh": 12496080418,
+    "zeilen": 32976564,
+    "dateien": 34430,
+    "fehlend": 610,
+    "gb": 4.52
+   },
+   "2022": {
+    "utcTage": 365,
+    "bytesGz": 3845966649,
+    "bytesRoh": 10680884460,
+    "zeilen": 28558601,
+    "dateien": 34953,
+    "fehlend": 87,
+    "gb": 3.85
+   },
+   "2023": {
+    "utcTage": 365,
+    "bytesGz": 5162814896,
+    "bytesRoh": 14258358403,
+    "zeilen": 37500045,
+    "dateien": 34868,
+    "fehlend": 172,
+    "gb": 5.16
+   },
+   "2024": {
+    "utcTage": 366,
+    "bytesGz": 4845972659,
+    "bytesRoh": 13482313924,
+    "zeilen": 35551834,
+    "dateien": 35134,
+    "fehlend": 2,
+    "gb": 4.85
+   },
+   "2025": {
+    "utcTage": 365,
+    "bytesGz": 4004685769,
+    "bytesRoh": 11237929471,
+    "zeilen": 29983154,
+    "dateien": 33359,
+    "fehlend": 1681,
+    "gb": 4
+   },
+   "2026": {
+    "utcTage": 243,
+    "bytesGz": 2429284445,
+    "bytesRoh": 6896435998,
+    "zeilen": 18410591,
+    "dateien": 23326,
+    "fehlend": 2,
+    "gb": 2.43
+   }
+  },
+  "bytesGz": 54088467052,
+  "bytesRoh": 149378022281,
+  "zeilen": 398449271,
+  "dateien": 331657,
+  "fehlend": 7127,
+  "utcTage": 3529,
+  "stuecke": {
+   "bytesGz": 13017277,
+   "zeilen": 101462,
+   "anzahl": 2
+  },
+  "gb": 54.09,
+  "gib": 50.37,
+  "downloadZipBytes": 2184286121254,
+  "downloadCsvBytes": 6830484570255,
+  "downloadTB": 2.184,
+  "anteilAuszugAmDownload": 2.48
+ },
+ "lauf": {
+  "teile": [
+   {
+    "teil": 1,
+    "start": "2026-09-22T12:15:37",
+    "tage": 177,
+    "ende": "2026-09-22T21:49:10",
+    "dateien": 16996,
+    "sekunden": 34413
+   },
+   {
+    "teil": 2,
+    "start": "2026-09-22T12:15:37",
+    "tage": 177,
+    "ende": "2026-09-22T21:53:30",
+    "dateien": 16988,
+    "sekunden": 34673
+   },
+   {
+    "teil": 3,
+    "start": "2026-09-22T12:15:37",
+    "tage": 177,
+    "ende": "2026-09-22T21:49:34",
+    "dateien": 16988,
+    "sekunden": 34437
+   },
+   {
+    "teil": 4,
+    "start": "2026-09-22T12:15:37",
+    "tage": 177,
+    "ende": "2026-09-22T21:52:27",
+    "dateien": 16996,
+    "sekunden": 34609
+   },
+   {
+    "teil": 5,
+    "start": "2026-09-22T12:15:37",
+    "tage": 177,
+    "ende": "2026-09-22T21:55:35",
+    "dateien": 16992,
+    "sekunden": 34797
+   },
+   {
+    "teil": 6,
+    "start": "2026-09-22T12:15:37",
+    "tage": 177,
+    "ende": "2026-09-22T21:51:35",
+    "dateien": 16988,
+    "sekunden": 34558
+   },
+   {
+    "teil": 7,
+    "start": "2026-09-22T12:15:38",
+    "tage": 177,
+    "ende": "2026-09-22T21:55:14",
+    "dateien": 16992,
+    "sekunden": 34776
+   },
+   {
+    "teil": 8,
+    "start": "2026-09-22T12:15:38",
+    "tage": 177,
+    "ende": "2026-09-22T21:51:11",
+    "dateien": 16996,
+    "sekunden": 34534
+   },
+   {
+    "teil": 9,
+    "start": "2026-09-22T12:15:38",
+    "tage": 177,
+    "ende": "2026-09-22T21:52:14",
+    "dateien": 16996,
+    "sekunden": 34596
+   },
+   {
+    "teil": 10,
+    "start": "2026-09-22T12:15:38",
+    "tage": 177,
+    "ende": "2026-09-22T21:46:50",
+    "dateien": 16988,
+    "sekunden": 34273
+   },
+   {
+    "teil": 11,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:47:23",
+    "dateien": 16892,
+    "sekunden": 34305
+   },
+   {
+    "teil": 12,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:44:53",
+    "dateien": 16900,
+    "sekunden": 34155
+   },
+   {
+    "teil": 13,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:51:46",
+    "dateien": 16900,
+    "sekunden": 34569
+   },
+   {
+    "teil": 14,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:56:31",
+    "dateien": 16888,
+    "sekunden": 34854
+   },
+   {
+    "teil": 15,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:44:58",
+    "dateien": 16892,
+    "sekunden": 34161
+   },
+   {
+    "teil": 16,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:49:38",
+    "dateien": 16900,
+    "sekunden": 34440
+   },
+   {
+    "teil": 17,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:50:47",
+    "dateien": 16900,
+    "sekunden": 34509
+   },
+   {
+    "teil": 18,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:53:25",
+    "dateien": 16892,
+    "sekunden": 34668
+   },
+   {
+    "teil": 19,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:49:54",
+    "dateien": 16892,
+    "sekunden": 34457
+   },
+   {
+    "teil": 20,
+    "start": "2026-09-22T12:15:38",
+    "tage": 176,
+    "ende": "2026-09-22T21:55:17",
+    "dateien": 16900,
+    "sekunden": 34779
+   }
+  ],
+  "start": "2026-09-22T12:15:37",
+  "ende": "2026-09-22T21:56:31",
+  "dateien": 338876,
+  "netzfehlerTage": [
+   {
+    "tag": "2017-03-05",
+    "teil": 4,
+    "gefunden": 95,
+    "soll": 96,
+    "fehler": "20170305101500:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-06",
+    "teil": 5,
+    "gefunden": 95,
+    "soll": 96,
+    "fehler": "20170306153000:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-08",
+    "teil": 7,
+    "gefunden": 95,
+    "soll": 96,
+    "fehler": "20170308161500:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-09",
+    "teil": 8,
+    "gefunden": 95,
+    "soll": 96,
+    "fehler": "20170309223000:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-13",
+    "teil": 12,
+    "gefunden": 95,
+    "soll": 96,
+    "fehler": "20170313184500:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-15",
+    "teil": 14,
+    "gefunden": 95,
+    "soll": 96,
+    "fehler": "20170315193000:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-20",
+    "teil": 19,
+    "gefunden": 94,
+    "soll": 96,
+    "fehler": "20170320123000:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-22",
+    "teil": 1,
+    "gefunden": 94,
+    "soll": 96,
+    "fehler": "20170322043000:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-23",
+    "teil": 2,
+    "gefunden": 93,
+    "soll": 96,
+    "fehler": "20170323181500:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-24",
+    "teil": 3,
+    "gefunden": 95,
+    "soll": 96,
+    "fehler": "20170324040000:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-30",
+    "teil": 9,
+    "gefunden": 94,
+    "soll": 96,
+    "fehler": "20170330090000:fehler Zeit"
+   },
+   {
+    "tag": "2017-03-31",
+    "teil": 10,
+    "gefunden": 94,
+    "soll": 96,
+    "fehler": "20170331061500:fehler Zeit"
+   },
+   {
+    "tag": "2017-04-05",
+    "teil": 15,
+    "gefunden": 94,
+    "soll": 96,
+    "fehler": "20170405120000:fehler Zeit"
+   },
+   {
+    "tag": "2017-04-06",
+    "teil": 16,
+    "gefunden": 94,
+    "soll": 96,
+    "fehler": "20170406124500:fehler Zeit"
+   },
+   {
+    "tag": "2017-04-07",
+    "teil": 17,
+    "gefunden": 95,
+    "soll": 96,
+    "fehler": "20170407083000:fehler Zeit"
+   }
+  ],
+  "nacharbeitZeilen": [
+   "2026-09-23T20:32:56 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=0 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:32:56 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=0 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:32:56 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=0 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:32:56 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=0 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:32:56 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=0 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:34:41 2017-03-05 dateien=96/96 fehlend=0 fehler=0 zeilen=177389 treffer=6630 spaet=1928 fremd=0 symbole=237 zip=665MB dauer=104.6s roh=131117z/03-05:vereint,03-06:wartet",
+   "2026-09-23T20:34:41 ENDE teil 1/1 tage=1 dateien=96 105 s",
+   "2026-09-23T20:35:01 2017-03-13 dateien=96/96 fehlend=0 fehler=0 zeilen=311779 treffer=19811 spaet=6986 fremd=0 symbole=340 zip=1125MB dauer=124.6s roh=233204z/03-13:vereint,03-14:vereint",
+   "2026-09-23T20:35:01 ENDE teil 1/1 tage=1 dateien=96 125 s",
+   "2026-09-23T20:35:43 2017-03-06 dateien=96/96 fehlend=0 fehler=0 zeilen=335252 treffer=16399 spaet=5349 fremd=0 symbole=343 zip=1226MB dauer=166.8s roh=251557z/03-06:vereint,03-07:vereint",
+   "2026-09-23T20:35:43 ENDE teil 1/1 tage=1 dateien=96 167 s",
+   "2026-09-23T20:35:48 2017-03-09 dateien=96/96 fehlend=0 fehler=0 zeilen=357087 treffer=22302 spaet=6973 fremd=0 symbole=346 zip=1308MB dauer=171.9s roh=270994z/03-09:wartet,03-10:vereint",
+   "2026-09-23T20:35:48 ENDE teil 1/1 tage=1 dateien=96 172 s",
+   "2026-09-23T20:35:59 2017-03-08 dateien=96/96 fehlend=0 fehler=0 zeilen=354462 treffer=19793 spaet=5829 fremd=0 symbole=352 zip=1305MB dauer=182.6s roh=272550z/03-08:vereint,03-09:vereint",
+   "2026-09-23T20:35:59 ENDE teil 1/1 tage=1 dateien=96 183 s",
+   "2026-09-23T20:39:27 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:39:27 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:39:27 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:39:27 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:39:27 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:42:00 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:42:00 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:42:00 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:42:00 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:42:00 START nachrichten-stimmung-tage-2026-09-19/gdelt/v1 teil 1/1 tage=1 erledigt=1 symbole=661 vollNamen=649 karte=nachrichten-stimmung-tage-2026-09-19/namenskarte/v2 node=v24.18.0",
+   "2026-09-23T20:42:04 2017-03-20 dateien=95/96 fehlend=1(2300) fehler=0 zeilen=306027 treffer=18203 spaet=6400 fremd=0 symbole=342 zip=1139MB dauer=156.6s roh=232930z/03-20:vereint,03-21:vereint",
+   "2026-09-23T20:42:04 ENDE teil 1/1 tage=1 dateien=96 157 s",
+   "2026-09-23T20:42:04 2017-03-15 dateien=96/96 fehlend=0 fehler=0 zeilen=339823 treffer=21320 spaet=6386 fremd=0 symbole=356 zip=1238MB dauer=156.9s roh=260959z/03-15:vereint,03-16:vereint",
+   "2026-09-23T20:42:04 ENDE teil 1/1 tage=1 dateien=96 157 s",
+   "2026-09-23T20:42:05 2017-03-23 dateien=94/96 fehlend=2(2300 0230) fehler=0 zeilen=310020 treffer=16226 spaet=5041 fremd=0 symbole=332 zip=1183MB dauer=158.1s roh=238256z/03-23:wartet,03-24:wartet",
+   "2026-09-23T20:42:05 ENDE teil 1/1 tage=1 dateien=96 158 s",
+   "2026-09-23T20:42:15 2017-03-22 dateien=95/96 fehlend=1(0045) fehler=0 zeilen=333729 treffer=18753 spaet=6241 fremd=0 symbole=333 zip=1261MB dauer=168.1s roh=258196z/03-22:vereint,03-23:vereint",
+   "2026-09-23T20:42:15 ENDE teil 1/1 tage=1 dateien=96 168 s",
+   "2026-09-23T20:42:16 2017-03-24 dateien=96/96 fehlend=0 fehler=0 zeilen=301739 treffer=17381 spaet=5599 fremd=0 symbole=315 zip=1123MB dauer=168.5s roh=227757z/03-24:vereint,03-25:vereint",
+   "2026-09-23T20:42:16 ENDE teil 1/1 tage=1 dateien=96 169 s",
+   "2026-09-23T20:45:00 2017-04-06 dateien=95/96 fehlend=1(2245) fehler=0 zeilen=328085 treffer=18311 spaet=5345 fremd=0 symbole=329 zip=1212MB dauer=179.4s roh=248877z/04-06:wartet,04-07:wartet",
+   "2026-09-23T20:45:00 ENDE teil 1/1 tage=1 dateien=96 179 s",
+   "2026-09-23T20:45:03 2017-03-30 dateien=95/96 fehlend=1(2345) fehler=0 zeilen=339972 treffer=21217 spaet=5856 fremd=0 symbole=330 zip=1244MB dauer=182.7s roh=261219z/03-30:vereint,03-31:wartet",
+   "2026-09-23T20:45:03 ENDE teil 1/1 tage=1 dateien=96 183 s",
+   "2026-09-23T20:45:03 2017-04-05 dateien=95/96 fehlend=1(0415) fehler=0 zeilen=333767 treffer=20754 spaet=6599 fremd=0 symbole=345 zip=1224MB dauer=182.7s roh=254365z/04-05:vereint,04-06:vereint",
+   "2026-09-23T20:45:03 ENDE teil 1/1 tage=1 dateien=96 183 s",
+   "2026-09-23T20:45:04 2017-04-07 dateien=96/96 fehlend=0 fehler=0 zeilen=311629 treffer=16586 spaet=4497 fremd=0 symbole=342 zip=1178MB dauer=183.9s roh=236687z/04-07:vereint,04-08:vereint",
+   "2026-09-23T20:45:04 ENDE teil 1/1 tage=1 dateien=96 184 s"
+  ]
+ }
+}

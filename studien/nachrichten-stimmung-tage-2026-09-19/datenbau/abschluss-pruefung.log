@@ -1,0 +1,29 @@
+Kalender: ET-Tage 3530 (2017-01-01..2026-08-31), UTC-Tage 3531 (2017-01-01..2026-09-01)
+§1.1 Tagesdateien: 3530/3530 ungueltig=0 unvollstaendig=0 fehler-Summe=0 (Tage: ) fehlend(404)=7127 gefunden=331749 soll=338876
+     n=26396207 nSpaet=11379001 treffer=37775208 (gleich: true) mitOrganisation=398550733 zeilen=547275171 fremderTag=0 stempelAusDatei=0 symbole=599
+     offeneTage in Fortschritt: 15, davon laut Tagesdatei noch offen: 0 
+§1.3 2017: 365 Tage, treffer Median 16590 P5 6173.8 P95 24380, Ausreisser<10%: 0
+§1.3 2018: 365 Tage, treffer Median 16167 P5 6152 P95 22279, Ausreisser<10%: 0
+§1.3 2019: 365 Tage, treffer Median 13692 P5 4544.2 P95 18621.8, Ausreisser<10%: 0
+§1.3 2020: 366 Tage, treffer Median 10996.5 P5 3004.5 P95 17413.25, Ausreisser<10%: 5 (2020-11-07:542/13D 2020-11-08:705/22D 2020-11-13:971/8D 2020-11-14:727/9D 2020-11-15:675/14D)
+§1.3 2021: 365 Tage, treffer Median 11657 P5 3810 P95 17939, Ausreisser<10%: 0
+§1.3 2022: 365 Tage, treffer Median 7917 P5 2505.8 P95 11251.400000000001, Ausreisser<10%: 0
+§1.3 2023: 365 Tage, treffer Median 10354 P5 3345 P95 15452.200000000003, Ausreisser<10%: 1 (2023-03-22:422/2D)
+§1.3 2024: 366 Tage, treffer Median 11082.5 P5 4737 P95 15028.75, Ausreisser<10%: 0
+§1.3 2025: 365 Tage, treffer Median 8601 P5 2544 P95 13271, Ausreisser<10%: 17 (2025-06-15:0/0D 2025-06-16:0/0D 2025-06-17:0/0D 2025-06-18:0/0D 2025-06-19:0/0D 2025-06-20:0/0D 2025-06-21:0/0D 2025-06-22:0/0D 2025-06-23:0/0D 2025-06-24:0/0D 2025-06-25:0/0D 2025-06-26:0/0D 2025-06-27:0/0D 2025-06-28:0/0D 2025-06-29:0/0D 2025-06-30:0/0D 2025-07-01:143/7D)
+§1.3 2026: 243 Tage, treffer Median 7889 P5 2926 P95 10659.4, Ausreisser<10%: 0
+§2.1 UTC-Tage: erwartet 3531 vorhanden 3529 fehlend 2 (2017-01-01 2026-09-01) ohneBeleg=0 Stuecke=2 (Randtage: 2017-01-01_2017-01-01 2026-09-01_2026-08-31) Reste=0 stueckeOhneBeleg=0
+§2.3 Stichprobe: 40/40 bestanden
+§2.4 Auszug: 3529 UTC-Tage, 54.09 GB (50.37 GiB), 398449271 Zeilen, 331657 Quelldateien, fehlend(404) 7127; Stuecke 2 = 101462 Zeilen; Download 2.184 TB zip, Auszug = 2.48 %
+     2017: 364 Tage 9.08 GB 67008105 Zeilen fehlend 985
+     2018: 365 Tage 8.18 GB 59955377 Zeilen fehlend 992
+     2019: 365 Tage 6.68 GB 49468194 Zeilen fehlend 11
+     2020: 366 Tage 5.35 GB 39036806 Zeilen fehlend 2585
+     2021: 365 Tage 4.52 GB 32976564 Zeilen fehlend 610
+     2022: 365 Tage 3.85 GB 28558601 Zeilen fehlend 87
+     2023: 365 Tage 5.16 GB 37500045 Zeilen fehlend 172
+     2024: 366 Tage 4.85 GB 35551834 Zeilen fehlend 2
+     2025: 365 Tage 4 GB 29983154 Zeilen fehlend 1681
+     2026: 243 Tage 2.43 GB 18410591 Zeilen fehlend 2
+Lauf: 20 Teile, Start 2026-09-22T12:15:37 Ende 2026-09-22T21:56:31, Dateien 338876, Netzfehler-Tage im Vollauf 15, Nacharbeit-Zeilen 43
+geschrieben: /archiv/markt-dashboard/studien-zellen/gdelt-2017-2026/pruefung/abschluss.json
