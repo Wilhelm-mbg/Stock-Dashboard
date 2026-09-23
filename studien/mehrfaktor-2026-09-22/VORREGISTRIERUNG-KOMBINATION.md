@@ -1,8 +1,14 @@
-# Vorregistrierung — Mehrfaktor-Kombination, Runde 1b — **ENTWURF** (22.09.2026, nicht registriert)
+# Vorregistrierung — Mehrfaktor-Kombination, Runde 1b — **REGISTRIERT** (23.09.2026 22:16)
 
-**Status:** Entwurf des Werkzeug-Chats (Auftrag Nr. 48 §3). **Nicht registriert, keine Zahl eines Feldes gemessen.** Registriert
-wird dieses Papier erst, wenn Wilhelm die offenen Entscheide (§9) getroffen hat und **bevor** der Kombinationslauf startet; die
-neun Feldzellen (Runde 1a) entstehen davor, sind aber **Bau- und Nullpunktprüfungen, keine Auswahl**.
+**Status: REGISTRIERT** — Wilhelm per Formular am 23.09.2026 22:16 („Registrieren und laufen lassen"), nach Nachträgen 1–5 und vor
+dem Kombinationslauf (Nr. 62). **Siegel:** der Commit, der diese Statuszeile einführt (Hash im Wiki-Log und in `wiki/entscheide.md`);
+ab hier ändert sich an diesem Papier nichts mehr außer dem Ergebnisabschnitt (§12, vom Lauf geschrieben) und datierten Nachträgen,
+die nichts an Frage, Test, Feldern, Gewichten, Universum, Signaltagen, Haltefenster oder Toren ändern. Zum Zeitpunkt der
+Registrierung war **kein IC eines echten Feldes und keine Kombinationszahl** berechnet oder angesehen; die 13 Feldzellen
+(`zellen/`, Kennung `zelle/v1.1`, Tafel v1.1) tragen ihre IC-Werte als Diagnose in den Dateien, die der PM nur auf se/MDE₈₀ gelesen hat.
+
+*Ursprünglicher Kopf (22.09.):* Entwurf des Werkzeug-Chats (Auftrag Nr. 48 §3), nicht registriert, keine Zahl eines Feldes gemessen;
+die neun Feldzellen (Runde 1a) entstehen davor, sind aber **Bau- und Nullpunktprüfungen, keine Auswahl**.
 
 **Die Feldwahl stammt aus `wiki/mehrfaktor-felder.md` vom 22.09.2026 (Commit `4da7ecf`), vor jeder Feldmessung.** Änderungen an
 Feldern, Formeln oder Gewichten nach der ersten Feldzelle sind Nachträge mit Datum und Grund (§11), nie stille Korrekturen.
