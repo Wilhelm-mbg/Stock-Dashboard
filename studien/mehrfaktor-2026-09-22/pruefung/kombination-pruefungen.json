@@ -1,0 +1,1382 @@
+{
+ "kennung": "mehrfaktor-2026-09-22/kombination-pruefungen/v1",
+ "auftrag": "Nr. 62 (23.09.2026), Studien-Chat",
+ "vorregistrierung": "VORREGISTRIERUNG-KOMBINATION.md, REGISTRIERT 23.09.2026 22:16, Siegel 71f8da3",
+ "repoHeadVorDemLauf": "7efb519",
+ "node": "v24.18.0",
+ "vorDemLauf": {
+  "stand": "2026-09-23T20:34:31.985Z",
+  "K-P1": {
+   "name": "K-P1 Kennung zelle/v1.1, rueckhalte false, 92 Signaltage, gleiche Signaltage und Universen, tafelKennung je Zellenart",
+   "bestanden": true,
+   "zellen": {
+    "momentum": {
+     "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+     "stand": "2026-09-22T20:26:22.513Z",
+     "rueckhalte": false,
+     "signaltageZahl": 92,
+     "erster": "2017-01-03",
+     "letzter": "2024-08-01",
+     "universumMittel": 760.5326086956521,
+     "tafelKennung": null,
+     "maengel": []
+    },
+    "schwankung": {
+     "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+     "stand": "2026-09-22T20:26:29.970Z",
+     "rueckhalte": false,
+     "signaltageZahl": 92,
+     "erster": "2017-01-03",
+     "letzter": "2024-08-01",
+     "universumMittel": 760.5326086956521,
+     "tafelKennung": null,
+     "maengel": []
+    },
+    "bewertung": {
+     "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+     "stand": "2026-09-22T20:26:47.702Z",
+     "rueckhalte": false,
+     "signaltageZahl": 92,
+     "erster": "2017-01-03",
+     "letzter": "2024-08-01",
+     "universumMittel": 760.5326086956521,
+     "tafelKennung": "fundamentaltafel-2026-09-16/v1.1",
+     "maengel": []
+    },
+    "ertragskraft": {
+     "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+     "stand": "2026-09-22T20:26:59.566Z",
+     "rueckhalte": false,
+     "signaltageZahl": 92,
+     "erster": "2017-01-03",
+     "letzter": "2024-08-01",
+     "universumMittel": 760.5326086956521,
+     "tafelKennung": "fundamentaltafel-2026-09-16/v1.1",
+     "maengel": []
+    },
+    "investition": {
+     "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+     "stand": "2026-09-22T20:27:11.402Z",
+     "rueckhalte": false,
+     "signaltageZahl": 92,
+     "erster": "2017-01-03",
+     "letzter": "2024-08-01",
+     "universumMittel": 760.5326086956521,
+     "tafelKennung": "fundamentaltafel-2026-09-16/v1.1",
+     "maengel": []
+    },
+    "sue": {
+     "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+     "stand": "2026-09-22T20:27:17.249Z",
+     "rueckhalte": false,
+     "signaltageZahl": 92,
+     "erster": "2017-01-03",
+     "letzter": "2024-08-01",
+     "universumMittel": 760.5326086956521,
+     "tafelKennung": "fundamentaltafel-2026-09-16/v1.1",
+     "maengel": []
+    },
+    "fue": {
+     "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+     "stand": "2026-09-22T20:27:23.043Z",
+     "rueckhalte": false,
+     "signaltageZahl": 92,
+     "erster": "2017-01-03",
+     "letzter": "2024-08-01",
+     "universumMittel": 760.5326086956521,
+     "tafelKennung": "fundamentaltafel-2026-09-16/v1.1",
+     "maengel": []
+    },
+    "groesse": {
+     "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+     "stand": "2026-09-22T20:26:35.874Z",
+     "rueckhalte": false,
+     "signaltageZahl": 92,
+     "erster": "2017-01-03",
+     "letzter": "2024-08-01",
+     "universumMittel": 760.5326086956521,
+     "tafelKennung": "fundamentaltafel-2026-09-16/v1.1",
+     "maengel": []
+    },
+    "verschuldung": {
+     "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+     "stand": "2026-09-22T20:26:41.802Z",
+     "rueckhalte": false,
+     "signaltageZahl": 92,
+     "erster": "2017-01-03",
+     "letzter": "2024-08-01",
+     "universumMittel": 760.5326086956521,
+     "tafelKennung": "fundamentaltafel-2026-09-16/v1.1",
+     "maengel": []
+    }
+   }
+  },
+  "K-P2": {
+   "name": "K-P2 kein kunst-Eintrag",
+   "bestanden": true,
+   "kunst": {
+    "momentum": null,
+    "schwankung": null,
+    "bewertung": null,
+    "ertragskraft": null,
+    "investition": null,
+    "sue": null,
+    "fue": null,
+    "groesse": null,
+    "verschuldung": null
+   }
+  },
+  "K-P3": {
+   "name": "K-P3 Gewichte genau 1 fuer die sieben Signale, Kontrollen genau groesse+verschuldung, umkehr (und die nachrichtlichen Zellen) nicht enthalten",
+   "signale": [
+    "momentum",
+    "schwankung",
+    "bewertung",
+    "ertragskraft",
+    "investition",
+    "sue",
+    "fue"
+   ],
+   "gewichteAufruf": null,
+   "kontrollen": [
+    "groesse",
+    "verschuldung"
+   ],
+   "nichtEnthalten": [
+    "umkehr",
+    "bewertung-ep",
+    "ertragskraft-roa",
+    "fue-marktwert"
+   ],
+   "gewichteWirksam": {
+    "momentum": 1,
+    "schwankung": 1,
+    "bewertung": 1,
+    "ertragskraft": 1,
+    "investition": 1,
+    "sue": 1,
+    "fue": 1
+   },
+   "kontrollenWirksam": [
+    "groesse",
+    "verschuldung"
+   ],
+   "bestanden": true
+  },
+  "K-P4": {
+   "name": "K-P4 Nullpunkt je Zelle: Orakel, Placebo Symbole, Zufall, Leck bestanden (Placebo Versatz nur notiert)",
+   "bestanden": true,
+   "zellen": {
+    "momentum": {
+     "orakel": true,
+     "orakelIc": true,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "versatzNotiert": true,
+     "bestanden": true
+    },
+    "schwankung": {
+     "orakel": true,
+     "orakelIc": true,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "versatzNotiert": true,
+     "bestanden": true
+    },
+    "bewertung": {
+     "orakel": true,
+     "orakelIc": true,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "versatzNotiert": false,
+     "bestanden": true
+    },
+    "ertragskraft": {
+     "orakel": true,
+     "orakelIc": true,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "versatzNotiert": true,
+     "bestanden": true
+    },
+    "investition": {
+     "orakel": true,
+     "orakelIc": true,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "versatzNotiert": true,
+     "bestanden": true
+    },
+    "sue": {
+     "orakel": true,
+     "orakelIc": true,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "versatzNotiert": false,
+     "bestanden": true
+    },
+    "fue": {
+     "orakel": true,
+     "orakelIc": true,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "versatzNotiert": true,
+     "bestanden": true
+    },
+    "groesse": {
+     "orakel": true,
+     "orakelIc": true,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "versatzNotiert": true,
+     "bestanden": true
+    },
+    "verschuldung": {
+     "orakel": true,
+     "orakelIc": true,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "versatzNotiert": true,
+     "bestanden": true
+    }
+   }
+  },
+  "K-P5": {
+   "name": "K-P5 Vorpruefung §6 als Datei VOR dem Lauf (Commit 83a3981), V1/V2 uebernommen",
+   "bestanden": true,
+   "datei": "pruefung/vorpruefung-kombination.json",
+   "kennung": "mehrfaktor-2026-09-22/vorpruefung/v1",
+   "stand": "2026-09-22T20:28:37.491Z",
+   "geprueftAm": "2026-09-23T20:34:31.777Z",
+   "gitCommit": "83a3981 2026-09-22 22:29:49 +0200",
+   "standVorDemLauf": true,
+   "V1": {
+    "kanteHalbe": [
+     0.15,
+     0.3
+    ],
+    "kosten": 0.017150190099254666,
+    "bestanden": true,
+    "hinweis": "Information ueber die Handelbarkeit des Dezils; kein Tor fuer den IC-Test"
+   },
+   "V2": {
+    "erwarteterIc": [
+     0.02,
+     0.03
+    ],
+    "mde80IcSchaetzung": 0.049468322669983716,
+    "faktorZumBoden": 5.044905224563894,
+    "bestandenObereGrenze": false,
+    "bestandenUntereGrenze": false
+   },
+   "erwartungIc": [
+    0.02,
+    0.03
+   ],
+   "icBoden": {
+    "se": 0.0035,
+    "mde80": 0.01
+   },
+   "seIcMedian": 0.017657168285973628,
+   "mde80IcSchaetzung": 0.049468322669983716,
+   "umschlagMittel": 0.21437737624068331,
+   "kosten": 0.017150190099254666,
+   "v2Gefallen": true
+  },
+  "bestanden": true
+ },
+ "lauf": {
+  "start": "2026-09-23T20:34:31.986Z",
+  "ende": "2026-09-23T20:34:37.810Z",
+  "sekundenProzess": 5.729,
+  "rssMBProzess": 906.578125,
+  "maschine": {
+   "sekunden": 5.36,
+   "maxRssMB": 1245.30078125,
+   "tafelLadeSekunden": 2.404,
+   "werteNull": 0,
+   "bilanzZugriffe": 0,
+   "node": "v24.18.0"
+  },
+  "feld": "kombination",
+  "kennung": "mehrfaktor-2026-09-22/zelle/v1.1",
+  "panel": {
+   "kennung": "querschnitt-pruefstand-2026-09-13/panel/v2",
+   "letzterTag": "2026-09-15",
+   "zeilen": 9904017,
+   "reihen": 7338,
+   "ordner": "C:\\Users\\Wilhe\\Downloads\\Stock-Dashboard\\studien\\querschnitt-pruefstand-2026-09-13\\voll"
+  },
+  "tafelKennung": null,
+  "rueckhalte": false,
+  "signaltageZahl": 92,
+  "klassen": [
+   1,
+   2,
+   3
+  ],
+  "dateien": {
+   "zelle": "zellen/kombination.json",
+   "nullpunkt": "zellen/kombination-nullpunkt.json",
+   "bericht": "zellen/kombination-bericht.md"
+  }
+ },
+ "nachDemLauf": {
+  "stand": "2026-09-23T20:34:37.811Z",
+  "K-P6": {
+   "name": "K-P6 Auffuellungen je Feld und je Dezil ausgewiesen; Anteil aufgefuellter Mitglieder im Dezil oben < 50 %",
+   "jeFeld": {
+    "momentum": 24,
+    "schwankung": 24,
+    "bewertung": 15697,
+    "ertragskraft": 32033,
+    "investition": 11646,
+    "sue": 12481,
+    "fue": 50342
+   },
+   "anteilJeFeld": {
+    "momentum": 0.00034300904686361105,
+    "schwankung": 0.00034300904686361105,
+    "bewertung": 0.22434220869242094,
+    "ertragskraft": 0.4578170332575855,
+    "investition": 0.16644513999056726,
+    "sue": 0.17837899641269706,
+    "fue": 0.7194900598836628
+   },
+   "gesamtFeldAuffuellungen": 122247,
+   "symbolTage": 69969,
+   "jeDezil": {
+    "oben": 5933,
+    "unten": 4078
+   },
+   "mitgliederDezilOben": 7042,
+   "mitgliederDezilUnten": 6956,
+   "nenner": "Summe der Dezilgroessen k je Periode aus kombination-nullpunkt.json einzelmessungPerioden (Maschine)",
+   "anteilOben": 0.8425163305879012,
+   "anteilUnten": 0.5862564692351926,
+   "maxAnteilObenJeSignaltag": 0.9886363636363636,
+   "zaehlweise": "Maschine (zelle.js lauf): ein Dezilmitglied zaehlt als aufgefuellt, wenn mindestens ein Feld fehlte; je Feld: Auffuellungen ueber alle Mitglied-Monate (kombiniere.zaehler)",
+   "jeFeldJeDezil": "von der Maschine nicht ausgewiesen (nur Summe je Dezil und Summe je Feld); keine eigene Dezilbildung (Auftrag §1a.2)",
+   "schwelle": 0.5,
+   "bestanden": false
+  },
+  "kontrollgroessen": {
+   "hinweis": "NAEHERUNG (Auftrag §1.5): Spearman-Rangkorrelation zwischen Kombinationswert und Kontrollrang je Signaltag ueber die Mitglieder mit Kontrollwert (Z.ic der Maschine), Mittel ueber die Signaltage. rho > 0: hohe Kombinationsraenge gehen mit hohem Kontrollrang einher (gross bzw. verschuldet). Der mittlere Kontrollrang der Dezilmitglieder ist nicht berichtbar, weil die Maschine die Dezilmitglieder nicht ausweist. Nur Bericht, kein Tor.",
+   "groesse": {
+    "mittel": 0.22562270715465288,
+    "sd": 0.07299408077574407,
+    "se": 0.0076101589912945305,
+    "t": 29.647568127387203,
+    "n": 92,
+    "min": 0.022196375003314787,
+    "max": 0.41150739096392014,
+    "abdeckungMittel": 0.778469070853004,
+    "monate": [
+     {
+      "tag": "2017-01-03",
+      "rho": 0.17729388998086257,
+      "n": 508
+     },
+     {
+      "tag": "2017-02-01",
+      "rho": 0.16812359954869674,
+      "n": 519
+     },
+     {
+      "tag": "2017-03-01",
+      "rho": 0.19279842294146604,
+      "n": 527
+     },
+     {
+      "tag": "2017-04-03",
+      "rho": 0.23044793275580902,
+      "n": 534
+     },
+     {
+      "tag": "2017-05-01",
+      "rho": 0.2538418094396594,
+      "n": 519
+     },
+     {
+      "tag": "2017-06-01",
+      "rho": 0.30182835928868473,
+      "n": 530
+     },
+     {
+      "tag": "2017-07-03",
+      "rho": 0.28666600090921607,
+      "n": 523
+     },
+     {
+      "tag": "2017-08-01",
+      "rho": 0.3113801923306916,
+      "n": 497
+     },
+     {
+      "tag": "2017-09-01",
+      "rho": 0.3590545267824683,
+      "n": 471
+     },
+     {
+      "tag": "2017-10-02",
+      "rho": 0.349531018379126,
+      "n": 475
+     },
+     {
+      "tag": "2017-11-01",
+      "rho": 0.3188787759545184,
+      "n": 485
+     },
+     {
+      "tag": "2017-12-01",
+      "rho": 0.34805944233648645,
+      "n": 515
+     },
+     {
+      "tag": "2018-01-02",
+      "rho": 0.32347485272186655,
+      "n": 495
+     },
+     {
+      "tag": "2018-02-01",
+      "rho": 0.26445937707856965,
+      "n": 515
+     },
+     {
+      "tag": "2018-03-01",
+      "rho": 0.2124942931283477,
+      "n": 565
+     },
+     {
+      "tag": "2018-04-02",
+      "rho": 0.20121919055630513,
+      "n": 592
+     },
+     {
+      "tag": "2018-05-01",
+      "rho": 0.16978342436178864,
+      "n": 567
+     },
+     {
+      "tag": "2018-06-01",
+      "rho": 0.21964601559782637,
+      "n": 535
+     },
+     {
+      "tag": "2018-07-02",
+      "rho": 0.20374608016968157,
+      "n": 536
+     },
+     {
+      "tag": "2018-08-01",
+      "rho": 0.2228335877717731,
+      "n": 545
+     },
+     {
+      "tag": "2018-09-04",
+      "rho": 0.265804104877278,
+      "n": 511
+     },
+     {
+      "tag": "2018-10-01",
+      "rho": 0.25637659842462385,
+      "n": 500
+     },
+     {
+      "tag": "2018-11-01",
+      "rho": 0.2684630890745858,
+      "n": 543
+     },
+     {
+      "tag": "2018-12-03",
+      "rho": 0.2597476604102779,
+      "n": 566
+     },
+     {
+      "tag": "2019-01-02",
+      "rho": 0.25484411846913857,
+      "n": 574
+     },
+     {
+      "tag": "2019-02-01",
+      "rho": 0.24194739334860796,
+      "n": 544
+     },
+     {
+      "tag": "2019-03-01",
+      "rho": 0.2672530072184535,
+      "n": 554
+     },
+     {
+      "tag": "2019-04-01",
+      "rho": 0.2807389253643554,
+      "n": 558
+     },
+     {
+      "tag": "2019-05-01",
+      "rho": 0.28498455193076183,
+      "n": 535
+     },
+     {
+      "tag": "2019-06-03",
+      "rho": 0.30543770986492746,
+      "n": 546
+     },
+     {
+      "tag": "2019-07-01",
+      "rho": 0.31994777316826284,
+      "n": 531
+     },
+     {
+      "tag": "2019-08-01",
+      "rho": 0.31268770223521813,
+      "n": 526
+     },
+     {
+      "tag": "2019-09-03",
+      "rho": 0.33649561919640436,
+      "n": 509
+     },
+     {
+      "tag": "2019-10-01",
+      "rho": 0.322828797509344,
+      "n": 524
+     },
+     {
+      "tag": "2019-11-01",
+      "rho": 0.2670023477235449,
+      "n": 516
+     },
+     {
+      "tag": "2019-12-02",
+      "rho": 0.2879336607260621,
+      "n": 510
+     },
+     {
+      "tag": "2020-01-02",
+      "rho": 0.25447002871105406,
+      "n": 507
+     },
+     {
+      "tag": "2020-02-03",
+      "rho": 0.3392518783518881,
+      "n": 526
+     },
+     {
+      "tag": "2020-03-02",
+      "rho": 0.2920502804000198,
+      "n": 587
+     },
+     {
+      "tag": "2020-04-01",
+      "rho": 0.33484409582671193,
+      "n": 623
+     },
+     {
+      "tag": "2020-05-01",
+      "rho": 0.41150739096392014,
+      "n": 631
+     },
+     {
+      "tag": "2020-06-01",
+      "rho": 0.35980248391713515,
+      "n": 619
+     },
+     {
+      "tag": "2020-07-01",
+      "rho": 0.3174328259490557,
+      "n": 608
+     },
+     {
+      "tag": "2020-08-03",
+      "rho": 0.2590431779338253,
+      "n": 610
+     },
+     {
+      "tag": "2020-09-01",
+      "rho": 0.18674737946934122,
+      "n": 563
+     },
+     {
+      "tag": "2020-10-01",
+      "rho": 0.2062970845894214,
+      "n": 565
+     },
+     {
+      "tag": "2020-11-02",
+      "rho": 0.21966950283305098,
+      "n": 552
+     },
+     {
+      "tag": "2020-12-01",
+      "rho": 0.1841830714815852,
+      "n": 561
+     },
+     {
+      "tag": "2021-01-04",
+      "rho": 0.18649707314207759,
+      "n": 585
+     },
+     {
+      "tag": "2021-02-01",
+      "rho": 0.21008200162892637,
+      "n": 642
+     },
+     {
+      "tag": "2021-03-01",
+      "rho": 0.16293773416674398,
+      "n": 679
+     },
+     {
+      "tag": "2021-04-01",
+      "rho": 0.06977840048755662,
+      "n": 690
+     },
+     {
+      "tag": "2021-05-03",
+      "rho": 0.12492016808028002,
+      "n": 655
+     },
+     {
+      "tag": "2021-06-01",
+      "rho": 0.09788758655403794,
+      "n": 661
+     },
+     {
+      "tag": "2021-07-01",
+      "rho": 0.022196375003314787,
+      "n": 652
+     },
+     {
+      "tag": "2021-08-02",
+      "rho": 0.059919847634807344,
+      "n": 666
+     },
+     {
+      "tag": "2021-09-01",
+      "rho": 0.1112103932810348,
+      "n": 614
+     },
+     {
+      "tag": "2021-10-01",
+      "rho": 0.12789288087993456,
+      "n": 631
+     },
+     {
+      "tag": "2021-11-01",
+      "rho": 0.1053982065643522,
+      "n": 627
+     },
+     {
+      "tag": "2021-12-01",
+      "rho": 0.12928911469173907,
+      "n": 665
+     },
+     {
+      "tag": "2022-01-03",
+      "rho": 0.18547005212712292,
+      "n": 626
+     },
+     {
+      "tag": "2022-02-01",
+      "rho": 0.2167903945297526,
+      "n": 693
+     },
+     {
+      "tag": "2022-03-01",
+      "rho": 0.24597963134831144,
+      "n": 732
+     },
+     {
+      "tag": "2022-04-01",
+      "rho": 0.24530025475595568,
+      "n": 732
+     },
+     {
+      "tag": "2022-05-02",
+      "rho": 0.24773915298424723,
+      "n": 753
+     },
+     {
+      "tag": "2022-06-01",
+      "rho": 0.23434364614328435,
+      "n": 707
+     },
+     {
+      "tag": "2022-07-01",
+      "rho": 0.22361911825320382,
+      "n": 667
+     },
+     {
+      "tag": "2022-08-01",
+      "rho": 0.16344091060349783,
+      "n": 675
+     },
+     {
+      "tag": "2022-09-01",
+      "rho": 0.2013427285237023,
+      "n": 639
+     },
+     {
+      "tag": "2022-10-03",
+      "rho": 0.23472681461206735,
+      "n": 647
+     },
+     {
+      "tag": "2022-11-01",
+      "rho": 0.24175574771291053,
+      "n": 654
+     },
+     {
+      "tag": "2022-12-01",
+      "rho": 0.21804117740971116,
+      "n": 645
+     },
+     {
+      "tag": "2023-01-03",
+      "rho": 0.2023184011402956,
+      "n": 606
+     },
+     {
+      "tag": "2023-02-01",
+      "rho": 0.1769564801414716,
+      "n": 625
+     },
+     {
+      "tag": "2023-03-01",
+      "rho": 0.16455921785625993,
+      "n": 623
+     },
+     {
+      "tag": "2023-04-03",
+      "rho": 0.13969744750796745,
+      "n": 646
+     },
+     {
+      "tag": "2023-05-01",
+      "rho": 0.1631468024934174,
+      "n": 640
+     },
+     {
+      "tag": "2023-06-01",
+      "rho": 0.19958066799503094,
+      "n": 635
+     },
+     {
+      "tag": "2023-07-03",
+      "rho": 0.1739211695663384,
+      "n": 628
+     },
+     {
+      "tag": "2023-08-01",
+      "rho": 0.18944090818692147,
+      "n": 644
+     },
+     {
+      "tag": "2023-09-01",
+      "rho": 0.15815864888396483,
+      "n": 575
+     },
+     {
+      "tag": "2023-10-02",
+      "rho": 0.16095014159084772,
+      "n": 607
+     },
+     {
+      "tag": "2023-11-01",
+      "rho": 0.1790828250072016,
+      "n": 635
+     },
+     {
+      "tag": "2023-12-01",
+      "rho": 0.2143534827808671,
+      "n": 625
+     },
+     {
+      "tag": "2024-01-02",
+      "rho": 0.1895998366364665,
+      "n": 622
+     },
+     {
+      "tag": "2024-02-01",
+      "rho": 0.20797799049330848,
+      "n": 629
+     },
+     {
+      "tag": "2024-03-01",
+      "rho": 0.19332776756689782,
+      "n": 655
+     },
+     {
+      "tag": "2024-04-01",
+      "rho": 0.14793740571385708,
+      "n": 621
+     },
+     {
+      "tag": "2024-05-01",
+      "rho": 0.16341205872195091,
+      "n": 666
+     },
+     {
+      "tag": "2024-06-03",
+      "rho": 0.20902411601859094,
+      "n": 635
+     },
+     {
+      "tag": "2024-07-01",
+      "rho": 0.19896127550414383,
+      "n": 634
+     },
+     {
+      "tag": "2024-08-01",
+      "rho": 0.24496995130099178,
+      "n": 678
+     }
+    ]
+   },
+   "verschuldung": {
+    "mittel": -0.005024589284055977,
+    "sd": 0.07793390598777426,
+    "se": 0.00812517137110995,
+    "t": -0.6183979456632169,
+    "n": 92,
+    "min": -0.2269250217417708,
+    "max": 0.1370815586974189,
+    "abdeckungMittel": 0.840924448345337,
+    "monate": [
+     {
+      "tag": "2017-01-03",
+      "rho": -0.012588020620348864,
+      "n": 548
+     },
+     {
+      "tag": "2017-02-01",
+      "rho": -0.012965405750486709,
+      "n": 558
+     },
+     {
+      "tag": "2017-03-01",
+      "rho": -0.009267794862281332,
+      "n": 561
+     },
+     {
+      "tag": "2017-04-03",
+      "rho": 0.018898664837792192,
+      "n": 563
+     },
+     {
+      "tag": "2017-05-01",
+      "rho": 0.03859867764995167,
+      "n": 556
+     },
+     {
+      "tag": "2017-06-01",
+      "rho": 0.02537600425604012,
+      "n": 572
+     },
+     {
+      "tag": "2017-07-03",
+      "rho": 0.04854521255196145,
+      "n": 567
+     },
+     {
+      "tag": "2017-08-01",
+      "rho": 0.0668669716371757,
+      "n": 539
+     },
+     {
+      "tag": "2017-09-01",
+      "rho": 0.0710633331418826,
+      "n": 518
+     },
+     {
+      "tag": "2017-10-02",
+      "rho": 0.038272176739586244,
+      "n": 526
+     },
+     {
+      "tag": "2017-11-01",
+      "rho": -0.021043803544335615,
+      "n": 537
+     },
+     {
+      "tag": "2017-12-01",
+      "rho": -0.07094861035838698,
+      "n": 565
+     },
+     {
+      "tag": "2018-01-02",
+      "rho": -0.050625515729250475,
+      "n": 546
+     },
+     {
+      "tag": "2018-02-01",
+      "rho": -0.02256455691939515,
+      "n": 564
+     },
+     {
+      "tag": "2018-03-01",
+      "rho": -0.0361022695366099,
+      "n": 604
+     },
+     {
+      "tag": "2018-04-02",
+      "rho": 0.005785473576569645,
+      "n": 631
+     },
+     {
+      "tag": "2018-05-01",
+      "rho": 0.014139378306792112,
+      "n": 612
+     },
+     {
+      "tag": "2018-06-01",
+      "rho": 0.014195549287938217,
+      "n": 588
+     },
+     {
+      "tag": "2018-07-02",
+      "rho": 0.00013180727503850158,
+      "n": 588
+     },
+     {
+      "tag": "2018-08-01",
+      "rho": 0.01929188953149767,
+      "n": 598
+     },
+     {
+      "tag": "2018-09-04",
+      "rho": 0.004000281553222281,
+      "n": 563
+     },
+     {
+      "tag": "2018-10-01",
+      "rho": 0.01906304288776198,
+      "n": 552
+     },
+     {
+      "tag": "2018-11-01",
+      "rho": 0.01231654481360681,
+      "n": 599
+     },
+     {
+      "tag": "2018-12-03",
+      "rho": 0.010290192496605092,
+      "n": 620
+     },
+     {
+      "tag": "2019-01-02",
+      "rho": 0.018355504078683322,
+      "n": 624
+     },
+     {
+      "tag": "2019-02-01",
+      "rho": 0.04843566385576337,
+      "n": 598
+     },
+     {
+      "tag": "2019-03-01",
+      "rho": 0.06028583924637205,
+      "n": 597
+     },
+     {
+      "tag": "2019-04-01",
+      "rho": 0.05562890358544034,
+      "n": 597
+     },
+     {
+      "tag": "2019-05-01",
+      "rho": 0.038177940978427014,
+      "n": 585
+     },
+     {
+      "tag": "2019-06-03",
+      "rho": 0.06783684051505386,
+      "n": 600
+     },
+     {
+      "tag": "2019-07-01",
+      "rho": 0.06956494583813388,
+      "n": 585
+     },
+     {
+      "tag": "2019-08-01",
+      "rho": 0.06384017966106721,
+      "n": 580
+     },
+     {
+      "tag": "2019-09-03",
+      "rho": 0.05837902170947161,
+      "n": 563
+     },
+     {
+      "tag": "2019-10-01",
+      "rho": 0.057077421297239486,
+      "n": 578
+     },
+     {
+      "tag": "2019-11-01",
+      "rho": 0.02595928263505848,
+      "n": 568
+     },
+     {
+      "tag": "2019-12-02",
+      "rho": 0.007654509237735005,
+      "n": 561
+     },
+     {
+      "tag": "2020-01-02",
+      "rho": 0.040709154047129964,
+      "n": 558
+     },
+     {
+      "tag": "2020-02-03",
+      "rho": 0.03023036070736867,
+      "n": 579
+     },
+     {
+      "tag": "2020-03-02",
+      "rho": -0.006998279430936797,
+      "n": 623
+     },
+     {
+      "tag": "2020-04-01",
+      "rho": -0.08889992765983505,
+      "n": 662
+     },
+     {
+      "tag": "2020-05-01",
+      "rho": -0.10991640439070983,
+      "n": 678
+     },
+     {
+      "tag": "2020-06-01",
+      "rho": -0.16163508407545868,
+      "n": 683
+     },
+     {
+      "tag": "2020-07-01",
+      "rho": -0.1965352060693605,
+      "n": 674
+     },
+     {
+      "tag": "2020-08-03",
+      "rho": -0.18983879016461766,
+      "n": 676
+     },
+     {
+      "tag": "2020-09-01",
+      "rho": -0.19783611196048725,
+      "n": 625
+     },
+     {
+      "tag": "2020-10-01",
+      "rho": -0.20759724992331366,
+      "n": 626
+     },
+     {
+      "tag": "2020-11-02",
+      "rho": -0.2269250217417708,
+      "n": 613
+     },
+     {
+      "tag": "2020-12-01",
+      "rho": -0.20925199911012957,
+      "n": 619
+     },
+     {
+      "tag": "2021-01-04",
+      "rho": -0.17406284899761473,
+      "n": 648
+     },
+     {
+      "tag": "2021-02-01",
+      "rho": -0.14528432039750863,
+      "n": 711
+     },
+     {
+      "tag": "2021-03-01",
+      "rho": -0.1353462581715504,
+      "n": 737
+     },
+     {
+      "tag": "2021-04-01",
+      "rho": 0.00904518415760567,
+      "n": 742
+     },
+     {
+      "tag": "2021-05-03",
+      "rho": 0.03952767636393904,
+      "n": 717
+     },
+     {
+      "tag": "2021-06-01",
+      "rho": 0.054352197769263255,
+      "n": 716
+     },
+     {
+      "tag": "2021-07-01",
+      "rho": 0.06652288649356604,
+      "n": 710
+     },
+     {
+      "tag": "2021-08-02",
+      "rho": 0.07712285637970932,
+      "n": 717
+     },
+     {
+      "tag": "2021-09-01",
+      "rho": 0.08351564835629975,
+      "n": 664
+     },
+     {
+      "tag": "2021-10-01",
+      "rho": 0.07450487459759453,
+      "n": 679
+     },
+     {
+      "tag": "2021-11-01",
+      "rho": 0.1370815586974189,
+      "n": 675
+     },
+     {
+      "tag": "2021-12-01",
+      "rho": 0.071237715887824,
+      "n": 713
+     },
+     {
+      "tag": "2022-01-03",
+      "rho": 0.07866938067926325,
+      "n": 674
+     },
+     {
+      "tag": "2022-02-01",
+      "rho": 0.0807747577041003,
+      "n": 744
+     },
+     {
+      "tag": "2022-03-01",
+      "rho": 0.08715049056854378,
+      "n": 775
+     },
+     {
+      "tag": "2022-04-01",
+      "rho": 0.054146764128004204,
+      "n": 770
+     },
+     {
+      "tag": "2022-05-02",
+      "rho": 0.007411587643110907,
+      "n": 796
+     },
+     {
+      "tag": "2022-06-01",
+      "rho": -0.016286175598620303,
+      "n": 756
+     },
+     {
+      "tag": "2022-07-01",
+      "rho": 0.019240291438451174,
+      "n": 716
+     },
+     {
+      "tag": "2022-08-01",
+      "rho": 0.053474751672905156,
+      "n": 724
+     },
+     {
+      "tag": "2022-09-01",
+      "rho": 0.016344982791259594,
+      "n": 679
+     },
+     {
+      "tag": "2022-10-03",
+      "rho": 0.007006080175830013,
+      "n": 686
+     },
+     {
+      "tag": "2022-11-01",
+      "rho": 0.02094513655341925,
+      "n": 694
+     },
+     {
+      "tag": "2022-12-01",
+      "rho": 0.06075031275256285,
+      "n": 683
+     },
+     {
+      "tag": "2023-01-03",
+      "rho": 0.05004598602780287,
+      "n": 642
+     },
+     {
+      "tag": "2023-02-01",
+      "rho": 0.017505952177168427,
+      "n": 665
+     },
+     {
+      "tag": "2023-03-01",
+      "rho": 0.035284565164841596,
+      "n": 653
+     },
+     {
+      "tag": "2023-04-03",
+      "rho": 0.029532780931344822,
+      "n": 678
+     },
+     {
+      "tag": "2023-05-01",
+      "rho": -0.015777044845049423,
+      "n": 675
+     },
+     {
+      "tag": "2023-06-01",
+      "rho": 0.011765628098819354,
+      "n": 671
+     },
+     {
+      "tag": "2023-07-03",
+      "rho": 0.0014372366105843588,
+      "n": 667
+     },
+     {
+      "tag": "2023-08-01",
+      "rho": -0.0003441049771982877,
+      "n": 684
+     },
+     {
+      "tag": "2023-09-01",
+      "rho": -0.010906494566031119,
+      "n": 612
+     },
+     {
+      "tag": "2023-10-02",
+      "rho": -0.06123893423409458,
+      "n": 647
+     },
+     {
+      "tag": "2023-11-01",
+      "rho": -0.06143383984205335,
+      "n": 677
+     },
+     {
+      "tag": "2023-12-01",
+      "rho": -0.07038360804899758,
+      "n": 666
+     },
+     {
+      "tag": "2024-01-02",
+      "rho": -0.05358513167773869,
+      "n": 664
+     },
+     {
+      "tag": "2024-02-01",
+      "rho": -0.06744477077006138,
+      "n": 672
+     },
+     {
+      "tag": "2024-03-01",
+      "rho": -0.10794046974119359,
+      "n": 690
+     },
+     {
+      "tag": "2024-04-01",
+      "rho": -0.04541642257658532,
+      "n": 652
+     },
+     {
+      "tag": "2024-05-01",
+      "rho": -0.034528176925093655,
+      "n": 704
+     },
+     {
+      "tag": "2024-06-03",
+      "rho": 0.033727459813135,
+      "n": 675
+     },
+     {
+      "tag": "2024-07-01",
+      "rho": 0.011121195289344854,
+      "n": 677
+     },
+     {
+      "tag": "2024-08-01",
+      "rho": 0.03103973222387718,
+      "n": 724
+     }
+    ]
+   }
+  },
+  "urteil": {
+   "satz": "nicht entscheidbar unterhalb von IC 0,0505",
+   "alleBedingungen": false,
+   "paragraph": "§7 der Vorregistrierung (Fassung nach Nachtrag 3)"
+  },
+  "K-P7": {
+   "name": "K-P7 Urteil folgt §7 aus den eigenen Zahlen des IC; Satzform; Dezil netto berichtet, nicht beurteilt; Kennungen",
+   "urteil": "nicht entscheidbar unterhalb von IC 0,0505",
+   "bedingungen": {
+    "a": {
+     "text": "Nullpunkt der Kombinationszelle (Orakel: Dezil-Schranken und IC = 1; Placebo Symbole; Zufall; Klinke) und alle neun Feldzellen (K-P4)",
+     "orakel": true,
+     "orakelIc": true,
+     "orakelIcMittel": 1,
+     "placeboSymbole": true,
+     "zufall": true,
+     "leck": true,
+     "feldzellenKP4": true,
+     "erfuellt": true
+    },
+    "b": {
+     "text": "Vorpruefung §6 dokumentiert (K-P5, Datei vor dem Lauf)",
+     "stand": "2026-09-22T20:28:37.491Z",
+     "erfuellt": true
+    },
+    "c": {
+     "text": "IC Mittel >= MDE80 (2,8016 x se)",
+     "mittel": 0.01241899900682343,
+     "mde80": 0.050477969631671636,
+     "erfuellt": false
+    },
+    "d": {
+     "text": "t >= 3",
+     "t": 0.6892723275400154,
+     "schwelle": 3,
+     "erfuellt": false
+    },
+    "e": {
+     "text": "letzte 12 Signaltage des Laufs im Mittel >= 0",
+     "mittel": 0.05361589155080718,
+     "n": 12,
+     "erfuellt": true
+    }
+   },
+   "v2GefallenVorDemLauf": true,
+   "satzform": "„nicht entscheidbar unterhalb von IC <MDE80 des Laufs>\" (§6.3a, weil V2 vor dem Lauf gefallen war)",
+   "letzte12Fenster": "2023-09-01 … 2024-08-01",
+   "kennungKombinationszelle": "mehrfaktor-2026-09-22/zelle/v1.1",
+   "tafelKennungKombinationszelle": null,
+   "kennungKombination": "mehrfaktor-2026-09-22/kombination/v1.1",
+   "maschinenBefund": null,
+   "bestanden": true
+  },
+  "K-P8": {
+   "name": "K-P8 Rueckhaltereihe erst nach dem Urteil (eigene Datei, Flagge in der Kennung) - hier kein Rueckhaltelauf",
+   "rueckhalteZelle": false,
+   "rueckhalteKombination": false,
+   "signaltageZahl": 92,
+   "letzterSignaltag": "2024-08-01",
+   "bestanden": true
+  },
+  "bestanden": false
+ }
+}

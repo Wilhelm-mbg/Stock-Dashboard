@@ -271,3 +271,28 @@ Auftrag §1a.1, kein Widerspruch) · 8 Umkehr-Zelle bauen · 9 F&E ohne Ausweis 
 
 *Entwurf 2026-09-22 (Werkzeug-Chat, Nr. 48). Nichts gemessen außer Kunstfeldern. Alles Simulation mit virtuellem Kapital, keine
 Anlageberatung.*
+
+---
+
+## 12. Ergebnis (vom Lauf geschrieben, 23.09.2026)
+
+**Urteil nach §7: „nicht entscheidbar unterhalb von IC 0,0505".** Satzform nach §6.3a, weil Tor V2 vor dem Lauf mit dem registrierten
+Schätzer gefallen war (Schätzung 0,0495; Lauf 0,0505). Bedingungen: (a) Nullpunkt der Kombinationszelle und aller neun Feldzellen
+bestanden ✓; (b) Vorprüfung dokumentiert ✓; (c) IC Mittel 0,0124 ≥ MDE₈₀ 0,0505 ✗; (d) t 0,69 ≥ 3 ✗; (e) letzte 12 Signaltage
+(2023-09-01 … 2024-08-01) Mittel 0,0536 ≥ 0 ✓. Ein Lauf (Auftrag Nr. 62, `kombination.js`, 23.09.2026 22:34, 5,7 s), Testzahl 1,
+`rueckhalte: false`, 92 Signaltage 2017-01-03 … 2024-08-01.
+
+- **IC** (`zellen/kombination.json`, `einzelmessung.ic`): n 92, Mittel 0,0124, sd 0,1728, se 0,0180, t 0,69, MDE₈₀ 0,0505, kein
+  Signaltag ohne IC; letzte 12: n 12, Mittel 0,0536.
+- **Dezil oben − Universum netto (berichtet, nicht beurteilt):** −0,176 Pp, se 0,265, t −0,67 (t_HH −0,64), MDE₈₀ 0,743 Pp,
+  Umschlag 29,4 %, Kosten 0,024 Pp je Monat; brutto −0,159 Pp.
+- **Nullpunkt der Kombinationszelle:** Orakel bestanden (Dezil 18,59 Pp, t 29,4, Long-Short 34,40 Pp; IC 1,0000); Placebo Symbole
+  bestanden (IC −0,0009, t −0,26; Dezil netto −0,214 Pp, t −1,27); Zufall ×12 bestanden (IC Mittel −0,0006, MDE₈₀-Boden(IC) 0,0106,
+  Dezil-Boden 0,309 Pp, 0 Ausreißer); Leck-Klinke bestanden (0 Verstöße, Positivkontrolle Kurs 1 / Bilanz 1). Placebo Versatz entfällt.
+- **K-P6 gefallen (Befund an den PM, keine Reparatur):** Anteil aufgefüllter Mitglieder im Dezil oben 84,3 % (5.933 von 7.042
+  Mitglied-Monaten; Zählweise der Maschine: mindestens ein fehlendes Feld), Dezil unten 58,6 %; Auffüllungen je Feld über 69.969
+  Mitglied-Monate: fue 71,9 %, ertragskraft 45,8 %, bewertung 22,4 %, sue 17,8 %, investition 16,6 %, momentum/schwankung 0,0 %.
+- Kontrollgrößen (Näherung, Rangkorrelation Kombinationswert ↔ Kontrollrang je Signaltag): groesse +0,226, verschuldung −0,005.
+- Prüfungen: K-P1–K-P5 ✓, K-P6 ✗, K-P7 ✓, K-P8 ✓ (`pruefung/kombination-pruefungen.json`). Bericht: `ERGEBNIS-KOMBINATION.md`.
+- Repo-Stand vor dem Lauf HEAD `7efb519`; **Commit des Laufs: der Commit, der diesen Abschnitt einführt**
+  (`git log -1 -- studien/mehrfaktor-2026-09-22/zellen/kombination.json`; Hash in der Übergabe Nr. 62).
