@@ -21,21 +21,31 @@
  *      der Nullpunkt je Periode nur Zaehler); berichtet wird deshalb die Rangkorrelation Kombinationswert <-> Kontrollrang je
  *      Signaltag (Z.ic, dieselbe Rangfunktion) als NAEHERUNG, gemittelt ueber die Signaltage - nur Bericht, kein Tor.
  *   5. Urteil WOERTLICH nach §7 aus einzelmessung.ic der Kombinationszelle; ERGEBNIS-KOMBINATION.md aus denselben Zahlen.
- * Keine Kommandozeilenoption, kein --rueckhalte, kein zweiter Lauf. Aufruf aus dem Studienordner:
+ * Schritt 1 (Urteil): keine Option, kein zweiter Lauf. Aufruf aus dem Studienordner:
  *   node --max-old-space-size=6144 kombination.js
+ * Schritt 2 (Rueckhaltefenster, §8, vom PM NACH dem Urteil geoeffnet, 23.09.2026): `--rueckhalte` liest die mit
+ *   `zelle.js --feld ... --rueckhalte --ziel zellen-rueckhalte` neu gebauten Zellen aus zellen-rueckhalte/ (116 Signaltage, rueckhalte
+ *   true), baut die Kombination EINMAL dorthin, schreibt pruefung/kombination-pruefungen-rueckhalte.json und haengt an
+ *   ERGEBNIS-KOMBINATION.md den Abschnitt 10 an: die 24 Signaltage ab RUECKHALTE_AB als eigene Reihe (IC je Signaltag, Mittel, sd,
+ *   se, t, MDE80; Dezil oben - Universum netto derselben Monate aus der Periodenreihe des Nullpunkts, gegen das Maschinenmittel
+ *   gegengeprueft), Gesamtreihe nachrichtlich, Einordnung WOERTLICH nach §8 ("bestaetigt" = gleiches Vorzeichen des mittleren IC
+ *   wie im Rechenfenster, sonst "widerspricht"). Kein §7-Urteil in diesem Modus; die versiegelten Zellen in zellen/ und die
+ *   Pruefdatei des Schritts 1 bleiben unangetastet.
+ *   node --max-old-space-size=6144 kombination.js --rueckhalte
  */
 var fs = require('fs'), path = require('path'), cp = require('child_process');
 var Z = require('./zelle.js');
 
+var RH = process.argv.indexOf('--rueckhalte') >= 0;                 /* Schritt 2 (§8): Rueckhaltefenster geoeffnet, eigener Ordner */
 var ORDNER = __dirname, REPO = path.resolve(ORDNER, '..', '..');
-var ZELLEN = path.join(ORDNER, 'zellen'), PRUEF = path.join(ORDNER, 'pruefung');
-var DATEI_PRUEF = path.join(PRUEF, 'kombination-pruefungen.json'), DATEI_VORPRUEF = path.join(PRUEF, 'vorpruefung-kombination.json');
+var ZELLEN = path.join(ORDNER, RH ? 'zellen-rueckhalte' : 'zellen'), PRUEF = path.join(ORDNER, 'pruefung');
+var DATEI_PRUEF = path.join(PRUEF, RH ? 'kombination-pruefungen-rueckhalte.json' : 'kombination-pruefungen.json'), DATEI_VORPRUEF = path.join(PRUEF, 'vorpruefung-kombination.json');
 var DATEI_ERGEBNIS = path.join(ORDNER, 'ERGEBNIS-KOMBINATION.md');
 var SIGNALE = ['momentum', 'schwankung', 'bewertung', 'ertragskraft', 'investition', 'sue', 'fue'];
 var KONTROLLEN = ['groesse', 'verschuldung'];
 var NICHT_ENTHALTEN = ['umkehr', 'bewertung-ep', 'ertragskraft-roa', 'fue-marktwert'];
 var PANEL = ['momentum', 'schwankung'];                   /* Panelzellen: tafelKennung null; alle anderen sind Bilanzzellen */
-var KENNUNG_ZELLE = 'mehrfaktor-2026-09-22/zelle/v1.1', TAFEL = 'fundamentaltafel-2026-09-16/v1.1', SIGNALTAGE = 92;
+var KENNUNG_ZELLE = 'mehrfaktor-2026-09-22/zelle/v1.1', TAFEL = 'fundamentaltafel-2026-09-16/v1.1', SIGNALTAGE = RH ? 116 : 92;   /* 92 + 24 Rueckhalte-Signaltage */
 var T_SCHWELLE = 3, KP6_MAX = 0.5;
 var ALLE = SIGNALE.concat(KONTROLLEN);
 
@@ -60,7 +70,7 @@ var kp1 = { name: 'K-P1 Kennung zelle/v1.1, rueckhalte false, 92 Signaltage, gle
 ALLE.forEach(function (f) {
   var z = zellen[f], m = [], tage = (z.signaltage || []).map(function (s) { return s.tag; });
   if (z.kennung !== KENNUNG_ZELLE) m.push('kennung ' + z.kennung);
-  if (z.rueckhalte !== false) m.push('rueckhalte ' + JSON.stringify(z.rueckhalte));
+  if (z.rueckhalte !== RH) m.push('rueckhalte ' + JSON.stringify(z.rueckhalte) + ' statt ' + RH);
   if (z.signaltageZahl !== SIGNALTAGE) m.push('signaltageZahl ' + z.signaltageZahl);
   if (tage.length !== SIGNALTAGE) m.push('signaltage ' + tage.length);
   if (tage.join(',') !== refTage.join(',')) m.push('Signaltage weichen von ' + SIGNALE[0] + ' ab');
@@ -114,14 +124,14 @@ if (!pruef.vorDemLauf.bestanden) befund('K-P1..K-P5 nicht bestanden: ' + JSON.st
 var start = jetzt(), t0 = Date.now();
 var komb = Z.kombiniere(zellen, SIGNALE, null, { kontrollen: KONTROLLEN });
 kp3.gewichteWirksam = komb.gewichte; kp3.kontrollenWirksam = komb.kontrollen;
-kp3.bestanden = kp3.bestanden && Object.keys(komb.gewichte).length === 7 && SIGNALE.every(function (f) { return komb.gewichte[f] === 1; }) && komb.kontrollen.join(',') === 'groesse,verschuldung' && komb.rueckhalte === false;
+kp3.bestanden = kp3.bestanden && Object.keys(komb.gewichte).length === 7 && SIGNALE.every(function (f) { return komb.gewichte[f] === 1; }) && komb.kontrollen.join(',') === 'groesse,verschuldung' && komb.rueckhalte === RH;
 if (!kp3.bestanden) befund('K-P3 nach kombiniere nicht bestanden: ' + JSON.stringify({ gewichte: komb.gewichte, kontrollen: komb.kontrollen, rueckhalte: komb.rueckhalte }), pruef);
 var definition = 'Gleichgewichtete Rangkombination nach VORREGISTRIERUNG-KOMBINATION.md §5 (REGISTRIERT 23.09.2026 22:16, Siegel 71f8da3; Auftrag Nr. 62): '
   + 'Kombinationsrang = Summe w_f R_f / Summe w_f über ' + komb.felder.join(', ') + ' (Gewichte ' + JSON.stringify(komb.gewichte) + '); fehlendes Feld = mittlerer Rang (n+1)/2, '
   + 'Auffüllungen je Dezil gezählt; Kontrollen nur berichtet: ' + komb.kontrollen.join(', ') + '. Teststatistik: mittlerer Rang-IC über die Signaltage (Nachtrag 3); '
   + 'Dezil oben, Long-Short, Dezil unten, Jahresscheiben, Regime sind Diagnose.';
 var quellen = komb.quellen.map(function (q) { return 'zellen/' + q.feld + '.json (' + q.kennung + ', Stand ' + q.stand + ', Tafel ' + (q.tafelKennung || 'nicht benutzt') + (q.kunst ? ', KUNST ' + q.kunst : '') + ')'; });
-var r = Z.zelleAusKombination(komb, { definition: definition, quellen: quellen });
+var r = Z.zelleAusKombination(komb, { definition: definition, quellen: quellen, ziel: ZELLEN });
 var sekunden = (Date.now() - t0) / 1000, rssMB = process.memoryUsage().rss / 1048576;
 var zelle = r.zelle, em = zelle.einzelmessung, np = zelle.nullpunkt, pl = np.placebo || {}, icS = em.ic || {};
 
@@ -169,6 +179,7 @@ var bed = {
 bed.a.erfuellt = !!(bed.a.orakel && bed.a.orakelIc && bed.a.placeboSymbole && bed.a.zufall && bed.a.leck && bed.a.feldzellenKP4);
 var alleErfuellt = ['a', 'b', 'c', 'd', 'e'].every(function (k) { return bed[k].erfuellt; });
 var urteil = alleErfuellt ? 'Information belegt' : 'nicht entscheidbar unterhalb von IC ' + de(icS.mde80, 4);
+if (RH) urteil = 'Rückhaltelauf nach §8 — kein §7-Urteil (das Urteil des Rechenfensters steht in §12); Einordnung siehe Abschnitt Rückhaltefenster';
 var monateMitIc = (icS.monate || []).filter(function (e) { return e.ic != null; }), l12 = monateMitIc.slice(-12);
 var fensterL12 = l12.length ? l12[0].tag + ' … ' + l12[l12.length - 1].tag : null;
 var kp7 = { name: 'K-P7 Urteil folgt §7 aus den eigenen Zahlen des IC; Satzform; Dezil netto berichtet, nicht beurteilt; Kennungen', urteil: urteil, bedingungen: bed,
@@ -177,13 +188,39 @@ var kp7 = { name: 'K-P7 Urteil folgt §7 aus den eigenen Zahlen des IC; Satzform
   maschinenBefund: (bed.a.orakel && bed.a.orakelIc && bed.a.placeboSymbole && bed.a.zufall && bed.a.leck) ? null : 'Nullpunkt der Kombinationszelle nicht bestanden - Befund an den PM',
   bestanden: true };
 var kp8 = { name: 'K-P8 Rueckhaltereihe erst nach dem Urteil (eigene Datei, Flagge in der Kennung) - hier kein Rueckhaltelauf', rueckhalteZelle: zelle.rueckhalte, rueckhalteKombination: komb.rueckhalte,
-  signaltageZahl: zelle.signaltageZahl, letzterSignaltag: zelle.signaltage[zelle.signaltage.length - 1].tag, bestanden: zelle.rueckhalte === false && komb.rueckhalte === false && zelle.signaltageZahl === SIGNALTAGE };
+  signaltageZahl: zelle.signaltageZahl, letzterSignaltag: zelle.signaltage[zelle.signaltage.length - 1].tag, modus: RH ? 'Rueckhaltelauf (§8, vom PM geoeffnet, eigener Ordner zellen-rueckhalte/)' : 'Rechenfenster',
+  bestanden: zelle.rueckhalte === RH && komb.rueckhalte === RH && zelle.signaltageZahl === SIGNALTAGE };
+
+/* ---------- 4b. Rueckhaltereihe (§8, nur --rueckhalte): die Signaltage ab RUECKHALTE_AB als eigene Reihe ---------- */
+var rh = null;
+if (RH) {
+  var AB = Z.KONST.RUECKHALTE_AB, versiegelt = JSON.parse(fs.readFileSync(path.join(ORDNER, 'zellen', 'kombination.json'), 'utf8')).einzelmessung;
+  var stat = function (arr) {
+    var n = arr.length, m = n ? arr.reduce(function (a, v) { return a + v; }, 0) / n : null;
+    var sd = n > 1 ? Math.sqrt(arr.reduce(function (a, v) { return a + (v - m) * (v - m); }, 0) / (n - 1)) : null, se = sd == null ? null : sd / Math.sqrt(n);
+    return { n: n, mittel: m, sd: sd, se: se, t: (se && m != null) ? m / se : null, mde80: se == null ? null : Z.KONST.MDE_FAKTOR * se };
+  };
+  var icAlle = (icS.monate || []).filter(function (e) { return e.ic != null; }), icRH = icAlle.filter(function (e) { return e.tag >= AB; }), icVor = icAlle.filter(function (e) { return e.tag < AB; });
+  var perAlle = perioden || [], perRH = perAlle.filter(function (p) { return p.signaltag >= AB; }), perVor = perAlle.filter(function (p) { return p.signaltag < AB; });
+  var reihe = perRH.map(function (p) { var e = icRH.filter(function (x) { return x.tag === p.signaltag; })[0]; return { tag: p.signaltag, ic: e ? e.ic : null, n: e ? e.n : null, dezilNetto: p.netto, dezilBrutto: p.brutto, k: p.k, nUni: p.nUni }; });
+  var icStatRH = stat(icRH.map(function (e) { return e.ic; })), vorIc = stat(icVor.map(function (e) { return e.ic; })), vorNetto = stat(perVor.map(function (p) { return p.netto; })), alleNetto = stat(perAlle.map(function (p) { return p.netto; }));
+  rh = { ab: AB, fenster: reihe.length ? reihe[0].tag + ' … ' + reihe[reihe.length - 1].tag : null, signaltage: reihe.length,
+    ic: icStatRH, dezilNetto: stat(perRH.map(function (p) { return p.netto; })), dezilBrutto: stat(perRH.map(function (p) { return p.brutto; })), reihe: reihe,
+    rechenfenster: { quelle: 'zellen/kombination.json (versiegelter Lauf Schritt 1, 92 Signaltage)', icMittel: versiegelt.ic.mittel, dezilNettoMittel: versiegelt.dezilUni.netto.mittel },
+    gegenprobe: { hinweis: 'Die Monate vor ' + AB + ' dieses Laufs gegen die versiegelte Zelle (Soll identisch) und die Periodenreihe des Nullpunkts gegen das Maschinenmittel dezilUni.netto (Soll 0)',
+      n: vorIc.n, icMittelDieserLauf: vorIc.mittel, icAbweichung: vorIc.mittel == null ? null : vorIc.mittel - versiegelt.ic.mittel,
+      dezilNettoDieserLauf: vorNetto.mittel, dezilNettoAbweichung: vorNetto.mittel == null ? null : vorNetto.mittel - versiegelt.dezilUni.netto.mittel,
+      periodenreiheGegenMaschine: (alleNetto.mittel == null || !em.dezilUni) ? null : alleNetto.mittel - em.dezilUni.netto.mittel },
+    gesamt: { ic: { n: icS.n, mittel: icS.mittel, sd: icS.sd, se: icS.se, t: icS.t, mde80: icS.mde80, letzte12: icS.letzte12 }, dezilNetto: em.dezilUni && em.dezilUni.netto },
+    einordnung: (icStatRH.mittel != null && versiegelt.ic.mittel != null) ? (((icStatRH.mittel > 0) === (versiegelt.ic.mittel > 0)) ? 'bestätigt' : 'widerspricht') : null,
+    regel: '§8: gleiches Vorzeichen des mittleren IC der Rueckhaltereihe wie im Rechenfenster = "bestaetigt", sonst "widerspricht"; keine Anpassung, keine Deutung darueber hinaus' };
+}
 
 var rel = function (p) { return p ? path.relative(ORDNER, p).replace(/\\/g, '/') : null; };
 pruef.lauf = { start: start, ende: jetzt(), sekundenProzess: sekunden, rssMBProzess: rssMB, maschine: zelle.lauf, feld: zelle.feld, kennung: zelle.kennung, panel: zelle.panel,
   tafelKennung: zelle.tafelKennung || null, rueckhalte: zelle.rueckhalte, signaltageZahl: zelle.signaltageZahl, klassen: zelle.klassen,
   dateien: r.dateien ? { zelle: rel(r.dateien.zelle), nullpunkt: rel(r.dateien.nullpunkt), bericht: rel(r.dateien.bericht) } : null };
-pruef.nachDemLauf = { stand: jetzt(), 'K-P6': kp6, kontrollgroessen: { hinweis: kontrollHinweis, groesse: kontrollen.groesse, verschuldung: kontrollen.verschuldung },
+pruef.nachDemLauf = { stand: jetzt(), modus: RH ? 'rueckhalte (§8)' : 'rechenfenster', rueckhalte: rh, 'K-P6': kp6, kontrollgroessen: { hinweis: kontrollHinweis, groesse: kontrollen.groesse, verschuldung: kontrollen.verschuldung },
   urteil: { satz: urteil, alleBedingungen: alleErfuellt, paragraph: '§7 der Vorregistrierung (Fassung nach Nachtrag 3)' }, 'K-P7': kp7, 'K-P8': kp8,
   bestanden: kp6.bestanden && kp7.bestanden && kp8.bestanden };
 schreibe(DATEI_PRUEF, pruef);
@@ -298,7 +335,31 @@ zeile('| K-P7 | ' + ja(kp7.bestanden) + ' | Urteil aus IC Mittel ' + de(icS.mitt
 zeile('| K-P8 | ' + ja(kp8.bestanden) + ' | kein Rückhaltelauf, rueckhalte false, letzter Signaltag ' + kp8.letzterSignaltag + ' |');
 zeile();
 zeile('*Geschrieben von `kombination.js` am ' + pruef.nachDemLauf.stand + ' aus `zellen/kombination.json` und `zellen/kombination-nullpunkt.json`; nichts abgetippt, was die Maschine nicht schreibt. Alles Simulation mit virtuellem Kapital, keine Anlageberatung.*');
-fs.writeFileSync(DATEI_ERGEBNIS, L.join('\n') + '\n');
+if (!RH) fs.writeFileSync(DATEI_ERGEBNIS, L.join('\n') + '\n');
+else {
+  /* Abschnitt 10 vor die Fusszeile des Berichts aus Schritt 1 setzen; ein schon vorhandener Abschnitt 10 wird ersetzt */
+  var R = [], marke = '## 10. Rückhaltefenster (§8, vom Lauf geschrieben, ' + datumLauf + ')', rz = function (s) { R.push(s == null ? '' : s); };
+  var vz = function (x) { return x == null ? '—' : (x > 0 ? '+' : x < 0 ? '−' : '0'); };
+  var st = function (name, k) { k = k || {}; return '| ' + name + ' | ' + (k.n == null ? '—' : k.n) + ' | ' + de(k.mittel, 4) + ' | ' + de(k.sd, 4) + ' | ' + de(k.se, 4) + ' | ' + de(k.t, 2) + ' | ' + de(k.mde80, 4) + ' |'; };
+  rz(marke); rz();
+  rz('**Einordnung nach §8 (wörtlich): „' + rh.einordnung + '"** — mittlerer IC der ' + rh.signaltage + ' Rückhalte-Signaltage ' + rh.fenster + ' = ' + de(rh.ic.mittel, 4) + ' (Vorzeichen ' + vz(rh.ic.mittel) + ') gegen ' + de(rh.rechenfenster.icMittel, 4) + ' (Vorzeichen ' + vz(rh.rechenfenster.icMittel) + ') im Rechenfenster (§12). Regel: gleiches Vorzeichen = „bestätigt", sonst „widerspricht"; keine Anpassung, kein zweiter Lauf, keine Deutung darüber hinaus. Zellen: `zellen-rueckhalte/` (13 Feldzellen und `kombination`, `rueckhalte: true`, ' + zelle.signaltageZahl + ' Signaltage ' + zelle.signaltage[0].tag + ' … ' + zelle.signaltage[zelle.signaltage.length - 1].tag + '); die versiegelten Zellen in `zellen/` sind unangetastet. Prüfdatei `pruefung/kombination-pruefungen-rueckhalte.json`.');
+  rz();
+  rz('| Reihe | n | Mittel | sd | se | t | MDE₈₀ |'); rz('|---|---|---|---|---|---|---|');
+  rz(st('**IC, Rückhaltefenster**', rh.ic)); rz(st('Dezil oben − Universum netto, Rückhaltefenster (Pp)', rh.dezilNetto)); rz(st('Dezil oben − Universum brutto, Rückhaltefenster (Pp)', rh.dezilBrutto));
+  rz(st('IC, Gesamtreihe ' + rh.gesamt.ic.n + ' Signaltage (nachrichtlich)', rh.gesamt.ic)); rz(st('Dezil oben − Universum netto, Gesamtreihe (Pp, nachrichtlich)', rh.gesamt.dezilNetto));
+  rz();
+  rz('Gesamtreihe, letzte 12 Signaltage: n ' + (rh.gesamt.ic.letzte12 ? rh.gesamt.ic.letzte12.n : '—') + ', IC Mittel ' + de(rh.gesamt.ic.letzte12 && rh.gesamt.ic.letzte12.mittel, 4) + '.');
+  rz();
+  rz('| Signaltag | IC | Paare | Dezil netto Pp | Dezil brutto Pp | Dezil k | Universum |'); rz('|---|---|---|---|---|---|---|');
+  rh.reihe.forEach(function (e) { rz('| ' + e.tag + ' | ' + de(e.ic, 4) + ' | ' + (e.n == null ? '—' : e.n) + ' | ' + de(e.dezilNetto, 3) + ' | ' + de(e.dezilBrutto, 3) + ' | ' + e.k + ' | ' + e.nUni + ' |'); });
+  rz();
+  rz('Gegenproben: die ' + rh.gegenprobe.n + ' Monate vor ' + rh.ab + ' dieses Laufs gegen die versiegelte 92-Monats-Zelle — IC Mittel ' + de(rh.gegenprobe.icMittelDieserLauf, 6) + ' (Abweichung ' + de(rh.gegenprobe.icAbweichung, 6) + '), Dezil netto ' + de(rh.gegenprobe.dezilNettoDieserLauf, 6) + ' Pp (Abweichung ' + de(rh.gegenprobe.dezilNettoAbweichung, 6) + '); Periodenreihe des Nullpunkts gegen `einzelmessung.dezilUni.netto.mittel` der Maschine: Abweichung ' + de(rh.gegenprobe.periodenreiheGegenMaschine, 9) + '.');
+  rz('Nullpunkt der Kombinationszelle (' + zelle.signaltageZahl + ' Signaltage): Orakel ' + ja(bed.a.orakel) + ' (IC ' + de(bed.a.orakelIcMittel, 4) + ' ' + ja(bed.a.orakelIc) + '), Placebo Symbole ' + ja(bed.a.placeboSymbole) + ', Zufall ' + ja(bed.a.zufall) + ', Klinke ' + ja(bed.a.leck) + '; Feldzellen K-P4 ' + ja(kp4.bestanden) + '. Prüfungen: ' + [kp1, kp2, kp3, kp4, kp5, kp6, kp7, kp8].map(function (k, i) { return 'K-P' + (i + 1) + ' ' + ja(k.bestanden); }).join(', ') + ' (K-P6 Anteil Dezil oben ' + pz(kp6.anteilOben) + ').');
+  rz('Lauf: `' + JSON.stringify(zelle.lauf) + '`, Prozess ' + de(sekunden, 1) + ' s, RSS ' + de(rssMB, 0) + ' MB. Dateien: `zellen-rueckhalte/kombination.json`, `zellen-rueckhalte/kombination-nullpunkt.json`, `zellen-rueckhalte/kombination-bericht.md`.');
+  var alt = fs.existsSync(DATEI_ERGEBNIS) ? fs.readFileSync(DATEI_ERGEBNIS, 'utf8') : '', iF = alt.lastIndexOf('*Geschrieben von'), iM = alt.indexOf(marke);
+  var kopf = alt.slice(0, iM >= 0 ? iM : (iF >= 0 ? iF : alt.length)), fuss = iF >= 0 ? alt.slice(iF) : '';
+  fs.writeFileSync(DATEI_ERGEBNIS, kopf.replace(/\s*$/, '\n\n') + R.join('\n') + '\n\n' + fuss);
+}
 
 /* ---------- 6. Kurzausgabe ---------- */
 process.stdout.write([
@@ -310,3 +371,6 @@ process.stdout.write([
   'Kontrollen rho: groesse ' + de(kontrollen.groesse.mittel, 3) + ', verschuldung ' + de(kontrollen.verschuldung.mittel, 3),
   'Lauf: ' + de(sekunden, 1) + ' s, RSS ' + de(rssMB, 0) + ' MB; Dateien ' + (pruef.lauf.dateien ? pruef.lauf.dateien.zelle : '—') + ', ' + path.basename(DATEI_PRUEF) + ', ' + path.basename(DATEI_ERGEBNIS)
 ].join('\n') + '\n');
+if (RH) process.stdout.write('Rueckhalte (§8): ' + rh.einordnung + ' - IC ' + rh.signaltage + ' Signaltage ' + rh.fenster + ': Mittel ' + de(rh.ic.mittel, 4) + ', sd ' + de(rh.ic.sd, 4) + ', se ' + de(rh.ic.se, 4) + ', t ' + de(rh.ic.t, 2) + ', MDE80 ' + de(rh.ic.mde80, 4)
+  + ' | Dezil netto: Mittel ' + de(rh.dezilNetto.mittel, 3) + ', se ' + de(rh.dezilNetto.se, 3) + ', t ' + de(rh.dezilNetto.t, 2) + ', MDE80 ' + de(rh.dezilNetto.mde80, 3) + ' | Rechenfenster IC ' + de(rh.rechenfenster.icMittel, 4)
+  + ' | Gegenprobe IC-Abw. ' + de(rh.gegenprobe.icAbweichung, 6) + ', Dezil-Abw. ' + de(rh.gegenprobe.dezilNettoAbweichung, 6) + ', Periodenreihe-Abw. ' + de(rh.gegenprobe.periodenreiheGegenMaschine, 9) + '\n');

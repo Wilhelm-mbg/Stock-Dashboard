@@ -302,4 +302,24 @@ bestanden ✓; (b) Vorprüfung dokumentiert ✓; (c) IC Mittel 0,0124 ≥ MDE₈
 - Kontrollgrößen (Näherung, Rangkorrelation Kombinationswert ↔ Kontrollrang je Signaltag): groesse +0,226, verschuldung −0,005.
 - Prüfungen: K-P1–K-P5 ✓, K-P6 ✗, K-P7 ✓, K-P8 ✓ (`pruefung/kombination-pruefungen.json`). Bericht: `ERGEBNIS-KOMBINATION.md`.
 - Repo-Stand vor dem Lauf HEAD `7efb519`; **Commit des Laufs: der Commit, der diesen Abschnitt einführt**
-  (`git log -1 -- studien/mehrfaktor-2026-09-22/zellen/kombination.json`; Hash in der Übergabe Nr. 62).
+  (`git log -1 -- studien/mehrfaktor-2026-09-22/zellen/kombination.json`; Hash in der Übergabe Nr. 62) — `9bc3563`.
+
+---
+
+## 13. Rückhaltefenster (vom Lauf geschrieben, 23.09.2026)
+
+**Einordnung nach §8: „bestätigt"** — der mittlere IC der 24 Rückhalte-Signaltage 2024-09-03 … 2026-08-03 ist **0,0095** (Vorzeichen +),
+wie im Rechenfenster (0,0124, §12). Keine Anpassung, kein zweiter Lauf, keine Deutung darüber hinaus; das Urteil in §12 bleibt unverändert.
+Vom PM nach dem Urteil geöffnet (Nr. 62 Schritt 2, 23.09.2026 22:42–22:45): alle 13 Feldzellen und die Kombination **einmal** mit
+`rueckhalte: true` neu gebaut in `zellen-rueckhalte/` (116 Signaltage 2017-01-03 … 2026-08-03, Nullpunkt in allen 14 Zellen bestanden);
+die versiegelten Zellen in `zellen/` sind unangetastet. Lauf `kombination.js --rueckhalte`, 5,4 s.
+
+- **Rückhaltereihe (24 Signaltage, `pruefung/kombination-pruefungen-rueckhalte.json` → `nachDemLauf.rueckhalte`):** IC Mittel 0,0095,
+  sd 0,1250, se 0,0255, t 0,37, MDE₈₀ 0,0715; Dezil oben − Universum netto −0,303 Pp, se 0,436, t −0,69, MDE₈₀ 1,222 Pp (berichtet,
+  nicht beurteilt). IC je Signaltag in `ERGEBNIS-KOMBINATION.md` §10.
+- **Gesamtreihe 116 Signaltage (nachrichtlich):** IC Mittel 0,0118, sd 0,1636, se 0,0152, t 0,78, MDE₈₀ 0,0426, letzte 12 Signaltage
+  0,0346; Dezil oben − Universum netto −0,202 Pp, se 0,228, MDE₈₀ 0,639 Pp.
+- **Gegenproben:** die 92 Monate vor 2024-09-01 dieses Laufs reproduzieren die versiegelte Zelle exakt (Abweichung IC-Mittel 0,000000,
+  Dezil netto 0,000000 Pp); Periodenreihe des Nullpunkts gegen das Maschinenmittel 0. Nullpunkt der 116-Monats-Kombinationszelle:
+  Orakel (IC 1,0000), Placebo Symbole, Zufall ×12, Klinke bestanden; K-P1–K-P5, K-P7, K-P8 ✓, K-P6 wie im Rechenfenster gefallen (84,7 %).
+- Commit dieses Schritts: der Commit, der diesen Abschnitt einführt (Hash in der Übergabe Nr. 62, Nachtrag).

@@ -123,4 +123,49 @@ Je Dezil (`einzelmessung.aufgefuellt`, Zählweise der Maschine: Mitglied mit min
 | K-P7 | ✓ | Urteil aus IC Mittel 0,0124, MDE₈₀ 0,0505, t 0,69, letzte 12 0,0536; Kennung mehrfaktor-2026-09-22/zelle/v1.1, Tafel — |
 | K-P8 | ✓ | kein Rückhaltelauf, rueckhalte false, letzter Signaltag 2024-08-01 |
 
+## 10. Rückhaltefenster (§8, vom Lauf geschrieben, 2026-09-23)
+
+**Einordnung nach §8 (wörtlich): „bestätigt"** — mittlerer IC der 24 Rückhalte-Signaltage 2024-09-03 … 2026-08-03 = 0,0095 (Vorzeichen +) gegen 0,0124 (Vorzeichen +) im Rechenfenster (§12). Regel: gleiches Vorzeichen = „bestätigt", sonst „widerspricht"; keine Anpassung, kein zweiter Lauf, keine Deutung darüber hinaus. Zellen: `zellen-rueckhalte/` (13 Feldzellen und `kombination`, `rueckhalte: true`, 116 Signaltage 2017-01-03 … 2026-08-03); die versiegelten Zellen in `zellen/` sind unangetastet. Prüfdatei `pruefung/kombination-pruefungen-rueckhalte.json`.
+
+| Reihe | n | Mittel | sd | se | t | MDE₈₀ |
+|---|---|---|---|---|---|---|
+| **IC, Rückhaltefenster** | 24 | 0,0095 | 0,1250 | 0,0255 | 0,37 | 0,0715 |
+| Dezil oben − Universum netto, Rückhaltefenster (Pp) | 24 | -0,3030 | 2,1360 | 0,4360 | -0,69 | 1,2215 |
+| Dezil oben − Universum brutto, Rückhaltefenster (Pp) | 24 | -0,2875 | 2,1346 | 0,4357 | -0,66 | 1,2207 |
+| IC, Gesamtreihe 116 Signaltage (nachrichtlich) | 116 | 0,0118 | 0,1636 | 0,0152 | 0,78 | 0,0426 |
+| Dezil oben − Universum netto, Gesamtreihe (Pp, nachrichtlich) | 116 | -0,2022 | 2,4563 | 0,2281 | -0,89 | 0,6389 |
+
+Gesamtreihe, letzte 12 Signaltage: n 12, IC Mittel 0,0346.
+
+| Signaltag | IC | Paare | Dezil netto Pp | Dezil brutto Pp | Dezil k | Universum |
+|---|---|---|---|---|---|---|
+| 2024-09-03 | -0,1423 | 756 | -2,741 | -2,722 | 76 | 756 |
+| 2024-10-01 | 0,0397 | 780 | 1,185 | 1,195 | 78 | 780 |
+| 2024-11-01 | 0,0139 | 784 | 1,379 | 1,402 | 79 | 784 |
+| 2024-12-02 | 0,0775 | 799 | -0,054 | -0,030 | 80 | 799 |
+| 2025-01-02 | 0,1305 | 783 | 0,023 | 0,033 | 79 | 783 |
+| 2025-02-03 | 0,2445 | 872 | 3,597 | 3,609 | 88 | 872 |
+| 2025-03-03 | 0,0100 | 902 | -1,500 | -1,469 | 91 | 902 |
+| 2025-04-01 | -0,0571 | 903 | -1,356 | -1,348 | 91 | 903 |
+| 2025-05-01 | -0,1161 | 963 | -3,005 | -2,991 | 97 | 963 |
+| 2025-06-02 | -0,3100 | 909 | -3,031 | -3,002 | 91 | 909 |
+| 2025-07-01 | -0,0180 | 945 | -0,265 | -0,257 | 95 | 945 |
+| 2025-08-01 | -0,0610 | 995 | -2,338 | -2,317 | 100 | 995 |
+| 2025-09-02 | -0,0930 | 908 | -2,685 | -2,669 | 91 | 908 |
+| 2025-10-01 | 0,0203 | 946 | 0,248 | 0,259 | 95 | 946 |
+| 2025-11-03 | 0,1645 | 1036 | 1,589 | 1,610 | 104 | 1036 |
+| 2025-12-01 | -0,0466 | 1014 | -0,535 | -0,515 | 102 | 1014 |
+| 2026-01-02 | 0,0657 | 951 | 0,359 | 0,366 | 96 | 951 |
+| 2026-02-02 | 0,1439 | 1006 | 2,232 | 2,236 | 101 | 1006 |
+| 2026-03-02 | 0,1296 | 1062 | 0,979 | 1,007 | 107 | 1062 |
+| 2026-04-01 | -0,0885 | 1081 | -1,857 | -1,848 | 109 | 1081 |
+| 2026-05-01 | -0,1444 | 1053 | -4,305 | -4,290 | 106 | 1053 |
+| 2026-06-01 | 0,1187 | 1071 | 3,958 | 3,976 | 108 | 1071 |
+| 2026-07-01 | 0,1299 | 1081 | 1,256 | 1,264 | 109 | 1081 |
+| 2026-08-03 | 0,0153 | 1099 | -0,404 | -0,396 | 110 | 1099 |
+
+Gegenproben: die 92 Monate vor 2024-09-01 dieses Laufs gegen die versiegelte 92-Monats-Zelle — IC Mittel 0,012419 (Abweichung 0,000000), Dezil netto -0,175852 Pp (Abweichung 0,000000); Periodenreihe des Nullpunkts gegen `einzelmessung.dezilUni.netto.mittel` der Maschine: Abweichung 0,000000000.
+Nullpunkt der Kombinationszelle (116 Signaltage): Orakel ✓ (IC 1,0000 ✓), Placebo Symbole ✓, Zufall ✓, Klinke ✓; Feldzellen K-P4 ✓. Prüfungen: K-P1 ✓, K-P2 ✓, K-P3 ✓, K-P4 ✓, K-P5 ✓, K-P6 ✗, K-P7 ✓, K-P8 ✓ (K-P6 Anteil Dezil oben 84,7 %).
+Lauf: `{"sekunden":4.836,"maxRssMB":1303.17578125,"tafelLadeSekunden":1.187,"werteNull":0,"bilanzZugriffe":0,"node":"v24.18.0"}`, Prozess 5,4 s, RSS 936 MB. Dateien: `zellen-rueckhalte/kombination.json`, `zellen-rueckhalte/kombination-nullpunkt.json`, `zellen-rueckhalte/kombination-bericht.md`.
+
 *Geschrieben von `kombination.js` am 2026-09-23T20:34:37.811Z aus `zellen/kombination.json` und `zellen/kombination-nullpunkt.json`; nichts abgetippt, was die Maschine nicht schreibt. Zwei Zeilen (Panel-Kennung in der Kopfzeile, Dezil unten in §3) nach dem Lauf aus `zellen/kombination.json` nachgetragen, weil der Generator sie falsch formatierte; der Generator ist korrigiert, die Maschinendateien sind unberührt. Alles Simulation mit virtuellem Kapital, keine Anlageberatung.*
