@@ -28,7 +28,7 @@ tags: [befund]
 | Nullpunkt | Orakel IC exakt 1, Zufall-Boden IC 0,0106 / Dezil 0,31 Pp, Placebo Symbole, Leck-Klinke — alle bestanden, 13 Zellen + Kombination | `pruefung/kombination-pruefungen.json` |
 | Datenfunde nebenbei | Fundamentaltafel v1.1 (Aktien-Skala 330 CIKs, 414 falsche Kürzel→CIK, 17 Einheitenfehler), Panel: 101 verklebte Reihen (Nr. 58 offen) | `wiki/offene-auftraege.md` Nr. 58–60 |
 
-**Lesart:** Die Kombination trägt keine messbare Information über die Rangfolge der nächsten Monatsrenditen — bei einer Auflösung, die einen IC von 0,05 bräuchte, während die Literatur 0,04–0,06 vor Zerfall nennt. Das ist die Auflösungswand in ihrer Querschnittsform: 92 Monate reichen weder für ein Dezil (MDE 0,74 Pp) noch für den IC. Rückhaltefenster (24 Monate) folgt als registrierter Schritt §8.
+**Lesart:** Die Kombination trägt keine messbare Information über die Rangfolge der nächsten Monatsrenditen — bei einer Auflösung, die einen IC von 0,05 bräuchte, während die Literatur 0,04–0,06 vor Zerfall nennt. Das ist die Auflösungswand in ihrer Querschnittsform: 92 Monate reichen weder für ein Dezil (MDE 0,74 Pp) noch für den IC. **Rückhaltefenster (§8, 23.09. 22:46, `4fe9c89`):** 24 Signaltage 2024-09…2026-08, IC 0,0095 (se 0,0255, t 0,37, MDE₈₀ 0,072) — nach §8 „bestätigt" (gleiches Vorzeichen), der Sache nach Rauschen; Dezil oben netto −0,30 Pp (MDE₈₀ 1,22). Gesamtreihe 116 Monate: IC 0,0118, t 0,78, MDE₈₀ 0,043. Die 92 Monate vor 2024-09 reproduzieren die versiegelte Zelle exakt. **Ergebnis der Studie: nicht entscheidbar — kein belegtes Informationssignal, keine handelbare Kante.**
 
 ## Widerlegt (gemessen tot)
 
