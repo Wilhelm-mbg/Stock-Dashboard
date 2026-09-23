@@ -16,6 +16,19 @@ tags: [befund]
 > **Neu am 08.09.:** Die **Signalstudie auf Minutenbasis** (5m/15m, 45.096 Dateien, 2,37 Mrd Kerzen, 7.299 Reihen mit 4.993 Verschwundenen, Kassa-Hürde je Klasse) findet **0 von 144 Konfigurationen**, die auch nur das Entdeckungstor bestehen — bei sauberen Placebos und einer Auflösung, die eine Kante von 0,02 Pp gesehen hätte. Die bekannten Intraday-Detektoren sind auf 5- und 15-Minuten-Basis unter Kassa-Kosten **gemessen tot**. 1m ist nicht gemessen. Abschnitt „Signalstudie Minuten" unten.
 
 > **Neu am 09.09.:** Der **Trendkanal auf Tagesbasis** (7.299 Aktien inkl. 4.801 verschwundene, 6,08 Mio Wert-Tage, 1,31 Mio Trades, Haltedauer 5/10/20 Tage und „bis Kanalbruch") ist gemessen: **kein Kanal-Einstieg schlägt den Topf.** Der Abschnittskanal der App ist als Einstieg **in jeder Umsatzklasse zu** (Rücklauf an die untere Linie: t −3,4 bis −4,3 gegen den Topf); der Ausbruch verdient roh nur die Marktdrift und bleibt unter ihr. Die einzigen drei Tor-1-Kandidaten (Donchian 55, Rücklauf long) sind in der Entdeckung ein Ausreißer-Mittel (t = 1,0) und in der Bestätigung deutlich negativ. Abschnitt unten.
+> **Neu am 23.09.:** Die **Mehrfaktor-Kombination** (sieben vorab festgelegte Signale — Momentum, niedrige Schwankung, Bewertung, Ertragskraft, Investition, Gewinnüberraschung, F&E — gleichgewichtet als Rangkombination, 92 Monate 2017–2024, registrierter Test: Rang-IC) ist **nicht entscheidbar unterhalb von IC 0,05** (gemessen IC 0,012, t 0,69). Das Dezil oben netto liegt bei −0,18 Pp mit MDE₈₀ 0,74 — nichts Handelbares, nichts Ausgeschlossenes. Die Zahl der belegten Kanten bleibt **NULL**; die Zahl der belegten Informationssignale ebenfalls.
+
+## Mehrfaktor-Kombination (Runde 1b, 23.09.2026) — nicht entscheidbar
+
+| Sache | Zahl | Fundstelle |
+|---|---|---|
+| **Rang-IC der Kombination** (der eine registrierte Test) | **0,0124**, se 0,0180, **t 0,69**, MDE₈₀ **0,0505**; erwartet 0,02–0,03 → „nicht entscheidbar unterhalb von IC 0,0505" (Tor V2 war vorab gefallen: Faktor 5 über dem Kunstfeld-Boden) | `studien/mehrfaktor-2026-09-22/ERGEBNIS-KOMBINATION.md`, Vorregistrierung §12 (Siegel `71f8da3`, Lauf `9bc3563`) |
+| Dezil oben − Universum netto (Diagnose) | **−0,176 Pp**, se 0,265, MDE₈₀ 0,743, Umschlag 29 %, Kosten 0,024 Pp | dieselbe Zelle |
+| Einzelfelder (Diagnose, v1.1-Zellen) | Dezil netto: Momentum +0,85 (MDE 1,49), Ertragskraft +0,29 (0,67), SUE +0,15 (0,48), Investition +0,13 (0,73), Schwankung −0,25 (1,09), Bewertung −0,20 (1,04), F&E −0,15 (2,11); Kontrolle Verschuldung +0,46 (0,47, t_HH 3,1 — Kontrolle, kein Signal) | `zellen/*-bericht.md`, `wiki/mehrfaktor-vorpruefung.md` |
+| Nullpunkt | Orakel IC exakt 1, Zufall-Boden IC 0,0106 / Dezil 0,31 Pp, Placebo Symbole, Leck-Klinke — alle bestanden, 13 Zellen + Kombination | `pruefung/kombination-pruefungen.json` |
+| Datenfunde nebenbei | Fundamentaltafel v1.1 (Aktien-Skala 330 CIKs, 414 falsche Kürzel→CIK, 17 Einheitenfehler), Panel: 101 verklebte Reihen (Nr. 58 offen) | `wiki/offene-auftraege.md` Nr. 58–60 |
+
+**Lesart:** Die Kombination trägt keine messbare Information über die Rangfolge der nächsten Monatsrenditen — bei einer Auflösung, die einen IC von 0,05 bräuchte, während die Literatur 0,04–0,06 vor Zerfall nennt. Das ist die Auflösungswand in ihrer Querschnittsform: 92 Monate reichen weder für ein Dezil (MDE 0,74 Pp) noch für den IC. Rückhaltefenster (24 Monate) folgt als registrierter Schritt §8.
 
 ## Widerlegt (gemessen tot)
 

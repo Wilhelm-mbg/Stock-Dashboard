@@ -274,6 +274,13 @@ Anlageberatung.*
 
 ---
 
+6. **23.09.2026 22:41 (PM, nach dem Urteil, ändert nichts an Frage, Test oder Toren) — K-P6 war konstruktionsbedingt unerfüllbar.**
+   K-P6 zählte Mitglieder des Dezils oben mit **mindestens einem** aufgefüllten Feld; bei 28 % F&E-Abdeckung (Erwartung 30–40 %, §4) hat
+   fast jedes Mitglied ein aufgefülltes Feld (gemessen 84,3 %, davon F&E 71,9 %). Die informative Größe ist der Anteil aufgefüllter
+   **Feld-Plätze** je Feld im Dezil (steht in der Zelle); ein Dezil „überwiegend aus Auffüllungen" wäre bei > 50 % je Feld gegeben —
+   F&E erfüllt das, die übrigen nicht. K-P6 ist kein Tor in §7; das Urteil ist unberührt. Lehre für Runde 2: Prüfkriterien mit dem
+   Kunstfeld „Lücken" vorab durchrechnen.
+
 ## 12. Ergebnis (vom Lauf geschrieben, 23.09.2026)
 
 **Urteil nach §7: „nicht entscheidbar unterhalb von IC 0,0505".** Satzform nach §6.3a, weil Tor V2 vor dem Lauf mit dem registrierten
