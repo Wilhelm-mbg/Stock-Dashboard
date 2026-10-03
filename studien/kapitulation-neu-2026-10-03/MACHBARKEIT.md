@@ -59,7 +59,9 @@ gekürzten Effekt (+0,68 Pp, Band 0,36 … 0,92) reicht sie knapp oder nicht; ei
 folgende Kerzen desselben Werts zählen einzeln. *Tag* = UTC-Kalendertag der Signalkerze; Urteilsgröße ist das Mittel der Tagesmittel
 des Überschusses gegen die „Erwartung Symbol × UTC-Stunde" (A7-Lesefenster ausgeschnitten), t über Tage. Universum 2.201 Werte
 („Ueberlebende"), 730 Handelstage 2023-09-26 … 2026-08-24, Schnitt 2025-03-12. V2: 2.567 Signale an 163 Tagen; Entdeckung 65 Tage
-−0,367 Pp, Bestätigung 98 Tage +1,107 Pp, se 0,517, t 2,14, Urteil `nicht-bestaetigt`.
+−0,367 Pp, Bestätigung 98 Tage +1,107 Pp, se 0,517, t 2,14, Urteil `nicht-bestaetigt`. (Schleife und Tagesschlüssel sind aus den
+Protokollfeldern und aus `kapitulation-schwanz.js:49–68` gelesen, das die Maschine nachstellt — `messmaschine.js` selbst wurde in
+diesem Auftrag nicht gelesen.)
 
 **Befunde Code ↔ Protokoll ↔ Auftragstext**
 
