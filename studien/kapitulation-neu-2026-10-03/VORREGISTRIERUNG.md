@@ -100,3 +100,13 @@ gefahren (Auftrag Nr. 68) · 2 keine getrennte Vorab-Zählung — die Vollzählu
 wie §4: das Urteil fällt **nur** im unberührten Fenster bis 2023-09-25, das alte Fenster ist Wiederholung ohne Urteil · 4 Urteilsgröße
 gegen den **Tagestopf**; die Symbol-Stunden-Erwartung des alten Protokolls nur nachrichtlich · 5 Abbruchregel §6.6 und Totalverlust-Regel
 §7 übernommen. Schwelle und Satzformen wie §1 und §9.
+
+## Nachträge (datiert; ändern nichts an Vorhersage, Fenster, Toren oder Satzformen)
+
+1. **03.10.2026, vor jedem Ertrag (PM, nach Zweitleser zu Auftrag Nr. 68) — zwei Präzisierungen der Rechnung.** (a) **Tagestopf (§5):** das
+   Mittel über **alle** zulässigen Kerzen des ET-Tags in der Umsatzklasse des Signals (jede 60m-Kerze jeder Reihe, die an dem Tag Umsatztor,
+   Regime und Vorlauf von V2 erfüllt; ohne Reihen-Tage mit Signal, ohne gesperrte Reihen), mit derselben Haltedauer und derselben Buchung
+   für Verschwundene — keine Zufallsziehung. Nur wenn das die Laufzeit sprengt, eine feste Stichprobe von 200 Kerzen je Tag × Klasse (Saat
+   `kapitulation-neu-2026-10-03/topf`), dann ausgewiesen. (b) **Fenster je Stufe (§4/§6):** die Vollzählung läuft über den ganzen Zeitraum und
+   weist die drei Fenster getrennt aus; Nullpunkt, Placebo, Leck-Klinke, Kosten, Stufe A und Stufe B gelten dem Bestätigungsfenster; die
+   nachrichtlichen Zeilen werden erst nach Stufe B gerechnet.
