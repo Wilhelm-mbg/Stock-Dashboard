@@ -64,6 +64,17 @@ var SPLIT_ARTEN_EIGEN = ['forward_splits', 'reverse_splits'];
  * die drei bekannten Wiedervergaben darunter (ROCC 56, PANA 37, PMGM 21) bleiben ausgewiesen ungetrennt. */
 var WECHSEL_MIN_LUECKE_TAGE = 60;
 var ENDE_GRUND_KUERZEL = 'kuerzel-neu-vergeben';
+/* v2.2 (03.10.2026, Auftrag Nr. 67; Entscheid Wilhelm/PM 03.10.): jede Luecke > LUECKE_TRENN_TAGE KALENDERtage zwischen zwei
+ * aufeinanderfolgenden Tageszeilen einer Reihe beginnt eine neue Reihe - ohne Beleg-Bedingung (Trockenlauf Nr. 64: 141 Luecken
+ * in 140 Reihen, 104 davon ohne lokalen Beleg). Zwei Einheiten, zwei Namen: WECHSEL_MIN_LUECKE_TAGE zaehlt HANDELStage ab dem
+ * Datum eines name_changes-Satzes, LUECKE_TRENN_TAGE zaehlt KALENDERtage zwischen zwei Zeilen. PANEL_KENNUNG bleibt v2: ohne
+ * die Option --luecken baut paneldaten.js weiter v2.1. Lesbar ohne ausdrueckliche Kennung sind v2 und v2.2 (der Ordner waehlt
+ * das Panel: voll/ = v2.1, voll-v22/ = v2.2). Der Abschnitt VOR einer Luecke endet mit ENDE_GRUND_LUECKE - Auskunft, kein
+ * Urteil: der Grund steht in keiner Totalverlust-Liste, ausgebucht wird zum letzten Kurs (wie kuerzel-neu-vergeben). */
+var PANEL_KENNUNG_V22 = 'querschnitt-pruefstand-2026-09-13/panel/v2.2';
+var PANEL_KENNUNGEN_LESBAR = [PANEL_KENNUNG, PANEL_KENNUNG_V22];
+var LUECKE_TRENN_TAGE = 90;
+var ENDE_GRUND_LUECKE = 'notierung-unterbrochen';
 /* SPERRE fuer eigene Splits (v2.1, 18.09.2026, erster Vollbau): drei Quellsaetze hatten KEINEN Sprung in der Rohreihe
  * (HON reverse 2:1 am 29.06.2026 bei Rohverhaeltnis 0,985 -> -50,8 %; FNF 2017 0,725 statt 3,26; INPX 2018 1,012 statt 3,0)
  * - blind angewandt erzeugten sie den Sprung, den sie entfernen sollten. Ein Split gilt nur, wenn ln(roh_T/roh_V) am
@@ -234,6 +245,8 @@ module.exports = {
   FENSTER_VON: FENSTER_VON, FENSTER_BIS_MAX: FENSTER_BIS_MAX, REFERENZ: REFERENZ, kalender: kalender,
   PANEL_KENNUNG: PANEL_KENNUNG, PANEL_KENNUNG_V1: PANEL_KENNUNG_V1, SPALTEN: SPALTEN, MARKEN_NAMEN: MARKEN_NAMEN,
   SPLIT_ARTEN_EIGEN: SPLIT_ARTEN_EIGEN, WECHSEL_MIN_LUECKE_TAGE: WECHSEL_MIN_LUECKE_TAGE, ENDE_GRUND_KUERZEL: ENDE_GRUND_KUERZEL,
+  PANEL_KENNUNG_V22: PANEL_KENNUNG_V22, PANEL_KENNUNGEN_LESBAR: PANEL_KENNUNGEN_LESBAR, LUECKE_TRENN_TAGE: LUECKE_TRENN_TAGE,
+  ENDE_GRUND_LUECKE: ENDE_GRUND_LUECKE,
   SPLIT_SPERRE_MIN_LOG: SPLIT_SPERRE_MIN_LOG, SPLIT_SPERRE_ANTEIL: SPLIT_SPERRE_ANTEIL, REGRESSION23_ERWARTET: REGRESSION23_ERWARTET,
   M_QUELLE_REIN: M_QUELLE_REIN, M_SCHLUSS_ERSATZ: M_SCHLUSS_ERSATZ, M_DICHTE_OK: M_DICHTE_OK,
   M_MASSNAHME_NAH: M_MASSNAHME_NAH, M_LETZTER_TAG: M_LETZTER_TAG, M_STEMPEL_TAG: M_STEMPEL_TAG,

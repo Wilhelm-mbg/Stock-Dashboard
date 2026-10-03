@@ -18,6 +18,7 @@
  * Symboltabelle (Reihe S und Nachfolge-Reihe S~2) in allen sechs Teilen gleich ist.
  *
  * Aufruf:  node kuerzelwechsel.js            -> schreibt kuerzelwechsel-kandidaten.json (Repo)
+ *          node kuerzelwechsel.js --luecken voll/panel   -> v2.2: schreibt NUR luecken-trennungen.json (siehe unten)
  *          node kuerzelwechsel.js --diagnose voll   -> dazu je Kandidat die Luecke im vorhandenen Panel (nur Anzeige)
  *
  * NUR LESEN auf E:. Keine Sperre, kein Netz.
@@ -115,7 +116,127 @@ function diagnose(aus, tafel, kennung) {
   return zeilen;
 }
 
-if (require.main === module) {
+/* ---------- v2.2 (Auftrag Nr. 67, 03.10.2026): Luecken-Trennungen ---------- */
+/* REGEL (PM, 03.10.2026): jede Luecke > K.LUECKE_TRENN_TAGE KALENDERtage zwischen zwei aufeinanderfolgenden Tageszeilen einer
+ * Reihe beginnt eine neue Reihe - ohne Beleg-Bedingung. Die Liste entsteht VOR dem Bau aus dem vorhandenen Panel (v2.1) und ist
+ * eine reine Funktion davon (kein Zeitstempel), damit die Symboltabelle in allen Bau-Teilen gleich ist.
+ * NAMEN: die frueheste Notierung behaelt das Kuerzel; neue Abschnitte bekommen je Basis-Kuerzel die naechste freie Nummer in der
+ * Reihenfolge ihres ersten Tages (SYM~2, SYM~3, ...). Eine ~2-Reihe, die v2.1 schon fuehrt, BEHAELT ihren Namen (es wird
+ * weitergezaehlt): kein v2.1-Name zeigt in v2.2 auf Zeilen, die er vorher nicht hatte - dafuer sind die Nummern bei den Kuerzeln
+ * mit vorhandener ~2-Reihe nicht chronologisch (GIG in Zeitfolge: GIG, GIG~3, GIG~2, GIG~4). */
+var LUECKEN_DATEI = path.join(__dirname, 'luecken-trennungen.json');
+var LUECKEN_KENNUNG = 'querschnitt-pruefstand-2026-09-13/luecken-trennungen/v1';
+var KURZLUECKE_AB_TAGE = 30;                                 // 30..LUECKE_TRENN_TAGE: nur gezaehlt, nie getrennt
+function basisVon(name) { return String(name).replace(/~\d+$/, ''); }
+
+/** Luecken des vorhandenen Panels (Ordner mit _stand.json und Jahresbloecken) als Trennliste. */
+function lueckenSammeln(panelOrdner, kennung) {
+  var P = require('./paneldaten.js'), kal = K.kalender();
+  var panel = P.ladePanel(null, { ordner: panelOrdner, kennung: kennung || K.PANEL_KENNUNG }), sym = panel.stand.symbole, n = sym.length;
+  var ms = kal.tage.map(function (t) { return Date.parse(t + 'T00:00:00Z'); });
+  var letzter = new Int32Array(n).fill(-1), zeilen = new Int32Array(n), roh = [], kurz = 0, maxTag = -1, gesamt = 0;
+  Object.keys(panel.jahre).sort().forEach(function (j) {
+    var b = panel.jahre[j];
+    for (var i = 0; i < b.n; i++) {
+      var s = b.sym[i], t = b.tag[i];
+      if (letzter[s] >= 0) {
+        if (t <= letzter[s]) throw new Error('Reihe ' + sym[s].reihe + ': Tage nicht aufsteigend (' + kal.tage[t] + ')');
+        var d = Math.round((ms[t] - ms[letzter[s]]) / 86400000);
+        if (d > K.LUECKE_TRENN_TAGE) roh.push({ s: s, vor: letzter[s], tag: t, tage: d, zeilenVor: zeilen[s] });
+        else if (d >= KURZLUECKE_AB_TAGE) kurz++;
+      }
+      letzter[s] = t; zeilen[s]++; gesamt++; if (t > maxTag) maxTag = t;
+    }
+  });
+  /* hoechste in v2.1 vergebene Nummer je Basis-Kuerzel (ohne Suffix = 1) */
+  var nr = {};
+  sym.forEach(function (x) { var m = /~(\d+)$/.exec(x.reihe), b = basisVon(x.reihe); nr[b] = Math.max(nr[b] || 1, m ? +m[1] : 1); });
+  roh.sort(function (a, b) {
+    var ra = sym[a.s].reihe, rb = sym[b.s].reihe, ba = basisVon(ra), bb = basisVon(rb);
+    return ba < bb ? -1 : ba > bb ? 1 : a.tag - b.tag || (ra < rb ? -1 : ra > rb ? 1 : 0);
+  });
+  var vorAbschnitt = {}, wechseln = 0, basen = {}, ab3 = {};
+  var tr = roh.map(function (x) {
+    var r = sym[x.s].reihe, b = basisVon(r), k = ++nr[b], name = b + '~' + k;
+    var e = { reihe: r, basis: b, bauReihe: sym[x.s].vorgaenger || r, letzterVor: kal.tage[x.vor], tag: kal.tage[x.tag], tage: x.tage,
+      zeilenVor: x.zeilenVor, zeilenNach: zeilen[x.s] - x.zeilenVor, vorAbschnitt: vorAbschnitt[r] || r, nachfolger: name };
+    if (!vorAbschnitt[r]) wechseln += e.zeilenNach;              // je Reihe einmal: alle Zeilen ab der ERSTEN Luecke wechseln
+    vorAbschnitt[r] = name; basen[b] = 1;
+    if (k >= 3) (ab3[b] = ab3[b] || []).push(name);
+    return e;
+  });
+  return { kennung: LUECKEN_KENNUNG, entschiedenAus: panelOrdner, panelKennung: panel.stand.kennung, panelStand: panel.stand.stand, panelZeilen: gesamt,
+    schwelleKalendertage: K.LUECKE_TRENN_TAGE, bisTag: kal.tage[maxTag],
+    zaehler: { luecken: tr.length, reihen: Object.keys(vorAbschnitt).length, basisKuerzel: Object.keys(basen).length, zeilenWechseln: wechseln,
+      kurzluecken: kurz, nummerAb3: ab3 },
+    trennungen: tr };
+}
+
+/** Trennliste fuer den Bau (paneldaten.js --luecken). Fehlt sie oder passt sie nicht zur Konfiguration: Abbruch. */
+function lueckenLaden() {
+  if (!fs.existsSync(LUECKEN_DATEI)) throw new Error('luecken-trennungen.json fehlt - erst `node kuerzelwechsel.js --luecken voll/panel`');
+  var j = JSON.parse(fs.readFileSync(LUECKEN_DATEI, 'utf8'));
+  if (j.kennung !== LUECKEN_KENNUNG || j.schwelleKalendertage !== K.LUECKE_TRENN_TAGE || !Array.isArray(j.trennungen) || !j.bisTag)
+    throw new Error('luecken-trennungen.json passt nicht zur Konfiguration (Kennung, Schwelle ' + K.LUECKE_TRENN_TAGE + ' oder bisTag)');
+  return j;
+}
+
+/** REIHENTAFEL (Auftrag §1.3, Auskunft statt Urteil): je Basis-Kuerzel mit mehr als einem Abschnitt die Abschnitte in Zeitfolge -
+ *  Reihenname, erster/letzter Tag, Zeilenzahl, womit der Abschnitt beginnt, Fall und Beleg des Trockenlaufs (luecken-kandidaten.json),
+ *  "dasselbe Papier wie der Vorgaenger: ja / nein / unbekannt". symbole = Eintraege aus _stand.json, jeSym[idx] = {von, bis, n}. */
+function reihenAbschnitte(symbole, jeSym, kal, panelKennung) {
+  var KAND = {}, kandDa = false;
+  try { JSON.parse(fs.readFileSync(path.join(__dirname, 'luecken-kandidaten.json'), 'utf8')).kandidaten.forEach(function (k) { KAND[k.reihe + '@' + k.ersterNach] = k; }); kandDa = true; }
+  catch (e) { kandDa = false; }
+  var PAPIER = { I: 'nein', II: 'nein', III: 'ja', IV: 'unbekannt' }, EMITTENT = { I: 'unbekannt', II: 'ja', III: 'ja', IV: 'unbekannt' };
+  var je = {}, z = { basisKuerzel: 0, abschnitte: 0, beginn: {}, faelle: {}, dasselbePapier: {} };
+  symbole.forEach(function (r, i) {
+    var q = jeSym[i] || null, b = basisVon(r.reihe);
+    var e = { reihe: r.reihe, von: q ? kal.tage[q.von] : null, bis: q ? kal.tage[q.bis] : null, zeilen: q ? q.n : 0, lebend: r.lebend, ende_grund: r.ende_grund, ende_datum: r.ende_datum };
+    if (r.luecke) {
+      var k = KAND[r.luecke.reiheV21 + '@' + r.luecke.tag] || null;
+      e.beginn = 'luecke'; e.reiheV21 = r.luecke.reiheV21; e.letzterTagVor = r.luecke.letzterVor; e.lueckeKalendertage = r.luecke.tage;
+      e.fall = k ? k.fall : null; e.beleg = k ? k.belege : null; e.belegText = k ? k.fallGrund : (kandDa ? 'nicht im Trockenlauf' : 'luecken-kandidaten.json fehlt');
+      e.dasselbePapierWieVorgaenger = k ? PAPIER[k.fall] : 'unbekannt'; e.derselbeEmittentWieVorgaenger = k ? EMITTENT[k.fall] : 'unbekannt';
+      e.quellen = k ? { polygon: k.polygon, cusip: k.cusip, yahoo: k.yahoo, nameChanges: k.nameChanges, endeSaetze: k.endeSaetze, anfangSaetze: k.anfangSaetze } : null;
+    } else if (r.kuerzelwechsel && r.kuerzelwechsel.nachfolger === r.reihe) {
+      var w = r.kuerzelwechsel;
+      e.beginn = 'kuerzelwechsel'; e.reiheV21 = r.reihe; e.letzterTagVor = w.letzterVor; e.lueckeHandelstage = w.luecke; e.fall = null;
+      e.beleg = ['name_changes Regel ' + w.regel + ': ' + w.old_symbol + '->' + w.new_symbol + ' ' + w.datum]; e.belegText = 'v2.1: Kuerzelwechsel mit Luecke >= ' + K.WECHSEL_MIN_LUECKE_TAGE + ' Handelstagen';
+      e.dasselbePapierWieVorgaenger = 'nein'; e.derselbeEmittentWieVorgaenger = 'nein'; e.quellen = null;
+    } else if (/~\d+$/.test(r.reihe)) {
+      e.beginn = 'archiv-zweite-reihe'; e.reiheV21 = r.reihe; e.fall = null; e.beleg = ['_lebenszeit.json: wiederverwendet / zweiteReihe']; e.belegText = 'Archiv fuehrt die zweite Firma als eigene Reihe';
+      e.dasselbePapierWieVorgaenger = 'nein'; e.derselbeEmittentWieVorgaenger = 'nein'; e.quellen = null;
+    } else { e.beginn = 'reihenanfang'; e.reiheV21 = r.reihe; }
+    (je[b] = je[b] || []).push(e);
+  });
+  var aus = {};
+  Object.keys(je).sort().forEach(function (b) {
+    if (je[b].length < 2) return;
+    je[b].sort(function (x, y) { return (x.von || '9') < (y.von || '9') ? -1 : (x.von || '9') > (y.von || '9') ? 1 : (x.reihe < y.reihe ? -1 : 1); });
+    je[b].forEach(function (e, i) {
+      e.nr = i + 1; e.vorgaenger = i ? je[b][i - 1].reihe : null;
+      z.abschnitte++; z.beginn[e.beginn] = (z.beginn[e.beginn] || 0) + 1;
+      if (e.beginn === 'luecke') { z.faelle[e.fall] = (z.faelle[e.fall] || 0) + 1; }
+      if (i) z.dasselbePapier[e.dasselbePapierWieVorgaenger] = (z.dasselbePapier[e.dasselbePapierWieVorgaenger] || 0) + 1;
+    });
+    aus[b] = je[b]; z.basisKuerzel++;
+  });
+  return { kennung: 'querschnitt-pruefstand-2026-09-13/reihen-abschnitte/v1', panel: panelKennung,
+    regel: 'Jede Luecke > ' + K.LUECKE_TRENN_TAGE + ' Kalendertage zwischen zwei aufeinanderfolgenden Tageszeilen beginnt eine neue Reihe (ohne Beleg-Bedingung). Fall/Beleg sind AUSKUNFT aus dem Trockenlauf Nr. 64 (luecken-kandidaten.json), kein Urteil: I = anderer Emittent oder neues Papier belegt, II = derselbe Emittent, neues Papier, III = dasselbe Papier, IV = kein Beleg.',
+    felder: 'je Basis-Kuerzel die Abschnitte in Zeitfolge: reihe, von, bis, zeilen, beginn (reihenanfang | luecke | kuerzelwechsel | archiv-zweite-reihe), vorgaenger (Abschnitt davor), reiheV21 (Reihe, zu der die Zeilen in v2.1 gehoerten), fall, beleg, dasselbePapierWieVorgaenger, derselbeEmittentWieVorgaenger, quellen (Polygon-Inhaber mit cik NACH der Luecke, CUSIP beidseits, Yahoo-Beginn, name_changes) - fuer die Bilanz-Zuordnung der getrennten Reihen.',
+    zaehler: z, kuerzel: aus };
+}
+
+var NUR_LUECKEN = require.main === module && process.argv.indexOf('--luecken') !== -1;
+if (NUR_LUECKEN) {
+  /* node kuerzelwechsel.js --luecken voll/panel   -> schreibt luecken-trennungen.json (und NICHT die Kuerzelwechsel-Kandidaten) */
+  var LT = lueckenSammeln(process.argv[process.argv.indexOf('--luecken') + 1]);
+  fs.writeFileSync(LUECKEN_DATEI + '.tmp', JSON.stringify(LT, null, 1)); fs.renameSync(LUECKEN_DATEI + '.tmp', LUECKEN_DATEI);
+  process.stdout.write('Luecken > ' + K.LUECKE_TRENN_TAGE + ' Kalendertage: ' + JSON.stringify(LT.zaehler) + ' bis ' + LT.bisTag + ' -> ' + LUECKEN_DATEI + '\n');
+}
+
+if (require.main === module && !NUR_LUECKEN) {
   var a = { diagnose: null, entscheiden: null, kennung: null };
   for (var i = 2; i < process.argv.length; i++) {
     if (process.argv[i] === '--diagnose') a.diagnose = process.argv[++i];
@@ -148,4 +269,5 @@ if (require.main === module) {
   }
 }
 
-module.exports = { sammeln: sammeln, laden: laden, diagnose: diagnose, entscheiden: entscheiden, DATEI: DATEI, datumAus: datumAus };
+module.exports = { sammeln: sammeln, laden: laden, diagnose: diagnose, entscheiden: entscheiden, DATEI: DATEI, datumAus: datumAus,
+  lueckenSammeln: lueckenSammeln, lueckenLaden: lueckenLaden, reihenAbschnitte: reihenAbschnitte, basisVon: basisVon, LUECKEN_DATEI: LUECKEN_DATEI };

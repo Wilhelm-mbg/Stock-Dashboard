@@ -545,6 +545,54 @@ abschnitt(16, 'Echtes Panel (v2): GE 02.08.2021 und AMC 24.08.2023 bereinigt (|r
 });
 
 /* =======================================================================================
+ * 17  Luecken-Trennung (v2.2, Auftrag Nr. 67): mehrere Schnitte je Reihe; Liste gegen den Trockenlauf
+ * ======================================================================================= */
+abschnitt(17, 'Luecken-Trennung (v2.2): konstruierte Reihe mit Luecke, Kuerzelwechsel, Luecke - vier Reihen, keine Zeile verloren; Liste = Trockenlauf', function (pr) {
+  var kal = K.kalender();
+  /* A: 45 Tage, 3 Mrd $ Umsatz | LUECKE | B: 70 Tage, 100 Mio $ | Kuerzelwechsel | C: 3 Tage | LUECKE | D: 2 Tage */
+  var bloecke = [[200, 45, 3e9, 30], [600, 70, 1e8, 80], [700, 3, 1e8, 50], [1100, 2, 1e8, 20]], T = [], grenzen = [];
+  bloecke.forEach(function (b) { grenzen.push(T.length); kal.tage.slice(b[0], b[0] + b[1]).forEach(function (t) { T.push({ tag: t, dateiSchluss: b[3], dateiEroeffnung: b[3], faktor: 1, bFaktor: 1,
+    umsatzReg: b[2], umsatzAuktion: 0, kerzen: 390, schlussErsatz: 0, eroeffnungErsatz: 0, dichteOk: 1, stempelTag: 0 }); }); });
+  function schnitt(k, idx, art) { var s = { tag: T[grenzen[k]].tag, letzterVor: T[grenzen[k] - 1].tag, idx: idx }; if (art) s.art = art; return s; }
+  function zNeu() { return { luecken: 0, stempeltage: 0, schlussErsatz: {}, eroeffnungErsatz: {}, tageJeJahr: {}, trennungen: 0, trennungAbweichung: 0 }; }
+  var z = zNeu();
+  var zl = P.zeilenAus(T, { idx: 5, schnitte: [schnitt(1, 11, 'luecke'), schnitt(2, 12), schnitt(3, 13, 'luecke')] }, kal, z, new Set());
+  pr(zl.length === T.length && z.lueckenTrennungen === 2 && z.trennungen === 1 && z.trennungAbweichung === 0, 'keine Zeile verloren (' + zl.length + ' von ' + T.length + '), zwei Luecken-Trennungen, ein Kuerzelwechsel, keine Abweichung', JSON.stringify({ lu: z.lueckenTrennungen, tr: z.trennungen, abw: z.trennungAbweichung }));
+  var soll = [5, 11, 12, 13], okSym = true, okErste = true, okLetzte = true;
+  grenzen.forEach(function (g0, k) {
+    var ende = k + 1 < grenzen.length ? grenzen[k + 1] : T.length;
+    for (var i2 = g0; i2 < ende; i2++) if (zl[i2].symIdx !== soll[k]) okSym = false;
+    if ((zl[g0].rendite === zl[g0].rendite) || !(zl[g0].marken & K.M_KEINE_RENDITE)) okErste = false;
+    if (!(zl[ende - 1].marken & K.M_LETZTER_TAG)) okLetzte = false;
+  });
+  pr(okSym, 'jeder Abschnitt liegt in seiner Reihe (5, 11, 12, 13)');
+  pr(okErste, 'erste Zeile jedes Abschnitts ohne Rendite (KEINE_RENDITE)');
+  pr(okLetzte, 'letzte Zeile jedes Abschnitts traegt LETZTER_TAG');
+  var kA = K.klasseIndex(3e9), kB = K.klasseIndex(1e8), g1 = grenzen[1];
+  pr(kA !== kB && kB !== -1 && zl[g1 - 1].klasse === kA && zl[g1].klasse === -1 && zl[g1 + K.UMSATZ_MIN_TAGE - 1].klasse === -1 && zl[g1 + K.UMSATZ_MIN_TAGE].klasse === kB,
+    'Klasse laeuft je Reihe: vor der Luecke ' + kA + ', danach ' + K.UMSATZ_MIN_TAGE + ' Zeilen -1, dann ' + kB + ' aus dem eigenen Fenster');
+  /* Gegenprobe: ohne Schnitte klebt die Reihe - Rendite ueber die Luecke, Klasse aus dem Fenster des alten Papiers. */
+  var kleb = P.zeilenAus(T, { idx: 5 }, kal, zNeu(), new Set());
+  pr(Math.abs(kleb[g1].rendite - 100 * (80 / 30 - 1)) < 1e-4 && kleb[g1].klasse === kA && kleb.every(function (r) { return r.symIdx === 5; }),
+    'Gegenprobe ohne Schnitte: +' + kleb[g1].rendite.toFixed(1) + ' % ueber die Luecke, Klasse ' + kleb[g1].klasse + ' aus dem alten Fenster');
+  var z3 = zNeu();
+  P.zeilenAus(T, { idx: 5, schnitte: [{ art: 'luecke', tag: T[g1].tag, letzterVor: T[g1 - 2].tag, idx: 11 }] }, kal, z3, new Set());
+  pr(z3.trennungAbweichung === 1, 'Zaehler: letzter Tag vor der Luecke ungleich der Liste wird als Abweichung gezaehlt', z3.trennungAbweichung);
+  /* Liste gegen den Trockenlauf (Auftrag Nr. 67 §1a.2/3): dieselben Reihen und Tage, Zeilenwechsel vorab exakt, Nummern ab ~3. */
+  var lp = path.join(__dirname, 'luecken-trennungen.json'), kp = path.join(__dirname, 'luecken-kandidaten.json');
+  if (!fs.existsSync(lp) || !fs.existsSync(kp)) return pr(false, 'luecken-trennungen.json oder luecken-kandidaten.json fehlt');
+  var LT = JSON.parse(fs.readFileSync(lp, 'utf8')), KA = JSON.parse(fs.readFileSync(kp, 'utf8'));
+  var la = LT.trennungen.map(function (t) { return t.reihe + '@' + t.letzterVor + '>' + t.tag; }).sort(), lb = KA.kandidaten.map(function (k) { return k.reihe + '@' + k.letzterVor + '>' + k.ersterNach; }).sort();
+  var wechsel = 0; KA.kandidaten.forEach(function (k) { if (k.lueckeNrDerReihe === 1) wechsel += k.zeilenNach; });
+  pr(la.length === 141 && LT.zaehler.reihen === 140 && la.join() === lb.join(), 'Liste: 141 Trennungen in 140 Reihen, dieselben Reihen und Tage wie der Trockenlauf', la.length + ' / ' + LT.zaehler.reihen);
+  pr(LT.zaehler.zeilenWechseln === wechsel && wechsel === 95150, 'Zeilen, die die Reihe wechseln: Liste ' + LT.zaehler.zeilenWechseln + ' = aus dem Trockenlauf gerechnet ' + wechsel + ' (Soll 95.150)');
+  var ab3 = Object.keys(LT.zaehler.nummerAb3).sort(), mit4 = ab3.filter(function (b3) { return LT.zaehler.nummerAb3[b3].length > 1; });
+  pr(ab3.join() === 'AAC,CPAA,GIG,HYAC,ISRL,LCA,LEXEB' && mit4.join() === 'GIG,HYAC', 'Nummern ab ~3 bei sieben Kuerzeln (' + ab3.join(', ') + '), ~4 bei ' + mit4.join(', '));
+  var namen = {}, doppelt = 0; LT.trennungen.forEach(function (t) { if (namen[t.nachfolger]) doppelt++; namen[t.nachfolger] = 1; });
+  pr(doppelt === 0 && LT.schwelleKalendertage === K.LUECKE_TRENN_TAGE && K.LUECKE_TRENN_TAGE === 90, 'jeder Nachfolgername genau einmal; Schwelle ' + LT.schwelleKalendertage + ' Kalendertage = K.LUECKE_TRENN_TAGE');
+});
+
+/* =======================================================================================
  * Abschluss
  * ======================================================================================= */
 var rot = ERG.reduce(function (s, e) { return s + e.rot; }, 0);

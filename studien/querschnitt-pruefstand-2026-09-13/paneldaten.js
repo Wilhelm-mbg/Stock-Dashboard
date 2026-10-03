@@ -7,6 +7,8 @@
  * Aufruf:
  *   node --max-old-space-size=4096 paneldaten.js --aus <ordner> [--teil k/n] [--max N] [--reihen A B ...]
  *   node paneldaten.js --aus <ordner> --vereinen
+ * v2.2 (Auftrag Nr. 67): dieselben Aufrufe mit --luecken (Teile UND Vereinen) und --aus voll-v22; --bis <tag> deckelt einen
+ * Bau ohne --luecken auf einen Datenstand (Rueckwaerts-Probe gegen v2.1). Siehe MODUS unten.
  *
  * Ergebnis je Teil: <aus>/teil-<k>/<jahr>.bin (Spalten, siehe SPALTEN), <aus>/teil-<k>/_teil.json (Zaehler).
  * Nach --vereinen: <aus>/panel/<jahr>.bin + <aus>/panel/_stand.json.
@@ -18,6 +20,24 @@ var path = require('path');
 var K = require('./konfig.js');
 var LP = require('./lesen-panel.js');
 var TR = require('./kuerzelwechsel.js');
+
+/* ---------- Bau-Modus (v2.2, Auftrag Nr. 67, 03.10.2026) ---------- */
+/* OHNE --luecken baut dieses Modul unveraendert v2.1 (Kennung K.PANEL_KENNUNG) - an einer Teilmenge bitgleich geprueft
+ * (pruefung-v22.js). MIT --luecken: Kennung K.PANEL_KENNUNG_V22, und jede Luecke > K.LUECKE_TRENN_TAGE Kalendertage zwischen
+ * zwei aufeinanderfolgenden Tageszeilen einer Reihe beginnt eine neue Reihe (deterministische Liste luecken-trennungen.json,
+ * kuerzelwechsel.js). bisTag deckelt den Bau auf den Datenstand, aus dem die Liste stammt: das Archiv waechst weiter (die
+ * 2026er Dateien wurden am 03.10.2026 fortgeschrieben), und eine Liste aus dem Panel bis 2026-09-15 sagt nichts ueber Luecken,
+ * die spaeter entstehen. */
+var MODUS = { kennung: K.PANEL_KENNUNG, luecken: null, bisTag: null };
+function modus(opt) {
+  if (opt && opt.luecken) {
+    var LU = TR.lueckenLaden();
+    if (opt.bisTag && opt.bisTag !== LU.bisTag) throw new Error('--bis ' + opt.bisTag + ' widerspricht dem Stand der Luecken-Liste (' + LU.bisTag + ')');
+    MODUS = { kennung: K.PANEL_KENNUNG_V22, luecken: LU, bisTag: LU.bisTag };
+  } else MODUS = { kennung: K.PANEL_KENNUNG, luecken: null, bisTag: (opt && opt.bisTag) || null };
+  SYM = null;
+  return MODUS;
+}
 
 /* ---------- Spaltenformat ---------- */
 /* v2 (18.09.2026): `faktor` = roh / bereinigt ueber alle EIGENEN Splits der Quelle (lesen-panel.js eigeneSplits) - in
@@ -32,7 +52,7 @@ var SPALTEN = [
 var TYP = { u8: Uint8Array, i8: Int8Array, u16: Uint16Array, f32: Float32Array, f64: Float64Array };
 function leer(n) { var o = {}; SPALTEN.forEach(function (s) { o[s.name] = new TYP[s.typ](n); }); o.n = n; return o; }
 function schreibeBlock(pfad, sp, n, kopfExtra) {
-  var kopf = Buffer.from(JSON.stringify(Object.assign({ kennung: K.PANEL_KENNUNG, n: n, spalten: SPALTEN }, kopfExtra || {})), 'utf8');
+  var kopf = Buffer.from(JSON.stringify(Object.assign({ kennung: MODUS.kennung, n: n, spalten: SPALTEN }, kopfExtra || {})), 'utf8');
   var len = Buffer.alloc(4); len.writeUInt32LE(kopf.length, 0);
   var teile = [len, kopf];
   SPALTEN.forEach(function (s) { var a = sp[s.name]; teile.push(Buffer.from(a.buffer, a.byteOffset, n * a.BYTES_PER_ELEMENT)); });
@@ -44,7 +64,7 @@ function leseBlock(pfad, kennung) {
   var buf = fs.readFileSync(pfad);
   var kl = buf.readUInt32LE(0);
   var kopf = JSON.parse(buf.slice(4, 4 + kl).toString('utf8'));
-  var soll = kennung || K.PANEL_KENNUNG;
+  var soll = kennung || MODUS.kennung;
   if (kopf.kennung !== soll) throw new Error('Panelkennung passt nicht: ' + kopf.kennung + ' statt ' + soll + ' (' + pfad + ')');
   var off = 4 + kl, n = kopf.n, sp = { n: n, kopf: kopf };
   SPALTEN.forEach(function (s) {
@@ -58,7 +78,7 @@ function leseBlock(pfad, kennung) {
 
 /* ---------- Argumente ---------- */
 function argumente(argv) {
-  var a = { aus: null, teil: null, max: 0, reihen: null, vereinen: false, checkpoint: 50, neu: false };
+  var a = { aus: null, teil: null, max: 0, reihen: null, vereinen: false, checkpoint: 50, neu: false, luecken: false, bis: null };
   for (var i = 0; i < argv.length; i++) {
     var x = argv[i];
     if (x === '--aus') a.aus = argv[++i];
@@ -67,6 +87,8 @@ function argumente(argv) {
     else if (x === '--checkpoint') a.checkpoint = +argv[++i];
     else if (x === '--neu') a.neu = true;
     else if (x === '--vereinen') a.vereinen = true;
+    else if (x === '--luecken') a.luecken = true;
+    else if (x === '--bis') a.bis = argv[++i];
     else if (x === '--reihen') { a.reihen = []; while (i + 1 < argv.length && String(argv[i + 1]).slice(0, 2) !== '--') String(argv[++i]).split(',').forEach(function (s) { if (s) a.reihen.push(s); }); }
   }
   return a;
@@ -101,10 +123,40 @@ function symbole() {
       art: base.art, schnittMs: base.schnittMs, abMs: base.abMs, referenz: false, vorgaenger: reihe, wechsel: base.trennung };
     R.push(neu); vorhanden[name] = neu;
   });
+  /* LUECKEN-TRENNUNG (v2.2): je Eintrag der Liste eine weitere Reihe fuer die Zeilen ab dem ersten Tag nach der Luecke. Gebaut
+   * wird weiter die Reihe mit den Dateien (bauReihe); ihre Schnitte (Kuerzelwechsel aus v2.1 UND Luecken) liegen in Tagesfolge
+   * in `schnitte`. Nur der letzte Abschnitt kann noch leben; `endet` nennt je Abschnitt den Schnitt, der ihn beendet. */
+  if (MODUS.luecken) {
+    var jeBau = {};
+    MODUS.luecken.trennungen.forEach(function (t) { (jeBau[t.bauReihe] = jeBau[t.bauReihe] || []).push(t); });
+    Object.keys(jeBau).sort().forEach(function (bau) {
+      var base = vorhanden[bau];
+      if (!base) throw new Error('Luecken-Trennung fuer unbekannte Reihe ' + bau + ' - Liste passt nicht zum Archiv. Abbruch.');
+      var schnitte = base.trennung ? [base.trennung] : [];
+      jeBau[bau].forEach(function (t) {
+        if (vorhanden[t.nachfolger]) throw new Error('Reihenname ' + t.nachfolger + ' doppelt. Abbruch.');
+        var lu = { art: 'luecke', tag: t.tag, letzterVor: t.letzterVor, tage: t.tage, reiheV21: t.reihe, vorAbschnitt: t.vorAbschnitt, nachfolger: t.nachfolger };
+        var neuL = { reihe: t.nachfolger, ordner: base.ordner, lebend: 0, jahre: base.jahre, gruppe: base.gruppe, art: base.art,
+          schnittMs: base.schnittMs, abMs: base.abMs, referenz: false, vorgaenger: bau, luecke: lu };
+        R.push(neuL); vorhanden[t.nachfolger] = neuL; schnitte.push(lu);
+      });
+      schnitte.sort(function (a, b) { return a.tag < b.tag ? -1 : a.tag > b.tag ? 1 : 0; });
+      for (var q = 1; q < schnitte.length; q++) if (schnitte[q].tag === schnitte[q - 1].tag) throw new Error('zwei Schnitte am selben Tag in ' + bau + '. Abbruch.');
+      var lebt = base.lebendVorTrennung !== undefined ? base.lebendVorTrennung : base.lebend;
+      var abschnitte = [base].concat(schnitte.map(function (s) { return vorhanden[s.nachfolger]; }));
+      abschnitte.forEach(function (r, k) {
+        r.lebend = k === abschnitte.length - 1 ? lebt : 0; r.endet = k < schnitte.length ? schnitte[k] : null;
+        if (k) r.vorAbschnitt = abschnitte[k - 1].reihe;
+        if (r.luecke && r.luecke.vorAbschnitt !== r.vorAbschnitt) throw new Error('Abschnittsfolge von ' + bau + ' passt nicht zur Liste (' + r.reihe + '). Abbruch.');
+      });
+      base.schnitte = schnitte;
+    });
+  }
   R.sort(function (a, b) { return a.reihe < b.reihe ? -1 : a.reihe > b.reihe ? 1 : 0; });
   if (R.length > 65535) throw new Error('mehr als 65535 Reihen - Uint16 fuer sym reicht nicht');
   var idx = {}; R.forEach(function (r, i) { r.idx = i; idx[r.reihe] = i; });
   R.forEach(function (r) { if (r.trennung) r.trennung.idx = idx[r.trennung.nachfolger]; });
+  R.forEach(function (r) { (r.schnitte || []).forEach(function (s) { s.idx = idx[s.nachfolger]; }); });
   SYM = { liste: R, idx: idx, referenz: K.REFERENZ.slice(), ausgeschlossen: LP.reihen().ausgeschlossen, trennungen: W };
   return SYM;
 }
@@ -148,6 +200,9 @@ function reiheBauen(R, kal, z) {
   var sauber = [];
   for (var q = 0; q < tage.length; q++) { if (q && tage[q].tag === tage[q - 1].tag) { z.doppelteTage++; continue; } sauber.push(tage[q]); }
   tage = sauber;
+  /* DECKEL (--bis oder Stand der Luecken-Liste): Tage nach dem Stand werden nicht gebaut - der Bau bleibt auf dem Datenstand von
+   * v2.1, und der letzte Tag der Reihe traegt LETZTER_TAG wie dort. Ohne Deckel unveraendert. */
+  if (MODUS.bisTag) { tage = tage.filter(function (t) { return t.tag <= MODUS.bisTag; }); if (!tage.length) return null; }
 
   /* SPLIT-SPERRE (v2.1): eigene Splits nur mit Sprung in der Rohreihe; Tagesfaktor daraus neu zusammensetzen. */
   var sp = splitSperre(tage, LP.eigeneSplits(R), R.reihe);
@@ -188,16 +243,22 @@ function splitSperre(tage, eigene, reihe) {
  *  bFaktor (roh / bereinigt), umsatzReg, umsatzAuktion, kerzen, schlussErsatz, eroeffnungErsatz, dichteOk, stempelTag}.
  *  R.idx ist die Reihe; R.trennung (falls gesetzt) gibt die Zeilen ab R.trennung.tag der Reihe R.trennung.idx. */
 function zeilenAus(tage, R, kal, z, nah, quelleReinJeJahr) {
-  var umsatzFenster = [], zeilen = [], symIdx = R.idx, start = 0, tr = R.trennung || null;
+  var umsatzFenster = [], zeilen = [], symIdx = R.idx, start = 0;
+  /* Schnitte in Tagesfolge: v2.1 kennt hoechstens einen (R.trennung, Kuerzelwechsel), v2.2 dazu die Luecken (R.schnitte). */
+  var schnitte = R.schnitte || (R.trennung ? [R.trennung] : []), sk = 0;
   quelleReinJeJahr = quelleReinJeJahr || {};
   for (var d = 0; d < tage.length; d++) {
     var T = tage[d], jahr = +T.tag.slice(0, 4);
     /* KUERZELWECHSEL (v2): ab dem entschiedenen Tag gehoeren die Zeilen dem Nachfolger. Die alte Reihe endet mit
      * LETZTER_TAG davor, der Nachfolger beginnt ohne Vortag (keine Rendite, leeres Umsatzfenster, 0 Vortage). */
-    if (tr && symIdx === R.idx && T.tag >= tr.tag) {
+    /* v2.2: dasselbe an jeder Luecke der Liste (art 'luecke') - der Abschnitt davor endet mit LETZTER_TAG, der neue beginnt ohne
+     * Vortag: keine Rendite ueber die Luecke, Umsatzfenster und Klasse laufen je Reihe. Keine Zeile geht verloren. */
+    if (sk < schnitte.length && T.tag >= schnitte[sk].tag) {
+      var tr = schnitte[sk++];
       if (T.tag !== tr.tag || !zeilen.length || zeilen[zeilen.length - 1].tagText !== tr.letzterVor) z.trennungAbweichung++;
       if (zeilen.length) zeilen[zeilen.length - 1].marken |= K.M_LETZTER_TAG;
-      symIdx = tr.idx; start = d; umsatzFenster = []; z.trennungen++;
+      symIdx = tr.idx; start = d; umsatzFenster = [];
+      if (tr.art === 'luecke') z.lueckenTrennungen = (z.lueckenTrennungen || 0) + 1; else z.trennungen++;
     }
     var marken = 0;
     if (quelleReinJeJahr[jahr]) marken |= K.M_QUELLE_REIN;
@@ -223,6 +284,8 @@ function zeilenAus(tage, R, kal, z, nah, quelleReinJeJahr) {
       if (bV > 0 && bT > 0) rendite = 100 * (bT / bV - 1);
       var abstand = kal.idx[T.tag] - kal.idx[V.tag];
       if (abstand > 1) z.luecken++;
+      /* Gegenprobe im Bau (v2.2): eine Luecke ueber der Schwelle, die NICHT getrennt wurde, darf es nicht geben (Soll 0). */
+      if (MODUS.luecken && (Date.parse(T.tag) - Date.parse(V.tag)) / 86400000 > K.LUECKE_TRENN_TAGE) z.lueckenUngetrennt = (z.lueckenUngetrennt || 0) + 1;
     }
     if (!(rendite === rendite)) marken |= K.M_KEINE_RENDITE;
     /* Eroeffnung -> Schluss desselben Tages: Faktor kuerzt sich, roh und bereinigt sind gleich. */
@@ -259,12 +322,14 @@ function lauf(a) {
    * war die umgeleitete Standardausgabe. Ein Lauf muss auf der Platte sichtbar sein, waehrend er laeuft. */
   var logPfad = path.join(ordner, '_lauf.log');
   function sag(s) { var z = new Date().toISOString() + ' ' + s; try { fs.appendFileSync(logPfad, z + '\n'); } catch (e) { /* Ordner weg: Ausgabe reicht */ } process.stdout.write(z + '\n'); }
-  sag('START Teil ' + (a.teil ? a.teil.k + '/' + a.teil.n : 'ganz') + ' | Reihen ' + meine.length + ' | Kennung ' + K.KONFIG_KENNUNG);
+  sag('START Teil ' + (a.teil ? a.teil.k + '/' + a.teil.n : 'ganz') + ' | Reihen ' + meine.length + ' | Kennung ' + K.KONFIG_KENNUNG +
+    (MODUS.luecken || MODUS.bisTag ? ' | Panel ' + MODUS.kennung + ' | Deckel ' + MODUS.bisTag + (MODUS.luecken ? ' | Luecken-Trennungen ' + MODUS.luecken.trennungen.length : '') : ''));
 
   var z = { reihen: 0, zeilen: 0, dateien: 0, bytes: 0, kerzenGesehen: 0, stempelkerzen: 0, stempeltage: 0,
     dateiFehler: {}, dateienNichtRein: 0, doppelteTage: 0, luecken: 0,
     schlussErsatz: {}, eroeffnungErsatz: {}, tageJeJahr: {}, ohneZeilen: 0,
     trennungen: 0, trennungAbweichung: 0, nachfolgerUebersprungen: 0, splitAkzeptiert: 0, splitAbgelehnt: 0, splitAbgelehntListe: [] };
+  if (MODUS.luecken) { z.lueckenTrennungen = 0; z.lueckenUngetrennt = 0; }
   var jeJahr = {};                                            // jahr -> {sp, n, cap}
 
   /* FORTSETZBARKEIT. Der erste Vollauf wurde nach 11 Minuten still getoetet (die Prozesse sterben mit der
@@ -272,6 +337,13 @@ function lauf(a) {
    * Jetzt: alle `checkpoint` Reihen werden die Jahresbloecke UND _fortschritt.json geschrieben; ein
    * Neustart ohne --neu liest beides und ueberspringt, was schon drin ist. */
   var fortPfad = path.join(ordner, '_fortschritt.json'), erledigt = {};
+  /* v2.2: ein Teilordner gehoert zu genau einer Panel-Fassung und einem Deckel - nie still mit der anderen fortsetzen (der
+   * Leseversuch unten wuerde die fremden Bloecke verwerfen und von vorn ueberschreiben). */
+  if (!a.neu && fs.existsSync(fortPfad)) {
+    var fk = null; try { fk = JSON.parse(fs.readFileSync(fortPfad, 'utf8')); } catch (e0) { fk = null; }
+    if (fk && ((fk.panel || K.PANEL_KENNUNG) !== MODUS.kennung || (fk.bisTag || null) !== MODUS.bisTag))
+      throw new Error('Teilordner ' + ordner + ' wurde als ' + (fk.panel || K.PANEL_KENNUNG) + ' (Deckel ' + (fk.bisTag || '-') + ') begonnen, dieser Aufruf baut ' + MODUS.kennung + ' (Deckel ' + (MODUS.bisTag || '-') + '). Abbruch.');
+  }
   if (!a.neu && fs.existsSync(fortPfad)) {
     try {
       var fj = JSON.parse(fs.readFileSync(fortPfad, 'utf8'));
@@ -289,7 +361,9 @@ function lauf(a) {
   function checkpoint() {
     Object.keys(jeJahr).forEach(function (j) { schreibeBlock(path.join(ordner, j + '.bin'), jeJahr[j].sp, jeJahr[j].n, { jahr: +j, teil: a.teil ? a.teil.k : 0 }); });
     var tmp = fortPfad + '.tmp';
-    fs.writeFileSync(tmp, JSON.stringify({ kennung: K.KONFIG_KENNUNG, stand: new Date().toISOString(), erledigt: erledigt, zaehler: z }));
+    var fo = { kennung: K.KONFIG_KENNUNG, stand: new Date().toISOString(), erledigt: erledigt, zaehler: z };
+    if (MODUS.luecken || MODUS.bisTag) { fo.panel = MODUS.kennung; fo.bisTag = MODUS.bisTag; }
+    fs.writeFileSync(tmp, JSON.stringify(fo));
     fs.renameSync(tmp, fortPfad);
   }
   function anhaenge(jahr, symIdx, r) {
@@ -339,8 +413,12 @@ function vereinen(a) {
   var teile = fs.readdirSync(a.aus).filter(function (d) { return /^teil-\d+$/.test(d); }).sort();
   if (!teile.length) throw new Error('keine Teilordner unter ' + a.aus);
   var panel = path.join(a.aus, 'panel');
+  /* v2.2: ein vorhandenes Panel einer ANDEREN Fassung wird nie ueberschrieben (voll/panel ist v2.1 und bleibt es). */
+  var standAlt = path.join(panel, '_stand.json');
+  if (fs.existsSync(standAlt) && JSON.parse(fs.readFileSync(standAlt, 'utf8')).kennung !== MODUS.kennung) throw new Error('In ' + panel + ' liegt ein Panel anderer Kennung - dieser Aufruf vereint ' + MODUS.kennung + '. Abbruch.');
   fs.mkdirSync(panel, { recursive: true });
-  var gesamt = { kennung: K.PANEL_KENNUNG, konfig: K.KONFIG_KENNUNG, stand: new Date().toISOString(),
+  var jeSym = MODUS.luecken ? {} : null;                       // v2.2: erster/letzter Tag und Zeilenzahl je Reihe (Reihentafel)
+  var gesamt = { kennung: MODUS.kennung, konfig: K.KONFIG_KENNUNG, stand: new Date().toISOString(),
     teile: teile.length, zeilen: 0, jahre: [], zeilenJeTag: {}, zaehler: {} };
   /* Zaehler der Teile addieren */
   var addiere = function (ziel, q) { Object.keys(q).forEach(function (k) { if (typeof q[k] === 'number') ziel[k] = (ziel[k] || 0) + q[k]; else if (q[k] && typeof q[k] === 'object' && !Array.isArray(q[k])) { ziel[k] = ziel[k] || {}; addiere(ziel[k], q[k]); } }); };
@@ -373,6 +451,7 @@ function vereinen(a) {
     schreibeBlock(path.join(panel, j + '.bin'), neu, n, { jahr: +j });
     gesamt.zeilen += n; gesamt.jahre.push({ jahr: +j, n: n });
     for (var w = 0; w < n; w++) gesamt.zeilenJeTag[neu.tag[w]] = (gesamt.zeilenJeTag[neu.tag[w]] || 0) + 1;
+    if (jeSym) for (var w2 = 0; w2 < n; w2++) { var js = jeSym[neu.sym[w2]] || (jeSym[neu.sym[w2]] = { von: neu.tag[w2], bis: neu.tag[w2], n: 0 }); js.bis = neu.tag[w2]; js.n++; }
     process.stdout.write('vereint ' + j + ': ' + n + ' Zeilen aus ' + bloecke.length + ' Teilen\n');
   });
   gesamt.jahre.sort(function (x, y) { return x.jahr - y.jahr; });
@@ -398,10 +477,30 @@ function vereinen(a) {
       ende_grund: g ? g.grund : null, ende_datum: g ? g.datum : null };
     if (r.trennung) { e.lebend = 0; e.ende_grund = K.ENDE_GRUND_KUERZEL; e.ende_datum = r.trennung.letzterVor; e.kuerzelwechsel = r.trennung; }
     if (r.vorgaenger) { e.vorgaenger = r.vorgaenger; e.kuerzelwechsel = r.wechsel; }
+    /* v2.2: Abschnitte eines Kuerzels mit Luecken-Trennung. Der Abschnitt nach einer Luecke nennt seinen Vorgaenger-Abschnitt und
+     * die Luecke; wer an einem Schnitt endet, traegt dessen Grund und Datum (Luecke: K.ENDE_GRUND_LUECKE, Kuerzelwechsel wie v2.1);
+     * der letzte Abschnitt erbt Leben und Ende-Grund der Grundstudie. */
+    if (MODUS.luecken && r.endet !== undefined) {
+      if (r.vorAbschnitt) e.vorgaenger = r.vorAbschnitt;         // Abschnitt davor in Zeitfolge (GIG~2 folgt in v2.2 auf GIG~3)
+      if (r.luecke) { e.luecke = r.luecke; delete e.kuerzelwechsel; }
+      if (r.endet) {
+        e.lebend = 0; e.ende_datum = r.endet.letzterVor;
+        if (r.endet.art === 'luecke') { e.ende_grund = K.ENDE_GRUND_LUECKE; if (!r.wechsel) delete e.kuerzelwechsel; }
+        else { e.ende_grund = K.ENDE_GRUND_KUERZEL; e.kuerzelwechsel = r.endet; }
+      } else { e.lebend = r.lebend; e.ende_grund = g ? g.grund : null; e.ende_datum = g ? g.datum : null; if (!r.wechsel) delete e.kuerzelwechsel; }
+    }
     return e;
   });
   gesamt.kuerzelwechsel = { kennung: S.trennungen.kennung, entschiedenAus: S.trennungen.entschiedenAus, n: Object.keys(S.trennungen.trennungen).length,
     minLuecke: K.WECHSEL_MIN_LUECKE_TAGE, trennungenGebaut: gesamt.zaehler.trennungen || 0, abweichungen: gesamt.zaehler.trennungAbweichung || 0 };
+  if (MODUS.luecken) {
+    gesamt.luecken = { kennung: MODUS.luecken.kennung, entschiedenAus: MODUS.luecken.entschiedenAus, schwelleKalendertage: K.LUECKE_TRENN_TAGE,
+      bisTag: MODUS.bisTag, n: MODUS.luecken.trennungen.length, trennungenGebaut: gesamt.zaehler.lueckenTrennungen || 0,
+      ungetrennt: gesamt.zaehler.lueckenUngetrennt || 0, zeilenWechselnSoll: MODUS.luecken.zaehler.zeilenWechseln };
+    var tafel = TR.reihenAbschnitte(gesamt.symbole, jeSym, kal, gesamt.kennung), tp = path.join(a.aus, 'reihen-abschnitte.json');
+    fs.writeFileSync(tp + '.tmp', JSON.stringify(tafel, null, 1)); fs.renameSync(tp + '.tmp', tp);
+    process.stdout.write('Reihentafel: ' + JSON.stringify(tafel.zaehler) + ' -> ' + tp + '\n');
+  }
   gesamt.tage = kal.tage;
   gesamt.ausgeschlosseneArten = S.ausgeschlossen;
   gesamt.gruendeKennung = K.gruende().kennung;
@@ -415,6 +514,9 @@ function vereinen(a) {
 function ladePanel(aus, opt) {
   var panel = (opt && opt.ordner) || path.join(aus, 'panel'), kn = opt && opt.kennung;
   var stand = JSON.parse(fs.readFileSync(path.join(panel, '_stand.json'), 'utf8'));
+  /* v2.2: ohne ausdrueckliche Kennung gilt die des Standes, wenn sie eine lesbare Fassung ist - der ORDNER waehlt das Panel
+   * (voll/ = v2.1, voll-v22/ = v2.2). Fuer voll/ aendert das nichts: dort steht K.PANEL_KENNUNG. */
+  if (!kn && K.PANEL_KENNUNGEN_LESBAR.indexOf(stand.kennung) !== -1) kn = stand.kennung;
   var jahre = {};
   stand.jahre.forEach(function (j) { jahre[j.jahr] = leseBlock(path.join(panel, j.jahr + '.bin'), kn); });
   return { stand: stand, jahre: jahre };
@@ -423,9 +525,11 @@ function ladePanel(aus, opt) {
 if (require.main === module) {
   var a = argumente(process.argv.slice(2));
   if (!a.aus) { process.stderr.write('--aus <ordner> fehlt\n'); process.exit(2); }
+  modus({ luecken: a.luecken, bisTag: a.bis });
+  if (a.luecken && path.basename(path.resolve(a.aus)) === 'voll') { process.stderr.write('--luecken baut v2.2 und schreibt nie nach voll/ (v2.1)\n'); process.exit(2); }
   fs.mkdirSync(a.aus, { recursive: true });
   if (a.vereinen) vereinen(a); else lauf(a);
 }
 
 module.exports = { SPALTEN: SPALTEN, leer: leer, schreibeBlock: schreibeBlock, leseBlock: leseBlock,
-  symbole: symbole, reiheBauen: reiheBauen, zeilenAus: zeilenAus, splitSperre: splitSperre, ladePanel: ladePanel, median: median, argumente: argumente, vereinen: vereinen };
+  symbole: symbole, modus: modus, reiheBauen: reiheBauen, zeilenAus: zeilenAus, splitSperre: splitSperre, ladePanel: ladePanel, median: median, argumente: argumente, vereinen: vereinen };

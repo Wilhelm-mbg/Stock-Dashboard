@@ -1,8 +1,8 @@
 {
- "stand": "2026-09-18T13:05:32.859Z",
+ "stand": "2026-10-03T18:37:59.330Z",
  "aus": "voll",
  "kunst": "kunst",
- "n": 71,
+ "n": 82,
  "rot": 0,
  "abschnitte": [
   {
@@ -16,12 +16,12 @@
     },
     {
      "ok": true,
-     "text": "Panelzeilen 9904017 <= Manifest-Tage 9916310",
-     "extra": "Verhaeltnis 0.9988"
+     "text": "Panelzeilen 9904017 <= Manifest-Tage 9945529",
+     "extra": "Verhaeltnis 0.9958"
     },
     {
      "ok": true,
-     "text": "Panel deckt 99.9 % der Manifest-Tage",
+     "text": "Panel deckt 99.6 % der Manifest-Tage",
      "extra": "unter 90 % waere ein stiller Verlust"
     }
    ],
@@ -451,6 +451,61 @@
     {
      "ok": true,
      "text": "erste Zeile von HCP~2 (2021-12-09) ohne Rendite, Vortage 0"
+    }
+   ],
+   "rot": 0,
+   "fehler": null
+  },
+  {
+   "nr": 17,
+   "titel": "Luecken-Trennung (v2.2): konstruierte Reihe mit Luecke, Kuerzelwechsel, Luecke - vier Reihen, keine Zeile verloren; Liste = Trockenlauf",
+   "pruefungen": [
+    {
+     "ok": true,
+     "text": "keine Zeile verloren (120 von 120), zwei Luecken-Trennungen, ein Kuerzelwechsel, keine Abweichung",
+     "extra": "{\"lu\":2,\"tr\":1,\"abw\":0}"
+    },
+    {
+     "ok": true,
+     "text": "jeder Abschnitt liegt in seiner Reihe (5, 11, 12, 13)"
+    },
+    {
+     "ok": true,
+     "text": "erste Zeile jedes Abschnitts ohne Rendite (KEINE_RENDITE)"
+    },
+    {
+     "ok": true,
+     "text": "letzte Zeile jedes Abschnitts traegt LETZTER_TAG"
+    },
+    {
+     "ok": true,
+     "text": "Klasse laeuft je Reihe: vor der Luecke 3, danach 40 Zeilen -1, dann 1 aus dem eigenen Fenster"
+    },
+    {
+     "ok": true,
+     "text": "Gegenprobe ohne Schnitte: +166.7 % ueber die Luecke, Klasse 3 aus dem alten Fenster"
+    },
+    {
+     "ok": true,
+     "text": "Zaehler: letzter Tag vor der Luecke ungleich der Liste wird als Abweichung gezaehlt",
+     "extra": 1
+    },
+    {
+     "ok": true,
+     "text": "Liste: 141 Trennungen in 140 Reihen, dieselben Reihen und Tage wie der Trockenlauf",
+     "extra": "141 / 140"
+    },
+    {
+     "ok": true,
+     "text": "Zeilen, die die Reihe wechseln: Liste 95150 = aus dem Trockenlauf gerechnet 95150 (Soll 95.150)"
+    },
+    {
+     "ok": true,
+     "text": "Nummern ab ~3 bei sieben Kuerzeln (AAC, CPAA, GIG, HYAC, ISRL, LCA, LEXEB), ~4 bei GIG, HYAC"
+    },
+    {
+     "ok": true,
+     "text": "jeder Nachfolgername genau einmal; Schwelle 90 Kalendertage = K.LUECKE_TRENN_TAGE"
     }
    ],
    "rot": 0,
