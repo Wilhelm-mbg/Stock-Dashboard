@@ -1,0 +1,4 @@
+# Journale je Reihe (Zaehlung, Topf, Siegel), Logs und Fortschritt des Archivlaufs: rund 60 MB, bleiben auf der Platte.
+lauf/teile/
+lauf/stufen.log
+*.tmp

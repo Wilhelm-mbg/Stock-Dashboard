@@ -47,11 +47,13 @@ function stichprobe(alle, n) {
 }
 
 /** 1m -> 60m fuer einen Tagesabschnitt aus L.tageAus: Eimer = volle Stunden seit Sitzungsbeginn, Stempel = Eimeranfang. */
-function verdichte60(k1, d, bars) {
+function verdichte60(k1, d, bars, oeff) {
   var b = -1, cur = null, vol = 0;
   for (var q = d.von; q <= d.bis; q++) {
     var k = k1[q], e = Math.max(0, Math.floor((k[0] - d.auf) / 3600000));
-    if (e !== b) { cur = [d.auf + e * 3600000, k[1], 0]; bars.push(cur); b = e; }
+    /* oeff (Phase 2, nur fuer die Einstiegsluecke S9): Eroeffnung der ersten Minute des Eimers, als EIGENES Feld - die
+     * Kerzen selbst bleiben [ms, schluss, stueck], damit der Ausloeser genau das sieht, was er in Phase 1 sah. */
+    if (e !== b) { cur = [d.auf + e * 3600000, k[1], 0]; bars.push(cur); if (oeff) oeff.push(k[5]); b = e; }
     cur[1] = k[1]; cur[2] += k[2] || 0; vol += k[2] || 0;
   }
   return vol;
@@ -59,7 +61,7 @@ function verdichte60(k1, d, bars) {
 
 /** Ganze Reihe als 60m-Kerzen [ms, schluss, stueck] ueber alle Jahresdateien, dazu Tage und Sperrtage. */
 function ladeReihe60(R) {
-  var kal = K.kalender(), bars = [], barTag = [], tage = [], sperr = new Set(), angewandt = new Set(), fehl = [], dateien = 0, bytes = 0, msLesen = 0;
+  var kal = K.kalender(), bars = [], oeff = [], barTag = [], tage = [], sperr = new Set(), angewandt = new Set(), fehl = [], dateien = 0, bytes = 0, msLesen = 0;
   var massnahmen = L.massnahmenFuer(R);
   R.jahre.filter(function (j) { return j >= +K.FENSTER.von.slice(0, 4) && j <= +K.FENSTER.bis.slice(0, 4); }).forEach(function (jahr) {
     var t0 = Date.now(), g = L.ladeJahr(R, jahr); msLesen += Date.now() - t0;
@@ -71,12 +73,12 @@ function ladeReihe60(R) {
     L.ausschlussTage(R, massnahmen, g.quelle, g.angewandt).forEach(function (t) { if (+t.slice(0, 4) === jahr) sperr.add(t); });
     L.tageAus(g.kerzen).forEach(function (d) {
       var ki = kal.idx[d.tag]; if (ki === undefined) return;
-      var von = bars.length, vol = verdichte60(g.kerzen, d, bars);
+      var von = bars.length, vol = verdichte60(g.kerzen, d, bars, oeff);
       for (var q = von; q < bars.length; q++) barTag.push(tage.length);
       tage.push({ tag: d.tag, ki: ki, t0: g.kerzen[d.von][0], close: g.kerzen[d.bis][1], vol: vol });
     });
   });
-  return { bars: bars, barTag: barTag, tage: tage, sperr: sperr, angewandt: angewandt, fehl: fehl, dateien: dateien, bytes: bytes, msLesen: msLesen };
+  return { bars: bars, oeff: oeff, barTag: barTag, tage: tage, sperr: sperr, angewandt: angewandt, fehl: fehl, dateien: dateien, bytes: bytes, msLesen: msLesen };
 }
 
 /** Regime aus SPY-Stundenkerzen: ueber[q] = Schluss > EMA200 (vor 200 Kerzen kein Urteil = null). */
@@ -101,8 +103,12 @@ function splitListe() {
 }
 
 /** Eine Reihe zaehlen. sig: [Kalenderindex, Klasse, Regime offen, Ausstiegskerze da, Sperrtag, Split-Fenster 0-3]. */
-function zaehleReihe(R, regime, splits) {
-  var d = ladeReihe60(R), bars = d.bars, bt = d.barTag, tage = d.tage, len = bars.length, i;
+function zaehleReihe(R, regime, splits, opt) {
+  /* opt (Phase 2, messen.js): d = schon geladene Reihe (Kunstdaten der Pruefungen), signal = Ausloeser (Vorgabe: der echte,
+   * unveraendert), voll = Ertragsstufe, die sich nach der Zaehlung einhaengt und den Topf der Phase 1 ersetzt. */
+  opt = opt || {};
+  var sigF = opt.signal || function (b, j) { return S.signal(b, j, PV1); }, sigI = [];
+  var d = opt.d || ladeReihe60(R), bars = d.bars, bt = d.barTag, tage = d.tage, len = bars.length, i;
   var aus = { reihe: R.reihe, lebend: R.lebend, dateien: d.dateien, bytes: d.bytes, fehl: d.fehl, tage: tage.length, kerzen: len,
     ersterTag: tage.length ? tage[0].tag : null, letzterTag: tage.length ? tage[tage.length - 1].tag : null,
     tageLiq: 0, tageLiqOffen: 0, sig: [], klinke: 0, topf: [], split: [], msLesen: d.msLesen };
@@ -129,7 +135,7 @@ function zaehleReihe(R, regime, splits) {
   for (i = 0; i < tage.length; i++) kl[i] = i < K.UMSATZ_FENSTER ? -1 : K.klasseIndex(Liquide.medianUmsatz(ums, i - 1, K.UMSATZ_FENSTER));
   var flag = new Uint8Array(len), liqTag = new Uint8Array(tage.length), offTag = new Uint8Array(tage.length), sigTag = new Uint8Array(tage.length);
   for (i = VOR; i < len; i++) {
-    var n = bt[i], s1 = S.signal(bars, i, PV1);
+    var n = bt[i], s1 = sigF(bars, i);
     var liq = n >= 20 && (P[n] - P[n - 20]) / 20 >= 50e6;
     if (!!s1 !== !!(s1 && liq)) aus.klinke++;
     if (!liq) continue;
@@ -139,9 +145,10 @@ function zaehleReihe(R, regime, splits) {
     sigTag[n] = 1;
     var sf = splitFenster(i);
     if (sf) { sf[1].v1[sf[0] - 1]++; if (offen) sf[1].v2[sf[0] - 1]++; }
-    aus.sig.push([tage[n].ki, kl[n], offen ? 1 : 0, i + H < len ? 1 : 0, d.sperr.has(tage[n].tag) ? 1 : 0, sf ? sf[0] : 0]);
+    aus.sig.push([tage[n].ki, kl[n], offen ? 1 : 0, i + H < len ? 1 : 0, d.sperr.has(tage[n].tag) ? 1 : 0, sf ? sf[0] : 0]); sigI.push(i);
   }
   for (i = 0; i < tage.length; i++) { aus.tageLiq += liqTag[i]; aus.tageLiqOffen += offTag[i]; }
+  if (opt.voll) { opt.voll(aus, { d: d, bars: bars, bt: bt, tage: tage, len: len, kl: kl, flag: flag, sigTag: sigTag, sigI: sigI, splitFenster: splitFenster }); return aus; }
   /* TOPF (Placebo): je Reihentag EIN Zufallseinstieg unter den Kerzen, die V2 haette nehmen duerfen (Umsatztor offen,
    * Regime offen, Ausstiegskerze da) - ohne Sperrtage, ohne Split-Fenster und OHNE jeden Reihentag mit echtem Signal.
    * Rendite = Schluss[i+H] / Schluss[i] - 1, gespeichert in Basispunkten. */
