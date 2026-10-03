@@ -1,0 +1,1068 @@
+{
+ "kennung": "kapitulation-neu-2026-10-03/v1",
+ "erstellt": "Sat Oct 03 2026 23:08:42 GMT+0200 (Mitteleuropäische Sommerzeit)",
+ "strategie": {
+  "datei": "studien/messmaschine/strategien/kapitulation.js",
+  "zeichen": 8393,
+  "zeichenImProtokoll": 8393,
+  "zeichengleich": true,
+  "sha256": "7339e5312dadd9009f3d3ec6c6fe762311f467ea259a1d2acf47648f9427b84d",
+  "sha256QuelleImProtokoll": "7339e5312dadd9009f3d3ec6c6fe762311f467ea259a1d2acf47648f9427b84d",
+  "quantSha256": "d513932e2d1b0f5cc820c89637049d166659069569182d783378244d41cbb234",
+  "statistikSha256": "4c70e05b1a7fc60fdc8b62a45808aca9e25e9448ddd839cec905129daacdfda7"
+ },
+ "zaehlung": {
+  "kennung": "kapitulation-neu-2026-10-03/v1",
+  "tor": "1 Vollzaehlung, blind",
+  "erstellt": "Sat Oct 03 2026 22:56:26 GMT+0200 (Mitteleuropäische Sommerzeit)",
+  "blind": "kein Ertrag gerechnet oder gelesen; das Siegel blieb zu",
+  "fenster": {
+   "bestaetigung": "erster signalfaehiger Tag ... 2023-09-25",
+   "altesFenster": "bis 2026-08-24",
+   "rueckhalt": "danach",
+   "kalenderVon": "2016-01-04",
+   "kalenderBis": "2026-08-31",
+   "ersterSignalfaehigerTag": "2016-02-26"
+  },
+  "archiv": {
+   "reihen": 7299,
+   "lebend": 2306,
+   "verschwunden": 4993,
+   "jahresdateien": 45096,
+   "gelesenGB": 122.72,
+   "kerzen60m": 65671999,
+   "jahresdateienFehlen": 562,
+   "reihenMitV2Signal": 1501,
+   "topfReihentage": 832021,
+   "topfKerzen": 4707290,
+   "topfKerzenReiheEndet": 3236
+  },
+  "regimeOffeneTageAbVorlauf": {
+   "bestaetigung": 683,
+   "altesFenster": 226,
+   "rueckhalt": 0
+  },
+  "v1OhneRegime": {
+   "gesamt": {
+    "signale": 16747,
+    "signaltage": 2087,
+    "aufVerschwundenen": 2213
+   },
+   "jeFenster": {
+    "altesFenster": {
+     "signale": 5907,
+     "signaltage": 629,
+     "aufVerschwundenen": 233
+    },
+    "bestaetigung": {
+     "signale": 10817,
+     "signaltage": 1453,
+     "aufVerschwundenen": 1980
+    },
+    "rueckhalt": {
+     "signale": 23,
+     "signaltage": 5,
+     "aufVerschwundenen": 0
+    }
+   },
+   "jeJahr": {
+    "2016": {
+     "signale": 1056,
+     "signaltage": 155,
+     "aufVerschwundenen": 243
+    },
+    "2017": {
+     "signale": 1200,
+     "signaltage": 213,
+     "aufVerschwundenen": 371
+    },
+    "2018": {
+     "signale": 1720,
+     "signaltage": 208,
+     "aufVerschwundenen": 324
+    },
+    "2019": {
+     "signale": 1018,
+     "signaltage": 192,
+     "aufVerschwundenen": 210
+    },
+    "2020": {
+     "signale": 1746,
+     "signaltage": 140,
+     "aufVerschwundenen": 316
+    },
+    "2021": {
+     "signale": 1471,
+     "signaltage": 208,
+     "aufVerschwundenen": 218
+    },
+    "2022": {
+     "signale": 1461,
+     "signaltage": 184,
+     "aufVerschwundenen": 164
+    },
+    "2023": {
+     "signale": 1619,
+     "signaltage": 203,
+     "aufVerschwundenen": 169
+    },
+    "2024": {
+     "signale": 1454,
+     "signaltage": 215,
+     "aufVerschwundenen": 72
+    },
+    "2025": {
+     "signale": 2654,
+     "signaltage": 212,
+     "aufVerschwundenen": 117
+    },
+    "2026": {
+     "signale": 1348,
+     "signaltage": 157,
+     "aufVerschwundenen": 9
+    }
+   },
+   "jeKlasse": {
+    "250-1000": {
+     "signale": 3352,
+     "signaltage": 1027,
+     "aufVerschwundenen": 178
+    },
+    "5-50": {
+     "signale": 949,
+     "signaltage": 526,
+     "aufVerschwundenen": 248
+    },
+    "50-250": {
+     "signale": 11916,
+     "signaltage": 1907,
+     "aufVerschwundenen": 1782
+    },
+    "ab1000": {
+     "signale": 530,
+     "signaltage": 262,
+     "aufVerschwundenen": 5
+    }
+   },
+   "jeFensterUndKlasse": {
+    "altesFenster | 250-1000": {
+     "signale": 1390,
+     "signaltage": 366,
+     "aufVerschwundenen": 25
+    },
+    "altesFenster | 5-50": {
+     "signale": 279,
+     "signaltage": 154,
+     "aufVerschwundenen": 33
+    },
+    "altesFenster | 50-250": {
+     "signale": 3968,
+     "signaltage": 582,
+     "aufVerschwundenen": 175
+    },
+    "altesFenster | ab1000": {
+     "signale": 270,
+     "signaltage": 120,
+     "aufVerschwundenen": 0
+    },
+    "bestaetigung | 250-1000": {
+     "signale": 1960,
+     "signaltage": 659,
+     "aufVerschwundenen": 153
+    },
+    "bestaetigung | 5-50": {
+     "signale": 670,
+     "signaltage": 372,
+     "aufVerschwundenen": 215
+    },
+    "bestaetigung | 50-250": {
+     "signale": 7927,
+     "signaltage": 1320,
+     "aufVerschwundenen": 1607
+    },
+    "bestaetigung | ab1000": {
+     "signale": 260,
+     "signaltage": 142,
+     "aufVerschwundenen": 5
+    },
+    "rueckhalt | 250-1000": {
+     "signale": 2,
+     "signaltage": 2,
+     "aufVerschwundenen": 0
+    },
+    "rueckhalt | 50-250": {
+     "signale": 21,
+     "signaltage": 5,
+     "aufVerschwundenen": 0
+    }
+   }
+  },
+  "v2": {
+   "gesamt": {
+    "signale": 9104,
+    "signaltage": 715,
+    "aufVerschwundenen": 1073
+   },
+   "jeFenster": {
+    "altesFenster": {
+     "signale": 3050,
+     "signaltage": 187,
+     "aufVerschwundenen": 110
+    },
+    "bestaetigung": {
+     "signale": 6054,
+     "signaltage": 528,
+     "aufVerschwundenen": 963
+    }
+   },
+   "jeJahr": {
+    "2016": {
+     "signale": 556,
+     "signaltage": 57,
+     "aufVerschwundenen": 121
+    },
+    "2017": {
+     "signale": 230,
+     "signaltage": 38,
+     "aufVerschwundenen": 62
+    },
+    "2018": {
+     "signale": 1086,
+     "signaltage": 98,
+     "aufVerschwundenen": 187
+    },
+    "2019": {
+     "signale": 436,
+     "signaltage": 54,
+     "aufVerschwundenen": 83
+    },
+    "2020": {
+     "signale": 1420,
+     "signaltage": 50,
+     "aufVerschwundenen": 232
+    },
+    "2021": {
+     "signale": 531,
+     "signaltage": 49,
+     "aufVerschwundenen": 65
+    },
+    "2022": {
+     "signale": 1196,
+     "signaltage": 129,
+     "aufVerschwundenen": 130
+    },
+    "2023": {
+     "signale": 940,
+     "signaltage": 75,
+     "aufVerschwundenen": 98
+    },
+    "2024": {
+     "signale": 481,
+     "signaltage": 46,
+     "aufVerschwundenen": 22
+    },
+    "2025": {
+     "signale": 1591,
+     "signaltage": 59,
+     "aufVerschwundenen": 66
+    },
+    "2026": {
+     "signale": 637,
+     "signaltage": 60,
+     "aufVerschwundenen": 7
+    }
+   },
+   "jeKlasse": {
+    "250-1000": {
+     "signale": 1895,
+     "signaltage": 438,
+     "aufVerschwundenen": 87
+    },
+    "5-50": {
+     "signale": 447,
+     "signaltage": 234,
+     "aufVerschwundenen": 94
+    },
+    "50-250": {
+     "signale": 6451,
+     "signaltage": 672,
+     "aufVerschwundenen": 889
+    },
+    "ab1000": {
+     "signale": 311,
+     "signaltage": 121,
+     "aufVerschwundenen": 3
+    }
+   },
+   "jeFensterUndKlasse": {
+    "altesFenster | 250-1000": {
+     "signale": 721,
+     "signaltage": 134,
+     "aufVerschwundenen": 11
+    },
+    "altesFenster | 5-50": {
+     "signale": 111,
+     "signaltage": 54,
+     "aufVerschwundenen": 10
+    },
+    "altesFenster | 50-250": {
+     "signale": 2069,
+     "signaltage": 176,
+     "aufVerschwundenen": 89
+    },
+    "altesFenster | ab1000": {
+     "signale": 149,
+     "signaltage": 47,
+     "aufVerschwundenen": 0
+    },
+    "bestaetigung | 250-1000": {
+     "signale": 1174,
+     "signaltage": 304,
+     "aufVerschwundenen": 76
+    },
+    "bestaetigung | 5-50": {
+     "signale": 336,
+     "signaltage": 180,
+     "aufVerschwundenen": 84
+    },
+    "bestaetigung | 50-250": {
+     "signale": 4382,
+     "signaltage": 496,
+     "aufVerschwundenen": 800
+    },
+    "bestaetigung | ab1000": {
+     "signale": 162,
+     "signaltage": 74,
+     "aufVerschwundenen": 3
+    }
+   }
+  },
+  "raender": {
+   "sperrtagMassnahme": 16,
+   "splitFenster": 35,
+   "v2ReiheEndetInHaltedauer": 10,
+   "v2OhneAusstiegArchivende": 0,
+   "klinkeUmsatztor": 0
+  },
+  "haeufungV2Bestaetigung": {
+   "signaltage": 528,
+   "signale": 6054,
+   "mittelJeSignaltag": 11.47,
+   "median": 5,
+   "p95": 37,
+   "max": 319
+  },
+  "gegenSchaetzungPhase1": {
+   "signaltageBestaetigungGezaehlt": 528,
+   "schaetzungModell": 403,
+   "schaetzungGeeicht": 493,
+   "sicherVon": 154,
+   "sicherBis": 683,
+   "inDerSpanne403Bis493": false
+  }
+ },
+ "tore": {
+  "nullpunkt": {
+   "signaltage": 528,
+   "sdJeSignaltag": 2.6119,
+   "seNaiv": 0.1137,
+   "seHansenHodrick": 0.0975,
+   "seBloecke": 0.1179,
+   "se": 0.1179,
+   "mde80": 0.3302,
+   "mittelPp": -0.0689,
+   "band95": [
+    -0.2999,
+    0.1622
+   ],
+   "t": -0.58,
+   "kennung": "kapitulation-neu-2026-10-03/v1",
+   "tor": "2 Nullpunkt: Zufallseinstiege an den Signaltagen gegen den Tagestopf",
+   "saat": "kapitulation-neu-2026-10-03/v1/nullpunkt",
+   "erstellt": "Sat Oct 03 2026 22:56:27 GMT+0200 (Mitteleuropäische Sommerzeit)",
+   "signaleImFenster": 6054,
+   "eintraege": 6054,
+   "ohneTopf": 0,
+   "schranke": "|t| < 2",
+   "bestanden": true
+  },
+  "placebo": {
+   "signaltage": 528,
+   "sdJeSignaltag": 2.8186,
+   "seNaiv": 0.1227,
+   "seHansenHodrick": 0.1053,
+   "seBloecke": 0.1323,
+   "se": 0.1323,
+   "mde80": 0.3707,
+   "mittelPp": -0.0267,
+   "band95": [
+    -0.286,
+    0.2326
+   ],
+   "t": -0.2,
+   "kennung": "kapitulation-neu-2026-10-03/v1",
+   "tor": "3 Placebo ohne Kursbezug: Streuwert aus Kuerzel und Datum, gleiche Haeufigkeit je Tag",
+   "saat": "kapitulation-neu-2026-10-03/v1/placebo",
+   "erstellt": "Sat Oct 03 2026 22:56:27 GMT+0200 (Mitteleuropäische Sommerzeit)",
+   "signaleImFenster": 6054,
+   "eintraege": 6054,
+   "ohneTopf": 0,
+   "schranke": "|t| < 2",
+   "bestanden": true
+  },
+  "leckKlinke": {
+   "kennung": "kapitulation-neu-2026-10-03/v1",
+   "tor": "4 Leck-Klinke",
+   "saat": "kapitulation-neu-2026-10-03/v1/leck",
+   "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+   "wahl": "Reihen mit mindestens einem V2-Signal im Bestaetigungsfenster, geordnet nach Streuwert der Saat, die ersten 20",
+   "reihen": 20,
+   "kerzenGeprueft": 322831,
+   "ausloeserGeprueft": 232,
+   "abweichungen": 0,
+   "bestanden": true,
+   "jeReihe": [
+    {
+     "kerzen": 18418,
+     "feuer": 2,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 2,
+     "abweichungRegime": 0,
+     "reihe": "AEE",
+     "feuerInDerZaehlung": 2,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18412,
+     "feuer": 19,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 19,
+     "abweichungRegime": 0,
+     "reihe": "MTN",
+     "feuerInDerZaehlung": 19,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 16218,
+     "feuer": 8,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 8,
+     "abweichungRegime": 0,
+     "reihe": "BLUE",
+     "feuerInDerZaehlung": 8,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18424,
+     "feuer": 21,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 21,
+     "abweichungRegime": 0,
+     "reihe": "TMUS",
+     "feuerInDerZaehlung": 21,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 10172,
+     "feuer": 1,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 1,
+     "abweichungRegime": 0,
+     "reihe": "FROG",
+     "feuerInDerZaehlung": 1,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18412,
+     "feuer": 11,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 11,
+     "abweichungRegime": 0,
+     "reihe": "LDOS",
+     "feuerInDerZaehlung": 11,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18412,
+     "feuer": 2,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 2,
+     "abweichungRegime": 0,
+     "reihe": "MSM",
+     "feuerInDerZaehlung": 2,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 14498,
+     "feuer": 14,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 14,
+     "abweichungRegime": 0,
+     "reihe": "BILI",
+     "feuerInDerZaehlung": 14,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18412,
+     "feuer": 7,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 7,
+     "abweichungRegime": 0,
+     "reihe": "OSK",
+     "feuerInDerZaehlung": 7,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18424,
+     "feuer": 15,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 15,
+     "abweichungRegime": 0,
+     "reihe": "ZBRA",
+     "feuerInDerZaehlung": 15,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18412,
+     "feuer": 19,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 19,
+     "abweichungRegime": 0,
+     "reihe": "MGM",
+     "feuerInDerZaehlung": 19,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 13188,
+     "feuer": 4,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 4,
+     "abweichungRegime": 0,
+     "reihe": "NUVA",
+     "feuerInDerZaehlung": 4,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 1237,
+     "feuer": 2,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 2,
+     "abweichungRegime": 0,
+     "reihe": "N",
+     "feuerInDerZaehlung": 2,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18407,
+     "feuer": 24,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 24,
+     "abweichungRegime": 0,
+     "reihe": "TAP",
+     "feuerInDerZaehlung": 24,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 9721,
+     "feuer": 8,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 8,
+     "abweichungRegime": 0,
+     "reihe": "OWL",
+     "feuerInDerZaehlung": 8,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18412,
+     "feuer": 17,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 17,
+     "abweichungRegime": 0,
+     "reihe": "O",
+     "feuerInDerZaehlung": 17,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18422,
+     "feuer": 30,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 30,
+     "abweichungRegime": 0,
+     "reihe": "REGN",
+     "feuerInDerZaehlung": 30,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18400,
+     "feuer": 3,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 3,
+     "abweichungRegime": 0,
+     "reihe": "RAMP",
+     "feuerInDerZaehlung": 3,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18412,
+     "feuer": 14,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 14,
+     "abweichungRegime": 0,
+     "reihe": "ALV",
+     "feuerInDerZaehlung": 14,
+     "gleichDerZaehlung": true
+    },
+    {
+     "kerzen": 18418,
+     "feuer": 11,
+     "abweichungAusloeser": 0,
+     "regimeGeprueft": 11,
+     "abweichungRegime": 0,
+     "reihe": "AAP",
+     "feuerInDerZaehlung": 11,
+     "gleichDerZaehlung": true
+    }
+   ]
+  },
+  "kosten": {
+   "kennung": "kapitulation-neu-2026-10-03/v1",
+   "tor": "5 Kosten",
+   "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+   "huerdeJeUmlaufPp": [
+    {
+     "klasse": "5-50",
+     "pp": 0.1569
+    },
+    {
+     "klasse": "50-250",
+     "pp": 0.0854
+    },
+    {
+     "klasse": "250-1000",
+     "pp": 0.0647
+    },
+    {
+     "klasse": "ab1000",
+     "pp": 0.0449
+    }
+   ],
+   "ohneKlasse": "Signale mit Median unter 5 Mio $ tragen die Huerde der Klasse 5-50",
+   "signaleMessbar": 6054,
+   "signaltage": 528,
+   "klassenMix": {
+    "250-1000": {
+     "signale": 1174,
+     "anteil": 0.1939
+    },
+    "5-50": {
+     "signale": 336,
+     "anteil": 0.0555
+    },
+    "50-250": {
+     "signale": 4382,
+     "anteil": 0.7238
+    },
+    "ab1000": {
+     "signale": 162,
+     "anteil": 0.0268
+    }
+   },
+   "mittlereHuerdeJeSignalPp": 0.0843
+  }
+ },
+ "stufeA": {
+  "signaltage": 528,
+  "sdJeSignaltag": 6.3283,
+  "seNaiv": 0.2754,
+  "seHansenHodrick": 0.2941,
+  "seBloecke": 0.319,
+  "se": 0.319,
+  "mde80": 0.8935682864271679,
+  "kennung": "kapitulation-neu-2026-10-03/v1",
+  "stufe": "A: N und se, das Mittel bleibt zu",
+  "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+  "groesse": "Tagesmittel des Netto-Ueberschusses gegen den Tagestopf, Pp je Signaltag",
+  "signale": 6054,
+  "ohneTopf": 0,
+  "klasseAmTagLeerGanzerTagestopf": 0,
+  "mde80Mit280": 0.8931,
+  "schwelleMde80": 1.107,
+  "stufeBGesperrt": false,
+  "tor1Muehle": {
+   "seNoetig": 0.138,
+   "se": 0.319,
+   "erreicht": false
+  },
+  "tor2Muehle": "vorab verfehlt: MDE80 liegt weit ueber jeder Kassa-Huerde (0,045 ... 0,157 Pp) - die Messung prueft die Behauptung, nicht die Huerde",
+  "aufVerschwundenen": {
+   "signale": 963,
+   "anteil": 0.1591
+  },
+  "totalverlustBuchungen": 5,
+  "letzterKursBuchungen": 5
+ },
+ "stufeB": {
+  "kennung": "kapitulation-neu-2026-10-03/v1",
+  "stufe": "B: Mittel, Band, t",
+  "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+  "netto": {
+   "signaltage": 528,
+   "sdJeSignaltag": 6.3283,
+   "seNaiv": 0.2754,
+   "seHansenHodrick": 0.2941,
+   "seBloecke": 0.319,
+   "se": 0.319,
+   "mde80": 0.8936,
+   "mittelPp": -0.0238,
+   "band95": [
+    -0.6489,
+    0.6014
+   ],
+   "t": -0.07
+  },
+  "brutto": {
+   "signaltage": 528,
+   "sdJeSignaltag": 6.3303,
+   "seNaiv": 0.2755,
+   "seHansenHodrick": 0.2941,
+   "seBloecke": 0.319,
+   "se": 0.319,
+   "mde80": 0.8936,
+   "mittelPp": 0.0622,
+   "band95": [
+    -0.563,
+    0.6874
+   ],
+   "t": 0.2
+  },
+  "schwelleT": 1.96,
+  "urteil": {
+   "form": "in der behaupteten Größe zurückgewiesen",
+   "satz": "In der behaupteten Größe zurückgewiesen: obere Grenze +0,601 < 1,107 Pp (V2 netto −0,024 Pp je Signaltag, Band [−0,649; +0,601]).",
+   "zusatz": "N = 528 Signaltage, se = 0,319 Pp, MDE₈₀ = 0,894 Pp, 15,9 % der Signale auf Verschwundenen, 5 Totalverlust-Buchungen."
+  }
+ },
+ "urteil": {
+  "kennung": "kapitulation-neu-2026-10-03/v1",
+  "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+  "form": "in der behaupteten Größe zurückgewiesen",
+  "satz": "In der behaupteten Größe zurückgewiesen: obere Grenze +0,601 < 1,107 Pp (V2 netto −0,024 Pp je Signaltag, Band [−0,649; +0,601]).",
+  "zusatz": "N = 528 Signaltage, se = 0,319 Pp, MDE₈₀ = 0,894 Pp, 15,9 % der Signale auf Verschwundenen, 5 Totalverlust-Buchungen.",
+  "tor1Muehle": {
+   "seNoetig": 0.138,
+   "se": 0.319,
+   "erreicht": false
+  },
+  "tor2Muehle": "vorab verfehlt: MDE80 liegt weit ueber jeder Kassa-Huerde (0,045 ... 0,157 Pp) - die Messung prueft die Behauptung, nicht die Huerde"
+ },
+ "abbruch": null,
+ "nachrichtlich": {
+  "kennung": "kapitulation-neu-2026-10-03/v1",
+  "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+  "ohneUrteil": true,
+  "mittelGeoeffnet": true,
+  "zeilen": {
+   "altesFensterAlle": {
+    "netto": {
+     "signaltage": 187,
+     "sdJeSignaltag": 3.5825,
+     "seNaiv": 0.262,
+     "seHansenHodrick": 0.2234,
+     "seBloecke": 0.2844,
+     "se": 0.2844,
+     "mde80": 0.7968,
+     "mittelPp": 0.3954,
+     "band95": [
+      -0.1621,
+      0.9528
+     ],
+     "t": 1.39
+    },
+    "brutto": {
+     "signaltage": 187,
+     "sdJeSignaltag": 3.5832,
+     "seNaiv": 0.262,
+     "seHansenHodrick": 0.2235,
+     "seBloecke": 0.2845,
+     "se": 0.2845,
+     "mde80": 0.797,
+     "mittelPp": 0.478,
+     "band95": [
+      -0.0796,
+      1.0356
+     ],
+     "t": 1.68
+    },
+    "signale": 3050,
+    "ohneKontrolle": 0,
+    "fenster": "2023-09-26 ... 2026-08-24",
+    "aufVerschwundenen": 110
+   },
+   "altesFensterNurLebend": {
+    "netto": {
+     "signaltage": 186,
+     "sdJeSignaltag": 3.5411,
+     "seNaiv": 0.2596,
+     "seHansenHodrick": 0.2273,
+     "seBloecke": 0.2844,
+     "se": 0.2844,
+     "mde80": 0.7969,
+     "mittelPp": 0.3589,
+     "band95": [
+      -0.1986,
+      0.9164
+     ],
+     "t": 1.26
+    },
+    "brutto": {
+     "signaltage": 186,
+     "sdJeSignaltag": 3.5409,
+     "seNaiv": 0.2596,
+     "seHansenHodrick": 0.2274,
+     "seBloecke": 0.2845,
+     "se": 0.2845,
+     "mde80": 0.797,
+     "mittelPp": 0.4407,
+     "band95": [
+      -0.1169,
+      0.9983
+     ],
+     "t": 1.55
+    },
+    "signale": 2940,
+    "ohneKontrolle": 0,
+    "hinweis": "Signale und Topf nur aus lebenden Reihen"
+   },
+   "bestaetigungHaelfte1": {
+    "netto": {
+     "signaltage": 247,
+     "sdJeSignaltag": 3.1864,
+     "seNaiv": 0.2027,
+     "seHansenHodrick": 0.2187,
+     "seBloecke": 0.2313,
+     "se": 0.2313,
+     "mde80": 0.6481,
+     "mittelPp": -0.3985,
+     "band95": [
+      -0.8519,
+      0.0549
+     ],
+     "t": -1.72
+    },
+    "brutto": {
+     "signaltage": 247,
+     "sdJeSignaltag": 3.1864,
+     "seNaiv": 0.2027,
+     "seHansenHodrick": 0.2184,
+     "seBloecke": 0.2311,
+     "se": 0.2311,
+     "mde80": 0.6476,
+     "mittelPp": -0.3103,
+     "band95": [
+      -0.7634,
+      0.1428
+     ],
+     "t": -1.34
+    },
+    "signale": 2308,
+    "ohneKontrolle": 0,
+    "bis": "2019-12-09"
+   },
+   "bestaetigungHaelfte2": {
+    "netto": {
+     "signaltage": 281,
+     "sdJeSignaltag": 8.1378,
+     "seNaiv": 0.4855,
+     "seHansenHodrick": 0.5117,
+     "seBloecke": 0.5548,
+     "se": 0.5548,
+     "mde80": 1.5544,
+     "mittelPp": 0.3056,
+     "band95": [
+      -0.7819,
+      1.3931
+     ],
+     "t": 0.55
+    },
+    "brutto": {
+     "signaltage": 281,
+     "sdJeSignaltag": 8.1407,
+     "seNaiv": 0.4856,
+     "seHansenHodrick": 0.5119,
+     "seBloecke": 0.5549,
+     "se": 0.5549,
+     "mde80": 1.5547,
+     "mittelPp": 0.3896,
+     "band95": [
+      -0.6981,
+      1.4773
+     ],
+     "t": 0.7
+    },
+    "signale": 3746,
+    "ohneKontrolle": 0,
+    "ab": "2019-12-10"
+   },
+   "kontrolleAltesProtokoll": {
+    "netto": {
+     "signaltage": 528,
+     "sdJeSignaltag": 7.1935,
+     "seNaiv": 0.3131,
+     "seHansenHodrick": 0.4207,
+     "seBloecke": 0.3844,
+     "se": 0.4207,
+     "mde80": 1.1788,
+     "mittelPp": -0.1873,
+     "band95": [
+      -1.012,
+      0.6374
+     ],
+     "t": -0.45
+    },
+    "brutto": {
+     "signaltage": 528,
+     "sdJeSignaltag": 7.1945,
+     "seNaiv": 0.3131,
+     "seHansenHodrick": 0.4207,
+     "seBloecke": 0.3844,
+     "se": 0.4207,
+     "mde80": 1.1787,
+     "mittelPp": -0.1013,
+     "band95": [
+      -0.9259,
+      0.7233
+     ],
+     "t": -0.24
+    },
+    "signale": 6053,
+    "ohneKontrolle": 1,
+    "kontrolle": "Erwartung Symbol x Position im Handelstag, je Fenster, ohne [i-287, i+25], mindestens 20 Kerzen"
+   },
+   "einstiegsluecke": {
+    "netto": {
+     "signaltage": 528,
+     "sdJeSignaltag": 0.658,
+     "seNaiv": 0.0286,
+     "seHansenHodrick": 0.0332,
+     "seBloecke": 0.027,
+     "se": 0.0332,
+     "mde80": 0.093,
+     "mittelPp": -0.0416,
+     "band95": [
+      -0.1066,
+      0.0235
+     ],
+     "t": -1.25
+    },
+    "brutto": {
+     "signaltage": 528,
+     "sdJeSignaltag": 0.658,
+     "seNaiv": 0.0286,
+     "seHansenHodrick": 0.0332,
+     "seBloecke": 0.027,
+     "se": 0.0332,
+     "mde80": 0.093,
+     "mittelPp": -0.0416,
+     "band95": [
+      -0.1066,
+      0.0235
+     ],
+     "t": -1.25
+    },
+    "signale": 6054,
+    "ohneKontrolle": 0,
+    "groesse": "Eroeffnung der naechsten Stundenkerze gegen den Schluss der Signalkerze, zentriert gegen dieselbe Groesse im Tagestopf"
+   },
+   "empfindlichkeitStreng": {
+    "netto": {
+     "signaltage": 528,
+     "sdJeSignaltag": 6.6395,
+     "seNaiv": 0.2889,
+     "seHansenHodrick": 0.3067,
+     "seBloecke": 0.4132,
+     "se": 0.4132,
+     "mde80": 1.1577,
+     "mittelPp": -0.0832,
+     "band95": [
+      -0.8931,
+      0.7268
+     ],
+     "t": -0.2
+    },
+    "brutto": {
+     "signaltage": 528,
+     "sdJeSignaltag": 6.6414,
+     "seNaiv": 0.289,
+     "seHansenHodrick": 0.3067,
+     "seBloecke": 0.4133,
+     "se": 0.4133,
+     "mde80": 1.1578,
+     "mittelPp": 0.0028,
+     "band95": [
+      -0.8072,
+      0.8128
+     ],
+     "t": 0.01
+    },
+    "signale": 6054,
+    "ohneKontrolle": 0,
+    "regel": "Totalverlust auch fuer unbekannt und freiwillig",
+    "totalverlustBuchungen": 8,
+    "differenzZurHauptzahlPp": -0.0594,
+    "urteilsformUnterDieserRegel": "nicht entscheidbar"
+   },
+   "empfindlichkeitMilde": {
+    "netto": {
+     "signaltage": 528,
+     "sdJeSignaltag": 6.3034,
+     "seNaiv": 0.2743,
+     "seHansenHodrick": 0.2923,
+     "seBloecke": 0.3182,
+     "se": 0.3182,
+     "mde80": 0.8914,
+     "mittelPp": -0.0118,
+     "band95": [
+      -0.6354,
+      0.6118
+     ],
+     "t": -0.04
+    },
+    "brutto": {
+     "signaltage": 528,
+     "sdJeSignaltag": 6.3053,
+     "seNaiv": 0.2744,
+     "seHansenHodrick": 0.2924,
+     "seBloecke": 0.3182,
+     "se": 0.3182,
+     "mde80": 0.8914,
+     "mittelPp": 0.0742,
+     "band95": [
+      -0.5495,
+      0.6978
+     ],
+     "t": 0.23
+    },
+    "signale": 6054,
+    "ohneKontrolle": 0,
+    "regel": "letzter Kurs fuer alle",
+    "totalverlustBuchungen": 0,
+    "differenzZurHauptzahlPp": 0.012,
+    "urteilsformUnterDieserRegel": "in der behaupteten Größe zurückgewiesen"
+   },
+   "rueckhalt": {
+    "fenster": "ab 2026-08-25",
+    "signaltage": 0,
+    "signale": 0,
+    "hinweis": "kein Urteil vor 100 Signaltagen; nichts gerechnet"
+   }
+  }
+ },
+ "laeufe": [
+  {
+   "zeit": "Sat Oct 03 2026 20:36:23 GMT+0200 (Mitteleuropäische Sommerzeit)",
+   "grund": "Erststart des registrierten Laufs (Auftrag Nr. 68)",
+   "gestartet": "0+1+2+3+Waechter",
+   "strategieSha256": "7339e5312dadd9009f3d3ec6c6fe762311f467ea259a1d2acf47648f9427b84d"
+  }
+ ]
+}

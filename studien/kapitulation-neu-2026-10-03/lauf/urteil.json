@@ -1,0 +1,13 @@
+{
+ "kennung": "kapitulation-neu-2026-10-03/v1",
+ "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+ "form": "in der behaupteten Größe zurückgewiesen",
+ "satz": "In der behaupteten Größe zurückgewiesen: obere Grenze +0,601 < 1,107 Pp (V2 netto −0,024 Pp je Signaltag, Band [−0,649; +0,601]).",
+ "zusatz": "N = 528 Signaltage, se = 0,319 Pp, MDE₈₀ = 0,894 Pp, 15,9 % der Signale auf Verschwundenen, 5 Totalverlust-Buchungen.",
+ "tor1Muehle": {
+  "seNoetig": 0.138,
+  "se": 0.319,
+  "erreicht": false
+ },
+ "tor2Muehle": "vorab verfehlt: MDE80 liegt weit ueber jeder Kassa-Huerde (0,045 ... 0,157 Pp) - die Messung prueft die Behauptung, nicht die Huerde"
+}

@@ -1,0 +1,214 @@
+{
+ "kennung": "kapitulation-neu-2026-10-03/v1",
+ "tor": "4 Leck-Klinke",
+ "saat": "kapitulation-neu-2026-10-03/v1/leck",
+ "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+ "wahl": "Reihen mit mindestens einem V2-Signal im Bestaetigungsfenster, geordnet nach Streuwert der Saat, die ersten 20",
+ "reihen": 20,
+ "kerzenGeprueft": 322831,
+ "ausloeserGeprueft": 232,
+ "abweichungen": 0,
+ "bestanden": true,
+ "jeReihe": [
+  {
+   "kerzen": 18418,
+   "feuer": 2,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 2,
+   "abweichungRegime": 0,
+   "reihe": "AEE",
+   "feuerInDerZaehlung": 2,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18412,
+   "feuer": 19,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 19,
+   "abweichungRegime": 0,
+   "reihe": "MTN",
+   "feuerInDerZaehlung": 19,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 16218,
+   "feuer": 8,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 8,
+   "abweichungRegime": 0,
+   "reihe": "BLUE",
+   "feuerInDerZaehlung": 8,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18424,
+   "feuer": 21,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 21,
+   "abweichungRegime": 0,
+   "reihe": "TMUS",
+   "feuerInDerZaehlung": 21,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 10172,
+   "feuer": 1,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 1,
+   "abweichungRegime": 0,
+   "reihe": "FROG",
+   "feuerInDerZaehlung": 1,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18412,
+   "feuer": 11,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 11,
+   "abweichungRegime": 0,
+   "reihe": "LDOS",
+   "feuerInDerZaehlung": 11,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18412,
+   "feuer": 2,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 2,
+   "abweichungRegime": 0,
+   "reihe": "MSM",
+   "feuerInDerZaehlung": 2,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 14498,
+   "feuer": 14,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 14,
+   "abweichungRegime": 0,
+   "reihe": "BILI",
+   "feuerInDerZaehlung": 14,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18412,
+   "feuer": 7,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 7,
+   "abweichungRegime": 0,
+   "reihe": "OSK",
+   "feuerInDerZaehlung": 7,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18424,
+   "feuer": 15,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 15,
+   "abweichungRegime": 0,
+   "reihe": "ZBRA",
+   "feuerInDerZaehlung": 15,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18412,
+   "feuer": 19,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 19,
+   "abweichungRegime": 0,
+   "reihe": "MGM",
+   "feuerInDerZaehlung": 19,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 13188,
+   "feuer": 4,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 4,
+   "abweichungRegime": 0,
+   "reihe": "NUVA",
+   "feuerInDerZaehlung": 4,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 1237,
+   "feuer": 2,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 2,
+   "abweichungRegime": 0,
+   "reihe": "N",
+   "feuerInDerZaehlung": 2,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18407,
+   "feuer": 24,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 24,
+   "abweichungRegime": 0,
+   "reihe": "TAP",
+   "feuerInDerZaehlung": 24,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 9721,
+   "feuer": 8,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 8,
+   "abweichungRegime": 0,
+   "reihe": "OWL",
+   "feuerInDerZaehlung": 8,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18412,
+   "feuer": 17,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 17,
+   "abweichungRegime": 0,
+   "reihe": "O",
+   "feuerInDerZaehlung": 17,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18422,
+   "feuer": 30,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 30,
+   "abweichungRegime": 0,
+   "reihe": "REGN",
+   "feuerInDerZaehlung": 30,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18400,
+   "feuer": 3,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 3,
+   "abweichungRegime": 0,
+   "reihe": "RAMP",
+   "feuerInDerZaehlung": 3,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18412,
+   "feuer": 14,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 14,
+   "abweichungRegime": 0,
+   "reihe": "ALV",
+   "feuerInDerZaehlung": 14,
+   "gleichDerZaehlung": true
+  },
+  {
+   "kerzen": 18418,
+   "feuer": 11,
+   "abweichungAusloeser": 0,
+   "regimeGeprueft": 11,
+   "abweichungRegime": 0,
+   "reihe": "AAP",
+   "feuerInDerZaehlung": 11,
+   "gleichDerZaehlung": true
+  }
+ ]
+}

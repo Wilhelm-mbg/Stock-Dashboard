@@ -5,6 +5,6 @@ rem Aufruf von Hand:  lauf-stufen.cmd            (wartet, falls Teile fehlen; re
 set "PATH=C:\Program Files\nodejs;%SystemRoot%\System32;%SystemRoot%;%SystemRoot%\System32\Wbem"
 cd /d "C:\Users\Wilhe\Downloads\Stock-Dashboard"
 if not exist "studien\kapitulation-neu-2026-10-03\lauf" mkdir "studien\kapitulation-neu-2026-10-03\lauf"
-echo [%date% %time%] Start Waechter>> "studien\kapitulation-neu-2026-10-03\lauf\stufen.log"
+>> "studien\kapitulation-neu-2026-10-03\lauf\stufen.log" echo [%date% %time%] Start Waechter
 node --max-old-space-size=4096 "studien\kapitulation-neu-2026-10-03\messen.js" --warten >> "studien\kapitulation-neu-2026-10-03\lauf\stufen.log" 2>&1
-echo [%date% %time%] Ende Waechter mit Code %errorlevel%>> "studien\kapitulation-neu-2026-10-03\lauf\stufen.log"
+>> "studien\kapitulation-neu-2026-10-03\lauf\stufen.log" echo [%date% %time%] Ende Waechter mit Code %errorlevel%

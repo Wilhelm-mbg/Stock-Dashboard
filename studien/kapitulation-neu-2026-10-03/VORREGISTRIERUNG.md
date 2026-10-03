@@ -110,3 +110,33 @@ gegen den **Tagestopf**; die Symbol-Stunden-Erwartung des alten Protokolls nur n
    `kapitulation-neu-2026-10-03/topf`), dann ausgewiesen. (b) **Fenster je Stufe (§4/§6):** die Vollzählung läuft über den ganzen Zeitraum und
    weist die drei Fenster getrennt aus; Nullpunkt, Placebo, Leck-Klinke, Kosten, Stufe A und Stufe B gelten dem Bestätigungsfenster; die
    nachrichtlichen Zeilen werden erst nach Stufe B gerechnet.
+
+## 11. Ergebnis (vom Lauf geschrieben, 03.10.2026)
+
+**In der behaupteten Größe zurückgewiesen: obere Grenze +0,601 < 1,107 Pp (V2 netto −0,024 Pp je Signaltag, Band [−0,649; +0,601]).**
+N = 528 Signaltage, se = 0,319 Pp, MDE₈₀ = 0,894 Pp, 15,9 % der Signale auf Verschwundenen, 5 Totalverlust-Buchungen.
+
+Der eine registrierte Lauf (Auftrag Nr. 68; Start 03.10.2026 20:36, Ende 23:06, ein Start ohne Wiederaufnahme — `lauf/laeufe.json`).
+Tagestopf ohne Ziehung (4.707.290 zulässige Kerzen an 832.021 Reihentagen). Tore in der Reihenfolge von §6, jedes vor dem Mittel auf
+der Platte:
+
+1. **Vollzählung, blind:** 7.299 Reihen, 122,7 GB; V2 9.104 Signale an 715 Signaltagen, davon **528 Signaltage (6.054 Signale) im
+   Bestätigungsfenster** (Schätzung 403 … 493, sicher 154 … 683), 187 im alten Fenster, 0 im Rückhaltefenster.
+2. **Nullpunkt:** Mittel −0,069 Pp, t −0,58 — gehalten.
+3. **Placebo ohne Kursbezug:** Mittel −0,027 Pp, t −0,20 — gehalten.
+4. **Leck-Klinke:** 20 Reihen, 322.831 Kerzen, 232 Auslöser, 0 Abweichungen — gehalten.
+5. **Kosten:** mittlere Hürde 0,0843 Pp je Signal (Klassen-Mix 5–50: 5,5 % · 50–250: 72,4 % · 250–1.000: 19,4 % · ab 1.000: 2,7 %).
+6. **Stufe A:** N 528, sd 6,328 Pp je Signaltag, se naiv 0,275 / Hansen-Hodrick 0,294 / Blöcke 0,319 ⇒ 0,319 Pp; MDE₈₀ 0,894 ≤ 1,107 ⇒
+   **Stufe B** geöffnet: netto −0,024 Pp, t −0,07; brutto +0,062 Pp. Tor 1 der Mühle verfehlt (se 0,319 > 0,138 Pp); Tor 2 vorab
+   verfehlt — die Messung prüft die Behauptung, nicht die Hürde.
+
+**§7, Pflicht-Empfindlichkeiten:** Totalverlust auch für `unbekannt`/`freiwillig` (8 statt 5 Buchungen): netto −0,083 Pp, se 0,413,
+MDE₈₀ 1,158 > 1,107 Pp — unter dieser Regel wäre das Mittel zu geblieben („nicht entscheidbar"). Letzter Kurs für alle: −0,012 Pp,
+se 0,318, gleiche Urteilsform. **Das Ergebnis wird deshalb als von der Buchung der Verschwundenen abhängig berichtet** — die Mittel
+liegen beieinander (−0,059 / +0,012 Pp gegen die Hauptzahl), es wechselt die Auflösung.
+
+**Nachrichtlich, ohne Urteil** (erst nach Stufe B gerechnet): altes Fenster, alle Reihen +0,395 Pp (187 Signaltage, t +1,39), nur
+lebend +0,359 Pp (t +1,26); Hälften des Bestätigungsfensters −0,399 Pp (t −1,72) / +0,306 Pp (t +0,55); gegen die Kontrolle des alten
+Protokolls −0,187 Pp (t −0,45); Einstiegslücke −0,042 Pp (t −1,25). Rangfolge der Satzformen, vor dem Lauf im Code festgelegt (Commit
+`388c6e2`): nicht entscheidbar → bestätigt (a > 0) → in der behaupteten Größe zurückgewiesen (b < 1,107) → nicht bestätigt. Alle Zahlen
+stehen in `ERGEBNIS.md`, `protokoll.json` und `lauf/*.json`.

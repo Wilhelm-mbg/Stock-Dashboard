@@ -1,0 +1,41 @@
+{
+ "kennung": "kapitulation-neu-2026-10-03/v1",
+ "stufe": "B: Mittel, Band, t",
+ "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+ "netto": {
+  "signaltage": 528,
+  "sdJeSignaltag": 6.3283,
+  "seNaiv": 0.2754,
+  "seHansenHodrick": 0.2941,
+  "seBloecke": 0.319,
+  "se": 0.319,
+  "mde80": 0.8936,
+  "mittelPp": -0.0238,
+  "band95": [
+   -0.6489,
+   0.6014
+  ],
+  "t": -0.07
+ },
+ "brutto": {
+  "signaltage": 528,
+  "sdJeSignaltag": 6.3303,
+  "seNaiv": 0.2755,
+  "seHansenHodrick": 0.2941,
+  "seBloecke": 0.319,
+  "se": 0.319,
+  "mde80": 0.8936,
+  "mittelPp": 0.0622,
+  "band95": [
+   -0.563,
+   0.6874
+  ],
+  "t": 0.2
+ },
+ "schwelleT": 1.96,
+ "urteil": {
+  "form": "in der behaupteten Größe zurückgewiesen",
+  "satz": "In der behaupteten Größe zurückgewiesen: obere Grenze +0,601 < 1,107 Pp (V2 netto −0,024 Pp je Signaltag, Band [−0,649; +0,601]).",
+  "zusatz": "N = 528 Signaltage, se = 0,319 Pp, MDE₈₀ = 0,894 Pp, 15,9 % der Signale auf Verschwundenen, 5 Totalverlust-Buchungen."
+ }
+}

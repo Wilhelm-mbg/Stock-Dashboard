@@ -1,0 +1,301 @@
+{
+ "kennung": "kapitulation-neu-2026-10-03/v1",
+ "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+ "ohneUrteil": true,
+ "mittelGeoeffnet": true,
+ "zeilen": {
+  "altesFensterAlle": {
+   "netto": {
+    "signaltage": 187,
+    "sdJeSignaltag": 3.5825,
+    "seNaiv": 0.262,
+    "seHansenHodrick": 0.2234,
+    "seBloecke": 0.2844,
+    "se": 0.2844,
+    "mde80": 0.7968,
+    "mittelPp": 0.3954,
+    "band95": [
+     -0.1621,
+     0.9528
+    ],
+    "t": 1.39
+   },
+   "brutto": {
+    "signaltage": 187,
+    "sdJeSignaltag": 3.5832,
+    "seNaiv": 0.262,
+    "seHansenHodrick": 0.2235,
+    "seBloecke": 0.2845,
+    "se": 0.2845,
+    "mde80": 0.797,
+    "mittelPp": 0.478,
+    "band95": [
+     -0.0796,
+     1.0356
+    ],
+    "t": 1.68
+   },
+   "signale": 3050,
+   "ohneKontrolle": 0,
+   "fenster": "2023-09-26 ... 2026-08-24",
+   "aufVerschwundenen": 110
+  },
+  "altesFensterNurLebend": {
+   "netto": {
+    "signaltage": 186,
+    "sdJeSignaltag": 3.5411,
+    "seNaiv": 0.2596,
+    "seHansenHodrick": 0.2273,
+    "seBloecke": 0.2844,
+    "se": 0.2844,
+    "mde80": 0.7969,
+    "mittelPp": 0.3589,
+    "band95": [
+     -0.1986,
+     0.9164
+    ],
+    "t": 1.26
+   },
+   "brutto": {
+    "signaltage": 186,
+    "sdJeSignaltag": 3.5409,
+    "seNaiv": 0.2596,
+    "seHansenHodrick": 0.2274,
+    "seBloecke": 0.2845,
+    "se": 0.2845,
+    "mde80": 0.797,
+    "mittelPp": 0.4407,
+    "band95": [
+     -0.1169,
+     0.9983
+    ],
+    "t": 1.55
+   },
+   "signale": 2940,
+   "ohneKontrolle": 0,
+   "hinweis": "Signale und Topf nur aus lebenden Reihen"
+  },
+  "bestaetigungHaelfte1": {
+   "netto": {
+    "signaltage": 247,
+    "sdJeSignaltag": 3.1864,
+    "seNaiv": 0.2027,
+    "seHansenHodrick": 0.2187,
+    "seBloecke": 0.2313,
+    "se": 0.2313,
+    "mde80": 0.6481,
+    "mittelPp": -0.3985,
+    "band95": [
+     -0.8519,
+     0.0549
+    ],
+    "t": -1.72
+   },
+   "brutto": {
+    "signaltage": 247,
+    "sdJeSignaltag": 3.1864,
+    "seNaiv": 0.2027,
+    "seHansenHodrick": 0.2184,
+    "seBloecke": 0.2311,
+    "se": 0.2311,
+    "mde80": 0.6476,
+    "mittelPp": -0.3103,
+    "band95": [
+     -0.7634,
+     0.1428
+    ],
+    "t": -1.34
+   },
+   "signale": 2308,
+   "ohneKontrolle": 0,
+   "bis": "2019-12-09"
+  },
+  "bestaetigungHaelfte2": {
+   "netto": {
+    "signaltage": 281,
+    "sdJeSignaltag": 8.1378,
+    "seNaiv": 0.4855,
+    "seHansenHodrick": 0.5117,
+    "seBloecke": 0.5548,
+    "se": 0.5548,
+    "mde80": 1.5544,
+    "mittelPp": 0.3056,
+    "band95": [
+     -0.7819,
+     1.3931
+    ],
+    "t": 0.55
+   },
+   "brutto": {
+    "signaltage": 281,
+    "sdJeSignaltag": 8.1407,
+    "seNaiv": 0.4856,
+    "seHansenHodrick": 0.5119,
+    "seBloecke": 0.5549,
+    "se": 0.5549,
+    "mde80": 1.5547,
+    "mittelPp": 0.3896,
+    "band95": [
+     -0.6981,
+     1.4773
+    ],
+    "t": 0.7
+   },
+   "signale": 3746,
+   "ohneKontrolle": 0,
+   "ab": "2019-12-10"
+  },
+  "kontrolleAltesProtokoll": {
+   "netto": {
+    "signaltage": 528,
+    "sdJeSignaltag": 7.1935,
+    "seNaiv": 0.3131,
+    "seHansenHodrick": 0.4207,
+    "seBloecke": 0.3844,
+    "se": 0.4207,
+    "mde80": 1.1788,
+    "mittelPp": -0.1873,
+    "band95": [
+     -1.012,
+     0.6374
+    ],
+    "t": -0.45
+   },
+   "brutto": {
+    "signaltage": 528,
+    "sdJeSignaltag": 7.1945,
+    "seNaiv": 0.3131,
+    "seHansenHodrick": 0.4207,
+    "seBloecke": 0.3844,
+    "se": 0.4207,
+    "mde80": 1.1787,
+    "mittelPp": -0.1013,
+    "band95": [
+     -0.9259,
+     0.7233
+    ],
+    "t": -0.24
+   },
+   "signale": 6053,
+   "ohneKontrolle": 1,
+   "kontrolle": "Erwartung Symbol x Position im Handelstag, je Fenster, ohne [i-287, i+25], mindestens 20 Kerzen"
+  },
+  "einstiegsluecke": {
+   "netto": {
+    "signaltage": 528,
+    "sdJeSignaltag": 0.658,
+    "seNaiv": 0.0286,
+    "seHansenHodrick": 0.0332,
+    "seBloecke": 0.027,
+    "se": 0.0332,
+    "mde80": 0.093,
+    "mittelPp": -0.0416,
+    "band95": [
+     -0.1066,
+     0.0235
+    ],
+    "t": -1.25
+   },
+   "brutto": {
+    "signaltage": 528,
+    "sdJeSignaltag": 0.658,
+    "seNaiv": 0.0286,
+    "seHansenHodrick": 0.0332,
+    "seBloecke": 0.027,
+    "se": 0.0332,
+    "mde80": 0.093,
+    "mittelPp": -0.0416,
+    "band95": [
+     -0.1066,
+     0.0235
+    ],
+    "t": -1.25
+   },
+   "signale": 6054,
+   "ohneKontrolle": 0,
+   "groesse": "Eroeffnung der naechsten Stundenkerze gegen den Schluss der Signalkerze, zentriert gegen dieselbe Groesse im Tagestopf"
+  },
+  "empfindlichkeitStreng": {
+   "netto": {
+    "signaltage": 528,
+    "sdJeSignaltag": 6.6395,
+    "seNaiv": 0.2889,
+    "seHansenHodrick": 0.3067,
+    "seBloecke": 0.4132,
+    "se": 0.4132,
+    "mde80": 1.1577,
+    "mittelPp": -0.0832,
+    "band95": [
+     -0.8931,
+     0.7268
+    ],
+    "t": -0.2
+   },
+   "brutto": {
+    "signaltage": 528,
+    "sdJeSignaltag": 6.6414,
+    "seNaiv": 0.289,
+    "seHansenHodrick": 0.3067,
+    "seBloecke": 0.4133,
+    "se": 0.4133,
+    "mde80": 1.1578,
+    "mittelPp": 0.0028,
+    "band95": [
+     -0.8072,
+     0.8128
+    ],
+    "t": 0.01
+   },
+   "signale": 6054,
+   "ohneKontrolle": 0,
+   "regel": "Totalverlust auch fuer unbekannt und freiwillig",
+   "totalverlustBuchungen": 8,
+   "differenzZurHauptzahlPp": -0.0594,
+   "urteilsformUnterDieserRegel": "nicht entscheidbar"
+  },
+  "empfindlichkeitMilde": {
+   "netto": {
+    "signaltage": 528,
+    "sdJeSignaltag": 6.3034,
+    "seNaiv": 0.2743,
+    "seHansenHodrick": 0.2923,
+    "seBloecke": 0.3182,
+    "se": 0.3182,
+    "mde80": 0.8914,
+    "mittelPp": -0.0118,
+    "band95": [
+     -0.6354,
+     0.6118
+    ],
+    "t": -0.04
+   },
+   "brutto": {
+    "signaltage": 528,
+    "sdJeSignaltag": 6.3053,
+    "seNaiv": 0.2744,
+    "seHansenHodrick": 0.2924,
+    "seBloecke": 0.3182,
+    "se": 0.3182,
+    "mde80": 0.8914,
+    "mittelPp": 0.0742,
+    "band95": [
+     -0.5495,
+     0.6978
+    ],
+    "t": 0.23
+   },
+   "signale": 6054,
+   "ohneKontrolle": 0,
+   "regel": "letzter Kurs fuer alle",
+   "totalverlustBuchungen": 0,
+   "differenzZurHauptzahlPp": 0.012,
+   "urteilsformUnterDieserRegel": "in der behaupteten Größe zurückgewiesen"
+  },
+  "rueckhalt": {
+   "fenster": "ab 2026-08-25",
+   "signaltage": 0,
+   "signale": 0,
+   "hinweis": "kein Urteil vor 100 Signaltagen; nichts gerechnet"
+  }
+ }
+}

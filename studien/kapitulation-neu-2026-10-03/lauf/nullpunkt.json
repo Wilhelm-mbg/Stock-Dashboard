@@ -1,0 +1,24 @@
+{
+ "signaltage": 528,
+ "sdJeSignaltag": 2.6119,
+ "seNaiv": 0.1137,
+ "seHansenHodrick": 0.0975,
+ "seBloecke": 0.1179,
+ "se": 0.1179,
+ "mde80": 0.3302,
+ "mittelPp": -0.0689,
+ "band95": [
+  -0.2999,
+  0.1622
+ ],
+ "t": -0.58,
+ "kennung": "kapitulation-neu-2026-10-03/v1",
+ "tor": "2 Nullpunkt: Zufallseinstiege an den Signaltagen gegen den Tagestopf",
+ "saat": "kapitulation-neu-2026-10-03/v1/nullpunkt",
+ "erstellt": "Sat Oct 03 2026 22:56:27 GMT+0200 (Mitteleuropäische Sommerzeit)",
+ "signaleImFenster": 6054,
+ "eintraege": 6054,
+ "ohneTopf": 0,
+ "schranke": "|t| < 2",
+ "bestanden": true
+}

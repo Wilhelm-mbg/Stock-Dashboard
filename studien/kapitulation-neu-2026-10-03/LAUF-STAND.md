@@ -17,7 +17,11 @@ Fünf abgekoppelte Prozesse (über `Win32_Process.Create`, hängen nicht an der 
 - Fortschritt: `lauf/teile/teil-k-von-4.fortschritt.json` (Reihen erledigt / gesamt, GB, Minuten); letzte Zeile von `lauf/teile/teil-k.log`.
 - Fertig ist der Lauf, wenn `lauf/stufen.fertig` liegt. `lauf/abbruch.json` = ein Tor 2–4 ist gerissen (Befund an den PM, **kein**
   Neustart ohne Rückfrage). `lauf/stufen.fehler.json` = technischer Abbruch der Stufen (Ausnahme im Log `lauf/stufen.log`).
-- Ein Teil ist tot, wenn die letzte Zeile seines Logs „Ende Teil k mit Code …" lautet und `teil-k-von-4.fertig` fehlt.
+- Ein Teil ist tot, wenn `teil-k-von-4.fertig` fehlt **und** kein Prozess `messen.js --teil k/4` mehr läuft (seine
+  `.fortschritt.json` wird dann nicht mehr jünger; im Log steht die Ausnahme). Prozesse ansehen:
+  `powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object CommandLine -like '*kapitulation-neu*' | Select-Object ProcessId, CommandLine"`.
+  (Die Start-/Ende-Zeilen der beiden `.cmd` sind im ersten Start verstümmelt — eine Ziffer direkt vor `>>` liest cmd als Kanalnummer;
+  betroffen ist nur diese Logzeile, nicht der Lauf. Nach dem Lauf berichtigt.)
 
 ## Von Hand weitermachen (aus der Repo-Wurzel `C:\Users\Wilhe\Downloads\Stock-Dashboard`)
 
@@ -45,4 +49,13 @@ schreiben. Die Strategiedatei ist vor dem Lauf geprüft (zeichengleich mit der Q
 ## Stand
 
 - 03.10.2026 20:36 — Code fertig (`messen.js`, `test.js` 52 grün, eslint sauber), Rauchprobe an 20 Reihen im Kratzordner (Wiederaufnahme
-  nach zerrissener Zeile ergibt bytegleiche Journale; Siegel nicht geöffnet). Start des Laufs folgt; Uhrzeit in `lauf/laeufe.json`.
+  nach zerrissener Zeile ergibt bytegleiche Journale; Siegel nicht geöffnet). Start des Laufs 20:36:23 (`lauf/laeufe.json`).
+- 03.10.2026 22:55 — alle vier Teile fertig (je 139 Minuten, zusammen 122,7 GB, **ein** Start, keine Wiederaufnahme).
+- 03.10.2026 23:06 — **Lauf zu Ende** (`lauf/stufen.fertig`): alle Tore gehalten, Stufe A geschrieben, Stufe B geöffnet, Urteil in
+  `lauf/urteil.json`, Bericht in `ERGEBNIS.md` und `protokoll.json`. Es läuft kein Prozess mehr. Danach: die Hauptzahl unabhängig von
+  `messen.js` aus den Journalen nachgerechnet (gleich: 528 Signaltage, netto −0,0238 Pp, sd 6,3283); §11 an die Vorregistrierung
+  angehängt; die Logzeilen der beiden `.cmd` berichtigt (Umleitung vor dem `echo`); im Bericht ein erklärender Satz zur
+  Totalverlust-Empfindlichkeit ergänzt und `--bericht` neu geschrieben (liest nur `lauf/*.json`, rechnet nichts neu).
+- Der Sitzungs-Weckruf lief zwei Stunden an seine Zeitgrenze und wurde durch einen begrenzten ersetzt; ein „Wächter steht" um 22:56 war
+  ein Fehlalarm der Weckruf-Bedingung (das Wächter-Log schweigt, solange er wartet). Der Lauf selbst war davon nie berührt.
+- **Offen:** nichts am Lauf. Die Journale (`lauf/teile/`, rund 45 MB, samt Siegel) liegen auf der Platte und sind nicht eingecheckt.

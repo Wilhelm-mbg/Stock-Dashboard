@@ -1,0 +1,31 @@
+{
+ "signaltage": 528,
+ "sdJeSignaltag": 6.3283,
+ "seNaiv": 0.2754,
+ "seHansenHodrick": 0.2941,
+ "seBloecke": 0.319,
+ "se": 0.319,
+ "mde80": 0.8935682864271679,
+ "kennung": "kapitulation-neu-2026-10-03/v1",
+ "stufe": "A: N und se, das Mittel bleibt zu",
+ "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+ "groesse": "Tagesmittel des Netto-Ueberschusses gegen den Tagestopf, Pp je Signaltag",
+ "signale": 6054,
+ "ohneTopf": 0,
+ "klasseAmTagLeerGanzerTagestopf": 0,
+ "mde80Mit280": 0.8931,
+ "schwelleMde80": 1.107,
+ "stufeBGesperrt": false,
+ "tor1Muehle": {
+  "seNoetig": 0.138,
+  "se": 0.319,
+  "erreicht": false
+ },
+ "tor2Muehle": "vorab verfehlt: MDE80 liegt weit ueber jeder Kassa-Huerde (0,045 ... 0,157 Pp) - die Messung prueft die Behauptung, nicht die Huerde",
+ "aufVerschwundenen": {
+  "signale": 963,
+  "anteil": 0.1591
+ },
+ "totalverlustBuchungen": 5,
+ "letzterKursBuchungen": 5
+}

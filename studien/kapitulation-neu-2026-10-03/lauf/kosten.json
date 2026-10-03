@@ -1,0 +1,45 @@
+{
+ "kennung": "kapitulation-neu-2026-10-03/v1",
+ "tor": "5 Kosten",
+ "erstellt": "Sat Oct 03 2026 23:06:11 GMT+0200 (Mitteleuropäische Sommerzeit)",
+ "huerdeJeUmlaufPp": [
+  {
+   "klasse": "5-50",
+   "pp": 0.1569
+  },
+  {
+   "klasse": "50-250",
+   "pp": 0.0854
+  },
+  {
+   "klasse": "250-1000",
+   "pp": 0.0647
+  },
+  {
+   "klasse": "ab1000",
+   "pp": 0.0449
+  }
+ ],
+ "ohneKlasse": "Signale mit Median unter 5 Mio $ tragen die Huerde der Klasse 5-50",
+ "signaleMessbar": 6054,
+ "signaltage": 528,
+ "klassenMix": {
+  "250-1000": {
+   "signale": 1174,
+   "anteil": 0.1939
+  },
+  "5-50": {
+   "signale": 336,
+   "anteil": 0.0555
+  },
+  "50-250": {
+   "signale": 4382,
+   "anteil": 0.7238
+  },
+  "ab1000": {
+   "signale": 162,
+   "anteil": 0.0268
+  }
+ },
+ "mittlereHuerdeJeSignalPp": 0.0843
+}
