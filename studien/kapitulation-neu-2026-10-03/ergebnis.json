@@ -1,0 +1,1512 @@
+{
+ "kennung": "kapitulation-neu-2026-10-03/ergebnis/v1",
+ "erstellt": "2026-10-03T14:38:47.993Z",
+ "blind": "keine Rendite echter Signale gerechnet; Renditen nur aus Zufallseinstiegen (Topf)",
+ "stichprobe": {
+  "saat": "kapitulation-2026-10-03",
+  "reihen": 400,
+  "lebend": 126,
+  "verschwunden": 274,
+  "archiv": {
+   "reihenAktien": 7299,
+   "lebend": 2306
+  },
+  "gewicht": {
+   "lebend": 18.302,
+   "verschwunden": 18.223
+  },
+  "anteil": 0.0548,
+  "teile": 8,
+  "gelesenGB": 6.42,
+  "laufzeitSekunden": 400,
+  "vollzaehlungGeschaetztMinuten": 122
+ },
+ "kalender": {
+  "handelstage": 2680,
+  "von": "2016-01-04",
+  "bis": "2026-08-31",
+  "regimeOffeneTage": 941,
+  "regimeOffenUnberuehrt": 683,
+  "regimeOffenAltesFenster": 226,
+  "altesFensterAb": "2023-09-26",
+  "vorlaufTage": 37
+ },
+ "zaehler": {
+  "v1": 890,
+  "v2": 456,
+  "v1Ver": 117,
+  "v2Ver": 52,
+  "v1Hoch": 16279.174429382216,
+  "v2Hoch": 8341.417912177089,
+  "v1VerHoch": 2132.0474452554754,
+  "v2VerHoch": 947.5766423357663,
+  "anteilVerV1": 0.13096778675749993,
+  "anteilVerV2": 0.11359898908223522,
+  "tageV1": {
+   "tage": 2643,
+   "signaltageStichprobe": 477,
+   "mittel": 0.3367385546727204,
+   "nullAnteil": 0.8195232690124858,
+   "a": 0.20448359888073356,
+   "s": 1.6467753722836491,
+   "pNachtrag": 0.3955812642168306,
+   "schaetzung": 1333.829018293655
+  },
+  "tageV2": {
+   "tage": 909,
+   "signaltageStichprobe": 224,
+   "mittel": 0.5016501650165016,
+   "nullAnteil": 0.7535753575357536,
+   "a": 0.2684963104752006,
+   "s": 1.8683689326257464,
+   "pNachtrag": 0.48951015969965905,
+   "schaetzung": 559.3144593942665
+  },
+  "tageV2Unberuehrt": {
+   "tage": 683,
+   "signaltageStichprobe": 154,
+   "mittel": 0.4377745241581259,
+   "nullAnteil": 0.7745241581259151,
+   "a": 0.25677242505116543,
+   "s": 1.7049125273903274,
+   "pNachtrag": 0.47021459765672335,
+   "schaetzung": 402.74352216040666
+  },
+  "tageV2AltesFenster": {
+   "tage": 226,
+   "signaltageStichprobe": 70,
+   "mittel": 0.6946902654867256,
+   "nullAnteil": 0.6902654867256637,
+   "a": 0.32298222506765606,
+   "s": 2.150862219557769,
+   "pNachtrag": 0.5607816780381811,
+   "schaetzung": 157.48194177395624
+  }
+ },
+ "band95": {
+  "v1Hoch": [
+   12745.31,
+   20157.216
+  ],
+  "v2Hoch": [
+   6347.887,
+   10463.455
+  ],
+  "anteilVerV1": [
+   0.06,
+   0.221
+  ],
+  "anteilVerV2": [
+   0.05,
+   0.197
+  ]
+ },
+ "signaltageV2": {
+  "unberuehrt": {
+   "untergrenzeStichprobe": 154,
+   "modell": 403,
+   "kalibriertAmAltenProtokoll": 493,
+   "obergrenzeRegimeTage": 683
+  },
+  "gesamt": {
+   "untergrenzeStichprobe": 224,
+   "modell": 559,
+   "kalibriertAmAltenProtokoll": 656,
+   "obergrenzeRegimeTage": 909
+  },
+  "altesFenster": {
+   "untergrenzeStichprobe": 70,
+   "modell": 157,
+   "altesProtokoll": 163,
+   "obergrenzeRegimeTage": 226
+  },
+  "quoteAltesProtokoll": 0.721
+ },
+ "modellprobe": {
+  "signaltageStichprobeIst": 224,
+  "vorhersageAusHaelfteMittel": 194.6,
+  "vorhersageP05": 164.6,
+  "vorhersageP95": 226.1,
+  "anhaeufungskurveV2": {
+   "50": 43,
+   "100": 73.1,
+   "200": 136.3,
+   "300": 181.1,
+   "400": 224
+  },
+  "istZuVorhersage": 1.151
+ },
+ "raender": {
+  "sperrtagMassnahme": 0,
+  "splitFenster": 0,
+  "ohneAusstiegVerschwunden": 1,
+  "ohneAusstiegArchivende": 0,
+  "v2OhneAusstiegVerschwunden": 1,
+  "klinke": 0,
+  "dateienAusgelassen": 36
+ },
+ "v1": {
+  "jeJahr": {
+   "2016": {
+    "signale": 59,
+    "hoch": 1078,
+    "aufVerschwundenen": 17,
+    "signaltageStichprobe": 32,
+    "handelstage": 252,
+    "regimeOffeneTage": 108
+   },
+   "2017": {
+    "signale": 49,
+    "hoch": 896,
+    "aufVerschwundenen": 16,
+    "signaltageStichprobe": 34,
+    "handelstage": 251,
+    "regimeOffeneTage": 49
+   },
+   "2018": {
+    "signale": 95,
+    "hoch": 1736,
+    "aufVerschwundenen": 30,
+    "signaltageStichprobe": 52,
+    "handelstage": 251,
+    "regimeOffeneTage": 120
+   },
+   "2019": {
+    "signale": 56,
+    "hoch": 1024,
+    "aufVerschwundenen": 9,
+    "signaltageStichprobe": 34,
+    "handelstage": 252,
+    "regimeOffeneTage": 67
+   },
+   "2020": {
+    "signale": 80,
+    "hoch": 1463,
+    "aufVerschwundenen": 10,
+    "signaltageStichprobe": 26,
+    "handelstage": 253,
+    "regimeOffeneTage": 75
+   },
+   "2021": {
+    "signale": 73,
+    "hoch": 1335,
+    "aufVerschwundenen": 8,
+    "signaltageStichprobe": 50,
+    "handelstage": 252,
+    "regimeOffeneTage": 61
+   },
+   "2022": {
+    "signale": 76,
+    "hoch": 1390,
+    "aufVerschwundenen": 9,
+    "signaltageStichprobe": 47,
+    "handelstage": 251,
+    "regimeOffeneTage": 168
+   },
+   "2023": {
+    "signale": 96,
+    "hoch": 1757,
+    "aufVerschwundenen": 5,
+    "signaltageStichprobe": 49,
+    "handelstage": 250,
+    "regimeOffeneTage": 94
+   },
+   "2024": {
+    "signale": 89,
+    "hoch": 1628,
+    "aufVerschwundenen": 6,
+    "signaltageStichprobe": 46,
+    "handelstage": 252,
+    "regimeOffeneTage": 54
+   },
+   "2025": {
+    "signale": 144,
+    "hoch": 2635,
+    "aufVerschwundenen": 7,
+    "signaltageStichprobe": 61,
+    "handelstage": 250,
+    "regimeOffeneTage": 80
+   },
+   "2026": {
+    "signale": 73,
+    "hoch": 1336,
+    "aufVerschwundenen": 0,
+    "signaltageStichprobe": 46,
+    "handelstage": 166,
+    "regimeOffeneTage": 65
+   }
+  },
+  "jeKlasse": {
+   "50-250": {
+    "signale": 613,
+    "hoch": 11212,
+    "aufVerschwundenen": 84,
+    "signaltageStichprobe": 356
+   },
+   "250-1000": {
+    "signale": 190,
+    "hoch": 3476,
+    "aufVerschwundenen": 17,
+    "signaltageStichprobe": 129
+   },
+   "5-50": {
+    "signale": 39,
+    "hoch": 712,
+    "aufVerschwundenen": 16,
+    "signaltageStichprobe": 28
+   },
+   "ab1000": {
+    "signale": 48,
+    "hoch": 878,
+    "aufVerschwundenen": 0,
+    "signaltageStichprobe": 35
+   }
+  }
+ },
+ "v2": {
+  "jeJahr": {
+   "2016": {
+    "signale": 27,
+    "hoch": 494,
+    "aufVerschwundenen": 7,
+    "signaltageStichprobe": 16,
+    "handelstage": 252,
+    "regimeOffeneTage": 108
+   },
+   "2017": {
+    "signale": 8,
+    "hoch": 146,
+    "aufVerschwundenen": 0,
+    "signaltageStichprobe": 8,
+    "handelstage": 251,
+    "regimeOffeneTage": 49
+   },
+   "2018": {
+    "signale": 58,
+    "hoch": 1060,
+    "aufVerschwundenen": 16,
+    "signaltageStichprobe": 30,
+    "handelstage": 251,
+    "regimeOffeneTage": 120
+   },
+   "2019": {
+    "signale": 28,
+    "hoch": 512,
+    "aufVerschwundenen": 5,
+    "signaltageStichprobe": 13,
+    "handelstage": 252,
+    "regimeOffeneTage": 67
+   },
+   "2020": {
+    "signale": 64,
+    "hoch": 1171,
+    "aufVerschwundenen": 7,
+    "signaltageStichprobe": 15,
+    "handelstage": 253,
+    "regimeOffeneTage": 75
+   },
+   "2021": {
+    "signale": 24,
+    "hoch": 439,
+    "aufVerschwundenen": 2,
+    "signaltageStichprobe": 15,
+    "handelstage": 252,
+    "regimeOffeneTage": 61
+   },
+   "2022": {
+    "signale": 61,
+    "hoch": 1116,
+    "aufVerschwundenen": 8,
+    "signaltageStichprobe": 39,
+    "handelstage": 251,
+    "regimeOffeneTage": 168
+   },
+   "2023": {
+    "signale": 44,
+    "hoch": 805,
+    "aufVerschwundenen": 0,
+    "signaltageStichprobe": 26,
+    "handelstage": 250,
+    "regimeOffeneTage": 94
+   },
+   "2024": {
+    "signale": 22,
+    "hoch": 402,
+    "aufVerschwundenen": 3,
+    "signaltageStichprobe": 11,
+    "handelstage": 252,
+    "regimeOffeneTage": 54
+   },
+   "2025": {
+    "signale": 86,
+    "hoch": 1574,
+    "aufVerschwundenen": 4,
+    "signaltageStichprobe": 27,
+    "handelstage": 250,
+    "regimeOffeneTage": 80
+   },
+   "2026": {
+    "signale": 34,
+    "hoch": 622,
+    "aufVerschwundenen": 0,
+    "signaltageStichprobe": 24,
+    "handelstage": 166,
+    "regimeOffeneTage": 65
+   }
+  },
+  "jeKlasse": {
+   "50-250": {
+    "signale": 315,
+    "hoch": 5762,
+    "aufVerschwundenen": 39,
+    "signaltageStichprobe": 171
+   },
+   "250-1000": {
+    "signale": 104,
+    "hoch": 1903,
+    "aufVerschwundenen": 9,
+    "signaltageStichprobe": 70
+   },
+   "5-50": {
+    "signale": 15,
+    "hoch": 274,
+    "aufVerschwundenen": 4,
+    "signaltageStichprobe": 14
+   },
+   "ab1000": {
+    "signale": 22,
+    "hoch": 403,
+    "aufVerschwundenen": 0,
+    "signaltageStichprobe": 17
+   }
+  }
+ },
+ "haeufungV1": {
+  "signaltage": 477,
+  "signale": 890,
+  "median": 1,
+  "p95": 4,
+  "max": 25,
+  "mittel": 1.87,
+  "anteilSignaleInTop5ProzentTagen": 0.192,
+  "hochgerechnetJeTagFaktor": 18.25
+ },
+ "haeufungV2": {
+  "signaltage": 224,
+  "signale": 456,
+  "median": 1,
+  "p95": 5,
+  "max": 25,
+  "mittel": 2.04,
+  "anteilSignaleInTop5ProzentTagen": 0.239,
+  "hochgerechnetJeTagFaktor": 18.25
+ },
+ "placebo": {
+  "laeufe": 200,
+  "roh": {
+   "tage": 224,
+   "sd": 5.0516,
+   "seNaiv": 0.3375,
+   "seHH": 0.3923,
+   "seBlock": 0.3461,
+   "mittel": 0.155,
+   "hhOhneWert": 0,
+   "seGilt": 0.3923,
+   "aufblaehung": 1.351,
+   "mde80Stichprobentage": 1.099
+  },
+  "bereinigt": {
+   "tage": 222,
+   "sd": 4.2529,
+   "seNaiv": 0.2854,
+   "seHH": 0.2859,
+   "seBlock": 0.3021,
+   "mittel": -0.0152,
+   "hhOhneWert": 0,
+   "seGilt": 0.3021,
+   "aufblaehung": 1.12,
+   "mde80Stichprobentage": 0.846
+  },
+  "signaltageOhneTopf": 0,
+  "klassenErsatzJeLauf": 3,
+  "zerlegung": {
+   "gemeinsamSd": 3.15,
+   "gemeinsamSeNaiv": 0.2105,
+   "gemeinsamSeHH": 0.2917,
+   "gemeinsamSeBlock": 0.2072,
+   "eigenSdJeEinstieg": 5.447,
+   "topfEintraege": 9831
+  }
+ },
+ "aufloesung": {
+  "z80": 2.8016,
+  "anteilVerschwundenV2": 0.1136,
+  "effektBehauptet": 1.107,
+  "verzerrungJePaartag": -3.7815,
+  "effektNachVerzerrung": 0.677,
+  "huerden": [
+   {
+    "klasse": "5-50",
+    "pp": 0.1569
+   },
+   {
+    "klasse": "50-250",
+    "pp": 0.0854
+   },
+   {
+    "klasse": "250-1000",
+    "pp": 0.0647
+   },
+   {
+    "klasse": "ab1000",
+    "pp": 0.0449
+   }
+  ],
+  "altesProtokoll": {
+   "v2SignaltageGesamt": 163,
+   "v2SignaltageBestaetigung": 98,
+   "sdBestaetigung": 5.117,
+   "sdGesamt": 6.13,
+   "effekt": 1.107,
+   "verzerrungJePaartag": -3.7815
+  },
+  "zeilen": [
+   {
+    "anker": "Placebo roh (Stichprobenmassstab)",
+    "sdJeSignaltag": 5.052,
+    "aufblaehung": 1.351,
+    "mde80": {
+     "unberuehrtUntergrenze": 1.326,
+     "unberuehrtModell": 0.819,
+     "unberuehrtKalibriert": 0.741,
+     "unberuehrtObergrenze": 0.629,
+     "gesamtModell": 0.696,
+     "gesamtObergrenze": 0.546
+    },
+    "noetigeSignaltage": {
+     "behauptet_1_107": 221,
+     "nachVerzerrung": 590,
+     "huerde_0_157": 10992,
+     "huerde_0_045": 134223
+    },
+    "tor1NoetigeSignaltage": 1801
+   },
+   {
+    "anker": "Placebo tagesbereinigt (Stichprobenmassstab)",
+    "sdJeSignaltag": 4.253,
+    "aufblaehung": 1.12,
+    "mde80": {
+     "unberuehrtUntergrenze": 1.016,
+     "unberuehrtModell": 0.628,
+     "unberuehrtKalibriert": 0.568,
+     "unberuehrtObergrenze": 0.482,
+     "gesamtModell": 0.533,
+     "gesamtObergrenze": 0.418
+    },
+    "noetigeSignaltage": {
+     "behauptet_1_107": 130,
+     "nachVerzerrung": 346,
+     "huerde_0_157": 6459,
+     "huerde_0_045": 78868
+    },
+    "tor1NoetigeSignaltage": 1058
+   },
+   {
+    "anker": "gemeinsamer Teil allein (Untergrenze ohne Tagesbereinigung)",
+    "sdJeSignaltag": 3.15,
+    "aufblaehung": 1.921,
+    "mde80": {
+     "unberuehrtUntergrenze": 0.986,
+     "unberuehrtModell": 0.609,
+     "unberuehrtKalibriert": 0.551,
+     "unberuehrtObergrenze": 0.468,
+     "gesamtModell": 0.517,
+     "gesamtObergrenze": 0.406
+    },
+    "noetigeSignaltage": {
+     "behauptet_1_107": 122,
+     "nachVerzerrung": 326,
+     "huerde_0_157": 6077,
+     "huerde_0_045": 74202
+    },
+    "tor1NoetigeSignaltage": 995
+   },
+   {
+    "anker": "altes Protokoll V2 Bestaetigung (echte Signale, Ueberlebende)",
+    "sdJeSignaltag": 5.117,
+    "aufblaehung": 1.351,
+    "mde80": {
+     "unberuehrtUntergrenze": 1.343,
+     "unberuehrtModell": 0.83,
+     "unberuehrtKalibriert": 0.75,
+     "unberuehrtObergrenze": 0.638,
+     "gesamtModell": 0.705,
+     "gesamtObergrenze": 0.553
+    },
+    "noetigeSignaltage": {
+     "behauptet_1_107": 227,
+     "nachVerzerrung": 605,
+     "huerde_0_157": 11278,
+     "huerde_0_045": 137721
+    },
+    "tor1NoetigeSignaltage": 1847
+   },
+   {
+    "anker": "altes Protokoll V2 gesamt",
+    "sdJeSignaltag": 6.13,
+    "aufblaehung": 1.351,
+    "mde80": {
+     "unberuehrtUntergrenze": 1.609,
+     "unberuehrtModell": 0.994,
+     "unberuehrtKalibriert": 0.899,
+     "unberuehrtObergrenze": 0.764,
+     "gesamtModell": 0.844,
+     "gesamtObergrenze": 0.662
+    },
+    "noetigeSignaltage": {
+     "behauptet_1_107": 325,
+     "nachVerzerrung": 868,
+     "huerde_0_157": 16186,
+     "huerde_0_045": 197647
+    },
+    "tor1NoetigeSignaltage": 2651
+   }
+  ],
+  "zusatz": {
+   "tor1SeNoetig": 0.1384,
+   "signaleJeSignaltagUniversum": {
+    "beiModell": 14.9,
+    "beiKalibriert": 12.7,
+    "altesProtokoll": 15.7
+   },
+   "eigenSdJeTagBeiMittlererHaeufung": 1.528,
+   "effektNachVerzerrungBand": [
+    0.362,
+    0.918
+   ],
+   "tAltesProtokoll": 2.14,
+   "tAltesProtokollNachAufblaehung": 1.84,
+   "belegung": {
+    "reihenMitLiquidenTagen": 158,
+    "liquideReihentage": 122129,
+    "davonRegimeOffen": 42826,
+    "v1JeLiquidemReihentag": 0.00729,
+    "v2JeOffenemLiquidemReihentag": 0.01065
+   }
+  }
+ },
+ "sperrliste": {
+  "saetzeInListe": 47,
+  "saetzeGezaehlt": 47,
+  "reihen": 47,
+  "nichtImUniversum": [],
+  "inKopieAngewandt": 44,
+  "falscherSprungAb50Prozent": 32,
+  "fensterErklaerung": "[vor: e-26..e-1, am/nach: e..e+26, Lesefenster: e+27..e+261] in 60m-Kerzen, e = erste Kerze am Ex-Tag",
+  "v1Signale": [
+   0,
+   32,
+   3
+  ],
+  "v2Signale": [
+   0,
+   17,
+   0
+  ],
+  "saetze": [
+   {
+    "reihe": "AA",
+    "lebend": 1,
+    "ex": "2016-11-01",
+    "art": "reverse_splits",
+    "faktor": 0.33333,
+    "inKopieAngewandt": true,
+    "sprungProzent": -73.3,
+    "v1": [
+     0,
+     0,
+     1
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "AAN",
+    "lebend": 0,
+    "ex": "2020-12-01",
+    "art": "reverse_splits",
+    "faktor": 0.25,
+    "inKopieAngewandt": true,
+    "sprungProzent": -92.2,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "AMPE",
+    "lebend": 0,
+    "ex": "2016-01-05",
+    "art": "reverse_splits",
+    "faktor": 0.2,
+    "inKopieAngewandt": true,
+    "sprungProzent": -80.4,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "ARNC",
+    "lebend": 0,
+    "ex": "2020-04-01",
+    "art": "reverse_splits",
+    "faktor": 0.25,
+    "inKopieAngewandt": true,
+    "sprungProzent": -83.6,
+    "v1": [
+     0,
+     4,
+     0
+    ],
+    "v2": [
+     0,
+     4,
+     0
+    ]
+   },
+   {
+    "reihe": "AWI",
+    "lebend": 1,
+    "ex": "2016-04-04",
+    "art": "reverse_splits",
+    "faktor": 0.5,
+    "inKopieAngewandt": true,
+    "sprungProzent": -56.4,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "BEP",
+    "lebend": 1,
+    "ex": "2020-07-30",
+    "art": "reverse_splits",
+    "faktor": 0.25,
+    "inKopieAngewandt": true,
+    "sprungProzent": -80.2,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "BHAT",
+    "lebend": 0,
+    "ex": "2026-03-06",
+    "art": "reverse_splits",
+    "faktor": 0.02,
+    "inKopieAngewandt": true,
+    "sprungProzent": -98.1,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "BIP",
+    "lebend": 1,
+    "ex": "2020-03-31",
+    "art": "reverse_splits",
+    "faktor": 0.111111,
+    "inKopieAngewandt": true,
+    "sprungProzent": -89,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "CIVI",
+    "lebend": 0,
+    "ex": "2017-05-01",
+    "art": "reverse_splits",
+    "faktor": 0.008961537082840448,
+    "inKopieAngewandt": true,
+    "sprungProzent": -99.1,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "CNX",
+    "lebend": 1,
+    "ex": "2017-11-29",
+    "art": "reverse_splits",
+    "faktor": 0.125,
+    "inKopieAngewandt": true,
+    "sprungProzent": -89.4,
+    "v1": [
+     0,
+     3,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "CYH",
+    "lebend": 1,
+    "ex": "2016-05-02",
+    "art": "reverse_splits",
+    "faktor": 0.25,
+    "inKopieAngewandt": true,
+    "sprungProzent": -80,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "DB",
+    "lebend": 1,
+    "ex": "2017-03-21",
+    "art": "reverse_splits",
+    "faktor": 0.5,
+    "inKopieAngewandt": true,
+    "sprungProzent": -52.4,
+    "v1": [
+     0,
+     3,
+     0
+    ],
+    "v2": [
+     0,
+     3,
+     0
+    ]
+   },
+   {
+    "reihe": "DDR",
+    "lebend": 0,
+    "ex": "2018-07-02",
+    "art": "reverse_splits",
+    "faktor": 0.1,
+    "inKopieAngewandt": true,
+    "sprungProzent": -92,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "DGLY",
+    "lebend": 1,
+    "ex": "2025-05-07",
+    "art": "reverse_splits",
+    "faktor": 0.05,
+    "inKopieAngewandt": true,
+    "sprungProzent": -88.3,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "DLPH",
+    "lebend": 0,
+    "ex": "2017-12-05",
+    "art": "reverse_splits",
+    "faktor": 0.33333,
+    "inKopieAngewandt": true,
+    "sprungProzent": -82.9,
+    "v1": [
+     0,
+     4,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "DRS",
+    "lebend": 1,
+    "ex": "2022-11-23",
+    "art": "forward_splits",
+    "faktor": 1.451345,
+    "inKopieAngewandt": true,
+    "sprungProzent": 44.3,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "EBIX",
+    "lebend": 0,
+    "ex": "2016-08-02",
+    "art": "forward_splits",
+    "faktor": 3,
+    "inKopieAngewandt": true,
+    "sprungProzent": 197.9,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "EBS",
+    "lebend": 1,
+    "ex": "2016-08-01",
+    "art": "reverse_splits",
+    "faktor": 0.5,
+    "inKopieAngewandt": true,
+    "sprungProzent": -53,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "EQT",
+    "lebend": 1,
+    "ex": "2018-11-13",
+    "art": "reverse_splits",
+    "faktor": 0.8,
+    "inKopieAngewandt": true,
+    "sprungProzent": -52.4,
+    "v1": [
+     0,
+     2,
+     0
+    ],
+    "v2": [
+     0,
+     2,
+     0
+    ]
+   },
+   {
+    "reihe": "FNF",
+    "lebend": 1,
+    "ex": "2017-10-02",
+    "art": "reverse_splits",
+    "faktor": 0.30663,
+    "inKopieAngewandt": false,
+    "sprungProzent": -27.8,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "GB",
+    "lebend": 0,
+    "ex": "2016-03-14",
+    "art": "reverse_splits",
+    "faktor": 0.333,
+    "inKopieAngewandt": true,
+    "sprungProzent": -68.5,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "GSK",
+    "lebend": 1,
+    "ex": "2022-07-19",
+    "art": "reverse_splits",
+    "faktor": 0.8,
+    "inKopieAngewandt": true,
+    "sprungProzent": -16.4,
+    "v1": [
+     0,
+     0,
+     1
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "HK",
+    "lebend": 0,
+    "ex": "2016-09-09",
+    "art": "reverse_splits",
+    "faktor": 0.02945083036616217,
+    "inKopieAngewandt": true,
+    "sprungProzent": -97.1,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "HON",
+    "lebend": 1,
+    "ex": "2026-06-29",
+    "art": "reverse_splits",
+    "faktor": 0.5,
+    "inKopieAngewandt": false,
+    "sprungProzent": 5.7,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "IHG",
+    "lebend": 1,
+    "ex": "2016-05-09",
+    "art": "reverse_splits",
+    "faktor": 0.8333333333333334,
+    "inKopieAngewandt": true,
+    "sprungProzent": -17.2,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "INPX",
+    "lebend": 0,
+    "ex": "2018-09-04",
+    "art": "reverse_splits",
+    "faktor": 0.333333,
+    "inKopieAngewandt": false,
+    "sprungProzent": -1.7,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "IR",
+    "lebend": 1,
+    "ex": "2020-03-02",
+    "art": "reverse_splits",
+    "faktor": 0.8824,
+    "inKopieAngewandt": true,
+    "sprungProzent": -10.5,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "MCEP",
+    "lebend": 0,
+    "ex": "2020-03-24",
+    "art": "reverse_splits",
+    "faktor": 0.1,
+    "inKopieAngewandt": true,
+    "sprungProzent": -68.9,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "MFCB",
+    "lebend": 0,
+    "ex": "2017-07-14",
+    "art": "forward_splits",
+    "faktor": 20,
+    "inKopieAngewandt": true,
+    "sprungProzent": 10591.1,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "MFGP",
+    "lebend": 0,
+    "ex": "2019-04-30",
+    "art": "reverse_splits",
+    "faktor": 0.8296,
+    "inKopieAngewandt": true,
+    "sprungProzent": -17.1,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "MFH",
+    "lebend": 0,
+    "ex": "2023-02-28",
+    "art": "reverse_splits",
+    "faktor": 0.9,
+    "inKopieAngewandt": true,
+    "sprungProzent": -12.7,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "MNTX",
+    "lebend": 0,
+    "ex": "2023-06-22",
+    "art": "reverse_splits",
+    "faktor": 0.5,
+    "inKopieAngewandt": true,
+    "sprungProzent": -49,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "NVS",
+    "lebend": 1,
+    "ex": "2019-04-09",
+    "art": "reverse_splits",
+    "faktor": 0.2,
+    "inKopieAngewandt": true,
+    "sprungProzent": -82.2,
+    "v1": [
+     0,
+     2,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "RELV",
+    "lebend": 0,
+    "ex": "2016-10-03",
+    "art": "reverse_splits",
+    "faktor": 0.14285714285714285,
+    "inKopieAngewandt": true,
+    "sprungProzent": -76.2,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "RRD",
+    "lebend": 0,
+    "ex": "2016-10-03",
+    "art": "reverse_splits",
+    "faktor": 0.125,
+    "inKopieAngewandt": true,
+    "sprungProzent": -80.9,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "SFUN",
+    "lebend": 0,
+    "ex": "2019-06-12",
+    "art": "reverse_splits",
+    "faktor": 0.2,
+    "inKopieAngewandt": true,
+    "sprungProzent": -79.7,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "SIR",
+    "lebend": 0,
+    "ex": "2018-12-28",
+    "art": "reverse_splits",
+    "faktor": 0.502509,
+    "inKopieAngewandt": true,
+    "sprungProzent": -78,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "SMTS",
+    "lebend": 0,
+    "ex": "2017-07-24",
+    "art": "forward_splits",
+    "faktor": 50,
+    "inKopieAngewandt": true,
+    "sprungProzent": 4844,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "SNR",
+    "lebend": 0,
+    "ex": "2018-11-15",
+    "art": "reverse_splits",
+    "faktor": 0.25,
+    "inKopieAngewandt": true,
+    "sprungProzent": -75.5,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "SPEC",
+    "lebend": 0,
+    "ex": "2022-08-26",
+    "art": "reverse_splits",
+    "faktor": 0.25,
+    "inKopieAngewandt": true,
+    "sprungProzent": -75,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "SRC",
+    "lebend": 0,
+    "ex": "2018-06-01",
+    "art": "reverse_splits",
+    "faktor": 0.1,
+    "inKopieAngewandt": true,
+    "sprungProzent": -91,
+    "v1": [
+     0,
+     2,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "SWI",
+    "lebend": 0,
+    "ex": "2021-07-30",
+    "art": "reverse_splits",
+    "faktor": 0.5,
+    "inKopieAngewandt": true,
+    "sprungProzent": -50.1,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "TGNA",
+    "lebend": 0,
+    "ex": "2017-06-01",
+    "art": "reverse_splits",
+    "faktor": 0.33333,
+    "inKopieAngewandt": true,
+    "sprungProzent": -78.5,
+    "v1": [
+     0,
+     4,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "TRN",
+    "lebend": 1,
+    "ex": "2018-11-01",
+    "art": "reverse_splits",
+    "faktor": 0.333333,
+    "inKopieAngewandt": true,
+    "sprungProzent": -74.5,
+    "v1": [
+     0,
+     6,
+     0
+    ],
+    "v2": [
+     0,
+     6,
+     0
+    ]
+   },
+   {
+    "reihe": "TRNX",
+    "lebend": 0,
+    "ex": "2019-12-06",
+    "art": "forward_splits",
+    "faktor": 5,
+    "inKopieAngewandt": true,
+    "sprungProzent": 271.5,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "WHLR",
+    "lebend": 1,
+    "ex": "2025-11-28",
+    "art": "reverse_splits",
+    "faktor": 0.5,
+    "inKopieAngewandt": true,
+    "sprungProzent": -45.6,
+    "v1": [
+     0,
+     0,
+     0
+    ],
+    "v2": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "reihe": "WRK",
+    "lebend": 0,
+    "ex": "2016-05-16",
+    "art": "reverse_splits",
+    "faktor": 0.1666,
+    "inKopieAngewandt": true,
+    "sprungProzent": -84.9,
+    "v1": [
+     0,
+     2,
+     1
+    ],
+    "v2": [
+     0,
+     2,
+     0
+    ]
+   }
+  ]
+ }
+}
