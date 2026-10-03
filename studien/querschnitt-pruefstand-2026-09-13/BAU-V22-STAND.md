@@ -74,9 +74,15 @@ Kursspalten bitgleich, Wirkung 1.613 → 0 Reihen-Tage.
 
 ## Verlauf
 
+**ABGESCHLOSSEN 03.10.2026 22:56 — nichts läuft mehr, nichts ist von Hand nachzuholen.** Ergebnis und Zahlen: `PANEL-V22.md`.
+
 - 03.10. 20:40:44 Start der vier Teile und des Nachlaufs (PID der cmd-Hüllen 43824, 44088, 44400, 44380, Nachlauf 45540).
 - 03.10. 20:48 **Erwartung korrigiert: Ende der Teile zwischen 00:15 und 01:30, nicht 22:15–23:15** (erste Prüfpunkte aller
   vier Teile: 50–53 Reihen in 333–465 s, 1,9–2,1 MB/s je Teil, „Rest" 198–282 min). Gemessen über 30 Sekunden: alle
   acht Leser auf E: (vier Panelbau, vier Kapitulation) sind plattengebunden — je Prozess nur 1,3–2,4 MB/s bei 12–23 % CPU,
   zusammen rund 14 MB/s; v2.1 hatte mit sechs Lesern allein 36 MB/s (6 MB/s je Prozess). Erster Prüfpunkt Teil 3: 51 von 1.869
   nach 333 s, 1,9 MB/s, „Rest ~198 min". Endet die Kapitulations-Messung früher, wird der Bau entsprechend schneller.
+- 03.10. 22:55:04–22:55:49 alle vier Teile FERTIG (8.057–8.102 s je Teil; ab etwa 21:40 lief die Platte doppelt so schnell).
+- 03.10. 22:56:16 Nachlauf: Vereinen (rc 0, 9.904.017 Zeilen, Reihentafel geschrieben), 22:56:33 Kernprüfung (rc 0, BESTANDEN).
+- 03.10. 22:57–23:01 in der Sitzung: Kontrollenlauf (`voll-v22/kontrollen-v22.json`), zweiter Schlüssel der Prüfzahl in
+  `konfig.js`, Suiten gegen `voll-v22` und `voll` grün, Mehrfaktor-Klinke B14 grün.

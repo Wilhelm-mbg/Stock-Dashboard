@@ -1,0 +1,207 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/pruefung-v22/v1",
+ "stand": "2026-10-03T20:56:38.967Z",
+ "aufruf": {
+  "a": "voll",
+  "b": "voll-v22",
+  "erwartung": "luecken",
+  "teilmenge": false,
+  "aus": "C:\\Users\\Wilhe\\Downloads\\Stock-Dashboard\\studien\\querschnitt-pruefstand-2026-09-13\\pruefung-v22.json"
+ },
+ "bestanden": true,
+ "gruende": [],
+ "liste": {
+  "trennungen": 141,
+  "reihen": 140,
+  "basisKuerzel": 138,
+  "trockenlauf": 141,
+  "gleichDemTrockenlauf": true,
+  "zeilenWechselnAusTrockenlauf": 95150,
+  "zeilenWechselnListe": 95150,
+  "nummerAb3": {
+   "AAC": [
+    "AAC~3"
+   ],
+   "CPAA": [
+    "CPAA~3"
+   ],
+   "GIG": [
+    "GIG~3",
+    "GIG~4"
+   ],
+   "HYAC": [
+    "HYAC~3",
+    "HYAC~4"
+   ],
+   "ISRL": [
+    "ISRL~3"
+   ],
+   "LCA": [
+    "LCA~3"
+   ],
+   "LEXEB": [
+    "LEXEB~3"
+   ]
+  },
+  "bisTag": "2026-09-15",
+  "ok": true
+ },
+ "a": {
+  "ordner": "voll",
+  "kennung": "querschnitt-pruefstand-2026-09-13/panel/v2",
+  "zeilen": 9904017,
+  "reihen": 7338,
+  "reihenMitZeilen": 7337,
+  "letzterVollTag": "2026-09-15",
+  "zeilenVerglichen": 9904017
+ },
+ "b": {
+  "ordner": "voll-v22",
+  "kennung": "querschnitt-pruefstand-2026-09-13/panel/v2.2",
+  "zeilen": 9904017,
+  "reihen": 7479,
+  "reihenMitZeilen": 7478,
+  "letzterVollTag": "2026-09-15",
+  "zaehler": {
+   "trennungen": 38,
+   "lueckenTrennungen": 141,
+   "lueckenUngetrennt": 0,
+   "trennungAbweichung": 0,
+   "splitAkzeptiert": 1693,
+   "splitAbgelehnt": 47,
+   "reihen": 7300,
+   "ohneZeilen": 1
+  },
+  "luecken": {
+   "kennung": "querschnitt-pruefstand-2026-09-13/luecken-trennungen/v1",
+   "entschiedenAus": "voll/panel",
+   "schwelleKalendertage": 90,
+   "bisTag": "2026-09-15",
+   "n": 141,
+   "trennungenGebaut": 141,
+   "ungetrennt": 0,
+   "zeilenWechselnSoll": 95150
+  }
+ },
+ "soll": {
+  "zeilenWechseln": 95150,
+  "neueReihen": 141
+ },
+ "vergleich": {
+  "gemeinsam": 9904017,
+  "nurInB": 0,
+  "fehltInB": 0,
+  "nameWechsel": 95150,
+  "neueReihenMitZeilen": 141,
+  "renditeErsteZeile": 141,
+  "klasseUnreif": 1293,
+  "klasseFensterNeu": 96,
+  "markeKeineRendite": 141,
+  "markeLetzterTag": 141,
+  "unerklaert": 0,
+  "unerklaertJeArt": {},
+  "ersteZeilenNeuerReihen": 141,
+  "ersteZeilenRenditeInAEndlich": 141
+ },
+ "schluesselDoppelt": {
+  "a": 0,
+  "b": 0
+ },
+ "bitgleichGeprueft": [
+  "kerzen",
+  "rohSchluss",
+  "rohEroeffnung",
+  "faktor",
+  "renditeOC",
+  "umsatzReg",
+  "umsatzAuktion"
+ ],
+ "wirkung": {
+  "definition": {
+   "minVortage": 250,
+   "fensterZeilen": 252,
+   "klassen": [
+    1,
+    2,
+    3
+   ],
+   "jahrVon": 2017,
+   "jahrBis": 2026
+  },
+  "a": {
+   "lueckenUeberSchwelle": 141,
+   "reihenMitLuecke": 140,
+   "kurzluecken3090": 231,
+   "betroffeneReihenTage": 1613,
+   "universumReihenTage": 2221248,
+   "betroffeneReihen": 20,
+   "groesste": [
+    "DOW 251",
+    "MBLY 233",
+    "CHK 156",
+    "CART 136",
+    "XL 130",
+    "CORZ 130",
+    "DWAC 121",
+    "SN 76",
+    "NIO 68",
+    "XM 43",
+    "SE 36",
+    "MON 31",
+    "PX 31",
+    "LB 31",
+    "RICE 30",
+    "BTBT 26",
+    "DNB 25",
+    "ATHN 23",
+    "EDR 18",
+    "LINE 18"
+   ]
+  },
+  "aGanzesPanel": {
+   "lueckenUeberSchwelle": 141,
+   "reihenMitLuecke": 140,
+   "kurzluecken3090": 231,
+   "betroffeneReihenTage": 1613,
+   "universumReihenTage": 2221248,
+   "betroffeneReihen": 20,
+   "groesste": [
+    "DOW 251",
+    "MBLY 233",
+    "CHK 156",
+    "CART 136",
+    "XL 130",
+    "CORZ 130",
+    "DWAC 121",
+    "SN 76",
+    "NIO 68",
+    "XM 43",
+    "SE 36",
+    "MON 31",
+    "PX 31",
+    "LB 31",
+    "RICE 30",
+    "BTBT 26",
+    "DNB 25",
+    "ATHN 23",
+    "EDR 18",
+    "LINE 18"
+   ]
+  },
+  "b": {
+   "lueckenUeberSchwelle": 0,
+   "reihenMitLuecke": 0,
+   "kurzluecken3090": 231,
+   "betroffeneReihenTage": 0,
+   "universumReihenTage": 2219644,
+   "betroffeneReihen": 0,
+   "groesste": []
+  },
+  "trockenlauf": {
+   "summe": 1613,
+   "universum": 2221248
+  }
+ },
+ "unerklaertBeispiele": [],
+ "sekunden": 5.1
+}

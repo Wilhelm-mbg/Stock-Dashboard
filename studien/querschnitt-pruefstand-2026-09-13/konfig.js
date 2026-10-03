@@ -88,7 +88,10 @@ var SPLIT_SPERRE_MIN_LOG = 0.1, SPLIT_SPERRE_ANTEIL = 0.5;
 var REGRESSION23_ERWARTET = { 'querschnitt-pruefstand-2026-09-13/panel/v1': 1.609984309418836,
   /* v2.1 (Bau 18.09.2026, Split-Sperre): Teil-2-Zahl aus voll/kontrollen-v2.json laeufe.momentum.monat/haupt.netto.mittel,
    * vom PM eingetragen; v2.0 (1.6705, verworfen) bekommt absichtlich keinen Pin. */
-  'querschnitt-pruefstand-2026-09-13/panel/v2': 1.6694766839043451 };
+  'querschnitt-pruefstand-2026-09-13/panel/v2': 1.6694766839043451,
+  /* v2.2 (Bau 03./04.10.2026, Luecken-Trennung, Auftrag Nr. 67): dieselbe Teil-2-Zahl aus voll-v22/kontrollen-v22.json
+   * (laeufe.momentum.monat/haupt.netto.mittel), gemessen am Panel in voll-v22/. Der v2-Eintrag bleibt und gilt weiter fuer voll/. */
+  'querschnitt-pruefstand-2026-09-13/panel/v2.2': 1.6868679011460952 };
 var SPALTEN = ['sym', 'tag', 'roh_schluss', 'roh_eroeffnung', 'faktor', 'rendite', 'umsatz_reg', 'umsatz_auktion', 'klasse', 'marken', 'kerzen'];
 var M_QUELLE_REIN = 1, M_SCHLUSS_ERSATZ = 2, M_DICHTE_OK = 4, M_MASSNAHME_NAH = 8,
     M_LETZTER_TAG = 16, M_STEMPEL_TAG = 32, M_EROEFFNUNG_ERSATZ = 64, M_KEINE_RENDITE = 128;
