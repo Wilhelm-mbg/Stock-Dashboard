@@ -1,7 +1,10 @@
-# VORREGISTRIERUNG — Kapitulation V2 auf dem sauberen Archiv · **ENTWURF, NICHT REGISTRIERT** (03.10.2026)
+# VORREGISTRIERUNG — Kapitulation V2 auf dem sauberen Archiv · **REGISTRIERT** (03.10.2026)
 
-Stand: Entwurf aus Auftrag Nr. 65. Gerechnet ist bisher nur die blinde Zählung (`MACHBARKEIT.md`, `ergebnis.json`). Registriert wird
-erst nach Wilhelms Entscheid (Abschnitt 10) — dann mit Datum, Commit und ohne das Wort „Entwurf". Bis dahin bindet der Text an nichts.
+**Status: REGISTRIERT am 03.10.2026** durch Wilhelms Entscheid per Formular („Registrieren und bauen"); Siegel ist der Commit, der diese
+Statuszeile einführt (Hash und Uhrzeit in `wiki/entscheide.md`). Kennung `kapitulation-neu-2026-10-03/v1`. Gerechnet war zu diesem
+Zeitpunkt nur die blinde Stichproben-Zählung (`MACHBARKEIT.md`, `ergebnis.json`) — **keine Rendite eines echten Signals**. Ab hier ändert
+sich an diesem Papier nichts mehr außer dem Ergebnisabschnitt (§11, vom Lauf geschrieben) und datierten Nachträgen, die nichts an
+Vorhersage, Definition, Fenster, Urteilsgröße, Toren oder Satzformen ändern. Die Entscheide aus §10 stehen dort.
 
 ## 1. Die eine Vorhersage
 
@@ -91,3 +94,9 @@ Kosten-Tauglichkeit fallen nicht; dafür ist die Messung zu grob (Tor 2).
 4. **Kontrolle:** Tagestopf (schärfer, neu) als Urteilsgröße — oder die Symbol-Stunden-Erwartung des alten Protokolls (vergleichbar,
    aber rund 5 Pp Streuung je Signaltag)?
 5. **Abbruchregel §6.6** (kein Blick auf das Mittel, wenn MDE₈₀ > 1,107 Pp) und die **Totalverlust-Regel §7** so übernehmen?
+
+**Entschieden (Wilhelm, 03.10.2026, Formular „Registrieren und bauen" mit den Empfehlungen des PM):** 1 ja, Phase 2 wird gebaut und
+gefahren (Auftrag Nr. 68) · 2 keine getrennte Vorab-Zählung — die Vollzählung ist der erste, blinde Schritt des Laufs (§6.1) · 3 Fenster
+wie §4: das Urteil fällt **nur** im unberührten Fenster bis 2023-09-25, das alte Fenster ist Wiederholung ohne Urteil · 4 Urteilsgröße
+gegen den **Tagestopf**; die Symbol-Stunden-Erwartung des alten Protokolls nur nachrichtlich · 5 Abbruchregel §6.6 und Totalverlust-Regel
+§7 übernommen. Schwelle und Satzformen wie §1 und §9.
