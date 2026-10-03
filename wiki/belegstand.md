@@ -17,6 +17,26 @@ tags: [befund]
 
 > **Neu am 09.09.:** Der **Trendkanal auf Tagesbasis** (7.299 Aktien inkl. 4.801 verschwundene, 6,08 Mio Wert-Tage, 1,31 Mio Trades, Haltedauer 5/10/20 Tage und „bis Kanalbruch") ist gemessen: **kein Kanal-Einstieg schlägt den Topf.** Der Abschnittskanal der App ist als Einstieg **in jeder Umsatzklasse zu** (Rücklauf an die untere Linie: t −3,4 bis −4,3 gegen den Topf); der Ausbruch verdient roh nur die Marktdrift und bleibt unter ihr. Die einzigen drei Tor-1-Kandidaten (Donchian 55, Rücklauf long) sind in der Entdeckung ein Ausreißer-Mittel (t = 1,0) und in der Bestätigung deutlich negativ. Abschnitt unten.
 > **Neu am 23.09.:** Die **Mehrfaktor-Kombination** (sieben vorab festgelegte Signale — Momentum, niedrige Schwankung, Bewertung, Ertragskraft, Investition, Gewinnüberraschung, F&E — gleichgewichtet als Rangkombination, 92 Monate 2017–2024, registrierter Test: Rang-IC) ist **nicht entscheidbar unterhalb von IC 0,05** (gemessen IC 0,012, t 0,69). Das Dezil oben netto liegt bei −0,18 Pp mit MDE₈₀ 0,74 — nichts Handelbares, nichts Ausgeschlossenes. Die Zahl der belegten Kanten bleibt **NULL**; die Zahl der belegten Informationssignale ebenfalls.
+> **Neu am 03.10.:** Die **Nachrichten-Stimmung** (GDELT-Ton je Symbol und Tag als Rang im Querschnitt, Klassen 250–1.000 und ab 1.000 Mio $, 2.396 Signaltage 2017–2026, Haltedauer 1/3/5 Tage) ist gemessen: **zwölfmal „nicht belegt"**, brutto zwischen −0,036 und +0,045 Pp (|t| ≤ 1,5). Bei einem Tag Haltedauer liegt die obere 95-%-Grenze des Brutto-Effekts bei +0,006 Pp — weit unter der Kassa-Hürde 0,062: **in der Größe ausgeschlossen**. Die Zahl der belegten Kanten bleibt **NULL**.
+
+## Nachrichten-Stimmung, Tagesdesign (03.10.2026) — nicht belegt, in 9 von 12 Tests in der Größe ausgeschlossen
+
+| Test (Klassen 2+3 gepoolt) | Δ̄ brutto | se | obere 95-%-Grenze | Hürde (ein Umlauf) | Größe |
+|---|---|---|---|---|---|
+| Ton-Rang · 1 Tag · Dezil gegen Universum | −0,016 | 0,011 | +0,006 | 0,062 | **ausgeschlossen** |
+| Ton-Rang · 1 Tag · Long-Short | +0,011 | 0,021 | +0,052 | 0,124 | **ausgeschlossen** |
+| Ton-Rang · 3 Tage · Dezil | −0,036 | 0,023 | +0,009 | 0,062 | **ausgeschlossen** |
+| Ton-Rang · 3 Tage · Long-Short | +0,001 | 0,049 | +0,097 | 0,124 | **ausgeschlossen** |
+| Ton-Rang · 5 Tage · Dezil | −0,033 | 0,036 | +0,038 | 0,062 | **ausgeschlossen** |
+| Ton-Rang · 5 Tage · Long-Short | −0,014 | 0,079 | +0,141 | 0,124 | offen |
+| Ton-Änderung · 1 Tag · Dezil | −0,002 | 0,013 | +0,023 | 0,062 | **ausgeschlossen** |
+| Ton-Änderung · 1 Tag · Long-Short | +0,010 | 0,020 | +0,049 | 0,124 | **ausgeschlossen** |
+| Ton-Änderung · 3 Tage · Dezil | −0,002 | 0,024 | +0,045 | 0,062 | **ausgeschlossen** |
+| Ton-Änderung · 3 Tage · Long-Short | +0,031 | 0,039 | +0,107 | 0,124 | **ausgeschlossen** |
+| Ton-Änderung · 5 Tage · Dezil | +0,003 | 0,030 | +0,062 | 0,062 | an der Hürde — offen |
+| Ton-Änderung · 5 Tage · Long-Short | +0,045 | 0,052 | +0,147 | 0,124 | offen |
+
+Fundstelle: `studien/nachrichten-stimmung-tage-2026-09-19/ERGEBNIS.md`, `protokoll.json`, Vorregistrierung §13 und Nachtrag 4. Das registrierte Urteil lautet in allen zwölf Tests „nicht belegt: nichts oberhalb von <MDE₈₀>"; die Spalte „Größe" ist die Lesart des PM aus der Urteilstafel (obere Grenze = Δ̄ brutto + 1,96 × se, drei Stellen). **Einschränkungen:** Placebo 1 und das Abdeckungstor sind im Lauf gefallen — nach Durchsicht Fehler der Kriterien (Schranke unter einem Standardfehler; künftiger Ton folgt dem Kurs; drei Klassen-Jahre mit 77–80 % statt 80 % Abdeckung), nicht der Messung; die Hauptzelle ist vom PM unabhängig nachgerechnet (identisch). Nur 105 von 220–400 Universumsmitgliedern tragen an einem Tag einen definierten Ton; Klasse 1 und kleinere Werte sind nicht gemessen. Nebenbeobachtung ohne Urteil: der Ton der **Zukunft** hängt mit der heutigen Rendite zusammen (Long-Short t 2,1 … 2,9) — Nachrichten folgen dem Kurs.
 
 ## Mehrfaktor-Kombination (Runde 1b, 23.09.2026) — nicht entscheidbar
 

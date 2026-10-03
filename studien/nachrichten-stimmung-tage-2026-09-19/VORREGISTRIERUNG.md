@@ -285,6 +285,25 @@ es liegt nur zusätzlich der Rohauszug. §9 gilt insoweit nicht mehr.
 
 ---
 
+### Nachtrag 4 — 03.10.2026, nach dem Lauf (PM; ändert kein Urteil)
+
+- **(a) Placebo 1 gefallen (6 von 12 Zellen) — Befund über das Kriterium, nicht über die Messung.** Die Schranke 0,02 Pp liegt in 9 von 12 Zellen unter
+  einem Standardfehler der Placebo-Reihe (se 0,012 … 0,072) und war durch Rauschen allein zu reißen (Fehlerform „Absolute Schranke aus einer anderen
+  Skala"). Zudem ist der Ton von t + 21 kein kursloses Signal: Nachrichten folgen Kursen, der künftige Ton trägt die Rendite der Zwischenzeit (G1 L-S
+  positiv bei allen drei Haltedauern, t 2,1 … 2,9; G2 Long-Uni H 5 t −3,25). Die Maschine ist durch Orakel, Placebo 2 (Permutation), Nullpunkt,
+  kursloses Signal und beide Leck-Klinken geprüft. Der Lauf bleibt gekennzeichnet (§7: `belegt` ausgeschlossen); die zwölf Urteile stehen.
+- **(b) Abdeckungstor:** drei Klassen-Jahre knapp unter 80 % (2017 Kl. 2 79,7 %, 2019 Kl. 3 77,3 %, 2022 Kl. 2 76,8 %). §6 nennt keine Folge für die
+  gepoolte Urteilszelle; gerechnet wurde ohne Ausschluss. Ein Neulauf mit Ausschluss kann kein Urteil ändern (`belegt` ist ausgeschlossen, alle zwölf
+  Brutto-Mittel liegen unter ihrer MDE₈₀) und unterbleibt.
+- **(c) Kostenformel §5:** „2 × `umschlagKosten`" zählt den Umlauf doppelt (0,110 … 0,222 Pp gegen die im selben Absatz genannte Obergrenze ein Umlauf
+  = 0,063 / 0,124). Geurteilt wurde mit der registrierten Formel; mit halben Kosten ist netto ebenfalls in 12 von 12 negativ. Für künftige Studien:
+  Kosten = `umschlagKosten` je Seite, Obergrenze ein Umlauf.
+- **(d) Tor 1 war für den erwarteten Effekt unerreichbar:** im Kunsttest scheitert selbst ein eingepflanzter Effekt von +0,20 Pp (das Doppelte von E₁) an
+  „Entdeckung ≥ 4 × Bestätigungs-MDE₈₀". Die Aussage dieser Messung ist deshalb die **Größenaussage** (MDE₈₀ und obere Grenzen), nicht das formale Urteil.
+- **(e)** Die gesperrte Bestätigungshälfte ist aus Gesamtmittel, Entdeckung und Jahresscheiben ableitbar — für G1/G2 nicht mehr unberührt.
+- **(f) PM-Nachrechnung** unabhängig von `messen.js` (eigene Signal- und Renditebildung, Universum aus dem Prüfstand): G1 · H 1 · Long-Uni brutto
+  n 2.396, Mittel −0,0158 Pp, se 0,0114, t −1,38, MDE₈₀ 0,0320 — identisch mit dem Protokoll.
+
 ## 13. Ergebnis (vom Lauf geschrieben, 2026-10-03)
 
 Lauf `nachrichten-stimmung-tage-2026-09-19/messung/v1` auf Panel `querschnitt-pruefstand-2026-09-13/panel/v2` und 3530 Tagesdateien des Datenbaus; Maschine (messen.js, test-messen.js grün) Commit `bbc3000`. Zahlen aus `protokoll.json`, vollständige Tafeln in `ERGEBNIS.md`. Pp je Halteperiode.
