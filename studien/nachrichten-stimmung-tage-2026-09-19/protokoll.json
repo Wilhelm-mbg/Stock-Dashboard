@@ -1,0 +1,6062 @@
+{
+ "kennung": "nachrichten-stimmung-tage-2026-09-19/v1",
+ "kennungMessung": "nachrichten-stimmung-tage-2026-09-19/messung/v1",
+ "panel": "querschnitt-pruefstand-2026-09-13/panel/v2",
+ "panelStand": "2026-09-18T12:56:18.397Z",
+ "datenbau": {
+  "nachrichten-stimmung-tage-2026-09-19/gdelt/v1 · nachrichten-stimmung-tage-2026-09-19/namenskarte/v2": 3530
+ },
+ "vorpruefung": "nachrichten-stimmung-tage-2026-09-19/vorpruefung/v1",
+ "stand": "2026-10-03T19:09:52.232Z",
+ "stufe": "B",
+ "fenster": [
+  "2017-01-01",
+  "2026-08-31"
+ ],
+ "haltedauern": [
+  1,
+  3,
+  5
+ ],
+ "haltedauerNachrichtlich": 21,
+ "klassen": [
+  2,
+  3
+ ],
+ "testzahl": 12,
+ "mdeFaktor": 2.8016,
+ "mdeFaktorSchwelle": 3.8416,
+ "lesarten": [
+  "Tagesdatei -> Signal: je Symbol n Artikel mit Stempel = letzterStempel und Ton = ton der Tageszeile an tagesSignal (Leck-Klinke und 3-Artikel-Schwelle wirken dort); der Ton des Signals ist der von tagesSignal zurückgegebene.",
+  "Universum = universum(T, t, {klassen: [2, 3]}) ohne die 25 Kürzel der Medienliste (§2: sie fallen aus dem Universum); gelesen aus datenbau/namenskarte-v2.json.",
+  "G2: die 20 letzten definierten Tages-Töne des Symbols sind Handelstage < t mit definiertem Ton, unabhängig von der Universumszugehörigkeit an jenen Tagen; Nicht-Handelstage gehen in kein Signal ein.",
+  "Dezil = max(2, ceil(m/10)) nach dem Text von §4 (vorpruefung.js rundete kaufmännisch).",
+  "Kosten = registrierte Formel 2 × umschlagKosten(T, w_{t-H}, w_t, t) je Portfolio-Seite (Long-Uni: Dezil + Universum; L-S: oben + unten); fehlt die Tranche t-H, gilt der Aufbau aus dem Leeren. Die Formel liegt bei Umschlag über 50 % über der im selben Absatz genannten Obergrenze (ein Umlauf je Seite); die Obergrenze steht je Test als `obergrenze` daneben, geurteilt wird mit der registrierten Formel.",
+  "Urteil: Bedingungen 1 und 2 von §6 auf der ganzen Zelle UND (Urteil aus der Bestätigung) auf der Bestätigungshälfte; Entdeckung = Mittel netto der ungeraden Jahre (Jahr des Signaltags).",
+  "Placebo 1: die Größe des Tages t + 21 Handelstage, dem Tag t zugeordnet, gelesen über Sicht mit Orakelschlüssel. Placebo 2: die Werte der Größe je Tag unter den definierten Symbolen permutiert, je Ziehung k ein Strom mulberry32(fnv(Saat#k)) in fester Reihenfolge (Tage aufsteigend, G1 vor G2).",
+  "Orakel: Größe = Vorzeichen der künftigen H-Tage-Rendite (Sicht mit Schlüssel) auf dem definierten Universum von G1, durch dieselbe Rang- und Dezil-Strecke; Δ = oberstes minus unterstes Dezil.",
+  "Nullpunkt: Zufallsdezil gegen Universum und oben gegen unten, 5 Ziehungen, Saat der Vorprüfung, in zwei Fassungen: `voll` (ganzes Universum) und `definiert` (Symbole mit definiertem Ton); Schranke |Mittel|/se < 3 in jeder Zelle. Kursloses Signal: Zufallsgröße auf dem ganzen Universum durch die Rang-Strecke.",
+  "Vorprüfungstor: Paar-sd des Zufallsdezils (gepoolt, 3 Haltedauern × 2 Portfolios) im Verhältnis zu vorpruefung.json innerhalb [1/1,5; 1,5] — in BEIDEN Fassungen; Klassen getrennt nachrichtlich.",
+  "Abdeckungstor: Rechnung wie Nr. 44 (studien/gdelt-abdeckung-2026-09-19/auswerten.js, Abschnitte (a) und (f); ABDECKUNG.md §e/§f): je Monat der Anteil der Klassenmitglieder mit >= 5 Artikeln (n + nSpaet, alle Kalendertage des Monats), je Jahr der Median über die Monate (lineares Quantil, eine Nachkommastelle), bestanden ab 80 %. Mitglieder = Universum am ersten Handelstag des Jahres (Stichtagsregel von Nr. 44), ohne Medienliste."
+ ],
+ "zaehler": {
+  "signaltage": 2428,
+  "tagesdateien": 3530,
+  "tagesdateienAnHandelstagen": 2428,
+  "handelstageOhneDatei": [],
+  "handelstageUndefiniert": {
+   "dateien<48": 21,
+   "block-ausfall": 11
+  },
+  "tageszeilen": 782867,
+  "artikelBis16": 22079041,
+  "zeilenStempelNichtImSignal": 0,
+  "tonAbweichung": 0,
+  "placeboZugriffe": 2417,
+  "ohneUniversum": 0,
+  "ohnePeriodenende": {
+   "21": 11
+  },
+  "duenn": {
+   "G1|3": 1302,
+   "G2|23": 42,
+   "G2|2": 42,
+   "G2|3": 1302,
+   "G1|23": 32,
+   "G1|2": 32
+  },
+  "placebo1Duenn": {
+   "G1": 53,
+   "G2": 53
+  },
+  "nullpunktDuenn": {
+   "voll|3": 862,
+   "definiert|3": 1302,
+   "definiert|23": 32,
+   "definiert|2": 32
+  },
+  "renditen": {
+   "tote": 761,
+   "toteTotalverlust": 0,
+   "luecken": 1333
+  },
+  "halte": {
+   "tote": 329,
+   "toteTotalverlust": 0,
+   "luecken": 362
+  },
+  "definierteSymboleJeTag": {
+   "G1|23": {
+    "tage": 2428,
+    "mittel": 105.4,
+    "min": 0,
+    "p5": 77,
+    "median": 106,
+    "max": 182
+   },
+   "G1|2": {
+    "tage": 2428,
+    "mittel": 84.3,
+    "min": 0,
+    "p5": 66,
+    "median": 84,
+    "max": 139
+   },
+   "G1|3": {
+    "tage": 2428,
+    "mittel": 21.1,
+    "min": 0,
+    "p5": 6,
+    "median": 18,
+    "max": 58
+   },
+   "G2|23": {
+    "tage": 2428,
+    "mittel": 104.9,
+    "min": 0,
+    "p5": 76,
+    "median": 106,
+    "max": 182
+   },
+   "G2|2": {
+    "tage": 2428,
+    "mittel": 83.8,
+    "min": 0,
+    "p5": 66,
+    "median": 84,
+    "max": 139
+   },
+   "G2|3": {
+    "tage": 2428,
+    "mittel": 21.1,
+    "min": 0,
+    "p5": 6,
+    "median": 18,
+    "max": 58
+   }
+  },
+  "jeJahr": {
+   "2017": {
+    "signaltage": 251,
+    "mitgliederJeTag": 113.5,
+    "definiertJeTag": 81.6,
+    "anteilDefiniert": 0.7188,
+    "anteilMitArtikel": 0.7937,
+    "tonMittel": 0.1412,
+    "artikelBis16JeMitgliedTag": 72.93,
+    "anteilSpaet": 0.3232
+   },
+   "2018": {
+    "signaltage": 251,
+    "mitgliederJeTag": 134.5,
+    "definiertJeTag": 91.2,
+    "anteilDefiniert": 0.678,
+    "anteilMitArtikel": 0.7795,
+    "tonMittel": 0.2207,
+    "artikelBis16JeMitgliedTag": 61.73,
+    "anteilSpaet": 0.3155
+   },
+   "2019": {
+    "signaltage": 252,
+    "mitgliederJeTag": 132.8,
+    "definiertJeTag": 86.2,
+    "anteilDefiniert": 0.6488,
+    "anteilMitArtikel": 0.7765,
+    "tonMittel": 0.3401,
+    "artikelBis16JeMitgliedTag": 51.68,
+    "anteilSpaet": 0.3123
+   },
+   "2020": {
+    "signaltage": 253,
+    "mitgliederJeTag": 182.8,
+    "definiertJeTag": 92.9,
+    "anteilDefiniert": 0.5079,
+    "anteilMitArtikel": 0.6992,
+    "tonMittel": 0.0551,
+    "artikelBis16JeMitgliedTag": 33.96,
+    "anteilSpaet": 0.3098
+   },
+   "2021": {
+    "signaltage": 252,
+    "mitgliederJeTag": 233.6,
+    "definiertJeTag": 107.4,
+    "anteilDefiniert": 0.4599,
+    "anteilMitArtikel": 0.6384,
+    "tonMittel": 0.4391,
+    "artikelBis16JeMitgliedTag": 29.73,
+    "anteilSpaet": 0.3266
+   },
+   "2022": {
+    "signaltage": 251,
+    "mitgliederJeTag": 251.2,
+    "definiertJeTag": 113.5,
+    "anteilDefiniert": 0.4517,
+    "anteilMitArtikel": 0.659,
+    "tonMittel": 0.3323,
+    "artikelBis16JeMitgliedTag": 17.63,
+    "anteilSpaet": 0.3022
+   },
+   "2023": {
+    "signaltage": 250,
+    "mitgliederJeTag": 194.9,
+    "definiertJeTag": 107.9,
+    "anteilDefiniert": 0.5537,
+    "anteilMitArtikel": 0.726,
+    "tonMittel": 0.6582,
+    "artikelBis16JeMitgliedTag": 31.25,
+    "anteilSpaet": 0.2915
+   },
+   "2024": {
+    "signaltage": 252,
+    "mitgliederJeTag": 219.3,
+    "definiertJeTag": 116.9,
+    "anteilDefiniert": 0.5332,
+    "anteilMitArtikel": 0.7191,
+    "tonMittel": 0.9228,
+    "artikelBis16JeMitgliedTag": 29.26,
+    "anteilSpaet": 0.2944
+   },
+   "2025": {
+    "signaltage": 250,
+    "mitgliederJeTag": 310.2,
+    "definiertJeTag": 129.6,
+    "anteilDefiniert": 0.4179,
+    "anteilMitArtikel": 0.6463,
+    "tonMittel": 0.8531,
+    "artikelBis16JeMitgliedTag": 18.83,
+    "anteilSpaet": 0.2704
+   },
+   "2026": {
+    "signaltage": 166,
+    "mitgliederJeTag": 401.6,
+    "definiertJeTag": 137.9,
+    "anteilDefiniert": 0.3434,
+    "anteilMitArtikel": 0.6105,
+    "tonMittel": 0.681,
+    "artikelBis16JeMitgliedTag": 13.32,
+    "anteilSpaet": 0.292
+   }
+  },
+  "handelstageUndefiniertGesamt": 32
+ },
+ "tests": {
+  "G1|1|longUni": {
+   "groesse": "G1",
+   "haltedauer": 1,
+   "portfolio": "longUni",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2396,
+     "seHH": 0.011436082358323274,
+     "mde80": 0.032039328335078485,
+     "mde80Schwelle": 0.043932853987734694,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1243,
+     "seHH": 0.01449025710245525,
+     "mde80": 0.04059590429823863,
+     "mde80Schwelle": 0.055665771684792094,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.017905998393003122,
+     "mde80": 0.05016544509783755,
+     "mde80Schwelle": 0.0687876834265608,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.04718485710638596,
+     "mde80": 0.13219309566925092,
+     "mde80Schwelle": 0.1812653470598923,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 251,
+      "seHH": 0.026715536699630584,
+      "mde80": 0.07484624761768505,
+      "mde80Schwelle": 0.10263040578530086,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.027512620645220667,
+      "mde80": 0.07707935799965022,
+      "mde80Schwelle": 0.10569248347067972,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.02768791365824048,
+      "mde80": 0.07757045890492653,
+      "mde80Schwelle": 0.10636588910949664,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.048863018309492266,
+      "mde80": 0.13689463209587355,
+      "mde80Schwelle": 0.1877121711377455,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.03572169863935647,
+      "mde80": 0.10007791090802108,
+      "mde80Schwelle": 0.1372284774929518,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.03650776922490612,
+      "mde80": 0.10228016626049698,
+      "mde80Schwelle": 0.14024824625439936,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.02940418523521034,
+      "mde80": 0.08237876535496529,
+      "mde80Schwelle": 0.11295911799958405,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.03136182497915014,
+      "mde80": 0.08786328886158704,
+      "mde80Schwelle": 0.12047958683990317,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.04090483269726,
+      "mde80": 0.11459897928464363,
+      "mde80Schwelle": 0.15714000528979402,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.05971707074031989,
+      "mde80": 0.16730334538608022,
+      "mde80Schwelle": 0.2294090989560129,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": -0.015773566372371355,
+    "mittelNetto": -0.12594161985196403,
+    "tHH": -11.012654150772418,
+    "tHHBrutto": -1.3816224700307604,
+    "seHHBrutto": 0.01141669791460483,
+    "paarSd": 0.5599011108787134,
+    "hh0": false,
+    "kosten": 0.11016805347959255,
+    "umschlag": 0.720722036236637,
+    "obergrenze": 0.06268399338568946
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1243,
+    "mittelBrutto": -0.009979212478294822,
+    "mittelNetto": -0.11819162844845726,
+    "tHH": -8.15662742301727,
+    "tHHBrutto": -0.6887834042899601,
+    "seHHBrutto": 0.014488172067069476,
+    "paarSd": 0.5110771002204032,
+    "hh0": false,
+    "kosten": 0.10821241597016241,
+    "umschlag": 0.712438743601646,
+    "obergrenze": 0.0627642799151996
+   },
+   "tor1": {
+    "entdeckungNetto": -0.11819162844845726,
+    "viermalBestaetigungsMde80": 0.2006617803913502,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1182 Pp < 4 × Bestätigungs-MDE80 = 0.2007 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 251,
+     "seHH": 0.026715536699630584,
+     "mde80": 0.07484624761768505,
+     "mde80Schwelle": 0.10263040578530086,
+     "hh0": false,
+     "mittelBrutto": -0.03645084946074094,
+     "mittelNetto": -0.1304757890309944,
+     "tHH": -4.8838917405241045,
+     "tHHBrutto": -1.365786015384158,
+     "seHHBrutto": 0.026688550805294576,
+     "paarSd": 0.4240993633209444,
+     "kosten": 0.09402493957025357,
+     "umschlag": 0.6711503193574898,
+     "obergrenze": 0.06383862549800806
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.027512620645220667,
+     "mde80": 0.07707935799965022,
+     "mde80Schwelle": 0.10569248347067972,
+     "hh0": false,
+     "mittelBrutto": 0.037441897575607584,
+     "mittelNetto": -0.05687557415062842,
+     "tHH": -2.0672539662450697,
+     "tHHBrutto": 1.3666225323596688,
+     "seHHBrutto": 0.027397395176090654,
+     "paarSd": 0.43675277910812466,
+     "kosten": 0.09431747172623599,
+     "umschlag": 0.6591347452901228,
+     "obergrenze": 0.06378073705179295
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.02768791365824048,
+     "mde80": 0.07757045890492653,
+     "mde80Schwelle": 0.10636588910949664,
+     "hh0": false,
+     "mittelBrutto": 0.0007777100057265808,
+     "mittelNetto": -0.09647454547840553,
+     "tHH": -3.4843559059457254,
+     "tHHBrutto": 0.028117052617542243,
+     "seHHBrutto": 0.027659727223377856,
+     "paarSd": 0.44040669459032267,
+     "kosten": 0.09725225548413206,
+     "umschlag": 0.6710880059094336,
+     "obergrenze": 0.06288403061224491
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.048863018309492266,
+     "mde80": 0.13689463209587355,
+     "mde80Schwelle": 0.1877121711377455,
+     "hh0": false,
+     "mittelBrutto": -0.011489062933051502,
+     "mittelNetto": -0.12502621774667114,
+     "tHH": -2.5587084480694715,
+     "tHHBrutto": -0.2351869067597857,
+     "seHHBrutto": 0.04885077613944792,
+     "paarSd": 0.7490627266061788,
+     "kosten": 0.11353715481361962,
+     "umschlag": 0.759080366452161,
+     "obergrenze": 0.06219246383957928
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.03572169863935647,
+     "mde80": 0.10007791090802108,
+     "mde80Schwelle": 0.1372284774929518,
+     "hh0": false,
+     "mittelBrutto": 0.026692770956985034,
+     "mittelNetto": -0.09083199115984346,
+     "tHH": -2.542767970719318,
+     "tHHBrutto": 0.7489810103237154,
+     "seHHBrutto": 0.03563878201057222,
+     "paarSd": 0.5681928735077669,
+     "kosten": 0.11752476211682854,
+     "umschlag": 0.7530008571675229,
+     "obergrenze": 0.06227135378510386
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.03650776922490612,
+     "mde80": 0.10228016626049698,
+     "mde80Schwelle": 0.14024824625439936,
+     "hh0": false,
+     "mittelBrutto": -0.06353262336171088,
+     "mittelNetto": -0.18341189737625285,
+     "tHH": -5.023914122124084,
+     "tHHBrutto": -1.7440531361464564,
+     "seHHBrutto": 0.03642814662292247,
+     "paarSd": 0.5783964672593558,
+     "kosten": 0.11987927401454175,
+     "umschlag": 0.7489821067821055,
+     "obergrenze": 0.06237302527472538
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.02940418523521034,
+     "mde80": 0.08237876535496529,
+     "mde80Schwelle": 0.11295911799958405,
+     "hh0": false,
+     "mittelBrutto": -0.034650866080492934,
+     "mittelNetto": -0.14414306587847361,
+     "tHH": -4.902127527950274,
+     "tHHBrutto": -1.1761371595641374,
+     "seHHBrutto": 0.029461586005270112,
+     "paarSd": 0.4649247397715005,
+     "kosten": 0.10949219979798058,
+     "umschlag": 0.7053818559842642,
+     "obergrenze": 0.06313135553201835
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.03136182497915014,
+     "mde80": 0.08786328886158704,
+     "mde80Schwelle": 0.12047958683990317,
+     "hh0": false,
+     "mittelBrutto": 0.001986680414865703,
+     "mittelNetto": -0.10875047215640965,
+     "tHH": -3.467606627761897,
+     "tHHBrutto": 0.06361430293165922,
+     "seHHBrutto": 0.031230090141834803,
+     "paarSd": 0.4988442916238657,
+     "kosten": 0.11073715257127546,
+     "umschlag": 0.7081137667447187,
+     "obergrenze": 0.06306735871271599
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.04090483269726,
+     "mde80": 0.11459897928464363,
+     "mde80Schwelle": 0.15714000528979402,
+     "hh0": false,
+     "mittelBrutto": -0.006483236169184462,
+     "mittelNetto": -0.12999958359026828,
+     "tHH": -3.178098405936672,
+     "tHHBrutto": -0.15840388274641065,
+     "seHHBrutto": 0.04092851801848506,
+     "paarSd": 0.6337004902888499,
+     "kosten": 0.12351634742108372,
+     "umschlag": 0.763983901684686,
+     "obergrenze": 0.06164703154388648
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.05971707074031989,
+     "mde80": 0.16730334538608022,
+     "mde80Schwelle": 0.2294090989560129,
+     "hh0": false,
+     "mittelBrutto": -0.10070040425869378,
+     "mittelNetto": -0.22924053983051917,
+     "tHH": -3.8387773711703526,
+     "tHHBrutto": -1.6842297993001065,
+     "seHHBrutto": 0.059790180829564075,
+     "paarSd": 0.771728630227983,
+     "kosten": 0.1285401355718253,
+     "umschlag": 0.7983784204416727,
+     "obergrenze": 0.06100371063114773
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.04718485710638596,
+    "mde80": 0.13219309566925092,
+    "mde80Schwelle": 0.1812653470598923,
+    "hh0": false,
+    "mittelBrutto": -0.06373977196422989,
+    "mittelNetto": -0.19207422765534563,
+    "tHH": -4.0706752003568205,
+    "tHHBrutto": -1.3481981621837513,
+    "seHHBrutto": 0.04727774725711467,
+    "paarSd": 0.7475547051462257,
+    "kosten": 0.12833445569111565,
+    "umschlag": 0.7974322924065949,
+    "obergrenze": 0.06102694069506345
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,032 Pp je Periode"
+  },
+  "G1|1|ls": {
+   "groesse": "G1",
+   "haltedauer": 1,
+   "portfolio": "ls",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2396,
+     "seHH": 0.02143785907206262,
+     "mde80": 0.06006030597629064,
+     "mde80Schwelle": 0.08235567941123577,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1243,
+     "seHH": 0.025622492095977605,
+     "mde80": 0.07178397385609087,
+     "mde80Schwelle": 0.09843136563590757,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.03494949673876707,
+     "mde80": 0.09791451006332984,
+     "mde80Schwelle": 0.1342619866716476,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.06889938300242082,
+     "mde80": 0.1930285114195822,
+     "mde80Schwelle": 0.26468386974209984,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 251,
+      "seHH": 0.047135030904306395,
+      "mde80": 0.1320535025815048,
+      "mde80Schwelle": 0.18107393472198346,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.04786077979221294,
+      "mde80": 0.13408676066586378,
+      "mde80Schwelle": 0.18386197164976523,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.04358397464130547,
+      "mde80": 0.12210486335508142,
+      "mde80Schwelle": 0.1674321969820391,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.11375459399330148,
+      "mde80": 0.3186948705316334,
+      "mde80Schwelle": 0.436999648284667,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.06664838225648924,
+      "mde80": 0.18672210772978026,
+      "mde80Schwelle": 0.2560364252765291,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.07717271563636764,
+      "mde80": 0.21620708012684758,
+      "mde80Schwelle": 0.29646670438866995,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.052247878206112125,
+      "mde80": 0.14637765558224372,
+      "mde80Schwelle": 0.20071544891660034,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.054793204445940526,
+      "mde80": 0.15350864157574698,
+      "mde80Schwelle": 0.21049357419952514,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.07251751043762808,
+      "mde80": 0.20316505724205883,
+      "mde80Schwelle": 0.278583268097192,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.08213466370796842,
+      "mde80": 0.23010847384424432,
+      "mde80Schwelle": 0.3155285241005315,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": 0.010899340702113026,
+    "mittelNetto": -0.16844634289622698,
+    "tHH": -7.857423744134171,
+    "tHHBrutto": 0.5085826822729351,
+    "seHHBrutto": 0.021430813674980394,
+    "paarSd": 1.0495798065474078,
+    "hh0": false,
+    "kosten": 0.1793456835983393,
+    "umschlag": 0.721643425496166,
+    "obergrenze": 0.12433979293376005
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1243,
+    "mittelBrutto": 0.019372373895194986,
+    "mittelNetto": -0.1596131133776805,
+    "tHH": -6.229414093671929,
+    "tHHBrutto": 0.7558978309382748,
+    "seHHBrutto": 0.025628296711936057,
+    "paarSd": 0.9037154322550695,
+    "hh0": false,
+    "kosten": 0.17898548727287555,
+    "umschlag": 0.7174768554819757,
+    "obergrenze": 0.1247755906395994
+   },
+   "tor1": {
+    "entdeckungNetto": -0.1596131133776805,
+    "viermalBestaetigungsMde80": 0.39165804025331935,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1596 Pp < 4 × Bestätigungs-MDE80 = 0.3917 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 251,
+     "seHH": 0.047135030904306395,
+     "mde80": 0.1320535025815048,
+     "mde80Schwelle": 0.18107393472198346,
+     "hh0": false,
+     "mittelBrutto": 0.0484180794010593,
+     "mittelNetto": -0.1292615138133845,
+     "tHH": -2.7423661623519755,
+     "tHHBrutto": 1.0267530215549514,
+     "seHHBrutto": 0.047156500526030334,
+     "paarSd": 0.748251357304972,
+     "kosten": 0.17767959321444368,
+     "umschlag": 0.6950657686713461,
+     "obergrenze": 0.12779185258964149
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.04786077979221294,
+     "mde80": 0.13408676066586378,
+     "mde80Schwelle": 0.18386197164976523,
+     "hh0": false,
+     "mittelBrutto": 0.02482705324605662,
+     "mittelNetto": -0.1491166250278607,
+     "tHH": -3.1156330021209206,
+     "tHHBrutto": 0.5177833542316748,
+     "seHHBrutto": 0.04794872806001429,
+     "paarSd": 0.759772355170469,
+     "kosten": 0.17394367827391735,
+     "umschlag": 0.6876397009365145,
+     "obergrenze": 0.12643798520204894
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.04358397464130547,
+     "mde80": 0.12210486335508142,
+     "mde80Schwelle": 0.1674321969820391,
+     "hh0": false,
+     "mittelBrutto": 0.06556522816619574,
+     "mittelNetto": -0.10638091492572102,
+     "tHH": -2.4408263771542655,
+     "tHHBrutto": 1.5070274944691135,
+     "seHHBrutto": 0.04350632513794492,
+     "paarSd": 0.6932510136303847,
+     "kosten": 0.17194614309191697,
+     "umschlag": 0.6860962230009848,
+     "obergrenze": 0.1249122789115645
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.11375459399330148,
+     "mde80": 0.3186948705316334,
+     "mde80Schwelle": 0.436999648284667,
+     "hh0": false,
+     "mittelBrutto": 0.2028228234136822,
+     "mittelNetto": 0.017986548897599944,
+     "tHH": 0.15811712095477298,
+     "tHHBrutto": 1.7855123839999736,
+     "seHHBrutto": 0.11359362457028202,
+     "paarSd": 1.7438408286793912,
+     "kosten": 0.1848362745160823,
+     "umschlag": 0.7454108391608395,
+     "obergrenze": 0.12381089414858651
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.06664838225648924,
+     "mde80": 0.18672210772978026,
+     "mde80Schwelle": 0.2560364252765291,
+     "hh0": false,
+     "mittelBrutto": 0.030587704781204334,
+     "mittelNetto": -0.15542310917335966,
+     "tHH": -2.3319862224896966,
+     "tHHBrutto": 0.45862496481915116,
+     "seHHBrutto": 0.06669437367690163,
+     "paarSd": 1.0601157635666374,
+     "kosten": 0.18601081395456392,
+     "umschlag": 0.7551381488881488,
+     "obergrenze": 0.12323430402930417
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.07717271563636764,
+     "mde80": 0.21620708012684758,
+     "mde80Schwelle": 0.29646670438866995,
+     "hh0": false,
+     "mittelBrutto": -0.17928035633897438,
+     "mittelNetto": -0.3628580288842067,
+     "tHH": -4.70189529929163,
+     "tHHBrutto": -2.3247410807981597,
+     "seHHBrutto": 0.07711841882943006,
+     "paarSd": 1.2226555344398937,
+     "kosten": 0.1835776725452326,
+     "umschlag": 0.7466291264291266,
+     "obergrenze": 0.12341263538461558
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.052247878206112125,
+     "mde80": 0.14637765558224372,
+     "mde80Schwelle": 0.20071544891660034,
+     "hh0": false,
+     "mittelBrutto": -0.015048191463447384,
+     "mittelNetto": -0.1932616840953136,
+     "tHH": -3.698938420674569,
+     "tHHBrutto": -0.28783115777725377,
+     "seHHBrutto": 0.052281315128130945,
+     "paarSd": 0.8261181523745073,
+     "kosten": 0.17821349263186614,
+     "umschlag": 0.7088921119041602,
+     "obergrenze": 0.1259710726422175
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.054793204445940526,
+     "mde80": 0.15350864157574698,
+     "mde80Schwelle": 0.21049357419952514,
+     "hh0": false,
+     "mittelBrutto": 0.061187839733678424,
+     "mittelNetto": -0.11176621975070841,
+     "tHH": -2.0397825037040493,
+     "tHHBrutto": 1.1151807751166152,
+     "seHHBrutto": 0.05486809053651411,
+     "paarSd": 0.8715461321465975,
+     "kosten": 0.17295405948438689,
+     "umschlag": 0.6970281151828773,
+     "obergrenze": 0.12370597440258162
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.07251751043762808,
+     "mde80": 0.20316505724205883,
+     "mde80Schwelle": 0.278583268097192,
+     "hh0": false,
+     "mittelBrutto": -0.03580174312253111,
+     "mittelNetto": -0.21697776798575644,
+     "tHH": -2.99207414424931,
+     "tHHBrutto": -0.49339429783137345,
+     "seHHBrutto": 0.07256213393606549,
+     "paarSd": 1.1234462748928429,
+     "kosten": 0.1811760248632253,
+     "umschlag": 0.7433348361815468,
+     "obergrenze": 0.1218433814895871
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.08213466370796842,
+     "mde80": 0.23010847384424432,
+     "mde80Schwelle": 0.3155285241005315,
+     "hh0": false,
+     "mittelBrutto": -0.1340748072359624,
+     "mittelNetto": -0.3198754374260141,
+     "tHH": -3.8945242238202638,
+     "tHHBrutto": -1.633498223042391,
+     "seHHBrutto": 0.08207833063096208,
+     "paarSd": 1.061433032996872,
+     "kosten": 0.1858006301900516,
+     "umschlag": 0.7704930614015485,
+     "obergrenze": 0.12100805296493017
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.06889938300242082,
+    "mde80": 0.1930285114195822,
+    "mde80Schwelle": 0.26468386974209984,
+    "hh0": false,
+    "mittelBrutto": -0.07564451708829592,
+    "mittelNetto": -0.26225533117283173,
+    "tHH": -3.8063523901747747,
+    "tHHBrutto": -1.0979841175494982,
+    "seHHBrutto": 0.06889399935685844,
+    "paarSd": 1.091580246370202,
+    "kosten": 0.18661081408453611,
+    "umschlag": 0.7714368676644996,
+    "obergrenze": 0.12124275026707038
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,060 Pp je Periode"
+  },
+  "G1|3|longUni": {
+   "groesse": "G1",
+   "haltedauer": 3,
+   "portfolio": "longUni",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2396,
+     "seHH": 0.02349416787301027,
+     "mde80": 0.06582126071302558,
+     "mde80Schwelle": 0.09025519530095626,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1243,
+     "seHH": 0.03127585944212132,
+     "mde80": 0.0876224478130471,
+     "mde80Schwelle": 0.12014934163285328,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.035330357107451825,
+     "mde80": 0.09898152847223704,
+     "mde80Schwelle": 0.13572509986398693,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.09879411095505375,
+     "mde80": 0.27678158125167857,
+     "mde80Schwelle": 0.3795274566449345,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 251,
+      "seHH": 0.05514351055390921,
+      "mde80": 0.15449005916783204,
+      "mde80Schwelle": 0.21183931014389762,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.06326983450082442,
+      "mde80": 0.1772567683375097,
+      "mde80Schwelle": 0.2430573962183671,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.06456850332239482,
+      "mde80": 0.18089511890802132,
+      "mde80Schwelle": 0.24804636236331196,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.08249409327873757,
+      "mde80": 0.23111545172971118,
+      "mde80Schwelle": 0.3169093087395982,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.08174950958239614,
+      "mde80": 0.22902942604604104,
+      "mde80Schwelle": 0.314048916011733,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.06580145095739261,
+      "mde80": 0.18434934500223113,
+      "mde80Schwelle": 0.25278285399791944,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.053865185599429696,
+      "mde80": 0.15090870397536224,
+      "mde80Schwelle": 0.20692849699876914,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.0572377927480954,
+      "mde80": 0.16035740016306407,
+      "mde80Schwelle": 0.2198847046210833,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.08696285182957644,
+      "mde80": 0.24363512568574136,
+      "mde80Schwelle": 0.3340764915885009,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.13020127815408933,
+      "mde80": 0.3647719008764967,
+      "mde80Schwelle": 0.5001812301567495,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": -0.035538683733600966,
+    "mittelNetto": -0.15179327661709488,
+    "tHH": -6.4608918024916555,
+    "tHHBrutto": -1.5182036496999372,
+    "seHHBrutto": 0.023408377223058944,
+    "paarSd": 0.9610057011984134,
+    "hh0": false,
+    "kosten": 0.11625459288349375,
+    "umschlag": 0.7489337399739665,
+    "obergrenze": 0.06268399338568946
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1243,
+    "mittelBrutto": -0.03230655173140609,
+    "mittelNetto": -0.1462421343201788,
+    "tHH": -4.675878998331364,
+    "tHHBrutto": -1.0352822838689901,
+    "seHHBrutto": 0.03120554870375269,
+    "paarSd": 0.8953886795548316,
+    "hh0": false,
+    "kosten": 0.11393558258877276,
+    "umschlag": 0.7392741201239686,
+    "obergrenze": 0.0627642799151996
+   },
+   "tor1": {
+    "entdeckungNetto": -0.1462421343201788,
+    "viermalBestaetigungsMde80": 0.39592611388894816,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1462 Pp < 4 × Bestätigungs-MDE80 = 0.3959 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 251,
+     "seHH": 0.05514351055390921,
+     "mde80": 0.15449005916783204,
+     "mde80Schwelle": 0.21183931014389762,
+     "hh0": false,
+     "mittelBrutto": -0.015885090199111374,
+     "mittelNetto": -0.11580467740017705,
+     "tHH": -2.1000599388202623,
+     "tHHBrutto": -0.28904338130656937,
+     "seHHBrutto": 0.05495746045906894,
+     "paarSd": 0.7117015419657226,
+     "kosten": 0.09991958720106563,
+     "umschlag": 0.7025564409030535,
+     "obergrenze": 0.06383862549800806
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.06326983450082442,
+     "mde80": 0.1772567683375097,
+     "mde80Schwelle": 0.2430573962183671,
+     "hh0": false,
+     "mittelBrutto": 0.08669133098651201,
+     "mittelNetto": -0.01563263508749749,
+     "tHH": -0.24707880478640723,
+     "tHHBrutto": 1.3773168340274853,
+     "seHHBrutto": 0.06294218501128261,
+     "paarSd": 0.7557178322260767,
+     "kosten": 0.10232396607400958,
+     "umschlag": 0.7049146846955594,
+     "obergrenze": 0.06378073705179295
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.06456850332239482,
+     "mde80": 0.18089511890802132,
+     "mde80Schwelle": 0.24804636236331196,
+     "hh0": false,
+     "mittelBrutto": 0.0379445762208476,
+     "mittelNetto": -0.06625105182496495,
+     "tHH": -1.0260583475842557,
+     "tHHBrutto": 0.5890133123084875,
+     "seHHBrutto": 0.06442057493086786,
+     "paarSd": 0.7680929680432729,
+     "kosten": 0.10419562804581257,
+     "umschlag": 0.7092628381318838,
+     "obergrenze": 0.06288403061224491
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.08249409327873757,
+     "mde80": 0.23111545172971118,
+     "mde80Schwelle": 0.3169093087395982,
+     "hh0": false,
+     "mittelBrutto": 0.011935246131233368,
+     "mittelNetto": -0.10724580827783063,
+     "tHH": -1.3000422698805842,
+     "tHHBrutto": 0.14451616862881853,
+     "seHHBrutto": 0.0825876180117144,
+     "paarSd": 1.1641036124097937,
+     "kosten": 0.11918105440906414,
+     "umschlag": 0.7841070135941921,
+     "obergrenze": 0.06219246383957928
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.08174950958239614,
+     "mde80": 0.22902942604604104,
+     "mde80Schwelle": 0.314048916011733,
+     "hh0": false,
+     "mittelBrutto": -0.1073156836716387,
+     "mittelNetto": -0.23073018382224722,
+     "tHH": -2.8224045012733927,
+     "tHHBrutto": -1.3089701848081479,
+     "seHHBrutto": 0.08198481899522231,
+     "paarSd": 1.0743152079503904,
+     "kosten": 0.12341450015060881,
+     "umschlag": 0.7835904835904824,
+     "obergrenze": 0.06227135378510386
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.06580145095739261,
+     "mde80": 0.18434934500223113,
+     "mde80Schwelle": 0.25278285399791944,
+     "hh0": false,
+     "mittelBrutto": -0.08921203136248958,
+     "mittelNetto": -0.21485023953924487,
+     "tHH": -3.2651292093598894,
+     "tHHBrutto": -1.3581602997988398,
+     "seHHBrutto": 0.06568593661271278,
+     "paarSd": 1.090242645401605,
+     "kosten": 0.12563820817675514,
+     "umschlag": 0.775427084027083,
+     "obergrenze": 0.06237302527472538
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.053865185599429696,
+     "mde80": 0.15090870397536224,
+     "mde80Schwelle": 0.20692849699876914,
+     "hh0": false,
+     "mittelBrutto": -0.04406368198914176,
+     "mittelNetto": -0.15828533721736746,
+     "tHH": -2.9385462141439893,
+     "tHHBrutto": -0.8168267548204919,
+     "seHHBrutto": 0.05394495433591094,
+     "paarSd": 0.7972802216373264,
+     "kosten": 0.11422165522822576,
+     "umschlag": 0.7222328541605636,
+     "obergrenze": 0.06313135553201835
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.0572377927480954,
+     "mde80": 0.16035740016306407,
+     "mde80Schwelle": 0.2198847046210833,
+     "hh0": false,
+     "mittelBrutto": -0.003353626348186176,
+     "mittelNetto": -0.1198916217306027,
+     "tHH": -2.0946234292829558,
+     "tHHBrutto": -0.05841692337151854,
+     "seHHBrutto": 0.057408472658819494,
+     "paarSd": 0.8626967072640388,
+     "kosten": 0.11653799538241659,
+     "umschlag": 0.7285364327030976,
+     "obergrenze": 0.06306735871271599
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.08696285182957644,
+     "mde80": 0.24363512568574136,
+     "mde80Schwelle": 0.3340764915885009,
+     "hh0": false,
+     "mittelBrutto": -0.032286653846297836,
+     "mittelNetto": -0.1609191572481842,
+     "tHH": -1.8504356039696355,
+     "tHHBrutto": -0.3722373087739672,
+     "seHHBrutto": 0.08673674853453012,
+     "paarSd": 1.0650273632292657,
+     "kosten": 0.1286325034018863,
+     "umschlag": 0.7805064723322559,
+     "obergrenze": 0.06164703154388648
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.13020127815408933,
+     "mde80": 0.3647719008764967,
+     "mde80Schwelle": 0.5001812301567495,
+     "hh0": false,
+     "mittelBrutto": -0.27950537599715586,
+     "mittelNetto": -0.4155009560824081,
+     "tHH": -3.1912202550782576,
+     "tHHBrutto": -2.1487198532677168,
+     "seHHBrutto": 0.1300799522897745,
+     "paarSd": 1.247719154121399,
+     "kosten": 0.13599558008525248,
+     "umschlag": 0.8293068106985538,
+     "obergrenze": 0.06100371063114773
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.09879411095505375,
+    "mde80": 0.27678158125167857,
+    "mde80Schwelle": 0.3795274566449345,
+    "hh0": false,
+    "mittelBrutto": -0.19611195028611864,
+    "mittelNetto": -0.33082972918116277,
+    "tHH": -3.3486786406901654,
+    "tHHBrutto": -1.9883097826605476,
+    "seHHBrutto": 0.09863249278173454,
+    "paarSd": 1.2096690560467613,
+    "kosten": 0.13471777889504416,
+    "umschlag": 0.8221097446069578,
+    "obergrenze": 0.06102694069506345
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,066 Pp je Periode"
+  },
+  "G1|3|ls": {
+   "groesse": "G1",
+   "haltedauer": 3,
+   "portfolio": "ls",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2396,
+     "seHH": 0.04862600302885698,
+     "mde80": 0.13623061008564571,
+     "mde80Schwelle": 0.18680165323565698,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1243,
+     "seHH": 0.057714187540276025,
+     "mde80": 0.16169206781283732,
+     "mde80Schwelle": 0.22171482285472438,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.07949116998673154,
+     "mde80": 0.22270246183482711,
+     "mde80Schwelle": 0.3053732786210279,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.1305415577190715,
+     "mde80": 0.3657252281057507,
+     "mde80Schwelle": 0.5014884481335851,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 251,
+      "seHH": 0.11209943176183274,
+      "mde80": 0.3140577680239506,
+      "mde80Schwelle": 0.43064117705625665,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.08944128407763476,
+      "mde80": 0.25057870147190153,
+      "mde80Schwelle": 0.34359763691264167,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.10645680822225481,
+      "mde80": 0.29824939391546906,
+      "mde80Schwelle": 0.4089644744666141,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.2738483568567206,
+      "mde80": 0.7672135565697884,
+      "mde80Schwelle": 1.052015847700778,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.16281777830402788,
+      "mde80": 0.4561502876965645,
+      "mde80Schwelle": 0.6254807771327535,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.16470317829129344,
+      "mde80": 0.4614324243008877,
+      "mde80Schwelle": 0.632723729723833,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.11787044435356364,
+      "mde80": 0.3302258369009439,
+      "mde80Schwelle": 0.4528110990286501,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.12383479160027754,
+      "mde80": 0.34693555214733757,
+      "mde80Schwelle": 0.4757237354116262,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.13371861630146628,
+      "mde80": 0.37462607543018794,
+      "mde80Schwelle": 0.5136934363837129,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.1631909675362417,
+      "mde80": 0.4571958146495348,
+      "mde80Schwelle": 0.6269144208872262,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": 0.0013682080056396095,
+    "mittelNetto": -0.18979635879280085,
+    "tHH": -3.90318650455738,
+    "tHHBrutto": 0.028155224299456404,
+    "seHHBrutto": 0.04859517335353019,
+    "paarSd": 1.7715547584266897,
+    "hh0": false,
+    "kosten": 0.19116456679843966,
+    "umschlag": 0.7684311334689908,
+    "obergrenze": 0.12433979293376005
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1243,
+    "mittelBrutto": -0.04480955521461314,
+    "mittelNetto": -0.235759433795905,
+    "tHH": -4.08494763322068,
+    "tHHBrutto": -0.7768874907844117,
+    "seHHBrutto": 0.05767830702148338,
+    "paarSd": 1.5646010945660744,
+    "hh0": false,
+    "kosten": 0.19094987858129214,
+    "umschlag": 0.7647339285209963,
+    "obergrenze": 0.1247755906395994
+   },
+   "tor1": {
+    "entdeckungNetto": -0.235759433795905,
+    "viermalBestaetigungsMde80": 0.8908098473393085,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.2358 Pp < 4 × Bestätigungs-MDE80 = 0.8908 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 251,
+     "seHH": 0.11209943176183274,
+     "mde80": 0.3140577680239506,
+     "mde80Schwelle": 0.43064117705625665,
+     "hh0": false,
+     "mittelBrutto": 0.08404337565313354,
+     "mittelNetto": -0.10668600318073715,
+     "tHH": -0.9517086884740237,
+     "tHHBrutto": 0.7504162611963235,
+     "seHHBrutto": 0.11199567493267067,
+     "paarSd": 1.295454021798435,
+     "kosten": 0.19072937883387073,
+     "umschlag": 0.7452246569278445,
+     "obergrenze": 0.12779185258964149
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.08944128407763476,
+     "mde80": 0.25057870147190153,
+     "mde80Schwelle": 0.34359763691264167,
+     "hh0": false,
+     "mittelBrutto": 0.1309018425561518,
+     "mittelNetto": -0.05694309186201964,
+     "tHH": -0.6366533357525728,
+     "tHHBrutto": 1.4640890632108845,
+     "seHHBrutto": 0.08940838767627415,
+     "paarSd": 1.2378118584898654,
+     "kosten": 0.18784493441817154,
+     "umschlag": 0.7423940601231432,
+     "obergrenze": 0.12643798520204894
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.10645680822225481,
+     "mde80": 0.29824939391546906,
+     "mde80Schwelle": 0.4089644744666141,
+     "hh0": false,
+     "mittelBrutto": 0.01045548608506382,
+     "mittelNetto": -0.17594770569669946,
+     "tHH": -1.6527614216026962,
+     "tHHBrutto": 0.09849633035042028,
+     "seHHBrutto": 0.10615102154431896,
+     "paarSd": 1.2841001127903058,
+     "kosten": 0.18640319178176318,
+     "umschlag": 0.7425900158043013,
+     "obergrenze": 0.1249122789115645
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.2738483568567206,
+     "mde80": 0.7672135565697884,
+     "mde80Schwelle": 1.052015847700778,
+     "hh0": false,
+     "mittelBrutto": 0.40324824488491107,
+     "mittelNetto": 0.20720096728240908,
+     "tHH": 0.7566266588585671,
+     "tHHBrutto": 1.474001224313053,
+     "seHHBrutto": 0.2735738873438466,
+     "paarSd": 2.809338398104832,
+     "kosten": 0.1960472776025019,
+     "umschlag": 0.7887713841239484,
+     "obergrenze": 0.12381089414858651
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.16281777830402788,
+     "mde80": 0.4561502876965645,
+     "mde80Schwelle": 0.6254807771327535,
+     "hh0": false,
+     "mittelBrutto": -0.21176777326149052,
+     "mittelNetto": -0.40915026411939825,
+     "tHH": -2.5129335898159497,
+     "tHHBrutto": -1.2998006497960963,
+     "seHHBrutto": 0.16292327080672808,
+     "paarSd": 1.983859426395115,
+     "kosten": 0.19738249085790768,
+     "umschlag": 0.8012289408122742,
+     "obergrenze": 0.12323430402930417
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.16470317829129344,
+     "mde80": 0.4614324243008877,
+     "mde80Schwelle": 0.632723729723833,
+     "hh0": false,
+     "mittelBrutto": -0.20310569017668034,
+     "mittelNetto": -0.39901723002350026,
+     "tHH": -2.422644384662692,
+     "tHHBrutto": -1.2330415330899254,
+     "seHHBrutto": 0.16471926105174262,
+     "paarSd": 2.072765043350742,
+     "kosten": 0.19591153984681975,
+     "umschlag": 0.7961466866466869,
+     "obergrenze": 0.12341263538461558
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.11787044435356364,
+     "mde80": 0.3302258369009439,
+     "mde80Schwelle": 0.4528110990286501,
+     "hh0": false,
+     "mittelBrutto": -0.014323227832967713,
+     "mittelNetto": -0.20391473281615946,
+     "tHH": -1.7299903630166844,
+     "tHHBrutto": -0.12159041564853734,
+     "seHHBrutto": 0.11779898733441012,
+     "paarSd": 1.4893415928674607,
+     "kosten": 0.18959150498319174,
+     "umschlag": 0.7529502068658698,
+     "obergrenze": 0.1259710726422175
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.12383479160027754,
+     "mde80": 0.34693555214733757,
+     "mde80Schwelle": 0.4757237354116262,
+     "hh0": false,
+     "mittelBrutto": 0.16095291620222574,
+     "mittelNetto": -0.021012292682804686,
+     "tHH": -0.16968004234730422,
+     "tHHBrutto": 1.2972011019826741,
+     "seHHBrutto": 0.12407707328973228,
+     "paarSd": 1.5495238471818849,
+     "kosten": 0.18196520888503037,
+     "umschlag": 0.732796155564013,
+     "obergrenze": 0.12370597440258162
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.13371861630146628,
+     "mde80": 0.37462607543018794,
+     "mde80Schwelle": 0.5136934363837129,
+     "hh0": false,
+     "mittelBrutto": -0.09412545741352382,
+     "mittelNetto": -0.28473360897516536,
+     "tHH": -2.129349052889079,
+     "tHHBrutto": -0.7033459970651156,
+     "seHHBrutto": 0.1338252550043442,
+     "paarSd": 1.6595987026557537,
+     "kosten": 0.1906081515616415,
+     "umschlag": 0.7823678062164503,
+     "obergrenze": 0.1218433814895871
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.1631909675362417,
+     "mde80": 0.4571958146495348,
+     "mde80Schwelle": 0.6269144208872262,
+     "hh0": false,
+     "mittelBrutto": -0.3495401241576956,
+     "mittelNetto": -0.5472650872531085,
+     "tHH": -3.3535255995805713,
+     "tHHBrutto": -2.1423511967717954,
+     "seHHBrutto": 0.1631572473665385,
+     "paarSd": 1.7380003238157509,
+     "kosten": 0.19772496309541301,
+     "umschlag": 0.8191687156649947,
+     "obergrenze": 0.12100805296493017
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.1305415577190715,
+    "mde80": 0.3657252281057507,
+    "mde80Schwelle": 0.5014884481335851,
+    "hh0": false,
+    "mittelBrutto": -0.24540015376689236,
+    "mittelNetto": -0.4423775354222356,
+    "tHH": -3.388787012747638,
+    "tHHBrutto": -1.8810883065204282,
+    "seHHBrutto": 0.13045647719793924,
+    "paarSd": 1.7366240871984584,
+    "kosten": 0.19697738165534331,
+    "umschlag": 0.8134617737096068,
+    "obergrenze": 0.12124275026707038
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,136 Pp je Periode"
+  },
+  "G1|5|longUni": {
+   "groesse": "G1",
+   "haltedauer": 5,
+   "portfolio": "longUni",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2396,
+     "seHH": 0.036335074629858216,
+     "mde80": 0.10179634508301078,
+     "mde80Schwelle": 0.13958482269806333,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1243,
+     "seHH": 0.04903007766123475,
+     "mde80": 0.13736266557571528,
+     "mde80Schwelle": 0.18835394634339944,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.054077770227336404,
+     "mde80": 0.15150428106890568,
+     "mde80Schwelle": 0.20774516210533553,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.13792795151277376,
+     "mde80": 0.38641894895818696,
+     "mde80Schwelle": 0.5298640185314717,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 251,
+      "seHH": 0.08942465074105578,
+      "mde80": 0.25053210151614186,
+      "mde80Schwelle": 0.3435337382868399,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.10407212074126151,
+      "mde80": 0.2915684534687183,
+      "mde80Schwelle": 0.39980345903963027,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.10532120602338453,
+      "mde80": 0.2950678907951141,
+      "mde80Schwelle": 0.40460194505943403,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.12116128076936646,
+      "mde80": 0.33944544420345707,
+      "mde80Schwelle": 0.4654531762035982,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.14064586104609694,
+      "mde80": 0.3940334443067452,
+      "mde80Schwelle": 0.5403051397946861,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.09885485780748707,
+      "mde80": 0.2769517696334558,
+      "mde80Schwelle": 0.37976082175324233,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.06585039745654149,
+      "mde80": 0.18448647351424666,
+      "mde80Schwelle": 0.2529708868690498,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.09630680247436575,
+      "mde80": 0.2698131378121831,
+      "mde80Schwelle": 0.36997221238552347,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.12722302054706922,
+      "mde80": 0.35642801436466914,
+      "mde80Schwelle": 0.4887399557336211,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.17856300779071055,
+      "mde80": 0.5002621226264546,
+      "mde80Schwelle": 0.6859676507287936,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": -0.032809579923266864,
+    "mittelNetto": -0.14978000821668722,
+    "tHH": -4.122187988946802,
+    "tHHBrutto": -0.905755624289377,
+    "seHHBrutto": 0.03622343493479058,
+    "paarSd": 1.2391240312502536,
+    "hh0": false,
+    "kosten": 0.11697042829342018,
+    "umschlag": 0.7498542199651339,
+    "obergrenze": 0.06268399338568946
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1243,
+    "mittelBrutto": -0.05144931490594638,
+    "mittelNetto": -0.16632037104156597,
+    "tHH": -3.392211046262851,
+    "tHHBrutto": -1.051445454386567,
+    "seHHBrutto": 0.048931986620231176,
+    "paarSd": 1.149820053177951,
+    "hh0": false,
+    "kosten": 0.1148710561356198,
+    "umschlag": 0.7414681003056107,
+    "obergrenze": 0.0627642799151996
+   },
+   "tor1": {
+    "entdeckungNetto": -0.16632037104156597,
+    "viermalBestaetigungsMde80": 0.6060171242756227,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1663 Pp < 4 × Bestätigungs-MDE80 = 0.6060 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 251,
+     "seHH": 0.08942465074105578,
+     "mde80": 0.25053210151614186,
+     "mde80Schwelle": 0.3435337382868399,
+     "hh0": false,
+     "mittelBrutto": 0.01665882662720649,
+     "mittelNetto": -0.08671717361616643,
+     "tHH": -0.969723369312011,
+     "tHHBrutto": 0.18621286214438937,
+     "seHHBrutto": 0.0894612028157821,
+     "paarSd": 0.9259286341722404,
+     "kosten": 0.10337600024337286,
+     "umschlag": 0.7198317839752085,
+     "obergrenze": 0.06383862549800806
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.10407212074126151,
+     "mde80": 0.2915684534687183,
+     "mde80Schwelle": 0.39980345903963027,
+     "hh0": false,
+     "mittelBrutto": 0.1305125673734748,
+     "mittelNetto": 0.02874961357694275,
+     "tHH": 0.2762470234311693,
+     "tHHBrutto": 1.2544666221506688,
+     "seHHBrutto": 0.1040382940996253,
+     "paarSd": 1.0142191290281288,
+     "kosten": 0.10176295379653211,
+     "umschlag": 0.6907279971024978,
+     "obergrenze": 0.06378073705179295
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.10532120602338453,
+     "mde80": 0.2950678907951141,
+     "mde80Schwelle": 0.40460194505943403,
+     "hh0": false,
+     "mittelBrutto": -0.016209387200972328,
+     "mittelNetto": -0.12033611353047377,
+     "tHH": -1.1425630039192247,
+     "tHHBrutto": -0.1544406206932217,
+     "seHHBrutto": 0.10495546526694156,
+     "paarSd": 1.0227548877985138,
+     "kosten": 0.1041267263295015,
+     "umschlag": 0.7057244783435247,
+     "obergrenze": 0.06288403061224491
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.12116128076936646,
+     "mde80": 0.33944544420345707,
+     "mde80Schwelle": 0.4654531762035982,
+     "hh0": false,
+     "mittelBrutto": 0.1109235735526649,
+     "mittelNetto": -0.010138062559450657,
+     "tHH": -0.08367411185384145,
+     "tHHBrutto": 0.9143950286664065,
+     "seHHBrutto": 0.12130815465438462,
+     "paarSd": 1.5384085123165103,
+     "kosten": 0.12106163611211548,
+     "umschlag": 0.7941456572866823,
+     "obergrenze": 0.06219246383957928
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.14064586104609694,
+     "mde80": 0.3940334443067452,
+     "mde80Schwelle": 0.5403051397946861,
+     "hh0": false,
+     "mittelBrutto": -0.18108519859129366,
+     "mittelNetto": -0.30304596363416025,
+     "tHH": -2.1546738836120913,
+     "tHHBrutto": -1.286758367560043,
+     "seHHBrutto": 0.14072976182363456,
+     "paarSd": 1.3134160661232024,
+     "kosten": 0.12196076504286636,
+     "umschlag": 0.7727124727124718,
+     "obergrenze": 0.06227135378510386
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.09885485780748707,
+     "mde80": 0.2769517696334558,
+     "mde80Schwelle": 0.37976082175324233,
+     "hh0": false,
+     "mittelBrutto": -0.09642418954228452,
+     "mittelNetto": -0.22146824144396537,
+     "tHH": -2.2403374639945293,
+     "tHHBrutto": -0.9780115766184676,
+     "seHHBrutto": 0.09859207380313105,
+     "paarSd": 1.3523691061648675,
+     "kosten": 0.12504405190168094,
+     "umschlag": 0.7704375624375616,
+     "obergrenze": 0.06237302527472538
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.06585039745654149,
+     "mde80": 0.18448647351424666,
+     "mde80Schwelle": 0.2529708868690498,
+     "hh0": false,
+     "mittelBrutto": -0.029357082967832016,
+     "mittelNetto": -0.14475898042788235,
+     "tHH": -2.198300785100306,
+     "tHHBrutto": -0.4444110019197117,
+     "seHHBrutto": 0.06605840728744095,
+     "paarSd": 1.0202319761056888,
+     "kosten": 0.11540189746005035,
+     "umschlag": 0.7255362442109415,
+     "obergrenze": 0.06313135553201835
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.09630680247436575,
+     "mde80": 0.2698131378121831,
+     "mde80Schwelle": 0.36997221238552347,
+     "hh0": false,
+     "mittelBrutto": 0.055055552763022625,
+     "mittelNetto": -0.06351961200510375,
+     "tHH": -0.6595547808994172,
+     "tHHBrutto": 0.5721572271184053,
+     "seHHBrutto": 0.09622451688725961,
+     "paarSd": 1.0705774489605582,
+     "kosten": 0.11857516476812638,
+     "umschlag": 0.7394212269212262,
+     "obergrenze": 0.06306735871271599
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.12722302054706922,
+     "mde80": 0.35642801436466914,
+     "mde80Schwelle": 0.4887399557336211,
+     "hh0": false,
+     "mittelBrutto": -0.04646324114175317,
+     "mittelNetto": -0.17670686633882196,
+     "tHH": -1.3889535524228889,
+     "tHHBrutto": -0.36586661947217475,
+     "seHHBrutto": 0.12699502679086808,
+     "paarSd": 1.4008390013540293,
+     "kosten": 0.13024362519706875,
+     "umschlag": 0.7855331984412451,
+     "obergrenze": 0.06164703154388648
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.17856300779071055,
+     "mde80": 0.5002621226264546,
+     "mde80Schwelle": 0.6859676507287936,
+     "hh0": false,
+     "mittelBrutto": -0.3803793831375445,
+     "mittelNetto": -0.5157019413562614,
+     "tHH": -2.8880670623598776,
+     "tHHBrutto": -2.131574746057703,
+     "seHHBrutto": 0.17844993887314867,
+     "paarSd": 1.6428938265553352,
+     "kosten": 0.13532255821871725,
+     "umschlag": 0.8244548884653414,
+     "obergrenze": 0.06100371063114773
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.13792795151277376,
+    "mde80": 0.38641894895818696,
+    "mde80Schwelle": 0.5298640185314717,
+    "hh0": false,
+    "mittelBrutto": -0.25170202191437957,
+    "mittelNetto": -0.38668804576296023,
+    "tHH": -2.803550995442344,
+    "tHHBrutto": -1.8271637292677703,
+    "seHHBrutto": 0.13775559238757892,
+    "paarSd": 1.5971229394889341,
+    "kosten": 0.13498602384858105,
+    "umschlag": 0.823665732238178,
+    "obergrenze": 0.06102694069506345
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,102 Pp je Periode"
+  },
+  "G1|5|ls": {
+   "groesse": "G1",
+   "haltedauer": 5,
+   "portfolio": "ls",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2396,
+     "seHH": 0.07896007998866482,
+     "mde80": 0.22121456009624335,
+     "mde80Schwelle": 0.30333304328445476,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1243,
+     "seHH": 0.09157604937055802,
+     "mde80": 0.2565594599165554,
+     "mde80Schwelle": 0.3517985512619357,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.13079438845057453,
+     "mde80": 0.3664335586831296,
+     "mde80Schwelle": 0.5024597226717271,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.21680285194047785,
+     "mde80": 0.6073948699964428,
+     "mde80Schwelle": 0.8328698360145398,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 251,
+      "seHH": 0.19577909490953374,
+      "mde80": 0.5484947122985497,
+      "mde80Schwelle": 0.7521049710044648,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.12751634509503565,
+      "mde80": 0.3572497924182519,
+      "mde80Schwelle": 0.489866791317089,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.16894299989738368,
+      "mde80": 0.4733107085125101,
+      "mde80Schwelle": 0.6490114284057892,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.45517364664900845,
+      "mde80": 1.2752144884518621,
+      "mde80Schwelle": 1.748595080966831,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.2608148070287488,
+      "mde80": 0.7306987633717427,
+      "mde80Schwelle": 1.0019461626816415,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.26036037766513975,
+      "mde80": 0.7294256340666555,
+      "mde80Schwelle": 1.0002004268384008,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.18250755680114059,
+      "mde80": 0.5113131711340755,
+      "mde80Schwelle": 0.7011210302072617,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.2075376325551691,
+      "mde80": 0.5814374313665618,
+      "mde80Schwelle": 0.7972765692239376,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.18381697202848307,
+      "mde80": 0.5149816288349982,
+      "mde80Schwelle": 0.7061512797446206,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.28152724802397505,
+      "mde80": 0.7887267380639685,
+      "mde80Schwelle": 1.0815150760089025,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": -0.014035053062824621,
+    "mittelNetto": -0.20703247111343923,
+    "tHH": -2.621989125937562,
+    "tHHBrutto": -0.17784669318094032,
+    "seHHBrutto": 0.07891658153320529,
+    "paarSd": 2.4299792076767477,
+    "hh0": false,
+    "kosten": 0.192997418050614,
+    "umschlag": 0.7752219506864348,
+    "obergrenze": 0.12433979293376005
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1243,
+    "mittelBrutto": -0.07618070896059002,
+    "mittelNetto": -0.2690733520286329,
+    "tHH": -2.9382502726214,
+    "tHHBrutto": -0.8323707074515944,
+    "seHHBrutto": 0.09152257314992099,
+    "paarSd": 2.0406823065402966,
+    "hh0": false,
+    "kosten": 0.19289264306804257,
+    "umschlag": 0.7719427080168133,
+    "obergrenze": 0.1247755906395994
+   },
+   "tor1": {
+    "entdeckungNetto": -0.2690733520286329,
+    "viermalBestaetigungsMde80": 1.4657342347325184,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.2691 Pp < 4 × Bestätigungs-MDE80 = 1.4657 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 251,
+     "seHH": 0.19577909490953374,
+     "mde80": 0.5484947122985497,
+     "mde80Schwelle": 0.7521049710044648,
+     "hh0": false,
+     "mittelBrutto": 0.1581236763425855,
+     "mittelNetto": -0.038314627900758534,
+     "tHH": -0.19570336617636877,
+     "tHHBrutto": 0.8077197366864411,
+     "seHHBrutto": 0.1957655225700762,
+     "paarSd": 1.7478668331422618,
+     "kosten": 0.19643830424334388,
+     "umschlag": 0.766810535635237,
+     "obergrenze": 0.12779185258964149
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.12751634509503565,
+     "mde80": 0.3572497924182519,
+     "mde80Schwelle": 0.489866791317089,
+     "hh0": false,
+     "mittelBrutto": 0.17322347956580705,
+     "mittelNetto": -0.017405699590583218,
+     "tHH": -0.13649779232310227,
+     "tHHBrutto": 1.3542861999391445,
+     "seHHBrutto": 0.1279075867225044,
+     "paarSd": 1.5876640748167712,
+     "kosten": 0.1906291791563902,
+     "umschlag": 0.7523024065354744,
+     "obergrenze": 0.12643798520204894
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.16894299989738368,
+     "mde80": 0.4733107085125101,
+     "mde80Schwelle": 0.6490114284057892,
+     "hh0": false,
+     "mittelBrutto": -0.05106383002185268,
+     "mittelNetto": -0.2382361524954548,
+     "tHH": -1.4101569916490173,
+     "tHHBrutto": -0.30278099350851684,
+     "seHHBrutto": 0.16864939053849928,
+     "paarSd": 1.7531458836543259,
+     "kosten": 0.18717232247360208,
+     "umschlag": 0.7451443287752806,
+     "obergrenze": 0.1249122789115645
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.45517364664900845,
+     "mde80": 1.2752144884518621,
+     "mde80Schwelle": 1.748595080966831,
+     "hh0": false,
+     "mittelBrutto": 0.5026376982533117,
+     "mittelNetto": 0.304658779789297,
+     "tHH": 0.6693242942164975,
+     "tHHBrutto": 1.104633439594306,
+     "seHHBrutto": 0.4550266905172754,
+     "paarSd": 4.329451043779547,
+     "kosten": 0.19797891846401464,
+     "umschlag": 0.7963674680020828,
+     "obergrenze": 0.12381089414858651
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.2608148070287488,
+     "mde80": 0.7306987633717427,
+     "mde80Schwelle": 1.0019461626816415,
+     "hh0": false,
+     "mittelBrutto": -0.4323818556563782,
+     "mittelNetto": -0.6288767532741926,
+     "tHH": -2.41120034724437,
+     "tHHBrutto": -1.6591939556285584,
+     "seHHBrutto": 0.2605975354415858,
+     "paarSd": 2.5227292313267844,
+     "kosten": 0.19649489761781438,
+     "umschlag": 0.7983332254165587,
+     "obergrenze": 0.12323430402930417
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.26036037766513975,
+     "mde80": 0.7294256340666555,
+     "mde80Schwelle": 1.0002004268384008,
+     "hh0": false,
+     "mittelBrutto": -0.3266624481349402,
+     "mittelNetto": -0.5217483824073345,
+     "tHH": -2.003946941106287,
+     "tHHBrutto": -1.25560260712492,
+     "seHHBrutto": 0.2601638816941709,
+     "paarSd": 2.743402566479673,
+     "kosten": 0.19508593427239435,
+     "umschlag": 0.791827405927406,
+     "obergrenze": 0.12341263538461558
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.18250755680114059,
+     "mde80": 0.5113131711340755,
+     "mde80Schwelle": 0.7011210302072617,
+     "hh0": false,
+     "mittelBrutto": 0.00996885866353089,
+     "mittelNetto": -0.18327154022138592,
+     "tHH": -1.0041860371901081,
+     "tHHBrutto": 0.054666976845021094,
+     "seHHBrutto": 0.18235613598667152,
+     "paarSd": 1.871343612672669,
+     "kosten": 0.19324039888491698,
+     "umschlag": 0.7663492464697286,
+     "obergrenze": 0.1259710726422175
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.2075376325551691,
+     "mde80": 0.5814374313665618,
+     "mde80Schwelle": 0.7972765692239376,
+     "hh0": false,
+     "mittelBrutto": 0.22480563143961846,
+     "mittelNetto": 0.03886030491208958,
+     "tHH": 0.18724461888500854,
+     "tHHBrutto": 1.084627774220119,
+     "seHHBrutto": 0.20726523585592366,
+     "paarSd": 2.064644762517847,
+     "kosten": 0.18594532652752885,
+     "umschlag": 0.7487250624155382,
+     "obergrenze": 0.12370597440258162
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.18381697202848307,
+     "mde80": 0.5149816288349982,
+     "mde80Schwelle": 0.7061512797446206,
+     "hh0": false,
+     "mittelBrutto": -0.06291044776697646,
+     "mittelNetto": -0.2539503732193454,
+     "tHH": -1.3815393128116313,
+     "tHHBrutto": -0.3418480801538598,
+     "seHHBrutto": 0.18403042585075094,
+     "paarSd": 2.1721621813382557,
+     "kosten": 0.1910399254523688,
+     "umschlag": 0.783590107084301,
+     "obergrenze": 0.1218433814895871
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.28152724802397505,
+     "mde80": 0.7887267380639685,
+     "mde80Schwelle": 1.0815150760089025,
+     "hh0": false,
+     "mittelBrutto": -0.45191016717985394,
+     "mittelNetto": -0.649811140516158,
+     "tHH": -2.308164289876551,
+     "tHHBrutto": -1.6062199635233478,
+     "seHHBrutto": 0.2813501123398813,
+     "paarSd": 2.3102691402403153,
+     "kosten": 0.19790097333630427,
+     "umschlag": 0.8198406567249586,
+     "obergrenze": 0.12100805296493017
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.21680285194047785,
+    "mde80": 0.6073948699964428,
+    "mde80Schwelle": 0.8328698360145398,
+    "hh0": false,
+    "mittelBrutto": -0.2815297873450007,
+    "mittelNetto": -0.4792633302798316,
+    "tHH": -2.2105951374265636,
+    "tHHBrutto": -1.2998321247674622,
+    "seHHBrutto": 0.21658934410115915,
+    "paarSd": 2.29200235639873,
+    "kosten": 0.1977335429348309,
+    "umschlag": 0.8170798780682685,
+    "obergrenze": 0.12124275026707038
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,221 Pp je Periode"
+  },
+  "G2|1|longUni": {
+   "groesse": "G2",
+   "haltedauer": 1,
+   "portfolio": "longUni",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2386,
+     "seHH": 0.013113235972247077,
+     "mde80": 0.03673804189984741,
+     "mde80Schwelle": 0.05037580731098437,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1233,
+     "seHH": 0.016076116649287136,
+     "mde80": 0.04503884840464284,
+     "mde80Schwelle": 0.06175800971990146,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.020990612310075117,
+     "mde80": 0.05880729944790645,
+     "mde80Schwelle": 0.08063753625038457,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.041927160705565826,
+     "mde80": 0.11746313343271322,
+     "mde80Schwelle": 0.1610673805665017,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 241,
+      "seHH": 0.030374630775511252,
+      "mde80": 0.08509756558067233,
+      "mde80Schwelle": 0.11668718158720404,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.031202956506013884,
+      "mde80": 0.0874182029472485,
+      "mde80Schwelle": 0.11986927771350295,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.029256872183055848,
+      "mde80": 0.08196605310804926,
+      "mde80Schwelle": 0.11239320017842735,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.06616509805999549,
+      "mde80": 0.18536813872488336,
+      "mde80Schwelle": 0.25417984070727867,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.04071138470515645,
+      "mde80": 0.11405701538996632,
+      "mde80Schwelle": 0.15639685548332902,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.043773360879055034,
+      "mde80": 0.12263544783876058,
+      "mde80Schwelle": 0.16815974315297783,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.034953770845366224,
+      "mde80": 0.09792648440037802,
+      "mde80Schwelle": 0.13427840607955888,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.03688528396757472,
+      "mde80": 0.10333781156355734,
+      "mde80Schwelle": 0.14169850688983504,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.04255932119762868,
+      "mde80": 0.11923419426727652,
+      "mde80Schwelle": 0.16349588831281034,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.05158724387655015,
+      "mde80": 0.1445268224445429,
+      "mde80Schwelle": 0.19817755607615506,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": -0.0017449271388069937,
+    "mittelNetto": -0.12719082554254676,
+    "tHH": -9.699423224880121,
+    "tHHBrutto": -0.13316716974636628,
+    "seHHBrutto": 0.013103283205090476,
+    "paarSd": 0.6406725607070485,
+    "hh0": false,
+    "kosten": 0.12544589840373993,
+    "umschlag": 0.8454556734207698,
+    "obergrenze": 0.06237676722917111
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1233,
+    "mittelBrutto": 0.008159671584358286,
+    "mittelNetto": -0.11636316286423079,
+    "tHH": -7.238263157874678,
+    "tHHBrutto": 0.5076183514133711,
+    "seHHBrutto": 0.01607442197792724,
+    "paarSd": 0.5647274152203711,
+    "hh0": false,
+    "kosten": 0.1245228344485888,
+    "umschlag": 0.8437089788031013,
+    "obergrenze": 0.0625865062687406
+   },
+   "tor1": {
+    "entdeckungNetto": -0.11636316286423079,
+    "viermalBestaetigungsMde80": 0.2352291977916258,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1164 Pp < 4 × Bestätigungs-MDE80 = 0.2352 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 241,
+     "seHH": 0.030374630775511252,
+     "mde80": 0.08509756558067233,
+     "mde80Schwelle": 0.11668718158720404,
+     "hh0": false,
+     "mittelBrutto": 0.001881007013152038,
+     "mittelNetto": -0.10975430405243623,
+     "tHH": -3.613354343748032,
+     "tHHBrutto": 0.0618991971120066,
+     "seHHBrutto": 0.03038822958799216,
+     "paarSd": 0.4725224305486967,
+     "kosten": 0.11163531106558823,
+     "umschlag": 0.8094991108476568,
+     "obergrenze": 0.06402105809128639
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.031202956506013884,
+     "mde80": 0.0874182029472485,
+     "mde80Schwelle": 0.11986927771350295,
+     "hh0": false,
+     "mittelBrutto": 0.017319488666856186,
+     "mittelNetto": -0.09569876251858853,
+     "tHH": -3.0669774032516464,
+     "tHHBrutto": 0.5553953472354135,
+     "seHHBrutto": 0.031184072306452062,
+     "paarSd": 0.4953355096966699,
+     "kosten": 0.11301825118544462,
+     "umschlag": 0.811382751820997,
+     "obergrenze": 0.06327046385885042
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.029256872183055848,
+     "mde80": 0.08196605310804926,
+     "mde80Schwelle": 0.11239320017842735,
+     "hh0": false,
+     "mittelBrutto": -0.0036255224914516853,
+     "mittelNetto": -0.1191070036804209,
+     "tHH": -4.071077828661461,
+     "tHHBrutto": -0.1237463605331408,
+     "seHHBrutto": 0.02929801309575263,
+     "paarSd": 0.465362704147135,
+     "kosten": 0.11548148118896921,
+     "umschlag": 0.8179975778190048,
+     "obergrenze": 0.06270568877551022
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.06616509805999549,
+     "mde80": 0.18536813872488336,
+     "mde80Schwelle": 0.25417984070727867,
+     "hh0": false,
+     "mittelBrutto": 0.08548299394850371,
+     "mittelNetto": -0.04057752323628036,
+     "tHH": -0.6132768548077495,
+     "tHHBrutto": 1.2931581237647038,
+     "seHHBrutto": 0.06610405361692469,
+     "paarSd": 1.0143010086906032,
+     "kosten": 0.12606051718478412,
+     "umschlag": 0.8583257791591123,
+     "obergrenze": 0.06233914647318502
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.04071138470515645,
+     "mde80": 0.11405701538996632,
+     "mde80Schwelle": 0.15639685548332902,
+     "hh0": false,
+     "mittelBrutto": 0.03190748368991025,
+     "mittelNetto": -0.10048441768633702,
+     "tHH": -2.4682141964483413,
+     "tHHBrutto": 0.7845770311012713,
+     "seHHBrutto": 0.04066838873057922,
+     "paarSd": 0.6475593138400577,
+     "kosten": 0.1323919013762472,
+     "umschlag": 0.8754452337785664,
+     "obergrenze": 0.0619623260073261
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.043773360879055034,
+     "mde80": 0.12263544783876058,
+     "mde80Schwelle": 0.16815974315297783,
+     "hh0": false,
+     "mittelBrutto": -0.05028709766017455,
+     "mittelNetto": -0.1847670685467412,
+     "tHH": -4.2209934269668965,
+     "tHHBrutto": -1.150804415266435,
+     "seHHBrutto": 0.04369734508581291,
+     "paarSd": 0.6935060079004164,
+     "kosten": 0.1344799708865666,
+     "umschlag": 0.8722711288711286,
+     "obergrenze": 0.06170486109890118
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.034953770845366224,
+     "mde80": 0.09792648440037802,
+     "mde80Schwelle": 0.13427840607955888,
+     "hh0": false,
+     "mittelBrutto": 0.029490552405618348,
+     "mittelNetto": -0.09941531990757826,
+     "tHH": -2.84419441746033,
+     "tHHBrutto": 0.8428361699425311,
+     "seHHBrutto": 0.03498966164163216,
+     "paarSd": 0.5526721003938848,
+     "kosten": 0.12890587231319664,
+     "umschlag": 0.8585349501012137,
+     "obergrenze": 0.06303731828412569
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.03688528396757472,
+     "mde80": 0.10333781156355734,
+     "mde80Schwelle": 0.14169850688983504,
+     "hh0": false,
+     "mittelBrutto": -0.031317492732333925,
+     "mittelNetto": -0.1573420796572074,
+     "tHH": -4.26571420178097,
+     "tHHBrutto": -0.8485730271127112,
+     "seHHBrutto": 0.03690606669280121,
+     "paarSd": 0.5867009768845587,
+     "kosten": 0.12602458692487356,
+     "umschlag": 0.8380840499888114,
+     "obergrenze": 0.06239168759811625
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.04255932119762868,
+     "mde80": 0.11923419426727652,
+     "mde80Schwelle": 0.16349588831281034,
+     "hh0": false,
+     "mittelBrutto": -0.020345813379357376,
+     "mittelNetto": -0.15453363888514315,
+     "tHH": -3.631017472472128,
+     "tHHBrutto": -0.4785567784253472,
+     "seHHBrutto": 0.04251494137498929,
+     "paarSd": 0.6593319402845158,
+     "kosten": 0.1341878255057858,
+     "umschlag": 0.8564062512642115,
+     "obergrenze": 0.061202741637386385
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.05158724387655015,
+     "mde80": 0.1445268224445429,
+     "mde80Schwelle": 0.19817755607615506,
+     "hh0": false,
+     "mittelBrutto": -0.10910060766533869,
+     "mittelNetto": -0.24484354754918017,
+     "tHH": -4.746203308226705,
+     "tHHBrutto": -2.111693474058241,
+     "seHHBrutto": 0.05166498310745345,
+     "paarSd": 0.6666662071756149,
+     "kosten": 0.13574293988384137,
+     "umschlag": 0.8626132534486538,
+     "obergrenze": 0.06050986220901707
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.041927160705565826,
+    "mde80": 0.11746313343271322,
+    "mde80Schwelle": 0.1610673805665017,
+    "hh0": false,
+    "mittelBrutto": -0.0675137237826558,
+    "mittelNetto": -0.20364267450094226,
+    "tHH": -4.857058552832286,
+    "tHHBrutto": -1.6096262067235583,
+    "seHHBrutto": 0.04194372799140863,
+    "paarSd": 0.664256462368851,
+    "kosten": 0.1361289507182864,
+    "umschlag": 0.8653793787224124,
+    "obergrenze": 0.060687026454598
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,037 Pp je Periode"
+  },
+  "G2|1|ls": {
+   "groesse": "G2",
+   "haltedauer": 1,
+   "portfolio": "ls",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2386,
+     "seHH": 0.020095278166490028,
+     "mde80": 0.05629893131123846,
+     "mde80Schwelle": 0.07719802060438809,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1233,
+     "seHH": 0.024640481354931486,
+     "mde80": 0.06903277256397605,
+     "mde80Schwelle": 0.0946588731731048,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.03213857430588838,
+     "mde80": 0.09003942977537689,
+     "mde80Schwelle": 0.12346354705350081,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.06317164604894263,
+     "mde80": 0.17698168357071767,
+     "mde80Schwelle": 0.242680195461618,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 241,
+      "seHH": 0.04456973344356571,
+      "mde80": 0.1248665652154937,
+      "mde80Schwelle": 0.17121908799680205,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.048752869552658444,
+      "mde80": 0.1365860393387279,
+      "mde80Schwelle": 0.18728902367349268,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.04668024768790464,
+      "mde80": 0.13077938192243363,
+      "mde80Schwelle": 0.17932683951785447,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.09102425223974409,
+      "mde80": 0.25501354507486707,
+      "mde80Schwelle": 0.3496787674042009,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.06484540626031272,
+      "mde80": 0.18167089017889212,
+      "mde80Schwelle": 0.24911011268961736,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.07644322272209875,
+      "mde80": 0.21416333277823185,
+      "mde80Schwelle": 0.29366428440921455,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.05161735976577213,
+      "mde80": 0.1446111951197872,
+      "mde80Schwelle": 0.19829324927619021,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.061000498198584385,
+      "mde80": 0.170898995753154,
+      "mde80Schwelle": 0.23433951387968177,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.0640938649246114,
+      "mde80": 0.17956537197279132,
+      "mde80Schwelle": 0.24622299149438717,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.07595615810721594,
+      "mde80": 0.2127987725531762,
+      "mde80Schwelle": 0.29179317698468077,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": 0.010429880167236335,
+    "mittelNetto": -0.19642554344604762,
+    "tHH": -9.774711343563183,
+    "tHHBrutto": 0.5190996598672126,
+    "seHHBrutto": 0.020092250050605567,
+    "paarSd": 0.9817937653446683,
+    "hh0": false,
+    "kosten": 0.20685542361328363,
+    "umschlag": 0.8314692979629597,
+    "obergrenze": 0.12434760357488424
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1233,
+    "mittelBrutto": 0.043694735948820305,
+    "mittelNetto": -0.16349029170178578,
+    "tHH": -6.635028323789837,
+    "tHHBrutto": 1.7734684226036195,
+    "seHHBrutto": 0.024638011814539274,
+    "paarSd": 0.8655793963757562,
+    "hh0": false,
+    "kosten": 0.20718502765060615,
+    "umschlag": 0.8297620749199064,
+    "obergrenze": 0.12476615878054266
+   },
+   "tor1": {
+    "entdeckungNetto": -0.16349029170178578,
+    "viermalBestaetigungsMde80": 0.36015771910150757,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1635 Pp < 4 × Bestätigungs-MDE80 = 0.3602 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 241,
+     "seHH": 0.04456973344356571,
+     "mde80": 0.1248665652154937,
+     "mde80Schwelle": 0.17121908799680205,
+     "hh0": false,
+     "mittelBrutto": 0.1090619708447276,
+     "mittelNetto": -0.09558857219683196,
+     "tHH": -2.144696968355586,
+     "tHHBrutto": 2.4476300699862357,
+     "seHHBrutto": 0.04455819209858821,
+     "paarSd": 0.6933483054101989,
+     "kosten": 0.20465054304155927,
+     "umschlag": 0.8006503984719753,
+     "obergrenze": 0.1277271784232365
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.048752869552658444,
+     "mde80": 0.1365860393387279,
+     "mde80Schwelle": 0.18728902367349268,
+     "hh0": false,
+     "mittelBrutto": -0.0012863943234885076,
+     "mittelNetto": -0.20378514286467708,
+     "tHH": -4.179962015252595,
+     "tHHBrutto": -0.026301472856974182,
+     "seHHBrutto": 0.04890959264843616,
+     "paarSd": 0.7739339534824843,
+     "kosten": 0.20249874854118854,
+     "umschlag": 0.8016349465054644,
+     "obergrenze": 0.12610172453044965
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.04668024768790464,
+     "mde80": 0.13077938192243363,
+     "mde80Schwelle": 0.17932683951785447,
+     "hh0": false,
+     "mittelBrutto": 0.04057143081125602,
+     "mittelNetto": -0.16218673448684992,
+     "tHH": -3.474418892787372,
+     "tHHBrutto": 0.8701786148433284,
+     "seHHBrutto": 0.04662425635288764,
+     "paarSd": 0.7425006391107793,
+     "kosten": 0.20275816529810572,
+     "umschlag": 0.8091566887697834,
+     "obergrenze": 0.1250464767573695
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.09102425223974409,
+     "mde80": 0.25501354507486707,
+     "mde80Schwelle": 0.3496787674042009,
+     "hh0": false,
+     "mittelBrutto": 0.10485441547801833,
+     "mittelNetto": -0.10436303741334493,
+     "tHH": -1.1465410024843545,
+     "tHHBrutto": 1.153458715740248,
+     "seHHBrutto": 0.09090435058243637,
+     "paarSd": 1.3953881059522246,
+     "kosten": 0.20921745289136306,
+     "umschlag": 0.8402589338486777,
+     "obergrenze": 0.12446566521085761
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.06484540626031272,
+     "mde80": 0.18167089017889212,
+     "mde80Schwelle": 0.24911011268961736,
+     "hh0": false,
+     "mittelBrutto": 0.07414632099780367,
+     "mittelNetto": -0.1387311795417802,
+     "tHH": -2.1394141473162103,
+     "tHHBrutto": 1.1435568586618234,
+     "seHHBrutto": 0.06483833351720597,
+     "paarSd": 1.0314374489524385,
+     "kosten": 0.21287750053958393,
+     "umschlag": 0.861746972163639,
+     "obergrenze": 0.12349230158730165
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.07644322272209875,
+     "mde80": 0.21416333277823185,
+     "mde80Schwelle": 0.29366428440921455,
+     "hh0": false,
+     "mittelBrutto": -0.11040387050453418,
+     "mittelNetto": -0.3201967837357477,
+     "tHH": -4.1886876603801655,
+     "tHHBrutto": -1.444692578560856,
+     "seHHBrutto": 0.07642032093396231,
+     "paarSd": 1.2110981006809443,
+     "kosten": 0.2097929132312131,
+     "umschlag": 0.8524206682206686,
+     "obergrenze": 0.12308083736263753
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.05161735976577213,
+     "mde80": 0.1446111951197872,
+     "mde80Schwelle": 0.19829324927619021,
+     "hh0": false,
+     "mittelBrutto": 0.011862731411279935,
+     "mittelNetto": -0.19837680650506523,
+     "tHH": -3.8432187815350143,
+     "tHHBrutto": 0.2296143790267363,
+     "seHHBrutto": 0.05166371314184396,
+     "paarSd": 0.8161487000856142,
+     "kosten": 0.2102395379163451,
+     "umschlag": 0.835507854483758,
+     "obergrenze": 0.12571238713094154
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.061000498198584385,
+     "mde80": 0.170898995753154,
+     "mde80Schwelle": 0.23433951387968177,
+     "hh0": false,
+     "mittelBrutto": 0.005262971646184053,
+     "mittelNetto": -0.20087298632661912,
+     "tHH": -3.29297288151133,
+     "tHHBrutto": 0.0863078978333541,
+     "seHHBrutto": 0.060979027160943694,
+     "paarSd": 0.970279960837927,
+     "kosten": 0.20613595797280318,
+     "umschlag": 0.8288241465324802,
+     "obergrenze": 0.124296156898657
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.0640938649246114,
+     "mde80": 0.17956537197279132,
+     "mde80Schwelle": 0.24622299149438717,
+     "hh0": false,
+     "mittelBrutto": -0.01787037291203217,
+     "mittelNetto": -0.22309432892840791,
+     "tHH": -3.480743893207506,
+     "tHHBrutto": -0.2788382090276159,
+     "seHHBrutto": 0.06408868058058106,
+     "paarSd": 0.9929465774334835,
+     "kosten": 0.20522395601637555,
+     "umschlag": 0.8411326946561478,
+     "obergrenze": 0.12184212233450961
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.07595615810721594,
+     "mde80": 0.2127987725531762,
+     "mde80Schwelle": 0.29179317698468077,
+     "hh0": false,
+     "mittelBrutto": -0.16221846277852356,
+     "mittelNetto": -0.366551848746786,
+     "tHH": -4.825834506128912,
+     "tHHBrutto": -2.1357458198345642,
+     "seHHBrutto": 0.07595401160194665,
+     "paarSd": 0.9815876955579529,
+     "kosten": 0.20433338596826228,
+     "umschlag": 0.8493330872804655,
+     "obergrenze": 0.12040583709433722
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.06317164604894263,
+    "mde80": 0.17698168357071767,
+    "mde80Schwelle": 0.242680195461618,
+    "hh0": false,
+    "mittelBrutto": -0.0996585002432789,
+    "mittelNetto": -0.3046868541322451,
+    "tHH": -4.823158381787093,
+    "tHHBrutto": -1.5788903201856523,
+    "seHHBrutto": 0.06311933069015246,
+    "paarSd": 1.000835101169094,
+    "kosten": 0.20502835388896617,
+    "umschlag": 0.84930956905152,
+    "obergrenze": 0.12079594895825539
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,056 Pp je Periode"
+  },
+  "G2|3|longUni": {
+   "groesse": "G2",
+   "haltedauer": 3,
+   "portfolio": "longUni",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2386,
+     "seHH": 0.024273369121706932,
+     "mde80": 0.06800427093137415,
+     "mde80Schwelle": 0.09324857481794935,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1233,
+     "seHH": 0.02974140877311229,
+     "mde80": 0.08332353081875139,
+     "mde80Schwelle": 0.11425459594278818,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.03870827634773263,
+     "mde80": 0.10844510701580773,
+     "mde80Schwelle": 0.14870171441744967,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.08509983614494004,
+     "mde80": 0.23841570094366404,
+     "mde80Schwelle": 0.3269195305344017,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 241,
+      "seHH": 0.05287823370238703,
+      "mde80": 0.1481436595406075,
+      "mde80Schwelle": 0.20313702259109,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.0595502602209892,
+      "mde80": 0.16683600903512336,
+      "mde80Schwelle": 0.2287682796649521,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.051364806387827186,
+      "mde80": 0.14390364157613664,
+      "mde80Schwelle": 0.19732304021947691,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.11723262044379172,
+      "mde80": 0.3284389094353269,
+      "mde80Schwelle": 0.45036083469687027,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.0828115775662866,
+      "mde80": 0.23200491570970855,
+      "mde80Schwelle": 0.31812895637864663,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.07695436775256373,
+      "mde80": 0.21559535669558255,
+      "mde80Schwelle": 0.29562789915824883,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.057204864408542944,
+      "mde80": 0.16026514812697393,
+      "mde80Schwelle": 0.2197582071118586,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.0591500501398053,
+      "mde80": 0.16571478047167854,
+      "mde80Schwelle": 0.22723083261707605,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.08023795525064055,
+      "mde80": 0.22479465543019458,
+      "mde80Schwelle": 0.3082421288908607,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.11086632380765513,
+      "mde80": 0.31060309277952663,
+      "mde80Schwelle": 0.42590406953948795,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": -0.002462889736071126,
+    "mittelNetto": -0.13464238333670253,
+    "tHH": -5.54691780368865,
+    "tHHBrutto": -0.10167125877703573,
+    "seHHBrutto": 0.024224050785799988,
+    "paarSd": 1.0859411667232446,
+    "hh0": false,
+    "kosten": 0.13217949360063153,
+    "umschlag": 0.8784376033156313,
+    "obergrenze": 0.06237676722917111
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1233,
+    "mittelBrutto": -0.006590320314427971,
+    "mittelNetto": -0.13692836522901308,
+    "tHH": -4.603963661358339,
+    "tHHBrutto": -0.22186875883571439,
+    "seHHBrutto": 0.029703687662073503,
+    "paarSd": 1.0418161630735518,
+    "hh0": false,
+    "kosten": 0.13033804491458492,
+    "umschlag": 0.8705366602545951,
+    "obergrenze": 0.0625865062687406
+   },
+   "tor1": {
+    "entdeckungNetto": -0.13692836522901308,
+    "viermalBestaetigungsMde80": 0.4337804280632309,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1369 Pp < 4 × Bestätigungs-MDE80 = 0.4338 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 241,
+     "seHH": 0.05287823370238703,
+     "mde80": 0.1481436595406075,
+     "mde80Schwelle": 0.20313702259109,
+     "hh0": false,
+     "mittelBrutto": 0.02090200541812217,
+     "mittelNetto": -0.09617807438798716,
+     "tHH": -1.8188594371230953,
+     "tHHBrutto": 0.3974519997838002,
+     "seHHBrutto": 0.05259001194985085,
+     "paarSd": 0.758676470134928,
+     "kosten": 0.1170800798061092,
+     "umschlag": 0.8354887044721052,
+     "obergrenze": 0.06402105809128639
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.0595502602209892,
+     "mde80": 0.16683600903512336,
+     "mde80Schwelle": 0.2287682796649521,
+     "hh0": false,
+     "mittelBrutto": 0.03455696277722764,
+     "mittelNetto": -0.08740797802729959,
+     "tHH": -1.4678017812673068,
+     "tHHBrutto": 0.581281128302317,
+     "seHHBrutto": 0.05944965541570962,
+     "paarSd": 0.9260473819009237,
+     "kosten": 0.12196494080452731,
+     "umschlag": 0.8640096180932821,
+     "obergrenze": 0.06327046385885042
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.051364806387827186,
+     "mde80": 0.14390364157613664,
+     "mde80Schwelle": 0.19732304021947691,
+     "hh0": false,
+     "mittelBrutto": 0.021805130250969664,
+     "mittelNetto": -0.10143729304069311,
+     "tHH": -1.974840365887809,
+     "tHHBrutto": 0.42140570783068765,
+     "seHHBrutto": 0.05174379427183869,
+     "paarSd": 0.8212021976782109,
+     "kosten": 0.12324242329166285,
+     "umschlag": 0.8630444181039401,
+     "obergrenze": 0.06270568877551022
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.11723262044379172,
+     "mde80": 0.3284389094353269,
+     "mde80Schwelle": 0.45036083469687027,
+     "hh0": false,
+     "mittelBrutto": 0.1748695784536035,
+     "mittelNetto": 0.04340090867003336,
+     "tHH": 0.3702118787905311,
+     "tHHBrutto": 1.4939465815675168,
+     "seHHBrutto": 0.11705209584543672,
+     "paarSd": 1.3823211599515575,
+     "kosten": 0.13146866978357008,
+     "umschlag": 0.8813768852230386,
+     "obergrenze": 0.06233914647318502
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.0828115775662866,
+     "mde80": 0.23200491570970855,
+     "mde80Schwelle": 0.31812895637864663,
+     "hh0": false,
+     "mittelBrutto": -0.061254080401979945,
+     "mittelNetto": -0.19866295084264834,
+     "tHH": -2.398975562126303,
+     "tHHBrutto": -0.7381299947532486,
+     "seHHBrutto": 0.08298549149524365,
+     "paarSd": 1.3712546122299418,
+     "kosten": 0.13740887044066855,
+     "umschlag": 0.8977360602360591,
+     "obergrenze": 0.0619623260073261
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.07695436775256373,
+     "mde80": 0.21559535669558255,
+     "mde80Schwelle": 0.29562789915824883,
+     "hh0": false,
+     "mittelBrutto": 0.0034039571619530642,
+     "mittelNetto": -0.13697269343553173,
+     "tHH": -1.7799209770126205,
+     "tHHBrutto": 0.04437069951191835,
+     "seHHBrutto": 0.07671632855458436,
+     "paarSd": 1.1753424011728593,
+     "kosten": 0.1403766505974849,
+     "umschlag": 0.9009520479520466,
+     "obergrenze": 0.06170486109890118
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.057204864408542944,
+     "mde80": 0.16026514812697393,
+     "mde80Schwelle": 0.2197582071118586,
+     "hh0": false,
+     "mittelBrutto": -0.007104166506434733,
+     "mittelNetto": -0.14111809446962448,
+     "tHH": -2.4668897641605105,
+     "tHHBrutto": -0.12455747106655202,
+     "seHHBrutto": 0.05703525003842541,
+     "paarSd": 0.9734654774539435,
+     "kosten": 0.1340139279631897,
+     "umschlag": 0.8782895596148595,
+     "obergrenze": 0.06303731828412569
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.0591500501398053,
+     "mde80": 0.16571478047167854,
+     "mde80Schwelle": 0.22723083261707605,
+     "hh0": false,
+     "mittelBrutto": -0.0441670889849544,
+     "mittelNetto": -0.17990281054955984,
+     "tHH": -3.0414650558088607,
+     "tHHBrutto": -0.741861755783667,
+     "seHHBrutto": 0.059535470915734724,
+     "paarSd": 0.8926362452992544,
+     "kosten": 0.13573572156460542,
+     "umschlag": 0.8890054390054389,
+     "obergrenze": 0.06239168759811625
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.08023795525064055,
+     "mde80": 0.22479465543019458,
+     "mde80Schwelle": 0.3082421288908607,
+     "hh0": false,
+     "mittelBrutto": -0.0060802316121352055,
+     "mittelNetto": -0.14598364610179743,
+     "tHH": -1.8193839267935734,
+     "tHHBrutto": -0.07595791440943277,
+     "seHHBrutto": 0.08004737438367762,
+     "paarSd": 1.1615322796408594,
+     "kosten": 0.13990341448966215,
+     "umschlag": 0.877021520629109,
+     "obergrenze": 0.061202741637386385
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.11086632380765513,
+     "mde80": 0.31060309277952663,
+     "mde80Schwelle": 0.42590406953948795,
+     "hh0": false,
+     "mittelBrutto": -0.22328163761495923,
+     "mittelNetto": -0.36784205325640285,
+     "tHH": -3.31788807117463,
+     "tHHBrutto": -2.019428014277147,
+     "seHHBrutto": 0.11056677239118262,
+     "paarSd": 1.2413422107113345,
+     "kosten": 0.14456041564144378,
+     "umschlag": 0.904845972989134,
+     "obergrenze": 0.06050986220901707
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.08509983614494004,
+    "mde80": 0.23841570094366404,
+    "mde80Schwelle": 0.3269195305344017,
+    "hh0": false,
+    "mittelBrutto": -0.12821065388890457,
+    "mittelNetto": -0.27174898864323277,
+    "tHH": -3.1932962618211893,
+    "tHHBrutto": -1.5095803754236468,
+    "seHHBrutto": 0.08493131997222983,
+    "paarSd": 1.1974731422072626,
+    "kosten": 0.1435383347543281,
+    "umschlag": 0.8987230584001472,
+    "obergrenze": 0.060687026454598
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,068 Pp je Periode"
+  },
+  "G2|3|ls": {
+   "groesse": "G2",
+   "haltedauer": 3,
+   "portfolio": "ls",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2386,
+     "seHH": 0.038629247372688344,
+     "mde80": 0.10822369943932367,
+     "mde80Schwelle": 0.14839811670691955,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1233,
+     "seHH": 0.04740974158996403,
+     "mde80": 0.13282313203844323,
+     "mde80Schwelle": 0.18212926329200582,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.06161761400855689,
+     "mde80": 0.172627907406373,
+     "mde80Schwelle": 0.23671022597527216,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.12034371955918263,
+     "mde80": 0.33715496471700607,
+     "mde80Schwelle": 0.462312433058556,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 241,
+      "seHH": 0.08925240099621652,
+      "mde80": 0.2500495266310002,
+      "mde80Schwelle": 0.3428720236670654,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.0870241968199401,
+      "mde80": 0.2438069898107442,
+      "mde80Schwelle": 0.3343121545034819,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.08601284975941714,
+      "mde80": 0.24097359988598308,
+      "mde80Schwelle": 0.3304269636357769,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.1875711055837252,
+      "mde80": 0.5254992094033645,
+      "mde80Schwelle": 0.7205731592104387,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.12121106446020224,
+      "mde80": 0.3395849181917026,
+      "mde80Schwelle": 0.46564442523031296,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.13913545743353078,
+      "mde80": 0.3898018975457799,
+      "mde80Schwelle": 0.5345027732766519,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.10282136296379453,
+      "mde80": 0.28806433047936675,
+      "mde80Schwelle": 0.3949985479617131,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.09899672182201914,
+      "mde80": 0.27734921585656885,
+      "mde80Schwelle": 0.38030580655146873,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.12284339434059939,
+      "mde80": 0.34415805358462326,
+      "mde80Schwelle": 0.4719151836988466,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.14394420489799328,
+      "mde80": 0.403274084442218,
+      "mde80Schwelle": 0.552976057536131,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": 0.031337800910180756,
+    "mittelNetto": -0.18819426854026802,
+    "tHH": -4.871807796942095,
+    "tHHBrutto": 0.8120729230678425,
+    "seHHBrutto": 0.038589885243055594,
+    "paarSd": 1.660138426084189,
+    "hh0": false,
+    "kosten": 0.219532069450448,
+    "umschlag": 0.881487009320648,
+    "obergrenze": 0.12434760357488424
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1233,
+    "mittelBrutto": 0.02268853961973794,
+    "mittelNetto": -0.19655700385928043,
+    "tHH": -4.145920168881258,
+    "tHHBrutto": 0.4788032901783392,
+    "seHHBrutto": 0.0473859308930128,
+    "paarSd": 1.5294823481185489,
+    "hh0": false,
+    "kosten": 0.21924554347901848,
+    "umschlag": 0.8771423551744898,
+    "obergrenze": 0.12476615878054266
+   },
+   "tor1": {
+    "entdeckungNetto": -0.19655700385928043,
+    "viermalBestaetigungsMde80": 0.690511629625492,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1966 Pp < 4 × Bestätigungs-MDE80 = 0.6905 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 241,
+     "seHH": 0.08925240099621652,
+     "mde80": 0.2500495266310002,
+     "mde80Schwelle": 0.3428720236670654,
+     "hh0": false,
+     "mittelBrutto": 0.16310478729186803,
+     "mittelNetto": -0.05504974590315274,
+     "tHH": -0.6167872829044267,
+     "tHHBrutto": 1.8286975531292398,
+     "seHHBrutto": 0.08919177860372021,
+     "paarSd": 1.0800126746933578,
+     "kosten": 0.21815453319502076,
+     "umschlag": 0.8521265560165973,
+     "obergrenze": 0.1277271784232365
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.0870241968199401,
+     "mde80": 0.2438069898107442,
+     "mde80Schwelle": 0.3343121545034819,
+     "hh0": false,
+     "mittelBrutto": 0.10615862513602561,
+     "mittelNetto": -0.1132748491486537,
+     "tHH": -1.301647740375338,
+     "tHHBrutto": 1.2239129820916324,
+     "seHHBrutto": 0.08673706929278874,
+     "paarSd": 1.370139123946431,
+     "kosten": 0.2194334742846794,
+     "umschlag": 0.8678286852589646,
+     "obergrenze": 0.12610172453044965
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.08601284975941714,
+     "mde80": 0.24097359988598308,
+     "mde80Schwelle": 0.3304269636357769,
+     "hh0": false,
+     "mittelBrutto": 0.01117288615937171,
+     "mittelNetto": -0.2077342990143611,
+     "tHH": -2.41515424259754,
+     "tHHBrutto": 0.129783459382008,
+     "seHHBrutto": 0.08608867580332519,
+     "paarSd": 1.3252264306973256,
+     "kosten": 0.21890718517373273,
+     "umschlag": 0.872412761400857,
+     "obergrenze": 0.1250464767573695
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.1875711055837252,
+     "mde80": 0.5254992094033645,
+     "mde80Schwelle": 0.7205731592104387,
+     "hh0": false,
+     "mittelBrutto": 0.36691698033480635,
+     "mittelNetto": 0.14566519109128612,
+     "tHH": 0.776586514420614,
+     "tHHBrutto": 1.9637415838242118,
+     "seHHBrutto": 0.1868458576001982,
+     "paarSd": 2.221860641033117,
+     "kosten": 0.22125178924351985,
+     "umschlag": 0.8869503715657574,
+     "obergrenze": 0.12446566521085761
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.12121106446020224,
+     "mde80": 0.3395849181917026,
+     "mde80Schwelle": 0.46564442523031296,
+     "hh0": false,
+     "mittelBrutto": 0.007986317703433126,
+     "mittelNetto": -0.2151380148929829,
+     "tHH": -1.774904096841919,
+     "tHHBrutto": 0.06592852122472848,
+     "seHHBrutto": 0.1211360054051632,
+     "paarSd": 1.8676396099592498,
+     "kosten": 0.22312433259641612,
+     "umschlag": 0.9024056190722862,
+     "obergrenze": 0.12349230158730165
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.13913545743353078,
+     "mde80": 0.3898018975457799,
+     "mde80Schwelle": 0.5345027732766519,
+     "hh0": false,
+     "mittelBrutto": -0.13922012198819847,
+     "mittelNetto": -0.3595896527108093,
+     "tHH": -2.5844573291649695,
+     "tHHBrutto": -0.9998422522920737,
+     "seHHBrutto": 0.13924208710828667,
+     "paarSd": 1.9426972739195765,
+     "kosten": 0.2203695307226107,
+     "umschlag": 0.8951645021645024,
+     "obergrenze": 0.12308083736263753
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.10282136296379453,
+     "mde80": 0.28806433047936675,
+     "mde80Schwelle": 0.3949985479617131,
+     "hh0": false,
+     "mittelBrutto": -0.016692280695644223,
+     "mittelNetto": -0.23729839412928774,
+     "tHH": -2.307870536717601,
+     "tHHBrutto": -0.16247258883853152,
+     "seHHBrutto": 0.10273905780028743,
+     "paarSd": 1.5610135576863113,
+     "kosten": 0.22060611343364359,
+     "umschlag": 0.876220443991529,
+     "obergrenze": 0.12571238713094154
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.09899672182201914,
+     "mde80": 0.27734921585656885,
+     "mde80Schwelle": 0.38030580655146873,
+     "hh0": false,
+     "mittelBrutto": 0.056878708243906576,
+     "mittelNetto": -0.16303681459965197,
+     "tHH": -1.646891044460715,
+     "tHHBrutto": 0.5747895533121168,
+     "seHHBrutto": 0.09895570981788676,
+     "paarSd": 1.4776667894593987,
+     "kosten": 0.2199155228435585,
+     "umschlag": 0.8836112465576754,
+     "obergrenze": 0.124296156898657
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.12284339434059939,
+     "mde80": 0.34415805358462326,
+     "mde80Schwelle": 0.4719151836988466,
+     "hh0": false,
+     "mittelBrutto": -0.050230233750688844,
+     "mittelNetto": -0.26542541319242546,
+     "tHH": -2.1606812040417798,
+     "tHHBrutto": -0.4092654422049545,
+     "seHHBrutto": 0.12273265360512466,
+     "paarSd": 1.6840409478678784,
+     "kosten": 0.2151951794417368,
+     "umschlag": 0.8816774121214386,
+     "obergrenze": 0.12184212233450961
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.14394420489799328,
+     "mde80": 0.403274084442218,
+     "mde80Schwelle": 0.552976057536131,
+     "hh0": false,
+     "mittelBrutto": -0.27250463052619145,
+     "mittelNetto": -0.49004648253506705,
+     "tHH": -3.4044196699849136,
+     "tHHBrutto": -1.892896051340139,
+     "seHHBrutto": 0.14396175127168906,
+     "paarSd": 1.798304068336782,
+     "kosten": 0.21754185200887594,
+     "umschlag": 0.9028851427039771,
+     "obergrenze": 0.12040583709433722
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.12034371955918263,
+    "mde80": 0.33715496471700607,
+    "mde80Schwelle": 0.462312433058556,
+    "hh0": false,
+    "mittelBrutto": -0.18373326015950311,
+    "mittelNetto": -0.400337533116386,
+    "tHH": -3.326617579902107,
+    "tHHBrutto": -1.5277830357083195,
+    "seHHBrutto": 0.12026135640020355,
+    "paarSd": 1.7508051866881869,
+    "kosten": 0.21660427295688317,
+    "umschlag": 0.8960494814524996,
+    "obergrenze": 0.12079594895825539
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,108 Pp je Periode"
+  },
+  "G2|5|longUni": {
+   "groesse": "G2",
+   "haltedauer": 5,
+   "portfolio": "longUni",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2386,
+     "seHH": 0.03044525815367637,
+     "mde80": 0.08529543524333973,
+     "mde80Schwelle": 0.11695850372316315,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1233,
+     "seHH": 0.03935631094913073,
+     "mde80": 0.11026064075508465,
+     "mde80Schwelle": 0.15119120414218062,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.0469596022209628,
+     "mde80": 0.1315620215822494,
+     "mde80Schwelle": 0.18040000789205068,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.12340199335758552,
+     "mde80": 0.3457230245906116,
+     "mde80Schwelle": 0.47406109768250054,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 241,
+      "seHH": 0.0796200096934139,
+      "mde80": 0.2230634191570684,
+      "mde80Schwelle": 0.3058682292382189,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.0866534114047288,
+      "mde80": 0.24276819739148822,
+      "mde80Schwelle": 0.33288774525240616,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.05651729913835616,
+      "mde80": 0.15833886526601862,
+      "mde80Schwelle": 0.21711685636990902,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.09734507694071573,
+      "mde80": 0.2727219675571092,
+      "mde80Schwelle": 0.37396084757545356,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.10242609552840908,
+      "mde80": 0.2869569492323909,
+      "mde80Schwelle": 0.39348008858193634,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.0973273630341048,
+      "mde80": 0.272672340276348,
+      "mde80Schwelle": 0.373892797831817,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.09006563394700928,
+      "mde80": 0.2523278800659412,
+      "mde80Schwelle": 0.34599613937083085,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.07407837401664034,
+      "mde80": 0.2075379726450196,
+      "mde80Schwelle": 0.28457948162232555,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.09871836379274172,
+      "mde80": 0.2765693680017452,
+      "mde80Schwelle": 0.3792364663461966,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.16815897665722987,
+      "mde80": 0.4711141890028952,
+      "mde80Schwelle": 0.6459995247264143,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": 0.002849411246227195,
+    "mittelNetto": -0.13080317080324405,
+    "tHH": -4.2963396842621,
+    "tHHBrutto": 0.09368777614614886,
+    "seHHBrutto": 0.03041390631134458,
+    "paarSd": 1.349245707036416,
+    "hh0": false,
+    "kosten": 0.13365258204947134,
+    "umschlag": 0.8856110741191651,
+    "obergrenze": 0.06237676722917111
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1233,
+    "mittelBrutto": -0.014966394474034419,
+    "mittelNetto": -0.14726236654142158,
+    "tHH": -3.741772615115345,
+    "tHHBrutto": -0.38047868192892703,
+    "seHHBrutto": 0.039335697858704534,
+    "paarSd": 1.2592809537372947,
+    "hh0": false,
+    "kosten": 0.13229597206738697,
+    "umschlag": 0.8809707237103411,
+    "obergrenze": 0.0625865062687406
+   },
+   "tor1": {
+    "entdeckungNetto": -0.14726236654142158,
+    "viermalBestaetigungsMde80": 0.5262480863289976,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1473 Pp < 4 × Bestätigungs-MDE80 = 0.5262 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 241,
+     "seHH": 0.0796200096934139,
+     "mde80": 0.2230634191570684,
+     "mde80Schwelle": 0.3058682292382189,
+     "hh0": false,
+     "mittelBrutto": 0.07516079081053516,
+     "mittelNetto": -0.04614351275825965,
+     "tHH": -0.5795466860144907,
+     "tHHBrutto": 0.9462948324707324,
+     "seHHBrutto": 0.07942639886798682,
+     "paarSd": 1.049226080587741,
+     "kosten": 0.12130430356879485,
+     "umschlag": 0.8571576763485461,
+     "obergrenze": 0.06402105809128639
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.0866534114047288,
+     "mde80": 0.24276819739148822,
+     "mde80Schwelle": 0.33288774525240616,
+     "hh0": false,
+     "mittelBrutto": 0.022597216969235084,
+     "mittelNetto": -0.10058007053149234,
+     "tHH": -1.1607168015776876,
+     "tHHBrutto": 0.2602204746924809,
+     "seHHBrutto": 0.08683873548359196,
+     "paarSd": 1.1765828139890073,
+     "kosten": 0.12317728750072733,
+     "umschlag": 0.8648235341462419,
+     "obergrenze": 0.06327046385885042
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.05651729913835616,
+     "mde80": 0.15833886526601862,
+     "mde80Schwelle": 0.21711685636990902,
+     "hh0": false,
+     "mittelBrutto": -0.043919756179743405,
+     "mittelNetto": -0.167273270639545,
+     "tHH": -2.959682666895576,
+     "tHHBrutto": -0.7780547910559104,
+     "seHHBrutto": 0.05644815337508457,
+     "paarSd": 1.0572214564418447,
+     "kosten": 0.12335351445980186,
+     "umschlag": 0.8615726425250217,
+     "obergrenze": 0.06270568877551022
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.09734507694071573,
+     "mde80": 0.2727219675571092,
+     "mde80Schwelle": 0.37396084757545356,
+     "hh0": false,
+     "mittelBrutto": 0.23665681789584778,
+     "mittelNetto": 0.10365667268096423,
+     "tHH": 1.0648373388629848,
+     "tHHBrutto": 2.4293154429480124,
+     "seHHBrutto": 0.09741708043014002,
+     "paarSd": 1.5998713826925077,
+     "kosten": 0.1330001452148836,
+     "umschlag": 0.8892367485316199,
+     "obergrenze": 0.06233914647318502
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.10242609552840908,
+     "mde80": 0.2869569492323909,
+     "mde80Schwelle": 0.39348008858193634,
+     "hh0": false,
+     "mittelBrutto": -0.11870297359521854,
+     "mittelNetto": -0.2561162260981563,
+     "tHH": -2.5004977957704098,
+     "tHHBrutto": -1.1560046715233725,
+     "seHHBrutto": 0.1026838182572332,
+     "paarSd": 1.486937367733012,
+     "kosten": 0.13741325250293784,
+     "umschlag": 0.8994610327943656,
+     "obergrenze": 0.0619623260073261
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.0973273630341048,
+     "mde80": 0.272672340276348,
+     "mde80Schwelle": 0.373892797831817,
+     "hh0": false,
+     "mittelBrutto": 0.0009709416888033947,
+     "mittelNetto": -0.1399407308766957,
+     "tHH": -1.4378354299772675,
+     "tHHBrutto": 0.00998859251972279,
+     "seHHBrutto": 0.09720505535552079,
+     "paarSd": 1.5947603872517377,
+     "kosten": 0.14091167256549908,
+     "umschlag": 0.9048104562104553,
+     "obergrenze": 0.06170486109890118
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.09006563394700928,
+     "mde80": 0.2523278800659412,
+     "mde80Schwelle": 0.34599613937083085,
+     "hh0": false,
+     "mittelBrutto": 0.0457959231684318,
+     "mittelNetto": -0.09057938906624906,
+     "tHH": -1.0057042303121082,
+     "tHHBrutto": 0.508115947118645,
+     "seHHBrutto": 0.09012888382686098,
+     "paarSd": 1.1937622441920874,
+     "kosten": 0.13637531223468083,
+     "umschlag": 0.8910122675182905,
+     "obergrenze": 0.06303731828412569
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.07407837401664034,
+     "mde80": 0.2075379726450196,
+     "mde80Schwelle": 0.28457948162232555,
+     "hh0": false,
+     "mittelBrutto": 0.030375554347973698,
+     "mittelNetto": -0.10652081179712677,
+     "tHH": -1.4379474875244809,
+     "tHHBrutto": 0.40993222427981824,
+     "seHHBrutto": 0.0740989669727439,
+     "paarSd": 1.206199558491529,
+     "kosten": 0.13689636614510048,
+     "umschlag": 0.892525970502161,
+     "obergrenze": 0.06239168759811625
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.09871836379274172,
+     "mde80": 0.2765693680017452,
+     "mde80Schwelle": 0.3792364663461966,
+     "hh0": false,
+     "mittelBrutto": -0.02924507086808594,
+     "mittelNetto": -0.1724079092696034,
+     "tHH": -1.7464623869938949,
+     "tHHBrutto": -0.2957460807737281,
+     "seHHBrutto": 0.09888574276817215,
+     "paarSd": 1.440790034733693,
+     "kosten": 0.1431628384015174,
+     "umschlag": 0.8954785001770312,
+     "obergrenze": 0.061202741637386385
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.16815897665722987,
+     "mde80": 0.4711141890028952,
+     "mde80Schwelle": 0.6459995247264143,
+     "hh0": false,
+     "mittelBrutto": -0.2632211587037,
+     "mittelNetto": -0.40785243375216473,
+     "tHH": -2.4253979291484313,
+     "tHHBrutto": -1.5666348868269069,
+     "seHHBrutto": 0.16801691377933842,
+     "paarSd": 1.597062557300366,
+     "kosten": 0.14463127504846482,
+     "umschlag": 0.9069870823325819,
+     "obergrenze": 0.06050986220901707
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.12340199335758552,
+    "mde80": 0.3457230245906116,
+    "mde80Schwelle": 0.47406109768250054,
+    "hh0": false,
+    "mittelBrutto": -0.11279230455125207,
+    "mittelNetto": -0.25703092418199375,
+    "tHH": -2.082874977855405,
+    "tHHBrutto": -0.9145836228034693,
+    "seHHBrutto": 0.1233263987447209,
+    "paarSd": 1.533145013208083,
+    "kosten": 0.14423861963074164,
+    "umschlag": 0.9042556757827649,
+    "obergrenze": 0.060687026454598
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,085 Pp je Periode"
+  },
+  "G2|5|ls": {
+   "groesse": "G2",
+   "haltedauer": 5,
+   "portfolio": "ls",
+   "universum": "Klassen 2+3 gepoolt",
+   "stufeA": {
+    "gesamt": {
+     "n": 2386,
+     "seHH": 0.051741130640295514,
+     "mde80": 0.14495795160185193,
+     "mde80Schwelle": 0.19876872746775925,
+     "hh0": false
+    },
+    "entdeckung": {
+     "n": 1233,
+     "seHH": 0.06501865205501467,
+     "mde80": 0.1821562555973291,
+     "mde80Schwelle": 0.24977565373454436,
+     "hh0": false
+    },
+    "bestaetigung": {
+     "n": 1153,
+     "seHH": 0.08162847417066585,
+     "mde80": 0.22869033323653745,
+     "mde80Schwelle": 0.3135839463740299,
+     "hh0": false
+    },
+    "letzte250": {
+     "n": 250,
+     "seHH": 0.1844258407860214,
+     "mde80": 0.5166874355461175,
+     "mde80Schwelle": 0.7084903099635799,
+     "hh0": false
+    },
+    "jahre": {
+     "2017": {
+      "n": 241,
+      "seHH": 0.1231738540981671,
+      "mde80": 0.34508386964142496,
+      "mde80Schwelle": 0.47318467790351876,
+      "hh0": false
+     },
+     "2018": {
+      "n": 251,
+      "seHH": 0.1041402051235269,
+      "mde80": 0.29175919867407296,
+      "mde80Schwelle": 0.40006501200254097,
+      "hh0": false
+     },
+     "2019": {
+      "n": 252,
+      "seHH": 0.10483498356701425,
+      "mde80": 0.2937056899613471,
+      "mde80Schwelle": 0.40273407287104196,
+      "hh0": false
+     },
+     "2020": {
+      "n": 234,
+      "seHH": 0.19392332033043674,
+      "mde80": 0.5432955742377515,
+      "mde80Schwelle": 0.7449758273814058,
+      "hh0": false
+     },
+     "2021": {
+      "n": 252,
+      "seHH": 0.1560291056278147,
+      "mde80": 0.43713114232688566,
+      "mde80Schwelle": 0.5994014121798129,
+      "hh0": false
+     },
+     "2022": {
+      "n": 250,
+      "seHH": 0.19555413159023652,
+      "mde80": 0.5478644550632067,
+      "mde80Schwelle": 0.7512407519170526,
+      "hh0": false
+     },
+     "2023": {
+      "n": 249,
+      "seHH": 0.1495197235182288,
+      "mde80": 0.41889445740866976,
+      "mde80Schwelle": 0.5743949698676277,
+      "hh0": false
+     },
+     "2024": {
+      "n": 252,
+      "seHH": 0.15196818067893247,
+      "mde80": 0.4257540549900972,
+      "mde80Schwelle": 0.583800962896187,
+      "hh0": false
+     },
+     "2025": {
+      "n": 239,
+      "seHH": 0.17789093696817548,
+      "mde80": 0.49837924901004044,
+      "mde80Schwelle": 0.683385823456943,
+      "hh0": false
+     },
+     "2026": {
+      "n": 166,
+      "seHH": 0.23541162548783243,
+      "mde80": 0.6595292099667114,
+      "mde80Schwelle": 0.904357300474057,
+      "hh0": false
+     }
+    }
+   },
+   "stufeB": {
+    "mittelBrutto": 0.04509243634712125,
+    "mittelNetto": -0.17691393599709118,
+    "tHH": -3.4192127966239734,
+    "tHHBrutto": 0.871368170326901,
+    "seHHBrutto": 0.051749005624344126,
+    "paarSd": 2.121950999167312,
+    "hh0": false,
+    "kosten": 0.2220063723442115,
+    "umschlag": 0.8908516508725262,
+    "obergrenze": 0.12434760357488424
+   },
+   "entdeckung": {
+    "jahre": "ungerade",
+    "n": 1233,
+    "mittelBrutto": 0.04644009516538712,
+    "mittelNetto": -0.17573367108224044,
+    "tHH": -2.702819353030354,
+    "tHHBrutto": 0.71405253595208,
+    "seHHBrutto": 0.06503736465758272,
+    "paarSd": 1.9409489621079523,
+    "hh0": false,
+    "kosten": 0.22217376624762739,
+    "umschlag": 0.8882835035450709,
+    "obergrenze": 0.12476615878054266
+   },
+   "tor1": {
+    "entdeckungNetto": -0.17573367108224044,
+    "viermalBestaetigungsMde80": 0.9147613329461498,
+    "bestanden": false
+   },
+   "bestaetigung": {
+    "jahre": "gerade",
+    "n": 1153,
+    "gerechnet": false,
+    "mittel": null,
+    "grund": "Tor 1 nicht bestanden: Entdeckung -0.1757 Pp < 4 × Bestätigungs-MDE80 = 0.9148 Pp — das Mittel der Bestätigung wurde nicht gerechnet"
+   },
+   "jahresscheiben": {
+    "2017": {
+     "n": 241,
+     "seHH": 0.1231738540981671,
+     "mde80": 0.34508386964142496,
+     "mde80Schwelle": 0.47318467790351876,
+     "hh0": false,
+     "mittelBrutto": 0.219615790263036,
+     "mittelNetto": -0.0036208245364106276,
+     "tHH": -0.029396048073034257,
+     "tHHBrutto": 1.7847567921655973,
+     "seHHBrutto": 0.12305082195348166,
+     "paarSd": 1.5325085707625745,
+     "kosten": 0.22323661479944662,
+     "umschlag": 0.8709889349930844,
+     "obergrenze": 0.1277271784232365
+    },
+    "2018": {
+     "n": 251,
+     "seHH": 0.1041402051235269,
+     "mde80": 0.29175919867407296,
+     "mde80Schwelle": 0.40006501200254097,
+     "hh0": false,
+     "mittelBrutto": 0.09349858353808194,
+     "mittelNetto": -0.12931609512101888,
+     "tHH": -1.2417499559140426,
+     "tHHBrutto": 0.8961289321051461,
+     "seHHBrutto": 0.10433608400349181,
+     "paarSd": 1.6505709029835458,
+     "kosten": 0.22281467865910104,
+     "umschlag": 0.8803216427220416,
+     "obergrenze": 0.12610172453044965
+    },
+    "2019": {
+     "n": 252,
+     "seHH": 0.10483498356701425,
+     "mde80": 0.2937056899613471,
+     "mde80Schwelle": 0.40273407287104196,
+     "hh0": false,
+     "mittelBrutto": -0.04077141853014846,
+     "mittelNetto": -0.2606507732594138,
+     "tHH": -2.4862957420391694,
+     "tHHBrutto": -0.3895064377181985,
+     "seHHBrutto": 0.10467456910082167,
+     "paarSd": 1.7768377137738227,
+     "kosten": 0.21987935472926542,
+     "umschlag": 0.8764524496667359,
+     "obergrenze": 0.1250464767573695
+    },
+    "2020": {
+     "n": 234,
+     "seHH": 0.19392332033043674,
+     "mde80": 0.5432955742377515,
+     "mde80Schwelle": 0.7449758273814058,
+     "hh0": false,
+     "mittelBrutto": 0.39357585649774035,
+     "mittelNetto": 0.17097261109048828,
+     "tHH": 0.8816505967366819,
+     "tHHBrutto": 2.0370073336133463,
+     "seHHBrutto": 0.1932127832841896,
+     "paarSd": 2.72683295086849,
+     "kosten": 0.22260324540725188,
+     "umschlag": 0.8915971077830046,
+     "obergrenze": 0.12446566521085761
+    },
+    "2021": {
+     "n": 252,
+     "seHH": 0.1560291056278147,
+     "mde80": 0.43713114232688566,
+     "mde80Schwelle": 0.5994014121798129,
+     "hh0": false,
+     "mittelBrutto": -0.06535809430757898,
+     "mittelNetto": -0.2901939844976361,
+     "tHH": -1.8598708448015637,
+     "tHHBrutto": -0.41866725206444305,
+     "seHHBrutto": 0.15610987958885972,
+     "paarSd": 2.2465822618144795,
+     "kosten": 0.2248358901900568,
+     "umschlag": 0.9091374674708014,
+     "obergrenze": 0.12349230158730165
+    },
+    "2022": {
+     "n": 250,
+     "seHH": 0.19555413159023652,
+     "mde80": 0.5478644550632067,
+     "mde80Schwelle": 0.7512407519170526,
+     "hh0": false,
+     "mittelBrutto": -0.27847370172050523,
+     "mittelNetto": -0.5004727464257999,
+     "tHH": -2.5592542707023385,
+     "tHHBrutto": -1.4212154290267849,
+     "seHHBrutto": 0.19594052810923782,
+     "paarSd": 2.614962741986149,
+     "kosten": 0.2219990447052949,
+     "umschlag": 0.9009666333666335,
+     "obergrenze": 0.12308083736263753
+    },
+    "2023": {
+     "n": 249,
+     "seHH": 0.1495197235182288,
+     "mde80": 0.41889445740866976,
+     "mde80Schwelle": 0.5743949698676277,
+     "hh0": false,
+     "mittelBrutto": 0.07864036182226793,
+     "mittelNetto": -0.1465815743105418,
+     "tHH": -0.9803494205409712,
+     "tHHBrutto": 0.525009667160423,
+     "seHHBrutto": 0.14978840722610623,
+     "paarSd": 1.9410280819887256,
+     "kosten": 0.22522193613280972,
+     "umschlag": 0.8931765356464154,
+     "obergrenze": 0.12571238713094154
+    },
+    "2024": {
+     "n": 252,
+     "seHH": 0.15196818067893247,
+     "mde80": 0.4257540549900972,
+     "mde80Schwelle": 0.583800962896187,
+     "hh0": false,
+     "mittelBrutto": 0.2317724161903111,
+     "mittelNetto": 0.009160720060162603,
+     "tHH": 0.06028051411312687,
+     "tHHBrutto": 1.528336424035215,
+     "seHHBrutto": 0.15165012921590276,
+     "paarSd": 2.0326189629198272,
+     "kosten": 0.22261169613014856,
+     "umschlag": 0.8938543379019571,
+     "obergrenze": 0.124296156898657
+    },
+    "2025": {
+     "n": 239,
+     "seHH": 0.17789093696817548,
+     "mde80": 0.49837924901004044,
+     "mde80Schwelle": 0.683385823456943,
+     "hh0": false,
+     "mittelBrutto": 0.048102171660641166,
+     "mittelNetto": -0.16943643001266193,
+     "tHH": -0.9524736498688179,
+     "tHHBrutto": 0.27044074719306505,
+     "seHHBrutto": 0.17786584366408914,
+     "paarSd": 2.1218315207571736,
+     "kosten": 0.21753860167330305,
+     "umschlag": 0.89111133909256,
+     "obergrenze": 0.12184212233450961
+    },
+    "2026": {
+     "n": 166,
+     "seHH": 0.23541162548783243,
+     "mde80": 0.6595292099667114,
+     "mde80Schwelle": 0.904357300474057,
+     "hh0": false,
+     "mittelBrutto": -0.3254409792352564,
+     "mittelNetto": -0.5432325350190763,
+     "tHH": -2.3075858462527545,
+     "tHHBrutto": -1.3814460764530672,
+     "seHHBrutto": 0.23557993669274635,
+     "paarSd": 2.280676893275659,
+     "kosten": 0.21779155578381965,
+     "umschlag": 0.9050064582732016,
+     "obergrenze": 0.12040583709433722
+    }
+   },
+   "letzte250": {
+    "von": "2025-09-03",
+    "bis": "2026-08-31",
+    "n": 250,
+    "seHH": 0.1844258407860214,
+    "mde80": 0.5166874355461175,
+    "mde80Schwelle": 0.7084903099635799,
+    "hh0": false,
+    "mittelBrutto": -0.14454697002281272,
+    "mittelNetto": -0.36225963722450166,
+    "tHH": -1.9642563953107337,
+    "tHHBrutto": -0.7831254563889558,
+    "seHHBrutto": 0.18457702893394443,
+    "paarSd": 2.20280478639778,
+    "kosten": 0.217712667201689,
+    "umschlag": 0.9019222009672477,
+    "obergrenze": 0.12079594895825539
+   },
+   "bestaetigt": false,
+   "bedingungen": {
+    "b1NettoPositivUndAbMde80": false,
+    "b2tHHab3": false,
+    "b3Tor1UndBestaetigung": false,
+    "b4AktualitaetLetzte250NichtNegativ": false,
+    "b5ProtokollBestaetigtUndPlaceboBestanden": false
+   },
+   "kennzeichnung": [
+    "placebo1",
+    "abdeckungstor"
+   ],
+   "belegt": false,
+   "urteil": "nicht belegt: nichts oberhalb von 0,145 Pp je Periode"
+  }
+ },
+ "ablauf": [
+  "Stufe A fuer 12 Tests gerechnet",
+  "Stufe A geschrieben",
+  "Stufe B begonnen",
+  "Stufe B fuer 12 Tests gerechnet"
+ ],
+ "kontrollen": {
+  "placebo1": {
+   "bau": "Größe des Tages t + 21 Handelstage, eine Reihe",
+   "schranke": "|Mittel brutto| < 0.02 Pp und |t_HH| < 3",
+   "zellen": {
+    "G1|1|longUni": {
+     "n": 2375,
+     "mittelBrutto": 0.00908310660410871,
+     "seHH": 0.011976457771881121,
+     "tHH": 0.7584134455376652,
+     "bestanden": true
+    },
+    "G1|1|ls": {
+     "n": 2375,
+     "mittelBrutto": 0.060700257285176876,
+     "seHH": 0.021028180249273824,
+     "tHH": 2.886614845679434,
+     "bestanden": false
+    },
+    "G1|3|longUni": {
+     "n": 2375,
+     "mittelBrutto": 0.019713665718841762,
+     "seHH": 0.024988212607771967,
+     "tHH": 0.788918600472861,
+     "bestanden": true
+    },
+    "G1|3|ls": {
+     "n": 2375,
+     "mittelBrutto": 0.10501695939559157,
+     "seHH": 0.048993848442911284,
+     "tHH": 2.143472348736998,
+     "bestanden": false
+    },
+    "G1|5|longUni": {
+     "n": 2375,
+     "mittelBrutto": 0.003049500490071169,
+     "seHH": 0.03535143861672625,
+     "tHH": 0.08626241560161917,
+     "bestanden": true
+    },
+    "G1|5|ls": {
+     "n": 2375,
+     "mittelBrutto": 0.16948960988286826,
+     "seHH": 0.07171512521193245,
+     "tHH": 2.3633732686374427,
+     "bestanden": false
+    },
+    "G2|1|longUni": {
+     "n": 2375,
+     "mittelBrutto": -0.016247657029958274,
+     "seHH": 0.013583636779625432,
+     "tHH": -1.19611980896962,
+     "bestanden": true
+    },
+    "G2|1|ls": {
+     "n": 2375,
+     "mittelBrutto": 0.02904752835311872,
+     "seHH": 0.01966194162698972,
+     "tHH": 1.4773479091833697,
+     "bestanden": false
+    },
+    "G2|3|longUni": {
+     "n": 2375,
+     "mittelBrutto": -0.050197034529678546,
+     "seHH": 0.025922895932297026,
+     "tHH": -1.9363976409417538,
+     "bestanden": false
+    },
+    "G2|3|ls": {
+     "n": 2375,
+     "mittelBrutto": 0.0070549236428908285,
+     "seHH": 0.03818741619815495,
+     "tHH": 0.18474472340005269,
+     "bestanden": true
+    },
+    "G2|5|longUni": {
+     "n": 2375,
+     "mittelBrutto": -0.11159520008847851,
+     "seHH": 0.03432260968283578,
+     "tHH": -3.2513611616276834,
+     "bestanden": false
+    },
+    "G2|5|ls": {
+     "n": 2375,
+     "mittelBrutto": -0.014859976079861063,
+     "seHH": 0.04784556810068694,
+     "tHH": -0.3105820804257043,
+     "bestanden": true
+    }
+   },
+   "bestanden": false
+  },
+  "placebo2": {
+   "bau": "Permutation je Tag, 12 Ziehungen",
+   "schranke": "|Mittel über 12| < 0.02 Pp; höchstens 3 mit |t_HH| >= 3",
+   "zellen": {
+    "G1|1|longUni": {
+     "n": 2396,
+     "mittelUeberZiehungen": 0.002195723307615475,
+     "tMaxBetrag": 1.4227845658746217,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G1|1|ls": {
+     "n": 2396,
+     "mittelUeberZiehungen": 0.00449913074542152,
+     "tMaxBetrag": 1.9042147682929937,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G1|3|longUni": {
+     "n": 2396,
+     "mittelUeberZiehungen": -0.0009337458368188593,
+     "tMaxBetrag": 1.9032021996400525,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G1|3|ls": {
+     "n": 2396,
+     "mittelUeberZiehungen": 0.0038994018929528907,
+     "tMaxBetrag": 1.8429743357168442,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G1|5|longUni": {
+     "n": 2396,
+     "mittelUeberZiehungen": -0.002728278074583611,
+     "tMaxBetrag": 1.5530143236221443,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G1|5|ls": {
+     "n": 2396,
+     "mittelUeberZiehungen": 0.005998921736805356,
+     "tMaxBetrag": 1.784659722031694,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G2|1|longUni": {
+     "n": 2386,
+     "mittelUeberZiehungen": 0.003096951919538793,
+     "tMaxBetrag": 2.2162912310607914,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G2|1|ls": {
+     "n": 2386,
+     "mittelUeberZiehungen": 0.007265533885486977,
+     "tMaxBetrag": 3.302248650065973,
+     "anzahlTab3": 1,
+     "bestanden": true
+    },
+    "G2|3|longUni": {
+     "n": 2386,
+     "mittelUeberZiehungen": 0.003184856123301574,
+     "tMaxBetrag": 2.066088120132945,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G2|3|ls": {
+     "n": 2386,
+     "mittelUeberZiehungen": 0.009530465293062885,
+     "tMaxBetrag": 2.458946153224184,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G2|5|longUni": {
+     "n": 2386,
+     "mittelUeberZiehungen": 0.006013834814984696,
+     "tMaxBetrag": 2.0125573864921766,
+     "anzahlTab3": 0,
+     "bestanden": true
+    },
+    "G2|5|ls": {
+     "n": 2386,
+     "mittelUeberZiehungen": 0.014075377935827367,
+     "tMaxBetrag": 2.279231819082944,
+     "anzahlTab3": 0,
+     "bestanden": true
+    }
+   },
+   "bestanden": true
+  },
+  "orakel": {
+   "bau": "Vorzeichen der künftigen H-Tage-Rendite, oberstes − unterstes Dezil",
+   "schranke": "Δ brutto >= 2.5 / 4 / 5 Pp (H 1/3/5), t_HH >= 8",
+   "zellen": {
+    "1": {
+     "n": 2396,
+     "mittelBrutto": 2.690706349740139,
+     "seHH": 0.02526675637779314,
+     "tHH": 106.4919576343005,
+     "schranke": 2.5,
+     "bestanden": true
+    },
+    "3": {
+     "n": 2396,
+     "mittelBrutto": 4.782551228362198,
+     "seHH": 0.07692770773000888,
+     "tHH": 62.16942333895337,
+     "schranke": 4,
+     "bestanden": true
+    },
+    "5": {
+     "n": 2396,
+     "mittelBrutto": 6.22175317430246,
+     "seHH": 0.11714278829234115,
+     "tHH": 53.11255831452017,
+     "schranke": 5,
+     "bestanden": true
+    }
+   },
+   "bestanden": true
+  },
+  "nullpunkt": {
+   "bau": "Zufallsdezil gegen Universum, 5 Ziehungen",
+   "schranke": "|Mittel| / se < 3 in jeder Zelle",
+   "zellen": {
+    "voll|23|1|longUni": {
+     "n": 2428,
+     "paarSd": 0.4578881098150299,
+     "mittel": -0.0005976248203074129,
+     "seHH": 0.00929063871328235,
+     "verhaeltnis": 0.064325482752119,
+     "tMaxJeZiehung": 1.0905010495169802,
+     "bestanden": true
+    },
+    "voll|23|1|ls": {
+     "n": 2428,
+     "paarSd": 0.6906723985514098,
+     "mittel": -0.002955597849144737,
+     "seHH": 0.01401387716044746,
+     "verhaeltnis": 0.21090507753889612,
+     "tMaxJeZiehung": 1.1756066063734272,
+     "bestanden": true
+    },
+    "voll|23|3|longUni": {
+     "n": 2428,
+     "paarSd": 0.8022587409664073,
+     "mittel": -0.0016919796531376838,
+     "seHH": 0.01598330219794325,
+     "verhaeltnis": 0.10585920432358525,
+     "tMaxJeZiehung": 1.5903570294470302,
+     "bestanden": true
+    },
+    "voll|23|3|ls": {
+     "n": 2428,
+     "paarSd": 1.224002835881428,
+     "mittel": -0.0046379502877189225,
+     "seHH": 0.024457060733083597,
+     "verhaeltnis": 0.18963645461472264,
+     "tMaxJeZiehung": 0.8813206449841163,
+     "bestanden": true
+    },
+    "voll|23|5|longUni": {
+     "n": 2428,
+     "paarSd": 1.0443171959193074,
+     "mittel": 0.005165600245187548,
+     "seHH": 0.020509633950853957,
+     "verhaeltnis": 0.25186213745040864,
+     "tMaxJeZiehung": 1.7896896075875708,
+     "bestanden": true
+    },
+    "voll|23|5|ls": {
+     "n": 2428,
+     "paarSd": 1.5786340077516565,
+     "mittel": 0.004360581300163092,
+     "seHH": 0.03182334437456927,
+     "verhaeltnis": 0.1370246083767276,
+     "tMaxJeZiehung": 0.8972056838149616,
+     "bestanden": true
+    },
+    "voll|2|1|longUni": {
+     "n": 2428,
+     "paarSd": 0.49458492830994194,
+     "mittel": 0.0007346770673370554,
+     "seHH": 0.010035224290533641,
+     "verhaeltnis": 0.07320983030046334,
+     "tMaxJeZiehung": 1.7042876437148986,
+     "bestanden": true
+    },
+    "voll|2|1|ls": {
+     "n": 2428,
+     "paarSd": 0.726584090027651,
+     "mittel": -0.003674653418575955,
+     "seHH": 0.01474253235794406,
+     "verhaeltnis": 0.24925523847304676,
+     "tMaxJeZiehung": 1.0254355439120588,
+     "bestanden": true
+    },
+    "voll|2|3|longUni": {
+     "n": 2428,
+     "paarSd": 0.8585754315507999,
+     "mittel": -0.004184061561771026,
+     "seHH": 0.017255933499595137,
+     "verhaeltnis": 0.24247089048350778,
+     "tMaxJeZiehung": 1.665244798763382,
+     "bestanden": true
+    },
+    "voll|2|3|ls": {
+     "n": 2428,
+     "paarSd": 1.274251539544672,
+     "mittel": -0.0056638452724454,
+     "seHH": 0.025972693868490066,
+     "verhaeltnis": 0.21806922690128602,
+     "tMaxJeZiehung": 1.1736002257302462,
+     "bestanden": true
+    },
+    "voll|2|5|longUni": {
+     "n": 2428,
+     "paarSd": 1.0914176726216922,
+     "mittel": -0.002668299878520733,
+     "seHH": 0.021597117609354434,
+     "verhaeltnis": 0.1235488886426679,
+     "tMaxJeZiehung": 1.850630349484419,
+     "bestanden": true
+    },
+    "voll|2|5|ls": {
+     "n": 2428,
+     "paarSd": 1.6104633311873269,
+     "mittel": -0.0009982969010670542,
+     "seHH": 0.03219852126744588,
+     "verhaeltnis": 0.03100443317800362,
+     "tMaxJeZiehung": 0.7072854143927156,
+     "bestanden": true
+    },
+    "voll|3|1|longUni": {
+     "n": 1566,
+     "paarSd": 1.2085290897690892,
+     "mittel": 0.021660263625762115,
+     "seHH": 0.030529698945610917,
+     "verhaeltnis": 0.7094817300475244,
+     "tMaxJeZiehung": 1.1863654143920799,
+     "bestanden": true
+    },
+    "voll|3|1|ls": {
+     "n": 1566,
+     "paarSd": 1.8271754150558586,
+     "mittel": 0.015254507232789549,
+     "seHH": 0.04615785901614943,
+     "verhaeltnis": 0.33048558919191623,
+     "tMaxJeZiehung": 0.8819732287489772,
+     "bestanden": true
+    },
+    "voll|3|3|longUni": {
+     "n": 1566,
+     "paarSd": 2.061225008906813,
+     "mittel": 0.02956126538088809,
+     "seHH": 0.051792065658243756,
+     "verhaeltnis": 0.5707682249237113,
+     "tMaxJeZiehung": 0.8469435482247286,
+     "bestanden": true
+    },
+    "voll|3|3|ls": {
+     "n": 1566,
+     "paarSd": 3.1297060420089355,
+     "mittel": 0.028795293342016998,
+     "seHH": 0.0770794567278697,
+     "verhaeltnis": 0.37357934999048137,
+     "tMaxJeZiehung": 0.9324070006138834,
+     "bestanden": true
+    },
+    "voll|3|5|longUni": {
+     "n": 1566,
+     "paarSd": 2.6630592971436555,
+     "mittel": 0.036282992045463695,
+     "seHH": 0.06992531398168322,
+     "verhaeltnis": 0.5188820754522167,
+     "tMaxJeZiehung": 1.8305226241163923,
+     "bestanden": true
+    },
+    "voll|3|5|ls": {
+     "n": 1566,
+     "paarSd": 4.033417800507662,
+     "mittel": 0.0613038700918758,
+     "seHH": 0.10119822132152967,
+     "verhaeltnis": 0.6057801144261175,
+     "tMaxJeZiehung": 1.4453347704049393,
+     "bestanden": true
+    },
+    "definiert|23|1|longUni": {
+     "n": 2396,
+     "paarSd": 0.5946858590456463,
+     "mittel": -0.002219850638741596,
+     "seHH": 0.012146567187021447,
+     "verhaeltnis": 0.18275539126095613,
+     "tMaxJeZiehung": 1.5887063674447108,
+     "bestanden": true
+    },
+    "definiert|23|1|ls": {
+     "n": 2396,
+     "paarSd": 0.9040972651265701,
+     "mittel": 0.0005735923808379672,
+     "seHH": 0.018466351616441078,
+     "verhaeltnis": 0.03106148917511583,
+     "tMaxJeZiehung": 2.2675541077596577,
+     "bestanden": true
+    },
+    "definiert|23|3|longUni": {
+     "n": 2396,
+     "paarSd": 1.0065759108147652,
+     "mittel": -0.009365723115127551,
+     "seHH": 0.020668275123081233,
+     "verhaeltnis": 0.45314488312904294,
+     "tMaxJeZiehung": 1.5746944317030784,
+     "bestanden": true
+    },
+    "definiert|23|3|ls": {
+     "n": 2396,
+     "paarSd": 1.523066665872746,
+     "mittel": -0.010321749945290035,
+     "seHH": 0.03135076274947231,
+     "verhaeltnis": 0.32923441218232463,
+     "tMaxJeZiehung": 2.925421198057913,
+     "bestanden": true
+    },
+    "definiert|23|5|longUni": {
+     "n": 2396,
+     "paarSd": 1.2836829353672603,
+     "mittel": -0.015285795041994416,
+     "seHH": 0.02588380286932469,
+     "verhaeltnis": 0.5905544528818003,
+     "tMaxJeZiehung": 1.7099288196692943,
+     "bestanden": true
+    },
+    "definiert|23|5|ls": {
+     "n": 2396,
+     "paarSd": 1.9588645604766204,
+     "mittel": -0.026223917906299438,
+     "seHH": 0.04071516120576714,
+     "verhaeltnis": 0.6440823793811954,
+     "tMaxJeZiehung": 2.816658040585463,
+     "bestanden": true
+    },
+    "definiert|2|1|longUni": {
+     "n": 2396,
+     "paarSd": 0.655540299417394,
+     "mittel": -0.01613321804094939,
+     "seHH": 0.013389530236101257,
+     "verhaeltnis": 1.2049129249845167,
+     "tMaxJeZiehung": 2.0707577069893466,
+     "bestanden": true
+    },
+    "definiert|2|1|ls": {
+     "n": 2396,
+     "paarSd": 0.9823983266087251,
+     "mittel": -0.03282422625553594,
+     "seHH": 0.02006566508529404,
+     "verhaeltnis": 1.6358404326997635,
+     "tMaxJeZiehung": 2.588543948158989,
+     "bestanden": true
+    },
+    "definiert|2|3|longUni": {
+     "n": 2396,
+     "paarSd": 1.1232490219631757,
+     "mittel": -0.020746927264850917,
+     "seHH": 0.022996223667652443,
+     "verhaeltnis": 0.9021884447068806,
+     "tMaxJeZiehung": 2.1683953835153433,
+     "bestanden": true
+    },
+    "definiert|2|3|ls": {
+     "n": 2396,
+     "paarSd": 1.659882785631997,
+     "mittel": -0.029725164238635703,
+     "seHH": 0.03365800613828583,
+     "verhaeltnis": 0.8831528557130858,
+     "tMaxJeZiehung": 1.768915473019456,
+     "bestanden": true
+    },
+    "definiert|2|5|longUni": {
+     "n": 2396,
+     "paarSd": 1.414506609285963,
+     "mittel": -0.021105505516110293,
+     "seHH": 0.02878838156300172,
+     "verhaeltnis": 0.7331258087545528,
+     "tMaxJeZiehung": 2.180598617342882,
+     "bestanden": true
+    },
+    "definiert|2|5|ls": {
+     "n": 2396,
+     "paarSd": 2.1034381667617232,
+     "mittel": -0.014897904113083258,
+     "seHH": 0.04277717736668617,
+     "verhaeltnis": 0.3482675816914789,
+     "tMaxJeZiehung": 1.8110845075365485,
+     "bestanden": true
+    },
+    "definiert|3|1|longUni": {
+     "n": 1126,
+     "paarSd": 1.3502782457510552,
+     "mittel": -0.02474637903376778,
+     "seHH": 0.04022176659909226,
+     "verhaeltnis": 0.6152484370073955,
+     "tMaxJeZiehung": 1.5011144707966517,
+     "bestanden": true
+    },
+    "definiert|3|1|ls": {
+     "n": 1126,
+     "paarSd": 2.012997618619651,
+     "mittel": -0.028785984393746716,
+     "seHH": 0.059962693345187425,
+     "verhaeltnis": 0.48006490015440684,
+     "tMaxJeZiehung": 2.2606607219233106,
+     "bestanden": true
+    },
+    "definiert|3|3|longUni": {
+     "n": 1126,
+     "paarSd": 2.3201964845898106,
+     "mittel": -0.032416380644013074,
+     "seHH": 0.06829212454120506,
+     "verhaeltnis": 0.47467231195090687,
+     "tMaxJeZiehung": 1.0724444721052826,
+     "bestanden": true
+    },
+    "definiert|3|3|ls": {
+     "n": 1126,
+     "paarSd": 3.4998895877166056,
+     "mittel": -0.04304562385808412,
+     "seHH": 0.10277912133612548,
+     "verhaeltnis": 0.4188168112209203,
+     "tMaxJeZiehung": 1.168921122020244,
+     "bestanden": true
+    },
+    "definiert|3|5|longUni": {
+     "n": 1126,
+     "paarSd": 2.956137807067649,
+     "mittel": -0.07657004281195705,
+     "seHH": 0.08797476070002466,
+     "verhaeltnis": 0.8703637520884507,
+     "tMaxJeZiehung": 1.5398166411476502,
+     "bestanden": true
+    },
+    "definiert|3|5|ls": {
+     "n": 1126,
+     "paarSd": 4.457826498653737,
+     "mittel": -0.07257207585903028,
+     "seHH": 0.12974465996121226,
+     "verhaeltnis": 0.5593453779194151,
+     "tMaxJeZiehung": 1.5232606303823284,
+     "bestanden": true
+    }
+   },
+   "bestanden": true
+  },
+  "kurslos": {
+   "bau": "Zufallsgröße ohne Kurs- und Textbezug, ganzes Universum",
+   "schranke": "|Mittel| / se < 3",
+   "zellen": {
+    "1|longUni": {
+     "n": 2428,
+     "mittelBrutto": -0.0011730182288319272,
+     "seHH": 0.009469072158280361,
+     "tHH": -0.12387889850497814,
+     "bestanden": true
+    },
+    "1|ls": {
+     "n": 2428,
+     "mittelBrutto": 0.003100303161347924,
+     "seHH": 0.01431860046393914,
+     "tHH": 0.21652277882576038,
+     "bestanden": true
+    },
+    "3|longUni": {
+     "n": 2428,
+     "mittelBrutto": 0.0029552118636740642,
+     "seHH": 0.01644804985698075,
+     "tHH": 0.17966943737222665,
+     "bestanden": true
+    },
+    "3|ls": {
+     "n": 2428,
+     "mittelBrutto": -0.014066528697251172,
+     "seHH": 0.025843152236315642,
+     "tHH": -0.5443039056777457,
+     "bestanden": true
+    },
+    "5|longUni": {
+     "n": 2428,
+     "mittelBrutto": -0.01453239948798112,
+     "seHH": 0.021224573497454095,
+     "tHH": -0.684696891069415,
+     "bestanden": true
+    },
+    "5|ls": {
+     "n": 2428,
+     "mittelBrutto": -0.05589487283744386,
+     "seHH": 0.03184578907931825,
+     "tHH": -1.7551731156111912,
+     "bestanden": true
+    }
+   },
+   "bestanden": true
+  },
+  "leck": {
+   "schranke": "Sicht ohne Schlüssel: 0 Verstöße im Hauptlauf; tagesSignal: kein Wurf im Hauptlauf; Positivkontrolle beider Klinken > 0",
+   "verstoesseSichtOhneSchluessel": 0,
+   "beispiele": [],
+   "tagesSignalWuerfeImHauptlauf": 0,
+   "placeboZugriffeMitSchluessel": 2417,
+   "positivkontrolle": {
+    "tag": "2017-01-03",
+    "sichtTagesdateiFolgetag": {
+     "verstoesse": 1,
+     "verweigert": true
+    },
+    "sichtPanelFolgetag": {
+     "verstoesse": 1
+    },
+    "tagesSignalStempelFolgetag": {
+     "geworfen": true
+    }
+   },
+   "positivkontrolleBestanden": true,
+   "bestanden": true
+  }
+ },
+ "abdeckung": {
+  "regel": ">= 80 % der Klassenmitglieder mit >= 5 Artikeln je Monat, Median über die Monate des Jahres",
+  "jeJahrKlasse": {
+   "2017|2": {
+    "stichtag": "2017-01-03",
+    "mitglieder": 116,
+    "monate": 12,
+    "anteilAb5Median": 79.7,
+    "anteilAb5Min": 77.6,
+    "nurBis16Median": 79.3,
+    "bestanden": false
+   },
+   "2017|3": {
+    "stichtag": "2017-01-03",
+    "mitglieder": 8,
+    "monate": 12,
+    "anteilAb5Median": 100,
+    "anteilAb5Min": 87.5,
+    "nurBis16Median": 100,
+    "bestanden": true
+   },
+   "2018|2": {
+    "stichtag": "2018-01-02",
+    "mitglieder": 98,
+    "monate": 12,
+    "anteilAb5Median": 86.7,
+    "anteilAb5Min": 84.7,
+    "nurBis16Median": 84.7,
+    "bestanden": true
+   },
+   "2018|3": {
+    "stichtag": "2018-01-02",
+    "mitglieder": 13,
+    "monate": 12,
+    "anteilAb5Median": 92.3,
+    "anteilAb5Min": 92.3,
+    "nurBis16Median": 92.3,
+    "bestanden": true
+   },
+   "2019|2": {
+    "stichtag": "2019-01-02",
+    "mitglieder": 138,
+    "monate": 12,
+    "anteilAb5Median": 84.4,
+    "anteilAb5Min": 81.2,
+    "nurBis16Median": 83,
+    "bestanden": true
+   },
+   "2019|3": {
+    "stichtag": "2019-01-02",
+    "mitglieder": 22,
+    "monate": 12,
+    "anteilAb5Median": 77.3,
+    "anteilAb5Min": 72.7,
+    "nurBis16Median": 77.3,
+    "bestanden": false
+   },
+   "2020|2": {
+    "stichtag": "2020-01-02",
+    "mitglieder": 111,
+    "monate": 12,
+    "anteilAb5Median": 80.2,
+    "anteilAb5Min": 78.4,
+    "nurBis16Median": 79.3,
+    "bestanden": true
+   },
+   "2020|3": {
+    "stichtag": "2020-01-02",
+    "mitglieder": 12,
+    "monate": 12,
+    "anteilAb5Median": 95.8,
+    "anteilAb5Min": 91.7,
+    "nurBis16Median": 91.7,
+    "bestanden": true
+   },
+   "2021|2": {
+    "stichtag": "2021-01-04",
+    "mitglieder": 168,
+    "monate": 12,
+    "anteilAb5Median": 80.4,
+    "anteilAb5Min": 78.6,
+    "nurBis16Median": 78.6,
+    "bestanden": true
+   },
+   "2021|3": {
+    "stichtag": "2021-01-04",
+    "mitglieder": 30,
+    "monate": 12,
+    "anteilAb5Median": 83.3,
+    "anteilAb5Min": 80,
+    "nurBis16Median": 81.7,
+    "bestanden": true
+   },
+   "2022|2": {
+    "stichtag": "2022-01-03",
+    "mitglieder": 196,
+    "monate": 12,
+    "anteilAb5Median": 76.8,
+    "anteilAb5Min": 74,
+    "nurBis16Median": 74.7,
+    "bestanden": false
+   },
+   "2022|3": {
+    "stichtag": "2022-01-03",
+    "mitglieder": 42,
+    "monate": 12,
+    "anteilAb5Median": 88.1,
+    "anteilAb5Min": 85.7,
+    "nurBis16Median": 86.9,
+    "bestanden": true
+   },
+   "2023|2": {
+    "stichtag": "2023-01-03",
+    "mitglieder": 190,
+    "monate": 12,
+    "anteilAb5Median": 82.9,
+    "anteilAb5Min": 81.6,
+    "nurBis16Median": 81.8,
+    "bestanden": true
+   },
+   "2023|3": {
+    "stichtag": "2023-01-03",
+    "mitglieder": 24,
+    "monate": 12,
+    "anteilAb5Median": 91.7,
+    "anteilAb5Min": 87.5,
+    "nurBis16Median": 87.5,
+    "bestanden": true
+   },
+   "2024|2": {
+    "stichtag": "2024-01-02",
+    "mitglieder": 179,
+    "monate": 12,
+    "anteilAb5Median": 83,
+    "anteilAb5Min": 81,
+    "nurBis16Median": 81.3,
+    "bestanden": true
+   },
+   "2024|3": {
+    "stichtag": "2024-01-02",
+    "mitglieder": 21,
+    "monate": 12,
+    "anteilAb5Median": 95.2,
+    "anteilAb5Min": 90.5,
+    "nurBis16Median": 90.5,
+    "bestanden": true
+   },
+   "2025|2": {
+    "stichtag": "2025-01-02",
+    "mitglieder": 204,
+    "monate": 12,
+    "anteilAb5Median": 80.9,
+    "anteilAb5Min": 73,
+    "nurBis16Median": 78.2,
+    "bestanden": true
+   },
+   "2025|3": {
+    "stichtag": "2025-01-02",
+    "mitglieder": 38,
+    "monate": 12,
+    "anteilAb5Median": 90.8,
+    "anteilAb5Min": 81.6,
+    "nurBis16Median": 89.5,
+    "bestanden": true
+   },
+   "2026|2": {
+    "stichtag": "2026-01-02",
+    "mitglieder": 296,
+    "monate": 8,
+    "anteilAb5Median": 80.1,
+    "anteilAb5Min": 75.7,
+    "nurBis16Median": 77.4,
+    "bestanden": true
+   },
+   "2026|3": {
+    "stichtag": "2026-01-02",
+    "mitglieder": 65,
+    "monate": 8,
+    "anteilAb5Median": 89.2,
+    "anteilAb5Min": 87.7,
+    "nurBis16Median": 87.7,
+    "bestanden": true
+   }
+  },
+  "nichtMessbar": [
+   "2017 Klasse 2",
+   "2019 Klasse 3",
+   "2022 Klasse 2"
+  ],
+  "bestanden": false
+ },
+ "vorpruefungstor": {
+  "regel": "Paar-sd des Zufallsdezils im Lauf / Paar-sd der Vorprüfung innerhalb [1/1.5; 1.5], gepoolt, beide Fassungen",
+  "zellen": {
+   "voll|23|1|longUni": {
+    "paarSdLauf": 0.4578881098150299,
+    "paarSdVorpruefung": 0.47015264684741637,
+    "verhaeltnis": 0.9739137126747544,
+    "bestanden": true
+   },
+   "voll|23|1|ls": {
+    "paarSdLauf": 0.6906723985514098,
+    "paarSdVorpruefung": 0.705802885685973,
+    "verhaeltnis": 0.9785627298479266,
+    "bestanden": true
+   },
+   "voll|23|3|longUni": {
+    "paarSdLauf": 0.8022587409664073,
+    "paarSdVorpruefung": 0.8003841001336198,
+    "verhaeltnis": 1.0023421765030995,
+    "bestanden": true
+   },
+   "voll|23|3|ls": {
+    "paarSdLauf": 1.224002835881428,
+    "paarSdVorpruefung": 1.2081794502732053,
+    "verhaeltnis": 1.0130968835835146,
+    "bestanden": true
+   },
+   "voll|23|5|longUni": {
+    "paarSdLauf": 1.0443171959193074,
+    "paarSdVorpruefung": 1.0336263160353483,
+    "verhaeltnis": 1.0103430802003628,
+    "bestanden": true
+   },
+   "voll|23|5|ls": {
+    "paarSdLauf": 1.5786340077516565,
+    "paarSdVorpruefung": 1.529793098552066,
+    "verhaeltnis": 1.0319264802840449,
+    "bestanden": true
+   },
+   "definiert|23|1|longUni": {
+    "paarSdLauf": 0.5946858590456463,
+    "paarSdVorpruefung": 0.47015264684741637,
+    "verhaeltnis": 1.2648782539740673,
+    "bestanden": true
+   },
+   "definiert|23|1|ls": {
+    "paarSdLauf": 0.9040972651265701,
+    "paarSdVorpruefung": 0.705802885685973,
+    "verhaeltnis": 1.2809486663516172,
+    "bestanden": true
+   },
+   "definiert|23|3|longUni": {
+    "paarSdLauf": 1.0065759108147652,
+    "paarSdVorpruefung": 0.8003841001336198,
+    "verhaeltnis": 1.2576160753902066,
+    "bestanden": true
+   },
+   "definiert|23|3|ls": {
+    "paarSdLauf": 1.523066665872746,
+    "paarSdVorpruefung": 1.2081794502732053,
+    "verhaeltnis": 1.2606295079165064,
+    "bestanden": true
+   },
+   "definiert|23|5|longUni": {
+    "paarSdLauf": 1.2836829353672603,
+    "paarSdVorpruefung": 1.0336263160353483,
+    "verhaeltnis": 1.2419216843191911,
+    "bestanden": true
+   },
+   "definiert|23|5|ls": {
+    "paarSdLauf": 1.9588645604766204,
+    "paarSdVorpruefung": 1.529793098552066,
+    "verhaeltnis": 1.2804767927967946,
+    "bestanden": true
+   }
+  },
+  "nachrichtlichKlassen": {
+   "voll|2|1|longUni": {
+    "paarSdLauf": 0.49458492830994194,
+    "paarSdVorpruefung": 0.5081416075882533,
+    "verhaeltnis": 0.973321060358245,
+    "bestanden": true
+   },
+   "voll|2|1|ls": {
+    "paarSdLauf": 0.726584090027651,
+    "paarSdVorpruefung": 0.7623606066669334,
+    "verhaeltnis": 0.9530713991168844,
+    "bestanden": true
+   },
+   "voll|2|3|longUni": {
+    "paarSdLauf": 0.8585754315507999,
+    "paarSdVorpruefung": 0.8733618522059015,
+    "verhaeltnis": 0.9830695368503276,
+    "bestanden": true
+   },
+   "voll|2|3|ls": {
+    "paarSdLauf": 1.274251539544672,
+    "paarSdVorpruefung": 1.2918403184504492,
+    "verhaeltnis": 0.9863847112877893,
+    "bestanden": true
+   },
+   "voll|2|5|longUni": {
+    "paarSdLauf": 1.0914176726216922,
+    "paarSdVorpruefung": 1.1143978855264478,
+    "verhaeltnis": 0.9793788078717507,
+    "bestanden": true
+   },
+   "voll|2|5|ls": {
+    "paarSdLauf": 1.6104633311873269,
+    "paarSdVorpruefung": 1.6306569921725926,
+    "verhaeltnis": 0.9876162423598596,
+    "bestanden": true
+   },
+   "voll|3|1|longUni": {
+    "paarSdLauf": 1.2085290897690892,
+    "paarSdVorpruefung": 1.206094153130858,
+    "verhaeltnis": 1.0020188611576555,
+    "bestanden": true
+   },
+   "voll|3|1|ls": {
+    "paarSdLauf": 1.8271754150558586,
+    "paarSdVorpruefung": 1.7704819023173841,
+    "verhaeltnis": 1.032021514969607,
+    "bestanden": true
+   },
+   "voll|3|3|longUni": {
+    "paarSdLauf": 2.061225008906813,
+    "paarSdVorpruefung": 2.0454660608598805,
+    "verhaeltnis": 1.0077043312272351,
+    "bestanden": true
+   },
+   "voll|3|3|ls": {
+    "paarSdLauf": 3.1297060420089355,
+    "paarSdVorpruefung": 3.056267515375242,
+    "verhaeltnis": 1.024028828060451,
+    "bestanden": true
+   },
+   "voll|3|5|longUni": {
+    "paarSdLauf": 2.6630592971436555,
+    "paarSdVorpruefung": 2.632344395959655,
+    "verhaeltnis": 1.0116682684952412,
+    "bestanden": true
+   },
+   "voll|3|5|ls": {
+    "paarSdLauf": 4.033417800507662,
+    "paarSdVorpruefung": 3.9175990396302725,
+    "verhaeltnis": 1.0295637097379726,
+    "bestanden": true
+   },
+   "definiert|2|1|longUni": {
+    "paarSdLauf": 0.655540299417394,
+    "paarSdVorpruefung": 0.5081416075882533,
+    "verhaeltnis": 1.2900740455573512,
+    "bestanden": true
+   },
+   "definiert|2|1|ls": {
+    "paarSdLauf": 0.9823983266087251,
+    "paarSdVorpruefung": 0.7623606066669334,
+    "verhaeltnis": 1.2886268230776037,
+    "bestanden": true
+   },
+   "definiert|2|3|longUni": {
+    "paarSdLauf": 1.1232490219631757,
+    "paarSdVorpruefung": 0.8733618522059015,
+    "verhaeltnis": 1.2861210037124011,
+    "bestanden": true
+   },
+   "definiert|2|3|ls": {
+    "paarSdLauf": 1.659882785631997,
+    "paarSdVorpruefung": 1.2918403184504492,
+    "verhaeltnis": 1.2848978019380999,
+    "bestanden": true
+   },
+   "definiert|2|5|longUni": {
+    "paarSdLauf": 1.414506609285963,
+    "paarSdVorpruefung": 1.1143978855264478,
+    "verhaeltnis": 1.269301232223482,
+    "bestanden": true
+   },
+   "definiert|2|5|ls": {
+    "paarSdLauf": 2.1034381667617232,
+    "paarSdVorpruefung": 1.6306569921725926,
+    "verhaeltnis": 1.2899329392131844,
+    "bestanden": true
+   },
+   "definiert|3|1|longUni": {
+    "paarSdLauf": 1.3502782457510552,
+    "paarSdVorpruefung": 1.206094153130858,
+    "verhaeltnis": 1.1195462993050043,
+    "bestanden": true
+   },
+   "definiert|3|1|ls": {
+    "paarSdLauf": 2.012997618619651,
+    "paarSdVorpruefung": 1.7704819023173841,
+    "verhaeltnis": 1.1369772353983614,
+    "bestanden": true
+   },
+   "definiert|3|3|longUni": {
+    "paarSdLauf": 2.3201964845898106,
+    "paarSdVorpruefung": 2.0454660608598805,
+    "verhaeltnis": 1.1343118954584062,
+    "bestanden": true
+   },
+   "definiert|3|3|ls": {
+    "paarSdLauf": 3.4998895877166056,
+    "paarSdVorpruefung": 3.056267515375242,
+    "verhaeltnis": 1.145151584443974,
+    "bestanden": true
+   },
+   "definiert|3|5|longUni": {
+    "paarSdLauf": 2.956137807067649,
+    "paarSdVorpruefung": 2.632344395959655,
+    "verhaeltnis": 1.1230057174908343,
+    "bestanden": true
+   },
+   "definiert|3|5|ls": {
+    "paarSdLauf": 4.457826498653737,
+    "paarSdVorpruefung": 3.9175990396302725,
+    "verhaeltnis": 1.1378975881805529,
+    "bestanden": true
+   }
+  },
+  "bestanden": true
+ },
+ "tore": {
+  "orakel": true,
+  "placebo1": false,
+  "placebo2": true,
+  "leckKlinken": true,
+  "nullpunkt": true,
+  "kurslosesSignal": true,
+  "abdeckungstor": false,
+  "vorpruefungstor": true
+ },
+ "toreGefallen": [
+  "placebo1",
+  "abdeckungstor"
+ ],
+ "maschinentoreBestanden": false,
+ "nachrichtlich": {
+  "klassenGetrennt": {
+   "G1|1|longUni|Klasse 2": {
+    "n": 2396,
+    "seHH": 0.012452224735527567,
+    "mde80": 0.03488615281905404,
+    "mde80Schwelle": 0.047836466544002705,
+    "hh0": false,
+    "mittelBrutto": -0.01428841288784392,
+    "mittelNetto": -0.1324841932120365,
+    "tHH": -10.639399466831378,
+    "tHHBrutto": -1.1492239302588538,
+    "seHHBrutto": 0.012433097250790422,
+    "paarSd": 0.6096505992070781,
+    "kosten": 0.11819578032419262,
+    "umschlag": 0.7267137020371642,
+    "obergrenze": 0.06469999999999895
+   },
+   "G1|1|ls|Klasse 2": {
+    "n": 2396,
+    "seHH": 0.022573782303799878,
+    "mde80": 0.06324270850232575,
+    "mde80Schwelle": 0.08671944209827762,
+    "hh0": false,
+    "mittelBrutto": 0.02183714941760989,
+    "mittelNetto": -0.16700995972313343,
+    "tHH": -7.398403930519893,
+    "tHHBrutto": 0.9679612148997032,
+    "seHHBrutto": 0.022559942569468118,
+    "paarSd": 1.1051936662062392,
+    "kosten": 0.18884710914074007,
+    "umschlag": 0.7291617218109279,
+    "obergrenze": 0.1293999999999979
+   },
+   "G1|3|longUni|Klasse 2": {
+    "n": 2396,
+    "seHH": 0.025874140490037233,
+    "mde80": 0.07248899199688831,
+    "mde80Schwelle": 0.09939809810652704,
+    "hh0": false,
+    "mittelBrutto": -0.027923710438660324,
+    "mittelNetto": -0.15288400571928965,
+    "tHH": -5.908756883273368,
+    "tHHBrutto": -1.0825980997489988,
+    "seHHBrutto": 0.025793237993983604,
+    "paarSd": 1.051970399354061,
+    "kosten": 0.12496029528062938,
+    "umschlag": 0.7542467444909076,
+    "obergrenze": 0.06469999999999895
+   },
+   "G1|3|ls|Klasse 2": {
+    "n": 2396,
+    "seHH": 0.05272287965818335,
+    "mde80": 0.14770841965036646,
+    "mde80Schwelle": 0.20254021449487716,
+    "hh0": false,
+    "mittelBrutto": 0.019982765133512274,
+    "mittelNetto": -0.18106982466597127,
+    "tHH": -3.434369022327608,
+    "tHHBrutto": 0.3793786416591752,
+    "seHHBrutto": 0.05267235141683152,
+    "paarSd": 1.9062144773780307,
+    "kosten": 0.20105258979948123,
+    "umschlag": 0.7756916161653203,
+    "obergrenze": 0.1293999999999979
+   },
+   "G1|5|longUni|Klasse 2": {
+    "n": 2396,
+    "seHH": 0.03997335666731875,
+    "mde80": 0.11198935603916021,
+    "mde80Schwelle": 0.1535616469731717,
+    "hh0": false,
+    "mittelBrutto": -0.0316491040901214,
+    "mittelNetto": -0.1575524915471919,
+    "tHH": -3.9414376145199483,
+    "tHHBrutto": -0.7944606598129257,
+    "seHHBrutto": 0.039837220004794095,
+    "paarSd": 1.358352385464725,
+    "kosten": 0.12590338745707047,
+    "umschlag": 0.7549599850622467,
+    "obergrenze": 0.06469999999999895
+   },
+   "G1|5|ls|Klasse 2": {
+    "n": 2396,
+    "seHH": 0.08257334149642254,
+    "mde80": 0.23133747353637737,
+    "mde80Schwelle": 0.31721374869265684,
+    "hh0": false,
+    "mittelBrutto": 0.0038710396915365903,
+    "mittelNetto": -0.19877534871253763,
+    "tHH": -2.4072581430067173,
+    "tHHBrutto": 0.046922203317920075,
+    "seHHBrutto": 0.08249910314970653,
+    "paarSd": 2.5617560410921607,
+    "kosten": 0.2026463884040719,
+    "umschlag": 0.7813166406029489,
+    "obergrenze": 0.1293999999999979
+   },
+   "G2|1|longUni|Klasse 2": {
+    "n": 2386,
+    "seHH": 0.014188830397322667,
+    "mde80": 0.039751427241139184,
+    "mde80Schwelle": 0.05450781085435476,
+    "hh0": false,
+    "mittelBrutto": 0.005087766514831889,
+    "mittelNetto": -0.12959370705536147,
+    "tHH": -9.133501735267403,
+    "tHHBrutto": 0.3590007295882133,
+    "seHHBrutto": 0.014172022771841548,
+    "paarSd": 0.6932228111603942,
+    "kosten": 0.13468147357019342,
+    "umschlag": 0.8544039933708933,
+    "obergrenze": 0.064699999999999
+   },
+   "G2|1|ls|Klasse 2": {
+    "n": 2386,
+    "seHH": 0.02181959763409155,
+    "mde80": 0.06112978473167089,
+    "mde80Schwelle": 0.0838221662711261,
+    "hh0": false,
+    "mittelBrutto": 0.027711490522830676,
+    "mittelNetto": -0.18948626509202562,
+    "tHH": -8.6842236172113,
+    "tHHBrutto": 1.270473893323474,
+    "seHHBrutto": 0.021811932278544728,
+    "paarSd": 1.066038735169304,
+    "kosten": 0.21719775561485544,
+    "umschlag": 0.8387244205454581,
+    "obergrenze": 0.129399999999998
+   },
+   "G2|3|longUni|Klasse 2": {
+    "n": 2386,
+    "seHH": 0.025723449063936192,
+    "mde80": 0.07206681489752363,
+    "mde80Schwelle": 0.09881920192401727,
+    "hh0": false,
+    "mittelBrutto": 0.01813584738233934,
+    "mittelNetto": -0.12415107605006363,
+    "tHH": -4.826377510320775,
+    "tHHBrutto": 0.7063416957393237,
+    "seHHBrutto": 0.025675742337929883,
+    "paarSd": 1.1814313185057708,
+    "kosten": 0.1422869234324026,
+    "umschlag": 0.8882144131829894,
+    "obergrenze": 0.064699999999999
+   },
+   "G2|3|ls|Klasse 2": {
+    "n": 2386,
+    "seHH": 0.040449877931224044,
+    "mde80": 0.11332437801211728,
+    "mde80Schwelle": 0.1553922510605903,
+    "hh0": false,
+    "mittelBrutto": 0.06030148530627934,
+    "mittelNetto": -0.1700055984181827,
+    "tHH": -4.202870493385397,
+    "tHHBrutto": 1.4925936014559023,
+    "seHHBrutto": 0.040400471533215875,
+    "paarSd": 1.7806747141264858,
+    "kosten": 0.23030708372446124,
+    "umschlag": 0.8886106419425803,
+    "obergrenze": 0.129399999999998
+   },
+   "G2|5|longUni|Klasse 2": {
+    "n": 2386,
+    "seHH": 0.032185333876693784,
+    "mde80": 0.0901704313889453,
+    "mde80Schwelle": 0.12364317862070684,
+    "hh0": false,
+    "mittelBrutto": 0.017701887798608252,
+    "mittelNetto": -0.125853936814714,
+    "tHH": -3.910288372240501,
+    "tHHBrutto": 0.5507991675070135,
+    "seHHBrutto": 0.03213855220357218,
+    "paarSd": 1.4592330382850947,
+    "kosten": 0.14355582461332209,
+    "umschlag": 0.8915586229919941,
+    "obergrenze": 0.064699999999999
+   },
+   "G2|5|ls|Klasse 2": {
+    "n": 2386,
+    "seHH": 0.05239569724203066,
+    "mde80": 0.1467917853932731,
+    "mde80Schwelle": 0.201283310524985,
+    "hh0": false,
+    "mittelBrutto": 0.06449079253303691,
+    "mittelNetto": -0.16778704762822214,
+    "tHH": -3.202305846855438,
+    "tHHBrutto": 1.2311029115996235,
+    "seHHBrutto": 0.05238456665596,
+    "paarSd": 2.2630865198034607,
+    "kosten": 0.2322778401612578,
+    "umschlag": 0.8956536612079388,
+    "obergrenze": 0.129399999999998
+   },
+   "G1|1|longUni|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.03623140702046823,
+    "mde80": 0.1015059099085438,
+    "mde80Schwelle": 0.13918657320983077,
+    "hh0": false,
+    "mittelBrutto": -0.06184623698489448,
+    "mittelNetto": -0.13758104558420967,
+    "tHH": -3.797286854095562,
+    "tHHBrutto": -1.707358126202066,
+    "seHHBrutto": 0.036223353516621835,
+    "paarSd": 1.2163185471270277,
+    "kosten": 0.07573480859931515,
+    "umschlag": 0.7087329780935446,
+    "obergrenze": 0.04489999999999894
+   },
+   "G1|1|ls|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.06491626048773054,
+    "mde80": 0.18186939538242589,
+    "mde80Schwelle": 0.24938230628966565,
+    "hh0": false,
+    "mittelBrutto": -0.1257223609228157,
+    "mittelNetto": -0.25057912528042353,
+    "tHH": -3.860036351412819,
+    "tHHBrutto": -1.9371860629146256,
+    "seHHBrutto": 0.06489947627109087,
+    "paarSd": 2.1792929983853457,
+    "kosten": 0.12485676435760724,
+    "umschlag": 0.6941459443457663,
+    "obergrenze": 0.08979999999999788
+   },
+   "G1|3|longUni|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.07799023352453481,
+    "mde80": 0.21849743824233672,
+    "mde80Schwelle": 0.29960728110785295,
+    "hh0": false,
+    "mittelBrutto": -0.16981598997949188,
+    "mittelNetto": -0.24941199737952108,
+    "tHH": -3.1979901342526302,
+    "tHHBrutto": -2.1783546370249773,
+    "seHHBrutto": 0.07795608074698662,
+    "paarSd": 2.2441230852868075,
+    "kosten": 0.07959600740002927,
+    "umschlag": 0.7256808762581392,
+    "obergrenze": 0.04489999999999894
+   },
+   "G1|3|ls|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.13159979751434697,
+    "mde80": 0.3686899927161945,
+    "mde80Schwelle": 0.5055537821311153,
+    "hh0": false,
+    "mittelBrutto": -0.32830223726963204,
+    "mittelNetto": -0.45927071565921207,
+    "tHH": -3.4899044248844113,
+    "tHHBrutto": -2.4941700320207296,
+    "seHHBrutto": 0.13162784936664793,
+    "paarSd": 3.6096930910882303,
+    "kosten": 0.13096847838957892,
+    "umschlag": 0.7267835997631736,
+    "obergrenze": 0.08979999999999788
+   },
+   "G1|5|longUni|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.10949991990818862,
+    "mde80": 0.30677497561478123,
+    "mde80Schwelle": 0.4206548923192974,
+    "hh0": false,
+    "mittelBrutto": -0.20906049847990568,
+    "mittelNetto": -0.2903333832673143,
+    "tHH": -2.6514483618869074,
+    "tHHBrutto": -1.909128869967481,
+    "seHHBrutto": 0.10950570271532623,
+    "paarSd": 2.8273866949613344,
+    "kosten": 0.08127288478740854,
+    "umschlag": 0.734872705743042,
+    "obergrenze": 0.04489999999999894
+   },
+   "G1|5|ls|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.19658888882423597,
+    "mde80": 0.5507634309299795,
+    "mde80Schwelle": 0.7552158753071849,
+    "hh0": false,
+    "mittelBrutto": -0.4065850602718366,
+    "mittelNetto": -0.5400882574299185,
+    "tHH": -2.7472979813869065,
+    "tHHBrutto": -2.0674769120836096,
+    "seHHBrutto": 0.19665760613601188,
+    "paarSd": 4.819787953313449,
+    "kosten": 0.13350319715808087,
+    "umschlag": 0.7396092362344567,
+    "obergrenze": 0.08979999999999788
+   },
+   "G2|1|longUni|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.04031665210198366,
+    "mde80": 0.11295113252891742,
+    "mde80Schwelle": 0.15488045071498044,
+    "hh0": false,
+    "mittelBrutto": -0.08452020164882386,
+    "mittelNetto": -0.16814832979891792,
+    "tHH": -4.170691786946384,
+    "tHHBrutto": -2.0966077644223455,
+    "seHHBrutto": 0.04031283441903629,
+    "paarSd": 1.3534636312083486,
+    "kosten": 0.08362812815009388,
+    "umschlag": 0.797335701598577,
+    "obergrenze": 0.04489999999999894
+   },
+   "G2|1|ls|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.06705520397837875,
+    "mde80": 0.1878618594658259,
+    "mde80Schwelle": 0.2575992716033398,
+    "hh0": false,
+    "mittelBrutto": -0.17571780328646974,
+    "mittelNetto": -0.3179828269691223,
+    "tHH": -4.742105132834322,
+    "tHHBrutto": -2.6208591589531864,
+    "seHHBrutto": 0.06704587794662506,
+    "paarSd": 2.2510991150360815,
+    "kosten": 0.14226502368265154,
+    "umschlag": 0.7911930136175235,
+    "obergrenze": 0.08979999999999788
+   },
+   "G2|3|longUni|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.07761234202923172,
+    "mde80": 0.21743873742909559,
+    "mde80Schwelle": 0.2981555731394966,
+    "hh0": false,
+    "mittelBrutto": -0.13474880412351242,
+    "mittelNetto": -0.22254595590001008,
+    "tHH": -2.867404205070773,
+    "tHHBrutto": -1.7363789014032425,
+    "seHHBrutto": 0.07760334107642987,
+    "paarSd": 2.4013539389794647,
+    "kosten": 0.08779715177649706,
+    "umschlag": 0.8181320307874461,
+    "obergrenze": 0.04489999999999894
+   },
+   "G2|3|ls|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.12284188855760302,
+    "mde80": 0.34415383498298063,
+    "mde80Schwelle": 0.47190939908288776,
+    "hh0": false,
+    "mittelBrutto": -0.3390182835363696,
+    "mittelNetto": -0.4884972207773408,
+    "tHH": -3.976633919530427,
+    "tHHBrutto": -2.7594123663234584,
+    "seHHBrutto": 0.12285886940054028,
+    "paarSd": 3.819132011694436,
+    "kosten": 0.14947893724096964,
+    "umschlag": 0.8300769686204829,
+    "obergrenze": 0.08979999999999788
+   },
+   "G2|5|longUni|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.10883683478983996,
+    "mde80": 0.30491727634721566,
+    "mde80Schwelle": 0.4181075845286492,
+    "hh0": false,
+    "mittelBrutto": -0.1352467869899359,
+    "mittelNetto": -0.22502840645980826,
+    "tHH": -2.0675758064292302,
+    "tHHBrutto": -1.2430660504038156,
+    "seHHBrutto": 0.10880096592292933,
+    "paarSd": 3.103313574988303,
+    "kosten": 0.08978161946987212,
+    "umschlag": 0.8309946714031939,
+    "obergrenze": 0.04489999999999894
+   },
+   "G2|5|ls|Klasse 3": {
+    "n": 1126,
+    "seHH": 0.17416654112627974,
+    "mde80": 0.4879449816193854,
+    "mde80Schwelle": 0.6690781843907163,
+    "hh0": false,
+    "mittelBrutto": -0.44913595840750137,
+    "mittelNetto": -0.6007147801955417,
+    "tHH": -3.449082563797328,
+    "tHHBrutto": -2.581809550926425,
+    "seHHBrutto": 0.17396169219621133,
+    "paarSd": 4.999566332938464,
+    "kosten": 0.15157882178803897,
+    "umschlag": 0.8405565423327385,
+    "obergrenze": 0.08979999999999788
+   }
+  },
+  "haltedauer21": {
+   "G1|21|longUni": {
+    "n": 2385,
+    "seHH": 0.12056890630288997,
+    "mde80": 0.33778584789817656,
+    "mde80Schwelle": 0.4631775104531821,
+    "hh0": false,
+    "mittelBrutto": -0.11590102035825278,
+    "mittelNetto": -0.24106714893906167,
+    "tHH": -1.9994139146743128,
+    "tHHBrutto": -0.9643425472070969,
+    "seHHBrutto": 0.12018656720469528,
+    "paarSd": 2.6272129966395186,
+    "kosten": 0.1251661285808086,
+    "umschlag": 0.7698336923803715,
+    "obergrenze": 0.0626882032936724
+   },
+   "G1|21|ls": {
+    "n": 2385,
+    "seHH": 0.2324029289449043,
+    "mde80": 0.6511000457320439,
+    "mde80Schwelle": 0.8927990918347444,
+    "hh0": false,
+    "mittelBrutto": -0.04364701469207643,
+    "mittelNetto": -0.2438799463148956,
+    "tHH": -1.0493841339353867,
+    "tHHBrutto": -0.1877939998697679,
+    "seHHBrutto": 0.23241964451657093,
+    "paarSd": 4.680167959682584,
+    "kosten": 0.20023293162281883,
+    "umschlag": 0.8003478398796703,
+    "obergrenze": 0.12436257222155546
+   },
+   "G2|21|longUni": {
+    "n": 2375,
+    "seHH": 0.09324200016841229,
+    "mde80": 0.2612267876718239,
+    "mde80Schwelle": 0.3581984678469727,
+    "hh0": false,
+    "mittelBrutto": -0.15980502255813242,
+    "mittelNetto": -0.3017606770360299,
+    "tHH": -3.2363170726817776,
+    "tHHBrutto": -1.7149410820336506,
+    "seHHBrutto": 0.09318397245964204,
+    "paarSd": 2.831772605590243,
+    "kosten": 0.14195565447789757,
+    "umschlag": 0.9068810921810463,
+    "obergrenze": 0.06239061566871487
+   },
+   "G2|21|ls": {
+    "n": 2375,
+    "seHH": 0.11366630656215132,
+    "mde80": 0.3184475244645231,
+    "mde80Schwelle": 0.4366604832891605,
+    "hh0": false,
+    "mittelBrutto": -0.02842381228108952,
+    "mittelNetto": -0.25642312733960554,
+    "tHH": -2.2559290883565093,
+    "tHHBrutto": -0.2498831747069072,
+    "seHHBrutto": 0.11374840388684974,
+    "paarSd": 4.221510583904263,
+    "kosten": 0.22799931505851503,
+    "umschlag": 0.9108226098300253,
+    "obergrenze": 0.12437027897651967
+   }
+  },
+  "einstiegEroeffnung": {
+   "G1|1|longUni": {
+    "n": 2396,
+    "seHH": 0.01186857087252203,
+    "mde80": 0.033250988156457724,
+    "mde80Schwelle": 0.04559430186388063,
+    "hh0": false,
+    "mittelBrutto": -0.002081478398505207,
+    "mittelNetto": -0.1122495318780977,
+    "tHH": -9.457712565712225,
+    "tHHBrutto": -0.1758327434643636,
+    "seHHBrutto": 0.011837831552273225,
+    "paarSd": 0.5810753899679095,
+    "kosten": 0.11016805347959255,
+    "umschlag": 0.720722036236637,
+    "obergrenze": 0.06268399338568946,
+    "differenzBruttoZurHauptzeile": 0.013692087973866148
+   },
+   "G1|1|ls": {
+    "n": 2396,
+    "seHH": 0.022219096658509855,
+    "mde80": 0.06224902119848121,
+    "mde80Schwelle": 0.08535688172333146,
+    "hh0": false,
+    "mittelBrutto": 0.026393104528684007,
+    "mittelNetto": -0.15295257906965612,
+    "tHH": -6.883834271951632,
+    "tHHBrutto": 1.1886751209159414,
+    "seHHBrutto": 0.022203799898113982,
+    "paarSd": 1.0878285510743007,
+    "kosten": 0.1793456835983393,
+    "umschlag": 0.721643425496166,
+    "obergrenze": 0.12433979293376005,
+    "differenzBruttoZurHauptzeile": 0.01549376382657098
+   },
+   "G1|3|longUni": {
+    "n": 2396,
+    "seHH": 0.024161685316809844,
+    "mde80": 0.06769137758357446,
+    "mde80Schwelle": 0.0928195303130567,
+    "hh0": false,
+    "mittelBrutto": -0.027510825000385302,
+    "mittelNetto": -0.14376541788387945,
+    "tHH": -5.950140315082182,
+    "tHHBrutto": -1.1424834034410072,
+    "seHHBrutto": 0.024079846514642032,
+    "paarSd": 0.9765927051655332,
+    "kosten": 0.11625459288349375,
+    "umschlag": 0.7489337399739665,
+    "obergrenze": 0.06268399338568946,
+    "differenzBruttoZurHauptzeile": 0.008027858733215664
+   },
+   "G1|3|ls": {
+    "n": 2396,
+    "seHH": 0.04980625273070404,
+    "mde80": 0.13953719765034045,
+    "mde80Schwelle": 0.19133570049027265,
+    "hh0": false,
+    "mittelBrutto": 0.00023430975304559822,
+    "mittelNetto": -0.1909302570453946,
+    "tHH": -3.8334595874483828,
+    "tHHBrutto": 0.004708599767465201,
+    "seHHBrutto": 0.049762087375656294,
+    "paarSd": 1.8266484844472592,
+    "kosten": 0.19116456679843966,
+    "umschlag": 0.7684311334689908,
+    "obergrenze": 0.12433979293376005,
+    "differenzBruttoZurHauptzeile": -0.0011338982525940114
+   },
+   "G1|5|longUni": {
+    "n": 2396,
+    "seHH": 0.03644110348693325,
+    "mde80": 0.1020933955289922,
+    "mde80Schwelle": 0.1399921431554028,
+    "hh0": false,
+    "mittelBrutto": -0.03036593822743467,
+    "mittelNetto": -0.14733636652085516,
+    "tHH": -4.043136799457399,
+    "tHHBrutto": -0.8358126579543221,
+    "seHHBrutto": 0.036331034159923184,
+    "paarSd": 1.252465704795992,
+    "kosten": 0.11697042829342018,
+    "umschlag": 0.7498542199651339,
+    "obergrenze": 0.06268399338568946,
+    "differenzBruttoZurHauptzeile": 0.002443641695832194
+   },
+   "G1|5|ls": {
+    "n": 2396,
+    "seHH": 0.07755181408583639,
+    "mde80": 0.21726916234287924,
+    "mde80Schwelle": 0.2979230489921491,
+    "hh0": false,
+    "mittelBrutto": -0.02860716504422234,
+    "mittelNetto": -0.22160458309483708,
+    "tHH": -2.8575035375646958,
+    "tHHBrutto": -0.3690573203728932,
+    "seHHBrutto": 0.07751415150177171,
+    "paarSd": 2.439390060235888,
+    "kosten": 0.192997418050614,
+    "umschlag": 0.7752219506864348,
+    "obergrenze": 0.12433979293376005,
+    "differenzBruttoZurHauptzeile": -0.01457211198139772
+   },
+   "G2|1|longUni": {
+    "n": 2386,
+    "seHH": 0.01333819596362884,
+    "mde80": 0.03736828981170256,
+    "mde80Schwelle": 0.051240013613876555,
+    "hh0": false,
+    "mittelBrutto": 0.0053478834879789,
+    "mittelNetto": -0.12009801491576103,
+    "tHH": -9.004067359877558,
+    "tHHBrutto": 0.4013382683153723,
+    "seHHBrutto": 0.01332512723101831,
+    "paarSd": 0.6516634171241998,
+    "kosten": 0.12544589840373993,
+    "umschlag": 0.8454556734207698,
+    "obergrenze": 0.06237676722917111,
+    "differenzBruttoZurHauptzeile": 0.007092810626785894
+   },
+   "G2|1|ls": {
+    "n": 2386,
+    "seHH": 0.0205814968973101,
+    "mde80": 0.057661121707503975,
+    "mde80Schwelle": 0.07906587848070648,
+    "hh0": false,
+    "mittelBrutto": 0.028036756445435598,
+    "mittelNetto": -0.17881866716784886,
+    "tHH": -8.688321751330905,
+    "tHHBrutto": 1.3628105705322429,
+    "seHHBrutto": 0.020572746536949665,
+    "paarSd": 1.0055489238728532,
+    "kosten": 0.20685542361328363,
+    "umschlag": 0.8314692979629597,
+    "obergrenze": 0.12434760357488424,
+    "differenzBruttoZurHauptzeile": 0.017606876278199263
+   },
+   "G2|3|longUni": {
+    "n": 2386,
+    "seHH": 0.022671003795909667,
+    "mde80": 0.06351508423462053,
+    "mde80Schwelle": 0.08709292818236658,
+    "hh0": false,
+    "mittelBrutto": 0.0008578661363329297,
+    "mittelNetto": -0.1313216274642984,
+    "tHH": -5.7924928532715265,
+    "tHHBrutto": 0.037931264123026324,
+    "seHHBrutto": 0.022616333944224094,
+    "paarSd": 1.0715894012695057,
+    "kosten": 0.13217949360063153,
+    "umschlag": 0.8784376033156313,
+    "obergrenze": 0.06237676722917111,
+    "differenzBruttoZurHauptzeile": 0.003320755872404056
+   },
+   "G2|3|ls": {
+    "n": 2386,
+    "seHH": 0.03750851963156379,
+    "mde80": 0.10508386859978912,
+    "mde80Schwelle": 0.14409272901661546,
+    "hh0": false,
+    "mittelBrutto": 0.03806014140326025,
+    "mittelNetto": -0.18147192804718834,
+    "tHH": -4.838152233938818,
+    "tHHBrutto": 1.015701890866324,
+    "seHHBrutto": 0.03747176385661501,
+    "paarSd": 1.657214490057945,
+    "kosten": 0.219532069450448,
+    "umschlag": 0.881487009320648,
+    "obergrenze": 0.12434760357488424,
+    "differenzBruttoZurHauptzeile": 0.006722340493079494
+   },
+   "G2|5|longUni": {
+    "n": 2386,
+    "seHH": 0.02938073226269577,
+    "mde80": 0.08231305950716848,
+    "mde80Schwelle": 0.11286902106037208,
+    "hh0": false,
+    "mittelBrutto": -0.0049942825756593865,
+    "mittelNetto": -0.13864686462513057,
+    "tHH": -4.7189723995125945,
+    "tHHBrutto": -0.1701265850225312,
+    "seHHBrutto": 0.02935627359473509,
+    "paarSd": 1.3497631702593196,
+    "kosten": 0.13365258204947134,
+    "umschlag": 0.8856110741191651,
+    "obergrenze": 0.06237676722917111,
+    "differenzBruttoZurHauptzeile": -0.007843693821886582
+   },
+   "G2|5|ls": {
+    "n": 2386,
+    "seHH": 0.05158609695035632,
+    "mde80": 0.14452360921611826,
+    "mde80Schwelle": 0.19817315004448885,
+    "hh0": false,
+    "mittelBrutto": 0.038426904638411225,
+    "mittelNetto": -0.18357946770580177,
+    "tHH": -3.5587004747125714,
+    "tHHBrutto": 0.7447885790282953,
+    "seHHBrutto": 0.051594379560097076,
+    "paarSd": 2.1089292984625176,
+    "kosten": 0.2220063723442115,
+    "umschlag": 0.8908516508725262,
+    "obergrenze": 0.12434760357488424,
+    "differenzBruttoZurHauptzeile": -0.0066655317087100235
+   }
+  }
+ },
+ "dauerS": 571.917,
+ "laeufe": [
+  {
+   "nr": 1,
+   "start": "2026-10-03T19:00:16.980Z",
+   "grund": "der eine registrierte Lauf auf den echten Tagesdateien",
+   "status": "fertig",
+   "ende": "2026-10-03T19:09:52.232Z"
+  }
+ ],
+ "maschine": {
+  "commit": "bbc3000",
+  "ordnerSauber": true,
+  "node": "v24.18.0",
+  "sha256": {
+   "messen.js": "10019ab0b66137efd7d2f4315c5d6cf82a33738acb203869abed0d3727c03de4",
+   "signal.js": "90c820f8b0b22bae5859a38a4cb7a91892c1cd6905342b21bd275161faae048b",
+   "konstanten.js": "6dfa1c679f132095eb25c7e9769ee95dcd5332273d56b2de25ba5db78e5fb8c7"
+  }
+ },
+ "tagesdateienHashpruefung": {
+  "gelesen": 3530,
+  "hashGleich": 3530,
+  "ohneHash": 0
+ }
+}

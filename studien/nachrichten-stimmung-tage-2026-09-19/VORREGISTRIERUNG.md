@@ -281,3 +281,27 @@ es liegt nur zusätzlich der Rohauszug. §9 gilt insoweit nicht mehr.
 5. **Was gleich bleibt:** Zähler, Felder, Stichprobe und Tagesdateien sind unverändert; die 126 vor dem Umbau gezählten Tage werden
    nach `tage-vor-umbau/` gelegt und neu gezählt — die neue Fassung ist deterministisch, also müssen die Tagesdateien bis auf das
    Laufzeitfeld `dauerS` bytegleich sein (zweite Positivkontrolle).
+
+
+---
+
+## 13. Ergebnis (vom Lauf geschrieben, 2026-10-03)
+
+Lauf `nachrichten-stimmung-tage-2026-09-19/messung/v1` auf Panel `querschnitt-pruefstand-2026-09-13/panel/v2` und 3530 Tagesdateien des Datenbaus; Maschine (messen.js, test-messen.js grün) Commit `bbc3000`. Zahlen aus `protokoll.json`, vollständige Tafeln in `ERGEBNIS.md`. Pp je Halteperiode.
+
+| Test | n | MDE₈₀ | MDE₈₀ (t ≥ 3) | Δ̄ brutto | Kosten | Δ̄ netto | se_HH | t_HH | Entdeckung netto | 4 × MDE₈₀ Best. | Tor 1 | Bestätigung netto | letzte 250 netto | Urteil |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| G1 rangTon · H 1 · Long-Uni | 2396 | 0,032 | 0,044 | -0,016 | 0,110 | -0,126 | 0,011 | -11,01 | -0,118 | 0,201 | gesperrt | nicht gerechnet | -0,192 | **nicht belegt: nichts oberhalb von 0,032 Pp je Periode** |
+| G1 rangTon · H 1 · L-S | 2396 | 0,060 | 0,082 | 0,011 | 0,179 | -0,168 | 0,021 | -7,86 | -0,160 | 0,392 | gesperrt | nicht gerechnet | -0,262 | **nicht belegt: nichts oberhalb von 0,060 Pp je Periode** |
+| G1 rangTon · H 3 · Long-Uni | 2396 | 0,066 | 0,090 | -0,036 | 0,116 | -0,152 | 0,023 | -6,46 | -0,146 | 0,396 | gesperrt | nicht gerechnet | -0,331 | **nicht belegt: nichts oberhalb von 0,066 Pp je Periode** |
+| G1 rangTon · H 3 · L-S | 2396 | 0,136 | 0,187 | 0,001 | 0,191 | -0,190 | 0,049 | -3,90 | -0,236 | 0,891 | gesperrt | nicht gerechnet | -0,442 | **nicht belegt: nichts oberhalb von 0,136 Pp je Periode** |
+| G1 rangTon · H 5 · Long-Uni | 2396 | 0,102 | 0,140 | -0,033 | 0,117 | -0,150 | 0,036 | -4,12 | -0,166 | 0,606 | gesperrt | nicht gerechnet | -0,387 | **nicht belegt: nichts oberhalb von 0,102 Pp je Periode** |
+| G1 rangTon · H 5 · L-S | 2396 | 0,221 | 0,303 | -0,014 | 0,193 | -0,207 | 0,079 | -2,62 | -0,269 | 1,466 | gesperrt | nicht gerechnet | -0,479 | **nicht belegt: nichts oberhalb von 0,221 Pp je Periode** |
+| G2 rangAend · H 1 · Long-Uni | 2386 | 0,037 | 0,050 | -0,002 | 0,125 | -0,127 | 0,013 | -9,70 | -0,116 | 0,235 | gesperrt | nicht gerechnet | -0,204 | **nicht belegt: nichts oberhalb von 0,037 Pp je Periode** |
+| G2 rangAend · H 1 · L-S | 2386 | 0,056 | 0,077 | 0,010 | 0,207 | -0,196 | 0,020 | -9,77 | -0,163 | 0,360 | gesperrt | nicht gerechnet | -0,305 | **nicht belegt: nichts oberhalb von 0,056 Pp je Periode** |
+| G2 rangAend · H 3 · Long-Uni | 2386 | 0,068 | 0,093 | -0,002 | 0,132 | -0,135 | 0,024 | -5,55 | -0,137 | 0,434 | gesperrt | nicht gerechnet | -0,272 | **nicht belegt: nichts oberhalb von 0,068 Pp je Periode** |
+| G2 rangAend · H 3 · L-S | 2386 | 0,108 | 0,148 | 0,031 | 0,220 | -0,188 | 0,039 | -4,87 | -0,197 | 0,691 | gesperrt | nicht gerechnet | -0,400 | **nicht belegt: nichts oberhalb von 0,108 Pp je Periode** |
+| G2 rangAend · H 5 · Long-Uni | 2386 | 0,085 | 0,117 | 0,003 | 0,134 | -0,131 | 0,030 | -4,30 | -0,147 | 0,526 | gesperrt | nicht gerechnet | -0,257 | **nicht belegt: nichts oberhalb von 0,085 Pp je Periode** |
+| G2 rangAend · H 5 · L-S | 2386 | 0,145 | 0,199 | 0,045 | 0,222 | -0,177 | 0,052 | -3,42 | -0,176 | 0,915 | gesperrt | nicht gerechnet | -0,362 | **nicht belegt: nichts oberhalb von 0,145 Pp je Periode** |
+
+Kontrollen und Tore: orakel bestanden, placebo1 **gefallen**, placebo2 bestanden, leckKlinken bestanden, nullpunkt bestanden, kurslosesSignal bestanden, abdeckungstor **gefallen**, vorpruefungstor bestanden. Signaltage 2428, davon undefiniert 32.

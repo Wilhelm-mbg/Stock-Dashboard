@@ -431,7 +431,7 @@ function urteilstafel(P) {
   return L;
 }
 function ergebnisText(P) {
-  var L = [], KO = P.kontrollen, Z = P.zaehler;
+  var L = [], KO = Object.assign({}, P.kontrollen), Z = P.zaehler;      /* flache Kopie: das Protokoll bleibt unberührt */
   L.push('# ERGEBNIS — Nachrichten-Stimmung aus GDELT, Tagesdesign (Studie Nr. 45, Auftrag Nr. 66)', '');
   L.push('Kennung `' + P.kennung + '`, Messung `' + P.kennungMessung + '`, Panel `' + P.panel + '` (Stand ' + P.panelStand + '), Datenbau ' + Object.keys(P.datenbau).map(function (k) { return '`' + k + '` (' + P.datenbau[k] + ' Tagesdateien)'; }).join(', ') + '. Stand ' + P.stand + '.');
   L.push('Alle Zahlen dieser Datei stammen aus `protokoll.json` (von `messen.js` geschrieben); Pp je Halteperiode. Simulation mit virtuellem Kapital, keine Anlageberatung.', '');
@@ -440,13 +440,18 @@ function ergebnisText(P) {
   L = L.concat(urteilstafel(P));
   L.push('', 'MDE₈₀ = 2,8016 × se_HH und MDE₈₀ an der Schwelle = 3,8416 × se_HH stehen im Protokoll in Stufe A und wurden vor jedem Mittel gerechnet und geschrieben. Entdeckung = ungerade Jahre des Signaltags, Bestätigung = gerade Jahre.');
   L.push('Gefallene Kontrollen und Tore (Kennzeichnung aller zwölf Zeilen): ' + (P.toreGefallen.length ? '**' + P.toreGefallen.join(', ') + '** — die Zahlen stehen trotzdem da; das Urteil `belegt` ist damit ausgeschlossen (§7).' : 'keine.'), '');
-  L.push('| Test | Umschlag je Periode | Kosten (registrierte Formel) | Obergrenze laut §5 (ein Umlauf je Seite) | Bedingung 1 | 2 | 3 | 4 | 5 |', '|---|---|---|---|---|---|---|---|---|');
-  Object.keys(P.tests).forEach(function (k) { var t = P.tests[k], b = t.bedingungen; L.push('| ' + testName(k) + ' | ' + z(t.stufeB.umschlag) + ' | ' + z(t.stufeB.kosten) + ' | ' + z(t.stufeB.obergrenze) + ' | ' + jn(b.b1NettoPositivUndAbMde80) + ' | ' + jn(b.b2tHHab3) + ' | ' + jn(b.b3Tor1UndBestaetigung) + ' | ' + jn(b.b4AktualitaetLetzte250NichtNegativ) + ' | ' + jn(b.b5ProtokollBestaetigtUndPlaceboBestanden) + ' |'); });
+  L.push('| Test | se_HH brutto | t_HH brutto | Umschlag je Periode | Kosten (registrierte Formel) | Obergrenze laut §5 (ein Umlauf je Seite) | Bedingung 1 | 2 | 3 | 4 | 5 |', '|---|---|---|---|---|---|---|---|---|---|---|');
+  var bruttoUnterMde = 0, nettoNegativHalbeKosten = 0, groesstesBrutto = -Infinity;
+  Object.keys(P.tests).forEach(function (k) { var t = P.tests[k]; if (t.stufeB.mittelBrutto < t.stufeA.gesamt.mde80) bruttoUnterMde++; if (t.stufeB.mittelBrutto - t.stufeB.kosten / 2 < 0) nettoNegativHalbeKosten++; groesstesBrutto = Math.max(groesstesBrutto, t.stufeB.mittelBrutto); });
+  Object.keys(P.tests).forEach(function (k) { var t = P.tests[k], b = t.bedingungen; L.push('| ' + testName(k) + ' | ' + z(t.stufeB.seHHBrutto) + ' | ' + z(t.stufeB.tHHBrutto, 2) + ' | ' + z(t.stufeB.umschlag) + ' | ' + z(t.stufeB.kosten) + ' | ' + z(t.stufeB.obergrenze) + ' | ' + jn(b.b1NettoPositivUndAbMde80) + ' | ' + jn(b.b2tHHab3) + ' | ' + jn(b.b3Tor1UndBestaetigung) + ' | ' + jn(b.b4AktualitaetLetzte250NichtNegativ) + ' | ' + jn(b.b5ProtokollBestaetigtUndPlaceboBestanden) + ' |'); });
+  L.push('', 't_HH in der Urteilstafel ist das t der Netto-Reihe (das Urteil fällt netto); se_HH brutto und t_HH brutto stehen hier daneben. In ' + bruttoUnterMde + ' von 12 Tests liegt schon Δ̄ brutto unter MDE₈₀ (größtes Δ̄ brutto ' + z(groesstesBrutto) + ' Pp); mit halben Kosten (1 × umschlagKosten je Seite, die Obergrenze-Lesart von §5) wäre Δ̄ netto in ' + nettoNegativHalbeKosten + ' von 12 Tests negativ — beides aus den Protokollzahlen gerechnet, kein weiterer Lauf.');
   L.push('', '## 2. Kontrollen (§7) — Schranke und Befund', '');
   L.push('| Kontrolle | Schranke | Befund | bestanden |', '|---|---|---|---|');
+  function esc(s) { return String(s).replace(/\|/g, '\\|'); }
+  ['placebo1', 'placebo2', 'orakel', 'nullpunkt', 'kurslos', 'leck'].forEach(function (k) { KO[k] = Object.assign({}, KO[k], { schranke: esc(KO[k].schranke) }); });
   var p1 = Object.keys(KO.placebo1.zellen).map(function (k) { return KO.placebo1.zellen[k]; }), p2 = Object.keys(KO.placebo2.zellen).map(function (k) { return KO.placebo2.zellen[k]; });
   function maxB(arr, f) { return Math.max.apply(null, arr.map(function (x) { return Math.abs(x[f]); })); }
-  L.push('| Placebo 1 (Zukunft, t + 21) | ' + KO.placebo1.schranke + ' | 12 Zellen: größtes \\|Mittel\\| ' + z(maxB(p1, 'mittelBrutto')) + ' Pp, größtes \\|t_HH\\| ' + z(maxB(p1, 'tHH'), 2) + '; gefallen ' + p1.filter(function (x) { return !x.bestanden; }).length + ' von 12 | ' + jn(KO.placebo1.bestanden) + ' |');
+  L.push('| Placebo 1 (Zukunft, t + 21) | ' + KO.placebo1.schranke + ' | 12 Zellen: größtes \\|Mittel\\| ' + z(maxB(p1, 'mittelBrutto')) + ' Pp, größtes \\|t_HH\\| ' + z(maxB(p1, 'tHH'), 2) + '; gefallen ' + p1.filter(function (x) { return !x.bestanden; }).length + ' von 12, davon allein über die Pp-Schranke (bei \\|t_HH\\| < 3) ' + p1.filter(function (x) { return !x.bestanden && Math.abs(x.tHH) < 3; }).length + ' | ' + jn(KO.placebo1.bestanden) + ' |');
   L.push('| Placebo 2 (Permutation, 12 Ziehungen) | ' + KO.placebo2.schranke + ' | 12 Zellen: größtes \\|Mittel über 12\\| ' + z(maxB(p2, 'mittelUeberZiehungen')) + ' Pp, höchste Zahl mit \\|t\\| ≥ 3: ' + Math.max.apply(null, p2.map(function (x) { return x.anzahlTab3; })) + '; gefallen ' + p2.filter(function (x) { return !x.bestanden; }).length + ' von 12 | ' + jn(KO.placebo2.bestanden) + ' |');
   L.push('| Orakel | ' + KO.orakel.schranke + ' | ' + Object.keys(KO.orakel.zellen).map(function (H) { var o = KO.orakel.zellen[H]; return 'H ' + H + ': ' + z(o.mittelBrutto, 2) + ' Pp, t ' + z(o.tHH, 1); }).join('; ') + ' | ' + jn(KO.orakel.bestanden) + ' |');
   var np = Object.keys(KO.nullpunkt.zellen).map(function (k) { return KO.nullpunkt.zellen[k]; });

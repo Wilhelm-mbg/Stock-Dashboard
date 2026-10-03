@@ -1,11 +1,11 @@
-(a) Lauf H = 1 fertig, 55 s
+(a) Lauf H = 1 fertig, 50 s
 (a) H 1: Kunst-Ton L-S brutto 2.848 Pp, t 114.9; Orakel der Maschine: H 1 2.848 Pp t 114.9, H 3 5.058 Pp t 64.6, H 5 6.594 Pp t 54.8
-(a) H 3: Kunst-Ton L-S brutto 5.069 Pp, t 64.8, 107 s
-(a) H 5: Kunst-Ton L-S brutto 6.603 Pp, t 54.9, 160 s
-(b) Lauf Zufall fertig, 216 s
+(a) H 3: Kunst-Ton L-S brutto 5.069 Pp, t 64.8, 88 s
+(a) H 5: Kunst-Ton L-S brutto 6.603 Pp, t 54.9, 133 s
+(b) Lauf Zufall fertig, 186 s
 (b) Zufalls-Ton: größtes |t_HH brutto| über 12 Zellen 2.02; Placebo 2 true, kurslos true, Nullpunkt true
 (g) Vorprüfungstor: Verhältnis Paar-sd Lauf / Vorprüfung 0.97 … 1.03 über 12 Zellen
-(c) eingepflanzt: beta 0.00425, unabhängig gerechnet 0.2000 Pp; Maschine brutto 0.2000 Pp, Kosten 0.1144, netto 0.0856, t_HH brutto 19.3, 278 s
+(c) eingepflanzt: beta 0.00425, unabhängig gerechnet 0.2000 Pp; Maschine brutto 0.2000 Pp, Kosten 0.1144, netto 0.0856, t_HH brutto 19.3, 244 s
 (c) Handrechnung 2022-12-16: brutto 0.055569 / Maschine 0.055569; Kosten 0.116305 / Maschine 0.116305; netto -0.060735
 (c) Tor 1 beim eingepflanzten Effekt: Entdeckung netto 0.047 Pp gegen 4 × Bestätigungs-MDE80 0.182 Pp -> gesperrt
-40 Prüfungen grün, 278 s
+40 Prüfungen grün, 244 s
