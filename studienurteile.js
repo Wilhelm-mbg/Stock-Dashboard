@@ -18,6 +18,12 @@
  * - Liegt für denselben Schlüssel später ein Messmaschinen-Protokoll vor, gewinnt
  *   das Protokoll: die Leser (depot.js, triggerBelegstand) fragen diese Datei nur,
  *   wenn kein Protokoll da ist.
+ *   FORTGESCHRIEBEN AM 04.10.2026 (Auftrag Nr. 71): es gewinnt das JÜNGERE Urteil.
+ *   Anlass war der Kapitulations-Dip: sein Protokoll vom 26.08.2026 (alte Maschine)
+ *   hätte die Neumessung vom 03.10.2026 überdeckt, die außerhalb der Messmaschine lief
+ *   und deshalb hier steht. Entschieden wird das an EINER Stelle - gueltig() unten;
+ *   depot.js ruft sie über belegKette(), alle anderen Leser über DepotAPI. Bei
+ *   gleichem Datum und ohne Registereintrag bleibt es wie bisher beim Protokoll.
  * - Seit 02.09.2026 zusätzlich VORWÄRTSTEST-Etiketten (unten): das wörtliche Urteil einer
  *   vorregistrierten Studie zu genau der Konfiguration, die ein Buch der App handelt.
  *   Nie „belegt", nie „bestätigt" — und jede Zahl wird von test-v6.js gegen die Rohdaten
@@ -44,6 +50,21 @@
       befund: 'Abschnittskanäle-Studie: als Handelsbedingung schädlich (−0,17 Pp, t = −4,1); der Kanal ist seither nur Anzeige. Erster Backtest zuvor: −39 % bei Gegenprobe p = 0,86.',
       quelle: 'Abschnittskanäle-Befund 22.08.2026 (PROJEKTSTAND) + Backtest 21.08.2026 (quant.js, SETUP_ALLOW)',
       datum: '2026-08-22'
+    },
+    /* Neumessung des Kapitulations-Dips (Auftrag Nr. 68, 03.10.2026). Der erste Satz des
+     * Befunds ist der Urteilssatz der Studie WÖRTLICH (lauf/stufe-b.json, urteil.satz -
+     * Vorregistrierung §9/§11), der Vermerk zu den verschwundenen Reihen ist Pflicht
+     * (ERGEBNIS.md). Jede Zahl in zahlen wird von test-v6.js gegen stufe-b.json gehalten.
+     * etikett ist die Kennzeichnung, die Auswahl, Statuszeile und Regelkopf zeigen. */
+    kapitulation: {
+      etikett: 'Neumessung: zurückgewiesen',
+      befund: 'In der behaupteten Größe zurückgewiesen: obere Grenze +0,601 < 1,107 Pp (V2 netto −0,024 Pp je Signaltag, Band [−0,649; +0,601]). ' +
+        'Neumessung vom 03.10.2026 auf sauberem Minutenarchiv mit den verschwundenen Reihen, 528 Signaltage im zuvor nie gemessenen Fenster 2016 bis 25.09.2023. ' +
+        'Das Urteil hängt an der Buchung der verschwundenen Reihen (strenge Regel: nicht entscheidbar). ' +
+        'Ein kleiner Effekt in Hürdengröße ist weder belegt noch ausgeschlossen.',
+      zahlen: { nettoPp: -0.0238, band95: [-0.6489, 0.6014], signaltage: 528, se: 0.319, mde80: 0.8936, behauptetPp: 1.107 },
+      quelle: 'studien/kapitulation-neu-2026-10-03/ERGEBNIS.md, 03.10.2026 · wiki/belegstand.md, Abschnitt „Kapitulation V2, Neumessung“',
+      datum: '2026-10-03'
     }
   };
   /* Vorwärtstest-Etiketten (Wilhelms Entscheid 02.09.2026): Das Momentum-Buch handelt
@@ -67,6 +88,15 @@
     /** Liefert die dokumentierte Verwerfung zu einem Auslöser-/Modus-Schlüssel,
      *  oder null. */
     verworfen: function (k) { return EINTRAEGE[k] || null; },
+    /** DIE EINE KETTE (04.10.2026): hält das Messprotokoll (pk, oder null) gegen den
+     *  Registereintrag desselben Schlüssels - das JÜNGERE Urteil gewinnt, bei gleichem
+     *  Datum das Protokoll. Rückgabe { protokoll, register }, genau eines davon gesetzt,
+     *  oder null, wenn es keines von beiden gibt. Kein Leser entscheidet das selbst. */
+    gueltig: function (k, pk) {
+      var v = EINTRAEGE[k] || null;
+      if (pk && !(v && v.datum > String(pk.datum || ''))) return { protokoll: pk, register: null };
+      return v ? { protokoll: null, register: v } : null;
+    },
     /** Liefert das Vorwärtstest-Etikett zu einer Buch-Konfiguration, oder null.
      *  Mehr Urteilsarten gibt es hier absichtlich nicht (s. Kopf). */
     vorwaertstest: function (k) { return VORWAERTSTEST[k] || null; }

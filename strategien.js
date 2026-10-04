@@ -24,7 +24,7 @@
       name: 'Kurzfristig · Intraday',
       horizont: 'Stunden bis wenige Tage',
       instrument: 'Aktie 1× (Voreinstellung) – mit Schein stirbt die Kante (−96 %)',
-      was: 'Kauft im laufenden Handel den RSI(2)-Rücklauf im Seitwärtskanal. Zuschaltbar: der Kapitulations-Dip als zweites Standbein und die Regime-Zuteilung. Ausstieg über die Zeit, darunter nur ein Not-Stop – kein Gewinnziel, kein Trailing; die Position darf über Nacht laufen.',
+      was: 'Kauft im laufenden Handel den RSI(2)-Rücklauf im Seitwärtskanal. Von Hand zuschaltbar: die Regime-Zuteilung und der Kapitulations-Dip (Neumessung: zurückgewiesen – per Voreinstellung aus). Ausstieg über die Zeit, darunter nur ein Not-Stop – kein Gewinnziel, kein Trailing; die Position darf über Nacht laufen.',
       stand: 'gemessen – gegen Kontrolle nicht entscheidbar',
       farbe: 'warn',
       /* Struktur-Audit Punkt 3: unter welchen Kennungen die Messmaschine diese
@@ -38,8 +38,10 @@
         'Das Instrument entscheidet: Der Vorsprung liegt ÜBER der Basiswert-Hürde (0,10 %) und UNTER der Scheinhürde (0,21 %). Im Backtest: Basiswert PF 1,23 (+0,23 % je Trade, volatiles Drittel), Schein −96 %. Und er zahlt über Nacht aus — streng intraday −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %.',
         'Nur die Call-Seite trägt (+0,075 %); das Put-Bein kämpft gegen die Marktdrift (−0,099 %) — dieselbe Lektion wie beim Ergebnis-Drift.',
         'Als Modus „RSI(2) im Seitwärtskanal“ (Umkehr-Auslöser) eingebaut: nur Long, Zeit-Ausstieg 8 Handelsstunden, darf eine Nacht überleben. Monatssignifikanz steht noch aus (36 Monate, t ≈ 0,5) — der Modus gehört in den Vorwärtstest, nicht auf großes Budget.',
-        'Zuschaltbar als zweites Standbein: der Kapitulations-Dip. Gemessen Median +0,44 % je Trade, t = 4,6 — er kauft den Ausverkauf im Abwärtskanal, nur Long, Zeit-Ausstieg nach 26 Handelsstunden, kein Gewinndeckel.',
-        'Zuschaltbar seit Version 8.23.26: die Regime-Zuteilung. Gemessen trägt rsi2seit nur über der SPY-EMA200 (+0,148 Pp; darunter −0,169 Pp), der Kapitulations-Dip nur darunter (+0,94 Pp, t = 3,1). Die Zuteilung schlug die statische Basis im Mittelwert (t = 3,21) und im Gesamtertrag (+45 Pp), Permutationstest p = 0,013.',
+        /* Messstand 04.10.2026 (Auftrag Nr. 71). Die gerundeten Zahlen der beiden
+         * folgenden Texte haelt test-v6.js gegen lauf/stufe-b.json der Neumessung. */
+        'KAPITULATIONS-DIP, NEUMESSUNG 03.10.2026: auf sauberem Archiv mit den verschwundenen Reihen in der behaupteten Größe zurückgewiesen – netto −0,02 Pp je Signaltag, Band −0,65 bis +0,60, 528 Signaltage, gegen behauptete +1,107 Pp; das Urteil hängt an der Buchung der verschwundenen Reihen (strenge Regel: nicht entscheidbar). Ein kleiner Effekt ist weder belegt noch ausgeschlossen. Der Modus ist deshalb per Voreinstellung aus und bleibt von Hand zuschaltbar: er kauft den Ausverkauf im Abwärtskanal, nur Long, Zeit-Ausstieg nach 26 Handelsstunden. Fundstelle: wiki/belegstand.md, Abschnitt „Kapitulation V2, Neumessung“.',
+        'Zuschaltbar seit Version 8.23.26: die Regime-Zuteilung. RSI-Teil (Regime-Studie 21.08.2026, altes Archiv, seither nicht neu gemessen): rsi2seit über der SPY-EMA200 +0,148 Pp, darunter −0,169 Pp – mit der Zuteilung handelt rsi2seit nur über der Linie, darunter ist Pause. Der Kapitulations-Teil der Zuteilung ist seit der Neumessung vom 03.10.2026 nicht mehr getragen (in der behaupteten Größe zurückgewiesen). Der frühere Gesamtvergleich der Zuteilung wurde mit beiden Teilen zusammen auf dem alten Archiv gemessen und ist deshalb kein Beleg der Zuteilung mehr.',
         'Auf diesen Daten OHNE tragfähige Zelle: Donchian, Squeeze, Pullback — in keiner Marktlage überzufällig.'
       ],
       schalter: 'intraday'
@@ -200,8 +202,11 @@
     setz('depot', 'driftAn', true, 'Drift-Buch an');
     setz('depot', 'maxRisikostufe', 3, 'Maximale Risikostufe 3');
     var extras = ['Gemessene Voreinstellungen übernommen'];
-    // Zweite gemessene Kante gleich mit an - feuert in der anderen Marktphase
-    if (!D.intraday.kapiZusatz && setz('intraday', 'kapiZusatz', true, 'Kapitulations-Dip zusätzlich an')) extras.push('Kapitulations-Dip zusätzlich an');
+    /* Bis zum 04.10.2026 schaltete diese Zeile den Kapitulations-Dip EIN - unter der
+     * Ueberschrift "gemessen". Seit der Neumessung vom 03.10.2026 (in der behaupteten
+     * Groesse zurueckgewiesen) gehoert er nicht in die gemessene Konfiguration: der
+     * Knopf stellt ihn aus, wenn er an ist - einzeln zurueckstellbar wie jedes Feld. */
+    if (D.intraday.kapiZusatz && setz('intraday', 'kapiZusatz', false, 'Kapitulations-Dip aus')) extras.push('Kapitulations-Dip aus (Neumessung: zurückgewiesen)');
     // Die widerlegte Stunden-Strategie gehoert nicht in die belegte Konfiguration
     if (D.hourlyEnabled !== false && setz('depot', 'hourlyEnabled', false, 'Stunden-Strategie aus')) extras.push('Stunden-Strategie aus (widerlegt)');
     // Regime-Zuteilung (Studie 21.08.): jede Kante nur in ihrem gemessenen Regime
@@ -214,7 +219,8 @@
       applied: extras, felder: felder,
       txt: 'Auf die gemessenen Einstellungen umgestellt: Intraday-Modus RSI(2) im Seitwärtskanal ' +
         '(Basiswert, 8 h Zeit-Ausstieg, nur Long). Der Ein/Aus-Schalter des Intraday-Handels bleibt ' +
-        'unangetastet; das Schattenbuch zeichnet immer auf. Momentum- und Drift-Buch handeln virtuell. ' +
+        'unangetastet; das Schattenbuch zeichnet immer auf. Der Kapitulations-Dip gehört seit der Neumessung ' +
+        'vom 03.10.2026 nicht mehr dazu und wird ausgeschaltet, falls er an war. Momentum- und Drift-Buch handeln virtuell. ' +
         'Maximale Risikostufe 3. Jedes Feld lässt sich unten unter „Was hat gewirkt?“ einzeln zurückstellen.' });
     if (window.__save) window.__save();
     [['idMode', 'rsi2seit'], ['idInstrument', 'basis'], ['idInterval', '60m'], ['idHold', '480'], ['idMaxStufe', '3']].forEach(function (kv) {
@@ -275,10 +281,20 @@
     if (!s.messKeys || !s.messKeys.length) return '';
     var api = window.DepotAPI;
     if (!api || !api.protokollKante) return '';
+    /* Seit 04.10.2026 gibt protokollKante() nur noch das GUELTIGE Protokoll heraus. Ist
+     * ein Registereintrag juenger (Kapitulations-Dip, Neumessung), steht dessen
+     * Kennzeichnung in derselben Zeile - sonst verschwaende das Urteil einfach. */
+    var register = [];
     var treffer = s.messKeys.map(function (k) {
       var pk = api.protokollKante(k);
-      return pk ? { key: k, pk: pk } : null;
+      if (pk) return { key: k, pk: pk };
+      var su = window.StudienUrteile && window.StudienUrteile.verworfen(k);
+      if (su && su.etikett) register.push('Studienregister <code>' + U.esc(k) + '</code> vom ' + U.esc(su.datum) + ': <b>' + U.esc(su.etikett) + '</b>');
+      return null;
     }).filter(Boolean);
+    if (!treffer.length && register.length) {
+      return '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:3px;">' + register.join(' · ') + '</div>';
+    }
     if (!treffer.length) {
       return '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:3px;">' +
         'Kein Messprotokoll im Datenordner – der Stand oben steht fest im Code und kann veralten.</div>';
@@ -303,7 +319,7 @@
           (pk.urteil === 'nicht-entscheidbar' && pk.aussichtTage80 != null
             ? ', entscheidbar frühestens mit rund ' + U.nf0.format(pk.aussichtTage80) + ' weiteren Signaltagen'
             : '');
-      }).join(' · ') +
+      }).concat(register).join(' · ') +
       ' <span style="color:var(--muted);">– die App liest dieses Urteil, sie rechnet es nicht.</span></div>';
   }
 
@@ -323,7 +339,7 @@
           quelle: 'Messprotokoll ' + kette[i] + ' vom ' + pk.datum };
       }
       var su = window.StudienUrteile && window.StudienUrteile.verworfen(kette[i]);
-      if (su) return { txt: 'gemessen und verworfen', farbe: 'down', urteil: 'verworfen',
+      if (su) return { txt: su.etikett || 'gemessen und verworfen', farbe: 'down', urteil: 'verworfen',
         quelle: su.quelle, befund: su.befund };
       /* Vorwaertstest-Etikett (02.09.2026): Urteil und Einschraenkung woertlich aus dem
        * Studienregister, das Datum aus dem Buch - seit wann es auf dem liquiden Korb
@@ -363,7 +379,12 @@
       var cI = antwortChip([st.modus]) || { txt: 'nicht gemessen', farbe: 'muted' };
       zeilen.push('<div><b>Intraday</b> · ' + U.esc(a.modusName || st.modus || '?') +
         ' – handelt ' + (a.instrument === 'schein' ? 'Hebelscheine' : 'die Aktie selbst (1×)') +
-        (st.kapiZusatz ? ', Kapitulations-Dip zugeschaltet' : '') + ' ' + chipHtml(cI) + '</div>');
+        ' ' + chipHtml(cI) +
+        /* Der Zusatz traegt sein EIGENES Etikett aus der Kette - nicht das des Hauptmodus. */
+        (st.kapiZusatz && st.modus !== 'kapitulation'
+          ? ' <span>+ Kapitulations-Dip von Hand zugeschaltet</span> ' +
+            chipHtml(antwortChip(['kapitulation']) || { txt: 'nicht gemessen', farbe: 'muted' })
+          : '') + '</div>');
     }
     STRATEGIEN.forEach(function (s) {
       if (s.key === 'kurz' || s.fussnote || !s.schalter) return;

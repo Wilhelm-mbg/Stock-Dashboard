@@ -154,6 +154,59 @@
             'Einmalig auf die gemessene Einstellung zurückgesetzt – jede Änderung von Hand bleibt ab jetzt unangetastet.' });
       }
     }
+    /* Einmalig (04.10.2026, Auftrag Nr. 71): Der Kapitulations-Dip ist am 03.10.2026 auf
+     * sauberem Archiv neu gemessen worden und in der behaupteten Groesse zurueckgewiesen.
+     * Er wird EINMAL abgeschaltet - dieselbe Mechanik wie bei der Stunden-Strategie
+     * oben: eigener Merker, sichtbarer Journal-Eintrag, und wer danach von Hand wieder
+     * einschaltet, entscheidet bewusst gegen die Messung; das wird nie wieder
+     * automatisch angefasst.
+     * Was "aus" heisst: (a) der Zusatz-Haken faellt; (b) steht der eigenstaendige Modus
+     * auf Kapitulation, geht er auf rsi2seit zurueck - und zwar mit GENAU den Feldern,
+     * die ein Moduswechsel von Hand ueber die Ausloeser-Auswahl setzt (applySetup +
+     * idSave in depot.js: Zeitrahmen 60m, Bestaetigung 15, Haltedauer 480, dazu die
+     * abgeleiteten Felder setup/trigger/exitStyle). Ein halber Wechsel - Modus neu,
+     * Haltedauer noch 26 Stunden - waere genau der Fehler, den die Zeitrahmen-Sicherung
+     * darueber schon einmal aufraeumen musste; (c) eine vom Autopiloten VORGEMERKTE
+     * Umstellung auf Kapitulation wird verworfen, sonst spielte er sie beim naechsten
+     * Boersenschluss wieder ein.
+     * NICHT angefasst werden: die Regime-Zuteilung (Wilhelms Entscheid 04.10.2026),
+     * die Hand-Sperren (sie gehoeren dem Nutzer; diese Sicherung setzt auch keine
+     * neuen) und OFFENE POSITIONEN - ihr Ausstieg haengt an den Stempeln der Position
+     * (exitMode, maxHoldMin, sl), nicht an diesen Einstellungen: ein laufender
+     * Kapitulations-Trade laeuft mit seinem 26-Stunden-Horizont und Not-Stop zu Ende.
+     * Ist nichts umzustellen, wird nur der Merker gesetzt - kein Journal-Eintrag. */
+    if (D.kapitulationNeumessungGeprueft === undefined) {
+      D.kapitulationNeumessungGeprueft = 1;
+      var kapiAus = [];
+      if (D.intraday.kapiZusatz) { D.intraday.kapiZusatz = false; kapiAus.push('Kapitulations-Dip (Zusatz) aus'); }
+      if (D.intraday.mode === 'kapitulation') {
+        /* Die alten Werte stehen im Eintrag - es gibt bewusst kein konfigVorher (wie bei
+         * der Stunden-Strategie): ein Zurueck-Knopf wuerde spaeter die GANZE
+         * Intraday-Konfiguration auf den Ladestand zuruecksetzen, nicht nur dies. */
+        var kapiAlt = 'Zeitrahmen ' + D.intraday.interval + ' → 60m, Haltedauer ' + D.intraday.scalpHold +
+          ' → 480 Min, Bestätigung ' + D.intraday.confirmBps + ' → 15';
+        D.intraday.mode = 'rsi2seit';
+        D.intraday.setup = 'umkehr'; D.intraday.trigger = 'rsi2seit'; D.intraday.exitStyle = 'laufen';
+        D.intraday.interval = '60m'; D.intraday.confirmBps = 15; D.intraday.scalpHold = 480;
+        kapiAus.push('Modus Kapitulations-Dip → RSI(2) im Seitwärtskanal; ' + kapiAlt);
+      }
+      var vorgemerkt = D.autoOpt && D.autoOpt.pending && D.autoOpt.pending.rec;
+      if (vorgemerkt && vorgemerkt.modeKey === 'kapitulation') {
+        D.autoOpt.pending = null; D.autoOpt.lastRecKey = null;
+        kapiAus.push('Vorgemerkte Autopilot-Umstellung auf Kapitulations-Dip verworfen');
+      }
+      if (kapiAus.length) {
+        var regKapi = window.StudienUrteile && window.StudienUrteile.verworfen ? window.StudienUrteile.verworfen('kapitulation') : null;
+        if (!D.tuneLog) D.tuneLog = [];
+        D.tuneLog.unshift({ id: 'sicherung-kapi-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+          applied: kapiAus.map(function (a) { return a + ' (Neumessung: zurückgewiesen)'; }),
+          txt: 'Der Kapitulations-Dip wurde neu gemessen. ' +
+            (regKapi ? regKapi.befund : 'Neumessung vom 03.10.2026: in der behaupteten Größe zurückgewiesen.') +
+            ' Er wurde deshalb einmalig abgeschaltet. Die Regime-Zuteilung bleibt, wie sie eingestellt ist, und offene ' +
+            'Positionen laufen mit ihrem eigenen Horizont und Not-Stop zu Ende. Einschalten bleibt jederzeit möglich ' +
+            '(Reiter „Regeln → Einstellungen“, Intraday-Karte) und wird danach nie wieder automatisch geändert.' });
+      }
+    }
     // Einmalig: Das Event-Blackout ist eine Sicherung, keine Stellschraube. Steht es aus,
     // wird es beim Update einmal zurückgesetzt – sichtbar im Verlauf, danach nie wieder automatisch.
     if (D.blackoutGeprueft === undefined) {

@@ -1689,13 +1689,13 @@
           <b>Erlaubnis</b>: dasselbe Signal ist im Trend ein Münzwurf und im Seitwärtsband messbar. Gemessen über
           162 Werte: <b>+0,147 Prozentpunkte</b> auf 8 Handelsstunden über die übliche Drift hinaus, in beiden
           Zeithälften positiv. Nur Long, weil das Gegenstück gegen die Marktdrift kämpft.<br><br>
-          <b>Kapitulations-Dip</b> (zuschaltbar). Kauft den Ausverkauf im Abwärtskanal – dieselbe Idee, aber für die
-          andere Marktphase. Gemessen: Median <b>+0,44 %</b> je Trade. Nur Long, 26 Handelsstunden Zeit, kein
-          Gewinndeckel, weil der Ertrag in den großen Erholungen sitzt.<br><br>
-          <b>Regime-Zuteilung</b> (zuschaltbar). Beide Kanten sind komplementär: Der Rücksetzer-Kauf trägt nur, solange
-          der Gesamtmarkt über seiner 200er-Linie steht, der Kapitulations-Kauf nur darunter. Die Zuteilung schaltet
-          jede Kante in ihrer Phase frei – gemessen besser als beide dauerhaft laufen zu lassen, im Durchschnitt
-          <b>und</b> im Gesamtertrag. Pausierte Signale laufen im Schattenbuch weiter mit, damit die Regel im
+          <b>Kapitulations-Dip</b> (von Hand zuschaltbar, per Voreinstellung aus). Kauft den Ausverkauf im Abwärtskanal – dieselbe Idee, aber für die
+          andere Marktphase. <b>Neumessung vom 03.10.2026: in der behaupteten Größe zurückgewiesen</b> – netto −0,02 Pp je Signaltag,
+          Band −0,65 bis +0,60, 528 Signaltage; das Urteil hängt an der Buchung der verschwundenen Reihen. Nur Long, 26 Handelsstunden Zeit.<br><br>
+          <b>Regime-Zuteilung</b> (zuschaltbar). Der Rücksetzer-Kauf handelt damit nur, solange
+          der Gesamtmarkt über seiner 200er-Linie steht; darunter ist Pause. Der Kapitulations-Teil der Zuteilung ist seit der
+          Neumessung nicht mehr getragen, und der frühere Gesamtvergleich wurde mit beiden Teilen zusammen auf dem alten Archiv
+          gemessen – er ist kein Beleg der Zuteilung mehr. Pausierte Signale laufen im Schattenbuch weiter mit, damit die Regel im
           Echtbetrieb überprüfbar bleibt.<br><br>
           <b>Instrument:</b> gemessen wurde mit der Aktie selbst, ohne Hebel – so ist es auch voreingestellt
           (was gerade eingestellt ist, steht in der Karte darunter). Der gemessene Vorsprung liegt über der Aktien-Kostenhürde
@@ -1751,8 +1751,8 @@
               <option value="ndx100">Nasdaq 100</option>
               <option value="dax">DAX (nur 15:30–17:30 handelbar)</option>
             </select></label>
-            <label title="IN ÜBERPRÜFUNG (seit 23.08.2026): Die große Signalstudie reproduziert diesen Modus NICHT – bis zu einer Neumessung gilt er als unbestätigt, nicht als belegt. Die ursprüngliche Messung vom 21.08. ergab Median +0,44 %, t=4,6. Der Kapitulations-Dip kauft den Ausverkauf im Abwärtskanal – die andere Marktphase als RSI(2) im Seitwärtskanal. Nur Long, 26 Handelsstunden Zeit-Ausstieg, kein Gewinndeckel (der Ertrag sitzt in den großen Erholungen). Wirkt als Zusatz nur, wenn als Auslöser RSI(2) im Seitwärtskanal eingestellt ist – als eigener Auslöser lässt er sich in den Experten-Einstellungen direkt wählen."><input type="checkbox" id="idKapiZusatz"> Kapitulations-Dip zusätzlich</label>
-            <label title="Regime-Studie vom 21.08.2026: RSI(2) im Seitwärtskanal trägt nur über der 200er-Linie des S&P 500 (+0,15 Pp, darunter −0,17), der Kapitulations-Dip nur darunter (+0,94 Pp, t=3,1). Diese vorab festgelegte Zuteilung schlug die feste Einstellung im Mittelwert UND im Gesamtertrag; eine Zufalls-Gegenprobe ergab p=0,013. Pausierte Signale zeichnet das Schattenbuch als 'Regime-Filter' auf – so bleibt die Regel im Echtbetrieb überprüfbar."><input type="checkbox" id="idRegime"> Regime-Zuteilung (Marktlage)</label>
+            <label title="NEUMESSUNG: ZURÜCKGEWIESEN – ABGESCHALTET. Der Kapitulations-Dip wurde am 03.10.2026 auf sauberem Archiv mit den verschwundenen Reihen neu gemessen: in der behaupteten Größe zurückgewiesen (netto −0,02 Pp je Signaltag, Band −0,65 bis +0,60, 528 Signaltage; das Urteil hängt an der Buchung der verschwundenen Reihen). Fundstelle: wiki/belegstand.md, Abschnitt Kapitulation V2, Neumessung. Er ist per Voreinstellung aus und wurde bei bestehenden Einstellungen einmalig abgeschaltet. Wer ihn hier von Hand einschaltet, entscheidet gegen die Messung – das wird respektiert und nicht erneut überschrieben. Der Modus kauft den Ausverkauf im Abwärtskanal – die andere Marktphase als RSI(2) im Seitwärtskanal. Nur Long, 26 Handelsstunden Zeit-Ausstieg. Wirkt als Zusatz nur, wenn als Auslöser RSI(2) im Seitwärtskanal eingestellt ist – als eigener Auslöser lässt er sich in den Experten-Einstellungen direkt wählen."><input type="checkbox" id="idKapiZusatz"> Kapitulations-Dip zusätzlich <span id="idKapiKennung" class="warn" style="font-size:var(--fs-klein);">Neumessung: zurückgewiesen – per Voreinstellung abgeschaltet</span></label>
+            <label title="Regime-Studie vom 21.08.2026 (altes Archiv): RSI(2) im Seitwärtskanal trägt nur über der 200er-Linie des S&P 500 (+0,15 Pp, darunter −0,17) – mit der Zuteilung handelt er nur über der Linie, darunter ist Pause. Der Kapitulations-Teil der Zuteilung ist seit der Neumessung vom 03.10.2026 nicht mehr getragen (in der behaupteten Größe zurückgewiesen); unter der Linie kauft der Kapitulations-Dip nur noch, wenn er von Hand zugeschaltet ist. Der frühere Gesamtvergleich der Zuteilung wurde mit beiden Teilen zusammen auf dem alten Archiv gemessen und ist kein Beleg der Zuteilung mehr. Pausierte Signale zeichnet das Schattenbuch als 'Regime-Filter' auf – so bleibt die Regel im Echtbetrieb überprüfbar."><input type="checkbox" id="idRegime"> Regime-Zuteilung (Marktlage)</label>
           </div>
         </div>
 
@@ -1810,7 +1810,7 @@
               <label data-iv="1m" title="1-Min-Signale müssen zusätzlich zur EMA20-Richtung auf dem 5-Min-Chart passen (Rauschfilter)">5-Min-Bestätigung<span class="switch"><input type="checkbox" id="idMtf" checked><span class="knob"></span></span></label>
               <label data-modes="wave" title="Nur im Umkehr-Setup mit Auslöser Wellental. Chart-technische Erkennung: Linien an echten Hochs und Tiefs, Fenster automatisch gewählt, Ausbruch wird erkannt. Ohne gültigen Kanal gibt es keinen Trade.">Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
               <label title="Einmal täglich ~30 zusätzliche Kandidaten nach Wellen-Qualität und Liquidität ranken – die Top-5 werden mitgescannt">Wellen-Screener<span class="switch"><input type="checkbox" id="idScreener"><span class="knob"></span></span></label>
-              <label title="Liegt im Daten-Ordner eine geprüfte Empfehlung (empfehlung.json), übernimmt die App daraus einzelne Einstellungen. Beim Handels-Modus darf sie nur zwischen den beiden gemessenen Kanten wechseln (RSI(2) im Seitwärtskanal, Kapitulations-Dip), nie zu einem widerlegten Modus – und das Instrument nie. Von Hand gesetzte Felder bleiben unangetastet. Jede Übernahme steht im Experiment-Journal und lässt sich dort einzeln zurücknehmen.">Empfehlungen übernehmen<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
+              <label title="Liegt im Daten-Ordner eine geprüfte Empfehlung (empfehlung.json), übernimmt die App daraus einzelne Einstellungen. Beim Handels-Modus darf sie nur zwischen den beiden gemessenen Modi wechseln (RSI(2) im Seitwärtskanal und Kapitulations-Dip – dieser ist seit der Neumessung vom 03.10.2026 in der behaupteten Größe zurückgewiesen), nie zu einem anderen Modus – und das Instrument nie. Von Hand gesetzte Felder bleiben unangetastet. Jede Übernahme steht im Experiment-Journal und lässt sich dort einzeln zurücknehmen.">Empfehlungen übernehmen<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
               <label title="Sammelt im Hintergrund Kryptokurse (BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC) ins Kursarchiv. Diese Werte werden NICHT gehandelt – sie liefern nur Messdaten. Krypto hat 24 Kerzen am Tag statt 6,5 und keine Nachtlücken, die Messbasis wächst dadurch rund viermal so schnell wie mit Aktien allein.">Krypto-Messdaten sammeln<span class="switch"><input type="checkbox" id="idKrypto" checked><span class="knob"></span></span></label>
               <label title="Zeichnet jedes Intraday-Signal auf und lässt es virtuell zu Ende laufen – auch wenn der Handel oben ausgeschaltet ist. So entsteht ein Vorwärtstest ohne Kapitaleinsatz. Ausschalten heißt: keine Beweisaufnahme mehr.">Signale immer aufzeichnen<span class="switch"><input type="checkbox" id="idSchattenImmer" checked><span class="knob"></span></span></label>
             </div>
@@ -2372,7 +2372,7 @@
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
       <select id="stcMode">
         <option value="rsi2seit">RSI(2) im Seitwärtskanal (gemessen, nicht bestätigt)</option>
-        <option value="kapitulation">Kapitulations-Dip im Abwärtskanal (in Überprüfung)</option>
+        <option value="kapitulation">Kapitulations-Dip im Abwärtskanal (Neumessung: zurückgewiesen)</option>
       </select>
       <select id="stcSym"></select>
       <label style="font-size:var(--fs-neben); color:var(--ink-2);">Kerzenlänge <select id="stcIv">

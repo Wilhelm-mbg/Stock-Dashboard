@@ -190,7 +190,7 @@
     },
     reversion: {
       name: 'Umkehr', farbe: 'var(--series4)', urteil: null,
-      hinweis: 'Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long.',
+      hinweis: 'Roh ohne Vorsprung. Als Kapitulations-Dip (nur im Abwärtskanal, nur mit Volumen, nur Long) ist dieselbe Überdehnung am 03.10.2026 neu gemessen worden: in der behaupteten Größe zurückgewiesen.',
       fn: function (b) { return Q.reversionSignal(b, 'ema', 20, 1.5).signal; }
     },
     pullback: {

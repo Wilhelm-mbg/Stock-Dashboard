@@ -4488,8 +4488,11 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
 
   /* D2 im Regelkopf: Der Belegstand kommt aus dem Protokoll. Vorher stand dort ueber
    * den Kapitulations-Dip "in Ueberpruefung", als die Messung laengst vorlag. */
-  ok(dep2.indexOf('belegAusProtokoll') !== -1 && dep2.indexOf('PROTOKOLL_KANTE[cfg.mode]') !== -1,
-     'Der Belegstand im Regelkopf kommt aus dem Messprotokoll, nicht aus dem Code');
+  /* Umgeschrieben am 04.10.2026 (Auftrag Nr. 71): der Regelkopf griff selbst in den
+   * Protokollspeicher. Seither liest er ueber die Kette (juengeres Urteil gewinnt) -
+   * die Eigenschaft "aus dem Protokoll, nicht aus dem Code" bleibt, der Weg ist neu. */
+  ok(dep2.indexOf('belegAusProtokoll') !== -1 && /var kette = belegKette\(cfg\.mode\);\s*var pk = kette && kette\.protokoll;/.test(dep2),
+     'Der Belegstand im Regelkopf kommt aus dem Messprotokoll (ueber die Kette), nicht aus dem Code');
   ok(dep2.indexOf("stand: 'in Überprüfung'") === -1,
      'Der veraltete Kapitulations-Belegstand ist weg (gemessen am 24.08.2026)');
   ok(/belegAusProtokoll && b.stand === 'bestaetigt'/.test(dep2),
@@ -4513,8 +4516,11 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'Die Ausloeser-Auswahl hat eine eigene Gruppe fuer Gemessen-und-verworfen');
   ok(/urteil === 'widerlegt'\) return 'verworfen';/.test(dep2),
      'Ein widerlegtes Protokoll landet in der Verworfen-Gruppe, nicht bei "gemessen"');
-  ok(dep2.indexOf('window.StudienUrteile.verworfen(k)') !== -1,
-     'Verwerfungen von Studien ausserhalb der Messmaschine erreichen die Auswahl');
+  /* Umgeschrieben am 04.10.2026 (Auftrag Nr. 71): die Auswahl fragte das Register
+   * selbst und nur ohne Protokoll. Jetzt kommt beides aus der Kette; dass sie das
+   * Register wirklich fragt, haelt Abschnitt 91.3 (return SU.gueltig(k, pk)). */
+  ok(/var g = belegKette\(k\);/.test(dep2) && /if \(g && g\.register\) return 'verworfen';/.test(dep2),
+     'Verwerfungen von Studien ausserhalb der Messmaschine erreichen die Auswahl (ueber die Kette)');
   var su9 = fs.readFileSync(__dirname + '/studienurteile.js', 'utf8');
   ['donchian', 'squeeze', 'ruecksetzer', 'kanaltrend'].forEach(function (k9) {
     ok(new RegExp('^    ' + k9 + ': \\{', 'm').test(su9),
@@ -21566,6 +21572,237 @@ console.log('\n90) Nachrichten-Archiv ohne Deckel (Nr. 43, 19.09.2026): Universu
   ok(takt90 && /NEWS_ARCHIV_TAKT_MS\) newsArchivLauf\(\);/.test(takt90) && takt90.indexOf('hourlyEnabled') === -1 && lauf90.indexOf('hourlyEnabled') === -1,
      '90.3 der Takt fragt weder nach hourlyEnabled noch nach einer Strategie - weder im Zeitgeber noch im Lauf');
   gegen90('ein Takt mit hourlyEnabled fiele durch', (takt90 + ' && D.hourlyEnabled !== false').indexOf('hourlyEnabled') !== -1);
+})();
+
+/* ================= 91) Kapitulation auf dem Messstand (Auftrag Nr. 71, 04.10.2026) =====
+ *
+ * Die Neumessung vom 03.10.2026 hat den Kapitulations-Dip in der behaupteten Groesse
+ * zurueckgewiesen. Die App sagte an mehreren Stellen noch das Gegenteil, und ein Knopf
+ * schaltete ihn unter der Ueberschrift "gemessen" wieder ein. Sechs Gruppen:
+ *   91.1 Register: jede Zahl gegen lauf/stufe-b.json, Befund woertlich, Pflichtvermerk
+ *   91.2 die EINE Kette: das juengere Urteil gewinnt
+ *   91.3 die Leser, aufgezaehlt - wer die Kette umgeht, macht rot
+ *   91.4 Sperrklinke auf die EIGENSCHAFT: kein sichtbarer Text behauptet die alte Groesse
+ *   91.5 Voreinstellung aus, und der Knopf schaltet nie ein (Verhalten, nicht Textmarke)
+ *   91.6 die einmalige Sicherung am Kunstbestand
+ * Die verbotenen Woerter werden unten ZUSAMMENGESETZT und stehen in diesem Kommentar
+ * nicht - eine Klinke, die ihren eigenen Kommentar frisst, hatte dieses Projekt schon. */
+console.log('91) Kapitulation auf dem Messstand (Neumessung 03.10.2026)');
+(function () {
+  var g91 = 0, rot91 = 0;
+  function gegen91(was, ergebnis) { g91++; if (ergebnis) rot91++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function nah91(a, b) { return typeof a === 'number' && typeof b === 'number' && Math.abs(a - b) < 1e-9; }
+  function de91(x, st) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(st).replace('.', ','); }
+  var pfad91 = __dirname + '/studien/kapitulation-neu-2026-10-03/';
+  var stufeB = JSON.parse(fs.readFileSync(pfad91 + 'lauf/stufe-b.json', 'utf8'));
+  var N = stufeB.netto, UR = stufeB.urteil;
+  var suQ = fs.readFileSync(__dirname + '/studienurteile.js', 'utf8');
+  function registerLaden(quelle) { var w = {}; new Function('window', quelle)(w); return w.StudienUrteile; }
+  var SU = registerLaden(suQ);
+  var e = SU.verworfen('kapitulation');
+
+  /* ---- 91.1 Register gegen die Rohdaten der Studie ---- */
+  ok(e && e.datum === '2026-10-03' && e.zahlen && nah91(e.zahlen.nettoPp, N.mittelPp) && nah91(e.zahlen.band95[0], N.band95[0]) &&
+     nah91(e.zahlen.band95[1], N.band95[1]) && e.zahlen.signaltage === N.signaltage && nah91(e.zahlen.se, N.se) && nah91(e.zahlen.mde80, N.mde80),
+     '91.1 Studienregister kapitulation: jede Zahl steht so in lauf/stufe-b.json', JSON.stringify(e && e.zahlen));
+  ok(e && e.befund.indexOf(UR.satz) === 0 && e.befund.toLowerCase().indexOf(UR.form.toLowerCase()) !== -1,
+     '91.1 der Befund beginnt WOERTLICH mit dem Urteilssatz der Studie (urteil.satz) und traegt die Urteilsform');
+  ok(e && UR.satz.indexOf(String(e.zahlen.behauptetPp).replace('.', ',') + ' Pp') !== -1 && e.befund.indexOf(N.signaltage + ' Signaltage') !== -1,
+     '91.1 behauptete Groesse und Zahl der Signaltage im Befund stammen aus Urteilssatz und Rohdaten');
+  var erg91 = fs.readFileSync(pfad91 + 'ERGEBNIS.md', 'utf8'), nachr91 = fs.readFileSync(pfad91 + 'lauf/nachrichtlich.json', 'utf8');
+  ok(/hängt von der Buchung der Verschwundenen ab/.test(erg91) && /nicht entscheidbar/.test(nachr91) &&
+     e && /hängt an der Buchung der verschwundenen Reihen \(strenge Regel: nicht entscheidbar\)/.test(e.befund),
+     '91.1 der Pflichtvermerk (Buchung der Verschwundenen) steht in der Studie UND im Befund');
+  ok(e && /zurückgewiesen/.test(e.etikett) && /belegstand\.md/.test(e.quelle) && /kapitulation-neu-2026-10-03/.test(e.quelle) &&
+     /weder belegt noch ausgeschlossen/.test(e.befund),
+     '91.1 Kennzeichnung, Fundstelle (Belegstand + Studie) und der Halbsatz zum kleinen Effekt sind da', e && e.etikett);
+
+  /* ---- 91.2 die eine Kette ---- */
+  var altPk = { urteil: 'nicht-bestaetigt', datum: '2026-08-26', jeSignalPp: 1.1 };
+  var neuPk = { urteil: 'nicht-entscheidbar', datum: '2026-11-01' };
+  var g1 = SU.gueltig('kapitulation', altPk), g2 = SU.gueltig('kapitulation', neuPk);
+  var g3 = SU.gueltig('kapitulation', { urteil: 'nicht-entscheidbar', datum: '2026-10-03' });
+  ok(g1 && g1.register === e && g1.protokoll === null, '91.2 Registereintrag juenger als das Protokoll -> das Register gewinnt');
+  ok(g2 && g2.protokoll === neuPk && g2.register === null && g3 && g3.protokoll && !g3.register,
+     '91.2 Protokoll juenger oder gleich alt -> wie bisher das Protokoll');
+  ok(SU.gueltig('rsi2seit', altPk).protokoll === altPk && SU.gueltig('rsi2seit', null) === null &&
+     SU.gueltig('donchian', null).register === SU.verworfen('donchian') && SU.gueltig('kapitulation', null).register === e,
+     '91.2 ohne Registereintrag bleibt das Protokoll, ohne Protokoll das Register, ohne beides nichts');
+  var SUkaputt = registerLaden(suQ.replace('v.datum > String', 'v.datum < String'));
+  gegen91('eine Kette, die das AELTERE Urteil nimmt, gaebe das alte Protokoll heraus', SUkaputt.gueltig('kapitulation', altPk).protokoll === altPk);
+
+  /* ---- 91.3 die Leser ---- */
+  var dep91 = ohneKommentare(fs.readFileSync(__dirname + '/depot.js', 'utf8'));
+  var lesestellen91 = (dep91.match(/PROTOKOLL_KANTE\[/g) || []).length;
+  ok(lesestellen91 === 1 && /function belegKette\(k\) \{\s*var pk = PROTOKOLL_KANTE\[k\] \|\| null;/.test(dep91) && /return SU\.gueltig\(k, pk\);/.test(dep91),
+     '91.3 depot.js liest den Protokollspeicher an genau EINER Stelle - in belegKette(), und die fragt das Register', lesestellen91);
+  var LESER91 = [
+    ['Regelkopf', /var kette = belegKette\(cfg\.mode\);\s*var pk = kette && kette\.protokoll;/],
+    ['Kostenhuerde', /var ketteH = belegKette\(cfg\.mode\);\s*var kante = ketteH \? ketteH\.protokoll : null;/],
+    ['DepotAPI.protokollKante', /protokollKante: function \(key\) \{\s*var k = kanteGueltig\(key\);/],
+    ['Klartext', /var ketteK = belegKette\(c\.mode\);/],
+    ['Klartext, Zusatz-Haken', /var regZ = \(belegKette\('kapitulation'\) \|\| \{\}\)\.register;/],
+    ['Ausloeser-Einteilung', /function triggerBelegstand\(k\) \{\s*var g = belegKette\(k\);/],
+    ['Ausloeser-Titel', /var g9 = belegKette\(k\) \|\| \{\};/]
+  ];
+  LESER91.forEach(function (l) { ok(l[1].test(dep91), '91.3 Leser ueber die Kette: ' + l[0]); });
+  var rufe91 = (dep91.match(/belegKette\(/g) || []).length + (dep91.match(/kanteGueltig\(/g) || []).length;
+  ok(rufe91 === LESER91.length + 3,
+     '91.3 die Aufzaehlung ist VOLLSTAENDIG: jeder Aufruf der Kette ist oben benannt (ein neuer Leser muss hier eingetragen werden)',
+     rufe91 + ' Fundstellen = ' + LESER91.length + ' Leser + 2 Definitionen + 1 Aufruf in kanteGueltig');
+  var direkt91 = fs.readdirSync(__dirname).filter(function (f) {
+    return /\.js$/.test(f) && !/^test-/.test(f) && /readProtokolle\(/.test(ohneKommentare(fs.readFileSync(__dirname + '/' + f, 'utf8')));
+  }).sort().join(',');
+  var mb91 = ohneKommentare(fs.readFileSync(__dirname + '/messband.js', 'utf8'));
+  ok(direkt91 === 'depot.js,messband.js,scoreboard.js' && /SU\.gueltig\(m, k \|\|/.test(mb91) && /if \(g && g\.register\) return \{ register: g\.register \};/.test(mb91),
+     '91.3 Protokolle selbst lesen nur depot.js, das Messband (ueber dieselbe Kette) und das Scoreboard (zeigt Protokolle als solche)', direkt91);
+  var ash91 = ohneKommentare(fs.readFileSync(__dirname + '/app-shell.js', 'utf8'));
+  var strat91 = ohneKommentare(fs.readFileSync(__dirname + '/strategien.js', 'utf8'));
+  ok(/A\.protokollKante\(st\.modus\) : null;\s*var su = !k && st\.modus && window\.StudienUrteile \? window\.StudienUrteile\.verworfen\(st\.modus\) : null;/.test(ash91) &&
+     /txt: su\.etikett \|\| 'gemessen und verworfen'/.test(strat91),
+     '91.3 Statuszeile (app-shell) und Antwort-Seite (strategien) zeigen die Kennzeichnung des Registers, wenn es gewinnt');
+
+  /* ---- 91.4 Sperrklinke: kein sichtbarer Text behauptet die alte Groesse ---- */
+  var W91 = ['best' + 'ätigt', 'bestae' + 'tigt', 'vali' + 'diert', 'Stand' + 'bein'];
+  var VERBOTEN91 = new RegExp('(' + W91.join('|') + ')', 'i');
+  function tWertAb3(s) {
+    var re = /(?:^|[^A-Za-zÄÖÜäöüß0-9])t(?:\s*(?:=|≈)\s*|\s+)[−-]?(\d+(?:[.,]\d+)?)/g, m;
+    while ((m = re.exec(s))) { if (parseFloat(m[1].replace(',', '.')) >= 3) return true; }
+    return false;
+  }
+  /* Texteinheiten: in JS jedes String-Literal (verkettete Teile vorher zusammengezogen,
+   * sonst stuende die Zahl im Nachbarteil), in HTML jedes Attribut und jeder Textblock. */
+  function einheitenJs(q) {
+    var s = ohneKommentare(q).replace(/'\s*\+\s*'/g, '').replace(/"\s*\+\s*"/g, '');
+    return s.match(/'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"/g) || [];
+  }
+  function einheitenHtml(q) {
+    var s = q.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<!--[\s\S]*?-->/g, '');
+    var attr = s.match(/(?:title|aria-label|placeholder)="[^"]*"/g) || [];
+    var text = s.replace(/<\/?(?:b|i|em|strong|span|code|a|br)\b[^>]*>/g, ' ').split(/<[^>]+>/);
+    return attr.concat(text);
+  }
+  function verstoesse91(dateien) {
+    var raus = [];
+    Object.keys(dateien).forEach(function (f) {
+      (/\.html$/.test(f) ? einheitenHtml(dateien[f]) : einheitenJs(dateien[f])).forEach(function (u) {
+        if (!/kapitulation/i.test(u)) return;
+        if (VERBOTEN91.test(u) || tWertAb3(u)) raus.push(f + ': ' + u.replace(/\s+/g, ' ').slice(0, 90));
+      });
+    });
+    return raus;
+  }
+  var dateien91 = {};
+  fs.readdirSync(__dirname).filter(function (f) { return (/\.js$/.test(f) && !/^test-/.test(f)) || f === 'index.html'; })
+    .forEach(function (f) { dateien91[f] = fs.readFileSync(__dirname + '/' + f, 'utf8'); });
+  var scharf91 = !!(e && /zurückgewiesen/i.test(e.befund) && SU.gueltig('kapitulation', altPk).register);
+  var v91 = verstoesse91(dateien91);
+  ok(scharf91, '91.4 die Klinke ist scharf: der Belegstand der App fuehrt die Kapitulation als zurueckgewiesen');
+  ok(!scharf91 || v91.length === 0,
+     '91.4 kein sichtbarer Text (' + Object.keys(dateien91).length + ' Dateien) nennt fuer die Kapitulation ein t ab 3 oder eines der verbotenen Woerter',
+     v91.length ? v91.join(' | ') : 'keiner');
+  ok(['strategien.js', 'depot.js', 'index.html', 'app-shell.js', 'backtestui.js'].every(function (f) { return !!dateien91[f]; }),
+     '91.4 die fuenf im Auftrag genannten Dateien sind in der Abtastung enthalten');
+  gegen91('der alte Belegtext faellt auf', verstoesse91({ 'a.js': "x = 'Zuschaltbar als zweites " + W91[3] + ": der Kapitulations-Dip.';" }).length === 1);
+  gegen91('ein t ab 3 im Kapitulations-Satz faellt auf', verstoesse91({ 'a.js': "x = 'der Kapitulations-Dip nur darunter (+0,94 Pp, t = 3,1).';" }).length === 1);
+  gegen91('auch ueber verkettete Teile hinweg', verstoesse91({ 'a.js': "x = 'Der Kapitulations-Dip ' +\n  'ist " + W91[0] + ".';" }).length === 1);
+  gegen91('auch im title-Attribut der Seite', verstoesse91({ 'a.html': '<label title="Messung ergab t=4,6. Der Kapitulations-Dip kauft">x</label>' }).length === 1);
+  gegen91('ein Kommentar mit dem verbotenen Wort faellt NICHT auf (die Klinke frisst ihren Kommentar nicht)',
+    verstoesse91({ 'a.js': "/* Kapitulation war einmal " + W91[0] + " */ x = 'Kapitulations-Dip';" }).length === 0);
+  gegen91('ein t unter 3 und ein fremdes t ab 3 fallen NICHT auf',
+    verstoesse91({ 'a.js': "x = 'Kapitulations-Dip: t = 1,39'; y = 'RSI(2): t = 4,1 über die Symbole';" }).length === 0);
+  /* Die gerundeten Zahlen der Texte - aus den Rohdaten gerechnet, nicht abgetippt. */
+  var zahlSatz91 = 'netto ' + de91(N.mittelPp, 2) + ' Pp je Signaltag, Band ' + de91(N.band95[0], 2) + ' bis ' + de91(N.band95[1], 2) + ', ' + N.signaltage + ' Signaltage';
+  var html91 = dateien91['index.html'].replace(/\s+/g, ' ');
+  ok(dateien91['strategien.js'].split(zahlSatz91).length === 2 && html91.split(zahlSatz91).length === 3,
+     '91.4 Belegtext, Erklaerabsatz und Haken-Titel tragen genau die Zahlen der Rohdaten', zahlSatz91);
+  ok(/id="idKapiKennung"[^>]*>Neumessung: zurückgewiesen – per Voreinstellung abgeschaltet</.test(html91) &&
+     /<option value="kapitulation">[^<]*\(Neumessung: zurückgewiesen\)</.test(html91) &&
+     /if \(su && su\.etikett\) o\.textContent = tr\[k\] \+ ' – ' \+ su\.etikett;/.test(dep91),
+     '91.4 Kennzeichnung steht am Haken, in der Chart-Auswahl und in der Ausloeser-Auswahl');
+  ok(dateien91['index.html'].indexOf('p=0,013') === -1 && dateien91['strategien.js'].indexOf('p = 0,013') === -1 &&
+     /kein Beleg der Zuteilung mehr/.test(html91) && /kein Beleg der Zuteilung mehr/.test(dateien91['strategien.js']),
+     '91.4 Regime-Zuteilung: der Gesamtvergleich steht nicht mehr als Beleg da; der Halbsatz dazu steht an beiden Stellen');
+
+  /* ---- 91.5 Voreinstellung und Knopf ---- */
+  ok(/intraday: \{[^\n]*kapiZusatz: false[^\n]*regimeZuteilung: false/.test(dep91) && dep91.indexOf('kapiZusatz: true') === -1,
+     '91.5 Voreinstellung: der Zusatz-Haken ist aus');
+  function knopfLauf(quelle, D) {
+    var H = {}, klick = null;
+    var doc = { addEventListener: function (ev, fn) { H[ev] = fn; },
+      getElementById: function (id) { return id === 'stratEmpfohlenBtn' ? { addEventListener: function (ev, fn) { klick = fn; } } : null; } };
+    var win = { U: {}, __D: function () { return D; }, StudienUrteile: SU };
+    new Function('window', 'document', 'setTimeout', quelle)(win, doc, function () {});
+    H.DOMContentLoaded(); klick();
+    return D;
+  }
+  var stratQ91 = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
+  function kunstD(kapi) { return { intraday: { mode: 'breakout', kapiZusatz: kapi, regimeZuteilung: false, blackout: 'block' }, hourlyEnabled: false, tuneLog: [] }; }
+  var k1 = knopfLauf(stratQ91, kunstD(true)), k2 = knopfLauf(stratQ91, kunstD(false));
+  var feld91 = (k1.tuneLog[0].felder || []).filter(function (f) { return f.k === 'kapiZusatz'; })[0];
+  ok(k1.intraday.kapiZusatz === false && feld91 && feld91.alt === true && feld91.neu === false &&
+     k1.tuneLog[0].applied.some(function (a) { return /Kapitulations-Dip aus \(Neumessung: zurückgewiesen\)/.test(a); }),
+     '91.5 Knopf "Gemessene Voreinstellungen": ein eingeschalteter Zusatz wird AUSgeschaltet - einzeln zurueckstellbar, mit Grund');
+  ok(k2.intraday.kapiZusatz === false && !(k2.tuneLog[0].felder || []).some(function (f) { return f.k === 'kapiZusatz'; }) &&
+     k1.intraday.regimeZuteilung === true && k1.intraday.mode === 'rsi2seit' && /nicht mehr dazu/.test(k1.tuneLog[0].txt),
+     '91.5 ein ausgeschalteter bleibt aus; die Regime-Zeile und der Modus des Knopfs sind unveraendert; der Protokolltext sagt es');
+  ok(ohneKommentare(stratQ91).indexOf("'kapiZusatz', true") === -1, '91.5 nirgends in strategien.js wird der Zusatz auf an gesetzt');
+  gegen91('der alte Knopf (schaltet ein) fiele durch',
+    knopfLauf(stratQ91.replace("if (D.intraday.kapiZusatz && setz('intraday', 'kapiZusatz', false,", "if (!D.intraday.kapiZusatz && setz('intraday', 'kapiZusatz', true,"), kunstD(false)).intraday.kapiZusatz === true);
+
+  /* ---- 91.6 die einmalige Sicherung, am Kunstbestand (kein echter Store) ---- */
+  var migQ91 = fs.readFileSync(__dirname + '/depotmigration.js', 'utf8');
+  function sicherung(quelle, D) {
+    var w = { Quant: Q, U: {}, StudienUrteile: SU };
+    new Function('window', 'setTimeout', quelle)(w, function () {});
+    w.DepotMigration.laufen(D, { repairOrphans: function () { return 0; }, altlastSchliessen: function () { return 0; },
+      messSchnittSetzen: function () { return 0; }, warnbandSetzen: function () {}, automatikDarf: function () { return true; },
+      defaultDepot: function () { return { intraday: { kapiZusatz: false, regimeZuteilung: false }, weights: { news: 0 } }; } });
+    return D;
+  }
+  var POS91 = { id: 7, sym: 'KUNST', strategy: 'intraday', modus: 'kapitulation', exitMode: 'zeit', maxHoldMin: 1560, uebernacht: true, sl: -0.2 };
+  function bestand91(intraday, extra) {
+    return Object.assign({ positions: [JSON.parse(JSON.stringify(POS91))], trades: [], rechenstand: Q.RECHENSTAND, messStart: 1, statsBereinigt: 1,
+      hourlyWiderlegtGeprueft: 1, hourlyEnabled: false, rsi2seitZeitrahmenGeprueft: 1, blackoutGeprueft: 1, cooldownGeprueft: 1, newsGewichtNull: 1,
+      weights: { news: 0 }, kostenModellV3: 1, kostenModellV2: 1, gesamtzaehler: { sitzungen: 1 }, momentumAn: false, driftAn: false, maxRisikostufe: 3, tuneLog: [],
+      intraday: Object.assign({ mode: 'rsi2seit', interval: '60m', scalpHold: 480, confirmBps: 15, instrument: 'basis', blackout: 'block', regimeZuteilung: true }, intraday) }, extra || {});
+  }
+  function neuLaden(D) { return JSON.parse(JSON.stringify(D)); }
+  var a1 = sicherung(migQ91, bestand91({ kapiZusatz: true }));
+  ok(a1.intraday.kapiZusatz === false && a1.kapitulationNeumessungGeprueft === 1 && a1.tuneLog.length === 1 && a1.tuneLog[0].quelle === 'sicherung' &&
+     /zurückgewiesen/.test(a1.tuneLog[0].txt) && /nie wieder automatisch/.test(a1.tuneLog[0].txt) && a1.tuneLog[0].txt.indexOf(UR.satz) !== -1,
+     '91.6 Zusatz an, kein Merker -> einmal aus, Merker gesetzt, EIN Journal-Eintrag (was, warum, Einschalten bleibt moeglich)');
+  ok(a1.intraday.regimeZuteilung === true && JSON.stringify(a1.positions[0]) === JSON.stringify(POS91) && a1.intraday.mode === 'rsi2seit' && a1.intraday.scalpHold === 480,
+     '91.6 die Regime-Zuteilung bleibt an, die offene Kapitulations-Position und der Modus bleiben unberuehrt');
+  var a2 = neuLaden(a1); a2.intraday.kapiZusatz = true; sicherung(migQ91, a2);
+  ok(a2.intraday.kapiZusatz === true && a2.tuneLog.length === 1 && a2.intraday.regimeZuteilung === true,
+     '91.6 danach von Hand wieder ein -> bleibt nach erneutem Laden ein, kein zweiter Eintrag');
+  var b1 = sicherung(migQ91, bestand91({ mode: 'kapitulation', trigger: 'kapitulation', scalpHold: 1560, confirmBps: 30, handSperre: { mode: 5 } },
+    { autoOpt: { pending: { rec: { modeKey: 'kapitulation' } }, lastRecKey: 'x' } }));
+  var mApply = /if \(m === 'rsi2seit' \|\| m === 'kapitulation'\) \{\s*setzeWert\(idI, '(\w+)'\); setzeWert\(idC, '(\d+)'\);\s*setzeWert\(idH, m === 'kapitulation' \? '1560' : '(\d+)'\);/.exec(dep91);
+  var mSetup = /if \(mode === 'rsi2seit'\) return \{ setup: '(\w+)', trigger: '(\w+)', exitStyle: '(\w+)' \};/.exec(dep91);
+  ok(mApply && mSetup && b1.intraday.mode === 'rsi2seit' && b1.intraday.interval === mApply[1] && b1.intraday.confirmBps === parseInt(mApply[2], 10) &&
+     b1.intraday.scalpHold === parseInt(mApply[3], 10) && b1.intraday.setup === mSetup[1] && b1.intraday.trigger === mSetup[2] && b1.intraday.exitStyle === mSetup[3],
+     '91.6 eigenstaendiger Modus -> rsi2seit mit GENAU den Werten, die der Moduswechsel von Hand setzt (aus applySetup und setupFromMode gelesen)',
+     mApply && mSetup ? mApply.slice(1).concat(mSetup.slice(1)).join('/') : 'Muster nicht gefunden');
+  ok(b1.autoOpt.pending === null && b1.tuneLog.length === 1 && b1.tuneLog[0].applied.length === 2 && b1.intraday.handSperre.mode === 5 &&
+     Object.keys(b1.intraday.handSperre).length === 1 && JSON.stringify(b1.positions[0]) === JSON.stringify(POS91) && b1.intraday.regimeZuteilung === true,
+     '91.6 die vorgemerkte Autopilot-Umstellung ist verworfen; EIN Eintrag; Hand-Sperren, Position und Regime-Zuteilung unberuehrt');
+  var b2 = neuLaden(b1); b2.intraday.mode = 'kapitulation'; b2.intraday.scalpHold = 1560; sicherung(migQ91, b2);
+  ok(b2.intraday.mode === 'kapitulation' && b2.intraday.scalpHold === 1560 && b2.tuneLog.length === 1, '91.6 Modus danach von Hand zurueck -> bleibt, kein zweiter Eintrag');
+  var c1 = sicherung(migQ91, bestand91({ kapiZusatz: false })), c2 = sicherung(migQ91, bestand91({}));
+  ok(c1.kapitulationNeumessungGeprueft === 1 && c1.tuneLog.length === 0 && c2.kapitulationNeumessungGeprueft === 1 && c2.tuneLog.length === 0 && c2.intraday.kapiZusatz === false,
+     '91.6 nichts umzustellen (auch: Feld fehlte im alten Bestand) -> nur der Merker, KEIN Journal-Eintrag');
+  var ohneMerker = migQ91.replace('if (D.kapitulationNeumessungGeprueft === undefined) {', 'if (D) {');
+  var x2 = neuLaden(sicherung(ohneMerker, bestand91({ kapiZusatz: true }))); x2.intraday.kapiZusatz = true; sicherung(ohneMerker, x2);
+  gegen91('ohne den Merker wuerde der Hand-Entscheid beim naechsten Laden ueberschrieben', x2.intraday.kapiZusatz === false && x2.tuneLog.length === 2);
+  /* Offene Positionen: der Ausstieg haengt an den Stempeln der Position. */
+  var aus91 = dep91.slice(dep91.indexOf("var xm = open.exitMode || 'confirmed';"), dep91.indexOf('var kapiTrade = false;'));
+  ok(aus91.length > 2000 && aus91.indexOf('kapiZusatz') === -1 && aus91.indexOf('cfg.mode') === -1 && aus91.indexOf('intraday.mode') === -1 &&
+     /open\.maxHoldMin && xm === 'zeit'/.test(aus91) && /maxHoldMin: kapiTrade \? 1560 : \(mp\.maxHoldMin \|\| 0\)/.test(dep91) &&
+     /exitMode: kapiTrade \? 'zeit' : mp\.exitMode/.test(dep91),
+     '91.6 der Ausstieg einer offenen Position liest ihre eigenen Stempel (exitMode, maxHoldMin) - weder den Zusatz-Haken noch den Modus', aus91.length + ' Zeichen');
+  ok(rot91 === g91, '91.x alle Gegenproben dieses Abschnitts schlagen an', rot91 + ' von ' + g91);
 })();
 
 Promise.all(offeneProben).then(function () {

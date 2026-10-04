@@ -218,6 +218,28 @@ in Fensterhöhen, `webContents.capturePage()` → PNG. Vorbild: `tools/ui-probe.
 Aufnahmen vom 02.09. (v8.37.3) liegen beim PM; Stufe 1 legt das Skript als
 `tools/ui-aufnahmen.js` ab.
 
+## 6a. Kapitulations-Dip: „Neumessung: zurückgewiesen" (seit 04.10.2026, Auftrag Nr. 71)
+
+Zweiter Fall nach der Stunden-Strategie (`#hourlyEnabled`, „widerlegt – abgeschaltet"), gleiche Bauart: per Voreinstellung
+aus, einmalige Sicherung, von Hand wieder einschaltbar. *Fundstelle: `uebergabe/kapitulation-app-2026-10-04.md`.*
+
+- **Wo der Zustand steht:** Regeln → Einstellungen, Intraday-Karte: Haken `#idKapiZusatz` mit der Kennzeichnung
+  `#idKapiKennung` („Neumessung: zurückgewiesen – per Voreinstellung abgeschaltet") und dem Messstand im Titel; Auslöser-Auswahl
+  `#idTrigger` (Gruppe „Gemessen und verworfen", Zusatz im Options-Text); Regelkopf `#regelKopf`, Klartext `#idKlartext`,
+  Kostenhürde `#kostenHuerde`, Messband `#messband`; Regeln → Strategien: Karte „Kurzfristig · Intraday" (Belege hinter dem i,
+  Protokollzeile) und Antwort-Seite; Betrieb → Strategie-Chart: Auswahl `#stcMode`.
+- **Woher das Etikett kommt:** Regel „Etiketten nur aus dem Protokoll" fortgeschrieben — Protokoll **oder** Studienregister,
+  es gewinnt das **jüngere** Urteil. Entschieden an einer Stelle: `StudienUrteile.gueltig(k, pk)` (`studienurteile.js`);
+  `depot.js` liest den Protokollspeicher nur noch in `belegKette()`, alle anderen über `DepotAPI.protokollKante()`. Die Neumessung
+  steht als Eintrag `kapitulation` im Register (Befund wörtlich, Zahlen von test-v6 gegen `lauf/stufe-b.json` gehalten).
+- **Sicherung:** `depotmigration.js`, Merker `D.kapitulationNeumessungGeprueft` — Zusatz-Haken aus, eigenständiger Modus zurück
+  auf `rsi2seit` (60m, Haltedauer 480, Bestätigung 15), vorgemerkte Autopilot-Umstellung verworfen; Eintrag im Experiment-Journal.
+  Regime-Schalter (`#idRegime`), Hand-Sperren und offene Positionen bleiben unberührt.
+- **Sperrklinke:** test-v6 Abschnitt 91 — kein sichtbarer Text (alle Wurzel-`.js` und `index.html`) nennt für die Kapitulation
+  ein t ab 3 oder eines der vier verbotenen Wörter; die Leser der Kette sind aufgezählt, ein neuer macht rot.
+- **Nicht umgestellt:** die Scoreboard-Zeile (altes Protokoll) und zwei Automatik-Wege, die den Modus selbst wählen dürfen
+  (`TUNE_ALLOW.mode`, Wächter-Modus des Autopiloten) — eigener Entscheid nötig.
+
 ## 7. Aktuelle Aufnahmen und Struktur (seit 04.09.2026)
 
 **[aufnahmen/struktur.md](aufnahmen/struktur.md)** zeigt die Oberfläche der ausgelieferten Fassung als Baum (Reiter → Pille → Blöcke und Klappen, mit den Kennungen aus `index.html`) und darunter je Pille die Aufnahmen. Die Bilder liegen je Reiter in einem Unterordner (`aufnahmen/heute/`, `markt/`, `regeln/`, `werkzeuge/`), damit die Struktur auch im Datei-Baum von Obsidian sichtbar ist.

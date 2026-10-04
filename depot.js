@@ -663,19 +663,26 @@
              'selben Tagesstunde (6.509 Trades, 675 Tage). Die Rohkante von +0,170 Pp besteht ' +
              'damit zu rund zwei Dritteln aus schlichtem Halten – nicht die Regel verdient sie, ' +
              'sondern die Zeit im Markt.' },
-      kapitulation: { stand: 'nicht entscheidbar',
-        /* Gemessen am 24.08.2026 mit der Messmaschine, vorregistriert. Die Zahlen
-         * kommen unten aus dem Protokoll; dieser Text erklaert nur, was sie heissen. */
-        txt: 'Der Ertrag sitzt fast vollständig in wenigen Trades: In der Bestätigungshälfte tragen ' +
-             '6 von 676 Trades die Hälfte des Gesamtertrags, und ohne die besten 5 % bleiben −0,505 Pp. ' +
-             'Die Datenmenge kann die Frage nicht beantworten – dafür bräuchte es rund die 23-fache ' +
-             'Zahl an Werten. Was belastbar ist, ist die Aussage über das Risiko, nicht die über den Ertrag.' }
+      /* Seit dem 04.10.2026 steht hier KEIN eigener Text mehr. Der Stand der Neumessung
+       * vom 03.10.2026 (Urteil, Datum, Fundstelle) wohnt im Studienregister und wird
+       * unten aus der Kette gelesen - ein zweiter, hier abgetippter Stand waere genau
+       * die Doppelung, die schon zweimal veraltet ist. Fehlt das Register (kann im
+       * Betrieb nicht vorkommen), behauptet die Zeile nichts. */
+      kapitulation: { stand: 'ungemessen', txt: 'Hier ist kein eigener Text hinterlegt – maßgeblich ist das jeweils jüngste Urteil aus Messprotokoll oder Studienregister.' }
     };
     var b = BELEG[cfg.mode] || { stand: 'ungemessen', txt: 'Für diesen Auslöser liegt keine Messung vor.' };
     /* D2: Wo ein Protokoll vorliegt, gewinnt es. Ein fest verdrahteter Belegstand
      * veraltet - genau das war beim Kapitulations-Dip passiert, der hier noch "in
-     * Ueberpruefung" stand, als die Messung laengst vorlag. */
-    var pk = PROTOKOLL_KANTE[cfg.mode];
+     * Ueberpruefung" stand, als die Messung laengst vorlag.
+     * Seit 04.10.2026 ueber die Kette: ist der Registereintrag juenger als das
+     * Protokoll, gewinnt er - mit Kennzeichnung, Befund und Fundstelle. */
+    var kette = belegKette(cfg.mode);
+    var pk = kette && kette.protokoll;
+    var belegAusRegister = (kette && kette.register) || null;
+    if (belegAusRegister) {
+      b = { stand: belegAusRegister.etikett || 'gemessen und verworfen',
+        txt: belegAusRegister.befund + ' Fundstelle: ' + belegAusRegister.quelle + '.' };
+    }
     var belegAusProtokoll = null;
     if (pk && pk.urteil && pk.urteil !== 'unbekannt') {
       belegAusProtokoll = { stand: pk.urteil, datum: pk.datum, jeSignalPp: pk.jeSignalPp,
@@ -700,7 +707,7 @@
     /* Gruen nur, wenn ein PROTOKOLL "bestaetigt" sagt. Ein im Code stehendes "belegt"
      * reicht nicht - das war der Fehler, den die fest verdrahtete Kante 0,11 gemacht hat. */
     var farbe = (belegAusProtokoll && b.stand === 'bestaetigt') ? 'var(--up)'
-      : b.stand === 'ungemessen' ? 'var(--down)' : 'var(--warn, var(--series2))';
+      : (b.stand === 'ungemessen' || belegAusRegister) ? 'var(--down)' : 'var(--warn, var(--series2))';
     var halten = mp.maxHoldMin > 0 ? (mp.maxHoldMin >= 60 ? Math.round(mp.maxHoldMin / 60) + ' Stunden' : mp.maxHoldMin + ' Minuten') : 'kein Zeitausstieg';
     var zeilen = [
       ['Auslöser', NAME[cfg.mode] || cfg.mode],
@@ -762,6 +769,21 @@
    * Groessen - genau dieser Fehler stand hier bis zum 23.08.2026.
    * ------------------------------------------------------------------------- */
   var PROTOKOLL_KANTE = {};
+  /* DIE EINE LESESTELLE (04.10.2026, Auftrag Nr. 71). Bis hierher griffen sechs Stellen
+   * dieser Datei selbst in den Speicher oben und fragten das Studienregister nur, wenn
+   * dort nichts lag. Fuer den Kapitulations-Dip lag aber etwas dort: das Protokoll der
+   * alten Maschine vom 26.08.2026 - und es haette die Neumessung vom 03.10.2026
+   * ueberdeckt, die im Register steht. Wer gewinnt (das JUENGERE Urteil), entscheidet
+   * StudienUrteile.gueltig(); gelesen wird der Speicher nur noch in dieser Funktion.
+   * Rueckgabe { protokoll, register } - genau eines gesetzt - oder null. */
+  function belegKette(k) {
+    var pk = PROTOKOLL_KANTE[k] || null;
+    var SU = window.StudienUrteile;
+    if (SU && SU.gueltig) return SU.gueltig(k, pk);
+    return pk ? { protokoll: pk, register: null } : null;
+  }
+  /** Das Messprotokoll zu k - aber nur, wenn es das gueltige (juengste) Urteil ist. */
+  function kanteGueltig(k) { var g = belegKette(k); return g ? g.protokoll : null; }
   async function kantenAusProtokollen() {
     try {
       if (!window.api || !window.api.readProtokolle) return;
@@ -891,7 +913,8 @@
      * Zahl war ein Tagesmittel aus einer Messung mit dem Fehler A6 und wurde gegen
      * Kosten JE UMLAUF gestellt - daraus wurde "netto +0,01 Pp" in Gruen, waehrend
      * dasselbe Protokoll "nicht entscheidbar" und je Signal -0,14 Pp fuehrte.) */
-    var kante = PROTOKOLL_KANTE[cfg.mode] || null;
+    var ketteH = belegKette(cfg.mode);
+    var kante = ketteH ? ketteH.protokoll : null;
     var std = halten >= 60 ? Math.round(halten / 60) + " h" : halten + " Min";
     var T = h.teile || { spanne: h.pp, zeit: 0, gebuehr: 0 };
     var txt = "<b>Kostenhürde:</b> " + U.dez(h.pp, 3) + " Pp je Umlauf" +
@@ -933,6 +956,12 @@
       } else if (netto <= 0) {
         txt += " – mit diesem Produkt trägt der Vorsprung die Kosten nicht.";
       }
+    }
+    /* Ist das gueltige Urteil ein Registereintrag (juenger als jedes Protokoll), steht
+     * hier KEINE Zahl je Signal aus dem ueberholten Protokoll - sondern das Urteil. */
+    if (ketteH && ketteH.register) {
+      txt += "<br><span class=\"warn\"><b>" + U.esc(ketteH.register.etikett || "gemessen und verworfen") + "</b> – " +
+        U.esc(ketteH.register.befund) + "</span>";
     }
     el.innerHTML = txt;
   }
@@ -3048,7 +3077,7 @@
             schattenNeu('Regime-Filter', sym, dir, spot, sigBars, mp, cfg, now);
             dir = null;
           } else if (istKapi && regimeAuf === true) {
-            patienceAdd('Regime: S&P 500 über der 200er-Linie – Kapitulations-Dip pausiert (trägt nur im Abwärtstrend)', sym);
+            patienceAdd('Regime: S&P 500 über der 200er-Linie – Kapitulations-Dip pausiert (die Zuteilung lässt ihn nur darunter zu)', sym);
             schattenNeu('Regime-Filter', sym, dir, spot, sigBars, mp, cfg, now);
             dir = null; kapiTrade = false;
           }
@@ -4542,7 +4571,9 @@
      * Buch laeuft). Das ist Depot-Zustand, kein Urteil - beide gehoeren nebeneinander
      * angezeigt, nie vermischt. */
     protokollKante: function (key) {
-      var k = PROTOKOLL_KANTE[key];
+      /* Nur das GUELTIGE Protokoll (04.10.2026): ist ein Registereintrag juenger, gibt
+       * es hier nichts - der Leser faellt dann von selbst auf das Studienregister. */
+      var k = kanteGueltig(key);
       return k ? { urteil: k.urteil, datum: k.datum, jeSignalPp: k.jeSignalPp, varianten: k.varianten,
         aussichtTage80: k.aussichtTage80 == null ? null : k.aussichtTage80 } : null;
     },
@@ -5649,15 +5680,23 @@
       /* Struktur-Audit Punkt 3: die Messzahl kommt aus dem Protokoll, nicht aus einem
        * abgetippten Satz - abgetippte Zahlen veralten (Regel D2). Ohne Protokoll steht
        * der alte Backtest-Wert da, aber ALS das gekennzeichnet, was er ist. */
-      var pkK = PROTOKOLL_KANTE[c.mode];
+      /* Seit 04.10.2026 ueber die Kette: ist ein Registereintrag juenger als das
+       * Protokoll (Kapitulations-Dip, Neumessung 03.10.2026), steht hier dessen
+       * Kennzeichnung und Befund - nicht die Zahl des ueberholten Protokolls und auch
+       * nicht mehr der alte Backtest-Median. */
+      var ketteK = belegKette(c.mode);
+      var pkK = ketteK && ketteK.protokoll;
+      var regK = ketteK && ketteK.register;
       var messSatz = pkK
         ? ' Messprotokoll vom ' + pkK.datum + ': ' + U.urteilText(pkK.urteil) +
           (pkK.jeSignalPp == null ? ' (keine Zahl je Signal zu diesem Urteil)'
             : ', Überschuss je Signal ' + (pkK.jeSignalPp >= 0 ? '+' : '') + U.dez(pkK.jeSignalPp, 3) + ' Pp') +
           ' – die App liest dieses Urteil, sie rechnet es nicht.'
-        : (c.mode === 'rsi2seit'
-          ? ' Backtest vor der Kontrollmessung: +0,147 Pp auf 8 Handelsstunden über die übliche Drift – kein Messprotokoll im Datenordner, dieser Stand kann veralten.'
-          : ' Backtest vor der Kontrollmessung: Median +0,44 % je Trade – kein Messprotokoll im Datenordner, dieser Stand kann veralten.');
+        : regK
+          ? ' ' + (regK.etikett || 'Gemessen und verworfen') + ' – ' + regK.befund + ' Wählbar bleibt der Modus von Hand.'
+          : (c.mode === 'rsi2seit'
+            ? ' Backtest vor der Kontrollmessung: +0,147 Pp auf 8 Handelsstunden über die übliche Drift – kein Messprotokoll im Datenordner, dieser Stand kann veralten.'
+            : ' Kein Messprotokoll im Datenordner – zu diesem Modus wird hier nichts behauptet.');
       was = (c.mode === 'rsi2seit'
         ? 'Kauft den RSI(2)-Rücklauf, aber nur im Seitwärtskanal mit Volumen – der Kanal gibt nicht die Richtung, sondern die Erlaubnis. Nur Long.'
         : 'Kauft den Ausverkauf im Abwärtskanal – die Kapitulation, nicht den Trend. Nur Long.') + messSatz;
@@ -5669,7 +5708,11 @@
         ? ' Gehandelt wird die Aktie selbst (1×, ohne Hebel).'
         : ' Achtung: eingestellt ist der Hebelschein – der gemessene Vorsprung liegt UNTER der Scheinhürde, mit Schein war dieselbe Strategie im Backtest bei −96 %.';
       if (c.mode === 'rsi2seit' && c.kapiZusatz) {
-        was += ' Zusätzlich läuft der Kapitulations-Dip als zweites Standbein – er greift in der anderen Marktphase.';
+        /* Kein Messsatz mehr im Fliesstext: Kennzeichnung und Befund kommen aus der Kette. */
+        var regZ = (belegKette('kapitulation') || {}).register;
+        was += ' Zusätzlich ist der Kapitulations-Dip von Hand zugeschaltet' +
+          (regZ ? ' (' + (regZ.etikett || 'gemessen und verworfen') + ')' : '') +
+          '; er kauft den Ausverkauf im Abwärtskanal, 26 Handelsstunden Zeit-Ausstieg.';
       }
       if (c.regimeZuteilung) {
         /* Nur der Modulcache, niemals spyTrendAuf(): das ist async mit Netzabruf,
@@ -7004,12 +7047,14 @@
      * einladendsten der Beschriftungen. Die zweite Quelle ist studienurteile.js;
      * sie kann nur verwerfen, nie belegen (Regel D2), und das Protokoll gewinnt. */
     function triggerBelegstand(k) {
-      var p = PROTOKOLL_KANTE[k];
+      /* Seit 04.10.2026 ueber die Kette (belegKette): das JUENGERE Urteil gewinnt. */
+      var g = belegKette(k);
+      var p = g && g.protokoll;
       if (p) {
         if (p.urteil === 'widerlegt') return 'verworfen';
         return p.urteil === 'bestaetigt' ? 'belegt' : 'gemessen';
       }
-      if (window.StudienUrteile && window.StudienUrteile.verworfen(k)) return 'verworfen';
+      if (g && g.register) return 'verworfen';
       return 'ungemessen';
     }
     /** Standard-Ausloeser je Setup. Im Umkehr-Setup rsi2seit - NICHT weil es belegt waere
@@ -7046,11 +7091,15 @@
           var o = document.createElement('option'); o.value = k; o.textContent = tr[k];
           /* Bei Verworfenen sagt der Titel-Text WOHER das Nein kommt - Studie und Zahl. */
           if (triggerBelegstand(k) === 'verworfen') {
-            var su = window.StudienUrteile && window.StudienUrteile.verworfen(k);
-            var pk9 = PROTOKOLL_KANTE[k];
+            var g9 = belegKette(k) || {};
+            var su = g9.register, pk9 = g9.protokoll;
             o.title = pk9 && pk9.urteil === 'widerlegt'
               ? 'Messprotokoll vom ' + pk9.datum + ': widerlegt'
               : (su ? su.befund + ' (' + su.quelle + ')' : '');
+            /* Traegt der Registereintrag eine Kennzeichnung (Kapitulations-Dip seit der
+             * Neumessung), steht sie in der Auswahl selbst - ein title allein liest
+             * niemand, der mit der Tastatur waehlt. */
+            if (su && su.etikett) o.textContent = tr[k] + ' – ' + su.etikett;
           }
           og.appendChild(o);
         });

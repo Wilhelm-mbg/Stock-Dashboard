@@ -125,7 +125,17 @@
     var treffer = r.protokolle
       .filter(function (p) { return p.protokoll && p.protokoll.strategie && p.protokoll.strategie.key === m; })
       .sort(function (a, b) { return (b.mtime || 0) - (a.mtime || 0); })[0];
-    return treffer ? ausProtokoll(treffer.protokoll) : null;
+    var k = treffer ? ausProtokoll(treffer.protokoll) : null;
+    /* Die Kette (04.10.2026, Auftrag Nr. 71): dieses Band liest die Protokolle selbst
+     * und haette fuer den Kapitulations-Dip weiter das Protokoll der alten Maschine
+     * gezeigt, obwohl die Neumessung im Studienregister juenger ist. Wer gewinnt,
+     * entscheidet dieselbe Funktion wie ueberall (StudienUrteile.gueltig). */
+    var SU = window.StudienUrteile;
+    var g = SU && SU.gueltig
+      ? SU.gueltig(m, k || (treffer ? { datum: String(treffer.protokoll.gemessenAm || '').slice(0, 10) } : null))
+      : null;
+    if (g && g.register) return { register: g.register };
+    return k;
   }
 
   function farbe(urteil) {
@@ -142,6 +152,13 @@
       return '<div style="color:var(--muted); font-size:var(--fs-neben);">' +
         'Für den laufenden Auslöser liegt <b>keine Messung</b> vor. Was hier gehandelt wird, ' +
         'beruht damit auf keiner Zahl.</div>';
+    }
+    if (k.register) {
+      /* Das gueltige Urteil steht im Studienregister: Kennzeichnung, Befund, Fundstelle -
+       * und keine Zahl aus einem ueberholten Protokoll. */
+      return '<div style="font-size:var(--fs-neben);"><b style="color:var(--down);">' +
+        esc(k.register.etikett || 'gemessen und verworfen') + '</b> – ' + esc(k.register.befund) +
+        ' <span style="color:var(--muted);">Fundstelle: ' + esc(k.register.quelle) + '.</span></div>';
     }
     var h = liveHuerde();
     var huerde = h ? h.pp : HUERDE_PP;

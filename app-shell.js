@@ -417,7 +417,11 @@
       var name = a.aktiverTrigger || a.modusName || st.modus;
       if (!name) return null;
       var k = st.modus && A.protokollKante ? A.protokollKante(st.modus) : null;
-      return name + ' · ' + (k ? U.urteilText(k.urteil) : 'kein Protokoll');
+      /* Seit 04.10.2026 gibt protokollKante() nur das gueltige (juengste) Urteil heraus.
+       * Ist ein Registereintrag juenger, steht dessen Kennzeichnung da - "kein Protokoll"
+       * waere fuer einen neu gemessenen Modus die falsche, einladende Auskunft. */
+      var su = !k && st.modus && window.StudienUrteile ? window.StudienUrteile.verworfen(st.modus) : null;
+      return name + ' · ' + (k ? U.urteilText(k.urteil) : su ? (su.etikett || 'gemessen und verworfen') : 'kein Protokoll');
     },
     berichte: null,
     /* Wie viele Kennungen ein Messprotokoll haben - aus derselben Sammlung, die
