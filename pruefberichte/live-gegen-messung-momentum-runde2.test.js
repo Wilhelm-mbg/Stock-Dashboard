@@ -20,6 +20,17 @@
  *   23  F9 mit echten Takten: Buch im Zustand "aus" angelegt, spaeter eingeschaltet (mit Gegenprobe)
  *   24  F1 auf dem Eroeffnungsweg: offene Verkaeufe, die Kaeufe werden nicht nachgeholt
  *   25  F1 auf dem Eroeffnungsweg: keine Eroeffnung bis 16:00 - 0 Orders, Takt trotzdem neu
+ * Uebernommen aus den Belegskripten der Durchsicht vom 04.10.2026 (Belegnamen f1-f7, p1 = Dateien f1-split-am-ausfuehrungstag.js
+ * usw.; nicht zu verwechseln mit den Fundnummern F1-F13 oben), je mit Gegenprobe:
+ *   26  Split mit Ex-Tag = Ausfuehrungstag: alte Stueckzahl zum geteilten Kurs verkauft; Umkehr-Split blaeht den Plan (Beleg f1)
+ *   27  Split, Bestand am Ex-Tag waehrend der Sitzung geladen: Tagespunkt zum halben Wert       (Beleg f1b)
+ *   28  Ausschuettung auf eine zur Eroeffnung des Ex-Tags verkaufte Position: nie gebucht        (Beleg f2)
+ *   29  Nachfassen eines Verkaufs: der Erloes liegt bis zur naechsten Umschichtung              (Beleg f3)
+ *   30  Reihenende in den fuenf Tagen vor der Umschichtung: Platz leer, Geld liegt              (Beleg f4)
+ *   31  Tote Reihen gegen die 95-%-Schwelle von stichtagPruefen: ab 10 keine Umschichtung mehr  (Beleg f5)
+ *   32  SPY-Ausfall verspaetet die Umschichtung, das Journal nennt einen falschen Grund          (Beleg f6)
+ *   33  Ladevorgang ueber 16:15 New York: frischer Stand, erste Werte ohne den Balken des Tages  (Beleg f7)
+ *   34  Sieben-Tage-Grenze von momentumZiel ueber den Herbstwechsel; dazu nyZeit 2026-2027      (Beleg p1)
  *
  * Jeder Test druckt GENAU EINE Zeile: "ZEIGT ABWEICHUNG: ..." oder "kein Unterschied: ...".
  * Reines Node, kein Netz, keine Schluessel, kein Electron. Die Fenster-Module laufen in einer
@@ -219,6 +230,53 @@ function imZiel(buch, ziel) { return (buch.positionen || []).filter(function (p)
 function massstabOpts(start, dm) {
   return { an: true, start: start, angelegt: null, punktKurs: true, marktRoh: dm.roh, buchAusschuettungen: true, markt: dm.reihe };
 }
+
+/* ---------------- Hilfen fuer 26-34 (aus den Belegskripten hilfen.js und depot.js) ---------------- */
+
+/** n Werktage bis endeT wie werktageBis, aber mit der Uhrzeit von endeT statt 13:30 UTC. Die Belegskripte stempeln
+ *  09:30 New York (MH.nyZeit(tag, 9, 30): im Winter 14:30 UTC) - an diesem Stempel haengen Split-, Ausschuettungs- und
+ *  Reihenende-Vergleiche (t <= barZeit). */
+function werktageUm(endeT, n) {
+  var dt = endeT - stempel(endeT);
+  return werktageBis(endeT, n).map(function (t) { return t + dt; });
+}
+/** mfdepot.js in der Sandbox wie mfdepotSandbox, aber der Eroeffnungsbalken traegt den angefragten New-Yorker Tag
+ *  (09:30 New York) statt fest den 24.11. - so geht auch ein Ausfuehrungstag im Dezember (Test 32). */
+function mfdepotSandboxTag(st, d, MF, jetzt, eroeffnungen) {
+  var karte = { innerHTML: '' };
+  var win = sandbox(['mfdepot.js'], {
+    U: U_ATTRAPPE, api: st.api, MF: MF, MFHandel: MH, Massstab: Ms, __el: { buchMomentumKopf: karte },
+    Kurse: kursAttrappe(async function (sym, o) {
+      var e = eroeffnungen && eroeffnungen[sym];
+      if (!(e > 0) || !o || !(o.von > 0)) return { bars: [] };
+      var t = MH.nyZeit(MH.nyTag(o.von + 3600000), 9, 30);
+      return { bars: [[t, e * 1.01, 1e6, e * 1.02, e * 0.99, e]], verworfen: 0, gesamt: 1, feld: 'close' };
+    }),
+    __D: function () { return d; }, __save: function () { return Promise.resolve({ ok: true }); }
+  }, jetzt);
+  win.__karte = karte;
+  return win;
+}
+/** Bestand ablegen wie tagesdatenAblegen, dazu die Ereignisse je Wert (mf_ereignisse.sym: Splits und Ausschuettungen). */
+function bestandAblegen(st, roh, at, spy, ereignisse) {
+  tagesdatenAblegen(st, roh, at, spy);
+  st.daten.mf_ereignisse = { at: at, sym: ereignisse || {} };
+}
+/** Ein Takt um jetzt auf dem abgelegten Bestand: frische Sandboxen fuer mittelfrist.js (der Abruf liefert nichts) und
+ *  mfdepot.js (Eroeffnungen aus eroeff). */
+async function taktUm(st, d, jetzt, eroeff) {
+  var mf = mittelfristSandbox(st, async function () { return null; }, jetzt);
+  var dep = mfdepotSandboxTag(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, jetzt, eroeff);
+  await taktLauf(dep);
+  return dep;
+}
+function imBuch(b, s) { return (b.positionen || []).some(function (p) { return p.sym === s; }); }
+function jn(x) { return x ? 'ja' : 'nein'; }
+function betrag(x) { return x.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $'; }
+/** Stueckzahl mit deutschem Komma (41.833 hiesse sonst einundvierzigtausend). */
+function stk(x) { return String(x).replace('.', ','); }
+/** 'JJJJ-MM-TT' -> 'TT.MM.' */
+function tagKurz(s) { return s ? s.slice(8, 10) + '.' + s.slice(5, 7) + '.' : '-'; }
 
 /* ---------------- Die Tests ---------------- */
 var TESTS = {};
@@ -597,6 +655,434 @@ TESTS[25] = async function () {
     d.mfBuch.positionen.length + ' alte Positionen (kein Ziel) bleiben; letzte Umschichtung ' + (neu ? 'NEU ' + MH.datumDe(d.mfBuch.letzteAusfuehrungTag) : 'bleibt ' + MH.datumDe(tagVorher)) +
     ' -> faellig ' + (f.faellig ? 'weiter' : 'erst nach ' + f.noch + ' weiteren Handelstagen') + '. Journal am Ende: "' + (ende ? ende.applied[0].slice(0, 70) + ' ...' : '-') +
     '". Die Messung schichtet an diesem Tag auf vollen Daten um.');
+};
+
+/* 26 - Split mit Ex-Tag = Ausfuehrungstag (Beleg f1). Der Bestand vom Stichtag (Montag 23.11., 17:00) traegt den Ex-Tag
+ *     noch nicht, also bucht der Takt am Dienstag 10:00 New York den Split 2:1 auf XSPL nicht; die Eroeffnung des Ex-Tags
+ *     kommt roh, also schon geteilt. XSPL (schwach, kein Ziel) wird mit der alten Stueckzahl zum geteilten Kurs verkauft,
+ *     am Folgetag ist die Position weg und nichts wird nachgebucht. Dazu als Planrechnung ein Umkehr-Split 1:10 auf einem
+ *     gehaltenen Ziel: der Depotwert im Plan blaeht sich auf und mit ihm jeder Platzwert.
+ *     main: mfhandel.js:617 (bucheMassnahmen bucht nur t <= barZeit), mfdepot.js:48 (barZeit = juengster gespeicherter
+ *           Balken), mfdepot.js:266 (Eroeffnung bereinigt: false), mfhandel.js:126 (Depotwert = Stueck x Eroeffnung).
+ *     Messung: rueckblick.js:195 (preise = bEroeffnung, split-bereinigt wie Stueck und bSchluss), REGEL §1.1/§1.3.
+ *     Soll: Buchwert nach dem Handel wie im einheitlichen Massstab (Lauf "Messung"); ein Split aendert den Depotwert im
+ *     Plan nicht. Gegenprobe: derselbe Split mit Ex-Tag am Stichtag - der Bestand traegt ihn, gebucht vor dem Handel. */
+TESTS[26] = async function () {
+  var namen = universum().slice(0, 130), K = { kleinstAnteil: MH.buchKonfig().kleinstAnteil };
+  var stichT = MH.nyZeit('2026-11-23', 9, 30), ausf = '2026-11-24', exT = MH.nyZeit(ausf, 9, 30);
+  var tage = werktageUm(stichT, 300), n = tage.length, spy = spyAus(tage);
+  var roh = kunstUniversum(tage, namen);
+  roh.XSPL = buchReihe(tage, kursweg(n, -0.3));                   // schwach -> kein Ziel -> wird verkauft
+  var ziel = zielAm(roh, stichT);
+  if (ziel.indexOf('XSPL') >= 0) throw new Error('XSPL im Ziel');
+  var letzteAusf = tage[n - 63] + 3600000;                       // 62 Balken danach -> heute faellig
+  var xK = roh.XSPL[n - 1][1];
+  /* art: 'app' (Ex-Tag = Ausfuehrungstag, Bestand ungeteilt), 'messung' (dieselbe Lage in einheitlichem Massstab:
+   * Reihe geteilt, 200 Stueck), 'vortag' (Gegenprobe: Ex-Tag am Stichtag, Bestand geteilt, 100 Stueck vor dem Split). */
+  async function lauf(art) {
+    var st = speicher({ drift_markt: driftMarkt(spy, stichT) });
+    var r = JSON.parse(JSON.stringify(roh)), m = art === 'messung';
+    if (art !== 'app') r.XSPL = r.XSPL.map(function (b) { return [b[0], b[1] / 2, b[2] * 2, b[3] / 2]; });
+    bestandAblegen(st, r, MH.nyZeit('2026-11-23', 17, 0), spy, { XSPL: { div: [], split: [[art === 'vortag' ? stichT : exT, 2, 1]] } });
+    var pos = ziel.slice(0, 18).map(function (s) { return { sym: s, stueck: 50, einstand: roh[s][n - 63][1], seit: letzteAusf, kursT: tage[n - 63] }; });
+    pos.push({ sym: 'XSPL', stueck: m ? 200 : 100, einstand: m ? 50 : 100, seit: letzteAusf, kursT: tage[n - 63] });
+    var d = { momentumAn: true, mfBuch: buchMit(pos, letzteAusf), mfVerlauf: [] };
+    var eroeff = {}; Object.keys(roh).forEach(function (s) { eroeff[s] = roh[s][n - 1][1]; });
+    eroeff.SPY = 430; eroeff.XSPL = xK / 2;                       // Eroeffnung des Ex-Tags, roh = geteilt
+    await taktUm(st, d, MH.nyZeit(ausf, 10, 0), eroeff);
+    return { d: d, st: st, eroeff: eroeff, x: d.mfBuch.trades.filter(function (t) { return t.sym === 'XSPL'; })[0],
+      wert: MH.bewerte(d.mfBuch, eroeff).wert, gebucht: (d.mfBuch.massnahmen || []).length };
+  }
+  var a = await lauf('app'), b = await lauf('messung'), gp = await lauf('vortag');
+  // Folgetag: Bestand mit dem Ex-Tag, Reihe geteilt, Split-Ereignis - die Position ist weg, nichts wird nachgeholt
+  var r2 = JSON.parse(JSON.stringify(roh));
+  Object.keys(r2).forEach(function (s) { var l = r2[s][n - 1]; r2[s].push([exT, l[1], l[2], l[3]]); });
+  r2.XSPL = r2.XSPL.map(function (z) { return [z[0], z[1] / 2, z[2] * 2, z[3] / 2]; });
+  bestandAblegen(a.st, r2, MH.nyZeit(ausf, 17, 0), spy.concat([[exT, 430, 8e7, 430]]), { XSPL: { div: [], split: [[exT, 2, 1]] } });
+  await taktUm(a.st, a.d, MH.nyZeit('2026-11-25', 10, 0), {});
+  var nachgeholt = (a.d.mfBuch.massnahmen || []).length, xsplDa = imBuch(a.d.mfBuch, 'XSPL');
+  // Umkehr-Split 1:10 auf einem GEHALTENEN Ziel: z0 hat heute Ex-Tag, Eroeffnung roh = x10, Stueck noch alt (Planrechnung)
+  var z0 = ziel[0], bu = { cash: 0, positionen: ziel.slice(0, 10).map(function (s) { return { sym: s, stueck: 50 }; }).concat([{ sym: 'XSPL', stueck: 100 }]) };
+  var plOk = MH.planeUmschichtung(ziel, bu, a.eroeff, K);
+  var pr2 = Object.assign({}, a.eroeff); pr2[z0] = a.eroeff[z0] * 10;
+  var plUm = MH.planeUmschichtung(ziel, bu, pr2, K);
+  var verlust = a.wert - b.wert;
+  zeile(Math.abs(verlust) > 1 || Math.abs(plUm.depotwert - plOk.depotwert) > 1,
+    'Split 2:1 auf XSPL, Ex-Tag = Ausfuehrungstag 24.11.: vor dem Handel gebucht ' + jn(a.gebucht) + ', verkauft ' + a.x.stueck + ' Stueck zu ' + kurs2(a.x.kurs) + ' = ' +
+    geld(a.x.stueck * a.x.kurs * 0.998) + '; im einheitlichen Massstab (Messung) ' + b.x.stueck + ' Stueck = ' + geld(b.x.stueck * b.x.kurs * 0.998) + '. Buchwert nach dem Handel ' +
+    geld(a.wert) + ' statt ' + geld(b.wert) + ' (' + geld(verlust) + ', ' + pz((a.wert / b.wert - 1) * 100) + '); Folgetag: Split nachgebucht ' + jn(nachgeholt) + ', XSPL im Buch ' + jn(xsplDa) +
+    '. Umkehr-Split 1:10 auf dem gehaltenen Ziel ' + z0 + ' (Plan, ' + ziel.length + ' Ziele, Buch 10 Ziele + XSPL): Depotwert ' + geld(plOk.depotwert) + ' -> ' + geld(plUm.depotwert) +
+    ', Platzwert je Kauf ' + geld(plOk.kaufen[0].budget) + ' -> ' + geld(plUm.kaufen[0].budget) + '. Gegenprobe Ex-Tag am Stichtag 23.11.: gebucht ' + jn(gp.gebucht) + ', verkauft ' +
+    gp.x.stueck + ' Stueck, Buchwert ' + geld(gp.wert) + '.');
+};
+
+/* 27 - Split, Bestand am Ex-Tag WAEHREND der Sitzung geladen (Beleg f1b). Gespeichert ist der Stand vom Freitag (nicht frisch),
+ *     am Dienstag 24.11. um 10:00 New York laedt der Lader neu. Die Quelle liefert die Vergangenheit schon geteilt (close ist
+ *     splitbereinigt) und das Split-Ereignis mit dem Stempel des Ex-Tags; der laufende Balken des Ex-Tags wird abgeschnitten.
+ *     Der Split wird nicht gebucht, die Kurse sind aber schon geteilt: der Tagespunkt des Stichtags haelt den halben Wert fest.
+ *     main: mittelfrist.js:71 (bereinigt: true), mittelfrist.js:81 (ohneLaufendenBalken), mfhandel.js:617 (nur t <= barZeit),
+ *           mfdepot.js:247 (Tagespunkt: bewerte mit den Schluessen des Bestands).
+ *     Messung: rueckblick.js:234 (Schritt 6: Bewertung zum bSchluss, Stueck und Kurs im selben bereinigten Massstab), REGEL §1.3.
+ *     Soll: Tagespunkt = 100 Stueck x ungeteilter Schluss (= 200 x geteilter). Gegenprobe: dieselbe Quelle um 17:00 geladen -
+ *     der Balken des Ex-Tags steht im Bestand, der Split wird gebucht. */
+TESTS[27] = async function () {
+  var namen = universum();
+  var stichT = MH.nyZeit('2026-11-23', 9, 30), ausf = '2026-11-24', exT = MH.nyZeit(ausf, 9, 30);
+  var tage = werktageUm(stichT, 300), n = tage.length, spy = spyAus(tage);
+  var roh = kunstUniversum(tage, namen);
+  var S = namen[7], kS = roh[S][n - 1][1];
+  // Quelle am Ex-Tag: Vergangenheit geteilt, laufender Balken des Ex-Tags dabei, Ereignis mit Stempel des Ex-Tags
+  function quelle(sym, o) {
+    var basis = sym === 'SPY' ? spy : roh[sym];
+    if (!basis) return null;
+    var r = basis.map(function (b) { return b.slice(); });
+    var l = r[r.length - 1]; r.push([exT, l[1], l[2], l[3]]);
+    if (sym === S) r = r.map(function (b) { return [b[0], b[1] / 2, b[2] * 2, b[3] / 2]; });
+    var a = ladeAntwort(r, o);
+    if (o.ereignisse) a.ereignisse = sym === S ? { div: [], split: [[exT, 2, 1]] } : { div: [], split: [] };
+    return a;
+  }
+  async function lauf(jetzt) {
+    var st = speicher({ drift_markt: driftMarkt(spy, stichT) });
+    var rohAlt = {}; namen.forEach(function (s) { rohAlt[s] = roh[s].slice(0, -1); });
+    bestandAblegen(st, rohAlt, MH.nyZeit('2026-11-20', 17, 0), spyAus(tage.slice(0, -1)), {});   // Freitag -> nicht frisch -> neu laden
+    var mf = mittelfristSandbox(st, async function (sym, o) { return quelle(sym, o); }, jetzt);
+    await mf.MF.ladeUniversum();
+    var g = await mf.MF.tagesdatenLesen(), rS = g.roh[S];
+    var letzteAusf = tage[n - 20] + 3600000;
+    var pos = [{ sym: S, stueck: 100, einstand: kS, seit: letzteAusf, kursT: tage[n - 20] }];
+    var d = { momentumAn: true, mfBuch: buchMit(pos, letzteAusf),
+      mfVerlauf: [{ t: tage[n - 2], tag: MH.nyTag(tage[n - 2]), momentum: 100 * kS, spy: 400, spyT: tage[n - 2], startM: 100000 }] };
+    var dep = mfdepotSandboxTag(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, jetzt, {});
+    await taktLauf(dep);
+    return { letzterTag: MH.nyTag(rS[rS.length - 1][0]), schluss: rS[rS.length - 1][1], gebucht: (d.mfBuch.massnahmen || []).length,
+      stueck: d.mfBuch.positionen[0].stueck, punkt: d.mfVerlauf[d.mfVerlauf.length - 1] };
+  }
+  var x = await lauf(MH.nyZeit(ausf, 10, 0)), gp = await lauf(MH.nyZeit(ausf, 17, 0));
+  zeile(Math.abs(x.punkt.momentum - 100 * kS) > 1,
+    'Bestand am Ex-Tag 24.11. um 10:00 New York neu geladen: juengster Balken ' + tagKurz(x.letzterTag) + ', Schluss ' + S + ' im Bestand ' + kurs2(x.schluss) + ' (vor dem Split ' +
+    kurs2(kS) + ' - die Vergangenheit kommt schon geteilt, der Balken des Ex-Tags ist abgeschnitten). Split gebucht ' + jn(x.gebucht) + ', Stueck ' + x.stueck + '; Tagespunkt ' +
+    tagKurz(x.punkt.tag) + ': Buch ' + geld(x.punkt.momentum) + ' statt ' + geld(100 * kS) + ' (100 Stueck x ' + kurs2(kS) + ' = 200 x ' + kurs2(kS / 2) + ') - ein geschriebener Punkt wird nicht neu gerechnet. ' +
+    'Gegenprobe dieselbe Quelle um 17:00 geladen: juengster Balken ' + tagKurz(gp.letzterTag) + ', Split gebucht ' + jn(gp.gebucht) + ', Stueck ' + gp.stueck + ', Tagespunkt ' + tagKurz(gp.punkt.tag) +
+    ': ' + geld(gp.punkt.momentum) + '.');
+};
+
+/* 28 - Ausschuettung mit Ex-Tag = Ausfuehrungstag auf Positionen, die zur Eroeffnung des Ex-Tags VERKAUFT werden (Beleg f2):
+ *     XDIV (kein Ziel, 100 Stueck, 1,00 $) und ein Kleinstbestand (Ziel, 1 Stueck, 2,00 $), den Regel K2 verkauft und neu
+ *     kauft. Am Morgen fehlt der Balken des Ex-Tags im Bestand, am Folgetag ist die Position weg (XDIV) bzw. neu gekauft.
+ *     main: mfhandel.js:611-617 (bucheMassnahmen laeuft nur ueber buch.positionen und nur bis barZeit), mfdepot.js:384.
+ *     Messung: rueckblick.js:180 (Schritt 2: Anspruch, wer ueber die Nacht hielt - vor dem Handel festgestellt),
+ *              rueckblick.js:221 (Schritt 4: gutgeschrieben nach dem Handel), REGEL Teil C.3.
+ *     Soll: 100 x 1,00 $ + 1 x 2,00 $ = 102,00 $ Bargeld nach dem Handel des Ex-Tags. Gegenprobe: dieselbe Lage, die
+ *     Ausschuettung (0,50 $) liegt auf einem gehaltenen Ziel - sie wird am Folgetag gebucht. */
+TESTS[28] = async function () {
+  var namen = universum().slice(0, 130);
+  var stichT = MH.nyZeit('2026-11-23', 9, 30), ausf = '2026-11-24', exT = MH.nyZeit(ausf, 9, 30);
+  var tage = werktageUm(stichT, 300), n = tage.length, spy = spyAus(tage);
+  var roh = kunstUniversum(tage, namen);
+  roh.XDIV = buchReihe(tage, kursweg(n, -0.3));                   // schwach -> kein Ziel -> wird verkauft
+  var ziel = zielAm(roh, stichT);
+  var kl = ziel[3], gh = ziel[0];                                 // kl: Kleinstbestand (1 Stueck) -> K2; gh: gehalten (Gegenprobe)
+  var letzteAusf = tage[n - 63] + 3600000;
+  async function lauf(er) {
+    var st = speicher({ drift_markt: driftMarkt(spy, stichT) });
+    bestandAblegen(st, roh, MH.nyZeit('2026-11-23', 17, 0), spy, er);
+    var pos = ziel.slice(0, 10).map(function (s) { return { sym: s, stueck: s === kl ? 1 : 50, einstand: 100, seit: letzteAusf, kursT: tage[n - 63] }; });
+    pos.push({ sym: 'XDIV', stueck: 100, einstand: 100, seit: letzteAusf, kursT: tage[n - 63] });
+    var d = { momentumAn: true, mfBuch: buchMit(pos, letzteAusf), mfVerlauf: [] };
+    var eroeff = {}; Object.keys(roh).forEach(function (s) { eroeff[s] = roh[s][n - 1][1]; }); eroeff.SPY = 430;
+    await taktUm(st, d, MH.nyZeit(ausf, 10, 0), eroeff);
+    var verk = d.mfBuch.trades.filter(function (t) { return t.art === 'verkauf'; }).map(function (t) { return t.sym; });
+    var klNeu = d.mfBuch.positionen.filter(function (p) { return p.sym === kl; })[0], cash0 = d.mfBuch.cash;
+    // Folgetag: der Bestand traegt den Ex-Tag und die Ereignisse
+    var r2 = JSON.parse(JSON.stringify(roh));
+    Object.keys(r2).forEach(function (s) { var l = r2[s][n - 1]; r2[s].push([exT, l[1], l[2], l[3]]); });
+    bestandAblegen(st, r2, MH.nyZeit(ausf, 17, 0), spy.concat([[exT, 430, 8e7, 430]]), er);
+    await taktUm(st, d, MH.nyZeit('2026-11-25', 10, 0), {});
+    var div = (d.mfBuch.massnahmen || []).filter(function (m) { return m.art === 'div'; });
+    return { verk: verk, klNeu: klNeu, cash0: cash0, cash1: d.mfBuch.cash, n: div.length, summe: div.reduce(function (s, m) { return s + m.summe; }, 0),
+      gehalten: imBuch(d.mfBuch, gh) };
+  }
+  var er = { XDIV: { div: [[exT, 1.0]], split: [] } }; er[kl] = { div: [[exT, 2.0]], split: [] };
+  var erGp = {}; erGp[gh] = { div: [[exT, 0.5]], split: [] };
+  var x = await lauf(er), gp = await lauf(erGp);
+  var soll = 100 * 1.0 + 1 * 2.0;
+  zeile(Math.abs(x.summe - soll) > 0.01,
+    'Ausfuehrungstag 24.11. = Ex-Tag: verkauft ' + x.verk.join(', ') + '; Kleinstbestand ' + kl + ' (1 Stueck ueber Nacht) nach K2 verkauft und neu gekauft (' +
+    (x.klNeu ? stk(x.klNeu.stueck) + ' Stueck' + (x.klNeu.kursT === exT ? ', Kauf auf den Ex-Tag gestempelt' : '') : 'nicht gekauft') + '). App bis zum Folgetag: ' + x.n +
+    ' Ausschuettungen gebucht (' + betrag(x.summe) + '), Bargeld ' + betrag(x.cash0) + ' -> ' + betrag(x.cash1) + '. Messung: XDIV 100 Stueck x 1,00 $ + ' + kl + ' 1 Stueck x 2,00 $ = ' +
+    betrag(soll) + ' nach dem Handel des Ex-Tags gutgeschrieben. Gegenprobe Ausschuettung auf dem gehaltenen Ziel ' + gh + ' (50 Stueck x 0,50 $, ' + (gp.gehalten ? 'gehalten' : 'NICHT gehalten') +
+    '): ' + gp.n + ' gebucht bis zum Folgetag (' + betrag(gp.summe) + ').');
+};
+
+/* 29 - Nachfassen eines VERKAUFS, der Erloes bleibt liegen (Beleg f3; reine Rechnung mit den Funktionen von mfhandel.js).
+ *     Um 09:36 New York fehlt die Eroeffnung der gehaltenen Nicht-Ziel-Position ALT (5.000 $). Der Plan rechnet den Depotwert
+ *     ohne sie, der Kauf des 19. Ziels T19 traegt sich ohne ihren Erloes nicht und faellt aus - offen wird nur der Verkauf.
+ *     Um 10:05 kommt die Eroeffnung (derselbe Kurs): nachfassen verkauft ALT und kauft nichts. Dazu ein Kleinstbestand
+ *     (Ziel T5, 1 Stueck) ohne Eroeffnung: er wird gehalten und steht nicht in offen.
+ *     main: mfhandel.js:126 (Depotwert nur mit Kurs), mfhandel.js:750-751 (offeneAuftraege: nur plan.fehltKurs, ein
+ *           Verkauf ohne den Kauf, den sein Erloes truege), mfhandel.js:777/791 (nachfassen kauft nur offen.kaeufe),
+ *           mfdepot.js:428.
+ *     Messung: rueckblick.js:195-200 (alle Eroeffnungen des Tages, Verkaeufe vor Kaeufen in einem fuehreAus), REGEL §1.3.
+ *     Soll: am Ende des Tages dieselben Positionen und dasselbe Bargeld wie die Messung. Gegenprobe: dem Kauf T19 fehlt um
+ *     09:36 die Eroeffnung (statt dem Verkauf) - er steht in offen und wird um 10:05 nachgekauft. */
+TESTS[29] = function () {
+  var K = { kleinstAnteil: MH.buchKonfig().kleinstAnteil }, tag = '2026-11-24';
+  var vor = MH.nyZeit(tag, 9, 36), nach = MH.nyZeit(tag, 10, 5), oeffT = MH.nyZeit(tag, 9, 30);
+  var ziel = []; for (var i = 1; i <= 19; i++) ziel.push('T' + i);
+  function buch() {
+    var ps = ziel.slice(0, 18).map(function (s) { return { sym: s, stueck: 50, einstand: 100 }; });   // 18 gehaltene Ziele zu je 5.000 $
+    ps.push({ sym: 'ALT', stueck: 50, einstand: 100 });                                                // kein Ziel, 5.000 $
+    return { cash: 0, positionen: ps, trades: [] };
+  }
+  /* Kleinstbestand: Ziel T5 mit 1 Stueck (100 $ bei 5.000 $ Platzwert), ALT verkauft, T19 schon im Buch, 4.900 $ Bargeld */
+  function buchKlein() {
+    var b = buch(); b.positionen[4].stueck = 1; b.cash = 4900; b.positionen.pop(); b.positionen.push({ sym: 'T19', stueck: 50, einstand: 100 });
+    return b;
+  }
+  var kurse = { ALT: 100 }; ziel.forEach(function (s) { kurse[s] = 100; });
+  function messung(b) { MH.fuehreAus(b, MH.planeUmschichtung(ziel, b, kurse, K), vor, 20, K); return b; }
+  /** Die App: um 09:36 fehlt die Eroeffnung von fehlt; ist etwas offen, kommt sie um 10:05 (derselbe Kurs). */
+  function app(b, fehlt) {
+    var ohne = Object.assign({}, kurse); delete ohne[fehlt];
+    var plan = MH.planeUmschichtung(ziel, b, ohne, K); MH.fuehreAus(b, plan, vor, 20, K);
+    var offen = MH.offeneAuftraege(ziel, plan, tag), pr = {}, bt = {};
+    pr[fehlt] = 100; bt[fehlt] = oeffT; b.offen = offen;
+    return { plan: plan, offen: offen, res: offen ? MH.nachfassen(b, pr, bt, nach, 20, K) : null };
+  }
+  function st5(b) { var p = b.positionen.filter(function (x) { return x.sym === 'T5'; })[0]; return p ? p.stueck : 0; }
+  function syms(l) { return (l || []).map(function (x) { return x.sym || x; }).join(', '); }
+  var bM = messung(buch()), bA = buch(), a = app(bA, 'ALT');
+  var kM = messung(buchKlein()), kA = buchKlein(), k = app(kA, 'T5');
+  var bG = buch(), g = app(bG, 'T19');
+  zeile(bA.positionen.length !== bM.positionen.length || Math.abs(bA.cash - bM.cash) > 100 || Math.abs(st5(kA) - st5(kM)) > 1,
+    '09:36 New York ohne Eroeffnung fuer ALT (kein Ziel, 5.000 $): Plan-Depotwert ' + geld(a.plan.depotwert) + ' (ohne ALT), Kaeufe geplant ' + a.plan.kaufen.length + ' (' + syms(a.plan.kaufen) + ')' +
+    ', ausgefuehrt ' + jn(a.plan.kaufen[0].stueck > 0) + '; offen: Verkaeufe [' + syms(a.offen.verkaeufe) + '], Kaeufe [' + syms(a.offen.kaeufe) + ']. 10:05 nachgefasst: verkauft [' +
+    a.res.verkauft.map(function (v) { return v.sym + ' zu ' + kurs2(v.kurs); }).join(', ') + '], gekauft [' + syms(a.res.gekauft) + '] -> T19 im Buch ' + jn(imBuch(bA, 'T19')) + ', ' +
+    bA.positionen.length + ' Positionen, Bargeld ' + betrag(bA.cash) + ' bis zur naechsten Umschichtung (63 Handelstage). Messung: T19 gekauft ' + jn(imBuch(bM, 'T19')) + ', ' +
+    bM.positionen.length + ' Positionen, Bargeld ' + betrag(bM.cash) + '. Kleinstbestand T5 (1 Stueck) ohne Eroeffnung: App ' + stk(st5(kA)) + ' Stueck, offen ' + (k.offen ? syms(k.offen.verkaeufe.concat(k.offen.kaeufe)) : 'nichts') +
+    ', Bargeld ' + betrag(kA.cash) + ' bis zur naechsten Umschichtung; Messung ' + stk(st5(kM)) + ' Stueck (K2: verkauft, voll neu gekauft). Gegenprobe Kauf T19 ohne Eroeffnung um 09:36: offen [' +
+    syms(g.offen && g.offen.kaeufe) + '], 10:05 gekauft [' + syms(g.res && g.res.gekauft) + '], ' + bG.positionen.length + ' Positionen, Bargeld ' + betrag(bG.cash) + '.');
+};
+
+/* 30 - Reihenende in den fuenf Tagen vor der Umschichtung (Beleg f4; reine Rechnung). WEG (5.000 $) hat seine letzte Zeile
+ *     am Freitag 20.11., Ausfuehrungstag ist Dienstag 24.11. Die App bucht erst nach fuenf SPY-Balken aus; am 24.11. wird WEG
+ *     ohne Eroeffnung gehalten (zaehlt nicht zum Depotwert), der Platz T19 bleibt leer, und das Geld aus dem spaeteren
+ *     Ausbuchen liegt bis zur naechsten Umschichtung. Der Preis ist derselbe (letzter Schluss) - die Anlage nicht.
+ *     main: mfhandel.js:426/436 (REIHENENDE_TAGE = 5), mfdepot.js:396 (Reihenende vor der Umschichtung des Takts).
+ *     Messung: rueckblick.js:165 (Schritt 1: am ersten Handelstag nach der letzten Zeile, VOR Schritt 3), REGEL §1.4, Teil C.5.
+ *     Soll: am 24.11. T19 gekauft, Bargeld nahe 0 wie die Messung. Gegenprobe: letzte Zeile am 16.11. - bis zum Stichtag
+ *     liegen fuenf SPY-Balken dazwischen, die App bucht am 24.11. vor der Umschichtung aus. */
+TESTS[30] = function () {
+  var K = { kleinstAnteil: MH.buchKonfig().kleinstAnteil };
+  function st(tag) { return MH.nyZeit(tag, 9, 30); }
+  var spyTage = ['2026-11-16', '2026-11-17', '2026-11-18', '2026-11-19', '2026-11-20', '2026-11-23', '2026-11-24', '2026-11-25', '2026-11-27', '2026-11-30', '2026-12-01'];
+  function spyBis(tag) { return spyTage.filter(function (t) { return t <= tag; }).map(function (t, j) { return [st(t), 400 + j, 8e7, 400 + j]; }); }
+  var ziel = []; for (var i = 1; i <= 19; i++) ziel.push('T' + i);
+  function buch() {
+    var ps = ziel.slice(0, 18).map(function (s) { return { sym: s, stueck: 50, einstand: 100, kursT: st('2026-08-25') }; });
+    ps.push({ sym: 'WEG', stueck: 50, einstand: 100, kursT: st('2026-08-25') });
+    return { cash: 0, positionen: ps, trades: [] };
+  }
+  function rohMit(wegTage) {
+    var r = { WEG: [[st(wegTage[0]), 101, 1e6], [st(wegTage[1]), 100, 1e6]] };
+    ziel.forEach(function (s) { r[s] = spyTage.map(function (t) { return [st(t), 100, 3e6]; }); });
+    return r;
+  }
+  var kurse = {}; ziel.forEach(function (s) { kurse[s] = 100; });   // WEG hat am 24.11. keine Eroeffnung
+  // Messung: Montag 23.11. ausgebucht (letzter Schluss 100, ohne Kosten), Dienstag 24.11. umgeschichtet
+  var bM = buch(); bM.positionen = bM.positionen.filter(function (p) { return p.sym !== 'WEG'; }); bM.cash += 50 * 100;
+  MH.fuehreAus(bM, MH.planeUmschichtung(ziel, bM, kurse, K), st('2026-11-24'), 20, K);
+  /** Die App: Takt am 24.11. 10:00 - erst reihenendeAusbuchen (Bestand bis Montag), dann die Umschichtung; danach die
+   *  Takte der Folgetage, bis WEG ausgebucht ist. */
+  function app(roh) {
+    var b = buch(), heute = MH.nyZeit('2026-11-24', 10, 0);
+    var aus1 = MH.reihenendeAusbuchen(b, roh, spyBis('2026-11-23'), heute);
+    var plan = MH.planeUmschichtung(ziel, b, kurse, K); MH.fuehreAus(b, plan, heute, 20, K);
+    var offen = MH.offeneAuftraege(ziel, plan, '2026-11-24'), t19 = imBuch(b, 'T19'), spaeter = [];
+    ['2026-11-25', '2026-11-27', '2026-11-30', '2026-12-01'].forEach(function (tag) {
+      var a = MH.reihenendeAusbuchen(b, roh, spyBis(tag), MH.nyZeit(tag, 10, 0) + TAG);
+      if (a.length) spaeter.push(tagKurz(tag) + ' (' + a[0].tage + ' Balken)');
+    });
+    return { b: b, aus1: aus1.length, plan: plan, offen: offen, t19: t19, spaeter: spaeter };
+  }
+  var x = app(rohMit(['2026-11-19', '2026-11-20'])), gp = app(rohMit(['2026-11-13', '2026-11-16']));
+  zeile(!x.t19 || Math.abs(x.b.cash - bM.cash) > 100,
+    'WEG mit letzter Zeile Fr 20.11., Ausfuehrungstag Di 24.11.: App bucht am 24.11. ' + x.aus1 + ' Position(en) aus, WEG ohne Eroeffnung ' + (x.plan.halten.indexOf('WEG') >= 0 ? 'gehalten' : 'nicht gehalten') +
+    ', Plan-Depotwert ' + geld(x.plan.depotwert) + ' (ohne WEG), T19 gekauft ' + jn(x.t19) + ', offener Verkauf ' + JSON.stringify(x.offen && x.offen.verkaeufe) + ' (kann nie gefuellt werden); ausgebucht am ' +
+    (x.spaeter.join(', ') || '-') + ' -> Bargeld ' + betrag(x.b.cash) + ' bis zur naechsten Umschichtung, T19 im Buch ' + jn(imBuch(x.b, 'T19')) + '. Messung: WEG am 23.11. ausgebucht, am 24.11. T19 gekauft ' +
+    jn(imBuch(bM, 'T19')) + ', Bargeld ' + betrag(bM.cash) + '. Gegenprobe letzte Zeile Mo 16.11.: am 24.11. ' + gp.aus1 + ' ausgebucht, T19 gekauft ' + jn(gp.t19) + ', Bargeld ' + betrag(gp.b.cash) + '.');
+};
+
+/* 31 - Tote Reihen gegen die 95-%-Schwelle von stichtagPruefen (Beleg f5). Ein Wert, der endgueltig nichts mehr liefert,
+ *     behaelt seine alte Reihe und steht auf weg. ladenAnnehmen nimmt weg-Werte aus dem Nenner, stichtagPruefen nicht: es
+ *     verlangt fuer 95 % ALLER Werte im Bestand einen Balken vom Stichtag. Bestand: 189 Werte (HES, BK, MMC, FI liefern schon
+ *     heute nichts), davon 8 bis 11 seit 40 Handelstagen ohne Antwort; Ladevorgang am Montagabend, Takt am faelligen Dienstag.
+ *     main: mfhandel.js:366 (r.ok: mit * 100 >= gesamt * 95, gesamt = alle Werte), mittelfrist.js:244 (weg behaelt die alte
+ *           Reihe), mittelfrist.js:159 (ladenAnnehmen: weg nicht im Nenner), mfdepot.js:284.
+ *     Messung: rueckblick.js:99 (zielAm: momentumZiel auf allen Reihen, keine Schwelle; zu alte wirft momentumZiel selbst
+ *              hinaus), REGEL §1.2.
+ *     Soll: umgeschichtet, solange momentumZiel einen Korb bildet. Gegenprobe: 9 tote Reihen (180 von 189) - umgeschichtet. */
+TESTS[31] = async function () {
+  var alle = universum(), nie = ['HES', 'BK', 'MMC', 'FI'];          // liefern schon heute nichts (Kommentar in mittelfrist.js)
+  var namen = alle.filter(function (s) { return nie.indexOf(s) < 0; });
+  var stichT = MH.nyZeit('2026-11-23', 9, 30), ausf = '2026-11-24';
+  var tage = werktageUm(stichT, 300), n = tage.length, spy = spyAus(tage);
+  async function lauf(tot) {
+    var roh = kunstUniversum(tage, namen), weg = namen.slice(-tot);   // seit Wochen ohne Antwort (Uebernahme, Kuerzelwechsel)
+    weg.forEach(function (s) { roh[s] = roh[s].slice(0, n - 40); });
+    var st = speicher({ drift_markt: driftMarkt(spy, stichT) }), altAt = MH.nyZeit('2026-11-20', 17, 0);
+    tagesdatenAblegen(st, roh, altAt, spy); st.daten.mf_tagesdaten_index.weg = weg.concat(nie);
+    // Ladevorgang am Montagabend: die toten liefern nichts, alle anderen alles
+    var mf = mittelfristSandbox(st, async function (sym, o) {
+      if (weg.indexOf(sym) >= 0 || nie.indexOf(sym) >= 0) return null;
+      return ladeAntwort(sym === 'SPY' ? spy : roh[sym], o);
+    }, MH.nyZeit('2026-11-23', 17, 0));
+    await mf.MF.ladeUniversum();
+    var g = await mf.MF.tagesdatenLesen();
+    var sp = MH.stichtagPruefen(g.roh, g.bezug.reihe, g.at, ausf);
+    var mz = MH.momentumZiel(MH.rohBis(g.roh, '2026-11-23'), { nowMs: stichT });
+    // Takt am faelligen Ausfuehrungstag
+    var d = { momentumAn: true, mfBuch: buchMit([], tage[n - 63] + 3600000), mfVerlauf: [] }; d.mfBuch.cash = 100000;
+    var eroeff = {}; namen.forEach(function (s) { eroeff[s] = 100; }); eroeff.SPY = 430;
+    var dep = mfdepotSandboxTag(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, MH.nyZeit(ausf, 10, 0), eroeff);
+    await taktLauf(dep);
+    return { tot: tot, angenommen: g.at !== altAt, bestand: Object.keys(g.roh).length, sp: sp, korb: !mz.zuWenig, zulaessig: mz.korb.zulaessig, um: umgeschichtet(d) };
+  }
+  var l = [];
+  for (var tot = 8; tot <= 11; tot++) l.push(await lauf(tot));
+  var gesperrt = l.filter(function (z) { return !z.sp.ok; })[0];
+  zeile(l.some(function (z) { return z.korb && !z.um; }),
+    'Bestand ' + l[0].bestand + ' Werte, Ladevorgang jeweils ' + (l.every(function (z) { return z.angenommen; }) ? 'angenommen' : 'NICHT immer angenommen') + ': ' +
+    l.map(function (z) {
+      return z.tot + ' tote Reihen' + (z.tot === 9 ? ' (Gegenprobe)' : '') + ' - Stichtag ' + z.sp.mit + '/' + z.sp.gesamt + (z.sp.ok ? ' ok' : ' gesperrt') + ', momentumZiel ' +
+        (z.korb ? 'moeglich (' + z.zulaessig + ' zulaessig)' : 'zu wenig') + ', ' + (z.um ? 'umgeschichtet' : 'NICHT umgeschichtet');
+    }).join('; ') + (gesperrt ? '. Karte: "' + gesperrt.sp.grund + '"' : '') + '. Ab dem 10. verschwundenen Wert schichtet das Buch nie mehr um; die Messung kennt diese Schwelle nicht.');
+};
+
+/* 32 - Der SPY-Abruf scheitert, die Werte kommen (Beleg f6). Der Ladevorgang wird angenommen, mittelfrist.js behaelt die ALTE
+ *     SPY-Reihe und schreibt sie mit dem NEUEN Stand at. faelligkeit() zaehlt an dieser Reihe: die fehlenden Tage fehlen in der
+ *     Zaehlung, und bis zu drei Werktage gilt die Reihe nicht als veraltet. SPY im Bestand bis Fr 27.11., danach scheitert der
+ *     SPY-Abruf drei Abende lang; am vierten kommt er wieder. Abends geladen, am naechsten Werktag 10:00 New York gehandelt.
+ *     main: mittelfrist.js:249 (alte Bezugsreihe behalten), mittelfrist.js:251 (Stand at = jetzt), mfhandel.js:340/343
+ *           (veraltet erst nach drei Werktagen, tageSeit an der SPY-Reihe), mfdepot.js:457 (Journal: "die App lief am
+ *           faelligen Tag nicht nach Boersenoeffnung").
+ *     Messung: rueckblick.js:218 (naechste = Q.ptage[o + halten], der 63. Panel-Handelstag), REGEL §1.3.
+ *     Soll: umgeschichtet am faelligen Tag der Messung (oder gesperrt mit dem wahren Grund). Gegenprobe: SPY kommt jeden Abend. */
+TESTS[32] = async function () {
+  var namen = universum();
+  var ende = MH.nyZeit('2026-12-04', 9, 30);                      // Fr 04.12.2026
+  var alleTage = werktageUm(ende, 320), spyAlle = spyAus(alleTage), rohAlle = kunstUniversum(alleTage, namen);
+  var spyBisIdx = alleTage.length - 6;                            // SPY im Bestand nur bis Fr 27.11.
+  var E = spyBisIdx + 2 - 63;                                     // faellig (der 63.) ist der Tag nach dem ersten Abend ohne SPY
+  var letzteAusf = alleTage[E] + 3600000, messTag = MH.nyTag(alleTage[E + 63]);
+  function bisIdx(i) { var r = {}; namen.forEach(function (s) { r[s] = rohAlle[s].slice(0, i + 1); }); return r; }
+  async function lauf(spyFehlt) {
+    var st = speicher({ drift_markt: driftMarkt(spyAlle, ende) });
+    tagesdatenAblegen(st, bisIdx(spyBisIdx), MH.nyZeit(MH.nyTag(alleTage[spyBisIdx]), 17, 0), spyAlle.slice(0, spyBisIdx + 1));
+    var d = { momentumAn: true, mfBuch: buchMit([], letzteAusf), mfVerlauf: [] }; d.mfBuch.cash = 100000;
+    var eroeff = {}; namen.forEach(function (s) { eroeff[s] = 100; }); eroeff.SPY = 430;
+    /* Abend k: Tag i laden (SPY scheitert an den ersten spyFehlt Abenden), am naechsten Werktag um 10:00 der Takt */
+    async function abend(k) {
+      var i = spyBisIdx + k, spyOk = k > spyFehlt;
+      var heute = i + 1 < alleTage.length ? MH.nyTag(alleTage[i + 1]) : '2026-12-07';
+      var mf = mittelfristSandbox(st, async function (sym, o) {
+        if (sym === 'SPY') return spyOk ? ladeAntwort(spyAlle.slice(0, i + 1), o) : null;
+        var r = rohAlle[sym]; return r ? ladeAntwort(r.slice(0, i + 1), o) : null;
+      }, MH.nyZeit(MH.nyTag(alleTage[i]), 17, 0));
+      await mf.MF.ladeUniversum();
+      var g = await mf.MF.tagesdatenLesen(), r0 = g.roh[namen[0]];
+      var fl = MH.faelligkeit(g.bezug.reihe, MH.nyTag(letzteAusf), 63, MH.nyZeit(heute, 10, 0));
+      var dep = mfdepotSandboxTag(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, MH.nyZeit(heute, 10, 0), eroeff);
+      await taktLauf(dep);
+      var z = (d.tuneLog || []).filter(function (x) { return /^mfrebal-/.test(x.id); })[0];
+      return { heute: heute, werteBis: MH.nyTag(r0[r0.length - 1][0]), fl: fl, um: !!z, spyOk: spyOk,
+        spaet: z ? ((/ – (\d+ Handelstage? verspätet \([^)]*\))/.exec(z.txt) || [])[1] || null) : null };
+    }
+    var tageL = [];
+    for (var k = 1; k <= 4 && !umgeschichtet(d); k++) tageL.push(await abend(k));
+    return { tage: tageL, um: tageL.filter(function (t) { return t.um; })[0] };
+  }
+  var x = await lauf(3), gp = await lauf(0);
+  zeile(!x.um || x.um.heute !== messTag,
+    'Messung: faellig am ' + tagKurz(messTag) + ' (63. Handelstag nach ' + tagKurz(MH.nyTag(alleTage[E])) + '). SPY-Abruf scheitert drei Abende, die Werte kommen: ' +
+    x.tage.map(function (t) {
+      return tagKurz(t.heute) + ' Werte bis ' + tagKurz(t.werteBis) + ', SPY bis ' + tagKurz(t.fl.letzterMarktTag) + (t.spyOk ? '' : ' (alte Reihe, Stand at neu)') + ', tageSeit ' + t.fl.tageSeit + ', faellig ' + jn(t.fl.faellig) +
+        ', noch ' + t.fl.noch + ', veraltet ' + jn(t.fl.veraltet) + (t.um ? ', umgeschichtet' : '');
+    }).join('; ') + ' -> umgeschichtet ' + (x.um ? 'am ' + tagKurz(x.um.heute) + ', Journal: "' + (x.um.spaet || 'ohne Verspaetung') + '"' : 'gar nicht') +
+    '. Gegenprobe SPY jeden Abend: umgeschichtet ' + (gp.um ? 'am ' + tagKurz(gp.um.heute) + (gp.um.spaet ? ', "' + gp.um.spaet + '"' : ', ohne Verspaetung') : 'gar nicht') + '.');
+};
+
+/* 33 - Ein Ladevorgang, der vor 16:15 New York beginnt und danach endet (Beleg f7). holeTage schneidet den Tagesbalken je Wert
+ *     mit der Uhr DIESES Abrufs ab, der Bestand bekommt den Stand at = Ende des Ladevorgangs. bestandFrisch(at) haelt ihn fuer
+ *     frisch (kein Nachladen bis zum naechsten Tag); die ersten Werte der Liste tragen den Balken des Tages nicht. Liegen sie
+ *     unter 5 %, laesst stichtagPruefen den Handel zu - sie rangieren mit dem Vortag. Ein Abruf je Sekunde, Beginn 16:14:50.
+ *     main: mittelfrist.js:81 (ohneLaufendenBalken(reihe, Date.now()) je Wert), mittelfrist.js:251 (at = Date.now() nach dem
+ *           letzten Abruf), mfhandel.js:292 (bestandFrisch), mfhandel.js:366 (95 %).
+ *     Messung: rueckblick.js:71 (rohMapAm: jede Reihe bis einschliesslich Stichtag), REGEL §1.2.
+ *     Soll: kein Handel auf einem Bestand, in dem Werte den Stichtag nicht tragen (alle bis einschliesslich Stichtag, oder
+ *     nicht frisch). Gegenprobe: Beginn 16:15:00 - alle Werte tragen den Balken des Tages. */
+TESTS[33] = async function () {
+  var namen = universum(), D = '2026-11-23';
+  var tage = werktageUm(MH.nyZeit(D, 9, 30), 300), spy = spyAus(tage), roh = kunstUniversum(tage, namen);
+  async function lauf(start) {
+    var st = speicher({}), alt = {};
+    namen.forEach(function (s) { alt[s] = roh[s].slice(0, -2); });
+    tagesdatenAblegen(st, alt, MH.nyZeit('2026-11-19', 17, 0), spy.slice(0, -2));   // Stand vom Donnerstag -> nicht frisch -> neu laden
+    st.daten.mf_ereignisse = { at: 1, sym: {} };
+    var win = mittelfristSandbox(st, async function (sym, o) {
+      win.__uhr.jetzt += 1000;                                    // ein Abruf je Sekunde (90 ms Pause + Antwortzeit)
+      return sym === 'SPY' ? ladeAntwort(spy, o) : roh[sym] ? ladeAntwort(roh[sym], o) : null;
+    }, start);
+    await win.MF.ladeUniversum();
+    var g = await win.MF.tagesdatenLesen();
+    var ohne = namen.filter(function (s) { var r = g.roh[s]; return r && MH.nyTag(r[r.length - 1][0]) < D; });
+    return { start: start, at: g.at, ohne: ohne, vorTag: ohne.length ? MH.nyTag(g.roh[ohne[0]][g.roh[ohne[0]].length - 1][0]) : null,
+      frisch: MH.bestandFrisch(g.at, MH.nyZeit('2026-11-24', 9, 40)), sp: MH.stichtagPruefen(g.roh, g.bezug.reihe, g.at, '2026-11-24') };
+  }
+  var x = await lauf(MH.nyZeit(D, 16, 14) + 50000), gp = await lauf(MH.nyZeit(D, 16, 15));
+  zeile(x.ohne.length > 0 && x.frisch && x.sp.ok,
+    'Ladevorgang ' + MH.nyUhr(x.start) + '-' + MH.nyUhr(x.at) + ' New York am 23.11.: Stand at ' + MH.nyUhr(x.at) + ', am Folgetag 09:40 frisch ' + jn(x.frisch) + '; ohne den Balken vom 23.11.: ' +
+    x.ohne.length + ' Werte (' + x.ohne.join(', ') + '). Folgetag: stichtagPruefen ' + (x.sp.ok ? 'ok' : 'gesperrt') + ' (' + x.sp.mit + '/' + x.sp.gesamt + ', Stichtag ' + tagKurz(x.sp.stichtag) +
+    ') - gerankt und bewertet wuerde mit ' + x.ohne.length + ' Werten auf dem Schluss vom ' + tagKurz(x.vorTag) + ' statt vom Stichtag. Gegenprobe Beginn ' + MH.nyUhr(gp.start) + ': ' +
+    gp.ohne.length + ' Werte ohne den Balken, Stichtag ' + gp.sp.mit + '/' + gp.sp.gesamt + '.');
+};
+
+/* 34 - Sieben-Tage-Grenze von momentumZiel ueber den Herbstwechsel (Beleg p1). Dazu als Pruefung ohne erwarteten Fund: nyZeit
+ *     an jedem Tag 2026-2027 zu fuenf Uhrzeiten gegen Intl (America/New_York). Die Grenze: Yahoo stempelt 09:30 New York, im
+ *     Sommer 13:30 UTC, im Winter 14:30 UTC. Eine Reihe mit letzter Zeile Fr 30.10. (Sommer) ist am Stichtag Fr 06.11. (Winter)
+ *     genau 7 Kalendertage alt, nach Stempeln aber 7 Tage und eine Stunde - die App wirft sie als veraltet hinaus.
+ *     main: mfhandel.js:60/76 (maxAlter 7 x 86400000 gegen den Balkenstempel).
+ *     Messung: rueckblick.js:42 (Zeitstempel des Tages = Mitternacht UTC), REGEL Teil C.2 ("7 Kalendertage" sind ganze Tage).
+ *     Soll: die App rangiert die Reihe wie die Messung. Gegenprobe: dieselbe Lage ohne Zeitumstellung (Fr 23.10. -> Fr 30.10.). */
+TESTS[34] = function () {
+  var f = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  var tageL = [], falsch = [], faelle = 0;
+  for (var t = Date.UTC(2026, 0, 1); t < Date.UTC(2028, 0, 1); t += TAG) tageL.push(new Date(t).toISOString().slice(0, 10));
+  tageL.forEach(function (tag) {
+    [[0, 0], [9, 30], [9, 35], [16, 0], [16, 15]].forEach(function (hm) {
+      var p = {}; faelle++;
+      f.formatToParts(new Date(MH.nyZeit(tag, hm[0], hm[1]))).forEach(function (x) { p[x.type] = x.value; });
+      if (p.year + '-' + p.month + '-' + p.day !== tag || Number(p.hour) % 24 !== hm[0] || Number(p.minute) !== hm[1]) falsch.push(tag + ' ' + hm.join(':'));
+    });
+  });
+  function mitternacht(ms) { var d = new Date(ms); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()); }
+  /** STARK (staerkster Wert, letzte Zeile letzteT) neben 120 frischen Werten bis stichT: App (Stempel) und Messung (Mitternacht). */
+  function grenze(stichT, letzteT) {
+    var r = { STARK: buchReihe(werktageUm(letzteT, 300), kursweg(300, 5)) }, tage = werktageUm(stichT, 300);
+    for (var k = 0; k < 120; k++) r['W' + k] = buchReihe(tage, kursweg(tage.length, 0.01 * k));
+    var rM = {};
+    Object.keys(r).forEach(function (s) { rM[s] = r[s].map(function (b) { return [mitternacht(b[0]), b[1], b[2]]; }); });
+    var app = MH.momentumZiel(r, { nowMs: stichT }), mess = MH.momentumZiel(rM, { nowMs: mitternacht(stichT) });
+    var v = app.verworfen.filter(function (x) { return x.sym === 'STARK'; })[0];
+    return { app: app.ziel.indexOf('STARK') >= 0, grund: v ? v.grund : 'zulaessig', mess: mess.ziel.indexOf('STARK') >= 0, stunden: (stichT - letzteT) / 3600000 };
+  }
+  var x = grenze(MH.nyZeit('2026-11-06', 9, 30), MH.nyZeit('2026-10-30', 9, 30)), gp = grenze(MH.nyZeit('2026-10-30', 9, 30), MH.nyZeit('2026-10-23', 9, 30));
+  zeile(falsch.length > 0 || x.app !== x.mess,
+    'nyZeit 2026-2027: ' + faelle + ' Faelle, ' + falsch.length + ' falsch' + (falsch.length ? ' (' + falsch.slice(0, 3).join(', ') + ')' : '') +
+    '. Reihe mit letzter Zeile genau 7 Kalendertage vor dem Stichtag, ueber den Herbstwechsel (Fr 30.10. -> Fr 06.11., ' + x.stunden + ' Stunden zwischen den Stempeln): App rangiert STARK ' +
+    jn(x.app) + ' (' + x.grund + '); Messung (Mitternacht UTC) ' + jn(x.mess) + '. Gegenprobe ohne Zeitumstellung (Fr 23.10. -> Fr 30.10., ' + gp.stunden + ' Stunden): App ' + jn(gp.app) +
+    ', Messung ' + jn(gp.mess) + '.');
 };
 
 /* ---------------- Ablauf ---------------- */
