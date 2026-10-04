@@ -102,3 +102,31 @@ Quelle: `C:/Users/Wilhe/Downloads/Markt-Dashboard-Daten/uebergabe/*.md` ohne das
 ### 3. Vergleichsregel für den 25.09.
 
 Gleiche Fenster (19.–25.09. gegen 11.–18.09.), gleiche Trennung (nur wiki / mit Code / nur Code-Zeilen / sonstige), gleiche Quellen und dasselbe Werkzeug (`node tools/ponytail-messbasis.js <repo> <uebergabe-ordner> 2026-09-19 2026-09-25`), Übergaben nach Datum im Dateinamen, „ohne Angabe“ bleibt „ohne Angabe“ — verglichen werden die Mediane; ein Mittel, das eine Datei-Ablage trägt, ist kein Befund. Vorbehalt: eine Woche mit anderen Aufträgen misst auch die Aufträge, nicht nur Ponytail — der Vergleich ist ein Hinweis, keine Messung mit Kontrolle.
+
+## Vergleich 19.–25.09.2026 (nachgeholt am 04.10.2026)
+
+Fällig war der Vergleich am 25.09.; an dem Tag lief nichts, er ist am 04.10.2026 um 07:24 nachgeholt — mit demselben Werkzeug und denselben Fenstern wie in der Vergleichsregel (`node tools/ponytail-messbasis.js <repo> <uebergabe-ordner> 2026-09-19 2026-09-25`, nur gelesen).
+
+### 1. Zeilen je Commit
+
+| Gruppe | Basis 11.–18.09. (Commits · Median · Mittel) | Probe 19.–25.09. (Commits · Median · Mittel) |
+|---|---|---|
+| nur `wiki/` berührt | 32 · 5,5 · 12,8 | 50 · 3 · 9,5 |
+| mit Code, alle Dateien des Commits | 32 · 1.587 · 13.070 | 38 · 9.376,5 · 132.502 |
+| **dieselben Code-Commits, nur Zeilen in Code-Dateien** | 32 · **279,5** · 449,4 | 38 · **141** · 197,9 |
+| sonstige | 19 · 115 · 559 | 22 · 31,5 · 74,4 |
+
+Die Größe, auf die Ponytail zielt (Code-Zeilen je Code-Commit), ist im Median **halbiert** (279,5 → 141), im Mittel um 56 % kleiner. Die Zeile „alle Dateien" tragen in beiden Wochen Datei-Ablagen (in der Probewoche die Zellen der Mehrfaktor-Studie mit je 150.000–300.000 JSON-Zeilen) — kein Befund.
+
+### 2. Token je Sitzung
+
+Die Selbstangaben der Probewoche sind mit der Basis **nicht vergleichbar**: seit dem 18.09. sollen die Chats den Zähler des Werkzeugs melden statt den Kontext zu schätzen, und die meisten taten das — die gemeldeten Zahlen sprangen dadurch von selbst (Feld-Chats 150–350k gegen Basis-Median 125k). Verglichen wird deshalb über die **Abrechnung des Rahmens**, wie am 18.09. festgelegt (`offene-auftraege.md`, Nr. 42–63): 19 Sitzungen — 248 · 213 · 299 · 230 · 191 · 448 · 152 · 169 · 199 · 227 · 219 · 190 · 189 · 181 · 221 · 532 (zwei Runden) · 258 · 267 · 263 (jeweils k Token; dazu 305k Haiku-Unteragenten bei Nr. 42 und 44). **Median 221k, Mittel 247k.** Für die Basiswoche gibt es nur drei abgerechnete Zahlen (152k, 171k, 406k); ihre Selbstschätzungen (Median 125k) lagen laut Festlegung um den Faktor 1,8–2,0 zu tief, entsprächen also etwa 225–250k. Die Sitzung `mail-ueberblick` (330k) liegt im selben Ordner, gehört aber nicht zum Repo und zählt nicht.
+
+**Ergebnis:** beim Tokenverbrauch ist **keine Senkung zu sehen** (221k gegen umgerechnet 225–250k — im Rauschen verschiedener Aufträge). Zur Einordnung: am 03.10. lagen fünf Sitzungen bei 290 · 306 · 370 · 418 · 462k (Median 370k) — größere Aufträge, nicht mehr Ponytail.
+
+### 3. Lesart des PM
+
+- **Kürzere Diffs: ja, als Hinweis.** Der Median der Code-Zeilen hat sich halbiert. Der Vorbehalt der Vergleichsregel gilt aber voll: die Probewoche bestand zu einem guten Teil aus neun kleinen Feld-Modulen nach einer Vorlage — die wären auch ohne Ponytail klein gewesen.
+- **Weniger Token: nein.** Den Verbrauch treiben die feste Grundlast je Agentenstart (60–68k), die Leselisten (25–30k), lange Läufe mit Warten und die Zweitleser (65–96k je Auftrag) — nichts davon berührt Ponytail. Wilhelms Klage vom 14.09. (zu viele Token) löst der Block nicht.
+- **Schaden: keiner beobachtet.** Kein Vorfall der Probewoche geht auf eine Ponytail-Regel zurück; Klinken, Gegenproben, Übergaben und Vorregistrierungen wurden nicht ausgedünnt (die Fehler der Woche — Korrekturregeln am Schreibtisch, unerfüllbare Tore — kamen aus den Aufträgen des PM).
+- **Vorschlag:** den Block **behalten** (kostet nichts, schadet nicht, Diffs eher kleiner) und die Probe schließen; die Token-Frage getrennt angehen — weniger und dafür größere Aufträge, Leselisten kürzen, Zweitleser nur noch ab 250k oder bei neuen Auftragsarten. Entscheid ist Wilhelms (Formular).
