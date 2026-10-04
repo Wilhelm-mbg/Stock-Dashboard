@@ -125,6 +125,11 @@ denselben Stempel (Nr. 91/93) — beides wird hier nicht mehr gefordert, sondern
   (b) 0,05 Pp ist ein Drittel der bekannten Anfangsabweichung von 0,14 Pp (Nr. 81) und weit unter jeder Rundung der Anzeige.
 - **Nicht prüfbar:** Punkte ohne `buchT`/`spyT` (vor Nr. 93 geschrieben); keine SPY-Minute ab 09:30.
 - **Bei Verfehlen:** Befund an den PM. Kein Halt.
+- **Nachtrag 04.10.2026 (PM, nach dem Probelauf, vor der Umschichtung am 23.11.2026):** (b) gilt **nur an der ersten
+  Umschichtung des Buchs** (bzw. an einem gesetzten Beginn des Vorwärtstests). Grund (Befund des Chats beim Lesen des Codes):
+  `massstab.js` setzt die Marktlinie eines laufenden Buchs am ersten Punkt überhaupt an, nicht je Umschichtung; ab der zweiten
+  Umschichtung würde (b) nur die Tagesbewegung von SPY messen und fast immer verfehlen, ohne dass die Umsetzung falsch wäre.
+  Ab der zweiten Umschichtung steht bei (b) „entfällt"; (a) gilt unverändert. Der Wortlaut oben bleibt stehen.
 
 ## Zeitpunkt
 

@@ -271,17 +271,19 @@ function pruefeP4P5(g, gNext, d, q, zer, ht, pruefEnde) {
   return { p4: r4, p5: r5 };
 }
 
-function pruefeP7(g, gNext, d, q) {
+/* Nachtrag 04.10.2026 (PM, KRITERIEN.md P7): (b) Anfangsstand nur an der ersten Umschichtung des Buchs - nur dort setzt die
+ * Marktlinie an (massstab.js); ab der zweiten entfaellt (b), (a) gilt weiter. erste = false auch bei gekappten Trades. */
+function pruefeP7(g, gNext, d, q, erste) {
   const v = (d.mfVerlauf || []).filter(p => p.t >= g.t0 && (!gNext || p.t < gNext.t0));
   const ohne = v.filter(p => !(p.buchT > 0) || !(p.spyT > 0)).length;
   const falsch = v.filter(p => p.buchT > 0 && p.spyT > 0 && p.buchT !== p.spyT).length;
   const a = v.find(p => p.spy > 0);
-  const o = q.eroeffnung('SPY', g.tag);
-  const pp = a && o > 0 ? Math.abs(a.spy / o - 1) * 100 : null;
+  const o = erste ? q.eroeffnung('SPY', g.tag) : null;
+  const pp = erste && a && o > 0 ? Math.abs(a.spy / o - 1) * 100 : null;
   return { zahl: { punkte: v.length, ohneStempel: ohne, buchTungleichSpyT: falsch, anfangPp: pp == null ? null : Math.round(pp * 1000) / 1000,
-    spyAnker: a ? a.spy : null, spyEroeffnung: o || null },
-    schwelle: '0 Punkte buchT ≠ spyT; Anfangsstand ≤ ' + SCHWELLE.p7Pp + ' Pp',
-    urteil: urteil(falsch > 0 || (pp != null && pp > SCHWELLE.p7Pp), ohne > 0 || pp == null || !v.length, v.length) };
+    spyAnker: a ? a.spy : null, spyEroeffnung: o || null, anfang: erste ? 'geprueft' : 'entfaellt (nicht die erste Umschichtung)' },
+    schwelle: '0 Punkte buchT ≠ spyT; Anfangsstand ≤ ' + SCHWELLE.p7Pp + ' Pp (nur erste Umschichtung)',
+    urteil: urteil(falsch > 0 || (pp != null && pp > SCHWELLE.p7Pp), ohne > 0 || (erste && pp == null) || !v.length, v.length) };
 }
 
 function pruefeZeitpunkt(g, gVor, ht) {
@@ -346,7 +348,7 @@ function pruefe(d, q, opts) {
     if (zer.gekappt && k === 0) { P1.urteil = P1.urteil === VERFEHLT ? VERFEHLT : NP; P1.grund = 'Trades gekappt (400): Bestand vor der Umschichtung unbekannt'; }
     const P2 = pruefeP2(g, q), P3 = pruefeP3(g, d, q, zer);
     const p45 = pruefeP4P5(g, gNext, d, q, zer, ht, pruefEnde);
-    const P6 = pruefeP6(g, q, P1, cash[k], d), P7 = pruefeP7(g, gNext, d, q);
+    const P6 = pruefeP6(g, q, P1, cash[k], d), P7 = pruefeP7(g, gNext, d, q, k === 0 && !zer.gekappt);
     const zeitpunkt = pruefeZeitpunkt(g, gVor, ht);
     return { tag: g.tag, stichtag: P1.stichtag, orders: g.trades.length, P1: P1, P2: P2, P3: P3, P4: p45.p4, P5: p45.p5,
       P6: P6, P7: P7, zeitpunkt: zeitpunkt, hochrechnung: hochrechnung(g, P2, P3, cash[k]) };

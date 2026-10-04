@@ -109,6 +109,8 @@ soll('P5 verfehlt -> U-Regel Halt', e5.uRegel.halt === true);
 soll('P6 Kleinstbestand -> verfehlt', U(lauf({ p6: true })).P6.urteil === V);
 soll('P7 buchT ≠ spyT -> verfehlt', U(lauf({ p7: true })).P7.urteil === V);
 soll('P7 Anfangsstand 0,2 Pp -> verfehlt', U(lauf({ p7anfang: true })).P7.urteil === V);
+/* Nachtrag 04.10.2026 (PM): Anfangsstand nur an der ersten Umschichtung; an der zweiten entfaellt er, (a) bleibt */
+soll('zweite Umschichtung: Anfangsstand entfaellt, P7 bestanden', U(g, 1).P7.zahl.anfangPp === null && U(g, 1).P7.urteil === P.BESTANDEN);
 soll('Zeitpunkt 09:31 -> verfehlt', U(lauf({ uhr: 31 })).zeitpunkt.urteil === V);
 soll('Zeitpunkt einen Tag zu spät -> verfehlt', U(lauf({ spaet: true }), 1).zeitpunkt.urteil === V);
 const eh = lauf({ hoch: true });
