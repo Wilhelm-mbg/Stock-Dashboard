@@ -262,7 +262,8 @@ function ergebnisText(E) {
 /* ---------- Vorbereitung am echten Panel (wie lauf() in korb.js) ---------- */
 function vorbereitung() {
   var K = require(path.join(R.PRUEFSTAND, 'konfig.js')), PR = require(path.join(R.PRUEFSTAND, 'pruefstand.js'));
-  var T = PR.Tafel(R.PANEL_ORDNER), Q = R.vorbereiten(T), info = {}, protokoll = { ergaenzt: 0, schonInDerDatei: 0 };
+  /* Nr. 96: R.PANEL_OPTIONEN ist ohne RUECKBLICK_PANEL undefined - dann genau PR.Tafel(R.PANEL_ORDNER) wie in Nr. 85 */
+  var T = PR.Tafel(R.PANEL_ORDNER, R.PANEL_OPTIONEN), Q = R.vorbereiten(T), info = {}, protokoll = { ergaenzt: 0, schonInDerDatei: 0 };
   Q.korbVorab = [S.KORB_N];
   var M = S.Massnahmen(T, Q, S.dateiLeser(info), S.ERGAENZUNGEN, protokoll);
   var e0 = K.EMPFINDLICHKEIT;
@@ -334,6 +335,8 @@ function abschluss(E) {
 }
 
 function lauf(nurSelbstpruefung) {
+  /* Nr. 96: dieser Lauf schreibt die Ergebnisdatei von Nr. 85 (Panel v2.2) - auf v2.3 nur ueber studien/momentum-korb-v23-2026-10-04/lauf.js */
+  if (R.PANEL_OPTIONEN) throw new Error('KLINKE: kleinst.js laeuft nur auf voll-v22; v2.3 ueber studien/momentum-korb-v23-2026-10-04/lauf.js');
   var t0 = Date.now(), V = vorbereitung();
   var SP = selbstpruefung(V);
   if (!SP.bestanden) throw new Error('SELBSTPRUEFUNG nicht bestanden - kein Lauf (§3)');
