@@ -8,7 +8,7 @@
 5. **Zwölf Live-Filter, die die Messung nicht kennt** (Liquidität, Zahlen-/Event-Blackout, Edge-Pause, Symbolsperre, Kosten-Check, Abklingzeit 120 min, maxPos 8, Verlustserie halbiert Größe, Kill-Switch, Folgesignale entfallen). Gehandelt werden 99 statt 2.874 Werte.
 6. **Veraltete/fehlende Daten:** Ausstiege und Not-Stopp laufen auf bis zu 20 h alten Kerzen ohne Hinweis (`depot.js:2846`). Ist das Archiv leer, bleibt eine offene Position ohne Stopp und Zeitausstieg liegen (`depot.js:2864`). Positionen außerhalb des Scan-Universums werden nie gestoppt und zum Einstand bewertet (`depot.js:2008`). Ein Geldkurs 0 über Capital löst den Stopp aus (`capital.js:252`).
 7. **Anzeige:** Wo sie aus dem Protokoll liest, stimmt sie (+0,021 Pp, „nicht entscheidbar", Kosten 0,10, netto −0,079). Daneben stehen an sieben sichtbaren Orten Altzahlen ohne Fundstelle: **+0,147 Pp, 162/99 Werte, +0,235, +0,017, −96 %**. Zweimal steht dort „Vorsprung über der Aktien-Kostenhürde", obwohl das Protokoll netto −0,079 Pp ausweist (`index.html:1701`, `strategien.js:36-40`).
-8. **Zählung:** 63 Kleinsttests, **46 zeigen eine Abweichung**. Befunde: 29 Klasse A (Geld/Positionen, ohne Doppelzählung F3-09/10, davon 5 nur mit Schalter), 18 Klasse B, 6 Klasse C. App-Code ist unverändert.
+8. **Zählung:** 63 Kleinsttests, **46 zeigen eine Abweichung**. Befunde: 29 Klasse A (Geld/Positionen, ohne Doppelzählung F3-09/10, davon 4 nur mit Schalter oder Rückfallweg), 18 Klasse B, 6 Klasse C. App-Code ist unverändert.
 
 Alles Simulation mit virtuellem Kapital. Keine Anlageberatung.
 
