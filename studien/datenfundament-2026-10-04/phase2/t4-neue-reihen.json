@@ -1,0 +1,924 @@
+{
+ "stand": "2026-10-04T11:57:31.376Z",
+ "hinweis": "Reihen, die der alten Tafel fehlen (nach Teil 1 nicht lebend).",
+ "reihen": [
+  {
+   "reihe": "AACB",
+   "anker": "2026-08-19",
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2026-08-25",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:68077bc5-9c78-4334-9f2d-414f08f7f32c",
+    "firma": "Artius II Acquisition Inc.",
+    "cik": "0002034334",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 10.59,
+   "preisJeAktie": 10.59743309,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "ADTX",
+   "anker": "2026-06-24",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-06-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-26-071380 (8-K 2026-06-24)",
+    "firma": "Aditxt, Inc.",
+    "cik": "0001726711",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.0095,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "ALUR",
+   "anker": "2026-03-06",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-03-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-26-084412 (8-K 2026-03-02)",
+    "firma": "ALLURION TECHNOLOGIES, INC.",
+    "cik": "0001964979",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 10.0665,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "ANEB",
+   "anker": "2026-02-27",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-02-06",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-26-005463 (8-K 2026-02-06)",
+    "firma": "Anebulo Pharmaceuticals, Inc.",
+    "cik": "0001815974",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.36,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "APGE",
+   "anker": "2026-09-02",
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2026-09-03",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:8f4ccf91-693d-4581-9956-adc13537e1db",
+    "firma": "Apogee Therapeutics, Inc.",
+    "cik": "0001974640",
+    "weg": "fts-ticker"
+   },
+   "letzterKurs": 135.08,
+   "preisJeAktie": 135.11,
+   "nachfolger": null,
+   "k123": 160
+  },
+  {
+   "reihe": "AREB",
+   "anker": "2026-05-12",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-03-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-26-013122 (8-K 2026-03-27)",
+    "firma": "AMERICAN REBEL HOLDINGS INC",
+    "cik": "0001648087",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.1282,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "ASNS",
+   "anker": "2026-04-09",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-04-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-26-041856 (8-K 2026-04-09)",
+    "firma": "ACTELIS NETWORKS INC",
+    "cik": "0001141284",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.0892,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "BINI",
+   "anker": "2025-10-10",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-10-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001829126-25-008053 (8-K 2025-10-10)",
+    "firma": "BOLLINGER INNOVATIONS, INC.",
+    "cik": "0001499961",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.63,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "BNBX",
+   "anker": "2026-07-13",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-07-13",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-26-082893 (8-K 2026-07-13)",
+    "firma": "BNB PLUS CORP.",
+    "cik": "0000744452",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.163,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "BSLK",
+   "anker": "2026-01-02",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-01-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001841125-26-000003 (8-K 2026-01-05)",
+    "firma": "Bolt Projects Holdings, Inc.",
+    "cik": "0001841125",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.5832,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "CARM",
+   "anker": "2025-10-10",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-10-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-098404 (8-K 2025-10-09)",
+    "firma": "Carisma Therapeutics Inc.",
+    "cik": "0001485003",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.1539,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "CERO",
+   "anker": "2025-10-30",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-10-30",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-103661 (8-K 2025-10-30)",
+    "firma": "CERO THERAPEUTICS HOLDINGS, INC.",
+    "cik": "0001870404",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.0951,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "CREG",
+   "anker": "2026-07-20",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-07-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-26-079598 (8-K 2026-07-20)",
+    "firma": "Smart Powerr Corp.",
+    "cik": "0000721693",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.7721,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "CRNX",
+   "anker": "2026-08-31",
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2026-09-02",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:069b9a15-c0d0-44cc-ad28-dc4ba67e4c6f",
+    "firma": "Crinetics Pharmaceuticals, Inc.",
+    "cik": "0001658247",
+    "weg": "fts-ticker"
+   },
+   "letzterKurs": 84.95,
+   "preisJeAktie": 85,
+   "nachfolger": null,
+   "k123": 21
+  },
+  {
+   "reihe": "DGLY",
+   "anker": "2026-01-07",
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2026-01-08",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:7847f10c-0550-4475-8a62-1d0b66593d5e",
+    "firma": "KUSTOM ENTERTAINMENT, INC.",
+    "cik": "0001342958",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.8719,
+   "preisJeAktie": null,
+   "nachfolger": "KUST",
+   "k123": 0
+  },
+  {
+   "reihe": "DHAI",
+   "anker": "2025-11-06",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-11-06",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-25-020954 (8-K 2025-11-06)",
+    "firma": "DIH HOLDING US, INC.",
+    "cik": "0001883788",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.7469,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "ENFY",
+   "anker": "2025-10-13",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-10-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-102666 (8-K 2025-10-27)",
+    "firma": "Enlightify Inc.",
+    "cik": "0000857949",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.3685,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "GGRP",
+   "anker": "2026-08-19",
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2026-08-20",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:0c7bbec0-f904-4419-98e0-27ccff213b50",
+    "firma": "Brightline Interactive, Inc./NV",
+    "cik": "0001854445",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.931,
+   "preisJeAktie": null,
+   "nachfolger": "BTLN",
+   "k123": 0
+  },
+  {
+   "reihe": "GLBZ",
+   "anker": "2025-12-22",
+   "neu": {
+    "grund": "abgemeldet-anlass-offen",
+    "datum": "2025-12-22",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001552781-25-000467 (25 2025-12-22)",
+    "firma": "GLEN BURNIE BANCORP",
+    "cik": "0000890066",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 4.3,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "HLX",
+   "anker": "2026-09-01",
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2026-09-02",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:1930f46d-dd21-4778-b349-1c184962285d",
+    "firma": "HORNBECK OFFSHORE SERVICES, INC.",
+    "cik": "0000866829",
+    "weg": "fts-ticker"
+   },
+   "letzterKurs": 10.3,
+   "preisJeAktie": null,
+   "nachfolger": "HOS",
+   "k123": 0
+  },
+  {
+   "reihe": "KAVL",
+   "anker": "2025-12-22",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-11-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001731122-25-001551 (8-K 2025-11-17)",
+    "firma": "Kaival Brands Innovations Group, Inc.",
+    "cik": "0001762239",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.136,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "LBRDA",
+   "anker": "2026-08-19",
+   "neu": {
+    "grund": "fusion-aktientausch",
+    "datum": "2026-08-20",
+    "beleg": "alpaca-stock_mergers",
+    "quelle": "alpaca-massnahmen:e652a818-b25c-45d2-9bbc-94e0627efd2a",
+    "firma": "Liberty Broadband Corp",
+    "cik": "0001611983",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 35.99,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "LBRDK",
+   "anker": "2026-08-19",
+   "neu": {
+    "grund": "fusion-aktientausch",
+    "datum": "2026-08-20",
+    "beleg": "alpaca-stock_mergers",
+    "quelle": "alpaca-massnahmen:bad1a3b9-d57e-4e7e-a077-06913f1cbd90",
+    "firma": "Liberty Broadband Corp",
+    "cik": "0001611983",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 36.02,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 240
+  },
+  {
+   "reihe": "LEG",
+   "anker": "2026-08-26",
+   "neu": {
+    "grund": "fusion-aktientausch",
+    "datum": "2026-08-27",
+    "beleg": "alpaca-stock_mergers",
+    "quelle": "alpaca-massnahmen:75acef18-d313-4df3-b201-253236ff418e",
+    "firma": "LEGGETT & PLATT INC",
+    "cik": "0000058492",
+    "weg": "fts-knapp"
+   },
+   "letzterKurs": 9.2,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "LYRA",
+   "anker": "2026-03-16",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-03-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-26-108439 (8-K 2026-03-16)",
+    "firma": "Lyra Therapeutics, Inc.",
+    "cik": "0001327273",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.495,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "MAPS",
+   "anker": "2026-04-24",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-04-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001779474-26-000015 (8-K 2026-04-07)",
+    "firma": "WM TECHNOLOGY, INC.",
+    "cik": "0001779474",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.3738,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "MEHA",
+   "anker": "2026-06-15",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-06-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-26-068518 (8-K 2026-06-15)",
+    "firma": "Functional Brands Inc.",
+    "cik": "0001837254",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.0188,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "MSPR",
+   "anker": "2025-12-19",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-12-22",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-25-327465 (8-K 2025-12-22)",
+    "firma": "MSP Recovery, Inc.",
+    "cik": "0001802450",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.2001,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "NOTE",
+   "anker": "2026-03-25",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-03-26",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-26-124523 (8-K 2026-03-26)",
+    "firma": "FiscalNote Holdings, Inc.",
+    "cik": "0001823466",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.531,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "NVVE",
+   "anker": "2026-07-23",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-07-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001836875-26-000065 (8-K 2026-07-23)",
+    "firma": "Nuvve Holding Corp.",
+    "cik": "0001836875",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 3.23,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "OMCC",
+   "anker": "2025-12-31",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-12-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-25-037549 (8-K 2025-12-11)",
+    "firma": "OLD MARKET CAPITAL Corp",
+    "cik": "0001000045",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 5.18,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "PMNT",
+   "anker": "2026-06-17",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-06-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-26-028535 (8-K 2026-06-12)",
+    "firma": "Perfect Moment Ltd.",
+    "cik": "0001849221",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.176,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "PRPH",
+   "anker": "2026-01-02",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-01-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-26-000175 (8-K 2026-01-02)",
+    "firma": "ProPhase Labs, Inc.",
+    "cik": "0000868278",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.3626,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "PTIX",
+   "anker": "2026-01-02",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-01-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-26-000263 (8-K 2026-01-05)",
+    "firma": "Protagenic Therapeutics, Inc.\\new",
+    "cik": "0001022899",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.74,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "PWM",
+   "anker": "2025-10-10",
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-10-13",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:bbb0e21e-0af6-48e8-9275-b31054f1be77",
+    "firma": "Aurelion Inc.",
+    "cik": "0001765850",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 1.17,
+   "preisJeAktie": null,
+   "nachfolger": "AURE",
+   "k123": 0
+  },
+  {
+   "reihe": "RBOT",
+   "anker": "2026-03-02",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-03-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-26-023404 (8-K 2026-03-04)",
+    "firma": "Vicarious Surgical Inc.",
+    "cik": "0001812173",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 1.92,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "RVPH",
+   "anker": "2026-05-13",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-05-13",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-26-016538 (8-K 2026-05-13)",
+    "firma": "REVIVA PHARMACEUTICALS HOLDINGS, INC.",
+    "cik": "0001742927",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.3521,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "SBDS",
+   "anker": "2026-04-02",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-04-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001870600-26-000019 (8-K 2026-04-02)",
+    "firma": "Solo Brands, Inc.",
+    "cik": "0001870600",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 3.61,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "SGRP",
+   "anker": "2026-07-22",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-07-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-26-023636 (8-K 2026-07-15)",
+    "firma": "SPAR Group, Inc.",
+    "cik": "0001004989",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.2875,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "SISI",
+   "anker": "2025-10-06",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-10-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-25-017416 (8-K 2025-10-08)",
+    "firma": "SHINECO, INC.",
+    "cik": "0001300734",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 5.5501,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "SSKN",
+   "anker": "2026-02-18",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-02-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001140361-26-004822 (8-K 2026-02-11)",
+    "firma": "STRATA Skin Sciences, Inc.",
+    "cik": "0001051514",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.1898,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "STAI",
+   "anker": "2026-02-09",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-02-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-26-012229 (8-K 2026-02-10)",
+    "firma": "ScanTech AI Systems Inc.",
+    "cik": "0001994624",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.9001,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "STRS",
+   "anker": "2026-08-07",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-07-01",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000885508-26-000035 (8-K 2026-07-01)",
+    "firma": "STRATUS PROPERTIES INC",
+    "cik": "0000885508",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 19.32,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "SYBX",
+   "anker": "2026-01-20",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-01-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-26-016040 (8-K 2026-01-20)",
+    "firma": "SYNLOGIC, INC.",
+    "cik": "0001527599",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.56,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "TAIT",
+   "anker": "2025-12-03",
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2025-12-04",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:cb84b032-134b-4098-ab8f-9098fb39de64",
+    "firma": "TAITRON COMPONENTS INC",
+    "cik": "0000942126",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 1.05,
+   "preisJeAktie": null,
+   "nachfolger": "TAIQ",
+   "k123": 0
+  },
+  {
+   "reihe": "TTSH",
+   "anker": "2025-12-26",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-12-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001140361-25-045538 (8-K 2025-12-15)",
+    "firma": "TILE SHOP HOLDINGS, INC.",
+    "cik": "0001552800",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 3.68,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "TWO",
+   "anker": "2026-08-24",
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2026-08-26",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:8dfe1295-ca69-4a4c-a499-042e66690d8f",
+    "firma": null,
+    "cik": null,
+    "weg": "fts-knapp"
+   },
+   "letzterKurs": 12.18,
+   "preisJeAktie": 12,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "VSEE",
+   "anker": "2026-08-05",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-08-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001185185-26-003262 (8-K 2026-08-04)",
+    "firma": "VSEE HEALTH, INC.",
+    "cik": "0001864531",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.0502,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "VSTD",
+   "anker": "2026-07-24",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-07-28",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-26-034885 (8-K 2026-07-28)",
+    "firma": "Vestand Inc.",
+    "cik": "0001898604",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.0987,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "WBS",
+   "anker": "2026-08-19",
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2026-08-21",
+    "beleg": "alpaca-stock_and_cash_mergers",
+    "quelle": "alpaca-massnahmen:3b89dc3f-ef15-4553-a92c-782c76098816",
+    "firma": "WEBSTER FINANCIAL CORP",
+    "cik": "0000801337",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 77.59,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 250
+  },
+  {
+   "reihe": "WINT",
+   "anker": "2025-08-20",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-08-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-25-027421 (8-K 2025-08-20)",
+    "firma": "WINDTREE THERAPEUTICS INC /DE/",
+    "cik": "0000946486",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.11,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "WORX",
+   "anker": "2026-04-13",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-04-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-26-042594 (8-K 2026-04-10)",
+    "firma": "SCWorx Corp.",
+    "cik": "0001674227",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 12.72,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "XAGE",
+   "anker": "2025-09-11",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-09-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-25-114421 (8-K 2025-09-12)",
+    "firma": "Longevity Health Holdings, Inc.",
+    "cik": "0001842939",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 2.32,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  },
+  {
+   "reihe": "ZSPC",
+   "anker": "2026-04-27",
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-04-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-26-047275 (8-K 2026-04-23)",
+    "firma": "zSpace, Inc.",
+    "cik": "0001637147",
+    "weg": "polygon-cik"
+   },
+   "letzterKurs": 0.2395,
+   "preisJeAktie": null,
+   "nachfolger": null,
+   "k123": 0
+  }
+ ]
+}

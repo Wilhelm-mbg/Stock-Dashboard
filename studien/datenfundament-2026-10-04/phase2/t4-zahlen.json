@@ -1,0 +1,531 @@
+{
+ "stand": "2026-10-04T11:57:31.376Z",
+ "kennung": "datenfundament-2026-10-04/phase2/gruende-trockenlauf-2 (KEINE Tafel)",
+ "regeln": {
+  "R-a": "Firma = Polygon-CIK des Kuerzels (Eintrag hoechstens 45 Tage vom Anker); Volltextsuche nur ohne sie",
+  "R-b": "8-K 2.01 zaehlt nur hoechstens 30 Tage vor oder nach dem Anker",
+  "R-c": "Formular 25/25-NSE ohne 8-K 3.01 -> abgemeldet-anlass-offen statt freiwillig, nur von der Firma aus R-a (Polygon-CIK)"
+ },
+ "alteTafel": {
+  "kennung": "verschwundene-gruende-2026-09-12/v1",
+  "zeilen": 4996
+ },
+ "eingestuft": 5050,
+ "offen": 0,
+ "alteZeilen": {
+  "zeilen": 4996,
+  "inDerNeuenEinstufungFehlend": 0,
+  "vergleich": {
+   "umbenannt-R-c": 236,
+   "gleich": 4219,
+   "unbekannt-bekommt-grund": 99,
+   "gleicher-grund-anderer-beleg": 100,
+   "kippt": 217,
+   "kippt-verliert-grund": 125
+  },
+  "ankerWechseltUeber3Tage": 285,
+  "firmaAnders": 1044,
+  "firmaAnders_beideBelegt": 364,
+  "firmaNeuBelegt": 679,
+  "firmaNichtMehrBelegt": 1
+ },
+ "kipp": {
+  "gesamt": 342,
+  "verliertGrund": 125,
+  "mitKlasse123": 32,
+  "jeUrsache": {
+   "Anker": 44,
+   "R-a": 169,
+   "R-b": 36,
+   "R-a+R-b": 28,
+   "R-c": 20,
+   "Anker+R-b": 7,
+   "Anker+R-a": 8,
+   "R-a+R-c": 21,
+   "Anker+R-a+R-c": 3,
+   "Anker+R-c": 3,
+   "Anker+R-a+R-b": 3
+  },
+  "ohneAnkerwechsel": 274,
+  "stroeme": {
+   "uebernahme -> fusion-aktientausch": 1,
+   "zwangs-delisting -> spac-ende": 6,
+   "uebernahme -> zwangs-delisting": 58,
+   "zwangs-delisting -> unbekannt": 31,
+   "freiwillig -> zwangs-delisting": 20,
+   "uebernahme -> unbekannt": 56,
+   "zwangs-delisting -> uebernahme": 15,
+   "uebernahme -> spac-ende": 4,
+   "freiwillig -> unbekannt": 22,
+   "insolvenz -> abgemeldet-anlass-offen": 6,
+   "zwangs-delisting -> abgemeldet-anlass-offen": 24,
+   "insolvenz -> unbekannt": 12,
+   "uebernahme -> abgemeldet-anlass-offen": 24,
+   "insolvenz -> zwangs-delisting": 12,
+   "freiwillig -> spac-ende": 5,
+   "spac-ende -> zwangs-delisting": 4,
+   "fusion-aktientausch -> spac-ende": 1,
+   "umbenennung-ticker -> zwangs-delisting": 9,
+   "insolvenz -> uebernahme": 4,
+   "freiwillig -> uebernahme": 8,
+   "uebernahme -> freiwillig": 2,
+   "spac-ende -> unbekannt": 2,
+   "freiwillig -> insolvenz": 1,
+   "fusion-aktientausch -> zwangs-delisting": 1,
+   "zwangs-delisting -> insolvenz": 7,
+   "insolvenz -> freiwillig": 1,
+   "umbenennung-ticker -> spac-ende": 1,
+   "umbenennung-ticker -> insolvenz": 1,
+   "zwangs-delisting -> umbenennung-ticker": 1,
+   "insolvenz -> spac-ende": 1,
+   "umbenennung-ticker -> unbekannt": 2
+  }
+ },
+ "umbenanntRc": 236,
+ "unbekanntBekommtGrund": {
+  "zwangs-delisting": 21,
+  "abgemeldet-anlass-offen": 46,
+  "uebernahme": 23,
+  "insolvenz": 4,
+  "spac-ende": 4,
+  "freiwillig": 1
+ },
+ "neueReihen": {
+  "reihen": 54,
+  "jeGrund": {
+   "uebernahme": 5,
+   "zwangs-delisting": 40,
+   "umbenennung-ticker": 4,
+   "abgemeldet-anlass-offen": 1,
+   "fusion-aktientausch": 3,
+   "insolvenz": 1
+  }
+ },
+ "zuordnungswege": {
+  "neu": {
+   "polygon-cik": 4717,
+   "fts-ticker": 95,
+   "fts-leer": 7,
+   "fts-knapp": 67,
+   "fts-mehrheit": 123,
+   "fts2-geprueft": 27,
+   "fts-unklar": 14
+  },
+  "alt": {
+   "fts-knapp": 1003,
+   "fts-mehrheit": 2427,
+   "fts-ticker": 1156,
+   "fts-leer": 30,
+   "fts2-geprueft": 352,
+   "fts-unklar": 28
+  }
+ },
+ "belegarten": {
+  "neu": {
+   "edgar-formular25": 337,
+   "alpaca-cash_mergers": 780,
+   "alpaca-name_changes": 1321,
+   "edgar-8K-3.01": 627,
+   "alpaca-stock_and_cash_mergers": 120,
+   "edgar-mantel+abmeldung": 288,
+   "edgar-8K-2.01+prospekt": 663,
+   "edgar-ohne-signal": 222,
+   "alpaca-stock_mergers": 312,
+   "q-kuerzel+edgar-8K-1.03": 106,
+   "alpaca-redemptions": 9,
+   "q-kuerzel": 22,
+   "edgar-8K-1.03": 207,
+   "edgar-formular15": 18,
+   "nichts": 14,
+   "alpaca-worthless_removals": 1,
+   "bigdata": 1,
+   "massnahme-passt-nicht": 2
+  },
+  "alt": {
+   "edgar-formular25": 291,
+   "alpaca-cash_mergers": 786,
+   "alpaca-name_changes": 1329,
+   "edgar-8K-3.01": 546,
+   "alpaca-stock_and_cash_mergers": 120,
+   "edgar-mantel+abmeldung": 273,
+   "massnahme-passt-nicht": 18,
+   "nichts": 156,
+   "edgar-8K-2.01+prospekt": 745,
+   "alpaca-stock_mergers": 310,
+   "q-kuerzel+edgar-8K-1.03": 107,
+   "alpaca-redemptions": 9,
+   "q-kuerzel": 49,
+   "edgar-formular15": 13,
+   "edgar-8K-1.03": 201,
+   "edgar-ohne-signal": 38,
+   "bigdata": 4,
+   "alpaca-worthless_removals": 1
+  }
+ },
+ "edgar": {
+  "anfragen": 1430,
+  "fehlversuche": 4,
+  "sperren": 0,
+  "polygonFirma": 4717,
+  "polygonOhneEinreichungen": 0,
+  "ftsReihen": 333,
+  "ftsNr79Cache": 31,
+  "ftsAltCache": 325,
+  "ftsEigenCache": 0,
+  "ftsNeu": 4,
+  "fts2EigenCache": 0,
+  "fts2Nr79Cache": 11,
+  "fts2Neu": 21,
+  "fts2NurAltesKriterium": 10,
+  "cikEigenCache": 115,
+  "cikNr79Cache": 62,
+  "cikAltCache": 3772,
+  "cikNeu": 1159,
+  "cikNeuWeilFensterNachAbruf": 389,
+  "cikNeuWeilGrenze": 64,
+  "cikNeuWeilFehlt": 706,
+  "aeltereDateien": 242,
+  "minAbstandGemessenMs": 180
+ },
+ "edgarFehler": 0,
+ "tafelImGanzen": {
+  "alt": {
+   "freiwillig": 311,
+   "uebernahme": 1653,
+   "umbenennung-ticker": 1330,
+   "zwangs-delisting": 547,
+   "spac-ende": 276,
+   "unbekannt": 212,
+   "fusion-aktientausch": 310,
+   "insolvenz": 357
+  },
+  "neu": {
+   "abgemeldet-anlass-offen": 337,
+   "uebernahme": 1563,
+   "umbenennung-ticker": 1322,
+   "zwangs-delisting": 628,
+   "spac-ende": 292,
+   "unbekannt": 238,
+   "fusion-aktientausch": 312,
+   "insolvenz": 335,
+   "freiwillig": 23
+  },
+  "zeilenAlt": 4996,
+  "zeilenNeu": 5050
+ },
+ "rC": {
+  "formular25VonPolygonFirma": 337,
+  "formular25OhneAussenanker": {
+   "zeilen": 18,
+   "davonJetzt": {
+    "unbekannt (edgar-ohne-signal)": 11,
+    "freiwillig (edgar-formular15)": 7
+   },
+   "davonAltFreiwillig": 17
+  },
+  "hinweis": "Lesart des Auftrags: \"nur von der Firma aus (R-a)\" = nur von der Polygon-CIK. Zaehlte das Formular 25 auch von einer Firma aus der Volltextsuche, bekaemen diese Zeilen den neuen Grund."
+ },
+ "hinweise": {
+  "erklaerung": "Auskunft je Zeile, kein Urteil - siehe PHASE2A.md Teil 4",
+  "polygonNamePasstNicht": 118,
+  "alteFirmaTraegtPolygonNamen": 99,
+  "zwangsDelistingPer301": {
+   "zeilen": 627,
+   "mitFusionsbeleg": 146,
+   "mit501": 29,
+   "mitFusionsbelegOder501": 165,
+   "fernVomAnker": 133,
+   "ohneHinweis": 366
+  },
+  "alteTafel301MitFusionsbelegNichtPruefbar": "die alte Tafel fuehrt die Signale nicht je Zeile"
+ },
+ "pruefsteine": {
+  "firma": {
+   "alteTafelGanz": {
+    "zeilen": 4996,
+    "mitPolygonCik": 4467,
+    "firmaBestaetigt": 3810,
+    "stimmt": 3477,
+    "widerspricht": 333,
+    "ohneFirma": 657
+   },
+   "trockenlaufNeu": {
+    "zeilen": 5050,
+    "mitPolygonCik": 4717,
+    "firmaBestaetigt": 4717,
+    "stimmt": 4717,
+    "widerspricht": 0,
+    "ohneFirma": 0
+   },
+   "hinweis": "Nach R-a IST die Firma die Polygon-CIK, wo es eine gibt - die Pruefung besteht dort von selbst. Unabhaengig ist nur noch die Gegenprobe \"polygonCikGegenEdgarName\"."
+  },
+  "polygonCikGegenEdgarName": {
+   "zeilen": 4717,
+   "namePasst": 3478,
+   "nurFruehererNamePasst": 1120,
+   "nurKuerzelPasst": 1,
+   "nichtsPasst": 118,
+   "hinweis": "grober Namensvergleich (erstes tragendes Wort / Anfang); \"nichtsPasst\" ist eine Leseliste (t4-polygon-namen.json), kein Urteil"
+  },
+  "belegLage": {
+   "neu": {
+    "edgar-8K-3.01": {
+     "zeilen": 627,
+     "innerhalb30": 494,
+     "mehrAls30TageVorAnker": 94,
+     "mehrAls180TageVorAnker": 32,
+     "mehrAls30TageNach": 39,
+     "anteilInnerhalb30": 0.788
+    },
+    "edgar-8K-2.01+prospekt": {
+     "zeilen": 663,
+     "innerhalb30": 663,
+     "mehrAls30TageVorAnker": 0,
+     "mehrAls180TageVorAnker": 0,
+     "mehrAls30TageNach": 0,
+     "anteilInnerhalb30": 1
+    },
+    "edgar-8K-1.03": {
+     "zeilen": 207,
+     "innerhalb30": 129,
+     "mehrAls30TageVorAnker": 14,
+     "mehrAls180TageVorAnker": 8,
+     "mehrAls30TageNach": 64,
+     "anteilInnerhalb30": 0.623
+    },
+    "q-kuerzel+edgar-8K-1.03": {
+     "zeilen": 106,
+     "innerhalb30": 105,
+     "mehrAls30TageVorAnker": 1,
+     "mehrAls180TageVorAnker": 1,
+     "mehrAls30TageNach": 0,
+     "anteilInnerhalb30": 0.991
+    },
+    "edgar-formular25": {
+     "zeilen": 337,
+     "innerhalb30": 288,
+     "mehrAls30TageVorAnker": 12,
+     "mehrAls180TageVorAnker": 4,
+     "mehrAls30TageNach": 37,
+     "anteilInnerhalb30": 0.855
+    },
+    "edgar-formular15": {
+     "zeilen": 18,
+     "innerhalb30": 7,
+     "mehrAls30TageVorAnker": 5,
+     "mehrAls180TageVorAnker": 3,
+     "mehrAls30TageNach": 6,
+     "anteilInnerhalb30": 0.389
+    },
+    "edgar-mantel+abmeldung": {
+     "zeilen": 288,
+     "innerhalb30": 226,
+     "mehrAls30TageVorAnker": 4,
+     "mehrAls180TageVorAnker": 2,
+     "mehrAls30TageNach": 58,
+     "anteilInnerhalb30": 0.785
+    }
+   },
+   "alt": {
+    "edgar-8K-3.01": {
+     "zeilen": 546,
+     "innerhalb30": 255,
+     "mehrAls30TageVorAnker": 212,
+     "mehrAls180TageVorAnker": 157,
+     "mehrAls30TageNach": 79,
+     "anteilInnerhalb30": 0.467
+    },
+    "edgar-8K-2.01+prospekt": {
+     "zeilen": 745,
+     "innerhalb30": 669,
+     "mehrAls30TageVorAnker": 76,
+     "mehrAls180TageVorAnker": 42,
+     "mehrAls30TageNach": 0,
+     "anteilInnerhalb30": 0.898
+    },
+    "edgar-8K-1.03": {
+     "zeilen": 201,
+     "innerhalb30": 126,
+     "mehrAls30TageVorAnker": 25,
+     "mehrAls180TageVorAnker": 14,
+     "mehrAls30TageNach": 50,
+     "anteilInnerhalb30": 0.627
+    },
+    "q-kuerzel+edgar-8K-1.03": {
+     "zeilen": 107,
+     "innerhalb30": 107,
+     "mehrAls30TageVorAnker": 0,
+     "mehrAls180TageVorAnker": 0,
+     "mehrAls30TageNach": 0,
+     "anteilInnerhalb30": 1
+    },
+    "edgar-formular25": {
+     "zeilen": 291,
+     "innerhalb30": 221,
+     "mehrAls30TageVorAnker": 20,
+     "mehrAls180TageVorAnker": 8,
+     "mehrAls30TageNach": 50,
+     "anteilInnerhalb30": 0.759
+    },
+    "edgar-formular15": {
+     "zeilen": 13,
+     "innerhalb30": 1,
+     "mehrAls30TageVorAnker": 6,
+     "mehrAls180TageVorAnker": 5,
+     "mehrAls30TageNach": 6,
+     "anteilInnerhalb30": 0.077
+    },
+    "edgar-mantel+abmeldung": {
+     "zeilen": 273,
+     "innerhalb30": 214,
+     "mehrAls30TageVorAnker": 11,
+     "mehrAls180TageVorAnker": 8,
+     "mehrAls30TageNach": 48,
+     "anteilInnerhalb30": 0.784
+    }
+   }
+  }
+ },
+ "totalverlust": {
+  "listen": {
+   "haupt": [
+    "insolvenz",
+    "zwangs-delisting"
+   ],
+   "streng": [
+    "insolvenz",
+    "zwangs-delisting",
+    "unbekannt",
+    "freiwillig"
+   ],
+   "strengMitNeuemGrund": [
+    "insolvenz",
+    "zwangs-delisting",
+    "unbekannt",
+    "freiwillig",
+    "abgemeldet-anlass-offen"
+   ]
+  },
+  "haupt": {
+   "geaendert": 261,
+   "kommtHinzu": 160,
+   "faelltWeg": 101,
+   "mitKlasse123": 14,
+   "kommtHinzuKlasse123": 7,
+   "faelltWegKlasse123": 7,
+   "mitKlasse23": 2,
+   "davonNeueReihen": 41,
+   "davonAlteZeilen": 220,
+   "kommtHinzuMitHinweis": 89,
+   "kommtHinzuOhneHinweis": 71,
+   "kommtHinzuJeHinweis": {
+    "3.01-mit-fusionsbeleg": 75,
+    "3.01-mit-5.01": 7,
+    "beleg-fern-vom-anker": 30,
+    "alte-firma-traegt-polygon-namen": 2,
+    "polygon-name-passt-nicht": 6
+   },
+   "faelltWegJeNeuemGrund": {
+    "spac-ende": 7,
+    "unbekannt": 43,
+    "uebernahme": 19,
+    "abgemeldet-anlass-offen": 30,
+    "freiwillig": 1,
+    "umbenennung-ticker": 1
+   },
+   "faelltWegMitHinweis": 21
+  },
+  "strengNeuerGrundWieFreiwillig": {
+   "geaendert": 268,
+   "kommtHinzu": 201,
+   "faelltWeg": 67,
+   "mitKlasse123": 32,
+   "kommtHinzuKlasse123": 21,
+   "faelltWegKlasse123": 11,
+   "mitKlasse23": 5,
+   "davonNeueReihen": 42,
+   "davonAlteZeilen": 226,
+   "kommtHinzuMitHinweis": 109,
+   "kommtHinzuOhneHinweis": 92,
+   "kommtHinzuJeHinweis": {
+    "3.01-mit-fusionsbeleg": 60,
+    "3.01-mit-5.01": 5,
+    "beleg-fern-vom-anker": 27,
+    "alte-firma-traegt-polygon-namen": 43,
+    "polygon-name-passt-nicht": 33
+   },
+   "faelltWegJeNeuemGrund": {
+    "spac-ende": 16,
+    "uebernahme": 50,
+    "umbenennung-ticker": 1
+   },
+   "faelltWegMitHinweis": 2
+  },
+  "strengNeuerGrundKeinTotalverlust": {
+   "geaendert": 555,
+   "kommtHinzu": 176,
+   "faelltWeg": 379,
+   "mitKlasse123": 43,
+   "kommtHinzuKlasse123": 19,
+   "faelltWegKlasse123": 24,
+   "mitKlasse23": 10,
+   "davonNeueReihen": 41,
+   "davonAlteZeilen": 514,
+   "kommtHinzuMitHinweis": 102,
+   "kommtHinzuOhneHinweis": 74,
+   "kommtHinzuJeHinweis": {
+    "3.01-mit-fusionsbeleg": 60,
+    "3.01-mit-5.01": 5,
+    "beleg-fern-vom-anker": 21,
+    "alte-firma-traegt-polygon-namen": 38,
+    "polygon-name-passt-nicht": 27
+   },
+   "faelltWegJeNeuemGrund": {
+    "abgemeldet-anlass-offen": 312,
+    "spac-ende": 16,
+    "uebernahme": 50,
+    "umbenennung-ticker": 1
+   },
+   "faelltWegMitHinweis": 51
+  },
+  "hinweis": "haupt = Insolvenz, Zwangs-Delisting. Der neue Grund abgemeldet-anlass-offen steht in keiner Liste des Pruefstands; \"streng\" ist deshalb in zwei Lesarten gezaehlt (wie freiwillig / kein Totalverlust)."
+ },
+ "gruppen": {
+  "mantelSic6770Mit8K301": {
+   "zahl": 394,
+   "jeGrund": {
+    "uebernahme": 35,
+    "spac-ende": 163,
+    "umbenennung-ticker": 115,
+    "zwangs-delisting": 67,
+    "fusion-aktientausch": 11,
+    "freiwillig": 2,
+    "insolvenz": 1
+   },
+   "mitKlasse123": 3
+  },
+  "freiwilligMit8K301": {
+   "zahl": 397,
+   "jeGrund": {
+    "umbenennung-ticker": 109,
+    "uebernahme": 61,
+    "zwangs-delisting": 176,
+    "insolvenz": 28,
+    "spac-ende": 14,
+    "fusion-aktientausch": 9
+   },
+   "mitKlasse123": 25
+  },
+  "ausgesetzt": {
+   "zahl": 28,
+   "jeGrund": {
+    "zwangs-delisting": 20,
+    "freiwillig": 1,
+    "unbekannt": 6,
+    "insolvenz": 1
+   },
+   "mitKlasse123": 2,
+   "yndxDabei": true
+  }
+ }
+}

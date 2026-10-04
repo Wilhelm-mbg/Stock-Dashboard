@@ -1,0 +1,68 @@
+{
+ "stand": "2026-10-04T11:57:31.376Z",
+ "hinweis": "ALLE 4996 Zeilen der alten Tafel: Grund alt (Zeile) -> Grund neu (Spalte). Keine Tafel.",
+ "matrix": {
+  "freiwillig": {
+   "abgemeldet-anlass-offen": 236,
+   "freiwillig": 19,
+   "zwangs-delisting": 20,
+   "unbekannt": 22,
+   "spac-ende": 5,
+   "uebernahme": 8,
+   "insolvenz": 1
+  },
+  "uebernahme": {
+   "uebernahme": 1508,
+   "fusion-aktientausch": 1,
+   "zwangs-delisting": 58,
+   "unbekannt": 56,
+   "spac-ende": 4,
+   "abgemeldet-anlass-offen": 24,
+   "freiwillig": 2
+  },
+  "umbenennung-ticker": {
+   "umbenennung-ticker": 1317,
+   "zwangs-delisting": 9,
+   "spac-ende": 1,
+   "insolvenz": 1,
+   "unbekannt": 2
+  },
+  "zwangs-delisting": {
+   "zwangs-delisting": 463,
+   "spac-ende": 6,
+   "unbekannt": 31,
+   "uebernahme": 15,
+   "abgemeldet-anlass-offen": 24,
+   "insolvenz": 7,
+   "umbenennung-ticker": 1
+  },
+  "spac-ende": {
+   "spac-ende": 270,
+   "zwangs-delisting": 4,
+   "unbekannt": 2
+  },
+  "unbekannt": {
+   "zwangs-delisting": 21,
+   "abgemeldet-anlass-offen": 46,
+   "unbekannt": 113,
+   "uebernahme": 23,
+   "insolvenz": 4,
+   "spac-ende": 4,
+   "freiwillig": 1
+  },
+  "fusion-aktientausch": {
+   "fusion-aktientausch": 308,
+   "spac-ende": 1,
+   "zwangs-delisting": 1
+  },
+  "insolvenz": {
+   "insolvenz": 321,
+   "abgemeldet-anlass-offen": 6,
+   "unbekannt": 12,
+   "zwangs-delisting": 12,
+   "uebernahme": 4,
+   "freiwillig": 1,
+   "spac-ende": 1
+  }
+ }
+}

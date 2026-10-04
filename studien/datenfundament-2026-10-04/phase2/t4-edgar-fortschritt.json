@@ -1,0 +1,17 @@
+{
+ "stand": "2026-10-04T11:46:11.017Z",
+ "fertig": true,
+ "reihenGesamt": 5050,
+ "reihenFertigDieserLauf": 5025,
+ "uebersprungen": 25,
+ "zugeordnet": 5050,
+ "anfragen": 1425,
+ "fehlversuche": 4,
+ "sperren": 0,
+ "taktFaktor": 1,
+ "offeneFehler": 0,
+ "sekunden": 403,
+ "anfragenJeSekunde": 3.54,
+ "minAbstandGemessenMs": 180,
+ "meldungen": []
+}
