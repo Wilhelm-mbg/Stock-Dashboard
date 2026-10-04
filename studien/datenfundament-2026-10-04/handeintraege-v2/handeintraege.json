@@ -1,42 +1,332 @@
 {
-  "kennung": "datenfundament-2026-10-04/handeintraege-v2/v1",
+  "kennung": "datenfundament-2026-10-04/handeintraege-v2/v2",
   "stand": "2026-10-04",
   "von": "PM (Projekt-Manager-Sitzung), nach der Leseliste des vierten Zähllaufs (Nr. 92, zaehllauf4/z4-leseliste.md) und den Funden zu E2",
   "regel": "Ein Handeintrag ersetzt in der Gründe-Tafel v2 den Grund der Regeln. Quelle 'daten' = aus Dateien des Projekts nachgesehen (EDGAR-Auszug, Alpaca-Maßnahme, Minutenarchiv). Quelle 'wissen' = Allgemeinwissen des PM, nicht nachgeschlagen - so gekennzeichnet; ein solcher Eintrag ändert die Totalverlust-Buchung nur, wo das Ereignis allgemein bekannt ist (Bankschließungen, Gang an den Freiverkehr).",
-  "totalverlustHaupt": ["insolvenz", "zwangs-delisting"],
+  "totalverlustHaupt": [
+    "insolvenz",
+    "zwangs-delisting"
+  ],
   "eintraege": [
-    { "reihe": "CYBR", "anker": "2026-02-10", "grund": "uebernahme", "nachfolger": "PANW", "quelle": "daten", "beleg": "Alpaca-Maßnahme 2026-02-12 (Nachfolger PANW); 25-NSE 2026-02-11; Minutenarchiv: CYBR 413,55 $ gegen 2,2005 × PANW 167,86 + 45 $ = 414 $", "anmerkung": "Übernahme durch Palo Alto Networks gegen Aktien und Bargeld (Verhältnis aus dem Abgleich der Kurse, nicht aus einer Meldung)" },
-    { "reihe": "SIVB", "anker": "2023-03-10", "grund": "insolvenz", "quelle": "daten", "beleg": "EDGAR 8-K 1.03 vom 2023-03-10 und 2023-03-17 (SVB Financial Group)", "anmerkung": "bestätigt die Regel" },
-    { "reihe": "BCR", "anker": "2017-12-28", "grund": "uebernahme", "nachfolger": "BDX", "quelle": "wissen", "beleg": "EDGAR-Firma BARD C R INC /NJ/ (von E6 verworfen, der Name passt)", "anmerkung": "Übernahme durch Becton Dickinson gegen Bargeld und Aktien, Vollzug Ende Dezember 2017" },
-    { "reihe": "YHOO", "anker": "2017-06-16", "grund": "umbenennung-ticker", "nachfolger": "AABA", "quelle": "daten", "beleg": "Minutenarchiv: YHOO letzter Schluss 52,58 $ am 2017-06-16, AABA erster Kurs 53,39 $ am 2017-06-19; EDGAR CIK 1011006 führt beide Namen", "anmerkung": "nach dem Verkauf des Geschäfts an Verizon hieß die Gesellschaft Altaba" },
-    { "reihe": "AABA", "anker": "2019-10-02", "grund": "freiwillig", "quelle": "daten", "beleg": "Alpaca-Ausschüttung 51,50 $ am 2019-09-24; 25-NSE 2019-10-07", "anmerkung": "Abwicklung (Altaba): Rest als Liquidationsvermögen, kein Totalverlust" },
-    { "reihe": "INXN", "anker": "2020-03-12", "grund": "fusion-aktientausch", "nachfolger": "DLR", "quelle": "daten", "beleg": "SC 14D9 2020-01-29; 25-NSE 2020-03-13", "anmerkung": "Umtauschangebot von Digital Realty" },
-    { "reihe": "SBNY", "anker": "2023-03-13", "grund": "insolvenz", "quelle": "wissen", "beleg": "keine SEC-Meldungen (die Bank meldete an die FDIC)", "anmerkung": "Schließung durch die New Yorker Aufsicht am 12.03.2023, FDIC als Verwalter; die Aktionäre gingen leer aus" },
-    { "reihe": "RDS.A", "anker": "2022-01-28", "grund": "umbenennung-ticker", "nachfolger": "SHEL", "quelle": "wissen", "beleg": "25-NSE 2022-01-31 (Shell plc, CIK 1306965)", "anmerkung": "Zusammenlegung der Aktiengattungen A und B zu Shell plc, 1:1" },
-    { "reihe": "RDS.B", "anker": "2022-01-28", "grund": "umbenennung-ticker", "nachfolger": "SHEL", "quelle": "wissen", "beleg": "25-NSE 2022-01-31 (Shell plc, CIK 1306965)", "anmerkung": "wie RDS.A" },
-    { "reihe": "BHI", "anker": "2017-07-03", "grund": "fusion-aktientausch", "nachfolger": "BKR", "quelle": "daten", "beleg": "DEFM14A 2017-05-30; Minutenarchiv: BHI 58,70 $, BKR (damals BHGE) 40,18 $ am 2017-07-05 - Abstand passt zur Sonderausschüttung von 17,50 $", "anmerkung": "Zusammenschluss mit GE Oil & Gas zu BHGE (heute BKR), je Aktie eine neue Aktie und 17,50 $" },
-    { "reihe": "QIHU", "anker": "2016-07-15", "grund": "uebernahme", "quelle": "daten", "beleg": "SC 13E3 2016-01-11; 25-NSE 2016-07-18; letzter Kurs 76,92 $", "anmerkung": "Rückzug von der Börse gegen Bargeld (Going Private)" },
-    { "reihe": "YNDX", "anker": "2022-02-28", "grund": "ausgesetzt", "quelle": "wissen", "beleg": "kein Abgang am Anker (Regel V5 iii)", "anmerkung": "Handel ab 28.02.2022 ausgesetzt (Sanktionen); die Gesellschaft handelt seit Oktober 2024 als Nebius Group (NBIS) wieder - Nachfolger nicht im Archiv. Hauptlesart letzter Kurs, streng Totalverlust: wie die Regel" },
-    { "reihe": "DISCA", "anker": "2022-04-08", "grund": "fusion-aktientausch", "nachfolger": "WBD", "quelle": "daten", "beleg": "Minutenarchiv: DISCA 24,25 $ am 2022-04-08, WBD 24,40 $ am 2022-04-11", "anmerkung": "Zusammenschluss mit WarnerMedia, 1:1 in Warner Bros. Discovery" },
-    { "reihe": "DISCK", "anker": "2022-04-08", "grund": "fusion-aktientausch", "nachfolger": "WBD", "quelle": "daten", "beleg": "Minutenarchiv: DISCK 24,42 $, WBD 24,40 $", "anmerkung": "wie DISCA" },
-    { "reihe": "FRC", "anker": "2023-04-28", "grund": "insolvenz", "quelle": "wissen", "beleg": "keine SEC-Meldungen (die Bank meldete an die FDIC)", "anmerkung": "Schließung am 01.05.2023, Verkauf an JPMorgan Chase; die Aktionäre gingen leer aus" },
-    { "reihe": "SODA", "anker": "2018-12-04", "grund": "uebernahme", "quelle": "wissen", "beleg": "25-NSE 2018-12-06; 15-12B 2018-12-17; letzter Kurs 143,68 $", "anmerkung": "Übernahme durch PepsiCo gegen Bargeld (144 $ je Aktie)" },
-    { "reihe": "CHL", "anker": "2021-01-08", "grund": "umbenennung-ticker", "quelle": "wissen", "beleg": "von E6 verworfene Suchfirma war Fannie Mae (falsch)", "anmerkung": "die NYSE strich die ADS auf US-Anordnung; die Aktie blieb in Hongkong handelbar (0941.HK) - Gang an eine andere Börse, kein Totalverlust" },
-    { "reihe": "PSTH", "anker": "2022-07-25", "grund": "spac-ende", "quelle": "daten", "beleg": "25-NSE 2022-07-26; 15-12G 2022-08-05; letzter Kurs 20,14 $", "anmerkung": "Mantel aufgelöst, Rückzahlung aus dem Treuhandkonto (20 $ je Aktie)" },
-    { "reihe": "QVCA", "anker": "2018-03-09", "grund": "umbenennung-ticker", "nachfolger": "QRTEA", "quelle": "daten", "beleg": "Minutenarchiv: QVCA 27,85 $ am 2018-03-09, QRTEA 28,00 $ am 2018-03-12", "anmerkung": "Liberty Interactive wurde Qurate Retail; die EDGAR-Firma des Laufs (Liberty Expedia) ist falsch" },
-    { "reihe": "GG", "anker": "2019-04-17", "grund": "fusion-aktientausch", "nachfolger": "NEM", "quelle": "daten", "beleg": "25-NSE 2019-04-18; Minutenarchiv: GG 11,21 $, NEM 34,50 $ am 2019-04-18 (Verhältnis 0,328 passt)", "anmerkung": "Übernahme durch Newmont gegen Aktien" },
-    { "reihe": "LGF", "anker": "2016-12-08", "grund": "umbenennung-ticker", "nachfolger": "LGF.A", "quelle": "daten", "beleg": "Minutenarchiv: LGF 26,23 $ am 2016-12-08, LGF.A 27,00 $ und LGF.B 26,80 $ am 2016-12-09", "anmerkung": "Aufteilung in die Gattungen A und B beim Zusammenschluss mit Starz" },
-    { "reihe": "OZON", "anker": "2022-02-25", "grund": "ausgesetzt", "quelle": "wissen", "beleg": "kein Abgang am Anker (Regel V5 iii); die EDGAR-Firma des Laufs (JNL Series Trust) ist falsch", "anmerkung": "Handel ab 28.02.2022 ausgesetzt (Sanktionen); wie die Regel" },
-    { "reihe": "LK", "anker": "2020-06-26", "grund": "umbenennung-ticker", "nachfolger": "LKNCY", "quelle": "wissen", "beleg": "25-NSE 2020-07-01", "anmerkung": "Nasdaq strich die ADS nach dem Bilanzbetrug; das Papier blieb im Freiverkehr handelbar (LKNCY) - nach der Regel des Projekts ein Gang an den Freiverkehr, kein Totalverlust" },
-    { "reihe": "GRUB", "anker": "2022-03-11", "grund": "freiwillig", "quelle": "daten", "beleg": "Formular 25 des Emittenten 2022-03-04", "anmerkung": "Just Eat Takeaway.com zog die ADS freiwillig von der Nasdaq zurück" },
-    { "reihe": "DIDI", "anker": "2022-06-10", "grund": "umbenennung-ticker", "nachfolger": "DIDIY", "quelle": "wissen", "beleg": "Formular 25 des Emittenten 2022-06-02", "anmerkung": "freiwilliger Rückzug von der NYSE; die ADS blieben im Freiverkehr handelbar (DIDIY) - Gang an den Freiverkehr" },
-    { "reihe": "SAVE", "anker": "2024-11-15", "grund": "insolvenz", "quelle": "daten", "beleg": "EDGAR 8-K 1.03 2024-11-18; Alpaca: Umbenennung in SAVEQ", "anmerkung": "bestätigt die Regel" },
-    { "reihe": "NKLA", "anker": "2025-02-25", "grund": "insolvenz", "quelle": "daten", "beleg": "EDGAR 8-K 1.03 2025-02-19; Alpaca: Umbenennung in NKLAQ", "anmerkung": "bestätigt die Regel" },
-    { "reihe": "NOVA", "anker": "2025-06-09", "grund": "insolvenz", "quelle": "daten", "beleg": "Alpaca: Umbenennung in NOVAQ am 2025-06-10", "anmerkung": "Sunnova Energy International (die EDGAR-Firma des Laufs, Bank of Nova Scotia, ist falsch); Grund bestätigt" },
-    { "reihe": "AAPC", "anker": "2017-10-04", "grund": "spac-ende", "quelle": "daten", "beleg": "8-K 3.01 (Mindestzahl der Aktionäre); roher letzter Kurs 10,60 $", "anmerkung": "Mantel am Treuhandwert, Name ohne Mantel-Wort - E2 verfehlt" },
-    { "reihe": "APN", "anker": "2023-01-30", "grund": "spac-ende", "quelle": "daten", "beleg": "8-K 3.01; roher letzter Kurs 10,37 $", "anmerkung": "Mantel (Apeiron Capital Investment Corp), E2 verfehlt" },
-    { "reihe": "ARTE", "anker": "2023-11-03", "grund": "spac-ende", "quelle": "daten", "beleg": "frühe Rüge + 25-NSE; roher letzter Kurs 10,735 $", "anmerkung": "Mantel (Artemis Strategic Investment Corp), E2 verfehlt" },
-    { "reihe": "SCVX", "anker": "2022-03-08", "grund": "spac-ende", "quelle": "daten", "beleg": "8-K 3.01; roher letzter Kurs 9,91 $", "anmerkung": "Mantel (SCVX Corp.), E2 verfehlt" },
-    { "reihe": "WYIG", "anker": "2018-01-05", "grund": "spac-ende", "quelle": "daten", "beleg": "8-K 3.01; roher letzter Kurs 9,63 $; Polygon-Name JM Global Holding Company", "anmerkung": "Mantel, E2 verfehlt" }
-  ]
+    {
+      "reihe": "CYBR",
+      "anker": "2026-02-10",
+      "grund": "uebernahme",
+      "nachfolger": "PANW",
+      "quelle": "daten",
+      "beleg": "Alpaca-Maßnahme 2026-02-12 (Nachfolger PANW); 25-NSE 2026-02-11; Minutenarchiv: CYBR 413,55 $ gegen 2,2005 × PANW 167,86 + 45 $ = 414 $",
+      "anmerkung": "Übernahme durch Palo Alto Networks gegen Aktien und Bargeld (Verhältnis aus dem Abgleich der Kurse, nicht aus einer Meldung)"
+    },
+    {
+      "reihe": "SIVB",
+      "anker": "2023-03-10",
+      "grund": "insolvenz",
+      "quelle": "daten",
+      "beleg": "EDGAR 8-K 1.03 vom 2023-03-10 und 2023-03-17 (SVB Financial Group)",
+      "anmerkung": "bestätigt die Regel"
+    },
+    {
+      "reihe": "BCR",
+      "anker": "2017-12-28",
+      "grund": "uebernahme",
+      "nachfolger": "BDX",
+      "quelle": "wissen",
+      "beleg": "EDGAR-Firma BARD C R INC /NJ/ (von E6 verworfen, der Name passt)",
+      "anmerkung": "Übernahme durch Becton Dickinson gegen Bargeld und Aktien, Vollzug Ende Dezember 2017"
+    },
+    {
+      "reihe": "YHOO",
+      "anker": "2017-06-16",
+      "grund": "umbenennung-ticker",
+      "nachfolger": "AABA",
+      "quelle": "daten",
+      "beleg": "Minutenarchiv: YHOO letzter Schluss 52,58 $ am 2017-06-16, AABA erster Kurs 53,39 $ am 2017-06-19; EDGAR CIK 1011006 führt beide Namen",
+      "anmerkung": "nach dem Verkauf des Geschäfts an Verizon hieß die Gesellschaft Altaba"
+    },
+    {
+      "reihe": "AABA",
+      "anker": "2019-10-02",
+      "grund": "freiwillig",
+      "quelle": "daten",
+      "beleg": "Alpaca-Ausschüttung 51,50 $ am 2019-09-24; 25-NSE 2019-10-07",
+      "anmerkung": "Abwicklung (Altaba): Rest als Liquidationsvermögen, kein Totalverlust"
+    },
+    {
+      "reihe": "INXN",
+      "anker": "2020-03-12",
+      "grund": "fusion-aktientausch",
+      "nachfolger": "DLR",
+      "quelle": "daten",
+      "beleg": "SC 14D9 2020-01-29; 25-NSE 2020-03-13",
+      "anmerkung": "Umtauschangebot von Digital Realty"
+    },
+    {
+      "reihe": "SBNY",
+      "anker": "2023-03-13",
+      "grund": "insolvenz",
+      "quelle": "wissen",
+      "beleg": "keine SEC-Meldungen (die Bank meldete an die FDIC)",
+      "anmerkung": "Schließung durch die New Yorker Aufsicht am 12.03.2023, FDIC als Verwalter; die Aktionäre gingen leer aus"
+    },
+    {
+      "reihe": "RDS.A",
+      "anker": "2022-01-28",
+      "grund": "umbenennung-ticker",
+      "nachfolger": "SHEL",
+      "quelle": "wissen",
+      "beleg": "25-NSE 2022-01-31 (Shell plc, CIK 1306965)",
+      "anmerkung": "Zusammenlegung der Aktiengattungen A und B zu Shell plc, 1:1"
+    },
+    {
+      "reihe": "RDS.B",
+      "anker": "2022-01-28",
+      "grund": "umbenennung-ticker",
+      "nachfolger": "SHEL",
+      "quelle": "wissen",
+      "beleg": "25-NSE 2022-01-31 (Shell plc, CIK 1306965)",
+      "anmerkung": "wie RDS.A"
+    },
+    {
+      "reihe": "BHI",
+      "anker": "2017-07-03",
+      "grund": "fusion-aktientausch",
+      "nachfolger": "BKR",
+      "quelle": "daten",
+      "beleg": "DEFM14A 2017-05-30; Minutenarchiv: BHI 58,70 $, BKR (damals BHGE) 40,18 $ am 2017-07-05 - Abstand passt zur Sonderausschüttung von 17,50 $",
+      "anmerkung": "Zusammenschluss mit GE Oil & Gas zu BHGE (heute BKR), je Aktie eine neue Aktie und 17,50 $"
+    },
+    {
+      "reihe": "QIHU",
+      "anker": "2016-07-15",
+      "grund": "uebernahme",
+      "quelle": "daten",
+      "beleg": "SC 13E3 2016-01-11; 25-NSE 2016-07-18; letzter Kurs 76,92 $",
+      "anmerkung": "Rückzug von der Börse gegen Bargeld (Going Private)"
+    },
+    {
+      "reihe": "YNDX",
+      "anker": "2022-02-28",
+      "grund": "ausgesetzt",
+      "quelle": "wissen",
+      "beleg": "kein Abgang am Anker (Regel V5 iii)",
+      "anmerkung": "Handel ab 28.02.2022 ausgesetzt (Sanktionen); die Gesellschaft handelt seit Oktober 2024 als Nebius Group (NBIS) wieder - Nachfolger nicht im Archiv. Hauptlesart letzter Kurs, streng Totalverlust: wie die Regel"
+    },
+    {
+      "reihe": "DISCA",
+      "anker": "2022-04-08",
+      "grund": "fusion-aktientausch",
+      "nachfolger": "WBD",
+      "quelle": "daten",
+      "beleg": "Minutenarchiv: DISCA 24,25 $ am 2022-04-08, WBD 24,40 $ am 2022-04-11",
+      "anmerkung": "Zusammenschluss mit WarnerMedia, 1:1 in Warner Bros. Discovery"
+    },
+    {
+      "reihe": "DISCK",
+      "anker": "2022-04-08",
+      "grund": "fusion-aktientausch",
+      "nachfolger": "WBD",
+      "quelle": "daten",
+      "beleg": "Minutenarchiv: DISCK 24,42 $, WBD 24,40 $",
+      "anmerkung": "wie DISCA"
+    },
+    {
+      "reihe": "FRC",
+      "anker": "2023-04-28",
+      "grund": "insolvenz",
+      "quelle": "wissen",
+      "beleg": "keine SEC-Meldungen (die Bank meldete an die FDIC)",
+      "anmerkung": "Schließung am 01.05.2023, Verkauf an JPMorgan Chase; die Aktionäre gingen leer aus"
+    },
+    {
+      "reihe": "SODA",
+      "anker": "2018-12-04",
+      "grund": "uebernahme",
+      "quelle": "wissen",
+      "beleg": "25-NSE 2018-12-06; 15-12B 2018-12-17; letzter Kurs 143,68 $",
+      "anmerkung": "Übernahme durch PepsiCo gegen Bargeld (144 $ je Aktie)"
+    },
+    {
+      "reihe": "CHL",
+      "anker": "2021-01-08",
+      "grund": "umbenennung-ticker",
+      "quelle": "wissen",
+      "beleg": "von E6 verworfene Suchfirma war Fannie Mae (falsch)",
+      "anmerkung": "die NYSE strich die ADS auf US-Anordnung; die Aktie blieb in Hongkong handelbar (0941.HK) - Gang an eine andere Börse, kein Totalverlust"
+    },
+    {
+      "reihe": "PSTH",
+      "anker": "2022-07-25",
+      "grund": "spac-ende",
+      "quelle": "daten",
+      "beleg": "25-NSE 2022-07-26; 15-12G 2022-08-05; letzter Kurs 20,14 $",
+      "anmerkung": "Mantel aufgelöst, Rückzahlung aus dem Treuhandkonto (20 $ je Aktie)"
+    },
+    {
+      "reihe": "QVCA",
+      "anker": "2018-03-09",
+      "grund": "umbenennung-ticker",
+      "nachfolger": "QRTEA",
+      "quelle": "daten",
+      "beleg": "Minutenarchiv: QVCA 27,85 $ am 2018-03-09, QRTEA 28,00 $ am 2018-03-12",
+      "anmerkung": "Liberty Interactive wurde Qurate Retail; die EDGAR-Firma des Laufs (Liberty Expedia) ist falsch"
+    },
+    {
+      "reihe": "GG",
+      "anker": "2019-04-17",
+      "grund": "fusion-aktientausch",
+      "nachfolger": "NEM",
+      "quelle": "daten",
+      "beleg": "25-NSE 2019-04-18; Minutenarchiv: GG 11,21 $, NEM 34,50 $ am 2019-04-18 (Verhältnis 0,328 passt)",
+      "anmerkung": "Übernahme durch Newmont gegen Aktien"
+    },
+    {
+      "reihe": "LGF",
+      "anker": "2016-12-08",
+      "grund": "umbenennung-ticker",
+      "nachfolger": "LGF.A",
+      "quelle": "daten",
+      "beleg": "Minutenarchiv: LGF 26,23 $ am 2016-12-08, LGF.A 27,00 $ und LGF.B 26,80 $ am 2016-12-09",
+      "anmerkung": "Aufteilung in die Gattungen A und B beim Zusammenschluss mit Starz"
+    },
+    {
+      "reihe": "OZON",
+      "anker": "2022-02-25",
+      "grund": "ausgesetzt",
+      "quelle": "wissen",
+      "beleg": "kein Abgang am Anker (Regel V5 iii); die EDGAR-Firma des Laufs (JNL Series Trust) ist falsch",
+      "anmerkung": "Handel ab 28.02.2022 ausgesetzt (Sanktionen); wie die Regel"
+    },
+    {
+      "reihe": "LK",
+      "anker": "2020-06-26",
+      "grund": "umbenennung-ticker",
+      "nachfolger": "LKNCY",
+      "quelle": "wissen",
+      "beleg": "25-NSE 2020-07-01",
+      "anmerkung": "Nasdaq strich die ADS nach dem Bilanzbetrug; das Papier blieb im Freiverkehr handelbar (LKNCY) - nach der Regel des Projekts ein Gang an den Freiverkehr, kein Totalverlust"
+    },
+    {
+      "reihe": "GRUB",
+      "anker": "2022-03-11",
+      "grund": "freiwillig",
+      "quelle": "daten",
+      "beleg": "Formular 25 des Emittenten 2022-03-04",
+      "anmerkung": "Just Eat Takeaway.com zog die ADS freiwillig von der Nasdaq zurück"
+    },
+    {
+      "reihe": "DIDI",
+      "anker": "2022-06-10",
+      "grund": "umbenennung-ticker",
+      "nachfolger": "DIDIY",
+      "quelle": "wissen",
+      "beleg": "Formular 25 des Emittenten 2022-06-02",
+      "anmerkung": "freiwilliger Rückzug von der NYSE; die ADS blieben im Freiverkehr handelbar (DIDIY) - Gang an den Freiverkehr"
+    },
+    {
+      "reihe": "SAVE",
+      "anker": "2024-11-15",
+      "grund": "insolvenz",
+      "quelle": "daten",
+      "beleg": "EDGAR 8-K 1.03 2024-11-18; Alpaca: Umbenennung in SAVEQ",
+      "anmerkung": "bestätigt die Regel"
+    },
+    {
+      "reihe": "NKLA",
+      "anker": "2025-02-25",
+      "grund": "insolvenz",
+      "quelle": "daten",
+      "beleg": "EDGAR 8-K 1.03 2025-02-19; Alpaca: Umbenennung in NKLAQ",
+      "anmerkung": "bestätigt die Regel"
+    },
+    {
+      "reihe": "NOVA",
+      "anker": "2025-06-09",
+      "grund": "insolvenz",
+      "quelle": "daten",
+      "beleg": "Alpaca: Umbenennung in NOVAQ am 2025-06-10",
+      "anmerkung": "Sunnova Energy International (die EDGAR-Firma des Laufs, Bank of Nova Scotia, ist falsch); Grund bestätigt"
+    },
+    {
+      "reihe": "AAPC",
+      "anker": "2017-10-04",
+      "grund": "spac-ende",
+      "quelle": "daten",
+      "beleg": "8-K 3.01 (Mindestzahl der Aktionäre); roher letzter Kurs 10,60 $",
+      "anmerkung": "Mantel am Treuhandwert, Name ohne Mantel-Wort - E2 verfehlt"
+    },
+    {
+      "reihe": "APN",
+      "anker": "2023-01-30",
+      "grund": "spac-ende",
+      "quelle": "daten",
+      "beleg": "8-K 3.01; roher letzter Kurs 10,37 $",
+      "anmerkung": "Mantel (Apeiron Capital Investment Corp), E2 verfehlt"
+    },
+    {
+      "reihe": "ARTE",
+      "anker": "2023-11-03",
+      "grund": "spac-ende",
+      "quelle": "daten",
+      "beleg": "frühe Rüge + 25-NSE; roher letzter Kurs 10,735 $",
+      "anmerkung": "Mantel (Artemis Strategic Investment Corp), E2 verfehlt"
+    },
+    {
+      "reihe": "SCVX",
+      "anker": "2022-03-08",
+      "grund": "spac-ende",
+      "quelle": "daten",
+      "beleg": "8-K 3.01; roher letzter Kurs 9,91 $",
+      "anmerkung": "Mantel (SCVX Corp.), E2 verfehlt"
+    },
+    {
+      "reihe": "WYIG",
+      "anker": "2018-01-05",
+      "grund": "spac-ende",
+      "quelle": "daten",
+      "beleg": "8-K 3.01; roher letzter Kurs 9,63 $; Polygon-Name JM Global Holding Company",
+      "anmerkung": "Mantel, E2 verfehlt"
+    },
+    {
+      "reihe": "BNK",
+      "anker": "2016-07-21",
+      "grund": "uebernahme",
+      "quelle": "daten",
+      "beleg": "EDGAR 8-K 2.01 vom 2016-07-21 (C1 Financial, CIK 1609132)",
+      "anmerkung": "Übernahme durch Bank of the Ozarks; die Namensprobe E6 hatte die richtige Firma verworfen"
+    },
+    {
+      "reihe": "CVO",
+      "anker": "2018-02-12",
+      "grund": "insolvenz",
+      "quelle": "daten",
+      "beleg": "EDGAR 8-K 1.03 vom 2018-02-02 (Cenveo, CIK 920321)",
+      "anmerkung": "Insolvenzantrag; die Namensprobe E6 hatte die richtige Firma verworfen"
+    },
+    {
+      "reihe": "OTIV",
+      "anker": "2019-10-30",
+      "grund": "zwangs-delisting",
+      "quelle": "daten",
+      "beleg": "EDGAR 8-K 3.01 (Rüge) vom 2019-10-28 (On Track Innovations, CIK 1021604); roher letzter Kurs 0,17 $",
+      "anmerkung": "die Namensprobe E6 hatte die richtige Firma verworfen; ob das Papier danach im Freiverkehr weiterlief, ist nicht nachgesehen"
+    },
+    {
+      "reihe": "SGBK",
+      "anker": "2017-09-26",
+      "grund": "uebernahme",
+      "nachfolger": "HOMB",
+      "quelle": "daten",
+      "beleg": "EDGAR 8-K 2.01 vom 2017-09-27 der übernehmenden Home BancShares (CIK 1331520)",
+      "anmerkung": "Stonegate Bank, übernommen von Home BancShares"
+    },
+    {
+      "reihe": "CHU",
+      "anker": "2021-01-08",
+      "grund": "umbenennung-ticker",
+      "quelle": "wissen",
+      "beleg": "die Suchfirma des Laufs (SemiLEDs) ist falsch",
+      "anmerkung": "wie China Mobile (CHL): die NYSE strich die ADS von China Unicom auf US-Anordnung, die Aktie blieb in Hongkong handelbar - kein Totalverlust"
+    }
+  ],
+  "nachtrag": "04.10.2026 (PM, nach der Abnahme von Nr. 92 Schritt 2): BNK, CVO, OTIV, SGBK, CHU ergänzt. Die Namensprobe der Suchfirma (E6) verwirft wieder wie im vierten Lauf; als bloßes Kennzeichen (B2) gab sie sieben falsche Firmen zurück (ERB, VISI, VSR, WP, NTT, CHU, DOM)."
 }
