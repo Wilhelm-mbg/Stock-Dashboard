@@ -1,0 +1,198 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/pruefung-v23b/v1",
+ "stand": "2026-10-04T18:01:24.110Z",
+ "bestanden": true,
+ "gruende": [],
+ "v22": {
+  "kennung": "querschnitt-pruefstand-2026-09-13/panel/v2.2",
+  "zeilen": 9904017,
+  "reihen": 7479,
+  "letzterVollTag": "2026-09-15"
+ },
+ "v23": {
+  "kennung": "querschnitt-pruefstand-2026-09-13/panel/v2.3",
+  "bau": "2b",
+  "zeilen": 9663629,
+  "reihen": 7102,
+  "letzterVollTag": "2026-09-15",
+  "gruendeKennung": "datenfundament-2026-10-04/tafel-v2/v2.1"
+ },
+ "doppelte": {
+  "liste": "querschnitt-pruefstand-2026-09-13/doppelte-abschnitte-v23/v1",
+  "stand": "2026-10-04T17:35:50.629Z",
+  "abschnitte": 387
+ },
+ "rest": {
+  "behalten": [
+   "ABAC 169 (bis 2016-09-08, Zwilling BIQI)",
+   "ALQA 444 (bis 2017-10-05, Zwilling ADYX)",
+   "BPMX 833 (bis 2019-04-25, Zwilling TMBR)",
+   "IFON 447 (bis 2017-10-10, Zwilling AWSM)",
+   "LMCA 72 (bis 2016-04-15, Zwilling FWONA)",
+   "LMCK 72 (bis 2016-04-15, Zwilling FWONK)",
+   "MNGA 348 (bis 2017-05-19, Zwilling TRNX)",
+   "NAO 161 (bis 2016-08-22, Zwilling PSV)",
+   "NETE 99 (bis 2016-05-24, Zwilling BINI)",
+   "VICL 101 (bis 2016-05-26, Zwilling FRTX)"
+  ],
+  "ganzEntfernt": 377,
+  "regelVerletzt": []
+ },
+ "lebenszeit": "datenfundament-2026-10-04/phase2/lebenszeit-minuten/v1 (2026-10-03T21:33:22.875Z)",
+ "zeilen": {
+  "zeilenV22": 9904017,
+  "zeilenV23": 9663629,
+  "zwillingstagZeilen": 240388,
+  "restZeilen": 2746,
+  "restZeilenGanzEntfernt": 0,
+  "jahre": [
+   {
+    "jahr": 2016,
+    "v22": 983226,
+    "weg": 36753,
+    "v23": 946473,
+    "gleich": true
+   },
+   {
+    "jahr": 2017,
+    "v22": 976411,
+    "weg": 35892,
+    "v23": 940519,
+    "gleich": true
+   },
+   {
+    "jahr": 2018,
+    "v22": 964541,
+    "weg": 33595,
+    "v23": 930946,
+    "gleich": true
+   },
+   {
+    "jahr": 2019,
+    "v22": 943858,
+    "weg": 27751,
+    "v23": 916107,
+    "gleich": true
+   },
+   {
+    "jahr": 2020,
+    "v22": 940816,
+    "weg": 27774,
+    "v23": 913042,
+    "gleich": true
+   },
+   {
+    "jahr": 2021,
+    "v22": 1059973,
+    "weg": 31013,
+    "v23": 1028960,
+    "gleich": true
+   },
+   {
+    "jahr": 2022,
+    "v22": 1078321,
+    "weg": 23601,
+    "v23": 1054720,
+    "gleich": true
+   },
+   {
+    "jahr": 2023,
+    "v22": 962319,
+    "weg": 15808,
+    "v23": 946511,
+    "gleich": true
+   },
+   {
+    "jahr": 2024,
+    "v22": 849277,
+    "weg": 6369,
+    "v23": 842908,
+    "gleich": true
+   },
+   {
+    "jahr": 2025,
+    "v22": 720431,
+    "weg": 1516,
+    "v23": 718915,
+    "gleich": true
+   },
+   {
+    "jahr": 2026,
+    "v22": 424844,
+    "weg": 316,
+    "v23": 424528,
+    "gleich": true
+   }
+  ],
+  "verglichen": 9663629,
+  "unerklaert": 0,
+  "unerklaertJeSpalte": {},
+  "reihenZeilenAnders": []
+ },
+ "bitgleichGeprueft": [
+  "sym",
+  "tag",
+  "marken",
+  "klasse",
+  "kerzen",
+  "rohSchluss",
+  "rohEroeffnung",
+  "faktor",
+  "rendite",
+  "renditeOC",
+  "umsatzReg",
+  "umsatzAuktion"
+ ],
+ "stand_je_reihe": {
+  "schnitt": 164,
+  "rest": 10,
+  "ausTafelV21": 4678,
+  "ohneZeileInTafelV21": 2250,
+  "lebendV22": 2306,
+  "lebendV23": 2216,
+  "lebendAuf0": 90,
+  "lebendMitGrund": 0,
+  "lebendAnders": [],
+  "grundAnders": [],
+  "vorgaengerAnders": [],
+  "restAnders": []
+ },
+ "probeAufV23": {
+  "zaehler": {
+   "abschnitte": 7102,
+   "referenz": 1,
+   "ohneZeilen": 1,
+   "bisLetzterTag": 2215,
+   "endenVorher": 4885,
+   "zuKurzFuerA": 35,
+   "gepruefteEnden": 4850,
+   "nurA": 4,
+   "nurAWeiter": 2,
+   "abcOhneB1": 0,
+   "abcMitB1": 0,
+   "nurDurchB1": [],
+   "anB": 1,
+   "anC": 3,
+   "andererZwillingDurchB1": 0,
+   "doppelt": 0,
+   "zeilen": 0,
+   "gleicheTage": 0,
+   "zeilenOhneGegenstueck": 0,
+   "gruppen": 0,
+   "ketten": 0,
+   "kettenTiefe2": 0,
+   "behalteRegelWieNichtDoppelt": true,
+   "speicherSpitzeMB": 363
+  },
+  "nurA": [
+   "ACPW (PIOI b60/60 c1)",
+   "BTBT (DNJR b60/60 c0)",
+   "DNJR (BTBT b60/60 c0)",
+   "DTC (SBDS b4/60 c175)"
+  ],
+  "doppelt": []
+ },
+ "unerklaertBeispiele": [],
+ "speicherSpitzeMB": 358,
+ "sekunden": 9.5
+}
