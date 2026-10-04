@@ -62,6 +62,30 @@
  *      (erstes Jahr: / 100.000) - 1.
  *  L16 Doppelte Tage in einer Rohantwort: die erste Zeile gilt, die weiteren werden gezählt (kommt nicht vor).
  *      Zeilen ohne gültigen Schluss gehören nicht zum Kalender bzw. nicht zum TR der Reihe (kommt bis 15.09.2026 nicht vor).
+ *
+ * NACHRICHTLICHER TEIL (§7, entscheidet nichts; JSON-Schlüssel "nachrichtlich", Lesarten dort unter "lesarten"):
+ *  NL1 N1 (Schluss des Signaltags): Erstkauf zur Eröffnung von s in die Reihe des letzten Signals vor s. Weicht das
+ *      Signal des Tages d (s <= d < Endtag) von der gehaltenen Reihe ab, wird zum Schluss von d gewechselt:
+ *      Erlös = Stück_alt x C_alt(d) x 0,998, Stück_neu = Erlös / (C_neu(d) x 1,002). Die Ausschüttung des Tages d
+ *      (Anspruch nach Reihe und Stück zum Schluss von d-1, also der alten Reihe) wird zum Schluss von d ohne Kosten in
+ *      die NEUE Reihe zum Schluss angelegt und ist nicht Teil des gehandelten Volumens. Am Tag nach einem Wechsel zählt
+ *      die neue Reihe. Signal des Endtags: kein Wechsel. Fehlende Kurse sind in N1 nicht ausprogrammiert (Abbruch).
+ *  NL2 N2: Geld = SHY (R1, R3 und Vergleich in R2), Nicht-US = EFA, Anleihen = AGG; Signale neu auf den TR von
+ *      SHY/EFA gerechnet; sonst Hauptlesart.
+ *  NL3 N3 (nur R3): C(d) > SMA200(d) -> SPY, sonst BIL, ohne Band und ohne Gedächtnis; Ausführung nächste Eröffnung.
+ *  NL4 N4: alle Kosten 0 (auch Erstkauf); Maßstab unverändert.
+ *  NL5 N5 (nur R2): G = SPY falls r_SPY >= r_ACWX, sonst ACWX; r_G > r_BIL -> G, sonst AGG.
+ *  NL6 Zusatz §7.1: erster möglicher Tag = erster SPY-Handelstag nach dem ersten Monatsende, an dem R1 (zehn
+ *      Monatsenden TR_SPY), R2 (TR von SPY, SHY, EFA an M und M-12) und R3 (Zustand) ein Signal haben und AGG an M
+ *      einen Schlusskurs hat. Ende e(s) = letzter SPY-Handelstag <= Date.UTC(J+5, M-1, T) - 1 Tag. Reihen SHY/EFA/AGG,
+ *      sonst Hauptlesart. Stichprobe = Starttage mit Index 0, 200, 400, ... ab dem ersten möglichen Tag (solange
+ *      <= 16.09.2021) plus 16.09.2021. Zusätzlich über ALLE Fenster: Anteil vorn, Median/Min/Max des Abstands, Median
+ *      und schlechtester Rückschlag, Anteil mit flacherem Rückschlag als SPY (strikt: Regel > SPY); 10-/90-%-Punkte
+ *      werden nicht gerechnet, weil REGEL.md die Quantildefinition nicht festlegt.
+ *  NL9 Ergänzung (Abgleich mit dem Lauf): Hält eine Regel SPY über den ganzen größten Rückschlag, sind beide
+ *      Rückschläge mathematisch gleich und Gleitkomma-Rauschen (~1e-16) entscheidet die strikte Zählung. Daher
+ *      zusätzlich: "flacher mit Toleranz" = Rückschlag_Regel > Rückschlag_SPY + 1e-9; |Differenz| <= 1e-9 = "gleich".
+ *      Die strikte Zählung (anteilFlacherAlsSpy) bleibt unverändert stehen.
  */
 
 const fs = require('fs');
@@ -253,8 +277,12 @@ for (let i = 0; i + 1 < N; i++) {
 // Reihen auf den Kalender legen, Gesamtertragsindex §2.5
 const R = {};
 const zaehler = { ausschVerschobenTR: 0, ausschOhneZeileDanach: 0, ausschAusserhalbKalender: 0, zeilenAusserhalbKalender: 0 };
-for (const sym of REIHEN) {
+// Ersatzreihen SHY/EFA (nur für den nachrichtlichen Teil) mit eigenem Zähler, damit der Hauptteil unverändert bleibt
+const zaehlerErsatz = { ausschVerschobenTR: 0, ausschOhneZeileDanach: 0, ausschAusserhalbKalender: 0, zeilenAusserhalbKalender: 0 };
+for (const sym of REIHEN.concat(['SHY', 'EFA'])) {
+  if (!roh[sym]) continue;
   const x = roh[sym];
+  const zz = REIHEN.includes(sym) ? zaehler : zaehlerErsatz;
   const O = new Array(N).fill(null);
   const C = new Array(N).fill(null);
   const D = new Array(N).fill(0);
@@ -266,8 +294,8 @@ for (const sym of REIHEN) {
   let j = 0;
   for (const a of x.aussch) {
     while (j < mitSchluss.length && mitSchluss[j].tag < a.tag) j++;
-    if (j >= mitSchluss.length) { zaehler.ausschOhneZeileDanach++; continue; }
-    if (mitSchluss[j].tag !== a.tag) zaehler.ausschVerschobenTR++;
+    if (j >= mitSchluss.length) { zz.ausschOhneZeileDanach++; continue; }
+    if (mitSchluss[j].tag !== a.tag) zz.ausschVerschobenTR++;
     const t = mitSchluss[j].tag;
     dZeile.set(t, (dZeile.get(t) || 0) + a.betrag);
   }
@@ -278,7 +306,7 @@ for (const sym of REIHEN) {
     tr = tr === null ? 1 : tr * (z.c + dd) / cVor;
     cVor = z.c;
     const i = kalIdx.get(z.tag);
-    if (i === undefined) { zaehler.zeilenAusserhalbKalender++; if (dd) zaehler.ausschAusserhalbKalender++; continue; }
+    if (i === undefined) { zz.zeilenAusserhalbKalender++; if (dd) zz.ausschAusserhalbKalender++; continue; }
     TR[i] = tr;
     D[i] = dd;
     C[i] = z.c;
@@ -791,6 +819,405 @@ const auffaelligkeiten = [];
   auffaelligkeiten.push({ was: 'Splits bis 15.09.2026 (Kurse und Beträge bei Yahoo bereinigt, ohne Wirkung auf das Buch, L7)', splits: Object.keys(roh).map((s) => roh[s].splits.map((p) => s + ' ' + p.tag + ' ' + p.text)).flat() });
 }
 
+// ---------------------------------------------------------------- Nachrichtlich §7 (entscheidet nichts)
+const LESARTEN_N = [
+  'NL1 N1: Erstkauf zur Eröffnung von s in die Reihe des letzten Signals vor s; weicht das Signal des Tages d (s <= d < Endtag) von der gehaltenen Reihe ab, Wechsel zum Schluss von d: Erlös = Stück_alt x C_alt(d) x 0,998, Stück_neu = Erlös/(C_neu(d) x 1,002). Die Ausschüttung des Tages d (Anspruch nach Reihe/Stück zum Schluss von d-1, also der alten Reihe) wird zum Schluss von d ohne Kosten in die NEUE Reihe angelegt und ist nicht Teil des gehandelten Volumens; am Folgetag zählt die neue Reihe. Signal des Endtags: kein Wechsel. Fehlende Kurse in N1 nicht ausprogrammiert (Abbruch; kommt nicht vor).',
+  'NL2 N2: Geld = SHY (R1, R3, Vergleich in R2), Nicht-US = EFA, Anleihen = AGG; Signale neu auf den TR von SHY/EFA; sonst Hauptlesart.',
+  'NL3 N3 (nur R3): C(d) > SMA200(d) -> SPY, sonst BIL, ohne Band und Gedächtnis; Ausführung zur nächsten Eröffnung.',
+  'NL4 N4: alle Kosten 0, auch beim Erstkauf; Maßstab unverändert.',
+  'NL5 N5 (nur R2): G = SPY, falls r_SPY >= r_ACWX, sonst ACWX; r_G > r_BIL -> G, sonst AGG.',
+  'NL6 Zusatz §7.1: erster möglicher Tag = erster SPY-Handelstag nach dem ersten Monatsende, an dem R1 (zehn Monatsenden TR_SPY), R2 (TR von SPY, SHY, EFA an M und M-12) und R3 (Zustand) ein Signal haben und AGG an M einen Schluss hat. Ende e(s) = letzter SPY-Handelstag <= Date.UTC(J+5, M-1, T) - 1 Tag. Reihen SHY/EFA/AGG, sonst Hauptlesart (nächste Eröffnung, 20 bp, Band).',
+  'NL7 Stichprobe = Starttage mit Index 0, 200, 400, ... ab dem ersten möglichen Tag (solange <= 16.09.2021) plus 16.09.2021. Über ALLE Fenster zusätzlich: Anteil vorn, Median/Min/Max des Abstands, Median und schlechtester Rückschlag, Anteil mit flacherem Rückschlag als SPY (strikt Regel > SPY). 10-/90-%-Punkte nicht gerechnet (Quantildefinition in REGEL.md nicht festgelegt).',
+  'NL8 "über alle Starttage" (§7.2) = dieselben 22 Starttage je Fenster wie im Hauptteil, Abstand gegen denselben Maßstab SPY.',
+];
+const probenN = [];
+function probeN(name, ok, detail) {
+  probenN.push({ name, ok: Boolean(ok), detail: detail === undefined ? null : detail });
+}
+
+function signaleR1(geld) {
+  const sig = new Array(N).fill(null);
+  for (let m = 9; m < monatsenden.length; m++) {
+    const i = monatsenden[m];
+    let summe = 0;
+    for (let k = m - 9; k <= m; k++) summe += R.SPY.TR[monatsenden[k]];
+    sig[i] = R.SPY.TR[i] > summe / 10 ? 'SPY' : geld;
+  }
+  return sig;
+}
+function signaleR2(geld, nichtUS, n5) {
+  const sig = new Array(N).fill(null);
+  for (const i of monatsenden) {
+    const mon = kal[i].slice(0, 7);
+    const i12 = monatsendeNachMonat.get(String(Number(mon.slice(0, 4)) - 1) + mon.slice(4));
+    if (i12 === undefined) continue;
+    const r = {};
+    let ok = true;
+    for (const sym of ['SPY', geld, nichtUS]) {
+      const a = R[sym].TR[i];
+      const b = R[sym].TR[i12];
+      if (a === null || b === null) { ok = false; break; }
+      r[sym] = a / b - 1;
+    }
+    if (!ok) continue;
+    if (n5) {
+      const g = r.SPY >= r[nichtUS] ? 'SPY' : nichtUS;
+      sig[i] = r[g] > r[geld] ? g : ANLEIHEN;
+    } else if (r.SPY > r[geld]) {
+      sig[i] = r.SPY >= r[nichtUS] ? 'SPY' : nichtUS;
+    } else {
+      sig[i] = ANLEIHEN;
+    }
+  }
+  return sig;
+}
+function sollR3(geld, mitBand) {
+  const soll = new Array(N).fill(null);
+  let z = null;
+  for (let i = 199; i < N; i++) {
+    let summe = 0;
+    for (let k = i - 199; k <= i; k++) summe += R.SPY.C[k];
+    const sma = summe / 200;
+    const c = R.SPY.C[i];
+    if (!mitBand || i === 199) z = c > sma;
+    else if (z) z = !(c <= 0.99 * sma);
+    else z = c >= 1.01 * sma;
+    soll[i] = z ? 'SPY' : geld;
+  }
+  return soll;
+}
+function gleicheFolge(a, b) {
+  for (let i = 0; i < N; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+const SOLL_N = {
+  haupt: SOLL,
+  ersatz: {
+    R1: sollAusMonatssignal(signaleR1('SHY')),
+    R2: sollAusMonatssignal(signaleR2('SHY', 'EFA', false)),
+    R3: sollR3('SHY', true),
+  },
+  n3R3: sollR3(GELD, false),
+  n5R2: sollAusMonatssignal(signaleR2(GELD, NICHTUS, true)),
+};
+probeN('Generische Signale mit Hauptlesart-Parametern = Signale des Hauptteils (R1, R2, R3, Tag für Tag)',
+  gleicheFolge(sollAusMonatssignal(signaleR1(GELD)), SOLL.R1) &&
+  gleicheFolge(sollAusMonatssignal(signaleR2(GELD, NICHTUS, false)), SOLL.R2) &&
+  gleicheFolge(sollR3(GELD, true), SOLL.R3));
+probeN('Zeilen von SHY/EFA außerhalb des SPY-Kalenders und Ausschüttungen ohne Zeile (Erwartung 0)',
+  zaehlerErsatz.zeilenAusserhalbKalender === 0 && zaehlerErsatz.ausschVerschobenTR === 0 && zaehlerErsatz.ausschOhneZeileDanach === 0,
+  zaehlerErsatz);
+{
+  const i = kalIdx.get('2005-06-09');
+  const sp = roh.EFA ? roh.EFA.splits.find((x) => x.tag === '2005-06-09') : undefined;
+  const sprung = R.EFA.C[i] / R.EFA.C[i - 1] - 1;
+  probeN('EFA-Split 09.06.2005 (3:1): Schluss ohne Sprung (Kurse bereinigt)', sp !== undefined && Math.abs(sprung) < 0.05,
+    { split: sp || null, sprungSchluss: sprung });
+}
+
+// Buch N1: Wechsel zum Schluss des Signaltags (NL1)
+function rechneBuchSchluss(soll, s, e, satz) {
+  function preis(arr, sym, i) {
+    const v = R[sym][arr][i];
+    if (v === null) throw new Error('N1: Kurs fehlt (' + sym + ' ' + arr + ' ' + kal[i] + '), nicht ausprogrammiert');
+    return v;
+  }
+  let reihe = soll[s - 1];
+  if (reihe === null) throw new Error('kein Signal vor ' + kal[s]);
+  const o0 = preis('O', reihe, s);
+  let stueck = KAPITAL / (o0 * (1 + satz));
+  const kostenErstkauf = stueck * o0 * satz;
+  const startReihe = reihe;
+  let kostenWechsel = 0;
+  const wechsel = [];
+  const werte = new Array(e - s + 1);
+  const gehalten = new Array(e - s + 1);
+  let vorReihe = null;
+  let vorStueck = 0;
+  let ausschZahl = 0;
+  let ausschSumme = 0;
+  for (let i = s; i <= e; i++) {
+    const ziel = soll[i];
+    if (i < e && ziel !== null && ziel !== reihe) {
+      const pv = preis('C', reihe, i);
+      const pk = preis('C', ziel, i);
+      const kostenV = stueck * pv * satz;
+      const erloes = stueck * pv * (1 - satz);
+      const neu = erloes / (pk * (1 + satz));
+      const kostenK = neu * pk * satz;
+      kostenWechsel += kostenV + kostenK;
+      wechsel.push({ tag: kal[i], signalTag: kal[i], von: reihe, nach: ziel, kosten: kostenV + kostenK });
+      reihe = ziel;
+      stueck = neu;
+    }
+    const c = preis('C', reihe, i);
+    if (vorReihe !== null) {
+      const d = R[vorReihe].D[i];
+      if (d > 0) {
+        const betrag = vorStueck * d;
+        stueck += betrag / c;
+        ausschZahl++;
+        ausschSumme += betrag;
+      }
+    }
+    werte[i - s] = stueck * c;
+    gehalten[i - s] = reihe;
+    vorReihe = reihe;
+    vorStueck = stueck;
+  }
+  return {
+    s, e, startReihe, werte, gehalten, wechsel, kostenErstkauf, kostenWechsel, ausschZahl, ausschSumme,
+    endwert: werte[werte.length - 1], fehlend: { fehlendeKurse: 0, verschobeneWechsel: 0, ersatz: [] },
+  };
+}
+// Renditekette zu N1 (Probe)
+function ketteSchluss(soll, s, e, satz) {
+  let a = soll[s - 1];
+  let v = KAPITAL / (1 + satz) * R[a].C[s] / R[a].O[s];
+  if (s < e && soll[s] !== a) { v = v * (1 - satz) / (1 + satz); a = soll[s]; }
+  for (let i = s + 1; i <= e; i++) {
+    const b = i < e ? soll[i] : a;
+    if (b !== a) v = v / R[a].C[i - 1] * (R[a].C[i] * (1 - satz) / (1 + satz) + R[a].D[i]);
+    else v = v * (R[a].C[i] + R[a].D[i]) / R[a].C[i - 1];
+    a = b;
+  }
+  return v;
+}
+
+function kurzErgebnis(b, spyB) {
+  const t = tageZwischen(kal[b.s], kal[b.e]);
+  const kr = kennzahlen(b);
+  return {
+    endwert: b.endwert, endwertCent: cent(b.endwert), abstandZurHalbCentGrenzeDollar: centGrenze(b.endwert),
+    pa: kr.pa, abstandPp: (kr.pa - pa(spyB.endwert, t)) * 100, vorn: b.endwert > spyB.endwert,
+    startReihe: b.startReihe, wechsel: b.wechsel.length,
+    wechselListe: b.wechsel.map((w) => ({ tag: w.tag, von: w.von, nach: w.nach })),
+    kosten: b.kostenErstkauf + b.kostenWechsel,
+    groessterRueckschlag: kr.groessterRueckschlag,
+    fehlendeKurse: b.fehlend.fehlendeKurse + spyB.fehlend.fehlendeKurse,
+  };
+}
+
+const VARIANTEN = [
+  { name: 'N1', regeln: ['R1', 'R2', 'R3'], soll: (rg) => SOLL[rg], buch: rechneBuchSchluss, satz: KOSTEN },
+  { name: 'N2', regeln: ['R1', 'R2', 'R3'], soll: (rg) => SOLL_N.ersatz[rg], buch: rechneBuch, satz: KOSTEN },
+  { name: 'N3', regeln: ['R3'], soll: () => SOLL_N.n3R3, buch: rechneBuch, satz: KOSTEN },
+  { name: 'N4', regeln: ['R1', 'R2', 'R3'], soll: (rg) => SOLL[rg], buch: rechneBuch, satz: 0 },
+  { name: 'N5', regeln: ['R2'], soll: () => SOLL_N.n5R2, buch: rechneBuch, satz: KOSTEN },
+];
+
+const nachFenster = {};
+for (const fn of ['A', 'B']) {
+  const F = FENSTER[fn];
+  const e = kalIdx.get(F.ende);
+  const starttage = [];
+  for (let i = 0; i < N; i++) if (kal[i] >= F.erster && kal[i] < F.grenze) starttage.push(i);
+  const s0 = starttage[0];
+  const spyB = new Map(starttage.map((s) => [s, rechneBuch(SPY_IMMER, s, e, 0)]));
+  const spy0 = spyB.get(s0);
+  const spyKz = kennzahlen(spy0);
+  probeN('Fenster ' + fn + ': Maßstab SPY = Hauptteil (bit-gleich)', spy0.endwert === ergebnis[fn].regeln.R1.k0.spy.endwert);
+  const varianten = {};
+  for (const V of VARIANTEN) {
+    varianten[V.name] = {};
+    for (const rg of V.regeln) {
+      const soll = V.soll(rg);
+      const b0 = V.buch(soll, s0, e, V.satz);
+      const k0 = kurzErgebnis(b0, spy0);
+      if (V.name === 'N1') {
+        const kt = ketteSchluss(soll, s0, e, V.satz);
+        probeN('Fenster ' + fn + ' N1 ' + rg + ': Stückbuch = Renditekette (rel. < 1e-9)', Math.abs(kt / b0.endwert - 1) < 1e-9,
+          { buch: b0.endwert, kette: kt });
+      } else {
+        const kt = kette(soll, s0, e, V.satz);
+        probeN('Fenster ' + fn + ' ' + V.name + ' ' + rg + ': Stückbuch = Renditekette (rel. < 1e-9)', Math.abs(kt / b0.endwert - 1) < 1e-9,
+          { buch: b0.endwert, kette: kt });
+      }
+      const abst = [];
+      let vorn = 0;
+      let fehl = 0;
+      for (const s of starttage) {
+        const b = s === s0 ? b0 : V.buch(soll, s, e, V.satz);
+        const sp = spyB.get(s);
+        const t = tageZwischen(kal[s], kal[e]);
+        abst.push((pa(b.endwert, t) - pa(sp.endwert, t)) * 100);
+        if (b.endwert > sp.endwert) vorn++;
+        fehl += b.fehlend.fehlendeKurse + sp.fehlend.fehlendeKurse;
+      }
+      probeN('Fenster ' + fn + ' ' + V.name + ' ' + rg + ': fehlende Kurse über alle Starttage = 0', fehl === 0, fehl);
+      varianten[V.name][rg] = {
+        k0,
+        ueberStarttage: {
+          starttage: starttage.length, vorn, anteilVorn: vorn / starttage.length,
+          medianAbstandPp: median(abst), minimumAbstandPp: Math.min(...abst), maximumAbstandPp: Math.max(...abst),
+        },
+      };
+    }
+  }
+  // N4 ohne Kosten muss jede Regel mit Kosten übertreffen, wenn die Wechseltage gleich sind
+  for (const rg of REGELN) {
+    const mit = ergebnis[fn].regeln[rg].k0;
+    const ohne = varianten.N4[rg].k0;
+    const gleicheTage = JSON.stringify(mit.wechselListe.map((w) => w.tag)) === JSON.stringify(ohne.wechselListe.map((w) => w.tag));
+    probeN('Fenster ' + fn + ' N4 ' + rg + ': gleiche Wechseltage wie Hauptlesart und Endwert ohne Kosten > mit Kosten',
+      gleicheTage && ohne.endwert > mit.regel.endwert, { mitKosten: mit.regel.endwert, ohneKosten: ohne.endwert });
+  }
+  nachFenster[fn] = {
+    start: kal[s0], ende: kal[e],
+    spy: { endwert: spy0.endwert, endwertCent: cent(spy0.endwert), pa: spyKz.pa, groessterRueckschlag: spyKz.groessterRueckschlag },
+    varianten,
+  };
+}
+
+// Zusatz §7.1 mit Ersatzreihen (NL6, NL7)
+function fuenfJahreEnde(tag) {
+  const grenze = new Date(Date.UTC(Number(tag.slice(0, 4)) + 5, Number(tag.slice(5, 7)) - 1, Number(tag.slice(8, 10))) - 86400000)
+    .toISOString().slice(0, 10);
+  let lo = 0;
+  let hi = N - 1;
+  if (kal[hi] <= grenze) return hi;
+  while (hi - lo > 1) { // kal[lo] <= grenze < kal[hi]
+    const mid = (lo + hi) >> 1;
+    if (kal[mid] <= grenze) lo = mid; else hi = mid;
+  }
+  return lo;
+}
+const zusatz = {};
+{
+  const SE = SOLL_N.ersatz;
+  const sigR1 = signaleR1('SHY');
+  const sigR2 = signaleR2('SHY', 'EFA', false);
+  let meErst = null;
+  for (const i of monatsenden) {
+    if (sigR1[i] !== null && sigR2[i] !== null && SE.R3[i] !== null && R.AGG.C[i] !== null) { meErst = i; break; }
+  }
+  const f = meErst + 1;
+  probeN('Zusatz: erster möglicher Tag = 2003-10-01 (Erwartung §7.1)', kal[f] === '2003-10-01', { monatsende: kal[meErst], ersterTag: kal[f] });
+  {
+    let luecken = 0;
+    for (const sym of ['SPY', 'SHY', 'EFA', 'AGG']) for (let i = f; i < N; i++) if (R[sym].C[i] === null || R[sym].O[i] === null) luecken++;
+    probeN('Zusatz: keine Lücken von SPY/SHY/EFA/AGG gegen den SPY-Kalender ab dem ersten möglichen Tag', luecken === 0, luecken);
+  }
+  const letzter = kalIdx.get('2021-09-16');
+  const zahl = letzter - f + 1;
+  // Gesamtlauf
+  const eG = N - 1;
+  const spyG = rechneBuch(SPY_IMMER, f, eG, 0);
+  const spyGk = kennzahlen(spyG);
+  const tG = tageZwischen(kal[f], kal[eG]);
+  const gesamt = {
+    start: kal[f], ende: kal[eG], tage: tG,
+    spy: {
+      endwert: spyG.endwert, endwertCent: cent(spyG.endwert), pa: spyGk.pa,
+      groessterRueckschlag: spyGk.groessterRueckschlag, laengsteZeitUnterWasser: spyGk.laengsteZeitUnterWasser,
+      anteilHandelstageUnterWasser: spyGk.anteilHandelstageUnterWasser,
+    },
+  };
+  {
+    const immer = rechneBuch(SPY_IMMER, f, eG, KOSTEN);
+    probeN('Zusatz-Gesamtlauf: Regel "immer SPY" mit Kosten = SPY-Endwert x (1/1,002)',
+      Math.abs(immer.endwert / (spyG.endwert / 1.002) - 1) < 1e-12, { immerSpy: immer.endwert, spy: spyG.endwert });
+  }
+  for (const rg of REGELN) {
+    const b = rechneBuch(SE[rg], f, eG, KOSTEN);
+    const k = kennzahlen(b);
+    const kt = kette(SE[rg], f, eG, KOSTEN);
+    probeN('Zusatz-Gesamtlauf ' + rg + ': Stückbuch = Renditekette (rel. < 1e-9) und fehlende Kurse = 0',
+      Math.abs(kt / b.endwert - 1) < 1e-9 && b.fehlend.fehlendeKurse === 0, { buch: b.endwert, kette: kt, fehlend: b.fehlend.fehlendeKurse });
+    gesamt[rg] = {
+      endwert: b.endwert, endwertCent: cent(b.endwert), abstandZurHalbCentGrenzeDollar: centGrenze(b.endwert),
+      pa: k.pa, abstandPp: (k.pa - spyGk.pa) * 100, vorn: b.endwert > spyG.endwert, startReihe: b.startReihe,
+      wechsel: b.wechsel.length, wechselJeJahr: b.wechsel.length / (tG / 365.25),
+      wechselListe: b.wechsel.map((w) => ({ tag: w.tag, von: w.von, nach: w.nach })),
+      kosten: { gesamt: b.kostenErstkauf + b.kostenWechsel, erstkauf: b.kostenErstkauf, wechsel: b.kostenWechsel },
+      groessterRueckschlag: k.groessterRueckschlag, laengsteZeitUnterWasser: k.laengsteZeitUnterWasser,
+      anteilHandelstageUnterWasser: k.anteilHandelstageUnterWasser, anteilTageJeReihe: k.anteilTageJeReihe,
+      fehlendeKurse: b.fehlend.fehlendeKurse,
+    };
+  }
+  // alle rollierenden Fenster, Stichprobe ausgeben
+  const stich = new Set();
+  for (let k = 0; f + k <= letzter; k += 200) stich.add(f + k);
+  stich.add(letzter);
+  const stichprobe = [];
+  const sammel = {};
+  for (const rg of REGELN) sammel[rg] = { abst: [], vorn: 0, rsR: [], rsS: [], flacher: 0, flacherTol: 0, gleich: 0, fehl: 0 };
+  let endeOk = true;
+  for (let s = f; s <= letzter; s++) {
+    const e = fuenfJahreEnde(kal[s]);
+    if (!(e > s)) endeOk = false;
+    const sp = rechneBuch(SPY_IMMER, s, e, 0);
+    const spK = kennzahlen(sp);
+    const zeile = stich.has(s) ? {
+      index: s - f, start: kal[s], ende: kal[e],
+      spy: { endwert: sp.endwert, endwertCent: cent(sp.endwert), groessterRueckschlag: spK.groessterRueckschlag.wert },
+    } : null;
+    for (const rg of REGELN) {
+      const b = rechneBuch(SE[rg], s, e, KOSTEN);
+      const k = kennzahlen(b);
+      const a = (k.pa - spK.pa) * 100;
+      const z = sammel[rg];
+      z.abst.push(a);
+      if (b.endwert > sp.endwert) z.vorn++;
+      z.rsR.push(k.groessterRueckschlag.wert);
+      z.rsS.push(spK.groessterRueckschlag.wert);
+      if (k.groessterRueckschlag.wert > spK.groessterRueckschlag.wert) z.flacher++;
+      // NL9: Gleichstand mit Toleranz 1e-9 (Gleitkomma-Rauschen bei mathematisch gleichem Rückschlag)
+      const dRs = k.groessterRueckschlag.wert - spK.groessterRueckschlag.wert;
+      if (Math.abs(dRs) <= 1e-9) z.gleich++;
+      else if (dRs > 1e-9) z.flacherTol++;
+      z.fehl += b.fehlend.fehlendeKurse + sp.fehlend.fehlendeKurse;
+      if (zeile) {
+        zeile[rg] = {
+          endwert: b.endwert, endwertCent: cent(b.endwert), abstandPp: a, vorn: b.endwert > sp.endwert,
+          wechsel: b.wechsel.length, groessterRueckschlag: k.groessterRueckschlag.wert,
+        };
+      }
+    }
+    if (zeile) stichprobe.push(zeile);
+  }
+  probeN('Zusatz: jedes Fenster hat ein Ende nach dem Start; letztes Fenster 16.09.2021 endet am 15.09.2026',
+    endeOk && kal[fuenfJahreEnde('2021-09-16')] === '2026-09-15');
+  const alle = {};
+  for (const rg of REGELN) {
+    const z = sammel[rg];
+    alle[rg] = {
+      fenster: z.abst.length, vorn: z.vorn, anteilVorn: z.vorn / z.abst.length,
+      medianAbstandPp: median(z.abst), minimumAbstandPp: Math.min(...z.abst), maximumAbstandPp: Math.max(...z.abst),
+      medianRueckschlagRegel: median(z.rsR), medianRueckschlagSpy: median(z.rsS),
+      schlechtesterRueckschlagRegel: Math.min(...z.rsR), schlechtesterRueckschlagSpy: Math.min(...z.rsS),
+      anteilFlacherAlsSpy: z.flacher / z.abst.length, fehlendeKurse: z.fehl,
+      flacherAlsSpyToleranz: z.flacherTol,
+      anteilFlacherAlsSpyToleranz: z.flacherTol / z.abst.length,
+      gleichWieSpy: z.gleich,
+    };
+    probeN('Zusatz ' + rg + ': fehlende Kurse über alle Fenster = 0', z.fehl === 0, z.fehl);
+  }
+  // Querprobe: letztes Zusatzfenster = N2 beim Start am ersten Tag in B
+  const letzteZeile = stichprobe[stichprobe.length - 1];
+  probeN('Zusatz: Fenster 16.09.2021 = N2 k = 0 in B (alle drei Regeln, bit-gleich)',
+    REGELN.every((rg) => letzteZeile[rg].endwert === nachFenster.B.varianten.N2[rg].k0.endwert));
+  zusatz.ersterMoeglicherTag = kal[f];
+  zusatz.monatsendeDesErstenSignals = kal[meErst];
+  zusatz.starttageZahl = zahl;
+  zusatz.letzterStarttag = kal[letzter];
+  zusatz.gesamtlauf = gesamt;
+  zusatz.stichprobeZahl = stichprobe.length;
+  zusatz.stichprobe = stichprobe;
+  zusatz.alleFenster = alle;
+  zusatz.lesartToleranz = 'NL9: flacherAlsSpyToleranz zählt Fenster mit Rückschlag_Regel > Rückschlag_SPY + 1e-9; gleichWieSpy zählt |Rückschlag_Regel - Rückschlag_SPY| <= 1e-9 (mathematisch gleicher Rückschlag, wenn die Regel über die ganze Strecke SPY hält). anteilFlacherAlsSpy (strikt, ohne Toleranz) bleibt unverändert.';
+}
+
+const nachrichtlich = {
+  hinweis: 'Nachrichtlich nach §7, entscheidet nichts. Eigener Code (zweitrechner.js), nur REGEL.md und Rohdaten.',
+  lesarten: LESARTEN_N,
+  proben: probenN,
+  probenOk: probenN.every((p) => p.ok),
+  fenster: nachFenster,
+  zusatz,
+};
+
 // ---------------------------------------------------------------- Ausgabe
 const dateien = {};
 for (const s of Object.keys(roh)) {
@@ -823,6 +1250,7 @@ const ausgabe = {
   urteile,
   signale,
   auffaelligkeiten,
+  nachrichtlich,
 };
 fs.writeFileSync(AUS, JSON.stringify(ausgabe, null, 2) + '\n', 'utf8');
 
@@ -849,7 +1277,30 @@ for (const fn of ['A', 'B']) {
 }
 console.log('\nUrteile §5.3:');
 for (const rg of REGELN) console.log('  ' + rg + ': ' + urteile[rg].urteil + (urteile[rg].verfehlt.length ? ' — verfehlt: ' + urteile[rg].verfehlt.join('; ') : ''));
+console.log('\nNachrichtlich §7 (entscheidet nichts), k = 0:');
+for (const fn of ['A', 'B']) {
+  const F = nachrichtlich.fenster[fn];
+  for (const v of Object.keys(F.varianten)) {
+    for (const rg of Object.keys(F.varianten[v])) {
+      const k = F.varianten[v][rg].k0;
+      console.log('  ' + fn + ' ' + v + ' ' + rg + ': ' + k.endwertCent + '  Abstand ' + pp(k.abstandPp) + ' Pp  Wechsel ' + k.wechsel +
+        '  Rückschlag ' + pz(k.groessterRueckschlag.wert));
+    }
+  }
+}
+{
+  const g = nachrichtlich.zusatz.gesamtlauf;
+  console.log('Zusatz-Gesamtlauf ' + g.start + ' .. ' + g.ende + ': SPY ' + g.spy.endwertCent + ' (Rückschlag ' + pz(g.spy.groessterRueckschlag.wert) + ')');
+  for (const rg of REGELN) {
+    console.log('  ' + rg + ': ' + g[rg].endwertCent + '  Abstand ' + pp(g[rg].abstandPp) + ' Pp  Wechsel ' + g[rg].wechsel +
+      '  Rückschlag ' + pz(g[rg].groessterRueckschlag.wert) + ' (' + g[rg].groessterRueckschlag.spitzeTag + ' bis ' + g[rg].groessterRueckschlag.tiefTag + ')');
+  }
+  const z = nachrichtlich.zusatz;
+  console.log('Zusatz-Fenster: ' + z.starttageZahl + ' Starttage, Stichprobe ' + z.stichprobeZahl + '; vorn R1/R2/R3: ' +
+    REGELN.map((rg) => z.alleFenster[rg].vorn).join('/'));
+}
 console.log('\nProben:');
 for (const p of proben) console.log('  ' + (p.ok ? 'ok     ' : 'FEHLER ') + p.name);
-console.log('\n' + (ausgabe.probenOk ? 'Alle Proben ok.' : 'MINDESTENS EINE PROBE FEHLER.') + ' Geschrieben: ' + AUS);
-if (!ausgabe.probenOk) process.exitCode = 1;
+for (const p of probenN) console.log('  ' + (p.ok ? 'ok     ' : 'FEHLER ') + '[nachrichtlich] ' + p.name);
+console.log('\n' + (ausgabe.probenOk && nachrichtlich.probenOk ? 'Alle Proben ok.' : 'MINDESTENS EINE PROBE FEHLER.') + ' Geschrieben: ' + AUS);
+if (!ausgabe.probenOk || !nachrichtlich.probenOk) process.exitCode = 1;

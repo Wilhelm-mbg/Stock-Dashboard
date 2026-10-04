@@ -67,6 +67,10 @@ if (fs.existsSync(path.join(DATEN, 'SPY.json'))) {
 } else console.log('  (daten/ fehlt: Teil 2 und 3 übersprungen - erst laden.js laufen lassen)');
 
 /* ---------- Teil 3 ---------- */
+/* ergebnis.json speichert jede Kommazahl auf zehn Nachkommastellen (lauf.js); Abgleiche von Anteilen und Renditen deshalb auf 1e-9.
+ * (Zuerst stand hier 1e-12: 23 Zusicherungen wurden nach dem Lauf rot, alle mit Abstand unter 5e-11 = der Rundung der Ablage;
+ * die Zusicherung mass die Ablage, nicht die Rechnung. Endwerte werden weiter auf den Cent verglichen.) */
+var TOL = 1e-9;
 var ERG = path.join(ORDNER, 'ergebnis.json'), ZW = path.join(ORDNER, 'zweitrechner.json');
 if (D && fs.existsSync(ERG)) {
   var E = JSON.parse(fs.readFileSync(ERG, 'utf8'));
@@ -74,6 +78,7 @@ if (D && fs.existsSync(ERG)) {
     var sha = crypto.createHash('sha256').update(fs.readFileSync(path.join(ORDNER, f))).digest('hex');
     ok('ergebnis.json kam aus dem heutigen ' + f, sha === E.lauf.code[f]);
   });
+  ok('Korrektur 1 vermerkt (Rückschlag-Gleichstand im Zusatz)', E.korrekturen.length === 1 && E.korrekturen[0].nr === 1);
   ['R1', 'R2', 'R3'].forEach(function (r) {
     var m = E.regeln[r];
     var u = K.urteil(m.fenster);
@@ -101,15 +106,15 @@ if (D && fs.existsSync(ERG)) {
         ok(r + f + ' k=0: Wechsel gleich (Tag, von, nach)', wa === wz, wa + ' / ' + wz);
         nah(r + f + ' k=0: Abstand Pp', k.abstandPp, zk.abstandPp, 1e-9);
         nah(r + f + ' k=0: Kosten', k.kosten, zk.kosten.gesamt, 1e-6);
-        nah(r + f + ' k=0: größter Rückschlag Regel', k.regel.maxRueckschlag, zk.regel.groessterRueckschlag.wert, 1e-12);
-        nah(r + f + ' k=0: größter Rückschlag SPY', k.spy.maxRueckschlag, zk.spy.groessterRueckschlag.wert, 1e-12);
+        nah(r + f + ' k=0: größter Rückschlag Regel', k.regel.maxRueckschlag, zk.regel.groessterRueckschlag.wert, TOL);
+        nah(r + f + ' k=0: größter Rückschlag SPY', k.spy.maxRueckschlag, zk.spy.groessterRueckschlag.wert, TOL);
         ok(r + f + ' k=0: längste Zeit unter Wasser Regel', k.regel.unterWasser.tage === zk.regel.laengsteZeitUnterWasser.tage && k.regel.unterWasser.von === zk.regel.laengsteZeitUnterWasser.von &&
           k.regel.unterWasser.bis === zk.regel.laengsteZeitUnterWasser.bis && k.regel.unterWasser.erholt === zk.regel.laengsteZeitUnterWasser.erholt,
           JSON.stringify(k.regel.unterWasser) + ' / ' + JSON.stringify(zk.regel.laengsteZeitUnterWasser));
         ok(r + f + ' k=0: längste Zeit unter Wasser SPY', k.spy.unterWasser.tage === zk.spy.laengsteZeitUnterWasser.tage && k.spy.unterWasser.von === zk.spy.laengsteZeitUnterWasser.von,
           JSON.stringify(k.spy.unterWasser) + ' / ' + JSON.stringify(zk.spy.laengsteZeitUnterWasser));
-        nah(r + f + ' k=0: Anteil Tage unter Wasser', k.regel.anteilTageUnterWasser, zk.regel.anteilHandelstageUnterWasser, 1e-12);
-        ok(r + f + ' k=0: Kalenderjahre', k.kalenderjahre.every(function (j) { return Math.abs(j.regel - zk.regel.kalenderjahre[String(j.jahr)]) < 1e-12 && Math.abs(j.spy - zk.spy.kalenderjahre[String(j.jahr)]) < 1e-12; }));
+        nah(r + f + ' k=0: Anteil Tage unter Wasser', k.regel.anteilTageUnterWasser, zk.regel.anteilHandelstageUnterWasser, TOL);
+        ok(r + f + ' k=0: Kalenderjahre', k.kalenderjahre.every(function (j) { return Math.abs(j.regel - zk.regel.kalenderjahre[String(j.jahr)]) < TOL && Math.abs(j.spy - zk.spy.kalenderjahre[String(j.jahr)]) < TOL; }));
         var st = a.starttage.liste, zst = z.starttage;
         var stGleich = st.length === zst.length && st.every(function (x, i) {
           return x.start === zst[i].start && K.cent(x.endwertRegel) === zst[i].regelEndwertCent && K.cent(x.endwertSpy) === zst[i].spyEndwertCent && x.vorn === zst[i].vorn;
@@ -122,7 +127,53 @@ if (D && fs.existsSync(ERG)) {
       });
       ok(r + ': Urteil gleich', E.regeln[r].urteil.satz === Z.urteile[r].urteil);
     });
-    fs.writeFileSync(path.join(ORDNER, 'vergleich-zweitrechner.json'), JSON.stringify({ erzeugtVon: 'test.js', vergleich: vergleich }, null, 1) + '\n');
+    /* Teil 3b: die nachrichtlichen Teile (Lesarten N1-N5, Zusatz) - nach dem Lauf vom zweiten Rechner mit eigenem Code nachgerechnet. */
+    var nachr = { varianten: [], gesamtlauf: [], stichprobe: null, alleFenster: [] };
+    if (Z.nachrichtlich) {
+      var ZN = Z.nachrichtlich;
+      ['A', 'B'].forEach(function (f) {
+        Object.keys(ZN.fenster[f].varianten).forEach(function (vn) {
+          Object.keys(ZN.fenster[f].varianten[vn]).forEach(function (r) {
+            var mine = E.regeln[r].fenster[f].nachrichtlich[vn].k0, z = ZN.fenster[f].varianten[vn][r].k0;
+            var g = mine.regel.endwertCent === z.endwertCent && mine.wechsel === z.wechsel;
+            ok(vn + ' ' + r + f + ' k=0: Endwert auf den Cent und Wechselzahl', g, mine.regel.endwertCent + '/' + z.endwertCent + ' ' + mine.wechsel + '/' + z.wechsel);
+            nah(vn + ' ' + r + f + ' k=0: Abstand', mine.abstandPp, z.abstandPp, TOL);
+            nachr.varianten.push({ lesart: vn, regel: r, fenster: f, lauf: mine.regel.endwertCent, zweit: z.endwertCent, gleich: g });
+          });
+        });
+      });
+      ['R1', 'R2', 'R3'].forEach(function (r) {
+        var g = E.regeln[r].zusatz.gesamtlauf, z = ZN.zusatz.gesamtlauf[r];
+        var gl = g.regel.endwertCent === z.endwertCent && g.spy.endwertCent === ZN.zusatz.gesamtlauf.spy.endwertCent && g.wechsel === z.wechsel;
+        ok(r + ' Gesamtlauf 2003-2026: Endwerte auf den Cent, Wechsel', gl, g.regel.endwertCent + '/' + z.endwertCent);
+        nah(r + ' Gesamtlauf: größter Rückschlag', g.regel.maxRueckschlag, z.groessterRueckschlag.wert, TOL);
+        ok(r + ' Gesamtlauf: längste Zeit unter Wasser', g.regel.unterWasser.tage === z.laengsteZeitUnterWasser.tage && g.regel.unterWasser.von === z.laengsteZeitUnterWasser.von,
+          JSON.stringify(g.regel.unterWasser) + ' / ' + JSON.stringify(z.laengsteZeitUnterWasser));
+        nachr.gesamtlauf.push({ regel: r, lauf: g.regel.endwertCent, zweit: z.endwertCent, gleich: gl });
+        var q = E.regeln[r].zusatz.zusammen, za = ZN.zusatz.alleFenster[r];
+        var qa = q.fenster === za.fenster && q.vorn === za.vorn && Math.abs(q.abstandMedian - za.medianAbstandPp) < TOL &&
+          Math.abs(q.rueckschlagRegelSchlechtester - za.schlechtesterRueckschlagRegel) < TOL && Math.abs(q.anteilFlacherAlsSpy - za.anteilFlacherAlsSpyToleranz) < TOL &&
+          q.flacherAlsSpy === za.flacherAlsSpyToleranz && q.gleichWieSpy === za.gleichWieSpy;
+        ok(r + ' Zusatz: alle Fenster (Zahl, vorn, Median, schlechtester Rückschlag, flacher/gleich mit Toleranz 1e-9) gleich', qa,
+          q.flacherAlsSpy + '/' + za.flacherAlsSpyToleranz + ' ' + q.gleichWieSpy + '/' + za.gleichWieSpy);
+        nachr.alleFenster.push({ regel: r, fenster: q.fenster, vorn: q.vorn, gleich: qa });
+      });
+      ok('Zusatz: erster Tag und Zahl der Starttage', ZN.zusatz.ersterMoeglicherTag === E.zusatzErsterTag && ZN.zusatz.starttageZahl === E.regeln.R1.zusatz.zusammen.fenster);
+      var ZF = JSON.parse(fs.readFileSync(path.join(ORDNER, E.zusatzFensterDatei), 'utf8'));
+      var stichGleich = 0;
+      ZN.zusatz.stichprobe.forEach(function (w) {
+        ['R1', 'R2', 'R3'].forEach(function (r) {
+          var zeile = ZF.regeln[r].filter(function (x) { return x[0] === w.start; })[0];
+          var g = zeile && zeile[1] === w.ende && Math.abs(zeile[2] - w[r].abstandPp) < 6e-5 && zeile[3] === (w[r].vorn ? 1 : 0) &&
+            Math.abs(zeile[4] - w[r].groessterRueckschlag) < 6e-6 && Math.abs(zeile[5] - w.spy.groessterRueckschlag) < 6e-6;
+          if (g) stichGleich++;
+          else ok('Zusatz-Stichprobe ' + r + ' ' + w.start, false, JSON.stringify(zeile) + ' / ' + JSON.stringify(w[r]));
+        });
+      });
+      ok('Zusatz-Stichprobe: alle ' + ZN.zusatz.stichprobe.length + ' Fenster x 3 Regeln gleich (Ende, Abstand, vorn, Rückschläge)', stichGleich === ZN.zusatz.stichprobe.length * 3);
+      nachr.stichprobe = { fenster: ZN.zusatz.stichprobe.length, gleich: stichGleich / 3 };
+    } else console.log('  (zweitrechner.json ohne Teil "nachrichtlich": Teil 3b übersprungen)');
+    fs.writeFileSync(path.join(ORDNER, 'vergleich-zweitrechner.json'), JSON.stringify({ erzeugtVon: 'test.js', vergleich: vergleich, nachrichtlich: nachr }, null, 1) + '\n');
   } else console.log('  (zweitrechner.json fehlt: Abgleich übersprungen)');
 } else if (D) console.log('  (ergebnis.json fehlt: Teil 3 übersprungen)');
 

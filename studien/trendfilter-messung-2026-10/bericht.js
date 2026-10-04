@@ -168,6 +168,14 @@ function tabellen(E, Z) {
     Z.vergleich.forEach(function (v) {
       z('| ' + v.regel + ' | ' + v.fenster + ' | ' + v.regelLauf + ' / ' + v.regelZweit + ' $ | ' + v.spyLauf + ' / ' + v.spyZweit + ' $ | ' + jaNein(v.wechselGleich) + ' | ' + v.starttage + ' |');
     });
+    var nr = Z.nachrichtlich;
+    if (nr && nr.varianten && nr.varianten.length) {
+      z('');
+      z('Nachrichtliche Teile, nach dem Lauf vom zweiten Rechner mit eigenem Code nachgerechnet: Lesarten N1–N5 beim Start am ersten Tag ' +
+        nr.varianten.filter(function (v) { return v.gleich; }).length + ' von ' + nr.varianten.length + ' auf den Cent gleich (mit Wechselzahl); Gesamtlauf 2003–2026 ' +
+        nr.gesamtlauf.filter(function (v) { return v.gleich; }).length + ' von 3 auf den Cent; alle 4.522 Zusatzfenster in Zahl, vorn, Median, schlechtestem Rückschlag und „flacher/gleich“ (mit Toleranz) ' +
+        nr.alleFenster.filter(function (v) { return v.gleich; }).length + ' von 3 Regeln gleich; Stichprobe ' + nr.stichprobe.gleich + ' von ' + nr.stichprobe.fenster + ' Fenstern einzeln gleich.');
+    }
   } else z('(Vergleich steht in test.js; Ergebnis siehe dort.)');
   z('');
 
@@ -181,7 +189,7 @@ function tabellen(E, Z) {
   R.forEach(function (r) { ['A', 'B'].forEach(function (f) { fe.push(r + f + ' ' + E.regeln[r].fenster[f].k0.fehlendeKurse); }); });
   z('- Fälle mit fehlendem Kurs beim Start am ersten Tag (Erwartung 0): ' + fe.join(', ') + '. Verschobene Ex-Tage: ' + E.daten.zaehlung.exTagVerschoben.length + '.');
   z('- Code-Prüfsummen (SHA-256, erste 12 Zeichen): ' + Object.keys(E.lauf.code).map(function (f) { return f + ' ' + E.lauf.code[f].slice(0, 12); }).join(', ') + '.');
-  z('- Korrekturen: ' + (E.korrekturen.length ? E.korrekturen.map(function (k) { return k.text || JSON.stringify(k); }).join(' ') : 'keine') + '.');
+  z('- Korrekturen: ' + (E.korrekturen.length ? E.korrekturen.map(function (k) { return 'Nr. ' + k.nr + ' (erster Lauf ' + k.ersterLauf + ', gefunden ' + k.gefunden + '): ' + k.fehler + '. Behoben: ' + k.behebung + '. Wirkung: ' + k.wirkung; }).join(' ') : 'keine') + '.');
   return out.join('\n');
 }
 

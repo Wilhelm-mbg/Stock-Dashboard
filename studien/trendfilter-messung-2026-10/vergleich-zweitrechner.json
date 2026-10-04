@@ -1,0 +1,289 @@
+{
+ "erzeugtVon": "test.js",
+ "vergleich": [
+  {
+   "regel": "R1",
+   "fenster": "A",
+   "regelLauf": "161020.23",
+   "regelZweit": "161020.23",
+   "spyLauf": "215548.40",
+   "spyZweit": "215548.40",
+   "wechselGleich": true,
+   "starttage": "alle 22 auf den Cent"
+  },
+  {
+   "regel": "R1",
+   "fenster": "B",
+   "regelLauf": "127172.89",
+   "regelZweit": "127172.89",
+   "spyLauf": "181193.89",
+   "spyZweit": "181193.89",
+   "wechselGleich": true,
+   "starttage": "alle 22 auf den Cent"
+  },
+  {
+   "regel": "R2",
+   "fenster": "A",
+   "regelLauf": "141841.27",
+   "regelZweit": "141841.27",
+   "spyLauf": "215548.40",
+   "spyZweit": "215548.40",
+   "wechselGleich": true,
+   "starttage": "alle 22 auf den Cent"
+  },
+  {
+   "regel": "R2",
+   "fenster": "B",
+   "regelLauf": "157624.64",
+   "regelZweit": "157624.64",
+   "spyLauf": "181193.89",
+   "spyZweit": "181193.89",
+   "wechselGleich": true,
+   "starttage": "alle 22 auf den Cent"
+  },
+  {
+   "regel": "R3",
+   "fenster": "A",
+   "regelLauf": "155669.62",
+   "regelZweit": "155669.62",
+   "spyLauf": "215548.40",
+   "spyZweit": "215548.40",
+   "wechselGleich": true,
+   "starttage": "alle 22 auf den Cent"
+  },
+  {
+   "regel": "R3",
+   "fenster": "B",
+   "regelLauf": "157638.54",
+   "regelZweit": "157638.54",
+   "spyLauf": "181193.89",
+   "spyZweit": "181193.89",
+   "wechselGleich": true,
+   "starttage": "alle 22 auf den Cent"
+  }
+ ],
+ "nachrichtlich": {
+  "varianten": [
+   {
+    "lesart": "N1",
+    "regel": "R1",
+    "fenster": "A",
+    "lauf": "167431.34",
+    "zweit": "167431.34",
+    "gleich": true
+   },
+   {
+    "lesart": "N1",
+    "regel": "R2",
+    "fenster": "A",
+    "lauf": "152404.36",
+    "zweit": "152404.36",
+    "gleich": true
+   },
+   {
+    "lesart": "N1",
+    "regel": "R3",
+    "fenster": "A",
+    "lauf": "164770.33",
+    "zweit": "164770.33",
+    "gleich": true
+   },
+   {
+    "lesart": "N2",
+    "regel": "R1",
+    "fenster": "A",
+    "lauf": "163262.39",
+    "zweit": "163262.39",
+    "gleich": true
+   },
+   {
+    "lesart": "N2",
+    "regel": "R2",
+    "fenster": "A",
+    "lauf": "138426.44",
+    "zweit": "138426.44",
+    "gleich": true
+   },
+   {
+    "lesart": "N2",
+    "regel": "R3",
+    "fenster": "A",
+    "lauf": "157353.12",
+    "zweit": "157353.12",
+    "gleich": true
+   },
+   {
+    "lesart": "N3",
+    "regel": "R3",
+    "fenster": "A",
+    "lauf": "157846.43",
+    "zweit": "157846.43",
+    "gleich": true
+   },
+   {
+    "lesart": "N4",
+    "regel": "R1",
+    "fenster": "A",
+    "lauf": "166585.14",
+    "zweit": "166585.14",
+    "gleich": true
+   },
+   {
+    "lesart": "N4",
+    "regel": "R2",
+    "fenster": "A",
+    "lauf": "146743.97",
+    "zweit": "146743.97",
+    "gleich": true
+   },
+   {
+    "lesart": "N4",
+    "regel": "R3",
+    "fenster": "A",
+    "lauf": "164965.11",
+    "zweit": "164965.11",
+    "gleich": true
+   },
+   {
+    "lesart": "N5",
+    "regel": "R2",
+    "fenster": "A",
+    "lauf": "141841.27",
+    "zweit": "141841.27",
+    "gleich": true
+   },
+   {
+    "lesart": "N1",
+    "regel": "R1",
+    "fenster": "B",
+    "lauf": "126766.51",
+    "zweit": "126766.51",
+    "gleich": true
+   },
+   {
+    "lesart": "N1",
+    "regel": "R2",
+    "fenster": "B",
+    "lauf": "153485.05",
+    "zweit": "153485.05",
+    "gleich": true
+   },
+   {
+    "lesart": "N1",
+    "regel": "R3",
+    "fenster": "B",
+    "lauf": "152874.91",
+    "zweit": "152874.91",
+    "gleich": true
+   },
+   {
+    "lesart": "N2",
+    "regel": "R1",
+    "fenster": "B",
+    "lauf": "123089.00",
+    "zweit": "123089.00",
+    "gleich": true
+   },
+   {
+    "lesart": "N2",
+    "regel": "R2",
+    "fenster": "B",
+    "lauf": "138966.24",
+    "zweit": "138966.24",
+    "gleich": true
+   },
+   {
+    "lesart": "N2",
+    "regel": "R3",
+    "fenster": "B",
+    "lauf": "152423.82",
+    "zweit": "152423.82",
+    "gleich": true
+   },
+   {
+    "lesart": "N3",
+    "regel": "R3",
+    "fenster": "B",
+    "lauf": "134604.98",
+    "zweit": "134604.98",
+    "gleich": true
+   },
+   {
+    "lesart": "N4",
+    "regel": "R1",
+    "fenster": "B",
+    "lauf": "133683.63",
+    "zweit": "133683.63",
+    "gleich": true
+   },
+   {
+    "lesart": "N4",
+    "regel": "R2",
+    "fenster": "B",
+    "lauf": "163727.61",
+    "zweit": "163727.61",
+    "gleich": true
+   },
+   {
+    "lesart": "N4",
+    "regel": "R3",
+    "fenster": "B",
+    "lauf": "167051.60",
+    "zweit": "167051.60",
+    "gleich": true
+   },
+   {
+    "lesart": "N5",
+    "regel": "R2",
+    "fenster": "B",
+    "lauf": "151930.74",
+    "zweit": "151930.74",
+    "gleich": true
+   }
+  ],
+  "gesamtlauf": [
+   {
+    "regel": "R1",
+    "lauf": "603957.91",
+    "zweit": "603957.91",
+    "gleich": true
+   },
+   {
+    "regel": "R2",
+    "lauf": "651737.92",
+    "zweit": "651737.92",
+    "gleich": true
+   },
+   {
+    "regel": "R3",
+    "lauf": "519587.01",
+    "zweit": "519587.01",
+    "gleich": true
+   }
+  ],
+  "stichprobe": {
+   "fenster": 24,
+   "gleich": 24
+  },
+  "alleFenster": [
+   {
+    "regel": "R1",
+    "fenster": 4522,
+    "vorn": 1249,
+    "gleich": true
+   },
+   {
+    "regel": "R2",
+    "fenster": 4522,
+    "vorn": 1085,
+    "gleich": true
+   },
+   {
+    "regel": "R3",
+    "fenster": 4522,
+    "vorn": 1251,
+    "gleich": true
+   }
+  ]
+ }
+}

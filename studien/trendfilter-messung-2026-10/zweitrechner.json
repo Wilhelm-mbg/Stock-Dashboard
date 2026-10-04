@@ -4739,5 +4739,4255 @@
         "EFA 2005-06-09 3:1"
       ]
     }
-  ]
+  ],
+  "nachrichtlich": {
+    "hinweis": "Nachrichtlich nach §7, entscheidet nichts. Eigener Code (zweitrechner.js), nur REGEL.md und Rohdaten.",
+    "lesarten": [
+      "NL1 N1: Erstkauf zur Eröffnung von s in die Reihe des letzten Signals vor s; weicht das Signal des Tages d (s <= d < Endtag) von der gehaltenen Reihe ab, Wechsel zum Schluss von d: Erlös = Stück_alt x C_alt(d) x 0,998, Stück_neu = Erlös/(C_neu(d) x 1,002). Die Ausschüttung des Tages d (Anspruch nach Reihe/Stück zum Schluss von d-1, also der alten Reihe) wird zum Schluss von d ohne Kosten in die NEUE Reihe angelegt und ist nicht Teil des gehandelten Volumens; am Folgetag zählt die neue Reihe. Signal des Endtags: kein Wechsel. Fehlende Kurse in N1 nicht ausprogrammiert (Abbruch; kommt nicht vor).",
+      "NL2 N2: Geld = SHY (R1, R3, Vergleich in R2), Nicht-US = EFA, Anleihen = AGG; Signale neu auf den TR von SHY/EFA; sonst Hauptlesart.",
+      "NL3 N3 (nur R3): C(d) > SMA200(d) -> SPY, sonst BIL, ohne Band und Gedächtnis; Ausführung zur nächsten Eröffnung.",
+      "NL4 N4: alle Kosten 0, auch beim Erstkauf; Maßstab unverändert.",
+      "NL5 N5 (nur R2): G = SPY, falls r_SPY >= r_ACWX, sonst ACWX; r_G > r_BIL -> G, sonst AGG.",
+      "NL6 Zusatz §7.1: erster möglicher Tag = erster SPY-Handelstag nach dem ersten Monatsende, an dem R1 (zehn Monatsenden TR_SPY), R2 (TR von SPY, SHY, EFA an M und M-12) und R3 (Zustand) ein Signal haben und AGG an M einen Schluss hat. Ende e(s) = letzter SPY-Handelstag <= Date.UTC(J+5, M-1, T) - 1 Tag. Reihen SHY/EFA/AGG, sonst Hauptlesart (nächste Eröffnung, 20 bp, Band).",
+      "NL7 Stichprobe = Starttage mit Index 0, 200, 400, ... ab dem ersten möglichen Tag (solange <= 16.09.2021) plus 16.09.2021. Über ALLE Fenster zusätzlich: Anteil vorn, Median/Min/Max des Abstands, Median und schlechtester Rückschlag, Anteil mit flacherem Rückschlag als SPY (strikt Regel > SPY). 10-/90-%-Punkte nicht gerechnet (Quantildefinition in REGEL.md nicht festgelegt).",
+      "NL8 \"über alle Starttage\" (§7.2) = dieselben 22 Starttage je Fenster wie im Hauptteil, Abstand gegen denselben Maßstab SPY."
+    ],
+    "proben": [
+      {
+        "name": "Generische Signale mit Hauptlesart-Parametern = Signale des Hauptteils (R1, R2, R3, Tag für Tag)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "Zeilen von SHY/EFA außerhalb des SPY-Kalenders und Ausschüttungen ohne Zeile (Erwartung 0)",
+        "ok": true,
+        "detail": {
+          "ausschVerschobenTR": 0,
+          "ausschOhneZeileDanach": 0,
+          "ausschAusserhalbKalender": 0,
+          "zeilenAusserhalbKalender": 0
+        }
+      },
+      {
+        "name": "EFA-Split 09.06.2005 (3:1): Schluss ohne Sprung (Kurse bereinigt)",
+        "ok": true,
+        "detail": {
+          "split": {
+            "tag": "2005-06-09",
+            "zaehler": 3,
+            "nenner": 1,
+            "text": "3:1"
+          },
+          "sprungSchluss": 0.003949086473527874
+        }
+      },
+      {
+        "name": "Fenster A: Maßstab SPY = Hauptteil (bit-gleich)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "Fenster A N1 R1: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 167431.33681840295,
+          "kette": 167431.33681840292
+        }
+      },
+      {
+        "name": "Fenster A N1 R1: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N1 R2: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 152404.36425588257,
+          "kette": 152404.3642558826
+        }
+      },
+      {
+        "name": "Fenster A N1 R2: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N1 R3: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 164770.32504370218,
+          "kette": 164770.32504370244
+        }
+      },
+      {
+        "name": "Fenster A N1 R3: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N2 R1: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 163262.3903423626,
+          "kette": 163262.39034236225
+        }
+      },
+      {
+        "name": "Fenster A N2 R1: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N2 R2: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 138426.4359301287,
+          "kette": 138426.43593012847
+        }
+      },
+      {
+        "name": "Fenster A N2 R2: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N2 R3: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 157353.1217812957,
+          "kette": 157353.12178129586
+        }
+      },
+      {
+        "name": "Fenster A N2 R3: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N3 R3: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 157846.43047216145,
+          "kette": 157846.4304721617
+        }
+      },
+      {
+        "name": "Fenster A N3 R3: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N4 R1: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 166585.13531341008,
+          "kette": 166585.13531341022
+        }
+      },
+      {
+        "name": "Fenster A N4 R1: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N4 R2: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 146743.97359039157,
+          "kette": 146743.97359039116
+        }
+      },
+      {
+        "name": "Fenster A N4 R2: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N4 R3: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 164965.10908036472,
+          "kette": 164965.10908036484
+        }
+      },
+      {
+        "name": "Fenster A N4 R3: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N5 R2: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 141841.2670860713,
+          "kette": 141841.2670860712
+        }
+      },
+      {
+        "name": "Fenster A N5 R2: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster A N4 R1: gleiche Wechseltage wie Hauptlesart und Endwert ohne Kosten > mit Kosten",
+        "ok": true,
+        "detail": {
+          "mitKosten": 161020.2334073064,
+          "ohneKosten": 166585.13531341008
+        }
+      },
+      {
+        "name": "Fenster A N4 R2: gleiche Wechseltage wie Hauptlesart und Endwert ohne Kosten > mit Kosten",
+        "ok": true,
+        "detail": {
+          "mitKosten": 141841.2670860713,
+          "ohneKosten": 146743.97359039157
+        }
+      },
+      {
+        "name": "Fenster A N4 R3: gleiche Wechseltage wie Hauptlesart und Endwert ohne Kosten > mit Kosten",
+        "ok": true,
+        "detail": {
+          "mitKosten": 155669.6158136794,
+          "ohneKosten": 164965.10908036472
+        }
+      },
+      {
+        "name": "Fenster B: Maßstab SPY = Hauptteil (bit-gleich)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "Fenster B N1 R1: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 126766.5056039564,
+          "kette": 126766.50560395645
+        }
+      },
+      {
+        "name": "Fenster B N1 R1: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N1 R2: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 153485.05185297865,
+          "kette": 153485.05185297874
+        }
+      },
+      {
+        "name": "Fenster B N1 R2: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N1 R3: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 152874.90620077433,
+          "kette": 152874.9062007743
+        }
+      },
+      {
+        "name": "Fenster B N1 R3: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N2 R1: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 123089.00407087358,
+          "kette": 123089.00407087352
+        }
+      },
+      {
+        "name": "Fenster B N2 R1: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N2 R2: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 138966.2413576106,
+          "kette": 138966.24135761065
+        }
+      },
+      {
+        "name": "Fenster B N2 R2: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N2 R3: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 152423.81817528862,
+          "kette": 152423.8181752889
+        }
+      },
+      {
+        "name": "Fenster B N2 R3: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N3 R3: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 134604.9819690307,
+          "kette": 134604.98196903063
+        }
+      },
+      {
+        "name": "Fenster B N3 R3: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N4 R1: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 133683.63269248567,
+          "kette": 133683.63269248538
+        }
+      },
+      {
+        "name": "Fenster B N4 R1: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N4 R2: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 163727.60995790083,
+          "kette": 163727.60995790063
+        }
+      },
+      {
+        "name": "Fenster B N4 R2: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N4 R3: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 167051.6033797825,
+          "kette": 167051.60337978246
+        }
+      },
+      {
+        "name": "Fenster B N4 R3: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N5 R2: Stückbuch = Renditekette (rel. < 1e-9)",
+        "ok": true,
+        "detail": {
+          "buch": 151930.74017129574,
+          "kette": 151930.74017129585
+        }
+      },
+      {
+        "name": "Fenster B N5 R2: fehlende Kurse über alle Starttage = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Fenster B N4 R1: gleiche Wechseltage wie Hauptlesart und Endwert ohne Kosten > mit Kosten",
+        "ok": true,
+        "detail": {
+          "mitKosten": 127172.89282959064,
+          "ohneKosten": 133683.63269248567
+        }
+      },
+      {
+        "name": "Fenster B N4 R2: gleiche Wechseltage wie Hauptlesart und Endwert ohne Kosten > mit Kosten",
+        "ok": true,
+        "detail": {
+          "mitKosten": 157624.63553248154,
+          "ohneKosten": 163727.60995790083
+        }
+      },
+      {
+        "name": "Fenster B N4 R3: gleiche Wechseltage wie Hauptlesart und Endwert ohne Kosten > mit Kosten",
+        "ok": true,
+        "detail": {
+          "mitKosten": 157638.53983524046,
+          "ohneKosten": 167051.6033797825
+        }
+      },
+      {
+        "name": "Zusatz: erster möglicher Tag = 2003-10-01 (Erwartung §7.1)",
+        "ok": true,
+        "detail": {
+          "monatsende": "2003-09-30",
+          "ersterTag": "2003-10-01"
+        }
+      },
+      {
+        "name": "Zusatz: keine Lücken von SPY/SHY/EFA/AGG gegen den SPY-Kalender ab dem ersten möglichen Tag",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Zusatz-Gesamtlauf: Regel \"immer SPY\" mit Kosten = SPY-Endwert x (1/1,002)",
+        "ok": true,
+        "detail": {
+          "immerSpy": 1145070.8184115242,
+          "spy": 1147360.9600483475
+        }
+      },
+      {
+        "name": "Zusatz-Gesamtlauf R1: Stückbuch = Renditekette (rel. < 1e-9) und fehlende Kurse = 0",
+        "ok": true,
+        "detail": {
+          "buch": 603957.9076308778,
+          "kette": 603957.907630874,
+          "fehlend": 0
+        }
+      },
+      {
+        "name": "Zusatz-Gesamtlauf R2: Stückbuch = Renditekette (rel. < 1e-9) und fehlende Kurse = 0",
+        "ok": true,
+        "detail": {
+          "buch": 651737.9202482803,
+          "kette": 651737.9202482792,
+          "fehlend": 0
+        }
+      },
+      {
+        "name": "Zusatz-Gesamtlauf R3: Stückbuch = Renditekette (rel. < 1e-9) und fehlende Kurse = 0",
+        "ok": true,
+        "detail": {
+          "buch": 519587.008757917,
+          "kette": 519587.00875791704,
+          "fehlend": 0
+        }
+      },
+      {
+        "name": "Zusatz: jedes Fenster hat ein Ende nach dem Start; letztes Fenster 16.09.2021 endet am 15.09.2026",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "Zusatz R1: fehlende Kurse über alle Fenster = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Zusatz R2: fehlende Kurse über alle Fenster = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Zusatz R3: fehlende Kurse über alle Fenster = 0",
+        "ok": true,
+        "detail": 0
+      },
+      {
+        "name": "Zusatz: Fenster 16.09.2021 = N2 k = 0 in B (alle drei Regeln, bit-gleich)",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "probenOk": true,
+    "fenster": {
+      "A": {
+        "start": "2017-01-04",
+        "ende": "2021-09-15",
+        "spy": {
+          "endwert": 215548.39814252124,
+          "endwertCent": "215548.40",
+          "pa": 0.1777043805289169,
+          "groessterRueckschlag": {
+            "wert": -0.33699813656214483,
+            "spitzeTag": "2020-02-19",
+            "tiefTag": "2020-03-23"
+          }
+        },
+        "varianten": {
+          "N1": {
+            "R1": {
+              "k0": {
+                "endwert": 167431.33681840295,
+                "endwertCent": "167431.34",
+                "abstandZurHalbCentGrenzeDollar": 0.0018184029497206212,
+                "pa": 0.11601839593227048,
+                "abstandPp": -6.168598459664643,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 8,
+                "wechselListe": [
+                  {
+                    "tag": "2018-10-31",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-11-30",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-12-31",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2019-02-28",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-05-31",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2019-06-28",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-02-28",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-05-29",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 3858.502704339858,
+                "groessterRueckschlag": {
+                  "wert": -0.21292718128018184,
+                  "spitzeTag": "2018-09-20",
+                  "tiefTag": "2018-12-24"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -6.225830286206612,
+                "minimumAbstandPp": -6.277481690705478,
+                "maximumAbstandPp": -6.168598459664643
+              }
+            },
+            "R2": {
+              "k0": {
+                "endwert": 152404.36425588257,
+                "endwertCent": "152404.36",
+                "abstandZurHalbCentGrenzeDollar": 0.0007441174238920212,
+                "pa": 0.09388998269591853,
+                "abstandPp": -8.381439783299838,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 8,
+                "wechselListe": [
+                  {
+                    "tag": "2017-05-31",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2018-05-31",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-12-31",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2019-02-28",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-31",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2020-05-29",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2021-05-28",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2021-06-30",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 3974.120448918174,
+                "groessterRueckschlag": {
+                  "wert": -0.33699813656214483,
+                  "spitzeTag": "2020-02-19",
+                  "tiefTag": "2020-03-23"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -8.458446163107148,
+                "minimumAbstandPp": -8.52794488695543,
+                "maximumAbstandPp": -8.381439783299838
+              }
+            },
+            "R3": {
+              "k0": {
+                "endwert": 164770.32504370218,
+                "endwertCent": "164770.33",
+                "abstandZurHalbCentGrenzeDollar": 0.000043702181428670884,
+                "pa": 0.11221701811840412,
+                "abstandPp": -6.548736241051278,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 14,
+                "wechselListe": [
+                  {
+                    "tag": "2018-10-11",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-10-16",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-10-23",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-11-07",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-11-12",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-12-03",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-12-04",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2019-02-15",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-02-27",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-03-02",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-03",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-03-04",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-06",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-05-27",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 6741.343482383014,
+                "groessterRueckschlag": {
+                  "wert": -0.21389700294794756,
+                  "spitzeTag": "2020-02-19",
+                  "tiefTag": "2020-06-11"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -6.60939402981453,
+                "minimumAbstandPp": -6.664137457116581,
+                "maximumAbstandPp": -6.548736241051278
+              }
+            }
+          },
+          "N2": {
+            "R1": {
+              "k0": {
+                "endwert": 163262.3903423626,
+                "endwertCent": "163262.39",
+                "abstandZurHalbCentGrenzeDollar": 0.004657637402415276,
+                "pa": 0.11004136851930646,
+                "abstandPp": -6.766301200961045,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 8,
+                "wechselListe": [
+                  {
+                    "tag": "2018-11-01",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2018-12-03",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-01-02",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2019-03-01",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-06-03",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2019-07-01",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-02",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2020-06-01",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 3776.237120169237,
+                "groessterRueckschlag": {
+                  "wert": -0.23722676070744597,
+                  "spitzeTag": "2018-09-20",
+                  "tiefTag": "2019-08-05"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -6.828914399830454,
+                "minimumAbstandPp": -6.885422644927397,
+                "maximumAbstandPp": -6.766301200961045
+              }
+            },
+            "R2": {
+              "k0": {
+                "endwert": 138426.4359301287,
+                "endwertCent": "138426.44",
+                "abstandZurHalbCentGrenzeDollar": 0.0009301287122070789,
+                "pa": 0.07170670906477516,
+                "abstandPp": -10.599767146414173,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 8,
+                "wechselListe": [
+                  {
+                    "tag": "2017-07-03",
+                    "von": "SPY",
+                    "nach": "EFA"
+                  },
+                  {
+                    "tag": "2018-06-01",
+                    "von": "EFA",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-01-02",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2019-03-01",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-09-03",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2019-11-01",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-04-01",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2020-06-01",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 3573.9328743220703,
+                "groessterRueckschlag": {
+                  "wert": -0.35339897924964603,
+                  "spitzeTag": "2018-09-20",
+                  "tiefTag": "2020-03-23"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -10.696183656262658,
+                "minimumAbstandPp": -10.783201501305207,
+                "maximumAbstandPp": -10.599767146414173
+              }
+            },
+            "R3": {
+              "k0": {
+                "endwert": 157353.1217812957,
+                "endwertCent": "157353.12",
+                "abstandZurHalbCentGrenzeDollar": 0.0032187043130397796,
+                "pa": 0.10135996749484932,
+                "abstandPp": -7.634441303406758,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 14,
+                "wechselListe": [
+                  {
+                    "tag": "2018-10-12",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2018-10-17",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-10-24",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2018-11-08",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-11-13",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2018-12-04",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-12-06",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2019-02-19",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-02-28",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2020-03-03",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-04",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2020-03-05",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-09",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2020-05-28",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 6758.734954655082,
+                "groessterRueckschlag": {
+                  "wert": -0.2617199996549213,
+                  "spitzeTag": "2020-02-19",
+                  "tiefTag": "2020-06-11"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -7.704817945954767,
+                "minimumAbstandPp": -7.768332996892147,
+                "maximumAbstandPp": -7.634441303406758
+              }
+            }
+          },
+          "N3": {
+            "R3": {
+              "k0": {
+                "endwert": 157846.43047216145,
+                "endwertCent": "157846.43",
+                "abstandZurHalbCentGrenzeDollar": 0.004527838546782732,
+                "pa": 0.10209441993553403,
+                "abstandPp": -7.5609960593382874,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 26,
+                "wechselListe": [
+                  {
+                    "tag": "2018-03-26",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-03-27",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-04-03",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-04-04",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-10-12",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-10-17",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-10-19",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-11-08",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-11-13",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-12-04",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-12-06",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2019-02-13",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-03-11",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2019-03-12",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-06-03",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2019-06-05",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-02-28",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-03-03",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-04",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-03-05",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-06",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-05-28",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-06-12",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-06-15",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-06-29",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-06-30",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 11885.974827778382,
+                "groessterRueckschlag": {
+                  "wert": -0.2175472640052999,
+                  "spitzeTag": "2020-02-19",
+                  "tiefTag": "2020-06-11"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -7.630718340641329,
+                "minimumAbstandPp": -7.693642801646439,
+                "maximumAbstandPp": -7.5609960593382874
+              }
+            }
+          },
+          "N4": {
+            "R1": {
+              "k0": {
+                "endwert": 166585.13531341008,
+                "endwertCent": "166585.14",
+                "abstandZurHalbCentGrenzeDollar": 0.00031341008841991426,
+                "pa": 0.11481474658712365,
+                "abstandPp": -6.2889633941793255,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 8,
+                "wechselListe": [
+                  {
+                    "tag": "2018-11-01",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-12-03",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-01-02",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2019-03-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-06-03",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2019-07-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-02",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-06-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 0,
+                "groessterRueckschlag": {
+                  "wert": -0.22055412422089515,
+                  "spitzeTag": "2018-09-20",
+                  "tiefTag": "2019-08-05"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -6.347281291442353,
+                "minimumAbstandPp": -6.3999129020740675,
+                "maximumAbstandPp": -6.2889633941793255
+              }
+            },
+            "R2": {
+              "k0": {
+                "endwert": 146743.97359039157,
+                "endwertCent": "146743.97",
+                "abstandZurHalbCentGrenzeDollar": 0.0014096084237098694,
+                "pa": 0.0851080070466459,
+                "abstandPp": -9.259637348227102,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 8,
+                "wechselListe": [
+                  {
+                    "tag": "2017-06-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2018-06-01",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-01-02",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2019-03-01",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-04-01",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2020-06-01",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2021-06-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2021-07-01",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 0,
+                "groessterRueckschlag": {
+                  "wert": -0.33699813656214495,
+                  "spitzeTag": "2020-02-19",
+                  "tiefTag": "2020-03-23"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -9.344377829057827,
+                "minimumAbstandPp": -9.420857073717027,
+                "maximumAbstandPp": -9.259637348227102
+              }
+            },
+            "R3": {
+              "k0": {
+                "endwert": 164965.10908036472,
+                "endwertCent": "164965.11",
+                "abstandZurHalbCentGrenzeDollar": 0.004080364722758531,
+                "pa": 0.11249690855774341,
+                "abstandPp": -6.520747197117349,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 14,
+                "wechselListe": [
+                  {
+                    "tag": "2018-10-12",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-10-17",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-10-24",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-11-08",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-11-13",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2018-12-04",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2018-12-06",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2019-02-19",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-02-28",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-03-03",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-04",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-03-05",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-03-09",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2020-05-28",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 0,
+                "groessterRueckschlag": {
+                  "wert": -0.24767107052884274,
+                  "spitzeTag": "2020-02-19",
+                  "tiefTag": "2020-06-11"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -6.581153144063334,
+                "minimumAbstandPp": -6.63566927678958,
+                "maximumAbstandPp": -6.520747197117349
+              }
+            }
+          },
+          "N5": {
+            "R2": {
+              "k0": {
+                "endwert": 141841.2670860713,
+                "endwertCent": "141841.27",
+                "abstandZurHalbCentGrenzeDollar": 0.002086071316152811,
+                "pa": 0.07728340822702129,
+                "abstandPp": -10.042097230189562,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 8,
+                "wechselListe": [
+                  {
+                    "tag": "2017-06-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2018-06-01",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2019-01-02",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2019-03-01",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2020-04-01",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2020-06-01",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2021-06-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2021-07-01",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 3834.9178915966145,
+                "groessterRueckschlag": {
+                  "wert": -0.33699813656214495,
+                  "spitzeTag": "2020-02-19",
+                  "tiefTag": "2020-03-23"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -10.133673598670933,
+                "minimumAbstandPp": -10.216322771278419,
+                "maximumAbstandPp": -10.042097230189562
+              }
+            }
+          }
+        }
+      },
+      "B": {
+        "start": "2021-09-16",
+        "ende": "2026-09-15",
+        "spy": {
+          "endwert": 181193.89139394907,
+          "endwertCent": "181193.89",
+          "pa": 0.12632590436736035,
+          "groessterRueckschlag": {
+            "wert": -0.2449724419928806,
+            "spitzeTag": "2022-01-03",
+            "tiefTag": "2022-10-12"
+          }
+        },
+        "varianten": {
+          "N1": {
+            "R1": {
+              "k0": {
+                "endwert": 126766.5056039564,
+                "endwertCent": "126766.51",
+                "abstandZurHalbCentGrenzeDollar": 0.0006039563938975334,
+                "pa": 0.04861246032041033,
+                "abstandPp": -7.771344404695002,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 12,
+                "wechselListe": [
+                  {
+                    "tag": "2022-02-28",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-03-31",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-04-29",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-11-30",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-12-30",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-01-31",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-10-31",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-11-30",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-03-31",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2025-05-30",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2026-03-31",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2026-04-30",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 4882.0657477368295,
+                "groessterRueckschlag": {
+                  "wert": -0.2628343793742648,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-03-13"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -7.883518636689635,
+                "minimumAbstandPp": -7.938759395321648,
+                "maximumAbstandPp": -7.771344404695002
+              }
+            },
+            "R2": {
+              "k0": {
+                "endwert": 153485.05185297865,
+                "endwertCent": "153485.05",
+                "abstandZurHalbCentGrenzeDollar": 0.003147021345794201,
+                "pa": 0.08952877722926988,
+                "abstandPp": -3.679712713809047,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 9,
+                "wechselListe": [
+                  {
+                    "tag": "2022-05-31",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2023-06-30",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-10-31",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2023-11-30",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-04-30",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2025-05-30",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-06-30",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2025-07-31",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-10-31",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  }
+                ],
+                "kosten": 4063.5311498247406,
+                "groessterRueckschlag": {
+                  "wert": -0.22059518299830083,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-10-27"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -3.733389156851097,
+                "minimumAbstandPp": -3.7600447954339034,
+                "maximumAbstandPp": -3.679712713809047
+              }
+            },
+            "R3": {
+              "k0": {
+                "endwert": 152874.90620077433,
+                "endwertCent": "152874.91",
+                "abstandZurHalbCentGrenzeDollar": 0.0012007743306457997,
+                "pa": 0.08866056668572342,
+                "abstandPp": -3.7665337681636935,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 14,
+                "wechselListe": [
+                  {
+                    "tag": "2022-01-25",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-01-31",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-02-14",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-03-25",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-04-11",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-01-23",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-03-10",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-03-21",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-10-25",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-11-02",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-03-10",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2025-05-12",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2026-03-20",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2026-04-08",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 5971.701167064778,
+                "groessterRueckschlag": {
+                  "wert": -0.19486416924149086,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-03-22"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -3.821464618450676,
+                "minimumAbstandPp": -3.8487384698701055,
+                "maximumAbstandPp": -3.7665337681636935
+              }
+            }
+          },
+          "N2": {
+            "R1": {
+              "k0": {
+                "endwert": 123089.00407087358,
+                "endwertCent": "123089.00",
+                "abstandZurHalbCentGrenzeDollar": 0.0009291264228522778,
+                "pa": 0.04245234435979306,
+                "abstandPp": -8.387356000756728,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 12,
+                "wechselListe": [
+                  {
+                    "tag": "2022-03-01",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2022-04-01",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-05-02",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2022-12-01",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-01-03",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2023-02-01",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-11-01",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2023-12-01",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-04-01",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2025-06-02",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2026-04-01",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2026-05-01",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 4740.5443121048065,
+                "groessterRueckschlag": {
+                  "wert": -0.28989614409553077,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-03-13"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -8.508226201032155,
+                "minimumAbstandPp": -8.567671932584275,
+                "maximumAbstandPp": -8.387356000756728
+              }
+            },
+            "R2": {
+              "k0": {
+                "endwert": 138966.2413576106,
+                "endwertCent": "138966.24",
+                "abstandZurHalbCentGrenzeDollar": 0.0036423894017934798,
+                "pa": 0.06807423523739797,
+                "abstandPp": -5.825166912996238,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 12,
+                "wechselListe": [
+                  {
+                    "tag": "2022-07-01",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2023-05-01",
+                    "von": "AGG",
+                    "nach": "EFA"
+                  },
+                  {
+                    "tag": "2023-07-03",
+                    "von": "EFA",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-08-01",
+                    "von": "SPY",
+                    "nach": "EFA"
+                  },
+                  {
+                    "tag": "2023-12-01",
+                    "von": "EFA",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-05-01",
+                    "von": "SPY",
+                    "nach": "EFA"
+                  },
+                  {
+                    "tag": "2025-06-02",
+                    "von": "EFA",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-07-01",
+                    "von": "SPY",
+                    "nach": "EFA"
+                  },
+                  {
+                    "tag": "2025-08-01",
+                    "von": "EFA",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-11-03",
+                    "von": "SPY",
+                    "nach": "EFA"
+                  },
+                  {
+                    "tag": "2026-05-01",
+                    "von": "EFA",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2026-08-03",
+                    "von": "SPY",
+                    "nach": "EFA"
+                  }
+                ],
+                "kosten": 5251.4133489929545,
+                "groessterRueckschlag": {
+                  "wert": -0.2839101351475226,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-10-27"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -5.909675477006671,
+                "minimumAbstandPp": -5.9514606716055685,
+                "maximumAbstandPp": -5.825166912996238
+              }
+            },
+            "R3": {
+              "k0": {
+                "endwert": 152423.81817528862,
+                "endwertCent": "152423.82",
+                "abstandZurHalbCentGrenzeDollar": 0.003175288625061512,
+                "pa": 0.08801690441901888,
+                "abstandPp": -3.830899994834147,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 14,
+                "wechselListe": [
+                  {
+                    "tag": "2022-01-26",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2022-02-01",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-02-15",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2022-03-28",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-04-12",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2023-01-24",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-03-13",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2023-03-22",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-10-26",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2023-11-03",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-03-11",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2025-05-13",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2026-03-23",
+                    "von": "SPY",
+                    "nach": "SHY"
+                  },
+                  {
+                    "tag": "2026-04-09",
+                    "von": "SHY",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 5956.80325249401,
+                "groessterRueckschlag": {
+                  "wert": -0.20465657411500393,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-03-22"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -3.8867604575928083,
+                "minimumAbstandPp": -3.914492308870665,
+                "maximumAbstandPp": -3.830899994834147
+              }
+            }
+          },
+          "N3": {
+            "R3": {
+              "k0": {
+                "endwert": 134604.9819690307,
+                "endwertCent": "134604.98",
+                "abstandZurHalbCentGrenzeDollar": 0.003030969314277172,
+                "pa": 0.061279820369336546,
+                "abstandPp": -6.504608399802381,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 32,
+                "wechselListe": [
+                  {
+                    "tag": "2022-01-24",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-02-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-02-14",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-02-16",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-02-18",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-03-23",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-03-24",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-03-25",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-04-07",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-04-08",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-04-11",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-12-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-12-06",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-01-17",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-01-19",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-01-24",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-03-10",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-03-17",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-03-20",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-03-21",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-03-23",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-03-24",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-10-23",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-10-25",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-10-26",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-11-03",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-03-11",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2025-03-25",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-03-27",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2025-05-13",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2026-03-20",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2026-04-09",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 11864.732516837252,
+                "groessterRueckschlag": {
+                  "wert": -0.2678402307916874,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-03-22"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -6.5988084882339315,
+                "minimumAbstandPp": -6.645320528056975,
+                "maximumAbstandPp": -6.504608399802381
+              }
+            }
+          },
+          "N4": {
+            "R1": {
+              "k0": {
+                "endwert": 133683.63269248567,
+                "endwertCent": "133683.63",
+                "abstandZurHalbCentGrenzeDollar": 0.002307514324784279,
+                "pa": 0.059821971307330024,
+                "abstandPp": -6.650393306003033,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 12,
+                "wechselListe": [
+                  {
+                    "tag": "2022-03-01",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-04-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-05-02",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-12-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-01-03",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-02-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-11-01",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-12-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-04-01",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2025-06-02",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2026-04-01",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2026-05-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 0,
+                "groessterRueckschlag": {
+                  "wert": -0.2464188771112069,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-03-13"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -6.746668267478539,
+                "minimumAbstandPp": -6.794190445997761,
+                "maximumAbstandPp": -6.650393306003033
+              }
+            },
+            "R2": {
+              "k0": {
+                "endwert": 163727.60995790083,
+                "endwertCent": "163727.61",
+                "abstandZurHalbCentGrenzeDollar": 0.004957900829613209,
+                "pa": 0.10370679475064803,
+                "abstandPp": -2.261910961671232,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 9,
+                "wechselListe": [
+                  {
+                    "tag": "2022-06-01",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2023-07-03",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-11-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2023-12-01",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-05-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2025-06-02",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-07-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2025-08-01",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-11-03",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  }
+                ],
+                "kosten": 0,
+                "groessterRueckschlag": {
+                  "wert": -0.20924343627263298,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-10-27"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -2.2950235093713744,
+                "minimumAbstandPp": -2.311513273015531,
+                "maximumAbstandPp": -2.261910961671232
+              }
+            },
+            "R3": {
+              "k0": {
+                "endwert": 167051.6033797825,
+                "endwertCent": "167051.60",
+                "abstandZurHalbCentGrenzeDollar": 0.0016202175058424473,
+                "pa": 0.10815537465702474,
+                "abstandPp": -1.8170529710335614,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 14,
+                "wechselListe": [
+                  {
+                    "tag": "2022-01-26",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-02-01",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-02-15",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2022-03-28",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2022-04-12",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-01-24",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-03-13",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-03-22",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-10-26",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2023-11-03",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-03-11",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2025-05-13",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2026-03-23",
+                    "von": "SPY",
+                    "nach": "BIL"
+                  },
+                  {
+                    "tag": "2026-04-09",
+                    "von": "BIL",
+                    "nach": "SPY"
+                  }
+                ],
+                "kosten": 0,
+                "groessterRueckschlag": {
+                  "wert": -0.1471146066652994,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-03-22"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -1.8436826748336466,
+                "minimumAbstandPp": -1.8569555602264476,
+                "maximumAbstandPp": -1.8170529710335614
+              }
+            }
+          },
+          "N5": {
+            "R2": {
+              "k0": {
+                "endwert": 151930.74017129574,
+                "endwertCent": "151930.74",
+                "abstandZurHalbCentGrenzeDollar": 0.004828704260289669,
+                "pa": 0.08731158086684654,
+                "abstandPp": -3.9014323500513814,
+                "vorn": false,
+                "startReihe": "SPY",
+                "wechsel": 11,
+                "wechselListe": [
+                  {
+                    "tag": "2022-06-01",
+                    "von": "SPY",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2023-05-01",
+                    "von": "AGG",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2023-06-01",
+                    "von": "ACWX",
+                    "nach": "AGG"
+                  },
+                  {
+                    "tag": "2023-07-03",
+                    "von": "AGG",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2023-11-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2023-12-01",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-05-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2025-06-02",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-07-01",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  },
+                  {
+                    "tag": "2025-08-01",
+                    "von": "ACWX",
+                    "nach": "SPY"
+                  },
+                  {
+                    "tag": "2025-11-03",
+                    "von": "SPY",
+                    "nach": "ACWX"
+                  }
+                ],
+                "kosten": 4709.443419271324,
+                "groessterRueckschlag": {
+                  "wert": -0.24387339360619043,
+                  "spitzeTag": "2022-01-03",
+                  "tiefTag": "2023-10-27"
+                },
+                "fehlendeKurse": 0
+              },
+              "ueberStarttage": {
+                "starttage": 22,
+                "vorn": 0,
+                "anteilVorn": 0,
+                "medianAbstandPp": -3.958311124632241,
+                "minimumAbstandPp": -3.9865445355470985,
+                "maximumAbstandPp": -3.9014323500513814
+              }
+            }
+          }
+        }
+      }
+    },
+    "zusatz": {
+      "ersterMoeglicherTag": "2003-10-01",
+      "monatsendeDesErstenSignals": "2003-09-30",
+      "starttageZahl": 4522,
+      "letzterStarttag": "2021-09-16",
+      "gesamtlauf": {
+        "start": "2003-10-01",
+        "ende": "2026-09-15",
+        "tage": 8385,
+        "spy": {
+          "endwert": 1147360.9600483475,
+          "endwertCent": "1147360.96",
+          "pa": 0.11214255565424347,
+          "groessterRueckschlag": {
+            "wert": -0.5520142834962477,
+            "spitzeTag": "2007-10-09",
+            "tiefTag": "2009-03-09"
+          },
+          "laengsteZeitUnterWasser": {
+            "tage": 1773,
+            "von": "2007-10-09",
+            "bis": "2012-08-16",
+            "erholt": true
+          },
+          "anteilHandelstageUnterWasser": 0.874978354978355
+        },
+        "R1": {
+          "endwert": 603957.9076308778,
+          "endwertCent": "603957.91",
+          "abstandZurHalbCentGrenzeDollar": 0.0026308777928352356,
+          "pa": 0.08148523534726926,
+          "abstandPp": -3.065732030697421,
+          "vorn": false,
+          "startReihe": "SPY",
+          "wechsel": 34,
+          "wechselJeJahr": 1.4810375670840787,
+          "wechselListe": [
+            {
+              "tag": "2004-09-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2004-10-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2008-01-02",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2009-07-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2010-07-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2010-08-02",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2010-09-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2010-10-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2011-09-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2012-02-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2015-09-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2015-11-02",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2016-02-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2016-04-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2018-11-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2018-12-03",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2019-01-02",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2019-03-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2019-06-03",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2019-07-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2020-03-02",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2020-06-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2022-03-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2022-04-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2022-05-02",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2022-12-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2023-01-03",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2023-02-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2023-11-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2023-12-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2025-04-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2025-06-02",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2026-04-01",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2026-05-01",
+              "von": "SHY",
+              "nach": "SPY"
+            }
+          ],
+          "kosten": {
+            "gesamt": 44189.82016372719,
+            "erstkauf": 199.60079840319364,
+            "wechsel": 43990.219365323996
+          },
+          "groessterRueckschlag": {
+            "wert": -0.28989614409553044,
+            "spitzeTag": "2022-01-03",
+            "tiefTag": "2023-03-13"
+          },
+          "laengsteZeitUnterWasser": {
+            "tage": 1015,
+            "von": "2010-04-23",
+            "bis": "2013-02-01",
+            "erholt": true
+          },
+          "anteilHandelstageUnterWasser": 0.9049350649350649,
+          "anteilTageJeReihe": {
+            "SPY": 0.8185281385281385,
+            "SHY": 0.18147186147186148
+          },
+          "fehlendeKurse": 0
+        },
+        "R2": {
+          "endwert": 651737.9202482803,
+          "endwertCent": "651737.92",
+          "abstandZurHalbCentGrenzeDollar": 0.004751719683408737,
+          "pa": 0.08507800743935423,
+          "abstandPp": -2.706454821488924,
+          "vorn": false,
+          "startReihe": "EFA",
+          "wechsel": 39,
+          "wechselJeJahr": 1.6988372093023256,
+          "wechselListe": [
+            {
+              "tag": "2008-01-02",
+              "von": "EFA",
+              "nach": "AGG"
+            },
+            {
+              "tag": "2009-11-02",
+              "von": "AGG",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2010-05-03",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2011-05-02",
+              "von": "SPY",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2011-08-01",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2011-10-03",
+              "von": "SPY",
+              "nach": "AGG"
+            },
+            {
+              "tag": "2011-11-01",
+              "von": "AGG",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2012-06-01",
+              "von": "SPY",
+              "nach": "AGG"
+            },
+            {
+              "tag": "2012-07-02",
+              "von": "AGG",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2013-01-02",
+              "von": "SPY",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2013-03-01",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2013-05-01",
+              "von": "SPY",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2013-07-01",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2013-10-01",
+              "von": "SPY",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2013-11-01",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2015-09-01",
+              "von": "SPY",
+              "nach": "AGG"
+            },
+            {
+              "tag": "2015-11-02",
+              "von": "AGG",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2016-02-01",
+              "von": "SPY",
+              "nach": "AGG"
+            },
+            {
+              "tag": "2016-04-01",
+              "von": "AGG",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2017-07-03",
+              "von": "SPY",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2018-06-01",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2019-01-02",
+              "von": "SPY",
+              "nach": "AGG"
+            },
+            {
+              "tag": "2019-03-01",
+              "von": "AGG",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2019-09-03",
+              "von": "SPY",
+              "nach": "AGG"
+            },
+            {
+              "tag": "2019-11-01",
+              "von": "AGG",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2020-04-01",
+              "von": "SPY",
+              "nach": "AGG"
+            },
+            {
+              "tag": "2020-06-01",
+              "von": "AGG",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2022-07-01",
+              "von": "SPY",
+              "nach": "AGG"
+            },
+            {
+              "tag": "2023-05-01",
+              "von": "AGG",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2023-07-03",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2023-08-01",
+              "von": "SPY",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2023-12-01",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2025-05-01",
+              "von": "SPY",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2025-06-02",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2025-07-01",
+              "von": "SPY",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2025-08-01",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2025-11-03",
+              "von": "SPY",
+              "nach": "EFA"
+            },
+            {
+              "tag": "2026-05-01",
+              "von": "EFA",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2026-08-03",
+              "von": "SPY",
+              "nach": "EFA"
+            }
+          ],
+          "kosten": {
+            "gesamt": 55825.28890261635,
+            "erstkauf": 199.6007984031936,
+            "wechsel": 55625.68810421315
+          },
+          "groessterRueckschlag": {
+            "wert": -0.3533989792496459,
+            "spitzeTag": "2018-09-20",
+            "tiefTag": "2020-03-23"
+          },
+          "laengsteZeitUnterWasser": {
+            "tage": 1001,
+            "von": "2022-01-03",
+            "bis": "2024-09-30",
+            "erholt": true
+          },
+          "anteilHandelstageUnterWasser": 0.914978354978355,
+          "anteilTageJeReihe": {
+            "EFA": 0.3321212121212121,
+            "AGG": 0.15965367965367966,
+            "SPY": 0.5082251082251082
+          },
+          "fehlendeKurse": 0
+        },
+        "R3": {
+          "endwert": 519587.008757917,
+          "endwertCent": "519587.01",
+          "abstandZurHalbCentGrenzeDollar": 0.0037579169869422914,
+          "pa": 0.07441985067348811,
+          "abstandPp": -3.772270498075536,
+          "vorn": false,
+          "startReihe": "SPY",
+          "wechsel": 70,
+          "wechselJeJahr": 3.0491949910554563,
+          "wechselListe": [
+            {
+              "tag": "2004-07-22",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2004-09-13",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2004-09-24",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2004-10-04",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2004-10-15",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2004-11-02",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2005-04-18",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2005-05-05",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2005-10-11",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2005-11-03",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2006-06-13",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2006-07-05",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2006-07-14",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2006-08-04",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2007-08-15",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2007-08-27",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2007-08-29",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2007-09-04",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2007-11-12",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2007-12-07",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2007-12-17",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2009-06-02",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2009-06-23",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2009-06-26",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2010-05-21",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2010-08-05",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2010-08-12",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2010-09-16",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2011-08-03",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2012-01-04",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2012-11-15",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2012-11-26",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2014-10-14",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2014-10-22",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2015-08-21",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2015-10-29",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2015-11-16",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2015-11-19",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2015-12-14",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2016-03-18",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2016-06-28",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2016-06-30",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2018-10-12",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2018-10-17",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2018-10-24",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2018-11-08",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2018-11-13",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2018-12-04",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2018-12-06",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2019-02-19",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2020-02-28",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2020-03-03",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2020-03-04",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2020-03-05",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2020-03-09",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2020-05-28",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2022-01-26",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2022-02-01",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2022-02-15",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2022-03-28",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2022-04-12",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2023-01-24",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2023-03-13",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2023-03-22",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2023-10-26",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2023-11-03",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2025-03-11",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2025-05-13",
+              "von": "SHY",
+              "nach": "SPY"
+            },
+            {
+              "tag": "2026-03-23",
+              "von": "SPY",
+              "nach": "SHY"
+            },
+            {
+              "tag": "2026-04-09",
+              "von": "SHY",
+              "nach": "SPY"
+            }
+          ],
+          "kosten": {
+            "gesamt": 57001.118928298114,
+            "erstkauf": 199.60079840319364,
+            "wechsel": 56801.51812989492
+          },
+          "groessterRueckschlag": {
+            "wert": -0.2617199996549213,
+            "spitzeTag": "2020-02-19",
+            "tiefTag": "2020-06-11"
+          },
+          "laengsteZeitUnterWasser": {
+            "tage": 1043,
+            "von": "2004-03-05",
+            "bis": "2007-01-12",
+            "erholt": true
+          },
+          "anteilHandelstageUnterWasser": 0.9158441558441558,
+          "anteilTageJeReihe": {
+            "SPY": 0.7823376623376623,
+            "SHY": 0.21766233766233767
+          },
+          "fehlendeKurse": 0
+        }
+      },
+      "stichprobeZahl": 24,
+      "stichprobe": [
+        {
+          "index": 0,
+          "start": "2003-10-01",
+          "ende": "2008-09-30",
+          "spy": {
+            "endwert": 127016.72037500526,
+            "endwertCent": "127016.72",
+            "groessterRueckschlag": -0.27333523381272573
+          },
+          "R1": {
+            "endwert": 158628.4480978706,
+            "endwertCent": "158628.45",
+            "abstandPp": 4.768561514932634,
+            "vorn": true,
+            "wechsel": 3,
+            "groessterRueckschlag": -0.09924590492919927
+          },
+          "R2": {
+            "endwert": 220040.29825497884,
+            "endwertCent": "220040.30",
+            "abstandPp": 12.187421026786982,
+            "vorn": true,
+            "wechsel": 1,
+            "groessterRueckschlag": -0.15755174919376824
+          },
+          "R3": {
+            "endwert": 113034.03256337944,
+            "endwertCent": "113034.03",
+            "abstandPp": -2.4189001833036627,
+            "vorn": false,
+            "wechsel": 21,
+            "groessterRueckschlag": -0.15093579393079792
+          }
+        },
+        {
+          "index": 200,
+          "start": "2004-07-20",
+          "ende": "2009-07-17",
+          "spy": {
+            "endwert": 94337.26747717858,
+            "endwertCent": "94337.27",
+            "groessterRueckschlag": -0.5520142834962476
+          },
+          "R1": {
+            "endwert": 147926.36021077857,
+            "endwertCent": "147926.36",
+            "abstandPp": 9.321925489875548,
+            "vorn": true,
+            "wechsel": 4,
+            "groessterRueckschlag": -0.0992459049291996
+          },
+          "R2": {
+            "endwert": 196957.5484702026,
+            "endwertCent": "196957.55",
+            "abstandPp": 15.707045264524611,
+            "vorn": true,
+            "wechsel": 1,
+            "groessterRueckschlag": -0.15755174919376835
+          },
+          "R3": {
+            "endwert": 100605.34524919582,
+            "endwertCent": "100605.35",
+            "abstandPp": 1.2821542366240002,
+            "vorn": true,
+            "wechsel": 24,
+            "groessterRueckschlag": -0.17860546199592053
+          }
+        },
+        {
+          "index": 400,
+          "start": "2005-05-04",
+          "ende": "2010-05-03",
+          "spy": {
+            "endwert": 114110.42887205342,
+            "endwertCent": "114110.43",
+            "groessterRueckschlag": -0.5520142834962475
+          },
+          "R1": {
+            "endwert": 183565.93975713383,
+            "endwertCent": "183565.94",
+            "abstandPp": 10.249218208041743,
+            "vorn": true,
+            "wechsel": 2,
+            "groessterRueckschlag": -0.09924590492919949
+          },
+          "R2": {
+            "endwert": 182487.17151987183,
+            "endwertCent": "182487.17",
+            "abstandPp": 10.11608662780159,
+            "vorn": true,
+            "wechsel": 3,
+            "groessterRueckschlag": -0.15755174919376824
+          },
+          "R3": {
+            "endwert": 138392.89450079825,
+            "endwertCent": "138392.89",
+            "abstandPp": 4.042143348302862,
+            "vorn": true,
+            "wechsel": 17,
+            "groessterRueckschlag": -0.17860546199592042
+          }
+        },
+        {
+          "index": 600,
+          "start": "2006-02-17",
+          "ende": "2011-02-16",
+          "spy": {
+            "endwert": 114920.86310836973,
+            "endwertCent": "114920.86",
+            "groessterRueckschlag": -0.5520142834962476
+          },
+          "R1": {
+            "endwert": 155291.22295395532,
+            "endwertCent": "155291.22",
+            "abstandPp": 6.385805736812888,
+            "vorn": true,
+            "wechsel": 6,
+            "groessterRueckschlag": -0.2076322100419431
+          },
+          "R2": {
+            "endwert": 172140.1876115687,
+            "endwertCent": "172140.19",
+            "abstandPp": 8.66055669248873,
+            "vorn": true,
+            "wechsel": 3,
+            "groessterRueckschlag": -0.1953815185535981
+          },
+          "R3": {
+            "endwert": 129602.2653568942,
+            "endwertCent": "129602.27",
+            "abstandPp": 2.5040967345878906,
+            "vorn": true,
+            "wechsel": 18,
+            "groessterRueckschlag": -0.17860546199592098
+          }
+        },
+        {
+          "index": 800,
+          "start": "2006-12-04",
+          "ende": "2011-12-02",
+          "spy": {
+            "endwert": 98798.66942673987,
+            "endwertCent": "98798.67",
+            "groessterRueckschlag": -0.5520142834962476
+          },
+          "R1": {
+            "endwert": 129480.44043861686,
+            "endwertCent": "129480.44",
+            "abstandPp": 5.551460460783575,
+            "vorn": true,
+            "wechsel": 7,
+            "groessterRueckschlag": -0.207632210041943
+          },
+          "R2": {
+            "endwert": 124090.76340252378,
+            "endwertCent": "124090.76",
+            "abstandPp": 4.658679976080638,
+            "vorn": true,
+            "wechsel": 7,
+            "groessterRueckschlag": -0.23051367695428437
+          },
+          "R3": {
+            "endwert": 120978.0569095084,
+            "endwertCent": "120978.06",
+            "abstandPp": 4.1288510153764,
+            "vorn": true,
+            "wechsel": 15,
+            "groessterRueckschlag": -0.17860546199592098
+          }
+        },
+        {
+          "index": 1000,
+          "start": "2007-09-21",
+          "ende": "2012-09-20",
+          "spy": {
+            "endwert": 106325.84212007432,
+            "endwertCent": "106325.84",
+            "groessterRueckschlag": -0.5520142834962476
+          },
+          "R1": {
+            "endwert": 130354.683981313,
+            "endwertCent": "130354.68",
+            "abstandPp": 4.211115295416357,
+            "vorn": true,
+            "wechsel": 8,
+            "groessterRueckschlag": -0.207632210041943
+          },
+          "R2": {
+            "endwert": 121268.549110505,
+            "endwertCent": "121268.55",
+            "abstandPp": 2.6981438082080755,
+            "vorn": true,
+            "wechsel": 9,
+            "groessterRueckschlag": -0.23051367695428382
+          },
+          "R3": {
+            "endwert": 135326.50328178788,
+            "endwertCent": "135326.50",
+            "abstandPp": 5.00358017215794,
+            "vorn": true,
+            "wechsel": 12,
+            "groessterRueckschlag": -0.17281605398819133
+          }
+        },
+        {
+          "index": 1200,
+          "start": "2008-07-09",
+          "ende": "2013-07-08",
+          "spy": {
+            "endwert": 143317.14153921427,
+            "endwertCent": "143317.14",
+            "groessterRueckschlag": -0.4717499754207609
+          },
+          "R1": {
+            "endwert": 151809.48796983575,
+            "endwertCent": "151809.49",
+            "abstandPp": 1.245322390271597,
+            "vorn": true,
+            "wechsel": 7,
+            "groessterRueckschlag": -0.2076322100419431
+          },
+          "R2": {
+            "endwert": 121177.830366894,
+            "endwertCent": "121177.83",
+            "abstandPp": -3.549199107337042,
+            "vorn": false,
+            "wechsel": 12,
+            "groessterRueckschlag": -0.23051367695428393
+          },
+          "R3": {
+            "endwert": 157191.23437326518,
+            "endwertCent": "157191.23",
+            "abstandPp": 2.0059366793723665,
+            "vorn": true,
+            "wechsel": 11,
+            "groessterRueckschlag": -0.172816053988191
+          }
+        },
+        {
+          "index": 1400,
+          "start": "2009-04-24",
+          "ende": "2014-04-23",
+          "spy": {
+            "endwert": 241331.9561726397,
+            "endwertCent": "241331.96",
+            "groessterRueckschlag": -0.1860912675377141
+          },
+          "R1": {
+            "endwert": 169539.13918585284,
+            "endwertCent": "169539.14",
+            "abstandPp": -8.138287303570003,
+            "vorn": false,
+            "wechsel": 7,
+            "groessterRueckschlag": -0.207632210041943
+          },
+          "R2": {
+            "endwert": 130978.68682497277,
+            "endwertCent": "130978.69",
+            "abstandPp": -13.732628126100476,
+            "vorn": false,
+            "wechsel": 14,
+            "groessterRueckschlag": -0.23051367695428393
+          },
+          "R3": {
+            "endwert": 175549.41341018365,
+            "endwertCent": "175549.41",
+            "abstandPp": -7.360671169223232,
+            "vorn": false,
+            "wechsel": 11,
+            "groessterRueckschlag": -0.1728160539881911
+          }
+        },
+        {
+          "index": 1600,
+          "start": "2010-02-09",
+          "ende": "2015-02-06",
+          "spy": {
+            "endwert": 212347.19334947577,
+            "endwertCent": "212347.19",
+            "groessterRueckschlag": -0.1860912675377141
+          },
+          "R1": {
+            "endwert": 161510.16071867486,
+            "endwertCent": "161510.16",
+            "abstandPp": -6.204127874704346,
+            "vorn": false,
+            "wechsel": 6,
+            "groessterRueckschlag": -0.20763221004194288
+          },
+          "R2": {
+            "endwert": 143328.97789242223,
+            "endwertCent": "143328.98",
+            "abstandPp": -8.806859805698686,
+            "vorn": false,
+            "wechsel": 13,
+            "groessterRueckschlag": -0.23051367695428415
+          },
+          "R3": {
+            "endwert": 168487.29663512518,
+            "endwertCent": "168487.30",
+            "abstandPp": -5.2673850458405,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.17281605398819122
+          }
+        },
+        {
+          "index": 1800,
+          "start": "2010-11-23",
+          "ende": "2015-11-20",
+          "spy": {
+            "endwert": 195108.36773007535,
+            "endwertCent": "195108.37",
+            "groessterRueckschlag": -0.186091267537714
+          },
+          "R1": {
+            "endwert": 161634.91519694473,
+            "endwertCent": "161634.92",
+            "abstandPp": -4.231101549338545,
+            "vorn": false,
+            "wechsel": 4,
+            "groessterRueckschlag": -0.17309314543241006
+          },
+          "R2": {
+            "endwert": 128812.11325599671,
+            "endwertCent": "128812.11",
+            "abstandPp": -9.126011783086874,
+            "vorn": false,
+            "wechsel": 14,
+            "groessterRueckschlag": -0.23051367695428393
+          },
+          "R3": {
+            "endwert": 160364.17258511332,
+            "endwertCent": "160364.17",
+            "abstandPp": -4.405072525143527,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.09686964600339987
+          }
+        },
+        {
+          "index": 2000,
+          "start": "2011-09-09",
+          "ende": "2016-09-08",
+          "spy": {
+            "endwert": 205958.0335896512,
+            "endwertCent": "205958.03",
+            "groessterRueckschlag": -0.13006096436360826
+          },
+          "R1": {
+            "endwert": 153628.0316079929,
+            "endwertCent": "153628.03",
+            "abstandPp": -6.58045223885293,
+            "vorn": false,
+            "wechsel": 5,
+            "groessterRueckschlag": -0.19192388928400805
+          },
+          "R2": {
+            "endwert": 131748.96786843872,
+            "endwertCent": "131748.97",
+            "abstandPp": -9.878260087429801,
+            "vorn": false,
+            "wechsel": 14,
+            "groessterRueckschlag": -0.18751093460643886
+          },
+          "R3": {
+            "endwert": 149457.38657133744,
+            "endwertCent": "149457.39",
+            "abstandPp": -7.178711352556011,
+            "vorn": false,
+            "wechsel": 13,
+            "groessterRueckschlag": -0.13855956345330112
+          }
+        },
+        {
+          "index": 2200,
+          "start": "2012-06-26",
+          "ende": "2017-06-23",
+          "spy": {
+            "endwert": 204611.44189646433,
+            "endwertCent": "204611.44",
+            "groessterRueckschlag": -0.13006096436360826
+          },
+          "R1": {
+            "endwert": 174113.71157504348,
+            "endwertCent": "174113.71",
+            "abstandPp": -3.672923634824188,
+            "vorn": false,
+            "wechsel": 4,
+            "groessterRueckschlag": -0.19192388928400794
+          },
+          "R2": {
+            "endwert": 147194.20936020106,
+            "endwertCent": "147194.21",
+            "abstandPp": -7.370899883624049,
+            "vorn": false,
+            "wechsel": 11,
+            "groessterRueckschlag": -0.18751093460643864
+          },
+          "R3": {
+            "endwert": 163064.51014688093,
+            "endwertCent": "163064.51",
+            "abstandPp": -5.13127983797419,
+            "vorn": false,
+            "wechsel": 12,
+            "groessterRueckschlag": -0.138559563453301
+          }
+        },
+        {
+          "index": 2400,
+          "start": "2013-04-16",
+          "ende": "2018-04-13",
+          "spy": {
+            "endwert": 187488.36645041447,
+            "endwertCent": "187488.37",
+            "groessterRueckschlag": -0.13006096436360848
+          },
+          "R1": {
+            "endwert": 159542.86357232102,
+            "endwertCent": "159542.86",
+            "abstandPp": -3.609169241020038,
+            "vorn": false,
+            "wechsel": 4,
+            "groessterRueckschlag": -0.19192388928400794
+          },
+          "R2": {
+            "endwert": 145093.90364860927,
+            "endwertCent": "145093.90",
+            "abstandPp": -5.678062056312094,
+            "vorn": false,
+            "wechsel": 9,
+            "groessterRueckschlag": -0.18751093460643897
+          },
+          "R3": {
+            "endwert": 155865.0159804682,
+            "endwertCent": "155865.02",
+            "abstandPp": -4.121096146526337,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.13855956345330156
+          }
+        },
+        {
+          "index": 2600,
+          "start": "2014-01-30",
+          "ende": "2019-01-29",
+          "spy": {
+            "endwert": 162685.8387693547,
+            "endwertCent": "162685.84",
+            "groessterRueckschlag": -0.19338780026848057
+          },
+          "R1": {
+            "endwert": 124171.21439598378,
+            "endwertCent": "124171.21",
+            "abstandPp": -5.801745040470929,
+            "vorn": false,
+            "wechsel": 7,
+            "groessterRueckschlag": -0.22232401000131696
+          },
+          "R2": {
+            "endwert": 124770.11578660847,
+            "endwertCent": "124770.12",
+            "abstandPp": -5.701134682273334,
+            "vorn": false,
+            "wechsel": 7,
+            "groessterRueckschlag": -0.19338780026848046
+          },
+          "R3": {
+            "endwert": 125900.72165129599,
+            "endwertCent": "125900.72",
+            "abstandPp": -5.512250717016753,
+            "vorn": false,
+            "wechsel": 17,
+            "groessterRueckschlag": -0.16191529968963303
+          }
+        },
+        {
+          "index": 2800,
+          "start": "2014-11-13",
+          "ende": "2019-11-12",
+          "spy": {
+            "endwert": 167165.5097117751,
+            "endwertCent": "167165.51",
+            "groessterRueckschlag": -0.19338780026848057
+          },
+          "R1": {
+            "endwert": 110045.99021607466,
+            "endwertCent": "110045.99",
+            "abstandPp": -8.896310193792623,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.23722676070744564
+          },
+          "R2": {
+            "endwert": 112917.71956743232,
+            "endwertCent": "112917.72",
+            "abstandPp": -8.369406469905694,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.19338780026848046
+          },
+          "R3": {
+            "endwert": 128004.02330525611,
+            "endwertCent": "128004.02",
+            "abstandPp": -5.765329946465014,
+            "vorn": false,
+            "wechsel": 16,
+            "groessterRueckschlag": -0.16327012561816057
+          }
+        },
+        {
+          "index": 3000,
+          "start": "2015-09-01",
+          "ende": "2020-08-31",
+          "spy": {
+            "endwert": 199906.74491683996,
+            "endwertCent": "199906.74",
+            "groessterRueckschlag": -0.33699813656214495
+          },
+          "R1": {
+            "endwert": 129621.41498050497,
+            "endwertCent": "129621.41",
+            "abstandPp": -9.53460970785196,
+            "vorn": false,
+            "wechsel": 11,
+            "groessterRueckschlag": -0.23722676070744575
+          },
+          "R2": {
+            "endwert": 112152.78192744416,
+            "endwertCent": "112152.78",
+            "abstandPp": -12.540630164575362,
+            "vorn": false,
+            "wechsel": 11,
+            "groessterRueckschlag": -0.3533989792496457
+          },
+          "R3": {
+            "endwert": 121552.05608104676,
+            "endwertCent": "121552.06",
+            "abstandPp": -10.880109993906073,
+            "vorn": false,
+            "wechsel": 21,
+            "groessterRueckschlag": -0.2617199996549211
+          }
+        },
+        {
+          "index": 3200,
+          "start": "2016-06-17",
+          "ende": "2021-06-16",
+          "spy": {
+            "endwert": 222933.6275372991,
+            "endwertCent": "222933.63",
+            "groessterRueckschlag": -0.33699813656214495
+          },
+          "R1": {
+            "endwert": 168856.16981188516,
+            "endwertCent": "168856.17",
+            "abstandPp": -6.349888958309768,
+            "vorn": false,
+            "wechsel": 8,
+            "groessterRueckschlag": -0.23722676070744586
+          },
+          "R2": {
+            "endwert": 143169.27323467506,
+            "endwertCent": "143169.27",
+            "abstandPp": -9.95771532897589,
+            "vorn": false,
+            "wechsel": 8,
+            "groessterRueckschlag": -0.3533989792496456
+          },
+          "R3": {
+            "endwert": 157019.9618295053,
+            "endwertCent": "157019.96",
+            "abstandPp": -7.953461043112675,
+            "vorn": false,
+            "wechsel": 16,
+            "groessterRueckschlag": -0.2617199996549211
+          }
+        },
+        {
+          "index": 3400,
+          "start": "2017-04-04",
+          "ende": "2022-04-01",
+          "spy": {
+            "endwert": 210426.53295715057,
+            "endwertCent": "210426.53",
+            "groessterRueckschlag": -0.33699813656214483
+          },
+          "R1": {
+            "endwert": 148518.61798394233,
+            "endwertCent": "148518.62",
+            "abstandPp": -7.826705260305,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.23722676070744608
+          },
+          "R2": {
+            "endwert": 135137.1442952327,
+            "endwertCent": "135137.14",
+            "abstandPp": -9.855248864055067,
+            "vorn": false,
+            "wechsel": 8,
+            "groessterRueckschlag": -0.3533989792496456
+          },
+          "R3": {
+            "endwert": 142711.51891634587,
+            "endwertCent": "142711.52",
+            "abstandPp": -8.688288714623638,
+            "vorn": false,
+            "wechsel": 18,
+            "groessterRueckschlag": -0.2617199996549212
+          }
+        },
+        {
+          "index": 3600,
+          "start": "2018-01-19",
+          "ende": "2023-01-18",
+          "spy": {
+            "endwert": 152489.4885078286,
+            "endwertCent": "152489.49",
+            "groessterRueckschlag": -0.33699813656214483
+          },
+          "R1": {
+            "endwert": 104066.59238868272,
+            "endwertCent": "104066.59",
+            "abstandPp": -8.010117443692977,
+            "vorn": false,
+            "wechsel": 13,
+            "groessterRueckschlag": -0.2669326386095946
+          },
+          "R2": {
+            "endwert": 94333.51682991462,
+            "endwertCent": "94333.52",
+            "abstandPp": -9.971753698819496,
+            "vorn": false,
+            "wechsel": 8,
+            "groessterRueckschlag": -0.35339897924964614
+          },
+          "R3": {
+            "endwert": 114563.77183807835,
+            "endwertCent": "114563.77",
+            "abstandPp": -6.052619384215596,
+            "vorn": false,
+            "wechsel": 19,
+            "groessterRueckschlag": -0.26171999965492054
+          }
+        },
+        {
+          "index": 3800,
+          "start": "2018-11-02",
+          "ende": "2023-11-01",
+          "spy": {
+            "endwert": 167344.79476486886,
+            "endwertCent": "167344.79",
+            "groessterRueckschlag": -0.33699813656214495
+          },
+          "R1": {
+            "endwert": 110440.08796585494,
+            "endwertCent": "110440.09",
+            "abstandPp": -8.847134218700292,
+            "vorn": false,
+            "wechsel": 14,
+            "groessterRueckschlag": -0.28989614409553077
+          },
+          "R2": {
+            "endwert": 91751.79651733165,
+            "endwertCent": "91751.80",
+            "abstandPp": -12.562520708846826,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.33699813656214483
+          },
+          "R3": {
+            "endwert": 117676.17537362209,
+            "endwertCent": "117676.18",
+            "abstandPp": -7.543238438062061,
+            "vorn": false,
+            "wechsel": 20,
+            "groessterRueckschlag": -0.2617199996549211
+          }
+        },
+        {
+          "index": 4000,
+          "start": "2019-08-22",
+          "ende": "2024-08-21",
+          "spy": {
+            "endwert": 206988.04644684395,
+            "endwertCent": "206988.05",
+            "groessterRueckschlag": -0.33699813656214495
+          },
+          "R1": {
+            "endwert": 161884.72953823154,
+            "endwertCent": "161884.73",
+            "abstandPp": -5.548758995618197,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.28989614409553066
+          },
+          "R2": {
+            "endwert": 128171.66502051968,
+            "endwertCent": "128171.67",
+            "abstandPp": -10.573874571377061,
+            "vorn": false,
+            "wechsel": 9,
+            "groessterRueckschlag": -0.33699813656214483
+          },
+          "R3": {
+            "endwert": 155413.1604646887,
+            "endwertCent": "155413.16",
+            "abstandPp": -6.443707701567236,
+            "vorn": false,
+            "wechsel": 16,
+            "groessterRueckschlag": -0.2617199996549209
+          }
+        },
+        {
+          "index": 4200,
+          "start": "2020-06-09",
+          "ende": "2025-06-06",
+          "spy": {
+            "endwert": 201253.3343788911,
+            "endwertCent": "201253.33",
+            "groessterRueckschlag": -0.24497244199288049
+          },
+          "R1": {
+            "endwert": 151705.85718351934,
+            "endwertCent": "151705.86",
+            "abstandPp": -6.33325463533565,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.28989614409553044
+          },
+          "R2": {
+            "endwert": 159050.4987184757,
+            "endwertCent": "159050.50",
+            "abstandPp": -5.298616263643741,
+            "vorn": false,
+            "wechsel": 7,
+            "groessterRueckschlag": -0.2839101351475224
+          },
+          "R3": {
+            "endwert": 174356.46805684466,
+            "endwertCent": "174356.47",
+            "abstandPp": -3.2596618850176062,
+            "vorn": false,
+            "wechsel": 12,
+            "groessterRueckschlag": -0.2046565741150036
+          }
+        },
+        {
+          "index": 4400,
+          "start": "2021-03-25",
+          "ende": "2026-03-24",
+          "spy": {
+            "endwert": 181235.0932622718,
+            "endwertCent": "181235.09",
+            "groessterRueckschlag": -0.24497244199288049
+          },
+          "R1": {
+            "endwert": 136615.99823894314,
+            "endwertCent": "136616.00",
+            "abstandPp": -6.19428258576431,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.28989614409553066
+          },
+          "R2": {
+            "endwert": 146068.84061732012,
+            "endwertCent": "146068.84",
+            "abstandPp": -4.759424609604901,
+            "vorn": false,
+            "wechsel": 10,
+            "groessterRueckschlag": -0.2839101351475226
+          },
+          "R3": {
+            "endwert": 157461.92824306185,
+            "endwertCent": "157461.93",
+            "abstandPp": -3.125611677972473,
+            "vorn": false,
+            "wechsel": 13,
+            "groessterRueckschlag": -0.2046565741150035
+          }
+        },
+        {
+          "index": 4521,
+          "start": "2021-09-16",
+          "ende": "2026-09-15",
+          "spy": {
+            "endwert": 181193.89139394907,
+            "endwertCent": "181193.89",
+            "groessterRueckschlag": -0.2449724419928806
+          },
+          "R1": {
+            "endwert": 123089.00407087358,
+            "endwertCent": "123089.00",
+            "abstandPp": -8.387356000756728,
+            "vorn": false,
+            "wechsel": 12,
+            "groessterRueckschlag": -0.28989614409553077
+          },
+          "R2": {
+            "endwert": 138966.2413576106,
+            "endwertCent": "138966.24",
+            "abstandPp": -5.825166912996238,
+            "vorn": false,
+            "wechsel": 12,
+            "groessterRueckschlag": -0.2839101351475226
+          },
+          "R3": {
+            "endwert": 152423.81817528862,
+            "endwertCent": "152423.82",
+            "abstandPp": -3.830899994834147,
+            "vorn": false,
+            "wechsel": 14,
+            "groessterRueckschlag": -0.20465657411500393
+          }
+        }
+      ],
+      "alleFenster": {
+        "R1": {
+          "fenster": 4522,
+          "vorn": 1249,
+          "anteilVorn": 0.27620521892967714,
+          "medianAbstandPp": -5.6320836565844745,
+          "minimumAbstandPp": -14.075377049159087,
+          "maximumAbstandPp": 15.262791286461908,
+          "medianRueckschlagRegel": -0.2076322100419431,
+          "medianRueckschlagSpy": -0.33699813656214483,
+          "schlechtesterRueckschlagRegel": -0.2898961440955311,
+          "schlechtesterRueckschlagSpy": -0.5532988830928285,
+          "anteilFlacherAlsSpy": 0.6143299425033171,
+          "fehlendeKurse": 0,
+          "flacherAlsSpyToleranz": 2778,
+          "anteilFlacherAlsSpyToleranz": 0.6143299425033171,
+          "gleichWieSpy": 0
+        },
+        "R2": {
+          "fenster": 4522,
+          "vorn": 1085,
+          "anteilVorn": 0.23993808049535603,
+          "medianAbstandPp": -7.47218573974423,
+          "minimumAbstandPp": -19.48270882795495,
+          "maximumAbstandPp": 21.71999698008815,
+          "medianRueckschlagRegel": -0.23051367695428393,
+          "medianRueckschlagSpy": -0.33699813656214483,
+          "schlechtesterRueckschlagRegel": -0.356526329441764,
+          "schlechtesterRueckschlagSpy": -0.5532988830928285,
+          "anteilFlacherAlsSpy": 0.3339230429013711,
+          "fehlendeKurse": 0,
+          "flacherAlsSpyToleranz": 1330,
+          "anteilFlacherAlsSpyToleranz": 0.29411764705882354,
+          "gleichWieSpy": 640
+        },
+        "R3": {
+          "fenster": 4522,
+          "vorn": 1251,
+          "anteilVorn": 0.27664750110570546,
+          "medianAbstandPp": -4.8543887063589475,
+          "minimumAbstandPp": -13.297155566480567,
+          "maximumAbstandPp": 8.239092697486905,
+          "medianRueckschlagRegel": -0.1786054619959203,
+          "medianRueckschlagSpy": -0.33699813656214483,
+          "schlechtesterRueckschlagRegel": -0.26199394841190204,
+          "schlechtesterRueckschlagSpy": -0.5532988830928285,
+          "anteilFlacherAlsSpy": 0.8662096417514374,
+          "fehlendeKurse": 0,
+          "flacherAlsSpyToleranz": 3917,
+          "anteilFlacherAlsSpyToleranz": 0.8662096417514374,
+          "gleichWieSpy": 0
+        }
+      },
+      "lesartToleranz": "NL9: flacherAlsSpyToleranz zählt Fenster mit Rückschlag_Regel > Rückschlag_SPY + 1e-9; gleichWieSpy zählt |Rückschlag_Regel - Rückschlag_SPY| <= 1e-9 (mathematisch gleicher Rückschlag, wenn die Regel über die ganze Strecke SPY hält). anteilFlacherAlsSpy (strikt, ohne Toleranz) bleibt unverändert."
+    }
+  }
 }
