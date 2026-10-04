@@ -1,0 +1,161 @@
+[
+ {
+  "datei": "scoreboard.js",
+  "zeile": 454,
+  "wortlaut": "Aktie 0,04 · Schein am Geld 0,05",
+  "klasse": "c",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "ist gemessen** und klassenspezifisch (0,0449 bis 0,1569 Pp"
+  },
+  "belegsagt": "Kassa-Hürde (Aktie) ist seit 03.09.2026 gemessen und klassenspezifisch: 0,0449 (ab1000) bis 0,1569 Pp (5-50), Faktor 3,5; „Schein am Geld 0,05\" steht weder in belegstand.md noch in einer ERGEBNIS.md",
+  "vorschlag": "Aktie je Umsatzklasse 0,045 bis 0,157 Pp (gemessen 03.09.2026) · Schein am Geld: ohne Messung im Belegstand"
+ },
+ {
+  "datei": "scoreboard.js",
+  "zeile": 454,
+  "wortlaut": "CFD 0,10 · Standard-Schein",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| 0,10 Pp (CFD-Runde ohne Nacht) | 26 |"
+  },
+  "belegsagt": "CFD-Runde ohne Nacht 0,10 Pp (gehebelt mit einer Nacht 0,1247 Pp)",
+  "vorschlag": ""
+ },
+ {
+  "datei": "scoreboard.js",
+  "zeile": 454,
+  "wortlaut": "Standard-Schein 0,23 Pp je Umlauf",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| 0,23 Pp (Standard-Schein) | 40 |"
+  },
+  "belegsagt": "Standard-Schein-Hürde 0,23 Pp",
+  "vorschlag": ""
+ },
+ {
+  "datei": "mfdepot.js",
+  "zeile": 175,
+  "wortlaut": "Momentum-Buch: Konfiguration → gemessene liquide Fassung (Studie 02.09.2026)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "das App-Buch rechnet exakt die gemessene Konfiguration (231/21/63, stärkste 10 %"
+  },
+  "belegsagt": "Buch rechnet seit 02.09.2026 die gemessene liquide Konfiguration (Urteil: „LEBT\" nach Regel, In-Sample und am Rand, kein „belegt\")",
+  "vorschlag": ""
+ },
+ {
+  "datei": "mfdepot.js",
+  "zeile": 178,
+  "wortlaut": "liquiden Korb ist jede weitere ein Out-of-Sample-Beleg.",
+  "klasse": "c",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Buch seit 02.09.2026 auf liquidem Korb — ab hier Out-of-Sample"
+  },
+  "belegsagt": "ab 02.09.2026 Out-of-Sample – aber ein Vorwärtstest über Monate prüft laut Realitätsprobe 04.10. die Umsetzung, nicht den Vorsprung; eine einzelne Umschichtung ist kein Beleg",
+  "vorschlag": "liquiden Korb ist jede weitere eine Out-of-Sample-Beobachtung (für sich kein Beleg)."
+ },
+ {
+  "datei": "mfdepot.js",
+  "zeile": 857,
+  "wortlaut": ". Konfiguration wie gemessen (Studie 02.09.2026)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "das App-Buch rechnet exakt die gemessene Konfiguration (231/21/63, stärkste 10 %"
+  },
+  "belegsagt": "Buch rechnet exakt die gemessene Konfiguration der Studie vom 02.09.2026",
+  "vorschlag": ""
+ },
+ {
+  "datei": "mittelfrist.js",
+  "zeile": 344,
+  "wortlaut": "die Parameter wurden auf den Jahren <b>davor</b> ausgesucht und hier nicht mehr angepasst.",
+  "klasse": "d",
+  "beleg": null,
+  "belegsagt": "Kein Beleg für eine Parameterwahl vor 2005; Belegstand zum Monats-Momentum: „nicht entscheidbar\", liquide Fassung „In-Sample und am Rand\"; das Universum dieser Rechnung sind heutige Überlebende",
+  "vorschlag": "Rückrechnung ab 2005 auf den heute gelisteten Werten (Überlebende) – kein Prüfzeitraum im Sinne einer Bestätigung; Belegstand Momentum: nicht entscheidbar."
+ },
+ {
+  "datei": "depotmigration.js",
+  "zeile": 128,
+  "wortlaut": "Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre)",
+  "klasse": "d",
+  "beleg": null,
+  "belegsagt": "belegstand.md nennt für die Stunden-Strategie nur t = −11,6 (Fundstelle „Gedächtnisprotokoll\"); Signal-, Werte- und Jahreszahl stehen dort nicht",
+  "vorschlag": "Die Stunden-Strategie wurde vermessen: Ihr Technik-Score ist ein Kontraindikator (t = −11,6)"
+ },
+ {
+  "datei": "depotmigration.js",
+  "zeile": 129,
+  "wortlaut": "Kontraindikator (−0,74 Pp auf 20 Tage",
+  "klasse": "d",
+  "beleg": null,
+  "belegsagt": "−0,74 Pp auf 20 Tage steht weder in belegstand.md noch in einer ERGEBNIS.md; belegt ist nur t = −11,6",
+  "vorschlag": "Kontraindikator (t = −11,6)"
+ },
+ {
+  "datei": "depotmigration.js",
+  "zeile": 129,
+  "wortlaut": ", t=−11,6) – dazu Schein-Kosten",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator, nicht nur wirkungslos |"
+  },
+  "belegsagt": "Stunden-Strategie widerlegt, t = −11,6, Kontraindikator",
+  "vorschlag": ""
+ },
+ {
+  "datei": "depotmigration.js",
+  "zeile": 152,
+  "wortlaut": "txt: 'Die gemessene Kante war auf '",
+  "klasse": "c",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| `rsi2seit` (RSI2 im Seitwärtskanal) | Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle."
+  },
+  "belegsagt": "Belegte handelbare Kanten: NULL. rsi2seit nicht entscheidbar (+0,021 Pp je Signal), Kapitulation am 03.10.2026 zurückgewiesen – „gemessene Kante\" ist für keinen der beiden Modi gedeckt",
+  "vorschlag": "txt: 'Die gemessene Regel war auf '"
+ },
+ {
+  "datei": "depotmigration.js",
+  "zeile": 204,
+  "wortlaut": "'Neumessung vom 03.10.2026: in der behaupteten Größe zurückgewiesen.'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "## Kapitulation V2, Neumessung (03.10.2026) — in der behaupteten Größe zurückgewiesen"
+  },
+  "belegsagt": "Kapitulation V2 am 03.10.2026 neu gemessen: netto −0,024 Pp, in der behaupteten Größe zurückgewiesen",
+  "vorschlag": ""
+ },
+ {
+  "datei": "depotmigration.js",
+  "zeile": 268,
+  "wortlaut": "35 Beobachtungen an 10 Zeitpunkten, nötig wären rund",
+  "klasse": "c",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| **News-Sentiment (Übernacht, Großwerte)** | **b = +0,0070 Pp/Score-Punkt, t = 0,31** — mitten im Placebo-Band."
+  },
+  "belegsagt": "„35 Beobachtungen / Faktor 75\" ist seit 01.09.2026 überholt; News-Sentiment ist inzwischen gemessen und widerlegt (b = +0,0070 Pp/Score-Punkt, t = 0,31, 33.307 Beobachtungen)",
+  "vorschlag": "Journaltext als Stand vom Eintragstag kennzeichnen und ergänzen: „Überholt: Messung vom 01.09.2026 – widerlegt (t = 0,31).\""
+ },
+ {
+  "datei": "depotmigration.js",
+  "zeile": 269,
+  "wortlaut": "2.600. Es fehlt der Faktor 75. Unbelegt ist nicht widerlegt",
+  "klasse": "c",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| **News-Sentiment (Übernacht, Großwerte)** | **b = +0,0070 Pp/Score-Punkt, t = 0,31** — mitten im Placebo-Band."
+  },
+  "belegsagt": "Heute nicht mehr „unbelegt\", sondern widerlegt (Übernacht, Großwerte, t = 0,31); Faktor 75 galt nur für das App-Archiv und ist überholt",
+  "vorschlag": "„… Faktor 75 (Stand damals). Seit 01.09.2026 gemessen: widerlegt, t = 0,31.\""
+ }
+]
