@@ -14,6 +14,8 @@
  *     New York) statt auf Date.now();
  *   - dieselbe Datei laeuft gegen jeden Stand: PRUEF_WURZEL=<Ordner> nimmt die Module von dort
  *     (so entstand der Lauf "vor dem Umbau" gegen 97f16d2).
+ * Mit Auftrag Nr. 94 (04.10.2026) Test 10 neu gefasst: jede Zahl jeder Rueckblick-Zeile gegen die Datei, die ihr
+ * Eintrag als Quelle nennt (Einzelheiten im Kopf von Test 10); Test 11 unveraendert (Kopf erklaert seine Abweichung).
  * Jeder Test druckt GENAU EINE Zeile: "ZEIGT ABWEICHUNG: ..." oder "kein Unterschied: ...".
  * Reines Node, kein Netz, keine Schluessel, kein Electron. Die Fenster-Module laufen in einer
  * vm-Sandbox mit Attrappen fuer Speicher, Kursabruf und Uhr. Nicht in `npm test` eingehaengt.
@@ -441,32 +443,91 @@ TESTS[9] = function () {
       : ' (Rueckgabe nur wahr/falsch, kein Grund, keine Altersangabe)') + '; die Messung haette am 63. Tag umgeschichtet.');
 };
 
-/* 10 - Texte: jede Zahl des Rueckblick-Eintrags gegen ERGEBNIS.md (kein Fund erwartet). Unveraendert uebernommen. */
+/* 10 - Texte: jede Zahl jeder Rueckblick-Zeile gegen die Datei, die ihr Eintrag als Quelle nennt (kein Fund erwartet).
+ *      Umgeschrieben mit Auftrag Nr. 94: die Fassung aus der Durchsicht suchte die Zahlen des ersten Eintrags in
+ *      studien/massstab-rueckblick-2026-10-04/ERGEBNIS.md (Nr. 74). Seit Nr. 91 kommen die Zeilen aus anderen Quellen -
+ *      die Momentum-Zeilen aus studien/momentum-korb-kleinst-2026-10-04/ergebnis.json (Fassung mit Regel K), die
+ *      Drift-Zeile aus studien/vorregistrierung-2026-10-04-ergebnis-drift/ergebnis.json. Jetzt fuer JEDEN Eintrag
+ *      (momentum-liquide und drift): die Datei aus seinem Feld quelle (Pfad vor dem ersten Komma - es muss sie geben),
+ *      daneben ergebnis.json (die Zahlen, auf die ERGEBNIS.md verweist), Lauf ("Lauf B-187 mit Regel K") bzw. Stufe
+ *      ("Stufe 2") aus demselben Feld. Jede Zahl auf eine Nachkommastelle wie in test-v6.js 97.8; das Fenster der
+ *      Drift-Zeile und ihre 60 Handelstage stehen nur in der genannten ERGEBNIS.md. Danach muss jede Zahl der gezeigten
+ *      Zeile (rueckblickText) einem geprueften Feld gehoeren, und jedes Feld von zahlen muss geprueft sein. Ausgenommen
+ *      ist nur der Satz "Grenzen: ..." - ein fester Satz des PM, dessen Zahlen in keiner der Quellen stehen; er wird
+ *      genannt, nicht geprueft. */
 TESTS[10] = function () {
   var win = sandbox(['studienurteile.js'], {}, Date.now());
-  var r = win.StudienUrteile.rueckblicke('momentum-liquide')[0], z = r.zahlen;
-  var erg = fs.readFileSync(path.join(WURZEL, 'studien/massstab-rueckblick-2026-10-04/ERGEBNIS.md'), 'utf8');
-  /* Das Register fuehrt eine Nachkommastelle, ERGEBNIS.md teils zwei (−40,16 %): gesucht wird
-   * eine Prozentzahl mit gleichem Vorzeichen, die auf die Registerzahl rundet. */
-  var prozente = (erg.match(/[+−]\d+,\d+ %/g) || []).map(function (s) { return (s[0] === '−' ? -1 : 1) * Number(s.slice(1, -2).replace(',', '.')); });
-  function steht(x) { return prozente.some(function (p) { return Math.round(p * 10) / 10 === x; }); }
-  var pruef = [
-    ['Buch gesamt', steht(z.buchGesamt)],
-    ['SPY gesamt', steht(z.spyGesamt)],
-    ['nicht geschlagen', z.schlaegt === false && /den S&P 500 nach Kosten: \*\*nein\*\*/.test(erg)],
-    ['Phasen', erg.indexOf(z.phasenVorn + ' von ' + z.phasen) !== -1],
-    ['Rueckschlag Buch', steht(z.rueckschlagBuch)],
-    ['Rueckschlag SPY', steht(z.rueckschlagSpy)],
-    ['zulaessig', erg.indexOf(z.zulaessigMin + ' bis ' + z.zulaessigMax) !== -1],
-    ['Fenster', erg.indexOf('16.09.2021 bis 15.09.2026') !== -1 && z.von === '2021-09-16' && z.bis === '2026-09-15']
-  ];
-  var rot = pruef.filter(function (p) { return !p[1]; }).map(function (p) { return p[0]; });
-  zeile(rot.length > 0, rot.length ? 'Zahlen ohne Gegenstueck in ERGEBNIS.md: ' + rot.join(', ')
-    : 'alle ' + pruef.length + ' Zahlen des Rueckblick-Eintrags (studienurteile.js) stehen so in ERGEBNIS.md; Kartentext: "' + win.StudienUrteile.rueckblickText(r) + '"');
+  var SU = win.StudienUrteile;
+  function r1(x) { return Math.round(x * 10) / 10; }
+  function pzDe(x) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(1).replace('.', ',') + ' %'; }
+  function ppDe(x) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(1).replace('.', ',') + ' Pp'; }
+  function tagD(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '')); return m ? m[3] + '.' + m[2] + '.' + m[1] : '?'; }
+  var rot = [], nZahlen = 0, quellen = [], grenzen = [];
+  var liste = SU.rueckblicke('momentum-liquide').concat(SU.rueckblicke('drift'));
+  liste.forEach(function (e) {
+    var z = e.zahlen || {}, name = e.lauf || e.kennung;
+    var datei = String(e.quelle || '').split(',')[0].trim();
+    if (!datei || !fs.existsSync(path.join(WURZEL, datei))) { rot.push(name + ': die Quelle "' + datei + '" gibt es nicht'); return; }
+    var md = fs.readFileSync(path.join(WURZEL, datei), 'utf8'), json;
+    try { json = JSON.parse(fs.readFileSync(path.join(WURZEL, path.dirname(datei), 'ergebnis.json'), 'utf8')); }
+    catch (err) { rot.push(name + ': keine ergebnis.json neben ' + datei); return; }
+    /* je Feld: [Feld, Wert im Register, Wert in der Quelle, Textstueck in der Zeile (oder null)] */
+    var p = [['kennung', e.kennung, json.kennung, null]];
+    if (e.art === 'zufall') {
+      var mS = /Stufe (\d+)/.exec(e.quelle), s = mS && json['stufe' + mS[1]];
+      if (!s) { rot.push(name + ': Stufe aus der Quelle fehlt in ergebnis.json'); return; }
+      quellen.push(path.dirname(datei) + '/ergebnis.json Stufe ' + mS[1]);
+      var fenster = md.indexOf(tagD(z.von) + ' bis ' + tagD(z.bis)) !== -1 && Math.abs(s.jahre - 5) < 0.01;
+      var halten = /Verkäufe am (\d+)\. Handelstag/.exec(md);
+      p.push(['von', z.von, fenster ? z.von : '(nicht in ' + datei + ')', tagD(z.von)], ['bis', z.bis, fenster ? z.bis : '(nicht in ' + datei + ')', tagD(z.bis)],
+        ['plaetze', /\((\d+) Plätze/.exec(e.korb) && Number(/\((\d+) Plätze/.exec(e.korb)[1]), s.plaetzeMax, s.plaetzeMax + ' Plätze'],
+        ['haltedauer', /, (\d+) Handelstage/.exec(e.korb) && Number(/, (\d+) Handelstage/.exec(e.korb)[1]), halten && Number(halten[1]), (halten && halten[1]) + ' Handelstage'],
+        ['buchGesamt', z.buchGesamt, r1(s.buchGesamt), pzDe(z.buchGesamt)], ['spyGesamt', z.spyGesamt, r1(s.spyGesamt), pzDe(z.spyGesamt)],
+        ['schlaegt', z.schlaegt, s.schlaegt, null], ['zufallUeber', z.zufallUeber, s.zufall.ueberDemBuch, null], ['zufallBuecher', z.zufallBuecher, s.zufall.buecher, null],
+        ['zufall', z.zufallUeber + '/' + z.zufallBuecher, z.zufallUeber + '/' + z.zufallBuecher, z.zufallUeber + ' von ' + z.zufallBuecher + ' Zufallsbüchern'],
+        ['vorwaertstest', z.vorwaertstest, s.vorwaertstestAngezeigt, null],
+        ['rueckschlagBuch', z.rueckschlagBuch, r1(s.rueckschlagBuch), pzDe(z.rueckschlagBuch)], ['rueckschlagSpy', z.rueckschlagSpy, r1(s.rueckschlagSpy), pzDe(z.rueckschlagSpy)]);
+    } else {
+      var mL = /Lauf (\S+)/.exec(e.quelle), L = mL && json.laeufe && json.laeufe[mL[1]];
+      var mitK = /mit Regel K/.test(e.quelle), m = L && (mitK ? L.mit : L.ohne);
+      if (!m) { rot.push(name + ': Lauf aus der Quelle fehlt in ergebnis.json'); return; }
+      quellen.push(path.dirname(datei) + '/ergebnis.json ' + mL[1] + (mitK ? ' mit' : ' ohne') + ' Regel K');
+      var korbZ = /Korb der (\d+) /.exec(e.korb);
+      p.push(['lauf', e.lauf, mL[1], null], ['regel', e.regel, mitK && json.regel.kleinstAnteil > 0 ? 'mit Regel K' : '(ohne Regel K)', null],
+        ['von', z.von, L.fenster.von, tagD(z.von)], ['bis', z.bis, L.fenster.bis, tagD(z.bis)],
+        ['korb', korbZ ? Number(korbZ[1]) : 'alle', L.korb === 'alle zulaessigen' ? 'alle' : L.korb, korbZ ? 'Korb der ' + korbZ[1] + ' ' : null],
+        ['buchGesamt', z.buchGesamt, r1(m.k0.buchGesamt), pzDe(z.buchGesamt)], ['spyGesamt', z.spyGesamt, r1(m.k0.spyGesamt), pzDe(z.spyGesamt)],
+        ['schlaegt', z.schlaegt, m.k0.schlaegt, null], ['phasenVorn', z.phasenVorn, m.startphasen.vorDemMarkt, null], ['phasen', z.phasen, m.startphasen.anzahl, null],
+        ['phasenText', z.phasenVorn + '/' + z.phasen, z.phasenVorn + '/' + z.phasen, 'in ' + z.phasenVorn + ' von ' + z.phasen + ' Fällen'],
+        ['medianAbstandPa', z.medianAbstandPa, r1(m.startphasen.median), ppDe(z.medianAbstandPa)],
+        ['rueckschlagBuch', z.rueckschlagBuch, r1(m.k0.rueckschlagBuch), pzDe(z.rueckschlagBuch)], ['rueckschlagSpy', z.rueckschlagSpy, r1(m.k0.rueckschlagSpy), pzDe(z.rueckschlagSpy)]);
+    }
+    p.forEach(function (x) { if (x[1] !== x[2]) rot.push(name + '.' + x[0] + ' ' + x[1] + ' statt ' + x[2]); });
+    var geprueft = p.map(function (x) { return x[0]; });
+    Object.keys(z).forEach(function (k) { if (geprueft.indexOf(k) < 0) rot.push(name + '.' + k + ': Feld ohne Pruefung'); });
+    /* jede Zahl der gezeigten Zeile gehoert einem geprueften Feld */
+    var text = SU.rueckblickText(e), iG = text.indexOf(' Grenzen: ');
+    if (iG !== -1) { grenzen.push(name + ': "' + text.slice(iG + 10) + '"'); text = text.slice(0, iG); }
+    p.forEach(function (x) {
+      if (x[3] == null) return;
+      var i = text.indexOf(x[3]);
+      if (i === -1) { rot.push(name + ': "' + x[3] + '" steht nicht in der Zeile'); return; }
+      text = text.slice(0, i) + '#' + text.slice(i + x[3].length);
+      nZahlen++;
+    });
+    var uebrig = text.split('S&P 500').join('S&P').match(/\d[\d.,]*/g);   // "S&P 500" ist ein Name, keine Zahl
+    if (uebrig) rot.push(name + ': Zahl in der Zeile ohne Pruefung: ' + uebrig.join(', '));
+  });
+  zeile(rot.length > 0 || liste.length !== 4, rot.length ? 'Zahlen ohne Gegenstueck in der genannten Quelle: ' + rot.join(' | ')
+    : 'alle ' + nZahlen + ' Zahlen der ' + liste.length + ' Rueckblick-Zeilen stehen so in der Datei, die ihr Eintrag als Quelle nennt (' +
+      quellen.join('; ') + ', eine Nachkommastelle), keine weitere Zahl in den Zeilen, jedes Feld geprueft. Nicht geprueft (fester Satz des PM, ' +
+      'keine Zahl in den Quellen): ' + grenzen.join('; '));
 };
 
 /* 11 - Texte der Oberflaeche: Zahlen ohne Fundstelle in ERGEBNIS.md / belegstand.md (Fund F7). Unveraendert uebernommen
- *      (nicht Teil von Nr. 93). */
+ *      (nicht Teil von Nr. 93 und Nr. 94). Die Abweichung ist erwartet und bleibt: der Test findet die Zahlen, die
+ *      absichtlich stehen geblieben sind - die alten Belege des Momentum-Buchs, gemessen nur an Werten, die es heute
+ *      noch gibt, seit Nr. 91 an jeder Stelle unter dem Kopf "Überholt: …" (studienurteile.js belegeKopf). */
 TESTS[11] = function () {
   var quellen = ['strategien.js', 'app-shell.js', 'index.html'].map(function (f) { return [f, fs.readFileSync(path.join(WURZEL, f), 'utf8')]; });
   var beleg = ['wiki/belegstand.md', 'studien/massstab-rueckblick-2026-10-04/ERGEBNIS.md', 'studien/momentum-korb-2026-10-04/ERGEBNIS.md']
