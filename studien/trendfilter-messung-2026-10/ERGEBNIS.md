@@ -35,7 +35,7 @@ Die Vermutung aus REGEL §10 („schlägt SPY nicht“, Schutz vor allem in Fens
 ## Grenzen
 
 - **Zwei Fenster, überwiegend Aufwärtsmarkt.** 2017–2026 enthält keinen Abschwung wie 2000–2002 oder 2008; genau dort liegt der bekannte Nutzen solcher Regeln (Zusatz). Die Entscheidregel des Auftrags fragt aber nach 2017–2026.
-- **Zusatz mit Ersatzreihen:** SHY (1–3-jährige Staatsanleihen) stieg 2008 deutlich stärker als Schatzwechsel — das schönt die Regeln in den Fenstern mit 2008 eher; EFA statt ACWX. Die Fenster überlappen fast vollständig und sind kein unabhängiger Nachweis.
+- **Zusatz mit Ersatzreihen:** SHY (1–3-jährige Staatsanleihen) brachte 2008 +6,6 % gegen +1,6 % bei BIL (Schatzwechsel; aus denselben Daten) — das schönt die Regeln in den Fenstern mit 2008 eher; EFA statt ACWX. Die Fenster überlappen fast vollständig und sind kein unabhängiger Nachweis.
 - **Daten:** eine Quelle (Yahoo); zweite Quelle (Alpaca-Minutenarchiv, Alpaca-Maßnahmen) nur ab 2016, für 2003–2015 keine. Kurse in US-Dollar, ohne Wechselkurs; ein Anleger in Deutschland würde vermutlich UCITS-ETFs mit anderen Kosten benutzen. 20 Basispunkte je Seite sind eine Annahme.
 - **Ausschüttungen** werden am Ex-Tag zum Schluss ohne Kosten wieder angelegt (auf beiden Seiten gleich).
 - **Quellen:** Faber in der Fassung von 2013 gelesen (die Fassung von 2007 über ihre Zitate), Antonacci über seine FAQ (das Buch nicht), Siegel über Inhaltsverzeichnis und Sekundärquellen (`notiz-R1.md`, `notiz-R2.md`, `notiz-R3.md`).
