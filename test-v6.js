@@ -22487,6 +22487,358 @@ console.log('94) Der Rueckblick am Momentum-Buch');
   ok(rot94 === g94, '94.x alle Gegenproben dieses Abschnitts schlagen an', rot94 + ' von ' + g94);
 })();
 
+/* ================= 95) Regel K gegen Kleinstpositionen im Momentum-Buch (Auftrag Nr. 85, 04.10.2026) =====
+ *
+ * Der Befund (wiki/fehlerformen.md, "Die Notloesung fuer Cent-Betraege griff bei neun von zehn
+ * Umschichtungen"): fuehreAus verkleinert einen Kauf, wenn das Bargeld nicht reicht - bis auf
+ * 0,0001 Stueck -, und planeUmschichtung hielt den Rest danach fuer eine volle Position; der
+ * Platz blieb leer, solange der Wert Ziel war. Regel K steht seit Nr. 85 als SCHALTER im
+ * Handelscode (opts.kleinstAnteil), Vorgabe AUS. Die App schaltet erst ein, wenn die
+ * Nachrechnung (studien/momentum-korb-kleinst-2026-10-04/) abgenommen ist.
+ *   95.1 Vorgabe aus: beide Funktionen rechnen zeichengleich wie die Fassung vor Nr. 85 (unten
+ *        als Altfassung eingefroren) - an den bestehenden Faellen des Abschnitts
+ *        "Mittelfrist-Depot", an einem Fall mit Kleinstkauf (0,0001 Stueck entsteht weiter)
+ *        und an 400 Zufallsfaellen
+ *   95.2 K1 von Hand: kein Kauf unter 5 % des Platzwerts - gemessen NACH dem Verkleinern
+ *   95.3 K2 von Hand: ein Kleinstbestand gilt nicht als gehalten
+ *   95.4 beides ueber zwei Umschichtungen: der Platz wird wieder besetzt
+ *   95.5 Eigenschaften an den 400 Zufallsfaellen
+ *   95.6 die App schaltet noch nicht ein
+ * Gegenproben: der Handelscode wird aus geaendertem Quelltext geladen - ohne K1, ohne K2, ohne
+ * die Neuplanung, mit eingeschalteter Vorgabe und mit verschobener Grenze. Jede dieser
+ * Fassungen muss an den Pruefungen oben auffallen. */
+console.log('95) Regel K gegen Kleinstpositionen: Schalter im Handelscode, Vorgabe aus');
+(function () {
+  var MH = require('./mfhandel.js');
+  var g95 = 0, rot95 = 0;
+  function gegen95(was, ergebnis) { g95++; if (ergebnis) rot95++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function kopie(x) { return JSON.parse(JSON.stringify(x)); }
+  function nah(a, b) { return Math.abs(a - b) < 1e-9; }
+  function melde(liste) { liste.forEach(function (x) { ok(x[0], x[1], x[2]); }); }
+  function alle(liste) { return liste.every(function (x) { return x[0]; }); }
+  function pos(b, s) { return b.positionen.filter(function (p) { return p.sym === s; })[0]; }
+  function namen(l) { return l.map(function (o) { return o.sym || o; }).join(','); }
+  var K = { kleinstAnteil: 0.05 };
+
+  /* ---- Altfassung: planeUmschichtung und fuehreAus, wie sie bis Nr. 85 in mfhandel.js standen (woertlich) ---- */
+  function planeAlt(ziel, buch, preise) {
+    var zielSet = {};
+    ziel.forEach(function (s) { zielSet[s] = true; });
+    var verkaufen = [], halten = [], fehltKurs = [];
+    var wert = buch.cash;
+    (buch.positionen || []).forEach(function (p) {
+      var k = preise[p.sym];
+      if (!(k > 0)) { fehltKurs.push(p.sym); halten.push(p.sym); return; }
+      wert += p.stueck * k;
+      if (zielSet[p.sym]) halten.push(p.sym);
+      else verkaufen.push({ sym: p.sym, stueck: p.stueck, kurs: k });
+    });
+    var neuKaufen = ziel.filter(function (s) {
+      return !(buch.positionen || []).some(function (p) { return p.sym === s; });
+    }).filter(function (s) { if (!(preise[s] > 0)) { fehltKurs.push(s); return false; } return true; });
+    var budget = ziel.length ? wert / ziel.length : 0;
+    var kaufen = neuKaufen.map(function (s) {
+      return { sym: s, kurs: preise[s], budget: budget, stueck: budget > 0 ? Math.round(budget / preise[s] * 10000) / 10000 : 0 };
+    });
+    return { verkaufen: verkaufen, kaufen: kaufen, halten: halten, fehltKurs: fehltKurs, depotwert: wert };
+  }
+  function fuehreAlt(buch, plan, nowMs, kostenBp) {
+    var k = (kostenBp == null ? 20 : kostenBp) / 10000;
+    var n = 0;
+    if (!buch.trades) buch.trades = [];
+    plan.verkaufen.forEach(function (o) {
+      var idx = buch.positionen.findIndex(function (p) { return p.sym === o.sym; });
+      if (idx < 0) return;
+      var p = buch.positionen[idx];
+      var erloes = p.stueck * o.kurs * (1 - k);
+      buch.cash += erloes;
+      buch.trades.push({ t: nowMs, sym: o.sym, art: 'verkauf', stueck: p.stueck, kurs: o.kurs,
+        pnl: Math.round((erloes - p.stueck * p.einstand) * 100) / 100 });
+      buch.positionen.splice(idx, 1);
+      n++;
+    });
+    plan.kaufen.forEach(function (o) {
+      var kosten = o.stueck * o.kurs * (1 + k);
+      if (!(o.stueck > 0) || kosten > buch.cash) {
+        o.stueck = Math.max(0, Math.floor(buch.cash / (o.kurs * (1 + k)) * 10000) / 10000);
+        kosten = o.stueck * o.kurs * (1 + k);
+        if (!(o.stueck > 0)) return;
+      }
+      buch.cash -= kosten;
+      buch.positionen.push({ sym: o.sym, stueck: o.stueck, einstand: o.kurs * (1 + k), seit: nowMs });
+      buch.trades.push({ t: nowMs, sym: o.sym, art: 'kauf', stueck: o.stueck, kurs: o.kurs });
+      n++;
+    });
+    if (buch.trades.length > 400) buch.trades = buch.trades.slice(-400);
+    return n;
+  }
+
+  /** Eine Umschichtung auf einer Kopie des Buchs; a = die zusaetzlichen Argumente (der Schalter). */
+  function laufe(M, f, a) {
+    var b = kopie(f.buch);
+    var plan = M.planeUmschichtung.apply(null, [f.ziel, b, f.preise].concat(a || []));
+    var vor = JSON.stringify(plan);
+    var n = M.fuehreAus.apply(null, [b, plan, f.t, f.bp].concat(a || []));
+    return { buch: b, plan: plan, n: n, spur: vor + '|' + JSON.stringify(plan) + '|' + JSON.stringify(b) + '|' + n };
+  }
+  var ALT = { planeUmschichtung: planeAlt, fuehreAus: fuehreAlt };
+  /* "aus" heisst: kein Argument, kein Schalter, null, 0, negativ, keine Zahl */
+  var AUS = [[], [undefined], [null], [{}], [{ kleinstAnteil: 0 }], [{ kleinstAnteil: -0.05 }], [{ kleinstAnteil: NaN }]];
+  function gleichAlt(M, f) {
+    var soll = laufe(ALT, f).spur;
+    return AUS.every(function (a) { return laufe(M, f, a).spur === soll; });
+  }
+
+  /* ---- die Faelle ---- */
+  /* (a) die bestehenden Faelle aus "Mittelfrist-Depot": leeres Buch, zweite Umschichtung, Ziel ohne Kurs */
+  var now = Date.UTC(2026, 7, 21);
+  function serie(steig) { var r = []; for (var i = 0; i < 300; i++) r.push([now - (300 - i) * 86400000, 100 * (1 + steig * i / 300), 5e6]); return r; }
+  var roh = { A: serie(0.6), B: serie(0.3), C: serie(-0.3), D: serie(0.1), E: serie(0.05), F: serie(0.02), G: serie(-0.1) };
+  var z = MH.momentumZiel(roh, { rueckblick: 231, luecke: 21, anteil: 0.3, minWerte: 5, nowMs: now });
+  var preise = { A: 150, B: 120, C: 80, D: 110, E: 105, F: 101, G: 90 };
+  var best1 = { ziel: z.ziel, buch: { cash: 10000, positionen: [] }, preise: preise, t: now, bp: 20 };
+  var best2 = { ziel: z.ziel.filter(function (s) { return s !== 'A'; }).concat(['G']), buch: laufe(ALT, best1).buch, preise: preise, t: now + 86400000, bp: 20 };
+  var best3 = { ziel: ['A', 'X'], buch: { cash: 1000, positionen: [] }, preise: { A: 100 }, t: now, bp: 20 };
+  /* (b) der Kleinstkauf, von Hand (20 Bp je Seite). Depotwert 1002,0075 + 100 x 110 = 12002,0075; Platzwert 12002,0075 / 3 = 4000,6692.
+   *     B: geplant 40,0067 Stueck, das Bargeld reicht nicht -> floor(1002,0075 / 100,2 x 10000) / 10000 = 10 Stueck = 1002,00 $ mit Kosten
+   *        (Wert 1000 $ = 25 % des Platzwerts), Rest 0,0075 $.
+   *     C: geplant 80,0134 Stueck, Rest 0,0075 $ -> floor(0,0075 / 50,1 x 10000) / 10000 = 0,0001 Stueck = 0,00501 $ mit Kosten
+   *        (Wert 0,005 $ statt 4000 $), Rest 0,00249 $. */
+  var f1 = { ziel: ['A', 'B', 'C'], buch: { cash: 1002.0075, positionen: [{ sym: 'A', stueck: 100, einstand: 50, seit: 1 }], trades: [] },
+    preise: { A: 110, B: 100, C: 50 }, t: 1000, bp: 20 };
+  /* (c) der Kleinstbestand, von Hand. Depotwert 500 + 100 x 110 + 0,0001 x 50 + 0,0002 x 30 + 1,4 x 100 = 11640,011 (X hat keinen Kurs
+   *     und zaehlt nicht); Platzwert 11640,011 / 5 = 2328,0022; 5 % davon = 116,40011.
+   *     F (0,005 $, Ziel) und N (0,006 $, kein Ziel) liegen darunter; S (140 $ = 6,01 %, Ziel) liegt darueber; X bleibt, wie es ist.
+   *     Neu geplant, voll: B 2328,0022 / 100 = 23,28 Stueck, F 2328,0022 / 50 = 46,56 Stueck, C 2328,0022 / 25 = 93,1201 Stueck. */
+  var f3 = { ziel: ['B', 'F', 'A', 'S', 'C'], buch: { cash: 500, positionen: [
+    { sym: 'A', stueck: 100, einstand: 50, seit: 1 }, { sym: 'F', stueck: 0.0001, einstand: 50.1, seit: 1 }, { sym: 'N', stueck: 0.0002, einstand: 30, seit: 1 },
+    { sym: 'X', stueck: 0.0001, einstand: 20, seit: 1 }, { sym: 'S', stueck: 1.4, einstand: 100, seit: 1 }], trades: [] },
+    preise: { A: 110, F: 50, N: 30, S: 100, B: 100, C: 25 }, t: 2000, bp: 20 };
+  /* (d) 400 Zufallsfaelle: zwoelf Werte, davon etwa ein Zehntel ohne Kurs; Positionen normal oder als Rest von 0,0001 bis 0,0005 Stueck;
+   *     Zielliste in zufaelliger Reihenfolge; Bargeld von Cent-Bruchteilen bis 20.000 $; Kosten 0, 10, 20 Bp oder die Vorgabe. */
+  var rnd = lcg(8504), NAMEN = 'A B C D E F G H I J K L'.split(' ');
+  function r01() { return rnd() + 0.5; }
+  function zufallsFall() {
+    var pr = {}, ps = [], zl = [], i, j, h;
+    NAMEN.forEach(function (s) { if (r01() < 0.9) pr[s] = Math.round((5 + r01() * 400) * 100) / 100; });
+    NAMEN.forEach(function (s) {
+      var u = r01();
+      if (u < 0.3) ps.push({ sym: s, stueck: Math.round((0.5 + r01() * 60) * 10000) / 10000, einstand: 50, seit: 1 });
+      else if (u < 0.5) ps.push({ sym: s, stueck: (1 + Math.floor(r01() * 5)) / 10000, einstand: 50, seit: 1 });
+    });
+    NAMEN.forEach(function (s) { if (r01() < 0.5) zl.push(s); });
+    for (i = zl.length - 1; i > 0; i--) { j = Math.floor(r01() * (i + 1)); h = zl[i]; zl[i] = zl[j]; zl[j] = h; }
+    var u2 = r01(), cash = u2 < 0.3 ? r01() * 0.05 : u2 < 0.6 ? r01() * 800 : r01() * 20000;
+    return { ziel: zl, buch: { cash: cash, positionen: ps, trades: [] }, preise: pr, t: 1000, bp: [0, 10, 20, undefined][Math.floor(r01() * 4)] };
+  }
+  var FAELLE = [];
+  for (var q = 0; q < 400; q++) FAELLE.push(zufallsFall());
+
+  /* ---- 95.1 Vorgabe aus ---- */
+  function pruefeAus(M) {
+    var r = laufe(M, f1), zahl = { kleinstkauf: 0, verkleinert: 0, ausgefallen: 0, rest: 0 }, ungleich = 0;
+    FAELLE.forEach(function (f) {
+      if (!gleichAlt(M, f)) ungleich++;
+      var e = laufe(ALT, f);
+      e.plan.kaufen.forEach(function (o) {
+        var w = o.stueck * o.kurs;
+        if (!(o.stueck > 0)) zahl.ausgefallen++; else if (w < 0.05 * o.budget) zahl.kleinstkauf++; else if (w < 0.95 * o.budget) zahl.verkleinert++;
+      });
+      f.buch.positionen.forEach(function (p) { if (f.preise[p.sym] > 0 && f.ziel.indexOf(p.sym) >= 0 && p.stueck < 0.001) zahl.rest++; });
+    });
+    return [
+      [gleichAlt(M, best1) && gleichAlt(M, best2) && gleichAlt(M, best3) && laufe(M, best1).n === z.ziel.length && laufe(M, best2).n === 2 &&
+        namen(laufe(M, best3).plan.fehltKurs) === 'X',
+      '95.1 Vorgabe aus: die bestehenden Faelle (leeres Buch, zweite Umschichtung, Ziel ohne Kurs) laufen zeichengleich wie vor Nr. 85 - Plan, Buch, Trades, Zahl der Ausfuehrungen'],
+      [r.n === 2 && pos(r.buch, 'B').stueck === 10 && pos(r.buch, 'C').stueck === 0.0001 && nah(r.buch.cash, 0.00249) && nah(r.plan.kaufen[0].budget, 12002.0075 / 3) &&
+        r.buch.trades.length === 2 && !('kleinst' in r.plan),
+      '95.1 Vorgabe aus: der Kleinstkauf entsteht weiter - C bekommt 0,0001 Stueck statt 80, das Bargeld faellt auf 0,00249 $', pos(r.buch, 'C') && pos(r.buch, 'C').stueck],
+      [gleichAlt(M, f1) && gleichAlt(M, f3), '95.1 Vorgabe aus: Kleinstkauf und Kleinstbestand zeichengleich wie vor Nr. 85 (ohne Argument, {}, null, 0, negativ, keine Zahl)'],
+      [ungleich === 0 && zahl.kleinstkauf >= 20 && zahl.verkleinert >= 100 && zahl.ausgefallen >= 100 && zahl.rest >= 50,
+        '95.1 Vorgabe aus: 400 Zufallsfaelle zeichengleich wie vor Nr. 85 - darunter Kleinstkaeufe, verkleinerte und ausgefallene Kaeufe und Reste als Ziel',
+        ungleich + ' ungleich; ' + zahl.kleinstkauf + ' / ' + zahl.verkleinert + ' / ' + zahl.ausgefallen + ' / ' + zahl.rest]
+    ];
+  }
+  melde(pruefeAus(MH));
+
+  /* ---- 95.2 K1: kein Kleinstkauf ---- */
+  /** Ein einzelner geplanter Kauf von 40 Stueck B zu 100 $ (Platzwert 4000 $) bei gegebenem Bargeld; ein Stueck kostet 100,20 $. */
+  function kauf(M, cash, budget, opts) {
+    var o = { sym: 'B', kurs: 100, stueck: 40 };
+    if (budget !== undefined) o.budget = budget;
+    var b = { cash: cash, positionen: [], trades: [] };
+    var n = M.fuehreAus(b, { verkaufen: [], kaufen: [o] }, 1000, 20, opts);
+    return { n: n, stueck: o.stueck, cash: b.cash, pos: b.positionen.length, trades: b.trades.length };
+  }
+  function pruefeK1(M) {
+    var r = laufe(M, f1, [K]);
+    var k49 = kauf(M, 196, 4000, K), k60 = kauf(M, 241, 4000, K), voll = kauf(M, 5000, 4000, K);
+    var o1 = kauf(M, 196, undefined, K), o2 = kauf(M, 196, 0, K), o3 = kauf(M, 196, -1, K);
+    return [
+      [r.n === 1 && !pos(r.buch, 'C') && pos(r.buch, 'B').stueck === 10 && r.plan.kaufen[1].stueck === 0 && r.plan.kaufen[1].sym === 'C' &&
+        r.buch.trades.length === 1 && r.buch.trades[0].sym === 'B' && nah(r.buch.cash, 0.0075) && r.buch.positionen.length === 2,
+      '95.2 K1: der Kauf von 0,0001 Stueck faellt weg - keine Position, kein Trade, o.stueck = 0, das Bargeld (0,0075 $) bleibt; der Kauf mit 25 % davor wird ausgefuehrt',
+      r.n + ' Ausfuehrung, Bargeld ' + r.buch.cash.toFixed(5)],
+      /* 196 $ Bargeld: floor(196 / 100,2 x 10000) / 10000 = 1,9560 Stueck = 195,60 $ = 4,89 % von 4000 $ -> unter 5 % (200 $) */
+      [k49.n === 0 && k49.stueck === 0 && k49.cash === 196 && k49.pos === 0 && k49.trades === 0 && kauf(M, 196, 4000).stueck === 1.956 && kauf(M, 196, 4000).n === 1,
+        '95.2 K1: ein Kauf, der auf 4,89 % des Platzwerts verkleinert wuerde, faellt weg (ohne Schalter: 1,956 Stueck)', k49.stueck + ' / ' + kauf(M, 196, 4000).stueck],
+      /* 241 $ Bargeld: floor(241 / 100,2 x 10000) / 10000 = 2,4051 Stueck = 240,51 $ = 6,01 % */
+      [k60.n === 1 && k60.stueck === 2.4051 && k60.pos === 1 && k60.trades === 1 && nah(k60.cash, 241 - 2.4051 * 100.2),
+        '95.2 K1: ein Kauf mit 6 % des Platzwerts wird ausgefuehrt', k60.stueck],
+      [voll.n === 1 && voll.stueck === 40 && nah(voll.cash, 5000 - 4008), '95.2 K1: ein voller Kauf bleibt, wie er ist', voll.stueck],
+      [o1.n === 1 && o1.stueck === 1.956 && o2.stueck === 1.956 && o3.stueck === 1.956 && o1.pos === 1 && o2.pos === 1 && o3.pos === 1,
+        '95.2 K1: ein Kauf ohne budget (oder mit budget 0 / negativ) ist nicht betroffen - er wird verkleinert und ausgefuehrt wie zuvor', [o1.stueck, o2.stueck, o3.stueck].join(' / ')]
+    ];
+  }
+  /* 200,405 $ Bargeld: floor(200,405 / 100,2 x 10000) / 10000 = 2,0000 Stueck = 200,00 $ = genau 5 % von 4000 $ -> "unter" heisst echt kleiner */
+  function pruefeGrenzeK1(M) {
+    var g = kauf(M, 200.405, 4000, K);
+    return [[g.n === 1 && g.stueck === 2 && g.pos === 1, '95.2 K1: genau 5 % des Platzwerts wird ausgefuehrt (unter heisst echt kleiner)', g.stueck]];
+  }
+  melde(pruefeK1(MH)); melde(pruefeGrenzeK1(MH));
+
+  /* ---- 95.3 K2: ein Kleinstbestand gilt nicht als gehalten ---- */
+  function pruefeK2(M) {
+    var an = M.planeUmschichtung(f3.ziel, kopie(f3.buch), f3.preise, K), aus = M.planeUmschichtung(f3.ziel, kopie(f3.buch), f3.preise);
+    var kF = an.kaufen.filter(function (o) { return o.sym === 'F'; })[0] || {};
+    var leer = M.planeUmschichtung([], kopie(f3.buch), f3.preise, K);
+    return [
+      [namen(an.verkaufen) === 'F,N' && an.verkaufen[0].stueck === 0.0001 && an.verkaufen[0].kurs === 50 && namen(an.kaufen) === 'B,F,C' && kF.stueck === 46.56 &&
+        nah(kF.budget, 2328.0022) && an.kaufen[0].stueck === 23.28 && an.kaufen[2].stueck === 93.1201,
+      '95.3 K2: der Kleinstbestand eines Ziels wird ganz verkauft und voll neu geplant - an seiner Stelle der Zielliste (B, F, C), nicht am Ende',
+      namen(an.verkaufen) + ' | ' + namen(an.kaufen) + ' | F ' + kF.stueck],
+      [namen(an.verkaufen).indexOf('N') >= 0 && namen(an.kaufen).indexOf('N') === -1 && namen(aus.verkaufen) === 'N',
+        '95.3 K2: der Kleinstbestand eines Nicht-Ziels wird verkauft wie immer (und nicht neu geplant)'],
+      [namen(an.halten) === 'A,X,S' && namen(an.fehltKurs) === 'X' && an.kleinst.indexOf('X') === -1 && namen(an.verkaufen).indexOf('X') === -1,
+        '95.3 K2: eine Position ohne Kurs bleibt, wie sie ist (gehalten, als fehlender Kurs gemeldet) - auch wenn sie nur 0,0001 Stueck hat', namen(an.halten)],
+      [an.halten.indexOf('S') >= 0 && namen(an.verkaufen).indexOf('S') === -1 && namen(an.kaufen).indexOf('S') === -1,
+        '95.3 K2: eine Position mit 6 % des Platzwerts bleibt gehalten'],
+      [Array.isArray(an.kleinst) && an.kleinst.join(',') === 'F,N' && !('kleinst' in aus), '95.3 K2: die Rueckgabe nennt die Kleinstbestaende im Feld kleinst (nur mit Schalter)', String(an.kleinst)],
+      [nah(an.depotwert, 11640.011) && an.depotwert === aus.depotwert && an.kaufen[0].budget === aus.kaufen[0].budget,
+        '95.3 K2: Depotwert und Platzwert bleiben definiert wie bisher (der Kleinstbestand zaehlt mit)', an.depotwert],
+      [namen(aus.halten) === 'A,F,X,S' && namen(aus.kaufen) === 'B,C', '95.3 ohne Schalter gilt der Rest von 0,0001 Stueck weiter als gehalten, sein Platz wird nicht geplant', namen(aus.halten)],
+      [leer.kleinst.length === 0 && namen(leer.verkaufen) === 'A,F,N,S' && namen(leer.halten) === 'X' && leer.kaufen.length === 0,
+        '95.3 K2: leere Zielliste - alles mit Kurs wird verkauft wie immer, nichts heisst Kleinstbestand', namen(leer.verkaufen)]
+    ];
+  }
+  /* Grenze: Depotwert 3800 + 2 x 100 = 4000, ein Ziel -> Platzwert 4000, 5 % = 200. Die Position mit genau 200 $ bleibt gehalten;
+   * mit 1,9999 Stueck (199,99 $ bei Platzwert 3999,99 und Schwelle 199,9995) ist sie ein Kleinstbestand. */
+  function pruefeGrenzeK2(M) {
+    var gl = M.planeUmschichtung(['P'], { cash: 3800, positionen: [{ sym: 'P', stueck: 2, einstand: 100 }] }, { P: 100 }, K);
+    var dr = M.planeUmschichtung(['P'], { cash: 3800, positionen: [{ sym: 'P', stueck: 1.9999, einstand: 100 }] }, { P: 100 }, K);
+    return [[namen(gl.halten) === 'P' && gl.kleinst.length === 0 && gl.kaufen.length === 0 && dr.kleinst.join() === 'P' && namen(dr.verkaufen) === 'P' &&
+      namen(dr.kaufen) === 'P' && dr.kaufen[0].stueck === 39.9999 && dr.halten.length === 0,
+    '95.3 K2: genau 5 % des Platzwerts bleibt gehalten, knapp darunter ist ein Kleinstbestand', namen(gl.halten) + ' | ' + dr.kleinst.join()]];
+  }
+  melde(pruefeK2(MH)); melde(pruefeGrenzeK2(MH));
+
+  /* ---- 95.4 ueber zwei Umschichtungen ----
+   * Erste Umschichtung wie Fall (b); danach kommen 5000 $ Bargeld dazu, Ziel und Kurse bleiben.
+   * aus/aus: C gilt mit 0,0001 Stueck als gehalten -> kein Kauf, 5000,00249 $ bleiben liegen (der Befund).
+   * an/an:   C wurde gar nicht gekauft -> jetzt geplant mit Platzwert 17000,0075 / 3 = 5666,67 $ = 113,3334 Stueck; das Bargeld (5000,0075 $)
+   *          reicht fuer floor(5000,0075 / 50,1 x 10000) / 10000 = 99,8005 Stueck (4990,03 $ = 88 % des Platzwerts).
+   * aus/an:  das Buch traegt den Rest von 0,0001 Stueck (so stuende ein Buch da, das vor dem Einschalten gehandelt hat) -> verkauft
+   *          (0,0001 x 50 x 0,998 = 0,00499 $), neu geplant und mit 99,8005 Stueck gekauft.
+   * Mit 6100 $ statt 5000 $ reicht das Bargeld: Platzwert (12000,00749 + 6100) / 3 = 6033,3358 $ -> 120,6667 Stueck, voll. */
+  function zwei(M, o1, o2, dazu) {
+    var e1 = laufe(M, f1, o1 ? [o1] : []), b = e1.buch;
+    b.cash += dazu;
+    var e2 = laufe(M, { ziel: f1.ziel, buch: b, preise: f1.preise, t: 2000, bp: 20 }, o2 ? [o2] : []);
+    return { c: pos(e2.buch, 'C'), plan: e2.plan, n: e2.n, cash: e2.buch.cash, trades: e2.buch.trades };
+  }
+  function pruefeZwei(M) {
+    var aa = zwei(M, null, null, 5000), kk = zwei(M, K, K, 5000), ak = zwei(M, null, K, 5000), voll = zwei(M, null, K, 6100);
+    var letzte = ak.trades.slice(-2);
+    return [
+      [aa.n === 0 && aa.plan.kaufen.length === 0 && aa.c.stueck === 0.0001 && nah(aa.cash, 5000.00249),
+        '95.4 ohne Schalter bleibt der Platz leer: C gilt mit 0,0001 Stueck als gehalten, 5000 $ bleiben liegen', aa.c && aa.c.stueck],
+      [kk.n === 1 && kk.plan.kleinst.length === 0 && namen(kk.plan.kaufen) === 'C' && kk.c.stueck === 99.8005 && kk.c.seit === 2000 && nah(kk.cash, 5000.0075 - 99.8005 * 50.1),
+        '95.4 mit Schalter in beiden Umschichtungen: C wird beim zweiten Mal gekauft (99,8005 Stueck = 88 % des Platzwerts)', kk.c && kk.c.stueck],
+      [ak.n === 2 && ak.plan.kleinst.join() === 'C' && ak.c.stueck === 99.8005 && ak.c.seit === 2000 && letzte[0].art === 'verkauf' && letzte[0].stueck === 0.0001 &&
+        letzte[1].art === 'kauf' && letzte[1].sym === 'C' && nah(ak.cash, 5000.00249 + 0.0001 * 50 * 0.998 - 99.8005 * 50.1),
+      '95.4 ein Buch, das den Rest von 0,0001 Stueck schon traegt: beim Einschalten wird er verkauft und der Platz neu besetzt', ak.c && ak.c.stueck],
+      [voll.n === 2 && voll.c.stueck === 120.6667 && voll.plan.kaufen[0].stueck === 120.6667, '95.4 reicht das Bargeld, wird der Platz voll besetzt (120,6667 Stueck)', voll.c && voll.c.stueck]
+    ];
+  }
+  melde(pruefeZwei(MH));
+
+  /* ---- 95.5 Eigenschaften an den Zufallsfaellen (Schalter an) ---- */
+  function eigenschaften(M) {
+    var e = { k1: 0, k2: 0, kleinst: 0, neuGeplant: 0, ausgefallen: 0, kaeufe: 0 };
+    FAELLE.forEach(function (f) {
+      var b = kopie(f.buch), plan = M.planeUmschichtung(f.ziel, b, f.preise, K), alt = planeAlt(f.ziel, kopie(f.buch), f.preise);
+      var budget = f.ziel.length ? alt.depotwert / f.ziel.length : 0, kl = plan.kleinst || [];
+      if (plan.depotwert !== alt.depotwert) e.k2++;
+      b.positionen.forEach(function (p) {
+        var k = f.preise[p.sym], klein = k > 0 && p.stueck * k < 0.05 * budget, istZiel = f.ziel.indexOf(p.sym) >= 0;
+        var gehalten = plan.halten.indexOf(p.sym) >= 0, verkauft = namen(plan.verkaufen).split(',').indexOf(p.sym) >= 0, gekauft = namen(plan.kaufen).split(',').indexOf(p.sym) >= 0;
+        if (klein !== (kl.indexOf(p.sym) >= 0)) e.k2++;
+        if (!(k > 0)) { if (!gehalten || verkauft || gekauft || plan.fehltKurs.indexOf(p.sym) < 0) e.k2++; return; }
+        if (klein) { e.kleinst++; if (gehalten || !verkauft || gekauft !== istZiel) e.k2++; if (istZiel) e.neuGeplant++; return; }
+        if (gehalten !== istZiel || verkauft === istZiel || gekauft) e.k2++;
+      });
+      var imKauf = namen(plan.kaufen).split(',');
+      if (f.ziel.filter(function (s) { return imKauf.indexOf(s) >= 0; }).join(',') !== namen(plan.kaufen)) e.k2++;      /* Reihenfolge der Zielliste */
+      M.fuehreAus(b, plan, f.t, f.bp, K);
+      plan.kaufen.forEach(function (o) {
+        var da = b.positionen.some(function (p) { return p.sym === o.sym && p.seit === f.t && p.stueck === o.stueck; });
+        if (o.stueck > 0 && o.stueck * o.kurs < 0.05 * o.budget) e.k1++;                                              /* ein Kleinstkauf */
+        if ((o.stueck > 0) !== da) e.k1++;
+        if (o.stueck > 0) e.kaeufe++; else e.ausgefallen++;
+      });
+      b.positionen.forEach(function (p) {                                                                           /* was jetzt im Buch steht und einen Kurs hat, ist kein Rest */
+        if (f.preise[p.sym] > 0 && p.stueck * f.preise[p.sym] < 0.05 * budget) e.k1++;
+      });
+      if (b.cash < -1e-9) e.k1++;
+    });
+    return e;
+  }
+  var e95 = eigenschaften(MH);
+  ok(e95.k2 === 0 && e95.kleinst >= 100 && e95.neuGeplant >= 50,
+    '95.5 K2 an 400 Zufallsfaellen: jede Position mit Kurs unter 5 % des Platzwerts ist Kleinstbestand, wird verkauft und - als Ziel - neu geplant, in der Reihenfolge der Zielliste; alles andere wie bisher',
+    e95.k2 + ' Verstoesse; ' + e95.kleinst + ' Kleinstbestaende, ' + e95.neuGeplant + ' neu geplant');
+  ok(e95.k1 === 0 && e95.kaeufe >= 200 && e95.ausgefallen >= 100,
+    '95.5 K1 an 400 Zufallsfaellen: kein ausgefuehrter Kauf unter 5 % des Platzwerts, nach der Umschichtung kein Rest mit Kurs im Buch, nie negatives Bargeld',
+    e95.k1 + ' Verstoesse; ' + e95.kaeufe + ' Kaeufe, ' + e95.ausgefallen + ' ausgefallen');
+
+  /* ---- 95.6 die App schaltet noch nicht ein (Stand Nr. 85) ----
+   * Wer Regel K in der App einschaltet, stellt genau diese beiden Marken um - bewusst, nach der Abnahme der Nachrechnung. */
+  var kf = MH.buchKonfig(), mfd95 = ohneKommentare(fs.readFileSync(__dirname + '/mfdepot.js', 'utf8'));
+  ok(kf.kleinstAnteil === 0 && Object.keys(kf).join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil',
+    '95.6 buchKonfig fuehrt den Schalter mit Vorgabe 0 (aus); die sieben Felder davor sind unveraendert', kf.kleinstAnteil);
+  ok(mfd95.split('MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise)').length === 3 && mfd95.split('MH.fuehreAus(d.mfBuch, plan, now, 20)').length === 2 &&
+     mfd95.indexOf('kleinstAnteil') === -1,
+  '95.6 die App reicht den Schalter noch nicht durch: mfdepot.js ruft beide Funktionen wie zuvor (zweimal planen, einmal ausfuehren, ohne opts)');
+
+  /* ---- Gegenproben: der Handelscode aus geaendertem Quelltext ---- */
+  var mhQ = fs.readFileSync(__dirname + '/mfhandel.js', 'utf8');
+  /** Laedt mfhandel.js mit einer Aenderung; findet das Muster nichts, gibt es keine Fassung (und die Gegenprobe schlaegt nicht an). */
+  function fassung(muster, ersatz) {
+    var q2 = mhQ.replace(muster, function () { return ersatz; });
+    if (q2 === mhQ) return null;
+    var m = { exports: {} };
+    new Function('module', 'require', q2)(m, require);
+    return m.exports;
+  }
+  var ohneK1 = fassung(/if \(kl > 0 && o\.budget > 0 && o\.stueck \* o\.kurs < kl \* o\.budget\) \{ o\.stueck = 0; return; \}/, '');
+  var ohneK2 = fassung(/if \(kl > 0 && p\.stueck \* k < kl \* budget\) \{/, 'if (false) {');
+  var ohneNeu = fassung(/istKleinst\[s\] === true \|\| /, '');
+  var vorgabeAn = fassung(/opts\.kleinstAnteil : 0;/g, 'opts.kleinstAnteil : 0.05;');
+  var k1Gleich = fassung(/o\.stueck \* o\.kurs < kl \* o\.budget/, 'o.stueck * o.kurs <= kl * o.budget');
+  var k2Gleich = fassung(/p\.stueck \* k < kl \* budget/, 'p.stueck * k <= kl * budget');
+  var gleich = fassung(/'use strict';/, "'use strict'; ");
+  ok(!!gleich && alle(pruefeAus(gleich)) && alle(pruefeK1(gleich)) && alle(pruefeGrenzeK1(gleich)) && alle(pruefeK2(gleich)) && alle(pruefeGrenzeK2(gleich)) &&
+     alle(pruefeZwei(gleich)) && eigenschaften(gleich).k1 === 0 && eigenschaften(gleich).k2 === 0,
+  '95.x Kontrolle: derselbe Handelscode, auf dem Weg der Gegenproben geladen, besteht alle Pruefungen (der Ladeweg selbst faellt nicht auf)');
+  gegen95('ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt', !!ohneK1 && !alle(pruefeK1(ohneK1)) && eigenschaften(ohneK1).k1 > 0 && alle(pruefeAus(ohneK1)));
+  gegen95('ohne K2 faellt auf: der Kleinstbestand gilt wieder als gehalten', !!ohneK2 && !alle(pruefeK2(ohneK2)) && eigenschaften(ohneK2).k2 > 0 && !alle(pruefeZwei(ohneK2)) && alle(pruefeAus(ohneK2)));
+  gegen95('wird der Kleinstbestand eines Ziels nur verkauft und nicht neu geplant, faellt es auf', !!ohneNeu && !alle(pruefeK2(ohneNeu)) && eigenschaften(ohneNeu).k2 > 0);
+  gegen95('eine eingeschaltete Vorgabe (ohne opts schon 5 %) faellt auf: nicht mehr zeichengleich wie vor Nr. 85', !!vorgabeAn && !alle(pruefeAus(vorgabeAn)));
+  gegen95('K1 mit "kleiner gleich" faellt an der Grenze auf (genau 5 % wuerde wegfallen)', !!k1Gleich && !alle(pruefeGrenzeK1(k1Gleich)) && alle(pruefeK1(k1Gleich)));
+  gegen95('K2 mit "kleiner gleich" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)', !!k2Gleich && !alle(pruefeGrenzeK2(k2Gleich)) && alle(pruefeK2(k2Gleich)));
+  ok(rot95 === g95 && g95 === 6, '95.x alle Gegenproben dieses Abschnitts schlagen an', rot95 + ' von ' + g95);
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

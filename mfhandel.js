@@ -29,7 +29,14 @@
   function buchKonfig() {
     return { rueckblick: Mo.STANDARD.rueckblick, luecke: Mo.STANDARD.luecke, halten: Mo.STANDARD.halten,
       anteil: Mo.STANDARD.anteil, mindestWerte: Li.KORB.mindestWerte,
-      umsatzMin: Li.KORB.umsatzMin, umsatzFenster: Li.KORB.fenster };
+      umsatzMin: Li.KORB.umsatzMin, umsatzFenster: Li.KORB.fenster,
+      /* Regel K gegen Kleinstpositionen (Auftrag Nr. 85, 04.10.2026): Anteil am Platzwert
+       * (Depotwert / Zielzahl), unter dem ein Kauf nicht ausgefuehrt wird (K1) und ein Bestand
+       * nicht als gehalten gilt (K2). 0 = AUS - so rechnet die App heute, und so wurde bisher
+       * gemessen. Wert fuer die App NACH der Abnahme der Nachrechnung: 0,05. Das Feld wird
+       * noch von niemandem gelesen; planeUmschichtung und fuehreAus bekommen den Schalter
+       * ueber ihr eigenes Argument opts. */
+      kleinstAnteil: 0 };
   }
 
   /** 12-1-Momentum-Rangfolge auf ROHEN Serien — jede Serie mit ihren eigenen
@@ -97,35 +104,60 @@
   /** Umschichtung planen: Soll-Ist-Abgleich. Gleichgewichtung über die Zielliste.
    *  buch: {cash, positionen: [{sym, stueck, einstand}]}   preise: {sym: kurs}
    *  Rückgabe: {verkaufen: [{sym, stueck, kurs}], kaufen: [{sym, stueck, kurs, budget}],
-   *             halten: [sym…], fehltKurs: [sym…]} */
-  function planeUmschichtung(ziel, buch, preise) {
+   *             halten: [sym…], fehltKurs: [sym…]}
+   *  opts.kleinstAnteil > 0 schaltet Regel K2 ein (Auftrag Nr. 85; Vorgabe AUS - ohne opts
+   *  oder mit 0 rechnet die Funktion wie zuvor): eine gehaltene Position MIT Kurs, deren
+   *  Wert unter kleinstAnteil × (Depotwert / Zielzahl) liegt, ist ein Kleinstbestand. Sie
+   *  wird ganz verkauft; ist ihr Wert ein Ziel, wird er wie ein nicht gehaltenes Ziel neu
+   *  geplant - an seiner Stelle der Zielliste. Der Depotwert zaehlt sie mit, wie bisher;
+   *  eine Position ohne Kurs bleibt, wie sie ist. Die Rückgabe traegt dann zusaetzlich
+   *  kleinst: [sym…]. Grund: fuehreAus verkleinert einen Kauf, wenn das Bargeld nicht
+   *  reicht, bis auf 0,0001 Stück - und ein solcher Rest galt hier als volle Position, der
+   *  Platz blieb leer, solange der Wert Ziel war (wiki/fehlerformen.md, 04.10.2026). */
+  function planeUmschichtung(ziel, buch, preise, opts) {
+    var kl = opts && opts.kleinstAnteil > 0 ? opts.kleinstAnteil : 0;
     var zielSet = {};
     ziel.forEach(function (s) { zielSet[s] = true; });
-    var verkaufen = [], halten = [], fehltKurs = [];
+    var verkaufen = [], halten = [], fehltKurs = [], kleinst = [], istKleinst = {};
     var wert = buch.cash;
     (buch.positionen || []).forEach(function (p) {
       var k = preise[p.sym];
+      if (k > 0) wert += p.stueck * k;
+    });
+    // Gleichgewichtung: jedes Ziel bekommt wert/zielAnzahl. Bestehende Positionen werden
+    // NICHT nachjustiert — jeder Trade kostet, und die Messung lief ohne Feinjustierung.
+    var budget = ziel.length ? wert / ziel.length : 0;
+    (buch.positionen || []).forEach(function (p) {
+      var k = preise[p.sym];
       if (!(k > 0)) { fehltKurs.push(p.sym); halten.push(p.sym); return; }   // ohne Kurs kein Handel
-      wert += p.stueck * k;
+      if (kl > 0 && p.stueck * k < kl * budget) {                             // K2: Kleinstbestand
+        kleinst.push(p.sym); istKleinst[p.sym] = true;
+        verkaufen.push({ sym: p.sym, stueck: p.stueck, kurs: k });
+        return;
+      }
       if (zielSet[p.sym]) halten.push(p.sym);
       else verkaufen.push({ sym: p.sym, stueck: p.stueck, kurs: k });
     });
     var neuKaufen = ziel.filter(function (s) {
-      return !(buch.positionen || []).some(function (p) { return p.sym === s; });
+      return istKleinst[s] === true || !(buch.positionen || []).some(function (p) { return p.sym === s; });
     }).filter(function (s) { if (!(preise[s] > 0)) { fehltKurs.push(s); return false; } return true; });
-    // Gleichgewichtung: jedes Ziel bekommt wert/zielAnzahl. Bestehende Positionen werden
-    // NICHT nachjustiert — jeder Trade kostet, und die Messung lief ohne Feinjustierung.
-    var budget = ziel.length ? wert / ziel.length : 0;
     var kaufen = neuKaufen.map(function (s) {
       return { sym: s, kurs: preise[s], budget: budget, stueck: budget > 0 ? Math.round(budget / preise[s] * 10000) / 10000 : 0 };
     });
-    return { verkaufen: verkaufen, kaufen: kaufen, halten: halten, fehltKurs: fehltKurs, depotwert: wert };
+    var plan = { verkaufen: verkaufen, kaufen: kaufen, halten: halten, fehltKurs: fehltKurs, depotwert: wert };
+    if (kl > 0) plan.kleinst = kleinst;
+    return plan;
   }
 
   /** Orders ausführen — mutiert das Buch, schreibt Trades. kostenBp je Seite.
-   *  Bruchstücke sind erlaubt (Simulation/CFD). Rückgabe: Anzahl der Ausführungen. */
-  function fuehreAus(buch, plan, nowMs, kostenBp) {
+   *  Bruchstücke sind erlaubt (Simulation/CFD). Rückgabe: Anzahl der Ausführungen.
+   *  opts.kleinstAnteil > 0 schaltet Regel K1 ein (Auftrag Nr. 85; Vorgabe AUS): liegt der
+   *  Wert eines Kaufs NACH dem Verkleinern unter kleinstAnteil × o.budget, wird er nicht
+   *  ausgeführt - keine Position, kein Trade, o.stueck = 0, das Bargeld bleibt. Ein Kauf
+   *  ohne positives o.budget (ein anderer Aufrufer) läuft wie zuvor. */
+  function fuehreAus(buch, plan, nowMs, kostenBp, opts) {
     var k = (kostenBp == null ? 20 : kostenBp) / 10000;
+    var kl = opts && opts.kleinstAnteil > 0 ? opts.kleinstAnteil : 0;
     var n = 0;
     if (!buch.trades) buch.trades = [];
     plan.verkaufen.forEach(function (o) {
@@ -148,6 +180,7 @@
         kosten = o.stueck * o.kurs * (1 + k);
         if (!(o.stueck > 0)) return;
       }
+      if (kl > 0 && o.budget > 0 && o.stueck * o.kurs < kl * o.budget) { o.stueck = 0; return; }   // K1: kein Kleinstkauf
       buch.cash -= kosten;
       buch.positionen.push({ sym: o.sym, stueck: o.stueck, einstand: o.kurs * (1 + k), seit: nowMs });
       buch.trades.push({ t: nowMs, sym: o.sym, art: 'kauf', stueck: o.stueck, kurs: o.kurs });
