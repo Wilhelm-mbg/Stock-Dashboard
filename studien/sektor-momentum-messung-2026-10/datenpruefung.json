@@ -1,0 +1,4707 @@
+{
+ "kennung": "sektor-momentum-messung-2026-10/datenpruefung/v1",
+ "erzeugt": "2026-10-04T22:52:47.848Z",
+ "hinweis": "Nur Bericht (ZUSATZ §1.10), aendert keine Zahl der Messung. Keine Kursreihen, keine Rangfolge, kein Buch.",
+ "quellen": {
+  "yahoo": "C:/Users/Wilhe/Downloads/sektor-messung/daten/<KUERZEL>.json (unveraendert, nur gelesen)",
+  "massnahmen": "E:/Markt-Dashboard-Archiv/alpaca-massnahmen",
+  "nachtrag": "E:/Markt-Dashboard-Archiv/alpaca-massnahmen-nachtrag-2026-10",
+  "minuten": "E:/Markt-Dashboard-Archiv/alpaca1m",
+  "panel": "C:/Users/Wilhe/Downloads/Stock-Dashboard/studien/querschnitt-pruefstand-2026-09-13/voll-v22/panel/_stand.json"
+ },
+ "pruefsummen": {
+  "XLB": {
+   "sha256": "1c023c03ba0d137d91a0ac083001a301dc87848045e16dda02c7fd862ee8c1c2",
+   "passt": true
+  },
+  "XLC": {
+   "sha256": "94877c94dc87d2642ccb60f0aa269763aaa7e1c389e0707387ae843664eea278",
+   "passt": true
+  },
+  "XLE": {
+   "sha256": "f951aef0d896bfa67649c913e2d35ce8a7078252d1f43bb4bf9f55b484ade403",
+   "passt": true
+  },
+  "XLF": {
+   "sha256": "f30ee273ae91ddc5cbe43890e4a1c39db3a3ad95c0d63c6f6cc373336f619607",
+   "passt": true
+  },
+  "XLI": {
+   "sha256": "717aaf2b107ac23bdfa248474e51f4af806a5653f3b1ba1d5f80bff6f5f79edc",
+   "passt": true
+  },
+  "XLK": {
+   "sha256": "984eeb38d462973f925bb3172149fbfc5413ae4977e33329c61a44131580c2a2",
+   "passt": true
+  },
+  "XLP": {
+   "sha256": "45700648dbbe34db9b335ff6e4df56173ba1a9be18eb59a91489a5c2c741514a",
+   "passt": true
+  },
+  "XLRE": {
+   "sha256": "81650f5fa3acc035ebb6af7375d1cc7471c9fb78f72ef6bacad9f52be61dc954",
+   "passt": true
+  },
+  "XLU": {
+   "sha256": "468c56c844dffcdee4c18f36ca78d6b65bd0a04774a0ec4eb9afca4eee0f5a3f",
+   "passt": true
+  },
+  "XLV": {
+   "sha256": "c4781233ddc71e7e9207c3934ae5d3f42d5474857585ba4423576be10f5cb393",
+   "passt": true
+  },
+  "XLY": {
+   "sha256": "498cf0db8352c1ba825169ce5128e14c7d0bb5559048efe29668d0631269c385",
+   "passt": true
+  },
+  "SPY": {
+   "sha256": "2f8578a8cb78b19cb4c2cc2a23f638b9e32567a18b8eded508c7d665ee40a9dc",
+   "passt": true
+  }
+ },
+ "reihen": {
+  "XLB": {
+   "metaSymbol": "XLB",
+   "zeilenRoh": 6974,
+   "zeilenGueltig": 6974,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-22",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2538,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2538
+   },
+   "ausschuettungen": 110,
+   "splits": 1
+  },
+  "XLC": {
+   "metaSymbol": "XLC",
+   "zeilenRoh": 2071,
+   "zeilenGueltig": 2071,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "2018-06-19",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "13:30": 1387,
+    "14:30": 684
+   },
+   "stundenUTC": {
+    "13": 1387,
+    "14": 684
+   },
+   "ausschuettungen": 32,
+   "splits": 0
+  },
+  "XLE": {
+   "metaSymbol": "XLE",
+   "zeilenRoh": 6974,
+   "zeilenGueltig": 6974,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-22",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2538,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2538
+   },
+   "ausschuettungen": 111,
+   "splits": 1
+  },
+  "XLF": {
+   "metaSymbol": "XLF",
+   "zeilenRoh": 6974,
+   "zeilenGueltig": 6974,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-22",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2538,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2538
+   },
+   "ausschuettungen": 110,
+   "splits": 1
+  },
+  "XLI": {
+   "metaSymbol": "XLI",
+   "zeilenRoh": 6974,
+   "zeilenGueltig": 6974,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-22",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2538,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2538
+   },
+   "ausschuettungen": 109,
+   "splits": 0
+  },
+  "XLK": {
+   "metaSymbol": "XLK",
+   "zeilenRoh": 6974,
+   "zeilenGueltig": 6974,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-22",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2538,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2538
+   },
+   "ausschuettungen": 84,
+   "splits": 1
+  },
+  "XLP": {
+   "metaSymbol": "XLP",
+   "zeilenRoh": 6974,
+   "zeilenGueltig": 6974,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-22",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2538,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2538
+   },
+   "ausschuettungen": 110,
+   "splits": 0
+  },
+  "XLRE": {
+   "metaSymbol": "XLRE",
+   "zeilenRoh": 2749,
+   "zeilenGueltig": 2749,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "2015-10-08",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "13:30": 1805,
+    "14:30": 944
+   },
+   "stundenUTC": {
+    "13": 1805,
+    "14": 944
+   },
+   "ausschuettungen": 43,
+   "splits": 0
+  },
+  "XLU": {
+   "metaSymbol": "XLU",
+   "zeilenRoh": 6974,
+   "zeilenGueltig": 6974,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-22",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2538,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2538
+   },
+   "ausschuettungen": 111,
+   "splits": 1
+  },
+  "XLV": {
+   "metaSymbol": "XLV",
+   "zeilenRoh": 6974,
+   "zeilenGueltig": 6974,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-22",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2538,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2538
+   },
+   "ausschuettungen": 105,
+   "splits": 0
+  },
+  "XLY": {
+   "metaSymbol": "XLY",
+   "zeilenRoh": 6974,
+   "zeilenGueltig": 6974,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-22",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2538,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2538
+   },
+   "ausschuettungen": 110,
+   "splits": 1
+  },
+  "SPY": {
+   "metaSymbol": "SPY",
+   "zeilenRoh": 6989,
+   "zeilenGueltig": 6989,
+   "entfallen": {},
+   "entfallenListe": [],
+   "doppelteTageRoh": 0,
+   "doppelteGleich": 0,
+   "doppelteVerschieden": [],
+   "unsortiert": 0,
+   "ersterTag": "1998-12-01",
+   "letzterTag": "2026-09-15",
+   "uhrzeitenUTC": {
+    "14:30": 2553,
+    "13:30": 4436
+   },
+   "stundenUTC": {
+    "13": 4436,
+    "14": 2553
+   },
+   "ausschuettungen": 112,
+   "splits": 0
+  }
+ },
+ "kalender": {
+  "quelle": "SPY",
+  "tage": 6989,
+  "ersterTag": "1998-12-01",
+  "letzterTag": "2026-09-15",
+  "A": {
+   "von": "2017-01-04",
+   "bis": "2021-09-15",
+   "ist": 1183,
+   "soll": 1183,
+   "ok": true
+  },
+  "B": {
+   "von": "2021-09-16",
+   "bis": "2026-09-15",
+   "ist": 1254,
+   "soll": 1254,
+   "ok": true
+  },
+  "vorA": {
+   "ist": "2017-01-03",
+   "soll": "2017-01-03",
+   "ok": true
+  },
+  "vorB": {
+   "ist": "2021-09-15",
+   "soll": "2021-09-15",
+   "ok": true
+  },
+  "letzterTagOk": true,
+  "wochenendTage": [],
+  "alleKlinkenOk": true
+ },
+ "luecken": {
+  "XLB": {
+   "abTag": "1998-12-22",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLC": {
+   "abTag": "2018-06-19",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLE": {
+   "abTag": "1998-12-22",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLF": {
+   "abTag": "1998-12-22",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLI": {
+   "abTag": "1998-12-22",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {
+     "1999": 1
+    },
+    "A": [],
+    "B": [],
+    "gesamt": 1,
+    "alle": [
+     "1999-01-26"
+    ]
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLK": {
+   "abTag": "1998-12-22",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLP": {
+   "abTag": "1998-12-22",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLRE": {
+   "abTag": "2015-10-08",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {
+     "2015": 4,
+     "2016": 1
+    },
+    "A": [],
+    "B": [],
+    "gesamt": 5,
+    "alle": [
+     "2015-10-14",
+     "2015-11-25",
+     "2015-11-27",
+     "2015-12-07",
+     "2016-01-25"
+    ]
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLU": {
+   "abTag": "1998-12-22",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLV": {
+   "abTag": "1998-12-22",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "XLY": {
+   "abTag": "1998-12-22",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  },
+  "SPY": {
+   "abTag": "1998-12-01",
+   "fehlend": [],
+   "fehlendJeJahr": {},
+   "ohneSpyZeile": [],
+   "ohneOpen": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volumeNull": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "volume0": {
+    "jeJahr": {},
+    "A": [],
+    "B": [],
+    "gesamt": 0
+   },
+   "fehlendA": [],
+   "fehlendB": []
+  }
+ },
+ "splits": {
+  "XLB": [
+   {
+    "tag": "2025-12-05",
+    "utc": "14:30",
+    "verhaeltnis": "2:1",
+    "faktor": 2,
+    "vortag": "2025-12-04",
+    "abspaltung": null,
+    "closeSplittagZuCloseVortag": 0.996722,
+    "openSplittagZuCloseVortag": 1.002374,
+    "sprungWennUnbereinigt": 0.5,
+    "volumenMedianNachZuVor": 0.6757,
+    "dollarUmsatzMedianNachZuVor": 0.7016,
+    "saetzeVor": [
+     {
+      "ex": "2024-12-23",
+      "betrag": 0.222,
+      "satzPct": 0.5188
+     },
+     {
+      "ex": "2025-03-24",
+      "betrag": 0.2035,
+      "satzPct": 0.4744
+     },
+     {
+      "ex": "2025-06-23",
+      "betrag": 0.219,
+      "satzPct": 0.5068
+     },
+     {
+      "ex": "2025-09-22",
+      "betrag": 0.2145,
+      "satzPct": 0.4723
+     }
+    ],
+    "saetzeNach": [
+     {
+      "ex": "2025-12-22",
+      "betrag": 0.233,
+      "satzPct": 0.5136
+     },
+     {
+      "ex": "2026-03-23",
+      "betrag": 0.208,
+      "satzPct": 0.4427
+     },
+     {
+      "ex": "2026-06-22",
+      "betrag": 0.193,
+      "satzPct": 0.3725
+     }
+    ],
+    "alpacaMassnahme": [
+     {
+      "art": "forward_splits",
+      "ex_date": "2025-12-05",
+      "old_rate": 1,
+      "new_rate": 2
+     }
+    ],
+    "betraegeVorDemSplitYahooGegenAlpacaRoh": [
+     {
+      "ex": "2024-12-23",
+      "yahoo": 0.222,
+      "alpacaRoh": 0.444309,
+      "verhaeltnisYahooZuAlpaca": 0.499652
+     },
+     {
+      "ex": "2025-03-24",
+      "yahoo": 0.2035,
+      "alpacaRoh": 0.406775,
+      "verhaeltnisYahooZuAlpaca": 0.500277
+     },
+     {
+      "ex": "2025-06-23",
+      "yahoo": 0.219,
+      "alpacaRoh": 0.437887,
+      "verhaeltnisYahooZuAlpaca": 0.500129
+     },
+     {
+      "ex": "2025-09-22",
+      "yahoo": 0.2145,
+      "alpacaRoh": 0.428887,
+      "verhaeltnisYahooZuAlpaca": 0.500132
+     }
+    ]
+   }
+  ],
+  "XLC": [],
+  "XLE": [
+   {
+    "tag": "2025-12-05",
+    "utc": "14:30",
+    "verhaeltnis": "2:1",
+    "faktor": 2,
+    "vortag": "2025-12-04",
+    "abspaltung": null,
+    "closeSplittagZuCloseVortag": 0.995879,
+    "openSplittagZuCloseVortag": 0.998265,
+    "sprungWennUnbereinigt": 0.5,
+    "volumenMedianNachZuVor": 0.8204,
+    "dollarUmsatzMedianNachZuVor": 0.8298,
+    "saetzeVor": [
+     {
+      "ex": "2024-12-23",
+      "betrag": 0.35,
+      "satzPct": 0.8319
+     },
+     {
+      "ex": "2025-03-24",
+      "betrag": 0.358,
+      "satzPct": 0.7739
+     },
+     {
+      "ex": "2025-06-23",
+      "betrag": 0.359,
+      "satzPct": 0.8069
+     },
+     {
+      "ex": "2025-09-22",
+      "betrag": 0.3745,
+      "satzPct": 0.8461
+     }
+    ],
+    "saetzeNach": [
+     {
+      "ex": "2025-12-22",
+      "betrag": 0.373,
+      "satzPct": 0.8452
+     },
+     {
+      "ex": "2026-03-23",
+      "betrag": 0.385,
+      "satzPct": 0.6491
+     },
+     {
+      "ex": "2026-06-22",
+      "betrag": 0.385,
+      "satzPct": 0.716
+     }
+    ],
+    "alpacaMassnahme": [
+     {
+      "art": "forward_splits",
+      "ex_date": "2025-12-05",
+      "old_rate": 1,
+      "new_rate": 2
+     }
+    ],
+    "betraegeVorDemSplitYahooGegenAlpacaRoh": [
+     {
+      "ex": "2024-12-23",
+      "yahoo": 0.35,
+      "alpacaRoh": 0.699989,
+      "verhaeltnisYahooZuAlpaca": 0.500008
+     },
+     {
+      "ex": "2025-03-24",
+      "yahoo": 0.358,
+      "alpacaRoh": 0.71633,
+      "verhaeltnisYahooZuAlpaca": 0.49977
+     },
+     {
+      "ex": "2025-06-23",
+      "yahoo": 0.359,
+      "alpacaRoh": 0.718258,
+      "verhaeltnisYahooZuAlpaca": 0.49982
+     },
+     {
+      "ex": "2025-09-22",
+      "yahoo": 0.3745,
+      "alpacaRoh": 0.748731,
+      "verhaeltnisYahooZuAlpaca": 0.50018
+     }
+    ]
+   }
+  ],
+  "XLF": [
+   {
+    "tag": "2016-09-19",
+    "utc": "13:30",
+    "verhaeltnis": "1231:1000",
+    "faktor": 1.231,
+    "vortag": "2016-09-16",
+    "abspaltung": {
+     "alpacaSatz": 0.139146,
+     "xlreSchlussVortag": 31.90999984741211,
+     "xlfRohSchlussVortag": 23.62,
+     "wertJeXlfStueck": 4.4401,
+     "impliziterFaktor": 1.231501,
+     "yahooFaktor": 1.231
+    },
+    "closeSplittagZuCloseVortag": 1.006376,
+    "openSplittagZuCloseVortag": 0.999601,
+    "sprungWennUnbereinigt": 0.812348,
+    "volumenMedianNachZuVor": 0.8724,
+    "dollarUmsatzMedianNachZuVor": 0.8482,
+    "saetzeVor": [
+     {
+      "ex": "2015-12-18",
+      "betrag": 0.121852,
+      "satzPct": 0.6227
+     },
+     {
+      "ex": "2016-03-18",
+      "betrag": 0.081235,
+      "satzPct": 0.4419
+     },
+     {
+      "ex": "2016-06-17",
+      "betrag": 0.098294,
+      "satzPct": 0.5319
+     },
+     {
+      "ex": "2016-09-16",
+      "betrag": 0.092608,
+      "satzPct": 0.4758
+     }
+    ],
+    "saetzeNach": [
+     {
+      "ex": "2016-12-16",
+      "betrag": 0.107,
+      "satzPct": 0.452
+     },
+     {
+      "ex": "2017-03-17",
+      "betrag": 0.088,
+      "satzPct": 0.3551
+     },
+     {
+      "ex": "2017-06-16",
+      "betrag": 0.093,
+      "satzPct": 0.381
+     },
+     {
+      "ex": "2017-09-15",
+      "betrag": 0.103,
+      "satzPct": 0.4153
+     }
+    ],
+    "alpacaMassnahme": [],
+    "betraegeVorDemSplitYahooGegenAlpacaRoh": [
+     {
+      "ex": "2016-03-18",
+      "yahoo": 0.081235,
+      "alpacaRoh": 0.122995,
+      "verhaeltnisYahooZuAlpaca": 0.660474
+     },
+     {
+      "ex": "2016-06-17",
+      "yahoo": 0.098294,
+      "alpacaRoh": 0.121097,
+      "verhaeltnisYahooZuAlpaca": 0.811696
+     },
+     {
+      "ex": "2016-09-16",
+      "yahoo": 0.092608,
+      "alpacaRoh": 0.114386,
+      "verhaeltnisYahooZuAlpaca": 0.80961
+     }
+    ]
+   }
+  ],
+  "XLI": [],
+  "XLK": [
+   {
+    "tag": "2025-12-05",
+    "utc": "14:30",
+    "verhaeltnis": "2:1",
+    "faktor": 2,
+    "vortag": "2025-12-04",
+    "abspaltung": null,
+    "closeSplittagZuCloseVortag": 1.007318,
+    "openSplittagZuCloseVortag": 1.004638,
+    "sprungWennUnbereinigt": 0.5,
+    "volumenMedianNachZuVor": 0.4658,
+    "dollarUmsatzMedianNachZuVor": 0.4834,
+    "saetzeVor": [
+     {
+      "ex": "2024-12-23",
+      "betrag": 0.193,
+      "satzPct": 0.1636
+     },
+     {
+      "ex": "2025-03-24",
+      "betrag": 0.1875,
+      "satzPct": 0.1753
+     },
+     {
+      "ex": "2025-06-23",
+      "betrag": 0.199,
+      "satzPct": 0.1655
+     },
+     {
+      "ex": "2025-09-22",
+      "betrag": 0.179,
+      "satzPct": 0.1284
+     }
+    ],
+    "saetzeNach": [
+     {
+      "ex": "2025-12-22",
+      "betrag": 0.219,
+      "satzPct": 0.1515
+     },
+     {
+      "ex": "2026-03-23",
+      "betrag": 0.168,
+      "satzPct": 0.1242
+     },
+     {
+      "ex": "2026-06-22",
+      "betrag": 0.228,
+      "satzPct": 0.1191
+     }
+    ],
+    "alpacaMassnahme": [
+     {
+      "art": "forward_splits",
+      "ex_date": "2025-12-05",
+      "old_rate": 1,
+      "new_rate": 2
+     }
+    ],
+    "betraegeVorDemSplitYahooGegenAlpacaRoh": [
+     {
+      "ex": "2024-12-23",
+      "yahoo": 0.193,
+      "alpacaRoh": 0.385957,
+      "verhaeltnisYahooZuAlpaca": 0.500056
+     },
+     {
+      "ex": "2025-03-24",
+      "yahoo": 0.1875,
+      "alpacaRoh": 0.374892,
+      "verhaeltnisYahooZuAlpaca": 0.500144
+     },
+     {
+      "ex": "2025-06-23",
+      "yahoo": 0.199,
+      "alpacaRoh": 0.397508,
+      "verhaeltnisYahooZuAlpaca": 0.500619
+     },
+     {
+      "ex": "2025-09-22",
+      "yahoo": 0.179,
+      "alpacaRoh": 0.357867,
+      "verhaeltnisYahooZuAlpaca": 0.500186
+     }
+    ]
+   }
+  ],
+  "XLP": [],
+  "XLRE": [],
+  "XLU": [
+   {
+    "tag": "2025-12-05",
+    "utc": "14:30",
+    "verhaeltnis": "2:1",
+    "faktor": 2,
+    "vortag": "2025-12-04",
+    "abspaltung": null,
+    "closeSplittagZuCloseVortag": 0.99062,
+    "openSplittagZuCloseVortag": 1.000229,
+    "sprungWennUnbereinigt": 0.5,
+    "volumenMedianNachZuVor": 0.8599,
+    "dollarUmsatzMedianNachZuVor": 0.8392,
+    "saetzeVor": [
+     {
+      "ex": "2024-12-23",
+      "betrag": 0.314,
+      "satzPct": 0.8217
+     },
+     {
+      "ex": "2025-03-24",
+      "betrag": 0.2775,
+      "satzPct": 0.7048
+     },
+     {
+      "ex": "2025-06-23",
+      "betrag": 0.2785,
+      "satzPct": 0.6895
+     },
+     {
+      "ex": "2025-09-22",
+      "betrag": 0.284,
+      "satzPct": 0.6686
+     }
+    ],
+    "saetzeNach": [
+     {
+      "ex": "2025-12-22",
+      "betrag": 0.317,
+      "satzPct": 0.7436
+     },
+     {
+      "ex": "2026-03-23",
+      "betrag": 0.31,
+      "satzPct": 0.6943
+     },
+     {
+      "ex": "2026-06-22",
+      "betrag": 0.284,
+      "satzPct": 0.6345
+     }
+    ],
+    "alpacaMassnahme": [
+     {
+      "art": "forward_splits",
+      "ex_date": "2025-12-05",
+      "old_rate": 1,
+      "new_rate": 2
+     }
+    ],
+    "betraegeVorDemSplitYahooGegenAlpacaRoh": [
+     {
+      "ex": "2024-12-23",
+      "yahoo": 0.314,
+      "alpacaRoh": 0.627989,
+      "verhaeltnisYahooZuAlpaca": 0.500009
+     },
+     {
+      "ex": "2025-03-24",
+      "yahoo": 0.2775,
+      "alpacaRoh": 0.555029,
+      "verhaeltnisYahooZuAlpaca": 0.499974
+     },
+     {
+      "ex": "2025-06-23",
+      "yahoo": 0.2785,
+      "alpacaRoh": 0.557397,
+      "verhaeltnisYahooZuAlpaca": 0.499644
+     },
+     {
+      "ex": "2025-09-22",
+      "yahoo": 0.284,
+      "alpacaRoh": 0.567827,
+      "verhaeltnisYahooZuAlpaca": 0.500152
+     }
+    ]
+   }
+  ],
+  "XLV": [],
+  "XLY": [
+   {
+    "tag": "2025-12-05",
+    "utc": "14:30",
+    "verhaeltnis": "2:1",
+    "faktor": 2,
+    "vortag": "2025-12-04",
+    "abspaltung": null,
+    "closeSplittagZuCloseVortag": 1.005543,
+    "openSplittagZuCloseVortag": 1.000924,
+    "sprungWennUnbereinigt": 0.5,
+    "volumenMedianNachZuVor": 0.6809,
+    "dollarUmsatzMedianNachZuVor": 0.6972,
+    "saetzeVor": [
+     {
+      "ex": "2024-12-23",
+      "betrag": 0.2165,
+      "satzPct": 0.1892
+     },
+     {
+      "ex": "2025-03-24",
+      "betrag": 0.271,
+      "satzPct": 0.2745
+     },
+     {
+      "ex": "2025-06-23",
+      "betrag": 0.2235,
+      "satzPct": 0.2122
+     },
+     {
+      "ex": "2025-09-22",
+      "betrag": 0.2125,
+      "satzPct": 0.1761
+     }
+    ],
+    "saetzeNach": [
+     {
+      "ex": "2025-12-22",
+      "betrag": 0.241,
+      "satzPct": 0.1978
+     },
+     {
+      "ex": "2026-03-23",
+      "betrag": 0.216,
+      "satzPct": 0.2005
+     },
+     {
+      "ex": "2026-06-22",
+      "betrag": 0.233,
+      "satzPct": 0.1989
+     }
+    ],
+    "alpacaMassnahme": [
+     {
+      "art": "forward_splits",
+      "ex_date": "2025-12-05",
+      "old_rate": 1,
+      "new_rate": 2
+     }
+    ],
+    "betraegeVorDemSplitYahooGegenAlpacaRoh": [
+     {
+      "ex": "2024-12-23",
+      "yahoo": 0.2165,
+      "alpacaRoh": 0.433128,
+      "verhaeltnisYahooZuAlpaca": 0.499852
+     },
+     {
+      "ex": "2025-03-24",
+      "yahoo": 0.271,
+      "alpacaRoh": 0.541956,
+      "verhaeltnisYahooZuAlpaca": 0.500041
+     },
+     {
+      "ex": "2025-06-23",
+      "yahoo": 0.2235,
+      "alpacaRoh": 0.447042,
+      "verhaeltnisYahooZuAlpaca": 0.499953
+     },
+     {
+      "ex": "2025-09-22",
+      "yahoo": 0.2125,
+      "alpacaRoh": 0.425455,
+      "verhaeltnisYahooZuAlpaca": 0.499465
+     }
+    ]
+   }
+  ],
+  "SPY": []
+ },
+ "ausschuettungen": {
+  "jeJahr": {
+   "XLB": {
+    "1999": 4,
+    "2000": 4,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 4,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLC": {
+    "2018": 2,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLE": {
+    "1999": 4,
+    "2000": 4,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 4,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 5,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLF": {
+    "1999": 4,
+    "2000": 4,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 4,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLI": {
+    "1999": 4,
+    "2000": 4,
+    "2001": 3,
+    "2002": 4,
+    "2003": 4,
+    "2004": 4,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLK": {
+    "1999": 1,
+    "2002": 1,
+    "2003": 1,
+    "2004": 1,
+    "2005": 1,
+    "2006": 2,
+    "2007": 3,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLP": {
+    "1999": 4,
+    "2000": 4,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 4,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLRE": {
+    "2015": 1,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLU": {
+    "1999": 4,
+    "2000": 5,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 4,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLV": {
+    "1999": 1,
+    "2000": 1,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 4,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 5,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "XLY": {
+    "1999": 4,
+    "2000": 4,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 4,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "SPY": {
+    "1998": 1,
+    "1999": 4,
+    "2000": 4,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 5,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   }
+  },
+  "saetzeAusserhalb": [
+   {
+    "sym": "XLK",
+    "tag": "1999-12-17",
+    "betrag": 0.0005,
+    "vortag": "1999-12-16",
+    "closeVortag": 25.5,
+    "satzPct": 0.001961
+   }
+  ],
+  "exOhneHandelstag": [],
+  "betragNichtPositiv": [],
+  "mehrereAmTag": [],
+  "vorErsterZeile": [],
+  "schluesselUngleichDatum": [],
+  "satzStatistik": {
+   "XLB": {
+    "n": 110,
+    "minPct": 0.1282,
+    "medianPct": 0.4926,
+    "maxPct": 2.539
+   },
+   "XLC": {
+    "n": 32,
+    "minPct": 0.1594,
+    "medianPct": 0.2453,
+    "maxPct": 0.3475
+   },
+   "XLE": {
+    "n": 111,
+    "minPct": 0.2568,
+    "medianPct": 0.5119,
+    "maxPct": 2.9037
+   },
+   "XLF": {
+    "n": 110,
+    "minPct": 0.2097,
+    "medianPct": 0.4459,
+    "maxPct": 1.4711
+   },
+   "XLI": {
+    "n": 109,
+    "minPct": 0.1273,
+    "medianPct": 0.4373,
+    "maxPct": 0.9623
+   },
+   "XLK": {
+    "n": 84,
+    "minPct": 0.002,
+    "medianPct": 0.3523,
+    "maxPct": 1.946
+   },
+   "XLP": {
+    "n": 110,
+    "minPct": 0.1763,
+    "medianPct": 0.595,
+    "maxPct": 1.1096
+   },
+   "XLRE": {
+    "n": 43,
+    "minPct": 0.5255,
+    "medianPct": 0.8188,
+    "maxPct": 1.8024
+   },
+   "XLU": {
+    "n": 111,
+    "minPct": 0.5369,
+    "medianPct": 0.8194,
+    "maxPct": 1.2478
+   },
+   "XLV": {
+    "n": 105,
+    "minPct": 0.0181,
+    "medianPct": 0.3887,
+    "maxPct": 0.647
+   },
+   "XLY": {
+    "n": 110,
+    "minPct": 0.0206,
+    "medianPct": 0.2671,
+    "maxPct": 0.7542
+   },
+   "SPY": {
+    "n": 112,
+    "minPct": 0.2349,
+    "medianPct": 0.4371,
+    "maxPct": 0.8052
+   }
+  },
+  "uhrzeitenUTC": {
+   "14:30": 361,
+   "13:30": 786
+  },
+  "jahreUngleich4": {
+   "XLB": [],
+   "XLC": [],
+   "XLE": [
+    {
+     "jahr": 2019,
+     "n": 5,
+     "exTage": [
+      "2019-03-15 0.257",
+      "2019-06-21 0.288",
+      "2019-09-20 0.28",
+      "2019-12-20 0.2965",
+      "2019-12-30 0.8955"
+     ]
+    }
+   ],
+   "XLF": [],
+   "XLI": [
+    {
+     "jahr": 2001,
+     "n": 3,
+     "exTage": [
+      "2001-03-16 0.079",
+      "2001-06-15 0.065",
+      "2001-09-21 0.091"
+     ]
+    }
+   ],
+   "XLK": [
+    {
+     "jahr": 1999,
+     "n": 1,
+     "exTage": [
+      "1999-12-17 0.0005"
+     ]
+    },
+    {
+     "jahr": 2000,
+     "n": 0,
+     "exTage": []
+    },
+    {
+     "jahr": 2001,
+     "n": 0,
+     "exTage": []
+    },
+    {
+     "jahr": 2002,
+     "n": 1,
+     "exTage": [
+      "2002-12-20 0.0205"
+     ]
+    },
+    {
+     "jahr": 2003,
+     "n": 1,
+     "exTage": [
+      "2003-12-19 0.0705"
+     ]
+    },
+    {
+     "jahr": 2004,
+     "n": 1,
+     "exTage": [
+      "2004-12-17 0.209"
+     ]
+    },
+    {
+     "jahr": 2005,
+     "n": 1,
+     "exTage": [
+      "2005-12-16 0.074"
+     ]
+    },
+    {
+     "jahr": 2006,
+     "n": 2,
+     "exTage": [
+      "2006-09-15 0.022",
+      "2006-12-15 0.0675"
+     ]
+    },
+    {
+     "jahr": 2007,
+     "n": 3,
+     "exTage": [
+      "2007-06-15 0.009",
+      "2007-09-21 0.0265",
+      "2007-12-21 0.0615"
+     ]
+    }
+   ],
+   "XLP": [],
+   "XLRE": [],
+   "XLU": [
+    {
+     "jahr": 2000,
+     "n": 5,
+     "exTage": [
+      "2000-03-17 0.0985",
+      "2000-06-16 0.1105",
+      "2000-09-15 0.1255",
+      "2000-12-15 0.119",
+      "2000-12-18 0.127"
+     ]
+    }
+   ],
+   "XLV": [
+    {
+     "jahr": 1999,
+     "n": 1,
+     "exTage": [
+      "1999-12-20 0.176"
+     ]
+    },
+    {
+     "jahr": 2000,
+     "n": 1,
+     "exTage": [
+      "2000-12-18 0.005"
+     ]
+    },
+    {
+     "jahr": 2019,
+     "n": 5,
+     "exTage": [
+      "2019-03-15 0.341",
+      "2019-06-21 0.398",
+      "2019-09-20 0.38",
+      "2019-12-20 0.422",
+      "2019-12-30 0.666"
+     ]
+    }
+   ],
+   "XLY": [],
+   "SPY": [
+    {
+     "jahr": 2004,
+     "n": 5,
+     "exTage": [
+      "2004-03-19 0.395",
+      "2004-06-18 0.414",
+      "2004-09-17 0.469",
+      "2004-11-15 0.351",
+      "2004-12-17 0.568"
+     ]
+    }
+   ]
+  }
+ },
+ "adjAbgleich": {
+  "XLB": {
+   "stufen": 119,
+   "zugeordnetAusschuettung": 110,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 9,
+   "ohneEreignisGroessteRelAenderung": 0.000001221,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "1999-2012",
+   "kleinsteAusschuettungsStufe": 0.001284,
+   "ohneEreignis": [
+    {
+     "tag": "1999-12-31",
+     "vortag": "1999-12-30",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.00000104619855001431
+    },
+    {
+     "tag": "2000-11-03",
+     "vortag": "2000-11-02",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011268594368729623
+    },
+    {
+     "tag": "2000-11-30",
+     "vortag": "2000-11-29",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011382011312344176
+    },
+    {
+     "tag": "2002-10-25",
+     "vortag": "2002-10-24",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000012209552839870241
+    },
+    {
+     "tag": "2003-01-07",
+     "vortag": "2003-01-06",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010232702303270003
+    },
+    {
+     "tag": "2003-11-12",
+     "vortag": "2003-11-11",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010379542081384585
+    },
+    {
+     "tag": "2008-12-01",
+     "vortag": "2008-11-28",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011297344503224949
+    },
+    {
+     "tag": "2009-07-07",
+     "vortag": "2009-07-06",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011416184427792686
+    },
+    {
+     "tag": "2012-03-02",
+     "vortag": "2012-03-01",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000011446920109570158
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 110,
+   "groessteAbweichung": {
+    "tag": "2011-03-18",
+    "betrag": 0.062,
+    "closeVortag": 18.834999084472656,
+    "soll": 0.996708,
+    "ist": 0.996709,
+    "abw": 6.956e-7,
+    "relZumSatz": -0.000211
+   },
+   "medianAbsAbweichung": 1.46e-7,
+   "groessteRelAbweichungZumSatz": 0.000231
+  },
+  "XLC": {
+   "stufen": 32,
+   "zugeordnetAusschuettung": 32,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 0,
+   "ohneEreignisGroessteRelAenderung": 0,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": null,
+   "kleinsteAusschuettungsStufe": 0.001597,
+   "ohneEreignis": [],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 32,
+   "groessteAbweichung": {
+    "tag": "2021-06-21",
+    "betrag": 0.141,
+    "closeVortag": 78.58000183105469,
+    "soll": 0.998206,
+    "ist": 0.998206,
+    "abw": 4.193e-7,
+    "relZumSatz": -0.000234
+   },
+   "medianAbsAbweichung": 8.588e-8,
+   "groessteRelAbweichungZumSatz": 0.000234
+  },
+  "XLE": {
+   "stufen": 121,
+   "zugeordnetAusschuettung": 111,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 10,
+   "ohneEreignisGroessteRelAenderung": 0.000001307,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "1999-2015",
+   "kleinsteAusschuettungsStufe": 0.002574,
+   "ohneEreignis": [
+    {
+     "tag": "1999-10-08",
+     "vortag": "1999-10-07",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000012085655782811955
+    },
+    {
+     "tag": "2001-03-09",
+     "vortag": "2001-03-08",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001029995430501529
+    },
+    {
+     "tag": "2001-03-28",
+     "vortag": "2001-03-27",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011071060698197854
+    },
+    {
+     "tag": "2001-07-03",
+     "vortag": "2001-07-02",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010568046537873244
+    },
+    {
+     "tag": "2001-07-05",
+     "vortag": "2001-07-03",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000013067134359001642
+    },
+    {
+     "tag": "2004-06-14",
+     "vortag": "2004-06-10",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001128963501129121
+    },
+    {
+     "tag": "2007-02-12",
+     "vortag": "2007-02-09",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010125979837960486
+    },
+    {
+     "tag": "2007-12-26",
+     "vortag": "2007-12-24",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000012378814745472866
+    },
+    {
+     "tag": "2009-07-16",
+     "vortag": "2009-07-15",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010231435795260424
+    },
+    {
+     "tag": "2015-04-30",
+     "vortag": "2015-04-29",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001074838680392709
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 111,
+   "groessteAbweichung": {
+    "tag": "2001-09-21",
+    "betrag": 0.0705,
+    "closeVortag": 12.604999542236328,
+    "soll": 0.994407,
+    "ist": 0.994408,
+    "abw": 7.609e-7,
+    "relZumSatz": -0.000136
+   },
+   "medianAbsAbweichung": 1.705e-7,
+   "groessteRelAbweichungZumSatz": 0.000259
+  },
+  "XLF": {
+   "stufen": 127,
+   "zugeordnetAusschuettung": 110,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 17,
+   "ohneEreignisGroessteRelAenderung": 0.000001417,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "1999-2008",
+   "kleinsteAusschuettungsStufe": 0.002102,
+   "ohneEreignis": [
+    {
+     "tag": "1999-06-03",
+     "vortag": "1999-06-02",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010040584681458853
+    },
+    {
+     "tag": "1999-08-25",
+     "vortag": "1999-08-24",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.000001026949901783425
+    },
+    {
+     "tag": "2000-07-10",
+     "vortag": "2000-07-07",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.000001284261442080492
+    },
+    {
+     "tag": "2000-09-11",
+     "vortag": "2000-09-08",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010892857285060842
+    },
+    {
+     "tag": "2000-09-19",
+     "vortag": "2000-09-18",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010944488646469352
+    },
+    {
+     "tag": "2000-09-20",
+     "vortag": "2000-09-19",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010192804049680149
+    },
+    {
+     "tag": "2001-03-08",
+     "vortag": "2001-03-07",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010020476775007836
+    },
+    {
+     "tag": "2001-03-28",
+     "vortag": "2001-03-27",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001210712258670199
+    },
+    {
+     "tag": "2001-07-19",
+     "vortag": "2001-07-18",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001082394445406365
+    },
+    {
+     "tag": "2001-08-13",
+     "vortag": "2001-08-10",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010950808111420685
+    },
+    {
+     "tag": "2002-05-20",
+     "vortag": "2002-05-17",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001155476679781664
+    },
+    {
+     "tag": "2002-08-29",
+     "vortag": "2002-08-28",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010482683870938203
+    },
+    {
+     "tag": "2003-10-16",
+     "vortag": "2003-10-15",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000014168465312103251
+    },
+    {
+     "tag": "2004-05-12",
+     "vortag": "2004-05-11",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010393625091698055
+    },
+    {
+     "tag": "2004-08-16",
+     "vortag": "2004-08-13",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011652904244874307
+    },
+    {
+     "tag": "2008-01-30",
+     "vortag": "2008-01-29",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000012003668492521768
+    },
+    {
+     "tag": "2008-01-31",
+     "vortag": "2008-01-30",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.000001177872873237007
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 110,
+   "groessteAbweichung": {
+    "tag": "2008-12-19",
+    "betrag": 0.14866,
+    "closeVortag": 10.105605125427246,
+    "soll": 0.985289,
+    "ist": 0.985289,
+    "abw": -8.339e-7,
+    "relZumSatz": 0.000057
+   },
+   "medianAbsAbweichung": 1.379e-7,
+   "groessteRelAbweichungZumSatz": 0.000225
+  },
+  "XLI": {
+   "stufen": 117,
+   "zugeordnetAusschuettung": 109,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 8,
+   "ohneEreignisGroessteRelAenderung": 0.000001253,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "2000-2009",
+   "kleinsteAusschuettungsStufe": 0.001274,
+   "ohneEreignis": [
+    {
+     "tag": "2000-06-09",
+     "vortag": "2000-06-08",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000012531655183556367
+    },
+    {
+     "tag": "2000-06-12",
+     "vortag": "2000-06-09",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010020717999825735
+    },
+    {
+     "tag": "2001-03-14",
+     "vortag": "2001-03-13",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000012172077010763616
+    },
+    {
+     "tag": "2001-09-18",
+     "vortag": "2001-09-17",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010825912719614195
+    },
+    {
+     "tag": "2001-12-07",
+     "vortag": "2001-12-06",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.000001094341582463798
+    },
+    {
+     "tag": "2001-12-13",
+     "vortag": "2001-12-12",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010058629944520447
+    },
+    {
+     "tag": "2009-01-14",
+     "vortag": "2009-01-13",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010090245258220776
+    },
+    {
+     "tag": "2009-01-28",
+     "vortag": "2009-01-27",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000011985121659563447
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 109,
+   "groessteAbweichung": {
+    "tag": "2003-06-20",
+    "betrag": 0.05,
+    "closeVortag": 22.860000610351562,
+    "soll": 0.997813,
+    "ist": 0.997812,
+    "abw": -8.568e-7,
+    "relZumSatz": 0.000392
+   },
+   "medianAbsAbweichung": 1.705e-7,
+   "groessteRelAbweichungZumSatz": 0.000544
+  },
+  "XLK": {
+   "stufen": 94,
+   "zugeordnetAusschuettung": 84,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 10,
+   "ohneEreignisGroessteRelAenderung": 0.000001284,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "2000-2010",
+   "kleinsteAusschuettungsStufe": 0.00001953,
+   "ohneEreignis": [
+    {
+     "tag": "2000-02-22",
+     "vortag": "2000-02-18",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011259132233210067
+    },
+    {
+     "tag": "2002-02-11",
+     "vortag": "2002-02-08",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000011267987580776406
+    },
+    {
+     "tag": "2002-02-12",
+     "vortag": "2002-02-11",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010440487669960419
+    },
+    {
+     "tag": "2005-07-22",
+     "vortag": "2005-07-21",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010870449537181415
+    },
+    {
+     "tag": "2006-05-23",
+     "vortag": "2006-05-22",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010921432620492055
+    },
+    {
+     "tag": "2006-08-25",
+     "vortag": "2006-08-24",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000012842441223792633
+    },
+    {
+     "tag": "2006-11-06",
+     "vortag": "2006-11-03",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010096442171203535
+    },
+    {
+     "tag": "2009-06-25",
+     "vortag": "2009-06-24",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010990552776757312
+    },
+    {
+     "tag": "2009-11-11",
+     "vortag": "2009-11-10",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000011431209152590327
+    },
+    {
+     "tag": "2010-03-04",
+     "vortag": "2010-03-03",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011085946501898647
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 84,
+   "groessteAbweichung": {
+    "tag": "2010-09-17",
+    "betrag": 0.0405,
+    "closeVortag": 11.244999885559082,
+    "soll": 0.996398,
+    "ist": 0.996398,
+    "abw": -8.225e-7,
+    "relZumSatz": 0.000228
+   },
+   "medianAbsAbweichung": 1.262e-7,
+   "groessteRelAbweichungZumSatz": 0.003994
+  },
+  "XLP": {
+   "stufen": 127,
+   "zugeordnetAusschuettung": 110,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 17,
+   "ohneEreignisGroessteRelAenderung": 0.000001278,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "1999-2008",
+   "kleinsteAusschuettungsStufe": 0.001766,
+   "ohneEreignis": [
+    {
+     "tag": "1999-06-11",
+     "vortag": "1999-06-10",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010278451414436063
+    },
+    {
+     "tag": "1999-08-09",
+     "vortag": "1999-08-06",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010495942198707198
+    },
+    {
+     "tag": "1999-10-06",
+     "vortag": "1999-10-05",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010532122994844073
+    },
+    {
+     "tag": "2000-02-22",
+     "vortag": "2000-02-18",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010623416065724811
+    },
+    {
+     "tag": "2000-02-23",
+     "vortag": "2000-02-22",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.000001231461472794848
+    },
+    {
+     "tag": "2000-10-10",
+     "vortag": "2000-10-09",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010748880145960982
+    },
+    {
+     "tag": "2001-03-15",
+     "vortag": "2001-03-14",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010452745073941117
+    },
+    {
+     "tag": "2001-07-12",
+     "vortag": "2001-07-11",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000011373316974871983
+    },
+    {
+     "tag": "2002-05-07",
+     "vortag": "2002-05-06",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000011400345534262613
+    },
+    {
+     "tag": "2004-02-04",
+     "vortag": "2004-02-03",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010184595606865798
+    },
+    {
+     "tag": "2004-08-19",
+     "vortag": "2004-08-18",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010847723305174028
+    },
+    {
+     "tag": "2005-03-08",
+     "vortag": "2005-03-07",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001199705229271153
+    },
+    {
+     "tag": "2006-02-28",
+     "vortag": "2006-02-27",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000012592342952810753
+    },
+    {
+     "tag": "2006-03-07",
+     "vortag": "2006-03-06",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010078318658512941
+    },
+    {
+     "tag": "2006-06-15",
+     "vortag": "2006-06-14",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000012784368443874428
+    },
+    {
+     "tag": "2008-09-29",
+     "vortag": "2008-09-26",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000012324187650403218
+    },
+    {
+     "tag": "2008-09-30",
+     "vortag": "2008-09-29",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011809088057423978
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 110,
+   "groessteAbweichung": {
+    "tag": "2006-06-16",
+    "betrag": 0.127,
+    "closeVortag": 23.850000381469727,
+    "soll": 0.994675,
+    "ist": 0.994676,
+    "abw": 0.000001051,
+    "relZumSatz": -0.000197
+   },
+   "medianAbsAbweichung": 1.672e-7,
+   "groessteRelAbweichungZumSatz": 0.000267
+  },
+  "XLRE": {
+   "stufen": 43,
+   "zugeordnetAusschuettung": 43,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 0,
+   "ohneEreignisGroessteRelAenderung": 0,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": null,
+   "kleinsteAusschuettungsStufe": 0.005283,
+   "ohneEreignis": [],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 43,
+   "groessteAbweichung": {
+    "tag": "2020-12-21",
+    "betrag": 0.466,
+    "closeVortag": 36.439998626708984,
+    "soll": 0.987212,
+    "ist": 0.987212,
+    "abw": 3.33e-7,
+    "relZumSatz": -0.000026
+   },
+   "medianAbsAbweichung": 9.524e-8,
+   "groessteRelAbweichungZumSatz": 0.000036
+  },
+  "XLU": {
+   "stufen": 120,
+   "zugeordnetAusschuettung": 111,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 9,
+   "ohneEreignisGroessteRelAenderung": 0.000001308,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "1999-2005",
+   "kleinsteAusschuettungsStufe": 0.005398,
+   "ohneEreignis": [
+    {
+     "tag": "1999-11-08",
+     "vortag": "1999-11-05",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000013081986679486235
+    },
+    {
+     "tag": "1999-11-24",
+     "vortag": "1999-11-23",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010502986227400868
+    },
+    {
+     "tag": "2000-09-11",
+     "vortag": "2000-09-08",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000012099269675047708
+    },
+    {
+     "tag": "2001-06-06",
+     "vortag": "2001-06-05",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000011054241977337398
+    },
+    {
+     "tag": "2002-02-20",
+     "vortag": "2002-02-19",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.00000113029853743285
+    },
+    {
+     "tag": "2002-10-03",
+     "vortag": "2002-10-02",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010909014629412184
+    },
+    {
+     "tag": "2003-05-06",
+     "vortag": "2003-05-05",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010612871568227433
+    },
+    {
+     "tag": "2003-06-05",
+     "vortag": "2003-06-04",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001058657271402197
+    },
+    {
+     "tag": "2005-09-20",
+     "vortag": "2005-09-19",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010516121359271935
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 111,
+   "groessteAbweichung": {
+    "tag": "1999-03-19",
+    "betrag": 0.0945,
+    "closeVortag": 14.460938453674316,
+    "soll": 0.993465,
+    "ist": 0.993464,
+    "abw": -7.895e-7,
+    "relZumSatz": 0.000121
+   },
+   "medianAbsAbweichung": 1.288e-7,
+   "groessteRelAbweichungZumSatz": 0.000121
+  },
+  "XLV": {
+   "stufen": 107,
+   "zugeordnetAusschuettung": 105,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 2,
+   "ohneEreignisGroessteRelAenderung": 0.000001024,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "1999-2003",
+   "kleinsteAusschuettungsStufe": 0.0001808,
+   "ohneEreignis": [
+    {
+     "tag": "1999-08-11",
+     "vortag": "1999-08-10",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.00000101479730951759
+    },
+    {
+     "tag": "2003-11-06",
+     "vortag": "2003-11-05",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010235579284145757
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 105,
+   "groessteAbweichung": {
+    "tag": "2001-09-21",
+    "betrag": 0.009,
+    "closeVortag": 21.899999618530273,
+    "soll": 0.999589,
+    "ist": 0.999588,
+    "abw": -7.824e-7,
+    "relZumSatz": 0.001904
+   },
+   "medianAbsAbweichung": 1.321e-7,
+   "groessteRelAbweichungZumSatz": 0.003638
+  },
+  "XLY": {
+   "stufen": 122,
+   "zugeordnetAusschuettung": 110,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 12,
+   "ohneEreignisGroessteRelAenderung": 0.000001545,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "1999-2016",
+   "kleinsteAusschuettungsStufe": 0.000206,
+   "ohneEreignis": [
+    {
+     "tag": "1999-01-07",
+     "vortag": "1999-01-06",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000011578281220447906
+    },
+    {
+     "tag": "1999-01-08",
+     "vortag": "1999-01-07",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000011578267814504883
+    },
+    {
+     "tag": "2000-10-30",
+     "vortag": "2000-10-27",
+     "istMultiplikator": 0.999998,
+     "relAenderung": 0.0000015445923389201255
+    },
+    {
+     "tag": "2002-08-30",
+     "vortag": "2002-08-29",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010145050475252049
+    },
+    {
+     "tag": "2002-10-01",
+     "vortag": "2002-09-30",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000011227960692306027
+    },
+    {
+     "tag": "2002-10-02",
+     "vortag": "2002-10-01",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001105412148261209
+    },
+    {
+     "tag": "2007-07-17",
+     "vortag": "2007-07-16",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.000001188180977385045
+    },
+    {
+     "tag": "2009-01-22",
+     "vortag": "2009-01-21",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.000001028887964160674
+    },
+    {
+     "tag": "2011-08-11",
+     "vortag": "2011-08-10",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000012537369959986222
+    },
+    {
+     "tag": "2015-01-08",
+     "vortag": "2015-01-07",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010097063076752733
+    },
+    {
+     "tag": "2015-04-16",
+     "vortag": "2015-04-15",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010522771736187764
+    },
+    {
+     "tag": "2016-07-29",
+     "vortag": "2016-07-28",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010037135557139365
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 110,
+   "groessteAbweichung": {
+    "tag": "2003-03-21",
+    "betrag": 0.017,
+    "closeVortag": 11.789999961853027,
+    "soll": 0.998558,
+    "ist": 0.998559,
+    "abw": 7.554e-7,
+    "relZumSatz": -0.000524
+   },
+   "medianAbsAbweichung": 1.498e-7,
+   "groessteRelAbweichungZumSatz": 0.000654
+  },
+  "SPY": {
+   "stufen": 118,
+   "zugeordnetAusschuettung": 112,
+   "zugeordnetSplit": 0,
+   "splitMitStufe": [],
+   "ohneEreignisAnzahl": 6,
+   "ohneEreignisGroessteRelAenderung": 0.000001233,
+   "ohneEreignisUeber1e5": 0,
+   "ohneEreignisJahre": "2000-2004",
+   "kleinsteAusschuettungsStufe": 0.002354,
+   "ohneEreignis": [
+    {
+     "tag": "2000-10-17",
+     "vortag": "2000-10-16",
+     "istMultiplikator": 0.999999,
+     "relAenderung": 0.0000010664425142969947
+    },
+    {
+     "tag": "2002-12-12",
+     "vortag": "2002-12-11",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.000001067053829073572
+    },
+    {
+     "tag": "2003-10-20",
+     "vortag": "2003-10-17",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010110641858185332
+    },
+    {
+     "tag": "2003-11-18",
+     "vortag": "2003-11-17",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010064292574885059
+    },
+    {
+     "tag": "2004-06-30",
+     "vortag": "2004-06-29",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000010133167358539197
+    },
+    {
+     "tag": "2004-09-15",
+     "vortag": "2004-09-14",
+     "istMultiplikator": 1.000001,
+     "relAenderung": -0.0000012328611818102075
+    }
+   ],
+   "ausschuettungenOhneStufe": [],
+   "ausschuettungenGezaehlt": 112,
+   "groessteAbweichung": {
+    "tag": "2004-12-17",
+    "betrag": 0.568,
+    "closeVortag": 120.80999755859375,
+    "soll": 0.995298,
+    "ist": 0.9953,
+    "abw": 0.000001194,
+    "relZumSatz": -0.000254
+   },
+   "medianAbsAbweichung": 1.573e-7,
+   "groessteRelAbweichungZumSatz": 0.000284
+  }
+ },
+ "gesamtertrag": {
+  "hinweis": "(a) adjclose(Ende)/adjclose(Start) - 1; (b) Schluss + Ausschuettungen, Wiederanlage am Ex-Tag zum Schluss; Differenz (a)-(b) in Pp. Nur Abgleich, keine Rangfolge.",
+  "fenster": {
+   "A": "2017-01-03 -> 2021-09-15",
+   "B": "2021-09-15 -> 2026-09-15",
+   "L": "1999-12-31 -> 2026-09-15"
+  },
+  "je": {
+   "XLB": {
+    "A": {
+     "adjPct": 83.5508,
+     "schlussPct": 83.6378,
+     "diffPp": -0.087
+    },
+    "B": {
+     "adjPct": 33.4426,
+     "schlussPct": 33.4031,
+     "diffPp": 0.0395
+    },
+    "L": {
+     "adjPct": 588.3011,
+     "schlussPct": 588.0433,
+     "diffPp": 0.2578
+    }
+   },
+   "XLC": {
+    "A": null,
+    "B": {
+     "adjPct": 42.6604,
+     "schlussPct": 42.651,
+     "diffPp": 0.0094
+    },
+    "L": null
+   },
+   "XLE": {
+    "A": {
+     "adjPct": -18.3583,
+     "schlussPct": -18.197,
+     "diffPp": -0.1613
+    },
+    "B": {
+     "adjPct": 214.7092,
+     "schlussPct": 214.39,
+     "diffPp": 0.3192
+    },
+    "L": {
+     "adjPct": 878.1286,
+     "schlussPct": 878.8001,
+     "diffPp": -0.6715
+    }
+   },
+   "XLF": {
+    "A": {
+     "adjPct": 76.0483,
+     "schlussPct": 76.1741,
+     "diffPp": -0.1258
+    },
+    "B": {
+     "adjPct": 63.7545,
+     "schlussPct": 63.7101,
+     "diffPp": 0.0444
+    },
+    "L": {
+     "adjPct": 395.1014,
+     "schlussPct": 394.8282,
+     "diffPp": 0.2732
+    }
+   },
+   "XLI": {
+    "A": {
+     "adjPct": 77.61,
+     "schlussPct": 77.6936,
+     "diffPp": -0.0837
+    },
+    "B": {
+     "adjPct": 78.3332,
+     "schlussPct": 78.2813,
+     "diffPp": 0.0519
+    },
+    "L": {
+     "adjPct": 812.2532,
+     "schlussPct": 812.3856,
+     "diffPp": -0.1323
+    }
+   },
+   "XLK": {
+    "A": {
+     "adjPct": 243.2223,
+     "schlussPct": 243.2293,
+     "diffPp": -0.007
+    },
+    "B": {
+     "adjPct": 141.7079,
+     "schlussPct": 141.6894,
+     "diffPp": 0.0185
+    },
+    "L": {
+     "adjPct": 817.7289,
+     "schlussPct": 817.866,
+     "diffPp": -0.1371
+    }
+   },
+   "XLP": {
+    "A": {
+     "adjPct": 56.8293,
+     "schlussPct": 56.8513,
+     "diffPp": -0.0219
+    },
+    "B": {
+     "adjPct": 32.7257,
+     "schlussPct": 32.6775,
+     "diffPp": 0.0482
+    },
+    "L": {
+     "adjPct": 586.0747,
+     "schlussPct": 586.0553,
+     "diffPp": 0.0195
+    }
+   },
+   "XLRE": {
+    "A": {
+     "adjPct": 77.8722,
+     "schlussPct": 77.99,
+     "diffPp": -0.1178
+    },
+    "B": {
+     "adjPct": 7.8833,
+     "schlussPct": 7.8389,
+     "diffPp": 0.0443
+    },
+    "L": null
+   },
+   "XLU": {
+    "A": {
+     "adjPct": 62.7356,
+     "schlussPct": 62.7557,
+     "diffPp": -0.02
+    },
+    "B": {
+     "adjPct": 41.2416,
+     "schlussPct": 41.144,
+     "diffPp": 0.0976
+    },
+    "L": {
+     "adjPct": 635.8518,
+     "schlussPct": 634.9036,
+     "diffPp": 0.9482
+    }
+   },
+   "XLV": {
+    "A": {
+     "adjPct": 106.2341,
+     "schlussPct": 106.2955,
+     "diffPp": -0.0613
+    },
+    "B": {
+     "adjPct": 36.4839,
+     "schlussPct": 36.4543,
+     "diffPp": 0.0297
+    },
+    "L": {
+     "adjPct": 708.0066,
+     "schlussPct": 707.9201,
+     "diffPp": 0.0865
+    }
+   },
+   "XLY": {
+    "A": {
+     "adjPct": 136.8687,
+     "schlussPct": 136.8974,
+     "diffPp": -0.0287
+    },
+    "B": {
+     "adjPct": 25.6426,
+     "schlussPct": 25.6184,
+     "diffPp": 0.0242
+    },
+    "L": {
+     "adjPct": 866.2584,
+     "schlussPct": 866.4868,
+     "diffPp": -0.2284
+    }
+   },
+   "SPY": {
+    "A": {
+     "adjPct": 115.8099,
+     "schlussPct": 115.912,
+     "diffPp": -0.1022
+    },
+    "B": {
+     "adjPct": 80.933,
+     "schlussPct": 80.9673,
+     "diffPp": -0.0343
+    },
+    "L": {
+     "adjPct": 722.9504,
+     "schlussPct": 723.5852,
+     "diffPp": -0.6348
+    }
+   }
+  }
+ },
+ "alpacaAbgleich": {
+  "XLB": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 42,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 41,
+   "yahooAbVon": 42,
+   "gleich": 41,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.0785
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [],
+   "groessteAbwUsd": 0.000286,
+   "mitSplitUmgerechnet": 38,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.228593
+    }
+   ]
+  },
+  "XLC": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2018-09-21",
+   "alpacaSaetze": 33,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 32,
+   "yahooAbVon": 32,
+   "gleich": 30,
+   "nurYahoo": [],
+   "nurAlpaca": [],
+   "betragVerschieden": [
+    {
+     "ex": "2019-06-21",
+     "yahoo": 0.118,
+     "alpacaRoh": 0.1175,
+     "alpacaUmgerechnet": 0.1175,
+     "splitFaktor": 1,
+     "abw": 0.0005,
+     "closeVortag": 49.310001373291016,
+     "abwSatzPp": 0.001014
+    },
+    {
+     "ex": "2021-06-21",
+     "yahoo": 0.141,
+     "alpacaRoh": 0.140498,
+     "alpacaUmgerechnet": 0.140498,
+     "splitFaktor": 1,
+     "abw": 0.000502,
+     "closeVortag": 78.58000183105469,
+     "abwSatzPp": 0.000639
+    }
+   ],
+   "groessteAbwUsd": 0.000502,
+   "mitSplitUmgerechnet": 0,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.364093
+    }
+   ]
+  },
+  "XLE": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 43,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 42,
+   "yahooAbVon": 43,
+   "gleich": 42,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.226
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [],
+   "groessteAbwUsd": 0.000246,
+   "mitSplitUmgerechnet": 39,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.380277
+    }
+   ]
+  },
+  "XLF": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-03-18",
+   "alpacaSaetze": 44,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 43,
+   "yahooAbVon": 42,
+   "gleich": 40,
+   "nurYahoo": [],
+   "nurAlpaca": [
+    {
+     "ex": "2016-09-19",
+     "alpacaRoh": 0.139146,
+     "alpacaUmgerechnet": 0.139146,
+     "splitFaktor": 1
+    }
+   ],
+   "betragVerschieden": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.081235,
+     "alpacaRoh": 0.122995,
+     "alpacaUmgerechnet": 0.099915,
+     "splitFaktor": 1.231,
+     "abw": -0.01868,
+     "closeVortag": 18.3834285736084,
+     "abwSatzPp": -0.101612
+    },
+    {
+     "ex": "2018-09-21",
+     "yahoo": 0.128,
+     "alpacaRoh": 0.1275,
+     "alpacaUmgerechnet": 0.1275,
+     "splitFaktor": 1,
+     "abw": 0.0005,
+     "closeVortag": 28.979999542236328,
+     "abwSatzPp": 0.001725
+    }
+   ],
+   "groessteAbwUsd": 0.01868,
+   "mitSplitUmgerechnet": 3,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.196537
+    }
+   ]
+  },
+  "XLI": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 42,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 41,
+   "yahooAbVon": 42,
+   "gleich": 41,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.283
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [],
+   "groessteAbwUsd": 0.000469,
+   "mitSplitUmgerechnet": 0,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.45497
+    }
+   ]
+  },
+  "XLK": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 42,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 41,
+   "yahooAbVon": 42,
+   "gleich": 41,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.11
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [],
+   "groessteAbwUsd": 0.000495,
+   "mitSplitUmgerechnet": 38,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.220686
+    }
+   ]
+  },
+  "XLP": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 42,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 41,
+   "yahooAbVon": 42,
+   "gleich": 41,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.271
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [],
+   "groessteAbwUsd": 0.000494,
+   "mitSplitUmgerechnet": 0,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.5406
+    }
+   ]
+  },
+  "XLRE": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 42,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 41,
+   "yahooAbVon": 42,
+   "gleich": 41,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.303
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [],
+   "groessteAbwUsd": 0.000485,
+   "mitSplitUmgerechnet": 0,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.354737
+    }
+   ]
+  },
+  "XLU": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 42,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 41,
+   "yahooAbVon": 42,
+   "gleich": 41,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.184
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [],
+   "groessteAbwUsd": 0.000415,
+   "mitSplitUmgerechnet": 38,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.300376
+    }
+   ]
+  },
+  "XLV": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 43,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 42,
+   "yahooAbVon": 43,
+   "gleich": 40,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.237
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [
+    {
+     "ex": "2019-09-20",
+     "yahoo": 0.38,
+     "alpacaRoh": 0.3795,
+     "alpacaUmgerechnet": 0.3795,
+     "splitFaktor": 1,
+     "abw": 0.0005,
+     "closeVortag": 91.87000274658203,
+     "abwSatzPp": 0.000544
+    },
+    {
+     "ex": "2021-03-22",
+     "yahoo": 0.398,
+     "alpacaRoh": 0.397468,
+     "alpacaUmgerechnet": 0.397468,
+     "splitFaktor": 1,
+     "abw": 0.000532,
+     "closeVortag": 115.06999969482422,
+     "abwSatzPp": 0.000462
+    }
+   ],
+   "groessteAbwUsd": 0.000532,
+   "mitSplitUmgerechnet": 0,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.642226
+    }
+   ]
+  },
+  "XLY": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 42,
+   "ausNachtrag": 1,
+   "alpacaBisDatenende": 41,
+   "yahooAbVon": 42,
+   "gleich": 41,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 0.1605
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [],
+   "groessteAbwUsd": 0.000377,
+   "mitSplitUmgerechnet": 38,
+   "special": [],
+   "nachDatenende": [
+    {
+     "ex": "2026-09-21",
+     "rate": 0.244085
+    }
+   ]
+  },
+  "SPY": {
+   "von": "2016-01-01",
+   "ersterAlpacaExTag": "2016-06-17",
+   "alpacaSaetze": 40,
+   "ausNachtrag": 0,
+   "alpacaBisDatenende": 40,
+   "yahooAbVon": 42,
+   "gleich": 39,
+   "nurYahoo": [
+    {
+     "ex": "2016-03-18",
+     "yahoo": 1.05
+    },
+    {
+     "ex": "2018-06-15",
+     "yahoo": 1.246
+    }
+   ],
+   "nurAlpaca": [],
+   "betragVerschieden": [
+    {
+     "ex": "2021-12-17",
+     "yahoo": 1.633,
+     "alpacaRoh": 1.636431,
+     "alpacaUmgerechnet": 1.636431,
+     "splitFaktor": 1,
+     "abw": -0.003431,
+     "closeVortag": 466.45001220703125,
+     "abwSatzPp": -0.000736
+    }
+   ],
+   "groessteAbwUsd": 0.003431,
+   "mitSplitUmgerechnet": 0,
+   "special": [],
+   "nachDatenende": []
+  }
+ },
+ "spyPflicht": {
+  "yahooHat20180615": {
+   "betrag": 1.246
+  },
+  "ergaenzt": 0,
+  "jeJahr": {
+   "2017": {
+    "ist": 4,
+    "soll": 4,
+    "ok": true
+   },
+   "2018": {
+    "ist": 4,
+    "soll": 4,
+    "ok": true
+   },
+   "2019": {
+    "ist": 4,
+    "soll": 4,
+    "ok": true
+   },
+   "2020": {
+    "ist": 4,
+    "soll": 4,
+    "ok": true
+   },
+   "2021": {
+    "ist": 4,
+    "soll": 4,
+    "ok": true
+   },
+   "2022": {
+    "ist": 4,
+    "soll": 4,
+    "ok": true
+   },
+   "2023": {
+    "ist": 4,
+    "soll": 4,
+    "ok": true
+   },
+   "2024": {
+    "ist": 4,
+    "soll": 4,
+    "ok": true
+   },
+   "2025": {
+    "ist": 4,
+    "soll": 4,
+    "ok": true
+   }
+  },
+  "exTageA": {
+   "ist": 18,
+   "soll": 18,
+   "ok": true
+  },
+  "exTageB": {
+   "ist": 20,
+   "soll": 20,
+   "ok": true
+  },
+  "i": {
+   "was": "Schluss 03.01.2017 -> Schluss 15.09.2021, Wiederanlage am Ex-Tag zum Schluss",
+   "istPct": 115.912,
+   "sollPct": 115.95,
+   "diffPp": -0.038,
+   "bestanden": true
+  },
+  "ii": {
+   "was": "100.000 $ zur Eroeffnung 04.01.2017 -> Schluss 15.09.2021",
+   "openKauftag": 225.6199951171875,
+   "istUsd": 215548.4,
+   "sollUsd": 215535.73,
+   "diffUsd": 12.67,
+   "diffPp": 0.0127,
+   "gebuchteExTage": 18,
+   "bestanden": true
+  },
+  "iii": {
+   "was": "100.000 $ zur Eroeffnung 16.09.2021 -> Schluss 15.09.2026",
+   "openKauftag": 447.32000732421875,
+   "istUsd": 181193.89,
+   "sollUsd": 181193.87,
+   "diffUsd": 0.02,
+   "diffPp": 0,
+   "gebuchteExTage": 20,
+   "bestanden": true
+  },
+  "iv": {
+   "A": {
+    "istUsd": 23.867,
+    "sollUsd": 23.8656,
+    "diffUsd": 0.0014,
+    "bestanden": true
+   },
+   "B": {
+    "istUsd": 34.062,
+    "sollUsd": 34.0657,
+    "diffUsd": -0.0037,
+    "bestanden": true
+   }
+  },
+  "adjVergleich": {
+   "iAusAdjclosePct": 115.8099,
+   "bAusAdjclosePct": 80.933
+  },
+  "alleBestanden": true
+ },
+ "zweiteKursquelle": {
+  "quelle": "E:/Markt-Dashboard-Archiv/alpaca1m/<KUERZEL>/<JAHR>.json (alpaca v2 1Min, feed=sip, adjustment=raw; nur gelesen)",
+  "regel": "Schluss = Eroeffnung der 16:00-Kerze (NY), Rueckfall Schluss der 15:59-Kerze, sonst letzte Kerze 09:30-15:59; an den 21 NYSE-Tagen mit Schluss 13:00 Eroeffnung der 13:00-Kerze, Rueckfall 12:59-Schluss. Eroeffnung = Eroeffnung der 09:30-Kerze. Rohkurse geteilt durch die Yahoo-Splitfaktoren nach dem Tag.",
+  "tagesdateien": {
+   "archiv1d": [],
+   "such1d": []
+  },
+  "je": {
+   "XLB": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0057,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2016-03-21",
+      "abw": -0.012273,
+      "yahoo": 22.815000534057617,
+      "alpaca": 22.535,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 3,
+     "liste": [
+      {
+       "tag": "2016-03-15",
+       "yahooClose": 22.100000381469727,
+       "alpacaClose": 21.84,
+       "abwPct": -1.1765,
+       "quelle": "16:00-Eroeffnung",
+       "alpaca1559Schluss": 21.8425,
+       "abw1559Pct": -1.1652,
+       "minutenSpanne": [
+        21.72,
+        22.1
+       ],
+       "yahooSchlussInSpanne": true
+      },
+      {
+       "tag": "2016-03-21",
+       "yahooClose": 22.815000534057617,
+       "alpacaClose": 22.535,
+       "abwPct": -1.2273,
+       "quelle": "16:00-Eroeffnung",
+       "alpaca1559Schluss": 22.54,
+       "abw1559Pct": -1.2053,
+       "minutenSpanne": [
+        22.38,
+        22.815
+       ],
+       "yahooSchlussInSpanne": true
+      },
+      {
+       "tag": "2018-07-18",
+       "yahooClose": 29.15999984741211,
+       "alpacaClose": 29.45,
+       "abwPct": 0.9945,
+       "quelle": "16:00-Eroeffnung",
+       "alpaca1559Schluss": 29.455,
+       "abw1559Pct": 1.0117,
+       "minutenSpanne": [
+        29.16,
+        29.57
+       ],
+       "yahooSchlussInSpanne": true
+      }
+     ],
+     "quellen": {
+      "16:00-Eroeffnung": 2667,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "15:59-Schluss": 1,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0127,
+     "groesste": {
+      "tag": "2020-03-16",
+      "abw": 0.066861,
+      "yahoo": 18.844999313354492,
+      "alpaca": 20.105
+     },
+     "ueber05Pct": 5,
+     "liste": [
+      {
+       "tag": "2016-05-25",
+       "yahooOpen": 24.010000228881836,
+       "alpacaOpen": 23.765,
+       "abwPct": -1.0204,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2016-10-21",
+       "yahooOpen": 23.540000915527344,
+       "alpacaOpen": 23.35,
+       "abwPct": -0.8071,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2017-10-30",
+       "yahooOpen": 29.690000534057617,
+       "alpacaOpen": 29.525,
+       "abwPct": -0.5557,
+       "yahooOpenInSpanne": false
+      },
+      {
+       "tag": "2019-04-05",
+       "yahooOpen": 28.924999237060547,
+       "alpacaOpen": 28.75,
+       "abwPct": -0.605,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2020-03-16",
+       "yahooOpen": 18.844999313354492,
+       "alpacaOpen": 20.105,
+       "abwPct": 6.6861,
+       "yahooOpenInSpanne": true
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0006,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2017-10-30",
+      "fenster": "A",
+      "yahooOpen": 29.690000534057617,
+      "minutenOpen": 29.525,
+      "spanne": [
+       29.36,
+       29.585
+      ],
+      "abstandZurSpannePct": 0.3549,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": false,
+      "gleichYahooHoch": true
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [
+     {
+      "tag": "2025-12-05",
+      "tageVor": 2496,
+      "mittelAbsPctVor": 0.0061,
+      "tageNach": 194,
+      "mittelAbsPctNach": 0.0005,
+      "umsatzVerhaeltnisMedian90TageVor": 1.0121,
+      "umsatzVerhaeltnisMedian90TageNach": 1.0095
+     }
+    ],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLC": {
+    "schluss": {
+     "tage": 2071,
+     "mittelAbsPct": 0.002,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2018-09-21",
+      "abw": -0.002678,
+      "yahoo": 48.54999923706055,
+      "alpaca": 48.42,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 0,
+     "liste": [],
+     "quellen": {
+      "letzte Kerze": 5,
+      "15:59-Schluss": 34,
+      "16:00-Eroeffnung": 2014,
+      "verkuerzt 13:00-Eroeffnung": 18
+     }
+    },
+    "eroeffnung": {
+     "tage": 2070,
+     "mittelAbsPct": 0.013,
+     "groesste": {
+      "tag": "2020-03-16",
+      "abw": 0.050114,
+      "yahoo": 39.5099983215332,
+      "alpaca": 41.49
+     },
+     "ueber05Pct": 2,
+     "liste": [
+      {
+       "tag": "2018-08-03",
+       "yahooOpen": 48.09000015258789,
+       "alpacaOpen": 48.86,
+       "abwPct": 1.6012,
+       "yahooOpenInSpanne": false
+      },
+      {
+       "tag": "2020-03-16",
+       "yahooOpen": 39.5099983215332,
+       "alpacaOpen": 41.49,
+       "abwPct": 5.0114,
+       "yahooOpenInSpanne": true
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0021,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2018-08-03",
+      "fenster": "A",
+      "yahooOpen": 48.09000015258789,
+      "minutenOpen": 48.86,
+      "spanne": [
+       48.65,
+       48.93
+      ],
+      "abstandZurSpannePct": -1.1511,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     },
+     {
+      "tag": "2023-06-05",
+      "fenster": "B",
+      "yahooOpen": 62.91999816894531,
+      "minutenOpen": 62.955,
+      "spanne": [
+       62.955,
+       63.88
+      ],
+      "abstandZurSpannePct": -0.0556,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLE": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0077,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2020-03-23",
+      "abw": 0.00594,
+      "yahoo": 11.78499984741211,
+      "alpaca": 11.855,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 1,
+     "liste": [
+      {
+       "tag": "2020-03-23",
+       "yahooClose": 11.78499984741211,
+       "alpacaClose": 11.855,
+       "abwPct": 0.594,
+       "quelle": "16:00-Eroeffnung",
+       "alpaca1559Schluss": 11.765,
+       "abw1559Pct": -0.1697,
+       "minutenSpanne": [
+        11.575,
+        12.645
+       ],
+       "yahooSchlussInSpanne": true
+      }
+     ],
+     "quellen": {
+      "16:00-Eroeffnung": 2668,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0134,
+     "groesste": {
+      "tag": "2016-10-10",
+      "abw": 0.009914,
+      "yahoo": 35.30500030517578,
+      "alpaca": 35.655
+     },
+     "ueber05Pct": 5,
+     "liste": [
+      {
+       "tag": "2016-10-10",
+       "yahooOpen": 35.30500030517578,
+       "alpacaOpen": 35.655,
+       "abwPct": 0.9914,
+       "yahooOpenInSpanne": false
+      },
+      {
+       "tag": "2017-10-30",
+       "yahooOpen": 33.435001373291016,
+       "alpacaOpen": 33.72,
+       "abwPct": 0.8524,
+       "yahooOpenInSpanne": false
+      },
+      {
+       "tag": "2017-12-04",
+       "yahooOpen": 35.1349983215332,
+       "alpacaOpen": 34.875,
+       "abwPct": -0.74,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2017-12-12",
+       "yahooOpen": 34.79499816894531,
+       "alpacaOpen": 35.025,
+       "abwPct": 0.661,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2020-11-09",
+       "yahooOpen": 16.200000762939453,
+       "alpacaOpen": 16.115,
+       "abwPct": -0.5247,
+       "yahooOpenInSpanne": true
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0081,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2016-10-10",
+      "fenster": "",
+      "yahooOpen": 35.30500030517578,
+      "minutenOpen": 35.655,
+      "spanne": [
+       35.62,
+       35.99
+      ],
+      "abstandZurSpannePct": -0.8843,
+      "gleichVortagesschluss": true,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     },
+     {
+      "tag": "2017-10-30",
+      "fenster": "A",
+      "yahooOpen": 33.435001373291016,
+      "minutenOpen": 33.72,
+      "spanne": [
+       33.6551,
+       33.94
+      ],
+      "abstandZurSpannePct": -0.6538,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [
+     {
+      "tag": "2025-12-05",
+      "tageVor": 2496,
+      "mittelAbsPctVor": 0.0078,
+      "tageNach": 194,
+      "mittelAbsPctNach": 0.0062,
+      "umsatzVerhaeltnisMedian90TageVor": 1.0151,
+      "umsatzVerhaeltnisMedian90TageNach": 1.0174
+     }
+    ],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLF": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0076,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2020-03-23",
+      "abw": -0.002831,
+      "yahoo": 17.65999984741211,
+      "alpaca": 17.61,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 0,
+     "liste": [],
+     "quellen": {
+      "16:00-Eroeffnung": 2668,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0098,
+     "groesste": {
+      "tag": "2020-03-09",
+      "abw": 0.011739,
+      "yahoo": 23,
+      "alpaca": 23.27
+     },
+     "ueber05Pct": 3,
+     "liste": [
+      {
+       "tag": "2016-09-19",
+       "yahooOpen": 19.18000030517578,
+       "alpacaOpen": 19.35,
+       "abwPct": 0.8863,
+       "yahooOpenInSpanne": false
+      },
+      {
+       "tag": "2017-12-07",
+       "yahooOpen": 27.84000015258789,
+       "alpacaOpen": 27.63,
+       "abwPct": -0.7543,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2020-03-09",
+       "yahooOpen": 23,
+       "alpacaOpen": 23.27,
+       "abwPct": 1.1739,
+       "yahooOpenInSpanne": true
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0118,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2016-09-19",
+      "fenster": "",
+      "yahooOpen": 19.18000030517578,
+      "minutenOpen": 19.35,
+      "spanne": [
+       19.23,
+       19.4499
+      ],
+      "abstandZurSpannePct": -0.26,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     },
+     {
+      "tag": "2017-02-08",
+      "fenster": "A",
+      "yahooOpen": 23.549999237060547,
+      "minutenOpen": 23.46,
+      "spanne": [
+       23.28,
+       23.48
+      ],
+      "abstandZurSpannePct": 0.2981,
+      "gleichVortagesschluss": true,
+      "gleichYahooTief": false,
+      "gleichYahooHoch": true
+     },
+     {
+      "tag": "2017-02-09",
+      "fenster": "A",
+      "yahooOpen": 23.389999389648438,
+      "minutenOpen": 23.46,
+      "spanne": [
+       23.41,
+       23.74
+      ],
+      "abstandZurSpannePct": -0.0854,
+      "gleichVortagesschluss": true,
+      "gleichYahooTief": false,
+      "gleichYahooHoch": false
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [
+     {
+      "tag": "2016-09-19",
+      "tageVor": 179,
+      "mittelAbsPctVor": 0.0323,
+      "tageNach": 2511,
+      "mittelAbsPctNach": 0.0058,
+      "umsatzVerhaeltnisMedian90TageVor": 0.9893,
+      "umsatzVerhaeltnisMedian90TageNach": 0.9998
+     }
+    ],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLI": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.004,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2016-03-16",
+      "abw": 0.003134,
+      "yahoo": 54.25,
+      "alpaca": 54.42,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 0,
+     "liste": [],
+     "quellen": {
+      "16:00-Eroeffnung": 2668,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0093,
+     "groesste": {
+      "tag": "2016-07-05",
+      "abw": 0.006979,
+      "yahoo": 55.880001068115234,
+      "alpaca": 56.27
+     },
+     "ueber05Pct": 3,
+     "liste": [
+      {
+       "tag": "2016-03-17",
+       "yahooOpen": 54.59000015258789,
+       "alpacaOpen": 54.26,
+       "abwPct": -0.6045,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2016-07-05",
+       "yahooOpen": 55.880001068115234,
+       "alpacaOpen": 56.27,
+       "abwPct": 0.6979,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2017-11-09",
+       "yahooOpen": 71.47000122070312,
+       "alpacaOpen": 71.09,
+       "abwPct": -0.5317,
+       "yahooOpenInSpanne": true
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0009,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2017-02-09",
+      "fenster": "A",
+      "yahooOpen": 63.72999954223633,
+      "minutenOpen": 63.89,
+      "spanne": [
+       63.79,
+       64.38
+      ],
+      "abstandZurSpannePct": -0.0941,
+      "gleichVortagesschluss": true,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     },
+     {
+      "tag": "2023-06-05",
+      "fenster": "B",
+      "yahooOpen": 101.1500015258789,
+      "minutenOpen": 101.08,
+      "spanne": [
+       100.11,
+       101.08
+      ],
+      "abstandZurSpannePct": 0.0693,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": false,
+      "gleichYahooHoch": true
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLK": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0032,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2018-06-07",
+      "abw": -0.001671,
+      "yahoo": 35.900001525878906,
+      "alpaca": 35.84,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 0,
+     "liste": [],
+     "quellen": {
+      "16:00-Eroeffnung": 2667,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "15:59-Schluss": 1,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0078,
+     "groesste": {
+      "tag": "2017-10-30",
+      "abw": 0.010989,
+      "yahoo": 30.940000534057617,
+      "alpaca": 31.28
+     },
+     "ueber05Pct": 1,
+     "liste": [
+      {
+       "tag": "2017-10-30",
+       "yahooOpen": 30.940000534057617,
+       "alpacaOpen": 31.28,
+       "abwPct": 1.0989,
+       "yahooOpenInSpanne": false
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0042,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2017-10-30",
+      "fenster": "A",
+      "yahooOpen": 30.940000534057617,
+      "minutenOpen": 31.28,
+      "spanne": [
+       31.2217,
+       31.46
+      ],
+      "abstandZurSpannePct": -0.9023,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [
+     {
+      "tag": "2025-12-05",
+      "tageVor": 2496,
+      "mittelAbsPctVor": 0.0033,
+      "tageNach": 194,
+      "mittelAbsPctNach": 0.0016,
+      "umsatzVerhaeltnisMedian90TageVor": 1.0138,
+      "umsatzVerhaeltnisMedian90TageNach": 1.0176
+     }
+    ],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLP": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0037,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2016-04-18",
+      "abw": -0.002437,
+      "yahoo": 53.34000015258789,
+      "alpaca": 53.21,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 0,
+     "liste": [],
+     "quellen": {
+      "16:00-Eroeffnung": 2667,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "15:59-Schluss": 1,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0103,
+     "groesste": {
+      "tag": "2017-10-30",
+      "abw": -0.008237,
+      "yahoo": 53.41999816894531,
+      "alpaca": 52.98
+     },
+     "ueber05Pct": 3,
+     "liste": [
+      {
+       "tag": "2017-10-30",
+       "yahooOpen": 53.41999816894531,
+       "alpacaOpen": 52.98,
+       "abwPct": -0.8237,
+       "yahooOpenInSpanne": false
+      },
+      {
+       "tag": "2017-12-04",
+       "yahooOpen": 56.58000183105469,
+       "alpacaOpen": 56.25,
+       "abwPct": -0.5832,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2020-04-07",
+       "yahooOpen": 58.29999923706055,
+       "alpacaOpen": 57.97,
+       "abwPct": -0.566,
+       "yahooOpenInSpanne": true
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0013,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2017-10-30",
+      "fenster": "A",
+      "yahooOpen": 53.41999816894531,
+      "minutenOpen": 52.98,
+      "spanne": [
+       52.61,
+       53.03
+      ],
+      "abstandZurSpannePct": 0.7354,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": false,
+      "gleichYahooHoch": true
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLRE": {
+    "schluss": {
+     "tage": 2688,
+     "mittelAbsPct": 0.0018,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2019-08-12",
+      "abw": -0.001821,
+      "yahoo": 38.439998626708984,
+      "alpaca": 38.37,
+      "quelle": "letzte Kerze"
+     },
+     "ueber05Pct": 0,
+     "liste": [],
+     "quellen": {
+      "letzte Kerze": 134,
+      "15:59-Schluss": 17,
+      "16:00-Eroeffnung": 2516,
+      "verkuerzt 13:00-Eroeffnung": 21
+     }
+    },
+    "eroeffnung": {
+     "tage": 2595,
+     "mittelAbsPct": 0.0186,
+     "groesste": {
+      "tag": "2019-08-07",
+      "abw": -0.007455,
+      "yahoo": 37.560001373291016,
+      "alpaca": 37.28
+     },
+     "ueber05Pct": 3,
+     "liste": [
+      {
+       "tag": "2019-01-25",
+       "yahooOpen": 32.86000061035156,
+       "alpacaOpen": 32.66,
+       "abwPct": -0.6086,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2019-08-07",
+       "yahooOpen": 37.560001373291016,
+       "alpacaOpen": 37.28,
+       "abwPct": -0.7455,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2020-03-17",
+       "yahooOpen": 30.110000610351562,
+       "alpacaOpen": 30.28,
+       "abwPct": 0.5646,
+       "yahooOpenInSpanne": true
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0009,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2017-10-30",
+      "fenster": "A",
+      "yahooOpen": 32.08000183105469,
+      "minutenOpen": 32.2,
+      "spanne": [
+       32.1756,
+       32.57
+      ],
+      "abstandZurSpannePct": -0.2971,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     },
+     {
+      "tag": "2018-08-07",
+      "fenster": "A",
+      "yahooOpen": 33.56999969482422,
+      "minutenOpen": 33.49,
+      "spanne": [
+       33.21,
+       33.49
+      ],
+      "abstandZurSpannePct": 0.2389,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": false,
+      "gleichYahooHoch": false
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLU": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0033,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2016-03-16",
+      "abw": -0.004486,
+      "yahoo": 24.520000457763672,
+      "alpaca": 24.41,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 0,
+     "liste": [],
+     "quellen": {
+      "16:00-Eroeffnung": 2667,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "15:59-Schluss": 1,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0095,
+     "groesste": {
+      "tag": "2020-03-16",
+      "abw": -0.008769,
+      "yahoo": 26.229999542236328,
+      "alpaca": 26
+     },
+     "ueber05Pct": 4,
+     "liste": [
+      {
+       "tag": "2016-07-08",
+       "yahooOpen": 25.774999618530273,
+       "alpacaOpen": 25.92,
+       "abwPct": 0.5626,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2017-10-30",
+       "yahooOpen": 27.325000762939453,
+       "alpacaOpen": 27.51,
+       "abwPct": 0.677,
+       "yahooOpenInSpanne": false
+      },
+      {
+       "tag": "2020-03-16",
+       "yahooOpen": 26.229999542236328,
+       "alpacaOpen": 26,
+       "abwPct": -0.8769,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2020-04-13",
+       "yahooOpen": 30.260000228881836,
+       "alpacaOpen": 30.03,
+       "abwPct": -0.7601,
+       "yahooOpenInSpanne": true
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0015,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2017-10-30",
+      "fenster": "A",
+      "yahooOpen": 27.325000762939453,
+      "minutenOpen": 27.51,
+      "spanne": [
+       27.44,
+       27.585
+      ],
+      "abstandZurSpannePct": -0.4191,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [
+     {
+      "tag": "2025-12-05",
+      "tageVor": 2496,
+      "mittelAbsPctVor": 0.0035,
+      "tageNach": 194,
+      "mittelAbsPctNach": 0.0008,
+      "umsatzVerhaeltnisMedian90TageVor": 1.0119,
+      "umsatzVerhaeltnisMedian90TageNach": 1.0146
+     }
+    ],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLV": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0054,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2018-11-30",
+      "abw": -0.010014,
+      "yahoo": 95.87000274658203,
+      "alpaca": 94.91,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 2,
+     "liste": [
+      {
+       "tag": "2018-11-30",
+       "yahooClose": 95.87000274658203,
+       "alpacaClose": 94.91,
+       "abwPct": -1.0014,
+       "quelle": "16:00-Eroeffnung",
+       "alpaca1559Schluss": 94.92,
+       "abw1559Pct": -0.9909,
+       "minutenSpanne": [
+        93.8,
+        95.87
+       ],
+       "yahooSchlussInSpanne": true
+      },
+      {
+       "tag": "2020-03-20",
+       "yahooClose": 79.08999633789062,
+       "alpacaClose": 78.69,
+       "abwPct": -0.5057,
+       "quelle": "16:00-Eroeffnung",
+       "alpaca1559Schluss": 78.69,
+       "abw1559Pct": -0.5057,
+       "minutenSpanne": [
+        78.64,
+        83.81
+       ],
+       "yahooSchlussInSpanne": true
+      }
+     ],
+     "quellen": {
+      "16:00-Eroeffnung": 2667,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "15:59-Schluss": 1,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0124,
+     "groesste": {
+      "tag": "2016-11-09",
+      "abw": 0.041831,
+      "yahoo": 68.37000274658203,
+      "alpaca": 71.23
+     },
+     "ueber05Pct": 3,
+     "liste": [
+      {
+       "tag": "2016-01-21",
+       "yahooOpen": 67.16000366210938,
+       "alpacaOpen": 66.78,
+       "abwPct": -0.5658,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2016-11-09",
+       "yahooOpen": 68.37000274658203,
+       "alpacaOpen": 71.23,
+       "abwPct": 4.1831,
+       "yahooOpenInSpanne": false
+      },
+      {
+       "tag": "2020-04-09",
+       "yahooOpen": 95.16999816894531,
+       "alpacaOpen": 94.4,
+       "abwPct": -0.8091,
+       "yahooOpenInSpanne": true
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.0017,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2016-11-09",
+      "fenster": "",
+      "yahooOpen": 68.37000274658203,
+      "minutenOpen": 71.23,
+      "spanne": [
+       69.26,
+       71.57
+      ],
+      "abstandZurSpannePct": -1.285,
+      "gleichVortagesschluss": true,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "XLY": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.002,
+     "medianAbsPct": 0,
+     "groesste": {
+      "tag": "2017-08-08",
+      "abw": -0.000986,
+      "yahoo": 45.64500045776367,
+      "alpaca": 45.6,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 0,
+     "liste": [],
+     "quellen": {
+      "16:00-Eroeffnung": 2667,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "15:59-Schluss": 1,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0083,
+     "groesste": {
+      "tag": "2018-08-07",
+      "abw": 0.00813,
+      "yahoo": 55.96500015258789,
+      "alpaca": 56.42
+     },
+     "ueber05Pct": 2,
+     "liste": [
+      {
+       "tag": "2016-08-12",
+       "yahooOpen": 40.935001373291016,
+       "alpacaOpen": 40.71,
+       "abwPct": -0.5497,
+       "yahooOpenInSpanne": true
+      },
+      {
+       "tag": "2018-08-07",
+       "yahooOpen": 55.96500015258789,
+       "alpacaOpen": 56.42,
+       "abwPct": 0.813,
+       "yahooOpenInSpanne": false
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 0.9999,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2017-10-30",
+      "fenster": "A",
+      "yahooOpen": 45.80500030517578,
+      "minutenOpen": 46.015,
+      "spanne": [
+       45.8875,
+       46.095
+      ],
+      "abstandZurSpannePct": -0.1798,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     },
+     {
+      "tag": "2018-08-07",
+      "fenster": "A",
+      "yahooOpen": 55.96500015258789,
+      "minutenOpen": 56.42,
+      "spanne": [
+       56.31,
+       56.6475
+      ],
+      "abstandZurSpannePct": -0.6127,
+      "gleichVortagesschluss": false,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [
+     {
+      "tag": "2025-12-05",
+      "tageVor": 2496,
+      "mittelAbsPctVor": 0.0021,
+      "tageNach": 194,
+      "mittelAbsPctNach": 0.0002,
+      "umsatzVerhaeltnisMedian90TageVor": 1.0042,
+      "umsatzVerhaeltnisMedian90TageNach": 1.0078
+     }
+    ],
+    "minutenTageOhneYahooZeile": 0
+   },
+   "SPY": {
+    "schluss": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0128,
+     "medianAbsPct": 0.0091,
+     "groesste": {
+      "tag": "2025-04-09",
+      "abw": -0.009369,
+      "yahoo": 548.6199951171875,
+      "alpaca": 543.48,
+      "quelle": "16:00-Eroeffnung"
+     },
+     "ueber05Pct": 3,
+     "liste": [
+      {
+       "tag": "2020-03-13",
+       "yahooClose": 269.32000732421875,
+       "alpacaClose": 270.94,
+       "abwPct": 0.6015,
+       "quelle": "16:00-Eroeffnung",
+       "alpaca1559Schluss": 270.93,
+       "abw1559Pct": 0.5978,
+       "minutenSpanne": [
+        249.58,
+        271.1
+       ],
+       "yahooSchlussInSpanne": true
+      },
+      {
+       "tag": "2020-03-17",
+       "yahooClose": 252.8000030517578,
+       "alpacaClose": 254.44,
+       "abwPct": 0.6487,
+       "quelle": "16:00-Eroeffnung",
+       "alpaca1559Schluss": 254.19,
+       "abw1559Pct": 0.5498,
+       "minutenSpanne": [
+        237.07,
+        256.17
+       ],
+       "yahooSchlussInSpanne": true
+      },
+      {
+       "tag": "2025-04-09",
+       "yahooClose": 548.6199951171875,
+       "alpacaClose": 543.48,
+       "abwPct": -0.9369,
+       "quelle": "16:00-Eroeffnung",
+       "alpaca1559Schluss": 543.37,
+       "abw1559Pct": -0.9569,
+       "minutenSpanne": [
+        493.05,
+        548.62
+       ],
+       "yahooSchlussInSpanne": true
+      }
+     ],
+     "quellen": {
+      "16:00-Eroeffnung": 2668,
+      "verkuerzt 13:00-Eroeffnung": 21,
+      "letzte Kerze": 1
+     }
+    },
+    "eroeffnung": {
+     "tage": 2690,
+     "mittelAbsPct": 0.0044,
+     "groesste": {
+      "tag": "2016-11-07",
+      "abw": 0.013906,
+      "yahoo": 208.5500030517578,
+      "alpaca": 211.45
+     },
+     "ueber05Pct": 2,
+     "liste": [
+      {
+       "tag": "2016-11-07",
+       "yahooOpen": 208.5500030517578,
+       "alpacaOpen": 211.45,
+       "abwPct": 1.3906,
+       "yahooOpenInSpanne": false
+      },
+      {
+       "tag": "2017-05-17",
+       "yahooOpen": 240.0800018310547,
+       "alpacaOpen": 238.1,
+       "abwPct": -0.8247,
+       "yahooOpenInSpanne": false
+      }
+     ]
+    },
+    "umsatzYahooZuAlpacaMedian": 1.1206,
+    "yahooOpenAusserhalbMinutenSpanne": [
+     {
+      "tag": "2016-08-05",
+      "fenster": "",
+      "yahooOpen": 216.41000366210938,
+      "minutenOpen": 217.21,
+      "spanne": [
+       217.07,
+       218.23
+      ],
+      "abstandZurSpannePct": -0.304,
+      "gleichVortagesschluss": true,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     },
+     {
+      "tag": "2016-11-07",
+      "fenster": "",
+      "yahooOpen": 208.5500030517578,
+      "minutenOpen": 211.45,
+      "spanne": [
+       211.3,
+       213.24
+      ],
+      "abstandZurSpannePct": -1.3015,
+      "gleichVortagesschluss": true,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     },
+     {
+      "tag": "2017-02-09",
+      "fenster": "A",
+      "yahooOpen": 229.24000549316406,
+      "minutenOpen": 229.56,
+      "spanne": [
+       229.52,
+       230.95
+      ],
+      "abstandZurSpannePct": -0.122,
+      "gleichVortagesschluss": true,
+      "gleichYahooTief": true,
+      "gleichYahooHoch": false
+     },
+     {
+      "tag": "2017-05-17",
+      "fenster": "A",
+      "yahooOpen": 240.0800018310547,
+      "minutenOpen": 238.1,
+      "spanne": [
+       235.75,
+       238.64
+      ],
+      "abstandZurSpannePct": 0.6034,
+      "gleichVortagesschluss": true,
+      "gleichYahooTief": false,
+      "gleichYahooHoch": true
+     }
+    ],
+    "yahooSchlussAusserhalbMinutenSpanne": [],
+    "splits": [],
+    "minutenTageOhneYahooZeile": 0
+   }
+  },
+  "spyKaufAnBetroffenemTag": [
+   {
+    "tag": "2017-02-09",
+    "fenster": "A",
+    "k": 25,
+    "startphase": true
+   },
+   {
+    "tag": "2017-05-17",
+    "fenster": "A",
+    "k": 92,
+    "startphase": false
+   }
+  ]
+ },
+ "panel": {
+  "datei": "C:/Users/Wilhe/Downloads/Stock-Dashboard/studien/querschnitt-pruefstand-2026-09-13/voll-v22/panel/_stand.json",
+  "kennung": "querschnitt-pruefstand-2026-09-13/panel/v2.2",
+  "reihen": 7479,
+  "treffer": [
+   {
+    "reihe": "SPY",
+    "art": "ETF",
+    "referenz": true
+   }
+  ],
+  "ausgeschlosseneArten": [
+   "ETF",
+   "ETN",
+   "ETV",
+   "FUND",
+   "ETS",
+   "ohne Art",
+   "TEST",
+   "UNIT"
+  ],
+  "kalender": {
+   "von": "2016-01-04",
+   "bis": "2026-09-15",
+   "panelTage": 2690,
+   "spyTage": 2690,
+   "nurPanel": [],
+   "nurSpy": []
+  }
+ },
+ "laufzeitSekunden": 7.4
+}
