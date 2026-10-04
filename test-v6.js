@@ -15,9 +15,10 @@ function probe(zusage) { offeneProben.push(zusage); return zusage; }
  * stehen. Abschnitt 64 traegt seine Zusage hier ein, Block 35 wartet darauf. */
 var leckDurchreiche = null;
 
+var bestanden = 0;   // fuer die Gesamtzahl am Ende, seit Abschnitt 101 einschliesslich test-mutation-buecher.js
 function ok(cond, name, extra) {
   console.log((cond ? '  ✅ ' : '  ❌ ') + name + (extra !== undefined ? '  [' + extra + ']' : ''));
-  if (!cond) fails++;
+  if (!cond) fails++; else bestanden++;
 }
 /* Kommentare weg, bevor im Quelltext gesucht wird.
  *
@@ -24522,7 +24523,32 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
 })();
 
 
+console.log('101) Mutationstest der Geld-Buecher: die Kleinsttests laufen mit (test-mutation-buecher.js)');
+/* Am 04.10.2026 ueberlebten 147 von 462 Mutanten im Momentum-Buch (mfhandel.js, mfdepot.js, kurse.js,
+ * liquide.js, momentum.js) diese Reihe, 123 davon echte Luecken - darunter Faelligkeit einen Handelstag
+ * zu frueh/spaet, UTC statt New York, doppelt gebuchte Ausschuettung/Teilung, buchInit, Stichtag.
+ * Die Zusicherungen, die sie toeten, stehen in einer eigenen Datei, weil Teil D mfdepot.js in einer
+ * vm-Sandbox mit Attrappen asynchron durchspielt; als Kindprozess beruehrt das die Module hier nicht
+ * (Muster: test-messmaschine.js in Abschnitt 44). Jede Zeile geht durch ok() und zaehlt mit.
+ * Die Mindestzahl haelt fest, dass kein Teil still wegfaellt - wer Zusicherungen dazuschreibt, laesst
+ * sie stehen; wer welche streicht, muss es hier begruenden. */
+(function () {
+  var MB_MINDESTENS = 281;
+  var r = require('child_process').spawnSync(process.execPath, [__dirname + '/test-mutation-buecher.js'], { encoding: 'utf8', timeout: 120000 });
+  var gruen = 0, rot = 0;
+  String(r.stdout || '').split('\n').forEach(function (z) {
+    var m = /^  (✅|❌) (.*)$/.exec(z);
+    if (!m) return;
+    if (m[1] === '✅') gruen++; else rot++;
+    ok(m[1] === '✅', 'MB ' + m[2]);
+  });
+  ok(r.status === 0 && rot === 0 && gruen >= MB_MINDESTENS && /\nALLE TESTS BESTANDEN/.test(r.stdout || ''),
+     'test-mutation-buecher.js laeuft vollstaendig durch (mindestens ' + MB_MINDESTENS + ' Zusicherungen, Abschlusszeile da)',
+     gruen + ' gruen, ' + rot + ' rot, Exit ' + r.status + (r.error ? ', ' + r.error.code : '') + (r.status !== 0 ? ' ' + String(r.stderr || '').slice(-300) : ''));
+})();
+
 Promise.all(offeneProben).then(function () {
+  console.log('\n' + (bestanden + fails) + ' Pruefungen, ' + bestanden + ' bestanden');
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
 }, function (e) {
