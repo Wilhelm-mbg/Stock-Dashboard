@@ -24522,6 +24522,65 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
 })();
 
 
+/* ================= 101) Generalprobe 23.11.2026: behobene Funde (Zweig fix/generalprobe-2311) =================
+ * Die Nachweise der Generalprobe (pruefberichte/generalprobe-2311/funde/, Bericht
+ * pruefberichte/2026-10-generalprobe-2311.md) sind hier dauerhafte Tests: jeder behobene Fund und jede
+ * Gegenprobe muss "kein Unterschied" melden (lauf() liefert abweichung: false). Vor der Behebung meldeten
+ * die Fund-Nachweise "ZEIGT ABWEICHUNG" (Protokoll: pruefberichte/2026-10-fix-generalprobe-2311.md).
+ * Nicht hier stehen die Funde, die offen oder kein Fehler sind (M-03/H-d Reihenende nach fuenf Tagen,
+ * H-g Uhrsprung) und die Klasse C (D-10, D-11, M-04, M-05) - sie zeigen ihre Abweichung weiter.
+ * Kunstdaten, feste Uhr, kein Netz. */
+console.log('101) Generalprobe 23.11.2026: behobene Funde und Gegenproben');
+(function () {
+  var pfad = require('path');
+  var ordner = pfad.join(__dirname, 'pruefberichte', 'generalprobe-2311', 'funde');
+  var BEHOBEN = [
+    ['Fund 1 Split am Ausfuehrungstag', 'M-02-split-am-ausfuehrungstag'], ['Fund 1', 'D-02-split-exTag-ausfuehrungstag'], ['Fund 1', 'H-c2-split-ex-tag'],
+    ['Fund 2 Platzwert ohne Eroeffnung', 'D-04-budget-ohne-eroeffnung-haltewert'], ['Fund 2', 'D-05-budget-null-all-in'], ['Fund 2', 'H-b2-budget-ohne-kurs'],
+    ['Fund 3 SPY-Ausfall', 'D-06-spy-ausfall-alter-bezug'],
+    ['Fund 4 Stichtag-Nenner', 'D-07-stichtag-nenner-behaltene-reihen'],
+    ['Fund 5 Ausschuettung verkaufter Position', 'M-01-ausschuettung-verkauf-am-extag'], ['Fund 5', 'D-01-dividende-exTag-verkauf'], ['Fund 5', 'H-c1-div-verkaufte-position'],
+    ['Fund 7 nur SPY antwortet', 'D-08-netzausfall-quartal-verloren'], ['Fund 7', 'D-08b-nur-spy-ganzer-tag'],
+    ['Fund 8 Tagespunkt nach 16:15', 'D-03-tagespunkt-ausfuehrungstag-vor-handel'],
+    ['Fund 10 ohne drift_markt', 'D-09-takt-braucht-drift-markt']];
+  var GEGENPROBEN = ['D-ok-01-nachfassen-ziele-ohne-eroeffnung', 'D-ok-02-neustart-keine-zweite-umschichtung', 'D-ok-03-split-freitag-vor-plan',
+    'D-ok-04-ereignis-stempel-winterzeit', 'D-ok-05-tagespunkt-dienstag-fuer-montag', 'H-a-normal-genau-einmal', 'H-b1-abruf-ganz-weg',
+    'H-b2-nachfassen-zur-eroeffnung', 'H-c1-split-freitag', 'H-e-start-1550', 'H-f-feiertag-montag', 'H-g-dst-uhr', 'H-g1-uhr-zurueck',
+    'OK-01-faelligkeit-2311', 'OK-02-nyzeit-sommerzeitwechsel', 'OK-03-massnahmen-grenzen', 'OK-04-nachfassen-kein-doppelkauf'];
+  var liste = BEHOBEN.map(function (k) { return { fund: k[0], id: k[1] }; })
+    .concat(GEGENPROBEN.map(function (id) { return { fund: 'Gegenprobe', id: id }; }));
+  var fehlen = liste.filter(function (x) { return !fs.existsSync(pfad.join(ordner, x.id + '.js')); }).map(function (x) { return x.id; });
+  ok(fehlen.length === 0, '101.0 alle ' + liste.length + ' genannten Nachweise liegen unter pruefberichte/generalprobe-2311/funde/', fehlen.join(', ') || undefined);
+  offeneProben.push((async function () {
+    for (var i = 0; i < liste.length; i++) {
+      var r;
+      try { r = await require(pfad.join(ordner, liste[i].id + '.js')).lauf(); } catch (e) { r = { abweichung: true, text: 'Testfehler: ' + (e && e.message) }; }
+      ok(!r.abweichung, '101 ' + liste[i].fund + ': ' + liste[i].id + ' - kein Unterschied', r.abweichung ? String(r.text).slice(0, 300) : undefined);
+    }
+  })());
+})();
+
+/* ================= 102) Lader-Stoerungen: Tagesbalken in kurse.js (Zweig fix/generalprobe-2311) =================
+ * Die Einzeltests des Pruefberichts pruefberichte/2026-10-lader-stoerungen.md fuer kurse.js laufen als eigener
+ * Prozess (sie sperren Netz und Schreiben fuer ihren ganzen Prozess, das soll diese Suite nicht treffen). Die
+ * behobenen Funde (KU-2, KU-5, KU-6, KU-9, KU-13, KU-14; vorher "ZEIGT ABWEICHUNG") und die vorher schon
+ * richtigen (KU-1, KU-3, KU-4, KU-12) muessen "kein Unterschied" melden; kein Test darf kaputt sein. Offen und
+ * deshalb nicht hier: KU-7, KU-8, KU-10, KU-11. Kunstdaten, feste Uhr, kein Netz. */
+console.log('102) Lader-Stoerungen: Tagesbalken je Handelstag in kurse.js (KU)');
+(function () {
+  var ku = '';
+  try {
+    ku = require('child_process').execFileSync(process.execPath, [__dirname + '/pruefberichte/lader-stoerungen.test.js', 'KU'],
+      { cwd: __dirname, encoding: 'utf8', timeout: 120000 });
+  } catch (e) { ku = String((e && e.stdout) || '') + '\nLAUF GESCHEITERT: ' + (e && e.message); }
+  ['KU-2', 'KU-5', 'KU-6', 'KU-9', 'KU-13', 'KU-14', 'KU-1', 'KU-3', 'KU-4', 'KU-12'].forEach(function (id) {
+    var zeile = ku.split('\n').filter(function (z) { return z.indexOf('[' + id + ']') >= 0; })[0] || '';
+    ok(/^kein Unterschied: /.test(zeile), '102 ' + id + ' - kein Unterschied', zeile ? undefined : 'Zeile fehlt');
+  });
+  ok(/ 0 kaputt; Netzversuche 0, Schreibversuche ausserhalb 0/.test(ku), '102 Lauf der KU-Tests: 0 kaputt, kein Netz, kein Schreiben ausserhalb',
+     (ku.split('\n').filter(function (z) { return /^--- /.test(z); })[0] || ku.slice(-200)));
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

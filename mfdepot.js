@@ -259,15 +259,34 @@
 
   /** A4 - Fuellkurs: die Eroeffnung des Tagesbalkens vom Ausfuehrungstag (heute, New York),
    *  ein kleiner Abruf je Wert. Ohne Eroeffnung null - nie der Schluss, nie der laufende Kurs
-   *  (offenRoh: fehlt sie, faellt sie nicht still auf den Schluss). */
+   *  (offenRoh: fehlt sie, faellt sie nicht still auf den Schluss).
+   *  Generalprobe 23.11., Fund 1: derselbe Abruf bringt die Kapitalmassnahmen des Tages mit (f.ereignisse
+   *  = { div, split }, Fenster ab Mitternacht New York) - splitsHeuteBuchen bucht die Splits vor dem Handel. */
+  function fuellkurs(kd, von, bis) {
+    var best = null;
+    ((kd && kd.bars) || []).forEach(function (b) { if (b[0] >= von && b[0] < bis && b[5] > 0 && (!best || b[0] < best[0])) best = b; });
+    return best ? { kurs: best[5], t: best[0] } : null;
+  }
   async function eroeffnung(MH, sym, heute, now) {
     try {
       var von = MH.nyZeit(heute, 0, 0), bis = MH.nyZeit(MH.tagPlus(heute, 1), 0, 0);
-      var kd = await window.Kurse.hole(sym, { von: von, bis: now, interval: '1d', bereinigt: false, offenRoh: true });
-      var best = null;
-      ((kd && kd.bars) || []).forEach(function (b) { if (b[0] >= von && b[0] < bis && b[5] > 0 && (!best || b[0] < best[0])) best = b; });
-      return best ? { kurs: best[5], t: best[0] } : null;
+      var kd = await window.Kurse.hole(sym, { von: von, bis: now, interval: '1d', bereinigt: false, offenRoh: true, ereignisse: true });
+      var f = fuellkurs(kd, von, bis);
+      if (f && kd.ereignisse) f.ereignisse = kd.ereignisse;
+      return f;
     } catch (e) { return null; }
+  }
+
+  /** Generalprobe 23.11., Fund 1 (M-02, D-02, H-c2): Splits mit Ex-Tag = Ausfuehrungstag im Momentum-Buch buchen,
+   *  BEVOR zur Eroeffnung dieses Tages geplant oder nachgefasst wird (MFHandel.splitsAmAusfuehrungstag) - sonst
+   *  traefe die Eroeffnung in neuer Stueckelung auf die alte Stueckzahl. Eine Journalzeile wie massnahmenBuchen,
+   *  nur wenn gebucht (oder ein Split neu gesperrt) wurde. Rueckgabe: true, wenn gespeichert werden muss. */
+  function splitsHeuteBuchen(MH, d, ereignisse, barZeit, now) {
+    var zeile = MH.massnahmenJournal('momentum', MH.splitsAmAusfuehrungstag(d.mfBuch, ereignisse, barZeit, now), now);
+    if (!zeile) return false;
+    if (!d.tuneLog) d.tuneLog = [];
+    d.tuneLog.unshift({ id: 'mfmass-momentum-heute-' + now, at: now, quelle: 'automatik', applied: zeile.applied, txt: zeile.txt });
+    return true;
   }
 
   /** A4 - darf HEUTE umgeschichtet werden, und zu welchen Kursen? Wie in der Messung: Rangfolge
@@ -291,13 +310,22 @@
     if (!spyF) return { ok: false, hinweis: 'Umschichtung fällig, aber für SPY gibt es keinen Tagesbalken vom ' + MH.datumDe(heute) + ' – heute kein Handelstag (oder die Quelle antwortet nicht); kein Handel.' };
     var syms = ziel.ziel.slice();
     (d.mfBuch.positionen || []).forEach(function (p) { if (syms.indexOf(p.sym) < 0) syms.push(p.sym); });
-    var preise = {}, barZeit = {};
+    var preise = {}, barZeit = {}, ereignisse = {};
     for (var i = 0; i < syms.length; i++) {
       var f = await eroeffnung(MH, syms[i], heute, now);
-      if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; }
+      if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; if (f.ereignisse) ereignisse[syms[i]] = f.ereignisse; }
       await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader
     }
-    return { ok: true, ziel: ziel, preise: preise, barZeit: barZeit, stichtag: st.stichtag, heute: heute };
+    /* Generalprobe 23.11., Fund 7 (D-08): ausser SPY hat kein Ziel und keine Position eine Eroeffnung - das ist die Quelle,
+     * nicht der Markt (im Panel hat ein Ausfuehrungstag Zeilen). Nicht umgeschichtet, nichts gemerkt; neuer Versuch wie bei zuWenig. */
+    if (!Object.keys(preise).length) return { ok: false, hinweis: 'Umschichtung fällig, aber außer SPY hat um ' + MH.nyUhr(now) + ' New York kein Wert eine Eröffnung vom ' +
+      MH.datumDe(heute) + ' (die Quelle antwortet nicht) – nicht umgeschichtet; neuer Versuch beim nächsten Takt.' };
+    /* Generalprobe 23.11., Fund 2 (D-04, D-05, H-b2): fehlt einer gehaltenen, handelnden Position die Eroeffnung noch,
+     * waere der Platzwert zu klein. Bis 16:00 New York warten (gehandelt wird ohnehin zur Eroeffnung dieses Tages). */
+    var warten = MH.eroeffnungAbwarten(d.mfBuch.positionen, preise, daten.roh, st.stichtag, now);
+    if (warten.length) return { ok: false, hinweis: 'Umschichtung fällig, aber um ' + MH.nyUhr(now) + ' New York fehlt noch die Eröffnung gehaltener Werte (' +
+      warten.slice(0, 6).join(', ') + (warten.length > 6 ? ' …' : '') + ') – nichts gehandelt; neuer Versuch beim nächsten Takt, gehandelt wird zur Eröffnung dieses Tages.' };
+    return { ok: true, ziel: ziel, preise: preise, barZeit: barZeit, ereignisse: ereignisse, stichtag: st.stichtag, heute: heute };
   }
 
   /** Auftrag Nr. 94 - die offenen Auftraege der Umschichtung von heute (d.mfBuch.offen, Regeln in
@@ -317,13 +345,16 @@
       return true;
     }
     if (!d.momentumAn) return false;
-    var syms = MH.offenWerte(o), preise = {}, barZeit = {};
+    var syms = MH.offenWerte(o), preise = {}, barZeit = {}, ereignisse = {};
     for (var i = 0; i < syms.length; i++) {
       var f = await eroeffnung(MH, syms[i], o.tag, now);
-      if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; }
+      if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; if (f.ereignisse) ereignisse[syms[i]] = f.ereignisse; }
       await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader
     }
+    var split = splitsHeuteBuchen(MH, d, ereignisse, barZeit, now);   // Generalprobe 23.11., Fund 1: vor dem Verkauf zur Eroeffnung
+    var vorher = (b.positionen || []).slice();
     var res = MH.nachfassen(b, preise, barZeit, now, 20, { kleinstAnteil: kleinstAnteil });   // 20 Bp je Seite wie die Umschichtung
+    MH.anspruecheVormerken(b, vorher, barZeit, now);                  // Generalprobe 23.11., Fund 5: Anspruch der verkauften (REGEL C.3)
     var z = MH.nachfassenJournal(res, now);
     if (z) d.tuneLog.unshift({ id: 'mfnach-' + now, at: now, quelle: 'automatik', applied: z.applied, txt: z.txt });
     /* Auftrag Nr. 95 (B4): ein Kauf, der seine Eroeffnung hatte und am Bargeld scheiterte, traegt
@@ -334,7 +365,7 @@
     if (b.offen && res.wartet.length) {
       b.offen.kaeufe.forEach(function (k) { if (res.wartet.indexOf(k.sym) >= 0 && !k.bargeld) { k.bargeld = true; neuMerker = true; } });
     }
-    return res.geaendert || neuMerker;
+    return res.geaendert || neuMerker || split;
   }
 
   async function takt(manuell) {
@@ -345,7 +376,11 @@
     try {
       var daten = await ladeKurse();
       var markt = await ladeMarkt();
-      if (!daten || !markt) {
+      /* Generalprobe 23.11., Fund D-09: das Momentum-Buch rechnet seit Nr. 93 auf den Tagesdaten
+       * und ihrer SPY-Reihe (mf_bezug); drift_markt brauchen nur das Drift-Buch und der Massstab.
+       * Fehlt drift_markt, laeuft das Momentum-Buch weiter, das Drift-Buch setzt aus (unten).
+       * Ohne beide Marktreihen (Bestand von vor Nr. 93 und kein drift_markt) bleibt es beim Halt. */
+      if (!daten || (!markt && !daten.bezug)) {
         /* Erststart-Luecke aus der ersten externen Diagnose (mfBuchWert: null): Frische
          * Installationen haben keine Tagesdaten, und der Erstladevorgang von 193 Werten
          * wartete auf einen Knopfdruck, von dem niemand wusste. Jetzt stoesst er sich
@@ -360,7 +395,7 @@
         /* Der Verweis zeigte auf die Pille, auf der dieser Text selbst steht. Genannt
            wird deshalb der Knopf, der die Daten wirklich holt - wörtlich so, wie er
            beschriftet ist (#mfLadenBtn, gleiches Pillen-Panel, weiter oben). */
-        if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – erst oben „Daten holen und rechnen“.'); return; }
+        if (!daten || (!markt && !daten.bezug)) { zeige(null, null, null, 'Keine Tagesdaten – erst oben „Daten holen und rechnen“.'); return; }
       }
       kurseFrischHalten(daten.stand);
       /* Bestand von vor Auftrag Nr. 87: Tagesdaten da, aber kein Schluessel mf_ereignisse. Der
@@ -394,8 +429,14 @@
       else if (fl.veraltet) { nachladen(); hinweisM = 'Marktreihe veraltet seit ' + MH.datumDe(fl.letzterMarktTag) + ' – Nachladen angestoßen; ob die Umschichtung fällig ist, ist offen.'; }
       /* A2: Reihenende in beiden Buechern - nur mit einer Marktreihe, die nicht veraltet ist. */
       if (daten.bezug && !fl.veraltet && reihenendeBuchen(MH, d, daten, now)) speichern();
-      /* A5: der Tagespunkt - VOR jedem Handel dieses Takts (sein Buch ist das Buch am Schluss von X). */
-      if (daten.bezug && tagespunkt(MH, d, daten, now)) speichern();
+      /* A5: der Tagespunkt - VOR jedem Handel dieses Takts (sein Buch ist das Buch am Schluss von X).
+       * Generalprobe 23.11., Fund D-03: ist X heute (Takt nach 16:15) und wird heute zur Eroeffnung
+       * umgeschichtet, gehoert in den Punkt das Buch NACH diesem Handel - er wird dann erst nach dem
+       * Handelsblock geschrieben; kommt der Handel in diesem Takt nicht zustande, schreibt ihn ein
+       * spaeterer Takt. */
+      var punktNachHandel = !!daten.bezug && ((fl.faellig === true && d.momentumAn) || manuell === 'momentum') &&
+        (MH.punktTag(daten.bezug, now) || {}).tag === MH.nyTag(now);
+      if (daten.bezug && !punktNachHandel && tagespunkt(MH, d, daten, now)) speichern();
       /* Nr. 94: offene Auftraege der Umschichtung von heute zur Eroeffnung dieses Tages nachfassen - oder beenden. */
       if (d.mfBuch.offen && await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil)) speichern();
       var faellig = fl.faellig === true;
@@ -419,6 +460,8 @@
         if (!ausf.ok) hinweisM = ausf.hinweis;
         else {
           var zielA = ausf.ziel;
+          splitsHeuteBuchen(MH, d, ausf.ereignisse, ausf.barZeit, now);   // Generalprobe 23.11., Fund 1: Split vom Ausfuehrungstag vor dem Plan (gespeichert wird unten)
+          var vorherM = (d.mfBuch.positionen || []).slice();              // Generalprobe 23.11., Fund 5: fuer anspruecheVormerken unten
           plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, { kleinstAnteil: KONFIG.kleinstAnteil });
           var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil });
           MH.stempleKursT(d.mfBuch, ausf.barZeit, now);   // neue Positionen: Balken des Ausfuehrungstags, zu dessen Eroeffnung gekauft wurde
@@ -427,6 +470,9 @@
            * "jetzt umschichten" aendert nichts an offen; seine fehlenden Werte bleiben wie bisher liegen. */
           var offenNeu = manuell === 'momentum' ? null : MH.offeneAuftraege(zielA.ziel, plan, ausf.heute);
           if (offenNeu) d.mfBuch.offen = offenNeu;
+          /* Generalprobe 23.11., Fund 5 (M-01, D-01, H-c1): zur Eroeffnung verkaufte Positionen behalten ihren Anspruch auf
+           * Ausschuettungen bis zum Verkaufstag (REGEL C.3); gebucht wird nach dem Laden (bucheMassnahmen, Regel 7). */
+          MH.anspruecheVormerken(d.mfBuch, vorherM, ausf.barZeit, now);
           var offenSyms = MH.offenWerte(offenNeu);
           var fehltRest = plan.fehltKurs.filter(function (s) { return offenSyms.indexOf(s) < 0; });
           /* Gezaehlt wird, was WIRKLICH lief: fuehreAus setzt o.stueck eines nicht ausgefuehrten
@@ -454,7 +500,7 @@
             txt: 'Momentum-Depot umgeschichtet: ' + (nM - gekauftM) + ' Verkäufe, ' + gekauftM +
               ' Käufe auf das stärkste Zehntel (' + zielA.ziel.length + ' Werte). Ausführungstag ' + MH.datumDe(ausf.heute) +
               ', Rangfolge auf den Schlusskursen des Stichtags ' + MH.datumDe(ausf.stichtag) + ', gehandelt zur Eröffnung' +
-              (spaet ? ' – ' + spaet + (spaet === 1 ? ' Handelstag' : ' Handelstage') + ' verspätet (die App lief am fälligen Tag nicht nach Börsenöffnung)' : '') +
+              (spaet ? ' – ' + spaet + (spaet === 1 ? ' Handelstag' : ' Handelstage') + ' verspätet (am fälligen Tag kam nach Börsenöffnung keine Umschichtung zustande – die App lief nicht oder bekam keine Eröffnungskurse)' : '') +
               '. Kosten 20 Bp je Seite.' +
               (ausgefallenM ? ' ' + ausgefallenM + (ausgefallenM === 1 ? ' Kauf' : ' Käufe') + ' mangels Bargeld nicht ausgeführt.' : '') +
               (kleinstM ? ' ' + kleinstM + (kleinstM === 1 ? ' Kleinstbestand' : ' Kleinstbestände') + ' aufgelöst.' : '') +
@@ -469,11 +515,13 @@
           faellig = false;
         }
       }
+      /* D-03: der aufgeschobene Punkt von heute - nur, wenn heute umgeschichtet wurde. */
+      if (punktNachHandel && d.mfBuch.letzteAusfuehrungTag === MH.nyTag(now) && tagespunkt(MH, d, daten, now)) speichern();
 
       /* ---- Drift-Buch ---- */
       var driftInfo = null;
       var termine = await window.api.storeGet('drift_termine');
-      if (termine && termine.sym) {
+      if (termine && termine.sym && markt) {                   // ohne drift_markt kein Drift-Abgleich (D-09)
         var kurseD = {}, termD = {};
         Object.keys(daten.roh).forEach(function (s) {
           if (termine.sym[s] && termine.sym[s].length) { kurseD[s] = daten.roh[s]; termD[s] = termine.sym[s]; }

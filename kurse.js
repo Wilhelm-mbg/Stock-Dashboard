@@ -55,6 +55,53 @@
    *  0, negative Werte und NaN kommen sonst durch. */
   function kursOk(v) { return typeof v === 'number' && isFinite(v) && v > 0; }
 
+  /* ---- Tagesbalken: ein Balken je Handelstag (Pruefbericht Lader-Stoerungen, KU-2/5/6/9/14) ----
+   * Bei interval '1d' kann die Antwort Kerzen tragen, die kein Handelstag sind: die flache
+   * Quote-Stempel-Kerze (Eroeffnung = Hoch = Tief = Schluss, Umsatz 0) hinter dem Balken desselben
+   * Tags oder allein am Ende (Feiertag, abgemeldete Reihe), dazu unsortierte oder doppelte Stempel.
+   * Die Leser zaehlen Balken als Handelstage und suchen binaer (mfhandel.js) - REGEL §1.3: je
+   * Handelstag eine Zeile. Gezaehlt wird, was fortfaellt. */
+  var NY_TAG = null;
+  function nyTag(ms) {
+    if (!NY_TAG) NY_TAG = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
+    return NY_TAG.format(new Date(ms));
+  }
+  function stempelKerze(b) { return b[2] === 0 && b[3] === b[1] && b[4] === b[1] && (b[5] == null || b[5] === b[1]); }
+  /** bars (und roh, gleich lang und gleich geordnet) sortieren, je Stempel den letzten behalten, je
+   *  New-Yorker Tag die flachen Umsatz-0-Kerzen neben einem anderen Balken streichen und eine flache
+   *  Umsatz-0-Kerze am Ende streichen. Rein. Rueckgabe { bars, roh, umsortiert, doppelt, stempelKerzen }. */
+  function nurHandelstage(bars, roh) {
+    var z = { umsortiert: 0, doppelt: 0, stempelKerzen: 0 };
+    var idx = bars.map(function (b, i) { return i; });
+    for (var i = 1; i < bars.length; i++) if (bars[i][0] < bars[i - 1][0]) z.umsortiert++;
+    idx.sort(function (a, b) { return bars[a][0] - bars[b][0] || a - b; });
+    var eins = [];
+    idx.forEach(function (i) {
+      if (eins.length && bars[eins[eins.length - 1]][0] === bars[i][0]) { z.doppelt++; eins[eins.length - 1] = i; } else eins.push(i);
+    });
+    var tage = {}, behalten = [];
+    function tagAn(k) { return k in tage ? tage[k] : (tage[k] = nyTag(bars[eins[k]][0])); }   // nur fuer flache Kerzen und ihre Nachbarn
+    eins.forEach(function (i, k) {
+      if (stempelKerze(bars[i])) {
+        /* am Ende (nicht, wenn schon der Balken davor flach ist - Reihen ohne Umsatz wie Fonds bleiben), oder ein
+         * frueherer Balken desselben Tags, oder (Schleife) ein spaeterer echter Balken desselben Tags */
+        var weg = (k === eins.length - 1 && !(k > 0 && stempelKerze(bars[eins[k - 1]]))) || (k > 0 && tagAn(k - 1) === tagAn(k));
+        for (var n = k + 1; !weg && n < eins.length && tagAn(n) === tagAn(k); n++) if (!stempelKerze(bars[eins[n]])) weg = true;
+        if (weg) { z.stempelKerzen++; return; }
+      }
+      behalten.push(i);
+    });
+    z.bars = behalten.map(function (i) { return bars[i]; });
+    z.roh = roh ? behalten.map(function (i) { return roh[i]; }) : null;
+    return z;
+  }
+  /** Gehoert die Antwort zum angefragten Kuerzel? meta.symbol gegen sym, gross und mit '-' statt '.'
+   *  (BRK.B / BRK-B). Ohne meta.symbol gilt sie als passend. (Pruefbericht Lader-Stoerungen, KU-13) */
+  function fremdesSymbol(meta, sym) {
+    function norm(s) { return String(s).toUpperCase().replace(/\./g, '-'); }
+    return !!(meta && typeof meta.symbol === 'string' && meta.symbol && norm(meta.symbol) !== norm(sym));
+  }
+
   /** Die URL bauen. Entweder benannter Zeitraum ODER freie Grenzen - nie beides.
    *  von/bis in Millisekunden, wie ueberall sonst in dieser App. */
   function url(sym, o) {
@@ -133,6 +180,7 @@
     try { j = JSON.parse(text); } catch (e) { return null; }
     var r = j && j.chart && j.chart.result && j.chart.result[0];
     if (!r) return null;
+    if (o.kuerzel && fremdesSymbol(r.meta, o.kuerzel)) return null;   // KU-13, gesetzt von hole()
     var ind = r.indicators || {};
     var q = (ind.quote && ind.quote[0]) || {};
     var ts = r.timestamp || [];
@@ -194,6 +242,14 @@
     var ergebnis = { bars: bars, meta: r.meta || {}, verworfen: verworfen, gesamt: ts.length,
       feld: feld, ausserhalbFenster: ausserhalbFenster };
     if (rohSchluss) ergebnis.roh = rohSchluss;
+    /* Tagesbalken: sortiert, je Stempel einmal, keine Stempel-Kerze als Handelstag (oben, nurHandelstage) -
+     * bars und roh gemeinsam. Nur bei interval '1d'; die Zaehler stehen nur da, wenn etwas fortfiel. */
+    if (o.interval === '1d') {
+      var tg = nurHandelstage(ergebnis.bars, ergebnis.roh);
+      ergebnis.bars = tg.bars;
+      if (ergebnis.roh) ergebnis.roh = tg.roh;
+      ['umsortiert', 'doppelt', 'stempelKerzen'].forEach(function (k) { if (tg[k]) ergebnis[k] = tg[k]; });
+    }
     /* o.ereignisse: die Kapitalmassnahmen derselben Antwort dazu (Auftrag Nr. 87). Ohne den
      * Schalter traegt die Rueckgabe das Feld NICHT - sie ist zeichengleich wie zuvor. */
     if (o.ereignisse) ergebnis.ereignisse = ereignisseAus(r.events, o);
@@ -254,6 +310,9 @@
         }
         var res = await mitWiederholung(url(sym, o), o);
         if (!res || !res.ok) return null;
+        /* Eine Antwort fuer ein anderes Kuerzel (meta.symbol) gilt wie keine Antwort - der Aufrufer
+         * behaelt seinen Bestand (zerlege prueft o.kuerzel; Pruefbericht Lader-Stoerungen, KU-13). */
+        o = Object.assign({}, o, { kuerzel: sym });
         return zerlege(res.body, o);
       },
       /** Nur den Rohtext holen - fuer den einen Auswerter, der die Antwort anders

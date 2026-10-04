@@ -350,22 +350,30 @@
   /** A4 - der Stichtag zum Ausfuehrungstag heute: der juengste SPY-Tag vor heute. Dazu, ob der
    *  Bestand fuer ihn reicht: geladen nach dem Schluss des Werktags vor heute, und fuer
    *  mindestens 95 % der Werte ein Balken genau vom Stichtag.
-   *  Rueckgabe { stichtag, stichtagT, mit, gesamt, ok, grund } */
+   *  Nicht gezaehlt (ausgelassen) wird eine Reihe, deren letzter Balken bis zum Stichtag mehr als
+   *  7 x 86.400.000 ms vor stichtagT liegt: genau die wirft momentumZiel am Stichtag als veraltet
+   *  hinaus (REGEL §1.2, gleicher Vergleich), sie kann das Ziel nicht aendern. Sonst sperrten
+   *  dauerhaft verschwundene Werte (alte Reihe behalten, auf weg) ab 5 % jede Umschichtung
+   *  (Generalprobe 23.11., Fund D-07). Bleibt keine Reihe uebrig, ist das Ergebnis nicht ok.
+   *  Rueckgabe { stichtag, stichtagT, mit, gesamt, ausgelassen, ok, grund } */
   function stichtagPruefen(rohMap, spyReihe, at, heute) {
-    var r = { stichtag: null, stichtagT: null, mit: 0, gesamt: 0, ok: false, grund: null };
+    var r = { stichtag: null, stichtagT: null, mit: 0, gesamt: 0, ausgelassen: 0, ok: false, grund: null };
     var j = spyReihe && spyReihe.length ? indexVor(spyReihe, nyZeit(heute, 0, 0)) : -1;
     if (j < 0) { r.grund = 'keine Marktreihe vor heute'; return r; }
     r.stichtagT = spyReihe[j][0]; r.stichtag = nyTag(r.stichtagT);
     var von = nyZeit(r.stichtag, 0, 0), bis = nyZeit(tagPlus(r.stichtag, 1), 0, 0);
     Object.keys(rohMap || {}).forEach(function (s) {
-      var x = rohMap[s]; r.gesamt++;
+      var x = rohMap[s];
       var i = x && x.length ? indexVor(x, bis) : -1;
+      if (i >= 0 && r.stichtagT - x[i][0] > 7 * 86400000) { r.ausgelassen++; return; }
+      r.gesamt++;
       if (i >= 0 && x[i][0] >= von) r.mit++;
     });
     var geladenNach = at >= nyZeit(werktagVor(heute), SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);
     r.ok = geladenNach && r.gesamt > 0 && r.mit * 100 >= r.gesamt * 95;
     if (!geladenNach) r.grund = 'Tageskurse vor dem Schluss des ' + datumDe(werktagVor(heute)) + ' geladen';
-    else if (!r.ok) r.grund = 'nur ' + r.mit + ' von ' + r.gesamt + ' Werten mit einem Kurs vom Stichtag ' + datumDe(r.stichtag) + ' (nötig 95 %)';
+    else if (!r.ok) r.grund = 'nur ' + r.mit + ' von ' + r.gesamt + ' Werten mit einem Kurs vom Stichtag ' + datumDe(r.stichtag) + ' (nötig 95 %' +
+      (r.ausgelassen ? '; ' + r.ausgelassen + ' Reihen ohne Kurs seit über 7 Tagen nicht gezählt' : '') + ')';
     return r;
   }
   /** Jede Reihe bis einschliesslich tag (New York) - kein Balken vom Ausfuehrungstag oder spaeter
@@ -578,6 +586,7 @@
    * Ereignis wie den Tagesbalken des Ex-Tags (beides am 04.10.2026 nachgesehen, kurse.js
    * ereignisseAus). Daraus folgen Reihenfolge und Grenzen unten. */
   var SPLIT_SPERRE_MS = 30 * 86400000;
+  var ANSPRUCH_MS = 30 * 86400000;                                   // Generalprobe 23.11., Fund 5: Regel 7 unten
 
   /** Splits und Ausschuettungen eines Buchs buchen - mutiert das Buch (Stueck, Einstand,
    *  Bargeld, Merker je Position). Rein: kein Netz, kein Fenster.
@@ -600,11 +609,19 @@
    *     ersten Mal, die Position merkt es sich in p.gemeldet).
    *  6. Ohne Ereignisse oder ohne barZeit fuer den Wert geschieht nichts; ein zweiter Aufruf
    *     mit denselben Daten bucht nichts.
+   *  7. (Generalprobe 23.11., Fund 5) Ansprueche verkaufter Positionen (buch.ansprueche, gemerkt von
+   *     anspruecheVormerken): jede Ausschuettung mit beginn < t <= bisT (Ex-Tag spaetestens der Tag des
+   *     Verkaufs zur Eroeffnung) und t <= barZeit[sym] wird einmal gebucht wie in 4 (Betrag × Stueck beim
+   *     Verkauf, spaetere Splits eingerechnet). Erledigt ist ein Anspruch, sobald barZeit[sym] >= bisT
+   *     (der Bestand traegt den Verkaufstag), spaetestens 30 Tage nach bisT.
+   *  opts.nurSplits (Generalprobe 23.11., Fund 1): nur Regel 3 und 5, keine Ausschuettungen und kein
+   *  Anspruch - fuer splitsAmAusfuehrungstag unten.
    *  Rueckgabe: {buchungen: [{sym, art: 'split'|'div', t, am, kaufT, …}], gesperrt: [{sym, art, t, …, neu}]}.
    *  Die Buchungen stehen NICHT in buch.trades (dort steht nur Handel), sondern in
    *  buch.massnahmen (hoechstens 400) - damit sich das Bargeld des Buchs auch ohne das
    *  Journal nachrechnen laesst. */
-  function bucheMassnahmen(buch, ereignisse, barZeit, nowMs) {
+  function bucheMassnahmen(buch, ereignisse, barZeit, nowMs, opts) {
+    var nurSplits = !!(opts && opts.nurSplits);
     var res = { buchungen: [], gesperrt: [] };
     if (!buch || !ereignisse || !barZeit) return res;
     function nachZeit(a, b) { return a[0] - b[0]; }
@@ -637,7 +654,7 @@
         merke('split', t);
         res.buchungen.push(b);
       });
-      (e.div || []).slice().sort(nachZeit).forEach(function (a) {
+      (nurSplits ? [] : e.div || []).slice().sort(nachZeit).forEach(function (a) {
         var t = a[0], betrag = a[1];
         if (!(betrag > 0) || !faellig('div', t)) return;
         var richtung = p.richtung < 0 ? -1 : 1;
@@ -648,6 +665,24 @@
           richtung: richtung, summe: summe });
       });
     });
+    if (!nurSplits && buch.ansprueche && buch.ansprueche.length) {             // Regel 7
+      buch.ansprueche = buch.ansprueche.filter(function (a) {
+        var e = ereignisse[a.sym], bis = barZeit[a.sym];
+        if (e && bis > 0) (e.div || []).slice().sort(nachZeit).forEach(function (x) {
+          var t = x[0], betrag = x[1];
+          if (!(betrag > 0) || !(t > a.beginn) || t > a.bisT || t > bis || a.gebucht.indexOf('div:' + t) >= 0) return;
+          var faktor = 1;                                               // Splits nach dem Verkauf: der Betrag steht in heutiger Stueckelung
+          (e.split || []).forEach(function (s) { if (s[0] > a.bisT && s[1] > 0 && s[2] > 0) faktor *= s[1] / s[2]; });
+          var stueck = a.stueck * faktor, summe = a.richtung * stueck * betrag;
+          buch.cash += summe;
+          a.gebucht.push('div:' + t);
+          res.buchungen.push({ sym: a.sym, art: 'div', t: t, am: nowMs, kaufT: a.beginn, betrag: betrag, stueck: stueck,
+            richtung: a.richtung, summe: summe, verkauftT: a.bisT });
+        });
+        return !(bis >= a.bisT) && nowMs - a.bisT <= ANSPRUCH_MS;
+      });
+      if (!buch.ansprueche.length) delete buch.ansprueche;
+    }
     if (res.buchungen.length) {
       buch.massnahmen = (buch.massnahmen || []).concat(res.buchungen);
       if (buch.massnahmen.length > 400) buch.massnahmen = buch.massnahmen.slice(-400);
@@ -663,6 +698,38 @@
     var n = 0;
     ((buch && buch.positionen) || []).forEach(function (p) {
       if (p.seit === nowMs && !(p.kursT > 0) && barZeit && barZeit[p.sym] > 0) { p.kursT = barZeit[p.sym]; n++; }
+    });
+    return n;
+  }
+
+  /** Generalprobe 23.11., Fund 1 (M-02, D-02, H-c2): Splits mit Ex-Tag = Ausfuehrungstag VOR dem Handel buchen.
+   *  Die Eroeffnung des Ausfuehrungstags (mfdepot.js eroeffnung, roher Kurs) steht schon in neuer Stueckelung, der
+   *  Bestand kennt den Split erst nach dem Laden am Abend. ereignisse / barZeit kommen aus demselben Abruf der
+   *  Eroeffnung ({SYM: {div, split}} ab Mitternacht New York, Stempel des Balkens von heute). Gebucht wird wie in
+   *  bucheMassnahmen (Kennung 'split:' + t, Sperre 30 Tage) - der Abend bucht denselben Split dann nicht noch einmal.
+   *  Ausschuettungen NICHT: sie werden nach dem Handel gutgeschrieben (REGEL Teil C.3). Mutiert das Buch;
+   *  Rueckgabe wie bucheMassnahmen (fuer massnahmenJournal). */
+  function splitsAmAusfuehrungstag(buch, ereignisse, barZeit, nowMs) {
+    return bucheMassnahmen(buch, ereignisse, barZeit, nowMs, { nurSplits: true });
+  }
+
+  /** Generalprobe 23.11., Fund 5 (M-01, D-01, H-c1): Ansprueche der Positionen merken, die eben zur Eroeffnung verkauft
+   *  wurden. REGEL Teil C.3: "ein Verkauf zur Eroeffnung des Ex-Tags zaehlt noch", gutgeschrieben nach dem Handel - dann
+   *  steht die Position aber nicht mehr im Buch. vorher = buch.positionen.slice() VOR fuehreAus bzw. nachfassen (dieselben
+   *  Objekte); jede, die danach fehlt, bekommt einen Eintrag in buch.ansprueche: { sym, stueck, richtung, beginn (kursT,
+   *  sonst seit - wie bucheMassnahmen), bisT (Stempel des Balkens, zu dessen Eroeffnung verkauft wurde: barZeit), am,
+   *  gebucht (Kopie der schon gebuchten Kennungen) }. Gebucht wird in bucheMassnahmen, Regel 7. Die gemessenen Funktionen
+   *  bleiben unberuehrt. Mutiert das Buch; Rueckgabe: Zahl der neuen Ansprueche. */
+  function anspruecheVormerken(buch, vorher, barZeit, nowMs) {
+    var n = 0;
+    (vorher || []).forEach(function (p) {
+      if ((buch.positionen || []).indexOf(p) >= 0) return;            // noch im Buch
+      var beginn = p.kursT > 0 ? p.kursT : p.seit, bisT = barZeit && barZeit[p.sym];
+      if (!(beginn > 0) || !(bisT > beginn)) return;
+      if (!buch.ansprueche) buch.ansprueche = [];
+      buch.ansprueche.push({ sym: p.sym, stueck: p.stueck, richtung: p.richtung < 0 ? -1 : 1, beginn: beginn, bisT: bisT, am: nowMs,
+        gebucht: (p.gebucht || []).slice() });
+      n++;
     });
     return n;
   }
@@ -698,7 +765,8 @@
         ' Einzelposten (Wert, Ex-Tag, Betrag je Stück × Stück = Summe): ' +
         div.map(function (b) {
           return b.sym + ' ' + tag(b.t) + ' ' + zahl(b.betrag, 6) + ' $ × ' + zahl(b.stueck, 4) + ' = ' + geld(b.summe) +
-            (b.richtung < 0 ? ' (Leerverkauf)' : '') + (mehrere ? ' (Kauf ' + tag(b.kaufT) + ')' : '');
+            (b.richtung < 0 ? ' (Leerverkauf)' : '') + (mehrere ? ' (Kauf ' + tag(b.kaufT) + ')' : '') +
+            (b.verkauftT ? ' (zur Eröffnung am ' + tag(b.verkauftT) + ' verkauft – über die Nacht vor dem Ex-Tag gehalten, der Anspruch bleibt)' : '');
         }).join('; ') + '.');
     }
     split.forEach(function (b) {
@@ -765,6 +833,21 @@
     return (offen.verkaeufe || []).concat((offen.kaeufe || []).slice().sort(nachRang).map(function (k) { return k.sym; }));
   }
 
+  /** Generalprobe 23.11., Fund 2 (D-04, D-05, H-b2): auf welche gehaltenen Werte wartet die Umschichtung noch?
+   *  Eine Position ohne Eroeffnung in preise, deren Reihe einen Balken vom Stichtag hat, handelt - ihre Eroeffnung
+   *  kommt (die Messung hat sie; REGEL §1.3 "ohne Kurs" meint einen Wert, der an dem Tag nicht handelt). Ohne sie
+   *  rechnete der Plan den Platzwert zu klein. Bis 16:00 New York (NACHFASSEN_BIS) wird gewartet und nichts gehandelt;
+   *  danach ist die Liste leer und es gilt, was da ist. Rein. Rueckgabe [sym…] */
+  function eroeffnungAbwarten(positionen, preise, rohMap, stichtag, nowMs) {
+    if (nowMs >= nyZeit(nyTag(nowMs), NACHFASSEN_BIS[0], NACHFASSEN_BIS[1])) return [];
+    var von = nyZeit(stichtag, 0, 0), bis = nyZeit(tagPlus(stichtag, 1), 0, 0), aus = [];
+    (positionen || []).forEach(function (p) {
+      var x = rohMap && rohMap[p.sym], i = !((preise || {})[p.sym] > 0) && x && x.length ? indexVor(x, bis) : -1;
+      if (i >= 0 && x[i][0] >= von) aus.push(p.sym);
+    });
+    return aus;
+  }
+
   /** Regel 2: ausfuehren, was jetzt eine Eroeffnung hat. preise / barZeit = die Eroeffnungen DIESES Tages und
    *  die Stempel ihrer Balken (mfdepot.js eroeffnung). Erst die Verkaeufe (Erloes ins Bargeld, Kosten wie
    *  bisher), dann die Kaeufe in der Reihenfolge rang, je hoechstens budget (Stueck = budget / Kurs, auf vier
@@ -791,6 +874,9 @@
     (o.kaeufe || []).slice().sort(nachRang).forEach(function (k) {
       if (imBuch[k.sym]) { res.entfallen.push(k.sym); return; }
       var kurs = preise[k.sym];
+      /* Generalprobe 23.11., Fund 2 (D-05): ohne Budget nie kaufen - fuehreAus naehme sonst das ganze Bargeld. Der Kauf
+       * bleibt offen wie einer, fuer den das Bargeld nicht reicht. */
+      if (kurs > 0 && !(k.budget > 0)) { res.wartet.push(k.sym); restK.push(k); return; }
       if (kurs > 0) plan.kaufen.push({ sym: k.sym, kurs: kurs, budget: k.budget, rang: k.rang,
         stueck: k.budget > 0 ? Math.floor(k.budget / kurs * 10000) / 10000 : 0 });
       else restK.push(k);
@@ -884,6 +970,8 @@
     fuehreAus: fuehreAus, bewerte: bewerte, rebalanceFaellig: rebalanceFaellig,
     driftAbgleich: driftAbgleich, bewerteDrift: bewerteDrift,
     bucheMassnahmen: bucheMassnahmen, stempleKursT: stempleKursT, massnahmenJournal: massnahmenJournal,
+    splitsAmAusfuehrungstag: splitsAmAusfuehrungstag,                    /* Generalprobe 23.11., Fund 1 */
+    anspruecheVormerken: anspruecheVormerken,                            /* Generalprobe 23.11., Fund 5 */
     /* Auftrag Nr. 93 */
     nyTag: nyTag, nyZeit: nyZeit, tagPlus: tagPlus, istWerktag: istWerktag, werktagVor: werktagVor,
     letzterFertigerWerktag: letzterFertigerWerktag, bestandFrisch: bestandFrisch, ohneLaufendenBalken: ohneLaufendenBalken,
@@ -894,6 +982,7 @@
     /* Auftrag Nr. 94 */
     nyUhr: nyUhr, offeneAuftraege: offeneAuftraege, offenLaeuft: offenLaeuft, offenWerte: offenWerte, nachfassen: nachfassen,
     offenBeenden: offenBeenden, offenText: offenText, nachfassenJournal: nachfassenJournal, offenEndeJournal: offenEndeJournal,
+    eroeffnungAbwarten: eroeffnungAbwarten,   // Generalprobe 23.11., Fund 2
     NACHFASSEN_BIS: NACHFASSEN_BIS
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = MFHandel; return; }

@@ -1,0 +1,438 @@
+{
+ "kennung": "g1b",
+ "titel": "Systemuhr wird VOR der Umschichtung um 30 min zurueckgestellt (um 09:00 NY)",
+ "takte": 1440,
+ "abrufe": 611,
+ "uebereinstimmung_mit_REGEL": true,
+ "abweichungen": [],
+ "pruefungen": [
+  "genau ein Eintrag mfrebal-* im tuneLog (um 2026-11-23 09:35 Uhrzeit der App-Uhr)",
+  "kein Wert mit mehr als einem Trade (18 Werte gehandelt, 18 Trades)",
+  "alle 18 Trades zur Eroeffnung des Ausfuehrungstags 2026-11-23 (nie Schluss, nie laufender Kurs, nie spaeterer Kurs)",
+  "Journalzeile: Stichtag 20.11.2026 (Soll 20.11.2026)",
+  "Positionen und Stueckzahlen am Ende (19) gleich dem Soll (MFHandel-Funktionen und von Hand)",
+  "Bargeld am Ende 0 = Soll 0",
+  "keine verlorene Position (9 verkaufte/ausgebuchte, alle mit Trade belegt)",
+  "Bargeld in keinem der 1440 Takte negativ",
+  "keine Statuszeile mit \"Fehler\"",
+  "Karte ohne Fehler/NaN/undefined",
+  "Erhaltung: Wert zu Eroeffnungskursen vor 116222.41 - Kosten 218.8 = nach 116003.61; Kosten der App-Trades 218.8",
+  "ein Tagespunkt je abgeschlossenem Handelstag: 2026-11-20, 2026-11-23, 2026-11-24"
+ ],
+ "anzahlRebal": 1,
+ "rebal": [
+  {
+   "at": "2026-11-23 09:35",
+   "quelle": "automatik",
+   "applied": [
+    "Momentum-Rebalancing: 18 Orders"
+   ]
+  }
+ ],
+ "journal": {
+  "ausfuehrungstag": "23.11.2026",
+  "stichtag": "20.11.2026"
+ },
+ "handelZeiten": {
+  "2026-11-23 10:05 (Uhr 09:35)": 18
+ },
+ "kursKlassen": {
+  "Eroeffnung des Tages 2026-11-23": 18
+ },
+ "tradesJeSym": {
+  "WELL": 1,
+  "TXN": 1,
+  "CL": 1,
+  "APTV": 1,
+  "ABBV": 1,
+  "FCX": 1,
+  "KLAC": 1,
+  "WMB": 1,
+  "FIS": 1,
+  "LUV": 1,
+  "XEL": 1,
+  "NKE": 1,
+  "COF": 1,
+  "NET": 1,
+  "CCI": 1,
+  "DIS": 1,
+  "MMC": 1,
+  "WDAY": 1
+ },
+ "trades": [
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "WELL",
+   "art": "verkauf",
+   "stueck": 58.6393,
+   "kurs": 104.7328,
+   "pnl": 866.02
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "TXN",
+   "art": "verkauf",
+   "stueck": 58.6627,
+   "kurs": 104.2315,
+   "pnl": 839.12
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "CL",
+   "art": "verkauf",
+   "stueck": 58.5985,
+   "kurs": 104.9636,
+   "pnl": 875.26
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "APTV",
+   "art": "verkauf",
+   "stueck": 58.3621,
+   "kurs": 105.2186,
+   "pnl": 865.34
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "ABBV",
+   "art": "verkauf",
+   "stueck": 58.2587,
+   "kurs": 104.3385,
+   "pnl": 803.31
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "FCX",
+   "art": "verkauf",
+   "stueck": 57.9493,
+   "kurs": 104.2443,
+   "pnl": 765.65
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "KLAC",
+   "art": "verkauf",
+   "stueck": 58.1097,
+   "kurs": 104.3263,
+   "pnl": 787.09
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "WMB",
+   "art": "verkauf",
+   "stueck": 57.8283,
+   "kurs": 103.9806,
+   "pnl": 737.84
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "FIS",
+   "art": "verkauf",
+   "stueck": 58.1715,
+   "kurs": 104.2973,
+   "pnl": 791.84
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "LUV",
+   "art": "kauf",
+   "stueck": 58.1923,
+   "kurs": 105.1165
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "XEL",
+   "art": "kauf",
+   "stueck": 58.6057,
+   "kurs": 104.3749
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "NKE",
+   "art": "kauf",
+   "stueck": 57.9791,
+   "kurs": 105.503
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "COF",
+   "art": "kauf",
+   "stueck": 58.2079,
+   "kurs": 105.0883
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "NET",
+   "art": "kauf",
+   "stueck": 58.1162,
+   "kurs": 105.2541
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "CCI",
+   "art": "kauf",
+   "stueck": 58.1619,
+   "kurs": 105.1715
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "DIS",
+   "art": "kauf",
+   "stueck": 57.9584,
+   "kurs": 105.5406
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "MMC",
+   "art": "kauf",
+   "stueck": 58.4715,
+   "kurs": 104.6146
+  },
+  {
+   "T": "2026-11-23 10:05",
+   "uhr": "2026-11-23 09:35",
+   "t": 1795444500000,
+   "sym": "WDAY",
+   "art": "kauf",
+   "stueck": 53.7243,
+   "kurs": 105.2598
+  }
+ ],
+ "korb": {
+  "sollZulaessig": 190,
+  "sollGeprueft": 193,
+  "sollZielzahl": 19,
+  "app": {
+   "t": 1795444500000,
+   "zulaessig": 190,
+   "geprueft": 192,
+   "ziel": 19
+  }
+ },
+ "soll": {
+  "ausfuehrungstag": "2026-11-23",
+  "stichtag": "2026-11-20",
+  "zulaessig": 190,
+  "geprueft": 193,
+  "zielzahl": 19,
+  "ziel": [
+   "SCHW",
+   "LUV",
+   "ELV",
+   "XEL",
+   "NVDA",
+   "NKE",
+   "DASH",
+   "COF",
+   "ITW",
+   "NET",
+   "ZTS",
+   "CCI",
+   "ADBE",
+   "DIS",
+   "SPOT",
+   "MMC",
+   "LIN",
+   "WDAY",
+   "EOG"
+  ],
+  "gleichHandUndMH": true,
+  "depotwertOpen": 116222.41,
+  "budget": 6116.97,
+  "orders": [
+   "verkauf WELL 58.6393 @104.7328",
+   "verkauf TXN 58.6627 @104.2315",
+   "verkauf CL 58.5985 @104.9636",
+   "verkauf APTV 58.3621 @105.2186",
+   "verkauf ABBV 58.2587 @104.3385",
+   "verkauf FCX 57.9493 @104.2443",
+   "verkauf KLAC 58.1097 @104.3263",
+   "verkauf WMB 57.8283 @103.9806",
+   "verkauf FIS 58.1715 @104.2973",
+   "kauf LUV 58.1923 @105.1165",
+   "kauf XEL 58.6057 @104.3749",
+   "kauf NKE 57.9791 @105.503",
+   "kauf COF 58.2079 @105.0883",
+   "kauf NET 58.1162 @105.2541",
+   "kauf CCI 58.1619 @105.1715",
+   "kauf DIS 57.9584 @105.5406",
+   "kauf MMC 58.4715 @104.6146",
+   "kauf WDAY 53.7243 @105.2598"
+  ],
+  "cashNachHandel": 0,
+  "reihenende": [],
+  "dividenden": 0
+ },
+ "erhaltung": {
+  "wertSollVorOpen": 116222.41,
+  "wertSollNachOpen": 116003.61,
+  "kostenSoll": 218.8,
+  "kostenAusTrades": 218.8,
+  "notional": 109400.24
+ },
+ "punkte": [
+  {
+   "tag": "2026-11-20",
+   "wert": 116279.03,
+   "sollWert": 116279.03,
+   "diff": 0,
+   "spy": 442.7193,
+   "geschrieben": "2026-11-20 16:20"
+  },
+  {
+   "tag": "2026-11-23",
+   "wert": 116174.09,
+   "sollWert": 116174.09,
+   "diff": 0,
+   "spy": 442.6844,
+   "geschrieben": "2026-11-23 16:50"
+  },
+  {
+   "tag": "2026-11-24",
+   "wert": 116466.55,
+   "sollWert": 116466.55,
+   "diff": 0,
+   "spy": 443.2111,
+   "geschrieben": "2026-11-24 16:50"
+  }
+ ],
+ "endbuch": {
+  "istPositionen": 19,
+  "sollPositionen": 19,
+  "cashIst": 0.003725687619407836,
+  "cashSoll": 0.003725687619407836,
+  "cashSollOhneDividenden": 0.003725687619407836,
+  "dividendenSoll": 0,
+  "dividendenSollVerkauft": 0,
+  "diffe": []
+ },
+ "buchVorher": {
+  "cash": 0.09,
+  "positionen": 19,
+  "wertFreitagSchluss": 116279.03
+ },
+ "buchNachher": {
+  "cash": 0,
+  "positionen": 19,
+  "offen": null
+ },
+ "massnahmen": [],
+ "rollen": {
+  "ziel": [
+   "SCHW",
+   "LUV",
+   "ELV",
+   "XEL",
+   "NVDA",
+   "NKE",
+   "DASH",
+   "COF",
+   "ITW",
+   "NET",
+   "ZTS",
+   "CCI",
+   "ADBE",
+   "DIS",
+   "SPOT",
+   "MMC",
+   "LIN",
+   "WDAY",
+   "EOG"
+  ],
+  "kept": [
+   "SCHW",
+   "ELV",
+   "NVDA",
+   "DASH",
+   "ITW",
+   "ZTS",
+   "ADBE",
+   "SPOT",
+   "LIN",
+   "EOG"
+  ],
+  "neu": [
+   "LUV",
+   "XEL",
+   "NKE",
+   "COF",
+   "NET",
+   "CCI",
+   "DIS",
+   "MMC",
+   "WDAY"
+  ],
+  "sold": [
+   "WELL",
+   "TXN",
+   "CL",
+   "APTV",
+   "ABBV",
+   "FCX",
+   "KLAC",
+   "WMB",
+   "FIS"
+  ],
+  "handGleichMH": true
+ },
+ "fehlerTakte": [],
+ "statuszeilen": {
+  "mfdStatus: Kurse vom TT.": 1437,
+  "mfdStatus: Kurse vom TT – nicht nach dem letzten Börsenschluss geladen, Nachladen angestoßen.": 3,
+  "mfStatus: Lade Tageskurse … 10/194": 3,
+  "mfStatus: Lade Tageskurse … 20/194": 3,
+  "mfStatus: Lade Tageskurse … 30/194": 3,
+  "mfStatus: Lade Tageskurse … 40/194": 3,
+  "mfStatus: Lade Tageskurse … 50/194": 3,
+  "mfStatus: Lade Tageskurse … 60/194": 3,
+  "mfStatus: Lade Tageskurse … 70/194": 3,
+  "mfStatus: Lade Tageskurse … 80/194": 3,
+  "mfStatus: Lade Tageskurse … 90/194": 3,
+  "mfStatus: Lade Tageskurse … 100/194": 3,
+  "mfStatus: Lade Tageskurse … 110/194": 3,
+  "mfStatus: Lade Tageskurse … 120/194": 3,
+  "mfStatus: Lade Tageskurse … 130/194": 3,
+  "mfStatus: Lade Tageskurse … 140/194": 3,
+  "mfStatus: Lade Tageskurse … 150/194": 3,
+  "mfStatus: Lade Tageskurse … 160/194": 3,
+  "mfStatus: Lade Tageskurse … 170/194": 3,
+  "mfStatus: Lade Tageskurse … 180/194": 3,
+  "mfStatus: Lade Tageskurse … 190/194": 3,
+  "mfStatus: 192 von 193 Werten geladen.  Nicht mehr abrufbar: UPS – vermutlich übernommen oder umbenannt. Das Universum besteht damit aus Überlebenden, was gemessene Vorsprünge nach oben verzerrt.": 1,
+  "mfStatus: 193 von 193 Werten geladen.": 2
+ }
+}
