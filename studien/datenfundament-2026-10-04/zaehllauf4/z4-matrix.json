@@ -1,0 +1,146 @@
+{
+ "stand": "2026-10-04T15:26:26.191Z",
+ "hinweis": "Grund vorher (Zeile) -> Grund im vierten Lauf (Spalte). Keine Tafel.",
+ "lauf3": {
+  "abgemeldet-anlass-offen": {
+   "abgemeldet-anlass-offen": 304,
+   "unbekannt": 47,
+   "umbenennung-ticker": 12,
+   "freiwillig": 5,
+   "zwangs-delisting": 1,
+   "uebernahme": 1
+  },
+  "uebernahme": {
+   "uebernahme": 1627,
+   "umbenennung-ticker": 32,
+   "unbekannt": 3,
+   "spac-ende": 3
+  },
+  "umbenennung-ticker": {
+   "umbenennung-ticker": 1327
+  },
+  "zwangs-delisting": {
+   "zwangs-delisting": 278,
+   "umbenennung-ticker": 15,
+   "abgemeldet-anlass-offen": 28,
+   "spac-ende": 21,
+   "unbekannt": 26,
+   "freiwillig": 4
+  },
+  "spac-ende": {
+   "spac-ende": 342,
+   "unbekannt": 1
+  },
+  "freiwillig": {
+   "freiwillig": 99,
+   "umbenennung-ticker": 5,
+   "unbekannt": 3,
+   "spac-ende": 1
+  },
+  "unbekannt": {
+   "unbekannt": 142,
+   "umbenennung-ticker": 47
+  },
+  "fusion-aktientausch": {
+   "fusion-aktientausch": 300,
+   "umbenennung-ticker": 9
+  },
+  "insolvenz": {
+   "insolvenz": 332,
+   "umbenennung-ticker": 9,
+   "unbekannt": 2,
+   "zwangs-delisting": 1
+  },
+  "ausgesetzt": {
+   "ausgesetzt": 22,
+   "spac-ende": 1
+  }
+ },
+ "alteTafel": {
+  "freiwillig": {
+   "abgemeldet-anlass-offen": 223,
+   "unbekannt": 34,
+   "freiwillig": 12,
+   "uebernahme": 13,
+   "spac-ende": 7,
+   "umbenennung-ticker": 9,
+   "ausgesetzt": 6,
+   "zwangs-delisting": 5,
+   "insolvenz": 1,
+   "fusion-aktientausch": 1
+  },
+  "uebernahme": {
+   "uebernahme": 1525,
+   "umbenennung-ticker": 40,
+   "fusion-aktientausch": 3,
+   "freiwillig": 9,
+   "unbekannt": 27,
+   "spac-ende": 5,
+   "zwangs-delisting": 22,
+   "abgemeldet-anlass-offen": 18,
+   "ausgesetzt": 4
+  },
+  "(keine Zeile)": {
+   "uebernahme": 6,
+   "zwangs-delisting": 33,
+   "freiwillig": 4,
+   "unbekannt": 2,
+   "umbenennung-ticker": 5,
+   "abgemeldet-anlass-offen": 1,
+   "fusion-aktientausch": 3
+  },
+  "umbenennung-ticker": {
+   "umbenennung-ticker": 1317,
+   "zwangs-delisting": 4,
+   "spac-ende": 5,
+   "abgemeldet-anlass-offen": 1,
+   "ausgesetzt": 2,
+   "unbekannt": 1
+  },
+  "zwangs-delisting": {
+   "zwangs-delisting": 193,
+   "umbenennung-ticker": 42,
+   "uebernahme": 45,
+   "freiwillig": 71,
+   "spac-ende": 75,
+   "abgemeldet-anlass-offen": 49,
+   "unbekannt": 58,
+   "ausgesetzt": 6,
+   "fusion-aktientausch": 2,
+   "insolvenz": 6
+  },
+  "spac-ende": {
+   "spac-ende": 271,
+   "unbekannt": 2,
+   "freiwillig": 1,
+   "umbenennung-ticker": 1,
+   "fusion-aktientausch": 1
+  },
+  "unbekannt": {
+   "freiwillig": 11,
+   "abgemeldet-anlass-offen": 36,
+   "unbekannt": 92,
+   "umbenennung-ticker": 27,
+   "uebernahme": 25,
+   "insolvenz": 4,
+   "spac-ende": 4,
+   "zwangs-delisting": 9,
+   "ausgesetzt": 4
+  },
+  "fusion-aktientausch": {
+   "fusion-aktientausch": 290,
+   "uebernahme": 10,
+   "spac-ende": 1,
+   "umbenennung-ticker": 8,
+   "zwangs-delisting": 1
+  },
+  "insolvenz": {
+   "insolvenz": 321,
+   "umbenennung-ticker": 7,
+   "unbekannt": 8,
+   "zwangs-delisting": 13,
+   "uebernahme": 4,
+   "abgemeldet-anlass-offen": 4
+  }
+ }
+}

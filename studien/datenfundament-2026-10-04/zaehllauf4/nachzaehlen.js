@@ -19,7 +19,7 @@ function main(N, L3, V, PN, Z) {
   V.reihen.forEach(function (R) { Rje[R.reihe] = R; });
   function k(r) { var p = PK.je[r]; return !!(p && p.k123 > 0); }
   var aus = [];
-  function zahl(nr, was, soll, ist, wie) { aus.push({ nr: nr, was: was, soll: soll, ist: ist, stimmt: JSON.stringify(soll) === JSON.stringify(ist) ? 'ja' : 'nein', wie: wie }); }
+  function zahl(nr, was, soll, ist, wie, urteil) { aus.push({ nr: nr, was: was, soll: soll, ist: ist, stimmt: urteil !== undefined ? urteil : (JSON.stringify(soll) === JSON.stringify(ist) ? 'ja' : 'nein'), wie: wie }); }
 
   /* ---- V9 ---- */
   var mitAWeiter = Object.keys(PN.je).filter(function (r) { return (PN.je[r].kandidaten || []).some(function (c) { return c.cTage >= 1; }); });
@@ -31,8 +31,8 @@ function main(N, L3, V, PN, Z) {
   zahl('V9', 'Reihen mit Zwilling nach a, b und c', 308, Z.zwillinge.anzahl, 'Regel Z der Einstufung');
   var dtc = (PN.je.DTC && PN.je.DTC.kandidaten || []).map(function (c) { return c.name + ' ' + c.bGleich + '/' + c.bTage + ' Nachlauf ' + c.cTage; });
   var acpw = (PN.je.ACPW && PN.je.ACPW.kandidaten || []).map(function (c) { return c.name + ' ' + c.bGleich + '/' + c.bTage + ' Nachlauf ' + c.cTage; });
-  zahl('V9', 'DTC -> SBDS scheitert an (b) mit 4 von 60', 'SBDS 4/60', dtc.join('; '), 'Kandidaten von DTC');
-  zahl('V9', 'ACPW -> PIOI: Zwilling laeuft nur einen Tag weiter', 'PIOI Nachlauf 1', acpw.join('; '), 'Kandidaten von ACPW');
+  zahl('V9', 'DTC -> SBDS scheitert an (b) mit 4 von 60', 'SBDS 4/60', dtc.join('; '), 'Kandidaten von DTC', dtc.join('; ').indexOf('SBDS 4/60 ') === 0 ? 'ja' : 'nein');
+  zahl('V9', 'ACPW -> PIOI: Zwilling laeuft nur einen Tag weiter', 'PIOI Nachlauf 1', acpw.join('; '), 'Kandidaten von ACPW', /^PIOI .* Nachlauf 1$/.test(acpw.join('; ')) ? 'ja' : 'nein');
   var echt60 = N.reihen.filter(function (u) { return u.zwilling_info && u.zwilling_info.bTage === 60; }).map(function (u) { return u.zwilling_info.bGleich; }).sort(function (a, b) { return a - b; });
   zahl('V9', 'die schwaechsten echten Paare haben 46 bis 53 von 60', '46-53', echt60.slice(0, 5).join(','), 'gleiche Tage der fuenf schwaechsten Paare mit 60 Tagen');
   var zw = N.reihen.filter(function (u) { return u.beleg === 'zwilling-im-archiv'; });
@@ -52,7 +52,7 @@ function main(N, L3, V, PN, Z) {
   zahl('E1', 'davon fallen aus Regel 0 (Umbenennungen)', ['ARQ', 'ARQQ', 'CCAQ', 'ELIQ', 'INFQ', 'IONQ', 'NHIQ', 'TAIQ'], ohne103.filter(function (u) { return !e1(u); }).map(function (u) { return String(u.nachfolger); }).sort(), 'neues Kuerzel nach E1 geprueft');
   zahl('E1', 'alle Zeilen mit Insolvenz-Meldung erfuellen E1', 109 + ' von ' + 109, mit103.filter(e1).length + ' von ' + mit103.length, 'dritter Lauf, Beleg q-kuerzel+edgar-8K-1.03');
   var fall = ohne103.filter(function (u) { return !e1(u); }).map(function (u) { return u.reihe + ': ' + (u4[u.reihe] ? u4[u.reihe].grund + ' / Regel ' + u4[u.reihe].regel : '-'); });
-  zahl('E1', 'die acht gehen an Regel 1', 'Regel 1', fall.join('; '), 'Grund und Regel im vierten Lauf');
+  zahl('E1', 'die acht gehen an Regel 1', 'Regel 1', fall.join('; '), 'Grund und Regel im vierten Lauf (Regel Z = Zwilling geht vor)', fall.every(function (x) { return / Regel (1|Z)$/.test(x); }) ? 'ja (Regel 1 oder Z)' : 'nein');
 
   /* ---- E2 ---- */
   var e2 = N.reihen.filter(function (u) { return u.lauf3 && u.lauf3.grund === 'zwangs-delisting' && u.grund === 'spac-ende' && /^name-/.test(u.mantel_merkmal || ''); });
@@ -74,7 +74,7 @@ function main(N, L3, V, PN, Z) {
   /* ---- E6 ---- */
   var s4 = u4.SYMC, s3 = u3.SYMC;
   zahl('E6', 'SYMC: Suchfirma Broadcom im dritten Lauf', 'Broadcom Inc.', s3 ? s3.firma : null, 'dritter Lauf');
-  zahl('E6', 'SYMC im vierten Lauf', 'nicht Broadcom', s4 ? (s4.firma || '(keine Firma)') + ' / ' + s4.grund + ' / ' + s4.beleg : null, 'vierter Lauf');
+  zahl('E6', 'SYMC im vierten Lauf', 'nicht Broadcom', s4 ? (s4.firma || '(keine Firma)') + ' / ' + s4.grund + ' / ' + s4.beleg : null, 'vierter Lauf', s4 && s4.firma !== 'Broadcom Inc.' ? 'ja' : 'nein');
 
   /* ---- E7 ---- */
   var mitBeiden = V.reihen.filter(function (R) { return R.kursFaktor; }), ueber = mitBeiden.filter(function (R) { return R.kursFaktor > 1.5; });
@@ -83,7 +83,7 @@ function main(N, L3, V, PN, Z) {
     'alle Reihen mit beiden Kursen; Teilmengen: Totalverlust streng Lauf 3 ' + teil(function (R) { return u3[R.reihe] && tvIn(u3[R.reihe].grund, STRENG); }) + ', Hauptlesart Lauf 3 ' + teil(function (R) { return u3[R.reihe] && tvIn(u3[R.reihe].grund, HAUPT); })
     + ', Klasse 1-3 ' + teil(function (R) { return k(R.reihe); }) + ', Kurs unter 1 $ roh ' + teil(function (R) { return R.letzterKursRoh < 1; }));
   ['RNVA', 'LFLY', 'CFNB'].forEach(function (r, i) { var R = Rje[r]; zahl('E7', 'roher letzter Kurs ' + r, [0.589, 0.567, 13.3][i], R ? R.letzterKursRoh : null, R ? R.letzterKursRohQuelle + '; bereinigt ' + R.letzterKursArchiv : ''); });
-  zahl('E7', 'Reihen ohne Panel-Zeile (ohnePanelReihe in phase2/t4-panelklasse.json)', 'Zahl nennen', PK.ohnePanelReihe + ' (Panelklasse); hier ohne Panel-Reihe ' + PN.zaehler.ohnePanelReihe + ', ohne Zeilen ' + PN.zaehler.ohneZeilen, '');
+  zahl('E7', 'Reihen ohne Panel-Zeile (ohnePanelReihe in phase2/t4-panelklasse.json)', 'Zahl nennen', PK.ohnePanelReihe + ' (Panelklasse); hier ohne Panel-Reihe ' + PN.zaehler.ohnePanelReihe + ', ohne Zeilen ' + PN.zaehler.ohneZeilen, 'die Reihe ohne Zeilen: ' + Object.keys(PN.je).filter(function (r) { return PN.je[r].zeilen === 0; }).join(' ') + ' (roher Kurs: ' + V.zaehler4.ohneRohKurs + ' ohne)', 'gezaehlt');
 
   /* ---- E8 ---- */
   var unb3 = L3.reihen.filter(function (u) { return u.grund === 'unbekannt' && k(u.reihe); }), unb4 = N.reihen.filter(function (u) { return u.grund === 'unbekannt' && k(u.reihe); });

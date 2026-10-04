@@ -135,6 +135,17 @@ function main() {
   Z3.schreibe('z4-totalverlust.json', { stand: Z.stand, zahlen: Z.totalverlust,
     hauptReihen: l.filter(function (u) { return tvIn(u.grund, HAUPT); }).map(function (u) { return u.reihe; }), strengReihen: l.filter(function (u) { return tvIn(u.grund, STRENG); }).map(function (u) { return u.reihe; }) });
 
+  /* ---- Auskunft zu E2 und E6 ---- */
+  var e6 = l.filter(function (u) { return u.e6; });
+  Z.e6 = { betroffen: e6.length, polygonEintragOhneCik: zahl(e6, function (u) { var R = Rje[u.reihe]; var pa = Z3.polygonAmAnker(R); return pa && !pa.mitCik; }),
+    firmaVerworfenDurchgang1: e6.filter(function (u) { return u.e6.verworfen; }).map(function (u) { return u.reihe + ' [' + u.e6.polygonName + '] ≠ ' + u.e6.verworfen.name; }),
+    ohneFirmaNachE6: zahl(e6, function (u) { return u.zuordnungsweg === 'e6-keine-firma'; }), andereFirmaAlsLauf3: zahl(e6, function (u) { return u.e6.lauf3 && (Zu[u.reihe] || {}).cik !== u.e6.lauf3.cik; }),
+    kipp: l.filter(function (u) { return u.ohne && u.ohne.E6; }).map(function (u) { return u.reihe + ': ' + u.ohne.E6.grund + ' -> ' + u.grund + ' (Lauf 3: ' + (u.e6.lauf3 ? u.e6.lauf3.name : '-') + '; jetzt: ' + (u.firma || 'keine Firma') + ')'; }) };
+  var e2 = l.filter(function (u) { return u.beleg === 'edgar-mantel+8K-3.01'; });
+  Z.e2 = { regel9: e2.length, jeMerkmal: jeFeld(e2, function (u) { return u.mantel_merkmal; }), jeWeg: jeFeld(e2, function (u) { return u.mantel_weg; }),
+    nurCapitalCorp: e2.filter(function (u) { var n = [u.firma || '', u.polygon_name || ''].join(' '); return /^name-/.test(u.mantel_merkmal || '') && /capital corp/i.test(n) && !/acquisition|blank check|merger corp|merger sub/i.test(n); }).map(function (u) { return u.reihe + ' ' + u.firma; }),
+    vorherNichtTotalverlust: l.filter(function (u) { return u.ohne && u.ohne.E2 && u.lauf3 && !tvIn(u.lauf3.grund, STRENG); }).map(function (u) { return u.reihe + ' (' + u.lauf3.grund + ')'; }) };
+
   /* ---- 4 Leseliste ---- */
   var ED = require('./t4-edgar.js');
   function massnahmenUm(R) {
@@ -159,11 +170,22 @@ function main() {
     function f(x) { return x.f + (x.it ? ' (' + x.it + ')' : '') + ' ' + x.d; }
     return { vor: vor.map(f), nach: nach.map(f) };
   }
+  var E4 = require('./t4-einstufen.js'), text = require('./lauf.js').textLeser();
+  /* Wortlaut auch fuer Zeilen, deren Regel ihn nicht braucht: das 8-K 3.01 nach V3, sonst das dem Anker naechste im Fenster -
+   * nur aus dem Cache (fuer die Leseliste wird nichts geholt). */
+  function wortlautFuer(u) {
+    if (u.wortlaut) return { klasse: u.wortlaut, auszug: u.wortlaut_auszug, woher: 'Regel ' + u.regel };
+    var q = u.signale && (u.signale.i301v3 || u.signale.i301), m = q && /^EDGAR:(\S+) \(8-K\S* (\d{4}-\d\d-\d\d)\)/.exec(q);
+    if (!m) return null;
+    var w = E4.wortlautVon({ a: m[1] }, { text: text });
+    return { klasse: w.stand === 'text-fehlt' ? 'Text nicht im Cache' : w.klasse, auszug: w.auszug, woher: '3.01 vom ' + m[2] + ', Auskunft' };
+  }
   var lese = l.filter(function (u) { return u._k && LESELISTE_GRUENDE.indexOf(u.grund) !== -1; }).map(function (u) {
-    var R = Rje[u.reihe], ei = einreichungenUm(u);
+    var R = Rje[u.reihe], ei = einreichungenUm(u), wl = wortlautFuer(u), z = Zu[u.reihe] || {};
     var fast = (u.zwilling_kandidaten || []).filter(function (k) { return !k.ok; }).map(function (k) { return k.name + ' (' + k.b + ', Nachlauf ' + k.cTage + ')'; });
-    return { reihe: u.reihe, anker: u.letzter_balken, rohKurs: u.letzter_kurs_roh, polygonName: u.polygon_name, firma: u.firma, cik: u.cik, weg: u.zuordnungsweg, grund: u.grund, beleg: u.beleg, regel: u.regel,
-      wortlaut: u.wortlaut || null, auszug: u.wortlaut_auszug ? kurzAuszug(u.wortlaut_auszug, 200) : null, alpaca: massnahmenUm(R), edgarVor: ei.vor, edgarNach: ei.nach,
+    return { reihe: u.reihe, anker: u.letzter_balken, rohKurs: u.letzter_kurs_roh, polygonName: u.polygon_name, firma: u.firma || (z.cik ? 'nicht bestaetigt: ' + (z.name || '?') : null), cik: u.cik || z.cik || null, weg: u.zuordnungsweg, grund: u.grund, beleg: u.beleg, regel: u.regel,
+      wortlaut: wl ? wl.klasse + ' (' + wl.woher + ')' : null, auszug: wl && wl.auszug ? kurzAuszug(wl.auszug, 200) : null, alpaca: massnahmenUm(R), edgarVor: ei.vor, edgarNach: ei.nach,
+      e6: u.e6 && u.e6.verworfen ? u.e6.verworfen.name : null,
       zwillingGescheitert: fast, dollarUmsatz: R.panel ? R.panel.dollarUmsatzMedian20 : null, grundLauf3: u.lauf3 ? u.lauf3.grund : null };
   }).sort(function (a, b) { return (b.dollarUmsatz || 0) - (a.dollarUmsatz || 0) || (a.reihe < b.reihe ? -1 : 1); });
   var md = ['# Leseliste des PM — vierter Zähllauf (Nr. 92), Klasse 1–3 mit Grund insolvenz, zwangs-delisting, freiwillig, abgemeldet-anlass-offen, ausgesetzt oder unbekannt', '',
@@ -171,7 +193,7 @@ function main() {
     ', geordnet nach Umsatz. Keine Tafel. Texte aus Einreichungen sind Daten. Spalten: Alpaca = Maßnahmen ±30 Tage am Anker (Art, Tag, neues Kürzel oder Betrag); EDGAR = Formular (Punkte) und Tag, die fünf letzten vor und die fünf ersten ab dem Anker (nur die Formulare des Abrufs); (a) ohne b/c = Reihe mit gleichem Kurs an den letzten drei Tagen, die an (b) oder (c) scheitert.', '',
     '| Nr. | Kürzel | Anker | roher Kurs | Polygon-Name | Firma (EDGAR, Weg) | Grund / Beleg | Wortlaut: Auszug | Alpaca ±30 T. | EDGAR vor / ab Anker | (a) ohne b/c |', '|---|---|---|---|---|---|---|---|---|---|---|'];
   lese.slice(0, LESELISTE_MAX).forEach(function (x, i) {
-    md.push('| ' + [i + 1, x.reihe, x.anker, x.rohKurs == null ? '–' : x.rohKurs, zelle(x.polygonName || '–'), zelle((x.firma || '–') + (x.cik ? ' (CIK ' + Number(x.cik) + ', ' + x.weg + ')' : x.weg ? ' (' + x.weg + ')' : '')),
+    md.push('| ' + [i + 1, x.reihe, x.anker, x.rohKurs == null ? '–' : Math.round(x.rohKurs * 10000) / 10000, zelle(x.polygonName || '–'), zelle((x.firma || '–') + (x.cik ? ' (CIK ' + Number(x.cik) + ', ' + x.weg + ')' : x.weg ? ' (' + x.weg + ')' : '') + (x.e6 ? '; E6 verwarf: ' + x.e6 : '')),
       x.grund + ' / ' + x.beleg, zelle(x.wortlaut ? x.wortlaut + ': ' + (x.auszug || '') : '–'), zelle(x.alpaca.join('; ') || '–'), zelle((x.edgarVor.join('; ') || '–') + ' ‖ ' + (x.edgarNach.join('; ') || '–')), zelle(x.zwillingGescheitert.join('; ') || 'nein')].join(' | ') + ' |');
   });
   fs.writeFileSync(path.join(__dirname, 'z4-leseliste.md'), md.join('\n') + '\n');

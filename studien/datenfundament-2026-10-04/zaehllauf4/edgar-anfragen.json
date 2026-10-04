@@ -1,0 +1,30 @@
+{
+ "obergrenze": 500,
+ "gesamt": 44,
+ "laeufe": [
+  {
+   "skript": "t4-edgar.js",
+   "anfragen": 37,
+   "stand": "2026-10-04T15:23:00.459Z",
+   "fehlversuche": 2,
+   "sperren": 0,
+   "minAbstandGemessenMs": 222
+  },
+  {
+   "skript": "t4-edgar.js",
+   "anfragen": 4,
+   "stand": "2026-10-04T15:23:02.327Z",
+   "fehlversuche": 2,
+   "sperren": 0,
+   "minAbstandGemessenMs": 222
+  },
+  {
+   "skript": "texte.js",
+   "anfragen": 3,
+   "stand": "2026-10-04T15:23:39.934Z",
+   "fehlversuche": 0,
+   "sperren": 0,
+   "minAbstandGemessenMs": 233
+  }
+ ]
+}

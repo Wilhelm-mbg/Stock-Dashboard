@@ -1,0 +1,299 @@
+{
+ "stand": "2026-10-04T15:26:26.328Z",
+ "stimmen": 17,
+ "von": 31,
+ "zahlen": [
+  {
+   "nr": "V9",
+   "was": "Reihen mit Zwilling nur nach Bedingung (a) (Zwilling laeuft mindestens einen Tag weiter)",
+   "soll": 310,
+   "ist": 374,
+   "stimmt": "nein",
+   "wie": "z4-panel.json: Kandidat mit a und Nachlauf >= 1"
+  },
+  {
+   "nr": "V9",
+   "was": "... davon mit Klasse 1-3",
+   "soll": 37,
+   "ist": 43,
+   "stimmt": "nein",
+   "wie": "phase2/t4-panelklasse.json k123 > 0"
+  },
+  {
+   "nr": "V9",
+   "was": "doppelte Panel-Zeilen (nur a)",
+   "soll": 193581,
+   "ist": 227431,
+   "stimmt": "nein",
+   "wie": "Tage der Reihe, an denen der Zwilling denselben rohen Schluss hat; Zeilen der Reihen insgesamt: 238197"
+  },
+  {
+   "nr": "V9",
+   "was": "Reihen mit Zwilling nach a, b und c",
+   "soll": 308,
+   "ist": 368,
+   "stimmt": "nein",
+   "wie": "Regel Z der Einstufung"
+  },
+  {
+   "nr": "V9",
+   "was": "DTC -> SBDS scheitert an (b) mit 4 von 60",
+   "soll": "SBDS 4/60",
+   "ist": "SBDS 4/60 Nachlauf 175",
+   "stimmt": "ja",
+   "wie": "Kandidaten von DTC"
+  },
+  {
+   "nr": "V9",
+   "was": "ACPW -> PIOI: Zwilling laeuft nur einen Tag weiter",
+   "soll": "PIOI Nachlauf 1",
+   "ist": "PIOI 60/60 Nachlauf 1",
+   "stimmt": "ja",
+   "wie": "Kandidaten von ACPW"
+  },
+  {
+   "nr": "V9",
+   "was": "die schwaechsten echten Paare haben 46 bis 53 von 60",
+   "soll": "46-53",
+   "ist": "45,45,46,47,47",
+   "stimmt": "nein",
+   "wie": "gleiche Tage der fuenf schwaechsten Paare mit 60 Tagen"
+  },
+  {
+   "nr": "V9",
+   "was": "davon tragen einen anderen Grund als Umbenennung (dritter Lauf)",
+   "soll": 109,
+   "ist": 126,
+   "stimmt": "nein",
+   "wie": "Menge nur (a); mit a, b, c: 123"
+  },
+  {
+   "nr": "V9",
+   "was": "standen im dritten Lauf als Totalverlust (Hauptlesart)",
+   "soll": 14,
+   "ist": 18,
+   "stimmt": "nein",
+   "wie": "Menge nur (a); mit a, b, c: 18"
+  },
+  {
+   "nr": "V9",
+   "was": "in der alten Tafel als Totalverlust (Hauptlesart)",
+   "soll": 32,
+   "ist": 41,
+   "stimmt": "nein",
+   "wie": "Menge nur (a); mit Klasse 1-3: SLW SYMC UBNT"
+  },
+  {
+   "nr": "V9",
+   "was": "in der alten Tafel weitere nur in der strengen Lesart",
+   "soll": 29,
+   "ist": 36,
+   "stimmt": "nein",
+   "wie": "Menge nur (a)"
+  },
+  {
+   "nr": "V9",
+   "was": "SLW und SYMC mit Klasse 1-3 unter den alten Totalverlusten",
+   "soll": [
+    "SLW",
+    "SYMC"
+   ],
+   "ist": [
+    "SLW",
+    "SYMC"
+   ],
+   "stimmt": "ja",
+   "wie": ""
+  },
+  {
+   "nr": "E1",
+   "was": "Zeilen der Regel 0 ohne Insolvenz-Meldung",
+   "soll": 22,
+   "ist": 22,
+   "stimmt": "ja",
+   "wie": "dritter Lauf, Beleg q-kuerzel"
+  },
+  {
+   "nr": "E1",
+   "was": "davon fallen aus Regel 0 (Umbenennungen)",
+   "soll": [
+    "ARQ",
+    "ARQQ",
+    "CCAQ",
+    "ELIQ",
+    "INFQ",
+    "IONQ",
+    "NHIQ",
+    "TAIQ"
+   ],
+   "ist": [
+    "ARQ",
+    "ARQQ",
+    "CCAQ",
+    "ELIQ",
+    "INFQ",
+    "IONQ",
+    "NHIQ",
+    "TAIQ"
+   ],
+   "stimmt": "ja",
+   "wie": "neues Kuerzel nach E1 geprueft"
+  },
+  {
+   "nr": "E1",
+   "was": "alle Zeilen mit Insolvenz-Meldung erfuellen E1",
+   "soll": "109 von 109",
+   "ist": "109 von 109",
+   "stimmt": "ja",
+   "wie": "dritter Lauf, Beleg q-kuerzel+edgar-8K-1.03"
+  },
+  {
+   "nr": "E1",
+   "was": "die acht gehen an Regel 1",
+   "soll": "Regel 1",
+   "ist": "ADES: umbenennung-ticker / Regel 1; CCCX: umbenennung-ticker / Regel 1; CENH: umbenennung-ticker / Regel 1; DMYI: umbenennung-ticker / Regel Z; IPOD: umbenennung-ticker / Regel 1; NH: umbenennung-ticker / Regel 1; TAIT: umbenennung-ticker / Regel 1; TLGA: umbenennung-ticker / Regel Z",
+   "stimmt": "ja (Regel 1 oder Z)",
+   "wie": "Grund und Regel im vierten Lauf (Regel Z = Zwilling geht vor)"
+  },
+  {
+   "nr": "E2",
+   "was": "Zwangs-Delistings, die Maentel mit anderer Kennziffer sind",
+   "soll": 21,
+   "ist": 15,
+   "stimmt": "nein",
+   "wie": "dritter Lauf zwangs-delisting -> vierter Lauf spac-ende ueber den Mantel-Namen; Namen: ATEK CHPM CPTK FLDD GSD HCCH ITAQ MEOA NVAC OTEC PORT RCFA SGII WAVS WEL"
+  },
+  {
+   "nr": "E3",
+   "was": "Ruege 31 bis 180 Tage vor dem Anker (dritter Lauf, Regel 11)",
+   "soll": 50,
+   "ist": 50,
+   "stimmt": "ja",
+   "wie": "Beleg edgar-8K-3.01-ruege, i301v3_tage < -30"
+  },
+  {
+   "nr": "E3",
+   "was": "... davon ohne Formular 25-NSE am Anker",
+   "soll": 42,
+   "ist": 42,
+   "stimmt": "ja",
+   "wie": "signale.f25nse leer"
+  },
+  {
+   "nr": "E4",
+   "was": "Zeilen mit unklarem Wortlaut (Regel 11, Zeile 5)",
+   "soll": 30,
+   "ist": 30,
+   "stimmt": "ja",
+   "wie": "dritter Lauf, Beleg edgar-8K-3.01"
+  },
+  {
+   "nr": "E5",
+   "was": "abgemeldet, Anlass offen (dritter Lauf)",
+   "soll": 370,
+   "ist": 370,
+   "stimmt": "ja",
+   "wie": ""
+  },
+  {
+   "nr": "E5",
+   "was": "... davon Formular 25 mehr als 30 Tage vom Anker",
+   "soll": 61,
+   "ist": 61,
+   "stimmt": "ja",
+   "wie": "Datum der Zeile = Tag des Formulars 25"
+  },
+  {
+   "nr": "E6",
+   "was": "SYMC: Suchfirma Broadcom im dritten Lauf",
+   "soll": "Broadcom Inc.",
+   "ist": "Broadcom Inc.",
+   "stimmt": "ja",
+   "wie": "dritter Lauf"
+  },
+  {
+   "nr": "E6",
+   "was": "SYMC im vierten Lauf",
+   "soll": "nicht Broadcom",
+   "ist": "Gen Digital Inc. / umbenennung-ticker / zwilling-im-archiv",
+   "stimmt": "ja",
+   "wie": "vierter Lauf"
+  },
+  {
+   "nr": "E7",
+   "was": "letzter Kurs weicht um mehr als das 1,5-Fache vom rohen ab",
+   "soll": "63 von 958",
+   "ist": "127 von 5049",
+   "stimmt": "nein",
+   "wie": "alle Reihen mit beiden Kursen; Teilmengen: Totalverlust streng Lauf 3 37 von 1406, Hauptlesart Lauf 3 24 von 716, Klasse 1-3 3 von 447, Kurs unter 1 $ roh 61 von 938"
+  },
+  {
+   "nr": "E7",
+   "was": "roher letzter Kurs RNVA",
+   "soll": 0.589,
+   "ist": 0.589,
+   "stimmt": "ja",
+   "wie": "panel:RNVA 2017-10-24; bereinigt 58900000000"
+  },
+  {
+   "nr": "E7",
+   "was": "roher letzter Kurs LFLY",
+   "soll": 0.567,
+   "ist": 0.567,
+   "stimmt": "ja",
+   "wie": "panel:LFLY 2025-01-16; bereinigt 283.5"
+  },
+  {
+   "nr": "E7",
+   "was": "roher letzter Kurs CFNB",
+   "soll": 13.3,
+   "ist": 13.3,
+   "stimmt": "ja",
+   "wie": "panel:CFNB 2017-11-10; bereinigt 665"
+  },
+  {
+   "nr": "E7",
+   "was": "Reihen ohne Panel-Zeile (ohnePanelReihe in phase2/t4-panelklasse.json)",
+   "soll": "Zahl nennen",
+   "ist": "0 (Panelklasse); hier ohne Panel-Reihe 0, ohne Zeilen 1",
+   "stimmt": "gezaehlt",
+   "wie": "die Reihe ohne Zeilen: AEBIV (roher Kurs: 1 ohne)"
+  },
+  {
+   "nr": "E8",
+   "was": "Klasse 1-3 mit Grund unbekannt im dritten Lauf",
+   "soll": 18,
+   "ist": 18,
+   "stimmt": "ja",
+   "wie": ""
+  },
+  {
+   "nr": "E8",
+   "was": "nach V9 bleiben (Namen)",
+   "soll": [
+    "DISCA",
+    "DISCK",
+    "DWDP",
+    "FRC",
+    "LGF",
+    "MHFI",
+    "QVCA",
+    "SBNY",
+    "YHOO"
+   ],
+   "ist": [
+    "BCR",
+    "CHL",
+    "DISCA",
+    "DISCK",
+    "FRC",
+    "LGF",
+    "QVCA",
+    "SBNY",
+    "YHOO"
+   ],
+   "stimmt": "nein",
+   "wie": "vierter Lauf, alle Regeln"
+  }
+ ]
+}

@@ -1,0 +1,6 @@
+eingestuft 5050 offen 0 | Wortlaut-Fassung 2 | Textbedarf 0
+Grund: {"abgemeldet-anlass-offen":332,"uebernahme":1628,"umbenennung-ticker":1456,"zwangs-delisting":280,"spac-ende":368,"freiwillig":108,"unbekannt":224,"fusion-aktientausch":300,"insolvenz":332,"ausgesetzt":22}
+Regel: {"0":123,"1":1088,"2":922,"3":300,"4":209,"5":663,"6":9,"7":286,"8":1,"9":78,"10":22,"11":430,"12":7,"13":308,"14":12,"15":224,"Z":368}
+anderer Grund ohne Aenderung: {"V9":121,"E1":6,"E2":26,"E3":31,"E4":24,"E5":60,"E6":16,"E7":5}
+Gegenprobe alle aus = Lauf 3: 5050 gleich, 0 anders 
+Ausloeser Durchgang 2 anders: 2 von 215
