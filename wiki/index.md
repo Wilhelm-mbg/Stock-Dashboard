@@ -29,7 +29,7 @@ Die Gruppe steht als `tags:` im Kopf jeder Seite; die Farbgruppen des Obsidian-G
 | Seite | Beantwortet |
 |---|---|
 | [belegstand.md](belegstand.md) | Was ist belegt, was widerlegt, was offen? **Zuerst lesen.** |
-| [offene-auftraege.md](offene-auftraege.md) | Was gerade ansteht, in Reihenfolge |
+| [offene-auftraege.md](offene-auftraege.md) | Was gerade ansteht, in Reihenfolge — erledigte Zeilen bis 04.10.2026 im Wortlaut: [archiv/offene-auftraege-bis-2026-10-04.md](archiv/offene-auftraege-bis-2026-10-04.md) |
 | [entscheide.md](entscheide.md) | Wilhelms Entscheide, die weitergelten — und was noch offen ist |
 | [erledigt.md](erledigt.md) | Register abgeschlossener Aufträge mit Fundstelle |
 | [betrieb.md](betrieb.md) | Orte, Rollen, Aufträge und Budgets, Release, lange Läufe |
