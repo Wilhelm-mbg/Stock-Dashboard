@@ -22013,6 +22013,117 @@ console.log('92) Der Massstab: jedes Buch gegen den S&P 500');
   ok(rot92 === g92, '92.x alle Gegenproben dieses Abschnitts schlagen an', rot92 + ' von ' + g92);
 })();
 
+
+/* ================= 93) Die Automatik stellt nie auf Kapitulation (Auftrag Nr. 73 Teil 2, 04.10.2026) =====
+ *
+ * Wilhelms Entscheid: abgeschaltet, nur von Hand wieder einschaltbar. Zwei Wege konnten
+ * den Modus ohne Hand-Entscheid umstellen (Fund von Nr. 71): die Weissliste fuer
+ * empfehlung.json und die Kandidaten des Autopiloten. Beide fuehren ihn nicht mehr;
+ * eine Empfehlung, die ihn verlangt, wird ganz verworfen und im Journal vermerkt.
+ * Geprueft wird am VERHALTEN: die Funktionen werden aus depot.js geschnitten und mit
+ * Attrappen gefahren. Jede Aussage hat ihre Gegenprobe am alten Stand der Funktion. */
+console.log('93) Die Automatik stellt nie auf Kapitulation');
+(function () {
+  var g93 = 0, rot93 = 0;
+  function gegen93(was, ergebnis) { g93++; if (ergebnis) rot93++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  var dep93 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var html93 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  /* Umgebung: alles, was die geschnittene Funktion nicht selbst kennt, ist eine Attrappe. */
+  function umgebung(fest) {
+    return new Proxy(fest, {
+      has: function () { return true; },
+      get: function (t, k) {
+        if (k === Symbol.unscopables) return undefined;
+        if (k in t) return t[k];
+        if (k in globalThis) return globalThis[k];
+        return function () { return {}; };
+      }
+    });
+  }
+  function bauen(quelle, name, fest) { return new Function('env', 'with (env) { ' + quelle + '\n return ' + name + '; }')(umgebung(fest)); }
+  function bestand(mode) {
+    return { intraday: { mode: mode, interval: '5m', period: 20, autoTune: true }, trades: [], tuneLog: [], lastTuneId: null };
+  }
+
+  /* ---- Weg 1: empfehlung.json ---- */
+  var q1 = dep93.slice(dep93.indexOf('  var AUTOMATIK_NIE = {'), dep93.indexOf('  function renderTune() {'));
+  ok(q1.length > 3000 && /mode: \['rsi2seit'\],/.test(q1), '93.1 die Weissliste fuer empfehlung.json fuehrt als Modus nur noch rsi2seit', q1.length);
+  async function weg1(quelle, rec) {
+    var D = bestand('rsi2seit');
+    var f = bauen(quelle, 'checkRemoteRec', { D: D,
+      window: { api: { readRecommendation: async function () { return { ok: true, body: JSON.stringify(rec) }; } } },
+      automatikDarf: function () { return true; }, HAND_LABEL: {}, istMess: function () { return true; },
+      equityNow: function () { return 100000; }, save: async function () { }, document: { getElementById: function () { return null; } } });
+    await f();
+    return D;
+  }
+  var recK = { quelle: 'claude', id: 'k1', begruendung: 'Probe', intraday: { mode: 'kapitulation', interval: '60m' } };
+  var recR = { quelle: 'claude', id: 'r1', begruendung: 'Probe', intraday: { mode: 'rsi2seit', interval: '60m' } };
+  var altQ1 = q1.replace("mode: ['rsi2seit'],", "mode: ['rsi2seit', 'kapitulation'],").replace('var nieT = automatikVerwirft(it.mode);', 'var nieT = null;');
+  offeneProben.push((async function () {
+    var a = await weg1(q1, recK);
+    ok(a.intraday.mode === 'rsi2seit' && a.intraday.interval === '5m' && a.tuneLog.length === 1 && a.tuneLog[0].quelle === 'verworfen' &&
+       /verworfen/.test(a.tuneLog[0].applied[0]) && /zurückgewiesen/.test(a.tuneLog[0].applied[0]) && /nur von Hand/.test(a.tuneLog[0].applied[0]) &&
+       a.lastTuneId === 'k1' && !a.tuneLog[0].konfigVorher,
+       '93.1 empfehlung.json verlangt Kapitulation: nichts wird uebernommen (auch der Zeitrahmen nicht), das Journal nennt den Grund',
+       a.tuneLog[0] ? a.tuneLog[0].applied[0] : 'kein Eintrag');
+    var b = await weg1(q1, recR);
+    ok(b.intraday.interval === '60m' && b.tuneLog.length === 1 && b.tuneLog[0].quelle !== 'verworfen',
+       '93.1 eine Empfehlung OHNE diesen Modus wird weiter uebernommen (der Weg selbst ist nicht abgeklemmt)');
+    var c = await weg1(altQ1, recK);
+    gegen93('am alten Stand (Weissliste mit beiden Modi, ohne Verwerfen) stellt dieselbe Empfehlung auf Kapitulation um',
+      c.intraday.mode === 'kapitulation' && c.intraday.interval === '60m');
+    ok(rot93 === g93, '93.x alle Gegenproben dieses Abschnitts schlagen an', rot93 + ' von ' + g93);
+  })());
+
+  /* ---- Weg 2: Autopilot ---- */
+  var q2 = dep93.slice(dep93.indexOf('  function applyCentralRec(r, quelle) {'), dep93.indexOf('\n  }\n', dep93.indexOf('  function applyCentralRec(r, quelle) {')) + 5);
+  var qNie = dep93.slice(dep93.indexOf('  var AUTOMATIK_NIE = {'), dep93.indexOf('  var TUNE_ALLOW = {'));
+  function weg2(quelle, r, wer, mode) {
+    var D = bestand(mode || 'rsi2seit');
+    var f = bauen(qNie + quelle, 'applyCentralRec', { D: D, automatikDarf: function () { return true; }, HAND_LABEL: {}, WINDOW_NAMES: {},
+      Q: { PROFILES: {} }, setupName: function (m) { return m; }, setupFromMode: function (m) { return { setup: 'umkehr', trigger: m }; } });
+    var erg = null;
+    try { erg = f(r, wer); } catch (e) { erg = 'Abbruch: ' + e.message; }
+    return { D: D, erg: erg };
+  }
+  var rK = { modeKey: 'kapitulation', modeName: 'Kapitulations-Dip', interval: '60m', period: 20, confirmBps: 15, lineType: 'ema', window: 'all' };
+  var p = weg2(q2, rK, 'pilot');
+  ok(p.D.intraday.mode === 'rsi2seit' && p.D.intraday.interval === '5m' && p.D.tuneLog.length === 1 && p.D.tuneLog[0].quelle === 'verworfen' &&
+     Array.isArray(p.erg) && /verworfen/.test(p.erg[0]) && /Autopilot/.test(p.D.tuneLog[0].txt),
+     '93.2 der Autopilot spielt eine (auch frueher vorgemerkte) Kapitulations-Empfehlung nicht ein: nichts geaendert, Journal nennt den Grund',
+     String(p.erg).slice(0, 90));
+  var pKi = weg2(q2, { modeKey: 'ki', kiBase: 'kapitulation', interval: '60m' }, 'pilot');
+  ok(pKi.D.intraday.mode === 'rsi2seit' && pKi.D.tuneLog[0] && pKi.D.tuneLog[0].quelle === 'verworfen',
+     '93.2 … auch nicht ueber einen KI-Kandidaten mit diesem Basis-Modus');
+  var h = weg2(q2, rK, 'manuell');
+  ok(h.D.intraday.mode === 'kapitulation', '93.2 von Hand angewendet bleibt die Wahl frei (quelle "manuell")', String(h.erg).slice(0, 60));
+  var altQ2 = q2.replace("var nieA = quelle === 'manuell' ? null : automatikVerwirft(mKey);", 'var nieA = null;');
+  gegen93('am alten Stand stellt der Autopilot mit derselben Empfehlung auf Kapitulation um',
+    altQ2 !== q2 && weg2(altQ2, rK, 'pilot').D.intraday.mode === 'kapitulation');
+  /* Kandidaten der Nacht: labModes bleibt Nachschlagewerk, labCompute filtert. */
+  var qLab = dep93.slice(dep93.indexOf('  function labModes(cfg) {'), dep93.indexOf('  /** Walk-Forward über alle Modi'));
+  var labModes = bauen(qNie + qLab, 'labModes', {});
+  var nie = bauen(qNie, 'automatikVerwirft', {});
+  var liste = labModes({ mode: 'rsi2seit', scalpSL: 20, exitStyle: 'laufen', channel: true });
+  var kand = liste.filter(function (m) { return !nie(m.key); });
+  ok(liste.some(function (m) { return m.key === 'kapitulation'; }) && !kand.some(function (m) { return m.key === 'kapitulation'; }) &&
+     kand.some(function (m) { return m.key === 'rsi2seit'; }) && kand.length === liste.length - 1 &&
+     /var MODES = labModes\(cfg\)\.filter\(function \(m\) \{ return !automatikVerwirft\(m\.key\); \}\);/.test(dep93),
+     '93.2 Waechter-Modus: der Kapitulations-Dip tritt nachts nicht mehr als Kandidat an; rsi2seit und seine Haltedauern bleiben',
+     kand.map(function (m) { return m.key; }).join(', '));
+  gegen93('ohne den Filter stuende er weiter in der Kandidatenliste', liste.some(function (m) { return m.key === 'kapitulation'; }));
+
+  /* ---- Was bleiben muss ---- */
+  ok(/key: 'kapitulation', name: 'Kapitulations-Dip', pauseKey: 'edgePauseKapi'/.test(dep93) && labModes({ mode: 'kapitulation', scalpSL: 20 }).some(function (m) { return m.key === 'kapitulation'; }) &&
+     /MODESL\.push\(\{ key: 'kapitulation'/.test(dep93),
+     '93.3 der Edge-Waechter fuer den von Hand eingeschalteten Arm (EDGE_ARME, edgePauseKapi) und der Modus selbst bleiben');
+  var tit = /<label title="([^"]*)">Empfehlungen übernehmen/.exec(html93);
+  ok(tit && /nur auf RSI\(2\) im Seitwärtskanal/.test(tit[1]) && /auch nicht auf den Kapitulations-Dip/.test(tit[1]) &&
+     /wird ganz verworfen und mit Grund im Experiment-Journal vermerkt/.test(tit[1]) && !/zwischen den beiden/.test(tit[1]),
+     '93.3 der Titel an "Empfehlungen uebernehmen" sagt, was gilt');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

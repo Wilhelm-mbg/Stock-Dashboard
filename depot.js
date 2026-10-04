@@ -1158,13 +1158,29 @@
   var WINDOW_NAMES = { all: 'ganzer Handelstag', open2: '15:30–17:30 Uhr', open4: '15:30–19:30 Uhr', close2: '20–22 Uhr' };
 
   /* ================= Auto-Tuning (empfehlung.json von Claude) ================= */
+  /* DIE AUTOMATIK STELLT NIE AUF DIESE MODI (Wilhelms Entscheid, Auftrag Nr. 73,
+   * 04.10.2026): abgeschaltet, nur von Hand wieder einschaltbar. Das gilt fuer BEIDE
+   * Wege, auf denen der Modus ohne Hand-Entscheid wechseln konnte - empfehlung.json
+   * (checkRemoteRec) und den Autopiloten (labCompute -> pilotAnwenden ->
+   * applyCentralRec). Eine Empfehlung, die einen solchen Modus verlangt, wird GANZ
+   * verworfen und mit Grund im Journal vermerkt. Unberuehrt bleiben die Wahl von Hand
+   * und der Edge-Waechter fuer einen von Hand eingeschalteten Arm (EDGE_ARME). */
+  var AUTOMATIK_NIE = {
+    kapitulation: 'Kapitulations-Dip (Neumessung 03.10.2026: in der behaupteten Größe zurückgewiesen; abgeschaltet, nur von Hand wieder einschaltbar)'
+  };
+  function automatikVerwirft(mode) {
+    return Object.prototype.hasOwnProperty.call(AUTOMATIK_NIE, String(mode)) ? AUTOMATIK_NIE[String(mode)] : null;
+  }
+  function verworfenVermerken(id, grund, txt) {
+    if (!D.tuneLog) D.tuneLog = [];
+    D.tuneLog.unshift({ id: id, at: Date.now(), quelle: 'verworfen', applied: [grund], txt: txt });
+    if (D.tuneLog.length > 60) D.tuneLog = D.tuneLog.slice(0, 60);
+  }
   var TUNE_ALLOW = {
-    /* Die Liste enthielt ausschliesslich die inzwischen widerlegten Modi - eine
-     * uebernommene Empfehlung konnte die Strategie also nur VON der gemessenen Kante
-     * WEG schalten, nie zu ihr hin. Der Handels-Modus ist die eine Einstellung, die
-     * eine Messung tragen muss; die Automatik darf ihn nur noch zwischen den beiden
-     * gemessenen Kanten bewegen (UI-Audit 21.08.2026). */
-    mode: ['rsi2seit', 'kapitulation'],
+    /* Der Handels-Modus ist die eine Einstellung, die eine Messung tragen muss. Bis
+     * zum 04.10.2026 durfte die Automatik ihn zwischen zwei Modi bewegen; der zweite
+     * ist neu gemessen und zurueckgewiesen (AUTOMATIK_NIE) - es bleibt einer. */
+    mode: ['rsi2seit'],
     interval: ['1m', '5m', '15m', '60m'],
     period: [9, 20, 50],
     confirmBps: [5, 15, 30],
@@ -1186,6 +1202,19 @@
       var vorher = JSON.parse(JSON.stringify(D.intraday));
       var applied = [];
       var it = rec.intraday || {};
+      /* Ganz verwerfen, nicht nur den Modus auslassen: die uebrigen Felder sind fuer
+       * den verlangten Modus gedacht, und ein halb uebernommener Satz waere eine
+       * Konfiguration, die niemand gemessen hat. */
+      var nieT = automatikVerwirft(it.mode);
+      if (nieT) {
+        var grundT = 'Empfehlung verworfen – sie verlangt den Modus ' + nieT + '. Nichts übernommen.';
+        D.lastTune = { id: rec.id, at: Date.now(), txt: String(rec.begruendung || '').slice(0, 300), applied: [grundT] };
+        verworfenVermerken(rec.id, grundT, String(rec.begruendung || '').slice(0, 300));
+        await save();
+        renderTune();
+        renderTuneLog();
+        return;
+      }
       var gesperrtT = [];
       Object.keys(TUNE_ALLOW).forEach(function (k) {
         if (it[k] === undefined) return;
@@ -5056,7 +5085,10 @@
       var cfg = D.intraday;
       var intervals = ld.intervals;
       var data = ld.data;
-      var MODES = labModes(cfg);
+      /* labModes bleibt das NACHSCHLAGEWERK aller Modi (der Filter-Check liest daraus
+       * auch einen von Hand gewaehlten Modus). Als KANDIDAT der Nacht tritt ein Modus,
+       * auf den die Automatik nie stellt, nicht mehr an. */
+      var MODES = labModes(cfg).filter(function (m) { return !automatikVerwirft(m.key); });
       // KI-Vorschlag der letzten Nacht: laeuft als markierter Kandidat mit - gemessen wie
       // alle anderen, mit festen Parametern und nur auf seinem eigenen Zeitrahmen.
       var entd = (D.autoOpt || {}).entdeckt;
@@ -5469,6 +5501,15 @@
     // Der 'breakout'-Kandidat wurde mit dem eingestellten Ausstiegsstil GEMESSEN (labModes) –
     // beim Anwenden muss derselbe Stil gelten (Blitz/kurz laufen als mode 'waves').
     if (mKey === 'breakout' && (D.intraday.exitStyle === 'blitz' || D.intraday.exitStyle === 'kurz')) mKey = 'waves';
+    /* Die Automatik stellt nie auf einen abgeschalteten Modus (AUTOMATIK_NIE) - auch
+     * nicht ueber eine Empfehlung, die schon vor dieser Regel vorgemerkt war. Von
+     * Hand ('manuell') bleibt die Wahl frei. */
+    var nieA = quelle === 'manuell' ? null : automatikVerwirft(mKey);
+    if (nieA) {
+      var grundA = 'Empfehlung verworfen – sie verlangt den Modus ' + nieA + '. Nichts übernommen.';
+      verworfenVermerken('verworfen-' + Date.now(), grundA, 'Quelle: ' + (quelle === 'pilot' ? 'Autopilot' : String(quelle)) + '.');
+      return [grundA];
+    }
     set('mode', mKey, 'Setup → ' + setupName(mKey, r.channel !== false));
     var stZ = setupFromMode(mKey);
     D.intraday.setup = stZ.setup; D.intraday.trigger = stZ.trigger;

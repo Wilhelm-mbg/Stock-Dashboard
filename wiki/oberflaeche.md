@@ -237,8 +237,11 @@ aus, einmalige Sicherung, von Hand wieder einschaltbar. *Fundstelle: `uebergabe/
   Regime-Schalter (`#idRegime`), Hand-Sperren und offene Positionen bleiben unberührt.
 - **Sperrklinke:** test-v6 Abschnitt 91 — kein sichtbarer Text (alle Wurzel-`.js` und `index.html`) nennt für die Kapitulation
   ein t ab 3 oder eines der vier verbotenen Wörter; die Leser der Kette sind aufgezählt, ein neuer macht rot.
-- **Nicht umgestellt:** die Scoreboard-Zeile (altes Protokoll) und zwei Automatik-Wege, die den Modus selbst wählen dürfen
-  (`TUNE_ALLOW.mode`, Wächter-Modus des Autopiloten) — eigener Entscheid nötig.
+- **Automatik (seit Auftrag Nr. 73, 04.10.2026):** sie stellt nie auf Kapitulation. `AUTOMATIK_NIE` in `depot.js`:
+  `TUNE_ALLOW.mode` führt nur noch `rsi2seit`, der Autopilot nimmt den Modus nachts nicht mehr als Kandidaten, und eine
+  Empfehlung, die ihn verlangt (auch eine früher vorgemerkte), wird ganz verworfen und im Experiment-Journal vermerkt
+  (`quelle: 'verworfen'`). Die Wahl von Hand und der Edge-Wächter für den von Hand eingeschalteten Arm bleiben (test-v6 Abschnitt 93).
+- **Nicht umgestellt:** die Scoreboard-Zeile (altes Protokoll, Etikett „Zusatz-Standbein") und die Erklärtexte in `app-shell.js`.
 
 ## 6b. Der Maßstab: jedes Buch gegen den S&P 500 (seit 04.10.2026, Auftrag Nr. 73)
 
