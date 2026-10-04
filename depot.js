@@ -3473,7 +3473,7 @@
 
     var dayDelta = D.dayStartEq > 0 ? (eq / D.dayStartEq - 1) * 100 : 0;
     document.getElementById('depotStats').innerHTML =
-      tile('Depotwert', U.money(eq), null, U.signTxt(pnlTotal / START_CAPITAL * 100, ' %') + ' seit Start', pnlTotal) +
+      tile('Depotwert', U.money(eq), null, U.signTxt(window.Massstab.prozent(eq, START_CAPITAL), ' %') + ' seit Start', pnlTotal) +
       tile('Cash', U.money(D.cash), null) +
       tile('In Scheinen', U.money(invested), null, eq > 0 ? Math.round(invested / eq * 100) + ' % vom Depot' : null, 0) +
       tile('Gesamt-P/L', U.signTxt(pnlTotal, ' $'), pnlTotal, 'heute ' + U.signTxt(dayDelta, ' %'), dayDelta) +
@@ -3864,6 +3864,41 @@
    *  zwei Staende nebeneinander stehen.
    *  Ist die Strategie AUS, steht hier eine Zeile und ein Weg dorthin: Kennzahlen
    *  eines Buches, das gerade nicht handelt, sagen nichts ueber heute. */
+  /* ---- Der Massstab (Auftrag Nr. 73, 04.10.2026): jedes Buch gegen den S&P 500 ----
+   * Gerechnet wird in massstab.js - hier steht KEINE Prozentrechnung fuer ein Buch
+   * mehr, nur die Versorgung mit Daten. Momentum und Drift liefert mfdepot.js (dort
+   * liegt der Stand des letzten Takts); das Intraday-Depot hat keinen Marktstand im
+   * Verlauf und bekommt ihn aus den SPY-Tageskursen (unbereinigt, wie das Depot
+   * selbst handelt). Die Reihe wird hoechstens alle 30 Minuten geholt; bis sie da
+   * ist, steht "Markt: noch kein Stand" - keine Null. */
+  var Massstab = window.Massstab;
+  var MARKT_SPY = null, marktSpyAt = 0;
+  function buchVergleich(feld) {
+    return (window.MFDepot && window.MFDepot.vergleich) ? window.MFDepot.vergleich(feld) : null;
+  }
+  function marktSpyLaden() {
+    if (Date.now() - marktSpyAt < 30 * 60000) return;
+    marktSpyAt = Date.now();
+    getHistory('SPY', '2y').then(function (h) {
+      if (!h || !h.length) return;
+      MARKT_SPY = h;
+      renderIntradayKarte();
+      renderBuecherVerlauf();
+    }).catch(function () { });
+  }
+  /* Der juengste Punkt ist der Stand von JETZT (equityNow) - dieselbe Zahl, die auf
+   * der Karte steht. D.equityHist reicht nur etwa zwei Wochen zurueck (2000 Punkte im
+   * 10-Minuten-Takt); der Vergleich beginnt deshalb am ersten Punkt dieser Reihe und
+   * sagt das dazu, statt "seit Depot-Start" zu behaupten. */
+  function intradayVerlauf(marktReihe) {
+    return Massstab.mitMarkt((D.equityHist || []).concat([[Date.now(), equityNow()]]), marktReihe,
+      'intraday', 'startI', START_CAPITAL);
+  }
+  function intradayVergleich() {
+    return Massstab.vergleich(intradayVerlauf(MARKT_SPY), 'intraday', 'startI',
+      { an: !!(D.intraday && D.intraday.enabled) });
+  }
+
   function renderIntradayKarte() {
     var el = document.getElementById('buchIntradayKopf');
     if (!el) return;
@@ -3871,6 +3906,8 @@
       el.innerHTML = '<div class="buch-aus">Intraday-Strategie aus – einschalten unter <b>Regeln → Einstellungen</b>.</div>';
       return;
     }
+    if (!MARKT_SPY) marktSpyLaden();
+    var vI = intradayVergleich();
     var eq = equityNow();
     var pnl = eq - START_CAPITAL;
     var cls = pnl >= 0 ? 'pos' : 'neg';
@@ -3883,8 +3920,10 @@
     el.innerHTML =
       '<div class="buch-wert ' + cls + '">' + U.money(eq) + '</div>' +
       '<div class="buch-erg ' + cls + '">' + U.signTxt(Math.round(pnl * 100) / 100, ' $') +
-        ' · ' + pz1(pnl / START_CAPITAL * 100) + '</div>' +
+        ' · ' + pz1(Massstab.prozent(eq, START_CAPITAL)) + '</div>' +
       '<dl class="buch-fakten">' +
+        '<dt>Gegen den Markt</dt><dd>' + U.esc(Massstab.langText('Depot', vI, pz1)) + (vI.ok
+          ? '<br><span style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(Massstab.HINWEIS) + '</span>' : '') + '</dd>' +
         '<dt>Positionen</dt><dd>' + D.positions.length + '</dd>' +
         '<dt>Status</dt><dd>handelt selbst</dd>' +
         '<dt>Nächster Takt</dt><dd>wartet auf Signal</dd>' +
@@ -3936,29 +3975,36 @@
     var svg = document.getElementById('buecherChart');
     var leg = document.getElementById('buecherLegende');
     if (!svg) return;
-    var mv = D.mfVerlauf || [];
-    function reihe(feld, startFeld, buch) {
-      var pts = [];
-      mv.forEach(function (p) {
-        var st = p[startFeld] || (buch && buch.start) || null;
-        if (p[feld] == null || !st) return;
-        pts.push([p.t, (p[feld] / st - 1) * 100]);
-      });
-      return pts;
-    }
-    var serien = [], aus = [];
-    if (D.momentumAn) serien.push({ name: 'Momentum-Buch', short: 'Momentum', color: 'var(--series)', pts: reihe('momentum', 'startM', D.mfBuch) });
-    else aus.push('Momentum-Buch');
-    if (D.driftAn) serien.push({ name: 'Ergebnis-Drift-Buch', short: 'Drift', color: 'var(--series2)', pts: reihe('drift', 'startD', D.driftBuch) });
-    else aus.push('Ergebnis-Drift-Buch');
-    if (D.intraday && D.intraday.enabled) {
-      serien.push({ name: 'Intraday-Depot', short: 'Intraday', color: 'var(--series3)',
-        pts: (D.equityHist || []).map(function (p) { return [p[0], (p[1] / START_CAPITAL - 1) * 100]; }) });
-    } else aus.push('Intraday-Depot');
+    /* Seit dem 04.10.2026 (Auftrag Nr. 73) hat jede Buchlinie ihr GEGENSTUECK: den
+     * S&P 500 ab dem Beginn ihres Vergleichs, gestrichelt in der Farbe des Buchs.
+     * Buchlinie, Marktlinie und die Zahlen darunter kommen aus EINER Rechnung
+     * (Massstab.vergleich) - hier wird nichts nachgerechnet. Beginnen zwei Vergleiche
+     * am selben Punkt auf derselben Hoehe, genuegt eine Marktlinie (neutral gefaerbt). */
+    var buecher = [
+      { name: 'Momentum-Buch', short: 'Momentum', color: 'var(--series)', an: !!D.momentumAn, v: buchVergleich('momentum') },
+      { name: 'Ergebnis-Drift-Buch', short: 'Drift', color: 'var(--series2)', an: !!D.driftAn, v: buchVergleich('drift') },
+      { name: 'Intraday-Depot', short: 'Intraday', color: 'var(--series3)', an: !!(D.intraday && D.intraday.enabled), v: intradayVergleich() }
+    ];
+    var serien = [], aus = [], maerkte = {}, zeilen = [];
+    buecher.forEach(function (b) {
+      if (!b.an) { aus.push(b.name); return; }
+      serien.push({ name: b.name, short: b.short, color: b.color, pts: b.v ? b.v.buchReihe : [] });
+      zeilen.push(Massstab.langText(b.name, b.v, pz1));
+      if (!b.v || !b.v.ok) return;
+      /* Dieselbe Linie ist es nur, wenn Beginn, Hoehe UND Marktverlauf gleich sind -
+       * das Intraday-Depot liest eine andere SPY-Reihe als die zwei Buecher. */
+      var key = b.v.seit + '|' + b.v.bis + '|' + b.v.anker.toFixed(3) + '|' + b.v.marktPct.toFixed(4);
+      if (maerkte[key]) { maerkte[key].von.push(b.short); maerkte[key].color = 'var(--muted)'; return; }
+      maerkte[key] = { von: [b.short], color: b.color, seit: b.v.seit, pts: b.v.marktReihe };
+    });
+    Object.keys(maerkte).forEach(function (k) {
+      var m = maerkte[k];
+      serien.push({ name: 'S&P 500 seit ' + Massstab.datum(m.seit) + ' (zu ' + m.von.join(', ') + ')', color: m.color, dash: '5 4', pts: m.pts });
+    });
     /* Eine Serie mit einem einzigen Punkt zeichnet drawLines nicht - sie wuerde als
      * Legendeneintrag ohne Linie stehen bleiben und einen Verlauf behaupten. */
     var gezeigt = serien.filter(function (s) { return s.pts.length >= 2; });
-    var zuKurz = serien.filter(function (s) { return s.pts.length < 2; }).map(function (s) { return s.name; });
+    var zuKurz = serien.filter(function (s) { return !s.dash && s.pts.length < 2; }).map(function (s) { return s.name; });
     /* padR: die Endbeschriftung steht RECHTS neben dem letzten Punkt. Mit dem
      * Vorgabewert 52 px passte 'Momentum' nicht hinein - auf der ersten Aufnahme
      * stand dort 'Momentu'. Der Wert ist an der laengsten Beschriftung gemessen,
@@ -3968,6 +4014,14 @@
       var hinweis = [];
       if (aus.length) hinweis.push((aus.length === 1 ? 'Abgeschaltet und deshalb nicht gezeichnet: ' : 'Abgeschaltet und deshalb nicht gezeichnet: ') + aus.join(', ') + '.');
       if (zuKurz.length) hinweis.push('Noch zu wenige Punkte für eine Linie: ' + zuKurz.join(', ') + '.');
+      /* Die Zahlen zum Bild: je eingeschaltetem Buch eine Zeile mit Zeitraum. Sie
+       * stehen auch dann, wenn die Legende leer bleibt (zu wenige Punkte). */
+      if (zeilen.length) {
+        leg.innerHTML += '<div id="buecherMassstab" style="margin-top:2px;">' + zeilen.map(function (z) {
+          return '<div>' + U.esc(z) + '</div>';
+        }).join('') + '<div style="color:var(--muted);">' + U.esc(Massstab.HINWEIS) +
+          ' Gestrichelt: der S&P 500 ab dem Beginn des Vergleichs.</div></div>';
+      }
       if (hinweis.length) {
         leg.innerHTML += '<div style="color:var(--muted); margin-top:2px;">' + U.esc(hinweis.join(' ')) + '</div>';
       }
@@ -3996,14 +4050,17 @@
    * Bezugswert kommt aus dem Verlaufspunkt selbst (startM/startD), sonst aus dem
    * Buch - nie aus einer festen Zahl. Hier stand einmal 10000, waehrend die Buecher
    * mit 100000 laufen; ein unberuehrtes Buch meldete dadurch +900,0 %. */
-  function buchKopfText(feld, label) {
-    var mv = D.mfVerlauf || [];
-    var lp = mv.length ? mv[mv.length - 1] : null;
-    if (!(feld === 'momentum' ? D.momentumAn : D.driftAn)) return label + ' aus';
-    var buch = feld === 'momentum' ? D.mfBuch : D.driftBuch;
-    var st = (lp && (feld === 'momentum' ? lp.startM : lp.startD)) || (buch && buch.start) || null;
-    if (!lp || lp[feld] == null || !st) return label + ' noch kein Stand';
-    return label + ' ' + pz1((lp[feld] / st - 1) * 100);
+  /* Seit dem 04.10.2026 (Auftrag Nr. 73) steht der MASSSTAB daneben - der S&P 500
+   * ueber denselben Zeitraum: "Momentum +1,2 % · Drift -0,4 % · S&P 500 +2,0 %".
+   * Die drei Zustaende oben und die Rechnung stehen jetzt in massstab.js (kopfText,
+   * vergleich) und sind dort in Node geprueft; hier wird nur noch bestellt. Der
+   * Titel des Feldes nennt dasselbe ausfuehrlich, mit Zeitraum. */
+  function buchKopfText() {
+    return Massstab.kopfText([['Momentum', buchVergleich('momentum')], ['Drift', buchVergleich('drift')]], pz1);
+  }
+  function buchKopfTitel() {
+    return Massstab.langText('Momentum', buchVergleich('momentum'), pz1) + ' · ' +
+      Massstab.langText('Drift', buchVergleich('drift'), pz1) + '. ' + Massstab.HINWEIS;
   }
 
   /* Der Scan im Kopf, in Worten statt als Strich.
@@ -4045,7 +4102,7 @@
     var co = document.getElementById('ckOpen');
     if (co) co.textContent = D.positions.length + (D.positions.length === 1 ? ' Position' : ' Positionen');
     var cb = document.getElementById('ckBooks');
-    if (cb) cb.textContent = buchKopfText('momentum', 'Momentum') + ' · ' + buchKopfText('drift', 'Drift');
+    if (cb) { cb.textContent = buchKopfText(); cb.title = buchKopfTitel(); }
     var cs = document.getElementById('ckScan');
     if (cs) cs.textContent = scanKopfText();
   }
@@ -4088,7 +4145,7 @@
      * - dieselbe Hausregel wie in der Bestandstabelle seit #94.
      * Der VERLAUF bekommt sie mit: er kann genauso negativ sein und stand ganz ohne
      * Klasse da. "Hoch" bleibt farblos - das ist ein Stand, keine Veraenderung. */
-    var vGesamt = (eqLast / START_CAPITAL - 1) * 100;
+    var vGesamt = Massstab.prozent(eqLast, START_CAPITAL);
     el.innerHTML =
       '<span><span class="ckl">Verlauf</span><b class="' + U.signCls(vGesamt) + '">' + pz1(vGesamt) + '</b></span>' +
       '<span><span class="ckl">Hoch</span><b>' + U.nf0.format(hoch) + ' $</b></span>' +
@@ -4167,22 +4224,25 @@
     if (Date.now() - benchLoadedAt < 30 * 60000) return; // max. alle 30 Min laden
     benchLoadedAt = Date.now();
     info.textContent = 'Lade Index-Daten …';
-    var t0 = D.equityHist[0][0], base = D.equityHist[0][1];
-    var series = [{ name: 'KI-Depot', short: 'Depot', color: 'var(--series)', pts: D.equityHist }];
-    var marks = [['^GSPC', 'S&P 500 (Buy & Hold)', 'S&P', 'var(--series2)'], ['^IXIC', 'Nasdaq (Buy & Hold)', 'NDQ', 'var(--series3)']];
-    var retTxt = [];
-    for (var i = 0; i < marks.length; i++) {
-      var h = await getHistory(marks[i][0], '2y');
-      if (!h) continue;
-      var sl = h.filter(function (p) { return p[0] >= t0 - 86400000; });
-      if (sl.length < 2) sl = h.slice(-2);
-      var p0 = sl[0][1];
-      series.push({ name: marks[i][1], short: marks[i][2], color: marks[i][3], pts: sl.map(function (p) { return [Math.max(p[0], t0), base * p[1] / p0]; }) });
-      retTxt.push(marks[i][2] + ' ' + U.signTxt((sl[sl.length - 1][1] / p0 - 1) * 100, ' %'));
-    }
-    var eqNow = D.equityHist[D.equityHist.length - 1][1];
-    info.innerHTML = 'Seit Depot-Start: <b class="' + U.signCls(eqNow - base) + '">Depot ' + U.signTxt((eqNow / base - 1) * 100, ' %') + '</b> · ' + retTxt.join(' · ');
-    drawLines(document.getElementById('benchChart'), series, document.getElementById('benchLegend'), base, { unit: ' $' });
+    /* DERSELBE MASSSTAB wie bei den Buechern (Auftrag Nr. 73, 04.10.2026): der S&P 500
+     * als SPY, ueber denselben Zeitraum wie das Depot, aus derselben Rechnung
+     * (Massstab.vergleich). Vorher stand hier der Kursindex ^GSPC unter "Seit
+     * Depot-Start" - obwohl D.equityHist nur etwa zwei Wochen zurueckreicht und der
+     * Zeitraum damit gar nicht der Start war. Der Nasdaq bleibt als zweite Linie und
+     * laeuft ueber denselben Zeitraum durch dieselbe Rechnung. Gezeichnet wird in
+     * Dollar: die Marktlinie setzt auf dem Depotstand am Beginn des Vergleichs an. */
+    var spyH = await getHistory('SPY', '2y');
+    if (spyH && spyH.length) MARKT_SPY = spyH;
+    var vS = Massstab.vergleich(intradayVerlauf(MARKT_SPY), 'intraday', 'startI', {});
+    var ndqH = await getHistory('^IXIC', '2y');
+    var vN = ndqH ? Massstab.vergleich(intradayVerlauf(ndqH), 'intraday', 'startI', {}) : null;
+    function inDollar(pts) { return pts.map(function (p) { return [p[0], START_CAPITAL * (1 + p[1] / 100)]; }); }
+    var series = [{ name: 'Intraday-Depot', short: 'Depot', color: 'var(--series)', pts: D.equityHist }];
+    if (vS.ok) series.push({ name: 'S&P 500 (SPY, ohne Ausschüttungen)', short: 'S&P', color: 'var(--series2)', pts: inDollar(vS.marktReihe) });
+    if (vN && vN.ok) series.push({ name: 'Nasdaq (Kursindex)', short: 'NDQ', color: 'var(--series3)', pts: inDollar(vN.marktReihe) });
+    info.textContent = Massstab.langText('Intraday-Depot', vS, pz1) +
+      (vN && vN.ok ? ' · Nasdaq ' + pz1(vN.marktPct) : '') + '. ' + Massstab.HINWEIS;
+    drawLines(document.getElementById('benchChart'), series, document.getElementById('benchLegend'), D.equityHist[0][1], { unit: ' $' });
   }
 
 

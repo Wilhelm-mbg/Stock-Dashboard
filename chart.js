@@ -128,8 +128,12 @@ function drawLines(svg, seriesArr, legendEl, base, opts) {
     if (s.pts.length < 2) return;
     var d = s.pts.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
     var last = s.pts[s.pts.length - 1];
-    html += '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>';
-    html += '<circle cx="' + X(last[0]).toFixed(1) + '" cy="' + Y(last[1]).toFixed(1) + '" r="4" fill="' + s.color + '" stroke="var(--surface)" stroke-width="2"></circle>';
+    /* s.dash (optional, z. B. '5 4'): eine ZURUECKGENOMMENE Linie - duenner, gestrichelt,
+     * kleinerer Endpunkt. Fuer die Vergleichslinie neben einer Hauptlinie (der Markt
+     * neben dem Buch); ohne s.dash zeichnet alles wie bisher. */
+    html += '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="' + (s.dash ? '1.2' : '2') + '"' +
+      (s.dash ? ' stroke-dasharray="' + s.dash + '" opacity="0.85"' : '') + ' stroke-linejoin="round" stroke-linecap="round"></path>';
+    html += '<circle cx="' + X(last[0]).toFixed(1) + '" cy="' + Y(last[1]).toFixed(1) + '" r="' + (s.dash ? '2.5' : '4') + '" fill="' + s.color + '" stroke="var(--surface)" stroke-width="' + (s.dash ? '1' : '2') + '"></circle>';
     if (s.short) endLabels.push({ x: X(last[0]) + 8, y: Y(last[1]) + 3.5, txt: s.short, color: s.color });
   });
   // End-Beschriftungen: Kollisionen vermeiden (min. 13 px Abstand), Text in Textfarbe
@@ -151,7 +155,12 @@ function drawLines(svg, seriesArr, legendEl, base, opts) {
     svg.addEventListener('mouseleave', chartLeave);
   }
   if (legendEl) legendEl.innerHTML = seriesArr.length > 1 ? seriesArr.map(function (s) {
-    return '<span style="display:inline-flex; align-items:center; gap:5px; margin-right:14px;"><span style="width:10px;height:10px;border-radius:var(--r-klein);background:' + s.color + ';display:inline-block;"></span>' + U.esc(s.name) + '</span>';
+    /* Eine gestrichelte Serie bekommt in der Legende einen gestrichelten Strich statt
+     * des vollen Quadrats - sonst saehen Buch und Markt dort gleich aus. */
+    var marke = s.dash
+      ? '<span style="width:14px;height:0;border-top:2px dashed ' + s.color + ';display:inline-block;"></span>'
+      : '<span style="width:10px;height:10px;border-radius:var(--r-klein);background:' + s.color + ';display:inline-block;"></span>';
+    return '<span style="display:inline-flex; align-items:center; gap:5px; margin-right:14px;">' + marke + U.esc(s.name) + '</span>';
   }).join('') : '';
 }
 

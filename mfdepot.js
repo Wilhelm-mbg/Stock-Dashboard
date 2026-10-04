@@ -221,6 +221,7 @@
 
       /* ---- Verlauf für den Vergleich mit dem Markt ---- */
       var spy = markt.length ? markt[markt.length - 1][1] : null;
+      STAND.spy = spy;   // derselbe Marktstand fuer den Stand des letzten Takts (verlaufMitStand)
       var bwM = MH.bewerte(d.mfBuch, daten.preise);
       var bwD = d.driftBuch ? MH.bewerteDrift(d.driftBuch, daten.preise) : null;
       if (!d.mfVerlauf) d.mfVerlauf = [];
@@ -313,7 +314,35 @@
    * dieselbe Zahl an zwei Orten, verschieden alt.
    * Hier wird NICHTS nachgerechnet: abgelegt wird nur, was takt() ohnehin gerechnet
    * hat (MFHandel.bewerte / bewerteDrift). */
-  var STAND = { momentum: null, drift: null };
+  var STAND = { momentum: null, drift: null, spy: null };
+
+  /* ---- Der Massstab (Auftrag Nr. 73, 04.10.2026) ----
+   * Der Verlauf, wie ihn Kopf, Karte und Buecher-Verlauf lesen: die Tagespunkte aus
+   * d.mfVerlauf, dazu - wenn der Takt seither neu bewertet hat - der Stand des letzten
+   * Takts als juengster Punkt (nur im Speicher, nie im Bestand). So nennen alle drei
+   * Stellen dieselbe Zahl; vorher stand im Kopf der Tagespunkt und auf der Karte die
+   * frische Bewertung. Ein Buch geht nur mit dem Stand DIESES Takts in den Punkt. */
+  function verlaufMitStand() {
+    var d = D();
+    var v = (d && d.mfVerlauf) ? d.mfVerlauf.slice() : [];
+    var sM = STAND.momentum, sD = STAND.drift;
+    var at = Math.max(sM ? sM.at : 0, sD ? sD.at : 0);
+    if (!at || (v.length && v[v.length - 1].t >= at)) return v;
+    var mOk = sM && at - sM.at < 5000, dOk = sD && at - sD.at < 5000;
+    v.push({ t: at, momentum: mOk ? sM.wert : null, drift: dOk ? sD.wert : null, spy: STAND.spy,
+      startM: mOk ? sM.start : null, startD: dOk ? sD.start : null });
+    return v;
+  }
+  /** Buch gegen den S&P 500 ueber denselben Zeitraum - gerechnet in massstab.js,
+   *  hier nur mit den Daten des Buchs versorgt. name = 'momentum' | 'drift'. */
+  function vergleich(name) {
+    var d = D();
+    if (!d || !window.Massstab) return null;
+    var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
+    return window.Massstab.vergleich(verlaufMitStand(), name, name === 'momentum' ? 'startM' : 'startD', {
+      an: name === 'momentum' ? !!d.momentumAn : !!d.driftAn,
+      start: buch ? buch.start : null, angelegt: buch ? buch.angelegt : null });
+  }
 
   function letzterPunkt(d) {
     var v = d && d.mfVerlauf;
@@ -348,7 +377,8 @@
       positionen: (buch && buch.positionen) ? buch.positionen.length : null,
       faellig: s ? !!s.faellig : false,
       letzte: trades.length ? trades[trades.length - 1] : null,
-      geprueft: (d.pruefStand && d.pruefStand.buecher) ? d.pruefStand.buecher : null
+      geprueft: (d.pruefStand && d.pruefStand.buecher) ? d.pruefStand.buecher : null,
+      massstab: vergleich(name)
     };
   }
 
@@ -398,12 +428,19 @@
       : '<div class="buch-wert ' + cls + '">' + U.money(k.wert) + '</div>' +
         '<div class="buch-erg ' + cls + '">' + (pnl == null
           ? ohne('kein Startkapital im Verlauf')
-          : U.signTxt(Math.round(pnl * 100) / 100, ' $') + ' · ' + U.pz1((k.wert / k.start - 1) * 100)) + '</div>' +
+          : U.signTxt(Math.round(pnl * 100) / 100, ' $') + ' · ' + U.pz1(window.Massstab.prozent(k.wert, k.start))) + '</div>' +
         (k.quelle === 'verlauf'
           ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">Stand vom ' +
             U.d(k.standT) + ' – der Takt hat seither nicht neu bewertet.</div>'
           : '');
+    /* Der Massstab: Buch und S&P 500 ueber DENSELBEN Zeitraum, mit Datum. Fehlt der
+     * Marktstand, steht der Grund da, keine Null. Der Hinweis zur Bauart des
+     * Vergleichs steht wortgleich an jeder Stelle (Massstab.HINWEIS). */
+    var M = window.Massstab, v = k.massstab;
+    var gegen = U.esc(M.langText('Buch', v, U.pz1)) + (v && v.ok
+      ? '<br><span style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(M.HINWEIS) + '</span>' : '');
     return kopf + fakten([
+      ['Gegen den Markt', gegen],
       ['Positionen', k.positionen == null ? ohne('Buch noch nicht angelegt') : String(k.positionen)],
       ['Status', k.an ? 'handelt selbst' : 'nur rechnen'],
       ['Nächster Takt', U.esc(taktTxt)],
@@ -541,5 +578,5 @@
   /* karten() ist bewusst mit exportiert: depot.js render() zeichnet den Bestand,
    * und die zwei Buch-Karten gehoeren dazu. Der Schreiber bleibt trotzdem diese
    * Datei - render() bestellt nur, es formuliert nicht. */
-  window.MFDepot = { takt: takt, karten: karten };
+  window.MFDepot = { takt: takt, karten: karten, vergleich: vergleich };
 })();

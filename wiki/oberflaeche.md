@@ -240,6 +240,25 @@ aus, einmalige Sicherung, von Hand wieder einschaltbar. *Fundstelle: `uebergabe/
 - **Nicht umgestellt:** die Scoreboard-Zeile (altes Protokoll) und zwei Automatik-Wege, die den Modus selbst wählen dürfen
   (`TUNE_ALLOW.mode`, Wächter-Modus des Autopiloten) — eigener Entscheid nötig.
 
+## 6b. Der Maßstab: jedes Buch gegen den S&P 500 (seit 04.10.2026, Auftrag Nr. 73)
+
+Wilhelms Regel (entscheide.md, „Richtung des Projekts"): echtes Geld nur für ein Buch, das nach Kosten den S&P 500 schlägt.
+*Fundstelle: `uebergabe/massstab-app-2026-10-04.md`.*
+
+- **Wo er steht:** Kopf `#ckBooks` (kurz; der Titel nennt Zeitraum und Abstand); Heute → Bestand: je Buch-Karte die Zeile
+  „Gegen den Markt" (`#buchMomentumKopf`, `#buchDriftKopf`, `#buchIntradayKopf`); Depotverlauf `#buecherChart` mit einer
+  gestrichelten Marktlinie je Buch und den Zeilen `#buecherMassstab` darunter; Auswertung: `#benchInfo`/`#benchChart`
+  (Intraday-Depot gegen SPY, Nasdaq als zweite Linie).
+- **Eine Rechnung:** `massstab.js` (`Massstab.vergleich`, in Node geprüft). Buch und Markt immer über denselben Zeitraum: vom
+  ersten Verlaufspunkt, an dem beide einen Stand haben, bis zum jüngsten. Beginnt er am Tag, an dem das Buch angelegt wurde, ist
+  der Bezug das Startkapital (Kaufkosten zählen mit); sonst der Stand des Buchs am Beginn – der Text sagt dann „ab dem ersten
+  gemeinsamen Stand, nicht ab dem Start des Buchs". Fehlt der Marktstand: „Markt: noch kein Stand", keine Null.
+- **Was der Marktstand ist:** das Feld `spy` im Verlaufspunkt ist der jüngste Balken der bereinigten SPY-Reihe (`drift_markt`) am
+  Tag des Punkts – und der ist immer der unbereinigte Schluss. Der Vergleich ist deshalb der SPY-**Kurs**ertrag, ohne
+  Ausschüttungen; die Bücher buchen ebenfalls keine. Beide Seiten gleich, aber nicht „mit Dividenden" (Hinweis steht an jeder Stelle).
+- **Sperrklinke:** test-v6 Abschnitt 92 – an sieben Stellen (Kopf, Verlauf, drei Karten, Kennzahlen, Kachel, Benchmark) und in
+  `berichte.js` steht keine eigene Prozentrechnung für ein Buch mehr.
+
 ## 7. Aktuelle Aufnahmen und Struktur (seit 04.09.2026)
 
 **[aufnahmen/struktur.md](aufnahmen/struktur.md)** zeigt die Oberfläche der ausgelieferten Fassung als Baum (Reiter → Pille → Blöcke und Klappen, mit den Kennungen aus `index.html`) und darunter je Pille die Aufnahmen. Die Bilder liegen je Reiter in einem Unterordner (`aufnahmen/heute/`, `markt/`, `regeln/`, `werkzeuge/`), damit die Struktur auch im Datei-Baum von Obsidian sichtbar ist.

@@ -5435,8 +5435,15 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
   var bkt = dep.slice(dep.indexOf('function buchKopfText'), dep.indexOf('function scanKopfText'));
   ok(bkt.length > 200 && !/\/\s*\d\d+/.test(bkt),
      'B1: das Cockpit teilt nicht mehr durch eine fest verdrahtete Zahl');
-  ok(/lp\.startM/.test(bkt) && /lp\.startD/.test(bkt) && /buch\.start/.test(bkt) &&
-     /lp\[feld\] \/ st/.test(bkt),
+  /* 04.10.2026 (Auftrag Nr. 73): die Rechnung ist aus buchKopfText() nach massstab.js
+   * gezogen (ein Rechenweg fuer Kopf, Karte und Chart). Die Aussage bleibt dieselbe und
+   * wird an der neuen Stelle gehalten: der Bezugswert kommt aus dem Punkt (startFeld),
+   * sonst aus dem Buch (opts.start <- buch.start) - nie aus einer Konstante. Das
+   * Verhalten dazu prueft Abschnitt 92 an Zahlen. */
+  var mst5 = fs.readFileSync(__dirname + '/massstab.js', 'utf8');
+  ok(/Massstab\.kopfText\(/.test(bkt) && /name === 'momentum' \? 'startM' : 'startD'/.test(mfd) &&
+     /start: buch \? buch\.start : null/.test(mfd) && /p\[startFeld\]/.test(mst5) && /opts\.start/.test(mst5) &&
+     !/\/\s*\d{3,}/.test(mst5.replace(/\/\*[\s\S]*?\*\//g, '')),
      'B1: der Bezugswert kommt aus dem Verlaufspunkt, sonst aus dem Buch - nie aus einer Konstante');
   ok(/startM: d\.mfBuch/.test(mfd) && /startD: d\.driftBuch/.test(mfd),
      'B1: mfVerlauf schreibt das Startkapital mit, damit alte Punkte lesbar bleiben');
@@ -12990,10 +12997,18 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
      'Kopfzeile: das Muster "M – · D –" steht nirgends mehr im Code');
   var bkt = depO.slice(depO.indexOf('function buchKopfText'), depO.indexOf('function scanKopfText'));
   ok(bkt.length > 200, 'Kopfzeile: buchKopfText() ist als Block auffindbar', bkt.length);
-  ok(/label \+ ' aus'/.test(bkt), 'cockpitRender kennt den Zustand "Buch aus"');
-  ok(/label \+ ' noch kein Stand'/.test(bkt), 'cockpitRender kennt den Zustand "noch kein Stand"');
-  ok(/label \+ ' ' \+ pz1\(/.test(bkt), 'cockpitRender kennt den Zustand "an" und nennt den Prozentstand');
-  ok(/buchKopfText\('momentum', 'Momentum'\)/.test(depO) && /buchKopfText\('drift', 'Drift'\)/.test(depO),
+  /* 04.10.2026 (Auftrag Nr. 73): die drei Zustaende stehen jetzt in massstab.js
+   * (kopfText) und werden dort am VERHALTEN geprueft statt an einer Textmarke. */
+  var MstK = require('./massstab.js');
+  function pzK(v) { var r = Math.round(v * 10) / 10; return (r > 0 ? '+' : r < 0 ? '-' : '±') + Math.abs(r).toFixed(1).replace('.', ',') + ' %'; }
+  var ptK = [{ t: 1, momentum: 101200, startM: 100000, spy: null }];
+  ok(MstK.kopfText([['Momentum', MstK.vergleich(ptK, 'momentum', 'startM', { an: false })]], pzK) === 'Momentum aus',
+     'cockpitRender kennt den Zustand "Buch aus"');
+  ok(MstK.kopfText([['Momentum', MstK.vergleich([], 'momentum', 'startM', { an: true })]], pzK) === 'Momentum noch kein Stand',
+     'cockpitRender kennt den Zustand "noch kein Stand"');
+  ok(MstK.kopfText([['Momentum', MstK.vergleich(ptK, 'momentum', 'startM', { an: true })]], pzK).indexOf('Momentum +1,2 %') === 0,
+     'cockpitRender kennt den Zustand "an" und nennt den Prozentstand');
+  ok(/\['Momentum', buchVergleich\('momentum'\)\]/.test(bkt) && /\['Drift', buchVergleich\('drift'\)\]/.test(bkt),
      'Kopfzeile: #ckBooks nennt beide Buecher beim Namen');
   var skt = depO.slice(depO.indexOf('function scanKopfText'), depO.indexOf('function cockpitRender'));
   /* 03.09.2026 (Stufe 3, Schnitt): Die Beschriftung im Cockpit heisst SCAN; der Wert
@@ -13145,8 +13160,11 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   ok(bv.length > 400, 'renderBuecherVerlauf ist als Block auffindbar', bv.length);
   ok(/drawLines\(svg, gezeigt, leg, 0, \{ unit: ' %'/.test(bv) && !/svg\.innerHTML/.test(bv),
      'Der Buecher-Verlauf nutzt das vorhandene Mehrserien-Zeichenwerk - kein zweiter Zeichner');
-  ok(/reihe\('momentum', 'startM'/.test(bv) && /reihe\('drift', 'startD'/.test(bv) &&
-     /p\[startFeld\] \|\| \(buch && buch\.start\)/.test(bv) && /START_CAPITAL/.test(bv) &&
+  /* 04.10.2026 (Auftrag Nr. 73): die Linien kommen aus Massstab.vergleich (buchReihe);
+   * der Bezug steht im Punkt (startM/startD, beim Intraday-Depot START_CAPITAL ueber
+   * intradayVerlauf). Im Renderer selbst steht keine Division mehr. */
+  ok(/buchVergleich\('momentum'\)/.test(bv) && /buchVergleich\('drift'\)/.test(bv) && /intradayVergleich\(\)/.test(bv) &&
+     /b\.v \? b\.v\.buchReihe : \[\]/.test(bv) && /'intraday', 'startI', START_CAPITAL\)/.test(depO) &&
      !/\/\s*\d\d+/.test(bv),
      'Jede Linie rechnet gegen ihr EIGENES Startkapital - nie gegen eine Zahl im Code');
   ok(/pts\.length >= 2/.test(bv),
@@ -21803,6 +21821,196 @@ console.log('91) Kapitulation auf dem Messstand (Neumessung 03.10.2026)');
      /exitMode: kapiTrade \? 'zeit' : mp\.exitMode/.test(dep91),
      '91.6 der Ausstieg einer offenen Position liest ihre eigenen Stempel (exitMode, maxHoldMin) - weder den Zusatz-Haken noch den Modus', aus91.length + ' Zeichen');
   ok(rot91 === g91, '91.x alle Gegenproben dieses Abschnitts schlagen an', rot91 + ' von ' + g91);
+})();
+
+
+/* ================= 92) Der Massstab: jedes Buch gegen den S&P 500 (Auftrag Nr. 73, 04.10.2026) =====
+ *
+ * Wilhelms Regel: echtes Geld bekommt nur ein Buch, das nach Kosten den S&P 500
+ * schlaegt. Die App nannte jedes Buch nur gegen sein Startkapital. Jetzt steht der
+ * Markt ueber DENSELBEN Zeitraum daneben - gerechnet an einer Stelle (massstab.js).
+ *   92.1 die Rechnung am Kunstverlauf (gleicher Zeitraum, spaeter Beginn, Buch aus,
+ *        ein Punkt, Startkapital aus dem Punkt), jede Aussage mit Gegenprobe
+ *   92.2 die Texte fuer Kopf und Karte
+ *   92.3 der Stand des letzten Takts als juengster Punkt (mfdepot.js)
+ *   92.4 die Klinke: wo die Oberflaeche den Stand eines Buchs in Prozent nennt, kommt
+ *        er aus massstab.js - kein zweiter Rechenweg
+ * Die Klinke entfernt Kommentare, bevor sie sucht: ein Kommentar, der das verbotene
+ * Muster beim Namen nennt, darf sie nicht ausloesen (Fehlerform im Wiki). */
+console.log('92) Der Massstab: jedes Buch gegen den S&P 500');
+(function () {
+  var g92 = 0, rot92 = 0;
+  function gegen92(was, ergebnis) { g92++; if (ergebnis) rot92++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function nah92(a, b) { return typeof a === 'number' && typeof b === 'number' && Math.abs(a - b) < 1e-9; }
+  var Mst = require('./massstab.js');
+  var shell92 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  /* Das Prozentformat der App selbst (U.pz1), aus dem Quelltext geholt - keine Kopie. */
+  var pzQ = /pz1: (function \(v\) \{[\s\S]*?\n    \}),/.exec(shell92);
+  ok(!!pzQ, '92.0 U.pz1 ist in app-shell.js auffindbar');
+  var pz92 = new Function('return ' + pzQ[1])();
+  function T(tag, std) { return new Date(2026, 8, tag, std == null ? 12 : std).getTime(); }
+
+  /* ---- 92.1 die Rechnung ---- */
+  var A = [
+    { t: T(2), momentum: 99800, startM: 100000, spy: 500 },
+    { t: T(3), momentum: 100500, startM: 100000, spy: 505 },
+    { t: T(4), momentum: 101200, startM: 100000, spy: 510 }
+  ];
+  var vA = Mst.vergleich(A, 'momentum', 'startM', { an: true, angelegt: T(2) - 1000 });
+  ok(vA.ok && vA.abStart && nah92(vA.buchPct, 1.2) && nah92(vA.marktPct, 2) && nah92(vA.abstandPp, -0.8) &&
+     vA.seit === T(2) && vA.bis === T(4) && nah92(vA.standPct, vA.buchPct),
+     '92.1 gleicher Zeitraum ab dem Start: Buch +1,2 % (gegen das Startkapital, Kaufkosten zaehlen mit), Markt +2,0 %, Abstand -0,8 Pp',
+     [vA.buchPct, vA.marktPct, vA.abstandPp].join(' / '));
+  var vAspaet = Mst.vergleich(A, 'momentum', 'startM', { an: true, angelegt: T(2) - 10 * 86400000 });
+  gegen92('liegt der erste Punkt NICHT am Tag des Anlegens, ist der Bezug der Stand am ersten Punkt (+1,4 statt +1,2)',
+    vAspaet.ok && !vAspaet.abStart && nah92(Math.round(vAspaet.buchPct * 10) / 10, 1.4) && !nah92(vAspaet.buchPct, vAspaet.standPct));
+
+  /* Startkapital aus dem Punkt, nie eine feste Zahl */
+  var halb = A.map(function (p) { return { t: p.t, momentum: p.momentum / 2, startM: 50000, spy: p.spy }; });
+  var vH = Mst.vergleich(halb, 'momentum', 'startM', { an: true, angelegt: T(2), start: 100000 });
+  ok(nah92(vH.buchPct, 1.2) && nah92(vH.standPct, 1.2),
+     '92.1 das Startkapital kommt aus dem Punkt: ein 50.000-$-Buch mit halben Werten steht genauso bei +1,2 %', vH.standPct);
+  var ohneSt = A.map(function (p) { return { t: p.t, momentum: p.momentum, spy: p.spy }; });
+  ok(nah92(Mst.vergleich(ohneSt, 'momentum', 'startM', { an: true, start: 100000 }).standPct, 1.2) &&
+     Mst.vergleich(ohneSt, 'momentum', 'startM', { an: true }).grund === 'kein-startkapital' &&
+     Mst.vergleich(ohneSt, 'momentum', 'startM', { an: true }).standPct === null,
+     '92.1 fehlt das Startkapital im Punkt, zaehlt das des Buchs; fehlt beides, gibt es einen Grund und keine Zahl');
+  gegen92('gegen eine feste 10000 gerechnet staende dasselbe Buch bei ueber +900 %',
+    Mst.prozent(101200, 10000) > 900 && nah92(Mst.vergleich(A, 'momentum', 'startM', { an: true, start: 10000 }).standPct, 1.2));
+
+  /* erste Punkte ohne Marktstand -> der Vergleich beginnt spaeter und nennt das Datum */
+  var B = [
+    { t: T(2), momentum: 99800, startM: 100000, spy: null },
+    { t: T(3), momentum: 100500, startM: 100000 },
+    { t: T(4), momentum: 101000, startM: 100000, spy: 510 },
+    { t: T(5), momentum: 102010, startM: 100000, spy: 520.2 }
+  ];
+  var vB = Mst.vergleich(B, 'momentum', 'startM', { an: true, angelegt: T(2) });
+  ok(vB.ok && !vB.abStart && vB.seit === T(4) && vB.bis === T(5) && nah92(vB.buchPct, 1) && nah92(vB.marktPct, 2) &&
+     nah92(vB.abstandPp, -1) && nah92(Math.round(vB.standPct * 100) / 100, 2.01),
+     '92.1 fruehe Punkte ohne Marktstand: der Vergleich beginnt am 04.09., Buch +1,0 % und Markt +2,0 % ueber dieselben zwei Punkte',
+     [vB.buchPct, vB.marktPct, vB.standPct].join(' / '));
+  ok(Mst.langText('Momentum', vB, pz92).indexOf('seit 04.09.2026 – ab dem ersten gemeinsamen Stand, nicht ab dem Start des Buchs') !== -1,
+     '92.1 … und der Text nennt das Datum und sagt, dass es nicht der Start des Buchs ist');
+  gegen92('der Stand gegen das Startkapital (+2,0 %) waere ein anderer Zeitraum als der des Markts - er steht nicht neben ihm',
+    !nah92(vB.buchPct, vB.standPct) && Mst.langText('Momentum', vB, pz92).indexOf('Momentum +1,0 %') === 0);
+  var Bz = B.concat([{ t: T(6), momentum: 103000, startM: 100000, spy: null }]);
+  var vBz = Mst.vergleich(Bz, 'momentum', 'startM', { an: true, angelegt: T(2) });
+  ok(vBz.bis === T(5) && nah92(vBz.buchPct, 1) && nah92(vBz.standPct, 3),
+     '92.1 fehlt dem juengsten Punkt der Marktstand, endet der Vergleich am letzten gemeinsamen Punkt - fuer Buch UND Markt');
+
+  /* Buch aus, ein einziger Punkt, Markt fehlt */
+  var vAus = Mst.vergleich(A, 'momentum', 'startM', { an: false });
+  ok(vAus.grund === 'aus' && vAus.standPct === null && vAus.marktPct === null && !vAus.ok, '92.1 Buch aus: Grund statt Zahl');
+  var vEin = Mst.vergleich(A.slice(0, 1), 'momentum', 'startM', { an: true, angelegt: T(2) });
+  ok(!vEin.ok && vEin.grund === 'erst-ein-punkt' && nah92(vEin.standPct, -0.2) && vEin.marktPct === null && vEin.abstandPp === null,
+     '92.1 ein einziger Punkt: der Stand des Buchs steht, der Markt hat noch keinen Zeitraum - keine Null', vEin.standPct);
+  var vOhne = Mst.vergleich(A.map(function (p) { return { t: p.t, momentum: p.momentum, startM: p.startM, spy: null }; }), 'momentum', 'startM', { an: true });
+  ok(!vOhne.ok && vOhne.grund === 'markt-kein-stand' && vOhne.marktPct === null && nah92(vOhne.standPct, 1.2) &&
+     Mst.langText('Momentum', vOhne, pz92) === 'Momentum +1,2 % · Markt: noch kein Stand',
+     '92.1 fehlt der Marktstand, steht "Markt: noch kein Stand" - keine Null', Mst.langText('Momentum', vOhne, pz92));
+  gegen92('eine Null an der Stelle des fehlenden Markts ergaebe einen erfundenen Abstand von +1,2 Pp',
+    Mst.langText('Momentum', vOhne, pz92).indexOf('S&P 500') === -1 && Mst.langText('Momentum', vOhne, pz92).indexOf('Abstand') === -1);
+
+  /* Abstand aus den gerundeten Staenden, Marktlinie verankert */
+  var R = [{ t: T(2), momentum: 100000, startM: 100000, spy: 500 }, { t: T(3), momentum: 101240, startM: 100000, spy: 509.8 }];
+  var vR = Mst.vergleich(R, 'momentum', 'startM', { an: true, angelegt: T(2) });
+  ok(nah92(vR.abstandPp, -0.8) && Math.round((vR.buchPct - vR.marktPct) * 10) / 10 === -0.7,
+     '92.1 der Abstand passt zu den zwei gezeigten Zahlen (+1,2 und +2,0 ergeben -0,8, nicht -0,7)', vR.abstandPp);
+  ok(nah92(vA.marktReihe[0][1], 0) && nah92(vA.marktReihe[2][1], 2) && nah92(vA.buchReihe[0][1], -0.2) &&
+     nah92(vB.marktReihe[0][1], 1) && vB.marktReihe.length === 2 && vB.buchReihe.length === 4,
+     '92.1 die Marktlinie setzt am Beginn des Vergleichs an: beim Start auf 0 %, sonst auf dem Stand des Buchs');
+
+  /* mitMarkt: Wertreihe + Marktreihe -> Verlauf */
+  var mm = Mst.mitMarkt([[T(2, 10), 100000], [T(2, 15), 100100], [T(3, 15), 100500]], [[T(2, 14), 500], [T(3, 14), 505]], 'intraday', 'startI', 100000);
+  ok(mm[0].spy === null && mm[1].spy === 500 && mm[2].spy === 505 && mm[2].intraday === 100500 && mm[2].startI === 100000,
+     '92.1 mitMarkt gibt jedem Punkt den juengsten Marktkurs, der nicht nach ihm liegt - davor keinen');
+  var vI = Mst.vergleich(mm, 'intraday', 'startI', {});
+  ok(vI.ok && !vI.abStart && vI.seit === T(2, 15) && nah92(vI.marktPct, 1) && nah92(Math.round(vI.buchPct * 1000) / 1000, 0.4),
+     '92.1 das Intraday-Depot laeuft durch dieselbe Rechnung (Beginn am ersten gemeinsamen Punkt)');
+
+  /* ---- 92.2 die Texte ---- */
+  ok(Mst.langText('Momentum', vA, pz92) === 'Momentum +1,2 % · S&P 500 +2,0 % · Abstand -0,8 Pp (seit 02.09.2026, Stand 04.09.2026, nach Kosten)',
+     '92.2 ausfuehrlich: Buch, Markt, Abstand, Zeitraum, nach Kosten', Mst.langText('Momentum', vA, pz92));
+  var Dr = A.map(function (p, i) { return { t: p.t, drift: [100000, 99900, 99500][i], startD: 100000, spy: p.spy }; });
+  var vD = Mst.vergleich(Dr, 'drift', 'startD', { an: true, angelegt: T(2) });
+  ok(Mst.kopfText([['Momentum', vA], ['Drift', vD]], pz92) === 'Momentum +1,2 % · Drift -0,5 % · S&P 500 +2,0 %',
+     '92.2 Kopf: derselbe Zeitraum - der Markt steht einmal', Mst.kopfText([['Momentum', vA], ['Drift', vD]], pz92));
+  ok(Mst.kopfText([['Momentum', vB], ['Drift', vD]], pz92) === 'Momentum +1,0 % (S&P 500 +2,0 %) · Drift -0,5 % (S&P 500 +2,0 %)',
+     '92.2 Kopf: verschiedene Zeitraeume - jedes Buch bekommt seinen Markt, auch bei gleicher Zahl', Mst.kopfText([['Momentum', vB], ['Drift', vD]], pz92));
+  ok(Mst.kopfText([['Momentum', vAus], ['Drift', vOhne]], pz92) === 'Momentum aus · Drift +1,2 % · Markt: noch kein Stand' &&
+     Mst.kopfText([['Momentum', vAus], ['Drift', null]], pz92) === 'Momentum aus · Drift noch kein Stand',
+     '92.2 Kopf: aus, kein Stand und fehlender Markt werden benannt');
+  ok(/ohne Aussch/.test(Mst.HINWEIS) && /SPY/.test(Mst.HINWEIS) && !/mit Aussch/.test(Mst.HINWEIS),
+     '92.2 der Hinweis sagt, wie der Vergleich gebaut ist: SPY-Kurs, beide Seiten ohne Ausschuettungen', Mst.HINWEIS);
+
+  /* ---- 92.3 der Stand des letzten Takts ---- */
+  var mfd92 = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  var vmsQ = mfd92.slice(mfd92.indexOf('  function verlaufMitStand() {'), mfd92.indexOf('  /** Buch gegen den S&P 500 ueber denselben Zeitraum'));
+  ok(vmsQ.length > 300 && /STAND\.spy = spy;/.test(mfd92), '92.3 verlaufMitStand ist auffindbar, der Takt legt den Marktstand ab', vmsQ.length);
+  function vms(verlauf, STAND) { return new Function('D', 'STAND', vmsQ + '\n return verlaufMitStand();')(function () { return { mfVerlauf: verlauf }; }, STAND); }
+  var tag = [{ t: 1000, momentum: 100, drift: 50, spy: 5, startM: 100, startD: 50 }];
+  var live = vms(tag, { momentum: { wert: 103, start: 100, at: 90000 }, drift: { wert: 49, start: 50, at: 20000 }, spy: 5.1 });
+  ok(live.length === 2 && live[1].t === 90000 && live[1].momentum === 103 && live[1].spy === 5.1 && live[1].drift === null && tag.length === 1,
+     '92.3 der Stand des letzten Takts ist der juengste Punkt; ein Buch mit aelterem Stand geht nicht hinein; der Bestand bleibt unberuehrt');
+  ok(vms(tag, { momentum: null, drift: null, spy: null }).length === 1 &&
+     vms(tag, { momentum: { wert: 103, start: 100, at: 500 }, drift: null, spy: 5.1 }).length === 1,
+     '92.3 ohne Takt oder mit einem Takt VOR dem juengsten Tagespunkt bleibt der Verlauf, wie er ist');
+
+  /* ---- 92.4 die Klinke ---- */
+  var dep92 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var ber92 = fs.readFileSync(__dirname + '/berichte.js', 'utf8');
+  var html92 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  function ohneKomm(q) { return q.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, ''); }
+  function block(q, von, bis) { var a = q.indexOf(von), b = q.indexOf(bis, a + 1); return (a < 0 || b < 0) ? '' : ohneKomm(q.slice(a, b)); }
+  /* Die Stellen, an denen die Oberflaeche den Stand eines Buchs in Prozent nennt. */
+  function stellen(dep, mfd) {
+    return [
+      ['Kopf (buchKopfText)', block(dep, 'function buchKopfText', 'function scanKopfText')],
+      ['Buecher-Verlauf', block(dep, 'function renderBuecherVerlauf', 'function intradayBereichZeigen')],
+      ['Intraday-Karte', block(dep, 'function renderIntradayKarte', 'function renderHandlungen')],
+      ['Kennzahlen Depotverlauf', block(dep, 'function renderEquity', 'function normWeights')],
+      ['Kachel Depotwert', block(dep, "document.getElementById('depotStats').innerHTML =", "tile('Cash'")],
+      ['Benchmark', block(dep, 'async function renderBenchmark', 'function renderPatience')],
+      ['Buch-Karten', block(mfd, 'function buchKarteDaten', 'function karten()')]
+    ];
+  }
+  /* Ein eigener Rechenweg: "… - 1) * 100" oder eine Division durch einen Bezugswert. */
+  var EIGEN = [/-\s*1\s*\)\s*\*\s*100/, /\/\s*(START_CAPITAL|START_KAPITAL|k\.start|st|base)\b/];
+  function klinke92(dep, mfd, ber) {
+    var rot = [];
+    stellen(dep, mfd).forEach(function (s) {
+      if (s[1].length < 100) rot.push(s[0] + ': Block nicht gefunden');
+      else if (s[1].indexOf('Massstab.') === -1) rot.push(s[0] + ': liest massstab.js nicht');
+      EIGEN.forEach(function (re) { if (re.test(s[1])) rot.push(s[0] + ': eigener Rechenweg ' + re); });
+    });
+    [['depot.js', dep], ['mfdepot.js', mfd], ['berichte.js', ber]].forEach(function (d) {
+      if (/\/\s*START_(CAPITAL|KAPITAL)\s*(-\s*1|\*\s*100\b)/.test(ohneKomm(d[1]))) rot.push(d[0] + ': Prozentstand gegen das Startkapital von Hand gerechnet');
+    });
+    return rot;
+  }
+  var rot = klinke92(dep92, mfd92, ber92);
+  ok(rot.length === 0, '92.4 Klinke: wo die Oberflaeche den Stand eines Buchs in Prozent nennt, kommt er aus massstab.js (sieben Stellen, drei Dateien)',
+     rot.length ? rot.join(' | ') : '');
+  gegen92('die alte Rechnung im Kopf (Wert durch Bezug, minus eins, mal hundert) macht die Klinke rot',
+    klinke92(dep92.replace('function buchKopfText() {', 'function buchKopfText() { var x = pz1((lp[feld] / st - 1) * 100);'), mfd92, ber92).length >= 2);
+  gegen92('die alte Rechnung auf der Karte macht die Klinke rot',
+    klinke92(dep92, mfd92.replace('window.Massstab.prozent(k.wert, k.start)', '(k.wert / k.start - 1) * 100'), ber92).length >= 1);
+  gegen92('die alte Rechnung im Bericht macht die Klinke rot',
+    klinke92(dep92, mfd92, ber92 + '\n var g = (eqEnd / START_CAPITAL - 1) * 100;').length === 1);
+  gegen92('ein Kommentar, der das Muster nennt, loest die Klinke NICHT aus',
+    klinke92(dep92.replace('function buchKopfText() {', 'function buchKopfText() { /* frueher: (lp[feld] / st - 1) * 100 */'), mfd92, ber92).length === 0);
+  ok(html92.indexOf('<script src="massstab.js">') !== -1 &&
+     html92.indexOf('<script src="massstab.js">') < html92.indexOf('<script src="mfdepot.js">') &&
+     html92.indexOf('<script src="massstab.js">') < html92.indexOf('<script src="depot.js">'),
+     '92.4 massstab.js wird geladen, bevor mfdepot.js und depot.js es lesen');
+  var chart92 = fs.readFileSync(__dirname + '/chart.js', 'utf8');
+  ok(/dash: '5 4'/.test(block(dep92, 'function renderBuecherVerlauf', 'function intradayBereichZeigen')) && /stroke-dasharray="' \+ s\.dash/.test(chart92) &&
+     /drawLines\(svg, gezeigt, leg, 0, \{ unit: ' %'/.test(dep92),
+     '92.4 die Marktlinie ist eine zurueckgenommene (gestrichelte) Linie im vorhandenen Zeichenwerk');
+  ok(!/\^GSPC', 'S&P 500 \(Buy/.test(dep92) && /getHistory\('SPY', '2y'\)/.test(block(dep92, 'async function renderBenchmark', 'function renderPatience')),
+     '92.4 das Intraday-Depot hat denselben Massstab (SPY) - nicht mehr den Kursindex unter "Seit Depot-Start"');
+  ok(rot92 === g92, '92.x alle Gegenproben dieses Abschnitts schlagen an', rot92 + ' von ' + g92);
 })();
 
 Promise.all(offeneProben).then(function () {

@@ -1188,7 +1188,7 @@
   <div class="ck"><span class="ckl">Intraday-Depot</span><b id="ckEquity">–</b></div>
   <div class="ck"><span class="ckl">Heute</span><b id="ckDay">–</b></div>
   <div class="ck"><span class="ckl">Offen</span><b id="ckOpen">–</b></div>
-  <div class="ck"><span class="ckl">Bücher</span><b id="ckBooks" title="Momentum / Drift – virtuelle 100.000-$-Bücher, Stand gegen ihr eigenes Startkapital">–</b></div>
+  <div class="ck"><span class="ckl">Bücher</span><b id="ckBooks" title="Momentum / Drift – virtuelle 100.000-$-Bücher, Stand gegen ihr eigenes Startkapital, daneben der S&amp;P 500 über denselben Zeitraum">–</b></div>
   <div class="ck"><span class="ckl">US-Börse</span><b id="ckMarkt">–</b></div>
   <div class="ck"><span class="ckl">Scan</span><b id="ckScan">–</b></div>
 </div>
@@ -1297,7 +1297,7 @@
 </div>
 <!-- ============ DEPOTVERLAUF ueber alle Buecher ============ -->
 <div class="panel" style="margin-bottom:14px;">
-  <h3>Depotverlauf – jedes Buch gegen sein eigenes Startkapital</h3>
+  <h3>Depotverlauf – jedes Buch gegen sein eigenes Startkapital, daneben der S&amp;P 500</h3>
   <!-- Prozent statt Dollar, weil drei Buecher mit verschiedenem Startkapital in einem
        Bild sonst nur ihre Groesse zeigen, nicht ihren Verlauf. Gezeichnet wird mit
        demselben Zeichenwerk wie jeder andere Mehrserien-Chart (Chart.drawLines). -->
@@ -3103,6 +3103,8 @@
 <script src="scheinwahl.js"></script>
 <script src="scheinfinder.js"></script>
 <script src="mfhandel.js"></script>
+<!-- Der Massstab (Buch gegen S&P 500): reine Rechnung, VOR mfdepot.js und depot.js, die sie lesen. -->
+<script src="massstab.js"></script>
 <script src="mfdepot.js"></script>
 <script src="risiko.js"></script>
 <!-- Stufe E: aus depot.js herausgeloeste Bloecke - VOR depot.js, das sie verkabelt. -->

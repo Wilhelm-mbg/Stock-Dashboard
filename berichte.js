@@ -145,7 +145,7 @@
     lines.push('*' + KOSTOLANY[kw % KOSTOLANY.length] + ' – André Kostolany*');
     lines.push('## Depot');
     lines.push('- Wochen-Performance: **' + U.signTxt((eqEnd / eqStart - 1) * 100, ' %') + '** (' + U.money(eqStart) + ' → ' + U.money(eqEnd) + ')' + (spx ? ' · S&P 500 zur selben Zeit: ' + spx : ''));
-    lines.push('- Gesamt seit Start: ' + U.signTxt((eqEnd / START_CAPITAL - 1) * 100, ' %') + ' · Offene Positionen: ' + D.positions.length);
+    lines.push('- Gesamt seit Start: ' + U.signTxt(window.Massstab.prozent(eqEnd, START_CAPITAL), ' %') + ' · Offene Positionen: ' + D.positions.length);
     lines.push('## Trades dieser Woche');
     lines.push('- ' + closed.length + ' geschlossene Trades · Trefferquote ' + (closed.length ? Math.round(wins / closed.length * 100) + ' %' : '–') + ' · P/L ' + U.signTxt(pnlW, ' $') + ' · Gebühren ' + U.nf2.format(feesW) + ' $');
     if (agg.hourly.n) lines.push('- Stunden-Strategie: ' + agg.hourly.n + ' Trades, ' + U.signTxt(agg.hourly.pnl, ' $'));
