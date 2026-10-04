@@ -11,6 +11,10 @@
  *   b  (als ueberholt gekennzeichnet) in der Naehe steht ein Ueberholt-Vermerk            -> "kein Unterschied"
  *   c  (veraltet)  die Zahlen der Fundstelle fehlen in der Zeile des heutigen Belegs       -> "ZEIGT ABWEICHUNG"
  *   d  (ohne Beleg) die Zahlen der Fundstelle fehlen im ganzen Belegkorpus                 -> "ZEIGT ABWEICHUNG"
+ *   gestrichen  (Zweig fix/oberflaeche-texte) der alte Wortlaut (Feld alt.wortlaut) steht nicht mehr in der Datei,
+ *               Begruendung im Feld "begruendung"                                       -> "kein Unterschied"
+ * Nach der Korrektur (Zweig fix/oberflaeche-texte) traegt jede frueher c/d eingeordnete Stelle ihren alten Stand im
+ * Feld "alt" ({ klasse, zeile, wortlaut }) und als wortlaut/klasse/beleg den NEUEN Text mit seiner Belegstelle.
  * Faellt eine Pruefung anders aus als die Klasse erwartet (a ohne Treffer, d doch im Korpus, Wortlaut nicht mehr in der
  * Datei), meldet die Zeile das ausdruecklich - dann ist die Einordnung oder der Text weitergezogen.
  * Belegkorpus: wiki/belegstand.md, wiki/kosten.md (von belegstand.md als Quelle der Huerden genannt) und alle
@@ -21,7 +25,7 @@
  *
  * Aufruf aus der Repo-Wurzel:
  *   node pruefberichte/oberflaeche-inventur.test.js            alle Fundstellen
- *   node pruefberichte/oberflaeche-inventur.test.js c          nur Klasse c (a|b|c|d)
+ *   node pruefberichte/oberflaeche-inventur.test.js c          nur Klasse c (a|b|c|d|gestrichen)
  *   node pruefberichte/oberflaeche-inventur.test.js g2         nur Gruppen, deren Name so beginnt
  *
  * Alles Simulation mit virtuellem Kapital. Keine Anlageberatung.
@@ -112,6 +116,7 @@ var UEBERHOLT = /[ÜüUu]berholt|veraltet|zur[üu]ckgewiesen|zur[üu]ckgenommen|
 function pruefe(e, korpus) {
   var quelle = lies(e.datei);
   if (quelle == null) return [true, 'Quelldatei ' + e.datei + ' fehlt'];
+  if (e.klasse === 'gestrichen') return gestrichen(e, quelle);
   var fund = zeileMit(quelle, e.wortlaut);
   if (!fund) return [true, 'Wortlaut steht nicht mehr in ' + e.datei + ' (Text geaendert?) - "' + kurz(e.wortlaut) + '"'];
   var wo = e.datei + ':' + fund.zeile;
@@ -183,6 +188,19 @@ function pruefe(e, korpus) {
   return [true, wo + ': unbekannte Klasse "' + e.klasse + '"'];
 }
 
+/** Bewusst gestrichene Stelle (Zweig fix/oberflaeche-texte): der alte Wortlaut steht nicht mehr in der Datei, und keine
+ *  seiner Zahlen steht an derselben Stelle neu ohne Beleg. Der Wortlaut fehlt hier ABSICHTLICH - fuer eine geaenderte
+ *  Stelle wuerde dieselbe Meldung "Wortlaut steht nicht mehr" einen Fehler anzeigen, fuer eine gestrichene ist sie das
+ *  Soll. Jede gestrichene Stelle traegt ihre Begruendung im Feld "begruendung". */
+function gestrichen(e, quelle) {
+  var altW = e.alt && e.alt.wortlaut;
+  if (!altW) return [true, e.datei + ' (gestrichen): kein alter Wortlaut in der Liste'];
+  if (!e.begruendung) return [true, e.datei + ' (gestrichen): keine Begruendung in der Liste'];
+  var fund = zeileMit(quelle, altW);
+  if (fund) return [true, e.datei + ':' + fund.zeile + ' (gestrichen laut Liste): alter Wortlaut steht noch - "' + kurz(altW) + '"'];
+  return [false, e.datei + ' (gestrichen, war ' + (e.alt.klasse || '?') + ' Z. ' + (e.alt.zeile || '?') + '): "' + kurz(altW) + '" steht nicht mehr - ' + kurz(e.begruendung)];
+}
+
 /** strategien.js: der Kopf "Überholt: …" wird zur Laufzeit vor den Beleg gesetzt, der mit belegeUeberholt.ab beginnt
  *  (strategien.js, Auftrag Nr. 91). Eine Fundstelle steht darunter, wenn dieser Beleg im selben Feld vor ihr steht. */
 function kopfImFeld(quelle, stelle) {
@@ -222,14 +240,14 @@ function kurz(s) { s = String(s).replace(/\s+/g, ' '); return s.length > 90 ? s.
     .map(function (f) { return [f, lies(f)]; }).filter(function (k) { return k[1] != null; });
   var listen = fs.existsSync(LISTEN) ? fs.readdirSync(LISTEN).filter(function (f) { return /\.json$/.test(f); }).sort() : [];
   if (!listen.length) { console.log('TEST DEFEKT: keine Fundlisten unter ' + LISTEN); process.exitCode = 1; return; }
-  var summe = { a: [0, 0], b: [0, 0], c: [0, 0], d: [0, 0] }, nr = 0;
+  var summe = { a: [0, 0], b: [0, 0], c: [0, 0], d: [0, 0], gestrichen: [0, 0] }, nr = 0;
   listen.forEach(function (f) {
     var gruppe = f.replace(/\.json$/, ''), liste;
-    if (/^[a-d]$/.test(filter) === false && filter && gruppe.indexOf(filter) !== 0) return;
+    if (/^([a-d]|gestrichen)$/.test(filter) === false && filter && gruppe.indexOf(filter) !== 0) return;
     try { liste = JSON.parse(fs.readFileSync(path.join(LISTEN, f), 'utf8')); }
     catch (err) { console.log('[' + gruppe + '] TEST DEFEKT: ' + err.message); process.exitCode = 1; return; }
     liste.forEach(function (e, i) {
-      if (/^[a-d]$/.test(filter) && e.klasse !== filter) return;
+      if (/^([a-d]|gestrichen)$/.test(filter) && e.klasse !== filter) return;
       nr++;
       var r;
       try { r = pruefe(e, korpus); } catch (err) { r = [true, 'TEST DEFEKT: ' + (err && err.stack || err)]; process.exitCode = 1; }
