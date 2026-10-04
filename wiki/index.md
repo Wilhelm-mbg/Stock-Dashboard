@@ -6,6 +6,8 @@ tags: [steuerung]
 **Das hier ist die ABGELEITETE Ebene. Sie ist nie autoritativ.**
 Jede Aussage trägt ihre Fundstelle. Im Streitfall gilt die Fundstelle, nicht diese Seite.
 
+> **Richtung seit 04.10.2026 (Wilhelm, bestätigt):** Maßstab ist der **S&P 500 nach Kosten** — echtes Geld nur für etwas, das ihn im Rückblick über fünf Jahre und danach einige Monate im Vorwärtstest schlägt; sonst Indexfonds. **Studienpause**, bis eine wirklich gute Idee da ist; bis dahin Daten und App in Ordnung bringen (zuerst der Maßstab sichtbar in der App). Grenze: Tokenkosten. Volltext: [entscheide.md](entscheide.md), letzter Eintrag „Richtung des Projekts".
+
 **Lies diese Seiten statt `PROJEKTSTAND.md`** — die Tafel ist ein chronologisches Log
 (638 KB / ~9.959 Zeilen) und als Nachschlagewerk unbrauchbar geworden. Sie bleibt als
 **Archiv** bestehen und wird nicht gelöscht.
