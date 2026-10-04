@@ -3,6 +3,7 @@
  *
  *   a-massnahmen-nachtrag.cmd --probe      EIN Abruf ohne Symbol-Angabe, nur Zaehlungen
  *   a-massnahmen-nachtrag.cmd --holen      der ganze Zeitraum, seitenweise, in den NEUEN Ordner
+ *   a-massnahmen-nachtrag.cmd --zusatz     Saetze mit Verarbeitungstag NACH dem Abrufende (eine Datei)
  *   node a-massnahmen-nachtrag.js --pruefen   ohne Netz: Zaehlungen gegen den alten Ordner
  *
  * WARUM EIN EIGENES SKRIPT. Das Massnahmen-Archiv (alpaca-massnahmen/<SYM>.json) endet am
@@ -107,9 +108,26 @@ async function hole(url) {
   return { status: letzter, daten: null };
 }
 /** Die Adresse nach massnahmenEines() - ohne Symbol-Angabe liefert die Quelle alle Werte. */
-function adresse(symbole, bis, token) {
+function adresse(symbole, von, bis, token) {
   return DATEN1 + '/corporate-actions?' + (symbole ? 'symbols=' + encodeURIComponent(symbole) + '&' : '') + 'types=' + MASSNAHME_ARTEN +
-    '&start=' + VON + '&end=' + bis + '&limit=1000' + (token ? '&page_token=' + encodeURIComponent(token) : '');
+    '&start=' + von + '&end=' + bis + '&limit=1000' + (token ? '&page_token=' + encodeURIComponent(token) : '');
+}
+/** Alle Seiten eines Zeitraums ohne Symbol-Angabe. Bei einem Fehler nur der Statuscode. */
+async function seitenHolen(von, bis) {
+  var alle = [], gesehen = {}, doppelt = 0, token = null, seiten = 0;
+  do {
+    var r = await hole(adresse(null, von, bis, token));
+    if (r.status !== 200) return { status: r.status, seiten: seiten };
+    seiten++;
+    saetzeAus(r.daten).forEach(function (e) {
+      var k = e._art + '|' + (e.id || JSON.stringify(e));
+      if (gesehen[k]) { doppelt++; return; }
+      gesehen[k] = 1; alle.push(e);
+    });
+    token = r.daten ? r.daten.next_page_token : null;
+    if (seiten % 5 === 0) sag('  Seite ' + seiten + ': zusammen ' + alle.length + ' Saetze');
+  } while (token && seiten < SEITEN_DECKEL);
+  return { status: 200, alle: alle, seiten: seiten, doppelt: doppelt, offen: !!token };
 }
 /** Die Saetze einer Antwortseite, mit _art wie im alten Ordner. */
 function saetzeAus(daten) {
@@ -147,7 +165,7 @@ function ordnerStand(p) {
 /* ================= --probe: EIN Abruf ohne Symbol-Angabe ================= */
 async function probe(bis) {
   if (!S.vorhanden()) { sag('Kein Zugang in der Umgebung (es fehlt: ' + S.fehlend().join(', ') + ') - ueber die .cmd starten.'); return 2; }
-  var r = await hole(adresse(null, bis, null));
+  var r = await hole(adresse(null, VON, bis, null));
   var aus = { stand: new Date().toISOString(), von: VON, bis: bis, abrufe: Z.abrufe, status: r.status };
   if (r.status === 200) {
     var s = saetzeAus(r.daten), sym = {};
@@ -168,24 +186,14 @@ async function holen(bis) {
   var fertig = path.join(NEU, '_nachtrag.json');
   if (fs.existsSync(fertig) && !arg('neu')) { sag('Der Nachtrag liegt vollstaendig (' + fertig + ') - nichts zu tun. Erneut holen nur mit --neu.'); return 0; }
   var altVor = ordnerStand(ALT), beginn = Date.now();
-  var alle = [], gesehen = {}, doppelt = 0, token = null, seiten = 0;
-  do {
-    var r = await hole(adresse(null, bis, token));
-    if (r.status !== 200) {
-      protokoll('Holen abgebrochen: HTTP ' + r.status + ' auf Seite ' + (seiten + 1) + ', nichts geschrieben');
-      sag('Abbruch: HTTP ' + r.status + ' auf Seite ' + (seiten + 1) + ' - nichts geschrieben.');
-      return 3;
-    }
-    seiten++;
-    saetzeAus(r.daten).forEach(function (e) {
-      var k = e._art + '|' + (e.id || JSON.stringify(e));
-      if (gesehen[k]) { doppelt++; return; }
-      gesehen[k] = 1; alle.push(e);
-    });
-    token = r.daten ? r.daten.next_page_token : null;
-    if (seiten % 5 === 0) sag('  Seite ' + seiten + ': zusammen ' + alle.length + ' Saetze');
-  } while (token && seiten < SEITEN_DECKEL);
-  if (token) { sag('Abbruch: Seitendeckel ' + SEITEN_DECKEL + ' erreicht - nichts geschrieben.'); return 4; }
+  var h = await seitenHolen(VON, bis);
+  if (h.status !== 200) {
+    protokoll('Holen abgebrochen: HTTP ' + h.status + ' auf Seite ' + (h.seiten + 1) + ', nichts geschrieben');
+    sag('Abbruch: HTTP ' + h.status + ' auf Seite ' + (h.seiten + 1) + ' - nichts geschrieben.');
+    return 3;
+  }
+  if (h.offen) { sag('Abbruch: Seitendeckel ' + SEITEN_DECKEL + ' erreicht - nichts geschrieben.'); return 4; }
+  var alle = h.alle, doppelt = h.doppelt, seiten = h.seiten;
 
   /* Zuordnung je Kuerzel und der Beweis, dass die Dateinamen eindeutig sind (Windows
    * unterscheidet Gross- und Kleinschreibung nicht). */
@@ -228,6 +236,35 @@ async function holen(bis) {
   sag('Je Art: ' + JSON.stringify(kopf.saetzeJeArt));
   sag('process_date ' + JSON.stringify(kopf.process_date) + '  Datum ' + JSON.stringify(kopf.datum));
   sag('Alter Ordner unveraendert: ' + (JSON.stringify(altVor) === JSON.stringify(altNach) ? 'ja' : 'NEIN') + ' ' + JSON.stringify(altNach));
+  return 0;
+}
+
+/* ================= --zusatz: was die Quelle fuer die Zeit NACH dem Abrufende schon fuehrt =================
+ *
+ * BEFUND DES NACHTRAGS (a-zahlen.json): die Quelle filtert den Zeitraum nach process_date, und
+ * der liegt bei Ausschuettungen fast immer NACH dem Ex-Tag (Zahltag), vereinzelt auch bei
+ * Zusammenlegungen und Uebernahmen. Ein Abruf "bis gestern" enthaelt deshalb nicht jeden Satz,
+ * dessen Massnahmentag im Fenster liegt. Der alte Ordner hatte das Problem nicht: das Werkzeug
+ * fragt immer bis zum 31.12. des laufenden Jahres. Dieser Zusatz holt genau diesen Rest -
+ * process_date vom Tag nach dem Abrufende bis ANGEKUENDIGT_BIS - in EINE Datei
+ * _angekuendigt.json im neuen Ordner. Die Dateien je Kuerzel bleiben, wie beauftragt. */
+var ANGEKUENDIGT_BIS = '2026-12-31';
+async function zusatz() {
+  if (!S.vorhanden()) { sag('Kein Zugang in der Umgebung (es fehlt: ' + S.fehlend().join(', ') + ') - ueber die .cmd starten.'); return 2; }
+  var kopf = JSON.parse(fs.readFileSync(path.join(NEU, '_nachtrag.json'), 'utf8'));
+  var ziel = path.join(NEU, '_angekuendigt.json');
+  if (fs.existsSync(ziel) && !arg('neu')) { sag('Der Zusatz liegt schon - nichts zu tun. Erneut holen nur mit --neu.'); return 0; }
+  var von = tagLokal(Date.parse(kopf.bis + 'T12:00:00') + 86400000);
+  var h = await seitenHolen(von, ANGEKUENDIGT_BIS);
+  if (h.status !== 200 || h.offen) { protokoll('Zusatz abgebrochen: HTTP ' + h.status); sag('Abbruch: HTTP ' + h.status + ' - nichts geschrieben.'); return 3; }
+  var text = JSON.stringify({ stand: new Date().toISOString(), abruftag: tagLokal(Date.now()), quelle: 'alpaca v1 corporate-actions', von: von, bis: ANGEKUENDIGT_BIS,
+    hinweis: 'ZUSATZ ueber den Auftrag hinaus: Saetze mit process_date NACH dem Abrufende des Nachtrags (' + kopf.bis + '), Stand des Abruftags. ' +
+      'Enthaelt Saetze, deren Massnahmentag (ex_date, effective_date) im Fenster des Nachtrags liegt. Nicht je Kuerzel abgelegt, nicht zusammengefuehrt.',
+    abrufe: Z.abrufe, seiten: h.seiten, anzahl: h.alle.length, saetzeJeArt: jeArtZaehlen(h.alle), process_date: spanne(h.alle, 'process_date'), datum: spanne(h.alle, V.datumAus),
+    saetze: h.alle });
+  atomar(ziel, text);
+  protokoll('Zusatz: ' + Z.abrufe + ' Abrufe, ' + h.seiten + ' Seiten, ' + h.alle.length + ' Saetze, ' + Buffer.byteLength(text) + ' Bytes, Fehler ' + JSON.stringify(Z.fehler));
+  sag('Zusatz: ' + Z.abrufe + ' Abrufe, ' + h.seiten + ' Seiten, ' + h.alle.length + ' Saetze, ' + Buffer.byteLength(text) + ' Bytes; je Art ' + JSON.stringify(jeArtZaehlen(h.alle)));
   return 0;
 }
 
@@ -374,6 +411,31 @@ function pruefen() {
   AUS.c_lebendeReihen = { lebendX10: Object.keys(lebend).length, splitsSeit0409: splits.length, splits: splits, aktienDividenden: aktDiv,
     saetzeJeArtBeiLebenden: lebendMit, saetzeJeArtBeiAllenAktienreihen: reihenMit };
 
+  /* Zusatz (falls geholt): Saetze mit Verarbeitungstag nach dem Abrufende, deren Massnahmentag im Fenster liegt */
+  var pz = path.join(NEU, '_angekuendigt.json');
+  if (fs.existsSync(pz)) {
+    var ZS = JSON.parse(fs.readFileSync(pz, 'utf8')), zKenn = {}, imF = [], zLeb = {}, zSplits = [], zBenannt = [];
+    ZS.saetze.forEach(function (s) {
+      zKenn[s._art + '|' + s.id] = 1;
+      var d = V.datumAus(s);
+      symboleAus(s).forEach(function (x) { if (BENANNT.indexOf(x) !== -1) zBenannt.push(Object.assign({ kuerzel: x }, kurzSatz(s))); });
+      if (!d || d > kopf.bis) return;
+      imF.push(s);
+      symboleAus(s).forEach(function (x) {
+        if (!lebend[x]) return;
+        zLeb[s._art] = (zLeb[s._art] || 0) + 1;
+        if (/split/.test(s._art)) zSplits.push({ reihe: lebend[x], art: s._art, ex: d, process_date: s.process_date, old_rate: s.old_rate, new_rate: s.new_rate, faktor: V.faktorAus(s) });
+      });
+    });
+    var gefunden = 0;
+    Object.keys(alt).forEach(function (k) { var d = V.datumAus(alt[k]); if (d && d >= VON && d <= kopf.bis && !neu[k] && zKenn[alt[k]._art + '|' + alt[k].id]) gefunden++; });
+    AUS.zusatzAngekuendigt = { von: ZS.von, bis: ZS.bis, abrufe: ZS.abrufe, saetze: ZS.anzahl, saetzeJeArt: ZS.saetzeJeArt,
+      mitMassnahmentagBisAbrufende: imF.length, davonAb0409: imF.filter(function (s) { return V.datumAus(s) > ALT_BIS; }).length,
+      jeArt: jeArtZaehlen(imF), beiLebendenJeArt: zLeb, splitsBeiLebenden: zSplits, benannt: zBenannt, imAltenOrdnerVermissteHierGefunden: gefunden,
+      andereAlsBarausschuettung: imF.filter(function (s) { return s._art !== 'cash_dividends'; }).map(kurzSatz) };
+    sag('Zusatz: ' + JSON.stringify(AUS.zusatzAngekuendigt));
+  }
+
   /* (d) die benannten Kuerzel: alles, was der Nachtrag zu ihnen fuehrt */
   AUS.d_benannt = {};
   BENANNT.forEach(function (x) {
@@ -408,8 +470,9 @@ async function main() {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(bis)) || bis < VON) { sag('Ungueltiges --bis.'); return 9; }
   if (arg('probe')) return probe(bis);
   if (arg('holen')) return holen(bis);
+  if (arg('zusatz')) return zusatz();
   if (arg('pruefen')) return pruefen();
-  sag('Kein Modus gewaehlt: --probe | --holen | --pruefen (siehe Kopf der Datei).');
+  sag('Kein Modus gewaehlt: --probe | --holen | --zusatz | --pruefen (siehe Kopf der Datei).');
   return 1;
 }
 if (require.main === module) {

@@ -1,5 +1,5 @@
 {
- "stand": "2026-10-04T11:47:12.081Z",
+ "stand": "2026-10-04T11:51:21.835Z",
  "von": "2026-09-01",
  "bis": "2026-10-03",
  "abruftag": "2026-10-04",
@@ -721,6 +721,69 @@
    "spin_offs": 3,
    "reverse_splits": 3
   }
+ },
+ "zusatzAngekuendigt": {
+  "von": "2026-10-04",
+  "bis": "2026-12-31",
+  "abrufe": 3,
+  "saetze": 2887,
+  "saetzeJeArt": {
+   "cash_dividends": 2849,
+   "forward_splits": 11,
+   "reverse_splits": 20,
+   "stock_dividends": 3,
+   "cash_mergers": 2,
+   "spin_offs": 2
+  },
+  "mitMassnahmentagBisAbrufende": 1713,
+  "davonAb0409": 1606,
+  "jeArt": {
+   "cash_dividends": 1710,
+   "stock_dividends": 1,
+   "cash_mergers": 1,
+   "spin_offs": 1
+  },
+  "beiLebendenJeArt": {
+   "cash_dividends": 242
+  },
+  "splitsBeiLebenden": [],
+  "benannt": [
+   {
+    "kuerzel": "DBRG",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-15",
+    "symbol": "DBRG",
+    "rate": 0.01,
+    "special": false
+   }
+  ],
+  "imAltenOrdnerVermissteHierGefunden": 136,
+  "andereAlsBarausschuettung": [
+   {
+    "art": "stock_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-07",
+    "symbol": "CETXP",
+    "rate": 1.05
+   },
+   {
+    "art": "cash_mergers",
+    "datum": "2026-10-01",
+    "process_date": "2026-10-05",
+    "acquiree_symbol": "NSTS",
+    "rate": 14.31
+   },
+   {
+    "art": "spin_offs",
+    "datum": "2026-09-15",
+    "process_date": "2026-10-06",
+    "new_symbol": "09175M861",
+    "source_symbol": "GPUS",
+    "new_rate": 0.03894043087,
+    "source_rate": 1
+   }
+  ]
  },
  "d_benannt": {
   "BURU": {
