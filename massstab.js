@@ -14,20 +14,59 @@
  * Der Verlaufspunkt traegt im Feld spy den JUENGSTEN Balken der bereinigten SPY-Reihe
  * (Bestand drift_markt) vom Tag des Punkts. Der juengste Balken einer bereinigten
  * Reihe ist immer gleich dem unbereinigten Schluss - die Bereinigung schreibt nur die
- * Vergangenheit um. Zwei Punkte aus verschiedenen Tagen ergeben deshalb den
- * KURSERTRAG des SPY, ohne Ausschuettungen. Die Buecher sind genauso gebaut: sie
- * bewerten zum juengsten Kurs und buchen nie eine Ausschuettung. Beide Seiten stehen
- * also gleich da - und beide ohne Ausschuettungen. Das sagt HINWEIS, wortgleich an
- * jeder Stelle.
+ * Vergangenheit um. Zwei abgelegte Punkte aus verschiedenen Tagen ergeben deshalb den
+ * KURSERTRAG des SPY, ohne Ausschuettungen.
+ *
+ * SEIT AUFTRAG NR. 81 (04.10.2026) - DER MARKT ALS GESAMTERTRAG: Wilhelms Massstab ist
+ * der S&P 500, wie ihn ein Anleger im Indexfonds wirklich bekommt. Der Marktwert jedes
+ * Punkts kommt deshalb aus der AKTUELL geladenen bereinigten Reihe (opts.markt):
+ * juengster Balken, dessen Zeitstempel nicht nach dem Punkt liegt. Zwei Werte aus
+ * DERSELBEN, in einem Abruf bereinigten Reihe ergeben den Gesamtertrag (an echten
+ * Zahlen: 06.04. bis 02.10.2026 Kursertrag +16,80 %, Gesamtertrag +17,39 %). Fehlt die
+ * Reihe, beginnt sie nach dem ersten Punkt oder ist sie zu alt, bleibt es beim
+ * Kursertrag (abgelegte Staende, beim Intraday-Depot die Rohreihe) - und hinweis()
+ * sagt das. NIE GEMISCHT: ein Vergleich nimmt alle Marktwerte aus einer Quelle.
+ * Die Buecher bewerten zum juengsten Kurs und buchen keine Ausschuettung - das sagt
+ * hinweis() ebenfalls, wortgleich an jeder Stelle.
  *
  * Alles Simulation mit virtuellem Kapital. Keine Anlageberatung.
  */
 (function (root) {
 
   var TAG = 24 * 3600000;
-  var HINWEIS = 'S&P 500 als SPY-Tageskurs. Buch und Markt ohne Ausschüttungen.';
+  /* Aelter als fuenf Tage vor dem juengsten Punkt gilt die bereinigte Reihe als zu alt:
+   * ueber ein langes Wochenende liegen bis zu vier Tage zwischen zwei Balken. */
+  var MARKT_MAX_ALTER = 5 * TAG;
 
   function zahl(x) { return typeof x === 'number' && isFinite(x); }
+
+  /** Der juengste Balken von reihe [[t, kurs], …] (aufsteigend), dessen Zeitstempel
+   *  nicht nach t liegt - sein Kurs, oder null, wenn die Reihe erst spaeter beginnt.
+   *  DIE EINE Zuordnung von Marktwert zu Zeitpunkt (mitMarkt und vergleich lesen sie). */
+  function marktAn(reihe, t) {
+    var lo = 0, hi = reihe.length - 1, j = -1;
+    while (lo <= hi) {
+      var mi = (lo + hi) >> 1;
+      if (reihe[mi][0] <= t) { j = mi; lo = mi + 1; } else hi = mi - 1;
+    }
+    return j >= 0 && zahl(reihe[j][1]) && reihe[j][1] > 0 ? reihe[j][1] : null;
+  }
+
+  /** Aus welcher Quelle kommen die Marktwerte EINES Vergleichs?
+   *  art 'gesamt'  alle aus opts.markt, der aktuell geladenen BEREINIGTEN SPY-Reihe
+   *  art 'kurs'    Rueckfall: alle aus opts.marktKurs (unbereinigte Reihe), sonst aus
+   *                dem im Punkt abgelegten spy; grund sagt, warum nicht 'gesamt':
+   *                'reihe-fehlt' | 'reihe-beginnt-spaeter' | 'reihe-zu-alt' */
+  function marktWahl(tErst, tLetzt, opts) {
+    var m = opts.markt, grund = null;
+    if (!m || m.length < 2) grund = 'reihe-fehlt';
+    else if (m[0][0] > tErst) grund = 'reihe-beginnt-spaeter';
+    else if (tLetzt - m[m.length - 1][0] > MARKT_MAX_ALTER) grund = 'reihe-zu-alt';
+    if (!grund) return { art: 'gesamt', grund: null, wert: function (p) { return marktAn(m, p.t); } };
+    var k = opts.marktKurs;
+    if (k && k.length) return { art: 'kurs', grund: grund, wert: function (p) { return marktAn(k, p.t); } };
+    return { art: 'kurs', grund: grund, wert: function (p) { return zahl(p.spy) && p.spy > 0 ? p.spy : null; } };
+  }
 
   /** Der EINE Rechenweg fuer einen Prozentstand. null, wenn er sich nicht rechnen
    *  laesst - nie eine Null an der Stelle einer fehlenden Zahl. */
@@ -38,7 +77,8 @@
 
   function leer(grund) {
     return { ok: false, grund: grund, standPct: null, standT: null, buchPct: null, marktPct: null,
-      abstandPp: null, seit: null, bis: null, abStart: false, anker: null, buchReihe: [], marktReihe: [] };
+      abstandPp: null, seit: null, bis: null, abStart: false, anker: null, buchReihe: [], marktReihe: [],
+      marktArt: null, marktGrund: null };
   }
 
   /** Buch gegen Markt ueber DENSELBEN Zeitraum.
@@ -48,7 +88,13 @@
    *  opts.start     Startkapital des Buchs, falls der Punkt keines traegt - nie eine
    *                 feste Zahl aus dem Code
    *  opts.angelegt  Zeitpunkt, an dem das Buch angelegt wurde
+   *  opts.markt     die aktuell geladene BEREINIGTE SPY-Reihe [[t, kurs], …] - traegt
+   *                 sie den Zeitraum, ist der Markt der Gesamtertrag (marktArt 'gesamt')
+   *  opts.marktKurs unbereinigte Reihe als Rueckfall (Intraday-Depot, Nasdaq); ohne
+   *                 sie bleibt als Rueckfall der im Punkt abgelegte Stand (spy)
    *
+   *  marktArt  'gesamt' | 'kurs' - aus welcher Quelle ALLE Marktwerte dieses Vergleichs
+   *            stammen; marktGrund sagt bei 'kurs', warum es nicht der Gesamtertrag ist
    *  standPct  Stand des Buchs gegen sein Startkapital am juengsten Punkt
    *  buchPct, marktPct, abstandPp  ueber [seit, bis] - vom ersten Punkt, an dem Buch
    *            UND Markt einen Stand haben, bis zum juengsten solchen Punkt
@@ -68,11 +114,17 @@
       if (!p || !zahl(p[buchFeld])) return;
       var st = zahl(p[startFeld]) && p[startFeld] > 0 ? p[startFeld] : (zahl(opts.start) && opts.start > 0 ? opts.start : null);
       if (!st) { ohneStart = true; return; }
-      pts.push({ t: p.t, idx: p[buchFeld] / st, spy: zahl(p.spy) && p.spy > 0 ? p.spy : null });
+      pts.push({ t: p.t, idx: p[buchFeld] / st, spy: p.spy });
     });
     if (!pts.length) return leer(ohneStart ? 'kein-startkapital' : 'kein-stand');
     var z = pts[pts.length - 1];
+    /* Die Quelle des Markts wird EINMAL fuer den ganzen Vergleich gewaehlt - gemessen
+     * am ersten und am juengsten Punkt des Buchs. */
+    var wahl = marktWahl(pts[0].t, z.t, opts);
+    pts.forEach(function (p) { p.spy = wahl.wert(p); });
     var r = leer(null);
+    r.marktArt = wahl.art;
+    r.marktGrund = wahl.grund;
     r.standPct = prozent(z.idx, 1);
     r.standT = z.t;
     r.buchReihe = pts.map(function (p) { return [p.t, prozent(p.idx, 1)]; });
@@ -102,10 +154,9 @@
    *  Marktkurs, dessen Zeitstempel nicht nach ihm liegt. Fehlt die Marktreihe, bleibt
    *  spy null - der Vergleich meldet dann "Markt: noch kein Stand". */
   function mitMarkt(reihe, marktReihe, feld, startFeld, start) {
-    var m = marktReihe || [], j = -1;
+    var m = marktReihe || [];
     return (reihe || []).map(function (p) {
-      while (j + 1 < m.length && m[j + 1][0] <= p[0]) j++;
-      var o = { t: p[0], spy: j >= 0 ? m[j][1] : null };
+      var o = { t: p[0], spy: marktAn(m, p[0]) };
       o[feld] = p[1];
       o[startFeld] = start;
       return o;
@@ -156,9 +207,45 @@
       ', Stand ' + datum(v.bis) + ', nach Kosten)';
   }
 
+  /* ---- Die Beschriftung: wie der Vergleich gebaut ist - EINE Quelle, jede Stelle liest sie ----
+   * Der Markt steht als Gesamtertrag da, sobald die bereinigte Reihe den Zeitraum
+   * traegt. Die Buecher buchen keine Ausschuettung (Stand Auftrag Nr. 81: der Weg ist
+   * an echten Zahlen geklaert, gebaut ist er nicht) - der Vergleich ist damit um die
+   * Ausschuettungen des Buchs zu streng, und genau das steht da. Im Rueckfall steht der
+   * Kursertrag da, mit dem Grund. */
+  var HINWEIS_GESAMT = 'S&P 500 als SPY-Gesamtertrag. Markt mit, Buch ohne Ausschüttungen – der Vergleich ist um die Ausschüttungen des Buchs zu streng.';
+  var HINWEIS_KURS = 'S&P 500 als SPY-Tageskurs. Buch und Markt ohne Ausschüttungen';
+  var GRUND_KURS = {
+    'reihe-fehlt': 'die bereinigte SPY-Reihe ist noch nicht geladen',
+    'reihe-beginnt-spaeter': 'die bereinigte SPY-Reihe beginnt nach dem ersten Stand',
+    'reihe-zu-alt': 'die bereinigte SPY-Reihe ist zu alt'
+  };
+  /** Der Hinweis zu EINEM Vergleich. Leer, solange es keinen Markt-Zeitraum gibt. */
+  function hinweis(v) {
+    if (!v || !v.ok) return '';
+    if (v.marktArt === 'gesamt') return HINWEIS_GESAMT;
+    return HINWEIS_KURS + (GRUND_KURS[v.marktGrund] ? ' (' + GRUND_KURS[v.marktGrund] + ' – deshalb der Kursertrag)' : '') + '.';
+  }
+  /** Der Hinweis zu MEHREREN Vergleichen an einer Stelle (Kopf, Buecher-Verlauf):
+   *  sind alle gleich gebaut, steht er einmal; sonst je Buch mit Namen davor.
+   *  eintraege = [[label, vergleich], …] */
+  function hinweise(eintraege) {
+    var mit = (eintraege || []).filter(function (e) { return !!hinweis(e[1]); });
+    if (!mit.length) return '';
+    var erster = hinweis(mit[0][1]);
+    if (mit.every(function (e) { return hinweis(e[1]) === erster; })) return erster;
+    return mit.map(function (e) { return e[0] + ': ' + hinweis(e[1]); }).join(' ');
+  }
+  /** Kurz, fuer eine Legende oder eine Berichtszeile: welcher Ertrag des Markts dasteht. */
+  function marktZusatz(v) { return (v && v.marktArt === 'gesamt' ? 'mit' : 'ohne') + ' Ausschüttungen'; }
+  /** Der Name der Marktlinie in einer Legende. */
+  function marktName(v) { return 'S&P 500 (SPY, ' + marktZusatz(v) + ')'; }
+
   var Massstab = {
-    HINWEIS: HINWEIS, prozent: prozent, vergleich: vergleich, mitMarkt: mitMarkt,
-    kopfText: kopfText, langText: langText, datum: datum
+    prozent: prozent, vergleich: vergleich, mitMarkt: mitMarkt, marktAn: marktAn,
+    kopfText: kopfText, langText: langText, datum: datum,
+    hinweis: hinweis, hinweise: hinweise, marktName: marktName, marktZusatz: marktZusatz,
+    MARKT_MAX_ALTER: MARKT_MAX_ALTER
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = Massstab; return; }
   root.Massstab = Massstab;

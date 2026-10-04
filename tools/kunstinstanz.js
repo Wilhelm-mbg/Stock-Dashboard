@@ -35,6 +35,9 @@ function saeen(testroot, jetzt) {
    * depot.json zu legen genuegt nicht: der dort vorgesehene Uebernahmeweg laeuft
    * beim Start ins Leere (siehe Uebergabe oberflaeche-stufe2, Befund 2). */
   fs.writeFileSync(path.join(sd, 'kostenmessung.json'), JSON.stringify(KD.kostenmessung(jetzt)));
+  /* Die bereinigte Marktreihe (Auftrag Nr. 81): aus ihr kommt der Markt des Massstabs.
+   * Ohne sie zeigte die Kunstinstanz nur den Rueckfall auf den Kursertrag. */
+  fs.writeFileSync(path.join(sd, 'drift_markt.json'), JSON.stringify(KD.marktReihe(jetzt)));
   /* Der Reiter Markt (Stufe 5) haengt an drei Quellen. Zwei davon sind Dateien und
    * werden hier gelegt: die Stammdaten (Branche, Aktienanzahl) und Tagesreihen im
    * Tagesarchiv. Die dritte sind LAUFENDE Kurse - die gibt es ohne Netz nicht, und

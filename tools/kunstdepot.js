@@ -175,6 +175,28 @@ function bauen(jetzt) {
   };
 }
 
+/** Die BEREINIGTE Marktreihe der Kunstinstanz (Store-Name 'drift_markt', Auftrag Nr. 81).
+ *  Seit dem 04.10.2026 kommt der Markt des Massstabs aus der aktuell geladenen
+ *  bereinigten SPY-Reihe, nicht mehr aus den im Verlauf abgelegten Tagesstaenden. Ohne
+ *  diese Datei stuende die Kunstinstanz dauerhaft im Rueckfall ("Kursertrag") und
+ *  keine Aufnahme zeigte den Normalfall.
+ *  Gebaut wie eine echte bereinigte Reihe: derselbe erfundene Kursverlauf wie das Feld
+ *  spy in bauen() (640 x (1 + 0,011 s)), dazu EINE erfundene Ausschuettung von 1,90
+ *  neun Tage vor jetzt - jeder Balken davor ist um den Faktor (1 - 1,90 / Schluss am
+ *  Vortag) kleiner. Ueber die 19 Tage des Kunstverlaufs steht der Markt damit als
+ *  Gesamtertrag bei rund +1,4 % statt +1,1 %. Erfunden, keine Messung. */
+function marktReihe(jetzt) {
+  var now = jetzt || Date.now();
+  function schluss(i) { return 640 * (1 + 0.011 * ((19 - i) / 19)); }   // i Tage vor jetzt; vor dem Verlauf laeuft die Gerade weiter
+  var EX = 9, faktor = 1 - 1.90 / schluss(EX + 1);
+  var reihe = [];
+  for (var i = 30; i >= 0; i--) {
+    /* Eine Stunde VOR dem Verlaufspunkt des Tages: jeder Punkt findet seinen Balken. */
+    reihe.push([now - i * TAG - 3600000, Math.round(schluss(i) * (i > EX ? faktor : 1) * 10000) / 10000]);
+  }
+  return { at: now, reihe: reihe };
+}
+
 /** Der Store der Kostenmessung. Er liegt seit dem 27.08.2026 NEBEN dem Depot in
  *  einer eigenen Datei (Store-Name 'kostenmessung') - genau dort schreibt kosten.js
  *  hin, und nur von dort liest die Bilanz. Vier erfundene Runden, damit die
@@ -589,7 +611,7 @@ function massnahmen(jetzt) {
   }];
 }
 
-module.exports = { bauen: bauen, kostenmessung: kostenmessung, archiv: archiv,
+module.exports = { bauen: bauen, kostenmessung: kostenmessung, archiv: archiv, marktReihe: marktReihe,
                    massnahmen: massnahmen,
                    newsstand: newsstand,
                    marktStammdaten: marktStammdaten, marktArchiv: marktArchiv,

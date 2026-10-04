@@ -22081,8 +22081,13 @@ console.log('92) Der Massstab: jedes Buch gegen den S&P 500');
   ok(Mst.kopfText([['Momentum', vAus], ['Drift', vOhne]], pz92) === 'Momentum aus · Drift +1,2 % · Markt: noch kein Stand' &&
      Mst.kopfText([['Momentum', vAus], ['Drift', null]], pz92) === 'Momentum aus · Drift noch kein Stand',
      '92.2 Kopf: aus, kein Stand und fehlender Markt werden benannt');
-  ok(/ohne Aussch/.test(Mst.HINWEIS) && /SPY/.test(Mst.HINWEIS) && !/mit Aussch/.test(Mst.HINWEIS),
-     '92.2 der Hinweis sagt, wie der Vergleich gebaut ist: SPY-Kurs, beide Seiten ohne Ausschuettungen', Mst.HINWEIS);
+  /* Umgeschrieben mit Auftrag Nr. 81 (altes SOLL: EIN fester Satz "beide Seiten ohne
+   * Ausschuettungen"). Neu: der Hinweis folgt der Bauart des einzelnen Vergleichs. vA
+   * hat keine bereinigte Reihe bekommen - also Kursertrag, mit dem Grund dazu. */
+  ok(vA.marktArt === 'kurs' && vA.marktGrund === 'reihe-fehlt' &&
+     Mst.hinweis(vA) === 'S&P 500 als SPY-Tageskurs. Buch und Markt ohne Ausschüttungen (die bereinigte SPY-Reihe ist noch nicht geladen – deshalb der Kursertrag).' &&
+     Mst.hinweis(vOhne) === '' && Mst.hinweis(vAus) === '' && Mst.hinweis(null) === '' && Mst.HINWEIS === undefined,
+     '92.2 der Hinweis sagt, wie DIESER Vergleich gebaut ist: ohne bereinigte Reihe der Kursertrag samt Grund; ohne Markt-Zeitraum nichts', Mst.hinweis(vA));
 
   /* ---- 92.3 der Stand des letzten Takts ---- */
   var mfd92 = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
@@ -22148,8 +22153,126 @@ console.log('92) Der Massstab: jedes Buch gegen den S&P 500');
   ok(/dash: '5 4'/.test(block(dep92, 'function renderBuecherVerlauf', 'function intradayBereichZeigen')) && /stroke-dasharray="' \+ s\.dash/.test(chart92) &&
      /drawLines\(svg, gezeigt, leg, 0, \{ unit: ' %'/.test(dep92),
      '92.4 die Marktlinie ist eine zurueckgenommene (gestrichelte) Linie im vorhandenen Zeichenwerk');
-  ok(!/\^GSPC', 'S&P 500 \(Buy/.test(dep92) && /getHistory\('SPY', '2y'\)/.test(block(dep92, 'async function renderBenchmark', 'function renderPatience')),
-     '92.4 das Intraday-Depot hat denselben Massstab (SPY) - nicht mehr den Kursindex unter "Seit Depot-Start"');
+  /* Umgeschrieben mit Auftrag Nr. 81 (altes SOLL: die Marke getHistory('SPY', '2y') im
+   * Benchmark = "derselbe Massstab"). Neu: derselbe RECHENWEG wie die Buecher - die
+   * bereinigte Reihe zuerst, die Rohreihe nur als Rueckfall. */
+  var bench92 = block(dep92, 'async function renderBenchmark', 'function renderPatience');
+  ok(!/\^GSPC', 'S&P 500 \(Buy/.test(dep92) &&
+     /Massstab\.vergleich\(intradayVerlauf\(\), 'intraday', 'startI', \{ markt: marktGesamt\(\), marktKurs: MARKT_SPY \}\)/.test(bench92) &&
+     /name: Massstab\.marktName\(vS\)/.test(bench92),
+     '92.4 das Intraday-Depot hat denselben Massstab wie die Buecher: bereinigte SPY-Reihe, Rohreihe nur als Rueckfall - nicht mehr den Kursindex');
+
+  /* ---- 92.5 (Auftrag Nr. 81) der Markt als Gesamtertrag ----
+   * Kunstreihe mit EINER Ausschuettung: 5 $ am dritten Tag, der Kurs faellt am Ex-Tag
+   * um genau diese 5 $. So wie Yahoo bereinigt: jeder Balken VOR dem Ex-Tag mal
+   * (1 - Betrag / Schluss am Vortag). */
+  var ROH = [[T(1), 498], [T(2), 500], [T(3), 495], [T(4), 499.95]];
+  var FAKTOR = 1 - 5 / 500;
+  var BER = ROH.map(function (b, i) { return [b[0], i < 2 ? b[1] * FAKTOR : b[1]]; });
+  /* Der Verlauf, wie der Takt ihn ablegt: im Feld spy der Schluss des Tages (unbereinigt). */
+  var G = [
+    { t: T(2, 23), momentum: 100000, startM: 100000, spy: 500 },
+    { t: T(3, 23), momentum: 100300, startM: 100000, spy: 495 },
+    { t: T(4, 23), momentum: 100600, startM: 100000, spy: 499.95 }
+  ];
+  var vKurs = Mst.vergleich(G, 'momentum', 'startM', { an: true, angelegt: T(2, 23) });
+  var vGes = Mst.vergleich(G, 'momentum', 'startM', { an: true, angelegt: T(2, 23), markt: BER });
+  ok(vKurs.marktArt === 'kurs' && nah92(vKurs.marktPct, (499.95 / 500 - 1) * 100) && vGes.marktArt === 'gesamt' && vGes.marktGrund === null &&
+     nah92(vGes.marktPct, (499.95 / (500 * FAKTOR) - 1) * 100) && nah92(Math.round(vGes.marktPct * 100) / 100, 1) && nah92(Math.round(vKurs.marktPct * 100) / 100, -0.01),
+     '92.5 Kunstreihe mit einer Ausschuettung: aus den abgelegten Staenden der Kursertrag (-0,01 %), aus der bereinigten Reihe der Gesamtertrag (+1,00 %)',
+     vKurs.marktPct.toFixed(4) + ' / ' + vGes.marktPct.toFixed(4));
+  ok(nah92((1 + vGes.marktPct / 100) * FAKTOR, 1 + vKurs.marktPct / 100) && nah92(vGes.buchPct, vKurs.buchPct) && nah92(vGes.standPct, vKurs.standPct),
+     '92.5 die beiden unterscheiden sich um GENAU die Ausschuettung (Faktor 1 - 5/500); am Buch aendert die Marktquelle nichts');
+  var einTag = Mst.vergleich(G.slice(0, 2), 'momentum', 'startM', { an: true, angelegt: T(2, 23), markt: BER });
+  ok(nah92(einTag.marktPct, 0) && nah92(Mst.vergleich(G.slice(0, 2), 'momentum', 'startM', { an: true, angelegt: T(2, 23) }).marktPct, -1),
+     '92.5 ueber den Ex-Tag allein: Kursertrag -1,0 % (der Abschlag), Gesamtertrag 0,0 % - der Anleger hat die 5 $ bekommen');
+  ok(Mst.hinweis(vGes) === 'S&P 500 als SPY-Gesamtertrag. Markt mit, Buch ohne Ausschüttungen – der Vergleich ist um die Ausschüttungen des Buchs zu streng.' &&
+     Mst.marktName(vGes) === 'S&P 500 (SPY, mit Ausschüttungen)' && Mst.marktName(vKurs) === 'S&P 500 (SPY, ohne Ausschüttungen)',
+     '92.5 die Beschriftung sagt, was dasteht: Markt mit, Buch ohne Ausschuettungen - zu streng um die Ausschuettungen des Buchs', Mst.hinweis(vGes));
+  /* Nie gemischt: ein Vergleich nimmt ALLE Marktwerte aus einer Quelle. */
+  var Gfalsch = G.map(function (p) { return { t: p.t, momentum: p.momentum, startM: p.startM, spy: 1 }; });
+  ok(nah92(Mst.vergleich(Gfalsch, 'momentum', 'startM', { an: true, markt: BER }).marktPct, vGes.marktPct) &&
+     vGes.marktReihe.length === 3 && nah92(vGes.marktReihe[0][1], 0) && nah92(vGes.marktReihe[2][1], vGes.marktPct),
+     '92.5 traegt die bereinigte Reihe, zaehlt KEIN abgelegter Stand mehr - auch die Marktlinie kommt ganz aus ihr');
+  gegen92('gemischt (Beginn aus dem abgelegten Stand, Ende aus der bereinigten Reihe) kaeme der Kursertrag heraus, obwohl "Gesamtertrag" dranstaende',
+    nah92(Mst.prozent(Mst.marktAn(BER, G[2].t), G[0].spy), vKurs.marktPct) && !nah92(vKurs.marktPct, vGes.marktPct));
+  /* Der Rueckfall: fehlt die Reihe, beginnt sie nach dem ersten Punkt oder ist sie zu alt. */
+  var vSpaet = Mst.vergleich(G, 'momentum', 'startM', { an: true, markt: BER.slice(2) });
+  var Galt = G.concat([{ t: T(4, 23) + 6 * 86400000, momentum: 100700, startM: 100000, spy: 502 }]);
+  var vAlt = Mst.vergleich(Galt, 'momentum', 'startM', { an: true, markt: BER });
+  var vFrisch = Mst.vergleich(Galt, 'momentum', 'startM', { an: true, markt: BER.concat([[T(4, 23) + 5 * 86400000, 503]]) });
+  ok(vSpaet.marktArt === 'kurs' && vSpaet.marktGrund === 'reihe-beginnt-spaeter' && nah92(vSpaet.marktPct, vKurs.marktPct) &&
+     vAlt.marktArt === 'kurs' && vAlt.marktGrund === 'reihe-zu-alt' && nah92(vAlt.marktPct, (502 / 500 - 1) * 100) &&
+     /ist zu alt – deshalb der Kursertrag/.test(Mst.hinweis(vAlt)) && /beginnt nach dem ersten Stand/.test(Mst.hinweis(vSpaet)) &&
+     vFrisch.marktArt === 'gesamt' && nah92(vFrisch.marktPct, (503 / (500 * FAKTOR) - 1) * 100),
+     '92.5 Rueckfall auf den Kursertrag - sichtbar, mit Grund: Reihe beginnt nach dem ersten Punkt; juengster Balken mehr als fuenf Tage vor dem juengsten Punkt');
+  gegen92('ohne die Altersgrenze stuende der Markt auf dem alten Balken still (499,95 statt 502) und hiesse Gesamtertrag',
+    nah92(Mst.marktAn(BER, Galt[3].t), 499.95) && vAlt.marktArt !== 'gesamt');
+  /* Intraday-Depot: derselbe Weg, der Rueckfall ist dort die Rohreihe. */
+  var iV = Mst.mitMarkt([[T(2, 23), 100000], [T(4, 23), 100200]], null, 'intraday', 'startI', 100000);
+  var iGes = Mst.vergleich(iV, 'intraday', 'startI', { markt: BER, marktKurs: ROH });
+  var iKurs = Mst.vergleich(iV, 'intraday', 'startI', { markt: null, marktKurs: ROH });
+  ok(iV[0].spy === null && iGes.marktArt === 'gesamt' && nah92(iGes.marktPct, vGes.marktPct) && iKurs.marktArt === 'kurs' && nah92(iKurs.marktPct, vKurs.marktPct) &&
+     Mst.hinweise([['Momentum', vGes], ['Intraday', iGes]]) === Mst.hinweis(vGes) &&
+     Mst.hinweise([['Momentum', vGes], ['Intraday', iKurs]]) === 'Momentum: ' + Mst.hinweis(vGes) + ' Intraday: ' + Mst.hinweis(iKurs) &&
+     Mst.hinweise([['Momentum', vAus], ['Drift', null]]) === '',
+     '92.5 das Intraday-Depot laeuft durch denselben Weg (Rueckfall: Rohreihe); gleich gebaute Vergleiche teilen sich EINEN Hinweis, verschiedene bekommen je einen');
+  /* An echten Zahlen (Probeabruf Yahoo, 04.10.2026, SPY): Schluss 658,93 -> 769,64,
+   * bereinigt 655,6088 -> 769,64 zwischen 06.04. und 02.10.2026; im Fenster die
+   * Ausschuettungen vom 18.06. (1,904 $) und 18.09.2026 (1,889 $). */
+  var E = [{ t: Date.UTC(2026, 3, 6, 21), momentum: 100000, startM: 100000, spy: 658.93 }, { t: Date.UTC(2026, 9, 2, 21), momentum: 100000, startM: 100000, spy: 769.64 }];
+  var EB = [[Date.UTC(2026, 3, 6, 13, 30), 655.6088], [Date.UTC(2026, 9, 2, 13, 30), 769.64]];
+  var eK = Mst.vergleich(E, 'momentum', 'startM', { an: true }), eG = Mst.vergleich(E, 'momentum', 'startM', { an: true, markt: EB });
+  ok(eK.marktPct.toFixed(2) === '16.80' && eG.marktPct.toFixed(2) === '17.39' && pz92(eG.marktPct) === '+17,4 %',
+     '92.5 an echten Zahlen: SPY 06.04. bis 02.10.2026 - Kursertrag +16,80 %, Gesamtertrag +17,39 % (wie in Nr. 73 gemessen)', eK.marktPct.toFixed(2) + ' / ' + eG.marktPct.toFixed(2));
+
+  /* ---- 92.6 (Auftrag Nr. 81) Klinke: kein zweiter Rechenweg fuer den Markt ----
+   * (a) jeder Vergleich eines Buchs bekommt die bereinigte Reihe (markt:), einzig der
+   *     Nasdaq ist ein Kursindex; (b) die Reihe hat EINE Quelle (mfdepot.js liest den
+   *     Bestand, alle anderen fragen MFDepot.markt()); (c) ausserhalb von massstab.js
+   *     liest niemand den abgelegten Marktstand eines Punkts; (d) der Wortlaut der
+   *     Beschriftung steht nur in massstab.js. */
+  var mst92 = fs.readFileSync(__dirname + '/massstab.js', 'utf8');
+  var dui92 = fs.readFileSync(__dirname + '/driftui.js', 'utf8');
+  function klinkeMarkt(dep, mfd, ber) {
+    var rot = [];
+    var rufe = [];
+    [['depot.js', dep], ['mfdepot.js', mfd], ['berichte.js', ber]].forEach(function (d) {
+      var q = ohneKomm(d[1]), re = /(?:Massstab|MsW)\.vergleich\(([^;]*);/g, m;
+      while ((m = re.exec(q))) rufe.push([d[0], m[1]]);
+      /* (c) kein Lesen des abgelegten Stands: ".spy" kommt nur als STAND.spy vor */
+      (q.match(/[A-Za-z0-9_\]]\.spy\b/g) || []).forEach(function (t) { if (t !== 'D.spy' || d[0] !== 'mfdepot.js') rot.push(d[0] + ': liest den abgelegten Marktstand (' + t + ')'); });
+    });
+    var ohne = rufe.filter(function (r) { return !/\bmarkt: (?:MARKT\b|marktGesamt\(\)|mkW\b)/.test(r[1]); });
+    if (rufe.length !== 6) rot.push('erwartet 6 Aufrufe von vergleich, gefunden ' + rufe.length);
+    if (ohne.length !== 1 || !/\{ marktKurs: ndqH \}/.test(ohne[0][1])) rot.push('ohne bereinigte Reihe: ' + ohne.map(function (r) { return r[0] + ' ' + r[1].slice(0, 60); }).join(' | '));
+    var leser = [['depot.js', dep], ['mfdepot.js', mfd], ['berichte.js', ber]].filter(function (d) { return /drift_markt/.test(ohneKomm(d[1])); }).map(function (d) { return d[0]; }).join(',');
+    if (leser !== 'mfdepot.js') rot.push('den Bestand drift_markt lesen: ' + leser);
+    if (!/function marktGesamt\(\) \{\s*return \(window\.MFDepot && window\.MFDepot\.markt\) \? window\.MFDepot\.markt\(\) : null;/.test(dep)) rot.push('depot.js: marktGesamt fragt nicht MFDepot.markt()');
+    if (!/MARKT = c && c\.reihe \? c\.reihe : null;/.test(mfd) || !/markt: function \(\) \{ return MARKT; \}/.test(mfd)) rot.push('mfdepot.js: MARKT kommt nicht aus dem Bestand oder wird nicht herausgegeben');
+    if (/vergleich\(intradayVerlauf\(MARKT_SPY\)/.test(dep)) rot.push('depot.js: die Rohreihe als Markt des Vergleichs');
+    return rot;
+  }
+  var rotM = klinkeMarkt(dep92, mfd92, ber92);
+  ok(rotM.length === 0, '92.6 Klinke: kein zweiter Rechenweg fuer den Markt - sechs Vergleiche, fuenf mit der bereinigten Reihe aus EINER Quelle, der Nasdaq als Kursindex',
+     rotM.length ? rotM.join(' | ') : '');
+  gegen92('der alte Benchmark (Rohreihe als Markt) macht die Klinke rot',
+    klinkeMarkt(dep92.replace("Massstab.vergleich(intradayVerlauf(), 'intraday', 'startI', { markt: marktGesamt(), marktKurs: MARKT_SPY });",
+      "Massstab.vergleich(intradayVerlauf(MARKT_SPY), 'intraday', 'startI', {});"), mfd92, ber92).length >= 2);
+  gegen92('die alte Wochenzeile im Bericht (eigener Rechenweg ueber die abgelegten Staende) macht die Klinke rot',
+    klinkeMarkt(dep92, mfd92, ber92 + "\n z.push('SPY ' + pctW(e0.spy, e1.spy));").length === 2);
+  gegen92('ein Buch-Vergleich ohne die bereinigte Reihe macht die Klinke rot',
+    klinkeMarkt(dep92, mfd92.replace(', markt: MARKT });', ' });'), ber92).length === 1);
+  ok(/storeSet\(key, \{ at: Date\.now\(\), reihe: reihe \}\)/.test(dui92) && /bereinigt: true/.test(dui92.slice(dui92.indexOf('async function ladeMarkt'), dui92.indexOf('/* ---------------- Anzeige'))) &&
+     /bereinigt: false/.test(dep92.slice(dep92.indexOf('async function getHistory'), dep92.indexOf('/* ================= News je Symbol'))),
+     '92.6 nachgesehen: drift_markt ist die BEREINIGTE Reihe (driftui.js), getHistory liefert die ROHE - deshalb ist MARKT_SPY nur der Rueckfall');
+  var wortlaut = ['Markt mit, Buch ohne', 'ohne Ausschüttungen', 'mit Ausschüttungen', 'SPY-Gesamtertrag', 'SPY-Tageskurs'];
+  var fremd = fs.readdirSync(__dirname).filter(function (f) { return (/\.js$/.test(f) && !/^test-/.test(f) && f !== 'massstab.js') || f === 'index.html'; })
+    .filter(function (f) { var q = ohneKomm(fs.readFileSync(__dirname + '/' + f, 'utf8')); return wortlaut.some(function (w) { return q.indexOf(w) !== -1; }); });
+  ok(fremd.length === 0 && ['Markt mit, Buch ohne', 'ohne Ausschüttungen', 'SPY-Gesamtertrag', 'SPY-Tageskurs', "' Ausschüttungen'"].every(function (w) { return mst92.indexOf(w) !== -1; }) &&
+     (ohneKomm(dep92).match(/Massstab\.hinweise?\(/g) || []).length === 4 && /M\.hinweis\(v\)/.test(mfd92) && /MsW\.marktZusatz\(vSW\)/.test(ber92),
+     '92.6 die Beschriftung steht an jeder Stelle wortgleich aus EINER Quelle: der Wortlaut nur in massstab.js, die Stellen rufen hinweis()/hinweise()/marktZusatz()',
+     fremd.join(', '));
   ok(rot92 === g92, '92.x alle Gegenproben dieses Abschnitts schlagen an', rot92 + ' von ' + g92);
 })();
 

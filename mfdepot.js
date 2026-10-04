@@ -46,9 +46,16 @@
     });
     return { roh: g.roh, preise: preise, stand: g.at || 0, juengster: juengster };
   }
+  /* Die BEREINIGTE SPY-Reihe (Bestand drift_markt, geschrieben von driftui.js), wie
+   * der letzte Lesevorgang sie fand. Seit Auftrag Nr. 81 ist sie der Markt des
+   * Massstabs fuer ALLE drei Buecher: vergleich() unten reicht sie an massstab.js,
+   * depot.js holt sie fuer das Intraday-Depot ueber MFDepot.markt(). Gelesen wird beim
+   * Start und bei jedem Takt; gezeichnet wird synchron aus diesem Merker. */
+  var MARKT = null;
   async function ladeMarkt() {
     var c = await window.api.storeGet('drift_markt');
-    return c && c.reihe ? c.reihe : null;
+    MARKT = c && c.reihe ? c.reihe : null;
+    return MARKT;
   }
 
   /* Kurse frisch halten: älter als 26 Stunden -> den Lader des Mittelfrist-Tabs
@@ -334,14 +341,16 @@
     return v;
   }
   /** Buch gegen den S&P 500 ueber denselben Zeitraum - gerechnet in massstab.js,
-   *  hier nur mit den Daten des Buchs versorgt. name = 'momentum' | 'drift'. */
+   *  hier nur mit den Daten des Buchs versorgt. name = 'momentum' | 'drift'.
+   *  Der Markt kommt aus der aktuell geladenen bereinigten Reihe (MARKT) - der im
+   *  Verlaufspunkt abgelegte Tagesstand bleibt nur der Rueckfall (Auftrag Nr. 81). */
   function vergleich(name) {
     var d = D();
     if (!d || !window.Massstab) return null;
     var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
     return window.Massstab.vergleich(verlaufMitStand(), name, name === 'momentum' ? 'startM' : 'startD', {
       an: name === 'momentum' ? !!d.momentumAn : !!d.driftAn,
-      start: buch ? buch.start : null, angelegt: buch ? buch.angelegt : null });
+      start: buch ? buch.start : null, angelegt: buch ? buch.angelegt : null, markt: MARKT });
   }
 
   function letzterPunkt(d) {
@@ -435,10 +444,10 @@
           : '');
     /* Der Massstab: Buch und S&P 500 ueber DENSELBEN Zeitraum, mit Datum. Fehlt der
      * Marktstand, steht der Grund da, keine Null. Der Hinweis zur Bauart des
-     * Vergleichs steht wortgleich an jeder Stelle (Massstab.HINWEIS). */
+     * Vergleichs steht wortgleich an jeder Stelle (Massstab.hinweis). */
     var M = window.Massstab, v = k.massstab;
     var gegen = U.esc(M.langText('Buch', v, U.pz1)) + (v && v.ok
-      ? '<br><span style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(M.HINWEIS) + '</span>' : '');
+      ? '<br><span style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(M.hinweis(v)) + '</span>' : '');
     return kopf + fakten([
       ['Gegen den Markt', gegen],
       ['Positionen', k.positionen == null ? ohne('Buch noch nicht angelegt') : String(k.positionen)],
@@ -558,6 +567,9 @@
     if (b1) b1.addEventListener('click', function () { if (abgeschaltetOk('momentumAn', 'Das Momentum-Buch')) takt('momentum'); });
     if (b2) b2.addEventListener('click', function () { if (abgeschaltetOk('driftAn', 'Das Drift-Buch')) takt('drift'); });
     if (b3) b3.addEventListener('click', function () { takt(); });
+    /* Die Marktreihe gleich beim Start lesen (nur der Bestand, kein Abruf): sonst
+     * stuende der Massstab bis zum ersten Takt als Kursertrag da und spraenge dann um. */
+    ladeMarkt().then(function () { karten(); }).catch(function () { });
     setTimeout(function () { takt(); }, 12000);
     setInterval(function () { takt(); }, 30 * 60000);
 
@@ -578,5 +590,8 @@
   /* karten() ist bewusst mit exportiert: depot.js render() zeichnet den Bestand,
    * und die zwei Buch-Karten gehoeren dazu. Der Schreiber bleibt trotzdem diese
    * Datei - render() bestellt nur, es formuliert nicht. */
-  window.MFDepot = { takt: takt, karten: karten, vergleich: vergleich };
+  window.MFDepot = { takt: takt, karten: karten, vergleich: vergleich,
+    /** Die bereinigte SPY-Reihe, wie sie zuletzt gelesen wurde (oder null) - DIE eine
+     *  Marktreihe des Massstabs, auch fuer das Intraday-Depot (depot.js). */
+    markt: function () { return MARKT; } };
 })();

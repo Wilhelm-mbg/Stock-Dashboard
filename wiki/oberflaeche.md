@@ -269,11 +269,24 @@ Wilhelms Regel (entscheide.md, „Richtung des Projekts"): echtes Geld nur für 
   ersten Verlaufspunkt, an dem beide einen Stand haben, bis zum jüngsten. Beginnt er am Tag, an dem das Buch angelegt wurde, ist
   der Bezug das Startkapital (Kaufkosten zählen mit); sonst der Stand des Buchs am Beginn – der Text sagt dann „ab dem ersten
   gemeinsamen Stand, nicht ab dem Start des Buchs". Fehlt der Marktstand: „Markt: noch kein Stand", keine Null.
-- **Was der Marktstand ist:** das Feld `spy` im Verlaufspunkt ist der jüngste Balken der bereinigten SPY-Reihe (`drift_markt`) am
-  Tag des Punkts – und der ist immer der unbereinigte Schluss. Der Vergleich ist deshalb der SPY-**Kurs**ertrag, ohne
-  Ausschüttungen; die Bücher buchen ebenfalls keine. Beide Seiten gleich, aber nicht „mit Dividenden" (Hinweis steht an jeder Stelle).
-- **Sperrklinke:** test-v6 Abschnitt 92 – an sieben Stellen (Kopf, Verlauf, drei Karten, Kennzahlen, Kachel, Benchmark) und in
-  `berichte.js` steht keine eigene Prozentrechnung für ein Buch mehr.
+- **Was der Marktstand ist (seit Auftrag Nr. 81, 04.10.2026): der Gesamtertrag.** Der Marktwert jedes Verlaufspunkts kommt aus
+  der **aktuell geladenen bereinigten SPY-Reihe** (`drift_markt`, Yahoo `adjclose`; gelesen von `mfdepot.js` beim Start und bei
+  jedem Takt, herausgegeben über `MFDepot.markt()`): jüngster Balken, dessen Zeitstempel nicht nach dem Punkt liegt
+  (`Massstab.marktAn`). Zwei Werte aus derselben Reihe ergeben den Ertrag **mit** Ausschüttungen (an echten Zahlen: SPY 06.04. bis
+  02.10.2026 Kursertrag +16,80 %, Gesamtertrag +17,39 %). Alle drei Bücher nehmen diesen Weg, auch das Intraday-Depot und die
+  Wochenzeile im Bericht. Das Feld `spy` im Verlaufspunkt (der unbereinigte Schluss des Tages) wird weiter geschrieben, ist aber
+  nur noch der **Rückfall**: fehlt die Reihe, beginnt sie nach dem ersten Punkt oder ist ihr jüngster Balken mehr als fünf Tage
+  älter als der jüngste Punkt, steht der Kursertrag da – mit Grund. Nie gemischt: ein Vergleich nimmt alle Marktwerte aus einer Quelle.
+- **Die Bücher buchen keine Ausschüttung** (Stand Nr. 81: der Weg ist geklärt, nicht gebaut – siehe Übergabe). Die Beschriftung
+  sagt das an jeder Stelle wortgleich, aus einer Quelle (`Massstab.hinweis()` / `hinweise()`): „S&P 500 als SPY-Gesamtertrag.
+  Markt mit, Buch ohne Ausschüttungen – der Vergleich ist um die Ausschüttungen des Buchs zu streng." Im Rückfall: „S&P 500 als
+  SPY-Tageskurs. Buch und Markt ohne Ausschüttungen (… – deshalb der Kursertrag)."
+- **Sperrklinken:** test-v6 Abschnitt 92 – an sieben Stellen (Kopf, Verlauf, drei Karten, Kennzahlen, Kachel, Benchmark) und in
+  `berichte.js` steht keine eigene Prozentrechnung für ein Buch mehr (92.4); **kein zweiter Rechenweg für den Markt** (92.6): sechs
+  Aufrufe von `Massstab.vergleich`, fünf mit der bereinigten Reihe aus einer Quelle, der Nasdaq als Kursindex; außerhalb von
+  `massstab.js` liest niemand den abgelegten Marktstand; der Wortlaut der Beschriftung steht nur in `massstab.js`.
+- **Kunstinstanz:** `tools/kunstdepot.js` `marktReihe()` sät eine erfundene bereinigte Reihe mit einer Ausschüttung
+  (`drift_markt.json` im Test-Store) – die Aufnahmen zeigen den Normalfall (Gesamtertrag), nicht den Rückfall.
 
 ## 7. Aktuelle Aufnahmen und Struktur (seit 04.09.2026)
 

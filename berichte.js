@@ -415,11 +415,20 @@
       }
       var mv = (D.mfVerlauf || []).filter(function (p) { return p.t >= seitW; });
       if (mv.length >= 2) {
-        var e0 = mv[0], e1 = mv[mv.length - 1];
-        function pctW(a2, b2) { return a2 > 0 ? ((b2 / a2 - 1) * 100).toFixed(2) : '–'; }
+        /* Seit Auftrag Nr. 81 durch DIESELBE Rechnung wie die Oberflaeche (massstab.js):
+         * Buch und Markt ueber dieselben Tagespunkte, der Markt aus der bereinigten
+         * SPY-Reihe (Gesamtertrag), sonst sichtbar der Kursertrag. Vorher stand hier ein
+         * eigener Rechenweg ueber die abgelegten Tagesstaende - in einer Woche mit
+         * Ex-Tag eine andere Zahl als im Kopf der App. */
+        var MsW = window.Massstab, mkW = (window.MFDepot && window.MFDepot.markt) ? window.MFDepot.markt() : null;
+        var vMW = MsW.vergleich(mv, 'momentum', 'startM', { markt: mkW, start: D.mfBuch ? D.mfBuch.start : null });
+        var vDW = MsW.vergleich(mv, 'drift', 'startD', { markt: mkW, start: D.driftBuch ? D.driftBuch.start : null });
+        var vSW = vMW.ok ? vMW : vDW;
+        function pctW(v2, feld) { return v2 && v2[feld] != null ? v2[feld].toFixed(2) : '–'; }
         z.push('');
-        z.push('Bücher über die Woche (' + mv.length + ' Tagespunkte): Momentum ' + pctW(e0.momentum, e1.momentum) +
-          ' % · Drift ' + pctW(e0.drift, e1.drift) + ' % · SPY ' + pctW(e0.spy, e1.spy) + ' %.');
+        z.push('Bücher über die Woche (' + mv.length + ' Tagespunkte): Momentum ' + pctW(vMW.ok ? vMW : null, 'buchPct') +
+          ' % · Drift ' + pctW(vDW.ok ? vDW : null, 'buchPct') + ' % · SPY ' + pctW(vSW.ok ? vSW : null, 'marktPct') + ' %' +
+          (vSW.ok ? ' (' + MsW.marktZusatz(vSW) + ')' : '') + '.');
       }
     })();
     z.push('');

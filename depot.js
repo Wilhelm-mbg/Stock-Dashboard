@@ -3897,13 +3897,21 @@
    * Gerechnet wird in massstab.js - hier steht KEINE Prozentrechnung fuer ein Buch
    * mehr, nur die Versorgung mit Daten. Momentum und Drift liefert mfdepot.js (dort
    * liegt der Stand des letzten Takts); das Intraday-Depot hat keinen Marktstand im
-   * Verlauf und bekommt ihn aus den SPY-Tageskursen (unbereinigt, wie das Depot
-   * selbst handelt). Die Reihe wird hoechstens alle 30 Minuten geholt; bis sie da
-   * ist, steht "Markt: noch kein Stand" - keine Null. */
+   * Verlauf.
+   * SEIT AUFTRAG NR. 81 (04.10.2026) EIN RECHENWEG FUER ALLE DREI: der Markt ist die
+   * bereinigte SPY-Reihe, die auch Momentum und Drift lesen (marktGesamt() ->
+   * MFDepot.markt(), Bestand drift_markt) - also der Gesamtertrag. MARKT_SPY, die
+   * unbereinigten SPY-Tageskurse (getHistory, nachgesehen: bereinigt: false, weil
+   * dieselbe Reihe Stop-Abstaende im Handel fuettert), ist nur noch der RUECKFALL,
+   * solange die bereinigte Reihe fehlt oder zu alt ist; massstab.js waehlt und sagt,
+   * welche traegt. Bis eine der beiden da ist, steht "Markt: noch kein Stand". */
   var Massstab = window.Massstab;
   var MARKT_SPY = null, marktSpyAt = 0;
   function buchVergleich(feld) {
     return (window.MFDepot && window.MFDepot.vergleich) ? window.MFDepot.vergleich(feld) : null;
+  }
+  function marktGesamt() {
+    return (window.MFDepot && window.MFDepot.markt) ? window.MFDepot.markt() : null;
   }
   function marktSpyLaden() {
     if (Date.now() - marktSpyAt < 30 * 60000) return;
@@ -3919,13 +3927,13 @@
    * der Karte steht. D.equityHist reicht nur etwa zwei Wochen zurueck (2000 Punkte im
    * 10-Minuten-Takt); der Vergleich beginnt deshalb am ersten Punkt dieser Reihe und
    * sagt das dazu, statt "seit Depot-Start" zu behaupten. */
-  function intradayVerlauf(marktReihe) {
-    return Massstab.mitMarkt((D.equityHist || []).concat([[Date.now(), equityNow()]]), marktReihe,
+  function intradayVerlauf() {
+    return Massstab.mitMarkt((D.equityHist || []).concat([[Date.now(), equityNow()]]), null,
       'intraday', 'startI', START_CAPITAL);
   }
   function intradayVergleich() {
-    return Massstab.vergleich(intradayVerlauf(MARKT_SPY), 'intraday', 'startI',
-      { an: !!(D.intraday && D.intraday.enabled) });
+    return Massstab.vergleich(intradayVerlauf(), 'intraday', 'startI',
+      { an: !!(D.intraday && D.intraday.enabled), markt: marktGesamt(), marktKurs: MARKT_SPY });
   }
 
   function renderIntradayKarte() {
@@ -3952,7 +3960,7 @@
         ' · ' + pz1(Massstab.prozent(eq, START_CAPITAL)) + '</div>' +
       '<dl class="buch-fakten">' +
         '<dt>Gegen den Markt</dt><dd>' + U.esc(Massstab.langText('Depot', vI, pz1)) + (vI.ok
-          ? '<br><span style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(Massstab.HINWEIS) + '</span>' : '') + '</dd>' +
+          ? '<br><span style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(Massstab.hinweis(vI)) + '</span>' : '') + '</dd>' +
         '<dt>Positionen</dt><dd>' + D.positions.length + '</dd>' +
         '<dt>Status</dt><dd>handelt selbst</dd>' +
         '<dt>Nächster Takt</dt><dd>wartet auf Signal</dd>' +
@@ -4020,8 +4028,9 @@
       serien.push({ name: b.name, short: b.short, color: b.color, pts: b.v ? b.v.buchReihe : [] });
       zeilen.push(Massstab.langText(b.name, b.v, pz1));
       if (!b.v || !b.v.ok) return;
-      /* Dieselbe Linie ist es nur, wenn Beginn, Hoehe UND Marktverlauf gleich sind -
-       * das Intraday-Depot liest eine andere SPY-Reihe als die zwei Buecher. */
+      /* Dieselbe Linie ist es nur, wenn Beginn, Hoehe UND Marktverlauf gleich sind.
+       * Seit Nr. 81 lesen alle drei dieselbe bereinigte Reihe; verschieden bleiben die
+       * Linien, wo Beginn oder Ansatzhoehe verschieden sind - oder eine im Rueckfall steht. */
       var key = b.v.seit + '|' + b.v.bis + '|' + b.v.anker.toFixed(3) + '|' + b.v.marktPct.toFixed(4);
       if (maerkte[key]) { maerkte[key].von.push(b.short); maerkte[key].color = 'var(--muted)'; return; }
       maerkte[key] = { von: [b.short], color: b.color, seit: b.v.seit, pts: b.v.marktReihe };
@@ -4048,7 +4057,8 @@
       if (zeilen.length) {
         leg.innerHTML += '<div id="buecherMassstab" style="margin-top:2px;">' + zeilen.map(function (z) {
           return '<div>' + U.esc(z) + '</div>';
-        }).join('') + '<div style="color:var(--muted);">' + U.esc(Massstab.HINWEIS) +
+        }).join('') + '<div style="color:var(--muted);">' +
+          U.esc(Massstab.hinweise(buecher.filter(function (b) { return b.an; }).map(function (b) { return [b.name, b.v]; }))) +
           ' Gestrichelt: der S&P 500 ab dem Beginn des Vergleichs.</div></div>';
       }
       if (hinweis.length) {
@@ -4088,8 +4098,9 @@
     return Massstab.kopfText([['Momentum', buchVergleich('momentum')], ['Drift', buchVergleich('drift')]], pz1);
   }
   function buchKopfTitel() {
-    return Massstab.langText('Momentum', buchVergleich('momentum'), pz1) + ' · ' +
-      Massstab.langText('Drift', buchVergleich('drift'), pz1) + '. ' + Massstab.HINWEIS;
+    var vM = buchVergleich('momentum'), vD = buchVergleich('drift');
+    var hin = Massstab.hinweise([['Momentum', vM], ['Drift', vD]]);
+    return Massstab.langText('Momentum', vM, pz1) + ' · ' + Massstab.langText('Drift', vD, pz1) + '.' + (hin ? ' ' + hin : '');
   }
 
   /* Der Scan im Kopf, in Worten statt als Strich.
@@ -4260,17 +4271,20 @@
      * Zeitraum damit gar nicht der Start war. Der Nasdaq bleibt als zweite Linie und
      * laeuft ueber denselben Zeitraum durch dieselbe Rechnung. Gezeichnet wird in
      * Dollar: die Marktlinie setzt auf dem Depotstand am Beginn des Vergleichs an. */
+    /* Seit Auftrag Nr. 81: der S&P 500 aus der bereinigten Reihe (Gesamtertrag), die
+     * Rohreihe nur als Rueckfall - derselbe Weg wie auf der Karte (intradayVergleich
+     * ohne die Abfrage, ob der Handel an ist). Der Nasdaq ist ein Kursindex und bleibt es. */
     var spyH = await getHistory('SPY', '2y');
     if (spyH && spyH.length) MARKT_SPY = spyH;
-    var vS = Massstab.vergleich(intradayVerlauf(MARKT_SPY), 'intraday', 'startI', {});
+    var vS = Massstab.vergleich(intradayVerlauf(), 'intraday', 'startI', { markt: marktGesamt(), marktKurs: MARKT_SPY });
     var ndqH = await getHistory('^IXIC', '2y');
-    var vN = ndqH ? Massstab.vergleich(intradayVerlauf(ndqH), 'intraday', 'startI', {}) : null;
+    var vN = ndqH ? Massstab.vergleich(intradayVerlauf(), 'intraday', 'startI', { marktKurs: ndqH }) : null;
     function inDollar(pts) { return pts.map(function (p) { return [p[0], START_CAPITAL * (1 + p[1] / 100)]; }); }
     var series = [{ name: 'Intraday-Depot', short: 'Depot', color: 'var(--series)', pts: D.equityHist }];
-    if (vS.ok) series.push({ name: 'S&P 500 (SPY, ohne Ausschüttungen)', short: 'S&P', color: 'var(--series2)', pts: inDollar(vS.marktReihe) });
+    if (vS.ok) series.push({ name: Massstab.marktName(vS), short: 'S&P', color: 'var(--series2)', pts: inDollar(vS.marktReihe) });
     if (vN && vN.ok) series.push({ name: 'Nasdaq (Kursindex)', short: 'NDQ', color: 'var(--series3)', pts: inDollar(vN.marktReihe) });
     info.textContent = Massstab.langText('Intraday-Depot', vS, pz1) +
-      (vN && vN.ok ? ' · Nasdaq ' + pz1(vN.marktPct) : '') + '. ' + Massstab.HINWEIS;
+      (vN && vN.ok ? ' · Nasdaq ' + pz1(vN.marktPct) : '') + '. ' + Massstab.hinweis(vS);
     drawLines(document.getElementById('benchChart'), series, document.getElementById('benchLegend'), D.equityHist[0][1], { unit: ' $' });
   }
 
