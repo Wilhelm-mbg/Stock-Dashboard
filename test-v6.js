@@ -1,5 +1,13 @@
 'use strict';
 const fs = require('fs');
+/* Abschnitts-Laeufer (tools/testlaeufer.js, Kopf dort): `node test-v6.js --abschnitt 72`,
+ * `--nur-geaendert`, `--liste`, `--zeiten`. OHNE diese Schalter laeuft diese Datei wie immer
+ * und der Laeufer wird nicht einmal geladen. MIT Schalter faehrt er die gewaehlten Abschnitte
+ * in einem eigenen Prozess, und dieser hier endet sofort mit dessen Rueckgabewert.
+ * Das Muster ist dasselbe wie SCHALTER im Laeufer - Abschnitt 101 haelt beide gleich. */
+if (process.argv.slice(2).some(function (a) { return /^--(abschnitt|nur-geaendert|liste|zeiten|gegen|trocken)(=|$)/.test(a); })) {
+  process.exit(require('./tools/testlaeufer.js').uebernehmen(__filename, process.argv.slice(2)));
+}
 /* Tests v6: ORB, Auto-Stop, Risiko-Sizing, Resampling/MTF */
 var Q = require('./quant.js');
 var fails = 0;
@@ -16546,7 +16554,7 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
   var mengeQuelle = /function menge\(zahl, einzahl, mehrzahl\) \{[\s\S]*?\n  \}/.exec(ark);
   ok(!!mengeQuelle, 'F11: die Einzahl/Mehrzahl-Funktion ist auffindbar');
   if (mengeQuelle) {
-    /* eslint-disable-next-line no-new-func */
+    /* new Function ist hier der Zweck (die Funktion wird aus der Datei geschnitten und ausgefuehrt) */
     var menge = new Function('return (' + mengeQuelle[0].replace(/^function/, 'function') + ');')();
     ok(menge(1, 'Minute', 'Minuten') === '1 Minute', 'F11: 1 -> Einzahl', menge(1, 'Minute', 'Minuten'));
     ok(menge(2, 'Minute', 'Minuten') === '2 Minuten', 'F11: 2 -> Mehrzahl', menge(2, 'Minute', 'Minuten'));
