@@ -1,23 +1,31 @@
 'use strict';
 /* WORTLAUT - V2 des dritten Zaehllaufs (Auftrag Nr. 90): der Abschnitt zu Punkt 3.01 eines 8-K und seine Klasse.
  *
- * Reine Funktionen, kein Netz, keine Platte. FASSUNG 1 = die Wortlisten des Auftrags (1.2, V2) woertlich und eine
- * Abschnittssuche vom Schreibtisch. Der Auftrag erlaubt GENAU EINE Aenderung nach der Lernprobe (30 Reihen); die
- * Fassung steht in FASSUNG und in jeder Ergebnisdatei.
+ * Reine Funktionen, kein Netz, keine Platte. Fassung 1 (Commit 1) = die Wortlisten des Auftrags (1.2, V2) woertlich und
+ * eine Abschnittssuche vom Schreibtisch. FASSUNG 2 = die EINE Aenderung nach der Lernprobe (30 Reihen, Saat z3-lern):
+ * Zusaetze in den drei Wortlisten (je eigens markiert), der Titel von 3.01 auch mit Tippfehlern, "Item" und Nummer in
+ * zwei Zeilen. Danach wird nichts mehr geaendert - Fehler der Pruefprobe werden berichtet, nicht behoben.
  */
-var FASSUNG = 1;
+var FASSUNG = 2;
 
 /* Die drei Wortlisten des Auftrags (ohne Ruecksicht auf Gross- und Kleinschreibung). */
 var VOLLZUG = ['consummat(?:ion|ed)', 'effective time', 'completion of the (?:merger|acquisition|transaction|offer|arrangement)', 'closing of the (?:merger|transaction)',
-  'became an? (?:direct |indirect )?(?:wholly[- ]owned )?subsidiary', 'merged with and into', '(?:merger|arrangement|scheme) (?:became|was) effective', 'accepted for (?:payment|purchase)'];
+  'became an? (?:direct |indirect )?(?:wholly[- ]owned )?subsidiary', 'merged with and into', '(?:merger|arrangement|scheme) (?:became|was) effective', 'accepted for (?:payment|purchase)',
+  /* Fassung 2 (Lernprobe: CFCB, ADGE, CVRR) */ '(?:merger|acquisition|transaction|arrangement|amalgamation|business combination|offer) (?:had |has |was |were )?(?:been )?(?:closed|completed)',
+  'converted into the right to receive', 'call right'];
 var RUEGE = ['not in compliance', 'non-?compliance', 'deficien', 'fail(?:ed|ure|s)? to (?:satisfy|meet|comply|maintain|regain|file)', 'minimum bid', 'bid price',
-  'delisting determination', 'staff determination', 'determined to (?:delist|commence)', 'hearings? panel', 'delinquen', 'commence (?:delisting )?proceedings'];
-var EIGEN = ['voluntar(?:y|ily)', 'transfer (?:of |the )?(?:its )?listing', 'plan of (?:complete )?(?:liquidation|dissolution)'];
+  'delisting determination', 'staff determination', 'determined to (?:delist|commence)', 'hearings? panel', 'delinquen', 'commence (?:delisting )?proceedings',
+  /* Fassung 2 (Lernprobe: EBET; im selben Satz muss die Abmeldung stehen - sonst wuerde RBCN, ein freiwilliger Rueckzug, zur Ruege) */
+  'received (?:a |an |the |written |formal |deficiency |delisting )*(?:notice|notification|letter|determination|decision)s?[^.]{0,250}?(?:delist|suspend|cease)'];
+var EIGEN = ['voluntar(?:y|ily)', 'transfer (?:of |the )?(?:its )?listing', 'plan of (?:complete )?(?:liquidation|dissolution)',
+  /* Fassung 2 (Lernprobe: EQC, TLR) */ '(?:intends?|intention|intent|approved|authorized) (?:to )?(?:voluntarily )?(?:delist|the delisting|file (?:a |the )?form 25)'];
 
 /* Der amtliche Titel von Punkt 3.01 traegt selbst "Failure to Satisfy" und "Transfer of Listing" - er wird vor der Suche
  * aus dem Abschnitt genommen, sonst waere jeder Abschnitt Ruege UND eigener Entschluss. */
-var TITEL_301 = /notice of delisting or failure to satisfy a continued listing rule or standard[\s;,.:]*(?:and )?(?:transfer of listing)?\.?/gi;
-var KOPF = /(^|\n)[ \t]*Items?\b[ \t.:]*(\d\.\d\d)/gi;
+/* Fassung 2: der Titel wird auch mit Tippfehlern erkannt (Lernprobe: "of Failure", "Continuing Listing", "Rule or Stand;"),
+ * und "Item" und Nummer duerfen in zwei Zeilen stehen (Lernprobe: 5 von 30 ohne gefundenen Abschnitt). */
+var TITEL_301 = /notice of delisting\W+(?:or|of|and)\W+failure to satisfy\W+an?\W+continu\w+\W+listing\W+(?:rule|standard)(?:\W+or\W+(?:standards?|stand|rules?))?(?:\W+(?:and\W+)?transfer of listing)?\.?/gi;
+var KOPF = /(^|\n)[ \t]*Items?\b[\s.:]*(\d\.\d\d)/gi;
 var UNTERSCHRIFT = /\n[ \t]*SIGNATURES?[ \t]*(?:\n|$)|pursuant to the requirements of the securities exchange act of 1934/i;
 var KURZ = 160;                                             // ein Abschnitt mit weniger Text ist nur eine Ueberschrift (gestapelte Ueberschriften)
 
@@ -43,9 +51,9 @@ function zerlege(text) {
   var t = String(text || ''), m, teile = [];
   KOPF.lastIndex = 0;
   while ((m = KOPF.exec(t))) {
-    var von = m.index + (m[1] ? 1 : 0), ze = t.indexOf('\n', von + 1);
+    var von = m.index + (m[1] ? 1 : 0), nr = m.index + m[0].length - 4, ze = t.indexOf('\n', nr);
     if (ze < 0) ze = t.length;
-    teile.push({ von: von, nummern: t.slice(von, Math.min(ze, von + 250)).match(/\b\d\.\d\d\b/g) || [] });
+    teile.push({ von: von, nummern: t.slice(nr, Math.min(ze, nr + 250)).match(/\b\d\.\d\d\b/g) || [] });
   }
   var erste = teile.length ? teile[0].von : 0, su = t.slice(erste).search(UNTERSCHRIFT), ende = su < 0 ? t.length : erste + su;
   teile = teile.filter(function (k) { return k.von < ende; });

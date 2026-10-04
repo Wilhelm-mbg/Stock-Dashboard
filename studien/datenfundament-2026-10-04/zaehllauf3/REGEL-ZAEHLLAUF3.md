@@ -82,3 +82,25 @@ Kürzel wieder aktiv oder neu vergeben ist (AAC, AT, BCOM, CAPA, DICE, JONE, MN,
 (3.380 abgebend, 659 aufnehmend, 0 fremd, 0 ohne Kennung; 3 nur im Nachtrag, 4 dort mit gleicher Kennung ersetzt).
 
 Die Auswertung (`t4-auswerten.js`, Kopie, zählt nur) und die Nachzählung von §6 (`nachzaehlen.js`) folgen mit Commit 3.
+
+## Nachtrag zu Commit 2 — die eine Änderung nach der Lernprobe (Fassung 2 von `wortlaut.js`, 04.10.2026)
+
+Lernprobe: 30 Reihen der Regel 11 (505 Reihen), Saat `z3-lern`, `proben.js lern`; Auszüge in `z3-lernprobe-fassung1.txt` (vor der
+Änderung) und `z3-lernprobe-fassung2.txt` / `z3-lernprobe.json` (danach). Mit Fassung 1 (Wortlisten des Auftrags wörtlich) stand die
+Regel 11 bei: Rüge 274, eigener Entschluss 88, Vollzug 31, + Prospekt 19, + 5.01 5, unklar 88 (`z3-lauf-fassung1.log`).
+
+Was die Lernprobe zeigte und was geändert wurde:
+
+| Befund an der Lernprobe | Reihen | Änderung |
+|---|---|---|
+| Abschnitt nicht gefunden: „Item" und „3.01" stehen in zwei Zeilen | RBCN, BACK, YAYO, PTIX, SYRA (5 von 30) | Überschrift darf über den Zeilenwechsel gehen |
+| Titel von 3.01 mit Tippfehler wird nicht entfernt und zählt als Rüge / eigener Entschluss („of Failure", „Continuing Listing", „Rule or Stand;") | ZCAR, TLR, MAMS, FULL | Titel wird mit diesen Abweichungen erkannt |
+| Vollzug ohne Wort der Liste: „the Merger had closed"; „converted into the right to receive"; Abfindung über „Call Right" | CFCB, (ADGE, WNR), CVRR | Vollzug + `(merger\|acquisition\|transaction\|arrangement\|amalgamation\|business combination\|offer) (had\|has\|was\|were)? (been)? (closed\|completed)`, `converted into the right to receive`, `call right` |
+| Rüge ohne Wort der Liste: „received written notice … that it would delist" | EBET | Rüge + `received … (notice\|notification\|letter\|determination\|decision) … (delist\|suspend\|cease)` **im selben Satz** (ohne diese Bindung wäre RBCN — freiwilliger Rückzug, die Börse schreibt danach wegen der Direktoren — zur Rüge geworden) |
+| eigener Entschluss ohne Wort der Liste: „intends to file a Form 25", „authorized the delisting" | EQC, TLR | eigener Entschluss + `(intends?\|intention\|intent\|approved\|authorized) (to)? (voluntarily)? (delist\|the delisting\|file a form 25)` |
+
+Die Zuordnung Klasse → Grund (Tabelle des Auftrags) ist unverändert. Offen gelassen, weil es die Tabelle trifft und nicht die
+Listen: QVCGB (Rüge wegen des Mindestkurses, danach freiwilliger Rückzug mit Formular 25 des Emittenten — die Tabelle lässt die
+Rüge gewinnen). Lernprobe mit Fassung 2: 30 von 30 mit Abschnitt; Rüge 15, eigener Entschluss 8, Vollzug 6, nichts 1 (FULL —
+Vollzug ohne Vollzugswort, wird über Punkt 5.01 zur Übernahme). **Ab hier werden Listen und Abschnittssuche nicht mehr geändert.**
+Die Prüfprobe (40 andere Reihen, Saat `z3-pruef`) und die Eichprobe werden erst nach diesem Commit gezogen und gelesen.

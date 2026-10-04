@@ -152,6 +152,15 @@ gleich(W.klasse('FORM 8-K\n' + TITEL + 'The Company notified the exchange.\nSIGN
 ok(W.klasse(TR).auszug.length <= 300 && W.klasse(TR).auszug.indexOf('\n') < 0 && /not in compliance/.test(W.klasse(TR).auszug), '10.6 Auszug: hoechstens 300 Zeichen um den ersten Treffer, ohne Zeilenumbruch');
 var hd = TX.hauptdokument('<SEC-DOCUMENT>x\n<DOCUMENT>\n<TYPE>8-K\n<SEQUENCE>1\n<TEXT>\n<html><body><p>Item 3.01</p><div>Text &amp; mehr&#160;hier&nbsp;<b>fett</b></div><script>var x;</script></body></html>\n</TEXT>\n</DOCUMENT>\n<DOCUMENT><TYPE>EX-99.1<TEXT>Anhang</TEXT></DOCUMENT>');
 gleich([hd.typ, hd.text], ['8-K', 'Item 3.01\nText & mehr hier fett'], '10.7 gespeichert wird nur das Hauptdokument, ohne Auszeichnung');
+/* Fassung 2 (nach der Lernprobe) */
+function mit(titel, text) { return W.klasse('FORM 8-K\n' + titel + text + ENDE); }
+gleich([mit('Item\n3.01. Notice\nof Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing.\n', 'The Company is not in compliance with the rule.').klasse, mit('Item\n3.01\n', 'Text ohne Treffer.').abschnitt], ['ruege', 1], '10.8 Fassung 2: "Item" und Nummer in zwei Zeilen');
+gleich([mit('Item 3.01 Notice of Delisting of Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing.\n', 'Nothing here.').klasse, mit('Item 3.01 Notice of Delisting or Failure to Satisfy a Continuing Listing Rule or Standard; Transfer of Listing.\n', 'Nothing here.').klasse,
+  mit('Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Stand; Transfer of Listing\n', 'Nothing here.').klasse], ['nichts', 'nichts', 'nichts'], '10.9 Fassung 2: der Titel mit Tippfehlern ist kein Treffer');
+gleich([mit(TITEL, 'The Company notified NASDAQ that the Merger had closed and requested that trading be suspended.').klasse, mit(TITEL, 'The Company received written notice from Nasdaq that it would delist the shares.').klasse,
+  mit(TITEL, 'The Company announced that it intends to file a Form 25 with the Commission.').klasse, mit(TITEL, 'The board of directors authorized the delisting of the common stock.').klasse, mit(TITEL, 'Each unit was purchased pursuant to the call right.').klasse],
+  ['vollzug', 'ruege', 'eigener-entschluss', 'eigener-entschluss', 'vollzug'], '10.10 Fassung 2: die Zusaetze der Wortlisten');
+gleich(W.FASSUNG, 2, '10.11 Fassung der Wortlisten');
 
 /* ---- 11 die Kopie der Einstufung gegen das Original aus Nr. 86: welche Zeilen sind anders? ---- */
 var orig = fs.readFileSync(path.join(Z3.P2, 't4-einstufen.js'), 'utf8').split(/\r?\n/), kop = fs.readFileSync(path.join(Z3.HIER, 't4-einstufen.js'), 'utf8').split(/\r?\n/);

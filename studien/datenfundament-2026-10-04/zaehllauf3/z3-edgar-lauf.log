@@ -1,0 +1,27 @@
+200/5050  Anfragen 1  Fehlversuche 0  1s
+400/5050  Anfragen 1  Fehlversuche 0  2s
+600/5050  Anfragen 28  Fehlversuche 0  10s
+800/5050  Anfragen 81  Fehlversuche 1  27s
+1000/5050  Anfragen 83  Fehlversuche 1  28s
+1200/5050  Anfragen 86  Fehlversuche 2  32s
+1400/5050  Anfragen 89  Fehlversuche 2  33s
+1600/5050  Anfragen 93  Fehlversuche 2  35s
+1800/5050  Anfragen 93  Fehlversuche 2  35s
+2000/5050  Anfragen 96  Fehlversuche 2  37s
+2200/5050  Anfragen 98  Fehlversuche 2  37s
+2400/5050  Anfragen 102  Fehlversuche 2  39s
+2600/5050  Anfragen 103  Fehlversuche 2  40s
+2800/5050  Anfragen 103  Fehlversuche 2  40s
+3000/5050  Anfragen 106  Fehlversuche 2  41s
+3200/5050  Anfragen 107  Fehlversuche 2  42s
+3400/5050  Anfragen 107  Fehlversuche 2  42s
+3600/5050  Anfragen 156  Fehlversuche 2  54s
+3800/5050  Anfragen 156  Fehlversuche 2  55s
+4000/5050  Anfragen 161  Fehlversuche 2  56s
+4200/5050  Anfragen 162  Fehlversuche 2  57s
+4400/5050  Anfragen 165  Fehlversuche 2  58s
+4600/5050  Anfragen 165  Fehlversuche 2  58s
+4800/5050  Anfragen 166  Fehlversuche 2  59s
+5000/5050  Anfragen 177  Fehlversuche 2  62s
+FERTIG  Reihen 5050 (uebersprungen 0)  Anfragen 177  Fehlversuche 2  offen 0  62s
+{"anfragen":177,"fehlversuche":2,"sperren":0,"polygonFirma":4713,"probe_passt":3474,"probe_frueher":1120,"probe_kuerzel":1,"probe_nichts":118,"probe_ohne-auszug":0,"zweitRegistrant":39,"alteTafelStattSuche":0,"ftsReihen":455,"ftsEigenCache":0,"ftsNr86Cache":4,"ftsNr79Cache":27,"ftsAltCache":458,"ftsNeu":5,"fts2EigenCache":0,"fts2Nr86Cache":1,"fts2Nr79Cache":2,"fts2Neu":4,"cikEigenCache":16,"cikNr86Cache":1321,"cikNr79Cache":53,"cikAltCache":3852,"cikNeu":26,"aeltereDateien":140,"minAbstandGemessenMs":219}
