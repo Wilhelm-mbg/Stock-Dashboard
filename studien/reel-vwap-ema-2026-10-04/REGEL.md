@@ -138,6 +138,20 @@ Keine davon ist ein weiterer Parameter der Regel; jede füllt eine Stelle, an de
 - **L19 Rahmen der Eichung.** Geprüft werden genau die drei Größen aus 2.10 (Trades, Trefferquote, Gesamtertrag); Rückschlag und
   Sharpe stehen daneben. `lauf.js` startet die Läufe nur, wenn `eichung.json` vom selben Siegel stammt und „im Rahmen" sagt.
 
+## D. Korrekturen (nach dem ersten Lauf; Teil A und B bleiben unverändert stehen)
+
+- **Korrektur 1 (04.10.2026, nach dem ersten Lauf unter Siegel `3c96c2d`).** *Fehler:* Der Code verglich für die Trefferquote das
+  Vermögen nach dem Ausstieg mit dem Vermögen vor dem Einstieg. Bei einem Trade mit Ertrag **genau null** (Einstiegskurs =
+  Ausstiegskurs bei `c = 0`; Kursgewinn genau 0,001 $ bei „Papier"-Kosten) entschied das letzte Bit der Gleitkommarechnung, ob er als
+  Gewinner zählt. *Gefunden* durch die Gegenrechnung (`gegenrechnung.js`, zweiter Rechenweg ohne `daten.js`/`kern.js`): Hauptlauf bei
+  `c = 0` 2.159 statt 2.155 Gewinner (63 Nulltrades unter 12.604), Eichung 3.937 statt 3.934 (3 Grenzfälle unter 23.190); jede andere
+  verglichene Größe gleich bis 10⁻⁹. *Behoben:* L6 gilt unverändert („Netto-Ertrag größer null"), wird aber an den Kursen geprüft —
+  Gewinn je Stück nach Gebühren größer als 10⁻⁹ des Einstiegskurses (dieselbe Rechengenauigkeits-Schranke wie L2); ein Ertrag von genau
+  null ist kein Gewinner. *Wirkung (nach der Wiederholung gezählt, `vergleich-korrektur.log`):* nur die Trefferquote, nur auf den
+  Stufen `c = 0` (31 von 36 Läufen) und „Papier" (12 von 36), um 1 bis 25 Gewinner je Lauf, höchstens 0,20 Prozentpunkte; Erträge,
+  Tageserträge, t, `c*`, Trades, Umsatz und alle Sätze bleiben bit-gleich (7.136 Felder verglichen, 44 abweichend, alle `trefferquote`).
+  Der erste Lauf liegt als `ergebnis-vor-korrektur-1.json` und `eichung-vor-korrektur-1.json` im Ordner.
+
 ## C. Vor dem Siegel gezählt (nur Aufbau und Vollständigkeit; `zaehlen.js`, `zaehlen-luecken.js`, `daten-zaehlung.json`)
 
 - Je Wert **2.701 Handelstage** vom 04.01.2016 bis 30.09.2026, bei allen drei Werten dieselben Tage. Fenster: W-Vor 503, W-Papier

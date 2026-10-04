@@ -13,7 +13,15 @@ var PRUEFSTAND = path.join(REPO, 'studien', 'querschnitt-pruefstand-2026-09-13')
 var K = require(path.join(PRUEFSTAND, 'konfig.js'));
 
 var KENNUNG = 'massstab-rueckblick-2026-10-04/v1';
-var PANEL_ORDNER = path.join(PRUEFSTAND, 'voll-v22');
+/* Auftrag Nr. 96 (04.10.2026): ZUSAETZLICHE Wahl des Panels ueber die Umgebungsvariable RUECKBLICK_PANEL. Ohne sie (Vorgabe) liest
+ * alles wie bisher voll-v22, und PANEL_OPTIONEN ist undefined - PR.Tafel(PANEL_ORDNER, PANEL_OPTIONEN) ist dann PR.Tafel(PANEL_ORDNER).
+ * Mit RUECKBLICK_PANEL=v2.3 voll-v23c (Bau 2c) mit der ausdruecklichen Kennung K.PANEL_KENNUNG_V23. Gesetzt nur von
+ * studien/momentum-korb-v23-2026-10-04/lauf.js. lauf() hier und in korb.js reicht die Option NICHT durch: auf v2.3 bricht es an der
+ * Kennung ab, bevor es die Ergebnisdatei von Nr. 74 bzw. Nr. 78 ueberschreiben kann. Jeder andere Wert bricht ab. */
+var PANEL_WAHL = process.env.RUECKBLICK_PANEL || '';
+if (PANEL_WAHL !== '' && PANEL_WAHL !== 'v2.3') throw new Error('KLINKE: RUECKBLICK_PANEL kennt nur v2.3 (oder leer), nicht ' + PANEL_WAHL);
+var PANEL_ORDNER = path.join(PRUEFSTAND, PANEL_WAHL === 'v2.3' ? 'voll-v23c' : 'voll-v22');
+var PANEL_OPTIONEN = PANEL_WAHL === 'v2.3' ? { panelKennung: K.PANEL_KENNUNG_V23 } : undefined;
 var MASSNAHMEN_ORDNER = 'E:/Markt-Dashboard-Archiv/alpaca-massnahmen';
 var KOSTEN_BP = 20;                 /* mfdepot.js Zeile 158: MH.fuehreAus(d.mfBuch, plan, now, 20) */
 var KOSTEN_FUNDSTELLE = 'mfdepot.js Zeile 158: MH.fuehreAus(d.mfBuch, plan, now, 20)';
@@ -392,7 +400,7 @@ function lauf() {
   console.log('Laufzeit s', E.laufzeitSekunden);
 }
 
-module.exports = { KENNUNG: KENNUNG, KOSTEN_BP: KOSTEN_BP, START: START, PHASEN: PHASEN, MASSSTAB: MASSSTAB, PANEL_ORDNER: PANEL_ORDNER, PRUEFSTAND: PRUEFSTAND,
+module.exports = { KENNUNG: KENNUNG, KOSTEN_BP: KOSTEN_BP, START: START, PHASEN: PHASEN, MASSSTAB: MASSSTAB, PANEL_ORDNER: PANEL_ORDNER, PANEL_OPTIONEN: PANEL_OPTIONEN, PANEL_WAHL: PANEL_WAHL, PRUEFSTAND: PRUEFSTAND,
   FENSTER_VON: FENSTER_VON, FENSTER_BIS: FENSTER_BIS, vorbereiten: vorbereiten, endeBis: endeBis, tagAb: tagAb, rohMapAm: rohMapAm, klinkeReferenz: klinkeReferenz,
   zielAm: zielAm, Massnahmen: Massnahmen, ausschuettungenAm: ausschuettungenAm, simuliere: simuliere, kennzahlen: kennzahlen, maxRueckschlag: maxRueckschlag,
   kalenderjahre: kalenderjahre, periodenstreuung: periodenstreuung, median: median, startphasen: startphasen };

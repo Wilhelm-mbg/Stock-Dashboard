@@ -66,7 +66,46 @@
     }
     u += '&interval=' + o.interval;
     if (o.prePost) u += '&includePrePost=true';
+    /* Kapitalmassnahmen im SELBEN Abruf (Auftrag Nr. 87): Ausschuettungen und Splits kommen
+     * als Feld events der Antwort mit - kein zweiter Abruf je Wert. */
+    if (o.ereignisse) u += '&events=div%2Csplits';
     return u;
+  }
+
+  /** Die Kapitalmassnahmen einer Antwort (Feld chart.result[0].events). Rein.
+   *  Rueckgabe { div: [[tMs, betragJeStueck], ...], split: [[tMs, zaehler, nenner], ...] },
+   *  beide nach Zeit aufsteigend; fehlt das Feld, sind beide Listen leer.
+   *
+   *  Am 04.10.2026 an NVDA und WMT nachgesehen (ein Abruf je Wert, period1=0):
+   *  - der Betrag steht in HEUTIGER Stueckelung - NVDA zahlte vor dem Split 10:1 vom
+   *    10.06.2024 je Quartal 0,04 $, gemeldet werden 0,004; WMT zahlte vor dem Split 3:1
+   *    vom 26.02.2024 0,57 $, gemeldet werden 0,19;
+   *  - der Zeitstempel (Feld date, gleich dem Schluessel) ist der des Tagesbalkens des
+   *    Ex-Tags - bei 265 von 265 Ausschuettungen und 15 von 16 Splits; die Ausnahme ist
+   *    der NVDA-Split vom 12.09.2001, einem Tag ohne Handel und ohne Balken.
+   *  Ein "Split" z : n mit z = n aendert nichts und ist kein Ereignis. */
+  function ereignisseAus(ev, o) {
+    var div = [], split = [];
+    var d = (ev && ev.dividends) || {}, s = (ev && ev.splits) || {};
+    function zeit(x, k) { return (typeof x.date === 'number' ? x.date : Number(k)) * 1000; }
+    Object.keys(d).forEach(function (k) {
+      var x = d[k] || {}, t = zeit(x, k);
+      if (kursOk(t) && kursOk(x.amount)) div.push([t, x.amount]);
+    });
+    Object.keys(s).forEach(function (k) {
+      var x = s[k] || {}, t = zeit(x, k);
+      if (kursOk(t) && kursOk(x.numerator) && kursOk(x.denominator) && x.numerator !== x.denominator) split.push([t, x.numerator, x.denominator]);
+    });
+    function imFenster(e) { return !(o && o.von != null && o.bis != null) || (e[0] >= o.von && e[0] <= o.bis); }
+    function nachZeit(a, b) { return a[0] - b[0]; }
+    return { div: div.filter(imFenster).sort(nachZeit), split: split.filter(imFenster).sort(nachZeit) };
+  }
+
+  /** Nur die Ereignisse ab einem Zeitpunkt (einschliesslich) - fuer die Ablage: gespeichert
+   *  werden die letzten 400 Tage, nicht die Geschichte seit 1972. Rein, neue Listen. */
+  function ereignisseAb(e, abMs) {
+    function ab(x) { return x[0] >= abMs; }
+    return { div: ((e && e.div) || []).filter(ab), split: ((e && e.split) || []).filter(ab) };
   }
 
   /** Die Antwort auseinandernehmen. Rein: kein Netz, kein window, kein Zustand.
@@ -74,6 +113,13 @@
    *  o.bereinigt  true  -> adjclose, ersatzweise close (Split- und Dividenden-
    *                        bereinigt; fuer alles, was ueber Monate rechnet)
    *               false -> close (der tatsaechlich gehandelte Kurs)
+   *
+   *  o.mitRoh     true  -> zusaetzlich roh: [[t, schluss], ...] - der UNBEREINIGTE Schluss
+   *                        derselben Balken, dieselben Zeitstempel wie bars (Auftrag
+   *                        Nr. 91: aus bereinigt / roh entsteht der Faktor der
+   *                        Ausschuettungen je Balken). Ein fehlender roher Schluss steht
+   *                        als null da, der Balken bleibt. Ohne den Schalter traegt die
+   *                        Rueckgabe das Feld NICHT - sie ist zeichengleich wie zuvor.
    *
    *  Rueckgabe: null bei unbrauchbarer Antwort, sonst
    *    { bars: [[t, schluss, volumen, hoch, tief, eroeffnung], ...],
@@ -98,10 +144,11 @@
       if (adj.adjclose && adj.adjclose.length) { schluss = adj.adjclose; feld = 'adjclose'; }
     }
     var his = q.high || [], los = q.low || [], vols = q.volume || [], ops = q.open || [];
-    var bars = [], verworfen = 0;
+    var bars = [], verworfen = 0, rohSchluss = o.mitRoh ? [] : null;
     for (var i = 0; i < ts.length; i++) {
       var c = schluss[i];
       if (!kursOk(c)) { verworfen++; continue; }
+      if (rohSchluss) rohSchluss.push([ts[i] * 1000, kursOk(roh[i]) ? roh[i] : null]);
       var hi = kursOk(his[i]) ? his[i] : c;
       var lo = kursOk(los[i]) ? los[i] : c;
       /* Vertauscht geliefert: kommt bei der inoffiziellen Schnittstelle vor. Nur
@@ -141,9 +188,16 @@
       var vorFilter = bars.length;
       bars = bars.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });
       ausserhalbFenster = vorFilter - bars.length;
+      /* Dieselbe Sperre fuer die Rohreihe - sie hat dieselben Zeitstempel wie bars. */
+      if (rohSchluss) rohSchluss = rohSchluss.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });
     }
-    return { bars: bars, meta: r.meta || {}, verworfen: verworfen, gesamt: ts.length,
+    var ergebnis = { bars: bars, meta: r.meta || {}, verworfen: verworfen, gesamt: ts.length,
       feld: feld, ausserhalbFenster: ausserhalbFenster };
+    if (rohSchluss) ergebnis.roh = rohSchluss;
+    /* o.ereignisse: die Kapitalmassnahmen derselben Antwort dazu (Auftrag Nr. 87). Ohne den
+     * Schalter traegt die Rueckgabe das Feld NICHT - sie ist zeichengleich wie zuvor. */
+    if (o.ereignisse) ergebnis.ereignisse = ereignisseAus(r.events, o);
+    return ergebnis;
   }
 
   /** Nur Zeit und Schlusskurs - die Form, die die meisten Aufrufer wollen. */
@@ -243,7 +297,8 @@
   }
 
   var Kurse = {
-    kursOk: kursOk, url: url, zerlege: zerlege, reihe: reihe, baueLader: baueLader
+    kursOk: kursOk, url: url, zerlege: zerlege, reihe: reihe, baueLader: baueLader,
+    ereignisseAus: ereignisseAus, ereignisseAb: ereignisseAb
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = Kurse; return; }
   root.KurseKern = Kurse;
@@ -254,4 +309,5 @@
   root.Kurse.zerlege = zerlege;
   root.Kurse.reihe = reihe;
   root.Kurse.kursOk = kursOk;
+  root.Kurse.ereignisseAb = ereignisseAb;
 })(typeof window !== 'undefined' ? window : globalThis);

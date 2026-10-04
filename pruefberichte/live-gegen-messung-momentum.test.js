@@ -1,19 +1,28 @@
 'use strict';
 /* Pruefbericht "Live gegen Messung" - Momentum-Buch (Oktober 2026): die Kleinsttests.
  *
- * Gehoert zu pruefberichte/2026-10-live-gegen-messung-momentum.md. Jeder Test baut
- * Kunstdaten, ruft die Funktionen der App selbst und druckt GENAU EINE Zeile:
- *   "ZEIGT ABWEICHUNG: ..."  oder  "kein Unterschied: ...".
- * Reines Node, kein Netz, keine Schluessel, kein Electron. Die Fenster-Module
- * (mittelfrist.js, mfdepot.js, studienurteile.js) laufen in einer vm-Sandbox mit
- * Attrappen fuer Speicher und Kursabruf. Nicht in `npm test` eingehaengt.
+ * HERKUNFT: Zweig pruefung/live-gegen-messung (unabhaengige Durchsicht, Stand 450daed),
+ * Datei pruefberichte/live-gegen-messung-momentum.test.js; Bericht ebenda,
+ * pruefberichte/2026-10-live-gegen-messung-momentum.md. Uebernommen und angepasst mit
+ * Auftrag Nr. 93 (04.10.2026, "das Momentum-Buch handelt wie gemessen"):
+ *   - an den heutigen Code: holeTage liefert { reihe, ereignisse } und fragt bereinigt + mitRoh
+ *     (die Attrappe des Kurs-Laders kann beides und ereignisseAb); fuehreAus hat ein fuenftes
+ *     Argument ({ kleinstAnteil }); neue Felder (mf_bezug, letzteAusfuehrungTag, tag/buchT);
+ *   - jeder Test prueft die GEMESSENE Regel (studien/massstab-rueckblick-2026-10-04/REGEL.md
+ *     §1.2-§1.5, rueckblick.js) als Soll - keine Erwartung gelockert. Wo die Regel einen Zeitpunkt
+ *     braucht (Eroeffnung, Stichtag), laeuft der Test auf einer festen Uhr (Dienstag 24.11.2026,
+ *     New York) statt auf Date.now();
+ *   - dieselbe Datei laeuft gegen jeden Stand: PRUEF_WURZEL=<Ordner> nimmt die Module von dort
+ *     (so entstand der Lauf "vor dem Umbau" gegen 97f16d2).
+ * Mit Auftrag Nr. 94 (04.10.2026) Test 10 neu gefasst: jede Zahl jeder Rueckblick-Zeile gegen die Datei, die ihr
+ * Eintrag als Quelle nennt (Einzelheiten im Kopf von Test 10); Test 11 unveraendert (Kopf erklaert seine Abweichung).
+ * Jeder Test druckt GENAU EINE Zeile: "ZEIGT ABWEICHUNG: ..." oder "kein Unterschied: ...".
+ * Reines Node, kein Netz, keine Schluessel, kein Electron. Die Fenster-Module laufen in einer
+ * vm-Sandbox mit Attrappen fuer Speicher, Kursabruf und Uhr. Nicht in `npm test` eingehaengt.
  *
  * Aufruf aus der Repo-Wurzel:
  *   node pruefberichte/live-gegen-messung-momentum.test.js        alle Tests
  *   node pruefberichte/live-gegen-messung-momentum.test.js 7      nur Test 7
- *
- * Tests 1-15 aus der ersten Fassung, 16-19 aus der Nachpruefung (Gegenpruefung durch vier unabhaengige Durchlaeufe),
- * 20-21 messen auf echten Kennzahl-Dateien aus studien/ (nur lesen).
  *
  * Alles Simulation mit virtuellem Kapital. Keine Anlageberatung.
  */
@@ -21,7 +30,7 @@ var fs = require('fs');
 var path = require('path');
 var vm = require('vm');
 
-var WURZEL = path.join(__dirname, '..');
+var WURZEL = process.env.PRUEF_WURZEL ? path.resolve(process.env.PRUEF_WURZEL) : path.join(__dirname, '..');
 var MH = require(path.join(WURZEL, 'mfhandel.js'));
 var Ms = require(path.join(WURZEL, 'massstab.js'));
 var KK = require(path.join(WURZEL, 'kurse.js'));
@@ -29,7 +38,7 @@ var TAG = 86400000;
 
 /* ---------------- Hilfen ---------------- */
 
-/** Stempel eines Tagesbalkens wie bei Yahoo: Eroeffnung 13:30 UTC des Tages von ms. */
+/** Stempel eines Tagesbalkens wie bei Yahoo: Eroeffnung 13:30 UTC des Tages von ms (New-Yorker Tag derselbe). */
 function stempel(ms) {
   var d = new Date(ms);
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 13, 30);
@@ -47,19 +56,28 @@ function werktageBis(endeT, n) {
   while (aus.length < n) { if (werktag(t)) aus.unshift(t); t -= TAG; }
   return aus;
 }
-/** Kursweg mit fester Staerke: Kurs(i-21) / Kurs(i-252) - 1 = staerke (mfhandel.js Z. 76/86). */
+/* Die feste Uhr: Ende November 2026 gilt in New York Winterzeit (UTC-5). */
+function nyUTC(j, m, t, h, min) { return Date.UTC(j, m - 1, t, h + 5, min || 0); }
+var FR = Date.UTC(2026, 10, 20, 13, 30), MO = Date.UTC(2026, 10, 23, 13, 30), DI = Date.UTC(2026, 10, 24, 13, 30);
+/** Kursweg mit fester Staerke: Kurs(i-21) / Kurs(i-252) - 1 = staerke (mfhandel.js momentumZiel). */
 function kursweg(n, staerke) {
   var aus = [];
   for (var j = 0; j < n; j++) aus.push(100 * Math.pow(1 + staerke, (j - (n - 1 - 21)) / 231));
   return aus;
 }
-/** Reihe in der Form des Buchs: [[t, schluss, stueck]]. 3 Mio Stueck x ~100 $ = liquide. */
+/** Reihe des Bestands: [[t, schluss, stueck, adjclose]]. 3 Mio Stueck x ~100 $ = liquide. adjclose = schluss. */
 function buchReihe(tage, kurse, stueck) {
-  return tage.map(function (t, j) { return [t, kurse[j], stueck == null ? 3e6 : stueck]; });
+  return tage.map(function (t, j) { return [t, kurse[j], stueck == null ? 3e6 : stueck, kurse[j]]; });
 }
-/** Antwort des Kurs-Laders wie Kurse.hole (kurse.js): {bars: [[t, c, v, h, l, o]]}. */
-function ladeAntwort(reihe) {
-  return { bars: reihe.map(function (b) { return [b[0], b[1], b[2], b[1], b[1], b[1]]; }), verworfen: 0, gesamt: reihe.length, feld: 'adjclose' };
+/** Antwort des Kurs-Laders wie Kurse.hole (kurse.js): bars [[t, schluss, volumen, hoch, tief, eroeffnung]], Schluss je nach
+ *  bereinigt (adjclose = Spalte 4 der Kunstreihe) und mit o.mitRoh die rohen Schluesse (Spalte 1). */
+function ladeAntwort(reihe, o) {
+  o = o || {};
+  var bars = reihe.map(function (b) { var c = o.bereinigt === false ? b[1] : b[3]; return [b[0], c, b[2], c, c, b[4] != null ? b[4] : b[1]]; });
+  var aus = { bars: bars, verworfen: 0, gesamt: reihe.length, feld: o.bereinigt === false ? 'close' : 'adjclose' };
+  if (o.mitRoh) aus.roh = reihe.map(function (b) { return [b[0], b[1]]; });
+  if (o.ereignisse) aus.ereignisse = { div: [], split: [] };
+  return aus;
 }
 function universum() {
   var src = fs.readFileSync(path.join(WURZEL, 'mittelfrist.js'), 'utf8');
@@ -79,14 +97,17 @@ function speicher(anfang) {
     }
   };
 }
-/** Tagesdaten so ablegen, wie tagesdatenSchreiben (mittelfrist.js Z. 60-71) es tut. */
-function tagesdatenAblegen(st, roh, at) {
+/** Tagesdaten so ablegen, wie tagesdatenSchreiben (mittelfrist.js) es tut - samt Ereignis-Bestand und, seit Nr. 93,
+ *  der Bezugsreihe SPY (mf_bezug, gleicher Stand). Ein aelterer Stand der App liest mf_bezug nicht. */
+function tagesdatenAblegen(st, roh, at, spy) {
   var syms = Object.keys(roh).sort(), teile = Math.max(1, Math.ceil(syms.length / 25));
   for (var t = 0; t < teile; t++) {
     var stueck = {};
     syms.slice(t * 25, (t + 1) * 25).forEach(function (s) { stueck[s] = roh[s]; });
     st.daten['mf_tagesdaten_teil_' + t] = { roh: stueck };
   }
+  st.daten.mf_ereignisse = { at: at, sym: {} };
+  if (spy) st.daten.mf_bezug = { at: at, sym: 'SPY', reihe: spy };
   st.daten.mf_tagesdaten_index = { at: at, weg: [], teile: teile };
 }
 function symboleImBestand(st) {
@@ -99,35 +120,58 @@ var U_ATTRAPPE = {
   statuszeile: function (ziel, text) { STATUS.push(String(ziel) + ': ' + text); return null; },
   esc: String, d: String, dt: String, money: String, signTxt: String, pz1: String, nf2: { format: String }
 };
-/** Ein Fenster-Modul in einer Sandbox laden. sofortigeZeitgeber: setTimeout laeuft gleich
- *  (fuer die 90-ms-Pausen in ladeUniversum); sonst sind Zeitgeber stumm (mfdepot.js startet
- *  in bereit() einen Takt nach 12 s - der soll hier nicht von selbst laufen). */
-function sandbox(dateien, win, sofortigeZeitgeber) {
-  var doc = { readyState: 'complete', addEventListener: function () { }, getElementById: function () { return null; } };
+/** Eine Uhr fuer die Sandbox: Date.now() und new Date() stehen auf jetzt; new Date(x) wie gewohnt. */
+function uhr(jetzt) {
+  var Uh = function (x) { return arguments.length ? new Date(x) : new Date(Uh.jetzt); };
+  Uh.now = function () { return Uh.jetzt; }; Uh.jetzt = jetzt; Uh.UTC = Date.UTC; Uh.parse = Date.parse;
+  return Uh;
+}
+/** Ein Fenster-Modul in einer Sandbox laden, auf der Uhr jetzt (Date wird je Datei ersetzt). Zeitgeber unter einer
+ *  Sekunde laufen sofort (die 90-ms-Pausen der Lader); laengere sind stumm (mfdepot.js startet in bereit() einen
+ *  Takt nach 12 s und alle 30 min - die sollen hier nicht von selbst laufen). win.__el: Elemente nach Kennung. */
+function sandbox(dateien, win, jetzt) {
+  var doc = { readyState: 'complete', addEventListener: function () { }, getElementById: function (id) { return (win.__el && win.__el[id]) || null; } };
   var ctx = {
-    window: win, document: doc, console: console,
-    setTimeout: sofortigeZeitgeber ? function (f) { setImmediate(f); return 0; } : function () { return 0; },
+    window: win, document: doc, console: console, __Uhr: uhr(jetzt),
+    setTimeout: function (f, ms) { if (ms >= 1000) return 0; setImmediate(f); return 0; },
     setInterval: function () { return 0; }
   };
   win.document = doc;
   vm.createContext(ctx);
-  dateien.forEach(function (d) { vm.runInContext(fs.readFileSync(path.join(WURZEL, d), 'utf8'), ctx, { filename: d }); });
+  dateien.forEach(function (d) {
+    vm.runInContext('(function (Date) {' + fs.readFileSync(path.join(WURZEL, d), 'utf8') + '\n})(__Uhr);', ctx, { filename: d });
+  });
+  win.__uhr = ctx.__Uhr;
   return win;
 }
-function mittelfristSandbox(st, hole) {
+function kursAttrappe(liefere) {
+  return { hole: liefere, ereignisseAb: KK.ereignisseAb };
+}
+function mittelfristSandbox(st, hole, jetzt) {
   return sandbox(['mittelfrist.js'], {
     U: U_ATTRAPPE, Momentum: require(path.join(WURZEL, 'momentum.js')), Liquide: require(path.join(WURZEL, 'liquide.js')),
-    api: st.api, Kurse: { hole: hole }
-  }, true);
+    MFHandel: MH, api: st.api, Kurse: kursAttrappe(hole)
+  }, jetzt);
 }
-function mfdepotSandbox(st, d, MF) {
-  return sandbox(['mfdepot.js'], {
-    U: U_ATTRAPPE, api: st.api, MF: MF, MFHandel: MH, Massstab: Ms,
+/** mfdepot.js in der Sandbox. eroeffnungen: {SYM: Eroeffnung des Ausfuehrungstags} fuer den Abruf am Ausfuehrungstag
+ *  (A4) - ein Stand der App, der so nicht abruft, fragt die Attrappe nie. */
+function mfdepotSandbox(st, d, MF, jetzt, eroeffnungen) {
+  var karte = { innerHTML: '' };
+  var win = sandbox(['mfdepot.js'], {
+    U: U_ATTRAPPE, api: st.api, MF: MF, MFHandel: MH, Massstab: Ms, __el: { buchMomentumKopf: karte },
+    Kurse: kursAttrappe(async function (sym, o) {
+      var e = eroeffnungen && eroeffnungen[sym];
+      if (!(e > 0) || !o || !(o.von > 0)) return { bars: [] };
+      return { bars: [[DI, e * 1.01, 1e6, e * 1.02, e * 0.99, e]], verworfen: 0, gesamt: 1, feld: 'close' };
+    }),
     __D: function () { return d; }, __save: function () { return Promise.resolve({ ok: true }); }
-  }, false);
+  }, jetzt);
+  win.__karte = karte;
+  return win;
 }
 function geld(x) { return Math.round(x).toLocaleString('de-DE') + ' $'; }
 function pz(x) { return (x >= 0 ? '+' : '') + x.toFixed(2).replace('.', ',') + ' %'; }
+function tagDe(t) { var s = new Date(t).toISOString(); return s.slice(8, 10) + '.' + s.slice(5, 7) + '.'; }
 function zeile(abweichung, text) { console.log((abweichung ? 'ZEIGT ABWEICHUNG: ' : 'kein Unterschied: ') + text); }
 
 /* Kunst-Universum aus den 193 Namen der App-Liste: Staerken als feste Permutation,
@@ -144,15 +188,26 @@ function buchMit(positionen, letztesT) {
   return { name: 'momentum', start: 100000, cash: 0, positionen: positionen, trades: [], angelegt: letztesT - 30 * TAG,
     letztesRebalanceT: letztesT, konfig: MH.buchKonfig(), konfigSeit: letztesT, liquideSeit: letztesT, korbVerlauf: [] };
 }
+function spyAus(tage) { return tage.map(function (t, j) { return [t, 400 + j * 0.1, 8e7, 400 + j * 0.1]; }); }
+function driftMarkt(spy, at) { return { at: at, reihe: spy.map(function (b) { return [b[0], b[3]]; }) }; }
+/** Den Takt laufen lassen und Fehler des Takts als Testdefekt melden. */
+async function taktLauf(dep) {
+  STATUS = [];
+  await dep.MFDepot.takt();
+  var fehler = STATUS.filter(function (s) { return /Fehler/.test(s); });
+  if (fehler.length) throw new Error(fehler.join(' | '));
+}
+function umgeschichtet(d) { return (d.tuneLog || []).some(function (z) { return /^mfrebal-/.test(z.id); }); }
 
 /* ---------------- Die Tests ---------------- */
 var TESTS = {};
 
-/* 1 - Totalausfall beim Nachladen ueberschreibt den gespeicherten Bestand (Fund F1).
- *     Gegenprobe: derselbe Ablauf mit funktionierendem Abruf schichtet um. */
+/* 1 - Totalausfall beim Nachladen (Fund F1). Soll (Messung: vollstaendiges Panel, Bewertung zum letzten Schluss):
+ *     der gespeicherte Bestand bleibt ganz stehen, der Tagespunkt steht zum letzten Schluss (nie zum Einstand), auf
+ *     kaputten Daten wird nicht gehandelt, nachgeladen wird wieder. Gegenprobe: mit funktionierendem Abruf wird umgeschichtet. */
 TESTS[1] = async function () {
-  var jetzt = Date.now(), namen = universum();
-  var tage = werktageBis(werktagVor(jetzt), 520);
+  var namen = universum(), jetzt = nyUTC(2026, 11, 24, 17, 0);
+  var tage = werktageBis(MO, 520), spy = spyAus(tage);
   var alt = kunstUniversum(tage, namen);
   // Das Buch: 19 Positionen, gekauft vor 70 Handelstagen (Umschichtung damit faellig)
   var kaufIdx = tage.length - 71, kaufT = tage[kaufIdx] + 3600000;
@@ -162,36 +217,37 @@ TESTS[1] = async function () {
   var letzteKurse = {}; namen.forEach(function (s) { letzteKurse[s] = alt[s][alt[s].length - 1][1]; });
   var wertLetzterSchluss = MH.bewerte({ cash: 0, positionen: positionen }, letzteKurse).wert;
   var wertEinstand = Math.round(positionen.reduce(function (a, p) { return a + p.stueck * p.einstand; }, 0) * 100) / 100;
+  var eroeff = {}; namen.concat(['SPY']).forEach(function (s) { eroeff[s] = 100; });
   async function lauf(hole) {
-    var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: tage.map(function (t, j) { return [t, 400 + j * 0.1]; }) } });
-    tagesdatenAblegen(st, alt, jetzt - 27 * 3600000);            // aelter als 26 h -> Nachladen faellig
+    var st = speicher({ drift_markt: driftMarkt(spy, jetzt - 3600000) });
+    var atAlt = nyUTC(2026, 11, 23, 10, 0);                        // Montag vor Boersenschluss geladen -> nachzuladen
+    tagesdatenAblegen(st, alt, atAlt, spy);
     var d = { momentumAn: true, mfBuch: buchMit(JSON.parse(JSON.stringify(positionen)), kaufT), mfVerlauf: [] };
     var vorher = symboleImBestand(st);
-    var mf = mittelfristSandbox(st, hole);
+    var mf = mittelfristSandbox(st, hole, jetzt);
     await mf.MF.ladeUniversum();
     var anstoesse = 0;
-    var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { anstoesse++; return Promise.resolve(null); } });
-    STATUS = [];
-    await dep.MFDepot.takt();
-    var fehler = STATUS.filter(function (s) { return /Fehler/.test(s); });
-    if (fehler.length) throw new Error(fehler.join(' | '));
-    return { vorher: vorher, nachher: symboleImBestand(st), teile: st.daten.mf_tagesdaten_index.teile, anstoesse: anstoesse,
-      umgeschichtet: d.mfBuch.letztesRebalanceT !== kaufT, punkt: d.mfVerlauf[d.mfVerlauf.length - 1] };
+    var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { anstoesse++; return Promise.resolve(null); } }, jetzt, eroeff);
+    await taktLauf(dep);
+    return { vorher: vorher, nachher: symboleImBestand(st), atGleich: st.daten.mf_tagesdaten_index.at === atAlt, anstoesse: anstoesse,
+      umgeschichtet: umgeschichtet(d), punkt: d.mfVerlauf[d.mfVerlauf.length - 1], positionenGleich: JSON.stringify(d.mfBuch.positionen) === JSON.stringify(positionen) };
   }
   // Rechner wacht aus dem Ruhezustand auf, das Netz ist noch nicht da: jeder Abruf scheitert
   var x = await lauf(async function () { return null; });
-  var gp = await lauf(async function (sym) { return ladeAntwort(alt[sym]); });
-  var abw = x.nachher < x.vorher && !x.umgeschichtet && Math.abs(x.punkt.momentum - wertEinstand) < 0.01 && x.anstoesse === 0 && gp.umgeschichtet;
-  zeile(abw, 'Totalausfall beim Nachladen: Bestand ' + x.vorher + ' -> ' + x.nachher + ' Werte (Index ' + x.teile + ' Teil, Stand = jetzt). ' +
-    'Folgetakt: Umschichtung faellig, ' + (x.umgeschichtet ? 'ausgefuehrt' : 'NICHT ausgefuehrt (verschoben bis zum naechsten Ladeversuch nach 26 h)') + '; Tagespunkt ' + geld(x.punkt.momentum) +
-    ' = Einstand, Messung (letzter Schluss) ' + geld(wertLetzterSchluss) + '; Nachladen angestossen: ' + x.anstoesse + 'x (Stand gilt 26 h als frisch). ' +
+  var gp = await lauf(async function (sym, o) { return alt[sym] ? ladeAntwort(alt[sym], o) : (sym === 'SPY' ? ladeAntwort(spy, o) : null); });
+  var punktOk = x.punkt && Math.abs(x.punkt.momentum - wertLetzterSchluss) < 0.01;
+  var soll = x.nachher === x.vorher && x.atGleich && punktOk && !x.umgeschichtet && x.positionenGleich && x.anstoesse >= 1 && gp.umgeschichtet;
+  zeile(!soll, 'Totalausfall beim Nachladen: Bestand ' + x.vorher + ' -> ' + x.nachher + ' Werte (Stand ' + (x.atGleich ? 'unveraendert' : 'neu') + '). ' +
+    'Folgetakt: Umschichtung faellig, ' + (x.umgeschichtet ? 'ausgefuehrt' : 'nicht ausgefuehrt') + '; Tagespunkt ' + (x.punkt ? geld(x.punkt.momentum) : '-') +
+    ' (Einstand ' + geld(wertEinstand) + ', Messung: letzter Schluss ' + geld(wertLetzterSchluss) + '); Nachladen angestossen: ' + x.anstoesse + 'x. ' +
     'Gegenprobe mit funktionierendem Abruf: ' + (gp.umgeschichtet ? 'umgeschichtet' : 'NICHT umgeschichtet') + '.');
 };
 
-/* 2 - Halbe Antwort: 45 Werte ohne Daten (HTTP 200 leer / Drosselung) (Fund F1). */
+/* 2 - Halbe Antwort: 45 Werte ohne Daten (HTTP 200 leer / Drosselung) (Fund F1). Soll: das Buch handelt dieselben
+ *     Werte wie mit vollstaendiger Antwort, keine alte Position bleibt ohne Kurs liegen. */
 TESTS[2] = async function () {
-  var jetzt = Date.now(), namen = universum();
-  var tage = werktageBis(werktagVor(jetzt), 520);
+  var namen = universum(), jetzt = nyUTC(2026, 11, 24, 17, 0);
+  var tage = werktageBis(MO, 520), spy = spyAus(tage);
   var voll = kunstUniversum(tage, namen);
   var fehlen = namen.slice(-45);                                 // das Ende der Liste trifft eine Drosselung zuerst
   var fehlSet = {}; fehlen.forEach(function (s) { fehlSet[s] = true; });
@@ -201,154 +257,164 @@ TESTS[2] = async function () {
   var nachStaerke = namen.slice().sort(function (a, b) { return voll[a][250][1] / voll[a][0][1] - voll[b][250][1] / voll[b][0][1]; });
   var gehalten = nachStaerke.filter(function (s) { return fehlSet[s]; }).slice(0, 3)
     .concat(nachStaerke.filter(function (s) { return !fehlSet[s]; }).slice(0, 16));
+  var eroeff = {}; namen.concat(['SPY']).forEach(function (s) { eroeff[s] = 100; });
   async function lauf(fehlend) {
-    var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: tage.map(function (t, j) { return [t, 400 + j * 0.1]; }) } });
-    tagesdatenAblegen(st, voll, jetzt - 27 * 3600000);
+    var st = speicher({ drift_markt: driftMarkt(spy, jetzt - 3600000) });
+    tagesdatenAblegen(st, voll, nyUTC(2026, 11, 23, 16, 20), spy);          // Montag nach Boersenschluss geladen
     var pos = gehalten.map(function (s) { return { sym: s, stueck: 50, einstand: voll[s][kaufIdx][1] * 1.002, seit: tage[kaufIdx] }; });
     var d = { momentumAn: true, mfBuch: buchMit(pos, tage[kaufIdx] + 3600000), mfVerlauf: [] };
     d.mfBuch.cash = 1000;
-    var mf = mittelfristSandbox(st, async function (sym) { return fehlend[sym] ? null : ladeAntwort(voll[sym]); });
+    var mf = mittelfristSandbox(st, async function (sym, o) { return fehlend[sym] ? null : (voll[sym] ? ladeAntwort(voll[sym], o) : sym === 'SPY' ? ladeAntwort(spy, o) : null); }, jetzt);
     await mf.MF.ladeUniversum();
-    var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } });
-    STATUS = [];
-    await dep.MFDepot.takt();
-    var fehler = STATUS.filter(function (s) { return /Fehler/.test(s); });
-    if (fehler.length) throw new Error(fehler.join(' | '));
+    var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, jetzt, eroeff);
+    await taktLauf(dep);
     var korb = d.mfBuch.korbVerlauf[d.mfBuch.korbVerlauf.length - 1] || {};
     return { bestand: symboleImBestand(st), ziel: korb.ziel, syms: d.mfBuch.positionen.map(function (p) { return p.sym; }) };
   }
   var a = await lauf({}), b = await lauf(fehlSet);
   var nurVoll = a.syms.filter(function (s) { return b.syms.indexOf(s) === -1; });
   var haengen = b.syms.filter(function (s) { return fehlSet[s] && gehalten.indexOf(s) !== -1; });
-  zeile(nurVoll.length > 0 || haengen.length > 0,
+  zeile(nurVoll.length > 0 || haengen.length > 0 || !a.ziel,
     '45 von ' + namen.length + ' Werten ohne Daten: Bestand ' + b.bestand + ' statt ' + a.bestand + ' Werte; Ziel ' + b.ziel + ' statt ' + a.ziel +
     ' Werte, ' + nurVoll.length + ' Positionen der vollen Rechnung fehlen im Buch (' + nurVoll.slice(0, 5).join(', ') + (nurVoll.length > 5 ? ' ...' : '') +
     '); ' + haengen.length + ' alte Positionen ohne Kurs bleiben fuer eine ganze Periode liegen (' + haengen.join(', ') + ').');
 };
 
-/* 3 - Ein Wert verschwindet (Uebernahme, Delisting, Kuerzelwechsel) (Fund F2). */
-TESTS[3] = function () {
-  var buch = { cash: 0, positionen: [{ sym: 'WEG', stueck: 100, einstand: 100.2, seit: 0 }, { sym: 'A', stueck: 100, einstand: 100.2, seit: 0 }], trades: [] };
-  var letzterSchluss = 130;                                      // letzter Kurs, bevor die Quelle nichts mehr liefert
-  var budgets = [];
-  for (var runde = 0; runde < 3; runde++) {
-    var preise = { A: 110, B: 120 + runde, C: 90 + runde };      // WEG fehlt in den Tagesdaten
-    var plan = MH.planeUmschichtung(runde === 0 ? ['B', 'C'] : ['C', 'B'], buch, preise);
-    budgets.push(plan.depotwert);
-    MH.fuehreAus(buch, plan, runde, 20);
-  }
-  var weg = buch.positionen.filter(function (p) { return p.sym === 'WEG'; })[0];
-  var bw = MH.bewerte(buch, { B: 122, C: 92 });
-  zeile(!!weg && bw.ohneKurs.indexOf('WEG') !== -1,
-    'nach 3 Umschichtungen steht WEG noch im Buch (' + (weg ? weg.stueck : 0) + ' Stueck), bewertet zum Einstand ' + geld(weg.stueck * weg.einstand) +
-    ', nie verkauft, nicht im Depotwert der Umschichtung (' + geld(budgets[2]) + '). Messung: am ersten Tag ohne Zeile ausgebucht zu ' +
-    geld(100 * letzterSchluss) + ' (Uebernahme) bzw. 0 $ (Insolvenz/Zwangs-Delisting), Geld in der naechsten Umschichtung angelegt.');
+/* 3 - Ein Wert verschwindet (Uebernahme, Delisting, Kuerzelwechsel) (Fund F2). Soll (REGEL §1.4): die Position wird
+ *     ausgebucht - zum letzten Schluss ohne Verkaufskosten (bzw. 0 bei Insolvenz), das Geld ist Bargeld. Die alte Reihe
+ *     steht im Bestand (die Quelle liefert nichts mehr; seit Nr. 93 behaelt der Lader sie), seit zehn Handelstagen ohne
+ *     neuen Balken; die naechste regulaere Umschichtung ist noch nicht faellig. */
+TESTS[3] = async function () {
+  var namen = universum(), jetzt = nyUTC(2026, 11, 24, 17, 0);
+  var tage = werktageBis(MO, 300), spy = spyAus(tage);
+  var roh = kunstUniversum(tage, namen.slice(0, 120));
+  roh.WEG = buchReihe(tage.slice(0, -10), tage.slice(0, -10).map(function () { return 130; }));
+  var st = speicher({ drift_markt: driftMarkt(spy, jetzt - 3600000) });
+  tagesdatenAblegen(st, roh, nyUTC(2026, 11, 23, 16, 20), spy);
+  var letzte = tage[tage.length - 11];                           // letzte Umschichtung vor zehn Handelstagen
+  var d = { momentumAn: true, mfBuch: buchMit([{ sym: 'WEG', stueck: 100, einstand: 100.2, seit: letzte }, { sym: namen[0], stueck: 10, einstand: 100, seit: letzte }], letzte + 3600000), mfVerlauf: [] };
+  var mf = mittelfristSandbox(st, async function () { return null; }, jetzt);
+  var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, jetzt, {});
+  await taktLauf(dep);
+  var weg = d.mfBuch.positionen.filter(function (p) { return p.sym === 'WEG'; })[0];
+  var soll = !weg && Math.abs(d.mfBuch.cash - 100 * 130) < 1e-6 && !umgeschichtet(d);
+  zeile(!soll, (weg ? 'WEG steht nach dem Takt noch im Buch (' + weg.stueck + ' Stueck, seit 10 Handelstagen ohne Kurs), nicht ausgebucht'
+    : 'WEG ausgebucht') + '; Bargeld ' + geld(d.mfBuch.cash) + '. Messung: am ersten Tag ohne Zeile ausgebucht zu ' + geld(100 * 130) +
+    ' ohne Verkaufskosten (bzw. 0 $ bei Insolvenz/Zwangs-Delisting), Geld in der naechsten Umschichtung angelegt (App seit Nr. 93: nach fuenf Handelstagen, gleicher Preis).');
 };
 
-/* 4 - Rangfolge auf dividendenbereinigten Kursen (App) gegen Kurse ohne Ausschuettungen (Messung) (Fund F3). */
-TESTS[4] = function () {
-  var tage = werktageBis(werktagVor(Date.UTC(2026, 9, 2)), 300), n = tage.length, i = n - 1;
-  var roh = {}, adj = {};
-  for (var k = 0; k < 120; k++) {
-    var s = 'W' + (k < 10 ? '00' : k < 100 ? '0' : '') + k;
-    roh[s] = buchReihe(tage, kursweg(n, 0.10 + 0.01 * k));
-    adj[s] = roh[s];
-  }
-  /* W107: Kursstaerke 1,17, Platz 13 von 120 (das Ziel sind 12). Drei Quartalsausschuettungen
-   * von je 1,5 % liegen im Rueckblickfenster, eine vierte danach. Yahoo-adjclose: jeder Kurs vor
-   * einem Ex-Tag wird mit (1 - Satz) multipliziert (kurse.js Z. 74-75). */
+/* 4 - Rangfolge: was der Lader in Spalte 1 ablegt, rangiert das Buch (Fund F3). Soll (Messung, bSchluss): Splits ja,
+ *     Ausschuettungen nein. 193 Werte, das Ziel sind 19; der Wert auf Platz 20 hat drei Ausschuettungen zu je 1,5 % im Fenster. */
+TESTS[4] = async function () {
+  var namen = universum(), tage = werktageBis(MO, 520), n = tage.length, i = n - 1;   // mehr als 500 Balken: auch ein Lader mit der alten Laengenhuerde legt sie ab (F8 getrennt in Test 12)
+  var roh = {}, rang = {};
+  namen.forEach(function (s, k) { rang[s] = (k * 37) % namen.length; roh[s] = buchReihe(tage, kursweg(n, 0.10 + 0.01 * rang[s])); });
+  var w20 = namen.filter(function (s) { return rang[s] === namen.length - 20; })[0];
   var exTage = [i - 200, i - 137, i - 74, i - 11];
-  adj.W107 = roh.W107.map(function (b, j) {
-    var f = 1;
-    exTage.forEach(function (e) { if (e > j) f *= 0.985; });
-    return [b[0], b[1] * f, b[2]];
-  });
-  var zielMessung = MH.momentumZiel(roh, { nowMs: tage[i] }).ziel;
-  var zielApp = MH.momentumZiel(adj, { nowMs: tage[i] }).ziel;
+  roh[w20] = roh[w20].map(function (b, j) { var f = 1; exTage.forEach(function (e) { if (e > j) f *= 0.985; }); return [b[0], b[1], b[2], b[1] * f]; });
+  var st = speicher({});
+  var mf = mittelfristSandbox(st, async function (sym, o) { return roh[sym] ? ladeAntwort(roh[sym], o) : sym === 'SPY' ? ladeAntwort(spyAus(tage), o) : null; }, nyUTC(2026, 11, 23, 16, 30));
+  await mf.MF.ladeUniversum();
+  var g = await mf.MF.tagesdatenLesen();
+  var messRoh = {}; namen.forEach(function (s) { messRoh[s] = roh[s].map(function (b) { return [b[0], b[1], b[2]]; }); });
+  var zielMessung = MH.momentumZiel(messRoh, { nowMs: tage[i] }).ziel;
+  var zielApp = MH.momentumZiel(g.roh, { nowMs: tage[i] }).ziel;      // so rangiert das Buch: Spalte 1 des Bestands
   var rein = zielApp.filter(function (x) { return zielMessung.indexOf(x) === -1; });
   var raus = zielMessung.filter(function (x) { return zielApp.indexOf(x) === -1; });
-  var st = function (r) { return (r[i - 21][1] / r[i - 252][1] - 1).toFixed(3).replace('.', ','); };
-  zeile(rein.length > 0, 'Staerke W107 ohne Ausschuettungen ' + st(roh.W107) + ', dividendenbereinigt ' + st(adj.W107) +
-    ' -> im Ziel der App: ' + (rein.join(', ') || '-') + ', dafuer raus: ' + (raus.join(', ') || '-') + ' (Ziel ' + zielApp.length + ' von 120).');
+  var stk = function (r) { return (r[i - 21][1] / r[i - 252][1] - 1).toFixed(3).replace('.', ','); };
+  var adj = roh[w20].map(function (b) { return [b[0], b[3]]; });
+  zeile(rein.length > 0 || raus.length > 0, 'Staerke ' + w20 + ' ohne Ausschuettungen ' + stk(roh[w20]) + ', dividendenbereinigt ' + stk(adj) +
+    ' -> im Ziel der App, nicht in der Messung: ' + (rein.join(', ') || '-') + '; in der Messung, nicht in der App: ' + (raus.join(', ') || '-') +
+    ' (Ziel ' + zielApp.length + ' von ' + namen.length + ').');
 };
 
-/* 5 - Wie alt duerfen die Kurse sein? Die 7-Tage-Pruefung misst am juengsten Balken DESSELBEN Bestands (Fund F4). */
-TESTS[5] = function () {
-  var jetzt = Date.now();
+/* 5 - Wie alt duerfen die Kurse sein? (Fund F4). Soll (Messung: Kurs desselben Tages): mit Tagesdaten, die 30 Tage alt
+ *     sind, wird nicht umgeschichtet; nachgeladen wird, und der Grund steht auf der Karte. */
+TESTS[5] = async function () {
+  var namen = universum(), jetzt = nyUTC(2026, 11, 24, 10, 0);
   var ende = werktagVor(jetzt - 30 * TAG);                       // alle Reihen enden vor 30 Tagen
-  var tage = werktageBis(ende, 300), roh = {};
-  for (var k = 0; k < 120; k++) roh['W' + k] = buchReihe(tage, kursweg(300, 0.1 + 0.01 * k));
-  var juengster = tage[tage.length - 1];
-  var wieTakt = MH.momentumZiel(roh, { nowMs: juengster });      // so ruft mfdepot.js Z. 153
-  var gegenUhr = MH.momentumZiel(roh, { nowMs: jetzt });
-  var plan = MH.planeUmschichtung(wieTakt.ziel, { cash: 100000, positionen: [] }, (function () { var p = {}; Object.keys(roh).forEach(function (s) { p[s] = roh[s][299][1]; }); return p; })());
-  zeile(wieTakt.ziel.length > 0 && gegenUhr.ziel.length === 0,
-    'Tagesdaten ' + Math.round((jetzt - juengster) / TAG) + ' Tage alt: mit nowMs = juengster Balken (wie der Takt) Ziel ' + wieTakt.ziel.length +
-    ' Werte und ' + plan.kaufen.length + ' Kaeufe zu den alten Schlusskursen; gegen die Uhr gemessen waeren alle ' + gegenUhr.korb.geprueft +
-    ' Reihen "veraltet" (' + gegenUhr.verworfen.length + ' verworfen).');
+  var tage = werktageBis(ende, 300), spy = spyAus(tage), roh = kunstUniversum(tage, namen);
+  var st = speicher({ drift_markt: driftMarkt(spy, jetzt - 31 * TAG) });
+  tagesdatenAblegen(st, roh, jetzt - 31 * TAG, spy);
+  var d = { momentumAn: true, mfBuch: buchMit([], tage[tage.length - 80]), mfVerlauf: [] };
+  d.mfBuch.cash = 100000;
+  var mf = mittelfristSandbox(st, async function () { return null; }, jetzt);
+  var anstoesse = 0, eroeff = {}; namen.concat(['SPY']).forEach(function (s) { eroeff[s] = 100; });
+  var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { anstoesse++; return Promise.resolve(null); } }, jetzt, eroeff);
+  await taktLauf(dep);
+  var karte = dep.__karte.innerHTML;
+  var grund = /veraltet seit|nicht frisch/.test(karte);
+  zeile(umgeschichtet(d) || anstoesse < 1 || !grund, 'Tagesdaten ' + Math.round((jetzt - tage[tage.length - 1]) / TAG) + ' Tage alt: ' +
+    (umgeschichtet(d) ? 'umgeschichtet (' + d.mfBuch.positionen.length + ' Kaeufe zu den alten Schlusskursen)' : 'nicht umgeschichtet') +
+    '; Nachladen angestossen: ' + anstoesse + 'x; Grund auf der Karte: ' + (grund ? 'ja' : 'nein') + '.');
 };
 
-/* 6 - Welcher Kurs wird gehandelt? Schluss des Stichtags statt Eroeffnung des Folgetags (Fund F4).
- *     (a) ist Arithmetik mit der Funktion der App. (b) zeigt nur, dass der Lader innerhalb des Fensters nichts
- *     wegschneidet; wie Yahoos Balken der laufenden Sitzung genau aussieht (Stempel, Umsatz), belegt der Test NICHT. */
-TESTS[6] = function () {
-  // (a) Fuellkurs: Stichtag schliesst bei 100, der Ausfuehrungstag eroeffnet bei 103.
-  var appBuch = { cash: 100000, positionen: [] }, messBuch = { cash: 100000, positionen: [] };
-  MH.fuehreAus(appBuch, MH.planeUmschichtung(['X'], appBuch, { X: 100 }), 0, 20);       // App: letzter Balken
-  MH.fuehreAus(messBuch, MH.planeUmschichtung(['X'], messBuch, { X: 103 }), 0, 20);     // Messung: bEroeffnung
-  // (b) Der Lader behaelt den Balken der laufenden Sitzung (Stempel 13:30 UTC, Kurs = jetzt).
-  var heute = Date.UTC(2026, 9, 2, 13, 30), gestern = heute - TAG;
-  var antwort = JSON.stringify({ chart: { result: [{ meta: {}, timestamp: [gestern / 1000, heute / 1000],
-    indicators: { quote: [{ close: [100, 101.5], volume: [5e6, 1e6] }], adjclose: [{ adjclose: [100, 101.5] }] } }] } });
-  var z = KK.zerlege(antwort, { bereinigt: true, von: 0, bis: Date.UTC(2026, 9, 2, 16, 0) });   // Abruf um 16:00 UTC
-  var letzter = z.bars[z.bars.length - 1];
-  zeile(appBuch.positionen[0].stueck !== messBuch.positionen[0].stueck && letzter[0] === heute,
-    'Kauf zum Schluss des Stichtags (100 $ -> ' + appBuch.positionen[0].stueck + ' Stueck) statt zur Eroeffnung des Folgetags (103 $ -> ' +
-    messBuch.positionen[0].stueck + ' Stueck, ' + pz((appBuch.positionen[0].stueck / messBuch.positionen[0].stueck - 1) * 100) +
-    '); ein Abruf um 16:00 UTC liefert als letzten Balken den Zwischenstand der laufenden Sitzung (' + letzter[1] + ' $, ' +
-    (letzter[2] / 1e6) + ' Mio Stueck bis dahin gegen ' + (z.bars[0][2] / 1e6) + ' Mio am Vortag).');
+/* 6 - Welcher Kurs wird gehandelt? (Fund F4). Soll (REGEL §1.3): Rangfolge auf den Schluessen des Stichtags, Kauf zur
+ *     Eroeffnung des Ausfuehrungstags; ein laufender Balken kommt nicht in den Bestand. (a) Dienstag 10:00 New York,
+ *     Stichtag Montag schliesst bei ~100, Dienstag eroeffnet 3 % hoeher. (b) der Lader um 12:00 New York. */
+TESTS[6] = async function () {
+  var namen = universum(), jetzt = nyUTC(2026, 11, 24, 10, 0);
+  var tage = werktageBis(MO, 520), spy = spyAus(tage), roh = kunstUniversum(tage, namen);   // 520 Balken: siehe Test 4
+  var st = speicher({ drift_markt: driftMarkt(spy, jetzt - 3600000) });
+  tagesdatenAblegen(st, roh, nyUTC(2026, 11, 23, 16, 20), spy);
+  var d = { momentumAn: true, mfBuch: buchMit([], tage[tage.length - 80]), mfVerlauf: [] };
+  d.mfBuch.cash = 100000;
+  var eroeff = { SPY: 450 }; namen.forEach(function (s) { eroeff[s] = roh[s][roh[s].length - 1][1] * 1.03; });
+  var mf = mittelfristSandbox(st, async function () { return null; }, jetzt);
+  var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, jetzt, eroeff);
+  await taktLauf(dep);
+  var gekauft = d.mfBuch.positionen;
+  var zurEroeffnung = gekauft.length > 0 && gekauft.every(function (p) { return Math.abs(p.einstand - eroeff[p.sym] * 1.002) < 1e-6; });
+  var bsp = gekauft[0];
+  // (b) der Lader waehrend der Sitzung: Yahoo liefert den laufenden Balken mit (Stempel 13:30 UTC, Kurs = jetzt)
+  var st2 = speicher({}), lauf = {}; namen.forEach(function (s) { lauf[s] = roh[s].concat([[DI, 101.5, 1e6, 101.5]]); });
+  var mf2 = mittelfristSandbox(st2, async function (sym, o) { return lauf[sym] ? ladeAntwort(lauf[sym], o) : sym === 'SPY' ? ladeAntwort(spy.concat([[DI, 450, 1e6, 450]]), o) : null; }, nyUTC(2026, 11, 24, 12, 0));
+  await mf2.MF.ladeUniversum();
+  var g2 = await mf2.MF.tagesdatenLesen();
+  var r2 = g2 && g2.roh[namen[0]], letzter = r2 ? r2[r2.length - 1] : null;
+  var laufendDrin = !!letzter && letzter[0] === DI;
+  zeile(!zurEroeffnung || laufendDrin, (bsp ? 'Kauf ' + bsp.sym + ' zu ' + (bsp.einstand / 1.002).toFixed(2).replace('.', ',') + ' $ (Schluss des Stichtags ' +
+    roh[bsp.sym][roh[bsp.sym].length - 1][1].toFixed(2).replace('.', ',') + ' $, Eroeffnung ' + eroeff[bsp.sym].toFixed(2).replace('.', ',') + ' $) - ' +
+    (zurEroeffnung ? 'alle ' + gekauft.length + ' Kaeufe zur Eroeffnung' : 'nicht zur Eroeffnung') : 'kein Kauf') +
+    '; ein Abruf um 12:00 New York legt als letzten Balken ' + (letzter ? tagDe(letzter[0]) + ' ' + String(letzter[1]).replace('.', ',') + ' $' : '-') +
+    (laufendDrin ? ' ab (den Zwischenstand der laufenden Sitzung)' : ' ab (der laufende Balken bleibt draussen)') + '.');
 };
 
-/* 7 - Buch und Markt im selben Verlaufspunkt sind verschieden alt (Fund F5): die Buchseite ist eingefroren,
- *     die Marktseite wird bei jedem Lesen aus der aktuellen SPY-Reihe neu bestimmt.
- *     Der Test zeigt den Mechanismus, nicht ein bestimmtes Datum: Bestandsinhalt und Stempel (jetzt - 22 h)
- *     sind gesetzt. Gegenprobe: enden die Tagesdaten am selben Tag wie die SPY-Reihe, ist der Abstand 0. */
+/* 7 - Buch und Markt im selben Verlaufspunkt (Fund F5). Soll (rueckblick.js Schritt 5/6): beide zum Schluss desselben
+ *     Tags. Ein Buch, das Stueck fuer Stueck den Markt haelt, liegt 0 Pp neben ihm. Die Tagesdaten enden am Freitag, die
+ *     SPY-Reihe des Massstabs (drift_markt) am Montag mit +2 %. Gegenprobe: Tagesdaten bis Montag. */
 TESTS[7] = async function () {
-  var jetzt = Date.now();
-  var d1 = werktagVor(jetzt), d2 = werktagVor(d1);
+  var jetzt = nyUTC(2026, 11, 24, 6, 0);
+  var d1 = MO, d2 = FR;
   var spyTage = werktageBis(d1, 300);
-  var spy = spyTage.map(function (t) { return [t, t === d1 ? 510 : 500]; });   // +2 % am juengsten Tag, sonst flach
+  var spyM = spyTage.map(function (t) { return [t, t === d1 ? 510 : 500]; });   // +2 % am juengsten Tag, sonst flach
   var d6 = spyTage[spyTage.length - 6];
   /* Das Buch haelt Stueck fuer Stueck den Markt (GLEICH = SPY / 5). */
-  async function lauf(tageDaten) {
+  async function lauf(tageDaten, at) {
     var gleich = buchReihe(tageDaten, tageDaten.map(function (t) { return t === d1 ? 102 : 100; }));
-    var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: spy } });
-    tagesdatenAblegen(st, { GLEICH: gleich }, jetzt - 22 * 3600000);
-    var buch = buchMit([{ sym: 'GLEICH', stueck: 1000, einstand: 100, seit: d6 - 30 * TAG }], jetzt - 3600000);
+    var spyB = tageDaten.map(function (t) { return [t, t === d1 ? 510 : 500, 8e7, t === d1 ? 510 : 500]; });
+    var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: spyM } });
+    tagesdatenAblegen(st, { GLEICH: gleich }, at, spyB);
+    var buch = buchMit([{ sym: 'GLEICH', stueck: 1000, einstand: 100, seit: d6 - 30 * TAG }], d6);
     buch.angelegt = d6 - 30 * TAG;
     var d = { momentumAn: true, mfBuch: buch, mfVerlauf: [{ t: d6 + 7.5 * 3600000, momentum: 100000, drift: null, spy: 500, startM: 100000, startD: null }] };
-    var mf = mittelfristSandbox(st, async function () { return null; });
-    var anstoesse = 0;
-    var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { anstoesse++; return Promise.resolve(null); } });
-    STATUS = [];
-    await dep.MFDepot.takt();
-    var fehler = STATUS.filter(function (s) { return /Fehler/.test(s); });
-    if (fehler.length) throw new Error(fehler.join(' | '));
-    return { v: dep.MFDepot.vergleich('momentum'), anstoesse: anstoesse, punkte: d.mfVerlauf.length };
+    var mf = mittelfristSandbox(st, async function () { return null; }, jetzt);
+    var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, jetzt, {});
+    await taktLauf(dep);
+    return { v: dep.MFDepot.vergleich('momentum'), punkt: d.mfVerlauf[d.mfVerlauf.length - 1] };
   }
-  /* Tagesdaten vor 22 h geladen: sie enden einen Handelstag frueher als die SPY-Reihe. */
-  var x = await lauf(spyTage.slice(0, -1));
-  var gp = await lauf(spyTage);
+  var x = await lauf(spyTage.slice(0, -1), nyUTC(2026, 11, 20, 16, 30));
+  var gp = await lauf(spyTage, nyUTC(2026, 11, 23, 16, 30));
   var v = x.v;
-  var tag = function (t) { return new Date(t).toISOString().slice(0, 10); };
-  zeile(v && v.ok && Math.abs(v.abstandPp) >= 1.9 && gp.v && gp.v.ok && gp.v.abstandPp === 0,
-    'Buch = Markt Stueck fuer Stueck; neuer Tagespunkt: Buchwert aus Schluss ' + tag(d2) + ', Marktwert aus Schluss ' + tag(d1) +
-    ' (marktAn) -> Anzeige Buch ' + pz(v.buchPct) + ' gegen S&P 500 ' + pz(v.marktPct) + ', Abstand ' + v.abstandPp.toFixed(1).replace('.', ',') +
-    ' Pp statt 0 (Nachladen angestossen: ' + x.anstoesse + 'x, Tagesdaten 22 h alt gelten als frisch). Gegenprobe mit Tagesdaten bis ' + tag(d1) +
+  zeile(!(v && v.ok && Math.abs(v.abstandPp) < 0.05 && gp.v && gp.v.ok && Math.abs(gp.v.abstandPp) < 0.05),
+    'Buch = Markt Stueck fuer Stueck; Tagesdaten bis ' + tagDe(d2) + ', Massstab-Reihe bis ' + tagDe(d1) + ' -> neuer Tagespunkt ' +
+    (x.punkt.tag ? 'fuer ' + x.punkt.tag + ' (spy ' + x.punkt.spy + ')' : 'ohne Handelstag (spy ' + x.punkt.spy + ')') + '; Anzeige Buch ' + pz(v.buchPct) +
+    ' gegen S&P 500 ' + pz(v.marktPct) + ', Abstand ' + v.abstandPp.toFixed(1).replace('.', ',') + ' Pp (Soll 0). Gegenprobe mit Tagesdaten bis ' + tagDe(d1) +
     ': Abstand ' + gp.v.abstandPp.toFixed(1).replace('.', ',') + ' Pp.');
 };
 
-/* 8 - Haltedauer: der Tag der naechsten Umschichtung haengt an der Tageszeit der letzten (Fund F6). */
+/* 8 - Haltedauer: der Tag der naechsten Umschichtung haengt nicht an der Tageszeit der letzten (Fund F6). Soll
+ *     (rueckblick.js: naechste = Q.ptage[o + 63]): derselbe Handelstag, egal wann am Tag umgeschichtet wurde. */
 TESTS[8] = function () {
   var tage = werktageBis(stempel(Date.UTC(2026, 11, 30)), 150), markt = tage.map(function (t) { return [t, 500]; });
   var k = 20;
@@ -362,41 +428,108 @@ TESTS[8] = function () {
     nachmittags + ' Balken; die Messung legt den naechsten Ausfuehrungstag immer 63 Panel-Tage spaeter.');
 };
 
-/* 9 - Haltedauer: endet die SPY-Reihe (nicht aufgefrischt), wird nie umgeschichtet - still (Fund F6). */
+/* 9 - Haltedauer: endet die SPY-Reihe (nicht aufgefrischt), darf es kein stilles "nicht faellig" geben (Fund F6).
+ *     Soll: die Faelligkeit nennt die veraltete Marktreihe als Grund (A6: mehr als drei Handelstage hinter der Uhr). */
 TESTS[9] = function () {
   var tage = werktageBis(stempel(Date.UTC(2026, 11, 30)), 150), k = 20;
   var markt = tage.slice(0, k + 41).map(function (t) { return [t, 500]; });   // Reihe endet 40 Handelstage nach der Umschichtung
   var kalender = tage.length - 1 - k;
+  var jetzt = Date.UTC(2026, 11, 31, 15, 0);
   var faellig = MH.rebalanceFaellig(markt, tage[k] + 3600000, 63);
-  zeile(!faellig && kalender >= 63, kalender + ' Handelstage nach der letzten Umschichtung, SPY-Reihe aber nur 40 Tage weiter: rebalanceFaellig = ' + faellig +
-    ' (Rueckgabe nur wahr/falsch). Das gilt, solange jeder Auffrischversuch scheitert (Neuversuch alle 6 h); die Messung haette am 63. Tag umgeschichtet.');
+  var f = typeof MH.faelligkeit === 'function' ? MH.faelligkeit(markt, new Date(tage[k]).toISOString().slice(0, 10), 63, jetzt) : null;
+  var mitGrund = !!f && f.veraltet === true && f.faellig === null;
+  zeile(!mitGrund, kalender + ' Handelstage nach der letzten Umschichtung, SPY-Reihe aber nur 40 Tage weiter: rebalanceFaellig = ' + faellig +
+    (f ? '; faelligkeit: faellig = ' + f.faellig + ', veraltet = ' + f.veraltet + ' (Marktreihe seit ' + f.letzterMarktTag + ', ' + f.rueckstand + ' Werktage hinter der Uhr)'
+      : ' (Rueckgabe nur wahr/falsch, kein Grund, keine Altersangabe)') + '; die Messung haette am 63. Tag umgeschichtet.');
 };
 
-/* 10 - Texte: jede Zahl des Rueckblick-Eintrags gegen ERGEBNIS.md (kein Fund erwartet). */
+/* 10 - Texte: jede Zahl jeder Rueckblick-Zeile gegen die Datei, die ihr Eintrag als Quelle nennt (kein Fund erwartet).
+ *      Umgeschrieben mit Auftrag Nr. 94: die Fassung aus der Durchsicht suchte die Zahlen des ersten Eintrags in
+ *      studien/massstab-rueckblick-2026-10-04/ERGEBNIS.md (Nr. 74). Seit Nr. 91 kommen die Zeilen aus anderen Quellen -
+ *      die Momentum-Zeilen aus studien/momentum-korb-kleinst-2026-10-04/ergebnis.json (Fassung mit Regel K), die
+ *      Drift-Zeile aus studien/vorregistrierung-2026-10-04-ergebnis-drift/ergebnis.json. Jetzt fuer JEDEN Eintrag
+ *      (momentum-liquide und drift): die Datei aus seinem Feld quelle (Pfad vor dem ersten Komma - es muss sie geben),
+ *      daneben ergebnis.json (die Zahlen, auf die ERGEBNIS.md verweist), Lauf ("Lauf B-187 mit Regel K") bzw. Stufe
+ *      ("Stufe 2") aus demselben Feld. Jede Zahl auf eine Nachkommastelle wie in test-v6.js 97.8; das Fenster der
+ *      Drift-Zeile und ihre 60 Handelstage stehen nur in der genannten ERGEBNIS.md. Danach muss jede Zahl der gezeigten
+ *      Zeile (rueckblickText) einem geprueften Feld gehoeren, und jedes Feld von zahlen muss geprueft sein. Ausgenommen
+ *      ist nur der Satz "Grenzen: ..." - ein fester Satz des PM, dessen Zahlen in keiner der Quellen stehen; er wird
+ *      genannt, nicht geprueft.
+ *      Seit Auftrag Nr. 96 nennen die drei Momentum-Eintraege studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md (Panel v2.3,
+ *      dieselbe Regel); der Test liest die Quelle weiter aus dem Eintrag - an ihm selbst aendert sich nichts. */
 TESTS[10] = function () {
-  var win = sandbox(['studienurteile.js'], {}, false);
-  var r = win.StudienUrteile.rueckblicke('momentum-liquide')[0], z = r.zahlen;
-  var erg = fs.readFileSync(path.join(WURZEL, 'studien/massstab-rueckblick-2026-10-04/ERGEBNIS.md'), 'utf8');
-  /* Das Register fuehrt eine Nachkommastelle, ERGEBNIS.md teils zwei (−40,16 %): gesucht wird
-   * eine Prozentzahl mit gleichem Vorzeichen, die auf die Registerzahl rundet. */
-  var prozente = (erg.match(/[+−]\d+,\d+ %/g) || []).map(function (s) { return (s[0] === '−' ? -1 : 1) * Number(s.slice(1, -2).replace(',', '.')); });
-  function steht(x) { return prozente.some(function (p) { return Math.round(p * 10) / 10 === x; }); }
-  var pruef = [
-    ['Buch gesamt', steht(z.buchGesamt)],
-    ['SPY gesamt', steht(z.spyGesamt)],
-    ['nicht geschlagen', z.schlaegt === false && /den S&P 500 nach Kosten: \*\*nein\*\*/.test(erg)],
-    ['Phasen', erg.indexOf(z.phasenVorn + ' von ' + z.phasen) !== -1],
-    ['Rueckschlag Buch', steht(z.rueckschlagBuch)],
-    ['Rueckschlag SPY', steht(z.rueckschlagSpy)],
-    ['zulaessig', erg.indexOf(z.zulaessigMin + ' bis ' + z.zulaessigMax) !== -1],
-    ['Fenster', erg.indexOf('16.09.2021 bis 15.09.2026') !== -1 && z.von === '2021-09-16' && z.bis === '2026-09-15']
-  ];
-  var rot = pruef.filter(function (p) { return !p[1]; }).map(function (p) { return p[0]; });
-  zeile(rot.length > 0, rot.length ? 'Zahlen ohne Gegenstueck in ERGEBNIS.md: ' + rot.join(', ')
-    : 'alle ' + pruef.length + ' Zahlen des Rueckblick-Eintrags (studienurteile.js) stehen so in ERGEBNIS.md; Kartentext: "' + win.StudienUrteile.rueckblickText(r) + '"');
+  var win = sandbox(['studienurteile.js'], {}, Date.now());
+  var SU = win.StudienUrteile;
+  function r1(x) { return Math.round(x * 10) / 10; }
+  function pzDe(x) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(1).replace('.', ',') + ' %'; }
+  function ppDe(x) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(1).replace('.', ',') + ' Pp'; }
+  function tagD(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '')); return m ? m[3] + '.' + m[2] + '.' + m[1] : '?'; }
+  var rot = [], nZahlen = 0, quellen = [], grenzen = [];
+  var liste = SU.rueckblicke('momentum-liquide').concat(SU.rueckblicke('drift'));
+  liste.forEach(function (e) {
+    var z = e.zahlen || {}, name = e.lauf || e.kennung;
+    var datei = String(e.quelle || '').split(',')[0].trim();
+    if (!datei || !fs.existsSync(path.join(WURZEL, datei))) { rot.push(name + ': die Quelle "' + datei + '" gibt es nicht'); return; }
+    var md = fs.readFileSync(path.join(WURZEL, datei), 'utf8'), json;
+    try { json = JSON.parse(fs.readFileSync(path.join(WURZEL, path.dirname(datei), 'ergebnis.json'), 'utf8')); }
+    catch (err) { rot.push(name + ': keine ergebnis.json neben ' + datei); return; }
+    /* je Feld: [Feld, Wert im Register, Wert in der Quelle, Textstueck in der Zeile (oder null)] */
+    var p = [['kennung', e.kennung, json.kennung, null]];
+    if (e.art === 'zufall') {
+      var mS = /Stufe (\d+)/.exec(e.quelle), s = mS && json['stufe' + mS[1]];
+      if (!s) { rot.push(name + ': Stufe aus der Quelle fehlt in ergebnis.json'); return; }
+      quellen.push(path.dirname(datei) + '/ergebnis.json Stufe ' + mS[1]);
+      var fenster = md.indexOf(tagD(z.von) + ' bis ' + tagD(z.bis)) !== -1 && Math.abs(s.jahre - 5) < 0.01;
+      var halten = /Verkäufe am (\d+)\. Handelstag/.exec(md);
+      p.push(['von', z.von, fenster ? z.von : '(nicht in ' + datei + ')', tagD(z.von)], ['bis', z.bis, fenster ? z.bis : '(nicht in ' + datei + ')', tagD(z.bis)],
+        ['plaetze', /\((\d+) Plätze/.exec(e.korb) && Number(/\((\d+) Plätze/.exec(e.korb)[1]), s.plaetzeMax, s.plaetzeMax + ' Plätze'],
+        ['haltedauer', /, (\d+) Handelstage/.exec(e.korb) && Number(/, (\d+) Handelstage/.exec(e.korb)[1]), halten && Number(halten[1]), (halten && halten[1]) + ' Handelstage'],
+        ['buchGesamt', z.buchGesamt, r1(s.buchGesamt), pzDe(z.buchGesamt)], ['spyGesamt', z.spyGesamt, r1(s.spyGesamt), pzDe(z.spyGesamt)],
+        ['schlaegt', z.schlaegt, s.schlaegt, null], ['zufallUeber', z.zufallUeber, s.zufall.ueberDemBuch, null], ['zufallBuecher', z.zufallBuecher, s.zufall.buecher, null],
+        ['zufall', z.zufallUeber + '/' + z.zufallBuecher, z.zufallUeber + '/' + z.zufallBuecher, z.zufallUeber + ' von ' + z.zufallBuecher + ' Zufallsbüchern'],
+        ['vorwaertstest', z.vorwaertstest, s.vorwaertstestAngezeigt, null],
+        ['rueckschlagBuch', z.rueckschlagBuch, r1(s.rueckschlagBuch), pzDe(z.rueckschlagBuch)], ['rueckschlagSpy', z.rueckschlagSpy, r1(s.rueckschlagSpy), pzDe(z.rueckschlagSpy)]);
+    } else {
+      var mL = /Lauf (\S+)/.exec(e.quelle), L = mL && json.laeufe && json.laeufe[mL[1]];
+      var mitK = /mit Regel K/.test(e.quelle), m = L && (mitK ? L.mit : L.ohne);
+      if (!m) { rot.push(name + ': Lauf aus der Quelle fehlt in ergebnis.json'); return; }
+      quellen.push(path.dirname(datei) + '/ergebnis.json ' + mL[1] + (mitK ? ' mit' : ' ohne') + ' Regel K');
+      var korbZ = /Korb der (\d+) /.exec(e.korb);
+      p.push(['lauf', e.lauf, mL[1], null], ['regel', e.regel, mitK && json.regel.kleinstAnteil > 0 ? 'mit Regel K' : '(ohne Regel K)', null],
+        ['von', z.von, L.fenster.von, tagD(z.von)], ['bis', z.bis, L.fenster.bis, tagD(z.bis)],
+        ['korb', korbZ ? Number(korbZ[1]) : 'alle', L.korb === 'alle zulaessigen' ? 'alle' : L.korb, korbZ ? 'Korb der ' + korbZ[1] + ' ' : null],
+        ['buchGesamt', z.buchGesamt, r1(m.k0.buchGesamt), pzDe(z.buchGesamt)], ['spyGesamt', z.spyGesamt, r1(m.k0.spyGesamt), pzDe(z.spyGesamt)],
+        ['schlaegt', z.schlaegt, m.k0.schlaegt, null], ['phasenVorn', z.phasenVorn, m.startphasen.vorDemMarkt, null], ['phasen', z.phasen, m.startphasen.anzahl, null],
+        ['phasenText', z.phasenVorn + '/' + z.phasen, z.phasenVorn + '/' + z.phasen, 'in ' + z.phasenVorn + ' von ' + z.phasen + ' Fällen'],
+        ['medianAbstandPa', z.medianAbstandPa, r1(m.startphasen.median), ppDe(z.medianAbstandPa)],
+        ['rueckschlagBuch', z.rueckschlagBuch, r1(m.k0.rueckschlagBuch), pzDe(z.rueckschlagBuch)], ['rueckschlagSpy', z.rueckschlagSpy, r1(m.k0.rueckschlagSpy), pzDe(z.rueckschlagSpy)]);
+    }
+    p.forEach(function (x) { if (x[1] !== x[2]) rot.push(name + '.' + x[0] + ' ' + x[1] + ' statt ' + x[2]); });
+    var geprueft = p.map(function (x) { return x[0]; });
+    Object.keys(z).forEach(function (k) { if (geprueft.indexOf(k) < 0) rot.push(name + '.' + k + ': Feld ohne Pruefung'); });
+    /* jede Zahl der gezeigten Zeile gehoert einem geprueften Feld */
+    var text = SU.rueckblickText(e), iG = text.indexOf(' Grenzen: ');
+    if (iG !== -1) { grenzen.push(name + ': "' + text.slice(iG + 10) + '"'); text = text.slice(0, iG); }
+    p.forEach(function (x) {
+      if (x[3] == null) return;
+      var i = text.indexOf(x[3]);
+      if (i === -1) { rot.push(name + ': "' + x[3] + '" steht nicht in der Zeile'); return; }
+      text = text.slice(0, i) + '#' + text.slice(i + x[3].length);
+      nZahlen++;
+    });
+    var uebrig = text.split('S&P 500').join('S&P').match(/\d[\d.,]*/g);   // "S&P 500" ist ein Name, keine Zahl
+    if (uebrig) rot.push(name + ': Zahl in der Zeile ohne Pruefung: ' + uebrig.join(', '));
+  });
+  zeile(rot.length > 0 || liste.length !== 4, rot.length ? 'Zahlen ohne Gegenstueck in der genannten Quelle: ' + rot.join(' | ')
+    : 'alle ' + nZahlen + ' Zahlen der ' + liste.length + ' Rueckblick-Zeilen stehen so in der Datei, die ihr Eintrag als Quelle nennt (' +
+      quellen.join('; ') + ', eine Nachkommastelle), keine weitere Zahl in den Zeilen, jedes Feld geprueft. Nicht geprueft (fester Satz des PM, ' +
+      'keine Zahl in den Quellen): ' + grenzen.join('; '));
 };
 
-/* 11 - Texte der Oberflaeche: Zahlen ohne Fundstelle in ERGEBNIS.md / belegstand.md (Fund F7). */
+/* 11 - Texte der Oberflaeche: Zahlen ohne Fundstelle in ERGEBNIS.md / belegstand.md (Fund F7). Unveraendert uebernommen
+ *      (nicht Teil von Nr. 93 und Nr. 94). Die Abweichung ist erwartet und bleibt: der Test findet die Zahlen, die
+ *      absichtlich stehen geblieben sind - die alten Belege des Momentum-Buchs, gemessen nur an Werten, die es heute
+ *      noch gibt, seit Nr. 91 an jeder Stelle unter dem Kopf "Überholt: …" (studienurteile.js belegeKopf). */
 TESTS[11] = function () {
   var quellen = ['strategien.js', 'app-shell.js', 'index.html'].map(function (f) { return [f, fs.readFileSync(path.join(WURZEL, f), 'utf8')]; });
   var beleg = ['wiki/belegstand.md', 'studien/massstab-rueckblick-2026-10-04/ERGEBNIS.md', 'studien/momentum-korb-2026-10-04/ERGEBNIS.md']
@@ -411,24 +544,25 @@ TESTS[11] = function () {
   zeile(ohne.length > 0, 'Zahlen in der Oberflaeche ohne Gegenstueck in belegstand.md und den beiden ERGEBNIS.md: ' + ohne.join('; ') + '.');
 };
 
-/* 12 - Mindestlaenge: der Lader verwirft Reihen bis 500 Balken, die Regel rankt ab 253 (Fund F8). */
+/* 12 - Mindestlaenge: die Regel rankt ab 253 Balken - der Lader muss eine Reihe mit 400 Balken ablegen (Fund F8). */
 TESTS[12] = async function () {
-  var jetzt = Date.now(), namen = universum();
-  var tage = werktageBis(werktagVor(jetzt), 520);
+  var namen = universum();
+  var tage = werktageBis(MO, 520);
   var voll = kunstUniversum(tage, namen);
   var jung = 'ARM';
   voll[jung] = voll[jung].slice(-400);                           // 400 Handelstage Historie
   var st = speicher({});
-  var mf = mittelfristSandbox(st, async function (sym) { return ladeAntwort(voll[sym]); });
+  var mf = mittelfristSandbox(st, async function (sym, o) { return voll[sym] ? ladeAntwort(voll[sym], o) : sym === 'SPY' ? ladeAntwort(spyAus(tage), o) : null; },
+    nyUTC(2026, 11, 23, 16, 30));
   await mf.MF.ladeUniversum();
   var gelesen = await mf.MF.tagesdatenLesen();
   var r = MH.momentumZiel({ ARM: voll[jung] }, { nowMs: tage[tage.length - 1], minWerte: 1 });
   zeile(!gelesen.roh[jung] && r.rangfolge.length === 1,
-    jung + ' mit 400 Balken: momentumZiel rankt die Reihe (Mindestlaenge 253), der Lader legt sie nicht ab (mittelfrist.js: nur > 500 Balken) - Bestand ' +
-    Object.keys(gelesen.roh).length + ' von ' + namen.length + ' Werten, "weg": ' + gelesen.weg.join(', ') + '.');
+    jung + ' mit 400 Balken: momentumZiel rankt die Reihe (Mindestlaenge 253), der Lader ' + (gelesen.roh[jung] ? 'legt sie ab' : 'legt sie nicht ab') +
+    ' - Bestand ' + Object.keys(gelesen.roh).length + ' von ' + namen.length + ' Werten, "weg": ' + (gelesen.weg.join(', ') || '-') + '.');
 };
 
-/* 13 - Bargeld: kann es negativ werden? (kein Fund erwartet) */
+/* 13 - Bargeld: kann es negativ werden? (kein Fund erwartet). Unveraendert uebernommen. */
 TESTS[13] = function () {
   var seed = 7;
   function zufall() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
@@ -449,11 +583,12 @@ TESTS[13] = function () {
     ' (kleinster Stand ' + kleinstes.toExponential(2) + ' $); Verkaeufe laufen vor Kaeufen, wie in der Messung (dieselbe Funktion).');
 };
 
-/* 14 - Kosten je Seite: App und Messung rufen dieselbe Funktion mit 20 Bp (kein Fund erwartet). */
+/* 14 - Kosten je Seite: App und Messung rufen dieselbe Funktion mit 20 Bp (kein Fund erwartet). Angepasst: der Aufruf
+ *      in mfdepot.js traegt seit Nr. 87 ein fuenftes Argument ({ kleinstAnteil }) - gelesen wird weiter die Zahl. */
 TESTS[14] = function () {
   var mfd = fs.readFileSync(path.join(WURZEL, 'mfdepot.js'), 'utf8');
   var rb = fs.readFileSync(path.join(WURZEL, 'studien/massstab-rueckblick-2026-10-04/rueckblick.js'), 'utf8');
-  var app = /MH\.fuehreAus\(d\.mfBuch, plan, now, (\d+)\)/.exec(mfd), mess = /var KOSTEN_BP = (\d+);/.exec(rb);
+  var app = /MH\.fuehreAus\(d\.mfBuch, plan, now, (\d+)(?:, \{[^}]*\})?\)/.exec(mfd), mess = /var KOSTEN_BP = (\d+);/.exec(rb);
   // Probe: 100 A zu 100 $ verkaufen, B zu 50 $ kaufen
   var buch = { cash: 0, positionen: [{ sym: 'A', stueck: 100, einstand: 50 }], trades: [] };
   MH.fuehreAus(buch, MH.planeUmschichtung(['B'], buch, { A: 100, B: 50 }), 0, 20);
@@ -464,7 +599,7 @@ TESTS[14] = function () {
     ' $ (50 $ + 0,2 %), Restgeld ' + buch.cash.toFixed(4).replace('.', ',') + ' $.');
 };
 
-/* 15 - Zwei Takte am selben Tag: keine doppelte Umschichtung (kein Fund erwartet). */
+/* 15 - Zwei Takte am selben Tag: keine doppelte Umschichtung (kein Fund erwartet). Unveraendert uebernommen. */
 TESTS[15] = function () {
   var tage = werktageBis(stempel(Date.UTC(2026, 11, 30)), 150), markt = tage.map(function (t) { return [t, 500]; });
   var vorher = MH.rebalanceFaellig(markt, tage[10] + 3600000, 63);
@@ -472,174 +607,6 @@ TESTS[15] = function () {
   var halbStundeSpaeter = MH.rebalanceFaellig(markt, tage[tage.length - 1] + 1800000, 63);
   zeile(!vorher || direktDanach || halbStundeSpaeter, 'faellig vor der Umschichtung: ' + vorher + '; nach letztesRebalanceT = jetzt sofort wieder faellig: ' +
     direktDanach + ' (auch 30 min spaeter: ' + halbStundeSpaeter + ') - der zweite Takt handelt nicht.');
-};
-
-/* 16 - Speichern scheitert fuer einen Teil (Platte voll): Mischbestand aus alten und neuen Reihen (C). */
-TESTS[16] = async function () {
-  var jetzt = Date.now(), namen = universum();
-  var tageAlt = werktageBis(werktagVor(jetzt - 12 * TAG), 520), tageNeu = werktageBis(werktagVor(jetzt), 520);
-  var alt = kunstUniversum(tageAlt, namen), neu = kunstUniversum(tageNeu, namen);
-  // der Markt ist seit dem alten Stand um 10 % gestiegen
-  Object.keys(neu).forEach(function (x) { neu[x] = neu[x].map(function (b) { return [b[0], b[1] * 1.1, b[2]]; }); });
-  var st = speicher({});
-  tagesdatenAblegen(st, alt, jetzt - 12 * TAG);
-  var echtesSet = st.api.storeSet;
-  st.api.storeSet = async function (n, v) { if (n === 'mf_tagesdaten_teil_3') return { ok: false, msg: 'ENOSPC' }; return echtesSet(n, v); };
-  var mf = mittelfristSandbox(st, async function (sym) { return ladeAntwort(neu[sym]); });
-  await mf.MF.ladeUniversum();
-  var gelesen = await mf.MF.tagesdatenLesen();
-  var teil3 = Object.keys(st.daten.mf_tagesdaten_teil_3.roh);
-  var alterTeil3 = Math.round((jetzt - gelesen.roh[teil3[0]][gelesen.roh[teil3[0]].length - 1][0]) / TAG);
-  var juengster = Math.max.apply(null, Object.keys(gelesen.roh).map(function (s) { var x = gelesen.roh[s]; return x[x.length - 1][0]; }));
-  var r = MH.momentumZiel(gelesen.roh, { nowMs: juengster });
-  var veraltet = r.verworfen.filter(function (v) { return /veraltet/.test(v.grund); }).length;
-  // Preise wie mfdepot.js ladeKurse (letzter Balken jeder Reihe) - eine gehaltene Position aus Teil 3
-  var sym = teil3[0], preisFrisch = neu[sym][neu[sym].length - 1][1];
-  var preise = {}; Object.keys(gelesen.roh).forEach(function (x) { var y = gelesen.roh[x]; preise[x] = y[y.length - 1][1]; });
-  var plan = MH.planeUmschichtung(r.ziel, { cash: 0, positionen: [{ sym: sym, stueck: 100, einstand: preise[sym], seit: 0 }], trades: [] }, preise);
-  var verkauf = plan.verkaufen.filter(function (o) { return o.sym === sym; })[0];
-  zeile(veraltet > 0 && verkauf && Math.abs(verkauf.kurs - preisFrisch) > 1e-9,
-    'Teil 3 laesst sich nicht schreiben (Platte voll): der Index meldet "frisch" (Stand jetzt, ' + st.daten.mf_tagesdaten_index.teile +
-    ' Teile), Teil 3 traegt aber noch die alten Reihen (' + teil3.length + ' Werte, juengster Balken ' + alterTeil3 + ' Tage alt); die Rangfolge wirft ' + veraltet +
-    ' davon als "veraltet" hinaus, die gehaltene Position ' + sym + ' wird zum alten Kurs ' + verkauf.kurs.toFixed(2) + ' $ verkauft statt zum frischen ' +
-    preisFrisch.toFixed(2) + ' $. tagesdatenSchreiben prueft die Rueckgabe von storeSet nicht.');
-};
-
-/* 17 - Teilausfall trifft alle gehaltenen Werte: Umschichtung mit 0 Orders setzt den 63-Tage-Takt trotzdem neu (Fund F1). */
-TESTS[17] = async function () {
-  var jetzt = Date.now(), namen = universum();
-  var tage = werktageBis(werktagVor(jetzt), 520);
-  var voll = kunstUniversum(tage, namen);
-  var kaufIdx = tage.length - 71, kaufT = tage[kaufIdx] + 3600000;
-  var fehlt = {}; namen.slice(0, 40).forEach(function (s) { fehlt[s] = true; });   // Anfang der Liste faellt aus
-  var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: tage.map(function (t, j) { return [t, 400 + j * 0.1]; }) } });
-  tagesdatenAblegen(st, voll, jetzt - 27 * 3600000);
-  var pos = namen.slice(0, 19).map(function (s) { return { sym: s, stueck: 50, einstand: voll[s][kaufIdx][1] * 1.002, seit: tage[kaufIdx] }; });
-  var d = { momentumAn: true, mfBuch: buchMit(pos, kaufT), mfVerlauf: [] };
-  var mf = mittelfristSandbox(st, async function (sym) { return fehlt[sym] ? null : ladeAntwort(voll[sym]); });
-  await mf.MF.ladeUniversum();
-  var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } });
-  STATUS = [];
-  await dep.MFDepot.takt();
-  var fehler = STATUS.filter(function (s) { return /Fehler/.test(s); });
-  if (fehler.length) throw new Error(fehler.join(' | '));
-  var j = (d.tuneLog || []).filter(function (e) { return /^mfrebal-/.test(e.id); })[0];
-  var neuGesetzt = d.mfBuch.letztesRebalanceT !== kaufT;
-  zeile(neuGesetzt && d.mfBuch.trades.length === 0 && d.mfBuch.positionen.length === 19,
-    '40 Werte vom Listenanfang ohne Daten, darunter alle 19 gehaltenen: Umschichtung mit ' + d.mfBuch.trades.length + ' Ausfuehrungen, ' +
-    d.mfBuch.positionen.length + ' alte Positionen bleiben (zum Einstand bewertet), letztesRebalanceT ' +
-    (neuGesetzt ? 'NEU gesetzt -> naechster Versuch erst nach 63 Handelstagen' : 'unveraendert') + '. Journal: "' + (j ? j.applied[0] : '-') +
-    '" neben "' + (j ? j.txt.slice(0, 52) : '-') + ' ...". Die Messung schichtet auf vollen Daten um.');
-};
-
-/* 18 - Der Massstab "Gegen den Markt" beginnt am Tag, an dem das Buch angelegt wurde, nicht mit der liquiden Regel (Fund F9). */
-TESTS[18] = async function () {
-  var jetzt = Date.now(), tage = werktageBis(werktagVor(jetzt), 300);
-  var anlage = tage[tage.length - 60], liquide = tage[tage.length - 20];
-  /* Markt: flach bis zur ersten liquiden Umschichtung, danach +3 %. Buch: bis dahin -5 % (alte
-   * Positionen), danach genau wie der Markt. */
-  var spy = tage.map(function (t) { return [t, t <= liquide ? 500 : 515]; });
-  var verlauf = tage.filter(function (t) { return t >= anlage; }).map(function (t) {
-    var w = t < liquide ? 100000 - 5000 * (t - anlage) / (liquide - anlage) : 95000 * (t <= liquide ? 1 : 1.03);
-    return { t: t + 7 * 3600000, momentum: Math.round(w * 100) / 100, drift: null, spy: null, startM: 100000, startD: null };
-  });
-  var buch = buchMit([], anlage + 3600000);
-  buch.angelegt = anlage + 3600000; buch.liquideSeit = liquide + 7 * 3600000;
-  var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: spy } });
-  var d = { momentumAn: true, mfBuch: buch, mfVerlauf: verlauf };
-  var dep = mfdepotSandbox(st, d, { tagesdatenLesen: async function () { return null; }, ladeUniversum: function () { return Promise.resolve(null); } });
-  await new Promise(function (f) { setImmediate(f); });           // bereit() liest die SPY-Reihe nebenher
-  await new Promise(function (f) { setImmediate(f); });
-  var v = dep.MFDepot.vergleich('momentum');
-  var abLiquide = Ms.vergleich(verlauf.filter(function (p) { return p.t >= buch.liquideSeit; }), 'momentum', 'startM', { markt: spy, start: 100000 });
-  var tag = function (t) { return new Date(t).toISOString().slice(0, 10); };
-  zeile(v && v.ok && v.seit < buch.liquideSeit && Math.abs(v.abstandPp - abLiquide.abstandPp) >= 1,
-    'Karte/Kopf rechnen seit ' + tag(v.seit) + ' (Anlage des Buchs): Buch ' + pz(v.buchPct) + ' gegen S&P 500 ' + pz(v.marktPct) + ', Abstand ' +
-    v.abstandPp.toFixed(1).replace('.', ',') + ' Pp. Ab der ersten liquiden Umschichtung (' + tag(buch.liquideSeit) + '), wie die Messung startet: Abstand ' +
-    abLiquide.abstandPp.toFixed(1).replace('.', ',') + ' Pp. vergleich() uebergibt angelegt, nicht liquideSeit.');
-};
-
-/* 19 - "Alle Buecher zuruecksetzen" schaltet das Momentum-Buch ein; der naechste Takt kauft sofort (Fund F11). */
-TESTS[19] = async function () {
-  var dep0 = fs.readFileSync(path.join(WURZEL, 'depot.js'), 'utf8');
-  var reset = /D = defaultDepot\(\);/.test(dep0), vorgabeAn = /momentumAn: true, driftAn: true/.test(dep0);
-  var frage = (/window\.confirm\('Depot wirklich zurücksetzen\?[\s\S]*?\)\) return;/.exec(dep0) || [''])[0];
-  var frageNenntSchalter = /schalt|Automatik|handelt/i.test(frage);
-  // Zustand nach dem Reset: Schalter an (Vorgabe), kein Buch; gespeicherte Tagesdaten 20 h alt
-  var jetzt = Date.now(), namen = universum(), tage = werktageBis(werktagVor(jetzt), 520);
-  var voll = kunstUniversum(tage, namen);
-  var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: tage.map(function (t) { return [t, 500]; }) } });
-  tagesdatenAblegen(st, voll, jetzt - 20 * 3600000);
-  var d = { momentumAn: true };
-  var mf = mittelfristSandbox(st, async function () { return null; });
-  var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } });
-  STATUS = [];
-  await dep.MFDepot.takt();
-  var fehler = STATUS.filter(function (s) { return /Fehler/.test(s); });
-  if (fehler.length) throw new Error(fehler.join(' | '));
-  var kaeufe = (d.mfBuch && d.mfBuch.trades || []).filter(function (t) { return t.art === 'kauf'; }).length;
-  zeile(reset && vorgabeAn && !frageNenntSchalter && kaeufe > 0,
-    'Reset setzt D = defaultDepot() (momentumAn: true), die Rueckfrage erwaehnt den Schalter ' + (frageNenntSchalter ? 'ja' : 'nicht') +
-    '; erster Takt danach: Buch neu angelegt, sofort faellig (letztesRebalanceT 0), ' + kaeufe + ' Kaeufe zu den gespeicherten Kursen - auch wenn das Buch vorher aus war.');
-};
-
-/* 20 - ECHTE KENNZAHLEN: Wie eng ist die Grenze des Zehntels auf der App-Liste? (Fund F3, Groesse)
- *      Staerken ohne Ausschuettungen je Monatsstichtag aus dem Panel (gleiche Formel wie die App:
- *      bSchluss(t-21) / bSchluss(t-252) - 1), studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json,
- *      geschnitten mit der App-Liste. Gemessen wird ohne Modell: der Vorsprung des Letzten im Ziel vor dem
- *      Ersten draussen, multiplikativ - so wirkt ein Ausschuettungsaufschlag (F3). Grenzen: Monats- statt
- *      63-Tage-Takt, Liquiditaetsfilter nicht angewandt, Filter des Pruefstands blenden einzelne Monate aus. */
-TESTS[20] = function () {
-  var M = JSON.parse(fs.readFileSync(path.join(WURZEL, 'studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json'), 'utf8'));
-  var app = universum(), luecken = [], genuegt = { 0.005: 0, 0.01: 0, 0.02: 0 }, nMin = Infinity, nMax = 0;
-  M.signaltage.forEach(function (st) {
-    var f = app.filter(function (s) { return typeof st.werte[s] === 'number' && isFinite(st.werte[s]); })
-      .map(function (s) { return 1 + st.werte[s] / 100; }).sort(function (a, b) { return b - a; });
-    if (f.length < 100) return;
-    nMin = Math.min(nMin, f.length); nMax = Math.max(nMax, f.length);
-    var k = Math.max(5, Math.round(f.length * 0.1)), l = f[k - 1] / f[k] - 1;
-    luecken.push(l);
-    Object.keys(genuegt).forEach(function (g) { if (l < Number(g)) genuegt[g]++; });
-  });
-  var s = luecken.slice().sort(function (a, b) { return a - b; });
-  var med = s[s.length >> 1] * 100, n = luecken.length;
-  var anker = /0\.83 % im Jahr/.test(fs.readFileSync(path.join(WURZEL, 'studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL2.md'), 'utf8'));
-  zeile(genuegt['0.01'] > 0, n + ' Monatsstichtage (' + M.signaltage[0].tag + ' bis ' + M.signaltage[M.signaltage.length - 1].tag + ', ' + nMin + ' bis ' + nMax +
-    ' Werte der App-Liste): der Letzte im Ziel liegt im Median nur ' + med.toFixed(2).replace('.', ',') + ' Pp vor dem Ersten draussen. Ein Ausschuettungsvorsprung von 0,5 / 1 / 2 Pp ' +
-    'im Rueckblickfenster reicht fuer einen Tausch an ' + genuegt['0.005'] + ' / ' + genuegt['0.01'] + ' / ' + genuegt['0.02'] + ' von ' + n + ' Stichtagen' +
-    (anker ? ' (zum Vergleich: das Universum zahlt rund 1,7 % im Jahr, also ~1,6 Pp im 231-Tage-Fenster; das Momentum-Zehntel 0,83 %, ERGEBNIS-TEIL2.md)' : '') + '.');
-};
-
-/* 21 - ECHTE KENNZAHLEN: Was haette die 500-Balken-Huerde des Laders gekostet? (Fund F8, Groesse)
- *      Junge Werte der App-Liste = erster Paneltag nach dem Panelbeginn 2016-01-04
- *      (studien/fundamental-machbarkeit-2026-09-16/panel.json). LIN und APTV sind ausgenommen: Kuerzelwechsel
- *      bzw. Fusion, die Yahoo-Reihe reicht dort weiter zurueck. Naeherung: der erste Stichtag mit Wert in
- *      momentum.json hat 253 Zeilen; die App rankt erst ab 501 Balken, rund 248 Handelstage = 12 Monatsstichtage spaeter. */
-TESTS[21] = function () {
-  var M = JSON.parse(fs.readFileSync(path.join(WURZEL, 'studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json'), 'utf8'));
-  var P = JSON.parse(fs.readFileSync(path.join(WURZEL, 'studien/fundamental-machbarkeit-2026-09-16/panel.json'), 'utf8'));
-  var app = universum(), erster = {};
-  P.reihen.forEach(function (r) { if (!erster[r.reihe] || r.erster < erster[r.reihe]) erster[r.reihe] = r.erster; });
-  var jung = app.filter(function (s) { return erster[s] && erster[s] > '2016-01-04' && s !== 'LIN' && s !== 'APTV'; });
-  var T = M.signaltage;
-  function ok(v) { return typeof v === 'number' && isFinite(v); }
-  var namensMonate = 0, tage = {}, betroffen = [];
-  jung.forEach(function (sym) {
-    var i0 = -1;
-    for (var i = 0; i < T.length; i++) if (ok(T[i].werte[sym])) { i0 = i; break; }
-    if (i0 < 0) return;
-    var treffer = 0;
-    for (var ti = i0; ti < Math.min(T.length, i0 + 12); ti++) {
-      var w = T[ti].werte;
-      var liste = app.filter(function (s) { return ok(w[s]); }).sort(function (a, b) { return w[b] - w[a]; });
-      if (liste.length < 100) continue;
-      var k = Math.max(5, Math.round(liste.length * 0.1));
-      if (liste.slice(0, k).indexOf(sym) !== -1) { treffer++; tage[ti] = true; }
-    }
-    if (treffer) { namensMonate += treffer; betroffen.push(sym + ' ' + treffer); }
-  });
-  zeile(namensMonate > 0, jung.length + ' junge Werte der App-Liste; ' + betroffen.length + ' davon standen in ihren ersten 12 Monaten mit Wert im Messziel, die App haette sie nicht gerankt: ' +
-    namensMonate + ' Namens-Monate an ' + Object.keys(tage).length + ' von ' + T.length + ' Monatsstichtagen (' + betroffen.join(', ') + '). Heute wirkt das erst wieder bei einer Neuaufnahme in die Liste.');
 };
 
 /* ---------------- Ablauf ---------------- */

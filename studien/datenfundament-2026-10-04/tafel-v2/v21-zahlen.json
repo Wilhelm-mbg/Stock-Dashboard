@@ -1,0 +1,365 @@
+{
+ "kennung": "datenfundament-2026-10-04/tafel-v2/v2.1 (Zahlen)",
+ "stand": "2026-10-04T17:56:36.382Z",
+ "lauf": {
+  "reihen": 5050,
+  "offen": [],
+  "textbedarf": 0,
+  "handeintraege": 38,
+  "hand33": 33,
+  "handOhneReihe": [],
+  "gp1": {
+   "verglichen": 5012,
+   "gleich": 5012,
+   "anders": [],
+   "handZeilenGleich": 33,
+   "handZeilenAnders": [
+    "BNK",
+    "CHU",
+    "CVO",
+    "OTIV",
+    "SGBK"
+   ]
+  },
+  "gp2": {
+   "gleich": 5013,
+   "nurB1": [
+    "FFHL [grund,datum,quelle,beleg,regel,nachfolger,zwilling,doppelt]",
+    "GMTX [datum,quelle,beleg,regel,zwilling,doppelt]",
+    "MYOS [datum,quelle,beleg,regel,zwilling,doppelt]",
+    "THLD [grund,datum,quelle,beleg,regel,nachfolger,zwilling,doppelt]"
+   ],
+   "nurHand": [
+    "AABA",
+    "AAPC",
+    "APN",
+    "ARTE",
+    "BCR",
+    "BHI",
+    "CHL",
+    "CYBR",
+    "DIDI",
+    "DISCA",
+    "DISCK",
+    "FRC",
+    "GG",
+    "GRUB",
+    "INXN",
+    "LGF",
+    "LK",
+    "NKLA",
+    "NOVA",
+    "OZON",
+    "PSTH",
+    "QIHU",
+    "QVCA",
+    "RDS.A",
+    "RDS.B",
+    "SAVE",
+    "SBNY",
+    "SCVX",
+    "SIVB",
+    "SODA",
+    "WYIG",
+    "YHOO",
+    "YNDX"
+   ],
+   "unerklaert": [],
+   "handNachRegelnWieLauf4": 33,
+   "handNachRegelnAnders": []
+  },
+  "nurNeu5": {
+   "anders": [
+    "BNK",
+    "CHU",
+    "CVO",
+    "OTIV",
+    "SGBK"
+   ],
+   "gleich": 5045
+  }
+ },
+ "abweichungenGegenV2": {
+  "grundAnders": [
+   {
+    "reihe": "CHU",
+    "v2": "abgemeldet-anlass-offen",
+    "v21": "umbenennung-ticker",
+    "ursache": "neuer Handeintrag",
+    "klasse123": 0,
+    "firmaV2": "SemiLEDs Corp",
+    "firmaV21": null
+   },
+   {
+    "reihe": "DOM",
+    "v2": "unbekannt",
+    "v21": "zwangs-delisting",
+    "ursache": "B2 zurueckgenommen",
+    "klasse123": 0,
+    "firmaV2": "ABENGOA, S.A.",
+    "firmaV21": "DOMINION RESOURCES BLACK WARRIOR TRUST"
+   },
+   {
+    "reihe": "EGI",
+    "v2": "freiwillig",
+    "v21": "unbekannt",
+    "ursache": "B2 zurueckgenommen",
+    "klasse123": 0,
+    "firmaV2": "ENBRIDGE INC",
+    "firmaV21": null
+   },
+   {
+    "reihe": "ERB",
+    "v2": "zwangs-delisting",
+    "v21": "abgemeldet-anlass-offen",
+    "ursache": "B2 zurueckgenommen",
+    "klasse123": 0,
+    "firmaV2": "Nuwellis, Inc.",
+    "firmaV21": "ERBA Diagnostics, Inc."
+   },
+   {
+    "reihe": "NTT",
+    "v2": "abgemeldet-anlass-offen",
+    "v21": "unbekannt",
+    "ursache": "B2 zurueckgenommen",
+    "klasse123": 0,
+    "firmaV2": "GOLDMAN SACHS GROUP INC",
+    "firmaV21": null
+   },
+   {
+    "reihe": "SONG",
+    "v2": "freiwillig",
+    "v21": "unbekannt",
+    "ursache": "B2 zurueckgenommen",
+    "klasse123": 0,
+    "firmaV2": "China VTV Ltd",
+    "firmaV21": null
+   },
+   {
+    "reihe": "TAS",
+    "v2": "spac-ende",
+    "v21": "unbekannt",
+    "ursache": "B2 zurueckgenommen",
+    "klasse123": 0,
+    "firmaV2": "Chart Acquisition Corp.",
+    "firmaV21": null
+   },
+   {
+    "reihe": "VISI",
+    "v2": "insolvenz",
+    "v21": "unbekannt",
+    "ursache": "B2 zurueckgenommen",
+    "klasse123": 0,
+    "firmaV2": "Weatherford International plc",
+    "firmaV21": null
+   },
+   {
+    "reihe": "VSR",
+    "v2": "insolvenz",
+    "v21": "zwangs-delisting",
+    "ursache": "B2 zurueckgenommen",
+    "klasse123": 0,
+    "firmaV2": "RCS Capital Corp",
+    "firmaV21": "VERSAR INC"
+   },
+   {
+    "reihe": "WP",
+    "v2": "abgemeldet-anlass-offen",
+    "v21": "uebernahme",
+    "ursache": "B2 zurueckgenommen",
+    "klasse123": 1,
+    "firmaV2": "PROSHARES TRUST",
+    "firmaV21": "Worldpay, Inc."
+   }
+  ],
+  "nurBelegAnders": [
+   "BAS (edgar-ohne-signal -> nichts, B2 zurueckgenommen)",
+   "BNK (edgar-8K-2.01+prospekt -> handeintrag, neuer Handeintrag)",
+   "CALL (edgar-ohne-signal -> nichts, B2 zurueckgenommen)",
+   "CEO (edgar-ohne-signal -> nichts, B2 zurueckgenommen)",
+   "CVO (edgar-8K-1.03 -> handeintrag, neuer Handeintrag)",
+   "OTIV (edgar-8K-3.01-ruege -> handeintrag, neuer Handeintrag)",
+   "PER (edgar-ohne-signal -> nichts, B2 zurueckgenommen)",
+   "RT (edgar-ohne-signal -> nichts, B2 zurueckgenommen)",
+   "SGBK (edgar-8K-2.01+prospekt -> handeintrag, neuer Handeintrag)",
+   "TNT (edgar-ohne-signal -> nichts, B2 zurueckgenommen)",
+   "WINS (edgar-ohne-signal -> nichts, B2 zurueckgenommen)"
+  ],
+  "uebergaenge": {
+   "abgemeldet-anlass-offen -> umbenennung-ticker": 1,
+   "unbekannt -> zwangs-delisting": 1,
+   "freiwillig -> unbekannt": 2,
+   "zwangs-delisting -> abgemeldet-anlass-offen": 1,
+   "abgemeldet-anlass-offen -> unbekannt": 1,
+   "spac-ende -> unbekannt": 1,
+   "insolvenz -> unbekannt": 1,
+   "insolvenz -> zwangs-delisting": 1,
+   "abgemeldet-anlass-offen -> uebernahme": 1
+  }
+ },
+ "totalverlust": {
+  "haupt": {
+   "liste": [
+    "insolvenz",
+    "zwangs-delisting"
+   ],
+   "bestand": 611,
+   "klasse123": [
+    "FRC",
+    "NKLA",
+    "NOVA",
+    "SAVE",
+    "SBNY",
+    "SIVB"
+   ],
+   "gegenV2": {
+    "bestand": 612,
+    "heraus": [
+     "ERB (abgemeldet-anlass-offen)",
+     "VISI (unbekannt)"
+    ],
+    "hinein": [
+     "DOM (unbekannt -> zwangs-delisting)"
+    ]
+   },
+   "gegenLauf4": {
+    "bestand": 612,
+    "heraus": [
+     "AAPC (spac-ende)",
+     "APN (spac-ende)",
+     "ARTE (spac-ende)",
+     "SCVX (spac-ende)",
+     "WYIG (spac-ende)"
+    ],
+    "hinein": [
+     "CVO (unbekannt -> insolvenz)",
+     "FRC (unbekannt -> insolvenz, K1-3)",
+     "OTIV (unbekannt -> zwangs-delisting)",
+     "SBNY (unbekannt -> insolvenz, K1-3)"
+    ]
+   }
+  },
+  "streng": {
+   "liste": [
+    "insolvenz",
+    "zwangs-delisting",
+    "unbekannt",
+    "freiwillig",
+    "abgemeldet-anlass-offen",
+    "ausgesetzt"
+   ],
+   "bestand": 1271,
+   "klasse123": [
+    "AABA",
+    "FRC",
+    "GRUB",
+    "NKLA",
+    "NOVA",
+    "OZON",
+    "SAVE",
+    "SBNY",
+    "SIVB",
+    "YNDX"
+   ],
+   "gegenV2": {
+    "bestand": 1272,
+    "heraus": [
+     "CHU (umbenennung-ticker)",
+     "WP (uebernahme, K1-3)"
+    ],
+    "hinein": [
+     "TAS (spac-ende -> unbekannt)"
+    ]
+   },
+   "gegenLauf4": {
+    "bestand": 1298,
+    "heraus": [
+     "AAPC (spac-ende)",
+     "APN (spac-ende)",
+     "ARTE (spac-ende)",
+     "BCR (uebernahme, K1-3)",
+     "BHI (fusion-aktientausch, K1-3)",
+     "BNK (uebernahme)",
+     "CHL (umbenennung-ticker, K1-3)",
+     "CHU (umbenennung-ticker)",
+     "CYBR (uebernahme, K1-3)",
+     "DIDI (umbenennung-ticker, K1-3)",
+     "DISCA (fusion-aktientausch, K1-3)",
+     "DISCK (fusion-aktientausch, K1-3)",
+     "FFHL (umbenennung-ticker)",
+     "GG (fusion-aktientausch, K1-3)",
+     "INXN (fusion-aktientausch, K1-3)",
+     "LGF (umbenennung-ticker, K1-3)",
+     "LK (umbenennung-ticker, K1-3)",
+     "PSTH (spac-ende, K1-3)",
+     "QIHU (uebernahme, K1-3)",
+     "QVCA (umbenennung-ticker, K1-3)",
+     "RDS.A (umbenennung-ticker, K1-3)",
+     "RDS.B (umbenennung-ticker, K1-3)",
+     "SCVX (spac-ende)",
+     "SGBK (uebernahme)",
+     "SODA (uebernahme, K1-3)",
+     "WYIG (spac-ende)",
+     "YHOO (umbenennung-ticker, K1-3)"
+    ],
+    "hinein": []
+   }
+  }
+ },
+ "zaehler": {
+  "freiwillig": 110,
+  "uebernahme": 1633,
+  "umbenennung-ticker": 1467,
+  "zwangs-delisting": 276,
+  "spac-ende": 374,
+  "abgemeldet-anlass-offen": 319,
+  "unbekannt": 209,
+  "fusion-aktientausch": 305,
+  "insolvenz": 335,
+  "ausgesetzt": 22
+ },
+ "jeRegel": {
+  "0": 120,
+  "1": 1086,
+  "2": 922,
+  "3": 300,
+  "4": 208,
+  "5": 662,
+  "6": 9,
+  "7": 286,
+  "8": 1,
+  "9": 78,
+  "10": 20,
+  "11": 426,
+  "12": 6,
+  "13": 295,
+  "14": 12,
+  "15": 209,
+  "H": 38,
+  "Z": 372
+ },
+ "zaehlerV2": {
+  "freiwillig": 112,
+  "uebernahme": 1632,
+  "umbenennung-ticker": 1466,
+  "zwangs-delisting": 275,
+  "spac-ende": 375,
+  "abgemeldet-anlass-offen": 321,
+  "unbekannt": 205,
+  "fusion-aktientausch": 305,
+  "insolvenz": 337,
+  "ausgesetzt": 22
+ },
+ "zaehlerLauf4": {
+  "abgemeldet-anlass-offen": 332,
+  "uebernahme": 1628,
+  "umbenennung-ticker": 1456,
+  "zwangs-delisting": 280,
+  "spac-ende": 368,
+  "freiwillig": 108,
+  "unbekannt": 224,
+  "fusion-aktientausch": 300,
+  "insolvenz": 332,
+  "ausgesetzt": 22
+ }
+}

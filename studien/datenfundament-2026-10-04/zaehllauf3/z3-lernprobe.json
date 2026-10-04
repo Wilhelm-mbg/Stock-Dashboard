@@ -1,0 +1,795 @@
+{
+ "stand": "2026-10-04T13:10:46.178Z",
+ "wortlautFassung": 2,
+ "saat": "z3-lern",
+ "regel11": 505,
+ "reihen": [
+  {
+   "reihe": "BTTX",
+   "akz": "0001193125-24-068672",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "Better Therapeutics, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1301,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "non-compliance",
+     "minimum bid",
+     "bid price",
+     "hearings panel"
+    ],
+    "eigen": [
+     "voluntarily"
+    ]
+   },
+   "auszug": "tions Staff (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") indicating that, based upon the Company's non-compliance with the minimum bid price and market value of listed securities requirements for continued listing on The Nasdaq Capital Market, the Company's securities were subject to deli",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "8000"
+  },
+  {
+   "reihe": "RBCN",
+   "akz": "0001213900-22-079524",
+   "tageZumAnker": -16,
+   "band": "1-5",
+   "firma": "Rubicon Technology, Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 2258,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intent to file a form 25"
+    ]
+   },
+   "auszug": "n Technology, Inc (the \"Company) notified The Nasdaq Stock Market LLC (\"Nasdaq\") of the Company's decision to voluntarily delist its common stock from the Nasdaq Capital Market and its intent to file a Form 25 with the U.S. Securities and Exchange Commission (the \"SEC\") on or about December 23, 2022",
+   "fusionNah": 1,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "3674"
+  },
+  {
+   "reihe": "EMMA",
+   "akz": "0001213900-19-017572",
+   "tageZumAnker": 0,
+   "band": "1-5",
+   "firma": "Emmaus Life Sciences, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1140,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "noncompliance",
+     "hearing panel"
+    ],
+    "eigen": []
+   },
+   "auszug": "July 18, 2019, Emmaus Life Sciences, Inc. (\"we,\" \"our,\" \"us,\" \"Emmaus\" or the \"company\") received a notice of noncompliance from the Listing Qualifications Staff of The Nasdaq Stock Market (the \"Staff\") indicating that the company was not compliant with the minimum stockholders' equity requirement u",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2834"
+  },
+  {
+   "reihe": "ZCAR",
+   "akz": "0001213900-25-040800",
+   "tageZumAnker": 1,
+   "band": "1-5",
+   "firma": "Zoomcar Holdings, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 3543,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "deficien",
+     "failure to maintain",
+     "delisting determination",
+     "determined to delist",
+     "hearings panel",
+     "received notice from the nasdaq stock market llc (\"nasdaq\") that the nasdaq hearings panel (the \"panel\") has determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01. On May 6, 2025, Zoomcar Holdings, Inc. (the \"Company\") received notice from The Nasdaq Stock Market LLC (\"Nasdaq\") that the Nasdaq Hearings Panel (the \"Panel\") has determined to delist the Company's common stock and public warrants. Suspension of trading in the Company's common stock will",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "7510"
+  },
+  {
+   "reihe": "BACK",
+   "akz": "0001641172-25-000524",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "IMAC Holdings, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 4666,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "determined to delist",
+     "hearings panel",
+     "received a letter from nasdaq stating that the panel had determined to deny the company's request to continue its listing on nasdaq and that the company's common stock will be suspend"
+    ],
+    "eigen": []
+   },
+   "auszug": "e Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") indicating that the Company was not in compliance with the minimum stockholders' equity requirement of $2.5 million for continued listing on the Nasdaq Capital Market under Listing Rule 5550(b)(1) (the \"Equity Rule\"), and ",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "8093"
+  },
+  {
+   "reihe": "ACUR",
+   "akz": "0001144204-17-009360",
+   "tageZumAnker": -7,
+   "band": "unter 1",
+   "firma": "ACURA PHARMACEUTICALS, INC",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2232,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "failed to comply",
+     "delisting determination",
+     "received written notification from the nasdaq stating that the company's common stock will be delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "received a written notification from The NASDAQ Stock Market LLC (\"NASDAQ\") notifying the Company that it had failed to comply with NASDAQ Listing Rule 5550(b)(1) (the \"Rule\") due to the Company's failure to maintain a minimum of $2.5 million in stockholders' equity (or meet the alternatives of mark",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2834"
+  },
+  {
+   "reihe": "VRPX",
+   "akz": "0001731122-25-000524",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "Virpax Pharmaceuticals, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 964,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "failure to regain",
+     "determined to delist",
+     "hearings panel",
+     "received a letter from the nasdaq hearings panel (the \"panel\") indicating that the panel has determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 On April 2, 2025, Virpax Pharmaceuticals, Inc. (the \"Company\") received a letter from the Nasdaq Hearings Panel (the \"Panel\") indicating that the Panel has determined to delist the Company's securities from The Nasdaq Stock Market LLC (\"Nasdaq\") as a result of the Company's failure to rega",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2834"
+  },
+  {
+   "reihe": "WVFC",
+   "akz": "0001437749-22-013351",
+   "tageZumAnker": -17,
+   "band": "ueber 13",
+   "firma": "WVS FINANCIAL CORP",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 1096,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to voluntarily delist"
+    ]
+   },
+   "auszug": "Item 3.01 On May 24, 2022, WVS Financial Corp. (the \"Company\") notified The Nasdaq Stock Market of its intention to voluntarily delist its common stock, par value $0.01 per share (the \"Common Stock\") and to file a Notification of Removal from Listing and/or Registration under Section 12(b) of the Se",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "6036"
+  },
+  {
+   "reihe": "MAMS",
+   "akz": "0001437749-19-020301",
+   "tageZumAnker": 3,
+   "band": "8-13",
+   "firma": "MAM SOFTWARE GROUP, INC.",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "zeichen": 809,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [
+     "consummation"
+    ],
+    "ruege": [],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 On October 21, 2019, in connection with the consummation of the Merger, the Company (i) informed the Nasdaq Capital Market (\" Nasdaq \") of the consummation of the Merger and (ii) requested that Nasdaq file with the SEC a Notification of Removal from Listing and/or Registration on Form 25 t",
+   "fusionNah": 0,
+   "i501": 1,
+   "emittent25": 0,
+   "sic": "7372"
+  },
+  {
+   "reihe": "INVT",
+   "akz": "0001144204-17-031300",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "Inventergy Global, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 3159,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "failure to comply",
+     "minimum bid",
+     "bid price",
+     "delisting determination",
+     "determined to delist",
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": "6, the Company received notice from The NASDAQ Stock Market (\" Nasdaq \") indicating that, because the closing bid price for the Company's common stock had fallen below $1.00 per share for 30 consecutive business days, the Company no longer complied with the minimum bid price requirement (the \" Minim",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "4813"
+  },
+  {
+   "reihe": "CFCB",
+   "akz": "0001104659-17-039211",
+   "tageZumAnker": 5,
+   "band": "ueber 13",
+   "firma": "CENTRUE FINANCIAL CORP",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "zeichen": 468,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [
+     "merger had closed"
+    ],
+    "ruege": [],
+    "eigen": []
+   },
+   "auszug": "Item 3.01. On June 9, 2017, Centrue notified the NASDAQ Stock Market (NASDAQ) that the Merger had closed and requested that NASDAQ suspend trading of Centrues common stock. Following such request, NASDAQ withdrew the listing of Centrues common stock and filed with the Securities and Exchange Com",
+   "fusionNah": 0,
+   "i501": 1,
+   "emittent25": 0,
+   "sic": "6021"
+  },
+  {
+   "reihe": "ASBB",
+   "akz": "0001144204-17-050936",
+   "tageZumAnker": 3,
+   "band": "ueber 13",
+   "firma": "ASB Bancorp Inc",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "zeichen": 2499,
+   "verwiesen": [
+    "2.01"
+   ],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [
+     "completion of the merger",
+     "closing of the merger",
+     "merged with and into",
+     "merger was completed",
+     "converted into the right to receive"
+    ],
+    "ruege": [],
+    "eigen": []
+   },
+   "auszug": "mmon stock under Section 12(b) of the Securities and Exchange Act of 1934, as amended. In connection with the completion of the Merger, trading of the Company's common stock on NASDAQ ceased before the opening of trading on October 2, 2017. The information set forth in Item 2.01 of this Current Repo",
+   "fusionNah": 0,
+   "i501": 1,
+   "emittent25": 0,
+   "sic": "6035"
+  },
+  {
+   "reihe": "WNR",
+   "akz": "0001193125-17-193141",
+   "tageZumAnker": 1,
+   "band": "ueber 13",
+   "firma": "Western Refining, Inc.",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "zeichen": 1602,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [
+     "consummation",
+     "merged with and into",
+     "converted into the right to receive"
+    ],
+    "ruege": [],
+    "eigen": []
+   },
+   "auszug": "er Sub 2, LLC, a Delaware limited liability company and a wholly owned subsidiary of Tesoro, Merger Sub 1 was merged with and into Western Refining, with Western Refining surviving such merger as a wholly owned subsidiary of Tesoro (the Merger). On June 1, 2017, the Company notified the New York S",
+   "fusionNah": 1,
+   "i501": 1,
+   "emittent25": 0,
+   "sic": "2911"
+  },
+  {
+   "reihe": "OPGN",
+   "akz": "0001829126-24-005761",
+   "tageZumAnker": 3,
+   "band": "1-5",
+   "firma": "CapForce Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 6025,
+   "verwiesen": [
+    "1.01"
+   ],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": " letter, the Company submitted its plan to regain compliance with the Stockholders' Equity Rule to the Nasdaq Hearings Panel (the \"Panel\") and requested additional time to regain compliance with such rule. On August 16, 2024, following the Panel's review of the Company's plan to regain compliance, t",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "8071"
+  },
+  {
+   "reihe": "AIPT",
+   "akz": "0001171843-19-003445",
+   "tageZumAnker": -27,
+   "band": "unter 1",
+   "firma": "Axe Compute Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1894,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "deficien",
+     "bid price",
+     "delisting determination",
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": " On November 16, 2018, the Company received a letter from The Nasdaq Stock Market (\"Nasdaq\") stating that the bid price of the Company's common stock for the previous 30 consecutive trading days had closed below the minimum $1.00 per share required for continued listing under Listing Rule 5550(a)(2)",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "6199"
+  },
+  {
+   "reihe": "EFBI",
+   "akz": "0000943374-19-000509",
+   "tageZumAnker": -11,
+   "band": "ueber 13",
+   "firma": "Eagle Financial Bancorp, Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 1032,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntary",
+     "intention to file a form 25"
+    ]
+   },
+   "auszug": "vings Bank, announced today that it has submitted written notice to the NASDAQ Stock Market (\"NASDAQ\") of its intention to file a Form 25 with the Securities and Exchange Commission (the \"SEC\") on or about December 20, 2019 to effect the voluntary delisting of the Company's common stock from NASDAQ.",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "6035"
+  },
+  {
+   "reihe": "ADGE",
+   "akz": "0001378706-17-000036",
+   "tageZumAnker": 6,
+   "band": "unter 1",
+   "firma": "AMERICAN DG ENERGY INC",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "zeichen": 1037,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [
+     "effective time",
+     "closing of the merger",
+     "converted into the right to receive"
+    ],
+    "ruege": [],
+    "eigen": []
+   },
+   "auszug": "Item 3.01. In connection with the closing of the Merger, ADGE notified the New York Stock Exchange Market (\"NYSE MKT\") on May 18, 2017 that, at the Effective Time of the Merger, each share of ADGE's common stock issued and outstanding immediately prior to such time, was automatically cancelled and c",
+   "fusionNah": 0,
+   "i501": 1,
+   "emittent25": 0,
+   "sic": "4931"
+  },
+  {
+   "reihe": "YAYO",
+   "akz": "0001493152-20-001891",
+   "tageZumAnker": -9,
+   "band": "unter 1",
+   "firma": "EVmo, Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 920,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to delist"
+    ]
+   },
+   "auszug": "On February 10, 2020, YayYo, Inc. (the \"Company\") issued a press release (the \"Press Release\") announcing its intention to delist its common stock (the \"Common Stock\") from the NASDAQ Stock Market (\"NASDAQ\"). The Company notified NASDAQ on February 10, 2020 of its intent to voluntarily delist its Co",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "7374"
+  },
+  {
+   "reihe": "EBET",
+   "akz": "0001683168-23-007104",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "EBET, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 576,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "received written notice (the \"notice\") from the nasdaq stock market, llc (\"nasdaq\") that it would delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01. On October 12, 2023, EBET, Inc. (the \"Company\") received written notice (the \"Notice\") from the Nasdaq Stock Market, LLC (\"Nasdaq\") that it would delist the Company's shares of common stock from the Nasdaq Capital Market upon the opening of trading on October 13, 2023. The Company's commo",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "7900"
+  },
+  {
+   "reihe": "HGR",
+   "akz": "0001104659-16-101437",
+   "tageZumAnker": 4,
+   "band": "8-13",
+   "firma": "HANGER, INC.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1461,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "commence proceedings",
+     "received a letter from nyse regulation (the nyse) confirming that the nyse had suspend"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 On February 29, 2016, Hanger, Inc. (the Company) received a letter from NYSE Regulation (the NYSE) confirming that the NYSE had suspended trading in the Companys common stock, which suspension was effective immediately upon the close on February 26, 2016, and announcing its intention ",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "8093"
+  },
+  {
+   "reihe": "TLR",
+   "akz": "0000912282-16-000545",
+   "tageZumAnker": -11,
+   "band": "unter 1",
+   "firma": "Timberline Resources Corp",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 326,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "authorized the delisting"
+    ]
+   },
+   "auszug": "Item 3.01 On January 26, 2016, the board of directors of Timberline Resources Corporation (the \"Company\") authorized the delisting of the Company's common stock from the NYSE MKT exchange. On January 26, 2016, the Company notified the NYSE MKT exchange of its decision to voluntarily delist its commo",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "1040"
+  },
+  {
+   "reihe": "EQC",
+   "akz": "0000803649-25-000039",
+   "tageZumAnker": -20,
+   "band": "1-5",
+   "firma": "EQC Liquidating Trust",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 408,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "intends to file a form 25"
+    ]
+   },
+   "auszug": "Item 3.01. On April 1, 2025, Equity Commonwealth (the \"Company\") issued a press release announcing that it intends to file a Form 25, or Notification of Removal from Listing, with the Securities and Exchange Commission (\"SEC\") and the New York Stock Exchange (\"NYSE\") relating to the delisting of the",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "6798"
+  },
+  {
+   "reihe": "GBL",
+   "akz": "0001060349-22-000039",
+   "tageZumAnker": -20,
+   "band": "ueber 13",
+   "firma": "GAMCO INVESTORS, INC. ET AL",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 2883,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to voluntarily delist"
+    ]
+   },
+   "auszug": "O\" or the \"Company\") announced that it has given formal notice to the New York Stock Exchange (\"NYSE\") of its intention to voluntarily delist its Class A common stock (the \"common stock\") from the NYSE and to deregister under Section 12(b) of the Securities Exchange Act of 1934 (the \"Exchange Act\").",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "6211"
+  },
+  {
+   "reihe": "OMCC",
+   "akz": "0001437749-25-037549",
+   "tageZumAnker": -20,
+   "band": "5-8",
+   "firma": "OLD MARKET CAPITAL Corp",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 2793,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily"
+    ]
+   },
+   "auszug": "December 8, 2025, the Board of Directors of Old Market Capital Corporation (the \"Company\") approved a plan to voluntarily delist the Company's common stock from the NASDAQ Capital Market (\"NASDAQ\"), suspend its duty to file periodic reports and other information with the U.S. Securities and Exchange",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "6153"
+  },
+  {
+   "reihe": "PTIX",
+   "akz": "0001493152-26-000263",
+   "tageZumAnker": 3,
+   "band": "unter 1",
+   "firma": "Protagenic Therapeutics, Inc.\\new",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 4093,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "failure to satisfy",
+     "determined to delist",
+     "hearings panel",
+     "received a letter from the nasdaq stock market llc (\"nasdaq\") stating that trading of the company's securities on nasdaq would cease"
+    ],
+    "eigen": []
+   },
+   "auszug": "warrants (\"PTIXW\") to be quoted for trading on the over-the-counter market. On December 31, 2025, the Company received a letter from The Nasdaq Stock Market LLC (\"Nasdaq\") stating that trading of the Company's securities on Nasdaq would cease at the close of trading on January 2, 2026, and that Nasd",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2834"
+  },
+  {
+   "reihe": "QVCGB",
+   "akz": "0001104659-25-049822",
+   "tageZumAnker": -11,
+   "band": "ueber 13",
+   "firma": "Old QVC Group, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2640,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "non-compliance",
+     "minimum bid",
+     "bid price"
+    ],
+    "eigen": [
+     "voluntarily",
+     "intent to file a form 25"
+    ]
+   },
+   "auszug": "formerly known as Qurate Retail, Inc., received written notice from The Nasdaq Stock Market (\"Nasdaq\") of its non-compliance with the minimum bid price requirement for continued listing of the Company's Series A common stock (\"QVCGA\") and was given until June 9, 2025 (the \"Compliance Date\") to compl",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "5961"
+  },
+  {
+   "reihe": "CVRR",
+   "akz": "0001104659-19-004053",
+   "tageZumAnker": 1,
+   "band": "8-13",
+   "firma": "CVR Refining, LP",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "zeichen": 3446,
+   "verwiesen": [
+    "8.01"
+   ],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [
+     "call right"
+    ],
+    "ruege": [],
+    "eigen": [
+     "voluntarily"
+    ]
+   },
+   "auszug": "e Date), CVR Energy, Inc., a Delaware corporation (CVI), completed its previously announced purchase (the Call Right Purchase) of all of the issued and outstanding common units (Common Units) representing limited partner interests in CVR Refining, LP, a Delaware limited partnership (the Part",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "2911"
+  },
+  {
+   "reihe": "DYNT",
+   "akz": "0001062993-24-013111",
+   "tageZumAnker": -10,
+   "band": "unter 1",
+   "firma": "DYNATRONICS CORP",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1854,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "noncompliance",
+     "failed to regain",
+     "minimum bid",
+     "bid price",
+     "received written notice from the nasdaq stock market (\"nasdaq\") that if the company's common stock failed to regain compliance with nasdaq's minimum bid price requirement before june 24, 2024, the company's common stock would be delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01. As previously disclosed, on December 27, 2023, Dynatronics Corporation (the \"Company\") received written notice from The Nasdaq Stock Market (\"Nasdaq\") that if the Company's common stock failed to regain compliance with Nasdaq's minimum bid price requirement before June 24, 2024, the Compa",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "3841"
+  },
+  {
+   "reihe": "FULL",
+   "akz": "0001144204-16-131516",
+   "tageZumAnker": 1,
+   "band": "1-5",
+   "firma": "Full Circle Capital Corp",
+   "klasse": "nichts",
+   "abschnitt": 1,
+   "zeichen": 842,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 On November 3, 2016, in connection with the transactions contemplated by the Merger Agreement , the Company notified the NASDAQ Global Market of its intent to remove the Full Circle Common Stock from listing and requested that the NASDAQ Global Market file a notification of removal from li",
+   "fusionNah": 0,
+   "i501": 1,
+   "emittent25": 0,
+   "sic": null
+  },
+  {
+   "reihe": "SYRA",
+   "akz": "0001493152-24-041772",
+   "tageZumAnker": -178,
+   "band": "unter 1",
+   "firma": "Syra Health Corp",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1909,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "deficien",
+     "fails to regain",
+     "minimum bid",
+     "bid price",
+     "delisting determination",
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": ") received written notice (the \" Notice \") from the Nasdaq Stock Market, LLC (\" Nasdaq \") indicating that the bid price for the Company's common stock (the \"Common Stock\"), for the last 30 consecutive business days, had closed below the minimum $1.00 per share and, as a result, the Company is not in",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "7361"
+  }
+ ]
+}

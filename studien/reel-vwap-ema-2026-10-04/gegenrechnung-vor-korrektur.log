@@ -1,0 +1,28 @@
+Hauptlauf c=0 Tage: Gegenrechnung 753 | Lauf 753 | gleich
+Hauptlauf c=0 Gesamtertrag: Gegenrechnung 0.22365331911766684 | Lauf 0.22365331911766062 | gleich
+Hauptlauf c=0 Trades: Gegenrechnung 12604 | Lauf 12604 | gleich
+Hauptlauf c=0 Trefferquote: Gegenrechnung 0.17097746747064424 | Lauf 0.17129482703903523 | ABWEICHUNG
+  Gewinner scharf 2155, Grenzfaelle (Ertrag genau null) 63, Gewinner ueber den Faktor 2155, Gewinner im Lauf 2159
+Hauptlauf c=0 mittlerer Tagesertrag (Bp): Gegenrechnung 3.149574192935231 | Lauf 3.1495741929351695 | gleich
+Hauptlauf c=0 Tagesumsatz: Gegenrechnung 33.35179332446628 | Lauf 33.35179332446627 | gleich
+Hauptlauf c=0,25 Tage: Gegenrechnung 753 | Lauf 753 | gleich
+Hauptlauf c=0,25 Gesamtertrag: Gegenrechnung -0.3484232815402869 | Lauf -0.34842328154027646 | gleich
+Hauptlauf c=0,25 Trades: Gegenrechnung 12604 | Lauf 12604 | gleich
+Hauptlauf c=0,25 Trefferquote: Gegenrechnung 0.16034592192954616 | Lauf 0.16034592192954616 | gleich
+  Gewinner scharf 2021, Grenzfaelle (Ertrag genau null) 0, Gewinner ueber den Faktor 2021, Gewinner im Lauf 2021
+Hauptlauf c=0,25 mittlerer Tagesertrag (Bp): Gegenrechnung -5.185635368601896 | Lauf -5.1856353686017025 | gleich
+Hauptlauf c=0,25 Tagesumsatz: Gegenrechnung 33.33339278803945 | Lauf 33.33339278803945 | gleich
+Hauptlauf c=1,0 Tage: Gegenrechnung 753 | Lauf 753 | gleich
+Hauptlauf c=1,0 Gesamtertrag: Gegenrechnung -0.9016244777401017 | Lauf -0.9016244777401017 | gleich
+Hauptlauf c=1,0 Trades: Gegenrechnung 12604 | Lauf 12604 | gleich
+Hauptlauf c=1,0 Trefferquote: Gegenrechnung 0.14098698825769598 | Lauf 0.14098698825769598 | gleich
+  Gewinner scharf 1777, Grenzfaelle (Ertrag genau null) 0, Gewinner ueber den Faktor 1777, Gewinner im Lauf 1777
+Hauptlauf c=1,0 mittlerer Tagesertrag (Bp): Gegenrechnung -30.136148569066798 | Lauf -30.13614856906678 | gleich
+Hauptlauf c=1,0 Tagesumsatz: Gegenrechnung 33.278288444311094 | Lauf 33.2782884443111 | gleich
+Hauptlauf Kostengrenze (Bp): Gegenrechnung 0.09443492775018968 | Lauf 0.09443492775018784 | gleich
+Eichung Tage: Gegenrechnung 1445 | Lauf 1445 | gleich
+Eichung Gesamtertrag: Gegenrechnung 6.774449115065202 | Lauf 6.774449115065172 | gleich
+Eichung Trades: Gegenrechnung 23190 | Lauf 23190 | gleich
+Eichung Trefferquote: Gegenrechnung 0.16964208710651144 | Lauf 0.16977145321259163 | ABWEICHUNG
+  Gewinner scharf 3934, Grenzfaelle (Ertrag genau null) 3, Gewinner ueber den Faktor 3935, Gewinner im Lauf 3937
+GEGENRECHNUNG: 2 Abweichungen

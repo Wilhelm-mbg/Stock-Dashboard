@@ -1,0 +1,2222 @@
+{
+ "stand": "2026-10-04T15:26:26.191Z",
+ "regel": "jede Zeile mit anderem Grund als im dritten Lauf; Ursache = die Aenderung(en), ohne die der Grund ein anderer waere (je eine aus)",
+ "faelle": [
+  {
+   "reihe": "ABAC",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ABIL",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ACE",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ACGN",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "abgemeldet-anlass-offen / edgar-formular25",
+   "ursache": "E3",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ACXM",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ADAL",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege-frueh+25-NSE",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ADES",
+   "von": "insolvenz / q-kuerzel",
+   "nach": "umbenennung-ticker / alpaca-name_changes",
+   "ursache": "E1",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AIU",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ALN",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ALQA",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AMDA",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AMGP",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AMMA",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AOI",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "APEX",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "APPY",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "APRI",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AREB",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ASLN",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ASPU",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "abgemeldet-anlass-offen / edgar-formular25",
+   "ursache": "E3",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ATEK",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ATU",
+   "von": "freiwillig / edgar-formular15",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AVCO",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AVHI",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "freiwillig / edgar-formular15",
+   "ursache": "E3+E5",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AXN",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "AZRX",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "BAS",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / nichts",
+   "ursache": "zusammen",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "BCR",
+   "von": "uebernahme / edgar-8K-3.01-vollzug",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "BFR",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "BIN",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "BIOP",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "BIQI",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "BNK",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "BOAS",
+   "von": "fusion-aktientausch / alpaca-stock_mergers",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "BOWN",
+   "von": "ausgesetzt / ausgesetzt",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CAFN",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CALL",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / nichts",
+   "ursache": "zusammen",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CCCX",
+   "von": "insolvenz / q-kuerzel",
+   "nach": "umbenennung-ticker / alpaca-name_changes",
+   "ursache": "E1",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "CDEV",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "CEMP",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CENH",
+   "von": "insolvenz / q-kuerzel",
+   "nach": "umbenennung-ticker / alpaca-name_changes",
+   "ursache": "E1",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CFD",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CFX",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "CHKE",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CHL",
+   "von": "freiwillig / edgar-formular15",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "CHPM",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CHU",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CLDC",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CLNS",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "CLNT",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CLOE",
+   "von": "uebernahme / edgar-8K-3.01+prospekt",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CMCSV",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CNAC",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CNNX",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CO",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "freiwillig / edgar-formular15",
+   "ursache": "E5",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "COH",
+   "von": "freiwillig / edgar-formular15",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "CPTK",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CSAL",
+   "von": "freiwillig / edgar-formular15",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CTF",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CTRP",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "CTRV",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CUR",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CVO",
+   "von": "insolvenz / edgar-8K-1.03",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CVSL",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "CXRX",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "freiwillig / edgar-formular15",
+   "ursache": "E5",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DDR",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DEAC",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DELT",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DFBG",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DMYI",
+   "von": "insolvenz / q-kuerzel",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "zusammen",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DNK",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DOM",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "ursache": "E6",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DOTA",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DPS",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "DRWI",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DSW",
+   "von": "unbekannt / nichts",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DW",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "DWDP",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "DWIN",
+   "von": "fusion-aktientausch / alpaca-stock_mergers",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "EBIO",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "EFTR",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "EGI",
+   "von": "freiwillig / edgar-formular15",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "EMITF",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "EMWP",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "freiwillig / edgar-formular15",
+   "ursache": "E5",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ENI",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "EOC",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "EQOS",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ERB",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4+E6",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ESDI",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ESV",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "ETAK",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "EVK",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "abgemeldet-anlass-offen / edgar-formular25",
+   "ursache": "E3",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "EXXI",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "freiwillig / edgar-formular15",
+   "ursache": "E3+E5",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "FLDD",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "FLME",
+   "von": "fusion-aktientausch / alpaca-stock_mergers",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "FPP",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "FRES",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "FSC",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "FSIC",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "FSSI",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege-frueh+25-NSE",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "FXCM",
+   "von": "freiwillig / edgar-8K-3.01-eigener-entschluss",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "GECXU",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "GENE",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "GIGA",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "GMGI",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "GNRS",
+   "von": "freiwillig / edgar-8K-3.01-eigener-entschluss",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "GSD",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "GSHT",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "GSI",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "GSVC",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "HCCH",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege-frueh+25-NSE",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "HCII",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege-frueh+25-NSE",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "HCLP",
+   "von": "uebernahme / edgar-8K-3.01-vollzug",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "HLS",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "HONIV",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "HORI",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege-frueh+25-NSE",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "HOTR",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "HRMN",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "HRS",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "HSAC",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IAM",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IDRA",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IFON",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IKGH",
+   "von": "unbekannt / nichts",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IMMY",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IMN",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "freiwillig / edgar-formular15",
+   "ursache": "E3+E5",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IMV",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "freiwillig / edgar-formular15",
+   "ursache": "E5",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IPCI",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IPOA",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IPOD",
+   "von": "insolvenz / q-kuerzel",
+   "nach": "umbenennung-ticker / alpaca-name_changes",
+   "ursache": "E1",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IPVA",
+   "von": "fusion-aktientausch / alpaca-stock_mergers",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "IPXL",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ITAQ",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ITEK",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "JSYN",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "KAAC",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "KAVL",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "KCAP",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "KORS",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "LACQ",
+   "von": "uebernahme / edgar-8K-3.01+prospekt",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "LBIO",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "LEGA",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege-frueh+25-NSE",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "LEI",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "LG",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "LMCA",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "LMCK",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "LTEA",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "LUK",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "MBLX",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "MDM",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "MEOA",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "MHFI",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "MKD",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "MNGA",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "MOBV",
+   "von": "fusion-aktientausch / alpaca-stock_mergers",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "MOHO",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "MW",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NAO",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NFEC",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NH",
+   "von": "insolvenz / q-kuerzel",
+   "nach": "umbenennung-ticker / alpaca-name_changes",
+   "ursache": "E1",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NKGN",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NQ",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NRCIB",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NSAM",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NTT",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NVAC",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NVMM",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NWY",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "NXTP",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "OAKS",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ODT",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ONCT",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ONS",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "OPXA",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "OTEC",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "OTIV",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "OZM",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "OZRK",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "PAH",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PER",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / nichts",
+   "ursache": "zusammen",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PHCF",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PHMD",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PIP",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PME",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PNRL",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PORT",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PPHI",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PRKR",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "PSV",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "QPAC",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "QVCB",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "RAAS",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "RACY",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "RBZ",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "RCFA",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ROSG",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "RSO",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "RT",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / nichts",
+   "ursache": "zusammen",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "RTNB",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "RWC",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "RYCE",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SBSA",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SCSS",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SDLP",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SESN",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SGBK",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SGII",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SGNL",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SKLN",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SLD",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SLW",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "SMIH",
+   "von": "fusion-aktientausch / alpaca-stock_mergers",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SMSH",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SNHY",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SONG",
+   "von": "freiwillig / edgar-formular15",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SSC",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SSLJ",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SSRI",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "STO",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "STV",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SVFC",
+   "von": "fusion-aktientausch / alpaca-stock_mergers",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SVVC",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SWHC",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "SYMC",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "SYMX",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SYRA",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "abgemeldet-anlass-offen / edgar-formular25",
+   "ursache": "E3",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "SYRX",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TAIT",
+   "von": "insolvenz / q-kuerzel",
+   "nach": "umbenennung-ticker / alpaca-name_changes",
+   "ursache": "E1",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TAS",
+   "von": "spac-ende / edgar-mantel+abmeldung",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TASR",
+   "von": "unbekannt / nichts",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TCAC",
+   "von": "fusion-aktientausch / alpaca-stock_mergers",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TCB",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TFG",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TLGA",
+   "von": "insolvenz / q-kuerzel",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "zusammen",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TMK",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TNT",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / nichts",
+   "ursache": "zusammen",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TOF",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TPGE",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TRIT",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TRNX",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TRPX",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "TSRA",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "UBNT",
+   "von": "freiwillig / edgar-8K-3.01-eigener-entschluss",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "UBSH",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "VCXA",
+   "von": "fusion-aktientausch / alpaca-stock_mergers",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "VGFC",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "VICL",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "VISI",
+   "von": "insolvenz / edgar-8K-1.03",
+   "nach": "unbekannt / nichts",
+   "ursache": "E6",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "VRNG",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "VRX",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "VSR",
+   "von": "insolvenz / edgar-8K-1.03",
+   "nach": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "ursache": "E6",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "VYGG",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege-frueh+25-NSE",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WAC",
+   "von": "insolvenz / edgar-8K-1.03",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WAVS",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WCST",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WEL",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WGP",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WHLM",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WILN",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WINS",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / nichts",
+   "ursache": "zusammen",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WP",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "uebernahme / edgar-8K-2.01+prospekt",
+   "ursache": "E6",
+   "art": "kippt",
+   "klasse123": 1
+  },
+  {
+   "reihe": "WRNT",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WTER",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "freiwillig / edgar-formular15",
+   "ursache": "E3+E5",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WTMA",
+   "von": "uebernahme / edgar-8K-3.01+prospekt",
+   "nach": "spac-ende / edgar-mantel+8K-3.01",
+   "ursache": "E2",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WTRH",
+   "von": "zwangs-delisting / edgar-8K-3.01-ruege",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E3+E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "WYN",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 1
+  },
+  {
+   "reihe": "XGTI",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "XIN",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "XNY",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "XSPL",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "XTKG",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "YECO",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "freiwillig / edgar-formular15",
+   "ursache": "E5",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "YOD",
+   "von": "unbekannt / edgar-ohne-signal",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "unbekannt-bekommt-grund",
+   "klasse123": 0
+  },
+  {
+   "reihe": "YOGA",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ZFC",
+   "von": "uebernahme / edgar-8K-2.01+prospekt",
+   "nach": "umbenennung-ticker / zwilling-im-archiv",
+   "ursache": "V9",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ZPTA",
+   "von": "zwangs-delisting / edgar-8K-3.01",
+   "nach": "abgemeldet-anlass-offen / edgar-8K-3.01-unklar",
+   "ursache": "E4",
+   "art": "kippt",
+   "klasse123": 0
+  },
+  {
+   "reihe": "ZX",
+   "von": "abgemeldet-anlass-offen / edgar-formular25",
+   "nach": "unbekannt / edgar-ohne-signal",
+   "ursache": "E5",
+   "art": "kippt-verliert-grund",
+   "klasse123": 0
+  }
+ ]
+}

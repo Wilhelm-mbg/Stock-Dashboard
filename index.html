@@ -2213,6 +2213,10 @@
          seit Stufe 3 nur noch die MESSAUSSAGE: Rueckschlag und Marktvergleich. Der
          beschreibende erste Satz ist woertlich ins Register gewandert, der
          Simulationssatz steht einmal in der Kopfzeile. -->
+    <!-- Auftrag Nr. 91: die Zahlen darunter stammen vom Universum der Ueberlebenden. Sie
+         bleiben stehen; der Kopf darueber kommt aus studienurteile.js (belegeKopf), das den
+         leeren Behaelter beim Laden fuellt - derselbe Wortlaut wie hinter den i-Knoepfen. -->
+    <div id="mfErklaerungKopf" data-belege-kopf="momentum-liquide" style="font-size:var(--fs-klein); color:var(--muted); max-width:68ch; margin-bottom:4px;"></div>
     <div id="mfErklaerung" style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
       <b>Kein ruhiges Investment:</b> größter Rückschlag 52 % (2008),
       in 8 von 22 Jahren schlechter als der Markt.
@@ -2221,7 +2225,7 @@
          zeigen die Konfiguration, mit der das Buch WIRKLICH rechnet. Sie sind deshalb
          gesperrt und werden von mittelfrist.js aus D.mfBuch.konfig gefuellt - eine
          Auswahl, die von der Messung abweicht, waere eine stille Umstellung. -->
-    <div class="hinweis" style="margin-top:10px;" id="mfKonfigZeile">Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
+    <div class="hinweis" style="margin-top:10px;" id="mfKonfigZeile">Konfiguration (Parameter wie gemessen, Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
     <div class="chartleiste" style="margin-top:10px;">
       <label title="Über wie viele Handelstage die Stärke gemessen wird. 231 Tage sind rund elf Monate.">Rückblick
         <select id="mfRueck" disabled>
@@ -2287,7 +2291,10 @@
          dass die Konfiguration die gemessene ist. -->
     <!-- Live = Messung: dieselbe Sperre wie beim Momentum-Buch. Gefuellt aus
          Drift.STANDARD (driftui.js), nicht aus einer Zahl in diesem Markup. -->
-    <div class="hinweis" style="margin-top:10px;" id="drKonfigZeile">Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
+    <!-- Auftrag Nr. 95 (A2): hier stand „Konfiguration wie gemessen (Studie 02.09.2026)" - eine
+         Drift-Studie vom 02.09.2026 gibt es weder im Repo noch im Belegstand (der Satz war vom
+         Momentum-Panel kopiert). Der Satz steht nur hier. -->
+    <div class="hinweis" style="margin-top:10px;" id="drKonfigZeile">Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus (Neumessung offen).</div>
     <div class="chartleiste" style="margin-top:10px;">
       <label title="Wie lange eine Position gehalten wird. Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.">Halten
         <select id="drHalten" disabled>
@@ -2336,7 +2343,8 @@
     <!-- Die Quelle wird benannt, aber NICHT nacherzaehlt: der Messblock selbst
          ("20.356 …") gehoert laut Sperrklinke ins Register und darf hier nicht wieder
          auftauchen. Sie ist beim ersten Versuch prompt rot geworden. -->
-    <div data-mess="Ergebnis-Drift-Studie 02.09.2026 · Quartalszahlen 1993–2026, 197 Werte"
+    <!-- Auftrag Nr. 95 (A2): die Messung ist vom 21.08.2026 (Kopf von drift.js), nicht vom 02.09. -->
+    <div data-mess="Ergebnis-Drift-Messung 21.08.2026 · Quartalszahlen 1993–2026, 197 Werte"
          style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
       Gemessen ab 2015: <b>+10,44 % p. a. bei t = 3,04</b> – aber die Überlebensverzerrung ist nur teilweise
       ausgeräumt (schwache Hälfte der Werte: +1,72 % bei t = 0,58). Die vollständige Messung steht hinter dem

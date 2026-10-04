@@ -1,0 +1,548 @@
+{
+ "kennung": "datenfundament-2026-10-04/tafel-v2/v1 (Zahlen)",
+ "stand": "2026-10-04T17:34:16.410Z",
+ "lauf": {
+  "reihen": 5050,
+  "offen": [],
+  "textbedarf": 0,
+  "handeintraege": 33,
+  "handOhneReihe": [],
+  "handAnkerAnders": [],
+  "gegenprobe": {
+   "gleich": 5050,
+   "anders": [],
+   "feldAnders": {},
+   "nachfolgerImArchivAnders": 256
+  },
+  "b2": {
+   "betroffen": 239,
+   "firmaAnders": 64,
+   "namePasst": {
+    "true": 175,
+    "false": 64,
+    "null": 0
+   }
+  },
+  "nachfolgerImArchiv": {
+   "ausLauf4": 1086,
+   "null": 0,
+   "zwilling": 372
+  }
+ },
+ "matrix": {
+  "andersAlsLauf4": 43,
+  "jeUrsache": {
+   "B1": 2,
+   "B2": 14,
+   "B3": 26,
+   "zusammen": 0,
+   "B2 oder B3": 1
+  },
+  "jeUrsacheKlasse123": {
+   "B1": 0,
+   "B2": 1,
+   "B3": 21,
+   "zusammen": 0,
+   "B2 oder B3": 1
+  },
+  "uebergaenge": {
+   "abgemeldet-anlass-offen -> freiwillig": 2,
+   "zwangs-delisting -> spac-ende": 5,
+   "unbekannt -> uebernahme": 3,
+   "abgemeldet-anlass-offen -> fusion-aktientausch": 3,
+   "unbekannt -> umbenennung-ticker": 5,
+   "unbekannt -> abgemeldet-anlass-offen": 2,
+   "unbekannt -> insolvenz": 4,
+   "abgemeldet-anlass-offen -> uebernahme": 3,
+   "abgemeldet-anlass-offen -> umbenennung-ticker": 4,
+   "unbekannt -> fusion-aktientausch": 2,
+   "zwangs-delisting -> unbekannt": 1,
+   "unbekannt -> freiwillig": 2,
+   "abgemeldet-anlass-offen -> zwangs-delisting": 1,
+   "unbekannt -> zwangs-delisting": 1,
+   "abgemeldet-anlass-offen -> spac-ende": 1,
+   "unbekannt -> spac-ende": 1,
+   "uebernahme -> umbenennung-ticker": 1,
+   "zwangs-delisting -> insolvenz": 1,
+   "uebernahme -> abgemeldet-anlass-offen": 1
+  },
+  "reihen": [
+   {
+    "reihe": "AABA",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "freiwillig",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "AAPC",
+    "lauf4": "zwangs-delisting",
+    "v2": "spac-ende",
+    "ursache": "B3",
+    "klasse123": 0
+   },
+   {
+    "reihe": "APN",
+    "lauf4": "zwangs-delisting",
+    "v2": "spac-ende",
+    "ursache": "B3",
+    "klasse123": 0
+   },
+   {
+    "reihe": "ARTE",
+    "lauf4": "zwangs-delisting",
+    "v2": "spac-ende",
+    "ursache": "B3",
+    "klasse123": 0
+   },
+   {
+    "reihe": "BCR",
+    "lauf4": "unbekannt",
+    "v2": "uebernahme",
+    "ursache": "B2 oder B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "BHI",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "fusion-aktientausch",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "BNK",
+    "lauf4": "unbekannt",
+    "v2": "uebernahme",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "CHL",
+    "lauf4": "unbekannt",
+    "v2": "umbenennung-ticker",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "CHU",
+    "lauf4": "unbekannt",
+    "v2": "abgemeldet-anlass-offen",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "CVO",
+    "lauf4": "unbekannt",
+    "v2": "insolvenz",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "CYBR",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "uebernahme",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "DIDI",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "umbenennung-ticker",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "DISCA",
+    "lauf4": "unbekannt",
+    "v2": "fusion-aktientausch",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "DISCK",
+    "lauf4": "unbekannt",
+    "v2": "fusion-aktientausch",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "DOM",
+    "lauf4": "zwangs-delisting",
+    "v2": "unbekannt",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "EGI",
+    "lauf4": "unbekannt",
+    "v2": "freiwillig",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "ERB",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "zwangs-delisting",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "FFHL",
+    "lauf4": "unbekannt",
+    "v2": "umbenennung-ticker",
+    "ursache": "B1",
+    "klasse123": 0
+   },
+   {
+    "reihe": "FRC",
+    "lauf4": "unbekannt",
+    "v2": "insolvenz",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "GG",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "fusion-aktientausch",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "GRUB",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "freiwillig",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "INXN",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "fusion-aktientausch",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "LGF",
+    "lauf4": "unbekannt",
+    "v2": "umbenennung-ticker",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "LK",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "umbenennung-ticker",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "NTT",
+    "lauf4": "unbekannt",
+    "v2": "abgemeldet-anlass-offen",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "OTIV",
+    "lauf4": "unbekannt",
+    "v2": "zwangs-delisting",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "PSTH",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "spac-ende",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "QIHU",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "uebernahme",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "QVCA",
+    "lauf4": "unbekannt",
+    "v2": "umbenennung-ticker",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "RDS.A",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "umbenennung-ticker",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "RDS.B",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "umbenennung-ticker",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "SBNY",
+    "lauf4": "unbekannt",
+    "v2": "insolvenz",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "SCVX",
+    "lauf4": "zwangs-delisting",
+    "v2": "spac-ende",
+    "ursache": "B3",
+    "klasse123": 0
+   },
+   {
+    "reihe": "SGBK",
+    "lauf4": "unbekannt",
+    "v2": "uebernahme",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "SODA",
+    "lauf4": "abgemeldet-anlass-offen",
+    "v2": "uebernahme",
+    "ursache": "B3",
+    "klasse123": 1
+   },
+   {
+    "reihe": "SONG",
+    "lauf4": "unbekannt",
+    "v2": "freiwillig",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "TAS",
+    "lauf4": "unbekannt",
+    "v2": "spac-ende",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "THLD",
+    "lauf4": "uebernahme",
+    "v2": "umbenennung-ticker",
+    "ursache": "B1",
+    "klasse123": 0
+   },
+   {
+    "reihe": "VISI",
+    "lauf4": "unbekannt",
+    "v2": "insolvenz",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "VSR",
+    "lauf4": "zwangs-delisting",
+    "v2": "insolvenz",
+    "ursache": "B2",
+    "klasse123": 0
+   },
+   {
+    "reihe": "WP",
+    "lauf4": "uebernahme",
+    "v2": "abgemeldet-anlass-offen",
+    "ursache": "B2",
+    "klasse123": 1
+   },
+   {
+    "reihe": "WYIG",
+    "lauf4": "zwangs-delisting",
+    "v2": "spac-ende",
+    "ursache": "B3",
+    "klasse123": 0
+   },
+   {
+    "reihe": "YHOO",
+    "lauf4": "unbekannt",
+    "v2": "umbenennung-ticker",
+    "ursache": "B3",
+    "klasse123": 1
+   }
+  ],
+  "belegAndersGleicherGrund": {
+   "B1": 2,
+   "B2": 7
+  }
+ },
+ "totalverlust": {
+  "haupt": {
+   "liste": [
+    "insolvenz",
+    "zwangs-delisting"
+   ],
+   "bestand": 612,
+   "klasse123": [
+    "FRC",
+    "NKLA",
+    "NOVA",
+    "SAVE",
+    "SBNY",
+    "SIVB"
+   ],
+   "lauf4": 612,
+   "lauf4Klasse123": [
+    "NKLA",
+    "NOVA",
+    "SAVE",
+    "SIVB"
+   ],
+   "heraus": [
+    "AAPC (spac-ende)",
+    "APN (spac-ende)",
+    "ARTE (spac-ende)",
+    "DOM (unbekannt)",
+    "SCVX (spac-ende)",
+    "WYIG (spac-ende)"
+   ],
+   "hinein": [
+    "CVO (unbekannt -> insolvenz)",
+    "ERB (abgemeldet-anlass-offen -> zwangs-delisting)",
+    "FRC (unbekannt -> insolvenz, K1-3)",
+    "OTIV (unbekannt -> zwangs-delisting)",
+    "SBNY (unbekannt -> insolvenz, K1-3)",
+    "VISI (unbekannt -> insolvenz)"
+   ]
+  },
+  "streng": {
+   "liste": [
+    "insolvenz",
+    "zwangs-delisting",
+    "unbekannt",
+    "freiwillig",
+    "abgemeldet-anlass-offen",
+    "ausgesetzt"
+   ],
+   "bestand": 1272,
+   "klasse123": [
+    "AABA",
+    "FRC",
+    "GRUB",
+    "NKLA",
+    "NOVA",
+    "OZON",
+    "SAVE",
+    "SBNY",
+    "SIVB",
+    "WP",
+    "YNDX"
+   ],
+   "lauf4": 1298,
+   "lauf4Klasse123": [
+    "AABA",
+    "BCR",
+    "BHI",
+    "CHL",
+    "CYBR",
+    "DIDI",
+    "DISCA",
+    "DISCK",
+    "FRC",
+    "GG",
+    "GRUB",
+    "INXN",
+    "LGF",
+    "LK",
+    "NKLA",
+    "NOVA",
+    "OZON",
+    "PSTH",
+    "QIHU",
+    "QVCA",
+    "RDS.A",
+    "RDS.B",
+    "SAVE",
+    "SBNY",
+    "SIVB",
+    "SODA",
+    "YHOO",
+    "YNDX"
+   ],
+   "heraus": [
+    "AAPC (spac-ende)",
+    "APN (spac-ende)",
+    "ARTE (spac-ende)",
+    "BCR (uebernahme, K1-3)",
+    "BHI (fusion-aktientausch, K1-3)",
+    "BNK (uebernahme)",
+    "CHL (umbenennung-ticker, K1-3)",
+    "CYBR (uebernahme, K1-3)",
+    "DIDI (umbenennung-ticker, K1-3)",
+    "DISCA (fusion-aktientausch, K1-3)",
+    "DISCK (fusion-aktientausch, K1-3)",
+    "FFHL (umbenennung-ticker)",
+    "GG (fusion-aktientausch, K1-3)",
+    "INXN (fusion-aktientausch, K1-3)",
+    "LGF (umbenennung-ticker, K1-3)",
+    "LK (umbenennung-ticker, K1-3)",
+    "PSTH (spac-ende, K1-3)",
+    "QIHU (uebernahme, K1-3)",
+    "QVCA (umbenennung-ticker, K1-3)",
+    "RDS.A (umbenennung-ticker, K1-3)",
+    "RDS.B (umbenennung-ticker, K1-3)",
+    "SCVX (spac-ende)",
+    "SGBK (uebernahme)",
+    "SODA (uebernahme, K1-3)",
+    "TAS (spac-ende)",
+    "WYIG (spac-ende)",
+    "YHOO (umbenennung-ticker, K1-3)"
+   ],
+   "hinein": [
+    "WP (uebernahme -> abgemeldet-anlass-offen, K1-3)"
+   ]
+  }
+ },
+ "zaehler": {
+  "freiwillig": 112,
+  "uebernahme": 1632,
+  "umbenennung-ticker": 1466,
+  "zwangs-delisting": 275,
+  "spac-ende": 375,
+  "abgemeldet-anlass-offen": 321,
+  "unbekannt": 205,
+  "fusion-aktientausch": 305,
+  "insolvenz": 337,
+  "ausgesetzt": 22
+ },
+ "jeRegel": {
+  "0": 120,
+  "1": 1086,
+  "2": 922,
+  "3": 300,
+  "4": 211,
+  "5": 663,
+  "6": 9,
+  "7": 287,
+  "8": 1,
+  "9": 78,
+  "10": 20,
+  "11": 426,
+  "12": 6,
+  "13": 297,
+  "14": 14,
+  "15": 205,
+  "H": 33,
+  "Z": 372
+ },
+ "zaehlerLauf4": {
+  "abgemeldet-anlass-offen": 332,
+  "uebernahme": 1628,
+  "umbenennung-ticker": 1456,
+  "zwangs-delisting": 280,
+  "spac-ende": 368,
+  "freiwillig": 108,
+  "unbekannt": 224,
+  "fusion-aktientausch": 300,
+  "insolvenz": 332,
+  "ausgesetzt": 22
+ }
+}

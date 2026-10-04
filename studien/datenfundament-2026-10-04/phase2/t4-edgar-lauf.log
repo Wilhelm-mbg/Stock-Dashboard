@@ -1,0 +1,29 @@
+2026-10-04 13:39:27 Start
+200/5025  Anfragen 77  Fehlversuche 0  26s
+400/5025  Anfragen 127  Fehlversuche 0  39s
+600/5025  Anfragen 179  Fehlversuche 0  57s
+800/5025  Anfragen 223  Fehlversuche 0  72s
+1000/5025  Anfragen 267  Fehlversuche 0  84s
+1200/5025  Anfragen 351  Fehlversuche 0  105s
+1400/5025  Anfragen 406  Fehlversuche 0  120s
+1600/5025  Anfragen 458  Fehlversuche 0  134s
+1800/5025  Anfragen 503  Fehlversuche 0  147s
+2000/5025  Anfragen 555  Fehlversuche 0  160s
+2200/5025  Anfragen 597  Fehlversuche 0  171s
+2400/5025  Anfragen 635  Fehlversuche 0  181s
+2600/5025  Anfragen 687  Fehlversuche 0  193s
+2800/5025  Anfragen 746  Fehlversuche 1  212s
+3000/5025  Anfragen 804  Fehlversuche 2  228s
+3200/5025  Anfragen 940  Fehlversuche 2  265s
+3400/5025  Anfragen 988  Fehlversuche 2  282s
+3600/5025  Anfragen 1073  Fehlversuche 4  311s
+3800/5025  Anfragen 1112  Fehlversuche 4  320s
+4000/5025  Anfragen 1157  Fehlversuche 4  332s
+4200/5025  Anfragen 1217  Fehlversuche 4  347s
+4400/5025  Anfragen 1268  Fehlversuche 4  362s
+4600/5025  Anfragen 1321  Fehlversuche 4  377s
+4800/5025  Anfragen 1364  Fehlversuche 4  388s
+5000/5025  Anfragen 1421  Fehlversuche 4  402s
+FERTIG  Reihen 5025 (uebersprungen 25)  Anfragen 1425  Fehlversuche 4  offen 0  403s
+{"anfragen":1425,"fehlversuche":4,"sperren":0,"polygonFirma":4695,"polygonOhneEinreichungen":0,"ftsReihen":330,"ftsNr79Cache":31,"ftsAltCache":322,"ftsEigenCache":0,"ftsNeu":4,"fts2EigenCache":0,"fts2Nr79Cache":11,"fts2Neu":21,"fts2NurAltesKriterium":10,"cikEigenCache":115,"cikNr79Cache":60,"cikAltCache":3755,"cikNeu":1154,"cikNeuWeilFensterNachAbruf":389,"cikNeuWeilGrenze":64,"cikNeuWeilFehlt":701,"aeltereDateien":242,"minAbstandGemessenMs":180}
+2026-10-04 13:46:11 Ende

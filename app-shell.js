@@ -741,7 +741,10 @@
       k.innerHTML =
         '<button type="button" class="ip-zu" aria-label="Erklärung schließen">×</button>' +
         '<h4>' + U.esc(e.titel) + '</h4>' +
-        '<ul>' + (e.punkte || []).map(function (p) { return '<li>' + ausz(p) + '</li>'; }).join('') + '</ul>' +
+        /* Ein Punkt darf eine Funktion sein (Auftrag Nr. 91): ihr Text entsteht erst beim
+         * Oeffnen - fuer Saetze aus einem Modul, das nach diesem geladen wird. Leer = kein Punkt. */
+        '<ul>' + (e.punkte || []).map(function (p) { return typeof p === 'function' ? p() : p; })
+          .filter(function (p) { return !!p; }).map(function (p) { return '<li>' + ausz(p) + '</li>'; }).join('') + '</ul>' +
         (e.fuss ? '<div class="ip-fuss">' + ausz(e.fuss) + '</div>' : '');
       k.style.display = 'block';
       // Erst einblenden, dann messen: vorher ist die Breite 0.
@@ -1226,14 +1229,18 @@
       titel: 'Momentum im Querschnitt',
       punkte: [
         'Diese Strategie vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel. Kein Chartmuster, kein Ein- und Ausstiegssignal – nur eine Rangfolge, die alle drei Monate neu gebildet wird.',
-        'Seit 02.09.2026 handelt das Buch <b>exakt die gemessene liquide Konfiguration</b>: Rückblick 231 Handelstage, Lücke 21, Halten 63, stärkstes Zehntel, Korb nur Werte mit Median-Tagesumsatz ≥ 100 Mio $ (20 Balken bis zum Stichtag, vor der Rangbildung). Die Schwelle ist nominal und wird nicht angepasst – ihre Drift steht als Korbgröße je Umschichtung im Buch. Ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg.',
+        'Seit 02.09.2026 handelt das Buch <b>die gemessene liquide Konfiguration (Parameter wie gemessen)</b>: Rückblick 231 Handelstage, Lücke 21, Halten 63, stärkstes Zehntel, Korb nur Werte mit Median-Tagesumsatz ≥ 100 Mio $ (20 Balken bis zum Stichtag, vor der Rangbildung). Die Schwelle ist nominal und wird nicht angepasst – ihre Drift steht als Korbgröße je Umschichtung im Buch. Ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg.',
         'Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht darstellbar, der Zeitwertverfall frisst sie auf.',
+        /* Auftrag Nr. 91: die drei Saetze darunter stammen vom Universum der Ueberlebenden.
+         * Sie bleiben stehen; der Kopf darueber kommt beim Oeffnen aus dem Studienregister
+         * (studienurteile.js wird erst nach dieser Datei geladen - deshalb eine Funktion). */
+        function () { return window.StudienUrteile && window.StudienUrteile.belegeKopf ? window.StudienUrteile.belegeKopf('momentum-liquide') : ''; },
         '<b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment. Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.',
         '<b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei −0,1 % gegen +7,4 %. Momentum verliert typischerweise genau dann, wenn der Markt scharf dreht.',
-        '<b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft, aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.',
-        /* Stufe 3 (03.09.2026): der erste Satz von #mfErklaerung, woertlich. Sichtbar
-         * geblieben ist dort der zweite - die Rueckschlag-Zahl ist eine Messaussage. */
-        'Vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel – kein Chartmuster, nur eine Rangfolge alle drei Monate.'
+        '<b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft, aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.'
+        /* Auftrag Nr. 95 (B3): hier stand seit Stufe 3 (03.09.2026) der erste Satz von
+         * #mfErklaerung („Vergleicht alle Werte des Universums miteinander …"). Unter den drei
+         * ueberholten Punkten las er sich mit „Überholt" - und er doppelte Punkt 1. Gestrichen. */
       ],
       fuss: 'Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.'
     },

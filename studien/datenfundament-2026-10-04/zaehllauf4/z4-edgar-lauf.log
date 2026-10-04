@@ -1,0 +1,3 @@
+200/885  Anfragen 37  Fehlversuche 2  18s
+FERTIG  Reihen 239 (uebersprungen 4811)  Anfragen 41  Fehlversuche 2  offen 0  20s
+{"anfragen":41,"fehlversuche":2,"sperren":0,"polygonFirma":116,"probe_passt":0,"probe_frueher":0,"probe_kuerzel":0,"probe_nichts":116,"probe_ohne-auszug":0,"zweitRegistrant":0,"alteTafelStattSuche":0,"ftsReihen":239,"ftsEigenCache":0,"ftsNr86Cache":0,"ftsNr79Cache":1,"ftsAltCache":275,"ftsNeu":0,"fts2EigenCache":0,"fts2Nr86Cache":2,"fts2Nr79Cache":0,"fts2Neu":8,"cikEigenCache":0,"cikNr86Cache":136,"cikNr79Cache":14,"cikAltCache":279,"cikNeu":21,"aeltereDateien":10,"minAbstandGemessenMs":222,"ftsNr90Cache":1,"fts2Nr90Cache":4,"cikNr90Cache":37,"e6Reihen":239,"e6Probe1":239,"e6Verworfen1":66,"e6Probe2":132,"e6Verworfen2":104,"e6Durchgang2Neu":37}

@@ -164,6 +164,23 @@ function gruende() {
   GR = { karte: m, n: j.n, zaehler: j.zaehler, kennung: j.kennung };
   return GR;
 }
+/* v2.3 (04.10.2026, Auftrag Nr. 92 Schritt 2): aus v2.2 abgeleitet, ohne die doppelten Vorgaenger-Abschnitte (Zwilling nach B1),
+ * Ende-Gruende aus der Gruende-Tafel v2 (studien/datenfundament-2026-10-04/tafel-v2/). ZUSAETZLICHE Konstanten - die Vorgaben
+ * oben (PANEL_KENNUNG, PANEL_KENNUNGEN_LESBAR, GRUENDE_DATEI, gruende()) bleiben unveraendert. v2.3 ist nur mit ausdruecklicher
+ * Kennung lesbar (PR.Tafel(aus, { panelKennung: PANEL_KENNUNG_V23 }), Option --v23 in kontrollen.js); ohne sie bricht ladePanel
+ * an der Kennung ab. Fuer v2.3 ist absichtlich KEIN Eintrag in REGRESSION23_ERWARTET gepinnt (Auftrag: nur berichten). */
+var PANEL_KENNUNG_V23 = 'querschnitt-pruefstand-2026-09-13/panel/v2.3';
+var GRUENDE_DATEI_V2 = path.join(REPO, 'studien', 'datenfundament-2026-10-04', 'tafel-v2', 'verschwundene-gruende-v2.json');
+var GR2 = null;
+/** Grund und Datum je Reihe aus der Gruende-Tafel v2 (nur lesen) - dieselbe Form wie gruende(). */
+function gruendeV2() {
+  if (GR2) return GR2;
+  var j = JSON.parse(fs.readFileSync(GRUENDE_DATEI_V2, 'utf8'));
+  var m = {};
+  (j.reihen || []).forEach(function (r) { m[r.reihe] = { grund: r.grund, datum: r.datum, letzter_balken: r.letzter_balken }; });
+  GR2 = { karte: m, n: j.n, zaehler: j.zaehler, kennung: j.kennung };
+  return GR2;
+}
 
 /* ---------- Stempelkerzen (§1.7): Form, nicht Umsatz ---------- */
 /** kerze = [zeit, schluss, umsatz, hoch, tief, eroeffnung]. */
@@ -286,4 +303,5 @@ module.exports = {
   TEIL4_BONFERRONI_T: TEIL4_BONFERRONI_T, TEIL4_MDE_FAKTOR_BONF: TEIL4_MDE_FAKTOR_BONF, TEIL4_VORHERSAGE_PP: TEIL4_VORHERSAGE_PP,
   TEIL4_MIN_PERIODEN: TEIL4_MIN_PERIODEN, TEIL4_PLACEBO: TEIL4_PLACEBO, TEIL4_ORAKEL: TEIL4_ORAKEL,
   TEIL4_VORPRUEFUNG: TEIL4_VORPRUEFUNG, FUNDAMENTAL_LESER: FUNDAMENTAL_LESER, KONFIG_KENNUNG_TEIL4: KONFIG_KENNUNG_TEIL4,
+  PANEL_KENNUNG_V23: PANEL_KENNUNG_V23, GRUENDE_DATEI_V2: GRUENDE_DATEI_V2, gruendeV2: gruendeV2,
 };

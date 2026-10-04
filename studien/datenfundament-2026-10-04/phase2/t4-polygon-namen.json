@@ -1,0 +1,1330 @@
+{
+ "stand": "2026-10-04T11:57:31.376Z",
+ "hinweis": "grober Namensvergleich (erstes tragendes Wort / Anfang); \"nichtsPasst\" ist eine Leseliste (t4-polygon-namen.json), kein Urteil",
+ "zahlen": {
+  "zeilen": 4717,
+  "namePasst": 3478,
+  "nurFruehererNamePasst": 1120,
+  "nurKuerzelPasst": 1,
+  "nichtsPasst": 118,
+  "hinweis": "grober Namensvergleich (erstes tragendes Wort / Anfang); \"nichtsPasst\" ist eine Leseliste (t4-polygon-namen.json), kein Urteil"
+ },
+ "nichtsPasst": [
+  {
+   "reihe": "AFAM",
+   "cik": "0000919012",
+   "polygon": "Almost Family Inc",
+   "edgar": "AMERICAN EAGLE OUTFITTERS INC",
+   "frueher": [
+    "AMERICAN EAGLE OUTFITTERS INC"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "AGC",
+   "cik": "0001401680",
+   "polygon": "Altimeter Growth Corp. Class A Ordinary Shares",
+   "edgar": "Cornerstone OnDemand Inc",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "AIRM",
+   "cik": "0000723574",
+   "polygon": "Air Methods Corp",
+   "edgar": "IMAGE SOFTWARE INC",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "AJAX",
+   "cik": "0001824963",
+   "polygon": "Capri Listco",
+   "edgar": "Ajax I",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "ALXN",
+   "cik": "0001347178",
+   "polygon": "Alexion Pharmaceuticals Inc",
+   "edgar": "Vanda Pharmaceuticals Inc.",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "alpaca-stock_and_cash_mergers",
+   "k123": 250
+  },
+  {
+   "reihe": "APOL",
+   "cik": "0000815094",
+   "polygon": "Apollo Education Group Inc Class A",
+   "edgar": "ABIOMED INC",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "ARA",
+   "cik": "0001524408",
+   "polygon": "American Renal Associates Holdings, Inc",
+   "edgar": "Van Berkom & Associates Inc.",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "ARDM",
+   "cik": "0001581987",
+   "polygon": "Aradigm Corp Common Stock",
+   "edgar": "TiGenix NV",
+   "frueher": [],
+   "grund": "abgemeldet-anlass-offen",
+   "beleg": "edgar-formular25",
+   "k123": 0
+  },
+  {
+   "reihe": "AREX",
+   "cik": "0001315478",
+   "polygon": "Approach Resources Inc.",
+   "edgar": "Champlain Investment Partners, LLC",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "ARQL",
+   "cik": "0000078003",
+   "polygon": "Arqule Inc",
+   "edgar": "PFIZER INC",
+   "frueher": [
+    "PFIZER INC"
+   ],
+   "grund": "abgemeldet-anlass-offen",
+   "beleg": "edgar-formular25",
+   "k123": 0
+  },
+  {
+   "reihe": "AXAS",
+   "cik": "0001006438",
+   "polygon": "Abraxas Petroleum Corporation",
+   "edgar": "APPALOOSA MANAGEMENT LP",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "BAS",
+   "cik": "0001109189",
+   "polygon": "Basis Energy Services, Inc.",
+   "edgar": "BASIC ENERGY SERVICES, INC.",
+   "frueher": [
+    "BASIC ENERGY SERVICES INC",
+    "SIERRA WELL SERVICE INC"
+   ],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 0
+  },
+  {
+   "reihe": "BBOX",
+   "cik": "0000887211",
+   "polygon": "Black Box Corp",
+   "edgar": "LOMBARDIA CAPITAL PARTNERS LLC",
+   "frueher": [
+    "VALENZUELA CAPITAL PARTNERS LLC",
+    "VALENZUELA CAPITAL PARTNERS INC",
+    "VALENZUELA CAPITAL MANAGEMENT INC"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "BCR",
+   "cik": "0000275110",
+   "polygon": "CR Bard Inc.",
+   "edgar": "BARD C R INC (PRED)",
+   "frueher": [
+    "BARD C R INC                                          (PRED)"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 250
+  },
+  {
+   "reihe": "BDSI",
+   "cik": "0001328003",
+   "polygon": "BioDelivery Sciences International, Inc.",
+   "edgar": "Redpoint Bio CORP",
+   "frueher": [
+    "Robcor Properties Inc"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "BGG",
+   "cik": "0001162663",
+   "polygon": "Briggs & Stratton Corp.",
+   "edgar": "PIONEER GLOBAL ASSET MANAGEMENT SPA",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "BMTC",
+   "cik": "0000700564",
+   "polygon": "Bryn Mawr Bank Corp",
+   "edgar": "FULTON FINANCIAL CORP",
+   "frueher": [],
+   "grund": "fusion-aktientausch",
+   "beleg": "alpaca-stock_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "BNK",
+   "cik": "0001609132",
+   "polygon": "C1 FINL INC COM STK (FL)",
+   "edgar": "C1 Financial, Inc.",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "edgar-8K-2.01+prospekt",
+   "k123": 0
+  },
+  {
+   "reihe": "BPFHP",
+   "cik": "0001498388",
+   "polygon": "Boston Private Financial Holdings, Inc.",
+   "edgar": "Clone Algo Inc.",
+   "frueher": [
+    "Corridor Ventures I Acquisition Corp."
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "BRSS",
+   "cik": "0001567940",
+   "polygon": "Global Brass & Copper Hldgs, Inc",
+   "edgar": "Allianz Global Investors U.S. Holdings LLC",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "CAB",
+   "cik": "0001606498",
+   "polygon": "Cabela's Inc",
+   "edgar": "AVANOS MEDICAL, INC.",
+   "frueher": [
+    "Halyard Health, Inc."
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "CALL",
+   "cik": "0001626971",
+   "polygon": "magicJack VocalTec Ltd",
+   "edgar": "Corvus Pharmaceuticals, Inc.",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "CBD",
+   "cik": "0001038572",
+   "polygon": "Companhia Brasileira de Distribuicao",
+   "edgar": "BRAZILIAN DISTRIBUTION CO COMPANHIA BRASILEIRA DE DISTR CBD",
+   "frueher": [
+    "BRAZILIAN DISTRIBUTION CO"
+   ],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "CBYL",
+   "cik": "0001385424",
+   "polygon": "Carbylan Therapeutics, Inc. Common Stock",
+   "edgar": "LDK Solar Co., Ltd.",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "CFNL",
+   "cik": "0001127924",
+   "polygon": "Cardinal Financial Corp",
+   "edgar": "LEE MUNDER INVESTMENTS LTD",
+   "frueher": [
+    "MUNDER LEE INVESTMENTS LTD"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "CKH",
+   "cik": "0001177719",
+   "polygon": "Seacor Holdings Inc.",
+   "edgar": "WESTFIELD CAPITAL MANAGEMENT CO LP",
+   "frueher": [
+    "WESTFIELD CAPITAL MANAGEMENT CO LLC"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "CONE",
+   "cik": "0001374170",
+   "polygon": "CyrusOne Inc Common Stock",
+   "edgar": "NORGES BANK",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 250
+  },
+  {
+   "reihe": "CORV",
+   "cik": "0001651431",
+   "polygon": "Correvio Pharma Corp. Ordinary Shares (Canada)",
+   "edgar": "Checkmate Pharmaceuticals, Inc.",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "CVO",
+   "cik": "0000920321",
+   "polygon": "Cenevo, Inc.",
+   "edgar": "CENVEO, INC",
+   "frueher": [
+    "MAIL WELL INC"
+   ],
+   "grund": "insolvenz",
+   "beleg": "edgar-8K-1.03",
+   "k123": 0
+  },
+  {
+   "reihe": "CYOU",
+   "cik": "0001681662",
+   "polygon": "Changyou.com Limited American Depositary Share",
+   "edgar": "Athos Capital Ltd",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "CYTX",
+   "cik": "0000799698",
+   "polygon": "Cytori Therapeutics Inc.",
+   "edgar": "LadRx Corp",
+   "frueher": [
+    "CYTRX CORP"
+   ],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 0
+  },
+  {
+   "reihe": "DSW",
+   "cik": "0001127924",
+   "polygon": "DSW Inc.",
+   "edgar": "LEE MUNDER INVESTMENTS LTD",
+   "frueher": [
+    "MUNDER LEE INVESTMENTS LTD"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "EBR",
+   "cik": "0001439124",
+   "polygon": "Centrais Elétricas Brasileiras S.A.- Eletrobrás American Depositary Shares (Each representing one Common Share)",
+   "edgar": "AXIA Energia S.A.",
+   "frueher": [
+    "BRAZILIAN ELECTRIC POWER CO"
+   ],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "EBR.B",
+   "cik": "0001439124",
+   "polygon": "Centrais Elétricas Brasileiras S.A.- Eletrobrás American Depositary Shares (Each representing one Preferred Share)",
+   "edgar": "AXIA Energia S.A.",
+   "frueher": [
+    "BRAZILIAN ELECTRIC POWER CO"
+   ],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "EEP",
+   "cik": "0001012569",
+   "polygon": "Enbridge Energy Partners",
+   "edgar": "Energy Transfer, LP",
+   "frueher": [
+    "Energy Transfer Partners, L.P.",
+    "ENERGY TRANSFER PARTNERS LP",
+    "HERITAGE PROPANE PARTNERS L P"
+   ],
+   "grund": "freiwillig",
+   "beleg": "edgar-formular15",
+   "k123": 0
+  },
+  {
+   "reihe": "EFII",
+   "cik": "0001483934",
+   "polygon": "Electronics for Imaging",
+   "edgar": "Scorpio Tankers Inc.",
+   "frueher": [],
+   "grund": "abgemeldet-anlass-offen",
+   "beleg": "edgar-formular25",
+   "k123": 0
+  },
+  {
+   "reihe": "EGI",
+   "cik": "0001271554",
+   "polygon": "Entr�e Resources Ltd. Common Shares",
+   "edgar": "Entree Resources Ltd.",
+   "frueher": [
+    "ENTREE GOLD INC"
+   ],
+   "grund": "abgemeldet-anlass-offen",
+   "beleg": "edgar-formular25",
+   "k123": 0
+  },
+  {
+   "reihe": "ELEC",
+   "cik": "0001671161",
+   "polygon": "Electrum Special Acquisition Corporation",
+   "edgar": "City Financial Investment Co Ltd",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "ELNK",
+   "cik": "0001580345",
+   "polygon": "EarthLink Holdings Corp.",
+   "edgar": "TriplePoint Venture Growth BDC Corp.",
+   "frueher": [],
+   "grund": "abgemeldet-anlass-offen",
+   "beleg": "edgar-formular25",
+   "k123": 0
+  },
+  {
+   "reihe": "ELOS",
+   "cik": "0000866842",
+   "polygon": "Syneron Medical Ltd",
+   "edgar": "DALTON GREINER HARTMAN MAHER & CO",
+   "frueher": [
+    "DALTON GREINER HARTMAN MAHER & CO INC"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "ELP",
+   "cik": "0001041792",
+   "polygon": "Companhia Paranaense de Energia - COPEL American Depositary Shares (each representing four (4) Class A Preferred Shares)",
+   "edgar": "ENERGY CO OF PARANA",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "EPAY",
+   "cik": "0001315478",
+   "polygon": "Bottomline Technologies Inc",
+   "edgar": "Champlain Investment Partners, LLC",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 45
+  },
+  {
+   "reihe": "EQR",
+   "cik": "0000931182",
+   "polygon": "Equity Residential",
+   "edgar": "ERP OPERATING LTD PARTNERSHIP",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 250
+  },
+  {
+   "reihe": "EQY",
+   "cik": "0001072034",
+   "polygon": "Equity One",
+   "edgar": "INCAM AG",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "ESMC",
+   "cik": "0000935113",
+   "polygon": "Escalon Medical Corp",
+   "edgar": "BJURMAN BARRY & ASSOCIATES",
+   "frueher": [
+    "BJURMAN GEORGE D & ASSOCIATES"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "EVBS",
+   "cik": "0001091491",
+   "polygon": "Eastern Virginia Bankshares In",
+   "edgar": "HCSB FINANCIAL CORP",
+   "frueher": [],
+   "grund": "freiwillig",
+   "beleg": "edgar-formular15",
+   "k123": 0
+  },
+  {
+   "reihe": "EVSI",
+   "cik": "0001398880",
+   "polygon": "Envision Solar International, Inc. Common Stock",
+   "edgar": "SEIGLER IMPORTS INC",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "FNJN",
+   "cik": "0001581655",
+   "polygon": "Finjan Holdings, Inc.",
+   "edgar": "Alpine Global Management, LLC",
+   "frueher": [
+    "Alpine Partners VI, LLC"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "FVEVV",
+   "cik": "0000935113",
+   "polygon": "Five Star Senior Living Inc. Common Stock When Issued",
+   "edgar": "BJURMAN BARRY & ASSOCIATES",
+   "frueher": [
+    "BJURMAN GEORGE D & ASSOCIATES"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "GMBT",
+   "cik": "0001836190",
+   "polygon": "Pivotal Holdings Corp Class A Ordinary Share",
+   "edgar": "Queen's Gambit Growth Capital",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "GOL",
+   "cik": "0001291733",
+   "polygon": "Gol Linhas Aéreas Inteligentes S.A. American Depositary Shares (Each representing Ten Preferred Shares)",
+   "edgar": "Gol Intelligent Airlines Inc.",
+   "frueher": [],
+   "grund": "insolvenz",
+   "beleg": "q-kuerzel",
+   "k123": 0
+  },
+  {
+   "reihe": "GPIA",
+   "cik": "0001415610",
+   "polygon": "GP Investments Acquisition Corp.",
+   "edgar": "RIMINI STREET, INC.",
+   "frueher": [
+    "Rimini Street Inc"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "GRA",
+   "cik": "0000899647",
+   "polygon": "W.R. Grace & Co.",
+   "edgar": "RIVIERA HOLDINGS CORP",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 42
+  },
+  {
+   "reihe": "HBANO",
+   "cik": "0000067088",
+   "polygon": "Huntington Bancshares Incorporated Depositary Shares",
+   "edgar": "MITSUBISHI UFJ FINANCIAL GROUP INC",
+   "frueher": [
+    "MITSUBISHI TOKYO FINANCIAL GROUP INC",
+    "MITSUBISHI TOKYO FINANCIAL GROUP INC /ADR/"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "HBMD",
+   "cik": "0001019650",
+   "polygon": "Howard Bancorp, Inc. Common Stock",
+   "edgar": "CENTRUE FINANCIAL CORP",
+   "frueher": [
+    "UNIONBANCORP INC"
+   ],
+   "grund": "fusion-aktientausch",
+   "beleg": "alpaca-stock_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "HOLI",
+   "cik": "0001357450",
+   "polygon": "Hollsys Automation Technologies INTERNATIONAL, LTD. COMMON (British Virgin Island)",
+   "edgar": "Hollysys Automation Technologies, Ltd.",
+   "frueher": [
+    "HLS SYSTEMS INTERNATIONAL LTD"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "HSGX",
+   "cik": "0001446159",
+   "polygon": "Histogenics Corporation",
+   "edgar": "Axe Compute Inc.",
+   "frueher": [
+    "Predictive Oncology Inc.",
+    "Precision Therapeutics Inc.",
+    "Skyline Medical Inc.",
+    "BioDrain Medical, Inc."
+   ],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 0
+  },
+  {
+   "reihe": "ICA",
+   "cik": "0000885012",
+   "polygon": "EMPRESAS ICA, S.A. DE C.V. ADS (EA REPTG 4 ORD PART CERT)",
+   "edgar": "ICA CORP",
+   "frueher": [
+    "ICA CORPORATION HOLDING CO"
+   ],
+   "grund": "abgemeldet-anlass-offen",
+   "beleg": "edgar-formular25",
+   "k123": 0
+  },
+  {
+   "reihe": "ISIL",
+   "cik": "0001319644",
+   "polygon": "Intersil Corp",
+   "edgar": "IXI Mobile, Inc.",
+   "frueher": [
+    "Israel Technology Acquisition Corp."
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 31
+  },
+  {
+   "reihe": "ITCB",
+   "cik": "0001276671",
+   "polygon": "Itau CorpBanca",
+   "edgar": "BANCO ITAU CHILE",
+   "frueher": [
+    "CORPBANCA/FI"
+   ],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "JASN",
+   "cik": "0001055454",
+   "polygon": "Jason Industries, Inc.",
+   "edgar": "SCHOOL SPECIALTY INC",
+   "frueher": [],
+   "grund": "freiwillig",
+   "beleg": "edgar-formular15",
+   "k123": 0
+  },
+  {
+   "reihe": "JAX",
+   "cik": "0000103884",
+   "polygon": "J. Alexander's Holdings, Inc.",
+   "edgar": "ALEXANDERS J CORP",
+   "frueher": [
+    "VOLUNTEER CAPITAL CORP / TN /"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "KLXIV",
+   "cik": "0001082327",
+   "polygon": "KLX Inc. Ex-distribution When Issued",
+   "edgar": "FULLER & THALER ASSET MANAGEMENT, INC.",
+   "frueher": [
+    "FULLER & THALER ASSET MANAGEMENT /CA"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "KONA",
+   "cik": "0001158202",
+   "polygon": "Kona Grill, Inc.",
+   "edgar": "Penn Capital Management Company, LLC",
+   "frueher": [
+    "PENN CAPITAL MANAGEMENT CO INC"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "LGC",
+   "cik": "0001648383",
+   "polygon": "Legacy Acquisition Corp. Class A Common Stock, par value $0.0001 per share",
+   "edgar": "CNL Healthcare Properties II, Inc.",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "LIOX",
+   "cik": "0000800083",
+   "polygon": "Lionbridge Technologies",
+   "edgar": "EDGE ASSET MANAGEMENT, INC.",
+   "frueher": [
+    "WM ADVISORS INC"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "LLIT",
+   "cik": "0001533363",
+   "polygon": "Lianluo Smart Limited Class A Common Stock",
+   "edgar": "Chimera Securities LLC",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "LMCK",
+   "cik": "0001805284",
+   "polygon": "Liberty Media Corporation Series C Liberty Media Common Stock",
+   "edgar": "Rocket Companies, Inc.",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "LPT",
+   "cik": "0000913414",
+   "polygon": "Liberty Property Trust",
+   "edgar": "BlackRock Institutional Trust Company, N.A.",
+   "frueher": [
+    "BARCLAYS GLOBAL INVESTORS NA /CA/",
+    "BZW BARCLAYS GLOBAL INVESTORS NA"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 9
+  },
+  {
+   "reihe": "LTEA",
+   "cik": "0001681348",
+   "polygon": "Long Island Iced Tea Corp. Common Stock",
+   "edgar": "VivoPower PLC",
+   "frueher": [
+    "VivoPower International PLC"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "LVLT",
+   "cik": "0000746515",
+   "polygon": "Level 3 Communications Inc",
+   "edgar": "EXPEDITORS INTERNATIONAL OF WASHINGTON INC",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 250
+  },
+  {
+   "reihe": "MCC",
+   "cik": "0001009215",
+   "polygon": "MEDLEY CAPITAL CORPORATION",
+   "edgar": "COLUMBIA PARTNERS L.L.C. INVESTMENT MANAGEMENT",
+   "frueher": [
+    "COLUMBIA PARTNERS L L C INVESTMENT MANAGEMENT"
+   ],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "MCEP",
+   "cik": "0001505413",
+   "polygon": "Mid-Con Energy Partners, LP",
+   "edgar": "VOC Energy Trust",
+   "frueher": [],
+   "grund": "fusion-aktientausch",
+   "beleg": "alpaca-stock_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "MCF",
+   "cik": "0001319418",
+   "polygon": "Contango Oil & Gas Co.",
+   "edgar": "Sellers Capital Fund LLC",
+   "frueher": [],
+   "grund": "fusion-aktientausch",
+   "beleg": "alpaca-stock_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "MDP",
+   "cik": "0000923338",
+   "polygon": "Meredith Corporation",
+   "edgar": "KOCH INDUSTRIES LLC",
+   "frueher": [
+    "KOCH INDUSTRIES INC"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "MDSO",
+   "cik": "0001362004",
+   "polygon": "Medidata Solutions, Inc.",
+   "edgar": "ICF International, Inc.",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 112
+  },
+  {
+   "reihe": "MRIC",
+   "cik": "0001730307",
+   "polygon": "MRI Interventions, Inc. Common Stock",
+   "edgar": "MELLON GROUP, LLC",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "MTSC",
+   "cik": "0001082327",
+   "polygon": "MTS Systems Corp",
+   "edgar": "FULLER & THALER ASSET MANAGEMENT, INC.",
+   "frueher": [
+    "FULLER & THALER ASSET MANAGEMENT /CA"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "MWW",
+   "cik": "0000895421",
+   "polygon": "Monster Worldwide Inc",
+   "edgar": "MORGAN STANLEY",
+   "frueher": [
+    "MORGAN STANLEY",
+    "MORGAN STANLEY",
+    "MORGAN STANLEY DEAN WITTER & CO",
+    "MORGAN STANLEY DEAN WITTER DISCOVER & CO"
+   ],
+   "grund": "abgemeldet-anlass-offen",
+   "beleg": "edgar-formular25",
+   "k123": 0
+  },
+  {
+   "reihe": "NAVG",
+   "cik": "0001315478",
+   "polygon": "Navigators Group Inc",
+   "edgar": "Champlain Investment Partners, LLC",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "NEFF",
+   "cik": "0001082506",
+   "polygon": "Neff Corporation",
+   "edgar": "Forest Investments, Inc.",
+   "frueher": [
+    "Great Elm Capital Group, Inc.",
+    "UNWIRED PLANET, INC.",
+    "OPENWAVE SYSTEMS INC",
+    "OPENWAVE SYSTEM INC"
+   ],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 0
+  },
+  {
+   "reihe": "OIIM",
+   "cik": "0001095348",
+   "polygon": "02Micro International Limited",
+   "edgar": "O2MICRO INTERNATIONAL LTD",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "OKSB",
+   "cik": "0000728575",
+   "polygon": "Southwest Bancorp Inc/OK",
+   "edgar": "CS MCKEE LP",
+   "frueher": [
+    "MCKEE C S & CO INC"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "OMED",
+   "cik": "0001403708",
+   "polygon": "OncoMed Pharmaceuticals, Inc.",
+   "edgar": "Evoke Pharma Inc",
+   "frueher": [],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 0
+  },
+  {
+   "reihe": "OTIV",
+   "cik": "0001021604",
+   "polygon": "OTI On Track Innovations Ltd",
+   "edgar": "ON TRACK INNOVATIONS LTD",
+   "frueher": [],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 0
+  },
+  {
+   "reihe": "PCPL",
+   "cik": "0001581655",
+   "polygon": "CC Neuberger Principal Holdings I",
+   "edgar": "Alpine Global Management, LLC",
+   "frueher": [
+    "Alpine Partners VI, LLC"
+   ],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "PE",
+   "cik": "0001527709",
+   "polygon": "PARSLEY ENERGY INC",
+   "edgar": "Mid-Con Energy Partners, LP",
+   "frueher": [],
+   "grund": "fusion-aktientausch",
+   "beleg": "alpaca-stock_mergers",
+   "k123": 250
+  },
+  {
+   "reihe": "PRCP",
+   "cik": "0000885074",
+   "polygon": "Perceptron Inc",
+   "edgar": "Aeon Global Health Corp.",
+   "frueher": [
+    "AUTHENTIDATE HOLDING CORP",
+    "BITWISE DESIGNS INC"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "PZRX",
+   "cik": "0001674416",
+   "polygon": "PhaseRx, Inc.",
+   "edgar": "CRISPR Therapeutics AG",
+   "frueher": [
+    "CRISPR Therapeutics AG"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "QSII",
+   "cik": "0000935113",
+   "polygon": "Quality Systems Inc",
+   "edgar": "BJURMAN BARRY & ASSOCIATES",
+   "frueher": [
+    "BJURMAN GEORGE D & ASSOCIATES"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "RLD",
+   "cik": "0001490983",
+   "polygon": "REALD INC COM STK",
+   "edgar": "Campus Crest Communities, Inc.",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "edgar-8K-2.01+prospekt",
+   "k123": 0
+  },
+  {
+   "reihe": "RLH",
+   "cik": "0000800083",
+   "polygon": "Red Lions Hotel Corporation",
+   "edgar": "EDGE ASSET MANAGEMENT, INC.",
+   "frueher": [
+    "WM ADVISORS INC"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "RLOG",
+   "cik": "0001567233",
+   "polygon": "Rand Logistics, Inc.",
+   "edgar": "JWEST, LLC",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "ROIAK",
+   "cik": "0000790526",
+   "polygon": "Radio One Inc",
+   "edgar": "RadNet, Inc.",
+   "frueher": [
+    "RadNet, Inc.",
+    "PRIMEDEX HEALTH SYSTEMS INC"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "RSYS",
+   "cik": "0000948669",
+   "polygon": "Radisys Corp",
+   "edgar": "PARNASSUS INVESTMENTS, LLC",
+   "frueher": [
+    "PARNASSUS INVESTMENTS /CA"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "RT",
+   "cik": "0000808326",
+   "polygon": "Ruby Tuesday Georgia",
+   "edgar": "EMCORE CORP",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "SCX",
+   "cik": "0000093676",
+   "polygon": "The L.S. Starrett Company",
+   "edgar": "STARRETT L S CO",
+   "frueher": [],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "SNAK",
+   "cik": "0000003197",
+   "polygon": "Inventure Foods, Inc.",
+   "edgar": "CECO ENVIRONMENTAL CORP",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "SNI",
+   "cik": "0000924168",
+   "polygon": "Scripps Networks Interactive, Inc Common Class A",
+   "edgar": "ENERGY FOCUS, INC/DE",
+   "frueher": [
+    "FIBERSTARS INC /CA/"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 250
+  },
+  {
+   "reihe": "STMP",
+   "cik": "0001037389",
+   "polygon": "Stamps.com, Inc.",
+   "edgar": "RENAISSANCE TECHNOLOGIES LLC",
+   "frueher": [
+    "RENAISSANCE TECHNOLOGIES CORP"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 179
+  },
+  {
+   "reihe": "SYMC",
+   "cik": "0001011722",
+   "polygon": "Symantec Corp",
+   "edgar": "NEXLAND INC",
+   "frueher": [
+    "WINDSTAR RESOURCES INC",
+    "TURTLEBACK MOUNTAIN GOLD CO INC"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 250
+  },
+  {
+   "reihe": "TASR",
+   "cik": "0000935113",
+   "polygon": "Taser International Inc",
+   "edgar": "BJURMAN BARRY & ASSOCIATES",
+   "frueher": [
+    "BJURMAN GEORGE D & ASSOCIATES"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "TCO",
+   "cik": "0001085601",
+   "polygon": "Taubman Centers Inc.",
+   "edgar": "LASALLE INVESTMENT MANAGEMENT SECURITIES LLC",
+   "frueher": [
+    "LASALLE INVESTMENT MANAGEMENT SECURITIES LP"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 90
+  },
+  {
+   "reihe": "TESO",
+   "cik": "0001495222",
+   "polygon": "Tesco Corp",
+   "edgar": "Oxford Lane Capital Corp.",
+   "frueher": [],
+   "grund": "abgemeldet-anlass-offen",
+   "beleg": "edgar-formular25",
+   "k123": 0
+  },
+  {
+   "reihe": "TISA",
+   "cik": "0001206284",
+   "polygon": "TOP Image Systems Ltd",
+   "edgar": "LEONIDAS OPPORTUNITY FUND LP",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "TREB",
+   "cik": "0001814538",
+   "polygon": "Trebia Acquisition Corp.",
+   "edgar": "BGPT Trebia LP",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "UPL",
+   "cik": "0001639669",
+   "polygon": "Ultra Petroleum Corp. Common Stock",
+   "edgar": "Electrum Special Acquisition Corp",
+   "frueher": [],
+   "grund": "spac-ende",
+   "beleg": "edgar-mantel+abmeldung",
+   "k123": 0
+  },
+  {
+   "reihe": "VCO",
+   "cik": "0000930543",
+   "polygon": "Vina Concha  Y Toro 50 Shrs",
+   "edgar": "CONCHA Y TORO WINERY INC",
+   "frueher": [],
+   "grund": "abgemeldet-anlass-offen",
+   "beleg": "edgar-formular25",
+   "k123": 0
+  },
+  {
+   "reihe": "VISI",
+   "cik": "0001512162",
+   "polygon": "Volt Information Sciences, Inc.",
+   "edgar": "COOPER CREEK PARTNERS MANAGEMENT LLC",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "VNE",
+   "cik": "0001218210",
+   "polygon": "Veoneer, Inc.",
+   "edgar": "NORDEA INVESTMENT MANAGEMENT AB",
+   "frueher": [
+    "NORDEA INVESTMENT MANAGEMENT SVERIGE AB",
+    "NORDEA INVESTMENT MANAGEMENT BANK DEMARK A/S"
+   ],
+   "grund": "uebernahme",
+   "beleg": "alpaca-cash_mergers",
+   "k123": 0
+  },
+  {
+   "reihe": "VSI",
+   "cik": "0001082327",
+   "polygon": "Vitamin Shoppe Inc.",
+   "edgar": "FULLER & THALER ASSET MANAGEMENT, INC.",
+   "frueher": [
+    "FULLER & THALER ASSET MANAGEMENT /CA"
+   ],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "VSR",
+   "cik": "0001541910",
+   "polygon": "Versar, Inc.",
+   "edgar": "Illinois Municipal Retirement Fund",
+   "frueher": [],
+   "grund": "unbekannt",
+   "beleg": "edgar-ohne-signal",
+   "k123": 0
+  },
+  {
+   "reihe": "VTL",
+   "cik": "0001725255",
+   "polygon": "Vital Therapies, Inc.",
+   "edgar": "AdaptHealth Corp.",
+   "frueher": [
+    "DFB Healthcare Acquisitions Corp."
+   ],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 0
+  },
+  {
+   "reihe": "WAGE",
+   "cik": "0001350381",
+   "polygon": "WageWorks, Inc.",
+   "edgar": "INNERWORKINGS INC",
+   "frueher": [],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 0
+  },
+  {
+   "reihe": "WINS",
+   "cik": "0001681941",
+   "polygon": "Wins Finance Holdings Inc. Ordinary Shares (Cayman Islands)",
+   "edgar": "iFresh Inc",
+   "frueher": [],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 0
+  },
+  {
+   "reihe": "WRLS",
+   "cik": "0001671161",
+   "polygon": "Pensare Acquisition Corp. Common Stock",
+   "edgar": "City Financial Investment Co Ltd",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  },
+  {
+   "reihe": "YHOO",
+   "cik": "0000316736",
+   "polygon": "Yahoo Inc",
+   "edgar": "FIELDPOINT PETROLEUM CORP",
+   "frueher": [
+    "ENERGY PRODUCTION CO"
+   ],
+   "grund": "zwangs-delisting",
+   "beleg": "edgar-8K-3.01",
+   "k123": 250
+  },
+  {
+   "reihe": "YRCW",
+   "cik": "0001683182",
+   "polygon": "YRC Worldwide, Inc.",
+   "edgar": "Front Street Capital Management, Inc.",
+   "frueher": [],
+   "grund": "umbenennung-ticker",
+   "beleg": "alpaca-name_changes",
+   "k123": 0
+  }
+ ]
+}

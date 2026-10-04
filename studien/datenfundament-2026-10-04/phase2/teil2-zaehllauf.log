@@ -1,0 +1,145 @@
+40/211 ...
+80/211 ...
+120/211 ...
+160/211 ...
+200/211 ...
+{
+ "stand": "2026-10-04T11:44:14.739Z",
+ "modus": "zaehlen (nichts geschrieben)",
+ "ziel": "E:/Markt-Dashboard-Archiv/alpaca1m-bereinigt-v2",
+ "dateienGesamt": 211,
+ "dateienA": 147,
+ "reihenA": 44,
+ "dateienB": 64,
+ "nachzaehlung": {
+  "saetze": 47,
+  "angewandtInAlterKopie": 44,
+  "ohneKopie": [
+   "FNF 2017-10-02",
+   "HON 2026-06-29",
+   "INPX 2018-09-04"
+  ],
+  "befundWieTrockenlauf": 44,
+  "befundAnders": [],
+  "ohneSprung": 38,
+  "sprungEinenTagDanach": [
+   "BHAT 2026-03-06 -> 2026-03-09",
+   "HK 2016-09-09 -> 2016-09-12",
+   "RELV 2016-10-03 -> 2016-10-04",
+   "SWI 2021-07-30 -> 2021-08-02",
+   "WHLR 2025-11-28 -> 2025-12-01"
+  ],
+  "sprungSonstAmNachbartag": [
+   "MFH 2023-02-28 (Versatz -1, Faktor 0.9)"
+  ],
+  "amExTag": 0
+ },
+ "gebaut": 209,
+ "geschrieben": 0,
+ "ausgenommen": [
+  {
+   "schluessel": "BURU/2026.json",
+   "sprung": {
+    "tagVor": "2026-07-17",
+    "schluss": 0.0727,
+    "tagAb": "2026-09-14",
+    "eroeffnung": 1.94,
+    "verhaeltnis": 26.685
+   }
+  },
+  {
+   "schluessel": "WHLR/2026.json",
+   "sprung": {
+    "tagVor": "2026-09-21",
+    "schluss": 0.2294,
+    "tagAb": "2026-09-22",
+    "eroeffnung": 2.03,
+    "verhaeltnis": 8.8492
+   }
+  }
+ ],
+ "fehler": [],
+ "kerzenV2": 13542966,
+ "kerzenGeaendert": 6418178,
+ "kerzenGeaendertUnerwartet": 0,
+ "kerzenNeu": 521834,
+ "kerzenNurInAlt": 0,
+ "bytes": 763815467,
+ "a": {
+  "dateien": 147,
+  "dateienMitAenderung": 127,
+  "dateienOhneAenderung": 20,
+  "kerzenGeaendert": 6418178,
+  "geaendertNachExTag": 0,
+  "ohneAngewandteMassnahme": 82
+ },
+ "b": {
+  "dateien": 62,
+  "kerzenBisAltGleich": 4531762,
+  "kerzenGeaendert": 0,
+  "kerzenNeu": 521834,
+  "alleBisEndeAlterKopieGleich": true
+ },
+ "groessteAenderungJeDatei": [
+  {
+   "schluessel": "BHAT/2026.json",
+   "pct": 4900,
+   "kerzen": 943
+  },
+  {
+   "schluessel": "SMTS/2017.json",
+   "pct": 4900,
+   "kerzen": 145
+  },
+  {
+   "schluessel": "HK/2016.json",
+   "pct": 3295.49,
+   "kerzen": 341
+  },
+  {
+   "schluessel": "MFCB/2016.json",
+   "pct": 1900,
+   "kerzen": 11515
+  },
+  {
+   "schluessel": "MFCB/2017.json",
+   "pct": 1900,
+   "kerzen": 4645
+  },
+  {
+   "schluessel": "RELV/2016.json",
+   "pct": 600,
+   "kerzen": 304
+  },
+  {
+   "schluessel": "TRNX/2017.json",
+   "pct": 400,
+   "kerzen": 22593
+  },
+  {
+   "schluessel": "TRNX/2018.json",
+   "pct": 400,
+   "kerzen": 79129
+  },
+  {
+   "schluessel": "TRNX/2019.json",
+   "pct": 400,
+   "kerzen": 91228
+  },
+  {
+   "schluessel": "EBIX/2016.json",
+   "pct": 200,
+   "kerzen": 35919
+  },
+  {
+   "schluessel": "SWI/2021.json",
+   "pct": 100,
+   "kerzen": 374
+  },
+  {
+   "schluessel": "WHLR/2025.json",
+   "pct": 100,
+   "kerzen": 149
+  }
+ ]
+}

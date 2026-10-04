@@ -1,0 +1,116 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/doppelte-rest-v23/v1",
+ "stand": "2026-10-04T17:41:11.640Z",
+ "liste": "querschnitt-pruefstand-2026-09-13/doppelte-abschnitte-v23/v1 (2026-10-04T17:35:50.629Z)",
+ "zaehler": {
+  "zeilen": 243134,
+  "exaktGleich": 233173,
+  "bis1e6": 7215,
+  "andererKurs": 0,
+  "ohneZwillingstag": 2746
+ },
+ "abschnitteMitRest": 10,
+ "speicherSpitzeMB": 224,
+ "je": [
+  {
+   "abschnitt": "BPMX",
+   "zwilling": "TMBR",
+   "zeilen": 1101,
+   "exaktGleich": 214,
+   "bis1e6": 54,
+   "andererKurs": 0,
+   "ohneZwillingstag": 833,
+   "ersterOhne": "2016-01-04"
+  },
+  {
+   "abschnitt": "IFON",
+   "zwilling": "AWSM",
+   "zeilen": 632,
+   "exaktGleich": 168,
+   "bis1e6": 17,
+   "andererKurs": 0,
+   "ohneZwillingstag": 447,
+   "ersterOhne": "2016-01-04"
+  },
+  {
+   "abschnitt": "ALQA",
+   "zwilling": "ADYX",
+   "zeilen": 839,
+   "exaktGleich": 395,
+   "bis1e6": 0,
+   "andererKurs": 0,
+   "ohneZwillingstag": 444,
+   "ersterOhne": "2016-01-04"
+  },
+  {
+   "abschnitt": "MNGA",
+   "zwilling": "TRNX",
+   "zeilen": 787,
+   "exaktGleich": 390,
+   "bis1e6": 49,
+   "andererKurs": 0,
+   "ohneZwillingstag": 348,
+   "ersterOhne": "2016-01-04"
+  },
+  {
+   "abschnitt": "ABAC",
+   "zwilling": "BIQI",
+   "zeilen": 755,
+   "exaktGleich": 586,
+   "bis1e6": 0,
+   "andererKurs": 0,
+   "ohneZwillingstag": 169,
+   "ersterOhne": "2016-01-04"
+  },
+  {
+   "abschnitt": "NAO",
+   "zwilling": "PSV",
+   "zeilen": 862,
+   "exaktGleich": 635,
+   "bis1e6": 66,
+   "andererKurs": 0,
+   "ohneZwillingstag": 161,
+   "ersterOhne": "2016-01-04"
+  },
+  {
+   "abschnitt": "VICL",
+   "zwilling": "FRTX",
+   "zeilen": 922,
+   "exaktGleich": 746,
+   "bis1e6": 75,
+   "andererKurs": 0,
+   "ohneZwillingstag": 101,
+   "ersterOhne": "2016-01-04"
+  },
+  {
+   "abschnitt": "NETE",
+   "zwilling": "BINI",
+   "zeilen": 1472,
+   "exaktGleich": 1254,
+   "bis1e6": 119,
+   "andererKurs": 0,
+   "ohneZwillingstag": 99,
+   "ersterOhne": "2016-01-04"
+  },
+  {
+   "abschnitt": "LMCA",
+   "zwilling": "FWONA",
+   "zeilen": 267,
+   "exaktGleich": 195,
+   "bis1e6": 0,
+   "andererKurs": 0,
+   "ohneZwillingstag": 72,
+   "ersterOhne": "2016-01-04"
+  },
+  {
+   "abschnitt": "LMCK",
+   "zwilling": "FWONK",
+   "zeilen": 267,
+   "exaktGleich": 193,
+   "bis1e6": 2,
+   "andererKurs": 0,
+   "ohneZwillingstag": 72,
+   "ersterOhne": "2016-01-04"
+  }
+ ]
+}

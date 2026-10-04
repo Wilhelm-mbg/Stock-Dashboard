@@ -1,0 +1,48 @@
+{
+ "erzeugt": "2026-10-04T12:30:02.640Z",
+ "kennung": "momentum-korb-kleinst-2026-10-04/v1",
+ "laeufe": {
+  "A-187": {
+   "umschichtungen": 1183,
+   "lesartA": 1135,
+   "lesartB": 1070,
+   "lesartC": 808,
+   "lesartD": 665,
+   "tabellePm": 1070,
+   "trifft": [
+    "b"
+   ]
+  },
+  "A-breit": {
+   "umschichtungen": 1183,
+   "lesartA": 1141,
+   "lesartB": 1137,
+   "lesartC": 1031,
+   "lesartD": 1001,
+   "tabellePm": 1137,
+   "trifft": [
+    "b"
+   ]
+  },
+  "B-187": {
+   "umschichtungen": 1254,
+   "lesartA": 1186,
+   "lesartB": 1123,
+   "lesartC": 897,
+   "lesartD": 823,
+   "tabellePm": 1123,
+   "trifft": [
+    "b"
+   ]
+  },
+  "B-breit": {
+   "umschichtungen": 1254,
+   "lesartA": 1223,
+   "lesartB": 1222,
+   "lesartC": 1121,
+   "lesartD": 1090,
+   "tabellePm": null,
+   "trifft": null
+  }
+ }
+}

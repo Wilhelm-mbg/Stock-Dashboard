@@ -102,38 +102,137 @@
    * Aufgenommen wird nur ein zweifach gerechneter Rückblick; die Vorab-Rechnung des PM
    * mit dem engeren Korb (eine einzelne Rechnung) steht bewusst NICHT hier.
    * Jede Zahl in zahlen hält test-v6.js gegen ergebnis.json der Studie (auf eine
-   * Nachkommastelle); der Text entsteht in rueckblickText() nur aus diesen Feldern. */
+   * Nachkommastelle); der Text entsteht in rueckblickText() nur aus diesen Feldern.
+   *
+   * Seit Auftrag Nr. 91 (04.10.2026): die App rechnet seit Nr. 87 mit Regel K (kein Kauf
+   * unter 5 % des Platzwerts) - deshalb überall die Fassung MIT Regel K aus
+   * studien/momentum-korb-kleinst-2026-10-04/ergebnis.json (laeufe.<Lauf>.mit). Drei
+   * Einträge in fester Reihenfolge: Korb 187 / 2021–2026, Korb 187 / 2017–2021, breiter
+   * Markt / 2021–2026 (ersetzt den Eintrag ohne Regel K aus massstab-rueckblick v1).
+   * medianAbstandPa ist der Median der 63 Startphasen (Pp pro Jahr), grenzen ein fester
+   * Satz des PM. Für das Drift-Buch steht unter 'drift' der Rückblick aus Nr. 88 (art
+   * 'zufall': gegen 200 Zufallsbücher statt über Startphasen).
+   *
+   * Seit Auftrag Nr. 95 (04.10.2026, Entscheide des PM zu B1 und A1 des Prüfgangs Nr. 83):
+   * grenzen BEGINNT bei allen drei Momentum-Einträgen mit ZUFALL (Belegstand, Lesart zu
+   * Nr. 78: das 95-%-Band schließt in allen fünf Läufen null ein - die Drift-Zeile nennt
+   * ihren Zufallsvergleich schon in der Zeile). ZUFALL ist ein fester Satz des PM und
+   * steht hinter „Grenzen:" - der Kleinsttest 10 prüft dort keine Zahl.
+   *
+   * Seit Auftrag Nr. 96 (04.10.2026): die drei Momentum-Einträge stehen auf dem bereinigten
+   * Panel v2.3 - dieselbe Regel und derselbe Rechner wie Nr. 85, nachgerechnet in
+   * studien/momentum-korb-v23-2026-10-04/ (ergebnis.json, laeufe.<Lauf>.mit). Der
+   * Halbsatz zu den doppelten Reihen (Vorgänger-Kürzel) ist aus grenzen weggefallen: das
+   * Panel ist bereinigt. */
+  var ZUFALL = 'vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein)';
   var RUECKBLICK = {
     'momentum-liquide': [
       {
-        kennung: 'massstab-rueckblick-2026-10-04/v1',
-        zeitraum: 'fünf Jahre',
-        korb: 'Regel auf dem breiten Markt',
-        korbZusatz: 'nicht der Korb der App',
-        zahlen: { von: '2021-09-16', bis: '2026-09-15', jahre: 5, buchGesamt: 65.2, spyGesamt: 81.2, schlaegt: false,
-          phasenVorn: 41, phasen: 63, rueckschlagBuch: -40.2, rueckschlagSpy: -24.5, zulaessigMin: 515, zulaessigMax: 923 },
-        quelle: 'studien/massstab-rueckblick-2026-10-04/ERGEBNIS.md, 04.10.2026 · wiki/belegstand.md, Abschnitt „Rückblick über fünf Jahre“',
+        kennung: 'momentum-korb-v23-2026-10-04/v1',
+        lauf: 'B-187',
+        korb: 'Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App)',
+        regel: 'mit Regel K',
+        zahlen: { von: '2021-09-16', bis: '2026-09-15', buchGesamt: 150.1, spyGesamt: 81.2, schlaegt: true,
+          phasenVorn: 61, phasen: 63, medianAbstandPa: 8.2, rueckschlagBuch: -56.9, rueckschlagSpy: -24.5 },
+        grenzen: ZUFALL + '; der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger)',
+        quelle: 'studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md, Lauf B-187 mit Regel K, Panel v2.3, 04.10.2026',
+        datum: '2026-10-04'
+      },
+      {
+        kennung: 'momentum-korb-v23-2026-10-04/v1',
+        lauf: 'A-187',
+        korb: 'Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App)',
+        regel: 'mit Regel K',
+        zahlen: { von: '2017-01-04', bis: '2021-09-15', buchGesamt: 159.2, spyGesamt: 115.5, schlaegt: true,
+          phasenVorn: 63, phasen: 63, medianAbstandPa: 7.3, rueckschlagBuch: -49.0, rueckschlagSpy: -33.8 },
+        grenzen: ZUFALL + '; der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger)',
+        quelle: 'studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md, Lauf A-187 mit Regel K, Panel v2.3, 04.10.2026',
+        datum: '2026-10-04'
+      },
+      {
+        kennung: 'momentum-korb-v23-2026-10-04/v1',
+        lauf: 'B-breit',
+        korb: 'breiter Markt (alle zulässigen Werte, nicht die Liste der App)',
+        regel: 'mit Regel K',
+        zahlen: { von: '2021-09-16', bis: '2026-09-15', buchGesamt: 64.0, spyGesamt: 81.2, schlaegt: false,
+          phasenVorn: 43, phasen: 63, medianAbstandPa: 1.7, rueckschlagBuch: -40.3, rueckschlagSpy: -24.5 },
+        grenzen: ZUFALL + '; vor Steuern (nach Steuern für den breiten Markt nicht gerechnet)',
+        quelle: 'studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md, Lauf B-breit mit Regel K, Panel v2.3, 04.10.2026',
+        datum: '2026-10-04'
+      }
+    ],
+    'drift': [
+      {
+        kennung: 'vorregistrierung-2026-10-04-ergebnis-drift/v1',
+        art: 'zufall',
+        korb: 'Kauf nach den stärksten Überraschungen (40 Plätze, 60 Handelstage, nur Kaufseite – nicht die Regel dieses Buchs)',
+        lage: 'knapp davor',
+        zahlen: { von: '2021-09-16', bis: '2026-09-15', buchGesamt: 84.2, spyGesamt: 81.2, schlaegt: true,
+          zufallUeber: 16, zufallBuecher: 200, vorwaertstest: false, rueckschlagBuch: -21.6, rueckschlagSpy: -24.5 },
+        quelle: 'studien/vorregistrierung-2026-10-04-ergebnis-drift/ERGEBNIS.md, Stufe 2, 04.10.2026',
         datum: '2026-10-04'
       }
     ]
   };
+  /* ALTE BELEGE (Auftrag Nr. 91): Sätze, die nur am Universum der Überlebenden gemessen
+   * sind (Werte, die es heute noch gibt). Sie bleiben stehen; darüber steht dieser Kopf -
+   * an jeder Stelle derselbe Wortlaut, nur von hier (belegeKopf). Der Tag kommt aus dem
+   * ersten Rückblick-Eintrag desselben Schlüssels. */
+  var ALTE_BELEGE = {
+    /* karte (Auftrag Nr. 95, B3): wo die Zeile Rückblick steht - zwei der drei Stellen des
+     * Kopfs (Werkzeuge → Betrieb, Erklärfenster) haben sie nicht in Sichtweite. */
+    'momentum-liquide': { grund: 'gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen)', karte: 'Momentum-Buchs' }
+  };
+  /* Satz zum Buch neben seinen Rückblick-Zeilen (Auftrag Nr. 95, B5, Wortlaut des PM). */
+  var BUCH_SATZ = {
+    'drift': 'Das Buch läuft als Simulation weiter; seine eigene Regel (Kauf und Leerverkauf, 60 Handelstage) ist nicht gemessen – kein Kandidat für echtes Geld.'
+  };
   function pzDe(x) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(1).replace('.', ',') + ' %'; }
+  function ppDe(x) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(1).replace('.', ',') + ' Pp'; }
   function tagDe(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '')); return m ? m[3] + '.' + m[2] + '.' + m[1] : String(iso || ''); }
   window.StudienUrteile = {
     /** Die Rückblicke zu einer Buch-Konfiguration - eine Liste, möglicherweise leer. */
     rueckblicke: function (k) { return RUECKBLICK[k] || []; },
     /** EIN Rückblick als Zeile, wie Karte und Antwort-Seite ihn zeigen - nur aus den
-     *  Feldern des Eintrags: „Rückblick fünf Jahre bis 15.09.2026, Regel auf dem
-     *  breiten Markt (515 bis 923 Werte, nicht der Korb der App): Buch +65,2 % gegen
-     *  S&P 500 +81,2 % – nicht geschlagen; je nach Starttag liegt das Buch in 41 von 63
-     *  Fällen vorn; größter Rückschlag −40,2 % gegen −24,5 %." */
+     *  Feldern des Eintrags: „Rückblick 16.09.2021 bis 15.09.2026, Korb der 187
+     *  umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch
+     *  +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen
+     *  vorn, in der Mitte +8,2 Pp pro Jahr; größter Rückschlag −56,9 % gegen −24,5 %.
+     *  Grenzen: …". Art 'zufall' (Drift-Buch) nennt statt der Startphasen die
+     *  Zufallsbücher über dem Buch und ob ein Vorwärtstest angezeigt ist. */
     rueckblickText: function (r) {
       var z = r.zahlen;
-      return 'Rückblick ' + r.zeitraum + ' bis ' + tagDe(z.bis) + ', ' + r.korb + ' (' + z.zulaessigMin + ' bis ' + z.zulaessigMax + ' Werte' +
-        (r.korbZusatz ? ', ' + r.korbZusatz : '') + '): Buch ' + pzDe(z.buchGesamt) + ' gegen S&P 500 ' + pzDe(z.spyGesamt) + ' – ' +
-        (z.schlaegt ? 'geschlagen' : 'nicht geschlagen') + '; je nach Starttag liegt das Buch in ' + z.phasenVorn + ' von ' + z.phasen +
-        ' Fällen vorn; größter Rückschlag ' + pzDe(z.rueckschlagBuch) + ' gegen ' + pzDe(z.rueckschlagSpy) + '.';
+      var kopf = 'Rückblick ' + tagDe(z.von) + ' bis ' + tagDe(z.bis) + ', ' + r.korb + (r.regel ? ', ' + r.regel : '') +
+        ': Buch ' + pzDe(z.buchGesamt) + ' gegen S&P 500 ' + pzDe(z.spyGesamt) + ' – ';
+      var fuss = 'größter Rückschlag ' + pzDe(z.rueckschlagBuch) + ' gegen ' + pzDe(z.rueckschlagSpy) + '.' +
+        (r.grenzen ? ' Grenzen: ' + r.grenzen + '.' : '');
+      if (r.art === 'zufall') {
+        return kopf + (r.lage || (z.schlaegt ? 'davor' : 'dahinter')) + ', aber ' + z.zufallUeber + ' von ' + z.zufallBuecher +
+          ' Zufallsbüchern liegen darüber: ' + (z.vorwaertstest ? 'Vorwärtstest angezeigt' : 'kein Vorwärtstest angezeigt') + '; ' + fuss;
+      }
+      return kopf + (z.schlaegt ? 'geschlagen' : 'nicht geschlagen') + '; je nach Starttag in ' + z.phasenVorn + ' von ' + z.phasen +
+        ' Fällen vorn, in der Mitte ' + ppDe(z.medianAbstandPa) + ' pro Jahr; ' + fuss;
     },
+    /** Der Kopf über ALTEN Belegen (Auftrag Nr. 91, nach dem Muster von ueberholtKopf):
+     *  „Überholt: gemessen nur an Werten, die es heute noch gibt (ohne die
+     *  verschwundenen). Maßgeblich ist der Rückblick vom 04.10.2026 gegen den S&P 500 –
+     *  siehe die Zeile Rückblick auf der Karte des Momentum-Buchs (Heute → Bestand)." (Ort
+     *  seit Auftrag Nr. 95.) Leer, wenn es zum Schlüssel keinen gibt. EINE Quelle
+     *  für drei Stellen: strategien.js (Belege hinter dem i der Karte), app-shell.js
+     *  (Erklärung Momentum) und index.html (#mfErklaerung, gefüllt unten). */
+    belegeKopf: function (k) {
+      var a = ALTE_BELEGE[k], r = RUECKBLICK[k] && RUECKBLICK[k][0];
+      if (!a || !r) return '';
+      return 'Überholt: ' + a.grund + '. Maßgeblich ist der Rückblick vom ' + tagDe(r.datum) + ' gegen den S&P 500 – siehe die Zeile ' +
+        'Rückblick auf der Karte des ' + a.karte + ' (Heute → Bestand).';
+    },
+    /** Der Satz zum BUCH neben seinen Rückblick-Zeilen (Auftrag Nr. 95, B5) - leer, wenn es
+     *  keinen gibt. Für das Drift-Buch: warum es läuft, obwohl seine Rückblick-Zeile „kein
+     *  Vorwärtstest angezeigt" sagt. Ein fester Satz des PM; er steht bewusst NICHT in
+     *  rueckblickText (der Kleinsttest 10 hält jede Zahl dort gegen die Ergebnisdatei, die
+     *  60 Handelstage der Buch-Regel stehen in keiner). Leser: Karte des Buchs (mfdepot.js)
+     *  und Antwort-Seite (strategien.js), je einmal unter den Rückblick-Zeilen. */
+    buchSatz: function (k) { return BUCH_SATZ[k] || ''; },
     /** Liefert die dokumentierte Verwerfung zu einem Auslöser-/Modus-Schlüssel,
      *  oder null. */
     verworfen: function (k) { return EINTRAEGE[k] || null; },
@@ -162,4 +261,12 @@
      *  Mehr Urteilsarten gibt es hier absichtlich nicht (s. Kopf). */
     vorwaertstest: function (k) { return VORWAERTSTEST[k] || null; }
   };
+  /* Feste Stellen im Markup (index.html) tragen einen leeren Behälter mit
+   * data-belege-kopf="<Schlüssel>"; der Satz kommt von hier, damit er an jeder Stelle
+   * wortgleich ist. Das Skript steht am Ende von index.html - die Behälter gibt es schon. */
+  if (typeof document !== 'undefined' && document.querySelectorAll) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-belege-kopf]'), function (el) {
+      el.textContent = window.StudienUrteile.belegeKopf(el.getAttribute('data-belege-kopf'));
+    });
+  }
 })();

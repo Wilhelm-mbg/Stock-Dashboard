@@ -104,7 +104,7 @@ function simuliere(R, s, d0, d1, fassung, kosten, protokoll) {
   var o = R.o, c = R.c, min = R.min, E = START, istP = fassung === 'P';
   if (!istP && fassung !== 'N') throw new Error('Fassung unbekannt: ' + fassung);
   for (var d = d0; d < d1; d++) {
-    var a = R.tagA[d], e = R.tagE[d], E0 = E, umsatz = 0, pos = 0, q = 0, pe = 0, Evor = 0, mark = E;
+    var a = R.tagA[d], e = R.tagE[d], E0 = E, umsatz = 0, pos = 0, q = 0, pe = 0, gebEin = 0, mark = E;
     var zu = min[e - 1] < 780 ? 780 : 960;       // L10: verkuerzter Tag, wenn die letzte Kerze vor 13:00 liegt
     for (var i = a; i < e; i++) {
       var letzte = i === e - 1, ziel = letzte ? 0 : s[i], wert;
@@ -123,12 +123,15 @@ function simuliere(R, s, d0, d1, fassung, kosten, protokoll) {
           umsatz += q * p;
           aus.trades++;
           aus.summeBrutto += pos > 0 ? p / pe - 1 : 1 - p / pe;
-          if (Eneu > Evor) aus.gewinner++;
+          /* Korrektur 1: Gewinner ist ein Trade mit Gewinn je Stueck nach Gebuehren ueber null - geprueft an den Kursen,
+           * nicht am Vermoegen (dort entschied bei Ertrag genau null das letzte Bit). Gleichbedeutend mit Eneu > Evor. */
+          var jeStueck = pos > 0 ? (p - fx) - (pe + gebEin) : (pe - p) - fx - gebEin;
+          if (jeStueck > EPS_GLEICH * pe) aus.gewinner++;
           E = Eneu; pos = 0;
         }
         if (ziel !== 0) {                         // Einstieg: das ganze Vermoegen, Gebuehr eingerechnet (kein Hebel)
           var fe = bp ? cs * p : fest;
-          Evor = E; q = E / (p + fe); pe = p; pos = ziel;
+          gebEin = fe; q = E / (p + fe); pe = p; pos = ziel;
           umsatz += q * p;
         }
       }

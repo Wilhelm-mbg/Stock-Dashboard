@@ -1,0 +1,50 @@
+{
+ "erstellt": "2026-10-04T15:07:12.850Z",
+ "siegel": {
+  "commit": "4965f2c",
+  "sha256": {
+   "REGEL.md": "cf97c46c851488e8",
+   "kern.js": "2ac58423fcd27da3",
+   "lauf.js": "5daa187aaebddf79",
+   "test.js": "5aa63672d2221030",
+   "teil1/daten.js": "1104fac7df32cb4a",
+   "teil1/kern.js": "7f255768def3777f"
+  }
+ },
+ "teil1Siegel": "aa32c79",
+ "was": "A1 (VWAP-Kreuz) gegen Ereignis R1 aus Teil 1: QQQ, W-Nach, H = 5 und 15; Zahl der Ereignisse, Mittel und Standardfehler",
+ "zellen": {
+  "h5": {
+   "teil2": {
+    "n": 11736,
+    "mittelBp": 0.015501747604441733,
+    "seBp": 0.08278736860782285,
+    "t": 0.18724773917958445
+   },
+   "teil1": {
+    "n": 11736,
+    "mittelBp": 0.015501747604441733,
+    "seBp": 0.08278736860782285,
+    "t": 0.18724773917958445
+   },
+   "gleich": true
+  },
+  "h15": {
+   "teil2": {
+    "n": 11465,
+    "mittelBp": 0.07657603821790127,
+    "seBp": 0.10409371877795559,
+    "t": 0.7356451389852557
+   },
+   "teil1": {
+    "n": 11465,
+    "mittelBp": 0.07657603821790127,
+    "seBp": 0.10409371877795559,
+    "t": 0.7356451389852557
+   },
+   "gleich": true
+  }
+ },
+ "gerundetWieTeil1": true,
+ "trifft": true
+}

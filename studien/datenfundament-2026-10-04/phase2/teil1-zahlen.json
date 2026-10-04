@@ -1,0 +1,47 @@
+{
+ "stand": "2026-10-04T11:33:04.199Z",
+ "datei": "E:/Markt-Dashboard-Archiv/alpaca1m-ableitungen/lebenszeit-minuten.json",
+ "bytes": 2231461,
+ "sha256": "756d0e9207e00cf45c585d78d26c381d19c333c525582e1e0a365045bc2a9ff6",
+ "geschrieben": "unveraendert (byte-gleich mit dem Bestand)",
+ "byteGleichMitBestand": true,
+ "zahlen": {
+  "reihen": 8058,
+  "aktienreihen": 7299,
+  "lebend": 2999,
+  "lebendAktien": 2249,
+  "erloscheneTraeger": 3,
+  "ohneMinuten": 0,
+  "unscharf": 0,
+  "aktienTagesbalkenUeber30TageNachMinuten": 291,
+  "aktienTagesbalkenUeber90TageNachMinuten": 257
+ },
+ "endeDesArchivs": "2026-10-02",
+ "manifestStand": "2026-10-03T21:33:22.875Z",
+ "pruefungen": {
+  "aktienreihen7299": true,
+  "lebendAktien2249": true,
+  "wechselLebendZuAbgegangen": 57,
+  "wechselSoll": 57,
+  "wechselGenauDieListe": true,
+  "wechselAbgegangenZuLebend": 0,
+  "letzterMinutentagWieTrockenlauf": true,
+  "panelDeckel": "2026-09-17",
+  "panelDeckelNachgerechnet": "2026-09-17",
+  "handelstageRueckwaertsVomEnde": [
+   "2026-10-02",
+   "2026-10-01",
+   "2026-09-30",
+   "2026-09-29",
+   "2026-09-28",
+   "2026-09-25",
+   "2026-09-24",
+   "2026-09-23",
+   "2026-09-22",
+   "2026-09-21",
+   "2026-09-18",
+   "2026-09-17"
+  ],
+  "alleBestanden": true
+ }
+}

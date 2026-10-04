@@ -26,8 +26,25 @@
  * Reihe, beginnt sie nach dem ersten Punkt oder ist sie zu alt, bleibt es beim
  * Kursertrag (abgelegte Staende, beim Intraday-Depot die Rohreihe) - und hinweis()
  * sagt das. NIE GEMISCHT: ein Vergleich nimmt alle Marktwerte aus einer Quelle.
- * Die Buecher bewerten zum juengsten Kurs und buchen keine Ausschuettung - das sagt
- * hinweis() ebenfalls, wortgleich an jeder Stelle.
+ *
+ * SEIT AUFTRAG NR. 91 (04.10.2026) - DER MARKT ZUM SELBEN ZEITPUNKT WIE DAS BUCH
+ * (opts.punktKurs, nur die zwei Mittelfrist-Buecher): Der Tagesbalken traegt den Stempel
+ * der Eroeffnung und den Kurs des Schlusses (wiki/fehlerformen.md). "Juengster Balken
+ * nicht nach dem Punkt" gab einem Punkt mitten in der Sitzung deshalb einen Kurs aus
+ * seiner Zukunft. Fuer die Buecher gilt jetzt: der im Punkt abgelegte Stand (spy - so
+ * sah die App den Markt, als sie das Buch bewertete) ist der Marktwert; fuer den
+ * Gesamtertrag kommt nur der Faktor der Ausschuettungen dazu:
+ *     Marktwert(p) = p.spy * f(b),   f(b) = bereinigt(b) / roh(b)
+ * aus den zwei jetzt geladenen Reihen desselben Abrufs (opts.markt, opts.marktRoh),
+ * b = der Balken mit Stempel p.spyT (aus ihm stammt spy); fehlt spyT oder dieser
+ * Balken, der juengste Balken mit Stempel <= p.t. Der Faktor eines Balkens ist ein
+ * Verhaeltnis zweier Zahlen DESSELBEN Balkens - er haengt nicht davon ab, wann der
+ * Schluss feststand. Ohne punktKurs rechnet vergleich() zeichengleich wie vorher
+ * (Intraday-Depot).
+ *
+ * Die zwei Mittelfrist-Buecher buchen seit Auftrag Nr. 87 Splits und Ausschuettungen
+ * (opts.buchAusschuettungen); das Intraday-Depot bucht keine. Das sagt hinweis(),
+ * wortgleich an jeder Stelle.
  *
  * Alles Simulation mit virtuellem Kapital. Keine Anlageberatung.
  */
@@ -40,32 +57,79 @@
 
   function zahl(x) { return typeof x === 'number' && isFinite(x); }
 
-  /** Der juengste Balken von reihe [[t, kurs], …] (aufsteigend), dessen Zeitstempel
-   *  nicht nach t liegt - sein Kurs, oder null, wenn die Reihe erst spaeter beginnt.
-   *  DIE EINE Zuordnung von Marktwert zu Zeitpunkt (mitMarkt und vergleich lesen sie). */
-  function marktAn(reihe, t) {
+  /** Der Index des juengsten Balkens von reihe [[t, kurs], …] (aufsteigend), dessen
+   *  Zeitstempel nicht nach t liegt, oder -1, wenn die Reihe erst spaeter beginnt. */
+  function indexAn(reihe, t) {
     var lo = 0, hi = reihe.length - 1, j = -1;
     while (lo <= hi) {
       var mi = (lo + hi) >> 1;
       if (reihe[mi][0] <= t) { j = mi; lo = mi + 1; } else hi = mi - 1;
     }
+    return j;
+  }
+
+  /** Der juengste Balken von reihe [[t, kurs], …] (aufsteigend), dessen Zeitstempel
+   *  nicht nach t liegt - sein Kurs, oder null, wenn die Reihe erst spaeter beginnt.
+   *  DIE EINE Zuordnung von Marktwert zu Zeitpunkt (mitMarkt und vergleich lesen sie). */
+  function marktAn(reihe, t) {
+    var j = indexAn(reihe, t);
     return j >= 0 && zahl(reihe[j][1]) && reihe[j][1] > 0 ? reihe[j][1] : null;
   }
 
+  /** Gehoeren bereinigte und unbereinigte Reihe zu DENSELBEN Balken? Gleich lang,
+   *  gleiche Stempel, jeder rohe Schluss eine Zahl ueber null. Sonst gibt es keinen
+   *  Faktor - und der Vergleich faellt mit Grund 'rohreihe-fehlt' zurueck. */
+  function rohPasst(m, r) {
+    if (!r || r.length !== m.length) return false;
+    for (var i = 0; i < m.length; i++) {
+      if (!r[i] || r[i][0] !== m[i][0] || !zahl(r[i][1]) || !(r[i][1] > 0)) return false;
+    }
+    return true;
+  }
+
+  /** Der Faktor der Ausschuettungen am Balken b: bereinigt(b) / roh(b), oder null. */
+  function faktorAn(m, r, b) {
+    return b >= 0 && zahl(m[b][1]) && m[b][1] > 0 ? m[b][1] / r[b][1] : null;
+  }
+
+  /** Der Balken, aus dem der Stand eines Punkts stammt: der mit Stempel p.spyT; fehlt
+   *  spyT oder dieser Balken, der juengste mit Stempel <= p.t (Punkte von vor Nr. 91). */
+  function balkenDesPunkts(m, p) {
+    if (zahl(p.spyT)) {
+      var j = indexAn(m, p.spyT);
+      if (j >= 0 && m[j][0] === p.spyT) return j;
+    }
+    return indexAn(m, p.t);
+  }
+
   /** Aus welcher Quelle kommen die Marktwerte EINES Vergleichs?
-   *  art 'gesamt'  alle aus opts.markt, der aktuell geladenen BEREINIGTEN SPY-Reihe
+   *  art 'gesamt'  alle aus opts.markt, der aktuell geladenen BEREINIGTEN SPY-Reihe -
+   *                mit opts.punktKurs: abgelegter Stand des Punkts mal Faktor f(b)
    *  art 'kurs'    Rueckfall: alle aus opts.marktKurs (unbereinigte Reihe), sonst aus
-   *                dem im Punkt abgelegten spy; grund sagt, warum nicht 'gesamt':
-   *                'reihe-fehlt' | 'reihe-beginnt-spaeter' | 'reihe-zu-alt' */
+   *                dem im Punkt abgelegten spy (mit punktKurs IMMER aus spy); grund sagt,
+   *                warum nicht 'gesamt': 'reihe-fehlt' | 'reihe-beginnt-spaeter' |
+   *                'reihe-zu-alt' | 'rohreihe-fehlt' (nur mit punktKurs) */
   function marktWahl(tErst, tLetzt, opts) {
     var m = opts.markt, grund = null;
     if (!m || m.length < 2) grund = 'reihe-fehlt';
     else if (m[0][0] > tErst) grund = 'reihe-beginnt-spaeter';
     else if (tLetzt - m[m.length - 1][0] > MARKT_MAX_ALTER) grund = 'reihe-zu-alt';
+    else if (opts.punktKurs && !rohPasst(m, opts.marktRoh)) grund = 'rohreihe-fehlt';
+    var abgelegt = function (p) { return zahl(p.spy) && p.spy > 0 ? p.spy : null; };
+    if (opts.punktKurs) {
+      if (grund) return { art: 'kurs', grund: grund, wert: abgelegt };
+      var r = opts.marktRoh;
+      return { art: 'gesamt', grund: null, wert: function (p) {
+        var s = abgelegt(p);
+        if (s == null) return null;
+        var f = faktorAn(m, r, balkenDesPunkts(m, p));
+        return f == null ? null : s * f;
+      } };
+    }
     if (!grund) return { art: 'gesamt', grund: null, wert: function (p) { return marktAn(m, p.t); } };
     var k = opts.marktKurs;
     if (k && k.length) return { art: 'kurs', grund: grund, wert: function (p) { return marktAn(k, p.t); } };
-    return { art: 'kurs', grund: grund, wert: function (p) { return zahl(p.spy) && p.spy > 0 ? p.spy : null; } };
+    return { art: 'kurs', grund: grund, wert: abgelegt };
   }
 
   /** Der EINE Rechenweg fuer einen Prozentstand. null, wenn er sich nicht rechnen
@@ -92,6 +156,13 @@
    *                 sie den Zeitraum, ist der Markt der Gesamtertrag (marktArt 'gesamt')
    *  opts.marktKurs unbereinigte Reihe als Rueckfall (Intraday-Depot, Nasdaq); ohne
    *                 sie bleibt als Rueckfall der im Punkt abgelegte Stand (spy)
+   *  opts.punktKurs true (nur die Mittelfrist-Buecher, Auftrag Nr. 91): Marktwert eines
+   *                 Punkts = p.spy * bereinigt(b) / roh(b), b = Balken p.spyT (sonst der
+   *                 juengste <= p.t); Rueckfall immer aus den abgelegten spy
+   *  opts.marktRoh  die UNBEREINIGTE Reihe desselben Abrufs wie opts.markt (gleiche
+   *                 Balken) - nur mit punktKurs gelesen
+   *  opts.buchAusschuettungen  true: das Buch bucht Ausschuettungen (die zwei
+   *                 Mittelfrist-Buecher seit Nr. 87) - steht im Ergebnis, hinweis() liest es
    *
    *  marktArt  'gesamt' | 'kurs' - aus welcher Quelle ALLE Marktwerte dieses Vergleichs
    *            stammen; marktGrund sagt bei 'kurs', warum es nicht der Gesamtertrag ist
@@ -107,14 +178,19 @@
    *  grund     'aus' | 'kein-stand' | 'kein-startkapital' | 'markt-kein-stand' |
    *            'erst-ein-punkt' | null */
   function vergleich(verlauf, buchFeld, startFeld, opts) {
-    opts = opts || {};
+    var r = rechne(verlauf, buchFeld, startFeld, opts || {});
+    /* Nur mit dem Schalter: ohne ihn ist das Ergebnis zeichengleich wie vor Nr. 91. */
+    if (opts && opts.buchAusschuettungen) r.buchAusschuettungen = true;
+    return r;
+  }
+  function rechne(verlauf, buchFeld, startFeld, opts) {
     if (opts.an === false) return leer('aus');
     var pts = [], ohneStart = false;
     (verlauf || []).forEach(function (p) {
       if (!p || !zahl(p[buchFeld])) return;
       var st = zahl(p[startFeld]) && p[startFeld] > 0 ? p[startFeld] : (zahl(opts.start) && opts.start > 0 ? opts.start : null);
       if (!st) { ohneStart = true; return; }
-      pts.push({ t: p.t, idx: p[buchFeld] / st, spy: p.spy });
+      pts.push({ t: p.t, idx: p[buchFeld] / st, spy: p.spy, spyT: p.spyT });
     });
     if (!pts.length) return leer(ohneStart ? 'kein-startkapital' : 'kein-stand');
     var z = pts[pts.length - 1];
@@ -209,22 +285,28 @@
 
   /* ---- Die Beschriftung: wie der Vergleich gebaut ist - EINE Quelle, jede Stelle liest sie ----
    * Der Markt steht als Gesamtertrag da, sobald die bereinigte Reihe den Zeitraum
-   * traegt. Die Buecher buchen keine Ausschuettung (Stand Auftrag Nr. 81: der Weg ist
-   * an echten Zahlen geklaert, gebaut ist er nicht) - der Vergleich ist damit um die
-   * Ausschuettungen des Buchs zu streng, und genau das steht da. Im Rueckfall steht der
-   * Kursertrag da, mit dem Grund. */
+   * traegt. Das Intraday-Depot bucht keine Ausschuettung - der Vergleich ist dort um
+   * die Ausschuettungen des Depots zu streng, und genau das steht da. Die zwei
+   * Mittelfrist-Buecher buchen sie seit Auftrag Nr. 87 (v.buchAusschuettungen) - fuer sie
+   * steht seit Nr. 91 "Buch und Markt mit". Im Rueckfall steht der Kursertrag da, mit
+   * dem Grund. */
   var HINWEIS_GESAMT = 'S&P 500 als SPY-Gesamtertrag. Markt mit, Buch ohne Ausschüttungen – der Vergleich ist um die Ausschüttungen des Buchs zu streng.';
   var HINWEIS_KURS = 'S&P 500 als SPY-Tageskurs. Buch und Markt ohne Ausschüttungen';
+  var HINWEIS_BUCH_GESAMT = 'S&P 500 als SPY-Gesamtertrag. Buch und Markt mit Ausschüttungen; Marktstand je Punkt so, wie die App ihn beim Bewerten des Buchs sah.';
+  var HINWEIS_BUCH_KURS = 'S&P 500 als SPY-Tageskurs. Buch mit, Markt ohne Ausschüttungen';
   var GRUND_KURS = {
     'reihe-fehlt': 'die bereinigte SPY-Reihe ist noch nicht geladen',
     'reihe-beginnt-spaeter': 'die bereinigte SPY-Reihe beginnt nach dem ersten Stand',
-    'reihe-zu-alt': 'die bereinigte SPY-Reihe ist zu alt'
+    'reihe-zu-alt': 'die bereinigte SPY-Reihe ist zu alt',
+    'rohreihe-fehlt': 'die unbereinigte SPY-Reihe fehlt oder passt nicht zur bereinigten'
   };
   /** Der Hinweis zu EINEM Vergleich. Leer, solange es keinen Markt-Zeitraum gibt. */
   function hinweis(v) {
     if (!v || !v.ok) return '';
-    if (v.marktArt === 'gesamt') return HINWEIS_GESAMT;
-    return HINWEIS_KURS + (GRUND_KURS[v.marktGrund] ? ' (' + GRUND_KURS[v.marktGrund] + ' – deshalb der Kursertrag)' : '') + '.';
+    var mit = !!v.buchAusschuettungen;
+    if (v.marktArt === 'gesamt') return mit ? HINWEIS_BUCH_GESAMT : HINWEIS_GESAMT;
+    return (mit ? HINWEIS_BUCH_KURS : HINWEIS_KURS) +
+      (GRUND_KURS[v.marktGrund] ? ' (' + GRUND_KURS[v.marktGrund] + ' – deshalb der Kursertrag)' : '') + '.';
   }
   /** Der Hinweis zu MEHREREN Vergleichen an einer Stelle (Kopf, Buecher-Verlauf):
    *  sind alle gleich gebaut, steht er einmal; sonst je Buch mit Namen davor.

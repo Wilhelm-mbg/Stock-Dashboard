@@ -1,0 +1,29 @@
+{
+ "stand": "2026-10-04T11:45:32.810Z",
+ "von": "2026-09-01",
+ "bis": "2026-10-03",
+ "abrufe": 1,
+ "status": 200,
+ "saetze": 1000,
+ "jeArt": {
+  "cash_dividends": 953,
+  "cash_mergers": 7,
+  "forward_splits": 1,
+  "name_changes": 9,
+  "reverse_splits": 17,
+  "rights_distributions": 3,
+  "stock_and_cash_mergers": 1,
+  "stock_mergers": 3,
+  "worthless_removals": 6
+ },
+ "symbole": 850,
+ "folgeseite": true,
+ "process_date": {
+  "min": "2026-09-01",
+  "max": "2026-10-02"
+ },
+ "datum": {
+  "min": "2026-04-08",
+  "max": "2026-10-02"
+ }
+}

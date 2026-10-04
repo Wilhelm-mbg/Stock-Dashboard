@@ -1,0 +1,36 @@
+W-Nach: 90 Zellen, |t| >= 2: 13 (negativ 13)
+  QQQ A2 H3: -0.08 Bp, t -2.05, n 24132
+  QQQ A2 H5: -0.11 Bp, t -2.28, n 23946
+  QQQ A3 H2: -0.63 Bp, t -2.32, n 1100
+  QQQ Alle H3: -0.08 Bp, t -2.01, n 29992
+  QQQ Alle H5: -0.11 Bp, t -2.22, n 29779
+  SPY A2 H3: -0.08 Bp, t -2.33, n 23647
+  SPY A2 H15: -0.13 Bp, t -2.74, n 22619
+  SPY Alle H2: -0.06 Bp, t -2.11, n 29779
+  SPY Alle H3: -0.07 Bp, t -2.27, n 29713
+  IWM A1 H1: -0.15 Bp, t -2.10, n 11761
+  IWM A1 H2: -0.21 Bp, t -2.45, n 11735
+  IWM A2 H1: -0.09 Bp, t -2.40, n 24736
+  IWM Alle H1: -0.07 Bp, t -2.10, n 30782
+Zellen W-Nach mit Mittel >= 1,0 Bp: 1; hoechstes Mittel 1.30
+QQQ Alle H5: -0.106 Bp, SE 0.048, t -2.22, n 29779, roh -0.110
+SPY Alle H5: -0.073 Bp, SE 0.039, t -1.88, n 29483, roh -0.079
+IWM Alle H5: -0.095 Bp, SE 0.055, t -1.71, n 30444, roh -0.105
+QQQ Ausloeser (alle Tage): {"A1":41937,"A1f":17801,"A1gefiltert":24123,"A1inSperre":13,"A2":86856,"A3":3959,"Alle":108049,"doppelt":565,"widerspruch":0,"tageOhneSpanne":0,"gleichstaendeEma50":1}
+SPY Ausloeser (alle Tage): {"A1":45020,"A1f":18953,"A1gefiltert":26055,"A1inSperre":12,"A2":86263,"A3":4123,"Alle":108775,"doppelt":563,"widerspruch":0,"tageOhneSpanne":0,"gleichstaendeEma50":1}
+IWM Ausloeser (alle Tage): {"A1":43029,"A1f":18760,"A1gefiltert":24257,"A1inSperre":12,"A2":88668,"A3":3815,"Alle":110654,"doppelt":589,"widerspruch":0,"tageOhneSpanne":0,"gleichstaendeEma50":1}
+QQQ W-Nach Bot: Ausloeser 30197, Einstiege 7033, verfallen {"offen":12083,"abkuehlung":3353,"bremse":7323,"spaet":405}, Arten {"stopp":1859,"sicherung":5104,"tagesende":70}, Tage mit Trade 753/753, Calls 51.0 %, pZ2 0.1119, Z2 Ausloeser/Tag 40.10 gegen Alle 40.10
+  Jahre Bot: 2023 -34.4 R, gruen 27/64 | 2024 4.0 R, gruen 136/252 | 2025 -2.1 R, gruen 139/250 | 2026 -54.9 R, gruen 97/187
+  Z1 Median Summe -81.0 [-182.7; 12.0], Serie [7; 15], schlechtester Tag [-13.09; -6.86]
+SPY W-Nach Bot: Ausloeser 29925, Einstiege 6129, verfallen {"offen":16021,"abkuehlung":2603,"bremse":4729,"spaet":443}, Arten {"stopp":1604,"sicherung":4412,"tagesende":113}, Tage mit Trade 753/753, Calls 51.5 %, pZ2 0.1109, Z2 Ausloeser/Tag 39.76 gegen Alle 39.74
+  Jahre Bot: 2023 8.1 R, gruen 34/64 | 2024 -78.0 R, gruen 110/252 | 2025 -65.4 R, gruen 118/250 | 2026 -104.6 R, gruen 78/187
+  Z1 Median Summe -211.9 [-305.1; -113.8], Serie [6; 12], schlechtester Tag [-10.94; -6.15]
+IWM W-Nach Bot: Ausloeser 30844, Einstiege 7260, verfallen {"offen":9736,"abkuehlung":3799,"bremse":9620,"spaet":429}, Arten {"stopp":1960,"sicherung":5277,"tagesende":23}, Tage mit Trade 753/753, Calls 49.7 %, pZ2 0.1143, Z2 Ausloeser/Tag 40.98 gegen Alle 40.96
+  Jahre Bot: 2023 -9.9 R, gruen 39/64 | 2024 45.4 R, gruen 152/252 | 2025 -17.4 R, gruen 141/250 | 2026 -86.7 R, gruen 88/187
+  Z1 Median Summe 11.8 [-121.9; 129.2], Serie [7; 16], schlechtester Tag [-15.81; -7.12]
+W-Vor QQQ: Bot -0.038 R (t -3.33), Z1 97,5 % -0.016, gruen 46 %, Satz: Die Auslöser tragen gegenüber gewürfelter Richtung nichts bei
+W-Vor SPY: Bot -0.037 R (t -3.37), Z1 97,5 % -0.016, gruen 46 %, Satz: Die Auslöser tragen gegenüber gewürfelter Richtung nichts bei
+W-Vor IWM: Bot -0.034 R (t -3.07), Z1 97,5 % -0.003, gruen 49 %, Satz: Die Auslöser tragen gegenüber gewürfelter Richtung nichts bei
+W-Papier QQQ: Bot 0.009 R (t 1.33), Z1 97,5 % 0.019, gruen 58 %, Satz: Die Auslöser tragen gegenüber gewürfelter Richtung nichts bei
+W-Papier SPY: Bot -0.030 R (t -4.75), Z1 97,5 % -0.009, gruen 49 %, Satz: Die Auslöser tragen gegenüber gewürfelter Richtung nichts bei
+W-Papier IWM: Bot 0.030 R (t 4.09), Z1 97,5 % 0.030, gruen 62 %, Satz: Die Auslöser tragen gegenüber gewürfelter Richtung nichts bei

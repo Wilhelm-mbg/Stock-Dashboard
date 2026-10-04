@@ -1,0 +1,87 @@
+
+!!! WERTPAPIERART: Referenzkarte vorhanden, aber ohne Eintrag fuer GCI (erster Fall dieses Laufs; weitere werden nicht gemeldet) - solche Symbole fallen STILL aus dem Universum heraus.
+
+{
+ "p1": {
+  "reihen": 7299,
+  "lebend": 2249,
+  "lebendInLesenJs": 2306,
+  "jahreOhneDatei": 0,
+  "jahreOhneDateiInLesenJs": 562,
+  "bestanden": true
+ },
+ "p2": {
+  "reihen": 33,
+  "bisRohEnde": 31,
+  "abbruchAusgenommen": [
+   {
+    "reihe": "BURU",
+    "meldung": "leser2: die bereinigte Kopie alpaca1m-bereinigt/BURU/2026.json endet am 2026-07-17, die Rohdatei alpaca1m/BURU/2026.json am 2026-10-02. Eine veraltete Kopie wird nicht gelesen und es wird nicht still auf die Rohdatei ausgewichen. Abhilfe: Kopie neu bilden (studien/datenfundament-2026-10-04/phase2/kopien-v2.js --schreiben) - oder, wenn die Reihe dort ausgenommen ist (unerklaerter Kurssprung), erst die Massnahme klaeren."
+   },
+   {
+    "reihe": "WHLR",
+    "meldung": "leser2: die bereinigte Kopie alpaca1m-bereinigt/WHLR/2026.json endet am 2026-09-03, die Rohdatei alpaca1m/WHLR/2026.json am 2026-10-02. Eine veraltete Kopie wird nicht gelesen und es wird nicht still auf die Rohdatei ausgewichen. Abhilfe: Kopie neu bilden (studien/datenfundament-2026-10-04/phase2/kopien-v2.js --schreiben) - oder, wenn die Reihe dort ausgenommen ist (unerklaerter Kurssprung), erst die Massnahme klaeren."
+   }
+  ],
+  "unerwartet": [],
+  "bestanden": true
+ },
+ "p3": {
+  "grundgesamtheit": 7223,
+  "gezogen": [
+   "SLAM",
+   "CLCT",
+   "SHUA",
+   "PPHP",
+   "SPRT",
+   "OBDC",
+   "GTLB",
+   "LMRK",
+   "NMHI",
+   "TAS",
+   "HONE",
+   "BUR",
+   "DGSE",
+   "ROCG",
+   "TVTY",
+   "SNY",
+   "FLNG",
+   "PMD",
+   "OPOF",
+   "RLI"
+  ],
+  "jahre": 126,
+  "kerzen": 4423482,
+  "mehrInVorgabe": 46535,
+  "bestanden": true,
+  "abweichungen": []
+ },
+ "p4": {
+  "grundgesamtheit": 1147,
+  "gezogen": [
+   "FWBI",
+   "CMG",
+   "XBKS",
+   "ALT",
+   "SBOT",
+   "APRI",
+   "GV",
+   "HLF",
+   "FSK",
+   "CHK"
+  ],
+  "jahre": 77,
+  "kerzen": 4671325,
+  "jahreAusAlterKopie": 42,
+  "bestanden": true,
+  "abweichungen": []
+ },
+ "p5": {
+  "saetze": 44,
+  "ausV2": 44,
+  "kopfNenntSatz": 44,
+  "fehler": [],
+  "bestanden": true
+ },
+ "bestanden": true
+}

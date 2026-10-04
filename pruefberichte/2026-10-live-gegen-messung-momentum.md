@@ -1,185 +1,168 @@
-# Prüfbericht: Live gegen Messung — Momentum-Buch (04.10.2026)
+# Prüfbericht: Live gegen Messung — Momentum-Buch (04./05.10.2026)
 
-Geprüfter Stand: `450daed` (Wiki: Stand v8.45.0). Nur gelesen, nichts geändert. Kleinsttests:
-`node pruefberichte/live-gegen-messung-momentum.test.js [Nummer]` (21 Tests: 1–19 mit Kunstdaten, 20–21 auf echten Kennzahl-Dateien aus `studien/`; kein Netz).
-**Zweite Fassung:** nach einer Gegenprüfung durch vier unabhängige Durchläufe, einem Vergleich mit der Studie vom
-02.09.2026 und einer Suche nach Messdaten. Was sich gegenüber der ersten Fassung geändert hat, steht am Ende.
-Alles Simulation mit virtuellem Kapital, keine Anlageberatung.
+Geprüft: `450daed` (Runden 1–2) und der heutige main `61dca2c` (Runde 3, nach den Umbauten Nr. 85–96). Tests: `pruefberichte/live-gegen-messung-momentum-runde2.test.js` (Tests 16–34, gegen main) und die übernommene Abnahme-Datei `pruefberichte/live-gegen-messung-momentum.test.js` (1–15). Simulation, keine Anlageberatung.
 
-**Die fünf schwersten Funde**
+**Die fünf schwersten Funde auf dem heutigen main**
 
-1. **F1 (A)** Ein teilweise gescheiterter Kursabruf ersetzt den gespeicherten Bestand. Umgeschichtet wird dann auf dem Rest. Gehaltene Werte ohne Daten bleiben eine Periode liegen; fehlen alle, gibt es 0 Orders, und der 63-Tage-Takt beginnt trotzdem neu. Test 1, 2, 17.
-2. **F2 (A)** Liefert die Quelle für einen gehaltenen Wert nichts mehr (Übernahme, Delisting), wird er nie verkauft und zum Einstand bewertet. Die Messung bucht ihn am ersten Tag aus. Test 3.
-3. **F3 (A, Zusammensetzung)** Die App rangiert auf Kursen **mit** Ausschüttungen, alle drei Messungen auf Kursen **ohne**. Auf echten Stärken reicht 1 Pp Vorsprung an 75 von 116 Stichtagen für einen Tausch an der Grenze; der Ertrag ändert sich laut Modell im Mittel kaum. Test 4, 20.
-4. **F4 (A, klein)** Die App kauft zum letzten gespeicherten Balken (bis rund 26 h alt), die Messung zur Eröffnung nach dem Stichtag; das Alter wird nicht gegen die Uhr geprüft. Nach einem vorhandenen Protokoll bringt das dem Buch rund +0,1 Pp im Jahr. Test 5, 6.
-5. **F9 (B, entscheidend für Nr. 76)** Die Zeile „Gegen den Markt“ rechnet ab Anlage des Buchs (25.08.), nicht ab der ersten liquiden Umschichtung (um den 23.11.). Der geplante Vorwärtstest liest damit vor allem das Portfolio der alten, breiten Regel. Test 18.
+1. **M1 (A, selten, je Fall groß)** Fällt der Ex-Tag eines Splits auf den Ausführungstag, verkauft die App die alte Stückzahl zum schon geteilten Kurs; der Split wird nie nachgebucht (Kunstfall: −6,25 % des Buchs). Test 26.
+2. **M2 (A)** Fehlt beim Umschichten die Eröffnung gehaltener Werte, fallen die Käufe mangels Geld aus und werden nie nachgeholt; das Geld liegt eine Periode (im Extrem 0 von 19 Zielen, 97.607 $ in bar). Test 24, 29, 30.
+3. **M5 (A, künftig)** Werte, die die Quelle nicht mehr liefert, behalten ihre alte Reihe und zählen gegen die 95-%-Schwelle. Ab dem zehnten solchen Wert schichtet das Buch nie mehr um. Test 31.
+4. **F9 (B, entscheidend für Nr. 76)** „Gegen den Markt“ rechnet ab Anlage des Buchs (25.08.), nicht ab der ersten Umschichtung mit der liquiden Regel; laut Wiki liest der Vorwärtstest damit vor allem die alte Regel. Test 18, 23.
+5. **M3 (A, klein, systematisch)** Eine Ausschüttung auf eine Position, die zur Eröffnung des Ex-Tags verkauft wird, geht verloren; die Messung schreibt sie gut. Test 28.
 
 ---
 
-## Prüfliste
+## Lage
 
-Messung = Rückblick Nr. 74 und Korb Nr. 78. Die Studie vom 02.09. (Grundlage der Oberflächen-Sätze) hat eine eigene Tabelle unter F10.
+Die erste Fassung (Stand `450daed`) fand fünf schwere Abweichungen (F1–F5). Eine zweite Runde mit sieben unabhängigen Durchläufen bestätigte sie, präzisierte sie und fand F9–F13. Noch während der zweiten Runde hat main mit Nr. 85, 87, 91, 93, 94, 95 und 96 das Buch umgebaut und meine Testdatei als Abnahme übernommen (Nr. 93 Teil 4a). Auf main meldet diese Abnahme bei den Tests 1–10 und 12–15 „kein Unterschied“; F1–F6 und F8 sind dort behoben. Diese dritte Fassung prüft deshalb main: was von der zweiten Runde noch steht, und was der Umbau neu eingebracht hat. Die ausführliche zweite Fassung zu `450daed` steht im Commit `0425152`.
 
-| Punkt | Messung | App | gleich? |
+Zwei Durchläufe arbeiteten an main: einer prüfte jeden Fund der zweiten Runde und portierte die Tests, einer griff den Umbau an. Ich habe jeden Beleg selbst laufen lassen und die tragenden Fundstellen nachgelesen.
+
+---
+
+## Prüfliste auf main (`61dca2c`)
+
+Messung = Rückblick Nr. 74 (`studien/massstab-rueckblick-2026-10-04/REGEL.md`, `rueckblick.js`) und Korb Nr. 78; Regel K misst `studien/momentum-korb-kleinst-2026-10-04/REGEL.md`.
+
+| Punkt | Messung | main | gleich? |
 |---|---|---|---|
-| Universum | alle Aktienreihen des Panels mit den verschwundenen (REGEL §1.2/§1.7) bzw. je Stichtag die 187 umsatzstärksten (Korb-REGEL §1.2 Z. 20–25) | feste Liste mit 193 Namen (`mittelfrist.js:8-20`); mindestens vier liefert Yahoo nicht mehr (HES, BK, MMC, FI, `mittelfrist.js:126-127`); Reihen bis 500 Balken fallen weg (`mittelfrist.js:48`) | nein — bekannt (Nr. 5); neu: 500-Balken-Hürde (F8) |
-| Mindestzahl | 100 zulässige Werte (REGEL Teil B Z. 79) | 100 (`liquide.js:35`, `mfhandel.js:90`) | gleich; bei rund 189 lieferbaren Werten bleibt ein Puffer von ~89 (F1) |
-| Rangfolge 231 / 21 | `momentumZiel` der App (REGEL §1.2 Z. 17–21) | dieselbe Funktion (`mfhandel.js:45-95`, Stärke Z. 76) | gleich |
-| Kurs der Rangfolge | `bSchluss`: Splits und Abspaltungen ja, Ausschüttungen nein (`rueckblick.js:73`; `pruefstand.js:35`; `dividenden.js:4-5`) | Yahoo-adjclose: Splits **und** Ausschüttungen (`mittelfrist.js:41`, `kurse.js:74-75, 96-98`) | **nein (F3)** |
-| Lücken in der Reihe | zählt Zeilen, nicht Kalendertage | ebenso; unbrauchbare Kurse verwirft der Lader (`kurse.js:104`) | gleich |
-| Liquiditätsfilter | Dollar-Umsatz roh, 20 Balken | adjclose × Stück, 20 Balken (`liquide.js:54`) | fast gleich (unter 1 %, wirkt nur an der Schwelle) |
-| Haltedauer: Zählung | 63. Panel-Handelstag nach dem Ausführungstag (`rueckblick.js:210`, REGEL §1.3 Z. 34) | SPY-Balken mit Stempel nach der **Uhrzeit** der letzten Umschichtung (`mfhandel.js:179`, `mfdepot.js:152, 166`) | **nein (F6)**: auf der Uhr 62 oder 63; stockt, solange die SPY-Reihe nicht aufgefrischt wird |
-| Auslöser | Kalender des Panels | Takt alle 30 min und 12 s nach dem Start (`mfdepot.js:584-585`), wenn fällig und Buch an; Knopf „jetzt umschichten“ handelt sofort und setzt den Takt neu (`mfdepot.js:163-166, 578`) | anders (Knopf: C) |
-| doppelt / gar nicht | — | zwei Takte am Tag: kein zweiter Handel (Test 15). `zuWenig`: nächster Takt versucht es neu, wie die Messung am nächsten Tag (REGEL Z. 35). App tagelang aus: Umschichtung beim nächsten Start, der Takt verschiebt sich dauerhaft. Teilausfall: Umschichtung mit 0 Orders zählt als volle (F1) | teils |
-| Zeitzone / UTC-Grenze | Tag = Mitternacht UTC (REGEL Teil C.2) | Verlaufspunkt je UTC-Tag (`mfdepot.js:235-236`); Fälligkeit über ms-Stempel | kein eigener Fund; die Tageszeit wirkt über F5 und F6 |
-| Feiertage | Panel-Handelstage | Balken der SPY-Reihe | gleich |
-| Handelskurs | Eröffnung des Ausführungstags (`rueckblick.js:187`, REGEL §1.3 Z. 32) | letzter Balken des Tagesbestands (`mfdepot.js:45, 165`) | **nein (F4)** |
-| Alter des Kurses | Kurs desselben Tages | 7 Tage, gemessen am jüngsten Balken **desselben** Bestands (`mfdepot.js:153`, `mfhandel.js:52-53, 68`); Nachladen erst ab 26 h (`mfdepot.js:66`) | **nein (F4)** |
-| Kosten je Seite | 20 Bp (`rueckblick.js:18`) | 20 Bp (`mfdepot.js:165`) | gleich (Test 14) |
-| Bargeld | `fuehreAus` der App | dieselbe Funktion; Verkäufe vor Käufen; vier Stellen | gleich; in 20.000 Zufallsfällen nie negativ (Test 13); Kleinstpositionen bekannt (Nr. 1) |
-| Ziel ohne Kurs | nicht gekauft (REGEL §1.3 Z. 32–33) | kommt nicht vor: jedes Ziel hat seinen letzten Balken | gleich im Ergebnis |
-| Position ohne Kurs | Umschichtung: gehalten. Bewertung: **letzter Schluss, nie Einstand** (REGEL §1.3 Z. 36, `rueckblick.js:226-234`) | Umschichtung: gehalten (`mfhandel.js:108`). Bewertung: **Einstand** (`mfhandel.js:168`) | **nein (F1, F2)** |
-| Wert verschwindet | am ersten Tag ohne Zeile ausgebucht: letzter Schluss, 0 bei Insolvenz/Zwangs-Delisting (REGEL §1.4, `rueckblick.js:157-171`) | ohne Daten: zum Einstand, nie verkauft; mit alter Reihe: zur nächsten Umschichtung zum alten Kurs mit Kosten verkauft, nie 0 | **nein (F2)** |
-| Leere / halbe Antwort | vollständiges Panel | jeder Fehler endet als „weg“; geschrieben wird trotzdem (`mittelfrist.js:98, 116-123`), gezählt erst danach (`:139`) | **nein (F1)** |
-| Zeitraum des Vergleichs | Buch und SPY starten am selben ersten Ausführungstag, beide mit der gemessenen Regel (REGEL §1.6, §1.8) | ab Anlage des Buchs (`mfdepot.js:353`: `angelegt`), auch über Zeit mit alter Regel oder mit ausgeschaltetem Buch | **nein (F9)** |
-| Gespeicherter Zustand | — | fehlt `letztesRebalanceT` → sofort fällig (`mfhandel.js:177`); Zurücksetzen schaltet das Buch ein (F11); Sicherungsgeneration nur bei unlesbarer Datei, markiert (C) | F11, sonst kein Fund mit Geldfolge |
-| Bewertung / Tagesverlauf | Buch und SPY täglich zum selben Schluss (`rueckblick.js:215-236`) | Buchseite des Tagespunkts eingefroren, Marktseite bei jedem Lesen aus der aktuellen SPY-Reihe neu bestimmt (`massstab.js:123-124`, `mfdepot.js:351-353`) | **nein (F5)** |
-| Texte `studienurteile.js` | ERGEBNIS.md Nr. 74 | alle 8 Zahlen des Rückblicks stimmen (Test 10) | gleich |
-| Texte Oberfläche | belegstand.md, ERGEBNIS.md | alte Zahlen ohne Fundstelle; „exakt die gemessene Konfiguration“ | **nein (F7, F10)** |
+| Kurs der Rangfolge | `bSchluss`: Splits, keine Ausschüttungen | Spalte 1 = roher, splitbereinigter Schluss (`mittelfrist.js:71-77`) | gleich (Abnahme-Test 4) |
+| Stichtag, Füllkurs | Schluss des Stichtags, Handel zur Eröffnung (REGEL §1.3) | Eröffnung roh (`mfdepot.js:266`), laufender Balken bleibt draußen (`mittelfrist.js:81`) | gleich (Test 6) |
+| Haltedauer | 63. Panel-Tag nach dem Ausführungstag | 63. SPY-Balken nach dem Ausführungstag (`mfhandel.js:343`) | gleich (Test 8); aber still verspätet bei SPY-Ausfall (M6) |
+| Ladeschutz | vollständiges Panel | Bestand wird nur ersetzt, wenn mindestens 95 % geliefert sind (`mittelfrist.js:159-166, 225-238`); Stichtag nur mit 95 % Kursen (`mfhandel.js:354-370`) | gleich im Ergebnis (Test 1, 2); tote Reihen zählen mit (M5) |
+| Splits und Ausschüttungen | im Maßstab des Panels; Ausschüttung gutgeschrieben, wer über die Nacht vor dem Ex-Tag hielt (REGEL Teil C.3) | gebucht bis zum letzten Balken im Bestand (`mfhandel.js:611-617`), vor dem Planen (`mfdepot.js:384`) | **nein am Ausführungstag** (M1, M3) |
+| Reihenende | am ersten Tag ohne Zeile ausgebucht, 0 bei Insolvenz (REGEL §1.4) | nach 5 Handelstagen zum letzten Schluss, nie 0 — offengelegte Abweichung (`mfhandel.js:418-426`) | Preis gleich (Test 3); Platz leer, wenn es in diese 5 Tage fällt (M2) |
+| Fehlende Eröffnung | im Panel hat jede Zeile ihre Eröffnung | Nachfassen bis 16:00 New York, nur für Werte ohne Kurs (`mfhandel.js:744-760`) | **nein** (M2, M4) |
+| Vergleich mit dem Markt | Buch und SPY starten am selben ersten Ausführungstag mit der gemessenen Regel (REGEL §1.6, §1.8) | ganzer Verlauf ab Anlage (`mfdepot.js:633-641`, `massstab.js:209-211`) | **nein** (F9) |
+| Kosten, Bargeld | 20 Bp, Verkäufe vor Käufen | dieselben (Test 13, 14) | gleich |
+| Texte | ERGEBNIS.md, belegstand.md | „exakt“ ersetzt durch „Parameter wie gemessen“; „Seit 02.09.2026 handelt das Buch …“ und „Out-of-Sample-Beleg“ stehen noch (F10); alte Zahlen als „überholt“ markiert (F7) | teils |
 
 ---
 
-## Funde nach Schwere
+## Funde auf main nach Schwere
 
-### A — verändert das Ergebnis des Buchs
+A = verändert, was das Buch kauft, verkauft oder wie es bewertet. B = verändert Anzeige oder Vergleich. C = Randfall, selten oder klein. Alle Fundstellen „main“ beziehen sich auf `61dca2c`.
 
-**F1 · Ein gescheiterter Kursabruf ersetzt den Bestand**
-- *Messung:* rechnet jeden Tag auf dem vollständigen Panel (REGEL §1.2). Fehlt einer gehaltenen Reihe die Zeile, gilt ihr letzter Schluss (REGEL §1.3 Z. 36, Klinke `rueckblick.js:234`).
-- *App:* `ladeUniversum` beginnt mit leerem `roh` (`mittelfrist.js:98`) und holt 193 Reihen einzeln. Jeder Fehler endet als „weg“: Netzfehler und Zeitüberschreitung (`main.js:48, 60-61`), HTTP 200 mit leerem Körper (`kurse.js:87`), zweimal 429 (`kurse.js:173-176, 202`). Danach wird **immer** geschrieben (`mittelfrist.js:123`), erst dann gezählt (`:139`). Ein Schutz fehlt; Sicherungsgenerationen gibt es nur für `depot` (`main.js:1279`).
-- **Zweig Teilausfall (A).** Test 2: 45 Werte ohne Daten → Umschichtung auf 148 statt 193 Werten, Ziel 15 statt 19, 4 Positionen der vollen Rechnung fehlen, 3 alte Positionen ohne Kurs bleiben 63 Tage liegen. Test 17: Fehlen alle 19 gehaltenen Werte (40 Werte vom Listenanfang, z. B. beim Aufwachen), wird mit **0 Ausführungen** umgeschichtet. `letztesRebalanceT` wird trotzdem neu gesetzt (`mfdepot.js:165-166`), das Buch steht eine weitere Periode still. Das Journal widerspricht sich dabei: „0 Orders“ neben „15 Käufe“ (`mfdepot.js:176-178` zählt geplante, nicht ausgeführte Käufe).
-- **Zweig Totalausfall (B plus Verzug).** Test 1: Bestand 193 → 0 Werte, Stand „jetzt“. Die fällige Umschichtung wird verschoben, bis der nächste Ladeversuch nach 26 h gelingt (`mfdepot.js:66`); die Messung versucht es bei `zuWenig` ebenfalls am nächsten Tag (REGEL Z. 35). Bis dahin: Bewertung zum Einstand (Kunstdaten: 88.834 $ statt 97.891 $). Jeder neue UTC-Tag in dieser Zeit schreibt einen Tagespunkt zum Einstand, der bleibt. Von den drei Auslöse-Stellen greift keine: `mfdepot.js:69` (Stand gilt als frisch), `:132-135` (`roh = {}` gilt als vorhanden, `:41`), `:157-161` (nur bei fehlenden Stückzahlen).
-- *Sichtbar ist es teilweise:* `mfdStatus` zeigt „Kurse vom 1.1.1970“ (`mfdepot.js:493`, `juengster = 0`), die Karte „Ohne frischen Kurs (zum Einstand bewertet)“ (`:534`) und „kein Korb“ (`:516`). `mfStatus` meldet „0 von 193 … vermutlich übernommen oder umbenannt“ (`mittelfrist.js:133-136`) — irreführend, die Ursache ist das Netz. Der Knopf „Daten holen und rechnen“ lädt nach einem Totalausfall neu, nach einem Teilausfall innerhalb von 20 h nicht (`mittelfrist.js:104, 225`).
-- *Nicht gemessen:* wie oft das vorkommt. „Yahoo drosselt nach etwa 200 Anfragen“ (`kurse.js:36-38`) ist ein Code-Kommentar, keine Messung. Die Dollarbeträge kommen aus Kunstdaten.
+### A
 
-**F2 · Ein verschwundener Wert bleibt zum Einstand im Buch**
-- *Messung:* Am ersten Handelstag nach der letzten Zeile wird die Position ausgebucht: zum letzten Schluss, bei Insolvenz oder Zwangs-Delisting zu 0 (REGEL §1.4, `rueckblick.js:157-171`). Das Geld wird in der nächsten Umschichtung angelegt.
-- *App:* Liefert Yahoo nichts mehr, fehlt der Wert im neu aufgebauten Bestand (`mittelfrist.js:98, 117-118`) und damit in `preise` (`mfdepot.js:45`, einzige Quelle). `planeUmschichtung` hält ihn (`mfhandel.js:108`) und lässt ihn aus dem Depotwert für die Budgets heraus (`:109`). `bewerte` setzt den Einstand an (`:168`). Einen gezielten Ausweg gibt es nicht: keinen Ersatzkurs, keine Abbildung von Kürzelwechseln, kein Ausbuchen. Es bleibt nur „Alle Bücher zurücksetzen“ (`depot.js:7738-7759`).
-- *Szenario* (Test 3; der Gegenprüfer hat es mit echtem Lader und Takt nachgestellt, HES): 100 Stück, Einstand 100,20 $, letzter Kurs 130 $. Nach 3 Umschichtungen steht die Position noch im Buch, bewertet mit **10.020 $**. Die Messung hätte **13.000 $** gutgeschrieben (Übernahme) bzw. **0 $** (Insolvenz).
-- *Sichtbar* ist der Zustand als „Ohne frischen Kurs (zum Einstand bewertet)“ (`mfdepot.js:534`) und im Journal (`:182`). Jeder Tagespunkt speichert den Einstandswert (`:232, 241`).
-- *Dauerhaft* nur, wenn die Quelle gar nichts mehr liefert. Liefert sie die alte Reihe weiter, fällt der Wert nach 7 Tagen aus der Rangfolge und wird zur nächsten Umschichtung zum alten Schluss mit 20 Bp verkauft, bei Insolvenz nie zu 0 (auf Kunstdaten nachgestellt). Welcher Fall eintritt, ist nicht geprüft; „nichts“ belegt das Repo für HES (`mittelfrist.js:126-127`).
-- *Häufigkeit:* In den Läufen mit dem Korb 187 gab es 1 Reihenende je fünf Jahre (Korb-ERGEBNIS Z. 38), im breiten Rückblick 16 (ERGEBNIS Nr. 74 Z. 21). Für die feste App-Liste vermutlich mehr: sie hat schon vier solche Namen.
+**M1 · Split mit Ex-Tag am Ausführungstag** *(neu auf main)*
+- *Messung:* Eröffnung und Stückzahl stehen im selben bereinigten Maßstab (`rueckblick.js:189-195`, `pruefstand.js:38`).
+- *main:* Gebucht wird nur bis zum letzten Balken im Bestand (`mfhandel.js:617`: `t <= bis`). Der Balken des Ausführungstags fehlt, weil der laufende Balken abgeschnitten wird (`mittelfrist.js:81`). Die Eröffnung kommt roh, also schon geteilt (`mfdepot.js:266`). Geplant und gehandelt wird also mit der alten Stückzahl (`mfdepot.js:422-423`); die verkaufte Position ist danach weg, der Split wird nie nachgebucht.
+- *Szenario* (Test 26): 100 Stück, Split 2:1 am Ausführungstag, Eröffnung 48,40 $. Messung: 200 × 48,40 = 9.662 $. App: 100 × 48,40 = 4.831 $ — **−6,25 % des Buchs**. Ein Umkehr-Split auf einem gehaltenen Ziel bläht dagegen Depotwert und Platzwert auf (1:10: Depotwert im Plan 56.867 → 103.739 $).
+- *Folge:* dauerhafter Verlust oder Scheingewinn. Selten, je Fall groß; Momentum-Gewinner sind typische Split-Kandidaten.
 
-**F3 · Ausschüttungen stecken live in der Rangfolge, in den Messungen nicht**
-- *Messung:* Alle drei Messungen geben Kurse ohne Dividenden an `momentumZiel`. Nr. 74/78: `bSchluss` des Panels (`rueckblick.js:73`, `korb.js:107`). Das Panel bereinigt nur Splits und Abspaltungen (`lesen-panel.js:59, 115-131`, `paneldaten.js:207-214`, `pruefstand.js:35`, ausdrücklich `dividenden.js:4-5, 13-14`). Die Studie vom 02.09. lief auf `archiv1d`, das `kerzenquelle.js:330` mit `bereinigt: false` füllt.
-- *App:* `holeTage` lädt mit `bereinigt: true` (`mittelfrist.js:41`), also Yahoo-adjclose mit Dividenden (`kurse.js:74-75, 96-98`). Einen zweiten Weg in die Tagesdaten gibt es nicht (einziger Schreiber `mittelfrist.js:66-70`). Belege aus dem Projekt: SPY über denselben Lader, Kursertrag +16,80 %, aus adjclose +17,39 % (`massstab.js:20-25`); für Einzelaktien „Ölwerte mit hohen Ausschüttungen, die Yahoo einrechnet“ (`pm-korb148/ERGEBNIS-KORB.md:44`).
-- *Wirkung:* `(1 + Stärke)` wird mit `1/(1 − Satz)` je Ex-Tag im Fenster multipliziert, absolut also etwa `+(1 + Stärke) · Satz`. Test 4: W107, Kursstärke 1,170 (Platz 13 von 120, Ziel 12), drei Ausschüttungen zu je 1,5 %, bereinigt 1,271 → live im Ziel, W108 raus; in der Messung umgekehrt.
-- *Größe, grob gemessen* (Test 20, echte Stärken ohne Ausschüttungen aus `studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json`, 116 Monatsstichtage 2017–2026, geschnitten mit der App-Liste): Der Letzte im Ziel liegt im Median nur **0,69 Pp** vor dem Ersten draußen. Ein Ausschüttungsvorsprung von 1 Pp im Rückblickfenster reicht an **75 von 116** Stichtagen für einen Tausch (0,5 Pp: 42, 2 Pp: 104). Zum Maßstab: das liquide Universum zahlt rund 1,7 % im Jahr, also ~1,6 Pp im Fenster, das Momentum-Zehntel 0,83 % (`querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL2.md:132-134`).
-- *Größe, Modell* (Daten-Durchlauf, Streuung der Ausschüttungen angenommen, nicht gemessen): 0,3 bis 1,0 getauschte Namen je Umschichtung, an 26 % bis 70 % der Umschichtungen mindestens einer; zum Vergleich kauft das Buch regulär 8 bis 9 von 19 Namen neu. Die Folgerendite ändert sich im Mittel nicht (0,00 bis 0,10 Pp), streut aber um 0,6 bis 1,1 Pp je Periode. Die Zusammensetzung ändert sich also oft, der Ertrag im Mittel kaum; exakt messbar wäre es mit den Ausschüttungsdateien auf Platte E (`dividenden.js` zeigt, wie man sie liest).
-- *Ergänzung zu Nr. 3:* Die Seiten sind vertauscht. Die Messung rangiert **ohne** Ausschüttungen und schreibt sie dem Buch **gut** (REGEL §1.5). Die App rangiert **mit** und schreibt sie **nicht** gut.
-- `test-v6.js` Block 34 (Z. 3211-3412) kann das nicht sehen: Beide Seiten bekommen dort dieselben Kursreihen; geprüft werden Formeln, Parameter und Symbolmengen.
+**M2 · Fehlende Eröffnung gehaltener Werte: die Käufe werden nie nachgeholt** *(neu auf main)*
+- *Messung:* Erst wird verkauft, dann mit dem Erlös gekauft; im Panel hat jede Zeile ihre Eröffnung (`rueckblick.js:189-195`).
+- *main:* Der Depotwert für die Budgets zählt nur Positionen **mit** Kurs (`mfhandel.js:123-127`). Fehlt die Eröffnung gehaltener Werte, sind die Budgets zu klein, Käufe fallen mangels Geld aus. `offeneAuftraege` merkt sich nur Werte **ohne** Kurs (`mfhandel.js:744-755`), also die Verkäufe. Das Nachfassen verkauft später, kauft aber nichts (`mfhandel.js:777`).
+- *Szenarien:* Test 24: um 10:00 New York fehlt die Eröffnung aller 19 gehaltenen Werte → „0 Orders“, um 10:30 werden die Verkäufe nachgefasst, am Ende **0 von 19 Zielwerten, 97.607 $ in bar** für 62 Handelstage. Test 29: ein Wert ohne Eröffnung um 09:36 → ein Ziel fällt aus, 4.990 $ liegen eine Periode, das Journal meldet „Damit ist nichts mehr offen“. Test 30: eine Reihe endet in den fünf Handelstagen vor der Umschichtung → der Verkauf kann nie gefüllt werden, ausgebucht wird erst danach (`mfhandel.js:426, 436`), 5.000 $ liegen bis zur nächsten Umschichtung.
+- *Folge:* leere Plätze für ein Quartal, genau in den Fällen, für die das Nachfassen (Nr. 94) gebaut wurde. Wie oft Eröffnungen fehlen, ist nicht gemessen. *Vermutung:* gehaltene Werte werden nach den Zielen abgefragt, eine Drosselung träfe also zuerst die Verkäufe.
 
-**F4 · Gehandelt wird der letzte gespeicherte Balken, nicht die Eröffnung**
-- *Messung:* Ziel aus den Schlusskursen des Stichtags, Handel zur Eröffnung des Ausführungstags (REGEL §1.3 Z. 31–33, `rueckblick.js:187-192`).
-- *App:* `preise` ist der letzte Balken jeder Reihe im Tagesbestand (`mfdepot.js:45`), zu genau diesem Kurs wird gehandelt (`:165`). Einen zweiten Kursweg gibt es nicht. Der Takt stößt das Nachladen erst ab 26 h an (`:66`) und wartet nicht darauf (`:69`). Der Lader selbst hält Daten nur 20 h für frisch (`mittelfrist.js:104`); dieser Widerspruch lässt die Ladezeit täglich um gut 2 h wandern. Die 7-Tage-Prüfung misst gegen den jüngsten Balken **desselben** Bestands (`mfdepot.js:153`), nicht gegen die Uhr; auch der Knopf prüft das Alter nicht.
-- *Wie alt realistisch:* im Takt höchstens rund 26 h (plus Ladezeit). Der Fall mit 31 Tage alten Kursen aus Test 5 ist nur über Sonderwege erreichbar: erster Takt nach dem Start, neues Buch, Zurücksetzen (F11) oder Knopf.
-- *Laufende Sitzung (Vermutung):* Lädt die App während der US-Sitzung, ist der letzte Balken kein endgültiger Schluss. Wie Yahoo ihn genau liefert (Stempel, Umsatz), belegt das Repo nicht. `kurse.js:126-130` beschreibt für ein altes Fenster eine angehängte Kerze mit Stempel 20:00 und Umsatz 0. Möglich sind zwei Zeilen am selben Tag; das würde die zeilenbasierten Fenster um eins verschieben. Test 6(b) zeigt nur, dass der Lader innerhalb des Fensters nichts wegschneidet.
-- *Szenario* (Test 6a): Lücke von Schluss 100 $ auf Eröffnung 103 $ → die App kauft 998,0 statt 968,9 Stück (+3,0 %).
-- *Größe, grob gemessen* (aus einem vorhandenen Protokoll, bisher nirgends zitiert): Für das stärkste Zehntel (231/21) liegt zwischen Schluss und nächster Eröffnung im Mittel **+0,0945 %**, gegen alle Kerzen zentriert **+0,0573 Pp** (`studien/messmaschine/protokolle/momentum-2026-08-26.json:807-815`, Zeile S9, 1.212.217 Fälle, 2.213 überlebende US-Aktien 1986–2026, ohne Fehlerband). Weil die App zum Schluss füllt, bekommt sie diese Lücke bei jedem Neukauf geschenkt. Mit 40–45 % Umschlag je Seite schätzt der Daten-Durchlauf daraus einen Vorteil von rund **+0,02 bis +0,03 Pp je Umschichtung** (etwa +0,1 Pp im Jahr), rund 1–2 % des gemessenen Abstands. Nicht messbar: Füllen einen Tag zu alt oder zum Zwischenstand.
-- *Folge:* Der Füllkurs war beim Handel nicht mehr zu haben. Die Richtung ist nach dem Protokoll leicht **zugunsten** des Buchs, die Größe klein.
+**M3 · Ausschüttung auf eine am Ex-Tag verkaufte Position geht verloren** *(neu auf main)*
+- *Messung:* „ein Verkauf zur Eröffnung des Ex-Tags zählt noch“ (REGEL Teil C.3, Z. 99; `rueckblick.js:180-184`).
+- *main:* Gebucht wird nur auf gehaltene Positionen (`mfhandel.js:611`) und nur bis zum letzten Balken (`:617`), vor dem Handel (`mfdepot.js:384`). Am Ausführungstag fehlt der Balken des Ex-Tags; danach ist die Position verkauft.
+- *Szenario* (Test 28): 100 Stück mit 1,00 $ und ein Kleinstbestand (1 Stück, 2,00 $, nach Regel K2 verkauft und neu gekauft) → Messung 102,00 $, App 0 $, auch am Folgetag.
+- *Folge:* systematisch gegen das Buch, je Fall klein.
 
-### B — verändert Anzeige oder Vergleich
+**M4 · Keine Eröffnung bis 16:00: 0 Orders, der 63-Tage-Takt beginnt trotzdem neu** *(Rest von F1)*
+- *main:* Der Ladeweg (F1) und der Widerspruch im Journal sind behoben (`mfdepot.js:432-436`). Liefert die Quelle am Ausführungstag aber bis 16:00 New York keine Eröffnungen, endet der Tag mit 0 Orders, und `letztesRebalanceT`/`letzteAusfuehrungTag` werden trotzdem gesetzt (`mfdepot.js:439-440`, Nachfassen bis 16:00: `mfhandel.js:758-760, 816-821`). Test 25: 19 alte Positionen bleiben, nächste Umschichtung erst nach 62 Handelstagen.
+- *Messung:* schichtet an diesem Tag auf vollen Daten um.
 
-**F9 · Der Vorwärtstest misst bis zur ersten liquiden Umschichtung die alte Regel** *(neu, aus der Gegenprüfung)*
-- *Messung:* Buch und SPY starten am selben ersten Ausführungstag, beide mit der gemessenen Regel (REGEL §1.6, §1.8; Korb-REGEL §1.1).
-- *App:* `vergleich()` übergibt `angelegt`, nicht `liquideSeit` (`mfdepot.js:351-353`); der Zeitraum beginnt am ersten Verlaufspunkt (`massstab.js:131-135`). Laut `studienurteile.js:97-98` ist genau diese Zeile der Vorwärtstest. Die Umstellung auf die liquide Fassung setzt nur `liquideSeit = null` (`mfdepot.js:112-115`); Buch, Verlauf und Positionen bleiben. Den Vorwärtstest datiert die Oberfläche anderswo richtig mit `liquideSeit` (`strategien.js:351-352`, „ab der nächsten Umschichtung“). Dieselbe Zahl lesen Kopf, Bücher-Verlauf und Wochenbericht (`depot.js:4021, 4078-4083`, `berichte.js:424`).
-- *Lage laut Wiki (Bestand nicht selbst gesehen):* Das Buch wurde am 25.08.2026 angelegt und gekauft (`wiki/fehlerformen.md:245`, `belegstand.md:86`), vor der liquiden Regel vom 02.09. Die erste liquide Umschichtung ist um den 23.11. fällig. Nr. 76 will „nach der nächsten Umschichtung“ genau diese Zeile ablesen (`wiki/offene-auftraege.md:22`). Die Zahl „+14,7 % seit 25.08.“ (`belegstand.md:48`) ist deshalb kein Vorwärtstest der liquiden Regel.
-- *Szenario* (Test 18): Buch bis zur liquiden Umschichtung −5 %, danach genau wie der Markt. Die Karte zeigt **−5,1 Pp**, ab `liquideSeit` gerechnet wären es **0,0 Pp**. Ebenso, wenn ein Buch im Zustand „aus“ angelegt wird (`mfdepot.js:149`): der Gegenprüfer kommt mit 44 Tagespunkten in bar auf −5,0 statt −0,2 Pp.
-- *Folge:* Die Zahl, an der Wilhelm über echtes Geld entscheiden will, enthält Monate mit einer anderen Regel. Der alte Zeitraum bleibt dauerhaft darin (bis die 750-Punkte-Grenze ihn abschneidet).
+**M5 · Tote Reihen zählen gegen die 95-%-Schwelle** *(neu auf main; heute vermutlich C, künftig A)*
+- *main:* Ein Wert ohne Antwort behält seine alte Reihe für immer (`mittelfrist.js:244-251`). Der Ladeschutz nimmt `weg` aus dem Nenner (`mittelfrist.js:163`), `stichtagPruefen` nicht (`mfhandel.js:366`).
+- *Szenario* (Test 31): 189 lieferbare Werte; mit 9 toten Reihen wird umgeschichtet, mit 10 nicht mehr — obwohl der Abruf angenommen wird und `momentumZiel` 179 zulässige Werte hätte. Der Hinweis lautet „Tageskurse nicht frisch genug … Nachladen angestoßen“, Nachladen hilft aber nicht. Vorübergehende Ausfälle zählen gegen dasselbe Budget.
+- *Messung:* keine solche Schwelle; veraltete Reihen wirft `momentumZiel` hinaus.
+- *Vermutung:* Die schon toten Namen der Liste (HES, BK, MMC, FI; laut Archiv auch AVB, EQR) stehen nicht im Bestand, weil der alte Lader sie vor dem Umbau verworfen hat. Jeder künftige Abgang bleibt dagegen stehen.
 
-**F10 · Die Studie vom 02.09. misst eine andere Größe als das Buch** *(neu)*
-Oberfläche: „exakt die gemessene liquide Konfiguration“ / „das Buch handelt seither exakt diese Konfiguration – jede weitere Umschichtung ist ein Out-of-Sample-Beleg“ (`strategien.js:79, 87`, `app-shell.js:1229`, ähnlich `mfdepot.js:517`, `index.html:2224`). Grundlage ist `studien/vorregistrierung-2026-09-02-momentum-liquide/`.
+**F11 · „Alle Bücher zurücksetzen“ schaltet das Momentum-Buch still ein** *(besteht; selten)*
+- *main:* `depot.js:7753` setzt `D = defaultDepot()` mit `momentumAn: true` (`depot.js:40`), die Rückfrage (`depot.js:7745-7749`) nennt das nicht. Der nächste Takt kauft zur Eröffnung, der Vorwärtstest beginnt mit diesem Kauf (`mfdepot.js:447`). Test 19: 19 Käufe, Gegenprobe mit dem vorigen Schalter „aus“: 0. Test 22: bis zum nächsten Takt zeigt die Karte 123.655 $ neben „Buch noch nicht angelegt“, der Kopf +23,66 % für das gelöschte Buch (`STAND` wird nicht geleert).
 
-| Punkt | Studie 02.09. | Buch der App | gleich? |
-|---|---|---|---|
-| Parameter (231/21/63, 10 %, 100 Mio $, 20 Balken, Median, mindestens 100) | `messen.js:43-44, 188-201` | `momentum.js:44-47`, `liquide.js:32-43` | gleich |
-| Universum | `archiv1d`, 2.213 Reihen, nur Überlebende, zuletzt 950 liquide (`messen.js:141-156`, ERGEBNIS Z. 115-124) | 193 Namen | nein |
-| Kursbasis | Yahoo-Schluss ohne Dividenden (`kerzenquelle.js:330`) | adjclose mit Dividenden | nein (F3) |
-| Gewichtung | gleichgewichtetes Zehntel, jede Periode neu (`messen.js:206-216`) | nur neue Ziele bekommen Depotwert / Zielzahl, Gehaltenes wird nie nachjustiert (`mfhandel.js:116-121`) | nein |
-| Kennzahl | Korb minus gleichgewichtetes liquides Universum, brutto, je Periode (`messen.js:212-216`) | Depotwert netto gegen SPY-Gesamtertrag | nein |
-| Kosten | brutto; netto nur als Annahme 0,06 / 0,110 Pp (`messen.js:49-51`) | 20 Bp je Seite auf den Umsatz | nein |
-| Ein-/Ausstieg | Schluss t / Schluss t+63 (`messen.js:190-194`) | letzter gespeicherter Balken | Konvention gleich, Umsetzung nicht (F4) |
+**F13 · Speichern scheitert für einen Teil: Ausbuchen zum alten Kurs** *(besteht, auf main schwerer; selten)*
+- *main:* `tagesdatenSchreiben` prüft die Rückgabe von `storeSet` nicht (`mittelfrist.js:97-117`); der Lader hält den Bestand für frisch. Test 16: Teil 3 ist 14 Tage alt → gehaltene Position FTV als „Reihenende“ zu 104,75 $ statt 115,22 $ ausgebucht; die Umschichtung sperrt die 95-%-Regel.
 
-- *Urteil:* Die Sätze stimmen **nur für die Parameter** — genau das hält `test-v6.js` Block 34. Für Universum, Gewichtung, Kursbasis, Kennzahl und Kosten stimmen sie nicht. „Seither“ stimmt auch nicht: das Buch hat die liquide Fassung noch nie gehandelt (F9). Ein „Out-of-Sample-Beleg“ für diese Studie entsteht im Buch nicht: die Studiengröße (Korb minus Universum) wird nirgends festgehalten (`korbVerlauf` speichert nur Zählungen), eine Auswerteregel ist nicht vorregistriert, und eine einzelne Periode streut um rund 8 Pp gegen eine Kante von 1,8 Pp (`lauf-2026-09-01-22-52.json`). Ein Vorwärtstest „Buch gegen S&P 500“ gehört zu Nr. 74/78, die die Buch-Mechanik gemessen haben.
-- *Zahlen im Etikett* (`studienurteile.js:90-91`) stimmen alle mit ERGEBNIS.md und den Rohdaten (`urteil5.bruttoLiquide`: 1,83520 / 0,91064 / 2,01528 / 79 / 0,05037 / 3,62003). **Lücke:** `test-v6.js:3395-3404` prüft nur das unsichtbare Feld `zahlen`; angezeigt wird `befund` (`strategien.js:468`), und das prüft niemand. Der Satz in `studienurteile.js:29-30` („eine Zahl, die dort nicht steht, macht die Suite rot“) gilt also nur für das Feld.
+### B
 
-**F5 · Im Verlaufspunkt ist die Buchseite eingefroren, die Marktseite nicht** *(ergänzt Nr. 4)*
-- *Messung:* Buch und SPY werden täglich zum selben Schluss bewertet (`rueckblick.js:215-236`).
-- *App:* Der Tagespunkt entsteht beim ersten Takt des UTC-Tags (`mfdepot.js:235-246`) und hält den Buchwert aus dem Tagesbestand fest; Punkte werden nie berichtigt (`:241, 244`). Die Marktseite wird dagegen bei **jedem** Lesen aus der aktuellen SPY-Reihe neu bestimmt (`massstab.js:123-124`, `marktAn` Z. 46-53: jüngster Balken mit Stempel nicht nach der Punktzeit). Sobald die Reihe nach Börsenschluss aufgefrischt ist, bekommt jeder Punkt den endgültigen Schluss der letzten Sitzung, die vor ihm eröffnet hat — die Buchseite nicht.
-- *Szenario:* Start Dienstag 06:00 UTC, Tagesbestand von Montag 08:00 UTC (enthält den Freitagsschluss, gilt mit 22 h als frisch). Die SPY-Reihe wird gegen 06:02 aufgefrischt; ab dem nächsten Lesen vergleicht der Punkt von 06:00 Buch (Freitag) mit Markt (Montag). Test 7: Ein Buch, das genau den Markt hält, zeigt **−2,0 Pp** (die Kunstbewegung einer Sitzung); Gegenprobe mit gleich alten Daten 0,0 Pp. Der Test zeigt den Mechanismus, kein bestimmtes Datum.
-- *Häufigkeit (Modell des Gegenprüfers, keine Messung):* Im Dauerbetrieb ist die Buchseite bei etwa 43 % der Tagespunkte eine Sitzung älter, bei 18 % eine Teil-Sitzung, bei 39 % gleich alt. Am Live-Punkt (`verlaufMitStand`, `mfdepot.js:332-342`) sind beide Vorzeichen möglich. Nr. 4 trifft jeden Punkt, der während einer Sitzung entsteht, nicht nur den ersten.
-- *Folge:* Auf die Zahl wirken Anfangs- und Endpunkt. Am stärksten betroffen ist der Wochenbericht (`berichte.js:416-424`): er nimmt nur gespeicherte Punkte, also beide Enden.
+**F9 · Der Vergleich mit dem Markt beginnt mit der Anlage des Buchs** *(besteht)*
+- *main:* `MFDepot.vergleich` gibt den ganzen Verlauf weiter und liest `liquideSeit` nicht (`mfdepot.js:633-641`); der Zeitraum beginnt am ersten Punkt (`massstab.js:209-211`). Laut `studienurteile.js:97-98` ist genau diese Zeile der Vorwärtstest. Das Buch schreibt Tagespunkte auch im Zustand „aus“ (`mfdepot.js:379, 398`).
+- *Lage laut Wiki (Bestand nicht eingesehen):* angelegt und gekauft am 25.08.2026, vor der liquiden Regel vom 02.09.; erste Umschichtung danach um den 23.11. Nr. 76 will genau diese Zeile ablesen (`wiki/offene-auftraege.md:22`).
+- *Szenario:* Test 18: Buch bis zur liquiden Umschichtung −5 %, danach wie der Markt → Karte **−5,1 Pp**, ab der ersten liquiden Umschichtung **+0,0 Pp**. Test 23 (echte Takte, Buch „aus“ angelegt, 44 Tagespunkte in bar): −5,2 statt −0,2 Pp; Gegenprobe −0,2 = Soll.
+- *Richtig wäre:* ab `liquideSeit`, mit dem letzten Tagespunkt davor als Bezug.
 
-**F6 · Die Haltedauer hängt an Tageszeit und Auffrischung der SPY-Reihe**
-- *Messung:* Der nächste Ausführungstag liegt genau 63 Panel-Tage später (`rueckblick.js:210`).
-- *App:* Gezählt werden SPY-Balken mit Stempel nach `letztesRebalanceT = now` (`mfhandel.js:179`, `mfdepot.js:166`). Test 8: Umschichtung um 10:00 UTC → nächste nach 62 Balken fällig, um 15:00 UTC → nach 63. Ob das zwischen den Füllkursen 62 oder 63 Tage sind, hängt am Alter des Tagesbestands (F4).
-- Die SPY-Reihe frischt nur `driftui.js` auf (`:124`), und nur über `rechne()`, das mindestens 30 Werte in den Tagesdaten braucht (`:110`). Scheitert der Abruf, bleibt still die alte Reihe (`:121, 123, 126`). Neu versucht wird 90 s nach dem Start und dann alle 6 h (`mfdepot.js:591-596`). Test 9: Solange **jeder** Versuch scheitert, meldet `rebalanceFaellig` nur „nicht fällig“. Ist die Reihe älter als 5 Tage, zeigt die Karte „die bereinigte SPY-Reihe ist zu alt – deshalb der Kursertrag“ (`massstab.js:39, 64, 221, 227`) — ohne Bezug zur Umschichtung; „Nächster Takt“ bleibt unverändert (`mfdepot.js:413-418`).
-- *Folge:* Die Umschichtung verschiebt sich. Ein langer Ausfall ist als Szenario nicht belegt.
+**F10 · Studie 02.09.: „Parameter wie gemessen“ stimmt, „Out-of-Sample-Beleg“ nicht** *(verändert)*
+- „exakt“ ist ersetzt (`strategien.js:79, 87`, `app-shell.js:1232`, `index.html:2228`). Es bleiben „Seit 02.09.2026 handelt das Buch …“ und „jede weitere Umschichtung ist ein Out-of-Sample-Beleg“ (`strategien.js:87`, `app-shell.js:1232`). Die Studie misst eine andere Größe (gleichgewichtetes Zehntel minus gleichgewichtetes liquides Universum, brutto, `studien/vorregistrierung-2026-09-02-momentum-liquide/messen.js:206-216`), die das Buch nirgends festhält; eine Periode streut um rund 8 Pp gegen eine Kante von 1,8 Pp; eine Auswerteregel ist nicht vorregistriert. Laut Wiki hat das Buch die liquide Fassung noch nicht gehandelt (F9).
+- *Testlücke:* `test-v6.js:3397-3404` prüft nur das unsichtbare Feld `zahlen` des Etiketts; dieselben Zahlen stehen als fester Text in `strategien.js:87`, und den prüft kein Test.
 
-**F11 · „Alle Bücher zurücksetzen“ schaltet das Momentum-Buch still ein** *(neu)*
-- *App:* `depot.js:7753` setzt `D = defaultDepot()`, darin `momentumAn: true` (`depot.js:40`), egal wie der Schalter vorher stand. Die Rückfrage (`depot.js:7745-7749`) nennt das nicht. Der Bestandsschutz für alte Installationen (`depotmigration.js:83-88`) greift hier nicht. Der nächste Takt legt das Buch an, findet es sofort fällig (`letztesRebalanceT` 0) und kauft zu den gespeicherten Kursen (Alter nach F4 nicht geprüft).
-- *Messung:* keine Entsprechung.
-- *Szenario* (Test 19): Reset → erster Takt → Buch angelegt, 19 Käufe — auch wenn das Buch vorher aus war. Laut Gegenprüfer zeigen Karte und Kopf bis zum nächsten Takt noch den alten Stand, weil `STAND` im Speicher nicht geleert wird (`mfdepot.js:374`).
+**M6 · SPY-Ausfall: Umschichtung still bis zu drei Handelstage verspätet, mit falschem Grund** *(neu auf main)*
+- *main:* SPY wird als letzter Wert abgerufen (`mittelfrist.js:215`); scheitert er, wird die alte SPY-Reihe mit neuem Stand geschrieben (`mittelfrist.js:249-251`), ohne Eintrag in „weg“ oder einer Statuszeile. Gezählt wird an dieser Reihe, veraltet gilt sie erst ab vier Werktagen (`mfhandel.js:340-343`). Test 32: fällig am 01.12., umgeschichtet am 04.12. mit „3 Handelstage verspätet (die App lief am fälligen Tag nicht …)“ (`mfdepot.js:457`), obwohl die App lief.
+- *Messung:* am 63. Panel-Tag (`rueckblick.js:218`).
 
-**F7 · Texte der Oberfläche: Zahlen ohne Fundstelle**
-- Ohne Gegenstück in belegstand.md und den beiden ERGEBNIS.md (Test 11): „52 %“ größter Rückschlag (`index.html:2217`, `strategien.js:91`, `app-shell.js:1231`), „8 von 22 Jahren“ (`index.html:2218`, `strategien.js:91`, `app-shell.js:1232`), „2024 lag es bei −0,1 % gegen +7,4 %“ (`app-shell.js:1232`), „+20,3 % p. a. … +5,4 Pp“, „14 von 22 Jahren“, „93 von 96“ (`strategien.js:89-90`). Das sind Zahlen der alten Studie (197 Werte, gegen den Durchschnitt derselben Werte). Neben der Karte mit dem Rückblick (2024: Buch +42,17 %, SPY +24,86 %, ERGEBNIS Nr. 74 Z. 14) liest sich „2024: −0,1 % gegen +7,4 %“ als Widerspruch.
-- Zu „exakt die gemessene Konfiguration“ siehe F10.
+**M7 · Bestand während der Sitzung am Ex-Tag eines Splits geladen: falscher Tagespunkt** *(neu auf main; A, wenn am selben Tag gehandelt wird)*
+- *main:* `mittelfrist.js:81` zusammen mit `mfhandel.js:617`. Test 27: liefert die Quelle die Vergangenheit schon geteilt und das Ereignis mit dem Stempel des Ex-Tags, wird der Split nicht gebucht, der Kurs aber halbiert: Tagespunkt 5.126 $ statt 10.251 $, dauerhaft. *Vermutung:* dass Yahoo die Historie während der Sitzung des Ex-Tags schon bereinigt, ist nicht geprüft.
 
-**F12 · Journalzeilen des Momentum-Buchs fließen in Intraday-Auswertungen** *(neu, Beleg nur im Durchlauf des Gegenprüfers)*
-- „Was hat gewirkt?“ (`depot.js:1592-1611`) schneidet die Bewertungsfenster an jeder Journalzeile, auch an `mfrebal-` und `mfkonfig-`, und bewertet sie mit Intraday-Trades. Ein Nachbau zeigt: die Umschichtungszeile bekommt aus 6 Intraday-Trades das Urteil „wirkt“, das Fenster der Autopilot-Änderung davor schrumpft von 11 auf 5 Trades. `renderKlartext` zeigt bei der Intraday-Strategie „Zuletzt eingestellt von … Momentum-Rebalancing“ (`depot.js:5882-5883`).
+**F12 · Journalzeilen des Momentum-Buchs fließen in Intraday-Auswertungen** *(besteht, mehr Zeilenarten)*
+- „Was hat gewirkt?“ (`depot.js:1592-1621`) und `renderKlartext` (`depot.js:5881-5883`) behandeln auch `mfrebal-`, `mfkonfig-`, neu `mfmass-`, `mfende-`, `mfoffen-ende-`, `mfnach-` (`mfdepot.js:200, 220, 316, 328`) als Einstellungen der Intraday-Automatik. Belegt nur im Nachbau eines Durchlaufs.
 
-### C — Randfall ohne Geldfolge
+**F7 · Alte Zahlen in der Oberfläche** *(verändert)*
+- Die Zahlen (52 %, 8 von 22 Jahren, „2024 −0,1 % gegen +7,4 %“, +5,4 Pp, 14 von 22, 93 von 96) stehen weiter (`strategien.js:89-91`, `app-shell.js:1238-1239`, `index.html:2221-2222`), seit Nr. 91 aber unter dem Kopf „Überholt: gemessen nur an Werten, die es heute noch gibt …“. Abnahme-Test 11 meldet sie erwartungsgemäß.
 
-- **F8 · Mindestlänge 500 statt 253.** `holeTage` legt nur Reihen mit mehr als 500 Balken ab (`mittelfrist.js:48`), die Regel rankt ab 253 Zeilen (`mfhandel.js:65`). Test 12: ARM mit 400 Balken landet auf „weg“. *Heute C, historisch nicht:* Test 21 zählt auf echten Stärken 2017–2026, dass 9 junge Werte der App-Liste in ihrem ersten Jahr im Messziel standen, das die App nicht gerankt hätte — **78 Namens-Monate an 36 von 116 Stichtagen** (MDB, OKTA und NET je 12, CRWD 10, ARM 5 …). Für den Vergleich Buch gegen Rückblick zählt das; im Betrieb wirkt es erst wieder bei einer Neuaufnahme in die Liste. *Ergänzt Nr. 5.*
-- **F13 · Speichern scheitert für einen Teil** (Platte voll; Test 16): Der Index meldet „frisch“, ein Teil trägt noch 13 Tage alte Reihen. 25 Werte fallen als „veraltet“ aus der Rangfolge, eine gehaltene Position würde zu 104,75 $ statt 115,22 $ verkauft. `tagesdatenSchreiben` prüft die Rückgabe von `storeSet` nicht (`mittelfrist.js:66-68`).
-- **Rückfall ohne adjclose:** Fehlt adjclose, nimmt `kurse.js:96-99` still den Schluss, und `holeTage` verwirft das Feld `feld`. Weil Yahoo-Schlusskurse schon splitbereinigt sind, rangiert der Wert dann nur ohne Ausschüttungen — F3 innerhalb derselben Rangfolge. Ob Yahoo adjclose je weglässt, ist nicht geprüft.
-- **Knopf „jetzt umschichten“** bei eingeschaltetem Buch: handelt ohne Rückfrage und setzt den 63-Tage-Takt neu (`mfdepot.js:163-166, 572-578`).
-- **Reihenende mit Kosten:** Liefert die Quelle die alte Reihe, verkauft die App mit 20 Bp; die Messung bucht ohne Verkaufskosten aus (REGEL §1.4).
-- **Wochenbericht ohne `an`** (`berichte.js:424`): ein abgeschaltetes Buch bekommt dort eine Prozentzahl, während Kopf und Karte „aus“ zeigen.
-- **Diagnose-Export** (`diagnose.js:224-226`): Die Reihe enthält den abgelegten SPY-Stand (Kursertrag), die App rechnet mit Gesamtertrag. Wer extern vergleicht, bekommt eine andere Zahl.
-- **`tools/sicherung.js --einspielen` bei laufender App** (Vermutung, nicht in Electron geprüft): prüft nicht, ob die App läuft (`:131-155`). Das nächste Speichern überschreibt das eingespielte `depot.json`, das eingespielte alte `drift_markt.json` bleibt und wird bis zur nächsten Auffrischung gezählt.
-- **Code-Kommentare gegen Regel D2:** `mfhandel.js:4` („die zwei am besten belegten Effekte“, +5,4 Pp) und `depot.js:39` („die belegten Mittelfrist-Bücher“). In der Oberfläche steht das nicht.
-- **Hinweis, kein Fehler:** `studienurteile.js:102-103` nimmt „nur einen zweifach gerechneten Rückblick“ auf. Mit Nr. 78 (B-187 „bestätigt die Vorab-Rechnung“) ist das für den Korb 187 erfüllt; der Eintrag fehlt. Das entscheidet der PM.
+### C
 
-### Ergänzungen zu den bekannten Punkten
+- **M8 · Ladevorgang über 16:15 New York** (Test 33): `mittelfrist.js:81` schneidet je Wert mit der Uhr dieses Abrufs, `:251` setzt den Stand auf das Ende. Beginnt das Laden 16:14, fehlt den ersten 9 Werten der Balken des Tages; am Folgetag gilt der Bestand als frisch, und die 9 rangieren mit dem Vortag.
+- **M9 · Sieben-Tage-Grenze über den Herbstwechsel** (Test 34): Stempel 13:30 UTC im Sommer, 14:30 UTC im Winter (`mfhandel.js:76`); eine Reihe genau 7 Kalendertage hinter dem Stichtag wirft die App hinaus, die Messung (Mitternacht UTC) nicht.
+- **V1 · Abspaltungen** (Vermutung, kein Test): Das Panel bereinigt um gemessene Abspaltungen (`pruefstand.js:38`), die App kennt nur Splits und Bardividenden und hat keine Sperre gegen einen Split ohne Kurssprung (das Panel hat eine). Offline nicht prüfbar.
+- **Knopf „jetzt umschichten“** bei eingeschaltetem Buch: handelt ohne Rückfrage und setzt den Takt neu (`mfdepot.js:414-418, 439-440`; Rückfrage nur bei „aus“).
+- **Diagnose-Export** (`diagnose.js:224-226`): enthält den abgelegten SPY-Stand (Kursertrag), die App rechnet mit Gesamtertrag.
+- **`tools/sicherung.js --einspielen` bei laufender App** (Vermutung): prüft nicht, ob die App läuft (`:131-155`).
+- **Code-Kommentare gegen Regel D2:** `mfhandel.js:4-6`, `depot.js:39`.
 
-- **Nr. 3 (Ausschüttungen):** Die Seiten sind vertauscht, siehe F3.
-- **Nr. 4 (erster Punkt des Maßstabs):** Es trifft jeden Punkt, der während einer Sitzung entsteht, und die Buchseite ist zusätzlich eingefroren (F5).
-- **Nr. 5 (Liste ≠ Korb):** 193 Namen, mindestens vier liefert die Quelle nicht mehr (`mittelfrist.js:126-127`). Laut `studien/datenfundament-2026-10-04/t1-reihen.json` enden im Panel zusätzlich AVB (14.08.2026) und EQR (17.08.2026), Gruppe „abgang“ — ob Yahoo sie noch liefert, ist nicht geprüft; wenn nicht, gilt für sie F2. Dazu die 500-Balken-Hürde (F8). Bei Teilausfall schrumpft das Ziel weiter (Test 2: 15 statt 19). Grob gemessen teilen das Ziel aus der App-Liste und das Ziel aus den 187 größten Werten (nach Marktwert, Ersatz für den Umsatz-Korb) im Mittel nur rund 10 von 19 Namen (Daten-Durchlauf).
+### Was `test-v6.js` auf main nicht abdeckt (laut Durchlauf am Umbau)
+
+Kein Test verbindet einen Ex-Tag mit einem Handel zur Eröffnung (M1, M3) oder einem während der Sitzung geladenen Bestand (M7); keiner enthält einen Split oder Umkehr-Split am Ausführungstag oder eine Abspaltung. 98.1 prüft nicht, dass SPY mit neuem Stand behalten wird (M6), und nicht, dass sich tote Reihen ansammeln (M5). 98.4 prüft keine Umschichtung innerhalb der fünf Tage (M2, Test 30). 98.5 prüft keinen Ladevorgang über 16:15 (M8). 99 prüft keinen offenen Verkauf, der die Käufe unterfinanziert (M2).
 
 ---
 
-## Gegenprüfung: was sich gegenüber der ersten Fassung geändert hat
+## Runden 1–2 (Stand `450daed`) und was daraus auf main wurde
 
-Vier unabhängige Durchläufe haben F1 bis F6 angegriffen, einer hat die Stellen außerhalb von `mfdepot.js`/`mfhandel.js` gesucht, einer die Studie vom 02.09. verglichen. **Widerlegt wurde keiner der Funde; ein falsches Zeilenzitat wurde nicht gefunden.** Korrigiert:
+| Fund (450daed) | Kern | main |
+|---|---|---|
+| F1 | gescheiterter Kursabruf ersetzt den Bestand | **behoben** (95-%-Ladeschutz); Rest siehe M4, M5 |
+| F2 | verschwundener Wert bleibt zum Einstand im Buch | **behoben** (ausgebucht nach 5 Tagen zum letzten Schluss, nie 0 — offengelegt); Rest siehe M2 |
+| F3 | Rangfolge mit Ausschüttungen, Messung ohne | **behoben** (roher Schluss) |
+| F4 | Füllkurs = letzter gespeicherter Balken statt Eröffnung | **behoben** (Eröffnung, Nachfassen) |
+| F5 | Buch- und Marktwert im Tagespunkt verschieden alt | **behoben** (Nr. 91) |
+| F6 | Haltedauer hängt an Uhrzeit und SPY-Auffrischung | **behoben** (Ausführungstag); Rest siehe M6 |
+| F7 | alte Zahlen in der Oberfläche | **verändert** (als überholt markiert) |
+| F8 | Lader verwirft Reihen bis 500 Balken | **behoben** |
+| F9 | Vergleich ab Anlage | **besteht** |
+| F10 | Studie 02.09. ≠ Buch-Mechanik, Etikett-Prüfung blind | **verändert** („exakt“ weg), Rest besteht |
+| F11 | Zurücksetzen schaltet das Buch ein | **besteht** |
+| F12 | Journalzeilen in Intraday-Auswertung | **besteht** |
+| F13 | storeSet ungeprüft | **besteht**, schwerer |
 
-- **F1:** Beim Totalausfall wird die Umschichtung **verschoben** (bis rund 26,5 h), sie fällt nicht aus; dieser Zweig ist B plus Verzug. Neu und schwerer: die Umschichtung mit 0 Orders setzt den Takt neu (Test 17). Ergänzt: dritte Auslöse-Stelle, Knopf, sichtbare Spuren.
-- **F2:** Ursache `mittelfrist.js:98` ergänzt; „kein Ausweg“ → „kein gezielter Ausweg“; „dauerhaft“ nur, wenn die Quelle nichts liefert.
-- **F3:** Formel berichtigt, stärkerer Beleg (`ERGEBNIS-KORB.md:44`), gilt gegen alle drei Messungen; Schwere als „A (Zusammensetzung), Ertragswirkung unbelegt“.
-- **F4:** Der 31-Tage-Fall ist nur über Sonderwege erreichbar, realistisch höchstens rund 26 h. Die Form des Sitzungsbalkens ist Vermutung; Test 6(b) ist kein Beleg dafür.
-- **F5:** Mechanismus umgeschrieben (eingefrorene Buchseite, nachträglich neu gelesene Marktseite), Szenario richtiggestellt, Wochenbericht ergänzt.
-- **F6:** Neuversuch alle 6 h und Hinweis „zu alt“ ab 5 Tagen ergänzt; „nie“ gilt nur, solange jeder Versuch scheitert.
-- **Neu:** F9 bis F13.
-- **Gemessen statt vermutet:** Größe von F3 (Test 20), F4 (Protokoll S9) und F8 (Test 21) auf echten Kennzahl-Dateien.
-- **Verworfen:** ein Zusatztest, der bei fehlendem adjclose einen unbereinigten Split annahm. Yahoo-Schlusskurse sind splitbereinigt; übrig bleibt die Randnotiz unter C.
+**Gemessene Größen (vom Code unabhängig, weiter gültig für den Vergleich mit Rückblicken):**
+- *F3* (Test 20, echte Stärken ohne Ausschüttungen aus `studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json`, 116 Monatsstichtage 2017–2026, App-Liste): Der Letzte im Ziel liegt im Median nur **0,69 Pp** vor dem Ersten draußen; 1 Pp Ausschüttungsvorsprung im Rückblickfenster reicht an **75 von 116** Stichtagen für einen Tausch. Das Universum zahlt rund 1,7 % im Jahr, das Momentum-Zehntel 0,83 % (`studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL2.md:132-134`). Ein Modell mit angenommener Streuung ergab 0,3 bis 1,0 getauschte Namen je Umschichtung und im Mittel keinen Ertragsunterschied (nicht im Testskript).
+- *F4* (Protokoll, bisher nirgends zitiert): Für das stärkste Zehntel einer verwandten Regel (Fenster 210 statt 231 Tage, tägliche Signale) liegt zwischen Schluss und nächster Eröffnung im Mittel +0,0945 %, gegen alle Kerzen bereinigt +0,0573 Pp (`studien/messmaschine/protokolle/momentum-2026-08-26.json:807-815`). Grob hochgerechnet bekam das alte Buch damit rund +0,1 Pp im Jahr geschenkt.
+- *F8* (Test 21): 9 junge Werte der App-Liste standen in ihrem ersten Jahr im stärksten Zehntel der App-Liste (Paneldaten, monatlich, ohne Umsatzfilter), das der alte Lader nicht gerankt hätte — 78 Namens-Monate an 36 von 116 Stichtagen.
+
+---
+
+## Korrekturen gegenüber der zweiten Fassung
+
+Aus der Gegenlesung der zweiten Fassung übernommen (Stand `450daed`, dort mit Commit `0425152` einzusehen):
+- Der `befund` des Vorwärtstest-Etiketts wird nicht angezeigt; angezeigt wird der feste Text in `strategien.js:87` (F10).
+- Das Übernacht-Protokoll gilt für eine verwandte Regel mit 210-Tage-Fenster, nicht für 231/21 (F4-Größe).
+- Ob Yahoos Tagesschluss splitbereinigt ist, ist nicht belegt; der Kommentar in `mittelfrist.js:38-40` (450daed) nahm das Gegenteil an. Das Verwerfen meines Split-Zusatztests war voreilig. Auf main stellt sich die Frage für das Buch nicht mehr in dieser Form (Spalte 1 und Ereignisse kommen aus derselben Antwort).
+- Zeilenzitate berichtigt: Kopf `depot.js:4097-4103`, Bestandsschutz `depotmigration.js:87-91`, `SICHERUNG_STORES` `main.js:1278`, Split-Filter `lesen-panel.js:60`; volle Studienpfade.
+- F9 betrifft den Wochenbericht nicht (er rechnet nur die letzte Woche); „`angelegt`“ bestimmt in `massstab.js` nur den Bezug, der Zeitraum beginnt in jedem Fall am ersten Punkt.
+- Die Zählung der Durchläufe: zweite Runde = drei Gegenprüfungen (F1/F6, F2/F3, F4/F5), eine Suche außerhalb von `mfdepot.js`/`mfhandel.js`, ein Vergleich mit der Studie vom 02.09., eine Datensuche, eine Gegenlesung; dritte Runde = zwei Durchläufe an main, ein Durchlauf zum Portieren der Belege.
 
 ---
 
 ## Nicht geprüft
 
-- **Electron nicht gestartet.** `mittelfrist.js`, `mfdepot.js` und `studienurteile.js` liefen in einer vm-Sandbox mit Attrappen für Speicher, Kursabruf und `U`. Echtes IPC habe ich gelesen, nicht ausgeführt; das Verhalten der Zeitgeber beim Aufwachen aus dem Ruhezustand ist nicht geprüft.
-- **Echte Yahoo-Antworten** nicht geprüft (Abruf verboten): ob für übernommene Werte nichts oder die alte Reihe kommt (F2); wie der Balken der laufenden Sitzung aussieht (F4); ob adjclose je fehlt.
-- **Größe von F3 und F4:** nur grob gemessen (Kennzahl-Dateien in `studien/`, siehe dort). Exakt bräuchte es die Ausschüttungsdateien (`alpaca-massnahmen/`) und Tageskurse mit Eröffnung (`archiv1d`) — beide auf Platte E, nicht in diesem Container. F1, F5, F6 bräuchten den echten App-Bestand mit Zeitstempeln.
-- **Echter App-Bestand** (`depot.json`) nicht gesehen. Die Aussagen zum Stand des echten Buchs (gekauft 25.08., noch keine liquide Umschichtung) stammen aus dem Wiki.
-- **Drift-Buch** (`driftAbgleich`) — außerhalb des Auftrags.
-- **Wiki:** Einen Abschnitt „Live driftet von der Messung weg“ gibt es in `wiki/fehlerformen.md` unter diesem Namen nicht. Gelesen habe ich die Formen-Tabelle, „Die Notlösung für Cent-Beträge …“, „Der Tagesbalken trägt den Stempel …“ und `wiki/messmethodik.md` Punkt 11.
-- **Testlauf:** `node test-channel.js` grün. `node test-v6.js` hat schon **vor** meiner Arbeit Fehlschläge, lokal 7 (im allerersten Lauf 8), in der CI 5 — auf `main` (`450daed`) dieselben 5 mit demselben Wortlaut. Die Ursachen habe ich nicht untersucht; ein Teil ist sichtbar umgebungsbedingt. Bestehende Dateien habe ich nicht geändert. `npx eslint .` ohne Fehler; die Testdatei ist zusätzlich mit den strengen Regeln des Repos (`no-undef` u. a.) sauber.
+- **Electron nicht gestartet.** Alle Module liefen in einer vm-Sandbox mit Attrappen für Speicher, Kursabruf, Uhr und `U`. Das Verhalten der Zeitgeber beim Aufwachen ist nicht geprüft.
+- **Echte Yahoo-Antworten** nicht geprüft (Abruf verboten): ob Eröffnungen am Ausführungstag ausfallen (M2, M4) und wie oft; ob Yahoo die Historie während der Sitzung des Ex-Tags schon bereinigt (M7); wie Abspaltungen geliefert werden (V1).
+- **Echter App-Bestand** (`depot.json`) nicht gesehen. Aussagen zum echten Buch (Kauf 25.08., noch keine liquide Umschichtung, keine toten Reihen im Bestand) stammen aus dem Wiki oder sind als Vermutung gekennzeichnet.
+- **Größe von M1–M3 im Betrieb:** nicht gemessen; es fehlen die Maßnahmen- und Kursarchive auf Platte E.
+- **Nur im Durchlauf, nicht im Testskript:** der Nachbau zu F12, das Modell zu F3, die Hochrechnung zu F4, „rund 10 von 19 Namen“ (App-Liste gegen die 187 größten).
+- **Drift-Buch** — außerhalb des Auftrags.
+- **Testlauf:** `node test-channel.js` grün. `node test-v6.js` ist auf main wie auf `450daed` schon ohne diesen Zweig rot (CI: dieselben 5 Fehlschläge); die Ursachen habe ich nicht untersucht. Bestehende Dateien habe ich nicht geändert; die Abnahme-Datei auf main bleibt unverändert. `npx eslint .` ohne Fehler; die Runde-2-Datei ist auch mit den strengen Regeln des Repos sauber.

@@ -419,16 +419,22 @@
          * Buch und Markt ueber dieselben Tagespunkte, der Markt aus der bereinigten
          * SPY-Reihe (Gesamtertrag), sonst sichtbar der Kursertrag. Vorher stand hier ein
          * eigener Rechenweg ueber die abgelegten Tagesstaende - in einer Woche mit
-         * Ex-Tag eine andere Zahl als im Kopf der App. */
-        var MsW = window.Massstab, mkW = (window.MFDepot && window.MFDepot.markt) ? window.MFDepot.markt() : null;
-        var vMW = MsW.vergleich(mv, 'momentum', 'startM', { markt: mkW, start: D.mfBuch ? D.mfBuch.start : null });
-        var vDW = MsW.vergleich(mv, 'drift', 'startD', { markt: mkW, start: D.driftBuch ? D.driftBuch.start : null });
-        var vSW = vMW.ok ? vMW : vDW;
+         * Ex-Tag eine andere Zahl als im Kopf der App.
+         * Seit Auftrag Nr. 95 (C1) ueber DIESELBE Funktion wie Kopf und Karten
+         * (MFDepot.vergleich, nur mit den Punkten der Woche): dieselben Optionen -
+         * Marktstand je Punkt (punktKurs), Rohreihe, Ausschuettungen des Buchs. Vorher
+         * rief diese Zeile den Massstab ohne sie und konnte in einer Woche mit Ex-Tag
+         * vom Kopf abweichen. */
+        var MsW = window.Massstab, MFD = window.MFDepot;
+        var vMW = MFD && MFD.vergleich ? MFD.vergleich('momentum', mv) : null;
+        var vDW = MFD && MFD.vergleich ? MFD.vergleich('drift', mv) : null;
+        var okW = function (v2) { return v2 && v2.ok ? v2 : null; };
+        var vSW = okW(vMW) || okW(vDW);
         function pctW(v2, feld) { return v2 && v2[feld] != null ? v2[feld].toFixed(2) : '–'; }
         z.push('');
-        z.push('Bücher über die Woche (' + mv.length + ' Tagespunkte): Momentum ' + pctW(vMW.ok ? vMW : null, 'buchPct') +
-          ' % · Drift ' + pctW(vDW.ok ? vDW : null, 'buchPct') + ' % · SPY ' + pctW(vSW.ok ? vSW : null, 'marktPct') + ' %' +
-          (vSW.ok ? ' (' + MsW.marktZusatz(vSW) + ')' : '') + '.');
+        z.push('Bücher über die Woche (' + mv.length + ' Tagespunkte): Momentum ' + pctW(okW(vMW), 'buchPct') +
+          ' % · Drift ' + pctW(okW(vDW), 'buchPct') + ' % · SPY ' + pctW(vSW, 'marktPct') + ' %' +
+          (vSW && MsW ? ' (' + MsW.marktZusatz(vSW) + ')' : '') + '.');
       }
     })();
     z.push('');

@@ -1,0 +1,54 @@
+{
+ "erstellt": "2026-10-04T11:37:25.302Z",
+ "siegel": {
+  "commit": "aa32c79",
+  "sha256": {
+   "REGEL.md": "9c4a5fee1e9b0640",
+   "daten.js": "1104fac7df32cb4a",
+   "kern.js": "7f255768def3777f",
+   "lauf.js": "ce087c70d7d91c27",
+   "test.js": "0dcd5f2cd4f3807c"
+  }
+ },
+ "lauf": "R1, QQQ, Fassung P, Kosten Papier (0,0005 $ je Aktie), 2018-01-02 bis 2023-09-28",
+ "papier": {
+  "gesamt": 6.71,
+  "trades": 21967,
+  "trefferquote": 0.17,
+  "rueckschlag": 0.094,
+  "sharpe": 2.1
+ },
+ "rahmen": {
+  "trades": [
+   20000,
+   24000
+  ],
+  "trefferquote": [
+   0.15,
+   0.19
+  ],
+  "gesamt": [
+   3,
+   12
+  ]
+ },
+ "imRahmen": true,
+ "ergebnis": {
+  "tage": 1445,
+  "gesamt": 6.774449115065172,
+  "trades": 23190,
+  "tradesJeTag": 16.048442906574394,
+  "trefferquote": 0.16964208710651144,
+  "rueckschlag": 0.08396607594435224,
+  "sharpe": 2.107344351695415,
+  "pa": 0.4299730467613745,
+  "jahre": {
+   "2018": 0.4004400992081296,
+   "2019": 0.09601721184397571,
+   "2020": 0.8092701409671166,
+   "2021": 0.47549490680880124,
+   "2022": 0.6595594721142743,
+   "2023": 0.14328304361805944
+  }
+ }
+}

@@ -1,0 +1,727 @@
+{
+ "stand": "2026-10-04T11:55:27.347Z",
+ "alt": {
+  "stand": "2026-08-23T17:13:33.203Z",
+  "seiten": 24,
+  "gesamt": 23422,
+  "aktienartig": 6921,
+  "letztesBis": "2026-08-21"
+ },
+ "neu": {
+  "stand": "2026-10-04T11:54:39.350Z",
+  "seiten": 24,
+  "abgebrochen": false,
+  "gesamt": 23462,
+  "aktienartig": 6948,
+  "bytes": 1359557,
+  "dauerSekunden": 300
+ },
+ "altesUnveraendert": true,
+ "kuerzelMehrfach": {
+  "alt": 25,
+  "neu": 0
+ },
+ "a_altInNeu": {
+  "altEintraege": 6921,
+  "gleich": 6881,
+  "abweichungen": 40,
+  "jeArt": {
+   "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)": 15,
+   "alte Liste fuehrte das Kuerzel doppelt, neue einmal": 25
+  },
+  "namentlich": [
+   {
+    "sym": "AAC",
+    "bisAlt": "2023-11-07",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "AC",
+    "bisAlt": "2025-09-05",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2025-09-05"
+    ]
+   },
+   {
+    "sym": "ANSC",
+    "bisAlt": "2026-08-14",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2026-08-13"
+    ]
+   },
+   {
+    "sym": "AT",
+    "bisAlt": "2021-05-17",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "BACQ",
+    "bisAlt": "2026-03-18",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2026-03-17"
+    ]
+   },
+   {
+    "sym": "BCOM",
+    "bisAlt": "2020-09-08",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "BLDE",
+    "bisAlt": "2025-08-29",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2025-08-29"
+    ]
+   },
+   {
+    "sym": "BURU",
+    "bisAlt": "2026-07-20",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "BYON",
+    "bisAlt": "2025-08-29",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2025-08-29"
+    ]
+   },
+   {
+    "sym": "CAPA",
+    "bisAlt": "2021-06-11",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "CUX",
+    "bisAlt": "2026-07-02",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2026-07-01"
+    ]
+   },
+   {
+    "sym": "DICE",
+    "bisAlt": "2023-08-10",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "GMS",
+    "bisAlt": "2025-09-05",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2025-09-05"
+    ]
+   },
+   {
+    "sym": "GRYP",
+    "bisAlt": "2025-09-05",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2025-09-05"
+    ]
+   },
+   {
+    "sym": "HOS",
+    "bisAlt": "2019-12-23",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "HSON",
+    "bisAlt": "2025-09-05",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2025-09-05"
+    ]
+   },
+   {
+    "sym": "ISRL",
+    "bisAlt": "2025-12-04",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "JHG",
+    "bisAlt": "2026-07-02",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2026-07-01"
+    ]
+   },
+   {
+    "sym": "JONE",
+    "bisAlt": "2018-11-27",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "LC",
+    "bisAlt": "2026-06-23",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2026-06-22"
+    ]
+   },
+   {
+    "sym": "LYRA",
+    "bisAlt": "2026-03-18",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2026-03-17"
+    ]
+   },
+   {
+    "sym": "MAG",
+    "bisAlt": "2025-09-05",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2025-09-05"
+    ]
+   },
+   {
+    "sym": "MATR",
+    "bisAlt": "2018-08-21",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "MBGLw",
+    "bisAlt": "2026-07-02",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2026-07-01"
+    ]
+   },
+   {
+    "sym": "MDV",
+    "bisAlt": "2026-08-14",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2026-08-13"
+    ]
+   },
+   {
+    "sym": "MN",
+    "bisAlt": "2022-10-24",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "OIG",
+    "bisAlt": "2023-08-29",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "PCPC",
+    "bisAlt": "2022-12-15",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   },
+   {
+    "sym": "QIPT",
+    "bisAlt": "2026-03-18",
+    "art": "alte Liste fuehrte das Kuerzel doppelt, neue einmal",
+    "bisNeu": [
+     "2026-03-17"
+    ]
+   },
+   {
+    "sym": "RML",
+    "bisAlt": "2006-08-03",
+    "art": "Kuerzel fehlt in der neuen Liste (wieder aktiv oder neu vergeben)",
+    "bisNeu": null
+   }
+  ]
+ },
+ "b_neu": {
+  "nachDemAltenStand": 67,
+  "altesLetztesBis": "2026-08-21",
+  "neuesLetztesBis": "2026-10-02",
+  "jeMonat": {
+   "2026-08": 19,
+   "2026-09": 41,
+   "2026-10": 7
+  },
+  "nachgetragenMitAelteremDatum": 0,
+  "neuOhneDatum": 0,
+  "liste": [
+   {
+    "sym": "NCL",
+    "bis": "2026-08-24",
+    "art": "CS",
+    "boerse": "XASE"
+   },
+   {
+    "sym": "SBEV",
+    "bis": "2026-08-24",
+    "art": "CS",
+    "boerse": "XASE"
+   },
+   {
+    "sym": "RMAX",
+    "bis": "2026-08-25",
+    "art": "CS",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "FLZH",
+    "bis": "2026-08-26",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "OSRH",
+    "bis": "2026-08-26",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "TWO",
+    "bis": "2026-08-26",
+    "art": "CS",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "AIHS",
+    "bis": "2026-08-27",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "CMII",
+    "bis": "2026-08-27",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "LEG",
+    "bis": "2026-08-27",
+    "art": "CS",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "NTZ",
+    "bis": "2026-08-27",
+    "art": "ADRC",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "WILC",
+    "bis": "2026-08-27",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "ALOT",
+    "bis": "2026-08-28",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "BBCQ",
+    "bis": "2026-08-28",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "BCAR",
+    "bis": "2026-08-28",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "BGI",
+    "bis": "2026-08-28",
+    "art": "CS",
+    "boerse": "XASE"
+   },
+   {
+    "sym": "FBRX",
+    "bis": "2026-08-28",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "AREN",
+    "bis": "2026-08-31",
+    "art": "CS",
+    "boerse": "XASE"
+   },
+   {
+    "sym": "BCAB",
+    "bis": "2026-08-31",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "JAB",
+    "bis": "2026-08-31",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "CRNX",
+    "bis": "2026-09-02",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "HLX",
+    "bis": "2026-09-02",
+    "art": "CS",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "NCSM",
+    "bis": "2026-09-02",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "YYGH",
+    "bis": "2026-09-02",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "ZTEK",
+    "bis": "2026-09-02",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "APGE",
+    "bis": "2026-09-04",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "BTOG",
+    "bis": "2026-09-04",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "JFB",
+    "bis": "2026-09-04",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "BTAI",
+    "bis": "2026-09-08",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "LPSN",
+    "bis": "2026-09-08",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "BRNS",
+    "bis": "2026-09-09",
+    "art": "ADRC",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "CYCN",
+    "bis": "2026-09-09",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "KWM",
+    "bis": "2026-09-09",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "GLMD",
+    "bis": "2026-09-10",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "RAY",
+    "bis": "2026-09-10",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "PHGE",
+    "bis": "2026-09-11",
+    "art": "CS",
+    "boerse": "XASE"
+   },
+   {
+    "sym": "ATAI",
+    "bis": "2026-09-14",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "FEED",
+    "bis": "2026-09-16",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "SOBR",
+    "bis": "2026-09-16",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "ANY",
+    "bis": "2026-09-17",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "RITR",
+    "bis": "2026-09-17",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "HCWC",
+    "bis": "2026-09-18",
+    "art": "CS",
+    "boerse": "XASE"
+   },
+   {
+    "sym": "SNYR",
+    "bis": "2026-09-18",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "CSAN",
+    "bis": "2026-09-21",
+    "art": "ADRC",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "BRR",
+    "bis": "2026-09-22",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "HWH",
+    "bis": "2026-09-22",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "NHIC",
+    "bis": "2026-09-22",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "BMB",
+    "bis": "2026-09-23",
+    "art": "CS",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "PLTS",
+    "bis": "2026-09-23",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "AMRO",
+    "bis": "2026-09-24",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "DOMO",
+    "bis": "2026-09-24",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "HVII",
+    "bis": "2026-09-24",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "TBPH",
+    "bis": "2026-09-24",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "FGNX",
+    "bis": "2026-09-28",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "IPEX",
+    "bis": "2026-09-28",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "SBXD",
+    "bis": "2026-09-28",
+    "art": "CS",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "RILYN",
+    "bis": "2026-09-29",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "AIXC",
+    "bis": "2026-09-30",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "AMZE",
+    "bis": "2026-09-30",
+    "art": "CS",
+    "boerse": "XASE"
+   },
+   {
+    "sym": "GBTG",
+    "bis": "2026-09-30",
+    "art": "CS",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "GETY",
+    "bis": "2026-09-30",
+    "art": "CS",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "DBRG",
+    "bis": "2026-10-01",
+    "art": "CS",
+    "boerse": "XNYS"
+   },
+   {
+    "sym": "VRME",
+    "bis": "2026-10-01",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "COLA",
+    "bis": "2026-10-02",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "FSEA",
+    "bis": "2026-10-02",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "NSTS",
+    "bis": "2026-10-02",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "THRMV",
+    "bis": "2026-10-02",
+    "art": "CS",
+    "boerse": "XNAS"
+   },
+   {
+    "sym": "VACI",
+    "bis": "2026-10-02",
+    "art": "CS",
+    "boerse": "XNYS"
+   }
+  ]
+ },
+ "c_benannt": {
+  "DBRG": [
+   "2026-10-01"
+  ],
+  "GBTG": [
+   "2026-09-30"
+  ],
+  "CSAN": [
+   "2026-09-21"
+  ],
+  "APGE": [
+   "2026-09-04"
+  ],
+  "CRNX": [
+   "2026-09-02"
+  ],
+  "HLX": [
+   "2026-09-02"
+  ],
+  "LEG": [
+   "2026-08-27"
+  ],
+  "TWO": [
+   "2026-08-26"
+  ]
+ },
+ "d_wechsler": {
+  "wechsler": 57,
+  "mitAbgangsdatumAlt": 52,
+  "mitAbgangsdatumNeu": 57,
+  "neuHinzu": [
+   {
+    "reihe": "APGE",
+    "letzterMinutentag": "2026-09-02",
+    "bis": "2026-09-04",
+    "diff": 2
+   },
+   {
+    "reihe": "CRNX",
+    "letzterMinutentag": "2026-08-31",
+    "bis": "2026-09-02",
+    "diff": 2
+   },
+   {
+    "reihe": "HLX",
+    "letzterMinutentag": "2026-09-01",
+    "bis": "2026-09-02",
+    "diff": 1
+   },
+   {
+    "reihe": "LEG",
+    "letzterMinutentag": "2026-08-26",
+    "bis": "2026-08-27",
+    "diff": 1
+   },
+   {
+    "reihe": "TWO",
+    "letzterMinutentag": "2026-08-24",
+    "bis": "2026-08-26",
+    "diff": 2
+   }
+  ],
+  "weiterOhne": []
+ }
+}
