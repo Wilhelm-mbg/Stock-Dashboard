@@ -24068,8 +24068,12 @@ console.log('98) Live gleich Messung: das Momentum-Buch handelt wie gemessen (Au
   })());
   var takt98 = ohneKommentare(mfdQ.slice(mfdQ.indexOf('async function takt('), mfdQ.indexOf('function zeige(')));
   ok(/if \(\(faellig && d\.momentumAn\) \|\| manuell === 'momentum'\) \{\s*var ausf = await ausfuehrungVorbereiten\(MH, d, daten, fl, now\);/.test(takt98) &&
-     /d\.mfBuch\.letzteAusfuehrungTag = ausf\.heute;/.test(takt98) && takt98.split('MH.fuehreAus(').length === 2,
-     '98.5 Takt UND Knopf ("jetzt umschichten" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag');
+     /d\.mfBuch\.letzteAusfuehrungTag = ausf\.heute;\s*fl = MH\.faelligkeit\(daten\.bezug, d\.mfBuch\.letzteAusfuehrungTag, KONFIG\.halten, now\);/.test(takt98) &&
+     takt98.split('MH.fuehreAus(').length === 2,
+     '98.5 Takt UND Knopf ("jetzt umschichten" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag, und die Faelligkeit wird ab ihm neu gezaehlt (die Karte nennt danach 62, nicht 0)');
+  var fNeu = MH.faelligkeit(SPY5.concat([[st(DI), 500, 8e7, 500]]), DI, 63, ny(DI, 9, 40));
+  ok(fNeu.faellig === false && fNeu.noch === 62 && fNeu.tageSeit === 0,
+     '98.5 am Ausfuehrungstag selbst, ab ihm gezaehlt: nicht faellig, noch 62 Handelstage (auch wenn der Bestand schon einen Balken von heute traegt)');
 
   /* ---- 98.6 A6 Haltedauer ---- */
   var T6 = werktage('2026-12-30', 150), M6 = T6.map(function (t) { return [st(t), 500]; });

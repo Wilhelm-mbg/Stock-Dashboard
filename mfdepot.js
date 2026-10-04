@@ -390,6 +390,9 @@
           var spaet = manuell === 'momentum' ? 0 : (fl.verspaetung || 0);
           d.mfBuch.letztesRebalanceT = now;
           d.mfBuch.letzteAusfuehrungTag = ausf.heute;
+          /* Die Faelligkeit neu ab DIESEM Ausfuehrungstag - sonst nennt die Karte bis zum naechsten
+           * Takt noch die alte Zaehlung ("nach 0 weiteren Handelstagen", Abnahme Nr. 93). */
+          fl = MH.faelligkeit(daten.bezug, d.mfBuch.letzteAusfuehrungTag, KONFIG.halten, now);
           /* Erste Umschichtung auf dem liquiden Korb = Beginn des Vorwaertstests; die
            * Korbgroesse je Umschichtung weist die Drift der nominalen Schwelle
            * NACHRICHTLICH aus (wiki/fehlerformen.md) - behoben wird sie nicht. */
