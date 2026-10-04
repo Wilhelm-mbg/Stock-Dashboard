@@ -149,6 +149,18 @@ Ohne Regel K: Korb 187 2017–2021 Median +7,59 → +6,87 (63 von 63 vorn); 2021
 
 **Lesart.** (1) Urteil nach der Regel: **nicht entscheidbar** — in A liegt das Momentum-Buch knapp unter dem 95. Perzentil. (2) Der Korb der 187 umsatzstärksten trägt den Vorsprung **nicht**: ein zufälliges Buch daraus liegt im Median in beiden Fenstern hinter dem S&P 500. Was vorn liegt, kommt also aus der Auswahl — in B deutlich (nur 2 von 200 Zufallsbüchern besser), in A schwächer. (3) Beschreibend über 63 Starttage: keiner der 50 Buch-Mediane liegt über dem Momentum-Buch. (4) Zufallsbücher tauschen fast alles und zahlen rund 0,7 Pp p. a. mehr Kosten — ein Teil des Abstands ist Umschlag, nicht Auswahl. (5) Der „ganze Korb" hängt bei dieser Mechanik an der Reihenfolge der Zielliste (bei knappem Bargeld fallen die letzten Käufe aus): nach Zeichencode 240.024 $, nach Umsatz 232.170 $ (PM-Nachrechnung). **Abnahme:** die Zufallsbücher 1, 2, 100, 200 und der ganze Korb in beiden Fenstern mit dem PM-Rechner aus den gespeicherten Ziehungen nachgespielt — alle auf ≤ 0,4 Cent gleich.
 
+## Trendfilter auf SPY (05.10.2026) — gemessen: **schlägt den S&P 500 nicht** (alle drei Regeln)
+
+Faber (10-Monats-Linie), Antonacci „Global Equity Momentum" und 200-Tage-Linie mit 1-%-Band, Parameter aus den Originalquellen, 20 Bp je Seite, Pause in kurzlaufenden Anleihen; Regel gesiegelt vor jedem Kursabruf (`6f9d06f`, 00:33; erste Datenabrufe ab 00:37), öffentliche Yahoo-Daten, Rohkurse nicht im Repo. Zweig `messung/trendfilter` (Ergebnis `b403547`).
+
+| Regel | Abstand p. a. zum S&P 500, Fenster A / B (Start am ersten Tag) | Starttage vorn (je 22) | Rückschlag A / B (SPY −33,7 / −24,5 %) |
+|---|---|---|---|
+| Faber 10 Monate | −7,09 / −7,70 Pp | 0 / 0 | −23,9 / −26,4 % |
+| Antonacci GEM | −10,04 / −3,10 Pp | 0 / 0 | −33,7 / −21,6 % |
+| 200 Tage | −7,89 / −3,10 Pp | 0 / 0 | −26,6 / −17,4 % |
+
+Placebo (1.000 Läufe mit gleich vielen Wechseln an zufälligen Tagen): kein beständiger Vorteil der Zeitwahl. Zusatz 2003–2026 (ohne Urteil): vorn in 24–28 % der 5-Jahres-Fenster, fast nur mit Start 2003–2008, ab 2009 in keinem; ganzer Zeitraum +7,4 bis +8,5 % p. a. gegen SPY +11,2 %, schlimmster Rückschlag −26 bis −36 % gegen −55 %. Sie schützen in großen Einbrüchen, kosten aber in steigenden Märkten mehr, als sie retten; jeder Wechsel wäre in Deutschland ein Steuerereignis. Unabhängiger zweiter Rechner auf den Cent, 196 Tests; SPY-Basis des Laufs (+17,77 / +12,63 % p. a.) gleich der des Rückblicks. **Abnahme PM:** Siegel-Reihenfolge an Commit- und Dateizeiten geprüft, SPY-Basis gegen den Rückblick verglichen; die Regeln selbst nicht nachgerechnet (Ergebnis eindeutig, zweiter Rechner im Lauf).
+
 ## Ergebnis-Drift tagesgenau (04.10.2026) — gemessen: **nicht entscheidbar**; das Buch endet knapp vor dem S&P 500, aber im Bereich des Zufalls — **kein Vorwärtstest**
 
 **Messung (Nr. 88, abgenommen 04.10.2026 14:42) — Wilhelms Regel: ein Test über die letzten fünf Jahre als Buch gegen den S&P 500, Regel vor der Zahl.** `studien/vorregistrierung-2026-10-04-ergebnis-drift/` (`VORREGISTRIERUNG.md`, `ERGEBNIS.md`, `ergebnis.json`; Siegel `8567df4` um 14:30:24, der eine Lauf 14:30:31 bis 14:30:57, Ergebnis `435d747`, keine Korrektur). Fenster: Einstiegstage 16.09.2021 bis 15.09.2026, 14.184 Meldungen von 1.248 Firmen der Klassen 50-250, 250-1000, ab1000; die Jahre 2017 bis 15.09.2021 bleiben verschlossen (kein zweiter Blick).
