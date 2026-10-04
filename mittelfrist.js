@@ -31,6 +31,8 @@
     };
   }
 
+  var EREIGNIS_TAGE = 400;
+
   /* Tageskerzen über den vollen verfügbaren Zeitraum. period1=0 statt range=max –
    * letzteres liefert bei Tageskerzen nur rund 170 Monatswerte. */
   async function holeTage(sym) {
@@ -38,14 +40,19 @@
       /* BEREINIGT: Momentum rangiert Werte ueber Monate gegeneinander. Ein
        * unbereinigter Split waere dort ein Kurssturz von 50 % - und der Wert
        * flaege aus dem staerksten Zehntel, obwohl gar nichts passiert ist. */
-      var kd = await window.Kurse.hole(sym, { von: 0, bis: Date.now(), interval: '1d', bereinigt: true });
+      /* ereignisse: Ausschuettungen und Splits kommen im SELBEN Abruf mit (Auftrag Nr. 87) -
+       * die zwei Mittelfrist-Buecher buchen sie (MFHandel.bucheMassnahmen). */
+      var kd = await window.Kurse.hole(sym, { von: 0, bis: Date.now(), interval: '1d', bereinigt: true, ereignisse: true });
       if (!kd) return null;
       /* Zeit, Schluss UND Stueckzahl: Das Momentum-Buch filtert seinen Korb seit dem
        * 02.09.2026 nach Median-Tagesumsatz (Schluss x Stueck, liquide.js) - ohne die
        * dritte Spalte kann es die gemessene Regel nicht rechnen. Wer nur [0] und [1]
        * liest (Rangfolge, Drift, Depot), merkt von der Spalte nichts. */
       var reihe = kd.bars.map(function (b) { return [b[0], b[1], b[2]]; });
-      return reihe.length > 500 ? reihe : null;
+      if (!(reihe.length > 500)) return null;
+      /* Abgelegt werden nur die Ereignisse der letzten 400 Tage - gebucht wird, was seit dem
+       * Kauf einer Position anfiel, nicht die Geschichte des Werts. */
+      return { reihe: reihe, ereignisse: window.Kurse.ereignisseAb(kd.ereignisse, Date.now() - EREIGNIS_TAGE * 86400000) };
     } catch (e) { return null; }
   }
 
@@ -57,7 +64,7 @@
    * und Teilzahl. Der Index wird ZULETZT geschrieben - wer liest, sieht nur
    * vollstaendige Staende; fehlt ein Teil, greift der alte Schluessel. */
   var TEIL_GROESSE = 25;
-  async function tagesdatenSchreiben(roh, weg, at) {
+  async function tagesdatenSchreiben(roh, weg, at, ereignisse) {
     var syms = Object.keys(roh).sort();
     var teile = Math.max(1, Math.ceil(syms.length / TEIL_GROESSE));
     for (var t = 0; t < teile; t++) {
@@ -65,6 +72,12 @@
       syms.slice(t * TEIL_GROESSE, (t + 1) * TEIL_GROESSE).forEach(function (s) { stueck[s] = roh[s]; });
       await window.api.storeSet('mf_tagesdaten_teil_' + t, { roh: stueck });
     }
+    /* Kapitalmassnahmen aus demselben Abruf (Auftrag Nr. 87): eigener Schluessel
+     * mf_ereignisse { at, sym: { SYM: { div: [[tMs, betrag]], split: [[tMs, zaehler, nenner]] } } },
+     * geschrieben NACH den Teilen und VOR dem Index - wer ueber den Index liest, sieht nur
+     * vollstaendige Staende. Ohne das Argument (die Wanderung des alten Klumpens) bleibt
+     * der Schluessel, wie er ist. */
+    if (ereignisse) await window.api.storeSet('mf_ereignisse', { at: at || Date.now(), sym: ereignisse });
     await window.api.storeSet('mf_tagesdaten_index', { at: at || Date.now(), weg: weg || [], teile: teile });
     // Der alte Riesen-Schluessel wird zu einem kleinen Verweis - die 38 MB sind damit weg
     try { await window.api.storeSet('mf_tagesdaten', { ersetztDurch: 'mf_tagesdaten_index', at: at || Date.now() }); } catch (eM) { }
@@ -101,9 +114,15 @@
      * Sie gelten nicht als frisch, sondern werden einmalig neu geladen - sonst staende
      * das Momentum-Buch mit "keine Stueckzahlen" still, bis der Bestand von allein
      * veraltet (20 Stunden), und niemand saehe, warum. */
-    var frisch = gespeichert && (Date.now() - (gespeichert.at || 0) < 20 * 3600000) && hatStueck(gespeichert.roh);
+    /* Dasselbe gilt seit Auftrag Nr. 87 fuer die Kapitalmassnahmen: ein Bestand aus der Zeit
+     * davor hat keinen Schluessel mf_ereignisse. Er wird einmalig neu geladen - sonst
+     * blieben Splits und Ausschuettungen bis zu 20 Stunden ungebucht. */
+    var ereignisseDa = !!(await window.api.storeGet('mf_ereignisse'));
+    var frisch = gespeichert && (Date.now() - (gespeichert.at || 0) < 20 * 3600000) && hatStueck(gespeichert.roh) && ereignisseDa;
     if (gespeichert && !frisch && gespeichert.roh && !hatStueck(gespeichert.roh)) {
       stat('Gespeicherte Tageskurse ohne Stückzahlen – lade neu, damit der Momentum-Korb nach Umsatz gefiltert werden kann …');
+    } else if (gespeichert && !frisch && !ereignisseDa) {
+      stat('Gespeicherte Tageskurse ohne Splits und Ausschüttungen – lade neu, damit die Bücher sie buchen können …');
     }
     if (frisch) {
       roh = gespeichert.roh;
@@ -112,15 +131,15 @@
       // wird er beim ersten Lesen in Teile umgeschrieben.
       if (gespeichert.quelle === 'alt') await tagesdatenSchreiben(roh, gespeichert.weg, gespeichert.at);
     } else {
-      var weg = [];
+      var weg = [], ereignisse = {};
       for (var i = 0; i < UNIVERSUM.length; i++) {
         var r = await holeTage(UNIVERSUM[i]);
-        if (r) roh[UNIVERSUM[i]] = r; else weg.push(UNIVERSUM[i]);
+        if (r) { roh[UNIVERSUM[i]] = r.reihe; ereignisse[UNIVERSUM[i]] = r.ereignisse; } else weg.push(UNIVERSUM[i]);
         fertig++;
         if (fertig % 10 === 0) stat('Lade Tageskurse … ' + fertig + '/' + UNIVERSUM.length);
         await new Promise(function (w) { setTimeout(w, 90); });   // Quelle nicht überrennen
       }
-      await tagesdatenSchreiben(roh, weg, Date.now());
+      await tagesdatenSchreiben(roh, weg, Date.now(), ereignisse);
       /* Ausgefallene Werte SICHTBAR machen, nicht still übergehen.
        *
        * Am 21.08.2026 lieferte Yahoo für BK, MMC, HES und FI nichts mehr – HES etwa ist

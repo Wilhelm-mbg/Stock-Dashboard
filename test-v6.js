@@ -22853,6 +22853,7 @@ console.log('95) Regel K gegen Kleinstpositionen: Schalter im Handelscode, Vorga
  *        korbVerlauf und konfigSeit stehen (sonst waere der Beginn des Vorwaertstests geloescht); eine echte
  *        Korb-Umstellung setzt sie weiter zurueck; ein Buch, das 0,05 schon traegt, schreibt nichts
  *   96.2 der Journaltext der Umschichtung zaehlt, was WIRKLICH lief; die Anzeige liest plan.kleinst || []
+ * Teil B und C - Splits und Ausschuettungen (96.3 bis 96.5, Uebersicht dort).
  * Gegenproben: mfdepot.js wird aus geaendertem Quelltext geladen (der Abschnitt zwischen KONFIG_FELDER und takt ist
  * fensterlos und laesst sich in Node ausfuehren). Jede geaenderte Fassung muss an den Pruefungen oben auffallen. */
 console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen in den Buechern');
@@ -22957,6 +22958,312 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
   ok(mfd96.indexOf("(mom.plan.kleinst || [])") >= 0 && !/[^(]mom\.plan\.kleinst\./.test(mfd96) && !/[^(]plan\.kleinst\./.test(mfd96),
     '96.2 die Anzeige und das Journal lesen plan.kleinst || [] - ohne Schalter fehlt das Feld');
 
+  /* ======================= Teil B und C: Splits und Ausschuettungen =======================
+   *   96.3 kurse.js: zerlege liefert die Ereignisse derselben Antwort (Testdatei = gekuerzte echte Antwort fuer NVDA);
+   *        ohne den Schalter zeichengleich wie die Fassung vor Nr. 87 (unten eingefroren)
+   *   96.4 mfhandel.js: bucheMassnahmen von Hand (Regeln 1-6 des Auftrags), stempleKursT, der Journaltext
+   *   96.5 die Verdrahtung: Ablage vor dem Index, barZeit aus dem Lader, buchen vor dem Planen und unabhaengig von den Schaltern */
+  var Ku = require('./kurse.js');
+  var TEXT96 = fs.readFileSync(__dirname + '/test-daten/yahoo-nvda-ereignisse.json', 'utf8');
+
+  /* ---- 96.3 zerlege mit Ereignissen ---- */
+  /* Altfassung von zerlege, wie sie bis Nr. 87 in kurse.js stand (woertlich, ohne die Kommentare) */
+  function zerlegeAlt(text, o) {
+    o = o || {};
+    var j;
+    try { j = JSON.parse(text); } catch (e) { return null; }
+    var r = j && j.chart && j.chart.result && j.chart.result[0];
+    if (!r) return null;
+    var ind = r.indicators || {};
+    var q = (ind.quote && ind.quote[0]) || {};
+    var ts = r.timestamp || [];
+    var roh = q.close || [];
+    var feld = 'close';
+    var schluss = roh;
+    if (o.bereinigt) {
+      var adj = (ind.adjclose && ind.adjclose[0]) || {};
+      if (adj.adjclose && adj.adjclose.length) { schluss = adj.adjclose; feld = 'adjclose'; }
+    }
+    var his = q.high || [], los = q.low || [], vols = q.volume || [], ops = q.open || [];
+    var bars = [], verworfen = 0;
+    for (var i = 0; i < ts.length; i++) {
+      var c = schluss[i];
+      if (!Ku.kursOk(c)) { verworfen++; continue; }
+      var hi = Ku.kursOk(his[i]) ? his[i] : c;
+      var lo = Ku.kursOk(los[i]) ? los[i] : c;
+      if (lo > hi) { var tausch = hi; hi = lo; lo = tausch; }
+      var op = Ku.kursOk(ops[i]) ? ops[i] : (o.offenRoh ? null : c);
+      var vo = (typeof vols[i] === 'number' && isFinite(vols[i])) ? vols[i] : 0;
+      bars.push([ts[i] * 1000, c, vo, hi, lo, op]);
+    }
+    var ausserhalbFenster = 0;
+    if (o.von != null && o.bis != null) {
+      var vorFilter = bars.length;
+      bars = bars.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });
+      ausserhalbFenster = vorFilter - bars.length;
+    }
+    return { bars: bars, meta: r.meta || {}, verworfen: verworfen, gesamt: ts.length, feld: feld, ausserhalbFenster: ausserhalbFenster };
+  }
+  /* Die Zahlen der Testdatei: 78 Tagesbalken vom 26.02.2024 bis 14.06.2024; Ausschuettung am 05.03.2024 (14:30 UTC, Winterzeit)
+   * 0,004 $ - gezahlt wurden damals 0,04 $ je Stueck, der Split 10:1 folgte am 10.06.2024 (13:30 UTC); Ausschuettung am 11.06.2024 0,01 $. */
+  var D1 = 1709649000000, SP = 1718026200000, D2 = 1718112600000;
+  function pruefeZerlege(K) {
+    var mit = K.zerlege(TEXT96, { bereinigt: true, ereignisse: true }), ohne = K.zerlege(TEXT96, { bereinigt: true });
+    var zeiten = {}; ((mit && mit.bars) || []).forEach(function (b) { zeiten[b[0]] = true; });
+    var e = (mit && mit.ereignisse) || { div: [], split: [] };
+    var OPT = [undefined, { bereinigt: true }, { bereinigt: false }, { bereinigt: true, offenRoh: true }, { bereinigt: true, von: 1709000000000, bis: 1718000000000 }];
+    var j = JSON.parse(TEXT96), ohneFeld = JSON.parse(TEXT96), kaputt = JSON.parse(TEXT96);
+    delete ohneFeld.chart.result[0].events;
+    var oe = K.zerlege(JSON.stringify(ohneFeld), { bereinigt: true, ereignisse: true });
+    kaputt.chart.result[0].events = { dividends: { '1709649000': { amount: 0, date: 1709649000 }, '1709735400': { amount: -1, date: 1709735400 },
+      '1709821800': { amount: 'x', date: 1709821800 }, '1718112600': { amount: 0.01 }, '1718199000': null },
+    splits: { '1718026200': { date: 1718026200, numerator: 10, denominator: 0 }, '1718112600': { date: 1718112600, numerator: 1, denominator: 1 },
+      '1718199000': { numerator: 3, denominator: 2 } } };
+    var ke = K.zerlege(JSON.stringify(kaputt), { bereinigt: true, ereignisse: true });
+    var fenster = K.zerlege(TEXT96, { bereinigt: true, ereignisse: true, von: 1709000000000, bis: 1718100000000 });
+    var ab = K.ereignisseAb(e, SP);
+    return [
+      [!!mit && mit.bars.length === 78 && JSON.stringify(e.div) === JSON.stringify([[D1, 0.004], [D2, 0.01]]) && JSON.stringify(e.split) === JSON.stringify([[SP, 10, 1]]),
+        '96.3 zerlege liefert aus der echten Antwort die Ereignisse: zwei Ausschuettungen [tMs, Betrag], ein Split [tMs, Zaehler, Nenner], nach Zeit', JSON.stringify(e)],
+      [zeiten[D1] === true && zeiten[SP] === true && zeiten[D2] === true && j.chart.result[0].events.dividends['1709649000'].amount === 0.004,
+        '96.3 jedes Ereignis traegt den Zeitstempel des Tagesbalkens seines Ex-Tags; die Ausschuettung VOR dem Split steht in heutiger Stueckelung (0,004 statt gezahlter 0,04)'],
+      [!!ohne && !('ereignisse' in ohne) && Object.keys(ohne).join(',') === 'bars,meta,verworfen,gesamt,feld,ausserhalbFenster' &&
+        OPT.every(function (o) { return JSON.stringify(K.zerlege(TEXT96, o)) === JSON.stringify(zerlegeAlt(TEXT96, o)); }) &&
+        JSON.stringify(Object.assign({}, mit, { ereignisse: undefined })) === JSON.stringify(ohne),
+      '96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben'],
+      [!!oe && oe.bars.length === 78 && JSON.stringify(oe.ereignisse) === '{"div":[],"split":[]}', '96.3 Antwort ohne das Feld events: leere Listen, die Balken wie sonst'],
+      [K.zerlege('', { bereinigt: true, ereignisse: true }) === null && K.zerlege('{"chart":{"result":null,"error":null}}', { bereinigt: true, ereignisse: true }) === null &&
+        K.zerlege('{"chart":{"result":[]}}', { bereinigt: true, ereignisse: true }) === null && K.zerlege('{}', { bereinigt: true, ereignisse: true }) === null,
+      '96.3 leere Antwort mit HTTP 200 (kein Text, result null, result leer): null wie bisher'],
+      [!!ke && JSON.stringify(ke.ereignisse) === JSON.stringify({ div: [[D2, 0.01]], split: [[1718199000000, 3, 2]] }),
+        '96.3 unbrauchbare Ereignisse fliegen raus (Betrag 0, negativ, keine Zahl, leerer Eintrag, Nenner 0, Split 1 : 1); fehlt date, gilt der Schluessel', ke && JSON.stringify(ke.ereignisse)],
+      [!!fenster && JSON.stringify(fenster.ereignisse) === JSON.stringify({ div: [[D1, 0.004]], split: [[SP, 10, 1]] }),
+        '96.3 Ereignisse ausserhalb des angefragten Fensters fliegen raus - wie die Balken', fenster && JSON.stringify(fenster.ereignisse)],
+      [JSON.stringify(ab) === JSON.stringify({ div: [[D2, 0.01]], split: [[SP, 10, 1]] }) && e.div.length === 2 && JSON.stringify(K.ereignisseAb(null, 5)) === '{"div":[],"split":[]}',
+        '96.3 ereignisseAb schneidet auf die Ereignisse ab einem Zeitpunkt (einschliesslich), ohne die Vorlage zu aendern'],
+      [K.url('NVDA', { von: 0, bis: 5000, interval: '1d', ereignisse: true }) === 'https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=0&period2=5&interval=1d&events=div%2Csplits' &&
+        K.url('NVDA', { von: 0, bis: 5000, interval: '1d' }) === 'https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=0&period2=5&interval=1d',
+      '96.3 die Adresse traegt events=div,splits nur mit dem Schalter - derselbe Abruf, kein zweiter']
+    ];
+  }
+  melde(pruefeZerlege(Ku));
+  probe((async function () {
+    var gerufen = [];
+    var L = Ku.baueLader({ fetchText: async function (u) { gerufen.push(u); return { ok: true, status: 200, body: TEXT96 }; } }, function () { return Promise.resolve(); });
+    var a = await L.hole('NVDA', { von: 0, bis: 1800000000000, interval: '1d', bereinigt: true, ereignisse: true });
+    var b = await L.hole('NVDA', { von: 0, bis: 1800000000000, interval: '1d', bereinigt: true });
+    ok(gerufen.length === 2 && /&events=div%2Csplits$/.test(gerufen[0]) && gerufen[1].indexOf('events') === -1 && !!a && a.ereignisse.div.length === 2 &&
+       a.ereignisse.split.length === 1 && !!b && !('ereignisse' in b),
+    '96.3 Kurse.hole reicht den Schalter an Adresse UND Zerlegung: ein Abruf je Wert, Ereignisse in derselben Antwort', gerufen.length + ' Abrufe');
+  })());
+
+  /* ---- 96.4 bucheMassnahmen von Hand ----
+   * ex(n) = Zeitstempel des Tagesbalkens am n. September 2026 (13:30 UTC). Eine Position P(...) wurde zum Kurs des Balkens
+   * kursT gekauft; seit (die Uhrzeit des Kaufs) liegt fuenf Stunden dahinter. */
+  var TAG = 86400000, STD = 3600000;
+  function ex(n) { return Date.UTC(2026, 8, 1, 13, 30) + (n - 1) * TAG; }
+  function P(sym, stueck, einstand, kursT, mehr) {
+    var p = { sym: sym, stueck: stueck, einstand: einstand, seit: kursT + 5 * STD, kursT: kursT };
+    Object.keys(mehr || {}).forEach(function (k) { p[k] = mehr[k]; });
+    return p;
+  }
+  function B(cash, ps) { return { cash: cash, positionen: ps, trades: [{ t: 1, sym: 'X', art: 'kauf', stueck: 1, kurs: 1 }] }; }
+  function E(div, split) { return { div: div || [], split: split || [] }; }
+  function nah96(a, b) { return Math.abs(a - b) < 1e-9; }
+  function pruefeBuchung(M) {
+    var L = [], NOW = ex(12) + STD;
+    /* (1) Split 2 : 1, Kauf: 10 Stueck zu 100 $ -> 20 Stueck zu 50 $; der Wert (1000 $) ist vor der Buchung zum alten Kurs und danach zum neuen derselbe */
+    var b1 = B(0, [P('A', 10, 100, ex(1))]), vor1 = M.bewerte(b1, { A: 100 }).wert, r1 = M.bucheMassnahmen(b1, { A: E([], [[ex(3), 2, 1]]) }, { A: ex(3) }, NOW);
+    L.push([b1.positionen[0].stueck === 20 && b1.positionen[0].einstand === 50 && vor1 === 1000 && M.bewerte(b1, { A: 50 }).wert === 1000 && r1.buchungen.length === 1 &&
+      r1.buchungen[0].art === 'split' && r1.buchungen[0].t === ex(3) && r1.buchungen[0].stueckAlt === 10 && r1.buchungen[0].stueckNeu === 20 && r1.buchungen[0].am === NOW &&
+      r1.buchungen[0].kaufT === ex(1) && b1.positionen[0].gebucht.join() === 'split:' + ex(3) && b1.cash === 0,
+    '96.4 Split 2 : 1 (Kauf): Stueck × 2, Einstand / 2 - der Wert der Position ist vor und nach der Buchung gleich (ohne Buchung: Scheinverlust von 50 %)', b1.positionen[0].stueck]);
+    /* (2) Split 1 : 10, Kauf: 10 Stueck zu 100 $ -> 1 Stueck zu 1000 $ */
+    var b2 = B(0, [P('A', 10, 100, ex(1))]); M.bucheMassnahmen(b2, { A: E([], [[ex(3), 1, 10]]) }, { A: ex(3) }, NOW);
+    L.push([b2.positionen[0].stueck === 1 && b2.positionen[0].einstand === 1000 && M.bewerte(b2, { A: 1000 }).wert === 1000,
+      '96.4 Split 1 : 10 (Zusammenlegung, Kauf): Stueck / 10, Einstand × 10 - Wert gleich', b2.positionen[0].stueck]);
+    /* (3) Leerverkauf: 10 Stueck zu 100 $, Kurs 90 -> Wert 10 × (200 - 90) = 1100; nach 2 : 1 bei Kurs 45: 20 × (100 - 45) = 1100; nach 1 : 10 bei Kurs 900: 1 × (2000 - 900) = 1100 */
+    var b3 = B(0, [P('S', 10, 100, ex(1), { richtung: -1 })]), vor3 = M.bewerteDrift(b3, { S: 90 }).wert, b3b = kopie(b3);
+    M.bucheMassnahmen(b3, { S: E([], [[ex(3), 2, 1]]) }, { S: ex(3) }, NOW); M.bucheMassnahmen(b3b, { S: E([], [[ex(3), 1, 10]]) }, { S: ex(3) }, NOW);
+    L.push([vor3 === 1100 && b3.positionen[0].stueck === 20 && b3.positionen[0].einstand === 50 && M.bewerteDrift(b3, { S: 45 }).wert === 1100 &&
+      b3b.positionen[0].stueck === 1 && b3b.positionen[0].einstand === 1000 && M.bewerteDrift(b3b, { S: 900 }).wert === 1100,
+    '96.4 Split im Leerverkauf (2 : 1 und 1 : 10): gebucht wie beim Kauf - der Wert der Position bleibt gleich', M.bewerteDrift(b3, { S: 45 }).wert]);
+    /* (4) Ausschuettung 0,50 $ je Stueck auf 10 Stueck: Kauf + 5 $, Leerverkauf - 5 $ */
+    var b4 = B(100, [P('A', 10, 100, ex(1))]), r4 = M.bucheMassnahmen(b4, { A: E([[ex(3), 0.5]]) }, { A: ex(3) }, NOW);
+    var b4s = B(100, [P('S', 10, 100, ex(1), { richtung: -1 })]), r4s = M.bucheMassnahmen(b4s, { S: E([[ex(3), 0.5]]) }, { S: ex(3) }, NOW);
+    L.push([b4.cash === 105 && r4.buchungen.length === 1 && r4.buchungen[0].art === 'div' && r4.buchungen[0].betrag === 0.5 && r4.buchungen[0].stueck === 10 &&
+      r4.buchungen[0].summe === 5 && r4.buchungen[0].richtung === 1 && b4.positionen[0].stueck === 10 && b4.positionen[0].gebucht.join() === 'div:' + ex(3),
+    '96.4 Ausschuettung (Kauf): Bargeld + Stueck × Betrag, die Position bleibt', b4.cash]);
+    L.push([b4s.cash === 95 && r4s.buchungen[0].summe === -5 && r4s.buchungen[0].richtung === -1, '96.4 Ausschuettung (Leerverkauf): Bargeld - Stueck × Betrag', b4s.cash]);
+    /* (5) Ausschuettung VOR und Split NACH ihr im selben Lauf: gemeldet 0,50 $ in heutiger Stueckelung (gezahlt wurde 1,00 $ je altem Stueck).
+     *     Erst der Split (10 -> 20 Stueck), dann 20 × 0,50 = 10 $ - dasselbe wie 10 alte Stueck × 1,00 $. */
+    var b5 = B(0, [P('A', 10, 100, ex(1))]), r5 = M.bucheMassnahmen(b5, { A: E([[ex(2), 0.5]], [[ex(4), 2, 1]]) }, { A: ex(4) }, NOW);
+    L.push([b5.cash === 10 && b5.positionen[0].stueck === 20 && r5.buchungen.length === 2 && r5.buchungen[0].art === 'split' && r5.buchungen[1].art === 'div' &&
+      r5.buchungen[1].stueck === 20 && b5.positionen[0].gebucht.join() === 'split:' + ex(4) + ',div:' + ex(2),
+    '96.4 Ausschuettung vor und Split nach ihr im selben Lauf: erst der Split, dann die Ausschuettung mit der Stueckzahl NACH dem Split (10 $, nicht 5 $)', b5.cash]);
+    /* (6) Kauf am Ex-Tag zum Kurs des Ex-Tags: der Kurs enthielt Abschlag und Split schon - nichts buchen */
+    var b6 = B(7, [P('A', 10, 100, ex(3))]), r6 = M.bucheMassnahmen(b6, { A: E([[ex(3), 0.5]], [[ex(3), 2, 1]]) }, { A: ex(5) }, NOW);
+    L.push([b6.cash === 7 && b6.positionen[0].stueck === 10 && r6.buchungen.length === 0 && !('gebucht' in b6.positionen[0]) && !('massnahmen' in b6),
+      '96.4 Kauf am Ex-Tag zum Kurs des Ex-Tags: nichts wird gebucht (t muss NACH dem Beginn liegen)', b6.cash]);
+    /* (7) Kauf zum Kurs des Vortags: gebucht wird erst, wenn der gespeicherte Kurs den Ex-Tag enthaelt */
+    var b7 = B(0, [P('A', 10, 100, ex(2))]), er7 = { A: E([[ex(3), 0.5]]) };
+    var r7a = M.bucheMassnahmen(b7, er7, { A: ex(2) }, NOW), cash7a = b7.cash, r7b = M.bucheMassnahmen(b7, er7, { A: ex(3) }, NOW);
+    var b7l = B(0, [P('A', 10, 100, ex(2))]); M.bucheMassnahmen(b7l, er7, { A: ex(3) + 4 * STD }, NOW);
+    L.push([r7a.buchungen.length === 0 && cash7a === 0 && r7b.buchungen.length === 1 && b7.cash === 5 && b7l.cash === 5,
+      '96.4 Kauf zum Kurs des Vortags: nicht gebucht, solange der juengste gespeicherte Balken vor dem Ex-Tag liegt - gebucht, sobald er ihn enthaelt (auch als laufender Balken)', cash7a + ' -> ' + b7.cash]);
+    /* (8) Position von vor Nr. 87 (kein kursT): Beginn = seit. Drei Ausschuettungen: am Kauftag vor dem Kauf (nicht), danach zwei (beide) */
+    var b8 = B(0, [{ sym: 'A', stueck: 10, einstand: 100, seit: ex(2) + 4.75 * STD }]);
+    var er8 = { A: E([[ex(2), 0.3], [ex(3), 0.5], [ex(10), 0.2]]) }, r8 = M.bucheMassnahmen(b8, er8, { A: ex(10) }, NOW);
+    L.push([nah96(b8.cash, 7) && r8.buchungen.length === 2 && r8.buchungen[0].t === ex(3) && r8.buchungen[1].t === ex(10) && r8.buchungen[0].kaufT === ex(2) + 4.75 * STD &&
+      b8.positionen[0].gebucht.join() === 'div:' + ex(3) + ',div:' + ex(10) && !('kursT' in b8.positionen[0]),
+    '96.4 Position ohne kursT: Beginn ist seit; mehrere Ausschuettungen im Fenster werden alle gebucht, die vom Kauftag selbst nicht', b8.cash]);
+    /* (9) zweiter Aufruf mit denselben Daten */
+    var cash8 = b8.cash, r9 = M.bucheMassnahmen(b8, er8, { A: ex(10) }, NOW + 1), r9b = M.bucheMassnahmen(b5, { A: E([[ex(2), 0.5]], [[ex(4), 2, 1]]) }, { A: ex(4) }, NOW + 1);
+    L.push([r9.buchungen.length === 0 && b8.cash === cash8 && r9b.buchungen.length === 0 && b5.cash === 10 && b5.positionen[0].stueck === 20 && b8.massnahmen.length === 2,
+      '96.4 ein zweiter Aufruf mit denselben Daten bucht nichts (Merker p.gebucht)', r9.buchungen.length + r9b.buchungen.length]);
+    /* (10) Sperre: zweiter Split 20 Tage nach dem gebuchten -> nicht gebucht, gemeldet (einmal neu); genau 30 Tage -> gesperrt; 31 Tage -> gebucht */
+    var b10 = B(0, [P('A', 10, 100, ex(1))]), er10 = { A: E([], [[ex(3), 2, 1], [ex(3) + 20 * TAG, 2, 1]]) };
+    var r10 = M.bucheMassnahmen(b10, er10, { A: ex(3) + 25 * TAG }, NOW), r10b = M.bucheMassnahmen(b10, er10, { A: ex(3) + 25 * TAG }, NOW + 1);
+    var b30 = B(0, [P('A', 10, 100, ex(1))]), r30 = M.bucheMassnahmen(b30, { A: E([], [[ex(3), 2, 1], [ex(3) + 30 * TAG, 2, 1]]) }, { A: ex(3) + 40 * TAG }, NOW);
+    var b31 = B(0, [P('A', 10, 100, ex(1))]), r31 = M.bucheMassnahmen(b31, { A: E([], [[ex(3), 2, 1], [ex(3) + 31 * TAG, 2, 1]]) }, { A: ex(3) + 40 * TAG }, NOW);
+    L.push([b10.positionen[0].stueck === 20 && r10.buchungen.length === 1 && r10.gesperrt.length === 1 && r10.gesperrt[0].neu === true && r10.gesperrt[0].t === ex(3) + 20 * TAG &&
+      r10.gesperrt[0].gebuchtT === ex(3) && r10b.buchungen.length === 0 && r10b.gesperrt.length === 1 && r10b.gesperrt[0].neu === false && b10.positionen[0].stueck === 20 &&
+      b10.positionen[0].gebucht.length === 1,
+    '96.4 Sperre: ein zweiter Split binnen 30 Kalendertagen wird nicht gebucht, sondern gemeldet - beim ersten Mal als neu, danach nicht mehr', b10.positionen[0].stueck]);
+    L.push([b30.positionen[0].stueck === 20 && r30.gesperrt.length === 1 && b31.positionen[0].stueck === 40 && r31.gesperrt.length === 0 && r31.buchungen.length === 2,
+      '96.4 Sperre: genau 30 Tage Abstand ist gesperrt, 31 Tage wird gebucht', b30.positionen[0].stueck + ' / ' + b31.positionen[0].stueck]);
+    /* (11) nicht gehaltener Wert, fehlende Ereignisse, fehlender Balken */
+    var b11 = B(3, [P('A', 10, 100, ex(1))]), er11 = { Z: E([[ex(3), 0.5]], [[ex(3), 2, 1]]) }, leer = [
+      M.bucheMassnahmen(b11, er11, { A: ex(5), Z: ex(5) }, NOW), M.bucheMassnahmen(b11, null, { A: ex(5) }, NOW), M.bucheMassnahmen(b11, {}, { A: ex(5) }, NOW),
+      M.bucheMassnahmen(b11, { A: E([[ex(3), 0.5]]) }, null, NOW), M.bucheMassnahmen(b11, { A: E([[ex(3), 0.5]]) }, {}, NOW), M.bucheMassnahmen(b11, { A: {} }, { A: ex(5) }, NOW),
+      M.bucheMassnahmen({ cash: 1 }, { A: E([[ex(3), 0.5]]) }, { A: ex(5) }, NOW)];
+    L.push([leer.every(function (r) { return r.buchungen.length === 0 && r.gesperrt.length === 0; }) && b11.cash === 3 && b11.positionen[0].stueck === 10 && !('gebucht' in b11.positionen[0]),
+      '96.4 Ereignis fuer einen nicht gehaltenen Wert, fehlende Ereignisse, fehlender Balken, Buch ohne Positionen: es geschieht nichts']);
+    /* (12) derselbe Wert in beiden Buechern: jedes bucht fuer sich; trades bleiben, wie sie sind */
+    var bm = B(0, [P('A', 10, 100, ex(1))]), bd = B(0, [P('A', 4, 100, ex(1), { richtung: 1 })]), er12 = { A: E([[ex(3), 0.5]]) };
+    M.bucheMassnahmen(bm, er12, { A: ex(3) }, NOW); M.bucheMassnahmen(bd, er12, { A: ex(3) }, NOW);
+    L.push([bm.cash === 5 && bd.cash === 2 && bm.trades.length === 1 && bd.trades.length === 1 && bm.massnahmen.length === 1 && bm.massnahmen[0].art === 'div' && bm.massnahmen[0].am === NOW,
+      '96.4 derselbe Wert in beiden Buechern: jedes Buch bucht fuer sich; nichts davon steht in buch.trades (dafuer in buch.massnahmen)', bm.cash + ' / ' + bd.cash]);
+    /* (13) stempleKursT und der Weg ueber eine Umschichtung: neue Positionen tragen den Balken, zu dessen Kurs gekauft wurde */
+    var bs = { cash: 0, positionen: [{ sym: 'A', seit: NOW }, { sym: 'Bx', seit: NOW - 1 }, { sym: 'C', seit: NOW }, { sym: 'D', seit: NOW, kursT: 5 }] };
+    var nS = M.stempleKursT(bs, { A: ex(9), Bx: ex(9), D: ex(9) }, NOW);
+    var bu = { cash: 3000, positionen: [], trades: [] }, plan = M.planeUmschichtung(['A', 'B'], bu, { A: 100, B: 50 }, { kleinstAnteil: 0.05 });
+    M.fuehreAus(bu, plan, NOW, 20, { kleinstAnteil: 0.05 }); M.stempleKursT(bu, { A: ex(9), B: ex(8) }, NOW);
+    var cashU = bu.cash, rU = M.bucheMassnahmen(bu, { A: E([[ex(9), 1]]), B: E([[ex(9), 1]]) }, { A: ex(9), B: ex(9) }, NOW);
+    L.push([nS === 1 && bs.positionen[0].kursT === ex(9) && !('kursT' in bs.positionen[1]) && !('kursT' in bs.positionen[2]) && bs.positionen[3].kursT === 5 &&
+      M.stempleKursT(null, {}, NOW) === 0 && M.stempleKursT(bs, null, NOW) === 0,
+    '96.4 stempleKursT: nur neue Positionen (seit === jetzt) ohne Stempel bekommen den Balken ihres Werts', nS]);
+    L.push([bu.positionen.length === 2 && bu.positionen[0].kursT === ex(9) && bu.positionen[1].kursT === ex(8) && rU.buchungen.length === 1 && rU.buchungen[0].sym === 'B' &&
+      nah96(bu.cash - cashU, bu.positionen[1].stueck),
+    '96.4 nach einer Umschichtung: A (gekauft zum Kurs des Ex-Tags) bekommt nichts, B (gekauft zum Kurs des Vortags) die Ausschuettung', rU.buchungen.length]);
+    return L;
+  }
+  melde(pruefeBuchung(MH));
+
+  /* Der Journaltext: je Takt und Buch eine Zeile, nur wenn gebucht wurde */
+  function pruefeJournal(M) {
+    var NOW = ex(12) + STD;
+    var b = B(0, [{ sym: 'A', stueck: 10, einstand: 100, seit: ex(2) + 4.75 * STD }, P('N', 10, 100, ex(1))]);
+    var r = M.bucheMassnahmen(b, { A: E([[ex(3), 0.5], [ex(10), 0.2]]), N: E([[ex(11), 0.25]], [[ex(4), 2, 1]]) }, { A: ex(11), N: ex(11) }, NOW);
+    var j = M.massnahmenJournal('momentum', r, NOW) || { applied: [], txt: '' };
+    var frisch = B(0, [P('A', 10, 100, ex(10))]), rf = M.bucheMassnahmen(frisch, { A: E([[ex(11), 0.5]]) }, { A: ex(11) }, NOW), jf = M.massnahmenJournal('momentum', rf, NOW) || { applied: [], txt: '' };
+    var kurz = B(0, [P('S', 10, 100, ex(10), { richtung: -1 })]), rk = M.bucheMassnahmen(kurz, { S: E([[ex(11), 0.5]]) }, { S: ex(11) }, NOW), jk = M.massnahmenJournal('drift', rk, NOW) || { applied: [], txt: '' };
+    var sp = B(0, [P('A', 10, 100, ex(1))]), er = { A: E([], [[ex(3), 2, 1], [ex(8), 2, 1]]) }, rs = M.bucheMassnahmen(sp, er, { A: ex(9) }, NOW), js = M.massnahmenJournal('momentum', rs, NOW) || { applied: [], txt: '' };
+    var rs2 = M.bucheMassnahmen(sp, er, { A: ex(9) }, NOW + 1);
+    /* alle Posten vom selben Kauftag: der Satz nennt ihn einmal, die Posten nicht */
+    var ein = B(0, [{ sym: 'A', stueck: 10, einstand: 100, seit: ex(2) + 4.75 * STD }, { sym: 'C', stueck: 2, einstand: 100, seit: ex(2) + 4.75 * STD }]);
+    var je = M.massnahmenJournal('momentum', M.bucheMassnahmen(ein, { A: E([[ex(3), 0.5]]), C: E([[ex(4), 1]]) }, { A: ex(11), C: ex(11) }, NOW), NOW) || { applied: [], txt: '' };
+    return [
+      [j.applied.length === 2 && j.applied[0] === 'Momentum-Buch: Ausschüttungen gutgeschrieben: 3 Buchungen, Summe 12,00 $' && j.applied[1] === 'Momentum-Buch: Split gebucht: N 2 : 1',
+        '96.4 Journal: die Kopfzeile nennt Zahl und Summe der Ausschuettungen und den Split', j.applied.join(' | ')],
+      [j.txt.indexOf('A 03.09.2026 0,5 $ × 10 = 5,00 $') >= 0 && j.txt.indexOf('A 10.09.2026 0,2 $ × 10 = 2,00 $') >= 0 && j.txt.indexOf('N 11.09.2026 0,25 $ × 20 = 5,00 $') >= 0 &&
+        j.txt.indexOf('Split gebucht: N 2 : 1, Stück 10 → 20, Einstand 100,00 $ → 50,00 $') >= 0 && /Simulation mit virtuellem Kapital, keine Anlageberatung\.$/.test(j.txt),
+      '96.4 Journal: die Einzelposten stehen im Text (Wert, Ex-Tag, Betrag je Stueck, Stueck, Summe), der Split mit Stueck und Einstand alt → neu'],
+      [j.txt.indexOf('Nachtrag seit dem jeweiligen Kauf (je Posten genannt): nachgeholt wird') >= 0 && j.txt.indexOf('= 5,00 $ (Kauf 02.09.2026)') >= 0 &&
+        j.txt.indexOf('= 5,00 $ (Kauf 01.09.2026)') >= 0 && je.txt.indexOf('Nachtrag seit dem Kauf am 02.09.2026: nachgeholt wird') >= 0 && je.txt.indexOf('(Kauf ') === -1 &&
+        !/Nachtrag/.test(jf.txt) && jf.applied[0] === 'Momentum-Buch: Ausschüttungen gutgeschrieben: 1 Buchung, Summe 5,00 $',
+      '96.4 Journal: liegt ein Ex-Tag mehr als vier Tage zurueck, sagt der Text "Nachtrag seit dem Kauf am …" - bei einer frischen Buchung nicht'],
+      [jk.applied[0] === 'Ergebnis-Drift-Buch: Ausschüttungen gebucht (Gutschrift bei Kauf, Belastung bei Leerverkauf): 1 Buchung, Summe −5,00 $' && jk.txt.indexOf('= −5,00 $ (Leerverkauf)') >= 0,
+        '96.4 Journal: im Drift-Buch heisst die Belastung eines Leerverkaufs Belastung', jk.applied[0]],
+      [js.applied.length === 2 && /Split NICHT gebucht \(Sperre\): A 2 : 1/.test(js.applied[1]) && js.txt.indexOf('vom 08.09.2026') >= 0 && js.txt.indexOf('Split vom 03.09.2026') >= 0 &&
+        M.massnahmenJournal('momentum', rs2, NOW + 1) === null && M.massnahmenJournal('momentum', { buchungen: [], gesperrt: [] }, NOW) === null,
+      '96.4 Journal: ein gesperrter Split wird einmal gemeldet; ohne Buchung und ohne neue Sperre gibt es keine Zeile']
+    ];
+  }
+  melde(pruefeJournal(MH));
+
+  /* ---- 96.5 die Verdrahtung ---- */
+  /* (a) massnahmenBuchen aus mfdepot.js (liegt im selben fensterlosen Abschnitt wie die Umstellung): beide Buecher, Schalter egal, je Buch eine Zeile */
+  function pruefeVerdrahtung(quelle) {
+    var a = quelle.indexOf('var KONFIG_FELDER'), b = quelle.indexOf('async function takt(');
+    if (a < 0 || b < a) return [[false, '96.5 massnahmenBuchen laesst sich laden']];
+    var buchen;
+    try { buchen = new Function(quelle.slice(a, b) + '\nreturn typeof massnahmenBuchen === "function" ? massnahmenBuchen : null;')(); } catch (e) { buchen = null; }
+    if (!buchen) return [[false, '96.5 massnahmenBuchen laesst sich laden']];
+    var NOW = ex(12) + STD;
+    var d = { momentumAn: false, driftAn: false, mfBuch: B(0, [P('A', 10, 100, ex(10))]), driftBuch: B(100, [P('A', 4, 100, ex(10), { richtung: -1 }), P('Q', 1, 10, ex(10), { richtung: 1 })]) };
+    var daten = { ereignisse: { A: E([[ex(11), 0.5]]) }, barZeit: { A: ex(11), Q: ex(11) } };
+    var g1 = buchen(MH, d, daten, NOW), n1 = (d.tuneLog || []).length, g2 = buchen(MH, d, daten, NOW + 1), n2 = (d.tuneLog || []).length;
+    var ohne = { mfBuch: B(0, [P('A', 10, 100, ex(10))]) }, g3 = buchen(MH, ohne, { ereignisse: null, barZeit: { A: ex(11) } }, NOW);
+    var z = d.tuneLog || [{}, {}];
+    return [
+      [g1 === true && d.mfBuch.cash === 5 && d.driftBuch.cash === 98 && n1 === 2, '96.5 mfdepot.js bucht fuer BEIDE Buecher, auch wenn beide Schalter aus sind', d.mfBuch.cash + ' / ' + d.driftBuch.cash],
+      [n1 === 2 && z[1].id === 'mfmass-momentum-' + NOW && z[0].id === 'mfmass-drift-' + NOW && z[0].at === NOW && z[0].quelle === 'automatik' &&
+        /^Momentum-Buch: Ausschüttungen gutgeschrieben: 1 Buchung/.test(z[1].applied[0]) && /^Ergebnis-Drift-Buch: /.test(z[0].applied[0]) && /Simulation/.test(z[0].txt),
+      '96.5 je Takt und Buch genau eine Journalzeile, wenn gebucht wurde', n1],
+      [g2 === false && n2 === 2 && d.mfBuch.cash === 5, '96.5 der zweite Takt bucht nichts und schreibt keine Zeile', n2],
+      [g3 === false && !ohne.tuneLog && ohne.mfBuch.cash === 0, '96.5 ohne Ereignis-Bestand (vor dem ersten Laden nach dem Update) geschieht nichts; ein fehlendes Drift-Buch stoert nicht']
+    ];
+  }
+  melde(pruefeVerdrahtung(mfdQ));
+  /* (b) die Reihenfolge im Takt, am Quelltext: buchen nach dem Laden und vor jedem Planen, ausserhalb der Schalter; kursT gleich nach dem Handel */
+  var taktQ = mfd96.slice(mfd96.indexOf('async function takt('), mfd96.indexOf('function zeige('));
+  var iBuchen = taktQ.indexOf('if (massnahmenBuchen(MH, d, daten, now)) speichern();');
+  ok(iBuchen > 0 && taktQ.split('massnahmenBuchen(').length === 2 && iBuchen > taktQ.indexOf('var daten = await ladeKurse();') &&
+     iBuchen < taktQ.indexOf('MH.rebalanceFaellig(') && iBuchen < taktQ.indexOf('MH.planeUmschichtung(') && iBuchen < taktQ.indexOf('MH.driftAbgleich(') &&
+     iBuchen < taktQ.indexOf('d.momentumAn') && iBuchen < taktQ.indexOf('d.driftAn'),
+  '96.5 im Takt wird einmal gebucht: nach dem Laden, vor dem Planen beider Buecher und vor (ausserhalb) der Abfrage der Schalter');
+  ok(/MH\.fuehreAus\(d\.mfBuch, plan, now, 20, \{ kleinstAnteil: KONFIG\.kleinstAnteil \}\);\s*MH\.stempleKursT\(d\.mfBuch, daten\.barZeit, now\);/.test(taktQ) &&
+     /getanD = MH\.driftAbgleich\(d\.driftBuch, heute, daten\.preise, now, \{\}\);\s*MH\.stempleKursT\(d\.driftBuch, daten\.barZeit, now\);/.test(taktQ) &&
+     taktQ.split('MH.stempleKursT(').length === 3,
+  '96.5 neue Positionen bekommen kursT gleich nach fuehreAus bzw. nach dem (echten) driftAbgleich');
+  /* (c) der Lader liefert barZeit und die Ereignisse; (d) die Ablage schreibt mf_ereignisse nach den Teilen und vor dem Index */
+  var mfrQ = fs.readFileSync(__dirname + '/mittelfrist.js', 'utf8'), mfr96 = ohneKommentare(mfrQ);
+  probe((async function () {
+    var ablage = { mf_ereignisse: { at: 5, sym: { A: E([[ex(3), 0.5]]) } } };
+    var fenster = { MF: { tagesdatenLesen: async function () { return { at: 7, roh: { A: [[ex(1), 10, 5], [ex(2), 11, 6]], Bx: [[ex(1), 20, 5]], C: [] } }; } },
+      api: { storeGet: async function (k) { return ablage[k] || null; } } };
+    var qa = mfdQ.indexOf('async function ladeKurse()'), qb = mfdQ.indexOf('var MARKT = null;');
+    var lade = new Function('window', mfdQ.slice(qa, qb) + '\nreturn ladeKurse;')(fenster);
+    var k = await lade();
+    delete ablage.mf_ereignisse;
+    var k2 = await lade();
+    ok(JSON.stringify(k.barZeit) === JSON.stringify({ A: ex(2), Bx: ex(1) }) && k.preise.A === 11 && k.preise.Bx === 20 && k.juengster === ex(2) && k.stand === 7 &&
+       JSON.stringify(k.ereignisse) === JSON.stringify(ablage.mf_ereignisse || { A: E([[ex(3), 0.5]]) }) && k2.ereignisse === null && JSON.stringify(k2.barZeit) === JSON.stringify(k.barZeit),
+    '96.5 ladeKurse liefert barZeit (Zeitstempel des Balkens, aus dem der Kurs stammt) und die Ereignisse des Bestands mf_ereignisse - fehlt er, null');
+    var geschrieben = [];
+    var f2 = { api: { storeSet: async function (key, v) { geschrieben.push([key, v]); } } };
+    var sa = mfrQ.indexOf('var TEIL_GROESSE = 25;'), sb = mfrQ.indexOf('async function tagesdatenLesen()');
+    var schreibe = new Function('window', mfrQ.slice(sa, sb) + '\nreturn tagesdatenSchreiben;')(f2);
+    var roh = {}; for (var i = 0; i < 30; i++) roh['S' + (i < 10 ? '0' : '') + i] = [[1, 2, 3]];
+    await schreibe(roh, ['WEG'], 77, { S00: E([[ex(3), 0.5]]) });
+    var mitE = geschrieben.map(function (x) { return x[0]; }).join(',');
+    var eintrag = geschrieben.filter(function (x) { return x[0] === 'mf_ereignisse'; })[0];
+    geschrieben.length = 0;
+    await schreibe(roh, [], 78);
+    ok(mitE === 'mf_tagesdaten_teil_0,mf_tagesdaten_teil_1,mf_ereignisse,mf_tagesdaten_index,mf_tagesdaten' && !!eintrag &&
+       JSON.stringify(eintrag[1]) === JSON.stringify({ at: 77, sym: { S00: E([[ex(3), 0.5]]) } }) &&
+       geschrieben.map(function (x) { return x[0]; }).join(',') === 'mf_tagesdaten_teil_0,mf_tagesdaten_teil_1,mf_tagesdaten_index,mf_tagesdaten',
+    '96.5 die Ablage schreibt mf_ereignisse { at, sym } nach den Teilen und VOR dem Index; ohne Ereignisse (Wanderung des alten Bestands) bleibt der Schluessel unberuehrt', mitE);
+  })());
+  ok(/window\.Kurse\.hole\(sym, \{ von: 0, bis: Date\.now\(\), interval: '1d', bereinigt: true, ereignisse: true \}\)/.test(mfr96) && mfr96.split('window.Kurse.hole(').length === 2 &&
+     /var EREIGNIS_TAGE = 400;/.test(mfr96) && /window\.Kurse\.ereignisseAb\(kd\.ereignisse, Date\.now\(\) - EREIGNIS_TAGE \* 86400000\)/.test(mfr96) &&
+     /roh\[UNIVERSUM\[i\]\] = r\.reihe; ereignisse\[UNIVERSUM\[i\]\] = r\.ereignisse;/.test(mfr96) && /await tagesdatenSchreiben\(roh, weg, Date\.now\(\), ereignisse\);/.test(mfr96) &&
+     /hatStueck\(gespeichert\.roh\) && ereignisseDa;/.test(mfr96),
+  '96.5 mittelfrist.js: EIN Abruf je Wert mit Ereignissen, abgelegt werden die letzten 400 Tage; ein Bestand ohne mf_ereignisse gilt nicht als frisch und wird einmal neu geladen');
+  ok(!/bucheMassnahmen|mf_ereignisse|stempleKursT/.test(ohneKommentare(fs.readFileSync(__dirname + '/depot.js', 'utf8'))),
+    '96.5 das Intraday-Depot (depot.js) ist nicht Teil: es bucht keine Massnahmen');
+
   /* ---- Gegenproben Teil A: mfdepot.js aus geaendertem Quelltext ---- */
   function fassungD(muster, ersatz) {
     var q2 = mfdQ.replace(muster, function () { return ersatz; });
@@ -22970,7 +23277,41 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
   gegen96('setzt die K-Umstellung liquideSeit und korbVerlauf zurueck, faellt es auf', !!setztZurueck && !alle(pruefeUmstellung(setztZurueck)));
   gegen96('ohne den eigenen Weg (K-Umstellung als Korb-Umstellung, Text vom 02.09., zurueckgesetzt) faellt es auf', !!ohneEigenenWeg && !alle(pruefeUmstellung(ohneEigenenWeg)));
   gegen96('kennt KONFIG_FELDER das Feld nicht, gibt es keine Journalzeile - faellt auf', !!ohneFeld && !alle(pruefeUmstellung(ohneFeld)));
-  ok(rot96 === g96 && g96 === 3, '96.x alle Gegenproben dieses Abschnitts schlagen an', rot96 + ' von ' + g96);
+  /* ---- Gegenproben Teil B/C: mfhandel.js und kurse.js aus geaendertem Quelltext ---- */
+  var mhQ96 = fs.readFileSync(__dirname + '/mfhandel.js', 'utf8'), kuQ96 = fs.readFileSync(__dirname + '/kurse.js', 'utf8');
+  /** Laedt ein Modul mit einer Reihe von Aenderungen; greift eine davon nicht, gibt es keine Fassung (und die Gegenprobe schlaegt nicht an). */
+  function fassungQ(quelle, aenderungen) {
+    var q2 = quelle, griff = true;
+    aenderungen.forEach(function (x) { var q3 = q2.replace(x[0], function () { return x[1]; }); if (q3 === q2) griff = false; q2 = q3; });
+    if (!griff) return null;
+    var m = { exports: {} };
+    new Function('module', 'require', q2)(m, require);
+    return m.exports;
+  }
+  var gleichH = fassungQ(mhQ96, [[/'use strict';/, "'use strict'; "]]), gleichK = fassungQ(kuQ96, [[/'use strict';/, "'use strict'; "]]);
+  var ohne3 = fassungQ(mhQ96, [[/p\.stueck = p\.stueck \* z \/ n;/, ''], [/p\.einstand = p\.einstand \* n \/ z;/, '']]);
+  var vorSplit = fassungQ(mhQ96, [[/if \(!\(beginn > 0\)\) return;/, 'if (!(beginn > 0)) return; var stueckVor = p.stueck;'], [/richtung \* p\.stueck \* betrag/, 'richtung * stueckVor * betrag']]);
+  var groesserGleich = fassungQ(mhQ96, [[/return t > beginn && t <= bis/, 'return t >= beginn && t <= bis']]);
+  var ohneBis = fassungQ(mhQ96, [[/return t > beginn && t <= bis/, 'return t > beginn']]);
+  var ohneMerker = fassungQ(mhQ96, [[/ && !\(p\.gebucht && p\.gebucht\.indexOf\(art \+ ':' \+ t\) >= 0\)/, '']]);
+  var leerGut = fassungQ(mhQ96, [[/var richtung = p\.richtung < 0 \? -1 : 1;/, 'var richtung = 1;']]);
+  var ohneSperre = fassungQ(mhQ96, [[/if \(davor\) \{/, 'if (false) {']]);
+  var sekunden = fassungQ(kuQ96, [[/Number\(k\)\) \* 1000;/, 'Number(k));']]);
+  function faelle(M, nummern) { var L = pruefeBuchung(M); return nummern.map(function (n) { return L[n][0]; }); }
+  function nurRot(M, rot) {            /* genau die genannten Pruefungen (Index in pruefeBuchung) fallen, mindestens */
+    var L = pruefeBuchung(M); return rot.every(function (n) { return L[n][0] === false; });
+  }
+  ok(!!gleichH && alle(pruefeBuchung(gleichH)) && alle(pruefeJournal(gleichH)) && !!gleichK && alle(pruefeZerlege(gleichK)) && faelle(MH, [0, 5, 6, 7, 9]).every(Boolean),
+    '96.x Kontrolle: Handelscode und Kursmodul, auf dem Weg der Gegenproben geladen, bestehen alle Pruefungen');
+  gegen96('ohne Schritt 3 (der Split wird gemerkt, aber Stueck und Einstand bleiben) faellt auf', !!ohne3 && nurRot(ohne3, [0, 1, 2, 5]));
+  gegen96('Ausschuettung mit der Stueckzahl VOR dem Split faellt auf (5 $ statt 10 $)', !!vorSplit && nurRot(vorSplit, [5]) && faelle(vorSplit, [0, 3, 4]).every(Boolean));
+  gegen96('"t >= Beginn" statt ">" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung', !!groesserGleich && nurRot(groesserGleich, [6]) && faelle(groesserGleich, [0, 3, 7]).every(Boolean));
+  gegen96('ohne die Bedingung t <= barZeit faellt auf: gebucht wuerde, bevor der gespeicherte Kurs den Ex-Tag enthaelt', !!ohneBis && nurRot(ohneBis, [7]) && faelle(ohneBis, [0, 3, 6]).every(Boolean));
+  gegen96('ohne den Merker p.gebucht faellt auf: der zweite Aufruf bucht noch einmal', !!ohneMerker && nurRot(ohneMerker, [9]) && faelle(ohneMerker, [0, 3, 6]).every(Boolean));
+  gegen96('Leerverkauf mit Gutschrift faellt auf', !!leerGut && nurRot(leerGut, [4]) && !alle(pruefeJournal(leerGut)) && faelle(leerGut, [0, 3]).every(Boolean));
+  gegen96('ohne die Sperre faellt auf: der zweite Split binnen 30 Tagen wuerde gebucht', !!ohneSperre && nurRot(ohneSperre, [10, 11]) && faelle(ohneSperre, [0, 3]).every(Boolean));
+  gegen96('Ereignis-Zeitstempel in Sekunden statt Millisekunden faellt auf', !!sekunden && !alle(pruefeZerlege(sekunden)));
+  ok(rot96 === g96 && g96 === 11, '96.x alle Gegenproben dieses Abschnitts schlagen an', rot96 + ' von ' + g96);
 })();
 
 Promise.all(offeneProben).then(function () {

@@ -39,12 +39,19 @@
     // Liest ueber den Teile-Speicher des Mittelfrist-Tabs (ein Lader, eine Wahrheit)
     var g = window.MF && window.MF.tagesdatenLesen ? await window.MF.tagesdatenLesen() : await window.api.storeGet('mf_tagesdaten');
     if (!g || !g.roh) return null;
-    var preise = {}, juengster = 0;
+    /* barZeit: je Wert der Zeitstempel des Balkens, aus dem der Kurs stammt. Die Buchung
+     * der Splits und Ausschuettungen (MFHandel.bucheMassnahmen, Auftrag Nr. 87) haengt daran:
+     * gebucht wird ein Ereignis erst, wenn der gespeicherte Kurs den Ex-Tag schon enthaelt. */
+    var preise = {}, juengster = 0, barZeit = {};
     Object.keys(g.roh).forEach(function (s) {
       var r = g.roh[s];
-      if (r && r.length) { preise[s] = r[r.length - 1][1]; if (r[r.length - 1][0] > juengster) juengster = r[r.length - 1][0]; }
+      if (r && r.length) { preise[s] = r[r.length - 1][1]; barZeit[s] = r[r.length - 1][0]; if (r[r.length - 1][0] > juengster) juengster = r[r.length - 1][0]; }
     });
-    return { roh: g.roh, preise: preise, stand: g.at || 0, juengster: juengster };
+    /* Die Ereignisse aus demselben Abruf (Bestand mf_ereignisse, mittelfrist.js schreibt ihn
+     * vor dem Index der Tagesdaten). Fehlt er - vor dem ersten Laden nach dem Update -,
+     * wird nichts gebucht. */
+    var er = await window.api.storeGet('mf_ereignisse');
+    return { roh: g.roh, preise: preise, stand: g.at || 0, juengster: juengster, barZeit: barZeit, ereignisse: (er && er.sym) || null };
   }
   /* Die BEREINIGTE SPY-Reihe (Bestand drift_markt, geschrieben von driftui.js), wie
    * der letzte Lesevorgang sie fand. Seit Auftrag Nr. 81 ist sie der Markt des
@@ -151,6 +158,26 @@
     return true;
   }
 
+  /* ---- Splits und Ausschuettungen buchen (Auftrag Nr. 87) ----
+   * Fuer BEIDE Buecher, unabhaengig von den Schaltern momentumAn / driftAn: eine
+   * Kapitalmassnahme ist Buchfuehrung, keine Handelsentscheidung. Gerechnet wird in
+   * MFHandel.bucheMassnahmen (rein, in Node getestet); hier nur der Aufruf und je Takt und
+   * Buch hoechstens EINE Journalzeile - nur, wenn gebucht (oder ein Split neu gesperrt)
+   * wurde. Rueckgabe: true, wenn gespeichert werden muss. */
+  function massnahmenBuchen(MH, d, daten, now) {
+    var geaendert = false;
+    [['momentum', d.mfBuch], ['drift', d.driftBuch]].forEach(function (x) {
+      if (!x[1]) return;
+      var res = MH.bucheMassnahmen(x[1], daten.ereignisse, daten.barZeit, now);
+      var zeile = MH.massnahmenJournal(x[0], res, now);
+      if (!zeile) return;
+      if (!d.tuneLog) d.tuneLog = [];
+      d.tuneLog.unshift({ id: 'mfmass-' + x[0] + '-' + now, at: now, quelle: 'automatik', applied: zeile.applied, txt: zeile.txt });
+      geaendert = true;
+    });
+    return geaendert;
+  }
+
   async function takt(manuell) {
     if (LAEUFT) return;
     var d = D();
@@ -177,6 +204,13 @@
         if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – erst oben „Daten holen und rechnen“.'); return; }
       }
       kurseFrischHalten(daten.stand);
+      /* Bestand von vor Auftrag Nr. 87: Tagesdaten da, aber kein Schluessel mf_ereignisse. Der
+       * Lader erkennt das und laedt einmalig neu - er muss nur angestossen werden, hoechstens
+       * einmal je Stunde. Bis dahin wird nichts gebucht (ohne Ereignisse geschieht nichts). */
+      if (!daten.ereignisse && window.MF && window.MF.ladeUniversum && Date.now() - ladeAngestossen > 3600000) {
+        ladeAngestossen = Date.now();
+        window.MF.ladeUniversum();
+      }
       var MH = window.MFHandel, Dr = window.Drift;
       var now = Date.now();
 
@@ -184,7 +218,10 @@
       if (!d.mfBuch) d.mfBuch = buchInit('momentum');
       var KONFIG = MH.buchKonfig();
       if (umstellungPruefen(d, KONFIG, now)) speichern();
-      var faellig = MH.rebalanceFaellig(markt, d.mfBuch.letztesRebalanceT, KONFIG.halten);
+      /* Splits und Ausschuettungen: nach dem Laden, VOR dem Planen, fuer beide Buecher -
+       * der Plan soll die Stueckzahl nach dem Split und das Bargeld nach der Gutschrift sehen. */
+      if (massnahmenBuchen(MH, d, daten, now)) speichern();
+      var faellig =MH.rebalanceFaellig(markt, d.mfBuch.letztesRebalanceT, KONFIG.halten);
       var ziel = MH.momentumZiel(daten.roh, { nowMs: daten.juengster || now });
       /* Gespeicherte Tagesdaten ohne Stueckzahlen (Bestand von vor dem Korbfilter): der
        * Lader des Mittelfrist-Tabs erkennt das und laedt neu - er muss nur angestossen
@@ -200,6 +237,7 @@
       if (plan && (faellig || manuell === 'momentum')) {
         if (d.momentumAn || manuell === 'momentum') {
           var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil });
+          MH.stempleKursT(d.mfBuch, daten.barZeit, now);   // neue Positionen: Balken, zu dessen Kurs gekauft wurde
           /* Gezaehlt wird, was WIRKLICH lief: fuehreAus setzt o.stueck eines nicht ausgefuehrten
            * Kaufs auf 0 (kein Bargeld mehr, oder nach dem Verkleinern unter der Grenze von
            * Regel K1). plan.kaufen.length waere die Zahl der GEPLANTEN Kaeufe. */
@@ -245,6 +283,7 @@
           var getanD;
           if (d.driftAn || manuell === 'drift') {
             getanD = MH.driftAbgleich(d.driftBuch, heute, daten.preise, now, {});
+            MH.stempleKursT(d.driftBuch, daten.barZeit, now);   // neue Positionen: Balken, zu dessen Kurs eroeffnet wurde
             /* NUR HANDLUNGEN ins Journal (Wilhelms Entscheid 31.08.2026): "42 verworfen"
              * ist das Ergebnis einer Pruefung, keine Handlung. Der alte Zustand schrieb
              * bei jedem Halbstunden-Takt eine Zeile "0 eroeffnet, 0 geschlossen, 42

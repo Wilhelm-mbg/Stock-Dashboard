@@ -303,10 +303,161 @@
     return { wert: Math.round(wert * 100) / 100, ohneKurs: ohneKurs };
   }
 
+  /* ================= Kapitalmassnahmen: Splits und Ausschuettungen (Auftrag Nr. 87, 04.10.2026) =================
+   *
+   * Die Buecher kaufen und bewerten zum juengsten Kurs der Tagesreihe - das ist der wirklich
+   * gehandelte Schluss. Zwei Dinge fehlten bis Nr. 87: (1) ein Split in einer gehaltenen
+   * Position liess die Stueckzahl stehen, waehrend der Kurs im Verhaeltnis fiel - das Buch
+   * zeigte einen Scheinverlust; (2) Ausschuettungen wurden nicht gutgeschrieben, waehrend der
+   * Massstab (S&P 500) seit Nr. 81 mit Ausschuettungen rechnet.
+   *
+   * Die Ereignisse kommen aus demselben Tagesabruf wie die Kurse (kurse.js, Bestand
+   * mf_ereignisse). Yahoo meldet die Ausschuettung in HEUTIGER Stueckelung und stempelt ein
+   * Ereignis wie den Tagesbalken des Ex-Tags (beides am 04.10.2026 nachgesehen, kurse.js
+   * ereignisseAus). Daraus folgen Reihenfolge und Grenzen unten. */
+  var SPLIT_SPERRE_MS = 30 * 86400000;
+
+  /** Splits und Ausschuettungen eines Buchs buchen - mutiert das Buch (Stueck, Einstand,
+   *  Bargeld, Merker je Position). Rein: kein Netz, kein Fenster.
+   *    buch        {cash, positionen: [{sym, stueck, einstand, seit, kursT, gebucht, richtung}]}
+   *    ereignisse  {SYM: {div: [[tMs, betragJeStueck], …], split: [[tMs, zaehler, nenner], …]}}
+   *    barZeit     {SYM: Zeitstempel des juengsten GESPEICHERTEN Tagesbalkens des Werts}
+   *  Die Regeln (fest, Auftrag Nr. 87 §2):
+   *  1. Beginn je Position: p.kursT - der Zeitstempel des Balkens, zu dessen Kurs gekauft
+   *     wurde; fehlt er (Positionen von vor Nr. 87), gilt p.seit.
+   *  2. Gebucht wird jedes Ereignis des Werts mit t > Beginn UND t <= barZeit[sym] (der
+   *     gespeicherte Kurs enthaelt den Ex-Tag dann schon), das nicht in p.gebucht steht
+   *     (Kennungen 'split:' + t, 'div:' + t). Erst alle Splits in zeitlicher Folge, dann
+   *     die Ausschuettungen. Jedes Buch bucht fuer sich.
+   *  3. Split z : n -> stueck × z / n, einstand × n / z, ungerundet; Kauf und Leerverkauf gleich.
+   *  4. Ausschuettung b je Stueck -> Bargeld + stueck × b (Kauf) bzw. - stueck × b
+   *     (Leerverkauf, richtung < 0); stueck ist die Stueckzahl NACH den Splits aus 3, weil b
+   *     in heutiger Stueckelung steht.
+   *  5. Sperre: ein zweiter Split desselben Werts im Abstand von hoechstens 30 Kalendertagen
+   *     zu einem gebuchten wird NICHT gebucht, sondern gemeldet (gesperrt; neu = true beim
+   *     ersten Mal, die Position merkt es sich in p.gemeldet).
+   *  6. Ohne Ereignisse oder ohne barZeit fuer den Wert geschieht nichts; ein zweiter Aufruf
+   *     mit denselben Daten bucht nichts.
+   *  Rueckgabe: {buchungen: [{sym, art: 'split'|'div', t, am, kaufT, …}], gesperrt: [{sym, art, t, …, neu}]}.
+   *  Die Buchungen stehen NICHT in buch.trades (dort steht nur Handel), sondern in
+   *  buch.massnahmen (hoechstens 400) - damit sich das Bargeld des Buchs auch ohne das
+   *  Journal nachrechnen laesst. */
+  function bucheMassnahmen(buch, ereignisse, barZeit, nowMs) {
+    var res = { buchungen: [], gesperrt: [] };
+    if (!buch || !ereignisse || !barZeit) return res;
+    function nachZeit(a, b) { return a[0] - b[0]; }
+    (buch.positionen || []).forEach(function (p) {
+      var e = ereignisse[p.sym], bis = barZeit[p.sym];
+      if (!e || !(bis > 0)) return;
+      var beginn = p.kursT > 0 ? p.kursT : p.seit;
+      if (!(beginn > 0)) return;
+      function faellig(art, t) {
+        return t > beginn && t <= bis && !(p.gebucht && p.gebucht.indexOf(art + ':' + t) >= 0);
+      }
+      function merke(art, t) { if (!p.gebucht) p.gebucht = []; p.gebucht.push(art + ':' + t); }
+      (e.split || []).slice().sort(nachZeit).forEach(function (s) {
+        var t = s[0], z = s[1], n = s[2];
+        if (!(z > 0) || !(n > 0) || !faellig('split', t)) return;
+        var davor = (p.gebucht || []).filter(function (k) {
+          return k.indexOf('split:') === 0 && Math.abs(t - Number(k.slice(6))) <= SPLIT_SPERRE_MS;
+        })[0];
+        if (davor) {                                                  // Regel 5: Sperre
+          var schon = !!(p.gemeldet && p.gemeldet.indexOf('split:' + t) >= 0);
+          if (!schon) { if (!p.gemeldet) p.gemeldet = []; p.gemeldet.push('split:' + t); }
+          res.gesperrt.push({ sym: p.sym, art: 'split', t: t, zaehler: z, nenner: n, gebuchtT: Number(davor.slice(6)), neu: !schon });
+          return;
+        }
+        var b = { sym: p.sym, art: 'split', t: t, am: nowMs, kaufT: beginn, zaehler: z, nenner: n,
+          stueckAlt: p.stueck, einstandAlt: p.einstand };
+        p.stueck = p.stueck * z / n;                                  // Regel 3
+        p.einstand = p.einstand * n / z;
+        b.stueckNeu = p.stueck; b.einstandNeu = p.einstand;
+        merke('split', t);
+        res.buchungen.push(b);
+      });
+      (e.div || []).slice().sort(nachZeit).forEach(function (a) {
+        var t = a[0], betrag = a[1];
+        if (!(betrag > 0) || !faellig('div', t)) return;
+        var richtung = p.richtung < 0 ? -1 : 1;
+        var summe = richtung * p.stueck * betrag;                     // Regel 4: Stueckzahl NACH den Splits
+        buch.cash += summe;
+        merke('div', t);
+        res.buchungen.push({ sym: p.sym, art: 'div', t: t, am: nowMs, kaufT: beginn, betrag: betrag, stueck: p.stueck,
+          richtung: richtung, summe: summe });
+      });
+    });
+    if (res.buchungen.length) {
+      buch.massnahmen = (buch.massnahmen || []).concat(res.buchungen);
+      if (buch.massnahmen.length > 400) buch.massnahmen = buch.massnahmen.slice(-400);
+    }
+    return res;
+  }
+
+  /** Neue Positionen (seit === nowMs) bekommen den Zeitstempel des Balkens, zu dessen Kurs
+   *  gekauft wurde - den Beginn fuer bucheMassnahmen (Regel 1). Aufgerufen gleich nach
+   *  fuehreAus bzw. driftAbgleich; auch ein nach Regel K2 neu gekaufter Bestand ist eine
+   *  neue Position. Rueckgabe: Zahl der gestempelten Positionen. */
+  function stempleKursT(buch, barZeit, nowMs) {
+    var n = 0;
+    ((buch && buch.positionen) || []).forEach(function (p) {
+      if (p.seit === nowMs && !(p.kursT > 0) && barZeit && barZeit[p.sym] > 0) { p.kursT = barZeit[p.sym]; n++; }
+    });
+    return n;
+  }
+
+  /** Die EINE Journalzeile je Takt und Buch zu bucheMassnahmen - null, wenn nichts gebucht
+   *  und nichts neu gesperrt wurde. name: 'momentum' | 'drift'. Rein (Text, keine Wirkung).
+   *  Der Ex-Tag ist der Kalendertag des Zeitstempels in UTC (= Handelstag in New York). */
+  function massnahmenJournal(name, res, nowMs) {
+    var div = res.buchungen.filter(function (b) { return b.art === 'div'; });
+    var split = res.buchungen.filter(function (b) { return b.art === 'split'; });
+    var sperre = res.gesperrt.filter(function (g) { return g.neu; });
+    if (!div.length && !split.length && !sperre.length) return null;
+    var buchName = name === 'drift' ? 'Ergebnis-Drift-Buch' : 'Momentum-Buch';
+    function tag(t) { var s = new Date(t).toISOString(); return s.slice(8, 10) + '.' + s.slice(5, 7) + '.' + s.slice(0, 4); }
+    function zahl(x, stellen) { return String(Math.round(x * Math.pow(10, stellen)) / Math.pow(10, stellen)).replace('.', ','); }
+    function geld(x) { return (x < 0 ? '−' : '') + Math.abs(x).toFixed(2).replace('.', ',') + ' $'; }
+    var applied = [], saetze = [];
+    if (div.length) {
+      var summe = div.reduce(function (a, b) { return a + b.summe; }, 0);
+      var mitLeer = div.some(function (b) { return b.richtung < 0; });
+      var kopf = (mitLeer ? 'Ausschüttungen gebucht (Gutschrift bei Kauf, Belastung bei Leerverkauf): ' : 'Ausschüttungen gutgeschrieben: ') +
+        div.length + (div.length === 1 ? ' Buchung' : ' Buchungen') + ', Summe ' + geld(summe);
+      applied.push(buchName + ': ' + kopf);
+      /* Nachtrag: der Ex-Tag liegt schon mehr als vier Tage zurueck - der erste Lauf nach dem
+       * Update (oder nach einer Pause der App) holt nach, was seit dem Kauf angefallen ist. */
+      var nach = div.filter(function (b) { return nowMs - b.t > 4 * 86400000; });
+      var kaufTage = {};
+      div.forEach(function (b) { kaufTage[tag(b.kaufT)] = true; });
+      var mehrere = Object.keys(kaufTage).length > 1;                 // dann nennt jeder Posten seinen Kauftag
+      saetze.push(kopf + ' – ins Bargeld des Buchs.' +
+        (nach.length ? ' Nachtrag seit dem ' + (mehrere ? 'jeweiligen Kauf (je Posten genannt)' : 'Kauf am ' + tag(nach[0].kaufT)) +
+          ': nachgeholt wird, was seit dem Kauf angefallen und noch nicht gebucht war.' : '') +
+        ' Einzelposten (Wert, Ex-Tag, Betrag je Stück × Stück = Summe): ' +
+        div.map(function (b) {
+          return b.sym + ' ' + tag(b.t) + ' ' + zahl(b.betrag, 6) + ' $ × ' + zahl(b.stueck, 4) + ' = ' + geld(b.summe) +
+            (b.richtung < 0 ? ' (Leerverkauf)' : '') + (mehrere ? ' (Kauf ' + tag(b.kaufT) + ')' : '');
+        }).join('; ') + '.');
+    }
+    split.forEach(function (b) {
+      var s = 'Split gebucht: ' + b.sym + ' ' + b.zaehler + ' : ' + b.nenner + ', Stück ' + zahl(b.stueckAlt, 4) + ' → ' + zahl(b.stueckNeu, 4) +
+        ', Einstand ' + geld(b.einstandAlt) + ' → ' + geld(b.einstandNeu);
+      applied.push(buchName + ': Split gebucht: ' + b.sym + ' ' + b.zaehler + ' : ' + b.nenner);
+      saetze.push(s + ' (Ex-Tag ' + tag(b.t) + '; der Wert der Position bleibt gleich).');
+    });
+    sperre.forEach(function (g) {
+      applied.push(buchName + ': Split NICHT gebucht (Sperre): ' + g.sym + ' ' + g.zaehler + ' : ' + g.nenner);
+      saetze.push('Split NICHT gebucht: ' + g.sym + ' ' + g.zaehler + ' : ' + g.nenner + ' vom ' + tag(g.t) + ' liegt höchstens 30 Kalendertage neben dem gebuchten Split vom ' +
+        tag(g.gebuchtT) + ' – zwei Splits so dicht beieinander sind fast immer eine doppelte Meldung der Quelle. Bitte prüfen; die Position bleibt, wie sie ist.');
+    });
+    return { applied: applied, txt: saetze.join(' ') + ' Simulation mit virtuellem Kapital, keine Anlageberatung.' };
+  }
+
   var MFHandel = {
     buchKonfig: buchKonfig, momentumZiel: momentumZiel, planeUmschichtung: planeUmschichtung,
     fuehreAus: fuehreAus, bewerte: bewerte, rebalanceFaellig: rebalanceFaellig,
-    driftAbgleich: driftAbgleich, bewerteDrift: bewerteDrift
+    driftAbgleich: driftAbgleich, bewerteDrift: bewerteDrift,
+    bucheMassnahmen: bucheMassnahmen, stempleKursT: stempleKursT, massnahmenJournal: massnahmenJournal
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = MFHandel; return; }
   root.MFHandel = MFHandel;
