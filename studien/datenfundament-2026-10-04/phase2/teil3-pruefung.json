@@ -1,0 +1,746 @@
+{
+ "stand": "2026-10-04T11:50:34.932Z",
+ "kennung": "datenfundament-2026-10-04/phase2/leser2/v1",
+ "fensterLesen": {
+  "von": "2016-01-01",
+  "bis": "2026-08-31"
+ },
+ "endeDesArchivs": "2026-10-02",
+ "p1": {
+  "reihen": 7299,
+  "lebend": 2249,
+  "lebendInLesenJs": 2306,
+  "jahreOhneDatei": 0,
+  "jahreOhneDateiInLesenJs": 562,
+  "bestanden": true
+ },
+ "p2": {
+  "reihen": 33,
+  "bisRohEnde": 31,
+  "abbruchAusgenommen": [
+   {
+    "reihe": "BURU",
+    "meldung": "leser2: die bereinigte Kopie alpaca1m-bereinigt/BURU/2026.json endet am 2026-07-17, die Rohdatei alpaca1m/BURU/2026.json am 2026-10-02. Eine veraltete Kopie wird nicht gelesen und es wird nicht still auf die Rohdatei ausgewichen. Abhilfe: Kopie neu bilden (studien/datenfundament-2026-10-04/phase2/kopien-v2.js --schreiben) - oder, wenn die Reihe dort ausgenommen ist (unerklaerter Kurssprung), erst die Massnahme klaeren."
+   },
+   {
+    "reihe": "WHLR",
+    "meldung": "leser2: die bereinigte Kopie alpaca1m-bereinigt/WHLR/2026.json endet am 2026-09-03, die Rohdatei alpaca1m/WHLR/2026.json am 2026-10-02. Eine veraltete Kopie wird nicht gelesen und es wird nicht still auf die Rohdatei ausgewichen. Abhilfe: Kopie neu bilden (studien/datenfundament-2026-10-04/phase2/kopien-v2.js --schreiben) - oder, wenn die Reihe dort ausgenommen ist (unerklaerter Kurssprung), erst die Massnahme klaeren."
+   }
+  ],
+  "unerwartet": [],
+  "zeilen": [
+   {
+    "reihe": "AGL",
+    "kopie": "v2",
+    "kerzen": 48663,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 45487
+   },
+   {
+    "reihe": "ALIT",
+    "kopie": "v2",
+    "kerzen": 65153,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 59540
+   },
+   {
+    "reihe": "AMCR",
+    "kopie": "v2",
+    "kerzen": 73464,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64546
+   },
+   {
+    "reihe": "ANAB",
+    "kopie": "v2",
+    "kerzen": 45505,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 40089
+   },
+   {
+    "reihe": "APH",
+    "kopie": "v2",
+    "kerzen": 73702,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64734
+   },
+   {
+    "reihe": "APTV",
+    "kopie": "v2",
+    "kerzen": 72252,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 63336
+   },
+   {
+    "reihe": "BKNG",
+    "kopie": "v2",
+    "kerzen": 73486,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64516
+   },
+   {
+    "reihe": "BYND",
+    "kopie": "v2",
+    "kerzen": 72148,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64161
+   },
+   {
+    "reihe": "CMCSA",
+    "kopie": "v2",
+    "kerzen": 73710,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64740
+   },
+   {
+    "reihe": "CRWD",
+    "kopie": "v2",
+    "kerzen": 73704,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64734
+   },
+   {
+    "reihe": "CVNA",
+    "kopie": "v2",
+    "kerzen": 73642,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64672
+   },
+   {
+    "reihe": "FDX",
+    "kopie": "v2",
+    "kerzen": 70886,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 62054
+   },
+   {
+    "reihe": "FUBO",
+    "kopie": "v2",
+    "kerzen": 68862,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 61117
+   },
+   {
+    "reihe": "IESC",
+    "kopie": "v2",
+    "kerzen": 46534,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 40634
+   },
+   {
+    "reihe": "KLAC",
+    "kopie": "v2",
+    "kerzen": 72373,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 63403
+   },
+   {
+    "reihe": "LILAK",
+    "kopie": "v2",
+    "kerzen": 54841,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 48085
+   },
+   {
+    "reihe": "MIDD",
+    "kopie": "v2",
+    "kerzen": 52043,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 46091
+   },
+   {
+    "reihe": "MLI",
+    "kopie": "v2",
+    "kerzen": 57070,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 49064
+   },
+   {
+    "reihe": "MNST",
+    "kopie": "v2",
+    "kerzen": 73638,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64668
+   },
+   {
+    "reihe": "MQ",
+    "kopie": "v2",
+    "kerzen": 65828,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 59128
+   },
+   {
+    "reihe": "PANW",
+    "kopie": "v2",
+    "kerzen": 73701,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64732
+   },
+   {
+    "reihe": "PIPR",
+    "kopie": "v2",
+    "kerzen": 48502,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 42402
+   },
+   {
+    "reihe": "POWL",
+    "kopie": "v2",
+    "kerzen": 62934,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 54817
+   },
+   {
+    "reihe": "REZI",
+    "kopie": "v2",
+    "kerzen": 63820,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 55698
+   },
+   {
+    "reihe": "RUSHA",
+    "kopie": "v2",
+    "kerzen": 41423,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 35314
+   },
+   {
+    "reihe": "SBS",
+    "kopie": "v2",
+    "kerzen": 70574,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 61949
+   },
+   {
+    "reihe": "SF",
+    "kopie": "v2",
+    "kerzen": 64138,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 56697
+   },
+   {
+    "reihe": "SFBS",
+    "kopie": "v2",
+    "kerzen": 34735,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 28603
+   },
+   {
+    "reihe": "SNEX",
+    "kopie": "v2",
+    "kerzen": 49712,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 43329
+   },
+   {
+    "reihe": "SPGI",
+    "kopie": "v2",
+    "kerzen": 73552,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 64598
+   },
+   {
+    "reihe": "TRI",
+    "kopie": "v2",
+    "kerzen": 70638,
+    "letzterTag": "2026-10-02",
+    "rohEnde": "2026-10-02",
+    "alteKopieEnde": "2026-09-03",
+    "kerzenLesenJs": 62185
+   }
+  ],
+  "bestanden": true
+ },
+ "p3": {
+  "grundgesamtheit": 7223,
+  "gezogen": [
+   "SLAM",
+   "CLCT",
+   "SHUA",
+   "PPHP",
+   "SPRT",
+   "OBDC",
+   "GTLB",
+   "LMRK",
+   "NMHI",
+   "TAS",
+   "HONE",
+   "BUR",
+   "DGSE",
+   "ROCG",
+   "TVTY",
+   "SNY",
+   "FLNG",
+   "PMD",
+   "OPOF",
+   "RLI"
+  ],
+  "reihen": [
+   {
+    "reihe": "SLAM",
+    "jahre": 4,
+    "jahreGleich": 4,
+    "kerzen": 13692,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 4,
+    "kopien": {
+     "null": 4
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "CLCT",
+    "jahre": 6,
+    "jahreGleich": 6,
+    "kerzen": 109780,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 6,
+    "kopien": {
+     "null": 6
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "SHUA",
+    "jahre": 2,
+    "jahreGleich": 2,
+    "kerzen": 852,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 2,
+    "kopien": {
+     "null": 2
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "PPHP",
+    "jahre": 4,
+    "jahreGleich": 4,
+    "kerzen": 742,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 4,
+    "kopien": {
+     "null": 4
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "SPRT",
+    "jahre": 6,
+    "jahreGleich": 6,
+    "kerzen": 108764,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 6,
+    "kopien": {
+     "alt": 2,
+     "null": 4
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "OBDC",
+    "jahre": 8,
+    "jahreGleich": 8,
+    "kerzen": 621675,
+    "mehrInVorgabe": 8701,
+    "vorgabeBisFensterGleich": 8,
+    "kopien": {
+     "null": 8
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "GTLB",
+    "jahre": 6,
+    "jahreGleich": 6,
+    "kerzen": 459670,
+    "mehrInVorgabe": 8954,
+    "vorgabeBisFensterGleich": 6,
+    "kopien": {
+     "null": 6
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "LMRK",
+    "jahre": 6,
+    "jahreGleich": 6,
+    "kerzen": 107077,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 6,
+    "kopien": {
+     "null": 6
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "NMHI",
+    "jahre": 4,
+    "jahreGleich": 4,
+    "kerzen": 26843,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 4,
+    "kopien": {
+     "alt": 3,
+     "null": 1
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "TAS",
+    "jahre": 1,
+    "jahreGleich": 1,
+    "kerzen": 472,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 1,
+    "kopien": {
+     "null": 1
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "HONE",
+    "jahre": 10,
+    "jahreGleich": 10,
+    "kerzen": 318151,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 10,
+    "kopien": {
+     "null": 10
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "BUR",
+    "jahre": 7,
+    "jahreGleich": 7,
+    "kerzen": 357707,
+    "mehrInVorgabe": 7858,
+    "vorgabeBisFensterGleich": 7,
+    "kopien": {
+     "null": 7
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "DGSE",
+    "jahre": 4,
+    "jahreGleich": 4,
+    "kerzen": 21711,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 4,
+    "kopien": {
+     "null": 4
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "ROCG",
+    "jahre": 3,
+    "jahreGleich": 3,
+    "kerzen": 1992,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 3,
+    "kopien": {
+     "null": 3
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "TVTY",
+    "jahre": 6,
+    "jahreGleich": 6,
+    "kerzen": 389190,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 6,
+    "kopien": {
+     "null": 6
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "SNY",
+    "jahre": 11,
+    "jahreGleich": 11,
+    "kerzen": 994027,
+    "mehrInVorgabe": 8901,
+    "vorgabeBisFensterGleich": 11,
+    "kopien": {
+     "null": 11
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "FLNG",
+    "jahre": 8,
+    "jahreGleich": 8,
+    "kerzen": 323521,
+    "mehrInVorgabe": 5714,
+    "vorgabeBisFensterGleich": 8,
+    "kopien": {
+     "null": 8
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "PMD",
+    "jahre": 9,
+    "jahreGleich": 9,
+    "kerzen": 64631,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 9,
+    "kopien": {
+     "null": 9
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "OPOF",
+    "jahre": 10,
+    "jahreGleich": 10,
+    "kerzen": 19442,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 10,
+    "kopien": {
+     "null": 10
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "RLI",
+    "jahre": 11,
+    "jahreGleich": 11,
+    "kerzen": 483543,
+    "mehrInVorgabe": 6407,
+    "vorgabeBisFensterGleich": 11,
+    "kopien": {
+     "alt": 10,
+     "null": 1
+    },
+    "abweichung": []
+   }
+  ],
+  "jahre": 126,
+  "kerzen": 4423482,
+  "mehrInVorgabe": 46535,
+  "bestanden": true
+ },
+ "p4": {
+  "grundgesamtheit": 1147,
+  "gezogen": [
+   "FWBI",
+   "CMG",
+   "XBKS",
+   "ALT",
+   "SBOT",
+   "APRI",
+   "GV",
+   "HLF",
+   "FSK",
+   "CHK"
+  ],
+  "reihen": [
+   {
+    "reihe": "FWBI",
+    "jahre": 9,
+    "jahreGleich": 9,
+    "kerzen": 210349,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 9,
+    "kopien": {
+     "alt": 8,
+     "null": 1
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "CMG",
+    "jahre": 11,
+    "jahreGleich": 11,
+    "kerzen": 797939,
+    "mehrInVorgabe": 8970,
+    "vorgabeBisFensterGleich": 11,
+    "kopien": {
+     "alt": 9,
+     "null": 2
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "XBKS",
+    "jahre": 2,
+    "jahreGleich": 2,
+    "kerzen": 34123,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 2,
+    "kopien": {
+     "alt": 1,
+     "null": 1
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "ALT",
+    "jahre": 11,
+    "jahreGleich": 11,
+    "kerzen": 759017,
+    "mehrInVorgabe": 8684,
+    "vorgabeBisFensterGleich": 11,
+    "kopien": {
+     "alt": 3,
+     "null": 8
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "SBOT",
+    "jahre": 4,
+    "jahreGleich": 4,
+    "kerzen": 42259,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 4,
+    "kopien": {
+     "alt": 4
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "APRI",
+    "jahre": 4,
+    "jahreGleich": 4,
+    "kerzen": 104823,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 4,
+    "kopien": {
+     "alt": 1,
+     "null": 3
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "GV",
+    "jahre": 5,
+    "jahreGleich": 5,
+    "kerzen": 94644,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 5,
+    "kopien": {
+     "alt": 3,
+     "null": 2
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "HLF",
+    "jahre": 11,
+    "jahreGleich": 11,
+    "kerzen": 941298,
+    "mehrInVorgabe": 7389,
+    "vorgabeBisFensterGleich": 11,
+    "kopien": {
+     "alt": 3,
+     "null": 8
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "FSK",
+    "jahre": 11,
+    "jahreGleich": 11,
+    "kerzen": 910027,
+    "mehrInVorgabe": 7945,
+    "vorgabeBisFensterGleich": 11,
+    "kopien": {
+     "alt": 5,
+     "null": 6
+    },
+    "abweichung": []
+   },
+   {
+    "reihe": "CHK",
+    "jahre": 9,
+    "jahreGleich": 9,
+    "kerzen": 776846,
+    "mehrInVorgabe": 0,
+    "vorgabeBisFensterGleich": 9,
+    "kopien": {
+     "alt": 5,
+     "null": 4
+    },
+    "abweichung": []
+   }
+  ],
+  "jahre": 77,
+  "kerzen": 4671325,
+  "jahreAusAlterKopie": 42,
+  "bestanden": true
+ },
+ "p5": {
+  "saetze": 44,
+  "ausV2": 44,
+  "kopfNenntSatz": 44,
+  "fehler": [],
+  "bestanden": true
+ },
+ "bestanden": true
+}
