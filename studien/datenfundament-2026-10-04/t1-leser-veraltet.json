@@ -1,0 +1,348 @@
+{
+ "stand": "2026-10-04T10:24:15.940Z",
+ "zahlen": {
+  "bereinigtStand": "2026-09-06T22:35:02.520Z",
+  "reihenMitKopieDesLetztenJahres": 390,
+  "kopieEndetVorRohdatei": 33,
+  "jeLeserEnde": {
+   "2026-07-17": 1,
+   "2026-09-03": 32
+  },
+  "alleOrdner2026": {
+   "kopien": 97,
+   "veraltet": 64
+  }
+ },
+ "reihen": [
+  {
+   "reihe": "BURU",
+   "jahr": 2026,
+   "leserEnde": "2026-07-17",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 54,
+   "kerzenBereinigt": 101312,
+   "kerzenRoh": 108092,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "AGL",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 47760,
+   "kerzenRoh": 50694,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "ALIT",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 67001,
+   "kerzenRoh": 71941,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "AMCR",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 68104,
+   "kerzenRoh": 75988,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "ANAB",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 41688,
+   "kerzenRoh": 46559,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "APH",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 72733,
+   "kerzenRoh": 81469,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "APTV",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 65835,
+   "kerzenRoh": 73761,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "BKNG",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 80005,
+   "kerzenRoh": 92630,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "BYND",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 111715,
+   "kerzenRoh": 119429,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "CMCSA",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 79709,
+   "kerzenRoh": 89324,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "CRWD",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 94706,
+   "kerzenRoh": 108134,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "CVNA",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 81038,
+   "kerzenRoh": 90573,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "FDX",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 66324,
+   "kerzenRoh": 74370,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "FUBO",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 73522,
+   "kerzenRoh": 80688,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "IESC",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 42121,
+   "kerzenRoh": 47289,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "KLAC",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 91142,
+   "kerzenRoh": 105638,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "LILAK",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 49458,
+   "kerzenRoh": 55335,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "MIDD",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 47371,
+   "kerzenRoh": 52695,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "MLI",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 50586,
+   "kerzenRoh": 57655,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "MNST",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 68743,
+   "kerzenRoh": 76952,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "MQ",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 61236,
+   "kerzenRoh": 67077,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "PANW",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 80777,
+   "kerzenRoh": 90434,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "PIPR",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 43577,
+   "kerzenRoh": 48973,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "POWL",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 58856,
+   "kerzenRoh": 66256,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "REZI",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 57638,
+   "kerzenRoh": 64699,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "RUSHA",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 36519,
+   "kerzenRoh": 41867,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "SBS",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 65716,
+   "kerzenRoh": 73386,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "SF",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 57979,
+   "kerzenRoh": 64663,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "SFBS",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 29535,
+   "kerzenRoh": 35014,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "SNEX",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 45126,
+   "kerzenRoh": 50687,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "SPGI",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 68662,
+   "kerzenRoh": 76906,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "TRI",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 64456,
+   "kerzenRoh": 71892,
+   "lebendAlt": 1
+  },
+  {
+   "reihe": "WHLR",
+   "jahr": 2026,
+   "leserEnde": "2026-09-03",
+   "rohEnde": "2026-10-02",
+   "handelstageFehlen": 20,
+   "kerzenBereinigt": 39965,
+   "kerzenRoh": 48803,
+   "lebendAlt": 1
+  }
+ ]
+}

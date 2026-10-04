@@ -1,0 +1,1839 @@
+{
+ "stand": "2026-10-04T10:41:53.366Z",
+ "hinweis": "Je abgelehntem Split-Satz: Schlusskurse (regulaere Sitzung) vor und ab dem Ex-Tag in Roh- und bereinigter Datei. angewandt = die Kopie traegt den Faktor vor dem Ex-Tag und nicht mehr danach.",
+ "zahlen": {
+  "stand": "2026-10-04T10:41:53.366Z",
+  "quelle": "panel-stand.json (querschnitt-pruefstand-2026-09-13/panel/v2)",
+  "saetze": 47,
+  "kopieVorhanden": 44,
+  "angewandt": 44,
+  "nichtAngewandt": [],
+  "nichtPruefbar": [
+   "FNF 2017-10-02 (keine Kopie)",
+   "HON 2026-06-29 (keine Kopie)",
+   "INPX 2018-09-04 (keine Kopie)"
+  ],
+  "sprungInKopie": {
+   "bisMinus50": 32,
+   "kleinerAbwaerts": 6,
+   "aufwaerts": 6,
+   "groessterAufwaertsPct": 10207.18
+  },
+  "rohZeigtSprungAmExTag": 0,
+  "rohZeigtSprungAmNachbartag": 6,
+  "rohOhneSprung": 41,
+  "rohVerhaeltnisWeichtVomPanelAb": [
+   "ARNC 2020-04-01: 0.4278 statt 0.4097",
+   "DGLY 2025-05-07: 1.8391 statt 1.8846",
+   "MCEP 2020-03-24: 2.3033 statt 2.5335",
+   "RELV 2016-10-03: 1.3623 statt 1.3913",
+   "TRNX 2019-12-06: 0.7628 statt 0.7806"
+  ],
+  "neuZuBildendeKopien": 147,
+  "reihenBetroffen": 44,
+  "dateienGelesen": 93
+ },
+ "saetze": [
+  {
+   "reihe": "AA",
+   "ex": "2016-11-01",
+   "art": "reverse_splits",
+   "faktor": 0.33333,
+   "erwartetesVerhaeltnis": 3,
+   "rohVor": {
+    "tag": "2016-10-31",
+    "c": 28.725
+   },
+   "rohAb": {
+    "tag": "2016-11-01",
+    "c": 22.98
+   },
+   "rohVerhaeltnis": 0.8,
+   "rohVerhaeltnisPanel": 0.7991,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-10-31",
+    "c": 86.17586175861759
+   },
+   "berAb": {
+    "tag": "2016-11-01",
+    "c": 22.98
+   },
+   "berVerhaeltnis": 0.2667,
+   "sprungInKopiePct": -73.33,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "AA/2016.json"
+   ]
+  },
+  {
+   "reihe": "AAN",
+   "ex": "2020-12-01",
+   "art": "reverse_splits",
+   "faktor": 0.25,
+   "erwartetesVerhaeltnis": 4,
+   "rohVor": {
+    "tag": "2020-11-30",
+    "c": 62.92
+   },
+   "rohAb": {
+    "tag": "2020-12-01",
+    "c": 18.36
+   },
+   "rohVerhaeltnis": 0.2918,
+   "rohVerhaeltnisPanel": 0.2892,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2020-11-30",
+    "c": 251.68
+   },
+   "berAb": {
+    "tag": "2020-12-01",
+    "c": 18.36
+   },
+   "berVerhaeltnis": 0.0729,
+   "sprungInKopiePct": -92.71,
+   "kopienBisExJahr": 5,
+   "kopienBisExJahrListe": [
+    "AAN/2016.json",
+    "AAN/2017.json",
+    "AAN/2018.json",
+    "AAN/2019.json",
+    "AAN/2020.json"
+   ]
+  },
+  {
+   "reihe": "AMPE",
+   "ex": "2016-01-05",
+   "art": "reverse_splits",
+   "faktor": 0.2,
+   "erwartetesVerhaeltnis": 5,
+   "rohVor": {
+    "tag": "2016-01-04",
+    "c": 3.34
+   },
+   "rohAb": {
+    "tag": "2016-01-05",
+    "c": 3.17
+   },
+   "rohVerhaeltnis": 0.9491,
+   "rohVerhaeltnisPanel": 0.9491,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-01-04",
+    "c": 5009.999999999999
+   },
+   "berAb": {
+    "tag": "2016-01-05",
+    "c": 950.9999999999999
+   },
+   "berVerhaeltnis": 0.1898,
+   "sprungInKopiePct": -81.02,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "AMPE/2016.json"
+   ]
+  },
+  {
+   "reihe": "ARNC",
+   "ex": "2020-04-01",
+   "art": "reverse_splits",
+   "faktor": 0.25,
+   "erwartetesVerhaeltnis": 4,
+   "rohVor": {
+    "tag": "2020-03-31",
+    "c": 16.06
+   },
+   "rohAb": {
+    "tag": "2020-04-01",
+    "c": 6.87
+   },
+   "rohVerhaeltnis": 0.4278,
+   "rohVerhaeltnisPanel": 0.4097,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2020-03-31",
+    "c": 64.24
+   },
+   "berAb": {
+    "tag": "2020-04-01",
+    "c": 6.87
+   },
+   "berVerhaeltnis": 0.1069,
+   "sprungInKopiePct": -89.31,
+   "kopienBisExJahr": 5,
+   "kopienBisExJahrListe": [
+    "ARNC/2016.json",
+    "ARNC/2017.json",
+    "ARNC/2018.json",
+    "ARNC/2019.json",
+    "ARNC/2020.json"
+   ]
+  },
+  {
+   "reihe": "AWI",
+   "ex": "2016-04-04",
+   "art": "reverse_splits",
+   "faktor": 0.5,
+   "erwartetesVerhaeltnis": 2,
+   "rohVor": {
+    "tag": "2016-04-01",
+    "c": 48.1
+   },
+   "rohAb": {
+    "tag": "2016-04-04",
+    "c": 41.75
+   },
+   "rohVerhaeltnis": 0.868,
+   "rohVerhaeltnisPanel": 0.868,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-04-01",
+    "c": 96.2
+   },
+   "berAb": {
+    "tag": "2016-04-04",
+    "c": 41.75
+   },
+   "berVerhaeltnis": 0.434,
+   "sprungInKopiePct": -56.6,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "AWI/2016.json"
+   ]
+  },
+  {
+   "reihe": "BEP",
+   "ex": "2020-07-30",
+   "art": "reverse_splits",
+   "faktor": 0.25,
+   "erwartetesVerhaeltnis": 4,
+   "rohVor": {
+    "tag": "2020-07-29",
+    "c": 54.58
+   },
+   "rohAb": {
+    "tag": "2020-07-30",
+    "c": 40.38
+   },
+   "rohVerhaeltnis": 0.7398,
+   "rohVerhaeltnisPanel": 0.7396,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2020-07-29",
+    "c": 145.54666666666665
+   },
+   "berAb": {
+    "tag": "2020-07-30",
+    "c": 26.92
+   },
+   "berVerhaeltnis": 0.185,
+   "sprungInKopiePct": -81.5,
+   "kopienBisExJahr": 5,
+   "kopienBisExJahrListe": [
+    "BEP/2016.json",
+    "BEP/2017.json",
+    "BEP/2018.json",
+    "BEP/2019.json",
+    "BEP/2020.json"
+   ]
+  },
+  {
+   "reihe": "BHAT",
+   "ex": "2026-03-06",
+   "art": "reverse_splits",
+   "faktor": 0.02,
+   "erwartetesVerhaeltnis": 50,
+   "rohVor": {
+    "tag": "2026-03-05",
+    "c": 0.0369
+   },
+   "rohAb": {
+    "tag": "2026-03-06",
+    "c": 0.0351
+   },
+   "rohVerhaeltnis": 0.9512,
+   "rohVerhaeltnisPanel": 0.9355,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": {
+    "tagVor": "2026-03-06",
+    "tagAb": "2026-03-09",
+    "verhaeltnis": 48.5755,
+    "versatzHandelstage": 1
+   },
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2026-03-05",
+    "c": 1.845
+   },
+   "berAb": {
+    "tag": "2026-03-06",
+    "c": 0.0351
+   },
+   "berVerhaeltnis": 0.019,
+   "sprungInKopiePct": -98.1,
+   "kopienBisExJahr": 8,
+   "kopienBisExJahrListe": [
+    "BHAT/2019.json",
+    "BHAT/2020.json",
+    "BHAT/2021.json",
+    "BHAT/2022.json",
+    "BHAT/2023.json",
+    "BHAT/2024.json",
+    "BHAT/2025.json",
+    "BHAT/2026.json"
+   ]
+  },
+  {
+   "reihe": "BIP",
+   "ex": "2020-03-31",
+   "art": "reverse_splits",
+   "faktor": 0.111111,
+   "erwartetesVerhaeltnis": 9,
+   "rohVor": {
+    "tag": "2020-03-30",
+    "c": 39.72
+   },
+   "rohAb": {
+    "tag": "2020-03-31",
+    "c": 35.91
+   },
+   "rohVerhaeltnis": 0.9041,
+   "rohVerhaeltnisPanel": 0.9094,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2020-03-30",
+    "c": 238.32023832023833
+   },
+   "berAb": {
+    "tag": "2020-03-31",
+    "c": 23.939999999999998
+   },
+   "berVerhaeltnis": 0.1005,
+   "sprungInKopiePct": -89.95,
+   "kopienBisExJahr": 5,
+   "kopienBisExJahrListe": [
+    "BIP/2016.json",
+    "BIP/2017.json",
+    "BIP/2018.json",
+    "BIP/2019.json",
+    "BIP/2020.json"
+   ]
+  },
+  {
+   "reihe": "CIVI",
+   "ex": "2017-05-01",
+   "art": "reverse_splits",
+   "faktor": 0.008961537082840448,
+   "erwartetesVerhaeltnis": 111.588,
+   "rohVor": {
+    "tag": "2017-04-28",
+    "c": 17.75
+   },
+   "rohAb": {
+    "tag": "2017-05-01",
+    "c": 17.75
+   },
+   "rohVerhaeltnis": 1,
+   "rohVerhaeltnisPanel": 1,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2017-04-28",
+    "c": 1980.6870000000001
+   },
+   "berAb": {
+    "tag": "2017-05-01",
+    "c": 17.75
+   },
+   "berVerhaeltnis": 0.009,
+   "sprungInKopiePct": -99.1,
+   "kopienBisExJahr": 2,
+   "kopienBisExJahrListe": [
+    "CIVI/2016.json",
+    "CIVI/2017.json"
+   ]
+  },
+  {
+   "reihe": "CNX",
+   "ex": "2017-11-29",
+   "art": "reverse_splits",
+   "faktor": 0.125,
+   "erwartetesVerhaeltnis": 8,
+   "rohVor": {
+    "tag": "2017-11-28",
+    "c": 16.15
+   },
+   "rohAb": {
+    "tag": "2017-11-29",
+    "c": 13.51
+   },
+   "rohVerhaeltnis": 0.8365,
+   "rohVerhaeltnisPanel": 0.8402,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2017-11-28",
+    "c": 129.2
+   },
+   "berAb": {
+    "tag": "2017-11-29",
+    "c": 13.51
+   },
+   "berVerhaeltnis": 0.1046,
+   "sprungInKopiePct": -89.54,
+   "kopienBisExJahr": 2,
+   "kopienBisExJahrListe": [
+    "CNX/2016.json",
+    "CNX/2017.json"
+   ]
+  },
+  {
+   "reihe": "CYH",
+   "ex": "2016-05-02",
+   "art": "reverse_splits",
+   "faktor": 0.25,
+   "erwartetesVerhaeltnis": 4,
+   "rohVor": {
+    "tag": "2016-04-29",
+    "c": 19.07
+   },
+   "rohAb": {
+    "tag": "2016-05-02",
+    "c": 15.74
+   },
+   "rohVerhaeltnis": 0.8254,
+   "rohVerhaeltnisPanel": 0.825,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-04-29",
+    "c": 76.28
+   },
+   "berAb": {
+    "tag": "2016-05-02",
+    "c": 15.74
+   },
+   "berVerhaeltnis": 0.2063,
+   "sprungInKopiePct": -79.37,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "CYH/2016.json"
+   ]
+  },
+  {
+   "reihe": "DB",
+   "ex": "2017-03-21",
+   "art": "reverse_splits",
+   "faktor": 0.5,
+   "erwartetesVerhaeltnis": 2,
+   "rohVor": {
+    "tag": "2017-03-20",
+    "c": 18.37
+   },
+   "rohAb": {
+    "tag": "2017-03-21",
+    "c": 17.08
+   },
+   "rohVerhaeltnis": 0.9298,
+   "rohVerhaeltnisPanel": 0.9308,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2017-03-20",
+    "c": 36.74
+   },
+   "berAb": {
+    "tag": "2017-03-21",
+    "c": 17.08
+   },
+   "berVerhaeltnis": 0.4649,
+   "sprungInKopiePct": -53.51,
+   "kopienBisExJahr": 2,
+   "kopienBisExJahrListe": [
+    "DB/2016.json",
+    "DB/2017.json"
+   ]
+  },
+  {
+   "reihe": "DDR",
+   "ex": "2018-07-02",
+   "art": "reverse_splits",
+   "faktor": 0.1,
+   "erwartetesVerhaeltnis": 10,
+   "rohVor": {
+    "tag": "2018-06-29",
+    "c": 17.905
+   },
+   "rohAb": {
+    "tag": "2018-07-02",
+    "c": 14.12
+   },
+   "rohVerhaeltnis": 0.7886,
+   "rohVerhaeltnisPanel": 0.788,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2018-06-29",
+    "c": 179.05
+   },
+   "berAb": {
+    "tag": "2018-07-02",
+    "c": 14.12
+   },
+   "berVerhaeltnis": 0.0789,
+   "sprungInKopiePct": -92.11,
+   "kopienBisExJahr": 3,
+   "kopienBisExJahrListe": [
+    "DDR/2016.json",
+    "DDR/2017.json",
+    "DDR/2018.json"
+   ]
+  },
+  {
+   "reihe": "DGLY",
+   "ex": "2025-05-07",
+   "art": "reverse_splits",
+   "faktor": 0.05,
+   "erwartetesVerhaeltnis": 20,
+   "rohVor": {
+    "tag": "2025-05-06",
+    "c": 0.0261
+   },
+   "rohAb": {
+    "tag": "2025-05-07",
+    "c": 0.048
+   },
+   "rohVerhaeltnis": 1.8391,
+   "rohVerhaeltnisPanel": 1.8846,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2025-05-06",
+    "c": 52.2
+   },
+   "berAb": {
+    "tag": "2025-05-07",
+    "c": 4.8
+   },
+   "berVerhaeltnis": 0.092,
+   "sprungInKopiePct": -90.8,
+   "kopienBisExJahr": 10,
+   "kopienBisExJahrListe": [
+    "DGLY/2016.json",
+    "DGLY/2017.json",
+    "DGLY/2018.json",
+    "DGLY/2019.json",
+    "DGLY/2020.json",
+    "DGLY/2021.json",
+    "DGLY/2022.json",
+    "DGLY/2023.json",
+    "DGLY/2024.json",
+    "DGLY/2025.json"
+   ]
+  },
+  {
+   "reihe": "DLPH",
+   "ex": "2017-12-05",
+   "art": "reverse_splits",
+   "faktor": 0.33333,
+   "erwartetesVerhaeltnis": 3,
+   "rohVor": {
+    "tag": "2017-12-04",
+    "c": 104.3
+   },
+   "rohAb": {
+    "tag": "2017-12-05",
+    "c": 56.34
+   },
+   "rohVerhaeltnis": 0.5402,
+   "rohVerhaeltnisPanel": 0.5354,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2017-12-04",
+    "c": 312.9031290312903
+   },
+   "berAb": {
+    "tag": "2017-12-05",
+    "c": 56.34
+   },
+   "berVerhaeltnis": 0.1801,
+   "sprungInKopiePct": -81.99,
+   "kopienBisExJahr": 2,
+   "kopienBisExJahrListe": [
+    "DLPH/2016.json",
+    "DLPH/2017.json"
+   ]
+  },
+  {
+   "reihe": "DRS",
+   "ex": "2022-11-23",
+   "art": "forward_splits",
+   "faktor": 1.451345,
+   "erwartetesVerhaeltnis": 0.689,
+   "rohVor": {
+    "tag": "2022-11-22",
+    "c": 10.06
+   },
+   "rohAb": {
+    "tag": "2022-11-23",
+    "c": 9.89
+   },
+   "rohVerhaeltnis": 0.9831,
+   "rohVerhaeltnisPanel": 0.9802,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2022-11-22",
+    "c": 6.931501469326728
+   },
+   "berAb": {
+    "tag": "2022-11-23",
+    "c": 9.89
+   },
+   "berVerhaeltnis": 1.4268,
+   "sprungInKopiePct": 42.68,
+   "kopienBisExJahr": 7,
+   "kopienBisExJahrListe": [
+    "DRS/2016.json",
+    "DRS/2017.json",
+    "DRS/2018.json",
+    "DRS/2019.json",
+    "DRS/2020.json",
+    "DRS/2021.json",
+    "DRS/2022.json"
+   ]
+  },
+  {
+   "reihe": "EBIX",
+   "ex": "2016-08-02",
+   "art": "forward_splits",
+   "faktor": 3,
+   "erwartetesVerhaeltnis": 0.3333,
+   "rohVor": {
+    "tag": "2016-08-01",
+    "c": 53.49
+   },
+   "rohAb": {
+    "tag": "2016-08-02",
+    "c": 51.13
+   },
+   "rohVerhaeltnis": 0.9559,
+   "rohVerhaeltnisPanel": 0.9555,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-08-01",
+    "c": 17.830000000000002
+   },
+   "berAb": {
+    "tag": "2016-08-02",
+    "c": 51.13
+   },
+   "berVerhaeltnis": 2.8676,
+   "sprungInKopiePct": 186.76,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "EBIX/2016.json"
+   ]
+  },
+  {
+   "reihe": "EBS",
+   "ex": "2016-08-01",
+   "art": "reverse_splits",
+   "faktor": 0.5,
+   "erwartetesVerhaeltnis": 2,
+   "rohVor": {
+    "tag": "2016-07-29",
+    "c": 33.3
+   },
+   "rohAb": {
+    "tag": "2016-08-01",
+    "c": 30.97
+   },
+   "rohVerhaeltnis": 0.93,
+   "rohVerhaeltnisPanel": 0.9275,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-07-29",
+    "c": 66.6
+   },
+   "berAb": {
+    "tag": "2016-08-01",
+    "c": 30.97
+   },
+   "berVerhaeltnis": 0.465,
+   "sprungInKopiePct": -53.5,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "EBS/2016.json"
+   ]
+  },
+  {
+   "reihe": "EQT",
+   "ex": "2018-11-13",
+   "art": "reverse_splits",
+   "faktor": 0.8,
+   "erwartetesVerhaeltnis": 1.25,
+   "rohVor": {
+    "tag": "2018-11-12",
+    "c": 34.64
+   },
+   "rohAb": {
+    "tag": "2018-11-13",
+    "c": 18.57
+   },
+   "rohVerhaeltnis": 0.5361,
+   "rohVerhaeltnisPanel": 0.5353,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2018-11-12",
+    "c": 43.3
+   },
+   "berAb": {
+    "tag": "2018-11-13",
+    "c": 18.57
+   },
+   "berVerhaeltnis": 0.4289,
+   "sprungInKopiePct": -57.11,
+   "kopienBisExJahr": 3,
+   "kopienBisExJahrListe": [
+    "EQT/2016.json",
+    "EQT/2017.json",
+    "EQT/2018.json"
+   ]
+  },
+  {
+   "reihe": "FNF",
+   "ex": "2017-10-02",
+   "art": "reverse_splits",
+   "faktor": 0.30663,
+   "erwartetesVerhaeltnis": 3.2613,
+   "rohVor": {
+    "tag": "2017-09-29",
+    "c": 47.44
+   },
+   "rohAb": {
+    "tag": "2017-10-02",
+    "c": 34.3
+   },
+   "rohVerhaeltnis": 0.723,
+   "rohVerhaeltnisPanel": 0.7251,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 0,
+   "kopfNenntSatz": null,
+   "angewandt": null,
+   "berVor": null,
+   "berAb": null,
+   "berVerhaeltnis": null,
+   "sprungInKopiePct": null,
+   "kopienBisExJahr": 0,
+   "kopienBisExJahrListe": []
+  },
+  {
+   "reihe": "GB",
+   "ex": "2016-03-14",
+   "art": "reverse_splits",
+   "faktor": 0.333,
+   "erwartetesVerhaeltnis": 3.003,
+   "rohVor": {
+    "tag": "2016-03-11",
+    "c": 37.5
+   },
+   "rohAb": {
+    "tag": "2016-03-14",
+    "c": 34.07
+   },
+   "rohVerhaeltnis": 0.9085,
+   "rohVerhaeltnisPanel": 0.9085,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-03-11",
+    "c": 112.61261261261261
+   },
+   "berAb": {
+    "tag": "2016-03-14",
+    "c": 34.07
+   },
+   "berVerhaeltnis": 0.3025,
+   "sprungInKopiePct": -69.75,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "GB/2016.json"
+   ]
+  },
+  {
+   "reihe": "GSK",
+   "ex": "2022-07-19",
+   "art": "reverse_splits",
+   "faktor": 0.8,
+   "erwartetesVerhaeltnis": 1.25,
+   "rohVor": {
+    "tag": "2022-07-18",
+    "c": 40.41
+   },
+   "rohAb": {
+    "tag": "2022-07-22",
+    "c": 42.27
+   },
+   "rohVerhaeltnis": 1.046,
+   "rohVerhaeltnisPanel": 1.0465,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2022-07-18",
+    "c": 50.512499999999996
+   },
+   "berAb": {
+    "tag": "2022-07-22",
+    "c": 42.27
+   },
+   "berVerhaeltnis": 0.8368,
+   "sprungInKopiePct": -16.32,
+   "kopienBisExJahr": 7,
+   "kopienBisExJahrListe": [
+    "GSK/2016.json",
+    "GSK/2017.json",
+    "GSK/2018.json",
+    "GSK/2019.json",
+    "GSK/2020.json",
+    "GSK/2021.json",
+    "GSK/2022.json"
+   ]
+  },
+  {
+   "reihe": "HK",
+   "ex": "2016-09-09",
+   "art": "reverse_splits",
+   "faktor": 0.02945083036616217,
+   "erwartetesVerhaeltnis": 33.9549,
+   "rohVor": {
+    "tag": "2016-09-08",
+    "c": 0.3056
+   },
+   "rohAb": {
+    "tag": "2016-09-09",
+    "c": 0.302
+   },
+   "rohVerhaeltnis": 0.9882,
+   "rohVerhaeltnisPanel": 1.0067,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": {
+    "tagVor": "2016-09-09",
+    "tagAb": "2016-09-12",
+    "verhaeltnis": 35.894,
+    "versatzHandelstage": 1
+   },
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-09-08",
+    "c": 10.37661744
+   },
+   "berAb": {
+    "tag": "2016-09-09",
+    "c": 0.302
+   },
+   "berVerhaeltnis": 0.0291,
+   "sprungInKopiePct": -97.09,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "HK/2016.json"
+   ]
+  },
+  {
+   "reihe": "HON",
+   "ex": "2026-06-29",
+   "art": "reverse_splits",
+   "faktor": 0.5,
+   "erwartetesVerhaeltnis": 2,
+   "rohVor": {
+    "tag": "2026-06-26",
+    "c": 231.3
+   },
+   "rohAb": {
+    "tag": "2026-06-29",
+    "c": 227.71
+   },
+   "rohVerhaeltnis": 0.9845,
+   "rohVerhaeltnisPanel": 0.9847,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 0,
+   "kopfNenntSatz": null,
+   "angewandt": null,
+   "berVor": null,
+   "berAb": null,
+   "berVerhaeltnis": null,
+   "sprungInKopiePct": null,
+   "kopienBisExJahr": 0,
+   "kopienBisExJahrListe": []
+  },
+  {
+   "reihe": "IHG",
+   "ex": "2016-05-09",
+   "art": "reverse_splits",
+   "faktor": 0.8333333333333334,
+   "erwartetesVerhaeltnis": 1.2,
+   "rohVor": {
+    "tag": "2016-05-06",
+    "c": 39.28
+   },
+   "rohAb": {
+    "tag": "2016-05-09",
+    "c": 39.35
+   },
+   "rohVerhaeltnis": 1.0018,
+   "rohVerhaeltnisPanel": 1.001,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-05-06",
+    "c": 47.136
+   },
+   "berAb": {
+    "tag": "2016-05-09",
+    "c": 39.35
+   },
+   "berVerhaeltnis": 0.8348,
+   "sprungInKopiePct": -16.52,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "IHG/2016.json"
+   ]
+  },
+  {
+   "reihe": "INPX",
+   "ex": "2018-09-04",
+   "art": "reverse_splits",
+   "faktor": 0.333333,
+   "erwartetesVerhaeltnis": 3,
+   "rohVor": {
+    "tag": "2018-08-31",
+    "c": 0.1449
+   },
+   "rohAb": {
+    "tag": "2018-09-04",
+    "c": 0.1448
+   },
+   "rohVerhaeltnis": 0.9993,
+   "rohVerhaeltnisPanel": 1.0119,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 0,
+   "kopfNenntSatz": null,
+   "angewandt": null,
+   "berVor": null,
+   "berAb": null,
+   "berVerhaeltnis": null,
+   "sprungInKopiePct": null,
+   "kopienBisExJahr": 0,
+   "kopienBisExJahrListe": []
+  },
+  {
+   "reihe": "IR",
+   "ex": "2020-03-02",
+   "art": "reverse_splits",
+   "faktor": 0.8824,
+   "erwartetesVerhaeltnis": 1.1333,
+   "rohVor": {
+    "tag": "2020-02-28",
+    "c": 32.76
+   },
+   "rohAb": {
+    "tag": "2020-03-02",
+    "c": 32.98
+   },
+   "rohVerhaeltnis": 1.0067,
+   "rohVerhaeltnisPanel": 1.0085,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2020-02-28",
+    "c": 37.1260199456029
+   },
+   "berAb": {
+    "tag": "2020-03-02",
+    "c": 32.98
+   },
+   "berVerhaeltnis": 0.8883,
+   "sprungInKopiePct": -11.17,
+   "kopienBisExJahr": 4,
+   "kopienBisExJahrListe": [
+    "IR/2017.json",
+    "IR/2018.json",
+    "IR/2019.json",
+    "IR/2020.json"
+   ]
+  },
+  {
+   "reihe": "MCEP",
+   "ex": "2020-03-24",
+   "art": "reverse_splits",
+   "faktor": 0.1,
+   "erwartetesVerhaeltnis": 10,
+   "rohVor": {
+    "tag": "2020-03-23",
+    "c": 0.0821
+   },
+   "rohAb": {
+    "tag": "2020-03-24",
+    "c": 0.1891
+   },
+   "rohVerhaeltnis": 2.3033,
+   "rohVerhaeltnisPanel": 2.5335,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2020-03-23",
+    "c": 16.419999999999998
+   },
+   "berAb": {
+    "tag": "2020-03-24",
+    "c": 3.7819999999999996
+   },
+   "berVerhaeltnis": 0.2303,
+   "sprungInKopiePct": -76.97,
+   "kopienBisExJahr": 5,
+   "kopienBisExJahrListe": [
+    "MCEP/2016.json",
+    "MCEP/2017.json",
+    "MCEP/2018.json",
+    "MCEP/2019.json",
+    "MCEP/2020.json"
+   ]
+  },
+  {
+   "reihe": "MFCB",
+   "ex": "2017-07-14",
+   "art": "forward_splits",
+   "faktor": 20,
+   "erwartetesVerhaeltnis": 0.05,
+   "rohVor": {
+    "tag": "2017-07-13",
+    "c": 1.7221
+   },
+   "rohAb": {
+    "tag": "2017-07-14",
+    "c": 8.875
+   },
+   "rohVerhaeltnis": 5.1536,
+   "rohVerhaeltnisPanel": 5.1536,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2017-07-13",
+    "c": 0.086105
+   },
+   "berAb": {
+    "tag": "2017-07-14",
+    "c": 8.875
+   },
+   "berVerhaeltnis": 103.0718,
+   "sprungInKopiePct": 10207.18,
+   "kopienBisExJahr": 2,
+   "kopienBisExJahrListe": [
+    "MFCB/2016.json",
+    "MFCB/2017.json"
+   ]
+  },
+  {
+   "reihe": "MFGP",
+   "ex": "2019-04-30",
+   "art": "reverse_splits",
+   "faktor": 0.8296,
+   "erwartetesVerhaeltnis": 1.2054,
+   "rohVor": {
+    "tag": "2019-04-29",
+    "c": 25.07
+   },
+   "rohAb": {
+    "tag": "2019-04-30",
+    "c": 25.09
+   },
+   "rohVerhaeltnis": 1.0008,
+   "rohVerhaeltnisPanel": 1.0008,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2019-04-29",
+    "c": 30.219382835101253
+   },
+   "berAb": {
+    "tag": "2019-04-30",
+    "c": 25.09
+   },
+   "berVerhaeltnis": 0.8303,
+   "sprungInKopiePct": -16.97,
+   "kopienBisExJahr": 3,
+   "kopienBisExJahrListe": [
+    "MFGP/2017.json",
+    "MFGP/2018.json",
+    "MFGP/2019.json"
+   ]
+  },
+  {
+   "reihe": "MFH",
+   "ex": "2023-02-28",
+   "art": "reverse_splits",
+   "faktor": 0.9,
+   "erwartetesVerhaeltnis": 1.1111,
+   "rohVor": {
+    "tag": "2023-02-27",
+    "c": 0.8147
+   },
+   "rohAb": {
+    "tag": "2023-02-28",
+    "c": 0.975
+   },
+   "rohVerhaeltnis": 1.1968,
+   "rohVerhaeltnisPanel": 1.2152,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": {
+    "tagVor": "2023-02-24",
+    "tagAb": "2023-02-27",
+    "verhaeltnis": 1.0718,
+    "versatzHandelstage": -1
+   },
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2023-02-27",
+    "c": 0.9052222222222222
+   },
+   "berAb": {
+    "tag": "2023-02-28",
+    "c": 0.975
+   },
+   "berVerhaeltnis": 1.0771,
+   "sprungInKopiePct": 7.71,
+   "kopienBisExJahr": 4,
+   "kopienBisExJahrListe": [
+    "MFH/2020.json",
+    "MFH/2021.json",
+    "MFH/2022.json",
+    "MFH/2023.json"
+   ]
+  },
+  {
+   "reihe": "MNTX",
+   "ex": "2023-06-22",
+   "art": "reverse_splits",
+   "faktor": 0.5,
+   "erwartetesVerhaeltnis": 2,
+   "rohVor": {
+    "tag": "2023-06-21",
+    "c": 5.01
+   },
+   "rohAb": {
+    "tag": "2023-06-22",
+    "c": 5.09
+   },
+   "rohVerhaeltnis": 1.016,
+   "rohVerhaeltnisPanel": 1.016,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2023-06-21",
+    "c": 10.02
+   },
+   "berAb": {
+    "tag": "2023-06-22",
+    "c": 5.09
+   },
+   "berVerhaeltnis": 0.508,
+   "sprungInKopiePct": -49.2,
+   "kopienBisExJahr": 8,
+   "kopienBisExJahrListe": [
+    "MNTX/2016.json",
+    "MNTX/2017.json",
+    "MNTX/2018.json",
+    "MNTX/2019.json",
+    "MNTX/2020.json",
+    "MNTX/2021.json",
+    "MNTX/2022.json",
+    "MNTX/2023.json"
+   ]
+  },
+  {
+   "reihe": "NVS",
+   "ex": "2019-04-09",
+   "art": "reverse_splits",
+   "faktor": 0.2,
+   "erwartetesVerhaeltnis": 5,
+   "rohVor": {
+    "tag": "2019-04-08",
+    "c": 94.93
+   },
+   "rohAb": {
+    "tag": "2019-04-09",
+    "c": 83.4
+   },
+   "rohVerhaeltnis": 0.8785,
+   "rohVerhaeltnisPanel": 0.8785,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2019-04-08",
+    "c": 474.65000000000003
+   },
+   "berAb": {
+    "tag": "2019-04-09",
+    "c": 83.4
+   },
+   "berVerhaeltnis": 0.1757,
+   "sprungInKopiePct": -82.43,
+   "kopienBisExJahr": 4,
+   "kopienBisExJahrListe": [
+    "NVS/2016.json",
+    "NVS/2017.json",
+    "NVS/2018.json",
+    "NVS/2019.json"
+   ]
+  },
+  {
+   "reihe": "RELV",
+   "ex": "2016-10-03",
+   "art": "reverse_splits",
+   "faktor": 0.14285714285714285,
+   "erwartetesVerhaeltnis": 7,
+   "rohVor": {
+    "tag": "2016-09-30",
+    "c": 0.69
+   },
+   "rohAb": {
+    "tag": "2016-10-03",
+    "c": 0.94
+   },
+   "rohVerhaeltnis": 1.3623,
+   "rohVerhaeltnisPanel": 1.3913,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": {
+    "tagVor": "2016-10-03",
+    "tagAb": "2016-10-04",
+    "verhaeltnis": 7.3404,
+    "versatzHandelstage": 1
+   },
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-09-30",
+    "c": 33.81
+   },
+   "berAb": {
+    "tag": "2016-10-03",
+    "c": 6.58
+   },
+   "berVerhaeltnis": 0.1946,
+   "sprungInKopiePct": -80.54,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "RELV/2016.json"
+   ]
+  },
+  {
+   "reihe": "RRD",
+   "ex": "2016-10-03",
+   "art": "reverse_splits",
+   "faktor": 0.125,
+   "erwartetesVerhaeltnis": 8,
+   "rohVor": {
+    "tag": "2016-09-30",
+    "c": 15.72
+   },
+   "rohAb": {
+    "tag": "2016-10-03",
+    "c": 23.76
+   },
+   "rohVerhaeltnis": 1.5115,
+   "rohVerhaeltnisPanel": 1.5092,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-09-30",
+    "c": 125.76
+   },
+   "berAb": {
+    "tag": "2016-10-03",
+    "c": 23.76
+   },
+   "berVerhaeltnis": 0.1889,
+   "sprungInKopiePct": -81.11,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "RRD/2016.json"
+   ]
+  },
+  {
+   "reihe": "SFUN",
+   "ex": "2019-06-12",
+   "art": "reverse_splits",
+   "faktor": 0.2,
+   "erwartetesVerhaeltnis": 5,
+   "rohVor": {
+    "tag": "2019-06-11",
+    "c": 1.16
+   },
+   "rohAb": {
+    "tag": "2019-06-12",
+    "c": 1.09
+   },
+   "rohVerhaeltnis": 0.9397,
+   "rohVerhaeltnisPanel": 0.9397,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2019-06-11",
+    "c": 289.9999999999999
+   },
+   "berAb": {
+    "tag": "2019-06-12",
+    "c": 54.49999999999999
+   },
+   "berVerhaeltnis": 0.1879,
+   "sprungInKopiePct": -81.21,
+   "kopienBisExJahr": 4,
+   "kopienBisExJahrListe": [
+    "SFUN/2016.json",
+    "SFUN/2017.json",
+    "SFUN/2018.json",
+    "SFUN/2019.json"
+   ]
+  },
+  {
+   "reihe": "SIR",
+   "ex": "2018-12-28",
+   "art": "reverse_splits",
+   "faktor": 0.502509,
+   "erwartetesVerhaeltnis": 1.99,
+   "rohVor": {
+    "tag": "2018-12-27",
+    "c": 17.5
+   },
+   "rohAb": {
+    "tag": "2018-12-28",
+    "c": 7.54
+   },
+   "rohVerhaeltnis": 0.4309,
+   "rohVerhaeltnisPanel": 0.4314,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2018-12-27",
+    "c": 34.8252469110006
+   },
+   "berAb": {
+    "tag": "2018-12-28",
+    "c": 7.54
+   },
+   "berVerhaeltnis": 0.2165,
+   "sprungInKopiePct": -78.35,
+   "kopienBisExJahr": 3,
+   "kopienBisExJahrListe": [
+    "SIR/2016.json",
+    "SIR/2017.json",
+    "SIR/2018.json"
+   ]
+  },
+  {
+   "reihe": "SMTS",
+   "ex": "2017-07-24",
+   "art": "forward_splits",
+   "faktor": 50,
+   "erwartetesVerhaeltnis": 0.02,
+   "rohVor": {
+    "tag": "2017-07-21",
+    "c": 2.6
+   },
+   "rohAb": {
+    "tag": "2017-07-24",
+    "c": 2.45
+   },
+   "rohVerhaeltnis": 0.9423,
+   "rohVerhaeltnisPanel": 0.9423,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2017-07-21",
+    "c": 0.052000000000000005
+   },
+   "berAb": {
+    "tag": "2017-07-24",
+    "c": 2.45
+   },
+   "berVerhaeltnis": 47.1154,
+   "sprungInKopiePct": 4611.54,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "SMTS/2017.json"
+   ]
+  },
+  {
+   "reihe": "SNR",
+   "ex": "2018-11-15",
+   "art": "reverse_splits",
+   "faktor": 0.25,
+   "erwartetesVerhaeltnis": 4,
+   "rohVor": {
+    "tag": "2018-11-14",
+    "c": 5.35
+   },
+   "rohAb": {
+    "tag": "2018-11-15",
+    "c": 5.22
+   },
+   "rohVerhaeltnis": 0.9757,
+   "rohVerhaeltnisPanel": 0.9757,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2018-11-14",
+    "c": 21.4
+   },
+   "berAb": {
+    "tag": "2018-11-15",
+    "c": 5.22
+   },
+   "berVerhaeltnis": 0.2439,
+   "sprungInKopiePct": -75.61,
+   "kopienBisExJahr": 3,
+   "kopienBisExJahrListe": [
+    "SNR/2016.json",
+    "SNR/2017.json",
+    "SNR/2018.json"
+   ]
+  },
+  {
+   "reihe": "SPEC",
+   "ex": "2022-08-26",
+   "art": "reverse_splits",
+   "faktor": 0.25,
+   "erwartetesVerhaeltnis": 4,
+   "rohVor": {
+    "tag": "2022-08-23",
+    "c": 10.15
+   },
+   "rohAb": {
+    "tag": "2022-08-31",
+    "c": 10.125
+   },
+   "rohVerhaeltnis": 0.9975,
+   "rohVerhaeltnisPanel": 0.9966,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2022-08-23",
+    "c": 40.6
+   },
+   "berAb": {
+    "tag": "2022-08-31",
+    "c": 10.125
+   },
+   "berVerhaeltnis": 0.2494,
+   "sprungInKopiePct": -75.06,
+   "kopienBisExJahr": 2,
+   "kopienBisExJahrListe": [
+    "SPEC/2021.json",
+    "SPEC/2022.json"
+   ]
+  },
+  {
+   "reihe": "SRC",
+   "ex": "2018-06-01",
+   "art": "reverse_splits",
+   "faktor": 0.1,
+   "erwartetesVerhaeltnis": 10,
+   "rohVor": {
+    "tag": "2018-05-31",
+    "c": 8.76
+   },
+   "rohAb": {
+    "tag": "2018-06-01",
+    "c": 7.64
+   },
+   "rohVerhaeltnis": 0.8721,
+   "rohVerhaeltnisPanel": 0.8721,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2018-05-31",
+    "c": 437.9999999999999
+   },
+   "berAb": {
+    "tag": "2018-06-01",
+    "c": 38.199999999999996
+   },
+   "berVerhaeltnis": 0.0872,
+   "sprungInKopiePct": -91.28,
+   "kopienBisExJahr": 3,
+   "kopienBisExJahrListe": [
+    "SRC/2016.json",
+    "SRC/2017.json",
+    "SRC/2018.json"
+   ]
+  },
+  {
+   "reihe": "SWI",
+   "ex": "2021-07-30",
+   "art": "reverse_splits",
+   "faktor": 0.5,
+   "erwartetesVerhaeltnis": 2,
+   "rohVor": {
+    "tag": "2021-07-29",
+    "c": 11.42
+   },
+   "rohAb": {
+    "tag": "2021-07-30",
+    "c": 11.23
+   },
+   "rohVerhaeltnis": 0.9834,
+   "rohVerhaeltnisPanel": 0.9834,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": {
+    "tagVor": "2021-07-30",
+    "tagAb": "2021-08-02",
+    "verhaeltnis": 1.9644,
+    "versatzHandelstage": 1
+   },
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2021-07-29",
+    "c": 22.84
+   },
+   "berAb": {
+    "tag": "2021-07-30",
+    "c": 11.23
+   },
+   "berVerhaeltnis": 0.4917,
+   "sprungInKopiePct": -50.83,
+   "kopienBisExJahr": 5,
+   "kopienBisExJahrListe": [
+    "SWI/2016.json",
+    "SWI/2018.json",
+    "SWI/2019.json",
+    "SWI/2020.json",
+    "SWI/2021.json"
+   ]
+  },
+  {
+   "reihe": "TGNA",
+   "ex": "2017-06-01",
+   "art": "reverse_splits",
+   "faktor": 0.33333,
+   "erwartetesVerhaeltnis": 3,
+   "rohVor": {
+    "tag": "2017-05-31",
+    "c": 23.74
+   },
+   "rohAb": {
+    "tag": "2017-06-01",
+    "c": 15.3
+   },
+   "rohVerhaeltnis": 0.6445,
+   "rohVerhaeltnisPanel": 0.6441,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2017-05-31",
+    "c": 71.22071220712206
+   },
+   "berAb": {
+    "tag": "2017-06-01",
+    "c": 15.3
+   },
+   "berVerhaeltnis": 0.2148,
+   "sprungInKopiePct": -78.52,
+   "kopienBisExJahr": 2,
+   "kopienBisExJahrListe": [
+    "TGNA/2016.json",
+    "TGNA/2017.json"
+   ]
+  },
+  {
+   "reihe": "TRN",
+   "ex": "2018-11-01",
+   "art": "reverse_splits",
+   "faktor": 0.333333,
+   "erwartetesVerhaeltnis": 3,
+   "rohVor": {
+    "tag": "2018-10-31",
+    "c": 28.52
+   },
+   "rohAb": {
+    "tag": "2018-11-01",
+    "c": 22.74
+   },
+   "rohVerhaeltnis": 0.7973,
+   "rohVerhaeltnisPanel": 0.7973,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2018-10-31",
+    "c": 85.56008556008557
+   },
+   "berAb": {
+    "tag": "2018-11-01",
+    "c": 22.74
+   },
+   "berVerhaeltnis": 0.2658,
+   "sprungInKopiePct": -73.42,
+   "kopienBisExJahr": 3,
+   "kopienBisExJahrListe": [
+    "TRN/2016.json",
+    "TRN/2017.json",
+    "TRN/2018.json"
+   ]
+  },
+  {
+   "reihe": "TRNX",
+   "ex": "2019-12-06",
+   "art": "forward_splits",
+   "faktor": 5,
+   "erwartetesVerhaeltnis": 0.2,
+   "rohVor": {
+    "tag": "2019-12-05",
+    "c": 1.56
+   },
+   "rohAb": {
+    "tag": "2019-12-06",
+    "c": 1.19
+   },
+   "rohVerhaeltnis": 0.7628,
+   "rohVerhaeltnisPanel": 0.7806,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2019-12-05",
+    "c": 0.312
+   },
+   "berAb": {
+    "tag": "2019-12-06",
+    "c": 1.19
+   },
+   "berVerhaeltnis": 3.8141,
+   "sprungInKopiePct": 281.41,
+   "kopienBisExJahr": 3,
+   "kopienBisExJahrListe": [
+    "TRNX/2017.json",
+    "TRNX/2018.json",
+    "TRNX/2019.json"
+   ]
+  },
+  {
+   "reihe": "WHLR",
+   "ex": "2025-11-28",
+   "art": "reverse_splits",
+   "faktor": 0.5,
+   "erwartetesVerhaeltnis": 2,
+   "rohVor": {
+    "tag": "2025-11-26",
+    "c": 1.4199
+   },
+   "rohAb": {
+    "tag": "2025-11-28",
+    "c": 1.465
+   },
+   "rohVerhaeltnis": 1.0318,
+   "rohVerhaeltnisPanel": 1.0355,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": {
+    "tagVor": "2025-11-28",
+    "tagAb": "2025-12-01",
+    "verhaeltnis": 2.4846,
+    "versatzHandelstage": 1
+   },
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2025-11-26",
+    "c": 4089.312
+   },
+   "berAb": {
+    "tag": "2025-11-28",
+    "c": 2109.6
+   },
+   "berVerhaeltnis": 0.5159,
+   "sprungInKopiePct": -48.41,
+   "kopienBisExJahr": 10,
+   "kopienBisExJahrListe": [
+    "WHLR/2016.json",
+    "WHLR/2017.json",
+    "WHLR/2018.json",
+    "WHLR/2019.json",
+    "WHLR/2020.json",
+    "WHLR/2021.json",
+    "WHLR/2022.json",
+    "WHLR/2023.json",
+    "WHLR/2024.json",
+    "WHLR/2025.json"
+   ]
+  },
+  {
+   "reihe": "WRK",
+   "ex": "2016-05-16",
+   "art": "reverse_splits",
+   "faktor": 0.1666,
+   "erwartetesVerhaeltnis": 6.0024,
+   "rohVor": {
+    "tag": "2016-05-13",
+    "c": 42.56
+   },
+   "rohAb": {
+    "tag": "2016-05-16",
+    "c": 39.65
+   },
+   "rohVerhaeltnis": 0.9316,
+   "rohVerhaeltnisPanel": 0.9316,
+   "rohZeigtSprung": false,
+   "sprungAmNachbartag": null,
+   "kopieVorhanden": 1,
+   "kopfNenntSatz": 1,
+   "angewandt": 1,
+   "berVor": {
+    "tag": "2016-05-13",
+    "c": 255.4621848739496
+   },
+   "berAb": {
+    "tag": "2016-05-16",
+    "c": 39.65
+   },
+   "berVerhaeltnis": 0.1552,
+   "sprungInKopiePct": -84.48,
+   "kopienBisExJahr": 1,
+   "kopienBisExJahrListe": [
+    "WRK/2016.json"
+   ]
+  }
+ ]
+}

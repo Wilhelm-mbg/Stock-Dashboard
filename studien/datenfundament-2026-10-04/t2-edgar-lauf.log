@@ -1,0 +1,20 @@
+20/342  Anfragen 31  Fehlversuche 2  40s
+40/342  Anfragen 81  Fehlversuche 3  80s
+FEHLER BGXX: FTS ohne Aggregation: HTTP 500
+60/342  Anfragen 108  Fehlversuche 7  110s
+80/342  Anfragen 138  Fehlversuche 7  138s
+100/342  Anfragen 170  Fehlversuche 9  178s
+120/342  Anfragen 223  Fehlversuche 9  200s
+140/342  Anfragen 276  Fehlversuche 12  246s
+160/342  Anfragen 305  Fehlversuche 12  265s
+180/342  Anfragen 340  Fehlversuche 14  299s
+200/342  Anfragen 397  Fehlversuche 16  335s
+220/342  Anfragen 423  Fehlversuche 16  352s
+240/342  Anfragen 455  Fehlversuche 18  393s
+260/342  Anfragen 541  Fehlversuche 24  460s
+280/342  Anfragen 571  Fehlversuche 24  480s
+300/342  Anfragen 608  Fehlversuche 31  532s
+320/342  Anfragen 642  Fehlversuche 31  551s
+340/342  Anfragen 670  Fehlversuche 31  572s
+FERTIG  Reihen 341 (uebersprungen 3)  Anfragen 671  Fehlversuche 31  offen 1  573s
+{"anfragen":671,"fehlversuche":31,"ftsAltCache":0,"ftsEigenCache":0,"ftsNeu":341,"fts2EigenCache":0,"fts2Neu":29,"cikAltCache":255,"cikEigenCache":17,"cikNeu":110,"cikNeuWeilFensterNachAbruf":30,"cikNeuWeilGrenze":17,"cikNeuWeilFehlt":63,"aeltereDateien":160,"minAbstandGemessenMs":350}

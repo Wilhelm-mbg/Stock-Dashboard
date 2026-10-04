@@ -1,0 +1,2136 @@
+{
+ "stand": "2026-10-04T10:24:15.940Z",
+ "ende": "2026-10-02",
+ "regel": "Klaerung 2 des Auftrags; Polygon-Liste endet am 2026-08-21",
+ "zahlen": {
+  "fensterHandelstage": 60,
+  "ersterTagImFenster": "2026-07-09",
+  "n": 83,
+  "jeGruppe": {
+   "abgang": 72,
+   "luecke-der-sammlung": 6,
+   "unklar": 5
+  },
+  "jeGruppeLebendAlt": {
+   "abgang": 15,
+   "luecke-der-sammlung": 6,
+   "unklar": 5
+  },
+  "polygonKannNichtBelegenAb": "2026-08-06",
+  "endeNachPolygonStand": 11
+ },
+ "gruppen": {
+  "abgang": [
+   {
+    "reihe": "AACB",
+    "letzterMinutentag": "2026-08-19",
+    "letzterTagesbalken": "2026-08-19",
+    "abstandHandelstage": 31,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-20",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-19",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-08-25",
+     "neuesKuerzel": null,
+     "diff": 6
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 0.728,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-20"
+    ]
+   },
+   {
+    "reihe": "AFBI",
+    "letzterMinutentag": "2026-07-31",
+    "letzterTagesbalken": "2026-07-31",
+    "abstandHandelstage": 44,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-03",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-31",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-08-03",
+     "neuesKuerzel": null,
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 0.952,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-03"
+    ]
+   },
+   {
+    "reihe": "ALBT",
+    "letzterMinutentag": "2026-07-21",
+    "letzterTagesbalken": "2026-07-21",
+    "abstandHandelstage": 52,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-22",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-21",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-22",
+     "neuesKuerzel": "CHGA",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-22"
+    ]
+   },
+   {
+    "reihe": "ANSC",
+    "letzterMinutentag": "2026-08-11",
+    "letzterTagesbalken": "2026-08-11",
+    "abstandHandelstage": 37,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-13",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-11",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-08-19",
+     "neuesKuerzel": null,
+     "diff": 8
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 0.789,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-13",
+     "2026-08-14"
+    ]
+   },
+   {
+    "reihe": "APM",
+    "letzterMinutentag": "2026-07-17",
+    "letzterTagesbalken": "2026-07-17",
+    "abstandHandelstage": 54,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-20",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-17",
+    "lebendAlt": 0,
+    "massnahmeEnde": null,
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-20"
+    ]
+   },
+   {
+    "reihe": "AVB",
+    "letzterMinutentag": "2026-08-14",
+    "letzterTagesbalken": "2026-08-14",
+    "abstandHandelstage": 34,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-18",
+    "polygonDiff": 4,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-14",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "stock_mergers",
+     "ex": "2026-08-17",
+     "neuesKuerzel": "EQR",
+     "diff": 3
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-08-24",
+     "letzterTag": "2026-08-21",
+     "tageNach": 5,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-18"
+    ]
+   },
+   {
+    "reihe": "AVNS",
+    "letzterMinutentag": "2026-07-24",
+    "letzterTagesbalken": "2026-07-24",
+    "abstandHandelstage": 49,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-28",
+    "polygonDiff": 4,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-24",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-28",
+     "neuesKuerzel": null,
+     "diff": 4
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-28"
+    ]
+   },
+   {
+    "reihe": "AXIA",
+    "letzterMinutentag": "2026-08-06",
+    "letzterTagesbalken": "2026-08-06",
+    "abstandHandelstage": 40,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-07",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-06",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-07",
+     "neuesKuerzel": "AXIAY",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-07"
+    ]
+   },
+   {
+    "reihe": "BBBY",
+    "letzterMinutentag": "2026-08-14",
+    "letzterTagesbalken": "2026-08-14",
+    "abstandHandelstage": 34,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-17",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-14",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-17",
+     "neuesKuerzel": "NXH",
+     "diff": 3
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-17"
+    ]
+   },
+   {
+    "reihe": "BNBX",
+    "letzterMinutentag": "2026-07-13",
+    "letzterTagesbalken": "2026-09-02",
+    "abstandHandelstage": 58,
+    "tagesbalkenNachMinuten": 51,
+    "polygonBis": "2026-07-14",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-13",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2025-10-07",
+     "neuesKuerzel": "BNBX",
+     "diff": -279
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-14"
+    ]
+   },
+   {
+    "reihe": "BNRG",
+    "letzterMinutentag": "2026-08-13",
+    "letzterTagesbalken": "2026-08-13",
+    "abstandHandelstage": 35,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-14",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-13",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-14",
+     "neuesKuerzel": "BRNX",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-14"
+    ]
+   },
+   {
+    "reihe": "BNZI",
+    "letzterMinutentag": "2026-08-06",
+    "letzterTagesbalken": "2026-08-06",
+    "abstandHandelstage": 40,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-07",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-06",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-07",
+     "neuesKuerzel": "PARA",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-07"
+    ]
+   },
+   {
+    "reihe": "CCIX",
+    "letzterMinutentag": "2026-07-27",
+    "letzterTagesbalken": "2026-07-27",
+    "abstandHandelstage": 48,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-28",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-27",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-28",
+     "neuesKuerzel": null,
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-28"
+    ]
+   },
+   {
+    "reihe": "CCRN",
+    "letzterMinutentag": "2026-07-20",
+    "letzterTagesbalken": "2026-07-20",
+    "abstandHandelstage": 53,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-22",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-20",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-22",
+     "neuesKuerzel": null,
+     "diff": 2
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-22"
+    ]
+   },
+   {
+    "reihe": "CPRX",
+    "letzterMinutentag": "2026-07-14",
+    "letzterTagesbalken": "2026-07-14",
+    "abstandHandelstage": 57,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-16",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-14",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-15",
+     "neuesKuerzel": null,
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-16"
+    ]
+   },
+   {
+    "reihe": "CREG",
+    "letzterMinutentag": "2026-07-20",
+    "letzterTagesbalken": "2026-09-02",
+    "abstandHandelstage": 53,
+    "tagesbalkenNachMinuten": 44,
+    "polygonBis": "2026-07-21",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-20",
+    "lebendAlt": 1,
+    "massnahmeEnde": null,
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-21"
+    ]
+   },
+   {
+    "reihe": "EA",
+    "letzterMinutentag": "2026-08-04",
+    "letzterTagesbalken": "2026-08-04",
+    "abstandHandelstage": 42,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-05",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-04",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-08-05",
+     "neuesKuerzel": null,
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-05"
+    ]
+   },
+   {
+    "reihe": "EEX",
+    "letzterMinutentag": "2026-07-13",
+    "letzterTagesbalken": "2026-07-13",
+    "abstandHandelstage": 58,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-15",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-13",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-15",
+     "neuesKuerzel": null,
+     "diff": 2
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-15"
+    ]
+   },
+   {
+    "reihe": "ELSE",
+    "letzterMinutentag": "2026-07-30",
+    "letzterTagesbalken": "2026-07-31",
+    "abstandHandelstage": 45,
+    "tagesbalkenNachMinuten": 1,
+    "polygonBis": "2026-08-03",
+    "polygonDiff": 4,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-30",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-31",
+     "neuesKuerzel": null,
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 0.944,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-03"
+    ]
+   },
+   {
+    "reihe": "EQR",
+    "letzterMinutentag": "2026-08-17",
+    "letzterTagesbalken": "2026-08-17",
+    "abstandHandelstage": 33,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-18",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-17",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-18",
+     "neuesKuerzel": "VMRK",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-08-24",
+     "letzterTag": "2026-08-21",
+     "tageNach": 4,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-18"
+    ]
+   },
+   {
+    "reihe": "ESPR",
+    "letzterMinutentag": "2026-07-10",
+    "letzterTagesbalken": "2026-07-10",
+    "abstandHandelstage": 59,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-14",
+    "polygonDiff": 4,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-10",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "stock_and_cash_mergers",
+     "ex": "2026-07-13",
+     "neuesKuerzel": "296CVR020",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-14"
+    ]
+   },
+   {
+    "reihe": "EVTV",
+    "letzterMinutentag": "2026-07-10",
+    "letzterTagesbalken": "2026-07-10",
+    "abstandHandelstage": 59,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-13",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-10",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-13",
+     "neuesKuerzel": "AZIO",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-13"
+    ]
+   },
+   {
+    "reihe": "FGMC",
+    "letzterMinutentag": "2026-07-17",
+    "letzterTagesbalken": "2026-07-17",
+    "abstandHandelstage": 54,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-20",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-17",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "stock_mergers",
+     "ex": "2026-07-20",
+     "neuesKuerzel": "BXBL",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-20"
+    ]
+   },
+   {
+    "reihe": "FTRK",
+    "letzterMinutentag": "2026-08-17",
+    "letzterTagesbalken": "2026-08-17",
+    "abstandHandelstage": 33,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-18",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-17",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-18",
+     "neuesKuerzel": "FTRKF",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-18"
+    ]
+   },
+   {
+    "reihe": "GAMB",
+    "letzterMinutentag": "2026-07-22",
+    "letzterTagesbalken": "2026-07-22",
+    "abstandHandelstage": 51,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-23",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-22",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-23",
+     "neuesKuerzel": "GRSD",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-23"
+    ]
+   },
+   {
+    "reihe": "GGRP",
+    "letzterMinutentag": "2026-08-19",
+    "letzterTagesbalken": "2026-08-19",
+    "abstandHandelstage": 31,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-20",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-19",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-20",
+     "neuesKuerzel": "BTLN",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-20"
+    ]
+   },
+   {
+    "reihe": "GRAF",
+    "letzterMinutentag": "2026-07-24",
+    "letzterTagesbalken": "2026-07-24",
+    "abstandHandelstage": 49,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-27",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-24",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-27",
+     "neuesKuerzel": "TONT",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 0.821,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-27"
+    ]
+   },
+   {
+    "reihe": "GREE",
+    "letzterMinutentag": "2026-07-23",
+    "letzterTagesbalken": "2026-07-23",
+    "abstandHandelstage": 50,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-24",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-23",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-24",
+     "neuesKuerzel": "VIP",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-24"
+    ]
+   },
+   {
+    "reihe": "GTLS",
+    "letzterMinutentag": "2026-07-15",
+    "letzterTagesbalken": "2026-07-15",
+    "abstandHandelstage": 56,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-17",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-15",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-17",
+     "neuesKuerzel": "BKR",
+     "diff": 2
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-17"
+    ]
+   },
+   {
+    "reihe": "GV",
+    "letzterMinutentag": "2026-07-30",
+    "letzterTagesbalken": "2026-07-30",
+    "abstandHandelstage": 45,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-31",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-30",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-31",
+     "neuesKuerzel": "GVHGF",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-31"
+    ]
+   },
+   {
+    "reihe": "IPCX",
+    "letzterMinutentag": "2026-08-14",
+    "letzterTagesbalken": "2026-08-14",
+    "abstandHandelstage": 34,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-17",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-14",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-17",
+     "neuesKuerzel": "WATR",
+     "diff": 3
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 0.948,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-17"
+    ]
+   },
+   {
+    "reihe": "ISSC",
+    "letzterMinutentag": "2026-08-17",
+    "letzterTagesbalken": "2026-08-17",
+    "abstandHandelstage": 33,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-18",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-17",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-18",
+     "neuesKuerzel": "IA",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-18"
+    ]
+   },
+   {
+    "reihe": "KORE",
+    "letzterMinutentag": "2026-07-20",
+    "letzterTagesbalken": "2026-07-20",
+    "abstandHandelstage": 53,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-22",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-20",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-22",
+     "neuesKuerzel": null,
+     "diff": 2
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-22"
+    ]
+   },
+   {
+    "reihe": "KVAC",
+    "letzterMinutentag": "2026-07-31",
+    "letzterTagesbalken": "2026-07-31",
+    "abstandHandelstage": 44,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-03",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-31",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-03",
+     "neuesKuerzel": "KVACF",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 0.465,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-03"
+    ]
+   },
+   {
+    "reihe": "LBRDA",
+    "letzterMinutentag": "2026-08-19",
+    "letzterTagesbalken": "2026-08-19",
+    "abstandHandelstage": 31,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-21",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-19",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "stock_mergers",
+     "ex": "2026-08-20",
+     "neuesKuerzel": "CHTR",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-09-12",
+     "letzterTag": "2026-08-21",
+     "tageNach": 1,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-21"
+    ]
+   },
+   {
+    "reihe": "LBRDK",
+    "letzterMinutentag": "2026-08-19",
+    "letzterTagesbalken": "2026-08-19",
+    "abstandHandelstage": 31,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-21",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-19",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "stock_mergers",
+     "ex": "2026-08-20",
+     "neuesKuerzel": "CHTR",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-09-01",
+     "letzterTag": "2026-08-21",
+     "tageNach": 1,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-21"
+    ]
+   },
+   {
+    "reihe": "LMFA",
+    "letzterMinutentag": "2026-07-21",
+    "letzterTagesbalken": "2026-07-21",
+    "abstandHandelstage": 52,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-22",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-21",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-22",
+     "neuesKuerzel": "PWCM",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-22"
+    ]
+   },
+   {
+    "reihe": "LPRO",
+    "letzterMinutentag": "2026-07-29",
+    "letzterTagesbalken": "2026-07-29",
+    "abstandHandelstage": 46,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-31",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-29",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-08-03",
+     "neuesKuerzel": null,
+     "diff": 5
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-31"
+    ]
+   },
+   {
+    "reihe": "LSH",
+    "letzterMinutentag": "2026-08-03",
+    "letzterTagesbalken": "2026-08-03",
+    "abstandHandelstage": 43,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-04",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-03",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-04",
+     "neuesKuerzel": "QNME",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 0.993,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-04"
+    ]
+   },
+   {
+    "reihe": "MBAV",
+    "letzterMinutentag": "2026-07-21",
+    "letzterTagesbalken": "2026-07-21",
+    "abstandHandelstage": 52,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-23",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-21",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-23",
+     "neuesKuerzel": "VLOS",
+     "diff": 2
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 0.927,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-23"
+    ]
+   },
+   {
+    "reihe": "MDV",
+    "letzterMinutentag": "2026-08-11",
+    "letzterTagesbalken": "2026-08-11",
+    "abstandHandelstage": 37,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-13",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-11",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "stock_mergers",
+     "ex": "2026-08-13",
+     "neuesKuerzel": "GNL",
+     "diff": 2
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-13",
+     "2026-08-14"
+    ]
+   },
+   {
+    "reihe": "MVO",
+    "letzterMinutentag": "2026-07-24",
+    "letzterTagesbalken": "2026-07-24",
+    "abstandHandelstage": 49,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-27",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-24",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "worthless_removals",
+     "ex": "2026-08-17",
+     "neuesKuerzel": null,
+     "diff": 24
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-27"
+    ]
+   },
+   {
+    "reihe": "NFBK",
+    "letzterMinutentag": "2026-07-20",
+    "letzterTagesbalken": "2026-07-20",
+    "abstandHandelstage": 53,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-21",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-20",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "stock_and_cash_mergers",
+     "ex": "2026-07-22",
+     "neuesKuerzel": "CLBK",
+     "diff": 2
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-21"
+    ]
+   },
+   {
+    "reihe": "NSA",
+    "letzterMinutentag": "2026-07-21",
+    "letzterTagesbalken": "2026-07-21",
+    "abstandHandelstage": 52,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-23",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-21",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "stock_mergers",
+     "ex": "2026-07-23",
+     "neuesKuerzel": "PSA",
+     "diff": 2
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-23"
+    ]
+   },
+   {
+    "reihe": "NUVL",
+    "letzterMinutentag": "2026-07-14",
+    "letzterTagesbalken": "2026-07-14",
+    "abstandHandelstage": 57,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-16",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-14",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-16",
+     "neuesKuerzel": null,
+     "diff": 2
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-16"
+    ]
+   },
+   {
+    "reihe": "NVVE",
+    "letzterMinutentag": "2026-07-23",
+    "letzterTagesbalken": "2026-09-02",
+    "abstandHandelstage": 50,
+    "tagesbalkenNachMinuten": 41,
+    "polygonBis": "2026-07-24",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-23",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2021-03-23",
+     "neuesKuerzel": "NVVE",
+     "diff": -1948
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-24"
+    ]
+   },
+   {
+    "reihe": "ODV",
+    "letzterMinutentag": "2026-07-17",
+    "letzterTagesbalken": "2026-07-17",
+    "abstandHandelstage": 54,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-20",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-17",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-20",
+     "neuesKuerzel": "OGG",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-20"
+    ]
+   },
+   {
+    "reihe": "ORLA",
+    "letzterMinutentag": "2026-07-30",
+    "letzterTagesbalken": "2026-07-30",
+    "abstandHandelstage": 45,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-31",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-30",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "stock_and_cash_mergers",
+     "ex": "2026-08-06",
+     "neuesKuerzel": "EQX",
+     "diff": 7
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-31"
+    ]
+   },
+   {
+    "reihe": "PCSC",
+    "letzterMinutentag": "2026-07-20",
+    "letzterTagesbalken": "2026-07-20",
+    "abstandHandelstage": 53,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-21",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-20",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-21",
+     "neuesKuerzel": "FRNM",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-21"
+    ]
+   },
+   {
+    "reihe": "PSTV",
+    "letzterMinutentag": "2026-07-31",
+    "letzterTagesbalken": "2026-07-31",
+    "abstandHandelstage": 44,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-03",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-31",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-03",
+     "neuesKuerzel": "CNSY",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-03"
+    ]
+   },
+   {
+    "reihe": "SGRP",
+    "letzterMinutentag": "2026-07-22",
+    "letzterTagesbalken": "2026-09-02",
+    "abstandHandelstage": 51,
+    "tagesbalkenNachMinuten": 42,
+    "polygonBis": "2026-07-23",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-22",
+    "lebendAlt": 1,
+    "massnahmeEnde": null,
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-23"
+    ]
+   },
+   {
+    "reihe": "SKHYV",
+    "letzterMinutentag": "2026-07-10",
+    "letzterTagesbalken": "2026-07-10",
+    "abstandHandelstage": 59,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-13",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-10",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-13",
+     "neuesKuerzel": "SKHY",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-13"
+    ]
+   },
+   {
+    "reihe": "SKYT",
+    "letzterMinutentag": "2026-07-30",
+    "letzterTagesbalken": "2026-07-31",
+    "abstandHandelstage": 45,
+    "tagesbalkenNachMinuten": 1,
+    "polygonBis": "2026-08-03",
+    "polygonDiff": 4,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-30",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "stock_and_cash_mergers",
+     "ex": "2026-07-31",
+     "neuesKuerzel": "IONQ",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-03"
+    ]
+   },
+   {
+    "reihe": "SLAI",
+    "letzterMinutentag": "2026-07-16",
+    "letzterTagesbalken": "2026-07-16",
+    "abstandHandelstage": 55,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-17",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-16",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2025-10-20",
+     "neuesKuerzel": "SLAI",
+     "diff": -269
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-17"
+    ]
+   },
+   {
+    "reihe": "STRS",
+    "letzterMinutentag": "2026-08-07",
+    "letzterTagesbalken": "2026-09-02",
+    "abstandHandelstage": 39,
+    "tagesbalkenNachMinuten": 26,
+    "polygonBis": "2026-08-10",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-07",
+    "lebendAlt": 1,
+    "massnahmeEnde": null,
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-10"
+    ]
+   },
+   {
+    "reihe": "SVAC",
+    "letzterMinutentag": "2026-07-10",
+    "letzterTagesbalken": "2026-07-10",
+    "abstandHandelstage": 59,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-13",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-10",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-13",
+     "neuesKuerzel": "GFUZ",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 0.977,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-13"
+    ]
+   },
+   {
+    "reihe": "TALK",
+    "letzterMinutentag": "2026-08-14",
+    "letzterTagesbalken": "2026-08-14",
+    "abstandHandelstage": 34,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-18",
+    "polygonDiff": 4,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-14",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-08-18",
+     "neuesKuerzel": "UHS",
+     "diff": 4
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-18"
+    ]
+   },
+   {
+    "reihe": "TMHC",
+    "letzterMinutentag": "2026-07-23",
+    "letzterTagesbalken": "2026-07-23",
+    "abstandHandelstage": 50,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-27",
+    "polygonDiff": 4,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-23",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-27",
+     "neuesKuerzel": null,
+     "diff": 4
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-27"
+    ]
+   },
+   {
+    "reihe": "TOI",
+    "letzterMinutentag": "2026-08-03",
+    "letzterTagesbalken": "2026-08-03",
+    "abstandHandelstage": 43,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-04",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-03",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-04",
+     "neuesKuerzel": "STLN",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-04"
+    ]
+   },
+   {
+    "reihe": "TRINI",
+    "letzterMinutentag": "2026-07-24",
+    "letzterTagesbalken": "2026-07-24",
+    "abstandHandelstage": 49,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-27",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-24",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-27",
+     "neuesKuerzel": "TRNI",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-27"
+    ]
+   },
+   {
+    "reihe": "TRINZ",
+    "letzterMinutentag": "2026-07-24",
+    "letzterTagesbalken": "2026-07-24",
+    "abstandHandelstage": 49,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-27",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-24",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-27",
+     "neuesKuerzel": "TRNZ",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-27"
+    ]
+   },
+   {
+    "reihe": "UBXG",
+    "letzterMinutentag": "2026-07-17",
+    "letzterTagesbalken": "2026-07-17",
+    "abstandHandelstage": 54,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-20",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-17",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-20",
+     "neuesKuerzel": "MF",
+     "diff": 3
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-20"
+    ]
+   },
+   {
+    "reihe": "VSEE",
+    "letzterMinutentag": "2026-08-05",
+    "letzterTagesbalken": "2026-09-02",
+    "abstandHandelstage": 41,
+    "tagesbalkenNachMinuten": 28,
+    "polygonBis": "2026-08-06",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-05",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2024-06-25",
+     "neuesKuerzel": "VSEE",
+     "diff": -771
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-06"
+    ]
+   },
+   {
+    "reihe": "VSTD",
+    "letzterMinutentag": "2026-07-24",
+    "letzterTagesbalken": "2026-09-02",
+    "abstandHandelstage": 49,
+    "tagesbalkenNachMinuten": 40,
+    "polygonBis": "2026-07-27",
+    "polygonDiff": 3,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-24",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2025-09-03",
+     "neuesKuerzel": "VSTD",
+     "diff": -324
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-27"
+    ]
+   },
+   {
+    "reihe": "VYNE",
+    "letzterMinutentag": "2026-07-27",
+    "letzterTagesbalken": "2026-07-27",
+    "abstandHandelstage": 48,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-28",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-27",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-28",
+     "neuesKuerzel": "YARW",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-28"
+    ]
+   },
+   {
+    "reihe": "WAI",
+    "letzterMinutentag": "2026-07-15",
+    "letzterTagesbalken": "2026-07-15",
+    "abstandHandelstage": 56,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-16",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-15",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-16",
+     "neuesKuerzel": "DPU",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 0.992,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-16"
+    ]
+   },
+   {
+    "reihe": "WBS",
+    "letzterMinutentag": "2026-08-19",
+    "letzterTagesbalken": "2026-08-19",
+    "abstandHandelstage": 31,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-08-20",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-08-19",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "stock_and_cash_mergers",
+     "ex": "2026-08-21",
+     "neuesKuerzel": "SAN",
+     "diff": 2
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-08-27",
+     "letzterTag": "2026-08-20",
+     "tageNach": 1,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-08-20"
+    ]
+   },
+   {
+    "reihe": "WGRX",
+    "letzterMinutentag": "2026-07-21",
+    "letzterTagesbalken": "2026-07-21",
+    "abstandHandelstage": 52,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-22",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-21",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-22",
+     "neuesKuerzel": "MEDS",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-22"
+    ]
+   },
+   {
+    "reihe": "WSR",
+    "letzterMinutentag": "2026-07-13",
+    "letzterTagesbalken": "2026-07-13",
+    "abstandHandelstage": 58,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-15",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-13",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-20",
+     "neuesKuerzel": null,
+     "diff": 7
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-15"
+    ]
+   },
+   {
+    "reihe": "XOMA",
+    "letzterMinutentag": "2026-07-13",
+    "letzterTagesbalken": "2026-07-13",
+    "abstandHandelstage": 58,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-15",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-13",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-15",
+     "neuesKuerzel": "LGND",
+     "diff": 2
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-15"
+    ]
+   },
+   {
+    "reihe": "XOMAO",
+    "letzterMinutentag": "2026-07-13",
+    "letzterTagesbalken": "2026-07-13",
+    "abstandHandelstage": 58,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-15",
+    "polygonDiff": 2,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-13",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-07-14",
+     "neuesKuerzel": null,
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 0.992,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-15"
+    ]
+   },
+   {
+    "reihe": "YOOV",
+    "letzterMinutentag": "2026-07-20",
+    "letzterTagesbalken": "2026-07-20",
+    "abstandHandelstage": 53,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": "2026-07-21",
+    "polygonDiff": 1,
+    "gruppeEnde": "abgang",
+    "lmtLebenszeit": "2026-07-20",
+    "lebendAlt": 0,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-07-21",
+     "neuesKuerzel": "CIGL",
+     "diff": 1
+    },
+    "imLiveSammler": 0,
+    "yahoo": null,
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": [
+     "2026-07-21"
+    ]
+   }
+  ],
+  "luecke-der-sammlung": [
+   {
+    "reihe": "AAC~2",
+    "letzterMinutentag": "2026-10-01",
+    "letzterTagesbalken": "2026-09-03",
+    "abstandHandelstage": 1,
+    "tagesbalkenNachMinuten": -28,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "luecke-der-sammlung",
+    "lmtLebenszeit": "2026-09-03",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2023-11-07",
+     "neuesKuerzel": null,
+     "diff": -1059
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 0.8,
+    "tagesbalkenBisZuletzt": 1,
+    "polygonAlle": [
+     "2023-11-07"
+    ]
+   },
+   {
+    "reihe": "CSAN",
+    "letzterMinutentag": "2026-09-18",
+    "letzterTagesbalken": "2026-09-03",
+    "abstandHandelstage": 10,
+    "tagesbalkenNachMinuten": -15,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "luecke-der-sammlung",
+    "lmtLebenszeit": "2026-09-03",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2021-03-11",
+     "neuesKuerzel": "CSAN",
+     "diff": -2017
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-09-12",
+     "letzterTag": "2026-09-11",
+     "tageNach": 0,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 1,
+    "polygonAlle": []
+   },
+   {
+    "reihe": "DBRG",
+    "letzterMinutentag": "2026-09-29",
+    "letzterTagesbalken": "2026-09-03",
+    "abstandHandelstage": 3,
+    "tagesbalkenNachMinuten": -26,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "luecke-der-sammlung",
+    "lmtLebenszeit": "2026-09-03",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2021-06-22",
+     "neuesKuerzel": "DBRG",
+     "diff": -1925
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-10-02",
+     "letzterTag": "2026-09-29",
+     "tageNach": 0,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 1,
+    "polygonAlle": []
+   },
+   {
+    "reihe": "GBTG",
+    "letzterMinutentag": "2026-09-28",
+    "letzterTagesbalken": "2026-09-03",
+    "abstandHandelstage": 4,
+    "tagesbalkenNachMinuten": -25,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "luecke-der-sammlung",
+    "lmtLebenszeit": "2026-09-03",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2022-05-31",
+     "neuesKuerzel": "GBTG",
+     "diff": -1581
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-09-12",
+     "letzterTag": "2026-09-11",
+     "tageNach": 0,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 1,
+    "polygonAlle": []
+   },
+   {
+    "reihe": "ISRL",
+    "letzterMinutentag": "2026-10-01",
+    "letzterTagesbalken": "2026-09-03",
+    "abstandHandelstage": 1,
+    "tagesbalkenNachMinuten": -28,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "luecke-der-sammlung",
+    "lmtLebenszeit": "2026-09-03",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2025-12-04",
+     "neuesKuerzel": "ISRLF",
+     "diff": -301
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 0.682,
+    "tagesbalkenBisZuletzt": 1,
+    "polygonAlle": [
+     "2025-12-04"
+    ]
+   },
+   {
+    "reihe": "MATR",
+    "letzterMinutentag": "2026-10-01",
+    "letzterTagesbalken": "2026-09-03",
+    "abstandHandelstage": 1,
+    "tagesbalkenNachMinuten": -28,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "luecke-der-sammlung",
+    "lmtLebenszeit": "2026-09-03",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-08-31",
+     "neuesKuerzel": "MATR",
+     "diff": -31
+    },
+    "imLiveSammler": 1,
+    "yahoo": null,
+    "dichte2026": 0.59,
+    "tagesbalkenBisZuletzt": 1,
+    "polygonAlle": [
+     "2018-08-21"
+    ]
+   }
+  ],
+  "unklar": [
+   {
+    "reihe": "APGE",
+    "letzterMinutentag": "2026-09-02",
+    "letzterTagesbalken": "2026-09-02",
+    "abstandHandelstage": 21,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "unklar",
+    "lmtLebenszeit": "2026-09-02",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-09-03",
+     "neuesKuerzel": null,
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-09-12",
+     "letzterTag": "2026-09-03",
+     "tageNach": 1,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": []
+   },
+   {
+    "reihe": "CRNX",
+    "letzterMinutentag": "2026-08-31",
+    "letzterTagesbalken": "2026-08-31",
+    "abstandHandelstage": 23,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "unklar",
+    "lmtLebenszeit": "2026-08-31",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-09-02",
+     "neuesKuerzel": null,
+     "diff": 2
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-09-09",
+     "letzterTag": "2026-09-02",
+     "tageNach": 2,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": []
+   },
+   {
+    "reihe": "HLX",
+    "letzterMinutentag": "2026-09-01",
+    "letzterTagesbalken": "2026-09-01",
+    "abstandHandelstage": 22,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "unklar",
+    "lmtLebenszeit": "2026-09-01",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "name_changes",
+     "ex": "2026-09-02",
+     "neuesKuerzel": "HOS",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-09-19",
+     "letzterTag": "2026-09-01",
+     "tageNach": 0,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": []
+   },
+   {
+    "reihe": "LEG",
+    "letzterMinutentag": "2026-08-26",
+    "letzterTagesbalken": "2026-08-26",
+    "abstandHandelstage": 26,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "unklar",
+    "lmtLebenszeit": "2026-08-26",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "stock_mergers",
+     "ex": "2026-08-27",
+     "neuesKuerzel": "SGI",
+     "diff": 1
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-09-04",
+     "letzterTag": "2026-08-27",
+     "tageNach": 1,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": []
+   },
+   {
+    "reihe": "TWO",
+    "letzterMinutentag": "2026-08-24",
+    "letzterTagesbalken": "2026-08-24",
+    "abstandHandelstage": 28,
+    "tagesbalkenNachMinuten": 0,
+    "polygonBis": null,
+    "polygonDiff": null,
+    "gruppeEnde": "unklar",
+    "lmtLebenszeit": "2026-08-24",
+    "lebendAlt": 1,
+    "massnahmeEnde": {
+     "art": "cash_mergers",
+     "ex": "2026-08-26",
+     "neuesKuerzel": null,
+     "diff": 2
+    },
+    "imLiveSammler": 1,
+    "yahoo": {
+     "stand": "2026-09-01",
+     "letzterTag": "2026-08-24",
+     "tageNach": 0,
+     "tageNachMitUmsatz": 0
+    },
+    "dichte2026": 1,
+    "tagesbalkenBisZuletzt": 0,
+    "polygonAlle": []
+   }
+  ]
+ }
+}

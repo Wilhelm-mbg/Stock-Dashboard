@@ -1,0 +1,495 @@
+{
+ "stand": "2026-10-04T10:45:12.987Z",
+ "alteTafel": {
+  "kennung": "verschwundene-gruende-2026-09-12/v1",
+  "zeilen": 4996
+ },
+ "eingestuft": 345,
+ "offen": 0,
+ "ankerGeaendert": {
+  "zeilen": 285,
+  "ueber90Tage": 223,
+  "ueber90_altUnbekannt": 20,
+  "ueber90_altBelegNichtsOderPasstNicht": 15,
+  "altUnbekannt": 21,
+  "vergleich": {
+   "gleich": 144,
+   "unbekannt-bekommt-grund": 16,
+   "kippt": 69,
+   "gleicher-grund-anderer-beleg": 53,
+   "kippt-verliert-grund": 3
+  },
+  "altJeGrund": {
+   "zwangs-delisting": 136,
+   "unbekannt": 21,
+   "uebernahme": 27,
+   "freiwillig": 10,
+   "spac-ende": 22,
+   "insolvenz": 48,
+   "umbenennung-ticker": 19,
+   "fusion-aktientausch": 2
+  },
+  "neuJeGrund": {
+   "zwangs-delisting": 181,
+   "fusion-aktientausch": 1,
+   "spac-ende": 22,
+   "uebernahme": 20,
+   "insolvenz": 35,
+   "umbenennung-ticker": 7,
+   "unbekannt": 8,
+   "freiwillig": 11
+  },
+  "firmaAnders": 46,
+  "firmaAnders_beideBelegt": 24,
+  "totalverlustHaupt": {
+   "kommtHinzu": 45,
+   "faelltWeg": 13
+  },
+  "totalverlustStreng": {
+   "kommtHinzu": 33,
+   "faelltWeg": 13
+  }
+ },
+ "neueReihen": {
+  "beiX": {
+   "0": {
+    "reihen": 60,
+    "jeGrund": {
+     "uebernahme": 10,
+     "zwangs-delisting": 37,
+     "freiwillig": 3,
+     "umbenennung-ticker": 4,
+     "fusion-aktientausch": 3,
+     "unbekannt": 2,
+     "insolvenz": 1
+    },
+    "totalverlustHaupt": 38,
+    "totalverlustStreng": 43
+   },
+   "5": {
+    "reihen": 55,
+    "jeGrund": {
+     "uebernahme": 7,
+     "zwangs-delisting": 36,
+     "freiwillig": 3,
+     "umbenennung-ticker": 4,
+     "fusion-aktientausch": 3,
+     "unbekannt": 1,
+     "insolvenz": 1
+    },
+    "totalverlustHaupt": 37,
+    "totalverlustStreng": 41
+   },
+   "10": {
+    "reihen": 54,
+    "jeGrund": {
+     "uebernahme": 7,
+     "zwangs-delisting": 36,
+     "umbenennung-ticker": 4,
+     "freiwillig": 2,
+     "fusion-aktientausch": 3,
+     "unbekannt": 1,
+     "insolvenz": 1
+    },
+    "totalverlustHaupt": 37,
+    "totalverlustStreng": 40
+   },
+   "20": {
+    "reihen": 54,
+    "jeGrund": {
+     "uebernahme": 7,
+     "zwangs-delisting": 36,
+     "umbenennung-ticker": 4,
+     "freiwillig": 2,
+     "fusion-aktientausch": 3,
+     "unbekannt": 1,
+     "insolvenz": 1
+    },
+    "totalverlustHaupt": 37,
+    "totalverlustStreng": 40
+   }
+  }
+ },
+ "edgar": {
+  "anfragen": 680,
+  "fehlversuche": 31,
+  "ftsAltCache": 0,
+  "ftsEigenCache": 0,
+  "ftsNeu": 345,
+  "fts2EigenCache": 0,
+  "fts2Neu": 30,
+  "cikAltCache": 257,
+  "cikEigenCache": 17,
+  "cikNeu": 113,
+  "cikNeuWeilFensterNachAbruf": 32,
+  "cikNeuWeilGrenze": 17,
+  "cikNeuWeilFehlt": 64,
+  "aeltereDateien": 161,
+  "minAbstandGemessenMs": 350
+ },
+ "edgarFehler": 0,
+ "tafelImGanzen": {
+  "alt": {
+   "freiwillig": 311,
+   "uebernahme": 1653,
+   "umbenennung-ticker": 1330,
+   "zwangs-delisting": 547,
+   "spac-ende": 276,
+   "unbekannt": 212,
+   "fusion-aktientausch": 310,
+   "insolvenz": 357
+  },
+  "neuBeiX10": {
+   "freiwillig": 314,
+   "uebernahme": 1653,
+   "umbenennung-ticker": 1322,
+   "zwangs-delisting": 628,
+   "spac-ende": 276,
+   "unbekannt": 200,
+   "fusion-aktientausch": 312,
+   "insolvenz": 345
+  },
+  "zeilenAlt": 4996,
+  "zeilenNeuBeiX10": 5050
+ },
+ "pruefsteine": {
+  "hinweis": "Aussenanker Polygon-CIK (Eintrag hoechstens 45 Tage vom Anker) und Lage des Belegs zum Anker. \"alteTafelGanz\" misst die Logik selbst, unabhaengig vom Ankerfehler.",
+  "firma": {
+   "trockenlaufNeu": {
+    "zeilen": 339,
+    "mitPolygonCik": 308,
+    "firmaBestaetigt": 302,
+    "stimmt": 290,
+    "widerspricht": 12,
+    "ohneFirma": 6,
+    "widerspruchListe": [
+     {
+      "reihe": "AIU",
+      "grund": "insolvenz",
+      "beleg": "edgar-8K-1.03",
+      "firma": "Clearday, Inc.",
+      "polygon": "Meta Data Limited American Depositary Shares, each representing ten (10) Class A Ordinary Shares"
+     },
+     {
+      "reihe": "AXAS",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "ABRAXAS PETROLEUM CORP",
+      "polygon": "Abraxas Petroleum Corporation"
+     },
+     {
+      "reihe": "CURO",
+      "grund": "insolvenz",
+      "beleg": "q-kuerzel",
+      "firma": "SPDR SERIES TRUST",
+      "polygon": "CURO Group Holdings Corp."
+     },
+     {
+      "reihe": "EXPR",
+      "grund": "freiwillig",
+      "beleg": "edgar-formular25",
+      "firma": "JPMORGAN CHASE & CO",
+      "polygon": "Express, Inc."
+     },
+     {
+      "reihe": "HALL",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "Stablecoin Development Corp",
+      "polygon": "Hallmark Financial Services, Inc."
+     },
+     {
+      "reihe": "IDEX",
+      "grund": "freiwillig",
+      "beleg": "edgar-formular25",
+      "firma": "iSHARES TRUST",
+      "polygon": "Ideanomics, Inc. Common Stock"
+     },
+     {
+      "reihe": "MAPS",
+      "grund": "freiwillig",
+      "beleg": "edgar-formular25",
+      "firma": "Morgan Stanley Finance LLC",
+      "polygon": "WM Technology, Inc. Class A Common Stock"
+     },
+     {
+      "reihe": "MARK",
+      "grund": "freiwillig",
+      "beleg": "edgar-formular25",
+      "firma": "GOLDMAN SACHS GROUP INC",
+      "polygon": "Remark Holdings, Inc."
+     },
+     {
+      "reihe": "RENO",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "U-Haul Holding Co /NV/",
+      "polygon": "Renovare Environmental, Inc. Common Stock"
+     },
+     {
+      "reihe": "SBNY",
+      "grund": "freiwillig",
+      "beleg": "edgar-formular25",
+      "firma": "UBS AG",
+      "polygon": "Signature Bank"
+     },
+     {
+      "reihe": "SING",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "Bio Green Med Solution, Inc.",
+      "polygon": "SinglePoint Inc."
+     },
+     {
+      "reihe": "TAIT",
+      "grund": "insolvenz",
+      "beleg": "q-kuerzel",
+      "firma": "EA Series Trust",
+      "polygon": "Taitron Components Inc"
+     }
+    ]
+   },
+   "dieselbenZeilenAlt": {
+    "zeilen": 285,
+    "mitPolygonCik": 259,
+    "firmaBestaetigt": 238,
+    "stimmt": 216,
+    "widerspricht": 22,
+    "ohneFirma": 21,
+    "widerspruchListe": [
+     {
+      "reihe": "AIU",
+      "grund": "insolvenz",
+      "beleg": "edgar-8K-1.03",
+      "firma": "Clearday, Inc.",
+      "polygon": "Meta Data Limited American Depositary Shares, each representing ten (10) Class A Ordinary Shares"
+     },
+     {
+      "reihe": "ARDS",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "2seventy bio, Inc.",
+      "polygon": "Aridis Pharmaceuticals Inc. Common Stock"
+     },
+     {
+      "reihe": "ASPU",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "Change Agents Corporation.",
+      "polygon": "ASPEN GROUP, INC."
+     },
+     {
+      "reihe": "BBIG",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "Cineverse Corp.",
+      "polygon": "Vinco Ventures, Inc. Common Stock"
+     },
+     {
+      "reihe": "BCEL",
+      "grund": "uebernahme",
+      "beleg": "edgar-8K-2.01+prospekt",
+      "firma": "CERO THERAPEUTICS HOLDINGS, INC.",
+      "polygon": "Atreca, Inc. Class A Common Stock"
+     },
+     {
+      "reihe": "CALA",
+      "grund": "freiwillig",
+      "beleg": "edgar-formular25",
+      "firma": "WESCO INTERNATIONAL INC",
+      "polygon": "Calithera Biosciences, Inc"
+     },
+     {
+      "reihe": "CHRA",
+      "grund": "freiwillig",
+      "beleg": "edgar-formular25",
+      "firma": "Two Roads Shared Trust",
+      "polygon": "Charah Solutions, Inc Common Stock"
+     },
+     {
+      "reihe": "HALL",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "Hall of Fame Resort & Entertainment Co",
+      "polygon": "Hallmark Financial Services, Inc."
+     },
+     {
+      "reihe": "IFMK",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "Quanome Technologies, Inc.",
+      "polygon": "iFresh Inc. Common Stock"
+     },
+     {
+      "reihe": "KLDO",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "CRESCENT BIOPHARMA, INC.",
+      "polygon": "Kaleido Biosciences, Inc. Common Stock"
+     },
+     {
+      "reihe": "RENO",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "Dragonfly Energy Holdings Corp.",
+      "polygon": "Renovare Environmental, Inc. Common Stock"
+     },
+     {
+      "reihe": "RUBY",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "Invest Acquisition Corp",
+      "polygon": "Rubius Therapeutics, Inc"
+     },
+     {
+      "reihe": "SBNY",
+      "grund": "insolvenz",
+      "beleg": "edgar-8K-1.03",
+      "firma": "Core Scientific, Inc./tx",
+      "polygon": "Signature Bank"
+     },
+     {
+      "reihe": "SCPS",
+      "grund": "freiwillig",
+      "beleg": "edgar-formular25",
+      "firma": "ENERGY CO OF PARANA",
+      "polygon": "Scopus BioPharma Inc. Common Stock"
+     },
+     {
+      "reihe": "SEAC",
+      "grund": "spac-ende",
+      "beleg": "edgar-mantel+abmeldung",
+      "firma": "Screaming Eagle Acquisition Corp.",
+      "polygon": "Seachange International Inc"
+     },
+     {
+      "reihe": "SING",
+      "grund": "uebernahme",
+      "beleg": "edgar-8K-2.01+prospekt",
+      "firma": "Bio Green Med Solution, Inc.",
+      "polygon": "SinglePoint Inc."
+     },
+     {
+      "reihe": "SIOX",
+      "grund": "uebernahme",
+      "beleg": "edgar-8K-2.01+prospekt",
+      "firma": "Solidion Technology Inc.",
+      "polygon": "Sio Gene Therapies Inc. Common Stock"
+     },
+     {
+      "reihe": "SMIT",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "CRESCENT BIOPHARMA, INC.",
+      "polygon": "Schmitt Industries Inc"
+     },
+     {
+      "reihe": "SRAX",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "GT Biopharma, Inc.",
+      "polygon": "SRAX, Inc. Class A Common Stock"
+     },
+     {
+      "reihe": "UNAM",
+      "grund": "zwangs-delisting",
+      "beleg": "edgar-8K-3.01",
+      "firma": "Iveda Solutions, Inc.",
+      "polygon": "Unico American Corp"
+     },
+     {
+      "reihe": "VIVE",
+      "grund": "freiwillig",
+      "beleg": "edgar-formular15",
+      "firma": "F45 Training Holdings Inc.",
+      "polygon": "VIVEVE MED INC"
+     },
+     {
+      "reihe": "VYNT",
+      "grund": "uebernahme",
+      "beleg": "edgar-8K-2.01+prospekt",
+      "firma": "HEALTHPEAK PROPERTIES, INC.",
+      "polygon": "Vyant Bio, Inc. Common Stock"
+     }
+    ]
+   },
+   "alteTafelGanz": {
+    "zeilen": 4996,
+    "mitPolygonCik": 4467,
+    "firmaBestaetigt": 3810,
+    "stimmt": 3477,
+    "widerspricht": 333,
+    "ohneFirma": 657,
+    "widerspruchListe": "333 Faelle (nicht gelistet)"
+   }
+  },
+  "belegLage": {
+   "trockenlaufNeu": {
+    "edgar-8K-2.01+prospekt": {
+     "zeilen": 18,
+     "mehrAls30TageVorAnker": 18,
+     "mehrAls180TageVorAnker": 8,
+     "innerhalb30": 0,
+     "mehrAls30TageNach": 0
+    },
+    "edgar-8K-3.01": {
+     "zeilen": 217,
+     "mehrAls30TageVorAnker": 16,
+     "mehrAls180TageVorAnker": 1,
+     "innerhalb30": 197,
+     "mehrAls30TageNach": 4
+    },
+    "edgar-8K-1.03": {
+     "zeilen": 26,
+     "mehrAls30TageVorAnker": 2,
+     "mehrAls180TageVorAnker": 0,
+     "innerhalb30": 3,
+     "mehrAls30TageNach": 21
+    },
+    "edgar-formular25": {
+     "zeilen": 13,
+     "mehrAls30TageVorAnker": 1,
+     "mehrAls180TageVorAnker": 0,
+     "innerhalb30": 4,
+     "mehrAls30TageNach": 8
+    }
+   },
+   "alteTafelGanz": {
+    "edgar-8K-2.01+prospekt": {
+     "zeilen": 745,
+     "mehrAls30TageVorAnker": 76,
+     "mehrAls180TageVorAnker": 42,
+     "innerhalb30": 669,
+     "mehrAls30TageNach": 0
+    },
+    "edgar-8K-3.01": {
+     "zeilen": 546,
+     "mehrAls30TageVorAnker": 212,
+     "mehrAls180TageVorAnker": 157,
+     "innerhalb30": 255,
+     "mehrAls30TageNach": 79
+    },
+    "edgar-8K-1.03": {
+     "zeilen": 201,
+     "mehrAls30TageVorAnker": 25,
+     "mehrAls180TageVorAnker": 14,
+     "innerhalb30": 126,
+     "mehrAls30TageNach": 50
+    },
+    "edgar-formular25": {
+     "zeilen": 291,
+     "mehrAls30TageVorAnker": 20,
+     "mehrAls180TageVorAnker": 8,
+     "innerhalb30": 221,
+     "mehrAls30TageNach": 50
+    }
+   }
+  }
+ },
+ "kippGuete": {
+  "passt": 53,
+  "widerspricht": 4,
+  "ohne": 15,
+  "belegFern": 24
+ }
+}

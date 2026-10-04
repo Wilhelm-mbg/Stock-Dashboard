@@ -1,0 +1,7182 @@
+{
+ "stand": "2026-10-04T10:45:12.987Z",
+ "hinweis": "Zeilen der alten Tafel, deren Anker sich um mehr als 3 Tage aendert: Grund alt (Zeile) -> Grund neu (Spalte).",
+ "matrix": {
+  "zwangs-delisting": {
+   "zwangs-delisting": 126,
+   "uebernahme": 7,
+   "insolvenz": 2,
+   "umbenennung-ticker": 1
+  },
+  "unbekannt": {
+   "zwangs-delisting": 11,
+   "uebernahme": 2,
+   "spac-ende": 1,
+   "unbekannt": 5,
+   "freiwillig": 2
+  },
+  "uebernahme": {
+   "fusion-aktientausch": 1,
+   "zwangs-delisting": 15,
+   "uebernahme": 7,
+   "spac-ende": 1,
+   "freiwillig": 2,
+   "unbekannt": 1
+  },
+  "freiwillig": {
+   "zwangs-delisting": 8,
+   "freiwillig": 2
+  },
+  "spac-ende": {
+   "spac-ende": 18,
+   "uebernahme": 1,
+   "zwangs-delisting": 2,
+   "freiwillig": 1
+  },
+  "insolvenz": {
+   "insolvenz": 33,
+   "zwangs-delisting": 10,
+   "uebernahme": 2,
+   "freiwillig": 3
+  },
+  "umbenennung-ticker": {
+   "umbenennung-ticker": 6,
+   "zwangs-delisting": 8,
+   "spac-ende": 1,
+   "freiwillig": 1,
+   "uebernahme": 1,
+   "unbekannt": 2
+  },
+  "fusion-aktientausch": {
+   "spac-ende": 1,
+   "zwangs-delisting": 1
+  }
+ },
+ "alle": [
+  {
+   "reihe": "AAGR",
+   "ankerAlt": "2025-09-24",
+   "ankerNeu": "2024-09-25",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-13",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-042393 (8-K 2024-05-13)",
+    "firma": "African Agriculture Holdings Inc.",
+    "cik": "0001848898"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-13",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-042393 (8-K 2024-05-13)",
+    "firma": "African Agriculture Holdings Inc.",
+    "cik": "0001848898"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -135
+  },
+  {
+   "reihe": "AATC",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2022-12-29",
+   "ankerDiffTage": 813,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2022-12-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000897101-22-001055 (8-K 2022-12-21)",
+    "firma": "AUTOSCOPE TECHNOLOGIES CORP",
+    "cik": "0000943034"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -8
+  },
+  {
+   "reihe": "ACER",
+   "ankerAlt": "2024-10-17",
+   "ankerNeu": "2023-11-08",
+   "ankerDiffTage": 344,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2023-11-20",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001193125-23-280679 (8-K 2023-11-20)",
+    "firma": "Acer Therapeutics Inc.",
+    "cik": "0001069308"
+   },
+   "neu": {
+    "grund": "fusion-aktientausch",
+    "datum": "2023-11-21",
+    "beleg": "alpaca-stock_mergers",
+    "quelle": "alpaca-massnahmen:d7e20bed-2eb0-486f-a9b4-d6220bc28072",
+    "firma": null,
+    "cik": null
+   },
+   "firmaZuPolygon": "ohne Firma",
+   "belegTageZumAnker": 13
+  },
+  {
+   "reihe": "ADXS",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2021-12-22",
+   "ankerDiffTage": 1185,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2024-05-09",
+    "beleg": "edgar-formular15",
+    "quelle": "EDGAR:0000929638-24-001751 (15-12G 2024-05-09)",
+    "firma": "Ayala Pharmaceuticals, Inc.",
+    "cik": "0001100397"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2021-12-22",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-21-032280 (8-K 2021-12-22)",
+    "firma": "Ayala Pharmaceuticals, Inc.",
+    "cik": "0001100397"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "AFAR",
+   "ankerAlt": "2024-09-06",
+   "ankerNeu": "2024-07-19",
+   "ankerDiffTage": 49,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2025-03-05",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000167 (25-NSE 2025-03-05)",
+    "firma": "Aura Fat Projects Acquisition Corp",
+    "cik": "0001901886"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2025-03-05",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000167 (25-NSE 2025-03-05)",
+    "firma": "Aura Fat Projects Acquisition Corp",
+    "cik": "0001901886"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 229
+  },
+  {
+   "reihe": "AFIB",
+   "ankerAlt": "2025-05-07",
+   "ankerNeu": "2024-05-08",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001628280-24-024029 (8-K 2024-05-17)",
+    "firma": "Acutus Medical, Inc.",
+    "cik": "0001522860"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001628280-24-020272 (8-K 2024-05-03)",
+    "firma": "Acutus Medical, Inc.",
+    "cik": "0001522860"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -5
+  },
+  {
+   "reihe": "AGRX",
+   "ankerAlt": "2025-03-24",
+   "ankerNeu": "2024-03-25",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-08-26",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001104659-24-092914 (8-K 2024-08-26)",
+    "firma": "AGILE THERAPEUTICS INC",
+    "cik": "0001261249"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-03-25",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-24-003854 (8-K 2024-03-25)",
+    "firma": "AGILE THERAPEUTICS INC",
+    "cik": "0001261249"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "AHI",
+   "ankerAlt": "2024-07-26",
+   "ankerNeu": "2024-01-31",
+   "ankerDiffTage": 177,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-002666 (8-K 2025-01-10)",
+    "firma": "Incannex Healthcare Inc.",
+    "cik": "0001873875"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-23-040048 (8-K 2023-11-09)",
+    "firma": "Sadot Group Inc.",
+    "cik": "0001701756"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": -83
+  },
+  {
+   "reihe": "AIEV",
+   "ankerAlt": "2026-04-20",
+   "ankerNeu": "2025-04-21",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-033474 (8-K 2025-04-21)",
+    "firma": "Thunder Power Holdings, Inc.",
+    "cik": "0001912582"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2024-08-06",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001213900-24-065349 (8-K/A 2024-08-06)",
+    "firma": "Thunder Power Holdings, Inc.",
+    "cik": "0001912582"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -258
+  },
+  {
+   "reihe": "AIU",
+   "ankerAlt": "2024-08-19",
+   "ankerNeu": "2024-08-13",
+   "ankerDiffTage": 6,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-04-05",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001493152-24-013381 (8-K 2024-04-05)",
+    "firma": "Clearday, Inc.",
+    "cik": "0000895665"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-04-05",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001493152-24-013381 (8-K 2024-04-05)",
+    "firma": "Clearday, Inc.",
+    "cik": "0000895665"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (Meta Data Limited American Depositary Shares, each representing ten (10) Class A Ordinary Shares)",
+   "belegTageZumAnker": -130
+  },
+  {
+   "reihe": "ALCE",
+   "ankerAlt": "2026-02-10",
+   "ankerNeu": "2025-02-11",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-012325 (8-K 2025-02-12)",
+    "firma": "Aedis Energy Inc.",
+    "cik": "0001883984"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2024-12-12",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001213900-24-108423 (8-K 2024-12-12)",
+    "firma": "Aedis Energy Inc.",
+    "cik": "0001883984"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -61
+  },
+  {
+   "reihe": "ALJJ",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2022-09-09",
+   "ankerDiffTage": 924,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2022-04-14",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001564590-22-014465 (8-K 2022-04-14)",
+    "firma": "ALJ REGIONAL HOLDINGS INC",
+    "cik": "0001438731"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -148
+  },
+  {
+   "reihe": "ALPP",
+   "ankerAlt": "2025-10-16",
+   "ankerNeu": "2024-10-17",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001628280-24-043049 (8-K 2024-10-17)",
+    "firma": "ALPINE 4 HOLDINGS, INC.",
+    "cik": "0001606698"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001628280-24-043049 (8-K 2024-10-17)",
+    "firma": "ALPINE 4 HOLDINGS, INC.",
+    "cik": "0001606698"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "AMPE",
+   "ankerAlt": "2025-04-11",
+   "ankerNeu": "2024-04-12",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-03-25",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-24-003858 (8-K 2024-03-25)",
+    "firma": "Ampio Pharmaceuticals, Inc.",
+    "cik": "0001411906"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-03-25",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-24-003858 (8-K 2024-03-25)",
+    "firma": "Ampio Pharmaceuticals, Inc.",
+    "cik": "0001411906"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -18
+  },
+  {
+   "reihe": "AOGO",
+   "ankerAlt": "2025-09-15",
+   "ankerNeu": "2024-09-16",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2025-03-05",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000177 (25-NSE 2025-03-05)",
+    "firma": "Arogo Capital Acquisition Corp.",
+    "cik": "0001881741"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2025-03-05",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000177 (25-NSE 2025-03-05)",
+    "firma": "Arogo Capital Acquisition Corp.",
+    "cik": "0001881741"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 170
+  },
+  {
+   "reihe": "AONC",
+   "ankerAlt": "2025-06-06",
+   "ankerNeu": "2024-06-07",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001839998-24-000045 (8-K 2024-05-21)",
+    "firma": "American Oncology Network, Inc.",
+    "cik": "0001839998"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001839998-24-000045 (8-K 2024-05-21)",
+    "firma": "American Oncology Network, Inc.",
+    "cik": "0001839998"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -17
+  },
+  {
+   "reihe": "APCX",
+   "ankerAlt": "2026-05-18",
+   "ankerNeu": "2025-05-19",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-25-003828 (8-K 2025-05-19)",
+    "firma": "AppTech Payments Corp.",
+    "cik": "0001070050"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-25-003828 (8-K 2025-05-19)",
+    "firma": "AppTech Payments Corp.",
+    "cik": "0001070050"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "APTX",
+   "ankerAlt": "2024-04-24",
+   "ankerNeu": "2023-05-18",
+   "ankerDiffTage": 342,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-05-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-23-058779 (8-K 2023-05-11)",
+    "firma": "Aptinyx Inc.",
+    "cik": "0001674365"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-05-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-23-058779 (8-K 2023-05-11)",
+    "firma": "Aptinyx Inc.",
+    "cik": "0001674365"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "ARDS",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-07-18",
+   "ankerDiffTage": 612,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-13",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001140361-25-018514 (8-K 2025-05-13)",
+    "firma": "2seventy bio, Inc.",
+    "cik": "0001860782"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-07-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-23-024769 (8-K 2023-07-18)",
+    "firma": "Aridis Pharmaceuticals, Inc.",
+    "cik": "0001614067"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "ASAP",
+   "ankerAlt": "2024-04-01",
+   "ankerNeu": "2023-02-01",
+   "ankerDiffTage": 425,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-04-02",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001653247-24-000019 (8-K 2024-04-02)",
+    "firma": "Waitr Holdings Inc.",
+    "cik": "0001653247"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-01-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001653247-23-000013 (8-K 2023-01-24)",
+    "firma": "Waitr Holdings Inc.",
+    "cik": "0001653247"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -8
+  },
+  {
+   "reihe": "ASPA",
+   "ankerAlt": "2023-11-02",
+   "ankerNeu": "2023-10-25",
+   "ankerDiffTage": 8,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2023-11-15",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:288fa87a-6691-422e-addf-403f74178af0",
+    "firma": "Collective Audience, Inc.",
+    "cik": "0001854583"
+   },
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2023-11-15",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:288fa87a-6691-422e-addf-403f74178af0",
+    "firma": "Collective Audience, Inc.",
+    "cik": "0001854583"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 21
+  },
+  {
+   "reihe": "ASPU",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-03-30",
+   "ankerDiffTage": 722,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-047391 (8-K 2025-05-23)",
+    "firma": "Change Agents Corporation.",
+    "cik": "0001630212"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2022-10-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001079973-22-001258 (8-K 2022-10-03)",
+    "firma": "ASPEN GROUP, INC.",
+    "cik": "0001487198"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -178
+  },
+  {
+   "reihe": "ATEK",
+   "ankerAlt": "2025-12-08",
+   "ankerNeu": "2024-12-09",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2024-12-19",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0000876661-24-001197 (25-NSE 2024-12-19)",
+    "firma": "Athena Technology Acquisition Corp. II",
+    "cik": "0001882198"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2023-12-14",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001213900-23-095519 (8-K 2023-12-14)",
+    "firma": "Athena Technology Acquisition Corp. II",
+    "cik": "0001882198"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -361
+  },
+  {
+   "reihe": "ATHX",
+   "ankerAlt": "2024-01-05",
+   "ankerNeu": "2023-10-17",
+   "ankerDiffTage": 80,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-01-08",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001437749-24-000820 (8-K 2024-01-08)",
+    "firma": "ATHERSYS, INC / NEW",
+    "cik": "0001368148"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-01-08",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001437749-24-000820 (8-K 2024-01-08)",
+    "firma": "ATHERSYS, INC / NEW",
+    "cik": "0001368148"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 83
+  },
+  {
+   "reihe": "ATIP",
+   "ankerAlt": "2025-12-02",
+   "ankerNeu": "2024-12-03",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2025-09-05",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:eec370b1-bab6-4f7a-ab88-54592c4b9864",
+    "firma": "ATI Physical Therapy, Inc.",
+    "cik": "0001815849"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001815849-24-000063 (8-K 2024-12-03)",
+    "firma": "ATI Physical Therapy, Inc.",
+    "cik": "0001815849"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "ATMC",
+   "ankerAlt": "2026-01-05",
+   "ankerNeu": "2025-12-09",
+   "ankerDiffTage": 27,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2026-01-15",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-26-000044 (25-NSE 2026-01-15)",
+    "firma": "ALPHATIME ACQUISITION CORP",
+    "cik": "0001889106"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2026-01-15",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-26-000044 (25-NSE 2026-01-15)",
+    "firma": "ALPHATIME ACQUISITION CORP",
+    "cik": "0001889106"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 37
+  },
+  {
+   "reihe": "ATXI",
+   "ankerAlt": "2026-03-17",
+   "ankerNeu": "2025-03-18",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-03-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-024505 (8-K 2025-03-17)",
+    "firma": "AVENUE THERAPEUTICS, INC.",
+    "cik": "0001644963"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-03-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-024505 (8-K 2025-03-17)",
+    "firma": "AVENUE THERAPEUTICS, INC.",
+    "cik": "0001644963"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -1
+  },
+  {
+   "reihe": "AUMN",
+   "ankerAlt": "2025-12-12",
+   "ankerNeu": "2024-12-13",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-24-016153 (8-K 2024-12-11)",
+    "firma": "Golden Minerals Co",
+    "cik": "0001011509"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-24-016153 (8-K 2024-12-11)",
+    "firma": "Golden Minerals Co",
+    "cik": "0001011509"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -2
+  },
+  {
+   "reihe": "AVHI",
+   "ankerAlt": "2025-04-07",
+   "ankerNeu": "2024-04-08",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-06",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-076584 (8-K 2024-09-06)",
+    "firma": "Achari Ventures Holdings Corp. I",
+    "cik": "0001844507"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-051753 (8-K 2024-06-11)",
+    "firma": "Achari Ventures Holdings Corp. I",
+    "cik": "0001844507"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 64
+  },
+  {
+   "reihe": "AWIN",
+   "ankerAlt": "2025-06-17",
+   "ankerNeu": "2024-06-18",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-01-16",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001493152-24-002344 (8-K 2024-01-16)",
+    "firma": "AERWINS Technologies Inc.",
+    "cik": "0001855631"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-01-16",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001493152-24-002344 (8-K 2024-01-16)",
+    "firma": "AERWINS Technologies Inc.",
+    "cik": "0001855631"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -154
+  },
+  {
+   "reihe": "AXAC",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-05-17",
+   "ankerDiffTage": 674,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2023-05-22",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0000876661-23-000423 (25-NSE 2023-05-22)",
+    "firma": "AXIOS Sustainable Growth Acquisition Corp",
+    "cik": "0001898019"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 5
+  },
+  {
+   "reihe": "AXAS",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2021-08-03",
+   "ankerDiffTage": 1326,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2021-07-30",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-21-018005 (8-K 2021-07-30)",
+    "firma": "ABRAXAS PETROLEUM CORP",
+    "cik": "0000867665"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (Abraxas Petroleum Corporation)",
+   "belegTageZumAnker": -4
+  },
+  {
+   "reihe": "AXLA",
+   "ankerAlt": "2024-01-16",
+   "ankerNeu": "2023-11-22",
+   "ankerDiffTage": 55,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-23-119563 (8-K 2023-11-17)",
+    "firma": "Axcella Health Inc.",
+    "cik": "0001633070"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-23-119563 (8-K 2023-11-17)",
+    "firma": "Axcella Health Inc.",
+    "cik": "0001633070"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -5
+  },
+  {
+   "reihe": "BACK",
+   "ankerAlt": "2026-03-24",
+   "ankerNeu": "2025-03-25",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "firmaZuPolygon": "ohne Firma",
+   "belegTageZumAnker": null
+  },
+  {
+   "reihe": "BBIG",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-07-27",
+   "ankerDiffTage": 603,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-083250 (8-K 2024-07-12)",
+    "firma": "Cineverse Corp.",
+    "cik": "0001173204"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-07-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-23-025134 (8-K 2023-07-21)",
+    "firma": "Vinco Ventures, Inc.",
+    "cik": "0001717556"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -6
+  },
+  {
+   "reihe": "BCEL",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-03-18",
+   "ankerDiffTage": 368,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-02-27",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001213900-24-017157 (8-K/A 2024-02-27)",
+    "firma": "CERO THERAPEUTICS HOLDINGS, INC.",
+    "cik": "0001870404"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-03-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-032973 (8-K 2024-03-11)",
+    "firma": "Atreca, Inc.",
+    "cik": "0001532346"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "BCLI",
+   "ankerAlt": "2026-07-16",
+   "ankerNeu": "2025-07-17",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-07-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-068709 (8-K 2025-07-17)",
+    "firma": "BRAINSTORM CELL THERAPEUTICS INC.",
+    "cik": "0001137883"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-07-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-068709 (8-K 2025-07-17)",
+    "firma": "BRAINSTORM CELL THERAPEUTICS INC.",
+    "cik": "0001137883"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "BCOW",
+   "ankerAlt": "2026-03-06",
+   "ankerNeu": "2025-03-07",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000943374-25-000107 (8-K 2025-02-18)",
+    "firma": "1895 Bancorp of Wisconsin, Inc. /MD/",
+    "cik": "0001847360"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000943374-25-000107 (8-K 2025-02-18)",
+    "firma": "1895 Bancorp of Wisconsin, Inc. /MD/",
+    "cik": "0001847360"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -17
+  },
+  {
+   "reihe": "BGXX",
+   "ankerAlt": "2025-02-21",
+   "ankerNeu": "2024-09-18",
+   "ankerDiffTage": 156,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-02-27",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001493152-25-008512 (8-K 2025-02-27)",
+    "firma": "Bright Green Corp",
+    "cik": "0001886799"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2025-01-28",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001493152-25-003865 (8-K 2025-01-28)",
+    "firma": "Bright Green Corp",
+    "cik": "0001886799"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 132
+  },
+  {
+   "reihe": "BHAC",
+   "ankerAlt": "2025-06-06",
+   "ankerNeu": "2024-10-09",
+   "ankerDiffTage": 240,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "fusion-aktientausch",
+    "datum": "2025-06-06",
+    "beleg": "alpaca-stock_mergers",
+    "quelle": "alpaca-massnahmen:19d65c4e-3cf4-451a-aec7-0f6380676fc1",
+    "firma": "Focus Impact BH3 Acquisition Co",
+    "cik": "0001851612"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2025-02-12",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000091 (25-NSE 2025-02-12)",
+    "firma": "Focus Impact BH3 Acquisition Co",
+    "cik": "0001851612"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 126
+  },
+  {
+   "reihe": "BIMI",
+   "ankerAlt": "2025-08-20",
+   "ankerNeu": "2024-08-21",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-29",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001013762-24-002069 (8-K 2024-07-29)",
+    "firma": "BIMI Holdings Inc.",
+    "cik": "0001213660"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-29",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001013762-24-002069 (8-K 2024-07-29)",
+    "firma": "BIMI Holdings Inc.",
+    "cik": "0001213660"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -23
+  },
+  {
+   "reihe": "BIOL",
+   "ankerAlt": "2024-10-01",
+   "ankerNeu": "2024-06-18",
+   "ankerDiffTage": 105,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-10-01",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0000950170-24-110801 (8-K 2024-10-01)",
+    "firma": "BIOLASE, INC",
+    "cik": "0000811240"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-10-01",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0000950170-24-110801 (8-K 2024-10-01)",
+    "firma": "BIOLASE, INC",
+    "cik": "0000811240"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 105
+  },
+  {
+   "reihe": "BIOR",
+   "ankerAlt": "2024-12-27",
+   "ankerNeu": "2024-12-10",
+   "ankerDiffTage": 17,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-12-30",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001213900-24-113256 (8-K 2024-12-30)",
+    "firma": "BIORA THERAPEUTICS, INC.",
+    "cik": "0001580063"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-12-30",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001213900-24-113256 (8-K 2024-12-30)",
+    "firma": "BIORA THERAPEUTICS, INC.",
+    "cik": "0001580063"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 20
+  },
+  {
+   "reihe": "BKSC",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-09-14",
+   "ankerDiffTage": 554,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "edgar-ohne-signal",
+    "quelle": null,
+    "firma": "BANK OF SOUTH CAROLINA CORP",
+    "cik": "0001007273"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-08-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-23-044275 (8-K 2023-08-24)",
+    "firma": "BANK OF SOUTH CAROLINA CORP",
+    "cik": "0001007273"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -21
+  },
+  {
+   "reihe": "BLCM",
+   "ankerAlt": "2024-03-27",
+   "ankerNeu": "2023-06-01",
+   "ankerDiffTage": 300,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2024-03-28",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:019979a6-4313-4f8b-af4a-16a0c4e7706f",
+    "firma": "BELLICUM PHARMACEUTICALS, INC",
+    "cik": "0001358403"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-05-30",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001628280-23-020109 (8-K 2023-05-30)",
+    "firma": "BELLICUM PHARMACEUTICALS, INC",
+    "cik": "0001358403"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -2
+  },
+  {
+   "reihe": "BLEU",
+   "ankerAlt": "2024-11-22",
+   "ankerNeu": "2024-11-01",
+   "ankerDiffTage": 21,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-11-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-100742 (8-K 2024-11-21)",
+    "firma": "bleuacacia ltd",
+    "cik": "0001843370"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-11-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-100742 (8-K 2024-11-21)",
+    "firma": "bleuacacia ltd",
+    "cik": "0001843370"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 20
+  },
+  {
+   "reihe": "BLPH",
+   "ankerAlt": "2024-12-18",
+   "ankerNeu": "2023-10-13",
+   "ankerDiffTage": 432,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-12-19",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:93b1bf9f-c829-41ba-8cc1-6c7faa353497",
+    "firma": "Bellerophon Therapeutics, Inc.",
+    "cik": "0001600132"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-10-13",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-23-108988 (8-K 2023-10-13)",
+    "firma": "Bellerophon Therapeutics, Inc.",
+    "cik": "0001600132"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "BLUA",
+   "ankerAlt": "2024-07-12",
+   "ankerNeu": "2024-07-08",
+   "ankerDiffTage": 4,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2024-07-15",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001143313-24-000070 (25-NSE 2024-07-15)",
+    "firma": "BlueRiver Acquisition Corp.",
+    "cik": "0001831006"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2024-07-15",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001143313-24-000070 (25-NSE 2024-07-15)",
+    "firma": "BlueRiver Acquisition Corp.",
+    "cik": "0001831006"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 7
+  },
+  {
+   "reihe": "BOWN",
+   "ankerAlt": "2026-07-14",
+   "ankerNeu": "2025-07-15",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2026-07-13",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-26-000667 (25-NSE 2026-07-13)",
+    "firma": "Bowen Acquisition Corp",
+    "cik": "0001973056"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-07-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-020251 (8-K 2025-07-18)",
+    "firma": "Bowen Acquisition Corp",
+    "cik": "0001973056"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 3
+  },
+  {
+   "reihe": "BPTH",
+   "ankerAlt": "2026-02-17",
+   "ankerNeu": "2025-02-18",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-25-001051 (8-K 2025-02-18)",
+    "firma": "BIO-PATH HOLDINGS, INC.",
+    "cik": "0001133818"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-25-001051 (8-K 2025-02-18)",
+    "firma": "BIO-PATH HOLDINGS, INC.",
+    "cik": "0001133818"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "BRDS",
+   "ankerAlt": "2023-12-19",
+   "ankerNeu": "2023-09-22",
+   "ankerDiffTage": 88,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2023-12-26",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001861449-23-000220 (8-K 2023-12-26)",
+    "firma": "Bird Global, Inc.",
+    "cik": "0001861449"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2023-12-26",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001861449-23-000220 (8-K 2023-12-26)",
+    "firma": "Bird Global, Inc.",
+    "cik": "0001861449"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 95
+  },
+  {
+   "reihe": "BSFC",
+   "ankerAlt": "2025-12-18",
+   "ankerNeu": "2024-12-19",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-050752 (8-K 2024-12-19)",
+    "firma": "Blue Star Foods Corp.",
+    "cik": "0001730773"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-050752 (8-K 2024-12-19)",
+    "firma": "Blue Star Foods Corp.",
+    "cik": "0001730773"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "BTCY",
+   "ankerAlt": "2025-08-01",
+   "ankerNeu": "2024-08-02",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-030615 (8-K 2024-08-07)",
+    "firma": "BIOTRICITY INC.",
+    "cik": "0001630113"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-01",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-029939 (8-K 2024-08-01)",
+    "firma": "BIOTRICITY INC.",
+    "cik": "0001630113"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -1
+  },
+  {
+   "reihe": "BTTX",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-03-15",
+   "ankerDiffTage": 371,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-03-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-068672 (8-K 2024-03-15)",
+    "firma": "Better Therapeutics, Inc.",
+    "cik": "0001832415"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-03-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-068672 (8-K 2024-03-15)",
+    "firma": "Better Therapeutics, Inc.",
+    "cik": "0001832415"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "BXRX",
+   "ankerAlt": "2024-02-28",
+   "ankerNeu": "2023-11-15",
+   "ankerDiffTage": 105,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-02-28",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-24-049000 (8-K 2024-02-28)",
+    "firma": "Baudax Bio, Inc.",
+    "cik": "0001780097"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-02-28",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-24-049000 (8-K 2024-02-28)",
+    "firma": "Baudax Bio, Inc.",
+    "cik": "0001780097"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 105
+  },
+  {
+   "reihe": "CALA",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-02-01",
+   "ankerDiffTage": 779,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2025-06-23",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0000876661-25-000457 (25-NSE 2025-06-23)",
+    "firma": "WESCO INTERNATIONAL INC",
+    "cik": "0000929008"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-01-25",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-23-014684 (8-K 2023-01-25)",
+    "firma": "Calithera Biosciences, Inc.",
+    "cik": "0001496671"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "CARV",
+   "ankerAlt": "2026-03-13",
+   "ankerNeu": "2025-12-05",
+   "ankerDiffTage": 98,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-11-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000943374-25-000480 (8-K 2025-11-18)",
+    "firma": "CARVER BANCORP INC",
+    "cik": "0001016178"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-11-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000943374-25-000480 (8-K 2025-11-18)",
+    "firma": "CARVER BANCORP INC",
+    "cik": "0001016178"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -17
+  },
+  {
+   "reihe": "CAUD",
+   "ankerAlt": "2025-08-14",
+   "ankerNeu": "2024-08-15",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2025-09-05",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001683168-25-006722 (8-K 2025-09-05)",
+    "firma": "Collective Audience, Inc.",
+    "cik": "0001854583"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-069733 (8-K 2024-08-15)",
+    "firma": "Collective Audience, Inc.",
+    "cik": "0001854583"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "CFMS",
+   "ankerAlt": "2023-09-05",
+   "ankerNeu": "2023-09-01",
+   "ankerDiffTage": 4,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2023-09-06",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:5a628f53-65f8-4cf4-9d95-29e6f5a4191f",
+    "firma": "Conformis Inc",
+    "cik": "0001305773"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2023-09-06",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:5a628f53-65f8-4cf4-9d95-29e6f5a4191f",
+    "firma": "Conformis Inc",
+    "cik": "0001305773"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 5
+  },
+  {
+   "reihe": "CFRX",
+   "ankerAlt": "2023-12-04",
+   "ankerNeu": "2023-11-08",
+   "ankerDiffTage": 26,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2023-12-05",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-23-288544 (8-K 2023-12-05)",
+    "firma": "CONTRAFECT Corp",
+    "cik": "0001478069"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2023-12-05",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-23-288544 (8-K 2023-12-05)",
+    "firma": "CONTRAFECT Corp",
+    "cik": "0001478069"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 27
+  },
+  {
+   "reihe": "CHRA",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-04-03",
+   "ankerDiffTage": 718,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2025-07-01",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001417835-25-000128 (25-NSE 2025-07-01)",
+    "firma": "Two Roads Shared Trust",
+    "cik": "0001552947"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-04-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001730346-23-000015 (8-K 2023-04-03)",
+    "firma": "Charah Solutions, Inc.",
+    "cik": "0001730346"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "CLOE",
+   "ankerAlt": "2025-09-02",
+   "ankerNeu": "2024-09-03",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-075060 (8-K 2024-09-03)",
+    "firma": "Clover Leaf Capital Corp.",
+    "cik": "0001849058"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-075060 (8-K 2024-09-03)",
+    "firma": "Clover Leaf Capital Corp.",
+    "cik": "0001849058"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "CLVR",
+   "ankerAlt": "2025-05-15",
+   "ankerNeu": "2024-05-16",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-26",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-036656 (8-K 2024-04-26)",
+    "firma": "Clever Leaves Holdings Inc.",
+    "cik": "0001819615"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-26",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-036656 (8-K 2024-04-26)",
+    "firma": "Clever Leaves Holdings Inc.",
+    "cik": "0001819615"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -20
+  },
+  {
+   "reihe": "CMCSV",
+   "ankerAlt": "2026-01-02",
+   "ankerNeu": "2025-12-23",
+   "ankerDiffTage": 10,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "nichts",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2026-09-14",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001354457-26-000874 (25-NSE 2026-09-14)",
+    "firma": "COMCAST CORP",
+    "cik": "0001166691"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 265
+  },
+  {
+   "reihe": "CMLS",
+   "ankerAlt": "2026-03-04",
+   "ankerNeu": "2025-05-01",
+   "ankerDiffTage": 307,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2026-03-05",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001104659-26-023855 (8-K 2026-03-05)",
+    "firma": "CUMULUS MEDIA INC",
+    "cik": "0001058623"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001058623-25-000039 (8-K 2025-04-23)",
+    "firma": "CUMULUS MEDIA INC",
+    "cik": "0001058623"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -8
+  },
+  {
+   "reihe": "CMRA",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-11-16",
+   "ankerDiffTage": 491,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-23-064530 (8-K 2023-11-16)",
+    "firma": "Comera Life Sciences Holdings, Inc.",
+    "cik": "0001907685"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-23-064530 (8-K 2023-11-16)",
+    "firma": "Comera Life Sciences Holdings, Inc.",
+    "cik": "0001907685"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "CNGL",
+   "ankerAlt": "2024-07-05",
+   "ankerNeu": "2024-06-27",
+   "ankerDiffTage": 8,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2024-07-19",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-24-000518 (25-NSE 2024-07-19)",
+    "firma": "Canna-Global Acquisition Corp",
+    "cik": "0001867443"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2024-07-19",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-24-000518 (25-NSE 2024-07-19)",
+    "firma": "Canna-Global Acquisition Corp",
+    "cik": "0001867443"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 22
+  },
+  {
+   "reihe": "CNTM",
+   "ankerAlt": "2026-04-17",
+   "ankerNeu": "2025-05-07",
+   "ankerDiffTage": 345,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-038099 (8-K 2025-04-23)",
+    "firma": "ConnectM Technology Solutions, Inc.",
+    "cik": "0001895249"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2024-11-21",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001104659-24-121588 (8-K/A 2024-11-21)",
+    "firma": "ConnectM Technology Solutions, Inc.",
+    "cik": "0001895249"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -167
+  },
+  {
+   "reihe": "COMS",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-01-30",
+   "ankerDiffTage": 416,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-02-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-009624 (8-K 2024-02-02)",
+    "firma": "COMSovereign Holding Corp.",
+    "cik": "0001178727"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-02-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-009624 (8-K 2024-02-02)",
+    "firma": "COMSovereign Holding Corp.",
+    "cik": "0001178727"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 3
+  },
+  {
+   "reihe": "CORR",
+   "ankerAlt": "2024-02-23",
+   "ankerNeu": "2023-12-01",
+   "ankerDiffTage": 84,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-02-27",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:ab5e6d2a-e836-4a99-947e-402c27a5d04d",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-02-26",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001347652-24-000017 (8-K 2024-02-26)",
+    "firma": "CorEnergy Infrastructure Trust, Inc.",
+    "cik": "0001347652"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 87
+  },
+  {
+   "reihe": "CRGE",
+   "ankerAlt": "2024-03-06",
+   "ankerNeu": "2024-02-28",
+   "ankerDiffTage": 7,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-03-12",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001437749-24-007478 (8-K 2024-03-12)",
+    "firma": "Charge Enterprises, Inc.",
+    "cik": "0001277250"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-03-12",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001437749-24-007478 (8-K 2024-03-12)",
+    "firma": "Charge Enterprises, Inc.",
+    "cik": "0001277250"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 13
+  },
+  {
+   "reihe": "CRKN",
+   "ankerAlt": "2026-03-03",
+   "ankerNeu": "2025-03-04",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-03-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-020228 (8-K 2025-03-04)",
+    "firma": "Crown Electrokinetics Corp.",
+    "cik": "0001761696"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-03-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-020228 (8-K 2025-03-04)",
+    "firma": "Crown Electrokinetics Corp.",
+    "cik": "0001761696"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "CTHR",
+   "ankerAlt": "2026-03-03",
+   "ankerNeu": "2025-04-24",
+   "ankerDiffTage": 313,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2026-03-04",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001104659-26-023038 (8-K 2026-03-04)",
+    "firma": "CHARLES & COLVARD LTD",
+    "cik": "0001015155"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-22",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-037514 (8-K 2025-04-22)",
+    "firma": "CHARLES & COLVARD LTD",
+    "cik": "0001015155"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -2
+  },
+  {
+   "reihe": "CUEN",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-12-19",
+   "ankerDiffTage": 458,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-23-096878 (8-K 2023-12-19)",
+    "firma": "Cuentas Inc.",
+    "cik": "0001424657"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-23-096878 (8-K 2023-12-19)",
+    "firma": "Cuentas Inc.",
+    "cik": "0001424657"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "CURO",
+   "ankerAlt": "2024-03-22",
+   "ankerNeu": "2024-03-11",
+   "ankerDiffTage": 11,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-03-26",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:b4ef303c-f81d-4d66-af7d-0950a7f3332e",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-03-26",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:b4ef303c-f81d-4d66-af7d-0950a7f3332e",
+    "firma": "SPDR SERIES TRUST",
+    "cik": "0001064642"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (CURO Group Holdings Corp.)",
+   "belegTageZumAnker": 15
+  },
+  {
+   "reihe": "CWBR",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-11-28",
+   "ankerDiffTage": 479,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2025-01-06",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:48de0a42-f8e6-476d-93e3-ae6cbcf5f203",
+    "firma": "CohBar, Inc.",
+    "cik": "0001522602"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-23-090274 (8-K 2023-11-27)",
+    "firma": "CohBar, Inc.",
+    "cik": "0001522602"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -1
+  },
+  {
+   "reihe": "CXDC",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2021-10-28",
+   "ankerDiffTage": 1240,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "nichts",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2021-10-28",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-21-026630 (8-K 2021-10-28)",
+    "firma": "China XD Plastics Co Ltd",
+    "cik": "0001353970"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "CYAN",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-02-16",
+   "ankerDiffTage": 399,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-02-14",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-24-004144 (8-K 2024-02-14)",
+    "firma": "CYANOTECH CORP",
+    "cik": "0000768408"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-02-14",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-24-004144 (8-K 2024-02-14)",
+    "firma": "CYANOTECH CORP",
+    "cik": "0000768408"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -2
+  },
+  {
+   "reihe": "DISA",
+   "ankerAlt": "2023-12-22",
+   "ankerNeu": "2023-12-18",
+   "ankerDiffTage": 4,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2024-02-15",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-24-000090 (25-NSE 2024-02-15)",
+    "firma": "Disruptive Acquisition Corp I",
+    "cik": "0001838831"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2024-02-15",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-24-000090 (25-NSE 2024-02-15)",
+    "firma": "Disruptive Acquisition Corp I",
+    "cik": "0001838831"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 59
+  },
+  {
+   "reihe": "DIST",
+   "ankerAlt": "2025-07-08",
+   "ankerNeu": "2025-06-12",
+   "ankerDiffTage": 26,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-07-10",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:452a1adf-389c-40c5-b4c6-d477c77456cf",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-07-10",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:452a1adf-389c-40c5-b4c6-d477c77456cf",
+    "firma": null,
+    "cik": null
+   },
+   "firmaZuPolygon": "ohne Firma",
+   "belegTageZumAnker": 28
+  },
+  {
+   "reihe": "DMYY",
+   "ankerAlt": "2026-03-19",
+   "ankerNeu": "2025-09-29",
+   "ankerDiffTage": 171,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2026-03-20",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:cb87f8ce-ccd2-4ba3-8f3d-c43a15ffe95a",
+    "firma": "dMY Squared Technology Group, Inc.",
+    "cik": "0001915380"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-09-29",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001829126-25-007696 (8-K 2025-09-29)",
+    "firma": "dMY Squared Technology Group, Inc.",
+    "cik": "0001915380"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "DNMR",
+   "ankerAlt": "2025-03-17",
+   "ankerNeu": "2024-12-30",
+   "ankerDiffTage": 77,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-03-18",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0000950170-25-041367 (8-K 2025-03-18)",
+    "firma": "Danimer Scientific, Inc.",
+    "cik": "0001779020"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2025-03-18",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0000950170-25-041367 (8-K 2025-03-18)",
+    "firma": "Danimer Scientific, Inc.",
+    "cik": "0001779020"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 78
+  },
+  {
+   "reihe": "DXYN",
+   "ankerAlt": "2025-10-01",
+   "ankerNeu": "2024-10-02",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000029332-24-000056 (8-K 2024-10-02)",
+    "firma": "DIXIE GROUP INC",
+    "cik": "0000029332"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000029332-24-000056 (8-K 2024-10-02)",
+    "firma": "DIXIE GROUP INC",
+    "cik": "0000029332"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "DYNT",
+   "ankerAlt": "2025-07-07",
+   "ankerNeu": "2024-07-08",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2026-01-12",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001062993-26-000178 (8-K 2026-01-12)",
+    "firma": "DYNATRONICS CORP",
+    "cik": "0000720875"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-28",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001062993-24-013111 (8-K 2024-06-28)",
+    "firma": "DYNATRONICS CORP",
+    "cik": "0000720875"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -10
+  },
+  {
+   "reihe": "DZSI",
+   "ankerAlt": "2025-03-14",
+   "ankerNeu": "2024-08-07",
+   "ankerDiffTage": 219,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-03-14",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001101680-25-000021 (8-K 2025-03-14)",
+    "firma": "DZS INC.",
+    "cik": "0001101680"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2025-03-14",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001101680-25-000021 (8-K 2025-03-14)",
+    "firma": "DZS INC.",
+    "cik": "0001101680"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 219
+  },
+  {
+   "reihe": "EBET",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-10-12",
+   "ankerDiffTage": 526,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-10-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-23-007104 (8-K 2023-10-12)",
+    "firma": "EBET, Inc.",
+    "cik": "0001829966"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-10-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-23-007104 (8-K 2023-10-12)",
+    "firma": "EBET, Inc.",
+    "cik": "0001829966"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "ECDA",
+   "ankerAlt": "2026-03-19",
+   "ankerNeu": "2026-01-15",
+   "ankerDiffTage": 63,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2026-04-13",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:bdc2683a-3d33-4e2a-81c1-8e22711bfbe2",
+    "firma": "ECD Automotive Design, Inc.",
+    "cik": "0001922858"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-01-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-26-001367 (8-K 2026-01-15)",
+    "firma": "ECD Automotive Design, Inc.",
+    "cik": "0001922858"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "EDTX",
+   "ankerAlt": "2023-08-31",
+   "ankerNeu": "2023-07-14",
+   "ankerDiffTage": 48,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2023-09-01",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:fbfe8ec9-b30f-4af5-b438-132638212685",
+    "firma": "EdtechX Holdings Acquisition Corp. II",
+    "cik": "0001817153"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2023-09-05",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001213900-23-073913 (15-12G 2023-09-05)",
+    "firma": "EdtechX Holdings Acquisition Corp. II",
+    "cik": "0001817153"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 53
+  },
+  {
+   "reihe": "EFTR",
+   "ankerAlt": "2025-07-01",
+   "ankerNeu": "2024-07-02",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-25",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-077420 (8-K 2024-06-25)",
+    "firma": "eFFECTOR Therapeutics, Inc.",
+    "cik": "0001828522"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-25",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-077420 (8-K 2024-06-25)",
+    "firma": "eFFECTOR Therapeutics, Inc.",
+    "cik": "0001828522"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "EGRX",
+   "ankerAlt": "2025-10-01",
+   "ankerNeu": "2024-10-02",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-11-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-119783 (8-K 2024-11-15)",
+    "firma": "EAGLE PHARMACEUTICALS, INC.",
+    "cik": "0000827871"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-105232 (8-K 2024-10-02)",
+    "firma": "EAGLE PHARMACEUTICALS, INC.",
+    "cik": "0000827871"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "ELIQ",
+   "ankerAlt": "2024-05-03",
+   "ankerNeu": "2024-01-16",
+   "ankerDiffTage": 108,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-05-07",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:095c8c01-0d8b-4ae3-b399-531dd268c6ae",
+    "firma": "Electriq Power Holdings, Inc.",
+    "cik": "0001827871"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2023-08-04",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001193125-23-203886 (8-K 2023-08-04)",
+    "firma": "Electriq Power Holdings, Inc.",
+    "cik": "0001827871"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -165
+  },
+  {
+   "reihe": "ELYS",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-10-16",
+   "ankerDiffTage": 522,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-10-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001017386-23-000337 (8-K 2023-10-17)",
+    "firma": "Elys BMG Group, Inc.",
+    "cik": "0001080319"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-10-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001017386-23-000337 (8-K 2023-10-17)",
+    "firma": "Elys BMG Group, Inc.",
+    "cik": "0001080319"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "EMPG",
+   "ankerAlt": "2026-07-24",
+   "ankerNeu": "2025-10-08",
+   "ankerDiffTage": 289,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "edgar-ohne-signal",
+    "quelle": null,
+    "firma": "Empro Group Inc.",
+    "cik": "0002005569"
+   },
+   "neu": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "edgar-ohne-signal",
+    "quelle": null,
+    "firma": "Empro Group Inc.",
+    "cik": "0002005569"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": null
+  },
+  {
+   "reihe": "EVFM",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2022-08-10",
+   "ankerDiffTage": 954,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-25-001682 (8-K 2025-01-10)",
+    "firma": "Evofem Biosciences, Inc.",
+    "cik": "0001618835"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2022-08-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001618835-22-000158 (8-K 2022-08-10)",
+    "firma": "Evofem Biosciences, Inc.",
+    "cik": "0001618835"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "EVLO",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-12-11",
+   "ankerDiffTage": 466,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-23-287901 (8-K 2023-12-04)",
+    "firma": "Evelo Biosciences, Inc.",
+    "cik": "0001694665"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-23-287901 (8-K 2023-12-04)",
+    "firma": "Evelo Biosciences, Inc.",
+    "cik": "0001694665"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "EXPR",
+   "ankerAlt": "2024-04-19",
+   "ankerNeu": "2024-03-06",
+   "ankerDiffTage": 44,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-04-23",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:bded3131-68c5-414c-8df5-204ce8c6b83f",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2024-05-24",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001143362-24-000165 (25-NSE 2024-05-24)",
+    "firma": "JPMORGAN CHASE & CO",
+    "cik": "0000019617"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (Express, Inc.)",
+   "belegTageZumAnker": 79
+  },
+  {
+   "reihe": "FATP",
+   "ankerAlt": "2023-12-04",
+   "ankerNeu": "2023-11-17",
+   "ankerDiffTage": 17,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2023-12-27",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-23-001000 (25-NSE 2023-12-27)",
+    "firma": "FAT PROJECTS ACQUISITION CORP",
+    "cik": "0001865045"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2023-12-27",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-23-001000 (25-NSE 2023-12-27)",
+    "firma": "FAT PROJECTS ACQUISITION CORP",
+    "cik": "0001865045"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 40
+  },
+  {
+   "reihe": "FLDD",
+   "ankerAlt": "2025-02-14",
+   "ankerNeu": "2024-12-23",
+   "ankerDiffTage": 53,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-02-19",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:cb0c7aa3-58c5-4ef4-ab94-e7cda95cbbf4",
+    "firma": "Fold Holdings, Inc.",
+    "cik": "0001889123"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-109953 (8-K 2024-12-18)",
+    "firma": "Fold Holdings, Inc.",
+    "cik": "0001889123"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": -5
+  },
+  {
+   "reihe": "FNCH",
+   "ankerAlt": "2025-05-23",
+   "ankerNeu": "2024-05-24",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-240034 (8-K 2024-10-21)",
+    "firma": "Finch Therapeutics Group, Inc.",
+    "cik": "0001733257"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-146454 (8-K 2024-05-24)",
+    "firma": "Finch Therapeutics Group, Inc.",
+    "cik": "0001733257"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "FOXO",
+   "ankerAlt": "2026-08-11",
+   "ankerNeu": "2025-08-12",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-08-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-024660 (8-K 2025-08-18)",
+    "firma": "FOXO TECHNOLOGIES INC.",
+    "cik": "0001812360"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-08-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-024660 (8-K 2025-08-18)",
+    "firma": "FOXO TECHNOLOGIES INC.",
+    "cik": "0001812360"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 6
+  },
+  {
+   "reihe": "FPAY",
+   "ankerAlt": "2025-12-19",
+   "ankerNeu": "2025-10-22",
+   "ankerDiffTage": 58,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-12-23",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:f157edf1-a4c0-49df-918b-50ee45ddea24",
+    "firma": "FlexShopper, Inc.",
+    "cik": "0001397047"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-09-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-091201 (8-K 2025-09-24)",
+    "firma": "FlexShopper, Inc.",
+    "cik": "0001397047"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -28
+  },
+  {
+   "reihe": "FRBK",
+   "ankerAlt": "2024-08-27",
+   "ankerNeu": "2023-08-22",
+   "ankerDiffTage": 371,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-09-05",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001104659-24-097413 (8-K 2024-09-05)",
+    "firma": "REPUBLIC FIRST BANCORP INC",
+    "cik": "0000834285"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-04-29",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001437749-24-013455 (8-K 2024-04-29)",
+    "firma": "REPUBLIC FIRST BANCORP INC",
+    "cik": "0000834285"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 251
+  },
+  {
+   "reihe": "FRTX",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-12-18",
+   "ankerDiffTage": 459,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2025-03-03",
+    "beleg": "alpaca-stock_and_cash_mergers",
+    "quelle": "alpaca-massnahmen:44bd9e64-dcbc-4dd9-b22f-b686afe4f369",
+    "firma": "Fresh Tracks Therapeutics, Inc.",
+    "cik": "0000819050"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001628280-23-041723 (8-K 2023-12-18)",
+    "firma": "Fresh Tracks Therapeutics, Inc.",
+    "cik": "0000819050"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "FRZA",
+   "ankerAlt": "2024-12-10",
+   "ankerNeu": "2024-10-09",
+   "ankerDiffTage": 62,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "fusion-aktientausch",
+    "datum": "2024-12-12",
+    "beleg": "alpaca-stock_mergers",
+    "quelle": "alpaca-massnahmen:5aa9a9d9-610c-4778-8a51-b50d5d082532",
+    "firma": "Forza X1, Inc.",
+    "cik": "0001901305"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001731122-24-001545 (8-K 2024-10-04)",
+    "firma": "Forza X1, Inc.",
+    "cik": "0001901305"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -5
+  },
+  {
+   "reihe": "FSNB",
+   "ankerAlt": "2023-10-17",
+   "ankerNeu": "2023-10-11",
+   "ankerDiffTage": 6,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2023-11-01",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001143313-23-000143 (25-NSE 2023-11-01)",
+    "firma": "Fusion Acquisition Corp. II",
+    "cik": "0001840225"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2023-11-01",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001143313-23-000143 (25-NSE 2023-11-01)",
+    "firma": "Fusion Acquisition Corp. II",
+    "cik": "0001840225"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 21
+  },
+  {
+   "reihe": "FXLV",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-08-24",
+   "ankerDiffTage": 575,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2023-11-07",
+    "beleg": "edgar-formular15",
+    "quelle": "EDGAR:0001193125-23-272551 (15-12G 2023-11-07)",
+    "firma": "F45 Training Holdings Inc.",
+    "cik": "0001788717"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-08-14",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001788717-23-000050 (8-K 2023-08-14)",
+    "firma": "F45 Training Holdings Inc.",
+    "cik": "0001788717"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -10
+  },
+  {
+   "reihe": "GBNY",
+   "ankerAlt": "2025-10-03",
+   "ankerNeu": "2024-10-04",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-102258 (8-K 2024-09-24)",
+    "firma": "Generations Bancorp NY, Inc.",
+    "cik": "0001823365"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-102258 (8-K 2024-09-24)",
+    "firma": "Generations Bancorp NY, Inc.",
+    "cik": "0001823365"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -10
+  },
+  {
+   "reihe": "GENE",
+   "ankerAlt": "2024-12-13",
+   "ankerNeu": "2024-10-16",
+   "ankerDiffTage": 58,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-08-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-23-203836 (8-K 2023-08-04)",
+    "firma": "Taysha Gene Therapies, Inc.",
+    "cik": "0001806310"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001999371-24-009864 (8-K 2024-08-09)",
+    "firma": "Tonix Pharmaceuticals Holding Corp.",
+    "cik": "0001430306"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": -68
+  },
+  {
+   "reihe": "GETR",
+   "ankerAlt": "2025-07-08",
+   "ankerNeu": "2024-07-09",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-092215 (8-K 2024-08-07)",
+    "firma": "Getaround, Inc",
+    "cik": "0001839608"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-082596 (8-K 2024-07-10)",
+    "firma": "Getaround, Inc",
+    "cik": "0001839608"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "GGAA",
+   "ankerAlt": "2023-07-24",
+   "ankerNeu": "2023-07-13",
+   "ankerDiffTage": 11,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2023-07-25",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:1bebd575-5e62-4a9c-ab2f-38000b16a76c",
+    "firma": "NeuroMind AI Corp.",
+    "cik": "0001865697"
+   },
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2023-07-25",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:1bebd575-5e62-4a9c-ab2f-38000b16a76c",
+    "firma": "NeuroMind AI Corp.",
+    "cik": "0001865697"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 12
+  },
+  {
+   "reihe": "GHSI",
+   "ankerAlt": "2024-11-04",
+   "ankerNeu": "2024-10-11",
+   "ankerDiffTage": 24,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-06-06",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001493152-24-022933 (8-K 2024-06-06)",
+    "firma": "Guardion Health Sciences, Inc.",
+    "cik": "0001642375"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2024-06-06",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001493152-24-022933 (8-K 2024-06-06)",
+    "firma": "Guardion Health Sciences, Inc.",
+    "cik": "0001642375"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -127
+  },
+  {
+   "reihe": "GLST",
+   "ankerAlt": "2025-05-13",
+   "ankerNeu": "2025-03-07",
+   "ankerDiffTage": 67,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-05-14",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:5aec2367-2a54-4c6c-81ca-7657dcc285f4",
+    "firma": "Global Star Acquisition Inc.",
+    "cik": "0001922331"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-03-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001829126-25-001706 (8-K 2025-03-11)",
+    "firma": "Global Star Acquisition Inc.",
+    "cik": "0001922331"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 4
+  },
+  {
+   "reihe": "GMBL",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-02-20",
+   "ankerDiffTage": 395,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-02-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-007169 (8-K 2024-02-20)",
+    "firma": "ESPORTS ENTERTAINMENT GROUP, INC.",
+    "cik": "0001451448"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-02-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-007169 (8-K 2024-02-20)",
+    "firma": "ESPORTS ENTERTAINMENT GROUP, INC.",
+    "cik": "0001451448"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "GPAK",
+   "ankerAlt": "2025-08-01",
+   "ankerNeu": "2024-08-02",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001161697-24-000325 (8-K 2024-08-05)",
+    "firma": "Gamer Pakistan Inc",
+    "cik": "0001948884"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001161697-24-000325 (8-K 2024-08-05)",
+    "firma": "Gamer Pakistan Inc",
+    "cik": "0001948884"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 3
+  },
+  {
+   "reihe": "GROM",
+   "ankerAlt": "2025-08-15",
+   "ankerNeu": "2024-08-16",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-24-006046 (8-K 2024-08-27)",
+    "firma": "Grom Social Enterprises, Inc.",
+    "cik": "0001662574"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-24-006046 (8-K 2024-08-27)",
+    "firma": "Grom Social Enterprises, Inc.",
+    "cik": "0001662574"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 11
+  },
+  {
+   "reihe": "GRTX",
+   "ankerAlt": "2025-06-02",
+   "ankerNeu": "2024-06-03",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-212627 (8-K 2024-09-04)",
+    "firma": "Galera Therapeutics, Inc.",
+    "cik": "0001563577"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-152343 (8-K 2024-06-03)",
+    "firma": "Galera Therapeutics, Inc.",
+    "cik": "0001563577"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "HALL",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-01-04",
+   "ankerDiffTage": 442,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-032570 (8-K 2025-04-16)",
+    "firma": "Hall of Fame Resort & Entertainment Co",
+    "cik": "0001708176"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-24-012586 (8-K 2024-04-19)",
+    "firma": "Stablecoin Development Corp",
+    "cik": "0001389545"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (Hallmark Financial Services, Inc.)",
+   "belegTageZumAnker": 106
+  },
+  {
+   "reihe": "HCVI",
+   "ankerAlt": "2025-06-05",
+   "ankerNeu": "2025-04-03",
+   "ankerDiffTage": 63,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-06-06",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:217dfcf8-9228-4f31-83df-2ac0e1abd895",
+    "firma": "Red Rock Acquisition Corp.",
+    "cik": "0001842937"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-028619 (8-K 2025-04-03)",
+    "firma": "Red Rock Acquisition Corp.",
+    "cik": "0001842937"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "HEPA",
+   "ankerAlt": "2026-05-11",
+   "ankerNeu": "2025-05-12",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-009744 (8-K 2025-05-12)",
+    "firma": "Hepion Pharmaceuticals, Inc.",
+    "cik": "0001583771"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-009744 (8-K 2025-05-12)",
+    "firma": "Hepion Pharmaceuticals, Inc.",
+    "cik": "0001583771"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "HGAS",
+   "ankerAlt": "2025-06-23",
+   "ankerNeu": "2024-06-24",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-055277 (8-K 2024-06-24)",
+    "firma": "Global Gas Corp",
+    "cik": "0001817232"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2023-12-28",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001213900-23-099273 (8-K 2023-12-28)",
+    "firma": "Global Gas Corp",
+    "cik": "0001817232"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -179
+  },
+  {
+   "reihe": "HGEN",
+   "ankerAlt": "2024-01-03",
+   "ankerNeu": "2023-07-25",
+   "ankerDiffTage": 162,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-01-08",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001214659-24-000421 (8-K 2024-01-08)",
+    "firma": "HUMANIGEN, INC",
+    "cik": "0001293310"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-01-08",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001214659-24-000421 (8-K 2024-01-08)",
+    "firma": "HUMANIGEN, INC",
+    "cik": "0001293310"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 167
+  },
+  {
+   "reihe": "HLGN",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-11-07",
+   "ankerDiffTage": 500,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-08-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-073828 (8-K 2025-08-11)",
+    "firma": "Heliogen, Inc.",
+    "cik": "0001840292"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001840292-23-000040 (8-K 2023-11-07)",
+    "firma": "Heliogen, Inc.",
+    "cik": "0001840292"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "HOFV",
+   "ankerAlt": "2026-06-25",
+   "ankerNeu": "2025-06-26",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2025-12-31",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001140361-25-047082 (8-K 2025-12-31)",
+    "firma": "Hall of Fame Resort & Entertainment Co",
+    "cik": "0001708176"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-06-25",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-057786 (8-K 2025-06-25)",
+    "firma": "Hall of Fame Resort & Entertainment Co",
+    "cik": "0001708176"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": -1
+  },
+  {
+   "reihe": "HOOK",
+   "ankerAlt": "2026-06-09",
+   "ankerNeu": "2025-08-07",
+   "ankerDiffTage": 306,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-07-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-069029 (8-K 2025-07-18)",
+    "firma": "HOOKIPA Pharma Inc.",
+    "cik": "0001760542"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-07-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-069029 (8-K 2025-07-18)",
+    "firma": "HOOKIPA Pharma Inc.",
+    "cik": "0001760542"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -20
+  },
+  {
+   "reihe": "HPCO",
+   "ankerAlt": "2025-09-04",
+   "ankerNeu": "2024-09-05",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001477932-24-005619 (8-K 2024-09-09)",
+    "firma": "Hempacco Co., Inc.",
+    "cik": "0001892480"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001477932-24-005619 (8-K 2024-09-09)",
+    "firma": "Hempacco Co., Inc.",
+    "cik": "0001892480"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 4
+  },
+  {
+   "reihe": "HSTO",
+   "ankerAlt": "2024-11-13",
+   "ankerNeu": "2023-10-04",
+   "ankerDiffTage": 406,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-11-15",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:d8d3b77a-d0fd-42c7-a914-3d27634df161",
+    "firma": "Histogen Inc.",
+    "cik": "0001383701"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-09-26",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-23-049922 (8-K 2023-09-26)",
+    "firma": "Histogen Inc.",
+    "cik": "0001383701"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -8
+  },
+  {
+   "reihe": "HUDA",
+   "ankerAlt": "2025-01-22",
+   "ankerNeu": "2024-07-22",
+   "ankerDiffTage": 184,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-03-26",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001013762-25-002541 (8-K 2025-03-26)",
+    "firma": "Hudson Acquisition I Corp.",
+    "cik": "0001853047"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-26",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001013762-24-001686 (8-K 2024-07-26)",
+    "firma": "Hudson Acquisition I Corp.",
+    "cik": "0001853047"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 4
+  },
+  {
+   "reihe": "HWEL",
+   "ankerAlt": "2023-12-04",
+   "ankerNeu": "2023-11-28",
+   "ankerDiffTage": 6,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2023-12-04",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-23-000906 (25-NSE 2023-12-04)",
+    "firma": "Healthwell Acquisition Corp. I",
+    "cik": "0001845013"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2023-12-04",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-23-000906 (25-NSE 2023-12-04)",
+    "firma": "Healthwell Acquisition Corp. I",
+    "cik": "0001845013"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 6
+  },
+  {
+   "reihe": "ICCT",
+   "ankerAlt": "2026-05-20",
+   "ankerNeu": "2025-05-21",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-06-03",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001477932-25-004389 (8-K 2025-06-03)",
+    "firma": "iCoreConnect Inc.",
+    "cik": "0001906133"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2025-06-03",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001477932-25-004389 (8-K 2025-06-03)",
+    "firma": "iCoreConnect Inc.",
+    "cik": "0001906133"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 13
+  },
+  {
+   "reihe": "IDEX",
+   "ankerAlt": "2024-12-03",
+   "ankerNeu": "2024-07-10",
+   "ankerDiffTage": 146,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-12-05",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:5f2b8f79-9495-4b09-9fd9-f12ab4b67788",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2024-08-13",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001354457-24-000562 (25-NSE 2024-08-13)",
+    "firma": "iSHARES TRUST",
+    "cik": "0001100663"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (Ideanomics, Inc. Common Stock)",
+   "belegTageZumAnker": 34
+  },
+  {
+   "reihe": "IFMK",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2021-11-22",
+   "ankerDiffTage": 1215,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-017999 (8-K 2025-02-27)",
+    "firma": "Quanome Technologies, Inc.",
+    "cik": "0001996192"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2022-09-06",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001213900-22-054253 (8-K 2022-09-06)",
+    "firma": "iFresh Inc",
+    "cik": "0001681941"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 288
+  },
+  {
+   "reihe": "IGTA",
+   "ankerAlt": "2025-12-15",
+   "ankerNeu": "2024-12-16",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-107669 (8-K 2024-12-11)",
+    "firma": "Inception Growth Acquisition Ltd",
+    "cik": "0001866838"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-107669 (8-K 2024-12-11)",
+    "firma": "Inception Growth Acquisition Ltd",
+    "cik": "0001866838"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -5
+  },
+  {
+   "reihe": "IMPL",
+   "ankerAlt": "2023-12-19",
+   "ankerNeu": "2023-12-15",
+   "ankerDiffTage": 4,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2023-12-20",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-23-299243 (8-K 2023-12-20)",
+    "firma": "IPI Legacy Liquidation Co",
+    "cik": "0001445499"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2023-12-20",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-23-299243 (8-K 2023-12-20)",
+    "firma": "IPI Legacy Liquidation Co",
+    "cik": "0001445499"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 5
+  },
+  {
+   "reihe": "INFI",
+   "ankerAlt": "2023-09-29",
+   "ankerNeu": "2023-09-13",
+   "ankerDiffTage": 16,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2023-09-29",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001113148-23-000018 (8-K 2023-09-29)",
+    "firma": "INFINITY PHARMACEUTICALS, INC.",
+    "cik": "0001113148"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2023-09-29",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001113148-23-000018 (8-K 2023-09-29)",
+    "firma": "INFINITY PHARMACEUTICALS, INC.",
+    "cik": "0001113148"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 16
+  },
+  {
+   "reihe": "INTE",
+   "ankerAlt": "2024-11-08",
+   "ankerNeu": "2024-11-01",
+   "ankerDiffTage": 7,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2025-03-21",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000224 (25-NSE 2025-03-21)",
+    "firma": "Integral Acquisition Corp 1",
+    "cik": "0001850262"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2025-03-21",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000224 (25-NSE 2025-03-21)",
+    "firma": "Integral Acquisition Corp 1",
+    "cik": "0001850262"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 140
+  },
+  {
+   "reihe": "IONM",
+   "ankerAlt": "2025-07-22",
+   "ankerNeu": "2024-07-23",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-04-01",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001104659-24-041979 (8-K 2024-04-01)",
+    "firma": "Assure Holdings Corp.",
+    "cik": "0001798270"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2024-04-01",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001104659-24-041979 (8-K 2024-04-01)",
+    "firma": "Assure Holdings Corp.",
+    "cik": "0001798270"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -113
+  },
+  {
+   "reihe": "IRAA",
+   "ankerAlt": "2025-04-30",
+   "ankerNeu": "2024-09-05",
+   "ankerDiffTage": 237,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2025-03-05",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000166 (25-NSE 2025-03-05)",
+    "firma": "Iris Acquisition Corp",
+    "cik": "0001831874"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2025-03-05",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000166 (25-NSE 2025-03-05)",
+    "firma": "Iris Acquisition Corp",
+    "cik": "0001831874"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 181
+  },
+  {
+   "reihe": "IRNT",
+   "ankerAlt": "2023-10-13",
+   "ankerNeu": "2023-08-04",
+   "ankerDiffTage": 70,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2023-10-12",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-23-255052 (8-K 2023-10-12)",
+    "firma": "IronNet, Inc.",
+    "cik": "0001777946"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2023-10-12",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-23-255052 (8-K 2023-10-12)",
+    "firma": "IronNet, Inc.",
+    "cik": "0001777946"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 69
+  },
+  {
+   "reihe": "IRRX",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-03-06",
+   "ankerDiffTage": 380,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2024-03-26",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0000876661-24-000229 (25-NSE 2024-03-26)",
+    "firma": "INTEGRATED RAIL & RESOURCES ACQUISITION CORP",
+    "cik": "0001854795"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2024-03-26",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0000876661-24-000229 (25-NSE 2024-03-26)",
+    "firma": "INTEGRATED RAIL & RESOURCES ACQUISITION CORP",
+    "cik": "0001854795"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 20
+  },
+  {
+   "reihe": "ISUN",
+   "ankerAlt": "2024-06-03",
+   "ankerNeu": "2024-05-22",
+   "ankerDiffTage": 12,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-06-07",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001493152-24-023164 (8-K 2024-06-07)",
+    "firma": "ISUN, INC.",
+    "cik": "0001634447"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-06-05",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:5831d749-5d2f-4fb3-b19b-56c74807a227",
+    "firma": null,
+    "cik": null
+   },
+   "firmaZuPolygon": "ohne Firma",
+   "belegTageZumAnker": 14
+  },
+  {
+   "reihe": "JEWL",
+   "ankerAlt": "2025-09-03",
+   "ankerNeu": "2024-09-04",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001199835-24-000417 (8-K 2024-09-09)",
+    "firma": "Adamas One Corp.",
+    "cik": "0001884072"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001199835-24-000417 (8-K 2024-09-09)",
+    "firma": "Adamas One Corp.",
+    "cik": "0001884072"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 5
+  },
+  {
+   "reihe": "JMG",
+   "ankerAlt": "2026-06-12",
+   "ankerNeu": "2026-01-15",
+   "ankerDiffTage": 148,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "nichts",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "nichts",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": null
+  },
+  {
+   "reihe": "KBNT",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-11-16",
+   "ankerDiffTage": 491,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001140361-23-053360 (8-K 2023-11-15)",
+    "firma": "Kubient, Inc.",
+    "cik": "0001729750"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001140361-23-053360 (8-K 2023-11-15)",
+    "firma": "Kubient, Inc.",
+    "cik": "0001729750"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -1
+  },
+  {
+   "reihe": "KLDO",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2022-04-14",
+   "ankerDiffTage": 1072,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-26",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-24-016472 (8-K 2024-12-26)",
+    "firma": "CRESCENT BIOPHARMA, INC.",
+    "cik": "0001253689"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2022-04-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-22-099802 (8-K 2022-04-08)",
+    "firma": "Kaleido Biosciences, Inc.",
+    "cik": "0001751299"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -6
+  },
+  {
+   "reihe": "KRBP",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-09-13",
+   "ankerDiffTage": 555,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-03-21",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001437749-25-008671 (8-K 2025-03-21)",
+    "firma": "Kiromic Biopharma, Inc.",
+    "cik": "0001792581"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-09-13",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-23-015711 (8-K 2023-09-13)",
+    "firma": "Kiromic Biopharma, Inc.",
+    "cik": "0001792581"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "KSPN",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-06-09",
+   "ankerDiffTage": 651,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001140361-23-058191 (8-K 2023-12-18)",
+    "firma": "Kaspien Holdings Inc.",
+    "cik": "0000795212"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-06-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001140361-23-029225 (8-K 2023-06-12)",
+    "firma": "Kaspien Holdings Inc.",
+    "cik": "0000795212"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 3
+  },
+  {
+   "reihe": "LBYKV",
+   "ankerAlt": "2024-11-11",
+   "ankerNeu": "2024-11-05",
+   "ankerDiffTage": 6,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2024-11-13",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:ba302a61-c9db-40fb-b8dc-2cba7970f5ac",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2024-11-13",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:ba302a61-c9db-40fb-b8dc-2cba7970f5ac",
+    "firma": null,
+    "cik": null
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 8
+  },
+  {
+   "reihe": "LFLY",
+   "ankerAlt": "2025-09-12",
+   "ankerNeu": "2025-01-16",
+   "ankerDiffTage": 239,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-09-15",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:fe3aee2c-475b-429b-b682-fd5a9684a5ac",
+    "firma": "Leafly Holdings, Inc. /DE",
+    "cik": "0001785592"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-25-006032 (8-K 2025-01-16)",
+    "firma": "Leafly Holdings, Inc. /DE",
+    "cik": "0001785592"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "LGMK",
+   "ankerAlt": "2026-05-29",
+   "ankerNeu": "2025-05-30",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-30",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-049480 (8-K 2025-05-30)",
+    "firma": "LogicMark, Inc.",
+    "cik": "0001566826"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-30",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-049480 (8-K 2025-05-30)",
+    "firma": "LogicMark, Inc.",
+    "cik": "0001566826"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "LIPO",
+   "ankerAlt": "2026-06-17",
+   "ankerNeu": "2025-06-18",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2026-07-15",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001753926-26-001173 (8-K 2026-07-15)",
+    "firma": "LIPELLA PHARMACEUTICALS INC.",
+    "cik": "0001347242"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2026-03-31",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001753926-26-000577 (8-K 2026-03-31)",
+    "firma": "LIPELLA PHARMACEUTICALS INC.",
+    "cik": "0001347242"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 286
+  },
+  {
+   "reihe": "LMPX",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2022-08-24",
+   "ankerDiffTage": 940,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2022-08-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-22-047389 (8-K 2022-08-12)",
+    "firma": "LMP Automotive Holdings, Inc.",
+    "cik": "0001731727"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -12
+  },
+  {
+   "reihe": "LOGC",
+   "ankerAlt": "2026-06-02",
+   "ankerNeu": "2025-06-03",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-30",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000902664-25-002596 (8-K 2025-05-30)",
+    "firma": "ContextLogic Inc.",
+    "cik": "0001822250"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-30",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000902664-25-002596 (8-K 2025-05-30)",
+    "firma": "ContextLogic Inc.",
+    "cik": "0001822250"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -4
+  },
+  {
+   "reihe": "LPTV",
+   "ankerAlt": "2025-08-07",
+   "ankerNeu": "2024-08-08",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-10-20",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001493152-25-018533 (8-K 2025-10-20)",
+    "firma": "Loop Media, Inc.",
+    "cik": "0001643988"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-030877 (8-K 2024-08-09)",
+    "firma": "Loop Media, Inc.",
+    "cik": "0001643988"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "LTCH",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-08-09",
+   "ankerDiffTage": 590,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-03-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001826000-24-000004 (8-K 2024-03-21)",
+    "firma": "Latch, Inc.",
+    "cik": "0001826000"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-08-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001826000-23-000085 (8-K 2023-08-09)",
+    "firma": "Latch, Inc.",
+    "cik": "0001826000"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "LTRPA",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-10-27",
+   "ankerDiffTage": 511,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-038737 (8-K 2025-04-24)",
+    "firma": "Liberty TripAdvisor Holdings, Inc.",
+    "cik": "0001606745"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-10-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-23-110120 (8-K 2023-10-19)",
+    "firma": "Liberty TripAdvisor Holdings, Inc.",
+    "cik": "0001606745"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -8
+  },
+  {
+   "reihe": "LTRPB",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-10-27",
+   "ankerDiffTage": 511,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-038737 (8-K 2025-04-24)",
+    "firma": "Liberty TripAdvisor Holdings, Inc.",
+    "cik": "0001606745"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-10-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-23-110120 (8-K 2023-10-19)",
+    "firma": "Liberty TripAdvisor Holdings, Inc.",
+    "cik": "0001606745"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -8
+  },
+  {
+   "reihe": "LUNA",
+   "ankerAlt": "2026-01-05",
+   "ankerNeu": "2025-01-06",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001239819-25-000011 (8-K 2025-01-27)",
+    "firma": "LUNA INNOVATIONS INC",
+    "cik": "0001239819"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-06",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001239819-25-000008 (8-K 2025-01-06)",
+    "firma": "LUNA INNOVATIONS INC",
+    "cik": "0001239819"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "LUXH",
+   "ankerAlt": "2025-09-12",
+   "ankerNeu": "2025-01-16",
+   "ankerDiffTage": 239,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-09-18",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001829126-25-007474 (8-K 2025-09-18)",
+    "firma": "LUXURBAN HOTELS INC.",
+    "cik": "0001893311"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2025-09-18",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001829126-25-007474 (8-K 2025-09-18)",
+    "firma": "LUXURBAN HOTELS INC.",
+    "cik": "0001893311"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 245
+  },
+  {
+   "reihe": "MARK",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-02-13",
+   "ankerDiffTage": 402,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "nichts",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2024-05-17",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0000876661-24-000363 (25-NSE 2024-05-17)",
+    "firma": "GOLDMAN SACHS GROUP INC",
+    "cik": "0000886982"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (Remark Holdings, Inc.)",
+   "belegTageZumAnker": 94
+  },
+  {
+   "reihe": "MCOM",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-12-19",
+   "ankerDiffTage": 458,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001079973-23-001785 (8-K 2023-12-19)",
+    "firma": "micromobility.com Inc.",
+    "cik": "0001788841"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001079973-23-001785 (8-K 2023-12-19)",
+    "firma": "micromobility.com Inc.",
+    "cik": "0001788841"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "MDRX",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-02-28",
+   "ankerDiffTage": 387,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-25",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-113859 (8-K 2024-04-25)",
+    "firma": "Veradigm Inc.",
+    "cik": "0001124804"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-02-28",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-049131 (8-K 2024-02-28)",
+    "firma": "Veradigm Inc.",
+    "cik": "0001124804"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "MEOA",
+   "ankerAlt": "2023-07-12",
+   "ankerNeu": "2023-05-24",
+   "ankerDiffTage": 49,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2023-08-09",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:7e2ffb2b-0576-46f5-b5cf-63a347ccecbe",
+    "firma": "Minority Equality Opportunities Acquisition Inc.",
+    "cik": "0001859310"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-01-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-23-005700 (8-K 2023-01-27)",
+    "firma": "Minority Equality Opportunities Acquisition Inc.",
+    "cik": "0001859310"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": -117
+  },
+  {
+   "reihe": "MGAM",
+   "ankerAlt": "2025-04-16",
+   "ankerNeu": "2024-04-17",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-032562 (8-K 2024-04-12)",
+    "firma": "Mobile Global Esports, Inc.",
+    "cik": "0001886362"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-032562 (8-K 2024-04-12)",
+    "firma": "Mobile Global Esports, Inc.",
+    "cik": "0001886362"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -5
+  },
+  {
+   "reihe": "MOBQ",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-12-06",
+   "ankerDiffTage": 471,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-24-004645 (8-K 2024-07-03)",
+    "firma": "Mobiquity Technologies, Inc.",
+    "cik": "0001084267"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-23-008668 (8-K 2023-12-07)",
+    "firma": "Mobiquity Technologies, Inc.",
+    "cik": "0001084267"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "MOND",
+   "ankerAlt": "2025-02-21",
+   "ankerNeu": "2024-12-05",
+   "ankerDiffTage": 78,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-01-15",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001828852-25-000010 (8-K 2025-01-15)",
+    "firma": "Mondee Holdings, Inc.",
+    "cik": "0001828852"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2025-01-15",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001828852-25-000010 (8-K 2025-01-15)",
+    "firma": "Mondee Holdings, Inc.",
+    "cik": "0001828852"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 41
+  },
+  {
+   "reihe": "MOTS",
+   "ankerAlt": "2025-04-14",
+   "ankerNeu": "2024-04-15",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-014324 (8-K 2024-04-11)",
+    "firma": "Motus GI Holdings, Inc.",
+    "cik": "0001686850"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-014324 (8-K 2024-04-11)",
+    "firma": "Motus GI Holdings, Inc.",
+    "cik": "0001686850"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -4
+  },
+  {
+   "reihe": "MRAI",
+   "ankerAlt": "2025-05-27",
+   "ankerNeu": "2024-05-28",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-064564 (8-K 2024-05-24)",
+    "firma": "Marpai, Inc.",
+    "cik": "0001844392"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-064564 (8-K 2024-05-24)",
+    "firma": "Marpai, Inc.",
+    "cik": "0001844392"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -4
+  },
+  {
+   "reihe": "MTCR",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-02-08",
+   "ankerDiffTage": 772,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-02-01",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-23-021568 (8-K 2023-02-01)",
+    "firma": "Metacrine, Inc.",
+    "cik": "0001634379"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "MTEM",
+   "ankerAlt": "2025-04-17",
+   "ankerNeu": "2024-12-24",
+   "ankerDiffTage": 114,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-04-24",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001641172-25-006026 (8-K 2025-04-24)",
+    "firma": "Molecular Templates, Inc.",
+    "cik": "0001183765"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2025-04-24",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001641172-25-006026 (8-K 2025-04-24)",
+    "firma": "Molecular Templates, Inc.",
+    "cik": "0001183765"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 121
+  },
+  {
+   "reihe": "MVLA",
+   "ankerAlt": "2025-03-31",
+   "ankerNeu": "2024-04-01",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001628280-24-015496 (8-K 2024-04-09)",
+    "firma": "Movella Holdings Inc.",
+    "cik": "0001839132"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2023-03-31",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001193125-23-088291 (8-K/A 2023-03-31)",
+    "firma": "Movella Holdings Inc.",
+    "cik": "0001839132"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -367
+  },
+  {
+   "reihe": "NAVB",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-10-05",
+   "ankerDiffTage": 533,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2024-01-16",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001143313-24-000012 (25-NSE 2024-01-16)",
+    "firma": "NAVIDEA BIOPHARMACEUTICALS, INC.",
+    "cik": "0000810509"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-06-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-23-016520 (8-K 2023-06-05)",
+    "firma": "NAVIDEA BIOPHARMACEUTICALS, INC.",
+    "cik": "0000810509"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -122
+  },
+  {
+   "reihe": "NEXI",
+   "ankerAlt": "2025-07-10",
+   "ankerNeu": "2024-07-11",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-177674 (8-K 2024-07-11)",
+    "firma": "NexImmune, Inc.",
+    "cik": "0001538210"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-177674 (8-K 2024-07-11)",
+    "firma": "NexImmune, Inc.",
+    "cik": "0001538210"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "NFNT",
+   "ankerAlt": "2023-10-24",
+   "ankerNeu": "2023-10-20",
+   "ankerDiffTage": 4,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2023-11-06",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0000876661-23-000819 (25-NSE 2023-11-06)",
+    "firma": "Infinite Acquisition Corp.",
+    "cik": "0001862327"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2023-11-06",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0000876661-23-000819 (25-NSE 2023-11-06)",
+    "firma": "Infinite Acquisition Corp.",
+    "cik": "0001862327"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 17
+  },
+  {
+   "reihe": "NKGN",
+   "ankerAlt": "2026-03-03",
+   "ankerNeu": "2025-03-04",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-002147 (8-K 2025-01-08)",
+    "firma": "NKGen Biotech, Inc.",
+    "cik": "0001845459"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-002147 (8-K 2025-01-08)",
+    "firma": "NKGen Biotech, Inc.",
+    "cik": "0001845459"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -55
+  },
+  {
+   "reihe": "NMHI",
+   "ankerAlt": "2026-01-13",
+   "ankerNeu": "2025-01-14",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-14",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-003463 (8-K 2025-01-14)",
+    "firma": "Nature's Miracle Holding Inc.",
+    "cik": "0001947861"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-14",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-003463 (8-K 2025-01-14)",
+    "firma": "Nature's Miracle Holding Inc.",
+    "cik": "0001947861"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "NMRD",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-01-04",
+   "ankerDiffTage": 442,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-01-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001079973-24-000008 (8-K 2024-01-03)",
+    "firma": "Nemaura Medical Inc.",
+    "cik": "0001602078"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-01-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001079973-24-000008 (8-K 2024-01-03)",
+    "firma": "Nemaura Medical Inc.",
+    "cik": "0001602078"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -1
+  },
+  {
+   "reihe": "NOVV",
+   "ankerAlt": "2024-11-19",
+   "ankerNeu": "2024-09-13",
+   "ankerDiffTage": 67,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2024-11-21",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:a280f885-3756-4bdc-9af9-1c296f4c765e",
+    "firma": "Nova Vision Acquisition Corp",
+    "cik": "0001858028"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2024-11-19",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-24-000879 (25-NSE 2024-11-19)",
+    "firma": "Nova Vision Acquisition Corp",
+    "cik": "0001858028"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 67
+  },
+  {
+   "reihe": "NSTB",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-01-26",
+   "ankerDiffTage": 420,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-01-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-002724 (8-K 2024-01-10)",
+    "firma": "Northern Star Investment Corp. II",
+    "cik": "0001834518"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-01-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-002724 (8-K 2024-01-10)",
+    "firma": "Northern Star Investment Corp. II",
+    "cik": "0001834518"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -16
+  },
+  {
+   "reihe": "NUTR",
+   "ankerAlt": "2026-08-10",
+   "ankerNeu": "2025-10-08",
+   "ankerDiffTage": 306,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-08-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-26-036635 (8-K 2026-08-07)",
+    "firma": "NUSATRIP Inc",
+    "cik": "0002006468"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-06-01",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-26-026520 (8-K 2026-06-01)",
+    "firma": "NUSATRIP Inc",
+    "cik": "0002006468"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 236
+  },
+  {
+   "reihe": "NVAC",
+   "ankerAlt": "2025-07-11",
+   "ankerNeu": "2024-11-14",
+   "ankerDiffTage": 239,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-07-14",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:cd9179a0-9d85-4a76-926e-7715514f29f0",
+    "firma": "Profusa, Inc.",
+    "cik": "0001859807"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-089060 (8-K 2024-10-21)",
+    "firma": "Profusa, Inc.",
+    "cik": "0001859807"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -24
+  },
+  {
+   "reihe": "NVOS",
+   "ankerAlt": "2025-11-04",
+   "ankerNeu": "2024-11-05",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-008349 (8-K 2025-05-02)",
+    "firma": "Novo Integrated Sciences, Inc.",
+    "cik": "0001138978"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-11-06",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-043763 (8-K 2024-11-06)",
+    "firma": "Novo Integrated Sciences, Inc.",
+    "cik": "0001138978"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "NVTA",
+   "ankerAlt": "2024-02-13",
+   "ankerNeu": "2024-02-05",
+   "ankerDiffTage": 8,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-02-14",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001501134-24-000016 (8-K 2024-02-14)",
+    "firma": "Invitae Corp",
+    "cik": "0001501134"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-02-14",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001501134-24-000016 (8-K 2024-02-14)",
+    "firma": "Invitae Corp",
+    "cik": "0001501134"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 9
+  },
+  {
+   "reihe": "NXTP",
+   "ankerAlt": "2025-04-11",
+   "ankerNeu": "2024-04-12",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-01-22",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-005085 (8-K 2024-01-22)",
+    "firma": "NextPlay Technologies Inc.",
+    "cik": "0001372183"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-01-22",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-005085 (8-K 2024-01-22)",
+    "firma": "NextPlay Technologies Inc.",
+    "cik": "0001372183"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -81
+  },
+  {
+   "reihe": "OCEA",
+   "ankerAlt": "2026-04-22",
+   "ankerNeu": "2025-04-23",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-08-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-022271 (8-K 2025-08-05)",
+    "firma": "Ocean Biomedical, Inc.",
+    "cik": "0001869974"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-005788 (8-K 2025-04-23)",
+    "firma": "Ocean Biomedical, Inc.",
+    "cik": "0001869974"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "OCFCP",
+   "ankerAlt": "2025-05-23",
+   "ankerNeu": "2025-05-14",
+   "ankerDiffTage": 9,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2025-05-16",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:3e322e2c-6424-4519-a0a7-0385413f8b42",
+    "firma": "OCEANFIRST FINANCIAL CORP",
+    "cik": "0001004702"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2025-05-16",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:3e322e2c-6424-4519-a0a7-0385413f8b42",
+    "firma": "OCEANFIRST FINANCIAL CORP",
+    "cik": "0001004702"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 2
+  },
+  {
+   "reihe": "OCFT",
+   "ankerAlt": "2025-11-19",
+   "ankerNeu": "2025-10-29",
+   "ankerDiffTage": 21,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2025-12-08",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:266d995b-4f5c-4b0b-9a96-73675c300dbc",
+    "firma": "ONECONNECT FINANCIAL TECHNOLOGY CO., LTD.",
+    "cik": "0001780531"
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2025-11-21",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0000876661-25-000905 (25-NSE 2025-11-21)",
+    "firma": "ONECONNECT FINANCIAL TECHNOLOGY CO., LTD.",
+    "cik": "0001780531"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 23
+  },
+  {
+   "reihe": "OFED",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-07-31",
+   "ankerDiffTage": 599,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "nichts",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-07-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001387131-23-008514 (8-K 2023-07-20)",
+    "firma": "Oconee Federal Financial Corp.",
+    "cik": "0001501078"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -11
+  },
+  {
+   "reihe": "OMQS",
+   "ankerAlt": "2025-05-05",
+   "ankerNeu": "2024-05-06",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-018237 (8-K 2024-05-08)",
+    "firma": "OMNIQ Corp.",
+    "cik": "0000278165"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-018237 (8-K 2024-05-08)",
+    "firma": "OMNIQ Corp.",
+    "cik": "0000278165"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 2
+  },
+  {
+   "reihe": "ONCR",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-06-20",
+   "ankerDiffTage": 640,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-06-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-23-027274 (8-K 2023-06-09)",
+    "firma": "Oncorus, Inc.",
+    "cik": "0001671818"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -11
+  },
+  {
+   "reihe": "OPGN",
+   "ankerAlt": "2025-08-18",
+   "ankerNeu": "2024-08-19",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001829126-24-008575 (8-K 2024-12-27)",
+    "firma": "CapForce Inc.",
+    "cik": "0001293818"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-22",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001829126-24-005761 (8-K 2024-08-22)",
+    "firma": "CapForce Inc.",
+    "cik": "0001293818"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 3
+  },
+  {
+   "reihe": "OPT",
+   "ankerAlt": "2025-11-18",
+   "ankerNeu": "2025-03-17",
+   "ankerDiffTage": 246,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-11-20",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:4940bb2d-b015-4b1f-b83a-ac32f9b4e0be",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2025-04-10",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001417835-25-000073 (25-NSE 2025-04-10)",
+    "firma": "Innovator ETFs Trust",
+    "cik": "0001415726"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 24
+  },
+  {
+   "reihe": "ORGS",
+   "ankerAlt": "2025-10-17",
+   "ankerNeu": "2024-10-18",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-06-06",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-014075 (8-K 2025-06-06)",
+    "firma": "Orgenesis Inc.",
+    "cik": "0001460602"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-041439 (8-K 2024-10-17)",
+    "firma": "Orgenesis Inc.",
+    "cik": "0001460602"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -1
+  },
+  {
+   "reihe": "OTIC",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2022-12-22",
+   "ankerDiffTage": 820,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2022-12-22",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-22-310711 (8-K 2022-12-22)",
+    "firma": "OTONOMY, INC.",
+    "cik": "0001493566"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "OTRK",
+   "ankerAlt": "2025-08-29",
+   "ankerNeu": "2025-08-15",
+   "ankerDiffTage": 14,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-09-03",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:1597bee7-ff03-4bd1-a4af-d6a45ad805e6",
+    "firma": "Ontrak, Inc.",
+    "cik": "0001136174"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2025-09-03",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:1597bee7-ff03-4bd1-a4af-d6a45ad805e6",
+    "firma": "Ontrak, Inc.",
+    "cik": "0001136174"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 19
+  },
+  {
+   "reihe": "PBLA",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-03-06",
+   "ankerDiffTage": 380,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-25",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-24-013250 (8-K 2024-04-25)",
+    "firma": "Panbela Therapeutics, Inc.",
+    "cik": "0001029125"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-03-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-24-006889 (8-K 2024-03-07)",
+    "firma": "Panbela Therapeutics, Inc.",
+    "cik": "0001029125"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "PETV",
+   "ankerAlt": "2025-04-07",
+   "ankerNeu": "2024-04-08",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-06",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-035333 (8-K 2024-09-06)",
+    "firma": "PetVivo Holdings, Inc.",
+    "cik": "0001512922"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-014003 (8-K 2024-04-09)",
+    "firma": "PetVivo Holdings, Inc.",
+    "cik": "0001512922"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "PKBO",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-01-09",
+   "ankerDiffTage": 802,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-11-14",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0000950170-24-127099 (8-K 2024-11-14)",
+    "firma": "Peak Bio, Inc.",
+    "cik": "0001834645"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2022-11-07",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001193125-22-279204 (8-K 2022-11-07)",
+    "firma": "Peak Bio, Inc.",
+    "cik": "0001834645"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -63
+  },
+  {
+   "reihe": "PNST",
+   "ankerAlt": "2025-09-08",
+   "ankerNeu": "2025-03-05",
+   "ankerDiffTage": 187,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-09-10",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:6060bfc4-550b-4f63-86ec-abc86072c554",
+    "firma": "Pinstripes Holdings, Inc.",
+    "cik": "0001852633"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2024-01-05",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001104659-24-001803 (8-K 2024-01-05)",
+    "firma": "Pinstripes Holdings, Inc.",
+    "cik": "0001852633"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -425
+  },
+  {
+   "reihe": "PRST",
+   "ankerAlt": "2025-08-06",
+   "ankerNeu": "2024-08-07",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-065927 (8-K 2024-08-07)",
+    "firma": "Presto Automation Inc.",
+    "cik": "0001822145"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-065927 (8-K 2024-08-07)",
+    "firma": "Presto Automation Inc.",
+    "cik": "0001822145"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "PTNM",
+   "ankerAlt": "2026-07-14",
+   "ankerNeu": "2025-10-03",
+   "ankerDiffTage": 284,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "edgar-ohne-signal",
+    "quelle": null,
+    "firma": "Pitanium Ltd",
+    "cik": "0002046573"
+   },
+   "neu": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "edgar-ohne-signal",
+    "quelle": null,
+    "firma": "Pitanium Ltd",
+    "cik": "0002046573"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": null
+  },
+  {
+   "reihe": "PTPI",
+   "ankerAlt": "2026-05-20",
+   "ankerNeu": "2025-05-21",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-11-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-108552 (8-K 2025-11-07)",
+    "firma": "Petros Pharmaceuticals, Inc.",
+    "cik": "0001815903"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-051336 (8-K 2025-05-21)",
+    "firma": "Petros Pharmaceuticals, Inc.",
+    "cik": "0001815903"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "PWUP",
+   "ankerAlt": "2025-02-18",
+   "ankerNeu": "2025-02-14",
+   "ankerDiffTage": 4,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-02-20",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:53688422-b1f9-42dd-88ec-4f14e244a7f1",
+    "firma": "Aspire Biopharma Holdings, Inc.",
+    "cik": "0001847345"
+   },
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-02-20",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:53688422-b1f9-42dd-88ec-4f14e244a7f1",
+    "firma": "Aspire Biopharma Holdings, Inc.",
+    "cik": "0001847345"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 6
+  },
+  {
+   "reihe": "PXMD",
+   "ankerAlt": "2025-04-30",
+   "ankerNeu": "2024-05-01",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-14",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-071809 (8-K 2024-06-14)",
+    "firma": "Kuvatris Therapeutics, Inc.",
+    "cik": "0001811623"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-05-01",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-055841 (8-K 2024-05-01)",
+    "firma": "Kuvatris Therapeutics, Inc.",
+    "cik": "0001811623"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "QIWI",
+   "ankerAlt": "2024-07-16",
+   "ankerNeu": "2022-02-28",
+   "ankerDiffTage": 869,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2024-09-06",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001354457-24-000655 (25-NSE 2024-09-06)",
+    "firma": "QIWI",
+    "cik": "0001561566"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2021-06-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-21-030802 (8-K 2021-06-03)",
+    "firma": "Kismet Acquisition One Corp",
+    "cik": "0001814824"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": -270
+  },
+  {
+   "reihe": "QMMM",
+   "ankerAlt": "2026-08-03",
+   "ankerNeu": "2025-09-26",
+   "ankerDiffTage": 311,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "edgar-ohne-signal",
+    "quelle": null,
+    "firma": "QMMM Holdings Ltd",
+    "cik": "0001971542"
+   },
+   "neu": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "edgar-ohne-signal",
+    "quelle": null,
+    "firma": "QMMM Holdings Ltd",
+    "cik": "0001971542"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": null
+  },
+  {
+   "reihe": "QOMO",
+   "ankerAlt": "2024-11-20",
+   "ankerNeu": "2024-11-07",
+   "ankerDiffTage": 13,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2025-01-30",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001493152-25-004255 (25 2025-01-30)",
+    "firma": "Qomolangma Acquisition Corp.",
+    "cik": "0001894210"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2025-01-30",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001493152-25-004255 (25 2025-01-30)",
+    "firma": "Qomolangma Acquisition Corp.",
+    "cik": "0001894210"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 84
+  },
+  {
+   "reihe": "QVCGB",
+   "ankerAlt": "2026-04-17",
+   "ankerNeu": "2025-05-27",
+   "ankerDiffTage": 325,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2026-04-17",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001104659-26-044521 (8-K 2026-04-17)",
+    "firma": "Old QVC Group, Inc.",
+    "cik": "0001355096"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-049822 (8-K 2025-05-16)",
+    "firma": "Old QVC Group, Inc.",
+    "cik": "0001355096"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -11
+  },
+  {
+   "reihe": "RACY",
+   "ankerAlt": "2024-04-30",
+   "ankerNeu": "2023-01-11",
+   "ankerDiffTage": 475,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2024-06-03",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-24-000380 (25-NSE 2024-06-03)",
+    "firma": "Relativity Acquisition Corp",
+    "cik": "0001860484"
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2023-09-14",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0000876661-23-000722 (25-NSE 2023-09-14)",
+    "firma": "GOLDMAN SACHS GROUP INC",
+    "cik": "0000886982"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 246
+  },
+  {
+   "reihe": "RBCN",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2022-12-29",
+   "ankerDiffTage": 813,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "nichts",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2022-09-20",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001213900-22-057430 (8-K/A 2022-09-20)",
+    "firma": "Rubicon Technology, Inc.",
+    "cik": "0001410172"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -100
+  },
+  {
+   "reihe": "RCAC",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-03-01",
+   "ankerDiffTage": 385,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2024-04-04",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001213900-24-030085 (25 2024-04-04)",
+    "firma": "Revelstone Capital Acquisition Corp.",
+    "cik": "0001874218"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2024-04-04",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001213900-24-030085 (25 2024-04-04)",
+    "firma": "Revelstone Capital Acquisition Corp.",
+    "cik": "0001874218"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 34
+  },
+  {
+   "reihe": "RENO",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2022-06-16",
+   "ankerDiffTage": 1009,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-06-13",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-015095 (8-K 2025-06-13)",
+    "firma": "Dragonfly Energy Holdings Corp.",
+    "cik": "0001847986"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2022-11-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000004457-22-000110 (8-K 2022-11-16)",
+    "firma": "U-Haul Holding Co /NV/",
+    "cik": "0000004457"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (Renovare Environmental, Inc. Common Stock)",
+   "belegTageZumAnker": 153
+  },
+  {
+   "reihe": "RIBT",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-11-07",
+   "ankerDiffTage": 500,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-23-030019 (8-K 2023-11-02)",
+    "firma": "RiceBran Technologies",
+    "cik": "0001063537"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-23-030019 (8-K 2023-11-02)",
+    "firma": "RiceBran Technologies",
+    "cik": "0001063537"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -5
+  },
+  {
+   "reihe": "ROCC",
+   "ankerAlt": "2023-06-20",
+   "ankerNeu": "2023-06-16",
+   "ankerDiffTage": 4,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2023-06-21",
+    "beleg": "alpaca-stock_and_cash_mergers",
+    "quelle": "alpaca-massnahmen:6a0f3bb4-8ea7-4d2e-829d-69a487df9d09",
+    "firma": "BAYTEX ENERGY USA, INC.",
+    "cik": "0000077159"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2023-06-21",
+    "beleg": "alpaca-stock_and_cash_mergers",
+    "quelle": "alpaca-massnahmen:6a0f3bb4-8ea7-4d2e-829d-69a487df9d09",
+    "firma": "BAYTEX ENERGY USA, INC.",
+    "cik": "0000077159"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 5
+  },
+  {
+   "reihe": "RUBY",
+   "ankerAlt": "2024-04-30",
+   "ankerNeu": "2023-03-06",
+   "ankerDiffTage": 421,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-194066 (8-K 2024-08-05)",
+    "firma": "Invest Acquisition Corp",
+    "cik": "0001857410"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-03-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-23-028428 (8-K 2023-03-03)",
+    "firma": "Rubius Therapeutics, Inc.",
+    "cik": "0001709401"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -3
+  },
+  {
+   "reihe": "SALM",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-01-18",
+   "ankerDiffTage": 428,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-29",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-23-305906 (8-K 2023-12-29)",
+    "firma": "SALEM MEDIA GROUP, INC. /DE/",
+    "cik": "0001050606"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-29",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-23-305906 (8-K 2023-12-29)",
+    "firma": "SALEM MEDIA GROUP, INC. /DE/",
+    "cik": "0001050606"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -20
+  },
+  {
+   "reihe": "SANW",
+   "ankerAlt": "2026-07-31",
+   "ankerNeu": "2025-08-01",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-07-14",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-019525 (8-K 2025-07-14)",
+    "firma": "S&W Seed Co",
+    "cik": "0001477246"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-07-14",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-019525 (8-K 2025-07-14)",
+    "firma": "S&W Seed Co",
+    "cik": "0001477246"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -18
+  },
+  {
+   "reihe": "SBIG",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-09-01",
+   "ankerDiffTage": 567,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "edgar-ohne-signal",
+    "quelle": null,
+    "firma": "SpringBig Holdings, Inc.",
+    "cik": "0001801602"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-09-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001628280-23-031294 (8-K 2023-09-05)",
+    "firma": "SpringBig Holdings, Inc.",
+    "cik": "0001801602"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 4
+  },
+  {
+   "reihe": "SBNY",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-03-13",
+   "ankerDiffTage": 739,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-01-17",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-24-008952 (8-K 2024-01-17)",
+    "firma": "Core Scientific, Inc./tx",
+    "cik": "0001839341"
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2023-06-16",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001143362-23-000254 (25-NSE 2023-06-16)",
+    "firma": "UBS AG",
+    "cik": "0001114446"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (Signature Bank)",
+   "belegTageZumAnker": 95
+  },
+  {
+   "reihe": "SCPS",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2022-12-16",
+   "ankerDiffTage": 826,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2025-12-29",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0000876661-25-001018 (25-NSE 2025-12-29)",
+    "firma": "ENERGY CO OF PARANA",
+    "cik": "0001041792"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2022-12-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-22-127517 (8-K 2022-12-16)",
+    "firma": "Scopus BioPharma Inc.",
+    "cik": "0001772028"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "SCPX",
+   "ankerAlt": "2026-04-20",
+   "ankerNeu": "2025-04-21",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001079973-25-000738 (8-K 2025-05-02)",
+    "firma": "Scorpius Holdings, Inc.",
+    "cik": "0001476963"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001079973-25-000687 (8-K 2025-04-21)",
+    "firma": "Scorpius Holdings, Inc.",
+    "cik": "0001476963"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "SDM",
+   "ankerAlt": "2026-06-16",
+   "ankerNeu": "2025-09-26",
+   "ankerDiffTage": 263,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2026-07-13",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001354457-26-000676 (25-NSE 2026-07-13)",
+    "firma": "Smart Digital Group Ltd",
+    "cik": "0002014955"
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2026-07-13",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001354457-26-000676 (25-NSE 2026-07-13)",
+    "firma": "Smart Digital Group Ltd",
+    "cik": "0002014955"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 290
+  },
+  {
+   "reihe": "SEAC",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-08-25",
+   "ankerDiffTage": 574,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2024-05-14",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-24-000333 (25-NSE 2024-05-14)",
+    "firma": "Screaming Eagle Acquisition Corp.",
+    "cik": "0001893325"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-08-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-23-205609 (8-K 2023-08-08)",
+    "firma": "SEACHANGE INTERNATIONAL INC",
+    "cik": "0001019671"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -17
+  },
+  {
+   "reihe": "SEEL",
+   "ankerAlt": "2024-11-15",
+   "ankerNeu": "2024-10-15",
+   "ankerDiffTage": 31,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-11-22",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001099910-24-000383 (8-K 2024-11-22)",
+    "firma": "SEELOS THERAPEUTICS, INC.",
+    "cik": "0001017491"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-11-22",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001099910-24-000383 (8-K 2024-11-22)",
+    "firma": "SEELOS THERAPEUTICS, INC.",
+    "cik": "0001017491"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 38
+  },
+  {
+   "reihe": "SGMO",
+   "ankerAlt": "2026-06-22",
+   "ankerNeu": "2026-05-04",
+   "ankerDiffTage": 49,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2026-06-23",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-26-278582 (8-K 2026-06-23)",
+    "firma": "SANGAMO THERAPEUTICS, INC",
+    "cik": "0001001233"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2026-06-23",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001193125-26-278582 (8-K 2026-06-23)",
+    "firma": "SANGAMO THERAPEUTICS, INC",
+    "cik": "0001001233"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 50
+  },
+  {
+   "reihe": "SING",
+   "ankerAlt": "2025-09-09",
+   "ankerNeu": "2024-09-10",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2025-09-12",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001493152-25-013123 (8-K 2025-09-12)",
+    "firma": "Bio Green Med Solution, Inc.",
+    "cik": "0001130166"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-30",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-095276 (8-K 2024-08-30)",
+    "firma": "Bio Green Med Solution, Inc.",
+    "cik": "0001130166"
+   },
+   "firmaZuPolygon": "WIDERSPRICHT (SinglePoint Inc.)",
+   "belegTageZumAnker": -11
+  },
+  {
+   "reihe": "SIOX",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-03-22",
+   "ankerDiffTage": 730,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-02-08",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001213900-24-011711 (8-K 2024-02-08)",
+    "firma": "Solidion Technology Inc.",
+    "cik": "0001881551"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-03-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001636050-23-000011 (8-K 2023-03-15)",
+    "firma": "Sio Gene Therapies Inc.",
+    "cik": "0001636050"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "SMFL",
+   "ankerAlt": "2025-09-17",
+   "ankerNeu": "2024-09-18",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-081099 (8-K 2024-09-23)",
+    "firma": "SMART FOR LIFE, INC.",
+    "cik": "0001851860"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-081099 (8-K 2024-09-23)",
+    "firma": "SMART FOR LIFE, INC.",
+    "cik": "0001851860"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 5
+  },
+  {
+   "reihe": "SMIT",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-01-13",
+   "ankerDiffTage": 798,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-26",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-24-016472 (8-K 2024-12-26)",
+    "firma": "CRESCENT BIOPHARMA, INC.",
+    "cik": "0001253689"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2022-10-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193805-22-001438 (8-K 2022-10-20)",
+    "firma": "SCHMITT INDUSTRIES INC",
+    "cik": "0000922612"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -85
+  },
+  {
+   "reihe": "SNAX",
+   "ankerAlt": "2026-02-04",
+   "ankerNeu": "2025-02-05",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-25-004974 (8-K 2025-02-05)",
+    "firma": "STRYVE FOODS, INC.",
+    "cik": "0001691936"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-05",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-25-004974 (8-K 2025-02-05)",
+    "firma": "STRYVE FOODS, INC.",
+    "cik": "0001691936"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "SNRH",
+   "ankerAlt": "2023-06-09",
+   "ankerNeu": "2023-06-02",
+   "ankerDiffTage": 7,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2023-06-23",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:56534546-af86-497b-9740-53199a452667",
+    "firma": "Senior Connect Acquisition Corp. I",
+    "cik": "0001823854"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2023-06-23",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:56534546-af86-497b-9740-53199a452667",
+    "firma": "Senior Connect Acquisition Corp. I",
+    "cik": "0001823854"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 21
+  },
+  {
+   "reihe": "SOFO",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-12-04",
+   "ankerDiffTage": 473,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-03-28",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001437749-24-009789 (8-K 2024-03-28)",
+    "firma": "SONIC FOUNDRY INC",
+    "cik": "0001029744"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-03-22",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001437749-24-008887 (8-K 2024-03-22)",
+    "firma": "SONIC FOUNDRY INC",
+    "cik": "0001029744"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 109
+  },
+  {
+   "reihe": "SONX",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-11-21",
+   "ankerDiffTage": 486,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-044507 (8-K 2024-04-15)",
+    "firma": "Sonendo, Inc.",
+    "cik": "0001407973"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-23-065525 (8-K 2023-11-21)",
+    "firma": "Sonendo, Inc.",
+    "cik": "0001407973"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "SPEC",
+   "ankerAlt": "2025-08-05",
+   "ankerNeu": "2024-08-06",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-06",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-065402 (8-K 2024-08-06)",
+    "firma": "Spectaire Holdings Inc.",
+    "cik": "0001844149"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2023-10-27",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001013762-23-007283 (8-K 2023-10-27)",
+    "firma": "Spectaire Holdings Inc.",
+    "cik": "0001844149"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -284
+  },
+  {
+   "reihe": "SPGC",
+   "ankerAlt": "2026-01-05",
+   "ankerNeu": "2025-03-14",
+   "ankerDiffTage": 297,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2026-04-09",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-26-015826 (8-K 2026-04-09)",
+    "firma": "Newton Golf Company, Inc.",
+    "cik": "0001934245"
+   },
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2025-03-17",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:f91ff62c-4395-4d0c-a845-8f10a93b279b",
+    "firma": "Newton Golf Company, Inc.",
+    "cik": "0001934245"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 3
+  },
+  {
+   "reihe": "SPLP",
+   "ankerAlt": "2026-04-30",
+   "ankerNeu": "2025-05-01",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-030805 (8-K 2025-04-11)",
+    "firma": "STEEL PARTNERS HOLDINGS L.P.",
+    "cik": "0001452857"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-030805 (8-K 2025-04-11)",
+    "firma": "STEEL PARTNERS HOLDINGS L.P.",
+    "cik": "0001452857"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -20
+  },
+  {
+   "reihe": "SRAX",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-03-08",
+   "ankerDiffTage": 744,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-11-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-047994 (8-K 2024-11-27)",
+    "firma": "GT Biopharma, Inc.",
+    "cik": "0000109657"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-03-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-23-007017 (8-K 2023-03-08)",
+    "firma": "SRAX, Inc.",
+    "cik": "0001538217"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "STAB",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-01-11",
+   "ankerDiffTage": 800,
+   "vergleich": "unbekannt-bekommt-grund",
+   "alt": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-01-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-23-001440 (8-K 2023-01-20)",
+    "firma": "Statera Biopharma, Inc.",
+    "cik": "0001318641"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 9
+  },
+  {
+   "reihe": "SUNL",
+   "ankerAlt": "2023-10-31",
+   "ankerNeu": "2023-09-25",
+   "ankerDiffTage": 36,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2023-10-31",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001104659-23-112707 (8-K 2023-10-31)",
+    "firma": "Sunlight Financial Holdings Inc.",
+    "cik": "0001821850"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2023-10-31",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001104659-23-112707 (8-K 2023-10-31)",
+    "firma": "Sunlight Financial Holdings Inc.",
+    "cik": "0001821850"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 36
+  },
+  {
+   "reihe": "SVVC",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-10-25",
+   "ankerDiffTage": 513,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-10-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001398344-23-019845 (8-K 2023-10-27)",
+    "firma": "Firsthand Technology Value Fund, Inc.",
+    "cik": "0001495584"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-10-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001398344-23-019845 (8-K 2023-10-27)",
+    "firma": "Firsthand Technology Value Fund, Inc.",
+    "cik": "0001495584"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 2
+  },
+  {
+   "reihe": "SYRA",
+   "ankerAlt": "2026-04-16",
+   "ankerNeu": "2025-04-17",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-041772 (8-K 2024-10-21)",
+    "firma": "Syra Health Corp",
+    "cik": "0001922335"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-21",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-24-041772 (8-K 2024-10-21)",
+    "firma": "Syra Health Corp",
+    "cik": "0001922335"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -178
+  },
+  {
+   "reihe": "SYRS",
+   "ankerAlt": "2026-03-18",
+   "ankerNeu": "2025-03-19",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-28",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-25-042498 (8-K 2025-02-28)",
+    "firma": "Syros Pharmaceuticals, Inc.",
+    "cik": "0001556263"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-28",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-25-042498 (8-K 2025-02-28)",
+    "firma": "Syros Pharmaceuticals, Inc.",
+    "cik": "0001556263"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -19
+  },
+  {
+   "reihe": "TBIO",
+   "ankerAlt": "2025-09-26",
+   "ankerNeu": "2024-09-27",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-105164 (8-K 2024-09-10)",
+    "firma": "Telesis Bio Inc.",
+    "cik": "0001850079"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-105164 (8-K 2024-09-10)",
+    "firma": "Telesis Bio Inc.",
+    "cik": "0001850079"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -17
+  },
+  {
+   "reihe": "TBLT",
+   "ankerAlt": "2025-08-07",
+   "ankerNeu": "2024-08-08",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-066541 (8-K 2024-08-08)",
+    "firma": "Toughbuilt Industries, Inc",
+    "cik": "0001668370"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-066541 (8-K 2024-08-08)",
+    "firma": "Toughbuilt Industries, Inc",
+    "cik": "0001668370"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "TCGL",
+   "ankerAlt": "2026-06-12",
+   "ankerNeu": "2026-01-30",
+   "ankerDiffTage": 133,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-12-12",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001214659-24-020448 (8-K 2024-12-12)",
+    "firma": "VerifyMe, Inc.",
+    "cik": "0001104038"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-12-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001214659-25-018223 (8-K 2025-12-18)",
+    "firma": "OpenWorld, Inc.",
+    "cik": "0001104038"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": -43
+  },
+  {
+   "reihe": "TCON",
+   "ankerAlt": "2024-12-03",
+   "ankerNeu": "2024-06-27",
+   "ankerDiffTage": 159,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2024-12-04",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:62ec3ba8-5576-4675-a404-66b211a08618",
+    "firma": "Tracon Pharmaceuticals, Inc.",
+    "cik": "0001394319"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-12",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-072265 (8-K 2024-06-12)",
+    "firma": "Tracon Pharmaceuticals, Inc.",
+    "cik": "0001394319"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -15
+  },
+  {
+   "reihe": "THMO",
+   "ankerAlt": "2025-06-13",
+   "ankerNeu": "2024-06-14",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-24-019942 (8-K 2024-06-11)",
+    "firma": "ThermoGenesis Holdings, Inc.",
+    "cik": "0000811212"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-06-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-24-019942 (8-K 2024-06-11)",
+    "firma": "ThermoGenesis Holdings, Inc.",
+    "cik": "0000811212"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -3
+  },
+  {
+   "reihe": "TIO",
+   "ankerAlt": "2024-02-28",
+   "ankerNeu": "2023-11-13",
+   "ankerDiffTage": 107,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2024-03-01",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:123173e4-786e-47cd-b923-1f36ea23dfd5",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2023-02-15",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001213900-23-012144 (8-K 2023-02-15)",
+    "firma": "Tingo Group, Inc.",
+    "cik": "0000854800"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": -271
+  },
+  {
+   "reihe": "TLIS",
+   "ankerAlt": "2025-08-29",
+   "ankerNeu": "2024-08-30",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-100200 (8-K 2024-08-23)",
+    "firma": "Talis Biomedical Corp",
+    "cik": "0001584751"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-08-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-100200 (8-K 2024-08-23)",
+    "firma": "Talis Biomedical Corp",
+    "cik": "0001584751"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "TMPO",
+   "ankerAlt": "2023-12-12",
+   "ankerNeu": "2023-11-01",
+   "ankerDiffTage": 41,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2023-12-14",
+    "beleg": "q-kuerzel",
+    "quelle": "alpaca-massnahmen:f950797a-d2be-49ae-aee8-61aba862c1c2",
+    "firma": "Tempo Automation Holdings, Inc.",
+    "cik": "0001813658"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-08-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-23-094401 (8-K 2023-08-23)",
+    "firma": "Tempo Automation Holdings, Inc.",
+    "cik": "0001813658"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -70
+  },
+  {
+   "reihe": "TPHS",
+   "ankerAlt": "2025-07-29",
+   "ankerNeu": "2024-07-30",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-31",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-084062 (8-K 2024-07-31)",
+    "firma": "Trinity Place Holdings Inc.",
+    "cik": "0000724742"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-07-31",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-084062 (8-K 2024-07-31)",
+    "firma": "Trinity Place Holdings Inc.",
+    "cik": "0000724742"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "TRCA",
+   "ankerAlt": "2023-11-10",
+   "ankerNeu": "2023-11-02",
+   "ankerDiffTage": 8,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2023-11-03",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:80f2c1a6-cad8-460c-a03e-86826d929a62",
+    "firma": "Twin Ridge Capital Acquisition Corp.",
+    "cik": "0001840353"
+   },
+   "neu": {
+    "grund": "umbenennung-ticker",
+    "datum": "2023-11-03",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:80f2c1a6-cad8-460c-a03e-86826d929a62",
+    "firma": "Twin Ridge Capital Acquisition Corp.",
+    "cik": "0001840353"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "TRVN",
+   "ankerAlt": "2025-10-06",
+   "ankerNeu": "2024-10-07",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-106265 (8-K 2024-10-04)",
+    "firma": "TREVENA INC",
+    "cik": "0001429560"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-04",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-24-106265 (8-K 2024-10-04)",
+    "firma": "TREVENA INC",
+    "cik": "0001429560"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -3
+  },
+  {
+   "reihe": "TTOO",
+   "ankerAlt": "2026-02-10",
+   "ankerNeu": "2025-02-11",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-25-024057 (8-K 2025-02-11)",
+    "firma": "T2 Biosystems, Inc.",
+    "cik": "0001492674"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-11",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-25-024057 (8-K 2025-02-11)",
+    "firma": "T2 Biosystems, Inc.",
+    "cik": "0001492674"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "TWCB",
+   "ankerAlt": "2023-07-25",
+   "ankerNeu": "2023-07-21",
+   "ankerDiffTage": 4,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2023-07-25",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-23-000535 (25-NSE 2023-07-25)",
+    "firma": "Bilander Acquisition Corp.",
+    "cik": "0001845618"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2023-07-25",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-23-000535 (25-NSE 2023-07-25)",
+    "firma": "Bilander Acquisition Corp.",
+    "cik": "0001845618"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 4
+  },
+  {
+   "reihe": "UNAM",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-06-14",
+   "ankerDiffTage": 646,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-30",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-013078 (8-K 2025-05-30)",
+    "firma": "Iveda Solutions, Inc.",
+    "cik": "0001397183"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2023-06-12",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001654954-23-007910 (8-K 2023-06-12)",
+    "firma": "UNICO AMERICAN CORP",
+    "cik": "0000100716"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -2
+  },
+  {
+   "reihe": "USDP",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-11-15",
+   "ankerDiffTage": 492,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001610682-23-000045 (8-K 2023-11-16)",
+    "firma": "USD Partners LP",
+    "cik": "0001610682"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001610682-23-000045 (8-K 2023-11-16)",
+    "firma": "USD Partners LP",
+    "cik": "0001610682"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "UTRS",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-12-28",
+   "ankerDiffTage": 449,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-23-070768 (8-K 2023-12-15)",
+    "firma": "MINERVA SURGICAL INC",
+    "cik": "0001452965"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-23-070768 (8-K 2023-12-15)",
+    "firma": "MINERVA SURGICAL INC",
+    "cik": "0001452965"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -13
+  },
+  {
+   "reihe": "VAPO",
+   "ankerAlt": "2024-10-17",
+   "ankerNeu": "2023-12-14",
+   "ankerDiffTage": 308,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-09-20",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:ea35d0e2-9716-40fe-b99a-25a13c9f1f3f",
+    "firma": "VAPOTHERM INC",
+    "cik": "0001253176"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-12-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-23-070508 (8-K 2023-12-15)",
+    "firma": "VAPOTHERM INC",
+    "cik": "0001253176"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "VAXX",
+   "ankerAlt": "2025-05-07",
+   "ankerNeu": "2024-05-08",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001562762-24-000094 (8-K 2024-04-19)",
+    "firma": "Vaxxinity, Inc.",
+    "cik": "0001851657"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-04-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001562762-24-000094 (8-K 2024-04-19)",
+    "firma": "Vaxxinity, Inc.",
+    "cik": "0001851657"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -19
+  },
+  {
+   "reihe": "VCNX",
+   "ankerAlt": "2025-12-16",
+   "ankerNeu": "2024-12-17",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-03-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-25-049988 (8-K 2025-03-07)",
+    "firma": "VACCINEX, INC.",
+    "cik": "0001205922"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-24-280155 (8-K 2024-12-17)",
+    "firma": "VACCINEX, INC.",
+    "cik": "0001205922"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "VERO",
+   "ankerAlt": "2026-04-08",
+   "ankerNeu": "2026-02-06",
+   "ankerDiffTage": 61,
+   "vergleich": "kippt-verliert-grund",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2026-04-15",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:22b674ae-2789-4968-8976-24a2ddb26503",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "firmaZuPolygon": "ohne Firma",
+   "belegTageZumAnker": null
+  },
+  {
+   "reihe": "VHAI",
+   "ankerAlt": "2025-09-09",
+   "ankerNeu": "2024-09-10",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-077387 (8-K 2024-09-10)",
+    "firma": "Vocodia Holdings Corp",
+    "cik": "0001880431"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-09-10",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-24-077387 (8-K 2024-09-10)",
+    "firma": "Vocodia Holdings Corp",
+    "cik": "0001880431"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "VINC",
+   "ankerAlt": "2026-04-21",
+   "ankerNeu": "2025-04-22",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-25-084406 (8-K 2025-04-17)",
+    "firma": "Vincerx Pharma, Inc.",
+    "cik": "0001796129"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-17",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001193125-25-084406 (8-K 2025-04-17)",
+    "firma": "Vincerx Pharma, Inc.",
+    "cik": "0001796129"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -5
+  },
+  {
+   "reihe": "VINO",
+   "ankerAlt": "2025-07-30",
+   "ankerNeu": "2024-11-21",
+   "ankerDiffTage": 251,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2025-06-20",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001641172-25-015685 (8-K 2025-06-20)",
+    "firma": "Gaucho Group Holdings, Inc.",
+    "cik": "0001559998"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-11-13",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001493152-24-045165 (8-K 2024-11-13)",
+    "firma": "Gaucho Group Holdings, Inc.",
+    "cik": "0001559998"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -8
+  },
+  {
+   "reihe": "VIRX",
+   "ankerAlt": "2025-08-18",
+   "ankerNeu": "2025-02-03",
+   "ankerDiffTage": 196,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-31",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-25-011792 (8-K 2025-01-31)",
+    "firma": "Viracta Therapeutics, Inc.",
+    "cik": "0001061027"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-31",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-25-011792 (8-K 2025-01-31)",
+    "firma": "Viracta Therapeutics, Inc.",
+    "cik": "0001061027"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -3
+  },
+  {
+   "reihe": "VISL",
+   "ankerAlt": "2026-02-06",
+   "ankerNeu": "2025-02-07",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-31",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-25-004429 (8-K 2025-01-31)",
+    "firma": "Vislink Technologies, Inc.",
+    "cik": "0001565228"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-31",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-25-004429 (8-K 2025-01-31)",
+    "firma": "Vislink Technologies, Inc.",
+    "cik": "0001565228"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "VIVE",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-01-18",
+   "ankerDiffTage": 793,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2023-11-07",
+    "beleg": "edgar-formular15",
+    "quelle": "EDGAR:0001193125-23-272551 (15-12G 2023-11-07)",
+    "firma": "F45 Training Holdings Inc.",
+    "cik": "0001788717"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-01-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-23-001184 (8-K 2023-01-18)",
+    "firma": "VIVEVE MEDICAL, INC.",
+    "cik": "0000879682"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "VRPX",
+   "ankerAlt": "2026-04-02",
+   "ankerNeu": "2025-04-03",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001731122-25-000524 (8-K/A 2025-04-03)",
+    "firma": "Virpax Pharmaceuticals, Inc.",
+    "cik": "0001708331"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-04-03",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001731122-25-000524 (8-K/A 2025-04-03)",
+    "firma": "Virpax Pharmaceuticals, Inc.",
+    "cik": "0001708331"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "VSTA",
+   "ankerAlt": "2026-07-27",
+   "ankerNeu": "2026-01-28",
+   "ankerDiffTage": 180,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2026-08-03",
+    "beleg": "alpaca-cash_mergers",
+    "quelle": "alpaca-massnahmen:4b2a77da-30b0-4902-bbcf-fe27bfc141e4",
+    "firma": "Vasta Platform Ltd",
+    "cik": "0001792829"
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2026-01-20",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0000950103-26-000644 (25 2026-01-20)",
+    "firma": "Vasta Platform Ltd",
+    "cik": "0001792829"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -8
+  },
+  {
+   "reihe": "VXRT",
+   "ankerAlt": "2026-07-06",
+   "ankerNeu": "2025-07-07",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-09-19",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-25-029485 (8-K 2025-09-19)",
+    "firma": "Vaxart, Inc.",
+    "cik": "0000072444"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-07-02",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001437749-25-021865 (8-K 2025-07-02)",
+    "firma": "Vaxart, Inc.",
+    "cik": "0000072444"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -5
+  },
+  {
+   "reihe": "VYNT",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-05-12",
+   "ankerDiffTage": 679,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "uebernahme",
+    "datum": "2024-03-01",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001104659-24-029661 (8-K 2024-03-01)",
+    "firma": "HEALTHPEAK PROPERTIES, INC.",
+    "cik": "0000765880"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-04-24",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-23-013369 (8-K 2023-04-24)",
+    "firma": "Vyant Bio, Inc.",
+    "cik": "0001349929"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -18
+  },
+  {
+   "reihe": "WAVS",
+   "ankerAlt": "2025-02-14",
+   "ankerNeu": "2025-01-22",
+   "ankerDiffTage": 23,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-02-14",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-014270 (8-K 2025-02-14)",
+    "firma": "Cycurion, Inc.",
+    "cik": "0001868419"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-01-23",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001104659-25-005631 (8-K 2025-01-23)",
+    "firma": "Cycurion, Inc.",
+    "cik": "0001868419"
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "WHLM",
+   "ankerAlt": "2025-12-26",
+   "ankerNeu": "2024-12-27",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-24-008895 (8-K 2024-12-20)",
+    "firma": "Wilhelmina International, Inc.",
+    "cik": "0001013706"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-12-20",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001683168-24-008895 (8-K 2024-12-20)",
+    "firma": "Wilhelmina International, Inc.",
+    "cik": "0001013706"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -7
+  },
+  {
+   "reihe": "WINV",
+   "ankerAlt": "2026-03-19",
+   "ankerNeu": "2025-03-20",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2025-07-18",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000697 (25-NSE 2025-07-18)",
+    "firma": "WinVest Acquisition Corp.",
+    "cik": "0001854463"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2025-07-18",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000697 (25-NSE 2025-07-18)",
+    "firma": "WinVest Acquisition Corp.",
+    "cik": "0001854463"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 120
+  },
+  {
+   "reihe": "WTER",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2024-02-05",
+   "ankerDiffTage": 410,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-28",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001062993-23-021510 (8-K 2023-11-28)",
+    "firma": "ALKALINE WATER Co INC",
+    "cik": "0001532390"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-28",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001062993-23-021510 (8-K 2023-11-28)",
+    "firma": "ALKALINE WATER Co INC",
+    "cik": "0001532390"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -69
+  },
+  {
+   "reihe": "XELA",
+   "ankerAlt": "2025-11-06",
+   "ankerNeu": "2024-11-07",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-11-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-24-014731 (8-K 2024-11-07)",
+    "firma": "Exela Technologies, Inc.",
+    "cik": "0001620179"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-11-07",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001558370-24-014731 (8-K 2024-11-07)",
+    "firma": "Exela Technologies, Inc.",
+    "cik": "0001620179"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  },
+  {
+   "reihe": "XTKG",
+   "ankerAlt": "2026-05-06",
+   "ankerNeu": "2026-04-01",
+   "ankerDiffTage": 35,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "freiwillig",
+    "datum": "2026-07-14",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001354457-26-000683 (25-NSE 2026-07-14)",
+    "firma": "X3 Holdings Co., Ltd.",
+    "cik": "0001754323"
+   },
+   "neu": {
+    "grund": "freiwillig",
+    "datum": "2026-07-14",
+    "beleg": "edgar-formular25",
+    "quelle": "EDGAR:0001354457-26-000683 (25-NSE 2026-07-14)",
+    "firma": "X3 Holdings Co., Ltd.",
+    "cik": "0001754323"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 104
+  },
+  {
+   "reihe": "YGF",
+   "ankerAlt": "2024-03-22",
+   "ankerNeu": "2024-02-08",
+   "ankerDiffTage": 43,
+   "vergleich": "kippt-verliert-grund",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2024-03-26",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:0310c7ad-0a45-4e5d-a9d7-3efeec3edd9a",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": null
+  },
+  {
+   "reihe": "YNDX",
+   "ankerAlt": "2024-08-19",
+   "ankerNeu": "2022-02-28",
+   "ankerDiffTage": 903,
+   "vergleich": "kippt-verliert-grund",
+   "alt": {
+    "grund": "umbenennung-ticker",
+    "datum": "2024-08-21",
+    "beleg": "alpaca-name_changes",
+    "quelle": "alpaca-massnahmen:5487d127-ede6-4644-a537-c8e1e18d2a4d",
+    "firma": null,
+    "cik": null
+   },
+   "neu": {
+    "grund": "unbekannt",
+    "datum": null,
+    "beleg": "massnahme-passt-nicht",
+    "quelle": null,
+    "firma": null,
+    "cik": null
+   },
+   "firmaZuPolygon": "kein Aussenanker",
+   "belegTageZumAnker": null
+  },
+  {
+   "reihe": "YOTA",
+   "ankerAlt": "2026-04-24",
+   "ankerNeu": "2025-04-25",
+   "ankerDiffTage": 364,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "spac-ende",
+    "datum": "2025-07-14",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000658 (25-NSE 2025-07-14)",
+    "firma": "Yotta Acquisition Corp",
+    "cik": "0001907730"
+   },
+   "neu": {
+    "grund": "spac-ende",
+    "datum": "2025-07-14",
+    "beleg": "edgar-mantel+abmeldung",
+    "quelle": "EDGAR:0001354457-25-000658 (25-NSE 2025-07-14)",
+    "firma": "Yotta Acquisition Corp",
+    "cik": "0001907730"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 80
+  },
+  {
+   "reihe": "YTEN",
+   "ankerAlt": "2024-12-06",
+   "ankerNeu": "2024-05-15",
+   "ankerDiffTage": 205,
+   "vergleich": "gleich",
+   "alt": {
+    "grund": "insolvenz",
+    "datum": "2024-12-06",
+    "beleg": "q-kuerzel+edgar-8K-1.03",
+    "quelle": "EDGAR:0001121702-24-000093 (8-K 2024-12-06)",
+    "firma": "YIELD10 BIOSCIENCE, INC.",
+    "cik": "0001121702"
+   },
+   "neu": {
+    "grund": "insolvenz",
+    "datum": "2024-12-06",
+    "beleg": "edgar-8K-1.03",
+    "quelle": "EDGAR:0001121702-24-000093 (8-K 2024-12-06)",
+    "firma": "YIELD10 BIOSCIENCE, INC.",
+    "cik": "0001121702"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 205
+  },
+  {
+   "reihe": "ZCAR",
+   "ankerAlt": "2026-05-06",
+   "ankerNeu": "2025-05-07",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-08-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-073658 (8-K 2025-08-08)",
+    "firma": "Zoomcar Holdings, Inc.",
+    "cik": "0001854275"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-05-08",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001213900-25-040800 (8-K 2025-05-08)",
+    "firma": "Zoomcar Holdings, Inc.",
+    "cik": "0001854275"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 1
+  },
+  {
+   "reihe": "ZIVO",
+   "ankerAlt": "2025-03-21",
+   "ankerNeu": "2023-11-24",
+   "ankerDiffTage": 483,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-02-15",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001654954-24-001856 (8-K 2024-02-15)",
+    "firma": "Zivo Bioscience, Inc.",
+    "cik": "0001101026"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2023-11-27",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001654954-23-014775 (8-K 2023-11-27)",
+    "firma": "Zivo Bioscience, Inc.",
+    "cik": "0001101026"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 3
+  },
+  {
+   "reihe": "ZPTA",
+   "ankerAlt": "2025-10-24",
+   "ankerNeu": "2024-10-25",
+   "ankerDiffTage": 364,
+   "vergleich": "kippt",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2024-10-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0000950170-24-115639 (8-K 2024-10-18)",
+    "firma": "Zapata Quantum, Inc.",
+    "cik": "0001843714"
+   },
+   "neu": {
+    "grund": "uebernahme",
+    "datum": "2024-04-03",
+    "beleg": "edgar-8K-2.01+prospekt",
+    "quelle": "EDGAR:0001193125-24-085161 (8-K 2024-04-03)",
+    "firma": "Zapata Quantum, Inc.",
+    "cik": "0001843714"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": -205
+  },
+  {
+   "reihe": "ZVSA",
+   "ankerAlt": "2026-07-15",
+   "ankerNeu": "2025-07-16",
+   "ankerDiffTage": 364,
+   "vergleich": "gleicher-grund-anderer-beleg",
+   "alt": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-09-18",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001493152-25-013968 (8-K 2025-09-18)",
+    "firma": "ZyVersa Therapeutics, Inc.",
+    "cik": "0001859007"
+   },
+   "neu": {
+    "grund": "zwangs-delisting",
+    "datum": "2025-07-16",
+    "beleg": "edgar-8K-3.01",
+    "quelle": "EDGAR:0001641172-25-019856 (8-K 2025-07-16)",
+    "firma": "ZyVersa Therapeutics, Inc.",
+    "cik": "0001859007"
+   },
+   "firmaZuPolygon": "passt",
+   "belegTageZumAnker": 0
+  }
+ ]
+}

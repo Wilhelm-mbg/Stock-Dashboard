@@ -1,0 +1,28 @@
+{
+ "stand": "2026-10-04T10:45:33.891Z",
+ "zeilenJeLuecke": 38,
+ "basisKuerzelMitMehrAlsEinemAbschnitt": 173,
+ "abschnittsAnfaenge": 182,
+ "jeBeginn": {
+  "luecke": 141,
+  "archiv-zweite-reihe": 3,
+  "kuerzelwechsel": 38
+ },
+ "vomMinutenLeserGetrennt": 3,
+ "betroffeneAnfaenge": 179,
+ "betroffeneBasisKuerzel": 171,
+ "panelTage": 6616,
+ "davonKlasse123inV21": 391,
+ "davonKlasse23inV21": 55,
+ "davonKlasse123inV22": 0,
+ "anfaengeMitKlasse123inV21": 15,
+ "anfaengeMitWenigerAls38Zeilen": 8,
+ "zeilenOhneV21Treffer": 0,
+ "klasseNachAnlauf": {
+  "0": 40,
+  "1": 8,
+  "2": 2,
+  "-1": 120,
+  "null": 9
+ }
+}

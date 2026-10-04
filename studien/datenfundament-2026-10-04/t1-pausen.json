@@ -1,0 +1,151 @@
+{
+ "stand": "2026-10-04T10:45:33.891Z",
+ "panel": "querschnitt-pruefstand-2026-09-13/panel/v2.2",
+ "hinweis": "Pause = Handelstage ohne Panelzeile zwischen zwei Zeilen derselben Reihe (v2.2: nie ueber 90 Kalendertage). falschTot = Reihen-Tage im Fenster, an denen die Regel \"mehr als X Handelstage ohne Minuten = abgegangen\" eine weiterlaufende Reihe fuer abgegangen gehalten haette.",
+ "zahlen": {
+  "fensterTage": 250,
+  "von": "2025-09-17",
+  "bis": "2026-09-15",
+  "jeX": {
+   "0": {
+    "pausenImFenster": 821,
+    "reihenMitPause": 84,
+    "falschTotReihentage": 1519,
+    "falschTotReihentageK123": 1,
+    "pausenK123": 1,
+    "falschTotJeTag": 6.076,
+    "falschTotJeTagK123": 0.004
+   },
+   "1": {
+    "pausenImFenster": 311,
+    "reihenMitPause": 50,
+    "falschTotReihentage": 709,
+    "falschTotReihentageK123": 0,
+    "pausenK123": 0,
+    "falschTotJeTag": 2.836,
+    "falschTotJeTagK123": 0
+   },
+   "2": {
+    "pausenImFenster": 150,
+    "reihenMitPause": 36,
+    "falschTotReihentage": 403,
+    "falschTotReihentageK123": 0,
+    "pausenK123": 0,
+    "falschTotJeTag": 1.612,
+    "falschTotJeTagK123": 0
+   },
+   "3": {
+    "pausenImFenster": 75,
+    "reihenMitPause": 26,
+    "falschTotReihentage": 258,
+    "falschTotReihentageK123": 0,
+    "pausenK123": 0,
+    "falschTotJeTag": 1.032,
+    "falschTotJeTagK123": 0
+   },
+   "5": {
+    "pausenImFenster": 39,
+    "reihenMitPause": 19,
+    "falschTotReihentage": 138,
+    "falschTotReihentageK123": 0,
+    "pausenK123": 0,
+    "falschTotJeTag": 0.552,
+    "falschTotJeTagK123": 0
+   },
+   "10": {
+    "pausenImFenster": 8,
+    "reihenMitPause": 8,
+    "falschTotReihentage": 41,
+    "falschTotReihentageK123": 0,
+    "pausenK123": 0,
+    "falschTotJeTag": 0.164,
+    "falschTotJeTagK123": 0
+   },
+   "20": {
+    "pausenImFenster": 2,
+    "reihenMitPause": 2,
+    "falschTotReihentage": 9,
+    "falschTotReihentageK123": 0,
+    "pausenK123": 0,
+    "falschTotJeTag": 0.036,
+    "falschTotJeTagK123": 0
+   },
+   "40": {
+    "pausenImFenster": 0,
+    "reihenMitPause": 0,
+    "falschTotReihentage": 0,
+    "falschTotReihentageK123": 0,
+    "pausenK123": 0,
+    "falschTotJeTag": 0,
+    "falschTotJeTagK123": 0
+   }
+  },
+  "pausenUeber10Handelstage": 9,
+  "echteEndenImFenster": 576
+ },
+ "laengste": [
+  {
+   "reihe": "OAKU",
+   "von": "2026-02-12",
+   "bis": "2026-03-23",
+   "handelstageOhneZeile": 25,
+   "klasseDavor": -1
+  },
+  {
+   "reihe": "AREB",
+   "von": "2026-03-20",
+   "bis": "2026-04-27",
+   "handelstageOhneZeile": 24,
+   "klasseDavor": -1
+  },
+  {
+   "reihe": "DYCQ",
+   "von": "2025-08-20",
+   "bis": "2025-09-19",
+   "handelstageOhneZeile": 20,
+   "klasseDavor": -1
+  },
+  {
+   "reihe": "OAKU",
+   "von": "2025-08-19",
+   "bis": "2025-09-17",
+   "handelstageOhneZeile": 19,
+   "klasseDavor": -1
+  },
+  {
+   "reihe": "FORL",
+   "von": "2025-08-27",
+   "bis": "2025-09-19",
+   "handelstageOhneZeile": 15,
+   "klasseDavor": -1
+  },
+  {
+   "reihe": "ATMC",
+   "von": "2025-10-29",
+   "bis": "2025-11-18",
+   "handelstageOhneZeile": 13,
+   "klasseDavor": -1
+  },
+  {
+   "reihe": "ALCY",
+   "von": "2025-11-11",
+   "bis": "2025-12-01",
+   "handelstageOhneZeile": 12,
+   "klasseDavor": -1
+  },
+  {
+   "reihe": "KVAC",
+   "von": "2025-11-06",
+   "bis": "2025-11-25",
+   "handelstageOhneZeile": 12,
+   "klasseDavor": -1
+  },
+  {
+   "reihe": "HSPO",
+   "von": "2025-09-18",
+   "bis": "2025-10-06",
+   "handelstageOhneZeile": 11,
+   "klasseDavor": -1
+  }
+ ]
+}

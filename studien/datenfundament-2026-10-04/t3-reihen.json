@@ -1,0 +1,7362 @@
+{
+ "stand": "2026-10-04T10:45:33.891Z",
+ "x": 10,
+ "hinweis": "Panel-Reihen, deren Stand (lebend, ende_grund, ende_datum) nach T1/T2 anders waere. k123/k23 = Zeilen in Klasse 1-3 bzw. 2-3 unter den letzten 250.",
+ "reihen": [
+  {
+   "reihe": "EQR",
+   "leserReihe": "EQR",
+   "zeilen": 2670,
+   "letztePanelzeile": "2026-08-17",
+   "letzterMinutentag": "2026-08-17",
+   "letzterTagesbalken": "2026-08-17",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-08-18"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-08-18"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": false,
+    "datum": false
+   },
+   "k123": 250,
+   "k23": 0,
+   "maxKlasse": 1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": null,
+   "quelleNeu": null,
+   "neuInTafel": null
+  },
+  {
+   "reihe": "SBNY",
+   "leserReihe": "SBNY",
+   "zeilen": 1809,
+   "letztePanelzeile": "2023-03-10",
+   "letzterMinutentag": "2023-03-13",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-01-17"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2023-06-16"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 250,
+   "k23": 48,
+   "maxKlasse": 2,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0001143362-23-000254 (25-NSE 2023-06-16)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "WBS",
+   "leserReihe": "WBS",
+   "zeilen": 2671,
+   "letztePanelzeile": "2026-08-19",
+   "letzterMinutentag": "2026-08-19",
+   "letzterTagesbalken": "2026-08-19",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2026-08-21"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 250,
+   "k23": 17,
+   "maxKlasse": 2,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-stock_and_cash_mergers",
+   "quelleNeu": "alpaca-massnahmen:3b89dc3f-ef15-4553-a92c-782c76098816",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "YNDX",
+   "leserReihe": "YNDX",
+   "zeilen": 1549,
+   "letztePanelzeile": "2022-02-25",
+   "letzterMinutentag": "2022-02-28",
+   "letzterTagesbalken": "2024-08-19",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2024-08-21"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 250,
+   "k23": 0,
+   "maxKlasse": 1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "massnahme-passt-nicht",
+   "quelleNeu": null,
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LBRDK",
+   "leserReihe": "LBRDK",
+   "zeilen": 2672,
+   "letztePanelzeile": "2026-08-19",
+   "letzterMinutentag": "2026-08-19",
+   "letzterTagesbalken": "2026-08-19",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "fusion-aktientausch",
+    "ende_datum": "2026-08-20"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 240,
+   "k23": 0,
+   "maxKlasse": 1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-stock_mergers",
+   "quelleNeu": "alpaca-massnahmen:bad1a3b9-d57e-4e7e-a077-06913f1cbd90",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "APGE",
+   "leserReihe": "APGE",
+   "zeilen": 788,
+   "letztePanelzeile": "2026-09-02",
+   "letzterMinutentag": "2026-09-02",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2026-09-03"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 160,
+   "k23": 0,
+   "maxKlasse": 1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-cash_mergers",
+   "quelleNeu": "alpaca-massnahmen:8f4ccf91-693d-4581-9956-adc13537e1db",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "CRNX",
+   "leserReihe": "CRNX",
+   "zeilen": 2041,
+   "letztePanelzeile": "2026-08-31",
+   "letzterMinutentag": "2026-08-31",
+   "letzterTagesbalken": "2026-08-31",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2026-09-02"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 21,
+   "k23": 0,
+   "maxKlasse": 1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-cash_mergers",
+   "quelleNeu": "alpaca-massnahmen:069b9a15-c0d0-44cc-ad28-dc4ba67e4c6f",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "AACB",
+   "leserReihe": "AACB",
+   "zeilen": 243,
+   "letztePanelzeile": "2026-08-19",
+   "letzterMinutentag": "2026-08-19",
+   "letzterTagesbalken": "2026-08-19",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2026-08-25"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-cash_mergers",
+   "quelleNeu": "alpaca-massnahmen:68077bc5-9c78-4334-9f2d-414f08f7f32c",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "AATC",
+   "leserReihe": "AATC",
+   "zeilen": 1733,
+   "letztePanelzeile": "2022-12-29",
+   "letzterMinutentag": "2022-12-29",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2022-12-21"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000897101-22-001055 (8-K 2022-12-21)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ACER",
+   "leserReihe": "ACER",
+   "zeilen": 1977,
+   "letztePanelzeile": "2023-11-08",
+   "letzterMinutentag": "2023-11-08",
+   "letzterTagesbalken": "2024-10-17",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2023-11-20"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "fusion-aktientausch",
+    "ende_datum": "2023-11-21"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-stock_mergers",
+   "quelleNeu": "alpaca-massnahmen:d7e20bed-2eb0-486f-a9b4-d6220bc28072",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ADTX",
+   "leserReihe": "ADTX",
+   "zeilen": 1503,
+   "letztePanelzeile": "2026-06-24",
+   "letzterMinutentag": "2026-06-24",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-06-24"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-26-071380 (8-K 2026-06-24)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "ADXS",
+   "leserReihe": "ADXS",
+   "zeilen": 1505,
+   "letztePanelzeile": "2021-12-22",
+   "letzterMinutentag": "2021-12-22",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2024-05-09"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2021-12-22"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-21-032280 (8-K 2021-12-22)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "AFIB",
+   "leserReihe": "AFIB",
+   "zeilen": 945,
+   "letztePanelzeile": "2024-05-08",
+   "letzterMinutentag": "2024-05-08",
+   "letzterTagesbalken": "2025-05-07",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-05-17"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-05-03"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001628280-24-020272 (8-K 2024-05-03)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "AGRX",
+   "leserReihe": "AGRX",
+   "zeilen": 2069,
+   "letztePanelzeile": "2024-03-25",
+   "letzterMinutentag": "2024-03-25",
+   "letzterTagesbalken": "2025-03-24",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-08-26"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-03-25"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001558370-24-003854 (8-K 2024-03-25)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "AHI",
+   "leserReihe": "AHI",
+   "zeilen": 539,
+   "letztePanelzeile": "2024-01-31",
+   "letzterMinutentag": "2024-01-31",
+   "letzterTagesbalken": "2024-07-26",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-01-10"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-11-09"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-23-040048 (8-K 2023-11-09)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "AIEV",
+   "leserReihe": "AIEV",
+   "zeilen": 534,
+   "letztePanelzeile": "2025-04-21",
+   "letzterMinutentag": "2025-04-21",
+   "letzterTagesbalken": "2026-04-20",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-21"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-08-06"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001213900-24-065349 (8-K/A 2024-08-06)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ALCE",
+   "leserReihe": "ALCE",
+   "zeilen": 570,
+   "letztePanelzeile": "2025-02-11",
+   "letzterMinutentag": "2025-02-11",
+   "letzterTagesbalken": "2026-02-10",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-02-12"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-12-12"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001213900-24-108423 (8-K 2024-12-12)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ALJJ",
+   "leserReihe": "ALJJ",
+   "zeilen": 1576,
+   "letztePanelzeile": "2022-09-09",
+   "letzterMinutentag": "2022-09-09",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2022-04-14"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001564590-22-014465 (8-K 2022-04-14)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ALUR",
+   "leserReihe": "ALUR",
+   "zeilen": 651,
+   "letztePanelzeile": "2026-03-06",
+   "letzterMinutentag": "2026-03-06",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-03-02"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-26-084412 (8-K 2026-03-02)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "ANEB",
+   "leserReihe": "ANEB",
+   "zeilen": 1136,
+   "letztePanelzeile": "2026-02-27",
+   "letzterMinutentag": "2026-02-27",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-02-06"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-26-005463 (8-K 2026-02-06)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "ARDS",
+   "leserReihe": "ARDS",
+   "zeilen": 1223,
+   "letztePanelzeile": "2023-07-18",
+   "letzterMinutentag": "2023-07-18",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-05-13"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-07-18"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-23-024769 (8-K 2023-07-18)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "AREB",
+   "leserReihe": "AREB",
+   "zeilen": 1045,
+   "letztePanelzeile": "2026-05-12",
+   "letzterMinutentag": "2026-05-12",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-03-27"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-26-013122 (8-K 2026-03-27)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "ASAP",
+   "leserReihe": "ASAP",
+   "zeilen": 1424,
+   "letztePanelzeile": "2023-02-01",
+   "letzterMinutentag": "2023-02-01",
+   "letzterTagesbalken": "2024-04-01",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-04-02"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-01-24"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001653247-23-000013 (8-K 2023-01-24)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ASNS",
+   "leserReihe": "ASNS",
+   "zeilen": 977,
+   "letztePanelzeile": "2026-04-09",
+   "letzterMinutentag": "2026-04-09",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-04-09"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-26-041856 (8-K 2026-04-09)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "ASPU",
+   "leserReihe": "ASPU",
+   "zeilen": 1421,
+   "letztePanelzeile": "2023-03-30",
+   "letzterMinutentag": "2023-03-30",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-05-23"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2022-10-03"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001079973-22-001258 (8-K 2022-10-03)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ATEK",
+   "leserReihe": "ATEK",
+   "zeilen": 489,
+   "letztePanelzeile": "2024-12-09",
+   "letzterMinutentag": "2024-12-09",
+   "letzterTagesbalken": "2025-12-08",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "spac-ende",
+    "ende_datum": "2024-12-19"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2023-12-14"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001213900-23-095519 (8-K 2023-12-14)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ATIP",
+   "leserReihe": "ATIP",
+   "zeilen": 1044,
+   "letztePanelzeile": "2024-12-03",
+   "letzterMinutentag": "2024-12-03",
+   "letzterTagesbalken": "2025-12-02",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2025-09-05"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-12-03"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001815849-24-000063 (8-K 2024-12-03)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "AVHI~2",
+   "leserReihe": "AVHI",
+   "zeilen": 249,
+   "letztePanelzeile": "2024-04-08",
+   "letzterMinutentag": "2024-04-08",
+   "letzterTagesbalken": "2025-04-07",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-09-06"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-06-11"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-24-051753 (8-K 2024-06-11)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "AXAC",
+   "leserReihe": "AXAC",
+   "zeilen": 224,
+   "letztePanelzeile": "2023-05-17",
+   "letzterMinutentag": "2023-05-17",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "spac-ende",
+    "ende_datum": "2023-05-22"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-mantel+abmeldung",
+   "quelleNeu": "EDGAR:0000876661-23-000423 (25-NSE 2023-05-22)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "AXAS",
+   "leserReihe": "AXAS",
+   "zeilen": 1406,
+   "letztePanelzeile": "2021-08-03",
+   "letzterMinutentag": "2021-08-03",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2021-07-30"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-21-018005 (8-K 2021-07-30)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "BBIG",
+   "leserReihe": "BBIG",
+   "zeilen": 1306,
+   "letztePanelzeile": "2023-07-27",
+   "letzterMinutentag": "2023-07-27",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-07-12"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-07-21"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-23-025134 (8-K 2023-07-21)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "BCEL",
+   "leserReihe": "BCEL",
+   "zeilen": 1194,
+   "letztePanelzeile": "2024-03-18",
+   "letzterMinutentag": "2024-03-18",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-02-27"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-03-11"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-24-032973 (8-K 2024-03-11)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "BGXX",
+   "leserReihe": "BGXX",
+   "zeilen": 588,
+   "letztePanelzeile": "2024-09-18",
+   "letzterMinutentag": "2024-09-18",
+   "letzterTagesbalken": "2025-02-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2025-02-27"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2025-01-28"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-1.03",
+   "quelleNeu": "EDGAR:0001493152-25-003865 (8-K 2025-01-28)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "BHAC~2",
+   "leserReihe": "BHAC",
+   "zeilen": 418,
+   "letztePanelzeile": "2024-10-09",
+   "letzterMinutentag": "2024-10-09",
+   "letzterTagesbalken": "2025-06-06",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "fusion-aktientausch",
+    "ende_datum": "2025-06-06"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "spac-ende",
+    "ende_datum": "2025-02-12"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-mantel+abmeldung",
+   "quelleNeu": "EDGAR:0001354457-25-000091 (25-NSE 2025-02-12)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "BINI",
+   "leserReihe": "BINI",
+   "zeilen": 2359,
+   "letztePanelzeile": "2025-10-10",
+   "letzterMinutentag": "2025-10-10",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-10-10"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001829126-25-008053 (8-K 2025-10-10)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "BKSC",
+   "leserReihe": "BKSC",
+   "zeilen": 1837,
+   "letztePanelzeile": "2023-09-14",
+   "letzterMinutentag": "2023-09-14",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-08-24"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000950170-23-044275 (8-K 2023-08-24)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "BLCM",
+   "leserReihe": "BLCM",
+   "zeilen": 1866,
+   "letztePanelzeile": "2023-06-01",
+   "letzterMinutentag": "2023-06-01",
+   "letzterTagesbalken": "2024-03-27",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2024-03-28"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-05-30"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001628280-23-020109 (8-K 2023-05-30)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "BLPH",
+   "leserReihe": "BLPH",
+   "zeilen": 1958,
+   "letztePanelzeile": "2023-10-13",
+   "letzterMinutentag": "2023-10-13",
+   "letzterTagesbalken": "2024-12-18",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-12-19"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-10-13"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-23-108988 (8-K 2023-10-13)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "BNBX",
+   "leserReihe": "BNBX",
+   "zeilen": 2643,
+   "letztePanelzeile": "2026-07-13",
+   "letzterMinutentag": "2026-07-13",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-07-13"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-26-082893 (8-K 2026-07-13)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "BOWN",
+   "leserReihe": "BOWN",
+   "zeilen": 365,
+   "letztePanelzeile": "2025-07-15",
+   "letzterMinutentag": "2025-07-15",
+   "letzterTagesbalken": "2026-07-14",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "spac-ende",
+    "ende_datum": "2026-07-13"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-07-18"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001641172-25-020251 (8-K 2025-07-18)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "BSLK",
+   "leserReihe": "BSLK",
+   "zeilen": 846,
+   "letztePanelzeile": "2026-01-02",
+   "letzterMinutentag": "2026-01-02",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-01-05"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001841125-26-000003 (8-K 2026-01-05)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "BTCY",
+   "leserReihe": "BTCY",
+   "zeilen": 738,
+   "letztePanelzeile": "2024-08-02",
+   "letzterMinutentag": "2024-08-02",
+   "letzterTagesbalken": "2025-08-01",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-07"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-01"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-24-029939 (8-K 2024-08-01)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CALA",
+   "leserReihe": "CALA",
+   "zeilen": 1783,
+   "letztePanelzeile": "2023-02-01",
+   "letzterMinutentag": "2023-02-01",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2025-06-23"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-01-25"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-23-014684 (8-K 2023-01-25)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CARM",
+   "leserReihe": "CARM",
+   "zeilen": 2458,
+   "letztePanelzeile": "2025-10-10",
+   "letzterMinutentag": "2025-10-10",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-10-09"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-25-098404 (8-K 2025-10-09)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "CAUD",
+   "leserReihe": "CAUD",
+   "zeilen": 455,
+   "letztePanelzeile": "2024-08-15",
+   "letzterMinutentag": "2024-08-15",
+   "letzterTagesbalken": "2025-08-14",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2025-09-05"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-15"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-24-069733 (8-K 2024-08-15)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CERO",
+   "leserReihe": "CERO",
+   "zeilen": 767,
+   "letztePanelzeile": "2025-10-30",
+   "letzterMinutentag": "2025-10-30",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-10-30"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-25-103661 (8-K 2025-10-30)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "CHRA",
+   "leserReihe": "CHRA",
+   "zeilen": 1208,
+   "letztePanelzeile": "2023-04-03",
+   "letzterMinutentag": "2023-04-03",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2025-07-01"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-04-03"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001730346-23-000015 (8-K 2023-04-03)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CMCSV",
+   "leserReihe": "CMCSV",
+   "zeilen": 7,
+   "letztePanelzeile": "2025-12-23",
+   "letzterMinutentag": "2025-12-23",
+   "letzterTagesbalken": "2026-01-02",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2026-09-14"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0001354457-26-000874 (25-NSE 2026-09-14)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CMLS",
+   "leserReihe": "CMLS",
+   "zeilen": 1686,
+   "letztePanelzeile": "2025-05-01",
+   "letzterMinutentag": "2025-05-01",
+   "letzterTagesbalken": "2026-03-04",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2026-03-05"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-23"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001058623-25-000039 (8-K 2025-04-23)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CNTM",
+   "leserReihe": "CNTM",
+   "zeilen": 499,
+   "letztePanelzeile": "2025-05-07",
+   "letzterMinutentag": "2025-05-07",
+   "letzterTagesbalken": "2026-04-17",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-23"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-11-21"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001104659-24-121588 (8-K/A 2024-11-21)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CORR",
+   "leserReihe": "CORR",
+   "zeilen": 1993,
+   "letztePanelzeile": "2023-12-01",
+   "letzterMinutentag": "2023-12-01",
+   "letzterTagesbalken": "2024-02-23",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-02-27"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-02-26"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-1.03",
+   "quelleNeu": "EDGAR:0001347652-24-000017 (8-K 2024-02-26)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CREG",
+   "leserReihe": "CREG",
+   "zeilen": 2550,
+   "letztePanelzeile": "2026-07-20",
+   "letzterMinutentag": "2026-07-20",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-07-20"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-26-079598 (8-K 2026-07-20)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "CTHR",
+   "leserReihe": "CTHR",
+   "zeilen": 2340,
+   "letztePanelzeile": "2025-04-24",
+   "letzterMinutentag": "2025-04-24",
+   "letzterTagesbalken": "2026-03-03",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2026-03-04"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-22"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-25-037514 (8-K 2025-04-22)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CWBR",
+   "leserReihe": "CWBR",
+   "zeilen": 1495,
+   "letztePanelzeile": "2023-11-28",
+   "letzterMinutentag": "2023-11-28",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2025-01-06"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-11-27"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-23-090274 (8-K 2023-11-27)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "CXDC",
+   "leserReihe": "CXDC",
+   "zeilen": 1459,
+   "letztePanelzeile": "2021-10-28",
+   "letzterMinutentag": "2021-10-28",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2021-10-28"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-21-026630 (8-K 2021-10-28)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "DGLY",
+   "leserReihe": "DGLY",
+   "zeilen": 2516,
+   "letztePanelzeile": "2026-01-07",
+   "letzterMinutentag": "2026-01-07",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-01-08"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-name_changes",
+   "quelleNeu": "alpaca-massnahmen:7847f10c-0550-4475-8a62-1d0b66593d5e",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "DHAI",
+   "leserReihe": "DHAI",
+   "zeilen": 438,
+   "letztePanelzeile": "2025-11-06",
+   "letzterMinutentag": "2025-11-06",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-11-06"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-25-020954 (8-K 2025-11-06)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "DMYY",
+   "leserReihe": "DMYY",
+   "zeilen": 416,
+   "letztePanelzeile": "2025-09-29",
+   "letzterMinutentag": "2025-09-29",
+   "letzterTagesbalken": "2026-03-19",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-03-20"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-09-29"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001829126-25-007696 (8-K 2025-09-29)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "DYNT",
+   "leserReihe": "DYNT",
+   "zeilen": 2029,
+   "letztePanelzeile": "2024-07-08",
+   "letzterMinutentag": "2024-07-08",
+   "letzterTagesbalken": "2025-07-07",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2026-01-12"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-06-28"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001062993-24-013111 (8-K 2024-06-28)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ECDA",
+   "leserReihe": "ECDA",
+   "zeilen": 689,
+   "letztePanelzeile": "2026-01-15",
+   "letzterMinutentag": "2026-01-15",
+   "letzterTagesbalken": "2026-03-19",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2026-04-13"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-01-15"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-26-001367 (8-K 2026-01-15)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "EDTX~2",
+   "leserReihe": "EDTX",
+   "zeilen": 396,
+   "letztePanelzeile": "2023-07-14",
+   "letzterMinutentag": "2023-07-14",
+   "letzterTagesbalken": "2023-08-31",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2023-09-01"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "spac-ende",
+    "ende_datum": "2023-09-05"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-mantel+abmeldung",
+   "quelleNeu": "EDGAR:0001213900-23-073913 (15-12G 2023-09-05)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "EGRX",
+   "leserReihe": "EGRX",
+   "zeilen": 2202,
+   "letztePanelzeile": "2024-10-02",
+   "letzterMinutentag": "2024-10-02",
+   "letzterTagesbalken": "2025-10-01",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-11-15"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-10-02"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-24-105232 (8-K 2024-10-02)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ELIQ",
+   "leserReihe": "ELIQ",
+   "zeilen": 598,
+   "letztePanelzeile": "2024-01-16",
+   "letzterMinutentag": "2024-01-16",
+   "letzterTagesbalken": "2024-05-03",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-05-07"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2023-08-04"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001193125-23-203886 (8-K 2023-08-04)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ENFY",
+   "leserReihe": "ENFY",
+   "zeilen": 2432,
+   "letztePanelzeile": "2025-10-13",
+   "letzterMinutentag": "2025-10-13",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-10-27"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-25-102666 (8-K 2025-10-27)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "EVFM",
+   "leserReihe": "EVFM",
+   "zeilen": 1148,
+   "letztePanelzeile": "2022-08-10",
+   "letzterMinutentag": "2022-08-10",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-01-10"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2022-08-10"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001618835-22-000158 (8-K 2022-08-10)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "EXPR",
+   "leserReihe": "EXPR",
+   "zeilen": 2057,
+   "letztePanelzeile": "2024-03-06",
+   "letzterMinutentag": "2024-03-06",
+   "letzterTagesbalken": "2024-04-19",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-04-23"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2024-05-24"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0001143362-24-000165 (25-NSE 2024-05-24)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "FLDD",
+   "leserReihe": "FLDD",
+   "zeilen": 558,
+   "letztePanelzeile": "2024-12-23",
+   "letzterMinutentag": "2024-12-23",
+   "letzterTagesbalken": "2025-02-14",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2025-02-19"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-12-18"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-24-109953 (8-K 2024-12-18)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "FNCH",
+   "leserReihe": "FNCH",
+   "zeilen": 800,
+   "letztePanelzeile": "2024-05-24",
+   "letzterMinutentag": "2024-05-24",
+   "letzterTagesbalken": "2025-05-23",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-10-21"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-05-24"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-24-146454 (8-K 2024-05-24)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "FPAY",
+   "leserReihe": "FPAY",
+   "zeilen": 2181,
+   "letztePanelzeile": "2025-10-22",
+   "letzterMinutentag": "2025-10-22",
+   "letzterTagesbalken": "2025-12-19",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2025-12-23"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-09-24"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-25-091201 (8-K 2025-09-24)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "FRBK",
+   "leserReihe": "FRBK",
+   "zeilen": 1922,
+   "letztePanelzeile": "2023-08-22",
+   "letzterMinutentag": "2023-08-22",
+   "letzterTagesbalken": "2024-08-27",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-09-05"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-04-29"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-1.03",
+   "quelleNeu": "EDGAR:0001437749-24-013455 (8-K 2024-04-29)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "FRTX",
+   "leserReihe": "FRTX",
+   "zeilen": 1903,
+   "letztePanelzeile": "2023-12-18",
+   "letzterMinutentag": "2023-12-18",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2025-03-03"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-12-18"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001628280-23-041723 (8-K 2023-12-18)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "FRZA",
+   "leserReihe": "FRZA",
+   "zeilen": 543,
+   "letztePanelzeile": "2024-10-09",
+   "letzterMinutentag": "2024-10-09",
+   "letzterTagesbalken": "2024-12-10",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "fusion-aktientausch",
+    "ende_datum": "2024-12-12"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-10-04"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001731122-24-001545 (8-K 2024-10-04)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "FTRK",
+   "leserReihe": "FTRK",
+   "zeilen": 309,
+   "letztePanelzeile": "2026-08-17",
+   "letzterMinutentag": "2026-08-17",
+   "letzterTagesbalken": "2026-08-17",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-08-18"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-08-18"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": false,
+    "datum": false
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": null,
+   "quelleNeu": null,
+   "neuInTafel": null
+  },
+  {
+   "reihe": "FXLV",
+   "leserReihe": "FXLV",
+   "zeilen": 532,
+   "letztePanelzeile": "2023-08-24",
+   "letzterMinutentag": "2023-08-24",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2023-11-07"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-08-14"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001788717-23-000050 (8-K 2023-08-14)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "GENE",
+   "leserReihe": "GENE",
+   "zeilen": 2196,
+   "letztePanelzeile": "2024-10-16",
+   "letzterMinutentag": "2024-10-16",
+   "letzterTagesbalken": "2024-12-13",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-08-04"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-09"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001999371-24-009864 (8-K 2024-08-09)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "GETR",
+   "leserReihe": "GETR",
+   "zeilen": 788,
+   "letztePanelzeile": "2024-07-09",
+   "letzterMinutentag": "2024-07-09",
+   "letzterTagesbalken": "2025-07-08",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-07"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-07-10"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000950170-24-082596 (8-K 2024-07-10)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "GGRP",
+   "leserReihe": "GGRP",
+   "zeilen": 126,
+   "letztePanelzeile": "2026-08-19",
+   "letzterMinutentag": "2026-08-19",
+   "letzterTagesbalken": "2026-08-19",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-08-20"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-name_changes",
+   "quelleNeu": "alpaca-massnahmen:0c7bbec0-f904-4419-98e0-27ccff213b50",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "GLBZ",
+   "leserReihe": "GLBZ",
+   "zeilen": 1859,
+   "letztePanelzeile": "2025-12-22",
+   "letzterMinutentag": "2025-12-22",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2025-12-22"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0001552781-25-000467 (25 2025-12-22)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "GLST",
+   "leserReihe": "GLST",
+   "zeilen": 399,
+   "letztePanelzeile": "2025-03-07",
+   "letzterMinutentag": "2025-03-07",
+   "letzterTagesbalken": "2025-05-13",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2025-05-14"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-03-11"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001829126-25-001706 (8-K 2025-03-11)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "GRTX",
+   "leserReihe": "GRTX",
+   "zeilen": 1149,
+   "letztePanelzeile": "2024-06-03",
+   "letzterMinutentag": "2024-06-03",
+   "letzterTagesbalken": "2025-06-02",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-09-04"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-06-03"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-24-152343 (8-K 2024-06-03)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "HALL",
+   "leserReihe": "HALL",
+   "zeilen": 2004,
+   "letztePanelzeile": "2024-01-04",
+   "letzterMinutentag": "2024-01-04",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-16"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-04-19"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-24-012586 (8-K 2024-04-19)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "HCVI",
+   "leserReihe": "HCVI",
+   "zeilen": 610,
+   "letztePanelzeile": "2025-04-03",
+   "letzterMinutentag": "2025-04-03",
+   "letzterTagesbalken": "2025-06-05",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2025-06-06"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-03"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-25-028619 (8-K 2025-04-03)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "HGAS",
+   "leserReihe": "HGAS",
+   "zeilen": 125,
+   "letztePanelzeile": "2024-06-24",
+   "letzterMinutentag": "2024-06-24",
+   "letzterTagesbalken": "2025-06-23",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-06-24"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2023-12-28"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001213900-23-099273 (8-K 2023-12-28)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "HLGN",
+   "leserReihe": "HLGN",
+   "zeilen": 631,
+   "letztePanelzeile": "2023-11-07",
+   "letzterMinutentag": "2023-11-07",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-08-11"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-11-07"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001840292-23-000040 (8-K 2023-11-07)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "HLX",
+   "leserReihe": "HLX",
+   "zeilen": 2681,
+   "letztePanelzeile": "2026-09-01",
+   "letzterMinutentag": "2026-09-01",
+   "letzterTagesbalken": "2026-09-01",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-09-02"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-name_changes",
+   "quelleNeu": "alpaca-massnahmen:1930f46d-dd21-4778-b349-1c184962285d",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "HOFV",
+   "leserReihe": "HOFV",
+   "zeilen": 1252,
+   "letztePanelzeile": "2025-06-26",
+   "letzterMinutentag": "2025-06-26",
+   "letzterTagesbalken": "2026-06-25",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2025-12-31"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-06-25"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-25-057786 (8-K 2025-06-25)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "HSTO",
+   "leserReihe": "HSTO",
+   "zeilen": 1952,
+   "letztePanelzeile": "2023-10-04",
+   "letzterMinutentag": "2023-10-04",
+   "letzterTagesbalken": "2024-11-13",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-11-15"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-09-26"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000950170-23-049922 (8-K 2023-09-26)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "HUDA",
+   "leserReihe": "HUDA",
+   "zeilen": 227,
+   "letztePanelzeile": "2024-07-22",
+   "letzterMinutentag": "2024-07-22",
+   "letzterTagesbalken": "2025-01-22",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-03-26"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-07-26"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001013762-24-001686 (8-K 2024-07-26)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "IDEX",
+   "leserReihe": "IDEX",
+   "zeilen": 2143,
+   "letztePanelzeile": "2024-07-10",
+   "letzterMinutentag": "2024-07-10",
+   "letzterTagesbalken": "2024-12-03",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-12-05"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2024-08-13"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0001354457-24-000562 (25-NSE 2024-08-13)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "IFMK",
+   "leserReihe": "IFMK",
+   "zeilen": 1198,
+   "letztePanelzeile": "2021-11-22",
+   "letzterMinutentag": "2021-11-22",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-02-27"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2022-09-06"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-1.03",
+   "quelleNeu": "EDGAR:0001213900-22-054253 (8-K 2022-09-06)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ISSC",
+   "leserReihe": "ISSC",
+   "zeilen": 2664,
+   "letztePanelzeile": "2026-08-17",
+   "letzterMinutentag": "2026-08-17",
+   "letzterTagesbalken": "2026-08-17",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-08-18"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2026-08-18"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": false,
+    "datum": false
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": null,
+   "quelleNeu": null,
+   "neuInTafel": null
+  },
+  {
+   "reihe": "ISUN",
+   "leserReihe": "ISUN",
+   "zeilen": 1607,
+   "letztePanelzeile": "2024-05-22",
+   "letzterMinutentag": "2024-05-22",
+   "letzterTagesbalken": "2024-06-03",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-06-07"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-06-05"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "q-kuerzel",
+   "quelleNeu": "alpaca-massnahmen:5831d749-5d2f-4fb3-b19b-56c74807a227",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "KAVL",
+   "leserReihe": "KAVL",
+   "zeilen": 1106,
+   "letztePanelzeile": "2025-12-22",
+   "letzterMinutentag": "2025-12-22",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-11-17"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001731122-25-001551 (8-K 2025-11-17)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "KLDO",
+   "leserReihe": "KLDO",
+   "zeilen": 790,
+   "letztePanelzeile": "2022-04-14",
+   "letzterMinutentag": "2022-04-14",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-12-26"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2022-04-08"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-22-099802 (8-K 2022-04-08)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "KRBP",
+   "leserReihe": "KRBP",
+   "zeilen": 729,
+   "letztePanelzeile": "2023-09-13",
+   "letzterMinutentag": "2023-09-13",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2025-03-21"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-09-13"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001558370-23-015711 (8-K 2023-09-13)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "KSPN",
+   "leserReihe": "KSPN",
+   "zeilen": 1840,
+   "letztePanelzeile": "2023-06-09",
+   "letzterMinutentag": "2023-06-09",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-12-18"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-06-12"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001140361-23-029225 (8-K 2023-06-12)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LBRDA",
+   "leserReihe": "LBRDA",
+   "zeilen": 2672,
+   "letztePanelzeile": "2026-08-19",
+   "letzterMinutentag": "2026-08-19",
+   "letzterTagesbalken": "2026-08-19",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "fusion-aktientausch",
+    "ende_datum": "2026-08-20"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-stock_mergers",
+   "quelleNeu": "alpaca-massnahmen:e652a818-b25c-45d2-9bbc-94e0627efd2a",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "LEG",
+   "leserReihe": "LEG",
+   "zeilen": 2676,
+   "letztePanelzeile": "2026-08-26",
+   "letzterMinutentag": "2026-08-26",
+   "letzterTagesbalken": "2026-08-26",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "fusion-aktientausch",
+    "ende_datum": "2026-08-27"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-stock_mergers",
+   "quelleNeu": "alpaca-massnahmen:75acef18-d313-4df3-b201-253236ff418e",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "LFLY",
+   "leserReihe": "LFLY",
+   "zeilen": 739,
+   "letztePanelzeile": "2025-01-16",
+   "letzterMinutentag": "2025-01-16",
+   "letzterTagesbalken": "2025-09-12",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2025-09-15"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-01-16"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000950170-25-006032 (8-K 2025-01-16)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LIPO",
+   "leserReihe": "LIPO",
+   "zeilen": 622,
+   "letztePanelzeile": "2025-06-18",
+   "letzterMinutentag": "2025-06-18",
+   "letzterTagesbalken": "2026-06-17",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2026-07-15"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2026-03-31"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-1.03",
+   "quelleNeu": "EDGAR:0001753926-26-000577 (8-K 2026-03-31)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LMPX",
+   "leserReihe": "LMPX",
+   "zeilen": 685,
+   "letztePanelzeile": "2022-08-24",
+   "letzterMinutentag": "2022-08-24",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2022-08-12"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-22-047389 (8-K 2022-08-12)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LPTV",
+   "leserReihe": "LPTV",
+   "zeilen": 472,
+   "letztePanelzeile": "2024-08-08",
+   "letzterMinutentag": "2024-08-08",
+   "letzterTagesbalken": "2025-08-07",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2025-10-20"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-09"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-24-030877 (8-K 2024-08-09)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LTCH",
+   "leserReihe": "LTCH",
+   "zeilen": 655,
+   "letztePanelzeile": "2023-08-09",
+   "letzterMinutentag": "2023-08-09",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-03-21"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-08-09"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001826000-23-000085 (8-K 2023-08-09)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LTRPA",
+   "leserReihe": "LTRPA",
+   "zeilen": 1969,
+   "letztePanelzeile": "2023-10-27",
+   "letzterMinutentag": "2023-10-27",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-24"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-10-19"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-23-110120 (8-K 2023-10-19)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LTRPB",
+   "leserReihe": "LTRPB",
+   "zeilen": 902,
+   "letztePanelzeile": "2023-10-27",
+   "letzterMinutentag": "2023-10-27",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-24"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-10-19"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-23-110120 (8-K 2023-10-19)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LUNA",
+   "leserReihe": "LUNA",
+   "zeilen": 2267,
+   "letztePanelzeile": "2025-01-06",
+   "letzterMinutentag": "2025-01-06",
+   "letzterTagesbalken": "2026-01-05",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-01-27"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-01-06"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001239819-25-000008 (8-K 2025-01-06)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "LYRA",
+   "leserReihe": "LYRA",
+   "zeilen": 1475,
+   "letztePanelzeile": "2026-03-16",
+   "letzterMinutentag": "2026-03-16",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-03-16"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-26-108439 (8-K 2026-03-16)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "MAPS",
+   "leserReihe": "MAPS",
+   "zeilen": 1612,
+   "letztePanelzeile": "2026-04-24",
+   "letzterMinutentag": "2026-04-24",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2026-02-23"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0000876661-26-000158 (25-NSE 2026-02-23)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "MARK",
+   "leserReihe": "MARK",
+   "zeilen": 2042,
+   "letztePanelzeile": "2024-02-13",
+   "letzterMinutentag": "2024-02-13",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2024-05-17"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0000876661-24-000363 (25-NSE 2024-05-17)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "MDRX",
+   "leserReihe": "MDRX",
+   "zeilen": 2052,
+   "letztePanelzeile": "2024-02-28",
+   "letzterMinutentag": "2024-02-28",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-04-25"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-02-28"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-24-049131 (8-K 2024-02-28)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "MEHA",
+   "leserReihe": "MEHA",
+   "zeilen": 152,
+   "letztePanelzeile": "2026-06-15",
+   "letzterMinutentag": "2026-06-15",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-06-15"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-26-068518 (8-K 2026-06-15)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "MEOA",
+   "leserReihe": "MEOA",
+   "zeilen": 182,
+   "letztePanelzeile": "2023-05-24",
+   "letzterMinutentag": "2023-05-24",
+   "letzterTagesbalken": "2023-07-12",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2023-08-09"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-01-27"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-23-005700 (8-K 2023-01-27)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "MOBQ",
+   "leserReihe": "MOBQ",
+   "zeilen": 501,
+   "letztePanelzeile": "2023-12-06",
+   "letzterMinutentag": "2023-12-06",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-07-03"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-12-07"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001683168-23-008668 (8-K 2023-12-07)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "MSPR",
+   "leserReihe": "MSPR",
+   "zeilen": 745,
+   "letztePanelzeile": "2025-12-19",
+   "letzterMinutentag": "2025-12-19",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-12-22"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-25-327465 (8-K 2025-12-22)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "MTCR",
+   "leserReihe": "MTCR",
+   "zeilen": 604,
+   "letztePanelzeile": "2023-02-08",
+   "letzterMinutentag": "2023-02-08",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-02-01"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-23-021568 (8-K 2023-02-01)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "MVLA",
+   "leserReihe": "MVLA",
+   "zeilen": 284,
+   "letztePanelzeile": "2024-04-01",
+   "letzterMinutentag": "2024-04-01",
+   "letzterTagesbalken": "2025-03-31",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-04-09"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2023-03-31"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001193125-23-088291 (8-K/A 2023-03-31)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "NAVB",
+   "leserReihe": "NAVB",
+   "zeilen": 1120,
+   "letztePanelzeile": "2023-10-05",
+   "letzterMinutentag": "2023-10-05",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2024-01-16"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-06-05"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-23-016520 (8-K 2023-06-05)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "NOTE",
+   "leserReihe": "NOTE",
+   "zeilen": 1320,
+   "letztePanelzeile": "2026-03-25",
+   "letzterMinutentag": "2026-03-25",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": false
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "massnahme-passt-nicht",
+   "quelleNeu": null,
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "NOVV",
+   "leserReihe": "NOVV",
+   "zeilen": 285,
+   "letztePanelzeile": "2024-09-13",
+   "letzterMinutentag": "2024-09-13",
+   "letzterTagesbalken": "2024-11-19",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2024-11-21"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "spac-ende",
+    "ende_datum": "2024-11-19"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-mantel+abmeldung",
+   "quelleNeu": "EDGAR:0001354457-24-000879 (25-NSE 2024-11-19)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "NUTR~2",
+   "leserReihe": "NUTR",
+   "zeilen": 38,
+   "letztePanelzeile": "2025-10-08",
+   "letzterMinutentag": "2025-10-08",
+   "letzterTagesbalken": "2026-08-10",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-08-07"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-06-01"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-26-026520 (8-K 2026-06-01)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "NVAC",
+   "leserReihe": "NVAC",
+   "zeilen": 299,
+   "letztePanelzeile": "2024-11-14",
+   "letzterMinutentag": "2024-11-14",
+   "letzterTagesbalken": "2025-07-11",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2025-07-14"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-10-21"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-24-089060 (8-K 2024-10-21)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "NVOS",
+   "leserReihe": "NVOS",
+   "zeilen": 932,
+   "letztePanelzeile": "2024-11-05",
+   "letzterMinutentag": "2024-11-05",
+   "letzterTagesbalken": "2025-11-04",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-05-02"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-11-06"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-24-043763 (8-K 2024-11-06)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "NVVE",
+   "leserReihe": "NVVE",
+   "zeilen": 1521,
+   "letztePanelzeile": "2026-07-23",
+   "letzterMinutentag": "2026-07-23",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-07-23"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001836875-26-000065 (8-K 2026-07-23)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "OCEA",
+   "leserReihe": "OCEA",
+   "zeilen": 708,
+   "letztePanelzeile": "2025-04-23",
+   "letzterMinutentag": "2025-04-23",
+   "letzterTagesbalken": "2026-04-22",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-08-05"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-23"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001641172-25-005788 (8-K 2025-04-23)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "OCFT",
+   "leserReihe": "OCFT",
+   "zeilen": 1476,
+   "letztePanelzeile": "2025-10-29",
+   "letzterMinutentag": "2025-10-29",
+   "letzterTagesbalken": "2025-11-19",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2025-12-08"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2025-11-21"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0000876661-25-000905 (25-NSE 2025-11-21)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "OFED",
+   "leserReihe": "OFED",
+   "zeilen": 1113,
+   "letztePanelzeile": "2023-07-31",
+   "letzterMinutentag": "2023-07-31",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-07-20"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001387131-23-008514 (8-K 2023-07-20)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "OMCC",
+   "leserReihe": "OMCC",
+   "zeilen": 278,
+   "letztePanelzeile": "2025-12-31",
+   "letzterMinutentag": "2025-12-31",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-12-11"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-25-037549 (8-K 2025-12-11)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "ONCR",
+   "leserReihe": "ONCR",
+   "zeilen": 682,
+   "letztePanelzeile": "2023-06-20",
+   "letzterMinutentag": "2023-06-20",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-06-09"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000950170-23-027274 (8-K 2023-06-09)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "OPGN",
+   "leserReihe": "OPGN",
+   "zeilen": 2166,
+   "letztePanelzeile": "2024-08-19",
+   "letzterMinutentag": "2024-08-19",
+   "letzterTagesbalken": "2025-08-18",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-12-27"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-22"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001829126-24-005761 (8-K 2024-08-22)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "OPT",
+   "leserReihe": "OPT",
+   "zeilen": 1022,
+   "letztePanelzeile": "2025-03-17",
+   "letzterMinutentag": "2025-03-17",
+   "letzterTagesbalken": "2025-11-18",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2025-11-20"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2025-04-10"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0001417835-25-000073 (25-NSE 2025-04-10)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ORGS",
+   "leserReihe": "ORGS",
+   "zeilen": 1663,
+   "letztePanelzeile": "2024-10-18",
+   "letzterMinutentag": "2024-10-18",
+   "letzterTagesbalken": "2025-10-17",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-06-06"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-10-17"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-24-041439 (8-K 2024-10-17)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "OTIC",
+   "leserReihe": "OTIC",
+   "zeilen": 1757,
+   "letztePanelzeile": "2022-12-22",
+   "letzterMinutentag": "2022-12-22",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2022-12-22"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-22-310711 (8-K 2022-12-22)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "PBLA",
+   "leserReihe": "PBLA",
+   "zeilen": 885,
+   "letztePanelzeile": "2024-03-06",
+   "letzterMinutentag": "2024-03-06",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-04-25"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-03-07"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-24-006889 (8-K 2024-03-07)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "PETV",
+   "leserReihe": "PETV",
+   "zeilen": 668,
+   "letztePanelzeile": "2024-04-08",
+   "letzterMinutentag": "2024-04-08",
+   "letzterTagesbalken": "2025-04-07",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-09-06"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-04-09"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-24-014003 (8-K 2024-04-09)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "PKBO",
+   "leserReihe": "PKBO",
+   "zeilen": 290,
+   "letztePanelzeile": "2023-01-09",
+   "letzterMinutentag": "2023-01-09",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-11-14"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2022-11-07"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001193125-22-279204 (8-K 2022-11-07)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "PMNT",
+   "leserReihe": "PMNT",
+   "zeilen": 586,
+   "letztePanelzeile": "2026-06-17",
+   "letzterMinutentag": "2026-06-17",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-06-12"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-26-028535 (8-K 2026-06-12)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "PNST",
+   "leserReihe": "PNST",
+   "zeilen": 294,
+   "letztePanelzeile": "2025-03-05",
+   "letzterMinutentag": "2025-03-05",
+   "letzterTagesbalken": "2025-09-08",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2025-09-10"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-01-05"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001104659-24-001803 (8-K 2024-01-05)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "PRPH",
+   "leserReihe": "PRPH",
+   "zeilen": 2451,
+   "letztePanelzeile": "2026-01-02",
+   "letzterMinutentag": "2026-01-02",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-01-02"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-26-000175 (8-K 2026-01-02)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "PTIX",
+   "leserReihe": "PTIX",
+   "zeilen": 1158,
+   "letztePanelzeile": "2026-01-02",
+   "letzterMinutentag": "2026-01-02",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-01-05"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-26-000263 (8-K 2026-01-05)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "PTPI",
+   "leserReihe": "PTPI",
+   "zeilen": 1122,
+   "letztePanelzeile": "2025-05-21",
+   "letzterMinutentag": "2025-05-21",
+   "letzterTagesbalken": "2026-05-20",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-11-07"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-05-21"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-25-051336 (8-K 2025-05-21)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "PWM",
+   "leserReihe": "PWM",
+   "zeilen": 570,
+   "letztePanelzeile": "2025-10-10",
+   "letzterMinutentag": "2025-10-10",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2025-10-13"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-name_changes",
+   "quelleNeu": "alpaca-massnahmen:bbb0e21e-0af6-48e8-9275-b31054f1be77",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "PXMD",
+   "leserReihe": "PXMD",
+   "zeilen": 422,
+   "letztePanelzeile": "2024-05-01",
+   "letzterMinutentag": "2024-05-01",
+   "letzterTagesbalken": "2025-04-30",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-06-14"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-05-01"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-24-055841 (8-K 2024-05-01)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "QIWI",
+   "leserReihe": "QIWI",
+   "zeilen": 1549,
+   "letztePanelzeile": "2022-02-25",
+   "letzterMinutentag": "2022-02-28",
+   "letzterTagesbalken": "2024-07-16",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2024-09-06"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2021-06-03"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-21-030802 (8-K 2021-06-03)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "QVCGB",
+   "leserReihe": "QVCGB",
+   "zeilen": 1692,
+   "letztePanelzeile": "2025-05-27",
+   "letzterMinutentag": "2025-05-27",
+   "letzterTagesbalken": "2026-04-17",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2026-04-17"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-05-16"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-25-049822 (8-K 2025-05-16)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "RACY",
+   "leserReihe": "RACY",
+   "zeilen": 105,
+   "letztePanelzeile": "2023-01-11",
+   "letzterMinutentag": "2023-01-11",
+   "letzterTagesbalken": "2024-04-30",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "spac-ende",
+    "ende_datum": "2024-06-03"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2023-09-14"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0000876661-23-000722 (25-NSE 2023-09-14)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "RBCN",
+   "leserReihe": "RBCN",
+   "zeilen": 1361,
+   "letztePanelzeile": "2022-12-29",
+   "letzterMinutentag": "2022-12-29",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2022-09-20"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001213900-22-057430 (8-K/A 2022-09-20)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "RBOT",
+   "leserReihe": "RBOT",
+   "zeilen": 1376,
+   "letztePanelzeile": "2026-03-02",
+   "letzterMinutentag": "2026-03-02",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-03-04"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-26-023404 (8-K 2026-03-04)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "RENO",
+   "leserReihe": "RENO",
+   "zeilen": 129,
+   "letztePanelzeile": "2022-06-16",
+   "letzterMinutentag": "2022-06-16",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-06-13"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2022-11-16"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000004457-22-000110 (8-K 2022-11-16)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "RUBY",
+   "leserReihe": "RUBY",
+   "zeilen": 1166,
+   "letztePanelzeile": "2023-03-06",
+   "letzterMinutentag": "2023-03-06",
+   "letzterTagesbalken": "2024-04-30",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-05"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-03-03"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-23-028428 (8-K 2023-03-03)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "RVPH",
+   "leserReihe": "RVPH",
+   "zeilen": 1637,
+   "letztePanelzeile": "2026-05-13",
+   "letzterMinutentag": "2026-05-13",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-05-13"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-26-016538 (8-K 2026-05-13)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "SBDS",
+   "leserReihe": "SBDS",
+   "zeilen": 179,
+   "letztePanelzeile": "2026-04-02",
+   "letzterMinutentag": "2026-04-02",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-04-02"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001870600-26-000019 (8-K 2026-04-02)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "SBIG",
+   "leserReihe": "SBIG",
+   "zeilen": 572,
+   "letztePanelzeile": "2023-09-01",
+   "letzterMinutentag": "2023-09-01",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-09-05"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001628280-23-031294 (8-K 2023-09-05)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SCPS",
+   "leserReihe": "SCPS",
+   "zeilen": 505,
+   "letztePanelzeile": "2022-12-16",
+   "letzterMinutentag": "2022-12-16",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2025-12-29"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2022-12-16"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-22-127517 (8-K 2022-12-16)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SCPX",
+   "leserReihe": "SCPX",
+   "zeilen": 263,
+   "letztePanelzeile": "2025-04-21",
+   "letzterMinutentag": "2025-04-21",
+   "letzterTagesbalken": "2026-04-20",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-05-02"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-04-21"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001079973-25-000687 (8-K 2025-04-21)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SEAC",
+   "leserReihe": "SEAC",
+   "zeilen": 1924,
+   "letztePanelzeile": "2023-08-25",
+   "letzterMinutentag": "2023-08-25",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "spac-ende",
+    "ende_datum": "2024-05-14"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-08-08"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-23-205609 (8-K 2023-08-08)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SGRP",
+   "leserReihe": "SGRP",
+   "zeilen": 2598,
+   "letztePanelzeile": "2026-07-22",
+   "letzterMinutentag": "2026-07-22",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-07-15"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-26-023636 (8-K 2026-07-15)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "SING",
+   "leserReihe": "SING",
+   "zeilen": 184,
+   "letztePanelzeile": "2024-09-10",
+   "letzterMinutentag": "2024-09-10",
+   "letzterTagesbalken": "2025-09-09",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2025-09-12"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-30"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-24-095276 (8-K 2024-08-30)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SIOX",
+   "leserReihe": "SIOX",
+   "zeilen": 1395,
+   "letztePanelzeile": "2023-03-22",
+   "letzterMinutentag": "2023-03-22",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-02-08"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-03-15"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001636050-23-000011 (8-K 2023-03-15)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SISI",
+   "leserReihe": "SISI",
+   "zeilen": 995,
+   "letztePanelzeile": "2025-10-06",
+   "letzterMinutentag": "2025-10-06",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-10-08"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-25-017416 (8-K 2025-10-08)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "SMIT",
+   "leserReihe": "SMIT",
+   "zeilen": 1666,
+   "letztePanelzeile": "2023-01-13",
+   "letzterMinutentag": "2023-01-13",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-12-26"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2022-10-20"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193805-22-001438 (8-K 2022-10-20)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SOFO~2",
+   "leserReihe": "SOFO",
+   "zeilen": 452,
+   "letztePanelzeile": "2023-12-04",
+   "letzterMinutentag": "2023-12-04",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-03-28"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-03-22"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-1.03",
+   "quelleNeu": "EDGAR:0001437749-24-008887 (8-K 2024-03-22)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SONX",
+   "leserReihe": "SONX",
+   "zeilen": 519,
+   "letztePanelzeile": "2023-11-21",
+   "letzterMinutentag": "2023-11-21",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-04-15"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-11-21"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000950170-23-065525 (8-K 2023-11-21)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SPEC",
+   "leserReihe": "SPEC",
+   "zeilen": 434,
+   "letztePanelzeile": "2024-08-06",
+   "letzterMinutentag": "2024-08-06",
+   "letzterTagesbalken": "2025-08-05",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-08-06"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2023-10-27"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001013762-23-007283 (8-K 2023-10-27)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SPGC",
+   "leserReihe": "SPGC",
+   "zeilen": 396,
+   "letztePanelzeile": "2025-03-14",
+   "letzterMinutentag": "2025-03-14",
+   "letzterTagesbalken": "2026-01-05",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-04-09"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2025-03-17"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-name_changes",
+   "quelleNeu": "alpaca-massnahmen:f91ff62c-4395-4d0c-a845-8f10a93b279b",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SRAX",
+   "leserReihe": "SRAX",
+   "zeilen": 1606,
+   "letztePanelzeile": "2023-03-08",
+   "letzterMinutentag": "2023-03-08",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-11-27"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-03-08"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-23-007017 (8-K 2023-03-08)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "SSKN",
+   "leserReihe": "SSKN",
+   "zeilen": 2540,
+   "letztePanelzeile": "2026-02-18",
+   "letzterMinutentag": "2026-02-18",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-02-11"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001140361-26-004822 (8-K 2026-02-11)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "STAB",
+   "leserReihe": "STAB",
+   "zeilen": 1765,
+   "letztePanelzeile": "2023-01-11",
+   "letzterMinutentag": "2023-01-11",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-01-20"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-23-001440 (8-K 2023-01-20)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "STAI",
+   "leserReihe": "STAI",
+   "zeilen": 570,
+   "letztePanelzeile": "2026-02-09",
+   "letzterMinutentag": "2026-02-09",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-02-10"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-26-012229 (8-K 2026-02-10)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "STRS",
+   "leserReihe": "STRS",
+   "zeilen": 2629,
+   "letztePanelzeile": "2026-08-07",
+   "letzterMinutentag": "2026-08-07",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2026-06-26"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0000885508-26-000033 (8-K 2026-06-26)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "SYBX",
+   "leserReihe": "SYBX",
+   "zeilen": 2512,
+   "letztePanelzeile": "2026-01-20",
+   "letzterMinutentag": "2026-01-20",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-01-20"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-26-016040 (8-K 2026-01-20)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "TAIT",
+   "leserReihe": "TAIT",
+   "zeilen": 2445,
+   "letztePanelzeile": "2025-12-03",
+   "letzterMinutentag": "2025-12-03",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2025-12-04"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "q-kuerzel",
+   "quelleNeu": "alpaca-massnahmen:cb84b032-134b-4098-ab8f-9098fb39de64",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "TCGL",
+   "leserReihe": "TCGL",
+   "zeilen": 74,
+   "letztePanelzeile": "2026-01-30",
+   "letzterMinutentag": "2026-01-30",
+   "letzterTagesbalken": "2026-06-12",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-12-12"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-12-18"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001214659-25-018223 (8-K 2025-12-18)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "TCON",
+   "leserReihe": "TCON",
+   "zeilen": 2134,
+   "letztePanelzeile": "2024-06-27",
+   "letzterMinutentag": "2024-06-27",
+   "letzterTagesbalken": "2024-12-03",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2024-12-04"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-06-12"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000950170-24-072265 (8-K 2024-06-12)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "TIO",
+   "leserReihe": "TIO",
+   "zeilen": 1928,
+   "letztePanelzeile": "2023-11-13",
+   "letzterMinutentag": "2023-11-13",
+   "letzterTagesbalken": "2024-02-28",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2024-03-01"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2023-02-15"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001213900-23-012144 (8-K 2023-02-15)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "TMPO",
+   "leserReihe": "TMPO",
+   "zeilen": 777,
+   "letztePanelzeile": "2023-11-01",
+   "letzterMinutentag": "2023-11-01",
+   "letzterTagesbalken": "2023-12-12",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2023-12-14"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-08-23"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-23-094401 (8-K 2023-08-23)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "TTSH",
+   "leserReihe": "TTSH",
+   "zeilen": 1138,
+   "letztePanelzeile": "2025-12-26",
+   "letzterMinutentag": "2025-12-26",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-12-15"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001140361-25-045538 (8-K 2025-12-15)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "TWO",
+   "leserReihe": "TWO",
+   "zeilen": 2675,
+   "letztePanelzeile": "2026-08-24",
+   "letzterMinutentag": "2026-08-24",
+   "letzterTagesbalken": "2026-08-24",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2026-08-26"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": 0,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "alpaca-cash_mergers",
+   "quelleNeu": "alpaca-massnahmen:8dfe1295-ca69-4a4c-a499-042e66690d8f",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "UNAM",
+   "leserReihe": "UNAM",
+   "zeilen": 1277,
+   "letztePanelzeile": "2023-06-14",
+   "letzterMinutentag": "2023-06-14",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-05-30"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2023-06-12"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-1.03",
+   "quelleNeu": "EDGAR:0001654954-23-007910 (8-K 2023-06-12)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "VAPO",
+   "leserReihe": "VAPO",
+   "zeilen": 1278,
+   "letztePanelzeile": "2023-12-14",
+   "letzterMinutentag": "2023-12-14",
+   "letzterTagesbalken": "2024-10-17",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-09-20"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-12-15"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0000950170-23-070508 (8-K 2023-12-15)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "VCNX",
+   "leserReihe": "VCNX",
+   "zeilen": 1587,
+   "letztePanelzeile": "2024-12-17",
+   "letzterMinutentag": "2024-12-17",
+   "letzterTagesbalken": "2025-12-16",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-03-07"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-12-17"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001193125-24-280155 (8-K 2024-12-17)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "VERO",
+   "leserReihe": "VERO",
+   "zeilen": 2087,
+   "letztePanelzeile": "2026-02-06",
+   "letzterMinutentag": "2026-02-06",
+   "letzterTagesbalken": "2026-04-08",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2026-04-15"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "massnahme-passt-nicht",
+   "quelleNeu": null,
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "VINO",
+   "leserReihe": "VINO",
+   "zeilen": 946,
+   "letztePanelzeile": "2024-11-21",
+   "letzterMinutentag": "2024-11-21",
+   "letzterTagesbalken": "2025-07-30",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2025-06-20"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "insolvenz",
+    "ende_datum": "2024-11-13"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-1.03",
+   "quelleNeu": "EDGAR:0001493152-24-045165 (8-K 2024-11-13)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "VIVE",
+   "leserReihe": "VIVE",
+   "zeilen": 1661,
+   "letztePanelzeile": "2023-01-18",
+   "letzterMinutentag": "2023-01-18",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2023-11-07"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-01-18"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-23-001184 (8-K 2023-01-18)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "VSEE",
+   "leserReihe": "VSEE",
+   "zeilen": 871,
+   "letztePanelzeile": "2026-08-05",
+   "letzterMinutentag": "2026-08-05",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-08-04"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001185185-26-003262 (8-K 2026-08-04)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "VSTA",
+   "leserReihe": "VSTA",
+   "zeilen": 1374,
+   "letztePanelzeile": "2026-01-28",
+   "letzterMinutentag": "2026-01-28",
+   "letzterTagesbalken": "2026-07-27",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2026-08-03"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "freiwillig",
+    "ende_datum": "2026-01-20"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-formular25",
+   "quelleNeu": "EDGAR:0000950103-26-000644 (25 2026-01-20)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "VSTD",
+   "leserReihe": "VSTD",
+   "zeilen": 966,
+   "letztePanelzeile": "2026-07-24",
+   "letzterMinutentag": "2026-07-24",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-07-28"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-26-034885 (8-K 2026-07-28)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "VXRT",
+   "leserReihe": "VXRT",
+   "zeilen": 2388,
+   "letztePanelzeile": "2025-07-07",
+   "letzterMinutentag": "2025-07-07",
+   "letzterTagesbalken": "2026-07-06",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-09-19"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-07-02"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-25-021865 (8-K 2025-07-02)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "VYNT",
+   "leserReihe": "VYNT",
+   "zeilen": 1853,
+   "letztePanelzeile": "2023-05-12",
+   "letzterMinutentag": "2023-05-12",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-03-01"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-04-24"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001493152-23-013369 (8-K 2023-04-24)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "WAVS",
+   "leserReihe": "WAVS",
+   "zeilen": 382,
+   "letztePanelzeile": "2025-01-22",
+   "letzterMinutentag": "2025-01-22",
+   "letzterTagesbalken": "2025-02-14",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-02-14"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-01-23"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-25-005631 (8-K 2025-01-23)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "WINT",
+   "leserReihe": "WINT",
+   "zeilen": 1319,
+   "letztePanelzeile": "2025-08-20",
+   "letzterMinutentag": "2025-08-20",
+   "letzterTagesbalken": "2026-08-19",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-08-20"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001437749-25-027421 (8-K 2025-08-20)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "WORX~2",
+   "leserReihe": "WORX",
+   "zeilen": 1425,
+   "letztePanelzeile": "2026-04-13",
+   "letzterMinutentag": "2026-04-13",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-04-10"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-26-042594 (8-K 2026-04-10)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "XAGE",
+   "leserReihe": "XAGE",
+   "zeilen": 821,
+   "letztePanelzeile": "2025-09-11",
+   "letzterMinutentag": "2025-09-11",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2025-01-16"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0000950170-25-006024 (8-K 2025-01-16)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "YGF",
+   "leserReihe": "YGF",
+   "zeilen": 219,
+   "letztePanelzeile": "2024-02-08",
+   "letzterMinutentag": "2024-02-08",
+   "letzterTagesbalken": "2024-03-22",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "umbenennung-ticker",
+    "ende_datum": "2024-03-26"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "unbekannt",
+    "ende_datum": null
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": false,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "massnahme-passt-nicht",
+   "quelleNeu": null,
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ZCAR",
+   "leserReihe": "ZCAR",
+   "zeilen": 653,
+   "letztePanelzeile": "2025-05-07",
+   "letzterMinutentag": "2025-05-07",
+   "letzterTagesbalken": "2026-05-06",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-08-08"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-05-08"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001213900-25-040800 (8-K 2025-05-08)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ZIVO",
+   "leserReihe": "ZIVO",
+   "zeilen": 626,
+   "letztePanelzeile": "2023-11-24",
+   "letzterMinutentag": "2023-11-24",
+   "letzterTagesbalken": "2025-03-21",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-02-15"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2023-11-27"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001654954-23-014775 (8-K 2023-11-27)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ZPTA",
+   "leserReihe": "ZPTA",
+   "zeilen": 564,
+   "letztePanelzeile": "2024-10-25",
+   "letzterMinutentag": "2024-10-25",
+   "letzterTagesbalken": "2025-10-24",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2024-10-18"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "uebernahme",
+    "ende_datum": "2024-04-03"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": false,
+   "tvStrengAlt": true,
+   "tvStrengNeu": false,
+   "belegNeu": "edgar-8K-2.01+prospekt",
+   "quelleNeu": "EDGAR:0001193125-24-085161 (8-K 2024-04-03)",
+   "neuInTafel": 0
+  },
+  {
+   "reihe": "ZSPC",
+   "leserReihe": "ZSPC",
+   "zeilen": 347,
+   "letztePanelzeile": "2026-04-27",
+   "letzterMinutentag": "2026-04-27",
+   "letzterTagesbalken": "2026-09-02",
+   "alt": {
+    "lebend": 1,
+    "ende_grund": null,
+    "ende_datum": null
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2026-04-23"
+   },
+   "aendert": {
+    "lebend": true,
+    "grund": true,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": false,
+   "tvHauptNeu": true,
+   "tvStrengAlt": false,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001104659-26-047275 (8-K 2026-04-23)",
+   "neuInTafel": 1
+  },
+  {
+   "reihe": "ZVSA",
+   "leserReihe": "ZVSA",
+   "zeilen": 738,
+   "letztePanelzeile": "2025-07-16",
+   "letzterMinutentag": "2025-07-16",
+   "letzterTagesbalken": "2026-07-15",
+   "alt": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-09-18"
+   },
+   "neu": {
+    "lebend": 0,
+    "ende_grund": "zwangs-delisting",
+    "ende_datum": "2025-07-16"
+   },
+   "aendert": {
+    "lebend": false,
+    "grund": false,
+    "datum": true
+   },
+   "k123": 0,
+   "k23": 0,
+   "maxKlasse": -1,
+   "tvHauptAlt": true,
+   "tvHauptNeu": true,
+   "tvStrengAlt": true,
+   "tvStrengNeu": true,
+   "belegNeu": "edgar-8K-3.01",
+   "quelleNeu": "EDGAR:0001641172-25-019856 (8-K 2025-07-16)",
+   "neuInTafel": 0
+  }
+ ],
+ "panelrand": [
+  {
+   "reihe": "WINT",
+   "letztePanelzeile": "2025-08-20",
+   "handelstageVorEnde": 268,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-08-20"
+  },
+  {
+   "reihe": "XAGE",
+   "letztePanelzeile": "2025-09-11",
+   "handelstageVorEnde": 253,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-09-11"
+  },
+  {
+   "reihe": "SISI",
+   "letztePanelzeile": "2025-10-06",
+   "handelstageVorEnde": 236,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-10-06"
+  },
+  {
+   "reihe": "BINI",
+   "letztePanelzeile": "2025-10-10",
+   "handelstageVorEnde": 232,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-10-10"
+  },
+  {
+   "reihe": "CARM",
+   "letztePanelzeile": "2025-10-10",
+   "handelstageVorEnde": 232,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-10-10"
+  },
+  {
+   "reihe": "PWM",
+   "letztePanelzeile": "2025-10-10",
+   "handelstageVorEnde": 232,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-10-10"
+  },
+  {
+   "reihe": "ENFY",
+   "letztePanelzeile": "2025-10-13",
+   "handelstageVorEnde": 231,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-10-13"
+  },
+  {
+   "reihe": "CERO",
+   "letztePanelzeile": "2025-10-30",
+   "handelstageVorEnde": 218,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-10-30"
+  },
+  {
+   "reihe": "DHAI",
+   "letztePanelzeile": "2025-11-06",
+   "handelstageVorEnde": 213,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-11-06"
+  },
+  {
+   "reihe": "TAIT",
+   "letztePanelzeile": "2025-12-03",
+   "handelstageVorEnde": 195,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-12-03"
+  },
+  {
+   "reihe": "MSPR",
+   "letztePanelzeile": "2025-12-19",
+   "handelstageVorEnde": 183,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-12-19"
+  },
+  {
+   "reihe": "GLBZ",
+   "letztePanelzeile": "2025-12-22",
+   "handelstageVorEnde": 182,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-12-22"
+  },
+  {
+   "reihe": "KAVL",
+   "letztePanelzeile": "2025-12-22",
+   "handelstageVorEnde": 182,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-12-22"
+  },
+  {
+   "reihe": "TTSH",
+   "letztePanelzeile": "2025-12-26",
+   "handelstageVorEnde": 179,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-12-26"
+  },
+  {
+   "reihe": "OMCC",
+   "letztePanelzeile": "2025-12-31",
+   "handelstageVorEnde": 176,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2025-12-31"
+  },
+  {
+   "reihe": "BSLK",
+   "letztePanelzeile": "2026-01-02",
+   "handelstageVorEnde": 175,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-01-02"
+  },
+  {
+   "reihe": "PRPH",
+   "letztePanelzeile": "2026-01-02",
+   "handelstageVorEnde": 175,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-01-02"
+  },
+  {
+   "reihe": "PTIX",
+   "letztePanelzeile": "2026-01-02",
+   "handelstageVorEnde": 175,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-01-02"
+  },
+  {
+   "reihe": "DGLY",
+   "letztePanelzeile": "2026-01-07",
+   "handelstageVorEnde": 172,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-01-07"
+  },
+  {
+   "reihe": "SYBX",
+   "letztePanelzeile": "2026-01-20",
+   "handelstageVorEnde": 164,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-01-20"
+  },
+  {
+   "reihe": "STAI",
+   "letztePanelzeile": "2026-02-09",
+   "handelstageVorEnde": 150,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-02-09"
+  },
+  {
+   "reihe": "SSKN",
+   "letztePanelzeile": "2026-02-18",
+   "handelstageVorEnde": 144,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-02-18"
+  },
+  {
+   "reihe": "ANEB",
+   "letztePanelzeile": "2026-02-27",
+   "handelstageVorEnde": 137,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-02-27"
+  },
+  {
+   "reihe": "RBOT",
+   "letztePanelzeile": "2026-03-02",
+   "handelstageVorEnde": 136,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-03-02"
+  },
+  {
+   "reihe": "ALUR",
+   "letztePanelzeile": "2026-03-06",
+   "handelstageVorEnde": 132,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-03-06"
+  },
+  {
+   "reihe": "LYRA",
+   "letztePanelzeile": "2026-03-16",
+   "handelstageVorEnde": 126,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-03-16"
+  },
+  {
+   "reihe": "NOTE",
+   "letztePanelzeile": "2026-03-25",
+   "handelstageVorEnde": 119,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-03-25"
+  },
+  {
+   "reihe": "SBDS",
+   "letztePanelzeile": "2026-04-02",
+   "handelstageVorEnde": 113,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-04-02"
+  },
+  {
+   "reihe": "ASNS",
+   "letztePanelzeile": "2026-04-09",
+   "handelstageVorEnde": 109,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-04-09"
+  },
+  {
+   "reihe": "WORX~2",
+   "letztePanelzeile": "2026-04-13",
+   "handelstageVorEnde": 107,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-04-13"
+  },
+  {
+   "reihe": "MAPS",
+   "letztePanelzeile": "2026-04-24",
+   "handelstageVorEnde": 98,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-04-24"
+  },
+  {
+   "reihe": "ZSPC",
+   "letztePanelzeile": "2026-04-27",
+   "handelstageVorEnde": 97,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-04-27"
+  },
+  {
+   "reihe": "AREB",
+   "letztePanelzeile": "2026-05-12",
+   "handelstageVorEnde": 86,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-05-12"
+  },
+  {
+   "reihe": "RVPH",
+   "letztePanelzeile": "2026-05-13",
+   "handelstageVorEnde": 85,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-05-13"
+  },
+  {
+   "reihe": "MEHA",
+   "letztePanelzeile": "2026-06-15",
+   "handelstageVorEnde": 63,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-06-15"
+  },
+  {
+   "reihe": "PMNT",
+   "letztePanelzeile": "2026-06-17",
+   "handelstageVorEnde": 61,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-06-17"
+  },
+  {
+   "reihe": "ADTX",
+   "letztePanelzeile": "2026-06-24",
+   "handelstageVorEnde": 57,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-06-24"
+  },
+  {
+   "reihe": "BNBX",
+   "letztePanelzeile": "2026-07-13",
+   "handelstageVorEnde": 45,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-07-13"
+  },
+  {
+   "reihe": "BURU",
+   "letztePanelzeile": "2026-07-17",
+   "handelstageVorEnde": 41,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "CREG",
+   "letztePanelzeile": "2026-07-20",
+   "handelstageVorEnde": 40,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-07-20"
+  },
+  {
+   "reihe": "SGRP",
+   "letztePanelzeile": "2026-07-22",
+   "handelstageVorEnde": 38,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-07-22"
+  },
+  {
+   "reihe": "NVVE",
+   "letztePanelzeile": "2026-07-23",
+   "handelstageVorEnde": 37,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-07-23"
+  },
+  {
+   "reihe": "VSTD",
+   "letztePanelzeile": "2026-07-24",
+   "handelstageVorEnde": 36,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-07-24"
+  },
+  {
+   "reihe": "VSEE",
+   "letztePanelzeile": "2026-08-05",
+   "handelstageVorEnde": 28,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-05"
+  },
+  {
+   "reihe": "STRS",
+   "letztePanelzeile": "2026-08-07",
+   "handelstageVorEnde": 26,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-07"
+  },
+  {
+   "reihe": "EQR",
+   "letztePanelzeile": "2026-08-17",
+   "handelstageVorEnde": 20,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 250,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-17"
+  },
+  {
+   "reihe": "FTRK",
+   "letztePanelzeile": "2026-08-17",
+   "handelstageVorEnde": 20,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-17"
+  },
+  {
+   "reihe": "ISSC",
+   "letztePanelzeile": "2026-08-17",
+   "handelstageVorEnde": 20,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-17"
+  },
+  {
+   "reihe": "AACB",
+   "letztePanelzeile": "2026-08-19",
+   "handelstageVorEnde": 18,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-19"
+  },
+  {
+   "reihe": "GGRP",
+   "letztePanelzeile": "2026-08-19",
+   "handelstageVorEnde": 18,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-19"
+  },
+  {
+   "reihe": "LBRDA",
+   "letztePanelzeile": "2026-08-19",
+   "handelstageVorEnde": 18,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-19"
+  },
+  {
+   "reihe": "LBRDK",
+   "letztePanelzeile": "2026-08-19",
+   "handelstageVorEnde": 18,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 240,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-19"
+  },
+  {
+   "reihe": "WBS",
+   "letztePanelzeile": "2026-08-19",
+   "handelstageVorEnde": 18,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 250,
+   "k23": 17,
+   "letzterMinutentag": "2026-08-19"
+  },
+  {
+   "reihe": "TWO",
+   "letztePanelzeile": "2026-08-24",
+   "handelstageVorEnde": 15,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-24"
+  },
+  {
+   "reihe": "LEG",
+   "letztePanelzeile": "2026-08-26",
+   "handelstageVorEnde": 13,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-26"
+  },
+  {
+   "reihe": "CRNX",
+   "letztePanelzeile": "2026-08-31",
+   "handelstageVorEnde": 10,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 21,
+   "k23": 0,
+   "letzterMinutentag": "2026-08-31"
+  },
+  {
+   "reihe": "HLX",
+   "letztePanelzeile": "2026-09-01",
+   "handelstageVorEnde": 9,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-09-01"
+  },
+  {
+   "reihe": "APGE",
+   "letztePanelzeile": "2026-09-02",
+   "handelstageVorEnde": 8,
+   "ursache": "Abgang nach neuer Regel",
+   "k123": 160,
+   "k23": 0,
+   "letzterMinutentag": "2026-09-02"
+  },
+  {
+   "reihe": "AGL",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "ALIT",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "AMCR",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "ANAB",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "APH",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "APTV",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "BKNG",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "BYND",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 50,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "CMCSA",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "CRWD",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "CVNA",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "FDX",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "FUBO",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 11,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "IESC",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 176,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "KLAC",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "LILAK",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "MIDD",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "MLI",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "MNST",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "MQ",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "PANW",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "PIPR",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 23,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "POWL",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 246,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "REZI",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 79,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "RUSHA",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "SBS",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "SF",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "SFBS",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "SNEX",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 99,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "SPGI",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 250,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "TRI",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 250,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "WHLR",
+   "letztePanelzeile": "2026-09-03",
+   "handelstageVorEnde": 7,
+   "ursache": "veraltete bereinigte Kopie",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-02"
+  },
+  {
+   "reihe": "ISRL~2",
+   "letztePanelzeile": "2026-09-11",
+   "handelstageVorEnde": 2,
+   "ursache": "handelt nicht jeden Tag (Minuten nach dem Panel-Ende vorhanden)",
+   "k123": 0,
+   "k23": 0,
+   "letzterMinutentag": "2026-10-01"
+  }
+ ]
+}

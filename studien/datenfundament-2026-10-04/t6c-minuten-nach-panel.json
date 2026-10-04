@@ -1,0 +1,119 @@
+{
+ "panelEnde": "2026-09-15",
+ "archivEnde": "2026-10-02",
+ "handelstageDazwischen": 13,
+ "reihenMitMinutenNachPanelEnde": 2249,
+ "tage": [
+  {
+   "tag": "2026-09-16",
+   "handelstagNachPanelEnde": 1,
+   "reihenMitMinutenBisMindestens": 2249,
+   "davonImLeserSichtbar": 2216,
+   "letzterMinutentagGenauHier": 0
+  },
+  {
+   "tag": "2026-09-17",
+   "handelstagNachPanelEnde": 2,
+   "reihenMitMinutenBisMindestens": 2249,
+   "davonImLeserSichtbar": 2216,
+   "letzterMinutentagGenauHier": 0
+  },
+  {
+   "tag": "2026-09-18",
+   "handelstagNachPanelEnde": 3,
+   "reihenMitMinutenBisMindestens": 2249,
+   "davonImLeserSichtbar": 2216,
+   "letzterMinutentagGenauHier": 1
+  },
+  {
+   "tag": "2026-09-21",
+   "handelstagNachPanelEnde": 4,
+   "reihenMitMinutenBisMindestens": 2248,
+   "davonImLeserSichtbar": 2215,
+   "letzterMinutentagGenauHier": 0
+  },
+  {
+   "tag": "2026-09-22",
+   "handelstagNachPanelEnde": 5,
+   "reihenMitMinutenBisMindestens": 2248,
+   "davonImLeserSichtbar": 2215,
+   "letzterMinutentagGenauHier": 0
+  },
+  {
+   "tag": "2026-09-23",
+   "handelstagNachPanelEnde": 6,
+   "reihenMitMinutenBisMindestens": 2248,
+   "davonImLeserSichtbar": 2215,
+   "letzterMinutentagGenauHier": 0
+  },
+  {
+   "tag": "2026-09-24",
+   "handelstagNachPanelEnde": 7,
+   "reihenMitMinutenBisMindestens": 2248,
+   "davonImLeserSichtbar": 2215,
+   "letzterMinutentagGenauHier": 0
+  },
+  {
+   "tag": "2026-09-25",
+   "handelstagNachPanelEnde": 8,
+   "reihenMitMinutenBisMindestens": 2248,
+   "davonImLeserSichtbar": 2215,
+   "letzterMinutentagGenauHier": 0
+  },
+  {
+   "tag": "2026-09-28",
+   "handelstagNachPanelEnde": 9,
+   "reihenMitMinutenBisMindestens": 2248,
+   "davonImLeserSichtbar": 2215,
+   "letzterMinutentagGenauHier": 1
+  },
+  {
+   "tag": "2026-09-29",
+   "handelstagNachPanelEnde": 10,
+   "reihenMitMinutenBisMindestens": 2247,
+   "davonImLeserSichtbar": 2214,
+   "letzterMinutentagGenauHier": 1
+  },
+  {
+   "tag": "2026-09-30",
+   "handelstagNachPanelEnde": 11,
+   "reihenMitMinutenBisMindestens": 2246,
+   "davonImLeserSichtbar": 2213,
+   "letzterMinutentagGenauHier": 0
+  },
+  {
+   "tag": "2026-10-01",
+   "handelstagNachPanelEnde": 12,
+   "reihenMitMinutenBisMindestens": 2246,
+   "davonImLeserSichtbar": 2213,
+   "letzterMinutentagGenauHier": 3
+  },
+  {
+   "tag": "2026-10-02",
+   "handelstagNachPanelEnde": 13,
+   "reihenMitMinutenBisMindestens": 2243,
+   "davonImLeserSichtbar": 2210,
+   "letzterMinutentagGenauHier": 2243
+  }
+ ],
+ "aufwand": {
+  "dateienAlle": 45096,
+  "gbAlle": 115.1,
+  "dateien2026": 2643,
+  "gb2026": 7.3,
+  "kerzen2026": 154363727,
+  "anteil2026": 0.063,
+  "vollbau": {
+   "teile": 4,
+   "sekundenJeTeil": 8100,
+   "prozessSekunden": 32333,
+   "dateien": 45107,
+   "gb": 122.8,
+   "quelle": "PANEL-V22.md §4 (Vollbau 03.10.2026, Platte E: als Engpass)"
+  },
+  "schaetzungNur2026Minuten": 9,
+  "neueZeilenGeschaetzt": 29217,
+  "panelMbHeute": 910,
+  "zeilenHeute": 9904017
+ }
+}

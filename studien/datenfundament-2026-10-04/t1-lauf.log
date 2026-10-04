@@ -1,0 +1,14 @@
+
+!!! WERTPAPIERART: Referenzkarte vorhanden, aber ohne Eintrag fuer GCI (erster Fall dieses Laufs; weitere werden nicht gemeldet) - solche Symbole fallen STILL aus dem Universum heraus.
+
+Aktienreihen 7.299 | lebend alt 2.306 | Ende des Archivs 2026-10-02 | letzter Tagesbalken der Tafel 2026-09-03
+PM 257: {"behauptet":257,"lebenszeitFeld_rohLetzter":260,"lebenszeitFeld_mitSchnitt":257,"manifest_mitSchnitt":257,"manifest_ueber30":291,"manifest_ueber3":329}
+PM 39: {"behauptet":39,"lebenszeitFeld":39,"manifest":38,"polygonEinsBisVierTageDanach":39,"wiederMinutenSeither":[{"reihe":"BURU","lmtLebenszeit":"2026-07-17","lmtManifest":"2026-10-02","minutentageNeu":15}]}
+Manifest gegen Lebenszeit-Feld: {"gleich":5040,"manifestSpaeter":2259,"manifestFrueher":0,"ohneFeld":0}
+X=0 {"lebendNeu":2243,"lebendZuAbgegangen":63,"abgegangenZuLebend":0,"davonNachlebenUeber30Tage":42,"davonEndeNachTafelstand":6,"davonEndeBisTafelstand":15,"gruppen":{"abgang":15,"luecke-der-sammlung":6,"frueher":37,"unklar":5}}
+X=5 {"lebendNeu":2248,"lebendZuAbgegangen":58,"abgegangenZuLebend":0,"davonNachlebenUeber30Tage":42,"davonEndeNachTafelstand":1,"davonEndeBisTafelstand":15,"gruppen":{"abgang":15,"frueher":37,"unklar":5,"luecke-der-sammlung":1}}
+X=10 {"lebendNeu":2249,"lebendZuAbgegangen":57,"abgegangenZuLebend":0,"davonNachlebenUeber30Tage":42,"davonEndeNachTafelstand":0,"davonEndeBisTafelstand":15,"gruppen":{"abgang":15,"frueher":37,"unklar":5}}
+X=20 {"lebendNeu":2249,"lebendZuAbgegangen":57,"abgegangenZuLebend":0,"davonNachlebenUeber30Tage":42,"davonEndeNachTafelstand":0,"davonEndeBisTafelstand":15,"gruppen":{"abgang":15,"frueher":37,"unklar":5}}
+Aussetzer: {"fensterHandelstage":60,"ersterTagImFenster":"2026-07-09","n":83,"jeGruppe":{"abgang":72,"luecke-der-sammlung":6,"unklar":5},"jeGruppeLebendAlt":{"abgang":15,"luecke-der-sammlung":6,"unklar":5},"polygonKannNichtBelegenAb":"2026-08-06","endeNachPolygonStand":11}
+Leser veraltet: {"bereinigtStand":"2026-09-06T22:35:02.520Z","reihenMitKopieDesLetztenJahres":390,"kopieEndetVorRohdatei":33,"jeLeserEnde":{"2026-07-17":1,"2026-09-03":32},"alleOrdner2026":{"kopien":97,"veraltet":64}}
+Abstand-Verteilung: {"0":2243,"1":3,"3":1,"4":1,"10":1,"21":1,"22":1,"23":1}

@@ -1,0 +1,137 @@
+{
+ "stand": "2026-10-04T10:45:33.891Z",
+ "panel": "querschnitt-pruefstand-2026-09-13/panel/v2.2",
+ "panelEnde": "2026-09-15",
+ "x": 10,
+ "t2Vorhanden": true,
+ "t2Offen": 0,
+ "reihen": 7479,
+ "reihenOhneReferenz": 7478,
+ "lebendAlt": 2306,
+ "ohneLeserReihe": 0,
+ "andererStand": {
+  "gesamt": 198,
+  "lebend": 57,
+  "grund": 142,
+  "datum": 194,
+  "nurDatum": 53
+ },
+ "klasse123": {
+  "gesamt": 7,
+  "lebend": 5,
+  "grund": 6,
+  "datum": 6,
+  "klasse23": 2,
+  "grundKlasse23": 2
+ },
+ "totalverlust": {
+  "haupt": {
+   "alle": {
+    "kommtHinzu": 82,
+    "faelltWeg": 13
+   },
+   "klasse123": {
+    "kommtHinzu": 0,
+    "faelltWeg": 1
+   },
+   "klasse23": {
+    "kommtHinzu": 0,
+    "faelltWeg": 1
+   }
+  },
+  "streng": {
+   "alle": {
+    "kommtHinzu": 73,
+    "faelltWeg": 13
+   },
+   "klasse123": {
+    "kommtHinzu": 1,
+    "faelltWeg": 0
+   },
+   "klasse23": {
+    "kommtHinzu": 0,
+    "faelltWeg": 0
+   }
+  },
+  "listen": {
+   "haupt": [
+    "insolvenz",
+    "zwangs-delisting"
+   ],
+   "streng": [
+    "insolvenz",
+    "zwangs-delisting",
+    "unbekannt",
+    "freiwillig"
+   ]
+  }
+ },
+ "grundMatrix": {
+  "null -> uebernahme": 7,
+  "unbekannt -> zwangs-delisting": 11,
+  "uebernahme -> fusion-aktientausch": 1,
+  "null -> zwangs-delisting": 36,
+  "freiwillig -> zwangs-delisting": 8,
+  "uebernahme -> zwangs-delisting": 15,
+  "zwangs-delisting -> uebernahme": 7,
+  "unbekannt -> uebernahme": 2,
+  "insolvenz -> zwangs-delisting": 10,
+  "spac-ende -> uebernahme": 1,
+  "unbekannt -> spac-ende": 1,
+  "fusion-aktientausch -> spac-ende": 1,
+  "umbenennung-ticker -> zwangs-delisting": 8,
+  "spac-ende -> zwangs-delisting": 2,
+  "unbekannt -> freiwillig": 2,
+  "null -> umbenennung-ticker": 4,
+  "uebernahme -> spac-ende": 1,
+  "insolvenz -> uebernahme": 2,
+  "insolvenz -> freiwillig": 3,
+  "fusion-aktientausch -> zwangs-delisting": 1,
+  "null -> freiwillig": 2,
+  "zwangs-delisting -> insolvenz": 2,
+  "null -> fusion-aktientausch": 3,
+  "null -> unbekannt": 1,
+  "umbenennung-ticker -> spac-ende": 1,
+  "uebernahme -> freiwillig": 2,
+  "umbenennung-ticker -> freiwillig": 1,
+  "spac-ende -> freiwillig": 1,
+  "zwangs-delisting -> umbenennung-ticker": 1,
+  "null -> insolvenz": 1,
+  "umbenennung-ticker -> uebernahme": 1,
+  "uebernahme -> unbekannt": 1,
+  "umbenennung-ticker -> unbekannt": 2
+ },
+ "pm45": {
+  "behauptet": 45,
+  "gezaehlt": 45,
+  "davonOhneGrund": 45
+ },
+ "pm39ImPanel": {
+  "leserReihenImWechselX10": 38,
+  "imPanelGefunden": 38,
+  "lebend1OhneGrund": 38,
+  "alsAbschnitt": [
+   "WORX~2"
+  ],
+  "klasse123InLetzten250": 0,
+  "maxKlasse": {
+   "0": 1,
+   "-1": 37
+  }
+ },
+ "panelrand": {
+  "lebendImPanel": 2306,
+  "letzteZeileAmEnde": 2215,
+  "davor": 91,
+  "ursachen": {
+   "veraltete bereinigte Kopie": 33,
+   "Abgang nach neuer Regel": 57,
+   "Minuten enden vor dem Panel-Ende (lebt nach neuer Regel)": 0,
+   "handelt nicht jeden Tag (Minuten nach dem Panel-Ende vorhanden)": 1
+  },
+  "davonKlasse123": {
+   "veraltete bereinigte Kopie": 23,
+   "Abgang nach neuer Regel": 5
+  }
+ }
+}

@@ -1,0 +1,411 @@
+{
+ "stand": "2026-10-04T10:40:01.702Z",
+ "muster": "/['\"]voll['\"]|\\/voll\\/|['\"]voll\\/|voll\\/panel/",
+ "treffer": [
+  {
+   "datei": "63-supertrend/detektoren.js",
+   "zeile": 75,
+   "text": "/* stufe: 'roh' | 'ema' | 'voll' | 'steil' */",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "63-supertrend/detektoren.js",
+   "zeile": 100,
+   "text": "if (stufe === 'voll') return { dir: dir };",
+   "kommentar": false,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "63-supertrend/detektoren.js",
+   "zeile": 118,
+   "text": "{ key: 'st_voll',  zeitrahmen: ['5m', '15m'], params: {}, signal: function (b, i) { return pruefe(b, i, 'voll'); } },",
+   "kommentar": false,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "fundamental-machbarkeit-2026-09-16/bauen.js",
+   "zeile": 386,
+   "text": "var T = PR.Tafel(path.join(PRUEFSTAND, 'voll'));",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "Werkzeug - umstellen, aber nicht nur der Pfad",
+   "grund": "Bau der Bilanz-Tafel: kursAm() sucht den Kurs ueber T.symIdx[Leser-Reihe]; in v2.2 liegen die Zeilen nach einer Luecke unter ~2/~3/~4 - ohne Abschnitts-Zuordnung findet der Waechter fuer diese Zeitraeume keinen Kurs"
+  },
+  {
+   "datei": "fundamental-machbarkeit-2026-09-16/test-fundamental.js",
+   "zeile": 309,
+   "text": "var PR = require(path.join(PRUEFSTAND, 'pruefstand.js')), T = PR.Tafel(path.join(PRUEFSTAND, 'voll'));",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "Werkzeug - mit bauen.js umstellen",
+   "grund": "Pruefung derselben Tafel"
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/auswerten.js",
+   "zeile": 18,
+   "text": "var STUFEN = ['voll', 'kurz'], KLASSEN = [1, 2, 3], SCHWELLEN = [1, 5, 20];",
+   "kommentar": false,
+   "art": "eigen",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/auswerten.js",
+   "zeile": 265,
+   "text": "var a = argumente(process.argv.slice(2)), aus = path.resolve(HIER, a.aus || 'voll');",
+   "kommentar": false,
+   "art": "eigen",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/gkg-zaehlen.js",
+   "zeile": 11,
+   "text": "* Zwei Strenge-Stufen, getrennt gezaehlt: \"voll\" (normalisierter Organisationstext == normalisierter Firmenname der Karte,",
+   "kommentar": true,
+   "art": "eigen",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/gkg-zaehlen.js",
+   "zeile": 191,
+   "text": "var aus = path.resolve(HIER, a.aus || 'voll');",
+   "kommentar": false,
+   "art": "eigen",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/namenskarte.js",
+   "zeile": 5,
+   "text": "* mit namen.js normalisiert; unterscheiden sie sich danach, traegt die Karte beide (voll, voll2) - GDELT trifft \"voll\",",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/namenskarte.js",
+   "zeile": 19,
+   "text": "var TICKERS = path.join(HIER, 'voll', 'company_tickers.json');",
+   "kommentar": false,
+   "art": "eigen",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/namenskarte.js",
+   "zeile": 26,
+   "text": "var T = PS.Tafel(path.join(QS, 'voll'));",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt (bei Neulauf umstellen)",
+   "grund": "Namenskarte der GDELT-Abdeckung aus den Panel-Kuerzeln; Zeile 19 ist der eigene Ordner"
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/namenskarte.js",
+   "zeile": 142,
+   "text": "/* Dasselbe fuer \"voll\": zwei Symbole mit gleichem normalisiertem Namen (z. B. zwei Aktienklassen) bleiben BEIDE in der",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/test.js",
+   "zeile": 60,
+   "text": "var probeP = path.join(HIER, 'voll', 'probe.gkg.csv.zip');",
+   "kommentar": false,
+   "art": "eigen",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "gdelt-abdeckung-2026-09-19/test.js",
+   "zeile": 61,
+   "text": "ok(fs.existsSync(probeP), 'voll/probe.gkg.csv.zip fehlt (node gkg-zaehlen.js --tag <tag> --probe)');",
+   "kommentar": false,
+   "art": "eigen",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "kapitulation-neu-2026-10-03/zaehlen.js",
+   "zeile": 181,
+   "text": "else { wahl = (a.alle ? alle : stichprobe(alle, a.n)).filter(function (r, q) { return q % a.teil.n === a.teil.k; }); name = (a.alle ? 'voll' : 'stichprobe') + '",
+   "kommentar": false,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "mehrfaktor-2026-09-22/zelle.js",
+   "zeile": 69,
+   "text": "PANEL: path.join(PS, 'voll'),                              // das echte Panel v2.1 (liegt auf C:)",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "Werkzeug - umstellen",
+   "grund": "KONST.PANEL der Mehrfaktor-Maschine; die gemessene Studie (23.09.) bleibt, ein neuer Lauf braucht v2.2 und einen neuen Pin (B14 trifft heute den v2-Pin exakt)"
+  },
+  {
+   "datei": "nachrichten-stimmung-machbarkeit-2026-09-19/mde-vorpruefung.js",
+   "zeile": 10,
+   "text": "* NUR LESEN am Panel (Tafel('voll'), Kennung panel/v2). Kein Modell, keine Schlagzeile, keine Stimmung.",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "nachrichten-stimmung-machbarkeit-2026-09-19/mde-vorpruefung.js",
+   "zeile": 34,
+   "text": "var T = PR.Tafel(path.join(Q, 'voll'));   /* ladePanel löst gegen das Arbeitsverzeichnis auf */",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Machbarkeits-Vorpruefung, abgeschlossen"
+  },
+  {
+   "datei": "nachrichten-stimmung-tage-2026-09-19/messen.js",
+   "zeile": 306,
+   "text": "[['voll', gruppe[gr]], ['definiert', sg && !sg.grund ? gruppe[gr].filter(function (m) { return typeof sg.ton[m.name] === 'number'; }) : []]].forEach(function (v",
+   "kommentar": false,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "nachrichten-stimmung-tage-2026-09-19/messen.js",
+   "zeile": 311,
+   "text": "var perm = mischen(L.slice(), ST.mulberry32(ST.fnv(KONST.SAAT_VORPRUEFUNG + '|' + gr + '|' + iso + '|' + j + (v[0] === 'voll' ? '' : '|definiert'))));",
+   "kommentar": false,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "nachrichten-stimmung-tage-2026-09-19/messen.js",
+   "zeile": 373,
+   "text": "['voll', 'definiert'].forEach(function (va) { GRUPPEN.forEach(function (gr) { H_URTEIL.forEach(function (H) { PORTFOLIOS.forEach(function (pf) {",
+   "kommentar": false,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "nachrichten-stimmung-tage-2026-09-19/messen.js",
+   "zeile": 542,
+   "text": "var T = PR.Tafel(path.join(Q, 'voll'));",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Nachrichten-Stimmung, gemessen 03.10.2026 auf v2.1"
+  },
+  {
+   "datei": "nachrichten-stimmung-tage-2026-09-19/test-messen.js",
+   "zeile": 25,
+   "text": "var T = PR.Tafel(path.join(Q, 'voll'));",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Test derselben Messung"
+  },
+  {
+   "datei": "nachrichten-stimmung-tage-2026-09-19/vorpruefung.js",
+   "zeile": 17,
+   "text": "* NUR LESEN am Panel (Tafel('voll'), Kennung panel/v2). Keine Stimmung, kein Netz, kein Modell, kein Datenbau.",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "nachrichten-stimmung-tage-2026-09-19/vorpruefung.js",
+   "zeile": 40,
+   "text": "var T = PR.Tafel(path.join(Q, 'voll'));",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Nachrichten-Stimmung, gemessen 03.10.2026 auf v2.1"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/bericht-teil3.js",
+   "zeile": 27,
+   "text": "try { tage = JSON.parse(fs.readFileSync(path.join(__dirname, 'voll', 'teil3', 'teil3-tage.json'), 'utf8')).tagesdatum; } catch (e) { tage = null; }",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "liest voll/teil3/teil3-tage.json der gemessenen Teil-3-Studie"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/bericht.js",
+   "zeile": 17,
+   "text": "var a = { aus: 'voll', kontrollen: null, ziel: null };",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "Werkzeug - umstellen",
+   "grund": "Vorgabe --aus voll; besser: ohne Vorgabe abbrechen wie kontrollen.js/teil3.js/teil4.js"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/diagnose-placebo-teil4.js",
+   "zeile": 10,
+   "text": "var aus = process.argv[process.argv.indexOf('--aus') + 1] || 'voll', ZIEH = 60, SAAT = 'teil4-placebo-diagnose-2026-09-18';",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Diagnose zu Teil 4 (18.09.), Vorgabe voll"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/diagnose-spruenge-teil4.js",
+   "zeile": 10,
+   "text": "var aus = process.argv[process.argv.indexOf('--aus') + 1] || 'voll';",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Diagnose zu Teil 4, Vorgabe voll"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/kuerzelwechsel.js",
+   "zeile": 21,
+   "text": "*          node kuerzelwechsel.js --luecken voll/panel   -> v2.2: schreibt NUR luecken-trennungen.json (siehe unten)",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/kuerzelwechsel.js",
+   "zeile": 93,
+   "text": "/* `aus` ist ein Panelordner (voll/panel oder voll/panel-v1); die Kennung des v1-Panels ist K.PANEL_KENNUNG_V1. */",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/kuerzelwechsel.js",
+   "zeile": 177,
+   "text": "if (!fs.existsSync(LUECKEN_DATEI)) throw new Error('luecken-trennungen.json fehlt - erst `node kuerzelwechsel.js --luecken voll/panel`');",
+   "kommentar": false,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/kuerzelwechsel.js",
+   "zeile": 233,
+   "text": "/* node kuerzelwechsel.js --luecken voll/panel   -> schreibt luecken-trennungen.json (und NICHT die Kuerzelwechsel-Kandidaten) */",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/luecken-trockenlauf.js",
+   "zeile": 40,
+   "text": "var T = PR.Tafel(path.join(__dirname, 'voll')), g = T.g, N = g.n, nSym = T.nSym, iso = T.kal.tage;",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Trockenlauf zu v2.2, misst absichtlich v2.1"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/luecken-trockenlauf.js",
+   "zeile": 312,
+   "text": "panel: { ordner: 'voll', zeilen: N, reihen: nSym, ersterTag: iso[g.tag[0]], letzterTag: iso[g.tag[N - 1]] }, parameter: P,",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Trockenlauf zu v2.2, misst absichtlich v2.1"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/paneldaten.js",
+   "zeile": 416,
+   "text": "/* v2.2: ein vorhandenes Panel einer ANDEREN Fassung wird nie ueberschrieben (voll/panel ist v2.1 und bleibt es). */",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/paneldaten.js",
+   "zeile": 512,
+   "text": "/** opt.ordner: anderer Panelordner (z. B. voll/panel-v1), opt.kennung: dessen Kennung (K.PANEL_KENNUNG_V1) - nur fuer",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/paneldaten.js",
+   "zeile": 529,
+   "text": "if (a.luecken && path.basename(path.resolve(a.aus)) === 'voll') { process.stderr.write('--luecken baut v2.2 und schreibt nie nach voll/ (v2.1)\\n'); process.exit",
+   "kommentar": false,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/pruefung-spruenge-v2.js",
+   "zeile": 11,
+   "text": "* Aufruf: node --max-old-space-size=8192 pruefung-spruenge-v2.js [--v1 voll/panel-v1] [--v2 voll/panel]",
+   "kommentar": true,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/pruefung-spruenge-v2.js",
+   "zeile": 19,
+   "text": "var A = { v1: 'voll/panel-v1', v2: 'voll/panel' };",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Vergleich v1 gegen v2.1"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/pruefung-v22.js",
+   "zeile": 31,
+   "text": "var A = { a: 'voll', b: null, erwartung: 'luecken', teilmenge: false, aus: path.join(__dirname, 'pruefung-v22.json') };",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Kernpruefung v2.1 gegen v2.2: voll ist hier die Vergleichsbasis"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/test-teil3.js",
+   "zeile": 155,
+   "text": "gleich(k1.kosten, voll, 1e-12, 'voll'); gleich(k1.umschlag, 0.5, 1e-12, 'Umschlag voll');",
+   "kommentar": false,
+   "art": "text",
+   "urteil": null,
+   "grund": null
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/test.js",
+   "zeile": 20,
+   "text": "var A = { aus: 'voll', kunst: 'kunst', nur: null };",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "Werkzeug - umstellen",
+   "grund": "Vorgabe aus: voll; die Pruefzahl REGRESSION23_ERWARTET hat schon den v2.2-Schluessel"
+  },
+  {
+   "datei": "querschnitt-pruefstand-2026-09-13/vergleich-v2.js",
+   "zeile": 13,
+   "text": "var A = { t3v1: 'teil3-ergebnis.json', t3v2: 'teil3-ergebnis-v2.json', k1v1: 'kontrollen-voll.json', k1v2: 'voll/kontrollen-v2.json',",
+   "kommentar": false,
+   "art": "panel",
+   "urteil": "abgeschlossen - bleibt",
+   "grund": "Vergleich v1/v2.1, liest voll/kontrollen-v2.json"
+  }
+ ]
+}
