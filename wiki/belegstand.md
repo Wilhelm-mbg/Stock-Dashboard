@@ -32,6 +32,23 @@ tags: [befund]
 
 **Lesart:** Der große Wert des alten Protokolls (+1,107 Pp bei 98 Tagen) hält weder im unberührten Fenster noch — in dieser Größe — auf sauberem Archiv im alten Fenster. Über Kosten-Tauglichkeit sagt die Messung nichts (se 0,319 gegen Hürden von 0,05–0,16 Pp): ein kleiner Effekt in Hürdengröße ist weder belegt noch ausgeschlossen. PM-Nachrechnung aus den Rohjournalen mit eigenem Code: identisch (−0,0238 Pp, 528 Signaltage, 6.054 Signale).
 
+## Rückblick über fünf Jahre: Momentum-Regel gegen den S&P 500 (04.10.2026) — Hauptzahl: nicht geschlagen; Antwort hängt am Starttag; gemessen ist der breite Markt, nicht der Korb der App
+
+*Keine Studie mit Urteil über eine Kante, sondern die beschreibende Zahl zu Wilhelms Regel vom 04.10.2026 („nach Kosten den S&P 500 schlagen — Rückblick fünf Jahre, dann einige Monate Vorwärtstest"). Regel vor der Zahl festgelegt, ein Lauf.*
+
+| Sache | Zahl | Fundstelle |
+|---|---|---|
+| **Hauptzahl** (Start 16.09.2021, Ende 15.09.2026, 20 Basispunkte je Seite, Gesamtertrag auf beiden Seiten) | Buch **+65,2 % (10,57 % p. a.)** gegen SPY **+81,2 % (12,63 % p. a.)** → **−2,06 Pp p. a. — „schlägt den Markt: nein"** | `studien/massstab-rueckblick-2026-10-04/ERGEBNIS.md`, `ergebnis.json` (Siegel `152cc07`, Ergebnis `cf6e718`) |
+| Zufallsbereich: 63 Startphasen | Abstand **−3,47 bis +7,89 Pp p. a.**, Median +1,62; **41 von 63** vor dem Markt (Starttage 0–27 und 58–62 um null oder darunter, 28–57 deutlich darüber) | `ergebnis.json` → `zufallsbereich.startphasen` |
+| Zufallsbereich: Periodenstreuung (Start 16.09.2021) | +0,63 Pp je Periode, Standardfehler 3,07, 95-%-Band −5,79 bis +7,05; 8 von 20 Perioden vor dem Markt | ebd. |
+| Größter Rückschlag | Buch **−40,2 %** gegen SPY −24,5 % (über die 63 Phasen −36 bis −45 %) | `ergebnis.json` → `haupt`; Phasen: Gegenprobe des PM |
+| Letzte Periode 25.06.–15.09.2026 | Buch **−25,1 %** gegen SPY +3,3 % — echter Einbruch der Vorjahressieger (Median der Positionen etwa −28 %, kein Sprung aus einer Bereinigung); bis 24.06.2026 stand das Buch bei 220.500 $ gegen 175.400 $ | Übergabe; Gegenprobe des PM Position für Position |
+| Kalenderjahre (Buch / SPY) | 2021 ab 16.09.: −3,4 / +6,9 · 2022: −16,9 / −18,2 · 2023: +9,4 / +26,2 · 2024: +42,2 / +24,9 · 2025: +31,4 / +17,7 · 2026 bis 15.09.: +0,7 / +11,7 | `ERGEBNIS.md` |
+| **Was gemessen wurde** | die Regel des Buchs (mit den Funktionen der App nachgespielt) auf **allen liquiden Aktien des Panels** mit den verschwundenen: 515–923 zulässige Werte, Zielzahl 52–92, gehalten 48–78. **Das Buch der App wählt aus 148 großen Werten** (Zielzahl heute 15, im Buch 19) — das ist ein anderer Korb. | Fehler im Auftrag des PM (§1.7 „weitgehend dieselbe Menge" war nicht nachgesehen); App-Bestand am 04.10. gelesen |
+| Vorwärtstest des Buchs der App | seit 25.08.2026: Momentum **+14,7 %** gegen SPY +0,8 % (Kurs, beide ohne Ausschüttungen), Drift −0,6 %; 38 Tagespunkte bis 04.10.2026 | Kopie des App-Bestands, `massstab.js` und von Hand |
+
+**Lesart:** Nach der vorher festgelegten Hauptzahl schlägt die Regel den S&P 500 **nicht**; über die 63 Starttage liegt sie in zwei Dritteln der Fälle vorn, im Mittel leicht, bei fast doppelt so tiefem Rückschlag — der Unterschied zwischen „ja" und „nein" ist die Lage der Umschichtungstage im Quartal, also Zufall. Ein klares „schlägt den Markt" ist das nicht. Für den Korb, den die App wirklich handelt (wenige große Werte), sagt die Zahl nichts Sicheres; ein Rückblick auf der heutigen Liste der App wäre durch die Auswahl geschönt. Zwei unabhängige Rechnungen (Studien-Chat, PM) stimmen in der Hauptzahl überein (−2,06 / −2,05 Pp p. a.).
+
 ## Nachrichten-Stimmung, Tagesdesign (03.10.2026) — nicht belegt, in 9 von 12 Tests in der Größe ausgeschlossen
 
 | Test (Klassen 2+3 gepoolt) | Δ̄ brutto | se | obere 95-%-Grenze | Hürde (ein Umlauf) | Größe |
