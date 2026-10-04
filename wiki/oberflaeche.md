@@ -285,8 +285,13 @@ Wilhelms Regel (entscheide.md, „Richtung des Projekts"): echtes Geld nur für 
   `berichte.js` steht keine eigene Prozentrechnung für ein Buch mehr (92.4); **kein zweiter Rechenweg für den Markt** (92.6): sechs
   Aufrufe von `Massstab.vergleich`, fünf mit der bereinigten Reihe aus einer Quelle, der Nasdaq als Kursindex; außerhalb von
   `massstab.js` liest niemand den abgelegten Marktstand; der Wortlaut der Beschriftung steht nur in `massstab.js`.
-- **Kunstinstanz:** `tools/kunstdepot.js` `marktReihe()` sät eine erfundene bereinigte Reihe mit einer Ausschüttung
-  (`drift_markt.json` im Test-Store) – die Aufnahmen zeigen den Normalfall (Gesamtertrag), nicht den Rückfall.
+- **Kunstinstanz:** `tools/kunstdepot.js` `marktReihe()` sät eine erfundene bereinigte Reihe (`drift_markt.json` im Test-Store,
+  glatt, +1,4 % über die 19 Tage des Kunstverlaufs gegen +1,1 % der abgelegten Tagesstände) – die Aufnahmen zeigen den
+  Normalfall (Gesamtertrag), nicht den Rückfall.
+- **Aufnahmen vom 04.10.2026** (`aufnahmen/`, nach Nr. 71, 73 und 81 neu erzeugt): `heute/ueberblick-1` zeigt die drei
+  Buch-Karten mit „Gegen den Markt" und am Momentum-Buch den Rückblick, `heute/ueberblick-2` den Depotverlauf mit den
+  gestrichelten Marktlinien, `regeln/regeln-1` die Antwort-Seite mit der Rückblick-Zeile. Das Scoreboard steht in den Aufnahmen
+  leer (die Kunstinstanz sät keine Messprotokolle); den Kopf über dem überholten Protokoll belegt der Textauszug in der Übergabe.
 
 ## 6c. Der Rückblick am Momentum-Buch (seit 04.10.2026, Auftrag Nr. 81)
 

@@ -3,7 +3,7 @@ tags: [bauplan]
 ---
 # Struktur der Oberfläche — mit Aufnahmen
 
-*Erzeugt am 2026-09-07 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.44.0** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
+*Erzeugt am 2026-10-04 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.44.2** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
 
 **Was hier steht:** ▪ = Überschrift `h2`, · = Überschrift `h3`, ▸ = Klappe (`<details>`). Die Einrückung ist die echte Verschachtelung: eine Klappe **in** einer Klappe steht eine Stufe weiter rechts. `[#kennung]` ist die `id` des Blocks. „verborgen“ heißt: der Block steht in der Seite, ist aber ausgeblendet, bis etwas passiert (z. B. Explorer → „Kennzahlen“ erst nach dem Öffnen eines Werts).
 
@@ -21,7 +21,7 @@ Heute (data-tab="dashboard")
    │  ▸ Klappe: Positionen im Detail — Ergebnis-Drift  [in #buchDrift]
    │  · Intraday-Depot · die Kurzfrist-Regel, virtuelles Kapital  [in #buchIntraday]
    │  · Zuletzt getan – die jüngsten Handlungen aller Bücher  [in #bestandBlock]
-   │  · Depotverlauf – jedes Buch gegen sein eigenes Startkapital  [in #bestandBlock]
+   │  · Depotverlauf – jedes Buch gegen sein eigenes Startkapital, daneben der S&P 500  [in #bestandBlock]
    │  ▪ Intraday-Depot  [in #intradayBereich]
    │  · Depotverlauf (seit Start der Simulation)  [in #sub-depot]
    │  ▪ Offene Positionen  [in #sub-depot]
@@ -86,14 +86,14 @@ Werkzeuge (data-tab="werkzeuge")
 ├─ Schein-Finder (data-sub="scheine", #sub-scheine)
    │  · Schein-Finder · Kennzahlen und Risikostufe
 └─ Betrieb (data-sub="betrieb", #sub-betrieb)
-   │  ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
+   │  ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 02.10.26, 22:00 Uhr“
    │    ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
-   │  ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 07.09.26 · Marktlage 07.09.26“
+   │  ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 03.10.26 · Marktlage 04.10.26“
    │    · Autopilot & Datensammlung  [#abAutopilot]
    │    · Autopilot – die App verbessert sich selbst  [in #sub-auswertung]
    │    ▸ Klappe: Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)  [in #sub-auswertung]
-   │  ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 05.09.26“
-   │  ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 07.09.26“
+   │  ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 02.10.26“
+   │  ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 04.10.26“
    │    · Mittelfrist – Momentum & Ergebnis-Drift  [#abMittelfrist]
    │    · Momentum im Querschnitt · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
    │    · Was jetzt zu halten wäre  [in #sub-mittelfrist]
@@ -135,7 +135,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Heute → Überblick
 
-`#sub-ueberblick` · 13 Blöcke · 4378 Zeichen sichtbarer Text
+`#sub-ueberblick` · 13 Blöcke · 6536 Zeichen sichtbarer Text
 
 - ▪ Bestand  [in #bestandBlock]
 - · Momentum-Buch · stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite  [in #buchMomentum]
@@ -144,7 +144,7 @@ Dialoge (gehören zu keinem Reiter)
 - ▸ Klappe: Positionen im Detail — Ergebnis-Drift  [in #buchDrift]
 - · Intraday-Depot · die Kurzfrist-Regel, virtuelles Kapital  [in #buchIntraday]
 - · Zuletzt getan – die jüngsten Handlungen aller Bücher  [in #bestandBlock]
-- · Depotverlauf – jedes Buch gegen sein eigenes Startkapital  [in #bestandBlock]
+- · Depotverlauf – jedes Buch gegen sein eigenes Startkapital, daneben der S&P 500  [in #bestandBlock]
 - ▪ Intraday-Depot  [in #intradayBereich]
 - · Depotverlauf (seit Start der Simulation)  [in #sub-depot]
 - ▪ Offene Positionen  [in #sub-depot]
@@ -168,7 +168,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 7490 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 7539 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -202,21 +202,19 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Radar
 
-`#sub-beobachtung` · 3 Blöcke · 2674 Zeichen sichtbarer Text
+`#sub-beobachtung` · 3 Blöcke · 864 Zeichen sichtbarer Text
 
 - ▪ Spekulations-Radar – Gerüchte aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. Gehandelt wird hiervon nichts.
 - ▪ Insider-Käufe – meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat (SEC Form 4). Gehandelt wird hiervon nichts.
 - ▪ Vorbörsen-Lücken – Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss. Gehandelt wird hiervon nichts.
 
 ![[aufnahmen/markt/beobachtung-1.png]]
-![[aufnahmen/markt/beobachtung-2.png]]
-![[aufnahmen/markt/beobachtung-3.png]]
 
 ## Regeln
 
 ### Regeln → Strategien
 
-`#sub-regeln` · 8 Blöcke · 7162 Zeichen sichtbarer Text
+`#sub-regeln` · 8 Blöcke · 7451 Zeichen sichtbarer Text
 
 - · Was die App gerade tut  [in #antwortSeite]
 - · Die Strategien im Überblick
@@ -233,7 +231,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Regeln → Einstellungen
 
-`#sub-einstellungen` · 8 Blöcke · 8680 Zeichen sichtbarer Text
+`#sub-einstellungen` · 8 Blöcke · 8943 Zeichen sichtbarer Text
 
 - · Intraday & Risiko  [#abIntraday]
 - · Intraday-Strategie  [in #sub-strategien]
@@ -272,16 +270,16 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Betrieb
 
-`#sub-betrieb` · 34 Blöcke · 17300 Zeichen sichtbarer Text
+`#sub-betrieb` · 34 Blöcke · 17583 Zeichen sichtbarer Text
 
-- ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
+- ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 02.10.26, 22:00 Uhr“
   - ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
-- ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 07.09.26 · Marktlage 07.09.26“
+- ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 03.10.26 · Marktlage 04.10.26“
   - · Autopilot & Datensammlung  [#abAutopilot]
   - · Autopilot – die App verbessert sich selbst  [in #sub-auswertung]
   - ▸ Klappe: Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)  [in #sub-auswertung]
-- ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 05.09.26“
-- ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 07.09.26“
+- ▸ Klappe: Kostenmessung Capital & Alpaca  — Statuszeile: „Runden Capital 2 · Alpaca 2 · letzte 02.10.26“
+- ▸ Klappe: Mittelfrist-Analyse & Bücher steuern  — Statuszeile: „Momentum an · Drift an · zuletzt geprüft 04.10.26“
   - · Mittelfrist – Momentum & Ergebnis-Drift  [#abMittelfrist]
   - · Momentum im Querschnitt · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
   - · Was jetzt zu halten wäre  [in #sub-mittelfrist]
