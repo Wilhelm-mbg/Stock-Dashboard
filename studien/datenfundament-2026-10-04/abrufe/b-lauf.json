@@ -1,0 +1,34 @@
+{
+ "stand": "2026-10-04T11:54:39.366Z",
+ "seiten": 24,
+ "abgebrochen": false,
+ "gesamt": 23462,
+ "aktienartig": 6948,
+ "dauerSekunden": 300,
+ "bytes": 1359557,
+ "altesUnveraendert": true,
+ "bestandVorher": {
+  "universum-2024-09-02.json": {
+   "bytes": 154889,
+   "geaendert": "2026-08-23T22:43:06.931Z",
+   "sha256": "90df147bf7242b3133783c345f2e42bd04870a32df47b972212c4c8df872d4fc"
+  },
+  "verschwundene.json": {
+   "bytes": 1353844,
+   "geaendert": "2026-08-23T17:13:33.212Z",
+   "sha256": "19bd6b973d3240e3b4b22badf55b4eb4aed578160684b671f6a5c647a86cdf6b"
+  }
+ },
+ "bestandNachher": {
+  "universum-2024-09-02.json": {
+   "bytes": 154889,
+   "geaendert": "2026-08-23T22:43:06.931Z",
+   "sha256": "90df147bf7242b3133783c345f2e42bd04870a32df47b972212c4c8df872d4fc"
+  },
+  "verschwundene.json": {
+   "bytes": 1353844,
+   "geaendert": "2026-08-23T17:13:33.212Z",
+   "sha256": "19bd6b973d3240e3b4b22badf55b4eb4aed578160684b671f6a5c647a86cdf6b"
+  }
+ }
+}
