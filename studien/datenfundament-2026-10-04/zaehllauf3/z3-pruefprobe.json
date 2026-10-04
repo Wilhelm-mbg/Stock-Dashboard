@@ -1,0 +1,1048 @@
+{
+ "stand": "2026-10-04T13:12:04.623Z",
+ "wortlautFassung": 2,
+ "saat": "z3-pruef",
+ "regel11": 505,
+ "reihen": [
+  {
+   "reihe": "TBIO",
+   "akz": "0000950170-24-105164",
+   "tageZumAnker": -17,
+   "band": "1-5",
+   "firma": "Telesis Bio Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 2419,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intends to file a form 25"
+    ]
+   },
+   "auszug": "tock under Section 12(b) of the Securities Exchange Act of 1934, as amended (the \"Exchange Act\"). The Company intends to file a Form 25 with the SEC to remove the Common Stock from listing on the Nasdaq Global Select Market on or about September 20, 2024 and deregister the Common Stock under Section",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "3826"
+  },
+  {
+   "reihe": "WINT",
+   "akz": "0001437749-25-027421",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "WINDTREE THERAPEUTICS INC /DE/",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 3419,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "noncompliance",
+     "determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "s notified by The Nasdaq Stock Market LLC (\" Nasdaq \") that as a result of the Company's previously disclosed noncompliance with Nasdaq Listing Rule 5550(a)(2), Nasdaq has determined to delist the Company's common stock from the Nasdaq Capital Market and, accordingly, will suspend trading in the Com",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2836"
+  },
+  {
+   "reihe": "GMBL",
+   "akz": "0001493152-24-007169",
+   "tageZumAnker": 0,
+   "band": "1-5",
+   "firma": "ESPORTS ENTERTAINMENT GROUP, INC.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 741,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily"
+    ]
+   },
+   "auszug": "Item 3.01 As previously announced, on February 13, 2024, Esports Entertainment Group, Inc. (the \"Company\") is voluntarily delisting its securities, including its Common Stock, par value $0.01 per share, 10.0% Series A Cumulative Redeemable Convertible Preferred Stock and Common Stock Warrants (the \"",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "7900"
+  },
+  {
+   "reihe": "BSTG",
+   "akz": "0001144204-17-051587",
+   "tageZumAnker": 1,
+   "band": "unter 1",
+   "firma": "Harvard Apparatus Regenerative Technology, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 9284,
+   "verwiesen": [
+    "8.01"
+   ],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "noncompliance",
+     "minimum bid",
+     "bid price",
+     "determined to delist",
+     "hearings panel",
+     "received written notification from nasdaq indicating that the panel has determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "m 3.01. . On October 4, 2017, following the withdrawal by Biostage, Inc. (the \"Company\") of its appeal to the Hearings Panel (the \"Panel\") of The Nasdaq Stock Market LLC (\"NASDAQ\"), the Company received written notification from NASDAQ indicating that the Panel has determined to delist the Company's",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "3841"
+  },
+  {
+   "reihe": "IONM",
+   "akz": "0001104659-24-081940",
+   "tageZumAnker": 0,
+   "band": "1-5",
+   "firma": "Assure Holdings Corp.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2152,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "bid price",
+     "determined to delist",
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": ", 2024, the Nasdaq Stock Market LLC (\"Nasdaq\") notified Assure Holdings Corp. (the \"Company\") that the Nasdaq Hearings Panel (the \"Panel\") has determined to delist the Company's common stock and that trading of the Company's securities will be suspended at the open of trading on July 24, 2024. As pr",
+   "fusionNah": 1,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "3841"
+  },
+  {
+   "reihe": "TCPI",
+   "akz": "0001545391-16-000042",
+   "tageZumAnker": 1,
+   "band": "1-5",
+   "firma": "TCP International Holdings Ltd.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1635,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "delisting determination",
+     "commence proceedings",
+     "received a letter from nyse regulation (the \"nyse\") confirming that the nyse had suspend"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 On November 21, 2016, TCP International Holdings Ltd. (the \"Company\") received a letter from NYSE Regulation (the \"NYSE\") confirming that the NYSE had suspended trading in the Company's common stock, which suspension was effective immediately upon the close on November 21, 2016, and announ",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "3640"
+  },
+  {
+   "reihe": "AATC",
+   "akz": "0000897101-22-001055",
+   "tageZumAnker": -8,
+   "band": "1-5",
+   "firma": "AUTOSCOPE TECHNOLOGIES CORP",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 1387,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to voluntarily delist"
+    ]
+   },
+   "auszug": "oncurrently with the delivery of the notification to Nasdaq, the Company issued a press release regarding its intention to voluntarily delist and deregister the Common Stock, a copy of which is filed as Exhibit 99.1 hereto and incorporated herein by reference. Section 9 - Financial Statements and Ex",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "3829"
+  },
+  {
+   "reihe": "WBB",
+   "akz": "0001553326-17-000034",
+   "tageZumAnker": -17,
+   "band": "ueber 13",
+   "firma": "Westbury Bancorp, Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 1757,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to file a form 25"
+    ]
+   },
+   "auszug": "n September 20, 2017, the board of directors of Westbury Bancorp, Inc. (the \"Company\") approved a decision to voluntarily delist the Company's common stock from the NASDAQ Capital Market (\"NASDAQ\") and deregister its common stock with the Securities and Exchange Commission (the \"SEC\"). On September ",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "6022"
+  },
+  {
+   "reihe": "AXLA",
+   "akz": "0001104659-23-119563",
+   "tageZumAnker": -5,
+   "band": "1-5",
+   "firma": "Axcella Health Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2129,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": "isting Qualifications Department (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") that the Company was not in compliance with the continued listing requirements of Nasdaq Listing Rule 5250(c)(1) because its Quarterly Report on Form 10-Q for the quarter ended September 30, 2023 had not yet bee",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2836"
+  },
+  {
+   "reihe": "BSFC",
+   "akz": "0001493152-24-050752",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "Blue Star Foods Corp.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1441,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "minimum bid",
+     "bid price",
+     "determined to delist",
+     "hearings panel",
+     "received formal notice from the nasdaq stock market llc (\"nasdaq\") that the nasdaq hearings panel (the \"panel\") had determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 On December 18, 2024, Blue Star Foods Corp. (the \"Company\") received formal notice from The Nasdaq Stock Market LLC (\"Nasdaq\") that the Nasdaq Hearings Panel (the \"Panel\") had determined to delist the Company's securities from Nasdaq based upon the Company's violation of Listing Rule 5550(",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2092"
+  },
+  {
+   "reihe": "SISI",
+   "akz": "0001493152-25-017416",
+   "tageZumAnker": 2,
+   "band": "5-8",
+   "firma": "SHINECO, INC.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2747,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "non-compliance",
+     "minimum bid",
+     "bid price",
+     "staff determination",
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 As previously reported, on June 16, 2025, Shineco Inc. (\"Shineco\" or the \"Company\") received a staff determination letter (the \"Letter\") from the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that it was not in compliance with the minimum",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "0100"
+  },
+  {
+   "reihe": "RXII",
+   "akz": "0001683168-18-003381",
+   "tageZumAnker": -3,
+   "band": "unter 1",
+   "firma": "Phio Pharmaceuticals Corp.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1513,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "deficien",
+     "failure to meet",
+     "minimum bid",
+     "bid price"
+    ],
+    "eigen": []
+   },
+   "auszug": "n notice (the \"Notification Letter\") from the Nasdaq Stock Market (\"Nasdaq\") notifying the Company that it is not in compliance with the minimum bid price requirements set forth in Nasdaq Listing Rule 5550(a)(2) for continued listing on The Nasdaq Capital Market. Nasdaq Listing Rule 5550(a)(2) requi",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2834"
+  },
+  {
+   "reihe": "WTER",
+   "akz": "0001062993-23-021510",
+   "tageZumAnker": -69,
+   "band": "unter 1",
+   "firma": "ALKALINE WATER Co INC",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2008,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "deficien",
+     "failure to comply",
+     "hearings panel",
+     "delinquen"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 On November 21, 2023, The Alkaline Water Company Inc. (the \"Company\") received a deficiency letter (the \"Letter\") from the Listing Qualifications Department of The Nasdaq Stock Market (the \"Nasdaq\"), notifying the Company that since the Company had not yet filed its Form 10-Q for the perio",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "5140"
+  },
+  {
+   "reihe": "TBLT",
+   "akz": "0001213900-24-066541",
+   "tageZumAnker": 0,
+   "band": "1-5",
+   "firma": "Toughbuilt Industries, Inc",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1734,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "non-compliance",
+     "hearings panel",
+     "delinquen"
+    ],
+    "eigen": []
+   },
+   "auszug": "s, Inc. (the \"Company\") notified The Nasdaq Stock Market LLC that it was withdrawing its appeal to the Nasdaq Hearings Panel. Although the Company was earlier notified by Nasdaq on August 7, 2024, that it had regained compliance with the majority independent board and various board committee require",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "3420"
+  },
+  {
+   "reihe": "BLPH",
+   "akz": "0001104659-23-108988",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "Bellerophon Therapeutics, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1238,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "minimum bid",
+     "bid price",
+     "determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "(\"Staff\") notified Bellerophon Therapeutics, Inc. (the \"Company\") that, pursuant to Listing Rule 5101, it had determined to delist the Company's shares of common stock as the Staff believed that the Company was a \"public shell,\" and that the continued listing of its securities was no longer warrante",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2834"
+  },
+  {
+   "reihe": "POT",
+   "akz": "0001193125-18-000203",
+   "tageZumAnker": 4,
+   "band": "ueber 13",
+   "firma": "POTASH CORP OF SASKATCHEWAN INC",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "zeichen": 859,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [
+     "consummation"
+    ],
+    "ruege": [],
+    "eigen": []
+   },
+   "auszug": "connection with the Arrangement, the Company (i) notified the New York Stock Exchange (the NYSE) that, upon consummation of the Arrangement, trading in the common shares of the Company (the Company Shares) should be suspended and the listing of the Company Shares on the NYSE should be removed an",
+   "fusionNah": 0,
+   "i501": 1,
+   "emittent25": 0,
+   "sic": "2870"
+  },
+  {
+   "reihe": "RVLT",
+   "akz": "0001193125-19-265817",
+   "tageZumAnker": -1,
+   "band": "unter 1",
+   "firma": "Revolution Lighting Technologies, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 4714,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "minimum bid",
+     "bid price",
+     "delisting determination",
+     "determined to delist",
+     "hearings panel",
+     "received a notification letter from the nasdaq hearings panel (the panel), informing the company that the panel has determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 On October 10, 2019, Revolution Lighting Technologies, Inc. (the Company) received a notification letter from the Nasdaq Hearings Panel (the Panel), informing the Company that the Panel has determined to delist the Companys common stock from The Nasdaq Capital Market and, accordingly,",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "3640"
+  },
+  {
+   "reihe": "MICR",
+   "akz": "0000819689-20-000003",
+   "tageZumAnker": -18,
+   "band": "1-5",
+   "firma": "MICRON SOLUTIONS INC /DE/",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 3146,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to voluntarily delist"
+    ]
+   },
+   "auszug": "Item 3.01 On March 16 , 2020, Micron Solutions, Inc. (the \" Company \") issued a press release announcing its intention to voluntarily delist its Common Stock, par value $0.01 (the \" Common Stock \") , from the NYSE American LLC (the \" Exchange \") and to deregister its Common Stock under Section 12(g)",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "3845"
+  },
+  {
+   "reihe": "GSVC",
+   "akz": "0001144204-19-018669",
+   "tageZumAnker": -114,
+   "band": "5-8",
+   "firma": "Neostellar Capital Corp.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2769,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": "not accept the Company's plan, then the Company will have the opportunity to appeal that decision to a Nasdaq Hearings Panel. The Company expects to file the Form 10-K with the SEC prior to the due date of such plan to regain compliance with the Nasdaq Listing Rules. If completion of the Internal Re",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": null
+  },
+  {
+   "reihe": "SBSA",
+   "akz": "0001564590-17-000386",
+   "tageZumAnker": 0,
+   "band": "1-5",
+   "firma": "SPANISH BROADCASTING SYSTEM INC",
+   "klasse": "nichts",
+   "abschnitt": 0,
+   "zeichen": 0,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": null,
+   "auszug": "",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "4832"
+  },
+  {
+   "reihe": "SDT",
+   "akz": "0001509228-19-000038",
+   "tageZumAnker": 1,
+   "band": "unter 1",
+   "firma": "SandRidge Mississippian Trust I",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1927,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "non-compliance"
+    ],
+    "eigen": []
+   },
+   "auszug": "d that concluded on November 16, 2019, the NYSE announced the suspension of trading of the Trust units due to non-compliance with Rule 802.01C of the NYSE Listed Company Manual, effective as of the close of trading on November 18, 2019, and announced that it was initiating proceedings to delist the ",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "1311"
+  },
+  {
+   "reihe": "RAS",
+   "akz": "0001193125-18-161071",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "RAIT Financial Trust",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 4829,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "delisting determination"
+    ],
+    "eigen": []
+   },
+   "auszug": "IT has the right to have a committee of the Board of Directors of the NYSE review the NYSE Regulation Staffs delisting determination. RAIT plans to notify the NYSE that it will exercise this right and appeal the Staffs decision by the deadline for such notice. RAIT cannot provide any assurance tha",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "6798"
+  },
+  {
+   "reihe": "BLT",
+   "akz": "0001193125-16-541716",
+   "tageZumAnker": 4,
+   "band": "8-13",
+   "firma": "BLOUNT INTERNATIONAL INC",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "zeichen": 1016,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [
+     "effective time",
+     "converted into the right to receive"
+    ],
+    "ruege": [],
+    "eigen": []
+   },
+   "auszug": "a result of the Merger, each share of the Companys common stock issued and outstanding immediately prior the effective time of the Merger was cancelled and, other than the Excluded Shares, was converted into the right to receive the Per Share Merger Consideration. Accordingly, on April 12, 2016, th",
+   "fusionNah": 1,
+   "i501": 1,
+   "emittent25": 0,
+   "sic": "3420"
+  },
+  {
+   "reihe": "PRST",
+   "akz": "0001213900-24-065927",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "Presto Automation Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2479,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "bid price",
+     "staff determination",
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": "ualifications Department (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") stating that the Company was not in compliance with the requirement to maintain a minimum Market Value of Listed Securities (\"MVLS\") of $50 million, as set forth in Nasdaq Listing Rule 5450(b)(2)(A) (the \"MVLS Requireme",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "7372"
+  },
+  {
+   "reihe": "TLIS",
+   "akz": "0000950170-24-100200",
+   "tageZumAnker": -7,
+   "band": "1-5",
+   "firma": "Talis Biomedical Corp",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 1574,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntary"
+    ]
+   },
+   "auszug": "e Company had suspended all research and development activities as of June 30, 2024, anticipated commencing a voluntary petition under Chapter 11 of the United States Code and expected that the Company would be delisted from the Nasdaq Stock Market. On August 22, 2024, the Company received a letter ",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "3826"
+  },
+  {
+   "reihe": "AGII",
+   "akz": "0001193125-18-126911",
+   "tageZumAnker": -11,
+   "band": "ueber 13",
+   "firma": "Argo Group International Holdings, Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 1913,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "transfer the listing"
+    ]
+   },
+   "auszug": "irectors, provided written notice to The Nasdaq Global Select Market ( Nasdaq ) that the Company intends to transfer the listing of its common stock, par value $1.00 per share (the  Common Stock ), from Nasdaq to the New York Stock Exchange (the  NYSE ), where it has been authorized for listin",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "6361"
+  },
+  {
+   "reihe": "ANTH",
+   "akz": "0001214659-18-004587",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "Anthera Pharmaceuticals Inc",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1387,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "failure to meet",
+     "minimum bid",
+     "bid price"
+    ],
+    "eigen": []
+   },
+   "auszug": "the trading of the Company's securities at the open of business on June 28, 2018 as a result of the Company's failure to meet the minimum bid price requirement pursuant to Listing Rule 550(a)(2), and the Company's disclosure on its most recent form 10-Q for the quarter ended March 31, 2018 in which ",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "2834"
+  },
+  {
+   "reihe": "VYNT",
+   "akz": "0001493152-23-013369",
+   "tageZumAnker": -18,
+   "band": "unter 1",
+   "firma": "Vyant Bio, Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 1830,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to voluntarily delist"
+    ]
+   },
+   "auszug": "iated with being a public company, on April 24, 2023, the Company notified The Nasdaq Stock Market LLC of its intention to voluntarily delist its shares of common stock, par value $0.0001 per share (the \"Common Stock\") from the Nasdaq Capital Market (\"Nasdaq\") and deregister the Common Stock under S",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "8071"
+  },
+  {
+   "reihe": "SALM",
+   "akz": "0001193125-23-305906",
+   "tageZumAnker": -20,
+   "band": "unter 1",
+   "firma": "SALEM MEDIA GROUP, INC. /DE/",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 5230,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "minimum bid",
+     "bid price",
+     "hearings panel",
+     "received written notice from nasdaq notifying the corporation that it has not regained compliance with nasdaq listing rule 5450(a)(1) and that the class a common stock is subject to delist"
+    ],
+    "eigen": [
+     "voluntarily",
+     "intent to file a form 25"
+    ]
+   },
+   "auszug": "th the SEC on June 23, 2023, the Corporation had received written notice from Nasdaq that the Corporation was not in compliance with the minimum bid price required for continued listing on the Nasdaq Global Market under Nasdaq Listing Rule 5450(a)(1) based upon the closing bid price of the Class A C",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "4832"
+  },
+  {
+   "reihe": "TEAR",
+   "akz": "0001493152-17-012536",
+   "tageZumAnker": -1,
+   "band": "unter 1",
+   "firma": "TearLab Corp",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2416,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "non-compliance",
+     "failure to regain",
+     "determined to delist",
+     "hearings panel",
+     "received a letter (the \"letter\") from the nasdaq stock market llc (\"nasdaq\") notifying the company that the nasdaq hearings panel had determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01. On November 7, 2017, Tearlab Corporation (the \"Company\") received a letter (the \"Letter\") from The NASDAQ Stock Market LLC (\"Nasdaq\") notifying the Company that the Nasdaq Hearings Panel had determined to delist the Company's securities from The Nasdaq Capital Market due to the Company's ",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "3841"
+  },
+  {
+   "reihe": "SPHS",
+   "akz": "0001437749-20-004807",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "SOPHIRIS BIO INC.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1521,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "non-compliance",
+     "determined to delist",
+     "hearing panel"
+    ],
+    "eigen": []
+   },
+   "auszug": "Inc. (the \"Company\") announced that the Nasdaq Office of General Counsel notified the Company that the Nasdaq Hearing Panel (\"Panel\") had determined to delist the Company's shares from The Nasdaq Stock Market LLC (\"Nasdaq\"), and that trading in the Company's common shares will be suspended effective",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2834"
+  },
+  {
+   "reihe": "DS",
+   "akz": "0001140361-22-045424",
+   "tageZumAnker": -16,
+   "band": "unter 1",
+   "firma": "Drive Shack Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 1487,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to voluntarily delist"
+    ]
+   },
+   "auszug": " Drive Shack Inc. (the \"Company\") delivered written notice to the New York Stock Exchange (the \"NYSE\") of its intention to voluntarily delist its securities from NYSE and deregister its securities under the Section 12(b) and Section 12(g) of Securities and Exchange Act of 1934, as amended (the \"Exch",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "5810"
+  },
+  {
+   "reihe": "ENSV",
+   "akz": "0001437749-24-020212",
+   "tageZumAnker": -141,
+   "band": "unter 1",
+   "firma": "Enservco Corp",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1274,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "determined to commence",
+     "commence proceedings",
+     "received formal notice from that nyse regulation has determined to commence proceedings to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 On June 10, 2024, the Company received formal notice from that NYSE Regulation has determined to commence proceedings to delist the Company's Common Stock from the NYSE American. NYSE Regulation has determined that the Company is no longer suitable for listing pursuant to Section 1009(a) o",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "1389"
+  },
+  {
+   "reihe": "SXE",
+   "akz": "0001547638-19-000003",
+   "tageZumAnker": 1,
+   "band": "unter 1",
+   "firma": "Southcross Energy Partners LLC",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 2777,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "non-compliance",
+     "determined to commence",
+     "commence proceedings"
+    ],
+    "eigen": []
+   },
+   "auszug": " the New York Stock Exchange (the \"NYSE\") that the staff of NYSE Regulation, Inc. (the \"NYSE Regulation\") has determined to commence proceedings to delist the common units representing limited partner interests (the \"Common Units\") of the Partnership. The NYSE Regulation reached its decision to deli",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "4922"
+  },
+  {
+   "reihe": "WCFB",
+   "akz": "0000943374-19-000346",
+   "tageZumAnker": -10,
+   "band": "8-13",
+   "firma": "WCF Bancorp, Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 838,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to voluntarily delist"
+    ]
+   },
+   "auszug": "bank headquartered in Webster City, Iowa, today announced that it has notified The Nasdaq Stock Market of its intention to voluntarily delist its common stock from the Nasdaq Capital Market and to file a Form 25, Notification of Removal from Listing and/or Registration Under Section 12(b) of the Sec",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "6035"
+  },
+  {
+   "reihe": "EQGP",
+   "akz": "0001104659-18-075340",
+   "tageZumAnker": -10,
+   "band": "ueber 13",
+   "firma": "EQGP Holdings, LP",
+   "klasse": "mehrdeutig",
+   "abschnitt": 1,
+   "zeichen": 1774,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [
+     "closing of the transaction",
+     "call right"
+    ],
+    "ruege": [
+     "failure to satisfy"
+    ],
+    "eigen": [
+     "voluntarily",
+     "transfer of listing"
+    ]
+   },
+   "auszug": "Item 3.01. Notice of Delisting or Failure to Satisfy Continued Listing Rule or Standard; Transfer of Listing. On December 31, 2018 (the Closing Date), EQGP Holdings, LP, a Delaware limited partnership (EQGP), acting pursuant to authorization from the Board of Managers of Equitrans Gathering Holdings",
+   "fusionNah": 1,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "4922"
+  },
+  {
+   "reihe": "ZIVO",
+   "akz": "0001654954-23-014775",
+   "tageZumAnker": 3,
+   "band": "1-5",
+   "firma": "Zivo Bioscience, Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1300,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "noncompliance",
+     "determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "s notified by The Nasdaq Stock Market LLC (\" Nasdaq \") that as a result of the Company's previously disclosed noncompliance with Nasdaq Listing Rule 5550(b)(1), Nasdaq has determined to delist the Company's common stock from the Nasdaq Capital Market and, accordingly, will suspend trading in the Com",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "2836"
+  },
+  {
+   "reihe": "FNCX",
+   "akz": "0000725876-17-000058",
+   "tageZumAnker": 1,
+   "band": "unter 1",
+   "firma": "Function(x) Inc.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1804,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "non-compliance",
+     "deficien",
+     "bid price",
+     "delisting determination",
+     "determined to delist",
+     "hearings panel",
+     "received a letter dated may 25, 2017 from the listing qualifications staff (the \"staff\") of the nasdaq stock market llc indicating that the staff had determined to delist"
+    ],
+    "eigen": []
+   },
+   "auszug": "Item 3.01 As previously reported on the Current Report on Form 8-K filed on June 1, 2017, the Company received a letter dated May 25, 2017 from the Listing Qualifications Staff (the \"Staff\") of The NASDAQ Stock Market LLC indicating that the Staff had determined to delist the Company's common stock ",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "7370"
+  },
+  {
+   "reihe": "KBNT",
+   "akz": "0001140361-23-053360",
+   "tageZumAnker": -1,
+   "band": "unter 1",
+   "firma": "Kubient, Inc.",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "zeichen": 827,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [],
+    "eigen": [
+     "voluntarily",
+     "intention to voluntarily delist"
+    ]
+   },
+   "auszug": "pursuant to authorization from its Board of Directors, notified The Nasdaq Stock Market LLC (\"Nasdaq\") of its intention to voluntarily delist its common stock and common stock purchase warrants from The Nasdaq Capital Market. Trading of the Company's common stock and warrants on The Nasdaq Capital M",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 1,
+   "sic": "7373"
+  },
+  {
+   "reihe": "DHAI",
+   "akz": "0001493152-25-020954",
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "firma": "DIH HOLDING US, INC.",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "zeichen": 1511,
+   "verwiesen": [],
+   "gestapelt": 0,
+   "treffer": {
+    "vollzug": [],
+    "ruege": [
+     "not in compliance",
+     "hearings panel"
+    ],
+    "eigen": []
+   },
+   "auszug": "pany\") received a determination letter from The Nasdaq Stock Market LLC (\"Nasdaq\") indicating that the Nasdaq Hearings Panel (the \"Panel\") has determined to deny the Company's request to continue its listing on Nasdaq. Accordingly, the Company's shares will be delisted from Nasdaq and trading in the",
+   "fusionNah": 0,
+   "i501": 0,
+   "emittent25": 0,
+   "sic": "3841"
+  }
+ ]
+}

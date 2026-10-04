@@ -1,0 +1,18 @@
+{
+ "hinweis": "Pruefprobe (40 Reihen der Regel 11, Saat z3-pruef, nach Commit 2 gezogen): MEINE Lesart des Auszugs je Reihe - gelesen am Auszug (hoechstens 300 Zeichen), nicht aus einer zweiten Quelle geprueft. lesart = die Klasse, die der Abschnitt nach meinem Lesen haben muesste.",
+ "lesart": {
+  "TBIO": "eigener-entschluss", "WINT": "ruege", "GMBL": "eigener-entschluss", "BSTG": "ruege", "IONM": "ruege", "TCPI": "ruege", "AATC": "eigener-entschluss", "WBB": "eigener-entschluss",
+  "AXLA": "ruege", "BSFC": "ruege", "SISI": "ruege", "RXII": "ruege", "WTER": "ruege", "TBLT": "ruege", "BLPH": "ruege", "POT": "vollzug", "RVLT": "ruege", "MICR": "eigener-entschluss",
+  "GSVC": "ruege", "SBSA": "unlesbar", "SDT": "ruege", "RAS": "ruege", "BLT": "vollzug", "PRST": "ruege", "TLIS": "ruege", "AGII": "eigener-entschluss", "ANTH": "ruege",
+  "VYNT": "eigener-entschluss", "SALM": "ruege", "TEAR": "ruege", "SPHS": "ruege", "DS": "eigener-entschluss", "ENSV": "ruege", "SXE": "ruege", "WCFB": "eigener-entschluss",
+  "EQGP": "vollzug", "ZIVO": "ruege", "FNCX": "ruege", "KBNT": "eigener-entschluss", "DHAI": "ruege"
+ },
+ "anmerkung": {
+  "SBSA": "Abschnitt nicht gefunden - kein Auszug, nichts zu lesen (Fehlgriff der Abschnittssuche)",
+  "TLIS": "Fehlgriff: 'voluntary' stammt aus 'voluntary petition under Chapter 11' - das ist die angekuendigte Insolvenz mit erwarteter Abmeldung, kein eigener Entschluss zur Abmeldung",
+  "EQGP": "Fehlgriff: der Titel steht ohne Artikel ('Failure to Satisfy Continued Listing Rule') und wird nicht entfernt -> 'mehrdeutig' statt 'vollzug' (Abfindung der Anteilseigner); der Grund kommt ueber den Fusionsbeleg trotzdem als Uebernahme heraus",
+  "SALM": "Klasse stimmt (Ruege wegen des Mindestkurses), danach aber freiwilliger Rueckzug mit Formular 25 des Emittenten - die Tabelle laesst die Ruege gewinnen (wie QVCGB in der Lernprobe)",
+  "GSVC": "Klasse stimmt (Ruege wegen verspaeteter Jahresmeldung, 114 Tage vor dem Anker) - als GRUND vermutlich falsch: die Ruege wurde geheilt, die Reihe endet aus anderem Anlass. Kein Fehler der Wortliste, sondern der Regel (Ruege ohne Bestaetigung der Abmeldung)",
+  "AGII": "Klasse stimmt (Wechsel der Boerse) - 'freiwillig' ist hier ein Boersenwechsel, kein Rueckzug"
+ }
+}

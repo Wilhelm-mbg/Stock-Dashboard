@@ -1,0 +1,3659 @@
+{
+ "stand": "2026-10-04T13:15:36.971Z",
+ "fassung": 2,
+ "regel11": {
+  "reihen": 505,
+  "jeKlasse": {
+   "ruege": 333,
+   "eigener-entschluss": 94,
+   "vollzug": 40,
+   "mehrdeutig": 9,
+   "nichts": 29
+  },
+  "jeTabellenzeile": {
+   "2 zwangs-delisting edgar-8K-3.01-ruege": 333,
+   "3 freiwillig edgar-8K-3.01-eigener-entschluss": 94,
+   "1 uebernahme edgar-8K-3.01-vollzug": 38,
+   "4 uebernahme edgar-8K-3.01+prospekt": 8,
+   "5 zwangs-delisting edgar-8K-3.01": 30,
+   "4 uebernahme edgar-8K-3.01+5.01": 2
+  },
+  "jeGrund": {
+   "zwangs-delisting": 363,
+   "freiwillig": 94,
+   "uebernahme": 48
+  },
+  "jeStand": {
+   "abschnitt": 497,
+   "abschnitt-nicht-gefunden": 8
+  },
+  "wortlautUnklar": 30,
+  "klasseMalHinweise": {
+   "vollzug": {
+    "n": 40,
+    "mitFusionsbeleg": 14,
+    "mitEmittent25": 5,
+    "hoechstens30TageAmAnker": 38,
+    "band": {
+     "ueber 13": 28,
+     "1-5": 3,
+     "unter 1": 2,
+     "8-13": 5,
+     "5-8": 2
+    },
+    "grund": {
+     "uebernahme": 38,
+     "zwangs-delisting": 2
+    }
+   },
+   "ruege": {
+    "n": 333,
+    "mitFusionsbeleg": 21,
+    "mitEmittent25": 56,
+    "hoechstens30TageAmAnker": 283,
+    "band": {
+     "unter 1": 215,
+     "8-13": 24,
+     "1-5": 68,
+     "ueber 13": 15,
+     "5-8": 11
+    },
+    "grund": {
+     "zwangs-delisting": 333
+    }
+   },
+   "mehrdeutig": {
+    "n": 9,
+    "mitFusionsbeleg": 7,
+    "mitEmittent25": 2,
+    "hoechstens30TageAmAnker": 7,
+    "band": {
+     "unter 1": 2,
+     "8-13": 4,
+     "ueber 13": 3
+    },
+    "grund": {
+     "uebernahme": 5,
+     "zwangs-delisting": 4
+    }
+   },
+   "eigener-entschluss": {
+    "n": 94,
+    "mitFusionsbeleg": 14,
+    "mitEmittent25": 90,
+    "hoechstens30TageAmAnker": 89,
+    "band": {
+     "1-5": 25,
+     "ueber 13": 20,
+     "8-13": 15,
+     "unter 1": 27,
+     "5-8": 7
+    },
+    "grund": {
+     "freiwillig": 94
+    }
+   },
+   "nichts": {
+    "n": 29,
+    "mitFusionsbeleg": 3,
+    "mitEmittent25": 9,
+    "hoechstens30TageAmAnker": 27,
+    "band": {
+     "1-5": 9,
+     "5-8": 3,
+     "unter 1": 10,
+     "8-13": 3,
+     "ueber 13": 4
+    },
+    "grund": {
+     "uebernahme": 5,
+     "zwangs-delisting": 24
+    }
+   }
+  },
+  "kreuztabelle": [
+   [
+    "ruege | kein Fusionsbeleg | kein Emittent-25 | unter 1",
+    173
+   ],
+   [
+    "ruege | kein Fusionsbeleg | kein Emittent-25 | 1-5",
+    56
+   ],
+   [
+    "ruege | kein Fusionsbeleg | Emittent-25 | unter 1",
+    35
+   ],
+   [
+    "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | unter 1",
+    20
+   ],
+   [
+    "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | 1-5",
+    19
+   ],
+   [
+    "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | ueber 13",
+    19
+   ],
+   [
+    "vollzug | kein Fusionsbeleg | kein Emittent-25 | ueber 13",
+    18
+   ],
+   [
+    "ruege | kein Fusionsbeleg | kein Emittent-25 | 8-13",
+    15
+   ],
+   [
+    "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | 8-13",
+    12
+   ],
+   [
+    "ruege | kein Fusionsbeleg | kein Emittent-25 | ueber 13",
+    11
+   ],
+   [
+    "ruege | Fusionsbeleg | kein Emittent-25 | 8-13",
+    8
+   ],
+   [
+    "ruege | kein Fusionsbeleg | Emittent-25 | 1-5",
+    8
+   ],
+   [
+    "vollzug | Fusionsbeleg | kein Emittent-25 | ueber 13",
+    7
+   ],
+   [
+    "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | 5-8",
+    6
+   ],
+   [
+    "ruege | kein Fusionsbeleg | kein Emittent-25 | 5-8",
+    6
+   ],
+   [
+    "eigener-entschluss | Fusionsbeleg | Emittent-25 | 1-5",
+    5
+   ],
+   [
+    "nichts | kein Fusionsbeleg | Emittent-25 | unter 1",
+    5
+   ],
+   [
+    "nichts | kein Fusionsbeleg | kein Emittent-25 | 1-5",
+    5
+   ],
+   [
+    "nichts | kein Fusionsbeleg | kein Emittent-25 | unter 1",
+    5
+   ],
+   [
+    "eigener-entschluss | Fusionsbeleg | Emittent-25 | unter 1",
+    4
+   ],
+   [
+    "ruege | Fusionsbeleg | Emittent-25 | unter 1",
+    4
+   ],
+   [
+    "ruege | Fusionsbeleg | kein Emittent-25 | 1-5",
+    4
+   ],
+   [
+    "ruege | kein Fusionsbeleg | Emittent-25 | 5-8",
+    4
+   ],
+   [
+    "eigener-entschluss | Fusionsbeleg | Emittent-25 | 8-13",
+    3
+   ],
+   [
+    "eigener-entschluss | kein Fusionsbeleg | kein Emittent-25 | unter 1",
+    3
+   ],
+   [
+    "nichts | kein Fusionsbeleg | Emittent-25 | 1-5",
+    3
+   ],
+   [
+    "nichts | kein Fusionsbeleg | kein Emittent-25 | 5-8",
+    3
+   ],
+   [
+    "nichts | kein Fusionsbeleg | kein Emittent-25 | ueber 13",
+    3
+   ],
+   [
+    "ruege | Fusionsbeleg | kein Emittent-25 | unter 1",
+    3
+   ],
+   [
+    "ruege | kein Fusionsbeleg | Emittent-25 | ueber 13",
+    3
+   ],
+   [
+    "mehrdeutig | Fusionsbeleg | kein Emittent-25 | 8-13",
+    2
+   ],
+   [
+    "mehrdeutig | Fusionsbeleg | kein Emittent-25 | ueber 13",
+    2
+   ],
+   [
+    "mehrdeutig | Fusionsbeleg | kein Emittent-25 | unter 1",
+    2
+   ],
+   [
+    "vollzug | Fusionsbeleg | kein Emittent-25 | 8-13",
+    2
+   ],
+   [
+    "vollzug | kein Fusionsbeleg | Emittent-25 | ueber 13",
+    2
+   ],
+   [
+    "vollzug | kein Fusionsbeleg | kein Emittent-25 | 8-13",
+    2
+   ],
+   [
+    "eigener-entschluss | Fusionsbeleg | Emittent-25 | 5-8",
+    1
+   ],
+   [
+    "eigener-entschluss | Fusionsbeleg | Emittent-25 | ueber 13",
+    1
+   ],
+   [
+    "eigener-entschluss | kein Fusionsbeleg | kein Emittent-25 | 1-5",
+    1
+   ],
+   [
+    "mehrdeutig | Fusionsbeleg | Emittent-25 | ueber 13",
+    1
+   ],
+   [
+    "mehrdeutig | kein Fusionsbeleg | Emittent-25 | 8-13",
+    1
+   ],
+   [
+    "mehrdeutig | kein Fusionsbeleg | kein Emittent-25 | 8-13",
+    1
+   ],
+   [
+    "nichts | Fusionsbeleg | kein Emittent-25 | 1-5",
+    1
+   ],
+   [
+    "nichts | Fusionsbeleg | kein Emittent-25 | 8-13",
+    1
+   ],
+   [
+    "nichts | Fusionsbeleg | kein Emittent-25 | ueber 13",
+    1
+   ],
+   [
+    "nichts | kein Fusionsbeleg | Emittent-25 | 8-13",
+    1
+   ],
+   [
+    "nichts | kein Fusionsbeleg | kein Emittent-25 | 8-13",
+    1
+   ],
+   [
+    "ruege | Fusionsbeleg | Emittent-25 | 5-8",
+    1
+   ],
+   [
+    "ruege | Fusionsbeleg | kein Emittent-25 | ueber 13",
+    1
+   ],
+   [
+    "ruege | kein Fusionsbeleg | Emittent-25 | 8-13",
+    1
+   ],
+   [
+    "vollzug | Fusionsbeleg | Emittent-25 | 1-5",
+    1
+   ],
+   [
+    "vollzug | Fusionsbeleg | Emittent-25 | ueber 13",
+    1
+   ],
+   [
+    "vollzug | Fusionsbeleg | kein Emittent-25 | 1-5",
+    1
+   ],
+   [
+    "vollzug | Fusionsbeleg | kein Emittent-25 | 5-8",
+    1
+   ],
+   [
+    "vollzug | Fusionsbeleg | kein Emittent-25 | unter 1",
+    1
+   ],
+   [
+    "vollzug | kein Fusionsbeleg | Emittent-25 | 8-13",
+    1
+   ],
+   [
+    "vollzug | kein Fusionsbeleg | kein Emittent-25 | 1-5",
+    1
+   ],
+   [
+    "vollzug | kein Fusionsbeleg | kein Emittent-25 | 5-8",
+    1
+   ],
+   [
+    "vollzug | kein Fusionsbeleg | kein Emittent-25 | unter 1",
+    1
+   ]
+  ]
+ },
+ "regeln9bis12": {
+  "reihen": 569,
+  "jeStand": {
+   "abschnitt": 561,
+   "abschnitt-nicht-gefunden": 8
+  },
+  "textNichtZuHolen": 0,
+  "abschnittNichtGefunden": 8
+ },
+ "lernprobe": {
+  "saat": "z3-lern",
+  "fassung": 2,
+  "reihen": 30,
+  "jeKlasse": {
+   "ruege": 15,
+   "eigener-entschluss": 8,
+   "vollzug": 6,
+   "nichts": 1
+  },
+  "ohneAbschnitt": 0
+ },
+ "pruefprobe": {
+  "saat": "z3-pruef",
+  "fassung": 2,
+  "reihen": 40,
+  "stimmt": 37,
+  "jeKlasse": {
+   "eigener-entschluss": {
+    "n": 11,
+    "stimmt": 10
+   },
+   "ruege": {
+    "n": 25,
+    "stimmt": 25
+   },
+   "vollzug": {
+    "n": 2,
+    "stimmt": 2
+   },
+   "nichts": {
+    "n": 1,
+    "stimmt": 0
+   },
+   "mehrdeutig": {
+    "n": 1,
+    "stimmt": 0
+   }
+  },
+  "fehlgriffe": [
+   {
+    "reihe": "SBSA",
+    "klasse": "nichts",
+    "lesart": "unlesbar",
+    "anmerkung": "Abschnitt nicht gefunden - kein Auszug, nichts zu lesen (Fehlgriff der Abschnittssuche)"
+   },
+   {
+    "reihe": "TLIS",
+    "klasse": "eigener-entschluss",
+    "lesart": "ruege",
+    "anmerkung": "Fehlgriff: 'voluntary' stammt aus 'voluntary petition under Chapter 11' - das ist die angekuendigte Insolvenz mit erwarteter Abmeldung, kein eigener Entschluss zur Abmeldung"
+   },
+   {
+    "reihe": "EQGP",
+    "klasse": "mehrdeutig",
+    "lesart": "vollzug",
+    "anmerkung": "Fehlgriff: der Titel steht ohne Artikel ('Failure to Satisfy Continued Listing Rule') und wird nicht entfernt -> 'mehrdeutig' statt 'vollzug' (Abfindung der Anteilseigner); der Grund kommt ueber den Fusionsbeleg trotzdem als Uebernahme heraus"
+   }
+  ]
+ },
+ "eichprobe": {
+  "a": {
+   "regel": "Regeln 2 und 3 mit 8-K 3.01 hoechstens 30 Tage am Anker; 150 gezogen, Saat z3-eich-a; erwartet vollzug, nie ruege",
+   "kandidaten": 991,
+   "reihen": 150,
+   "jeKlasse": {
+    "vollzug": 139,
+    "mehrdeutig": 2,
+    "nichts": 5,
+    "ruege": 2,
+    "eigener-entschluss": 2
+   },
+   "jeStand": {
+    "abschnitt": 150
+   }
+  },
+  "b": {
+   "regel": "Regel 0 (Q-Kuerzel) mit 8-K 3.01 nach V3; alle, hoechstens 100 (Saat z3-eich-b); erwartet ruege",
+   "kandidaten": 117,
+   "reihen": 100,
+   "jeKlasse": {
+    "ruege": 81,
+    "nichts": 7,
+    "eigener-entschluss": 8,
+    "mehrdeutig": 4
+   },
+   "jeStand": {
+    "abschnitt": 100
+   }
+  }
+ },
+ "pruefprobeListe": [
+  {
+   "reihe": "TBIO",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -17,
+   "band": "1-5",
+   "auszug": "tock under Section 12(b) of the Securities Exchange Act of 1934, as amended (the \"Exchange Act\"). The Company intends to file a Form 25 with the SEC to remove the Common Stock from listing on the Nasdaq Global Select Market on or about September 20, 2024 and deregister the Common Stock under Section"
+  },
+  {
+   "reihe": "WINT",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "auszug": "s notified by The Nasdaq Stock Market LLC (\" Nasdaq \") that as a result of the Company's previously disclosed noncompliance with Nasdaq Listing Rule 5550(a)(2), Nasdaq has determined to delist the Company's common stock from the Nasdaq Capital Market and, accordingly, will suspend trading in the Com"
+  },
+  {
+   "reihe": "GMBL",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "1-5",
+   "auszug": "Item 3.01 As previously announced, on February 13, 2024, Esports Entertainment Group, Inc. (the \"Company\") is voluntarily delisting its securities, including its Common Stock, par value $0.01 per share, 10.0% Series A Cumulative Redeemable Convertible Preferred Stock and Common Stock Warrants (the \""
+  },
+  {
+   "reihe": "BSTG",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 1,
+   "band": "unter 1",
+   "auszug": "m 3.01. . On October 4, 2017, following the withdrawal by Biostage, Inc. (the \"Company\") of its appeal to the Hearings Panel (the \"Panel\") of The Nasdaq Stock Market LLC (\"NASDAQ\"), the Company received written notification from NASDAQ indicating that the Panel has determined to delist the Company's"
+  },
+  {
+   "reihe": "IONM",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "1-5",
+   "auszug": ", 2024, the Nasdaq Stock Market LLC (\"Nasdaq\") notified Assure Holdings Corp. (the \"Company\") that the Nasdaq Hearings Panel (the \"Panel\") has determined to delist the Company's common stock and that trading of the Company's securities will be suspended at the open of trading on July 24, 2024. As pr"
+  },
+  {
+   "reihe": "TCPI",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 1,
+   "band": "1-5",
+   "auszug": "Item 3.01 On November 21, 2016, TCP International Holdings Ltd. (the \"Company\") received a letter from NYSE Regulation (the \"NYSE\") confirming that the NYSE had suspended trading in the Company's common stock, which suspension was effective immediately upon the close on November 21, 2016, and announ"
+  },
+  {
+   "reihe": "AATC",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -8,
+   "band": "1-5",
+   "auszug": "oncurrently with the delivery of the notification to Nasdaq, the Company issued a press release regarding its intention to voluntarily delist and deregister the Common Stock, a copy of which is filed as Exhibit 99.1 hereto and incorporated herein by reference. Section 9 - Financial Statements and Ex"
+  },
+  {
+   "reihe": "WBB",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -17,
+   "band": "ueber 13",
+   "auszug": "n September 20, 2017, the board of directors of Westbury Bancorp, Inc. (the \"Company\") approved a decision to voluntarily delist the Company's common stock from the NASDAQ Capital Market (\"NASDAQ\") and deregister its common stock with the Securities and Exchange Commission (the \"SEC\"). On September "
+  },
+  {
+   "reihe": "AXLA",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -5,
+   "band": "1-5",
+   "auszug": "isting Qualifications Department (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") that the Company was not in compliance with the continued listing requirements of Nasdaq Listing Rule 5250(c)(1) because its Quarterly Report on Form 10-Q for the quarter ended September 30, 2023 had not yet bee"
+  },
+  {
+   "reihe": "BSFC",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "auszug": "Item 3.01 On December 18, 2024, Blue Star Foods Corp. (the \"Company\") received formal notice from The Nasdaq Stock Market LLC (\"Nasdaq\") that the Nasdaq Hearings Panel (the \"Panel\") had determined to delist the Company's securities from Nasdaq based upon the Company's violation of Listing Rule 5550("
+  },
+  {
+   "reihe": "SISI",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 2,
+   "band": "5-8",
+   "auszug": "Item 3.01 As previously reported, on June 16, 2025, Shineco Inc. (\"Shineco\" or the \"Company\") received a staff determination letter (the \"Letter\") from the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that it was not in compliance with the minimum"
+  },
+  {
+   "reihe": "RXII",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -3,
+   "band": "unter 1",
+   "auszug": "n notice (the \"Notification Letter\") from the Nasdaq Stock Market (\"Nasdaq\") notifying the Company that it is not in compliance with the minimum bid price requirements set forth in Nasdaq Listing Rule 5550(a)(2) for continued listing on The Nasdaq Capital Market. Nasdaq Listing Rule 5550(a)(2) requi"
+  },
+  {
+   "reihe": "WTER",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -69,
+   "band": "unter 1",
+   "auszug": "Item 3.01 On November 21, 2023, The Alkaline Water Company Inc. (the \"Company\") received a deficiency letter (the \"Letter\") from the Listing Qualifications Department of The Nasdaq Stock Market (the \"Nasdaq\"), notifying the Company that since the Company had not yet filed its Form 10-Q for the perio"
+  },
+  {
+   "reihe": "TBLT",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "1-5",
+   "auszug": "s, Inc. (the \"Company\") notified The Nasdaq Stock Market LLC that it was withdrawing its appeal to the Nasdaq Hearings Panel. Although the Company was earlier notified by Nasdaq on August 7, 2024, that it had regained compliance with the majority independent board and various board committee require"
+  },
+  {
+   "reihe": "BLPH",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "auszug": "(\"Staff\") notified Bellerophon Therapeutics, Inc. (the \"Company\") that, pursuant to Listing Rule 5101, it had determined to delist the Company's shares of common stock as the Staff believed that the Company was a \"public shell,\" and that the continued listing of its securities was no longer warrante"
+  },
+  {
+   "reihe": "POT",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "lesart": "vollzug",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 4,
+   "band": "ueber 13",
+   "auszug": "connection with the Arrangement, the Company (i) notified the New York Stock Exchange (the NYSE) that, upon consummation of the Arrangement, trading in the common shares of the Company (the Company Shares) should be suspended and the listing of the Company Shares on the NYSE should be removed an"
+  },
+  {
+   "reihe": "RVLT",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -1,
+   "band": "unter 1",
+   "auszug": "Item 3.01 On October 10, 2019, Revolution Lighting Technologies, Inc. (the Company) received a notification letter from the Nasdaq Hearings Panel (the Panel), informing the Company that the Panel has determined to delist the Companys common stock from The Nasdaq Capital Market and, accordingly,"
+  },
+  {
+   "reihe": "MICR",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -18,
+   "band": "1-5",
+   "auszug": "Item 3.01 On March 16 , 2020, Micron Solutions, Inc. (the \" Company \") issued a press release announcing its intention to voluntarily delist its Common Stock, par value $0.01 (the \" Common Stock \") , from the NYSE American LLC (the \" Exchange \") and to deregister its Common Stock under Section 12(g)"
+  },
+  {
+   "reihe": "GSVC",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": "Klasse stimmt (Ruege wegen verspaeteter Jahresmeldung, 114 Tage vor dem Anker) - als GRUND vermutlich falsch: die Ruege wurde geheilt, die Reihe endet aus anderem Anlass. Kein Fehler der Wortliste, sondern der Regel (Ruege ohne Bestaetigung der Abmeldung)",
+   "tageZumAnker": -114,
+   "band": "5-8",
+   "auszug": "not accept the Company's plan, then the Company will have the opportunity to appeal that decision to a Nasdaq Hearings Panel. The Company expects to file the Form 10-K with the SEC prior to the due date of such plan to regain compliance with the Nasdaq Listing Rules. If completion of the Internal Re"
+  },
+  {
+   "reihe": "SBSA",
+   "klasse": "nichts",
+   "abschnitt": 0,
+   "lesart": "unlesbar",
+   "stimmt": 0,
+   "anmerkung": "Abschnitt nicht gefunden - kein Auszug, nichts zu lesen (Fehlgriff der Abschnittssuche)",
+   "tageZumAnker": 0,
+   "band": "1-5",
+   "auszug": ""
+  },
+  {
+   "reihe": "SDT",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 1,
+   "band": "unter 1",
+   "auszug": "d that concluded on November 16, 2019, the NYSE announced the suspension of trading of the Trust units due to non-compliance with Rule 802.01C of the NYSE Listed Company Manual, effective as of the close of trading on November 18, 2019, and announced that it was initiating proceedings to delist the "
+  },
+  {
+   "reihe": "RAS",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "auszug": "IT has the right to have a committee of the Board of Directors of the NYSE review the NYSE Regulation Staffs delisting determination. RAIT plans to notify the NYSE that it will exercise this right and appeal the Staffs decision by the deadline for such notice. RAIT cannot provide any assurance tha"
+  },
+  {
+   "reihe": "BLT",
+   "klasse": "vollzug",
+   "abschnitt": 1,
+   "lesart": "vollzug",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 4,
+   "band": "8-13",
+   "auszug": "a result of the Merger, each share of the Companys common stock issued and outstanding immediately prior the effective time of the Merger was cancelled and, other than the Excluded Shares, was converted into the right to receive the Per Share Merger Consideration. Accordingly, on April 12, 2016, th"
+  },
+  {
+   "reihe": "PRST",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "auszug": "ualifications Department (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") stating that the Company was not in compliance with the requirement to maintain a minimum Market Value of Listed Securities (\"MVLS\") of $50 million, as set forth in Nasdaq Listing Rule 5450(b)(2)(A) (the \"MVLS Requireme"
+  },
+  {
+   "reihe": "TLIS",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 0,
+   "anmerkung": "Fehlgriff: 'voluntary' stammt aus 'voluntary petition under Chapter 11' - das ist die angekuendigte Insolvenz mit erwarteter Abmeldung, kein eigener Entschluss zur Abmeldung",
+   "tageZumAnker": -7,
+   "band": "1-5",
+   "auszug": "e Company had suspended all research and development activities as of June 30, 2024, anticipated commencing a voluntary petition under Chapter 11 of the United States Code and expected that the Company would be delisted from the Nasdaq Stock Market. On August 22, 2024, the Company received a letter "
+  },
+  {
+   "reihe": "AGII",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": "Klasse stimmt (Wechsel der Boerse) - 'freiwillig' ist hier ein Boersenwechsel, kein Rueckzug",
+   "tageZumAnker": -11,
+   "band": "ueber 13",
+   "auszug": "irectors, provided written notice to The Nasdaq Global Select Market ( Nasdaq ) that the Company intends to transfer the listing of its common stock, par value $1.00 per share (the  Common Stock ), from Nasdaq to the New York Stock Exchange (the  NYSE ), where it has been authorized for listin"
+  },
+  {
+   "reihe": "ANTH",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "auszug": "the trading of the Company's securities at the open of business on June 28, 2018 as a result of the Company's failure to meet the minimum bid price requirement pursuant to Listing Rule 550(a)(2), and the Company's disclosure on its most recent form 10-Q for the quarter ended March 31, 2018 in which "
+  },
+  {
+   "reihe": "VYNT",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -18,
+   "band": "unter 1",
+   "auszug": "iated with being a public company, on April 24, 2023, the Company notified The Nasdaq Stock Market LLC of its intention to voluntarily delist its shares of common stock, par value $0.0001 per share (the \"Common Stock\") from the Nasdaq Capital Market (\"Nasdaq\") and deregister the Common Stock under S"
+  },
+  {
+   "reihe": "SALM",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": "Klasse stimmt (Ruege wegen des Mindestkurses), danach aber freiwilliger Rueckzug mit Formular 25 des Emittenten - die Tabelle laesst die Ruege gewinnen (wie QVCGB in der Lernprobe)",
+   "tageZumAnker": -20,
+   "band": "unter 1",
+   "auszug": "th the SEC on June 23, 2023, the Corporation had received written notice from Nasdaq that the Corporation was not in compliance with the minimum bid price required for continued listing on the Nasdaq Global Market under Nasdaq Listing Rule 5450(a)(1) based upon the closing bid price of the Class A C"
+  },
+  {
+   "reihe": "TEAR",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -1,
+   "band": "unter 1",
+   "auszug": "Item 3.01. On November 7, 2017, Tearlab Corporation (the \"Company\") received a letter (the \"Letter\") from The NASDAQ Stock Market LLC (\"Nasdaq\") notifying the Company that the Nasdaq Hearings Panel had determined to delist the Company's securities from The Nasdaq Capital Market due to the Company's "
+  },
+  {
+   "reihe": "SPHS",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "auszug": "Inc. (the \"Company\") announced that the Nasdaq Office of General Counsel notified the Company that the Nasdaq Hearing Panel (\"Panel\") had determined to delist the Company's shares from The Nasdaq Stock Market LLC (\"Nasdaq\"), and that trading in the Company's common shares will be suspended effective"
+  },
+  {
+   "reihe": "DS",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -16,
+   "band": "unter 1",
+   "auszug": " Drive Shack Inc. (the \"Company\") delivered written notice to the New York Stock Exchange (the \"NYSE\") of its intention to voluntarily delist its securities from NYSE and deregister its securities under the Section 12(b) and Section 12(g) of Securities and Exchange Act of 1934, as amended (the \"Exch"
+  },
+  {
+   "reihe": "ENSV",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -141,
+   "band": "unter 1",
+   "auszug": "Item 3.01 On June 10, 2024, the Company received formal notice from that NYSE Regulation has determined to commence proceedings to delist the Company's Common Stock from the NYSE American. NYSE Regulation has determined that the Company is no longer suitable for listing pursuant to Section 1009(a) o"
+  },
+  {
+   "reihe": "SXE",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 1,
+   "band": "unter 1",
+   "auszug": " the New York Stock Exchange (the \"NYSE\") that the staff of NYSE Regulation, Inc. (the \"NYSE Regulation\") has determined to commence proceedings to delist the common units representing limited partner interests (the \"Common Units\") of the Partnership. The NYSE Regulation reached its decision to deli"
+  },
+  {
+   "reihe": "WCFB",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -10,
+   "band": "8-13",
+   "auszug": "bank headquartered in Webster City, Iowa, today announced that it has notified The Nasdaq Stock Market of its intention to voluntarily delist its common stock from the Nasdaq Capital Market and to file a Form 25, Notification of Removal from Listing and/or Registration Under Section 12(b) of the Sec"
+  },
+  {
+   "reihe": "EQGP",
+   "klasse": "mehrdeutig",
+   "abschnitt": 1,
+   "lesart": "vollzug",
+   "stimmt": 0,
+   "anmerkung": "Fehlgriff: der Titel steht ohne Artikel ('Failure to Satisfy Continued Listing Rule') und wird nicht entfernt -> 'mehrdeutig' statt 'vollzug' (Abfindung der Anteilseigner); der Grund kommt ueber den Fusionsbeleg trotzdem als Uebernahme heraus",
+   "tageZumAnker": -10,
+   "band": "ueber 13",
+   "auszug": "Item 3.01. Notice of Delisting or Failure to Satisfy Continued Listing Rule or Standard; Transfer of Listing. On December 31, 2018 (the Closing Date), EQGP Holdings, LP, a Delaware limited partnership (EQGP), acting pursuant to authorization from the Board of Managers of Equitrans Gathering Holdings"
+  },
+  {
+   "reihe": "ZIVO",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 3,
+   "band": "1-5",
+   "auszug": "s notified by The Nasdaq Stock Market LLC (\" Nasdaq \") that as a result of the Company's previously disclosed noncompliance with Nasdaq Listing Rule 5550(b)(1), Nasdaq has determined to delist the Company's common stock from the Nasdaq Capital Market and, accordingly, will suspend trading in the Com"
+  },
+  {
+   "reihe": "FNCX",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 1,
+   "band": "unter 1",
+   "auszug": "Item 3.01 As previously reported on the Current Report on Form 8-K filed on June 1, 2017, the Company received a letter dated May 25, 2017 from the Listing Qualifications Staff (the \"Staff\") of The NASDAQ Stock Market LLC indicating that the Staff had determined to delist the Company's common stock "
+  },
+  {
+   "reihe": "KBNT",
+   "klasse": "eigener-entschluss",
+   "abschnitt": 1,
+   "lesart": "eigener-entschluss",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": -1,
+   "band": "unter 1",
+   "auszug": "pursuant to authorization from its Board of Directors, notified The Nasdaq Stock Market LLC (\"Nasdaq\") of its intention to voluntarily delist its common stock and common stock purchase warrants from The Nasdaq Capital Market. Trading of the Company's common stock and warrants on The Nasdaq Capital M"
+  },
+  {
+   "reihe": "DHAI",
+   "klasse": "ruege",
+   "abschnitt": 1,
+   "lesart": "ruege",
+   "stimmt": 1,
+   "anmerkung": null,
+   "tageZumAnker": 0,
+   "band": "unter 1",
+   "auszug": "pany\") received a determination letter from The Nasdaq Stock Market LLC (\"Nasdaq\") indicating that the Nasdaq Hearings Panel (the \"Panel\") has determined to deny the Company's request to continue its listing on Nasdaq. Accordingly, the Company's shares will be delisted from Nasdaq and trading in the"
+  }
+ ],
+ "eichprobeReihen": {
+  "a": {
+   "regel": "Regeln 2 und 3 mit 8-K 3.01 hoechstens 30 Tage am Anker; 150 gezogen, Saat z3-eich-a; erwartet vollzug, nie ruege",
+   "kandidaten": 991,
+   "reihen": [
+    {
+     "reihe": "BPFH",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-21-205601",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " this Item 3.01. On July 1, 2021, Boston Private notified the NASDAQ Stock Market LLC (the \"NASDAQ\") that the Merger had closed and requested that the NASDAQ (1) suspend trading of Boston Private Common Stock on the NASDAQ, (2) withdraw Boston Private Common Stock from listing on the NASDAQ prior to",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "EHAB",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-26-225491",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "o this Item 3.01. On the Closing Date, the Company notified the New York Stock Exchange (the \" NYSE \") of the consummation of the Merger and requested that NYSE file with the SEC a Form 25 Notification of Removal from Listing and/or Registration under Section 12(b) of the Securities Exchange Act of ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "FBMS",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0000947559-25-000035",
+     "tage": 7,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On March 31, 2025, the New York Stock Exchange was notified that the Closing of the Merger would be effective as of April 1, 2025, and it was requested that the New York Stock Exchange (1) suspend trading of The First Common Stock, (2) withdraw The First Common Stock from listing on the N",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "WLL",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-22-189511",
+     "tage": 7,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Prior to the completion of the Merger, shares of Whiting Common Stock were listed and traded on the New York Stock Exchange (the \" NYSE \") under the trading symbol \"WLL\". Pursuant to the Merger Agreement, Whiting notified the NYSE of the Merger and requested that the NYSE withdraw the list",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "BECN",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001213900-25-036794",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On April 29, 2025, in connection with the consummation of the Merger, the Company (i) notified the Nasdaq Global Select Market (\"Nasdaq\") of the consummation of the Merger and (ii) requested that Nasdaq (x) suspend trading of the Shares prior to the open of trading on the Closing Date, (y",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "LBC",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-24-053876",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On the Closing Date, Luther Burbank notified the Nasdaq Stock Market LLC (\" Nasdaq \") that the Merger had closed and requested that Nasdaq (i) suspend trading of LBC Common Stock prior to the opening of trading on March 1, 2024, (ii) withdraw LBC Common Stock from listing on Nasdaq prior ",
+     "band": "8-13"
+    },
+    {
+     "reihe": "TRUE",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-26-005627",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": ".01 of this Current Report on Form 8-K is incorporated by reference in this Item 3.01. In connection with the consummation of the Merger, the Company notified The Nasdaq Stock Market LLC (\"Nasdaq\") that each issued and outstanding share of Company Stock as of immediately prior to the Effective Time ",
+     "band": "1-5"
+    },
+    {
+     "reihe": "CETV",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0000925645-20-000039",
+     "tage": 1,
+     "klasse": "mehrdeutig",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Notice of Delisting for Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. In connection with the consummation of the Merger, the Company requested that Nasdaq halt trading in the Common Shares prior to Nasdaq market opening on October 13, 2020, suspend trading i",
+     "band": "1-5"
+    },
+    {
+     "reihe": "BRDG",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-25-193504",
+     "tage": 4,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "n of the Corporate Merger, the Company notified the New York Stock Exchange (the \" NYSE \") that the Corporate Merger had been completed and requested that the NYSE suspend trading of the Class A Common Stock on the NYSE and withdraw the Class A Common Stock from listing on the NYSE prior to the open",
+     "band": "8-13"
+    },
+    {
+     "reihe": "NUAN",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-22-066065",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ion of this Current Report on Form 8-K is incorporated by reference in this Item 3.01. In connection with the closing of the Merger, the Company notified The NASDAQ Stock Market LLC (\" NASDAQ \") that the Merger had been consummated and, as a result, trading of the Shares on NASDAQ has been halted pr",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "CYTH",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001437749-25-009255",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. In connection with the consummation of the Merger, the Company notified Nasdaq and requested that it suspend trading of the Company Common Stock and Company Public Warrants and remove the Company Common Stock and ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "INFN",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-041368",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Notice of Delisting. On the Closing Date, Infinera notified the Nasdaq Global Select Market (\"Nasdaq\") of the consummation of the Merger and requested that Nasdaq (1) suspend trading of the Company Common Stock, (2) withdraw the Company Common Stock from listing on Nasdaq, and (3) file with the Secu",
+     "band": "5-8"
+    },
+    {
+     "reihe": "APRN",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-23-116812",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 . On November 13, 2023, the Company (a) notified the Nasdaq Stock Market LLC (\" Nasdaq \") of the consummation of the Merger and (b) requested that Nasdaq (i) suspend trading of the Common Stock effective as of the close of business on November 13, 2023, and (ii) file with the SEC a Form 25",
+     "band": "8-13"
+    },
+    {
+     "reihe": "RP",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-21-125818",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "nto this Item 3.01. On April 22, 2021, the Company notified the NASDAQ Stock Market LLC (\" NASDAQ \") that the Merger had been completed, and requested that NASDAQ suspend trading of the Common Stock on NASDAQ prior to the opening of trading on April 22, 2021. The Company also requested that NASDAQ f",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "UBP",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-23-217007",
+     "tage": 4,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "nce. On the terms and subject to the conditions set forth in the Merger Agreement, on August 18, 2023, at the effective time of the First Merger (the \" First Merger Effective Time \"), each share of the Company's common stock, par value $0.01 per share (\" Company Common Stock \"), class A common stock",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "SCPL",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-23-110660",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. In connection with the consummation of the Merger, the Company requested that the Nasdaq Global Select Market (\" Nasdaq \") halt trading of the shares of Company Class A Common Stock on Nasdaq effective as of 8:00 p.m. Eastern Time on October 20, 2023. On October 23, 2023, prior to the ope",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "TIF",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-21-004213",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Report on Form 8-K is incorporated by reference in this Item 3.01. On January 7, 2021, in connection with the completion of the Merger, Registrant notified The New York Stock Exchange (\" NYSE \") of the completion of the Merger and requested that NYSE delist the Common Stock and file with the SEC a n",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "LFG",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001213900-22-083247",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "nto this Item 3.01. On the Closing Date, the Company notified the New York Stock Exchange (the \"NYSE\") of the consummation of the Mergers and requested that the NYSE file with the Securities and Exchange Commission (the \"SEC\") a notification of removal from listing and registration on Form 25 to eff",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "CFSB",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0000943374-25-000455",
+     "tage": 3,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 As a result of the Merger, CFSB Bancorp no longer fulfills the listing requirements of the Nasdaq Stock Market (\"Nasdaq\"). CFSB Bancorp notified Nasdaq that trading in CFSB Bancorp common stock should be suspended and the listing of CFSB Bancorp common stock should be removed, in each case",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "XOMA",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-26-302648",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. In connection with the Closing of the Merger, the Company (i) notified The Nasdaq Global Market (\" Nasdaq \") that the Merger was consummated and (ii) requested that Nasdaq (A) halt trading of and delist the Shares",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "ICAD",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193805-25-001039",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "d Item 2.01 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. Prior to the consummation of the Merger, shares of iCAD Common Stock were listed and traded on the Nasdaq Capital Market (\" Nasdaq \") under the trading symbol \"ICAD.\" In connection with the consummation ",
+     "band": "1-5"
+    },
+    {
+     "reihe": "VSLR",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-20-265966",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. In connection with the completion of the Merger, on October 8, 2020, Vivint Solar notified the New York Stock Exchange (the \"NYSE\") that the transaction had closed and requested that the NYSE (i) suspend trading of the Vivint Solar Common Stock on the NYSE, (ii) withdraw the Vivint Solar ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "SQSP",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-24-043631",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On October 17, 2024, in connection with the completion of the Merger, the Company notified the New York Stock Exchange (the \" NYSE \") that the Merger had been completed and requested that the NYSE suspend trading of the Class A Common Stock on the NYSE and withdraw the Class A Common Stock",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "RLH",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-21-085184",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the consummation of the Merger, on March 17, 2021, the Company submitted a written request to the New York Stock Exchange (\" NYSE \") for the NYSE to cease trading of the Common Stock on the NYSE and to suspend the listing of the Common Stock, in each case prior to market",
+     "band": "1-5"
+    },
+    {
+     "reihe": "SGEN",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-23-294938",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "y Note of this Current Report on Form 8-K is incorporated herein by reference. On December 14, 2023, upon the consummation the Merger, the Company notified the NASDAQ Stock Market LLC (\" NASDAQ \") that each outstanding Common Share had been converted into the right to receive the Merger Consideratio",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "SGE",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001493152-24-039224",
+     "tage": 5,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Prior to the completion of the Plan of Arrangement, SGE's common stock was listed and traded on the New York Stock Exchange (\"NYSE\") under the trading symbol \"SGE.\" In connection with the completion of the Plan of Arrangement, SGE will be delisted from NYSE prior to the open of trading on ",
+     "band": "1-5"
+    },
+    {
+     "reihe": "APEN",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-23-090389",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ompany completed its merger with Merger Sub pursuant to the terms of the Merger Agreement, whereby Merger Sub merged with and into the Company, in accordance with the Delaware General Corporation Law, as amended (the \"DGCL\"), with the Company continuing as the surviving corporation and as an indirec",
+     "band": "8-13"
+    },
+    {
+     "reihe": "JNCE",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001640455-23-000093",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. In connection with the consummation of the Offer and the Merger, the Company notified The Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and requested that Nasdaq file with the SEC a notification of removal from listing and/or registration on Form 25 to effect the de",
+     "band": "1-5"
+    },
+    {
+     "reihe": "IHC",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0000701869-22-000009",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " incorporated herein by reference. Prior to the close of trading on February 15, 2022, in connection with the consummation of the Merger, the Company notified the NYSE that the Merger had been consummated and requested that the trading of the Common Stock on the NYSE be suspended before market open ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "GWPH",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-21-151938",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the consummation of the Transaction, the Company requested that the Nasdaq Global Select Market (\" Nasdaq \") suspend trading of Company ADSs (Nasdaq: GWPH) effective as of the open of trading on May 5, 2021 (which suspension was granted) and file with the SEC a Notificat",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "VEI",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-21-315558",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the consummation of the Merger, Vine notified the New York Stock Exchange (the \"NYSE\") that each outstanding share of Vine's Class A common stock was converted into the right to receive the Merger Consideration and requested that the NYSE withdraw the listing of Vine's C",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "MMAC",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-21-104715",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. In connection with the consummation of the Merger, the Surviving Company notified The Nasdaq Global Select Market (\"Nasdaq\") of the effectiveness of the Merger and of its intent to remove the Company Common Stock from listing on Nasdaq and requested that Nasdaq file a Notification of Remo",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "MGRM",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001104659-25-097530",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. In connection with the consummation of the Merger, on October 7, 2025, the Company notified the Nasdaq Stock Market (\" Nasdaq \") that the Merger had occurred and requested that Nasdaq (a) suspend trading of the Company common stock and (b) file with the SEC an application on Form 25 to de",
+     "band": "5-8"
+    },
+    {
+     "reihe": "PXD",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-24-130052",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ntroduction of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. Prior to the consummation of the Merger, shares of Pioneer Common Stock were listed and traded on the New York Stock Exchange (the \" NYSE \") under the trading symbol \"PXD.\" In connection with the consumm",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "MCW",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-26-229866",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " Report on Form 8-K is incorporated by reference into this Item 3.01. On May 19, 2026, in connection with the consummation of the Merger, the Company notified The NASDAQ Stock Market LLC (\" NASDAQ \") that a certificate of merger was filed with the Secretary of State of the State of Delaware for purp",
+     "band": "5-8"
+    },
+    {
+     "reihe": "AMNB",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001104659-24-041548",
+     "tage": 4,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ted as of July 24, 2023 (the \"Merger Agreement\"), by and between Atlantic Union and American National. At the effective time of the Merger (the \"Effective Time\"), American National merged with and into Atlantic Union, with Atlantic Union continuing as the surviving corporation. Immediately following",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "MGOL",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001493152-25-006186",
+     "tage": -7,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "ritten notice (the \" Notice \") from The Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that it is not in compliance with the minimum bid price requirement set forth in Nasdaq Listing Rule 5550(a)(2) due to the Company's common stock not maintaining a closing bid price of at least $1.00 p",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "IBTX",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0000950103-25-000002",
+     "tage": 2,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On December 31, 2024, the NASDAQ was notified that the Closing of the Merger would be effective as of January 1, 2025 and it has been requested that the NASDAQ (1) suspend trading of IBTX Common Stock, (2) withdraw IBTX Common Stock from listing on the NASDAQ, in each case, prior to the o",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "GNMK",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-21-125815",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. In connection with the closing of the Merger, the Company notified The Nasdaq Stock Market LLC (\"Nasdaq\") on April 22, 2021 that the Merger was consummated, and requested that the trading of Shares on Nasdaq be halted prior to market open on April 22, 2021 and that such trading be suspend",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "PHX",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-25-061419",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the closing of the Merger, PHX notified the New York Stock Exchange (the \"NYSE\") on June 23, 2025, that the Merger was consummated, and trading of the Shares on the NYSE has been suspended. Accordingly, the NYSE has filed a notification of delisting of the Shares from th",
+     "band": "1-5"
+    },
+    {
+     "reihe": "CIT",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001140361-22-000350",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "First-Step Merger had been filed with the Secretary of State of the State of Delaware providing for a delayed effective time of January 3, 2022 at 11:59 p.m. Eastern Time and requested that, following the Effective Time, the NYSE (i) suspend trading of CIT Common Stock and CIT Series B Preferred Sto",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "TRHC",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-23-051496",
+     "tage": 4,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the consummation of the Merger, the Company notified the NASDAQ Global Market (together with the Nasdaq Stock Market LLC, \" NASDAQ \") on October 31, 2023 of the anticipated closing of the Merger on the Closing Date and requested that the trading of the Company Common Sto",
+     "band": "8-13"
+    },
+    {
+     "reihe": "DENN",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-26-015085",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "o this Item 3.01. On January 16, 2026, the Company (i) notified The Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and (ii) requested that Nasdaq file a Form 25 Notification of Removal from Listing and/or Registration with the SEC to remove the Common Stock from listing on Nasd",
+     "band": "5-8"
+    },
+    {
+     "reihe": "CORE",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-21-263394",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " this Item 3.01. On September 1, 2021, the Company notified the NASDAQ Global Select Market (\"Nasdaq\") of the consummation of the Mergers and that each outstanding share of Company Common Stock had been converted into the right to receive PFG Common Stock. The Company requested that Nasdaq (i) suspe",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "DBTX",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-23-240971",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On September 25, 2023, the Company notified The Nasdaq Global Select Market (\"Nasdaq\") of the consummation of the Merger and requested that Nasdaq (i) halt trading in the shares of Common Stock, (ii) suspend trading of and delist the shares of Common Stock and (iii) file with the SEC a no",
+     "band": "1-5"
+    },
+    {
+     "reihe": "VRS",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-22-012098",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On the Closing Date, the Company (i) notified The New York Stock Exchange (\" NYSE \") of the consummation of the Merger and (ii) requested that NYSE file with the SEC a Form 25 Notification of Removal from Listing and/or Registration to delist and deregister the shares of Company Common Sto",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "BRMK",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001104659-23-066662",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " Report on Form 8-K is incorporated into this Item 3.01 by reference. On May 31, 2023, in connection with the consummation of the Merger, the Company notified the NYSE that articles of merger were filed with the State Department of Assessments and Taxation of Maryland and a certificate of merger was",
+     "band": "1-5"
+    },
+    {
+     "reihe": "INFA",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-25-113667",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Before market open on the Closing Date, in connection with the consummation of the Merger, the Company notified the New York Stock Exchange (\" NYSE \") of the consummation of the Merger and requested that NYSE (i) suspend trading of the Class A Common Stock, which traded under the ticker sy",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "INST",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-24-257230",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ITEM 3.01 On November 13, 2024, in connection with the consummation of the Merger, the Company (i) notified the New York Stock Exchange (the \"NYSE\") that the Merger had been completed and (ii) requested that the NYSE suspend trading of the Company Common Stock prior to the opening of trading on Nove",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "PDCO",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-083614",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. In connection with the closing of the Merger, the Company notified the NASDAQ Stock Market (\"Nasdaq\") of the consummation of the Merger and requested Nasdaq to file a notification of removal from listing and regis",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "FOE",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-22-113039",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On April 21, 2022, in connection with the closing of the Merger, the Company notified the New York Stock Exchange (the \"NYSE\") of the completion of the Merger and requested that the NYSE (i) suspend trading of the Company Common Stock on the NYSE and (ii) file a notification of removal fro",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "MRUS",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-335951",
+     "tage": 1,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On December 29, 2025, in connection with the effectiveness of the Back-End Transactions (as defined in the Offer to Purchase), the Company (i) notified the Nasdaq Stock Market LLC (\"Nasdaq\") of the effectiveness of the Back-End Transactions and (ii) requested that Nasdaq (x) halt trading o",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "CVA",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-21-343811",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On November 30, 2021, in connection with the consummation of the Merger, the Company notified the New York Stock Exchange (\" NYSE \") that the certificate of merger had been filed with the Secretary of State of the State of Delaware and that, at the Effective Time, each share of Company Sto",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "LRFC",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001628280-25-035073",
+     "tage": 2,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the closing of the transactions contemplated by the Merger Agreement, on July 15, 2025, the Company notified the NASDAQ Global Select Market (\"NASDAQ\") of the consummation of the Mergers and requested that NASDAQ file with the Securities and Exchange Commission (\"SEC\") a",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "AIRC",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-24-032015",
+     "tage": 4,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "this Current Report on Form 8-K is incorporated herein by reference. On June 28, 2024, in connection with the completion of the Merger, the Company requested that the New York Stock Exchange (the \" NYSE \") suspend trading in shares of Company Common Stock and file a notification of removal from list",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "CIVI",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001104659-26-008521",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Prior to the completion of the Mergers, shares of Civitas Common Stock were listed and traded on the New York Stock Exchange (the \" NYSE \") under the trading symbol \"CIVI.\" In connection with the completion of the Mergers, Civitas notified the NYSE that each eligible and outstanding share ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "ORTX",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-24-014239",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": ".01 of this Current Report on Form 8-K is incorporated by reference in this Item 3.01. In connection with the consummation of the Transaction, the Company requested that the Nasdaq Capital Market (\" Nasdaq \") suspend trading of Company ADSs (Nasdaq: ORTX) effective as of the open of trading on Janua",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "EVBG",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-24-173902",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " Item 3.01. On the Closing Date, the Company (i) notified The Nasdaq Global Select Market (\" NASDAQ \") of the consummation of the Merger and (ii) requested that NASDAQ file a Form 25 Notification of Removal from Listing and/or Registration with the SEC to remove the Common Stock from listing on NASD",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "HSII",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-313582",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the consummation of the Merger, the Company requested that the Nasdaq Global Stock Market (\" NASDAQ \") suspend trading of the Shares effective before the opening of trading on December 10, 2025, and file with the SEC a Notification of Removal from Listing and/or Registra",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "EWCZ",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-26-213462",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": ".01 of this Current Report on Form 8-K is incorporated by reference in this Item 3.01. In connection with the closing of the Mergers, the Company notified the Nasdaq Stock Market LLC (\" Nasdaq \") of its intent to remove the Class A Common Stock from listing on Nasdaq and requested that Nasdaq (i) su",
+     "band": "5-8"
+    },
+    {
+     "reihe": "FCCY",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001214659-22-000423",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "on no longer fulfills the listing requirements of the Nasdaq Global Market (\"Nasdaq\"). In connection with the closing of the Merger, 1st Constitution notified Nasdaq on the Closing Date that the certificate of merger providing for the Merger had been filed with the Department of Treasury of the Stat",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "BWL.A",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001437749-21-020174",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "is Current Report on Form 8-K is incorporated herein by reference. On August 16, 2021, in connection with the completion of the Merger, the Company notified NYSE American (the \"NYSE\") of the completion of the Merger and requested that trading in the shares of Class A Common Stock be halted and suspe",
+     "band": "8-13"
+    },
+    {
+     "reihe": "TCRR",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001104659-23-067031",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " Report on Form 8-K is incorporated by reference into this Item 3.01. On June 1, 2023, in connection with the consummation of the Merger, TCR 2 notified the NASDAQ Global Select Market (\" Nasdaq \") of the consummation of the Merger and requested that Nasdaq cease trading of TCR 2 Common Stock on Nas",
+     "band": "1-5"
+    },
+    {
+     "reihe": "OBCI",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001213900-22-045646",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ble. Item 2.01. Completion of Acquisition or Disposition of Assets. On August 9, 2022, the Company and Parent consummated the transactions contemplated by the Merger Agreement. Pursuant to the Certificate of Merger filed with the Secretary of State of the State of Florida, the Merger was effective o",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "NEX",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001688476-23-000147",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the completion of the Mergers, the Company notified the New York Stock Exchange (the \"NYSE\") that Eligible Shares were converted into the right to receive shares of Patterson-UTI Common Stock and requested the NYSE withdraw the listing of the shares of Company Common Sto",
+     "band": "8-13"
+    },
+    {
+     "reihe": "HBI",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-25-303276",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "t is incorporated by reference into this Item 3.01. On the Closing Date, Hanesbrands notified the NYSE of the consummation of the Transactions and of its intent to remove Hanesbrands Common Stock from listing on the NYSE and requested that the NYSE (a) suspend trading of Hanesbrands Common Stock on ",
+     "band": "5-8"
+    },
+    {
+     "reihe": "LVTX",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001104659-25-114793",
+     "tage": 1,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": "viously disclosed, on November 13, 2025, the Company notified The Nasdaq Stock Market LLC (\" Nasdaq \") of its intention to voluntarily delist its Shares from Nasdaq. Prior to the opening of trading on November 21, 2025, Nasdaq suspended trading of the Shares and filed a Form 25, Notification of Remo",
+     "band": "1-5"
+    },
+    {
+     "reihe": "OMIC",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-038756",
+     "tage": 7,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the closing of the Merger, on February 21, 2025, the Company notified the Nasdaq Stock Market LLC (\"Nasdaq\") of its intent to remove its Common Stock from listing on Nasdaq and requested Nasdaq file a Notification of Removal from Listing and/or Registration on Form 25 wi",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "SSBK",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001628280-25-033673",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On the day before the Closing Date, Nasdaq was notified that the Closing of the Merger would be effective as of the Closing Date. It was requested that Nasdaq (i) suspend trading of SSB Common Stock, (ii) withdraw SSB Common Stock from listing on Nasdaq, in each case, prior to the open of ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "ESXB",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-21-347986",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " (\"United\") completed its acquisition of Community Bankers Trust Corporation (the \"Company\"). The Company was merged with and into United (the \"Merger\"), pursuant to the terms of the Agreement and Plan of Reorganization, dated June 2, 2021, by and between United and the Company (the \"Agreement\"). Un",
+     "band": "8-13"
+    },
+    {
+     "reihe": "AKYA",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001104659-25-066306",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " forth in the Introductory Note is incorporated herein by reference. Pursuant to the Merger Agreement, at the effective time of the Merger (the \" Effective Time \"), each share of common stock, par value $0.00001 per share, of Akoya (\" Akoya Common Stock \") outstanding immediately prior to the Effect",
+     "band": "1-5"
+    },
+    {
+     "reihe": "DAY",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-26-003628",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ort on Form 8-K is incorporated by reference into this Item 3.01. On February 4, 2026, in connection with the consummation of the Merger, the Company notified The New York Stock Exchange (\"NYSE\") that the Merger had been consummated and requested that the listing of the shares of Company Common Stoc",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "PWOD",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001104659-25-071025",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "n of Acquisition or Disposition of Assets. Pursuant to the Merger Agreement, on the Closing Date, Penns Woods merged with and into Northwest (the \"Merger\"), with Northwest continuing as the surviving corporation in the Merger (the \"Surviving Entity\"). Immediately following the effective time of the ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "SEMR",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-26-017299",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "d Item 2.01 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. Prior to the completion of the Merger, shares of Class A Common Stock were listed and traded on the New York Stock Exchange (the \"NYSE\") under the trading symbol \"SEMR.\" The Company notified the NYSE on ",
+     "band": "8-13"
+    },
+    {
+     "reihe": "TLND",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-21-097973",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " the Expiration Date. Because all conditions to the Offer were satisfied as of the Expiration Date, Purchaser accepted for payment all Company Shares (including Company Shares represented by ADSs) validly tendered and not validly withdrawn pursuant to the Offer prior to the Expiration Date (the \" Of",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "MDV",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001104659-26-094865",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": ".01 of this Current Report on Form 8-K is incorporated by reference in this Item 3.01. In connection with the consummation of the Mergers, the Company notified the New York Stock Exchange (the \"NYSE\") on the Closing Date that (i) each outstanding share of Modiv Common Stock, other than any Excluded ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "SMTX",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001564590-21-017517",
+     "tage": 4,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the consummation of the Merger, the Company notified The Nasdaq Stock Market LLC (\" Nasdaq \") of the completion of the Merger and requested that Nasdaq suspend trading of the Company Common Stock on April 5, 2021, remove the Company Common Stock from listing and file a F",
+     "band": "5-8"
+    },
+    {
+     "reihe": "OTEL",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-21-044800",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. In connection with the completion of the Merger, the Company notified The Nasdaq Stock Market LLC (\" Nasdaq \") on March 31, 2021 that each outstanding share of Common Stock (except as described in Item 2.01 above) was converted pursuant to the Merger Agreement as described under Item 2.01",
+     "band": "8-13"
+    },
+    {
+     "reihe": "SGTX",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-23-210739",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the consummation of the Merger, on August 11, 2023, the Company (i) notified The Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and (ii) requested that Nasdaq (x) halt trading of the Shares effective as of the morning of August 11, 2023 prior to mar",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "USER",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-23-003385",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "nto this Item 3.01. On the Closing Date, the Company (i) notified the New York Stock Exchange (\"NYSE\") of the consummation of the Merger and (ii) requested that NYSE file with the SEC a Form 25 Notification of Removal from Listing and/or Registration to delist and deregister the shares of Common Sto",
+     "band": "5-8"
+    },
+    {
+     "reihe": "SEPA",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001753926-24-001242",
+     "tage": -1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "approval of the stockholders, of SEP Acquisition Corp. (the \"Company\") determined that if the Company has not consummated a Business Combination (as defined in the Company's Amended and Restated Certificate of Incorporation, as amended), by July 30, 2024 (the \"Termination Date\"), the Company shall (",
+     "band": "8-13"
+    },
+    {
+     "reihe": "EVRI",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-153550",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "8-K is incorporated by reference into this Item 3.01. On July 1, 2025, the Company notified the NYSE that the Merger had been completed and requested that the NYSE: (i) suspend trading of the Company common stock on the NYSE prior to the open of trading on July 1, 2025; (ii) remove the Company commo",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "MNTV",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-23-027837",
+     "tage": 2,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ated herein by reference. The Company notified The Nasdaq Stock Market LLC (\"Nasdaq\") on May 31 , 2023 of the consummation of the Merger. The Company requested that Nasdaq delist its Common Stock on May 31 , 2023. As a result, Nasdaq filed a Form 25 with the SEC to remove the Common Stock from listi",
+     "band": "8-13"
+    },
+    {
+     "reihe": "PRO",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-312044",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "o this Item 3.01. On the Closing Date, the Company notified the New York Stock Exchange (the \" NYSE \") of the consummation of the Merger and requested that the NYSE file with the SEC a Form 25 Notification of Removal from Listing and/or Registration under Section 12(b) of the Securities Exchange Act",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "EGOV",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-21-013696",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "under Item 2.01 is incorporated by reference into this Item 3.01. On the Closing Date, in connection with the completion of the Merger, the Company notified the Nasdaq Global Select Market (\" Nasdaq \") that each outstanding share of NIC Common Stock (except as described in Item 2.01) was converted i",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "FIAC",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001140361-24-045008",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On October 28, 2024, Focus Impact Acquisition Company (the \" Company \" or \" FIAC \") received a notice (the \" Delisting Notice \") from the staff of the Listing Qualifications Department of The Nasdaq Stock Market LLC (\" Nasdaq \") stating that Nasdaq has determined to delist FIAC's securitie",
+     "band": "8-13"
+    },
+    {
+     "reihe": "FOUN",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001829126-22-016045",
+     "tage": 4,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Prior to the consummation of the Business Combination, the Founder Units, Founder Class A Shares and Founder Public Warrants were listed on the Nasdaq Stock Market LLC (\"Nasdaq\") under the symbols, \"FOUNU\", \"FOUN\" and \"FOUNW\", respectively. On the Closing Date, all of the issued and outsta",
+     "band": "8-13"
+    },
+    {
+     "reihe": "VGR",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-24-106511",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the consummation of the Offer and the Merger, on October 7, 2024, the Company requested that the New York Stock Exchange (\"NYSE\") suspend the Company Shares from trading effective as of the open of trading on October 7, 2024, remove the Company Shares from listing on NYS",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "RCM",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-24-261654",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "and Item 3.03 of this Current Report is incorporated by reference into this Item 3.01. In connection with the completion of the Merger, the Company (i) notified The Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and (ii) requested that Nasdaq file with the SEC a Form 25 Notific",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "ELSE",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-26-030505",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ult of the Merger, the Shares no longer trade on the Nasdaq Capital Market (\"Nasdaq\"). In connection with the consummation of the Merger, the Company requested that Nasdaq (i) suspend trading of Company Common Stock on Nasdaq and remove Company Common Stock from listing on Nasdaq, in each case, on J",
+     "band": "5-8"
+    },
+    {
+     "reihe": "EQRX",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-23-274145",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On November 9, 2023, in connection with the consummation of the Mergers, EQRx notified the NASDAQ Global Market (\"Nasdaq\") of the consummation of the Mergers and requested that Nasdaq cease trading of EQRx Common Stock and EQRx Warrants on Nasdaq and suspend the listing of EQRx Common Stoc",
+     "band": "1-5"
+    },
+    {
+     "reihe": "CDTX",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-26-005517",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. In connection with the closing of the Merger, the Company (i) notified The Nasdaq Stock Market LLC (\" Nasdaq \") that the Merger was consummated and (ii) requested that Nasdaq (A) halt trading of and delist the Com",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "LBRDK",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001140361-26-033932",
+     "tage": 2,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " incorporated into this Item 3.01 by reference. On the Closing Date, Liberty Broadband notified Nasdaq of the completion of the Merger and requested that the shares of LBRDA, LBRDK and LBRDP be delisted from Nasdaq effective following the Effective Time. Liberty Broadband also requested that Nasdaq ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "DSSI",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001104659-21-092877",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "rk Stock Exchange (\" NYSE \") that the Diamond S Common Shares issued and outstanding immediately prior to the Effective Time (excluding Diamond S Common Shares owned by Diamond S, INSW, Merger Sub or any of their respective direct or indirect wholly owned subsidiaries) were cancelled in exchange for",
+     "band": "8-13"
+    },
+    {
+     "reihe": "WRI",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001140361-21-026775",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On August 3, 2021, the Company notified the New York Stock Exchange (\"NYSE\") that the Merger had been completed and requested that NYSE (i) suspend trading of the Company's common shares on NYSE effective as of the open of business on August 4, 2021, (ii) withdraw the NYSE Common Stock fr",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "FBSS",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-21-103627",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "tween Virginia National and Fauquier, and a related Plan of Merger (together, the \"Merger Agreement\"). At the effective time of the Merger (the \"Effective Time\"), each share of common stock, par value $3.13 per share, of Fauquier (\"Fauquier common stock\"), that was outstanding immediately prior to t",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "TPCO",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0000950103-21-007803",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ch share of Company Common Stock (other than the Excluded Shares and the Dissenting Shares) was cancelled and converted into the right to receive the Merger Consideration. The shares of Company Common Stock were suspended from trading on The NASDAQ Stock Market LLC (\" Nasdaq \") effective as of the o",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "AKLI",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-24-032101",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "is Current Report on Form 8-K is incorporated herein by reference into this Item 3.01. In connection with the consummation of the Offer and the Merger, the Company (i) notified The Nasdaq Stock Market LLC (\" Nasdaq \") of the consummation of the Merger and (ii) requested that Nasdaq (A) suspend tradi",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "TERP",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001140361-20-017178",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " (i) 0.25 (which is the number of BEPC Exchangeable Shares distributed with respect to each BEP Unit upon the consummation of BEP's previously announced special distribution to its unitholders) and (ii) one. Public TERP Shares in respect of which a valid election to receive BEP Units was not made by",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "NARI",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-029190",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On February 19, 2025, Inari (i) notified The Nasdaq Global Select Market (\" Nasdaq \") of the consummation of the Merger and (ii) requested that Nasdaq (x) suspend trading of the Shares, effective prior to market open on February 19, 2025, and (y) file with the SEC a Form 25 Notification o",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "PBCT",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-22-094315",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": ".01 On the Closing Date, People's United notified the NASDAQ Global Select Market (\"NASDAQ\") of the impending consummation of the Merger and requested that NASDAQ (i) suspend trading of People's United Common Stock and People's United Preferred Stock prior to the opening of trading on April 4, 2022,",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "PFBI",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0000887919-21-000045",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "cial \"), pursuant to the Agreement and Plan of Merger (the \" Merger Agreement \") dated March 26, 2021. At the effective time of the Merger (the \" Effective Time \"), Premier Financial merged with and into Peoples (the \" Merger \"), with Peoples as the surviving corporation in the Merger. Immediately f",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "POSH",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-23-002016",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "is Item 3.01. On the Closing Date, the Company (i) notified The Nasdaq Global Select Market (\"Nasdaq\") of the consummation of the Merger and (ii) requested that Nasdaq file with the SEC a Form 25 Notification of Removal from Listing and/or Registration to delist and deregister the shares of the Comp",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "HIBB",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-24-034113",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. In connection with the completion of the Merger, on July 25, 2024, the Company (i) notified the Nasdaq Global Select Market (\" Nasdaq \") that the Merger was completed and (ii) submitted a request to Nasdaq for Nasdaq to cease trading of the Company Common Stock on Nasdaq and to suspend th",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "BFYT",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-20-226484",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "on with the Merger, on August 21, 2020, the Company (a) notified The NASDAQ Global Market ( Nasdaq ) of the consummation of the Merger and (b) requested that Nasdaq (i) suspend trading of the Class A Shares effective August 21, 2020, and (ii) file with the SEC a Form 25 to delist the Class A Share",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "THRD",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-170428",
+     "tage": 1,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": "31, 2025, the Company filed a Form 25 with the Securities and Exchange Commission (the \" SEC \") to effect the voluntary delisting of the Common Stock under Section 12(b) of the Securities Exchange Act of 1934, as amended (the \" Exchange Act \"), and that the delisting will be effective on or about Au",
+     "band": "5-8"
+    },
+    {
+     "reihe": "UDMY",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001140361-26-020398",
+     "tage": 3,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 The Surviving Corporation notified the Nasdaq Stock Market LLC (\"Nasdaq\") of the Closing and requested that Nasdaq suspend trading of Udemy Common Stock. As a result, trading of Udemy Common Stock on Nasdaq was suspended prior to the opening of trading on the Closing Date. On the Closing D",
+     "band": "1-5"
+    },
+    {
+     "reihe": "LSEA",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-25-023577",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Report on Form 8-K is incorporated by reference into this Item 3.01. On June 25, 2025, in connection with the consummation of the Offer and the Merger, the Company notified The Nasdaq Capital Market (\" Nasdaq \") of the consummation of the Merger and requested that Nasdaq file with the SEC a notifica",
+     "band": "8-13"
+    },
+    {
+     "reihe": "ASTR",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-24-180782",
+     "tage": 1,
+     "klasse": "mehrdeutig",
+     "stand": "abschnitt",
+     "auszug": "the opening of trading on July 18, 2024, the Company notified the Nasdaq Capital Market (\" Nasdaq \") that the Merger had been completed and that the Certificate of Merger had been filed, and requested that Nasdaq suspend trading of the Class A Shares on Nasdaq prior to the opening of trading on July",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "XEC",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001104659-21-122062",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "item 3.01 ; transfer or listing In connection with the consummation of the Merger, Cimarex notified the New York Stock Exchange (\" NYSE \") that each outstanding share of Cimarex's common stock was converted into the right to receive the Merger Consideration and requested that NYSE withdraw the listi",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "CTRA",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001104659-26-057278",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "d Item 2.01 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. Prior to the consummation of the Merger, shares of Company Common Stock were listed and traded on the New York Stock Exchange (the \"NYSE\") under the trading symbol \"CTRA.\" In connection with the consumma",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "ICBK",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-21-146823",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On December 3, 2021, the Company notified The Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and requested that Nasdaq (i) suspend trading in the Company Common Stock on Nasdaq effective as of the close of business on December 3, 2021, (ii) withdraw the Company Commo",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "CFLT",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-26-029071",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "m 3.01. On the Closing Date, the Surviving Corporation notified The Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and requested that Nasdaq delist the Class A Common Stock on the Closing Date. As a result, trading of the Class A Common Stock on Nasdaq was suspended prior to th",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "ADTH",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-24-030833",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " of this Current Report on Form 8-K are incorporated by reference into this Item 3.01. In connection with the consummation of the Merger, on June 20, 2024, the Company requested that The Nasdaq Stock Market LLC (\"Nasdaq\") halt trading in Company Common Stock, and on June 21, 2024, the Company notifi",
+     "band": "1-5"
+    },
+    {
+     "reihe": "HOLX",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-26-144632",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "in this Item 3.01. 3 On April 7, 2026, the Company notified The Nasdaq Stock Market LLC (\" Nasdaq \") that the Merger had been completed and requested that Nasdaq suspend trading of Company Common Stock on Nasdaq prior to the opening of trading on April 7, 2026. The Company also requested that Nasdaq",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "MANT",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-22-244730",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "eport on Form 8-K is incorporated by reference in this Item 3.01. On the Closing Date, in connection with the closing of the Merger, the Company notified the Nasdaq Global Select Market (\"Nasdaq\") that the Merger had been consummated and requested that the trading of its Class A Common Stock on Nasd",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "KDNY",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-23-210803",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On the Merger Closing Date, the Company (i) notified The Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and (ii) requested that Nasdaq file with the SEC a Form 25 Notification of Removal from Listing and/or Registration to delist the shares of Chinook common stock fr",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "EVBN",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001140361-25-017352",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "should be suspended and the listing of Evans Common Stock should be removed, in each case effective as of the Effective Time, and requested that NYSE file with the SEC a notification of removal from listing and registration of Evans Common Stock on Form 25 to effect the delisting of all shares of Ev",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "CSGS",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-26-224339",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated into this Item 3.01 by reference. In connection with the closing of the Merger, on May 9, 2026, CSG notified the Nasdaq Stock Market (\"Nasdaq\") of the anticipated completion of the Merger and on May 11, 2026, CSG requested that Nasdaq (i) suspend ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "COUP",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-23-054081",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "rt on Form 8-K is incorporated by reference into this Item 3.01. On February 28, 2023, in connection with the consummation of the Merger, the Company notified The Nasdaq Global Select Market (\"NASDAQ\") that the Merger had been consummated and requested that the listing of the shares of Company Commo",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "CIO",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-26-009080",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "in by reference. On January 9, 2026, the Company (i) notified the New York Stock Exchange (the \"NYSE\") of the consummation of the Merger and (ii) requested that the NYSE (A) suspend trading of the Common Stock and the Series A Preferred Stock on the NYSE effective prior to the opening of trading on ",
+     "band": "5-8"
+    },
+    {
+     "reihe": "CRGX",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001193125-25-183141",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "is Current Report on Form 8-K is incorporated herein by reference into this Item 3.01. In connection with the consummation of the Offer and the Merger, the Company (i) notified The Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and (ii) requested that Nasdaq (A) suspend trading",
+     "band": "1-5"
+    },
+    {
+     "reihe": "POLY",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0000950103-22-014549",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "s Current Report is incorporated by reference into this Item 3.01. On August 29, 2022, in connection with the completion of the Merger, the Company notified the New York Stock Exchange (the \" NYSE \") that the Merger had been completed, and requested that the NYSE suspend trading of the Company Commo",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "BGFV",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-227537",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. In connection with the consummation of the Merger, on the Closing Date, Big 5 notified The Nasdaq Stock Market LLC (\" Nasdaq \") that the Merger had been consummated and that the outstanding Company Common Stock ha",
+     "band": "1-5"
+    },
+    {
+     "reihe": "SHYF",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001140361-25-024297",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "his Current Report on Form 8-K are incorporated herein by reference. On June 30, 2025, in connection with the consummation of the Merger, the Company requested that The Nasdaq Global Select Market (\" Nasdaq \") halt trading of Company Common Stock effective following closing of the after-market tradi",
+     "band": "8-13"
+    },
+    {
+     "reihe": "LNKB",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0000943374-26-000182",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "and Burke & Herbert (the \"Merger Agreement\"). Pursuant to the Merger Agreement, on the Closing Date, (i) LNKB merged with and into Burke & Herbert, with Burke & Herbert continuing as the surviving corporation (the \"Merger\"), and (ii) immediately following the Merger, LINKBANK, a Pennsylvania charter",
+     "band": "8-13"
+    },
+    {
+     "reihe": "LBPH",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001140361-24-048133",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. In connection with the consummation of the Merger, the Company (i) notified the Nasdaq Global Market (\" Nasdaq \") of the consummation of the Merger and (ii) requested that Nasdaq (A) suspend trading of, and delist",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "HBMD",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-22-015556",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " Plan of Merger (the \"Merger Agreement\"), dated as of July 12, 2021, by and between F.N.B. and Howard. At the effective time of the Merger (the \"Effective Time\"), Howard merged with and into F.N.B., with F.N.B. surviving the Merger. On or about February 5, 2022, Howard's wholly-owned subsidiary Howa",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "UNVR",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-23-199985",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " of this Current Report on Form 8-K are incorporated by reference into this Item 3.01. In connection with the consummation of the Merger, on the Closing Date, Univar Solutions notified the New York Stock Exchange (the \" NYSE \") of the closing of the Merger and requested that the NYSE (a) suspend tra",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "DEN",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0000945764-23-000140",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "uctory Note of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. Prior to the completion of the Merger, shares of Denbury Common Stock were listed and traded on the New York Stock Exchange (the \"NYSE\") under the trading symbol \"DEN.\" In connection with the completion ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "INZY",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-25-153582",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ed herein by reference. On July 1, 2025, Inozyme (i) notified Nasdaq Global Select Market (\" Nasdaq \") of the consummation of the Merger and (ii) requested that Nasdaq (A) suspend trading of, and delist, the Shares effective before the opening of trading on July 1, 2025 and (B) file with the SEC a F",
+     "band": "1-5"
+    },
+    {
+     "reihe": "AKRO",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001140361-25-044946",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": " reference. On December 9, 2025, the Company (i) notified the Nasdaq Global Select Market (\" Nasdaq \") of the consummation of the Merger and its intent to remove all Company Common Stock from Nasdaq and (ii) requested that Nasdaq (A) halt trading of Company Common Stock effective before the opening ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "HMNF",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001437749-24-030970",
+     "tage": 0,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On October 9, 2024, the Company notified the Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and requested that Nasdaq file with the SEC a notification on Form 25 to delist and deregister the Company's common stock under Section 12(b) of the Securities Exchange Act of",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "MDC",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0000950142-24-001115",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "3.01. On April 19, 2024, the Company notified the New York Stock Exchange (\" NYSE \") that the Merger had been consummated and requested that the NYSE suspend trading of the Company's Common Stock on the NYSE prior to the opening of trading on April 19, 2024. The Company also requested that the NYSE ",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "SPNE",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-23-001942",
+     "tage": 1,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On January 5, 2023, SeaSpine requested that the NASDAQ Stock Market file with the SEC an application on Form 25 to withdraw the SeaSpine common stock from listing on the NASDAQ Global Select Market and terminate the registration of SeaSpine common stock under Section 12(b) of the Securitie",
+     "band": "8-13"
+    },
+    {
+     "reihe": "APGN",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0000950170-23-044038",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. In connection with the consummation of the Merger, Apexigen notified the Nasdaq Capital Market (\"Nasdaq\") and requested that it suspend trading of Apexigen Common Stock and Apexigen Warrants and remove Apexigen Co",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "TWKS",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001213900-24-097457",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "and Item 3.03 of this Current Report is incorporated by reference into this Item 3.01. In connection with the completion of the Merger, the Company notified the Nasdaq Global Select Market (\" Nasdaq \") that the Merger had been completed and requested that Nasdaq suspend trading of the Company Common",
+     "band": "1-5"
+    },
+    {
+     "reihe": "THS",
+     "regel": 2,
+     "beleg": "alpaca-stock_and_cash_mergers",
+     "akz": "0001320695-26-000014",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ce into this Item 3.01. On the Closing Date, the Company notified the New York Stock Exchange (\"NYSE\") of the consummation of the Merger and of its intent to remove the TreeHouse Common Stock from listing on NYSE and requested that NYSE (i) suspend trading of the TreeHouse Common Stock on the NYSE a",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "CPE",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-24-083393",
+     "tage": 4,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Prior to the completion of the Merger, shares of Callon Common Stock were listed and traded on the New York Stock Exchange (the \"NYSE\") under the trading symbol \"CPE.\" In connection with the completion of the Merger, the Company notified the NYSE that each eligible and outstanding share of",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "ECOL",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-22-054616",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. In connection with the consummation of the Mergers, the Company notified the Nasdaq Global Select Market and Nasdaq Capital Market that trading in the ECOL Common Stock and ECOLW Warrants should be suspended and l",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "ASRT",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-26-074619",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "1 of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. In connection with the closing of the Merger, the Company (i) notified The Nasdaq Capital Market (\" Nasdaq \") that the Merger was consummated and (ii) requested that Nasdaq (A) halt trading of and delist the Share",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "ZY",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-22-264951",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ort on Form 8-K is incorporated by reference into this Item 3.01. On the Closing Date, in connection with the consummation of the Merger, Zymergen notified the Nasdaq Stock Market (\"NASDAQ\") that the Merger had been consummated and requested that the trading of the shares of Company Common Stock on ",
+     "band": "1-5"
+    },
+    {
+     "reihe": "NPTN",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-22-210667",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. In connection with the closing of the Merger, on August 3, 2022 NeoPhotonics (i) notified the New York Stock Exchange (\"NYSE\") of the consummation of the Merger and (ii) requested that the NYSE (A) suspend trading of the shares of NeoPhotonics Common Stock on the NYSE and (B) file with th",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "BRY",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-25-325047",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "uctory Note of this Current Report on Form 8-K is incorporated by reference into this Item 3.01. Prior to the completion of the Merger, shares of Company Common Stock were listed and traded on the Nasdaq Global Select Market (\"Nasdaq\") under the trading symbol \"BRY.\" In connection with the completio",
+     "band": "1-5"
+    },
+    {
+     "reihe": "VLDR",
+     "regel": 3,
+     "beleg": "alpaca-stock_mergers",
+     "akz": "0001193125-23-033024",
+     "tage": 3,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "his Item 3.01. On February 10, 2023, the Company notified the Nasdaq Global Select Market (\" Nasdaq \") of the consummation of the Mergers and that each outstanding share of Velodyne Common Stock had been converted into the right to receive the Velodyne Common Stock Merger Consideration. The Company ",
+     "band": "1-5"
+    },
+    {
+     "reihe": "FPRX",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-21-118566",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On April 16, 2021, Five Prime notified the Nasdaq Global Select Market (\" Nasdaq \") of the consummation of the Merger, requested that Nasdaq suspend trading of the Shares effective as of the close of business on April 16, 2021, and requested that Nasdaq file with the SEC a Form 25 Notifica",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "NEWR",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-23-273042",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "nto this Item 3.01. On the Closing Date, the Company (i) notified the New York Stock Exchange (\"NYSE\") of the consummation of the Merger and (ii) requested that NYSE file with the SEC a Form 25 Notification of Removal from Listing and/or Registration under Section 12(b) of the Securities Exchange Ac",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "WBC",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-20-155112",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "s Current Report on Form 8-K is incorporated herein by reference. On the Closing Date, in connection with the consummation of the Merger, WABCO notified the New York Stock Exchange (the \"NYSE\") of the consummation of the Merger and requested that the NYSE delist its Common Stock and file with the SE",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "INDT",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001104659-23-076131",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 In connection with the consummation of the Merger, the Company requested that The Nasdaq Stock Market LLC (\" NASDAQ \") suspend trading of Company Common Stock on June 29, 2023, delist the Company Common Stock from NASDAQ, and file a Form 25 with the SEC to report the delisting of Company C",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "IMGO",
+     "regel": 2,
+     "beleg": "alpaca-cash_mergers",
+     "akz": "0001193125-23-006137",
+     "tage": 1,
+     "klasse": "vollzug",
+     "stand": "abschnitt",
+     "auszug": "ed herein by reference. On January 11, 2023, Imago (i) notified the Nasdaq Stock Market LLC (\"Nasdaq\") of the consummation of the Merger and (ii) requested that Nasdaq (A) suspend trading of the Shares effective before the opening of trading on January 11, 2023 and (B) file with the SEC a Form 25 No",
+     "band": "ueber 13"
+    }
+   ]
+  },
+  "b": {
+   "regel": "Regel 0 (Q-Kuerzel) mit 8-K 3.01 nach V3; alle, hoechstens 100 (Saat z3-eich-b); erwartet ruege",
+   "kandidaten": 117,
+   "reihen": [
+    {
+     "reihe": "CASA",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-24-084927",
+     "tage": -2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On March 27, 2024, Casa Systems, Inc. (the \"Company\") received a letter (the \"Letter\") from the listing qualifications staff (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") that the Company's common stock would be delisted, based upon the Company's non-compliance with the $1.00 bid",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "SOND",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001819395-25-000135",
+     "tage": -28,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On October 21, 2025, Sonder Holdings Inc. (the \"Company\") received a notice (the \"Notice\") from The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, based upon Nasdaq's review of the Company's Market Value of Publicly Held Shares (\"MVPHS\") for the last thirty (30) consecutive",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "TAIT",
+     "regel": 0,
+     "beleg": "q-kuerzel",
+     "akz": "0001185185-25-001751",
+     "tage": -19,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": "ITEM 3.01 On November 10, 2025, our Board of Directors approved the decision to voluntarily delist its common stock from The Nasdaq Stock Market and, based upon ownership of its shares by fewer than 300 holders of record, deregister its common stock under the Securities Exchange Act of 1934 and susp",
+     "band": "1-5"
+    },
+    {
+     "reihe": "HCDI",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-23-045017",
+     "tage": -5,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On December 12, 2023, the Company received written notice from The Nasdaq Stock Market LLC (\"Nasdaq\") indicating that, following Nasdaq's review of the Company's press release related to the Bankruptcy Petition and other publicly available information, and in accordance with Listing Rules ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "AXDX",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-25-047314",
+     "tage": -2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "e District of Delaware (such court, the \" Court \" and such cases, the \" Cases \"). On May 8, 2025, the Company received written notice (the \" Delisting Notice \") from the Listing Qualifications Staff (the \" Staff \") of The Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that, as a result o",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "APPH",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001807707-23-000104",
+     "tage": -8,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On July 24, 2023, the Company received notice from the Listing Qualifications Department (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that the Staff has, in accordance with Listing Rules 5101, 5110(b), and IM-5101-1, determined that the Company's securities",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "AEY",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001628280-24-003250",
+     "tage": -7,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": "ts subsidiaries, Fulton Technologies, Inc., Nave Communications Company , and ADDvantage Triton, LLC, filed a voluntary petition for relief under the provisions of Chapter 7 of Title 11 of the United States Code in the United States Bankruptcy Court for the District of Eastern District of Texas, She",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CURO",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001711291-24-000024",
+     "tage": 4,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Exchange (the \"NYSE\") notified CURO Group Holdings Corp. (the \"Company\"), and publicly announced, that it had determined to commence proceedings to delist the Company's common stock, par value $0.001 per share (the \"Common Stock\"), as a result of the Company's non-compliance with Rule 802.01B of the",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "NOGN",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001213900-23-096686",
+     "tage": -2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "f its common stock had closed below $15,000,000 for 30 consecutive trading days, and therefore the Company is not in compliance with Nasdaq Listing Rule 5450(b)(3)(C), a continued listing requirement. Subsequently, on September 5, 2023, Nasdaq notified the Company that the bid price of its common st",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "RAD",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-23-106854",
+     "tage": -12,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " to send a letter to the NYSE confirming receipt of the Notice and to indicate whether it intends to cure the deficiencies. If the Company determines to cure such deficiencies, the Company would then submit a business plan within 45 days of receipt of the Notice that demonstrates compliance with the",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CRGE",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001437749-24-005222",
+     "tage": -6,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " August 22, 2023, that it was no longer in compliance with Nasdaq Listing Rule 5450(a)(1) because the closing bid price per share for the Company's Common Stock had closed below $1.00 for the previous 30 consecutive business days (the \"Minimum Bid Price Requirement\"). On February 20, 2024, the Compa",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "IMPL",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-23-297146",
+     "tage": 3,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 As previously disclosed, on April 11, 2023, Impel Pharmaceuticals, Inc. (the \" Company \") received written notice (the \" Delisting Notice \") from the staff of The Nasdaq Stock Market (\" Nasdaq \") notifying the Company that it did not meet the $15 million minimum market value of publicly he",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "BIOR",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000950170-24-134755",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Biora Therapeutics, Inc. (the \"Company\") today announced that on December 9, 2024, the Company received formal notice from The Nasdaq Stock Market LLC (\"Nasdaq\") that the Nasdaq Hearings Panel (the \"Panel\") had determined to delist the Company's securities from Nasdaq based upon the Compan",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "ATNX",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-23-150484",
+     "tage": -2,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On May 16, 2023, the Company received written notice from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, as a result of the Chapter 11 Case and in accordance with Nasdaq Listing Rules 5101, 5110(b), and IM-5101-1, the Nasdaq staf",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CMAX",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000950170-24-109655",
+     "tage": -62,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "at least $15,000,000 (the \"Minimum MVPHS Requirement\"), and Nasdaq Listing Rule 5810(c)(3)(D) provides that a failure to meet the Minimum MVPHS Requirement exists if the deficiency continues for a period of 30 consecutive business days. The Notice has no immediate effect on the listing of the Compan",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "EGIO",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-24-218466",
+     "tage": -4,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "s Bankruptcy Court for the District of Delaware (the \" Bankruptcy Court \"). On September 9, 2024, the Company received written notice (the \" Delisting Notice \") from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that, as a result of the Chapt",
+     "band": "1-5"
+    },
+    {
+     "reihe": "SRGA",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-23-173206",
+     "tage": -7,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": " 2023, Surgalign Holdings, Inc. (the \"Company\") and certain of its direct and indirect subsidiaries commenced voluntary proceedings under chapter 11 (the \"Chapter 11 Cases\") of the United States Bankruptcy Code in the United States Bankruptcy Court for the Southern District of Texas. The Chapter 11 ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "UNAM",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001654954-23-007910",
+     "tage": -2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "mmission to effect the delisting of common stock unless the Company timely requests a hearing before a Nasdaq Hearings Panel (the \"Panel\") to address the deficiencies discussed in the letter and in the prior deficiency notices provided by the Company, and present a plan to regain compliance. The Com",
+     "band": "1-5"
+    },
+    {
+     "reihe": "SIEN",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001213900-24-014910",
+     "tage": -5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On February 13, 2024, the Company received written notice (the \" Delisting Notice \") from the Listing Qualifications Department of the Nasdaq Stock Market LLC notifying the Company that, as a result of the Chapter 11 Cases and in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-51",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CCCX",
+     "regel": 0,
+     "beleg": "q-kuerzel",
+     "akz": "0001193125-26-035805",
+     "tage": -10,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": "s exempted company (\"Churchill X\") notified the Nasdaq Stock Market LLC (\"Nasdaq\") of Churchill X's intent to transfer the listing of its Class A ordinary shares, par value $0.0001 per share (the \"Class A Ordinary Shares\") and public warrants (the \"CCX Warrants\") (each, the Common Stock and Warrants",
+     "band": "ueber 13"
+    },
+    {
+     "reihe": "OTRK",
+     "regel": 0,
+     "beleg": "q-kuerzel",
+     "akz": "0001437749-25-026512",
+     "tage": -2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": ", received a letter from The Nasdaq Stock Market, LLC (\"Nasdaq\") stating that the Company no longer meets the minimum bid price requirement set forth in Nasdaq Listing Rule 5550(a)(2) (the \"Minimum Bid Price Rule\") because the closing bid price for the Company's common stock was less than $1.00 from",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "VRAY",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001628280-23-025325",
+     "tage": -4,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "ruptcy Code, and (ii) concerns regarding the Company's ability to sustain compliance with the $1.00 per share minimum bid price requirement for continued inclusion on Nasdaq based on Listing Rule 5450(a)(1). Trading of the Company's common stock will be suspended as of the open business on July 26, ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "ZYXI",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-25-122563",
+     "tage": -5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On December 17, 2025, the Company received a written notice (the \"Notice\") from the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, pursuant to Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, Nasdaq had determined to delist the Com",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "YELL",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000950170-23-040179",
+     "tage": -6,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": "1, and has determined that the Common Stock will be delisted from the Nasdaq due to the Company's filing of a voluntary cases under Chapter 11 of the Bankruptcy Code. The Company does not intend to appeal the determination and, therefore, it is expected that its Common Stock will be delisted, which ",
+     "band": "1-5"
+    },
+    {
+     "reihe": "SDC",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001775625-23-000112",
+     "tage": -1,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On October 2, 2023, the Company received written notice from the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, Nasdaq had determined that the Company's securities ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "WE",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-23-274596",
+     "tage": 3,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Inc. (the \"Company\" or \"WeWork\") was notified by the staff of NYSE Regulation (\"NYSE Regulation\") that it had determined to commence proceedings to delist the Company's Class A common stock, par value $0.0001 per share (the \"Common Stock\"), from the New York Stock Exchange (the \"NYSE\") and that trad",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "NIR",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001213900-23-094534",
+     "tage": -7,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On December 8, 2023, the Company received written notice (the \" Delisting Notice \") from the staff of The Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that, as a result of the Bankruptcy Petitions and in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, the st",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "VTNR",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001999371-24-012788",
+     "tage": -6,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On September 27, 2024, the Company received written notice from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that, as a result of the Chapter 11 Cases and in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, Nasdaq ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "TRKA",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001628280-23-041088",
+     "tage": -8,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "mpliance with all requirements for continued listing on Nasdaq. Nasdaq also noted that, since the Company has failed to file its Form 10-Q for the period ended September 30, 2023, such failure serves as an additional and separate basis for delisting. The Determination Letter also advises the Company",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "VIEW",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-24-086157",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "ith The Nasdaq Stock Market LLC's (\"Nasdaq\") determination to delist the Company's securities from Nasdaq for failure to comply with the equity requirement in Nasdaq Listing Rule 5450(b)(1)(A). The Company was also previously notified that it no longer met the requirement to maintain a minimum marke",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CANO",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-24-024136",
+     "tage": 3,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "e \" NYSE \") notified (the \" Notice \") Cano Health, Inc. (the \" Company \") that the NYSE had determined to (a) commence proceedings to delist the Company's Class A common stock, par value $0.01 per share (\" Common Stock \") and (b) immediately suspend trading in the Company's Common Stock pursuant to ",
+     "band": "1-5"
+    },
+    {
+     "reihe": "SNBR",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000827187-26-000053",
+     "tage": -5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "ankruptcy Court for the Southern District of New York (the \"Chapter 11 Cases\"). On June 16, 2026, the Company received a written notice from the Listing Qualifications Staff of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, pursuant to Nasdaq Listing Rules 5101, 5110(b) and IM-51",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "EBIX",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-23-298190",
+     "tage": -8,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On December 18, 2023, the Company received written notice from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that, as a result of the Chapter 11 Cases and in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, Nasdaq h",
+     "band": "1-5"
+    },
+    {
+     "reihe": "MMAT",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000950170-24-097034",
+     "tage": -6,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "ourt for the District of Nevada, Case No. 24-50792 (the \"Bankruptcy Filing\"). On August 12, 2024, the Company received a letter (the \"Delisting Notice\") from the staff of the Nasdaq Listing Qualifications Department (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that t",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "AKU",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-23-265244",
+     "tage": 2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " trading on the NASDAQ Stock Market LLC (\"Nasdaq\"). As previously disclosed, on October 17, 2023, the Company received a written notification (the \"Staff Delisting Determination\") from Nasdaq's Listing Qualifications Department notifying the Company that unless the Company appealed Nasdaq's delistin",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "GMDA",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001213900-24-027568",
+     "tage": -7,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On March 28, 2024, the Company received written notice (the \" Delisting Notice \") from the Listing Qualifications Department (the \" Staff \") of The Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that the Staff has, in accordance with Listing Rules 5101, 5110(b) and IM-5101-1, d",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "BFX",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001078207-24-000033",
+     "tage": 2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On March 5, 2024, the Company received a written notice from the staff of NYSE Regulation notifying the Company that NYSE Regulation has determined to commence proceedings to delist the Company's common stock (NYSE: BFX) from the New York Stock Exchange (\"NYSE\"). Trading in the Company's c",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "ONCS",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-23-022077",
+     "tage": -1,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " ability to sustain compliance with all requirements for continued listing on Nasdaq, including the Company's failure to comply with (a) the minimum $2,500,000 stockholders' equity requirement under Listing Rule 5550(b)(1) and (b) the minimum bid price requirement under Listing Rule 5550(a)(2) due t",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "TTCF",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001628280-23-024475",
+     "tage": -5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On July 3, 2023, the Company received written notice (the \"Delisting Notice\") from The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, as a result of the Chapter 11 Cases and in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, Nasdaq had determined that the ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "EVA",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-24-107368",
+     "tage": 6,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On October 4, 2024, the Company received a notice (the \" NYSE Notice \") from NYSE Regulation that it had determined to commence proceedings to delist the Common Stock from the NYSE and that trading in the Common Stock was suspended immediately. NYSE Regulation reached its decision that the",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "VWE",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000950170-24-087506",
+     "tage": -2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On July 24, 2024, the Company received a letter (the \"Delisting Notice\") from the listing qualifications department staff (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, in accordance with Nasdaq Listing Rules 5101, 5110(b), and IM-5101-1, the Staff has ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "AILE",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001213900-25-000828",
+     "tage": 3,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "nkruptcy Code, and in accordance with Nasdaq Listing Rules 5101, 5110(b), and IM-5101-1, the Nasdaq Staff had determined to delist the Company's securities from The Nasdaq Stock Market. The Company did not appeal the Nasdaq Staff's determination and, accordingly, the Company expects that its common ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "NKLA",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001731289-25-000011",
+     "tage": -4,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "es Bankruptcy Court for the District of Delaware (the \"Bankruptcy Filing\"). On February 19, 2025, the Company received a letter (the \"Delisting Notice\") from the staff of the Nasdaq Listing Qualifications Department (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that t",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CUTR",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001628280-25-011587",
+     "tage": -2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "ng Qualifications Department of The Nasdaq Stock Market LLC (\" Nasdaq \") that, among other things, Nasdaq had determined to delist the Company's common stock, par value $0.001 per share (the \"Common Stock\") as a result of the Company's commencement of voluntary proceedings under Chapter 11 of the Un",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "MODV",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001437749-25-027610",
+     "tage": -5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On August 21, 2025, ModivCare Inc. (the \"Company\") received a notification letter (the \"Delisting Notice\") from the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that Nasdaq had determined to commence proceedings to delist the Company's c",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "RIDE",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-23-076003",
+     "tage": -7,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": " Motors Corp., a Delaware corporation (the \"Company\"), and its subsidiaries (the \"Company Parties\") commenced voluntary proceedings under chapter 11 (\"Chapter 11\") of the U.S. Bankruptcy Code in the U.S. Bankruptcy Court for the District of Delaware (the \"Bankruptcy Court\") and also filed extensive ",
+     "band": "1-5"
+    },
+    {
+     "reihe": "NH",
+     "regel": 0,
+     "beleg": "q-kuerzel",
+     "akz": "0001566469-23-000031",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " Float Requirement\") prior to May 1, 2023, which was 180 calendar days after the Company received the initial deficiency letter from Nasdaq on October 31, 2022 regarding the Public Float Requirement (the \"Compliance Period\"). The Notice indicated that Company's common stock would be suspended from t",
+     "band": "1-5"
+    },
+    {
+     "reihe": "MDVL",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-24-012286",
+     "tage": -4,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "tered under the caption, In Re: MedAvail Holdings, Inc. , Case No. 24-10148. On February 2, 2024, the Company received written notice (the \"Delisting Notice\") from the staff of the Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, as a result of the Chapter 7 Filing and in accordance wi",
+     "band": "1-5"
+    },
+    {
+     "reihe": "SUNW",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-24-006371",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On February 6, 2024, as a result of the Bankruptcy Filing, the Company received a written notice from The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that the Company's common stock will be delisted from The Nasdaq Stock Market. Accordingly, trading of the Company's common st",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CFRX",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-23-273553",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "(1) (the \"Minimum Stockholders' Equity Requirement\") for continued listing on The Nasdaq Capital Market (the \"Staff Determination\"). The Company requested a hearing before the Nasdaq Hearings Panel (the \"Panel\") to appeal the Staff Determination. On November 7, 2023, the Company received a determina",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "TPIC",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001171843-25-005450",
+     "tage": -3,
+     "klasse": "nichts",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On August 12, 2025, the Company received a letter from the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that the Nasdaq Staff has determined that the Company's common stock, par value $0.01 per share (the \"Common Stock\") will be delisted",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "IRBT",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001159167-25-000097",
+     "tage": -4,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "s notified by the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") that Nasdaq had determined to delist the Company's common stock, par value $0.01 per share (the \"Common Stock\"). Nasdaq reached its decision that the Company is no longer suitable for listing pursuant to Na",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "FAT",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-26-004289",
+     "tage": -4,
+     "klasse": "mehrdeutig",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Notice of Delisting or Failure to Satisfy Continued Listing Rule or Standard; Transfer of Listing. On January 28, 2026, FAT Brands Inc. (the \" Company \") received a letter (the \" Delisting Notice \") from the Listing Qualifications Staff of The Nasdaq Stock Market LLC (\" Nasdaq \") notifying",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "NMTR",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000930413-23-001864",
+     "tage": -7,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " ability to sustain compliance with all requirements for continued listing on Nasdaq, including the Company's failure to comply with (a) the minimum $2,500,000 stockholders' equity requirement under Listing Rule 5550(b)(1) and (b) the minimum bid price requirement under Listing Rule 5550(a)(2), purs",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "TUP",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001008654-24-000073",
+     "tage": 6,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " Corporation (the \"Corporation\") was notified by the staff of NYSE Regulation (\"NYSE Regulation\") that it had determined to commence proceedings to delist the Corporation's common stock, par value $0.01 per share (the \"Common Stock\"), from the New York Stock Exchange (the \"NYSE\") and that trading in",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "ISUN",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-24-020745",
+     "tage": -2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " Market (\"Nasdaq\") indicating that the Company did not satisfy Nasdaq Listing Rule 5500(a)(2), insofar as the bid price for the Company's Common Stock was less than $1.00 per share for the previous 30 consecutive business days, and in accordance with the Nasdaq Listing Rules, the Company had been pr",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "FATBB",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-26-004289",
+     "tage": -4,
+     "klasse": "mehrdeutig",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Notice of Delisting or Failure to Satisfy Continued Listing Rule or Standard; Transfer of Listing. On January 28, 2026, FAT Brands Inc. (the \" Company \") received a letter (the \" Delisting Notice \") from the Listing Qualifications Staff of The Nasdaq Stock Market LLC (\" Nasdaq \") notifying",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CSSEN",
+     "regel": 0,
+     "beleg": "q-kuerzel",
+     "akz": "0001104659-24-051279",
+     "tage": -69,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On April 18, 2024, Chicken Soup for the Soul Entertainment Inc. (the \" Company \") received a letter (the \" Delinquency Letter \") from The Nasdaq Stock Market (\" Nasdaq \") informing the Company that its securities may be delisted from the Nasdaq Capital Market due to the fact the Company's ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "BHIL",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001830210-25-000016",
+     "tage": -1,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "s notified by the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") that Nasdaq had determined to delist the Company's common stock, par value $0.0001 per share (the \"Common Stock\"). Nasdaq reached its decision pursuant to Nasdaq Listing Rules 5101 5110(b), and IM-5101-1, a",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "DMYI",
+     "regel": 0,
+     "beleg": "q-kuerzel",
+     "akz": "0001193125-21-178706",
+     "tage": -121,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " Company ) received a notice from the New York Stock Exchange (the  NYSE ) indicating that the Company is not in compliance with the NYSEs continued listing requirements under the timely filing criteria set forth in Section 802.01E of the NYSE Listed Company Manual since the Company did not fil",
+     "band": "8-13"
+    },
+    {
+     "reihe": "AMRS",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001365916-23-000099",
+     "tage": -7,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "S. Bankruptcy Code in the U.S. Bankruptcy Court for the District of Delaware. On August 10, 2023, the Company received written notice (the \"Delisting Notice\") from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, as a result of the Chapter 1",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CLSD",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-25-297177",
+     "tage": -3,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On November 24, 2025, the Company received written notice (the \" Delisting Notice \") from the staff of The Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that, as a result of the Case and in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, the staff of Nasdaq ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "OIG",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001437749-23-024889",
+     "tage": 2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On August 24, 2023, the Company received written notice from the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, the Chapter 11 Cases served as an additional basis ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "PET",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001842356-25-000092",
+     "tage": -1,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On July 23, 2025, the Company received written notice (the \" Delisting Notice \") from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, Nasdaq determined that the",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "HTGM",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000950170-23-027044",
+     "tage": -6,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On June 6, 2023, the Company received written notice (the \"Delisting Notice\") from the staff of The Nasdaq Stock Market (\"Nasdaq\") notifying the Company that, as a result of the Company's filing for protection under Chapter 11 of the U.S. Bankruptcy Code (the \"Filing\") and in accordance wi",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "NSTG",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001401708-24-000019",
+     "tage": -5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On February 5, 2024, the Company received written notice (the \" Delisting Notice \") from the staff of The Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that, as a result of the Bankruptcy Petitions and in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5101-1, the s",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "BFI",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001723580-24-000055",
+     "tage": -3,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On September 12, 2024, the Company received written notice from the director of the Listing Qualifications department of The Nasdaq Stock Market (\" Nasdaq \"), notifying the Company that the Company's securities will be delisted from Nasdaq in accordance with Listing Rules 5101, 5110(b), a",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "DMTK",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001651944-24-000063",
+     "tage": -6,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": " DermTech, Inc. and its subsidiary, DermTech Operations, Inc. (together, the \"Company\" or \"DermTech\") filed a voluntary petition for relief under Chapter 11 of Title 11 (\"Chapter 11\") of the United States Bankruptcy Code (the \"Bankruptcy Code\") in the United States Bankruptcy Court for the District ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "VINO",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-24-045165",
+     "tage": -8,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On November 13, 2024, the Company, received a letter from the Listing Qualifications Department of the Nasdaq Stock Market (the \"Staff\") that the Staff has determined that the Company's shares of common stock will be delisted from the Nasdaq Stock Market (\"Nasdaq\") in accordance with Nasda",
+     "band": "1-5"
+    },
+    {
+     "reihe": "RVLP",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-23-109105",
+     "tage": -7,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On October 12, 2023, RVL PLC received written notice (the \"Delisting Notice\") from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\"Nasdaq\") notifying RVL PLC that, as a result of the Chapter 11 Cases and in accordance with Nasdaq Listing Rules 5101, 5110(b) and IM-5",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CGRN",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001558370-23-016108",
+     "tage": -6,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "t $35 million or more for a minimum of ten (10) consecutive business days. On September 26, 2023, the Company received written notice (the \"Delisting Letter\") from Nasdaq that the Company has not regained compliance with Nasdaq Listing Rule 5550(b)(2) for the MVLS within the Compliance Period in acc",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "GRTS",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-24-238117",
+     "tage": -5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On October 11, 2024, the Company received written notice (the \"Delisting Notice\") from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, as a result of the Chapter 11 Case and in accordance with Nasdaq Listing Rules 5101, 5110(b) an",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "BIOC",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001654954-23-013182",
+     "tage": -4,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On October 16, 2023, the Company received a letter (\"Delisting Notice\") from the Listing Qualifications Staff (the \"Staff\") of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that the Staff had determined that the Company's securities will be delisted from Nasdaq pursuant to N",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "FLYY",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000950103-25-011142",
+     "tage": 5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On September 2, 2025, Spirit Aviation Holdings, Inc. (the \"Company\") received a notice from the staff of NYSE Regulation (\"NYSE Regulation\") that it had determined to commence proceedings to delist the common stock, par value $0.0001, of the Company (the \"Common Stock\") from NYSE American",
+     "band": "1-5"
+    },
+    {
+     "reihe": "SFT",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001013762-23-002963",
+     "tage": -7,
+     "klasse": "eigener-entschluss",
+     "stand": "abschnitt",
+     "auszug": "1-1, and has determined that the Common Stock will be delisted from the Nasdaq due to the Company's filing of voluntary cases under Chapter 11 of the Bankruptcy Code. The Company does not intend to appeal the determination and, therefore, it is expected that its Common Stock will be delisted, which ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "GOCO",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001628280-26-042509",
+     "tage": -4,
+     "klasse": "mehrdeutig",
+     "stand": "abschnitt",
+     "auszug": "rt\"), to implement a prepackaged chapter 11 plan of reorganization (the \"Plan\"). On June 9, 2026, the Company received a written notice (the \"Nasdaq Notice\") from the Listing Qualifications Staff of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, pursuant to Nasdaq Listing Rules 5",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "EIGR",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-24-086059",
+     "tage": -7,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " Code in the United States Bankruptcy Court for the Northern District of Texas. On April 2, 2024, the Company received written notice (the \" Delisting Notice \") from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that, as a result of the Bankr",
+     "band": "1-5"
+    },
+    {
+     "reihe": "GOEV",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001628280-25-002459",
+     "tage": -4,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On January 22, 2025, the Company received a letter from the staff of the Listing Qualifications Department (the \"Staff\") of the Nasdaq Stock Market LLC (\"Nasdaq\"), notifying the Company that the Staff has determined that the Company's securities will be delisted from Nasdaq based on the fo",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "IOBT",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-26-051790",
+     "tage": -52,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "\"Notice\") from the Listing Qualifications staff of The Nasdaq Stock Market LLC (\"Nasdaq\") that the Company is not in compliance with the continued listing requirements for The Nasdaq Global Select Market because the market value of the Company's listed securities (\"MVLS\") was below the minimum of $5",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "ME",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-25-067076",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Bankruptcy Petitions, and in accordance with Nasdaq Listing Rules 5101, 5110(b), and IM-5101-1, the Staff has determined to delist the Company's securities from The Nasdaq Stock Market. As set forth in the Nasdaq Notice, unless the Company timely requests a hearing before a Nasdaq hearings panel (th",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "INFI",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001113148-23-000016",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On September 12, 2023, Infinity Pharmaceuticals, Inc. (the \"Company\") received a delisting determination letter (the \"Determination Letter\") from The Nasdaq Stock Market LLC (\"Nasdaq\"). The Determination Letter indicated that, based on (i) the Company's continued non-compliance with The N",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "NOVN",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001467154-23-000084",
+     "tage": -8,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "be administered under the caption In re: Novan, Inc. et al , Case No. 23-10937. On July 17, 2023, the Company received written notice (the \"Delisting Notice\") from the listing qualifications department staff of The Nasdaq Stock Market (\"Nasdaq\") notifying the Company that, in accordance with Nasdaq ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "AGIL",
+     "regel": 0,
+     "beleg": "q-kuerzel",
+     "akz": "0001140361-23-054026",
+     "tage": -2,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "nce with all requirements for continued listing on The Nasdaq Stock Market, in light of the Company's current non-compliance with (i) Listing Rule 5550(a)(2), which sets forth the minimum bid price requirement for continued listing on the Nasdaq Capital Market, and (ii) Listing Rule 5250(c)(1) as a ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "PTE",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-23-020462",
+     "tage": -8,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "ityTE, Inc., a Delaware corporation (Case No. 23-bk-22358-KRA) (Bankr. D. Utah). On June 7, 2023, the Company received written notice (the \"Delisting Notice\") from the staff of the Listing Qualifications Department (the \"Staff\") of the Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, a",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "DLA",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001437749-24-022022",
+     "tage": 5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "kruptcy Code in the United States Bankruptcy Court for the District of Delaware. On July 1, 2024, the Company received written notice (the \"Delisting Notice\") from the staff of NYSE Regulation, Inc. (\"NYSE Regulation\") notifying the Company that, in light of the Chapter 11 Cases, NYSE Regulation has",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "VBIV",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-24-030073",
+     "tage": -5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On July 30, 2024, the Company received a letter (the \" Delisting Notice \") from the listing qualifications department staff (the \" Staff \") of the Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that in accordance with Nasdaq Listing Rules 5101, 5110(b), and IM-5101-1, the Staff",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "WLMS",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-23-085345",
+     "tage": 7,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Notice of Delisting On July 24, 2023, the Company received written notice from the staff of NYSE Regulation that, as a result of the Cases and in accordance with Section 1003(c)(iii) of the NYSE American Company Guide, NYSE Regulation has determined to commence proceedings to delist the co",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "QVCGA",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001355096-26-000015",
+     "tage": -3,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Nasdaq Delisting Determination - QVC Group, Inc. As previously disclosed in the Current Report on Form 8-K filed by QVC Group, Inc. (the \"Company\") on April 16, 2026, the Company and certain of its affiliates, including QVC, Inc. (collectively, the \"Company Parties\"), filed voluntary petit",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "SHPW",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001628280-24-025193",
+     "tage": -53,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " 10-Q\") with the U.S. Securities and Exchange Commission (the \"SEC\"). On May 22, 2024, the Company received a delinquency notification letter (the \"Notice\") from the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that due to the delay in filing the ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "CONN",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001223389-24-000052",
+     "tage": -4,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "024, Conn's, Inc. (the \"Company\") was notified by the staff of The Nasdaq Stock Market (\"Nasdaq\") that it had determined to commence proceedings to delist the Company's securities from trading on Nasdaq. As a result of this determination, trading in the Company's common stock will be suspended at th",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "ID",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001213900-24-000325",
+     "tage": 7,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "nkruptcy Court for the District of Delaware (the \"Chapter 11 Cases\"). On December 26, 2023, 2023, the Company received written notice (the \"Delisting Notice\") from the staff of NYSE Regulation, Inc. (\"NYSE Regulation\") notifying the Company that, in light of the Bankruptcy Petitions, the NYSE Regula",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "NOTV",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001628280-26-001160",
+     "tage": -154,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "n notice (the \"Notification Letter\") from The Nasdaq Stock Market LLC (\"Nasdaq\") stating that the Company was not in compliance with Nasdaq Listing Rule 5550(a)(2) (the \"Minimum Bid Price Rule\") because the Company's common stock failed to maintain a minimum closing bid price of $1.00 per share for ",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "OMGA",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-25-033500",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On February 18, 2025, Company received written notice (the \"Notice\") from the Listing Qualifications Department of The Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that Nasdaq had determined to delist the Company's common stock, par value $0.001 per share (the \"Common Stock\").",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "AUVI",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001213900-24-047092",
+     "tage": 0,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "s Quarterly Report on Form 10-Q for the period ended March 31, 2024 (the \"Quarterly Report\"), the Company was not in compliance with Nasdaq Listing Rule 5250(c)(1) (the \"Listing Rule\"), which requires timely filing of all required periodic financial reports with the Securities and Exchange Commissio",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "TWOU",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001193125-24-191570",
+     "tage": -5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "notified by the Listing Qualifications Department of The Nasdaq Stock Market LLC (\" Nasdaq \") that Nasdaq had determined to delist the Company's common stock, par value $0.001 per share (the \" Common Stock \"). Nasdaq reached its decision that the Company is no longer suitable for listing pursuant to",
+     "band": "1-5"
+    },
+    {
+     "reihe": "NTBL",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-24-041307",
+     "tage": -6,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "L Inc. \", Case Nos. 24-12336, 24-12333, 24-12334 and 24-12335, respectively. On October 14, 2024, the Company received written notice (the \" Delisting Notice \") from the staff of the Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that, as a result of the Chapter 7 Filings and in accordan",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "MNK",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-23-096203",
+     "tage": 1,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": " 2023, Mallinckrodt plc (the \"Company\") was notified by the staff of NYSE Regulation that NYSE Regulation has determined to commence proceedings to delist the ordinary shares, par value $0.01 per share, of the Company from the NYSE American LLC (\"NYSE American\") and that trading in the Company's ord",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "IMBI",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001104659-23-076399",
+     "tage": -8,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01. On June 29, 2023, the Company received written notice (the \"Delisting Notice\") from the Listing Qualifications Department of the Nasdaq Stock Market LLC (\"Nasdaq\") notifying the Company that, as a result of the Chapter 11 Cases and in accordance with Nasdaq Listing Rules 5101, 5110(b) and",
+     "band": "unter 1"
+    },
+    {
+     "reihe": "SAVE",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0000950103-24-016594",
+     "tage": 5,
+     "klasse": "ruege",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 On November 18, 2024, Spirit Airlines, Inc. (the \"Company\") received a notice (the \"NYSE Notice\") from the staff of NYSE Regulation (\"NYSE Regulation\") that it had determined to commence proceedings to delist the common stock, par value $0.0001, of the Company (the \"Common Stock\") from the",
+     "band": "1-5"
+    },
+    {
+     "reihe": "TWNP",
+     "regel": 0,
+     "beleg": "q-kuerzel+edgar-8K-1.03",
+     "akz": "0001493152-26-004291",
+     "tage": -4,
+     "klasse": "mehrdeutig",
+     "stand": "abschnitt",
+     "auszug": "Item 3.01 Notice of Delisting or Failure to Satisfy Continued Listing Rule or Standard; Transfer of Listing. On January 28, 2026, Twin Hospitality Group Inc. (the \" Company \") received a letter (the \" Delisting Notice \") from the Listing Qualifications Staff of The Nasdaq Stock Market LLC (\" Nasdaq ",
+     "band": "unter 1"
+    }
+   ]
+  }
+ }
+}

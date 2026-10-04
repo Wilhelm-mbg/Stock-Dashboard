@@ -1,0 +1,233 @@
+{
+ "stand": "2026-10-04T13:17:39.828Z",
+ "endeMassnahme": {
+  "juengsteAusserhalbFruehereImFenster": {
+   "zeilen": 30,
+   "davonAbgebend": 27,
+   "jeArt": {
+    "stock_and_cash_mergers": 2,
+    "name_changes": 8,
+    "stock_mergers": 8,
+    "cash_mergers": 12
+   },
+   "jeGrundLauf2": {
+    "uebernahme": 13,
+    "zwangs-delisting": 6,
+    "insolvenz": 2,
+    "unbekannt": 2,
+    "abgemeldet-anlass-offen": 6,
+    "spac-ende": 1
+   },
+   "zwangsDelisting": [
+    "ASAP",
+    "FLDD",
+    "KDLY",
+    "PKBO",
+    "POND",
+    "THRD"
+   ],
+   "abgemeldet": [
+    "OLK",
+    "SATX",
+    "SPNS",
+    "TARO",
+    "TUGC",
+    "WKME"
+   ],
+   "unbekannt": [
+    "BTN",
+    "GRIF"
+   ],
+   "nichtAbgebend": [
+    "ASAP (name_changes 2022-12-30, aufnehmend)",
+    "FLDD (name_changes 2024-12-18, aufnehmend)",
+    "PKBO (name_changes 2022-11-23, aufnehmend)"
+   ]
+  },
+  "andereArtNaeher": {
+   "zeilen": 183,
+   "davonAbgebend": 174,
+   "paare": {
+    "stock_mergers vor name_changes": 160,
+    "stock_and_cash_mergers vor cash_mergers": 2,
+    "stock_mergers vor cash_mergers": 7,
+    "name_changes vor stock_mergers": 1,
+    "stock_and_cash_mergers vor stock_mergers": 6,
+    "cash_mergers vor stock_mergers": 2,
+    "cash_mergers vor stock_and_cash_mergers": 3,
+    "name_changes vor cash_mergers": 1,
+    "cash_mergers vor name_changes": 1
+   }
+  },
+  "rolleInUebernahmeSaetzenImFenster": {
+   "abgebend": 1210,
+   "aufnehmend": 2,
+   "fremd": 0,
+   "ohnePunktGleichsetzung": [
+    "BWL.A",
+    "LGF.A",
+    "LGF.B"
+   ]
+  },
+  "nachtrag": {
+   "amAnker": [],
+   "spaet": [
+    "ACHL cash_mergers 2026-09-29 (abgebend, 558 Tage nach dem Anker)",
+    "LUNA cash_mergers 2026-09-21 (abgebend, 623 Tage nach dem Anker)",
+    "XYLO cash_mergers 2026-09-10 (abgebend, 385 Tage nach dem Anker)"
+   ]
+  }
+ },
+ "lauf2": {
+  "zeilen": 5050,
+  "jeGrund": {
+   "abgemeldet-anlass-offen": 337,
+   "uebernahme": 1563,
+   "umbenennung-ticker": 1322,
+   "zwangs-delisting": 628,
+   "spac-ende": 292,
+   "unbekannt": 238,
+   "fusion-aktientausch": 312,
+   "insolvenz": 335,
+   "freiwillig": 23
+  },
+  "mitPolygonFirma": 4717,
+  "zwangsDelistingUeber301": {
+   "zeilen": 627,
+   "lage": {
+    "180 bis 31 Tage davor": 62,
+    "hoechstens 30 Tage": 494,
+    "mehr als 180 Tage davor": 32,
+    "mehr als 30 Tage danach": 39
+   }
+  },
+  "alteFassungV2": {
+   "zeilen": 108,
+   "lageDesFusionsbelegs": {
+    "180 davor bis 30 danach": 54,
+    "mehr als 30 Tage danach": 23,
+    "noch frueher": 16,
+    "365 bis 181 davor": 15
+   },
+   "letzterKursUnter1": 36
+  },
+  "sic6770Ueber301": {
+   "zeilen": 67,
+   "band": {
+    "8-13": 62,
+    "unter 1": 1,
+    "1-5": 1,
+    "5-8": 2,
+    "ueber 13": 1
+   },
+   "unter8": [
+    "CCIH 0.8839",
+    "CIAN 3.4",
+    "GLST 6.56",
+    "QIWI 5.67"
+   ]
+  },
+  "spacEndeJeBand": {
+   "8-13": 283,
+   "ueber 13": 6,
+   "5-8": 1,
+   "unter 1": 2
+  },
+  "zwangsUeber301MitEmittent25": {
+   "zeilen": 175,
+   "band": {
+    "1-5": 38,
+    "ueber 13": 31,
+    "unter 1": 70,
+    "8-13": 23,
+    "5-8": 13
+   }
+  },
+  "gruppen": {
+   "mantelMit301": 394,
+   "emittent25Mit301": 397,
+   "ausgesetzt": 28
+  },
+  "namensprobe": {
+   "passt": 3478,
+   "frueher": 1120,
+   "kuerzel": 1,
+   "nichts": 118,
+   "ohne-auszug": 0
+  },
+  "alteFirmaTraegtPolygonNamen": {
+   "zeilen": 99,
+   "davonNichtsPasst": 60
+  }
+ },
+ "zusatz": {
+  "eigenerEntschlussNurUeberVoluntaryMitInsolvenzwort": {
+   "von": 94,
+   "zeilen": 1,
+   "reihen": [
+    "TLIS (1-5)"
+   ]
+  },
+  "qKuerzelMitKursAb5": [
+   "CCCX -> INFQ (13.66, q-kuerzel)",
+   "CENH -> ARQQ (8.35, q-kuerzel)",
+   "DMYI -> IONQ (10.4, q-kuerzel)",
+   "IPOD -> CCAQ (10.42, q-kuerzel)",
+   "TLGA -> ELIQ (6.06, q-kuerzel)"
+  ],
+  "abschnittNichtGefunden": [
+   "ADYX [kein 3.01 im Hauptdokument]",
+   "APEX [kein 3.01 im Hauptdokument]",
+   "CHKE [kein 3.01 im Hauptdokument]",
+   "GIGA [kein 3.01 im Hauptdokument]",
+   "NRCIB [Introduction and in Item 3.01 of this Current Report on]",
+   "PPHI [he Exchange Act. ☐ Ite m 3.01 Notice of Delisting or Fa]",
+   "PRKR [kein 3.01 im Hauptdokument]",
+   "SBSA [kein 3.01 im Hauptdokument]"
+  ],
+  "eichprobeA_nichtVollzug": [
+   "CETV mehrdeutig",
+   "CFSB nichts",
+   "SGE nichts",
+   "MGOL ruege",
+   "MRUS nichts",
+   "LVTX eigener-entschluss",
+   "FIAC ruege",
+   "THRD eigener-entschluss",
+   "UDMY nichts",
+   "ASTR mehrdeutig",
+   "SPNE nichts"
+  ],
+  "eichprobeA_ruege": [
+   "MGOL: ritten notice (the \" Notice \") from The Nasdaq Stock Market LLC (\" Nasdaq \") notifying the Company that it is not in compliance with the minimum bid price requirement set forth in Nasdaq Listing Rule 5550(a)(2) due to th",
+   "FIAC: Item 3.01 On October 28, 2024, Focus Impact Acquisition Company (the \" Company \" or \" FIAC \") received a notice (the \" Delisting Notice \") from the staff of the Listing Qualifications Department of The Nasdaq Stock Marke"
+  ],
+  "eichprobeB_nichtRuege": [
+   "SOND nichts",
+   "TAIT eigener-entschluss",
+   "HCDI nichts",
+   "APPH nichts",
+   "AEY eigener-entschluss",
+   "ATNX nichts",
+   "SRGA eigener-entschluss",
+   "CCCX eigener-entschluss",
+   "YELL eigener-entschluss",
+   "VTNR nichts",
+   "EBIX nichts",
+   "RIDE eigener-entschluss",
+   "TPIC nichts",
+   "FAT mehrdeutig",
+   "FATBB mehrdeutig",
+   "DMTK eigener-entschluss",
+   "SFT eigener-entschluss",
+   "GOCO mehrdeutig",
+   "TWNP mehrdeutig"
+  ],
+  "formular25MehrAls30TageVomAnker": {
+   "zeilen": 61,
+   "mitKlasse123": null,
+   "mehrAls180": 15
+  },
+  "ruegeWeiterAls30TageVorAnker": 50
+ }
+}

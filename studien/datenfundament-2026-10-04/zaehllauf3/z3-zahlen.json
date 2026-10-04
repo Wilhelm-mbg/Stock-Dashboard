@@ -1,0 +1,3220 @@
+{
+ "kennung": "datenfundament-2026-10-04/zaehllauf3 (KEINE Tafel)",
+ "stand": "2026-10-04T13:15:36.971Z",
+ "wortlautFassung": 2,
+ "eingestuft": 5050,
+ "offen": 0,
+ "tafelImGanzen": {
+  "alt": {
+   "freiwillig": 311,
+   "uebernahme": 1653,
+   "umbenennung-ticker": 1330,
+   "zwangs-delisting": 547,
+   "spac-ende": 276,
+   "unbekannt": 212,
+   "fusion-aktientausch": 310,
+   "insolvenz": 357
+  },
+  "lauf2": {
+   "abgemeldet-anlass-offen": 337,
+   "uebernahme": 1563,
+   "umbenennung-ticker": 1322,
+   "zwangs-delisting": 628,
+   "spac-ende": 292,
+   "unbekannt": 238,
+   "fusion-aktientausch": 312,
+   "insolvenz": 335,
+   "freiwillig": 23
+  },
+  "lauf3": {
+   "abgemeldet-anlass-offen": 370,
+   "uebernahme": 1665,
+   "umbenennung-ticker": 1327,
+   "zwangs-delisting": 372,
+   "spac-ende": 343,
+   "freiwillig": 108,
+   "unbekannt": 189,
+   "fusion-aktientausch": 309,
+   "insolvenz": 344,
+   "ausgesetzt": 23
+  }
+ },
+ "jeRegel": {
+  "0": 131,
+  "1": 1326,
+  "2": 922,
+  "3": 309,
+  "4": 213,
+  "5": 695,
+  "6": 9,
+  "7": 287,
+  "8": 1,
+  "9": 52,
+  "10": 23,
+  "11": 505,
+  "12": 8,
+  "13": 370,
+  "14": 9,
+  "15": 190
+ },
+ "belegarten": {
+  "edgar-formular25": 370,
+  "alpaca-cash_mergers": 796,
+  "alpaca-name_changes": 1326,
+  "edgar-8K-3.01-ruege": 333,
+  "alpaca-stock_and_cash_mergers": 126,
+  "edgar-mantel+abmeldung": 287,
+  "edgar-8K-3.01-eigener-entschluss": 94,
+  "edgar-8K-2.01+prospekt": 695,
+  "edgar-8K-3.01-vollzug": 38,
+  "edgar-ohne-signal": 164,
+  "alpaca-stock_mergers": 309,
+  "edgar-mantel+8K-3.01": 52,
+  "q-kuerzel+edgar-8K-1.03": 109,
+  "alpaca-redemptions": 9,
+  "edgar-8K-3.01-ruege-frueh+25-NSE": 8,
+  "q-kuerzel": 22,
+  "edgar-8K-3.01+prospekt": 8,
+  "edgar-8K-1.03": 213,
+  "ausgesetzt": 23,
+  "nichts": 24,
+  "edgar-8K-3.01": 30,
+  "edgar-formular15": 9,
+  "edgar-8K-3.01+5.01": 2,
+  "alpaca-worthless_removals": 1,
+  "bigdata": 1,
+  "massnahme-passt-nicht": 1
+ },
+ "neueReihen": {
+  "reihen": 54,
+  "jeGrund": {
+   "uebernahme": 6,
+   "zwangs-delisting": 35,
+   "freiwillig": 4,
+   "umbenennung-ticker": 4,
+   "abgemeldet-anlass-offen": 1,
+   "fusion-aktientausch": 3,
+   "insolvenz": 1
+  }
+ },
+ "kipp": {
+  "gegenAlteTafel": {
+   "zeilen": 4996,
+   "vergleich": {
+    "umbenannt-R-c": 258,
+    "gleich": 3876,
+    "unbekannt-bekommt-grund": 105,
+    "kippt": 388,
+    "gleicher-grund-anderer-beleg": 287,
+    "kippt-verliert-grund": 82
+   },
+   "kipp": 470,
+   "verliertGrund": 82,
+   "mitKlasse123": 30,
+   "kippFaelleMitRegelAlsUrsache": {
+    "V1": 7,
+    "V2": 115,
+    "V3": 35,
+    "V3b": 0,
+    "V5i": 52,
+    "V5iii": 19,
+    "V7": 6,
+    "V8": 27
+   },
+   "ohneRegelAlsUrsache": 215,
+   "stroeme": [
+    [
+     "zwangs-delisting -> freiwillig",
+     71
+    ],
+    [
+     "zwangs-delisting -> spac-ende",
+     55
+    ],
+    [
+     "zwangs-delisting -> uebernahme",
+     52
+    ],
+    [
+     "zwangs-delisting -> unbekannt",
+     43
+    ],
+    [
+     "zwangs-delisting -> abgemeldet-anlass-offen",
+     35
+    ],
+    [
+     "uebernahme -> unbekannt",
+     28
+    ],
+    [
+     "uebernahme -> zwangs-delisting",
+     27
+    ],
+    [
+     "uebernahme -> abgemeldet-anlass-offen",
+     19
+    ],
+    [
+     "freiwillig -> uebernahme",
+     13
+    ],
+    [
+     "insolvenz -> zwangs-delisting",
+     12
+    ],
+    [
+     "fusion-aktientausch -> uebernahme",
+     10
+    ],
+    [
+     "uebernahme -> freiwillig",
+     10
+    ],
+    [
+     "freiwillig -> zwangs-delisting",
+     8
+    ],
+    [
+     "zwangs-delisting -> insolvenz",
+     7
+    ],
+    [
+     "freiwillig -> ausgesetzt",
+     6
+    ],
+    [
+     "freiwillig -> spac-ende",
+     6
+    ],
+    [
+     "insolvenz -> abgemeldet-anlass-offen",
+     6
+    ],
+    [
+     "umbenennung-ticker -> zwangs-delisting",
+     6
+    ],
+    [
+     "zwangs-delisting -> ausgesetzt",
+     6
+    ],
+    [
+     "freiwillig -> unbekannt",
+     5
+    ],
+    [
+     "uebernahme -> fusion-aktientausch",
+     5
+    ],
+    [
+     "insolvenz -> uebernahme",
+     4
+    ],
+    [
+     "insolvenz -> unbekannt",
+     4
+    ],
+    [
+     "uebernahme -> ausgesetzt",
+     4
+    ],
+    [
+     "uebernahme -> spac-ende",
+     4
+    ],
+    [
+     "umbenennung-ticker -> spac-ende",
+     3
+    ],
+    [
+     "zwangs-delisting -> umbenennung-ticker",
+     3
+    ],
+    [
+     "umbenennung-ticker -> ausgesetzt",
+     2
+    ],
+    [
+     "zwangs-delisting -> fusion-aktientausch",
+     2
+    ],
+    [
+     "freiwillig -> fusion-aktientausch",
+     1
+    ],
+    [
+     "freiwillig -> insolvenz",
+     1
+    ],
+    [
+     "fusion-aktientausch -> spac-ende",
+     1
+    ],
+    [
+     "fusion-aktientausch -> umbenennung-ticker",
+     1
+    ],
+    [
+     "fusion-aktientausch -> zwangs-delisting",
+     1
+    ],
+    [
+     "spac-ende -> abgemeldet-anlass-offen",
+     1
+    ],
+    [
+     "spac-ende -> ausgesetzt",
+     1
+    ],
+    [
+     "spac-ende -> freiwillig",
+     1
+    ],
+    [
+     "spac-ende -> fusion-aktientausch",
+     1
+    ],
+    [
+     "spac-ende -> unbekannt",
+     1
+    ],
+    [
+     "spac-ende -> zwangs-delisting",
+     1
+    ],
+    [
+     "uebernahme -> umbenennung-ticker",
+     1
+    ],
+    [
+     "umbenennung-ticker -> abgemeldet-anlass-offen",
+     1
+    ],
+    [
+     "umbenennung-ticker -> unbekannt",
+     1
+    ]
+   ]
+  },
+  "gegenLauf2": {
+   "zeilen": 5050,
+   "vergleich": {
+    "gleich": 4467,
+    "kippt": 269,
+    "gleicher-grund-anderer-beleg": 198,
+    "kippt-verliert-grund": 29,
+    "unbekannt-bekommt-grund": 78,
+    "umbenannt-R-c": 9
+   },
+   "kipp": 298,
+   "verliertGrund": 29,
+   "mitKlasse123": 16,
+   "kippFaelleMitRegelAlsUrsache": {
+    "V1": 19,
+    "V2": 139,
+    "V3": 35,
+    "V3b": 0,
+    "V5i": 52,
+    "V5iii": 17,
+    "V7": 9,
+    "V8": 27
+   },
+   "ohneRegelAlsUrsache": 4,
+   "stroeme": [
+    [
+     "zwangs-delisting -> freiwillig",
+     95
+    ],
+    [
+     "zwangs-delisting -> spac-ende",
+     52
+    ],
+    [
+     "zwangs-delisting -> uebernahme",
+     50
+    ],
+    [
+     "zwangs-delisting -> unbekannt",
+     27
+    ],
+    [
+     "zwangs-delisting -> ausgesetzt",
+     17
+    ],
+    [
+     "zwangs-delisting -> abgemeldet-anlass-offen",
+     15
+    ],
+    [
+     "abgemeldet-anlass-offen -> uebernahme",
+     10
+    ],
+    [
+     "fusion-aktientausch -> uebernahme",
+     10
+    ],
+    [
+     "uebernahme -> fusion-aktientausch",
+     4
+    ],
+    [
+     "abgemeldet-anlass-offen -> unbekannt",
+     2
+    ],
+    [
+     "insolvenz -> abgemeldet-anlass-offen",
+     2
+    ],
+    [
+     "uebernahme -> abgemeldet-anlass-offen",
+     2
+    ],
+    [
+     "zwangs-delisting -> umbenennung-ticker",
+     2
+    ],
+    [
+     "abgemeldet-anlass-offen -> freiwillig",
+     1
+    ],
+    [
+     "abgemeldet-anlass-offen -> fusion-aktientausch",
+     1
+    ],
+    [
+     "abgemeldet-anlass-offen -> insolvenz",
+     1
+    ],
+    [
+     "freiwillig -> insolvenz",
+     1
+    ],
+    [
+     "freiwillig -> uebernahme",
+     1
+    ],
+    [
+     "fusion-aktientausch -> umbenennung-ticker",
+     1
+    ],
+    [
+     "spac-ende -> fusion-aktientausch",
+     1
+    ],
+    [
+     "spac-ende -> insolvenz",
+     1
+    ],
+    [
+     "uebernahme -> umbenennung-ticker",
+     1
+    ],
+    [
+     "zwangs-delisting -> fusion-aktientausch",
+     1
+    ]
+   ]
+  },
+  "andererGrundOhneRegel": {
+   "V1": 79,
+   "V2": 142,
+   "V3": 42,
+   "V3b": 8,
+   "V5i": 52,
+   "V5iii": 23,
+   "V7": 35,
+   "V8": 29
+  },
+  "hinweis": "andererGrundOhneRegel: je Regel einmal ausgeschaltet, alle anderen an - Zahl der Zeilen (von allen), die dann einen anderen Grund haetten"
+ },
+ "aenderungGegenLauf2JeRegel": {
+  "V1": [
+   [
+    "unbekannt -> uebernahme",
+    38
+   ],
+   [
+    "unbekannt -> abgemeldet-anlass-offen",
+    9
+   ],
+   [
+    "abgemeldet-anlass-offen -> uebernahme",
+    8
+   ],
+   [
+    "unbekannt -> insolvenz",
+    8
+   ],
+   [
+    "unbekannt -> zwangs-delisting",
+    3
+   ],
+   [
+    "abgemeldet-anlass-offen -> unbekannt",
+    2
+   ],
+   [
+    "zwangs-delisting -> uebernahme",
+    2
+   ],
+   [
+    "abgemeldet-anlass-offen -> freiwillig",
+    1
+   ]
+  ],
+  "V2": [
+   [
+    "zwangs-delisting -> freiwillig",
+    94
+   ],
+   [
+    "zwangs-delisting -> uebernahme",
+    48
+   ]
+  ],
+  "V3": [
+   [
+    "zwangs-delisting -> unbekannt",
+    23
+   ],
+   [
+    "zwangs-delisting -> abgemeldet-anlass-offen",
+    7
+   ],
+   [
+    "spac-ende -> zwangs-delisting",
+    6
+   ],
+   [
+    "spac-ende -> abgemeldet-anlass-offen",
+    3
+   ],
+   [
+    "freiwillig -> abgemeldet-anlass-offen",
+    1
+   ],
+   [
+    "freiwillig -> zwangs-delisting",
+    1
+   ],
+   [
+    "zwangs-delisting -> freiwillig",
+    1
+   ]
+  ],
+  "V3b": [
+   [
+    "abgemeldet-anlass-offen -> zwangs-delisting",
+    8
+   ]
+  ],
+  "V5i": [
+   [
+    "zwangs-delisting -> spac-ende",
+    48
+   ],
+   [
+    "uebernahme -> spac-ende",
+    2
+   ],
+   [
+    "ausgesetzt -> spac-ende",
+    1
+   ],
+   [
+    "freiwillig -> spac-ende",
+    1
+   ]
+  ],
+  "V5iii": [
+   [
+    "unbekannt -> ausgesetzt",
+    14
+   ],
+   [
+    "abgemeldet-anlass-offen -> ausgesetzt",
+    5
+   ],
+   [
+    "zwangs-delisting -> ausgesetzt",
+    3
+   ],
+   [
+    "freiwillig -> ausgesetzt",
+    1
+   ]
+  ],
+  "V7": [
+   [
+    "unbekannt -> abgemeldet-anlass-offen",
+    24
+   ],
+   [
+    "freiwillig -> abgemeldet-anlass-offen",
+    11
+   ]
+  ],
+  "V8": [
+   [
+    "fusion-aktientausch -> uebernahme",
+    10
+   ],
+   [
+    "abgemeldet-anlass-offen -> uebernahme",
+    5
+   ],
+   [
+    "uebernahme -> fusion-aktientausch",
+    4
+   ],
+   [
+    "abgemeldet-anlass-offen -> fusion-aktientausch",
+    1
+   ],
+   [
+    "abgemeldet-anlass-offen -> umbenennung-ticker",
+    1
+   ],
+   [
+    "freiwillig -> uebernahme",
+    1
+   ],
+   [
+    "fusion-aktientausch -> umbenennung-ticker",
+    1
+   ],
+   [
+    "spac-ende -> fusion-aktientausch",
+    1
+   ]
+  ]
+ },
+ "totalverlust": {
+  "listen": {
+   "haupt": [
+    "insolvenz",
+    "zwangs-delisting"
+   ],
+   "streng": [
+    "insolvenz",
+    "zwangs-delisting",
+    "unbekannt",
+    "freiwillig",
+    "abgemeldet-anlass-offen",
+    "ausgesetzt"
+   ]
+  },
+  "bestand": {
+   "haupt": 716,
+   "hauptKlasse123": 5,
+   "streng": 1406,
+   "strengKlasse123": 45,
+   "hauptLauf2": 963,
+   "hauptLauf2Klasse123": 19
+  },
+  "haupt": {
+   "gegenAlteTafel": {
+    "geaendert": 374,
+    "hinzu": 93,
+    "weg": 281,
+    "mitKlasse123": 14,
+    "hinzuKlasse123": 0,
+    "wegKlasse123": 14,
+    "mitKlasse23": 1,
+    "hinzuAus": [
+     [
+      "null",
+      36
+     ],
+     [
+      "uebernahme",
+      27
+     ],
+     [
+      "unbekannt",
+      13
+     ],
+     [
+      "freiwillig",
+      9
+     ],
+     [
+      "umbenennung-ticker",
+      6
+     ],
+     [
+      "fusion-aktientausch",
+      1
+     ],
+     [
+      "spac-ende",
+      1
+     ]
+    ],
+    "wegNach": [
+     [
+      "freiwillig",
+      71
+     ],
+     [
+      "uebernahme",
+      56
+     ],
+     [
+      "spac-ende",
+      55
+     ],
+     [
+      "unbekannt",
+      47
+     ],
+     [
+      "abgemeldet-anlass-offen",
+      41
+     ],
+     [
+      "ausgesetzt",
+      6
+     ],
+     [
+      "umbenennung-ticker",
+      3
+     ],
+     [
+      "fusion-aktientausch",
+      2
+     ]
+    ]
+   },
+   "gegenLauf2": {
+    "geaendert": 275,
+    "hinzu": 14,
+    "weg": 261,
+    "mitKlasse123": 14,
+    "hinzuKlasse123": 0,
+    "wegKlasse123": 14,
+    "mitKlasse23": 1,
+    "hinzuAus": [
+     [
+      "unbekannt",
+      11
+     ],
+     [
+      "abgemeldet-anlass-offen",
+      1
+     ],
+     [
+      "freiwillig",
+      1
+     ],
+     [
+      "spac-ende",
+      1
+     ]
+    ],
+    "wegNach": [
+     [
+      "freiwillig",
+      95
+     ],
+     [
+      "spac-ende",
+      52
+     ],
+     [
+      "uebernahme",
+      50
+     ],
+     [
+      "unbekannt",
+      27
+     ],
+     [
+      "abgemeldet-anlass-offen",
+      17
+     ],
+     [
+      "ausgesetzt",
+      17
+     ],
+     [
+      "umbenennung-ticker",
+      2
+     ],
+     [
+      "fusion-aktientausch",
+      1
+     ]
+    ]
+   }
+  },
+  "streng": {
+   "gegenAlteTafel": {
+    "geaendert": 311,
+    "hinzu": 145,
+    "weg": 166,
+    "mitKlasse123": 30,
+    "hinzuKlasse123": 11,
+    "wegKlasse123": 19,
+    "mitKlasse23": 4,
+    "hinzuAus": [
+     [
+      "uebernahme",
+      88
+     ],
+     [
+      "null",
+      41
+     ],
+     [
+      "umbenennung-ticker",
+      10
+     ],
+     [
+      "spac-ende",
+      5
+     ],
+     [
+      "fusion-aktientausch",
+      1
+     ]
+    ],
+    "wegNach": [
+     [
+      "uebernahme",
+      94
+     ],
+     [
+      "spac-ende",
+      65
+     ],
+     [
+      "umbenennung-ticker",
+      4
+     ],
+     [
+      "fusion-aktientausch",
+      3
+     ]
+    ]
+   },
+   "gegenLauf2": {
+    "geaendert": 161,
+    "hinzu": 3,
+    "weg": 158,
+    "mitKlasse123": 20,
+    "hinzuKlasse123": 1,
+    "wegKlasse123": 19,
+    "mitKlasse23": 3,
+    "hinzuAus": [
+     [
+      "uebernahme",
+      2
+     ],
+     [
+      "spac-ende",
+      1
+     ]
+    ],
+    "wegNach": [
+     [
+      "uebernahme",
+      99
+     ],
+     [
+      "spac-ende",
+      53
+     ],
+     [
+      "fusion-aktientausch",
+      3
+     ],
+     [
+      "umbenennung-ticker",
+      3
+     ]
+    ]
+   }
+  }
+ },
+ "wortlaut": {
+  "fassung": 2,
+  "regel11": {
+   "reihen": 505,
+   "jeKlasse": {
+    "ruege": 333,
+    "eigener-entschluss": 94,
+    "vollzug": 40,
+    "mehrdeutig": 9,
+    "nichts": 29
+   },
+   "jeTabellenzeile": {
+    "2 zwangs-delisting edgar-8K-3.01-ruege": 333,
+    "3 freiwillig edgar-8K-3.01-eigener-entschluss": 94,
+    "1 uebernahme edgar-8K-3.01-vollzug": 38,
+    "4 uebernahme edgar-8K-3.01+prospekt": 8,
+    "5 zwangs-delisting edgar-8K-3.01": 30,
+    "4 uebernahme edgar-8K-3.01+5.01": 2
+   },
+   "jeGrund": {
+    "zwangs-delisting": 363,
+    "freiwillig": 94,
+    "uebernahme": 48
+   },
+   "jeStand": {
+    "abschnitt": 497,
+    "abschnitt-nicht-gefunden": 8
+   },
+   "wortlautUnklar": 30,
+   "klasseMalHinweise": {
+    "vollzug": {
+     "n": 40,
+     "mitFusionsbeleg": 14,
+     "mitEmittent25": 5,
+     "hoechstens30TageAmAnker": 38,
+     "band": {
+      "ueber 13": 28,
+      "1-5": 3,
+      "unter 1": 2,
+      "8-13": 5,
+      "5-8": 2
+     },
+     "grund": {
+      "uebernahme": 38,
+      "zwangs-delisting": 2
+     }
+    },
+    "ruege": {
+     "n": 333,
+     "mitFusionsbeleg": 21,
+     "mitEmittent25": 56,
+     "hoechstens30TageAmAnker": 283,
+     "band": {
+      "unter 1": 215,
+      "8-13": 24,
+      "1-5": 68,
+      "ueber 13": 15,
+      "5-8": 11
+     },
+     "grund": {
+      "zwangs-delisting": 333
+     }
+    },
+    "mehrdeutig": {
+     "n": 9,
+     "mitFusionsbeleg": 7,
+     "mitEmittent25": 2,
+     "hoechstens30TageAmAnker": 7,
+     "band": {
+      "unter 1": 2,
+      "8-13": 4,
+      "ueber 13": 3
+     },
+     "grund": {
+      "uebernahme": 5,
+      "zwangs-delisting": 4
+     }
+    },
+    "eigener-entschluss": {
+     "n": 94,
+     "mitFusionsbeleg": 14,
+     "mitEmittent25": 90,
+     "hoechstens30TageAmAnker": 89,
+     "band": {
+      "1-5": 25,
+      "ueber 13": 20,
+      "8-13": 15,
+      "unter 1": 27,
+      "5-8": 7
+     },
+     "grund": {
+      "freiwillig": 94
+     }
+    },
+    "nichts": {
+     "n": 29,
+     "mitFusionsbeleg": 3,
+     "mitEmittent25": 9,
+     "hoechstens30TageAmAnker": 27,
+     "band": {
+      "1-5": 9,
+      "5-8": 3,
+      "unter 1": 10,
+      "8-13": 3,
+      "ueber 13": 4
+     },
+     "grund": {
+      "uebernahme": 5,
+      "zwangs-delisting": 24
+     }
+    }
+   },
+   "kreuztabelle": [
+    [
+     "ruege | kein Fusionsbeleg | kein Emittent-25 | unter 1",
+     173
+    ],
+    [
+     "ruege | kein Fusionsbeleg | kein Emittent-25 | 1-5",
+     56
+    ],
+    [
+     "ruege | kein Fusionsbeleg | Emittent-25 | unter 1",
+     35
+    ],
+    [
+     "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | unter 1",
+     20
+    ],
+    [
+     "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | 1-5",
+     19
+    ],
+    [
+     "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | ueber 13",
+     19
+    ],
+    [
+     "vollzug | kein Fusionsbeleg | kein Emittent-25 | ueber 13",
+     18
+    ],
+    [
+     "ruege | kein Fusionsbeleg | kein Emittent-25 | 8-13",
+     15
+    ],
+    [
+     "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | 8-13",
+     12
+    ],
+    [
+     "ruege | kein Fusionsbeleg | kein Emittent-25 | ueber 13",
+     11
+    ],
+    [
+     "ruege | Fusionsbeleg | kein Emittent-25 | 8-13",
+     8
+    ],
+    [
+     "ruege | kein Fusionsbeleg | Emittent-25 | 1-5",
+     8
+    ],
+    [
+     "vollzug | Fusionsbeleg | kein Emittent-25 | ueber 13",
+     7
+    ],
+    [
+     "eigener-entschluss | kein Fusionsbeleg | Emittent-25 | 5-8",
+     6
+    ],
+    [
+     "ruege | kein Fusionsbeleg | kein Emittent-25 | 5-8",
+     6
+    ],
+    [
+     "eigener-entschluss | Fusionsbeleg | Emittent-25 | 1-5",
+     5
+    ],
+    [
+     "nichts | kein Fusionsbeleg | Emittent-25 | unter 1",
+     5
+    ],
+    [
+     "nichts | kein Fusionsbeleg | kein Emittent-25 | 1-5",
+     5
+    ],
+    [
+     "nichts | kein Fusionsbeleg | kein Emittent-25 | unter 1",
+     5
+    ],
+    [
+     "eigener-entschluss | Fusionsbeleg | Emittent-25 | unter 1",
+     4
+    ],
+    [
+     "ruege | Fusionsbeleg | Emittent-25 | unter 1",
+     4
+    ],
+    [
+     "ruege | Fusionsbeleg | kein Emittent-25 | 1-5",
+     4
+    ],
+    [
+     "ruege | kein Fusionsbeleg | Emittent-25 | 5-8",
+     4
+    ],
+    [
+     "eigener-entschluss | Fusionsbeleg | Emittent-25 | 8-13",
+     3
+    ],
+    [
+     "eigener-entschluss | kein Fusionsbeleg | kein Emittent-25 | unter 1",
+     3
+    ],
+    [
+     "nichts | kein Fusionsbeleg | Emittent-25 | 1-5",
+     3
+    ],
+    [
+     "nichts | kein Fusionsbeleg | kein Emittent-25 | 5-8",
+     3
+    ],
+    [
+     "nichts | kein Fusionsbeleg | kein Emittent-25 | ueber 13",
+     3
+    ],
+    [
+     "ruege | Fusionsbeleg | kein Emittent-25 | unter 1",
+     3
+    ],
+    [
+     "ruege | kein Fusionsbeleg | Emittent-25 | ueber 13",
+     3
+    ],
+    [
+     "mehrdeutig | Fusionsbeleg | kein Emittent-25 | 8-13",
+     2
+    ],
+    [
+     "mehrdeutig | Fusionsbeleg | kein Emittent-25 | ueber 13",
+     2
+    ],
+    [
+     "mehrdeutig | Fusionsbeleg | kein Emittent-25 | unter 1",
+     2
+    ],
+    [
+     "vollzug | Fusionsbeleg | kein Emittent-25 | 8-13",
+     2
+    ],
+    [
+     "vollzug | kein Fusionsbeleg | Emittent-25 | ueber 13",
+     2
+    ],
+    [
+     "vollzug | kein Fusionsbeleg | kein Emittent-25 | 8-13",
+     2
+    ],
+    [
+     "eigener-entschluss | Fusionsbeleg | Emittent-25 | 5-8",
+     1
+    ],
+    [
+     "eigener-entschluss | Fusionsbeleg | Emittent-25 | ueber 13",
+     1
+    ],
+    [
+     "eigener-entschluss | kein Fusionsbeleg | kein Emittent-25 | 1-5",
+     1
+    ],
+    [
+     "mehrdeutig | Fusionsbeleg | Emittent-25 | ueber 13",
+     1
+    ],
+    [
+     "mehrdeutig | kein Fusionsbeleg | Emittent-25 | 8-13",
+     1
+    ],
+    [
+     "mehrdeutig | kein Fusionsbeleg | kein Emittent-25 | 8-13",
+     1
+    ],
+    [
+     "nichts | Fusionsbeleg | kein Emittent-25 | 1-5",
+     1
+    ],
+    [
+     "nichts | Fusionsbeleg | kein Emittent-25 | 8-13",
+     1
+    ],
+    [
+     "nichts | Fusionsbeleg | kein Emittent-25 | ueber 13",
+     1
+    ],
+    [
+     "nichts | kein Fusionsbeleg | Emittent-25 | 8-13",
+     1
+    ],
+    [
+     "nichts | kein Fusionsbeleg | kein Emittent-25 | 8-13",
+     1
+    ],
+    [
+     "ruege | Fusionsbeleg | Emittent-25 | 5-8",
+     1
+    ],
+    [
+     "ruege | Fusionsbeleg | kein Emittent-25 | ueber 13",
+     1
+    ],
+    [
+     "ruege | kein Fusionsbeleg | Emittent-25 | 8-13",
+     1
+    ],
+    [
+     "vollzug | Fusionsbeleg | Emittent-25 | 1-5",
+     1
+    ],
+    [
+     "vollzug | Fusionsbeleg | Emittent-25 | ueber 13",
+     1
+    ],
+    [
+     "vollzug | Fusionsbeleg | kein Emittent-25 | 1-5",
+     1
+    ],
+    [
+     "vollzug | Fusionsbeleg | kein Emittent-25 | 5-8",
+     1
+    ],
+    [
+     "vollzug | Fusionsbeleg | kein Emittent-25 | unter 1",
+     1
+    ],
+    [
+     "vollzug | kein Fusionsbeleg | Emittent-25 | 8-13",
+     1
+    ],
+    [
+     "vollzug | kein Fusionsbeleg | kein Emittent-25 | 1-5",
+     1
+    ],
+    [
+     "vollzug | kein Fusionsbeleg | kein Emittent-25 | 5-8",
+     1
+    ],
+    [
+     "vollzug | kein Fusionsbeleg | kein Emittent-25 | unter 1",
+     1
+    ]
+   ]
+  },
+  "regeln9bis12": {
+   "reihen": 569,
+   "jeStand": {
+    "abschnitt": 561,
+    "abschnitt-nicht-gefunden": 8
+   },
+   "textNichtZuHolen": 0,
+   "abschnittNichtGefunden": 8
+  },
+  "lernprobe": {
+   "saat": "z3-lern",
+   "fassung": 2,
+   "reihen": 30,
+   "jeKlasse": {
+    "ruege": 15,
+    "eigener-entschluss": 8,
+    "vollzug": 6,
+    "nichts": 1
+   },
+   "ohneAbschnitt": 0
+  },
+  "pruefprobe": {
+   "saat": "z3-pruef",
+   "fassung": 2,
+   "reihen": 40,
+   "stimmt": 37,
+   "jeKlasse": {
+    "eigener-entschluss": {
+     "n": 11,
+     "stimmt": 10
+    },
+    "ruege": {
+     "n": 25,
+     "stimmt": 25
+    },
+    "vollzug": {
+     "n": 2,
+     "stimmt": 2
+    },
+    "nichts": {
+     "n": 1,
+     "stimmt": 0
+    },
+    "mehrdeutig": {
+     "n": 1,
+     "stimmt": 0
+    }
+   },
+   "fehlgriffe": [
+    {
+     "reihe": "SBSA",
+     "klasse": "nichts",
+     "lesart": "unlesbar",
+     "anmerkung": "Abschnitt nicht gefunden - kein Auszug, nichts zu lesen (Fehlgriff der Abschnittssuche)"
+    },
+    {
+     "reihe": "TLIS",
+     "klasse": "eigener-entschluss",
+     "lesart": "ruege",
+     "anmerkung": "Fehlgriff: 'voluntary' stammt aus 'voluntary petition under Chapter 11' - das ist die angekuendigte Insolvenz mit erwarteter Abmeldung, kein eigener Entschluss zur Abmeldung"
+    },
+    {
+     "reihe": "EQGP",
+     "klasse": "mehrdeutig",
+     "lesart": "vollzug",
+     "anmerkung": "Fehlgriff: der Titel steht ohne Artikel ('Failure to Satisfy Continued Listing Rule') und wird nicht entfernt -> 'mehrdeutig' statt 'vollzug' (Abfindung der Anteilseigner); der Grund kommt ueber den Fusionsbeleg trotzdem als Uebernahme heraus"
+    }
+   ]
+  },
+  "eichprobe": {
+   "a": {
+    "regel": "Regeln 2 und 3 mit 8-K 3.01 hoechstens 30 Tage am Anker; 150 gezogen, Saat z3-eich-a; erwartet vollzug, nie ruege",
+    "kandidaten": 991,
+    "reihen": 150,
+    "jeKlasse": {
+     "vollzug": 139,
+     "mehrdeutig": 2,
+     "nichts": 5,
+     "ruege": 2,
+     "eigener-entschluss": 2
+    },
+    "jeStand": {
+     "abschnitt": 150
+    }
+   },
+   "b": {
+    "regel": "Regel 0 (Q-Kuerzel) mit 8-K 3.01 nach V3; alle, hoechstens 100 (Saat z3-eich-b); erwartet ruege",
+    "kandidaten": 117,
+    "reihen": 100,
+    "jeKlasse": {
+     "ruege": 81,
+     "nichts": 7,
+     "eigener-entschluss": 8,
+     "mehrdeutig": 4
+    },
+    "jeStand": {
+     "abschnitt": 100
+    }
+   }
+  }
+ },
+ "aussen": {
+  "a_namensprobe": {
+   "jeWeg": {
+    "Polygon-CIK, Namensprobe passt": 3440,
+    "keine Firma": 114,
+    "Polygon-CIK, Namensprobe frueher": 1115,
+    "Suche (kein Polygon-Eintrag)": 247,
+    "beide Auszuege (Polygon + alte Tafel)": 39,
+    "Suche (Polygon-CIK verworfen)": 94,
+    "Polygon-CIK, Namensprobe kuerzel": 1
+   },
+   "polygonEintraege": 4713,
+   "jeProbe": {
+    "passt": 3474,
+    "frueher": 1120,
+    "nichts": 118,
+    "kuerzel": 1
+   },
+   "verworfen": {
+    "zeilen": 118,
+    "sucheFindetFirma": 94,
+    "firmaDerSucheTraegtPolygonNamen": 63,
+    "firmaDerSucheGleichAlteTafel": 85,
+    "jeGrund": {
+     "uebernahme": 56,
+     "umbenennung-ticker": 18,
+     "insolvenz": 12,
+     "zwangs-delisting": 6,
+     "abgemeldet-anlass-offen": 7,
+     "fusion-aktientausch": 5,
+     "unbekannt": 11,
+     "freiwillig": 2,
+     "spac-ende": 1
+    },
+    "grundLauf2": {
+     "unbekannt": 47,
+     "umbenennung-ticker": 18,
+     "uebernahme": 23,
+     "abgemeldet-anlass-offen": 9,
+     "zwangs-delisting": 10,
+     "fusion-aktientausch": 5,
+     "insolvenz": 2,
+     "freiwillig": 3,
+     "spac-ende": 1
+    }
+   },
+   "zweiterRegistrant": {
+    "zeilen": 39,
+    "aendertDenGrundGegenLauf2": 23,
+    "mitKlasse123": 5
+   },
+   "v1AendertDenGrund": 79
+  },
+  "b_belegLage": {
+   "edgar-8K-3.01-vollzug": {
+    "lauf3": {
+     "zeilen": 38,
+     "innerhalb30": 38,
+     "davor": 0,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 0,
+     "innerhalb30": 0,
+     "davor": 0,
+     "danach": 0
+    }
+   },
+   "edgar-8K-3.01-ruege": {
+    "lauf3": {
+     "zeilen": 333,
+     "innerhalb30": 283,
+     "davor": 50,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 0,
+     "innerhalb30": 0,
+     "davor": 0,
+     "danach": 0
+    }
+   },
+   "edgar-8K-3.01-eigener-entschluss": {
+    "lauf3": {
+     "zeilen": 94,
+     "innerhalb30": 89,
+     "davor": 5,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 0,
+     "innerhalb30": 0,
+     "davor": 0,
+     "danach": 0
+    }
+   },
+   "edgar-8K-3.01+prospekt": {
+    "lauf3": {
+     "zeilen": 8,
+     "innerhalb30": 8,
+     "davor": 0,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 0,
+     "innerhalb30": 0,
+     "davor": 0,
+     "danach": 0
+    }
+   },
+   "edgar-8K-3.01+5.01": {
+    "lauf3": {
+     "zeilen": 2,
+     "innerhalb30": 2,
+     "davor": 0,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 0,
+     "innerhalb30": 0,
+     "davor": 0,
+     "danach": 0
+    }
+   },
+   "edgar-8K-3.01": {
+    "lauf3": {
+     "zeilen": 30,
+     "innerhalb30": 24,
+     "davor": 6,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 627,
+     "innerhalb30": 494,
+     "davor": 94,
+     "danach": 39
+    }
+   },
+   "edgar-8K-3.01-ruege-frueh+25-NSE": {
+    "lauf3": {
+     "zeilen": 8,
+     "innerhalb30": 8,
+     "davor": 0,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 0,
+     "innerhalb30": 0,
+     "davor": 0,
+     "danach": 0
+    }
+   },
+   "edgar-mantel+8K-3.01": {
+    "lauf3": {
+     "zeilen": 52,
+     "innerhalb30": 45,
+     "davor": 7,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 0,
+     "innerhalb30": 0,
+     "davor": 0,
+     "danach": 0
+    }
+   },
+   "edgar-8K-2.01+prospekt": {
+    "lauf3": {
+     "zeilen": 695,
+     "innerhalb30": 695,
+     "davor": 0,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 663,
+     "innerhalb30": 663,
+     "davor": 0,
+     "danach": 0
+    }
+   },
+   "edgar-8K-1.03": {
+    "lauf3": {
+     "zeilen": 213,
+     "innerhalb30": 131,
+     "davor": 14,
+     "danach": 68
+    },
+    "lauf2": {
+     "zeilen": 207,
+     "innerhalb30": 129,
+     "davor": 14,
+     "danach": 64
+    }
+   },
+   "q-kuerzel+edgar-8K-1.03": {
+    "lauf3": {
+     "zeilen": 109,
+     "innerhalb30": 108,
+     "davor": 1,
+     "danach": 0
+    },
+    "lauf2": {
+     "zeilen": 106,
+     "innerhalb30": 105,
+     "davor": 1,
+     "danach": 0
+    }
+   },
+   "edgar-formular25": {
+    "lauf3": {
+     "zeilen": 370,
+     "innerhalb30": 309,
+     "davor": 14,
+     "danach": 47
+    },
+    "lauf2": {
+     "zeilen": 337,
+     "innerhalb30": 288,
+     "davor": 12,
+     "danach": 37
+    }
+   },
+   "edgar-formular15": {
+    "lauf3": {
+     "zeilen": 9,
+     "innerhalb30": 2,
+     "davor": 3,
+     "danach": 4
+    },
+    "lauf2": {
+     "zeilen": 18,
+     "innerhalb30": 7,
+     "davor": 5,
+     "danach": 6
+    }
+   },
+   "edgar-mantel+abmeldung": {
+    "lauf3": {
+     "zeilen": 287,
+     "innerhalb30": 226,
+     "davor": 3,
+     "danach": 58
+    },
+    "lauf2": {
+     "zeilen": 288,
+     "innerhalb30": 226,
+     "davor": 4,
+     "danach": 58
+    }
+   },
+   "alle 8-K 3.01 der Regel 11": {
+    "lauf3": {
+     "zeilen": 505,
+     "innerhalb30": 444,
+     "davor": 61,
+     "danach": 0
+    }
+   }
+  },
+  "c_v8": {
+   "jeSorte": {
+    "keine": 2348,
+    "gleich": 2493,
+    "andere": 180,
+    "nur-alt": 2,
+    "nur-neu": 27
+   },
+   "andereMassnahmeAlsBisher": 209,
+   "davonAendertDenGrund": 29,
+   "v8AendertDenGrund": 29,
+   "nurAufnehmendeSeite": [
+    "AEBIV (stock_mergers 2025-07-01; Lauf 2: fusion-aktientausch, Lauf 3: uebernahme)",
+    "SSY (stock_mergers 2025-08-15; Lauf 2: fusion-aktientausch, Lauf 3: uebernahme)"
+   ],
+   "nurNeu": [
+    {
+     "reihe": "ANH",
+     "neu": "stock_and_cash_mergers 2021-03-19",
+     "juengste": "cash_mergers 2024-05-10",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "AUVI",
+     "neu": "name_changes 2024-05-29",
+     "juengste": "name_changes 2025-08-18",
+     "lauf2": "insolvenz",
+     "lauf3": "insolvenz"
+    },
+    {
+     "reihe": "BCAC",
+     "neu": "stock_mergers 2022-07-29",
+     "juengste": "name_changes 2022-08-29",
+     "lauf2": "uebernahme",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "BOAS",
+     "neu": "stock_mergers 2022-10-27",
+     "juengste": "name_changes 2022-12-02",
+     "lauf2": "uebernahme",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "BTN",
+     "neu": "stock_mergers 2022-12-23",
+     "juengste": "name_changes 2023-02-03",
+     "lauf2": "unbekannt",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "CSGS",
+     "neu": "cash_mergers 2026-05-15",
+     "juengste": "worthless_removals 2026-06-30",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "DM",
+     "neu": "cash_mergers 2025-04-02",
+     "juengste": "cash_mergers 2026-05-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "DUNE",
+     "neu": "name_changes 2023-12-22",
+     "juengste": "name_changes 2024-02-02",
+     "lauf2": "uebernahme",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "FOLD",
+     "neu": "cash_mergers 2026-04-28",
+     "juengste": "worthless_removals 2026-06-30",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "GRIF",
+     "neu": "name_changes 2021-01-05",
+     "juengste": "name_changes 2024-01-29",
+     "lauf2": "unbekannt",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "IPVA",
+     "neu": "stock_mergers 2022-12-08",
+     "juengste": "name_changes 2023-01-12",
+     "lauf2": "uebernahme",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "IROQ",
+     "neu": "cash_mergers 2026-03-13",
+     "juengste": "cash_mergers 2026-07-20",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "KDLY",
+     "neu": "name_changes 2025-05-23",
+     "juengste": "name_changes 2025-08-15",
+     "lauf2": "zwangs-delisting",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "MKFG",
+     "neu": "cash_mergers 2025-04-25",
+     "juengste": "cash_mergers 2026-05-15",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "OLK",
+     "neu": "cash_mergers 2024-07-10",
+     "juengste": "cash_mergers 2024-12-23",
+     "lauf2": "abgemeldet-anlass-offen",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "OTRA",
+     "neu": "stock_mergers 2022-05-19",
+     "juengste": "name_changes 2022-06-29",
+     "lauf2": "uebernahme",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "POND",
+     "neu": "stock_mergers 2022-12-16",
+     "juengste": "name_changes 2023-01-27",
+     "lauf2": "zwangs-delisting",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "SATX",
+     "neu": "cash_mergers 2025-07-02",
+     "juengste": "cash_mergers 2026-01-12",
+     "lauf2": "abgemeldet-anlass-offen",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SLNO",
+     "neu": "cash_mergers 2026-05-20",
+     "juengste": "worthless_removals 2026-06-30",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SPNS",
+     "neu": "cash_mergers 2025-12-17",
+     "juengste": "cash_mergers 2026-05-27",
+     "lauf2": "abgemeldet-anlass-offen",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TARO",
+     "neu": "cash_mergers 2024-06-24",
+     "juengste": "cash_mergers 2025-10-22",
+     "lauf2": "abgemeldet-anlass-offen",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "THRD",
+     "neu": "cash_mergers 2025-08-11",
+     "juengste": "cash_mergers 2026-03-11",
+     "lauf2": "zwangs-delisting",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TUGC",
+     "neu": "stock_mergers 2022-04-29",
+     "juengste": "name_changes 2022-05-31",
+     "lauf2": "abgemeldet-anlass-offen",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "VIGL",
+     "neu": "stock_and_cash_mergers 2025-08-06",
+     "juengste": "cash_mergers 2025-09-30",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "VINO",
+     "neu": "name_changes 2024-11-22",
+     "juengste": "name_changes 2025-07-31",
+     "lauf2": "insolvenz",
+     "lauf3": "insolvenz"
+    },
+    {
+     "reihe": "VOSO",
+     "neu": "stock_mergers 2021-11-18",
+     "juengste": "name_changes 2021-12-20",
+     "lauf2": "spac-ende",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "WKME",
+     "neu": "cash_mergers 2024-09-12",
+     "juengste": "cash_mergers 2025-08-11",
+     "lauf2": "abgemeldet-anlass-offen",
+     "lauf3": "uebernahme"
+    }
+   ],
+   "andere": [
+    {
+     "reihe": "ACAQ",
+     "alt": "name_changes 2023-10-31",
+     "neu": "name_changes 2023-10-20",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "ACCD",
+     "alt": "cash_mergers 2025-04-10",
+     "neu": "cash_mergers 2025-04-08",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "AE",
+     "alt": "cash_mergers 2025-02-05",
+     "neu": "cash_mergers 2025-02-04",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "AGR",
+     "alt": "cash_mergers 2024-12-24",
+     "neu": "cash_mergers 2024-12-23",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "AGS",
+     "alt": "cash_mergers 2025-07-01",
+     "neu": "cash_mergers 2025-06-30",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "AL",
+     "alt": "cash_mergers 2026-04-10",
+     "neu": "cash_mergers 2026-04-08",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ALEX",
+     "alt": "cash_mergers 2026-03-13",
+     "neu": "cash_mergers 2026-03-12",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ALIM",
+     "alt": "cash_mergers 2024-09-17",
+     "neu": "cash_mergers 2024-09-16",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ALLK",
+     "alt": "cash_mergers 2025-05-19",
+     "neu": "cash_mergers 2025-05-15",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ALTM",
+     "alt": "cash_mergers 2025-03-10",
+     "neu": "cash_mergers 2025-03-06",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ALTR",
+     "alt": "cash_mergers 2025-03-27",
+     "neu": "cash_mergers 2025-03-26",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "AMAM",
+     "alt": "cash_mergers 2024-03-08",
+     "neu": "cash_mergers 2024-03-07",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ANGN",
+     "alt": "name_changes 2023-06-08",
+     "neu": "name_changes 2023-06-02",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "ARCH",
+     "alt": "stock_mergers 2025-01-15",
+     "neu": "stock_mergers 2025-01-14",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "ASPA",
+     "alt": "name_changes 2023-11-15",
+     "neu": "name_changes 2023-11-03",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "ATSG",
+     "alt": "cash_mergers 2025-04-14",
+     "neu": "cash_mergers 2025-04-11",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "AURC",
+     "alt": "name_changes 2023-08-29",
+     "neu": "name_changes 2023-08-24",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "AVAC",
+     "alt": "stock_mergers 2023-07-07",
+     "neu": "stock_mergers 2023-06-08",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "AXNX",
+     "alt": "cash_mergers 2024-11-18",
+     "neu": "cash_mergers 2024-11-15",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "AZPN",
+     "alt": "cash_mergers 2025-03-14",
+     "neu": "cash_mergers 2025-03-12",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "BECN",
+     "alt": "cash_mergers 2025-05-02",
+     "neu": "cash_mergers 2025-04-29",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "BEDU",
+     "alt": "cash_mergers 2025-12-22",
+     "neu": "cash_mergers 2025-12-16",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "BGRY",
+     "alt": "cash_mergers 2023-07-21",
+     "neu": "cash_mergers 2023-07-20",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "BMTX",
+     "alt": "cash_mergers 2025-02-03",
+     "neu": "cash_mergers 2025-01-31",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "CBAY",
+     "alt": "cash_mergers 2024-03-27",
+     "neu": "cash_mergers 2024-03-22",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "CDMO",
+     "alt": "cash_mergers 2025-02-06",
+     "neu": "cash_mergers 2025-02-05",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "CDTX",
+     "alt": "cash_mergers 2026-01-08",
+     "neu": "cash_mergers 2026-01-07",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "CEMI",
+     "alt": "cash_mergers 2023-05-12",
+     "neu": "cash_mergers 2023-04-27",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "CFB",
+     "alt": "stock_mergers 2025-03-04",
+     "neu": "stock_mergers 2025-03-03",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "CFLT",
+     "alt": "cash_mergers 2026-03-18",
+     "neu": "cash_mergers 2026-03-17",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "CFSB",
+     "alt": "cash_mergers 2025-11-03",
+     "neu": "cash_mergers 2025-10-31",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "CHWA",
+     "alt": "name_changes 2022-08-10",
+     "neu": "name_changes 2022-08-09",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "CHX",
+     "alt": "stock_mergers 2025-07-17",
+     "neu": "stock_mergers 2025-07-16",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "CIH",
+     "alt": "cash_mergers 2023-04-25",
+     "neu": "cash_mergers 2023-04-17",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "CIO",
+     "alt": "cash_mergers 2026-01-12",
+     "neu": "cash_mergers 2026-01-09",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "CISSV",
+     "alt": "name_changes 2023-06-22",
+     "neu": "name_changes 2023-06-21",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "CLVR",
+     "alt": "name_changes 2024-05-20",
+     "neu": "name_changes 2024-05-17",
+     "lauf2": "zwangs-delisting",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "CMRX",
+     "alt": "cash_mergers 2025-04-22",
+     "neu": "cash_mergers 2025-04-21",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "COOP",
+     "alt": "stock_mergers 2025-10-02",
+     "neu": "stock_mergers 2025-10-01",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "CPTN",
+     "alt": "cash_mergers 2025-01-08",
+     "neu": "cash_mergers 2025-01-07",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "DADA",
+     "alt": "cash_mergers 2025-06-27",
+     "neu": "cash_mergers 2025-06-16",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "DAY",
+     "alt": "cash_mergers 2026-02-05",
+     "neu": "cash_mergers 2026-02-04",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "DCPH",
+     "alt": "cash_mergers 2024-06-13",
+     "neu": "cash_mergers 2024-06-11",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "DKDCA",
+     "alt": "name_changes 2023-11-21",
+     "neu": "name_changes 2023-11-08",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "DPSI",
+     "alt": "cash_mergers 2024-07-16",
+     "neu": "cash_mergers 2024-07-05",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "DTOC",
+     "alt": "name_changes 2023-10-16",
+     "neu": "name_changes 2023-09-21",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "DVAX",
+     "alt": "cash_mergers 2026-02-11",
+     "neu": "cash_mergers 2026-02-10",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "DVS",
+     "alt": "stock_mergers 2026-03-27",
+     "neu": "stock_mergers 2026-03-26",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "EB",
+     "alt": "cash_mergers 2026-03-11",
+     "neu": "cash_mergers 2026-03-10",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "EBTC",
+     "alt": "stock_and_cash_mergers 2025-07-02",
+     "neu": "stock_and_cash_mergers 2025-07-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "EFHT",
+     "alt": "name_changes 2023-12-21",
+     "neu": "name_changes 2023-12-13",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "EM",
+     "alt": "cash_mergers 2026-05-08",
+     "neu": "cash_mergers 2026-04-29",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "EMKR",
+     "alt": "cash_mergers 2025-03-03",
+     "neu": "cash_mergers 2025-02-28",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ENLC",
+     "alt": "stock_mergers 2025-02-03",
+     "neu": "stock_mergers 2025-01-31",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "ESGR",
+     "alt": "cash_mergers 2025-07-03",
+     "neu": "cash_mergers 2025-07-02",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ESSA",
+     "alt": "stock_mergers 2025-07-25",
+     "neu": "stock_mergers 2025-07-24",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "EVOK",
+     "alt": "cash_mergers 2025-12-18",
+     "neu": "cash_mergers 2025-12-17",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "EVRI",
+     "alt": "cash_mergers 2025-07-02",
+     "neu": "cash_mergers 2025-07-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "EXAS",
+     "alt": "cash_mergers 2026-03-24",
+     "neu": "cash_mergers 2026-03-23",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "FRLN",
+     "alt": "cash_mergers 2024-02-28",
+     "neu": "cash_mergers 2024-02-20",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "FSFG",
+     "alt": "stock_mergers 2026-02-03",
+     "neu": "stock_mergers 2026-02-02",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "FYBR",
+     "alt": "cash_mergers 2026-01-21",
+     "neu": "cash_mergers 2026-01-20",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "FZT",
+     "alt": "stock_mergers 2023-10-11",
+     "neu": "name_changes 2023-10-06",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "GEAR",
+     "alt": "cash_mergers 2025-01-06",
+     "neu": "cash_mergers 2025-01-03",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "GES",
+     "alt": "cash_mergers 2026-01-26",
+     "neu": "cash_mergers 2026-01-23",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "GIFI",
+     "alt": "cash_mergers 2026-01-20",
+     "neu": "cash_mergers 2026-01-16",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "GLDD",
+     "alt": "cash_mergers 2026-04-02",
+     "neu": "cash_mergers 2026-04-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "GLT",
+     "alt": "name_changes 2024-11-05",
+     "neu": "name_changes 2024-11-04",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "GRCL",
+     "alt": "stock_mergers 2024-02-29",
+     "neu": "stock_and_cash_mergers 2024-02-26",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "HARP",
+     "alt": "cash_mergers 2024-03-12",
+     "neu": "cash_mergers 2024-03-11",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "HCP",
+     "alt": "cash_mergers 2025-02-28",
+     "neu": "cash_mergers 2025-02-27",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "HI",
+     "alt": "cash_mergers 2026-02-11",
+     "neu": "cash_mergers 2026-02-10",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "HIBB",
+     "alt": "cash_mergers 2024-07-26",
+     "neu": "cash_mergers 2024-07-25",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "HSII",
+     "alt": "cash_mergers 2025-12-11",
+     "neu": "cash_mergers 2025-12-10",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "HTLF",
+     "alt": "stock_mergers 2025-02-03",
+     "neu": "stock_mergers 2025-01-31",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "ICVX",
+     "alt": "stock_mergers 2024-02-22",
+     "neu": "stock_and_cash_mergers 2024-02-20",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "IMBI",
+     "alt": "name_changes 2023-07-10",
+     "neu": "name_changes 2023-07-07",
+     "lauf2": "insolvenz",
+     "lauf3": "insolvenz"
+    },
+    {
+     "reihe": "INFN",
+     "alt": "cash_mergers 2025-03-03",
+     "neu": "cash_mergers 2025-02-28",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "INZY",
+     "alt": "cash_mergers 2025-07-03",
+     "neu": "cash_mergers 2025-07-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ISPO",
+     "alt": "cash_mergers 2026-02-04",
+     "neu": "cash_mergers 2026-02-03",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ITCI",
+     "alt": "cash_mergers 2025-04-03",
+     "neu": "cash_mergers 2025-04-02",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "IVAC",
+     "alt": "cash_mergers 2025-04-02",
+     "neu": "cash_mergers 2025-03-31",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "JAMF",
+     "alt": "cash_mergers 2026-02-02",
+     "neu": "cash_mergers 2026-01-30",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "JNPR",
+     "alt": "cash_mergers 2025-07-03",
+     "neu": "cash_mergers 2025-07-02",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "JUNE",
+     "alt": "name_changes 2025-06-03",
+     "neu": "name_changes 2025-06-02",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "JWN",
+     "alt": "cash_mergers 2025-05-22",
+     "neu": "cash_mergers 2025-05-20",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "KNTE",
+     "alt": "stock_mergers 2024-04-08",
+     "neu": "stock_and_cash_mergers 2024-04-05",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "LGTY",
+     "alt": "cash_mergers 2025-04-07",
+     "neu": "cash_mergers 2025-04-04",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "LGVC",
+     "alt": "name_changes 2024-05-17",
+     "neu": "name_changes 2024-05-02",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "LRFC",
+     "alt": "stock_mergers 2025-07-16",
+     "neu": "stock_mergers 2025-07-15",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "LSEA",
+     "alt": "cash_mergers 2025-06-26",
+     "neu": "cash_mergers 2025-06-25",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "MAG",
+     "alt": "stock_and_cash_mergers 2025-09-09",
+     "neu": "stock_and_cash_mergers 2025-09-04",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "MCBC",
+     "alt": "stock_mergers 2024-08-02",
+     "neu": "cash_mergers 2024-08-01",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "MGIC",
+     "alt": "stock_mergers 2026-02-25",
+     "neu": "stock_mergers 2026-02-24",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "MGOL",
+     "alt": "stock_mergers 2025-02-20",
+     "neu": "stock_mergers 2025-02-19",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "MIRO",
+     "alt": "stock_and_cash_mergers 2023-12-15",
+     "neu": "cash_mergers 2023-12-14",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "MNTX",
+     "alt": "cash_mergers 2025-01-03",
+     "neu": "cash_mergers 2025-01-02",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "MOFG",
+     "alt": "stock_mergers 2026-02-17",
+     "neu": "stock_mergers 2026-02-13",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "MORF",
+     "alt": "cash_mergers 2024-08-19",
+     "neu": "cash_mergers 2024-08-16",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "MRCC",
+     "alt": "stock_mergers 2026-04-15",
+     "neu": "stock_mergers 2026-04-14",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "MRNS",
+     "alt": "cash_mergers 2025-02-13",
+     "neu": "cash_mergers 2025-02-11",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "MRTX",
+     "alt": "stock_mergers 2024-01-25",
+     "neu": "stock_and_cash_mergers 2024-01-24",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "MRUS",
+     "alt": "cash_mergers 2026-01-05",
+     "neu": "cash_mergers 2025-12-30",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "NATI",
+     "alt": "cash_mergers 2023-10-12",
+     "neu": "cash_mergers 2023-10-11",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "NETC",
+     "alt": "name_changes 2023-12-26",
+     "neu": "name_changes 2023-12-19",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "NVEE",
+     "alt": "stock_and_cash_mergers 2025-08-05",
+     "neu": "stock_and_cash_mergers 2025-08-04",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "OBDE",
+     "alt": "stock_mergers 2025-01-14",
+     "neu": "stock_mergers 2025-01-13",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "ODP",
+     "alt": "cash_mergers 2025-12-11",
+     "neu": "cash_mergers 2025-12-10",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "OMIC",
+     "alt": "cash_mergers 2025-02-25",
+     "neu": "cash_mergers 2025-02-21",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ONTF",
+     "alt": "cash_mergers 2026-04-06",
+     "neu": "cash_mergers 2026-04-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ORLA",
+     "alt": "stock_and_cash_mergers 2026-08-06",
+     "neu": "stock_and_cash_mergers 2026-07-31",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ORTX",
+     "alt": "stock_mergers 2024-01-26",
+     "neu": "stock_and_cash_mergers 2024-01-25",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "OS",
+     "alt": "cash_mergers 2026-04-02",
+     "neu": "cash_mergers 2026-04-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "OXAC",
+     "alt": "name_changes 2023-08-16",
+     "neu": "name_changes 2023-08-11",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "PBBK",
+     "alt": "cash_mergers 2026-01-13",
+     "neu": "cash_mergers 2026-01-05",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "PCCT",
+     "alt": "name_changes 2023-10-31",
+     "neu": "name_changes 2023-10-20",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "PCH",
+     "alt": "stock_and_cash_mergers 2026-02-03",
+     "neu": "stock_and_cash_mergers 2026-02-02",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "PDCO",
+     "alt": "cash_mergers 2025-04-21",
+     "neu": "cash_mergers 2025-04-17",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "PEGR",
+     "alt": "name_changes 2024-08-05",
+     "neu": "name_changes 2024-07-30",
+     "lauf2": "umbenennung-ticker",
+     "lauf3": "umbenennung-ticker"
+    },
+    {
+     "reihe": "PFIE",
+     "alt": "cash_mergers 2025-01-06",
+     "neu": "cash_mergers 2025-01-03",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "PHX",
+     "alt": "cash_mergers 2025-06-27",
+     "neu": "cash_mergers 2025-06-23",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "PLL",
+     "alt": "stock_mergers 2025-09-02",
+     "neu": "stock_mergers 2025-08-29",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "PPBI",
+     "alt": "stock_mergers 2025-09-03",
+     "neu": "stock_mergers 2025-09-02",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "PRTK",
+     "alt": "stock_mergers 2023-09-22",
+     "neu": "cash_mergers 2023-09-21",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "PTVE",
+     "alt": "cash_mergers 2025-04-02",
+     "neu": "cash_mergers 2025-04-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "PWOD",
+     "alt": "stock_mergers 2025-07-29",
+     "neu": "stock_mergers 2025-07-28",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "QIPT",
+     "alt": "cash_mergers 2026-03-19",
+     "neu": "cash_mergers 2026-03-16",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "RAPT",
+     "alt": "cash_mergers 2026-03-04",
+     "neu": "cash_mergers 2026-03-03",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "RDFN",
+     "alt": "stock_mergers 2025-07-02",
+     "neu": "stock_mergers 2025-07-01",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "REVG",
+     "alt": "stock_and_cash_mergers 2026-02-04",
+     "neu": "stock_and_cash_mergers 2026-02-02",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "RNAM",
+     "alt": "cash_mergers 2026-03-04",
+     "neu": "cash_mergers 2026-02-27",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ROIC",
+     "alt": "cash_mergers 2025-02-13",
+     "neu": "cash_mergers 2025-02-12",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "RVNC",
+     "alt": "cash_mergers 2025-02-07",
+     "neu": "cash_mergers 2025-02-06",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SDIG",
+     "alt": "stock_mergers 2025-03-17",
+     "neu": "stock_mergers 2025-03-14",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "SDPI",
+     "alt": "cash_mergers 2024-08-02",
+     "neu": "cash_mergers 2024-08-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SEE",
+     "alt": "cash_mergers 2026-04-10",
+     "neu": "cash_mergers 2026-04-09",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SHCO",
+     "alt": "cash_mergers 2026-01-30",
+     "neu": "cash_mergers 2026-01-29",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SHYF",
+     "alt": "stock_mergers 2025-07-02",
+     "neu": "stock_mergers 2025-07-01",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "SMAR",
+     "alt": "cash_mergers 2025-01-23",
+     "neu": "cash_mergers 2025-01-22",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SNPO",
+     "alt": "cash_mergers 2024-06-18",
+     "neu": "cash_mergers 2024-06-14",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SOHO",
+     "alt": "cash_mergers 2026-02-13",
+     "neu": "cash_mergers 2026-02-12",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SOL",
+     "alt": "cash_mergers 2025-12-19",
+     "neu": "cash_mergers 2025-12-12",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SRCL",
+     "alt": "cash_mergers 2024-11-05",
+     "neu": "cash_mergers 2024-11-04",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SSBK",
+     "alt": "stock_mergers 2025-07-02",
+     "neu": "stock_mergers 2025-07-01",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "SUM",
+     "alt": "cash_mergers 2025-02-11",
+     "neu": "cash_mergers 2025-02-10",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SURF",
+     "alt": "stock_mergers 2023-09-11",
+     "neu": "stock_mergers 2023-09-08",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "SVT",
+     "alt": "cash_mergers 2025-07-02",
+     "neu": "cash_mergers 2025-07-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SWAV",
+     "alt": "cash_mergers 2024-06-03",
+     "neu": "cash_mergers 2024-05-31",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SWI",
+     "alt": "cash_mergers 2025-04-17",
+     "neu": "cash_mergers 2025-04-16",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SWKH",
+     "alt": "stock_and_cash_mergers 2026-04-10",
+     "neu": "stock_and_cash_mergers 2026-04-06",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "SWTX",
+     "alt": "cash_mergers 2025-07-02",
+     "neu": "cash_mergers 2025-07-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TAST",
+     "alt": "cash_mergers 2024-05-17",
+     "neu": "cash_mergers 2024-05-16",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TBHC",
+     "alt": "stock_mergers 2026-04-06",
+     "neu": "stock_mergers 2026-04-02",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "TBNK",
+     "alt": "stock_mergers 2025-04-03",
+     "neu": "stock_mergers 2025-04-02",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "TGAN",
+     "alt": "cash_mergers 2024-06-21",
+     "neu": "cash_mergers 2024-06-20",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TGNA",
+     "alt": "cash_mergers 2026-03-23",
+     "neu": "cash_mergers 2026-03-20",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "THRX",
+     "alt": "stock_mergers 2024-02-22",
+     "neu": "stock_and_cash_mergers 2024-02-16",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TIXT",
+     "alt": "stock_and_cash_mergers 2025-11-05",
+     "neu": "cash_mergers 2025-10-31",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TLGA",
+     "alt": "name_changes 2023-08-16",
+     "neu": "name_changes 2023-08-01",
+     "lauf2": "insolvenz",
+     "lauf3": "insolvenz"
+    },
+    {
+     "reihe": "TRHC",
+     "alt": "cash_mergers 2023-11-06",
+     "neu": "cash_mergers 2023-11-03",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TRTN",
+     "alt": "stock_and_cash_mergers 2023-10-06",
+     "neu": "cash_mergers 2023-10-05",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TRUE",
+     "alt": "cash_mergers 2026-01-23",
+     "neu": "cash_mergers 2026-01-21",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TSVT",
+     "alt": "cash_mergers 2025-05-15",
+     "neu": "cash_mergers 2025-05-13",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "TURN",
+     "alt": "stock_mergers 2025-09-15",
+     "neu": "stock_mergers 2025-09-12",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "UBFO",
+     "alt": "stock_mergers 2026-04-02",
+     "neu": "stock_mergers 2026-04-01",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "UNAM",
+     "alt": "name_changes 2023-07-05",
+     "neu": "name_changes 2023-06-15",
+     "lauf2": "insolvenz",
+     "lauf3": "insolvenz"
+    },
+    {
+     "reihe": "VBFC",
+     "alt": "cash_mergers 2025-04-02",
+     "neu": "cash_mergers 2025-04-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "VCSA",
+     "alt": "cash_mergers 2025-05-02",
+     "neu": "cash_mergers 2025-05-01",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "VRNT",
+     "alt": "cash_mergers 2025-11-28",
+     "neu": "cash_mergers 2025-11-26",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "VTYX",
+     "alt": "cash_mergers 2026-03-06",
+     "neu": "cash_mergers 2026-03-04",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "VZIO",
+     "alt": "cash_mergers 2024-12-04",
+     "neu": "cash_mergers 2024-12-03",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "WE",
+     "alt": "name_changes 2023-11-16",
+     "neu": "name_changes 2023-11-08",
+     "lauf2": "insolvenz",
+     "lauf3": "insolvenz"
+    },
+    {
+     "reihe": "WMC",
+     "alt": "cash_mergers 2023-12-08",
+     "neu": "stock_and_cash_mergers 2023-12-07",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "WMPN",
+     "alt": "stock_mergers 2025-05-01",
+     "neu": "stock_mergers 2025-04-30",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "WOW",
+     "alt": "cash_mergers 2026-01-02",
+     "neu": "cash_mergers 2025-12-31",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "X",
+     "alt": "cash_mergers 2025-06-20",
+     "neu": "cash_mergers 2025-06-18",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ZEUS",
+     "alt": "stock_mergers 2026-02-17",
+     "neu": "stock_mergers 2026-02-13",
+     "lauf2": "fusion-aktientausch",
+     "lauf3": "fusion-aktientausch"
+    },
+    {
+     "reihe": "ZK",
+     "alt": "cash_mergers 2026-01-02",
+     "neu": "cash_mergers 2025-12-22",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ZUO",
+     "alt": "cash_mergers 2025-02-18",
+     "neu": "cash_mergers 2025-02-14",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    },
+    {
+     "reihe": "ZYNE",
+     "alt": "stock_and_cash_mergers 2023-10-24",
+     "neu": "stock_and_cash_mergers 2023-10-17",
+     "lauf2": "uebernahme",
+     "lauf3": "uebernahme"
+    }
+   ],
+   "grundwechselDurchV8": [
+    [
+     "fusion-aktientausch -> uebernahme",
+     10
+    ],
+    [
+     "abgemeldet-anlass-offen -> uebernahme",
+     5
+    ],
+    [
+     "uebernahme -> fusion-aktientausch",
+     4
+    ],
+    [
+     "abgemeldet-anlass-offen -> fusion-aktientausch",
+     1
+    ],
+    [
+     "abgemeldet-anlass-offen -> umbenennung-ticker",
+     1
+    ],
+    [
+     "freiwillig -> uebernahme",
+     1
+    ],
+    [
+     "fusion-aktientausch -> umbenennung-ticker",
+     1
+    ],
+    [
+     "spac-ende -> fusion-aktientausch",
+     1
+    ],
+    [
+     "uebernahme -> umbenennung-ticker",
+     1
+    ],
+    [
+     "unbekannt -> fusion-aktientausch",
+     1
+    ],
+    [
+     "unbekannt -> umbenennung-ticker",
+     1
+    ],
+    [
+     "zwangs-delisting -> fusion-aktientausch",
+     1
+    ],
+    [
+     "zwangs-delisting -> umbenennung-ticker",
+     1
+    ]
+   ]
+  }
+ },
+ "gruppen": {
+  "mantel": {
+   "regel9": 52,
+   "regel9Klasse123": 0,
+   "regel9JeWortlaut": {
+    "ruege": 43,
+    "nichts": 4,
+    "mehrdeutig": 2,
+    "vollzug": 2,
+    "eigener-entschluss": 1
+   },
+   "regel9GrundLauf2": {
+    "zwangs-delisting": 52
+   },
+   "sic6770Mit301": 341,
+   "sic6770Mit301JeRegel": {
+    "1": 111,
+    "2": 26,
+    "3": 9,
+    "4": 1,
+    "5": 5,
+    "6": 1,
+    "7": 135,
+    "9": 52,
+    "11": 1
+   },
+   "scheitertAmKurs": 1
+  },
+  "ausgesetzt": {
+   "zahl": 23,
+   "mitKlasse123": 2,
+   "grundLauf2": {
+    "zwangs-delisting": 17,
+    "unbekannt": 6
+   },
+   "kuerzelNeuVergeben": 4
+  },
+  "emittent25Neben301": {
+   "zeilen": 383,
+   "jeRegel": {
+    "0": 12,
+    "1": 105,
+    "2": 27,
+    "3": 9,
+    "4": 16,
+    "5": 36,
+    "7": 12,
+    "8": 1,
+    "9": 2,
+    "10": 1,
+    "11": 162
+   },
+   "jeGrund": {
+    "umbenennung-ticker": 105,
+    "uebernahme": 69,
+    "freiwillig": 90,
+    "zwangs-delisting": 67,
+    "insolvenz": 28,
+    "spac-ende": 14,
+    "fusion-aktientausch": 9,
+    "ausgesetzt": 1
+   },
+   "regel11": {
+    "zeilen": 162,
+    "jeGrund": {
+     "freiwillig": 90,
+     "zwangs-delisting": 66,
+     "uebernahme": 6
+    },
+    "jeGrundUndBand": [
+     [
+      "zwangs-delisting | unter 1",
+      44
+     ],
+     [
+      "freiwillig | 1-5",
+      24
+     ],
+     [
+      "freiwillig | unter 1",
+      24
+     ],
+     [
+      "freiwillig | ueber 13",
+      20
+     ],
+     [
+      "freiwillig | 8-13",
+      15
+     ],
+     [
+      "zwangs-delisting | 1-5",
+      11
+     ],
+     [
+      "freiwillig | 5-8",
+      7
+     ],
+     [
+      "zwangs-delisting | 5-8",
+      5
+     ],
+     [
+      "uebernahme | ueber 13",
+      4
+     ],
+     [
+      "zwangs-delisting | 8-13",
+      3
+     ],
+     [
+      "zwangs-delisting | ueber 13",
+      3
+     ],
+     [
+      "uebernahme | 1-5",
+      1
+     ],
+     [
+      "uebernahme | 8-13",
+      1
+     ]
+    ],
+    "jeWortlaut": {
+     "eigener-entschluss": 90,
+     "ruege": 56,
+     "mehrdeutig": 2,
+     "nichts": 9,
+     "vollzug": 5
+    }
+   }
+  },
+  "regel12": 8,
+  "handeintrag": 18,
+  "unbekannt": {
+   "zeilen": 189,
+   "mitKlasse123": 18,
+   "jeBeleg": {
+    "edgar-ohne-signal": 164,
+    "nichts": 24,
+    "massnahme-passt-nicht": 1
+   }
+  }
+ }
+}
