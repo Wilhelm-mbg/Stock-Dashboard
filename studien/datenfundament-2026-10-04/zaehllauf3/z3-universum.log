@@ -1,0 +1,40 @@
+
+!!! WERTPAPIERART: Referenzkarte vorhanden, aber ohne Eintrag fuer GCI (erster Fall dieses Laufs; weitere werden nicht gemeldet) - solche Symbole fallen STILL aus dem Universum heraus.
+
+{
+ "aktien": 7299,
+ "tafelAlt": 4996,
+ "nichtLebend": 5050,
+ "davonInAlterTafel": 4996,
+ "neu": 54,
+ "alteZeilenJetztLebend": 0,
+ "ankerWechseltUeber3Tage": 285,
+ "mitPolygonFirma": 4713,
+ "ohnePolygonFirma": 337,
+ "ohneLetztenKurs": 1,
+ "ankerAbweichungZuNr79": 0,
+ "nichtImZweitenLauf": 0,
+ "ankerAndersAlsLauf2": 0,
+ "kursAndersAlsLauf2": 0,
+ "juengsteMassnahmeAndersAlsLauf2": 0,
+ "polygonEintragAnders": 14,
+ "polygonEintragAndersReihen": "AAC APGE AT BCOM CAPA CRNX DICE HLX JONE LEG MN OIG PCPC TWO",
+ "endeSaetze": 4039,
+ "endeSaetzeOhneId": 0,
+ "endeSaetzeAusNachtrag": 3,
+ "nachtragErsetztAlt": 4,
+ "reihenMitEndeSatz": 2984,
+ "jeRolle": {
+  "abgebend": 3380,
+  "aufnehmend": 659
+ },
+ "jeArt": {
+  "cash_mergers": 1009,
+  "name_changes": 2153,
+  "stock_mergers": 693,
+  "stock_and_cash_mergers": 163,
+  "redemptions": 10,
+  "worthless_removals": 11
+ }
+}
+Felder je Art: {"cash_mergers":"_art acquiree_cusip acquiree_symbol effective_date id payable_date process_date rate","name_changes":"_art id new_cusip new_symbol old_cusip old_symbol process_date","stock_mergers":"_art acquiree_cusip acquiree_rate acquiree_symbol acquirer_cusip acquirer_rate acquirer_symbol effective_date id process_date","stock_and_cash_mergers":"_art acquiree_cusip acquiree_rate acquiree_symbol acquirer_cusip acquirer_rate acquirer_symbol cash_rate effective_date id payable_date process_date","redemptions":"_art cusip id payable_date process_date rate symbol","worthless_removals":"_art cusip id process_date symbol"}
