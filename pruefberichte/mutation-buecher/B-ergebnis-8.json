@@ -1,0 +1,122 @@
+{
+ "basis": {
+  "v6rot": 17,
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "B-92",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: Verkauf ohne Bestand nicht verworfen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "B-93",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: offen bleibt leer stehen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌ 99.2 Eroeffnung erst beim dritten Takt (09:50, 10:20 ohne, 10:50 mit): die ersten zwei aendern nichts und schreiben keine Zeile, der dritte kauft zur Eroeffnu",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-94",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: geaendert ohne entfallen",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-95",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: Regel K nicht durchgereicht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌    Gegenprobe: Kaeufe vor Verkaeufen faellt auf",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-96",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: kursT nicht gestempelt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.2 Eroeffnung kommt beim ersten Nachfassen (10:05): Kauf zur Eroeffnung 50 (der Balken traegt als Schluss den laufenden Kurs 999), 200 Stueck = budget / Kur",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-97",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: wartet nicht gemeldet",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-98",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: budget >= 0",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-99",
+   "funktion": "offen*",
+   "beschreibung": "offenBeenden: laufendes offen wird geloescht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 10 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-100",
+   "funktion": "offen*",
+   "beschreibung": "offenBeenden: offen bleibt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 99.3 am Folgetag (Mittwoch 09:40) nichts mehr: kein Abruf, kein Kauf, offen geloescht mit einer Zeile  [Momentum-Buch: Nachfassen der Umschichtung vom 24.11.2",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-101",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: erster Verkauf uebergangen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ 99.2 Verkauf und Kauf zugleich offen (Bargeld 0): erst der Verkauf zur Eroeffnung (Erloes 4.990 $ ins Bargeld, 20 Bp), dann der Kauf aus dem Erloes, hoechsten",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-102",
+   "funktion": "offen*",
+   "beschreibung": "stempleKursT: ueberschreibt vorhandenes kursT",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.4 stempleKursT: nur neue Positionen (seit === jetzt) ohne Stempel bekommen den Balken ihres Werts  [2]",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  }
+ ]
+}

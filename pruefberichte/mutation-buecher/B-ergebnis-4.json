@@ -1,0 +1,132 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "B-40",
+   "funktion": "fuehreAus",
+   "beschreibung": "Reihenfolge: erst Kaeufe, dann Verkaeufe",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 10 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt",
+    "Kleinsttest-Urteil geaendert: [14] TEST DEFEKT: TypeError: Cannot read properties of undefined (reading 'einst"
+   ]
+  },
+  {
+   "id": "B-41",
+   "funktion": "bewerte",
+   "beschreibung": "bewerte ohne Rundung",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-42",
+   "funktion": "bewerte",
+   "beschreibung": "bewerte auf 10 Cent",
+   "datei": "mfhandel.js",
+   "urteil": "UNGUELTIG",
+   "grund": "2 Vorkommen von suche"
+  },
+  {
+   "id": "B-43",
+   "funktion": "bewerte",
+   "beschreibung": "bewerte: Position ohne Kurs zaehlt 0",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.4 bewertet wird zum letzten Schluss der Reihe (A: 130, nicht der Einstand 100); nur D ohne jede Reihe zum Einstand, als ohneKurs gemeldet"
+   ]
+  },
+  {
+   "id": "B-44",
+   "funktion": "bewerte",
+   "beschreibung": "bewerte: ohneKurs nicht gemeldet",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.4 bewertet wird zum letzten Schluss der Reihe (A: 130, nicht der Einstand 100); nur D ohne jede Reihe zum Einstand, als ohneKurs gemeldet"
+   ]
+  },
+  {
+   "id": "B-45",
+   "funktion": "bewerte",
+   "beschreibung": "bewerte ohne Bargeld",
+   "datei": "mfhandel.js",
+   "urteil": "UNGUELTIG",
+   "grund": "2 Vorkommen von suche"
+  },
+  {
+   "id": "B-46",
+   "funktion": "faelligkeit",
+   "beschreibung": "faellig bei halten statt halten-1",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 Grenze 63: Ausfuehrungstag = 0; 61 Balken danach -> nicht faellig (noch 1), 62 -> faellig (heute ist der 63.), 64 -> faellig mit 2 Handelstagen Verspaetu"
+   ]
+  },
+  {
+   "id": "B-47",
+   "funktion": "faelligkeit",
+   "beschreibung": "faellig: >= zu >",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 Grenze 63: Ausfuehrungstag = 0; 61 Balken danach -> nicht faellig (noch 1), 62 -> faellig (heute ist der 63.), 64 -> faellig mit 2 Handelstagen Verspaetu"
+   ]
+  },
+  {
+   "id": "B-48",
+   "funktion": "faelligkeit",
+   "beschreibung": "noch: halten statt halten-1",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 100.7 C3: die Karte nennt den Tag der naechsten Umschichtung, aus der Faelligkeit gerechnet (04.10.2026: 27 Balken seit dem 25.08., noch 35 -> Montag 23.11.20"
+   ]
+  },
+  {
+   "id": "B-49",
+   "funktion": "faelligkeit",
+   "beschreibung": "verspaetung ohne -1",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 Grenze 63: Ausfuehrungstag = 0; 61 Balken danach -> nicht faellig (noch 1), 62 -> faellig (heute ist der 63.), 64 -> faellig mit 2 Handelstagen Verspaetu"
+   ]
+  },
+  {
+   "id": "B-50",
+   "funktion": "faelligkeit",
+   "beschreibung": "veraltet ab 5 Werktagen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 Grenze drei Tage: Marktreihe drei Werktage hinter der Uhr gilt noch, vier nicht - dann faellig = null (nie still \"nicht faellig\")  [3 / 4]"
+   ]
+  },
+  {
+   "id": "B-51",
+   "funktion": "faelligkeit",
+   "beschreibung": "veraltet ab 3 Werktagen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 Grenze drei Tage: Marktreihe drei Werktage hinter der Uhr gilt noch, vier nicht - dann faellig = null (nie still \"nicht faellig\")  [3 / 4]"
+   ]
+  },
+  {
+   "id": "B-52",
+   "funktion": "faelligkeit",
+   "beschreibung": "Vorgabe halten 62",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  }
+ ]
+}

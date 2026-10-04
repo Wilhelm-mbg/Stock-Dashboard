@@ -1,0 +1,827 @@
+[
+ {
+  "id": "B-01",
+  "datei": "mfhandel.js",
+  "suche": "p.stueck * k < kl * budget",
+  "ersatz": "p.stueck * k <= kl * budget",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "K2 Kleinstbestand: < zu <="
+ },
+ {
+  "id": "B-02",
+  "datei": "mfhandel.js",
+  "suche": "var budget = ziel.length ? wert / ziel.length : 0;",
+  "ersatz": "var budget = ziel.length ? wert / (ziel.length + 1) : 0;",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Platzwert: Zielzahl+1"
+ },
+ {
+  "id": "B-03",
+  "datei": "mfhandel.js",
+  "suche": "var wert = buch.cash;",
+  "ersatz": "var wert = 0;",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Depotwert ohne Bargeld"
+ },
+ {
+  "id": "B-04",
+  "datei": "mfhandel.js",
+  "suche": "fehltKurs.push(p.sym); halten.push(p.sym); return; }",
+  "ersatz": "fehltKurs.push(p.sym); return; }",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Position ohne Kurs nicht mehr in halten"
+ },
+ {
+  "id": "B-05",
+  "datei": "mfhandel.js",
+  "suche": "p.stueck * k < kl * budget",
+  "ersatz": "p.stueck * k < kl * wert",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "K2: Schwelle gegen Depotwert statt Platzwert"
+ },
+ {
+  "id": "B-06",
+  "datei": "mfhandel.js",
+  "suche": "kleinst.push(p.sym); istKleinst[p.sym] = true;",
+  "ersatz": "kleinst.push(p.sym);",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Kleinstbestand wird nicht neu geplant"
+ },
+ {
+  "id": "B-07",
+  "datei": "mfhandel.js",
+  "suche": "istKleinst[s] === true || !(",
+  "ersatz": "istKleinst[s] === true && !(",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Neukauf: || zu &&"
+ },
+ {
+  "id": "B-08",
+  "datei": "mfhandel.js",
+  "suche": "Math.round(budget / preise[s] * 10000) / 10000",
+  "ersatz": "Math.floor(budget / preise[s] * 10000) / 10000",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Neukauf-Stueck: floor statt round"
+ },
+ {
+  "id": "B-09",
+  "datei": "mfhandel.js",
+  "suche": "Math.round(budget / preise[s] * 10000) / 10000",
+  "ersatz": "Math.round(budget / preise[s] * 1000) / 1000",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Neukauf-Stueck: 3 statt 4 Stellen"
+ },
+ {
+  "id": "B-10",
+  "datei": "mfhandel.js",
+  "suche": "budget > 0 ? Math.round(",
+  "ersatz": "budget >= 0 ? Math.round(",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Neukauf-Stueck: budget > 0 zu >= 0"
+ },
+ {
+  "id": "B-11",
+  "datei": "mfhandel.js",
+  "suche": "if (!(preise[s] > 0)) { fehltKurs.push(s); return false; }",
+  "ersatz": "if (!(preise[s] > 0)) { return false; }",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Ziel ohne Kurs nicht in fehltKurs"
+ },
+ {
+  "id": "B-12",
+  "datei": "mfhandel.js",
+  "suche": "var kl = opts && opts.kleinstAnteil > 0 ? opts.kleinstAnteil : 0;\n    var zielSet",
+  "ersatz": "var kl = opts && opts.kleinstAnteil > 0 ? opts.kleinstAnteil : 0.05;\n    var zielSet",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Vorgabe Kleinstanteil ohne opts 0,05 statt aus"
+ },
+ {
+  "id": "B-13",
+  "datei": "mfhandel.js",
+  "suche": "if (kl > 0) plan.kleinst = kleinst;",
+  "ersatz": "if (true) plan.kleinst = kleinst;",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "plan.kleinst immer gesetzt"
+ },
+ {
+  "id": "B-14",
+  "datei": "mfhandel.js",
+  "suche": "depotwert: wert };",
+  "ersatz": "depotwert: budget };",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Rueckgabe depotwert = budget"
+ },
+ {
+  "id": "B-15",
+  "datei": "mfhandel.js",
+  "suche": "if (zielSet[p.sym]) halten.push(p.sym);",
+  "ersatz": "if (zielSet[p.sym] || true) halten.push(p.sym);",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "nie verkaufen (Nicht-Ziel wird gehalten)"
+ },
+ {
+  "id": "B-16",
+  "datei": "mfhandel.js",
+  "suche": "var k = preise[p.sym];\n      if (!(k > 0))",
+  "ersatz": "var k = preise[p.sym] || p.einstand;\n      if (!(k > 0))",
+  "funktion": "planeUmschichtung",
+  "beschreibung": "Position ohne Kurs: Einstand als Kurs (Verkauf)",
+  "nr": 1
+ },
+ {
+  "id": "B-17",
+  "datei": "mfhandel.js",
+  "suche": "(kostenBp == null ? 20 : kostenBp) / 10000",
+  "ersatz": "(kostenBp == null ? 10 : kostenBp) / 10000",
+  "funktion": "fuehreAus",
+  "beschreibung": "Vorgabe-Kosten 10 statt 20 Bp"
+ },
+ {
+  "id": "B-18",
+  "datei": "mfhandel.js",
+  "suche": ": kostenBp) / 10000;",
+  "ersatz": ": kostenBp) / 1000;",
+  "funktion": "fuehreAus",
+  "beschreibung": "Kosten Bp: Teiler 1000"
+ },
+ {
+  "id": "B-19",
+  "datei": "mfhandel.js",
+  "suche": "var erloes = p.stueck * o.kurs * (1 - k);",
+  "ersatz": "var erloes = p.stueck * o.kurs * (1 + k);",
+  "funktion": "fuehreAus",
+  "beschreibung": "Verkaufserloes: Kosten addiert"
+ },
+ {
+  "id": "B-20",
+  "datei": "mfhandel.js",
+  "suche": "pnl: Math.round((erloes - p.stueck * p.einstand) * 100) / 100",
+  "ersatz": "pnl: (erloes - p.stueck * p.einstand)",
+  "funktion": "fuehreAus",
+  "beschreibung": "pnl ohne Cent-Rundung",
+  "nr": 1
+ },
+ {
+  "id": "B-21",
+  "datei": "mfhandel.js",
+  "suche": "pnl: Math.round((erloes - p.stueck * p.einstand) * 100) / 100",
+  "ersatz": "pnl: Math.round((erloes - p.stueck * p.einstand) * 10) / 10",
+  "funktion": "fuehreAus",
+  "beschreibung": "pnl auf 10 Cent",
+  "nr": 1
+ },
+ {
+  "id": "B-22",
+  "datei": "mfhandel.js",
+  "suche": "pnl: Math.round((erloes - p.stueck * p.einstand) * 100) / 100",
+  "ersatz": "pnl: Math.round((p.stueck * o.kurs - p.stueck * p.einstand) * 100) / 100",
+  "funktion": "fuehreAus",
+  "beschreibung": "pnl ohne Verkaufskosten",
+  "nr": 1
+ },
+ {
+  "id": "B-23",
+  "datei": "mfhandel.js",
+  "suche": "kosten > buch.cash) {",
+  "ersatz": "kosten >= buch.cash) {",
+  "funktion": "fuehreAus",
+  "beschreibung": "Kauf: Bargeldpruefung > zu >="
+ },
+ {
+  "id": "B-24",
+  "datei": "mfhandel.js",
+  "suche": "kosten > buch.cash) {",
+  "ersatz": "kosten > buch.cash + 1) {",
+  "funktion": "fuehreAus",
+  "beschreibung": "Kauf: Bargeldpruefung mit 1 Spielraum (Bargeld kann negativ werden)"
+ },
+ {
+  "id": "B-25",
+  "datei": "mfhandel.js",
+  "suche": "Math.floor(buch.cash / (o.kurs * (1 + k)) * 10000) / 10000",
+  "ersatz": "Math.round(buch.cash / (o.kurs * (1 + k)) * 10000) / 10000",
+  "funktion": "fuehreAus",
+  "beschreibung": "Verkleinerung: round statt floor"
+ },
+ {
+  "id": "B-26",
+  "datei": "mfhandel.js",
+  "suche": "Math.floor(buch.cash / (o.kurs * (1 + k)) * 10000) / 10000",
+  "ersatz": "Math.floor(buch.cash / o.kurs * 10000) / 10000",
+  "funktion": "fuehreAus",
+  "beschreibung": "Verkleinerung ohne Kostenfaktor"
+ },
+ {
+  "id": "B-27",
+  "datei": "mfhandel.js",
+  "suche": "if (!(o.stueck > 0)) return;",
+  "ersatz": "if (o.stueck < 0) return;",
+  "funktion": "fuehreAus",
+  "beschreibung": "Verkleinert auf 0: Position mit 0 Stueck gebucht"
+ },
+ {
+  "id": "B-28",
+  "datei": "mfhandel.js",
+  "suche": "o.stueck * o.kurs < kl * o.budget",
+  "ersatz": "o.stueck * o.kurs <= kl * o.budget",
+  "funktion": "fuehreAus",
+  "beschreibung": "K1: < zu <="
+ },
+ {
+  "id": "B-29",
+  "datei": "mfhandel.js",
+  "suche": "kl > 0 && o.budget > 0 && o.stueck",
+  "ersatz": "kl > 0 && o.stueck",
+  "funktion": "fuehreAus",
+  "beschreibung": "K1: ohne budget>0-Bedingung"
+ },
+ {
+  "id": "B-30",
+  "datei": "mfhandel.js",
+  "suche": "o.stueck * o.kurs < kl * o.budget",
+  "ersatz": "o.stueck * o.kurs * (1 + k) < kl * o.budget",
+  "funktion": "fuehreAus",
+  "beschreibung": "K1: Wert inkl. Kosten"
+ },
+ {
+  "id": "B-31",
+  "datei": "mfhandel.js",
+  "suche": "buch.cash -= kosten;",
+  "ersatz": "buch.cash -= o.stueck * o.kurs;",
+  "funktion": "fuehreAus",
+  "beschreibung": "Kauf: Bargeld ohne Kosten abgezogen"
+ },
+ {
+  "id": "B-32",
+  "datei": "mfhandel.js",
+  "suche": "einstand: o.kurs * (1 + k), seit: nowMs",
+  "ersatz": "einstand: o.kurs, seit: nowMs",
+  "funktion": "fuehreAus",
+  "beschreibung": "Einstand ohne Kosten"
+ },
+ {
+  "id": "B-33",
+  "datei": "mfhandel.js",
+  "suche": "einstand: o.kurs * (1 + k), seit: nowMs",
+  "ersatz": "einstand: o.kurs * (1 + k), seit: 0",
+  "funktion": "fuehreAus",
+  "beschreibung": "seit nicht gesetzt"
+ },
+ {
+  "id": "B-34",
+  "datei": "mfhandel.js",
+  "suche": "buch.trades = buch.trades.slice(-400);",
+  "ersatz": "buch.trades = buch.trades.slice(-399);",
+  "funktion": "fuehreAus",
+  "beschreibung": "Tradeprotokoll 399 statt 400",
+  "nr": 1
+ },
+ {
+  "id": "B-35",
+  "datei": "mfhandel.js",
+  "suche": "buch.trades.length > 400",
+  "ersatz": "buch.trades.length > 401",
+  "funktion": "fuehreAus",
+  "beschreibung": "Trade-Grenze 401",
+  "nr": 1
+ },
+ {
+  "id": "B-36",
+  "datei": "mfhandel.js",
+  "suche": "art: 'kauf', stueck: o.stueck, kurs: o.kurs });\n      n++;",
+  "ersatz": "art: 'kauf', stueck: o.stueck, kurs: o.kurs });",
+  "funktion": "fuehreAus",
+  "beschreibung": "Kauf zaehlt nicht in Rueckgabe"
+ },
+ {
+  "id": "B-37",
+  "datei": "mfhandel.js",
+  "suche": "buch.positionen.splice(idx, 1);\n      n++;",
+  "ersatz": "buch.positionen.splice(idx, 1);",
+  "funktion": "fuehreAus",
+  "beschreibung": "Verkauf zaehlt nicht in Rueckgabe"
+ },
+ {
+  "id": "B-38",
+  "datei": "mfhandel.js",
+  "suche": "var erloes = p.stueck * o.kurs * (1 - k);",
+  "ersatz": "var erloes = o.stueck * o.kurs * (1 - k);",
+  "funktion": "fuehreAus",
+  "beschreibung": "Erloes mit o.stueck statt Positionsbestand"
+ },
+ {
+  "id": "B-39",
+  "datei": "mfhandel.js",
+  "suche": "buch.positionen.splice(idx, 1);",
+  "ersatz": "buch.positionen.splice(idx, 0);",
+  "funktion": "fuehreAus",
+  "beschreibung": "Verkaufte Position bleibt im Buch"
+ },
+ {
+  "id": "B-40",
+  "datei": "mfhandel.js",
+  "suche": "    plan.verkaufen.forEach(function (o) {\n      var idx = buch.positionen.findIndex(function (p) { return p.sym === o.sym; });\n      if (idx < 0) return;\n      var p = buch.positionen[idx];\n      var erloes = p.stueck * o.kurs * (1 - k);\n      buch.cash += erloes;\n      buch.trades.push({ t: nowMs, sym: o.sym, art: 'verkauf', stueck: p.stueck, kurs: o.kurs,\n        pnl: Math.round((erloes - p.stueck * p.einstand) * 100) / 100 });\n      buch.positionen.splice(idx, 1);\n      n++;\n    });\n    plan.kaufen.forEach(function (o) {\n      var kosten = o.stueck * o.kurs * (1 + k);\n      if (!(o.stueck > 0) || kosten > buch.cash) {\n        // Reicht das Bargeld nicht (Rundung, Kosten), wird die Order verkleinert statt\n        // still verworfen — sonst hängt das Depot dauerhaft unter der Zielgewichtung.\n        o.stueck = Math.max(0, Math.floor(buch.cash / (o.kurs * (1 + k)) * 10000) / 10000);\n        kosten = o.stueck * o.kurs * (1 + k);\n        if (!(o.stueck > 0)) return;\n      }\n      if (kl > 0 && o.budget > 0 && o.stueck * o.kurs < kl * o.budget) { o.stueck = 0; return; }   // K1: kein Kleinstkauf\n      buch.cash -= kosten;\n      buch.positionen.push({ sym: o.sym, stueck: o.stueck, einstand: o.kurs * (1 + k), seit: nowMs });\n      buch.trades.push({ t: nowMs, sym: o.sym, art: 'kauf', stueck: o.stueck, kurs: o.kurs });\n      n++;\n    });\n",
+  "ersatz": "    plan.kaufen.forEach(function (o) {\n      var kosten = o.stueck * o.kurs * (1 + k);\n      if (!(o.stueck > 0) || kosten > buch.cash) {\n        // Reicht das Bargeld nicht (Rundung, Kosten), wird die Order verkleinert statt\n        // still verworfen — sonst hängt das Depot dauerhaft unter der Zielgewichtung.\n        o.stueck = Math.max(0, Math.floor(buch.cash / (o.kurs * (1 + k)) * 10000) / 10000);\n        kosten = o.stueck * o.kurs * (1 + k);\n        if (!(o.stueck > 0)) return;\n      }\n      if (kl > 0 && o.budget > 0 && o.stueck * o.kurs < kl * o.budget) { o.stueck = 0; return; }   // K1: kein Kleinstkauf\n      buch.cash -= kosten;\n      buch.positionen.push({ sym: o.sym, stueck: o.stueck, einstand: o.kurs * (1 + k), seit: nowMs });\n      buch.trades.push({ t: nowMs, sym: o.sym, art: 'kauf', stueck: o.stueck, kurs: o.kurs });\n      n++;\n    });\n    plan.verkaufen.forEach(function (o) {\n      var idx = buch.positionen.findIndex(function (p) { return p.sym === o.sym; });\n      if (idx < 0) return;\n      var p = buch.positionen[idx];\n      var erloes = p.stueck * o.kurs * (1 - k);\n      buch.cash += erloes;\n      buch.trades.push({ t: nowMs, sym: o.sym, art: 'verkauf', stueck: p.stueck, kurs: o.kurs,\n        pnl: Math.round((erloes - p.stueck * p.einstand) * 100) / 100 });\n      buch.positionen.splice(idx, 1);\n      n++;\n    });\n",
+  "funktion": "fuehreAus",
+  "beschreibung": "Reihenfolge: erst Kaeufe, dann Verkaeufe"
+ },
+ {
+  "id": "B-41",
+  "datei": "mfhandel.js",
+  "suche": "wert: Math.round(wert * 100) / 100, ohneKurs: ohneKurs };",
+  "ersatz": "wert: wert, ohneKurs: ohneKurs };",
+  "funktion": "bewerte",
+  "beschreibung": "bewerte ohne Rundung",
+  "nr": 1
+ },
+ {
+  "id": "B-42",
+  "datei": "mfhandel.js",
+  "suche": "wert: Math.round(wert * 100) / 100, ohneKurs: ohneKurs };",
+  "ersatz": "wert: Math.round(wert * 10) / 10, ohneKurs: ohneKurs };",
+  "funktion": "bewerte",
+  "beschreibung": "bewerte auf 10 Cent",
+  "nr": 1
+ },
+ {
+  "id": "B-43",
+  "datei": "mfhandel.js",
+  "suche": "else { wert += p.stueck * p.einstand; ohneKurs.push(p.sym); }",
+  "ersatz": "else { ohneKurs.push(p.sym); }",
+  "funktion": "bewerte",
+  "beschreibung": "bewerte: Position ohne Kurs zaehlt 0"
+ },
+ {
+  "id": "B-44",
+  "datei": "mfhandel.js",
+  "suche": "else { wert += p.stueck * p.einstand; ohneKurs.push(p.sym); }",
+  "ersatz": "else { wert += p.stueck * p.einstand; }",
+  "funktion": "bewerte",
+  "beschreibung": "bewerte: ohneKurs nicht gemeldet"
+ },
+ {
+  "id": "B-45",
+  "datei": "mfhandel.js",
+  "suche": "var wert = buch.cash, ohneKurs = [];",
+  "ersatz": "var wert = 0, ohneKurs = [];",
+  "funktion": "bewerte",
+  "beschreibung": "bewerte ohne Bargeld",
+  "nr": 1
+ },
+ {
+  "id": "B-46",
+  "datei": "mfhandel.js",
+  "suche": "r.faellig = r.tageSeit >= halten - 1;",
+  "ersatz": "r.faellig = r.tageSeit >= halten;",
+  "funktion": "faelligkeit",
+  "beschreibung": "faellig bei halten statt halten-1"
+ },
+ {
+  "id": "B-47",
+  "datei": "mfhandel.js",
+  "suche": "r.faellig = r.tageSeit >= halten - 1;",
+  "ersatz": "r.faellig = r.tageSeit > halten - 1;",
+  "funktion": "faelligkeit",
+  "beschreibung": "faellig: >= zu >"
+ },
+ {
+  "id": "B-48",
+  "datei": "mfhandel.js",
+  "suche": "r.noch = Math.max(0, halten - 1 - r.tageSeit);",
+  "ersatz": "r.noch = Math.max(0, halten - r.tageSeit);",
+  "funktion": "faelligkeit",
+  "beschreibung": "noch: halten statt halten-1"
+ },
+ {
+  "id": "B-49",
+  "datei": "mfhandel.js",
+  "suche": "r.verspaetung = Math.max(0, r.tageSeit - (halten - 1));",
+  "ersatz": "r.verspaetung = Math.max(0, r.tageSeit - halten);",
+  "funktion": "faelligkeit",
+  "beschreibung": "verspaetung ohne -1"
+ },
+ {
+  "id": "B-50",
+  "datei": "mfhandel.js",
+  "suche": "r.veraltet = n > 3;",
+  "ersatz": "r.veraltet = n > 4;",
+  "funktion": "faelligkeit",
+  "beschreibung": "veraltet ab 5 Werktagen"
+ },
+ {
+  "id": "B-51",
+  "datei": "mfhandel.js",
+  "suche": "r.veraltet = n > 3;",
+  "ersatz": "r.veraltet = n >= 3;",
+  "funktion": "faelligkeit",
+  "beschreibung": "veraltet ab 3 Werktagen"
+ },
+ {
+  "id": "B-52",
+  "datei": "mfhandel.js",
+  "suche": "halten = halten || 63;",
+  "ersatz": "halten = halten || 62;",
+  "funktion": "faelligkeit",
+  "beschreibung": "Vorgabe halten 62"
+ },
+ {
+  "id": "B-53",
+  "datei": "mfhandel.js",
+  "suche": "if (!letzteAusfuehrungTag) { r.faellig = true; return r; }",
+  "ersatz": "if (!letzteAusfuehrungTag) { r.faellig = false; return r; }",
+  "funktion": "faelligkeit",
+  "beschreibung": "Erste Umschichtung nicht faellig"
+ },
+ {
+  "id": "B-54",
+  "datei": "mfhandel.js",
+  "suche": "var heute = nyTag(nowMs);\n    var r = {",
+  "ersatz": "var heute = new Date(nowMs).toISOString().slice(0, 10);\n    var r = {",
+  "funktion": "faelligkeit",
+  "beschreibung": "faelligkeit: heute in UTC statt New York"
+ },
+ {
+  "id": "B-55",
+  "datei": "mfhandel.js",
+  "suche": "t <= bis && n < 400",
+  "ersatz": "t < bis && n < 400",
+  "funktion": "faelligkeit",
+  "beschreibung": "Rueckstand: bis exklusive"
+ },
+ {
+  "id": "B-56",
+  "datei": "mfhandel.js",
+  "suche": "r.tageSeit = balkenNach(spyReihe, letzteAusfuehrungTag, heute);",
+  "ersatz": "r.tageSeit = balkenNach(spyReihe, letzteAusfuehrungTag);",
+  "funktion": "faelligkeit",
+  "beschreibung": "tageSeit ohne Obergrenze heute"
+ },
+ {
+  "id": "B-57",
+  "datei": "mfhandel.js",
+  "suche": "indexVor(reihe, nyZeit(tagPlus(tag, 1), 0, 0))",
+  "ersatz": "indexVor(reihe, nyZeit(tagPlus(tag, 0), 0, 0))",
+  "funktion": "faelligkeit",
+  "beschreibung": "balkenNach: Ausfuehrungstag zaehlt mit"
+ },
+ {
+  "id": "B-58",
+  "datei": "mfhandel.js",
+  "suche": "return Math.max(0, b - a);",
+  "ersatz": "return b - a;",
+  "funktion": "faelligkeit",
+  "beschreibung": "balkenNach ohne max 0"
+ },
+ {
+  "id": "B-59",
+  "datei": "mfhandel.js",
+  "suche": "return tage >= (halten || 63);",
+  "ersatz": "return tage > (halten || 63);",
+  "funktion": "faelligkeit",
+  "beschreibung": "rebalanceFaellig: > statt >="
+ },
+ {
+  "id": "B-60",
+  "datei": "mfhandel.js",
+  "suche": "return tage >= (halten || 63);",
+  "ersatz": "return tage >= (halten || 62);",
+  "funktion": "faelligkeit",
+  "beschreibung": "rebalanceFaellig: 62"
+ },
+ {
+  "id": "B-61",
+  "datei": "mfhandel.js",
+  "suche": "nyZeit(tagPlus(typeof letztesT === 'string' ? letztesT : nyTag(letztesT), 1), 0, 0)",
+  "ersatz": "nyZeit(tagPlus(typeof letztesT === 'string' ? letztesT : nyTag(letztesT), 0), 0, 0)",
+  "funktion": "faelligkeit",
+  "beschreibung": "rebalanceFaellig: Umschichtungstag zaehlt mit"
+ },
+ {
+  "id": "B-62",
+  "datei": "mfhandel.js",
+  "suche": "if (!letztesT) return true;",
+  "ersatz": "if (!letztesT) return false;",
+  "funktion": "faelligkeit",
+  "beschreibung": "rebalanceFaellig: ohne letztes nicht faellig"
+ },
+ {
+  "id": "B-63",
+  "datei": "mfhandel.js",
+  "suche": "timeZone: 'America/New_York'",
+  "ersatz": "timeZone: 'UTC'",
+  "funktion": "Uhr",
+  "beschreibung": "Zeitzone UTC statt New York"
+ },
+ {
+  "id": "B-64",
+  "datei": "mfhandel.js",
+  "suche": "Number(o.hour) % 24",
+  "ersatz": "Number(o.hour)",
+  "funktion": "Uhr",
+  "beschreibung": "Stunde ohne %24"
+ },
+ {
+  "id": "B-65",
+  "datei": "mfhandel.js",
+  "suche": "SCHLUSS_FERTIG = [16, 15]",
+  "ersatz": "SCHLUSS_FERTIG = [16, 0]",
+  "funktion": "Uhr",
+  "beschreibung": "Balken fertig 16:00 statt 16:15"
+ },
+ {
+  "id": "B-66",
+  "datei": "mfhandel.js",
+  "suche": "HANDEL_AB = [9, 35]",
+  "ersatz": "HANDEL_AB = [9, 30]",
+  "funktion": "Uhr",
+  "beschreibung": "Handel ab 09:30 statt 09:35"
+ },
+ {
+  "id": "B-67",
+  "datei": "mfhandel.js",
+  "suche": "HANDEL_AB = [9, 35]",
+  "ersatz": "HANDEL_AB = [9, 40]",
+  "funktion": "Uhr",
+  "beschreibung": "Handel ab 09:40"
+ },
+ {
+  "id": "B-68",
+  "datei": "mfhandel.js",
+  "suche": "var t = ziel + 5 * 3600000;",
+  "ersatz": "var t = ziel + 4 * 3600000;",
+  "funktion": "Uhr",
+  "beschreibung": "nyZeit Startschaetzung 4h"
+ },
+ {
+  "id": "B-69",
+  "datei": "mfhandel.js",
+  "suche": "for (var k = 0; k < 3; k++) {",
+  "ersatz": "for (var k = 0; k < 1; k++) {",
+  "funktion": "Uhr",
+  "beschreibung": "nyZeit nur eine Iteration"
+ },
+ {
+  "id": "B-70",
+  "datei": "mfhandel.js",
+  "suche": "return w !== 0 && w !== 6;",
+  "ersatz": "return w !== 0;",
+  "funktion": "Uhr",
+  "beschreibung": "Samstag als Werktag"
+ },
+ {
+  "id": "B-71",
+  "datei": "mfhandel.js",
+  "suche": "return w !== 0 && w !== 6;",
+  "ersatz": "return w !== 6;",
+  "funktion": "Uhr",
+  "beschreibung": "Sonntag als Werktag"
+ },
+ {
+  "id": "B-72",
+  "datei": "mfhandel.js",
+  "suche": "if (istWerktag(heute) && nowMs >= nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return heute;",
+  "ersatz": "if (istWerktag(heute) && nowMs > nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return heute;",
+  "funktion": "Uhr",
+  "beschreibung": "letzterFertigerWerktag: > statt >="
+ },
+ {
+  "id": "B-73",
+  "datei": "mfhandel.js",
+  "suche": "return at >= nyZeit(d, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "ersatz": "return at > nyZeit(d, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "funktion": "Uhr",
+  "beschreibung": "bestandFrisch: > statt >="
+ },
+ {
+  "id": "B-74",
+  "datei": "mfhandel.js",
+  "suche": "if (!(at > 0)) return false;",
+  "ersatz": "if (!(at >= 0)) return false;",
+  "funktion": "Uhr",
+  "beschreibung": "bestandFrisch: at 0 gilt gueltig"
+ },
+ {
+  "id": "B-75",
+  "datei": "mfhandel.js",
+  "suche": "if (nowMs >= nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return reihe;",
+  "ersatz": "if (nowMs > nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return reihe;",
+  "funktion": "Uhr",
+  "beschreibung": "ohneLaufendenBalken: > statt >="
+ },
+ {
+  "id": "B-76",
+  "datei": "mfhandel.js",
+  "suche": "reihe[n - 1][0] >= ab",
+  "ersatz": "reihe[n - 1][0] > ab",
+  "funktion": "Uhr",
+  "beschreibung": "ohneLaufendenBalken: Balken um 00:00 bleibt"
+ },
+ {
+  "id": "B-77",
+  "datei": "mfhandel.js",
+  "suche": "if (reihe[mi][0] < grenze)",
+  "ersatz": "if (reihe[mi][0] <= grenze)",
+  "funktion": "Uhr",
+  "beschreibung": "indexVor: <= statt <"
+ },
+ {
+  "id": "B-78",
+  "datei": "mfhandel.js",
+  "suche": "var ab = nyZeit(heute, 0, 0), n = reihe.length;",
+  "ersatz": "var ab = nyZeit(heute, 9, 30), n = reihe.length;",
+  "funktion": "Uhr",
+  "beschreibung": "ohneLaufendenBalken: Tagesgrenze 09:30"
+ },
+ {
+  "id": "B-79",
+  "datei": "mfhandel.js",
+  "suche": "function werktagVor(tag) { var t = tagPlus(tag, -1);",
+  "ersatz": "function werktagVor(tag) { var t = tagPlus(tag, -2);",
+  "funktion": "Uhr",
+  "beschreibung": "werktagVor: 2 Tage zurueck"
+ },
+ {
+  "id": "B-80",
+  "datei": "mfhandel.js",
+  "suche": "nowMs < nyZeit(offen.tag, NACHFASSEN_BIS[0], NACHFASSEN_BIS[1])",
+  "ersatz": "nowMs <= nyZeit(offen.tag, NACHFASSEN_BIS[0], NACHFASSEN_BIS[1])",
+  "funktion": "offen*",
+  "beschreibung": "offenLaeuft: <= statt <"
+ },
+ {
+  "id": "B-81",
+  "datei": "mfhandel.js",
+  "suche": "NACHFASSEN_BIS = [16, 0]",
+  "ersatz": "NACHFASSEN_BIS = [16, 30]",
+  "funktion": "offen*",
+  "beschreibung": "Nachfassen bis 16:30"
+ },
+ {
+  "id": "B-82",
+  "datei": "mfhandel.js",
+  "suche": "nyTag(nowMs) === offen.tag && nowMs <",
+  "ersatz": "nowMs <",
+  "funktion": "offen*",
+  "beschreibung": "offenLaeuft: Tagespruefung entfernt"
+ },
+ {
+  "id": "B-83",
+  "datei": "mfhandel.js",
+  "suche": "if (gehalten[s]) { if (!rang[s]) verkaeufe.push(s); }",
+  "ersatz": "if (gehalten[s]) { if (rang[s]) verkaeufe.push(s); }",
+  "funktion": "offen*",
+  "beschreibung": "offeneAuftraege: Verkauf nur bei Ziel"
+ },
+ {
+  "id": "B-84",
+  "datei": "mfhandel.js",
+  "suche": "plan.depotwert / ziel.length : 0",
+  "ersatz": "plan.depotwert : 0",
+  "funktion": "offen*",
+  "beschreibung": "offeneAuftraege: Budget = Depotwert"
+ },
+ {
+  "id": "B-85",
+  "datei": "mfhandel.js",
+  "suche": "kaeufe: kaeufe.sort(nachRang) } : null",
+  "ersatz": "kaeufe: kaeufe } : null",
+  "funktion": "offen*",
+  "beschreibung": "offeneAuftraege: Kaeufe unsortiert"
+ },
+ {
+  "id": "B-86",
+  "datei": "mfhandel.js",
+  "suche": "rang[s] = i + 1;",
+  "ersatz": "rang[s] = i;",
+  "funktion": "offen*",
+  "beschreibung": "offeneAuftraege: Rang ab 0"
+ },
+ {
+  "id": "B-87",
+  "datei": "mfhandel.js",
+  "suche": "(offen.kaeufe || []).slice().sort(nachRang).map",
+  "ersatz": "(offen.kaeufe || []).slice().map",
+  "funktion": "offen*",
+  "beschreibung": "offenWerte: unsortiert"
+ },
+ {
+  "id": "B-88",
+  "datei": "mfhandel.js",
+  "suche": "return a.rang - b.rang;",
+  "ersatz": "return b.rang - a.rang;",
+  "funktion": "offen*",
+  "beschreibung": "nachRang umgekehrt"
+ },
+ {
+  "id": "B-89",
+  "datei": "mfhandel.js",
+  "suche": "Math.floor(k.budget / kurs * 10000) / 10000",
+  "ersatz": "Math.round(k.budget / kurs * 10000) / 10000",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: round statt floor"
+ },
+ {
+  "id": "B-90",
+  "datei": "mfhandel.js",
+  "suche": "kostenBp: kostenBp == null ? 20 : kostenBp };",
+  "ersatz": "kostenBp: kostenBp == null ? 10 : kostenBp };",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen Vorgabekosten 10"
+ },
+ {
+  "id": "B-91",
+  "datei": "mfhandel.js",
+  "suche": "if (imBuch[k.sym]) { res.entfallen.push(k.sym); return; }",
+  "ersatz": "if (false) { res.entfallen.push(k.sym); return; }",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: schon gehaltener Kauf nicht verworfen (Doppelkauf)"
+ },
+ {
+  "id": "B-92",
+  "datei": "mfhandel.js",
+  "suche": "if (!imBuch[s]) { res.entfallen.push(s); return; }",
+  "ersatz": "if (false) { res.entfallen.push(s); return; }",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: Verkauf ohne Bestand nicht verworfen"
+ },
+ {
+  "id": "B-93",
+  "datei": "mfhandel.js",
+  "suche": "else delete buch.offen;",
+  "ersatz": "else buch.offen = buch.offen;",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: offen bleibt leer stehen"
+ },
+ {
+  "id": "B-94",
+  "datei": "mfhandel.js",
+  "suche": "res.verkauft.length + res.gekauft.length + res.entfallen.length > 0",
+  "ersatz": "res.verkauft.length + res.gekauft.length > 0",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: geaendert ohne entfallen"
+ },
+ {
+  "id": "B-95",
+  "datei": "mfhandel.js",
+  "suche": "fuehreAus(buch, plan, nowMs, res.kostenBp, opts);",
+  "ersatz": "fuehreAus(buch, plan, nowMs, res.kostenBp);",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: Regel K nicht durchgereicht"
+ },
+ {
+  "id": "B-96",
+  "datei": "mfhandel.js",
+  "suche": "stempleKursT(buch, barZeit, nowMs);                       // neue",
+  "ersatz": "// neue",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: kursT nicht gestempelt"
+ },
+ {
+  "id": "B-97",
+  "datei": "mfhandel.js",
+  "suche": "else { res.wartet.push(k.sym); restK.push({",
+  "ersatz": "else { restK.push({",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: wartet nicht gemeldet"
+ },
+ {
+  "id": "B-98",
+  "datei": "mfhandel.js",
+  "suche": "stueck: k.budget > 0 ? Math.floor",
+  "ersatz": "stueck: k.budget >= 0 ? Math.floor",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: budget >= 0"
+ },
+ {
+  "id": "B-99",
+  "datei": "mfhandel.js",
+  "suche": "|| offenLaeuft(buch.offen, nowMs)) return null;",
+  "ersatz": ") return null;",
+  "funktion": "offen*",
+  "beschreibung": "offenBeenden: laufendes offen wird geloescht"
+ },
+ {
+  "id": "B-100",
+  "datei": "mfhandel.js",
+  "suche": "delete buch.offen;\n    return o;",
+  "ersatz": "return o;",
+  "funktion": "offen*",
+  "beschreibung": "offenBeenden: offen bleibt"
+ },
+ {
+  "id": "B-101",
+  "datei": "mfhandel.js",
+  "suche": "(o.verkaeufe || []).forEach(function (s) {\n      if (!imBuch[s])",
+  "ersatz": "(o.verkaeufe || []).slice(1).forEach(function (s) {\n      if (!imBuch[s])",
+  "funktion": "offen*",
+  "beschreibung": "nachfassen: erster Verkauf uebergangen"
+ },
+ {
+  "id": "B-102",
+  "datei": "mfhandel.js",
+  "suche": "if (p.seit === nowMs && !(p.kursT > 0) && barZeit && barZeit[p.sym] > 0)",
+  "ersatz": "if (p.seit === nowMs && barZeit && barZeit[p.sym] > 0)",
+  "funktion": "offen*",
+  "beschreibung": "stempleKursT: ueberschreibt vorhandenes kursT"
+ }
+]

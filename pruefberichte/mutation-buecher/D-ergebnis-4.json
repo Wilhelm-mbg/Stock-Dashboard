@@ -1,0 +1,310 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "D-97",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Merker bargeld nie gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+   ]
+  },
+  {
+   "id": "D-98",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Merker: erster wartender Wert uebersehen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+   ]
+  },
+  {
+   "id": "D-99",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Rueckgabe ohne neuMerker",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-100",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Merker nur wenn keine wartenden",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+   ]
+  },
+  {
+   "id": "D-101",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Journal-Zeile nur bei nicht-z",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.2 Eroeffnung kommt beim ersten Nachfassen (10:05): Kauf zur Eroeffnung 50 (der Balken traegt als Schluss den laufenden Kurs 999), 200 Stueck = budget / Kur"
+   ]
+  },
+  {
+   "id": "D-102",
+   "funktion": "takt",
+   "beschreibung": "Umschichtung auch bei ausgeschaltetem Buch (faellig allein)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Takt UND Knopf (\"jetzt umschichten\" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag, und die Faelligkeit wird ab ihm neu g"
+   ]
+  },
+  {
+   "id": "D-103",
+   "funktion": "takt",
+   "beschreibung": "Kosten 10 statt 20 Bp",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs ",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-104",
+   "funktion": "takt",
+   "beschreibung": "Kosten 30 statt 20 Bp",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs ",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-105",
+   "funktion": "takt",
+   "beschreibung": "Kleinstanteil nicht an fuehreAus",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs "
+   ]
+  },
+  {
+   "id": "D-106",
+   "funktion": "takt",
+   "beschreibung": "Kleinstanteil nicht an Vorab-Plan",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs "
+   ]
+  },
+  {
+   "id": "D-107",
+   "funktion": "takt",
+   "beschreibung": "Kleinstanteil nicht an Ausfuehrungsplan",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs "
+   ]
+  },
+  {
+   "id": "D-108",
+   "funktion": "takt",
+   "beschreibung": "Ausfuehrungsplan mit Schlusskursen statt Eroeffnungen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs ",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-109",
+   "funktion": "takt",
+   "beschreibung": "Ausfuehrungsplan mit Ziel vom Takt statt Stichtag",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs "
+   ]
+  },
+  {
+   "id": "D-110",
+   "funktion": "takt",
+   "beschreibung": "Kleinstanteil nicht an offenNachfassen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.2 im Takt: nachgefasst (oder beendet) wird nach dem Tagespunkt und vor einer Umschichtung - in jedem Takt, solange offen steht"
+   ]
+  },
+  {
+   "id": "D-111",
+   "funktion": "takt",
+   "beschreibung": "Stempel mit Schluss-barZeit statt Eroeffnungs-Balken",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.5 neue Positionen bekommen kursT gleich nach fuehreAus bzw. nach dem (echten) driftAbgleich"
+   ]
+  },
+  {
+   "id": "D-112",
+   "funktion": "takt",
+   "beschreibung": "offene Auftraege auch beim Knopf",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.1 offen setzt nur der Takt, gleich nach der Ausfuehrung der Umschichtung - der Knopf \"jetzt umschichten\" aendert nichts an offen; die Zeile der Umschichtun"
+   ]
+  },
+  {
+   "id": "D-113",
+   "funktion": "takt",
+   "beschreibung": "offene Auftraege nie gemerkt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.1 offen setzt nur der Takt, gleich nach der Ausfuehrung der Umschichtung - der Knopf \"jetzt umschichten\" aendert nichts an offen; die Zeile der Umschichtun"
+   ]
+  },
+  {
+   "id": "D-114",
+   "funktion": "takt",
+   "beschreibung": "fehltRest: offene Werte nicht ausgeschlossen",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-115",
+   "funktion": "takt",
+   "beschreibung": "gekauft zaehlt auch stueck 0",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 96.2 der Journaltext nennt die ausgefuehrten Kaeufe (nicht plan.kaufen.length), dazu die mangels Bargeld ausgefallenen und die aufgeloesten Kleinstbestaende"
+   ]
+  },
+  {
+   "id": "D-116",
+   "funktion": "takt",
+   "beschreibung": "Kleinstbestaende: Zaehlung ohne plan.kleinst",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "D-117",
+   "funktion": "takt",
+   "beschreibung": "Verspaetung fuer Knopf nicht genullt",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-118",
+   "funktion": "takt",
+   "beschreibung": "letztesRebalanceT nicht gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-119",
+   "funktion": "takt",
+   "beschreibung": "letzteAusfuehrungTag = Stichtag",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Takt UND Knopf (\"jetzt umschichten\" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag, und die Faelligkeit wird ab ihm neu g"
+   ]
+  },
+  {
+   "id": "D-120",
+   "funktion": "takt",
+   "beschreibung": "letzteAusfuehrungTag nicht gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Takt UND Knopf (\"jetzt umschichten\" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag, und die Faelligkeit wird ab ihm neu g"
+   ]
+  },
+  {
+   "id": "D-121",
+   "funktion": "takt",
+   "beschreibung": "Faelligkeit: halten - 1",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-122",
+   "funktion": "takt",
+   "beschreibung": "Faelligkeit: halten + 1",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-123",
+   "funktion": "takt",
+   "beschreibung": "Faelligkeit nach Umschichtung nicht neu gerechnet",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Takt UND Knopf (\"jetzt umschichten\" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag, und die Faelligkeit wird ab ihm neu g"
+   ]
+  },
+  {
+   "id": "D-124",
+   "funktion": "takt",
+   "beschreibung": "faellig bleibt nach Umschichtung true",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-125",
+   "funktion": "takt",
+   "beschreibung": "liquideSeit wird bei jeder Umschichtung ueberschrieben",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ erste Umschichtung auf dem liquiden Korb wird datiert, Korbgroesse je Umschichtung nachrichtlich festgehalten"
+   ]
+  },
+  {
+   "id": "D-126",
+   "funktion": "takt",
+   "beschreibung": "korbVerlauf: ziel = Zahl der Kaeufe",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-127",
+   "funktion": "takt",
+   "beschreibung": "korbVerlauf zulaessig/geprueft vertauscht",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-128",
+   "funktion": "takt",
+   "beschreibung": "korbVerlauf Kappung 119",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  }
+ ]
+}

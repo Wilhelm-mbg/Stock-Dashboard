@@ -1,0 +1,289 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "D-161",
+   "funktion": "ereignisseAb",
+   "beschreibung": "nur Dividenden gefiltert",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-162",
+   "funktion": "zerlege",
+   "beschreibung": "bereinigt invertiert",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+   ]
+  },
+  {
+   "id": "D-163",
+   "funktion": "zerlege",
+   "beschreibung": "feld bleibt close trotz adjclose",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+   ]
+  },
+  {
+   "id": "D-164",
+   "funktion": "zerlege",
+   "beschreibung": "Roh-Schluss ohne kursOk",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-165",
+   "funktion": "zerlege",
+   "beschreibung": "Roh-Zeitstempel in Sekunden",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 97.1 mitRoh: roh = [[t, unbereinigter Schluss]] derselben Balken, dieselben Stempel wie bars - auch im Fenster und unbereinigt  [78]"
+   ]
+  },
+  {
+   "id": "D-166",
+   "funktion": "zerlege",
+   "beschreibung": "Balken-Zeitstempel in Sekunden",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ Eine Kerze ausserhalb des angefragten Fensters fliegt raus  [0 Kerzen, 3 verworfen]"
+   ]
+  },
+  {
+   "id": "D-167",
+   "funktion": "zerlege",
+   "beschreibung": "Hoch/Tief nicht getauscht",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Hoch/Tief: vertauscht geliefert wird zurueckgedreht (frueher nur in depot.js, nicht im Explorer)"
+   ]
+  },
+  {
+   "id": "D-168",
+   "funktion": "zerlege",
+   "beschreibung": "Hoch/Tief Reihenfolge im Balken vertauscht",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+   ]
+  },
+  {
+   "id": "D-169",
+   "funktion": "zerlege",
+   "beschreibung": "Eroeffnung faellt immer auf Schluss (offenRoh ignoriert)",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Fehlt er im Archivpfad, bleibt er LEER - sonst koennte C7 nie warnen"
+   ]
+  },
+  {
+   "id": "D-170",
+   "funktion": "zerlege",
+   "beschreibung": "Eroeffnung bleibt immer leer",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Fuer die Anzeige faellt er weiter auf den Schluss - dort ist die Luecke laestiger"
+   ]
+  },
+  {
+   "id": "D-171",
+   "funktion": "zerlege",
+   "beschreibung": "Volumen nicht auf 0 gesetzt",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Volumen: fehlend wird 0, nicht null"
+   ]
+  },
+  {
+   "id": "D-172",
+   "funktion": "zerlege",
+   "beschreibung": "Hoch faellt nicht auf Schluss",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Hoch/Tief: fehlende Werte fallen auf den Schluss zurueck - keine Luecke fuer den Aufrufer"
+   ]
+  },
+  {
+   "id": "D-173",
+   "funktion": "zerlege",
+   "beschreibung": "Tief faellt auf Hoch statt Schluss",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-174",
+   "funktion": "zerlege",
+   "beschreibung": "verworfen nicht gezaehlt",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Verwerfen: die Zahl der verworfenen Kerzen wird gemeldet, nicht verschwiegen  [0/8]"
+   ]
+  },
+  {
+   "id": "D-175",
+   "funktion": "zerlege",
+   "beschreibung": "kaputter Kurs wird nicht verworfen (nur null)",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ Verwerfen: 0, negativ, NaN und null fliegen raus  [100,0,101,-5,102,103]"
+   ]
+  },
+  {
+   "id": "D-176",
+   "funktion": "zerlege",
+   "beschreibung": "Fenster Balken: untere Grenze ausschliessend",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ Eine Kerze ausserhalb des angefragten Fensters fliegt raus  [1 Kerzen, 2 verworfen]"
+   ]
+  },
+  {
+   "id": "D-177",
+   "funktion": "zerlege",
+   "beschreibung": "Fenster Balken: obere Grenze ausschliessend",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Eine Kerze ausserhalb des angefragten Fensters fliegt raus  [1 Kerzen, 2 verworfen]"
+   ]
+  },
+  {
+   "id": "D-178",
+   "funktion": "zerlege",
+   "beschreibung": "Fenster Rohreihe: obere Grenze ausschliessend",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-179",
+   "funktion": "zerlege",
+   "beschreibung": "Fenster Rohreihe: nicht gefiltert",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 97.1 mitRoh: roh = [[t, unbereinigter Schluss]] derselben Balken, dieselben Stempel wie bars - auch im Fenster und unbereinigt  [78]"
+   ]
+  },
+  {
+   "id": "D-180",
+   "funktion": "zerlege",
+   "beschreibung": "Fenster nur bei von UND bis -> oder",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-181",
+   "funktion": "zerlege",
+   "beschreibung": "ausserhalbFenster falsch gezaehlt",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+   ]
+  },
+  {
+   "id": "D-182",
+   "funktion": "zerlege",
+   "beschreibung": "gesamt = bars.length",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+   ]
+  },
+  {
+   "id": "D-183",
+   "funktion": "zerlege",
+   "beschreibung": "ereignisse immer",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.3 Kurse.hole reicht den Schalter an Adresse UND Zerlegung: ein Abruf je Wert, Ereignisse in derselben Antwort  [2 Abrufe]"
+   ]
+  },
+  {
+   "id": "D-184",
+   "funktion": "zerlege",
+   "beschreibung": "roh nie zurueck",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-185",
+   "funktion": "zerlege",
+   "beschreibung": "roh immer als Liste (mitRoh ignoriert)",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+   ]
+  },
+  {
+   "id": "D-186",
+   "funktion": "zerlege",
+   "beschreibung": "ereignisse mit o ohne Fenster",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "D-187",
+   "funktion": "zerlege",
+   "beschreibung": "adjclose-Pruefung: leere Liste genuegt",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-188",
+   "funktion": "reihe",
+   "beschreibung": "Volumen statt Schluss",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-189",
+   "funktion": "url",
+   "beschreibung": "period1 aufgerundet",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-190",
+   "funktion": "url",
+   "beschreibung": "Ereignisse nur Dividenden",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.3 Kurse.hole reicht den Schalter an Adresse UND Zerlegung: ein Abruf je Wert, Ereignisse in derselben Antwort  [2 Abrufe]"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,132 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "B-14",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Rueckgabe depotwert = budget",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 11 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  },
+  {
+   "id": "B-15",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "nie verkaufen (Nicht-Ziel wird gehalten)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 16 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)",
+    "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "B-16",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Position ohne Kurs: Einstand als Kurs (Verkauf)",
+   "datei": "mfhandel.js",
+   "urteil": "UNGUELTIG",
+   "grund": "2 Vorkommen von suche"
+  },
+  {
+   "id": "B-17",
+   "funktion": "fuehreAus",
+   "beschreibung": "Vorgabe-Kosten 10 statt 20 Bp",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "B-18",
+   "funktion": "fuehreAus",
+   "beschreibung": "Kosten Bp: Teiler 1000",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 25 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "B-19",
+   "funktion": "fuehreAus",
+   "beschreibung": "Verkaufserloes: Kosten addiert",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 10 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt",
+    "Kleinsttest-Urteil geaendert: 14:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "B-20",
+   "funktion": "fuehreAus",
+   "beschreibung": "pnl ohne Cent-Rundung",
+   "datei": "mfhandel.js",
+   "urteil": "UNGUELTIG",
+   "grund": "2 Vorkommen von suche"
+  },
+  {
+   "id": "B-21",
+   "funktion": "fuehreAus",
+   "beschreibung": "pnl auf 10 Cent",
+   "datei": "mfhandel.js",
+   "urteil": "UNGUELTIG",
+   "grund": "2 Vorkommen von suche"
+  },
+  {
+   "id": "B-22",
+   "funktion": "fuehreAus",
+   "beschreibung": "pnl ohne Verkaufskosten",
+   "datei": "mfhandel.js",
+   "urteil": "UNGUELTIG",
+   "grund": "2 Vorkommen von suche"
+  },
+  {
+   "id": "B-23",
+   "funktion": "fuehreAus",
+   "beschreibung": "Kauf: Bargeldpruefung > zu >=",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-24",
+   "funktion": "fuehreAus",
+   "beschreibung": "Kauf: Bargeldpruefung mit 1 Spielraum (Bargeld kann negativ werden)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 6 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "B-25",
+   "funktion": "fuehreAus",
+   "beschreibung": "Verkleinerung: round statt floor",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 18 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)",
+    "Kleinsttest-Urteil geaendert: 13:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "B-26",
+   "funktion": "fuehreAus",
+   "beschreibung": "Verkleinerung ohne Kostenfaktor",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 20 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)",
+    "Kleinsttest-Urteil geaendert: 13:ZEIGT ABWEICHUNG"
+   ]
+  }
+ ]
+}

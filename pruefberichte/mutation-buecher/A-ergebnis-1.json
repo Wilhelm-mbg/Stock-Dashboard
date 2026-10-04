@@ -1,0 +1,105 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "A-01",
+   "funktion": "buchKonfig",
+   "beschreibung": "Rueckblick der Konfig +1",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ 98.2 eine Reihe mit 253 Balken wird abgelegt (die Regel rangiert sie), eine mit 252 nicht (sie steht auf weg)"
+   ]
+  },
+  {
+   "id": "A-02",
+   "funktion": "buchKonfig",
+   "beschreibung": "Luecke der Konfig +1",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel"
+   ]
+  },
+  {
+   "id": "A-03",
+   "funktion": "buchKonfig",
+   "beschreibung": "Haltedauer der Konfig 62",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Fenster des Buchs = Fenster der Studie (Rueckblick/Luecke/Halten/Anteil aus lauf-*.json)  [[231,21,62,0.1]]"
+   ]
+  },
+  {
+   "id": "A-04",
+   "funktion": "buchKonfig",
+   "beschreibung": "Anteil der Konfig verdoppelt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ 98.3 die Zeile ist [t, close, stueck, adjclose]; die Rangfolge des Buchs liest Spalte 1 (close, ohne Ausschuettungen) - V107 nicht im Ziel, V108 drin, wie in "
+   ]
+  },
+  {
+   "id": "A-05",
+   "funktion": "buchKonfig",
+   "beschreibung": "mindestWerte der Konfig -1",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ Korbregel des Buchs = Korbregel der Studie (umsatzMin, mindestWerte aus lauf-*.json)  [100000000 / 99]"
+   ]
+  },
+  {
+   "id": "A-06",
+   "funktion": "buchKonfig",
+   "beschreibung": "umsatzMin der Konfig /10",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 8 neu rot, z.B. ❌ 99,9 Mio $ fliegt VOR der Rangbildung mit Grund heraus"
+   ]
+  },
+  {
+   "id": "A-07",
+   "funktion": "buchKonfig",
+   "beschreibung": "umsatzFenster der Konfig +1",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-08",
+   "funktion": "buchKonfig",
+   "beschreibung": "Kleinstanteil 0,5 statt 0,05",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 8 neu rot, z.B. ❌ 95.6 buchKonfig fuehrt den Schalter mit dem Wert 0,05 (an); die sieben Felder davor sind unveraendert  [0.5]"
+   ]
+  },
+  {
+   "id": "A-09",
+   "funktion": "buchKonfig",
+   "beschreibung": "Kleinstanteil 0 (Regel K aus)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 11 neu rot, z.B. ❌ 95.6 buchKonfig fuehrt den Schalter mit dem Wert 0,05 (an); die sieben Felder davor sind unveraendert  [0]"
+   ]
+  },
+  {
+   "id": "A-10",
+   "funktion": "momentumZiel",
+   "beschreibung": "Mindestlaenge 252 statt 253",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  }
+ ]
+}

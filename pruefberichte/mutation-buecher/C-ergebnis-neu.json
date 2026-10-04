@@ -1,0 +1,329 @@
+{
+ "basis": {
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "C-07",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Ausschuettung wird nicht als gebucht gemerkt (doppelt buchen)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-08",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Split wird nicht als gebucht gemerkt (doppelt buchen)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-11",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Splits nicht zeitlich sortiert",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-12",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Ausschuettung 0 wird gebucht (>= statt >)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-13",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Split mit Nenner 0 zugelassen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-15",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Rueckfall ohne kursT: 0 statt seit (Nachbuchung aller Altereignisse)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-16",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Massnahmen-Kappe 399 statt 400",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-19",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Splitsperre ohne Betrag (nur nach vorn)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-21",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "fehlende barZeit nicht abgefangen",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-28",
+   "funktion": "balkenNach",
+   "beschreibung": "bisTag eingeschlossen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-29",
+   "funktion": "balkenNach",
+   "beschreibung": "balkenNach beginnt einen Tag spaeter",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-30",
+   "funktion": "rohBis",
+   "beschreibung": "rohBis schneidet den Tag selbst weg",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-34",
+   "funktion": "schluesseAm",
+   "beschreibung": "Schluss 0 wird zugelassen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-35",
+   "funktion": "schluesseAm",
+   "beschreibung": "Balkenstempel verschoben",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-37",
+   "funktion": "ohneLaufendenBalken",
+   "beschreibung": "laufender Balken: genau 16:15 noch laufend",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-38",
+   "funktion": "ohneLaufendenBalken",
+   "beschreibung": "Balken exakt 00:00 NY nicht geschnitten",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-42",
+   "funktion": "indexVor",
+   "beschreibung": "indexVor: <= statt <",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-47",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "Stichtag-Balken > von",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-50",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "leere Bestandsmenge zaehlt als ok",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-51",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "Stichtag = heute statt letzter Tag vor heute",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-52",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "Stichtag-Fenster einen Tag zu weit",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-54",
+   "funktion": "punktTag",
+   "beschreibung": "Verlaufspunkt: 16:15 genau noch nicht fertig",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-56",
+   "funktion": "punktTag",
+   "beschreibung": "Verlaufspunkt: Kurs 0 zugelassen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-57",
+   "funktion": "punktTag",
+   "beschreibung": "Verlaufspunkt: heute in UTC",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-58",
+   "funktion": "bargeldAm",
+   "beschreibung": "bargeldAm: Ex-Tag gleich tX wird abgezogen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-70",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Bargeld auf Cent gerundet",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-71",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende pnl gegen Kurs statt Einstand",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-72",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende-Tag in UTC",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-73",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende: Schluss 0 wird ausgebucht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-74",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende: trades-Kappe fehlt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "C-76",
+   "funktion": "nyTeile",
+   "beschreibung": "24-Uhr-Normierung entfernt",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-78",
+   "funktion": "tagPlus",
+   "beschreibung": "tagPlus + 1 Stunde (Sommerzeit-Drift im UTC-Rechnen unkritisch)",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-80",
+   "funktion": "istWerktag",
+   "beschreibung": "Samstag gilt als Werktag",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  }
+ ]
+}

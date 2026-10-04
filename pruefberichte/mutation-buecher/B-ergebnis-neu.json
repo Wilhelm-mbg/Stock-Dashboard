@@ -1,0 +1,183 @@
+{
+ "basis": {
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "B-10",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Neukauf-Stueck: budget > 0 zu >= 0",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-23",
+   "funktion": "fuehreAus",
+   "beschreibung": "Kauf: Bargeldpruefung > zu >=",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-34",
+   "funktion": "fuehreAus",
+   "beschreibung": "Tradeprotokoll 399 statt 400",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-35",
+   "funktion": "fuehreAus",
+   "beschreibung": "Trade-Grenze 401",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-38",
+   "funktion": "fuehreAus",
+   "beschreibung": "Erloes mit o.stueck statt Positionsbestand",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-41",
+   "funktion": "bewerte",
+   "beschreibung": "bewerte ohne Rundung",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-42",
+   "funktion": "bewerte",
+   "beschreibung": "bewerte auf 10 Cent",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-53",
+   "funktion": "faelligkeit",
+   "beschreibung": "Erste Umschichtung nicht faellig",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-54",
+   "funktion": "faelligkeit",
+   "beschreibung": "faelligkeit: heute in UTC statt New York",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-56",
+   "funktion": "faelligkeit",
+   "beschreibung": "tageSeit ohne Obergrenze heute",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-59",
+   "funktion": "faelligkeit",
+   "beschreibung": "rebalanceFaellig: > statt >=",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-60",
+   "funktion": "faelligkeit",
+   "beschreibung": "rebalanceFaellig: 62",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-61",
+   "funktion": "faelligkeit",
+   "beschreibung": "rebalanceFaellig: Umschichtungstag zaehlt mit",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-64",
+   "funktion": "Uhr",
+   "beschreibung": "Stunde ohne %24",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-68",
+   "funktion": "Uhr",
+   "beschreibung": "nyZeit Startschaetzung 4h",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-69",
+   "funktion": "Uhr",
+   "beschreibung": "nyZeit nur eine Iteration",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-74",
+   "funktion": "Uhr",
+   "beschreibung": "bestandFrisch: at 0 gilt gueltig",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-94",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: geaendert ohne entfallen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-98",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: budget >= 0",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  }
+ ]
+}

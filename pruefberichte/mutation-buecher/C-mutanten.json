@@ -1,0 +1,788 @@
+[
+ {
+  "id": "C-01",
+  "datei": "mfhandel.js",
+  "suche": "t > beginn && t <= bis",
+  "ersatz": "t >= beginn && t <= bis",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Ex-Tag-Grenze: Beginn eingeschlossen (>= statt >)"
+ },
+ {
+  "id": "C-02",
+  "datei": "mfhandel.js",
+  "suche": "t > beginn && t <= bis",
+  "ersatz": "t > beginn && t < bis",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Ex-Tag-Grenze: letzter Balken ausgeschlossen (< statt <=)"
+ },
+ {
+  "id": "C-03",
+  "datei": "mfhandel.js",
+  "suche": "p.stueck = p.stueck * z / n;",
+  "ersatz": "p.stueck = p.stueck * n / z;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Split-Faktor Stueck n/z statt z/n"
+ },
+ {
+  "id": "C-04",
+  "datei": "mfhandel.js",
+  "suche": "p.einstand = p.einstand * n / z;",
+  "ersatz": "p.einstand = p.einstand * z / n;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Split-Faktor Einstand z/n statt n/z"
+ },
+ {
+  "id": "C-05",
+  "datei": "mfhandel.js",
+  "suche": "var summe = richtung * p.stueck * betrag;",
+  "ersatz": "var summe = p.stueck * betrag;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Leerverkauf-Vorzeichen der Ausschuettung entfernt"
+ },
+ {
+  "id": "C-06",
+  "datei": "mfhandel.js",
+  "suche": "var richtung = p.richtung < 0 ? -1 : 1;",
+  "ersatz": "var richtung = p.richtung > 0 ? -1 : 1;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Richtung vertauscht: Kauf belastet, Leerverkauf gutgeschrieben"
+ },
+ {
+  "id": "C-07",
+  "datei": "mfhandel.js",
+  "suche": "        merke('div', t);\n",
+  "ersatz": "",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Ausschuettung wird nicht als gebucht gemerkt (doppelt buchen)"
+ },
+ {
+  "id": "C-08",
+  "datei": "mfhandel.js",
+  "suche": "        merke('split', t);\n",
+  "ersatz": "",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Split wird nicht als gebucht gemerkt (doppelt buchen)"
+ },
+ {
+  "id": "C-09",
+  "datei": "mfhandel.js",
+  "suche": "<= SPLIT_SPERRE_MS",
+  "ersatz": "< SPLIT_SPERRE_MS",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Splitsperre: genau 30 Tage nicht mehr gesperrt"
+ },
+ {
+  "id": "C-10",
+  "datei": "mfhandel.js",
+  "suche": "var SPLIT_SPERRE_MS = 30 * 86400000;",
+  "ersatz": "var SPLIT_SPERRE_MS = 3 * 86400000;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Splitsperre 3 statt 30 Tage"
+ },
+ {
+  "id": "C-11",
+  "datei": "mfhandel.js",
+  "suche": ".slice().sort(nachZeit).forEach(function (s) {",
+  "ersatz": ".slice().forEach(function (s) {",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Splits nicht zeitlich sortiert"
+ },
+ {
+  "id": "C-12",
+  "datei": "mfhandel.js",
+  "suche": "if (!(betrag > 0) || !faellig('div', t)) return;",
+  "ersatz": "if (!(betrag >= 0) || !faellig('div', t)) return;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Ausschuettung 0 wird gebucht (>= statt >)"
+ },
+ {
+  "id": "C-13",
+  "datei": "mfhandel.js",
+  "suche": "if (!(z > 0) || !(n > 0) || !faellig('split', t)) return;",
+  "ersatz": "if (!(z > 0) || !(n >= 0) || !faellig('split', t)) return;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Split mit Nenner 0 zugelassen"
+ },
+ {
+  "id": "C-14",
+  "datei": "mfhandel.js",
+  "suche": "var beginn = p.kursT > 0 ? p.kursT : p.seit;",
+  "ersatz": "var beginn = p.seit;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Beginn immer p.seit statt kursT"
+ },
+ {
+  "id": "C-15",
+  "datei": "mfhandel.js",
+  "suche": "var beginn = p.kursT > 0 ? p.kursT : p.seit;",
+  "ersatz": "var beginn = p.kursT > 0 ? p.kursT : 0;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Rueckfall ohne kursT: 0 statt seit (Nachbuchung aller Altereignisse)"
+ },
+ {
+  "id": "C-16",
+  "datei": "mfhandel.js",
+  "suche": "buch.massnahmen.slice(-400)",
+  "ersatz": "buch.massnahmen.slice(-399)",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Massnahmen-Kappe 399 statt 400"
+ },
+ {
+  "id": "C-17",
+  "datei": "mfhandel.js",
+  "suche": "neu: !schon });",
+  "ersatz": "neu: schon });",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Sperrmeldung neu-Kennzeichen invertiert"
+ },
+ {
+  "id": "C-18",
+  "datei": "mfhandel.js",
+  "suche": "if (!schon) { if (!p.gemeldet) p.gemeldet = []; p.gemeldet.push('split:' + t); }",
+  "ersatz": "if (!schon) { if (!p.gemeldet) p.gemeldet = []; }",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "gesperrter Split wird nicht als gemeldet gemerkt"
+ },
+ {
+  "id": "C-19",
+  "datei": "mfhandel.js",
+  "suche": "Math.abs(t - Number(k.slice(6))) <= SPLIT_SPERRE_MS",
+  "ersatz": "(t - Number(k.slice(6))) <= SPLIT_SPERRE_MS",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Splitsperre ohne Betrag (nur nach vorn)"
+ },
+ {
+  "id": "C-20",
+  "datei": "mfhandel.js",
+  "suche": "return t > beginn && t <= bis && !(p.gebucht && p.gebucht.indexOf(art + ':' + t) >= 0);",
+  "ersatz": "return t > beginn && t <= bis;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "Gebucht-Pruefung entfernt"
+ },
+ {
+  "id": "C-21",
+  "datei": "mfhandel.js",
+  "suche": "if (!e || !(bis > 0)) return;",
+  "ersatz": "if (!e) return;",
+  "funktion": "bucheMassnahmen",
+  "beschreibung": "fehlende barZeit nicht abgefangen"
+ },
+ {
+  "id": "C-22",
+  "datei": "mfhandel.js",
+  "suche": "p.seit === nowMs && !(p.kursT > 0)",
+  "ersatz": "p.seit <= nowMs && !(p.kursT > 0)",
+  "funktion": "stempleKursT",
+  "beschreibung": "stempelt auch aeltere Positionen (<=)"
+ },
+ {
+  "id": "C-23",
+  "datei": "mfhandel.js",
+  "suche": "p.seit === nowMs && !(p.kursT > 0) &&",
+  "ersatz": "p.seit === nowMs &&",
+  "funktion": "stempleKursT",
+  "beschreibung": "ueberschreibt vorhandenes kursT"
+ },
+ {
+  "id": "C-24",
+  "datei": "mfhandel.js",
+  "suche": "barZeit[p.sym] > 0) { p.kursT = barZeit[p.sym]; n++; }",
+  "ersatz": "barZeit[p.sym] > 0) { p.kursT = barZeit[p.sym]; }",
+  "funktion": "stempleKursT",
+  "beschreibung": "Zaehler n nicht erhoeht"
+ },
+ {
+  "id": "C-25",
+  "datei": "mfhandel.js",
+  "suche": "p.kursT = barZeit[p.sym]; n++;",
+  "ersatz": "p.kursT = nowMs; n++;",
+  "funktion": "stempleKursT",
+  "beschreibung": "kursT = Kaufzeit statt Balkenzeit"
+ },
+ {
+  "id": "C-26",
+  "datei": "mfhandel.js",
+  "suche": "var a = indexVor(reihe, nyZeit(tagPlus(tag, 1), 0, 0));",
+  "ersatz": "var a = indexVor(reihe, nyZeit(tag, 0, 0));",
+  "funktion": "balkenNach",
+  "beschreibung": "balkenNach zaehlt den Tag selbst mit"
+ },
+ {
+  "id": "C-27",
+  "datei": "mfhandel.js",
+  "suche": "return Math.max(0, b - a);",
+  "ersatz": "return b - a;",
+  "funktion": "balkenNach",
+  "beschreibung": "balkenNach ohne Untergrenze 0"
+ },
+ {
+  "id": "C-28",
+  "datei": "mfhandel.js",
+  "suche": "var b = bisTag ? indexVor(reihe, nyZeit(bisTag, 0, 0))",
+  "ersatz": "var b = bisTag ? indexVor(reihe, nyZeit(tagPlus(bisTag, 1), 0, 0))",
+  "funktion": "balkenNach",
+  "beschreibung": "bisTag eingeschlossen"
+ },
+ {
+  "id": "C-29",
+  "datei": "mfhandel.js",
+  "suche": "var a = indexVor(reihe, nyZeit(tagPlus(tag, 1), 0, 0));",
+  "ersatz": "var a = indexVor(reihe, nyZeit(tagPlus(tag, 2), 0, 0));",
+  "funktion": "balkenNach",
+  "beschreibung": "balkenNach beginnt einen Tag spaeter"
+ },
+ {
+  "id": "C-30",
+  "datei": "mfhandel.js",
+  "suche": "var grenze = nyZeit(tagPlus(tag, 1), 0, 0), aus = {};",
+  "ersatz": "var grenze = nyZeit(tag, 0, 0), aus = {};",
+  "funktion": "rohBis",
+  "beschreibung": "rohBis schneidet den Tag selbst weg"
+ },
+ {
+  "id": "C-31",
+  "datei": "mfhandel.js",
+  "suche": "aus[s] = i === x.length - 1 ? x : x.slice(0, i + 1);",
+  "ersatz": "aus[s] = i === x.length - 1 ? x : x.slice(0, i);",
+  "funktion": "rohBis",
+  "beschreibung": "rohBis schneidet einen Balken zu viel"
+ },
+ {
+  "id": "C-32",
+  "datei": "mfhandel.js",
+  "suche": "var grenze = nyZeit(tagPlus(tag, 1), 0, 0), aus = {};",
+  "ersatz": "var grenze = nyZeit(tagPlus(tag, 2), 0, 0), aus = {};",
+  "funktion": "rohBis",
+  "beschreibung": "rohBis nimmt einen Tag zu viel"
+ },
+ {
+  "id": "C-33",
+  "datei": "mfhandel.js",
+  "suche": "var grenze = nyZeit(tagPlus(tag, 1), 0, 0), preise = {}, barT = {};",
+  "ersatz": "var grenze = nyZeit(tag, 0, 0), preise = {}, barT = {};",
+  "funktion": "schluesseAm",
+  "beschreibung": "Schluesse des Tages: Grenze Tagesbeginn"
+ },
+ {
+  "id": "C-34",
+  "datei": "mfhandel.js",
+  "suche": "if (i >= 0 && x[i][1] > 0) { preise[s] = x[i][1]; barT[s] = x[i][0]; }",
+  "ersatz": "if (i >= 0 && x[i][1] >= 0) { preise[s] = x[i][1]; barT[s] = x[i][0]; }",
+  "funktion": "schluesseAm",
+  "beschreibung": "Schluss 0 wird zugelassen"
+ },
+ {
+  "id": "C-35",
+  "datei": "mfhandel.js",
+  "suche": "preise[s] = x[i][1]; barT[s] = x[i][0];",
+  "ersatz": "preise[s] = x[i][1]; barT[s] = x[i][0] + 1;",
+  "funktion": "schluesseAm",
+  "beschreibung": "Balkenstempel verschoben"
+ },
+ {
+  "id": "C-36",
+  "datei": "mfhandel.js",
+  "suche": "var x = rohMap[s], i = x && x.length ? indexVor(x, grenze) : -1;",
+  "ersatz": "var x = rohMap[s], i = x && x.length ? indexVor(x, grenze) - 1 : -1;",
+  "funktion": "schluesseAm",
+  "beschreibung": "Index um eins daneben"
+ },
+ {
+  "id": "C-37",
+  "datei": "mfhandel.js",
+  "suche": "if (nowMs >= nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return reihe;\n    var ab",
+  "ersatz": "if (nowMs > nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return reihe;\n    var ab",
+  "funktion": "ohneLaufendenBalken",
+  "beschreibung": "laufender Balken: genau 16:15 noch laufend"
+ },
+ {
+  "id": "C-38",
+  "datei": "mfhandel.js",
+  "suche": "while (n > 0 && reihe[n - 1][0] >= ab) n--;",
+  "ersatz": "while (n > 0 && reihe[n - 1][0] > ab) n--;",
+  "funktion": "ohneLaufendenBalken",
+  "beschreibung": "Balken exakt 00:00 NY nicht geschnitten"
+ },
+ {
+  "id": "C-39",
+  "datei": "mfhandel.js",
+  "suche": "var ab = nyZeit(heute, 0, 0), n = reihe.length;",
+  "ersatz": "var ab = nyZeit(heute, 9, 30), n = reihe.length;",
+  "funktion": "ohneLaufendenBalken",
+  "beschreibung": "Schnittgrenze 09:30 statt Tagesbeginn"
+ },
+ {
+  "id": "C-40",
+  "datei": "mfhandel.js",
+  "suche": "var ab = nyZeit(heute, 0, 0), n = reihe.length;",
+  "ersatz": "var ab = nyZeit(tagPlus(heute, -1), 0, 0), n = reihe.length;",
+  "funktion": "ohneLaufendenBalken",
+  "beschreibung": "Schnittgrenze gestern"
+ },
+ {
+  "id": "C-41",
+  "datei": "mfhandel.js",
+  "suche": "return n === reihe.length ? reihe : reihe.slice(0, n);",
+  "ersatz": "return n === reihe.length ? reihe : reihe.slice(0, n + 1);",
+  "funktion": "ohneLaufendenBalken",
+  "beschreibung": "Schnitt einen Balken zu spaet"
+ },
+ {
+  "id": "C-42",
+  "datei": "mfhandel.js",
+  "suche": "if (reihe[mi][0] < grenze)",
+  "ersatz": "if (reihe[mi][0] <= grenze)",
+  "funktion": "indexVor",
+  "beschreibung": "indexVor: <= statt <"
+ },
+ {
+  "id": "C-43",
+  "datei": "mfhandel.js",
+  "suche": "while (lo <= hi)",
+  "ersatz": "while (lo < hi)",
+  "funktion": "indexVor",
+  "beschreibung": "indexVor: Schleife endet zu frueh"
+ },
+ {
+  "id": "C-44",
+  "datei": "mfhandel.js",
+  "suche": "{ j = mi; lo = mi + 1; }",
+  "ersatz": "{ j = mi - 1; lo = mi + 1; }",
+  "funktion": "indexVor",
+  "beschreibung": "indexVor: Treffer um eins daneben"
+ },
+ {
+  "id": "C-45",
+  "datei": "mfhandel.js",
+  "suche": "r.mit * 100 >= r.gesamt * 95",
+  "ersatz": "r.mit * 100 > r.gesamt * 95",
+  "funktion": "stichtagPruefen",
+  "beschreibung": "95 %-Schwelle strikt"
+ },
+ {
+  "id": "C-46",
+  "datei": "mfhandel.js",
+  "suche": "r.mit * 100 >= r.gesamt * 95",
+  "ersatz": "r.mit * 100 >= r.gesamt * 90",
+  "funktion": "stichtagPruefen",
+  "beschreibung": "Schwelle 90 statt 95"
+ },
+ {
+  "id": "C-47",
+  "datei": "mfhandel.js",
+  "suche": "if (i >= 0 && x[i][0] >= von) r.mit++;",
+  "ersatz": "if (i >= 0 && x[i][0] > von) r.mit++;",
+  "funktion": "stichtagPruefen",
+  "beschreibung": "Stichtag-Balken > von"
+ },
+ {
+  "id": "C-48",
+  "datei": "mfhandel.js",
+  "suche": "var geladenNach = at >= nyZeit(werktagVor(heute), SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "ersatz": "var geladenNach = at >= nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "funktion": "stichtagPruefen",
+  "beschreibung": "geladenNach gegen heute statt Vorwerktag"
+ },
+ {
+  "id": "C-49",
+  "datei": "mfhandel.js",
+  "suche": "var geladenNach = at >= nyZeit(werktagVor(heute), SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "ersatz": "var geladenNach = at > nyZeit(werktagVor(heute), SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "funktion": "stichtagPruefen",
+  "beschreibung": "geladenNach strikt"
+ },
+ {
+  "id": "C-50",
+  "datei": "mfhandel.js",
+  "suche": "r.ok = geladenNach && r.gesamt > 0 &&",
+  "ersatz": "r.ok = geladenNach &&",
+  "funktion": "stichtagPruefen",
+  "beschreibung": "leere Bestandsmenge zaehlt als ok"
+ },
+ {
+  "id": "C-51",
+  "datei": "mfhandel.js",
+  "suche": "var j = spyReihe && spyReihe.length ? indexVor(spyReihe, nyZeit(heute, 0, 0)) : -1;",
+  "ersatz": "var j = spyReihe && spyReihe.length ? indexVor(spyReihe, nyZeit(tagPlus(heute, 1), 0, 0)) : -1;",
+  "funktion": "stichtagPruefen",
+  "beschreibung": "Stichtag = heute statt letzter Tag vor heute"
+ },
+ {
+  "id": "C-52",
+  "datei": "mfhandel.js",
+  "suche": "var von = nyZeit(r.stichtag, 0, 0), bis = nyZeit(tagPlus(r.stichtag, 1), 0, 0);",
+  "ersatz": "var von = nyZeit(tagPlus(r.stichtag, -1), 0, 0), bis = nyZeit(tagPlus(r.stichtag, 1), 0, 0);",
+  "funktion": "stichtagPruefen",
+  "beschreibung": "Stichtag-Fenster einen Tag zu weit"
+ },
+ {
+  "id": "C-53",
+  "datei": "mfhandel.js",
+  "suche": "if (tag < heute || (tag === heute && fertig))",
+  "ersatz": "if (tag <= heute || (tag === heute && fertig))",
+  "funktion": "punktTag",
+  "beschreibung": "Verlaufspunkt: heute zaehlt immer"
+ },
+ {
+  "id": "C-54",
+  "datei": "mfhandel.js",
+  "suche": "var heute = nyTag(nowMs), fertig = nowMs >= nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "ersatz": "var heute = nyTag(nowMs), fertig = nowMs > nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "funktion": "punktTag",
+  "beschreibung": "Verlaufspunkt: 16:15 genau noch nicht fertig"
+ },
+ {
+  "id": "C-55",
+  "datei": "mfhandel.js",
+  "suche": "if (tag < heute || (tag === heute && fertig)) return b[1] > 0 ? { tag: tag, t: b[0], kurs: b[1] } : null;",
+  "ersatz": "if (tag < heute || (tag === heute && fertig)) return b[1] > 0 ? { tag: tag, t: b[0], kurs: b[0] } : null;",
+  "funktion": "punktTag",
+  "beschreibung": "Verlaufspunkt: Kurs = Zeitstempel"
+ },
+ {
+  "id": "C-56",
+  "datei": "mfhandel.js",
+  "suche": "if (tag < heute || (tag === heute && fertig)) return b[1] > 0 ?",
+  "ersatz": "if (tag < heute || (tag === heute && fertig)) return b[1] >= 0 ?",
+  "funktion": "punktTag",
+  "beschreibung": "Verlaufspunkt: Kurs 0 zugelassen"
+ },
+ {
+  "id": "C-57",
+  "datei": "mfhandel.js",
+  "suche": "var heute = nyTag(nowMs), fertig",
+  "ersatz": "var heute = new Date(nowMs).toISOString().slice(0, 10), fertig",
+  "funktion": "punktTag",
+  "beschreibung": "Verlaufspunkt: heute in UTC"
+ },
+ {
+  "id": "C-58",
+  "datei": "mfhandel.js",
+  "suche": "b.art === 'div' && b.t > tX && isFinite(b.summe)) c -= b.summe;",
+  "ersatz": "b.art === 'div' && b.t >= tX && isFinite(b.summe)) c -= b.summe;",
+  "funktion": "bargeldAm",
+  "beschreibung": "bargeldAm: Ex-Tag gleich tX wird abgezogen"
+ },
+ {
+  "id": "C-59",
+  "datei": "mfhandel.js",
+  "suche": "c -= b.summe;",
+  "ersatz": "c += b.summe;",
+  "funktion": "bargeldAm",
+  "beschreibung": "bargeldAm: Vorzeichen"
+ },
+ {
+  "id": "C-60",
+  "datei": "mfhandel.js",
+  "suche": "b.art === 'div' && b.t > tX",
+  "ersatz": "b.art === 'split' && b.t > tX",
+  "funktion": "bargeldAm",
+  "beschreibung": "bargeldAm: falsche Art"
+ },
+ {
+  "id": "C-61",
+  "datei": "mfhandel.js",
+  "suche": "b.t > tX && isFinite(b.summe)",
+  "ersatz": "b.t > tX",
+  "funktion": "bargeldAm",
+  "beschreibung": "bargeldAm: isFinite entfernt"
+ },
+ {
+  "id": "C-62",
+  "datei": "mfhandel.js",
+  "suche": "var REIHENENDE_TAGE = 5;",
+  "ersatz": "var REIHENENDE_TAGE = 4;",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Reihenende nach 4 statt 5 Handelstagen"
+ },
+ {
+  "id": "C-63",
+  "datei": "mfhandel.js",
+  "suche": "if (tage < REIHENENDE_TAGE ||",
+  "ersatz": "if (tage <= REIHENENDE_TAGE ||",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Reihenende strikt"
+ },
+ {
+  "id": "C-64",
+  "datei": "mfhandel.js",
+  "suche": "p.stueck * (2 * p.einstand - kurs)",
+  "ersatz": "p.stueck * (p.einstand - kurs)",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Leerverkauf Gutschrift ohne Faktor 2",
+  "nr": 1
+ },
+ {
+  "id": "C-65",
+  "datei": "mfhandel.js",
+  "suche": "Math.max(0, p.stueck * (2 * p.einstand - kurs))",
+  "ersatz": "p.stueck * (2 * p.einstand - kurs)",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Leerverkauf Gutschrift kann negativ werden"
+ },
+ {
+  "id": "C-66",
+  "datei": "mfhandel.js",
+  "suche": "var gut = kurz ? Math.max(0, p.stueck * (2 * p.einstand - kurs)) : p.stueck * kurs;",
+  "ersatz": "var gut = kurz ? Math.max(0, p.stueck * (2 * p.einstand - kurs)) : p.stueck * kurs * 0.999;",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Reihenende mit Verkaufskosten 10 Bp"
+ },
+ {
+  "id": "C-67",
+  "datei": "mfhandel.js",
+  "suche": "buch.positionen.splice(i, 1);\n      aus.push",
+  "ersatz": "aus.push",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Position nicht entfernt"
+ },
+ {
+  "id": "C-68",
+  "datei": "mfhandel.js",
+  "suche": "var kurs = letzter[1], kurz = p.richtung != null && p.richtung < 0;",
+  "ersatz": "var kurs = letzter[1], kurz = p.richtung != null && p.richtung > 0;",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Kurz/Lang vertauscht"
+ },
+ {
+  "id": "C-69",
+  "datei": "mfhandel.js",
+  "suche": "var tage = balkenNach(spyReihe, tag);",
+  "ersatz": "var tage = balkenNach(spyReihe, tag) + 1;",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Zaehlung um eins hoeher"
+ },
+ {
+  "id": "C-70",
+  "datei": "mfhandel.js",
+  "suche": "buch.cash += gut;",
+  "ersatz": "buch.cash += gut; buch.cash = Math.round(buch.cash * 100) / 100;",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Bargeld auf Cent gerundet"
+ },
+ {
+  "id": "C-71",
+  "datei": "mfhandel.js",
+  "suche": "pnl: Math.round((gut - p.stueck * p.einstand) * 100) / 100 });\n      buch.positionen.splice",
+  "ersatz": "pnl: Math.round((gut - p.stueck * kurs) * 100) / 100 });\n      buch.positionen.splice",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Reihenende pnl gegen Kurs statt Einstand"
+ },
+ {
+  "id": "C-72",
+  "datei": "mfhandel.js",
+  "suche": "var letzter = r[r.length - 1], tag = nyTag(letzter[0]);",
+  "ersatz": "var letzter = r[r.length - 1], tag = new Date(letzter[0]).toISOString().slice(0, 10);",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Reihenende-Tag in UTC"
+ },
+ {
+  "id": "C-73",
+  "datei": "mfhandel.js",
+  "suche": "tage < REIHENENDE_TAGE || !(letzter[1] > 0)",
+  "ersatz": "tage < REIHENENDE_TAGE",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Reihenende: Schluss 0 wird ausgebucht"
+ },
+ {
+  "id": "C-74",
+  "datei": "mfhandel.js",
+  "suche": "if (buch.trades.length > 400) buch.trades = buch.trades.slice(-400);\n    return aus;",
+  "ersatz": "return aus;",
+  "funktion": "reihenendeAusbuchen",
+  "beschreibung": "Reihenende: trades-Kappe fehlt"
+ },
+ {
+  "id": "C-75",
+  "datei": "mfhandel.js",
+  "suche": "timeZone: 'America/New_York'",
+  "ersatz": "timeZone: 'UTC'",
+  "funktion": "nyTeile",
+  "beschreibung": "Zeitzone UTC statt New York"
+ },
+ {
+  "id": "C-76",
+  "datei": "mfhandel.js",
+  "suche": "stunde: Number(o.hour) % 24",
+  "ersatz": "stunde: Number(o.hour)",
+  "funktion": "nyTeile",
+  "beschreibung": "24-Uhr-Normierung entfernt"
+ },
+ {
+  "id": "C-77",
+  "datei": "mfhandel.js",
+  "suche": "o.year + '-' + o.month + '-' + o.day",
+  "ersatz": "o.year + '-' + o.day + '-' + o.month",
+  "funktion": "nyTeile",
+  "beschreibung": "Tag/Monat vertauscht"
+ },
+ {
+  "id": "C-78",
+  "datei": "mfhandel.js",
+  "suche": "+tag.slice(5, 7) - 1, +tag.slice(8, 10)) + n * 86400000;",
+  "ersatz": "+tag.slice(5, 7) - 1, +tag.slice(8, 10)) + n * 86400000 + 3600000;",
+  "funktion": "tagPlus",
+  "beschreibung": "tagPlus + 1 Stunde (Sommerzeit-Drift im UTC-Rechnen unkritisch)"
+ },
+ {
+  "id": "C-79",
+  "datei": "mfhandel.js",
+  "suche": "+ n * 86400000;\n    return new Date(t)",
+  "ersatz": "+ (n < 0 ? n + 1 : n) * 86400000;\n    return new Date(t)",
+  "funktion": "tagPlus",
+  "beschreibung": "tagPlus negativ um eins zu kurz"
+ },
+ {
+  "id": "C-80",
+  "datei": "mfhandel.js",
+  "suche": "return w !== 0 && w !== 6;",
+  "ersatz": "return w !== 0;",
+  "funktion": "istWerktag",
+  "beschreibung": "Samstag gilt als Werktag"
+ },
+ {
+  "id": "C-81",
+  "datei": "mfhandel.js",
+  "suche": "return w !== 0 && w !== 6;",
+  "ersatz": "return w !== 6;",
+  "funktion": "istWerktag",
+  "beschreibung": "Sonntag gilt als Werktag"
+ },
+ {
+  "id": "C-82",
+  "datei": "mfhandel.js",
+  "suche": "var t = tagPlus(tag, -1); while (!istWerktag(t)) t = tagPlus(t, -1); return t;",
+  "ersatz": "var t = tagPlus(tag, -1); return t;",
+  "funktion": "werktagVor",
+  "beschreibung": "werktagVor ueberspringt Wochenende nicht"
+ },
+ {
+  "id": "C-83",
+  "datei": "mfhandel.js",
+  "suche": "var t = ziel + 5 * 3600000;",
+  "ersatz": "var t = ziel + 4 * 3600000;",
+  "funktion": "nyZeit",
+  "beschreibung": "nyZeit Startschaetzung 4 h"
+ },
+ {
+  "id": "C-84",
+  "datei": "mfhandel.js",
+  "suche": "for (var k = 0; k < 3; k++) {",
+  "ersatz": "for (var k = 0; k < 1; k++) {",
+  "funktion": "nyZeit",
+  "beschreibung": "nyZeit: nur ein Korrekturschritt"
+ },
+ {
+  "id": "C-85",
+  "datei": "mfhandel.js",
+  "suche": "t += ziel - ist;",
+  "ersatz": "t -= ziel - ist;",
+  "funktion": "nyZeit",
+  "beschreibung": "nyZeit Korrekturvorzeichen"
+ },
+ {
+  "id": "C-86",
+  "datei": "mfhandel.js",
+  "suche": "var SCHLUSS_FERTIG = [16, 15], HANDEL_AB = [9, 35];",
+  "ersatz": "var SCHLUSS_FERTIG = [16, 0], HANDEL_AB = [9, 35];",
+  "funktion": "nyZeit",
+  "beschreibung": "Schluss fertig 16:00 statt 16:15"
+ },
+ {
+  "id": "C-87",
+  "datei": "mfhandel.js",
+  "suche": "var SCHLUSS_FERTIG = [16, 15], HANDEL_AB = [9, 35];",
+  "ersatz": "var SCHLUSS_FERTIG = [16, 15], HANDEL_AB = [9, 30];",
+  "funktion": "nyZeit",
+  "beschreibung": "Handel ab 09:30 statt 09:35"
+ },
+ {
+  "id": "C-88",
+  "datei": "mfhandel.js",
+  "suche": "var SCHLUSS_FERTIG = [16, 15], HANDEL_AB = [9, 35];",
+  "ersatz": "var SCHLUSS_FERTIG = [16, 15], HANDEL_AB = [9, 45];",
+  "funktion": "nyZeit",
+  "beschreibung": "Handel ab 09:45"
+ },
+ {
+  "id": "C-89",
+  "datei": "mfhandel.js",
+  "suche": "var SCHLUSS_FERTIG = [16, 15], HANDEL_AB = [9, 35];",
+  "ersatz": "var SCHLUSS_FERTIG = [15, 15], HANDEL_AB = [9, 35];",
+  "funktion": "nyZeit",
+  "beschreibung": "Schluss fertig 15:15"
+ },
+ {
+  "id": "C-90",
+  "datei": "mfhandel.js",
+  "suche": "nowMs >= nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return heute;",
+  "ersatz": "nowMs > nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return heute;",
+  "funktion": "letzterFertigerWerktag",
+  "beschreibung": "genau 16:15 noch nicht fertig"
+ },
+ {
+  "id": "C-91",
+  "datei": "mfhandel.js",
+  "suche": "if (istWerktag(heute) && nowMs",
+  "ersatz": "if (nowMs",
+  "funktion": "letzterFertigerWerktag",
+  "beschreibung": "Wochenende wird als fertiger Tag gewertet"
+ },
+ {
+  "id": "C-92",
+  "datei": "mfhandel.js",
+  "suche": "return werktagVor(heute);\n  }\n  /** Ist ein Bestand",
+  "ersatz": "return heute;\n  }\n  /** Ist ein Bestand",
+  "funktion": "letzterFertigerWerktag",
+  "beschreibung": "vor Schluss: heute statt Vorwerktag"
+ },
+ {
+  "id": "C-93",
+  "datei": "mfhandel.js",
+  "suche": "if (!(at > 0)) return false;",
+  "ersatz": "if (!(at >= 0)) return false;",
+  "funktion": "bestandFrisch",
+  "beschreibung": "Ladezeit 0 gilt als moeglich frisch"
+ },
+ {
+  "id": "C-94",
+  "datei": "mfhandel.js",
+  "suche": "return at >= nyZeit(d, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "ersatz": "return at > nyZeit(d, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "funktion": "bestandFrisch",
+  "beschreibung": "Frische strikt"
+ },
+ {
+  "id": "C-95",
+  "datei": "mfhandel.js",
+  "suche": "return at >= nyZeit(d, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);",
+  "ersatz": "return at >= nyZeit(d, 16, 0);",
+  "funktion": "bestandFrisch",
+  "beschreibung": "Frische ab 16:00 statt 16:15"
+ },
+ {
+  "id": "C-96",
+  "datei": "mfhandel.js",
+  "suche": "var d = letzterFertigerWerktag(nowMs);\n    return at",
+  "ersatz": "var d = nyTag(nowMs);\n    return at",
+  "funktion": "bestandFrisch",
+  "beschreibung": "Frische gegen heute statt letzten fertigen Werktag"
+ },
+ {
+  "id": "C-97",
+  "datei": "mfhandel.js",
+  "suche": "Math.round(wert * 100) / 100",
+  "ersatz": "wert",
+  "funktion": "bewerteDrift",
+  "beschreibung": "bewerteDrift: Rundung entfernt (beruehrt Momentum nur ueber Verlaufspunkt)",
+  "nr": 2
+ },
+ {
+  "id": "C-98",
+  "datei": "mfhandel.js",
+  "suche": "Math.max(0, p.stueck * (2 * p.einstand - k))",
+  "ersatz": "p.stueck * (2 * p.einstand - k)",
+  "funktion": "bewerteDrift",
+  "beschreibung": "bewerteDrift: Short-Wert ohne Untergrenze"
+ }
+]

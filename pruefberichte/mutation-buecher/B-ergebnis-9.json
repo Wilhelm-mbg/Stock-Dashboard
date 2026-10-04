@@ -1,0 +1,48 @@
+{
+ "basis": {
+  "v6rot": 17,
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "B-16",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Position ohne Kurs: Einstand als Kurs (Verkauf)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 16 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  },
+  {
+   "id": "B-20",
+   "funktion": "fuehreAus",
+   "beschreibung": "pnl ohne Cent-Rundung",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "B-21",
+   "funktion": "fuehreAus",
+   "beschreibung": "pnl auf 10 Cent",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "B-22",
+   "funktion": "fuehreAus",
+   "beschreibung": "pnl ohne Verkaufskosten",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 6 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  }
+ ]
+}

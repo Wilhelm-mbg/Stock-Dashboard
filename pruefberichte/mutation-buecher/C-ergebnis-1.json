@@ -1,0 +1,191 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "C-01",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Ex-Tag-Grenze: Beginn eingeschlossen (>= statt >)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+   ]
+  },
+  {
+   "id": "C-02",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Ex-Tag-Grenze: letzter Balken ausgeschlossen (< statt <=)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 26 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+   ]
+  },
+  {
+   "id": "C-03",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Split-Faktor Stueck n/z statt z/n",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 19 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+   ]
+  },
+  {
+   "id": "C-04",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Split-Faktor Einstand z/n statt n/z",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 13 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+   ]
+  },
+  {
+   "id": "C-05",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Leerverkauf-Vorzeichen der Ausschuettung entfernt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 6 neu rot, z.B. ❌    Gegenprobe: Ausschuettung mit der Stueckzahl VOR dem Split faellt auf (5 $ statt 10 $)"
+   ]
+  },
+  {
+   "id": "C-06",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Richtung vertauscht: Kauf belastet, Leerverkauf gutgeschrieben",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 8 neu rot, z.B. ❌    Gegenprobe: Ausschuettung mit der Stueckzahl VOR dem Split faellt auf (5 $ statt 10 $)"
+   ]
+  },
+  {
+   "id": "C-07",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Ausschuettung wird nicht als gebucht gemerkt (doppelt buchen)",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-08",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Split wird nicht als gebucht gemerkt (doppelt buchen)",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-09",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Splitsperre: genau 30 Tage nicht mehr gesperrt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.4 Sperre: genau 30 Tage Abstand ist gesperrt, 31 Tage wird gebucht  [40 / 40]"
+   ]
+  },
+  {
+   "id": "C-10",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Splitsperre 3 statt 30 Tage",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "C-11",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Splits nicht zeitlich sortiert",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-12",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Ausschuettung 0 wird gebucht (>= statt >)",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-13",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Split mit Nenner 0 zugelassen",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-14",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Beginn immer p.seit statt kursT",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 10 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+   ]
+  },
+  {
+   "id": "C-15",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Rueckfall ohne kursT: 0 statt seit (Nachbuchung aller Altereignisse)",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-16",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Massnahmen-Kappe 399 statt 400",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-17",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Sperrmeldung neu-Kennzeichen invertiert",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.4 Journal: ein gesperrter Split wird einmal gemeldet; ohne Buchung und ohne neue Sperre gibt es keine Zeile"
+   ]
+  },
+  {
+   "id": "C-18",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "gesperrter Split wird nicht als gemeldet gemerkt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.4 Journal: ein gesperrter Split wird einmal gemeldet; ohne Buchung und ohne neue Sperre gibt es keine Zeile"
+   ]
+  },
+  {
+   "id": "C-19",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Splitsperre ohne Betrag (nur nach vorn)",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-20",
+   "funktion": "bucheMassnahmen",
+   "beschreibung": "Gebucht-Pruefung entfernt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 9 neu rot, z.B. ❌    Gegenprobe: ohne den Merker p.gebucht faellt auf: der zweite Aufruf bucht noch einmal"
+   ]
+  }
+ ]
+}

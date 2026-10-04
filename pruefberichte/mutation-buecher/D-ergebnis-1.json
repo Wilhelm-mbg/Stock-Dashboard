@@ -1,0 +1,303 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "D-01",
+   "funktion": "buchInit",
+   "beschreibung": "Startbargeld 90 % statt 100 %",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-02",
+   "funktion": "buchInit",
+   "beschreibung": "letztesRebalanceT startet mit Date.now() statt 0",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-03",
+   "funktion": "buchInit",
+   "beschreibung": "Konfig nur fuer NICHT-momentum-Buecher gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-04",
+   "funktion": "buchInit",
+   "beschreibung": "liquideSeit startet mit angelegt statt null",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-05",
+   "funktion": "buchInit",
+   "beschreibung": "START_KAPITAL 10000 statt 100000",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-06",
+   "funktion": "buchInit",
+   "beschreibung": "konfigSeit 0 statt angelegt",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-07",
+   "funktion": "kleinstWert",
+   "beschreibung": "fehlendes Feld zaehlt als 0,05 statt aus",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 8 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+   ]
+  },
+  {
+   "id": "D-08",
+   "funktion": "kleinstWert",
+   "beschreibung": "negativer/0-Wert wird nicht auf 0 gezwungen (>= 0 statt > 0 und Rueckgabe -1)",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-09",
+   "funktion": "feldGleich",
+   "beschreibung": "Vergleich a[k] <= b[k] statt ===",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+   ]
+  },
+  {
+   "id": "D-10",
+   "funktion": "feldGleich",
+   "beschreibung": "kleinstAnteil wird roh verglichen statt ueber kleinstWert",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-11",
+   "funktion": "konfigGleich",
+   "beschreibung": "every -> some",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 9 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+   ]
+  },
+  {
+   "id": "D-12",
+   "funktion": "konfigGleich",
+   "beschreibung": "fehlende Konfig gilt als gleich",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt"
+   ]
+  },
+  {
+   "id": "D-13",
+   "funktion": "KONFIG_FELDER",
+   "beschreibung": "Feld mindestWerte aus der Liste entfernt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+   ]
+  },
+  {
+   "id": "D-14",
+   "funktion": "KONFIG_FELDER",
+   "beschreibung": "Feld umsatzMin aus der Liste entfernt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+   ]
+  },
+  {
+   "id": "D-15",
+   "funktion": "KONFIG_FELDER",
+   "beschreibung": "Feld halten aus der Liste entfernt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+   ]
+  },
+  {
+   "id": "D-16",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "andere Felder: feldGleich nicht negiert",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 7 neu rot, z.B. ❌ 96.1 auch das Ausschalten bekaeme seine eigene Zeile (0,05 → aus) und setzte nichts zurueck"
+   ]
+  },
+  {
+   "id": "D-17",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "ohne Konfig gilt nichts als anders (Zweig \"nur Regel K\")",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt"
+   ]
+  },
+  {
+   "id": "D-18",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "kleinstSeit nicht gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌    Gegenprobe: setzt die K-Umstellung liquideSeit und korbVerlauf zurueck, faellt es auf"
+   ]
+  },
+  {
+   "id": "D-19",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "Kleinst-Zweig meldet false (nicht speichern)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ 96.1 auch das Ausschalten bekaeme seine eigene Zeile (0,05 → aus) und setzte nichts zurueck"
+   ]
+  },
+  {
+   "id": "D-20",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "Prozentzahl in Journal: *100/10 statt *1000/10",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.1 der Text nennt das Feld, alt → neu, was die Regel tut, ab wann sie greift, und \"Simulation\"  [Momentum-Buch: Regel K gegen Kleinstpositionen eingeschalte"
+   ]
+  },
+  {
+   "id": "D-21",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "stufe(): Prozent *100/10",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.1 auch das Ausschalten bekaeme seine eigene Zeile (0,05 → aus) und setzte nichts zurueck"
+   ]
+  },
+  {
+   "id": "D-22",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "Kleinst-Zweig setzt konfig nicht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ 96.1 das Buch merkt sich die neue Konfiguration (kleinstAnteil 0,05) und seit wann die Regel gilt"
+   ]
+  },
+  {
+   "id": "D-23",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "Umstellung setzt liquideSeit nicht zurueck",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt"
+   ]
+  },
+  {
+   "id": "D-24",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "Umstellung setzt korbVerlauf nicht zurueck",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt"
+   ]
+  },
+  {
+   "id": "D-25",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "Umstellung setzt konfig nicht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "D-26",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "Umstellung setzt konfigSeit nicht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.1 eine echte Korb-Umstellung (anderes Feld weicht ab) setzt liquideSeit und korbVerlauf weiter zurueck - mit dem Text der Korb-Umstellung  [null / 0]"
+   ]
+  },
+  {
+   "id": "D-27",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "Altwert-Text: Rueckblick 252 statt 231",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-28",
+   "funktion": "konfigText",
+   "beschreibung": "anteil *10 statt *100",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-29",
+   "funktion": "konfigText",
+   "beschreibung": "Umsatz in 1e5 statt 1e6",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-30",
+   "funktion": "kleinstText",
+   "beschreibung": "Prozent *100/10",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+   ]
+  },
+  {
+   "id": "D-31",
+   "funktion": "takt/Umstellung",
+   "beschreibung": "umstellungPruefen-Ergebnis fuehrt nicht zum Speichern",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-32",
+   "funktion": "massnahmenBuchen",
+   "beschreibung": "Drift-Buch wird nicht gebucht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.5 der zweite Takt bucht nichts und schreibt keine Zeile  [1]"
+   ]
+  }
+ ]
+}

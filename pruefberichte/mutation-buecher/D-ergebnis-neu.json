@@ -1,0 +1,755 @@
+{
+ "basis": {
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "D-01",
+   "funktion": "buchInit",
+   "beschreibung": "Startbargeld 90 % statt 100 %",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-02",
+   "funktion": "buchInit",
+   "beschreibung": "letztesRebalanceT startet mit Date.now() statt 0",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-03",
+   "funktion": "buchInit",
+   "beschreibung": "Konfig nur fuer NICHT-momentum-Buecher gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-04",
+   "funktion": "buchInit",
+   "beschreibung": "liquideSeit startet mit angelegt statt null",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-05",
+   "funktion": "buchInit",
+   "beschreibung": "START_KAPITAL 10000 statt 100000",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-06",
+   "funktion": "buchInit",
+   "beschreibung": "konfigSeit 0 statt angelegt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-08",
+   "funktion": "kleinstWert",
+   "beschreibung": "negativer/0-Wert wird nicht auf 0 gezwungen (>= 0 statt > 0 und Rueckgabe -1)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-10",
+   "funktion": "feldGleich",
+   "beschreibung": "kleinstAnteil wird roh verglichen statt ueber kleinstWert",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-27",
+   "funktion": "umstellungPruefen",
+   "beschreibung": "Altwert-Text: Rueckblick 252 statt 231",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-28",
+   "funktion": "konfigText",
+   "beschreibung": "anteil *10 statt *100",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-29",
+   "funktion": "konfigText",
+   "beschreibung": "Umsatz in 1e5 statt 1e6",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-31",
+   "funktion": "takt/Umstellung",
+   "beschreibung": "umstellungPruefen-Ergebnis fuehrt nicht zum Speichern",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-36",
+   "funktion": "massnahmenBuchen",
+   "beschreibung": "Zeit now + 1 Tag",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-39",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "Drift-Buch nicht ausgebucht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-42",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "Journal immer als momentum",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-43",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "geaendert nicht gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-46",
+   "funktion": "tagespunkt",
+   "beschreibung": "Tag des alten Punkts ohne tag um einen Tag verschoben",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-47",
+   "funktion": "tagespunkt",
+   "beschreibung": "Sperre nach Umschichtung >= statt >",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-51",
+   "funktion": "tagespunkt",
+   "beschreibung": "Drift-Bargeld aktuell statt an X",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-55",
+   "funktion": "tagespunkt",
+   "beschreibung": "startM Fallback 10000",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-56",
+   "funktion": "tagespunkt",
+   "beschreibung": "startD = START_KAPITAL statt null ohne Drift-Buch",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-57",
+   "funktion": "tagespunkt",
+   "beschreibung": "drift 0 statt null ohne Buch",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-58",
+   "funktion": "tagespunkt",
+   "beschreibung": "Kappung auf 749 statt 750",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-59",
+   "funktion": "tagespunkt",
+   "beschreibung": "Kappung auf 751 statt 750",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-61",
+   "funktion": "eroeffnung",
+   "beschreibung": "Fensterende zwei Tage statt einen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-63",
+   "funktion": "eroeffnung",
+   "beschreibung": "fehlende Eroeffnung (null) wird akzeptiert (>= 0)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-65",
+   "funktion": "eroeffnung",
+   "beschreibung": "Balken mit Eroeffnung wird ueber Schluss geprueft",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-66",
+   "funktion": "eroeffnung",
+   "beschreibung": "spaetester statt frueher Balken",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-71",
+   "funktion": "eroeffnung",
+   "beschreibung": "interval 1h statt 1d",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-74",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "now <= statt < Handelsbeginn",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-79",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Hinweistext nennt halten statt mindestWerte",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-84",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Ziel-Werte ohne ersten bepreist",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-86",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Rueckgabe heute = Stichtag",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-88",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "veraltete Marktreihe wird ignoriert",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-89",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Wochenendsperre ignoriert",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-99",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Rueckgabe ohne neuMerker",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-114",
+   "funktion": "takt",
+   "beschreibung": "fehltRest: offene Werte nicht ausgeschlossen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-117",
+   "funktion": "takt",
+   "beschreibung": "Verspaetung fuer Knopf nicht genullt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-118",
+   "funktion": "takt",
+   "beschreibung": "letztesRebalanceT nicht gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-121",
+   "funktion": "takt",
+   "beschreibung": "Faelligkeit: halten - 1",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-122",
+   "funktion": "takt",
+   "beschreibung": "Faelligkeit: halten + 1",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-124",
+   "funktion": "takt",
+   "beschreibung": "faellig bleibt nach Umschichtung true",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-126",
+   "funktion": "takt",
+   "beschreibung": "korbVerlauf: ziel = Zahl der Kaeufe",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-127",
+   "funktion": "takt",
+   "beschreibung": "korbVerlauf zulaessig/geprueft vertauscht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-128",
+   "funktion": "takt",
+   "beschreibung": "korbVerlauf Kappung 119",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-132",
+   "funktion": "takt",
+   "beschreibung": "Nachladen bei ohneUmsatz-Haelfte: > statt >=",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-134",
+   "funktion": "takt",
+   "beschreibung": "Journal: Kosten-Text 10 Bp",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-135",
+   "funktion": "nachladen",
+   "beschreibung": "Sperre 6 Minuten statt 1 Stunde",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-136",
+   "funktion": "kurseFrischHalten",
+   "beschreibung": "Frische-Pruefung entfernt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-137",
+   "funktion": "kurseFrischHalten",
+   "beschreibung": "Nachladen auch wenn frisch",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-141",
+   "funktion": "ladeKurse",
+   "beschreibung": "spalte4: 3 Spalten genuegen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-143",
+   "funktion": "ladeKurse",
+   "beschreibung": "stand ohne at = Date.now",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-148",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Schluessel statt Feld date bevorzugt",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-153",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Fenster ohne untere Grenze einschliessend (> statt >=)",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-154",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Fenster obere Grenze ausschliessend",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-155",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Fenster nur wenn eine Grenze fehlt (|| statt &&)",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-157",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Dividenden nicht sortiert",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-158",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Splits nicht sortiert",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-159",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Splits ohne Fensterfilter",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-161",
+   "funktion": "ereignisseAb",
+   "beschreibung": "nur Dividenden gefiltert",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-164",
+   "funktion": "zerlege",
+   "beschreibung": "Roh-Schluss ohne kursOk",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-173",
+   "funktion": "zerlege",
+   "beschreibung": "Tief faellt auf Hoch statt Schluss",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-178",
+   "funktion": "zerlege",
+   "beschreibung": "Fenster Rohreihe: obere Grenze ausschliessend",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-180",
+   "funktion": "zerlege",
+   "beschreibung": "Fenster nur bei von UND bis -> oder",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-184",
+   "funktion": "zerlege",
+   "beschreibung": "roh nie zurueck",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-187",
+   "funktion": "zerlege",
+   "beschreibung": "adjclose-Pruefung: leere Liste genuegt",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-188",
+   "funktion": "reihe",
+   "beschreibung": "Volumen statt Schluss",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-189",
+   "funktion": "url",
+   "beschreibung": "period1 aufgerundet",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-191",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Ausfuehrungstag nach UTC statt New York",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-192",
+   "funktion": "tagespunkt",
+   "beschreibung": "Schreibtag eines alten Punkts nach UTC statt New York",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-194",
+   "funktion": "eroeffnung",
+   "beschreibung": "Fehler beim Abruf wird weitergereicht statt null",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-195",
+   "funktion": "tagespunkt",
+   "beschreibung": "Kappung erst ab 7500 Punkten",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-197",
+   "funktion": "takt",
+   "beschreibung": "Korbverlauf-Kappung >= 120 statt > 120 (vermutlich aequivalent)",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-201",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "Journal-Kennung ohne Wert",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "D-202",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Wartezeit 90 ms entfernt (Tempo)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,141 @@
+{
+ "basis": {
+  "v6rot": 18,
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "B-79",
+   "funktion": "Uhr",
+   "beschreibung": "werktagVor: 2 Tage zurueck",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom ",
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-80",
+   "funktion": "offen*",
+   "beschreibung": "offenLaeuft: <= statt <",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌    Gegenprobe: Nachfassen am Folgetag (Grenze 16:00 des heutigen statt des Auftragstags) faellt auf"
+   ]
+  },
+  {
+   "id": "B-81",
+   "funktion": "offen*",
+   "beschreibung": "Nachfassen bis 16:30",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+   ]
+  },
+  {
+   "id": "B-82",
+   "funktion": "offen*",
+   "beschreibung": "offenLaeuft: Tagespruefung entfernt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌    Gegenprobe: Nachfassen am Folgetag (Grenze 16:00 des heutigen statt des Auftragstags) faellt auf"
+   ]
+  },
+  {
+   "id": "B-83",
+   "funktion": "offen*",
+   "beschreibung": "offeneAuftraege: Verkauf nur bei Ziel",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 99.1 die Journalzeile der Umschichtung nennt die offenen Auftraege  [ Um 09:36 New York noch ohne Eröffnung, offen – die App fasst heute bis 16:00 New York zu"
+   ]
+  },
+  {
+   "id": "B-84",
+   "funktion": "offen*",
+   "beschreibung": "offeneAuftraege: Budget = Depotwert",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.1 offene Auftraege: Verkauf = gehaltene Position ohne Eroeffnung, die kein Ziel ist (A); Kauf = Ziel ohne Eroeffnung (T1, T3) mit dem Platzwert des Plans ("
+   ]
+  },
+  {
+   "id": "B-85",
+   "funktion": "offen*",
+   "beschreibung": "offeneAuftraege: Kaeufe unsortiert",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Zeichenzeit fuer 390 Kerzen bleibt weit unter einer Zehntelsekunde  [259.1 ms]"
+   ]
+  },
+  {
+   "id": "B-86",
+   "funktion": "offen*",
+   "beschreibung": "offeneAuftraege: Rang ab 0",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 99.1 die Journalzeile der Umschichtung nennt die offenen Auftraege  [ Um 09:36 New York noch ohne Eröffnung, offen – die App fasst heute bis 16:00 New York zu"
+   ]
+  },
+  {
+   "id": "B-87",
+   "funktion": "offen*",
+   "beschreibung": "offenWerte: unsortiert",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "B-88",
+   "funktion": "offen*",
+   "beschreibung": "nachRang umgekehrt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-89",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: round statt floor",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "B-90",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen Vorgabekosten 10",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "B-91",
+   "funktion": "offen*",
+   "beschreibung": "nachfassen: schon gehaltener Kauf nicht verworfen (Doppelkauf)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.4 nach dem Knopf: ein offener Kauf eines Werts, der schon im Buch ist, entfaellt (kein zweiter Kauf), ebenso ein Verkauf eines Werts, der nicht mehr im Buc"
+   ]
+  }
+ ]
+}

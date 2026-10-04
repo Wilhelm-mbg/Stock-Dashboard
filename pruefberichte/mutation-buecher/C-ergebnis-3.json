@@ -1,0 +1,192 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "C-41",
+   "funktion": "ohneLaufendenBalken",
+   "beschreibung": "Schnitt einen Balken zu spaet",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.7 Grenze 16:15 New York: um 16:14 ist der Dienstag noch laufend (Punkt fuer Montag; der Lader legt den Balken nicht ab), um 16:16 abgeschlossen",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "C-42",
+   "funktion": "indexVor",
+   "beschreibung": "indexVor: <= statt <",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-43",
+   "funktion": "indexVor",
+   "beschreibung": "indexVor: Schleife endet zu frueh",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌ 100.7 C3: die Karte nennt den Tag der naechsten Umschichtung, aus der Faelligkeit gerechnet (04.10.2026: 27 Balken seit dem 25.08., noch 35 -> Montag 23.11.20",
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "C-44",
+   "funktion": "indexVor",
+   "beschreibung": "indexVor: Treffer um eins daneben",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 98.4 Grenze fuenf Handelstage: 4 ohne neuen Balken bleibt, 5 und 6 werden ausgebucht - zum letzten Schluss OHNE Kosten (100 × 130 = 13.000 $), der Leerverkauf",
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "C-45",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "95 %-Schwelle strikt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom "
+   ]
+  },
+  {
+   "id": "C-46",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "Schwelle 90 statt 95",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom "
+   ]
+  },
+  {
+   "id": "C-47",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "Stichtag-Balken > von",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-48",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "geladenNach gegen heute statt Vorwerktag",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "C-49",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "geladenNach strikt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "C-50",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "leere Bestandsmenge zaehlt als ok",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-51",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "Stichtag = heute statt letzter Tag vor heute",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-52",
+   "funktion": "stichtagPruefen",
+   "beschreibung": "Stichtag-Fenster einen Tag zu weit",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-53",
+   "funktion": "punktTag",
+   "beschreibung": "Verlaufspunkt: heute zaehlt immer",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.7 Grenze 16:15 New York: um 16:14 ist der Dienstag noch laufend (Punkt fuer Montag; der Lader legt den Balken nicht ab), um 16:16 abgeschlossen"
+   ]
+  },
+  {
+   "id": "C-54",
+   "funktion": "punktTag",
+   "beschreibung": "Verlaufspunkt: 16:15 genau noch nicht fertig",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-55",
+   "funktion": "punktTag",
+   "beschreibung": "Verlaufspunkt: Kurs = Zeitstempel",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+   ]
+  },
+  {
+   "id": "C-56",
+   "funktion": "punktTag",
+   "beschreibung": "Verlaufspunkt: Kurs 0 zugelassen",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-57",
+   "funktion": "punktTag",
+   "beschreibung": "Verlaufspunkt: heute in UTC",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-58",
+   "funktion": "bargeldAm",
+   "beschreibung": "bargeldAm: Ex-Tag gleich tX wird abgezogen",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-59",
+   "funktion": "bargeldAm",
+   "beschreibung": "bargeldAm: Vorzeichen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+   ]
+  },
+  {
+   "id": "C-60",
+   "funktion": "bargeldAm",
+   "beschreibung": "bargeldAm: falsche Art",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+   ]
+  }
+ ]
+}

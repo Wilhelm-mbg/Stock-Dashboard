@@ -1,0 +1,130 @@
+{
+ "basis": {
+  "v6rot": 17,
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "B-53",
+   "funktion": "faelligkeit",
+   "beschreibung": "Erste Umschichtung nicht faellig",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-54",
+   "funktion": "faelligkeit",
+   "beschreibung": "faelligkeit: heute in UTC statt New York",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-55",
+   "funktion": "faelligkeit",
+   "beschreibung": "Rueckstand: bis exklusive",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 Grenze drei Tage: Marktreihe drei Werktage hinter der Uhr gilt noch, vier nicht - dann faellig = null (nie still \"nicht faellig\")  [2 / 3]",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-56",
+   "funktion": "faelligkeit",
+   "beschreibung": "tageSeit ohne Obergrenze heute",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-57",
+   "funktion": "faelligkeit",
+   "beschreibung": "balkenNach: Ausfuehrungstag zaehlt mit",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ 100.7 C3: die Karte nennt den Tag der naechsten Umschichtung, aus der Faelligkeit gerechnet (04.10.2026: 27 Balken seit dem 25.08., noch 35 -> Montag 23.11.20",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-58",
+   "funktion": "faelligkeit",
+   "beschreibung": "balkenNach ohne max 0",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 am Ausfuehrungstag selbst, ab ihm gezaehlt: nicht faellig, noch 62 Handelstage (auch wenn der Bestand schon einen Balken von heute traegt)",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-59",
+   "funktion": "faelligkeit",
+   "beschreibung": "rebalanceFaellig: > statt >=",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-60",
+   "funktion": "faelligkeit",
+   "beschreibung": "rebalanceFaellig: 62",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-61",
+   "funktion": "faelligkeit",
+   "beschreibung": "rebalanceFaellig: Umschichtungstag zaehlt mit",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-62",
+   "funktion": "faelligkeit",
+   "beschreibung": "rebalanceFaellig: ohne letztes nicht faellig",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ ohne Vorgeschichte ist sofort fällig"
+   ]
+  },
+  {
+   "id": "B-63",
+   "funktion": "Uhr",
+   "beschreibung": "Zeitzone UTC statt New York",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌    Gegenprobe: Faelligkeit ueber die Uhrzeit (Fassung bis Nr. 92: Balken nach dem Zeitstempel) faellt auf",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-64",
+   "funktion": "Uhr",
+   "beschreibung": "Stunde ohne %24",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-65",
+   "funktion": "Uhr",
+   "beschreibung": "Balken fertig 16:00 statt 16:15",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom ",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  }
+ ]
+}

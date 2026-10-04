@@ -1,0 +1,134 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "B-27",
+   "funktion": "fuehreAus",
+   "beschreibung": "Verkleinert auf 0: Position mit 0 Stueck gebucht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "B-28",
+   "funktion": "fuehreAus",
+   "beschreibung": "K1: < zu <=",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)"
+   ]
+  },
+  {
+   "id": "B-29",
+   "funktion": "fuehreAus",
+   "beschreibung": "K1: ohne budget>0-Bedingung",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "B-30",
+   "funktion": "fuehreAus",
+   "beschreibung": "K1: Wert inkl. Kosten",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)"
+   ]
+  },
+  {
+   "id": "B-31",
+   "funktion": "fuehreAus",
+   "beschreibung": "Kauf: Bargeld ohne Kosten abgezogen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 21 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)",
+    "Kleinsttest-Urteil geaendert: 14:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "B-32",
+   "funktion": "fuehreAus",
+   "beschreibung": "Einstand ohne Kosten",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 9 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "B-33",
+   "funktion": "fuehreAus",
+   "beschreibung": "seit nicht gesetzt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 13 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "B-34",
+   "funktion": "fuehreAus",
+   "beschreibung": "Tradeprotokoll 399 statt 400",
+   "datei": "mfhandel.js",
+   "urteil": "UNGUELTIG",
+   "grund": "3 Vorkommen von suche"
+  },
+  {
+   "id": "B-35",
+   "funktion": "fuehreAus",
+   "beschreibung": "Trade-Grenze 401",
+   "datei": "mfhandel.js",
+   "urteil": "UNGUELTIG",
+   "grund": "3 Vorkommen von suche"
+  },
+  {
+   "id": "B-36",
+   "funktion": "fuehreAus",
+   "beschreibung": "Kauf zaehlt nicht in Rueckgabe",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 19 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)"
+   ]
+  },
+  {
+   "id": "B-37",
+   "funktion": "fuehreAus",
+   "beschreibung": "Verkauf zaehlt nicht in Rueckgabe",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 10 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "B-38",
+   "funktion": "fuehreAus",
+   "beschreibung": "Erloes mit o.stueck statt Positionsbestand",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-39",
+   "funktion": "fuehreAus",
+   "beschreibung": "Verkaufte Position bleibt im Buch",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 13 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt",
+    "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+   ]
+  }
+ ]
+}

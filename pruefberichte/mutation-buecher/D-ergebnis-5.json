@@ -1,0 +1,301 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "D-129",
+   "funktion": "takt",
+   "beschreibung": "Altbuch: letzteAusfuehrungTag auch bei vorhandenem Tag gesetzt (||)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 das laufende Buch: Ausfuehrungstag = New-Yorker Tag von letztesRebalanceT (25.08.2026 18:15 UTC -> 2026-08-25); letztesRebalanceT bleibt stehen"
+   ]
+  },
+  {
+   "id": "D-130",
+   "funktion": "takt",
+   "beschreibung": "Altbuch: NY-Tag von now statt letztesRebalanceT",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 das laufende Buch: Ausfuehrungstag = New-Yorker Tag von letztesRebalanceT (25.08.2026 18:15 UTC -> 2026-08-25); letztesRebalanceT bleibt stehen",
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-131",
+   "funktion": "takt",
+   "beschreibung": "Ziel mit now statt juengstem Balken",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ das Buch ruft die Rangfolge OHNE eigene Zahlen auf - Fenster und Korbregel kommen aus momentum.js + liquide.js"
+   ]
+  },
+  {
+   "id": "D-132",
+   "funktion": "takt",
+   "beschreibung": "Nachladen bei ohneUmsatz-Haelfte: > statt >=",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-133",
+   "funktion": "takt",
+   "beschreibung": "Journal: Verkaeufe = nM - gekauft + 1",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 96.2 der Journaltext nennt die ausgefuehrten Kaeufe (nicht plan.kaufen.length), dazu die mangels Bargeld ausgefallenen und die aufgeloesten Kleinstbestaende"
+   ]
+  },
+  {
+   "id": "D-134",
+   "funktion": "takt",
+   "beschreibung": "Journal: Kosten-Text 10 Bp",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-135",
+   "funktion": "nachladen",
+   "beschreibung": "Sperre 6 Minuten statt 1 Stunde",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-136",
+   "funktion": "kurseFrischHalten",
+   "beschreibung": "Frische-Pruefung entfernt",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-137",
+   "funktion": "kurseFrischHalten",
+   "beschreibung": "Nachladen auch wenn frisch",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-138",
+   "funktion": "ladeKurse",
+   "beschreibung": "Preis = vorletzter Balken",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.5 ladeKurse liefert barZeit (Zeitstempel des Balkens, aus dem der Kurs stammt) und die Ereignisse des Bestands mf_ereignisse - fehlt er, null",
+    "Kleinsttest-Urteil geaendert: 7:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-139",
+   "funktion": "ladeKurse",
+   "beschreibung": "barZeit = erster Balken",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 96.5 ladeKurse liefert barZeit (Zeitstempel des Balkens, aus dem der Kurs stammt) und die Ereignisse des Bestands mf_ereignisse - fehlt er, null"
+   ]
+  },
+  {
+   "id": "D-140",
+   "funktion": "ladeKurse",
+   "beschreibung": "juengster: kleinster statt groesster",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 96.5 ladeKurse liefert barZeit (Zeitstempel des Balkens, aus dem der Kurs stammt) und die Ereignisse des Bestands mf_ereignisse - fehlt er, null"
+   ]
+  },
+  {
+   "id": "D-141",
+   "funktion": "ladeKurse",
+   "beschreibung": "spalte4: 3 Spalten genuegen",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-142",
+   "funktion": "ladeKurse",
+   "beschreibung": "Bezug ohne Laengenpruefung",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Zeichenzeit fuer 390 Kerzen bleibt weit unter einer Zehntelsekunde  [641.4 ms]"
+   ]
+  },
+  {
+   "id": "D-143",
+   "funktion": "ladeKurse",
+   "beschreibung": "stand ohne at = Date.now",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-144",
+   "funktion": "kursOk",
+   "beschreibung": "0 gilt als Kurs (>= 0)",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌ 96.3 unbrauchbare Ereignisse fliegen raus (Betrag 0, negativ, keine Zahl, leerer Eintrag, Nenner 0, Split 1 : 1); fehlt date, gilt der Schluessel  [{\"div\":[[1"
+   ]
+  },
+  {
+   "id": "D-145",
+   "funktion": "kursOk",
+   "beschreibung": "isFinite entfernt",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Kurse: 0, negativ, NaN, unendlich, null und Text sind es nicht"
+   ]
+  },
+  {
+   "id": "D-146",
+   "funktion": "kursOk",
+   "beschreibung": "typeof entfernt",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Kurse: 0, negativ, NaN, unendlich, null und Text sind es nicht"
+   ]
+  },
+  {
+   "id": "D-147",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Zeit in 100 statt 1000",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: Ereignis-Zeitstempel in Sekunden statt Millisekunden faellt auf"
+   ]
+  },
+  {
+   "id": "D-148",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Schluessel statt Feld date bevorzugt",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-149",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Betrag nicht geprueft",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.3 unbrauchbare Ereignisse fliegen raus (Betrag 0, negativ, keine Zahl, leerer Eintrag, Nenner 0, Split 1 : 1); fehlt date, gilt der Schluessel  [{\"div\":[[1"
+   ]
+  },
+  {
+   "id": "D-150",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Split mit z = n bleibt",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.3 unbrauchbare Ereignisse fliegen raus (Betrag 0, negativ, keine Zahl, leerer Eintrag, Nenner 0, Split 1 : 1); fehlt date, gilt der Schluessel  [{\"div\":[[1"
+   ]
+  },
+  {
+   "id": "D-151",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Split Zaehler/Nenner vertauscht",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌ 96.3 Ereignisse ausserhalb des angefragten Fensters fliegen raus - wie die Balken  [{\"div\":[[1709649000000,0.004]],\"split\":[[1718026200000,1,10]]}]"
+   ]
+  },
+  {
+   "id": "D-152",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Split ohne Nenner-Pruefung",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.3 unbrauchbare Ereignisse fliegen raus (Betrag 0, negativ, keine Zahl, leerer Eintrag, Nenner 0, Split 1 : 1); fehlt date, gilt der Schluessel  [{\"div\":[[1"
+   ]
+  },
+  {
+   "id": "D-153",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Fenster ohne untere Grenze einschliessend (> statt >=)",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-154",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Fenster obere Grenze ausschliessend",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-155",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Fenster nur wenn eine Grenze fehlt (|| statt &&)",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-156",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Sortierung absteigend",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.3 zerlege liefert aus der echten Antwort die Ereignisse: zwei Ausschuettungen [tMs, Betrag], ein Split [tMs, Zaehler, Nenner], nach Zeit  [{\"div\":[[1718112"
+   ]
+  },
+  {
+   "id": "D-157",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Dividenden nicht sortiert",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-158",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Splits nicht sortiert",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-159",
+   "funktion": "ereignisseAus",
+   "beschreibung": "Splits ohne Fensterfilter",
+   "datei": "kurse.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-160",
+   "funktion": "ereignisseAb",
+   "beschreibung": "ab-Grenze ausschliessend",
+   "datei": "kurse.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 96.3 ereignisseAb schneidet auf die Ereignisse ab einem Zeitpunkt (einschliesslich), ohne die Vorlage zu aendern"
+   ]
+  }
+ ]
+}

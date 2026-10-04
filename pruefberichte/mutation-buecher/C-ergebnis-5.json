@@ -1,0 +1,187 @@
+{
+ "basis": {
+  "v6rot": 18
+ },
+ "ergebnisse": [
+  {
+   "id": "C-81",
+   "funktion": "istWerktag",
+   "beschreibung": "Sonntag gilt als Werktag",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-82",
+   "funktion": "werktagVor",
+   "beschreibung": "werktagVor ueberspringt Wochenende nicht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-83",
+   "funktion": "nyZeit",
+   "beschreibung": "nyZeit Startschaetzung 4 h",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-84",
+   "funktion": "nyZeit",
+   "beschreibung": "nyZeit: nur ein Korrekturschritt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-85",
+   "funktion": "nyZeit",
+   "beschreibung": "nyZeit Korrekturvorzeichen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌    Gegenprobe: Faelligkeit ueber die Uhrzeit (Fassung bis Nr. 92: Balken nach dem Zeitstempel) faellt auf"
+   ]
+  },
+  {
+   "id": "C-86",
+   "funktion": "nyZeit",
+   "beschreibung": "Schluss fertig 16:00 statt 16:15",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom "
+   ]
+  },
+  {
+   "id": "C-87",
+   "funktion": "nyZeit",
+   "beschreibung": "Handel ab 09:30 statt 09:35",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Grenze 09:35 New York: um 09:34 kein Handel, kein Abruf, die Karte sagt \"Umschichtung heute nach Börsenöffnung\""
+   ]
+  },
+  {
+   "id": "C-88",
+   "funktion": "nyZeit",
+   "beschreibung": "Handel ab 09:45",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-89",
+   "funktion": "nyZeit",
+   "beschreibung": "Schluss fertig 15:15",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom "
+   ]
+  },
+  {
+   "id": "C-90",
+   "funktion": "letzterFertigerWerktag",
+   "beschreibung": "genau 16:15 noch nicht fertig",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-91",
+   "funktion": "letzterFertigerWerktag",
+   "beschreibung": "Wochenende wird als fertiger Tag gewertet",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-92",
+   "funktion": "letzterFertigerWerktag",
+   "beschreibung": "vor Schluss: heute statt Vorwerktag",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 Grenze drei Tage: Marktreihe drei Werktage hinter der Uhr gilt noch, vier nicht - dann faellig = null (nie still \"nicht faellig\")  [4 / 5]"
+   ]
+  },
+  {
+   "id": "C-93",
+   "funktion": "bestandFrisch",
+   "beschreibung": "Ladezeit 0 gilt als moeglich frisch",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-94",
+   "funktion": "bestandFrisch",
+   "beschreibung": "Frische strikt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-95",
+   "funktion": "bestandFrisch",
+   "beschreibung": "Frische ab 16:00 statt 16:15",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-96",
+   "funktion": "bestandFrisch",
+   "beschreibung": "Frische gegen heute statt letzten fertigen Werktag",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-97",
+   "funktion": "bewerteDrift",
+   "beschreibung": "bewerteDrift: Rundung entfernt (beruehrt Momentum nur ueber Verlaufspunkt)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-98",
+   "funktion": "bewerteDrift",
+   "beschreibung": "bewerteDrift: Short-Wert ohne Untergrenze",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  }
+ ]
+}

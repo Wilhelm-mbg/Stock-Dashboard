@@ -1,0 +1,315 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "D-65",
+   "funktion": "eroeffnung",
+   "beschreibung": "Balken mit Eroeffnung wird ueber Schluss geprueft",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-66",
+   "funktion": "eroeffnung",
+   "beschreibung": "spaetester statt frueher Balken",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-67",
+   "funktion": "eroeffnung",
+   "beschreibung": "Zeitstempel t = von statt Balkenzeit",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌    Gegenprobe: Fuellkurs = Schluss statt Eroeffnung faellt auf"
+   ]
+  },
+  {
+   "id": "D-68",
+   "funktion": "eroeffnung",
+   "beschreibung": "bereinigt:true abgerufen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (r"
+   ]
+  },
+  {
+   "id": "D-69",
+   "funktion": "eroeffnung",
+   "beschreibung": "offenRoh:false (fehlende Eroeffnung faellt auf Schluss)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (r"
+   ]
+  },
+  {
+   "id": "D-70",
+   "funktion": "eroeffnung",
+   "beschreibung": "bis=Mitternacht statt now im Abruf",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.2 Eroeffnung erst beim dritten Takt (09:50, 10:20 ohne, 10:50 mit): die ersten zwei aendern nichts und schreiben keine Zeile, der dritte kauft zur Eroeffnu"
+   ]
+  },
+  {
+   "id": "D-71",
+   "funktion": "eroeffnung",
+   "beschreibung": "interval 1h statt 1d",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-72",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Handelsbeginn 09:30 statt HANDEL_AB-Minute",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "D-73",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Handelsbeginn 09:00",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Grenze 09:35 New York: um 09:34 kein Handel, kein Abruf, die Karte sagt \"Umschichtung heute nach Börsenöffnung\""
+   ]
+  },
+  {
+   "id": "D-74",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "now <= statt < Handelsbeginn",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-75",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Frische gegen now statt Bestandsstand",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom ",
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-76",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Frische mit falschem Tag (Stichtag statt heute)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom ",
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-77",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Ziel auf ungeschnittenen Rohdaten",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌    Gegenprobe: ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel"
+   ]
+  },
+  {
+   "id": "D-78",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Ziel mit nowMs = now statt Stichtag",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌    Gegenprobe: ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel"
+   ]
+  },
+  {
+   "id": "D-79",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Hinweistext nennt halten statt mindestWerte",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-80",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "SPY-Handelstagspruefung entfernt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 liefert der Abruf fuer SPY keinen Balken von heute, ist heute kein Handelstag: kein Handel, nur ein Abruf"
+   ]
+  },
+  {
+   "id": "D-81",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "SPY-Eroeffnung vom Stichtag",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-82",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Wert-Eroeffnungen vom Stichtag",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Fuellkurs = Eroeffnung des Ausfuehrungstags (50, nicht der Schluss 999); ein Wert ohne Eroeffnung bekommt keinen Kurs (Ziel nicht gekauft, Position gehal",
+    "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-83",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Positionen ausserhalb des Ziels werden nicht bepreist",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Fuellkurs = Eroeffnung des Ausfuehrungstags (50, nicht der Schluss 999); ein Wert ohne Eroeffnung bekommt keinen Kurs (Ziel nicht gekauft, Position gehal",
+    "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-84",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Ziel-Werte ohne ersten bepreist",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": [
+    "(Hinweis, kein Urteil) Kleinsttest-Text geaendert"
+   ]
+  },
+  {
+   "id": "D-85",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "barZeit = now statt Balkenstempel",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Fuellkurs = Eroeffnung des Ausfuehrungstags (50, nicht der Schluss 999); ein Wert ohne Eroeffnung bekommt keinen Kurs (Ziel nicht gekauft, Position gehal"
+   ]
+  },
+  {
+   "id": "D-86",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Rueckgabe heute = Stichtag",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-87",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Rueckgabe Stichtag = heute",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (r"
+   ]
+  },
+  {
+   "id": "D-88",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "veraltete Marktreihe wird ignoriert",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-89",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Wochenendsperre ignoriert",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-90",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Ende gemeldet, aber nicht zum Speichern gemeldet",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+   ]
+  },
+  {
+   "id": "D-91",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Nachfassen auch bei ausgeschaltetem Buch",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.4 Schalter \"handelt selbst\" aus: kein Abruf, kein Handel; beendet wird trotzdem (16:05: offen geloescht)"
+   ]
+  },
+  {
+   "id": "D-92",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Eroeffnung vom Folgetag des Auftrags",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 9 neu rot, z.B. ❌    Gegenprobe: Nachfassen zum laufenden Kurs (Schluss 999 statt Eroeffnung 50) faellt auf"
+   ]
+  },
+  {
+   "id": "D-93",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Kosten 10 statt 20 Bp",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌ 99.2 Eroeffnung erst beim dritten Takt (09:50, 10:20 ohne, 10:50 mit): die ersten zwei aendern nichts und schreiben keine Zeile, der dritte kauft zur Eroeffnu"
+   ]
+  },
+  {
+   "id": "D-94",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Kosten 30 statt 20 Bp",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌ 99.2 Eroeffnung erst beim dritten Takt (09:50, 10:20 ohne, 10:50 mit): die ersten zwei aendern nichts und schreiben keine Zeile, der dritte kauft zur Eroeffnu"
+   ]
+  },
+  {
+   "id": "D-95",
+   "funktion": "offenNachfassen",
+   "beschreibung": "Kleinstanteil nicht durchgereicht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.2 Schalter von Regel K wie bei der Umschichtung: 400 $ Bargeld bei 10.000 $ Platzwert - mit K1 (5 %) kein Kleinstkauf (bleibt offen), ohne Schalter gekauft"
+   ]
+  },
+  {
+   "id": "D-96",
+   "funktion": "offenNachfassen",
+   "beschreibung": "barZeit = now beim Nachfassen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 99.2 Eroeffnung kommt beim ersten Nachfassen (10:05): Kauf zur Eroeffnung 50 (der Balken traegt als Schluss den laufenden Kurs 999), 200 Stueck = budget / Kur"
+   ]
+  }
+ ]
+}

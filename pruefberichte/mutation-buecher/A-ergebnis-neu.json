@@ -1,0 +1,207 @@
+{
+ "basis": {
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "A-10",
+   "funktion": "momentumZiel",
+   "beschreibung": "Mindestlaenge 252 statt 253",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-12",
+   "funktion": "momentumZiel",
+   "beschreibung": "Altersgrenze 8 statt 7 Tage",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-13",
+   "funktion": "momentumZiel",
+   "beschreibung": "Altersgrenze 6 Tage",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-14",
+   "funktion": "momentumZiel",
+   "beschreibung": "Altersvergleich >= statt >",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-20",
+   "funktion": "momentumZiel",
+   "beschreibung": "Mindestzahl Ziele 4 statt 5",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-25",
+   "funktion": "momentumZiel",
+   "beschreibung": "Korbzaehler ohneUmsatz/unterSchwelle vertauscht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-29",
+   "funktion": "momentumZiel",
+   "beschreibung": "p0-Pruefung entfernt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-31",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Grenze: Umschichtungstag zaehlt mit",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-32",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Grenze: Folgetag zaehlt nicht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-34",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "faellig erst bei > halten",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-35",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Standard-halten 62",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-36",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Standard-halten 64",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-38",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Zeitstempel-Tag in UTC statt New York",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-39",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "juengster Balken nicht gezaehlt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-46",
+   "funktion": "medianUmsatz",
+   "beschreibung": "Indexgrenze",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-52",
+   "funktion": "zulaessig",
+   "beschreibung": "Schwelle 0 schaltet Filter nicht ab",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-53",
+   "funktion": "zulaessig",
+   "beschreibung": "umsatzMin 0 ersetzt durch Standard",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-54",
+   "funktion": "hatUmsatz",
+   "beschreibung": "hatUmsatz ohne isFinite",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-55",
+   "funktion": "hatUmsatz",
+   "beschreibung": "hatUmsatz ohne Stichtagsbalken",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "A-60",
+   "funktion": "STANDARD",
+   "beschreibung": "STANDARD.minWerte 24 (vom Buch ungenutzt)",
+   "datei": "momentum.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  }
+ ]
+}

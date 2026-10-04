@@ -1,0 +1,482 @@
+[
+ {
+  "id": "A-01",
+  "datei": "mfhandel.js",
+  "suche": "{ rueckblick: Mo.STANDARD.rueckblick, luecke:",
+  "ersatz": "{ rueckblick: Mo.STANDARD.rueckblick + 1, luecke:",
+  "funktion": "buchKonfig",
+  "beschreibung": "Rueckblick der Konfig +1"
+ },
+ {
+  "id": "A-02",
+  "datei": "mfhandel.js",
+  "suche": "luecke: Mo.STANDARD.luecke, halten",
+  "ersatz": "luecke: Mo.STANDARD.luecke + 1, halten",
+  "funktion": "buchKonfig",
+  "beschreibung": "Luecke der Konfig +1"
+ },
+ {
+  "id": "A-03",
+  "datei": "mfhandel.js",
+  "suche": "halten: Mo.STANDARD.halten,",
+  "ersatz": "halten: Mo.STANDARD.halten - 1,",
+  "funktion": "buchKonfig",
+  "beschreibung": "Haltedauer der Konfig 62"
+ },
+ {
+  "id": "A-04",
+  "datei": "mfhandel.js",
+  "suche": "anteil: Mo.STANDARD.anteil, mindestWerte",
+  "ersatz": "anteil: Mo.STANDARD.anteil * 2, mindestWerte",
+  "funktion": "buchKonfig",
+  "beschreibung": "Anteil der Konfig verdoppelt"
+ },
+ {
+  "id": "A-05",
+  "datei": "mfhandel.js",
+  "suche": "mindestWerte: Li.KORB.mindestWerte,",
+  "ersatz": "mindestWerte: Li.KORB.mindestWerte - 1,",
+  "funktion": "buchKonfig",
+  "beschreibung": "mindestWerte der Konfig -1"
+ },
+ {
+  "id": "A-06",
+  "datei": "mfhandel.js",
+  "suche": "umsatzMin: Li.KORB.umsatzMin,",
+  "ersatz": "umsatzMin: Li.KORB.umsatzMin / 10,",
+  "funktion": "buchKonfig",
+  "beschreibung": "umsatzMin der Konfig /10"
+ },
+ {
+  "id": "A-07",
+  "datei": "mfhandel.js",
+  "suche": "umsatzFenster: Li.KORB.fenster,",
+  "ersatz": "umsatzFenster: Li.KORB.fenster + 1,",
+  "funktion": "buchKonfig",
+  "beschreibung": "umsatzFenster der Konfig +1"
+ },
+ {
+  "id": "A-08",
+  "datei": "mfhandel.js",
+  "suche": "kleinstAnteil: 0.05 };",
+  "ersatz": "kleinstAnteil: 0.5 };",
+  "funktion": "buchKonfig",
+  "beschreibung": "Kleinstanteil 0,5 statt 0,05"
+ },
+ {
+  "id": "A-09",
+  "datei": "mfhandel.js",
+  "suche": "kleinstAnteil: 0.05 };",
+  "ersatz": "kleinstAnteil: 0 };",
+  "funktion": "buchKonfig",
+  "beschreibung": "Kleinstanteil 0 (Regel K aus)"
+ },
+ {
+  "id": "A-10",
+  "datei": "mfhandel.js",
+  "suche": "r.length < rueck + luecke + 1) {",
+  "ersatz": "r.length < rueck + luecke) {",
+  "funktion": "momentumZiel",
+  "beschreibung": "Mindestlaenge 252 statt 253"
+ },
+ {
+  "id": "A-11",
+  "datei": "mfhandel.js",
+  "suche": "r.length < rueck + luecke + 1) {",
+  "ersatz": "r.length <= rueck + luecke + 1) {",
+  "funktion": "momentumZiel",
+  "beschreibung": "Mindestlaenge 254 (<=)"
+ },
+ {
+  "id": "A-12",
+  "datei": "mfhandel.js",
+  "suche": "var maxAlter = opts.maxAlterMs || 7 * 86400000;",
+  "ersatz": "var maxAlter = opts.maxAlterMs || 8 * 86400000;",
+  "funktion": "momentumZiel",
+  "beschreibung": "Altersgrenze 8 statt 7 Tage"
+ },
+ {
+  "id": "A-13",
+  "datei": "mfhandel.js",
+  "suche": "var maxAlter = opts.maxAlterMs || 7 * 86400000;",
+  "ersatz": "var maxAlter = opts.maxAlterMs || 6 * 86400000;",
+  "funktion": "momentumZiel",
+  "beschreibung": "Altersgrenze 6 Tage"
+ },
+ {
+  "id": "A-14",
+  "datei": "mfhandel.js",
+  "suche": "nowMs - r[r.length - 1][0] > maxAlter) {",
+  "ersatz": "nowMs - r[r.length - 1][0] >= maxAlter) {",
+  "funktion": "momentumZiel",
+  "beschreibung": "Altersvergleich >= statt >"
+ },
+ {
+  "id": "A-15",
+  "datei": "mfhandel.js",
+  "suche": "var a = r[i - luecke - rueck][1]",
+  "ersatz": "var a = r[i - luecke - rueck + 1][1]",
+  "funktion": "momentumZiel",
+  "beschreibung": "Startkurs um einen Tag verschoben"
+ },
+ {
+  "id": "A-16",
+  "datei": "mfhandel.js",
+  "suche": "m2 = r[i - luecke][1]",
+  "ersatz": "m2 = r[i - luecke + 1][1]",
+  "funktion": "momentumZiel",
+  "beschreibung": "Endkurs der Staerke um einen Tag verschoben"
+ },
+ {
+  "id": "A-17",
+  "datei": "mfhandel.js",
+  "suche": "var st = m2 / a - 1;",
+  "ersatz": "var st = p0 / a - 1;",
+  "funktion": "momentumZiel",
+  "beschreibung": "Staerke bis heute statt bis Luecke (Lueckenmonat nicht ausgelassen)"
+ },
+ {
+  "id": "A-18",
+  "datei": "mfhandel.js",
+  "suche": "var st = m2 / a - 1;",
+  "ersatz": "var st = m2 / a;",
+  "funktion": "momentumZiel",
+  "beschreibung": "Staerke ohne -1 (Rang unveraendert, Wert +1)"
+ },
+ {
+  "id": "A-19",
+  "datei": "mfhandel.js",
+  "suche": "punkte.sort(function (a, b) { return b.staerke - a.staerke; });",
+  "ersatz": "punkte.sort(function (a, b) { return a.staerke - b.staerke; });",
+  "funktion": "momentumZiel",
+  "beschreibung": "Rangfolge aufsteigend (Schwaechste gekauft)"
+ },
+ {
+  "id": "A-20",
+  "datei": "mfhandel.js",
+  "suche": "Math.max(5, Math.round(punkte.length * anteil))",
+  "ersatz": "Math.max(4, Math.round(punkte.length * anteil))",
+  "funktion": "momentumZiel",
+  "beschreibung": "Mindestzahl Ziele 4 statt 5"
+ },
+ {
+  "id": "A-21",
+  "datei": "mfhandel.js",
+  "suche": "Math.max(5, Math.round(punkte.length * anteil))",
+  "ersatz": "Math.max(5, Math.floor(punkte.length * anteil))",
+  "funktion": "momentumZiel",
+  "beschreibung": "Zielzahl abgerundet"
+ },
+ {
+  "id": "A-22",
+  "datei": "mfhandel.js",
+  "suche": "Math.max(5, Math.round(punkte.length * anteil))",
+  "ersatz": "Math.max(5, Math.ceil(punkte.length * anteil))",
+  "funktion": "momentumZiel",
+  "beschreibung": "Zielzahl aufgerundet"
+ },
+ {
+  "id": "A-23",
+  "datei": "mfhandel.js",
+  "suche": "punkte.slice(0, n).map",
+  "ersatz": "punkte.slice(0, n + 1).map",
+  "funktion": "momentumZiel",
+  "beschreibung": "Ziel um einen Wert laenger"
+ },
+ {
+  "id": "A-24",
+  "datei": "mfhandel.js",
+  "suche": "if (punkte.length < minWerte)",
+  "ersatz": "if (punkte.length <= minWerte)",
+  "funktion": "momentumZiel",
+  "beschreibung": "mindestWerte <= statt <"
+ },
+ {
+  "id": "A-25",
+  "datei": "mfhandel.js",
+  "suche": "if (umsatzMin > 0 && !Li.hatUmsatz(r, i, fenster)) korb.ohneUmsatz++; else korb.unterSchwelle++;",
+  "ersatz": "if (umsatzMin > 0 && !Li.hatUmsatz(r, i, fenster)) korb.unterSchwelle++; else korb.ohneUmsatz++;",
+  "funktion": "momentumZiel",
+  "beschreibung": "Korbzaehler ohneUmsatz/unterSchwelle vertauscht"
+ },
+ {
+  "id": "A-26",
+  "datei": "mfhandel.js",
+  "suche": "if (isFinite(st)) { korb.zulaessig++;",
+  "ersatz": "if (isFinite(st)) {",
+  "funktion": "momentumZiel",
+  "beschreibung": "Korbzaehler zulaessig nicht gezaehlt"
+ },
+ {
+  "id": "A-27",
+  "datei": "mfhandel.js",
+  "suche": "var anteil = opts.anteil || K.anteil, minWerte = opts.minWerte || K.mindestWerte;",
+  "ersatz": "var anteil = opts.anteil || K.anteil, minWerte = opts.minWerte || K.mindestWerte - 1;",
+  "funktion": "momentumZiel",
+  "beschreibung": "Standard-minWerte -1"
+ },
+ {
+  "id": "A-28",
+  "datei": "mfhandel.js",
+  "suche": "var z = Li.zulaessig(r, i, { umsatzMin: umsatzMin, fenster: fenster });",
+  "ersatz": "var z = Li.zulaessig(r, i - 1, { umsatzMin: umsatzMin, fenster: fenster });",
+  "funktion": "momentumZiel",
+  "beschreibung": "Korbfilter am Vortag statt am Stichtag"
+ },
+ {
+  "id": "A-29",
+  "datei": "mfhandel.js",
+  "suche": "if (!(a > 0) || !(m2 > 0) || !(p0 > 0))",
+  "ersatz": "if (!(a > 0) || !(m2 > 0))",
+  "funktion": "momentumZiel",
+  "beschreibung": "p0-Pruefung entfernt"
+ },
+ {
+  "id": "A-30",
+  "datei": "mfhandel.js",
+  "suche": "umsatz: z.umsatz }); }",
+  "ersatz": "umsatz: 0 }); }",
+  "funktion": "momentumZiel",
+  "beschreibung": "Umsatz der Rangfolge 0"
+ },
+ {
+  "id": "A-31",
+  "datei": "mfhandel.js",
+  "suche": "nyZeit(tagPlus(typeof letztesT === 'string' ? letztesT : nyTag(letztesT), 1), 0, 0)",
+  "ersatz": "nyZeit(tagPlus(typeof letztesT === 'string' ? letztesT : nyTag(letztesT), 0), 0, 0)",
+  "funktion": "rebalanceFaellig",
+  "beschreibung": "Grenze: Umschichtungstag zaehlt mit"
+ },
+ {
+  "id": "A-32",
+  "datei": "mfhandel.js",
+  "suche": "nyZeit(tagPlus(typeof letztesT === 'string' ? letztesT : nyTag(letztesT), 1), 0, 0)",
+  "ersatz": "nyZeit(tagPlus(typeof letztesT === 'string' ? letztesT : nyTag(letztesT), 2), 0, 0)",
+  "funktion": "rebalanceFaellig",
+  "beschreibung": "Grenze: Folgetag zaehlt nicht"
+ },
+ {
+  "id": "A-33",
+  "datei": "mfhandel.js",
+  "suche": "marktReihe[i][0] >= grenze; i--) tage++;",
+  "ersatz": "marktReihe[i][0] > grenze; i--) tage++;",
+  "funktion": "rebalanceFaellig",
+  "beschreibung": "Balken genau an der Grenze zaehlt nicht"
+ },
+ {
+  "id": "A-34",
+  "datei": "mfhandel.js",
+  "suche": "return tage >= (halten || 63);",
+  "ersatz": "return tage > (halten || 63);",
+  "funktion": "rebalanceFaellig",
+  "beschreibung": "faellig erst bei > halten"
+ },
+ {
+  "id": "A-35",
+  "datei": "mfhandel.js",
+  "suche": "return tage >= (halten || 63);",
+  "ersatz": "return tage >= (halten || 62);",
+  "funktion": "rebalanceFaellig",
+  "beschreibung": "Standard-halten 62"
+ },
+ {
+  "id": "A-36",
+  "datei": "mfhandel.js",
+  "suche": "return tage >= (halten || 63);",
+  "ersatz": "return tage >= (halten || 64);",
+  "funktion": "rebalanceFaellig",
+  "beschreibung": "Standard-halten 64"
+ },
+ {
+  "id": "A-37",
+  "datei": "mfhandel.js",
+  "suche": "if (!letztesT) return true;",
+  "ersatz": "if (!letztesT) return false;",
+  "funktion": "rebalanceFaellig",
+  "beschreibung": "ohne letzte Umschichtung nicht faellig"
+ },
+ {
+  "id": "A-38",
+  "datei": "mfhandel.js",
+  "suche": "typeof letztesT === 'string' ? letztesT : nyTag(letztesT)",
+  "ersatz": "typeof letztesT === 'string' ? letztesT : new Date(letztesT).toISOString().slice(0, 10)",
+  "funktion": "rebalanceFaellig",
+  "beschreibung": "Zeitstempel-Tag in UTC statt New York"
+ },
+ {
+  "id": "A-39",
+  "datei": "mfhandel.js",
+  "suche": "for (var i = marktReihe.length - 1; i >= 0 && marktReihe[i][0] >= grenze; i--) tage++;",
+  "ersatz": "for (var i = marktReihe.length - 2; i >= 0 && marktReihe[i][0] >= grenze; i--) tage++;",
+  "funktion": "rebalanceFaellig",
+  "beschreibung": "juengster Balken nicht gezaehlt"
+ },
+ {
+  "id": "A-40",
+  "datei": "liquide.js",
+  "suche": "return s.length ? s[s.length >> 1] : NaN;",
+  "ersatz": "return s.length ? s[(s.length - 1) >> 1] : NaN;",
+  "funktion": "median",
+  "beschreibung": "Median unterer statt oberer Mittelwert"
+ },
+ {
+  "id": "A-41",
+  "datei": "liquide.js",
+  "suche": "a.slice().sort(function (x, y) { return x - y; });",
+  "ersatz": "a.slice().sort(function (x, y) { return y - x; });",
+  "funktion": "median",
+  "beschreibung": "Median: absteigend sortiert"
+ },
+ {
+  "id": "A-42",
+  "datei": "liquide.js",
+  "suche": "for (var q = Math.max(0, i - (fenster - 1)); q <= i; q++) ums.push",
+  "ersatz": "for (var q = Math.max(0, i - fenster); q <= i; q++) ums.push",
+  "funktion": "medianUmsatz",
+  "beschreibung": "Umsatzfenster 21 Balken"
+ },
+ {
+  "id": "A-43",
+  "datei": "liquide.js",
+  "suche": "for (var q = Math.max(0, i - (fenster - 1)); q <= i; q++) ums.push",
+  "ersatz": "for (var q = Math.max(0, i - (fenster - 2)); q <= i; q++) ums.push",
+  "funktion": "medianUmsatz",
+  "beschreibung": "Umsatzfenster 19 Balken"
+ },
+ {
+  "id": "A-44",
+  "datei": "liquide.js",
+  "suche": "for (var q = Math.max(0, i - (fenster - 1)); q <= i; q++) ums.push",
+  "ersatz": "for (var q = Math.max(0, i - (fenster - 1)); q < i; q++) ums.push",
+  "funktion": "medianUmsatz",
+  "beschreibung": "Stichtagsbalken nicht im Umsatzfenster"
+ },
+ {
+  "id": "A-45",
+  "datei": "liquide.js",
+  "suche": "(bars[q][1] || 0) * (bars[q][2] || 0)",
+  "ersatz": "(bars[q][1] || 0) + (bars[q][2] || 0)",
+  "funktion": "medianUmsatz",
+  "beschreibung": "Umsatz Summe statt Produkt"
+ },
+ {
+  "id": "A-46",
+  "datei": "liquide.js",
+  "suche": "if (i < 0 || i >= bars.length) return NaN;",
+  "ersatz": "if (i < 0 || i > bars.length) return NaN;",
+  "funktion": "medianUmsatz",
+  "beschreibung": "Indexgrenze"
+ },
+ {
+  "id": "A-47",
+  "datei": "liquide.js",
+  "suche": "fenster: 20,",
+  "ersatz": "fenster: 19,",
+  "funktion": "KORB",
+  "beschreibung": "KORB.fenster 19"
+ },
+ {
+  "id": "A-48",
+  "datei": "liquide.js",
+  "suche": "umsatzMin: 100000000,",
+  "ersatz": "umsatzMin: 10000000,",
+  "funktion": "KORB",
+  "beschreibung": "KORB.umsatzMin 10 Mio"
+ },
+ {
+  "id": "A-49",
+  "datei": "liquide.js",
+  "suche": "umsatzMin: 100000000,",
+  "ersatz": "umsatzMin: 100000001,",
+  "funktion": "KORB",
+  "beschreibung": "KORB.umsatzMin +1"
+ },
+ {
+  "id": "A-50",
+  "datei": "liquide.js",
+  "suche": "mindestWerte: 100 ",
+  "ersatz": "mindestWerte: 99 ",
+  "funktion": "KORB",
+  "beschreibung": "KORB.mindestWerte 99"
+ },
+ {
+  "id": "A-51",
+  "datei": "liquide.js",
+  "suche": "if (!(u >= min)) {",
+  "ersatz": "if (!(u > min)) {",
+  "funktion": "zulaessig",
+  "beschreibung": "Umsatzschwelle: > statt >="
+ },
+ {
+  "id": "A-52",
+  "datei": "liquide.js",
+  "suche": "if (!(min > 0)) return { ok: true",
+  "ersatz": "if (min < 0) return { ok: true",
+  "funktion": "zulaessig",
+  "beschreibung": "Schwelle 0 schaltet Filter nicht ab"
+ },
+ {
+  "id": "A-53",
+  "datei": "liquide.js",
+  "suche": "var min = opts.umsatzMin == null ? KORB.umsatzMin : opts.umsatzMin;",
+  "ersatz": "var min = opts.umsatzMin || KORB.umsatzMin;",
+  "funktion": "zulaessig",
+  "beschreibung": "umsatzMin 0 ersetzt durch Standard"
+ },
+ {
+  "id": "A-54",
+  "datei": "liquide.js",
+  "suche": "if (typeof bars[q][2] === 'number' && isFinite(bars[q][2])) return true;",
+  "ersatz": "if (typeof bars[q][2] === 'number') return true;",
+  "funktion": "hatUmsatz",
+  "beschreibung": "hatUmsatz ohne isFinite"
+ },
+ {
+  "id": "A-55",
+  "datei": "liquide.js",
+  "suche": "for (var q = Math.max(0, i - (fenster - 1)); q <= i && q < bars.length; q++) {",
+  "ersatz": "for (var q = Math.max(0, i - (fenster - 1)); q < i && q < bars.length; q++) {",
+  "funktion": "hatUmsatz",
+  "beschreibung": "hatUmsatz ohne Stichtagsbalken"
+ },
+ {
+  "id": "A-56",
+  "datei": "momentum.js",
+  "suche": "rueckblick: 231,",
+  "ersatz": "rueckblick: 230,",
+  "funktion": "STANDARD",
+  "beschreibung": "STANDARD.rueckblick 230"
+ },
+ {
+  "id": "A-57",
+  "datei": "momentum.js",
+  "suche": "luecke: 21, ",
+  "ersatz": "luecke: 20, ",
+  "funktion": "STANDARD",
+  "beschreibung": "STANDARD.luecke 20"
+ },
+ {
+  "id": "A-58",
+  "datei": "momentum.js",
+  "suche": "halten: 63, ",
+  "ersatz": "halten: 62, ",
+  "funktion": "STANDARD",
+  "beschreibung": "STANDARD.halten 62"
+ },
+ {
+  "id": "A-59",
+  "datei": "momentum.js",
+  "suche": "anteil: 0.10,",
+  "ersatz": "anteil: 0.20,",
+  "funktion": "STANDARD",
+  "beschreibung": "STANDARD.anteil 0,2"
+ },
+ {
+  "id": "A-60",
+  "datei": "momentum.js",
+  "suche": "minWerte: 25 ",
+  "ersatz": "minWerte: 24 ",
+  "funktion": "STANDARD",
+  "beschreibung": "STANDARD.minWerte 24 (vom Buch ungenutzt)"
+ }
+]

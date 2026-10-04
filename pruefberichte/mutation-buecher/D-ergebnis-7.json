@@ -1,0 +1,114 @@
+{
+ "basis": {
+  "v6rot": 17,
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "D-191",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Ausfuehrungstag nach UTC statt New York",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-192",
+   "funktion": "tagespunkt",
+   "beschreibung": "Schreibtag eines alten Punkts nach UTC statt New York",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-193",
+   "funktion": "takt",
+   "beschreibung": "Ausfuehrungstag des Altbuchs nach UTC statt New York",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.6 das laufende Buch: Ausfuehrungstag = New-Yorker Tag von letztesRebalanceT (25.08.2026 18:15 UTC -> 2026-08-25); letztesRebalanceT bleibt stehen"
+   ]
+  },
+  {
+   "id": "D-194",
+   "funktion": "eroeffnung",
+   "beschreibung": "Fehler beim Abruf wird weitergereicht statt null",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-195",
+   "funktion": "tagespunkt",
+   "beschreibung": "Kappung erst ab 7500 Punkten",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-196",
+   "funktion": "tagespunkt",
+   "beschreibung": "Kappung ab >= 750 statt > 750 (vermutlich aequivalent)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "D-197",
+   "funktion": "takt",
+   "beschreibung": "Korbverlauf-Kappung >= 120 statt > 120 (vermutlich aequivalent)",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-198",
+   "funktion": "tagespunkt",
+   "beschreibung": "Marktstand-Preis x.kurs aus Bezug Spalte 1 ok; Tag X = juengster statt vorheriger (Bedingung <= statt <)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+   ]
+  },
+  {
+   "id": "D-199",
+   "funktion": "offenNachfassen",
+   "beschreibung": "offenBeenden wird mit Uhr + 6 Stunden gefragt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 10 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+   ]
+  },
+  {
+   "id": "D-200",
+   "funktion": "massnahmenBuchen",
+   "beschreibung": "Journal-Kennung ohne Buchnamen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 96.5 je Takt und Buch genau eine Journalzeile, wenn gebucht wurde  [2]"
+   ]
+  },
+  {
+   "id": "D-201",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "Journal-Kennung ohne Wert",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-202",
+   "funktion": "ausfuehrungVorbereiten",
+   "beschreibung": "Wartezeit 90 ms entfernt (Tempo)",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  }
+ ]
+}

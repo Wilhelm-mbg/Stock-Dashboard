@@ -1,0 +1,302 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "D-33",
+   "funktion": "massnahmenBuchen",
+   "beschreibung": "Buecher vertauscht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 96.5 je Takt und Buch genau eine Journalzeile, wenn gebucht wurde  [2]"
+   ]
+  },
+  {
+   "id": "D-34",
+   "funktion": "massnahmenBuchen",
+   "beschreibung": "Ereignisse nicht uebergeben",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.5 der zweite Takt bucht nichts und schreibt keine Zeile  [0]"
+   ]
+  },
+  {
+   "id": "D-35",
+   "funktion": "massnahmenBuchen",
+   "beschreibung": "barZeit nicht uebergeben",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 96.5 der zweite Takt bucht nichts und schreibt keine Zeile  [0]"
+   ]
+  },
+  {
+   "id": "D-36",
+   "funktion": "massnahmenBuchen",
+   "beschreibung": "Zeit now + 1 Tag",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-37",
+   "funktion": "massnahmenBuchen",
+   "beschreibung": "geaendert wird nach Buchung nicht gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "D-38",
+   "funktion": "massnahmenBuchen",
+   "beschreibung": "Journaltext aus applied statt txt vertauscht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 96.5 je Takt und Buch genau eine Journalzeile, wenn gebucht wurde  [2]"
+   ]
+  },
+  {
+   "id": "D-39",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "Drift-Buch nicht ausgebucht",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-40",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "Momentum-Buch nicht ausgebucht",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "Kleinsttest-Urteil geaendert: 3:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-41",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "Zeit now + 10 Tage",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.4 im Takt: beide Buecher, nur mit einer Marktreihe, die nicht veraltet ist (sonst wird nicht gezaehlt und nichts ausgebucht)"
+   ]
+  },
+  {
+   "id": "D-42",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "Journal immer als momentum",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-43",
+   "funktion": "reihenendeBuchen",
+   "beschreibung": "geaendert nicht gesetzt",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-44",
+   "funktion": "takt/Reihenende",
+   "beschreibung": "Reihenende auch bei veralteter Marktreihe",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.4 im Takt: beide Buecher, nur mit einer Marktreihe, die nicht veraltet ist (sonst wird nicht gezaehlt und nichts ausgebucht)"
+   ]
+  },
+  {
+   "id": "D-45",
+   "funktion": "tagespunkt",
+   "beschreibung": "gleicher Tag erzeugt zweiten Punkt (< statt <=)",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+   ]
+  },
+  {
+   "id": "D-46",
+   "funktion": "tagespunkt",
+   "beschreibung": "Tag des alten Punkts ohne tag um einen Tag verschoben",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-47",
+   "funktion": "tagespunkt",
+   "beschreibung": "Sperre nach Umschichtung >= statt >",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-48",
+   "funktion": "tagespunkt",
+   "beschreibung": "Sperre nach Umschichtung < statt >",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌    Gegenprobe: Bewertung zum Einstand trotz Reihe (S ohne Balken von X zum Einstand 70 statt zum letzten Schluss 77) faellt auf",
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "D-49",
+   "funktion": "tagespunkt",
+   "beschreibung": "Schluesse vom Takt-Tag statt vom Punkt-Tag",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌    Gegenprobe: Bewertung zum Einstand trotz Reihe (S ohne Balken von X zum Einstand 70 statt zum letzten Schluss 77) faellt auf"
+   ]
+  },
+  {
+   "id": "D-50",
+   "funktion": "tagespunkt",
+   "beschreibung": "Momentum-Bargeld aktuell statt an X",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+   ]
+  },
+  {
+   "id": "D-51",
+   "funktion": "tagespunkt",
+   "beschreibung": "Drift-Bargeld aktuell statt an X",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-52",
+   "funktion": "tagespunkt",
+   "beschreibung": "buchT = now statt x.t",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 97.7 mfdepot.js: der Merker fuehrt beide Reihen (markt(), marktRoh()); jeder neue Tagespunkt und der Stand des Takts tragen spyT (Stempel des Balkens, aus dem"
+   ]
+  },
+  {
+   "id": "D-53",
+   "funktion": "tagespunkt",
+   "beschreibung": "spyT = now statt x.t",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "D-54",
+   "funktion": "tagespunkt",
+   "beschreibung": "spy = Schluss des Takts (daten.preise) statt x.kurs",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 97.7 mfdepot.js: der Merker fuehrt beide Reihen (markt(), marktRoh()); jeder neue Tagespunkt und der Stand des Takts tragen spyT (Stempel des Balkens, aus dem",
+    "(Hinweis, kein Urteil) Kleinsttest-Text geaendert"
+   ]
+  },
+  {
+   "id": "D-55",
+   "funktion": "tagespunkt",
+   "beschreibung": "startM Fallback 10000",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-56",
+   "funktion": "tagespunkt",
+   "beschreibung": "startD = START_KAPITAL statt null ohne Drift-Buch",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-57",
+   "funktion": "tagespunkt",
+   "beschreibung": "drift 0 statt null ohne Buch",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-58",
+   "funktion": "tagespunkt",
+   "beschreibung": "Kappung auf 749 statt 750",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-59",
+   "funktion": "tagespunkt",
+   "beschreibung": "Kappung auf 751 statt 750",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-60",
+   "funktion": "tagespunkt",
+   "beschreibung": "Marktwert Momentum aus Buch mit mfBuch.cash statt bargeldAm und Positionen",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+   ]
+  },
+  {
+   "id": "D-61",
+   "funktion": "eroeffnung",
+   "beschreibung": "Fensterende zwei Tage statt einen",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-62",
+   "funktion": "eroeffnung",
+   "beschreibung": "Fensteranfang ein Tag frueher",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (r"
+   ]
+  },
+  {
+   "id": "D-63",
+   "funktion": "eroeffnung",
+   "beschreibung": "fehlende Eroeffnung (null) wird akzeptiert (>= 0)",
+   "datei": "mfdepot.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "D-64",
+   "funktion": "eroeffnung",
+   "beschreibung": "Schluss statt Eroeffnung als Fuellkurs",
+   "datei": "mfdepot.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 8 neu rot, z.B. ❌    Gegenprobe: Fuellkurs = Schluss statt Eroeffnung faellt auf",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+   ]
+  }
+ ]
+}

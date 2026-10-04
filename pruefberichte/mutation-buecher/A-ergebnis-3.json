@@ -1,0 +1,103 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "A-21",
+   "funktion": "momentumZiel",
+   "beschreibung": "Zielzahl abgerundet",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ AEQUIVALENZ: beide bilden DENSELBEN Korb (staerkstes Zehntel der Zulaessigen)  [13 / 12]"
+   ]
+  },
+  {
+   "id": "A-22",
+   "funktion": "momentumZiel",
+   "beschreibung": "Zielzahl aufgerundet",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-23",
+   "funktion": "momentumZiel",
+   "beschreibung": "Ziel um einen Wert laenger",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 9 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "A-24",
+   "funktion": "momentumZiel",
+   "beschreibung": "mindestWerte <= statt <",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.2 eine Reihe mit 253 Balken wird abgelegt (die Regel rangiert sie), eine mit 252 nicht (sie steht auf weg)"
+   ]
+  },
+  {
+   "id": "A-25",
+   "funktion": "momentumZiel",
+   "beschreibung": "Korbzaehler ohneUmsatz/unterSchwelle vertauscht",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-26",
+   "funktion": "momentumZiel",
+   "beschreibung": "Korbzaehler zulaessig nicht gezaehlt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Korbzaehler: 101 zulaessig, 1 unter der Schwelle, 103 geprueft  [{\"zulaessig\":0,\"geprueft\":103,\"ohneUmsatz\":1,\"unterSchwelle\":1,\"umsatzMin\":100000000,\"fenster"
+   ]
+  },
+  {
+   "id": "A-27",
+   "funktion": "momentumZiel",
+   "beschreibung": "Standard-minWerte -1",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ unter 100 zulaessigen Werten bildet das Buch keinen Korb (MINDEST_WERTE der Studie)"
+   ]
+  },
+  {
+   "id": "A-28",
+   "funktion": "momentumZiel",
+   "beschreibung": "Korbfilter am Vortag statt am Stichtag",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-29",
+   "funktion": "momentumZiel",
+   "beschreibung": "p0-Pruefung entfernt",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-30",
+   "funktion": "momentumZiel",
+   "beschreibung": "Umsatz der Rangfolge 0",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ genau 100 Mio $ Median-Tagesumsatz ist zulaessig (>=, wie in der Studie)  [0]"
+   ]
+  }
+ ]
+}

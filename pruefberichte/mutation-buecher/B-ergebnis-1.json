@@ -1,0 +1,138 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "B-01",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "K2 Kleinstbestand: < zu <=",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 5 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  },
+  {
+   "id": "B-02",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Platzwert: Zielzahl+1",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 17 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)",
+    "(Hinweis, kein Urteil) Kleinsttest-Text geaendert"
+   ]
+  },
+  {
+   "id": "B-03",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Depotwert ohne Bargeld",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 22 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)",
+    "(Hinweis, kein Urteil) Kleinsttest-Text geaendert"
+   ]
+  },
+  {
+   "id": "B-04",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Position ohne Kurs nicht mehr in halten",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 14 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  },
+  {
+   "id": "B-05",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "K2: Schwelle gegen Depotwert statt Platzwert",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 10 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  },
+  {
+   "id": "B-06",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Kleinstbestand wird nicht neu geplant",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 9 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  },
+  {
+   "id": "B-07",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Neukauf: || zu &&",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 13 neu rot, z.B. ❌ 95.1 Vorgabe aus: 400 Zufallsfaelle zeichengleich wie vor Nr. 85 - darunter Kleinstkaeufe, verkleinerte und ausgefallene Kaeufe und Reste als Ziel  [375 ungle",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,[14] TEST DEFEKT: TypeError: Cannot read properties of undefined (reading 'einst"
+   ]
+  },
+  {
+   "id": "B-08",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Neukauf-Stueck: floor statt round",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 10 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  },
+  {
+   "id": "B-09",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Neukauf-Stueck: 3 statt 4 Stellen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 11 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  },
+  {
+   "id": "B-10",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Neukauf-Stueck: budget > 0 zu >= 0",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-11",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Ziel ohne Kurs nicht in fehltKurs",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 9 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+   ]
+  },
+  {
+   "id": "B-12",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "Vorgabe Kleinstanteil ohne opts 0,05 statt aus",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 13 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  },
+  {
+   "id": "B-13",
+   "funktion": "planeUmschichtung",
+   "beschreibung": "plan.kleinst immer gesetzt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 10 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+   ]
+  }
+ ]
+}

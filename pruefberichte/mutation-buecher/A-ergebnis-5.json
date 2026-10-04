@@ -1,0 +1,106 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "A-41",
+   "funktion": "median",
+   "beschreibung": "Median: absteigend sortiert",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-42",
+   "funktion": "medianUmsatz",
+   "beschreibung": "Umsatzfenster 21 Balken",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-43",
+   "funktion": "medianUmsatz",
+   "beschreibung": "Umsatzfenster 19 Balken",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-44",
+   "funktion": "medianUmsatz",
+   "beschreibung": "Stichtagsbalken nicht im Umsatzfenster",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-45",
+   "funktion": "medianUmsatz",
+   "beschreibung": "Umsatz Summe statt Produkt",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1",
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "A-46",
+   "funktion": "medianUmsatz",
+   "beschreibung": "Indexgrenze",
+   "datei": "liquide.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-47",
+   "funktion": "KORB",
+   "beschreibung": "KORB.fenster 19",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-48",
+   "funktion": "KORB",
+   "beschreibung": "KORB.umsatzMin 10 Mio",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 8 neu rot, z.B. ❌ 99,9 Mio $ fliegt VOR der Rangbildung mit Grund heraus"
+   ]
+  },
+  {
+   "id": "A-49",
+   "funktion": "KORB",
+   "beschreibung": "KORB.umsatzMin +1",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 4 neu rot, z.B. ❌ Korbregel des Buchs = Korbregel der Studie (umsatzMin, mindestWerte aus lauf-*.json)  [100000001 / 100]"
+   ]
+  },
+  {
+   "id": "A-50",
+   "funktion": "KORB",
+   "beschreibung": "KORB.mindestWerte 99",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ Korbregel des Buchs = Korbregel der Studie (umsatzMin, mindestWerte aus lauf-*.json)  [100000000 / 99]"
+   ]
+  }
+ ]
+}

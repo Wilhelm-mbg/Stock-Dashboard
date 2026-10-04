@@ -1,0 +1,195 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "C-61",
+   "funktion": "bargeldAm",
+   "beschreibung": "bargeldAm: isFinite entfernt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "C-62",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende nach 4 statt 5 Handelstagen",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.4 Grenze fuenf Handelstage: 4 ohne neuen Balken bleibt, 5 und 6 werden ausgebucht - zum letzten Schluss OHNE Kosten (100 × 130 = 13.000 $), der Leerverkauf"
+   ]
+  },
+  {
+   "id": "C-63",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende strikt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: Exit 1"
+   ]
+  },
+  {
+   "id": "C-64",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Leerverkauf Gutschrift ohne Faktor 2",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 100.5 Reihenende: beim Leerverkauf die Rechnung der Gutschrift (10 × (2 × 100 − 80) = 1.200 $), bei Kurs ueber dem doppelten Einstand 0 $ mit Grund; beim Kauf"
+   ]
+  },
+  {
+   "id": "C-65",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Leerverkauf Gutschrift kann negativ werden",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 100.5 Reihenende: beim Leerverkauf die Rechnung der Gutschrift (10 × (2 × 100 − 80) = 1.200 $), bei Kurs ueber dem doppelten Einstand 0 $ mit Grund; beim Kauf"
+   ]
+  },
+  {
+   "id": "C-66",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende mit Verkaufskosten 10 Bp",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 100.5 Reihenende: beim Leerverkauf die Rechnung der Gutschrift (10 × (2 × 100 − 80) = 1.200 $), bei Kurs ueber dem doppelten Einstand 0 $ mit Grund; beim Kauf",
+    "Kleinsttest-Urteil geaendert: 3:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "C-67",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Position nicht entfernt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.4 Grenze fuenf Handelstage: 4 ohne neuen Balken bleibt, 5 und 6 werden ausgebucht - zum letzten Schluss OHNE Kosten (100 × 130 = 13.000 $), der Leerverkauf",
+    "Kleinsttest-Urteil geaendert: 3:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "C-68",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Kurz/Lang vertauscht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ 100.5 Reihenende: beim Leerverkauf die Rechnung der Gutschrift (10 × (2 × 100 − 80) = 1.200 $), bei Kurs ueber dem doppelten Einstand 0 $ mit Grund; beim Kauf"
+   ]
+  },
+  {
+   "id": "C-69",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Zaehlung um eins hoeher",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.4 Grenze fuenf Handelstage: 4 ohne neuen Balken bleibt, 5 und 6 werden ausgebucht - zum letzten Schluss OHNE Kosten (100 × 130 = 13.000 $), der Leerverkauf"
+   ]
+  },
+  {
+   "id": "C-70",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Bargeld auf Cent gerundet",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-71",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende pnl gegen Kurs statt Einstand",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-72",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende-Tag in UTC",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-73",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende: Schluss 0 wird ausgebucht",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-74",
+   "funktion": "reihenendeAusbuchen",
+   "beschreibung": "Reihenende: trades-Kappe fehlt",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-75",
+   "funktion": "nyTeile",
+   "beschreibung": "Zeitzone UTC statt New York",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌    Gegenprobe: Faelligkeit ueber die Uhrzeit (Fassung bis Nr. 92: Balken nach dem Zeitstempel) faellt auf",
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "C-76",
+   "funktion": "nyTeile",
+   "beschreibung": "24-Uhr-Normierung entfernt",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-77",
+   "funktion": "nyTeile",
+   "beschreibung": "Tag/Monat vertauscht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ nach 90 Tagen fällig",
+    "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,3:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG,9:ZEIGT ABWEICHUNG,15:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "C-78",
+   "funktion": "tagPlus",
+   "beschreibung": "tagPlus + 1 Stunde (Sommerzeit-Drift im UTC-Rechnen unkritisch)",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "C-79",
+   "funktion": "tagPlus",
+   "beschreibung": "tagPlus negativ um eins zu kurz",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "C-80",
+   "funktion": "istWerktag",
+   "beschreibung": "Samstag gilt als Werktag",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  }
+ ]
+}

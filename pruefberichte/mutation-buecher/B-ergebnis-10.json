@@ -1,0 +1,43 @@
+{
+ "basis": {
+  "v6rot": 17,
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "B-34",
+   "funktion": "fuehreAus",
+   "beschreibung": "Tradeprotokoll 399 statt 400",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-35",
+   "funktion": "fuehreAus",
+   "beschreibung": "Trade-Grenze 401",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-42",
+   "funktion": "bewerte",
+   "beschreibung": "bewerte auf 10 Cent",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-45",
+   "funktion": "bewerte",
+   "beschreibung": "bewerte ohne Bargeld",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 2 neu rot, z.B. ❌ 98.4 bewertet wird zum letzten Schluss der Reihe (A: 130, nicht der Einstand 100); nur D ohne jede Reihe zum Einstand, als ohneKurs gemeldet",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  }
+ ]
+}

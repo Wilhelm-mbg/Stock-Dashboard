@@ -1,0 +1,100 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "A-11",
+   "funktion": "momentumZiel",
+   "beschreibung": "Mindestlaenge 254 (<=)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.2 eine Reihe mit 253 Balken wird abgelegt (die Regel rangiert sie), eine mit 252 nicht (sie steht auf weg)"
+   ]
+  },
+  {
+   "id": "A-12",
+   "funktion": "momentumZiel",
+   "beschreibung": "Altersgrenze 8 statt 7 Tage",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-13",
+   "funktion": "momentumZiel",
+   "beschreibung": "Altersgrenze 6 Tage",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-14",
+   "funktion": "momentumZiel",
+   "beschreibung": "Altersvergleich >= statt >",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-15",
+   "funktion": "momentumZiel",
+   "beschreibung": "Startkurs um einen Tag verschoben",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-16",
+   "funktion": "momentumZiel",
+   "beschreibung": "Endkurs der Staerke um einen Tag verschoben",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  },
+  {
+   "id": "A-17",
+   "funktion": "momentumZiel",
+   "beschreibung": "Staerke bis heute statt bis Luecke (Lueckenmonat nicht ausgelassen)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 6 neu rot, z.B. ❌    Gegenprobe: ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel"
+   ]
+  },
+  {
+   "id": "A-18",
+   "funktion": "momentumZiel",
+   "beschreibung": "Staerke ohne -1 (Rang unveraendert, Wert +1)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ Live-Buch und validierte Staerke liefern auf derselben Reihe denselben Wert  [0.181223 / 1.181223]"
+   ]
+  },
+  {
+   "id": "A-19",
+   "funktion": "momentumZiel",
+   "beschreibung": "Rangfolge aufsteigend (Schwaechste gekauft)",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 16 neu rot, z.B. ❌    Gegenprobe: Rangfolge auf adjclose (Spalte 1 = adjclose) bringt V107 ins Ziel",
+    "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG"
+   ]
+  },
+  {
+   "id": "A-20",
+   "funktion": "momentumZiel",
+   "beschreibung": "Mindestzahl Ziele 4 statt 5",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  }
+ ]
+}

@@ -1,0 +1,93 @@
+{
+ "basis": {
+  "v6rot": 17
+ },
+ "ergebnisse": [
+  {
+   "id": "A-31",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Grenze: Umschichtungstag zaehlt mit",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-32",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Grenze: Folgetag zaehlt nicht",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-33",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Balken genau an der Grenze zaehlt nicht",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+   ]
+  },
+  {
+   "id": "A-34",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "faellig erst bei > halten",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-35",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Standard-halten 62",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-36",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Standard-halten 64",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-37",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "ohne letzte Umschichtung nicht faellig",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ ohne Vorgeschichte ist sofort fällig"
+   ]
+  },
+  {
+   "id": "A-38",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "Zeitstempel-Tag in UTC statt New York",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-39",
+   "funktion": "rebalanceFaellig",
+   "beschreibung": "juengster Balken nicht gezaehlt",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "A-40",
+   "funktion": "median",
+   "beschreibung": "Median unterer statt oberer Mittelwert",
+   "datei": "liquide.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+   ]
+  }
+ ]
+}

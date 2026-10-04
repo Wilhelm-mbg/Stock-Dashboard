@@ -1,0 +1,134 @@
+{
+ "basis": {
+  "v6rot": 17,
+  "neuCode": 0
+ },
+ "ergebnisse": [
+  {
+   "id": "B-66",
+   "funktion": "Uhr",
+   "beschreibung": "Handel ab 09:30 statt 09:35",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "test-v6: 1 neu rot, z.B. ❌ 98.5 Grenze 09:35 New York: um 09:34 kein Handel, kein Abruf, die Karte sagt \"Umschichtung heute nach Börsenöffnung\"",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-67",
+   "funktion": "Uhr",
+   "beschreibung": "Handel ab 09:40",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-68",
+   "funktion": "Uhr",
+   "beschreibung": "nyZeit Startschaetzung 4h",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-69",
+   "funktion": "Uhr",
+   "beschreibung": "nyZeit nur eine Iteration",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-70",
+   "funktion": "Uhr",
+   "beschreibung": "Samstag als Werktag",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-71",
+   "funktion": "Uhr",
+   "beschreibung": "Sonntag als Werktag",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-72",
+   "funktion": "Uhr",
+   "beschreibung": "letzterFertigerWerktag: > statt >=",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-73",
+   "funktion": "Uhr",
+   "beschreibung": "bestandFrisch: > statt >=",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-74",
+   "funktion": "Uhr",
+   "beschreibung": "bestandFrisch: at 0 gilt gueltig",
+   "datei": "mfhandel.js",
+   "urteil": "UEBERLEBT",
+   "gruende": []
+  },
+  {
+   "id": "B-75",
+   "funktion": "Uhr",
+   "beschreibung": "ohneLaufendenBalken: > statt >=",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-76",
+   "funktion": "Uhr",
+   "beschreibung": "ohneLaufendenBalken: Balken um 00:00 bleibt",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-77",
+   "funktion": "Uhr",
+   "beschreibung": "indexVor: <= statt <",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  },
+  {
+   "id": "B-78",
+   "funktion": "Uhr",
+   "beschreibung": "ohneLaufendenBalken: Tagesgrenze 09:30",
+   "datei": "mfhandel.js",
+   "urteil": "GETOETET",
+   "gruende": [
+    "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG",
+    "neue Kleinsttests rot/Exit 1"
+   ]
+  }
+ ]
+}
