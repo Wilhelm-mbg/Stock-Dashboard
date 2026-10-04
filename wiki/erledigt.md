@@ -11,6 +11,7 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 04.10. | Nr. 78 — Momentum-Buch absichern | Gegenprobe A-187 (04.01.2017–15.09.2021) „hält": Buch +157,5 % gegen S&P 500 +115,5 %, +4,55 Pp p. a., 62 von 63 Startphasen vorn (Median +7,59), Rückschlag −49,0 %; zweiter Lauf B-187 „bestätigt die Vorab-Rechnung" (+7,96 Pp p. a., Median +8,36 gegen +8,25). Der Vorsprung stammt je Fenster aus einem Schub (2020; 2024/25), das Periodenband schließt null ein. | Siegel `bbe4586`, Ergebnis `756a9c1`, `studien/momentum-korb-2026-10-04/`, Übergabe `momentum-absichern-2026-10-04.md`, [belegstand.md](belegstand.md); Abnahme mit eigenem Rechner des PM (Zahlen vor der Lieferung festgehalten), Fund Kleinstpositionen → Nr. 85; Verbrauch 376k bei 300k (Abrechnung; Chat schätzte 200k), Zweitleser 106k |
 | 04.10. | Nr. 84 — Wiki verdichten | `offene-auftraege.md` von 138.123 auf 21.579 Bytes: 69 erledigte Zeilen als Kurzeinträge hierher (Abschnitt unten), 15 offene blieben wörtlich, sechs offene Reste als eigener Abschnitt; der volle alte Wortlaut liegt byte-gleich im Archiv (SHA-256 `21ef8f1e…d4fd`). Abnahme des PM mit eigenem Prüfskript (37 Prüfungen bestanden) und Durchsicht aller 69 Einträge. | `2f2a8a4`, Übergabe `wiki-verdichten-2026-10-04.md`, Auftrag `auftrag-wiki-verdichten-2026-10-04.md` (Fassung 3), Werkzeug `tools/wiki-verdichten.js`; Verbrauch 346k bei 200k (Abrechnung; Chat schätzte 190k), Zweitleser 119k |
 
 ## September 2026
