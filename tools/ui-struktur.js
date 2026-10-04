@@ -96,9 +96,17 @@ function slug(s) {
  * auskommt.
  *
  * Gelesen wird in Dokumentreihenfolge, was ein Leser als Block wahrnimmt:
- * Ueberschriften (h2/h3) und Klappen (<details>). Die TIEFE ist die Zahl der
+ * Ueberschriften (h2/h3/h4) und Klappen (<details>). Die TIEFE ist die Zahl der
  * <details>-Vorfahren bis zum Panel - daran haengt die Einrueckung, und genau die
  * hat der Markup-Sicht gefehlt (S8).
+ *
+ * h4 ist seit dem 05.10.2026 dabei. Die Karten des Schein-Finders ("Basiswert",
+ * "Was fuer ein Schein") und Unterbloecke wie "Was hat gewirkt?" (#sub-regelbuch)
+ * tragen NUR eine h4 -
+ * ohne sie standen diese Karten gar nicht im Inventar (Nachtbefund 04./05.09., a).
+ * Die Tiefe einer h4 entsteht genauso wie die einer h2/h3 aus den Klappen darueber;
+ * welche Ebene eine Ueberschrift hat, sagt ihre Marke im Inventar, nicht die
+ * Einrueckung - sonst stuende eine h4 eingerueckt, obwohl sie in keiner Klappe liegt.
  *
  * VERBORGEN wird getrennt gemeldet: ein Block mit [hidden] oder display:none steht
  * im Markup, aber der Leser sieht ihn nicht, bevor etwas passiert ist (Explorer
@@ -153,7 +161,7 @@ const MESSCODE = `(function (panelSel) {
   }
 
   var eintraege = [];
-  var alle = wurzel.querySelectorAll('h2, h3, details');
+  var alle = wurzel.querySelectorAll('h2, h3, h4, details');
   Array.prototype.forEach.call(alle, function (e) {
     var istKlappe = e.tagName === 'DETAILS';
     /* Ueberschriften IN einem <summary> sind der Titel der Klappe, kein zweiter
@@ -336,8 +344,10 @@ async function lauf(win) {
 
 /* ---------------------------------------------------------------------------
  * Die Seite schreiben. */
+/* Je Art eine eigene Marke - und jede davon steht in der Legende von seiteBauen().
+ * Eine h4 mit der Marke der h3 saehe aus wie eine Ebene hoeher, als sie ist. */
 function zeile(e) {
-  const marke = e.art === 'klappe' ? '▸ Klappe: ' : (e.art === 'h2' ? '▪ ' : '· ');
+  const marke = e.art === 'klappe' ? '▸ Klappe: ' : (e.art === 'h2' ? '▪ ' : (e.art === 'h4' ? '◦ ' : '· '));
   let s = '  '.repeat(e.tiefe) + marke + e.titel;
   if (e.mal > 1) s += '  (' + e.mal + '×)';
   if (e.kennung) s += '  [' + (e.eigeneKennung ? '#' : 'in #') + e.kennung + ']';
@@ -371,8 +381,10 @@ function seiteBauen(erg, version) {
     BREITE + ' px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. ' +
     'Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: ' +
     '`.\\node_modules\\.bin\\electron.cmd tools\\ui-struktur.js`.*', '');
-  out.push('**Was hier steht:** ▪ = Überschrift `h2`, · = Überschrift `h3`, ▸ = Klappe (`<details>`). ' +
-    'Die Einrückung ist die echte Verschachtelung: eine Klappe **in** einer Klappe steht eine Stufe weiter rechts. ' +
+  out.push('**Was hier steht:** ▪ = Überschrift `h2`, · = Überschrift `h3`, ◦ = Überschrift `h4` ' +
+    '(Kartenüberschrift, z. B. im Schein-Finder), ▸ = Klappe (`<details>`). ' +
+    'Die Einrückung ist die echte Verschachtelung: eine Klappe **in** einer Klappe steht eine Stufe weiter rechts; ' +
+    'die Ebene einer Überschrift steht in ihrer Marke, nicht in der Einrückung. ' +
     '`[#kennung]` ist die `id` des Blocks. „verborgen“ heißt: der Block steht in der Seite, ist aber ausgeblendet, ' +
     'bis etwas passiert (z. B. Explorer → „Kennzahlen“ erst nach dem Öffnen eines Werts).', '');
   out.push('**Grenze dieser Seite.** Sie zeigt, was die laufende Instanz in **diesem** Zustand hergibt — ' +
