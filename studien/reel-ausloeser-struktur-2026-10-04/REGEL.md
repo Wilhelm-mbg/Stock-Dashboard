@@ -191,3 +191,12 @@ Keine davon ist ein weiterer Parameter der Regel; jede füllt eine Stelle, an de
   μ = 0,5 → Hauptzelle +0,54 Bp (Standardfehler 0,04, t 13) „vorhanden, aber unter der Hürde"; μ = 1,2 → +2,88 Bp (t 33) „über der
   Hürde"; μ = 2 → +7,1 Bp; μ = 0 → +0,05 Bp (t 1,6) „kein Richtungsvorteil". Struktur: μ = 0,5 → Bot +0,177 R gegen Z1-97,5-%-Stelle
   +0,095 R „tragen etwas bei"; μ = 0 → −0,032 gegen +0,013 „nichts bei".
+
+## D. Korrekturen (nach dem ersten Lauf; Teil A bis C bleiben unverändert stehen)
+
+- **Korrektur 1 (04.10.2026, nach dem ersten Lauf unter Siegel `d18cc2c`).** *Fehler:* Der Berichtstext (`lauf.js`, Funktion `bericht`)
+  hielt die Form aus §4 nicht ein: die Annahmen standen als Fließtext statt als Liste; die Grenzen nannten nur die ungünstige Seite der
+  Kerzenregel („Stopp vor Gewinnsicherung"), nicht die vor dem Siegel gefundene günstige Seite (Füllung genau an der Marke, Teil C); die
+  erste Zeile sagte „über der Kontrolle" bei negativem Mittel. *Gefunden* beim Lesen von `ERGEBNIS.md` nach dem ersten Lauf. *Behoben:* nur
+  der Berichtstext; keine Rechnung geändert. *Wirkung:* keine Zahl — alle Zahlenfelder von `ergebnis.json` gegen den ersten Lauf
+  verglichen (`vergleich-korrektur.log`). Der erste Lauf liegt als `*-vor-korrektur-1.*` im Ordner.

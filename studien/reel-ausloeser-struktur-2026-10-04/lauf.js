@@ -110,7 +110,7 @@ function struktur(E, wert, fenster) { return E.struktur.filter(function (x) { re
 function satzZeileEreignis(E) {
   var c = zelle(E, HAUPT.wert, HAUPT.ausloeser, HAUPT.fenster, HAUPT.H), f = fensterNach(HAUPT.fenster);
   return '**Ereignis-Sicht: ' + K.satzEreignis(c.mittelBp, c.t) + '** (Hauptzelle QQQ, „Alle", H = 5, ' + tagText(f.von) + '–' + tagText(f.bis) + '): Mittel ' +
-    vz(c.mittelBp, 2) + ' Basispunkte über der Kontrolle, Standardfehler ' + z(c.seBp, 2) + ', t ' + vz(c.t, 2) + ' (' + gz(c.n) + ' Ereignisse an ' + gz(c.tage) +
+    vz(c.mittelBp, 2) + ' Basispunkte gegenüber der Kontrolle, Standardfehler ' + z(c.seBp, 2) + ', t ' + vz(c.t, 2) + ' (' + gz(c.n) + ' Ereignisse an ' + gz(c.tage) +
     ' Tagen); geschätzte Hürde 1,0 Basispunkte (Schätzung des PM, nicht gemessen).';
 }
 
@@ -177,13 +177,19 @@ function bericht(E) {
   zeilen.push('');
   zeilen.push('Nachrichtlich: SPY — ' + struktur(E, 'SPY', 'W-Nach').satz + '; IWM — ' + struktur(E, 'IWM', 'W-Nach').satz + ' (gleiche Regel, nicht Teil des Urteils).');
   zeilen.push('');
-  zeilen.push('**Annahmen (alle vom PM gesetzt, nicht gemessen):** Filter „zusammengedrückt" bei |EMA 9 − EMA 21| < 0,5 × ATR (das Reel nennt keine Zahl) · 5 Minuten Pause nach jedem Ausstieg („waits a moment") · ' +
-    'Stopp bei 17 % der Prämie (≈ 1.250 $ bei 20 Optionen zu 3,69 $; der Autor sagt nur „based on ATR") · Gewinnsicherung scharf ab +6 % der Prämie, Verkauf bei 40 % Rückgabe · Tagesbremse bei +1,44 R (1.800 $ / 1.250 $), keine Verlustbremse · ' +
-    'Option = Basiswert mit Delta 0,5, ohne Gamma, ohne Zeitwertverlust; Prämie 0,49 % des Kurses · Kosten 1 % der Prämie je Trade hin und zurück · Hürde der Ereignis-Sicht 1,0 Basispunkte · ' +
-    'Zufallszeit: Wahrscheinlichkeit je Kerze 09:45–15:44 so, dass im Mittel so viele Auslöser je Tag entstehen wie bei „Alle".');
+  zeilen.push('**Annahmen (alle vom PM gesetzt, nicht gemessen):**');
+  zeilen.push('');
+  ['Filter „zusammengedrückt" bei |EMA 9 − EMA 21| < 0,5 × ATR (das Reel nennt keine Zahl).', '5 Minuten Pause nach jedem Ausstieg („waits a moment").',
+    'Stopp bei 17 % der Prämie (≈ 1.250 $ bei 20 Optionen zu 3,69 $; der Autor sagt nur „based on ATR").', 'Gewinnsicherung scharf ab +6 % der Prämie, Verkauf bei 40 % Rückgabe.',
+    'Tagesbremse bei +1,44 R (1.800 $ / 1.250 $), keine Verlustbremse.', 'Option = Basiswert mit Delta 0,5, ohne Gamma, ohne Zeitwertverlust; Prämie 0,49 % des Kurses.',
+    'Kosten 1 % der Prämie je Trade hin und zurück.', 'Hürde der Ereignis-Sicht 1,0 Basispunkte je Trade hin und zurück.',
+    'Zufallszeit: Wahrscheinlichkeit je Kerze 09:45–15:44 so, dass im Mittel so viele Auslöser je Tag entstehen wie bei „Alle".'
+  ].forEach(function (a) { zeilen.push('- ' + a); });
   zeilen.push('');
   zeilen.push('**Grenzen.** Optionskurse fehlen: Gemessen ist der Basiswert, die Option ist über ihn genähert; Gamma, Zeitwertverlust und die echte Spanne einer Option mit einem Tag Laufzeit fehlen. ' +
-    'Innerhalb einer Minutenkerze ist der Kursweg unbekannt; die Regel nimmt den ungünstigen Fall zuerst (Stopp vor Gewinnsicherung), das drückt Ergebnisse von Bot und Kontrollen gleichermaßen. ' +
+    'Innerhalb einer Minutenkerze ist der Kursweg unbekannt; die Regel nimmt den ungünstigen Fall zuerst (Stopp vor Gewinnsicherung) und füllt Ausstiege genau am Stoppkurs bzw. an der Marke, ohne Rutsch. ' +
+    'Das Zweite ist zu günstig: an Kunstreihen ohne Kosten +0,009 R je Trade bei 60 Teilschritten je Minute, +0,066 R bei Kerzen ohne Docht (REGEL.md Teil C); für echte Minutenkerzen nicht gemessen. ' +
+    'Beides trifft Bot und Kontrollen gleich, der Vergleich bleibt; die absoluten R-Zahlen tragen den Fehler. ' +
     'Einstieg zur nächsten Eröffnung ohne Rutsch; Kosten allein über die 1 % der Prämie. Eine Hauptzelle und ein Struktur-Satz; die übrigen Zellen und Werte stehen nachrichtlich daneben. Kurse roh (SIP). ' +
     'Datenlücken gehandelt, wie sie sind (Teil 1, REGEL.md C). ' + (E.korrekturen || []).map(function (k) { return k.kurz + ' '; }).join('') +
     'Beschreibende Zahlen nach vorher festgelegter Regel (REGEL.md, Siegel ' + E.siegel.commit + '); gemessen werden Regeln, keine Aussage über Personen; keine Anlageberatung.');
@@ -197,7 +203,15 @@ function hauptlauf(sg) {
   var E = {
     erstellt: new Date().toISOString(), siegel: sg, hauptzelle: HAUPT, fenster: K1.FENSTER, h: K.H_LISTE, wiederholungen: K.WIEDERHOLUNGEN,
     konstanten: { stopp: K.STOPP, scharf: K.SCHARF, kosten: K.KOSTEN, rueckfall: K.RUECKFALL, bremseR: K.BREMSE_R, filter: K.FILTER, abkuehlung: K.ABKUEHLUNG, huerdeBp: K.HUERDE_BP },
-    eichung: null, daten: {}, ereignisse: [], struktur: [], korrekturen: [], vollstaendig: false
+    eichung: null, daten: {}, ereignisse: [], struktur: [], vollstaendig: false,
+    korrekturen: [{
+      nr: 1, erstesSiegel: 'd18cc2c',
+      fehler: 'Bericht (ERGEBNIS.md) nicht in der Form aus Paragraph 4: die Annahmen standen als Fliesstext statt als Liste; die Grenzen nannten nur die unguenstige Seite der Kerzenregel, nicht die vor dem Siegel gefundene guenstige (Fuellung genau an der Marke, REGEL.md Teil C); erste Zeile sagte "ueber der Kontrolle" bei negativem Mittel.',
+      gefunden: 'beim Lesen von ERGEBNIS.md nach dem ersten Lauf unter Siegel d18cc2c.',
+      behoben: 'nur der Berichtstext in lauf.js (Funktion bericht); keine Rechnung geaendert.',
+      wirkung: 'keine Zahl; Vergleich aller Zahlenfelder von ergebnis.json gegen den ersten Lauf in vergleich-korrektur.log.',
+      kurz: 'Eine Korrektur nach dem ersten Lauf, nur am Berichtstext (Annahmen als Liste, Grenze zur Füllung ergänzt); alle Zahlen gleich (REGEL.md Teil D).'
+    }]
   };
   D.WERTE.forEach(function (sym, wi) {
     var R = D.ladeWert(sym).reihe, vw = K1.vwapReihe(R), A = K.ausloeser(R, vw);
