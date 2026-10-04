@@ -586,6 +586,7 @@
    * Ereignis wie den Tagesbalken des Ex-Tags (beides am 04.10.2026 nachgesehen, kurse.js
    * ereignisseAus). Daraus folgen Reihenfolge und Grenzen unten. */
   var SPLIT_SPERRE_MS = 30 * 86400000;
+  var ANSPRUCH_MS = 30 * 86400000;                                   // Generalprobe 23.11., Fund 5: Regel 7 unten
 
   /** Splits und Ausschuettungen eines Buchs buchen - mutiert das Buch (Stueck, Einstand,
    *  Bargeld, Merker je Position). Rein: kein Netz, kein Fenster.
@@ -608,8 +609,13 @@
    *     ersten Mal, die Position merkt es sich in p.gemeldet).
    *  6. Ohne Ereignisse oder ohne barZeit fuer den Wert geschieht nichts; ein zweiter Aufruf
    *     mit denselben Daten bucht nichts.
-   *  opts.nurSplits (Generalprobe 23.11., Fund 1): nur Regel 3 und 5, keine Ausschuettungen -
-   *  fuer splitsAmAusfuehrungstag unten.
+   *  7. (Generalprobe 23.11., Fund 5) Ansprueche verkaufter Positionen (buch.ansprueche, gemerkt von
+   *     anspruecheVormerken): jede Ausschuettung mit beginn < t <= bisT (Ex-Tag spaetestens der Tag des
+   *     Verkaufs zur Eroeffnung) und t <= barZeit[sym] wird einmal gebucht wie in 4 (Betrag × Stueck beim
+   *     Verkauf, spaetere Splits eingerechnet). Erledigt ist ein Anspruch, sobald barZeit[sym] >= bisT
+   *     (der Bestand traegt den Verkaufstag), spaetestens 30 Tage nach bisT.
+   *  opts.nurSplits (Generalprobe 23.11., Fund 1): nur Regel 3 und 5, keine Ausschuettungen und kein
+   *  Anspruch - fuer splitsAmAusfuehrungstag unten.
    *  Rueckgabe: {buchungen: [{sym, art: 'split'|'div', t, am, kaufT, …}], gesperrt: [{sym, art, t, …, neu}]}.
    *  Die Buchungen stehen NICHT in buch.trades (dort steht nur Handel), sondern in
    *  buch.massnahmen (hoechstens 400) - damit sich das Bargeld des Buchs auch ohne das
@@ -659,6 +665,24 @@
           richtung: richtung, summe: summe });
       });
     });
+    if (!nurSplits && buch.ansprueche && buch.ansprueche.length) {             // Regel 7
+      buch.ansprueche = buch.ansprueche.filter(function (a) {
+        var e = ereignisse[a.sym], bis = barZeit[a.sym];
+        if (e && bis > 0) (e.div || []).slice().sort(nachZeit).forEach(function (x) {
+          var t = x[0], betrag = x[1];
+          if (!(betrag > 0) || !(t > a.beginn) || t > a.bisT || t > bis || a.gebucht.indexOf('div:' + t) >= 0) return;
+          var faktor = 1;                                               // Splits nach dem Verkauf: der Betrag steht in heutiger Stueckelung
+          (e.split || []).forEach(function (s) { if (s[0] > a.bisT && s[1] > 0 && s[2] > 0) faktor *= s[1] / s[2]; });
+          var stueck = a.stueck * faktor, summe = a.richtung * stueck * betrag;
+          buch.cash += summe;
+          a.gebucht.push('div:' + t);
+          res.buchungen.push({ sym: a.sym, art: 'div', t: t, am: nowMs, kaufT: a.beginn, betrag: betrag, stueck: stueck,
+            richtung: a.richtung, summe: summe, verkauftT: a.bisT });
+        });
+        return !(bis >= a.bisT) && nowMs - a.bisT <= ANSPRUCH_MS;
+      });
+      if (!buch.ansprueche.length) delete buch.ansprueche;
+    }
     if (res.buchungen.length) {
       buch.massnahmen = (buch.massnahmen || []).concat(res.buchungen);
       if (buch.massnahmen.length > 400) buch.massnahmen = buch.massnahmen.slice(-400);
@@ -687,6 +711,27 @@
    *  Rueckgabe wie bucheMassnahmen (fuer massnahmenJournal). */
   function splitsAmAusfuehrungstag(buch, ereignisse, barZeit, nowMs) {
     return bucheMassnahmen(buch, ereignisse, barZeit, nowMs, { nurSplits: true });
+  }
+
+  /** Generalprobe 23.11., Fund 5 (M-01, D-01, H-c1): Ansprueche der Positionen merken, die eben zur Eroeffnung verkauft
+   *  wurden. REGEL Teil C.3: "ein Verkauf zur Eroeffnung des Ex-Tags zaehlt noch", gutgeschrieben nach dem Handel - dann
+   *  steht die Position aber nicht mehr im Buch. vorher = buch.positionen.slice() VOR fuehreAus bzw. nachfassen (dieselben
+   *  Objekte); jede, die danach fehlt, bekommt einen Eintrag in buch.ansprueche: { sym, stueck, richtung, beginn (kursT,
+   *  sonst seit - wie bucheMassnahmen), bisT (Stempel des Balkens, zu dessen Eroeffnung verkauft wurde: barZeit), am,
+   *  gebucht (Kopie der schon gebuchten Kennungen) }. Gebucht wird in bucheMassnahmen, Regel 7. Die gemessenen Funktionen
+   *  bleiben unberuehrt. Mutiert das Buch; Rueckgabe: Zahl der neuen Ansprueche. */
+  function anspruecheVormerken(buch, vorher, barZeit, nowMs) {
+    var n = 0;
+    (vorher || []).forEach(function (p) {
+      if ((buch.positionen || []).indexOf(p) >= 0) return;            // noch im Buch
+      var beginn = p.kursT > 0 ? p.kursT : p.seit, bisT = barZeit && barZeit[p.sym];
+      if (!(beginn > 0) || !(bisT > beginn)) return;
+      if (!buch.ansprueche) buch.ansprueche = [];
+      buch.ansprueche.push({ sym: p.sym, stueck: p.stueck, richtung: p.richtung < 0 ? -1 : 1, beginn: beginn, bisT: bisT, am: nowMs,
+        gebucht: (p.gebucht || []).slice() });
+      n++;
+    });
+    return n;
   }
 
   /** Die EINE Journalzeile je Takt und Buch zu bucheMassnahmen - null, wenn nichts gebucht
@@ -720,7 +765,8 @@
         ' Einzelposten (Wert, Ex-Tag, Betrag je Stück × Stück = Summe): ' +
         div.map(function (b) {
           return b.sym + ' ' + tag(b.t) + ' ' + zahl(b.betrag, 6) + ' $ × ' + zahl(b.stueck, 4) + ' = ' + geld(b.summe) +
-            (b.richtung < 0 ? ' (Leerverkauf)' : '') + (mehrere ? ' (Kauf ' + tag(b.kaufT) + ')' : '');
+            (b.richtung < 0 ? ' (Leerverkauf)' : '') + (mehrere ? ' (Kauf ' + tag(b.kaufT) + ')' : '') +
+            (b.verkauftT ? ' (zur Eröffnung am ' + tag(b.verkauftT) + ' verkauft – über die Nacht vor dem Ex-Tag gehalten, der Anspruch bleibt)' : '');
         }).join('; ') + '.');
     }
     split.forEach(function (b) {
@@ -925,6 +971,7 @@
     driftAbgleich: driftAbgleich, bewerteDrift: bewerteDrift,
     bucheMassnahmen: bucheMassnahmen, stempleKursT: stempleKursT, massnahmenJournal: massnahmenJournal,
     splitsAmAusfuehrungstag: splitsAmAusfuehrungstag,                    /* Generalprobe 23.11., Fund 1 */
+    anspruecheVormerken: anspruecheVormerken,                            /* Generalprobe 23.11., Fund 5 */
     /* Auftrag Nr. 93 */
     nyTag: nyTag, nyZeit: nyZeit, tagPlus: tagPlus, istWerktag: istWerktag, werktagVor: werktagVor,
     letzterFertigerWerktag: letzterFertigerWerktag, bestandFrisch: bestandFrisch, ohneLaufendenBalken: ohneLaufendenBalken,

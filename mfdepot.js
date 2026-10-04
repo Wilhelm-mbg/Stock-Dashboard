@@ -352,7 +352,9 @@
       await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader
     }
     var split = splitsHeuteBuchen(MH, d, ereignisse, barZeit, now);   // Generalprobe 23.11., Fund 1: vor dem Verkauf zur Eroeffnung
+    var vorher = (b.positionen || []).slice();
     var res = MH.nachfassen(b, preise, barZeit, now, 20, { kleinstAnteil: kleinstAnteil });   // 20 Bp je Seite wie die Umschichtung
+    MH.anspruecheVormerken(b, vorher, barZeit, now);                  // Generalprobe 23.11., Fund 5: Anspruch der verkauften (REGEL C.3)
     var z = MH.nachfassenJournal(res, now);
     if (z) d.tuneLog.unshift({ id: 'mfnach-' + now, at: now, quelle: 'automatik', applied: z.applied, txt: z.txt });
     /* Auftrag Nr. 95 (B4): ein Kauf, der seine Eroeffnung hatte und am Bargeld scheiterte, traegt
@@ -459,6 +461,7 @@
         else {
           var zielA = ausf.ziel;
           splitsHeuteBuchen(MH, d, ausf.ereignisse, ausf.barZeit, now);   // Generalprobe 23.11., Fund 1: Split vom Ausfuehrungstag vor dem Plan (gespeichert wird unten)
+          var vorherM = (d.mfBuch.positionen || []).slice();              // Generalprobe 23.11., Fund 5: fuer anspruecheVormerken unten
           plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, { kleinstAnteil: KONFIG.kleinstAnteil });
           var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil });
           MH.stempleKursT(d.mfBuch, ausf.barZeit, now);   // neue Positionen: Balken des Ausfuehrungstags, zu dessen Eroeffnung gekauft wurde
@@ -467,6 +470,9 @@
            * "jetzt umschichten" aendert nichts an offen; seine fehlenden Werte bleiben wie bisher liegen. */
           var offenNeu = manuell === 'momentum' ? null : MH.offeneAuftraege(zielA.ziel, plan, ausf.heute);
           if (offenNeu) d.mfBuch.offen = offenNeu;
+          /* Generalprobe 23.11., Fund 5 (M-01, D-01, H-c1): zur Eroeffnung verkaufte Positionen behalten ihren Anspruch auf
+           * Ausschuettungen bis zum Verkaufstag (REGEL C.3); gebucht wird nach dem Laden (bucheMassnahmen, Regel 7). */
+          MH.anspruecheVormerken(d.mfBuch, vorherM, ausf.barZeit, now);
           var offenSyms = MH.offenWerte(offenNeu);
           var fehltRest = plan.fehltKurs.filter(function (s) { return offenSyms.indexOf(s) < 0; });
           /* Gezaehlt wird, was WIRKLICH lief: fuehreAus setzt o.stueck eines nicht ausgefuehrten
