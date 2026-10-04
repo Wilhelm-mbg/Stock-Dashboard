@@ -43,6 +43,17 @@
    *  Micron kommt darin ueberhaupt nicht vor. Deshalb zaehlt ausschliesslich ein
    *  EXAKT passendes Heimatkuerzel; ist zusaetzlich ein Name bekannt, muss auch
    *  der passen. Bleibt nichts uebrig, ist null die richtige Antwort. */
+  /** Namen von der Quelle saeubern, bevor sie in die Kennung wandern
+   *  (Sicherheitspruefung 2026-10, F3): Steuerzeichen und die Zeichen, mit
+   *  denen sich HTML bauen laesst (< > " ' `), fliegen raus, Laenge hoechstens
+   *  80. Das & bleibt - ohne < kann es kein Markup oeffnen, und Namen wie
+   *  "AT&T" muessen so bleiben, wie die Quelle sie sucht. Die Anzeige escapt
+   *  trotzdem selbst; das hier ist die zweite Wand. */
+  function klartext(s) {
+    if (s == null) return '';
+    return String(s).replace(/[\u0000-\u001f\u007f<>"'`]/g, '').trim().slice(0, 80);
+  }
+
   function basiswertWaehlen(liste, symbol, name) {
     var sym = String(symbol || '').split('.')[0].toUpperCase();
     if (!sym) return null;
@@ -66,7 +77,7 @@
       var kb = String(b.name || '').indexOf('(') >= 0 ? 1 : 0;
       return ka - kb || String(a.name || '').length - String(b.name || '').length;
     });
-    return { id: String(c[0].entityValue), name: c[0].name || sym, isin: c[0].isin || null };
+    return { id: String(c[0].entityValue), name: klartext(c[0].name) || sym, isin: c[0].isin || null };
   }
 
   function suchUrl(begriff) {
@@ -179,7 +190,8 @@
         iv: iv,
         geld: geld,
         brief: brief,
-        waehrung: q.isoCurrency || null,
+        // Fremdtext der Quelle: nur ein ISO-Code kommt durch (Sicherheitspruefung F3)
+        waehrung: /^[A-Z]{3}$/.test(String(q.isoCurrency || '')) ? q.isoCurrency : null,
         stand: stand,
         /* Einseitige oder absurd weite Stellungen kommen vor (Schein ausverkauft,
          * Emittent hat die Kursstellung eingestellt, Nachtzeit). Sie sind kein

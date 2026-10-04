@@ -1,5 +1,5 @@
 'use strict';
-const { app, BrowserWindow, ipcMain, shell, Tray, Menu, safeStorage } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Tray, Menu, safeStorage, dialog } = require('electron');
 // fork statt spawn: kein Shell-Aufruf, Argumente gehen als Liste - eine Zeichenkette,
 // die eine Shell interpretiert, gibt es hier gar nicht.
 const { fork } = require('child_process');
@@ -101,7 +101,9 @@ function holeSitz() {
       }, (r2) => {
         let d = '';
         r2.setEncoding('utf8');
-        r2.on('data', (c) => { d += c; if (d.length > 4096) req2.destroy(); });
+        // Ueber der Grenze: abbrechen UND aufloesen - destroy() allein loest weder 'end' noch
+        // 'error' aus, das Promise hinge sonst fuer immer (Sicherheits-Durchsicht 2026-10, N1).
+        r2.on('data', (c) => { d += c; if (d.length > 4096) { req2.destroy(); resolve({ cookie: null, crumb: null }); } });
         r2.on('end', () => {
           // Ein Crumb ist ein kurzes Token. Kommt etwas Längeres, ist es eine
           // Fehlerseite – dann lieber nichts als Müll weiterreichen.
@@ -207,7 +209,8 @@ function jsonGet(pfad, cookie, versuch) {
     }, (res) => {
       let d = '';
       res.setEncoding('utf8');
-      res.on('data', (c) => { d += c; if (d.length > 2 * 1024 * 1024) req.destroy(); });
+      // Ueber der Grenze: abbrechen UND aufloesen (siehe holeSitz, N1)
+      res.on('data', (c) => { d += c; if (d.length > 2 * 1024 * 1024) { req.destroy(); resolve(null); } });
       res.on('end', () => {
         if (res.statusCode === 429) YAHOO_429++;
         if (res.statusCode === 429 && versuch < 2) {
@@ -502,7 +505,8 @@ ipcMain.handle('diagnose-send', async (_ev, titel, body, label) => {
     }, (res) => {
       let d = '';
       res.setEncoding('utf8');
-      res.on('data', (c) => { d += c; if (d.length > 1e6) req.destroy(); });
+      // Ueber der Grenze: abbrechen UND aufloesen (siehe holeSitz, N1)
+      res.on('data', (c) => { d += c; if (d.length > 1e6) { req.destroy(); resolve({ ok: false, msg: 'Antwort zu gross' }); } });
       res.on('end', () => {
         if (res.statusCode === 201) {
           try { resolve({ ok: true, url: JSON.parse(d).html_url }); } catch (e) { resolve({ ok: true }); }
@@ -624,6 +628,9 @@ ipcMain.handle('write-strategie', async (_ev, key, quelltext) => {
     const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'strategien');
     fs.mkdirSync(dir, { recursive: true });
     const p = path.join(dir, key + '.js');
+    // Riegel 4 (Sicherheits-Durchsicht 2026-10, F1): nur eine reine Rechenregel, kein beliebiger Code
+    const inhalt = StrategiePruefung.inhaltPruefen(quelltext);
+    if (!inhalt.ok) return { ok: false, grund: inhalt.grund };
     if (fs.existsSync(p)) return { ok: false, grund: 'Es gibt schon eine Strategie mit dieser Kennung. Eine neue Fassung braucht eine neue Kennung - sonst verschwindet das alte Protokoll unter einem geaenderten Text.' };
     fs.writeFileSync(p, quelltext, 'utf8');
     return { ok: true, pfad: p };
@@ -652,9 +659,43 @@ ipcMain.handle('write-strategie', async (_ev, key, quelltext) => {
  *      herausfuehrt, fliegt raus, auch wenn das Muster ihn durchgelassen haette.
  *   3. Das Skript ist fest verdrahtet und kommt aus dem Programmordner, nie aus einer
  *      Angabe des Renderers. Keine Shell, kein spawn mit Zeichenkette.
- * Dass die Strategiedatei selbst Code ist, bleibt: sie ist der Zweck der Sache. Aber
- * sie liegt im Datenordner des Nutzers, den er selbst befuellt - das ist dieselbe
- * Vertrauensgrenze wie bei einem Dokument, das man doppelklickt. */
+ * Dass die Strategiedatei selbst Code ist, bleibt: sie ist der Zweck der Sache.
+ *
+ * Die drei Riegel sicherten nur den PFAD. Den INHALT schrieb bis 8.45 derselbe Renderer
+ * ueber write-strategie - ein Skript im Fenster konnte also Code ablegen UND starten
+ * (Sicherheits-Durchsicht 2026-10, F1). Deshalb zwei weitere:
+ *   4. Inhalt: strategiepruefung.js laesst nur eine reine Rechenregel durch (kein
+ *      require, process, eval, Netz ...). Eine Huerde, keine Sandbox.
+ *   5. Freigabe: Ausgefuehrt wird nur, was der Nutzer in einem NATIVEN Dialog mit
+ *      Kennung und Pruefsumme bestaetigt hat. Den kann kein Skript im Fenster klicken.
+ *      Die Freigaben liegen neben, nicht im Store-Ordner - store-set kommt nicht hin.
+ *      Eine Strategie, die schon einmal freigegeben war, laeuft ohne neue Frage, solange
+ *      ihr Inhalt derselbe ist. */
+const StrategiePruefung = require('./strategiepruefung.js');
+function freigabenPfad() { return path.join(app.getPath('userData'), 'strategie-freigaben.json'); }
+function freigabenLesen() {
+  try { const j = JSON.parse(fs.readFileSync(freigabenPfad(), 'utf8')); return j && typeof j === 'object' ? j : {}; } catch (e) { return {}; }
+}
+async function strategieFreigeben(ev, key, summe, groesse) {
+  const frei = freigabenLesen();
+  if (frei[key] === summe) return true;
+  let fenster = null;
+  try { fenster = BrowserWindow.fromWebContents(ev.sender); } catch (e) { /* ohne Elternfenster */ }
+  const optionen = {
+    type: 'warning', buttons: ['Abbrechen', 'Ausführen'], defaultId: 0, cancelId: 0, noLink: true,
+    title: 'Strategie ausführen?',
+    message: 'Die Strategie „' + key + '“ als Programm ausführen?',
+    detail: 'Eine Strategie ist Programmcode und läuft mit deinen Benutzerrechten.\n\n' +
+      'Bestätige nur, wenn du sie eben selbst angelegt hast oder ihren Inhalt kennst.\n\n' +
+      'Datei: strategien/' + key + '.js (' + groesse + ' Byte)\nPrüfsumme: ' + summe.slice(0, 16) + '…\n\n' +
+      'Diese Frage kommt erneut, sobald sich der Inhalt der Datei ändert.'
+  };
+  const antwort = fenster ? await dialog.showMessageBox(fenster, optionen) : await dialog.showMessageBox(optionen);
+  if (!antwort || antwort.response !== 1) return false;
+  frei[key] = summe;
+  try { fs.writeFileSync(freigabenPfad(), JSON.stringify(frei, null, 1)); } catch (e) { /* dann fragt sie naechstes Mal wieder */ }
+  return true;
+}
 const MESS_LAUF = { proc: null, key: null, start: 0, abbruch: false };
 function entpackt(p) {
   /* Im Paket liegt ein per asarUnpack ausgenommener Pfad ENTPACKT neben der asar-Datei.
@@ -800,11 +841,29 @@ ipcMain.handle('mess-lauf', async (ev, key) => {
   // Riegel 2: nach dem Zusammensetzen noch einmal pruefen, nicht nur das Muster davor
   if (path.dirname(path.resolve(datei)) !== path.resolve(dir)) return { ok: false, grund: 'Ungültiger Pfad.' };
   if (!fs.existsSync(datei)) return { ok: false, grund: 'Diese Strategie liegt nicht im Datenordner.' };
+  // Riegel 2b: keine Verknuepfung, die aus dem Ordner herausfuehrt
+  let quelltext;
+  try {
+    if (fs.lstatSync(datei).isSymbolicLink() ||
+        path.dirname(fs.realpathSync(datei)) !== fs.realpathSync(dir)) return { ok: false, grund: 'Ungültiger Pfad.' };
+    quelltext = fs.readFileSync(datei, 'utf8');
+  } catch (e) { return { ok: false, grund: 'Die Strategie ist nicht lesbar: ' + String(e && e.message || e) }; }
+  // Riegel 4: Inhalt
+  const inhalt = StrategiePruefung.inhaltPruefen(quelltext);
+  if (!inhalt.ok) return { ok: false, grund: 'Nicht ausgeführt: ' + inhalt.grund };
   const skript = messmaschinePfad();
   if (!fs.existsSync(skript)) {
     return { ok: false, grund: 'Die Messmaschine ist in dieser Installation nicht enthalten. ' +
       'Aus dem Projektordner geht es weiterhin von Hand: node studien/messmaschine/messen.js "' + datei + '"' };
   }
+  // Riegel 5: Freigabe durch den Nutzer im Hauptprozess
+  if (MESS_LAUF.proc || MESS_LAUF.fragt) return { ok: false, grund: 'Es läuft schon eine Messung.' };
+  MESS_LAUF.fragt = true;
+  let frei = false;
+  try { frei = await strategieFreigeben(ev, key, StrategiePruefung.pruefsumme(quelltext), Buffer.byteLength(quelltext)); }
+  catch (e) { frei = false; }
+  finally { MESS_LAUF.fragt = false; }
+  if (!frei) return { ok: false, grund: 'Nicht ausgeführt: Die Ausführung wurde nicht bestätigt.' };
   const protokolle = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'protokolle');
   return await new Promise((fertig) => {
     let raus = '';
@@ -1107,6 +1166,45 @@ ipcMain.handle('export-analysis', async (_ev, payload) => {
     return { ok: true, dir };
   } catch (e) { return { ok: false, msg: String(e.message || e) }; }
 });
+/* ---- Links im Standard-Browser (Sicherheits-Durchsicht 2026-10, F6) ----
+ * Bis 8.45 ging JEDE https-Adresse, die das Fenster oeffnen oder ansteuern wollte, still an
+ * shell.openExternal - auch ohne Klick (location.href = ...). Ein eingeschleuster Link oder
+ * ein Skript im Fenster konnte so Phishing-Seiten im echten Browser oeffnen oder Daten in
+ * der Adresse hinaustragen. Jetzt:
+ *   - Hosts, die die App selbst verlinkt, oeffnen sich direkt (Liste unten).
+ *   - Alles andere nur nach einer Rueckfrage im NATIVEN Dialog mit der vollen Adresse -
+ *     die kann kein Skript im Fenster beantworten. Nachrichtenquellen aus dem Radar
+ *     (beliebige Verlage) bleiben damit erreichbar, nur nicht mehr unbemerkt.
+ *   - Immer nur eine Rueckfrage zugleich; weitere Versuche waehrenddessen verfallen. */
+const EXTERN_HOSTS = ['news.google.com', 'finance.yahoo.com', 'github.com', 'www.finanzen.net', 'www.onvista.de',
+  'www.sec.gov', 'sec.gov'];
+const EXTERN_ENDUNGEN = ['.finance.yahoo.com', '.github.com'];
+function externErlaubt(url) {
+  try {
+    const u = new URL(String(url));
+    if (u.protocol !== 'https:' || u.username || u.password || u.port) return false;
+    const h = u.hostname.toLowerCase();
+    return EXTERN_HOSTS.indexOf(h) !== -1 || EXTERN_ENDUNGEN.some((e) => h.endsWith(e));
+  } catch (e) { return false; }
+}
+let externFragt = false;
+async function externOeffnen(url) {
+  const ziel = String(url || '');
+  if (!/^https:\/\//i.test(ziel)) return false;
+  if (externErlaubt(ziel)) { shell.openExternal(ziel); return true; }
+  if (externFragt) return false;
+  externFragt = true;
+  try {
+    const optionen = {
+      type: 'question', buttons: ['Abbrechen', 'Im Browser öffnen'], defaultId: 0, cancelId: 0, noLink: true,
+      title: 'Externe Adresse', message: 'Diese Adresse im Browser öffnen?', detail: ziel.slice(0, 2000)
+    };
+    const a = mainWin && !mainWin.isDestroyed() ? await dialog.showMessageBox(mainWin, optionen) : await dialog.showMessageBox(optionen);
+    if (a && a.response === 1) { shell.openExternal(ziel); return true; }
+    return false;
+  } catch (e) { return false; }
+  finally { externFragt = false; }
+}
 ipcMain.handle('open-external', async (_ev, url) => {
   try {
     const u = new URL(url);
@@ -2456,7 +2554,7 @@ function createWindow() {
   win.loadFile('index.html');
   // Externe Links im Standard-Browser öffnen, nicht im App-Fenster
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https://')) shell.openExternal(url);
+    if (url.startsWith('https://')) externOeffnen(url);
     return { action: 'deny' };
   });
   /* Nur die eigene Startseite. Vorher stand hier "alles ausser file:// verbieten" - also
@@ -2469,7 +2567,7 @@ function createWindow() {
    * nimmt also nichts weg, sie schliesst nur eine Tuer, die niemand benutzt. */
   const startseite = pathToFileURL(path.join(__dirname, 'index.html')).href;
   win.webContents.on('will-navigate', (ev, ziel) => {
-    if (ziel.startsWith('https://')) { ev.preventDefault(); shell.openExternal(ziel); return; }
+    if (ziel.startsWith('https://')) { ev.preventDefault(); externOeffnen(ziel); return; }
     if (String(ziel).split('#')[0].split('?')[0] !== startseite) ev.preventDefault();
   });
 }
