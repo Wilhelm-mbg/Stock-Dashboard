@@ -1,0 +1,683 @@
+{
+ "erstellt": "2026-10-04T11:22:20.469Z",
+ "ersterTag": "2016-01-04",
+ "schlusstag": "2026-09-30",
+ "werte": {
+  "QQQ": {
+   "zaehlung": {
+    "wert": "QQQ",
+    "dateien": 11,
+    "kerzenRoh": 2081801,
+    "kerzenRegulaer": 1048717,
+    "bloeckeRegulaer": 2703,
+    "verworfen": {
+     "unsortiert": 0,
+     "nichtRegulaer": 1032304,
+     "ausserhalbUhrzeit": 0,
+     "ohneKurs": 0,
+     "vorErstemTag": 0,
+     "nachSchlusstag": 780
+    },
+    "blockUeberTagesgrenze": 0,
+    "leereBloecke": 0,
+    "umsatzNull": 0,
+    "hochTiefWiderspruch": 0
+   },
+   "handelstage": 2701,
+   "ersterTag": "2016-01-04",
+   "letzterTag": "2026-09-30",
+   "kerzen": 1048717,
+   "kerzenJeTag": {
+    "genau390": 2672,
+    "genau210": 21,
+    "von380bis389": 1,
+    "von200bis209": 0,
+    "sonstUnter380": 7
+   },
+   "tageUnter380": 28,
+   "tageUnter380Liste": [
+    {
+     "datum": "2016-02-22",
+     "kerzen": 340,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2016-11-25",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2017-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2017-11-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2018-05-02",
+     "kerzen": 1,
+     "erste": 570,
+     "letzte": 570
+    },
+    {
+     "datum": "2018-05-03",
+     "kerzen": 1,
+     "erste": 570,
+     "letzte": 570
+    },
+    {
+     "datum": "2018-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2018-11-23",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2018-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2019-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2019-11-29",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2019-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2020-03-09",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-03-12",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-03-16",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-03-18",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-11-27",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2020-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2021-11-26",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2022-11-25",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2023-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2023-11-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2024-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2024-11-29",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2024-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2025-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2025-11-28",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2025-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    }
+   ],
+   "ersteKerzeNicht0930": 0,
+   "ersteKerzeNicht0930Liste": [],
+   "letzteKerzeNicht1559Oder1259": 2,
+   "letzteKerzeAndersListe": [
+    {
+     "datum": "2018-05-02",
+     "letzte": 570
+    },
+    {
+     "datum": "2018-05-03",
+     "letzte": 570
+    }
+   ],
+   "massnahmen": {
+    "aufbau": "object",
+    "schluessel": [
+     "sym",
+     "stand",
+     "quelle",
+     "von",
+     "bis",
+     "saetze",
+     "anwendbar",
+     "ohneFaktor"
+    ],
+    "zahlJeArt": {
+     "cash_dividends": 44
+    },
+    "splitFunde": [],
+    "splitsImFenster": []
+   }
+  },
+  "SPY": {
+   "zaehlung": {
+    "wert": "SPY",
+    "dateien": 11,
+    "kerzenRoh": 2157447,
+    "kerzenRegulaer": 1049506,
+    "bloeckeRegulaer": 2703,
+    "verworfen": {
+     "unsortiert": 0,
+     "nichtRegulaer": 1107161,
+     "ausserhalbUhrzeit": 0,
+     "ohneKurs": 0,
+     "vorErstemTag": 0,
+     "nachSchlusstag": 780
+    },
+    "blockUeberTagesgrenze": 0,
+    "leereBloecke": 0,
+    "umsatzNull": 0,
+    "hochTiefWiderspruch": 0
+   },
+   "handelstage": 2701,
+   "ersterTag": "2016-01-04",
+   "letzterTag": "2026-09-30",
+   "kerzen": 1049506,
+   "kerzenJeTag": {
+    "genau390": 2672,
+    "genau210": 21,
+    "von380bis389": 3,
+    "von200bis209": 0,
+    "sonstUnter380": 5
+   },
+   "tageUnter380": 26,
+   "tageUnter380Liste": [
+    {
+     "datum": "2016-11-25",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2017-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2017-11-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2018-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2018-11-23",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2018-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2019-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2019-08-12",
+     "kerzen": 360,
+     "erste": 570,
+     "letzte": 931
+    },
+    {
+     "datum": "2019-11-29",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2019-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2020-03-09",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-03-12",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-03-16",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-03-18",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-11-27",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2020-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2021-11-26",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2022-11-25",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2023-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2023-11-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2024-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2024-11-29",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2024-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2025-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2025-11-28",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2025-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    }
+   ],
+   "ersteKerzeNicht0930": 0,
+   "ersteKerzeNicht0930Liste": [],
+   "letzteKerzeNicht1559Oder1259": 1,
+   "letzteKerzeAndersListe": [
+    {
+     "datum": "2019-08-12",
+     "letzte": 931
+    }
+   ],
+   "massnahmen": {
+    "aufbau": "object",
+    "schluessel": [
+     "sym",
+     "stand",
+     "quelle",
+     "von",
+     "bis",
+     "saetze",
+     "anwendbar",
+     "ohneFaktor"
+    ],
+    "zahlJeArt": {
+     "cash_dividends": 40
+    },
+    "splitFunde": [],
+    "splitsImFenster": []
+   }
+  },
+  "IWM": {
+   "zaehlung": {
+    "wert": "IWM",
+    "dateien": 11,
+    "kerzenRoh": 1753624,
+    "kerzenRegulaer": 1049503,
+    "bloeckeRegulaer": 2703,
+    "verworfen": {
+     "unsortiert": 0,
+     "nichtRegulaer": 703341,
+     "ausserhalbUhrzeit": 0,
+     "ohneKurs": 0,
+     "vorErstemTag": 0,
+     "nachSchlusstag": 780
+    },
+    "blockUeberTagesgrenze": 0,
+    "leereBloecke": 0,
+    "umsatzNull": 0,
+    "hochTiefWiderspruch": 0
+   },
+   "handelstage": 2701,
+   "ersterTag": "2016-01-04",
+   "letzterTag": "2026-09-30",
+   "kerzen": 1049503,
+   "kerzenJeTag": {
+    "genau390": 2672,
+    "genau210": 21,
+    "von380bis389": 3,
+    "von200bis209": 0,
+    "sonstUnter380": 5
+   },
+   "tageUnter380": 26,
+   "tageUnter380Liste": [
+    {
+     "datum": "2016-11-25",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2017-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2017-11-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2018-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2018-11-23",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2018-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2019-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2019-08-12",
+     "kerzen": 357,
+     "erste": 570,
+     "letzte": 930
+    },
+    {
+     "datum": "2019-11-29",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2019-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2020-03-09",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-03-12",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-03-16",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-03-18",
+     "kerzen": 376,
+     "erste": 570,
+     "letzte": 959
+    },
+    {
+     "datum": "2020-11-27",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2020-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2021-11-26",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2022-11-25",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2023-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2023-11-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2024-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2024-11-29",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2024-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2025-07-03",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2025-11-28",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    },
+    {
+     "datum": "2025-12-24",
+     "kerzen": 210,
+     "erste": 570,
+     "letzte": 779
+    }
+   ],
+   "ersteKerzeNicht0930": 0,
+   "ersteKerzeNicht0930Liste": [],
+   "letzteKerzeNicht1559Oder1259": 1,
+   "letzteKerzeAndersListe": [
+    {
+     "datum": "2019-08-12",
+     "letzte": 930
+    }
+   ],
+   "massnahmen": {
+    "aufbau": "object",
+    "schluessel": [
+     "sym",
+     "stand",
+     "quelle",
+     "von",
+     "bis",
+     "saetze",
+     "anwendbar",
+     "ohneFaktor"
+    ],
+    "zahlJeArt": {
+     "cash_dividends": 42
+    },
+    "splitFunde": [],
+    "splitsImFenster": []
+   }
+  }
+ },
+ "handelstageDeckungsgleich": true,
+ "tageJeFenster": {
+  "W-Vor": 503,
+  "W-Papier": 1445,
+  "W-Nach": 753
+ }
+}

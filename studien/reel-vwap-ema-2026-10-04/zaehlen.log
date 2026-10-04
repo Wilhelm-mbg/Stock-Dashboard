@@ -1,0 +1,10 @@
+QQQ: Tage 2701 (2016-01-04 bis 2026-09-30), Kerzen 1048717, je Tag {"genau390":2672,"genau210":21,"von380bis389":1,"von200bis209":0,"sonstUnter380":7}, unter 380: 28, erste nicht 09:30: 0, letzte nicht 15:59/12:59: 2
+  verworfen {"unsortiert":0,"nichtRegulaer":1032304,"ausserhalbUhrzeit":0,"ohneKurs":0,"vorErstemTag":0,"nachSchlusstag":780}, Umsatz null 0, Hoch/Tief-Widerspruch 0, Block ueber Tagesgrenze 0, leere Bloecke 0, Rohkerzen 2081801
+  Massnahmen: object Schluessel ["sym","stand","quelle","von","bis","saetze","anwendbar","ohneFaktor"] Arten {"cash_dividends":44} Split-Funde 0 im Fenster 0
+SPY: Tage 2701 (2016-01-04 bis 2026-09-30), Kerzen 1049506, je Tag {"genau390":2672,"genau210":21,"von380bis389":3,"von200bis209":0,"sonstUnter380":5}, unter 380: 26, erste nicht 09:30: 0, letzte nicht 15:59/12:59: 1
+  verworfen {"unsortiert":0,"nichtRegulaer":1107161,"ausserhalbUhrzeit":0,"ohneKurs":0,"vorErstemTag":0,"nachSchlusstag":780}, Umsatz null 0, Hoch/Tief-Widerspruch 0, Block ueber Tagesgrenze 0, leere Bloecke 0, Rohkerzen 2157447
+  Massnahmen: object Schluessel ["sym","stand","quelle","von","bis","saetze","anwendbar","ohneFaktor"] Arten {"cash_dividends":40} Split-Funde 0 im Fenster 0
+IWM: Tage 2701 (2016-01-04 bis 2026-09-30), Kerzen 1049503, je Tag {"genau390":2672,"genau210":21,"von380bis389":3,"von200bis209":0,"sonstUnter380":5}, unter 380: 26, erste nicht 09:30: 0, letzte nicht 15:59/12:59: 1
+  verworfen {"unsortiert":0,"nichtRegulaer":703341,"ausserhalbUhrzeit":0,"ohneKurs":0,"vorErstemTag":0,"nachSchlusstag":780}, Umsatz null 0, Hoch/Tief-Widerspruch 0, Block ueber Tagesgrenze 0, leere Bloecke 0, Rohkerzen 1753624
+  Massnahmen: object Schluessel ["sym","stand","quelle","von","bis","saetze","anwendbar","ohneFaktor"] Arten {"cash_dividends":42} Split-Funde 0 im Fenster 0
+Handelstage der drei Werte deckungsgleich: true; Tage je Fenster (QQQ): {"W-Vor":503,"W-Papier":1445,"W-Nach":753}
