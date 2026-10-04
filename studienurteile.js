@@ -51,8 +51,8 @@
       datum: '2026-08-23'
     },
     kanaltrend: {
-      befund: 'Abschnittskanäle-Studie: als Handelsbedingung schädlich (−0,17 Pp, t = −4,1); der Kanal ist seither nur Anzeige. Erster Backtest zuvor: −39 % bei Gegenprobe p = 0,86.',
-      quelle: 'Abschnittskanäle-Befund 22.08.2026 (PROJEKTSTAND) + Backtest 21.08.2026 (quant.js, SETUP_ALLOW)',
+      befund: 'Abschnittskanäle-Studie: als Handelsbedingung schädlich (−0,17 Pp, t = −4,1); der Kanal ist seither nur Anzeige. Trendkanal auf Tagesbasis (09.09.2026): Kauf an der unteren Linie t −3,4 bis −4,3 gegen den Topf – als Einstieg in jeder Umsatzklasse zu.',
+      quelle: 'Abschnittskanäle-Befund 22.08.2026 (PROJEKTSTAND) + wiki/belegstand.md, Abschnitt „Trendkanal auf Tagesbasis“ (09.09.2026)',
       datum: '2026-08-22'
     },
     /* Neumessung des Kapitulations-Dips (Auftrag Nr. 68, 03.10.2026). Der erste Satz des
@@ -156,7 +156,7 @@
         regel: 'mit Regel K',
         zahlen: { von: '2021-09-16', bis: '2026-09-15', buchGesamt: 64.0, spyGesamt: 81.2, schlaegt: false,
           phasenVorn: 43, phasen: 63, medianAbstandPa: 1.7, rueckschlagBuch: -40.3, rueckschlagSpy: -24.5 },
-        grenzen: ZUFALL + '; vor Steuern (nach Steuern für den breiten Markt nicht gerechnet)',
+        grenzen: ZUFALL + '; vor Steuern (im Rechenmodell nach Steuern, ohne Regel K: −2,20 Pp pro Jahr hinter dem Indexfonds)',
         quelle: 'studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md, Lauf B-breit mit Regel K, Panel v2.3, 04.10.2026',
         datum: '2026-10-04'
       }

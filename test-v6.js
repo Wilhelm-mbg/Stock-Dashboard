@@ -3735,7 +3735,9 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * eine Statuszeile. Der Wortlaut des Titels bleibt WORTGENAU geprueft; die Klinke
    * wird dabei schaerfer, weil sie zusaetzlich verlangt, dass genau ein Stand-Span
    * mit dem Namen der Klappe dahinter steht - und sonst nichts. */
-  ok(hF.indexOf('<summary>Trendfinder — Detektor widerlegt' +
+  /* Seit fix/oberflaeche-texte (04.10.2026): der Belegstand fuehrt den Detektor unter "Nicht entscheidbar" (netto
+   * unentscheidbar, Long-Seite in der Groesse ausgeschlossen), nicht unter "Widerlegt" - der Titel nennt dieses Urteil. */
+  ok(hF.indexOf('<summary>Trendfinder — Detektor nicht entscheidbar (Long-Seite in der Größe ausgeschlossen)' +
      '<span class="klappe-stand" id="kstand-wende"></span></summary>') >= 0,
      'Trendfinder: die Klappe heisst nach dem Trend und nennt sein Urteil');
   ok(wu3.indexOf('>Trend jetzt</th>') >= 0 && wu3.indexOf('>Güte</th>') >= 0 && wu3.indexOf('>Breite</th>') >= 0,
@@ -14286,8 +14288,9 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
    * "Parameter wie gemessen" - die App weicht in der Mechanik noch von der Messung ab. */
   ok(/id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\) – Änderungen nur über eine neue Messung\./.test(html) &&
      /* Auftrag Nr. 95 (A2): beim Drift-Buch nannte die Zeile eine Studie vom 02.09.2026, die es nicht gibt */
-     /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus \(Neumessung offen\)\./.test(html),
-     'Live=Messung: ueber beiden Feldergruppen steht, woher die Werte kommen (beim Drift-Buch: Neumessung offen)');
+     /* seit fix/oberflaeche-texte: "Messung steht aus" ist ueberholt - Belegstand: t 1,7-2,0 nach Zeitzonen-Korrektur, nicht entscheidbar */
+     /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – nach der Zeitzonen-Korrektur nicht entscheidbar \(Stand im Kasten unten\)\./.test(html),
+     'Live=Messung: ueber beiden Feldergruppen steht, woher die Werte kommen (beim Drift-Buch: nach Korrektur nicht entscheidbar)');
   /* Gefuellt wird aus der Konfiguration, nicht aus dem Markup. Geprueft wird die
    * QUELLE, nicht der Wert: ein fester Wert im Code waere dieselbe Zahl an einer
    * zweiten Stelle - genau der Fehler, gegen den die Sperre gebaut ist. */
@@ -23716,7 +23719,7 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
   var SOLL = [
     'Rückblick 16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen vorn, in der Mitte +8,2 Pp pro Jahr; größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
     'Rückblick 04.01.2017 bis 15.09.2021, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +159,2 % gegen S&P 500 +115,5 % – geschlagen; je nach Starttag in 63 von 63 Fällen vorn, in der Mitte +7,3 Pp pro Jahr; größter Rückschlag −49,0 % gegen −33,8 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
-    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,0 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 43 von 63 Fällen vorn, in der Mitte +1,7 Pp pro Jahr; größter Rückschlag −40,3 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); vor Steuern (nach Steuern für den breiten Markt nicht gerechnet).',
+    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,0 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 43 von 63 Fällen vorn, in der Mitte +1,7 Pp pro Jahr; größter Rückschlag −40,3 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); vor Steuern (im Rechenmodell nach Steuern, ohne Regel K: −2,20 Pp pro Jahr hinter dem Indexfonds).',
     'Rückblick 16.09.2021 bis 15.09.2026, Kauf nach den stärksten Überraschungen (40 Plätze, 60 Handelstage, nur Kaufseite – nicht die Regel dieses Buchs): Buch +84,2 % gegen S&P 500 +81,2 % – knapp davor, aber 16 von 200 Zufallsbüchern liegen darüber: kein Vorwärtstest angezeigt; größter Rückschlag −21,6 % gegen −24,5 %.'
   ];
   var IST = SU.rueckblicke('momentum-liquide').concat(SU.rueckblicke('drift')).map(function (e) { return SU.rueckblickText(e); });
@@ -24432,7 +24435,8 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
 
   /* ---- 100.4 A2 ---- */
   var htmlO = html.replace(/<!--[\s\S]*?-->/g, '');
-  ok(/id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus \(Neumessung offen\)\.<\/div>/.test(htmlO) &&
+  /* Zeile seit fix/oberflaeche-texte auf den Belegstand umgestellt (siehe Live=Messung oben) */
+  ok(/id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – nach der Zeitzonen-Korrektur nicht entscheidbar \(Stand im Kasten unten\)\.<\/div>/.test(htmlO) &&
      !/Drift[^"<]{0,40}02\.09\.2026/.test(htmlO) && /data-mess="Ergebnis-Drift-Messung 21\.08\.2026 · /.test(htmlO) &&
      /GEMESSEN am 21\.08\.2026 auf 20\.356 Ergebnisterminen/.test(fs.readFileSync(__dirname + '/drift.js', 'utf8')) &&
      /id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\)/.test(htmlO),

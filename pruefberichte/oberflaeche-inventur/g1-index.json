@@ -37,30 +37,54 @@
  },
  {
   "datei": "index.html",
-  "zeile": 1615,
-  "wortlaut": "der Kurs im Schnitt 0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 1614,
+  "wortlaut": "lief\n          der Kurs schlechter als seine übliche Drift (t = −11,6",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6**"
+  },
   "belegsagt": "Belegstand führt nur t = −11,6 (Quelle „Gedächtnisprotokoll\"); die Größe 0,74 Pp und 20 Handelstage stehen weder dort noch in einer ERGEBNIS.md.",
-  "vorschlag": "der Kurs lief nach einem Einstiegssignal schlechter als seine übliche Drift (t = −11,6; Größe ohne Protokoll im Belegstand)"
+  "vorschlag": "der Kurs lief nach einem Einstiegssignal schlechter als seine übliche Drift (t = −11,6; Größe ohne Protokoll im Belegstand)",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1615,
+   "wortlaut": "der Kurs im Schnitt 0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage"
+  },
+  "neu_begruendung": "Größe 0,74 Pp und 20 Handelstage gestrichen (kein Protokoll im Belegstand); stehen bleibt das Urteil mit t = −11,6 aus der Zeile Stunden-Strategie."
  },
  {
   "datei": "index.html",
   "zeile": 1616,
-  "wortlaut": "24.727 Signalen",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Signalzahl nicht im Belegstand (nur t = −11,6).",
-  "vorschlag": "Zahl streichen oder Protokoll in den Belegstand aufnehmen"
+  "vorschlag": "Zahl streichen oder Protokoll in den Belegstand aufnehmen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1616,
+   "wortlaut": "24.727 Signalen"
+  },
+  "begruendung": "Die Signalzahl steht nirgends im Belegkorpus (dort nur t = −11,6 aus einem Gedächtnisprotokoll); ohne sie bleibt der Satz richtig."
  },
  {
   "datei": "index.html",
   "zeile": 1625,
-  "wortlaut": "Messung vom 21.08.2026 (24.727 Signale, 189 Werte, 8 Jahre)",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "Messung vom 21.08.2026 (Gedächtnisprotokoll, Umfang nicht im Belegstand)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6**"
+  },
   "belegsagt": "Umfang der Messung nicht im Belegstand; Quelle dort „Gedächtnisprotokoll\".",
-  "vorschlag": "Messung vom 21.08.2026 (Gedächtnisprotokoll, kein Protokoll im Repo)"
+  "vorschlag": "Messung vom 21.08.2026 (Gedächtnisprotokoll, kein Protokoll im Repo)",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1625,
+   "wortlaut": "Messung vom 21.08.2026 (24.727 Signale, 189 Werte, 8 Jahre)"
+  },
+  "neu_begruendung": "Umfang der Messung (Signale, Werte, Jahre) steht nicht im Belegstand; die Fundstelle dort heißt Gedächtnisprotokoll."
  },
  {
   "datei": "index.html",
@@ -76,66 +100,122 @@
  },
  {
   "datei": "index.html",
-  "zeile": 1627,
-  "wortlaut": "−0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 1626,
+  "wortlaut": "lief der Kurs schlechter\n          als die übliche Drift (t=−11,6)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6**"
+  },
   "belegsagt": "Größe nicht im Belegstand.",
-  "vorschlag": "Größe streichen, t = −11,6 stehen lassen"
+  "vorschlag": "Größe streichen, t = −11,6 stehen lassen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1627,
+   "wortlaut": "−0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage"
+  },
+  "neu_begruendung": "Größe −0,74 Pp und 20 Handelstage gestrichen; t = −11,6 steht im Belegstand."
  },
  {
   "datei": "index.html",
   "zeile": 1627,
-  "wortlaut": "nur 32 von 189 Werten positiv",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Nicht im Belegstand.",
-  "vorschlag": "streichen"
+  "vorschlag": "streichen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1627,
+   "wortlaut": "nur 32 von 189 Werten positiv"
+  },
+  "begruendung": "Aufteilung nach Werten steht nirgends im Belegkorpus; ersetzt durch den Hinweis, dass sie in keinem Protokoll steht."
  },
  {
   "datei": "index.html",
   "zeile": 1628,
-  "wortlaut": "Mit Elliott-Beimischung −1,0 Pp.",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Nicht im Belegstand.",
-  "vorschlag": "streichen"
+  "vorschlag": "streichen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1628,
+   "wortlaut": "Mit Elliott-Beimischung −1,0 Pp."
+  },
+  "begruendung": "Der Elliott-Anteil steht nirgends im Belegkorpus; ohne ihn bleibt die Aussage zum Technik-Score richtig."
  },
  {
   "datei": "index.html",
   "zeile": 1628,
-  "wortlaut": "Das News-Sentiment war nie messbar.",
-  "klasse": "c",
+  "wortlaut": "Das News-Sentiment ist seit dem 01.09.2026 gemessen und widerlegt",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "**b = +0,0070 Pp/Score-Punkt, t = 0,31**"
   },
   "belegsagt": "News-Sentiment ist seit 01.09.2026 gemessen und widerlegt (Übernacht, Großwerte: b = +0,0070 Pp, t = 0,31); Nachrichten-Stimmung (Tage) 03.10.: nicht belegt.",
-  "vorschlag": "Das News-Sentiment ist inzwischen gemessen: über Nacht auf Großwerten widerlegt (t = 0,31), auf Tagesbasis nicht belegt."
+  "vorschlag": "Das News-Sentiment ist inzwischen gemessen: über Nacht auf Großwerten widerlegt (t = 0,31), auf Tagesbasis nicht belegt.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 1628,
+   "wortlaut": "Das News-Sentiment war nie messbar."
+  },
+  "neu_begruendung": "Belegstand führt News-Sentiment (Übernacht, Großwerte) seit 01.09.2026 unter „Widerlegt“; die Zahl steht im Absatz darunter."
  },
  {
   "datei": "index.html",
   "zeile": 1633,
-  "wortlaut": "35 Beobachtungen an 10 Zeitpunkten, nötig wären rund 2.600",
-  "klasse": "c",
+  "wortlaut": "b = +0,0070 Pp je Score-Punkt, t = 0,31",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "**b = +0,0070 Pp/Score-Punkt, t = 0,31**"
   },
   "belegsagt": "Bei der Endkontrolle umgestuft (b → c): ein Überholt-Vermerk steht nicht dabei. Seit 01.09.2026 ist News-Sentiment über Nacht auf Großwerten gemessen und widerlegt (t = 0,31); „35 Beobachtungen / nötig 2.600“ galt nur für das App-Archiv.",
-  "vorschlag": "Das News-Sentiment steuert seit dem 31.08.2026 nichts mehr – gemessen am 01.09.2026: über Nacht auf Großwerten kein Effekt (t = 0,31)."
+  "vorschlag": "Das News-Sentiment steuert seit dem 31.08.2026 nichts mehr – gemessen am 01.09.2026: über Nacht auf Großwerten kein Effekt (t = 0,31).",
+  "alt": {
+   "klasse": "c",
+   "zeile": 1633,
+   "wortlaut": "35 Beobachtungen an 10 Zeitpunkten, nötig wären rund 2.600"
+  },
+  "neu_begruendung": "Alte Zahlen (35 / 10 / 2.600) galten für das App-Archiv und sind im Belegstand überholt; jetzt das Urteil der Vollkorpus-Messung vom 01.09.2026."
+ },
+ {
+  "datei": "index.html",
+  "zeile": 1633,
+  "wortlaut": "Auf Tagesbasis\n          (Nachrichten-Stimmung, 03.10.2026) ist es nicht belegt",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "## Nachrichten-Stimmung, Tagesdesign (03.10.2026) — nicht belegt"
+  },
+  "zusatz": true,
+  "alt": {
+   "klasse": "c",
+   "zeile": 1633,
+   "wortlaut": "35 Beobachtungen an 10 Zeitpunkten, nötig wären rund 2.600"
+  },
+  "neu_begruendung": "Tagesdesign vom 03.10.2026: „nicht belegt“ (zwölf Tests)."
  },
  {
   "datei": "index.html",
   "zeile": 1634,
-  "wortlaut": "Unbelegt ist nicht widerlegt",
-  "klasse": "c",
+  "wortlaut": "Score, Ereignistypen und auffälligste Schlagzeile\n          werden weiter berechnet und angezeigt",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "**b = +0,0070 Pp/Score-Punkt, t = 0,31**"
   },
   "belegsagt": "Für News-Sentiment über Nacht gilt heute „widerlegt\" (t = 0,31, Obergrenze Faktor 8,5 unter der CFD-Hürde); Tagesdesign „nicht belegt\".",
-  "vorschlag": "Die spätere Messung (01.09.2026) hat das News-Sentiment über Nacht widerlegt; Score, Ereignistypen und Schlagzeile werden nur noch angezeigt"
+  "vorschlag": "Die spätere Messung (01.09.2026) hat das News-Sentiment über Nacht widerlegt; Score, Ereignistypen und Schlagzeile werden nur noch angezeigt",
+  "alt": {
+   "klasse": "c",
+   "zeile": 1634,
+   "wortlaut": "Unbelegt ist nicht widerlegt"
+  },
+  "neu_begruendung": "„Unbelegt ist nicht widerlegt“ gestrichen – News-Sentiment über Nacht ist widerlegt; übrig bleibt die Beschreibung der Anzeige."
  },
  {
   "datei": "index.html",
@@ -152,41 +232,68 @@
  {
   "datei": "index.html",
   "zeile": 1671,
-  "wortlaut": "Stellt alles auf die gemessenen Ergebnisse um",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "Stellt alles auf die Voreinstellungen der Messungen um – belegt ist davon keine (Belegstand)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Belegte handelbare Kanten: NULL."
+  },
   "belegsagt": "Keine der Voreinstellungen ist belegt: rsi2seit nicht entscheidbar, Momentum nicht entscheidbar, Ergebnis-Drift nicht entscheidbar; belegte Kanten NULL.",
-  "vorschlag": "Stellt alles auf die Voreinstellungen der Messungen um (keine davon belegt)"
+  "vorschlag": "Stellt alles auf die Voreinstellungen der Messungen um (keine davon belegt)",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1671,
+   "wortlaut": "Stellt alles auf die gemessenen Ergebnisse um"
+  },
+  "neu_begruendung": "„gemessene Ergebnisse“ klang nach Beleg; der Belegstand zählt null belegte Kanten."
  },
  {
   "datei": "index.html",
   "zeile": 1689,
-  "wortlaut": "dasselbe Signal ist im Trend ein Münzwurf und im Seitwärtsband messbar",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Kein Beleg; rsi2seit steht unter „Nicht entscheidbar\".",
-  "vorschlag": "Satz streichen"
+  "vorschlag": "Satz streichen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1689,
+   "wortlaut": "dasselbe Signal ist im Trend ein Münzwurf und im Seitwärtsband messbar"
+  },
+  "begruendung": "Behauptung „Münzwurf im Trend, messbar im Seitwärtsband“ steht nirgends im Belegkorpus; der Satz beschreibt jetzt nur die Regel (handelt nur im Seitwärtsband)."
  },
  {
   "datei": "index.html",
-  "zeile": 1690,
-  "wortlaut": "162 Werte: <b>+0,147 Prozentpunkte</b> auf 8 Handelsstunden über die übliche Drift hinaus",
-  "klasse": "c",
+  "zeile": 1689,
+  "wortlaut": "Überschuss\n          <b>+0,021 Prozentpunkte je Signal</b>, Tagesmittel +0,054 – nicht entscheidbar",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
   },
   "belegsagt": "rsi2seit: +0,021 Pp je Signal, Tagesmittel +0,054 (Band −0,073 bis 0,182) – nicht entscheidbar; mit MCP-Stop gegen CFD geschlossen.",
-  "vorschlag": "Gemessen (Protokoll 26.08.2026): +0,021 Pp je Signal, Tagesmittel +0,054 Pp – nicht entscheidbar."
+  "vorschlag": "Gemessen (Protokoll 26.08.2026): +0,021 Pp je Signal, Tagesmittel +0,054 Pp – nicht entscheidbar.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 1690,
+   "wortlaut": "162 Werte: <b>+0,147 Prozentpunkte</b> auf 8 Handelsstunden über die übliche Drift hinaus"
+  },
+  "neu_begruendung": "Alte Zahl (+0,147 Pp, 162 Werte) ohne Beleg; heutiger Stand rsi2seit aus dem Protokoll vom 26.08.2026, Urteil „nicht entscheidbar“."
  },
  {
   "datei": "index.html",
   "zeile": 1691,
-  "wortlaut": "Zeithälften positiv",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Nicht im Belegstand.",
-  "vorschlag": "streichen"
+  "vorschlag": "streichen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1691,
+   "wortlaut": "Zeithälften positiv"
+  },
+  "begruendung": "„in beiden Zeithälften positiv“ steht nirgends im Belegkorpus."
  },
  {
   "datei": "index.html",
@@ -226,54 +333,87 @@
  },
  {
   "datei": "index.html",
-  "zeile": 1701,
-  "wortlaut": "Der gemessene Vorsprung liegt über der Aktien-Kostenhürde",
-  "klasse": "c",
+  "zeile": 1700,
+  "wortlaut": "Der gemessene Vorsprung (+0,021 Pp je Signal, nicht entscheidbar) liegt unter der gemessenen\n          Aktien-Kostenhürde",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
-   "marke": "Alles Reale (glockendruck H=1 +0,044, rsi2seit"
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
   },
   "belegsagt": "rsi2seit (+0,021 je Signal) liegt UNTER der Kassa-Annahme; gegen CFD geschlossen; keine belegte Kante.",
-  "vorschlag": "Der gemessene Vorsprung (+0,021 Pp je Signal) liegt unter der Aktien-Kostenhürde und ist nicht entscheidbar"
+  "vorschlag": "Der gemessene Vorsprung (+0,021 Pp je Signal) liegt unter der Aktien-Kostenhürde und ist nicht entscheidbar",
+  "alt": {
+   "klasse": "c",
+   "zeile": 1701,
+   "wortlaut": "Der gemessene Vorsprung liegt über der Aktien-Kostenhürde"
+  },
+  "neu_begruendung": "rsi2seit liegt mit +0,021 Pp je Signal unter jeder gemessenen Kassa-Hürde, nicht darüber."
  },
  {
   "datei": "index.html",
-  "zeile": 1702,
-  "wortlaut": "(0,10 %) und unter der Optionsschein-Hürde (0,21 %)",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 1701,
+  "wortlaut": "(0,0449 bis 0,1569 Pp je Umlauf, wiki/kosten.md)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/kosten.md",
+   "marke": "**GEMESSEN 03.09.2026, und es ist keine einzige Zahl:** K je Umsatzklasse"
+  },
   "belegsagt": "Hürden-Zahlen so nicht im Belegstand (gemessene Kassa-Hürde je Klasse 0,0449–0,1569 Pp).",
-  "vorschlag": "Hürde aus kosten.md je Umsatzklasse nennen"
+  "vorschlag": "Hürde aus kosten.md je Umsatzklasse nennen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1702,
+   "wortlaut": "(0,10 %) und unter der Optionsschein-Hürde (0,21 %)"
+  },
+  "neu_begruendung": "Angenommene Hürden 0,10 % / 0,21 % ersetzt durch die gemessene Kassa-Hürde je Umsatzklasse (03.09.2026); Schein ohne Zahl."
  },
  {
   "datei": "index.html",
   "zeile": 1702,
-  "wortlaut": "mit Schein war dieselbe Strategie im Backtest bei −96 %",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Nicht im Belegstand.",
-  "vorschlag": "streichen oder Protokoll nachweisen"
+  "vorschlag": "streichen oder Protokoll nachweisen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1702,
+   "wortlaut": "mit Schein war dieselbe Strategie im Backtest bei −96 %"
+  },
+  "begruendung": "Backtest-Zahl −96 % mit Schein steht nirgends im Belegkorpus; ohne sie bleibt die Aussage (Schein-Hürde höher) richtig."
  },
  {
   "datei": "index.html",
   "zeile": 1703,
-  "wortlaut": "streng bis Handelsschluss geschlossen −0,08 % je Trade, mit einer Nacht Haltezeit",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Nicht im Belegstand.",
-  "vorschlag": "streichen"
+  "vorschlag": "streichen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1703,
+   "wortlaut": "streng bis Handelsschluss geschlossen −0,08 % je Trade, mit einer Nacht Haltezeit"
+  },
+  "begruendung": "Die Zahlen −0,08 % / +0,23 % zur Nachthaltung stehen nirgends im Belegkorpus; der ganze Satz ist entfallen."
  },
  {
   "datei": "index.html",
-  "zeile": 1704,
-  "wortlaut": "+0,23 %. Deshalb steigen beide Kanten über die",
-  "klasse": "c",
+  "zeile": 1702,
+  "wortlaut": "Beide Einstiege steigen über die <b>Zeit</b> aus",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "Belegte handelbare Kanten: NULL."
   },
   "belegsagt": "+0,23 % ohne Beleg; „Kanten\" falsch – belegte Kanten NULL, Kapitulation zurückgewiesen.",
-  "vorschlag": "Deshalb steigen beide Einstiege über die Zeit aus"
+  "vorschlag": "Deshalb steigen beide Einstiege über die Zeit aus",
+  "alt": {
+   "klasse": "c",
+   "zeile": 1704,
+   "wortlaut": "+0,23 %. Deshalb steigen beide Kanten über die"
+  },
+  "neu_begruendung": "„beide Kanten“ ersetzt durch „beide Einstiege“ (belegte Kanten: NULL); +0,23 % ohne Beleg gestrichen."
  },
  {
   "datei": "index.html",
@@ -290,44 +430,62 @@
  {
   "datei": "index.html",
   "zeile": 1747,
-  "wortlaut": "Das volatile Drittel schnitt in der Messung besser ab (+0,235 statt +0,147 Prozentpunkte)",
-  "klasse": "c",
-  "beleg": {
-   "datei": "wiki/belegstand.md",
-   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
-  },
+  "wortlaut": "",
+  "klasse": "gestrichen",
+  "beleg": null,
   "belegsagt": "rsi2seit heute +0,021 Pp je Signal / Tagesmittel +0,054, nicht entscheidbar; +0,147 / +0,235 stehen in keiner Belegquelle.",
-  "vorschlag": "Satz streichen – der Belegstand führt keine Aufteilung nach Pools"
+  "vorschlag": "Satz streichen – der Belegstand führt keine Aufteilung nach Pools",
+  "alt": {
+   "klasse": "c",
+   "zeile": 1747,
+   "wortlaut": "Das volatile Drittel schnitt in der Messung besser ab (+0,235 statt +0,147 Prozentpunkte)"
+  },
+  "begruendung": "+0,235 / +0,147 stehen nirgends im Belegkorpus; der Belegstand führt keine Aufteilung nach Pools – das sagt der Satz jetzt."
  },
  {
   "datei": "index.html",
   "zeile": 1747,
-  "wortlaut": "Die Vorgabe sind die 99 Werte, auf denen gemessen wurde",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Zahl der Messwerte nicht im Belegstand; dieselbe Karte nennt an anderer Stelle 162 Werte.",
-  "vorschlag": "Die Vorgabe ist der Standard-Pool"
+  "vorschlag": "Die Vorgabe ist der Standard-Pool",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1747,
+   "wortlaut": "Die Vorgabe sind die 99 Werte, auf denen gemessen wurde"
+  },
+  "begruendung": "Zahl der Messwerte (99) steht nirgends im Belegkorpus und widersprach den 162 Werten derselben Karte; übrig bleibt der Name „Standard-Pool“ ohne Messaussage."
  },
  {
   "datei": "index.html",
   "zeile": 1748,
-  "wortlaut": "Standard (99 gemessene Werte)",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Nicht im Belegstand (widerspricht „162 Werte\" in Zeile 1690).",
-  "vorschlag": "Standard-Pool"
+  "vorschlag": "Standard-Pool",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1748,
+   "wortlaut": "Standard (99 gemessene Werte)"
+  },
+  "begruendung": "Zahl der gemessenen Werte ohne Beleg; die Option heißt jetzt nur „Standard“ (CSS-Kommentar mit dem alten Namen mitgezogen)."
  },
  {
   "datei": "index.html",
   "zeile": 1749,
-  "wortlaut": "gemessen +0,235 statt +0,147 Pp",
-  "klasse": "c",
-  "beleg": {
-   "datei": "wiki/belegstand.md",
-   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
-  },
+  "wortlaut": "",
+  "klasse": "gestrichen",
+  "beleg": null,
   "belegsagt": "rsi2seit: +0,021 Pp je Signal, nicht entscheidbar.",
-  "vorschlag": "Volatiles Drittel (33 Werte)"
+  "vorschlag": "Volatiles Drittel (33 Werte)",
+  "alt": {
+   "klasse": "c",
+   "zeile": 1749,
+   "wortlaut": "gemessen +0,235 statt +0,147 Pp"
+  },
+  "begruendung": "„gemessen +0,235 statt +0,147 Pp“ steht nirgends im Belegkorpus; die Option nennt nur noch die Poolgröße (Konfiguration, keine Messung)."
  },
  {
   "datei": "index.html",
@@ -367,24 +525,36 @@
  },
  {
   "datei": "index.html",
-  "zeile": 1790,
-  "wortlaut": "Die Intraday-Kante (RSI(2) im Seitwärtskanal) liefert gegen eine gepaarte Kontrolle je Signal rund −0,04 Pp (Messmaschine 23.08.2026)",
-  "klasse": "c",
+  "zeile": 1788,
+  "wortlaut": "RSI(2) im Seitwärtskanal liefert je Signal rund +0,021 Pp Überschuss (Protokoll vom 26.08.2026, nicht entscheidbar)",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
   },
   "belegsagt": "Heutiger Stand rsi2seit: +0,021 Pp je Signal (Protokoll 26.08.), Tagesmittel +0,054 – nicht entscheidbar; „Kante\" falsch (NULL belegt).",
-  "vorschlag": "RSI(2) im Seitwärtskanal liefert je Signal rund +0,021 Pp (Protokoll 26.08.2026, nicht entscheidbar)"
+  "vorschlag": "RSI(2) im Seitwärtskanal liefert je Signal rund +0,021 Pp (Protokoll 26.08.2026, nicht entscheidbar)",
+  "alt": {
+   "klasse": "c",
+   "zeile": 1790,
+   "wortlaut": "Die Intraday-Kante (RSI(2) im Seitwärtskanal) liefert gegen eine gepaarte Kontrolle je Signal rund −0,04 Pp (Messmaschine 23.08.2026)"
+  },
+  "neu_begruendung": "Alte Zahl −0,04 Pp (Messmaschine 23.08.) ersetzt durch den Stand des Protokolls vom 26.08.2026; „Kante“ gestrichen."
  },
  {
   "datei": "index.html",
   "zeile": 1791,
-  "wortlaut": "mit Schein war dieselbe Strategie im Backtest bei −96 %",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Nicht im Belegstand.",
-  "vorschlag": "streichen oder Protokoll nachweisen"
+  "vorschlag": "streichen oder Protokoll nachweisen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1791,
+   "wortlaut": "mit Schein war dieselbe Strategie im Backtest bei −96 %"
+  },
+  "begruendung": "Backtest-Zahl −96 % mit Schein steht nirgends im Belegkorpus; ohne sie bleibt der Satz richtig."
  },
  {
   "datei": "index.html",
@@ -437,12 +607,21 @@
  },
  {
   "datei": "index.html",
-  "zeile": 2144,
-  "wortlaut": "wendet doppelt bestätigte, robuste Ergebnisse morgens an",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 2142,
+  "wortlaut": "übernimmt morgens nur Einstellungen, die zweimal hintereinander die eigenen Prüfregeln bestehen – ein Beleg ist das nicht, belegt ist im Belegstand bisher nichts",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Belegte handelbare Kanten: NULL."
+  },
   "belegsagt": "Belegstand: kein Protokoll mit Urteil „bestaetigt\" + Placebo; belegte Kanten NULL.",
-  "vorschlag": "misst nachts auf dem Kursarchiv und übernimmt morgens Einstellungen, die seine Prüfregeln bestehen (kein Beleg einer Kante)"
+  "vorschlag": "misst nachts auf dem Kursarchiv und übernimmt morgens Einstellungen, die seine Prüfregeln bestehen (kein Beleg einer Kante)",
+  "alt": {
+   "klasse": "d",
+   "zeile": 2144,
+   "wortlaut": "wendet doppelt bestätigte, robuste Ergebnisse morgens an"
+  },
+  "neu_begruendung": "„doppelt bestätigte, robuste Ergebnisse“ meinte die Prüfregeln des Autopiloten (depot.js), kein „bestätigt“ im Sinne des Belegstands."
  },
  {
   "datei": "index.html",
@@ -482,96 +661,201 @@
  },
  {
   "datei": "index.html",
-  "zeile": 2248,
-  "wortlaut": "Zehn Prozent schnitten durchweg besser ab als zwanzig.",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 2246,
+  "wortlaut": "Die stärksten 10 % sind der Anteil der gemessenen Konfiguration (Studie 02.09.2026)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "stärkste 10 %, Korb nur Median-Tagesumsatz"
+  },
   "belegsagt": "Kein Vergleich 10 % gegen 20 % im Belegstand.",
-  "vorschlag": "Zehn Prozent ist der gemessene Anteil (Studie 02.09.2026)."
+  "vorschlag": "Zehn Prozent ist der gemessene Anteil (Studie 02.09.2026).",
+  "alt": {
+   "klasse": "d",
+   "zeile": 2248,
+   "wortlaut": "Zehn Prozent schnitten durchweg besser ab als zwanzig."
+  },
+  "neu_begruendung": "Vergleich 10 % gegen 20 % ohne Beleg; der Belegstand nennt „stärkste 10 %“ als gemessene Konfiguration des Buchs."
  },
  {
   "datei": "index.html",
-  "zeile": 2297,
-  "wortlaut": "ihre eigene Messung steht aus (Neumessung offen)",
-  "klasse": "c",
+  "zeile": 2295,
+  "wortlaut": "Konfiguration seit Anlage des Buchs unverändert – nach der Zeitzonen-Korrektur nicht entscheidbar",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
   },
   "belegsagt": "Ergebnis-Drift-Buch: t 1,7–2,0 nach Zeitzonen-Korrektur (nicht entscheidbar); Messung Nr. 88 (04.10., andere Buchregel): nicht entscheidbar, kein Vorwärtstest.",
-  "vorschlag": "Konfiguration seit Anlage unverändert – nach Zeitzonen-Korrektur t 1,7–2,0, nicht entscheidbar; der Buch-Rückblick vom 04.10.2026 (andere Regel) ebenfalls nicht entscheidbar"
+  "vorschlag": "Konfiguration seit Anlage unverändert – nach Zeitzonen-Korrektur t 1,7–2,0, nicht entscheidbar; der Buch-Rückblick vom 04.10.2026 (andere Regel) ebenfalls nicht entscheidbar",
+  "alt": {
+   "klasse": "c",
+   "zeile": 2297,
+   "wortlaut": "ihre eigene Messung steht aus (Neumessung offen)"
+  },
+  "neu_begruendung": "„Messung steht aus“ ist überholt; Belegstand: nach der Zeitzonen-Korrektur t 1,7–2,0, nicht entscheidbar (Zahl im Messkasten)."
  },
  {
   "datei": "index.html",
-  "zeile": 2299,
-  "wortlaut": "Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.",
-  "klasse": "c",
+  "zeile": 2297,
+  "wortlaut": "auf 60 Handelstagen nicht entscheidbar (Kaufseite nach Kosten +1,39 Pp, t 1,97)",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
-   "marke": "| 20 Handelstage (daneben, entscheidet nichts) | +1,18 Pp (t 2,22); Kaufseite nach Kosten +0,43 Pp (t 1,21) |"
+   "marke": "nach Kosten **+1,39 Pp (t 1,97**"
   },
   "belegsagt": "Nr. 88: 20 Handelstage +1,18 Pp (t 2,22), Kaufseite netto +0,43 (t 1,21); 60 Tage Kaufseite netto +1,39 Pp (t 1,97) – nicht entscheidbar. „Tot\" und „trägt\" sind beide nicht belegt.",
-  "vorschlag": "Gemessen (04.10.2026): auf 60 Tagen nicht entscheidbar (Kaufseite netto +1,39 Pp, t 1,97); 20 Tage entscheiden nichts."
+  "vorschlag": "Gemessen (04.10.2026): auf 60 Tagen nicht entscheidbar (Kaufseite netto +1,39 Pp, t 1,97); 20 Tage entscheiden nichts.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 2299,
+   "wortlaut": "Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er."
+  },
+  "neu_begruendung": "„tot“ / „trägt“ unbelegt; Messung Nr. 88 vom 04.10.2026 (andere Buchregel): 60 Tage nicht entscheidbar."
+ },
+ {
+  "datei": "index.html",
+  "zeile": 2297,
+  "wortlaut": "20 Handelstage entscheiden nichts",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| 20 Handelstage (daneben, entscheidet nichts) |"
+  },
+  "zusatz": true,
+  "alt": {
+   "klasse": "c",
+   "zeile": 2299,
+   "wortlaut": "Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er."
+  },
+  "neu_begruendung": "Nr. 88: 20 Handelstage stehen daneben und entscheiden nichts."
  },
  {
   "datei": "index.html",
   "zeile": 2303,
-  "wortlaut": "60 Tage (geprüft)",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "„geprüft\" ohne Beleg – die Zeile 2297 sagt selbst „Messung steht aus\".",
-  "vorschlag": "60 Tage"
+  "vorschlag": "60 Tage",
+  "alt": {
+   "klasse": "d",
+   "zeile": 2303,
+   "wortlaut": "60 Tage (geprüft)"
+  },
+  "begruendung": "Vermerk „(geprüft)“ ohne Beleg; übrig bleibt der reine Optionsname."
  },
  {
   "datei": "index.html",
   "zeile": 2310,
-  "wortlaut": "20 % (geprüft)",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "„geprüft\" ohne Beleg.",
-  "vorschlag": "20 %"
+  "vorschlag": "20 %",
+  "alt": {
+   "klasse": "d",
+   "zeile": 2310,
+   "wortlaut": "20 % (geprüft)"
+  },
+  "begruendung": "Vermerk „(geprüft)“ ohne Beleg; übrig bleibt der reine Optionsname."
  },
  {
   "datei": "index.html",
   "zeile": 2317,
-  "wortlaut": "120 Tage (geprüft)",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "„geprüft\" ohne Beleg.",
-  "vorschlag": "120 Tage"
+  "vorschlag": "120 Tage",
+  "alt": {
+   "klasse": "d",
+   "zeile": 2317,
+   "wortlaut": "120 Tage (geprüft)"
+  },
+  "begruendung": "Vermerk „(geprüft)“ ohne Beleg; übrig bleibt der reine Optionsname."
  },
  {
   "datei": "index.html",
   "zeile": 2321,
-  "wortlaut": "Bei 10 Basispunkten sinkt das Ergebnis um rund 1,8 Prozentpunkte im Jahr.",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Nicht im Belegstand.",
-  "vorschlag": "streichen"
+  "vorschlag": "streichen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 2321,
+   "wortlaut": "Bei 10 Basispunkten sinkt das Ergebnis um rund 1,8 Prozentpunkte im Jahr."
+  },
+  "begruendung": "1,8 Pp je Jahr bei 10 Basispunkten steht nirgends im Belegkorpus; ohne den Satz bleibt der Tooltip richtig."
  },
  {
   "datei": "index.html",
-  "zeile": 2349,
-  "wortlaut": "+10,44 % p. a. bei t = 3,04",
-  "klasse": "c",
+  "zeile": 2347,
+  "wortlaut": "Gemessen ab 2015: <b>+10,44 % p. a. bei t = 3,04</b>",
+  "klasse": "b",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
   },
   "belegsagt": "Zahl von vor der Zeitzonen-Korrektur; heute t 1,7–2,0 (nicht entscheidbar); Nr. 88: Buch 13,01 % p. a. gegen S&P 500 12,63 % (+0,38 Pp p. a.), 16 von 200 Zufallsbüchern darüber.",
-  "vorschlag": "Nach der Zeitzonen-Korrektur t 1,7–2,0 – nicht entscheidbar. Rückblick 04.10.2026: +0,38 Pp p. a. gegen den S&P 500, im Bereich des Zufalls."
+  "vorschlag": "Nach der Zeitzonen-Korrektur t 1,7–2,0 – nicht entscheidbar. Rückblick 04.10.2026: +0,38 Pp p. a. gegen den S&P 500, im Bereich des Zufalls.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 2349,
+   "wortlaut": "+10,44 % p. a. bei t = 3,04"
+  },
+  "neu_begruendung": "Zahl von vor der Zeitzonen-Korrektur bleibt stehen (eine Prüfung in test-v6 verlangt sie wörtlich), jetzt unter dem Vermerk „Überholt“; der heutige Stand folgt dahinter."
  },
  {
   "datei": "index.html",
-  "zeile": 2350,
-  "wortlaut": "schwache Hälfte der Werte: +1,72 % bei t = 0,58",
-  "klasse": "c",
+  "zeile": 2348,
+  "wortlaut": "Heute: t 1,7–2,0, nicht entscheidbar",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
   },
+  "zusatz": true,
+  "alt": {
+   "klasse": "c",
+   "zeile": 2349,
+   "wortlaut": "+10,44 % p. a. bei t = 3,04"
+  },
+  "neu_begruendung": "Heutiger Stand des Ergebnis-Drift-Buchs laut Belegstand."
+ },
+ {
+  "datei": "index.html",
+  "zeile": 2348,
+  "wortlaut": "+0,38 Pp p. a. gegen den\n      S&amp;P 500",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Abstand **+0,38 Pp p. a.**"
+  },
+  "zusatz": true,
+  "alt": {
+   "klasse": "c",
+   "zeile": 2349,
+   "wortlaut": "+10,44 % p. a. bei t = 3,04"
+  },
+  "neu_begruendung": "Rückblick als Buch (Nr. 88, 04.10.2026): Abstand +0,38 Pp p. a., kein Vorwärtstest."
+ },
+ {
+  "datei": "index.html",
+  "zeile": 2350,
+  "wortlaut": "",
+  "klasse": "gestrichen",
+  "beleg": null,
   "belegsagt": "Gehört zur überholten Messung vor der Zeitzonen-Korrektur; nicht im Belegstand.",
-  "vorschlag": "streichen"
+  "vorschlag": "streichen",
+  "alt": {
+   "klasse": "c",
+   "zeile": 2350,
+   "wortlaut": "schwache Hälfte der Werte: +1,72 % bei t = 0,58"
+  },
+  "begruendung": "Teil der überholten Messung vor der Zeitzonen-Korrektur, nicht im Belegstand; der Kasten trägt jetzt den heutigen Stand."
  },
  {
   "datei": "index.html",
@@ -611,23 +895,38 @@
  },
  {
   "datei": "index.html",
-  "zeile": 2656,
-  "wortlaut": "Trendfinder — Detektor widerlegt",
-  "klasse": "c",
+  "zeile": 2654,
+  "wortlaut": "Trendfinder — Detektor nicht entscheidbar (Long-Seite in der Größe ausgeschlossen)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Trendwende-/Winkel-Detektor | Netto unentscheidbar."
+  },
+  "belegsagt": "Belegstand führt den Trendwende-/Winkel-Detektor unter „Nicht entscheidbar\": alle 10 Punktschätzer negativ, Long-Seite als Größe ausgeschlossen – nicht „widerlegt\".",
+  "vorschlag": "Trendfinder — Detektor ohne Vorsprung (Long-Seite in der Größe ausgeschlossen)",
+  "alt": {
+   "klasse": "c",
+   "zeile": 2656,
+   "wortlaut": "Trendfinder — Detektor widerlegt"
+  },
+  "neu_begruendung": "Belegstand führt den Trendwende-/Winkel-Detektor unter „Nicht entscheidbar“, nicht „widerlegt“."
+ },
+ {
+  "datei": "index.html",
+  "zeile": 2672,
+  "wortlaut": "alle 10 Punktschätzer negativ",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "**alle 10 Punktschätzer negativ**, 9 von 10 obere Grenzen unter 0,1247 Pp"
   },
-  "belegsagt": "Belegstand führt den Trendwende-/Winkel-Detektor unter „Nicht entscheidbar\": alle 10 Punktschätzer negativ, Long-Seite als Größe ausgeschlossen – nicht „widerlegt\".",
-  "vorschlag": "Trendfinder — Detektor ohne Vorsprung (Long-Seite in der Größe ausgeschlossen)"
- },
- {
-  "datei": "index.html",
-  "zeile": 2674,
-  "wortlaut": "In der Studie war 1,0 die beste 1-Minuten-Zelle.",
-  "klasse": "d",
-  "beleg": null,
   "belegsagt": "Keine Belegquelle; alle 10 Winkel-Varianten haben negative Punktschätzer.",
-  "vorschlag": "1,0 ist die Einstellung der Studie; keine Zelle hatte einen positiven Punktschätzer."
+  "vorschlag": "1,0 ist die Einstellung der Studie; keine Zelle hatte einen positiven Punktschätzer.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 2674,
+   "wortlaut": "In der Studie war 1,0 die beste 1-Minuten-Zelle."
+  },
+  "neu_begruendung": "„beste 1-Minuten-Zelle“ ohne Beleg; alle 10 Punktschätzer der Maschine sind negativ (S10 = Schwelle 1,0 eingeschlossen)."
  }
 ]
