@@ -15,3 +15,13 @@ release-baut.json
 # Obsidian-Tresor-Einstellungen (Wilhelm liest das Wiki in Obsidian) - maschinenlokal.
 .obsidian/
 wiki/.obsidian/
+
+# Schluessel und Zertifikate (Sicherheits-Durchsicht 2026-10): Umgebungsdateien mit
+# Zugangsdaten und Signatur-Zertifikate (CSC_LINK) gehoeren nie ins Repo.
+.env
+.env.*
+!.env.vorlage
+*.pfx
+*.p12
+*.key
+*.pem

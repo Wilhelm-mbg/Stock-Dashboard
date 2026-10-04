@@ -943,7 +943,7 @@
       /* GRUEN NUR BEI BESTAETIGT. Ein positives Vorzeichen ist kein Vorsprung -
        * das war der Fehler, den diese Zeile bis zum 23.08.2026 gemacht hat. */
       var belegt = kante.urteil === "bestaetigt";
-      txt += "<br>Messung vom " + kante.datum + ": Überschuss je Signal <b>" +
+      txt += "<br>Messung vom " + U.esc(kante.datum) + ": Überschuss je Signal <b>" +
         (kante.jeSignalPp >= 0 ? "+" : "") + U.dez(kante.jeSignalPp, 3) + " Pp</b> gegen eine gepaarte Kontrolle" +
         /* Nicht mehr "beste von N": gezeigt wird die Variante, die das Urteil des
          * Protokolls traegt - nicht die mit der schoensten Zahl. */

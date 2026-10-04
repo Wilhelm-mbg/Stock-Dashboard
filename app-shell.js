@@ -10,7 +10,7 @@
   var GRUNDFARBE = new WeakMap();
 
   var U = {
-    esc: function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); },
+    esc: function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); },
     // Nur echte Web-Links ins DOM lassen: Feed-URLs kommen von außen. javascript:-Links
     // blockiert zwar schon die CSP, aber ein Link, der nichts tut, ist besser als einer,
     // der sich allein auf die CSP verlässt.

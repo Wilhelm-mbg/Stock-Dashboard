@@ -24,7 +24,9 @@
  * Alles Simulation, keine Anlageberatung. */
 (function () {
   var U = window.U || {};
-  function esc(x) { return U.esc ? U.esc(x) : String(x); }
+  /* Vorspann auf U.esc, kein zweiter Ort (wie messband.js): fehlt U.esc, wird
+   * nichts ausgegeben statt Fremdtext roh (Sicherheitspruefung 2026-10, F10). */
+  function esc(x) { var u = window.U || U; return u.esc ? u.esc(x) : ''; }
   var nf2 = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   var nf1 = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   var nf0 = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });

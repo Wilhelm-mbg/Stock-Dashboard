@@ -19,10 +19,10 @@
  * einem halben Megabyte schon.
  *
  * WAS AUSDRUECKLICH NICHT HINEINKOMMT: die Zugangsdaten. settings.json fuehrt capKey,
- * capId und capPass. Ein Sicherungspaket wandert per USB-Stick oder Mail auf einen
+ * capId, capPass, alpKey und alpSecret. Ein Sicherungspaket wandert per USB-Stick oder Mail auf einen
  * anderen Rechner - Zugangsdaten haben darin nichts verloren, auch nicht die eines
  * Demo-Kontos. Sie werden beim Einspielen NICHT ueberschrieben und muessen auf der
- * neuen Maschine einmal von Hand eingetragen werden. Drei Felder tippen ist zumutbar,
+ * neuen Maschine einmal von Hand eingetragen werden. Fuenf Felder tippen ist zumutbar,
  * ein Schluessel in einer herumliegenden Zip-Datei nicht.
  */
 const fs = require('fs');
@@ -39,8 +39,11 @@ const ZIEL_ORDNER = path.join(os.homedir(), 'Downloads');
 const AUS_STORE = ['depot.json', 'bestand.json', 'drift_termine.json', 'drift_markt.json',
   'diagnose.json', 'sentiment.json', 'spekGesehen.json', 'vormarktStand.json'];
 const AUS_DATEN = ['markt', 'spekulationen.json', 'insider.json', 'archiv60m-pfad.txt'];
-/* Zugangsdaten - stehen hier, damit sichtbar ist, dass sie bewusst fehlen. */
-const NIEMALS = ['capKey', 'capId', 'capPass'];
+/* Zugangsdaten - stehen hier, damit sichtbar ist, dass sie bewusst fehlen.
+ * Dieselbe Liste wie GEHEIME_FELDER in main.js. Die Alpaca-Schluessel fehlten hier bis
+ * 8.45 (Sicherheits-Durchsicht 2026-10) und landeten im Klartext-Paket; test-sicherheit.js
+ * prueft seitdem, dass jedes Geheimfeld aus main.js auch hier steht. */
+const NIEMALS = ['capKey', 'capId', 'capPass', 'alpKey', 'alpSecret'];
 
 function nurTag() { return new Date().toISOString().slice(0, 10); }
 
