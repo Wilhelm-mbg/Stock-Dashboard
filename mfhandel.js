@@ -350,22 +350,30 @@
   /** A4 - der Stichtag zum Ausfuehrungstag heute: der juengste SPY-Tag vor heute. Dazu, ob der
    *  Bestand fuer ihn reicht: geladen nach dem Schluss des Werktags vor heute, und fuer
    *  mindestens 95 % der Werte ein Balken genau vom Stichtag.
-   *  Rueckgabe { stichtag, stichtagT, mit, gesamt, ok, grund } */
+   *  Nicht gezaehlt (ausgelassen) wird eine Reihe, deren letzter Balken bis zum Stichtag mehr als
+   *  7 x 86.400.000 ms vor stichtagT liegt: genau die wirft momentumZiel am Stichtag als veraltet
+   *  hinaus (REGEL §1.2, gleicher Vergleich), sie kann das Ziel nicht aendern. Sonst sperrten
+   *  dauerhaft verschwundene Werte (alte Reihe behalten, auf weg) ab 5 % jede Umschichtung
+   *  (Generalprobe 23.11., Fund D-07). Bleibt keine Reihe uebrig, ist das Ergebnis nicht ok.
+   *  Rueckgabe { stichtag, stichtagT, mit, gesamt, ausgelassen, ok, grund } */
   function stichtagPruefen(rohMap, spyReihe, at, heute) {
-    var r = { stichtag: null, stichtagT: null, mit: 0, gesamt: 0, ok: false, grund: null };
+    var r = { stichtag: null, stichtagT: null, mit: 0, gesamt: 0, ausgelassen: 0, ok: false, grund: null };
     var j = spyReihe && spyReihe.length ? indexVor(spyReihe, nyZeit(heute, 0, 0)) : -1;
     if (j < 0) { r.grund = 'keine Marktreihe vor heute'; return r; }
     r.stichtagT = spyReihe[j][0]; r.stichtag = nyTag(r.stichtagT);
     var von = nyZeit(r.stichtag, 0, 0), bis = nyZeit(tagPlus(r.stichtag, 1), 0, 0);
     Object.keys(rohMap || {}).forEach(function (s) {
-      var x = rohMap[s]; r.gesamt++;
+      var x = rohMap[s];
       var i = x && x.length ? indexVor(x, bis) : -1;
+      if (i >= 0 && r.stichtagT - x[i][0] > 7 * 86400000) { r.ausgelassen++; return; }
+      r.gesamt++;
       if (i >= 0 && x[i][0] >= von) r.mit++;
     });
     var geladenNach = at >= nyZeit(werktagVor(heute), SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);
     r.ok = geladenNach && r.gesamt > 0 && r.mit * 100 >= r.gesamt * 95;
     if (!geladenNach) r.grund = 'Tageskurse vor dem Schluss des ' + datumDe(werktagVor(heute)) + ' geladen';
-    else if (!r.ok) r.grund = 'nur ' + r.mit + ' von ' + r.gesamt + ' Werten mit einem Kurs vom Stichtag ' + datumDe(r.stichtag) + ' (nötig 95 %)';
+    else if (!r.ok) r.grund = 'nur ' + r.mit + ' von ' + r.gesamt + ' Werten mit einem Kurs vom Stichtag ' + datumDe(r.stichtag) + ' (nötig 95 %' +
+      (r.ausgelassen ? '; ' + r.ausgelassen + ' Reihen ohne Kurs seit über 7 Tagen nicht gezählt' : '') + ')';
     return r;
   }
   /** Jede Reihe bis einschliesslich tag (New York) - kein Balken vom Ausfuehrungstag oder spaeter
