@@ -608,11 +608,14 @@
    *     ersten Mal, die Position merkt es sich in p.gemeldet).
    *  6. Ohne Ereignisse oder ohne barZeit fuer den Wert geschieht nichts; ein zweiter Aufruf
    *     mit denselben Daten bucht nichts.
+   *  opts.nurSplits (Generalprobe 23.11., Fund 1): nur Regel 3 und 5, keine Ausschuettungen -
+   *  fuer splitsAmAusfuehrungstag unten.
    *  Rueckgabe: {buchungen: [{sym, art: 'split'|'div', t, am, kaufT, …}], gesperrt: [{sym, art, t, …, neu}]}.
    *  Die Buchungen stehen NICHT in buch.trades (dort steht nur Handel), sondern in
    *  buch.massnahmen (hoechstens 400) - damit sich das Bargeld des Buchs auch ohne das
    *  Journal nachrechnen laesst. */
-  function bucheMassnahmen(buch, ereignisse, barZeit, nowMs) {
+  function bucheMassnahmen(buch, ereignisse, barZeit, nowMs, opts) {
+    var nurSplits = !!(opts && opts.nurSplits);
     var res = { buchungen: [], gesperrt: [] };
     if (!buch || !ereignisse || !barZeit) return res;
     function nachZeit(a, b) { return a[0] - b[0]; }
@@ -645,7 +648,7 @@
         merke('split', t);
         res.buchungen.push(b);
       });
-      (e.div || []).slice().sort(nachZeit).forEach(function (a) {
+      (nurSplits ? [] : e.div || []).slice().sort(nachZeit).forEach(function (a) {
         var t = a[0], betrag = a[1];
         if (!(betrag > 0) || !faellig('div', t)) return;
         var richtung = p.richtung < 0 ? -1 : 1;
@@ -673,6 +676,17 @@
       if (p.seit === nowMs && !(p.kursT > 0) && barZeit && barZeit[p.sym] > 0) { p.kursT = barZeit[p.sym]; n++; }
     });
     return n;
+  }
+
+  /** Generalprobe 23.11., Fund 1 (M-02, D-02, H-c2): Splits mit Ex-Tag = Ausfuehrungstag VOR dem Handel buchen.
+   *  Die Eroeffnung des Ausfuehrungstags (mfdepot.js eroeffnung, roher Kurs) steht schon in neuer Stueckelung, der
+   *  Bestand kennt den Split erst nach dem Laden am Abend. ereignisse / barZeit kommen aus demselben Abruf der
+   *  Eroeffnung ({SYM: {div, split}} ab Mitternacht New York, Stempel des Balkens von heute). Gebucht wird wie in
+   *  bucheMassnahmen (Kennung 'split:' + t, Sperre 30 Tage) - der Abend bucht denselben Split dann nicht noch einmal.
+   *  Ausschuettungen NICHT: sie werden nach dem Handel gutgeschrieben (REGEL Teil C.3). Mutiert das Buch;
+   *  Rueckgabe wie bucheMassnahmen (fuer massnahmenJournal). */
+  function splitsAmAusfuehrungstag(buch, ereignisse, barZeit, nowMs) {
+    return bucheMassnahmen(buch, ereignisse, barZeit, nowMs, { nurSplits: true });
   }
 
   /** Die EINE Journalzeile je Takt und Buch zu bucheMassnahmen - null, wenn nichts gebucht
@@ -910,6 +924,7 @@
     fuehreAus: fuehreAus, bewerte: bewerte, rebalanceFaellig: rebalanceFaellig,
     driftAbgleich: driftAbgleich, bewerteDrift: bewerteDrift,
     bucheMassnahmen: bucheMassnahmen, stempleKursT: stempleKursT, massnahmenJournal: massnahmenJournal,
+    splitsAmAusfuehrungstag: splitsAmAusfuehrungstag,                    /* Generalprobe 23.11., Fund 1 */
     /* Auftrag Nr. 93 */
     nyTag: nyTag, nyZeit: nyZeit, tagPlus: tagPlus, istWerktag: istWerktag, werktagVor: werktagVor,
     letzterFertigerWerktag: letzterFertigerWerktag, bestandFrisch: bestandFrisch, ohneLaufendenBalken: ohneLaufendenBalken,

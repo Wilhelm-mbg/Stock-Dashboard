@@ -1,19 +1,26 @@
 'use strict';
 /* Pruefmodul der Generalprobe 23.11.2026 (Takt-Ablauf, Zustand, Zusammenspiel von mfdepot.js / mittelfrist.js / kurse.js).
  * Kleinsttest in der Sandbox von ../lib.js: feste Uhr (New York, Winterzeit), Kunstdaten, kein Netz, keine Schluessel.
- * Alles Simulation mit virtuellem Kapital. */
+ * Alles Simulation mit virtuellem Kapital.
+ * Angepasst (Fix Generalprobe): die Attrappe des Abrufs am Ausfuehrungstag meldet jetzt, wie Yahoo (kurse.js ereignisseAus) und
+ * der Harness, bei o.ereignisse die Kapitalmassnahmen im Fenster des Abrufs - hier den Split 2:1 mit dem Stempel des Montagsbalkens.
+ * Vorher lieferte sie nie Ereignisse; die Behebung (Split aus dem Eroeffnungsabruf vor dem Plan buchen) braucht genau diesen Teil
+ * der Quelle. Ein Stand der App, der ohne Ereignisse abruft, bekommt weiter keine (rot vor der Behebung). */
 global.path = global.path || require('path');   // lib.js benutzt path/fs ohne eigenes require
 global.fs = global.fs || require('fs');
 var L = require('../lib.js');
 var MH = L.MH;
 
 /** Attrappe des Kurs-Laders fuer den Abruf am Ausfuehrungstag: eroeff = {SYM: Eroeffnung}; ein Wert ohne Eintrag
- *  antwortet ohne Balken (wie ein Abruf ohne Eroeffnung / ein gescheiterter Abruf). stempel = Balkenstempel des Tages. */
-function holeAm(eroeff, stempel) {
+ *  antwortet ohne Balken (wie ein Abruf ohne Eroeffnung / ein gescheiterter Abruf). stempel = Balkenstempel des Tages.
+ *  splits = {SYM: [zaehler, nenner]}: Split mit Ex-Tag = Tag des Stempels, gemeldet nur bei o.ereignisse (wie Yahoo). */
+function holeAm(eroeff, stempel, splits) {
   return async function (sym, o) {
     var e = eroeff && eroeff[sym];
     if (!(e > 0) || !o || !(o.von > 0) || !(stempel >= o.von && stempel <= o.bis)) return { bars: [] };
-    return { bars: [[stempel, e * 1.01, 1e6, e * 1.02, e * 0.99, e]], verworfen: 0, gesamt: 1, feld: 'close' };
+    var aus = { bars: [[stempel, e * 1.01, 1e6, e * 1.02, e * 0.99, e]], verworfen: 0, gesamt: 1, feld: 'close' };
+    if (o.ereignisse) aus.ereignisse = { div: [], split: splits && splits[sym] ? [[stempel, splits[sym][0], splits[sym][1]]] : [] };
+    return aus;
   };
 }
 /** mfdepot.js in der Sandbox auf der Uhr jetzt; speichern (optional) bekommt jeden Aufruf von window.__save. */
@@ -69,7 +76,8 @@ module.exports = {
     p0.stueck = 100;
     var schluss = s.roh[S][s.roh[S].length - 1][1];
     s.eroeff[S] = schluss / 2;                        // Eroeffnung Montag, schon nachsplit
-    var dep = depot(s.st, s.d, s.MF, s.jetzt, holeAm(s.eroeff, L.MO));
+    var splits = {}; splits[S] = [2, 1];              // Yahoo meldet den Split im selben Abruf (Stempel des Montagsbalkens)
+    var dep = depot(s.st, s.d, s.MF, s.jetzt, holeAm(s.eroeff, L.MO, splits));
     await L.taktLauf(dep);
     var v = b.trades.filter(function (t) { return t.art === 'verkauf' && t.sym === S; })[0];
     var erloes = v ? v.stueck * v.kurs : 0, soll = 100 * schluss;

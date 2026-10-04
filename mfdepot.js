@@ -259,15 +259,34 @@
 
   /** A4 - Fuellkurs: die Eroeffnung des Tagesbalkens vom Ausfuehrungstag (heute, New York),
    *  ein kleiner Abruf je Wert. Ohne Eroeffnung null - nie der Schluss, nie der laufende Kurs
-   *  (offenRoh: fehlt sie, faellt sie nicht still auf den Schluss). */
+   *  (offenRoh: fehlt sie, faellt sie nicht still auf den Schluss).
+   *  Generalprobe 23.11., Fund 1: derselbe Abruf bringt die Kapitalmassnahmen des Tages mit (f.ereignisse
+   *  = { div, split }, Fenster ab Mitternacht New York) - splitsHeuteBuchen bucht die Splits vor dem Handel. */
+  function fuellkurs(kd, von, bis) {
+    var best = null;
+    ((kd && kd.bars) || []).forEach(function (b) { if (b[0] >= von && b[0] < bis && b[5] > 0 && (!best || b[0] < best[0])) best = b; });
+    return best ? { kurs: best[5], t: best[0] } : null;
+  }
   async function eroeffnung(MH, sym, heute, now) {
     try {
       var von = MH.nyZeit(heute, 0, 0), bis = MH.nyZeit(MH.tagPlus(heute, 1), 0, 0);
-      var kd = await window.Kurse.hole(sym, { von: von, bis: now, interval: '1d', bereinigt: false, offenRoh: true });
-      var best = null;
-      ((kd && kd.bars) || []).forEach(function (b) { if (b[0] >= von && b[0] < bis && b[5] > 0 && (!best || b[0] < best[0])) best = b; });
-      return best ? { kurs: best[5], t: best[0] } : null;
+      var kd = await window.Kurse.hole(sym, { von: von, bis: now, interval: '1d', bereinigt: false, offenRoh: true, ereignisse: true });
+      var f = fuellkurs(kd, von, bis);
+      if (f && kd.ereignisse) f.ereignisse = kd.ereignisse;
+      return f;
     } catch (e) { return null; }
+  }
+
+  /** Generalprobe 23.11., Fund 1 (M-02, D-02, H-c2): Splits mit Ex-Tag = Ausfuehrungstag im Momentum-Buch buchen,
+   *  BEVOR zur Eroeffnung dieses Tages geplant oder nachgefasst wird (MFHandel.splitsAmAusfuehrungstag) - sonst
+   *  traefe die Eroeffnung in neuer Stueckelung auf die alte Stueckzahl. Eine Journalzeile wie massnahmenBuchen,
+   *  nur wenn gebucht (oder ein Split neu gesperrt) wurde. Rueckgabe: true, wenn gespeichert werden muss. */
+  function splitsHeuteBuchen(MH, d, ereignisse, barZeit, now) {
+    var zeile = MH.massnahmenJournal('momentum', MH.splitsAmAusfuehrungstag(d.mfBuch, ereignisse, barZeit, now), now);
+    if (!zeile) return false;
+    if (!d.tuneLog) d.tuneLog = [];
+    d.tuneLog.unshift({ id: 'mfmass-momentum-heute-' + now, at: now, quelle: 'automatik', applied: zeile.applied, txt: zeile.txt });
+    return true;
   }
 
   /** A4 - darf HEUTE umgeschichtet werden, und zu welchen Kursen? Wie in der Messung: Rangfolge
@@ -291,10 +310,10 @@
     if (!spyF) return { ok: false, hinweis: 'Umschichtung fällig, aber für SPY gibt es keinen Tagesbalken vom ' + MH.datumDe(heute) + ' – heute kein Handelstag (oder die Quelle antwortet nicht); kein Handel.' };
     var syms = ziel.ziel.slice();
     (d.mfBuch.positionen || []).forEach(function (p) { if (syms.indexOf(p.sym) < 0) syms.push(p.sym); });
-    var preise = {}, barZeit = {};
+    var preise = {}, barZeit = {}, ereignisse = {};
     for (var i = 0; i < syms.length; i++) {
       var f = await eroeffnung(MH, syms[i], heute, now);
-      if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; }
+      if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; if (f.ereignisse) ereignisse[syms[i]] = f.ereignisse; }
       await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader
     }
     /* Generalprobe 23.11., Fund 7 (D-08): ausser SPY hat kein Ziel und keine Position eine Eroeffnung - das ist die Quelle,
@@ -306,7 +325,7 @@
     var warten = MH.eroeffnungAbwarten(d.mfBuch.positionen, preise, daten.roh, st.stichtag, now);
     if (warten.length) return { ok: false, hinweis: 'Umschichtung fällig, aber um ' + MH.nyUhr(now) + ' New York fehlt noch die Eröffnung gehaltener Werte (' +
       warten.slice(0, 6).join(', ') + (warten.length > 6 ? ' …' : '') + ') – nichts gehandelt; neuer Versuch beim nächsten Takt, gehandelt wird zur Eröffnung dieses Tages.' };
-    return { ok: true, ziel: ziel, preise: preise, barZeit: barZeit, stichtag: st.stichtag, heute: heute };
+    return { ok: true, ziel: ziel, preise: preise, barZeit: barZeit, ereignisse: ereignisse, stichtag: st.stichtag, heute: heute };
   }
 
   /** Auftrag Nr. 94 - die offenen Auftraege der Umschichtung von heute (d.mfBuch.offen, Regeln in
@@ -326,12 +345,13 @@
       return true;
     }
     if (!d.momentumAn) return false;
-    var syms = MH.offenWerte(o), preise = {}, barZeit = {};
+    var syms = MH.offenWerte(o), preise = {}, barZeit = {}, ereignisse = {};
     for (var i = 0; i < syms.length; i++) {
       var f = await eroeffnung(MH, syms[i], o.tag, now);
-      if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; }
+      if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; if (f.ereignisse) ereignisse[syms[i]] = f.ereignisse; }
       await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader
     }
+    var split = splitsHeuteBuchen(MH, d, ereignisse, barZeit, now);   // Generalprobe 23.11., Fund 1: vor dem Verkauf zur Eroeffnung
     var res = MH.nachfassen(b, preise, barZeit, now, 20, { kleinstAnteil: kleinstAnteil });   // 20 Bp je Seite wie die Umschichtung
     var z = MH.nachfassenJournal(res, now);
     if (z) d.tuneLog.unshift({ id: 'mfnach-' + now, at: now, quelle: 'automatik', applied: z.applied, txt: z.txt });
@@ -343,7 +363,7 @@
     if (b.offen && res.wartet.length) {
       b.offen.kaeufe.forEach(function (k) { if (res.wartet.indexOf(k.sym) >= 0 && !k.bargeld) { k.bargeld = true; neuMerker = true; } });
     }
-    return res.geaendert || neuMerker;
+    return res.geaendert || neuMerker || split;
   }
 
   async function takt(manuell) {
@@ -438,6 +458,7 @@
         if (!ausf.ok) hinweisM = ausf.hinweis;
         else {
           var zielA = ausf.ziel;
+          splitsHeuteBuchen(MH, d, ausf.ereignisse, ausf.barZeit, now);   // Generalprobe 23.11., Fund 1: Split vom Ausfuehrungstag vor dem Plan (gespeichert wird unten)
           plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, { kleinstAnteil: KONFIG.kleinstAnteil });
           var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil });
           MH.stempleKursT(d.mfBuch, ausf.barZeit, now);   // neue Positionen: Balken des Ausfuehrungstags, zu dessen Eroeffnung gekauft wurde
