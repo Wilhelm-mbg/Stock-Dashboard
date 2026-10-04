@@ -197,6 +197,42 @@ var y7 = R.leseYahoo(kunstYahoo(t7, function (i, d) { return (d >= '2001-01-03' 
 var b7 = R.bereite(y7, markt7);
 ok('K1b: echter Sprung ohne eingefrorenen Lauf davor -> gelistet, Reihe bleibt ab 1999 ganz', b7.pruefung.brueche.length === 1 && b7.pruefung.anfangVerworfenBis === null && b7.tr[0].d === '1999-03-10');
 
+/* 16. Benannte Ergaenzungen (REGEL C2): fehlt / streichen / ersetzen, mit Schutz gegen Doppelbuchung */
+var rg = { div: [{ d: '2020-03-20', betrag: 0.5 }, { d: '2020-06-19', betrag: 0.6 }, { d: '2003-12-16', betrag: 0.278 }], cg: [] };
+var eg = R.ergaenze(rg, 'X', [
+  { symbol: 'X', ex: '2020-09-21', art: 'fehlt', betrag: 0.4 },
+  { symbol: 'X', ex: '2020-03-23', art: 'fehlt', betrag: 0.5 },
+  { symbol: 'X', ex: '2003-12-16', art: 'streichen', yahooBetrag: 0.278 },
+  { symbol: 'X', ex: '2020-06-19', art: 'ersetzen', betrag: 0.66, yahooBetrag: 0.6 },
+  { symbol: 'X', ex: '2019-01-01', art: 'streichen', yahooBetrag: 9 },
+  { symbol: 'Y', ex: '2020-01-01', art: 'fehlt', betrag: 1 }]);
+var dz = eg.reihe.div.map(function (x) { return x.d + ':' + x.betrag; }).join(' ');
+ok('Ergaenzung: fehlt nachgetragen, Doppel nicht gebucht, gestrichen, ersetzt, fremdes Symbol ignoriert', dz === '2020-03-20:0.5 2020-06-19:0.66 2020-09-21:0.4');
+ok('Ergaenzung: Protokoll nennt nicht angewandte Eintraege mit Grund', eg.log.length === 5 && eg.log.filter(function (x) { return !x.angewandt; }).length === 2);
+ok('Ergaenzung: Rohliste bleibt unveraendert', rg.div.length === 3 && rg.div[1].betrag === 0.6);
+
+/* 17. Korrektur K2 (USD-Werte in EUR-Reihen) */
+var t8 = werktage('2008-01-02', '2010-12-31');
+var markt8 = t8.map(function (d, i) { return { d: d, v: 100 * Math.pow(1.0002, i) }; });
+var fx14 = function () { return 1.4; };
+/* (a) Anfangsabschnitt bis 30.06.2008 in USD, dazu ein Einzeltag 15.03.2010 in USD */
+var y8 = R.leseYahoo(kunstYahoo(t8, function (i, d) { var eur = 50 * Math.pow(1.0002, i) * 1.4; return (d < '2008-07-01' || d === '2010-03-15') ? eur * 1.4 : eur; }, {}, { waehrung: 'EUR', tz: 'Europe/Berlin' }));
+var b8 = R.bereite(y8, markt8, fx14);
+var ab8 = b8.pruefung.usdAbschnitte;
+ok('K2: Anfangsabschnitt bis 30.06.2008 und Einzeltag 15.03.2010 erkannt', ab8.length === 2 && ab8[0].art === 'Anfang' && ab8[0].bis === '2008-06-30' && ab8[1].art === 'Einzeltag' && ab8[1].von === '2010-03-15');
+ok('K2: nach der Umrechnung keine Sprungpaare/Brueche mehr, Reihe ganz', b8.pruefung.brueche.length === 0 && b8.tr[0].d === '2008-01-02' && b8.pruefung.anfangVerworfenBis === null);
+nah('K2: Gesamtertrag ueber die ganze Reihe = reine Kursentwicklung', b8.tr[b8.tr.length - 1].v, Math.pow(1.0002, t8.length - 1), 1e-9);
+/* (b) echte Bewegung bei kleinem Kurs (EURUSD 1,07 < 1,1275): +6 % ohne Markt bleibt stehen */
+var y9 = R.leseYahoo(kunstYahoo(t8, function (i, d) { return 50 * (d >= '2009-11-06' ? 1.06 : 1); }, {}, { waehrung: 'EUR', tz: 'Europe/Berlin' }));
+ok('K2: +6 % bei EURUSD 1,07 wird nicht umgerechnet', R.bereite(y9, markt8, function () { return 1.07; }).pruefung.usdAbschnitte.length === 0);
+/* (c) eingefrorener Anfang, dann Sprung um den Kurs: nicht umrechnen, K1b schneidet */
+var y10 = R.leseYahoo(kunstYahoo(t8, function (i, d) { return d < '2008-03-03' ? 70 : 50 * Math.pow(1.0002, i); }, {}, { waehrung: 'EUR', tz: 'Europe/Berlin' }));
+var b10 = R.bereite(y10, markt8, fx14);
+ok('K2: eingefrorener Anfang wird nicht umgerechnet, K1b verwirft ihn', b10.pruefung.usdAbschnitte.length === 0 && b10.pruefung.anfangVerworfenBis === '2008-03-03');
+/* (d) USD-Reihe bleibt unberuehrt */
+var y11 = R.leseYahoo(kunstYahoo(t8, function (i, d) { return (d === '2010-03-15' ? 1.4 : 1) * 50; }, {}));
+ok('K2: Reihe in USD wird nicht angefasst', R.bereite(y11, markt8, fx14).pruefung.usdAbschnitte.length === 0);
+
 /* ===== Teil II: Klinken an fonds.json und am Ordner ===== */
 var FJ = path.join(ORDNER, 'fonds.json');
 if (fs.existsSync(FJ)) {
@@ -210,6 +246,19 @@ if (fs.existsSync(FJ)) {
   ok('jeder UCITS-Fonds hat ISIN, Auflage und Quelle', fonds.filter(function (f) { return f.art === 'UCITS'; }).every(function (f) { return /^[A-Z]{2}[A-Z0-9]{9}\d$/.test(f.isin) && /^\d{4}-\d{2}-\d{2}$/.test(f.auflage) && /^https?:\/\//.test(f.quelle); }));
   ok('mindestens ein UCITS-Fonds', fonds.some(function (f) { return f.art === 'UCITS'; }));
   ok('SPY ist Massstab und nicht in der Fondsliste', !fonds.some(function (f) { return f.id === 'SPY'; }));
+}
+/* Benannte Ergaenzungen: jede mit Symbol aus fonds.json, Datum, Art, Betrag und Quelle */
+var EGJ = path.join(ORDNER, 'ergaenzungen.json');
+if (fs.existsSync(EGJ) && fs.existsSync(FJ)) {
+  var alleSym = new Set(['SPY', 'SXR8.DE']);
+  JSON.parse(fs.readFileSync(FJ, 'utf8')).fonds.forEach(function (f) { f.yahoo.forEach(function (s) { alleSym.add(s); }); });
+  var eg2 = JSON.parse(fs.readFileSync(EGJ, 'utf8')).eintraege;
+  ok('ergaenzungen.json: jeder Eintrag vollstaendig (Symbol bekannt, Datum, Art, Betrag, Quelle)', eg2.every(function (e) {
+    var g = alleSym.has(e.symbol) && /^\d{4}-\d{2}-\d{2}$/.test(e.ex) && ['fehlt', 'streichen', 'ersetzen'].indexOf(e.art) >= 0 &&
+      (e.art === 'streichen' || e.betrag > 0) && (e.art === 'fehlt' || e.yahooBetrag > 0) && /^https?:\/\//.test(e.quelle_url || '');
+    if (!g) console.log('   unvollstaendig: ' + JSON.stringify(e));
+    return g;
+  }));
 }
 /* Keine Rohantworten der Yahoo-Schnittstelle im Studienordner (Daten Dritter) */
 var verdaechtig = [];

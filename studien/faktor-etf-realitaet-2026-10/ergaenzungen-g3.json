@@ -1,0 +1,729 @@
+{
+ "gruppe": "g3",
+ "stand": "2026-10-05",
+ "hinweis": "Abgleich Ex-Datum (+-5 Kalendertage gilt als gleich) und Betrag (Abweichung > 1 %) von Datenbeginn bis 15.09.2026, Yahoo = events.dividends + events.capitalGains wie rechnen.js. Alle Anbieter in g3 veroeffentlichen split-bereinigte Betraege (geprueft an den Zahlungen vor SCHD 3:1 2024, IJR 2:1 2017, IJH 5:1 2024, IJS 2:1 2020, NOBL 2:1 2026, HDV 5:1 2026 bzw. 2005), daher splitFaktor 1 und betrag = anbieterBetrag. Bei streichen ist betrag 0. Skripte: kratz-g3/vergleich-streng.js, ergaenzungen-bauen.js.",
+ "zaehlung": {
+  "geprueft": 18,
+  "vollstaendigGleich": 2,
+  "mitAbweichungen": 11,
+  "nichtPruefbar": 5,
+  "ergaenzungenJeArt": {
+   "ersetzen": 18,
+   "fehlt": 32,
+   "streichen": 3
+  }
+ },
+ "geprueft": [
+  {
+   "id": "SCHD",
+   "symbol": "SCHD",
+   "quelle_url": "https://www.schwabassetmanagement.com/products/schd",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "nicht pruefbar: schwabassetmanagement.com/products/schd und ?page=0 antworten HTTP 403 (WebFetch, curl), Browser-Navigation abgelehnt; schwab.com/research/etfs/quotes/performance/schd verlangt Anmeldung; SEC-EDGAR N-CSR ebenfalls HTTP 403. Yahoo: 4 je volles Jahr 2012-2025, Split 3:1 11.10.2024 passt (Ausschuettung/Vortagsschluss stetig)"
+  },
+  {
+   "id": "VIG",
+   "symbol": "VIG",
+   "quelle_url": "https://investor.vanguard.com/vmf/api/0920/distribution",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "nicht pruefbar: Vanguard zeigt (Seite und vmf/api/0920/distribution) nur die letzten 6 Zahlungen 30.06.2025-28.09.2026 - alle 6 gleich mit Yahoo. Indirekt: Kalenderjahresrenditen 2011-2025 laut Vanguard (Marktpreis) gegen unsere -0,14 ... +0,19 Pp, schliesst eine fehlende Quartalszahlung (~0,4-0,6 %) in 2011-2025 praktisch aus; 2006-2010 ohne Beleg"
+  },
+  {
+   "id": "DGRO",
+   "symbol": "DGRO",
+   "quelle_url": "https://www.ishares.com/us/products/264623/ishares-core-dividend-growth-etf",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 50 Zahlungen, Yahoo 49 (bis 2026-09-15, Anbieterliste ab 2014-09-24); fehlt 1, Zusatzeintrag 0, Betrag > 1 % abweichend 1"
+  },
+  {
+   "id": "VYM",
+   "symbol": "VYM",
+   "quelle_url": "https://investor.vanguard.com/vmf/api/0923/distribution",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "nicht pruefbar: Vanguard zeigt nur die letzten 6 Zahlungen 20.06.2025-18.09.2026 - alle 6 gleich mit Yahoo. Indirekt: Kalenderjahresrenditen 2011-2025 -0,19 ... +0,16 Pp (Quartalszahlung ~0,7-0,9 %); 2006-2010 ohne Beleg"
+  },
+  {
+   "id": "PKW",
+   "symbol": "PKW",
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V308/distribution?idType=cusip&productType=ETF",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 73 Zahlungen, Yahoo 73 (bis 2026-09-15, Anbieterliste ab 2007-03-16); fehlt 0, Zusatzeintrag 0, Betrag > 1 % abweichend 4"
+  },
+  {
+   "id": "SYLD",
+   "symbol": "SYLD",
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 42 Zahlungen, Yahoo 31 (bis 2026-09-15, Anbieterliste ab 2013-09-26); fehlt 21, Zusatzeintrag 0, Betrag > 1 % abweichend 0; Cambria-Historie reicht bis 14.12.2023 - die 10 Yahoo-Zahlungen 21.03.2024-18.06.2026 sind nicht einzeln pruefbar (nur indirekt: Factsheet-Marktpreisrendite 1 J./5 J. zum 30.06.2026 trifft auf +0,014/-0,005 Pp); Kapitalgewinne 12/2021 und 12/2022 stecken in Yahoos Dividendenbetrag"
+  },
+  {
+   "id": "IJR",
+   "symbol": "IJR",
+   "quelle_url": "https://www.ishares.com/us/products/239774/ishares-core-sp-smallcap-etf",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 106 Zahlungen, Yahoo 106 (bis 2026-09-15, Anbieterliste ab 2000-06-21); fehlt 0, Zusatzeintrag 0, Betrag > 1 % abweichend 1"
+  },
+  {
+   "id": "IWM",
+   "symbol": "IWM",
+   "quelle_url": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 106 Zahlungen, Yahoo 107 (bis 2026-09-15, Anbieterliste ab 2000-06-21); fehlt 0, Zusatzeintrag 1, Betrag > 1 % abweichend 0"
+  },
+  {
+   "id": "AVUV",
+   "symbol": "AVUV",
+   "quelle_url": "https://www.avantisinvestors.com/avantis-investments/avantis-us-small-cap-value-etf/",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "nicht pruefbar: Avantis zeigt nur die letzten 4 Zahlungen 16.12.2025-08.09.2026 - alle 4 gleich mit Yahoo. Indirekt: 5-Jahres-Marktpreisrendite zum 31.08.2026 und 30.09.2026 trifft auf -0,006/-0,004 Pp (deckt 09/2021-09/2026 ab, inkl. der kleinen Zahlung 21.09.2021); 09/2019-08/2021 ohne Beleg"
+  },
+  {
+   "id": "NOBL",
+   "symbol": "NOBL",
+   "quelle_url": "https://www.proshares.com/api/distributionsummary?fund=NOBL&year=<JJJJ> (2013-2026 einzeln abgerufen)",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "Anbieter 51 Zahlungen, Yahoo 51 (bis 2026-09-15, Anbieterliste ab 2013-12-24); ProShares fuehrt die Betraege split-bereinigt (Split 2:1 28.05.2026), keine Kapitalgewinne"
+  },
+  {
+   "id": "SDY",
+   "symbol": "SDY",
+   "quelle_url": "https://www.ssga.com/library-content/products/fund-data/etfs/us/spdr-etf-historical-distributions.xlsx",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 83 Zahlungen, Yahoo 82 (bis 2026-09-15, Anbieterliste ab 2005-12-16); fehlt 1, Zusatzeintrag 0, Betrag > 1 % abweichend 0; Kapitalgewinne 12/2007, 12/2013-12/2017 bei Yahoo richtig im Dividendenbetrag summiert"
+  },
+  {
+   "id": "DVY",
+   "symbol": "DVY",
+   "quelle_url": "https://www.ishares.com/us/products/239500/ishares-select-dividend-etf",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "Anbieter 92 Zahlungen, Yahoo 92 (bis 2026-09-15, Anbieterliste ab 2003-12-12)"
+  },
+  {
+   "id": "HDV",
+   "symbol": "HDV",
+   "quelle_url": "https://www.ishares.com/us/products/239563/ishares-high-dividend-etf",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 64 Zahlungen, Yahoo 64 (bis 2026-09-15, Anbieterliste ab 2011-06-23); fehlt 0, Zusatzeintrag 0, Betrag > 1 % abweichend 1"
+  },
+  {
+   "id": "SPHD",
+   "symbol": "SPHD",
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E362/distribution?idType=cusip&productType=ETF",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 167 Zahlungen, Yahoo 163 (bis 2026-09-15, Anbieterliste ab 2012-11-15); fehlt 4, Zusatzeintrag 0, Betrag > 1 % abweichend 0"
+  },
+  {
+   "id": "DGRW",
+   "symbol": "DGRW",
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 164 Zahlungen, Yahoo 159 (bis 2026-09-15, Anbieterliste ab 2013-06-24); fehlt 5, Zusatzeintrag 0, Betrag > 1 % abweichend 10"
+  },
+  {
+   "id": "IJH",
+   "symbol": "IJH",
+   "quelle_url": "https://www.ishares.com/us/products/239763/ishares-core-sp-midcap-etf",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 107 Zahlungen, Yahoo 108 (bis 2026-09-15, Anbieterliste ab 2000-06-21); fehlt 0, Zusatzeintrag 1, Betrag > 1 % abweichend 1"
+  },
+  {
+   "id": "VBR",
+   "symbol": "VBR",
+   "quelle_url": "https://investor.vanguard.com/vmf/api/0937/distribution",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "nicht pruefbar: Vanguard zeigt nur die letzten 6 Zahlungen 30.06.2025-28.09.2026 - alle 6 gleich mit Yahoo. Indirekt: Kalenderjahresrenditen 2011-2025 -0,12 ... +0,14 Pp (auch im alten Muster Dezember + Maerz bis 2014); 2004-2010 ohne Beleg"
+  },
+  {
+   "id": "IJS",
+   "symbol": "IJS",
+   "quelle_url": "https://www.ishares.com/us/products/239775/ishares-sp-smallcap-600-value-etf",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieter 104 Zahlungen, Yahoo 105 (bis 2026-09-15, Anbieterliste ab 2000-09-20); fehlt 0, Zusatzeintrag 1, Betrag > 1 % abweichend 0; iShares fuehrt am 14.12.2020 eine Ausschuettung von 0,00 USD (keine Zahlung, keine Abweichung)"
+  }
+ ],
+ "ergaenzungen": [
+  {
+   "symbol": "DGRO",
+   "ex": "2015-12-29",
+   "art": "ersetzen",
+   "betrag": 0.011283,
+   "yahooBetrag": 0.011,
+   "anbieterBetrag": 0.011283,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.ishares.com/us/products/264623/ishares-core-dividend-growth-etf",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung -2,51 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRO",
+   "ex": "2016-03-23",
+   "art": "fehlt",
+   "betrag": 0.157888,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.157888,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.ishares.com/us/products/264623/ishares-core-dividend-growth-etf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "PKW",
+   "ex": "2007-09-21",
+   "art": "ersetzen",
+   "betrag": 0.01037,
+   "yahooBetrag": 0.01,
+   "anbieterBetrag": 0.01037,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V308/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung -3,57 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "PKW",
+   "ex": "2007-12-21",
+   "art": "ersetzen",
+   "betrag": 0.02352,
+   "yahooBetrag": 0.024,
+   "anbieterBetrag": 0.02352,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V308/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung 2,04 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "PKW",
+   "ex": "2013-03-15",
+   "art": "ersetzen",
+   "betrag": 0.01583,
+   "yahooBetrag": 0.016,
+   "anbieterBetrag": 0.01583,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V308/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung 1,07 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "PKW",
+   "ex": "2014-03-21",
+   "art": "ersetzen",
+   "betrag": 0.01736,
+   "yahooBetrag": 0.017,
+   "anbieterBetrag": 0.01736,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V308/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung -2,07 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2013-09-26",
+   "art": "fehlt",
+   "betrag": 0.1243,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1243,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo (Ertrag (Irregular Distribution)); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2013-12-27",
+   "art": "fehlt",
+   "betrag": 0.2367,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.2367,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo (0,1193 Ertrag + 0,1174 kurzfristiger Kapitalgewinn); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2014-03-27",
+   "art": "fehlt",
+   "betrag": 0.1202,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1202,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2014-06-26",
+   "art": "fehlt",
+   "betrag": 0.132,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.132,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2014-09-26",
+   "art": "fehlt",
+   "betrag": 0.1565,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1565,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2014-12-29",
+   "art": "fehlt",
+   "betrag": 0.9475,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.9475,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo (0,1429 Ertrag + 0,7553 kurzfr. + 0,0493 langfr. Kapitalgewinn); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2015-03-26",
+   "art": "fehlt",
+   "betrag": 0.1215,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1215,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2015-06-25",
+   "art": "fehlt",
+   "betrag": 0.1166,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1166,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2015-09-25",
+   "art": "fehlt",
+   "betrag": 0.2354,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.2354,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2015-12-28",
+   "art": "fehlt",
+   "betrag": 1.529,
+   "yahooBetrag": null,
+   "anbieterBetrag": 1.529,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo (0,1371 Ertrag + 1,3919 langfr. Kapitalgewinn); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2016-03-28",
+   "art": "fehlt",
+   "betrag": 0.2303,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.2303,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2016-06-27",
+   "art": "fehlt",
+   "betrag": 0.1033,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1033,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2016-09-26",
+   "art": "fehlt",
+   "betrag": 0.0839,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.0839,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2016-12-27",
+   "art": "fehlt",
+   "betrag": 0.2063,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.2063,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2017-03-28",
+   "art": "fehlt",
+   "betrag": 0.1077,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1077,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2017-06-27",
+   "art": "fehlt",
+   "betrag": 0.1255,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1255,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2017-09-26",
+   "art": "fehlt",
+   "betrag": 0.1703,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1703,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2017-12-27",
+   "art": "fehlt",
+   "betrag": 0.1662,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1662,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo (0,1350 Ertrag + 0,0312 langfr. Kapitalgewinn); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2018-03-28",
+   "art": "fehlt",
+   "betrag": 0.1084,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1084,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2018-06-27",
+   "art": "fehlt",
+   "betrag": 0.2367,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.2367,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SYLD",
+   "ex": "2018-09-26",
+   "art": "fehlt",
+   "betrag": 0.2947,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.2947,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.cambriafunds.com/assets/docs/SYLD-Distribution-History-Flyer.pdf",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "IJR",
+   "ex": "2000-06-21",
+   "art": "ersetzen",
+   "betrag": 0.007084,
+   "yahooBetrag": 0.007167,
+   "anbieterBetrag": 0.007084,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.ishares.com/us/products/239774/ishares-core-sp-smallcap-etf",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung 1,17 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); Splits nach Ex-Tag: 2005-06-09 3:1, 2017-01-19 2:1 - iShares fuehrt die Betraege bereits split-bereinigt (alle uebrigen Zahlungen vor den Splits stimmen ohne Faktor mit Yahoo ueberein), daher splitFaktor 1"
+  },
+  {
+   "symbol": "IWM",
+   "ex": "2003-12-16",
+   "art": "streichen",
+   "betrag": 0,
+   "yahooBetrag": 0.115,
+   "anbieterBetrag": null,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf",
+   "bemerkung": "Yahoo-Zusatzeintrag, in der Anbieterhistorie nicht gefuehrt (dort im Dezember 2003 nur 2003-12-12 0.187337); derselbe Tag bei IWM, IJH, IJS; Splits nach Ex-Tag: 2005-06-09 2:1 (Yahoo-Betrag ist bereinigt)"
+  },
+  {
+   "symbol": "SDY",
+   "ex": "2021-06-18",
+   "art": "fehlt",
+   "betrag": 0.763366,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.763366,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.ssga.com/library-content/products/fund-data/etfs/us/spdr-etf-historical-distributions.xlsx",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "HDV",
+   "ex": "2011-12-28",
+   "art": "ersetzen",
+   "betrag": 0.002288,
+   "yahooBetrag": 0.0022,
+   "anbieterBetrag": 0.002288,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.ishares.com/us/products/239563/ishares-high-dividend-etf",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung -3,85 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); Splits nach Ex-Tag: 2026-04-29 5:1 - iShares fuehrt die Betraege bereits split-bereinigt (alle uebrigen Zahlungen vor den Splits stimmen ohne Faktor mit Yahoo ueberein), daher splitFaktor 1"
+  },
+  {
+   "symbol": "SPHD",
+   "ex": "2016-03-15",
+   "art": "fehlt",
+   "betrag": 0.11888,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.11888,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E362/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SPHD",
+   "ex": "2016-04-15",
+   "art": "fehlt",
+   "betrag": 0.1145,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1145,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E362/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SPHD",
+   "ex": "2020-09-21",
+   "art": "fehlt",
+   "betrag": 0.14966,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.14966,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E362/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "SPHD",
+   "ex": "2021-09-20",
+   "art": "fehlt",
+   "betrag": 0.12751,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.12751,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E362/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2014-04-21",
+   "art": "ersetzen",
+   "betrag": 0.0375,
+   "yahooBetrag": 0.038,
+   "anbieterBetrag": 0.0375,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung 1,33 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2014-05-23",
+   "art": "ersetzen",
+   "betrag": 0.03563,
+   "yahooBetrag": 0.036,
+   "anbieterBetrag": 0.03563,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung 1,04 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2014-10-27",
+   "art": "ersetzen",
+   "betrag": 0.02265,
+   "yahooBetrag": 0.023,
+   "anbieterBetrag": 0.02265,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung 1,55 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2014-12-29",
+   "art": "ersetzen",
+   "betrag": 0.0094,
+   "yahooBetrag": 0.009,
+   "anbieterBetrag": 0.0094,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung -4,26 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2015-01-26",
+   "art": "ersetzen",
+   "betrag": 0.01575,
+   "yahooBetrag": 0.016,
+   "anbieterBetrag": 0.01575,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung 1,59 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2015-03-23",
+   "art": "fehlt",
+   "betrag": 0.06341,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.06341,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2015-06-22",
+   "art": "fehlt",
+   "betrag": 0.07453,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.07453,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2015-07-27",
+   "art": "fehlt",
+   "betrag": 0.02966,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.02966,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2015-08-24",
+   "art": "fehlt",
+   "betrag": 0.06,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.06,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2015-10-26",
+   "art": "fehlt",
+   "betrag": 0.02931,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.02931,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "fehlt bei Yahoo; kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2016-01-25",
+   "art": "ersetzen",
+   "betrag": 0.0246,
+   "yahooBetrag": 0.025,
+   "anbieterBetrag": 0.0246,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung 1,63 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2018-12-04",
+   "art": "ersetzen",
+   "betrag": 0.02745,
+   "yahooBetrag": 0.027,
+   "anbieterBetrag": 0.02745,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung -1,64 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2020-07-28",
+   "art": "ersetzen",
+   "betrag": 0.055,
+   "yahooBetrag": 0.041,
+   "anbieterBetrag": 0.055,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo-Betrag falsch (Abweichung -25,45 %); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2020-12-30",
+   "art": "ersetzen",
+   "betrag": 0.01765,
+   "yahooBetrag": 0.018,
+   "anbieterBetrag": 0.01765,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung 1,98 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "DGRW",
+   "ex": "2025-01-28",
+   "art": "ersetzen",
+   "betrag": 0.00304,
+   "yahooBetrag": 0.003,
+   "anbieterBetrag": 0.00304,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.wisdomtree.com/api/fund-history/1000521?dataset=distributionHistory&format=json",
+   "bemerkung": "Yahoo rundet auf 3 Nachkommastellen (Abweichung -1,32 %, absolut <= 0,0005 USD; Wirkung vernachlaessigbar, nach Regel > 1 % aufgenommen); kein Split nach dem Ex-Tag"
+  },
+  {
+   "symbol": "IJH",
+   "ex": "2003-12-16",
+   "art": "streichen",
+   "betrag": 0,
+   "yahooBetrag": 0.0203,
+   "anbieterBetrag": null,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.ishares.com/us/products/239763/ishares-core-sp-midcap-etf",
+   "bemerkung": "Yahoo-Zusatzeintrag, in der Anbieterhistorie nicht gefuehrt (dort im Dezember 2003 nur 2003-12-15 0.028761, 2003-12-31 0.004676); derselbe Tag bei IWM, IJH, IJS; Splits nach Ex-Tag: 2005-06-09 2:1, 2024-02-22 5:1 (Yahoo-Betrag ist bereinigt)"
+  },
+  {
+   "symbol": "IJH",
+   "ex": "2006-06-23",
+   "art": "ersetzen",
+   "betrag": 0.04418,
+   "yahooBetrag": 0.0044,
+   "anbieterBetrag": 0.04418,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.ishares.com/us/products/239763/ishares-core-sp-midcap-etf",
+   "bemerkung": "Yahoo-Betrag falsch (Abweichung -90,04 %, Faktor 10); Splits nach Ex-Tag: 2024-02-22 5:1 - iShares fuehrt die Betraege bereits split-bereinigt (alle uebrigen Zahlungen vor den Splits stimmen ohne Faktor mit Yahoo ueberein), daher splitFaktor 1"
+  },
+  {
+   "symbol": "IJS",
+   "ex": "2003-12-16",
+   "art": "streichen",
+   "betrag": 0,
+   "yahooBetrag": 0.047,
+   "anbieterBetrag": null,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.ishares.com/us/products/239775/ishares-sp-smallcap-600-value-etf",
+   "bemerkung": "Yahoo-Zusatzeintrag, in der Anbieterhistorie nicht gefuehrt (dort im Dezember 2003 nur 2003-12-15 0.05252); derselbe Tag bei IWM, IJH, IJS; Splits nach Ex-Tag: 2005-06-09 2:1, 2020-10-19 2:1 (Yahoo-Betrag ist bereinigt)"
+  }
+ ]
+}

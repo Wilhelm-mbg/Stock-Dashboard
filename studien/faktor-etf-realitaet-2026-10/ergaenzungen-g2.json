@@ -1,0 +1,586 @@
+{
+ "gruppe": "g2",
+ "stand": "2026-10-05",
+ "geprueft": [
+  {
+   "id": "VLUE",
+   "symbol": "VLUE",
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=251616&component=fundDownload&userType=individual (Blatt Distributions)",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2013-06-27..2026-09-15, 55 Zahlungen > 0; Yahoo bis 15.09.2026: 54; gleich 53; Abweichungen 2. iShares-Fondsdokument, 55 Zahlungen 27.06.2013-15.09.2026. iShares fuehrt die Betraege bereits split-bereinigt (VLUE ohne Split)."
+  },
+  {
+   "id": "IWD",
+   "symbol": "IWD",
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239708&component=fundDownload&userType=individual (Blatt Distributions)",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2000-06-21..2026-09-15, 106 Zahlungen > 0; Yahoo bis 15.09.2026: 107; gleich 106; Abweichungen 1. iShares-Fondsdokument, 106 Zahlungen ab 21.06.2000 (ROC-Anteile 2006/2007 im Gesamtbetrag). Einzige Abweichung: Zusatzeintrag 16.12.2003 (echter Dezembertermin 12.12.2003 0,35729 stimmt)."
+  },
+  {
+   "id": "RPV",
+   "symbol": "RPV",
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V258/distribution?idType=cusip&productType=ETF",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2008-03-20..2026-06-22, 74 Zahlungen > 0; Yahoo bis 15.09.2026: 78; gleich 72; Abweichungen 2; nicht pruefbare Yahoo-Zahlungen vor 2008-03-20: 6. Invesco-Ausschuettungshistorie (API) reicht erst ab 20.03.2008: die 6 Yahoo-Zahlungen 15.09.2006-21.12.2007 sind NICHT pruefbar (Fonds damals Rydex/Guggenheim). Ab 2008: 72 gleich, 2 fehlen."
+  },
+  {
+   "id": "IWF",
+   "symbol": "IWF",
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239706&component=fundDownload&userType=individual (Blatt Distributions)",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2000-06-21..2026-09-15, 107 Zahlungen > 0; Yahoo bis 15.09.2026: 108; gleich 105; Abweichungen 3. iShares-Fondsdokument, bereits split-bereinigt (Split 4:1 am 29.04.2026; Yahoo-Betraege ebenso bereinigt, 105 gleich). Kapitalgewinn 13.12.2000 (0,028163) im Gesamtbetrag, bei Yahoo enthalten."
+  },
+  {
+   "id": "QQQ",
+   "symbol": "QQQ",
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2003-12-24..2026-06-22, 88 Zahlungen > 0; Yahoo bis 15.09.2026: 89; gleich 79; Abweichungen 11. Invesco-Ausschuettungshistorie ab 24.12.2003 (= erste Zahlung bei Yahoo). Split 2:1 vom 20.03.2000 liegt vor allen Zahlungen. 8 der Abweichungen sind Yahoo-Rundungen auf 3 Nachkommastellen; echte Fehler: 18.12.2009 (0,073 statt 0,0776), fehlend 21.09.2020, Zusatzeintraege 25.06.2010 (Doppel des 18.06.2010) und 27.12.2011. Sonderzahlung 27.12.2023 (0,21584) stimmt."
+  },
+  {
+   "id": "MTUM",
+   "symbol": "MTUM",
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=251614&component=fundDownload&userType=individual (Blatt Distributions)",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "Anbieterliste 2013-06-27..2026-09-15, 54 Zahlungen > 0; Yahoo bis 15.09.2026: 54; gleich 54; Abweichungen 0. iShares-Fondsdokument, 54 von 54 Zahlungen gleich."
+  },
+  {
+   "id": "SPMO",
+   "symbol": "SPMO",
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E339/distribution?idType=cusip&productType=ETF",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2015-12-18..2026-06-22, 42 Zahlungen > 0 + 1 Termine mit 0; Yahoo bis 15.09.2026: 39; gleich 39; Abweichungen 3. Invesco-Ausschuettungshistorie ab 18.12.2015 (= erste Zahlung). Zweitrechner-Meldungen: 03/2016, 09/2020, 09/2021 BESTAETIGT; 06/2017 WIDERLEGT (Invesco-Termin 16.06.2017 mit 0,00 $)."
+  },
+  {
+   "id": "QMOM",
+   "symbol": "QMOM",
+   "quelle_url": "https://funds.alphaarchitect.com/qmom/",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2015-12-28..2025-12-23, 15 Zahlungen > 0; Yahoo bis 15.09.2026: 13; gleich 12; Abweichungen 3. Fondsseite Alpha Architect (Tabelle Distributions, alle 15 Zahlungen Income, keine Kapitalgewinne)."
+  },
+  {
+   "id": "PDP",
+   "symbol": "PDP",
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2007-09-21..2026-06-22, 44 Zahlungen > 0 + 6 Termine mit 0; Yahoo bis 15.09.2026: 44; gleich 32; Abweichungen 12. Invesco-Ausschuettungshistorie ab 21.09.2007 (= erste Zahlung); 6 Termine mit 0,00 $ (bei Yahoo zu Recht ohne Eintrag). Alle 12 Abweichungen sind Yahoo-Rundungen auf 3 Nachkommastellen (je < 0,0005 $). Keine Kapitalgewinne."
+  },
+  {
+   "id": "IVE",
+   "symbol": "IVE",
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239728&component=fundDownload&userType=individual (Blatt Distributions)",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2000-06-21..2026-09-15, 106 Zahlungen > 0; Yahoo bis 15.09.2026: 107; gleich 106; Abweichungen 1. iShares-Fondsdokument, 106 Zahlungen. Kapitalgewinn 13.12.2000 (0,1472) im Gesamtbetrag, bei Yahoo enthalten. Einzige Abweichung: Zusatzeintrag 16.12.2003 (echter Termin 15.12.2003 0,272175 stimmt)."
+  },
+  {
+   "id": "VTV",
+   "symbol": "VTV",
+   "quelle_url": "https://api.vanguard.com/rs/ire/01/ind/fund/0966/distribution.json",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "Anbieterliste 2025-06-30..2026-06-26, 5 Zahlungen > 0; Yahoo bis 15.09.2026: 90; gleich 5; Abweichungen 0; nicht pruefbare Yahoo-Zahlungen vor 2025-06-30: 85. Vanguard liefert die Einzelzahlungen nur fuer die letzten 6 Termine (API; Profilseite investor.vanguard.com/investment-products/etfs/profile/vtv ebenso, investor.vanguard.com/irr/funds/profile/VTV-AdditionalFundData ohne Ausschuettungen; SEC-Jahresberichte N-CSR unter sec.gov/Archives verlangen einen User-Agent mit Kontakt-E-Mail, nicht benutzt). 5 Termine 30.06.2025-26.06.2026 pruefbar, alle gleich. Indirekt: Vanguard-Kalenderjahresrenditen 2011-2025 (Marktpreis) gegen unsere Reihe alle |Diff| <= 0,18 Pp - keine Luecke erkennbar. 2004-2010 ungeprueft."
+  },
+  {
+   "id": "IVW",
+   "symbol": "IVW",
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239725&component=fundDownload&userType=individual (Blatt Distributions)",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2000-06-21..2026-09-15, 107 Zahlungen > 0; Yahoo bis 15.09.2026: 107; gleich 106; Abweichungen 1. iShares-Fondsdokument, bereits split-bereinigt (Split 4:1 am 19.10.2020). 106 von 107 gleich, einschliesslich Kapitalgewinn 13.12.2000 (0,0281). Einzige Abweichung 21.06.2000 = Yahoo-Rundung (roh 0,024 statt 0,0236)."
+  },
+  {
+   "id": "VUG",
+   "symbol": "VUG",
+   "quelle_url": "https://api.vanguard.com/rs/ire/01/ind/fund/0967/distribution.json",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "Anbieterliste 2025-06-30..2026-06-26, 5 Zahlungen > 0; Yahoo bis 15.09.2026: 90; gleich 5; Abweichungen 0; nicht pruefbare Yahoo-Zahlungen vor 2025-06-30: 85. Wie VTV: nur die letzten 6 Vanguard-Termine abrufbar (5 im Zeitraum, alle gleich, inkl. Split 6:1 vom 21.04.2026: 27.03.2026 0,4778/6 = 0,079633 gegen Yahoo 0,079667). Indirekt: Kalenderjahre 2011-2025 |Diff| <= 0,23 Pp (2019 -0,23 liegt im Kursanteil, Ausschuettungssumme 2019 = 1,738 $ wie Drittquellen). 2004-2010 ungeprueft."
+  },
+  {
+   "id": "SCHG",
+   "symbol": "SCHG",
+   "quelle_url": "https://www.schwabassetmanagement.com/sites/g/files/eyrktu361/files/product_files/SCHG/SCHG_Fund_Distributions.CSV",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "Anbieterliste 2016-12-19..2026-06-24, 42 Zahlungen > 0; Yahoo bis 15.09.2026: 69; gleich 38; Abweichungen 4; nicht pruefbare Yahoo-Zahlungen vor 2016-12-19: 27. Schwab-CSV (SCHG_Fund_Distributions.CSV) reicht erst ab 19.12.2016: die 27 Yahoo-Zahlungen 22.03.2010-19.09.2016 sind NICHT pruefbar. Ab 12/2016: 38 gleich (nach Herausrechnen der Splits 2:1 11.03.2022 und 4:1 11.10.2024), 4 Yahoo-Rundungen. Zweitrechner-Meldung SCHG 2016-03: beim Anbieter NICHT pruefbar; Yahoo hat 2016 nur 3 Zahlungen (Jun/Sep/Dez), in allen anderen Jahren eine im Maerz - Luecke wahrscheinlich, Betrag unbekannt."
+  },
+  {
+   "id": "MGK",
+   "symbol": "MGK",
+   "quelle_url": "https://api.vanguard.com/rs/ire/01/ind/fund/3138/distribution.json",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "Anbieterliste 2025-06-30..2026-06-26, 5 Zahlungen > 0; Yahoo bis 15.09.2026: 73; gleich 5; Abweichungen 0; nicht pruefbare Yahoo-Zahlungen vor 2025-06-30: 68. Wie VTV: nur die letzten 6 Vanguard-Termine (5 im Zeitraum, alle gleich, inkl. Split 5:1). Zweitrechner-Meldung MGK 2014-12: Luecke BESTAETIGT ueber die Vanguard-Kalenderjahresrendite 2014 (Marktpreis 13,66 %, NAV 13,66 %, unser Wert 13,16 %; Yahoo hat 2014 nur 3 Zahlungen); der Betrag ist beim Anbieter nicht abrufbar, daher nach Regel (d) KEINE Ergaenzung. Hinweis: Drittquelle dividendhistory.net nennt Ex 17.12.2014 0,3230 $ (vor Split, /5 = 0,0646); damit ergaebe sich 2014 = 13,62 % (Rest -0,05 gegen Vanguard). 2004-2010 bzw. 2008-2010 ungeprueft."
+  }
+ ],
+ "ergaenzungen": [
+  {
+   "symbol": "VLUE",
+   "ex": "2015-12-29",
+   "art": "ersetzen",
+   "betrag": 0.036413,
+   "yahooBetrag": 0.036,
+   "anbieterBetrag": 0.036413,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=251616&component=fundDownload&userType=individual (Blatt Distributions)",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.036 statt 0.03641); Wirkung vernachlaessigbar. iShares fuehrt Betraege bereits split-bereinigt; anbieterBetrag = Wert im iShares-Dokument, splitFaktor daher 1."
+  },
+  {
+   "symbol": "VLUE",
+   "ex": "2016-03-23",
+   "art": "fehlt",
+   "betrag": 0.433562,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.433562,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=251616&component=fundDownload&userType=individual (Blatt Distributions)",
+   "bemerkung": "Zahlung fehlt bei Yahoo. iShares fuehrt Betraege bereits split-bereinigt; anbieterBetrag = Wert im iShares-Dokument, splitFaktor daher 1."
+  },
+  {
+   "symbol": "IWD",
+   "ex": "2003-12-16",
+   "art": "streichen",
+   "betrag": 0,
+   "yahooBetrag": 0.278,
+   "anbieterBetrag": null,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239708&component=fundDownload&userType=individual (Blatt Distributions)",
+   "bemerkung": "Zusatzeintrag bei Yahoo ohne Gegenstueck beim Anbieter; betrag 0 = nach der Streichung gebucht. Gleicher Fehler bei mehreren iShares-Fonds am 16.12.2003 (echter Dezembertermin 12./15.12.2003 stimmt). iShares fuehrt Betraege bereits split-bereinigt; anbieterBetrag = Wert im iShares-Dokument, splitFaktor daher 1."
+  },
+  {
+   "symbol": "RPV",
+   "ex": "2020-09-21",
+   "art": "fehlt",
+   "betrag": 0.29885,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.29885,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V258/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Zahlung fehlt bei Yahoo."
+  },
+  {
+   "symbol": "RPV",
+   "ex": "2021-09-20",
+   "art": "fehlt",
+   "betrag": 0.41952,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.41952,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V258/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Zahlung fehlt bei Yahoo."
+  },
+  {
+   "symbol": "IWF",
+   "ex": "2000-06-21",
+   "art": "ersetzen",
+   "betrag": 0.006993,
+   "yahooBetrag": 0.00775,
+   "anbieterBetrag": 0.006993,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239706&component=fundDownload&userType=individual (Blatt Distributions)",
+   "bemerkung": "Falscher Betrag bei Yahoo (je Anteil vor Splits: Yahoo 0.03100, Anbieter 0.02797). iShares fuehrt Betraege bereits split-bereinigt; anbieterBetrag = Wert im iShares-Dokument, splitFaktor daher 1 (Yahoo-Splitfaktor nach dem Ex-Tag: 4)."
+  },
+  {
+   "symbol": "IWF",
+   "ex": "2002-09-13",
+   "art": "ersetzen",
+   "betrag": 0.016894,
+   "yahooBetrag": 0.0165,
+   "anbieterBetrag": 0.016894,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239706&component=fundDownload&userType=individual (Blatt Distributions)",
+   "bemerkung": "Falscher Betrag bei Yahoo (je Anteil vor Splits: Yahoo 0.06600, Anbieter 0.06758). iShares fuehrt Betraege bereits split-bereinigt; anbieterBetrag = Wert im iShares-Dokument, splitFaktor daher 1 (Yahoo-Splitfaktor nach dem Ex-Tag: 4)."
+  },
+  {
+   "symbol": "IWF",
+   "ex": "2003-12-16",
+   "art": "streichen",
+   "betrag": 0,
+   "yahooBetrag": 0.02325,
+   "anbieterBetrag": null,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239706&component=fundDownload&userType=individual (Blatt Distributions)",
+   "bemerkung": "Zusatzeintrag bei Yahoo ohne Gegenstueck beim Anbieter; betrag 0 = nach der Streichung gebucht. Gleicher Fehler bei mehreren iShares-Fonds am 16.12.2003 (echter Dezembertermin 12./15.12.2003 stimmt). iShares fuehrt Betraege bereits split-bereinigt; anbieterBetrag = Wert im iShares-Dokument, splitFaktor daher 1 (Yahoo-Splitfaktor nach dem Ex-Tag: 4)."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2003-12-24",
+   "art": "ersetzen",
+   "betrag": 0.01358,
+   "yahooBetrag": 0.014,
+   "anbieterBetrag": 0.01358,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.014 statt 0.01358); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2006-06-16",
+   "art": "ersetzen",
+   "betrag": 0.0257,
+   "yahooBetrag": 0.026,
+   "anbieterBetrag": 0.0257,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.026 statt 0.02570); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2006-09-15",
+   "art": "ersetzen",
+   "betrag": 0.0234,
+   "yahooBetrag": 0.023,
+   "anbieterBetrag": 0.0234,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.023 statt 0.02340); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2007-03-16",
+   "art": "ersetzen",
+   "betrag": 0.0267,
+   "yahooBetrag": 0.027,
+   "anbieterBetrag": 0.0267,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.027 statt 0.02670); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2008-03-20",
+   "art": "ersetzen",
+   "betrag": 0.03252,
+   "yahooBetrag": 0.033,
+   "anbieterBetrag": 0.03252,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.033 statt 0.03252); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2008-06-20",
+   "art": "ersetzen",
+   "betrag": 0.03441,
+   "yahooBetrag": 0.034,
+   "anbieterBetrag": 0.03441,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.034 statt 0.03441); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2008-12-19",
+   "art": "ersetzen",
+   "betrag": 0.04346,
+   "yahooBetrag": 0.043,
+   "anbieterBetrag": 0.04346,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.043 statt 0.04346); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2009-12-18",
+   "art": "ersetzen",
+   "betrag": 0.0776,
+   "yahooBetrag": 0.073,
+   "anbieterBetrag": 0.0776,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Falscher Betrag bei Yahoo (je Anteil vor Splits: Yahoo 0.07300, Anbieter 0.07760)."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2020-09-21",
+   "art": "fehlt",
+   "betrag": 0.38824,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.38824,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Zahlung fehlt bei Yahoo."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2010-06-25",
+   "art": "streichen",
+   "betrag": 0,
+   "yahooBetrag": 0.089,
+   "anbieterBetrag": null,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Zusatzeintrag bei Yahoo ohne Gegenstueck beim Anbieter; betrag 0 = nach der Streichung gebucht. Gleicher Betrag wie der echte Termin 18.06.2010 (0,0893) - Doppelbuchung."
+  },
+  {
+   "symbol": "QQQ",
+   "ex": "2011-12-27",
+   "art": "streichen",
+   "betrag": 0,
+   "yahooBetrag": 0.049,
+   "anbieterBetrag": null,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Zusatzeintrag bei Yahoo ohne Gegenstueck beim Anbieter; betrag 0 = nach der Streichung gebucht."
+  },
+  {
+   "symbol": "SPMO",
+   "ex": "2016-03-18",
+   "art": "fehlt",
+   "betrag": 0.0493,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.0493,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E339/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Zahlung fehlt bei Yahoo."
+  },
+  {
+   "symbol": "SPMO",
+   "ex": "2020-09-21",
+   "art": "fehlt",
+   "betrag": 0.16846,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.16846,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E339/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Zahlung fehlt bei Yahoo."
+  },
+  {
+   "symbol": "SPMO",
+   "ex": "2021-09-20",
+   "art": "fehlt",
+   "betrag": 0.06993,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.06993,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E339/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Zahlung fehlt bei Yahoo."
+  },
+  {
+   "symbol": "QMOM",
+   "ex": "2015-12-28",
+   "art": "fehlt",
+   "betrag": 0.002,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.002,
+   "splitFaktor": 1,
+   "quelle_url": "https://funds.alphaarchitect.com/qmom/",
+   "bemerkung": "Zahlung fehlt bei Yahoo."
+  },
+  {
+   "symbol": "QMOM",
+   "ex": "2016-03-21",
+   "art": "fehlt",
+   "betrag": 0.003,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.003,
+   "splitFaktor": 1,
+   "quelle_url": "https://funds.alphaarchitect.com/qmom/",
+   "bemerkung": "Zahlung fehlt bei Yahoo."
+  },
+  {
+   "symbol": "QMOM",
+   "ex": "2019-03-18",
+   "art": "ersetzen",
+   "betrag": 0.0017,
+   "yahooBetrag": 0.002,
+   "anbieterBetrag": 0.0017,
+   "splitFaktor": 1,
+   "quelle_url": "https://funds.alphaarchitect.com/qmom/",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.002 statt 0.00170); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2007-09-21",
+   "art": "ersetzen",
+   "betrag": 0.02466,
+   "yahooBetrag": 0.025,
+   "anbieterBetrag": 0.02466,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.025 statt 0.02466); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2009-12-18",
+   "art": "ersetzen",
+   "betrag": 0.00737,
+   "yahooBetrag": 0.007,
+   "anbieterBetrag": 0.00737,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.007 statt 0.00737); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2010-12-17",
+   "art": "ersetzen",
+   "betrag": 0.03748,
+   "yahooBetrag": 0.037,
+   "anbieterBetrag": 0.03748,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.037 statt 0.03748); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2011-09-16",
+   "art": "ersetzen",
+   "betrag": 0.01721,
+   "yahooBetrag": 0.017,
+   "anbieterBetrag": 0.01721,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.017 statt 0.01721); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2012-06-15",
+   "art": "ersetzen",
+   "betrag": 0.04453,
+   "yahooBetrag": 0.045,
+   "anbieterBetrag": 0.04453,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.045 statt 0.04453); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2012-09-21",
+   "art": "ersetzen",
+   "betrag": 0.01761,
+   "yahooBetrag": 0.018,
+   "anbieterBetrag": 0.01761,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.018 statt 0.01761); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2013-06-21",
+   "art": "ersetzen",
+   "betrag": 0.04549,
+   "yahooBetrag": 0.045,
+   "anbieterBetrag": 0.04549,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.045 statt 0.04549); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2015-12-18",
+   "art": "ersetzen",
+   "betrag": 0.02572,
+   "yahooBetrag": 0.026,
+   "anbieterBetrag": 0.02572,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.026 statt 0.02572); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2018-09-24",
+   "art": "ersetzen",
+   "betrag": 0.00737,
+   "yahooBetrag": 0.007,
+   "anbieterBetrag": 0.00737,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.007 statt 0.00737); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2020-06-22",
+   "art": "ersetzen",
+   "betrag": 0.02366,
+   "yahooBetrag": 0.024,
+   "anbieterBetrag": 0.02366,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.024 statt 0.02366); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2023-09-18",
+   "art": "ersetzen",
+   "betrag": 0.0275,
+   "yahooBetrag": 0.028,
+   "anbieterBetrag": 0.0275,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.028 statt 0.02750); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "PDP",
+   "ex": "2024-03-18",
+   "art": "ersetzen",
+   "betrag": 0.02754,
+   "yahooBetrag": 0.028,
+   "anbieterBetrag": 0.02754,
+   "splitFaktor": 1,
+   "quelle_url": "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/distribution?idType=cusip&productType=ETF",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.028 statt 0.02754); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "IVE",
+   "ex": "2003-12-16",
+   "art": "streichen",
+   "betrag": 0,
+   "yahooBetrag": 0.215,
+   "anbieterBetrag": null,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239728&component=fundDownload&userType=individual (Blatt Distributions)",
+   "bemerkung": "Zusatzeintrag bei Yahoo ohne Gegenstueck beim Anbieter; betrag 0 = nach der Streichung gebucht. Gleicher Fehler bei mehreren iShares-Fonds am 16.12.2003 (echter Dezembertermin 12./15.12.2003 stimmt). iShares fuehrt Betraege bereits split-bereinigt; anbieterBetrag = Wert im iShares-Dokument, splitFaktor daher 1."
+  },
+  {
+   "symbol": "IVW",
+   "ex": "2000-06-21",
+   "art": "ersetzen",
+   "betrag": 0.0059,
+   "yahooBetrag": 0.006,
+   "anbieterBetrag": 0.0059,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/varnish-api/blk-one01-product-data/product-data/api/v1/get-fund-document?appType=PRODUCT_PAGE&appSubType=ISHARES&targetSite=us-ishares&locale=en_US&portfolioId=239725&component=fundDownload&userType=individual (Blatt Distributions)",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.024 statt 0.02360); Wirkung vernachlaessigbar. iShares fuehrt Betraege bereits split-bereinigt; anbieterBetrag = Wert im iShares-Dokument, splitFaktor daher 1 (Yahoo-Splitfaktor nach dem Ex-Tag: 4)."
+  },
+  {
+   "symbol": "SCHG",
+   "ex": "2021-12-30",
+   "art": "ersetzen",
+   "betrag": 0.0050625,
+   "yahooBetrag": 0.005125,
+   "anbieterBetrag": 0.0405,
+   "splitFaktor": 8,
+   "quelle_url": "https://www.schwabassetmanagement.com/sites/g/files/eyrktu361/files/product_files/SCHG/SCHG_Fund_Distributions.CSV",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.041 statt 0.04050); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "SCHG",
+   "ex": "2023-12-28",
+   "art": "ersetzen",
+   "betrag": 0.006125,
+   "yahooBetrag": 0.00625,
+   "anbieterBetrag": 0.0245,
+   "splitFaktor": 4,
+   "quelle_url": "https://www.schwabassetmanagement.com/sites/g/files/eyrktu361/files/product_files/SCHG/SCHG_Fund_Distributions.CSV",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.025 statt 0.02450); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "SCHG",
+   "ex": "2024-12-11",
+   "art": "ersetzen",
+   "betrag": 0.0316,
+   "yahooBetrag": 0.032,
+   "anbieterBetrag": 0.0316,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.schwabassetmanagement.com/sites/g/files/eyrktu361/files/product_files/SCHG/SCHG_Fund_Distributions.CSV",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.032 statt 0.03160); Wirkung vernachlaessigbar."
+  },
+  {
+   "symbol": "SCHG",
+   "ex": "2025-09-24",
+   "art": "ersetzen",
+   "betrag": 0.0297,
+   "yahooBetrag": 0.03,
+   "anbieterBetrag": 0.0297,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.schwabassetmanagement.com/sites/g/files/eyrktu361/files/product_files/SCHG/SCHG_Fund_Distributions.CSV",
+   "bemerkung": "Yahoo-Betrag ist der auf 3 Nachkommastellen gerundete Anbieterbetrag (je Anteil vor Splits: 0.030 statt 0.02970); Wirkung vernachlaessigbar."
+  }
+ ]
+}

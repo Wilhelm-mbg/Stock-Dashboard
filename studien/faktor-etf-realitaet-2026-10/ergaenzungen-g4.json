@@ -1,0 +1,306 @@
+{
+ "gruppe": "g4",
+ "stand": "2026-10-05 01:37",
+ "geprueft": [
+  {
+   "id": "XDEW",
+   "symbol": "XDEW.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BLNMYC90",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe XDEW.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "SP2Q",
+   "symbol": "SP2Q.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BNGJJT35",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe SP2Q.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "QDVB",
+   "symbol": "QDVB.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4L37",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe QDVB.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "UBUT",
+   "symbol": "UBUT.DE",
+   "quelle_url": "https://www.ubs.com/ch/en/assetmanagement/funds/etf/ie00b78jsg98-ubs-msci-usa-value-ucits-etf-usd-a-dis.html (HTTP 403, ebenso Factsheet-PDF-Pfade unter ubs.com/2/e/files/RET/)",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "ubs.com verweigert den Abruf (HTTP 403); die UBS-Factsheets nennen nur die Ausschuettungsmonate (Februar, August), keine Historie. Yahoo UBUT.DE: 22 Zahlungen, Betraege an EUR-Notiz = USD/EURUSD (Abgleich mit SIX/Amsterdam-Notiz)."
+  },
+  {
+   "id": "IS3Q",
+   "symbol": "IS3Q.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZ601",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe IS3Q.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "XDEQ",
+   "symbol": "XDEQ.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JL35",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe XDEQ.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "XMVU",
+   "symbol": "XMVU.L",
+   "quelle_url": "https://etf.dws.com/en-gb/IE00BDB7J586/ ; https://etf.dws.com/api/pdp/en-gb/etf/IE00BDB7J586/distributions",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "DWS-Produktseite enthaelt keine Ausschuettungshistorie (nur \"Distributing\"); API-Pfade /distributions und /dividends HTTP 404. Yahoo XMVU.L: 14 Zahlungen 2018-2026 (2018-2021 jaehrlich, ab 2022 halbjaehrlich), Quote 0,58-2,04 %."
+  },
+  {
+   "id": "MIVU",
+   "symbol": "MIVU.PA",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1589349734",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe MIVU.PA fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "SPY1",
+   "symbol": "SPY1.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B802KR88",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe SPY1.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "IBCK",
+   "symbol": "IBCK.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B6SPMN59",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe IBCK.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "UBUR",
+   "symbol": "UBUR.DE",
+   "quelle_url": "https://www.ubs.com/ch/en/assetmanagement/funds/etf/ie00b78jsg98-ubs-msci-usa-value-ucits-etf-usd-a-dis.html (HTTP 403, ebenso Factsheet-PDF-Pfade unter ubs.com/2/e/files/RET/)",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "ubs.com verweigert den Abruf (HTTP 403); die UBS-Factsheets nennen nur die Ausschuettungsmonate (Februar, August), keine Historie. Yahoo UBUR.DE: 22 Zahlungen, Betraege an EUR-Notiz = USD/EURUSD (Abgleich mit SIX/Amsterdam-Notiz)."
+  },
+  {
+   "id": "IQQ0",
+   "symbol": "IQQ0.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B8FHGS14",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe IQQ0.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "XDEB",
+   "symbol": "XDEB.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JN58",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe XDEB.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "QDVI",
+   "symbol": "QDVI.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4M44",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe QDVI.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "UBU5",
+   "symbol": "UBU5.DE",
+   "quelle_url": "https://www.ubs.com/ch/en/assetmanagement/funds/etf/ie00b78jsg98-ubs-msci-usa-value-ucits-etf-usd-a-dis.html (HTTP 403, ebenso Factsheet-PDF-Pfade unter ubs.com/2/e/files/RET/)",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "ubs.com verweigert den Abruf (HTTP 403); die UBS-Factsheets nennen nur die Ausschuettungsmonate (Februar, August), keine Historie. Yahoo UBU5.DE: 26 Zahlungen, Betraege an EUR-Notiz = USD/EURUSD (Abgleich mit SIX/Amsterdam-Notiz). Yahoo UBU5.DE erst ab 31.01.2014; USVUSY.SW zeigt 2 Zahlungen 2013 (ohne Anbieterbeleg)."
+  },
+  {
+   "id": "ZPRU",
+   "symbol": "ZPRU.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BSPLC520",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe ZPRU.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "UBUS",
+   "symbol": "UBUS.DE",
+   "quelle_url": "https://www.ubs.com/ch/en/assetmanagement/funds/etf/ie00b78jsg98-ubs-msci-usa-value-ucits-etf-usd-a-dis.html (HTTP 403, ebenso Factsheet-PDF-Pfade unter ubs.com/2/e/files/RET/)",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "ubs.com verweigert den Abruf (HTTP 403); die UBS-Factsheets nennen nur die Ausschuettungsmonate (Februar, August), keine Historie. Yahoo UBUS.DE: 21 Zahlungen, Betraege an EUR-Notiz = USD/EURUSD (Abgleich mit SIX/Amsterdam-Notiz). 2024 nur eine Zahlung (Februar 2024 fehlt an allen drei Notizen; Kursverhalten spricht fuer keine Zahlung)."
+  },
+  {
+   "id": "IS3S",
+   "symbol": "IS3S.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZB59",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe IS3S.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "XDEV",
+   "symbol": "XDEV.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JM42",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe XDEV.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "MWOT",
+   "symbol": "MWOW.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0005E8B9S4",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe MWOW.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "SXRV",
+   "symbol": "CSNDX.SW",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B53SZB19",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe CSNDX.SW fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "EXXT",
+   "symbol": "EXXT.DE",
+   "quelle_url": "https://www.blackrock.com/at/privatanleger/produkte/251896/ishares-nasdaq100-ucits-etf-de-fund/1509774438714.ajax?tab=distributions&fileType=json&subtab=table",
+   "ergebnis": "Abweichungen",
+   "bemerkung": "iShares-Ausschuettungshistorie (72 Termine 2006-2026, davon 17 Nullzahlungen). Ab Datenbeginn 2008-01-02: 46 Zahlungen gleich (Betrag EUR = USD/EZB, max. Abweichung 0.85 %), 8 fehlen bei Yahoo (2008-2013), 0 Yahoo-Zahlungen ohne Gegenstueck. Vor Datenbeginn (nicht benoetigt): 2007-06-15. Kapitalgewinne: keine (Yahoo 0)."
+  },
+  {
+   "id": "EQQQ",
+   "symbol": "EQQQ.DE",
+   "quelle_url": "https://www.invesco.com/uk/en/financial-products/etfs/invesco-eqqq-nasdaq-100-ucits-etf-dist.html ; https://dng-api.invesco.com/cache/v1/accounts/en_GB/shareclasses/IE0032077012/distribution?idType=isin",
+   "ergebnis": "nicht prüfbar",
+   "bemerkung": "Invesco zeigt nur die juengste Ausschuettung (Ex 10.09.2026, 0,3912 USD; Yahoo EQQQ.SW 0,3912 USD, EQQQ.DE 0,336428 EUR = 0,3912/1,1616 -> gleich). Eine Historie ist weder auf der Produktseite noch ueber die Invesco-API (/distributions, /dividends: HTTP 501) abrufbar; etf.invesco.com leitet um. Hinweis ohne Anbieterbeleg: Yahoo EQQQ.DE fuehrt Ausschuettungen erst ab 03.01.2014, EQQQ.SW zeigt 4 Zahlungen 2013 - Zahlungen 2008-2013 fehlen vermutlich (Wirkung siehe gruppe-g4.md)."
+  },
+  {
+   "id": "EQQX",
+   "symbol": "EQQX.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BNRQM384",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe EQQX.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "LYMS",
+   "symbol": "UST.PA",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1829221024",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe UST.PA fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "6AQQ",
+   "symbol": "ANX.PA",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1681038243",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe ANX.PA fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "XNAS",
+   "symbol": "XNAS.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BMFKG444",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe XNAS.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "QDVA",
+   "symbol": "QDVA.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4N50",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe QDVA.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "IS3R",
+   "symbol": "IS3R.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZ825",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe IS3R.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  },
+  {
+   "id": "XDEM",
+   "symbol": "XDEM.DE",
+   "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JP72",
+   "ergebnis": "vollständig gleich",
+   "bemerkung": "thesaurierend (laut fonds.json/justETF); Yahoo-Reihe XDEM.DE fuehrt 0 Dividenden und 0 Kapitalgewinne"
+  }
+ ],
+ "ergaenzungen": [
+  {
+   "symbol": "EXXT.DE",
+   "ex": "2008-06-16",
+   "art": "fehlt",
+   "betrag": 0.025746,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.0398,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/at/privatanleger/produkte/251896/ishares-nasdaq100-ucits-etf-de-fund/1509774438714.ajax?tab=distributions&fileType=json&subtab=table",
+   "bemerkung": "Anbieter zahlt in USD (0.0398 USD je Anteil); Yahoo-Reihe EXXT.DE in EUR, daher EUR = 0.0398 / 1.5459 (EZB-USD am 2008-06-16) = 0.025746. Yahoo fuehrt die Ausschuettungen erst ab 2014 (ab dann alle Betraege = USD/EZB, max. Abweichung 0.85 %). ACHTUNG: Die Yahoo-Kurse von EXXT.DE sind bis 30.12.2008 USD-Werte (Befund g4, gruppe-g4.md) - solange sie nicht korrigiert sind, passt zum Kurs am Ex-Tag der USD-Betrag 0.0398."
+  },
+  {
+   "symbol": "EXXT.DE",
+   "ex": "2009-06-15",
+   "art": "fehlt",
+   "betrag": 0.016173,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.0224000000511748,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/at/privatanleger/produkte/251896/ishares-nasdaq100-ucits-etf-de-fund/1509774438714.ajax?tab=distributions&fileType=json&subtab=table",
+   "bemerkung": "Anbieter zahlt in USD (0.0224000000511748 USD je Anteil); Yahoo-Reihe EXXT.DE in EUR, daher EUR = 0.0224000000511748 / 1.385 (EZB-USD am 2009-06-15) = 0.016173. Yahoo fuehrt die Ausschuettungen erst ab 2014 (ab dann alle Betraege = USD/EZB, max. Abweichung 0.85 %)."
+  },
+  {
+   "symbol": "EXXT.DE",
+   "ex": "2010-06-15",
+   "art": "fehlt",
+   "betrag": 0.020395,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.025,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/at/privatanleger/produkte/251896/ishares-nasdaq100-ucits-etf-de-fund/1509774438714.ajax?tab=distributions&fileType=json&subtab=table",
+   "bemerkung": "Anbieter zahlt in USD (0.025 USD je Anteil); Yahoo-Reihe EXXT.DE in EUR, daher EUR = 0.025 / 1.2258 (EZB-USD am 2010-06-15) = 0.020395. Yahoo fuehrt die Ausschuettungen erst ab 2014 (ab dann alle Betraege = USD/EZB, max. Abweichung 0.85 %)."
+  },
+  {
+   "symbol": "EXXT.DE",
+   "ex": "2011-06-15",
+   "art": "fehlt",
+   "betrag": 0.024909,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.0356,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/at/privatanleger/produkte/251896/ishares-nasdaq100-ucits-etf-de-fund/1509774438714.ajax?tab=distributions&fileType=json&subtab=table",
+   "bemerkung": "Anbieter zahlt in USD (0.0356 USD je Anteil); Yahoo-Reihe EXXT.DE in EUR, daher EUR = 0.0356 / 1.4292 (EZB-USD am 2011-06-15) = 0.024909. Yahoo fuehrt die Ausschuettungen erst ab 2014 (ab dann alle Betraege = USD/EZB, max. Abweichung 0.85 %)."
+  },
+  {
+   "symbol": "EXXT.DE",
+   "ex": "2012-06-15",
+   "art": "fehlt",
+   "betrag": 0.137583,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.1733,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/at/privatanleger/produkte/251896/ishares-nasdaq100-ucits-etf-de-fund/1509774438714.ajax?tab=distributions&fileType=json&subtab=table",
+   "bemerkung": "Anbieter zahlt in USD (0.1733 USD je Anteil); Yahoo-Reihe EXXT.DE in EUR, daher EUR = 0.1733 / 1.2596 (EZB-USD am 2012-06-15) = 0.137583. Yahoo fuehrt die Ausschuettungen erst ab 2014 (ab dann alle Betraege = USD/EZB, max. Abweichung 0.85 %)."
+  },
+  {
+   "symbol": "EXXT.DE",
+   "ex": "2013-06-17",
+   "art": "fehlt",
+   "betrag": 0.167176,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.222962,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/at/privatanleger/produkte/251896/ishares-nasdaq100-ucits-etf-de-fund/1509774438714.ajax?tab=distributions&fileType=json&subtab=table",
+   "bemerkung": "Anbieter zahlt in USD (0.222962 USD je Anteil); Yahoo-Reihe EXXT.DE in EUR, daher EUR = 0.222962 / 1.3337 (EZB-USD am 2013-06-17) = 0.167176. Yahoo fuehrt die Ausschuettungen erst ab 2014 (ab dann alle Betraege = USD/EZB, max. Abweichung 0.85 %)."
+  },
+  {
+   "symbol": "EXXT.DE",
+   "ex": "2013-09-16",
+   "art": "fehlt",
+   "betrag": 0.0291,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.038869,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/at/privatanleger/produkte/251896/ishares-nasdaq100-ucits-etf-de-fund/1509774438714.ajax?tab=distributions&fileType=json&subtab=table",
+   "bemerkung": "Anbieter zahlt in USD (0.038869 USD je Anteil); Yahoo-Reihe EXXT.DE in EUR, daher EUR = 0.038869 / 1.3357 (EZB-USD am 2013-09-16) = 0.029100. Yahoo fuehrt die Ausschuettungen erst ab 2014 (ab dann alle Betraege = USD/EZB, max. Abweichung 0.85 %)."
+  },
+  {
+   "symbol": "EXXT.DE",
+   "ex": "2013-12-16",
+   "art": "fehlt",
+   "betrag": 0.029172,
+   "yahooBetrag": null,
+   "anbieterBetrag": 0.040188,
+   "splitFaktor": 1,
+   "quelle_url": "https://www.blackrock.com/at/privatanleger/produkte/251896/ishares-nasdaq100-ucits-etf-de-fund/1509774438714.ajax?tab=distributions&fileType=json&subtab=table",
+   "bemerkung": "Anbieter zahlt in USD (0.040188 USD je Anteil); Yahoo-Reihe EXXT.DE in EUR, daher EUR = 0.040188 / 1.3776 (EZB-USD am 2013-12-16) = 0.029172. Yahoo fuehrt die Ausschuettungen erst ab 2014 (ab dann alle Betraege = USD/EZB, max. Abweichung 0.85 %)."
+  }
+ ]
+}

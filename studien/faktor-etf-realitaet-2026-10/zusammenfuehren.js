@@ -18,9 +18,9 @@ function monat(m) { return m ? m.slice(5, 7) + '/' + m.slice(0, 4) : '–'; }
 const fondsListe = lies('fonds.json').fonds;
 const nachId = new Map(fondsListe.map((f) => [f.id, f]));
 const gruppen = ['g1', 'g2', 'g3', 'g4', 'g5'].map((g) => lies('gruppe-' + g + '.json')).filter(Boolean);
-const fs1 = ['g1', 'g2', 'g3', 'g4', 'g5'].map((g) => lies('factsheet-' + g + '.json')).filter(Boolean);
+const fsg = lies('factsheet-gesamt.json');
 const factsheet = new Map();
-for (const f of fs1) for (const e of (f.stichproben || f.fonds || [])) if (e && e.id) factsheet.set(e.id, e);
+for (const e of (fsg ? fsg.stichproben : [])) if (e && e.id && !factsheet.has(e.id)) factsheet.set(e.id, e);
 
 function kategorie(f) {
   if (f.gruppe === 'Kontrolle') return 'Kontrolle';
@@ -63,7 +63,10 @@ for (const g of gruppen) {
         sprungpaare: e.pruefung.sprungpaare.length, grosseBewegungen: e.pruefung.grosseBewegungen.length, luecken: e.pruefung.luecken.length,
         ausschuettungen: e.pruefung.ausschuettungen, kapitalgewinne: e.pruefung.kapitalgewinne, splits: e.pruefung.splits.length,
         abgleichAdjcloseA: e.pruefung.abgleichAdjclose.A ? e.pruefung.abgleichAdjclose.A.differenzPa : null,
-        abgleichAdjcloseB: e.pruefung.abgleichAdjclose.B ? e.pruefung.abgleichAdjclose.B.differenzPa : null
+        abgleichAdjcloseB: e.pruefung.abgleichAdjclose.B ? e.pruefung.abgleichAdjclose.B.differenzPa : null,
+        anfangVerworfenBis: e.pruefung.anfangVerworfenBis, ergaenzungenC2: e.pruefung.ergaenzungen.length,
+        k2UsdAbschnitte: e.pruefung.usdAbschnitte.length, k3Einheitenbrueche: e.pruefung.einheitenbrueche.length,
+        eingefroreneLaeufe: e.pruefung.eingefroren.length
       } : null,
       factsheet: factsheet.get(e.id) || null
     };
@@ -95,7 +98,9 @@ const ergebnis = {
   },
   geschlosseneFonds: geschl ? { belegt: (geschl.fonds || []).length, us: (geschl.fonds || []).filter((x) => x.boerse === 'US').length,
     ucits: (geschl.fonds || []).filter((x) => x.boerse === 'UCITS').length, datei: 'geschlossene-fonds.json' } : null,
-  zweitrechner: zweit ? { datei: 'zweitrechner/ergebnis-zweit.json' } : null,
+  zweitrechner: zweit ? { datei: 'zweitrechner/ergebnis-zweit.json', abgleich: 'zweitrechner/vergleich.json' } : null,
+  factsheets: fsg ? fsg.zusammen : null,
+  ergaenzungen: lies('ergaenzungen.json') ? lies('ergaenzungen.json').zaehlung : null,
   fonds: alle
 };
 fs.writeFileSync(path.join(O, 'ergebnis.json'), JSON.stringify(ergebnis, null, 1) + '\n');

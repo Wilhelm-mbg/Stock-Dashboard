@@ -104,6 +104,51 @@ function leseRohdatei(ordner, symbol) {
 }
 function dateiname(symbol) { return symbol.replace(/[^A-Za-z0-9._-]/g, '_') + '.json'; }
 
+/* REGEL.md C2 - benannte Ergaenzungen: nachgewiesene Abweichungen der Yahoo-Ausschuettungen von der Ausschuettungshistorie
+ * des Anbieters (ergaenzungen.json, je Eintrag mit Quelle). art "fehlt": Zahlung wird nachgetragen (steht innerhalb
+ * +-3 Tagen schon eine Zahlung mit Betrag +-1 % bei Yahoo, gilt sie als vorhanden und wird nicht doppelt gebucht);
+ * "streichen": Yahoo-Eintrag (Datum +-3 Tage, Betrag +-1 % von yahooBetrag) entfaellt; "ersetzen": Betrag wird ersetzt.
+ * Was nicht passt, wird protokolliert und nicht angewandt. Betraege split-bereinigt wie Yahoo. */
+let ERGAENZUNGEN = null;
+function ergaenzungenListe() {
+  if (ERGAENZUNGEN) return ERGAENZUNGEN;
+  const p = path.join(__dirname, 'ergaenzungen.json');
+  ERGAENZUNGEN = fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')).eintraege || [] : [];
+  return ERGAENZUNGEN;
+}
+function setzeErgaenzungen(liste) { ERGAENZUNGEN = liste; }
+function ergaenze(reihe, symbol, liste) {
+  const eig = (liste || ergaenzungenListe()).filter((e) => e.symbol === symbol);
+  const log = [];
+  if (!eig.length) return { reihe, log };
+  const div = reihe.div.slice(); const cg = reihe.cg.slice();
+  const nah = (x, e, betrag) => Math.abs(tageZwischen(x.d, e.ex)) <= 3 && Math.abs(x.betrag - betrag) <= 0.01 * Math.abs(betrag) + 1e-9;
+  for (const e of eig) {
+    if (e.art === 'fehlt') {
+      const da = div.concat(cg).some((x) => nah(x, e, e.betrag));
+      if (da) { log.push({ ex: e.ex, art: e.art, betrag: e.betrag, angewandt: false, grund: 'bei Yahoo schon vorhanden' }); continue; }
+      div.push({ d: e.ex, t: null, betrag: e.betrag, ergaenzt: true });
+      log.push({ ex: e.ex, art: e.art, betrag: e.betrag, angewandt: true });
+    } else if (e.art === 'streichen' || e.art === 'ersetzen') {
+      let liste2 = div; let i = div.findIndex((x) => nah(x, e, e.yahooBetrag));
+      if (i < 0) { liste2 = cg; i = cg.findIndex((x) => nah(x, e, e.yahooBetrag)); }
+      if (i < 0) { log.push({ ex: e.ex, art: e.art, betrag: e.betrag, yahooBetrag: e.yahooBetrag, angewandt: false, grund: 'Yahoo-Eintrag nicht gefunden' }); continue; }
+      if (e.art === 'streichen') liste2.splice(i, 1);
+      else liste2[i] = Object.assign({}, liste2[i], { betrag: e.betrag, ersetzt: liste2[i].betrag });
+      log.push({ ex: e.ex, art: e.art, betrag: e.betrag, yahooBetrag: e.yahooBetrag, angewandt: true });
+    } else log.push({ ex: e.ex, art: e.art, angewandt: false, grund: 'unbekannte Art' });
+  }
+  div.sort((a, b) => (a.d < b.d ? -1 : a.d > b.d ? 1 : 0));
+  return { reihe: Object.assign({}, reihe, { div, cg }), log };
+}
+/* Reihe fuer die Rechnung: Rohdatei + benannte Ergaenzungen (ausser ohne=true) */
+function leseReihe(ordner, symbol, ohne) {
+  const r = leseRohdatei(ordner, symbol);
+  if (ohne) return Object.assign(r, { ergaenzungen: [] });
+  const g = ergaenze(r, symbol);
+  return Object.assign(g.reihe, { ergaenzungen: g.log });
+}
+
 /* EZB-Referenzkurse (CSV aus data-api.ecb.europa.eu, format=csvdata): Einheiten Fremdwaehrung je 1 EUR. */
 function leseEzb(text) {
   const zeilen = text.split(/\r?\n/).filter((z) => z.trim());
@@ -433,12 +478,118 @@ function vergleiche(fonds, mass, datenende) {
   };
 }
 
+/* Korrektur K2 (nach dem Siegel, Befund der Gruppen g4/g5 und des Zweitrechners, nachgewiesen an sauberen Zweitnotizen):
+ * Yahoo fuehrt in EUR-Reihen tage- bis monateweise den USD-Wert (Kurs x EURUSD) - ganze Anfangsabschnitte (EQQQ.DE 2008,
+ * EXXT.DE 2008, CSUSS.MI bis 10/2009, IBCK.DE/IQQ0.DE 2012/13, mehrere iShares/Xtrackers 2014) und einzelne Tage (EQQQ.DE
+ * 29.08.2011, 05.06.2017 in elf Reihen, 24.10.2025 in zehn, EXX5.DE 02.-23.09.2026). USD-Werte werden durch den EZB-Kurs des
+ * Tages geteilt (nicht verworfen). Zwei Regeln, nur fuer EUR-Reihen, jeder Treffer wird gelistet:
+ *  (1) Einzeltag: ln(c_t / Wurzel(c_t-1 * c_t+1)) liegt innerhalb 3 % bei ln(fx_t), und |ln fx_t| >= 8 % (EURUSD >= 1,083)
+ *      - der Tag steht um genau den Wechselkurs neben BEIDEN Nachbarn.
+ *  (2) Abschnitt (nach Regel 1): Spielraum P = [min(0, m_t-1, m_t) - 2 %, max(0, m_t-1, m_t) + 2 %] aus den SPY-Tagesbewegungen
+ *      in EUR (ln) des Vortags und des Tags (robust gegen den Zeitversatz Xetra/US). Eintritt, wenn ln(c_t/c_t-1) ausserhalb P,
+ *      ln(c_t/c_t-1) - ln fx_t aber innerhalb liegt; Austritt mit + ln fx_t. Nur bei |ln fx_t| >= 12 % (EURUSD >= 1,1275).
+ *      Mitten in der Reihe: Eintritt UND Austritt innerhalb 130 Handelstagen. Anfangsabschnitt: erster Uebergang ist ein
+ *      Austritt in den ersten 730 Tagen - ausser es geht ein eingefrorener Lauf (>= 5 gleiche Schluesse) voraus; den
+ *      behandelt K1b (Anfang verwerfen statt umrechnen, die Kurse dort sind ohnehin alt).
+ * Verworfene Vorfassungen (nie fuer ein Ergebnis benutzt): Toleranz um ln fx ab 3 % las Zeitversatz-Tage 2020/2022 als
+ * USD-Werte; Spielraum ab 5 % las den Wahltag 06.11.2024 (Small Caps) und den 10.06.2022 (Nasdaq) als Uebergang. */
+const K2 = { minLogEinzel: 0.08, tolEinzel: 0.03, minLog: 0.12, spiel: 0.02, mitteMaxTage: 130, anfangTage: 730 };
+function usdTageInEur(tage, markt, fxAm) {
+  const n = tage.length;
+  if (n < 3 || !markt || !fxAm) return { tage, abschnitte: [] };
+  const abschnitte = [];
+  /* (1) Einzeltage */
+  const t1 = tage.slice();
+  for (let t = 1; t + 1 < n; t++) {
+    const f = fxAm(t1[t].d);
+    if (!(f > 0) || Math.abs(Math.log(f)) < K2.minLogEinzel) continue;
+    const g = Math.sqrt(t1[t - 1].c * t1[t + 1].c);
+    const x = Math.log(t1[t].c / g);
+    if (Math.abs(x - Math.log(f)) < K2.tolEinzel) {
+      t1[t] = Object.assign({}, t1[t], { c: t1[t].c / f, adj: t1[t].adj ? t1[t].adj / f : t1[t].adj, k2: true });
+      abschnitte.push({ von: t1[t].d, bis: t1[t].d, tage: 1, art: 'Einzeltag' });
+    }
+  }
+  /* (2) Abschnitte */
+  const mk = (d) => { const z = wertBis(markt, d); const f = fxAm(d); return z && f > 0 ? z.v / f : NaN; };
+  const ein = new Array(n).fill(false); const aus = new Array(n).fill(false);
+  for (let t = 1; t < n; t++) {
+    const f = fxAm(t1[t].d);
+    if (!(f > 0)) continue;
+    const L = Math.log(f);
+    if (Math.abs(L) < K2.minLog) continue;
+    const mv = t >= 2 ? mk(t1[t - 2].d) : NaN; const m0 = mk(t1[t - 1].d); const m1 = mk(t1[t].d);
+    if (!(m0 > 0 && m1 > 0)) continue;
+    const bew = [0, Math.log(m1 / m0)];
+    if (mv > 0) bew.push(Math.log(m0 / mv));
+    const lo = Math.min(...bew) - K2.spiel; const hi = Math.max(...bew) + K2.spiel;
+    const r = Math.log(t1[t].c / t1[t - 1].c);
+    const drin = (x) => x >= lo && x <= hi;
+    if (drin(r)) continue;
+    if (drin(r - L)) ein[t] = true;
+    else if (drin(r + L)) aus[t] = true;
+  }
+  const usd = new Array(n).fill(false);
+  let erster = -1;
+  for (let t = 1; t < n; t++) if (ein[t] || aus[t]) { erster = t; break; }
+  let t0 = 1;
+  if (erster > 0 && aus[erster] && tageZwischen(t1[0].d, t1[erster].d) <= K2.anfangTage) {
+    let lauf = 0;
+    for (let j = erster - 1; j >= 0 && t1[j].c === t1[erster - 1].c; j--) lauf++;
+    if (lauf < 5) {
+      for (let i = 0; i < erster; i++) usd[i] = true;
+      abschnitte.push({ von: t1[0].d, bis: t1[erster - 1].d, tage: erster, art: 'Anfang' });
+    }
+    t0 = erster + 1;
+  }
+  for (let t = t0; t < n; t++) {
+    if (!ein[t]) continue;
+    let e = -1;
+    for (let u = t + 1; u < n && u - t <= K2.mitteMaxTage; u++) { if (aus[u]) { e = u; break; } if (ein[u]) break; }
+    if (e < 0) continue;
+    for (let i = t; i < e; i++) usd[i] = true;
+    abschnitte.push({ von: t1[t].d, bis: t1[e - 1].d, tage: e - t, art: 'Mitte' });
+    t = e;
+  }
+  if (!abschnitte.length) return { tage, abschnitte };
+  const neu = t1.map((z, i) => (usd[i] ? Object.assign({}, z, { c: z.c / fxAm(z.d), adj: z.adj ? z.adj / fxAm(z.d) : z.adj, k2: true }) : z));
+  abschnitte.sort((a, b) => (a.von < b.von ? -1 : a.von > b.von ? 1 : 0));
+  return { tage: neu, abschnitte };
+}
+
+/* Korrektur K3 (nach dem Siegel, Befund g5 an der Kontrolle P500): Einheiten- oder Splitbruch um genau den Faktor 100, den
+ * Yahoo nicht verbucht (SPXS.L 02.01.2014: 303,05 -> 3,023; P500.DE 15.12.2025 Split 1:100). Liegt das Verhaeltnis zweier
+ * aufeinanderfolgender Schlusskurse innerhalb 2 % bei 1/100 oder 100, werden alle frueheren Kurse und Ausschuettungen mit
+ * dem Faktor (genau 0,01 bzw. 100) auf die Einheit nach dem Bruch gebracht. Eine echte Tagesbewegung dieser Groesse gibt es
+ * bei einem Fonds nicht. Jeder Treffer wird gelistet. */
+function einheitenbrueche(reihe) {
+  const tage = reihe.tage.slice(); const brueche = [];
+  let div = reihe.div.slice(); let cg = reihe.cg.slice();
+  for (let t = 1; t < tage.length; t++) {
+    const q = tage[t].c / tage[t - 1].c;
+    let f = null;
+    if (Math.abs(q / 0.01 - 1) < 0.02) f = 0.01;
+    else if (Math.abs(q / 100 - 1) < 0.02) f = 100;
+    if (!f) continue;
+    const grenze = tage[t].d;
+    for (let i = 0; i < t; i++) tage[i] = Object.assign({}, tage[i], { c: tage[i].c * f, adj: tage[i].adj ? tage[i].adj * f : tage[i].adj });
+    div = div.map((x) => (x.d < grenze ? Object.assign({}, x, { betrag: x.betrag * f }) : x));
+    cg = cg.map((x) => (x.d < grenze ? Object.assign({}, x, { betrag: x.betrag * f }) : x));
+    brueche.push({ d: grenze, faktor: f, verhaeltnis: q });
+  }
+  if (!brueche.length) return { reihe, brueche };
+  return { reihe: Object.assign({}, reihe, { tage, div, cg }), brueche };
+}
+
 /* ---------- eine Reihe aufbereiten (Pruefungen + Gesamtertrag) ---------- */
 
-function bereite(reihe, markt) {
-  const fehl = sprungpaare(reihe.tage);
+function bereite(reihe0, markt, fxAm) {
+  const k3 = einheitenbrueche(reihe0);
+  const reihe = k3.reihe;
+  const k2 = reihe.waehrung === 'EUR' && fxAm ? usdTageInEur(reihe.tage, markt, fxAm) : { tage: reihe.tage, abschnitte: [] };
+  const fehl = sprungpaare(k2.tage);
   const fehlSet = new Set(fehl.map((x) => x.d));
-  const tage0 = reihe.tage.filter((z) => !fehlSet.has(z.d));
+  const tage0 = k2.tage.filter((z) => !fehlSet.has(z.d));
   /* K1 (Fassung K1b): Bruch in den ersten 730 Tagen, dem ein eingefrorener Lauf (>= 5 gleiche Schluesse bis zum Vortag)
    * vorausgeht -> Reihe beginnt am (letzten solchen) Bruchtag. K1b ersetzt K1, weil K1 echte Marktbewegungen eines
    * konzentrierten Fonds als Bruch las (QQQ 17.04.2000 +11,5 % und 03.01.2001 +16,8 % bei SPY +3,5/+4,8 % -> 22 Monate
@@ -482,11 +633,12 @@ function bereite(reihe, markt) {
       tage: tage.length, erster: tage.length ? tage[0].d : null, letzter: tage.length ? tage[tage.length - 1].d : null,
       ohneSchluss: reihe.ohneSchluss, doppelteDaten: reihe.doppelt,
       sprungpaare: fehl, grosseBewegungen: grosseBewegungen(tage, 0.10, markt),
+      usdAbschnitte: k2.abschnitte, einheitenbrueche: k3.brueche,
       brueche: br.map((b) => Object.assign({}, b, { verworfenBis: schnitt && b.d <= schnitt })), anfangVerworfenBis: schnitt,
       eingefroren: eingefroren(tage), randGleichVortag: randGleich,
       ausschuettungen: a.liste.length, kapitalgewinne: reihe.cg.length, kapitalgewinnDoppelt: a.cgDoppelt,
       ausschuettungVerschoben: z.verschoben, ausschuettungAusserhalb: z.ausserhalb,
-      splits: reihe.splits, abgleichAdjclose: abgleich,
+      splits: reihe.splits, abgleichAdjclose: abgleich, ergaenzungen: reihe.ergaenzungen || [],
       luecken: luecken(tage)
     }
   };
@@ -543,7 +695,7 @@ function rechneFonds(eintrag, ctx) {
   for (const s of eintrag.yahoo) {
     if (sperre[s]) { kandidaten.push({ symbol: s, erster: null, fehler: 'gesperrt: ' + sperre[s] }); continue; }
     try {
-      const r = leseRohdatei(ctx.roh, s);
+      const r = leseReihe(ctx.roh, s, ctx.ohneErgaenzungen);
       kandidaten.push({ symbol: s, erster: r.tage.length ? r.tage[0].d : null, reihe: r });
     } catch (e) {
       kandidaten.push({ symbol: s, erster: null, fehler: String(e.message || e) });
@@ -556,7 +708,7 @@ function rechneFonds(eintrag, ctx) {
   const k = kandidaten.find((x) => x.symbol === wahl.symbol);
   ergebnis.symbol = wahl.symbol; ergebnis.symbolGrund = wahl.grund;
   ergebnis.waehrung = k.reihe.waehrung; ergebnis.boerse = k.reihe.boerse;
-  const b = bereite(k.reihe, ctx.spy);
+  const b = bereite(k.reihe, ctx.spy, ctx.ohneErgaenzungen ? null : ctx.fxUsdJeEur);
   ergebnis.pruefung = b.pruefung;
   ergebnis.datenbeginn = b.pruefung.erster; ergebnis.datenende = b.pruefung.letzter;
   /* gegen SPY in USD */
@@ -576,18 +728,19 @@ function rechneFonds(eintrag, ctx) {
   return ergebnis;
 }
 
-function kontext(rohOrdner, datenende) {
+function kontext(rohOrdner, datenende, ohneErgaenzungen) {
   const ezb = {};
   for (const w of ['USD', 'GBP', 'CHF']) {
     const f = path.join(rohOrdner, 'EZB-' + w + '.csv');
     if (fs.existsSync(f)) ezb[w] = leseEzb(fs.readFileSync(f, 'utf8'));
   }
-  const spyRoh = leseRohdatei(rohOrdner, 'SPY');
+  const spyRoh = leseReihe(rohOrdner, 'SPY', ohneErgaenzungen);
   const spy = bereite(spyRoh);
+  const fxUsdJeEur = ezb.USD ? (d) => { const z = wertBis(ezb.USD, d); return z ? z.w : NaN; } : null;
   let sxr8 = null; let sxr8Pruefung = null;
-  if (fs.existsSync(path.join(rohOrdner, dateiname('SXR8.DE')))) { const x = bereite(leseRohdatei(rohOrdner, 'SXR8.DE'), spy.tr); sxr8 = x.tr; sxr8Pruefung = x.pruefung; }
+  if (fs.existsSync(path.join(rohOrdner, dateiname('SXR8.DE')))) { const x = bereite(leseReihe(rohOrdner, 'SXR8.DE', ohneErgaenzungen), spy.tr, ohneErgaenzungen ? null : fxUsdJeEur); sxr8 = x.tr; sxr8Pruefung = x.pruefung; }
   return {
-    roh: rohOrdner, datenende: datenende || DATENENDE, ezb, spy: spy.tr, spyPruefung: spy.pruefung, sxr8, sxr8Pruefung, sperre: symbolSperre(),
+    roh: rohOrdner, datenende: datenende || DATENENDE, ezb, spy: spy.tr, spyPruefung: spy.pruefung, sxr8, sxr8Pruefung, fxUsdJeEur, sperre: symbolSperre(), ohneErgaenzungen: !!ohneErgaenzungen,
     waehrungUmrechnen: (reihe, von, nach) => (von === nach ? reihe : umrechnen(reihe, wechselFaktor(von, nach, ezb)))
   };
 }
@@ -596,9 +749,9 @@ function kontext(rohOrdner, datenende) {
  * gibt die Rendite p. a. ueber 1, 3, 5, 10 Jahre bis zum Stichtag aus (Gesamtertrag dieses Rechners,
  * ohne Datenende-Schnitt), wahlweise in eine andere Waehrung umgerechnet (EZB). */
 function factsheetModus(a) {
-  const ctx = kontext(a.roh, a.stichtag);
-  const roh = leseRohdatei(a.roh, a.symbol);
-  const b = bereite(roh, roh.symbol === 'SPY' ? null : ctx.spy);
+  const ctx = kontext(a.roh, a.stichtag, !!a.ohneErgaenzungen);
+  const roh = leseReihe(a.roh, a.symbol, !!a.ohneErgaenzungen);
+  const b = bereite(roh, roh.symbol === 'SPY' ? null : ctx.spy, ctx.ohneErgaenzungen ? null : ctx.fxUsdJeEur);
   const ziel = a.waehrung || roh.waehrung;
   const reihe = ctx.waehrungUmrechnen(b.tr, roh.waehrung, ziel);
   const out = { symbol: a.symbol, waehrungReihe: roh.waehrung, waehrungRechnung: ziel, stichtag: a.stichtag, letzterTag: b.pruefung.letzter };
@@ -615,7 +768,7 @@ function main() {
     process.exit(2);
   }
   const liste = JSON.parse(fs.readFileSync(a.fonds || path.join(__dirname, 'fonds.json'), 'utf8')).fonds;
-  const ctx = kontext(a.roh, a.datenende);
+  const ctx = kontext(a.roh, a.datenende, !!a.ohneErgaenzungen);
   const auswahl = liste.filter((f) => a.gruppe === 'alle' || f.lauf === a.gruppe);
   const out = { kennung: KENNUNG, gruppe: a.gruppe, datenende: ctx.datenende, fenster: FENSTER, spyPruefung: ctx.spyPruefung, sxr8Pruefung: ctx.sxr8Pruefung, fonds: [] };
   for (const f of auswahl) {
@@ -635,8 +788,8 @@ function main() {
 module.exports = {
   KENNUNG, FENSTER, DATENENDE, ROLL_MONATE, SCHWELLE_ANTEIL, RAND_TOLERANZ_TAGE, SPRUNG,
   lokalesDatum, tageZwischen, monatPlus, letzterKalendertag, vorTag,
-  leseYahoo, leseRohdatei, leseEzb, dateiname,
-  sprungpaare, grosseBewegungen, marktRendite, brueche, eingefroren, BRUCH, ordneZu, ausschuettungen, gesamtertrag, ausAdj, umrechnen, wechselFaktor,
+  leseYahoo, leseRohdatei, leseReihe, ergaenze, ergaenzungenListe, setzeErgaenzungen, leseEzb, dateiname,
+  sprungpaare, grosseBewegungen, marktRendite, brueche, eingefroren, BRUCH, K2, usdTageInEur, einheitenbrueche, ordneZu, ausschuettungen, gesamtertrag, ausAdj, umrechnen, wechselFaktor,
   wertBis, wertVor, fensterRendite, jahreNominal, pa, fensterVergleich,
   monatsEnden, rollierend, rueckschlag, relativ, rueckschlagRelativ, gesamtVergleich, urteil, vergleiche,
   bereite, luecken, waehleSymbol, rechneFonds, kontext, jahreZurueck, renditeBisStichtag, factsheetModus
