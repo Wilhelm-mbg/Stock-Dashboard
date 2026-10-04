@@ -448,13 +448,24 @@
     var M = window.Massstab, v = k.massstab;
     var gegen = U.esc(M.langText('Buch', v, U.pz1)) + (v && v.ok
       ? '<br><span style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(M.hinweis(v)) + '</span>' : '');
-    return kopf + fakten([
-      ['Gegen den Markt', gegen],
+    /* Der Rueckblick (Auftrag Nr. 81): Wilhelms Regel hat zwei Stufen - Rueckblick ueber
+     * fuenf Jahre, dann Vorwaertstest. Der Vorwaertstest ist die Zeile darueber; der
+     * Rueckblick kommt aus dem Studienregister (jede Zahl dort gegen die Ergebnisdatei
+     * gehalten), je Eintrag eine Zeile. Nur das Momentum-Buch hat einen. */
+    var SU = window.StudienUrteile;
+    var rueck = (k.name === 'momentum' && SU && SU.rueckblicke) ? SU.rueckblicke('momentum-liquide') : [];
+    var zeilen = [['Gegen den Markt', gegen]];
+    if (rueck.length) {
+      zeilen.push(['Rückblick', rueck.map(function (r) {
+        return U.esc(SU.rueckblickText(r)) + '<br><span style="color:var(--muted); font-size:var(--fs-klein);">Fundstelle: ' + U.esc(r.quelle) + '</span>';
+      }).join('<br>')]);
+    }
+    return kopf + fakten(zeilen.concat([
       ['Positionen', k.positionen == null ? ohne('Buch noch nicht angelegt') : String(k.positionen)],
       ['Status', k.an ? 'handelt selbst' : 'nur rechnen'],
       ['Nächster Takt', U.esc(taktTxt)],
       ['Zuletzt getan', handlungText(k.letzte)]
-    ]);
+    ]));
   }
 
   /** Die zwei Buch-Karten oben im Bestand schreiben. depot.js render() ruft sie bei

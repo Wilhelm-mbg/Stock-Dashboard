@@ -367,6 +367,22 @@
     var i = txt.indexOf('. ');
     return i > 0 ? txt.slice(0, i + 1) : txt;
   }
+  /* Der Rueckblick (Auftrag Nr. 81, 04.10.2026): Wilhelms Regel hat zwei Stufen -
+   * Rueckblick ueber fuenf Jahre gegen den S&P 500, dann Vorwaertstest. Der Chip traegt
+   * den Vorwaertstest; hier steht je Rueckblick des Studienregisters eine Zeile unter
+   * der Strategie. Text und Zahlen kommen aus studienurteile.js - derselbe Satz wie an
+   * der Karte des Buchs (Heute -> Bestand), hier wird nichts formuliert. */
+  function rueckblickZeilen(kette) {
+    var SU = window.StudienUrteile;
+    if (!SU || !SU.rueckblicke) return '';
+    var html = '';
+    kette.forEach(function (k) {
+      SU.rueckblicke(k).forEach(function (r) {
+        html += '<div style="color:var(--ink-2); font-size:var(--fs-neben);" title="' + U.esc(r.quelle) + '">' + U.esc(SU.rueckblickText(r)) + '</div>';
+      });
+    });
+    return html;
+  }
   function renderAntwort() {
     var elH = document.getElementById('antwortHandelt');
     if (!elH) return;
@@ -391,7 +407,7 @@
       if (!anZustand(s.key)) return;
       var c = antwortChip(s.messKeys || []) ||
         { txt: s.stand, farbe: s.farbe, quelle: 'Stand aus strategien.js (kein Messprotokoll im Datenordner)' };
-      zeilen.push('<div><b>' + U.esc(s.name) + '</b> · ' + U.esc(s.tut || ersterSatz(s.was)) + ' ' + chipHtml(c) + '</div>');
+      zeilen.push('<div><b>' + U.esc(s.name) + '</b> · ' + U.esc(s.tut || ersterSatz(s.was)) + ' ' + chipHtml(c) + rueckblickZeilen(s.messKeys || []) + '</div>');
     });
     if (!zeilen.length) zeilen.push('<div>Es handelt gerade keine Strategie.</div>');
     if (!st.intradayAn && st.schatten) {

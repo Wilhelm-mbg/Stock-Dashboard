@@ -288,6 +288,23 @@ Wilhelms Regel (entscheide.md, „Richtung des Projekts"): echtes Geld nur für 
 - **Kunstinstanz:** `tools/kunstdepot.js` `marktReihe()` sät eine erfundene bereinigte Reihe mit einer Ausschüttung
   (`drift_markt.json` im Test-Store) – die Aufnahmen zeigen den Normalfall (Gesamtertrag), nicht den Rückfall.
 
+## 6c. Der Rückblick am Momentum-Buch (seit 04.10.2026, Auftrag Nr. 81)
+
+Wilhelms Regel hat zwei Stufen: Rückblick über fünf Jahre, dann Vorwärtstest. Der Vorwärtstest ist die Zeile „Gegen den Markt"
+(§6b); der Rückblick steht darunter. *Fundstelle: `uebergabe/app-fertig-2026-10-04.md`.*
+
+- **Wo er steht:** Heute → Bestand, Karte des Momentum-Buchs (`#buchMomentumKopf`), Zeile „Rückblick" mit Fundstelle; Regeln →
+  Strategien, Antwort-Seite (`#antwortHandelt`), eine Zeile unter „Mittelfristig · Momentum im Querschnitt" (Fundstelle im Titel).
+  Wortlaut: „Rückblick fünf Jahre bis 15.09.2026, Regel auf dem breiten Markt (515 bis 923 Werte, nicht der Korb der App): Buch
+  +65,2 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag liegt das Buch in 41 von 63 Fällen vorn; größter Rückschlag
+  −40,2 % gegen −24,5 %."
+- **Woher er kommt:** neue Art von Eintrag im Studienregister – `RUECKBLICK` in `studienurteile.js`, je Buch-Konfiguration eine
+  **Liste** (`StudienUrteile.rueckblicke('momentum-liquide')`); den Satz setzt `rueckblickText(r)` nur aus den Feldern des Eintrags.
+  Ein weiterer Rückblick (anderer Korb, anderes Fenster) ist ein weiterer Listeneintrag – beide Leser zeigen ihn als weitere Zeile.
+  Keine Urteilswörter: der Rückblick ist eine beschreibende Zahl, kein Urteil über eine Kante.
+- **Was nicht angezeigt wird:** die Vorab-Rechnung des PM mit dem engeren Korb (eine einzelne Rechnung ohne Gegenprobe).
+- **Prüfung:** test-v6 Abschnitt 94 – jede Zahl gegen `studien/massstab-rueckblick-2026-10-04/ergebnis.json`, beide Leser am Verhalten.
+
 ## 7. Aktuelle Aufnahmen und Struktur (seit 04.09.2026)
 
 **[aufnahmen/struktur.md](aufnahmen/struktur.md)** zeigt die Oberfläche der ausgelieferten Fassung als Baum (Reiter → Pille → Blöcke und Klappen, mit den Kennungen aus `index.html`) und darunter je Pille die Aufnahmen. Die Bilder liegen je Reiter in einem Unterordner (`aufnahmen/heute/`, `markt/`, `regeln/`, `werkzeuge/`), damit die Struktur auch im Datei-Baum von Obsidian sichtbar ist.

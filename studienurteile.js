@@ -28,6 +28,10 @@
  *   vorregistrierten Studie zu genau der Konfiguration, die ein Buch der App handelt.
  *   Nie „belegt", nie „bestätigt" — und jede Zahl wird von test-v6.js gegen die Rohdaten
  *   der Studie (lauf-*.json) gehalten. Eine Zahl, die dort nicht steht, macht die Suite rot.
+ * - Seit 04.10.2026 (Auftrag Nr. 81) zusätzlich RÜCKBLICKE (unten): die beschreibende
+ *   Zahl „Buch gegen S&P 500 über fünf Jahre" zu einer Buch-Konfiguration. Kein Urteil
+ *   über eine Kante, nie „belegt", nie „bestätigt" - und jede Zahl wird von test-v6.js
+ *   gegen ergebnis.json der Studie gehalten.
  */
 (function () {
   var EINTRAEGE = {
@@ -89,7 +93,47 @@
       datum: '2026-09-02'
     }
   };
+  /* RÜCKBLICKE (Auftrag Nr. 81, 04.10.2026). Wilhelms Regel hat zwei Stufen: Rückblick
+   * über fünf Jahre nach Kosten gegen den S&P 500, dann einige Monate Vorwärtstest. Der
+   * Vorwärtstest steht an der Karte des Buchs (massstab.js); hier steht der Rückblick -
+   * eine BESCHREIBENDE Zahl, kein Urteil über eine Kante, deshalb weder „belegt" noch
+   * „bestätigt". Je Buch-Konfiguration eine LISTE: ein weiterer Rückblick (anderer
+   * Korb, anderes Fenster) kommt als weiterer Eintrag dazu, die Leser zeigen jede Zeile.
+   * Aufgenommen wird nur ein zweifach gerechneter Rückblick; die Vorab-Rechnung des PM
+   * mit dem engeren Korb (eine einzelne Rechnung) steht bewusst NICHT hier.
+   * Jede Zahl in zahlen hält test-v6.js gegen ergebnis.json der Studie (auf eine
+   * Nachkommastelle); der Text entsteht in rueckblickText() nur aus diesen Feldern. */
+  var RUECKBLICK = {
+    'momentum-liquide': [
+      {
+        kennung: 'massstab-rueckblick-2026-10-04/v1',
+        zeitraum: 'fünf Jahre',
+        korb: 'Regel auf dem breiten Markt',
+        korbZusatz: 'nicht der Korb der App',
+        zahlen: { von: '2021-09-16', bis: '2026-09-15', jahre: 5, buchGesamt: 65.2, spyGesamt: 81.2, schlaegt: false,
+          phasenVorn: 41, phasen: 63, rueckschlagBuch: -40.2, rueckschlagSpy: -24.5, zulaessigMin: 515, zulaessigMax: 923 },
+        quelle: 'studien/massstab-rueckblick-2026-10-04/ERGEBNIS.md, 04.10.2026 · wiki/belegstand.md, Abschnitt „Rückblick über fünf Jahre“',
+        datum: '2026-10-04'
+      }
+    ]
+  };
+  function pzDe(x) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(1).replace('.', ',') + ' %'; }
+  function tagDe(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '')); return m ? m[3] + '.' + m[2] + '.' + m[1] : String(iso || ''); }
   window.StudienUrteile = {
+    /** Die Rückblicke zu einer Buch-Konfiguration - eine Liste, möglicherweise leer. */
+    rueckblicke: function (k) { return RUECKBLICK[k] || []; },
+    /** EIN Rückblick als Zeile, wie Karte und Antwort-Seite ihn zeigen - nur aus den
+     *  Feldern des Eintrags: „Rückblick fünf Jahre bis 15.09.2026, Regel auf dem
+     *  breiten Markt (515 bis 923 Werte, nicht der Korb der App): Buch +65,2 % gegen
+     *  S&P 500 +81,2 % – nicht geschlagen; je nach Starttag liegt das Buch in 41 von 63
+     *  Fällen vorn; größter Rückschlag −40,2 % gegen −24,5 %." */
+    rueckblickText: function (r) {
+      var z = r.zahlen;
+      return 'Rückblick ' + r.zeitraum + ' bis ' + tagDe(z.bis) + ', ' + r.korb + ' (' + z.zulaessigMin + ' bis ' + z.zulaessigMax + ' Werte' +
+        (r.korbZusatz ? ', ' + r.korbZusatz : '') + '): Buch ' + pzDe(z.buchGesamt) + ' gegen S&P 500 ' + pzDe(z.spyGesamt) + ' – ' +
+        (z.schlaegt ? 'geschlagen' : 'nicht geschlagen') + '; je nach Starttag liegt das Buch in ' + z.phasenVorn + ' von ' + z.phasen +
+        ' Fällen vorn; größter Rückschlag ' + pzDe(z.rueckschlagBuch) + ' gegen ' + pzDe(z.rueckschlagSpy) + '.';
+    },
     /** Liefert die dokumentierte Verwerfung zu einem Auslöser-/Modus-Schlüssel,
      *  oder null. */
     verworfen: function (k) { return EINTRAEGE[k] || null; },

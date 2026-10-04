@@ -97,6 +97,7 @@ const LESEN = "(function () {" +
   "  buchIntradayKopf: txt('buchIntradayKopf')," +
   "  buecherLegende: txt('buecherLegende')," +
   "  buecherMassstab: txt('buecherMassstab')," +
+  "  antwortHandelt: txt('antwortHandelt')," +
   "  scoreboardUeberholt: (function () { var s = el('scoreboard'); if (!s) return null; var raus = [];" +
   "    Array.prototype.forEach.call(s.querySelectorAll('tr'), function (tr, i, alle) {" +
   "      var t = String(tr.innerText || tr.textContent || '').replace(/\\s+/g, ' ').trim();" +
