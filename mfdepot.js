@@ -297,6 +297,11 @@
       if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; }
       await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader
     }
+    /* Generalprobe 23.11., Fund 2 (D-04, D-05, H-b2): fehlt einer gehaltenen, handelnden Position die Eroeffnung noch,
+     * waere der Platzwert zu klein. Bis 16:00 New York warten (gehandelt wird ohnehin zur Eroeffnung dieses Tages). */
+    var warten = MH.eroeffnungAbwarten(d.mfBuch.positionen, preise, daten.roh, st.stichtag, now);
+    if (warten.length) return { ok: false, hinweis: 'Umschichtung fällig, aber um ' + MH.nyUhr(now) + ' New York fehlt noch die Eröffnung gehaltener Werte (' +
+      warten.slice(0, 6).join(', ') + (warten.length > 6 ? ' …' : '') + ') – nichts gehandelt; neuer Versuch beim nächsten Takt, gehandelt wird zur Eröffnung dieses Tages.' };
     return { ok: true, ziel: ziel, preise: preise, barZeit: barZeit, stichtag: st.stichtag, heute: heute };
   }
 

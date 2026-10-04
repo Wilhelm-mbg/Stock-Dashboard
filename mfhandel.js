@@ -773,6 +773,21 @@
     return (offen.verkaeufe || []).concat((offen.kaeufe || []).slice().sort(nachRang).map(function (k) { return k.sym; }));
   }
 
+  /** Generalprobe 23.11., Fund 2 (D-04, D-05, H-b2): auf welche gehaltenen Werte wartet die Umschichtung noch?
+   *  Eine Position ohne Eroeffnung in preise, deren Reihe einen Balken vom Stichtag hat, handelt - ihre Eroeffnung
+   *  kommt (die Messung hat sie; REGEL §1.3 "ohne Kurs" meint einen Wert, der an dem Tag nicht handelt). Ohne sie
+   *  rechnete der Plan den Platzwert zu klein. Bis 16:00 New York (NACHFASSEN_BIS) wird gewartet und nichts gehandelt;
+   *  danach ist die Liste leer und es gilt, was da ist. Rein. Rueckgabe [sym…] */
+  function eroeffnungAbwarten(positionen, preise, rohMap, stichtag, nowMs) {
+    if (nowMs >= nyZeit(nyTag(nowMs), NACHFASSEN_BIS[0], NACHFASSEN_BIS[1])) return [];
+    var von = nyZeit(stichtag, 0, 0), bis = nyZeit(tagPlus(stichtag, 1), 0, 0), aus = [];
+    (positionen || []).forEach(function (p) {
+      var x = rohMap && rohMap[p.sym], i = !((preise || {})[p.sym] > 0) && x && x.length ? indexVor(x, bis) : -1;
+      if (i >= 0 && x[i][0] >= von) aus.push(p.sym);
+    });
+    return aus;
+  }
+
   /** Regel 2: ausfuehren, was jetzt eine Eroeffnung hat. preise / barZeit = die Eroeffnungen DIESES Tages und
    *  die Stempel ihrer Balken (mfdepot.js eroeffnung). Erst die Verkaeufe (Erloes ins Bargeld, Kosten wie
    *  bisher), dann die Kaeufe in der Reihenfolge rang, je hoechstens budget (Stueck = budget / Kurs, auf vier
@@ -799,6 +814,9 @@
     (o.kaeufe || []).slice().sort(nachRang).forEach(function (k) {
       if (imBuch[k.sym]) { res.entfallen.push(k.sym); return; }
       var kurs = preise[k.sym];
+      /* Generalprobe 23.11., Fund 2 (D-05): ohne Budget nie kaufen - fuehreAus naehme sonst das ganze Bargeld. Der Kauf
+       * bleibt offen wie einer, fuer den das Bargeld nicht reicht. */
+      if (kurs > 0 && !(k.budget > 0)) { res.wartet.push(k.sym); restK.push(k); return; }
       if (kurs > 0) plan.kaufen.push({ sym: k.sym, kurs: kurs, budget: k.budget, rang: k.rang,
         stueck: k.budget > 0 ? Math.floor(k.budget / kurs * 10000) / 10000 : 0 });
       else restK.push(k);
@@ -902,6 +920,7 @@
     /* Auftrag Nr. 94 */
     nyUhr: nyUhr, offeneAuftraege: offeneAuftraege, offenLaeuft: offenLaeuft, offenWerte: offenWerte, nachfassen: nachfassen,
     offenBeenden: offenBeenden, offenText: offenText, nachfassenJournal: nachfassenJournal, offenEndeJournal: offenEndeJournal,
+    eroeffnungAbwarten: eroeffnungAbwarten,   // Generalprobe 23.11., Fund 2
     NACHFASSEN_BIS: NACHFASSEN_BIS
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = MFHandel; return; }
