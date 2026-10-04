@@ -1,0 +1,83 @@
+{
+ "kennung": "faktor-etf-realitaet-2026-10/v1",
+ "eintraege": {
+  "EZB-USD": {
+   "quelle": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?format=csvdata",
+   "sha256": "4244238abfc1fc0fbd316c5cc115489633439ba6cd42926adf27a37dc8933e8f",
+   "bytes": 1485245,
+   "erster": "1999-01-04",
+   "letzter": "2026-10-02",
+   "kurse": 7106,
+   "geladen": "2026-10-04T23:02:05.153Z"
+  },
+  "EZB-GBP": {
+   "quelle": "https://data-api.ecb.europa.eu/service/data/EXR/D.GBP.EUR.SP00.A?format=csvdata",
+   "sha256": "d90a4900b258599667107f4d7ebf7977483add3a27db89e7bd3fb7f7cb0f80ed",
+   "bytes": 1559928,
+   "erster": "1999-01-04",
+   "letzter": "2026-10-02",
+   "kurse": 7106,
+   "geladen": "2026-10-04T23:02:05.751Z"
+  },
+  "EZB-CHF": {
+   "quelle": "https://data-api.ecb.europa.eu/service/data/EXR/D.CHF.EUR.SP00.A?format=csvdata",
+   "sha256": "c187659f7f0a71ca4354c83dbb3fae868d7fcdd56011bb11071a36b19c414ea9",
+   "bytes": 1513888,
+   "erster": "1999-01-04",
+   "letzter": "2026-10-02",
+   "kurse": 7106,
+   "geladen": "2026-10-04T23:02:06.196Z"
+  },
+  "SPY": {
+   "sha256": "d4b0fd91fc4eda470b0eab63a530c830be9e7857ded06f4b50dd900d8dc48196",
+   "bytes": 857219,
+   "waehrung": "USD",
+   "boerse": "PCX",
+   "zeitzone": "America/New_York",
+   "erster": "1993-01-29",
+   "letzter": "2026-10-02",
+   "tage": 8477,
+   "dividenden": 136,
+   "kapitalgewinne": 0,
+   "splits": 0,
+   "ohneSchluss": 0,
+   "geladen": "2026-10-04T23:02:07.116Z",
+   "quelle": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&events=div%2Csplits%2CcapitalGains&includeAdjustedClose=true&period1=0&period2=<jetzt>",
+   "versuche": 1
+  },
+  "^SP500TR": {
+   "sha256": "42eb02a08af00c6e2c480132241443f886fa661313afe3069e31e1b3376b8376",
+   "bytes": 948386,
+   "waehrung": "USD",
+   "boerse": "SNP",
+   "zeitzone": "America/New_York",
+   "erster": "1988-01-04",
+   "letzter": "2026-10-02",
+   "tage": 9761,
+   "dividenden": 0,
+   "kapitalgewinne": 0,
+   "splits": 0,
+   "ohneSchluss": 0,
+   "geladen": "2026-10-04T23:02:08.972Z",
+   "quelle": "https://query1.finance.yahoo.com/v8/finance/chart/%5ESP500TR?interval=1d&events=div%2Csplits%2CcapitalGains&includeAdjustedClose=true&period1=0&period2=<jetzt>",
+   "versuche": 1
+  },
+  "SXR8.DE": {
+   "sha256": "d5a32ec1f549f8600a418d09a93ad113fe9b159bca11d4da4db399ab75f01b62",
+   "bytes": 434090,
+   "waehrung": "EUR",
+   "boerse": "GER",
+   "zeitzone": "Europe/Berlin",
+   "erster": "2010-05-19",
+   "letzter": "2026-10-02",
+   "tage": 4160,
+   "dividenden": 0,
+   "kapitalgewinne": 0,
+   "splits": 0,
+   "ohneSchluss": 2,
+   "geladen": "2026-10-04T23:02:10.587Z",
+   "quelle": "https://query1.finance.yahoo.com/v8/finance/chart/SXR8.DE?interval=1d&events=div%2Csplits%2CcapitalGains&includeAdjustedClose=true&period1=0&period2=<jetzt>",
+   "versuche": 1
+  }
+ }
+}

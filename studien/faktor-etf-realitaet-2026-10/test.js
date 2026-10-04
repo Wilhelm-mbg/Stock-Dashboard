@@ -176,6 +176,20 @@ ok('Fonds = Massstab + Ausschuettungen -> in jedem Fenster vorn', v3.rollierend.
 var rb = R.renditeBisStichtag(b2.tr, '2026-06-30', 5);
 ok('Factsheet-Rendite: von 30.06.2021 bis 30.06.2026', rb.von === '2021-06-30' && rb.bis === '2026-06-30');
 
+/* 15. Korrektur K1: eingefrorener Anfang mit ungedecktem Sprung wird verworfen; spaeter Bruch nur gelistet; echter Marktsturz kein Bruch */
+var t5 = werktage('2010-05-03', '2014-12-31');
+var markt5 = t5.map(function (d, i) { return { d: d, v: Math.pow(1.0003, i) * (d === '2012-06-04' ? 1 : 1) }; });
+var y5 = R.leseYahoo(kunstYahoo(t5, function (i, d) { return d < '2010-11-01' ? 96.95 : (d >= '2013-05-01' ? 2 : 1) * 73 * Math.pow(1.0003, i); }, {}));
+var b5 = R.bereite(y5, markt5);
+ok('K1: Reihe beginnt am Bruchtag 01.11.2010 (eingefrorener Anfang verworfen)', b5.pruefung.anfangVerworfenBis === '2010-11-01' && b5.tr[0].d === '2010-11-01');
+ok('K1: spaeterer Bruch (01.05.2013, Faktor 2) gelistet, nicht verworfen', b5.pruefung.brueche.some(function (x) { return x.d === '2013-05-01' && !x.verworfenBis; }) && b5.tr.length === t5.filter(function (d) { return d >= '2010-11-01'; }).length);
+ok('K1: eingefrorener Lauf erkannt (>= 5 Tage gleicher Schluss)', R.eingefroren(y5.tage).length === 1 && R.eingefroren(y5.tage)[0].von === '2010-05-03');
+var markt6 = t5.map(function (d, i) { return { d: d, v: (d >= '2011-08-08' ? 0.85 : 1) * Math.pow(1.0003, i) }; });
+var y6 = R.leseYahoo(kunstYahoo(t5, function (i, d) { return (d >= '2011-08-08' ? 0.86 : 1) * 50 * Math.pow(1.0003, i); }, {}));
+var b6 = R.bereite(y6, markt6);
+ok('K1: -14 % bei Markt -15 % ist kein Bruch, Reihe bleibt ganz', b6.pruefung.brueche.length === 0 && b6.pruefung.anfangVerworfenBis === null && b6.pruefung.grosseBewegungen.length === 1);
+ok('ohne Markt keine Brueche (SPY selbst)', R.bereite(y5).pruefung.brueche.length === 0);
+
 /* ===== Teil II: Klinken an fonds.json und am Ordner ===== */
 var FJ = path.join(ORDNER, 'fonds.json');
 if (fs.existsSync(FJ)) {
@@ -213,12 +227,20 @@ if (argRoh) {
   var sB = R.fensterRendite(spy.tr, '2021-09-16', '2026-09-15');
   /* Nr. 88 (Ergebnis-Drift, 04.10.2026): S&P 500 (SPY, Gesamtertrag) 16.09.2021-15.09.2026 +81,2 % */
   nah('SPY Fenster B innerhalb 0,5 Pp von +81,2 % (Nr. 88)', sB.r * 100, 81.2, 0.5);
-  ok('SPY: vier Ausschuettungen je volles Kalenderjahr 2000-2025', (function () {
+  /* REGEL C7.6 verlangt vier je volles Jahr. Gemessen: 2004 sind es fuenf - die Sonderausschuettung vom 15.11.2004
+   * (0,351 $; Microsofts Sonderdividende). Beleg, dass sie echt ist und nicht doppelt zaehlt: SPY gegen ^SP500TR im
+   * Kalenderjahr 2004 -0,18 Pp (2003 -0,51, 2005 -0,09) - ohne sie laege SPY ~0,5 Pp weiter zurueck. Benannt in ERGEBNIS.md. */
+  ok('SPY: vier Ausschuettungen je volles Kalenderjahr 1994-2025, 2004 fuenf (Sonderausschuettung 15.11.2004)', (function () {
     var r = R.leseRohdatei(argRoh, 'SPY'); var z = {};
     r.div.forEach(function (x) { var j = x.d.slice(0, 4); z[j] = (z[j] || 0) + 1; });
-    for (var j = 2000; j <= 2025; j++) if (z[j] !== 4) { console.log('   SPY ' + j + ': ' + z[j]); return false; }
-    return true;
+    for (var j = 1994; j <= 2025; j++) if (z[j] !== (j === 2004 ? 5 : 4)) { console.log('   SPY ' + j + ': ' + z[j]); return false; }
+    return r.div.some(function (x) { return x.d === '2004-11-15' && Math.abs(x.betrag - 0.351) < 1e-9; });
   })());
+  /* K1 an der Eichung gefunden: SXR8.DE beginnt bei Yahoo mit eingefrorenen Kursen (92,67 / 96,95) bis 29.10.2010 */
+  if (fs.existsSync(path.join(argRoh, R.dateiname('SXR8.DE')))) {
+    var sx = R.bereite(R.leseRohdatei(argRoh, 'SXR8.DE'), spy.tr);
+    ok('SXR8.DE: Anfang bis 01.11.2010 verworfen (K1), danach keine Brueche', sx.pruefung.anfangVerworfenBis === '2010-11-01' && sx.pruefung.brueche.filter(function (x) { return !x.verworfenBis; }).length === 0);
+  }
   ok('SPY: keine Sprungpaare', spy.pruefung.sprungpaare.length === 0);
   /* REGEL.md C7.6: SPY liegt gegen den S&P 500 Total Return Index in A und B zwischen 0 und 0,25 Pp p. a. zurueck */
   if (fs.existsSync(path.join(argRoh, R.dateiname('^SP500TR')))) {

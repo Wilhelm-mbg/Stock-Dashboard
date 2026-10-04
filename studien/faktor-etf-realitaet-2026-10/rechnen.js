@@ -134,13 +134,41 @@ function sprungpaare(tage) {
   }
   return fehl;
 }
-function grosseBewegungen(tage, schwelle) {
+/* Marktrendite ueber dieselben Kalendertage (letzter Wert <= Tag) */
+function marktRendite(markt, von, bis) {
+  if (!markt) return null;
+  const a = wertBis(markt, von); const b = wertBis(markt, bis);
+  return a && b ? b.v / a.v - 1 : null;
+}
+function grosseBewegungen(tage, schwelle, markt) {
   const out = [];
   for (let i = 1; i < tage.length; i++) {
     const r = tage[i].c / tage[i - 1].c - 1;
-    if (Math.abs(r) > schwelle) out.push({ d: tage[i].d, r });
+    if (Math.abs(r) > schwelle) out.push({ d: tage[i].d, r, rMarkt: marktRendite(markt, tage[i - 1].d, tage[i].d) });
   }
   return out;
+}
+
+/* Korrektur K1 (nach dem Siegel, VOR dem Laden des ersten Fonds; gefunden an der Eichung von SXR8.DE: 2010-05-19 bis
+ * 2010-10-29 eingefrorene Kurse 92,67/96,95, dann -24,6 % am 01.11.2010 bei SPY ~0 %). Bruch = Tagesbewegung > 10 %, die der
+ * Markt nicht deckt (|r - r_Markt| > 8 Pp; Markt = SPY-Gesamtertrag ueber dieselben Kalendertage). Liegt ein Bruch in den
+ * ersten 730 Kalendertagen der Reihe, beginnt die Reihe am Bruchtag (der Abschnitt davor wird verworfen, nichts erfunden).
+ * Spaetere Brueche werden nur gelistet und von Hand geklaert. Gilt fuer jede Reihe gleich; siehe ERGEBNIS.md, Korrekturen. */
+const BRUCH = { bewegung: 0.10, abstand: 0.08, anfangTage: 730 };
+function brueche(tage, markt) {
+  if (!markt) return [];
+  return grosseBewegungen(tage, BRUCH.bewegung, markt)
+    .filter((x) => x.rMarkt != null && Math.abs(x.r - x.rMarkt) > BRUCH.abstand);
+}
+/* eingefrorene Kurse: Laeufe gleicher Schlusskurse ueber mindestens 5 Handelstage */
+function eingefroren(tage) {
+  const laeufe = []; let a = 0;
+  for (let i = 1; i <= tage.length; i++) {
+    if (i < tage.length && tage[i].c === tage[a].c) continue;
+    if (i - a >= 5) laeufe.push({ von: tage[a].d, bis: tage[i - 1].d, tage: i - a });
+    a = i;
+  }
+  return laeufe;
 }
 
 /* Ausschuettungen den Handelstagen zuordnen: Ex-Tag = erster Handelstag mit Datum >= Ereignisdatum. */
@@ -407,10 +435,23 @@ function vergleiche(fonds, mass, datenende) {
 
 /* ---------- eine Reihe aufbereiten (Pruefungen + Gesamtertrag) ---------- */
 
-function bereite(reihe) {
+function bereite(reihe, markt) {
   const fehl = sprungpaare(reihe.tage);
   const fehlSet = new Set(fehl.map((x) => x.d));
-  const tage = reihe.tage.filter((z) => !fehlSet.has(z.d));
+  const tage0 = reihe.tage.filter((z) => !fehlSet.has(z.d));
+  /* K1: Bruch in den ersten 730 Tagen -> Reihe beginnt am (letzten solchen) Bruchtag */
+  const br = brueche(tage0, markt);
+  let schnitt = null;
+  for (const b of br) if (tage0.length && tageZwischen(tage0[0].d, b.d) <= BRUCH.anfangTage) schnitt = b.d;
+  const tage = schnitt ? tage0.filter((z) => z.d >= schnitt) : tage0;
+  /* Rand eingefroren? (Schluss am Fensterrand gleich dem Vortag) - nur Hinweis */
+  const randGleich = {};
+  for (const k of ['A', 'B']) {
+    for (const [name, d, vor] of [['start', FENSTER[k].start, true], ['ende', FENSTER[k].ende, false]]) {
+      const idx = vor ? tage.findIndex((z) => z.d >= d) - 1 : (() => { let j = -1; for (let i = 0; i < tage.length && tage[i].d <= d; i++) j = i; return j; })();
+      if (idx > 0) randGleich[k + '-' + name] = { d: tage[idx].d, gleichVortag: tage[idx].c === tage[idx - 1].c };
+    }
+  }
   const a = ausschuettungen(reihe);
   const z = ordneZu(tage, a.liste);
   const tr = gesamtertrag(tage, z.map);
@@ -430,7 +471,9 @@ function bereite(reihe) {
     pruefung: {
       tage: tage.length, erster: tage.length ? tage[0].d : null, letzter: tage.length ? tage[tage.length - 1].d : null,
       ohneSchluss: reihe.ohneSchluss, doppelteDaten: reihe.doppelt,
-      sprungpaare: fehl, grosseBewegungen: grosseBewegungen(tage, 0.10),
+      sprungpaare: fehl, grosseBewegungen: grosseBewegungen(tage, 0.10, markt),
+      brueche: br.map((b) => Object.assign({}, b, { verworfenBis: schnitt && b.d <= schnitt })), anfangVerworfenBis: schnitt,
+      eingefroren: eingefroren(tage), randGleichVortag: randGleich,
       ausschuettungen: a.liste.length, kapitalgewinne: reihe.cg.length, kapitalgewinnDoppelt: a.cgDoppelt,
       ausschuettungVerschoben: z.verschoben, ausschuettungAusserhalb: z.ausserhalb,
       splits: reihe.splits, abgleichAdjclose: abgleich,
@@ -503,7 +546,7 @@ function rechneFonds(eintrag, ctx) {
   const k = kandidaten.find((x) => x.symbol === wahl.symbol);
   ergebnis.symbol = wahl.symbol; ergebnis.symbolGrund = wahl.grund;
   ergebnis.waehrung = k.reihe.waehrung; ergebnis.boerse = k.reihe.boerse;
-  const b = bereite(k.reihe);
+  const b = bereite(k.reihe, ctx.spy);
   ergebnis.pruefung = b.pruefung;
   ergebnis.datenbeginn = b.pruefung.erster; ergebnis.datenende = b.pruefung.letzter;
   /* gegen SPY in USD */
@@ -531,10 +574,10 @@ function kontext(rohOrdner, datenende) {
   }
   const spyRoh = leseRohdatei(rohOrdner, 'SPY');
   const spy = bereite(spyRoh);
-  let sxr8 = null;
-  if (fs.existsSync(path.join(rohOrdner, dateiname('SXR8.DE')))) sxr8 = bereite(leseRohdatei(rohOrdner, 'SXR8.DE')).tr;
+  let sxr8 = null; let sxr8Pruefung = null;
+  if (fs.existsSync(path.join(rohOrdner, dateiname('SXR8.DE')))) { const x = bereite(leseRohdatei(rohOrdner, 'SXR8.DE'), spy.tr); sxr8 = x.tr; sxr8Pruefung = x.pruefung; }
   return {
-    roh: rohOrdner, datenende: datenende || DATENENDE, ezb, spy: spy.tr, spyPruefung: spy.pruefung, sxr8, sperre: symbolSperre(),
+    roh: rohOrdner, datenende: datenende || DATENENDE, ezb, spy: spy.tr, spyPruefung: spy.pruefung, sxr8, sxr8Pruefung, sperre: symbolSperre(),
     waehrungUmrechnen: (reihe, von, nach) => (von === nach ? reihe : umrechnen(reihe, wechselFaktor(von, nach, ezb)))
   };
 }
@@ -545,7 +588,7 @@ function kontext(rohOrdner, datenende) {
 function factsheetModus(a) {
   const ctx = kontext(a.roh, a.stichtag);
   const roh = leseRohdatei(a.roh, a.symbol);
-  const b = bereite(roh);
+  const b = bereite(roh, roh.symbol === 'SPY' ? null : ctx.spy);
   const ziel = a.waehrung || roh.waehrung;
   const reihe = ctx.waehrungUmrechnen(b.tr, roh.waehrung, ziel);
   const out = { symbol: a.symbol, waehrungReihe: roh.waehrung, waehrungRechnung: ziel, stichtag: a.stichtag, letzterTag: b.pruefung.letzter };
@@ -564,7 +607,7 @@ function main() {
   const liste = JSON.parse(fs.readFileSync(a.fonds || path.join(__dirname, 'fonds.json'), 'utf8')).fonds;
   const ctx = kontext(a.roh, a.datenende);
   const auswahl = liste.filter((f) => a.gruppe === 'alle' || f.lauf === a.gruppe);
-  const out = { kennung: KENNUNG, gruppe: a.gruppe, datenende: ctx.datenende, fenster: FENSTER, spyPruefung: ctx.spyPruefung, fonds: [] };
+  const out = { kennung: KENNUNG, gruppe: a.gruppe, datenende: ctx.datenende, fenster: FENSTER, spyPruefung: ctx.spyPruefung, sxr8Pruefung: ctx.sxr8Pruefung, fonds: [] };
   for (const f of auswahl) {
     let e;
     try { e = rechneFonds(f, ctx); } catch (err) { e = { id: f.id, fehler: String(err.stack || err) }; }
@@ -583,7 +626,7 @@ module.exports = {
   KENNUNG, FENSTER, DATENENDE, ROLL_MONATE, SCHWELLE_ANTEIL, RAND_TOLERANZ_TAGE, SPRUNG,
   lokalesDatum, tageZwischen, monatPlus, letzterKalendertag, vorTag,
   leseYahoo, leseRohdatei, leseEzb, dateiname,
-  sprungpaare, grosseBewegungen, ordneZu, ausschuettungen, gesamtertrag, ausAdj, umrechnen, wechselFaktor,
+  sprungpaare, grosseBewegungen, marktRendite, brueche, eingefroren, BRUCH, ordneZu, ausschuettungen, gesamtertrag, ausAdj, umrechnen, wechselFaktor,
   wertBis, wertVor, fensterRendite, jahreNominal, pa, fensterVergleich,
   monatsEnden, rollierend, rueckschlag, relativ, rueckschlagRelativ, gesamtVergleich, urteil, vergleiche,
   bereite, luecken, waehleSymbol, rechneFonds, kontext, jahreZurueck, renditeBisStichtag, factsheetModus
