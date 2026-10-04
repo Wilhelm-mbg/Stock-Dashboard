@@ -40,7 +40,7 @@
   ];
   var KLASSE_MINDEST = 10;      // Runden je Klasse, Ziel der Messung (BERICHT §2.3: je >= 10)
   var ALP_ZIEL_USD = 200;       // Gegenwert je Runde; Stueckzahl ganzzahlig, mindestens 1
-  var ALP_ANNAHME_PCT = 0.06;   // die Aktien-Kostenannahme, die hier ersetzt werden soll (Pp je Umlauf)
+  var ALP_ANNAHME_PCT = 0.06;   // alte Aktien-Kostenannahme (Pp je Umlauf), überholt 03.09.2026: die Kassa-Hürde ist je Umsatzklasse gemessen, 0,0449 bis 0,1569 Pp (wiki/kosten.md). Bleibt nur Vergleichsmarke der Alpaca-Bilanz.
   function umsatzKlasse(medianUsd) {
     if (!(medianUsd >= 0) || !isFinite(medianUsd)) return null;
     for (var i = 0; i < UMSATZ_KLASSEN.length; i++) {
@@ -242,7 +242,7 @@
       medianPct: med(symMed) * 100,
       engstesPct: alle[0] * 100,
       weitestesPct: alle[alle.length - 1] * 100,
-      annahmePct: 0.10, seit: sp.seit
+      annahmePct: 0.10, seit: sp.seit   // 0,10 Pp = CFD-Runde ohne Nacht (Capital.com-Spannen), keine Kassa-Hürde – die ist seit 03.09.2026 je Umsatzklasse gemessen (wiki/kosten.md)
     };
   }
   if (typeof window !== 'undefined') window.__spannenBilanz = spannenBilanz;

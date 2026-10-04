@@ -676,7 +676,7 @@
      am unteren Rand seiner Rasterzelle. */
   .params label > select { margin-top: auto; }
   /* Die drei gemessenen Stellschrauben brauchen mehr als die 108-px-Spalte des
-     Experten-Rasters: "Standard (99 gemessene Werte)" wurde sonst im eigenen
+     Experten-Rasters: ein langer Optionsname des Beobachtungs-Pools wurde sonst im eigenen
      Auswahlfeld abgeschnitten. */
   .belegt-box .params { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   /* B5 (01.09.2026): Abschnittskoepfe der zusammengelegten Einstellungs-Pille -
@@ -1611,9 +1611,9 @@
           <label class="switch"><input type="checkbox" id="hourlyEnabled"><span class="knob"></span></label>
         </div>
         <div class="verdikt">
-          <b>Widerlegt am 21.08.2026:</b> Der Technik-Score ist ein Kontraindikator – nach einem Einstiegssignal läuft
-          der Kurs im Schnitt 0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage, t = −11,6 aus
-          24.727 Signalen). <b>Empfehlung: aus lassen.</b>
+          <b>Widerlegt am 21.08.2026:</b> Der Technik-Score ist ein Kontraindikator – nach einem Einstiegssignal lief
+          der Kurs schlechter als seine übliche Drift (t = −11,6 aus einem Gedächtnisprotokoll; Größe und Zahl der
+          Signale stehen in keinem Protokoll des Belegstands). <b>Empfehlung: aus lassen.</b>
         </div>
         <details class="how"><summary>Wie sie funktioniert hat und was genau gemessen wurde</summary>
         <div class="desc">
@@ -1622,17 +1622,17 @@
           <b>Technik</b> (Trend, RSI, Momentum, MACD) und <b>Elliott-Wellen</b> – gewichtet kombiniert.
           Kaufte Call/Put (5 % aus dem Geld, 60 Tage Laufzeit) ab Gesamtscore ±0,35.
           Ausstiege: Stop −40 % · Ziel +80 % · Zeit-Ausstieg · Gegensignal.
-          <br><br><b style="color:var(--down);">Messung vom 21.08.2026 (24.727 Signale, 189 Werte, 8 Jahre):</b>
-          Der Technik-Score ist ein <b>Kontraindikator</b> – nach einem Einstiegssignal läuft der Kurs im Schnitt
-          −0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage, t=−11,6, nur 32 von 189 Werten positiv,
-          beide Zeithälften negativ). Mit Elliott-Beimischung −1,0 Pp. Das News-Sentiment war nie messbar.
+          <br><br><b style="color:var(--down);">Messung vom 21.08.2026 (Gedächtnisprotokoll, Umfang nicht im Belegstand):</b>
+          Der Technik-Score ist ein <b>Kontraindikator</b> – nach einem Einstiegssignal lief der Kurs schlechter
+          als die übliche Drift (t=−11,6). Größe, Aufteilung nach Werten und Zeithälften und der Elliott-Anteil stehen
+          in keinem Protokoll des Belegstands. Das News-Sentiment ist seit dem 01.09.2026 gemessen und widerlegt (siehe unten).
           Dazu kommen Schein-Spanne und Zeitwertverfall über Tage. <b>Empfehlung: aus lassen.</b> Wer sie bewusst
           einschaltet, handelt gegen die Messung – das KI-Veto bremst dann wenigstens die schlechtesten Einstiege.
           <br><br>Die Quellen gehen fest gewichtet in den Gesamtscore ein: <b>News 0 %</b> · Technik 65 % ·
-          Elliott 35 %. Das <b>News-Sentiment steuert seit dem 31.08.2026 nichts mehr</b> – die erste Messung
-          konnte die Frage nicht beantworten (35 Beobachtungen an 10 Zeitpunkten, nötig wären rund 2.600).
-          Unbelegt ist nicht widerlegt: Score, Ereignistypen und auffälligste Schlagzeile werden weiter
-          berechnet und angezeigt, nur eben als Anzeige. Technik und Elliott behalten dabei ihr Verhältnis
+          Elliott 35 %. Das <b>News-Sentiment steuert seit dem 31.08.2026 nichts mehr</b> – die Messung vom 01.09.2026
+          hat es widerlegt: über Nacht auf Großwerten b = +0,0070 Pp je Score-Punkt, t = 0,31. Auf Tagesbasis
+          (Nachrichten-Stimmung, 03.10.2026) ist es nicht belegt. Score, Ereignistypen und auffälligste Schlagzeile
+          werden weiter berechnet und angezeigt, nur eben als Anzeige. Technik und Elliott behalten dabei ihr Verhältnis
           zueinander (55 : 30), sie werden nur auf die verbleibende Summe hochskaliert – so rechnet der
           Backtest ohnehin seit jeher, weil es keine historischen Schlagzeilen gibt.
           Regler dafür gibt es bewusst nicht mehr: Keine der Quellen hat einen bestätigten Vorsprung,
@@ -1668,7 +1668,7 @@
     <!-- B8 (01.09.2026): von der Antwort-Pille hierher - der Knopf stellt um und
          gehoert zu den Einstellungen. Kennungen unveraendert. -->
     <div style="margin:0 0 12px;">
-      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht im Werkzeug unter „Was hat gewirkt?“ – dort lässt sich jedes Feld einzeln zurückstellen.">Gemessene Voreinstellungen übernehmen</button>
+      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die Voreinstellungen der Messungen um – belegt ist davon keine (Belegstand): Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht im Werkzeug unter „Was hat gewirkt?“ – dort lässt sich jedes Feld einzeln zurückstellen.">Gemessene Voreinstellungen übernehmen</button>
       <span id="stratEmpfohlenStatus" style="font-size:var(--fs-neben); color:var(--muted); margin-left:8px;"></span>
     </div>
     <div class="strategy-grid">
@@ -1686,9 +1686,8 @@
           <b>RSI(2) im Seitwärtskanal</b> gewählt und zeichnet nur auf, bis du den Handel einschaltest.<br><br>
           <b>RSI(2) im Seitwärtskanal.</b> Kauft den kurzfristigen Rücksetzer – aber nur, wenn der Kurs in einem
           Seitwärtskorridor pendelt und Volumen dahintersteht. Der Kanal gibt nicht die Richtung, sondern die
-          <b>Erlaubnis</b>: dasselbe Signal ist im Trend ein Münzwurf und im Seitwärtsband messbar. Gemessen über
-          162 Werte: <b>+0,147 Prozentpunkte</b> auf 8 Handelsstunden über die übliche Drift hinaus, in beiden
-          Zeithälften positiv. Nur Long, weil das Gegenstück gegen die Marktdrift kämpft.<br><br>
+          <b>Erlaubnis</b>: das Signal handelt nur im Seitwärtsband. Gemessen (Protokoll vom 26.08.2026): Überschuss
+          <b>+0,021 Prozentpunkte je Signal</b>, Tagesmittel +0,054 – nicht entscheidbar. Nur Long, weil das Gegenstück gegen die Marktdrift kämpft.<br><br>
           <b>Kapitulations-Dip</b> (von Hand zuschaltbar, per Voreinstellung aus). Kauft den Ausverkauf im Abwärtskanal – dieselbe Idee, aber für die
           andere Marktphase. <b>Neumessung vom 03.10.2026: in der behaupteten Größe zurückgewiesen</b> – netto −0,02 Pp je Signaltag,
           Band −0,65 bis +0,60, 528 Signaltage; das Urteil hängt an der Buchung der verschwundenen Reihen. Nur Long, 26 Handelsstunden Zeit.<br><br>
@@ -1698,10 +1697,9 @@
           gemessen – er ist kein Beleg der Zuteilung mehr. Pausierte Signale laufen im Schattenbuch weiter mit, damit die Regel im
           Echtbetrieb überprüfbar bleibt.<br><br>
           <b>Instrument:</b> gemessen wurde mit der Aktie selbst, ohne Hebel – so ist es auch voreingestellt
-          (was gerade eingestellt ist, steht in der Karte darunter). Der gemessene Vorsprung liegt über der Aktien-Kostenhürde
-          (0,10 %) und unter der Optionsschein-Hürde (0,21 %) – mit Schein war dieselbe Strategie im Backtest bei −96 %.
-          Und er zahlt über Nacht aus: streng bis Handelsschluss geschlossen −0,08 % je Trade, mit einer Nacht Haltezeit
-          +0,23 %. Deshalb steigen beide Kanten über die <b>Zeit</b> aus, nicht zum Tagesschluss.<br><br>
+          (was gerade eingestellt ist, steht in der Karte darunter). Der gemessene Vorsprung (+0,021 Pp je Signal, nicht entscheidbar) liegt unter der gemessenen
+          Aktien-Kostenhürde jeder Umsatzklasse (0,0449 bis 0,1569 Pp je Umlauf, wiki/kosten.md) und erst recht unter
+          der Hürde eines Hebelscheins. Beide Einstiege steigen über die <b>Zeit</b> aus, nicht zum Tagesschluss.<br><br>
           <b>Was immer mitläuft:</b> Kosten-Prüfung (die erwartete Bewegung muss Spanne und Gebühren decken),
           Liquiditätsfilter, Nachrichten-Sperre um Quartalszahlen herum, ein Not-Stop je Position, ein Deckel für
           Klumpenrisiko und ein Tagesverlust-Limit. Nach 3 Verlusten in Folge wird der Einsatz halbiert,
@@ -1744,9 +1742,9 @@
         <div class="belegt-box">
           <div class="belegt-titel">Gemessene Stellschrauben</div>
           <div class="params">
-            <label title="Welche Werte der Scanner beobachtet. Die Vorgabe sind die 99 Werte, auf denen gemessen wurde (rund 5 handelbare Signale am Tag). Das volatile Drittel schnitt in der Messung besser ab (+0,235 statt +0,147 Prozentpunkte), schwankt aber auch stärker. DAX-Werte sind nur zwischen 15:30 und 17:30 handelbar – danach sperrt die Veraltet-Prüfung ihre Kurse automatisch. Die 15 Standard-Werte laufen immer mit; aus dem Pool kommen zwölf weitere je Runde, im Wechsel.">Beobachtungs-Pool<select id="idPool">
-              <option value="auto" selected>Standard (99 gemessene Werte)</option>
-              <option value="volatil">Volatiles Drittel (33 Werte – gemessen +0,235 statt +0,147 Pp)</option>
+            <label title="Welche Werte der Scanner beobachtet. Die Vorgabe ist der Standard-Pool. Das volatile Drittel sind die schwankungsstärksten Werte; eine Messung je Pool führt der Belegstand nicht. DAX-Werte sind nur zwischen 15:30 und 17:30 handelbar – danach sperrt die Veraltet-Prüfung ihre Kurse automatisch. Die 15 Standard-Werte laufen immer mit; aus dem Pool kommen zwölf weitere je Runde, im Wechsel.">Beobachtungs-Pool<select id="idPool">
+              <option value="auto" selected>Standard</option>
+              <option value="volatil">Volatiles Drittel (33 Werte)</option>
               <option value="sp100">S&amp;P 100 (größte US-Werte)</option>
               <option value="ndx100">Nasdaq 100</option>
               <option value="dax">DAX (nur 15:30–17:30 handelbar)</option>
@@ -1787,8 +1785,8 @@
             <div class="params">
               <label title="Fix: immer gleicher Kapitaleinsatz. Risiko: Einsatz so bemessen, dass ein ausgelöster Stop immer ~X % vom Depot kostet">Positionsgröße<select id="idSizing"><option value="fix" selected>fix 3 %</option><option value="0.25">Risiko 0,25 %</option><option value="0.5">Risiko 0,5 %</option><option value="1">Risiko 1 %</option></select></label>
               <label title="automatisch = passt sich an Schwankungsbreite und Hebel an">Not-Stop-Loss<select id="idScalpSL"><option value="15">−15 %</option><option value="20" selected>−20 %</option><option value="30">−30 %</option><option value="auto">auto</option></select></label>
-              <label title="Das Bezugsverhältnis (BV) ist ein Kostenhebel: Emittenten stellen den Spread als festen Cent-Betrag. Ein BV-1,0-Schein kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent — also ein Fünftel des relativen Spreads bei gleichem Hebel. Auf den Basiswert umgerechnet (Spanne durch Hebel plus Zeitwert) kostet ein Umlauf über 8 Stunden: BV 1,0 / 60 T 0,07 Pp, BV 1,0 / 21 T 0,09 Pp, Moderat BV 0,1 0,26 Pp, Heiß 0,61 Pp. Die Intraday-Kante (RSI(2) im Seitwärtskanal) liefert gegen eine gepaarte Kontrolle je Signal rund −0,04 Pp (Messmaschine 23.08.2026) – mit keinem Profil netto positiv. Die Profile unterscheiden sich in der Hürde, nicht im Ergebnis.">Hebel-Profil<select id="idProfile"><option value="atm60_b" selected>Ruhig 60 T · BV 1,0 — Hürde 0,07 Pp</option><option value="atm21_b">Moderat · BV 1,0 — Hürde 0,09 Pp</option><option value="otm3_30b">Spekulativ 30 T · BV 1,0</option><option value="atm21">Moderat (BV 0,1) — Hürde 0,26 Pp</option><option value="otm3_14">Spekulativ (BV 0,1)</option><option value="otm5_10">Heiß (BV 0,1) — Hürde 0,61 Pp</option></select></label>
-              <label title="Hebelschein: gehebelt, mit Zeitwertverfall und Spanne des Emittenten. Aktie 1×: ohne Hebel, linear, 0,05 % Spanne je Seite, Bruchstücke erlaubt – nötig für Strategien, deren Vorsprung unter der Schein-Kostenhürde liegt. Genau das gilt für RSI(2) im Seitwärtskanal: mit Schein war dieselbe Strategie im Backtest bei −96 %.">Instrument<select id="idInstrument"><option value="basis" selected>Aktie 1× (Basiswert)</option><option value="schein">Hebelschein</option></select></label>
+              <label title="Das Bezugsverhältnis (BV) ist ein Kostenhebel: Emittenten stellen den Spread als festen Cent-Betrag. Ein BV-1,0-Schein kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent — also ein Fünftel des relativen Spreads bei gleichem Hebel. Auf den Basiswert umgerechnet (Spanne durch Hebel plus Zeitwert) kostet ein Umlauf über 8 Stunden: BV 1,0 / 60 T 0,07 Pp, BV 1,0 / 21 T 0,09 Pp, Moderat BV 0,1 0,26 Pp, Heiß 0,61 Pp. RSI(2) im Seitwärtskanal liefert je Signal rund +0,021 Pp Überschuss (Protokoll vom 26.08.2026, nicht entscheidbar) – das liegt unter jeder Hürde hier, mit keinem Profil netto positiv. Die Profile unterscheiden sich in der Hürde, nicht im Ergebnis.">Hebel-Profil<select id="idProfile"><option value="atm60_b" selected>Ruhig 60 T · BV 1,0 — Hürde 0,07 Pp</option><option value="atm21_b">Moderat · BV 1,0 — Hürde 0,09 Pp</option><option value="otm3_30b">Spekulativ 30 T · BV 1,0</option><option value="atm21">Moderat (BV 0,1) — Hürde 0,26 Pp</option><option value="otm3_14">Spekulativ (BV 0,1)</option><option value="otm5_10">Heiß (BV 0,1) — Hürde 0,61 Pp</option></select></label>
+              <label title="Hebelschein: gehebelt, mit Zeitwertverfall und Spanne des Emittenten. Aktie 1×: ohne Hebel, linear, 0,05 % Spanne je Seite, Bruchstücke erlaubt – nötig für Strategien, deren Vorsprung unter der Schein-Kostenhürde liegt. Genau das gilt für RSI(2) im Seitwärtskanal.">Instrument<select id="idInstrument"><option value="basis" selected>Aktie 1× (Basiswert)</option><option value="schein">Hebelschein</option></select></label>
               <label title="Begrenzt depotweit, welche Scheine gekauft werden dürfen – egal ob von Hand, vom Autopiloten oder von einer Empfehlung. Die Stufen (1 defensiv … 5 Lotterielos) kommen aus dem Schein-Finder und sind dort je Schein begründet. Stufe 5 = keine Grenze.">max. Risikostufe<select id="idMaxStufe"><option value="1">1 – defensiv</option><option value="2">2</option><option value="3">3 – moderat</option><option value="4">4</option><option value="5" selected>5 – keine Grenze</option></select></label>
               <label title="BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC rund um die Uhr handeln – immer als Basiswert (1×) mit Taker-Gebühr 10 Bp je Seite, nie als Schein. ACHTUNG: Es gibt bis heute kein bestätigtes Krypto-Signal – alle gemessenen Modi waren negativ. Handelbar heißt können, nicht sollen.">Krypto handeln<span class="switch"><input type="checkbox" id="idKryptoHandeln"><span class="knob"></span></span></label>
               <label title="Capital.com und viele CFD-Broker berechnen keine Kommission — dort steckt alles im Spread. Bei einem Broker mit Ordergebühr den echten Betrag wählen.">Ordergebühr<select id="idFee"><option value="0" selected>0 (keine Kommission)</option><option value="1.5">1,50 $</option><option value="5">5 $</option></select></label>
@@ -2141,7 +2139,7 @@
 
       <div class="auto-row">
         <div class="auto-head">
-          <label title="Misst nachts auf dem Kursarchiv und wendet doppelt bestätigte, robuste Ergebnisse morgens an">Autopilot<span class="switch"><input type="checkbox" id="pilotOn" checked><span class="knob"></span></span></label>
+          <label title="Misst nachts auf dem Kursarchiv und übernimmt morgens nur Einstellungen, die zweimal hintereinander die eigenen Prüfregeln bestehen – ein Beleg ist das nicht, belegt ist im Belegstand bisher nichts">Autopilot<span class="switch"><input type="checkbox" id="pilotOn" checked><span class="knob"></span></span></label>
           <button class="btn ghost tiny" id="pilotBtn">jetzt messen (10–20 Min)</button>
         </div>
         <div id="pilotStatus" class="auto-status"></div>
@@ -2245,7 +2243,7 @@
           <option value="126">126 Tage (6 Mon.)</option>
         </select>
       </label>
-      <label title="Wie groß der gehaltene Teil des Universums ist. Zehn Prozent schnitten durchweg besser ab als zwanzig.">Anteil
+      <label title="Wie groß der gehaltene Teil des Universums ist. Die stärksten 10 % sind der Anteil der gemessenen Konfiguration (Studie 02.09.2026).">Anteil
         <select id="mfAnteil" disabled><option value="0.10" selected>stärkste 10 %</option><option value="0.15">15 %</option><option value="0.20">20 %</option></select>
       </label>
       <label title="Kosten je Kauf oder Verkauf. 20 Basispunkte sind für liquide Aktien realistisch.">Kosten
@@ -2294,31 +2292,31 @@
     <!-- Auftrag Nr. 95 (A2): hier stand „Konfiguration wie gemessen (Studie 02.09.2026)" - eine
          Drift-Studie vom 02.09.2026 gibt es weder im Repo noch im Belegstand (der Satz war vom
          Momentum-Panel kopiert). Der Satz steht nur hier. -->
-    <div class="hinweis" style="margin-top:10px;" id="drKonfigZeile">Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus (Neumessung offen).</div>
+    <div class="hinweis" style="margin-top:10px;" id="drKonfigZeile">Konfiguration seit Anlage des Buchs unverändert – nach der Zeitzonen-Korrektur nicht entscheidbar (Stand im Kasten unten).</div>
     <div class="chartleiste" style="margin-top:10px;">
-      <label title="Wie lange eine Position gehalten wird. Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.">Halten
+      <label title="Wie lange eine Position gehalten wird. Messung vom 04.10.2026 (andere Buchregel): auf 60 Handelstagen nicht entscheidbar (Kaufseite nach Kosten +1,39 Pp, t 1,97); 20 Handelstage entscheiden nichts.">Halten
         <select id="drHalten" disabled>
           <option value="20">20 Tage</option>
           <option value="40">40 Tage</option>
-          <option value="60" selected>60 Tage (geprüft)</option>
+          <option value="60" selected>60 Tage</option>
           <option value="90">90 Tage</option>
         </select>
       </label>
       <label title="Wie groß die beiden Beine sind. 0,2 heißt: oberstes und unterstes Fünftel.">Anteil je Bein
         <select id="drAnteil" disabled>
           <option value="0.1">10 %</option>
-          <option value="0.2" selected>20 % (geprüft)</option>
+          <option value="0.2" selected>20 %</option>
           <option value="0.33">33 %</option>
         </select>
       </label>
       <label title="Gegen wie viele Handelstage zurück eine Überraschung eingeordnet wird. Nur bereits veröffentlichte Zahlen zählen – kein Blick in die Zukunft.">Vergleichsfenster
         <select id="drFenster" disabled>
           <option value="60">60 Tage</option>
-          <option value="120" selected>120 Tage (geprüft)</option>
+          <option value="120" selected>120 Tage</option>
           <option value="250">250 Tage</option>
         </select>
       </label>
-      <label title="Handelskosten je Seite. Bei 10 Basispunkten sinkt das Ergebnis um rund 1,8 Prozentpunkte im Jahr.">Kosten
+      <label title="Handelskosten je Seite.">Kosten
         <select id="drKosten" disabled>
           <option value="0">keine</option>
           <option value="10" selected>10 Basispunkte</option>
@@ -2346,9 +2344,9 @@
     <!-- Auftrag Nr. 95 (A2): die Messung ist vom 21.08.2026 (Kopf von drift.js), nicht vom 02.09. -->
     <div data-mess="Ergebnis-Drift-Messung 21.08.2026 · Quartalszahlen 1993–2026, 197 Werte"
          style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
-      Gemessen ab 2015: <b>+10,44 % p. a. bei t = 3,04</b> – aber die Überlebensverzerrung ist nur teilweise
-      ausgeräumt (schwache Hälfte der Werte: +1,72 % bei t = 0,58). Die vollständige Messung steht hinter dem
-      i-Knopf oben.
+      <b>Überholt</b> (vor der Zeitzonen-Korrektur): Gemessen ab 2015: <b>+10,44 % p. a. bei t = 3,04</b>.
+      Heute: t 1,7–2,0, nicht entscheidbar; als Buch (04.10.2026, andere Regel) +0,38 Pp p. a. gegen den
+      S&amp;P 500 – im Bereich des Zufalls, kein Vorwärtstest.
     </div>
   </div>
   </div><!-- /sub-mittelfrist -->
@@ -2653,7 +2651,7 @@
   </details>
 
   <details class="how" data-klappe="wende">
-    <summary>Trendfinder — Detektor widerlegt<span class="klappe-stand" id="kstand-wende"></span></summary>
+    <summary>Trendfinder — Detektor nicht entscheidbar (Long-Seite in der Größe ausgeschlossen)<span class="klappe-stand" id="kstand-wende"></span></summary>
   <div id="sub-wende">
     <!-- Stufe 3 (03.09.2026): Die Textwand steht woertlich im Register
          (werkzeuge.trendfinder, vier Punkte). Sichtbar bleiben zwei Dinge, die eine
@@ -2671,7 +2669,7 @@
           <option value="1m" selected>1 Minute</option>
           <option value="5m">5 Minuten</option>
         </select></label>
-        <label class="wendeopt" title="Normierter Winkel des jungen Abschnitts: Steigung × Länge ÷ Kanalbreite – wie steil die Bewegung relativ zu ihrem eigenen Rauschen ist. In der Studie war 1,0 die beste 1-Minuten-Zelle.">Winkel-Schwelle<select id="wendeS">
+        <label class="wendeopt" title="Normierter Winkel des jungen Abschnitts: Steigung × Länge ÷ Kanalbreite – wie steil die Bewegung relativ zu ihrem eigenen Rauschen ist. Gemessen in der Maschine (zwei Varianten, je 5 Schwellen): alle 10 Punktschätzer negativ – auch die Studien-Zelle 1,0 hat keinen Vorsprung.">Winkel-Schwelle<select id="wendeS">
           <option value="0.5">0,5 (empfindlich)</option>
           <option value="1" selected>1,0 (Studien-Zelle)</option>
           <option value="1.5">1,5</option>

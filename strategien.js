@@ -23,7 +23,7 @@
       key: 'kurz',
       name: 'Kurzfristig · Intraday',
       horizont: 'Stunden bis wenige Tage',
-      instrument: 'Aktie 1× (Voreinstellung) – mit Schein stirbt die Kante (−96 %)',
+      instrument: 'Aktie 1× (Voreinstellung) – mit Hebelschein liegt der gemessene Überschuss unter den Kosten',
       was: 'Kauft im laufenden Handel den RSI(2)-Rücklauf im Seitwärtskanal. Von Hand zuschaltbar: die Regime-Zuteilung und der Kapitulations-Dip (Neumessung: zurückgewiesen – per Voreinstellung aus). Ausstieg über die Zeit, darunter nur ein Not-Stop – kein Gewinnziel, kein Trailing; die Position darf über Nacht laufen.',
       stand: 'gemessen – gegen Kontrolle nicht entscheidbar',
       farbe: 'warn',
@@ -32,7 +32,7 @@
        * eigene Zeile - aus derselben Quelle wie Regelkopf und Kostenhuerde. */
       messKeys: ['rsi2seit', 'kapitulation'],
       beleg: [
-        'KONTROLLMESSUNG 23.08.2026 (Messmaschine, Protokoll im Reiter Messung): Gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde bleibt auf den zurückgehaltenen Tagen ein Überschuss von +0,024 Pp bei einer Mindest-Effektgröße von 0,182 Pp – nicht entscheidbar. Je Signal gerechnet sind es −0,045 Pp. Rund 62 % des früher gemessenen Rohvorteils waren schlichtes Halten. Mit keinem Produkt netto positiv. Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.',
+        'KONTROLLMESSUNG (Messmaschine, Protokoll vom 26.08.2026 im Reiter Messung; Stand laut Belegstand): Gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde bleibt ein Überschuss von +0,021 Pp je Signal, im Tagesmittel +0,054 Pp (se 0,065, Band −0,073 bis +0,182) – nicht entscheidbar. Mit keinem Produkt netto positiv. Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.',
         'UNBEDINGT trägt kein Einzelsignal: Trefferquoten 46–56 %, bester Vorsprung +0,09 Pp. BEDINGT sieht es anders aus — die Bedingungsstudie vom 21.08.2026 (162 Werte, Stundenkerzen, jedes Signal gekreuzt mit Kanalzustand, EMA100, Volumen) fand: RSI(2)-Dip NUR im Seitwärtskanal mit Volumen = +0,147 Pp auf 8 h, t = 4,1 über die Symbole, beide Zeithälften positiv, 99 von 162 Werten im Plus.',
         'Der Kanal gibt nicht die Richtung, sondern die ERLAUBNIS: Dasselbe Signal ist im Trend ein Münzwurf und im Seitwärtsband messbar. Genau das war die These hinter dem handgezeichneten AMD-Chart.',
         'Das Instrument entscheidet: Der Vorsprung liegt ÜBER der Basiswert-Hürde (0,10 %) und UNTER der Scheinhürde (0,21 %). Im Backtest: Basiswert PF 1,23 (+0,23 % je Trade, volatiles Drittel), Schein −96 %. Und er zahlt über Nacht aus — streng intraday −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %.',
@@ -62,8 +62,8 @@
       stand: 'widerlegt – abgeschaltet',
       farbe: 'down',
       beleg: [
-        'Gemessen, nicht vermutet: Der Technik-Score ist ein Kontraindikator. −0,74 Prozentpunkte auf 20 Handelstage, t = −11,6 aus 24.727 Signalen über 189 Werte und 8 Jahre.',
-        'Kein Randfall, sondern die Regel: nur 32 von 189 Werten positiv, beide Zeithälften negativ. Das News-Sentiment, das ein gutes Drittel des Gesamtscores stellte, war nie messbar — es gab keine Auswertung, die es hätte belegen können.',
+        'Gemessen, nicht vermutet: Der Technik-Score ist ein Kontraindikator. Haltedauer je Signal rund 20 Handelstage, t = −11,6 aus dem Gedächtnisprotokoll (Belegstand, Abschnitt „Widerlegt“).',
+        'Das News-Sentiment, das ein gutes Drittel des Gesamtscores stellte, ist seit 01.09.2026 gemessen und über Nacht auf Großwerten widerlegt (t = 0,31). Für Nebenwerte und andere Zeitfenster sagt diese Messung nichts.',
         'Empfehlung: aus lassen. Seit Version 8.23.24 hält eine Sicherung sie abgeschaltet; wer sie hier von Hand einschaltet, handelt gegen die Messung — die Karte bleibt sichtbar, damit das nicht unbemerkt passiert.'
       ],
       schalter: 'hourly'
@@ -77,7 +77,7 @@
        * Praesens und wiederholt nicht woertlich den Karten-Text darunter. */
       tut: 'Hält das stärkste Zehntel der liquiden Werte (Median-Tagesumsatz ≥ 100 Mio $) und schichtet alle 63 Handelstage um.',
       was: 'Vergleicht alle Werte miteinander und hält das stärkste Zehntel. Keine Chartmuster, nur eine Rangfolge, die alle 63 Handelstage neu gebildet wird. Seit 02.09.2026 nur Werte mit Median-Tagesumsatz ≥ 100 Mio $ (20 Balken bis zum Stichtag, vor der Rangbildung) – die gemessene liquide Konfiguration (Parameter wie gemessen).',
-      stand: 'gemessen – hält die volle Historie, nicht die zurückgehaltenen Jahre',
+      stand: 'gemessen – nicht entscheidbar; liquide Fassung „lebt“ (In-Sample, am Rand)',
       farbe: 'warn',
       /* Erster Schluessel: die Konfiguration, die das Buch WIRKLICH handelt (Etikett aus
        * dem Studienregister, Vorwaertstest-Datum aus dem Buch). Zweiter: das
@@ -85,7 +85,7 @@
       messKeys: ['momentum-liquide', 'momentum'],
       beleg: [
         'LIQUIDE FASSUNG 02.09.2026 (Korb nur Werte mit Median-Tagesumsatz ≥ 100 Mio $, Punkt-in-Zeit, vor der Rangbildung): „lebt" nach registrierter Regel – In-Sample und am Rand. Brutto +1,835 Pp je Umlauf (se 0,911, t 2,02, 79 Perioden), Band [+0,050, +3,620]; gepaart gegen den breiten Korb +0,29 (t 0,69). Kein „belegt". Das Buch handelt seither diese Konfiguration (Parameter wie gemessen) – ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg. Die Schwelle bleibt nominal; ihre Drift steht als Korbgröße je Umschichtung im Buch.',
-        'KONTROLLMESSUNG 23.08.2026: Der eingebaute Marktvergleich ist bereits die richtige Kontrolle (Erwartung einer Zufallsauswahl gleicher Größe, per 500-fach-Simulation bestätigt). Über die volle Historie +2,42 Pp je Umschichtung (t = 3,84) – aber ab 2005 allein +1,51 Pp bei Mindest-Effektgröße 1,86 (t = 1,62): nicht entscheidbar. Rund die Hälfte des Vorsprungs hängt an 30 von 189 Werten, deren Namen man erst 2026 kennt (Überlebensverzerrung). 64,8 % des Ertrags je Schritt sind schlichtes Halten.',
+        'KONTROLLMESSUNG 23.08.2026 – überholt (Universum ohne die verschwundenen Werte; heute laut Belegstand für das Momentum-Buch nach Korrektur t 0,74 – nicht entscheidbar): Der eingebaute Marktvergleich ist bereits die richtige Kontrolle (Erwartung einer Zufallsauswahl gleicher Größe, per 500-fach-Simulation bestätigt). Über die volle Historie +2,42 Pp je Umschichtung (t = 3,84) – aber ab 2005 allein +1,51 Pp bei Mindest-Effektgröße 1,86 (t = 1,62): nicht entscheidbar. Rund die Hälfte des Vorsprungs hängt an 30 von 189 Werten, deren Namen man erst 2026 kennt (Überlebensverzerrung). 64,8 % des Ertrags je Schritt sind schlichtes Halten.',
         'Parameter auf 1970–2004 gewählt, auf 2005–2026 ohne Anpassung geprüft: +20,3 % p. a. gegen +14,9 % des Marktdurchschnitts, Vorsprung +5,4 Pp.',
         'Schlug den Markt in 14 von 22 Jahren; 93 von 96 Parameterkombinationen schlugen ihn ebenfalls.',
         'Unangenehm: 52 % größter Rückschlag im geprüften Zeitraum 2005–2026 (Referenzlauf, gemessen 2008), in 8 von 22 Jahren schlechter als der Markt, und das Universum enthält nur Firmen, die es heute noch gibt.'
@@ -108,7 +108,7 @@
       farbe: 'warn',
       messKeys: ['drift', 'ergebnis-drift'],
       beleg: [
-        'KONTROLLMESSUNG 23.08.2026: drift.js behandelte 59,8 % aller Termine (Datum ohne Uhrzeit) als „vor Börsenschluss gemeldet" und verbuchte dadurch einen Meldesprung von 1,97 % am ersten Tag als Strategieertrag. Korrigiert fällt der Rohlauf von 14,07 auf 8,44 % p. a. Gegen eine zukunftsfreie Kontrolle bleiben über die volle Historie 12 Pp p. a. (t = 5,5); im zurückgehaltenen Zeitraum 5–7 Pp bei Mindest-Effektgröße 5,6–6,7 (t = 1,7–2,0): nicht entscheidbar. Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.',
+        'KONTROLLMESSUNG 23.08.2026: drift.js behandelte alle Termine ohne Uhrzeit als „vor Börsenschluss gemeldet" und verbuchte dadurch den Meldesprung am ersten Tag als Strategieertrag (Zeitzonen-Fehler). Gegen eine zukunftsfreie Kontrolle ist der Rest nach der Korrektur zu schwach (t = 1,7–2,0): nicht entscheidbar. Die tagesgenaue Messung vom 04.10.2026 (Nr. 88, nur die Kaufseite als Buch) ist ebenfalls nicht entscheidbar. Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.',
         '20.356 Ergebnistermine aus 197 Werten, 1993–2026. Marktneutral, Rang nur gegen bereits veröffentlichte Zahlen: ab 2015 +10,44 % p. a. bei t = 3,04, 67 % positive Monate, positiv in allen sieben Teilzeiträumen.',
         'Neben dem Momentum bleibt messbar etwas übrig: Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. (t = 2,20). Die Mischung liefert denselben Ertrag bei 10,2 statt 13,1 % Schwankung.',
         'Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts.',

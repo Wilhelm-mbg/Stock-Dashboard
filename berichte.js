@@ -67,12 +67,12 @@
       var s = d.stats[src], tot = s.r + s.w;
       if (tot >= 8) {
         var pct = s.r / tot * 100;
-        if (pct < 45) recs.push('- **' + src + '-Gewicht senken**: nur ' + Math.round(pct) + ' % Treffer (' + s.r + '/' + tot + ').');
-        if (pct > 60) recs.push('- **' + src + '-Gewicht erhöhen**: ' + Math.round(pct) + ' % Treffer (' + s.r + '/' + tot + ').');
+        if (pct < 45) recs.push('- **' + src + '**: nur ' + Math.round(pct) + ' % Treffer (' + s.r + '/' + tot + ') – wenige Treffer, aber eine Trefferquote ist kein Beleg gegen die Quelle.');
+        if (pct > 60) recs.push('- **' + src + '**: ' + Math.round(pct) + ' % Treffer (' + s.r + '/' + tot + ') – viele Treffer, aber eine Trefferquote ist kein Beleg für die Quelle.');
       }
     });
     var ia = d.agg.intraday;
-    if (ia.n >= 10 && ia.pnl < 0 && d.fees > Math.abs(ia.pnl) * 0.3) recs.push('- **Intraday: Kosten fressen das Ergebnis** – größeren Zeitrahmen (5/15 Min) oder höhere Bestätigung testen.');
+    if (ia.n >= 10 && ia.pnl < 0 && d.fees > Math.abs(ia.pnl) * 0.3) recs.push('- **Intraday: Kosten fressen das Ergebnis** – ein größerer Minuten-Zeitrahmen hilft nach dem Belegstand nicht: die Signalstudie fand auf 1m/5m/15m unter Kassa-Kosten keine belegte Konfiguration (0 von 234, Stand 11.09.2026).');
     var slWhy = d.byWhy['Stop-Loss erreicht'] || d.byWhy['Stop-Loss'];
     if (slWhy && d.closedN && slWhy.n / d.closedN > 0.4) recs.push('- **Viele Stop-Loss-Exits (' + slWhy.n + ')** – Einstiege zu spät oder SL zu eng; höhere Bestätigungsschwelle testen.');
     if (!recs.length) recs.push('- Noch kein klares Muster – mehr Trades sammeln oder Backtests vergleichen.');
@@ -347,13 +347,13 @@
     z.push('');
     if (a.lastBackfill) z.push('Capital-Backfill: zuletzt ' + new Date(a.lastBackfill.at).toLocaleString('de-DE') + ' – ' + a.lastBackfill.bars + ' Kerzen für ' + a.lastBackfill.symbole + ' Werte nachgeladen (' + a.lastBackfill.requests + ' Anfragen).');
     if (a.lastBackfill) z.push('');
-    z.push('Das Kursarchiv sammelt rollierend 90 Kalendertage – die Tabelle wächst mit jedem Handelstag, an dem die App läuft. Hürde für ein belastbares Urteil: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen**.');
+    z.push('Das Kursarchiv sammelt rollierend 90 Kalendertage – die Tabelle wächst mit jedem Handelstag, an dem die App läuft. Mindestmenge, bevor die App überhaupt rechnet: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen** – ein Urteil ist das noch nicht; dafür braucht es t über Tage, ausreichende Auflösung und Netto nach Kosten.');
     z.push('');
-    z.push('## Kostenrealität (woran das Modell geeicht ist)');
+    z.push('## Kostenmodell der Scheine (Annahme, nicht gemessen)');
     z.push('');
-    z.push('Die Simulation rechnet nicht mit Pauschalen, sondern mit echten Emittenten-Kursen (Stichprobe onvista, 20.08.2026). Befund: **die Geld-Brief-Spanne ist ein fester Cent-Betrag**, kein Prozentsatz – rund 1 ct bei Bezugsverhältnis 0,1 und 2 ct bei 1,0, unabhängig vom Preis des Scheins. Ein 8-Euro-Schein zahlt damit 0,13 % je Seite, ein 9-Cent-Schein 11,5 %.');
+    z.push('Die Simulation rechnet für Scheine mit einem Cent-Modell: die Geld-Brief-Spanne als fester Cent-Betrag je Bezugsverhältnis, unabhängig vom Preis des Scheins. Das Modell stammt aus einer Stichprobe bei onvista vom 20.08.2026, die nicht als Messung abgelegt ist – es ist eine Annahme, kein Beleg. Gemessen ist für Hebelscheine nur die Hürde der Signalstudie: 0,23 Pp je 3 Stunden (wiki/kosten.md).');
     z.push('');
-    z.push('Daraus folgt der wichtigste Kostenhebel überhaupt: Ein Schein mit Bezugsverhältnis 1,0 kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent – also **ein Fünftel des relativen Spreads bei identischem Hebel** (Omega hängt nicht am Bezugsverhältnis). Was die Bewegung mindestens hergeben muss, damit ein Trade überhaupt lohnt:');
+    z.push('Nach diesem Modell ist das Bezugsverhältnis ein Kostenhebel: ein Schein mit höherem Bezugsverhältnis kostet mehr je Stück, zahlt aber relativ weniger Spanne bei gleichem Hebel (Omega hängt nicht am Bezugsverhältnis) – eine Folgerung aus der Modellannahme, nicht gemessen. Was die Bewegung nach dem Modell mindestens hergeben muss, damit ein Trade überhaupt lohnt:');
     z.push('');
     z.push('| Profil | Bezugsv. | Scheinpreis | Spread je Seite | Hebel | Basiswert muss laufen |');
     z.push('|---|---|---|---|---|---|');
@@ -464,13 +464,13 @@
     z.push('## Filter-Bilanz (bester Kandidat, ungesehene Daten)');
     z.push('');
     if (fb && fb.zeilen && fb.zeilen.length) {
-      z.push('Basis mit allen Filtern: ' + (fb.basisRet > 0 ? '+' : '') + fb.basisRet + ' % bei ' + fb.basisN + ' Trades. „Nutzen“ = Rendite mit Filter minus ohne – positiv heißt: der Filter spart Geld.');
+      z.push('Basis mit allen Filtern: ' + (fb.basisRet > 0 ? '+' : '') + fb.basisRet + ' % bei ' + fb.basisN + ' Trades. „Nutzen“ = Rendite mit Filter minus ohne – positiv heißt: mit Filter lag die Rendite auf dieser Testscheibe höher; ohne Signifikanzprüfung, kein Beleg.');
       z.push('');
       z.push('| Filter | mit | ohne | Nutzen | Trades mit/ohne | Urteil |');
       z.push('|---|---|---|---|---|---|');
       fb.zeilen.forEach(function (r) {
         var urteil = r.duenn ? 'zu wenig Trades für ein Urteil'
-          : r.nutzen > 0.5 ? 'spart Geld' : r.nutzen < -0.5 ? 'kostet Geld – Kandidat zum Lockern' : 'neutral';
+          : r.nutzen > 0.5 ? 'mit Filter besser (ohne Signifikanzprüfung)' : r.nutzen < -0.5 ? 'mit Filter schlechter (ohne Signifikanzprüfung)' : 'kein Unterschied sichtbar';
         z.push('| ' + r.name + ' | ' + (r.mitRet > 0 ? '+' : '') + r.mitRet + ' % | ' + (r.ohneRet > 0 ? '+' : '') + r.ohneRet + ' % | ' +
           (r.nutzen > 0 ? '+' : '') + r.nutzen + ' Pp | ' + r.mitN + '/' + r.ohneN + ' | ' + urteil + ' |');
       });
@@ -478,7 +478,7 @@
       z.push('Keine Filter-Bilanz in dieser Messung (zu wenig Daten auf der Testscheibe).');
     }
     z.push('');
-    z.push('Nur live wirksame Filter (nicht im Backtest abbildbar) – Urteil aus dem Schattenbuch:');
+    z.push('Nur live wirksame Filter (nicht im Backtest abbildbar) – Beobachtung aus dem Schattenbuch, kein Beleg:');
     z.push('');
     var sst = extra.schatten || {};
     var sk = Object.keys(sst);
@@ -486,7 +486,7 @@
       sk.forEach(function (g) {
         var x = sst[g];
         var u = x.n < 5 ? 'zu früh (' + x.n + ' Schatten)'
-          : x.gerettet > x.verhindert * 1.5 ? 'rettet Geld' : x.verhindert > x.gerettet * 1.5 ? 'verhindert eher Gewinne' : 'unentschieden';
+          : x.gerettet > x.verhindert * 1.5 ? 'bisher eher Verluste vermieden' : x.verhindert > x.gerettet * 1.5 ? 'bisher eher Gewinne verhindert' : 'kein Muster';
         z.push('- ' + g + ': ' + x.n + ' Schatten · Ø ' + (x.n ? Math.round(x.sumPct / x.n * 10) / 10 : 0) + ' % · gerettet ' + x.gerettet + ' / verhindert ' + x.verhindert + ' → ' + u);
       });
     } else {
@@ -523,7 +523,7 @@
     z.push('## Verlauf der letzten Messungen');
     z.push('');
     if ((a.messHistorie || []).length) {
-      z.push('| Datum | bester Kandidat | WF-Rendite | Trades | Tage | belastbar |');
+      z.push('| Datum | bester Kandidat | WF-Rendite | Trades | Tage | Mindestmenge erreicht |');
       z.push('|---|---|---|---|---|---|');
       a.messHistorie.slice(0, 14).forEach(function (h) {
         z.push('| ' + new Date(h.at).toLocaleString('de-DE') + ' | ' + h.name + ' · ' + h.interval + ' | ' +

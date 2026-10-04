@@ -1,0 +1,1364 @@
+[
+ {
+  "datei": "strategien.js",
+  "zeile": 26,
+  "wortlaut": "mit Hebelschein liegt der gemessene Überschuss unter den Kosten",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/kosten.md",
+   "marke": "| **Hebelschein** | **0,23 Pp je 3 Stunden**"
+  },
+  "belegsagt": "Weder belegstand.md noch eine dort genannte ERGEBNIS.md nennt −96 % für den Schein (Backtest vor der Kontrollmessung).",
+  "vorschlag": "Aktie 1× (Voreinstellung) – Scheine für diese Regel nicht gemessen",
+  "alt": {
+   "klasse": "d",
+   "zeile": 26,
+   "wortlaut": "mit Schein stirbt die Kante (−96 %)"
+  },
+  "neu_begruendung": "Die −96 % stehen nirgends im Belegkorpus; ersetzt durch die Aussage ohne Zahl: der Überschuss (+0,021 Pp je Signal, obere Grenze des Tagesmittels 0,182 Pp, belegstand.md) liegt unter der Hebelschein-Hürde 0,23 Pp (kosten.md)."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 27,
+  "wortlaut": "Kapitulations-Dip (Neumessung: zurückgewiesen – per Voreinstellung aus)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "netto −0,024 Pp je Signaltag, Band [−0,649; +0,601], 528 Signaltage — die behauptete Größe (+1,107 Pp) ist zurückgewiesen."
+  },
+  "belegsagt": "Neumessung 03.10.2026: in der behaupteten Größe zurückgewiesen.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 28,
+  "wortlaut": "gemessen – gegen Kontrolle nicht entscheidbar",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "rsi2seit: nicht entscheidbar.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 35,
+  "wortlaut": "im Tagesmittel +0,054 Pp (se 0,065, Band −0,073 bis +0,182) – nicht entscheidbar",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "dieselbe Variante hat ein **Tagesmittel +0,054** (se 0,065, Band [−0,073, 0,182])"
+  },
+  "belegsagt": "Urteil gleich (nicht entscheidbar), Zahlen anders: +0,021 Pp je Signal, Tagesmittel +0,054 (se 0,065, Band −0,073 bis +0,182).",
+  "vorschlag": "Gegen die Kontrolle bleibt je Signal +0,021 Pp, im Tagesmittel +0,054 Pp (Band −0,073 bis +0,182) – nicht entscheidbar.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 35,
+   "wortlaut": "Überschuss von +0,024 Pp bei einer Mindest-Effektgröße von 0,182 Pp – nicht entscheidbar"
+  },
+  "neu_begruendung": "Zahlen des Protokolls vom 26.08.2026 aus dem Belegstand (Tagesmittel mit Band) statt der Kontrollmessung vom 23.08.; Urteil unverändert „nicht entscheidbar“."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 35,
+  "wortlaut": "bleibt ein Überschuss von +0,021 Pp je Signal",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "Belegstand: +0,021 Pp je Signal.",
+  "vorschlag": "Je Signal gerechnet sind es +0,021 Pp.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 35,
+   "wortlaut": "Je Signal gerechnet sind es −0,045 Pp."
+  },
+  "neu_begruendung": "Je-Signal-Zahl des Belegstands (+0,021 Pp) statt −0,045 Pp."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 35,
+  "wortlaut": "Rund 62 % des früher gemessenen Rohvorteils waren schlichtes Halten.",
+  "klasse": "gestrichen",
+  "beleg": null,
+  "belegsagt": "Nicht in belegstand.md.",
+  "vorschlag": "Satz streichen oder die Messung in belegstand.md nachtragen.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 35,
+   "wortlaut": "Rund 62 % des früher gemessenen Rohvorteils waren schlichtes Halten."
+  },
+  "begruendung": "Die 62 % stehen nirgends im Belegkorpus; der Satz ist für das Urteil nicht nötig."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 36,
+  "wortlaut": "Trefferquoten 46–56 %, bester Vorsprung +0,09 Pp",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 35): „Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.“ Heute: rsi2seit nicht entscheidbar, +0,021 Pp je Signal.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 36,
+  "wortlaut": "= +0,147 Pp auf 8 h, t = 4,1 über die Symbole, beide Zeithälften positiv, 99 von 162 Werten im Plus",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 35): „Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.“ Heute: rsi2seit nicht entscheidbar, +0,021 Pp je Signal.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 38,
+  "wortlaut": "Basiswert PF 1,23 (+0,23 % je Trade, volatiles Drittel), Schein −96 %",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 35): „Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.“ Heute: rsi2seit nicht entscheidbar, +0,021 Pp je Signal.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 38,
+  "wortlaut": "streng intraday −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 35): „Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.“ Heute: rsi2seit nicht entscheidbar, +0,021 Pp je Signal.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 39,
+  "wortlaut": "Nur die Call-Seite trägt (+0,075 %); das Put-Bein kämpft gegen die Marktdrift (−0,099 %)",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 35): „Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.“ Heute: rsi2seit nicht entscheidbar, +0,021 Pp je Signal.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 40,
+  "wortlaut": "Monatssignifikanz steht noch aus (36 Monate, t ≈ 0,5)",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 35): „Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.“ Heute: rsi2seit nicht entscheidbar, +0,021 Pp je Signal.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 43,
+  "wortlaut": "netto −0,02 Pp je Signaltag, Band −0,65 bis +0,60, 528 Signaltage, gegen behauptete +1,107 Pp",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "netto −0,024 Pp je Signaltag, Band [−0,649; +0,601], 528 Signaltage — die behauptete Größe (+1,107 Pp) ist zurückgewiesen."
+  },
+  "belegsagt": "Neumessung 03.10.: −0,024 Pp, Band [−0,649; +0,601], 528 Signaltage, behauptet +1,107.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 44,
+  "wortlaut": "rsi2seit über der SPY-EMA200 +0,148 Pp, darunter −0,169 Pp",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Der RSI-Teil für sich (in der App genannt: +0,148 Pp über, −0,169 Pp unter der Linie) ist nicht neu gemessen"
+  },
+  "belegsagt": "RSI-Teil +0,148 / −0,169, nicht neu gemessen.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 44,
+  "wortlaut": "ist deshalb kein Beleg der Zuteilung mehr",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "t = 3,2 ist damit **kein Beleg der Zuteilung als Ganzes mehr**"
+  },
+  "belegsagt": "R-TREND t = 3,2 kein Beleg der Zuteilung als Ganzes mehr.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 45,
+  "wortlaut": "OHNE tragfähige Zelle: Donchian, Squeeze, Pullback — in keiner Marktlage überzufällig",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**0 von 51 Detektoren bestätigt**, 3.372 Tests"
+  },
+  "belegsagt": "Signalstudie: 0 von 51 Detektoren bestätigt.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 60,
+  "wortlaut": "kauft ab Gesamtscore ±0,35 – gegen die Messung",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator, nicht nur wirkungslos"
+  },
+  "belegsagt": "Stunden-Strategie widerlegt (t −11,6).",
+  "vorschlag": "",
+  "nurUrteil": true
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 62,
+  "wortlaut": "stand: 'widerlegt – abgeschaltet'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator, nicht nur wirkungslos"
+  },
+  "belegsagt": "Widerlegt, t −11,6.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 65,
+  "wortlaut": "Der Technik-Score ist ein Kontraindikator.",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator, nicht nur wirkungslos"
+  },
+  "belegsagt": "Kontraindikator, t −11,6.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 65,
+  "wortlaut": "−0,74 Prozentpunkte auf 20 Handelstage",
+  "klasse": "gestrichen",
+  "beleg": null,
+  "belegsagt": "belegstand.md nennt nur t = −11,6 (Fundstelle „Gedächtnisprotokoll“), keine Effektgröße.",
+  "vorschlag": "Zahl streichen oder mit Fundstelle in belegstand.md nachtragen; t = −11,6 bleibt.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 65,
+   "wortlaut": "−0,74 Prozentpunkte auf 20 Handelstage"
+  },
+  "begruendung": "Effektgröße −0,74 Pp steht nicht im Belegkorpus (belegstand.md nennt nur t = −11,6, Gedächtnisprotokoll); t bleibt stehen, die Haltedauer steht ohne Messzahl."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 65,
+  "wortlaut": "Handelstage, t = −11,6 aus",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator, nicht nur wirkungslos"
+  },
+  "belegsagt": "t = −11,6.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 65,
+  "wortlaut": "aus 24.727 Signalen über 189 Werte und 8 Jahre",
+  "klasse": "gestrichen",
+  "beleg": null,
+  "belegsagt": "Umfang nicht in belegstand.md.",
+  "vorschlag": "Umfang streichen oder in belegstand.md nachtragen.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 65,
+   "wortlaut": "aus 24.727 Signalen über 189 Werte und 8 Jahre"
+  },
+  "begruendung": "Umfang (24.727 Signale, 189 Werte, 8 Jahre) steht nicht im Belegkorpus; an seiner Stelle steht die Fundstelle des Belegstands (Gedächtnisprotokoll)."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 66,
+  "wortlaut": "nur 32 von 189 Werten positiv, beide Zeithälften negativ",
+  "klasse": "gestrichen",
+  "beleg": null,
+  "belegsagt": "Nicht in belegstand.md.",
+  "vorschlag": "Streichen oder in belegstand.md nachtragen.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 66,
+   "wortlaut": "nur 32 von 189 Werten positiv, beide Zeithälften negativ"
+  },
+  "begruendung": "Satz „nur 32 von 189 Werten positiv, beide Zeithälften negativ“ steht nicht im Belegkorpus; ohne ihn bleibt das Urteil (t = −11,6, widerlegt) richtig."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 66,
+  "wortlaut": "ist seit 01.09.2026 gemessen und über Nacht auf Großwerten widerlegt (t = 0,31)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**b = +0,0070 Pp/Score-Punkt, t = 0,31** — mitten im Placebo-Band"
+  },
+  "belegsagt": "„Nicht messbar“ ist seit 01.09.2026 überholt: News-Sentiment gemessen und widerlegt (Übernacht, Großwerte, t = 0,31).",
+  "vorschlag": "Das News-Sentiment, das ein gutes Drittel des Gesamtscores stellte, ist inzwischen gemessen: über Nacht auf Großwerten kein Effekt (t = 0,31).",
+  "alt": {
+   "klasse": "c",
+   "zeile": 66,
+   "wortlaut": "Das News-Sentiment, das ein gutes Drittel des Gesamtscores stellte, war nie messbar"
+  },
+  "neu_begruendung": "„Nie messbar“ ist seit 01.09.2026 überholt; jetzt das Urteil des Belegstands (widerlegt, Übernacht, Großwerte, t = 0,31) mit seiner Einschränkung."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 67,
+  "wortlaut": "wer sie hier von Hand einschaltet, handelt gegen die Messung",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator, nicht nur wirkungslos"
+  },
+  "belegsagt": "Widerlegt.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 79,
+  "wortlaut": "die gemessene liquide Konfiguration (Parameter wie gemessen)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Buch seit 02.09.2026 auf liquidem Korb — ab hier Out-of-Sample"
+  },
+  "belegsagt": "Buch rechnet die gemessene liquide Konfiguration.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 80,
+  "wortlaut": "gemessen – nicht entscheidbar; liquide Fassung „lebt“ (In-Sample, am Rand)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "nach registrierter Regel — In-Sample und am Rand"
+  },
+  "belegsagt": "Momentum H=63 nicht entscheidbar (t 4,74 → 0,74); liquide Fassung „lebt“ In-Sample am Rand; Rückblick 04.10.: breiter Markt nicht geschlagen. „Hält die volle Historie“ stammt aus der Kontrollmessung 23.08. vor der Korrektur.",
+  "vorschlag": "gemessen – nicht entscheidbar; liquide Fassung „lebt“ (In-Sample, am Rand)",
+  "alt": {
+   "klasse": "c",
+   "zeile": 80,
+   "wortlaut": "gemessen – hält die volle Historie, nicht die zurückgehaltenen Jahre"
+  },
+  "neu_begruendung": "Stand wie im Belegstand: breite Fassung „nicht entscheidbar“, liquide Fassung „lebt“ In-Sample am Rand; „hält die volle Historie“ stammte aus der überholten Kontrollmessung vom 23.08."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 87,
+  "wortlaut": "lebt\" nach registrierter Regel – In-Sample und am Rand",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "nach registrierter Regel — In-Sample und am Rand"
+  },
+  "belegsagt": "Liquide Fassung „LEBT“ nach registrierter Regel, In-Sample und am Rand.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 87,
+  "wortlaut": "Brutto +1,835 Pp je Umlauf (se 0,911, t 2,02, 79 Perioden), Band [+0,050, +3,620]; gepaart gegen den breiten Korb +0,29 (t 0,69)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Brutto **+1,835 Pp je Umlauf** (se 0,911, t 2,02, 79 Perioden, 1 Test), Band **[+0,050, +3,620]**; gepaart liquide − breit **+0,29 (t 0,69)**"
+  },
+  "belegsagt": "Exakt wie belegstand.md.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 87,
+  "wortlaut": "ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Buch seit 02.09.2026 auf liquidem Korb — ab hier Out-of-Sample"
+  },
+  "belegsagt": "Ab 02.09.2026 Out-of-Sample (Wilhelms Entscheid).",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 88,
+  "wortlaut": "Über die volle Historie +2,42 Pp je Umschichtung (t = 3,84)",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "t fiel von 4,74 auf **0,74** nach Korrektur"
+  },
+  "belegsagt": "Heute: t 0,74 nach Korrektur, nicht entscheidbar; die Kontrollmessung 23.08. steht nicht mehr im Belegstand. Steht NICHT unter dem Überholt-Kopf (der beginnt erst einen Beleg später).",
+  "vorschlag": "Beleg unter den Überholt-Kopf schieben (belegeUeberholt.ab auf „KONTROLLMESSUNG 23.08.2026“) oder ersetzen: „Breite Fassung nach Korrektur: t 0,74 – nicht entscheidbar.“",
+  "alt": {
+   "klasse": "c",
+   "zeile": 88,
+   "wortlaut": "Über die volle Historie +2,42 Pp je Umschichtung (t = 3,84)"
+  },
+  "neu_begruendung": "Wortlaut unverändert; der Beleg trägt jetzt am Anfang den Vermerk „überholt (Universum ohne die verschwundenen Werte …)“ mit dem heutigen Stand (t 0,74, nicht entscheidbar). Den Kopf belegeUeberholt.ab NICHT verschoben: test-v6 97.10 hält den Kopf direkt über „Parameter auf 1970–2004“."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 88,
+  "wortlaut": "heute laut Belegstand für das Momentum-Buch nach Korrektur t 0,74 – nicht entscheidbar",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "t fiel von 4,74 auf **0,74** nach Korrektur"
+  },
+  "zusatz": true,
+  "alt": {
+   "klasse": "c",
+   "zeile": 88,
+   "wortlaut": "Über die volle Historie +2,42 Pp je Umschichtung (t = 3,84)"
+  },
+  "neu_begruendung": "Neuer Überholt-Vermerk über der Kontrollmessung 23.08.; t 0,74 und das Urteil aus dem Belegstand."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 88,
+  "wortlaut": "ab 2005 allein +1,51 Pp bei Mindest-Effektgröße 1,86 (t = 1,62): nicht entscheidbar",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "t fiel von 4,74 auf **0,74** nach Korrektur"
+  },
+  "belegsagt": "Urteil gleich, Zahlen nicht im Belegstand (dort t 0,74, obere Grenzen 2,0–4,3 Pp).",
+  "vorschlag": "wie oben: unter den Überholt-Kopf oder „t 0,74 nach Korrektur – nicht entscheidbar“",
+  "alt": {
+   "klasse": "c",
+   "zeile": 88,
+   "wortlaut": "ab 2005 allein +1,51 Pp bei Mindest-Effektgröße 1,86 (t = 1,62): nicht entscheidbar"
+  },
+  "neu_begruendung": "Wortlaut unverändert; der Beleg trägt jetzt am Anfang den Vermerk „überholt (Universum ohne die verschwundenen Werte …)“ mit dem heutigen Stand (t 0,74, nicht entscheidbar). Den Kopf belegeUeberholt.ab NICHT verschoben: test-v6 97.10 hält den Kopf direkt über „Parameter auf 1970–2004“."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 88,
+  "wortlaut": "Rund die Hälfte des Vorsprungs hängt an 30 von 189 Werten",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "t fiel von 4,74 auf **0,74** nach Korrektur"
+  },
+  "belegsagt": "Nicht im Belegstand; gehört inhaltlich zu den Überlebenden-Belegen, steht aber über dem Überholt-Kopf.",
+  "vorschlag": "Unter den Überholt-Kopf schieben.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 88,
+   "wortlaut": "Rund die Hälfte des Vorsprungs hängt an 30 von 189 Werten"
+  },
+  "neu_begruendung": "Wortlaut unverändert; der Beleg trägt jetzt am Anfang den Vermerk „überholt (Universum ohne die verschwundenen Werte …)“ mit dem heutigen Stand (t 0,74, nicht entscheidbar). Den Kopf belegeUeberholt.ab NICHT verschoben: test-v6 97.10 hält den Kopf direkt über „Parameter auf 1970–2004“."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 88,
+  "wortlaut": "64,8 % des Ertrags je Schritt sind schlichtes Halten",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "t fiel von 4,74 auf **0,74** nach Korrektur"
+  },
+  "belegsagt": "Nicht im Belegstand.",
+  "vorschlag": "Unter den Überholt-Kopf schieben oder streichen.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 88,
+   "wortlaut": "64,8 % des Ertrags je Schritt sind schlichtes Halten"
+  },
+  "neu_begruendung": "Wortlaut unverändert; der Beleg trägt jetzt am Anfang den Vermerk „überholt (Universum ohne die verschwundenen Werte …)“ mit dem heutigen Stand (t 0,74, nicht entscheidbar). Den Kopf belegeUeberholt.ab NICHT verschoben: test-v6 97.10 hält den Kopf direkt über „Parameter auf 1970–2004“."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 89,
+  "wortlaut": "+20,3 % p. a. gegen +14,9 % des Marktdurchschnitts, Vorsprung +5,4 Pp",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Rückblick über fünf Jahre: Momentum-Regel gegen den S&P 500 (04.10.2026)"
+  },
+  "belegsagt": "Steht unter dem Kopf belegeKopf('momentum-liquide') („Überholt: gemessen nur an Werten, die es heute noch gibt … Maßgeblich ist der Rückblick vom 04.10.2026“), eingefügt ab „Parameter auf 1970–2004 gewählt“.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 90,
+  "wortlaut": "Schlug den Markt in 14 von 22 Jahren; 93 von 96 Parameterkombinationen schlugen ihn ebenfalls.",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Rückblick über fünf Jahre: Momentum-Regel gegen den S&P 500 (04.10.2026)"
+  },
+  "belegsagt": "Steht unter dem Kopf belegeKopf('momentum-liquide') („Überholt: gemessen nur an Werten, die es heute noch gibt … Maßgeblich ist der Rückblick vom 04.10.2026“), eingefügt ab „Parameter auf 1970–2004 gewählt“.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 91,
+  "wortlaut": "52 % größter Rückschlag im geprüften Zeitraum 2005–2026",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Rückblick über fünf Jahre: Momentum-Regel gegen den S&P 500 (04.10.2026)"
+  },
+  "belegsagt": "Steht unter dem Kopf belegeKopf('momentum-liquide') („Überholt: gemessen nur an Werten, die es heute noch gibt … Maßgeblich ist der Rückblick vom 04.10.2026“), eingefügt ab „Parameter auf 1970–2004 gewählt“.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 91,
+  "wortlaut": "in 8 von 22 Jahren schlechter als der Markt",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Rückblick über fünf Jahre: Momentum-Regel gegen den S&P 500 (04.10.2026)"
+  },
+  "belegsagt": "Steht unter dem Kopf belegeKopf('momentum-liquide') („Überholt: gemessen nur an Werten, die es heute noch gibt … Maßgeblich ist der Rückblick vom 04.10.2026“), eingefügt ab „Parameter auf 1970–2004 gewählt“.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 107,
+  "wortlaut": "Zeitzonen-Fehler gefunden, Neumessung offen",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Buch-Regel (Kauf und Leerverkauf) nicht neu gemessen; Belegstand: t 1,7–2,0 nach Zeitzonen-Korrektur. Gemessen ist nur die Kaufseite (Nr. 88).",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 107,
+  "wortlaut": "die Kaufseite allein wurde als Buch gemessen – kein Vorwärtstest angezeigt",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**16 von 200 liegen über dem Buch** — die Regel verlangt für einen Vorwärtstest höchstens 10 → **kein Vorwärtstest angezeigt**"
+  },
+  "belegsagt": "Nr. 88: 16 von 200 Zufallsbüchern darüber, kein Vorwärtstest.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 111,
+  "wortlaut": "behandelte alle Termine ohne Uhrzeit als „vor Börsenschluss gemeldet\"",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Nicht im Belegstand (dort nur „t 1,7–2,0 nach Zeitzonen-Korrektur“).",
+  "vorschlag": "In belegstand.md nachtragen oder streichen.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 111,
+   "wortlaut": "59,8 % aller Termine (Datum ohne Uhrzeit)"
+  },
+  "neu_begruendung": "Anteil 59,8 % steht nicht im Belegkorpus; Zahl gestrichen, die Beschreibung des Zeitzonen-Fehlers bleibt."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 111,
+  "wortlaut": "verbuchte dadurch den Meldesprung am ersten Tag als Strategieertrag (Zeitzonen-Fehler)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Nicht im Belegstand.",
+  "vorschlag": "In belegstand.md nachtragen oder streichen.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 111,
+   "wortlaut": "Meldesprung von 1,97 % am ersten Tag"
+  },
+  "neu_begruendung": "Größe 1,97 % steht nicht im Belegkorpus; Zahl gestrichen, Satz bleibt."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 111,
+  "wortlaut": "Korrigiert fällt der Rohlauf von 14,07 auf 8,44 % p. a.",
+  "klasse": "gestrichen",
+  "beleg": null,
+  "belegsagt": "Nicht im Belegstand.",
+  "vorschlag": "In belegstand.md nachtragen oder streichen.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 111,
+   "wortlaut": "Korrigiert fällt der Rohlauf von 14,07 auf 8,44 % p. a."
+  },
+  "begruendung": "Rohlauf 14,07 → 8,44 % p. a. steht nirgends im Belegkorpus; für das Urteil nicht nötig."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 111,
+  "wortlaut": "über die volle Historie 12 Pp p. a. (t = 5,5)",
+  "klasse": "gestrichen",
+  "beleg": null,
+  "belegsagt": "Nicht im Belegstand.",
+  "vorschlag": "Streichen; stattdessen Nr. 88: „Kaufseite als Buch 16.09.2021–15.09.2026: +84,2 % gegen S&P 500 +81,2 %, 16 von 200 Zufallsbüchern darüber – nicht entscheidbar.“",
+  "alt": {
+   "klasse": "d",
+   "zeile": 111,
+   "wortlaut": "über die volle Historie 12 Pp p. a. (t = 5,5)"
+  },
+  "begruendung": "12 Pp p. a. (t = 5,5) steht nirgends im Belegkorpus; das maßgebliche t 1,7–2,0 bleibt stehen."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 111,
+  "wortlaut": "im zurückgehaltenen Zeitraum 5–7 Pp bei Mindest-Effektgröße 5,6–6,7",
+  "klasse": "gestrichen",
+  "beleg": null,
+  "belegsagt": "Effekt und MDE nicht im Belegstand, nur das t.",
+  "vorschlag": "Zahlen streichen, t 1,7–2,0 und Nr. 88 nennen.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 111,
+   "wortlaut": "im zurückgehaltenen Zeitraum 5–7 Pp bei Mindest-Effektgröße 5,6–6,7"
+  },
+  "begruendung": "Effekt 5–7 Pp und Mindest-Effektgröße 5,6–6,7 stehen nicht im Belegkorpus (dort nur t 1,7–2,0); ersetzt durch „ist der Rest nach der Korrektur zu schwach (t = 1,7–2,0)“."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 111,
+  "wortlaut": "ist der Rest nach der Korrektur zu schwach (t = 1,7–2,0): nicht entscheidbar",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "zusatz": true,
+  "alt": {
+   "klasse": "d",
+   "zeile": 111,
+   "wortlaut": "im zurückgehaltenen Zeitraum 5–7 Pp bei Mindest-Effektgröße 5,6–6,7"
+  },
+  "neu_begruendung": "Ersatz für die gestrichenen Effektzahlen: nur das t des Belegstands und sein Urteil."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 111,
+  "wortlaut": "Die tagesgenaue Messung vom 04.10.2026 (Nr. 88, nur die Kaufseite als Buch) ist ebenfalls nicht entscheidbar",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Ergebnis-Drift tagesgenau (04.10.2026) — gemessen: **nicht entscheidbar**"
+  },
+  "zusatz": true,
+  "alt": {
+   "klasse": "d",
+   "zeile": 111,
+   "wortlaut": "im zurückgehaltenen Zeitraum 5–7 Pp bei Mindest-Effektgröße 5,6–6,7"
+  },
+  "neu_begruendung": "Hinweis auf die jüngste Messung (Nr. 88) mit dem Urteil des Belegstands, ohne Zahl."
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 111,
+  "wortlaut": "(t = 1,7–2,0): nicht entscheidbar",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "t 1,7–2,0 nach Zeitzonen-Korrektur, nicht entscheidbar.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 112,
+  "wortlaut": "ab 2015 +10,44 % p. a. bei t = 3,04, 67 % positive Monate, positiv in allen sieben Teilzeiträumen",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 111): „Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.“ Heute: t 1,7–2,0 nach Korrektur; Messung Nr. 88 (nur Kaufseite) nicht entscheidbar. Schwache Kennzeichnung: kein Kopf wie beim Momentum, nennt Nr. 88 nicht.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 113,
+  "wortlaut": "Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. (t = 2,20)",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 111): „Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.“ Heute: t 1,7–2,0 nach Korrektur; Messung Nr. 88 (nur Kaufseite) nicht entscheidbar. Schwache Kennzeichnung: kein Kopf wie beim Momentum, nennt Nr. 88 nicht.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 113,
+  "wortlaut": "Die Mischung liefert denselben Ertrag bei 10,2 statt 13,1 % Schwankung.",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 111): „Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.“ Heute: t 1,7–2,0 nach Korrektur; Messung Nr. 88 (nur Kaufseite) nicht entscheidbar. Schwache Kennzeichnung: kein Kopf wie beim Momentum, nennt Nr. 88 nicht.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 114,
+  "wortlaut": "Zufällige Zuordnung ergibt −1,74 % (t = −0,88)",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 111): „Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.“ Heute: t 1,7–2,0 nach Korrektur; Messung Nr. 88 (nur Kaufseite) nicht entscheidbar. Schwache Kennzeichnung: kein Kopf wie beim Momentum, nennt Nr. 88 nicht.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 115,
+  "wortlaut": "bleiben nur +1,72 % (t = 0,58)",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 111): „Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.“ Heute: t 1,7–2,0 nach Korrektur; Messung Nr. 88 (nur Kaufseite) nicht entscheidbar. Schwache Kennzeichnung: kein Kopf wie beim Momentum, nennt Nr. 88 nicht.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 115,
+  "wortlaut": "Auf 20 Tagen Haltedauer ist der Effekt seit 2015 tot.",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 111): „Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.“ Heute: t 1,7–2,0 nach Korrektur; Messung Nr. 88 (nur Kaufseite) nicht entscheidbar. Schwache Kennzeichnung: kein Kopf wie beim Momentum, nennt Nr. 88 nicht.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 116,
+  "wortlaut": "Der Basiswert müsste 5,5–11 % laufen",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 111): „Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.“ Heute: t 1,7–2,0 nach Korrektur; Messung Nr. 88 (nur Kaufseite) nicht entscheidbar. Schwache Kennzeichnung: kein Kopf wie beim Momentum, nennt Nr. 88 nicht.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 116,
+  "wortlaut": "der Drift liefert rund 1,3 % je Position",
+  "klasse": "b",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+  },
+  "belegsagt": "Markiert durch den Satz im Beleg davor (Z. 111): „Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.“ Heute: t 1,7–2,0 nach Korrektur; Messung Nr. 88 (nur Kaufseite) nicht entscheidbar. Schwache Kennzeichnung: kein Kopf wie beim Momentum, nennt Nr. 88 nicht.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 209,
+  "wortlaut": "Gemessene Voreinstellungen übernommen",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "Die gesetzten Modi sind gemessen (rsi2seit nicht entscheidbar); „gemessen“ heißt nicht „belegt“. Mitgesetzt wird die Regime-Zuteilung, die seit 04.10. kein Beleg als Ganzes mehr hat (Z. 218, ohne Wertung).",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 214,
+  "wortlaut": "Kapitulations-Dip aus (Neumessung: zurückgewiesen)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "netto −0,024 Pp je Signaltag, Band [−0,649; +0,601], 528 Signaltage — die behauptete Größe (+1,107 Pp) ist zurückgewiesen."
+  },
+  "belegsagt": "Zurückgewiesen 03.10.2026.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 216,
+  "wortlaut": "Stunden-Strategie aus (widerlegt)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator, nicht nur wirkungslos"
+  },
+  "belegsagt": "Widerlegt.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 225,
+  "wortlaut": "Auf die gemessenen Einstellungen umgestellt",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "wie Z. 209.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategien.js",
+  "zeile": 571,
+  "wortlaut": "Kein Protokoll sagt derzeit „bestätigt“",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Belegte handelbare Kanten: NULL."
+  },
+  "belegsagt": "Belegte handelbare Kanten: NULL.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 39,
+  "wortlaut": "in keiner Marktlage überzufällig — 0 von 51 Kandidaten der Studie bestätigt",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**0 von 51 Detektoren bestätigt**, 3.372 Tests"
+  },
+  "belegsagt": "0 von 51.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 44,
+  "wortlaut": "in keiner Marktlage überzufällig — 0 von 51 Kandidaten der Studie bestätigt",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**0 von 51 Detektoren bestätigt**, 3.372 Tests"
+  },
+  "belegsagt": "0 von 51.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 49,
+  "wortlaut": "in keiner Marktlage überzufällig — 0 von 51 Kandidaten bestätigt",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**0 von 51 Detektoren bestätigt**, 3.372 Tests"
+  },
+  "belegsagt": "0 von 51.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 54,
+  "wortlaut": "als Handelsbedingung schädlich (−0,17 Pp, t = −4,1)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Abschnittskanäle **als Bedingung** | −0,17 Pp, t = −4,1 → nur Anzeige |"
+  },
+  "belegsagt": "−0,17 Pp, t = −4,1.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 54,
+  "wortlaut": "Kauf an der unteren Linie t −3,4 bis −4,3 gegen den Topf – als Einstieg in jeder Umsatzklasse zu",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Rücklauf an die untere Linie: t −3,4 bis −4,3 gegen den Topf"
+  },
+  "belegsagt": "Nicht im Belegstand.",
+  "vorschlag": "Ersetzen durch den Belegstand: „Trendkanal auf Tagesbasis (09.09.2026): Kauf an der unteren Linie t −3,4 bis −4,3 gegen den Topf – als Einstieg in jeder Klasse zu.“",
+  "alt": {
+   "klasse": "d",
+   "zeile": 54,
+   "wortlaut": "Erster Backtest zuvor: −39 % bei Gegenprobe p = 0,86."
+  },
+  "neu_begruendung": "Backtest-Zahlen (−39 %, p = 0,86) stehen nicht im Belegkorpus; ersetzt durch die Trendkanal-Messung vom 09.09.2026 aus dem Belegstand. Feld quelle mitgezogen."
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 67,
+  "wortlaut": "etikett: 'Neumessung: zurückgewiesen'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "netto −0,024 Pp je Signaltag, Band [−0,649; +0,601], 528 Signaltage — die behauptete Größe (+1,107 Pp) ist zurückgewiesen."
+  },
+  "belegsagt": "Zurückgewiesen.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 70,
+  "wortlaut": "obere Grenze +0,601 < 1,107 Pp (V2 netto −0,024 Pp je Signaltag, Band [−0,649; +0,601])",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "netto −0,024 Pp je Signaltag, Band [−0,649; +0,601], 528 Signaltage — die behauptete Größe (+1,107 Pp) ist zurückgewiesen."
+  },
+  "belegsagt": "Exakt.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 71,
+  "wortlaut": "528 Signaltage im zuvor nie gemessenen Fenster 2016 bis 25.09.2023",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "im nie gemessenen Fenster 2016 … 25.09.2023 neu gemessen: **netto −0,024 Pp je Signaltag, Band [−0,649; +0,601], 528 Signaltage"
+  },
+  "belegsagt": "Exakt.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 72,
+  "wortlaut": "strenge Regel: nicht entscheidbar",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "netto −0,024 Pp je Signaltag, Band [−0,649; +0,601], 528 Signaltage — die behauptete Größe (+1,107 Pp) ist zurückgewiesen."
+  },
+  "belegsagt": "Pflichtvermerk der Neumessung.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 87,
+  "wortlaut": "urteil: 'lebt'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "nach registrierter Regel — In-Sample und am Rand"
+  },
+  "belegsagt": "„LEBT“ nach registrierter Regel, In-Sample, am Rand.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 88,
+  "wortlaut": "etikett: 'In-Sample, am Rand'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "nach registrierter Regel — In-Sample und am Rand"
+  },
+  "belegsagt": "In-Sample und am Rand.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 90,
+  "wortlaut": "brutto +1,835 Pp je Umlauf, se 0,911, t 2,02 über 79 Perioden, Band [+0,050, +3,620]",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Brutto **+1,835 Pp je Umlauf** (se 0,911, t 2,02, 79 Perioden, 1 Test), Band **[+0,050, +3,620]**; gepaart liquide − breit **+0,29 (t 0,69)**"
+  },
+  "belegsagt": "Exakt.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 90,
+  "wortlaut": "Untere Grenze 0,05 über null; bei Familienschwelle 2,638 schließt das Band null ein",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Etiketten: untere Grenze 0,05 über null; bei Familienschwelle 2,638 schließt das Band null ein"
+  },
+  "belegsagt": "Exakt.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 127,
+  "wortlaut": "vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "das 95-%-Band des Abstands je Periode schließt in allen fünf Läufen null ein"
+  },
+  "belegsagt": "Band schließt in allen fünf Läufen null ein.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 135,
+  "wortlaut": "buchGesamt: 150.1",
+  "klasse": "a",
+  "beleg": {
+   "datei": "studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md",
+   "marke": "+150,1 % → +150,1 %"
+  },
+  "belegsagt": "B-187 mit Regel K, v2.3: +150,1 % (Rückblick-Zeile, gerendert von rueckblickText).",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 135,
+  "wortlaut": "spyGesamt: 81.2, schlaegt: true",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "gegen SPY **+81,2 % (12,63 % p. a.)**"
+  },
+  "belegsagt": "S&P 500 +81,2 %; Korb vorn.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 136,
+  "wortlaut": "phasenVorn: 61, phasen: 63, medianAbstandPa: 8.2, rueckschlagBuch: -56.9",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Korb 187, 2021–2026 | 250.123 $ (unverändert) | +7,51 | 61 | +8,25 | −56,9 % |"
+  },
+  "belegsagt": "61 von 63, Median +8,25 (ergebnis.json 8,2476 → 8,2), −56,9 %.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 137,
+  "wortlaut": "der Vorsprung stammt aus einem Schub (2024/25)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "2021–2026 aus 2024/25"
+  },
+  "belegsagt": "Schub 2024/25.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 137,
+  "wortlaut": "nach Steuern rund 2,4 Pp pro Jahr weniger",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "die „2,4 Pp\" der App sind der Steuerunterschied"
+  },
+  "belegsagt": "„2,4 Pp“ bestätigt (Cloud-Realitätsprobe); auf v2.3 nicht neu gerechnet.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 146,
+  "wortlaut": "buchGesamt: 159.2",
+  "klasse": "a",
+  "beleg": {
+   "datei": "studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md",
+   "marke": "+169,0 % → +159,2 %"
+  },
+  "belegsagt": "A-187 mit Regel K, v2.3: +159,2 %.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 146,
+  "wortlaut": "spyGesamt: 115.5, schlaegt: true",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "+115,5 % (17,77 %)"
+  },
+  "belegsagt": "S&P 500 +115,5 %.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 147,
+  "wortlaut": "phasenVorn: 63, phasen: 63, medianAbstandPa: 7.3, rueckschlagBuch: -49.0",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Korb 187, 2017–2021 | 269.037 → 259.239 $ | +5,69 → +4,72 | 63 → 63 | +7,32 → +7,27 | −49,0 → −49,0 % |"
+  },
+  "belegsagt": "63 von 63, Median +7,27, −49,0 %.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 148,
+  "wortlaut": "der Vorsprung stammt aus einem Schub (2020)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Halbsatz „Schub (2020)\" hält auf v2.3"
+  },
+  "belegsagt": "Halbsatz hält auf v2.3.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 148,
+  "wortlaut": "nach Steuern rund 2,4 Pp pro Jahr weniger",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "die „2,4 Pp\" der App sind der Steuerunterschied"
+  },
+  "belegsagt": "wie Z. 137.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 157,
+  "wortlaut": "buchGesamt: 64.0",
+  "klasse": "a",
+  "beleg": {
+   "datei": "studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md",
+   "marke": "+64,3 % → +64,0 %"
+  },
+  "belegsagt": "B-breit mit Regel K, v2.3: +64,0 %.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 158,
+  "wortlaut": "phasenVorn: 43, phasen: 63, medianAbstandPa: 1.7, rueckschlagBuch: -40.3",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| breiter Markt, 2021–2026 | 164.275 → 164.016 $ | −2,19 → −2,22 | 41 → 43 | +1,76 → +1,72 | −40,2 → −40,3 % |"
+  },
+  "belegsagt": "43 von 63, Median +1,72, −40,3 %.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 159,
+  "wortlaut": "im Rechenmodell nach Steuern, ohne Regel K: −2,20 Pp pro Jahr hinter dem Indexfonds",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "nach Steuern, alles verkauft | +8,20 % | +10,40 % | −2,20 Pp"
+  },
+  "belegsagt": "Nr. 82 hat den breiten Markt 2021–2026 nach Steuern gerechnet: −2,20 Pp p. a., 37 von 63, Median +0,66 (ohne Regel K, Panel v2.2).",
+  "vorschlag": "vor Steuern (nach Steuern im Rechenmodell, ohne Regel K: −2,20 Pp pro Jahr)",
+  "alt": {
+   "klasse": "c",
+   "zeile": 159,
+   "wortlaut": "nach Steuern für den breiten Markt nicht gerechnet"
+  },
+  "neu_begruendung": "Nr. 82 hat den breiten Markt 2021–2026 nach Steuern gerechnet (Median der Startphasen +0,66 Pp p. a., ohne Regel K, Panel v2.2); „nicht gerechnet“ war überholt."
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 169,
+  "wortlaut": "lage: 'knapp davor'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Buch **+84,2 %** (13,01 % p. a.) gegen S&P 500 +81,2 % (12,63 % p. a.) — Abstand **+0,38 Pp p. a.**"
+  },
+  "belegsagt": "+0,38 Pp p. a. vor dem S&P 500.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 170,
+  "wortlaut": "buchGesamt: 84.2, spyGesamt: 81.2, schlaegt: true",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Buch **+84,2 %** (13,01 % p. a.) gegen S&P 500 +81,2 % (12,63 % p. a.) — Abstand **+0,38 Pp p. a.**"
+  },
+  "belegsagt": "+84,2 % gegen +81,2 %.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 171,
+  "wortlaut": "zufallUeber: 16, zufallBuecher: 200, vorwaertstest: false",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**16 von 200 liegen über dem Buch** — die Regel verlangt für einen Vorwärtstest höchstens 10 → **kein Vorwärtstest angezeigt**"
+  },
+  "belegsagt": "16 von 200, kein Vorwärtstest.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 171,
+  "wortlaut": "rueckschlagBuch: -21.6, rueckschlagSpy: -24.5",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Größter Rückschlag −21,6 % (S&P 500 −24,5 %)"
+  },
+  "belegsagt": "−21,6 % gegen −24,5 %.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 184,
+  "wortlaut": "gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Rückblick über fünf Jahre: Momentum-Regel gegen den S&P 500 (04.10.2026)"
+  },
+  "belegsagt": "Grund des Überholt-Kopfs; der Rückblick 04.10. rechnet mit den verschwundenen Werten.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 188,
+  "wortlaut": "seine eigene Regel (Kauf und Leerverkauf, 60 Handelstage) ist nicht gemessen – kein Kandidat für echtes Geld",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Kauf des obersten Zehntels der Überraschung zur Eröffnung nach der Meldung, Verkauf 60 Handelstage später"
+  },
+  "belegsagt": "Nr. 88 maß nur die Kaufseite.",
+  "vorschlag": ""
+ },
+ {
+  "datei": "studienurteile.js",
+  "zeile": 226,
+  "wortlaut": "Maßgeblich ist der Rückblick vom ",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Rückblick über fünf Jahre: Momentum-Regel gegen den S&P 500 (04.10.2026)"
+  },
+  "belegsagt": "Rückblick 04.10.2026 (Tag aus RUECKBLICK[0].datum).",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategiechart.js",
+  "zeile": 227,
+  "wortlaut": "sind NICHT die gemessene Konfiguration",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| `kapitulation` (Kapitulations-Dip, 60m, H=26)"
+  },
+  "belegsagt": "Kapitulation auf 60m gemessen; rsi2seit-Protokoll ebenso (Stundenkerzen).",
+  "vorschlag": ""
+ },
+ {
+  "datei": "strategiechart.js",
+  "zeile": 229,
+  "wortlaut": "fand unter 51 Detektoren keinen tragfähigen",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Große Signalstudie | **0 von 51 Detektoren bestätigt**, 3.372 Tests"
+  },
+  "belegsagt": "Die Signalstudie fand auf KEINEM Zeitrahmen eine tragfähige Kante (0 von 51), die Minutenstudie 0 von 234; auch auf 60m ist nichts belegt (rsi2seit nicht entscheidbar, Kapitulation zurückgewiesen). Der Satz legt nahe, 60m trage.",
+  "vorschlag": "fand keine tragfähige Kante (0 von 51), die Minutenstudie auf 1m/5m/15m ebenso nicht (0 von 234); auch auf 60m ist keine belegt.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 229,
+   "wortlaut": "fand auf anderen Zeitrahmen keine tragfaehige Kante"
+  },
+  "neu_begruendung": "Der Satz legte nahe, 60m trage; jetzt: Signalstudie 0 von 51, Minutenstudie 0 von 234, auf 60m nichts belegt (rsi2seit nicht entscheidbar, Kapitulation zurückgewiesen)."
+ },
+ {
+  "datei": "strategiechart.js",
+  "zeile": 229,
+  "wortlaut": "unter 234 Konfigurationen ebenso keinen",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "234 Konfigurationen (13 Detektoren × 1m/5m/15m"
+  },
+  "zusatz": true,
+  "alt": {
+   "klasse": "c",
+   "zeile": 229,
+   "wortlaut": "fand auf anderen Zeitrahmen keine tragfaehige Kante"
+  },
+  "neu_begruendung": "Minutenstudie (Gesamtbericht 11.09.2026): 0 von 234."
+ },
+ {
+  "datei": "strategiechart.js",
+  "zeile": 230,
+  "wortlaut": "Auch auf 60m ist keine Regel belegt: RSI(2) im Seitwärtskanal ist nicht entscheidbar, der Kapitulations-Dip in der behaupteten Größe zurückgewiesen",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| `kapitulation` (Kapitulations-Dip, 60m, H=26)"
+  },
+  "zusatz": true,
+  "alt": {
+   "klasse": "c",
+   "zeile": 229,
+   "wortlaut": "fand auf anderen Zeitrahmen keine tragfaehige Kante"
+  },
+  "neu_begruendung": "Urteile wortgleich zum Belegstand; 60m steht so in der Belegzeile."
+ },
+ {
+  "datei": "strategiechart.js",
+  "zeile": 231,
+  "wortlaut": "Gehandelt wird weiterhin nur, was auf 60m gemessen ist.",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "„gemessen“, nicht „belegt“ – sachlich richtig.",
+  "vorschlag": "",
+  "nurUrteil": true
+ },
+ {
+  "datei": "strategiechart.js",
+  "zeile": 278,
+  "wortlaut": "Put-Seite gemeldet – wird nicht gehandelt (die Regel handelt nur Long)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+  },
+  "belegsagt": "Kein Beleg zur Put-Seite in belegstand.md (die −0,099 % stehen nur in den alten Belegen von strategien.js).",
+  "vorschlag": "Put-Seite gemeldet – wird nicht gehandelt (die Regel handelt nur Long)",
+  "alt": {
+   "klasse": "d",
+   "zeile": 277,
+   "wortlaut": "Put-Seite gemeldet – trägt nicht, wird nicht gehandelt"
+  },
+  "neu_begruendung": "„trägt nicht“ hat keinen Beleg im Korpus (die −0,099 % stehen nur in den alten Belegen); übrig bleibt die Tatsache des Codes (nur Long) ohne Messurteil."
+ }
+]

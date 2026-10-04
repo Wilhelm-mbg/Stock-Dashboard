@@ -320,7 +320,7 @@
       '<span id="sfLzEigen" hidden><label>von<input id="sfLzVon" type="number" style="width:60px;"> Tagen</label>' +
       '<label>bis<input id="sfLzBis" type="number" style="width:60px;"></label></span>' +
       listeBauen('sfSpanne', W.SPANNE, 'Spanne',
-        'Geld-Brief-Spanne je Seite, aus dem an echten Emittentenkursen geeichten Cent-Modell. Je Umlauf zahlt man sie zweimal.') +
+        'Geld-Brief-Spanne je Seite, aus dem Cent-Modell (Modellannahme aus einer Stichprobe bei onvista, im Belegstand nicht gemessen). Je Umlauf zahlt man sie zweimal.') +
       listeBauen('sfTv', W.TOTALVERLUST, 'Totalverlust',
         'Modell-Wahrscheinlichkeit, dass der Schein wertlos verfällt.') +
       listeBauen('sfBand', W.BAND, 'Basispreis',
@@ -421,7 +421,7 @@
     bv: 'Bezugsverhältnis – der Kostenhebel: BV 1,0 zahlt relativ die kleinste Spanne',
     brief: 'Kaufkurs (Brief) laut Modell',
     omega: 'Effektiver Hebel (Omega). Klick sortiert, zweiter Klick dreht die Richtung.',
-    spread: 'Geld-Brief-Spanne je Seite, aus dem an echten Kursen geeichten Cent-Modell',
+    spread: 'Geld-Brief-Spanne je Seite, aus dem Cent-Modell (Modellannahme, im Belegstand nicht gemessen)',
     theta: 'Zeitwertverlust in einer Woche bei unverändertem Kurs',
     aufgeld: 'Aufgeld aufs Jahr gerechnet',
     tv: 'Modell-Wahrscheinlichkeit, dass der Schein wertlos verfällt',

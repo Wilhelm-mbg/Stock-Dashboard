@@ -3689,9 +3689,12 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
 
   /* Nachgerechnet, weil eine falsche Kontrolle schlimmer ist als keine: Der Startindex
    * war zuerst 60 und ergab +0,128 statt +0,113 Pp - der Ueberschuss haette damit
-   * +0,036 statt +0,064 gelautet. Die Zahl im Regelkopf muss die korrigierte sein. */
-  ok(/\+0,065 Pp Überschuss/.test(dep) && !/\+0,114 Pp gegen Kontrolle/.test(dep),
-     'Der Regelkopf nennt den korrigierten Ueberschuss (+0,065), nicht den zu hohen (+0,114)');
+   * +0,036 statt +0,064 gelautet. Die Zahl im Regelkopf muss die korrigierte sein.
+   * Seit fix/oberflaeche-texte (04.10.2026) ist die korrigierte Zahl die des Belegstands: +0,021 Pp je Signal
+   * (Protokoll rsi2seit 26.08.2026, nicht entscheidbar). +0,065 steht nirgends im Belegstand und darf nicht
+   * zurueckkommen - deshalb prueft die Marke jetzt die neue Zahl und schliesst beide alten aus. */
+  ok(/Überschuss \+0,021 Pp je Signal/.test(dep) && !/\+0,114 Pp gegen Kontrolle/.test(dep) && !/\+0,065 Pp Überschuss/.test(dep),
+     'Der Regelkopf nennt den Ueberschuss laut Belegstand (+0,021 je Signal), weder +0,065 noch +0,114');
   ok(/Überschuss/.test(dep) && /Kontrolle/.test(dep),
      'Die Regelliste zeigt Kontrolle und Ueberschuss als eigene Spalten');
 
@@ -3719,8 +3722,10 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
      'Stattdessen steht die Fallzahl da - sie sagt ehrlich, dass sich nichts bewerten laesst');
   ok(/kann seine eigenen Signale nicht/.test(wu3),
      'Der Reiter sagt selbst, dass er seine Signale nicht bewerten kann');
-  ok(/0,074 Pp, t = 1,22/.test(wu3),
-     'Die belastbare Aussage zum Winkel-Detektor steht dabei (widerlegt auf 55 Tagen)');
+  /* Seit fix/oberflaeche-texte (04.10.2026): "0,074 Pp, t = 1,22" steht nicht im Belegkorpus (das t gehoert zu einer
+   * anderen Zelle). Dabei steht jetzt der juengere Stand des Belegstands (02.09.2026): netto nicht entscheidbar. */
+  ok(/alle 10 Punktschätzer negativ, 9 von 10 obere Grenzen liegen unter 0,1247 Pp/.test(wu3) && !/0,074 Pp, t = 1,22/.test(wu3),
+     'Der neuere Stand zum Winkel-Detektor steht dabei (Belegstand 02.09.2026: netto nicht entscheidbar)');
 
   /* Trendfinder (Felix' Wunsch #58, 23.08.2026): Der Trend ist die Hauptsache, der
    * Wechsel sein Sonderfall. Dazu drei Zusicherungen - die Umbenennung, die drei
@@ -3738,7 +3743,9 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * eine Statuszeile. Der Wortlaut des Titels bleibt WORTGENAU geprueft; die Klinke
    * wird dabei schaerfer, weil sie zusaetzlich verlangt, dass genau ein Stand-Span
    * mit dem Namen der Klappe dahinter steht - und sonst nichts. */
-  ok(hF.indexOf('<summary>Trendfinder — Detektor widerlegt' +
+  /* Seit fix/oberflaeche-texte (04.10.2026): der Belegstand fuehrt den Detektor unter "Nicht entscheidbar" (netto
+   * unentscheidbar, Long-Seite in der Groesse ausgeschlossen), nicht unter "Widerlegt" - der Titel nennt dieses Urteil. */
+  ok(hF.indexOf('<summary>Trendfinder — Detektor nicht entscheidbar (Long-Seite in der Größe ausgeschlossen)' +
      '<span class="klappe-stand" id="kstand-wende"></span></summary>') >= 0,
      'Trendfinder: die Klappe heisst nach dem Trend und nennt sein Urteil');
   ok(wu3.indexOf('>Trend jetzt</th>') >= 0 && wu3.indexOf('>Güte</th>') >= 0 && wu3.indexOf('>Breite</th>') >= 0,
@@ -8549,7 +8556,9 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   var shellB11 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
   var eintragB11 = (shellB11.split("'vermoegen.buecher': {")[1] || '').split('\n    },')[0];
   ok(/data-info="vermoegen\.buecher"/.test(bestand) &&
-     /t = 1,62/.test(eintragB11) && /8,44 statt 14,07/.test(eintragB11),
+     /* seit fix/oberflaeche-texte die Zahlen des Belegstands statt "t = 1,62" und "8,44 statt 14,07" (beide unbelegt bzw.
+      * vor der Zeitzonen-Korrektur); geprueft wird weiter, dass sie ungeteilt im Eintrag stehen */
+     /t = 0,74 nach Korrektur/.test(eintragB11) && /16 von 200 Zufallsbüchern/.test(eintragB11),
      'Die Messzahlen der beiden Buecher haengen ungeteilt an der Buecher-Karte (i-Knopf)');
 
   /* --- Kein Wegweiser zeigt mehr auf einen Ort, den es nicht mehr gibt --- */
@@ -14287,8 +14296,9 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
    * "Parameter wie gemessen" - die App weicht in der Mechanik noch von der Messung ab. */
   ok(/id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\) – Änderungen nur über eine neue Messung\./.test(html) &&
      /* Auftrag Nr. 95 (A2): beim Drift-Buch nannte die Zeile eine Studie vom 02.09.2026, die es nicht gibt */
-     /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus \(Neumessung offen\)\./.test(html),
-     'Live=Messung: ueber beiden Feldergruppen steht, woher die Werte kommen (beim Drift-Buch: Neumessung offen)');
+     /* seit fix/oberflaeche-texte: "Messung steht aus" ist ueberholt - Belegstand: t 1,7-2,0 nach Zeitzonen-Korrektur, nicht entscheidbar */
+     /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – nach der Zeitzonen-Korrektur nicht entscheidbar \(Stand im Kasten unten\)\./.test(html),
+     'Live=Messung: ueber beiden Feldergruppen steht, woher die Werte kommen (beim Drift-Buch: nach Korrektur nicht entscheidbar)');
   /* Gefuellt wird aus der Konfiguration, nicht aus dem Markup. Geprueft wird die
    * QUELLE, nicht der Wert: ein fester Wert im Code waere dieselbe Zahl an einer
    * zweiten Stelle - genau der Fehler, gegen den die Sperre gebaut ist. */
@@ -16509,8 +16519,9 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
    * Erklaerabsaetze stehen im Register statt in der Legende. */
   ok(/data-mess="[^"]{10,}"/.test(wui),
      'F9: die Messaussagen der Trendfinder-Legende stehen in einem ausgewiesenen Kasten');
-  ok(/−0,17 Pp je Trade bei t = −4,1/.test(wui) && /0,074 Pp, t = 1,22/.test(wui),
-     'F9: beide Messaussagen sind wortgleich sichtbar geblieben');
+  /* Zweite Messaussage seit fix/oberflaeche-texte auf den Belegstand umgestellt (siehe oben, Winkel-Detektor). */
+  ok(/−0,17 Pp je Trade bei t = −4,1/.test(wui) && /alle 10 Punktschätzer negativ/.test(wui),
+     'F9: beide Messaussagen sind sichtbar geblieben');
   ok(!/Warum hier keine Ertragszahl steht/.test(ohneKommentare(wui)) &&
      /Warum hier keine Ertragszahl steht/.test(shell),
      'F9: der Erklaerabsatz ist ins Register gewandert - verschoben, nicht geloescht');
@@ -16519,7 +16530,8 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
      'F9: ebenso der Absatz "Dieser Reiter kann seine eigenen Signale nicht bewerten"');
   /* Verschoben heisst WOERTLICH: die Zahlen aus dem Absatz muessen im Register
    * alle wieder auftauchen. Faellt eine beim Umzug heraus, faellt es hier auf. */
-  ['4.000 Fünf-Minuten-Kerzen', '−0,028 / +0,166 / +0,230 %', '30 Fälle je Wert', '20.000 Kerzen']
+  /* '−0,028 / +0,166 / +0,230 %' seit fix/oberflaeche-texte gestrichen (nirgends im Belegkorpus); die Aussage des Satzes bleibt */
+  ['4.000 Fünf-Minuten-Kerzen', 'sobald man nur die Abtastdichte ändert', '30 Fälle je Wert', '20.000 Kerzen']
     .forEach(function (zahl) {
       ok(shell.indexOf(zahl) > -1, 'F9: die Zahl "' + zahl + '" ist beim Umzug mitgekommen');
     });
@@ -16533,8 +16545,9 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
      'F10: unter der Positionstabelle sitzt jetzt ein i-Knopf');
   ok(/'heute\.positionen': \{/.test(shell),
      'F10: und er findet einen Eintrag im Register');
-  ok(!/Gemessene Intraday-Kanten/.test(ohneKommentare(dep)) &&
-     /Gemessene Intraday-Kanten/.test(shell),
+  /* "Kanten" -> "Regeln" seit fix/oberflaeche-texte: der Belegstand zaehlt null belegte Kanten */
+  ok(!/Gemessene Intraday-Regeln/.test(ohneKommentare(dep)) &&
+     /Gemessene Intraday-Regeln/.test(shell),
      'F10: die Regelbeschreibung steht im Register, nicht mehr auf "Heute"');
   ['Stop −25 % / Ziel +35 %', 'Stop −40 % / Ziel +80 %', 'Bezugsverhältnis 0,1', '8 bzw. 26 Handelsstunden']
     .forEach(function (zahl) {
@@ -17021,7 +17034,8 @@ console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelr
      'ihre Inhalte stehen jetzt am Kerzenchart: Einblenden, Signal-Liste, Kanal-Zeile, Kanal-Verzug, Indikator-Spur');
   /* KEIN TEXT VERLOREN: die Erklaersaetze der Kaestchen standen als title im
    * Markup und stehen jetzt in den Tabellen SIGNALE/INDIKATOREN. */
-  ['Roh ein Münzwurf', 'Kapitulations-Dip', 'nie heimlich verkürzt',
+  /* 'Roh ohne belegten Vorsprung' hiess bis fix/oberflaeche-texte 'Roh ein Münzwurf (+0,017)' - die Zahl war unbelegt. */
+  ['Roh ohne belegten Vorsprung', 'Kapitulations-Dip', 'nie heimlich verkürzt',
    'KEINEN Vorsprung', 'es wird bewusst nichts davon gehandelt',
    'an denen der Kurs zuletzt gedreht hat'].forEach(function (satz) {
     ok(expQ.indexOf(satz) > 0, 'der Erklaertext "' + satz.slice(0, 28) + '…" ist beim Umzug nicht verloren gegangen');
@@ -23713,7 +23727,7 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
   var SOLL = [
     'Rückblick 16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen vorn, in der Mitte +8,2 Pp pro Jahr; größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
     'Rückblick 04.01.2017 bis 15.09.2021, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +159,2 % gegen S&P 500 +115,5 % – geschlagen; je nach Starttag in 63 von 63 Fällen vorn, in der Mitte +7,3 Pp pro Jahr; größter Rückschlag −49,0 % gegen −33,8 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
-    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,0 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 43 von 63 Fällen vorn, in der Mitte +1,7 Pp pro Jahr; größter Rückschlag −40,3 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); vor Steuern (nach Steuern für den breiten Markt nicht gerechnet).',
+    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,0 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 43 von 63 Fällen vorn, in der Mitte +1,7 Pp pro Jahr; größter Rückschlag −40,3 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); vor Steuern (im Rechenmodell nach Steuern, ohne Regel K: −2,20 Pp pro Jahr hinter dem Indexfonds).',
     'Rückblick 16.09.2021 bis 15.09.2026, Kauf nach den stärksten Überraschungen (40 Plätze, 60 Handelstage, nur Kaufseite – nicht die Regel dieses Buchs): Buch +84,2 % gegen S&P 500 +81,2 % – knapp davor, aber 16 von 200 Zufallsbüchern liegen darüber: kein Vorwärtstest angezeigt; größter Rückschlag −21,6 % gegen −24,5 %.'
   ];
   var IST = SU.rueckblicke('momentum-liquide').concat(SU.rueckblicke('drift')).map(function (e) { return SU.rueckblickText(e); });
@@ -24429,7 +24443,8 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
 
   /* ---- 100.4 A2 ---- */
   var htmlO = html.replace(/<!--[\s\S]*?-->/g, '');
-  ok(/id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus \(Neumessung offen\)\.<\/div>/.test(htmlO) &&
+  /* Zeile seit fix/oberflaeche-texte auf den Belegstand umgestellt (siehe Live=Messung oben) */
+  ok(/id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – nach der Zeitzonen-Korrektur nicht entscheidbar \(Stand im Kasten unten\)\.<\/div>/.test(htmlO) &&
      !/Drift[^"<]{0,40}02\.09\.2026/.test(htmlO) && /data-mess="Ergebnis-Drift-Messung 21\.08\.2026 · /.test(htmlO) &&
      /GEMESSEN am 21\.08\.2026 auf 20\.356 Ergebnisterminen/.test(fs.readFileSync(__dirname + '/drift.js', 'utf8')) &&
      /id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\)/.test(htmlO),
