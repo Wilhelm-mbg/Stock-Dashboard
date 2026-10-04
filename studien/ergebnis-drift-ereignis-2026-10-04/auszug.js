@@ -67,7 +67,7 @@ function main() {
 
 /** Auszug lesen -> [{cik, a, t, d, r, f, i}] */
 function lies(pfad) {
-  var a = fs.readFileSync(pfad || path.join(__dirname, 'meldungen-202.tsv'), 'utf8').split('\n'), aus = [];
+  var a = fs.readFileSync(pfad || path.join(__dirname, 'meldungen-202.tsv'), 'utf8').split(/\r?\n/), aus = [];   /* Git kann LF in CRLF wandeln */
   for (var i = 1; i < a.length; i++) {
     if (!a[i]) continue;
     var s = a[i].split('\t');
