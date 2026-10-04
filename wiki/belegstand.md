@@ -149,6 +149,17 @@ Ohne Regel K: Korb 187 2017–2021 Median +7,59 → +6,87 (63 von 63 vorn); 2021
 
 **Lesart.** (1) Urteil nach der Regel: **nicht entscheidbar** — in A liegt das Momentum-Buch knapp unter dem 95. Perzentil. (2) Der Korb der 187 umsatzstärksten trägt den Vorsprung **nicht**: ein zufälliges Buch daraus liegt im Median in beiden Fenstern hinter dem S&P 500. Was vorn liegt, kommt also aus der Auswahl — in B deutlich (nur 2 von 200 Zufallsbüchern besser), in A schwächer. (3) Beschreibend über 63 Starttage: keiner der 50 Buch-Mediane liegt über dem Momentum-Buch. (4) Zufallsbücher tauschen fast alles und zahlen rund 0,7 Pp p. a. mehr Kosten — ein Teil des Abstands ist Umschlag, nicht Auswahl. (5) Der „ganze Korb" hängt bei dieser Mechanik an der Reihenfolge der Zielliste (bei knappem Bargeld fallen die letzten Käufe aus): nach Zeichencode 240.024 $, nach Umsatz 232.170 $ (PM-Nachrechnung). **Abnahme:** die Zufallsbücher 1, 2, 100, 200 und der ganze Korb in beiden Fenstern mit dem PM-Rechner aus den gespeicherten Ziehungen nachgespielt — alle auf ≤ 0,4 Cent gleich.
 
+## Sektor-Momentum (05.10.2026) — gemessen: **schlägt den S&P 500 nicht** (nur in einem Fenster vorn)
+
+Die drei stärksten der SPDR-Sektor-ETFs nach 12-Monats-Rendite, Takt 21 Tage, gleich gewichtet — die Regel wurde am 04.10. **ohne Daten** festgelegt (`c903255`, Cloud 3), der Zusatz vor dem ersten Kursabruf gesiegelt (`f2f4b67`, 00:30:59; Kurse ab 00:31:08). Zweig `messung/sektor-momentum` (Ergebnis `7ae2094`).
+
+| Fenster | Buch gegen SPY | Abstand p. a. (Start am 1. Tag) | Starttage vorn | Median | Rückschlag (SPY) |
+|---|---|---|---|---|---|
+| A 2017–2021 | +74,6 % gegen +115,5 % | −5,17 Pp | 0 von 63 | −6,74 | −30,0 % (−33,7) |
+| B 2021–2026 | +119,6 % gegen +81,2 % | +4,42 Pp | 63 von 63 | +3,73 | −16,1 % (−24,5) |
+
+Der Vorsprung in B stammt fast ganz aus 2022 (Energie), 2023–2025 lag das Buch hinten; je Periode schließt das 95-%-Band null ein. Placebo (drei zufällige Sektoren): A −2,94, B −5,64 Pp p. a. — wie gefordert kein Vorsprung. Zusatz 2000–2026 ohne Urteil: +0,26 Pp p. a., vorn in 24 von 63 Starttagen und in 33,8 % der 5-Jahres-Fenster (Median −1,22 Pp). Zwei unabhängige Rechner auf den Cent, SPY-Basis gegen das Panel ≤ 0,04 Pp. **Abnahme PM:** Siegel-Reihenfolge an Commit- und Abrufzeiten geprüft; Ergebnis eindeutig, nicht selbst nachgerechnet.
+
 ## Trendfilter auf SPY (05.10.2026) — gemessen: **schlägt den S&P 500 nicht** (alle drei Regeln)
 
 Faber (10-Monats-Linie), Antonacci „Global Equity Momentum" und 200-Tage-Linie mit 1-%-Band, Parameter aus den Originalquellen, 20 Bp je Seite, Pause in kurzlaufenden Anleihen; Regel gesiegelt vor jedem Kursabruf (`6f9d06f`, 00:33; erste Datenabrufe ab 00:37), öffentliche Yahoo-Daten, Rohkurse nicht im Repo. Zweig `messung/trendfilter` (Ergebnis `b403547`).
