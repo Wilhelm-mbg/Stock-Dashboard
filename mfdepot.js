@@ -345,7 +345,11 @@
     try {
       var daten = await ladeKurse();
       var markt = await ladeMarkt();
-      if (!daten || !markt) {
+      /* Generalprobe 23.11., Fund D-09: das Momentum-Buch rechnet seit Nr. 93 auf den Tagesdaten
+       * und ihrer SPY-Reihe (mf_bezug); drift_markt brauchen nur das Drift-Buch und der Massstab.
+       * Fehlt drift_markt, laeuft das Momentum-Buch weiter, das Drift-Buch setzt aus (unten).
+       * Ohne beide Marktreihen (Bestand von vor Nr. 93 und kein drift_markt) bleibt es beim Halt. */
+      if (!daten || (!markt && !daten.bezug)) {
         /* Erststart-Luecke aus der ersten externen Diagnose (mfBuchWert: null): Frische
          * Installationen haben keine Tagesdaten, und der Erstladevorgang von 193 Werten
          * wartete auf einen Knopfdruck, von dem niemand wusste. Jetzt stoesst er sich
@@ -360,7 +364,7 @@
         /* Der Verweis zeigte auf die Pille, auf der dieser Text selbst steht. Genannt
            wird deshalb der Knopf, der die Daten wirklich holt - wörtlich so, wie er
            beschriftet ist (#mfLadenBtn, gleiches Pillen-Panel, weiter oben). */
-        if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – erst oben „Daten holen und rechnen“.'); return; }
+        if (!daten || (!markt && !daten.bezug)) { zeige(null, null, null, 'Keine Tagesdaten – erst oben „Daten holen und rechnen“.'); return; }
       }
       kurseFrischHalten(daten.stand);
       /* Bestand von vor Auftrag Nr. 87: Tagesdaten da, aber kein Schluessel mf_ereignisse. Der
@@ -473,7 +477,7 @@
       /* ---- Drift-Buch ---- */
       var driftInfo = null;
       var termine = await window.api.storeGet('drift_termine');
-      if (termine && termine.sym) {
+      if (termine && termine.sym && markt) {                   // ohne drift_markt kein Drift-Abgleich (D-09)
         var kurseD = {}, termD = {};
         Object.keys(daten.roh).forEach(function (s) {
           if (termine.sym[s] && termine.sym[s].length) { kurseD[s] = daten.roh[s]; termD[s] = termine.sym[s]; }
