@@ -38,5 +38,5 @@ module.exports = {
 
   /* M3: Zuordnung Meldung -> Tafelzeile. Die Meldung liegt im Fenster [period + 1 Tag, filed] der Zeile
    * (Annahmedatum New York); die Zeile mit dem naechstliegenden `filed` gewinnt. */
-  ZUORDNUNG_MAX_TAGE_NACH_PERIODE: 200,      /* Meldung hoechstens so viele Kalendertage nach dem Stichtag der Zeile */
+  ZUORDNUNG_MAX_TAGE_NACH_PERIODE: 150,      /* Meldung hoechstens so viele Kalendertage nach dem Stichtag der Zeile */
 };

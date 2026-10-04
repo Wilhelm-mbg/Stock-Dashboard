@@ -1,0 +1,369 @@
+{
+ "stand": "2026-10-04T10:53:31.720Z",
+ "lesart": "utc",
+ "panel": "querschnitt-pruefstand-2026-09-13/panel/v2.2",
+ "tafel": "fundamentaltafel-2026-09-16/v1.1",
+ "letzterPanelTag": "2026-09-15",
+ "reihen": {
+  "reihen": 7479,
+  "mitCik": 6961,
+  "getrennteReihen": 355
+ },
+ "M2": {
+  "alle": 125796,
+  "ohneZeit": 0,
+  "jeJahr": {
+   "2016": {
+    "vor": 4208,
+    "im": 1303,
+    "nach": 6467,
+    "frei": 7
+   },
+   "2017": {
+    "vor": 4239,
+    "im": 1121,
+    "nach": 6620,
+    "frei": 3
+   },
+   "2018": {
+    "vor": 4336,
+    "im": 979,
+    "nach": 6558,
+    "frei": 4
+   },
+   "2019": {
+    "vor": 4307,
+    "im": 783,
+    "nach": 6445,
+    "frei": 6
+   },
+   "2020": {
+    "vor": 4577,
+    "im": 662,
+    "nach": 6630,
+    "frei": 3
+   },
+   "2021": {
+    "vor": 4693,
+    "im": 611,
+    "nach": 7004,
+    "frei": 4
+   },
+   "2022": {
+    "vor": 4810,
+    "im": 504,
+    "nach": 7255,
+    "frei": 4
+   },
+   "2023": {
+    "vor": 4765,
+    "im": 472,
+    "nach": 6878,
+    "frei": 1
+   },
+   "2024": {
+    "vor": 4630,
+    "im": 383,
+    "nach": 6441,
+    "frei": 11
+   },
+   "2025": {
+    "vor": 4416,
+    "im": 287,
+    "nach": 5910,
+    "frei": 0
+   },
+   "2026": {
+    "vor": 3155,
+    "im": 183,
+    "nach": 4118,
+    "frei": 3
+   }
+  },
+  "knappVorBeginn0900bis0930": 3422,
+  "einstiegAusserhalbKalender": 0
+ },
+ "M3": {
+  "meldungen8K": 125796,
+  "form8KA": 1111,
+  "vor": 116792,
+  "vorHaupt": 108784,
+  "vorWeitere": 8008,
+  "berichtZuerst": 3041,
+  "berichtZuerstHaupt": 2309,
+  "ohne": 5963,
+  "gleichesFiled": 67,
+  "firmenOhneTafelzeilen": 818,
+  "abstandHaupt": {
+   "amMeldetag": 50281,
+   "tage1bis5": 29355,
+   "tage6bis30": 26393,
+   "ueber30": 2755
+  },
+  "amMeldetagBerichtVorMeldung": 7772,
+  "amMeldetagOhneUhrzeit": 0,
+  "zeilenErstberichte2016plus": 130635,
+  "zeilenMitHauptmeldung": 108784,
+  "abstandQuantile": {
+   "p5": 0,
+   "p25": 0,
+   "p50": 1,
+   "p75": 6,
+   "p90": 16,
+   "p95": 22,
+   "p99": 41
+  },
+  "nachPeriodeQuantile": {
+   "p5": 20,
+   "p25": 29,
+   "p50": 35,
+   "p75": 41,
+   "p95": 63,
+   "p99": 87
+  }
+ },
+ "M4": {
+  "hauptmeldungen": 108784,
+  "mitUeberraschung": 104013,
+  "quartalFehlt": 4771,
+  "sdNull": 0,
+  "mitWegY": 1482,
+  "jeJahr": {
+   "2016": {
+    "hauptmeldungen": 10256,
+    "mitUeberraschung": 9667
+   },
+   "2017": {
+    "hauptmeldungen": 10463,
+    "mitUeberraschung": 9804
+   },
+   "2018": {
+    "hauptmeldungen": 10357,
+    "mitUeberraschung": 9842
+   },
+   "2019": {
+    "hauptmeldungen": 10220,
+    "mitUeberraschung": 9828
+   },
+   "2020": {
+    "hauptmeldungen": 10137,
+    "mitUeberraschung": 9747
+   },
+   "2021": {
+    "hauptmeldungen": 10800,
+    "mitUeberraschung": 9945
+   },
+   "2022": {
+    "hauptmeldungen": 11200,
+    "mitUeberraschung": 10628
+   },
+   "2023": {
+    "hauptmeldungen": 10847,
+    "mitUeberraschung": 10559
+   },
+   "2024": {
+    "hauptmeldungen": 10337,
+    "mitUeberraschung": 10095
+   },
+   "2025": {
+    "hauptmeldungen": 9642,
+    "mitUeberraschung": 9455
+   },
+   "2026": {
+    "hauptmeldungen": 4525,
+    "mitUeberraschung": 4443
+   }
+  }
+ },
+ "M5": {
+  "kandidaten": 108784,
+  "ohneEinstiegstag": 0,
+  "einstiegNachPanelEnde": 0,
+  "einstiegAmErstenKalendertag": 0,
+  "keineReiheZurFirma": 0,
+  "ohneZeile": {
+   "nachDemAbgang": 4741,
+   "vorDemErstenBalken": 1311,
+   "luecke": 415
+  },
+  "mehrdeutigGetrennteReihe": 861,
+  "mehrereLinien": 586,
+  "nichtImUniversum": {
+   "klasseUnter5Mio": 29919,
+   "keineZeileAmStichtag": 258,
+   "unter250Vortage (Klasse 5-50)": 3878,
+   "unter250Vortage (Klasse 50-250 und hoeher)": 1926,
+   "centBoden (Klasse 5-50)": 718,
+   "centBoden (Klasse 50-250 und hoeher)": 205,
+   "dichteUnter80Prozent (Klasse 5-50)": 15855,
+   "dichteUnter80Prozent (Klasse 50-250 und hoeher)": 1853,
+   "massnahmeNah (Klasse 5-50)": 6,
+   "massnahmeNah (Klasse 50-250 und hoeher)": 10
+  },
+  "doppeltReiheTag": 0,
+  "imUniversum": 46828,
+  "imUniversumMitUeberraschung": 45785,
+  "jeJahrKlasse": {
+   "2017": {
+    "50-250": 1640,
+    "5-50": 2240,
+    "250-1000": 357,
+    "ab1000": 43
+   },
+   "2018": {
+    "5-50": 2306,
+    "250-1000": 408,
+    "50-250": 1762,
+    "ab1000": 66
+   },
+   "2019": {
+    "50-250": 1760,
+    "5-50": 2362,
+    "250-1000": 435,
+    "ab1000": 68
+   },
+   "2020": {
+    "5-50": 2265,
+    "50-250": 1819,
+    "250-1000": 551,
+    "ab1000": 104
+   },
+   "2021": {
+    "5-50": 1702,
+    "50-250": 1933,
+    "250-1000": 687,
+    "ab1000": 137
+   },
+   "2022": {
+    "5-50": 2091,
+    "50-250": 1980,
+    "250-1000": 785,
+    "ab1000": 138
+   },
+   "2023": {
+    "5-50": 2372,
+    "50-250": 1962,
+    "250-1000": 634,
+    "ab1000": 87
+   },
+   "2024": {
+    "5-50": 2323,
+    "50-250": 1970,
+    "250-1000": 720,
+    "ab1000": 113
+   },
+   "2025": {
+    "5-50": 1989,
+    "50-250": 2122,
+    "250-1000": 968,
+    "ab1000": 184
+   },
+   "2026": {
+    "5-50": 837,
+    "50-250": 1145,
+    "250-1000": 576,
+    "ab1000": 144
+   }
+  },
+  "jeKlasse": {
+   "50-250": 18093,
+   "5-50": 20487,
+   "250-1000": 6121,
+   "ab1000": 1084
+  },
+  "jeTageszeit": {
+   "vor": 20043,
+   "nach": 24177,
+   "im": 1564,
+   "frei": 1
+  },
+  "jeJahrTageszeit": {
+   "2017": {
+    "vor": 1896,
+    "nach": 2123,
+    "im": 261
+   },
+   "2018": {
+    "im": 233,
+    "vor": 2020,
+    "nach": 2289
+   },
+   "2019": {
+    "vor": 2044,
+    "im": 233,
+    "nach": 2347,
+    "frei": 1
+   },
+   "2020": {
+    "vor": 2048,
+    "im": 160,
+    "nach": 2531
+   },
+   "2021": {
+    "nach": 2370,
+    "vor": 1947,
+    "im": 142
+   },
+   "2022": {
+    "vor": 2113,
+    "nach": 2744,
+    "im": 137
+   },
+   "2023": {
+    "nach": 2729,
+    "vor": 2193,
+    "im": 133
+   },
+   "2024": {
+    "nach": 2765,
+    "vor": 2240,
+    "im": 121
+   },
+   "2025": {
+    "vor": 2348,
+    "nach": 2816,
+    "im": 99
+   },
+   "2026": {
+    "nach": 1463,
+    "vor": 1194,
+    "im": 45
+   }
+  },
+  "verschwunden": {
+   "lebend": 39249,
+   "verschwunden": 6536
+  },
+  "hauptklassen": {
+   "ereignisse": 25298,
+   "verschwunden": 1985,
+   "einstiegstage": 1876,
+   "handelstageImFenster": 2690,
+   "maxJeTag": 114,
+   "jeTagQuantile": {
+    "p10": 1,
+    "p25": 2,
+    "p50": 5,
+    "p75": 18,
+    "p90": 40,
+    "p99": 81
+   },
+   "anteilEreignisseInVollsten10ProzentTagen": 0.42702980472764646,
+   "jeMonat": {
+    "10": 2926,
+    "11": 2467,
+    "12": 409,
+    "01": 1817,
+    "02": 4171,
+    "03": 673,
+    "04": 3034,
+    "05": 3474,
+    "06": 414,
+    "07": 2804,
+    "08": 2815,
+    "09": 294
+   },
+   "firmen": 1418
+  }
+ }
+}

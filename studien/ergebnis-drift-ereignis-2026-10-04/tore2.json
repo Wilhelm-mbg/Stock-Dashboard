@@ -1,0 +1,269 @@
+{
+ "stand": "2026-10-04T10:59:04.821Z",
+ "faelle": [
+  {
+   "H": 60,
+   "schaetzer": "tag",
+   "groesse": "A",
+   "effekt": 0,
+   "seEntdeckung": 1.7639917460567534,
+   "seBestaetigung": 0.9369655420801273,
+   "mdeBestaetigung": 2.623503517824356,
+   "fassung1Beide": 0.0005175651820060953,
+   "fassung2": 0.006209679151598999
+  },
+  {
+   "H": 60,
+   "schaetzer": "tag",
+   "groesse": "B",
+   "effekt": 0,
+   "seEntdeckung": 1.2155330788737777,
+   "seBestaetigung": 0.6598195409969299,
+   "mdeBestaetigung": 1.8474947147914034,
+   "fassung1Beide": 0.0005175651820060953,
+   "fassung2": 0.006209679151598999
+  },
+  {
+   "H": 60,
+   "schaetzer": "tag",
+   "groesse": "A",
+   "effekt": 2,
+   "seEntdeckung": 1.7639917460567534,
+   "seBestaetigung": 0.9369655420801273,
+   "mdeBestaetigung": 2.623503517824356,
+   "fassung1Beide": 0.10693273243363563,
+   "fassung2": 0.3573878066032719
+  },
+  {
+   "H": 60,
+   "schaetzer": "tag",
+   "groesse": "B",
+   "effekt": 1,
+   "seEntdeckung": 1.2155330788737777,
+   "seBestaetigung": 0.6598195409969299,
+   "mdeBestaetigung": 1.8474947147914034,
+   "fassung1Beide": 0.037538569797966,
+   "fassung2": 0.16245102735149194
+  },
+  {
+   "H": 60,
+   "schaetzer": "tag",
+   "groesse": "A",
+   "effekt": 4,
+   "seEntdeckung": 1.7639917460567534,
+   "seBestaetigung": 0.9369655420801273,
+   "mdeBestaetigung": 2.623503517824356,
+   "fassung1Beide": 0.5984478895457097,
+   "fassung2": 0.9615614952272179
+  },
+  {
+   "H": 60,
+   "schaetzer": "tag",
+   "groesse": "B",
+   "effekt": 2,
+   "seEntdeckung": 1.2155330788737777,
+   "seBestaetigung": 0.6598195409969299,
+   "mdeBestaetigung": 1.8474947147914034,
+   "fassung1Beide": 0.3067699309206922,
+   "fassung2": 0.7023363741161683
+  },
+  {
+   "H": 60,
+   "schaetzer": "ereignis",
+   "groesse": "A",
+   "effekt": 0,
+   "seEntdeckung": 1.0477631673335763,
+   "seBestaetigung": 0.6705627759152083,
+   "mdeBestaetigung": 1.877575772562583,
+   "fassung1Beide": 0.0005175651820060953,
+   "fassung2": 0.006209679151598999
+  },
+  {
+   "H": 60,
+   "schaetzer": "ereignis",
+   "groesse": "B",
+   "effekt": 0,
+   "seEntdeckung": 0.7114913733165351,
+   "seBestaetigung": 0.44217608164396277,
+   "mdeBestaetigung": 1.2380930286030958,
+   "fassung1Beide": 0.0005175651820060953,
+   "fassung2": 0.006209679151598999
+  },
+  {
+   "H": 60,
+   "schaetzer": "ereignis",
+   "groesse": "A",
+   "effekt": 2,
+   "seEntdeckung": 1.0477631673335763,
+   "seBestaetigung": 0.6705627759152083,
+   "mdeBestaetigung": 1.877575772562583,
+   "fassung1Beide": 0.38814027338372065,
+   "fassung2": 0.6852993109423945
+  },
+  {
+   "H": 60,
+   "schaetzer": "ereignis",
+   "groesse": "B",
+   "effekt": 1,
+   "seEntdeckung": 0.7114913733165351,
+   "seBestaetigung": 0.44217608164396277,
+   "mdeBestaetigung": 1.2380930286030958,
+   "fassung1Beide": 0.1665261918101904,
+   "fassung2": 0.40576307171166753
+  },
+  {
+   "H": 60,
+   "schaetzer": "ereignis",
+   "groesse": "A",
+   "effekt": 4,
+   "seEntdeckung": 1.0477631673335763,
+   "seBestaetigung": 0.6705627759152083,
+   "mdeBestaetigung": 1.877575772562583,
+   "fassung1Beide": 0.9654063215355514,
+   "fassung2": 0.9997349741930093
+  },
+  {
+   "H": 60,
+   "schaetzer": "ereignis",
+   "groesse": "B",
+   "effekt": 2,
+   "seEntdeckung": 0.7114913733165351,
+   "seBestaetigung": 0.44217608164396277,
+   "mdeBestaetigung": 1.2380930286030958,
+   "fassung1Beide": 0.7867136464950611,
+   "fassung2": 0.9784678794127344
+  },
+  {
+   "H": 20,
+   "schaetzer": "tag",
+   "groesse": "A",
+   "effekt": 0,
+   "seEntdeckung": 0.5412725978164366,
+   "seBestaetigung": 0.5441405487786298,
+   "mdeBestaetigung": 1.5235935365801634,
+   "fassung1Beide": 0.0005175651820060953,
+   "fassung2": 0.006209679151598999
+  },
+  {
+   "H": 20,
+   "schaetzer": "tag",
+   "groesse": "B",
+   "effekt": 0,
+   "seEntdeckung": 0.38005139316146935,
+   "seBestaetigung": 0.3790235104858241,
+   "mdeBestaetigung": 1.0612658293603074,
+   "fassung1Beide": 0.0005175651820060953,
+   "fassung2": 0.006209679151598999
+  },
+  {
+   "H": 20,
+   "schaetzer": "tag",
+   "groesse": "A",
+   "effekt": 0.6666666666666666,
+   "seEntdeckung": 0.5412725978164366,
+   "seBestaetigung": 0.5441405487786298,
+   "mdeBestaetigung": 1.5235935365801634,
+   "fassung1Beide": 0.04847942645589935,
+   "fassung2": 0.10118540489394726
+  },
+  {
+   "H": 20,
+   "schaetzer": "tag",
+   "groesse": "B",
+   "effekt": 0.3333333333333333,
+   "seEntdeckung": 0.38005139316146935,
+   "seBestaetigung": 0.3790235104858241,
+   "mdeBestaetigung": 1.0612658293603074,
+   "fassung1Beide": 0.01715765239766844,
+   "fassung2": 0.05255738817902404
+  },
+  {
+   "H": 20,
+   "schaetzer": "tag",
+   "groesse": "A",
+   "effekt": 1.3333333333333333,
+   "seEntdeckung": 0.5412725978164366,
+   "seBestaetigung": 0.5441405487786298,
+   "mdeBestaetigung": 1.5235935365801634,
+   "fassung1Beide": 0.45711008952427,
+   "fassung2": 0.4801993725290796
+  },
+  {
+   "H": 20,
+   "schaetzer": "tag",
+   "groesse": "B",
+   "effekt": 0.6666666666666666,
+   "seEntdeckung": 0.38005139316146935,
+   "seBestaetigung": 0.3790235104858241,
+   "mdeBestaetigung": 1.0612658293603074,
+   "fassung1Beide": 0.16306959382449004,
+   "fassung2": 0.2293180509154738
+  },
+  {
+   "H": 20,
+   "schaetzer": "ereignis",
+   "groesse": "A",
+   "effekt": 0,
+   "seEntdeckung": 0.43950829629732746,
+   "seBestaetigung": 0.3970089575260935,
+   "mdeBestaetigung": 1.1116250810730617,
+   "fassung1Beide": 0.0005175651820060953,
+   "fassung2": 0.006209679151598999
+  },
+  {
+   "H": 20,
+   "schaetzer": "ereignis",
+   "groesse": "B",
+   "effekt": 0,
+   "seEntdeckung": 0.2849092216328248,
+   "seBestaetigung": 0.26593978371933924,
+   "mdeBestaetigung": 0.7446313944141498,
+   "fassung1Beide": 0.0005175651820060953,
+   "fassung2": 0.006209679151598999
+  },
+  {
+   "H": 20,
+   "schaetzer": "ereignis",
+   "groesse": "A",
+   "effekt": 0.6666666666666666,
+   "seEntdeckung": 0.43950829629732746,
+   "seBestaetigung": 0.3970089575260935,
+   "mdeBestaetigung": 1.1116250810730617,
+   "fassung1Beide": 0.11768018318530929,
+   "fassung2": 0.20588661412806836
+  },
+  {
+   "H": 20,
+   "schaetzer": "ereignis",
+   "groesse": "B",
+   "effekt": 0.3333333333333333,
+   "seEntdeckung": 0.2849092216328248,
+   "seBestaetigung": 0.26593978371933924,
+   "mdeBestaetigung": 0.7446313944141498,
+   "fassung1Beide": 0.04627339744881041,
+   "fassung2": 0.10627518744143277
+  },
+  {
+   "H": 20,
+   "schaetzer": "ereignis",
+   "groesse": "A",
+   "effekt": 1.3333333333333333,
+   "seEntdeckung": 0.43950829629732746,
+   "seBestaetigung": 0.3970089575260935,
+   "mdeBestaetigung": 1.1116250810730617,
+   "fassung1Beide": 0.7753290604784099,
+   "fassung2": 0.8046771025237835
+  },
+  {
+   "H": 20,
+   "schaetzer": "ereignis",
+   "groesse": "B",
+   "effekt": 0.6666666666666666,
+   "seEntdeckung": 0.2849092216328248,
+   "seBestaetigung": 0.26593978371933924,
+   "mdeBestaetigung": 0.7446313944141498,
+   "fassung1Beide": 0.4392466216146695,
+   "fassung2": 0.5027261775041403
+  }
+ ]
+}

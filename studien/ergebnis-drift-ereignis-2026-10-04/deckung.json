@@ -1,0 +1,505 @@
+{
+ "stand": "2026-10-04T10:54:52.263Z",
+ "stichtage": [
+  {
+   "stichtag": "2018-06-01",
+   "klassen": {
+    "50-250": {
+     "mitglieder": 561,
+     "ohneCik": 10,
+     "cikOhneMeldungImJahr": 85,
+     "mitMeldungImJahr": 466,
+     "artOhneMeldung": {
+      "CS": 62,
+      "ADRC": 33
+     },
+     "beispieleOhne": [
+      "ABC",
+      "APA",
+      "ARNC",
+      "ATHM",
+      "B",
+      "BBD",
+      "BBL*",
+      "BG",
+      "BHP",
+      "BIG*",
+      "BK",
+      "BLUE",
+      "BTI",
+      "BUD",
+      "BWA",
+      "CDK",
+      "CHKP",
+      "CMA",
+      "CNI",
+      "CNQ",
+      "CTRP",
+      "DATA*",
+      "DINO",
+      "DISH",
+      "DRE*"
+     ]
+    },
+    "5-50": {
+     "mitglieder": 655,
+     "ohneCik": 33,
+     "cikOhneMeldungImJahr": 135,
+     "mitMeldungImJahr": 487,
+     "artOhneMeldung": {
+      "CS": 124,
+      "ADRC": 44
+     },
+     "beispieleOhne": [
+      "AAN",
+      "ABB",
+      "ACC",
+      "AEG",
+      "AEM",
+      "AER",
+      "AFSI",
+      "AG",
+      "AGI",
+      "AL",
+      "AMX",
+      "APO",
+      "AU",
+      "AZPN",
+      "BAM",
+      "BB",
+      "BBVA",
+      "BCE",
+      "BCS",
+      "BNS",
+      "BRFS",
+      "BVN",
+      "CADE*",
+      "CBAY",
+      "CCEP"
+     ]
+    },
+    "ab1000": {
+     "mitglieder": 18,
+     "ohneCik": 0,
+     "cikOhneMeldungImJahr": 2,
+     "mitMeldungImJahr": 16,
+     "artOhneMeldung": {
+      "ADRC": 1,
+      "CS": 1
+     },
+     "beispieleOhne": [
+      "BABA",
+      "XOM"
+     ]
+    },
+    "250-1000": {
+     "mitglieder": 124,
+     "ohneCik": 1,
+     "cikOhneMeldungImJahr": 12,
+     "mitMeldungImJahr": 111,
+     "artOhneMeldung": {
+      "ADRC": 6,
+      "CS": 7
+     },
+     "beispieleOhne": [
+      "BIDU",
+      "BP",
+      "CI",
+      "DIS",
+      "EA",
+      "FOXA",
+      "JD",
+      "MON",
+      "NTES",
+      "NXPI",
+      "TSM",
+      "VALE",
+      "X*"
+     ]
+    }
+   }
+  },
+  {
+   "stichtag": "2021-06-01",
+   "klassen": {
+    "50-250": {
+     "mitglieder": 608,
+     "ohneCik": 12,
+     "cikOhneMeldungImJahr": 107,
+     "mitMeldungImJahr": 489,
+     "artOhneMeldung": {
+      "CS": 75,
+      "ADRC": 44
+     },
+     "beispieleOhne": [
+      "ABC",
+      "AEM",
+      "AER",
+      "AG",
+      "ALC",
+      "APO",
+      "ATHM",
+      "AU",
+      "AZPN",
+      "BAM",
+      "BBL*",
+      "BCE",
+      "BCS",
+      "BG",
+      "BHP",
+      "BK",
+      "BMO",
+      "BNS",
+      "BTI",
+      "BUD",
+      "CCJ",
+      "CHKP",
+      "CM",
+      "CMA",
+      "CNI"
+     ]
+    },
+    "250-1000": {
+     "mitglieder": 209,
+     "ohneCik": 2,
+     "cikOhneMeldungImJahr": 21,
+     "mitMeldungImJahr": 186,
+     "artOhneMeldung": {
+      "ADRC": 14,
+      "CS": 9
+     },
+     "beispieleOhne": [
+      "ASML",
+      "B",
+      "BILI",
+      "BNTX",
+      "BP",
+      "COUP*",
+      "DKNG",
+      "EA",
+      "FTCH",
+      "FUTU",
+      "IQ",
+      "JD",
+      "MARA",
+      "PBR",
+      "PDD",
+      "SE~2",
+      "SPOT",
+      "TAL",
+      "TEAM",
+      "TME",
+      "VALE",
+      "VIPS",
+      "X*"
+     ]
+    },
+    "ab1000": {
+     "mitglieder": 49,
+     "ohneCik": 0,
+     "cikOhneMeldungImJahr": 6,
+     "mitMeldungImJahr": 43,
+     "artOhneMeldung": {
+      "ADRC": 4,
+      "CS": 2
+     },
+     "beispieleOhne": [
+      "BABA",
+      "BIDU",
+      "NIO~2",
+      "SHOP",
+      "TSM",
+      "XOM"
+     ]
+    },
+    "5-50": {
+     "mitglieder": 560,
+     "ohneCik": 24,
+     "cikOhneMeldungImJahr": 145,
+     "mitMeldungImJahr": 391,
+     "artOhneMeldung": {
+      "ADRC": 45,
+      "CS": 124
+     },
+     "beispieleOhne": [
+      "ABB",
+      "ABEV",
+      "ACC",
+      "AEG",
+      "AFMD",
+      "AGI",
+      "AGRO",
+      "AMX",
+      "AQN",
+      "AQUA",
+      "ARCO",
+      "ARVL",
+      "ASX",
+      "ATCO",
+      "AVID",
+      "AY",
+      "BHVN",
+      "BIG*",
+      "BLUE",
+      "BPY",
+      "BRFS",
+      "BTBT~2",
+      "BTG",
+      "BVN",
+      "BXS*"
+     ]
+    }
+   }
+  },
+  {
+   "stichtag": "2024-06-03",
+   "klassen": {
+    "50-250": {
+     "mitglieder": 556,
+     "ohneCik": 4,
+     "cikOhneMeldungImJahr": 86,
+     "mitMeldungImJahr": 466,
+     "artOhneMeldung": {
+      "CS": 48,
+      "ADRC": 42
+     },
+     "beispieleOhne": [
+      "AEM",
+      "AER",
+      "AG",
+      "AIRC",
+      "ALC",
+      "ASX",
+      "BCE",
+      "BCS",
+      "BEKE",
+      "BHP",
+      "BILI",
+      "BK",
+      "BN",
+      "BNS",
+      "BTI",
+      "BUD",
+      "BZ",
+      "CCEP",
+      "CCJ",
+      "CLS",
+      "CM",
+      "CMA",
+      "CNI",
+      "CNQ",
+      "CVE"
+     ]
+    },
+    "250-1000": {
+     "mitglieder": 197,
+     "ohneCik": 0,
+     "cikOhneMeldungImJahr": 14,
+     "mitMeldungImJahr": 183,
+     "artOhneMeldung": {
+      "ADRC": 10,
+      "CS": 4
+     },
+     "beispieleOhne": [
+      "ASML",
+      "B",
+      "BABA",
+      "BIDU",
+      "BP",
+      "JD",
+      "MMC",
+      "NVO",
+      "PBR",
+      "PDD",
+      "SE~2",
+      "SHOP",
+      "SPOT",
+      "VALE"
+     ]
+    },
+    "5-50": {
+     "mitglieder": 608,
+     "ohneCik": 6,
+     "cikOhneMeldungImJahr": 131,
+     "mitMeldungImJahr": 471,
+     "artOhneMeldung": {
+      "CS": 91,
+      "ADRC": 46
+     },
+     "beispieleOhne": [
+      "AGI",
+      "AMX",
+      "AQN",
+      "ARCO",
+      "ASC",
+      "ATAT",
+      "ATHM",
+      "AU",
+      "AY",
+      "BAM",
+      "BASE",
+      "BBVA",
+      "BMO",
+      "BNTX",
+      "BORR",
+      "BTE",
+      "BUR",
+      "BVN",
+      "CADE*",
+      "CERE~2",
+      "CLBT",
+      "CPRX",
+      "CSIQ",
+      "CSTM",
+      "CX"
+     ]
+    },
+    "ab1000": {
+     "mitglieder": 32,
+     "ohneCik": 0,
+     "cikOhneMeldungImJahr": 2,
+     "mitMeldungImJahr": 30,
+     "artOhneMeldung": {
+      "ADRC": 1,
+      "CS": 1
+     },
+     "beispieleOhne": [
+      "TSM",
+      "XOM"
+     ]
+    }
+   }
+  },
+  {
+   "stichtag": "2026-06-01",
+   "klassen": {
+    "50-250": {
+     "mitglieder": 651,
+     "ohneCik": 2,
+     "cikOhneMeldungImJahr": 116,
+     "mitMeldungImJahr": 533,
+     "artOhneMeldung": {
+      "CS": 61,
+      "ADRC": 57
+     },
+     "beispieleOhne": [
+      "AES",
+      "AGI",
+      "ALC",
+      "AS",
+      "ASX",
+      "AU",
+      "BCE",
+      "BCS",
+      "BEKE",
+      "BHP",
+      "BIDU",
+      "BILI",
+      "BIRK",
+      "BMO",
+      "BN",
+      "BNS",
+      "BNTX",
+      "BTDR",
+      "BTI",
+      "BUD",
+      "BZ",
+      "CCEP",
+      "CHKP",
+      "CM",
+      "CNI"
+     ]
+    },
+    "250-1000": {
+     "mitglieder": 342,
+     "ohneCik": 0,
+     "cikOhneMeldungImJahr": 25,
+     "mitMeldungImJahr": 317,
+     "artOhneMeldung": {
+      "CS": 15,
+      "ADRC": 10
+     },
+     "beispieleOhne": [
+      "AEM",
+      "AG",
+      "B",
+      "BP",
+      "CCJ",
+      "CNQ",
+      "CVE",
+      "EA",
+      "JD",
+      "NOK",
+      "NU",
+      "NVO",
+      "OKLO",
+      "PAAS",
+      "PBR",
+      "PDD",
+      "SAP",
+      "SATS",
+      "SE~2",
+      "SHEL",
+      "SPOT",
+      "STM",
+      "TSEM",
+      "VALE",
+      "WPM"
+     ]
+    },
+    "ab1000": {
+     "mitglieder": 78,
+     "ohneCik": 0,
+     "cikOhneMeldungImJahr": 4,
+     "mitMeldungImJahr": 74,
+     "artOhneMeldung": {
+      "ADRC": 4
+     },
+     "beispieleOhne": [
+      "ARM",
+      "ASML",
+      "BABA",
+      "TSM"
+     ]
+    },
+    "5-50": {
+     "mitglieder": 439,
+     "ohneCik": 2,
+     "cikOhneMeldungImJahr": 82,
+     "mitMeldungImJahr": 355,
+     "artOhneMeldung": {
+      "CS": 50,
+      "ADRC": 34
+     },
+     "beispieleOhne": [
+      "AEG",
+      "AMX",
+      "AQN",
+      "ATAT",
+      "ATHM",
+      "BBAR",
+      "BBVA",
+      "BEP",
+      "BEPC",
+      "BIP",
+      "BIPC",
+      "BORR",
+      "BVN",
+      "CGAU",
+      "CIB",
+      "CLBT",
+      "CPRX",
+      "CSIQ",
+      "DLO",
+      "DSGX",
+      "E",
+      "EC",
+      "EDU",
+      "ERO",
+      "FVRR"
+     ]
+    }
+   }
+  }
+ ]
+}

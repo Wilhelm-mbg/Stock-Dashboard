@@ -1,0 +1,849 @@
+{
+ "stand": "2026-10-04T10:55:56.023Z",
+ "anfragen": 30,
+ "meldungen": [
+  {
+   "nr": 1,
+   "reihe": "MDLZ",
+   "cik": 1103982,
+   "akzession": "0001193125-20-283923",
+   "annahmeNY": "2020-11-02 16:12:05",
+   "tageszeit": "nach",
+   "einstiegstag": "2020-11-03",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2020-11-02",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2020-09-30 filed 2020-11-03 (+1 T)",
+   "fehler": null,
+   "anfang": "EX-99.1 Exhibit 99.1 Contacts: Tom Armitage (Media) Shep Dunlap (Investors) 1-847-943-5678 1-847-943-5454 news@mdlz.com ir@mdlz.com Mondel z International Reports Q3 2020 Results Net revenues increased 4.9% primarily driven by strong Organic Net Revenue 1 growth of 4.4% Year-to-date diluted EPS was $1.66, down 24.2%, lapping a prior-year benefit from Swiss tax reform; Year-to-date Adjusted EPS 1 was $1.92, up 5.9% on"
+  },
+  {
+   "nr": 2,
+   "reihe": "WEN",
+   "cik": 30697,
+   "akzession": "0001193125-25-025580",
+   "annahmeNY": "2025-02-13 07:06:14",
+   "tageszeit": "vor",
+   "einstiegstag": "2025-02-13",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-101.SCH",
+    "EX-101.LAB",
+    "EX-101.PRE",
+    "GRAPHIC"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2025-02-13",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-K 2024-12-31 filed 2025-02-21 (+8 T)",
+   "fehler": null,
+   "anfang": "EX-99.1 Exhibit 99.1 THE WENDY S COMPANY REPORTS FOURTH QUARTER AND FULL-YEAR 2024 RESULTS, PROVIDES 2025 OUTLOOK, AND UPDATES ITS CAPITAL ALLOCATION POLICY Wendy s systemwide sales grew 5.4% in the fourth quarter, reaching $3.7 billion,* including same-restaurant sales growth of 4.3%. For the full year systemwide sales grew 3.1%, reaching $14.5 billion, including same-restaurant sales growth of 1.5%. Total revenues "
+  },
+  {
+   "nr": 3,
+   "reihe": "PCTY",
+   "cik": 1591698,
+   "akzession": "0001591698-22-000182",
+   "annahmeNY": "2022-11-03 16:09:45",
+   "tageszeit": "nach",
+   "einstiegstag": "2022-11-04",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-101.SCH",
+    "EX-101.LAB",
+    "EX-101.PRE",
+    "GRAPHIC"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2022-11-03",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2022-09-30 filed 2022-11-04 (+1 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 press release Paylocity Announces First Quarter Fiscal Year 2023 Financial Results Q1 2023 Recurring Other Revenue of $245.4 million, up 36% year-over-year Q1 2023 Total Revenue of $253.3 million, up 39% year-over-year SCHAUMBURG, IL. - November 3, 2022 - Paylocity Holding Corporation (Nasdaq PCTY), a leading provider of cloud-based HCM and payroll software solutions, today announced financial r"
+  },
+  {
+   "nr": 4,
+   "reihe": "KMI",
+   "cik": 1506307,
+   "akzession": "0001506307-20-000037",
+   "annahmeNY": "2020-04-22 16:17:07",
+   "tageszeit": "nach",
+   "einstiegstag": "2020-04-23",
+   "itemsListe": "2.02,7.01,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Regulation FD Disclosure",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2020-04-22",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2020-03-31 filed 2020-04-29 (+7 T)",
+   "fehler": null,
+   "anfang": "Exhibit Exhibit 99.1 KINDER MORGAN INCREASES DIVIDEND FIVE PERCENT AND ANNOUNCES RESULTS FOR FIRST QUARTER OF 2020 HOUSTON, April 22, 2020 - Kinder Morgan, Inc. s (NYSE: KMI) board of directors today approved a cash dividend of $0.2625 per share for the first quarter ($1.05 annualized), payable on May 15, 2020, to common stockholders of record as of the close of business on May 4, 2020. This dividend represents a 5 p"
+  },
+  {
+   "nr": 5,
+   "reihe": "DFS",
+   "cik": 1393612,
+   "akzession": "0001393612-17-000038",
+   "annahmeNY": "2017-07-26 16:16:34",
+   "tageszeit": "nach",
+   "einstiegstag": "2017-07-27",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-99.2"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2017-07-26",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2017-06-30 filed 2017-08-01 (+6 T)",
+   "fehler": null,
+   "anfang": "Exhibit Exhibit 99.1 DISCOVER FINANCIAL SERVICES REPORTS SECOND QUARTER NET INCOME OF $546 MILLION OR $1.40 PER DILUTED SHARE Riverwoods, IL, July 26, 2017 - Discover Financial Services (NYSE: DFS) today reported net income of $546 million or $1.40 per diluted share for the second quarter of 2017 , as compared to $616 million or $1.47 per diluted share for the second quarter of 2016 . The company s return on equity f"
+  },
+  {
+   "nr": 6,
+   "reihe": "LULU",
+   "cik": 1397187,
+   "akzession": "0001397187-25-000038",
+   "annahmeNY": "2025-09-04 16:10:29",
+   "tageszeit": "nach",
+   "einstiegstag": "2025-09-05",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-101.SCH",
+    "EX-101.LAB",
+    "EX-101.PRE",
+    "GRAPHIC"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2025-09-04",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2025-07-31 filed 2025-09-04 (+0 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 LULULEMON ATHLETICA INC. ANNOUNCES SECOND QUARTER FISCAL 2025 RESULTS Revenue increased 7% to $2.5 billion, or increased 6% on a constant dollar basis Comparable sales increased 1% Diluted EPS of $3.10 Vancouver, British Columbia - September 4, 2025 - lululemon athletica inc. (NASDAQ LULU) today announced financial results for the second quarter of fiscal 2025, which ended on August 3, 2025. Cal"
+  },
+  {
+   "nr": 7,
+   "reihe": "MCK",
+   "cik": 927653,
+   "akzession": "0000927653-22-000047",
+   "annahmeNY": "2022-05-05 16:09:13",
+   "tageszeit": "nach",
+   "einstiegstag": "2022-05-06",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2022-05-05",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-K 2022-03-31 filed 2022-05-09 (+4 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 McKESSON REPORTS FISCAL 2022 FOURTH-QUARTER AND FULL-YEAR RESULTS Fourth-Quarter Highlights Total revenues of $66.1 billion increased 12%. Earnings per diluted share from continuing operations of $2.48 decreased $1.67. Adjusted Earnings per Diluted Share of $5.83 increased 15%. Adjusted Earnings per Diluted Share increased 21% excluding certain items 1 . Full-Year Highlights Total revenues of $2"
+  },
+  {
+   "nr": 8,
+   "reihe": "IBM",
+   "cik": 51143,
+   "akzession": "0000051143-24-000004",
+   "annahmeNY": "2024-01-24 16:13:55",
+   "tageszeit": "nach",
+   "einstiegstag": "2024-01-25",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2024-01-24",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-K 2023-12-31 filed 2024-02-26 (+33 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 IBM RELEASES FOURTH-QUARTER RESULTS Revenue growth in all segments Strong margin expansion and cash generation ARMONK, N.Y., January 24, 2024 . . . IBM (NYSE IBM) today announced fourth-quarter 2023 earnings results. In the fourth quarter, we grew revenue in all of our segments, driven by continued adoption of our hybrid cloud and AI offerings. Client demand for AI is accelerating and our book o"
+  },
+  {
+   "nr": 9,
+   "reihe": "ARMK",
+   "cik": 1584509,
+   "akzession": "0001584509-24-000094",
+   "annahmeNY": "2024-05-07 06:33:16",
+   "tageszeit": "vor",
+   "einstiegstag": "2024-05-07",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2024-05-07",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2024-03-31 filed 2024-05-07 (+0 T)",
+   "fehler": null,
+   "anfang": "Document For Immediate Release Inquiries Felise Glantz Kissell (215) 409-7287 Kissell-Felise aramark.com Gene Cleary (215) 409-7945 Cleary-Gene aramark.com Aramark Reports Second Quarter Earnings YEAR-OVER-YEAR SUMMARY Revenue +7% Organic Revenue +9% Growth from strong base business volume, pricing actions, and net new business Record revenue in a second quarter for both the FSS U.S. and International segments Operat"
+  },
+  {
+   "nr": 10,
+   "reihe": "OPEN",
+   "cik": 1801169,
+   "akzession": "0001801169-21-000099",
+   "annahmeNY": "2021-08-11 16:20:33",
+   "tageszeit": "nach",
+   "einstiegstag": "2021-08-12",
+   "itemsListe": "2.02,7.01,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Regulation FD Disclosure",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-99.2",
+    "EX-99.3",
+    "EX-101.SCH",
+    "EX-101.LAB"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2021-08-11",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2021-06-30 filed 2021-08-11 (+0 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 Opendoor Announces Second Quarter 2021 Financial Results SAN FRANCISCO, California - August 11, 2021 - Opendoor Technologies Inc. (Nasdaq OPEN), a leading digital platform for residential real estate, today reported financial results for its quarter ended June 30, 2021. Opendoor s Second Quarter 2021 financial results and management commentary can be accessed through the Company s shareholder le"
+  },
+  {
+   "nr": 11,
+   "reihe": "ADNT",
+   "cik": 1670541,
+   "akzession": "0001670541-18-000003",
+   "annahmeNY": "2018-01-29 07:36:34",
+   "tageszeit": "vor",
+   "einstiegstag": "2018-01-29",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "GRAPHIC"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2018-01-29",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2017-12-31 filed 2018-01-30 (+1 T)",
+   "fehler": null,
+   "anfang": "adientfy2018q1earnings RECENT HIGHLIGHTS ADIENT FISCAL FIRST QUARTER 2018 EARNINGS 1 Adient s Q1 results impacted by headwinds in Seat Structures & Mechanisms (SS&M) business Q1 GAAP net income and EPS diluted of $(216)M and $(2.32), respectively; Q1 adjusted-EPS diluted of $1.06 Q1 Adjusted-EBIT of $163M (margin of 3.9%) Cash and cash equivalents of $390M at Dec. 31, 2017 Gross debt and net debt totaled $3,501M and "
+  },
+  {
+   "nr": 12,
+   "reihe": "OKE",
+   "cik": 1039684,
+   "akzession": "0001039684-24-000013",
+   "annahmeNY": "2024-02-26 16:50:31",
+   "tageszeit": "nach",
+   "einstiegstag": "2024-02-27",
+   "itemsListe": "2.02,7.01,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Regulation FD Disclosure",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-101.SCH",
+    "EX-101.DEF",
+    "EX-101.LAB",
+    "EX-101.PRE"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2024-02-26",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-K 2023-12-31 filed 2024-02-27 (+1 T)",
+   "fehler": null,
+   "anfang": "okeq42023earningsrelease -more- February 26, 2024 Analyst Contact: Megan Patterson 918-561-5325 Media Contact: Brad Borror 918-588-7582 ONEOK Announces Higher Fourth Quarter and Full-year 2023 Earnings Record Rocky Mountain Region Volumes Announces 2024 Financial Guidance TULSA, Okla. - Feb. 26, 2024 - ONEOK, Inc. (NYSE: OKE) today announced higher fourth quarter and full-year 2023 results and 2024 financial guidance"
+  },
+  {
+   "nr": 13,
+   "reihe": "WMT",
+   "cik": 104169,
+   "akzession": "0000104169-17-000052",
+   "annahmeNY": "2017-08-17 06:59:27",
+   "tageszeit": "vor",
+   "einstiegstag": "2017-08-17",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": null,
+   "verhaeltnis": "kein Datum gefunden",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2017-07-31 filed 2017-08-31 (+14 T)",
+   "fehler": null,
+   "anfang": "Exhibit Walmart U.S. Q2 comps 1 grew 1.8% and Walmart U.S. eCommerce GMV 2 grew 67%, Company reports Q2 FY18 GAAP EPS of $0.96; Adjusted EPS 3 of $1.08 Total revenue was $123.4 billion, an increase of $2.5 billion, or 2.1%. Excluding currency 3 , total revenue was $124.4 billion, an increase of $3.5 billion, or 2.9%. \"Thanks to the team for delivering another solid quarter. Our customers are responding to the improve"
+  },
+  {
+   "nr": 14,
+   "reihe": "JLL",
+   "cik": 1037976,
+   "akzession": "0001037976-26-000104",
+   "annahmeNY": "2026-04-30 07:31:43",
+   "tageszeit": "vor",
+   "einstiegstag": "2026-04-30",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2026-04-30",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2026-03-31 filed 2026-04-30 (+0 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 News Release JLL Reports Financial Results for First-Quarter 2026 JLL achieved a record first-quarter diluted earnings per share of $3.33, up 207% versus the prior-year quarter (in local currency 1 ) CHICAGO, April 30, 2026 - Jones Lang LaSalle Incorporated ( NYSE JLL ) today reported operating performance for the first quarter of 2026. Diluted earnings per share was $3.33, up 192% in USD and 20"
+  },
+  {
+   "nr": 15,
+   "reihe": "CI",
+   "cik": 1739940,
+   "akzession": "0000950159-20-000161",
+   "annahmeNY": "2020-07-30 06:18:55",
+   "tageszeit": "vor",
+   "einstiegstag": "2020-07-30",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "GRAPHIC",
+    "GRAPHIC",
+    "EX-101.SCH",
+    "EX-101.LAB"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2020-07-30",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2020-06-30 filed 2020-08-06 (+7 T)",
+   "fehler": null,
+   "anfang": "Exhibit 99.1 Press Release INVESTOR RELATIONS CONTACT: Will McDowell 215-761-4198 william.mcdowell2@cigna.com MEDIA CONTACT: Ellie Polack 860-902-4906 elinor.polack@cigna.com Cigna Expands Stakeholder and Community Support, Reports Second Quarter 2020 Performance Total revenues in the second quarter were $39.3 billion. Adjusted revenues 1 were $39.2 billion. Shareholders net income for second quarter was $1.8 billion"
+  },
+  {
+   "nr": 16,
+   "reihe": "BMY",
+   "cik": 14272,
+   "akzession": "0000014272-24-000020",
+   "annahmeNY": "2024-02-02 07:46:16",
+   "tageszeit": "vor",
+   "einstiegstag": "2024-02-02",
+   "itemsListe": "2.02,7.01,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Regulation FD Disclosure",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2024-02-02",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-K 2023-12-31 filed 2024-02-13 (+11 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 Bristol Myers Squibb Reports Fourth Quarter and Full-Year Financial Results for 2023 Results Reflect Continued Strength of In-Line and New Products, Pipeline Execution and Business Development Activity, Supporting Growth Momentum into 2024 Reports Fourth Quarter Revenues of $11.5 Billion GAAP EPS of $0.87 and Non-GAAP EPS of $1.70 In-Line and New Product Portfolio Revenues Increased 9% to $9.8 B"
+  },
+  {
+   "nr": 17,
+   "reihe": "Z",
+   "cik": 1617640,
+   "akzession": "0001617640-24-000012",
+   "annahmeNY": "2024-02-13 16:06:39",
+   "tageszeit": "nach",
+   "einstiegstag": "2024-02-14",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-99.2",
+    "EX-99.3"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2024-02-13",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-K 2023-12-31 filed 2024-02-15 (+2 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 Contacts Investors Brad Berning ir zillowgroup.com Media Chrissy Roebuck press zillow.com Zillow Group Reports Fourth-Quarter and Full-Year 2023 Financial Results SEATTLE - Feb. 13, 2024 - Zillow Group, Inc. (NASDAQ Z and ZG), which is transforming the way people buy, sell, rent and finance homes, today announced its consolidated financial results for the three months and year ended December 31,"
+  },
+  {
+   "nr": 18,
+   "reihe": "MOS",
+   "cik": 1285785,
+   "akzession": "0001243786-20-000119",
+   "annahmeNY": "2020-11-02 16:05:35",
+   "tageszeit": "nach",
+   "einstiegstag": "2020-11-03",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-99.2"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2020-11-02",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2020-09-30 filed 2020-11-03 (+1 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 The Mosaic Company 101 E. Kennedy Blvd., Suite 2500 Tampa, FL 33602 www.mosaicco.com FOR IMMEDIATE RELEASE Media Ben Pratt The Mosaic Company 813-775-4206 benjamin.pratt mosaicco.com Investors Laura Gagnon The Mosaic Company 813-775-4214 investor mosaicco.com THE MOSAIC COMPANY REPORTS THIRD QUARTER 2020 RESULTS TAMPA, FL, November 2, 2020 - The Mosaic Company (NYSE MOS), reported a net loss of "
+  },
+  {
+   "nr": 19,
+   "reihe": "AVB",
+   "cik": 915912,
+   "akzession": "0000915912-22-000003",
+   "annahmeNY": "2022-02-03 06:56:47",
+   "tageszeit": "vor",
+   "einstiegstag": "2022-02-03",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2022-02-02",
+   "verhaeltnis": "Vortag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-K 2021-12-31 filed 2022-02-25 (+22 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 For Immediate News Release February 2, 2022 AVALONBAY COMMUNITIES, INC. ANNOUNCES 2021 OPERATING RESULTS AND INITIAL 2022 FINANCIAL OUTLOOK (Arlington, VA) AvalonBay Communities, Inc. (NYSE AVB) (the Company ) reported today that Net Income Attributable to Common Stockholders for the three months ended December 31, 2021 was $335,209,000. This resulted in a decrease in Earnings per Share - dilute"
+  },
+  {
+   "nr": 20,
+   "reihe": "AVY",
+   "cik": 8818,
+   "akzession": "0001193125-25-089998",
+   "annahmeNY": "2025-04-23 06:45:35",
+   "tageszeit": "vor",
+   "einstiegstag": "2025-04-23",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-99.2",
+    "EX-101.SCH",
+    "EX-101.DEF",
+    "EX-101.LAB"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2025-04-23",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": true,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2025-03-31 filed 2025-04-29 (+6 T)",
+   "fehler": null,
+   "anfang": "EX-99.1 Exhibit 99.1 For Immediate Release AVERY DENNISON ANNOUNCES FIRST QUARTER 2025 RESULTS Highlights: 1Q25 Reported EPS of $2.09 Adjusted EPS of $2.30, up 0.4% and up ~4% ex. currency (non-GAAP) 1Q25 Net sales of $2.1 billion, down 0.1% Organic sales change (non-GAAP), up 2.3% 2Q25 Reported EPS guidance of $2.25 to $2.45 2Q25 Adjusted EPS guidance of $2.30 to $2.50 MENTOR, Ohio, April 23, 2025 Avery Dennison Cor"
+  },
+  {
+   "nr": 21,
+   "reihe": "ETSY",
+   "cik": 1370637,
+   "akzession": "0001370637-24-000041",
+   "annahmeNY": "2024-07-31 16:06:58",
+   "tageszeit": "nach",
+   "einstiegstag": "2024-08-01",
+   "itemsListe": "2.02,5.02,7.01,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Departure of Directors or Certain Officers; Election of Directors; Appointment of Certain Officers: Compensatory Arrangements of Certain Officers",
+    "Regulation FD Disclosure",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-99.2",
+    "EX-101.SCH",
+    "EX-101.LAB",
+    "EX-101.PRE"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2024-07-31",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2024-06-30 filed 2024-08-01 (+1 T)",
+   "fehler": null,
+   "anfang": "Document Etsy, Inc. Reports Second Quarter 2024 Results Consolidated results came in at the high end or ahead of guidance for key performance metrics Brooklyn, NY - July 31, 2024 - Etsy, Inc. (NASDAQ ETSY), which operates two-sided online marketplaces that connect millions of passionate and creative buyers and sellers around the world, today announced results for its second quarter ended June 30, 2024. We are pleased"
+  },
+  {
+   "nr": 22,
+   "reihe": "INVH",
+   "cik": 1687229,
+   "akzession": "0001687229-23-000019",
+   "annahmeNY": "2023-02-15 16:16:41",
+   "tageszeit": "nach",
+   "einstiegstag": "2023-02-16",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2023-02-15",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-K 2022-12-31 filed 2023-02-22 (+7 T)",
+   "fehler": null,
+   "anfang": "Document Table of Contents Earnings Press Release 3 Consolidated Financial Statements 9 Schedule 1 Reconciliation of FFO, Core FFO, and AFFO 11 Schedule 2 Capital Structure Information 13 Schedule 3 Summary of Operating Information by Home Portfolio 17 Schedule 4 Home Characteristics by Market 20 Schedule 5 Same Store Operating Information by Market 21 Schedule 6 Cost to Maintain and Capital Expenditure Detail 28 Sch"
+  },
+  {
+   "nr": 23,
+   "reihe": "PTEN",
+   "cik": 889900,
+   "akzession": "0001628280-25-019463",
+   "annahmeNY": "2025-04-23 19:24:36",
+   "tageszeit": "nach",
+   "einstiegstag": "2025-04-24",
+   "itemsListe": "2.02,8.01,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Other Events",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-101.SCH",
+    "EX-101.LAB",
+    "EX-101.PRE",
+    "XML"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2025-04-23",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2025-03-31 filed 2025-04-29 (+5 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 Contact Michael Sabella Vice President, Investor Relations (281) 885-7589 Patterson-UTI Energy Reports Financial Results for the Quarter Ended March 31, 2025 HOUSTON, Texas - April 23, 2025 - PATTERSON-UTI ENERGY, INC. (NASDAQ PTEN) today reported financial results for the quarter ended March 31, 2025 . First Quarter 2025 Financial Results Total revenue of $1.3 billion Net income attributable to"
+  },
+  {
+   "nr": 24,
+   "reihe": "GOOGL",
+   "cik": 1652044,
+   "akzession": "0001652044-25-000040",
+   "annahmeNY": "2025-04-24 16:01:26",
+   "tageszeit": "nach",
+   "einstiegstag": "2025-04-25",
+   "itemsListe": "2.02,8.01,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Other Events",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-101.SCH",
+    "EX-101.DEF",
+    "EX-101.LAB",
+    "EX-101.PRE"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2025-04-24",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2025-03-31 filed 2025-04-25 (+1 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 Alphabet Announces First Quarter 2025 Results MOUNTAIN VIEW, Calif. - April 24, 2025 - Alphabet Inc. (NASDAQ GOOG, GOOGL) today announced financial results for the quarter ended March 31, 2025. Consolidated Alphabet revenues in Q1 2025 increased 12%, or 14% in constant currency, year over year to $90.2 billion reflecting robust momentum across the business, with Google Search other, YouTube ads,"
+  },
+  {
+   "nr": 25,
+   "reihe": "CFG",
+   "cik": 759944,
+   "akzession": "0001193125-18-123670",
+   "annahmeNY": "2018-04-20 07:17:11",
+   "tageszeit": "vor",
+   "einstiegstag": "2018-04-20",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2018-04-20",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2018-03-31 filed 2018-05-09 (+19 T)",
+   "fehler": null,
+   "anfang": "EX-99.1 Exhibit 99.1 Citizens Financial Group, Inc. Reports First Quarter Net Income of $388 Million and Diluted EPS of $0.78 ROTCE of 11.7%, up 203 bps with Underlying ROTCE up 273 bps year over year* First quarter 2018 net income up 21% and diluted EPS up 28% year over year; up 31% and 37%, respectively, on an Underlying basis* Net interest margin up 8 basis points linked quarter and 20 basis points year over year "
+  },
+  {
+   "nr": 26,
+   "reihe": "ORLY",
+   "cik": 898173,
+   "akzession": "0000898173-17-000107",
+   "annahmeNY": "2017-04-26 16:31:39",
+   "tageszeit": "nach",
+   "einstiegstag": "2017-04-27",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "GRAPHIC"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2017-04-26",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2017-03-31 filed 2017-05-08 (+12 T)",
+   "fehler": null,
+   "anfang": "Exhibit Exhibit 99.1 FOR IMMEDIATE RELEASE O REILLY AUTOMOTIVE, INC. REPORTS FIRST QUARTER 2017 RESULTS First quarter comparable store sales increase of 0.8% 9% increase in first quarter diluted earnings per share to $2.83 Springfield, MO, April 26, 2017 - O Reilly Automotive, Inc. (the Company or O Reilly ) ( Nasdaq: ORLY), a leading retailer in the automotive aftermarket industry, today announced record revenues an"
+  },
+  {
+   "nr": 27,
+   "reihe": "AMH",
+   "cik": 1562401,
+   "akzession": "0001562401-25-000078",
+   "annahmeNY": "2025-10-29 16:17:51",
+   "tageszeit": "nach",
+   "einstiegstag": "2025-10-30",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-99.2"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2025-10-29",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2025-09-30 filed 2025-10-30 (+1 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 News Release AMH Reports Third Quarter 2025 Financial and Operating Results Raises Full Year 2025 Guidance LAS VEGAS, October 29, 2025 -AM H (NYSE AMH) (the Company ), a leading large-scale integrated owner, operator and developer of single-family rental homes, today announced its financial and operating results for the quarter ended September 30, 2025. Highlights Rents and other single-family p"
+  },
+  {
+   "nr": 28,
+   "reihe": "SNAP",
+   "cik": 1564408,
+   "akzession": "0001564408-24-000047",
+   "annahmeNY": "2024-08-01 16:15:28",
+   "tageszeit": "nach",
+   "einstiegstag": "2024-08-02",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2024-08-01",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2024-06-30 filed 2024-08-02 (+1 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 Snap Inc. Announces Second Quarter 2024 Financial Results Second quarter revenue increased 16% year-over-year to $1,237 million Daily Active Users increased 9% year-over-year to 432 million Net loss improved 34% year-over-year to $249 million Adjusted EBITDA improved 243% year-over-year to $55 million SANTA MONICA, Calif. - August 1, 2024 - Snap Inc. (NYSE SNAP) today announced financial results"
+  },
+  {
+   "nr": 29,
+   "reihe": "TDG",
+   "cik": 1260221,
+   "akzession": "0001260221-22-000022",
+   "annahmeNY": "2022-05-10 07:17:26",
+   "tageszeit": "vor",
+   "einstiegstag": "2022-05-10",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-101.SCH",
+    "EX-101.LAB",
+    "EX-101.PRE",
+    "GRAPHIC"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2022-05-10",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2022-03-31 filed 2022-05-10 (+0 T)",
+   "fehler": null,
+   "anfang": "Document Exhibit 99.1 TransDigm Group Reports Fiscal 2022 Second Quarter Results Cleveland, Ohio, May 10, 2022 PRNewswire -- TransDigm Group Incorporated (NYSE TDG), a leading global designer, producer and supplier of highly engineered aircraft components, today reported results for the second quarter ended April 2, 2022. Second quarter highlights include Net sales of $1,327 million, up 11% from $1,194 million in the"
+  },
+  {
+   "nr": 30,
+   "reihe": "FTNT",
+   "cik": 1262039,
+   "akzession": "0001262039-20-000063",
+   "annahmeNY": "2020-10-29 16:09:29",
+   "tageszeit": "nach",
+   "einstiegstag": "2020-10-30",
+   "itemsListe": "2.02,9.01",
+   "punkteKopf": [
+    "Results of Operations and Financial Condition",
+    "Financial Statements and Exhibits"
+   ],
+   "dokumente": [
+    "8-K",
+    "EX-99.1",
+    "EX-101.SCH",
+    "EX-101.CAL",
+    "EX-101.DEF",
+    "EX-101.LAB"
+   ],
+   "anhangTyp": "EX-99.1",
+   "datumMitteilung": "2020-10-29",
+   "verhaeltnis": "gleicher Tag",
+   "preliminaryImAnfang": false,
+   "uhrzeitImAnfang": null,
+   "zeile": "10-Q 2020-09-30 filed 2020-11-06 (+8 T)",
+   "fehler": null,
+   "anfang": "Document Press Release Fortinet Reports Third Quarter 2020 Financial Results Third Quarter 2020 Highlights Total revenue of $651.1 million, up 19% year over year Product revenue of $223.8 million, up 14% year over year Service revenue of $427.3 million, up 22% year over year Billings of $749.8 million, up 20% year over year 1 Deferred revenue of $2.39 billion, up 24% year over year GAAP operating margin of 19.5%, up "
+  }
+ ]
+}

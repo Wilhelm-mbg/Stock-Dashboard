@@ -1,0 +1,140 @@
+{
+ "stand": "2026-10-04T10:53:00.564Z",
+ "tafelKennung": "fundamentaltafel-2026-09-16/v1.1",
+ "firmen": 5904,
+ "mitAntwort": 5904,
+ "ohneListe404": 0,
+ "offen": 0,
+ "offenBeispiele": [],
+ "firmenMit8K": 5149,
+ "firmenMit202": 4341,
+ "firmenMit202Lebend": 1966,
+ "firmenMit202Verschwunden": 2375,
+ "zeilen8K": 447118,
+ "zeilen202": 126907,
+ "form": {
+  "8-K": 125796,
+  "8-K/A": 1111
+ },
+ "jeJahr": {
+  "2016": {
+   "alle": 12092,
+   "form8K": 11985,
+   "mitAnnahmezeit": 12092
+  },
+  "2017": {
+   "alle": 12081,
+   "form8K": 11983,
+   "mitAnnahmezeit": 12081
+  },
+  "2018": {
+   "alle": 11997,
+   "form8K": 11877,
+   "mitAnnahmezeit": 11997
+  },
+  "2019": {
+   "alle": 11645,
+   "form8K": 11541,
+   "mitAnnahmezeit": 11645
+  },
+  "2020": {
+   "alle": 11982,
+   "form8K": 11872,
+   "mitAnnahmezeit": 11982
+  },
+  "2021": {
+   "alle": 12427,
+   "form8K": 12312,
+   "mitAnnahmezeit": 12427
+  },
+  "2022": {
+   "alle": 12691,
+   "form8K": 12573,
+   "mitAnnahmezeit": 12691
+  },
+  "2023": {
+   "alle": 12230,
+   "form8K": 12116,
+   "mitAnnahmezeit": 12230
+  },
+  "2024": {
+   "alle": 11568,
+   "form8K": 11465,
+   "mitAnnahmezeit": 11568
+  },
+  "2025": {
+   "alle": 10696,
+   "form8K": 10613,
+   "mitAnnahmezeit": 10696
+  },
+  "2026": {
+   "alle": 7498,
+   "form8K": 7459,
+   "mitAnnahmezeit": 7498
+  }
+ },
+ "mitAnnahmezeit": 126907,
+ "ohneAnnahmezeit": 0,
+ "punkte": {
+  "allein": 2109,
+  "mit901": 88931,
+  "mit701": 21520,
+  "mitAnderen": 14347
+ },
+ "cikJuengerAlsReihe": 203,
+ "cikJuengerBeispiele": [
+  {
+   "cik": 1671013,
+   "name": "Cardtronics plc",
+   "aeltesteEinreichung": "2016-04-27",
+   "ersteKerze": "2016-01-04"
+  },
+  {
+   "cik": 1672326,
+   "name": "Yuma Energy, Inc.",
+   "aeltesteEinreichung": "2016-06-17",
+   "ersteKerze": "2016-01-04"
+  },
+  {
+   "cik": 1675820,
+   "name": "TiVo Corp",
+   "aeltesteEinreichung": "2016-06-06",
+   "ersteKerze": "2016-01-04"
+  },
+  {
+   "cik": 1677761,
+   "name": "Parkway, Inc.",
+   "aeltesteEinreichung": "2016-07-01",
+   "ersteKerze": "2016-01-04"
+  },
+  {
+   "cik": 1678531,
+   "name": "Envision Healthcare Corp",
+   "aeltesteEinreichung": "2016-08-04",
+   "ersteKerze": "2016-01-04"
+  },
+  {
+   "cik": 1679688,
+   "name": "DigitalBridge Group, Inc.",
+   "aeltesteEinreichung": "2016-07-29",
+   "ersteKerze": "2016-01-04"
+  },
+  {
+   "cik": 1691936,
+   "name": "STRYVE FOODS, INC.",
+   "aeltesteEinreichung": "2016-12-09",
+   "ersteKerze": "2016-01-04"
+  },
+  {
+   "cik": 1692115,
+   "name": "Southwest Gas Holdings, Inc.",
+   "aeltesteEinreichung": "2017-01-03",
+   "ersteKerze": "2016-01-04"
+  }
+ ],
+ "feldFehlt": 0,
+ "doppelteAkzessionUeberFirmen": 122,
+ "einreichungenGesehen": 5962311,
+ "zusatzdateienGeholt": 1221,
+ "auszugBytes": 11564567
+}
