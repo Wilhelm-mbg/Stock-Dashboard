@@ -13,7 +13,12 @@ const Q = path.join(REPO, 'studien', 'querschnitt-pruefstand-2026-09-13');
 const PR = require(path.join(Q, 'pruefstand.js')), K = require(path.join(Q, 'konfig.js'));
 const MH = require(path.join(REPO, 'mfhandel.js'));
 const KONFIG = MH.buchKonfig();
-const VON = '2021-09-16', BIS = '2026-09-15', KOSTEN_BP = 20, START = 100000, N_KORB = 148, PHASEN = 63;
+/* N_KORB: 148 war die Zahl im Siegel c0d3f30 - ein Zaehlfehler des PM (sein Zaehlskript liess 39 Reihen mit Kursen vor 1973 aus).
+ * Die App fuehrt 187 Werte (REGEL-KORB148.md, Nachtrag 1). Aufruf ohne Angabe rechnet den berichtigten Korb 187;
+ * `node ... pm-korb148.js 148` rechnet den ersten Lauf nach (schreibt dann ergebnis-korb148.json). */
+const VON = '2021-09-16', BIS = '2026-09-15', KOSTEN_BP = 20, START = 100000, N_KORB = Number(process.argv[2] || 187), PHASEN = 63;
+if (N_KORB !== 148 && N_KORB !== 187) throw new Error('Nur die beiden festgelegten Koerbe (187 berichtigt, 148 erster Lauf) werden gerechnet');
+const KORREKTUREN = N_KORB === 187 ? [{ nr: 1, was: 'Korbgroesse 187 statt 148', ursache: 'Zaehlfehler des PM vor dem ersten Lauf: sein Zaehlskript verlangte eine erste Kerze nach 1973 und liess 39 der 187 Reihen der App aus (Zielzahl der App ist 19, nicht 15).', regel: 'REGEL-KORB148.md Nachtrag 1, festgelegt vor dem berichtigten Lauf', ersterLauf: 'ergebnis-korb148.json (bleibt stehen)' }] : [];
 const MASSNAHMEN = 'E:/Markt-Dashboard-Archiv/alpaca-massnahmen/';
 const T975 = [null, 12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.201, 2.179, 2.160, 2.145, 2.131, 2.120, 2.110, 2.101, 2.093, 2.086, 2.080];
 
@@ -168,7 +173,7 @@ try {
   ueberdeckung = { appWerte: app.length, imKorb: app.filter(nm => korb.indexOf(nm) >= 0).length, stichtagVor: letzter.ausfuehrung };
 } catch (e) { ueberdeckung = { fehler: e.message }; }
 
-const E = { kennung: 'massstab-rueckblick-2026-10-04/pm-korb148/v1', art: 'Vorab-Rechnung des PM - eine Rechnung, ohne unabhaengige Gegenprobe', erzeugt: new Date().toISOString(),
+const E = { kennung: 'massstab-rueckblick-2026-10-04/pm-korb' + N_KORB + '/v1', art: 'Vorab-Rechnung des PM - eine Rechnung, ohne unabhaengige Gegenprobe', erzeugt: new Date().toISOString(),
   panelKennung: T.stand.kennung, fenster: { von: VON, bis: BIS }, korb: N_KORB, kostenBpJeSeite: KOSTEN_BP, konfigBuch: KONFIG,
   selbstpruefungBreiterKorb: { buchGesamt: breit.buchGesamt, spyGesamt: breit.spyGesamt, abstandPa: breit.abstandPa },
   haupt: { schlaegt: H.schlaegt, buchGesamt: H.buchGesamt, spyGesamt: H.spyGesamt, buchPa: H.buchPa, spyPa: H.spyPa, abstandPa: H.abstandPa, buchEnde: H.buchEnde, spyEnde: H.spyEnde,
@@ -178,10 +183,10 @@ const E = { kennung: 'massstab-rueckblick-2026-10-04/pm-korb148/v1', art: 'Vorab
   zufallsbereich: { startphasen: { phasen: phasen, minimum: Math.min.apply(null, ab), median: median(ab), maximum: Math.max.apply(null, ab), vorDemMarkt: phasen.filter(p => p.schlaegt).length, anzahl: PHASEN,
       rueckschlagBuchVon: Math.min.apply(null, phasen.map(p => p.rueckschlagBuch)), rueckschlagBuchBis: Math.max.apply(null, phasen.map(p => p.rueckschlagBuch)) },
     periodenstreuung: { n: n, mittel: mittel, standardabweichung: sd, standardfehler: se, tWert: tw, band95: [mittel - tw * se, mittel + tw * se], periodenVorn: x.filter(v => v > 0).length } },
-  nachrichtlich: { ueberdeckungMitAppListe: ueberdeckung, ordnerOhneMassnahmenDatei: ohneDatei }, korrekturen: [], laufzeitSekunden: Math.round((Date.now() - t0) / 100) / 10 };
-fs.writeFileSync(path.join(__dirname, 'ergebnis-korb148.json'), JSON.stringify(E, null, 1));
+  nachrichtlich: { ueberdeckungMitAppListe: ueberdeckung, ordnerOhneMassnahmenDatei: ohneDatei }, korrekturen: KORREKTUREN, laufzeitSekunden: Math.round((Date.now() - t0) / 100) / 10 };
+fs.writeFileSync(path.join(__dirname, 'ergebnis-korb' + N_KORB + '.json'), JSON.stringify(E, null, 1));
 
-console.log('KORB 148, k = 0 (Start ' + H.start + '): schlaegt den Markt: ' + (H.schlaegt ? 'JA' : 'NEIN') + ' - Buch ' + f(H.buchGesamt, 1) + ' % (' + f(H.buchPa) + ' % p. a.), SPY ' + f(H.spyGesamt, 1) + ' % (' + f(H.spyPa) + ' % p. a.), Abstand ' + f(H.abstandPa) + ' Pp p. a.');
+console.log('KORB ' + N_KORB + ', k = 0 (Start ' + H.start + '): schlaegt den Markt: ' + (H.schlaegt ? 'JA' : 'NEIN') + ' - Buch ' + f(H.buchGesamt, 1) + ' % (' + f(H.buchPa) + ' % p. a.), SPY ' + f(H.spyGesamt, 1) + ' % (' + f(H.spyPa) + ' % p. a.), Abstand ' + f(H.abstandPa) + ' Pp p. a.');
 console.log('Startphasen: ' + E.zufallsbereich.startphasen.vorDemMarkt + ' von ' + PHASEN + ' vor dem Markt, Abstand ' + f(E.zufallsbereich.startphasen.minimum) + ' / ' + f(E.zufallsbereich.startphasen.median) + ' / ' + f(E.zufallsbereich.startphasen.maximum) + ' Pp p. a. (Minimum / Median / Maximum)');
 console.log('Periodenstreuung: ' + n + ' Perioden, Mittel ' + f(mittel) + ' Pp, Standardfehler ' + se.toFixed(2) + ', Band ' + f(mittel - tw * se) + ' bis ' + f(mittel + tw * se) + ', vor dem Markt ' + E.zufallsbereich.periodenstreuung.periodenVorn);
 console.log('Rueckschlag Buch ' + f(H.rueckschlagBuch, 1) + ' % (Phasen ' + f(E.zufallsbereich.startphasen.rueckschlagBuchVon, 1) + ' bis ' + f(E.zufallsbereich.startphasen.rueckschlagBuchBis, 1) + ') / SPY ' + f(H.rueckschlagSpy, 1) + ' % | Kosten ' + H.kosten.toFixed(0) + ' $ | Ausschuettungen ' + H.ausschuettungenBuch.toFixed(0) + ' $ (' + H.ausschuettungenZahl + ') | Reihenenden ' + H.reihenenden.length + ' | Bargeld ' + H.bargeldMittel.toFixed(2) + ' % | groesstes Gewicht ' + H.groesstesGewicht.toFixed(1) + ' % | zuWenig ' + H.zuWenigTage);

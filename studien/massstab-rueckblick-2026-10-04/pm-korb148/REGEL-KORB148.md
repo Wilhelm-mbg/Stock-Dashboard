@@ -31,6 +31,19 @@ Gesamtertrag auf beiden Seiten, SPY aus dem Panel ohne Kosten, „schlägt den M
 - **Ein Lauf.** Diese Datei und das Skript werden committet, dann wird gerechnet. Ein Fehler im Skript wird benannt, behoben und vermerkt; ein
   Ergebnis, das nicht gefällt, ist kein Fehler.
 
+## Nachtrag 1 (04.10.2026 09:40, **vor** dem berichtigten Lauf): die App führt 187 Werte, nicht 148
+
+Der erste Lauf (Siegel `c0d3f30`, 09:37:45–09:38:42, Ergebnis in `ergebnis-korb148.json`) rechnete mit N = 148. Beim Gegenprüfen meldete das
+Skript selbst „187 Werte in der App-Liste". Nachgezählt: die Tagesdaten der App führen **187** Reihen, alle über der Umsatzschwelle (kleinster
+Median-Tagesumsatz 120 Mio $), `momentumZiel` auf den Daten der App ergibt **Zielzahl 19** — und das Buch hält 19 Positionen. Die Zahl 148 war
+ein **Zählfehler des PM**: sein erstes Zählskript verlangte eine erste Kerze nach 1973 und ließ damit 39 Reihen mit älterer Historie aus
+(IBM, KO, GE und andere).
+
+Die Regel oben definiert N als „die Zahl der Werte, die die App heute führt". Diese Zahl ist **187**. Der Lauf wird deshalb **einmal mit N = 187
+wiederholt** (Zielzahl `max(5, round(187 × 0,1))` = 19), sonst unverändert. Beide Ergebnisse bleiben stehen und werden genannt; die Hauptzahl
+ist die mit dem richtigen N. Das ist eine Berichtigung der Vorgabe, keine Wahl nach Ergebnis — der erste Lauf ergab bereits „ja" (Buch +95,1 %
+gegen SPY +81,2 %, 63 von 63 Startphasen vor dem Markt, größter Rückschlag −57,6 %). Ein drittes N gibt es nicht.
+
 ## Was die Zahl ist und was nicht
 
 - Eine **Vorab-Rechnung mit einer einzigen Rechnung** — ohne den zweiten, unabhängigen Lauf, den die Regeln des Projekts für eine Messung
