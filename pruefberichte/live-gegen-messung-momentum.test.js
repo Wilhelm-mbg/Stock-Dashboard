@@ -12,6 +12,9 @@
  *   node pruefberichte/live-gegen-messung-momentum.test.js        alle Tests
  *   node pruefberichte/live-gegen-messung-momentum.test.js 7      nur Test 7
  *
+ * Tests 1-15 aus der ersten Fassung, 16-19 aus der Nachpruefung (Gegenpruefung durch vier unabhaengige Durchlaeufe),
+ * 20-21 messen auf echten Kennzahl-Dateien aus studien/ (nur lesen).
+ *
  * Alles Simulation mit virtuellem Kapital. Keine Anlageberatung.
  */
 var fs = require('fs');
@@ -180,7 +183,7 @@ TESTS[1] = async function () {
   var gp = await lauf(async function (sym) { return ladeAntwort(alt[sym]); });
   var abw = x.nachher < x.vorher && !x.umgeschichtet && Math.abs(x.punkt.momentum - wertEinstand) < 0.01 && x.anstoesse === 0 && gp.umgeschichtet;
   zeile(abw, 'Totalausfall beim Nachladen: Bestand ' + x.vorher + ' -> ' + x.nachher + ' Werte (Index ' + x.teile + ' Teil, Stand = jetzt). ' +
-    'Folgetakt: Umschichtung faellig, ' + (x.umgeschichtet ? 'ausgefuehrt' : 'NICHT ausgefuehrt') + '; Tagespunkt ' + geld(x.punkt.momentum) +
+    'Folgetakt: Umschichtung faellig, ' + (x.umgeschichtet ? 'ausgefuehrt' : 'NICHT ausgefuehrt (verschoben bis zum naechsten Ladeversuch nach 26 h)') + '; Tagespunkt ' + geld(x.punkt.momentum) +
     ' = Einstand, Messung (letzter Schluss) ' + geld(wertLetzterSchluss) + '; Nachladen angestossen: ' + x.anstoesse + 'x (Stand gilt 26 h als frisch). ' +
     'Gegenprobe mit funktionierendem Abruf: ' + (gp.umgeschichtet ? 'umgeschichtet' : 'NICHT umgeschichtet') + '.');
 };
@@ -285,7 +288,9 @@ TESTS[5] = function () {
     ' Reihen "veraltet" (' + gegenUhr.verworfen.length + ' verworfen).');
 };
 
-/* 6 - Welcher Kurs wird gehandelt? Schluss des Stichtags bzw. Zwischenstand statt Eroeffnung des Folgetags (Fund F4). */
+/* 6 - Welcher Kurs wird gehandelt? Schluss des Stichtags statt Eroeffnung des Folgetags (Fund F4).
+ *     (a) ist Arithmetik mit der Funktion der App. (b) zeigt nur, dass der Lader innerhalb des Fensters nichts
+ *     wegschneidet; wie Yahoos Balken der laufenden Sitzung genau aussieht (Stempel, Umsatz), belegt der Test NICHT. */
 TESTS[6] = function () {
   // (a) Fuellkurs: Stichtag schliesst bei 100, der Ausfuehrungstag eroeffnet bei 103.
   var appBuch = { cash: 100000, positionen: [] }, messBuch = { cash: 100000, positionen: [] };
@@ -304,8 +309,10 @@ TESTS[6] = function () {
     (letzter[2] / 1e6) + ' Mio Stueck bis dahin gegen ' + (z.bars[0][2] / 1e6) + ' Mio am Vortag).');
 };
 
-/* 7 - Buch und Markt im selben Verlaufspunkt kommen aus zwei verschieden alten Bestaenden (Fund F5).
- *     Gegenprobe: enden die Tagesdaten am selben Tag wie die SPY-Reihe, ist der Abstand 0. */
+/* 7 - Buch und Markt im selben Verlaufspunkt sind verschieden alt (Fund F5): die Buchseite ist eingefroren,
+ *     die Marktseite wird bei jedem Lesen aus der aktuellen SPY-Reihe neu bestimmt.
+ *     Der Test zeigt den Mechanismus, nicht ein bestimmtes Datum: Bestandsinhalt und Stempel (jetzt - 22 h)
+ *     sind gesetzt. Gegenprobe: enden die Tagesdaten am selben Tag wie die SPY-Reihe, ist der Abstand 0. */
 TESTS[7] = async function () {
   var jetzt = Date.now();
   var d1 = werktagVor(jetzt), d2 = werktagVor(d1);
@@ -362,7 +369,7 @@ TESTS[9] = function () {
   var kalender = tage.length - 1 - k;
   var faellig = MH.rebalanceFaellig(markt, tage[k] + 3600000, 63);
   zeile(!faellig && kalender >= 63, kalender + ' Handelstage nach der letzten Umschichtung, SPY-Reihe aber nur 40 Tage weiter: rebalanceFaellig = ' + faellig +
-    ' (Rueckgabe nur wahr/falsch, kein Grund, keine Altersangabe); die Messung haette am 63. Tag umgeschichtet.');
+    ' (Rueckgabe nur wahr/falsch). Das gilt, solange jeder Auffrischversuch scheitert (Neuversuch alle 6 h); die Messung haette am 63. Tag umgeschichtet.');
 };
 
 /* 10 - Texte: jede Zahl des Rueckblick-Eintrags gegen ERGEBNIS.md (kein Fund erwartet). */
@@ -465,6 +472,174 @@ TESTS[15] = function () {
   var halbStundeSpaeter = MH.rebalanceFaellig(markt, tage[tage.length - 1] + 1800000, 63);
   zeile(!vorher || direktDanach || halbStundeSpaeter, 'faellig vor der Umschichtung: ' + vorher + '; nach letztesRebalanceT = jetzt sofort wieder faellig: ' +
     direktDanach + ' (auch 30 min spaeter: ' + halbStundeSpaeter + ') - der zweite Takt handelt nicht.');
+};
+
+/* 16 - Speichern scheitert fuer einen Teil (Platte voll): Mischbestand aus alten und neuen Reihen (C). */
+TESTS[16] = async function () {
+  var jetzt = Date.now(), namen = universum();
+  var tageAlt = werktageBis(werktagVor(jetzt - 12 * TAG), 520), tageNeu = werktageBis(werktagVor(jetzt), 520);
+  var alt = kunstUniversum(tageAlt, namen), neu = kunstUniversum(tageNeu, namen);
+  // der Markt ist seit dem alten Stand um 10 % gestiegen
+  Object.keys(neu).forEach(function (x) { neu[x] = neu[x].map(function (b) { return [b[0], b[1] * 1.1, b[2]]; }); });
+  var st = speicher({});
+  tagesdatenAblegen(st, alt, jetzt - 12 * TAG);
+  var echtesSet = st.api.storeSet;
+  st.api.storeSet = async function (n, v) { if (n === 'mf_tagesdaten_teil_3') return { ok: false, msg: 'ENOSPC' }; return echtesSet(n, v); };
+  var mf = mittelfristSandbox(st, async function (sym) { return ladeAntwort(neu[sym]); });
+  await mf.MF.ladeUniversum();
+  var gelesen = await mf.MF.tagesdatenLesen();
+  var teil3 = Object.keys(st.daten.mf_tagesdaten_teil_3.roh);
+  var alterTeil3 = Math.round((jetzt - gelesen.roh[teil3[0]][gelesen.roh[teil3[0]].length - 1][0]) / TAG);
+  var juengster = Math.max.apply(null, Object.keys(gelesen.roh).map(function (s) { var x = gelesen.roh[s]; return x[x.length - 1][0]; }));
+  var r = MH.momentumZiel(gelesen.roh, { nowMs: juengster });
+  var veraltet = r.verworfen.filter(function (v) { return /veraltet/.test(v.grund); }).length;
+  // Preise wie mfdepot.js ladeKurse (letzter Balken jeder Reihe) - eine gehaltene Position aus Teil 3
+  var sym = teil3[0], preisFrisch = neu[sym][neu[sym].length - 1][1];
+  var preise = {}; Object.keys(gelesen.roh).forEach(function (x) { var y = gelesen.roh[x]; preise[x] = y[y.length - 1][1]; });
+  var plan = MH.planeUmschichtung(r.ziel, { cash: 0, positionen: [{ sym: sym, stueck: 100, einstand: preise[sym], seit: 0 }], trades: [] }, preise);
+  var verkauf = plan.verkaufen.filter(function (o) { return o.sym === sym; })[0];
+  zeile(veraltet > 0 && verkauf && Math.abs(verkauf.kurs - preisFrisch) > 1e-9,
+    'Teil 3 laesst sich nicht schreiben (Platte voll): der Index meldet "frisch" (Stand jetzt, ' + st.daten.mf_tagesdaten_index.teile +
+    ' Teile), Teil 3 traegt aber noch die alten Reihen (' + teil3.length + ' Werte, juengster Balken ' + alterTeil3 + ' Tage alt); die Rangfolge wirft ' + veraltet +
+    ' davon als "veraltet" hinaus, die gehaltene Position ' + sym + ' wird zum alten Kurs ' + verkauf.kurs.toFixed(2) + ' $ verkauft statt zum frischen ' +
+    preisFrisch.toFixed(2) + ' $. tagesdatenSchreiben prueft die Rueckgabe von storeSet nicht.');
+};
+
+/* 17 - Teilausfall trifft alle gehaltenen Werte: Umschichtung mit 0 Orders setzt den 63-Tage-Takt trotzdem neu (Fund F1). */
+TESTS[17] = async function () {
+  var jetzt = Date.now(), namen = universum();
+  var tage = werktageBis(werktagVor(jetzt), 520);
+  var voll = kunstUniversum(tage, namen);
+  var kaufIdx = tage.length - 71, kaufT = tage[kaufIdx] + 3600000;
+  var fehlt = {}; namen.slice(0, 40).forEach(function (s) { fehlt[s] = true; });   // Anfang der Liste faellt aus
+  var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: tage.map(function (t, j) { return [t, 400 + j * 0.1]; }) } });
+  tagesdatenAblegen(st, voll, jetzt - 27 * 3600000);
+  var pos = namen.slice(0, 19).map(function (s) { return { sym: s, stueck: 50, einstand: voll[s][kaufIdx][1] * 1.002, seit: tage[kaufIdx] }; });
+  var d = { momentumAn: true, mfBuch: buchMit(pos, kaufT), mfVerlauf: [] };
+  var mf = mittelfristSandbox(st, async function (sym) { return fehlt[sym] ? null : ladeAntwort(voll[sym]); });
+  await mf.MF.ladeUniversum();
+  var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } });
+  STATUS = [];
+  await dep.MFDepot.takt();
+  var fehler = STATUS.filter(function (s) { return /Fehler/.test(s); });
+  if (fehler.length) throw new Error(fehler.join(' | '));
+  var j = (d.tuneLog || []).filter(function (e) { return /^mfrebal-/.test(e.id); })[0];
+  var neuGesetzt = d.mfBuch.letztesRebalanceT !== kaufT;
+  zeile(neuGesetzt && d.mfBuch.trades.length === 0 && d.mfBuch.positionen.length === 19,
+    '40 Werte vom Listenanfang ohne Daten, darunter alle 19 gehaltenen: Umschichtung mit ' + d.mfBuch.trades.length + ' Ausfuehrungen, ' +
+    d.mfBuch.positionen.length + ' alte Positionen bleiben (zum Einstand bewertet), letztesRebalanceT ' +
+    (neuGesetzt ? 'NEU gesetzt -> naechster Versuch erst nach 63 Handelstagen' : 'unveraendert') + '. Journal: "' + (j ? j.applied[0] : '-') +
+    '" neben "' + (j ? j.txt.slice(0, 52) : '-') + ' ...". Die Messung schichtet auf vollen Daten um.');
+};
+
+/* 18 - Der Massstab "Gegen den Markt" beginnt am Tag, an dem das Buch angelegt wurde, nicht mit der liquiden Regel (Fund F9). */
+TESTS[18] = async function () {
+  var jetzt = Date.now(), tage = werktageBis(werktagVor(jetzt), 300);
+  var anlage = tage[tage.length - 60], liquide = tage[tage.length - 20];
+  /* Markt: flach bis zur ersten liquiden Umschichtung, danach +3 %. Buch: bis dahin -5 % (alte
+   * Positionen), danach genau wie der Markt. */
+  var spy = tage.map(function (t) { return [t, t <= liquide ? 500 : 515]; });
+  var verlauf = tage.filter(function (t) { return t >= anlage; }).map(function (t) {
+    var w = t < liquide ? 100000 - 5000 * (t - anlage) / (liquide - anlage) : 95000 * (t <= liquide ? 1 : 1.03);
+    return { t: t + 7 * 3600000, momentum: Math.round(w * 100) / 100, drift: null, spy: null, startM: 100000, startD: null };
+  });
+  var buch = buchMit([], anlage + 3600000);
+  buch.angelegt = anlage + 3600000; buch.liquideSeit = liquide + 7 * 3600000;
+  var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: spy } });
+  var d = { momentumAn: true, mfBuch: buch, mfVerlauf: verlauf };
+  var dep = mfdepotSandbox(st, d, { tagesdatenLesen: async function () { return null; }, ladeUniversum: function () { return Promise.resolve(null); } });
+  await new Promise(function (f) { setImmediate(f); });           // bereit() liest die SPY-Reihe nebenher
+  await new Promise(function (f) { setImmediate(f); });
+  var v = dep.MFDepot.vergleich('momentum');
+  var abLiquide = Ms.vergleich(verlauf.filter(function (p) { return p.t >= buch.liquideSeit; }), 'momentum', 'startM', { markt: spy, start: 100000 });
+  var tag = function (t) { return new Date(t).toISOString().slice(0, 10); };
+  zeile(v && v.ok && v.seit < buch.liquideSeit && Math.abs(v.abstandPp - abLiquide.abstandPp) >= 1,
+    'Karte/Kopf rechnen seit ' + tag(v.seit) + ' (Anlage des Buchs): Buch ' + pz(v.buchPct) + ' gegen S&P 500 ' + pz(v.marktPct) + ', Abstand ' +
+    v.abstandPp.toFixed(1).replace('.', ',') + ' Pp. Ab der ersten liquiden Umschichtung (' + tag(buch.liquideSeit) + '), wie die Messung startet: Abstand ' +
+    abLiquide.abstandPp.toFixed(1).replace('.', ',') + ' Pp. vergleich() uebergibt angelegt, nicht liquideSeit.');
+};
+
+/* 19 - "Alle Buecher zuruecksetzen" schaltet das Momentum-Buch ein; der naechste Takt kauft sofort (Fund F11). */
+TESTS[19] = async function () {
+  var dep0 = fs.readFileSync(path.join(WURZEL, 'depot.js'), 'utf8');
+  var reset = /D = defaultDepot\(\);/.test(dep0), vorgabeAn = /momentumAn: true, driftAn: true/.test(dep0);
+  var frage = (/window\.confirm\('Depot wirklich zurücksetzen\?[\s\S]*?\)\) return;/.exec(dep0) || [''])[0];
+  var frageNenntSchalter = /schalt|Automatik|handelt/i.test(frage);
+  // Zustand nach dem Reset: Schalter an (Vorgabe), kein Buch; gespeicherte Tagesdaten 20 h alt
+  var jetzt = Date.now(), namen = universum(), tage = werktageBis(werktagVor(jetzt), 520);
+  var voll = kunstUniversum(tage, namen);
+  var st = speicher({ drift_markt: { at: jetzt - 3600000, reihe: tage.map(function (t) { return [t, 500]; }) } });
+  tagesdatenAblegen(st, voll, jetzt - 20 * 3600000);
+  var d = { momentumAn: true };
+  var mf = mittelfristSandbox(st, async function () { return null; });
+  var dep = mfdepotSandbox(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } });
+  STATUS = [];
+  await dep.MFDepot.takt();
+  var fehler = STATUS.filter(function (s) { return /Fehler/.test(s); });
+  if (fehler.length) throw new Error(fehler.join(' | '));
+  var kaeufe = (d.mfBuch && d.mfBuch.trades || []).filter(function (t) { return t.art === 'kauf'; }).length;
+  zeile(reset && vorgabeAn && !frageNenntSchalter && kaeufe > 0,
+    'Reset setzt D = defaultDepot() (momentumAn: true), die Rueckfrage erwaehnt den Schalter ' + (frageNenntSchalter ? 'ja' : 'nicht') +
+    '; erster Takt danach: Buch neu angelegt, sofort faellig (letztesRebalanceT 0), ' + kaeufe + ' Kaeufe zu den gespeicherten Kursen - auch wenn das Buch vorher aus war.');
+};
+
+/* 20 - ECHTE KENNZAHLEN: Wie eng ist die Grenze des Zehntels auf der App-Liste? (Fund F3, Groesse)
+ *      Staerken ohne Ausschuettungen je Monatsstichtag aus dem Panel (gleiche Formel wie die App:
+ *      bSchluss(t-21) / bSchluss(t-252) - 1), studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json,
+ *      geschnitten mit der App-Liste. Gemessen wird ohne Modell: der Vorsprung des Letzten im Ziel vor dem
+ *      Ersten draussen, multiplikativ - so wirkt ein Ausschuettungsaufschlag (F3). Grenzen: Monats- statt
+ *      63-Tage-Takt, Liquiditaetsfilter nicht angewandt, Filter des Pruefstands blenden einzelne Monate aus. */
+TESTS[20] = function () {
+  var M = JSON.parse(fs.readFileSync(path.join(WURZEL, 'studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json'), 'utf8'));
+  var app = universum(), luecken = [], genuegt = { 0.005: 0, 0.01: 0, 0.02: 0 }, nMin = Infinity, nMax = 0;
+  M.signaltage.forEach(function (st) {
+    var f = app.filter(function (s) { return typeof st.werte[s] === 'number' && isFinite(st.werte[s]); })
+      .map(function (s) { return 1 + st.werte[s] / 100; }).sort(function (a, b) { return b - a; });
+    if (f.length < 100) return;
+    nMin = Math.min(nMin, f.length); nMax = Math.max(nMax, f.length);
+    var k = Math.max(5, Math.round(f.length * 0.1)), l = f[k - 1] / f[k] - 1;
+    luecken.push(l);
+    Object.keys(genuegt).forEach(function (g) { if (l < Number(g)) genuegt[g]++; });
+  });
+  var s = luecken.slice().sort(function (a, b) { return a - b; });
+  var med = s[s.length >> 1] * 100, n = luecken.length;
+  var anker = /0\.83 % im Jahr/.test(fs.readFileSync(path.join(WURZEL, 'studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL2.md'), 'utf8'));
+  zeile(genuegt['0.01'] > 0, n + ' Monatsstichtage (' + M.signaltage[0].tag + ' bis ' + M.signaltage[M.signaltage.length - 1].tag + ', ' + nMin + ' bis ' + nMax +
+    ' Werte der App-Liste): der Letzte im Ziel liegt im Median nur ' + med.toFixed(2).replace('.', ',') + ' Pp vor dem Ersten draussen. Ein Ausschuettungsvorsprung von 0,5 / 1 / 2 Pp ' +
+    'im Rueckblickfenster reicht fuer einen Tausch an ' + genuegt['0.005'] + ' / ' + genuegt['0.01'] + ' / ' + genuegt['0.02'] + ' von ' + n + ' Stichtagen' +
+    (anker ? ' (zum Vergleich: das Universum zahlt rund 1,7 % im Jahr, also ~1,6 Pp im 231-Tage-Fenster; das Momentum-Zehntel 0,83 %, ERGEBNIS-TEIL2.md)' : '') + '.');
+};
+
+/* 21 - ECHTE KENNZAHLEN: Was haette die 500-Balken-Huerde des Laders gekostet? (Fund F8, Groesse)
+ *      Junge Werte der App-Liste = erster Paneltag nach dem Panelbeginn 2016-01-04
+ *      (studien/fundamental-machbarkeit-2026-09-16/panel.json). LIN und APTV sind ausgenommen: Kuerzelwechsel
+ *      bzw. Fusion, die Yahoo-Reihe reicht dort weiter zurueck. Naeherung: der erste Stichtag mit Wert in
+ *      momentum.json hat 253 Zeilen; die App rankt erst ab 501 Balken, rund 248 Handelstage = 12 Monatsstichtage spaeter. */
+TESTS[21] = function () {
+  var M = JSON.parse(fs.readFileSync(path.join(WURZEL, 'studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json'), 'utf8'));
+  var P = JSON.parse(fs.readFileSync(path.join(WURZEL, 'studien/fundamental-machbarkeit-2026-09-16/panel.json'), 'utf8'));
+  var app = universum(), erster = {};
+  P.reihen.forEach(function (r) { if (!erster[r.reihe] || r.erster < erster[r.reihe]) erster[r.reihe] = r.erster; });
+  var jung = app.filter(function (s) { return erster[s] && erster[s] > '2016-01-04' && s !== 'LIN' && s !== 'APTV'; });
+  var T = M.signaltage;
+  function ok(v) { return typeof v === 'number' && isFinite(v); }
+  var namensMonate = 0, tage = {}, betroffen = [];
+  jung.forEach(function (sym) {
+    var i0 = -1;
+    for (var i = 0; i < T.length; i++) if (ok(T[i].werte[sym])) { i0 = i; break; }
+    if (i0 < 0) return;
+    var treffer = 0;
+    for (var ti = i0; ti < Math.min(T.length, i0 + 12); ti++) {
+      var w = T[ti].werte;
+      var liste = app.filter(function (s) { return ok(w[s]); }).sort(function (a, b) { return w[b] - w[a]; });
+      if (liste.length < 100) continue;
+      var k = Math.max(5, Math.round(liste.length * 0.1));
+      if (liste.slice(0, k).indexOf(sym) !== -1) { treffer++; tage[ti] = true; }
+    }
+    if (treffer) { namensMonate += treffer; betroffen.push(sym + ' ' + treffer); }
+  });
+  zeile(namensMonate > 0, jung.length + ' junge Werte der App-Liste; ' + betroffen.length + ' davon standen in ihren ersten 12 Monaten mit Wert im Messziel, die App haette sie nicht gerankt: ' +
+    namensMonate + ' Namens-Monate an ' + Object.keys(tage).length + ' von ' + T.length + ' Monatsstichtagen (' + betroffen.join(', ') + '). Heute wirkt das erst wieder bei einer Neuaufnahme in die Liste.');
 };
 
 /* ---------------- Ablauf ---------------- */
