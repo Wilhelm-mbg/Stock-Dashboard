@@ -200,7 +200,7 @@
     },
     rsi2: {
       name: 'RSI(2)', farbe: 'var(--series3)', urteil: null,
-      hinweis: 'Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die Hauptstrategie; gegen eine gepaarte Kontrolle ist sie seit dem 23.08.2026 nicht entscheidbar.',
+      hinweis: 'Roh ohne belegten Vorsprung (Signalstudie: 0 von 51 Detektoren bestätigt). Mit der Erlaubnis „Seitwärtskanal + Volumen“ ist es die Hauptstrategie (rsi2seit) – gemessen nicht entscheidbar: +0,021 Pp je Signal, unter jeder Beweisschwelle.',
       fn: function (b) { return Q.rsiExtremSignal(b).signal; }
     },
     donchian: {
@@ -233,9 +233,9 @@
     ma: { name: 'SMA 50/200', urteil: null,
       hinweis: 'Gleitende Durchschnitte über die letzten 50 bzw. 200 KERZEN der gewählten Kerzengröße – auf dem Tageschart also 50/200 Handelstage, auf dem Stundenchart 50/200 Stunden. Gezeichnet wird nur, wenn genug Kerzen da sind, nie heimlich verkürzt.' },
     cross50200: { name: 'Golden/Death Cross', urteil: null,
-      hinweis: 'Kreuzungen der beiden Durchschnitte. Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt.' },
+      hinweis: 'Kreuzungen der beiden Durchschnitte. Im Belegstand hat dieses Signal KEINEN Vorsprung, gemessen ist es dort nicht – es wird angezeigt, weil du es sehen willst, nicht weil es trägt.' },
     kanal: { name: 'Trendkanal', urteil: 'kanaltrend',
-      hinweis: 'Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg.' },
+      hinweis: 'Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus steuert den Intraday-Einstieg (RSI2 im Seitwärtskanal) – gemessen nicht entscheidbar (+0,021 Pp je Signal). Als Einstieg ist der Kanal auf drei Zeitskalen gemessen: Anzeige ja, Einstieg nein.' },
     segmente: { name: 'Kanal-Abschnitte (Historie)', urteil: 'kanaltrend',
       hinweis: 'Zerlegt die gesamte sichtbare Historie an ihren Wendepunkten und zeichnet für JEDEN Trendabschnitt einen eigenen Kanal – grün aufwärts, rot abwärts, blau seitwärts. Reine Anzeige zum Erkennen von Marktphasen: Als Handelsbedingung wurde ein Dip-Kauf im frischen Seitwärtsabschnitt gemessen und fiel durch – es wird bewusst nichts davon gehandelt.' },
     sr: { name: 'Unterstützung / Widerstand', urteil: null,

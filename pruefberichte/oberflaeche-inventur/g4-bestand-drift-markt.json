@@ -2,14 +2,20 @@
  {
   "datei": "driftui.js",
   "zeile": 171,
-  "wortlaut": "(gut ? 'überzufällig (t ≥ 2)' : 'nicht überzufällig – das ist kein Beleg')",
-  "klasse": "c",
+  "wortlaut": "auffällig (t ≥ 2), aber kein Beleg – die Messung vom 04.10.2026 ist nicht entscheidbar",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "Das Tor (t ≥ 2,5 für beide Größen) ist verfehlt, die Schranke liegt nicht unter 1 Pp → **nicht entscheidbar**"
   },
   "belegsagt": "Ergebnis-Drift ist nicht entscheidbar (Nr. 88: Stufe 1 Kaufseite netto +1,39 Pp, t 1,97; registriertes Tor t ≥ 2,5; Buch +0,38 Pp p. a., 16 von 200 Zufallsbüchern darüber). Ein In-Sample-t ≥ 2 der App-eigenen Rechnung ist nach der Mühle kein Urteil „überzufällig“.",
-  "vorschlag": "(gut ? 'auffällig (t ≥ 2) – In-Sample, kein Beleg; die Messung vom 04.10.2026 ist nicht entscheidbar' : 'unauffällig – kein Beleg')"
+  "vorschlag": "(gut ? 'auffällig (t ≥ 2) – In-Sample, kein Beleg; die Messung vom 04.10.2026 ist nicht entscheidbar' : 'unauffällig – kein Beleg')",
+  "alt": {
+   "klasse": "c",
+   "zeile": 171,
+   "wortlaut": "(gut ? 'überzufällig (t ≥ 2)' : 'nicht überzufällig – das ist kein Beleg')"
+  },
+  "neu_begruendung": "Ein In-Sample-t ≥ 2 der App-Rechnung heißt jetzt „auffällig, aber kein Beleg“; das Urteil der Messung Nr. 88 lautet wortgleich „nicht entscheidbar“."
  },
  {
   "datei": "driftui.js",
@@ -99,117 +105,216 @@
  {
   "datei": "wendeui.js",
   "zeile": 258,
-  "wortlaut": "'widerlegt (0,074 Pp, t = 1,22).",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "'dort widerlegt (Studie #33).",
+  "klasse": "a",
+  "beleg": {
+   "datei": "studien/33-winkel-detektor/README.md",
+   "marke": "Die +0,25 Pp von damals sind widerlegt"
+  },
   "belegsagt": "0,074 und „widerlegt“ stehen in studien/33-winkel-detektor/README.md; t = 1,22 gehört dort zu einer anderen Zelle (ergebnis-16-buckets.json: S1.0-F4 long|1h, brutto 0,04 Pp), nicht zum OOS-Wert. README: marktneutral 0,103 Pp, t über Tage 1,69.",
-  "vorschlag": "'widerlegt (außerhalb der Stichprobe +0,074 Pp)."
+  "vorschlag": "'widerlegt (außerhalb der Stichprobe +0,074 Pp).",
+  "alt": {
+   "klasse": "d",
+   "zeile": 258,
+   "wortlaut": "'widerlegt (0,074 Pp, t = 1,22)."
+  },
+  "neu_begruendung": "0,074 und t = 1,22 stehen nicht im Belegkorpus (t gehört zu einer anderen Zelle) und sind gestrichen; das Urteil „widerlegt“ für die alten +0,25 Pp bleibt wortgleich zur Studie #33."
  },
  {
   "datei": "wendeui.js",
-  "zeile": 258,
-  "wortlaut": "Das ist die belastbare Aussage zu diesem Detektor.",
-  "klasse": "c",
+  "zeile": 259,
+  "wortlaut": "in der Messmaschine sind alle 10 Punktschätzer negativ, 9 von 10 obere Grenzen liegen unter 0,1247 Pp",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "in der Maschine (winkelbestaetigt/winkelgrad, je 5 Schwellen) **alle 10 Punktschätzer negativ**, 9 von 10 obere Grenzen unter 0,1247 Pp — die Long-Seite ist als Größe ausgeschlossen"
   },
   "belegsagt": "Neuerer Stand (02.09.): Trendwende-/Winkel-Detektor netto unentscheidbar, in der Messmaschine alle 10 Punktschätzer negativ, Long-Seite als Größe ausgeschlossen.",
-  "vorschlag": "Neuerer Stand (02.09.2026): in der Messmaschine alle 10 Varianten negativ, die Long-Seite ist in der Größe ausgeschlossen."
+  "vorschlag": "Neuerer Stand (02.09.2026): in der Messmaschine alle 10 Varianten negativ, die Long-Seite ist in der Größe ausgeschlossen.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 258,
+   "wortlaut": "Das ist die belastbare Aussage zu diesem Detektor."
+  },
+  "neu_begruendung": "„Belastbare Aussage“ ersetzt durch den neueren Stand vom 02.09.2026 aus dem Belegstand: netto nicht entscheidbar, Long-Seite als Größe ausgeschlossen."
  },
  {
   "datei": "berichte.js",
   "zeile": 70,
-  "wortlaut": "-Gewicht senken**: nur ' + Math.round(pct) + ' % Treffer (",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "wenige Treffer, aber eine Trefferquote ist kein Beleg gegen die Quelle.",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**Belegte handelbare Kanten: NULL.**"
+  },
   "belegsagt": "Kein Beleg, dass eine Trefferquote < 45 % ab 8 Signalen etwas über eine Quelle aussagt; Mühle verlangt t über Tage, MDE, Kontrolle.",
-  "vorschlag": "Nur beschreiben: '- ' + src + ': ' + Math.round(pct) + ' % Treffer (' + s.r + '/' + tot + ') – zu wenige Fälle für ein Urteil.' (keine Gewichts-Empfehlung)"
+  "vorschlag": "Nur beschreiben: '- ' + src + ': ' + Math.round(pct) + ' % Treffer (' + s.r + '/' + tot + ') – zu wenige Fälle für ein Urteil.' (keine Gewichts-Empfehlung)",
+  "alt": {
+   "klasse": "d",
+   "zeile": 70,
+   "wortlaut": "-Gewicht senken**: nur ' + Math.round(pct) + ' % Treffer ("
+  },
+  "neu_begruendung": "Keine Gewichts-Empfehlung mehr; die Trefferquote wird nur beschrieben, Bedingung (pct < 45, ab 8 Fällen) unverändert."
  },
  {
   "datei": "berichte.js",
   "zeile": 71,
-  "wortlaut": "-Gewicht erhöhen**: ' + Math.round(pct) + ' % Treffer (",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "viele Treffer, aber eine Trefferquote ist kein Beleg für die Quelle.",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**Belegte handelbare Kanten: NULL.**"
+  },
   "belegsagt": "Ohne Beleg; für „news“ sagt der Belegstand sogar: News-Sentiment Übernacht widerlegt (t = 0,31), Nachrichten-Stimmung nicht belegt.",
-  "vorschlag": "wie Zeile 70: Trefferquote nur beschreiben, keine Empfehlung „Gewicht erhöhen“."
+  "vorschlag": "wie Zeile 70: Trefferquote nur beschreiben, keine Empfehlung „Gewicht erhöhen“.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 71,
+   "wortlaut": "-Gewicht erhöhen**: ' + Math.round(pct) + ' % Treffer ("
+  },
+  "neu_begruendung": "Keine Empfehlung „Gewicht erhöhen“ mehr; für news sagt der Belegstand sogar widerlegt bzw. nicht belegt. Bedingung (pct > 60) unverändert."
  },
  {
   "datei": "berichte.js",
   "zeile": 75,
-  "wortlaut": "Intraday: Kosten fressen das Ergebnis** – größeren Zeitrahmen (5/15 Min) oder höhere Bestätigung testen.",
-  "klasse": "c",
+  "wortlaut": "die Signalstudie fand auf 1m/5m/15m unter Kassa-Kosten keine belegte Konfiguration (0 von 234, Stand 11.09.2026)",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
-   "marke": "Die bekannten Intraday-Detektoren sind auf 5- und 15-Minuten-Basis unter Kassa-Kosten **gemessen tot**."
+   "marke": "234 Konfigurationen (13 Detektoren × 1m/5m/15m"
   },
   "belegsagt": "5m/15m (und 1m) gemessen: 0 von 234 Konfigurationen, Familie geschlossen. Der Rat „größeren Zeitrahmen 5/15 Min testen“ widerspricht dem Belegstand.",
-  "vorschlag": "Intraday: Kosten fressen das Ergebnis** – die Signalstudie auf 1m/5m/15m fand unter Kassa-Kosten keine Konfiguration, die trägt (0 von 234)."
+  "vorschlag": "Intraday: Kosten fressen das Ergebnis** – die Signalstudie auf 1m/5m/15m fand unter Kassa-Kosten keine Konfiguration, die trägt (0 von 234).",
+  "alt": {
+   "klasse": "c",
+   "zeile": 75,
+   "wortlaut": "Intraday: Kosten fressen das Ergebnis** – größeren Zeitrahmen (5/15 Min) oder höhere Bestätigung testen."
+  },
+  "neu_begruendung": "Der Rat „größeren Zeitrahmen 5/15 Min testen“ widersprach dem Belegstand (1m/5m/15m gemessen, 0 von 234 belegt); ersetzt durch diesen Befund."
  },
  {
   "datei": "berichte.js",
   "zeile": 350,
-  "wortlaut": "Hürde für ein belastbares Urteil: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen**.",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "ein Urteil ist das noch nicht; dafür braucht es t über Tage, ausreichende Auflösung und Netto nach Kosten.",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Eine geprüfte Maschine schützt nicht vor zu wenig Auflösung"
+  },
   "belegsagt": "Eine Trade-/Tageszahl ist keine Urteilshürde; nach Projektregel braucht ein Urteil t über Tage, MDE vor dem Urteil, getrennte Tage und Netto nach Kosten.",
-  "vorschlag": "Mindestmenge, bevor überhaupt gerechnet wird: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen** – ein Urteil ist das noch nicht."
+  "vorschlag": "Mindestmenge, bevor überhaupt gerechnet wird: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen** – ein Urteil ist das noch nicht.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 350,
+   "wortlaut": "Hürde für ein belastbares Urteil: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen**."
+  },
+  "neu_begruendung": "Die Trade-/Tageszahl heißt jetzt „Mindestmenge“, nicht mehr „Hürde für ein belastbares Urteil“; die Konstanten MIN_OOS_TRADES/MIN_OOS_TAGE bleiben."
  },
  {
   "datei": "berichte.js",
   "zeile": 354,
-  "wortlaut": "(Stichprobe onvista, 20.08.2026). Befund: **die Geld-Brief-Spanne ist ein fester Cent-Betrag**, kein Prozentsatz – rund 1 ct bei Bezugsverhältnis 0,1 und 2 ct bei 1,0",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "Gemessen ist für Hebelscheine nur die Hürde der Signalstudie: 0,23 Pp je 3 Stunden",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/kosten.md",
+   "marke": "| **Hebelschein** | **0,23 Pp je 3 Stunden** |"
+  },
   "belegsagt": "Weder in belegstand.md noch in einer ERGEBNIS.md (onvista nur in wiki/skills-uebernahme.md). Belegstand führt Schein-Hürden (Standard-Schein 0,23 Pp) aus kosten.md, nicht diese Stichprobe.",
-  "vorschlag": "(Stichprobe onvista, 20.08.2026, nicht als Messung abgelegt). Beobachtung: die Geld-Brief-Spanne wirkte wie ein fester Cent-Betrag – rund 1 ct bei Bezugsverhältnis 0,1 und 2 ct bei 1,0"
+  "vorschlag": "(Stichprobe onvista, 20.08.2026, nicht als Messung abgelegt). Beobachtung: die Geld-Brief-Spanne wirkte wie ein fester Cent-Betrag – rund 1 ct bei Bezugsverhältnis 0,1 und 2 ct bei 1,0",
+  "alt": {
+   "klasse": "d",
+   "zeile": 354,
+   "wortlaut": "(Stichprobe onvista, 20.08.2026). Befund: **die Geld-Brief-Spanne ist ein fester Cent-Betrag**, kein Prozentsatz – rund 1 ct bei Bezugsverhältnis 0,1 und 2 ct bei 1,0"
+  },
+  "neu_begruendung": "Der „Befund“ der onvista-Stichprobe und die Cent-Zahlen stehen nicht im Belegkorpus; das Cent-Modell heißt jetzt Annahme, daneben steht die einzige gemessene Schein-Hürde aus kosten.md."
  },
  {
   "datei": "berichte.js",
   "zeile": 354,
-  "wortlaut": "Ein 8-Euro-Schein zahlt damit 0,13 % je Seite, ein 9-Cent-Schein 11,5 %.",
-  "klasse": "d",
+  "wortlaut": "",
+  "klasse": "gestrichen",
   "beleg": null,
   "belegsagt": "Aus der unbelegten Stichprobe abgeleitet; kein Beleg in belegstand.md/ERGEBNIS.md.",
-  "vorschlag": "Rechenbeispiel (aus der Stichprobe, nicht gemessen): ein 8-Euro-Schein zahlte 0,13 % je Seite, ein 9-Cent-Schein 11,5 %."
+  "vorschlag": "Rechenbeispiel (aus der Stichprobe, nicht gemessen): ein 8-Euro-Schein zahlte 0,13 % je Seite, ein 9-Cent-Schein 11,5 %.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 354,
+   "wortlaut": "Ein 8-Euro-Schein zahlt damit 0,13 % je Seite, ein 9-Cent-Schein 11,5 %."
+  },
+  "begruendung": "0,13 % und 11,5 % stehen nirgends im Belegkorpus (aus der unbelegten Stichprobe abgeleitet); ohne das Rechenbeispiel bleibt die Beschreibung des Modells richtig."
  },
  {
   "datei": "berichte.js",
   "zeile": 356,
-  "wortlaut": "also **ein Fünftel des relativen Spreads bei identischem Hebel**",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "eine Folgerung aus der Modellannahme, nicht gemessen",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/kosten.md",
+   "marke": "| **Hebelschein** | **0,23 Pp je 3 Stunden** |"
+  },
   "belegsagt": "Folgerung aus der unbelegten Cent-Stichprobe.",
-  "vorschlag": "also – nach der Stichprobe vom 20.08. – rund ein Fünftel des relativen Spreads bei gleichem Hebel"
+  "vorschlag": "also – nach der Stichprobe vom 20.08. – rund ein Fünftel des relativen Spreads bei gleichem Hebel",
+  "alt": {
+   "klasse": "d",
+   "zeile": 356,
+   "wortlaut": "also **ein Fünftel des relativen Spreads bei identischem Hebel**"
+  },
+  "neu_begruendung": "„Ein Fünftel des relativen Spreads“ ist gestrichen; die Richtung bleibt als Modellfolgerung beschriftet – gemessen ist für Scheine nur die Hürde in kosten.md."
  },
  {
   "datei": "berichte.js",
   "zeile": 473,
-  "wortlaut": "r.nutzen > 0.5 ? 'spart Geld' : r.nutzen < -0.5 ? 'kostet Geld – Kandidat zum Lockern' : 'neutral'",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "r.nutzen > 0.5 ? 'mit Filter besser (ohne Signifikanzprüfung)' : r.nutzen < -0.5 ? 'mit Filter schlechter (ohne Signifikanzprüfung)' : 'kein Unterschied sichtbar'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Eine geprüfte Maschine schützt nicht vor zu wenig Auflösung"
+  },
   "belegsagt": "Fester Wertungstext auf einer Differenz von 0,5 Pp ohne Standardfehler/MDE; kein Beleg für diese Schwelle.",
   "vorschlag": "r.nutzen > 0.5 ? 'mit Filter besser (ohne Signifikanz)' : r.nutzen < -0.5 ? 'mit Filter schlechter (ohne Signifikanz)' : 'kein Unterschied sichtbar'",
-  "nurUrteil": true
+  "nurUrteil": true,
+  "alt": {
+   "klasse": "d",
+   "zeile": 473,
+   "wortlaut": "r.nutzen > 0.5 ? 'spart Geld' : r.nutzen < -0.5 ? 'kostet Geld – Kandidat zum Lockern' : 'neutral'"
+  },
+  "neu_begruendung": "Wertungen „spart/kostet Geld – Kandidat zum Lockern“ ersetzt durch reine Beschreibung ohne Signifikanz; Schwelle 0,5 unverändert."
  },
  {
   "datei": "berichte.js",
   "zeile": 489,
-  "wortlaut": "x.gerettet > x.verhindert * 1.5 ? 'rettet Geld' : x.verhindert > x.gerettet * 1.5 ? 'verhindert eher Gewinne' : 'unentschieden'",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "x.gerettet > x.verhindert * 1.5 ? 'bisher eher Verluste vermieden' : x.verhindert > x.gerettet * 1.5 ? 'bisher eher Gewinne verhindert' : 'kein Muster'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Eine geprüfte Maschine schützt nicht vor zu wenig Auflösung"
+  },
   "belegsagt": "Urteil ab 5 Schatten-Trades mit Faktor 1,5 – keine Messung im Sinne der Mühle.",
   "vorschlag": "x.gerettet > x.verhindert * 1.5 ? 'bisher eher Verluste vermieden' : x.verhindert > x.gerettet * 1.5 ? 'bisher eher Gewinne verhindert' : 'kein Muster'",
-  "nurUrteil": true
+  "nurUrteil": true,
+  "alt": {
+   "klasse": "d",
+   "zeile": 489,
+   "wortlaut": "x.gerettet > x.verhindert * 1.5 ? 'rettet Geld' : x.verhindert > x.gerettet * 1.5 ? 'verhindert eher Gewinne' : 'unentschieden'"
+  },
+  "neu_begruendung": "„rettet Geld“ ist kein Urteil der Mühle; jetzt Beschreibung des bisherigen Schattenbuchs, Faktor 1,5 und Mindestzahl unverändert."
  },
  {
   "datei": "berichte.js",
   "zeile": 526,
-  "wortlaut": "| Datum | bester Kandidat | WF-Rendite | Trades | Tage | belastbar |",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "| Datum | bester Kandidat | WF-Rendite | Trades | Tage | Mindestmenge erreicht |",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "Eine geprüfte Maschine schützt nicht vor zu wenig Auflösung"
+  },
   "belegsagt": "Spalte „belastbar“ beruht auf Mindestzahlen an Trades/Tagen (siehe Zeile 350), nicht auf t über Tage/MDE.",
-  "vorschlag": "| Datum | bester Kandidat | WF-Rendite | Trades | Tage | Mindestmenge erreicht |"
+  "vorschlag": "| Datum | bester Kandidat | WF-Rendite | Trades | Tage | Mindestmenge erreicht |",
+  "alt": {
+   "klasse": "d",
+   "zeile": 526,
+   "wortlaut": "| Datum | bester Kandidat | WF-Rendite | Trades | Tage | belastbar |"
+  },
+  "neu_begruendung": "Die Spalte zeigt nur, ob die Mindestmenge an Trades/Tagen erreicht ist; das Datenfeld h.belastbar bleibt unverändert."
  }
 ]

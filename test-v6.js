@@ -3714,8 +3714,10 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
      'Stattdessen steht die Fallzahl da - sie sagt ehrlich, dass sich nichts bewerten laesst');
   ok(/kann seine eigenen Signale nicht/.test(wu3),
      'Der Reiter sagt selbst, dass er seine Signale nicht bewerten kann');
-  ok(/0,074 Pp, t = 1,22/.test(wu3),
-     'Die belastbare Aussage zum Winkel-Detektor steht dabei (widerlegt auf 55 Tagen)');
+  /* Seit fix/oberflaeche-texte (04.10.2026): "0,074 Pp, t = 1,22" steht nicht im Belegkorpus (das t gehoert zu einer
+   * anderen Zelle). Dabei steht jetzt der juengere Stand des Belegstands (02.09.2026): netto nicht entscheidbar. */
+  ok(/alle 10 Punktschätzer negativ, 9 von 10 obere Grenzen liegen unter 0,1247 Pp/.test(wu3) && !/0,074 Pp, t = 1,22/.test(wu3),
+     'Der neuere Stand zum Winkel-Detektor steht dabei (Belegstand 02.09.2026: netto nicht entscheidbar)');
 
   /* Trendfinder (Felix' Wunsch #58, 23.08.2026): Der Trend ist die Hauptsache, der
    * Wechsel sein Sonderfall. Dazu drei Zusicherungen - die Umbenennung, die drei
@@ -16504,8 +16506,9 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
    * Erklaerabsaetze stehen im Register statt in der Legende. */
   ok(/data-mess="[^"]{10,}"/.test(wui),
      'F9: die Messaussagen der Trendfinder-Legende stehen in einem ausgewiesenen Kasten');
-  ok(/−0,17 Pp je Trade bei t = −4,1/.test(wui) && /0,074 Pp, t = 1,22/.test(wui),
-     'F9: beide Messaussagen sind wortgleich sichtbar geblieben');
+  /* Zweite Messaussage seit fix/oberflaeche-texte auf den Belegstand umgestellt (siehe oben, Winkel-Detektor). */
+  ok(/−0,17 Pp je Trade bei t = −4,1/.test(wui) && /alle 10 Punktschätzer negativ/.test(wui),
+     'F9: beide Messaussagen sind sichtbar geblieben');
   ok(!/Warum hier keine Ertragszahl steht/.test(ohneKommentare(wui)) &&
      /Warum hier keine Ertragszahl steht/.test(shell),
      'F9: der Erklaerabsatz ist ins Register gewandert - verschoben, nicht geloescht');
@@ -17016,7 +17019,8 @@ console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelr
      'ihre Inhalte stehen jetzt am Kerzenchart: Einblenden, Signal-Liste, Kanal-Zeile, Kanal-Verzug, Indikator-Spur');
   /* KEIN TEXT VERLOREN: die Erklaersaetze der Kaestchen standen als title im
    * Markup und stehen jetzt in den Tabellen SIGNALE/INDIKATOREN. */
-  ['Roh ein Münzwurf', 'Kapitulations-Dip', 'nie heimlich verkürzt',
+  /* 'Roh ohne belegten Vorsprung' hiess bis fix/oberflaeche-texte 'Roh ein Münzwurf (+0,017)' - die Zahl war unbelegt. */
+  ['Roh ohne belegten Vorsprung', 'Kapitulations-Dip', 'nie heimlich verkürzt',
    'KEINEN Vorsprung', 'es wird bewusst nichts davon gehandelt',
    'an denen der Kurs zuletzt gedreht hat'].forEach(function (satz) {
     ok(expQ.indexOf(satz) > 0, 'der Erklaertext "' + satz.slice(0, 28) + '…" ist beim Umzug nicht verloren gegangen');
