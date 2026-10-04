@@ -3,7 +3,7 @@ tags: [bauplan]
 ---
 # Struktur der Oberfläche — mit Aufnahmen
 
-*Erzeugt am 2026-10-04 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.44.2** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
+*Erzeugt am 2026-10-04 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.45.0** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
 
 **Was hier steht:** ▪ = Überschrift `h2`, · = Überschrift `h3`, ▸ = Klappe (`<details>`). Die Einrückung ist die echte Verschachtelung: eine Klappe **in** einer Klappe steht eine Stufe weiter rechts. `[#kennung]` ist die `id` des Blocks. „verborgen“ heißt: der Block steht in der Seite, ist aber ausgeblendet, bis etwas passiert (z. B. Explorer → „Kennzahlen“ erst nach dem Öffnen eines Werts).
 
@@ -88,7 +88,7 @@ Werkzeuge (data-tab="werkzeuge")
 └─ Betrieb (data-sub="betrieb", #sub-betrieb)
    │  ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 02.10.26, 22:00 Uhr“
    │    ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
-   │  ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 03.10.26 · Marktlage 04.10.26“
+   │  ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.10.26 · Marktlage 04.10.26“
    │    · Autopilot & Datensammlung  [#abAutopilot]
    │    · Autopilot – die App verbessert sich selbst  [in #sub-auswertung]
    │    ▸ Klappe: Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)  [in #sub-auswertung]
@@ -135,7 +135,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Heute → Überblick
 
-`#sub-ueberblick` · 13 Blöcke · 6536 Zeichen sichtbarer Text
+`#sub-ueberblick` · 13 Blöcke · 8394 Zeichen sichtbarer Text
 
 - ▪ Bestand  [in #bestandBlock]
 - · Momentum-Buch · stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite  [in #buchMomentum]
@@ -154,6 +154,7 @@ Dialoge (gehören zu keinem Reiter)
 ![[aufnahmen/heute/ueberblick-1.png]]
 ![[aufnahmen/heute/ueberblick-2.png]]
 ![[aufnahmen/heute/ueberblick-3.png]]
+![[aufnahmen/heute/ueberblick-4.png]]
 
 ### Heute → Meine Papiere
 
@@ -168,7 +169,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 7539 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 7423 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -214,7 +215,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Regeln → Strategien
 
-`#sub-regeln` · 8 Blöcke · 7451 Zeichen sichtbarer Text
+`#sub-regeln` · 8 Blöcke · 8722 Zeichen sichtbarer Text
 
 - · Was die App gerade tut  [in #antwortSeite]
 - · Die Strategien im Überblick
@@ -270,11 +271,11 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Betrieb
 
-`#sub-betrieb` · 34 Blöcke · 17583 Zeichen sichtbarer Text
+`#sub-betrieb` · 34 Blöcke · 17755 Zeichen sichtbarer Text
 
 - ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 02.10.26, 22:00 Uhr“
   - ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
-- ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 03.10.26 · Marktlage 04.10.26“
+- ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.10.26 · Marktlage 04.10.26“
   - · Autopilot & Datensammlung  [#abAutopilot]
   - · Autopilot – die App verbessert sich selbst  [in #sub-auswertung]
   - ▸ Klappe: Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)  [in #sub-auswertung]

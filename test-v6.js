@@ -23534,8 +23534,9 @@ console.log('97) Der Markt zum selben Zeitpunkt wie das Buch (Auftrag Nr. 91)');
    * Handrechnung: 763,47 * 0,997523 = 761,5789; 769,64 * 1 = 769,64; 769,64 / 761,5789 - 1
    * = +1,0585 % (angezeigt +1,1 %). Kurs allein: 769,64 / 763,47 - 1 = +0,81 %. */
   function bar(tag, monat, roh, f) { return [Date.UTC(2026, monat - 1, tag, 13, 30), roh, roh * f]; }
-  /* Schluss des 25.08. 765,83 (wiki/fehlerformen.md); die Schluesse vom 17./18.09. sind Fuellwerte. */
-  var EB = [bar(24, 8, 763.47, 0.997523), bar(25, 8, 765.83, 0.997523), bar(17, 9, 760.10, 0.997523), bar(18, 9, 758.50, 1), bar(2, 10, 769.64, 1)];
+  /* Schluss des 25.08. 765,91 (im echten Bestand bereinigt 764,0128 = 765,91 * 0,997523; das Wiki nennt 765,83);
+   * die Schluesse vom 17./18.09. sind Fuellwerte. */
+  var EB = [bar(24, 8, 763.47, 0.997523), bar(25, 8, 765.91, 0.997523), bar(17, 9, 760.10, 0.997523), bar(18, 9, 758.50, 1), bar(2, 10, 769.64, 1)];
   var E1 = { t: Date.UTC(2026, 7, 25, 18, 15), momentum: 99800, startM: 100000, spy: 763.47 };
   var E2 = { t: Date.UTC(2026, 9, 4, 0, 6), momentum: 101000, startM: 100000, spy: 769.64 };
   var vE = Mst.vergleich([E1, E2], 'momentum', 'startM', { an: true, angelegt: E1.t - 60000, punktKurs: true, buchAusschuettungen: true,
@@ -23543,8 +23544,8 @@ console.log('97) Der Markt zum selben Zeitpunkt wie das Buch (Auftrag Nr. 91)');
   var vEalt = Alt.vergleich([E1, E2], 'momentum', 'startM', { an: true, angelegt: E1.t - 60000, markt: EB.map(function (b) { return [b[0], b[2]]; }) });
   ok(vE.marktArt === 'gesamt' && nah97(vE.marktPct, 1.058474, 1e-6) && pz97(vE.marktPct) === '+1,1 %' && nah97(Math.round(vE.marktPct * 100) / 100, 1.06),
      '97.6 Abnahmezahl als Handfall: Markt seit dem Start +1,06 % (761,58 -> 769,64), angezeigt +1,1 %', vE.marktPct.toFixed(6));
-  ok(nah97(vEalt.marktPct, (769.64 / (765.83 * 0.997523) - 1) * 100) && pz97(vEalt.marktPct) === '+0,7 %' && vEalt.marktPct < (769.64 / 763.47 - 1) * 100,
-     '97.6 dieselben Zahlen durch die Altfassung: +0,7 % wie bisher in der App - der Balken des 25.08. (Stempel 13:30, Schluss 765,83) lag vor dem Punkt (18:15), ein Kurs aus seiner Zukunft; der Gesamtertrag lag UNTER dem Kursertrag', vEalt.marktPct.toFixed(4));
+  ok(nah97(vEalt.marktPct, (769.64 / (765.91 * 0.997523) - 1) * 100) && pz97(vEalt.marktPct) === '+0,7 %' && vEalt.marktPct < (769.64 / 763.47 - 1) * 100,
+     '97.6 dieselben Zahlen durch die Altfassung: +0,7 % wie bisher in der App - der Balken des 25.08. (Stempel 13:30, Schluss 765,91) lag vor dem Punkt (18:15), ein Kurs aus seiner Zukunft; der Gesamtertrag lag UNTER dem Kursertrag', vEalt.marktPct.toFixed(4));
 
   /* ---- 97.7 die Verdrahtung ---- */
   var duiQ97 = fs.readFileSync(__dirname + '/driftui.js', 'utf8');

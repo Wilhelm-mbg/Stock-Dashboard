@@ -185,16 +185,25 @@ function bauen(jetzt) {
  *  abgelegten Tagesstaende (640 x (1 + 0,011 s), +1,1 %). So viel macht eine
  *  Ausschuettung aus: eine bereinigte Reihe laeuft ueber den Ex-Tag glatt weiter,
  *  waehrend der unbereinigte Schluss um den Betrag faellt. Die Aufnahme zeigt damit
- *  den Gesamtertrag und nicht denselben Wert wie der Rueckfall. Erfunden, keine Messung. */
+ *  den Gesamtertrag und nicht denselben Wert wie der Rueckfall. Erfunden, keine Messung.
+ *
+ *  Seit Auftrag Nr. 91 traegt der Bestand auch die UNBEREINIGTE Reihe derselben Balken
+ *  (roh): der Markt eines Buchs ist dann der im Punkt abgelegte Stand mal dem Faktor
+ *  bereinigt / roh. Die Rohreihe ist so gebaut, dass dieser Faktor am juengsten Balken 1
+ *  ist und davor darunter liegt (wie nach Ausschuettungen) - die abgelegten Staende
+ *  (+1,1 %) mal Faktor ergeben wieder die +1,4 % der bereinigten Reihe. Ohne roh stuende
+ *  die Kunstinstanz im Rueckfall ("rohreihe-fehlt"). */
 function marktReihe(jetzt) {
   var now = jetzt || Date.now();
-  var reihe = [];
+  var reihe = [], roh = [];
   for (var i = 30; i >= 0; i--) {
     /* i Tage vor jetzt, eine Stunde VOR dem Verlaufspunkt des Tages: jeder Punkt findet
      * seinen Balken. Vor dem Beginn des Verlaufs laeuft die Gerade einfach weiter. */
-    reihe.push([now - i * TAG - 3600000, Math.round(640 * (1 + 0.014 * ((19 - i) / 19)) * 10000) / 10000]);
+    var s = (19 - i) / 19, t = now - i * TAG - 3600000;
+    reihe.push([t, Math.round(640 * (1 + 0.014 * s) * 10000) / 10000]);
+    roh.push([t, Math.round(640 * (1 + 0.011 * s) * (1.014 / 1.011) * 10000) / 10000]);
   }
-  return { at: now, reihe: reihe };
+  return { at: now, reihe: reihe, roh: roh };
 }
 
 /** Der Store der Kostenmessung. Er liegt seit dem 27.08.2026 NEBEN dem Depot in
