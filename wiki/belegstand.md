@@ -103,7 +103,7 @@ Ursache: Gewinner werden nie zurückgestutzt, jeder neue Kauf bekommt aber Depot
 
 ## VWAP-Trend und EMA-Stapel auf QQQ, SPY, IWM, Minutenkerzen (04.10.2026) — die veröffentlichte Regel stimmt in ihrem Fenster und hält auf den drei Jahren danach nicht
 
-*Anlass: Wilhelm zeigte ein Instagram-Reel (fünf Options-Bots auf QQQ, SPY und IWM; Signale laut Autor VWAP und EMA 9/21/50 auf 1-Minuten-Kerzen; Gewinnzähler „+66.559 $ in 23 Handelstagen") und bat, die Strategien zu prüfen. Die Regeln des Reels sind nicht bekannt; gemessen ist der Kern am Basiswert. Regel vor der Zahl — Auftrag Nr. 89, `studien/reel-vwap-ema-2026-10-04/` (`REGEL.md`, `ERGEBNIS.md`, `ergebnis.json`), erstes Siegel `3c96c2d`, Siegel des abschließenden Laufs `aa32c79`, Ergebnis `4920f2b`. Keine Studie mit Urteil „belegt": beschreibende Zahlen nach vorher festgelegten Sätzen.*
+*Anlass: Wilhelm zeigte ein Instagram-Reel (fünf Options-Bots auf QQQ, SPY und IWM; Signale laut Autor VWAP und EMA 9/21/50 auf 1-Minuten-Kerzen; Gewinnzähler „+66.559 $ in 23 Handelstagen") und bat, die Strategien zu prüfen. Die Regeln des Reels sind nicht bekannt; gemessen ist der Kern am Basiswert. Regel vor der Zahl — Auftrag Nr. 89R (im Studienordner und in den Commits „Nr. 89"; die Nummer wurde am selben Tag von der ersten PM-Sitzung ein zweites Mal vergeben), `studien/reel-vwap-ema-2026-10-04/` (`REGEL.md`, `ERGEBNIS.md`, `ergebnis.json`), erstes Siegel `3c96c2d`, Siegel des abschließenden Laufs `aa32c79`, Ergebnis `4920f2b`. Keine Studie mit Urteil „belegt": beschreibende Zahlen nach vorher festgelegten Sätzen.*
 
 | Sache | Zahl |
 |---|---|
