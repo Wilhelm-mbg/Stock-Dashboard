@@ -1,0 +1,444 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/pruefung-v23c/v1",
+ "stand": "2026-10-04T18:18:24.676Z",
+ "bestanden": true,
+ "gruende": [],
+ "bau2b": {
+  "stand": "2026-10-04T18:00:08.662Z",
+  "zeilen": 9663629,
+  "reihen": 7102
+ },
+ "bau2c": {
+  "stand": "2026-10-04T18:16:49.493Z",
+  "zeilen": 9663846,
+  "reihen": 7102,
+  "letzterVollTag": "2026-09-15"
+ },
+ "liste": [
+  "AGL",
+  "ALIT",
+  "AMCR",
+  "ANAB",
+  "APH",
+  "APTV",
+  "BKNG",
+  "BYND",
+  "CMCSA",
+  "CRWD",
+  "CVNA",
+  "FDX",
+  "FUBO",
+  "IESC",
+  "KLAC",
+  "LILAK",
+  "MIDD",
+  "MLI",
+  "MNST",
+  "MQ",
+  "PANW",
+  "PIPR",
+  "POWL",
+  "REZI",
+  "RUSHA",
+  "SBS",
+  "SF",
+  "SFBS",
+  "SNEX",
+  "SPGI",
+  "TRI"
+ ],
+ "zeilen": {
+  "zeilenB": 9663629,
+  "zeilenC": 9663846,
+  "uebrigeVerglichen": 9590453,
+  "uebrigeAnders": 0,
+  "uebrigeAndersJeSpalte": {},
+  "listeB": 73176,
+  "listeVerglichen": 73176,
+  "listeGleich": 73145,
+  "listeNurMarke": [
+   "AGL 2026-09-03",
+   "ALIT 2026-09-03",
+   "AMCR 2026-09-03",
+   "ANAB 2026-09-03",
+   "APH 2026-09-03",
+   "APTV 2026-09-03",
+   "BKNG 2026-09-03",
+   "BYND 2026-09-03",
+   "CMCSA 2026-09-03",
+   "CRWD 2026-09-03",
+   "CVNA 2026-09-03",
+   "FDX 2026-09-03",
+   "FUBO 2026-09-03",
+   "IESC 2026-09-03",
+   "KLAC 2026-09-03",
+   "LILAK 2026-09-03",
+   "MIDD 2026-09-03",
+   "MLI 2026-09-03",
+   "MNST 2026-09-03",
+   "MQ 2026-09-03",
+   "PANW 2026-09-03",
+   "PIPR 2026-09-03",
+   "POWL 2026-09-03",
+   "REZI 2026-09-03",
+   "RUSHA 2026-09-03",
+   "SBS 2026-09-03",
+   "SF 2026-09-03",
+   "SFBS 2026-09-03",
+   "SNEX 2026-09-03",
+   "SPGI 2026-09-03",
+   "TRI 2026-09-03"
+  ],
+  "listeAnders": 0,
+  "listeAndersJeSpalte": {},
+  "listeFehltInC": 0,
+  "neu": 217,
+  "jahre": [
+   {
+    "jahr": 2016,
+    "b": 946473,
+    "c": 946473
+   },
+   {
+    "jahr": 2017,
+    "b": 940519,
+    "c": 940519
+   },
+   {
+    "jahr": 2018,
+    "b": 930946,
+    "c": 930946
+   },
+   {
+    "jahr": 2019,
+    "b": 916107,
+    "c": 916107
+   },
+   {
+    "jahr": 2020,
+    "b": 913042,
+    "c": 913042
+   },
+   {
+    "jahr": 2021,
+    "b": 1028960,
+    "c": 1028960
+   },
+   {
+    "jahr": 2022,
+    "b": 1054720,
+    "c": 1054720
+   },
+   {
+    "jahr": 2023,
+    "b": 946511,
+    "c": 946511
+   },
+   {
+    "jahr": 2024,
+    "b": 842908,
+    "c": 842908
+   },
+   {
+    "jahr": 2025,
+    "b": 718915,
+    "c": 718915
+   },
+   {
+    "jahr": 2026,
+    "b": 424528,
+    "c": 424745
+   }
+  ]
+ },
+ "neueZeilen": {
+  "sollTage": [
+   "2026-09-04",
+   "2026-09-08",
+   "2026-09-09",
+   "2026-09-10",
+   "2026-09-11",
+   "2026-09-14",
+   "2026-09-15"
+  ],
+  "jeReihe": {
+   "AGL": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 3.2429378032684326,
+    "letzteMitMarke": true
+   },
+   "ALIT": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 9.852546691894531,
+    "letzteMitMarke": true
+   },
+   "AMCR": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.7514660358428955,
+    "letzteMitMarke": true
+   },
+   "ANAB": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.338651180267334,
+    "letzteMitMarke": true
+   },
+   "APH": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 6.410103797912598,
+    "letzteMitMarke": true
+   },
+   "APTV": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 4.629822731018066,
+    "letzteMitMarke": true
+   },
+   "BKNG": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 6.7204718589782715,
+    "letzteMitMarke": true
+   },
+   "BYND": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 4.9194231033325195,
+    "letzteMitMarke": true
+   },
+   "CMCSA": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 6.608431339263916,
+    "letzteMitMarke": true
+   },
+   "CRWD": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 13.961479187011719,
+    "letzteMitMarke": true
+   },
+   "CVNA": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 5.589272975921631,
+    "letzteMitMarke": true
+   },
+   "FDX": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.576824188232422,
+    "letzteMitMarke": true
+   },
+   "FUBO": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 8.087615966796875,
+    "letzteMitMarke": true
+   },
+   "IESC": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 8.196669578552246,
+    "letzteMitMarke": true
+   },
+   "KLAC": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 7.29154634475708,
+    "letzteMitMarke": true
+   },
+   "LILAK": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.6497695446014404,
+    "letzteMitMarke": true
+   },
+   "MIDD": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.7919464111328125,
+    "letzteMitMarke": true
+   },
+   "MLI": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 5.616567134857178,
+    "letzteMitMarke": true
+   },
+   "MNST": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 1.843317985534668,
+    "letzteMitMarke": true
+   },
+   "MQ": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.9553678035736084,
+    "letzteMitMarke": true
+   },
+   "PANW": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 13.157417297363281,
+    "letzteMitMarke": true
+   },
+   "PIPR": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.342012405395508,
+    "letzteMitMarke": true
+   },
+   "POWL": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 6.465753555297852,
+    "letzteMitMarke": true
+   },
+   "REZI": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 3.8696537017822266,
+    "letzteMitMarke": true
+   },
+   "RUSHA": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.330766201019287,
+    "letzteMitMarke": true
+   },
+   "SBS": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.702702760696411,
+    "letzteMitMarke": true
+   },
+   "SF": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.244232654571533,
+    "letzteMitMarke": true
+   },
+   "SFBS": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 1.5222482681274414,
+    "letzteMitMarke": true
+   },
+   "SNEX": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 2.614750623703003,
+    "letzteMitMarke": true
+   },
+   "SPGI": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 3.195183515548706,
+    "letzteMitMarke": true
+   },
+   "TRI": {
+    "altesEnde": "2026-09-03",
+    "neuesEnde": "2026-09-15",
+    "neueZeilen": 7,
+    "groessteRenditeNeuPp": 8.695428848266602,
+    "letzteMitMarke": true
+   }
+  },
+  "abweichend": []
+ },
+ "stand_je_reihe": {
+  "uebrigeAnders": [],
+  "listeAnders": [],
+  "lebendB": 2216,
+  "lebendC": 2247
+ },
+ "probeAufV23c": {
+  "zaehler": {
+   "abschnitte": 7102,
+   "referenz": 1,
+   "ohneZeilen": 1,
+   "bisLetzterTag": 2246,
+   "endenVorher": 4854,
+   "zuKurzFuerA": 35,
+   "gepruefteEnden": 4819,
+   "nurA": 4,
+   "nurAWeiter": 2,
+   "abcOhneB1": 0,
+   "abcMitB1": 0,
+   "nurDurchB1": [],
+   "anB": 1,
+   "anC": 3,
+   "andererZwillingDurchB1": 0,
+   "doppelt": 0,
+   "zeilen": 0,
+   "gleicheTage": 0,
+   "zeilenOhneGegenstueck": 0,
+   "gruppen": 0,
+   "ketten": 0,
+   "kettenTiefe2": 0,
+   "behalteRegelWieNichtDoppelt": true,
+   "speicherSpitzeMB": 365
+  },
+  "doppelt": [],
+  "nurA": [
+   "ACPW",
+   "BTBT",
+   "DNJR",
+   "DTC"
+  ]
+ },
+ "beispiele": [],
+ "bitgleichGeprueft": [
+  "sym",
+  "tag",
+  "marken",
+  "klasse",
+  "kerzen",
+  "rohSchluss",
+  "rohEroeffnung",
+  "faktor",
+  "rendite",
+  "renditeOC",
+  "umsatzReg",
+  "umsatzAuktion"
+ ],
+ "lebenszeit": "datenfundament-2026-10-04/phase2/lebenszeit-minuten/v1 (2026-10-03T21:33:22.875Z)",
+ "speicherSpitzeMB": 220,
+ "sekunden": 16.6
+}

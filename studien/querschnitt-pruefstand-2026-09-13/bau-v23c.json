@@ -1,0 +1,2251 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/bau-v23c/v1",
+ "stand": "2026-10-04T18:16:35.580Z",
+ "liste": [
+  "AGL",
+  "ALIT",
+  "AMCR",
+  "ANAB",
+  "APH",
+  "APTV",
+  "BKNG",
+  "BYND",
+  "CMCSA",
+  "CRWD",
+  "CVNA",
+  "FDX",
+  "FUBO",
+  "IESC",
+  "KLAC",
+  "LILAK",
+  "MIDD",
+  "MLI",
+  "MNST",
+  "MQ",
+  "PANW",
+  "PIPR",
+  "POWL",
+  "REZI",
+  "RUSHA",
+  "SBS",
+  "SF",
+  "SFBS",
+  "SNEX",
+  "SPGI",
+  "TRI"
+ ],
+ "bauReihen": {
+  "AGL": [
+   "AGL"
+  ],
+  "ALIT": [
+   "ALIT"
+  ],
+  "AMCR": [
+   "AMCR"
+  ],
+  "ANAB": [
+   "ANAB"
+  ],
+  "APH": [
+   "APH"
+  ],
+  "APTV": [
+   "APTV"
+  ],
+  "BKNG": [
+   "BKNG"
+  ],
+  "BYND": [
+   "BYND"
+  ],
+  "CMCSA": [
+   "CMCSA"
+  ],
+  "CRWD": [
+   "CRWD"
+  ],
+  "CVNA": [
+   "CVNA"
+  ],
+  "FDX": [
+   "FDX"
+  ],
+  "FUBO": [
+   "FUBO"
+  ],
+  "IESC": [
+   "IESC"
+  ],
+  "KLAC": [
+   "KLAC"
+  ],
+  "LILAK": [
+   "LILAK"
+  ],
+  "MIDD": [
+   "MIDD"
+  ],
+  "MLI": [
+   "MLI"
+  ],
+  "MNST": [
+   "MNST"
+  ],
+  "MQ": [
+   "MQ"
+  ],
+  "PANW": [
+   "PANW"
+  ],
+  "PIPR": [
+   "PIPR"
+  ],
+  "POWL": [
+   "POWL"
+  ],
+  "REZI": [
+   "REZI"
+  ],
+  "RUSHA": [
+   "RUSHA"
+  ],
+  "SBS": [
+   "SBS"
+  ],
+  "SF": [
+   "SF"
+  ],
+  "SFBS": [
+   "SFBS"
+  ],
+  "SNEX": [
+   "SNEX"
+  ],
+  "SPGI": [
+   "SPGI"
+  ],
+  "TRI": [
+   "TRI"
+  ]
+ },
+ "kennungBau": "querschnitt-pruefstand-2026-09-13/panel/v2.2",
+ "deckel": "2026-09-15",
+ "fehler": [],
+ "dateiwahl": {
+  "jeJahrUndKopie": {
+   "2021:alt": 31,
+   "2022:alt": 31,
+   "2023:alt": 31,
+   "2024:alt": 31,
+   "2025:alt": 31,
+   "2026:v2": 31,
+   "2020:alt": 29,
+   "2019:alt": 27,
+   "2017:alt": 22,
+   "2018:alt": 24,
+   "2016:alt": 19
+  },
+  "dateien": [
+   {
+    "reihe": "AGL",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AGL",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AGL",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AGL",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AGL",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AGL",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "ALIT",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ALIT",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ALIT",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ALIT",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ALIT",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ALIT",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ALIT",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "AMCR",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AMCR",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AMCR",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AMCR",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AMCR",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AMCR",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AMCR",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "AMCR",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "ANAB",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APH",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "APTV",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BKNG",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "BYND",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BYND",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BYND",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BYND",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BYND",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BYND",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BYND",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "BYND",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CMCSA",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "CRWD",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CRWD",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CRWD",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CRWD",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CRWD",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CRWD",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CRWD",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CRWD",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "CVNA",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FDX",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "FUBO",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FUBO",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FUBO",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FUBO",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FUBO",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FUBO",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "FUBO",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "IESC",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "KLAC",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "LILAK",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "LILAK",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "LILAK",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "LILAK",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "LILAK",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "LILAK",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "LILAK",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "LILAK",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "LILAK",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MIDD",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MLI",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MNST",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "MQ",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MQ",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MQ",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MQ",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MQ",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "MQ",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PANW",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "PIPR",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "POWL",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "REZI",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "REZI",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "REZI",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "REZI",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "REZI",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "REZI",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "REZI",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "REZI",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "REZI",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "RUSHA",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SBS",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SF",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SFBS",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SNEX",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "SPGI",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2016,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2017,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2018,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2019,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2020,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2021,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2022,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2023,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2024,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2025,
+    "kopie": "alt",
+    "ok": true
+   },
+   {
+    "reihe": "TRI",
+    "jahr": 2026,
+    "kopie": "v2",
+    "ok": true
+   }
+  ]
+ },
+ "zaehler": {
+  "reihen": 31,
+  "zeilen": 73393,
+  "dateien": 307,
+  "bytes": 1813939422,
+  "kerzenGesehen": 23097709,
+  "stempelkerzen": 0,
+  "stempeltage": 0,
+  "dateiFehler": {},
+  "dateienNichtRein": 0,
+  "doppelteTage": 0,
+  "luecken": 5,
+  "schlussErsatz": {
+   "2016": 1807,
+   "2017": 1991,
+   "2018": 2219,
+   "2019": 2551,
+   "2020": 913,
+   "2021": 34,
+   "2022": 30,
+   "2023": 21,
+   "2024": 20,
+   "2025": 23,
+   "2026": 38
+  },
+  "eroeffnungErsatz": {
+   "2016": 188,
+   "2017": 315,
+   "2018": 396,
+   "2019": 387,
+   "2020": 127,
+   "2021": 106,
+   "2022": 149,
+   "2023": 88,
+   "2024": 68,
+   "2025": 45,
+   "2026": 34
+  },
+  "tageJeJahr": {
+   "2016": 4689,
+   "2017": 5204,
+   "2018": 5813,
+   "2019": 6500,
+   "2020": 7007,
+   "2021": 7634,
+   "2022": 7778,
+   "2023": 7750,
+   "2024": 7812,
+   "2025": 7750,
+   "2026": 5456
+  },
+  "ohneZeilen": 0,
+  "trennungen": 0,
+  "trennungAbweichung": 0,
+  "nachfolgerUebersprungen": 0,
+  "splitAkzeptiert": 41,
+  "splitAbgelehnt": 0,
+  "splitAbgelehntListe": [],
+  "lueckenTrennungen": 0,
+  "lueckenUngetrennt": 0
+ },
+ "vorpruefung": {
+  "verglichen": 73176,
+  "gleich": 73145,
+  "nurMarkeLetzterTag": [
+   "AGL 2026-09-03",
+   "ALIT 2026-09-03",
+   "AMCR 2026-09-03",
+   "ANAB 2026-09-03",
+   "APH 2026-09-03",
+   "APTV 2026-09-03",
+   "BKNG 2026-09-03",
+   "BYND 2026-09-03",
+   "CMCSA 2026-09-03",
+   "CRWD 2026-09-03",
+   "CVNA 2026-09-03",
+   "FDX 2026-09-03",
+   "FUBO 2026-09-03",
+   "IESC 2026-09-03",
+   "KLAC 2026-09-03",
+   "LILAK 2026-09-03",
+   "MIDD 2026-09-03",
+   "MLI 2026-09-03",
+   "MNST 2026-09-03",
+   "MQ 2026-09-03",
+   "PANW 2026-09-03",
+   "PIPR 2026-09-03",
+   "POWL 2026-09-03",
+   "REZI 2026-09-03",
+   "RUSHA 2026-09-03",
+   "SBS 2026-09-03",
+   "SF 2026-09-03",
+   "SFBS 2026-09-03",
+   "SNEX 2026-09-03",
+   "SPGI 2026-09-03",
+   "TRI 2026-09-03"
+  ],
+  "anders": [],
+  "fehlenNeu": [],
+  "neuNachAltemEnde": {
+   "AGL": 7,
+   "ALIT": 7,
+   "AMCR": 7,
+   "ANAB": 7,
+   "APH": 7,
+   "APTV": 7,
+   "BKNG": 7,
+   "BYND": 7,
+   "CMCSA": 7,
+   "CRWD": 7,
+   "CVNA": 7,
+   "FDX": 7,
+   "FUBO": 7,
+   "IESC": 7,
+   "KLAC": 7,
+   "LILAK": 7,
+   "MIDD": 7,
+   "MLI": 7,
+   "MNST": 7,
+   "MQ": 7,
+   "PANW": 7,
+   "PIPR": 7,
+   "POWL": 7,
+   "REZI": 7,
+   "RUSHA": 7,
+   "SBS": 7,
+   "SF": 7,
+   "SFBS": 7,
+   "SNEX": 7,
+   "SPGI": 7,
+   "TRI": 7
+  },
+  "andereAbschnitte": {
+   "verglichen": 0,
+   "anders": 0,
+   "fehlen": 0
+  },
+  "zeilenBisAltesEndeJeReihe": {
+   "AGL": 1353,
+   "ALIT": 1541,
+   "AMCR": 1819,
+   "ANAB": 2415,
+   "APH": 2683,
+   "APTV": 2209,
+   "BKNG": 2683,
+   "BYND": 1846,
+   "CMCSA": 2683,
+   "CRWD": 1818,
+   "CVNA": 2351,
+   "FDX": 2683,
+   "FUBO": 1483,
+   "IESC": 2583,
+   "KLAC": 2683,
+   "LILAK": 2180,
+   "MIDD": 2683,
+   "MLI": 2683,
+   "MNST": 2683,
+   "MQ": 1316,
+   "PANW": 2683,
+   "PIPR": 2682,
+   "POWL": 2681,
+   "REZI": 1972,
+   "RUSHA": 2683,
+   "SBS": 2683,
+   "SF": 2683,
+   "SFBS": 2683,
+   "SNEX": 2683,
+   "SPGI": 2682,
+   "TRI": 2683
+  },
+  "bestanden": true
+ },
+ "vereinen": {
+  "zeilen": 9663846,
+  "jahre": [
+   {
+    "jahr": 2016,
+    "n": 946473
+   },
+   {
+    "jahr": 2017,
+    "n": 940519
+   },
+   {
+    "jahr": 2018,
+    "n": 930946
+   },
+   {
+    "jahr": 2019,
+    "n": 916107
+   },
+   {
+    "jahr": 2020,
+    "n": 913042
+   },
+   {
+    "jahr": 2021,
+    "n": 1028960
+   },
+   {
+    "jahr": 2022,
+    "n": 1054720
+   },
+   {
+    "jahr": 2023,
+    "n": 946511
+   },
+   {
+    "jahr": 2024,
+    "n": 842908
+   },
+   {
+    "jahr": 2025,
+    "n": 718915
+   },
+   {
+    "jahr": 2026,
+    "n": 424745
+   }
+  ],
+  "ersetzt": 73176,
+  "neuGebaut": 73393,
+  "neuJeReihe": {
+   "AGL": 7,
+   "ALIT": 7,
+   "AMCR": 7,
+   "ANAB": 7,
+   "APH": 7,
+   "APTV": 7,
+   "BKNG": 7,
+   "BYND": 7,
+   "CMCSA": 7,
+   "CRWD": 7,
+   "CVNA": 7,
+   "FDX": 7,
+   "FUBO": 7,
+   "IESC": 7,
+   "KLAC": 7,
+   "LILAK": 7,
+   "MIDD": 7,
+   "MLI": 7,
+   "MNST": 7,
+   "MQ": 7,
+   "PANW": 7,
+   "PIPR": 7,
+   "POWL": 7,
+   "REZI": 7,
+   "RUSHA": 7,
+   "SBS": 7,
+   "SF": 7,
+   "SFBS": 7,
+   "SNEX": 7,
+   "SPGI": 7,
+   "TRI": 7
+  },
+  "letzterVollTag": "2026-09-15"
+ }
+}

@@ -1,0 +1,854 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/liste-v23c/v1",
+ "stand": "2026-10-04T18:14:55.251Z",
+ "panel": "querschnitt-pruefstand-2026-09-13/panel/v2.3 bau 2b (2026-10-04T18:00:08.662Z)",
+ "letzterPanelTag": "2026-09-15",
+ "leser": "datenfundament-2026-10-04/phase2/leser2/v1",
+ "lebenszeit": "datenfundament-2026-10-04/phase2/lebenszeit-minuten/v1 (2026-10-03T21:33:22.875Z, Archivende 2026-10-02)",
+ "kopienV2Manifest": "2026-10-04T11:45:47.395Z",
+ "rohManifest": "2026-10-03T21:33:22.875Z",
+ "regel": "letzter Panel-Tag < letzter voller Panel-Tag, Ordner in den Minuten lebend, letzter Abschnitt des Ordners, Datei ueber leser2 mit Kerzen nach dem letzten Panel-Tag (bis zum Deckel 2026-09-15)",
+ "n": 31,
+ "namen": [
+  "AGL",
+  "ALIT",
+  "AMCR",
+  "ANAB",
+  "APH",
+  "APTV",
+  "BKNG",
+  "BYND",
+  "CMCSA",
+  "CRWD",
+  "CVNA",
+  "FDX",
+  "FUBO",
+  "IESC",
+  "KLAC",
+  "LILAK",
+  "MIDD",
+  "MLI",
+  "MNST",
+  "MQ",
+  "PANW",
+  "PIPR",
+  "POWL",
+  "REZI",
+  "RUSHA",
+  "SBS",
+  "SF",
+  "SFBS",
+  "SNEX",
+  "SPGI",
+  "TRI"
+ ],
+ "zaehler": {
+  "reihen": 7102,
+  "ohneZeilen": 1,
+  "endenVorPanelende": 4885,
+  "minutenNichtLebend": 4829,
+  "ohneLebenszeit": 0,
+  "abschnittVorSchnitt": [
+   "ADT (bis 2016-04-29, notierung-unterbrochen)",
+   "BTBT (bis 2019-11-04, notierung-unterbrochen)",
+   "BTU (bis 2016-04-12, notierung-unterbrochen)",
+   "BV (bis 2018-01-31, notierung-unterbrochen)",
+   "CART (bis 2019-12-31, notierung-unterbrochen)",
+   "CORZ (bis 2022-12-30, notierung-unterbrochen)",
+   "CRC (bis 2020-07-15, notierung-unterbrochen)",
+   "EVER (bis 2017-06-08, notierung-unterbrochen)",
+   "GPOR (bis 2020-11-25, notierung-unterbrochen)",
+   "IBTA (bis 2021-11-30, notierung-unterbrochen)",
+   "ISRL (bis 2019-10-24, notierung-unterbrochen)",
+   "ISRL~3 (bis 2025-12-03, kuerzel-neu-vergeben)",
+   "LB (bis 2021-08-02, notierung-unterbrochen)",
+   "LINE (bis 2016-05-23, notierung-unterbrochen)",
+   "MBLY (bis 2017-08-31, notierung-unterbrochen)",
+   "NATL (bis 2016-11-10, kuerzel-neu-vergeben)",
+   "NIO (bis 2016-04-08, notierung-unterbrochen)",
+   "PARA (bis 2018-07-11, notierung-unterbrochen)",
+   "SE (bis 2017-02-24, notierung-unterbrochen)",
+   "SMCI (bis 2018-08-22, notierung-unterbrochen)",
+   "SN (bis 2019-02-19, notierung-unterbrochen)",
+   "VAL (bis 2020-08-14, notierung-unterbrochen)"
+  ],
+  "keineKerzenDanach": [],
+  "kerzenNurNachDeckel": [
+   {
+    "reihe": "ISRL~2",
+    "letzterPanelTag": "2026-09-11",
+    "kerzenDanach": 33,
+    "ersteDatei": {
+     "jahr": 2026,
+     "kopie": null,
+     "pfad": "alpaca1m/ISRL/2026.json",
+     "kerzen": 66,
+     "kerzenNachLetztemPanelTag": 33
+    }
+   }
+  ],
+  "leser2Fehler": [
+   {
+    "reihe": "BURU",
+    "ordner": "BURU",
+    "letzterPanelTag": "2026-07-17",
+    "code": "LESER2_KOPIE_VERALTET",
+    "meldung": "leser2: die bereinigte Kopie alpaca1m-bereinigt/BURU/2026.json endet am 2026-07-17, die Rohdatei alpaca1m/BURU/2026.json am 2026-10-02. Eine veraltete Kopie wird nicht gelesen und es wird nicht still auf die Rohdatei ausgewichen. Abhilfe: Kopie neu bilden (studien/datenfundament-2026-10-04/phase2/kopien-v2.js --schreiben) - oder, wenn die Reihe dort ausgenommen ist (unerklaerter Kurssprung), erst die Massnahme klaeren."
+   },
+   {
+    "reihe": "WHLR",
+    "ordner": "WHLR",
+    "letzterPanelTag": "2026-09-03",
+    "code": "LESER2_KOPIE_VERALTET",
+    "meldung": "leser2: die bereinigte Kopie alpaca1m-bereinigt/WHLR/2026.json endet am 2026-09-03, die Rohdatei alpaca1m/WHLR/2026.json am 2026-10-02. Eine veraltete Kopie wird nicht gelesen und es wird nicht still auf die Rohdatei ausgewichen. Abhilfe: Kopie neu bilden (studien/datenfundament-2026-10-04/phase2/kopien-v2.js --schreiben) - oder, wenn die Reihe dort ausgenommen ist (unerklaerter Kurssprung), erst die Massnahme klaeren."
+   }
+  ],
+  "ausAlterKopieOderRoh": []
+ },
+ "reihen": [
+  {
+   "reihe": "AGL",
+   "ordner": "AGL",
+   "sym23": 203,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 1353,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/AGL/2026.json",
+     "kerzen": 48663,
+     "kerzenNachLetztemPanelTag": 2881
+    }
+   ],
+   "kerzenDanach": 2881,
+   "kerzenDanachBisDeckel": 903,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "ALIT",
+   "ordner": "ALIT",
+   "sym23": 292,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 1541,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/ALIT/2026.json",
+     "kerzen": 65153,
+     "kerzenNachLetztemPanelTag": 4901
+    }
+   ],
+   "kerzenDanach": 4901,
+   "kerzenDanachBisDeckel": 1610,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "AMCR",
+   "ordner": "AMCR",
+   "sym23": 346,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 1819,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/AMCR/2026.json",
+     "kerzen": 73464,
+     "kerzenNachLetztemPanelTag": 7758
+    }
+   ],
+   "kerzenDanach": 7758,
+   "kerzenDanachBisDeckel": 2714,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "ANAB",
+   "ordner": "ANAB",
+   "sym23": 389,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2415,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/ANAB/2026.json",
+     "kerzen": 45505,
+     "kerzenNachLetztemPanelTag": 4769
+    }
+   ],
+   "kerzenDanach": 4769,
+   "kerzenDanachBisDeckel": 1613,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "APH",
+   "ordner": "APH",
+   "sym23": 437,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/APH/2026.json",
+     "kerzen": 73702,
+     "kerzenNachLetztemPanelTag": 7798
+    }
+   ],
+   "kerzenDanach": 7798,
+   "kerzenDanachBisDeckel": 2728,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "APTV",
+   "ordner": "APTV",
+   "sym23": 462,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2209,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/APTV/2026.json",
+     "kerzen": 72252,
+     "kerzenNachLetztemPanelTag": 7749
+    }
+   ],
+   "kerzenDanach": 7749,
+   "kerzenDanachBisDeckel": 2711,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "BKNG",
+   "ordner": "BKNG",
+   "sym23": 866,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/BKNG/2026.json",
+     "kerzen": 73486,
+     "kerzenNachLetztemPanelTag": 7800
+    }
+   ],
+   "kerzenDanach": 7800,
+   "kerzenDanachBisDeckel": 2730,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "BYND",
+   "ordner": "BYND",
+   "sym23": 1077,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 1846,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/BYND/2026.json",
+     "kerzen": 72148,
+     "kerzenNachLetztemPanelTag": 6934
+    }
+   ],
+   "kerzenDanach": 6934,
+   "kerzenDanachBisDeckel": 2357,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "CMCSA",
+   "ordner": "CMCSA",
+   "sym23": 1421,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/CMCSA/2026.json",
+     "kerzen": 73710,
+     "kerzenNachLetztemPanelTag": 7800
+    }
+   ],
+   "kerzenDanach": 7800,
+   "kerzenDanachBisDeckel": 2730,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "CRWD",
+   "ordner": "CRWD",
+   "sym23": 1602,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 1818,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/CRWD/2026.json",
+     "kerzen": 73704,
+     "kerzenNachLetztemPanelTag": 7800
+    }
+   ],
+   "kerzenDanach": 7800,
+   "kerzenDanachBisDeckel": 2730,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "CVNA",
+   "ordner": "CVNA",
+   "sym23": 1697,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2351,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/CVNA/2026.json",
+     "kerzen": 73642,
+     "kerzenNachLetztemPanelTag": 7800
+    }
+   ],
+   "kerzenDanach": 7800,
+   "kerzenDanachBisDeckel": 2730,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "FDX",
+   "ordner": "FDX",
+   "sym23": 2366,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/FDX/2026.json",
+     "kerzen": 70886,
+     "kerzenNachLetztemPanelTag": 7684
+    }
+   ],
+   "kerzenDanach": 7684,
+   "kerzenDanachBisDeckel": 2654,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "FUBO",
+   "ordner": "FUBO",
+   "sym23": 2582,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 1483,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/FUBO/2026.json",
+     "kerzen": 68862,
+     "kerzenNachLetztemPanelTag": 6725
+    }
+   ],
+   "kerzenDanach": 6725,
+   "kerzenDanachBisDeckel": 2374,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "IESC",
+   "ordner": "IESC",
+   "sym23": 3225,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2583,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/IESC/2026.json",
+     "kerzen": 46534,
+     "kerzenNachLetztemPanelTag": 5037
+    }
+   ],
+   "kerzenDanach": 5037,
+   "kerzenDanachBisDeckel": 1844,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "KLAC",
+   "ordner": "KLAC",
+   "sym23": 3570,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/KLAC/2026.json",
+     "kerzen": 72373,
+     "kerzenNachLetztemPanelTag": 7800
+    }
+   ],
+   "kerzenDanach": 7800,
+   "kerzenDanachBisDeckel": 2730,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "LILAK",
+   "ordner": "LILAK",
+   "sym23": 3766,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2180,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/LILAK/2026.json",
+     "kerzen": 54841,
+     "kerzenNachLetztemPanelTag": 5844
+    }
+   ],
+   "kerzenDanach": 5844,
+   "kerzenDanachBisDeckel": 1950,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "MIDD",
+   "ordner": "MIDD",
+   "sym23": 4085,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/MIDD/2026.json",
+     "kerzen": 52043,
+     "kerzenNachLetztemPanelTag": 5244
+    }
+   ],
+   "kerzenDanach": 5244,
+   "kerzenDanachBisDeckel": 1853,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "MLI",
+   "ordner": "MLI",
+   "sym23": 4125,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/MLI/2026.json",
+     "kerzen": 57070,
+     "kerzenNachLetztemPanelTag": 7012
+    }
+   ],
+   "kerzenDanach": 7012,
+   "kerzenDanachBisDeckel": 2423,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "MNST",
+   "ordner": "MNST",
+   "sym23": 4161,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/MNST/2026.json",
+     "kerzen": 73638,
+     "kerzenNachLetztemPanelTag": 7800
+    }
+   ],
+   "kerzenDanach": 7800,
+   "kerzenDanachBisDeckel": 2730,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "MQ",
+   "ordner": "MQ",
+   "sym23": 4208,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 1316,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/MQ/2026.json",
+     "kerzen": 65828,
+     "kerzenNachLetztemPanelTag": 5768
+    }
+   ],
+   "kerzenDanach": 5768,
+   "kerzenDanachBisDeckel": 1847,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "PANW",
+   "ordner": "PANW",
+   "sym23": 4836,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/PANW/2026.json",
+     "kerzen": 73701,
+     "kerzenNachLetztemPanelTag": 7799
+    }
+   ],
+   "kerzenDanach": 7799,
+   "kerzenDanachBisDeckel": 2730,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "PIPR",
+   "ordner": "PIPR",
+   "sym23": 4985,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2682,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/PIPR/2026.json",
+     "kerzen": 48502,
+     "kerzenNachLetztemPanelTag": 5363
+    }
+   ],
+   "kerzenDanach": 5363,
+   "kerzenDanachBisDeckel": 1649,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "POWL",
+   "ordner": "POWL",
+   "sym23": 5060,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2681,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/POWL/2026.json",
+     "kerzen": 62934,
+     "kerzenNachLetztemPanelTag": 7004
+    }
+   ],
+   "kerzenDanach": 7004,
+   "kerzenDanachBisDeckel": 2481,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "REZI",
+   "ordner": "REZI",
+   "sym23": 5343,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 1972,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/REZI/2026.json",
+     "kerzen": 63820,
+     "kerzenNachLetztemPanelTag": 7006
+    }
+   ],
+   "kerzenDanach": 7006,
+   "kerzenDanachBisDeckel": 2489,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "RUSHA",
+   "ordner": "RUSHA",
+   "sym23": 5495,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/RUSHA/2026.json",
+     "kerzen": 41423,
+     "kerzenNachLetztemPanelTag": 5315
+    }
+   ],
+   "kerzenDanach": 5315,
+   "kerzenDanachBisDeckel": 1765,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "SBS",
+   "ordner": "SBS",
+   "sym23": 5589,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/SBS/2026.json",
+     "kerzen": 70574,
+     "kerzenNachLetztemPanelTag": 7490
+    }
+   ],
+   "kerzenDanach": 7490,
+   "kerzenDanachBisDeckel": 2674,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "SF",
+   "ordner": "SF",
+   "sym23": 5662,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/SF/2026.json",
+     "kerzen": 64138,
+     "kerzenNachLetztemPanelTag": 6611
+    }
+   ],
+   "kerzenDanach": 6611,
+   "kerzenDanachBisDeckel": 2041,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "SFBS",
+   "ordner": "SFBS",
+   "sym23": 5663,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/SFBS/2026.json",
+     "kerzen": 34735,
+     "kerzenNachLetztemPanelTag": 5446
+    }
+   ],
+   "kerzenDanach": 5446,
+   "kerzenDanachBisDeckel": 1878,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "SNEX",
+   "ordner": "SNEX",
+   "sym23": 5833,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/SNEX/2026.json",
+     "kerzen": 49712,
+     "kerzenNachLetztemPanelTag": 5501
+    }
+   ],
+   "kerzenDanach": 5501,
+   "kerzenDanachBisDeckel": 1819,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "SPGI",
+   "ordner": "SPGI",
+   "sym23": 5894,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2682,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/SPGI/2026.json",
+     "kerzen": 73552,
+     "kerzenNachLetztemPanelTag": 7785
+    }
+   ],
+   "kerzenDanach": 7785,
+   "kerzenDanachBisDeckel": 2728,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  },
+  {
+   "reihe": "TRI",
+   "ordner": "TRI",
+   "sym23": 6366,
+   "letzterPanelTag": "2026-09-03",
+   "zeilen2b": 2683,
+   "lebend2b": 0,
+   "lebendV22": 1,
+   "ende_grund2b": null,
+   "letzterMinutentag": "2026-10-02",
+   "dateien": [
+    {
+     "jahr": 2026,
+     "kopie": "v2",
+     "pfad": "alpaca1m-bereinigt-v2/TRI/2026.json",
+     "kerzen": 70638,
+     "kerzenNachLetztemPanelTag": 7328
+    }
+   ],
+   "kerzenDanach": 7328,
+   "kerzenDanachBisDeckel": 2627,
+   "letzterKerzentag": "2026-10-02",
+   "kerzenNachAusKopieV2": true
+  }
+ ]
+}
