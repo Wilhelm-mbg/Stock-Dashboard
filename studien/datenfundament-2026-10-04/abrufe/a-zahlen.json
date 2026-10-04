@@ -1,0 +1,828 @@
+{
+ "stand": "2026-10-04T11:47:12.081Z",
+ "von": "2026-09-01",
+ "bis": "2026-10-03",
+ "abruftag": "2026-10-04",
+ "abruf": {
+  "abrufe": 7,
+  "seiten": 7,
+  "wiederholt": 0,
+  "fehler": {},
+  "dauerSekunden": 12,
+  "saetze": 6624,
+  "saetzeJeArt": {
+   "cash_dividends": 6335,
+   "cash_mergers": 31,
+   "forward_splits": 17,
+   "name_changes": 47,
+   "reverse_splits": 130,
+   "rights_distributions": 6,
+   "stock_and_cash_mergers": 2,
+   "stock_mergers": 18,
+   "worthless_removals": 27,
+   "spin_offs": 7,
+   "stock_dividends": 3,
+   "unit_splits": 1
+  },
+  "dateien": 5656,
+  "bytes": 3415059,
+  "process_date": {
+   "min": "2026-09-01",
+   "max": "2026-10-02"
+  },
+  "datum": {
+   "min": "2025-08-22",
+   "max": "2026-10-02"
+  }
+ },
+ "nachtragGelesen": {
+  "dateien": 5656,
+  "saetzeInDateien": 6716,
+  "saetzeEindeutig": 6624
+ },
+ "zuordnungAlt": {
+  "dateien": 8345,
+  "jeArt": {
+   "cash_dividends": {
+    "saetze": 103931,
+    "keinFeld": 161,
+    "symbol": 103770
+   },
+   "reverse_splits": {
+    "saetze": 1684,
+    "keinFeld": 4,
+    "symbol": 1680
+   },
+   "cash_mergers": {
+    "saetze": 1148,
+    "keinFeld": 2,
+    "acquiree_symbol": 1009,
+    "acquirer_symbol": 137
+   },
+   "name_changes": {
+    "saetze": 2471,
+    "keinFeld": 0,
+    "old_symbol": 1700,
+    "new_symbol": 828
+   },
+   "stock_mergers": {
+    "saetze": 1010,
+    "keinFeld": 0,
+    "acquirer_symbol": 411,
+    "acquiree_symbol": 619
+   },
+   "stock_and_cash_mergers": {
+    "saetze": 245,
+    "keinFeld": 0,
+    "acquiree_symbol": 162,
+    "acquirer_symbol": 89
+   },
+   "forward_splits": {
+    "saetze": 424,
+    "keinFeld": 0,
+    "symbol": 424
+   },
+   "spin_offs": {
+    "saetze": 201,
+    "keinFeld": 0,
+    "source_symbol": 145,
+    "new_symbol": 62
+   },
+   "unit_splits": {
+    "saetze": 333,
+    "keinFeld": 0,
+    "new_symbol": 331,
+    "old_symbol": 5
+   },
+   "redemptions": {
+    "saetze": 10,
+    "keinFeld": 0,
+    "symbol": 10
+   },
+   "worthless_removals": {
+    "saetze": 11,
+    "keinFeld": 0,
+    "symbol": 11
+   },
+   "stock_dividends": {
+    "saetze": 43,
+    "keinFeld": 0,
+    "symbol": 43
+   },
+   "rights_distributions": {
+    "saetze": 12,
+    "keinFeld": 0,
+    "source_symbol": 12
+   }
+  }
+ },
+ "a_fenster_0109_0309": {
+  "nachMassnahmentag": {
+   "alt": 240,
+   "nachtrag": 233,
+   "gleich": 231,
+   "inhaltAnders": [
+    {
+     "datei": "AEG",
+     "art": "cash_dividends",
+     "datum": "2026-09-03",
+     "felder": [
+      "rate"
+     ]
+    },
+    {
+     "datei": "TAC",
+     "art": "cash_dividends",
+     "datum": "2026-09-01",
+     "felder": [
+      "rate"
+     ]
+    }
+   ],
+   "nurAlt": [
+    {
+     "datei": "AIN",
+     "grund": "Verarbeitungstag nach dem Abrufende",
+     "art": "cash_dividends",
+     "datum": "2026-09-01",
+     "process_date": "2026-10-07",
+     "symbol": "AIN",
+     "rate": 0.28,
+     "special": false
+    },
+    {
+     "datei": "BBD",
+     "grund": "Verarbeitungstag nach dem Abrufende",
+     "art": "cash_dividends",
+     "datum": "2026-09-03",
+     "process_date": "2026-10-08",
+     "symbol": "BBD",
+     "rate": 0.002325,
+     "special": false
+    },
+    {
+     "datei": "BR",
+     "grund": "Verarbeitungstag nach dem Abrufende",
+     "art": "cash_dividends",
+     "datum": "2026-09-03",
+     "process_date": "2026-10-05",
+     "symbol": "BR",
+     "rate": 1.09,
+     "special": false
+    },
+    {
+     "datei": "HRB",
+     "grund": "Verarbeitungstag nach dem Abrufende",
+     "art": "cash_dividends",
+     "datum": "2026-09-03",
+     "process_date": "2026-10-06",
+     "symbol": "HRB",
+     "rate": 0.46,
+     "special": false
+    },
+    {
+     "datei": "IBMw",
+     "grund": "im Fenster, von der Quelle nicht mehr geliefert",
+     "art": "cash_dividends",
+     "datum": "2026-09-01",
+     "process_date": "2026-09-04",
+     "symbol": "IBMW",
+     "rate": 0.0459,
+     "special": false
+    },
+    {
+     "datei": "ITUB",
+     "grund": "Verarbeitungstag nach dem Abrufende",
+     "art": "cash_dividends",
+     "datum": "2026-09-02",
+     "process_date": "2026-10-08",
+     "symbol": "ITUB",
+     "rate": 0.00273,
+     "special": false
+    },
+    {
+     "datei": "SLB",
+     "grund": "Verarbeitungstag nach dem Abrufende",
+     "art": "cash_dividends",
+     "datum": "2026-09-02",
+     "process_date": "2026-10-08",
+     "symbol": "SLB",
+     "rate": 0.295,
+     "special": false
+    }
+   ],
+   "nurNachtragImAltenBestand": [],
+   "nurNachtragSymbolOhneAlteDatei": 815,
+   "nurAltJeGrund": {
+    "Verarbeitungstag nach dem Abrufende": 6,
+    "im Fenster, von der Quelle nicht mehr geliefert": 1
+   }
+  },
+  "nachProcessDate": {
+   "alt": 164,
+   "nachtrag": 163,
+   "gleich": 163,
+   "inhaltAnders": [],
+   "nurAlt": [
+    {
+     "datei": "METw",
+     "grund": "im Fenster, von der Quelle nicht mehr geliefert",
+     "art": "cash_dividends",
+     "datum": "2026-08-31",
+     "process_date": "2026-09-01",
+     "symbol": "METW",
+     "rate": 0.09897,
+     "special": false
+    }
+   ],
+   "nurNachtragImAltenBestand": [],
+   "nurNachtragSymbolOhneAlteDatei": 674,
+   "nurAltJeGrund": {
+    "im Fenster, von der Quelle nicht mehr geliefert": 1
+   }
+  }
+ },
+ "vorabImAltenOrdner": {
+  "altAb0409BisEnde": 389,
+  "imNachtragGleich": 227,
+  "imNachtragAnders": 31,
+  "andersJeFeld": {
+   "rate": 22,
+   "special": 5,
+   "record_date": 5,
+   "ex_date": 1,
+   "due_bill_off_date": 1,
+   "due_bill_on_date": 1
+  },
+  "fehltImNachtrag": [
+   {
+    "datei": "AKR",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-15",
+    "symbol": "AKR",
+    "rate": 0.2,
+    "special": false
+   },
+   {
+    "datei": "ANDE",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-10-01",
+    "process_date": "2026-10-22",
+    "symbol": "ANDE",
+    "rate": 0.2,
+    "special": false
+   },
+   {
+    "datei": "APD",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-10-01",
+    "process_date": "2026-11-09",
+    "symbol": "APD",
+    "rate": 1.81,
+    "special": false
+   },
+   {
+    "datei": "APH",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-22",
+    "process_date": "2026-10-14",
+    "symbol": "APH",
+    "rate": 0.125,
+    "special": false
+   },
+   {
+    "datei": "AQN",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-29",
+    "process_date": "2026-10-15",
+    "symbol": "AQN",
+    "rate": 0.04875,
+    "special": false
+   },
+   {
+    "datei": "ARE",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-15",
+    "symbol": "ARE",
+    "rate": 0.72,
+    "special": false
+   },
+   {
+    "datei": "AVNT",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-11",
+    "process_date": "2026-10-07",
+    "symbol": "AVNT",
+    "rate": 0.275,
+    "special": false
+   },
+   {
+    "datei": "BBY",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-17",
+    "process_date": "2026-10-08",
+    "symbol": "BBY",
+    "rate": 0.96,
+    "special": false
+   },
+   {
+    "datei": "BCE",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-15",
+    "process_date": "2026-10-15",
+    "symbol": "BCE",
+    "rate": 0.328125,
+    "special": false
+   },
+   {
+    "datei": "BDC",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-16",
+    "process_date": "2026-10-08",
+    "symbol": "BDC",
+    "rate": 0.05,
+    "special": false
+   },
+   {
+    "datei": "BEN",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-09",
+    "symbol": "BEN",
+    "rate": 0.33,
+    "special": false
+   },
+   {
+    "datei": "BGS",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-30",
+    "symbol": "BGS",
+    "rate": 0.095,
+    "special": false
+   },
+   {
+    "datei": "BNL",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-15",
+    "symbol": "BNL",
+    "rate": 0.2925,
+    "special": false
+   },
+   {
+    "datei": "BRKR",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-21",
+    "process_date": "2026-10-07",
+    "symbol": "BRKR",
+    "rate": 0.05,
+    "special": false
+   },
+   {
+    "datei": "BRX",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-10-02",
+    "process_date": "2026-10-15",
+    "symbol": "BRX",
+    "rate": 0.3075,
+    "special": false
+   },
+   {
+    "datei": "BTI",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-10-02",
+    "process_date": "2026-11-12",
+    "symbol": "BTI",
+    "rate": 0.824851,
+    "special": false
+   },
+   {
+    "datei": "BXSL",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-23",
+    "symbol": "BXSL",
+    "rate": 0.77,
+    "special": false
+   },
+   {
+    "datei": "BYD",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-15",
+    "process_date": "2026-10-15",
+    "symbol": "BYD",
+    "rate": 0.2,
+    "special": false
+   },
+   {
+    "datei": "BZ",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-28",
+    "process_date": "2026-10-14",
+    "symbol": "BZ",
+    "rate": 0.51,
+    "special": false
+   },
+   {
+    "datei": "CAH",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-10-01",
+    "process_date": "2026-10-15",
+    "symbol": "CAH",
+    "rate": 0.5158,
+    "special": false
+   },
+   {
+    "datei": "CBU",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-15",
+    "process_date": "2026-10-13",
+    "symbol": "CBU",
+    "rate": 0.49,
+    "special": false
+   },
+   {
+    "datei": "CDP",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-15",
+    "symbol": "CDP",
+    "rate": 0.32,
+    "special": false
+   },
+   {
+    "datei": "CIB",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-13",
+    "symbol": "CIB",
+    "rate": 1.39384,
+    "special": false
+   },
+   {
+    "datei": "CINF",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-23",
+    "process_date": "2026-10-15",
+    "symbol": "CINF",
+    "rate": 0.94,
+    "special": false
+   },
+   {
+    "datei": "CM",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-28",
+    "process_date": "2026-10-28",
+    "symbol": "CM",
+    "rate": 0.8025,
+    "special": false
+   },
+   {
+    "datei": "COLD",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-30",
+    "process_date": "2026-10-15",
+    "symbol": "COLD",
+    "rate": 0.23,
+    "special": false
+   },
+   {
+    "datei": "CP",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-25",
+    "process_date": "2026-10-26",
+    "symbol": "CP",
+    "rate": 0.201,
+    "special": false
+   },
+   {
+    "datei": "CPK",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-09-14",
+    "process_date": "2026-10-05",
+    "symbol": "CPK",
+    "rate": 0.735,
+    "special": false
+   },
+   {
+    "datei": "CSCO",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-10-02",
+    "process_date": "2026-10-21",
+    "symbol": "CSCO",
+    "rate": 0.42,
+    "special": false
+   },
+   {
+    "datei": "CUBE",
+    "grund": "Verarbeitungstag nach dem Abrufende",
+    "art": "cash_dividends",
+    "datum": "2026-10-01",
+    "process_date": "2026-10-15",
+    "symbol": "CUBE",
+    "rate": 0.53,
+    "special": false
+   }
+  ],
+  "altNachEnde": 65,
+  "fehltImNachtragZahl": 131,
+  "fehltJeGrund": {
+   "Verarbeitungstag nach dem Abrufende": 130,
+   "im Fenster, unter anderer Kennung vorhanden": 1
+  },
+  "fehltJeArt": {
+   "cash_dividends": 131
+  },
+  "fehltImFenster": [
+   {
+    "datei": "PFLT",
+    "grund": "im Fenster, unter anderer Kennung vorhanden",
+    "art": "cash_dividends",
+    "datum": "2026-09-15",
+    "process_date": "2026-10-01",
+    "symbol": "PFLT",
+    "rate": 0.0033,
+    "special": false
+   }
+  ]
+ },
+ "exTagGegenVerarbeitungstag": {
+  "cash_mergers": {
+   "gleich": 19,
+   "verarbeitungSpaeter": 12,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 9
+  },
+  "stock_and_cash_mergers": {
+   "gleich": 0,
+   "verarbeitungSpaeter": 2,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 0
+  },
+  "rights_distributions": {
+   "gleich": 0,
+   "verarbeitungSpaeter": 6,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 3
+  },
+  "cash_dividends": {
+   "gleich": 78,
+   "verarbeitungSpaeter": 6255,
+   "verarbeitungFrueher": 2,
+   "exVorAbrufbeginn": 1280
+  },
+  "spin_offs": {
+   "gleich": 5,
+   "verarbeitungSpaeter": 2,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 0
+  },
+  "worthless_removals": {
+   "gleich": 27,
+   "verarbeitungSpaeter": 0,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 0
+  },
+  "stock_mergers": {
+   "gleich": 11,
+   "verarbeitungSpaeter": 7,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 1
+  },
+  "reverse_splits": {
+   "gleich": 126,
+   "verarbeitungSpaeter": 4,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 1
+  },
+  "name_changes": {
+   "gleich": 47,
+   "verarbeitungSpaeter": 0,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 0
+  },
+  "forward_splits": {
+   "gleich": 17,
+   "verarbeitungSpaeter": 0,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 0
+  },
+  "stock_dividends": {
+   "gleich": 0,
+   "verarbeitungSpaeter": 3,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 1
+  },
+  "unit_splits": {
+   "gleich": 1,
+   "verarbeitungSpaeter": 0,
+   "verarbeitungFrueher": 0,
+   "exVorAbrufbeginn": 0
+  }
+ },
+ "b_ab_0409": {
+  "saetze": 4292,
+  "jeArt": {
+   "cash_mergers": 17,
+   "stock_and_cash_mergers": 2,
+   "cash_dividends": 4046,
+   "spin_offs": 7,
+   "worthless_removals": 23,
+   "stock_mergers": 14,
+   "reverse_splits": 121,
+   "name_changes": 42,
+   "rights_distributions": 3,
+   "stock_dividends": 2,
+   "forward_splits": 14,
+   "unit_splits": 1
+  },
+  "splitsVorwaerts": 14,
+  "splitsRueckwaerts": 121,
+  "splitsEinheiten": 1,
+  "ausschuettungenBar": 4046,
+  "ausschuettungenAktien": 2,
+  "uebernahmen": 33,
+  "uebernahmenJeArt": {
+   "bar": 17,
+   "aktien": 14,
+   "aktienUndBar": 2
+  },
+  "umbenennungen": 42,
+  "abspaltungen": 7,
+  "ruecknahmen": 0,
+  "wertlosAusgebucht": 23,
+  "bezugsrechte": 3
+ },
+ "c_lebendeReihen": {
+  "lebendX10": 2249,
+  "splitsSeit0409": 2,
+  "splits": [
+   {
+    "reihe": "NFE",
+    "art": "reverse_splits",
+    "ex": "2026-09-14",
+    "old_rate": 50,
+    "new_rate": 1,
+    "faktor": 0.02
+   },
+   {
+    "reihe": "WHLR",
+    "art": "reverse_splits",
+    "ex": "2026-09-22",
+    "old_rate": 9,
+    "new_rate": 1,
+    "faktor": 0.1111111111111111
+   }
+  ],
+  "aktienDividenden": [],
+  "saetzeJeArtBeiLebenden": {
+   "cash_dividends": 264,
+   "name_changes": 4,
+   "spin_offs": 3,
+   "cash_mergers": 2,
+   "reverse_splits": 2
+  },
+  "saetzeJeArtBeiAllenAktienreihen": {
+   "cash_dividends": 265,
+   "cash_mergers": 4,
+   "name_changes": 4,
+   "spin_offs": 3,
+   "reverse_splits": 3
+  }
+ },
+ "d_benannt": {
+  "BURU": {
+   "datei": true,
+   "saetze": [
+    {
+     "art": "reverse_splits",
+     "datum": "2026-09-02",
+     "process_date": "2026-09-02",
+     "symbol": "BURU",
+     "new_symbol": "BURUD",
+     "old_rate": 40,
+     "new_rate": 1
+    },
+    {
+     "art": "name_changes",
+     "datum": "2026-09-14",
+     "process_date": "2026-09-14",
+     "old_symbol": "BURUD",
+     "new_symbol": "BURU"
+    }
+   ]
+  },
+  "DBRG": {
+   "datei": true,
+   "saetze": [
+    {
+     "art": "cash_mergers",
+     "datum": "2026-09-30",
+     "process_date": "2026-10-01",
+     "acquiree_symbol": "DBRG",
+     "rate": 16
+    }
+   ]
+  },
+  "GBTG": {
+   "datei": true,
+   "saetze": [
+    {
+     "art": "cash_mergers",
+     "datum": "2026-09-29",
+     "process_date": "2026-09-29",
+     "acquiree_symbol": "GBTG",
+     "rate": 9.5
+    }
+   ]
+  },
+  "CSAN": {
+   "datei": true,
+   "saetze": [
+    {
+     "art": "name_changes",
+     "datum": "2026-09-21",
+     "process_date": "2026-09-21",
+     "old_symbol": "CSAN",
+     "new_symbol": "CSANY"
+    }
+   ]
+  },
+  "APGE": {
+   "datei": true,
+   "saetze": [
+    {
+     "art": "cash_mergers",
+     "datum": "2026-09-03",
+     "process_date": "2026-09-03",
+     "acquiree_symbol": "APGE",
+     "rate": 135.11
+    }
+   ]
+  },
+  "CRNX": {
+   "datei": true,
+   "saetze": [
+    {
+     "art": "cash_mergers",
+     "datum": "2026-09-02",
+     "process_date": "2026-09-02",
+     "acquiree_symbol": "CRNX",
+     "rate": 85
+    }
+   ]
+  },
+  "HLX": {
+   "datei": true,
+   "saetze": [
+    {
+     "art": "name_changes",
+     "datum": "2026-09-02",
+     "process_date": "2026-09-02",
+     "old_symbol": "HLX",
+     "new_symbol": "HOS"
+    }
+   ]
+  },
+  "LEG": {
+   "datei": false,
+   "saetze": []
+  },
+  "TWO": {
+   "datei": false,
+   "saetze": []
+  }
+ }
+}
