@@ -696,6 +696,158 @@
     return { applied: applied, txt: saetze.join(' ') + ' Simulation mit virtuellem Kapital, keine Anlageberatung.' };
   }
 
+  /* ================= Eroeffnung am selben Tag nachfassen (Auftrag Nr. 94, 04.10.2026) =================
+   *
+   * Das Momentum-Buch schichtet zur Eroeffnung des Ausfuehrungstags um (Nr. 93) und holt die Eroeffnungen
+   * ab 09:35 New York einmal. Traegt der Tagesbalken eines Werts dann noch keine Eroeffnung (spaeter
+   * Handelsbeginn, die Quelle hinkt), merkt sich das Buch die offenen Auftraege des Tages in buch.offen:
+   *   { tag: 'JJJJ-MM-TT' (New York), verkaeufe: [sym…], kaeufe: [{ sym, budget, rang }…] }
+   * Jeder Takt am selben New-Yorker Tag bis 16:00 New York holt fuer sie die Eroeffnung DIESES Tages
+   * (mfdepot.js eroeffnung) und fuehrt aus, was jetzt einen Kurs hat. Gehandelt wird immer zur Eroeffnung
+   * des Tages - das ist der Kurs der Messung, nie ein spaeterer. Nach 16:00 New York oder an einem
+   * spaeteren Tag wird offen geloescht; was dann noch offen war, bleibt wie in der Messung (Ziel ohne Kurs
+   * nicht gekauft, gehaltene Position ohne Kurs gehalten). Nur das Momentum-Buch; der Knopf "jetzt
+   * umschichten" aendert nichts an offen. Rein, in Node pruefbar. */
+  var NACHFASSEN_BIS = [16, 0];
+  /** Uhrzeit eines Zeitstempels in New York, 'HH:MM'. */
+  function nyUhr(ms) { var p = nyTeile(ms); return (p.stunde < 10 ? '0' : '') + p.stunde + ':' + (p.minute < 10 ? '0' : '') + p.minute; }
+  function kursDe(x) { return x.toFixed(2).replace('.', ',') + ' $'; }
+  function stueckDe(x) { return String(Math.round(x * 10000) / 10000).replace('.', ','); }
+  function nachRang(a, b) { return a.rang - b.rang; }
+
+  /** Regel 1: die offenen Auftraege einer Umschichtung - die geplanten Verkaeufe und Kaeufe, fuer die die
+   *  Eroeffnung fehlte. ziel = die Zielliste (in der Rangfolge), plan = planeUmschichtung(ziel, Buch, Eroeffnungen)
+   *  dieser Umschichtung, tag = Ausfuehrungstag. Ein Verkauf ist eine gehaltene Position ohne Kurs, die kein
+   *  Ziel ist (der Plan haette sie verkauft); ein Kauf ein Ziel ohne Kurs, das nicht gehalten wird. budget ist
+   *  der Platzwert, mit dem der Plan rechnete (depotwert / Zielzahl wie in planeUmschichtung), rang der Platz
+   *  in der Zielliste (1 = der staerkste). Eine gehaltene Position ohne Kurs, die Ziel ist, ist kein Auftrag.
+   *  Rueckgabe: das offen-Objekt oder null, wenn nichts offen ist. */
+  function offeneAuftraege(ziel, plan, tag) {
+    var rang = {}, gehalten = {};
+    (ziel || []).forEach(function (s, i) { rang[s] = i + 1; });
+    (plan.halten || []).forEach(function (s) { gehalten[s] = true; });
+    var budget = ziel && ziel.length ? plan.depotwert / ziel.length : 0;
+    var verkaeufe = [], kaeufe = [];
+    (plan.fehltKurs || []).forEach(function (s) {
+      if (gehalten[s]) { if (!rang[s]) verkaeufe.push(s); }
+      else if (rang[s]) kaeufe.push({ sym: s, budget: budget, rang: rang[s] });
+    });
+    return verkaeufe.length || kaeufe.length ? { tag: tag, verkaeufe: verkaeufe, kaeufe: kaeufe.sort(nachRang) } : null;
+  }
+
+  /** Laeuft das Nachfassen noch? Nur am New-Yorker Tag des Auftrags und vor 16:00 New York. */
+  function offenLaeuft(offen, nowMs) {
+    return !!offen && nyTag(nowMs) === offen.tag && nowMs < nyZeit(offen.tag, NACHFASSEN_BIS[0], NACHFASSEN_BIS[1]);
+  }
+
+  /** Die Werte, fuer die der Takt eine Eroeffnung holt: erst die Verkaeufe, dann die Kaeufe nach rang. */
+  function offenWerte(offen) {
+    if (!offen) return [];
+    return (offen.verkaeufe || []).concat((offen.kaeufe || []).slice().sort(nachRang).map(function (k) { return k.sym; }));
+  }
+
+  /** Regel 2: ausfuehren, was jetzt eine Eroeffnung hat. preise / barZeit = die Eroeffnungen DIESES Tages und
+   *  die Stempel ihrer Balken (mfdepot.js eroeffnung). Erst die Verkaeufe (Erloes ins Bargeld, Kosten wie
+   *  bisher), dann die Kaeufe in der Reihenfolge rang, je hoechstens budget (Stueck = budget / Kurs, auf vier
+   *  Stellen abgerundet) und hoechstens das vorhandene Bargeld - mit fuehreAus, opts wie bei der Umschichtung
+   *  (Regel K). Ausgefuehrtes faellt aus offen heraus; ein Kauf mit Kurs, den das Bargeld (oder Regel K1)
+   *  jetzt nicht zulaesst, bleibt offen. Ein Verkauf eines Werts, der nicht mehr im Buch ist, und ein Kauf
+   *  eines Werts, der schon im Buch ist (etwa nach dem Knopf), entfallen - nie ein zweiter Kauf.
+   *  Mutiert das Buch. Rueckgabe { tag, verkauft: [{sym, kurs}], gekauft: [{sym, kurs, stueck}],
+   *  wartet: [sym], entfallen: [sym], rest: offen|null, geaendert, kostenBp } */
+  function nachfassen(buch, preise, barZeit, nowMs, kostenBp, opts) {
+    var o = buch && buch.offen;
+    var res = { tag: o ? o.tag : null, verkauft: [], gekauft: [], wartet: [], entfallen: [], rest: null, geaendert: false,
+      kostenBp: kostenBp == null ? 20 : kostenBp };
+    if (!o) return res;
+    preise = preise || {};
+    var imBuch = {};
+    (buch.positionen || []).forEach(function (p) { imBuch[p.sym] = p; });
+    var plan = { verkaufen: [], kaufen: [] }, restV = [], restK = [];
+    (o.verkaeufe || []).forEach(function (s) {
+      if (!imBuch[s]) { res.entfallen.push(s); return; }
+      if (preise[s] > 0) plan.verkaufen.push({ sym: s, stueck: imBuch[s].stueck, kurs: preise[s] });
+      else restV.push(s);
+    });
+    (o.kaeufe || []).slice().sort(nachRang).forEach(function (k) {
+      if (imBuch[k.sym]) { res.entfallen.push(k.sym); return; }
+      var kurs = preise[k.sym];
+      if (kurs > 0) plan.kaufen.push({ sym: k.sym, kurs: kurs, budget: k.budget, rang: k.rang,
+        stueck: k.budget > 0 ? Math.floor(k.budget / kurs * 10000) / 10000 : 0 });
+      else restK.push(k);
+    });
+    if (plan.verkaufen.length || plan.kaufen.length) {
+      fuehreAus(buch, plan, nowMs, res.kostenBp, opts);        // erst die Verkaeufe, dann die Kaeufe in dieser Reihenfolge
+      stempleKursT(buch, barZeit, nowMs);                       // neue Positionen: Balken des Tages, zu dessen Eroeffnung gekauft wurde
+    }
+    plan.verkaufen.forEach(function (v) { res.verkauft.push({ sym: v.sym, kurs: v.kurs }); });
+    plan.kaufen.forEach(function (k) {
+      if (k.stueck > 0) res.gekauft.push({ sym: k.sym, kurs: k.kurs, stueck: k.stueck });
+      else { res.wartet.push(k.sym); restK.push({ sym: k.sym, budget: k.budget, rang: k.rang }); }
+    });
+    if (restV.length || restK.length) buch.offen = { tag: o.tag, verkaeufe: restV, kaeufe: restK.sort(nachRang) };
+    else delete buch.offen;
+    res.rest = buch.offen || null;
+    res.geaendert = res.verkauft.length + res.gekauft.length + res.entfallen.length > 0;
+    return res;
+  }
+
+  /** Regel 3: nach 16:00 New York oder an einem spaeteren Tag wird offen geloescht. Rueckgabe: das geloeschte
+   *  offen (mit den liegen gebliebenen Auftraegen) - oder null, wenn keins da ist oder es weiterlaeuft. */
+  function offenBeenden(buch, nowMs) {
+    if (!buch || !buch.offen || offenLaeuft(buch.offen, nowMs)) return null;
+    var o = buch.offen;
+    delete buch.offen;
+    return o;
+  }
+
+  function auftraegeDe(verkaeufe, kaeufe) {
+    var teile = [];
+    if (verkaeufe.length) teile.push((verkaeufe.length === 1 ? 'Verkauf ' : 'Verkäufe ') + verkaeufe.join(', '));
+    if (kaeufe.length) teile.push((kaeufe.length === 1 ? 'Kauf ' : 'Käufe ') + kaeufe.join(', '));
+    return teile.join('; ');
+  }
+
+  /** Der Satz zu den offenen Auftraegen in der Journalzeile der Umschichtung ('' ohne offen). */
+  function offenText(offen, nowMs) {
+    if (!offen) return '';
+    return ' Um ' + nyUhr(nowMs) + ' New York noch ohne Eröffnung, offen – die App fasst heute bis 16:00 New York zur Eröffnung dieses Tages nach: ' +
+      auftraegeDe(offen.verkaeufe, offen.kaeufe.map(function (k) { return k.sym; })) + '.';
+  }
+
+  /** Die eigene Journalzeile eines Nachfassens (Wert, Eroeffnungskurs, Uhrzeit) - null, wenn nichts gehandelt
+   *  wurde und nichts entfallen ist. Rein (Text, keine Wirkung). */
+  function nachfassenJournal(res, nowMs) {
+    if (!res || !res.geaendert) return null;
+    var handel = res.verkauft.map(function (v) { return 'Verkauf ' + v.sym + ' zu ' + kursDe(v.kurs); })
+      .concat(res.gekauft.map(function (k) { return 'Kauf ' + k.sym + ' zu ' + kursDe(k.kurs) + ' (' + stueckDe(k.stueck) + ' Stück)'; }));
+    var applied = handel.length ? ['Momentum-Buch nachgefasst: ' + handel.join('; ')] : ['Momentum-Buch: offene Aufträge entfallen'];
+    var txt = 'Momentum-Buch: Eröffnung vom ' + datumDe(res.tag) + ' nachgefasst um ' + nyUhr(nowMs) + ' New York' +
+      (handel.length ? ', gehandelt zur Eröffnung dieses Tages – ' + handel.join('; ') + '. Kosten ' + res.kostenBp + ' Bp je Seite.' : '.') +
+      (res.entfallen.length ? ' Entfallen (Wert schon im Buch bzw. nicht mehr gehalten): ' + res.entfallen.join(', ') + '.' : '') +
+      (res.wartet.length ? ' Eröffnung da, aber das Bargeld reicht nicht – bleibt offen: ' + res.wartet.join(', ') + '.' : '') +
+      (res.rest ? ' Noch offen bis 16:00 New York: ' + auftraegeDe(res.rest.verkaeufe, res.rest.kaeufe.map(function (k) { return k.sym; })) + '.'
+        : ' Damit ist nichts mehr offen.') +
+      ' Simulation mit virtuellem Kapital, keine Anlageberatung.';
+    return { applied: applied, txt: txt };
+  }
+
+  /** Die Journalzeile zum Ende des Nachfassens mit den liegen gebliebenen Auftraegen. Rein. */
+  function offenEndeJournal(offen, nowMs) {
+    var verkaeufe = offen.verkaeufe || [], kaeufe = (offen.kaeufe || []).map(function (k) { return k.sym; });
+    var liste = auftraegeDe(verkaeufe, kaeufe), folgen = [];
+    if (verkaeufe.length) folgen.push(verkaeufe.length === 1 ? 'die Position bleibt bis zur nächsten Umschichtung gehalten' : 'die Positionen bleiben bis zur nächsten Umschichtung gehalten');
+    if (kaeufe.length) folgen.push((kaeufe.length === 1 ? 'das Ziel wird nicht gekauft, sein Platz bleibt' : 'die Ziele werden nicht gekauft, ihre Plätze bleiben') + ' bis zur nächsten Umschichtung Bargeld');
+    var satz = folgen.join(', ');
+    return {
+      applied: ['Momentum-Buch: Nachfassen beendet, liegen geblieben: ' + liste],
+      txt: 'Momentum-Buch: Nachfassen der Umschichtung vom ' + datumDe(offen.tag) + ' beendet (' +
+        (nyTag(nowMs) === offen.tag ? '16:00 New York vorbei' : 'ein späterer Tag') + ') – liegen geblieben: ' + liste + '. ' +
+        satz.charAt(0).toUpperCase() + satz.slice(1) +
+        ' – wie in der Messung (ohne Eröffnung kein Handel). Simulation mit virtuellem Kapital, keine Anlageberatung.'
+    };
+  }
+
   var MFHandel = {
     buchKonfig: buchKonfig, momentumZiel: momentumZiel, planeUmschichtung: planeUmschichtung,
     fuehreAus: fuehreAus, bewerte: bewerte, rebalanceFaellig: rebalanceFaellig,
@@ -707,7 +859,11 @@
     balkenNach: balkenNach, faelligkeit: faelligkeit, stichtagPruefen: stichtagPruefen, rohBis: rohBis,
     schluesseAm: schluesseAm, punktTag: punktTag, bargeldAm: bargeldAm, datumDe: datumDe,
     reihenendeAusbuchen: reihenendeAusbuchen, reihenendeJournal: reihenendeJournal, REIHENENDE_TAGE: REIHENENDE_TAGE,
-    SCHLUSS_FERTIG: SCHLUSS_FERTIG, HANDEL_AB: HANDEL_AB
+    SCHLUSS_FERTIG: SCHLUSS_FERTIG, HANDEL_AB: HANDEL_AB,
+    /* Auftrag Nr. 94 */
+    nyUhr: nyUhr, offeneAuftraege: offeneAuftraege, offenLaeuft: offenLaeuft, offenWerte: offenWerte, nachfassen: nachfassen,
+    offenBeenden: offenBeenden, offenText: offenText, nachfassenJournal: nachfassenJournal, offenEndeJournal: offenEndeJournal,
+    NACHFASSEN_BIS: NACHFASSEN_BIS
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = MFHandel; return; }
   root.MFHandel = MFHandel;

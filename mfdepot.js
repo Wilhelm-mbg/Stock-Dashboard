@@ -298,6 +298,35 @@
     return { ok: true, ziel: ziel, preise: preise, barZeit: barZeit, stichtag: st.stichtag, heute: heute };
   }
 
+  /** Auftrag Nr. 94 - die offenen Auftraege der Umschichtung von heute (d.mfBuch.offen, Regeln in
+   *  mfhandel.js): bis 16:00 New York holt jeder Takt fuer sie die Eroeffnung DIESES Tages - mit derselben
+   *  Funktion eroeffnung, nie ein spaeterer Kurs - und fuehrt aus, was jetzt einen Kurs hat (erst Verkaeufe,
+   *  dann Kaeufe nach rang, Kosten und Regel K wie bei der Umschichtung). Danach, oder an einem spaeteren Tag,
+   *  wird offen geloescht und eine Zeile nennt die liegen gebliebenen. Nachgefasst wird nur, solange das Buch
+   *  selbst handelt (Schalter "handelt selbst"); beendet wird immer. Rueckgabe: true, wenn gespeichert werden muss. */
+  async function offenNachfassen(MH, d, now, kleinstAnteil) {
+    var b = d.mfBuch, o = b && b.offen;
+    if (!o) return false;
+    if (!d.tuneLog) d.tuneLog = [];
+    var ende = MH.offenBeenden(b, now);
+    if (ende) {
+      var zE = MH.offenEndeJournal(ende, now);
+      d.tuneLog.unshift({ id: 'mfoffen-ende-' + now, at: now, quelle: 'automatik', applied: zE.applied, txt: zE.txt });
+      return true;
+    }
+    if (!d.momentumAn) return false;
+    var syms = MH.offenWerte(o), preise = {}, barZeit = {};
+    for (var i = 0; i < syms.length; i++) {
+      var f = await eroeffnung(MH, syms[i], o.tag, now);
+      if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; }
+      await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader
+    }
+    var res = MH.nachfassen(b, preise, barZeit, now, 20, { kleinstAnteil: kleinstAnteil });   // 20 Bp je Seite wie die Umschichtung
+    var z = MH.nachfassenJournal(res, now);
+    if (z) d.tuneLog.unshift({ id: 'mfnach-' + now, at: now, quelle: 'automatik', applied: z.applied, txt: z.txt });
+    return res.geaendert;
+  }
+
   async function takt(manuell) {
     if (LAEUFT) return;
     var d = D();
@@ -357,6 +386,8 @@
       if (daten.bezug && !fl.veraltet && reihenendeBuchen(MH, d, daten, now)) speichern();
       /* A5: der Tagespunkt - VOR jedem Handel dieses Takts (sein Buch ist das Buch am Schluss von X). */
       if (daten.bezug && tagespunkt(MH, d, daten, now)) speichern();
+      /* Nr. 94: offene Auftraege der Umschichtung von heute zur Eroeffnung dieses Tages nachfassen - oder beenden. */
+      if (d.mfBuch.offen && await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil)) speichern();
       var faellig = fl.faellig === true;
       var ziel = MH.momentumZiel(daten.roh, { nowMs: daten.juengster || now });
       /* Gespeicherte Tagesdaten ohne Stueckzahlen (Bestand von vor dem Korbfilter): der
@@ -381,6 +412,13 @@
           plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, { kleinstAnteil: KONFIG.kleinstAnteil });
           var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil });
           MH.stempleKursT(d.mfBuch, ausf.barZeit, now);   // neue Positionen: Balken des Ausfuehrungstags, zu dessen Eroeffnung gekauft wurde
+          /* Nr. 94: fehlt fuer einen geplanten Kauf oder Verkauf die Eroeffnung, merkt sich das Buch die offenen
+           * Auftraege des Tages (die naechsten Takte fassen bis 16:00 New York nach). Nur der Takt - der Knopf
+           * "jetzt umschichten" aendert nichts an offen; seine fehlenden Werte bleiben wie bisher liegen. */
+          var offenNeu = manuell === 'momentum' ? null : MH.offeneAuftraege(zielA.ziel, plan, ausf.heute);
+          if (offenNeu) d.mfBuch.offen = offenNeu;
+          var offenSyms = MH.offenWerte(offenNeu);
+          var fehltRest = plan.fehltKurs.filter(function (s) { return offenSyms.indexOf(s) < 0; });
           /* Gezaehlt wird, was WIRKLICH lief: fuehreAus setzt o.stueck eines nicht ausgefuehrten
            * Kaufs auf 0 (kein Bargeld mehr, oder nach dem Verkleinern unter der Grenze von
            * Regel K1). plan.kaufen.length waere die Zahl der GEPLANTEN Kaeufe. */
@@ -413,8 +451,9 @@
               ' Korb: ' + zielA.korb.zulaessig + ' von ' + zielA.korb.geprueft + ' Werten zulässig (Median-Tagesumsatz ≥ ' +
               Math.round(zielA.korb.umsatzMin / 1e6) + ' Mio $ über ' + zielA.korb.fenster + ' Balken).' +
               (zielA.uebersprungen.length ? ' Nicht im Korb oder ohne frische Kurse: ' + zielA.uebersprungen.slice(0, 6).join(', ') + (zielA.uebersprungen.length > 6 ? ' …' : '') : '') +
-              (plan.fehltKurs.length ? ' Ohne Eröffnungskurs nicht handelbar (Ziel nicht gekauft, Position bis zur nächsten Umschichtung gehalten): ' +
-                plan.fehltKurs.slice(0, 6).join(', ') + (plan.fehltKurs.length > 6 ? ' …' : '') : '') });
+              MH.offenText(offenNeu, now) +
+              (fehltRest.length ? ' Ohne Eröffnungskurs nicht handelbar (Ziel nicht gekauft, Position bis zur nächsten Umschichtung gehalten): ' +
+                fehltRest.slice(0, 6).join(', ') + (fehltRest.length > 6 ? ' …' : '') : '') });
           speichern();
           plan = MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil });   // frisch für die Anzeige
           faellig = false;

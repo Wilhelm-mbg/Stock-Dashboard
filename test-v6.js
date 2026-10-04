@@ -24150,6 +24150,184 @@ console.log('98) Live gleich Messung: das Momentum-Buch handelt wie gemessen (Au
   }));
 })();
 
+/* ================= 99) Eroeffnung am selben Tag nachfassen (Auftrag Nr. 94, 04.10.2026) =================
+ * Fehlt beim Umschichten des Momentum-Buchs um 09:35 New York fuer einen Wert noch die Eroeffnung, merkt sich das Buch die
+ * offenen Auftraege (d.mfBuch.offen); jeder Takt am selben New-Yorker Tag bis 16:00 fasst nach - gehandelt zur Eroeffnung
+ * DIESES Tages, nie zu einem spaeteren Kurs. Danach (oder am Folgetag) wird offen geloescht.
+ *   99.1 Regel 1  offene Auftraege aus dem Plan der Umschichtung; nur der Takt setzt sie, der Knopf nicht; Journalzeile
+ *   99.2 Regel 2  Handfaelle: beim ersten Nachfassen; erst beim dritten Takt; Verkauf und Kauf zugleich (Verkauf zuerst);
+ *                 Kauf groesser als das Bargeld (und Regel K1); Eroeffnung statt spaeterem Schluss
+ *   99.3 Regel 3  nie bis 16:00 (dann geloescht, Zeile mit den liegen gebliebenen); am Folgetag nichts mehr
+ *   99.4 Regel 4  kein zweiter Kauf nach dem Knopf; Schalter "handelt selbst"
+ * Gegenproben (je eine geaenderte Fassung, jede muss anschlagen): Nachfassen zum laufenden Kurs · Nachfassen am Folgetag ·
+ * Kaeufe vor Verkaeufen · offen nach 16:00 nicht geloescht. */
+console.log('99) Eroeffnung am selben Tag nachfassen (Auftrag Nr. 94)');
+(function () {
+  var MH = require('./mfhandel.js');
+  var g99 = 0, rot99 = 0, warte99 = [];
+  function p99(x) { warte99.push(x); return probe(x); }
+  function gegen99(was, ergebnis) { g99++; if (ergebnis) rot99++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function ny(tag, h, m) { return MH.nyZeit(tag, h, m); }
+  function st(tag) { return MH.nyZeit(tag, 9, 30); }                 // Stempel eines Tagesbalkens: Eroeffnung 09:30 New York
+  function nah(a, b) { return Math.abs(a - b) < 1e-6; }
+  function ersetze(q, alt, neu) { var n = q.split(alt).length - 1; return n === 1 ? q.replace(alt, function () { return neu; }) : null; }
+  var mhQ = fs.readFileSync(__dirname + '/mfhandel.js', 'utf8'), mfdQ = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  /** mfhandel.js aus geaendertem Quelltext; ohne Treffer keine Fassung (dann schlaegt die Gegenprobe nicht an). */
+  function mhAus(q) { if (!q) return null; var m = { exports: {} }; new Function('module', 'require', q)(m, require); return m.exports; }
+  var DI = '2026-11-24', MI = '2026-11-25';                          // Dienstag = Ausfuehrungstag, Mittwoch = Folgetag
+  /** Der Helfer des Takts aus mfdepot.js (Quelltext zwischen reihenendeBuchen und takt), mit Attrappe fuer den Kursabruf. */
+  function helfer(quelle, hole) {
+    var q = quelle.slice(quelle.indexOf('  function reihenendeBuchen('), quelle.indexOf('  async function takt('));
+    return new Function('window', 'nachladen', 'START_KAPITAL', 'setTimeout', q + '\n return { nachfassen: offenNachfassen };')(
+      { Kurse: { hole: hole } }, function () {}, 100000, function (fn) { setImmediate(fn); return 0; });
+  }
+  /** Kursabruf: der Tagesbalken vom Dienstag traegt die Eroeffnung eroeff[s] erst ab der Uhrzeit ab[s] (vorher null); sein
+   *  Schluss ist der laufende Kurs 999 - gehandelt werden darf nur die Eroeffnung. */
+  function hole(eroeff, ab) {
+    var log = [];
+    var f = async function (s, o) {
+      log.push([s, o]);
+      var da = eroeff[s] > 0 && !(ab && ab[s] > o.bis);             // o.bis = jetzt
+      return { bars: [[st(DI), 999, 1e6, 999, 999, da ? eroeff[s] : null]] };
+    };
+    f.log = log; return f;
+  }
+  function dd(cash, positionen, offen, an) {
+    return { momentumAn: an !== false, tuneLog: [], mfBuch: { cash: cash, positionen: positionen || [], trades: [], letzteAusfuehrungTag: DI, offen: offen } };
+  }
+  function kauf(sym, budget, rang) { return { sym: sym, budget: budget, rang: rang }; }
+
+  /* ---- 99.1 Regel 1: offene Auftraege aus dem Plan; nur der Takt setzt sie ---- */
+  var buch1 = { cash: 1000, positionen: [{ sym: 'A', stueck: 10, einstand: 90 }, { sym: 'H', stueck: 5, einstand: 50 }, { sym: 'X', stueck: 20, einstand: 10 }] };
+  var ziel1 = ['T1', 'H', 'T2', 'T3'];
+  var plan1 = MH.planeUmschichtung(ziel1, buch1, { T2: 50, X: 12 }, { kleinstAnteil: 0.05 });
+  var of1 = MH.offeneAuftraege(ziel1, plan1, DI);
+  ok(JSON.stringify(of1) === JSON.stringify({ tag: DI, verkaeufe: ['A'], kaeufe: [kauf('T1', 310, 1), kauf('T3', 310, 4)] }) &&
+     MH.offeneAuftraege(['T2'], MH.planeUmschichtung(['T2'], { cash: 100, positionen: [] }, { T2: 5 }), DI) === null,
+     '99.1 offene Auftraege: Verkauf = gehaltene Position ohne Eroeffnung, die kein Ziel ist (A); Kauf = Ziel ohne Eroeffnung (T1, T3) mit dem Platzwert des Plans (1.240 $ / 4 = 310 $) und dem Platz in der Zielliste; gehaltenes Ziel ohne Kurs (H) ist kein Auftrag; nichts offen -> null',
+     JSON.stringify(of1));
+  ok(MH.offenText(of1, ny(DI, 9, 36)) === ' Um 09:36 New York noch ohne Eröffnung, offen – die App fasst heute bis 16:00 New York zur Eröffnung dieses Tages nach: Verkauf A; Käufe T1, T3.' &&
+     MH.offenText(null, ny(DI, 9, 36)) === '',
+     '99.1 die Journalzeile der Umschichtung nennt die offenen Auftraege', MH.offenText(of1, ny(DI, 9, 36)));
+  var takt99 = ohneKommentare(mfdQ.slice(mfdQ.indexOf('async function takt('), mfdQ.indexOf('function zeige(')));
+  ok(/MH\.stempleKursT\(d\.mfBuch, ausf\.barZeit, now\);[^\n]*\s*var offenNeu = manuell === 'momentum' \? null : MH\.offeneAuftraege\(zielA\.ziel, plan, ausf\.heute\);\s*if \(offenNeu\) d\.mfBuch\.offen = offenNeu;/.test(takt99) &&
+     (takt99.match(/\.offen = /g) || []).length === 1 && takt99.indexOf('MH.offenText(offenNeu, now) +') > 0,
+     '99.1 offen setzt nur der Takt, gleich nach der Ausfuehrung der Umschichtung - der Knopf "jetzt umschichten" aendert nichts an offen; die Zeile der Umschichtung nennt sie');
+  var iP = takt99.indexOf('tagespunkt(MH, d, daten, now)'), iN = takt99.indexOf('if (d.mfBuch.offen && await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil)) speichern();'),
+    iU = takt99.indexOf('await ausfuehrungVorbereiten(');
+  ok(iP > 0 && iN > iP && iU > iN, '99.2 im Takt: nachgefasst (oder beendet) wird nach dem Tagespunkt und vor einer Umschichtung - in jedem Takt, solange offen steht');
+
+  /* ---- die Handfaelle als Funktionen: jede gibt { ok, info } (die Gegenproben fahren dieselben Faelle) ---- */
+  async function fallErster(M, quelle) {           // Eroeffnung kommt beim ersten Nachfassen
+    var d = dd(20000, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('B', 10000, 1)] }), h = hole({ B: 50 });
+    var g = await helfer(quelle || mfdQ, h).nachfassen(M || MH, d, ny(DI, 10, 5), 0.05);
+    var p = d.mfBuch.positionen[0], z = d.tuneLog[0] ? d.tuneLog[0].txt : '';
+    return { ok: g === true && !d.mfBuch.offen && !!p && p.sym === 'B' && p.stueck === 200 && nah(p.einstand, 50 * 1.002) && p.kursT === st(DI) &&
+      nah(d.mfBuch.cash, 20000 - 10000 * 1.002) && h.log.length === 1 && h.log[0][1].von === ny(DI, 0, 0) && h.log[0][1].offenRoh === true &&
+      h.log[0][1].bereinigt === false && d.tuneLog.length === 1 &&
+      z.indexOf('Momentum-Buch: Eröffnung vom 24.11.2026 nachgefasst um 10:05 New York, gehandelt zur Eröffnung dieses Tages – Kauf B zu 50,00 $ (200 Stück). Kosten 20 Bp je Seite.') === 0 &&
+      z.indexOf('Damit ist nichts mehr offen.') > 0, info: z };
+  }
+  async function fallDritter() {                   // erst beim dritten Takt
+    var d = dd(20000, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('B', 10000, 1)] }), h = hole({ B: 50 }, { B: ny(DI, 10, 45) }), H = helfer(mfdQ, h);
+    var s0 = JSON.stringify(d);
+    var g1 = await H.nachfassen(MH, d, ny(DI, 9, 50), 0.05), s1 = JSON.stringify(d);
+    var g2 = await H.nachfassen(MH, d, ny(DI, 10, 20), 0.05), s2 = JSON.stringify(d);
+    var g3 = await H.nachfassen(MH, d, ny(DI, 10, 50), 0.05);
+    var p = d.mfBuch.positionen[0];
+    return { ok: g1 === false && g2 === false && s1 === s0 && s2 === s0 && g3 === true && h.log.length === 3 && !!p && p.stueck === 200 && nah(p.einstand, 50 * 1.002) &&
+      !d.mfBuch.offen && d.tuneLog.length === 1 && d.tuneLog[0].txt.indexOf('nachgefasst um 10:50 New York') > 0, info: h.log.length + ' Abrufe' };
+  }
+  async function fallZugleich(M) {                 // Verkauf und Kauf zugleich offen, Bargeld 0: der Verkauf zuerst
+    var d = dd(0, [{ sym: 'A', stueck: 100, einstand: 45, seit: 1 }], { tag: DI, verkaeufe: ['A'], kaeufe: [kauf('B', 4000, 2)] }), h = hole({ A: 50, B: 40 });
+    await helfer(mfdQ, h).nachfassen(M || MH, d, ny(DI, 10, 0), 0.05);
+    var t = d.mfBuch.trades, p = d.mfBuch.positionen;
+    return { ok: t.length === 2 && t[0].art === 'verkauf' && t[0].sym === 'A' && t[0].kurs === 50 && t[1].art === 'kauf' && t[1].sym === 'B' && t[1].kurs === 40 &&
+      p.length === 1 && p[0].sym === 'B' && p[0].stueck === 100 && nah(d.mfBuch.cash, 100 * 50 * 0.998 - 4000 * 1.002) && !d.mfBuch.offen &&
+      h.log.map(function (x) { return x[0]; }).join(',') === 'A,B' &&
+      d.tuneLog[0].txt.indexOf('Verkauf A zu 50,00 $; Kauf B zu 40,00 $ (100 Stück)') > 0, info: JSON.stringify(t) };
+  }
+  async function fallNie(M) {                      // nie eine Eroeffnung bis 16:00
+    var d = dd(5000, [{ sym: 'A', stueck: 10, einstand: 45, seit: 1 }], { tag: DI, verkaeufe: ['A'], kaeufe: [kauf('B', 5000, 1)] }), h = hole({}), H = helfer(mfdQ, h);
+    var g1 = await H.nachfassen(M || MH, d, ny(DI, 10, 0), 0.05), g2 = await H.nachfassen(M || MH, d, ny(DI, 15, 59), 0.05);
+    var offenVor = JSON.stringify(d.mfBuch.offen), nVor = h.log.length;
+    var g3 = await H.nachfassen(M || MH, d, ny(DI, 16, 0), 0.05);
+    var z = d.tuneLog[0] ? d.tuneLog[0].txt : '';
+    return { ok: !g1 && !g2 && offenVor === JSON.stringify({ tag: DI, verkaeufe: ['A'], kaeufe: [kauf('B', 5000, 1)] }) && nVor === 4 && g3 === true && !d.mfBuch.offen &&
+      h.log.length === 4 && d.mfBuch.trades.length === 0 && d.mfBuch.cash === 5000 && d.mfBuch.positionen.length === 1 && d.tuneLog.length === 1 &&
+      z === 'Momentum-Buch: Nachfassen der Umschichtung vom 24.11.2026 beendet (16:00 New York vorbei) – liegen geblieben: Verkauf A; Kauf B. Die Position bleibt bis zur nächsten Umschichtung gehalten, das Ziel wird nicht gekauft, sein Platz bleibt bis zur nächsten Umschichtung Bargeld – wie in der Messung (ohne Eröffnung kein Handel). Simulation mit virtuellem Kapital, keine Anlageberatung.',
+      info: z };
+  }
+  async function fallFolgetag(M) {                 // am Folgetag nichts mehr
+    var d = dd(5000, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('B', 5000, 1)] }), h = hole({ B: 50 });
+    var g = await helfer(mfdQ, h).nachfassen(M || MH, d, ny(MI, 9, 40), 0.05);
+    return { ok: g === true && !d.mfBuch.offen && h.log.length === 0 && d.mfBuch.positionen.length === 0 && d.mfBuch.cash === 5000 &&
+      d.tuneLog.length === 1 && d.tuneLog[0].txt.indexOf('beendet (ein späterer Tag) – liegen geblieben: Kauf B. Das Ziel wird nicht gekauft, sein Platz bleibt bis zur nächsten Umschichtung Bargeld') > 0, info: d.tuneLog[0] && d.tuneLog[0].txt };
+  }
+
+  p99((async function () {
+    /* ---- 99.2 Regel 2 ---- */
+    var r1 = await fallErster();
+    ok(r1.ok, '99.2 Eroeffnung kommt beim ersten Nachfassen (10:05): Kauf zur Eroeffnung 50 (der Balken traegt als Schluss den laufenden Kurs 999), 200 Stueck = budget / Kurs, kursT = Balken des Tages, Abruf roh mit Eroeffnung ohne Rueckfall; offen geloescht; eine Zeile mit Wert, Kurs und Uhrzeit', r1.info);
+    var r3 = await fallDritter();
+    ok(r3.ok, '99.2 Eroeffnung erst beim dritten Takt (09:50, 10:20 ohne, 10:50 mit): die ersten zwei aendern nichts und schreiben keine Zeile, der dritte kauft zur Eroeffnung', r3.info);
+    var rZ = await fallZugleich();
+    ok(rZ.ok, '99.2 Verkauf und Kauf zugleich offen (Bargeld 0): erst der Verkauf zur Eroeffnung (Erloes 4.990 $ ins Bargeld, 20 Bp), dann der Kauf aus dem Erloes, hoechstens budget (4.000 $ = 100 Stueck zu 40)', rZ.info);
+    /* Kauf groesser als das Bargeld; Regel K1 wie bei der Umschichtung */
+    var dK = dd(3000, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('C', 10000, 2), kauf('B', 10000, 1)] });
+    await helfer(mfdQ, hole({ B: 50, C: 20 })).nachfassen(MH, dK, ny(DI, 10, 0), 0.05);
+    var pK = dK.mfBuch.positionen;
+    ok(pK.length === 1 && pK[0].sym === 'B' && pK[0].stueck === 59.8802 && dK.mfBuch.cash >= 0 && dK.mfBuch.cash < 0.01 &&
+       JSON.stringify(dK.mfBuch.offen) === JSON.stringify({ tag: DI, verkaeufe: [], kaeufe: [kauf('C', 10000, 2)] }) &&
+       dK.tuneLog[0].txt.indexOf('Eröffnung da, aber das Bargeld reicht nicht – bleibt offen: C.') > 0,
+       '99.2 Kauf groesser als das Bargeld: B (Platz 1) verkleinert auf das Bargeld (59,8802 Stueck zu 50, nicht 200), C (Platz 2) ohne Bargeld bleibt offen', JSON.stringify(pK) + ' ' + dK.mfBuch.cash);
+    var dK1 = dd(400, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('B', 10000, 1)] }), dK0 = dd(400, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('B', 10000, 1)] });
+    await helfer(mfdQ, hole({ B: 50 })).nachfassen(MH, dK1, ny(DI, 10, 0), 0.05);
+    await helfer(mfdQ, hole({ B: 50 })).nachfassen(MH, dK0, ny(DI, 10, 0), 0);
+    ok(dK1.mfBuch.positionen.length === 0 && dK1.mfBuch.cash === 400 && !!dK1.mfBuch.offen && dK0.mfBuch.positionen.length === 1 && !dK0.mfBuch.offen,
+       '99.2 Schalter von Regel K wie bei der Umschichtung: 400 $ Bargeld bei 10.000 $ Platzwert - mit K1 (5 %) kein Kleinstkauf (bleibt offen), ohne Schalter gekauft');
+    var dE = dd(0, [{ sym: 'A', stueck: 10, einstand: 45, seit: 1 }], { tag: DI, verkaeufe: ['A'], kaeufe: [] });
+    await helfer(mfdQ, hole({ A: 50 })).nachfassen(MH, dE, ny(DI, 15, 30), 0.05);
+    ok(dE.mfBuch.trades.length === 1 && dE.mfBuch.trades[0].kurs === 50 && nah(dE.mfBuch.cash, 10 * 50 * 0.998) && dE.mfBuch.positionen.length === 0,
+       '99.2 gehandelt wird die Eroeffnung, auch wenn der Abruf spaeter (15:30) im selben Balken einen anderen Schluss liefert (999): Verkauf zu 50', JSON.stringify(dE.mfBuch.trades));
+
+    /* ---- 99.3 Regel 3 ---- */
+    var rN = await fallNie();
+    ok(rN.ok, '99.3 nie eine Eroeffnung bis 16:00: um 10:00 und 15:59 je ein Abruf je Wert, kein Handel, keine Zeile; um 16:00 kein Abruf mehr, offen geloescht, eine Zeile nennt die liegen gebliebenen (Position gehalten, Ziel nicht gekauft)', rN.info);
+    var rF = await fallFolgetag();
+    ok(rF.ok, '99.3 am Folgetag (Mittwoch 09:40) nichts mehr: kein Abruf, kein Kauf, offen geloescht mit einer Zeile', rF.info);
+
+    /* ---- 99.4 Regel 4 ---- */
+    var dH = dd(5000, [{ sym: 'B', stueck: 1, einstand: 50, seit: 1 }], { tag: DI, verkaeufe: ['A'], kaeufe: [kauf('B', 5000, 1)] });
+    await helfer(mfdQ, hole({ A: 60, B: 50 })).nachfassen(MH, dH, ny(DI, 10, 0), 0.05);
+    ok(dH.mfBuch.positionen.length === 1 && dH.mfBuch.positionen[0].stueck === 1 && dH.mfBuch.trades.length === 0 && !dH.mfBuch.offen &&
+       dH.tuneLog[0].txt.indexOf('Entfallen (Wert schon im Buch bzw. nicht mehr gehalten): A, B.') > 0,
+       '99.4 nach dem Knopf: ein offener Kauf eines Werts, der schon im Buch ist, entfaellt (kein zweiter Kauf), ebenso ein Verkauf eines Werts, der nicht mehr im Buch ist', dH.tuneLog[0] && dH.tuneLog[0].txt);
+    var dS = dd(5000, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('B', 5000, 1)] }, false), hS = hole({ B: 50 });
+    var gS1 = await helfer(mfdQ, hS).nachfassen(MH, dS, ny(DI, 10, 0), 0.05), offenS = !!dS.mfBuch.offen;
+    var gS2 = await helfer(mfdQ, hS).nachfassen(MH, dS, ny(DI, 16, 5), 0.05);
+    ok(gS1 === false && offenS && hS.log.length === 0 && gS2 === true && !dS.mfBuch.offen && dS.mfBuch.positionen.length === 0,
+       '99.4 Schalter "handelt selbst" aus: kein Abruf, kein Handel; beendet wird trotzdem (16:05: offen geloescht)');
+
+    /* ---- Gegenproben ---- */
+    var qLauf = ersetze(mfdQ, 'var f = await eroeffnung(MH, syms[i], o.tag, now);',
+      'var f = await (async function (s) { var kd = await window.Kurse.hole(s, { von: 0, bis: now }); var x = kd.bars[kd.bars.length - 1]; return { kurs: x[1], t: x[0] }; })(syms[i]);');
+    gegen99('Nachfassen zum laufenden Kurs (Schluss 999 statt Eroeffnung 50) faellt auf', !!qLauf && !(await fallErster(MH, qLauf)).ok);
+    var MHf = mhAus(ersetze(mhQ, 'return !!offen && nyTag(nowMs) === offen.tag && nowMs < nyZeit(offen.tag, NACHFASSEN_BIS[0], NACHFASSEN_BIS[1]);',
+      'return !!offen && nowMs < nyZeit(nyTag(nowMs), NACHFASSEN_BIS[0], NACHFASSEN_BIS[1]);'));
+    gegen99('Nachfassen am Folgetag (Grenze 16:00 des heutigen statt des Auftragstags) faellt auf', !!MHf && !(await fallFolgetag(MHf)).ok);
+    var MHk = mhAus(ersetze(mhQ, 'fuehreAus(buch, plan, nowMs, res.kostenBp, opts);',
+      'fuehreAus(buch, { verkaufen: [], kaufen: plan.kaufen }, nowMs, res.kostenBp, opts); fuehreAus(buch, { verkaufen: plan.verkaufen, kaufen: [] }, nowMs, res.kostenBp, opts);'));
+    gegen99('Kaeufe vor Verkaeufen faellt auf', !!MHk && !(await fallZugleich(MHk)).ok);
+    var MHe = mhAus(ersetze(mhQ, 'if (!buch || !buch.offen || offenLaeuft(buch.offen, nowMs)) return null;',
+      'if (!buch || !buch.offen || nyTag(nowMs) === buch.offen.tag) return null;'));
+    gegen99('offen nach 16:00 nicht geloescht (erst am Folgetag) faellt auf', !!MHe && !(await fallNie(MHe)).ok);
+  })());
+  probe(Promise.all(warte99).then(function () {
+    ok(rot99 === g99 && g99 === 4, '99.x alle vier Gegenproben schlagen an', rot99 + ' von ' + g99);
+  }));
+})();
+
 
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
