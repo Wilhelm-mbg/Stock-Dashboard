@@ -1,0 +1,129 @@
+{
+ "kennung": "sektor-momentum-messung-2026-10/v1",
+ "erzeugt": "2026-10-04T23:22:50.096Z",
+ "gitHeadLauf": "0984eb4855851056e5c62b054d112a154a6dde55",
+ "regel": "ZUSATZ §6: Endwerte von Buch und SPY auf den Cent gleich",
+ "laeufe": {
+  "A-regel": {
+   "buchSimulator": 174597.93,
+   "buchZweitrechner": 174597.93,
+   "spySimulator": 215548.39814252124,
+   "spyZweitrechner": 215548.39814252124,
+   "buchGleichAufCent": true,
+   "spyGleichAufCent": true,
+   "umschichtungen": [
+    57,
+    57
+   ],
+   "umschichtungenAbweichend": 0,
+   "stueckMaxAbweichung": 0,
+   "bargeldMaxAbweichung": 0,
+   "tage": [
+    1183,
+    1183
+   ],
+   "tageDatumAbweichend": 0,
+   "tageBuchMaxAbweichung": 0,
+   "tageSpyMaxAbweichung": 0,
+   "tageBargeldMaxAbweichung": 1.1368683772161603e-13,
+   "perioden": [
+    57,
+    57
+   ],
+   "periodenBuchMaxAbweichungPp": 0,
+   "periodenSpyMaxAbweichungPp": 0,
+   "bestanden": true
+  },
+  "A-placebo": {
+   "buchSimulator": 191410.22,
+   "buchZweitrechner": 191410.22,
+   "spySimulator": 215548.39814252124,
+   "spyZweitrechner": 215548.39814252124,
+   "buchGleichAufCent": true,
+   "spyGleichAufCent": true,
+   "umschichtungen": [
+    57,
+    57
+   ],
+   "umschichtungenAbweichend": 0,
+   "stueckMaxAbweichung": 0,
+   "bargeldMaxAbweichung": 0,
+   "tage": [
+    1183,
+    1183
+   ],
+   "tageDatumAbweichend": 0,
+   "tageBuchMaxAbweichung": 0,
+   "tageSpyMaxAbweichung": 0,
+   "tageBargeldMaxAbweichung": 1.1368683772161603e-13,
+   "perioden": [
+    57,
+    57
+   ],
+   "periodenBuchMaxAbweichungPp": 0,
+   "periodenSpyMaxAbweichungPp": 0,
+   "bestanden": true
+  },
+  "B-regel": {
+   "buchSimulator": 219647.6,
+   "buchZweitrechner": 219647.6,
+   "spySimulator": 181193.89139394907,
+   "spyZweitrechner": 181193.89139394907,
+   "buchGleichAufCent": true,
+   "spyGleichAufCent": true,
+   "umschichtungen": [
+    60,
+    60
+   ],
+   "umschichtungenAbweichend": 0,
+   "stueckMaxAbweichung": 0,
+   "bargeldMaxAbweichung": 0,
+   "tage": [
+    1254,
+    1254
+   ],
+   "tageDatumAbweichend": 0,
+   "tageBuchMaxAbweichung": 0,
+   "tageSpyMaxAbweichung": 0,
+   "tageBargeldMaxAbweichung": 0,
+   "perioden": [
+    60,
+    60
+   ],
+   "periodenBuchMaxAbweichungPp": 0,
+   "periodenSpyMaxAbweichungPp": 0,
+   "bestanden": true
+  },
+  "B-placebo": {
+   "buchSimulator": 140176.83,
+   "buchZweitrechner": 140176.83,
+   "spySimulator": 181193.89139394907,
+   "spyZweitrechner": 181193.89139394907,
+   "buchGleichAufCent": true,
+   "spyGleichAufCent": true,
+   "umschichtungen": [
+    60,
+    60
+   ],
+   "umschichtungenAbweichend": 0,
+   "stueckMaxAbweichung": 0,
+   "bargeldMaxAbweichung": 0,
+   "tage": [
+    1254,
+    1254
+   ],
+   "tageDatumAbweichend": 0,
+   "tageBuchMaxAbweichung": 0,
+   "tageSpyMaxAbweichung": 0,
+   "tageBargeldMaxAbweichung": 0,
+   "perioden": [
+    60,
+    60
+   ],
+   "periodenBuchMaxAbweichungPp": 0,
+   "periodenSpyMaxAbweichungPp": 0,
+   "bestanden": true
+  }
+ },
+ "bestanden": true
+}

@@ -1,0 +1,292 @@
+{
+ "kennung": "sektor-momentum-messung-2026-10/v1/empfindlichkeit-eroeffnung",
+ "erzeugt": "2026-10-04T23:22:13.022Z",
+ "hinweis": "nachrichtlich, ohne Urteil; die Messung handelt zum gelieferten Yahoo-open (ZUSATZ §1.7)",
+ "ersetzt": [
+  {
+   "sym": "XLB",
+   "tag": "2017-10-30",
+   "fenster": "A",
+   "yahooOpen": 29.690000534057617,
+   "minutenOpen": 29.525,
+   "abstandZurSpannePct": 0.3549
+  },
+  {
+   "sym": "XLC",
+   "tag": "2018-08-03",
+   "fenster": "A",
+   "yahooOpen": 48.09000015258789,
+   "minutenOpen": 48.86,
+   "abstandZurSpannePct": -1.1511
+  },
+  {
+   "sym": "XLC",
+   "tag": "2023-06-05",
+   "fenster": "B",
+   "yahooOpen": 62.91999816894531,
+   "minutenOpen": 62.955,
+   "abstandZurSpannePct": -0.0556
+  },
+  {
+   "sym": "XLE",
+   "tag": "2017-10-30",
+   "fenster": "A",
+   "yahooOpen": 33.435001373291016,
+   "minutenOpen": 33.72,
+   "abstandZurSpannePct": -0.6538
+  },
+  {
+   "sym": "XLF",
+   "tag": "2017-02-08",
+   "fenster": "A",
+   "yahooOpen": 23.549999237060547,
+   "minutenOpen": 23.46,
+   "abstandZurSpannePct": 0.2981
+  },
+  {
+   "sym": "XLF",
+   "tag": "2017-02-09",
+   "fenster": "A",
+   "yahooOpen": 23.389999389648438,
+   "minutenOpen": 23.46,
+   "abstandZurSpannePct": -0.0854
+  },
+  {
+   "sym": "XLI",
+   "tag": "2017-02-09",
+   "fenster": "A",
+   "yahooOpen": 63.72999954223633,
+   "minutenOpen": 63.89,
+   "abstandZurSpannePct": -0.0941
+  },
+  {
+   "sym": "XLI",
+   "tag": "2023-06-05",
+   "fenster": "B",
+   "yahooOpen": 101.1500015258789,
+   "minutenOpen": 101.08,
+   "abstandZurSpannePct": 0.0693
+  },
+  {
+   "sym": "XLK",
+   "tag": "2017-10-30",
+   "fenster": "A",
+   "yahooOpen": 30.940000534057617,
+   "minutenOpen": 31.28,
+   "abstandZurSpannePct": -0.9023
+  },
+  {
+   "sym": "XLP",
+   "tag": "2017-10-30",
+   "fenster": "A",
+   "yahooOpen": 53.41999816894531,
+   "minutenOpen": 52.98,
+   "abstandZurSpannePct": 0.7354
+  },
+  {
+   "sym": "XLRE",
+   "tag": "2017-10-30",
+   "fenster": "A",
+   "yahooOpen": 32.08000183105469,
+   "minutenOpen": 32.2,
+   "abstandZurSpannePct": -0.2971
+  },
+  {
+   "sym": "XLRE",
+   "tag": "2018-08-07",
+   "fenster": "A",
+   "yahooOpen": 33.56999969482422,
+   "minutenOpen": 33.49,
+   "abstandZurSpannePct": 0.2389
+  },
+  {
+   "sym": "XLU",
+   "tag": "2017-10-30",
+   "fenster": "A",
+   "yahooOpen": 27.325000762939453,
+   "minutenOpen": 27.51,
+   "abstandZurSpannePct": -0.4191
+  },
+  {
+   "sym": "XLY",
+   "tag": "2017-10-30",
+   "fenster": "A",
+   "yahooOpen": 45.80500030517578,
+   "minutenOpen": 46.015,
+   "abstandZurSpannePct": -0.1798
+  },
+  {
+   "sym": "XLY",
+   "tag": "2018-08-07",
+   "fenster": "A",
+   "yahooOpen": 55.96500015258789,
+   "minutenOpen": 56.42,
+   "abstandZurSpannePct": -0.6127
+  },
+  {
+   "sym": "SPY",
+   "tag": "2017-02-09",
+   "fenster": "A",
+   "yahooOpen": 229.24000549316406,
+   "minutenOpen": 229.56,
+   "abstandZurSpannePct": -0.122
+  },
+  {
+   "sym": "SPY",
+   "tag": "2017-05-17",
+   "fenster": "A",
+   "yahooOpen": 240.0800018310547,
+   "minutenOpen": 238.1,
+   "abstandZurSpannePct": 0.6034
+  }
+ ],
+ "trefferK0": [],
+ "mitYahooOpen": {
+  "urteil": "schlägt nicht (vorn nur in Fenster B)",
+  "A": {
+   "kandidat": {
+    "buchEnde": 174597.93,
+    "spyEnde": 215548.39814252124,
+    "abstandPaK0": -5.167952943663991,
+    "phasenVorn": 0,
+    "median": -6.738334512098486,
+    "minimum": -11.356604130695438,
+    "maximum": -4.097135363620952
+   },
+   "placebo": {
+    "buchEnde": 191410.22,
+    "spyEnde": 215548.39814252124,
+    "abstandPaK0": -2.9415465031058083,
+    "phasenVorn": 0,
+    "median": -6.668136741466977,
+    "minimum": -14.228733174583972,
+    "maximum": -0.019989981211910646
+   },
+   "kandidatGegenPlacebo": {
+    "k0Vorn": false,
+    "vorn": 35,
+    "median": 0.24906652551530684
+   }
+  },
+  "B": {
+   "kandidat": {
+    "buchEnde": 219647.6,
+    "spyEnde": 181193.89139394907,
+    "abstandPaK0": 4.422985008267634,
+    "phasenVorn": 63,
+    "median": 3.7272239849070115,
+    "minimum": 0.4621762886494416,
+    "maximum": 6.336976448689001
+   },
+   "placebo": {
+    "buchEnde": 140176.83,
+    "spyEnde": 181193.89139394907,
+    "abstandPaK0": -5.639596702493454,
+    "phasenVorn": 1,
+    "median": -5.770562742194784,
+    "minimum": -13.48508848178156,
+    "maximum": 0.718844381273076
+   },
+   "kandidatGegenPlacebo": {
+    "k0Vorn": true,
+    "vorn": 63,
+    "median": 9.655546310873952
+   }
+  }
+ },
+ "mitMinutenOpen": {
+  "urteil": "schlägt nicht (vorn nur in Fenster B)",
+  "A": {
+   "kandidat": {
+    "buchEnde": 174597.93,
+    "spyEnde": 215548.39814252124,
+    "abstandPaK0": -5.167952943663991,
+    "phasenVorn": 0,
+    "median": -6.738334512098486,
+    "minimum": -11.356348512002203,
+    "maximum": -4.097135363620952
+   },
+   "placebo": {
+    "buchEnde": 191410.22,
+    "spyEnde": 215548.39814252124,
+    "abstandPaK0": -2.9415465031058083,
+    "phasenVorn": 0,
+    "median": -6.630030825579647,
+    "minimum": -14.228733174583972,
+    "maximum": -0.019989981211910646
+   },
+   "kandidatGegenPlacebo": {
+    "k0Vorn": false,
+    "vorn": 35,
+    "median": 0.2135842144923128
+   }
+  },
+  "B": {
+   "kandidat": {
+    "buchEnde": 219647.6,
+    "spyEnde": 181193.89139394907,
+    "abstandPaK0": 4.422985008267634,
+    "phasenVorn": 63,
+    "median": 3.7272239849070115,
+    "minimum": 0.4621762886494416,
+    "maximum": 6.336976448689001
+   },
+   "placebo": {
+    "buchEnde": 140176.83,
+    "spyEnde": 181193.89139394907,
+    "abstandPaK0": -5.639596702493454,
+    "phasenVorn": 1,
+    "median": -5.770562742194784,
+    "minimum": -13.489829568883815,
+    "maximum": 0.718844381273076
+   },
+   "kandidatGegenPlacebo": {
+    "k0Vorn": true,
+    "vorn": 63,
+    "median": 9.655546310873952
+   }
+  }
+ },
+ "unterschied": {
+  "A": {
+   "kandidat": {
+    "buchEndeDollar": 0,
+    "spyEndeDollar": 0,
+    "abstandPaK0Pp": 0,
+    "phasenVorn": 0,
+    "medianPp": 0,
+    "minimumPp": 0.00025561869323453834,
+    "maximumPp": 0
+   },
+   "placebo": {
+    "buchEndeDollar": 0,
+    "spyEndeDollar": 0,
+    "abstandPaK0Pp": 0,
+    "phasenVorn": 0,
+    "medianPp": 0.038105915887330255,
+    "minimumPp": 0,
+    "maximumPp": 0
+   }
+  },
+  "B": {
+   "kandidat": {
+    "buchEndeDollar": 0,
+    "spyEndeDollar": 0,
+    "abstandPaK0Pp": 0,
+    "phasenVorn": 0,
+    "medianPp": 0,
+    "minimumPp": 0,
+    "maximumPp": 0
+   },
+   "placebo": {
+    "buchEndeDollar": 0,
+    "spyEndeDollar": 0,
+    "abstandPaK0Pp": 0,
+    "phasenVorn": 0,
+    "medianPp": 0,
+    "minimumPp": -0.0047410871022552925,
+    "maximumPp": 0
+   }
+  }
+ }
+}
