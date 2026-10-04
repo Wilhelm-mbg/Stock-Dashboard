@@ -32,11 +32,12 @@
       umsatzMin: Li.KORB.umsatzMin, umsatzFenster: Li.KORB.fenster,
       /* Regel K gegen Kleinstpositionen (Auftrag Nr. 85, 04.10.2026): Anteil am Platzwert
        * (Depotwert / Zielzahl), unter dem ein Kauf nicht ausgefuehrt wird (K1) und ein Bestand
-       * nicht als gehalten gilt (K2). 0 = AUS - so rechnet die App heute, und so wurde bisher
-       * gemessen. Wert fuer die App NACH der Abnahme der Nachrechnung: 0,05. Das Feld wird
-       * noch von niemandem gelesen; planeUmschichtung und fuehreAus bekommen den Schalter
-       * ueber ihr eigenes Argument opts. */
-      kleinstAnteil: 0 };
+       * nicht als gehalten gilt (K2). EINGESCHALTET seit Auftrag Nr. 87 (04.10.2026) mit 0,05 -
+       * die Nachrechnung (studien/momentum-korb-kleinst-2026-10-04/) ist abgenommen. 0 hiesse
+       * AUS; so wurde bis Nr. 85 gemessen. mfdepot.js liest das Feld und reicht es als
+       * { kleinstAnteil } an planeUmschichtung und fuehreAus - die Funktionen selbst behalten
+       * ihre Vorgabe AUS (wer sie ohne opts ruft, rechnet wie vor Nr. 85). */
+      kleinstAnteil: 0.05 };
   }
 
   /** 12-1-Momentum-Rangfolge auf ROHEN Serien — jede Serie mit ihren eigenen

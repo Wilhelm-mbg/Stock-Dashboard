@@ -14291,8 +14291,10 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
    * im Aufruf von MFHandel.fuehreAus (mfdepot.js takt(), Handelscode - in dieser Stufe
    * nicht angefasst). Das Feld behaelt darum seinen Markup-Wert. Damit Anzeige und
    * Ausfuehrung nicht still auseinanderlaufen, haelt diese Zusicherung beide Zahlen
-   * gegeneinander: wer die Handelskosten aendert, macht sie rot. */
-  var kbp = /MH\.fuehreAus\(d\.mfBuch, plan, now, (\d+)\)/.exec(mfd);
+   * gegeneinander: wer die Handelskosten aendert, macht sie rot.
+   * Seit Auftrag Nr. 87 traegt der Aufruf als fuenftes Argument den Schalter der Regel K;
+   * die Kosten stehen weiter an vierter Stelle, und genau die werden hier gelesen. */
+  var kbp = /MH\.fuehreAus\(d\.mfBuch, plan, now, (\d+), \{ kleinstAnteil: KONFIG\.kleinstAnteil \}\)/.exec(mfd);
   var mfk = html.slice(html.indexOf('<select id="mfKosten" disabled>'), html.indexOf('</select>', html.indexOf('<select id="mfKosten" disabled>')));
   var gewaehlt = /<option value="(\d+)" selected>/.exec(mfk);
   ok(!!kbp && !!gewaehlt && kbp[1] === gewaehlt[1],
@@ -22493,8 +22495,9 @@ console.log('94) Der Rueckblick am Momentum-Buch');
  * Umschichtungen"): fuehreAus verkleinert einen Kauf, wenn das Bargeld nicht reicht - bis auf
  * 0,0001 Stueck -, und planeUmschichtung hielt den Rest danach fuer eine volle Position; der
  * Platz blieb leer, solange der Wert Ziel war. Regel K steht seit Nr. 85 als SCHALTER im
- * Handelscode (opts.kleinstAnteil), Vorgabe AUS. Die App schaltet erst ein, wenn die
- * Nachrechnung (studien/momentum-korb-kleinst-2026-10-04/) abgenommen ist.
+ * Handelscode (opts.kleinstAnteil), Vorgabe AUS. Die App schaltet seit Auftrag Nr. 87 ein
+ * (buchKonfig: 0,05), nachdem die Nachrechnung (studien/momentum-korb-kleinst-2026-10-04/)
+ * abgenommen ist - die Funktionen selbst behalten ihre Vorgabe AUS (95.1).
  *   95.1 Vorgabe aus: beide Funktionen rechnen zeichengleich wie die Fassung vor Nr. 85 (unten
  *        als Altfassung eingefroren) - an den bestehenden Faellen des Abschnitts
  *        "Mittelfrist-Depot", an einem Fall mit Kleinstkauf (0,0001 Stueck entsteht weiter)
@@ -22503,7 +22506,7 @@ console.log('94) Der Rueckblick am Momentum-Buch');
  *   95.3 K2 von Hand: ein Kleinstbestand gilt nicht als gehalten
  *   95.4 beides ueber zwei Umschichtungen: der Platz wird wieder besetzt
  *   95.5 Eigenschaften an den 400 Zufallsfaellen
- *   95.6 die App schaltet noch nicht ein
+ *   95.6 die App schaltet ein, Wert 0,05 (seit Nr. 87; Umstellung und Journal: Abschnitt 96)
  * Gegenproben: der Handelscode wird aus geaendertem Quelltext geladen - ohne K1, ohne K2, ohne
  * die Neuplanung, mit eingeschalteter Vorgabe und mit verschobener Grenze. Jede dieser
  * Fassungen muss an den Pruefungen oben auffallen. */
@@ -22801,14 +22804,18 @@ console.log('95) Regel K gegen Kleinstpositionen: Schalter im Handelscode, Vorga
     '95.5 K1 an 400 Zufallsfaellen: kein ausgefuehrter Kauf unter 5 % des Platzwerts, nach der Umschichtung kein Rest mit Kurs im Buch, nie negatives Bargeld',
     e95.k1 + ' Verstoesse; ' + e95.kaeufe + ' Kaeufe, ' + e95.ausgefallen + ' ausgefallen');
 
-  /* ---- 95.6 die App schaltet noch nicht ein (Stand Nr. 85) ----
-   * Wer Regel K in der App einschaltet, stellt genau diese beiden Marken um - bewusst, nach der Abnahme der Nachrechnung. */
+  /* ---- 95.6 die App schaltet ein, Wert 0,05 (Auftrag Nr. 87, 04.10.2026 - nach der Abnahme der Nachrechnung) ----
+   * Bis Nr. 87 hielten diese beiden Marken den Stand "aus" fest (Vorgabe 0, mfdepot.js ohne opts). Sie sind bewusst
+   * umgestellt: die Konfiguration des Buchs traegt 0,05, und mfdepot.js reicht genau dieses Feld an alle drei Aufrufe -
+   * kein Aufruf ohne opts bleibt uebrig (ein vergessener waere wieder die Mechanik von vor Nr. 85). */
   var kf = MH.buchKonfig(), mfd95 = ohneKommentare(fs.readFileSync(__dirname + '/mfdepot.js', 'utf8'));
-  ok(kf.kleinstAnteil === 0 && Object.keys(kf).join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil',
-    '95.6 buchKonfig fuehrt den Schalter mit Vorgabe 0 (aus); die sieben Felder davor sind unveraendert', kf.kleinstAnteil);
-  ok(mfd95.split('MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise)').length === 3 && mfd95.split('MH.fuehreAus(d.mfBuch, plan, now, 20)').length === 2 &&
-     mfd95.indexOf('kleinstAnteil') === -1,
-  '95.6 die App reicht den Schalter noch nicht durch: mfdepot.js ruft beide Funktionen wie zuvor (zweimal planen, einmal ausfuehren, ohne opts)');
+  ok(kf.kleinstAnteil === 0.05 && Object.keys(kf).join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil',
+    '95.6 buchKonfig fuehrt den Schalter mit dem Wert 0,05 (an); die sieben Felder davor sind unveraendert', kf.kleinstAnteil);
+  ok(mfd95.split('MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil })').length === 3 &&
+     mfd95.split('MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil })').length === 2 &&
+     mfd95.split('MH.planeUmschichtung(').length === 3 && mfd95.split('MH.fuehreAus(').length === 2 &&
+     /var KONFIG = MH\.buchKonfig\(\);/.test(mfd95),
+  '95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs - kein Aufruf ohne');
 
   /* ---- Gegenproben: der Handelscode aus geaendertem Quelltext ---- */
   var mhQ = fs.readFileSync(__dirname + '/mfhandel.js', 'utf8');
@@ -22837,6 +22844,133 @@ console.log('95) Regel K gegen Kleinstpositionen: Schalter im Handelscode, Vorga
   gegen95('K1 mit "kleiner gleich" faellt an der Grenze auf (genau 5 % wuerde wegfallen)', !!k1Gleich && !alle(pruefeGrenzeK1(k1Gleich)) && alle(pruefeK1(k1Gleich)));
   gegen95('K2 mit "kleiner gleich" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)', !!k2Gleich && !alle(pruefeGrenzeK2(k2Gleich)) && alle(pruefeK2(k2Gleich)));
   ok(rot95 === g95 && g95 === 6, '95.x alle Gegenproben dieses Abschnitts schlagen an', rot95 + ' von ' + g95);
+})();
+
+/* ================= 96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen gebucht (Auftrag Nr. 87, 04.10.2026) =====
+ *
+ * Teil A - Regel K in der App:
+ *   96.1 die Umstellung schreibt GENAU EINE Journalzeile mit dem eigenen, zutreffenden Text und laesst liquideSeit,
+ *        korbVerlauf und konfigSeit stehen (sonst waere der Beginn des Vorwaertstests geloescht); eine echte
+ *        Korb-Umstellung setzt sie weiter zurueck; ein Buch, das 0,05 schon traegt, schreibt nichts
+ *   96.2 der Journaltext der Umschichtung zaehlt, was WIRKLICH lief; die Anzeige liest plan.kleinst || []
+ * Gegenproben: mfdepot.js wird aus geaendertem Quelltext geladen (der Abschnitt zwischen KONFIG_FELDER und takt ist
+ * fensterlos und laesst sich in Node ausfuehren). Jede geaenderte Fassung muss an den Pruefungen oben auffallen. */
+console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen in den Buechern');
+(function () {
+  var MH = require('./mfhandel.js');
+  var g96 = 0, rot96 = 0;
+  function gegen96(was, ergebnis) { g96++; if (ergebnis) rot96++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function kopie(x) { return JSON.parse(JSON.stringify(x)); }
+  function melde(liste) { liste.forEach(function (x) { ok(x[0], x[1], x[2]); }); }
+  function alle(liste) { return liste.every(function (x) { return x[0]; }); }
+  var mfdQ = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+
+  /* ---- 96.1 die Umstellung auf Regel K ---- */
+  /** Die Umstellungs-Logik aus mfdepot.js, wie sie dort steht (zwischen den zwei Marken); null, wenn eine Marke fehlt. */
+  function umstellung(quelle) {
+    var a = quelle.indexOf('var KONFIG_FELDER'), b = quelle.indexOf('async function takt(');
+    if (a < 0 || b < a) return null;
+    return new Function(quelle.slice(a, b) + '\nreturn { pruefen: umstellungPruefen, text: konfigText, gleich: konfigGleich, felder: KONFIG_FELDER };')();
+  }
+  var NEU = MH.buchKonfig();
+  /* So merkte sich ein Buch seine Konfiguration vor Nr. 87: sieben Felder, kein kleinstAnteil. */
+  var ALT7 = { rueckblick: NEU.rueckblick, luecke: NEU.luecke, halten: NEU.halten, anteil: NEU.anteil, mindestWerte: NEU.mindestWerte,
+    umsatzMin: NEU.umsatzMin, umsatzFenster: NEU.umsatzFenster };
+  var VERLAUF = [{ t: 111, zulaessig: 150, geprueft: 190, ziel: 15 }];
+  function buchMit(konfig) {
+    var b = { name: 'momentum', cash: 5, positionen: [], konfigSeit: 99, liquideSeit: 111, korbVerlauf: kopie(VERLAUF) };
+    if (konfig) b.konfig = kopie(konfig);
+    return { mfBuch: b };
+  }
+  function pruefeUmstellung(U) {
+    var LEER = { applied: [''], txt: '' };
+    var d = buchMit(ALT7), r1 = U.pruefen(d, kopie(NEU), 5000), z = (d.tuneLog || [])[0] || LEER;
+    var r2 = U.pruefen(d, kopie(NEU), 6000);
+    var schon = buchMit(NEU), r3 = U.pruefen(schon, kopie(NEU), 5000);
+    var null0 = buchMit(Object.assign({}, ALT7, { kleinstAnteil: 0 })), r4 = U.pruefen(null0, kopie(NEU), 5000);
+    var korb = buchMit(Object.assign({}, ALT7, { umsatzMin: 5e7 })), r5 = U.pruefen(korb, kopie(NEU), 7000), zk = (korb.tuneLog || [])[0] || LEER;
+    var ohne = buchMit(null), r6 = U.pruefen(ohne, kopie(NEU), 7000), zo = (ohne.tuneLog || [])[0] || LEER;
+    var aus = buchMit(NEU), r7 = U.pruefen(aus, Object.assign({}, kopie(NEU), { kleinstAnteil: 0 }), 8000), za = (aus.tuneLog || [])[0] || LEER;
+    /* eine Fassung, die gar nichts schreibt, soll an den Pruefungen scheitern - nicht an einem fehlenden Feld */
+    [d, schon, null0, korb, ohne, aus].forEach(function (x) { if (!x.tuneLog) x.tuneLog = []; });
+    return [
+      [r1 === true && d.tuneLog.length === 1 && z.id === 'mfkonfig-5000' && z.at === 5000 && z.quelle === 'umstellung' && z.applied.length === 1,
+        '96.1 die Umstellung auf Regel K schreibt genau eine Journalzeile', (d.tuneLog || []).length],
+      [/Regel K gegen Kleinstpositionen eingeschaltet/.test(z.applied[0]) && z.applied[0].indexOf('kleinstAnteil 0 (aus) → 0,05') >= 0 &&
+        z.txt.indexOf('kleinstAnteil, alt 0 (aus) → neu 0,05') >= 0 && z.txt.indexOf('unter 5 % des Platzwerts') >= 0 && /wird nicht ausgeführt/.test(z.txt) &&
+        /gilt nicht als gehalten/.test(z.txt) && /Greift ab der nächsten regulären Umschichtung/.test(z.txt) && /Simulation mit virtuellem Kapital/.test(z.txt),
+      '96.1 der Text nennt das Feld, alt → neu, was die Regel tut, ab wann sie greift, und "Simulation"', z.applied[0]],
+      [!/liquide Fassung|Out-of-Sample|außerhalb des liquiden Korbs|Rückblick/.test(z.applied[0] + z.txt),
+        '96.1 der Text ist NICHT der der Korb-Umstellung vom 02.09. (keine liquide Fassung, kein Out-of-Sample-Beleg, keine Liste der sieben Felder)'],
+      [d.mfBuch.liquideSeit === 111 && JSON.stringify(d.mfBuch.korbVerlauf) === JSON.stringify(VERLAUF) && d.mfBuch.konfigSeit === 99,
+        '96.1 liquideSeit, korbVerlauf und konfigSeit bleiben stehen - der Beginn des Vorwaertstests wird nicht geloescht',
+        d.mfBuch.liquideSeit + ' / ' + (d.mfBuch.korbVerlauf || []).length + ' / ' + d.mfBuch.konfigSeit],
+      [d.mfBuch.konfig.kleinstAnteil === 0.05 && d.mfBuch.kleinstSeit === 5000 && U.gleich(d.mfBuch.konfig, NEU),
+        '96.1 das Buch merkt sich die neue Konfiguration (kleinstAnteil 0,05) und seit wann die Regel gilt', d.mfBuch.konfig.kleinstAnteil],
+      [r2 === false && d.tuneLog.length === 1, '96.1 der zweite Takt schreibt nichts mehr', d.tuneLog.length],
+      [r3 === false && schon.tuneLog.length === 0 && schon.mfBuch.liquideSeit === 111, '96.1 ein Buch, dessen gemerkte Konfiguration schon 0,05 traegt, schreibt nichts'],
+      [r4 === true && null0.tuneLog.length === 1 && /eingeschaltet/.test((null0.tuneLog[0] || LEER).applied[0]) && null0.mfBuch.liquideSeit === 111,
+        '96.1 eine gemerkte Konfiguration mit kleinstAnteil 0 gilt wie eine ohne das Feld (aus → an, eine Zeile, nichts zurueckgesetzt)'],
+      [r5 === true && korb.tuneLog.length === 1 && /gemessene liquide Fassung/.test(zk.applied[0]) && /Out-of-Sample/.test(zk.txt) &&
+        korb.mfBuch.liquideSeit === null && korb.mfBuch.korbVerlauf.length === 0 && korb.mfBuch.konfigSeit === 7000 && korb.mfBuch.konfig.kleinstAnteil === 0.05,
+      '96.1 eine echte Korb-Umstellung (anderes Feld weicht ab) setzt liquideSeit und korbVerlauf weiter zurueck - mit dem Text der Korb-Umstellung',
+      korb.mfBuch.liquideSeit + ' / ' + (korb.mfBuch.korbVerlauf || []).length],
+      [r6 === true && ohne.tuneLog.length === 1 && /KEIN Umsatzfilter/.test(zo.txt) && ohne.mfBuch.liquideSeit === null && ohne.mfBuch.korbVerlauf.length === 0,
+        '96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt'],
+      [/Regel K gegen Kleinstpositionen an \(unter 5 % des Platzwerts/.test(zk.txt) && /Regel K gegen Kleinstpositionen aus/.test(zk.txt) &&
+        /Regel K gegen Kleinstpositionen an/.test(U.text(NEU)) && /Regel K gegen Kleinstpositionen aus$/.test(U.text(ALT7)) &&
+        U.felder.join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil',
+      '96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)'],
+      [r7 === true && /ausgeschaltet/.test(za.applied[0]) && za.txt.indexOf('alt 0,05 → neu 0 (aus)') >= 0 && aus.mfBuch.liquideSeit === 111,
+        '96.1 auch das Ausschalten bekaeme seine eigene Zeile (0,05 → aus) und setzte nichts zurueck']
+    ];
+  }
+  var U96 = umstellung(mfdQ);
+  ok(!!U96, '96.1 die Umstellungs-Logik laesst sich aus mfdepot.js ohne Fenster laden');
+  if (U96) melde(pruefeUmstellung(U96));
+
+  /* ---- 96.2 der Journaltext der Umschichtung zaehlt, was wirklich lief ----
+   * Der Fall (b) aus Abschnitt 95: Bargeld 1002,0075 $, A gehalten, Ziel A, B, C. Mit Regel K wird B mit 10 Stueck gekauft,
+   * der Kauf von C (0,0001 Stueck) faellt weg: geplant 2 Kaeufe, ausgefuehrt 1. Der dritte Fall hat gar kein Bargeld. */
+  function zaehle(buch, ziel, preise) {
+    var opts = { kleinstAnteil: NEU.kleinstAnteil };
+    var plan = MH.planeUmschichtung(ziel, buch, preise, opts), n = MH.fuehreAus(buch, plan, 1000, 20, opts);
+    var gekauft = plan.kaufen.filter(function (o) { return o.stueck > 0; }).length;
+    return { geplant: plan.kaufen.length, gekauft: gekauft, verkauft: n - gekauft, kleinst: (plan.kleinst || []).length,
+      kaufTrades: buch.trades.filter(function (t) { return t.art === 'kauf'; }).length, verkaufTrades: buch.trades.filter(function (t) { return t.art === 'verkauf'; }).length };
+  }
+  var z1 = zaehle({ cash: 1002.0075, positionen: [{ sym: 'A', stueck: 100, einstand: 50, seit: 1 }], trades: [] }, ['A', 'B', 'C'], { A: 110, B: 100, C: 50 });
+  var z2 = zaehle({ cash: 500, positionen: [{ sym: 'A', stueck: 100, einstand: 50, seit: 1 }, { sym: 'F', stueck: 0.0001, einstand: 50.1, seit: 1 },
+    { sym: 'N', stueck: 0.0002, einstand: 30, seit: 1 }], trades: [] }, ['B', 'F', 'A'], { A: 110, F: 50, N: 30, B: 100 });
+  var z3 = zaehle({ cash: 0, positionen: [{ sym: 'A', stueck: 100, einstand: 50, seit: 1 }], trades: [] }, ['A', 'B'], { A: 110, B: 100 });
+  ok(z1.geplant === 2 && z1.gekauft === 1 && z1.kaufTrades === 1 && z1.verkauft === 0 && z1.verkaufTrades === 0 &&
+     z2.kleinst === 2 && z2.verkauft === 2 && z2.verkaufTrades === 2 && z2.gekauft === z2.kaufTrades && z2.geplant === 2 &&
+     z3.geplant === 1 && z3.gekauft === 0 && z3.kaufTrades === 0,
+  '96.2 die Zaehlweise des Journals trifft die Trades: ausgefuehrte Kaeufe = geplante mit stueck > 0, Verkaeufe = Ausfuehrungen minus Kaeufe (auch mit Kleinstbestand und ohne Bargeld)',
+  [z1.geplant + '/' + z1.gekauft, z2.verkauft + '/' + z2.gekauft, z3.geplant + '/' + z3.gekauft].join(' | '));
+  var mfd96 = ohneKommentare(mfdQ);
+  ok(mfd96.indexOf("var gekauftM = plan.kaufen.filter(function (o) { return o.stueck > 0; }).length;") >= 0 &&
+     mfd96.indexOf("'Momentum-Depot umgeschichtet: ' + (nM - gekauftM) + ' Verkäufe, ' + gekauftM +") >= 0 &&
+     mfd96.indexOf("' mangels Bargeld nicht ausgeführt.'") >= 0 && mfd96.indexOf("' aufgelöst.'") >= 0 &&
+     mfd96.indexOf("var kleinstM = (plan.kleinst || []).length;") >= 0 && !/plan\.kaufen\.length \+\s*' Käufe/.test(mfd96),
+  '96.2 der Journaltext nennt die ausgefuehrten Kaeufe (nicht plan.kaufen.length), dazu die mangels Bargeld ausgefallenen und die aufgeloesten Kleinstbestaende');
+  ok(mfd96.indexOf("(mom.plan.kleinst || [])") >= 0 && !/[^(]mom\.plan\.kleinst\./.test(mfd96) && !/[^(]plan\.kleinst\./.test(mfd96),
+    '96.2 die Anzeige und das Journal lesen plan.kleinst || [] - ohne Schalter fehlt das Feld');
+
+  /* ---- Gegenproben Teil A: mfdepot.js aus geaendertem Quelltext ---- */
+  function fassungD(muster, ersatz) {
+    var q2 = mfdQ.replace(muster, function () { return ersatz; });
+    return q2 === mfdQ ? null : umstellung(q2);
+  }
+  var gleichD = fassungD(/'use strict';/, "'use strict'; ");
+  var setztZurueck = fassungD(/d\.mfBuch\.kleinstSeit = now;/, 'd.mfBuch.kleinstSeit = now; d.mfBuch.liquideSeit = null; d.mfBuch.korbVerlauf = [];');
+  var ohneEigenenWeg = fassungD(/if \(!andere\.length\) \{/, 'if (false) {');
+  var ohneFeld = fassungD(/'umsatzFenster', 'kleinstAnteil'\];/, "'umsatzFenster'];");
+  ok(!!gleichD && alle(pruefeUmstellung(gleichD)), '96.x Kontrolle: dieselbe Umstellungs-Logik, auf dem Weg der Gegenproben geladen, besteht alle Pruefungen');
+  gegen96('setzt die K-Umstellung liquideSeit und korbVerlauf zurueck, faellt es auf', !!setztZurueck && !alle(pruefeUmstellung(setztZurueck)));
+  gegen96('ohne den eigenen Weg (K-Umstellung als Korb-Umstellung, Text vom 02.09., zurueckgesetzt) faellt es auf', !!ohneEigenenWeg && !alle(pruefeUmstellung(ohneEigenenWeg)));
+  gegen96('kennt KONFIG_FELDER das Feld nicht, gibt es keine Journalzeile - faellt auf', !!ohneFeld && !alle(pruefeUmstellung(ohneFeld)));
+  ok(rot96 === g96 && g96 === 3, '96.x alle Gegenproben dieses Abschnitts schlagen an', rot96 + ' von ' + g96);
 })();
 
 Promise.all(offeneProben).then(function () {

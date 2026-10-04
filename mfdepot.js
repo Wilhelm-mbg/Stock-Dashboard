@@ -89,21 +89,56 @@
    * Konfiguration. Gehandelt wird dabei NICHTS: die neue Regel greift bei der naechsten
    * regulaeren Umschichtung; Positionen ausserhalb des liquiden Korbs werden dort
    * verkauft, nicht sofort. */
-  var KONFIG_FELDER = ['rueckblick', 'luecke', 'halten', 'anteil', 'mindestWerte', 'umsatzMin', 'umsatzFenster'];
+  var KONFIG_FELDER = ['rueckblick', 'luecke', 'halten', 'anteil', 'mindestWerte', 'umsatzMin', 'umsatzFenster', 'kleinstAnteil'];
+  /* Regel K (Feld kleinstAnteil, Auftrag Nr. 87): ein Buch, das sich seine Konfiguration vor
+   * Nr. 87 gemerkt hat, traegt das Feld nicht - das heisst AUS, also 0. */
+  function kleinstWert(k) { return k && k.kleinstAnteil > 0 ? k.kleinstAnteil : 0; }
+  function feldGleich(a, b, k) { return k === 'kleinstAnteil' ? kleinstWert(a) === kleinstWert(b) : a[k] === b[k]; }
   function konfigGleich(a, b) {
     if (!a || !b) return false;
-    return KONFIG_FELDER.every(function (k) { return a[k] === b[k]; });
+    return KONFIG_FELDER.every(function (k) { return feldGleich(a, b, k); });
+  }
+  function kleinstText(k) {
+    var w = kleinstWert(k);
+    return w > 0 ? 'Regel K gegen Kleinstpositionen an (unter ' + String(Math.round(w * 1000) / 10).replace('.', ',') + ' % des Platzwerts kein Kauf, kein gehaltener Bestand)'
+      : 'Regel K gegen Kleinstpositionen aus';
   }
   function konfigText(k) {
     return 'Rückblick ' + k.rueckblick + ', Lücke ' + k.luecke + ', Halten ' + k.halten + ' Handelstage, stärkste ' +
       Math.round(k.anteil * 100) + ' %, mindestens ' + k.mindestWerte + ' zulässige Werte, Korb nur Median-Tagesumsatz ≥ ' +
-      Math.round(k.umsatzMin / 1e6) + ' Mio $ (Schluss × Stück über ' + k.umsatzFenster + ' Balken bis zum Stichtag, Punkt-in-Zeit, vor der Rangbildung)';
+      Math.round(k.umsatzMin / 1e6) + ' Mio $ (Schluss × Stück über ' + k.umsatzFenster + ' Balken bis zum Stichtag, Punkt-in-Zeit, vor der Rangbildung), ' +
+      kleinstText(k);
   }
   function umstellungPruefen(d, KONFIG, now) {
     if (konfigGleich(d.mfBuch.konfig, KONFIG)) return false;
+    if (!d.tuneLog) d.tuneLog = [];
+    /* NUR Regel K hat sich geaendert (Auftrag Nr. 87): eigene Journalzeile, und der Beginn des
+     * Vorwaertstests bleibt stehen. Der Korb ist derselbe - liquideSeit und korbVerlauf
+     * zurueckzusetzen hiesse, den Vorwaertstest neu zu beginnen, obwohl sich an Korb und
+     * Rangfolge nichts geaendert hat. Jede andere Abweichung laeuft weiter unten wie bisher. */
+    var andere = !d.mfBuch.konfig ? ['alle'] : KONFIG_FELDER.filter(function (k) {
+      return k !== 'kleinstAnteil' && !feldGleich(d.mfBuch.konfig, KONFIG, k);
+    });
+    if (!andere.length) {
+      var altK = kleinstWert(d.mfBuch.konfig), neuK = kleinstWert(KONFIG);
+      var zahl = function (x) { return x > 0 ? String(x).replace('.', ',') : '0 (aus)'; };
+      var pz = String(Math.round(neuK * 1000) / 10).replace('.', ',');
+      d.tuneLog.unshift({ id: 'mfkonfig-' + now, at: now, quelle: 'umstellung',
+        applied: ['Momentum-Buch: Regel K gegen Kleinstpositionen ' + (neuK > 0 ? 'eingeschaltet' : 'ausgeschaltet') +
+          ' (kleinstAnteil ' + zahl(altK) + ' → ' + zahl(neuK) + ')'],
+        txt: 'Geändert hat sich ein Feld der Konfiguration: kleinstAnteil, alt ' + zahl(altK) + ' → neu ' + zahl(neuK) + '. ' +
+          (neuK > 0
+            ? 'Die Regel: ein Kauf, der mangels Bargeld unter ' + pz + ' % des Platzwerts (Depotwert / Zahl der Zielwerte) fiele, wird nicht ' +
+              'ausgeführt; ein Bestand unter dieser Grenze gilt nicht als gehalten – er wird verkauft und, wenn der Wert Ziel ist, voll neu gekauft. '
+            : 'Ohne die Regel werden Käufe wieder bis auf 0,0001 Stück verkleinert, und ein solcher Rest gilt als gehalten. ') +
+          'Greift ab der nächsten regulären Umschichtung; bis dahin wird nichts gehandelt. Korb, Rangfolge und der Beginn des ' +
+          'Vorwärtstests bleiben, wie sie sind. Simulation mit virtuellem Kapital, keine Anlageberatung.' });
+      d.mfBuch.konfig = KONFIG;
+      d.mfBuch.kleinstSeit = now;
+      return true;
+    }
     var altTxt = d.mfBuch.konfig ? konfigText(d.mfBuch.konfig)
       : 'Rückblick 231, Lücke 21, Halten 63 Handelstage, stärkste 10 %, mindestens 25 Werte, KEIN Umsatzfilter (breiter Korb, alle geladenen Werte)';
-    if (!d.tuneLog) d.tuneLog = [];
     d.tuneLog.unshift({ id: 'mfkonfig-' + now, at: now, quelle: 'umstellung',
       applied: ['Momentum-Buch: Konfiguration → gemessene liquide Fassung (Studie 02.09.2026)'],
       txt: 'Alt: ' + altTxt + '. Neu: ' + konfigText(KONFIG) + '. Greift bei der nächsten regulären Umschichtung; ' +
@@ -159,10 +194,18 @@
         ladeAngestossen = Date.now();
         window.MF.ladeUniversum();
       }
-      var plan = ziel.zuWenig ? null : MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise);
+      /* Regel K (Auftrag Nr. 87): der Schalter aus der Konfiguration des Buchs geht an BEIDE
+       * Planungen und an die Ausfuehrung - K2 sitzt im Plan, K1 in der Ausfuehrung. */
+      var plan = ziel.zuWenig ? null : MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil });
       if (plan && (faellig || manuell === 'momentum')) {
         if (d.momentumAn || manuell === 'momentum') {
-          var nM = MH.fuehreAus(d.mfBuch, plan, now, 20);
+          var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil });
+          /* Gezaehlt wird, was WIRKLICH lief: fuehreAus setzt o.stueck eines nicht ausgefuehrten
+           * Kaufs auf 0 (kein Bargeld mehr, oder nach dem Verkleinern unter der Grenze von
+           * Regel K1). plan.kaufen.length waere die Zahl der GEPLANTEN Kaeufe. */
+          var gekauftM = plan.kaufen.filter(function (o) { return o.stueck > 0; }).length;
+          var ausgefallenM = plan.kaufen.length - gekauftM;
+          var kleinstM = (plan.kleinst || []).length;
           d.mfBuch.letztesRebalanceT = now;
           /* Erste Umschichtung auf dem liquiden Korb = Beginn des Vorwaertstests; die
            * Korbgroesse je Umschichtung weist die Drift der nominalen Schwelle
@@ -174,14 +217,16 @@
           if (!d.tuneLog) d.tuneLog = [];
           d.tuneLog.unshift({ id: 'mfrebal-' + now, at: now, quelle: manuell === 'momentum' ? 'hand' : 'automatik',
             applied: ['Momentum-Rebalancing: ' + nM + ' Orders'],
-            txt: 'Momentum-Depot umgeschichtet: ' + plan.verkaufen.length + ' Verkäufe, ' + plan.kaufen.length +
+            txt: 'Momentum-Depot umgeschichtet: ' + (nM - gekauftM) + ' Verkäufe, ' + gekauftM +
               ' Käufe auf das stärkste Zehntel (' + ziel.ziel.length + ' Werte). Kosten 20 Bp je Seite.' +
+              (ausgefallenM ? ' ' + ausgefallenM + (ausgefallenM === 1 ? ' Kauf' : ' Käufe') + ' mangels Bargeld nicht ausgeführt.' : '') +
+              (kleinstM ? ' ' + kleinstM + (kleinstM === 1 ? ' Kleinstbestand' : ' Kleinstbestände') + ' aufgelöst.' : '') +
               ' Korb: ' + ziel.korb.zulaessig + ' von ' + ziel.korb.geprueft + ' Werten zulässig (Median-Tagesumsatz ≥ ' +
               Math.round(ziel.korb.umsatzMin / 1e6) + ' Mio $ über ' + ziel.korb.fenster + ' Balken).' +
               (ziel.uebersprungen.length ? ' Nicht im Korb oder ohne frische Kurse: ' + ziel.uebersprungen.slice(0, 6).join(', ') + (ziel.uebersprungen.length > 6 ? ' …' : '') : '') +
               (plan.fehltKurs.length ? ' Ohne Kurs nicht handelbar: ' + plan.fehltKurs.slice(0, 6).join(', ') + (plan.fehltKurs.length > 6 ? ' …' : '') : '') });
           speichern();
-          plan = MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise);   // frisch für die Anzeige
+          plan = MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil });   // frisch für die Anzeige
           faellig = false;
         }
       }
@@ -528,7 +573,10 @@
             '<b>Rebalancing fällig.</b> ' + (d.momentumAn ? 'Wird beim nächsten Takt ausgeführt.' :
             'Automatik ist aus – Handlungsliste: ' +
             (mom.plan.verkaufen.length ? 'verkaufen ' + mom.plan.verkaufen.map(function (o) { return o.sym; }).join(', ') + '; ' : '') +
-            (mom.plan.kaufen.length ? 'kaufen ' + mom.plan.kaufen.map(function (o) { return o.sym; }).join(', ') : '')) + '</div>';
+            (mom.plan.kaufen.length ? 'kaufen ' + mom.plan.kaufen.map(function (o) { return o.sym; }).join(', ') : '') +
+            /* Regel K2: ein Kleinstbestand steht in BEIDEN Listen (verkaufen und, als Ziel, kaufen) -
+               ohne diesen Satz saehe das wie ein Widerspruch aus. Ohne Schalter fehlt das Feld. */
+            ((mom.plan.kleinst || []).length ? '; Kleinstbestand wird aufgelöst: ' + (mom.plan.kleinst || []).join(', ') : '')) + '</div>';
         }
         html += posTabelle(b, daten.preise, false);
         if (bw.ohneKurs.length) html += '<div class="hinweis">Ohne frischen Kurs (zum Einstand bewertet): ' + bw.ohneKurs.join(', ') + '</div>';
