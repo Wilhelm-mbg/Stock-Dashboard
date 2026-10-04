@@ -130,3 +130,7 @@ Die Selbstangaben der Probewoche sind mit der Basis **nicht vergleichbar**: seit
 - **Weniger Token: nein.** Den Verbrauch treiben die feste Grundlast je Agentenstart (60–68k), die Leselisten (25–30k), lange Läufe mit Warten und die Zweitleser (65–96k je Auftrag) — nichts davon berührt Ponytail. Wilhelms Klage vom 14.09. (zu viele Token) löst der Block nicht.
 - **Schaden: keiner beobachtet.** Kein Vorfall der Probewoche geht auf eine Ponytail-Regel zurück; Klinken, Gegenproben, Übergaben und Vorregistrierungen wurden nicht ausgedünnt (die Fehler der Woche — Korrekturregeln am Schreibtisch, unerfüllbare Tore — kamen aus den Aufträgen des PM).
 - **Vorschlag:** den Block **behalten** (kostet nichts, schadet nicht, Diffs eher kleiner) und die Probe schließen; die Token-Frage getrennt angehen — weniger und dafür größere Aufträge, Leselisten kürzen, Zweitleser nur noch ab 250k oder bei neuen Auftragsarten. Entscheid ist Wilhelms (Formular).
+
+### 4. Entscheid
+
+**Wilhelm, Formular, 04.10.2026, kurz vor 08:57 (der Commit `ce0563d` von 08:57:39 folgte unmittelbar): „Entfernen".** Der Block ist aus `CLAUDE.md` heraus (`ce0563d`); die Probe ist geschlossen. Der Vorschlag des PM war „behalten" — entschieden ist anders. Diese Seite, das Messwerkzeug und die beiden Skills bleiben als Verlauf liegen.
