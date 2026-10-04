@@ -230,7 +230,7 @@ abschnitt('E', function () {
 var ORDNER = path.join(__dirname, 'daten');
 var DATEI = path.join(ORDNER, 'SPY.json');
 var echt = null;
-if (!fs.existsSync(DATEI)) pruefe('Rohdaten daten/SPY.json vorhanden (laden.js)', false);
+if (!fs.existsSync(DATEI)) console.log('  (Rohdaten daten/SPY.json fehlen: Teil 2 uebersprungen - erst laden.js laufen lassen)');
 else {
   echt = abschnitt('echte Daten', function () {
     var D = K.ladeDaten(ORDNER);
@@ -338,7 +338,7 @@ else {
 
 /* ================= Teil 3: signale-R3.json gegen Neuberechnung ================= */
 var JSONDATEI = path.join(__dirname, 'signale-R3.json');
-if (!echt) pruefe('signale-R3.json: ohne Rohdaten nicht pruefbar', false);
+if (!echt) console.log('  (signale-R3.json: ohne Rohdaten nicht pruefbar, uebersprungen)');
 else if (!fs.existsSync(JSONDATEI)) pruefe('signale-R3.json vorhanden (node studien/trendfilter-messung-2026-10/regel-R3.js)', false);
 else {
   abschnitt('signale-R3.json', function () {

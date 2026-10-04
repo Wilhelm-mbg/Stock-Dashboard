@@ -236,3 +236,7 @@ Ex-Tag nirgends gehalten).
 - **Nach dem ersten Lauf ergänzt:** der zweite Rechner hat auf Bitte die nachrichtlichen Teile (N1–N5, Gesamtlauf, alle Zusatzfenster)
   nachgerechnet; seine Zahlen für Fenster A und B standen vor dem ersten Lauf fest (Commit `697e6f3`, 01:10:06; Lauf 01:10:11).
 - **Datenprüfung:** gibt nach einer Nacharbeit keine absoluten Kurse mehr aus (nur relative Abweichungen), Inhalt sonst gleich.
+- **Ohne Rohdaten** (frischer Klon, `daten/` steht nicht im Repo) überspringen `test-R1.js` und `test-R3.js` ihren Teil auf echten Daten
+  jetzt mit Hinweis, statt ihn rot zu zählen (wie `test-R2.js`); mit Rohdaten unverändert. Wiederholen: `node studien/trendfilter-messung-2026-10/laden.js`
+  holt die Rohdaten neu und schreibt `pruefsummen.json` neu — `git diff` auf diese Datei zeigt, ob Yahoo die Vergangenheit seither geändert hat
+  (Feld `shaKanonisch`); `laden.js --pruefen` hält vorhandene Rohdaten gegen die Datei. Danach `lauf.js`, `test.js`, `bericht.js`.

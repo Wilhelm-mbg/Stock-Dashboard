@@ -279,7 +279,7 @@ function fensterZweit(me, start, ende) {
 }
 
 fall('echt', function () {
-  if (!fs.existsSync(path.join(ORDNER, 'SPY.json'))) { ok('echte Daten vorhanden (' + ORDNER + ')', false); return; }
+  if (!fs.existsSync(path.join(ORDNER, 'SPY.json'))) { console.log('  (Rohdaten fehlen in ' + ORDNER + ': Teil 2 uebersprungen - erst laden.js laufen lassen)'); return; }
   var D = K.ladeDaten(ORDNER);
   var zH = R1.signal(D, K.HAUPT), zE = R1.signal(D, K.ERSATZ);
   var detH = R1.details(D, K.HAUPT), detE = R1.details(D, K.ERSATZ);
