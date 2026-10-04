@@ -105,7 +105,13 @@ faelle.forEach(function (f, i) {
 /* ---- 5 Die Handeintrags-Datei (nur lesen) ---- */
 var HJ = G.json(path.join(G.HIER, 'handeintraege-v2', 'handeintraege.json')), GR = ['umbenennung-ticker', 'uebernahme', 'fusion-aktientausch', 'insolvenz', 'spac-ende', 'zwangs-delisting', 'freiwillig', 'abgemeldet-anlass-offen', 'ausgesetzt', 'unbekannt'];
 var namen = HJ.eintraege.map(function (h) { return h.reihe; });
-gleich([HJ.eintraege.length, namen.filter(function (n, i) { return namen.indexOf(n) === i; }).length], [33, 33], '5.1 Handeintraege: 33, jede Reihe einmal');
+/* 5.1 (Nr. 92 Schritt 2c): die Datei hat seit e7757ce 38 Eintraege (Fassung v2). Geprueft wird, dass die 33 Eintraege der Fassung v1
+ * (Commit f9cc14a, aus git gelesen) unveraendert enthalten sind, jede Reihe der Datei einmal. */
+var HJ1 = JSON.parse(require('child_process').execSync('git show f9cc14a:studien/datenfundament-2026-10-04/handeintraege-v2/handeintraege.json', { cwd: G.HIER, encoding: 'utf8' }));
+var jetzt = {}; HJ.eintraege.forEach(function (h) { jetzt[h.reihe] = h; });
+gleich([HJ1.kennung, HJ1.eintraege.length, HJ1.eintraege.filter(function (h) { return JSON.stringify(jetzt[h.reihe]) !== JSON.stringify(h); }).map(function (h) { return h.reihe; }),
+  namen.filter(function (n, i) { return namen.indexOf(n) === i; }).length === namen.length],
+  ['datenfundament-2026-10-04/handeintraege-v2/v1', 33, [], true], '5.1 Handeintraege: die 33 der Fassung v1 unveraendert enthalten, jede Reihe einmal');
 gleich(HJ.eintraege.filter(function (h) { return GR.indexOf(h.grund) === -1 || ['daten', 'wissen'].indexOf(h.quelle) === -1 || !h.beleg || !/^\d{4}-\d\d-\d\d$/.test(h.anker); }).map(function (h) { return h.reihe; }), [],
   '5.2 Handeintraege: bekannter Grund, Quelle daten/wissen, Beleg und Anker vorhanden');
 
