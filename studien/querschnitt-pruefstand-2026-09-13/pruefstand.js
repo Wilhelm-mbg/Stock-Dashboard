@@ -16,10 +16,11 @@ var ST = require('./statistik.js');
  * 1. Die Tafel: Panel laden und zwei Indizes bauen (je Tag eine Zeilenspanne, je Reihe eine Zeilenliste)
  * ========================================================================================= */
 /** opt.panelKennung (v2.3, Auftrag Nr. 92): ausdrueckliche Kennung des Panels (K.PANEL_KENNUNG_V23) - ohne sie liest die Tafel
- *  wie bisher (der Ordner waehlt v2.1/v2.2; ein v2.3-Ordner bricht an der Kennung ab). */
+ *  wie bisher (der Ordner waehlt v2.1/v2.2; ein v2.3-Ordner bricht an der Kennung ab). Mit ihr kommt der Kalender aus dem Stand
+ *  des Panels (`tage`, beim Bau aus K.kalender() geschrieben; in v2.1, v2.2 und v2.3 dieselben 2.765 Tage) statt aus dem Archiv. */
 function Tafel(aus, opt) {
   var roh = (opt && opt.panelKennung) ? P.ladePanel(aus, { kennung: opt.panelKennung }) : P.ladePanel(aus);
-  var stand = roh.stand, kal = K.kalender();
+  var stand = roh.stand, kal = (opt && opt.panelKennung) ? kalenderAusStand(stand) : K.kalender();
   var jahre = Object.keys(roh.jahre).map(Number).sort(function (a, b) { return a - b; });
   var n = 0; jahre.forEach(function (j) { n += roh.jahre[j].n; });
 
@@ -87,6 +88,13 @@ function Tafel(aus, opt) {
     /** letzte Zeile der Reihe (Archivende). */
     letzteZeile: function (sym) { return symStart[sym + 1] > symStart[sym] ? symZeilen[symStart[sym + 1] - 1] : -1; },
   };
+}
+
+/** Kalender aus dem Stand eines Panels (nur mit opt.panelKennung): dieselbe Form wie K.kalender(), ohne die Schlusszeiten. */
+function kalenderAusStand(stand) {
+  if (!Array.isArray(stand.tage) || !stand.tage.length) throw new Error('panel/_stand.json ohne tage - Kalender fehlt');
+  var idx = {}; stand.tage.forEach(function (t, i) { idx[t] = i; });
+  return { tage: stand.tage, idx: idx, close: null };
 }
 
 /* =========================================================================================
