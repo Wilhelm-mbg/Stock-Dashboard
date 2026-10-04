@@ -1,0 +1,7 @@
+Tafel v2.1: 5050 Zeilen, offen 0 | Textbedarf 0 | Hand 38 ohne Reihe 0
+GP1 B2 an = Tafel v2 ohne die 38: 5012 von 5012 | anders 0 | Handzeilen gleich 33 anders BNK CHU CVO OTIV SGBK
+GP2 Lauf 4 + B1 + 33: 5013 gleich, nur B1 4 , nur Hand 33 , unerklaert 0 | Hand nach Regeln wie Lauf 4/B1 33 anders 
+v2.1 gegen GP2 anders nur an: BNK CHU CVO OTIV SGBK
+Grund anders als v2: 10 CHU(abgemeldet-anlass-offen->umbenennung-ticker,neuer Handeintrag) DOM(unbekannt->zwangs-delisting,B2 zurueckgenommen) EGI(freiwillig->unbekannt,B2 zurueckgenommen) ERB(zwangs-delisting->abgemeldet-anlass-offen,B2 zurueckgenommen) NTT(abgemeldet-anlass-offen->unbekannt,B2 zurueckgenommen) SONG(freiwillig->unbekannt,B2 zurueckgenommen) TAS(spac-ende->unbekannt,B2 zurueckgenommen) VISI(insolvenz->unbekannt,B2 zurueckgenommen) VSR(insolvenz->zwangs-delisting,B2 zurueckgenommen) WP(abgemeldet-anlass-offen->uebernahme,B2 zurueckgenommen)
+Haupt 611 K1-3 FRC NKLA NOVA SAVE SBNY SIVB | streng 1271 K1-3 AABA FRC GRUB NKLA NOVA OZON SAVE SBNY SIVB YNDX
+Grund: {"freiwillig":110,"uebernahme":1633,"umbenennung-ticker":1467,"zwangs-delisting":276,"spac-ende":374,"abgemeldet-anlass-offen":319,"unbekannt":209,"fusion-aktientausch":305,"insolvenz":335,"ausgesetzt":22}
