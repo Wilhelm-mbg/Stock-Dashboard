@@ -398,8 +398,14 @@
       else if (fl.veraltet) { nachladen(); hinweisM = 'Marktreihe veraltet seit ' + MH.datumDe(fl.letzterMarktTag) + ' – Nachladen angestoßen; ob die Umschichtung fällig ist, ist offen.'; }
       /* A2: Reihenende in beiden Buechern - nur mit einer Marktreihe, die nicht veraltet ist. */
       if (daten.bezug && !fl.veraltet && reihenendeBuchen(MH, d, daten, now)) speichern();
-      /* A5: der Tagespunkt - VOR jedem Handel dieses Takts (sein Buch ist das Buch am Schluss von X). */
-      if (daten.bezug && tagespunkt(MH, d, daten, now)) speichern();
+      /* A5: der Tagespunkt - VOR jedem Handel dieses Takts (sein Buch ist das Buch am Schluss von X).
+       * Generalprobe 23.11., Fund D-03: ist X heute (Takt nach 16:15) und wird heute zur Eroeffnung
+       * umgeschichtet, gehoert in den Punkt das Buch NACH diesem Handel - er wird dann erst nach dem
+       * Handelsblock geschrieben; kommt der Handel in diesem Takt nicht zustande, schreibt ihn ein
+       * spaeterer Takt. */
+      var punktNachHandel = !!daten.bezug && ((fl.faellig === true && d.momentumAn) || manuell === 'momentum') &&
+        (MH.punktTag(daten.bezug, now) || {}).tag === MH.nyTag(now);
+      if (daten.bezug && !punktNachHandel && tagespunkt(MH, d, daten, now)) speichern();
       /* Nr. 94: offene Auftraege der Umschichtung von heute zur Eroeffnung dieses Tages nachfassen - oder beenden. */
       if (d.mfBuch.offen && await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil)) speichern();
       var faellig = fl.faellig === true;
@@ -473,6 +479,8 @@
           faellig = false;
         }
       }
+      /* D-03: der aufgeschobene Punkt von heute - nur, wenn heute umgeschichtet wurde. */
+      if (punktNachHandel && d.mfBuch.letzteAusfuehrungTag === MH.nyTag(now) && tagespunkt(MH, d, daten, now)) speichern();
 
       /* ---- Drift-Buch ---- */
       var driftInfo = null;
