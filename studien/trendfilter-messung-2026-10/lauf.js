@@ -18,6 +18,15 @@ function argWert(name, vorgabe) {
 var ORDNER = path.resolve(argWert('--daten', path.join(__dirname, 'daten')));
 var AUS = path.resolve(argWert('--aus', path.join(__dirname, 'ergebnis.json')));
 var REGELN = ['R1', 'R2', 'R3'];
+/* REGEL §9.1/§9.2: ein Fehler im Code wird benannt, behoben, der Lauf wiederholt und hier vermerkt. */
+var KORREKTUREN = [{
+  nr: 1,
+  ersterLauf: '05.10.2026 01:10 (Code 697e6f3)',
+  gefunden: 'beim Abgleich des Zusatzes mit dem zweiten Rechner (R2: 1.514 gegen 1.510 Fenster „flacher als SPY“)',
+  fehler: 'kern.js zusatz/fassen verglich die Rueckschlaege strikt; haelt eine Regel SPY ueber den ganzen groessten Rueckschlag, sind beide mathematisch gleich und Gleitkomma-Rauschen (1e-16) entschied „flacher“ (R2: 184 von 640 solchen Fenstern; R1, R3: keine)',
+  behebung: 'flacher = mehr als 1e-9 flacher; |Differenz| <= 1e-9 zaehlt als gleich (eigene Zahl gleichWieSpy)',
+  wirkung: 'nur die nachrichtliche Zusatz-Zeile „flacher als SPY“ (gesamt und je Startjahr); alle anderen Zahlen unveraendert (gegen den ersten Lauf verglichen, siehe ERGEBNIS.md)'
+}];
 
 function shaDatei(p) { return crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'); }
 function git(args) { try { return childProcess.execFileSync('git', args, { cwd: __dirname, encoding: 'utf8' }).trim(); } catch (e) { return null; } }
@@ -92,7 +101,7 @@ function haupt() {
     ],
     zusatzErsterTag: D.tage[ersterZusatz],
     regeln: {},
-    korrekturen: []
+    korrekturen: KORREKTUREN
   };
   ['kern.js', 'laden.js', 'lauf.js', 'regel-R1.js', 'regel-R2.js', 'regel-R3.js'].forEach(function (f) {
     ergebnis.lauf.code[f] = shaDatei(path.join(__dirname, f));

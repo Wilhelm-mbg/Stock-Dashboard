@@ -35,6 +35,8 @@ var FENSTER = {
 };
 var ZUSATZ_LETZTER_START = '2021-09-16';
 var PLACEBO_LAEUFE = 1000;
+/* Rueckschlaege, die sich um hoechstens so viel unterscheiden, gelten als gleich (Korrektur 1, siehe zusatz/fassen). */
+var RUECKSCHLAG_GLEICH = 1e-9;
 /* Nachrichtliche Lesarten (§7.2). sig = Zusatz zu den Signal-Optionen, sim = Optionen des Buchs, nur = gilt nur fuer diese Regel. */
 var VARIANTEN = {
   N1: { titel: 'Ausfuehrung zum Schluss des Signaltags (wie im Original)', sim: { ausfuehrung: 'schluss' } },
@@ -465,7 +467,11 @@ function zusatz(D, ziel, ersterTag) {
   function fassen(l) {
     var ab = l.map(function (x) { return x.abstandPp; });
     var vorn = l.filter(function (x) { return x.vorn; }).length;
-    var flacher = l.filter(function (x) { return x.rueckschlagRegel > x.rueckschlagSpy; }).length;
+    /* Korrektur 1 (nach dem ersten Lauf): haelt die Regel SPY ueber den ganzen groessten Rueckschlag, sind beide Rueckschlaege
+     * mathematisch gleich; der strikte Vergleich liess dann Gleitkomma-Rauschen (1e-16) ueber "flacher" entscheiden (R2: 184 von
+     * 640 solchen Fenstern als flacher gezaehlt). Seither: flacher = mehr als 1e-9 flacher, |Differenz| <= 1e-9 = gleich. */
+    var flacher = l.filter(function (x) { return x.rueckschlagRegel > x.rueckschlagSpy + RUECKSCHLAG_GLEICH; }).length;
+    var gleich = l.filter(function (x) { return Math.abs(x.rueckschlagRegel - x.rueckschlagSpy) <= RUECKSCHLAG_GLEICH; }).length;
     return {
       fenster: l.length, vorn: vorn, anteilVorn: vorn / l.length,
       abstandMedian: median(ab), abstandMin: Math.min.apply(null, ab), abstandMax: Math.max.apply(null, ab),
@@ -474,7 +480,7 @@ function zusatz(D, ziel, ersterTag) {
       rueckschlagSpyMedian: median(l.map(function (x) { return x.rueckschlagSpy; })),
       rueckschlagRegelSchlechtester: Math.min.apply(null, l.map(function (x) { return x.rueckschlagRegel; })),
       rueckschlagSpySchlechtester: Math.min.apply(null, l.map(function (x) { return x.rueckschlagSpy; })),
-      anteilFlacherAlsSpy: flacher / l.length,
+      anteilFlacherAlsSpy: flacher / l.length, flacherAlsSpy: flacher, gleichWieSpy: gleich,
       unterWasserRegelMedian: median(l.map(function (x) { return x.unterWasserRegel; })),
       unterWasserSpyMedian: median(l.map(function (x) { return x.unterWasserSpy; })),
       wechselJeJahrMedian: median(l.map(function (x) { return x.wechselJeJahr; }))

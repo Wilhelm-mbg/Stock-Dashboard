@@ -120,7 +120,7 @@ function tabellen(E, Z) {
     var q = E.regeln[r].zusatz.zusammen;
     z('| ' + r + ' | ' + zahl(q.fenster, 0) + ' | ' + zahl(q.anteilVorn * 100, 1) + ' % | ' + pp(q.abstandMedian) + ' [' + vz(q.abstandP10, 2) + '; ' + vz(q.abstandP90, 2) + '] | ' +
       vz(q.abstandMin, 2) + ' / ' + vz(q.abstandMax, 2) + ' | ' + proz(q.rueckschlagRegelMedian) + ' / ' + proz(q.rueckschlagSpyMedian) + ' | ' + proz(q.rueckschlagRegelSchlechtester) + ' / ' +
-      proz(q.rueckschlagSpySchlechtester) + ' | ' + zahl(q.anteilFlacherAlsSpy * 100, 1) + ' % | ' + zahl(q.unterWasserRegelMedian, 0) + ' / ' + zahl(q.unterWasserSpyMedian, 0) + ' Tage | ' + zahl(q.wechselJeJahrMedian, 2) + ' |');
+      proz(q.rueckschlagSpySchlechtester) + ' | ' + zahl(q.anteilFlacherAlsSpy * 100, 1) + ' %' + (q.gleichWieSpy ? ' (' + zahl(q.gleichWieSpy, 0) + ' Fenster gleich)' : '') + ' | ' + zahl(q.unterWasserRegelMedian, 0) + ' / ' + zahl(q.unterWasserSpyMedian, 0) + ' Tage | ' + zahl(q.wechselJeJahrMedian, 2) + ' |');
   });
   z('');
   z('Je Startjahr (Anteil der Fenster vorn / Median des Abstands in Pp p. a.):');
