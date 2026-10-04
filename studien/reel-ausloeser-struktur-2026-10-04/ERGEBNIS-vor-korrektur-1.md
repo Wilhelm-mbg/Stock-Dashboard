@@ -1,0 +1,37 @@
+**Ereignis-Sicht: kein Richtungsvorteil** (Hauptzelle QQQ, „Alle", H = 5, 29.09.2023–30.09.2026): Mittel −0,11 Basispunkte über der Kontrolle, Standardfehler 0,05, t −2,22 (29.779 Ereignisse an 753 Tagen); geschätzte Hürde 1,0 Basispunkte (Schätzung des PM, nicht gemessen).
+
+**Struktur-Sicht: Die Auslöser tragen gegenüber gewürfelter Richtung nichts bei** (QQQ, 29.09.2023–30.09.2026; Bot −0,012 R je Trade gegen 97,5-%-Stelle der Zufallsrichtung +0,002 R). Bot: −0,012 R je Trade (t −1,37), 53 % grüne Tage, schlechtester Tag −8,78 R · Zufallsrichtung: −0,012 [−0,026; +0,002] R je Trade, 53 % [49 %; 56 %] grüne Tage, 23 grüne Tage in Folge in 0 % [0 %; 0 %] der Blöcke · Zufallszeit: −0,017 [−0,032; −0,003] R je Trade, 54 % [50 %; 57 %] grüne Tage, 23 grüne Tage in Folge in 0 % [0 %; 0 %] der Blöcke (Kontrollen: Median [2,5 %; 97,5 %] über je 200 Wiederholungen).
+
+# Ergebnis Auftrag Nr. 89R-2: die drei Auslöser aus dem Reel und seine Ausstiegsstruktur (QQQ, SPY, IWM, Minutenkerzen)
+
+**Ereignis-Sicht QQQ, 29.09.2023–30.09.2026** — Ertrag in Signalrichtung ab der nächsten Eröffnung über H Minuten, abzüglich des Mittels derselben Tagesminute im selben Kalenderjahr; Basispunkte, in Klammern t (Standardfehler über Tage gebündelt). Hauptzelle fett, alles andere nachrichtlich.
+
+| Auslöser | Ereignisse (H = 5) | H = 1 | H = 2 | H = 3 | H = 5 | H = 10 | H = 15 |
+|---|---|---|---|---|---|---|---|
+| A1 VWAP-Kreuz | 11.736 | −0,02 (−0,4) | +0,05 (+0,8) | +0,02 (+0,2) | +0,02 (+0,2) | +0,03 (+0,3) | +0,08 (+0,7) |
+| A1f VWAP-Kreuz mit Filter | 4.907 | −0,01 (−0,1) | −0,02 (−0,2) | +0,05 (+0,5) | +0,03 (+0,2) | +0,15 (+0,9) | +0,11 (+0,6) |
+| A2 EMA-50-Kreuz | 23.946 | −0,05 (−1,5) | −0,05 (−1,3) | −0,08 (−2,0) | −0,11 (−2,3) | −0,05 (−0,9) | −0,07 (−1,1) |
+| A3 Ausbruch 15 Min. | 1.096 | −0,23 (−1,3) | −0,63 (−2,3) | −0,53 (−1,5) | −0,70 (−1,6) | −0,31 (−0,5) | +0,36 (+0,5) |
+| Alle (A1f + A2 + A3) | 29.779 | −0,04 (−1,5) | −0,07 (−1,8) | −0,08 (−2,0) | **−0,11 (−2,2)** | −0,02 (−0,4) | −0,02 (−0,3) |
+
+Im Urteilsfenster 90 Zellen (3 Werte × 5 Auslöser × 6 H): 13 mit |t| ≥ 2 (bei reinem Zufall im Mittel etwa 4,1); größtes |t| −2,74 (SPY, A2, H = 15); für 90 Zellen läge die Schwelle nach Bonferroni bei |t| ≥ 3,45. Eichung: A1 trifft Ereignis R1 aus Teil 1 (11.736 Ereignisse; H = 5 +0,02, H = 15 +0,08 Basispunkte, gleich bis 10⁻⁹).
+
+**Struktur-Sicht, 29.09.2023–30.09.2026** — R = 17 % der Prämie (der Stopp), nach Kosten; Kontrollen als Median, wo angegeben [2,5 %; 97,5 %] über 200 Wiederholungen. Grüne Tage, Serien, Blöcke und Tagesextreme nur über Tage mit mindestens einem Trade. QQQ ist die Urteilszeile, SPY und IWM nachrichtlich.
+
+| Wert | Lauf | Trades/Tag | Treffer | Ø Gewinn R | Ø Verlust R | R je Trade (t) | R je Tag | grüne Tage | längste grüne Serie | 23er-Blöcke ganz grün | schlechtester Tag R | bester Tag R | Summe R | größter Rückschlag R |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| QQQ | Bot | 9,3 | 73 % | +0,37 | −1,04 | −0,012 (−1,4) | −0,12 | 53 % | 9 | 0 von 32 | −8,78 | +19,78 | −87,5 | 101,3 |
+| QQQ | Zufallsrichtung | 9,3 | 73 % | +0,38 | −1,05 | −0,012 [−0,026; +0,002] | −0,11 | 53 % [49 %; 56 %] | 9 | 0 % [0 %; 0 %] | −8,36 | +20,70 | −81,0 | 119,1 |
+| QQQ | Zufallszeit | 11,1 | 73 % | +0,36 | −1,05 | −0,017 [−0,032; −0,003] | −0,19 | 54 % [50 %; 57 %] | 10 | 0 % [0 %; 0 %] | −9,33 | +14,44 | −145,5 | 172,5 |
+| SPY | Bot | 8,1 | 72 % | +0,34 | −1,03 | −0,039 (−4,6) | −0,32 | 45 % | 6 | 0 von 32 | −8,17 | +5,47 | −239,8 | 257,1 |
+| SPY | Zufallsrichtung | 8,1 | 72 % | +0,34 | −1,03 | −0,035 [−0,050; −0,019] | −0,28 | 47 % [44 %; 50 %] | 8 | 0 % [0 %; 0 %] | −7,74 | +8,96 | −211,9 | 223,7 |
+| SPY | Zufallszeit | 9,5 | 73 % | +0,34 | −1,03 | −0,033 [−0,048; −0,018] | −0,32 | 48 % [45 %; 52 %] | 9 | 0 % [0 %; 0 %] | −8,72 | +12,03 | −238,5 | 254,3 |
+| IWM | Bot | 9,6 | 73 % | +0,38 | −1,05 | −0,009 (−1,1) | −0,09 | 56 % | 12 | 0 von 32 | −10,56 | +7,46 | −68,6 | 149,7 |
+| IWM | Zufallsrichtung | 9,7 | 73 % | +0,40 | −1,05 | +0,002 [−0,017; +0,018] | +0,02 | 57 % [53 %; 60 %] | 11 | 0 % [0 %; 0 %] | −9,04 | +21,16 | +11,8 | 81,1 |
+| IWM | Zufallszeit | 11,8 | 73 % | +0,37 | −1,05 | −0,014 [−0,028; −0,001] | −0,17 | 56 % [53 %; 59 %] | 11 | 0 % [0 %; 0 %] | −9,73 | +12,75 | −127,9 | 154,4 |
+
+Nachrichtlich: SPY — Die Auslöser tragen gegenüber gewürfelter Richtung nichts bei; IWM — Die Auslöser tragen gegenüber gewürfelter Richtung nichts bei (gleiche Regel, nicht Teil des Urteils).
+
+**Annahmen (alle vom PM gesetzt, nicht gemessen):** Filter „zusammengedrückt" bei |EMA 9 − EMA 21| < 0,5 × ATR (das Reel nennt keine Zahl) · 5 Minuten Pause nach jedem Ausstieg („waits a moment") · Stopp bei 17 % der Prämie (≈ 1.250 $ bei 20 Optionen zu 3,69 $; der Autor sagt nur „based on ATR") · Gewinnsicherung scharf ab +6 % der Prämie, Verkauf bei 40 % Rückgabe · Tagesbremse bei +1,44 R (1.800 $ / 1.250 $), keine Verlustbremse · Option = Basiswert mit Delta 0,5, ohne Gamma, ohne Zeitwertverlust; Prämie 0,49 % des Kurses · Kosten 1 % der Prämie je Trade hin und zurück · Hürde der Ereignis-Sicht 1,0 Basispunkte · Zufallszeit: Wahrscheinlichkeit je Kerze 09:45–15:44 so, dass im Mittel so viele Auslöser je Tag entstehen wie bei „Alle".
+
+**Grenzen.** Optionskurse fehlen: Gemessen ist der Basiswert, die Option ist über ihn genähert; Gamma, Zeitwertverlust und die echte Spanne einer Option mit einem Tag Laufzeit fehlen. Innerhalb einer Minutenkerze ist der Kursweg unbekannt; die Regel nimmt den ungünstigen Fall zuerst (Stopp vor Gewinnsicherung), das drückt Ergebnisse von Bot und Kontrollen gleichermaßen. Einstieg zur nächsten Eröffnung ohne Rutsch; Kosten allein über die 1 % der Prämie. Eine Hauptzelle und ein Struktur-Satz; die übrigen Zellen und Werte stehen nachrichtlich daneben. Kurse roh (SIP). Datenlücken gehandelt, wie sie sind (Teil 1, REGEL.md C). Beschreibende Zahlen nach vorher festgelegter Regel (REGEL.md, Siegel d18cc2c); gemessen werden Regeln, keine Aussage über Personen; keine Anlageberatung.
