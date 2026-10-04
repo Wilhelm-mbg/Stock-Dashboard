@@ -151,12 +151,14 @@
     });
     if (!andere.length) {
       var altK = kleinstWert(d.mfBuch.konfig), neuK = kleinstWert(KONFIG);
-      var zahl = function (x) { return x > 0 ? String(x).replace('.', ',') : '0 (aus)'; };
       var pz = String(Math.round(neuK * 1000) / 10).replace('.', ',');
+      /* Auftrag Nr. 95 (C5): die Stufe in Worten („aus" / „5 % des Platzwerts"), nicht der
+       * Feldname kleinstAnteil mit „0 (aus) → 0,05". */
+      var stufe = function (x) { return x > 0 ? String(Math.round(x * 1000) / 10).replace('.', ',') + ' % des Platzwerts' : 'aus'; };
       d.tuneLog.unshift({ id: 'mfkonfig-' + now, at: now, quelle: 'umstellung',
         applied: ['Momentum-Buch: Regel K gegen Kleinstpositionen ' + (neuK > 0 ? 'eingeschaltet' : 'ausgeschaltet') +
-          ' (kleinstAnteil ' + zahl(altK) + ' → ' + zahl(neuK) + ')'],
-        txt: 'Geändert hat sich ein Feld der Konfiguration: kleinstAnteil, alt ' + zahl(altK) + ' → neu ' + zahl(neuK) + '. ' +
+          ' (' + stufe(altK) + ' → ' + stufe(neuK) + ')'],
+        txt: 'Geändert hat sich eine Einstellung: Regel K gegen Kleinstpositionen, alt ' + stufe(altK) + ' → neu ' + stufe(neuK) + '. ' +
           (neuK > 0
             ? 'Die Regel: ein Kauf, der mangels Bargeld unter ' + pz + ' % des Platzwerts (Depotwert / Zahl der Zielwerte) fiele, wird nicht ' +
               'ausgeführt; ein Bestand unter dieser Grenze gilt nicht als gehalten – er wird verkauft und, wenn der Wert Ziel ist, voll neu gekauft. '
@@ -324,7 +326,15 @@
     var res = MH.nachfassen(b, preise, barZeit, now, 20, { kleinstAnteil: kleinstAnteil });   // 20 Bp je Seite wie die Umschichtung
     var z = MH.nachfassenJournal(res, now);
     if (z) d.tuneLog.unshift({ id: 'mfnach-' + now, at: now, quelle: 'automatik', applied: z.applied, txt: z.txt });
-    return res.geaendert;
+    /* Auftrag Nr. 95 (B4): ein Kauf, der seine Eroeffnung hatte und am Bargeld scheiterte, traegt
+     * das fuer die Zeile am Ende (offenEndeJournal nennt die Kaeufe nach Grund). Nur ein Merker
+     * fuer den Text - nachfassen() liest ihn nicht; gespeichert wird, damit er einen Neustart
+     * uebersteht. */
+    var neuMerker = false;
+    if (b.offen && res.wartet.length) {
+      b.offen.kaeufe.forEach(function (k) { if (res.wartet.indexOf(k.sym) >= 0 && !k.bargeld) { k.bargeld = true; neuMerker = true; } });
+    }
+    return res.geaendert || neuMerker;
   }
 
   async function takt(manuell) {
@@ -617,11 +627,14 @@
    *  Ausschuettungen aus den zwei Reihen des Merkers (MARKT, MARKT_ROH) - nicht mehr ein
    *  spaeter nachgeschlagener Balken. Die zwei Buecher buchen seit Nr. 87 Ausschuettungen
    *  (buchAusschuettungen) - das sagt der Hinweis. */
-  function vergleich(name) {
+  /*  Seit Auftrag Nr. 95 (C1): verlauf (optional) - ein Ausschnitt der Tagespunkte, etwa die
+   *  Woche im Wochenbericht (berichte.js). Dann rechnet derselbe Massstab mit denselben
+   *  Optionen ueber diese Punkte; ohne verlauf wie bisher ueber den Verlauf samt Stand. */
+  function vergleich(name, verlauf) {
     var d = D();
     if (!d || !window.Massstab) return null;
     var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
-    return window.Massstab.vergleich(verlaufMitStand(), name, name === 'momentum' ? 'startM' : 'startD', {
+    return window.Massstab.vergleich(verlauf || verlaufMitStand(), name, name === 'momentum' ? 'startM' : 'startD', {
       an: name === 'momentum' ? !!d.momentumAn : !!d.driftAn,
       start: buch ? buch.start : null, angelegt: buch ? buch.angelegt : null,
       punktKurs: true, marktRoh: MARKT_ROH, buchAusschuettungen: true, markt: MARKT });
@@ -702,6 +715,22 @@
    * wird ("Umschichtung heute nach Börsenöffnung", "Marktreihe veraltet seit …", Kurse nicht
    * frisch), steht DER da - nie still "nicht faellig". Sonst der Ausfuehrungstag der letzten
    * Umschichtung (New York) und wie viele Handelstage bis zur naechsten fehlen. */
+  /* Auftrag Nr. 95 (C3): der TAG der naechsten Umschichtung, aus der Faelligkeit gerechnet, nie
+   * fest. noch = Handelstage, die bis dahin fehlen (MFHandel.faelligkeit zaehlt nur Balken VOR
+   * heute - heute zaehlt also mit, wenn heute gehandelt wird); umgeschichtet wird am Handelstag
+   * danach. Handelstage aus dem Boersenkalender (boerse.js, Feiertage der NYSE). Ohne Kalender
+   * oder ohne noch: null - dann steht nur die Zahl der Handelstage da. */
+  function naechsteUmschichtung(noch, nowMs) {
+    var MH = window.MFHandel, B = window.Boerse;
+    if (!MH || !B || !B.istHandelstag || noch == null || !(nowMs > 0)) return null;
+    var tag = MH.nyTag(nowMs), n = 0;
+    for (var i = 0; i < 500; i++, tag = MH.tagPlus(tag, 1)) {
+      if (!B.istHandelstag(Date.UTC(+tag.slice(0, 4), +tag.slice(5, 7) - 1, +tag.slice(8, 10)))) continue;
+      if (n === noch) return tag;
+      n++;
+    }
+    return null;
+  }
   function taktTextMomentum(k) {
     if (k.hinweis) return k.hinweis;
     if (k.faellig) return 'Umschichtung fällig';
@@ -709,8 +738,10 @@
     var h = k.buch.konfig ? k.buch.konfig.halten : null;
     var MH = window.MFHandel;
     var tag = k.buch.letzteAusfuehrungTag && MH ? MH.datumDe(k.buch.letzteAusfuehrungTag) : U.d(k.buch.letztesRebalanceT);
-    return (h ? 'nach ' + h + ' Handelstagen · ' : '') + 'letzte Umschichtung ' + tag +
-      (k.noch != null ? ' · nächste nach ' + k.noch + ' weiteren Handelstagen, zur Eröffnung' : '');
+    var naechste = k.noch != null ? naechsteUmschichtung(k.noch, k.standT || Date.now()) : null;
+    return (h ? 'Umschichtung alle ' + h + ' Handelstage · ' : '') + 'letzte ' + tag +
+      (naechste ? ' · nächste am ' + MH.datumDe(naechste) + ' zur Eröffnung (nach ' + k.noch + ' weiteren Handelstagen)'
+        : k.noch != null ? ' · nächste nach ' + k.noch + ' weiteren Handelstagen, zur Eröffnung' : '');
   }
   /* Das Drift-Buch hat keinen Umschichtungs-Rhythmus: es gleicht bei jedem Takt ab.
    * Was es ueber die Zeit sagt, ist deshalb der Pruef-Stempel aus d.pruefStand. */
@@ -755,9 +786,12 @@
     var rueck = (rueckSchluessel && SU && SU.rueckblicke) ? SU.rueckblicke(rueckSchluessel) : [];
     var zeilen = [['Gegen den Markt', gegen]];
     if (rueck.length) {
+      /* Auftrag Nr. 95 (B5): der Satz zum Buch selbst (beim Drift-Buch: warum es trotz „kein
+       * Vorwärtstest angezeigt" läuft) - aus studienurteile.js, einmal unter den Zeilen. */
+      var buchSatz = SU.buchSatz ? SU.buchSatz(rueckSchluessel) : '';
       zeilen.push(['Rückblick', rueck.map(function (r) {
         return U.esc(SU.rueckblickText(r)) + '<br><span style="color:var(--muted); font-size:var(--fs-klein);">Fundstelle: ' + U.esc(r.quelle) + '</span>';
-      }).join('<br>')]);
+      }).join('<br>') + (buchSatz ? '<br>' + U.esc(buchSatz) : '')]);
     }
     /* A2 (Auftrag Nr. 93): eine Position ohne jede Kursreihe im Bestand steht zum Einstand im
      * Buchwert - das sagt die Karte als Warnung, nicht nur die Klappe darunter. */

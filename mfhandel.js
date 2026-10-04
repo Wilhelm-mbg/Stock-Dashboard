@@ -446,14 +446,33 @@
     return aus;
   }
   function datumDe(tag) { return tag ? tag.slice(8, 10) + '.' + tag.slice(5, 7) + '.' + tag.slice(0, 4) : '?'; }
-  /** Die Journalzeile je ausgebuchter Position (A2) - rein. name 'momentum' | 'drift'. */
+  /** Ein Geldbetrag in den Journalzeilen: Tausenderpunkt, zwei Stellen, Minuszeichen
+   *  (Auftrag Nr. 95, C4 - wie die uebrige Oberflaeche: „1.200,00 $" statt „1200,00 $"). */
+  function geldDe(x) {
+    var s = Math.abs(x).toFixed(2).split('.');
+    return (x < 0 ? '−' : '') + s[0].replace(/\B(?=(\d{3})+(?!\d))/g, function () { return '.'; }) + ',' + s[1] + ' $';
+  }
+  /** Die Journalzeile je ausgebuchter Position (A2) - rein. name 'momentum' | 'drift'.
+   *  Seit Auftrag Nr. 95 (B2): beim Leerverkauf zeigt die Zeile die Rechnung der Gutschrift
+   *  (Stück × (2 × Einstand − Kurs), wie reihenendeAusbuchen bucht) statt Kurs × Stück. Der
+   *  Einstand steht nicht in x; er folgt aus der Gutschrift selbst. Ist sie 0 (Kurs beim
+   *  Doppelten des Einstands oder darueber), sagt die Zeile das. */
   function reihenendeJournal(name, x) {
     var buchName = name === 'drift' ? 'Ergebnis-Drift-Buch' : 'Momentum-Buch';
-    var geld = function (v) { return v.toFixed(2).replace('.', ',') + ' $'; };
+    var stueck = String(Math.round(x.stueck * 10000) / 10000).replace('.', ',');
+    var rechnung;
+    if (!(x.richtung < 0)) rechnung = 'ausgebucht zu ' + geldDe(x.kurs) + ' × ' + stueck + ' Stück = ' + geldDe(x.gutschrift);
+    else if (x.gutschrift > 0) {
+      var einstand = x.einstand > 0 ? x.einstand : (x.gutschrift / x.stueck + x.kurs) / 2;
+      rechnung = 'letzter Kurs ' + geldDe(x.kurs) + ' (Leerverkauf glattgestellt): Gutschrift ' + stueck + ' Stück × (2 × ' + geldDe(einstand) +
+        ' Einstand − ' + geldDe(x.kurs) + ') = ' + geldDe(x.gutschrift);
+    } else {
+      rechnung = 'letzter Kurs ' + geldDe(x.kurs) + ' (Leerverkauf glattgestellt): Gutschrift ' + geldDe(0) +
+        ' – der Kurs liegt beim Doppelten des Einstands oder darüber, Stück × (2 × Einstand − Kurs) wäre nicht positiv';
+    }
     return { applied: [buchName + ': Reihenende ' + x.sym + ' ausgebucht'],
-      txt: 'Reihenende: ' + x.sym + ', letzter Handelstag ' + datumDe(x.letzterTag) + ', ausgebucht zu ' + geld(x.kurs) +
-        (x.richtung < 0 ? ' (Leerverkauf glattgestellt)' : '') + ' × ' + String(Math.round(x.stueck * 10000) / 10000).replace('.', ',') +
-        ' Stück = ' + geld(x.gutschrift) + ' ohne Verkaufskosten (seit ' + x.tage + ' Handelstagen kein neuer Kurs). ' +
+      txt: 'Reihenende: ' + x.sym + ', letzter Handelstag ' + datumDe(x.letzterTag) + ', ' + rechnung +
+        ' ohne Verkaufskosten (seit ' + x.tage + ' Handelstagen kein neuer Kurs). ' +
         'Grund unbekannt — wäre es eine Insolvenz, hätte die Messung 0 gebucht. Simulation mit virtuellem Kapital, keine Anlageberatung.' };
   }
 
@@ -659,7 +678,7 @@
     var buchName = name === 'drift' ? 'Ergebnis-Drift-Buch' : 'Momentum-Buch';
     function tag(t) { var s = new Date(t).toISOString(); return s.slice(8, 10) + '.' + s.slice(5, 7) + '.' + s.slice(0, 4); }
     function zahl(x, stellen) { return String(Math.round(x * Math.pow(10, stellen)) / Math.pow(10, stellen)).replace('.', ','); }
-    function geld(x) { return (x < 0 ? '−' : '') + Math.abs(x).toFixed(2).replace('.', ',') + ' $'; }
+    var geld = geldDe;                                                // Tausenderpunkt seit Nr. 95 (C4)
     var applied = [], saetze = [];
     if (div.length) {
       var summe = div.reduce(function (a, b) { return a + b.summe; }, 0);
@@ -711,7 +730,7 @@
   var NACHFASSEN_BIS = [16, 0];
   /** Uhrzeit eines Zeitstempels in New York, 'HH:MM'. */
   function nyUhr(ms) { var p = nyTeile(ms); return (p.stunde < 10 ? '0' : '') + p.stunde + ':' + (p.minute < 10 ? '0' : '') + p.minute; }
-  function kursDe(x) { return x.toFixed(2).replace('.', ',') + ' $'; }
+  function kursDe(x) { return geldDe(x); }                             // Tausenderpunkt seit Nr. 95 (C4)
   function stueckDe(x) { return String(Math.round(x * 10000) / 10000).replace('.', ','); }
   function nachRang(a, b) { return a.rang - b.rang; }
 
@@ -832,19 +851,31 @@
     return { applied: applied, txt: txt };
   }
 
-  /** Die Journalzeile zum Ende des Nachfassens mit den liegen gebliebenen Auftraegen. Rein. */
+  /** Die Journalzeile zum Ende des Nachfassens mit den liegen gebliebenen Auftraegen. Rein.
+   *  Seit Auftrag Nr. 95: die Kaeufe nach Grund getrennt (B4) - ohne Eroeffnung, oder mit
+   *  Eroeffnung, aber ohne genug Bargeld (Merker bargeld am Auftrag, gesetzt in mfdepot.js
+   *  offenNachfassen aus nachfassen().wartet); ein liegen gebliebener Verkauf bleibt bis zur
+   *  naechsten Umschichtung ODER zum Reihenende gehalten; am Folgetag steht der Tag da (C6). */
   function offenEndeJournal(offen, nowMs) {
-    var verkaeufe = offen.verkaeufe || [], kaeufe = (offen.kaeufe || []).map(function (k) { return k.sym; });
-    var liste = auftraegeDe(verkaeufe, kaeufe), folgen = [];
-    if (verkaeufe.length) folgen.push(verkaeufe.length === 1 ? 'die Position bleibt bis zur nächsten Umschichtung gehalten' : 'die Positionen bleiben bis zur nächsten Umschichtung gehalten');
-    if (kaeufe.length) folgen.push((kaeufe.length === 1 ? 'das Ziel wird nicht gekauft, sein Platz bleibt' : 'die Ziele werden nicht gekauft, ihre Plätze bleiben') + ' bis zur nächsten Umschichtung Bargeld');
-    var satz = folgen.join(', ');
+    var verkaeufe = offen.verkaeufe || [], ohne = [], geld = [];
+    (offen.kaeufe || []).forEach(function (k) { (k.bargeld ? geld : ohne).push(k.sym); });
+    var teile = [], folgen = [];
+    if (verkaeufe.length || ohne.length) teile.push('ohne Eröffnung: ' + auftraegeDe(verkaeufe, ohne));
+    if (geld.length) teile.push('mit Eröffnung, aber ohne genug Bargeld: ' + auftraegeDe([], geld));
+    var liste = teile.join('; ');
+    if (verkaeufe.length) folgen.push(verkaeufe.length === 1 ? 'die Position bleibt gehalten, bis zur nächsten Umschichtung oder zum Reihenende'
+      : 'die Positionen bleiben gehalten, bis zur nächsten Umschichtung oder zum Reihenende');
+    if (ohne.length) folgen.push((ohne.length === 1 ? 'das Ziel wird nicht gekauft, sein Platz bleibt' : 'die Ziele werden nicht gekauft, ihre Plätze bleiben') + ' bis zur nächsten Umschichtung Bargeld');
+    var satz = folgen.join('; ');
+    var heute = nyTag(nowMs);
     return {
-      applied: ['Momentum-Buch: Nachfassen beendet, liegen geblieben: ' + liste],
-      txt: 'Momentum-Buch: Nachfassen der Umschichtung vom ' + datumDe(offen.tag) + ' beendet (' +
-        (nyTag(nowMs) === offen.tag ? '16:00 New York vorbei' : 'ein späterer Tag') + ') – liegen geblieben: ' + liste + '. ' +
-        satz.charAt(0).toUpperCase() + satz.slice(1) +
-        ' – wie in der Messung (ohne Eröffnung kein Handel). Simulation mit virtuellem Kapital, keine Anlageberatung.'
+      applied: ['Momentum-Buch: Nachfassen beendet, liegen geblieben ' + liste],
+      txt: 'Momentum-Buch: Nachfassen der Umschichtung vom ' + datumDe(offen.tag) + ' beendet ' +
+        (heute === offen.tag ? '(16:00 New York vorbei)' : 'am ' + datumDe(heute) + ' (Auftragstag vorbei)') + ' – liegen geblieben ' + liste + '.' +
+        (satz ? ' ' + satz.charAt(0).toUpperCase() + satz.slice(1) + ' – wie in der Messung (ohne Eröffnung kein Handel).' : '') +
+        (geld.length ? ' Für ' + geld.join(', ') + ' reichte das Bargeld nicht – ' + (geld.length === 1 ? 'sein Platz bleibt' : 'ihre Plätze bleiben') +
+          ' bis zur nächsten Umschichtung leer.' : '') +
+        ' Simulation mit virtuellem Kapital, keine Anlageberatung.'
     };
   }
 

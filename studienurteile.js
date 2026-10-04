@@ -111,7 +111,17 @@
    * Markt / 2021–2026 (ersetzt den Eintrag ohne Regel K aus massstab-rueckblick v1).
    * medianAbstandPa ist der Median der 63 Startphasen (Pp pro Jahr), grenzen ein fester
    * Satz des PM. Für das Drift-Buch steht unter 'drift' der Rückblick aus Nr. 88 (art
-   * 'zufall': gegen 200 Zufallsbücher statt über Startphasen). */
+   * 'zufall': gegen 200 Zufallsbücher statt über Startphasen).
+   *
+   * Seit Auftrag Nr. 95 (04.10.2026, Entscheide des PM zu B1 und A1 des Prüfgangs Nr. 83):
+   * grenzen BEGINNT bei allen drei Momentum-Einträgen mit ZUFALL (Belegstand, Lesart zu
+   * Nr. 78: das 95-%-Band schließt in allen fünf Läufen null ein - die Drift-Zeile nennt
+   * ihren Zufallsvergleich schon in der Zeile); die zwei Einträge zum Korb 187 enden mit
+   * ZWILLINGE. Die Zahlen bleiben die der Ergebnisdatei, bis der Rückblick auf dem Panel
+   * v2.3 nachgerechnet ist (eigener Auftrag). Beide Sätze sind feste Sätze des PM und
+   * stehen hinter „Grenzen:" - der Kleinsttest 10 prüft dort keine Zahl. */
+  var ZUFALL = 'vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein)';
+  var ZWILLINGE = 'gerechnet auf einem Panel, in dem rund 2 % der Reihen doppelt stehen (Vorgänger-Kürzel); die Zahl je Starttag verschiebt sich dadurch, der Median kaum';
   var RUECKBLICK = {
     'momentum-liquide': [
       {
@@ -121,7 +131,7 @@
         regel: 'mit Regel K',
         zahlen: { von: '2021-09-16', bis: '2026-09-15', buchGesamt: 150.1, spyGesamt: 81.2, schlaegt: true,
           phasenVorn: 61, phasen: 63, medianAbstandPa: 8.2, rueckschlagBuch: -56.9, rueckschlagSpy: -24.5 },
-        grenzen: 'der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger)',
+        grenzen: ZUFALL + '; der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); ' + ZWILLINGE,
         quelle: 'studien/momentum-korb-kleinst-2026-10-04/ERGEBNIS.md, Lauf B-187 mit Regel K, 04.10.2026',
         datum: '2026-10-04'
       },
@@ -132,7 +142,7 @@
         regel: 'mit Regel K',
         zahlen: { von: '2017-01-04', bis: '2021-09-15', buchGesamt: 169.0, spyGesamt: 115.5, schlaegt: true,
           phasenVorn: 63, phasen: 63, medianAbstandPa: 7.3, rueckschlagBuch: -49.0, rueckschlagSpy: -33.8 },
-        grenzen: 'der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger)',
+        grenzen: ZUFALL + '; der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); ' + ZWILLINGE,
         quelle: 'studien/momentum-korb-kleinst-2026-10-04/ERGEBNIS.md, Lauf A-187 mit Regel K, 04.10.2026',
         datum: '2026-10-04'
       },
@@ -143,7 +153,7 @@
         regel: 'mit Regel K',
         zahlen: { von: '2021-09-16', bis: '2026-09-15', buchGesamt: 64.3, spyGesamt: 81.2, schlaegt: false,
           phasenVorn: 41, phasen: 63, medianAbstandPa: 1.8, rueckschlagBuch: -40.2, rueckschlagSpy: -24.5 },
-        grenzen: 'vor Steuern (nach Steuern für den breiten Markt nicht gerechnet)',
+        grenzen: ZUFALL + '; vor Steuern (nach Steuern für den breiten Markt nicht gerechnet)',
         quelle: 'studien/momentum-korb-kleinst-2026-10-04/ERGEBNIS.md, Lauf B-breit mit Regel K, 04.10.2026',
         datum: '2026-10-04'
       }
@@ -166,7 +176,13 @@
    * an jeder Stelle derselbe Wortlaut, nur von hier (belegeKopf). Der Tag kommt aus dem
    * ersten Rückblick-Eintrag desselben Schlüssels. */
   var ALTE_BELEGE = {
-    'momentum-liquide': { grund: 'gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen)' }
+    /* karte (Auftrag Nr. 95, B3): wo die Zeile Rückblick steht - zwei der drei Stellen des
+     * Kopfs (Werkzeuge → Betrieb, Erklärfenster) haben sie nicht in Sichtweite. */
+    'momentum-liquide': { grund: 'gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen)', karte: 'Momentum-Buchs' }
+  };
+  /* Satz zum Buch neben seinen Rückblick-Zeilen (Auftrag Nr. 95, B5, Wortlaut des PM). */
+  var BUCH_SATZ = {
+    'drift': 'Das Buch läuft als Simulation weiter; seine eigene Regel (Kauf und Leerverkauf, 60 Handelstage) ist nicht gemessen – kein Kandidat für echtes Geld.'
   };
   function pzDe(x) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(1).replace('.', ',') + ' %'; }
   function ppDe(x) { return (x < 0 ? '−' : '+') + Math.abs(x).toFixed(1).replace('.', ',') + ' Pp'; }
@@ -197,14 +213,23 @@
     /** Der Kopf über ALTEN Belegen (Auftrag Nr. 91, nach dem Muster von ueberholtKopf):
      *  „Überholt: gemessen nur an Werten, die es heute noch gibt (ohne die
      *  verschwundenen). Maßgeblich ist der Rückblick vom 04.10.2026 gegen den S&P 500 –
-     *  siehe die Zeile Rückblick." Leer, wenn es zum Schlüssel keinen gibt. EINE Quelle
+     *  siehe die Zeile Rückblick auf der Karte des Momentum-Buchs (Heute → Bestand)." (Ort
+     *  seit Auftrag Nr. 95.) Leer, wenn es zum Schlüssel keinen gibt. EINE Quelle
      *  für drei Stellen: strategien.js (Belege hinter dem i der Karte), app-shell.js
      *  (Erklärung Momentum) und index.html (#mfErklaerung, gefüllt unten). */
     belegeKopf: function (k) {
       var a = ALTE_BELEGE[k], r = RUECKBLICK[k] && RUECKBLICK[k][0];
       if (!a || !r) return '';
-      return 'Überholt: ' + a.grund + '. Maßgeblich ist der Rückblick vom ' + tagDe(r.datum) + ' gegen den S&P 500 – siehe die Zeile Rückblick.';
+      return 'Überholt: ' + a.grund + '. Maßgeblich ist der Rückblick vom ' + tagDe(r.datum) + ' gegen den S&P 500 – siehe die Zeile ' +
+        'Rückblick auf der Karte des ' + a.karte + ' (Heute → Bestand).';
     },
+    /** Der Satz zum BUCH neben seinen Rückblick-Zeilen (Auftrag Nr. 95, B5) - leer, wenn es
+     *  keinen gibt. Für das Drift-Buch: warum es läuft, obwohl seine Rückblick-Zeile „kein
+     *  Vorwärtstest angezeigt" sagt. Ein fester Satz des PM; er steht bewusst NICHT in
+     *  rueckblickText (der Kleinsttest 10 hält jede Zahl dort gegen die Ergebnisdatei, die
+     *  60 Handelstage der Buch-Regel stehen in keiner). Leser: Karte des Buchs (mfdepot.js)
+     *  und Antwort-Seite (strategien.js), je einmal unter den Rückblick-Zeilen. */
+    buchSatz: function (k) { return BUCH_SATZ[k] || ''; },
     /** Liefert die dokumentierte Verwerfung zu einem Auslöser-/Modus-Schlüssel,
      *  oder null. */
     verworfen: function (k) { return EINTRAEGE[k] || null; },

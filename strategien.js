@@ -103,7 +103,8 @@
       instrument: 'Aktien, kein Hebel',
       tut: 'Handelt Quartals-Überraschungen: oberstes Fünftel long, unterstes short, je 60 Handelstage.',
       was: 'Kauft nach einer Quartalsmeldung das oberste Fünftel der Überraschungen und verkauft das unterste – gleich viele, aus demselben Topf. Kein Chartsignal: Die Information kommt aus den Zahlen, nicht aus dem Kursverlauf.',
-      stand: 'gemessen – Zeitzonen-Fehler gefunden, Neumessung offen',
+      /* Zusatz ab „Stand" mit Auftrag Nr. 95 (B5): die Rückblick-Zeile misst nur die Kaufseite. */
+      stand: 'gemessen – Zeitzonen-Fehler gefunden, Neumessung offen; Stand 04.10.2026: die Kaufseite allein wurde als Buch gemessen – kein Vorwärtstest angezeigt',
       farbe: 'warn',
       messKeys: ['drift', 'ergebnis-drift'],
       beleg: [
@@ -380,6 +381,14 @@
     return '<span style="display:inline-block; font-size:var(--fs-klein); padding:1px 7px; border-radius:var(--r-gross); border:1px solid var(--' + c.farbe + '); color:var(--' + c.farbe + ');"' +
       (c.quelle ? ' title="' + U.esc(c.quelle) + '"' : '') + '>' + U.esc(c.txt) + '</span>';
   }
+  /* Beschriftung des Schalters einer Strategie-Karte (Auftrag Nr. 95, C2). Bei den zwei
+   * Mittelfrist-Buechern schaltet er nur das Handeln ab („nur rechnen": Reihenende und
+   * Ausschuettungen buchen weiter) - deshalb „Automatik an/aus" statt „läuft – ausschalten".
+   * vor = ' ' fuer den zugaenglichen Namen (hinter dem Namen der Strategie, #110). */
+  function knopfText(s, an, vor) {
+    if (s.schalter === 'momentum' || s.schalter === 'drift') return vor + (an ? 'Automatik an – ausschalten' : 'Automatik aus – einschalten');
+    return vor + (an ? 'läuft – ausschalten' : 'einschalten');
+  }
   function ersterSatz(txt) {
     var i = txt.indexOf('. ');
     return i > 0 ? txt.slice(0, i + 1) : txt;
@@ -397,6 +406,9 @@
       SU.rueckblicke(k).forEach(function (r) {
         html += '<div style="color:var(--ink-2); font-size:var(--fs-neben);" title="' + U.esc(r.quelle) + '">' + U.esc(SU.rueckblickText(r)) + '</div>';
       });
+      /* Auftrag Nr. 95 (B5): der Satz zum Buch, einmal unter seinen Zeilen - wie an der Karte. */
+      var satz = SU.rueckblicke(k).length && SU.buchSatz ? SU.buchSatz(k) : '';
+      if (satz) html += '<div style="color:var(--ink-2); font-size:var(--fs-neben);">' + U.esc(satz) + '</div>';
     });
     return html;
   }
@@ -517,8 +529,8 @@
                * sagen sonst woertlich dasselbe, und die Ueberschrift der Karte
                * zaehlt fuer den Namen des Knopfs nicht mit. */
               ? '<button class="btn' + (an ? '' : ' ghost') + '" data-strat="' + s.key + '"' +
-                ' aria-label="' + U.esc(s.name) + (an ? ' läuft – ausschalten' : ' einschalten') + '">' +
-                (an ? 'läuft – ausschalten' : 'einschalten') + '</button>'
+                ' aria-label="' + U.esc(s.name) + knopfText(s, an, ' ') + '">' +
+                knopfText(s, an, '') + '</button>'
               : '<span style="color:var(--muted); font-size:var(--fs-neben);">nicht verfügbar</span>') +
             (window.Info ? window.Info.knopf('strategie.' + s.key, s.name) : '') +
           '</span>' +

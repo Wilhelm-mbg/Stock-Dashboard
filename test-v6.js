@@ -11951,8 +11951,10 @@ console.log('\nAnzeigefehler aus dem Auditor-Lauf 27.08. (#106, #107, #108)');
      /'>' \+\s*\n?\s*U\.esc\(name\)/.test(knHtml),
      'Kursarchiv: jeder Hol-Knopf traegt die Aufloesung im zugaenglichen Namen UND sichtbar (#110)',
      knHtml.length + ' Zeichen geprueft');
-  ok(stg.indexOf('aria-label="\' + U.esc(s.name)') !== -1 &&
-     stg.indexOf("(an ? ' läuft – ausschalten' : ' einschalten')") !== -1,
+  /* Umgeschrieben mit Auftrag Nr. 95 (C2): die Beschriftung kommt aus knopfText(s, an, vor) - im
+   * zugaenglichen Namen mit vor = ' ' hinter dem Namen der Strategie, in beiden Zustaenden. */
+  ok(stg.indexOf('aria-label="\' + U.esc(s.name) + knopfText(s, an, \' \')') !== -1 &&
+     stg.indexOf("(an ? 'läuft – ausschalten' : 'einschalten')") !== -1 && stg.indexOf("(an ? 'Automatik an – ausschalten' : 'Automatik aus – einschalten')") !== -1,
      'Regeln: jeder Schalter traegt die Strategie im zugaenglichen Namen, in beiden Zustaenden (#110)');
 })();
 
@@ -14276,8 +14278,9 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
   /* Umgeschrieben mit Auftrag Nr. 91 (Zusatz des PM): beim Momentum-Buch heisst es jetzt
    * "Parameter wie gemessen" - die App weicht in der Mechanik noch von der Messung ab. */
   ok(/id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\) – Änderungen nur über eine neue Messung\./.test(html) &&
-     /id="drKonfigZeile"[^>]*>Konfiguration wie gemessen \(Studie 02\.09\.2026\) – Änderungen nur über eine neue Messung\./.test(html),
-     'Live=Messung: ueber beiden Feldergruppen steht, woher die Werte kommen');
+     /* Auftrag Nr. 95 (A2): beim Drift-Buch nannte die Zeile eine Studie vom 02.09.2026, die es nicht gibt */
+     /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus \(Neumessung offen\)\./.test(html),
+     'Live=Messung: ueber beiden Feldergruppen steht, woher die Werte kommen (beim Drift-Buch: Neumessung offen)');
   /* Gefuellt wird aus der Konfiguration, nicht aus dem Markup. Geprueft wird die
    * QUELLE, nicht der Wert: ein fester Wert im Code waere dieselbe Zahl an einer
    * zweiten Stelle - genau der Fehler, gegen den die Sperre gebaut ist. */
@@ -22250,7 +22253,9 @@ console.log('92) Der Massstab: jedes Buch gegen den S&P 500');
       (q.match(/[A-Za-z0-9_\]]\.spy\b/g) || []).forEach(function (t) { if (t !== 'D.spy' || d[0] !== 'mfdepot.js') rot.push(d[0] + ': liest den abgelegten Marktstand (' + t + ')'); });
     });
     var ohne = rufe.filter(function (r) { return !/\bmarkt: (?:MARKT\b|marktGesamt\(\)|mkW\b)/.test(r[1]); });
-    if (rufe.length !== 6) rot.push('erwartet 6 Aufrufe von vergleich, gefunden ' + rufe.length);
+    /* Seit Auftrag Nr. 95 (C1) ruft berichte.js den Massstab ueber MFDepot.vergleich - vier direkte Aufrufe */
+    if (rufe.length !== 4) rot.push('erwartet 4 Aufrufe von vergleich, gefunden ' + rufe.length);
+    if (!/MFD\.vergleich\('momentum', mv\)/.test(ohneKomm(ber)) || !/MFD\.vergleich\('drift', mv\)/.test(ohneKomm(ber))) rot.push('berichte.js: die Wochenzeile ruft nicht MFDepot.vergleich');
     if (ohne.length !== 1 || !/\{ marktKurs: ndqH \}/.test(ohne[0][1])) rot.push('ohne bereinigte Reihe: ' + ohne.map(function (r) { return r[0] + ' ' + r[1].slice(0, 60); }).join(' | '));
     var leser = [['depot.js', dep], ['mfdepot.js', mfd], ['berichte.js', ber]].filter(function (d) { return /drift_markt/.test(ohneKomm(d[1])); }).map(function (d) { return d[0]; }).join(',');
     if (leser !== 'mfdepot.js') rot.push('den Bestand drift_markt lesen: ' + leser);
@@ -22260,7 +22265,7 @@ console.log('92) Der Massstab: jedes Buch gegen den S&P 500');
     return rot;
   }
   var rotM = klinkeMarkt(dep92, mfd92, ber92);
-  ok(rotM.length === 0, '92.6 Klinke: kein zweiter Rechenweg fuer den Markt - sechs Vergleiche, fuenf mit der bereinigten Reihe aus EINER Quelle, der Nasdaq als Kursindex',
+  ok(rotM.length === 0, '92.6 Klinke: kein zweiter Rechenweg fuer den Markt - vier Vergleiche, drei mit der bereinigten Reihe aus EINER Quelle, der Nasdaq als Kursindex; die Wochenzeile ueber MFDepot.vergleich (Nr. 95)',
      rotM.length ? rotM.join(' | ') : '');
   gegen92('der alte Benchmark (Rohreihe als Markt) macht die Klinke rot',
     klinkeMarkt(dep92.replace("Massstab.vergleich(intradayVerlauf(), 'intraday', 'startI', { markt: marktGesamt(), marktKurs: MARKT_SPY });",
@@ -22444,8 +22449,8 @@ console.log('94) Der Rueckblick am Momentum-Buch');
   var txt = SU.rueckblickText(r);
   ok(txt === 'Rückblick 16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: ' +
        'Buch +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen vorn, in der Mitte +8,2 Pp pro Jahr; ' +
-       'größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
-     '94.2 der Satz, wie Karte und Antwort-Seite ihn zeigen', txt);
+       'größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); gerechnet auf einem Panel, in dem rund 2 % der Reihen doppelt stehen (Vorgänger-Kürzel); die Zahl je Starttag verschiebt sich dadurch, der Median kaum.',
+     '94.2 der Satz, wie Karte und Antwort-Seite ihn zeigen (Grenzen seit Nr. 95 mit Zufall vorn und dem Panel mit den doppelten Reihen)', txt);
   var anders = JSON.parse(JSON.stringify(r));
   anders.korb = 'Korb wie in der App'; anders.regel = ''; anders.grenzen = ''; anders.quelle = 'Kunstfall';
   anders.zahlen = { von: '2023-01-02', bis: '2026-01-02', buchGesamt: 12.34, spyGesamt: -5.06, schlaegt: true, phasenVorn: 7, phasen: 9,
@@ -22486,7 +22491,7 @@ console.log('94) Der Rueckblick am Momentum-Buch');
   function antwortZeilen(su, kette) { return new Function('window', 'U', rzQ + '\n return rueckblickZeilen;')({ StudienUrteile: su }, U94)(kette); }
   var aZ = antwortZeilen(SU, ['momentum-liquide', 'momentum']);
   ok(rzQ.length > 200 && aZ.split('<div').length === 4 && aZ.indexOf('title="' + U94.esc(r.quelle) + '">' + U94.esc(txt) + '</div>') !== -1 &&
-     antwortZeilen(SU, ['drift', 'ergebnis-drift']).split('<div').length === 2 && antwortZeilen(SU, ['hourly']) === '' &&
+     antwortZeilen(SU, ['drift', 'ergebnis-drift']).split('<div').length === 3 && antwortZeilen(SU, ['hourly']) === '' &&   // Nr. 95: dazu der Satz zum Buch
      /chipHtml\(c\) \+ rueckblickZeilen\(s\.messKeys \|\| \[\]\) \+ '<\/div>'/.test(stratQ),
      '94.3 Antwort-Seite: unter der Strategie dieselben Saetze, die Fundstelle im Titel; die Drift-Strategie (Schluessel drift) bekommt ihre Zeile; ohne Rueckblick keine Zeile');
   /* Ein weiterer Rueckblick (anderer Korb, anderes Fenster) kommt als weiterer Eintrag der
@@ -22916,8 +22921,9 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
     return [
       [r1 === true && d.tuneLog.length === 1 && z.id === 'mfkonfig-5000' && z.at === 5000 && z.quelle === 'umstellung' && z.applied.length === 1,
         '96.1 die Umstellung auf Regel K schreibt genau eine Journalzeile', (d.tuneLog || []).length],
-      [/Regel K gegen Kleinstpositionen eingeschaltet/.test(z.applied[0]) && z.applied[0].indexOf('kleinstAnteil 0 (aus) → 0,05') >= 0 &&
-        z.txt.indexOf('kleinstAnteil, alt 0 (aus) → neu 0,05') >= 0 && z.txt.indexOf('unter 5 % des Platzwerts') >= 0 && /wird nicht ausgeführt/.test(z.txt) &&
+      /* Umgeschrieben mit Auftrag Nr. 95 (C5): die Stufe in Worten statt Feldname und 0 (aus) → 0,05 */
+      [/Regel K gegen Kleinstpositionen eingeschaltet/.test(z.applied[0]) && z.applied[0].indexOf('(aus → 5 % des Platzwerts)') >= 0 &&
+        z.txt.indexOf('Regel K gegen Kleinstpositionen, alt aus → neu 5 % des Platzwerts') >= 0 && !/kleinstAnteil/.test(z.applied[0] + z.txt) && z.txt.indexOf('unter 5 % des Platzwerts') >= 0 && /wird nicht ausgeführt/.test(z.txt) &&
         /gilt nicht als gehalten/.test(z.txt) && /Greift ab der nächsten regulären Umschichtung/.test(z.txt) && /Simulation mit virtuellem Kapital/.test(z.txt),
       '96.1 der Text nennt das Feld, alt → neu, was die Regel tut, ab wann sie greift, und "Simulation"', z.applied[0]],
       [!/liquide Fassung|Out-of-Sample|außerhalb des liquiden Korbs|Rückblick/.test(z.applied[0] + z.txt),
@@ -22941,7 +22947,7 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
         /Regel K gegen Kleinstpositionen an/.test(U.text(NEU)) && /Regel K gegen Kleinstpositionen aus$/.test(U.text(ALT7)) &&
         U.felder.join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil',
       '96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)'],
-      [r7 === true && /ausgeschaltet/.test(za.applied[0]) && za.txt.indexOf('alt 0,05 → neu 0 (aus)') >= 0 && aus.mfBuch.liquideSeit === 111,
+      [r7 === true && /ausgeschaltet/.test(za.applied[0]) && za.txt.indexOf('alt 5 % des Platzwerts → neu aus') >= 0 && aus.mfBuch.liquideSeit === 111,
         '96.1 auch das Ausschalten bekaeme seine eigene Zeile (0,05 → aus) und setzte nichts zurueck']
     ];
   }
@@ -23578,7 +23584,7 @@ console.log('97) Der Markt zum selben Zeitpunkt wie das Buch (Auftrag Nr. 91)');
   }));
   var mfdQ97 = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
   var vmsQ97 = mfdQ97.slice(mfdQ97.indexOf('  function verlaufMitStand() {'), mfdQ97.indexOf('  /** Buch gegen den S&P 500 ueber denselben Zeitraum'));
-  var vglQ97 = mfdQ97.slice(mfdQ97.indexOf('  function vergleich(name) {'), mfdQ97.indexOf('  function letzterPunkt(d) {'));
+  var vglQ97 = mfdQ97.slice(mfdQ97.indexOf('  function vergleich(name, verlauf) {'), mfdQ97.indexOf('  function letzterPunkt(d) {'));   // Signatur seit Nr. 95 (C1)
   function mfVergleich(verlauf, STAND, MARKT, MARKT_ROH) {
     return new Function('D', 'STAND', 'MARKT', 'MARKT_ROH', 'window', vmsQ97 + vglQ97 + '\n return vergleich;')(
       function () { return { mfVerlauf: verlauf, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: verlauf[0].t - 60000 }, driftBuch: { start: 100000, angelegt: verlauf[0].t - 60000 } }; },
@@ -23683,9 +23689,9 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
 
   /* ---- 97.9 die vier Zeilen im Wortlaut ---- */
   var SOLL = [
-    'Rückblick 16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen vorn, in der Mitte +8,2 Pp pro Jahr; größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
-    'Rückblick 04.01.2017 bis 15.09.2021, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +169,0 % gegen S&P 500 +115,5 % – geschlagen; je nach Starttag in 63 von 63 Fällen vorn, in der Mitte +7,3 Pp pro Jahr; größter Rückschlag −49,0 % gegen −33,8 %. Grenzen: der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
-    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,3 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 41 von 63 Fällen vorn, in der Mitte +1,8 Pp pro Jahr; größter Rückschlag −40,2 % gegen −24,5 %. Grenzen: vor Steuern (nach Steuern für den breiten Markt nicht gerechnet).',
+    'Rückblick 16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen vorn, in der Mitte +8,2 Pp pro Jahr; größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); gerechnet auf einem Panel, in dem rund 2 % der Reihen doppelt stehen (Vorgänger-Kürzel); die Zahl je Starttag verschiebt sich dadurch, der Median kaum.',
+    'Rückblick 04.01.2017 bis 15.09.2021, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +169,0 % gegen S&P 500 +115,5 % – geschlagen; je nach Starttag in 63 von 63 Fällen vorn, in der Mitte +7,3 Pp pro Jahr; größter Rückschlag −49,0 % gegen −33,8 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); gerechnet auf einem Panel, in dem rund 2 % der Reihen doppelt stehen (Vorgänger-Kürzel); die Zahl je Starttag verschiebt sich dadurch, der Median kaum.',
+    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,3 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 41 von 63 Fällen vorn, in der Mitte +1,8 Pp pro Jahr; größter Rückschlag −40,2 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); vor Steuern (nach Steuern für den breiten Markt nicht gerechnet).',
     'Rückblick 16.09.2021 bis 15.09.2026, Kauf nach den stärksten Überraschungen (40 Plätze, 60 Handelstage, nur Kaufseite – nicht die Regel dieses Buchs): Buch +84,2 % gegen S&P 500 +81,2 % – knapp davor, aber 16 von 200 Zufallsbüchern liegen darüber: kein Vorwärtstest angezeigt; größter Rückschlag −21,6 % gegen −24,5 %.'
   ];
   var IST = SU.rueckblicke('momentum-liquide').concat(SU.rueckblicke('drift')).map(function (e) { return SU.rueckblickText(e); });
@@ -23695,7 +23701,7 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
   gegen97b('eine Rueckblick-Zahl um 0,1 verschoben (Drift-Buch +84,3 statt +84,2) faellt auf', pruefeDrift(laden(suQ.replace('buchGesamt: 84.2,', 'buchGesamt: 84.3,'))).length === 1);
 
   /* ---- 97.10 der Kopf ueber den alten Belegen ---- */
-  var KOPF = 'Überholt: gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen). Maßgeblich ist der Rückblick vom 04.10.2026 gegen den S&P 500 – siehe die Zeile Rückblick.';
+  var KOPF = 'Überholt: gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen). Maßgeblich ist der Rückblick vom 04.10.2026 gegen den S&P 500 – siehe die Zeile Rückblick auf der Karte des Momentum-Buchs (Heute → Bestand).';   // Ort seit Nr. 95 (B3)
   ok(SU.belegeKopf('momentum-liquide') === KOPF && SU.belegeKopf('drift') === '' && SU.belegeKopf('gibt-es-nicht') === '',
      '97.10 der Kopf (Wortlaut aus dem Auftrag, Tag aus dem Rueckblick-Eintrag) - nur fuer das Momentum-Buch', SU.belegeKopf('momentum-liquide'));
   /* (a) hinter dem i der Strategie-Karte: belegeAnmelden am Verhalten */
@@ -23771,8 +23777,8 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
      shQ.indexOf('handelt das Buch <b>die gemessene liquide Konfiguration (Parameter wie gemessen)</b>: Rückblick 231 Handelstage') !== -1 &&
      /id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\)/.test(html) &&
      [stQ, shQ, html].every(function (q) { return !/exakt die gemessene|seither exakt diese Konfiguration/.test(q); }) &&
-     /id="drKonfigZeile"[^>]*>Konfiguration wie gemessen \(Studie 02\.09\.2026\)/.test(html),
-     '97.11 Momentum: "exakt" gestrichen und "(Parameter wie gemessen)" an den drei Stellen (Karte, Belege, Erklaerung, Konfigurationszeile); die Zeile des Drift-Buchs ist nicht Teil des Zusatzes und bleibt');
+     /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert/.test(html),
+     '97.11 Momentum: "exakt" gestrichen und "(Parameter wie gemessen)" an den drei Stellen (Karte, Belege, Erklaerung, Konfigurationszeile); die Zeile des Drift-Buchs ist nicht Teil des Zusatzes (seit Nr. 95: Neumessung offen)');
   ok(rot97b === g97b && g97b === 5, '97b.x alle Gegenproben von Teil 2 und 3 schlagen an', rot97b + ' von ' + g97b);
 })();
 
@@ -24142,7 +24148,8 @@ console.log('98) Live gleich Messung: das Momentum-Buch handelt wie gemessen (Au
   var tt = new Function('window', 'U', kartQ + '\n return taktTextMomentum;')({ MFHandel: MH }, { d: function () { return 'TT.MM.JJJJ'; }, esc: String });
   var bK = { letztesRebalanceT: Date.UTC(2026, 7, 25, 18, 15), letzteAusfuehrungTag: '2026-08-25', konfig: { halten: 63 } };
   ok(tt({ buch: bK, hinweis: 'Marktreihe veraltet seit 02.10.2026 – Nachladen angestoßen; ob die Umschichtung fällig ist, ist offen.' }).indexOf('Marktreihe veraltet seit 02.10.2026') === 0 &&
-     tt({ buch: bK, noch: 35 }) === 'nach 63 Handelstagen · letzte Umschichtung 25.08.2026 · nächste nach 35 weiteren Handelstagen, zur Eröffnung' &&
+     /* Wortlaut seit Auftrag Nr. 95 (C3); ohne Boersenkalender (hier kein window.Boerse) steht die Zahl der Handelstage */
+     tt({ buch: bK, noch: 35 }) === 'Umschichtung alle 63 Handelstage · letzte 25.08.2026 · nächste nach 35 weiteren Handelstagen, zur Eröffnung' &&
      tt({ buch: bK, hinweis: 'Umschichtung heute nach Börsenöffnung', faellig: true }) === 'Umschichtung heute nach Börsenöffnung',
      '98.7 die Karte: der Grund steht da ("Marktreihe veraltet seit …", "Umschichtung heute nach Börsenöffnung"), sonst Ausfuehrungstag und Handelstage bis zur naechsten');
   probe(Promise.all(warte98).then(function () {
@@ -24255,14 +24262,15 @@ console.log('99) Eroeffnung am selben Tag nachfassen (Auftrag Nr. 94)');
     var z = d.tuneLog[0] ? d.tuneLog[0].txt : '';
     return { ok: !g1 && !g2 && offenVor === JSON.stringify({ tag: DI, verkaeufe: ['A'], kaeufe: [kauf('B', 5000, 1)] }) && nVor === 4 && g3 === true && !d.mfBuch.offen &&
       h.log.length === 4 && d.mfBuch.trades.length === 0 && d.mfBuch.cash === 5000 && d.mfBuch.positionen.length === 1 && d.tuneLog.length === 1 &&
-      z === 'Momentum-Buch: Nachfassen der Umschichtung vom 24.11.2026 beendet (16:00 New York vorbei) – liegen geblieben: Verkauf A; Kauf B. Die Position bleibt bis zur nächsten Umschichtung gehalten, das Ziel wird nicht gekauft, sein Platz bleibt bis zur nächsten Umschichtung Bargeld – wie in der Messung (ohne Eröffnung kein Handel). Simulation mit virtuellem Kapital, keine Anlageberatung.',
+      /* Wortlaut seit Auftrag Nr. 95 (B4): Grund vorn, der Verkauf bleibt auch nur bis zum Reihenende gehalten */
+      z === 'Momentum-Buch: Nachfassen der Umschichtung vom 24.11.2026 beendet (16:00 New York vorbei) – liegen geblieben ohne Eröffnung: Verkauf A; Kauf B. Die Position bleibt gehalten, bis zur nächsten Umschichtung oder zum Reihenende; das Ziel wird nicht gekauft, sein Platz bleibt bis zur nächsten Umschichtung Bargeld – wie in der Messung (ohne Eröffnung kein Handel). Simulation mit virtuellem Kapital, keine Anlageberatung.',
       info: z };
   }
   async function fallFolgetag(M) {                 // am Folgetag nichts mehr
     var d = dd(5000, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('B', 5000, 1)] }), h = hole({ B: 50 });
     var g = await helfer(mfdQ, h).nachfassen(M || MH, d, ny(MI, 9, 40), 0.05);
     return { ok: g === true && !d.mfBuch.offen && h.log.length === 0 && d.mfBuch.positionen.length === 0 && d.mfBuch.cash === 5000 &&
-      d.tuneLog.length === 1 && d.tuneLog[0].txt.indexOf('beendet (ein späterer Tag) – liegen geblieben: Kauf B. Das Ziel wird nicht gekauft, sein Platz bleibt bis zur nächsten Umschichtung Bargeld') > 0, info: d.tuneLog[0] && d.tuneLog[0].txt };
+      d.tuneLog.length === 1 && d.tuneLog[0].txt.indexOf('beendet am 25.11.2026 (Auftragstag vorbei) – liegen geblieben ohne Eröffnung: Kauf B. Das Ziel wird nicht gekauft, sein Platz bleibt bis zur nächsten Umschichtung Bargeld') > 0, info: d.tuneLog[0] && d.tuneLog[0].txt };
   }
 
   p99((async function () {
@@ -24278,7 +24286,8 @@ console.log('99) Eroeffnung am selben Tag nachfassen (Auftrag Nr. 94)');
     await helfer(mfdQ, hole({ B: 50, C: 20 })).nachfassen(MH, dK, ny(DI, 10, 0), 0.05);
     var pK = dK.mfBuch.positionen;
     ok(pK.length === 1 && pK[0].sym === 'B' && pK[0].stueck === 59.8802 && dK.mfBuch.cash >= 0 && dK.mfBuch.cash < 0.01 &&
-       JSON.stringify(dK.mfBuch.offen) === JSON.stringify({ tag: DI, verkaeufe: [], kaeufe: [kauf('C', 10000, 2)] }) &&
+       /* seit Auftrag Nr. 95 (B4) mit dem Merker bargeld (nur fuer den Text am Ende) */
+       JSON.stringify(dK.mfBuch.offen) === JSON.stringify({ tag: DI, verkaeufe: [], kaeufe: [Object.assign(kauf('C', 10000, 2), { bargeld: true })] }) &&
        dK.tuneLog[0].txt.indexOf('Eröffnung da, aber das Bargeld reicht nicht – bleibt offen: C.') > 0,
        '99.2 Kauf groesser als das Bargeld: B (Platz 1) verkleinert auf das Bargeld (59,8802 Stueck zu 50, nicht 200), C (Platz 2) ohne Bargeld bleibt offen', JSON.stringify(pK) + ' ' + dK.mfBuch.cash);
     var dK1 = dd(400, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('B', 10000, 1)] }), dK0 = dd(400, [], { tag: DI, verkaeufe: [], kaeufe: [kauf('B', 10000, 1)] });
@@ -24326,6 +24335,171 @@ console.log('99) Eroeffnung am selben Tag nachfassen (Auftrag Nr. 94)');
   probe(Promise.all(warte99).then(function () {
     ok(rot99 === g99 && g99 === 4, '99.x alle vier Gegenproben schlagen an', rot99 + ' von ' + g99);
   }));
+})();
+
+
+/* ================= 100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95, 04.10.2026) =================
+ * Nur Texte und ein Aufruf des Massstabs; keine Buchung und keine Rechnung des Handels aendert sich.
+ *   100.1 A1/B1  Grenzen der Momentum-Rueckblicke: Zufall vorn (alle drei), Panel mit doppelten Reihen (Korb 187)
+ *   100.2 B3     Kopf "Überholt" nennt den Ort der Zeile Rueckblick; Erklaerung ohne den Doppel-Satz unter dem Kopf
+ *   100.3 B5     Satz zum Drift-Buch an Karte und Antwort-Seite; Stand der Strategie-Karte
+ *   100.4 A2     Konfigurationszeile des Drift-Buchs ohne die Studie vom 02.09.2026
+ *   100.5 B2/C4  Reihenende beim Leerverkauf zeigt die Rechnung der Gutschrift; Tausenderpunkt
+ *   100.6 B4/C6  Ende des Nachfassens: Kaeufe nach Grund, Verkauf bis Umschichtung oder Reihenende, der Tag
+ *   100.7 C2/C3  Knopf "Automatik an/aus"; Tag der naechsten Umschichtung aus der Faelligkeit
+ *   100.8 C1     Wochenzeile und Kopf: derselbe Marktwert an denselben Kunstdaten (Gegenprobe: ohne die Optionen nicht) */
+console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
+(function () {
+  var MH = require('./mfhandel.js'), Mst = require('./massstab.js'), B = require('./boerse.js');
+  var suQ = fs.readFileSync(__dirname + '/studienurteile.js', 'utf8');
+  var mfdQ = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8'), stQ = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
+  var shQ = fs.readFileSync(__dirname + '/app-shell.js', 'utf8'), html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var berQ = fs.readFileSync(__dirname + '/berichte.js', 'utf8');
+  function laden(q) { var w = {}; new Function('window', 'document', q)(w, undefined); return w.StudienUrteile; }
+  var SU = laden(suQ);
+  var U = { esc: function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); },
+    money: function (x) { return x.toFixed(2) + ' $'; }, signTxt: function (x, e) { return (x >= 0 ? '+' : '') + x + e; },
+    pz1: function (x) { return (x >= 0 ? '+' : '') + x.toFixed(1).replace('.', ',') + ' %'; }, d: function () { return 'TT.MM.JJJJ'; }, dt: function () { return 'TT.MM.JJ, HH:MM'; } };
+  var ZUFALL = 'vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein)';
+  var ZWILL = 'gerechnet auf einem Panel, in dem rund 2 % der Reihen doppelt stehen (Vorgänger-Kürzel); die Zahl je Starttag verschiebt sich dadurch, der Median kaum';
+
+  /* ---- 100.1 A1/B1 ---- */
+  var mom = SU.rueckblicke('momentum-liquide'), dr = SU.rueckblicke('drift');
+  var g = function (lauf) { return mom.filter(function (e) { return e.lauf === lauf; })[0] || {}; };
+  ok(mom.length === 3 && mom.every(function (e) { return String(e.grenzen).indexOf(ZUFALL + '; ') === 0; }) &&
+     [g('B-187'), g('A-187')].every(function (e) { return String(e.grenzen).slice(-ZWILL.length) === ZWILL; }) && String(g('B-breit').grenzen).indexOf(ZWILL) === -1 &&
+     g('A-187').zahlen.buchGesamt === 169.0 && g('A-187').zahlen.medianAbstandPa === 7.3 && !dr[0].grenzen,
+     '100.1 Grenzen: alle drei Momentum-Zeilen beginnen mit "vom Zufall nicht zu trennen (…95-%-Band…)", die zwei zum Korb 187 enden mit dem Panel mit den doppelten Reihen; die Zahl bleibt die der Ergebnisdatei (A-187 +169,0); die Drift-Zeile unveraendert',
+     String(g('A-187').grenzen).slice(0, 60));
+  var tA = SU.rueckblickText(g('A-187')), iG = tA.indexOf(' Grenzen: ');
+  ok(iG > 0 && tA.slice(iG).indexOf('95-%-Band') > 0 && tA.slice(0, iG).indexOf('95') === -1 && tA.slice(0, iG).indexOf('2 %') === -1,
+     '100.1 die neuen Zahlen (95 %, 2 %) stehen nur hinter "Grenzen:" - dort liest der Kleinsttest 10 keine Zahl');
+
+  /* ---- 100.2 B3 ---- */
+  var KOPF = SU.belegeKopf('momentum-liquide');
+  var eA = shQ.indexOf("    'regeln.mf.momentum': {"), eintrag = ohneKommentare(shQ.slice(eA, shQ.indexOf('\n    },', eA) + 6));
+  ok(/ – siehe die Zeile Rückblick auf der Karte des Momentum-Buchs \(Heute → Bestand\)\.$/.test(KOPF) &&
+     eintrag.split('miteinander').length === 2 && eintrag.indexOf('Vergleicht alle Werte des Universums') === -1 &&
+     eintrag.indexOf("belegeKopf('momentum-liquide')") < eintrag.indexOf('Der größte Rückschlag lag bei 52 Prozent'),
+     '100.2 der Kopf sagt, wo die Zeile Rueckblick steht; in der Erklaerung steht unter dem Kopf kein beschreibender Satz mehr (er doppelte Punkt 1)', KOPF);
+
+  /* ---- 100.3 B5 ---- */
+  var SATZ = 'Das Buch läuft als Simulation weiter; seine eigene Regel (Kauf und Leerverkauf, 60 Handelstage) ist nicht gemessen – kein Kandidat für echtes Geld.';
+  var kartenQ = mfdQ.slice(mfdQ.indexOf('  function fakten(zeilen) {'), mfdQ.indexOf('  /** Die zwei Buch-Karten oben im Bestand schreiben.'));
+  function karte(su, name) {
+    return new Function('window', 'U', kartenQ + '\n return karteHtml;')({ Massstab: Mst, StudienUrteile: su }, U)(
+      { name: name, wert: 103000, start: 100000, quelle: 'live', an: true, positionen: 3, letzte: null, massstab: null, buch: {} }, 'Takt');
+  }
+  var rzQ = stQ.slice(stQ.indexOf('  function rueckblickZeilen(kette) {'), stQ.indexOf('  function renderAntwort() {'));
+  function antwort(kette) { return new Function('window', 'U', rzQ + '\n return rueckblickZeilen;')({ StudienUrteile: SU }, U)(kette); }
+  var kD = karte(SU, 'drift'), kM = karte(SU, 'momentum'), aD = antwort(['drift', 'ergebnis-drift']), aM = antwort(['momentum-liquide', 'momentum']);
+  var drift = stQ.slice(stQ.indexOf("      key: 'drift',"), stQ.indexOf('beleg: [', stQ.indexOf("      key: 'drift',")));
+  ok(SU.buchSatz('drift') === SATZ && SU.buchSatz('momentum-liquide') === '' && SU.rueckblickText(dr[0]).indexOf('Simulation') === -1 &&
+     kD.indexOf('Fundstelle: ' + U.esc(dr[0].quelle) + '</span><br>' + U.esc(SATZ) + '</dd>') !== -1 && kM.indexOf('Simulation weiter') === -1 &&
+     aD.split(U.esc(SATZ)).length === 2 && aD.indexOf(U.esc(SATZ)) > aD.indexOf(U.esc(SU.rueckblickText(dr[0]))) && aM.indexOf('Simulation weiter') === -1 &&
+     drift.indexOf("stand: 'gemessen – Zeitzonen-Fehler gefunden, Neumessung offen; Stand 04.10.2026: die Kaufseite allein wurde als Buch gemessen – kein Vorwärtstest angezeigt',") !== -1,
+     '100.3 Drift-Buch: der Satz des PM einmal unter der Rueckblick-Zeile (Karte und Antwort-Seite), nicht in der Zeile selbst; das Momentum-Buch bekommt keinen; die Strategie-Karte nennt den Stand vom 04.10.2026');
+
+  /* ---- 100.4 A2 ---- */
+  var htmlO = html.replace(/<!--[\s\S]*?-->/g, '');
+  ok(/id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus \(Neumessung offen\)\.<\/div>/.test(htmlO) &&
+     !/Drift[^"<]{0,40}02\.09\.2026/.test(htmlO) && /data-mess="Ergebnis-Drift-Messung 21\.08\.2026 · /.test(htmlO) &&
+     /GEMESSEN am 21\.08\.2026 auf 20\.356 Ergebnisterminen/.test(fs.readFileSync(__dirname + '/drift.js', 'utf8')) &&
+     /id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\)/.test(htmlO),
+     '100.4 Drift-Buch: keine Studie vom 02.09.2026 mehr (Zeile "Neumessung offen", Messkasten mit dem Tag aus drift.js); die Zeile des Momentum-Buchs bleibt');
+
+  /* ---- 100.5 B2/C4 ---- */
+  var TAGE = [], t0 = '2026-09-14';
+  for (var tg = t0; TAGE.length < 8; tg = MH.tagPlus(tg, 1)) if (MH.istWerktag(tg)) TAGE.push(tg);
+  var SPY5 = TAGE.map(function (t) { return [MH.nyZeit(t, 9, 30), 500]; });
+  var roh5 = TAGE.slice(0, 3).map(function (t) { return [MH.nyZeit(t, 9, 30), 80]; });
+  var buch5 = { cash: 0, trades: [], positionen: [{ sym: 'K', stueck: 10, einstand: 100, richtung: -1 }, { sym: 'N', stueck: 10, einstand: 30, richtung: -1 },
+    { sym: 'L', stueck: 100, einstand: 120 }] };
+  var aus5 = MH.reihenendeAusbuchen(buch5, { K: roh5, N: roh5, L: roh5.map(function (x) { return [x[0], 130]; }) }, SPY5, 77);
+  var x5 = function (s) { return aus5.filter(function (x) { return x.sym === s; })[0]; };
+  var jK = MH.reihenendeJournal('drift', x5('K')).txt, jN = MH.reihenendeJournal('drift', x5('N')).txt, jL = MH.reihenendeJournal('momentum', x5('L')).txt;
+  ok(aus5.length === 3 && x5('K').gutschrift === 1200 && x5('N').gutschrift === 0 &&
+     jK.indexOf('Reihenende: K, letzter Handelstag 16.09.2026, letzter Kurs 80,00 $ (Leerverkauf glattgestellt): Gutschrift 10 Stück × (2 × 100,00 $ Einstand − 80,00 $) = 1.200,00 $ ohne Verkaufskosten') === 0 &&
+     jK.indexOf('80,00 $ (Leerverkauf glattgestellt) × 10') === -1 &&
+     jN.indexOf('letzter Kurs 80,00 $ (Leerverkauf glattgestellt): Gutschrift 0,00 $ – der Kurs liegt beim Doppelten des Einstands oder darüber') > 0 &&
+     jL.indexOf('ausgebucht zu 130,00 $ × 100 Stück = 13.000,00 $ ohne Verkaufskosten') > 0,
+     '100.5 Reihenende: beim Leerverkauf die Rechnung der Gutschrift (10 × (2 × 100 − 80) = 1.200 $), bei Kurs ueber dem doppelten Einstand 0 $ mit Grund; beim Kauf Kurs × Stueck - mit Tausenderpunkt',
+     jK.slice(0, 170));
+  var div = { buchungen: [{ art: 'div', sym: 'X', t: Date.UTC(2026, 8, 15), kaufT: Date.UTC(2026, 8, 14), betrag: 1.2345, stueck: 1000, summe: 1234.5, richtung: 1 }], gesperrt: [] };
+  var jD = MH.massnahmenJournal('momentum', div, Date.UTC(2026, 8, 16));
+  var res6 = { geaendert: true, tag: '2026-11-24', verkauft: [{ sym: 'A', kurs: 1234.5 }], gekauft: [], wartet: [], entfallen: [], rest: null, kostenBp: 20 };
+  ok(jD.applied[0] === 'Momentum-Buch: Ausschüttungen gutgeschrieben: 1 Buchung, Summe 1.234,50 $' && jD.txt.indexOf('× 1000 = 1.234,50 $') > 0 &&
+     MH.nachfassenJournal(res6, MH.nyZeit('2026-11-24', 10, 0)).txt.indexOf('Verkauf A zu 1.234,50 $') > 0,
+     '100.5 C4: Geldbetraege in Journalzeilen mit Tausenderpunkt (Ausschuettung, Nachfassen)', jD.applied[0]);
+
+  /* ---- 100.6 B4/C6 ---- */
+  var DI = '2026-11-24', MI = '2026-11-25';
+  var offen6 = { tag: DI, verkaeufe: ['A'], kaeufe: [{ sym: 'B', budget: 5000, rang: 1 }, { sym: 'C', budget: 5000, rang: 2, bargeld: true }] };
+  var e1 = MH.offenEndeJournal(offen6, MH.nyZeit(DI, 16, 5)), e2 = MH.offenEndeJournal({ tag: DI, verkaeufe: [], kaeufe: [{ sym: 'C', budget: 1, rang: 1, bargeld: true }] }, MH.nyZeit(MI, 9, 40));
+  ok(e1.txt === 'Momentum-Buch: Nachfassen der Umschichtung vom 24.11.2026 beendet (16:00 New York vorbei) – liegen geblieben ohne Eröffnung: Verkauf A; Kauf B; ' +
+       'mit Eröffnung, aber ohne genug Bargeld: Kauf C. Die Position bleibt gehalten, bis zur nächsten Umschichtung oder zum Reihenende; das Ziel wird nicht gekauft, ' +
+       'sein Platz bleibt bis zur nächsten Umschichtung Bargeld – wie in der Messung (ohne Eröffnung kein Handel). Für C reichte das Bargeld nicht – sein Platz bleibt ' +
+       'bis zur nächsten Umschichtung leer. Simulation mit virtuellem Kapital, keine Anlageberatung.' &&
+     e2.txt.indexOf('beendet am 25.11.2026 (Auftragstag vorbei) – liegen geblieben mit Eröffnung, aber ohne genug Bargeld: Kauf C. Für C reichte das Bargeld nicht') > 0 &&
+     e2.txt.indexOf('ohne Eröffnung kein Handel') === -1,
+     '100.6 Ende des Nachfassens: Kaeufe nach Grund getrennt (ohne Eroeffnung / Bargeld reichte nicht), der Verkauf bleibt bis zur naechsten Umschichtung oder zum Reihenende; am Folgetag steht der Tag', e2.txt.slice(0, 140));
+  /* der Merker kommt aus dem Takt (mfdepot.js offenNachfassen), am Verhalten */
+  var hQ = mfdQ.slice(mfdQ.indexOf('  function reihenendeBuchen('), mfdQ.indexOf('  async function takt('));
+  var hilf = new Function('window', 'nachladen', 'START_KAPITAL', 'setTimeout', hQ + '\n return offenNachfassen;')(
+    { Kurse: { hole: async function (s) { var o = { B: 50, C: 20 }; return { bars: [[MH.nyZeit(DI, 9, 30), 999, 1e6, 999, 999, o[s] || null]] }; } } },
+    function () {}, 100000, function (fn) { setImmediate(fn); return 0; });
+  var d6 = { momentumAn: true, tuneLog: [], mfBuch: { cash: 3000, positionen: [], trades: [], letzteAusfuehrungTag: DI,
+    offen: { tag: DI, verkaeufe: [], kaeufe: [{ sym: 'C', budget: 10000, rang: 2 }, { sym: 'B', budget: 10000, rang: 1 }] } } };
+  probe((async function () {
+    var g1 = await hilf(MH, d6, MH.nyZeit(DI, 10, 0), 0.05);
+    var merker = JSON.stringify(d6.mfBuch.offen);
+    var g2 = await hilf(MH, d6, MH.nyZeit(DI, 16, 0), 0.05);
+    var z = d6.tuneLog[0] ? d6.tuneLog[0].txt : '';
+    ok(g1 === true && merker === JSON.stringify({ tag: DI, verkaeufe: [], kaeufe: [{ sym: 'C', budget: 10000, rang: 2, bargeld: true }] }) && g2 === true &&
+       d6.mfBuch.positionen.length === 1 && d6.mfBuch.positionen[0].sym === 'B' && z.indexOf('liegen geblieben mit Eröffnung, aber ohne genug Bargeld: Kauf C.') > 0,
+       '100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buchung bleibt (B gekauft, C nicht)', z.slice(0, 160));
+  })());
+
+  /* ---- 100.7 C2/C3 ---- */
+  var kt = new Function(stQ.slice(stQ.indexOf('  function knopfText(s, an, vor) {'), stQ.indexOf('  function ersterSatz(txt) {')) + '\n return knopfText;')();
+  ok(kt({ schalter: 'momentum' }, true, '') === 'Automatik an – ausschalten' && kt({ schalter: 'drift' }, false, ' ') === ' Automatik aus – einschalten' &&
+     kt({ schalter: 'hourly' }, true, '') === 'läuft – ausschalten' && kt({ schalter: 'intraday' }, false, '') === 'einschalten',
+     '100.7 C2: an den zwei Mittelfrist-Buechern (Schalter schaltet nur das Handeln ab) "Automatik an/aus", an den anderen wie bisher');
+  var spy7 = [];
+  for (var t7 = '2026-08-25'; t7 <= '2026-10-02'; t7 = MH.tagPlus(t7, 1)) if (B.istHandelstag(Date.UTC(+t7.slice(0, 4), +t7.slice(5, 7) - 1, +t7.slice(8, 10)))) spy7.push([MH.nyZeit(t7, 9, 30), 600]);
+  var jetzt7 = Date.UTC(2026, 9, 4, 12, 0), f7 = MH.faelligkeit(spy7, '2026-08-25', 63, jetzt7);
+  var tt = new Function('window', 'U', kartenQ + '\n return taktTextMomentum;')({ MFHandel: MH, Boerse: B }, U);
+  var bK = { letztesRebalanceT: Date.UTC(2026, 7, 25, 18, 15), letzteAusfuehrungTag: '2026-08-25', konfig: { halten: 63 } };
+  ok(f7.noch === 35 && f7.tageSeit === 27 &&
+     tt({ buch: bK, noch: f7.noch, standT: jetzt7 }) === 'Umschichtung alle 63 Handelstage · letzte 25.08.2026 · nächste am 23.11.2026 zur Eröffnung (nach 35 weiteren Handelstagen)' &&
+     tt({ buch: bK, noch: 38, standT: jetzt7 }).indexOf('nächste am 27.11.2026 zur Eröffnung') > 0 &&
+     tt({ buch: bK, noch: 35, standT: MH.nyZeit('2026-10-05', 17, 0) }).indexOf('nächste am 23.11.2026') > 0,
+     '100.7 C3: die Karte nennt den Tag der naechsten Umschichtung, aus der Faelligkeit gerechnet (04.10.2026: 27 Balken seit dem 25.08., noch 35 -> Montag 23.11.2026; 38 -> ueber Thanksgiving 27.11.)',
+     tt({ buch: bK, noch: f7.noch, standT: jetzt7 }));
+
+  /* ---- 100.8 C1 ---- */
+  var vmsQ = mfdQ.slice(mfdQ.indexOf('  function verlaufMitStand() {'), mfdQ.indexOf('  /** Buch gegen den S&P 500 ueber denselben Zeitraum'));
+  var vglQ = mfdQ.slice(mfdQ.indexOf('  function vergleich(name, verlauf) {'), mfdQ.indexOf('  function letzterPunkt(d) {'));
+  var MB = [], MR = [], V = [];
+  for (var k = 0; k < 10; k++) {
+    var st8 = Date.UTC(2026, 8, 1 + k, 13, 30), roh = 500 + 2 * k;
+    MR.push([st8, roh]); MB.push([st8, roh * (k < 6 ? 0.99 : 1)]);                 // Ex-Tag am siebten Balken
+    V.push({ t: Date.UTC(2026, 8, 1 + k, 20, 30), momentum: 100000 * (1 + 0.001 * k), startM: 100000, drift: 100000, startD: 100000, spy: roh + 5, spyT: st8 });
+  }
+  var vgl = new Function('D', 'STAND', 'MARKT', 'MARKT_ROH', 'window', vmsQ + vglQ + '\n return vergleich;')(
+    function () { return { mfVerlauf: V, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: V[0].t - 60000 }, driftBuch: { start: 100000, angelegt: V[0].t - 60000 } }; },
+    { momentum: null, drift: null }, MB, MR, { Massstab: Mst });
+  var kopf8 = vgl('momentum'), woche = V.slice(3), w8 = vgl('momentum', woche);
+  var mr = function (t) { return kopf8.marktReihe.filter(function (x) { return x[0] === t; })[0][1]; };
+  var ausKopf = ((1 + mr(V[9].t) / 100) / (1 + mr(V[3].t) / 100) - 1) * 100;
+  var alt8 = Mst.vergleich(woche, 'momentum', 'startM', { markt: MB, start: 100000 });   // der Aufruf der Wochenzeile vor Nr. 95
+  ok(vglQ.length > 300 && kopf8.ok && w8.ok && kopf8.marktArt === 'gesamt' && w8.marktArt === 'gesamt' && w8.buchAusschuettungen === true &&
+     Math.abs(w8.marktPct - ausKopf) < 1e-9 && w8.seit === V[3].t && w8.bis === V[9].t &&
+     /var vMW = MFD && MFD\.vergleich \? MFD\.vergleich\('momentum', mv\) : null;/.test(berQ) && /MFD\.vergleich\('drift', mv\)/.test(berQ),
+     '100.8 C1: die Wochenzeile rechnet ueber MFDepot.vergleich mit denselben Optionen wie der Kopf - an denselben Kunstdaten (Woche mit Ex-Tag) derselbe Marktwert',
+     w8.marktPct.toFixed(6) + ' / ' + ausKopf.toFixed(6));
+  ok(alt8.ok && Math.abs(alt8.marktPct - w8.marktPct) > 1e-3,
+     '   Gegenprobe: der alte Aufruf ohne punktKurs, marktRoh und buchAusschuettungen weicht in derselben Woche ab', alt8.marktPct.toFixed(6) + ' statt ' + w8.marktPct.toFixed(6));
 })();
 
 

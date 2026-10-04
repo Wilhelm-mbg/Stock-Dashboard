@@ -1237,10 +1237,10 @@
         function () { return window.StudienUrteile && window.StudienUrteile.belegeKopf ? window.StudienUrteile.belegeKopf('momentum-liquide') : ''; },
         '<b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment. Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.',
         '<b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei −0,1 % gegen +7,4 %. Momentum verliert typischerweise genau dann, wenn der Markt scharf dreht.',
-        '<b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft, aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.',
-        /* Stufe 3 (03.09.2026): der erste Satz von #mfErklaerung, woertlich. Sichtbar
-         * geblieben ist dort der zweite - die Rueckschlag-Zahl ist eine Messaussage. */
-        'Vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel – kein Chartmuster, nur eine Rangfolge alle drei Monate.'
+        '<b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft, aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.'
+        /* Auftrag Nr. 95 (B3): hier stand seit Stufe 3 (03.09.2026) der erste Satz von
+         * #mfErklaerung („Vergleicht alle Werte des Universums miteinander …"). Unter den drei
+         * ueberholten Punkten las er sich mit „Überholt" - und er doppelte Punkt 1. Gestrichen. */
       ],
       fuss: 'Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.'
     },
