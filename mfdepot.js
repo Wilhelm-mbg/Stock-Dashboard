@@ -549,9 +549,11 @@
     /* Der Rueckblick (Auftrag Nr. 81): Wilhelms Regel hat zwei Stufen - Rueckblick ueber
      * fuenf Jahre, dann Vorwaertstest. Der Vorwaertstest ist die Zeile darueber; der
      * Rueckblick kommt aus dem Studienregister (jede Zahl dort gegen die Ergebnisdatei
-     * gehalten), je Eintrag eine Zeile. Nur das Momentum-Buch hat einen. */
+     * gehalten), je Eintrag eine Zeile. Seit Auftrag Nr. 91 hat auch das Drift-Buch
+     * einen (Schluessel 'drift' - eine andere Regel als die des Buchs, das steht im Satz). */
     var SU = window.StudienUrteile;
-    var rueck = (k.name === 'momentum' && SU && SU.rueckblicke) ? SU.rueckblicke('momentum-liquide') : [];
+    var rueckSchluessel = { momentum: 'momentum-liquide', drift: 'drift' }[k.name];
+    var rueck = (rueckSchluessel && SU && SU.rueckblicke) ? SU.rueckblicke(rueckSchluessel) : [];
     var zeilen = [['Gegen den Markt', gegen]];
     if (rueck.length) {
       zeilen.push(['Rückblick', rueck.map(function (r) {

@@ -76,7 +76,7 @@
       /* tut (01.09.2026, B6): der Satz der Antwort-Seite - beschreibt das TUN im
        * Praesens und wiederholt nicht woertlich den Karten-Text darunter. */
       tut: 'Hält das stärkste Zehntel der liquiden Werte (Median-Tagesumsatz ≥ 100 Mio $) und schichtet alle 63 Handelstage um.',
-      was: 'Vergleicht alle Werte miteinander und hält das stärkste Zehntel. Keine Chartmuster, nur eine Rangfolge, die alle 63 Handelstage neu gebildet wird. Seit 02.09.2026 nur Werte mit Median-Tagesumsatz ≥ 100 Mio $ (20 Balken bis zum Stichtag, vor der Rangbildung) – exakt die gemessene liquide Konfiguration.',
+      was: 'Vergleicht alle Werte miteinander und hält das stärkste Zehntel. Keine Chartmuster, nur eine Rangfolge, die alle 63 Handelstage neu gebildet wird. Seit 02.09.2026 nur Werte mit Median-Tagesumsatz ≥ 100 Mio $ (20 Balken bis zum Stichtag, vor der Rangbildung) – die gemessene liquide Konfiguration (Parameter wie gemessen).',
       stand: 'gemessen – hält die volle Historie, nicht die zurückgehaltenen Jahre',
       farbe: 'warn',
       /* Erster Schluessel: die Konfiguration, die das Buch WIRKLICH handelt (Etikett aus
@@ -84,12 +84,16 @@
        * Messmaschinen-Protokoll der breiten Fassung, fuer die Protokollzeile der Karte. */
       messKeys: ['momentum-liquide', 'momentum'],
       beleg: [
-        'LIQUIDE FASSUNG 02.09.2026 (Korb nur Werte mit Median-Tagesumsatz ≥ 100 Mio $, Punkt-in-Zeit, vor der Rangbildung): „lebt" nach registrierter Regel – In-Sample und am Rand. Brutto +1,835 Pp je Umlauf (se 0,911, t 2,02, 79 Perioden), Band [+0,050, +3,620]; gepaart gegen den breiten Korb +0,29 (t 0,69). Kein „belegt". Das Buch handelt seither exakt diese Konfiguration – ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg. Die Schwelle bleibt nominal; ihre Drift steht als Korbgröße je Umschichtung im Buch.',
+        'LIQUIDE FASSUNG 02.09.2026 (Korb nur Werte mit Median-Tagesumsatz ≥ 100 Mio $, Punkt-in-Zeit, vor der Rangbildung): „lebt" nach registrierter Regel – In-Sample und am Rand. Brutto +1,835 Pp je Umlauf (se 0,911, t 2,02, 79 Perioden), Band [+0,050, +3,620]; gepaart gegen den breiten Korb +0,29 (t 0,69). Kein „belegt". Das Buch handelt seither diese Konfiguration (Parameter wie gemessen) – ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg. Die Schwelle bleibt nominal; ihre Drift steht als Korbgröße je Umschichtung im Buch.',
         'KONTROLLMESSUNG 23.08.2026: Der eingebaute Marktvergleich ist bereits die richtige Kontrolle (Erwartung einer Zufallsauswahl gleicher Größe, per 500-fach-Simulation bestätigt). Über die volle Historie +2,42 Pp je Umschichtung (t = 3,84) – aber ab 2005 allein +1,51 Pp bei Mindest-Effektgröße 1,86 (t = 1,62): nicht entscheidbar. Rund die Hälfte des Vorsprungs hängt an 30 von 189 Werten, deren Namen man erst 2026 kennt (Überlebensverzerrung). 64,8 % des Ertrags je Schritt sind schlichtes Halten.',
         'Parameter auf 1970–2004 gewählt, auf 2005–2026 ohne Anpassung geprüft: +20,3 % p. a. gegen +14,9 % des Marktdurchschnitts, Vorsprung +5,4 Pp.',
         'Schlug den Markt in 14 von 22 Jahren; 93 von 96 Parameterkombinationen schlugen ihn ebenfalls.',
         'Unangenehm: 52 % größter Rückschlag im geprüften Zeitraum 2005–2026 (Referenzlauf, gemessen 2008), in 8 von 22 Jahren schlechter als der Markt, und das Universum enthält nur Firmen, die es heute noch gibt.'
       ],
+      /* Auftrag Nr. 91: die Belege ab diesem Satz stammen vom Universum der Ueberlebenden.
+       * Sie bleiben stehen; darueber setzt belegeAnmelden() den Kopf aus dem
+       * Studienregister (StudienUrteile.belegeKopf) - kein eigener Wortlaut hier. */
+      belegeUeberholt: { ab: 'Parameter auf 1970–2004 gewählt', schluessel: 'momentum-liquide' },
       schalter: 'momentum'
     },
     {
@@ -242,6 +246,18 @@
    * Der Reiter "Regeln" trug so 12.630 Zeichen auf 3.739 px, ohne einen zugeklappten
    * Block - und das ausgerechnet dort, wo man eine Entscheidung trifft. Gekuerzt wird
    * dabei NICHTS: es sind Messaussagen mit Zahlen, das Fenster rollt lieber. */
+  /* Auftrag Nr. 91: ueber den alten Belegen (s.belegeUeberholt.ab - der erste Satz, der
+   * nur am Universum der Ueberlebenden gemessen ist) steht der Kopf aus dem
+   * Studienregister. Neue Liste; s.beleg selbst bleibt unberuehrt (die Zahl "… Belege
+   * hinter dem i" zaehlt weiter nur die Belege). Ohne Register oder ohne Treffer: wie bisher. */
+  function mitBelegeKopf(s, punkte) {
+    var u = s.belegeUeberholt, SU = window.StudienUrteile;
+    if (!u || !SU || !SU.belegeKopf) return punkte;
+    var kopf = SU.belegeKopf(u.schluessel), i = -1;
+    punkte.forEach(function (p, j) { if (i < 0 && String(p).indexOf(u.ab) === 0) i = j; });
+    if (!kopf || i < 0) return punkte;
+    return punkte.slice(0, i).concat([kopf], punkte.slice(i));
+  }
   function belegeAnmelden() {
     if (!window.Info) return;
     var eintraege = {};
@@ -255,6 +271,7 @@
         punkte: s.beleg || [],
         fuss: 'Vollständiges Protokoll mit Entscheidungsweg: „Werkzeuge → Betrieb“, Messprotokolle.'
       };
+      eintraege['strategie.' + s.key].punkte = mitBelegeKopf(s, eintraege['strategie.' + s.key].punkte);
     });
     window.Info.eintragen(eintraege);
     /* U6 der UI-QS (04.09.2026): Angemeldet waren alle vier Nicht-Fussnoten, einen
