@@ -1,0 +1,37 @@
+# Nach Steuern — der Rückblick für ein deutsches Privatdepot (Auftrag Nr. 82)
+
+**Rechenmodell mit Annahmen, keine Steuerberatung.** Beschreibende Zahlen nach der Regel in `REGEL.md` (vor dem Lauf festgelegt), kein Urteil; es entscheidet Wilhelm. Kennung `nach-steuern-2026-10-04/v1`, Panel `querschnitt-pruefstand-2026-09-13/panel/v2.2`. Alles Simulation.
+
+**A-187** (04.01.2017 bis 15.09.2021, Korb der 187 umsatzstärksten, Hauptzahl). Nach Steuern, alles verkauft: Buch +18,75 % p. a. gegen Indexfonds +14,83 % p. a., Abstand +3,92 Pp p. a. (vor Steuern +4,55 Pp p. a.); in 60 von 63 Startphasen liegt das Buch vorn (Median des Abstands +5,13 Pp p. a., vor Steuern +7,59). Gezahlte Steuer des Buchs 44.460 $ (laufend 35.801 $, Endverkauf 8.659 $) — 3,57 Pp p. a. weniger als vor Steuern; des Fonds 20.689 $ (Vorabpauschalen 165 $, Endverkauf 20.524 $) — 2,94 Pp p. a. weniger als vor Steuern (davon 0,39 Pp aus Quellensteuer im Fonds und laufenden Kosten; beim Buch 0,05 Pp aus den Kosten des Endverkaufs). Geplante Käufe voll / verkleinert / unter 5 % des Budgets / ausgefallen: vor Steuern 164 / 18 / 4 / 18, nach Steuern 159 / 19 / 10 / 17 (k = 0); über alle 63 Startphasen vor Steuern 9993 / 1096 / 318 / 1064, nach Steuern 9757 / 1107 / 349 / 1354.
+
+**B-187** (16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten, Hauptzahl). Nach Steuern, alles verkauft: Buch +16,67 % p. a. gegen Indexfonds +10,40 % p. a., Abstand +6,26 Pp p. a. (vor Steuern +7,96 Pp p. a.); in 60 von 63 Startphasen liegt das Buch vorn (Median des Abstands +6,06 Pp p. a., vor Steuern +8,36). Gezahlte Steuer des Buchs 41.565 $ (laufend 23.108 $, Endverkauf 18.457 $) — 3,93 Pp p. a. weniger als vor Steuern; des Fonds 14.429 $ (Vorabpauschalen 1.056 $, Endverkauf 13.373 $) — 2,23 Pp p. a. weniger als vor Steuern (davon 0,31 Pp aus Quellensteuer im Fonds und laufenden Kosten; beim Buch 0,05 Pp aus den Kosten des Endverkaufs). Geplante Käufe voll / verkleinert / unter 5 % des Budgets / ausgefallen: vor Steuern 156 / 18 / 6 / 34, nach Steuern 153 / 18 / 9 / 32 (k = 0); über alle 63 Startphasen vor Steuern 9953 / 1141 / 466 / 1993, nach Steuern 9829 / 1143 / 475 / 2167.
+
+**A-breit** (04.01.2017 bis 15.09.2021, alle zulässigen Werte, nachrichtlich). Nach Steuern, alles verkauft: Buch +21,59 % p. a. gegen Indexfonds +14,83 % p. a., Abstand +6,77 Pp p. a. (vor Steuern +10,00 Pp p. a.); in 59 von 63 Startphasen liegt das Buch vorn (Median des Abstands +4,43 Pp p. a., vor Steuern +7,52). Gezahlte Steuer des Buchs 53.895 $ (laufend 38.461 $, Endverkauf 15.433 $) — 6,18 Pp p. a. weniger als vor Steuern; des Fonds 20.689 $ (Vorabpauschalen 165 $, Endverkauf 20.524 $) — 2,94 Pp p. a. weniger als vor Steuern (davon 0,39 Pp aus Quellensteuer im Fonds und laufenden Kosten; beim Buch 0,05 Pp aus den Kosten des Endverkaufs). Geplante Käufe voll / verkleinert / unter 5 % des Budgets / ausgefallen: vor Steuern 382 / 16 / 13 / 98, nach Steuern 369 / 19 / 10 / 116 (k = 0); über alle 63 Startphasen vor Steuern 24114 / 1077 / 705 / 6554, nach Steuern 23593 / 1093 / 745 / 7275.
+
+**B-breit** (16.09.2021 bis 15.09.2026, alle zulässigen Werte, nachrichtlich (der amtliche Rückblick Nr. 74)). Nach Steuern, alles verkauft: Buch +8,20 % p. a. gegen Indexfonds +10,40 % p. a., Abstand −2,20 Pp p. a. (vor Steuern −2,06 Pp p. a.); in 37 von 63 Startphasen liegt das Buch vorn (Median des Abstands +0,66 Pp p. a., vor Steuern +1,62). Gezahlte Steuer des Buchs 17.299 $ (laufend 12.912 $, Endverkauf 4.386 $) — 2,37 Pp p. a. weniger als vor Steuern; des Fonds 14.429 $ (Vorabpauschalen 1.056 $, Endverkauf 13.373 $) — 2,23 Pp p. a. weniger als vor Steuern (davon 0,31 Pp aus Quellensteuer im Fonds und laufenden Kosten; beim Buch 0,04 Pp aus den Kosten des Endverkaufs). Geplante Käufe voll / verkleinert / unter 5 % des Budgets / ausgefallen: vor Steuern 533 / 17 / 20 / 224, nach Steuern 523 / 17 / 19 / 241 (k = 0); über alle 63 Startphasen vor Steuern 32990 / 1173 / 1052 / 14259, nach Steuern 32495 / 1170 / 1048 / 15032.
+
+| Lauf | Lesart | Buch p. a. | Indexfonds p. a. | Abstand p. a. | Startphasen vorn | Median des Abstands |
+|---|---|---|---|---|---|---|
+| **A-187** | vor Steuern (wie Nr. 78 / Nr. 74) | +22,32 % | +17,77 % | +4,55 Pp | 62 von 63 | +7,59 Pp |
+|  | nach Steuern (a) bleibt stehen | +19,76 % | +17,35 % | +2,42 Pp | 56 von 63 | +3,62 Pp |
+|  | **nach Steuern (b) alles verkauft** | +18,75 % | +14,83 % | +3,92 Pp | 60 von 63 | +5,13 Pp |
+| **B-187** | vor Steuern (wie Nr. 78 / Nr. 74) | +20,59 % | +12,63 % | +7,96 Pp | 62 von 63 | +8,36 Pp |
+|  | nach Steuern (a) bleibt stehen | +18,64 % | +12,15 % | +6,49 Pp | 57 von 63 | +5,90 Pp |
+|  | **nach Steuern (b) alles verkauft** | +16,67 % | +10,40 % | +6,26 Pp | 60 von 63 | +6,06 Pp |
+| **A-breit** | vor Steuern (wie Nr. 78 / Nr. 74) | +27,77 % | +17,77 % | +10,00 Pp | 61 von 63 | +7,52 Pp |
+|  | nach Steuern (a) bleibt stehen | +23,20 % | +17,35 % | +5,86 Pp | 57 von 63 | +3,84 Pp |
+|  | **nach Steuern (b) alles verkauft** | +21,59 % | +14,83 % | +6,77 Pp | 59 von 63 | +4,43 Pp |
+| **B-breit** | vor Steuern (wie Nr. 78 / Nr. 74) | +10,57 % | +12,63 % | −2,06 Pp | 41 von 63 | +1,62 Pp |
+|  | nach Steuern (a) bleibt stehen | +8,88 % | +12,15 % | −3,27 Pp | 32 von 63 | +0,15 Pp |
+|  | **nach Steuern (b) alles verkauft** | +8,20 % | +10,40 % | −2,20 Pp | 37 von 63 | +0,66 Pp |
+
+Buch und Indexfonds je für den ersten Ausführungstag des Fensters (k = 0), Startkapital 100.000; „vorn“ heißt Endwert Buch größer als Endwert Fonds. Steuern je Jahr, alle 63 Phasen und die Zähler stehen in `ergebnis.json`.
+
+**Annahmen (vom PM festgelegt, `REGEL.md` Teil A).**
+- Steuersatz 26,375 % (25 % plus Solidaritätszuschlag, keine Kirchensteuer), Sparer-Pauschbetrag 0, heutiges Steuerrecht für alle Jahre; Dollar wie Euro gerechnet (kein Wechselkurs).
+- Buch: Mechanik der App wie in Nr. 78 (20 Basispunkte je Seite, Kleinstpositionen eingeschlossen); die Steuer wird zwischen Verkäufen und Käufen abgerechnet; Aktien-Verlusttopf mit laufender Abrechnung im Kalenderjahr, Vortrag ohne Erstattung; Reihenende wie ein Verkauf; Ausschüttungen netto 73,625 %.
+- Indexfonds: ein Modell, kein bestimmtes Produkt — thesaurierend, Kurs des SPY, Ausschüttungen zu 85 % wieder angelegt, 0,07 % laufende Kosten im Jahr, Kauf und Verkauf ohne Kosten; Vorabpauschale mit den amtlichen Basiszinsen (2017: 0,59 % ist eine Annahme des PM, nicht nachgeschlagen; Wirkung unter 0,1 % des Werts), Teilfreistellung 30 %, bezahlt durch Verkauf von Anteilen am ersten Handelstag des Folgejahres.
+- (a) „bleibt stehen“: Wert am letzten Tag, offene Gewinne unversteuert. (b) „alles verkauft“: Buch mit 20 Basispunkten Kosten, ein verbleibender Verlusttopf verfällt; Fonds mit Abzug der schon versteuerten Vorabpauschalen, 70 % steuerbar.
+- „Vor Steuern“ sind die Zahlen aus Nr. 78 und Nr. 74 (Fonds = SPY mit voller Wiederanlage, ohne Kosten). Der Abstand zu (b) enthält deshalb beim Fonds auch Quellensteuer und Kosten, beim Buch die Kosten des Endverkaufs.
+
+**Geprüft.** Selbstprüfung mit Steuersatz 0 gegen Nr. 78 und Nr. 74: A-187 257.544 $ / 215.536 $ getroffen, 63 von 63 Phasen auf den Cent; B-187 254.876 $ / 181.194 $ getroffen, 63 von 63 Phasen auf den Cent; A-breit 316.042 $ / 215.536 $ getroffen, 63 von 63 Phasen auf den Cent; B-breit 165.210 $ / 181.194 $ getroffen, 63 von 63 Phasen auf den Cent. Korrekturen nach dem Siegel: keine. Ein Fenster je Lauf, die 63 Startphasen teilen sich dieselben Jahre; der Korb ist nicht die Liste der App.
