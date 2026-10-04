@@ -631,9 +631,9 @@
       '<b>Kontrolle</b> ist derselbe Wert, dieselbe Tagesstunde, dieselbe Haltedauer – nur an ' +
       'einem beliebigen anderen Tag, gemittelt über alle. Sie sagt, was schlichtes Halten ' +
       'gebracht hätte. <b>Überschuss</b> ist die Differenz und die eigentliche Aussage: ' +
-      'Nur er gehört der Regel. Bei der gemessenen Intraday-Regel sind rund zwei Drittel des ' +
-      'Rohertrags Kontrolle (+0,065 Überschuss auf +0,170 roh) – ohne diese Spalte misst man ' +
-      'Marktdrift und nennt sie Kante.' +
+      'Nur er gehört der Regel. Bei der gemessenen Intraday-Regel (RSI(2) im Seitwärtskanal) bleibt gegen die Kontrolle ' +
+      'ein Überschuss von +0,021 Pp je Signal – nicht entscheidbar (Messprotokoll 26.08.2026, Belegstand). ' +
+      'Ohne diese Spalte misst man Marktdrift und hält sie für einen Vorsprung der Regel.' +
       '<br>Ø je Trade ist der Schatten-Ertrag nach Spanne, ohne Ordergebühr. Bei unter etwa ' +
       '300 Trades ist so gut wie jede Zahl hier mit Rauschen vereinbar; was sie zeigt, ist die ' +
       'Richtung – und dass die Regel überhaupt auslöst.</div>';
@@ -658,11 +658,12 @@
       rsi2seit: { stand: 'nicht entscheidbar',
         /* +0,065, nicht +0,114. Die erste Auswertung hatte eine kaputte Paarung -
          * nur 0,6 % der Kontrollfaelle gehoerten zum selben Wert. Zwei unabhaengige
-         * Nachrechnungen kommen auf +0,065 bzw. +0,066. */
-        txt: '+0,065 Pp Überschuss gegen eine Kontrolle aus echten Kerzen desselben Werts zur ' +
-             'selben Tagesstunde (6.509 Trades, 675 Tage). Die Rohkante von +0,170 Pp besteht ' +
-             'damit zu rund zwei Dritteln aus schlichtem Halten – nicht die Regel verdient sie, ' +
-             'sondern die Zeit im Markt.' },
+         * Nachrechnungen kommen auf +0,065 bzw. +0,066.
+         * Seit 04.10.2026 (Oberflaechen-Inventur) steht im Text der Stand aus wiki/belegstand.md:
+         * Protokoll rsi2seit-2026-08-26, +0,021 Pp je Signal, Tagesmittel +0,054 - nicht entscheidbar. */
+        txt: 'Überschuss +0,021 Pp je Signal gegen eine Kontrolle aus echten Kerzen desselben Werts zur ' +
+             'selben Tagesstunde, Tagesmittel +0,054 Pp (Messprotokoll 26.08.2026) – nicht entscheidbar, ' +
+             'unter jeder Beweisschwelle (Belegstand).' },
       /* Seit dem 04.10.2026 steht hier KEIN eigener Text mehr. Der Stand der Neumessung
        * vom 03.10.2026 (Urteil, Datum, Fundstelle) wohnt im Studienregister und wird
        * unten aus der Kette gelesen - ein zweiter, hier abgetippter Stand waere genau
@@ -943,7 +944,7 @@
       /* GRUEN NUR BEI BESTAETIGT. Ein positives Vorzeichen ist kein Vorsprung -
        * das war der Fehler, den diese Zeile bis zum 23.08.2026 gemacht hat. */
       var belegt = kante.urteil === "bestaetigt";
-      txt += "<br>Messung vom " + kante.datum + ": Überschuss je Signal <b>" +
+      txt += "<br>Messung vom " + U.esc(kante.datum) + ": Überschuss je Signal <b>" +
         (kante.jeSignalPp >= 0 ? "+" : "") + U.dez(kante.jeSignalPp, 3) + " Pp</b> gegen eine gepaarte Kontrolle" +
         /* Nicht mehr "beste von N": gezeigt wird die Variante, die das Urteil des
          * Protokolls traegt - nicht die mit der schoensten Zahl. */
@@ -1489,7 +1490,7 @@
           ' (' + c.edgePause.mittelPp + ' Pp, t=' + c.edgePause.t + ') und steht weiterhin.'
         : '';
       warnbandSetzen('edge', '<b>Edge-Wächter ist von Hand ausgeschaltet</b> – du hast einmal ' +
-        '„Trotzdem weiter handeln“ gewählt. Seitdem setzt <b>keine</b> Kante mehr automatisch aus, ' +
+        '„Trotzdem weiter handeln“ gewählt. Seitdem setzt <b>keine</b> Regel mehr automatisch aus, ' +
         'auch wenn ihr gemessener Vorsprung verfällt.' + seitTxt + ' Gemessen wird weiter.' +
         '<button class="btn ghost" data-edgescharf="1" style="padding:2px 10px; font-size:var(--fs-neben); margin-left:6px;">Wächter wieder scharf stellen</button>', true);
       return;
@@ -1503,7 +1504,7 @@
     warnbandSetzen('edge', '<b>Edge-Wächter: ' +
       offen.map(function (o) { return o.name; }).join(' und ') + ' pausiert</b> – der gemessene Vorsprung ist in zwei Nächten ' +
       'hintereinander verfallen (' + offen.map(function (o) { return o.name + ': ' + o.ep.mittelPp + ' Pp, t=' + o.ep.t; }).join(' · ') + '). ' +
-      'Neue Einstiege ' + (offen.length > 1 ? 'dieser Kanten' : 'dieser Kante') + ' sind ausgesetzt' +
+      'Neue Einstiege ' + (offen.length > 1 ? 'dieser Regeln' : 'dieser Regel') + ' sind ausgesetzt' +
       (offen.length > 1 ? '' : ', die andere handelt weiter') + '. Das Schattenbuch misst weiter; ' +
       'eine positive Nacht hebt die Pause automatisch auf. ' +
       '<button class="btn ghost" data-edgefrei="1" style="padding:2px 10px; font-size:var(--fs-neben); margin-left:6px;">Trotzdem weiter handeln</button>', true);
@@ -3102,7 +3103,7 @@
           var istKapi = kapiTrade || isKapitulation;   // Zusatz-Standbein ODER eigener Modus
           var regimeAuf = await spyTrendAuf();
           if (!istKapi && regimeAuf === false) {
-            patienceAdd('Regime: S&P 500 unter der 200er-Linie – RSI(2) im Seitwärtskanal pausiert (verliert dort −0,17 Pp)', sym);
+            patienceAdd('Regime: S&P 500 unter der 200er-Linie – RSI(2) im Seitwärtskanal pausiert (alte Regime-Studie 21.08.2026: −0,169 Pp unter der Linie – nicht nachgemessen, weder bestätigt noch widerlegt)', sym);
             schattenNeu('Regime-Filter', sym, dir, spot, sigBars, mp, cfg, now);
             dir = null;
           } else if (istKapi && regimeAuf === true) {
@@ -5810,7 +5811,7 @@
         : regK
           ? ' ' + (regK.etikett || 'Gemessen und verworfen') + ' – ' + regK.befund + ' Wählbar bleibt der Modus von Hand.'
           : (c.mode === 'rsi2seit'
-            ? ' Backtest vor der Kontrollmessung: +0,147 Pp auf 8 Handelsstunden über die übliche Drift – kein Messprotokoll im Datenordner, dieser Stand kann veralten.'
+            ? ' Kein Messprotokoll im Datenordner. Stand laut Belegstand: Überschuss +0,021 Pp je Signal gegen die Kontrolle (Messprotokoll 26.08.2026) – nicht entscheidbar.'
             : ' Kein Messprotokoll im Datenordner – zu diesem Modus wird hier nichts behauptet.');
       was = (c.mode === 'rsi2seit'
         ? 'Kauft den RSI(2)-Rücklauf, aber nur im Seitwärtskanal mit Volumen – der Kanal gibt nicht die Richtung, sondern die Erlaubnis. Nur Long.'
@@ -5821,7 +5822,7 @@
       // Depots aktiv auf 'schein' zurueck - fuer die waere "Aktie" schlicht falsch.
       was += c.instrument === 'basis'
         ? ' Gehandelt wird die Aktie selbst (1×, ohne Hebel).'
-        : ' Achtung: eingestellt ist der Hebelschein – der gemessene Vorsprung liegt UNTER der Scheinhürde, mit Schein war dieselbe Strategie im Backtest bei −96 %.';
+        : ' Achtung: eingestellt ist der Hebelschein – der gemessene Überschuss je Signal liegt weit UNTER der Kostenhürde des Scheins.';
       if (c.mode === 'rsi2seit' && c.kapiZusatz) {
         /* Kein Messsatz mehr im Fliesstext: Kennzeichnung und Befund kommen aus der Kette. */
         var regZ = (belegKette('kapitulation') || {}).register;
@@ -5839,8 +5840,8 @@
         was += ' Regime-Zuteilung ist an: ' + (rg === null
           ? 'Die Marktlage ist noch nicht gemessen – bis dahin läuft alles wie ohne Zuteilung.'
           : rg === !kapiLaeuft
-            ? 'Der S&P 500 steht ' + (rg ? 'über' : 'unter') + ' seiner 200er-Linie – das ist die Phase dieser Kante, sie darf handeln.'
-            : 'Der S&P 500 steht ' + (rg ? 'über' : 'unter') + ' seiner 200er-Linie – das ist NICHT die Phase dieser Kante, sie pausiert. ' +
+            ? 'Der S&P 500 steht ' + (rg ? 'über' : 'unter') + ' seiner 200er-Linie – in dieser Phase darf die Regel handeln (die Zuteilung selbst ist ohne Beleg).'
+            : 'Der S&P 500 steht ' + (rg ? 'über' : 'unter') + ' seiner 200er-Linie – in dieser Phase pausiert die Regel (die Zuteilung selbst ist ohne Beleg). ' +
               (c.mode === 'rsi2seit' && c.kapiZusatz
                 ? 'Der Kapitulations-Dip handelt in dieser Phase weiter.'
                 : 'Signale laufen währenddessen im Schattenbuch mit.'));
@@ -5882,7 +5883,7 @@
     var tl = (D.tuneLog || []).filter(function (e) { return (e.applied || []).length && e.quelle !== 'sicherung'; })[0];
     if (tl) wer = 'Zuletzt eingestellt von ' + (QUELLE_NAME[tl.quelle] || tl.quelle || '?') + ' (' + U.dt(tl.at) + '): ' + tl.applied.slice(0, 3).join(' · ') + (tl.applied.length > 3 ? ' …' : '');
     var a = autoOptCfg();
-    var autoTxt = 'Du musst hier nichts einstellen: der Autopilot misst nachts auf dem wachsenden Kursarchiv und übernimmt nur doppelt bestätigte, robuste Ergebnisse – morgens vor Handelsbeginn' +
+    var autoTxt = 'Du musst hier nichts einstellen: der Autopilot misst nachts auf dem wachsenden Kursarchiv und übernimmt nur Ergebnisse, die in zwei Nachtläufen mit neuen Handelstagen bestehen (das ist kein Beleg im Sinne des Belegstands) – morgens vor Handelsbeginn' +
       (a.regime !== false ? '; die Marktlage wird stündlich gemessen und angezeigt – in erkennbar wirren Phasen setzt sie neue Einstiege für rund eine Stunde aus' : '') +
       '. Jede Änderung steht im Experiment-Journal (Auswertung).';
     var alleAn = a.on !== false;
@@ -6211,7 +6212,7 @@
     /* Die Aufloesung dieser Messung - sie gehoert in den Satz, denn sie ist meist
      * groesser als die Kante, um die es geht. */
     var mde = sd > 0 ? 2 * sd / Math.sqrt(n) : null;
-    var urteil = (m > 0 && t >= 1.5) ? 'im Rahmen der Studie'
+    var urteil = (m > 0 && t >= 1.5) ? 'positiv (t ≥ 1,5) – eine Beobachtung im Archiv, kein Beleg'
       : (m > 0 ? 'positiv, aber statistisch dünn – weiter beobachten'
         : (Math.abs(t) >= 2
           ? 'VERFALL – der Vorsprung ist messbar negativ, Handel pausieren und neu messen'

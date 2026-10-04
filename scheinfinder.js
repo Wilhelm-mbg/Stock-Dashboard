@@ -239,7 +239,7 @@
     var zeilen = tf.scheine.map(function (s) {
       var kurs = s.kursFraglich
         ? '<span style="color:var(--warn);" title="Einseitige oder sehr weite Stellung – als Preis nicht brauchbar">keine Stellung</span>'
-        : U.nf2.format(s.geld) + ' / ' + U.nf2.format(s.brief) + ' ' + (s.waehrung || '');
+        : U.nf2.format(s.geld) + ' / ' + U.nf2.format(s.brief) + ' ' + U.esc(s.waehrung || '');
       var stand = s.stand
         ? new Date(s.stand).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
         : '–';
@@ -320,7 +320,7 @@
       '<span id="sfLzEigen" hidden><label>von<input id="sfLzVon" type="number" style="width:60px;"> Tagen</label>' +
       '<label>bis<input id="sfLzBis" type="number" style="width:60px;"></label></span>' +
       listeBauen('sfSpanne', W.SPANNE, 'Spanne',
-        'Geld-Brief-Spanne je Seite, aus dem an echten Emittentenkursen geeichten Cent-Modell. Je Umlauf zahlt man sie zweimal.') +
+        'Geld-Brief-Spanne je Seite, aus dem Cent-Modell (Modellannahme aus einer Stichprobe bei onvista, im Belegstand nicht gemessen). Je Umlauf zahlt man sie zweimal.') +
       listeBauen('sfTv', W.TOTALVERLUST, 'Totalverlust',
         'Modell-Wahrscheinlichkeit, dass der Schein wertlos verfällt.') +
       listeBauen('sfBand', W.BAND, 'Basispreis',
@@ -391,7 +391,7 @@
         'title="Echte WKN nachschlagen. Erster Klick sucht den passenden aufgelegten Schein, danach kopiert ein Klick die WKN.">' + wknZelle(idx) + '</td>';
     }
     if (schl === 'kennung') {
-      return '<td class="sf-kennung" style="white-space:nowrap; color:var(--muted); font-size:var(--fs-klein); cursor:copy;" title="Kennung in der Syntax der Produktsuche – Klick kopiert sie">' + kennung(k) + '</td>';
+      return '<td class="sf-kennung" style="white-space:nowrap; color:var(--muted); font-size:var(--fs-klein); cursor:copy;" title="Kennung in der Syntax der Produktsuche – Klick kopiert sie">' + U.esc(kennung(k)) + '</td>';
     }
     if (schl === 'stufe') {
       return '<td><span class="sf-stufe sf-stufe' + k.stufe + '" title="Risikostufe ' + k.stufe + ' – ' +
@@ -421,7 +421,7 @@
     bv: 'Bezugsverhältnis – der Kostenhebel: BV 1,0 zahlt relativ die kleinste Spanne',
     brief: 'Kaufkurs (Brief) laut Modell',
     omega: 'Effektiver Hebel (Omega). Klick sortiert, zweiter Klick dreht die Richtung.',
-    spread: 'Geld-Brief-Spanne je Seite, aus dem an echten Kursen geeichten Cent-Modell',
+    spread: 'Geld-Brief-Spanne je Seite, aus dem Cent-Modell (Modellannahme, im Belegstand nicht gemessen)',
     theta: 'Zeitwertverlust in einer Woche bei unverändertem Kurs',
     aufgeld: 'Aufgeld aufs Jahr gerechnet',
     tv: 'Modell-Wahrscheinlichkeit, dass der Schein wertlos verfällt',
@@ -525,7 +525,7 @@
            oder fuenfzehn, und eine falsche Zahl bricht die Tabelle still. */
         tr.insertAdjacentHTML('afterend',
           '<tr class="sf-inline"><td colspan="' + spalten.length + '" style="background:var(--panel); padding:10px 12px; font-size:var(--fs-text); line-height:1.6; cursor:default;">' +
-          '<b>' + kennung(k) + ' – ' + (k.dir === 'call' ? 'Call' : 'Put') + ' ' + U.nf2.format(k.strike) + ', ' + k.restTage +
+          '<b>' + U.esc(kennung(k)) + ' – ' + (k.dir === 'call' ? 'Call' : 'Put') + ' ' + U.nf2.format(k.strike) + ', ' + k.restTage +
           ' Tage, BV ' + String(k.ratio).replace('.', ',') + ' · Risikostufe ' + k.stufe + '</b><br>' +
           k.stufenGruende.map(function (g) { return '• ' + U.esc(g); }).join('<br>') +
           '<br><span style="color:var(--muted);">Break-even ' + U.nf2.format(k.breakEven) + ' $ · Delta ' + k.delta +

@@ -168,7 +168,7 @@
         res.positionen.toLocaleString('de-DE') + ' Positionen aus ' + wieViele + ' Werten · ' +
         res.monate[0] + ' bis ' + res.monate[res.monate.length - 1] + ' · ' +
         '<b class="' + (gut ? 'pos' : 'neg') + '">' +
-        (gut ? 'überzufällig (t ≥ 2)' : 'nicht überzufällig – das ist kein Beleg') + '</b>' +
+        (gut ? 'auffällig (t ≥ 2), aber kein Beleg – die Messung vom 04.10.2026 ist nicht entscheidbar' : 'unauffällig – kein Beleg') + '</b>' +
       '</div>';
   }
 

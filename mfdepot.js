@@ -175,7 +175,7 @@
       applied: ['Momentum-Buch: Konfiguration → gemessene liquide Fassung (Studie 02.09.2026)'],
       txt: 'Alt: ' + altTxt + '. Neu: ' + konfigText(KONFIG) + '. Greift bei der nächsten regulären Umschichtung; ' +
         'Positionen außerhalb des liquiden Korbs werden dort verkauft, nicht sofort. Ab der ersten Umschichtung auf dem ' +
-        'liquiden Korb ist jede weitere ein Out-of-Sample-Beleg. Simulation mit virtuellem Kapital, keine Anlageberatung.' });
+        'liquiden Korb ist jede weitere eine Out-of-Sample-Beobachtung – für sich kein Beleg. Simulation mit virtuellem Kapital, keine Anlageberatung.' });
     d.mfBuch.konfig = KONFIG;
     d.mfBuch.konfigSeit = now;
     d.mfBuch.liquideSeit = null;

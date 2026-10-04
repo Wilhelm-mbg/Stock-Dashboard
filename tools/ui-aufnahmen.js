@@ -8,11 +8,18 @@
  *
  * Aufruf aus der Repo-Wurzel (ein Fenster erscheint fuer eine Weile - das ist normal):
  *
- *   .\node_modules\.bin\electron.cmd tools\ui-aufnahmen.js <Zielordner> [--kunstdaten] [--breite 1024] [--messung]
+ *   .\node_modules\.bin\electron.cmd tools\ui-aufnahmen.js <Zielordner> [--kunstdaten] [--breite 1024] [--messung] [--volltext]
  *
  * --messung legt Blockmessung und Satzzaehlung zusaetzlich nach
  * wiki/aufnahmen/laufzeit.json ab - das ist die Datei, die die Sperrklinke in
  * test-v6 (Abschnitt 73) liest. Ohne den Schalter fasst die Probe das Repo nicht an.
+ *
+ * --volltext legt je Block den GANZEN gezaehlten Text ab (Feld "text" neben dem
+ * Anfang "anfang" mit 120 Zeichen, beim Rest ausserhalb aller Bloecke ebenso) - in
+ * textmenge.json und, zusammen mit --messung, in laufzeit.json. Wozu: wer einen Block
+ * ueber der Grenze kuerzen will, muss lesen koennen, WAS dort steht, nicht nur den
+ * Anfang. Ohne den Schalter haben beide Dateien dieselben Felder wie vorher -
+ * laufzeit.json liest die Sperrklinke, und deren Eingang aendert kein neuer Schalter.
  *
  * --breite setzt die Fensterbreite (Vorgabe 1280). Sie ist seit Stufe 4 ein eigener
  * Schalter, weil die Kopfzeile bei 1280 UND bei 1024 px einzeilig bleiben muss -
@@ -58,6 +65,8 @@ const KUNSTDATEN = process.argv.indexOf('--kunstdaten') > -1;
  * wiki/aufnahmen/laufzeit.json legen. Dort liest sie die Sperrklinke in test-v6
  * (Abschnitt 73). Bewusst ein eigener Schalter - siehe Begruendung unten. */
 const MESSUNG_ABLEGEN = process.argv.indexOf('--messung') > -1;
+/* --volltext: je Block der ganze Text statt nur seines Anfangs (siehe Kopf). */
+const VOLLTEXT = process.argv.indexOf('--volltext') > -1;
 if (KUNSTDATEN) require(path.join(__dirname, 'kunstinstanz.js')).saeen(TESTROOT);
 /* Ohne diese Schalter pausiert Chromium verdeckte Fenster - eine pausierte Seite
  * liefert leere Aufnahmen. */
@@ -218,9 +227,32 @@ async function kopfzeileMessen(js) {
  * eines Blattknotens ist eine Naeherung, und eine Klinke auf einer Naeherung waere
  * eine, von der niemand weiss, was sie prueft. */
 const WEISS = ['idKlartext', 'antwortSeite', 'kostenHuerde', 'mfErklaerung', 'wendeUrteil'];
+
+/* ---- Was in einer ZUGEKLAPPTEN Klappe steht, sieht der Leser nicht ----
+ * Beide Zeichenzaehlungen (laeufeMessen, BLOCK_JS) fragten dafuer nur offsetParent.
+ * Unter Electron 37 ist offsetParent bei Inhalten geschlossener <details> nicht mehr
+ * zuverlaessig null (QS 04.09.2026; Chromium blendet sie je nach Fassung ueber
+ * content-visibility statt ueber display:none aus) - im Zustand "Klappen zu" wurde
+ * damit der Inhalt jeder geschlossenen Klappe mitgezaehlt, die Zahl ueberschaetzt.
+ * Diese Pruefung fragt die Eigenschaft selbst: liegt der Knoten in einer Klappe, die
+ * zu ist, und NICHT in deren <summary>? Sie haengt an details.open und nicht am
+ * Layout - das ist in jeder Chromium-Fassung dasselbe.
+ * Sie laeuft IN der Seite; hier steht sie als echte Funktion, damit test-v6 sie
+ * ohne Fenster an einem Kunst-DOM ausfuehren kann. */
+function zugeklappt(n) {
+  var kind = n, p = n ? n.parentElement : null;
+  while (p) {
+    if (p.tagName === 'DETAILS' && !p.open && kind.tagName !== 'SUMMARY') return true;
+    kind = p;
+    p = p.parentElement;
+  }
+  return false;
+}
+const ZUGEKLAPPT_JS = 'var zugeklappt = ' + zugeklappt.toString() + ';';
+
 const LAEUFE = [];
 async function laeufeMessen(js, name, sel) {
-  const f = await js("(function () {" +
+  const f = await js("(function () {" + ZUGEKLAPPT_JS +
     "var weiss = " + JSON.stringify(WEISS) + ";" +
     "var wurzel = document.querySelector('" + sel + "'); if (!wurzel) return [];" +
     "var BLOCK = 'div,p,h1,h2,h3,h4,h5,li,ul,ol,section,details,summary,label,table,thead,tbody,tr,td,th,nav,header,footer,button,select,option,textarea,svg,dl,dt,dd,form';" +
@@ -230,7 +262,7 @@ async function laeufeMessen(js, name, sel) {
       "if (e.querySelector(BLOCK)) continue;" +
       "if (e.closest('details:not([data-klappe])') || e.closest('[hidden]')) continue;" +
       "if (e.closest('button, select, summary, label, svg')) continue;" +
-      "if (!e.offsetParent) continue;" +
+      "if (!e.offsetParent || zugeklappt(e)) continue;" +
       "var p = e, drin = false;" +
       "while (p) { if (p.id && weiss.indexOf(p.id) >= 0) { drin = true; break; } p = p.parentElement; }" +
       "if (drin) continue;" +
@@ -263,7 +295,9 @@ async function laeufeMessen(js, name, sel) {
  *   3. Unsichtbares: hidden, display:none, und der Inhalt gewoehnlicher <details>
  *      (eine Vertiefung, an der man nicht vorbeiscrollen muss - dieselbe Regel wie
  *      in test-v6 Abschnitt 65). details[data-klappe] ist dagegen selbst ein Block
- *      und zaehlt mit; der Maschinenraum ist nicht ausgenommen.
+ *      und zaehlt mit, solange sie OFFEN ist; zugeklappt zaehlt ihr Inhalt nicht
+ *      (zugeklappt() oben - offsetParent allein reicht dafuer unter Electron 37
+ *      nicht). Der Maschinenraum ist nicht ausgenommen.
  *   4. Messaussagen-Kaesten ([data-mess]) und die Weissliste oben. Ein Messergebnis
  *      darf nie gegen eine Zeichengrenze laufen - sonst kuerzt irgendwann jemand
  *      eine Messaussage, um eine Klinke gruen zu bekommen.
@@ -280,7 +314,9 @@ async function laeufeMessen(js, name, sel) {
  * keiner Ueberschrift und laesst sich keinem Block zurechnen. Er landet in
  * "ohneBlock" - eine Messung, die etwas nicht sieht, muss sagen wie viel. */
 const BLOECKE = [];
-const BLOCK_JS = "(function (sel) {" +
+/* Zweites Argument volltext: true legt je Block zusaetzlich den ganzen Text ab
+ * ("text"), false laesst die Felder genau wie vorher (ort, len, anfang). */
+const BLOCK_JS = "(function (sel, volltext) {" + ZUGEKLAPPT_JS +
   "var weiss = " + JSON.stringify(WEISS) + ";" +
   "var wurzel = document.querySelector(sel); if (!wurzel) return [];" +
   "var BLOCKSEL = 'section, .card, .panel, details';" +
@@ -323,7 +359,7 @@ const BLOCK_JS = "(function (sel) {" +
     "var roh = (n.nodeValue || '').replace(/\\s+/g, ' ');" +
     "if (!roh.trim()) continue;" +
     "var e = n.parentElement; if (!e) continue;" +
-    "if (!e.offsetParent) continue;" +
+    "if (!e.offsetParent || zugeklappt(n)) continue;" +
     "if (e.closest(RAUS)) continue;" +
     "var w = e, drin = false;" +
     "while (w) { if (w.id && weiss.indexOf(w.id) >= 0) { drin = true; break; } w = w.parentElement; }" +
@@ -338,12 +374,17 @@ const BLOCK_JS = "(function (sel) {" +
   "var out = [];" +
   "karte.forEach(function (d) {" +
     "var t = d.txt.replace(/\\s+/g, ' ').trim();" +
-    "if (t.length > 0) out.push({ ort: d.ort, len: t.length, anfang: t.slice(0, 120) }); });" +
+    "if (t.length === 0) return;" +
+    "var z = { ort: d.ort, len: t.length, anfang: t.slice(0, 120) };" +
+    "if (volltext) z.text = t;" +
+    "out.push(z); });" +
   "out.sort(function (a, b2) { return b2.len - a.len; });" +
   "var rest = ohne.replace(/\\s+/g, ' ').trim();" +
-  "return { bloecke: out, ohneBlock: { len: rest.length, anfang: rest.slice(0, 200) } }; })";
+  "var ob = { len: rest.length, anfang: rest.slice(0, 200) };" +
+  "if (volltext) ob.text = rest;" +
+  "return { bloecke: out, ohneBlock: ob }; })";
 async function bloeckeMessen(js, name, sel) {
-  const f = await js(BLOCK_JS + "('" + sel + "')");
+  const f = await js(BLOCK_JS + "('" + sel + "', " + (VOLLTEXT ? 'true' : 'false') + ")");
   BLOECKE.push({ seite: name, sel: sel, bloecke: f.bloecke, ohneBlock: f.ohneBlock });
   const ueber = f.bloecke.filter((x) => x.len > 240);
   if (ueber.length) {
@@ -576,6 +617,19 @@ async function lauf(win) {
   return { seiten: nr, dateien };
 }
 
+/* Der Inhalt von wiki/aufnahmen/laufzeit.json (--messung). Eine eigene Funktion,
+ * damit test-v6 ohne Fenster pruefen kann, dass die Datei OHNE --volltext dieselben
+ * Felder in derselben Reihenfolge behaelt - die Sperrklinke in Abschnitt 73 liest
+ * sie. Mit --volltext nennt "werkzeug" den Schalter, damit man der Datei ansieht,
+ * warum sie groesser ist. */
+function laufzeitAblage(messung, volltext) {
+  return JSON.stringify({
+    stand: messung.stand, kunstdaten: messung.kunstdaten, breite: messung.breite,
+    werkzeug: 'tools/ui-aufnahmen.js <ziel> --kunstdaten --messung' + (volltext ? ' --volltext' : ''),
+    bloecke: messung.bloecke, saetze: messung.saetze, register: messung.register
+  }, null, 2) + '\n';
+}
+
 /* Hartes Zeitlimit: eine haengende Probe ist ein Befund, kein Grund zu warten. */
 setTimeout(() => { console.error('UI-Aufnahmen: Zeitlimit (600 s) erreicht.'); app.exit(2); }, 600000);
 
@@ -613,11 +667,7 @@ app.on('browser-window-created', (ev, win) => {
        * und Satzzaehlung; Aufnahmen und Textmengen bleiben beim Beleg. */
       if (MESSUNG_ABLEGEN) {
         const ablage = path.join(WURZEL, 'wiki', 'aufnahmen', 'laufzeit.json');
-        fs.writeFileSync(ablage, JSON.stringify({
-          stand: messung.stand, kunstdaten: KUNSTDATEN, breite: BREITE,
-          werkzeug: 'tools/ui-aufnahmen.js <ziel> --kunstdaten --messung',
-          bloecke: BLOECKE, saetze: SATZFUNDE, register: REGISTER
-        }, null, 2) + '\n');
+        fs.writeFileSync(ablage, laufzeitAblage(messung, VOLLTEXT));
         console.log('Messung abgelegt: ' + ablage);
       }
       console.log('UI-Aufnahmen: ' + erg.seiten + ' Seiten, ' + erg.dateien + ' Dateien in ' + ZIEL);

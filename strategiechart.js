@@ -225,8 +225,9 @@
     if (iv === '60m') { warnEl.style.display = 'none'; warnEl.textContent = ''; return ''; }
     warnEl.style.display = '';
     warnEl.textContent = 'Achtung: ' + STC_IV[iv].txt + ' sind NICHT die gemessene Konfiguration. ' +
-      'Beide Regeln sind auf 60-Minuten-Kerzen gemessen, und die grosse Signalstudie vom 23.08.2026 ' +
-      'fand auf anderen Zeitrahmen keine tragfaehige Kante. Was hier steht, ist eine Ansicht zum ' +
+      'Beide Regeln sind auf 60-Minuten-Kerzen gemessen. Die große Signalstudie vom 23.08.2026 ' +
+      'fand unter 51 Detektoren keinen tragfähigen, die Minutenstudie (1m/5m/15m) unter 234 Konfigurationen ebenso keinen. ' +
+      'Auch auf 60m ist keine Regel belegt: RSI(2) im Seitwärtskanal ist nicht entscheidbar, der Kapitulations-Dip in der behaupteten Größe zurückgewiesen. Was hier steht, ist eine Ansicht zum ' +
       'Nachvollziehen der Mechanik - kein Beleg. Gehandelt wird weiterhin nur, was auf 60m gemessen ist.';
     return warnEl.textContent;
   }
@@ -274,7 +275,7 @@
       var tage = Math.round((bars[bars.length - 1][0] - bars[261][0]) / 86400000);
       info.innerHTML = '<b>' + U.esc(name) + '</b> auf ' + U.esc(sym) + ' · ' + bars.length + ' ' + U.esc(ivCfg.txt) + ', davon ' + show.length + ' im Bild · Einstiege laut Regel in den letzten ~' + tage + ' Tagen: <b>' + marks.length + '</b>, im Bild <b>' + marksShow.length + '</b>' +
         ' · letzte Kerze ' + U.esc(new Date(bars[bars.length - 1][0]).toLocaleString('de-DE')) +
-        (bed.signal === 'call' ? ' · <b style="color:var(--up);">Regel gibt JETZT ein Long-Signal</b>' : bed.signal === 'put' ? ' · Put-Seite gemeldet – trägt nicht, wird nicht gehandelt' : ' · aktuell kein Signal');
+        (bed.signal === 'call' ? ' · <b style="color:var(--up);">Regel gibt JETZT ein Long-Signal</b>' : bed.signal === 'put' ? ' · Put-Seite gemeldet – wird nicht gehandelt (die Regel handelt nur Long)' : ' · aktuell kein Signal');
       stcListeZeichnen();
       stcCheckZeichnen(null);
     } catch (e3) {

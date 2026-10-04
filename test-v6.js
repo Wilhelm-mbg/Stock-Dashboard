@@ -1,5 +1,13 @@
 'use strict';
 const fs = require('fs');
+/* Abschnitts-Laeufer (tools/testlaeufer.js, Kopf dort): `node test-v6.js --abschnitt 72`,
+ * `--nur-geaendert`, `--liste`, `--zeiten`. OHNE diese Schalter laeuft diese Datei wie immer
+ * und der Laeufer wird nicht einmal geladen. MIT Schalter faehrt er die gewaehlten Abschnitte
+ * in einem eigenen Prozess, und dieser hier endet sofort mit dessen Rueckgabewert.
+ * Das Muster ist dasselbe wie SCHALTER im Laeufer - Abschnitt 101 haelt beide gleich. */
+if (process.argv.slice(2).some(function (a) { return /^--(abschnitt|nur-geaendert|liste|zeiten|gegen|trocken)(=|$)/.test(a); })) {
+  process.exit(require('./tools/testlaeufer.js').uebernehmen(__filename, process.argv.slice(2)));
+}
 /* Tests v6: ORB, Auto-Stop, Risiko-Sizing, Resampling/MTF */
 var Q = require('./quant.js');
 var fails = 0;
@@ -3681,9 +3689,12 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
 
   /* Nachgerechnet, weil eine falsche Kontrolle schlimmer ist als keine: Der Startindex
    * war zuerst 60 und ergab +0,128 statt +0,113 Pp - der Ueberschuss haette damit
-   * +0,036 statt +0,064 gelautet. Die Zahl im Regelkopf muss die korrigierte sein. */
-  ok(/\+0,065 Pp Überschuss/.test(dep) && !/\+0,114 Pp gegen Kontrolle/.test(dep),
-     'Der Regelkopf nennt den korrigierten Ueberschuss (+0,065), nicht den zu hohen (+0,114)');
+   * +0,036 statt +0,064 gelautet. Die Zahl im Regelkopf muss die korrigierte sein.
+   * Seit fix/oberflaeche-texte (04.10.2026) ist die korrigierte Zahl die des Belegstands: +0,021 Pp je Signal
+   * (Protokoll rsi2seit 26.08.2026, nicht entscheidbar). +0,065 steht nirgends im Belegstand und darf nicht
+   * zurueckkommen - deshalb prueft die Marke jetzt die neue Zahl und schliesst beide alten aus. */
+  ok(/Überschuss \+0,021 Pp je Signal/.test(dep) && !/\+0,114 Pp gegen Kontrolle/.test(dep) && !/\+0,065 Pp Überschuss/.test(dep),
+     'Der Regelkopf nennt den Ueberschuss laut Belegstand (+0,021 je Signal), weder +0,065 noch +0,114');
   ok(/Überschuss/.test(dep) && /Kontrolle/.test(dep),
      'Die Regelliste zeigt Kontrolle und Ueberschuss als eigene Spalten');
 
@@ -3711,8 +3722,10 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
      'Stattdessen steht die Fallzahl da - sie sagt ehrlich, dass sich nichts bewerten laesst');
   ok(/kann seine eigenen Signale nicht/.test(wu3),
      'Der Reiter sagt selbst, dass er seine Signale nicht bewerten kann');
-  ok(/0,074 Pp, t = 1,22/.test(wu3),
-     'Die belastbare Aussage zum Winkel-Detektor steht dabei (widerlegt auf 55 Tagen)');
+  /* Seit fix/oberflaeche-texte (04.10.2026): "0,074 Pp, t = 1,22" steht nicht im Belegkorpus (das t gehoert zu einer
+   * anderen Zelle). Dabei steht jetzt der juengere Stand des Belegstands (02.09.2026): netto nicht entscheidbar. */
+  ok(/alle 10 Punktschätzer negativ, 9 von 10 obere Grenzen liegen unter 0,1247 Pp/.test(wu3) && !/0,074 Pp, t = 1,22/.test(wu3),
+     'Der neuere Stand zum Winkel-Detektor steht dabei (Belegstand 02.09.2026: netto nicht entscheidbar)');
 
   /* Trendfinder (Felix' Wunsch #58, 23.08.2026): Der Trend ist die Hauptsache, der
    * Wechsel sein Sonderfall. Dazu drei Zusicherungen - die Umbenennung, die drei
@@ -3730,7 +3743,9 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * eine Statuszeile. Der Wortlaut des Titels bleibt WORTGENAU geprueft; die Klinke
    * wird dabei schaerfer, weil sie zusaetzlich verlangt, dass genau ein Stand-Span
    * mit dem Namen der Klappe dahinter steht - und sonst nichts. */
-  ok(hF.indexOf('<summary>Trendfinder — Detektor widerlegt' +
+  /* Seit fix/oberflaeche-texte (04.10.2026): der Belegstand fuehrt den Detektor unter "Nicht entscheidbar" (netto
+   * unentscheidbar, Long-Seite in der Groesse ausgeschlossen), nicht unter "Widerlegt" - der Titel nennt dieses Urteil. */
+  ok(hF.indexOf('<summary>Trendfinder — Detektor nicht entscheidbar (Long-Seite in der Größe ausgeschlossen)' +
      '<span class="klappe-stand" id="kstand-wende"></span></summary>') >= 0,
      'Trendfinder: die Klappe heisst nach dem Trend und nennt sein Urteil');
   ok(wu3.indexOf('>Trend jetzt</th>') >= 0 && wu3.indexOf('>Güte</th>') >= 0 && wu3.indexOf('>Breite</th>') >= 0,
@@ -8541,7 +8556,9 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   var shellB11 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
   var eintragB11 = (shellB11.split("'vermoegen.buecher': {")[1] || '').split('\n    },')[0];
   ok(/data-info="vermoegen\.buecher"/.test(bestand) &&
-     /t = 1,62/.test(eintragB11) && /8,44 statt 14,07/.test(eintragB11),
+     /* seit fix/oberflaeche-texte die Zahlen des Belegstands statt "t = 1,62" und "8,44 statt 14,07" (beide unbelegt bzw.
+      * vor der Zeitzonen-Korrektur); geprueft wird weiter, dass sie ungeteilt im Eintrag stehen */
+     /t = 0,74 nach Korrektur/.test(eintragB11) && /16 von 200 Zufallsbüchern/.test(eintragB11),
      'Die Messzahlen der beiden Buecher haengen ungeteilt an der Buecher-Karte (i-Knopf)');
 
   /* --- Kein Wegweiser zeigt mehr auf einen Ort, den es nicht mehr gibt --- */
@@ -14279,8 +14296,9 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
    * "Parameter wie gemessen" - die App weicht in der Mechanik noch von der Messung ab. */
   ok(/id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\) – Änderungen nur über eine neue Messung\./.test(html) &&
      /* Auftrag Nr. 95 (A2): beim Drift-Buch nannte die Zeile eine Studie vom 02.09.2026, die es nicht gibt */
-     /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus \(Neumessung offen\)\./.test(html),
-     'Live=Messung: ueber beiden Feldergruppen steht, woher die Werte kommen (beim Drift-Buch: Neumessung offen)');
+     /* seit fix/oberflaeche-texte: "Messung steht aus" ist ueberholt - Belegstand: t 1,7-2,0 nach Zeitzonen-Korrektur, nicht entscheidbar */
+     /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – nach der Zeitzonen-Korrektur nicht entscheidbar \(Stand im Kasten unten\)\./.test(html),
+     'Live=Messung: ueber beiden Feldergruppen steht, woher die Werte kommen (beim Drift-Buch: nach Korrektur nicht entscheidbar)');
   /* Gefuellt wird aus der Konfiguration, nicht aus dem Markup. Geprueft wird die
    * QUELLE, nicht der Wert: ein fester Wert im Code waere dieselbe Zahl an einer
    * zweiten Stelle - genau der Fehler, gegen den die Sperre gebaut ist. */
@@ -16501,8 +16519,9 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
    * Erklaerabsaetze stehen im Register statt in der Legende. */
   ok(/data-mess="[^"]{10,}"/.test(wui),
      'F9: die Messaussagen der Trendfinder-Legende stehen in einem ausgewiesenen Kasten');
-  ok(/−0,17 Pp je Trade bei t = −4,1/.test(wui) && /0,074 Pp, t = 1,22/.test(wui),
-     'F9: beide Messaussagen sind wortgleich sichtbar geblieben');
+  /* Zweite Messaussage seit fix/oberflaeche-texte auf den Belegstand umgestellt (siehe oben, Winkel-Detektor). */
+  ok(/−0,17 Pp je Trade bei t = −4,1/.test(wui) && /alle 10 Punktschätzer negativ/.test(wui),
+     'F9: beide Messaussagen sind sichtbar geblieben');
   ok(!/Warum hier keine Ertragszahl steht/.test(ohneKommentare(wui)) &&
      /Warum hier keine Ertragszahl steht/.test(shell),
      'F9: der Erklaerabsatz ist ins Register gewandert - verschoben, nicht geloescht');
@@ -16511,7 +16530,8 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
      'F9: ebenso der Absatz "Dieser Reiter kann seine eigenen Signale nicht bewerten"');
   /* Verschoben heisst WOERTLICH: die Zahlen aus dem Absatz muessen im Register
    * alle wieder auftauchen. Faellt eine beim Umzug heraus, faellt es hier auf. */
-  ['4.000 Fünf-Minuten-Kerzen', '−0,028 / +0,166 / +0,230 %', '30 Fälle je Wert', '20.000 Kerzen']
+  /* '−0,028 / +0,166 / +0,230 %' seit fix/oberflaeche-texte gestrichen (nirgends im Belegkorpus); die Aussage des Satzes bleibt */
+  ['4.000 Fünf-Minuten-Kerzen', 'sobald man nur die Abtastdichte ändert', '30 Fälle je Wert', '20.000 Kerzen']
     .forEach(function (zahl) {
       ok(shell.indexOf(zahl) > -1, 'F9: die Zahl "' + zahl + '" ist beim Umzug mitgekommen');
     });
@@ -16525,8 +16545,9 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
      'F10: unter der Positionstabelle sitzt jetzt ein i-Knopf');
   ok(/'heute\.positionen': \{/.test(shell),
      'F10: und er findet einen Eintrag im Register');
-  ok(!/Gemessene Intraday-Kanten/.test(ohneKommentare(dep)) &&
-     /Gemessene Intraday-Kanten/.test(shell),
+  /* "Kanten" -> "Regeln" seit fix/oberflaeche-texte: der Belegstand zaehlt null belegte Kanten */
+  ok(!/Gemessene Intraday-Regeln/.test(ohneKommentare(dep)) &&
+     /Gemessene Intraday-Regeln/.test(shell),
      'F10: die Regelbeschreibung steht im Register, nicht mehr auf "Heute"');
   ['Stop −25 % / Ziel +35 %', 'Stop −40 % / Ziel +80 %', 'Bezugsverhältnis 0,1', '8 bzw. 26 Handelsstunden']
     .forEach(function (zahl) {
@@ -16546,7 +16567,7 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
   var mengeQuelle = /function menge\(zahl, einzahl, mehrzahl\) \{[\s\S]*?\n  \}/.exec(ark);
   ok(!!mengeQuelle, 'F11: die Einzahl/Mehrzahl-Funktion ist auffindbar');
   if (mengeQuelle) {
-    /* eslint-disable-next-line no-new-func */
+    /* new Function ist hier der Zweck (die Funktion wird aus der Datei geschnitten und ausgefuehrt) */
     var menge = new Function('return (' + mengeQuelle[0].replace(/^function/, 'function') + ');')();
     ok(menge(1, 'Minute', 'Minuten') === '1 Minute', 'F11: 1 -> Einzahl', menge(1, 'Minute', 'Minuten'));
     ok(menge(2, 'Minute', 'Minuten') === '2 Minuten', 'F11: 2 -> Mehrzahl', menge(2, 'Minute', 'Minuten'));
@@ -17013,7 +17034,8 @@ console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelr
      'ihre Inhalte stehen jetzt am Kerzenchart: Einblenden, Signal-Liste, Kanal-Zeile, Kanal-Verzug, Indikator-Spur');
   /* KEIN TEXT VERLOREN: die Erklaersaetze der Kaestchen standen als title im
    * Markup und stehen jetzt in den Tabellen SIGNALE/INDIKATOREN. */
-  ['Roh ein Münzwurf', 'Kapitulations-Dip', 'nie heimlich verkürzt',
+  /* 'Roh ohne belegten Vorsprung' hiess bis fix/oberflaeche-texte 'Roh ein Münzwurf (+0,017)' - die Zahl war unbelegt. */
+  ['Roh ohne belegten Vorsprung', 'Kapitulations-Dip', 'nie heimlich verkürzt',
    'KEINEN Vorsprung', 'es wird bewusst nichts davon gehandelt',
    'an denen der Kurs zuletzt gedreht hat'].forEach(function (satz) {
     ok(expQ.indexOf(satz) > 0, 'der Erklaertext "' + satz.slice(0, 28) + '…" ist beim Umzug nicht verloren gegangen');
@@ -23705,7 +23727,7 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
   var SOLL = [
     'Rückblick 16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen vorn, in der Mitte +8,2 Pp pro Jahr; größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
     'Rückblick 04.01.2017 bis 15.09.2021, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +159,2 % gegen S&P 500 +115,5 % – geschlagen; je nach Starttag in 63 von 63 Fällen vorn, in der Mitte +7,3 Pp pro Jahr; größter Rückschlag −49,0 % gegen −33,8 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
-    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,0 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 43 von 63 Fällen vorn, in der Mitte +1,7 Pp pro Jahr; größter Rückschlag −40,3 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); vor Steuern (nach Steuern für den breiten Markt nicht gerechnet).',
+    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,0 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 43 von 63 Fällen vorn, in der Mitte +1,7 Pp pro Jahr; größter Rückschlag −40,3 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); vor Steuern (im Rechenmodell nach Steuern, ohne Regel K: −2,20 Pp pro Jahr hinter dem Indexfonds).',
     'Rückblick 16.09.2021 bis 15.09.2026, Kauf nach den stärksten Überraschungen (40 Plätze, 60 Handelstage, nur Kaufseite – nicht die Regel dieses Buchs): Buch +84,2 % gegen S&P 500 +81,2 % – knapp davor, aber 16 von 200 Zufallsbüchern liegen darüber: kein Vorwärtstest angezeigt; größter Rückschlag −21,6 % gegen −24,5 %.'
   ];
   var IST = SU.rueckblicke('momentum-liquide').concat(SU.rueckblicke('drift')).map(function (e) { return SU.rueckblickText(e); });
@@ -24421,7 +24443,8 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
 
   /* ---- 100.4 A2 ---- */
   var htmlO = html.replace(/<!--[\s\S]*?-->/g, '');
-  ok(/id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – ihre eigene Messung steht aus \(Neumessung offen\)\.<\/div>/.test(htmlO) &&
+  /* Zeile seit fix/oberflaeche-texte auf den Belegstand umgestellt (siehe Live=Messung oben) */
+  ok(/id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert – nach der Zeitzonen-Korrektur nicht entscheidbar \(Stand im Kasten unten\)\.<\/div>/.test(htmlO) &&
      !/Drift[^"<]{0,40}02\.09\.2026/.test(htmlO) && /data-mess="Ergebnis-Drift-Messung 21\.08\.2026 · /.test(htmlO) &&
      /GEMESSEN am 21\.08\.2026 auf 20\.356 Ergebnisterminen/.test(fs.readFileSync(__dirname + '/drift.js', 'utf8')) &&
      /id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\)/.test(htmlO),
@@ -24521,8 +24544,601 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
      '   Gegenprobe: der alte Aufruf ohne punktKurs, marktRoh und buchAusschuettungen weicht in derselben Woche ab', alt8.marktPct.toFixed(6) + ' statt ' + w8.marktPct.toFixed(6));
 })();
 
+console.log('\n101) Abschnitts-Laeufer: Gliederung, Auswahl, nur Geaendertes - und der volle Lauf bleibt unberuehrt');
+(function () {
+  /* WOZU: `node test-v6.js --abschnitt 72` und `--nur-geaendert` fahren nur einen Teil
+   * dieser Datei (tools/testlaeufer.js). Ein Teil-Lauf, der still einen Abschnitt
+   * verliert, einen falschen faehrt oder Rot als Gruen meldet, waere schlimmer als gar
+   * keiner. Geprueft wird deshalb das VERHALTEN des Laeufers - an dieser Datei selbst,
+   * an kleinen Kunstdateien und in echten Kindprozessen. Der Beleg, dass der volle Lauf
+   * unveraendert ist (Ausgabe vorher/nachher), steht in pruefberichte/2026-10-testlaeufer.md;
+   * tools/testvergleich.js, mit dem er gefuehrt wurde, wird unten geprueft. */
+  var imLaeufer = !!(require.main && /testlaeufer\.js$/.test(require.main.filename));
+  var vorherGeladen = Object.keys(require.cache).some(function (k) { return /[\\/]tools[\\/]testlaeufer\.js$/.test(k); });
+  ok(imLaeufer || !vorherGeladen,
+     '101.0 ohne Schalter laedt test-v6.js den Laeufer nicht (der volle Lauf haengt nicht an ihm)',
+     imLaeufer ? 'Teil-Lauf' : 'voller Lauf');
 
-/* ================= 101) Generalprobe 23.11.2026: behobene Funde (Zweig fix/generalprobe-2311) =================
+  var path101 = require('path'), os101 = require('os'), cp101 = require('child_process');
+  var L = require(__dirname + '/tools/testlaeufer.js');
+  var TV = require(__dirname + '/tools/testvergleich.js');
+  var selbst101 = fs.readFileSync(__filename, 'utf8');
+  var gl = L.gliederung(selbst101);
+  var nr = function (n) { return L.waehle(gl.einheiten, [n]).lfd; };
+  var einheit = function (n) { return gl.einheiten[nr(n)[0] - 1]; };
+
+  /* ---- 101.1 Gliederung: jede oberste Anweisung genau einmal ---- */
+  var abd = L.abdeckungPruefen(gl);
+  ok(abd.ok, '101.1 jede oberste Anweisung gehoert genau einem Teil an (Vorspann, ein Abschnitt, Schluss)',
+     abd.anweisungen + ' Anweisungen, ' + gl.einheiten.length + ' Abschnitte');
+  ok(!L.abdeckungPruefen({ ast: gl.ast, vorspann: gl.vorspann.concat([gl.vorspann[0]]), schluss: gl.schluss, einheiten: gl.einheiten }).ok &&
+     !L.abdeckungPruefen({ ast: gl.ast, vorspann: gl.vorspann.slice(1), schluss: gl.schluss, einheiten: gl.einheiten }).ok,
+     '   Gegenprobe: eine doppelt oder gar nicht zugeordnete Anweisung wird bemerkt');
+  ok(gl.einheiten[0].kopf.indexOf('1) resampleBars') === 0 && gl.vorspannEnde < gl.einheiten[0].startZeile,
+     '101.1 der Vorspann endet vor "1) resampleBars"; der erste Abschnitt ist dieser');
+  ok(/^Promise\.all\(offeneProben\)\.then/.test(selbst101.slice(gl.ast.body[gl.schluss[0]].range[0])),
+     '101.1 der Schluss ist Promise.all(offeneProben) - er laeuft in jedem Teil-Lauf mit');
+  /* Jeder nummerierte Kopf am Zeilenanfang beginnt einen Abschnitt - sonst waere er
+   * mit --abschnitt nicht waehlbar und liefe nur im Schlepptau eines anderen. */
+  var starts = new Set(gl.einheiten.map(function (e) { return e.startZeile; }));
+  var kopfZeilen = selbst101.split('\n').map(function (z, i) {
+    return /^console\.log\((['"])(\\n)*\d+[a-z]?\) /.test(z) ? i + 1 : 0;
+  }).filter(Boolean);
+  ok(kopfZeilen.length > 90 && kopfZeilen.every(function (z) { return starts.has(z); }),
+     '101.1 jeder nummerierte Kopf am Zeilenanfang beginnt einen eigenen Abschnitt', kopfZeilen.length + ' Koepfe');
+  ok(nr('101').length === 1 && einheit('101').kopf.indexOf('101) Abschnitts-Laeufer') === 0,
+     '101.1 dieser Abschnitt ist selbst als 101 waehlbar');
+
+  /* ---- 101.2 Auswahl ---- */
+  ok(nr('17b').length === 1 && /^17b\) /.test(einheit('17b').kopf), '101.2 "17b" waehlt genau 17b');
+  var w44 = nr('44');
+  ok(w44.length >= 2 && w44.every(function (l) { return gl.einheiten[l - 1].nummer === '44'; }),
+     '101.2 eine doppelt vergebene Nummer waehlt alle Abschnitte mit ihr', w44.length + ' mal 44');
+  ok(L.waehle(gl.einheiten, ['97-98']).lfd.map(function (l) { return gl.einheiten[l - 1].nummer; }).join() === '97,97b,98',
+     '101.2 ein Bereich 97-98 nimmt 97b mit');
+  var wText = L.waehle(gl.einheiten, ['wachhund']).lfd;
+  ok(wText.length >= 1 && wText.every(function (l) { return /wachhund/i.test(gl.einheiten[l - 1].kopf); }),
+     '101.2 Text waehlt ueber den Kopf, Gross/klein egal', wText.length);
+  ok(L.waehle(gl.einheiten, ['Oberfläche']).lfd.join() === L.waehle(gl.einheiten, ['Oberflaeche']).lfd.join() &&
+     L.waehle(gl.einheiten, ['Oberflaeche']).lfd.length > 0,
+     '101.2 Umlaute gleich Umschreibung (Oberfläche = Oberflaeche)');
+  var wLfd = L.waehle(gl.einheiten, ['lfd:' + nr('16')[0]]).lfd;
+  ok(wLfd.length === 1 && wLfd[0] === nr('16')[0], '101.2 lfd:<n> waehlt genau die laufende Nummer aus --liste');
+  var wNichts = L.waehle(gl.einheiten, ['16', 'gibts-nicht-xyz']);
+  ok(wNichts.ohneTreffer.join() === 'gibts-nicht-xyz' && wNichts.lfd.length === 1,
+     '101.2 ein Muster ohne Treffer wird benannt (der Lauf bricht dann ab), die anderen bleiben');
+
+  /* cmd.exe trennt am Komma: "--abschnitt 17,72" kommt als EIN oder als ZWEI Argumente. */
+  var a1 = L.argumenteLesen(['--abschnitt', '17,72', 'Wachhund', '--zeiten']);
+  var a2 = L.argumenteLesen(['--abschnitt', '17', '72', 'Wachhund', '--zeiten']);
+  ok(a1.muster.join('|') === '17|72|Wachhund' && a2.muster.join('|') === '17|72|Wachhund' && a1.zeiten && !a1.fremd.length,
+     '101.2 Komma oder Leerzeichen - dieselbe Auswahl');
+  var a3 = L.argumenteLesen(['--abschnitt=17b', '--nur-geaendert', '--gegen', 'origin/main']);
+  ok(a3.muster.join() === '17b' && a3.nurGeaendert && a3.gegen === 'origin/main', '101.2 --abschnitt=17b und --gegen <ref>');
+  ok(L.argumenteLesen(['--abschnit', '1']).fremd.length === 2, '101.2 ein vertippter Schalter wird gemeldet, nicht still uebergangen');
+
+  /* ---- 101.3 Abhaengigkeiten ueber oberste Variablen ---- */
+  var mini = ["'use strict';", 'var fails = 0;', 'function ok(c) { if (!c) fails++; }', 'var offeneProben = [];',
+    "console.log('1) a');", 'var basis = 5;', 'ok(basis === 5);',
+    "console.log('2) b');", 'ok(basis + 1 === 6);',
+    "console.log('3) c');", '(function () { var basis = 1; ok(basis === 1); })();',
+    'Promise.all(offeneProben).then(function () { process.exit(fails ? 1 : 0); });', ''].join('\n');
+  var gm = L.gliederung(mini);
+  var am = L.abhaengigkeiten(gm);
+  var m2 = L.mitAbhaengigkeiten([2], am);
+  ok(gm.einheiten.length === 3 && m2.lfd.join() === '1,2' && m2.mitgenommen.has(1),
+     '101.3 Abschnitt b benutzt basis aus a - a wird mitgenommen und als solcher genannt');
+  ok(L.mitAbhaengigkeiten([3], am).lfd.join() === '3',
+     '101.3 eine eigene Variable gleichen Namens zieht nichts nach');
+  var m3echt = L.mitAbhaengigkeiten(nr('3'), L.abhaengigkeiten(gl));
+  ok(m3echt.lfd.indexOf(nr('1')[0]) > -1, '101.3 in dieser Datei: Abschnitt 3 nimmt Abschnitt 1 mit (t0)', m3echt.lfd.join());
+
+  /* ---- 101.4 Die Teil-Quelle: Zeilen bleiben, wo sie sind ---- */
+  var e16 = einheit('16'), e17 = einheit('17');
+  var tq = L.teilQuelle(selbst101, gl, [e16.lfd]);
+  var zA = selbst101.split('\n'), zB = tq.split('\n');
+  ok(zA.length === zB.length, '101.4 die Teil-Quelle hat genau so viele Zeilen wie test-v6.js', zA.length + ' / ' + zB.length);
+  ok(zB.slice(0, gl.vorspannEnde).join('\n') === zA.slice(0, gl.vorspannEnde).join('\n'), '101.4 der Vorspann steht unveraendert');
+  var kz = zB[e16.startZeile - 1];
+  ok(kz.length > zA[e16.startZeile - 1].length && kz.slice(-zA[e16.startZeile - 1].length) === zA[e16.startZeile - 1] &&
+     kz.indexOf('__laeufer.beginn(' + e16.lfd + '); ') > -1,
+     '101.4 die Zeitmarke steht auf DERSELBEN Zeile vor dem Kopf (keine neue Zeile)');
+  ok(zB.slice(e16.startZeile, e16.endZeile).join('\n') === zA.slice(e16.startZeile, e16.endZeile).join('\n'),
+     '101.4 der Rumpf des gewaehlten Abschnitts steht Zeile fuer Zeile an seiner Stelle');
+  ok(zB.slice(e17.startZeile - 1, e17.endZeile).join('').trim() === '', '101.4 ein nicht gewaehlter Abschnitt ist leer');
+  var uebersetzt = true;
+  try { new (require('vm').Script)('(function (__laeufer) {' + tq + '\n})'); } catch (e) { uebersetzt = String(e.message); }
+  ok(uebersetzt === true, '101.4 die Teil-Quelle ist gueltiges JavaScript', uebersetzt === true ? undefined : uebersetzt);
+
+  /* ---- 101.5 --nur-geaendert: Zeilen und Dateien ---- */
+  ok(L.geaenderteZeilen('@@ -10,2 +12,3 @@ x\n+a\n@@ -40 +44,0 @@\n').join() === '12,13,14,44,45',
+     '101.5 Hunk-Koepfe werden zu Zeilen der NEUEN Fassung (auch reine Loeschungen)');
+  var ez = L.einheitenZuZeilen(gl, [e16.startZeile + 2]);
+  ok(!ez.alle && ez.lfd.join() === String(e16.lfd), '101.5 eine geaenderte Zeile in Abschnitt 16 waehlt genau 16');
+  ok(e17.bereichStart < e17.startZeile - 1 && L.einheitenZuZeilen(gl, [e17.startZeile - 1]).lfd.join() === String(e17.lfd),
+     '101.5 der Kommentar ueber einem Abschnitt gehoert zu ihm (17: Kommentarblock ueber dem Kopf)');
+  ok(L.einheitenZuZeilen(gl, [2]).alle && L.einheitenZuZeilen(gl, [gl.schlussStart]).alle,
+     '101.5 eine geaenderte Zeile im Vorspann oder im Schluss laesst ALLES laufen');
+  /* Kunstnamen, die es im Repo NICHT gibt: dieser Abschnitt nennt sie, und --nur-geaendert
+   * liest genau diese Zeichenketten - echte Namen wie depot.js liessen ihn bei jeder
+   * Aenderung an depot.js mitlaufen. */
+  var dm = new Set(['kunstmodul.js', 'tools/kunstwerkzeug.js', 'markt/kunstkarte.js', 'kunstseite.html', 'studien/a/kunstprobe.js', 'studien/b/kunstprobe.js']);
+  var nm = new Map();
+  dm.forEach(function (d) { var n = d.split('/').pop(); nm.set(n, (nm.get(n) || []).concat([d])); });
+  var gef = L.genannteDateien(['/kunstmodul.js', 'kunstwerkzeug.js', 'Die Klinke liest kunstseite.html.', 'C:\\x\\markt\\kunstkarte.js', 'xkunstmodul.js'], dm, nm);
+  ok(['kunstmodul.js', 'tools/kunstwerkzeug.js', 'kunstseite.html', 'markt/kunstkarte.js'].every(function (d) { return gef.has(d); }) && gef.size === 4,
+     '101.5 Pfade werden erkannt: __dirname-Stueck, nackter Dateiname, Fliesstext, Windows-Pfad - "xkunstmodul.js" ist nicht kunstmodul.js',
+     Array.from(gef).join(', '));
+  /* require()-Huelle an einem Kunstbaum: kunst-a.js -> unter/kunst-b.js -> kunst-c.js */
+  var kb = fs.mkdtempSync(path101.join(os101.tmpdir(), 'laeufer-101-'));
+  fs.mkdirSync(path101.join(kb, 'unter'));
+  fs.writeFileSync(path101.join(kb, 'kunst-a.js'), "require('./unter/kunst-b.js');\n");
+  fs.writeFileSync(path101.join(kb, 'unter', 'kunst-b.js'), "var c = require(__dirname + '/../kunst-c');\n");
+  fs.writeFileSync(path101.join(kb, 'kunst-c.js'), "require('fs');\n");
+  var hg = L.requireGraph(kb, new Set(['kunst-a.js', 'unter/kunst-b.js', 'kunst-c.js']));
+  ok(Array.from(L.huelle(['kunst-a.js'], hg)).sort().join() === 'kunst-a.js,kunst-c.js,unter/kunst-b.js',
+     '101.5 wer eine Datei nennt, haengt auch an dem, was sie nachlaedt (zwei Stufen, relativ und ueber __dirname)');
+  /* An dieser Datei: Abschnitt 1 nennt keine Datei, benutzt aber Q aus dem Vorspann. */
+  var alleDateien = new Set(fs.readdirSync(__dirname).filter(function (f) { return /\.js$/.test(f); })
+    .concat(fs.readdirSync(__dirname + '/tools').filter(function (f) { return /\.js$/.test(f); }).map(function (f) { return 'tools/' + f; })));
+  var qd = L.quelldateien(gl, __dirname, alleDateien);
+  ok(qd.get(nr('1')[0]).has('quant.js'), '101.5 Abschnitt 1 haengt an quant.js - ueber Q aus dem Vorspann');
+  ok(qd.get(nr('101')[0]).has('tools/testlaeufer.js') && qd.get(nr('101')[0]).has('tools/testvergleich.js'),
+     '101.5 dieser Abschnitt haengt am Laeufer und am Vergleich - aendert sich einer, laeuft er mit');
+
+  /* ---- 101.6 Das Muster in test-v6.js ist dasselbe wie im Laeufer ---- */
+  var haken = /process\.argv\.slice\(2\)\.some\(function \(a\) \{ return (\/.+?\/)\.test\(a\); \}\)/.exec(selbst101);
+  ok(!!haken && haken[1] === String(L.SCHALTER), '101.6 test-v6.js erkennt genau die Schalter, die der Laeufer kennt',
+     haken ? haken[1] : 'kein Haken gefunden');
+  ok(L.gewuenscht(['--abschnitt', '72']) && L.gewuenscht(['--nur-geaendert']) && L.gewuenscht(['--zeiten']) &&
+     !L.gewuenscht([]) && !L.gewuenscht(['--abschnitte']) && !L.gewuenscht(['irgendwas']),
+     '101.6 ohne einen der Schalter bleibt alles beim vollen Lauf');
+
+  /* ---- 101.7 testvergleich: Rauschen wird gemessen, nicht geraten ---- */
+  var v1 = '1) a\n  ✅ eins  [3 ms]\n  ✅ zwei\n  ok   x  "C:\\Temp\\probe-Ab12Cd\\f.json"\n  ✅ drei\n  ✅ vier\n';
+  var v2 = '1) a\n  ✅ eins  [5 ms]\n  ✅ zwei\n  ok   x  "C:\\Temp\\probe-Zz99Yy\\f.json"\n  ✅ vier\n  ✅ drei\n';
+  var nGleich = '1) a\n  ✅ eins  [9 ms]\n  ✅ zwei\n  ok   x  "C:\\Temp\\probe-Qq11Ww\\f.json"\n  ✅ vier\n  ✅ drei\n';
+  ok(TV.vergleichen(v1, nGleich, [v2]).gleich, '101.7 Messwert, Zufallsordner und spaete Reihenfolge wechseln schon zwischen zwei alten Laeufen - gleich');
+  ok(!TV.vergleichen(v1, '1) a\n  ✅ eins  [9 ms]\n  ✅ zwei\n  ok   x  "C:\\Temp\\probe-Qq11Ww\\f.json"\n  ✅ vier\n', [v2]).gleich,
+     '   Gegenprobe: eine fehlende Pruefung faellt auf');
+  ok(!TV.vergleichen(v1, nGleich.replace('✅ zwei', '✅ zwei  [neu]'), [v2]).gleich,
+     '   Gegenprobe: ein neuer Anhang an einer ruhigen Pruefung faellt auf');
+  ok(!TV.vergleichen(v1, nGleich.replace('  ✅ eins  [9 ms]\n  ✅ zwei', '  ✅ zwei\n  ✅ eins  [9 ms]'), [v2]).gleich,
+     '   Gegenprobe: eine vertauschte Reihenfolge VOR der ersten gemessenen Verschraenkung faellt auf');
+  ok(!TV.vergleichen(v1, nGleich).gleich && TV.vergleichen(v1, v1).gleich,
+     '   Gegenprobe: ohne Rauschmessung wird streng verglichen');
+
+  /* ---- 101.8 Ende zu Ende, in eigenen Prozessen (asynchron, laeuft neben dem Rest) ---- */
+  function lauf(args, cwd) {
+    return new Promise(function (fertig) {
+      cp101.execFile(process.execPath, args, { cwd: cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 },
+        function (fehler, aus, err) { fertig({ status: fehler ? (fehler.code === undefined ? null : fehler.code) : 0, signal: fehler && fehler.signal, aus: String(aus) + String(err) }); });
+    });
+  }
+  var kunst = path101.join(kb, 'test-kunst.js');
+  fs.writeFileSync(kunst, ["'use strict';", 'var fails = 0;',
+    "function ok(c, n) { console.log((c ? '  \u2705 ' : '  \u274c ') + n); if (!c) fails++; }",
+    'var offeneProben = [];', 'function probe(z) { offeneProben.push(z); return z; }',
+    "console.log('1) gruen');", "ok(true, 'eins');",
+    "console.log('2) rot');", "ok(false, 'zwei');",
+    "console.log('3) absturz');", "(function () { throw new Error('KUNSTABSTURZ'); })();",
+    "console.log('4) asynchron rot');", "probe(new Promise(function (f) { setTimeout(f, 5); }).then(function () { ok(false, 'spaet'); }));",
+    "console.log('5) beendet');", 'process.kill(process.pid, "SIGKILL");',
+    "Promise.all(offeneProben).then(function () { console.log(fails ? 'ROT' : 'GRUEN'); process.exit(fails ? 1 : 0); });", ''].join('\n'));
+  var LP = __dirname + '/tools/testlaeufer.js';
+  probe(Promise.all([
+    lauf([__filename, '--abschnitt', '16'], __dirname),
+    lauf([LP, '--datei', kunst, '--abschnitt', '1']),
+    lauf([LP, '--datei', kunst, '--abschnitt', '2']),
+    lauf([LP, '--datei', kunst, '--abschnitt', '3']),
+    lauf([LP, '--datei', kunst, '--abschnitt', '4']),
+    lauf([LP, '--datei', kunst, '--abschnitt', 'gibts-nicht']),
+    lauf([LP, '--datei', kunst, '--abschnitt', '5'])
+  ]).then(function (r) {
+    var echt = r[0];
+    ok(echt.status === 0 && /^16\) Kostenmodell/m.test(echt.aus) && !/^1\) resampleBars/m.test(echt.aus) &&
+       /Abschnitts-Lauf: \d+ Pruefungen in 1 von \d+ Abschnitten, 0 fehlgeschlagen/.test(echt.aus) && /KEIN voller Lauf/.test(echt.aus),
+       '101.8 node test-v6.js --abschnitt 16: nur 16 laeuft, gruen, und der Lauf sagt, dass er kein voller ist', echt.status);
+    ok(r[1].status === 0 && /GRUEN/.test(r[1].aus) && !/zwei/.test(r[1].aus), '101.8 Kunstdatei, nur der gruene Abschnitt: Rueckgabewert 0', r[1].status);
+    ok(r[2].status === 1 && /\u274c zwei/.test(r[2].aus), '101.8 ein roter Abschnitt: Rueckgabewert 1 und das Kreuz steht da', r[2].status);
+    ok(r[3].status !== 0 && /KUNSTABSTURZ/.test(r[3].aus) && /test-kunst\.js:11/.test(r[3].aus),
+       '101.8 ein Absturz endet nicht mit 0 - und der Stapel zeigt die ECHTE Zeile der Datei', r[3].status);
+    ok(r[4].status === 1 && /\u274c spaet/.test(r[4].aus), '101.8 eine asynchron rote Pruefung wird abgewartet und zaehlt', r[4].status);
+    ok(r[5].status === 2 && /kein Abschnitt passt zu "gibts-nicht"/.test(r[5].aus), '101.8 ein Muster ohne Treffer bricht mit 2 ab, statt nichts als gruen zu melden', r[5].status);
+    ok(r[6].status !== 0, '101.8 ein von aussen beendeter Lauf gilt nie als gruen', r[6].status + ' ' + r[6].signal);
+    var u = L.uebernehmen(kunst, ['--abschnitt', '5'], { stdio: 'pipe' });
+    ok(u !== 0, '101.8 uebernehmen(): ein Kind ohne Rueckgabewert (Signal) wird zu einem Fehler, nicht zu 0', u);
+    try { fs.rmSync(kb, { recursive: true, force: true }); } catch (e) { /* Temp raeumt das System */ }
+  }));
+})();
+
+console.log('\n102) Werkzeug-Maengel: h4 im Struktur-Inventar, Volltext in den Aufnahmen, zugeklappte Klappen');
+(function () {
+  /* Drei kleine Maengel an zwei Pruefwerkzeugen (wiki/offene-auftraege.md, "Bekannte
+   * Baustellen": Nachtbefunde a und c, QS-Werkzeugbefund zu offsetParent):
+   *   (a) tools/ui-struktur.js las nur h2, h3 und <details> - die h4-Karten des
+   *       Schein-Finders standen gar nicht im Inventar.
+   *   (c) tools/ui-aufnahmen.js legte je Block nur die ersten 120 Zeichen ab. Neu:
+   *       --volltext legt den ganzen Text ab. OHNE den Schalter bleibt laufzeit.json -
+   *       der Eingang der Sperrklinke in Abschnitt 73 - in Feldern und Form wie vorher.
+   *   (d) Die Zeichenzaehlung im Zustand "Klappen zu" fragte nur offsetParent, und das
+   *       ist unter Electron 37 bei geschlossenen <details> nicht zuverlaessig null.
+   *
+   * Beide Werkzeuge brauchen ein Electron-Fenster und duerfen hier nicht laufen. Geprueft
+   * wird deshalb wie in Abschnitt 73 (F11): die Messcodes werden aus der Quelle
+   * GESCHNITTEN und AUSGEFUEHRT - gegen ein Kunst-DOM, das genau so viel Dokument
+   * nachbildet, wie die Messcodes anfassen. Ein Selektor, den es nicht kennt, wirft,
+   * statt still "passt nicht" zu sagen. Geprueft wird das Verhalten, nicht der Wortlaut:
+   * eine Klinke auf die Selektorliste waere an einem Kommentar gruen geworden
+   * (Testmarken-Falle, wiki/fehlerformen.md). */
+  var stQ = fs.readFileSync(__dirname + '/tools/ui-struktur.js', 'utf8');
+  var uaQ = fs.readFileSync(__dirname + '/tools/ui-aufnahmen.js', 'utf8');
+
+  /* ---------------------------------------------------------------------------
+   * Das Kunst-DOM */
+  var SEL = /^([a-z][a-z0-9]*|\*)?(#[\w-]+)?((?:\.[\w-]+)*)((?:\[[\w-]+\])*)(?::not\(\[([\w-]+)\]\))?$/;
+  function passt(e, s) {
+    var m = SEL.exec(s);
+    if (!s || !m) throw new Error('Kunst-DOM kennt den Selektor nicht: "' + s + '"');
+    if (m[1] && m[1] !== '*' && e.tagName.toLowerCase() !== m[1]) return false;
+    if (m[2] && e.id !== m[2].slice(1)) return false;
+    var klassen = e.className.split(' ');
+    if (m[3] && !m[3].split('.').slice(1).every(function (k) { return klassen.indexOf(k) >= 0; })) return false;
+    if (m[4] && !m[4].slice(1, -1).split('][').every(function (a) { return e.hasAttribute(a); })) return false;
+    if (m[5] && e.hasAttribute(m[5])) return false;
+    return true;
+  }
+  var ELEMENT = {
+    hasAttribute: function (a) { return Object.prototype.hasOwnProperty.call(this.attr, a); },
+    getAttribute: function (a) { return this.hasAttribute(a) ? String(this.attr[a]) : null; },
+    matches: function (sel) { var e = this; return sel.split(',').some(function (s) { return passt(e, s.trim()); }); },
+    closest: function (sel) {
+      for (var e = this; e; e = e.parentElement) { if (e.matches(sel)) return e; }
+      return null;
+    },
+    querySelectorAll: function (sel) {
+      var nurKinder = sel.indexOf(':scope > ') === 0, s = nurKinder ? sel.slice(9) : sel, out = [];
+      (function lauf(e) {
+        e.childNodes.forEach(function (k) {
+          if (k.nodeType !== 1) return;
+          if (k.matches(s)) out.push(k);
+          if (!nurKinder) lauf(k);
+        });
+      })(this);
+      return out;
+    },
+    querySelector: function (sel) { return this.querySelectorAll(sel)[0] || null; },
+    cloneNode: function () {
+      var c = knoten(this.tagName.toLowerCase(), this.attr, this.childNodes.map(function (k) {
+        return k.nodeType === 3 ? k.nodeValue : k.cloneNode(true);
+      }));
+      c.open = this.open;
+      return c;
+    },
+    remove: function () {
+      var p = this.parentElement;
+      if (p) p.childNodes.splice(p.childNodes.indexOf(this), 1);
+      this.parentElement = null;
+    }
+  };
+  Object.defineProperties(ELEMENT, {
+    textContent: { get: function () {
+      return this.childNodes.map(function (k) { return k.nodeType === 3 ? k.nodeValue : k.textContent; }).join('');
+    } },
+    innerText: { get: function () { return this.textContent; } },
+    previousElementSibling: { get: function () {
+      var p = this.parentElement;
+      if (!p) return null;
+      var geschwister = p.childNodes.filter(function (k) { return k.nodeType === 1; });
+      return geschwister[geschwister.indexOf(this) - 1] || null;
+    } },
+    /* So verhaelt sich Electron 37 laut QS (04.09.2026): null nur bei [hidden] und
+     * display:none, NICHT im Inhalt geschlossener <details>. Genau diese Luecke soll (d)
+     * schliessen - das Kunst-DOM bildet sie deshalb absichtlich nach. */
+    offsetParent: { get: function () {
+      for (var e = this; e; e = e.parentElement) {
+        if (e.hasAttribute('hidden') || e.stil.display === 'none') return null;
+      }
+      return this.parentElement;
+    } }
+  });
+  function knoten(tag, attr, kinder) {
+    var e = Object.create(ELEMENT);
+    e.nodeType = 1;
+    e.tagName = tag.toUpperCase();
+    e.parentElement = null;
+    e.childNodes = [];
+    e.attr = Object.assign({}, attr || {});
+    e.id = e.attr.id || '';
+    e.className = e.attr['class'] || '';
+    e.open = false;
+    e.stil = {};
+    (kinder || []).forEach(function (k) {
+      var n = typeof k === 'string' ? { nodeType: 3, nodeValue: k } : k;
+      n.parentElement = e;
+      e.childNodes.push(n);
+    });
+    return e;
+  }
+  function offen(e) { e.open = true; return e; }
+  function rechenStil(n) { return { display: n.stil.display || 'block', visibility: n.stil.visibility || 'visible' }; }
+  function dokument(panel) {
+    var body = knoten('body', {}, [panel]);
+    return {
+      querySelector: function (sel) { return body.querySelector(sel); },
+      createTreeWalker: function (wurzel) {
+        var texte = [];
+        (function lauf(e) {
+          e.childNodes.forEach(function (k) { if (k.nodeType === 3) texte.push(k); else lauf(k); });
+        })(wurzel);
+        var i = 0;
+        return { nextNode: function () { return i < texte.length ? texte[i++] : null; } };
+      }
+    };
+  }
+  /* Die Seite: wertet den Code aus, den das Werkzeug an executeJavaScript gibt. */
+  function seite(doc) {
+    return function (code) {
+      return Promise.resolve(new Function('document', 'NodeFilter', 'getComputedStyle', 'return ' + code)(
+        doc, { SHOW_TEXT: 4 }, rechenStil));
+    };
+  }
+  function textKnoten(e) { return e.childNodes.filter(function (k) { return k.nodeType === 3; })[0]; }
+  /* Ein langer Text, dessen Ende anders aussieht als sein Anfang - sonst bewiese
+   * "der ganze Text ist da" nichts gegenueber "der Anfang ist da". */
+  function langerText(wort, n) {
+    var t = [];
+    for (var i = 1; i <= n; i++) t.push(wort + ' ' + i + '.');
+    return t.join(' ');
+  }
+
+  /* ---------------------------------------------------------------------------
+   * Die Bausteine aus der Quelle schneiden. Jedes Muster muss GENAU EINMAL treffen;
+   * die Endmarken der beiden Messcode-Zeichenketten muessen in ihrer Datei eindeutig
+   * sein, sonst koennte der Schnitt zu frueh enden und trotzdem gruen aussehen. */
+  function bausteine(quelle, liste) {
+    var teile = {}, fehlt = [];
+    liste.forEach(function (b) {
+      var treffer = quelle.match(new RegExp(b[1].source, 'g')) || [];
+      if (treffer.length === 1) teile[b[0]] = treffer[0];
+      else fehlt.push(b[0] + ' (' + treffer.length + 'x)');
+    });
+    return { teile: teile, fehlt: fehlt };
+  }
+  function zaehle(quelle, s) { return quelle.split(s).length - 1; }
+
+  var ST = bausteine(stQ, [
+    ['MESSCODE', /const MESSCODE = `[\s\S]*?\}\)`;/],
+    ['zeile', /function zeile\(e\) \{[\s\S]*?\n\}/],
+    ['buendeln', /function buendeln\(eintraege\) \{[\s\S]*?\n\}/],
+    ['seiteBauen', /function seiteBauen\(erg, version\) \{[\s\S]*?\n\}/]
+  ]);
+  var UA = bausteine(uaQ, [
+    ['WEISS', /const WEISS = \[[^\n]*\];/],
+    ['zugeklappt', /function zugeklappt\(n\) \{[\s\S]*?\n\}/],
+    ['ZUGEKLAPPT_JS', /const ZUGEKLAPPT_JS = [^\n]*;/],
+    ['LAEUFE', /const LAEUFE = \[\];/],
+    ['laeufeMessen', /async function laeufeMessen\(js, name, sel\) \{[\s\S]*?\n\}/],
+    ['BLOECKE', /const BLOECKE = \[\];/],
+    ['BLOCK_JS', /const BLOCK_JS = [\s\S]*?\}\)";/],
+    ['bloeckeMessen', /async function bloeckeMessen\(js, name, sel\) \{[\s\S]*?\n\}/],
+    ['VOLLTEXT', /const VOLLTEXT = [^\n]*;/],
+    ['laufzeitAblage', /function laufzeitAblage\(messung, volltext\) \{[\s\S]*?\n\}/]
+  ]);
+  var STRUKTUR = null, stFehler = '';
+  try {
+    STRUKTUR = new Function(['MESSCODE', 'zeile', 'buendeln', 'seiteBauen'].map(function (k) { return ST.teile[k] || ''; })
+      .join('\n') + '\nvar BREITE = 1280;\nreturn { MESSCODE: MESSCODE, zeile: zeile, buendeln: buendeln, seiteBauen: seiteBauen };')();
+  } catch (e) { stFehler = e.message; }
+  ok(ST.fehlt.length === 0 && zaehle(stQ, '})`;') === 1 && STRUKTUR !== null,
+     'Bausteine ui-struktur.js: Messcode, zeile, buendeln, seiteBauen je genau einmal da, Endmarke eindeutig, laufen ohne Fenster',
+     'fehlt: ' + (ST.fehlt.join(', ') || 'nichts') + ', Endmarke ' + zaehle(stQ, '})`;') + 'x' +
+     (stFehler ? ', Fehler: ' + stFehler : ''));
+
+  var uaFehler = '';
+  function ladeAufnahmen(argv) {
+    var quelle = ['WEISS', 'zugeklappt', 'ZUGEKLAPPT_JS', 'LAEUFE', 'laeufeMessen', 'BLOECKE', 'BLOCK_JS',
+                  'bloeckeMessen', 'VOLLTEXT', 'laufzeitAblage'].map(function (k) { return UA.teile[k] || ''; }).join('\n');
+    return new Function('process', 'console', quelle + '\nreturn {' +
+      ' LAEUFE: LAEUFE, laeufeMessen: laeufeMessen, BLOECKE: BLOECKE, bloeckeMessen: bloeckeMessen,' +
+      ' zugeklappt: typeof zugeklappt === "function" ? zugeklappt : null,' +
+      ' laufzeitAblage: typeof laufzeitAblage === "function" ? laufzeitAblage : null };')(
+      { argv: argv }, { log: function () {} });
+  }
+  var ARGV = ['electron.exe', 'tools/ui-aufnahmen.js', 'ziel', '--kunstdaten', '--messung'];
+  var OHNE = null, MIT = null;
+  try {
+    OHNE = ladeAufnahmen(ARGV);
+    MIT = ladeAufnahmen(ARGV.concat(['--volltext']));
+  } catch (e) { uaFehler = e.message; }
+  ok(UA.fehlt.length === 0 && zaehle(uaQ, '})";') === 1 && OHNE !== null,
+     'Bausteine ui-aufnahmen.js: Zuklapp-Pruefung, beide Zaehlungen, Schalter und Ablage je genau einmal da, Endmarke eindeutig',
+     'fehlt: ' + (UA.fehlt.join(', ') || 'nichts') + ', Endmarke ' + zaehle(uaQ, '})";') + 'x' +
+     (uaFehler ? ', Fehler: ' + uaFehler : ''));
+
+  /* ---------------------------------------------------------------------------
+   * (a) h4 im Struktur-Inventar - am Messcode selbst, gegen ein Kunst-Panel */
+  function strukturPanel() {
+    return knoten('div', { id: 'sub-probe' }, [
+      knoten('h2', {}, ['Schein-Finder']),
+      knoten('div', { 'class': 'card', id: 'sfBasis' }, [knoten('h4', {}, ['Basiswert ', knoten('button', { 'class': 'info' }, ['i'])])]),
+      knoten('div', { 'class': 'card' }, [knoten('h4', {}, ['Was für ein Schein'])]),
+      knoten('details', { 'data-klappe': 'archiv' }, [
+        knoten('summary', {}, [knoten('h3', {}, ['Archiv'])]),
+        knoten('details', {}, [knoten('summary', {}, ['Innen']), knoten('h4', {}, ['Tief'])])
+      ]),
+      knoten('details', {}, [knoten('summary', {}, [knoten('h4', {}, ['Titel im Summary'])]), knoten('p', {}, ['x'])])
+    ]);
+  }
+  var inv = null;
+  if (STRUKTUR) {
+    try {
+      inv = JSON.parse(new Function('document', 'getComputedStyle', 'return ' + STRUKTUR.MESSCODE)(
+        dokument(strukturPanel()), rechenStil)('#sub-probe'));
+    } catch (e) { inv = { fehler: e.message, eintraege: [] }; }
+  }
+  var eintraege = inv ? inv.eintraege || [] : [];
+  var h4 = eintraege.filter(function (e) { return e.art === 'h4'; });
+  ok(h4.length === 3 && h4[0].titel === 'Basiswert' && h4[1].titel === 'Was für ein Schein',
+     '(a) h4-Karten stehen im Inventar, als eigene Art und ohne das i ihres Erklaerknopfs',
+     (inv && inv.fehler) || h4.map(function (e) { return e.titel; }).join(' | ') || 'keine h4');
+  ok(h4.length === 3 && h4[0].tiefe === 0 && h4[0].kennung === 'sfBasis' && !h4[0].eigeneKennung &&
+     h4[2].titel === 'Tief' && h4[2].tiefe === 2,
+     '(a) die Tiefe einer h4 kommt wie bei h2/h3 aus den Klappen darueber (0 in der Karte, 2 in zwei Klappen)',
+     h4.map(function (e) { return e.titel + ':' + e.tiefe; }).join(' | '));
+  ok(eintraege.some(function (e) { return e.art === 'klappe' && e.titel === 'Titel im Summary'; }) &&
+     !eintraege.some(function (e) { return e.art !== 'klappe' && e.titel === 'Titel im Summary'; }),
+     '(a) eine h4 IM summary ist der Titel der Klappe und steht nicht doppelt');
+
+  var marken = {};
+  if (STRUKTUR) {
+    ['h2', 'h3', 'h4', 'klappe'].forEach(function (art) {
+      marken[art] = STRUKTUR.zeile({ art: art, tiefe: 0, titel: 'X', mal: 1, kennung: '', stand: '', verborgen: '' }).split(' ')[0];
+    });
+  }
+  var tiefZeile = STRUKTUR ? STRUKTUR.zeile({ art: 'h4', tiefe: 2, titel: 'Tief', mal: 1, kennung: '', stand: '', verborgen: '' }) : '';
+  ok(marken.h4 && [marken.h2, marken.h3, marken.klappe].indexOf(marken.h4) === -1 &&
+     tiefZeile === '    ' + marken.h4 + ' Tief',
+     '(a) zeile(): eine h4 hat ihre eigene Marke - nicht die der h3 - und wird nach ihrer Tiefe eingerueckt',
+     JSON.stringify(marken) + ' / "' + tiefZeile + '"');
+
+  /* Durch die ganze Kette: Kunst-Panel -> Messcode -> buendeln -> seiteBauen. Jede h4
+   * muss im Baum UND in der Liste stehen, und jede Marke, die die Seite benutzt, muss
+   * die Legende erklaeren. */
+  var md = '';
+  if (STRUKTUR && inv && !inv.fehler) {
+    var gebuendelt = STRUKTUR.buendeln(eintraege);
+    md = STRUKTUR.seiteBauen({ seiten: [{ reiter: 'Werkzeuge', reiterOrdner: 'werkzeuge', tab: 'werkzeuge',
+      pille: 'Scheine', sub: 'scheine', panel: '#sub-probe', eintraege: gebuendelt, zeichen: inv.zeichen,
+      bilder: [], bilderOffen: [] }], dialoge: [] }, '9.9.9');
+  }
+  var mdZeilen = md.split('\n');
+  var legende = mdZeilen.filter(function (z) { return z.indexOf('**Was hier steht:**') === 0; })[0] || '';
+  var h4Gebuendelt = md ? STRUKTUR.buendeln(eintraege).filter(function (e) { return e.art === 'h4'; }) : [];
+  var imBaum = h4Gebuendelt.filter(function (e) { return mdZeilen.indexOf('   │  ' + STRUKTUR.zeile(e)) > -1; }).length;
+  var inListe = h4Gebuendelt.filter(function (e) {
+    return mdZeilen.indexOf('  '.repeat(e.tiefe) + '- ' + STRUKTUR.zeile(e).trimStart()) > -1; }).length;
+  ok(h4Gebuendelt.length === 3 && imBaum === 3 && inListe === 3,
+     '(a) die erzeugte Seite fuehrt jede h4 im Baum und in der Liste ihrer Pille',
+     h4Gebuendelt.length + ' h4, ' + imBaum + ' im Baum, ' + inListe + ' in der Liste');
+  var unerklaert = ['h2', 'h3', 'h4'].filter(function (art) {
+    return !marken[art] || legende.indexOf(marken[art] + ' = Überschrift `' + art + '`') === -1;
+  });
+  if (!marken.klappe || legende.indexOf(marken.klappe + ' = Klappe') === -1) unerklaert.push('klappe');
+  ok(legende.length > 0 && unerklaert.length === 0,
+     '(a) die Legende erklaert jede Marke, die die Seite benutzt - auch die der h4',
+     unerklaert.join(', ') || 'alle erklaert');
+
+  /* ---------------------------------------------------------------------------
+   * (c) --volltext und (d) zugeklappte Klappen - an den Zaehlungen selbst */
+  var LANG = langerText('Langer Satz', 60);
+  var REST = langerText('Ausserhalb', 30);
+  function volltextPanel() {
+    return knoten('div', { id: 'sub-probe' }, [
+      knoten('section', { 'class': 'card', id: 'karteLang' }, [knoten('h3', {}, ['Langer Block']), knoten('p', {}, [LANG])]),
+      knoten('div', {}, [REST])
+    ]);
+  }
+  var ZU = langerText('Zugeklappt', 30), AUF = langerText('Aufgeklappt', 30), INNEN = langerText('Innen', 40);
+  function klappenPanel() {
+    var k1 = knoten('details', { 'data-klappe': 'k1' }, [
+      knoten('summary', {}, ['Klappe Eins']),
+      'Direkt in der Klappe, ohne Karte.',
+      knoten('div', { 'class': 'card' }, [knoten('h3', {}, ['Inhalt']), knoten('p', { id: 'pZu' }, [ZU])]),
+      offen(knoten('details', { 'data-klappe': 'k3' }, [knoten('summary', {}, ['Innen offen']), knoten('p', { id: 'pInnen' }, [INNEN])]))
+    ]);
+    var k2 = offen(knoten('details', { 'data-klappe': 'k2' }, [
+      knoten('summary', {}, ['Klappe Zwei']),
+      knoten('div', { 'class': 'card' }, [knoten('h3', {}, ['Offen']), knoten('p', { id: 'pAuf' }, [AUF])])
+    ]));
+    return { panel: knoten('div', { id: 'sub-probe' }, [k1, k2]), k1: k1, k2: k2 };
+  }
+  function orteVon(seiteMessung) {
+    var o = {};
+    (seiteMessung ? seiteMessung.bloecke : []).forEach(function (b) { o[b.ort] = b.len; });
+    return o;
+  }
+
+  if (!OHNE) return;
+  probe(Promise.resolve().then(function () {
+    return OHNE.bloeckeMessen(seite(dokument(volltextPanel())), 'probe', '#sub-probe');
+  }).then(function () {
+    return MIT.bloeckeMessen(seite(dokument(volltextPanel())), 'probe', '#sub-probe');
+  }).then(function () {
+    var o = OHNE.BLOECKE[0], m = MIT.BLOECKE[0];
+    var bo = o.bloecke.filter(function (b) { return b.ort === 'Langer Block · #karteLang'; })[0] || {};
+    var bm = m.bloecke.filter(function (b) { return b.ort === 'Langer Block · #karteLang'; })[0] || {};
+    ok(Object.keys(bo).join(',') === 'ort,len,anfang' && bo.len === LANG.length && bo.anfang === LANG.slice(0, 120) &&
+       Object.keys(o.ohneBlock).join(',') === 'len,anfang' && o.ohneBlock.len === REST.length,
+       '(c) ohne --volltext: je Block genau ort, len, anfang (120 Zeichen) - dieselben Felder wie vorher',
+       Object.keys(bo).join(',') + ' / ' + Object.keys(o.ohneBlock).join(','));
+    ok(bm.text === LANG && bm.len === LANG.length && bm.anfang === LANG.slice(0, 120),
+       '(c) mit --volltext: der ganze Text des Blocks steht da, der Anfang bleibt daneben',
+       (bm.text || '').length + ' von ' + LANG.length + ' Zeichen');
+    ok(m.ohneBlock.text === REST && m.ohneBlock.anfang === REST.slice(0, 200),
+       '(c) mit --volltext: auch der Text ausserhalb aller Bloecke steht ganz da',
+       (m.ohneBlock.text || '').length + ' von ' + REST.length + ' Zeichen');
+
+    /* Die Ablage. Ohne Schalter: die abgelegte Messung im Repo, durch die neue Ablage
+     * geschickt, ergibt dieselbe Datei Zeichen fuer Zeichen - der Eingang der
+     * Sperrklinke in Abschnitt 73 bleibt, wie er ist. */
+    var pfad = __dirname + '/wiki/aufnahmen/laufzeit.json';
+    var roh = fs.existsSync(pfad) ? fs.readFileSync(pfad, 'utf8').replace(/\r\n/g, '\n') : '';
+    var zurueck = OHNE.laufzeitAblage && roh ? OHNE.laufzeitAblage(JSON.parse(roh), false) : null;
+    ok(zurueck !== null && zurueck === roh,
+       '(c) ohne --volltext: die abgelegte laufzeit.json geht unveraendert durch die Ablage - gleiche Felder, gleiche Reihenfolge',
+       zurueck === null ? 'Ablage-Funktion fehlt' : roh.length + ' / ' + zurueck.length + ' Zeichen');
+    var messung = { stand: '2026-10-05T00:00:00.000Z', kunstdaten: true, breite: 1280, kopfzeile: {}, panels: [],
+                    dauertext: [], bildlauf: [], bloecke: MIT.BLOECKE, saetze: [], register: { angemeldet: [], knoepfe: [] } };
+    var abgelegt = MIT.laufzeitAblage ? JSON.parse(MIT.laufzeitAblage(messung, true)) : {};
+    ok(/ --volltext$/.test(abgelegt.werkzeug || '') && abgelegt.bloecke && abgelegt.bloecke[0].bloecke[0].text === LANG,
+       '(c) mit --volltext: laufzeit.json traegt den ganzen Text und nennt den Schalter im Feld werkzeug',
+       abgelegt.werkzeug || 'keine Ablage');
+
+    /* (d) Die Zuklapp-Pruefung selbst, an den vier Faellen, die zaehlen. */
+    var kp = klappenPanel();
+    var tZu = textKnoten(kp.panel.querySelector('#pZu'));
+    var tSum = textKnoten(kp.k1.querySelector(':scope > summary'));
+    var tAuf = textKnoten(kp.panel.querySelector('#pAuf'));
+    var tInnen = textKnoten(kp.panel.querySelector('#pInnen'));
+    var z = OHNE.zugeklappt;
+    ok(!!z && z(tZu) === true && z(tSum) === false && z(tAuf) === false && z(tInnen) === true &&
+       z(kp.panel.querySelector('#pZu')) === true,
+       '(d) zugeklappt(): verborgen ist der Inhalt einer geschlossenen Klappe, ihr summary nicht - auch eine offene Klappe IN einer geschlossenen',
+       z ? [z(tZu), z(tSum), z(tAuf), z(tInnen)].join('/') : 'Funktion fehlt');
+    ok(kp.panel.querySelector('#pZu').offsetParent !== null,
+       '(d) Kontrolle: das Kunst-DOM bildet die Luecke nach - offsetParent ist in der geschlossenen Klappe NICHT null');
+
+    var zu = OHNE.BLOECKE.length;
+    return OHNE.bloeckeMessen(seite(dokument(kp.panel)), 'zu', '#sub-probe').then(function () {
+      var orte = orteVon(OHNE.BLOECKE[zu]);
+      ok(Object.keys(orte).join(' | ') === 'Offen · .card' && orte['Offen · .card'] === AUF.length,
+         '(d) Blockmessung "Klappen zu": gezaehlt wird nur die offene Klappe, nichts aus der geschlossenen',
+         Object.keys(orte).map(function (k) { return k + ' (' + orte[k] + ')'; }).join(' | '));
+      return OHNE.laeufeMessen(seite(dokument(kp.panel)), 'zu', '#sub-probe');
+    }).then(function () {
+      var funde = OHNE.LAEUFE[OHNE.LAEUFE.length - 1].funde.map(function (f) { return f.ort; }).sort();
+      ok(funde.join(',') === '#pAuf',
+         '(d) Dauertext-Lauf "Klappen zu": nur der Absatz in der offenen Klappe, keiner aus der geschlossenen',
+         funde.join(', ') || 'keiner');
+      kp.k1.open = true;
+      return OHNE.bloeckeMessen(seite(dokument(kp.panel)), 'auf', '#sub-probe');
+    }).then(function () {
+      var orte = orteVon(OHNE.BLOECKE[OHNE.BLOECKE.length - 1]);
+      ok(orte['Inhalt · .card'] === ZU.length && orte['Innen offen · [k3]'] === INNEN.length &&
+         orte['Offen · .card'] === AUF.length && Object.keys(orte).length === 4,
+         '(d) Gegenrichtung: aufgeklappt zaehlt wieder alles - die Pruefung versteckt nichts, was offen ist',
+         Object.keys(orte).join(' | '));
+    });
+  }).catch(function (e) {
+    ok(false, '102: die Messcodes liefen nicht durch', e && e.message);
+  }));
+})();
+
+
+/* ================= 103) Generalprobe 23.11.2026: behobene Funde (Zweig fix/generalprobe-2311) =================
+ * (Bis zur Integration am 05.10.2026 als Abschnitt 101 gefuehrt - so nennt ihn noch
+ * pruefberichte/2026-10-fix-generalprobe-2311.md; 101/102 sind seither Abschnitts-Laeufer und Werkzeuge.)
  * Die Nachweise der Generalprobe (pruefberichte/generalprobe-2311/funde/, Bericht
  * pruefberichte/2026-10-generalprobe-2311.md) sind hier dauerhafte Tests: jeder behobene Fund und jede
  * Gegenprobe muss "kein Unterschied" melden (lauf() liefert abweichung: false). Vor der Behebung meldeten
@@ -24530,7 +25146,7 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
  * Nicht hier stehen die Funde, die offen oder kein Fehler sind (M-03/H-d Reihenende nach fuenf Tagen,
  * H-g Uhrsprung) und die Klasse C (D-10, D-11, M-04, M-05) - sie zeigen ihre Abweichung weiter.
  * Kunstdaten, feste Uhr, kein Netz. */
-console.log('101) Generalprobe 23.11.2026: behobene Funde und Gegenproben');
+console.log('103) Generalprobe 23.11.2026: behobene Funde und Gegenproben');
 (function () {
   var pfad = require('path');
   var ordner = pfad.join(__dirname, 'pruefberichte', 'generalprobe-2311', 'funde');
@@ -24550,23 +25166,24 @@ console.log('101) Generalprobe 23.11.2026: behobene Funde und Gegenproben');
   var liste = BEHOBEN.map(function (k) { return { fund: k[0], id: k[1] }; })
     .concat(GEGENPROBEN.map(function (id) { return { fund: 'Gegenprobe', id: id }; }));
   var fehlen = liste.filter(function (x) { return !fs.existsSync(pfad.join(ordner, x.id + '.js')); }).map(function (x) { return x.id; });
-  ok(fehlen.length === 0, '101.0 alle ' + liste.length + ' genannten Nachweise liegen unter pruefberichte/generalprobe-2311/funde/', fehlen.join(', ') || undefined);
+  ok(fehlen.length === 0, '103.0 alle ' + liste.length + ' genannten Nachweise liegen unter pruefberichte/generalprobe-2311/funde/', fehlen.join(', ') || undefined);
   offeneProben.push((async function () {
     for (var i = 0; i < liste.length; i++) {
       var r;
       try { r = await require(pfad.join(ordner, liste[i].id + '.js')).lauf(); } catch (e) { r = { abweichung: true, text: 'Testfehler: ' + (e && e.message) }; }
-      ok(!r.abweichung, '101 ' + liste[i].fund + ': ' + liste[i].id + ' - kein Unterschied', r.abweichung ? String(r.text).slice(0, 300) : undefined);
+      ok(!r.abweichung, '103 ' + liste[i].fund + ': ' + liste[i].id + ' - kein Unterschied', r.abweichung ? String(r.text).slice(0, 300) : undefined);
     }
   })());
 })();
 
-/* ================= 102) Lader-Stoerungen: Tagesbalken in kurse.js (Zweig fix/generalprobe-2311) =================
+/* ================= 104) Lader-Stoerungen: Tagesbalken in kurse.js (Zweig fix/generalprobe-2311) =================
+ * (Bis zur Integration am 05.10.2026 als Abschnitt 102 gefuehrt.)
  * Die Einzeltests des Pruefberichts pruefberichte/2026-10-lader-stoerungen.md fuer kurse.js laufen als eigener
  * Prozess (sie sperren Netz und Schreiben fuer ihren ganzen Prozess, das soll diese Suite nicht treffen). Die
  * behobenen Funde (KU-2, KU-5, KU-6, KU-9, KU-13, KU-14; vorher "ZEIGT ABWEICHUNG") und die vorher schon
  * richtigen (KU-1, KU-3, KU-4, KU-12) muessen "kein Unterschied" melden; kein Test darf kaputt sein. Offen und
  * deshalb nicht hier: KU-7, KU-8, KU-10, KU-11. Kunstdaten, feste Uhr, kein Netz. */
-console.log('102) Lader-Stoerungen: Tagesbalken je Handelstag in kurse.js (KU)');
+console.log('104) Lader-Stoerungen: Tagesbalken je Handelstag in kurse.js (KU)');
 (function () {
   var ku = '';
   try {
@@ -24575,9 +25192,9 @@ console.log('102) Lader-Stoerungen: Tagesbalken je Handelstag in kurse.js (KU)')
   } catch (e) { ku = String((e && e.stdout) || '') + '\nLAUF GESCHEITERT: ' + (e && e.message); }
   ['KU-2', 'KU-5', 'KU-6', 'KU-9', 'KU-13', 'KU-14', 'KU-1', 'KU-3', 'KU-4', 'KU-12'].forEach(function (id) {
     var zeile = ku.split('\n').filter(function (z) { return z.indexOf('[' + id + ']') >= 0; })[0] || '';
-    ok(/^kein Unterschied: /.test(zeile), '102 ' + id + ' - kein Unterschied', zeile ? undefined : 'Zeile fehlt');
+    ok(/^kein Unterschied: /.test(zeile), '104 ' + id + ' - kein Unterschied', zeile ? undefined : 'Zeile fehlt');
   });
-  ok(/ 0 kaputt; Netzversuche 0, Schreibversuche ausserhalb 0/.test(ku), '102 Lauf der KU-Tests: 0 kaputt, kein Netz, kein Schreiben ausserhalb',
+  ok(/ 0 kaputt; Netzversuche 0, Schreibversuche ausserhalb 0/.test(ku), '104 Lauf der KU-Tests: 0 kaputt, kein Netz, kein Schreiben ausserhalb',
      (ku.split('\n').filter(function (z) { return /^--- /.test(z); })[0] || ku.slice(-200)));
 })();
 

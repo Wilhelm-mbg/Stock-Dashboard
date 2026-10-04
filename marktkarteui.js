@@ -17,7 +17,9 @@
  * ist an dieser Karte nichts - sie zeigt, was heute passiert ist, mehr nicht. */
 (function () {
   var U = window.U || {};
-  function esc(x) { return U.esc ? U.esc(x) : String(x); }
+  /* Vorspann auf U.esc, kein zweiter Ort (wie messband.js): fehlt U.esc, wird
+   * nichts ausgegeben statt Fremdtext roh (Sicherheitspruefung 2026-10, F10). */
+  function esc(x) { var u = window.U || U; return u.esc ? u.esc(x) : ''; }
 
   /* Werte, deren Stueckzahl die SEC nicht hergibt. Nachgemessen am 25.08.2026:
    * Meta taggt gar keine Aktienanzahl in XBRL (mehrere Gattungen mit einer Achse,

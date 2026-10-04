@@ -1,0 +1,792 @@
+[
+  {
+    "datei": "app-shell.js",
+    "zeile": 448,
+    "wortlaut": "return 'widerlegt · Studie ' + String(v.datum)",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## Trendkanal auf Tagesbasis — **NEIN, der App-Kanal ist als Einstieg geschlossen** (09.09.2026)"
+    },
+    "belegsagt": "Trendkanal Tagesbasis: NEIN (09.09.2026); Datum kommt zur Laufzeit aus studienurteile.js.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 820,
+    "wortlaut": "Jede Regel wurde in genau einem Regime gemessen und wird nur dort eingesetzt; belegt ist keine davon (Belegstand 04.10.2026).",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## **Belegte handelbare Kanten: NULL.**"
+    },
+    "belegsagt": "Es gibt keine belegte Kante; die Regime-Zuteilung R-TREND (t = 3,2) ist seit 04.10.2026 kein Beleg der Zuteilung als Ganzes mehr.",
+    "vorschlag": "Jede Regel wurde in genau einem Regime gemessen und wird nur dort eingesetzt; eine belegte Kante gibt es derzeit nicht.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 820,
+      "wortlaut": "Jede Kante wurde in genau einem Regime gemessen und wird nur dort eingesetzt."
+    },
+    "neu_begruendung": "„Kante“ durch „Regel“ ersetzt und ergänzt, dass keine davon belegt ist (Belegstand: null belegte Kanten; R-TREND t = 3,2 kein Beleg der Zuteilung als Ganzes mehr)."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 868,
+    "wortlaut": "alte Annahme 0,06 Prozentpunkte je Umlauf – überholt 03.09.2026: gemessen liegt die Kassa-Hürde je Umsatzklasse bei 0,0449 bis 0,1569 Pp",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "die Kassa-Hürde ist gemessen und liegt je Klasse bei 0,0449 bis 0,1569 Pp"
+    },
+    "belegsagt": "0,06 Pp war eine Annahme, überholt 03.09.2026: die Kassa-Hürde ist gemessen und klassenspezifisch, 0,0449 bis 0,1569 Pp je Umlauf.",
+    "vorschlag": "die Aktienhürde (gemessen je Umsatzklasse 0,045 bis 0,157 Pp je Umlauf) – falls der Code noch mit 0,06 prüft, dort ebenso nachziehen",
+    "alt": {
+      "klasse": "c",
+      "zeile": 868,
+      "wortlaut": "die Aktienhürde (0,06 Prozentpunkte je Umlauf)"
+    },
+    "neu_begruendung": "kosten.js prüft Alpaca-Runden weiter gegen ALP_ANNAHME_PCT = 0.06 (Rechenwert bleibt); der Text nennt sie jetzt als überholte Annahme und daneben die gemessene Kassa-Hürde je Klasse."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 868,
+    "wortlaut": "die CFD-Hürde (0,10 %)",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "| 0,10 Pp (CFD-Runde ohne Nacht) | 26 |"
+    },
+    "belegsagt": "CFD-Runde ohne Nacht 0,10 Pp (Hinweis: im Text steht „%“ statt „Pp“).",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 903,
+    "wortlaut": "nur im Kapitulations-Modus (Neumessung: zurückgewiesen, per Voreinstellung aus)",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## Kapitulation V2, Neumessung (03.10.2026) — in der behaupteten Größe zurückgewiesen"
+    },
+    "belegsagt": "Kapitulation zurückgewiesen 03.10.2026.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 994,
+    "wortlaut": "Die große Signalstudie vom 23.08.2026 hat in 3.372 Tests keinen bestätigten Vorteil der Ausbruchsfamilie gefunden",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**0 von 51 Detektoren bestätigt**, 3.372 Tests"
+    },
+    "belegsagt": "Große Signalstudie: 0 von 51 Detektoren bestätigt, 3.372 Tests.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1054,
+    "wortlaut": "Gemessene Intraday-Regeln (belegt ist keine: RSI(2) im Seitwärtskanal nicht entscheidbar, Kapitulations-Dip in der behaupteten Größe zurückgewiesen): nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden)",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "`kapitulation` (Kapitulations-Dip, 60m, H=26) | **Überholt 03.10.2026 — Neumessung auf sauberem Archiv: in der behaupteten Größe zurückgewiesen"
+    },
+    "belegsagt": "Belegte Kanten: NULL. rsi2seit nicht entscheidbar (+0,021 Pp je Signal), Kapitulations-Dip am 03.10.2026 zurückgewiesen.",
+    "vorschlag": "Gemessene Intraday-Regeln (RSI(2) im Seitwärtskanal: nicht entscheidbar; Kapitulations-Dip: zurückgewiesen): nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1054,
+      "wortlaut": "Gemessene Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt."
+    },
+    "neu_begruendung": "„Kanten“ durch „Regeln“ ersetzt und je Regel das Urteil des Belegstands genannt; die 26 (H=26) steht in der Kapitulations-Zeile."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1054,
+    "wortlaut": "belegt ist keine: RSI(2) im Seitwärtskanal nicht entscheidbar",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+    },
+    "zusatz": true,
+    "alt": {
+      "klasse": "c",
+      "zeile": 1054,
+      "wortlaut": "Gemessene Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt."
+    },
+    "neu_begruendung": "Urteil für RSI(2) im Seitwärtskanal: nicht entscheidbar (+0,021 Pp je Signal)."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1055,
+    "wortlaut": "Widerlegte Setups:",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**0 von 51 Detektoren bestätigt**, 3.372 Tests"
+    },
+    "belegsagt": "Signalstudie 0 von 51 bestätigt; Ausbruchs-/Setup-Familie unter „Widerlegt (gemessen tot)“.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1065,
+    "wortlaut": "gehört zur Ausbruchsfamilie, und die ist hier in 3.372 Tests widerlegt worden",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**0 von 51 Detektoren bestätigt**, 3.372 Tests"
+    },
+    "belegsagt": "Große Signalstudie: 0 von 51 Detektoren bestätigt, 3.372 Tests (Abschnitt „Widerlegt“).",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1095,
+    "wortlaut": "Momentum: t = 0,74 nach Korrektur (liquide Fassung t 2,02, In-Sample und am Rand)",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "t fiel von 4,74 auf **0,74** nach Korrektur"
+    },
+    "belegsagt": "Momentum H=63: nicht entscheidbar (t 4,74 → 0,74); liquide Fassung brutto +1,835 Pp je Umlauf, t 2,02, „In-Sample und am Rand“, kein „belegt“.",
+    "vorschlag": "Momentum: nicht entscheidbar (t 0,74 nach Korrektur; liquide Fassung t 2,02, In-Sample, am Rand)",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1095,
+      "wortlaut": "Momentum t = 1,62"
+    },
+    "neu_begruendung": "t = 1,62 ersetzt durch den Belegstand: 0,74 nach Korrektur, liquide Fassung t 2,02 „In-Sample und am Rand“."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1095,
+    "wortlaut": "Ergebnis-Drift, gemessen am 04.10.2026: Buch 13,01 % p. a. gegen S&P 500 12,63 % p. a., 16 von 200 Zufallsbüchern darüber",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "200 Bücher mit einer Zufallszahl an Stelle der Überraschung: Mitte +56,6 %"
+    },
+    "belegsagt": "Ergebnis-Drift: t 1,7–2,0 nach Zeitzonen-Korrektur (nicht entscheidbar); Messung Nr. 88 vom 04.10.2026: +0,38 Pp p. a. gegen den S&P 500, 16 von 200 Zufallsbüchern darüber, kein Vorwärtstest. 8,44/14,07 % p. a. stehen nirgends im Belegstand.",
+    "vorschlag": "Ergebnis-Drift: nicht entscheidbar (Messung vom 04.10.2026: Buch 13,01 % p. a. gegen S&P 500 12,63 % p. a., 16 von 200 Zufallsbüchern darüber)",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1095,
+      "wortlaut": "Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a."
+    },
+    "neu_begruendung": "8,44/14,07 % p. a. (nicht im Belegstand) ersetzt durch die Messung Nr. 88 vom 04.10.2026 (Zeilen Buch und Zufallsbereich derselben Tabelle)."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1095,
+    "wortlaut": "Belegt ist keine von beiden – beide sind nach heutigem Stand nicht entscheidbar (Belegstand 04.10.2026)",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## **Belegte handelbare Kanten: NULL.**"
+    },
+    "belegsagt": "Belegte handelbare Kanten: NULL. Weder Momentum noch Ergebnis-Drift „halten“ – beide sind nicht entscheidbar.",
+    "vorschlag": "Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien führen. Belegt ist keine von beiden: beide sind nach heutigem Stand nicht entscheidbar. Details unter Werkzeuge → Betrieb, Messprotokolle.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1095,
+      "wortlaut": "beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005"
+    },
+    "neu_begruendung": "„beide halten über die volle Historie“ widersprach dem Belegstand; jetzt: keine belegt, beide nicht entscheidbar."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1120,
+    "wortlaut": "Er wurde am 03.10.2026 neu gemessen und in der behaupteten Größe zurückgewiesen",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## Kapitulation V2, Neumessung (03.10.2026) — in der behaupteten Größe zurückgewiesen"
+    },
+    "belegsagt": "Kapitulation V2 neu gemessen 03.10.2026: netto −0,024 Pp, Band [−0,649; +0,601], zurückgewiesen.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1121,
+    "wortlaut": "Das alte Setup-Rennen über die widerlegten Signale läuft dort bewusst nicht mehr",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**0 von 51 Detektoren bestätigt**, 3.372 Tests"
+    },
+    "belegsagt": "Signalstudie 0 von 51 bestätigt; Stunden-Strategie t −11,6.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1169,
+    "wortlaut": "der Kapitulations-Dip ist am 03.10.2026 neu gemessen und in der behaupteten Größe zurückgewiesen worden",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## Kapitulation V2, Neumessung (03.10.2026) — in der behaupteten Größe zurückgewiesen"
+    },
+    "belegsagt": "Kapitulation V2 neu gemessen 03.10.2026, zurückgewiesen.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1232,
+    "wortlaut": "Seit 02.09.2026 handelt das Buch <b>die gemessene liquide Konfiguration (Parameter wie gemessen)</b>: Rückblick 231 Handelstage, Lücke 21, Halten 63",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "das App-Buch rechnet exakt die gemessene Konfiguration (231/21/63"
+    },
+    "belegsagt": "Buch seit 02.09.2026 auf liquidem Korb, exakt die gemessene Konfiguration 231/21/63.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1232,
+    "wortlaut": "ist jede weitere Out-of-Sample – ein Beleg ist das nicht: Über Monate prüft das die Umsetzung (Kurse, Kosten, Ausschüttungen, Auswahl), nicht den Vorsprung.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Ein Test über Monate prüft also die **Umsetzung** (Kurse, Kosten, Ausschüttungen, Auswahl), nicht den Vorsprung"
+    },
+    "belegsagt": "Out-of-Sample ja, „Beleg“ nein: +7 Pp p. a. wären erst nach rund 37 Jahren von null zu trennen; ein Test über Monate prüft die Umsetzung, nicht den Vorsprung.",
+    "vorschlag": "Ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere Out-of-Sample. Über Monate prüft das die Umsetzung (Kurse, Kosten, Ausschüttungen), nicht den Vorsprung.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1232,
+      "wortlaut": "Ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg."
+    },
+    "neu_begruendung": "„Out-of-Sample-Beleg“ berichtigt: ein Test über Monate prüft die Umsetzung, nicht den Vorsprung (Nachtrag 23:06)."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1238,
+    "wortlaut": "<b>Der größte Rückschlag lag bei 52 Prozent</b> (2008)",
+    "klasse": "b",
+    "beleg": {
+      "datei": "studienurteile.js",
+      "marke": "'momentum-liquide': { grund: 'gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen)'"
+    },
+    "belegsagt": "Steht unter dem Kopf „Überholt: gemessen nur an Werten, die es heute noch gibt …“ (studienurteile.js belegeKopf). Heute: Rückblick Korb 187 größter Rückschlag −56,9 % / −49,0 %.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1239,
+    "wortlaut": "<b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei −0,1 % gegen +7,4 %.",
+    "klasse": "b",
+    "beleg": {
+      "datei": "studienurteile.js",
+      "marke": "'momentum-liquide': { grund: 'gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen)'"
+    },
+    "belegsagt": "Unter dem Überholt-Kopf; heutiger Stand ist der Rückblick vom 04.10.2026.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1240,
+    "wortlaut": "Der gemessene Vorsprung ist eher eine Obergrenze.",
+    "klasse": "b",
+    "beleg": {
+      "datei": "studienurteile.js",
+      "marke": "'momentum-liquide': { grund: 'gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen)'"
+    },
+    "belegsagt": "Unter dem Überholt-Kopf.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1252,
+    "wortlaut": "",
+    "klasse": "gestrichen",
+    "beleg": null,
+    "belegsagt": "Weder in belegstand.md noch in einer ERGEBNIS.md. Nr. 88 nennt nur Aktienkosten 0,08–0,21 Pp je Umlauf.",
+    "vorschlag": "Gehandelt wird im <b>Basiswert</b>, nicht mit Hebelscheinen.",
+    "alt": {
+      "klasse": "d",
+      "zeile": 1252,
+      "wortlaut": "Der Drift liefert nur ein Viertel bis ein Achtel der Schein-Kostenhürde."
+    },
+    "begruendung": "Die Größenangabe „ein Viertel bis ein Achtel der Schein-Kostenhürde“ steht nirgends im Belegkorpus; der Satz bleibt ohne sie richtig („im Basiswert, nicht mit Hebelscheinen“), die Begründung steht im Punkt „Nicht mit Hebelscheinen handelbar“."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1253,
+    "wortlaut": "Die These: Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter. Gemessen am 04.10.2026: nicht entscheidbar.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## Ergebnis-Drift tagesgenau (04.10.2026) — gemessen: **nicht entscheidbar**"
+    },
+    "belegsagt": "Als Tatsache formuliert; gemessen (Nr. 88): nicht entscheidbar.",
+    "vorschlag": "Die These: Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter. Gemessen am 04.10.2026: nicht entscheidbar.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1253,
+      "wortlaut": "Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter."
+    },
+    "neu_begruendung": "Als These gekennzeichnet und das Urteil der Messung Nr. 88 daneben gestellt."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1254,
+    "wortlaut": "Ob deshalb neben dem Momentum etwas übrig bleibt, ist nach heutigem Stand nicht belegt.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**Lesart.** (1) Nach Wilhelms Maßstab ist das **kein Beleg**"
+    },
+    "belegsagt": "Korrelation 0,41 und Alpha +6,90 % p. a. (t 2,20) stehen weder in belegstand.md noch in einer ERGEBNIS.md; stammen aus der Zeit vor der Zeitzonen-Korrektur.",
+    "vorschlag": "Ob neben dem Momentum etwas übrig bleibt, ist nicht gemessen.",
+    "alt": {
+      "klasse": "d",
+      "zeile": 1254,
+      "wortlaut": "Deshalb bleibt neben dem Momentum messbar etwas übrig (Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. bei t = 2,20)."
+    },
+    "neu_begruendung": "Korrelation 0,41 und Alpha +6,90 % (t 2,20) stehen nicht im Belegkorpus; ersetzt durch die Aussage ohne Zahl, dass nichts belegt ist."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1255,
+    "wortlaut": "Ein Schein verliert über die Haltedauer von 60 Handelstagen Zeitwert und Spanne; eine belegte Drift-Größe, die das trägt, gibt es nicht.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Kauf des obersten Zehntels der Überraschung zur Eröffnung nach der Meldung, Verkauf 60 Handelstage später"
+    },
+    "belegsagt": "Rechnung vom 21.08.2026, nicht im Belegstand; „rund 1,3 % je Position“ ist eine unbelegte Ertragsangabe.",
+    "vorschlag": "Am 21.08.2026 überschlagen: Ein Schein müsste über 60 Handelstage weit mehr laufen, als der Drift nach heutigem Stand erwarten lässt. Gerechnet wird deshalb im Basiswert.",
+    "alt": {
+      "klasse": "d",
+      "zeile": 1255,
+      "wortlaut": "Der Basiswert müsste 5,5 bis 11 % laufen, damit ein Schein nach Zeitwertverfall und Spanne bei null herauskommt – der Drift liefert rund 1,3 % je Position. Faktor 4 bis 8 zu wenig."
+    },
+    "neu_begruendung": "Die Überschlagsrechnung vom 21.08.2026 (5,5–11 %, 1,3 %, Faktor 4–8) steht nicht im Belegkorpus; ersetzt durch die Begründung ohne unbelegte Zahl, 60 Handelstage aus der Regel der Messung Nr. 88."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1256,
+    "wortlaut": "Nur die Kaufseite (oberstes Zehntel), Verkauf nach 60 Handelstagen, nach Kosten: Buch <b>+13,01 % p. a. gegen S&P 500 +12,63 % p. a.</b> (Abstand +0,38 Pp p. a.) – nicht entscheidbar, kein Vorwärtstest.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Buch **+84,2 %** (13,01 % p. a.) gegen S&P 500 +81,2 % (12,63 % p. a.) — Abstand **+0,38 Pp p. a.**"
+    },
+    "belegsagt": "Alte Zahl von vor der Zeitzonen-Korrektur. Heute: t 1,7–2,0; Nr. 88: Buch +84,2 % (13,01 % p. a.) gegen S&P 500 +81,2 % (12,63 % p. a.), +0,38 Pp p. a., 16 von 200 Zufallsbüchern darüber → nicht entscheidbar, kein Vorwärtstest.",
+    "vorschlag": "<b>Was gemessen ist.</b> 14.184 Meldungen 2021–2026, nur Kaufseite, Verkauf nach 60 Handelstagen, nach Kosten: Buch +13,01 % p. a. gegen S&P 500 +12,63 % p. a. (Abstand +0,38 Pp p. a.); 16 von 200 Zufallsbüchern liegen darüber – nicht entscheidbar. Die frühere Zahl (+10,44 % p. a., t 3,04) stammt von vor der Zeitzonen-Korrektur und ist überholt.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1256,
+      "wortlaut": "ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen"
+    },
+    "neu_begruendung": "+10,44 % p. a. bei t = 3,04 (alte Messung) ersetzt durch die Messung Nr. 88 vom 04.10.2026."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1256,
+    "wortlaut": "14.184 Meldungen von 1.248 Firmen, Einstiegstage 16.09.2021 bis 15.09.2026",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "14.184 Meldungen von 1.248 Firmen der Klassen"
+    },
+    "zusatz": true,
+    "alt": {
+      "klasse": "c",
+      "zeile": 1256,
+      "wortlaut": "ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen"
+    },
+    "neu_begruendung": "Umfang der Messung Nr. 88."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1256,
+    "wortlaut": "das Ergebnis-Drift-Buch stand nach der Zeitzonen-Korrektur bei t 1,7–2,0",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "| Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur |"
+    },
+    "zusatz": true,
+    "alt": {
+      "klasse": "c",
+      "zeile": 1256,
+      "wortlaut": "ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen"
+    },
+    "neu_begruendung": "Stand des Ergebnis-Drift-Buchs nach Zeitzonen-Korrektur laut Tabelle „Nicht entscheidbar“."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1256,
+    "wortlaut": "Überholt: die frühere Messung (20.356 Ergebnistermine aus 197 Werten, 1993–2026, marktneutral) ist durch diese ersetzt",
+    "klasse": "b",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## Ergebnis-Drift tagesgenau (04.10.2026) — gemessen: **nicht entscheidbar**"
+    },
+    "zusatz": true,
+    "alt": {
+      "klasse": "c",
+      "zeile": 1256,
+      "wortlaut": "ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen"
+    },
+    "neu_begruendung": "Die Beschreibung der alten Messung bleibt (test-v6 Zeile 5764 verlangt „20.356 Ergebnistermine“ im Register), steht jetzt aber unter dem Vermerk „Überholt“; ihre Ergebniszahlen sind gestrichen."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1256,
+    "wortlaut": "Zufallsbücher (Zufallszahl statt Überraschung): Mitte +56,6 %, 16 von 200 über dem Buch",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "200 Bücher mit einer Zufallszahl an Stelle der Überraschung: Mitte +56,6 %"
+    },
+    "belegsagt": "Gehört zur überholten Messung. Heute (Nr. 88): 200 Zufallsbücher, Mitte +56,6 %, 16 von 200 über dem Buch.",
+    "vorschlag": "Zufallsbücher (Zufallszahl statt Überraschung): Mitte +56,6 %, 16 von 200 über dem Buch.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1256,
+      "wortlaut": "Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts."
+    },
+    "neu_begruendung": "Zufallsprobe der alten Messung (−1,74 %, t −0,88) ersetzt durch die 200 Zufallsbücher der Messung Nr. 88."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1257,
+    "wortlaut": "Ein Fenster, eine Regel, ein Lauf; die Überraschung stammt aus dem später eingereichten Bericht, kein Analysten-Konsens.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**Grenzen.** Ein Fenster, eine Regel, ein Lauf."
+    },
+    "belegsagt": "Gehört zur überholten Messung vor der Zeitzonen-Korrektur; nicht im Belegstand.",
+    "vorschlag": "Grenzen der Messung vom 04.10.2026: ein Fenster, eine Regel, ein Lauf; Überraschung aus dem Bericht, kein Analysten-Konsens.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1257,
+      "wortlaut": "In der über zehn Jahre schwachen Hälfte der Werte bleiben nur +1,72 % (t = 0,58), in der starken +8,61 %."
+    },
+    "neu_begruendung": "Hälften-Zahlen der alten Messung (+1,72 / +8,61 %) ersetzt durch die Grenzen der Messung Nr. 88."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1257,
+    "wortlaut": "Über 60 Handelstage gegen das Mittel der Umsatzklasse: Kaufseite nach Kosten +1,39 Pp (t 1,97), oberstes gegen unterstes Zehntel +2,09 Pp (t 1,67) – beides nicht entscheidbar.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "nach Kosten **+1,39 Pp (t 1,97**"
+    },
+    "belegsagt": "Nicht gemessen. Gemessen ist nur die Kaufseite (Nr. 88: gegen das Klassenmittel nach Kosten +1,39 Pp, t 1,97 → nicht entscheidbar); die Leerverkaufsseite nicht.",
+    "vorschlag": "Gemessen ist nur die Kaufseite (nach Kosten +1,39 Pp über 60 Tage gegen das Klassenmittel, t 1,97: nicht entscheidbar); die Leerverkaufsseite des Buchs ist nicht gemessen.",
+    "alt": {
+      "klasse": "d",
+      "zeile": 1257,
+      "wortlaut": "Und es braucht <b>beide Beine</b> – long allein ist überwiegend Marktbeta."
+    },
+    "neu_begruendung": "„es braucht beide Beine – long allein ist überwiegend Marktbeta“ war ungemessen; ersetzt durch Stufe 1 der Messung Nr. 88."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1257,
+    "wortlaut": "Die Regel dieses Buchs (oberstes und unterstes Fünftel, Kauf und Leerverkauf) ist so nicht gemessen.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Kauf des obersten Zehntels der Überraschung zur Eröffnung nach der Meldung, Verkauf 60 Handelstage später"
+    },
+    "zusatz": true,
+    "alt": {
+      "klasse": "d",
+      "zeile": 1257,
+      "wortlaut": "Und es braucht <b>beide Beine</b> – long allein ist überwiegend Marktbeta."
+    },
+    "neu_begruendung": "Gemessen ist nur der Kauf des obersten Zehntels; die Regel des App-Buchs ist es nicht."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1272,
+    "wortlaut": "26 beim Kapitulations-Dip (dessen Neumessung vom 03.10.2026: in der behaupteten Größe zurückgewiesen, per Voreinstellung aus)",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "`kapitulation` (Kapitulations-Dip, 60m, H=26) | **Überholt 03.10.2026 — Neumessung auf sauberem Archiv: in der behaupteten Größe zurückgewiesen"
+    },
+    "belegsagt": "Kapitulations-Dip H=26, Neumessung 03.10.2026 zurückgewiesen.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1285,
+    "wortlaut": "Bei RSI(2) im Seitwärtskanal liegt der gemessene Überschuss (+0,021 Pp je Signal, nicht entscheidbar) weit unter der Schein-Kostenhürde.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+    },
+    "belegsagt": "−96 % steht weder in belegstand.md noch in einer ERGEBNIS.md.",
+    "vorschlag": "Bei RSI(2) im Seitwärtskanal frisst die Schein-Kostenhürde den Vorsprung auf.",
+    "alt": {
+      "klasse": "d",
+      "zeile": 1285,
+      "wortlaut": "Bei RSI(2) im Seitwärtskanal war dieselbe Strategie mit Schein im Backtest bei −96 %."
+    },
+    "neu_begruendung": "−96 % steht nicht im Belegkorpus; ersetzt durch den gemessenen Überschuss und das Urteil des Belegstands."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1298,
+    "wortlaut": "der hat keinen gemessenen Vorsprung",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## **Belegte handelbare Kanten: NULL.**"
+    },
+    "belegsagt": "Keine belegte Kante; Wellental-Einstieg steht nicht im Belegstand.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1299,
+    "wortlaut": "auch nicht auf den Kapitulations-Dip (Neumessung vom 03.10.2026: in der behaupteten Größe zurückgewiesen; abgeschaltet",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## Kapitulation V2, Neumessung (03.10.2026) — in der behaupteten Größe zurückgewiesen"
+    },
+    "belegsagt": "Kapitulation zurückgewiesen 03.10.2026.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1305,
+    "wortlaut": "",
+    "klasse": "gestrichen",
+    "beleg": null,
+    "belegsagt": "−0,08 % / +0,23 % je Trade stehen weder in belegstand.md noch in einer ERGEBNIS.md; „Intraday-Kante“ widerspricht „Belegte Kanten: NULL“.",
+    "vorschlag": "Streng bis Handelsschluss geschlossen ergibt dieselbe Regel ein anderes Ergebnis als mit einer Nacht Haltezeit.",
+    "alt": {
+      "klasse": "d",
+      "zeile": 1305,
+      "wortlaut": "Streng bis Handelsschluss geschlossen ergab die Intraday-Kante −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %."
+    },
+    "begruendung": "−0,08 % / +0,23 % je Trade stehen nirgends im Belegkorpus und „Intraday-Kante“ widerspricht null belegten Kanten; der Satz davor („Dieselbe Regel misst sich völlig anders, je nachdem wann sie schließt“) trägt die Aussage allein."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1306,
+    "wortlaut": "8 Handelsstunden für RSI(2) im Seitwärtskanal („gemessen“)",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+    },
+    "belegsagt": "rsi2seit gemessen, Urteil nicht entscheidbar (+0,021 Pp je Signal). Die 8 ist ein Parameter.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1306,
+    "wortlaut": "beim Kapitulations-Dip ist das Ergebnis der Neumessung vom 03.10.2026 die Zurückweisung",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## Kapitulation V2, Neumessung (03.10.2026) — in der behaupteten Größe zurückgewiesen"
+    },
+    "belegsagt": "Kapitulation zurückgewiesen 03.10.2026.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1317,
+    "wortlaut": "Der Trendkanal als Handelsbedingung kostete −0,17 Prozentpunkte je Trade bei t = −4,1 (Abschnittskanal-Studie)",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "| Abschnittskanäle **als Bedingung** | −0,17 Pp, t = −4,1 → nur Anzeige |"
+    },
+    "belegsagt": "Abschnittskanäle als Bedingung −0,17 Pp, t = −4,1 (Widerlegt).",
+    "vorschlag": ""
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1326,
+    "wortlaut": "Dieser Detektor (dein Winkel-Vorschlag aus #33) ist nachgemessen: netto unentscheidbar, in der Maschine alle 10 gemessenen Varianten mit negativem Punktschätzer, die Long-Seite in der Größe ausgeschlossen",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "in der Maschine (winkelbestaetigt/winkelgrad, je 5 Schwellen) **alle 10 Punktschätzer negativ**"
+    },
+    "belegsagt": "Trendwende-/Winkel-Detektor: netto unentscheidbar, in der Maschine alle 10 Punktschätzer negativ, Long-Seite als Größe ausgeschlossen.",
+    "vorschlag": "Dieser Detektor (dein Winkel-Vorschlag aus #33) ist nachgemessen: netto nicht entscheidbar, alle 10 Varianten im Punkt negativ, die Long-Seite in der Größe ausgeschlossen.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1326,
+      "wortlaut": "Dieser Detektor (dein Winkel-Vorschlag aus #33) war der einzige Teilüberlebende der Trendwende-Studie"
+    },
+    "neu_begruendung": "„einziger Teilüberlebender“ ersetzt durch das Ergebnis der Nachmessung (Ergänzung 02.09.2026 im Belegstand)."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1326,
+    "wortlaut": "",
+    "klasse": "gestrichen",
+    "beleg": null,
+    "belegsagt": "Die Nachmessung ist gelaufen (02.09.2026, Wiedervorlage) – Ergebnis siehe oben; dazu Minutenstudie 0 von 234.",
+    "vorschlag": "Die Nachmessung ist gelaufen (Ergebnis oben). Diese Seite zeigt live, was der Detektor sieht – zum Beobachten, nicht zum Handeln.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 1326,
+      "wortlaut": "in 4–6 Wochen wird sauber nachgemessen"
+    },
+    "begruendung": "Die angekündigte Nachmessung ist gelaufen; ihr Ergebnis steht jetzt im Satz davor, die Ankündigung (samt „seit 8.23.25“) ist damit gegenstandslos."
+  },
+  {
+    "datei": "app-shell.js",
+    "zeile": 1339,
+    "wortlaut": "",
+    "klasse": "gestrichen",
+    "beleg": null,
+    "belegsagt": "Zahlen stehen nicht im Belegstand (Treffer in ERGEBNIS-Dateien sind andere Größen).",
+    "vorschlag": "Zahlenklammer streichen: „… und das Vorzeichen kippt, sobald man nur die Abtastdichte ändert.“",
+    "alt": {
+      "klasse": "d",
+      "zeile": 1339,
+      "wortlaut": "(−0,028 / +0,166 / +0,230 % bei gleicher Fallzahl)"
+    },
+    "begruendung": "Die drei Zahlen stehen nirgends im Belegkorpus; der Satz sagt ohne sie dasselbe (das Vorzeichen kippt mit der Abtastdichte)."
+  },
+  {
+    "datei": "release-notizen/2026-10-04-eroeffnung-nachfassen.md",
+    "zeile": 3,
+    "wortlaut": "gehandelt wird immer zum Eröffnungskurs dieses Tages, wie in der Messung, nie zu einem späteren Kurs",
+    "klasse": "a",
+    "beleg": {
+      "datei": "studien/massstab-rueckblick-2026-10-04/REGEL.md",
+      "marke": "gehandelt wird zur **Eröffnung des Ausführungstags**"
+    },
+    "belegsagt": "Rückblick-Regel: Handel zur Eröffnung des Ausführungstags.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "release-notizen/2026-10-04-live-gleich-messung.md",
+    "zeile": 1,
+    "wortlaut": "## Das Momentum-Buch handelt jetzt so, wie es gemessen wurde",
+    "klasse": "a",
+    "beleg": {
+      "datei": "studien/massstab-rueckblick-2026-10-04/REGEL.md",
+      "marke": "gehandelt wird zur **Eröffnung des Ausführungstags**"
+    },
+    "belegsagt": "Rückblick-Regel (Nr. 74, belegstand.md) handelt zur Eröffnung des Ausführungstags, Zielliste aus den Schlusskursen des Stichtags. Hinweis: CLAUDE.md führt „Messung an den Live-Pfad angleichen“ (Audit 21) noch als offen.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "release-notizen/2026-10-04-live-gleich-messung.md",
+    "zeile": 3,
+    "wortlaut": "Fällig ist die nächste Umschichtung am 63. Handelstag nach der letzten",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "das App-Buch rechnet exakt die gemessene Konfiguration (231/21/63"
+    },
+    "belegsagt": "Halten 63 Handelstage wie gemessen.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "release-notizen/2026-10-04-massstab-rueckblick.md",
+    "zeile": 3,
+    "wortlaut": "bisher zeigte die App +0,7 %; aus dem Minutenarchiv seit dem Kaufzeitpunkt nachgerechnet sind es +0,88 % mit Ausschüttung",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**Aus dem Minutenarchiv gerechnet** ist der Markt seit dem Kaufzeitpunkt des Buchs"
+    },
+    "belegsagt": "belegstand.md (Nr. 81) nennt S&P 500 +0,7 % in der App und, aus dem Minutenarchiv mit Ausschüttung gerechnet, +0,88 %. „+1,1 %“ steht nur in wiki/erledigt.md und wiki/log.md, nicht im Belegstand.",
+    "vorschlag": "Am Momentum-Buch steigt der Markt seit dem Start dadurch leicht (aus dem Minutenarchiv nachgerechnet: +0,88 % mit Ausschüttung), der Abstand des Buchs wird entsprechend kleiner.",
+    "alt": {
+      "klasse": "d",
+      "zeile": 3,
+      "wortlaut": "Am Momentum-Buch steigt der Markt seit dem Start dadurch von +0,7 % auf +1,1 %, der Abstand des Buchs wird entsprechend kleiner."
+    },
+    "neu_begruendung": "„+1,1 %“ steht nicht im Belegstand (nur in erledigt.md/log.md); ersetzt durch die Zahlen aus Nachtrag Nr. 81. Notiz noch nicht ausgeliefert (nach v8.45.0 committet, liegt noch in release-notizen/), daher direkt berichtigt."
+  },
+  {
+    "datei": "release-notizen/2026-10-04-massstab-rueckblick.md",
+    "zeile": 3,
+    "wortlaut": "drei Rückblicke über fünf Jahre (zwei Zeiträume mit dem Korb der 187 umsatzstärksten Werte, einmal der breite Markt), alle mit der Regel gegen Kleinstpositionen",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "| Korb 187, 2021–2026 | +7,96 → +7,51 Pp |"
+    },
+    "belegsagt": "Nr. 85/96: Rückblicke mit Regel K, Korb 187 in zwei Fenstern und breiter Markt.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "release-notizen/2026-10-04-massstab-rueckblick.md",
+    "zeile": 3,
+    "wortlaut": "Über den älteren Momentum-Zahlen, die nur an heute noch existierenden Firmen gemessen wurden",
+    "klasse": "b",
+    "beleg": {
+      "datei": "studienurteile.js",
+      "marke": "'momentum-liquide': { grund: 'gemessen nur an Werten, die es heute noch gibt (ohne die verschwundenen)'"
+    },
+    "belegsagt": "Die alten Zahlen stehen unter „Überholt“ mit Verweis auf den Rückblick – richtig so.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "release-notizen/2026-10-04-rueckblick-v23.md",
+    "zeile": 3,
+    "wortlaut": "stehen jetzt auf dem bereinigten Datenstand: dieselbe Regel und dieselbe Rechnung wie bisher",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "derselbe Rückblick auf dem bereinigten Panel v2.3"
+    },
+    "belegsagt": "Nr. 96: derselbe Rückblick auf Panel v2.3, gleiche gesiegelte Regel und Rechner.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "release-notizen/2026-10-04-texte-pruefgang.md",
+    "zeile": 3,
+    "wortlaut": "dass der Vorsprung **vom Zufall nicht zu trennen** ist",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**Vom Zufall nicht zu unterscheiden:** das 95-%-Band des Abstands je Periode schließt in allen fünf Läufen null ein"
+    },
+    "belegsagt": "Nr. 78: vom Zufall nicht zu unterscheiden.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "release-notizen/2026-10-04-texte-pruefgang.md",
+    "zeile": 3,
+    "wortlaut": "",
+    "klasse": "gestrichen",
+    "beleg": null,
+    "belegsagt": "datenquellen.md (von belegstand.md verwiesen): 2,0 %, berichtigt 2,45 % der Panel-ZEILEN, nicht der Reihen (Reihen im Minutenarchiv rund 4 %). Seit Panel v2.3 entfernt (Nr. 96) – die Notiz rueckblick-v23 derselben Version sagt, der Hinweis entfällt.",
+    "vorschlag": "Halbsatz streichen (in derselben Version durch den bereinigten Datenstand überholt); sonst „rund 2,5 % der Zeilen im damals gerechneten Panel“.",
+    "alt": {
+      "klasse": "c",
+      "zeile": 3,
+      "wortlaut": "beim Korb 187, dass rund 2 % der Reihen im gerechneten Panel doppelt standen"
+    },
+    "begruendung": "Seit Panel v2.3 (Nr. 96, Notiz rueckblick-v23 im selben unveröffentlichten Release) sind die doppelten Reihen entfernt und der Hinweis entfällt; die Zahl „rund 2 % der Reihen“ war zudem eine Zeilen-, keine Reihenangabe. Notiz noch nicht ausgeliefert, daher direkt gestrichen."
+  },
+  {
+    "datei": "release-notizen/2026-10-04-texte-pruefgang.md",
+    "zeile": 3,
+    "wortlaut": "Am Drift-Buch steht, dass seine eigene Regel (Kauf und Leerverkauf, 60 Handelstage) nicht gemessen ist",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Kauf des obersten Zehntels der Überraschung zur Eröffnung nach der Meldung, Verkauf 60 Handelstage später"
+    },
+    "belegsagt": "Nr. 88 hat nur die Kaufseite (oberstes Zehntel) gemessen; Kauf+Leerverkauf ist ungemessen. Achtung: app-shell.js regeln.mf.drift sagt noch „Was gemessen ist … +10,44 %“ (Widerspruch).",
+    "vorschlag": ""
+  }
+]

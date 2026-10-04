@@ -255,7 +255,9 @@
         'kein guter Einstieg.' +
         '<br><b>Was aus der großen Messung bekannt ist:</b> Der Winkel-Detektor wurde auf 55 ' +
         'zurückgehaltenen Handelstagen nachgemessen; die ursprünglich gefundenen +0,25 Pp sind ' +
-        'widerlegt (0,074 Pp, t = 1,22). Das ist die belastbare Aussage zu diesem Detektor.</div>';
+        'dort widerlegt (Studie #33). <b>Neuerer Stand (02.09.2026, Belegstand):</b> netto nicht entscheidbar; ' +
+        'in der Messmaschine sind alle 10 Punktschätzer negativ, 9 von 10 obere Grenzen liegen unter 0,1247 Pp – ' +
+        'die Long-Seite ist als Größe ausgeschlossen.</div>';
       el.innerHTML = h;
       wendeChartsVerkabeln(el);
       wendeZuletzt = Date.now();
