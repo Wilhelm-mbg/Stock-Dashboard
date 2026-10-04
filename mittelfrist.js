@@ -32,24 +32,54 @@
   }
 
   var EREIGNIS_TAGE = 400;
+  /* Auftrag Nr. 93 (F8, A7): abgelegt wird jede Reihe, die die Regel rangieren kann -
+   * rueckblick + luecke + 1 = 253 Balken (mfhandel.js momentumZiel). Bis dahin stand hier
+   * "mehr als 500": ein neu gelisteter Wert fehlte rund ein Jahr laenger als in der Messung. */
+  var MIN_BALKEN = 253;
+  /* Auftrag Nr. 93 (A5): SPY kommt im SELBEN Ladevorgang mit - als Bezugsreihe (Handelstage,
+   * Faelligkeit, Reihenende, Marktstand des Tagespunkts), nicht gerangt. Sie liegt unter einem
+   * eigenen Schluessel (mf_bezug), nicht unter den Werten: wer die Werte liest (Rangfolge,
+   * Drift, Kosten, Diagnose), sieht sie nicht. */
+  var BEZUG = 'SPY';
+  /* Auftrag Nr. 93 (A1): Grenzen, ab denen ein neuer Ladevorgang den gespeicherten Bestand
+   * ersetzt - mindestens 120 Werte und mindestens 95 % der zuvor gelieferten. */
+  var MIN_GELIEFERT = 120, MIN_ANTEIL_PZ = 95, FEHLVERSUCH_PAUSE = 3600000;
+  var FEHLVERSUCH = 0, LAEDT = null;
 
   /* Tageskerzen über den vollen verfügbaren Zeitraum. period1=0 statt range=max –
    * letzteres liefert bei Tageskerzen nur rund 170 Monatswerte. */
   async function holeTage(sym) {
     try {
-      /* BEREINIGT: Momentum rangiert Werte ueber Monate gegeneinander. Ein
-       * unbereinigter Split waere dort ein Kurssturz von 50 % - und der Wert
-       * flaege aus dem staerksten Zehntel, obwohl gar nichts passiert ist. */
+      /* BEREINIGT und ROH aus EINEM Abruf (Auftrag Nr. 93, F3): die Messung rangiert, filtert
+       * und bewertet auf Schlusskursen, die um Splits bereinigt sind, NICHT um Ausschuettungen
+       * (REGEL §1.5 des Rueckblicks: das Panel fuehrt keine; die Ausschuettungen schreibt sie dem
+       * Buch gut - die App seit Nr. 87 auch). Yahoos Feld close ist genau das (am NVDA-Split vom
+       * 10.06.2024 kein Sprung, test-daten/yahoo-nvda-ereignisse.json); adjclose liegt zusaetzlich
+       * um die Ausschuettungen darunter. Bis Nr. 93 stand adjclose in Spalte 1 - das Buch
+       * rangierte mit Ausschuettungen und schrieb sie zugleich gut.
+       * Die Zeile im Bestand: [t, close, stueck, adjclose] (Index 0 bis 3).
+       *   [1] close    ("Spalte 1" des Auftrags) - Rangfolge, Korbfilter (Schluss x Stueck),
+       *                Bewertung, Handel
+       *   [2] stueck   - Korbfilter (liquide.js), Umsatzklasse (kosten.js)
+       *   [3] adjclose ("Spalte 4" des Auftrags, die vierte Spalte) - nur fuer Leser, deren
+       *                Messung mit Ausschuettungen rechnete (Uebergabe Nr. 93: driftui.js und die
+       *                Rechnung des Mittelfrist-Tabs); fehlt sie (Bestand von vor Nr. 93), lesen
+       *                sie [1]
+       * Ein Balken ohne brauchbaren close faellt weg (Spalte 1 ist die gehandelte). */
       /* ereignisse: Ausschuettungen und Splits kommen im SELBEN Abruf mit (Auftrag Nr. 87) -
        * die zwei Mittelfrist-Buecher buchen sie (MFHandel.bucheMassnahmen). */
-      var kd = await window.Kurse.hole(sym, { von: 0, bis: Date.now(), interval: '1d', bereinigt: true, ereignisse: true });
-      if (!kd) return null;
-      /* Zeit, Schluss UND Stueckzahl: Das Momentum-Buch filtert seinen Korb seit dem
-       * 02.09.2026 nach Median-Tagesumsatz (Schluss x Stueck, liquide.js) - ohne die
-       * dritte Spalte kann es die gemessene Regel nicht rechnen. Wer nur [0] und [1]
-       * liest (Rangfolge, Drift, Depot), merkt von der Spalte nichts. */
-      var reihe = kd.bars.map(function (b) { return [b[0], b[1], b[2]]; });
-      if (!(reihe.length > 500)) return null;
+      var kd = await window.Kurse.hole(sym, { von: 0, bis: Date.now(), interval: '1d', bereinigt: true, mitRoh: true, ereignisse: true });
+      if (!kd || !kd.bars || !kd.roh) return null;
+      var reihe = [];
+      for (var i = 0; i < kd.bars.length; i++) {
+        var b = kd.bars[i], r = kd.roh[i];
+        if (!r || r[0] !== b[0] || !(r[1] > 0)) continue;
+        reihe.push([b[0], r[1], b[2], b[1]]);
+      }
+      /* Ein laufender Balken (heute in New York, vor 16:15) kommt nicht in den Bestand: sein Kurs
+       * ist der von jetzt, sein Umsatz ein Teil des Tages (A4/A5: ein laufender Balken zaehlt nie). */
+      reihe = window.MFHandel.ohneLaufendenBalken(reihe, Date.now());
+      if (!(reihe.length >= MIN_BALKEN)) return null;
       /* Abgelegt werden nur die Ereignisse der letzten 400 Tage - gebucht wird, was seit dem
        * Kauf einer Position anfiel, nicht die Geschichte des Werts. */
       return { reihe: reihe, ereignisse: window.Kurse.ereignisseAb(kd.ereignisse, Date.now() - EREIGNIS_TAGE * 86400000) };
@@ -64,7 +94,7 @@
    * und Teilzahl. Der Index wird ZULETZT geschrieben - wer liest, sieht nur
    * vollstaendige Staende; fehlt ein Teil, greift der alte Schluessel. */
   var TEIL_GROESSE = 25;
-  async function tagesdatenSchreiben(roh, weg, at, ereignisse) {
+  async function tagesdatenSchreiben(roh, weg, at, ereignisse, bezug) {
     var syms = Object.keys(roh).sort();
     var teile = Math.max(1, Math.ceil(syms.length / TEIL_GROESSE));
     for (var t = 0; t < teile; t++) {
@@ -78,6 +108,9 @@
      * vollstaendige Staende. Ohne das Argument (die Wanderung des alten Klumpens) bleibt
      * der Schluessel, wie er ist. */
     if (ereignisse) await window.api.storeSet('mf_ereignisse', { at: at || Date.now(), sym: ereignisse });
+    /* Die Bezugsreihe (SPY, Auftrag Nr. 93) ebenso: nach den Teilen, vor dem Index, mit
+     * demselben Stand at - tagesdatenLesen gibt sie nur zurueck, wenn ihr at zum Index passt. */
+    if (bezug) await window.api.storeSet('mf_bezug', { at: at || Date.now(), sym: bezug.sym, reihe: bezug.reihe });
     await window.api.storeSet('mf_tagesdaten_index', { at: at || Date.now(), weg: weg || [], teile: teile });
     // Der alte Riesen-Schluessel wird zu einem kleinen Verweis - die 38 MB sind damit weg
     try { await window.api.storeSet('mf_tagesdaten', { ersetztDurch: 'mf_tagesdaten_index', at: at || Date.now() }); } catch (eM) { }
@@ -91,7 +124,11 @@
         if (!teil || !teil.roh) ok = false;
         else Object.keys(teil.roh).forEach(function (s) { roh[s] = teil.roh[s]; });
       }
-      if (ok) return { at: idx.at, roh: roh, weg: idx.weg || [], quelle: 'teile' };
+      if (ok) {
+        var bz = await window.api.storeGet('mf_bezug');
+        return { at: idx.at, roh: roh, weg: idx.weg || [], quelle: 'teile',
+          bezug: bz && bz.reihe && bz.at === idx.at ? { sym: bz.sym, reihe: bz.reihe } : null };
+      }
     }
     var g = await window.api.storeGet('mf_tagesdaten');
     return (g && g.roh) ? { at: g.at, roh: g.roh, weg: g.weg || [], quelle: 'alt' } : null;
@@ -107,7 +144,39 @@
 
   /** Alle Werte holen und auf eine gemeinsame Zeitachse bringen.
    *  Ohne gemeinsame Achse vergleicht man Werte zu verschiedenen Zeitpunkten. */
-  async function ladeUniversum() {
+  /** Hat der Bestand die vierte Spalte (adjclose, Auftrag Nr. 93)? Ein Bestand von davor nicht -
+   *  er gilt nicht als frisch und wird einmal neu geladen (wie mf_ereignisse in Nr. 87). */
+  function hatSpalte4(roh) {
+    return !!roh && Object.keys(roh).some(function (s) { var r = roh[s]; return r && r.length && r[r.length - 1].length >= 4; });
+  }
+
+  /** Den Ladevorgang annehmen? (Auftrag Nr. 93, A1, rein.) Ein neuer Ladevorgang ersetzt den
+   *  gespeicherten Bestand nur, wenn er fuer mindestens 120 Werte UND fuer mindestens 95 % der
+   *  zuvor gelieferten Werte eine Reihe brachte; ohne gespeicherten Bestand (Erststart) gilt nur
+   *  die 120. "Zuvor geliefert" sind die gespeicherten Werte, die NICHT auf weg stehen - ein Wert,
+   *  der schon beim letzten Mal nur seine alte Reihe behielt, zaehlt nicht mit (sonst sammelten
+   *  sich endgueltig verschwundene Werte im Nenner, bis kein Ladevorgang mehr durchkaeme). */
+  function ladenAnnehmen(geliefert, gespeichert) {
+    var vorher = 0;
+    if (gespeichert && gespeichert.roh) {
+      var wegAlt = gespeichert.weg || [];
+      vorher = Object.keys(gespeichert.roh).filter(function (s) { return wegAlt.indexOf(s) < 0; }).length;
+    }
+    var ok = geliefert >= MIN_GELIEFERT && (!vorher || geliefert * 100 >= vorher * MIN_ANTEIL_PZ);
+    return { ok: ok, geliefert: geliefert, vorher: vorher };
+  }
+
+  /** Alle Werte holen und auf eine gemeinsame Zeitachse bringen.
+   *  Ohne gemeinsame Achse vergleicht man Werte zu verschiedenen Zeitpunkten.
+   *  Laeuft schon ein Ladevorgang (Takt und Knopf gleichzeitig), bekommt der zweite Aufrufer
+   *  dessen Ergebnis - zwei Lader hiessen doppelte Abrufe und zwei Schreiber. */
+  function ladeUniversum() {
+    if (LAEDT) return LAEDT;
+    LAEDT = ladeUniversumEinmal();
+    LAEDT.then(function () { LAEDT = null; }, function () { LAEDT = null; });
+    return LAEDT;
+  }
+  async function ladeUniversumEinmal() {
     var roh = {}, fertig = 0;
     var gespeichert = await tagesdatenLesen();
     /* Gespeicherte Tagesdaten aus der Zeit vor dem Korbfilter tragen keine Stueckzahl.
@@ -117,29 +186,74 @@
     /* Dasselbe gilt seit Auftrag Nr. 87 fuer die Kapitalmassnahmen: ein Bestand aus der Zeit
      * davor hat keinen Schluessel mf_ereignisse. Er wird einmalig neu geladen - sonst
      * blieben Splits und Ausschuettungen bis zu 20 Stunden ungebucht. */
-    var ereignisseDa = !!(await window.api.storeGet('mf_ereignisse'));
-    var frisch = gespeichert && (Date.now() - (gespeichert.at || 0) < 20 * 3600000) && hatStueck(gespeichert.roh) && ereignisseDa;
+    var erAlt = await window.api.storeGet('mf_ereignisse');
+    var ereignisseDa = !!erAlt;
+    /* Frisch GEGEN DIE UHR (Auftrag Nr. 93, A4): geladen nach dem Schluss des juengsten Werktags,
+     * dessen Schluss feststehen muss - nicht "juenger als 20 Stunden". Dazu die vierte Spalte
+     * und die Bezugsreihe SPY (beide seit Nr. 93): ein Bestand ohne sie wird einmal neu geladen. */
+    var frisch = gespeichert && window.MFHandel.bestandFrisch(gespeichert.at || 0, Date.now()) && hatStueck(gespeichert.roh) && ereignisseDa &&
+      hatSpalte4(gespeichert.roh) && !!gespeichert.bezug;
     if (gespeichert && !frisch && gespeichert.roh && !hatStueck(gespeichert.roh)) {
       stat('Gespeicherte Tageskurse ohne Stückzahlen – lade neu, damit der Momentum-Korb nach Umsatz gefiltert werden kann …');
     } else if (gespeichert && !frisch && !ereignisseDa) {
       stat('Gespeicherte Tageskurse ohne Splits und Ausschüttungen – lade neu, damit die Bücher sie buchen können …');
+    } else if (gespeichert && !frisch && (!hatSpalte4(gespeichert.roh) || !gespeichert.bezug)) {
+      stat('Gespeicherte Tageskurse von vor der Umstellung (ohne vierte Spalte oder ohne SPY) – lade neu, damit die Rangfolge wie in der Messung rechnet …');
     }
-    if (frisch) {
+    var gesperrt = !frisch && gespeichert && gespeichert.roh && Date.now() - FEHLVERSUCH < FEHLVERSUCH_PAUSE;
+    if (frisch || gesperrt) {
       roh = gespeichert.roh;
-      stat('Gespeicherte Daten von ' + new Date(gespeichert.at).toLocaleString('de-DE') + ' verwendet.');
+      stat(gesperrt
+        ? 'Der letzte Kursabruf war unvollständig – neuer Versuch frühestens eine Stunde danach; bis dahin gilt der gespeicherte Bestand vom ' +
+          new Date(gespeichert.at).toLocaleString('de-DE') + '.'
+        : 'Gespeicherte Daten von ' + new Date(gespeichert.at).toLocaleString('de-DE') + ' verwendet.');
       // Einmalige Wanderung: Liegt der Bestand noch im alten Klumpen-Format,
       // wird er beim ersten Lesen in Teile umgeschrieben.
       if (gespeichert.quelle === 'alt') await tagesdatenSchreiben(roh, gespeichert.weg, gespeichert.at);
     } else {
-      var weg = [], ereignisse = {};
-      for (var i = 0; i < UNIVERSUM.length; i++) {
-        var r = await holeTage(UNIVERSUM[i]);
-        if (r) { roh[UNIVERSUM[i]] = r.reihe; ereignisse[UNIVERSUM[i]] = r.ereignisse; } else weg.push(UNIVERSUM[i]);
+      var weg = [], ereignisse = {}, neu = {}, geliefert = 0, bezug = null;
+      var liste = UNIVERSUM.concat([BEZUG]);
+      for (var i = 0; i < liste.length; i++) {
+        var r = await holeTage(liste[i]);
+        if (r && liste[i] === BEZUG) bezug = { sym: BEZUG, reihe: r.reihe };
+        else if (r) { neu[liste[i]] = r.reihe; ereignisse[liste[i]] = r.ereignisse; geliefert++; }
+        else if (liste[i] !== BEZUG) weg.push(liste[i]);
         fertig++;
-        if (fertig % 10 === 0) stat('Lade Tageskurse … ' + fertig + '/' + UNIVERSUM.length);
+        if (fertig % 10 === 0) stat('Lade Tageskurse … ' + fertig + '/' + liste.length);
         await new Promise(function (w) { setTimeout(w, 90); });   // Quelle nicht überrennen
       }
-      await tagesdatenSchreiben(roh, weg, Date.now(), ereignisse);
+      /* Auftrag Nr. 93 (F1, A1): der gespeicherte Bestand wird nur ersetzt, wenn der Abruf
+       * GETRAGEN hat. Bis dahin wurde nach jedem Abruf geschrieben - ein Totalausfall (Rechner
+       * wacht auf, das Netz ist noch nicht da) leerte den Bestand, das Buch stand zum Einstand
+       * da, und der neue Stand "jetzt" galt 26 Stunden als frisch. */
+      var urteil = ladenAnnehmen(geliefert, gespeichert);
+      if (!urteil.ok) {
+        FEHLVERSUCH = Date.now();
+        roh = (gespeichert && gespeichert.roh) || {};
+        stat('Kursabruf unvollständig: ' + geliefert + ' von ' + UNIVERSUM.length + ' Werten geliefert (nötig mindestens ' + MIN_GELIEFERT +
+          (urteil.vorher ? ' und 95 % der ' + urteil.vorher + ' zuletzt gelieferten, also ' + Math.ceil(urteil.vorher * MIN_ANTEIL_PZ / 100) : '') + ') – ' +
+          (gespeichert && gespeichert.roh ? 'der gespeicherte Bestand vom ' + new Date(gespeichert.at).toLocaleString('de-DE') + ' bleibt ganz stehen' : 'nichts gespeichert') +
+          '. Neuer Versuch frühestens in einer Stunde.');
+        return datenAus(roh);
+      }
+      /* Angenommen: ein Wert ohne Antwort behaelt seine ALTE Reihe (unveraendert - ihr letzter
+       * Balken ist dann eben alt) samt seinen Ereignissen und steht auf weg. Ein Wert verschwindet
+       * so nie still aus dem Bestand; haelt ihn ein Buch, bucht es ihn nach fuenf Handelstagen
+       * ohne neuen Balken aus (A2, MFHandel.reihenendeAusbuchen). Dasselbe fuer SPY. */
+      var altRoh = (gespeichert && gespeichert.roh) || {}, behalten = [];
+      weg.forEach(function (s) {
+        if (!altRoh[s]) return;
+        neu[s] = altRoh[s]; behalten.push(s);
+        if (erAlt && erAlt.sym && erAlt.sym[s]) ereignisse[s] = erAlt.sym[s];
+      });
+      if (!bezug && gespeichert && gespeichert.bezug) bezug = gespeichert.bezug;
+      roh = neu;
+      await tagesdatenSchreiben(roh, weg, Date.now(), ereignisse, bezug);
+      if (behalten.length) {
+        stat(geliefert + ' von ' + UNIVERSUM.length + ' Werten geladen. Ohne Antwort, mit ihrer alten Reihe behalten: ' + behalten.join(', ') +
+          '.' + (weg.length > behalten.length ? ' Nicht mehr abrufbar: ' + weg.filter(function (s) { return behalten.indexOf(s) < 0; }).join(', ') + '.' : ''));
+        return datenAus(roh);
+      }
       /* Ausgefallene Werte SICHTBAR machen, nicht still übergehen.
        *
        * Am 21.08.2026 lieferte Yahoo für BK, MMC, HES und FI nichts mehr – HES etwa ist
@@ -154,6 +268,14 @@
           ' – vermutlich übernommen oder umbenannt. Das Universum besteht damit aus Überlebenden, ' +
           'was gemessene Vorsprünge nach oben verzerrt.' : ''));
     }
+    return datenAus(roh);
+  }
+  /** Die gemeinsame Zeitachse fuer die Rechnung dieses Tabs (rechnen: Rangfolge und Durchlauf
+   *  ueber die ganze Historie). Sie liest die VIERTE Spalte (adjclose, Index 3), sonst Spalte 1:
+   *  ihre Messung - die alte Studie ueber 197 Werte gegen den Durchschnitt derselben Werte - lief
+   *  auf dem bereinigten Kurs dieses Laders, also mit Ausschuettungen (Auftrag Nr. 93, A3; das
+   *  Buch selbst liest Spalte 1). */
+  function datenAus(roh) {
     var syms = Object.keys(roh);
     if (syms.length < 30) return null;
     var zaehler = {};
@@ -163,7 +285,7 @@
     var map = {};
     syms.forEach(function (s) {
       var a = new Array(zeiten.length).fill(null);
-      roh[s].forEach(function (b) { var i = idx[b[0]]; if (i !== undefined) a[i] = b[1]; });
+      roh[s].forEach(function (b) { var i = idx[b[0]]; if (i !== undefined) a[i] = b[3] > 0 ? b[3] : b[1]; });
       map[s] = a;
     });
     return { syms: syms, zeiten: zeiten, map: map };
@@ -324,5 +446,7 @@
   if (typeof window !== 'undefined') window.__mfRechnen = rechnen;
   // Nach aussen: das Mittelfrist-Depot (mfdepot.js) stoesst hierueber den taeglichen
   // Kursabruf an, statt den Lader zu duplizieren - zwei Lader hiessen zwei Wahrheiten.
-  window.MF = { ladeUniversum: ladeUniversum, tagesdatenLesen: tagesdatenLesen };
+  window.MF = { ladeUniversum: ladeUniversum, tagesdatenLesen: tagesdatenLesen,
+    /* Auftrag Nr. 93 (A1): die Annahme-Regel, damit die Karte und die Tests sie lesen koennen */
+    ladenAnnehmen: ladenAnnehmen, fehlversuch: function () { return FEHLVERSUCH; } };
 })();

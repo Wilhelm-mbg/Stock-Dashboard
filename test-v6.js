@@ -3376,14 +3376,16 @@ console.log('\n34) Momentum: Live-Buch rechnet dasselbe Fenster wie die validier
   var mfd34 = ohneKommentare(fs.readFileSync(__dirname + '/mfdepot.js', 'utf8'));
   ok(/MH\.momentumZiel\(daten\.roh, \{ nowMs: daten\.juengster \|\| now \}\)/.test(mfd34),
      'das Buch ruft die Rangfolge OHNE eigene Zahlen auf - Fenster und Korbregel kommen aus momentum.js + liquide.js');
-  ok(/MH\.rebalanceFaellig\(markt, d\.mfBuch\.letztesRebalanceT, KONFIG\.halten\)/.test(mfd34) && !/rebalanceFaellig\([^)]*, 63\)/.test(mfd34),
+  /* Umgeschrieben mit Auftrag Nr. 93 (A6): gezaehlt wird ab dem Ausfuehrungstag an der SPY-Reihe des Bestands. */
+  ok(/MH\.faelligkeit\(daten\.bezug, d\.mfBuch\.letzteAusfuehrungTag, KONFIG\.halten, now\)/.test(mfd34) && !/(?:rebalanceFaellig|faelligkeit)\([^)]*, 63[,)]/.test(mfd34),
      'Haltedauer aus derselben Konfiguration, keine 63 im Verdrahtungscode');
   ok(/quelle: 'umstellung'/.test(mfd34) && /'mfkonfig-'/.test(mfd34) && /d\.mfBuch\.konfigSeit = now;/.test(mfd34),
      'die Umstellung ist eine HANDLUNG: Journalzeile mit alter und neuer Konfiguration, Datum im Buch');
   ok(/if \(!d\.mfBuch\.liquideSeit\) d\.mfBuch\.liquideSeit = now;/.test(mfd34) && /korbVerlauf\.push\(/.test(mfd34),
      'erste Umschichtung auf dem liquiden Korb wird datiert, Korbgroesse je Umschichtung nachrichtlich festgehalten');
   var mfsrc34 = ohneKommentare(fs.readFileSync(__dirname + '/mittelfrist.js', 'utf8'));
-  ok(/\[b\[0\], b\[1\], b\[2\]\]/.test(mfsrc34) && /hatStueck\(gespeichert\.roh\)/.test(mfsrc34),
+  /* Umgeschrieben mit Auftrag Nr. 93 (A3): die Zeile ist [t, close, stueck, adjclose]. */
+  ok(/reihe\.push\(\[b\[0\], r\[1\], b\[2\], b\[1\]\]\)/.test(mfsrc34) && /hatStueck\(gespeichert\.roh\)/.test(mfsrc34),
      'Tagesdaten tragen die Stueckzahl; gespeicherte Daten ohne Stueckzahl gelten nicht als frisch');
   var html34 = fs.readFileSync(__dirname + '/index.html', 'utf8');
   ok(html34.indexOf('<script src="liquide.js">') !== -1 && html34.indexOf('<script src="liquide.js">') < html34.indexOf('<script src="mfhandel.js">'),
@@ -22826,9 +22828,11 @@ console.log('95) Regel K gegen Kleinstpositionen: Schalter im Handelscode, Vorga
   var kf = MH.buchKonfig(), mfd95 = ohneKommentare(fs.readFileSync(__dirname + '/mfdepot.js', 'utf8'));
   ok(kf.kleinstAnteil === 0.05 && Object.keys(kf).join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil',
     '95.6 buchKonfig fuehrt den Schalter mit dem Wert 0,05 (an); die sieben Felder davor sind unveraendert', kf.kleinstAnteil);
+  /* Umgeschrieben mit Auftrag Nr. 93 (A4): dazu die Planung zu den Eroeffnungen des Ausfuehrungstags - drei Planungen, jede mit { kleinstAnteil }. */
   ok(mfd95.split('MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil })').length === 3 &&
+     mfd95.split('MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, { kleinstAnteil: KONFIG.kleinstAnteil })').length === 2 &&
      mfd95.split('MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil })').length === 2 &&
-     mfd95.split('MH.planeUmschichtung(').length === 3 && mfd95.split('MH.fuehreAus(').length === 2 &&
+     mfd95.split('MH.planeUmschichtung(').length === 4 && mfd95.split('MH.fuehreAus(').length === 2 &&
      /var KONFIG = MH\.buchKonfig\(\);/.test(mfd95),
   '95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs - kein Aufruf ohne');
 
@@ -23235,10 +23239,11 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
   var taktQ = mfd96.slice(mfd96.indexOf('async function takt('), mfd96.indexOf('function zeige('));
   var iBuchen = taktQ.indexOf('if (massnahmenBuchen(MH, d, daten, now)) speichern();');
   ok(iBuchen > 0 && taktQ.split('massnahmenBuchen(').length === 2 && iBuchen > taktQ.indexOf('var daten = await ladeKurse();') &&
-     iBuchen < taktQ.indexOf('MH.rebalanceFaellig(') && iBuchen < taktQ.indexOf('MH.planeUmschichtung(') && iBuchen < taktQ.indexOf('MH.driftAbgleich(') &&
+     iBuchen < taktQ.indexOf('MH.faelligkeit(') && iBuchen < taktQ.indexOf('MH.planeUmschichtung(') && iBuchen < taktQ.indexOf('MH.driftAbgleich(') &&
      iBuchen < taktQ.indexOf('d.momentumAn') && iBuchen < taktQ.indexOf('d.driftAn'),
   '96.5 im Takt wird einmal gebucht: nach dem Laden, vor dem Planen beider Buecher und vor (ausserhalb) der Abfrage der Schalter');
-  ok(/MH\.fuehreAus\(d\.mfBuch, plan, now, 20, \{ kleinstAnteil: KONFIG\.kleinstAnteil \}\);\s*MH\.stempleKursT\(d\.mfBuch, daten\.barZeit, now\);/.test(taktQ) &&
+  /* Umgeschrieben mit Auftrag Nr. 93 (A4): gekauft wird zur Eroeffnung des Ausfuehrungstags - kursT ist der Stempel DIESES Balkens. */
+  ok(/MH\.fuehreAus\(d\.mfBuch, plan, now, 20, \{ kleinstAnteil: KONFIG\.kleinstAnteil \}\);\s*MH\.stempleKursT\(d\.mfBuch, ausf\.barZeit, now\);/.test(taktQ) &&
      /getanD = MH\.driftAbgleich\(d\.driftBuch, heute, daten\.preise, now, \{\}\);\s*MH\.stempleKursT\(d\.driftBuch, daten\.barZeit, now\);/.test(taktQ) &&
      taktQ.split('MH.stempleKursT(').length === 3,
   '96.5 neue Positionen bekommen kursT gleich nach fuehreAus bzw. nach dem (echten) driftAbgleich');
@@ -23271,10 +23276,11 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
        geschrieben.map(function (x) { return x[0]; }).join(',') === 'mf_tagesdaten_teil_0,mf_tagesdaten_teil_1,mf_tagesdaten_index,mf_tagesdaten',
     '96.5 die Ablage schreibt mf_ereignisse { at, sym } nach den Teilen und VOR dem Index; ohne Ereignisse (Wanderung des alten Bestands) bleibt der Schluessel unberuehrt', mitE);
   })());
-  ok(/window\.Kurse\.hole\(sym, \{ von: 0, bis: Date\.now\(\), interval: '1d', bereinigt: true, ereignisse: true \}\)/.test(mfr96) && mfr96.split('window.Kurse.hole(').length === 2 &&
+  /* Umgeschrieben mit Auftrag Nr. 93 (A3/A5): derselbe EINE Abruf je Wert, dazu mitRoh (close fuer Spalte 1); SPY kommt im selben Ladevorgang mit. */
+  ok(/window\.Kurse\.hole\(sym, \{ von: 0, bis: Date\.now\(\), interval: '1d', bereinigt: true, mitRoh: true, ereignisse: true \}\)/.test(mfr96) && mfr96.split('window.Kurse.hole(').length === 2 &&
      /var EREIGNIS_TAGE = 400;/.test(mfr96) && /window\.Kurse\.ereignisseAb\(kd\.ereignisse, Date\.now\(\) - EREIGNIS_TAGE \* 86400000\)/.test(mfr96) &&
-     /roh\[UNIVERSUM\[i\]\] = r\.reihe; ereignisse\[UNIVERSUM\[i\]\] = r\.ereignisse;/.test(mfr96) && /await tagesdatenSchreiben\(roh, weg, Date\.now\(\), ereignisse\);/.test(mfr96) &&
-     /hatStueck\(gespeichert\.roh\) && ereignisseDa;/.test(mfr96),
+     /else if \(r\) \{ neu\[liste\[i\]\] = r\.reihe; ereignisse\[liste\[i\]\] = r\.ereignisse; geliefert\+\+; \}/.test(mfr96) && /await tagesdatenSchreiben\(roh, weg, Date\.now\(\), ereignisse, bezug\);/.test(mfr96) &&
+     /hatStueck\(gespeichert\.roh\) && ereignisseDa &&/.test(mfr96),
   '96.5 mittelfrist.js: EIN Abruf je Wert mit Ereignissen, abgelegt werden die letzten 400 Tage; ein Bestand ohne mf_ereignisse gilt nicht als frisch und wird einmal neu geladen');
   ok(!/bucheMassnahmen|mf_ereignisse|stempleKursT/.test(ohneKommentare(fs.readFileSync(__dirname + '/depot.js', 'utf8'))),
     '96.5 das Intraday-Depot (depot.js) ist nicht Teil: es bucht keine Massnahmen');
@@ -23584,8 +23590,9 @@ console.log('97) Der Markt zum selben Zeitpunkt wie das Buch (Auftrag Nr. 91)');
      mfVohne.marktGrund === 'rohreihe-fehlt' && nah97(mfVohne.marktPct, KURS),
      '97.7 mfdepot.js vergleich(name): Verlauf samt Stand des letzten Takts (mit spyT), beide Reihen des Merkers, punktKurs und buchAusschuettungen - am Verhalten (+2,5201 %; ohne Rohreihe der Rueckfall)');
   ok(/MARKT_ROH = MARKT && c\.roh \? c\.roh : null;/.test(mfdQ97) && /marktRoh: function \(\) \{ return MARKT_ROH; \}/.test(mfdQ97) &&
-     /var spyT = markt\.length \? markt\[markt\.length - 1\]\[0\] : null;/.test(mfdQ97) && /STAND\.spyT = spyT;/.test(mfdQ97) &&
-     /spy: spy, spyT: spyT,/.test(mfdQ97) && /spy: STAND\.spy, spyT: STAND\.spyT,/.test(vmsQ97) &&
+     /* Umgeschrieben mit Auftrag Nr. 93 (A5): Stand und Tagespunkt nehmen SPY aus DEMSELBEN Bestand wie das Buch. */
+     /var spyT = spyQ\.length \? spyQ\[spyQ\.length - 1\]\[0\] : null;/.test(mfdQ97) && /var spyQ = daten\.bezug \|\| markt;/.test(mfdQ97) && /STAND\.spyT = spyT;/.test(mfdQ97) &&
+     /spy: x\.kurs, spyT: x\.t, buchT: x\.t,/.test(mfdQ97) && /spy: STAND\.spy, spyT: STAND\.spyT,/.test(vmsQ97) &&
      /punktKurs: true, marktRoh: MARKT_ROH, buchAusschuettungen: true, markt: MARKT \}\);/.test(vglQ97),
      '97.7 mfdepot.js: der Merker fuehrt beide Reihen (markt(), marktRoh()); jeder neue Tagespunkt und der Stand des Takts tragen spyT (Stempel des Balkens, aus dem spy stammt)');
   var vmsLauf = new Function('D', 'STAND', vmsQ97 + '\n return verlaufMitStand();')(function () { return { mfVerlauf: [A] }; }, { momentum: { wert: 1, start: 1, at: C.t }, drift: null, spy: 405, spyT: U(6, 13, 30) });
@@ -23768,6 +23775,377 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
      '97.11 Momentum: "exakt" gestrichen und "(Parameter wie gemessen)" an den drei Stellen (Karte, Belege, Erklaerung, Konfigurationszeile); die Zeile des Drift-Buchs ist nicht Teil des Zusatzes und bleibt');
   ok(rot97b === g97b && g97b === 5, '97b.x alle Gegenproben von Teil 2 und 3 schlagen an', rot97b + ' von ' + g97b);
 })();
+
+/* ================= 98) Live gleich Messung: das Momentum-Buch handelt wie gemessen (Auftrag Nr. 93, 04.10.2026) =====
+ *
+ * Die Messung ist studien/massstab-rueckblick-2026-10-04/rueckblick.js (REGEL §1.2-§1.5). Je Regel Handfaelle samt Grenzen:
+ *   98.1 A1 Ladeschutz      120 Werte, 95 % der zuvor gelieferten; Totalausfall, Teilausfall, eine Stunde Pause, alte Reihe behalten
+ *   98.2 A7 Mindestlaenge   253 Balken abgelegt, 252 nicht
+ *   98.3 A3 Kursbasis       [t, close, stueck, adjclose]; Rangfolge auf Spalte 1; Drift-Tab und Rechnung des Tabs auf Spalte 4
+ *   98.4 A2 Reihenende      fuenf Handelstage; zum letzten Schluss ohne Kosten; Leerverkauf; ohne Reihe zum Einstand mit Warnung
+ *   98.5 A4 Stichtag/Fuellkurs  09:35 New York, 95 % vom Stichtag, geladen nach 16:15 des Vortags, Eroeffnung, SPY-Balken von heute
+ *   98.6 A6 Haltedauer      Ausfuehrungstag = 0, faellig am 63.; drei Werktage Rueckstand; Uhrzeit egal
+ *   98.7 A5 Tagespunkt      Buch und Markt vom selben abgeschlossenen Tag X, einmal je X, nie ein laufender Balken
+ * Gegenproben (je eine geaenderte Fassung, jede muss anschlagen): Schreiben trotz Teilausfall · Wert faellt still aus dem Bestand ·
+ * Rangfolge auf adjclose · laufender Balken in der Rangfolge · Fuellkurs = letzter Schluss · Bewertung zum Einstand trotz Reihe ·
+ * Faelligkeit ueber die Uhrzeit · Punkt mit Buch und Markt aus verschiedenen Tagen. */
+console.log('98) Live gleich Messung: das Momentum-Buch handelt wie gemessen (Auftrag Nr. 93)');
+(function () {
+  var MH = require('./mfhandel.js'), Li = require('./liquide.js');
+  var g98 = 0, rot98 = 0, warte98 = [];
+  function p98(x) { warte98.push(x); return probe(x); }
+  function gegen98(was, ergebnis) { g98++; if (ergebnis) rot98++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function kopie(x) { return x == null ? null : JSON.parse(JSON.stringify(x)); }
+  /** n Werktage, der letzte ist endTag (ohne Feiertage - Kunstdaten). */
+  function werktage(endTag, n) { var aus = [], t = endTag; while (aus.length < n) { if (MH.istWerktag(t)) aus.unshift(t); t = MH.tagPlus(t, -1); } return aus; }
+  function st(tag) { return MH.nyZeit(tag, 9, 30); }                 // Stempel eines Tagesbalkens: Eroeffnung 09:30 New York
+  function ny(tag, h, m) { return MH.nyZeit(tag, h, m); }
+  function ersetze(q, alt, neu) { var n = q.split(alt).length - 1; return n === 1 ? q.replace(alt, function () { return neu; }) : null; }
+  var mfrQ = fs.readFileSync(__dirname + '/mittelfrist.js', 'utf8'), mfdQ = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  var MO = '2026-11-23', DI = '2026-11-24';                          // Montag = Stichtag, Dienstag = Ausfuehrungstag
+
+  /* ---- Lader aus mittelfrist.js (Quelltext zwischen zwei Marken), mit Attrappen fuer Speicher, Kurse und Uhr ---- */
+  function uhr(ms) {
+    var Uh = function (x) { return arguments.length ? new Date(x) : new Date(Uh.jetzt); };
+    Uh.now = function () { return Uh.jetzt; }; Uh.jetzt = ms; Uh.UTC = Date.UTC; Uh.parse = Date.parse;
+    return Uh;
+  }
+  function lader(quelle, ablage, antwort, jetzt, universum) {
+    var a = quelle.indexOf('  var EREIGNIS_TAGE = 400;'), b = quelle.indexOf('  function zeigeRang() {');
+    if (a < 0 || b < a) return null;
+    var log = { hole: [], set: [], stat: [] }, Uh = uhr(jetzt);
+    var win = { MFHandel: MH, Liquide: Li,
+      api: { storeGet: async function (k) { return kopie(ablage[k]); }, storeSet: async function (k, v) { log.set.push(k); ablage[k] = kopie(v); return { ok: true }; } },
+      Kurse: { hole: async function (s, o) { log.hole.push([s, o]); return antwort(s, o); }, ereignisseAb: function (e) { return e || { div: [], split: [] }; } } };
+    var api = new Function('window', 'UNIVERSUM', 'stat', 'setTimeout', 'Date', quelle.slice(a, b) +
+      '\n return { lade: ladeUniversum, lesen: tagesdatenLesen, annehmen: ladenAnnehmen, datenAus: datenAus };')(
+      win, universum, function (t) { log.stat.push(t); }, function (fn) { setImmediate(fn); return 0; }, Uh);
+    return { api: api, log: log, uhr: Uh };
+  }
+  /** Antwort wie Kurse.hole mit bereinigt + mitRoh: bars [t, adjclose, stueck, hoch, tief, eroeffnung], roh [t, close]. */
+  function antwortAus(reihen) {
+    return function (s) {
+      var r = reihen[s];
+      if (!r) return null;
+      return { bars: r.map(function (z) { return [z[0], z[3], z[2], z[3], z[3], z[1]]; }), roh: r.map(function (z) { return [z[0], z[1]]; }), ereignisse: { div: [], split: [] } };
+    };
+  }
+  /** Kunstreihe [t, close, stueck, adjclose] mit fester Staerke; adjclose = close (keine Ausschuettung). */
+  function reihe98(tage, staerke, stueck) {
+    var n = tage.length;
+    return tage.map(function (t, j) { var c = 100 * Math.pow(1 + staerke, (j - (n - 1 - 21)) / 231); return [st(t), c, stueck == null ? 3e6 : stueck, c]; });
+  }
+  var UNI = [], TAGE = werktage(MO, 260), REIHEN = {};
+  for (var k98 = 0; k98 < 130; k98++) { UNI.push('W' + (k98 < 10 ? '00' : k98 < 100 ? '0' : '') + k98); REIHEN[UNI[k98]] = reihe98(TAGE, 0.02 + 0.003 * ((k98 * 37) % 130)); }
+  REIHEN.SPY = reihe98(TAGE, 0.1, 8e7);
+
+  /* ---- 98.1 A1 Ladeschutz ---- */
+  var L0 = lader(mfrQ, {}, antwortAus(REIHEN), ny(MO, 16, 30), UNI);
+  ok(!!L0, '98.1 der Lader laesst sich aus mittelfrist.js laden (Quelltext zwischen EREIGNIS_TAGE und zeigeRang)');
+  var A = L0.api.annehmen;
+  var altWeg = { roh: {}, weg: ['X1', 'X2', 'X3'] }; for (var i98 = 0; i98 < 190; i98++) altWeg.roh['S' + i98] = [[1, 1]]; ['X1', 'X2', 'X3'].forEach(function (s) { altWeg.roh[s] = [[1, 1]]; });
+  var alt187 = { roh: {}, weg: [] }; for (i98 = 0; i98 < 187; i98++) alt187.roh['S' + i98] = [[1, 1]];
+  var alt120 = { roh: {}, weg: [] }; for (i98 = 0; i98 < 120; i98++) alt120.roh['S' + i98] = [[1, 1]];
+  ok(!A(119, null).ok && A(120, null).ok && !A(177, alt187).ok && A(178, alt187).ok && A(177, alt187).vorher === 187 &&
+     A(120, alt120).ok && !A(119, alt120).ok && A(181, altWeg).ok && !A(180, altWeg).ok && A(181, altWeg).vorher === 190,
+     '98.1 Annahme-Grenzen: Erststart nur 120 (119 nein, 120 ja); 187 gespeichert -> 178 ja, 177 nein (95 %); 120 gespeichert -> 120 ja, 119 nein (die 120 gilt immer); Werte auf weg zaehlen nicht mit (190 geliefert zuvor -> 181 ja, 180 nein)');
+  var ABL = {};
+  p98((async function () {
+    /* (a) Erststart, alles kommt */
+    var La = lader(mfrQ, ABL, antwortAus(REIHEN), ny(MO, 16, 30), UNI);
+    await La.api.lade();
+    var g0 = await La.api.lesen();
+    var at0 = ABL.mf_tagesdaten_index.at;
+    ok(g0 && Object.keys(g0.roh).length === 130 && !g0.roh.SPY && g0.bezug && g0.bezug.sym === 'SPY' && g0.bezug.reihe.length === 260 &&
+       La.log.hole.length === 131 && La.log.hole[130][0] === 'SPY' && La.log.hole[0][1].mitRoh === true && La.log.hole[0][1].bereinigt === true &&
+       La.log.set.indexOf('mf_bezug') > La.log.set.indexOf('mf_ereignisse') && La.log.set.indexOf('mf_bezug') < La.log.set.indexOf('mf_tagesdaten_index'),
+       '98.1 Erststart: 130 Werte und SPY im SELBEN Ladevorgang (ein Abruf je Wert, bereinigt + mitRoh); SPY liegt als Bezugsreihe unter mf_bezug (vor dem Index), nicht unter den Werten',
+       La.log.set.join(','));
+    /* (b) Dienstag 17:00: der Bestand vom Montag ist nicht mehr frisch; der Abruf faellt ganz aus */
+    var Lb = lader(mfrQ, ABL, function () { return null; }, ny(DI, 17, 0), UNI);
+    await Lb.api.lade();
+    var gb = await Lb.api.lesen();
+    ok(Lb.log.hole.length === 131 && Lb.log.set.length === 0 && ABL.mf_tagesdaten_index.at === at0 && Object.keys(gb.roh).length === 130 && gb.bezug &&
+       /0 von 130 Werten geliefert/.test(Lb.log.stat.join(' ')) && /bleibt ganz stehen/.test(Lb.log.stat.join(' ')) && /frühestens in einer Stunde/.test(Lb.log.stat.join(' ')),
+       '98.1 Totalausfall: nichts geschrieben, der alte Bestand bleibt ganz stehen (130 Werte, Stand at unveraendert), die Statuszeile nennt die Zahlen', Lb.log.stat.slice(-1)[0]);
+    /* (c) zehn Minuten spaeter: kein neuer Versuch */
+    /* derselbe Modulzustand traegt den Fehlversuch: dieselbe Instanz Lb, Uhr vorgestellt */
+    Lb.uhr.jetzt = ny(DI, 17, 10);
+    var vorC = Lb.log.hole.length;
+    await Lb.api.lade();
+    ok(Lb.log.hole.length === vorC && Lb.log.set.length === 0 && /neuer Versuch frühestens eine Stunde/.test(Lb.log.stat.slice(-1)[0]),
+       '98.1 nach einem abgelehnten Abruf frueher als eine Stunde: kein neuer Abruf, der gespeicherte Bestand gilt');
+    /* (d) 61 Minuten danach: 7 von 130 fehlen -> 123 < 95 % von 130 (123,5) -> abgelehnt */
+    var fehl7 = {}; UNI.slice(-7).forEach(function (s) { fehl7[s] = true; });
+    var ant = antwortAus(REIHEN);
+    var Ld = lader(mfrQ, ABL, function (s, o) { return fehl7[s] ? null : ant(s, o); }, ny(DI, 18, 1), UNI);
+    await Ld.api.lade();
+    ok(Ld.log.set.length === 0 && ABL.mf_tagesdaten_index.at === at0 && /123 von 130 Werten geliefert/.test(Ld.log.stat.join(' ')) && /also 124/.test(Ld.log.stat.join(' ')),
+       '98.1 Grenze 95 %: 123 von 130 geliefert -> abgelehnt, nichts geschrieben (noetig 124)', Ld.log.stat.slice(-1)[0]);
+    /* (e) neue Instanz, 6 fehlen -> 124 -> angenommen; die 6 behalten ihre ALTE Reihe unveraendert und stehen auf weg */
+    var neuReihen = {}; Object.keys(REIHEN).forEach(function (s) { neuReihen[s] = REIHEN[s].concat([[st(DI), 999, 3e6, 999]]); });
+    var fehl6 = {}; UNI.slice(-6).forEach(function (s) { fehl6[s] = true; });
+    var antNeu = antwortAus(neuReihen);
+    var Le = lader(mfrQ, ABL, function (s, o) { return fehl6[s] ? null : antNeu(s, o); }, ny(DI, 18, 2), UNI);
+    await Le.api.lade();
+    var ge = await Le.api.lesen();
+    var behalten = UNI.slice(-6).every(function (s) { return JSON.stringify(ge.roh[s]) === JSON.stringify(REIHEN[s]); });
+    ok(ABL.mf_tagesdaten_index.at === ny(DI, 18, 2) && Object.keys(ge.roh).length === 130 && behalten && ge.weg.join(',') === UNI.slice(-6).join(',') &&
+       ge.roh.W000.length === 261 && ge.bezug.reihe.length === 261 && /mit ihrer alten Reihe behalten/.test(Le.log.stat.join(' ')),
+       '98.1 Grenze 95 %: 124 von 130 -> angenommen; die sechs ohne Antwort behalten ihre alte Reihe UNVERAENDERT (letzter Balken Montag) und stehen auf weg - kein Wert verschwindet');
+    /* Gegenprobe: Schreiben trotz Teilausfall */
+    var qG1 = ersetze(mfrQ, 'if (!urteil.ok) {', 'if (false) {');
+    var A1g = {}; Object.keys(ABL).forEach(function (k) { A1g[k] = kopie(ABL[k]); });
+    var Lg1 = qG1 && lader(qG1, A1g, function () { return null; }, ny('2026-11-25', 17, 0), UNI);
+    if (Lg1) await Lg1.api.lade();
+    gegen98('Schreiben trotz Teilausfall (ohne die Annahme-Pruefung) schreibt den Bestand neu', !!Lg1 && Lg1.log.set.length > 0);
+    /* Gegenprobe: Wert faellt still aus dem Bestand */
+    var qG2 = ersetze(mfrQ, 'neu[s] = altRoh[s]; behalten.push(s);', 'behalten.push(s);');
+    var A2g = {}; Object.keys(ABL).forEach(function (k) { A2g[k] = kopie(ABL[k]); });
+    A2g.mf_tagesdaten_index.at = ny(MO, 16, 30); A2g.mf_bezug.at = ny(MO, 16, 30);
+    var Lg2 = qG2 && lader(qG2, A2g, function (s, o) { return fehl6[s] ? null : antNeu(s, o); }, ny('2026-11-25', 17, 0), UNI);
+    var gg2 = Lg2 ? (await Lg2.api.lade(), await Lg2.api.lesen()) : null;
+    gegen98('ein Wert ohne Antwort faellt still aus dem Bestand (alte Reihe nicht behalten)', !!gg2 && Object.keys(gg2.roh).length === 124);
+    /* Bestand ohne Spalte 4 oder ohne SPY: nicht frisch, einmal neu laden */
+    var Aalt = {}; Object.keys(ABL).forEach(function (k) { Aalt[k] = kopie(ABL[k]); });
+    Object.keys(Aalt).forEach(function (k) { if (/^mf_tagesdaten_teil_/.test(k)) Object.keys(Aalt[k].roh).forEach(function (s) { Aalt[k].roh[s] = Aalt[k].roh[s].map(function (z) { return z.slice(0, 3); }); }); });
+    var Lf = lader(mfrQ, Aalt, antwortAus(neuReihen), ny(DI, 18, 30), UNI);
+    await Lf.api.lade();
+    var Lf2 = lader(mfrQ, kopie(ABL), antwortAus(neuReihen), ny(DI, 18, 30), UNI);
+    await Lf2.api.lade();
+    ok(Lf.log.hole.length === 131 && Lf2.log.hole.length === 0,
+       '98.1 ein Bestand ohne vierte Spalte gilt nicht als frisch und wird neu geladen; derselbe Bestand mit vierter Spalte (geladen nach 16:15) nicht', Lf.log.hole.length + ' / ' + Lf2.log.hole.length);
+  })());
+
+  /* ---- 98.2 A7 Mindestlaenge 253 ---- */
+  p98((async function () {
+    var r = { A: reihe98(werktage(MO, 253), 0.1), B: reihe98(werktage(MO, 252), 0.1), SPY: REIHEN.SPY };
+    var uni = ['A', 'B'];
+    for (var i = 0; i < 120; i++) { uni.push('Z' + i); r['Z' + i] = REIHEN.W000; }
+    var L = lader(mfrQ, {}, antwortAus(r), ny(MO, 16, 30), uni);
+    await L.api.lade();
+    var g = await L.api.lesen();
+    ok(g.roh.A && g.roh.A.length === 253 && !g.roh.B && g.weg.indexOf('B') >= 0 && MH.momentumZiel({ A: g.roh.A }, { nowMs: st(MO), minWerte: 1 }).rangfolge.length === 1,
+       '98.2 eine Reihe mit 253 Balken wird abgelegt (die Regel rangiert sie), eine mit 252 nicht (sie steht auf weg)');
+  })());
+
+  /* ---- 98.3 A3 Kursbasis ---- */
+  /* 120 Werte, das Ziel sind 12. V107: Kursstaerke Platz 13; drei Ausschuettungen zu je 1,5 % im Rueckblickfenster heben
+   * die Staerke auf adjclose ueber die von V108 (Kleinsttest 4 der Durchsicht). */
+  var T3 = werktage(MO, 300), R3 = {}, U3 = [];
+  for (var k3 = 0; k3 < 120; k3++) {
+    var s3 = 'V' + (k3 < 10 ? '00' : k3 < 100 ? '0' : '') + k3; U3.push(s3);
+    R3[s3] = reihe98(T3, 0.10 + 0.01 * k3);
+  }
+  var nT = T3.length, ex3 = [nT - 201, nT - 138, nT - 75, nT - 12];
+  R3.V107 = R3.V107.map(function (z, j) { var f = 1; ex3.forEach(function (e) { if (e > j) f *= 0.985; }); return [z[0], z[1], z[2], z[1] * f]; });
+  R3.SPY = reihe98(T3, 0.1, 8e7);
+  function rangPruefen(quelle) {
+    var L = lader(quelle, {}, antwortAus(R3), ny(MO, 16, 30), U3);
+    return L.api.lade().then(function () { return L.api.lesen(); }).then(function (g) {
+      return { g: g, ziel: MH.momentumZiel(g.roh, { nowMs: st(MO) }).ziel, L: L };
+    });
+  }
+  var sollZiel = MH.momentumZiel((function () { var o = {}; U3.forEach(function (s) { o[s] = R3[s].map(function (z) { return [z[0], z[1], z[2]]; }); }); return o; })(), { nowMs: st(MO) }).ziel;
+  p98(rangPruefen(mfrQ).then(function (x) {
+    var z = x.g.roh.V107[x.g.roh.V107.length - 300];
+    ok(z.length === 4 && z[1] === R3.V107[0][1] && z[3] === R3.V107[0][3] && z[3] < z[1] && JSON.stringify(x.ziel) === JSON.stringify(sollZiel) &&
+       x.ziel.indexOf('V107') < 0 && x.ziel.indexOf('V108') >= 0,
+       '98.3 die Zeile ist [t, close, stueck, adjclose]; die Rangfolge des Buchs liest Spalte 1 (close, ohne Ausschuettungen) - V107 nicht im Ziel, V108 drin, wie in der Messung', x.ziel.join(','));
+    var Ld = x.L.api.datenAus(x.g.roh);
+    var iL = Ld.zeiten.length - 300;
+    ok(Ld.map.V107[iL] === R3.V107[0][3], '98.3 die Rechnung des Mittelfrist-Tabs (datenAus) liest die vierte Spalte - ihre Messung lief auf adjclose');
+  }));
+  var qG3 = ersetze(mfrQ, 'reihe.push([b[0], r[1], b[2], b[1]]);', 'reihe.push([b[0], b[1], b[2], b[1]]);');
+  p98((qG3 ? rangPruefen(qG3) : Promise.resolve(null)).then(function (x) {
+    gegen98('Rangfolge auf adjclose (Spalte 1 = adjclose) bringt V107 ins Ziel', !!x && x.ziel.indexOf('V107') >= 0);
+  }));
+  /* driftui.js ladeKurse: die vierte Spalte an die Stelle des Kurses */
+  var duiQ = fs.readFileSync(__dirname + '/driftui.js', 'utf8');
+  var lkQ = duiQ.slice(duiQ.indexOf('  async function ladeKurse() {'), duiQ.indexOf('  async function ladeMarkt() {'));
+  var rohD = {}; for (var kd = 0; kd < 30; kd++) rohD['D' + kd] = [[1, 10, 5, 9.5], [2, 11, 6, 11]];
+  rohD.ALT = [[1, 10, 5]];
+  p98(new Function('window', lkQ + '\n return ladeKurse;')({ MF: { tagesdatenLesen: async function () { return { roh: rohD }; } } })().then(function (r) {
+    ok(JSON.stringify(r.D0) === '[[1,9.5,5],[2,11,6]]' && JSON.stringify(r.ALT) === '[[1,10,5]]' && rohD.D0[0][1] === 10,
+       '98.3 driftui.js ladeKurse gibt dem Drift-Tab die vierte Spalte (seine Messung vom 21.08. lief mit Ausschuettungen); ohne vierte Spalte bleibt Spalte 1; der Bestand selbst bleibt unberuehrt');
+  }));
+  var mfdOk = ohneKommentare(mfdQ);
+  ok(/preise\[s\] = r\[r\.length - 1\]\[1\];/.test(mfdOk) && !/\[3\]/.test(mfdOk.slice(mfdOk.indexOf('async function ladeKurse()'), mfdOk.indexOf('var MARKT = null;'))) &&
+     /kurseD\[s\] = daten\.roh\[s\];/.test(mfdOk),
+     '98.3 mfdepot.js: Handel, Bewertung und Drift-Buch lesen Spalte 1 (Schluss ohne Ausschuettungen - die Buecher buchen die Ausschuettungen seit Nr. 87 selbst)');
+
+  /* ---- 98.4 A2 Reihenende ---- */
+  var T4 = werktage(MO, 30), SPY4 = T4.map(function (t) { return [st(t), 500]; });
+  function bis4(n) { return T4.slice(0, T4.length - n).map(function (t) { return [st(t), 130, 1e6, 130]; }); }
+  var roh4 = { A: bis4(4), B: bis4(5), C: bis4(6), E: bis4(0) };
+  var buch4 = { cash: 1000, trades: [], positionen: [
+    { sym: 'A', stueck: 10, einstand: 100 }, { sym: 'B', stueck: 100, einstand: 100.2 }, { sym: 'C', stueck: 10, einstand: 150, richtung: -1 },
+    { sym: 'D', stueck: 5, einstand: 80 }, { sym: 'E', stueck: 1, einstand: 120 }] };
+  var aus4 = MH.reihenendeAusbuchen(buch4, roh4, SPY4, 77);
+  var pre4 = {}; Object.keys(roh4).forEach(function (s) { var r = roh4[s]; pre4[s] = r[r.length - 1][1]; });
+  var bw4 = MH.bewerte(buch4, pre4), j4 = MH.reihenendeJournal('momentum', aus4.filter(function (x) { return x.sym === 'B'; })[0]);
+  ok(aus4.map(function (x) { return x.sym; }).sort().join(',') === 'B,C' && buch4.positionen.map(function (p) { return p.sym; }).join(',') === 'A,D,E' &&
+     Math.abs(buch4.cash - (1000 + 100 * 130 + 10 * (2 * 150 - 130))) < 1e-9 && buch4.trades.filter(function (t) { return t.art === 'reihenende'; }).length === 2,
+     '98.4 Grenze fuenf Handelstage: 4 ohne neuen Balken bleibt, 5 und 6 werden ausgebucht - zum letzten Schluss OHNE Kosten (100 × 130 = 13.000 $), der Leerverkauf zu 10 × (2 × 150 − 130); Platz frei', buch4.cash);
+  ok(bw4.ohneKurs.join(',') === 'D' && Math.abs(bw4.wert - (buch4.cash + 10 * 130 + 5 * 80 + 130)) < 0.01,
+     '98.4 bewertet wird zum letzten Schluss der Reihe (A: 130, nicht der Einstand 100); nur D ohne jede Reihe zum Einstand, als ohneKurs gemeldet');
+  ok(j4.txt.indexOf('Reihenende: B, letzter Handelstag ' + MH.datumDe(T4[T4.length - 6]) + ', ausgebucht zu 130,00 $') === 0 &&
+     j4.txt.indexOf('Grund unbekannt — wäre es eine Insolvenz, hätte die Messung 0 gebucht.') > 0 && j4.applied[0] === 'Momentum-Buch: Reihenende B ausgebucht',
+     '98.4 eigene Journalzeile im Wortlaut des Auftrags', j4.txt.slice(0, 120));
+  var taktQ98 = ohneKommentare(mfdQ.slice(mfdQ.indexOf('async function takt('), mfdQ.indexOf('function zeige(')));
+  ok(/if \(daten\.bezug && !fl\.veraltet && reihenendeBuchen\(MH, d, daten, now\)\) speichern\(\);/.test(taktQ98) &&
+     /\[\['momentum', d\.mfBuch\], \['drift', d\.driftBuch\]\]\.forEach[\s\S]*MH\.reihenendeAusbuchen\(x\[1\], daten\.roh, daten\.bezug, now\)/.test(mfdQ),
+     '98.4 im Takt: beide Buecher, nur mit einer Marktreihe, die nicht veraltet ist (sonst wird nicht gezaehlt und nichts ausgebucht)');
+  var mfQ98 = ohneKommentare(mfdQ);
+  ok(/Warnung – ohne jede Kursreihe im Bestand, deshalb zum Einstand bewertet: /.test(mfQ98) && /\['Warnung', /.test(mfQ98),
+     '98.4 eine Position ohne jede Reihe steht mit Warnung in der Klappe und auf der Karte');
+
+  /* ---- 98.5 A4 Stichtag und Fuellkurs ---- */
+  var helfQ = mfdQ.slice(mfdQ.indexOf('  function reihenendeBuchen('), mfdQ.indexOf('  async function takt('));
+  function helfer(quelle, hole, angestossen) {
+    var q = quelle.slice(quelle.indexOf('  function reihenendeBuchen('), quelle.indexOf('  async function takt('));
+    return new Function('window', 'nachladen', 'START_KAPITAL', 'setTimeout', q + '\n return { vorbereiten: ausfuehrungVorbereiten, punkt: tagespunkt, eroeffnung: eroeffnung };')(
+      { Kurse: { hole: hole } }, function () { angestossen.n++; }, 100000, function (fn) { setImmediate(fn); return 0; });
+  }
+  ok(helfQ.length > 2000, '98.5 die Helfer des Takts lassen sich aus mfdepot.js laden (reihenendeBuchen bis takt)');
+  /* Bestand: 120 Werte bis Montag, geladen Montag 16:30; Z mit einem Sprung genau dort, wo ein Balken vom Dienstag die Rangfolge verschoebe */
+  var T5 = werktage(MO, 300), R5 = {};
+  for (var k5 = 0; k5 < 120; k5++) R5['Q' + k5] = reihe98(T5, 0.05 + 0.002 * k5);
+  function mitDienstag(roh) { var o = {}; Object.keys(roh).forEach(function (s) { o[s] = roh[s].concat([[st(DI), roh[s][roh[s].length - 1][1], 3e6, roh[s][roh[s].length - 1][1]]]); }); return o; }
+  var n5 = T5.length;
+  R5.Q0 = R5.Q0.map(function (z, j) { return j === n5 - 21 ? [z[0], z[1] * 5, z[2], z[3] * 5] : z; });   // Spitze am Balken i - 21, wenn i der Dienstag ist
+  var SPY5 = reihe98(T5, 0.1, 8e7);
+  function daten5(roh, at) { var p = {}; Object.keys(roh).forEach(function (s) { p[s] = roh[s][roh[s].length - 1][1]; }); return { roh: roh, preise: p, stand: at, bezug: SPY5 }; }
+  function holeOffen(eroeffnungen, ohneSpy) {
+    var log = [];
+    var f = async function (s, o) {
+      log.push([s, o]);
+      if (s === 'SPY' && ohneSpy) return { bars: [] };
+      var e = eroeffnungen[s] == null ? 50 : eroeffnungen[s];
+      return { bars: e > 0 ? [[st(DI), 999, 1e6, 999, 999, e]] : [[st(DI), 999, 1e6, 999, 999, null]] };
+    };
+    f.log = log; return f;
+  }
+  var fl5 = MH.faelligkeit(SPY5, '2026-08-25', 63, ny(DI, 9, 36));
+  p98((async function () {
+    var ang = { n: 0 }, h1 = holeOffen({}), H1 = helfer(mfdQ, h1, ang);
+    var buch5 = { mfBuch: { cash: 100000, positionen: [{ sym: 'Q1', stueck: 10, einstand: 50 }], letzteAusfuehrungTag: '2026-08-25' } };
+    var vor = await H1.vorbereiten(MH, buch5, daten5(R5, ny(MO, 16, 30)), fl5, ny(DI, 9, 34));
+    ok(!vor.ok && vor.hinweis === 'Umschichtung heute nach Börsenöffnung' && h1.log.length === 0,
+       '98.5 Grenze 09:35 New York: um 09:34 kein Handel, kein Abruf, die Karte sagt "Umschichtung heute nach Börsenöffnung"', vor.hinweis);
+    var eroeff = { Q2: 0 };   // Q2 ohne Eroeffnung
+    var h2 = holeOffen(eroeff), H2 = helfer(mfdQ, h2, ang);
+    var a2 = await H2.vorbereiten(MH, buch5, daten5(mitDienstag(R5), ny(DI, 9, 36)), fl5, ny(DI, 9, 36));
+    var sollZ5 = MH.momentumZiel(R5, { nowMs: st(MO) }).ziel, mitDi = MH.momentumZiel(mitDienstag(R5), { nowMs: st(DI) }).ziel;
+    ok(a2.ok && a2.stichtag === MO && JSON.stringify(a2.ziel.ziel) === JSON.stringify(sollZ5) && JSON.stringify(sollZ5) !== JSON.stringify(mitDi) &&
+       h2.log[0][0] === 'SPY' && h2.log[0][1].bereinigt === false && h2.log[0][1].offenRoh === true && h2.log[0][1].von === ny(DI, 0, 0),
+       '98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (roh, Eroeffnung ohne Rueckfall)',
+       a2.ziel.ziel.slice(0, 4).join(',') + ' | mit Dienstag: ' + mitDi.slice(0, 4).join(','));
+    var plan5 = MH.planeUmschichtung(a2.ziel.ziel, buch5.mfBuch, a2.preise, { kleinstAnteil: 0.05 });
+    ok(a2.preise.Q1 === 50 && a2.barZeit.Q1 === st(DI) && !(a2.preise.Q2 > 0) && (a2.ziel.ziel.indexOf('Q2') < 0 || plan5.fehltKurs.indexOf('Q2') >= 0) &&
+       plan5.kaufen.every(function (o) { return o.kurs === 50; }),
+       '98.5 Fuellkurs = Eroeffnung des Ausfuehrungstags (50, nicht der Schluss 999); ein Wert ohne Eroeffnung bekommt keinen Kurs (Ziel nicht gekauft, Position gehalten); kursT = Stempel des Balkens vom Dienstag');
+    var h3 = holeOffen({}, true), H3 = helfer(mfdQ, h3, ang);
+    var a3 = await H3.vorbereiten(MH, buch5, daten5(R5, ny(MO, 16, 30)), fl5, ny(DI, 10, 0));
+    ok(!a3.ok && /keinen Tagesbalken vom 24\.11\.2026 – heute kein Handelstag/.test(a3.hinweis) && h3.log.length === 1,
+       '98.5 liefert der Abruf fuer SPY keinen Balken von heute, ist heute kein Handelstag: kein Handel, nur ein Abruf', a3.hinweis);
+    /* Frische gegen die Uhr */
+    var angF = { n: 0 }, hF = holeOffen({}), HF = helfer(mfdQ, hF, angF);
+    var aF = await HF.vorbereiten(MH, buch5, daten5(R5, ny(MO, 16, 0)), fl5, ny(DI, 10, 0));
+    var r18 = {}; Object.keys(R5).slice(0, 20).forEach(function (s, i) { r18[s] = i < 2 ? R5[s].slice(0, -1) : R5[s]; });
+    var r19 = {}; Object.keys(R5).slice(0, 20).forEach(function (s, i) { r19[s] = i < 1 ? R5[s].slice(0, -1) : R5[s]; });
+    var s18 = MH.stichtagPruefen(r18, SPY5, ny(MO, 16, 30), DI), s19 = MH.stichtagPruefen(r19, SPY5, ny(MO, 16, 30), DI);
+    ok(!aF.ok && /vor dem Schluss des 23\.11\.2026 geladen/.test(aF.hinweis) && angF.n === 1 && hF.log.length === 0 && s19.ok && !s18.ok && /nur 18 von 20/.test(s18.grund),
+       '98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom Stichtag ja, 18 nein', aF.hinweis);
+    /* Gegenprobe: laufender Balken (Balken des Ausfuehrungstags) in der Rangfolge */
+    var qL = ersetze(mfdQ, 'MH.momentumZiel(MH.rohBis(daten.roh, st.stichtag), { nowMs: st.stichtagT })', 'MH.momentumZiel(daten.roh, { nowMs: st.stichtagT })');
+    var aL = qL ? await helfer(qL, holeOffen({}), { n: 0 }).vorbereiten(MH, buch5, daten5(mitDienstag(R5), ny(DI, 9, 36)), fl5, ny(DI, 9, 36)) : null;
+    gegen98('ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel', !!aL && aL.ok && JSON.stringify(aL.ziel.ziel) !== JSON.stringify(sollZ5));
+    /* Gegenprobe: Fuellkurs = letzter Schluss */
+    var qF = ersetze(mfdQ, "return best ? { kurs: best[5], t: best[0] } : null;", "return best ? { kurs: best[1], t: best[0] } : null;");
+    var aFk = qF ? await helfer(qF, holeOffen({}), { n: 0 }).vorbereiten(MH, buch5, daten5(R5, ny(MO, 16, 30)), fl5, ny(DI, 9, 36)) : null;
+    gegen98('Fuellkurs = Schluss statt Eroeffnung faellt auf', !!aFk && aFk.ok && aFk.preise.Q1 !== 50);
+  })());
+  var takt98 = ohneKommentare(mfdQ.slice(mfdQ.indexOf('async function takt('), mfdQ.indexOf('function zeige(')));
+  ok(/if \(\(faellig && d\.momentumAn\) \|\| manuell === 'momentum'\) \{\s*var ausf = await ausfuehrungVorbereiten\(MH, d, daten, fl, now\);/.test(takt98) &&
+     /d\.mfBuch\.letzteAusfuehrungTag = ausf\.heute;/.test(takt98) && takt98.split('MH.fuehreAus(').length === 2,
+     '98.5 Takt UND Knopf ("jetzt umschichten" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag');
+
+  /* ---- 98.6 A6 Haltedauer ---- */
+  var T6 = werktage('2026-12-30', 150), M6 = T6.map(function (t) { return [st(t), 500]; });
+  function fz(nSeit, jetzt) {
+    var L = T6[T6.length - 1 - nSeit];
+    return MH.faelligkeit(M6, L, 63, jetzt || ny('2026-12-31', 10, 0));
+  }
+  var f61 = fz(61), f62 = fz(62), f64 = fz(64);
+  ok(f61.faellig === false && f61.noch === 1 && f62.faellig === true && f62.verspaetung === 0 && f64.faellig === true && f64.verspaetung === 2 && f62.tageSeit === 62,
+     '98.6 Grenze 63: Ausfuehrungstag = 0; 61 Balken danach -> nicht faellig (noch 1), 62 -> faellig (heute ist der 63.), 64 -> faellig mit 2 Handelstagen Verspaetung');
+  var M6b = M6.slice(0, -3), M6c = M6.slice(0, -4);
+  var v3 = MH.faelligkeit(M6b, T6[40], 63, ny('2026-12-31', 10, 0)), v4 = MH.faelligkeit(M6c, T6[40], 63, ny('2026-12-31', 10, 0));
+  ok(v3.veraltet === false && v3.rueckstand === 3 && v4.veraltet === true && v4.faellig === null && v4.rueckstand === 4 && v4.letzterMarktTag === T6[T6.length - 5],
+     '98.6 Grenze drei Tage: Marktreihe drei Werktage hinter der Uhr gilt noch, vier nicht - dann faellig = null (nie still "nicht faellig")', v3.rueckstand + ' / ' + v4.rueckstand);
+  ok(MH.nyTag(Date.UTC(2026, 7, 25, 18, 15)) === '2026-08-25' && /if \(!d\.mfBuch\.letzteAusfuehrungTag && d\.mfBuch\.letztesRebalanceT\) \{ d\.mfBuch\.letzteAusfuehrungTag = MH\.nyTag\(d\.mfBuch\.letztesRebalanceT\); speichern\(\); \}/.test(takt98),
+     '98.6 das laufende Buch: Ausfuehrungstag = New-Yorker Tag von letztesRebalanceT (25.08.2026 18:15 UTC -> 2026-08-25); letztesRebalanceT bleibt stehen');
+  /** Prueft eine Faelligkeits-Funktion f(markt, letztes, halten) darauf, dass die Uhrzeit der letzten Umschichtung nichts aendert. */
+  function uhrzeitEgal(f) {
+    var k = 20;
+    function nach(letztes) { for (var j = k; j < T6.length; j++) if (f(M6.slice(0, j + 1), letztes, 63)) return j - k; return null; }
+    return nach(Date.UTC(+T6[k].slice(0, 4), +T6[k].slice(5, 7) - 1, +T6[k].slice(8, 10), 10)) === nach(Date.UTC(+T6[k].slice(0, 4), +T6[k].slice(5, 7) - 1, +T6[k].slice(8, 10), 15));
+  }
+  function altFaellig(marktReihe, letztesT, halten) { if (!letztesT) return true; var tage = 0; for (var i = marktReihe.length - 1; i >= 0 && marktReihe[i][0] > letztesT; i--) tage++; return tage >= (halten || 63); }
+  ok(uhrzeitEgal(MH.rebalanceFaellig), '98.6 rebalanceFaellig zaehlt ab dem New-Yorker Tag: 10:00 und 15:00 UTC desselben Tags ergeben dieselbe Faelligkeit');
+  gegen98('Faelligkeit ueber die Uhrzeit (Fassung bis Nr. 92: Balken nach dem Zeitstempel) faellt auf', !uhrzeitEgal(altFaellig));
+
+  /* ---- 98.7 A5 Tagespunkt ---- */
+  var T7 = werktage(MO, 40), SPY7 = T7.map(function (t, i) { return [st(t), 500 + i]; });
+  var roh7 = { P: T7.map(function (t, i) { return [st(t), 100 + i, 1e6, 100 + i]; }), S: T7.slice(0, -1).map(function (t) { return [st(t), 77, 1e6, 77]; }) };
+  /* Die Werte sind einen Tag weiter als SPY (Dienstag) - wer das Buch zum juengsten Balken bewertet, mischt zwei Tage */
+  var roh7n = { P: roh7.P.concat([[st(DI), 200, 1e6, 200]]), S: roh7.S };
+  function buch7() {
+    return { mfBuch: { cash: 1000, start: 100000, positionen: [{ sym: 'P', stueck: 10, einstand: 90 }, { sym: 'S', stueck: 2, einstand: 70 }],
+      massnahmen: [{ art: 'div', t: st(DI), summe: 10 }], letzteAusfuehrungTag: '2026-08-25' }, mfVerlauf: [{ t: Date.UTC(2026, 7, 25, 18, 15), momentum: 1, spy: 763.47 }] };
+  }
+  function daten7(roh) { var p = {}; Object.keys(roh).forEach(function (s) { p[s] = roh[s][roh[s].length - 1][1]; }); return { roh: roh, preise: p, bezug: SPY7 }; }
+  /** Soll aus der Messung: Buch und SPY zum Schluss desselben Tags X (rueckblick.js Schritt 5/6). */
+  function punktOk(p, roh, X) {
+    var iX = T7.indexOf(X), pX = roh.P.filter(function (z) { return MH.nyTag(z[0]) <= X; }).slice(-1)[0][1];
+    return !!p && p.tag === X && p.spy === SPY7[iX][1] && p.spyT === SPY7[iX][0] && p.buchT === p.spyT &&
+      Math.abs(p.momentum - (1000 - 10 + 10 * pX + 2 * 77)) < 1e-9;
+  }
+  var d7 = buch7(), H7 = helfer(mfdQ, function () { return null; }, { n: 0 });
+  var p7 = H7.punkt(MH, d7, daten7(roh7n), ny(DI, 12, 0));
+  var p7b = H7.punkt(MH, d7, daten7(roh7n), ny(DI, 12, 30));
+  ok(punktOk(p7, roh7n, MO) && p7b === null && d7.mfVerlauf.length === 2 && d7.mfVerlauf[0].spy === 763.47 && !d7.mfVerlauf[0].tag,
+     '98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Bestand, spyT = buchT; Bargeld ohne die Ausschuettung vom Dienstag; einmal je X; der erste Punkt bleibt, wie er ist',
+     p7 && (p7.tag + ' ' + p7.momentum + ' ' + p7.spy));
+  var p16a = MH.punktTag(SPY7.concat([[st(DI), 999]]), ny(DI, 16, 14)), p16b = MH.punktTag(SPY7.concat([[st(DI), 999]]), ny(DI, 16, 16));
+  var lauf7 = MH.ohneLaufendenBalken(SPY7.concat([[st(DI), 999]]), ny(DI, 16, 14)), fertig7 = MH.ohneLaufendenBalken(SPY7.concat([[st(DI), 999]]), ny(DI, 16, 16));
+  ok(p16a.tag === MO && p16b.tag === DI && lauf7.length === SPY7.length && fertig7.length === SPY7.length + 1,
+     '98.7 Grenze 16:15 New York: um 16:14 ist der Dienstag noch laufend (Punkt fuer Montag; der Lader legt den Balken nicht ab), um 16:16 abgeschlossen');
+  var d7b = buch7(); d7b.mfVerlauf.push({ t: ny(MO, 10, 0), momentum: 2, spy: 1 });
+  var d7c = buch7(); d7c.mfBuch.letzteAusfuehrungTag = DI;
+  ok(H7.punkt(MH, d7b, daten7(roh7), ny(DI, 12, 0)) === null && H7.punkt(MH, d7c, daten7(roh7), ny(DI, 12, 0)) === null,
+     '98.7 kein Punkt fuer X, wenn schon ein (alter) Punkt vom selben New-Yorker Tag steht oder das Buch nach X umgeschichtet hat');
+  var qP = ersetze(mfdQ, 'var s = MH.schluesseAm(daten.roh, x.tag);', 'var s = { preise: daten.preise };');
+  var pP = qP ? helfer(qP, function () { return null; }, { n: 0 }).punkt(MH, buch7(), daten7(roh7n), ny(DI, 12, 0)) : null;
+  gegen98('Punkt mit Buch und Markt aus verschiedenen Tagen (Buch zum juengsten Balken, Markt zum Schluss von X) faellt auf', !!pP && !punktOk(pP, roh7n, MO));
+  var qE = ersetze(mfdQ, 'var s = MH.schluesseAm(daten.roh, x.tag);',
+    'var s = (function () { var r = MH.schluesseAm(daten.roh, x.tag), o = { preise: {} }; Object.keys(r.preise).forEach(function (k) { if (MH.nyTag(r.barT[k]) === x.tag) o.preise[k] = r.preise[k]; }); return o; })();');
+  var pE = qE ? helfer(qE, function () { return null; }, { n: 0 }).punkt(MH, buch7(), daten7(roh7n), ny(DI, 12, 0)) : null;
+  gegen98('Bewertung zum Einstand trotz Reihe (S ohne Balken von X zum Einstand 70 statt zum letzten Schluss 77) faellt auf', !!pE && !punktOk(pE, roh7n, MO));
+  /* Die Karte: Grund statt stillem "nicht faellig" */
+  var kartQ = mfdQ.slice(mfdQ.indexOf('  function fakten(zeilen) {'), mfdQ.indexOf('  /** Die zwei Buch-Karten oben im Bestand schreiben.'));
+  var tt = new Function('window', 'U', kartQ + '\n return taktTextMomentum;')({ MFHandel: MH }, { d: function () { return 'TT.MM.JJJJ'; }, esc: String });
+  var bK = { letztesRebalanceT: Date.UTC(2026, 7, 25, 18, 15), letzteAusfuehrungTag: '2026-08-25', konfig: { halten: 63 } };
+  ok(tt({ buch: bK, hinweis: 'Marktreihe veraltet seit 02.10.2026 – Nachladen angestoßen; ob die Umschichtung fällig ist, ist offen.' }).indexOf('Marktreihe veraltet seit 02.10.2026') === 0 &&
+     tt({ buch: bK, noch: 35 }) === 'nach 63 Handelstagen · letzte Umschichtung 25.08.2026 · nächste nach 35 weiteren Handelstagen, zur Eröffnung' &&
+     tt({ buch: bK, hinweis: 'Umschichtung heute nach Börsenöffnung', faellig: true }) === 'Umschichtung heute nach Börsenöffnung',
+     '98.7 die Karte: der Grund steht da ("Marktreihe veraltet seit …", "Umschichtung heute nach Börsenöffnung"), sonst Ausfuehrungstag und Handelstage bis zur naechsten');
+  probe(Promise.all(warte98).then(function () {
+    ok(rot98 === g98 && g98 === 8, '98.x alle acht Gegenproben schlagen an', rot98 + ' von ' + g98);
+  }));
+})();
+
 
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

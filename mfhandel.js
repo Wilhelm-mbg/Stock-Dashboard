@@ -193,7 +193,10 @@
 
   /** Buchwert zu aktuellen Kursen. Positionen ohne Kurs zählen zum Einstand —
    *  ehrlicher wäre null, aber ein Depotwert muss eine Zahl sein; das Feld
-   *  ohneKurs macht die Unsicherheit sichtbar. */
+   *  ohneKurs macht die Unsicherheit sichtbar.
+   *  Seit Auftrag Nr. 93 (A1/A2) ist "ohne Kurs" nur noch ein Wert OHNE JEDE Reihe im Bestand:
+   *  der Lader behaelt die alte Reihe eines Werts, der keine Antwort bekam, und preise traegt
+   *  dann ihren letzten Schluss (wie rueckblick.js: nie der Einstand, solange es eine Reihe gibt). */
   function bewerte(buch, preise) {
     var wert = buch.cash, ohneKurs = [];
     (buch.positionen || []).forEach(function (p) {
@@ -206,12 +209,252 @@
 
   /** Ist ein Rebalancing fällig? Gezählt wird in HANDELSTAGEN über die Marktreihe
    *  (SPY) — Kalendertage wären bei Feiertagen ungenau, und die Messung lief in
-   *  Handelstagen (63 = ein Quartal). */
+   *  Handelstagen (63 = ein Quartal).
+   *  Seit Auftrag Nr. 93 (F6) zaehlt der TAG der letzten Umschichtung, nicht ihre Uhrzeit:
+   *  letztes ist ein New-Yorker Datum 'JJJJ-MM-TT' oder ein Zeitstempel (dann sein Tag in
+   *  New York); gezaehlt werden die Balken mit einem spaeteren New-Yorker Tag. Vorher zaehlte
+   *  der Balken des Umschichtungstags mit, wenn die Umschichtung vor 13:30 UTC lag - um 10:00
+   *  war die naechste nach 62 Balken faellig, um 15:00 nach 63. Der Takt rechnet mit
+   *  faelligkeit() unten (mit Grund und Alter der Marktreihe); diese Fassung bleibt fuer
+   *  Aufrufer, die nur ja/nein brauchen. */
   function rebalanceFaellig(marktReihe, letztesT, halten) {
     if (!letztesT) return true;
+    var grenze = nyZeit(tagPlus(typeof letztesT === 'string' ? letztesT : nyTag(letztesT), 1), 0, 0);
     var tage = 0;
-    for (var i = marktReihe.length - 1; i >= 0 && marktReihe[i][0] > letztesT; i--) tage++;
+    for (var i = marktReihe.length - 1; i >= 0 && marktReihe[i][0] >= grenze; i--) tage++;
     return tage >= (halten || 63);
+  }
+
+  /* ================= Live gleich Messung (Auftrag Nr. 93, 04.10.2026) =================
+   *
+   * Eine unabhaengige Durchsicht (Zweig pruefung/live-gegen-messung) fand sieben Stellen, an
+   * denen das Momentum-Buch anders handelte als der Rueckblick ueber fuenf Jahre
+   * (studien/massstab-rueckblick-2026-10-04/rueckblick.js). Die reinen Teile der Antwort stehen
+   * hier: die New-Yorker Uhr, die Faelligkeit nach Handelstagen, das Reihenende, die Schluesse
+   * eines Tages. Kein Netz, kein Fenster - in Node pruefbar.
+   *
+   * DIE UHR: jedes Datum ist ein Tag in New York (Zeitzone America/New_York), nie in UTC. Ein
+   * Handelstag ist ein Tag, fuer den SPY einen Tagesbalken hat - einen Kalender fuehrt die App
+   * nicht. Werktag (Mo-Fr) wird nur dort benutzt, wo noch kein Balken da sein kann: beim Alter
+   * der Marktreihe gegen die Uhr und bei der Frage, ob heute ein Abschluss zu erwarten ist. */
+  var NY_FMT = null;
+  /** Datum und Uhrzeit eines Zeitstempels in New York: { tag: 'JJJJ-MM-TT', stunde, minute }. */
+  function nyTeile(ms) {
+    if (!NY_FMT) {
+      NY_FMT = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hourCycle: 'h23',
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+    var o = {};
+    NY_FMT.formatToParts(new Date(ms)).forEach(function (p) { o[p.type] = p.value; });
+    return { tag: o.year + '-' + o.month + '-' + o.day, stunde: Number(o.hour) % 24, minute: Number(o.minute) };
+  }
+  function nyTag(ms) { return nyTeile(ms).tag; }
+  /** Der Tag d + n Kalendertage ('JJJJ-MM-TT'). */
+  function tagPlus(tag, n) {
+    var t = Date.UTC(+tag.slice(0, 4), +tag.slice(5, 7) - 1, +tag.slice(8, 10)) + n * 86400000;
+    return new Date(t).toISOString().slice(0, 10);
+  }
+  function istWerktag(tag) {
+    var w = new Date(Date.UTC(+tag.slice(0, 4), +tag.slice(5, 7) - 1, +tag.slice(8, 10))).getUTCDay();
+    return w !== 0 && w !== 6;
+  }
+  function werktagVor(tag) { var t = tagPlus(tag, -1); while (!istWerktag(t)) t = tagPlus(t, -1); return t; }
+  /** Der Zeitstempel (ms, UTC) der Uhrzeit hh:mm in New York am Tag 'JJJJ-MM-TT' - mit
+   *  Sommer- und Winterzeit, ohne Tabelle: geschaetzt, nachgesehen, korrigiert. */
+  function nyZeit(tag, hh, mm) {
+    var ziel = Date.UTC(+tag.slice(0, 4), +tag.slice(5, 7) - 1, +tag.slice(8, 10), hh, mm);
+    var t = ziel + 5 * 3600000;
+    for (var k = 0; k < 3; k++) {
+      var p = nyTeile(t);
+      var ist = Date.UTC(+p.tag.slice(0, 4), +p.tag.slice(5, 7) - 1, +p.tag.slice(8, 10), p.stunde, p.minute);
+      if (ist === ziel) break;
+      t += ziel - ist;
+    }
+    return t;
+  }
+  /* Ein Tagesbalken gilt als abgeschlossen ab 16:15 New York (Schluss 16:00 plus eine
+   * Viertelstunde fuer die Quelle); gehandelt wird ab 09:35 (Eroeffnung 09:30 plus fuenf Minuten,
+   * dann traegt der Balken des Tages seine Eroeffnung). */
+  var SCHLUSS_FERTIG = [16, 15], HANDEL_AB = [9, 35];
+  /** Der juengste Werktag, dessen Schluss feststehen muss: heute ab 16:15 New York, sonst der
+   *  Werktag davor (auch am Wochenende). */
+  function letzterFertigerWerktag(nowMs) {
+    var heute = nyTag(nowMs);
+    if (istWerktag(heute) && nowMs >= nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return heute;
+    return werktagVor(heute);
+  }
+  /** Ist ein Bestand mit Ladezeit at frisch gegen die Uhr? Ja, wenn er nach dem Schluss des
+   *  juengsten Werktags geladen wurde, dessen Schluss feststehen muss. (A4: "Frische gegen die
+   *  Uhr", nicht gegen den juengsten Balken desselben Bestands.) */
+  function bestandFrisch(at, nowMs) {
+    if (!(at > 0)) return false;
+    var d = letzterFertigerWerktag(nowMs);
+    return at >= nyZeit(d, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);
+  }
+  /** Laufende Balken abschneiden: ein Balken des heutigen New-Yorker Tags vor 16:15 ist noch
+   *  nicht abgeschlossen (sein Kurs ist der von jetzt, sein Umsatz ein Teil des Tages). Rein:
+   *  gibt die Reihe ohne ihn zurueck (dieselbe, wenn nichts zu schneiden ist). */
+  function ohneLaufendenBalken(reihe, nowMs) {
+    if (!reihe || !reihe.length) return reihe;
+    var heute = nyTag(nowMs);
+    if (nowMs >= nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1])) return reihe;
+    var ab = nyZeit(heute, 0, 0), n = reihe.length;
+    while (n > 0 && reihe[n - 1][0] >= ab) n--;
+    return n === reihe.length ? reihe : reihe.slice(0, n);
+  }
+  /** Index des juengsten Balkens mit Zeitstempel < grenze (oder -1). Reihe aufsteigend. */
+  function indexVor(reihe, grenze) {
+    var lo = 0, hi = reihe.length - 1, j = -1;
+    while (lo <= hi) { var mi = (lo + hi) >> 1; if (reihe[mi][0] < grenze) { j = mi; lo = mi + 1; } else hi = mi - 1; }
+    return j;
+  }
+  /** Wie viele Balken der Reihe liegen an New-Yorker Tagen NACH tag (und vor bisTag, wenn
+   *  angegeben)? Ueber Zeitgrenzen gezaehlt, nicht ueber Datum je Balken. */
+  function balkenNach(reihe, tag, bisTag) {
+    var a = indexVor(reihe, nyZeit(tagPlus(tag, 1), 0, 0));
+    var b = bisTag ? indexVor(reihe, nyZeit(bisTag, 0, 0)) : reihe.length - 1;
+    return Math.max(0, b - a);
+  }
+
+  /** A6 - Faelligkeit der Umschichtung, gezaehlt an der SPY-Reihe AUS DEMSELBEN BESTAND.
+   *  Ausfuehrungstag = 0; faellig ist der halten-te Handelstag danach (rueckblick.js:
+   *  naechste = Q.ptage[o + halten]). Der heutige Tag kann noch keinen abgeschlossenen Balken
+   *  haben - er ist der (n+1)-te, wenn n Balken zwischen dem letzten Ausfuehrungstag und heute
+   *  liegen; faellig heisst also n >= halten - 1 (und heute ist ein Handelstag: das sagt erst der
+   *  Abruf am Ausfuehrungstag, A4).
+   *  Ist die Reihe mehr als drei Werktage hinter der Uhr, gibt es KEIN "nicht faellig": faellig
+   *  ist dann null und veraltet true (die Karte sagt es, der Takt laedt nach).
+   *  Rueckgabe { faellig: true|false|null, tageSeit, noch, verspaetung, veraltet,
+   *              letzterMarktTag, rueckstand, heute, erste } */
+  function faelligkeit(spyReihe, letzteAusfuehrungTag, halten, nowMs) {
+    halten = halten || 63;
+    var heute = nyTag(nowMs);
+    var r = { faellig: null, tageSeit: null, noch: null, verspaetung: 0, veraltet: true, letzterMarktTag: null, rueckstand: null, heute: heute, erste: !letzteAusfuehrungTag };
+    if (!spyReihe || !spyReihe.length) return r;
+    r.letzterMarktTag = nyTag(spyReihe[spyReihe.length - 1][0]);
+    /* Rueckstand: Werktage nach dem letzten Balken bis zum juengsten Werktag, dessen Schluss
+     * feststehen muss. Normal 0; ueber einen Feiertag 1. */
+    var bis = letzterFertigerWerktag(nowMs), n = 0;
+    for (var t = tagPlus(r.letzterMarktTag, 1); t <= bis && n < 400; t = tagPlus(t, 1)) if (istWerktag(t)) n++;
+    r.rueckstand = n;
+    r.veraltet = n > 3;
+    if (r.veraltet) return r;
+    if (!letzteAusfuehrungTag) { r.faellig = true; return r; }
+    r.tageSeit = balkenNach(spyReihe, letzteAusfuehrungTag, heute);
+    r.faellig = r.tageSeit >= halten - 1;
+    r.noch = Math.max(0, halten - 1 - r.tageSeit);
+    r.verspaetung = Math.max(0, r.tageSeit - (halten - 1));
+    return r;
+  }
+
+  /** A4 - der Stichtag zum Ausfuehrungstag heute: der juengste SPY-Tag vor heute. Dazu, ob der
+   *  Bestand fuer ihn reicht: geladen nach dem Schluss des Werktags vor heute, und fuer
+   *  mindestens 95 % der Werte ein Balken genau vom Stichtag.
+   *  Rueckgabe { stichtag, stichtagT, mit, gesamt, ok, grund } */
+  function stichtagPruefen(rohMap, spyReihe, at, heute) {
+    var r = { stichtag: null, stichtagT: null, mit: 0, gesamt: 0, ok: false, grund: null };
+    var j = spyReihe && spyReihe.length ? indexVor(spyReihe, nyZeit(heute, 0, 0)) : -1;
+    if (j < 0) { r.grund = 'keine Marktreihe vor heute'; return r; }
+    r.stichtagT = spyReihe[j][0]; r.stichtag = nyTag(r.stichtagT);
+    var von = nyZeit(r.stichtag, 0, 0), bis = nyZeit(tagPlus(r.stichtag, 1), 0, 0);
+    Object.keys(rohMap || {}).forEach(function (s) {
+      var x = rohMap[s]; r.gesamt++;
+      var i = x && x.length ? indexVor(x, bis) : -1;
+      if (i >= 0 && x[i][0] >= von) r.mit++;
+    });
+    var geladenNach = at >= nyZeit(werktagVor(heute), SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);
+    r.ok = geladenNach && r.gesamt > 0 && r.mit * 100 >= r.gesamt * 95;
+    if (!geladenNach) r.grund = 'Tageskurse vor dem Schluss des ' + datumDe(werktagVor(heute)) + ' geladen';
+    else if (!r.ok) r.grund = 'nur ' + r.mit + ' von ' + r.gesamt + ' Werten mit einem Kurs vom Stichtag ' + datumDe(r.stichtag) + ' (nötig 95 %)';
+    return r;
+  }
+  /** Jede Reihe bis einschliesslich tag (New York) - kein Balken vom Ausfuehrungstag oder spaeter
+   *  geht in die Rangfolge ein. Neue Arrays nur, wo geschnitten wird. */
+  function rohBis(rohMap, tag) {
+    var grenze = nyZeit(tagPlus(tag, 1), 0, 0), aus = {};
+    Object.keys(rohMap || {}).forEach(function (s) {
+      var x = rohMap[s];
+      if (!x || !x.length) { aus[s] = x; return; }
+      var i = indexVor(x, grenze);
+      aus[s] = i === x.length - 1 ? x : x.slice(0, i + 1);
+    });
+    return aus;
+  }
+  /** A5 - die Schluesse des Tages tag: je Wert der Schluss (Spalte 1) des Balkens vom Tag, sonst
+   *  der letzte davor (wie rueckblick.js Schritt 6: nie der Einstand). barT = Stempel dieses Balkens. */
+  function schluesseAm(rohMap, tag) {
+    var grenze = nyZeit(tagPlus(tag, 1), 0, 0), preise = {}, barT = {};
+    Object.keys(rohMap || {}).forEach(function (s) {
+      var x = rohMap[s], i = x && x.length ? indexVor(x, grenze) : -1;
+      if (i >= 0 && x[i][1] > 0) { preise[s] = x[i][1]; barT[s] = x[i][0]; }
+    });
+    return { preise: preise, barT: barT };
+  }
+  /** A5 - der Tag des Verlaufspunkts: der juengste ABGESCHLOSSENE Handelstag X der SPY-Reihe
+   *  des Bestands (X vor heute in New York, oder heute nach 16:15). null, wenn es keinen gibt. */
+  function punktTag(spyReihe, nowMs) {
+    if (!spyReihe || !spyReihe.length) return null;
+    var heute = nyTag(nowMs), fertig = nowMs >= nyZeit(heute, SCHLUSS_FERTIG[0], SCHLUSS_FERTIG[1]);
+    for (var i = spyReihe.length - 1; i >= 0; i--) {
+      var b = spyReihe[i], tag = nyTag(b[0]);
+      if (tag < heute || (tag === heute && fertig)) return b[1] > 0 ? { tag: tag, t: b[0], kurs: b[1] } : null;
+    }
+    return null;
+  }
+  /** A5 - Bargeld am Schluss des Tages mit Balkenstempel tX: Ausschuettungen, deren Ex-Tag
+   *  danach liegt, sind schon im Bargeld (bucheMassnahmen bucht bis zum juengsten Balken) - sie
+   *  gehoeren nicht in den Wert von X, dessen Schluss sie noch enthaelt. */
+  function bargeldAm(buch, tX) {
+    var c = buch.cash;
+    (buch.massnahmen || []).forEach(function (b) { if (b.art === 'div' && b.t > tX && isFinite(b.summe)) c -= b.summe; });
+    return c;
+  }
+
+  /** A2 - Reihenende (REGEL §1.4 des Rueckblicks): eine gehaltene Position, deren eigene Reihe
+   *  seit mindestens fuenf Handelstagen (Balken der SPY-Reihe desselben Bestands) keinen neuen
+   *  Balken hat, wird ausgebucht - zum letzten Schluss der Reihe, OHNE Verkaufskosten, Bargeld
+   *  gutgeschrieben, Platz frei. Ein Leerverkauf (richtung < 0) wird entsprechend glattgestellt:
+   *  Wert stueck × (2 × Einstand − Kurs), nie unter 0.
+   *  BEWUSSTE ABWEICHUNG VON DER MESSUNG: rueckblick.js bucht am ERSTEN Handelstag ohne Zeile aus
+   *  (Z. 157-171), die App erst nach FUENF - live kann ein fehlender Balken ein Aussetzer der
+   *  Quelle sein; der Preis ist derselbe (der letzte Schluss). Die Messung bucht bei Insolvenz
+   *  oder Zwangs-Delisting 0; den Grund kennt die App nicht - die Journalzeile sagt das.
+   *  Der Aufrufer prueft vorher, dass die SPY-Reihe nicht veraltet ist (faelligkeit().veraltet):
+   *  dann wird nicht gezaehlt und nichts ausgebucht. Eine Position ohne jede Reihe im Bestand
+   *  bleibt (Bewertung zum Einstand, mit Warnung auf der Karte).
+   *  Mutiert das Buch. Rueckgabe [{sym, letzterTag, kurs, stueck, richtung, gutschrift, tage}]. */
+  var REIHENENDE_TAGE = 5;
+  function reihenendeAusbuchen(buch, rohMap, spyReihe, nowMs) {
+    var aus = [];
+    if (!buch || !spyReihe || !spyReihe.length) return aus;
+    if (!buch.trades) buch.trades = [];
+    for (var i = (buch.positionen || []).length - 1; i >= 0; i--) {
+      var p = buch.positionen[i], r = rohMap && rohMap[p.sym];
+      if (!r || !r.length) continue;
+      var letzter = r[r.length - 1], tag = nyTag(letzter[0]);
+      var tage = balkenNach(spyReihe, tag);
+      if (tage < REIHENENDE_TAGE || !(letzter[1] > 0)) continue;
+      var kurs = letzter[1], kurz = p.richtung != null && p.richtung < 0;
+      var gut = kurz ? Math.max(0, p.stueck * (2 * p.einstand - kurs)) : p.stueck * kurs;
+      buch.cash += gut;
+      buch.trades.push({ t: nowMs, sym: p.sym, art: 'reihenende', stueck: p.stueck, kurs: kurs,
+        pnl: Math.round((gut - p.stueck * p.einstand) * 100) / 100 });
+      buch.positionen.splice(i, 1);
+      aus.push({ sym: p.sym, letzterTag: tag, kurs: kurs, stueck: p.stueck, richtung: kurz ? -1 : 1, gutschrift: gut, tage: tage });
+    }
+    if (buch.trades.length > 400) buch.trades = buch.trades.slice(-400);
+    return aus;
+  }
+  function datumDe(tag) { return tag ? tag.slice(8, 10) + '.' + tag.slice(5, 7) + '.' + tag.slice(0, 4) : '?'; }
+  /** Die Journalzeile je ausgebuchter Position (A2) - rein. name 'momentum' | 'drift'. */
+  function reihenendeJournal(name, x) {
+    var buchName = name === 'drift' ? 'Ergebnis-Drift-Buch' : 'Momentum-Buch';
+    var geld = function (v) { return v.toFixed(2).replace('.', ',') + ' $'; };
+    return { applied: [buchName + ': Reihenende ' + x.sym + ' ausgebucht'],
+      txt: 'Reihenende: ' + x.sym + ', letzter Handelstag ' + datumDe(x.letzterTag) + ', ausgebucht zu ' + geld(x.kurs) +
+        (x.richtung < 0 ? ' (Leerverkauf glattgestellt)' : '') + ' × ' + String(Math.round(x.stueck * 10000) / 10000).replace('.', ',') +
+        ' Stück = ' + geld(x.gutschrift) + ' ohne Verkaufskosten (seit ' + x.tage + ' Handelstagen kein neuer Kurs). ' +
+        'Grund unbekannt — wäre es eine Insolvenz, hätte die Messung 0 gebucht. Simulation mit virtuellem Kapital, keine Anlageberatung.' };
   }
 
   /** Drift-Buch abgleichen: fällige Positionen schließen, neue Signale eröffnen.
@@ -457,7 +700,14 @@
     buchKonfig: buchKonfig, momentumZiel: momentumZiel, planeUmschichtung: planeUmschichtung,
     fuehreAus: fuehreAus, bewerte: bewerte, rebalanceFaellig: rebalanceFaellig,
     driftAbgleich: driftAbgleich, bewerteDrift: bewerteDrift,
-    bucheMassnahmen: bucheMassnahmen, stempleKursT: stempleKursT, massnahmenJournal: massnahmenJournal
+    bucheMassnahmen: bucheMassnahmen, stempleKursT: stempleKursT, massnahmenJournal: massnahmenJournal,
+    /* Auftrag Nr. 93 */
+    nyTag: nyTag, nyZeit: nyZeit, tagPlus: tagPlus, istWerktag: istWerktag, werktagVor: werktagVor,
+    letzterFertigerWerktag: letzterFertigerWerktag, bestandFrisch: bestandFrisch, ohneLaufendenBalken: ohneLaufendenBalken,
+    balkenNach: balkenNach, faelligkeit: faelligkeit, stichtagPruefen: stichtagPruefen, rohBis: rohBis,
+    schluesseAm: schluesseAm, punktTag: punktTag, bargeldAm: bargeldAm, datumDe: datumDe,
+    reihenendeAusbuchen: reihenendeAusbuchen, reihenendeJournal: reihenendeJournal, REIHENENDE_TAGE: REIHENENDE_TAGE,
+    SCHLUSS_FERTIG: SCHLUSS_FERTIG, HANDEL_AB: HANDEL_AB
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = MFHandel; return; }
   root.MFHandel = MFHandel;

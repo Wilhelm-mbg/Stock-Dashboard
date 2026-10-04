@@ -108,7 +108,18 @@
   async function ladeKurse() {
     var g = window.MF && window.MF.tagesdatenLesen ? await window.MF.tagesdatenLesen() : await window.api.storeGet('mf_tagesdaten');
     if (!g || !g.roh || Object.keys(g.roh).length < 30) return null;
-    return g.roh;
+    /* Auftrag Nr. 93 (A3): Spalte 1 des Bestands ist seit Nr. 93 der Schluss OHNE
+     * Ausschuettungen (close). Dieser Tab rechnet die Ergebnis-Drift so, wie sie am 21.08.2026
+     * gemessen wurde - auf dem bereinigten Kurs dieses Laders, also MIT Ausschuettungen
+     * (Tagesertraege b[j+1]/b[j], drift.js durchlauf). Er bekommt deshalb die vierte Spalte
+     * (adjclose, Index 3) an die Stelle des Kurses; fehlt sie (Bestand von vor Nr. 93), bleibt
+     * Spalte 1. Das Drift-BUCH (mfdepot.js) liest weiter Spalte 1: es handelt und bewertet zum
+     * gehandelten Schluss und bucht die Ausschuettungen seit Nr. 87 selbst. */
+    var aus = {};
+    Object.keys(g.roh).forEach(function (s) {
+      aus[s] = g.roh[s].map(function (b) { return b.length >= 4 && b[3] > 0 ? [b[0], b[3], b[2]] : b; });
+    });
+    return aus;
   }
   async function ladeMarkt() {
     var key = 'drift_markt';
