@@ -1,0 +1,266 @@
+[
+  {
+    "datei": "explorer.js",
+    "zeile": 188,
+    "wortlaut": "hinweis: 'Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt.',",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**0 von 51 Detektoren bestätigt**"
+    },
+    "belegsagt": "Große Signalstudie: 0 von 51 Detektoren bestätigt (u. a. pullback, donchian, squeeze, signalCross); Minuten- und Kanalstudie ebenfalls NEIN. (EMA-Kreuzung)",
+    "vorschlag": ""
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 193,
+    "wortlaut": "ist dieselbe Überdehnung am 03.10.2026 neu gemessen worden: in der behaupteten Größe zurückgewiesen.",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Neumessung (03.10.2026) — in der behaupteten Größe zurückgewiesen"
+    },
+    "belegsagt": "Kapitulation V2 Neumessung 03.10.2026: netto −0,024 Pp, Band [−0,649; +0,601], behauptete Größe +1,107 zurückgewiesen.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 193,
+    "wortlaut": "hinweis: 'Roh ohne Vorsprung. Als Kapitulations-Dip",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**0 von 51 Detektoren bestätigt**"
+    },
+    "belegsagt": "Große Signalstudie: 0 von 51 Detektoren bestätigt (u. a. pullback, donchian, squeeze, signalCross); Minuten- und Kanalstudie ebenfalls NEIN. (reversion)",
+    "vorschlag": ""
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 198,
+    "wortlaut": "hinweis: 'Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt.',",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**0 von 51 Detektoren bestätigt**"
+    },
+    "belegsagt": "Große Signalstudie: 0 von 51 Detektoren bestätigt (u. a. pullback, donchian, squeeze, signalCross); Minuten- und Kanalstudie ebenfalls NEIN. (Rücksetzer/pullback)",
+    "vorschlag": ""
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 203,
+    "wortlaut": "Roh ein Münzwurf (+0,017 Prozentpunkte).",
+    "klasse": "d",
+    "beleg": null,
+    "belegsagt": "Weder in belegstand.md noch in einer ERGEBNIS.md: +0,017 Pp für rohes RSI(2). Belegstand nennt nur rsi2seit (+0,021 Pp je Signal, Tagesmittel +0,054).",
+    "vorschlag": "Roh ohne belegten Vorsprung (Signalstudie: 0 von 51 Detektoren bestätigt)."
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 203,
+    "wortlaut": "Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die Hauptstrategie; gegen eine gepaarte Kontrolle ist sie seit dem 23.08.2026 nicht entscheidbar.",
+    "klasse": "c",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+    },
+    "belegsagt": "rsi2seit: nicht entscheidbar, +0,021 Pp je Signal, Tagesmittel +0,054 (Band [−0,073, 0,182]); mit MCP-Stop gegen CFD geschlossen. „Trägt“ ist nicht belegt; Datum 23.08.2026 steht nicht im Belegstand.",
+    "vorschlag": "Mit der Erlaubnis „Seitwärtskanal + Volumen“ ist es die Hauptstrategie (rsi2seit) – gemessen nicht entscheidbar: +0,021 Pp je Signal, unter jeder Beweisschwelle."
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 208,
+    "wortlaut": "hinweis: 'Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt.',",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**0 von 51 Detektoren bestätigt**"
+    },
+    "belegsagt": "Große Signalstudie: 0 von 51 Detektoren bestätigt (u. a. pullback, donchian, squeeze, signalCross); Minuten- und Kanalstudie ebenfalls NEIN. (Donchian; Trendkanal Tagesbasis: Donchian 55 Bestätigung negativ)",
+    "vorschlag": ""
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 213,
+    "wortlaut": "hinweis: 'Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt.',",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**0 von 51 Detektoren bestätigt**"
+    },
+    "belegsagt": "Große Signalstudie: 0 von 51 Detektoren bestätigt (u. a. pullback, donchian, squeeze, signalCross); Minuten- und Kanalstudie ebenfalls NEIN. (Squeeze)",
+    "vorschlag": ""
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 236,
+    "wortlaut": "Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung",
+    "klasse": "d",
+    "beleg": null,
+    "belegsagt": "Keine Messung des Golden/Death Cross (SMA 50/200) mit 191 Werten / 55 Jahren in belegstand.md oder einer ERGEBNIS.md. Die Signalstudie maß signalCross (MA-Kreuzung) als einen der 51 Detektoren.",
+    "vorschlag": "Kreuzungen der beiden Durchschnitte. Kein Protokoll belegt einen Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt."
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 238,
+    "wortlaut": "Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg.",
+    "klasse": "c",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
+    },
+    "belegsagt": "Die Nutzung (rsi2seit, RSI2 im Seitwärtskanal) ist nicht entscheidbar, nicht „tragend“. Kanal als Einstieg auf drei Zeitskalen NEIN; Abschnittskanäle als Bedingung −0,17 Pp, t −4,1.",
+    "vorschlag": "Das lange Seitwärtsfenster daraus steuert den Intraday-Einstieg (RSI2 im Seitwärtskanal) – gemessen nicht entscheidbar (+0,021 Pp je Signal). Als Einstieg ist der Kanal verworfen."
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 240,
+    "wortlaut": "Als Handelsbedingung wurde ein Dip-Kauf im frischen Seitwärtsabschnitt gemessen und fiel durch",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "| Abschnittskanäle **als Bedingung** | −0,17 Pp, t = −4,1 → nur Anzeige |"
+    },
+    "belegsagt": "Abschnittskanäle als Bedingung: −0,17 Pp, t −4,1 → nur Anzeige.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 270,
+    "wortlaut": "return { text: 'Kein Protokoll sagt bestätigt.', quelle: '', gefuehrt: false };",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**Belegte handelbare Kanten: NULL.**"
+    },
+    "belegsagt": "Belegte handelbare Kanten: NULL.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "explorer.js",
+    "zeile": 1947,
+    "wortlaut": "(belegt ? 'ein Protokoll sagt bestätigt' : 'kein Protokoll sagt bestätigt') +",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**Belegte handelbare Kanten: NULL.**"
+    },
+    "belegsagt": "Belegte handelbare Kanten: NULL; der Zweig „bestätigt“ wird zur Laufzeit aus dem Studienregister gelesen.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "scheinfinder.js",
+    "zeile": 323,
+    "wortlaut": "Geld-Brief-Spanne je Seite, aus dem an echten Emittentenkursen geeichten Cent-Modell.",
+    "klasse": "d",
+    "beleg": null,
+    "belegsagt": "Eine Eichung des Schein-Cent-Modells an Emittentenkursen steht weder in belegstand.md noch in kosten.md noch in einer ERGEBNIS.md (kosten.md führt für Hebelscheine nur 0,23 Pp je 3 Stunden).",
+    "vorschlag": "Geld-Brief-Spanne je Seite, aus dem Cent-Modell (Modellannahme, nicht gegen den Belegstand geprüft)."
+  },
+  {
+    "datei": "scheinfinder.js",
+    "zeile": 424,
+    "wortlaut": "spread: 'Geld-Brief-Spanne je Seite, aus dem an echten Kursen geeichten Cent-Modell',",
+    "klasse": "d",
+    "beleg": null,
+    "belegsagt": "wie Zeile 323: Eichung nicht im Belegstand.",
+    "vorschlag": "Geld-Brief-Spanne je Seite, aus dem Cent-Modell (Modellannahme)"
+  },
+  {
+    "datei": "quant.js",
+    "zeile": 409,
+    "wortlaut": "var NEWS_HINWEIS = 'unbelegt – steuert nichts",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "| **News-Sentiment (Übernacht, Großwerte)** |"
+    },
+    "belegsagt": "News-Sentiment Übernacht widerlegt (b = +0,0070, t 0,31); Nachrichten-Stimmung Tagesdesign zwölfmal „nicht belegt“. „unbelegt“ ist richtig, eher zu mild.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "kosten.js",
+    "zeile": 43,
+    "wortlaut": "var ALP_ANNAHME_PCT = 0.06;",
+    "klasse": "c",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**überholt 03.09.**: die Kassa-Hürde ist gemessen und liegt je Klasse bei 0,0449 bis 0,1569 Pp"
+    },
+    "belegsagt": "Die Kassa-Annahme 0,06 Pp ist überholt; die Hürde ist je Umsatzklasse gemessen (0,0449 / 0,0647 / 0,0854 / 0,1569 Pp). Der Wert erscheint in depot.js als „(angenommen: 0,06 %)“ neben der Alpaca-Messung.",
+    "vorschlag": "Vergleich gegen die gemessene Kassa-Hürde der Umsatzklasse (0,0449–0,1569 Pp) statt der überholten Annahme 0,06; mindestens als „alte Annahme, überholt 03.09.2026“ beschriften."
+  },
+  {
+    "datei": "kosten.js",
+    "zeile": 245,
+    "wortlaut": "annahmePct: 0.10, seit: sp.seit",
+    "klasse": "c",
+    "beleg": {
+      "datei": "wiki/kosten.md",
+      "marke": "5–50 Mio $ **0,1569** · 50–250 **0,0854** · 250–1.000 **0,0647** ·"
+    },
+    "belegsagt": "Die Spannen-Bilanz (Kassa-Spannen aus dem Kursarchiv) wird gegen 0,10 % „angenommen“ gestellt; für Kassa gilt seit 03.09.2026 die gemessene Klassenhürde. 0,10 ist die CFD-Runde.",
+    "vorschlag": "Gegen die gemessene Kassa-Hürde der jeweiligen Umsatzklasse vergleichen bzw. „0,10 % = CFD-Runde, nicht Kassa“ beschriften."
+  },
+  {
+    "datei": "kosten.js",
+    "zeile": 284,
+    "wortlaut": "'mitgeschrieben - die Kostenannahme von 0,10 % bleibt damit unbelegt. Das Kursarchiv ' +",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/kosten.md",
+      "marke": "**Also: 0,10 % ist für die Milliarden-Klasse passend und für unsere Kandidaten-Universen"
+    },
+    "belegsagt": "0,10 % ist eine Annahme; Freigabeschwelle der Capital-Runden unerfüllt (kosten.md, „Die gemessene Runde“). „unbelegt“ stimmt.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "kosten.js",
+    "zeile": 1032,
+    "wortlaut": "var aus = { n: r.length, annahmePct: 0.10, gefaess: 'capital',",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "| 0,10 Pp (CFD-Runde ohne Nacht) | 26 |"
+    },
+    "belegsagt": "CFD-Runde ohne Nacht 0,10 Pp (Hürde in den Größen-Ausschlüssen).",
+    "vorschlag": ""
+  },
+  {
+    "datei": "messband.js",
+    "zeile": 38,
+    "wortlaut": "var HUERDE_PP = 0.10;",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "| 0,10 Pp (CFD-Runde ohne Nacht) | 26 |"
+    },
+    "belegsagt": "Rückfall-Hürde 0,10 Pp = CFD-Runde ohne Nacht; wird als „0,100 Pp (Basiswert-Referenz …)“ angezeigt.",
+    "vorschlag": ""
+  },
+  {
+    "datei": "messband.js",
+    "zeile": 160,
+    "wortlaut": "esc(k.register.etikett || 'gemessen und verworfen')",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "## Widerlegt (gemessen tot)"
+    },
+    "belegsagt": "Rückfall-Etikett für Einträge, die das Studienregister als verworfen führt (z. B. Kapitulation 03.10.2026).",
+    "vorschlag": ""
+  },
+  {
+    "datei": "messband.js",
+    "zeile": 225,
+    "wortlaut": "Diese Zahl ist <b>kein belegter ' +",
+    "klasse": "a",
+    "beleg": {
+      "datei": "wiki/belegstand.md",
+      "marke": "**Belegte handelbare Kanten: NULL.**"
+    },
+    "belegsagt": "Belegte handelbare Kanten: NULL.",
+    "vorschlag": ""
+  }
+]
