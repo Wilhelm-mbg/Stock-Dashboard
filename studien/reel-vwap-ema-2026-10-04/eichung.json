@@ -1,13 +1,13 @@
 {
- "erstellt": "2026-10-04T11:32:22.433Z",
+ "erstellt": "2026-10-04T11:37:25.302Z",
  "siegel": {
-  "commit": "3c96c2d",
+  "commit": "aa32c79",
   "sha256": {
-   "REGEL.md": "02998fcf903a2e02",
+   "REGEL.md": "9c4a5fee1e9b0640",
    "daten.js": "1104fac7df32cb4a",
-   "kern.js": "c820c4459e30ee78",
-   "lauf.js": "b4605c8f937d97c9",
-   "test.js": "f564f9af97b47e5d"
+   "kern.js": "7f255768def3777f",
+   "lauf.js": "ce087c70d7d91c27",
+   "test.js": "0dcd5f2cd4f3807c"
   }
  },
  "lauf": "R1, QQQ, Fassung P, Kosten Papier (0,0005 $ je Aktie), 2018-01-02 bis 2023-09-28",
@@ -38,7 +38,7 @@
   "gesamt": 6.774449115065172,
   "trades": 23190,
   "tradesJeTag": 16.048442906574394,
-  "trefferquote": 0.16977145321259163,
+  "trefferquote": 0.16964208710651144,
   "rueckschlag": 0.08396607594435224,
   "sharpe": 2.107344351695415,
   "pa": 0.4299730467613745,

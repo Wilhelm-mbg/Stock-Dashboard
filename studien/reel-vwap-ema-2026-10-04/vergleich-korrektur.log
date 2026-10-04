@@ -1,0 +1,7 @@
+verglichene Felder: 7136
+abweichende Felder nach Name: {"trefferquote":44}
+groesste Aenderung einer Trefferquote: 0.1969 Prozentpunkte
+betroffene Laeufe je Kostenstufe: {"0":31,"Papier":12} (von je 36)
+groesste Aenderungen in Trades: R2 IWM W-Papier N c=0: 25 Gewinner weniger von 20316 Trades | R1 QQQ W-Papier N c=0: 14 Gewinner weniger von 23190 Trades | R2 QQQ W-Vor N c=0: 14 Gewinner weniger von 7109 Trades | R2 QQQ W-Papier P c=0: 14 Gewinner weniger von 19765 Trades
+kleinste: R1 IWM W-Vor P c=Papier: 1 | R2 IWM W-Vor N c=0: 1
+ERGEBNIS: nur trefferquote weicht ab - alle anderen Felder bit-gleich.
