@@ -1,0 +1,1797 @@
+{
+ "kennung": "trendfilter-messung-2026-10/v1 R3 Signal",
+ "regel": "REGEL.md §4.3 (Siegel 6f9d06f); N3 = §7.2",
+ "hinweis": "Nur das Signal: Signaltag = Schluss, an dem der Zustand wechselt; Ausfuehrung = Eroeffnung des naechsten SPY-Handelstags. verhaeltnis = C/SMA200 am Signaltag (auf 6 Stellen gerundet). Keine Kurse, keine Ertraege, keine Buchwerte. Simulation, keine Anlageberatung.",
+ "daten": {
+  "kalender": "SPY-Handelstage mit Schlusskurs",
+  "erster": "1993-01-29",
+  "letzter": "2026-09-15",
+  "tage": 8464
+ },
+ "sma200": {
+  "fenster": 200,
+  "ersterTag": "1993-11-11",
+  "anfangszustand": {
+   "signaltag": "1993-11-11",
+   "neu": "SPY",
+   "verhaeltnis": 1.025861
+  }
+ },
+ "hauptUndErsatzGleich": "ja: Wechseltage identisch, Geld BIL (Haupt) bzw. SHY (Ersatz)",
+ "haupt": {
+  "band": "1 % (Ausstieg C <= 0,99 x SMA200, Einstieg C >= 1,01 x SMA200)",
+  "wechselGesamtSeit1993": 96,
+  "wechselAb2003": 71,
+  "liste": [
+   {
+    "signaltag": "2003-04-15",
+    "ausfuehrung": "2003-04-16",
+    "neu": "SPY",
+    "verhaeltnis": 1.014588
+   },
+   {
+    "signaltag": "2004-07-21",
+    "ausfuehrung": "2004-07-22",
+    "neu": "BIL",
+    "verhaeltnis": 0.987815
+   },
+   {
+    "signaltag": "2004-09-10",
+    "ausfuehrung": "2004-09-13",
+    "neu": "SPY",
+    "verhaeltnis": 1.010535
+   },
+   {
+    "signaltag": "2004-09-23",
+    "ausfuehrung": "2004-09-24",
+    "neu": "BIL",
+    "verhaeltnis": 0.989325
+   },
+   {
+    "signaltag": "2004-10-01",
+    "ausfuehrung": "2004-10-04",
+    "neu": "SPY",
+    "verhaeltnis": 1.012226
+   },
+   {
+    "signaltag": "2004-10-14",
+    "ausfuehrung": "2004-10-15",
+    "neu": "BIL",
+    "verhaeltnis": 0.984063
+   },
+   {
+    "signaltag": "2004-11-01",
+    "ausfuehrung": "2004-11-02",
+    "neu": "SPY",
+    "verhaeltnis": 1.010075
+   },
+   {
+    "signaltag": "2005-04-15",
+    "ausfuehrung": "2005-04-18",
+    "neu": "BIL",
+    "verhaeltnis": 0.987289
+   },
+   {
+    "signaltag": "2005-05-04",
+    "ausfuehrung": "2005-05-05",
+    "neu": "SPY",
+    "verhaeltnis": 1.014015
+   },
+   {
+    "signaltag": "2005-10-10",
+    "ausfuehrung": "2005-10-11",
+    "neu": "BIL",
+    "verhaeltnis": 0.987516
+   },
+   {
+    "signaltag": "2005-11-02",
+    "ausfuehrung": "2005-11-03",
+    "neu": "SPY",
+    "verhaeltnis": 1.013942
+   },
+   {
+    "signaltag": "2006-06-12",
+    "ausfuehrung": "2006-06-13",
+    "neu": "BIL",
+    "verhaeltnis": 0.982671
+   },
+   {
+    "signaltag": "2006-07-03",
+    "ausfuehrung": "2006-07-05",
+    "neu": "SPY",
+    "verhaeltnis": 1.011585
+   },
+   {
+    "signaltag": "2006-07-13",
+    "ausfuehrung": "2006-07-14",
+    "neu": "BIL",
+    "verhaeltnis": 0.980284
+   },
+   {
+    "signaltag": "2006-08-03",
+    "ausfuehrung": "2006-08-04",
+    "neu": "SPY",
+    "verhaeltnis": 1.011614
+   },
+   {
+    "signaltag": "2007-08-14",
+    "ausfuehrung": "2007-08-15",
+    "neu": "BIL",
+    "verhaeltnis": 0.983313
+   },
+   {
+    "signaltag": "2007-08-24",
+    "ausfuehrung": "2007-08-27",
+    "neu": "SPY",
+    "verhaeltnis": 1.01785
+   },
+   {
+    "signaltag": "2007-08-28",
+    "ausfuehrung": "2007-08-29",
+    "neu": "BIL",
+    "verhaeltnis": 0.985771
+   },
+   {
+    "signaltag": "2007-08-31",
+    "ausfuehrung": "2007-09-04",
+    "neu": "SPY",
+    "verhaeltnis": 1.011439
+   },
+   {
+    "signaltag": "2007-11-09",
+    "ausfuehrung": "2007-11-12",
+    "neu": "BIL",
+    "verhaeltnis": 0.977942
+   },
+   {
+    "signaltag": "2007-12-06",
+    "ausfuehrung": "2007-12-07",
+    "neu": "SPY",
+    "verhaeltnis": 1.01633
+   },
+   {
+    "signaltag": "2007-12-14",
+    "ausfuehrung": "2007-12-17",
+    "neu": "BIL",
+    "verhaeltnis": 0.989399
+   },
+   {
+    "signaltag": "2009-06-01",
+    "ausfuehrung": "2009-06-02",
+    "neu": "SPY",
+    "verhaeltnis": 1.020532
+   },
+   {
+    "signaltag": "2009-06-22",
+    "ausfuehrung": "2009-06-23",
+    "neu": "BIL",
+    "verhaeltnis": 0.989201
+   },
+   {
+    "signaltag": "2009-06-25",
+    "ausfuehrung": "2009-06-26",
+    "neu": "SPY",
+    "verhaeltnis": 1.026083
+   },
+   {
+    "signaltag": "2010-05-20",
+    "ausfuehrung": "2010-05-21",
+    "neu": "BIL",
+    "verhaeltnis": 0.973683
+   },
+   {
+    "signaltag": "2010-08-04",
+    "ausfuehrung": "2010-08-05",
+    "neu": "SPY",
+    "verhaeltnis": 1.011452
+   },
+   {
+    "signaltag": "2010-08-11",
+    "ausfuehrung": "2010-08-12",
+    "neu": "BIL",
+    "verhaeltnis": 0.977925
+   },
+   {
+    "signaltag": "2010-09-15",
+    "ausfuehrung": "2010-09-16",
+    "neu": "SPY",
+    "verhaeltnis": 1.01123
+   },
+   {
+    "signaltag": "2011-08-02",
+    "ausfuehrung": "2011-08-03",
+    "neu": "BIL",
+    "verhaeltnis": 0.974775
+   },
+   {
+    "signaltag": "2012-01-03",
+    "ausfuehrung": "2012-01-04",
+    "neu": "SPY",
+    "verhaeltnis": 1.011493
+   },
+   {
+    "signaltag": "2012-11-14",
+    "ausfuehrung": "2012-11-15",
+    "neu": "BIL",
+    "verhaeltnis": 0.982312
+   },
+   {
+    "signaltag": "2012-11-23",
+    "ausfuehrung": "2012-11-26",
+    "neu": "SPY",
+    "verhaeltnis": 1.02034
+   },
+   {
+    "signaltag": "2014-10-13",
+    "ausfuehrung": "2014-10-14",
+    "neu": "BIL",
+    "verhaeltnis": 0.983263
+   },
+   {
+    "signaltag": "2014-10-21",
+    "ausfuehrung": "2014-10-22",
+    "neu": "SPY",
+    "verhaeltnis": 1.017332
+   },
+   {
+    "signaltag": "2015-08-20",
+    "ausfuehrung": "2015-08-21",
+    "neu": "BIL",
+    "verhaeltnis": 0.981232
+   },
+   {
+    "signaltag": "2015-10-28",
+    "ausfuehrung": "2015-10-29",
+    "neu": "SPY",
+    "verhaeltnis": 1.013633
+   },
+   {
+    "signaltag": "2015-11-13",
+    "ausfuehrung": "2015-11-16",
+    "neu": "BIL",
+    "verhaeltnis": 0.980802
+   },
+   {
+    "signaltag": "2015-11-18",
+    "ausfuehrung": "2015-11-19",
+    "neu": "SPY",
+    "verhaeltnis": 1.010557
+   },
+   {
+    "signaltag": "2015-12-11",
+    "ausfuehrung": "2015-12-14",
+    "neu": "BIL",
+    "verhaeltnis": 0.977871
+   },
+   {
+    "signaltag": "2016-03-17",
+    "ausfuehrung": "2016-03-18",
+    "neu": "SPY",
+    "verhaeltnis": 1.013317
+   },
+   {
+    "signaltag": "2016-06-27",
+    "ausfuehrung": "2016-06-28",
+    "neu": "BIL",
+    "verhaeltnis": 0.987386
+   },
+   {
+    "signaltag": "2016-06-29",
+    "ausfuehrung": "2016-06-30",
+    "neu": "SPY",
+    "verhaeltnis": 1.021878
+   },
+   {
+    "signaltag": "2018-10-11",
+    "ausfuehrung": "2018-10-12",
+    "neu": "BIL",
+    "verhaeltnis": 0.98521
+   },
+   {
+    "signaltag": "2018-10-16",
+    "ausfuehrung": "2018-10-17",
+    "neu": "SPY",
+    "verhaeltnis": 1.014474
+   },
+   {
+    "signaltag": "2018-10-23",
+    "ausfuehrung": "2018-10-24",
+    "neu": "BIL",
+    "verhaeltnis": 0.989487
+   },
+   {
+    "signaltag": "2018-11-07",
+    "ausfuehrung": "2018-11-08",
+    "neu": "SPY",
+    "verhaeltnis": 1.017906
+   },
+   {
+    "signaltag": "2018-11-12",
+    "ausfuehrung": "2018-11-13",
+    "neu": "BIL",
+    "verhaeltnis": 0.987758
+   },
+   {
+    "signaltag": "2018-12-03",
+    "ausfuehrung": "2018-12-04",
+    "neu": "SPY",
+    "verhaeltnis": 1.012105
+   },
+   {
+    "signaltag": "2018-12-04",
+    "ausfuehrung": "2018-12-06",
+    "neu": "BIL",
+    "verhaeltnis": 0.979331
+   },
+   {
+    "signaltag": "2019-02-15",
+    "ausfuehrung": "2019-02-19",
+    "neu": "SPY",
+    "verhaeltnis": 1.011455
+   },
+   {
+    "signaltag": "2020-02-27",
+    "ausfuehrung": "2020-02-28",
+    "neu": "BIL",
+    "verhaeltnis": 0.97764
+   },
+   {
+    "signaltag": "2020-03-02",
+    "ausfuehrung": "2020-03-03",
+    "neu": "SPY",
+    "verhaeltnis": 1.015077
+   },
+   {
+    "signaltag": "2020-03-03",
+    "ausfuehrung": "2020-03-04",
+    "neu": "BIL",
+    "verhaeltnis": 0.98581
+   },
+   {
+    "signaltag": "2020-03-04",
+    "ausfuehrung": "2020-03-05",
+    "neu": "SPY",
+    "verhaeltnis": 1.026791
+   },
+   {
+    "signaltag": "2020-03-06",
+    "ausfuehrung": "2020-03-09",
+    "neu": "BIL",
+    "verhaeltnis": 0.975778
+   },
+   {
+    "signaltag": "2020-05-27",
+    "ausfuehrung": "2020-05-28",
+    "neu": "SPY",
+    "verhaeltnis": 1.012964
+   },
+   {
+    "signaltag": "2022-01-25",
+    "ausfuehrung": "2022-01-26",
+    "neu": "BIL",
+    "verhaeltnis": 0.982769
+   },
+   {
+    "signaltag": "2022-01-31",
+    "ausfuehrung": "2022-02-01",
+    "neu": "SPY",
+    "verhaeltnis": 1.016556
+   },
+   {
+    "signaltag": "2022-02-14",
+    "ausfuehrung": "2022-02-15",
+    "neu": "BIL",
+    "verhaeltnis": 0.98829
+   },
+   {
+    "signaltag": "2022-03-25",
+    "ausfuehrung": "2022-03-28",
+    "neu": "SPY",
+    "verhaeltnis": 1.013618
+   },
+   {
+    "signaltag": "2022-04-11",
+    "ausfuehrung": "2022-04-12",
+    "neu": "BIL",
+    "verhaeltnis": 0.981508
+   },
+   {
+    "signaltag": "2023-01-23",
+    "ausfuehrung": "2023-01-24",
+    "neu": "SPY",
+    "verhaeltnis": 1.012401
+   },
+   {
+    "signaltag": "2023-03-10",
+    "ausfuehrung": "2023-03-13",
+    "neu": "BIL",
+    "verhaeltnis": 0.981563
+   },
+   {
+    "signaltag": "2023-03-21",
+    "ausfuehrung": "2023-03-22",
+    "neu": "SPY",
+    "verhaeltnis": 1.016006
+   },
+   {
+    "signaltag": "2023-10-25",
+    "ausfuehrung": "2023-10-26",
+    "neu": "BIL",
+    "verhaeltnis": 0.987519
+   },
+   {
+    "signaltag": "2023-11-02",
+    "ausfuehrung": "2023-11-03",
+    "neu": "SPY",
+    "verhaeltnis": 1.017082
+   },
+   {
+    "signaltag": "2025-03-10",
+    "ausfuehrung": "2025-03-11",
+    "neu": "BIL",
+    "verhaeltnis": 0.98005
+   },
+   {
+    "signaltag": "2025-05-12",
+    "ausfuehrung": "2025-05-13",
+    "neu": "SPY",
+    "verhaeltnis": 1.016589
+   },
+   {
+    "signaltag": "2026-03-20",
+    "ausfuehrung": "2026-03-23",
+    "neu": "BIL",
+    "verhaeltnis": 0.98214
+   },
+   {
+    "signaltag": "2026-04-08",
+    "ausfuehrung": "2026-04-09",
+    "neu": "SPY",
+    "verhaeltnis": 1.018701
+   }
+  ]
+ },
+ "n3": {
+  "band": "ohne (C > SMA200 -> SPY, sonst Geld)",
+  "wechselGesamtSeit1993": 222,
+  "wechselAb2016": 61,
+  "liste": [
+   {
+    "signaltag": "2016-03-11",
+    "ausfuehrung": "2016-03-14",
+    "neu": "SPY",
+    "verhaeltnis": 1.003215
+   },
+   {
+    "signaltag": "2016-06-27",
+    "ausfuehrung": "2016-06-28",
+    "neu": "BIL",
+    "verhaeltnis": 0.987386
+   },
+   {
+    "signaltag": "2016-06-28",
+    "ausfuehrung": "2016-06-29",
+    "neu": "SPY",
+    "verhaeltnis": 1.005034
+   },
+   {
+    "signaltag": "2018-03-23",
+    "ausfuehrung": "2018-03-26",
+    "neu": "BIL",
+    "verhaeltnis": 0.999261
+   },
+   {
+    "signaltag": "2018-03-26",
+    "ausfuehrung": "2018-03-27",
+    "neu": "SPY",
+    "verhaeltnis": 1.026176
+   },
+   {
+    "signaltag": "2018-04-02",
+    "ausfuehrung": "2018-04-03",
+    "neu": "BIL",
+    "verhaeltnis": 0.995342
+   },
+   {
+    "signaltag": "2018-04-03",
+    "ausfuehrung": "2018-04-04",
+    "neu": "SPY",
+    "verhaeltnis": 1.007768
+   },
+   {
+    "signaltag": "2018-10-11",
+    "ausfuehrung": "2018-10-12",
+    "neu": "BIL",
+    "verhaeltnis": 0.98521
+   },
+   {
+    "signaltag": "2018-10-16",
+    "ausfuehrung": "2018-10-17",
+    "neu": "SPY",
+    "verhaeltnis": 1.014474
+   },
+   {
+    "signaltag": "2018-10-18",
+    "ausfuehrung": "2018-10-19",
+    "neu": "BIL",
+    "verhaeltnis": 0.999684
+   },
+   {
+    "signaltag": "2018-11-07",
+    "ausfuehrung": "2018-11-08",
+    "neu": "SPY",
+    "verhaeltnis": 1.017906
+   },
+   {
+    "signaltag": "2018-11-12",
+    "ausfuehrung": "2018-11-13",
+    "neu": "BIL",
+    "verhaeltnis": 0.987758
+   },
+   {
+    "signaltag": "2018-12-03",
+    "ausfuehrung": "2018-12-04",
+    "neu": "SPY",
+    "verhaeltnis": 1.012105
+   },
+   {
+    "signaltag": "2018-12-04",
+    "ausfuehrung": "2018-12-06",
+    "neu": "BIL",
+    "verhaeltnis": 0.979331
+   },
+   {
+    "signaltag": "2019-02-12",
+    "ausfuehrung": "2019-02-13",
+    "neu": "SPY",
+    "verhaeltnis": 1.00009
+   },
+   {
+    "signaltag": "2019-03-08",
+    "ausfuehrung": "2019-03-11",
+    "neu": "BIL",
+    "verhaeltnis": 0.99862
+   },
+   {
+    "signaltag": "2019-03-11",
+    "ausfuehrung": "2019-03-12",
+    "neu": "SPY",
+    "verhaeltnis": 1.012994
+   },
+   {
+    "signaltag": "2019-05-31",
+    "ausfuehrung": "2019-06-03",
+    "neu": "BIL",
+    "verhaeltnis": 0.992808
+   },
+   {
+    "signaltag": "2019-06-04",
+    "ausfuehrung": "2019-06-05",
+    "neu": "SPY",
+    "verhaeltnis": 1.011972
+   },
+   {
+    "signaltag": "2020-02-27",
+    "ausfuehrung": "2020-02-28",
+    "neu": "BIL",
+    "verhaeltnis": 0.97764
+   },
+   {
+    "signaltag": "2020-03-02",
+    "ausfuehrung": "2020-03-03",
+    "neu": "SPY",
+    "verhaeltnis": 1.015077
+   },
+   {
+    "signaltag": "2020-03-03",
+    "ausfuehrung": "2020-03-04",
+    "neu": "BIL",
+    "verhaeltnis": 0.98581
+   },
+   {
+    "signaltag": "2020-03-04",
+    "ausfuehrung": "2020-03-05",
+    "neu": "SPY",
+    "verhaeltnis": 1.026791
+   },
+   {
+    "signaltag": "2020-03-05",
+    "ausfuehrung": "2020-03-06",
+    "neu": "BIL",
+    "verhaeltnis": 0.992358
+   },
+   {
+    "signaltag": "2020-05-27",
+    "ausfuehrung": "2020-05-28",
+    "neu": "SPY",
+    "verhaeltnis": 1.012964
+   },
+   {
+    "signaltag": "2020-06-11",
+    "ausfuehrung": "2020-06-12",
+    "neu": "BIL",
+    "verhaeltnis": 0.999063
+   },
+   {
+    "signaltag": "2020-06-12",
+    "ausfuehrung": "2020-06-15",
+    "neu": "SPY",
+    "verhaeltnis": 1.010737
+   },
+   {
+    "signaltag": "2020-06-26",
+    "ausfuehrung": "2020-06-29",
+    "neu": "BIL",
+    "verhaeltnis": 0.994683
+   },
+   {
+    "signaltag": "2020-06-29",
+    "ausfuehrung": "2020-06-30",
+    "neu": "SPY",
+    "verhaeltnis": 1.009249
+   },
+   {
+    "signaltag": "2022-01-21",
+    "ausfuehrung": "2022-01-24",
+    "neu": "BIL",
+    "verhaeltnis": 0.991282
+   },
+   {
+    "signaltag": "2022-01-31",
+    "ausfuehrung": "2022-02-01",
+    "neu": "SPY",
+    "verhaeltnis": 1.016556
+   },
+   {
+    "signaltag": "2022-02-11",
+    "ausfuehrung": "2022-02-14",
+    "neu": "BIL",
+    "verhaeltnis": 0.991774
+   },
+   {
+    "signaltag": "2022-02-15",
+    "ausfuehrung": "2022-02-16",
+    "neu": "SPY",
+    "verhaeltnis": 1.003913
+   },
+   {
+    "signaltag": "2022-02-17",
+    "ausfuehrung": "2022-02-18",
+    "neu": "BIL",
+    "verhaeltnis": 0.982991
+   },
+   {
+    "signaltag": "2022-03-22",
+    "ausfuehrung": "2022-03-23",
+    "neu": "SPY",
+    "verhaeltnis": 1.007573
+   },
+   {
+    "signaltag": "2022-03-23",
+    "ausfuehrung": "2022-03-24",
+    "neu": "BIL",
+    "verhaeltnis": 0.994357
+   },
+   {
+    "signaltag": "2022-03-24",
+    "ausfuehrung": "2022-03-25",
+    "neu": "SPY",
+    "verhaeltnis": 1.00902
+   },
+   {
+    "signaltag": "2022-04-06",
+    "ausfuehrung": "2022-04-07",
+    "neu": "BIL",
+    "verhaeltnis": 0.996922
+   },
+   {
+    "signaltag": "2022-04-07",
+    "ausfuehrung": "2022-04-08",
+    "neu": "SPY",
+    "verhaeltnis": 1.001653
+   },
+   {
+    "signaltag": "2022-04-08",
+    "ausfuehrung": "2022-04-11",
+    "neu": "BIL",
+    "verhaeltnis": 0.998724
+   },
+   {
+    "signaltag": "2022-11-30",
+    "ausfuehrung": "2022-12-01",
+    "neu": "SPY",
+    "verhaeltnis": 1.008769
+   },
+   {
+    "signaltag": "2022-12-05",
+    "ausfuehrung": "2022-12-06",
+    "neu": "BIL",
+    "verhaeltnis": 0.990171
+   },
+   {
+    "signaltag": "2023-01-13",
+    "ausfuehrung": "2023-01-17",
+    "neu": "SPY",
+    "verhaeltnis": 1.003257
+   },
+   {
+    "signaltag": "2023-01-18",
+    "ausfuehrung": "2023-01-19",
+    "neu": "BIL",
+    "verhaeltnis": 0.987113
+   },
+   {
+    "signaltag": "2023-01-23",
+    "ausfuehrung": "2023-01-24",
+    "neu": "SPY",
+    "verhaeltnis": 1.012401
+   },
+   {
+    "signaltag": "2023-03-09",
+    "ausfuehrung": "2023-03-10",
+    "neu": "BIL",
+    "verhaeltnis": 0.995794
+   },
+   {
+    "signaltag": "2023-03-16",
+    "ausfuehrung": "2023-03-17",
+    "neu": "SPY",
+    "verhaeltnis": 1.008139
+   },
+   {
+    "signaltag": "2023-03-17",
+    "ausfuehrung": "2023-03-20",
+    "neu": "BIL",
+    "verhaeltnis": 0.992853
+   },
+   {
+    "signaltag": "2023-03-20",
+    "ausfuehrung": "2023-03-21",
+    "neu": "SPY",
+    "verhaeltnis": 1.002602
+   },
+   {
+    "signaltag": "2023-03-22",
+    "ausfuehrung": "2023-03-23",
+    "neu": "BIL",
+    "verhaeltnis": 0.998921
+   },
+   {
+    "signaltag": "2023-03-23",
+    "ausfuehrung": "2023-03-24",
+    "neu": "SPY",
+    "verhaeltnis": 1.001859
+   },
+   {
+    "signaltag": "2023-10-20",
+    "ausfuehrung": "2023-10-23",
+    "neu": "BIL",
+    "verhaeltnis": 0.997382
+   },
+   {
+    "signaltag": "2023-10-24",
+    "ausfuehrung": "2023-10-25",
+    "neu": "SPY",
+    "verhaeltnis": 1.00225
+   },
+   {
+    "signaltag": "2023-10-25",
+    "ausfuehrung": "2023-10-26",
+    "neu": "BIL",
+    "verhaeltnis": 0.987519
+   },
+   {
+    "signaltag": "2023-11-02",
+    "ausfuehrung": "2023-11-03",
+    "neu": "SPY",
+    "verhaeltnis": 1.017082
+   },
+   {
+    "signaltag": "2025-03-10",
+    "ausfuehrung": "2025-03-11",
+    "neu": "BIL",
+    "verhaeltnis": 0.98005
+   },
+   {
+    "signaltag": "2025-03-24",
+    "ausfuehrung": "2025-03-25",
+    "neu": "SPY",
+    "verhaeltnis": 1.000598
+   },
+   {
+    "signaltag": "2025-03-26",
+    "ausfuehrung": "2025-03-27",
+    "neu": "BIL",
+    "verhaeltnis": 0.990384
+   },
+   {
+    "signaltag": "2025-05-12",
+    "ausfuehrung": "2025-05-13",
+    "neu": "SPY",
+    "verhaeltnis": 1.016589
+   },
+   {
+    "signaltag": "2026-03-19",
+    "ausfuehrung": "2026-03-20",
+    "neu": "BIL",
+    "verhaeltnis": 0.999543
+   },
+   {
+    "signaltag": "2026-04-08",
+    "ausfuehrung": "2026-04-09",
+    "neu": "SPY",
+    "verhaeltnis": 1.018701
+   }
+  ]
+ },
+ "fenster": {
+  "A": {
+   "start": "2017-01-04",
+   "ende": "2021-09-15",
+   "handelstage": 1183,
+   "haupt": {
+    "amStart": "SPY",
+    "wechsel": 14,
+    "liste": [
+     {
+      "ausfuehrung": "2018-10-12",
+      "signaltag": "2018-10-11",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2018-10-17",
+      "signaltag": "2018-10-16",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2018-10-24",
+      "signaltag": "2018-10-23",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2018-11-08",
+      "signaltag": "2018-11-07",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2018-11-13",
+      "signaltag": "2018-11-12",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2018-12-04",
+      "signaltag": "2018-12-03",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2018-12-06",
+      "signaltag": "2018-12-04",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2019-02-19",
+      "signaltag": "2019-02-15",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2020-02-28",
+      "signaltag": "2020-02-27",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2020-03-03",
+      "signaltag": "2020-03-02",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2020-03-04",
+      "signaltag": "2020-03-03",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2020-03-05",
+      "signaltag": "2020-03-04",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2020-03-09",
+      "signaltag": "2020-03-06",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2020-05-28",
+      "signaltag": "2020-05-27",
+      "neu": "SPY"
+     }
+    ]
+   },
+   "n3": {
+    "amStart": "SPY",
+    "wechsel": 26,
+    "liste": [
+     {
+      "ausfuehrung": "2018-03-26",
+      "signaltag": "2018-03-23",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2018-03-27",
+      "signaltag": "2018-03-26",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2018-04-03",
+      "signaltag": "2018-04-02",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2018-04-04",
+      "signaltag": "2018-04-03",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2018-10-12",
+      "signaltag": "2018-10-11",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2018-10-17",
+      "signaltag": "2018-10-16",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2018-10-19",
+      "signaltag": "2018-10-18",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2018-11-08",
+      "signaltag": "2018-11-07",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2018-11-13",
+      "signaltag": "2018-11-12",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2018-12-04",
+      "signaltag": "2018-12-03",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2018-12-06",
+      "signaltag": "2018-12-04",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2019-02-13",
+      "signaltag": "2019-02-12",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2019-03-11",
+      "signaltag": "2019-03-08",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2019-03-12",
+      "signaltag": "2019-03-11",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2019-06-03",
+      "signaltag": "2019-05-31",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2019-06-05",
+      "signaltag": "2019-06-04",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2020-02-28",
+      "signaltag": "2020-02-27",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2020-03-03",
+      "signaltag": "2020-03-02",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2020-03-04",
+      "signaltag": "2020-03-03",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2020-03-05",
+      "signaltag": "2020-03-04",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2020-03-06",
+      "signaltag": "2020-03-05",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2020-05-28",
+      "signaltag": "2020-05-27",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2020-06-12",
+      "signaltag": "2020-06-11",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2020-06-15",
+      "signaltag": "2020-06-12",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2020-06-29",
+      "signaltag": "2020-06-26",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2020-06-30",
+      "signaltag": "2020-06-29",
+      "neu": "SPY"
+     }
+    ]
+   }
+  },
+  "B": {
+   "start": "2021-09-16",
+   "ende": "2026-09-15",
+   "handelstage": 1254,
+   "haupt": {
+    "amStart": "SPY",
+    "wechsel": 14,
+    "liste": [
+     {
+      "ausfuehrung": "2022-01-26",
+      "signaltag": "2022-01-25",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2022-02-01",
+      "signaltag": "2022-01-31",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2022-02-15",
+      "signaltag": "2022-02-14",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2022-03-28",
+      "signaltag": "2022-03-25",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2022-04-12",
+      "signaltag": "2022-04-11",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-01-24",
+      "signaltag": "2023-01-23",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2023-03-13",
+      "signaltag": "2023-03-10",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-03-22",
+      "signaltag": "2023-03-21",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2023-10-26",
+      "signaltag": "2023-10-25",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-11-03",
+      "signaltag": "2023-11-02",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2025-03-11",
+      "signaltag": "2025-03-10",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2025-05-13",
+      "signaltag": "2025-05-12",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2026-03-23",
+      "signaltag": "2026-03-20",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2026-04-09",
+      "signaltag": "2026-04-08",
+      "neu": "SPY"
+     }
+    ]
+   },
+   "n3": {
+    "amStart": "SPY",
+    "wechsel": 32,
+    "liste": [
+     {
+      "ausfuehrung": "2022-01-24",
+      "signaltag": "2022-01-21",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2022-02-01",
+      "signaltag": "2022-01-31",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2022-02-14",
+      "signaltag": "2022-02-11",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2022-02-16",
+      "signaltag": "2022-02-15",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2022-02-18",
+      "signaltag": "2022-02-17",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2022-03-23",
+      "signaltag": "2022-03-22",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2022-03-24",
+      "signaltag": "2022-03-23",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2022-03-25",
+      "signaltag": "2022-03-24",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2022-04-07",
+      "signaltag": "2022-04-06",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2022-04-08",
+      "signaltag": "2022-04-07",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2022-04-11",
+      "signaltag": "2022-04-08",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2022-12-01",
+      "signaltag": "2022-11-30",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2022-12-06",
+      "signaltag": "2022-12-05",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-01-17",
+      "signaltag": "2023-01-13",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2023-01-19",
+      "signaltag": "2023-01-18",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-01-24",
+      "signaltag": "2023-01-23",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2023-03-10",
+      "signaltag": "2023-03-09",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-03-17",
+      "signaltag": "2023-03-16",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2023-03-20",
+      "signaltag": "2023-03-17",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-03-21",
+      "signaltag": "2023-03-20",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2023-03-23",
+      "signaltag": "2023-03-22",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-03-24",
+      "signaltag": "2023-03-23",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2023-10-23",
+      "signaltag": "2023-10-20",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-10-25",
+      "signaltag": "2023-10-24",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2023-10-26",
+      "signaltag": "2023-10-25",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2023-11-03",
+      "signaltag": "2023-11-02",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2025-03-11",
+      "signaltag": "2025-03-10",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2025-03-25",
+      "signaltag": "2025-03-24",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2025-03-27",
+      "signaltag": "2025-03-26",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2025-05-13",
+      "signaltag": "2025-05-12",
+      "neu": "SPY"
+     },
+     {
+      "ausfuehrung": "2026-03-20",
+      "signaltag": "2026-03-19",
+      "neu": "BIL"
+     },
+     {
+      "ausfuehrung": "2026-04-09",
+      "signaltag": "2026-04-08",
+      "neu": "SPY"
+     }
+    ]
+   }
+  }
+ },
+ "phasenHauptAb2003": [
+  {
+   "zustand": "SPY",
+   "ab": "2003-04-15",
+   "bisSignaltag": "2004-07-21",
+   "handelstage": 318,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2004-07-21",
+   "bisSignaltag": "2004-09-10",
+   "handelstage": 36,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2004-09-10",
+   "bisSignaltag": "2004-09-23",
+   "handelstage": 9,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2004-09-23",
+   "bisSignaltag": "2004-10-01",
+   "handelstage": 6,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2004-10-01",
+   "bisSignaltag": "2004-10-14",
+   "handelstage": 9,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2004-10-14",
+   "bisSignaltag": "2004-11-01",
+   "handelstage": 12,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2004-11-01",
+   "bisSignaltag": "2005-04-15",
+   "handelstage": 114,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2005-04-15",
+   "bisSignaltag": "2005-05-04",
+   "handelstage": 13,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2005-05-04",
+   "bisSignaltag": "2005-10-10",
+   "handelstage": 110,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2005-10-10",
+   "bisSignaltag": "2005-11-02",
+   "handelstage": 17,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2005-11-02",
+   "bisSignaltag": "2006-06-12",
+   "handelstage": 151,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2006-06-12",
+   "bisSignaltag": "2006-07-03",
+   "handelstage": 15,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2006-07-03",
+   "bisSignaltag": "2006-07-13",
+   "handelstage": 7,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2006-07-13",
+   "bisSignaltag": "2006-08-03",
+   "handelstage": 15,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2006-08-03",
+   "bisSignaltag": "2007-08-14",
+   "handelstage": 258,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2007-08-14",
+   "bisSignaltag": "2007-08-24",
+   "handelstage": 8,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2007-08-24",
+   "bisSignaltag": "2007-08-28",
+   "handelstage": 2,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2007-08-28",
+   "bisSignaltag": "2007-08-31",
+   "handelstage": 3,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2007-08-31",
+   "bisSignaltag": "2007-11-09",
+   "handelstage": 49,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2007-11-09",
+   "bisSignaltag": "2007-12-06",
+   "handelstage": 18,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2007-12-06",
+   "bisSignaltag": "2007-12-14",
+   "handelstage": 6,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2007-12-14",
+   "bisSignaltag": "2009-06-01",
+   "handelstage": 366,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2009-06-01",
+   "bisSignaltag": "2009-06-22",
+   "handelstage": 15,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2009-06-22",
+   "bisSignaltag": "2009-06-25",
+   "handelstage": 3,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2009-06-25",
+   "bisSignaltag": "2010-05-20",
+   "handelstage": 227,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2010-05-20",
+   "bisSignaltag": "2010-08-04",
+   "handelstage": 52,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2010-08-04",
+   "bisSignaltag": "2010-08-11",
+   "handelstage": 5,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2010-08-11",
+   "bisSignaltag": "2010-09-15",
+   "handelstage": 24,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2010-09-15",
+   "bisSignaltag": "2011-08-02",
+   "handelstage": 222,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2011-08-02",
+   "bisSignaltag": "2012-01-03",
+   "handelstage": 106,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2012-01-03",
+   "bisSignaltag": "2012-11-14",
+   "handelstage": 218,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2012-11-14",
+   "bisSignaltag": "2012-11-23",
+   "handelstage": 6,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2012-11-23",
+   "bisSignaltag": "2014-10-13",
+   "handelstage": 474,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2014-10-13",
+   "bisSignaltag": "2014-10-21",
+   "handelstage": 6,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2014-10-21",
+   "bisSignaltag": "2015-08-20",
+   "handelstage": 209,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2015-08-20",
+   "bisSignaltag": "2015-10-28",
+   "handelstage": 48,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2015-10-28",
+   "bisSignaltag": "2015-11-13",
+   "handelstage": 12,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2015-11-13",
+   "bisSignaltag": "2015-11-18",
+   "handelstage": 3,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2015-11-18",
+   "bisSignaltag": "2015-12-11",
+   "handelstage": 16,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2015-12-11",
+   "bisSignaltag": "2016-03-17",
+   "handelstage": 65,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2016-03-17",
+   "bisSignaltag": "2016-06-27",
+   "handelstage": 70,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2016-06-27",
+   "bisSignaltag": "2016-06-29",
+   "handelstage": 2,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2016-06-29",
+   "bisSignaltag": "2018-10-11",
+   "handelstage": 576,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2018-10-11",
+   "bisSignaltag": "2018-10-16",
+   "handelstage": 3,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2018-10-16",
+   "bisSignaltag": "2018-10-23",
+   "handelstage": 5,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2018-10-23",
+   "bisSignaltag": "2018-11-07",
+   "handelstage": 11,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2018-11-07",
+   "bisSignaltag": "2018-11-12",
+   "handelstage": 3,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2018-11-12",
+   "bisSignaltag": "2018-12-03",
+   "handelstage": 14,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2018-12-03",
+   "bisSignaltag": "2018-12-04",
+   "handelstage": 1,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2018-12-04",
+   "bisSignaltag": "2019-02-15",
+   "handelstage": 49,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2019-02-15",
+   "bisSignaltag": "2020-02-27",
+   "handelstage": 259,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2020-02-27",
+   "bisSignaltag": "2020-03-02",
+   "handelstage": 2,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2020-03-02",
+   "bisSignaltag": "2020-03-03",
+   "handelstage": 1,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2020-03-03",
+   "bisSignaltag": "2020-03-04",
+   "handelstage": 1,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2020-03-04",
+   "bisSignaltag": "2020-03-06",
+   "handelstage": 2,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2020-03-06",
+   "bisSignaltag": "2020-05-27",
+   "handelstage": 56,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2020-05-27",
+   "bisSignaltag": "2022-01-25",
+   "handelstage": 420,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2022-01-25",
+   "bisSignaltag": "2022-01-31",
+   "handelstage": 4,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2022-01-31",
+   "bisSignaltag": "2022-02-14",
+   "handelstage": 10,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2022-02-14",
+   "bisSignaltag": "2022-03-25",
+   "handelstage": 28,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2022-03-25",
+   "bisSignaltag": "2022-04-11",
+   "handelstage": 11,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2022-04-11",
+   "bisSignaltag": "2023-01-23",
+   "handelstage": 196,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2023-01-23",
+   "bisSignaltag": "2023-03-10",
+   "handelstage": 33,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2023-03-10",
+   "bisSignaltag": "2023-03-21",
+   "handelstage": 7,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2023-03-21",
+   "bisSignaltag": "2023-10-25",
+   "handelstage": 151,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2023-10-25",
+   "bisSignaltag": "2023-11-02",
+   "handelstage": 6,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2023-11-02",
+   "bisSignaltag": "2025-03-10",
+   "handelstage": 336,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2025-03-10",
+   "bisSignaltag": "2025-05-12",
+   "handelstage": 44,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2025-05-12",
+   "bisSignaltag": "2026-03-20",
+   "handelstage": 215,
+   "offen": false
+  },
+  {
+   "zustand": "BIL",
+   "ab": "2026-03-20",
+   "bisSignaltag": "2026-04-08",
+   "handelstage": 12,
+   "offen": false
+  },
+  {
+   "zustand": "SPY",
+   "ab": "2026-04-08",
+   "bisSignaltag": null,
+   "handelstage": null,
+   "offen": true
+  }
+ ],
+ "zustandNachLetztemSchluss": {
+  "signaltag": "2026-09-15",
+  "haupt": "SPY"
+ },
+ "grenzfaelle1e9": 0
+}

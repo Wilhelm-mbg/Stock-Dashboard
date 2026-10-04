@@ -1,0 +1,4743 @@
+{
+  "kennung": "trendfilter-messung-2026-10/v1",
+  "rechner": "zweitrechner (unabhängig, §9.1)",
+  "regelSiegel": "6f9d06f",
+  "hinweis": "Simulation mit virtuellem Kapital, keine Anlageberatung, vor Steuern. Hauptlesart: BIL, ACWX, AGG, nächste Eröffnung, 20 bp je Seite, R3 mit 1-%-Band.",
+  "lesarten": [
+    "L1 Monatsende am Datenende: Ein Tag ist nur Monatsende (§2.4), wenn der Kalender einen Handelstag des Folgemonats enthält; der 15.09.2026 (Datenende nach dem Abschneiden) ist nicht der letzte Handelstag des Septembers 2026 und daher kein Monatsende. Wirkung auf die Bücher: keine.",
+    "L2 Gezahlte Kosten = alle Kosten des Buchs einschließlich Erstkauf (0,002 x gekauftes Volumen = 100.000 x 0,002/1,002); getrennt ausgewiesen: Erstkauf und Wechsel (Verkaufsseite 0,002 x Stück_alt x O_alt, Kaufseite 0,002 x Stück_neu x O_neu = 0,002 x Erlös/1,002). Der Maßstab SPY zahlt nichts (§3.6).",
+    "L3 Unter Wasser: Tag mit Schlusswert < bisheriger Höchststand (Startkapital eingeschlossen); Anteil = solche Tage / alle Handelstage s..Endtag einschließlich. Längste Zeit = Kalendertage vom Tag des Höchststands (Starttag für das Startkapital; ein Schluss >= Höchststand setzt Höchststand und Tag neu) bis zum ersten Tag mit Wert >= Höchststand; nur Strecken mit mindestens einem Tag unter Wasser; bei gleicher Länge die frühere; ohne Erholung Ende am Endtag (\"nicht erholt\").",
+    "L4 Größter Rückschlag = min über t in [s, Endtag] von V(t)/max(100.000, V(s..t)) - 1 auf Tagesschlüssen, Starttag-Schluss eingeschlossen.",
+    "L5 R2 nicht berechenbar (TR einer Reihe fehlt an M oder M-12): kein Signal, die zuletzt vorgeschriebene Reihe gilt weiter; tritt ab Monatsende 2009-04 nicht auf, also nie in A und B.",
+    "L6 R3 Anfangszustand am ersten Tag mit 200 SPY-Schlüssen (1993) nach C > SMA200; Bandregeln ab dem folgenden Handelstag (am ersten Tag wäre ein Bandwechsel ohnehin unmöglich). SMA200 je Tag neu aus 200 Schlüssen summiert (älteste zuerst).",
+    "L7 Splits: Yahoo liefert open/close und die Ausschüttungsbeträge splitbereinigt (BIL 1:2 am 30.11.2017: Schluss vor/nach gleich, Ausschüttungen vor/nach gleich groß); das Buch rechnet ohne Stückzahl-Anpassung, events.splits wird nur gemeldet und geprüft.",
+    "L8 Fehlende Kurse (§3.5): Ersatz je Handelsseite (Eröffnung fehlt -> Schluss desselben Tags); fehlt auch der Schluss, wird der ganze Wechsel auf den nächsten Handelstag verschoben; für den Erstkauf ist dieser Doppelfall nicht ausprogrammiert (Abbruch). Fehlender Schluss der gehaltenen Reihe -> letzter Schluss. Gezählt je Tag und Reihe einmal.",
+    "L9 Cent = toFixed(2) des ungerundeten Gleitkommawerts; Abstand zur nächsten Halb-Cent-Grenze wird mitgeliefert.",
+    "L10 §5.3(b) ganzzahlig geprüft: 10 x vorn >= 7 x Zahl der Starttage.",
+    "L11 Signalfolge: \"ändert sich\" = Reihe des Signals != Reihe des vorigen Signals (R1/R2 voriges Monatsende, R3 Vortag); der Stand vor dem 01.12.2016 steht unter \"anfang\". P und SMA10 in der Basis TR_SPY = 1 am 29.01.1993 (erste SPY-Zeile, §2.5).",
+    "L12 Ausschüttung mit Ex-Tag am Endtag wird gutgeschrieben und zum Schluss angelegt (zählt im Endwert); Ex-Tage nach dem Endtag zählen nicht.",
+    "L13 Tage für p. a. = Endtag - Starttag in Kalendertagen (ohne +1).",
+    "L14 Am Starttag kein Wechsel (Erstkauf in die Reihe des letzten Signals vor s); ein Wechsel zur Eröffnung des Endtags zählt mit Kosten; das Signal des Endtags wird nicht mehr ausgeführt.",
+    "L15 Anteil der Tage je Reihe = Anteil der Handelstage s..Endtag, an deren Schluss die Reihe gehalten wird; Kalenderjahre = Wert am letzten Fenster-Handelstag des Jahres / Wert am letzten Handelstag des Vorjahres (erstes Jahr / 100.000) - 1.",
+    "L16 Doppelte Tage in einer Rohantwort: erste Zeile gilt, weitere gezählt; Zeilen ohne gültigen Schluss gehören weder zum Kalender noch zum TR der Reihe (beides kommt bis 15.09.2026 nicht vor)."
+  ],
+  "daten": {
+    "ordnerRelativZumStudienordner": "daten",
+    "ende": "2026-09-15",
+    "kalender": {
+      "handelstage": 8464,
+      "erster": "1993-01-29",
+      "letzter": "2026-09-15",
+      "monatsenden": 404
+    },
+    "dateien": {
+      "SPY": {
+        "sha256": "a8a9c46689e1df9bd38ce5e404683d8993fd22d6e60b4065a29fa2271ecc633b",
+        "shaErwartet": "a8a9c46689e1df9bd38ce5e404683d8993fd22d6e60b4065a29fa2271ecc633b",
+        "shaOk": true,
+        "zeilenBisEnde": 8464,
+        "ersterTag": "1993-01-29",
+        "letzterTagBisEnde": "2026-09-15",
+        "zeilenNachEndeAbgeschnitten": 13,
+        "ausschuettungenBisEnde": 135,
+        "ausschuettungenNachEndeAbgeschnitten": 1,
+        "splitsBisEnde": [],
+        "befund": {
+          "zeilenRoh": 8477,
+          "nachEnde": 13,
+          "doppelt": 0,
+          "wochenende": 0,
+          "uhrNicht0930": 0,
+          "eroeffnungFehlt": 0,
+          "schlussFehlt": 0,
+          "nichtPositiv": 0,
+          "nichtAufsteigend": 0
+        }
+      },
+      "BIL": {
+        "sha256": "80da7428ccd1deb67468ffee8bcca592d2d0a1bb1d1aab1f91c6a23b0782b79f",
+        "shaErwartet": "80da7428ccd1deb67468ffee8bcca592d2d0a1bb1d1aab1f91c6a23b0782b79f",
+        "shaOk": true,
+        "zeilenBisEnde": 4855,
+        "ersterTag": "2007-05-30",
+        "letzterTagBisEnde": "2026-09-15",
+        "zeilenNachEndeAbgeschnitten": 13,
+        "ausschuettungenBisEnde": 127,
+        "ausschuettungenNachEndeAbgeschnitten": 1,
+        "splitsBisEnde": [
+          "2017-11-30 1:2"
+        ],
+        "befund": {
+          "zeilenRoh": 4868,
+          "nachEnde": 13,
+          "doppelt": 0,
+          "wochenende": 0,
+          "uhrNicht0930": 0,
+          "eroeffnungFehlt": 0,
+          "schlussFehlt": 0,
+          "nichtPositiv": 0,
+          "nichtAufsteigend": 0
+        }
+      },
+      "SHY": {
+        "sha256": "e0fba577cbf6b1e498c893010f9f7277e5bf4e838ebdc3bcc07fd6c65d4b3640",
+        "shaErwartet": "e0fba577cbf6b1e498c893010f9f7277e5bf4e838ebdc3bcc07fd6c65d4b3640",
+        "shaOk": true,
+        "zeilenBisEnde": 6071,
+        "ersterTag": "2002-07-30",
+        "letzterTagBisEnde": "2026-09-15",
+        "zeilenNachEndeAbgeschnitten": 13,
+        "ausschuettungenBisEnde": 289,
+        "ausschuettungenNachEndeAbgeschnitten": 1,
+        "splitsBisEnde": [],
+        "befund": {
+          "zeilenRoh": 6084,
+          "nachEnde": 13,
+          "doppelt": 0,
+          "wochenende": 0,
+          "uhrNicht0930": 0,
+          "eroeffnungFehlt": 0,
+          "schlussFehlt": 0,
+          "nichtPositiv": 0,
+          "nichtAufsteigend": 0
+        }
+      },
+      "ACWX": {
+        "sha256": "6f5c6bf3455ce644bf0d579c2a9d75e6cef69e4dbe960d030218f638d07cb076",
+        "shaErwartet": "6f5c6bf3455ce644bf0d579c2a9d75e6cef69e4dbe960d030218f638d07cb076",
+        "shaOk": true,
+        "zeilenBisEnde": 4644,
+        "ersterTag": "2008-04-01",
+        "letzterTagBisEnde": "2026-09-15",
+        "zeilenNachEndeAbgeschnitten": 13,
+        "ausschuettungenBisEnde": 37,
+        "ausschuettungenNachEndeAbgeschnitten": 0,
+        "splitsBisEnde": [],
+        "befund": {
+          "zeilenRoh": 4657,
+          "nachEnde": 13,
+          "doppelt": 0,
+          "wochenende": 0,
+          "uhrNicht0930": 0,
+          "eroeffnungFehlt": 0,
+          "schlussFehlt": 0,
+          "nichtPositiv": 0,
+          "nichtAufsteigend": 0
+        }
+      },
+      "EFA": {
+        "sha256": "68af3e4e6773a0c5d5f9eb9c0444af9904a4528efecdb7b2a49a82469e63e9c9",
+        "shaErwartet": "68af3e4e6773a0c5d5f9eb9c0444af9904a4528efecdb7b2a49a82469e63e9c9",
+        "shaOk": true,
+        "zeilenBisEnde": 6299,
+        "ersterTag": "2001-08-27",
+        "letzterTagBisEnde": "2026-09-15",
+        "zeilenNachEndeAbgeschnitten": 13,
+        "ausschuettungenBisEnde": 47,
+        "ausschuettungenNachEndeAbgeschnitten": 0,
+        "splitsBisEnde": [
+          "2005-06-09 3:1"
+        ],
+        "befund": {
+          "zeilenRoh": 6312,
+          "nachEnde": 13,
+          "doppelt": 0,
+          "wochenende": 0,
+          "uhrNicht0930": 0,
+          "eroeffnungFehlt": 0,
+          "schlussFehlt": 0,
+          "nichtPositiv": 0,
+          "nichtAufsteigend": 0
+        }
+      },
+      "AGG": {
+        "sha256": "0cb87addbe7005c884d54e3649ed30ede5ab4a0d2da58b5712de2e68db9fd2ce",
+        "shaErwartet": "0cb87addbe7005c884d54e3649ed30ede5ab4a0d2da58b5712de2e68db9fd2ce",
+        "shaOk": true,
+        "zeilenBisEnde": 5777,
+        "ersterTag": "2003-09-29",
+        "letzterTagBisEnde": "2026-09-15",
+        "zeilenNachEndeAbgeschnitten": 13,
+        "ausschuettungenBisEnde": 275,
+        "ausschuettungenNachEndeAbgeschnitten": 1,
+        "splitsBisEnde": [],
+        "befund": {
+          "zeilenRoh": 5790,
+          "nachEnde": 13,
+          "doppelt": 0,
+          "wochenende": 0,
+          "uhrNicht0930": 0,
+          "eroeffnungFehlt": 0,
+          "schlussFehlt": 0,
+          "nichtPositiv": 0,
+          "nichtAufsteigend": 0
+        }
+      }
+    },
+    "zaehler": {
+      "ausschVerschobenTR": 0,
+      "ausschOhneZeileDanach": 0,
+      "ausschAusserhalbKalender": 0,
+      "zeilenAusserhalbKalender": 0
+    }
+  },
+  "proben": [
+    {
+      "name": "SHA-256 SPY = pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "sha": "a8a9c46689e1df9bd38ce5e404683d8993fd22d6e60b4065a29fa2271ecc633b",
+        "erwartet": "a8a9c46689e1df9bd38ce5e404683d8993fd22d6e60b4065a29fa2271ecc633b"
+      }
+    },
+    {
+      "name": "Symbol in Antwort SPY",
+      "ok": true,
+      "detail": "SPY"
+    },
+    {
+      "name": "Zeilen/Ausschüttungen SPY wie pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "zeilenBisEnde": 8464,
+        "ersterTag": "1993-01-29",
+        "letzterTagBisEnde": "2026-09-15",
+        "ausschuettungenBisEnde": 135
+      }
+    },
+    {
+      "name": "Rohdaten SPY sauber bis 15.09.2026 (keine doppelten/Wochenend-Tage, alle 09:30 NY, keine fehlenden/nicht positiven Kurse)",
+      "ok": true,
+      "detail": {
+        "zeilenRoh": 8477,
+        "nachEnde": 13,
+        "doppelt": 0,
+        "wochenende": 0,
+        "uhrNicht0930": 0,
+        "eroeffnungFehlt": 0,
+        "schlussFehlt": 0,
+        "nichtPositiv": 0,
+        "nichtAufsteigend": 0
+      }
+    },
+    {
+      "name": "SHA-256 BIL = pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "sha": "80da7428ccd1deb67468ffee8bcca592d2d0a1bb1d1aab1f91c6a23b0782b79f",
+        "erwartet": "80da7428ccd1deb67468ffee8bcca592d2d0a1bb1d1aab1f91c6a23b0782b79f"
+      }
+    },
+    {
+      "name": "Symbol in Antwort BIL",
+      "ok": true,
+      "detail": "BIL"
+    },
+    {
+      "name": "Zeilen/Ausschüttungen BIL wie pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "zeilenBisEnde": 4855,
+        "ersterTag": "2007-05-30",
+        "letzterTagBisEnde": "2026-09-15",
+        "ausschuettungenBisEnde": 127
+      }
+    },
+    {
+      "name": "Rohdaten BIL sauber bis 15.09.2026 (keine doppelten/Wochenend-Tage, alle 09:30 NY, keine fehlenden/nicht positiven Kurse)",
+      "ok": true,
+      "detail": {
+        "zeilenRoh": 4868,
+        "nachEnde": 13,
+        "doppelt": 0,
+        "wochenende": 0,
+        "uhrNicht0930": 0,
+        "eroeffnungFehlt": 0,
+        "schlussFehlt": 0,
+        "nichtPositiv": 0,
+        "nichtAufsteigend": 0
+      }
+    },
+    {
+      "name": "SHA-256 SHY = pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "sha": "e0fba577cbf6b1e498c893010f9f7277e5bf4e838ebdc3bcc07fd6c65d4b3640",
+        "erwartet": "e0fba577cbf6b1e498c893010f9f7277e5bf4e838ebdc3bcc07fd6c65d4b3640"
+      }
+    },
+    {
+      "name": "Symbol in Antwort SHY",
+      "ok": true,
+      "detail": "SHY"
+    },
+    {
+      "name": "Zeilen/Ausschüttungen SHY wie pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "zeilenBisEnde": 6071,
+        "ersterTag": "2002-07-30",
+        "letzterTagBisEnde": "2026-09-15",
+        "ausschuettungenBisEnde": 289
+      }
+    },
+    {
+      "name": "Rohdaten SHY sauber bis 15.09.2026 (keine doppelten/Wochenend-Tage, alle 09:30 NY, keine fehlenden/nicht positiven Kurse)",
+      "ok": true,
+      "detail": {
+        "zeilenRoh": 6084,
+        "nachEnde": 13,
+        "doppelt": 0,
+        "wochenende": 0,
+        "uhrNicht0930": 0,
+        "eroeffnungFehlt": 0,
+        "schlussFehlt": 0,
+        "nichtPositiv": 0,
+        "nichtAufsteigend": 0
+      }
+    },
+    {
+      "name": "SHA-256 ACWX = pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "sha": "6f5c6bf3455ce644bf0d579c2a9d75e6cef69e4dbe960d030218f638d07cb076",
+        "erwartet": "6f5c6bf3455ce644bf0d579c2a9d75e6cef69e4dbe960d030218f638d07cb076"
+      }
+    },
+    {
+      "name": "Symbol in Antwort ACWX",
+      "ok": true,
+      "detail": "ACWX"
+    },
+    {
+      "name": "Zeilen/Ausschüttungen ACWX wie pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "zeilenBisEnde": 4644,
+        "ersterTag": "2008-04-01",
+        "letzterTagBisEnde": "2026-09-15",
+        "ausschuettungenBisEnde": 37
+      }
+    },
+    {
+      "name": "Rohdaten ACWX sauber bis 15.09.2026 (keine doppelten/Wochenend-Tage, alle 09:30 NY, keine fehlenden/nicht positiven Kurse)",
+      "ok": true,
+      "detail": {
+        "zeilenRoh": 4657,
+        "nachEnde": 13,
+        "doppelt": 0,
+        "wochenende": 0,
+        "uhrNicht0930": 0,
+        "eroeffnungFehlt": 0,
+        "schlussFehlt": 0,
+        "nichtPositiv": 0,
+        "nichtAufsteigend": 0
+      }
+    },
+    {
+      "name": "SHA-256 EFA = pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "sha": "68af3e4e6773a0c5d5f9eb9c0444af9904a4528efecdb7b2a49a82469e63e9c9",
+        "erwartet": "68af3e4e6773a0c5d5f9eb9c0444af9904a4528efecdb7b2a49a82469e63e9c9"
+      }
+    },
+    {
+      "name": "Symbol in Antwort EFA",
+      "ok": true,
+      "detail": "EFA"
+    },
+    {
+      "name": "Zeilen/Ausschüttungen EFA wie pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "zeilenBisEnde": 6299,
+        "ersterTag": "2001-08-27",
+        "letzterTagBisEnde": "2026-09-15",
+        "ausschuettungenBisEnde": 47
+      }
+    },
+    {
+      "name": "Rohdaten EFA sauber bis 15.09.2026 (keine doppelten/Wochenend-Tage, alle 09:30 NY, keine fehlenden/nicht positiven Kurse)",
+      "ok": true,
+      "detail": {
+        "zeilenRoh": 6312,
+        "nachEnde": 13,
+        "doppelt": 0,
+        "wochenende": 0,
+        "uhrNicht0930": 0,
+        "eroeffnungFehlt": 0,
+        "schlussFehlt": 0,
+        "nichtPositiv": 0,
+        "nichtAufsteigend": 0
+      }
+    },
+    {
+      "name": "SHA-256 AGG = pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "sha": "0cb87addbe7005c884d54e3649ed30ede5ab4a0d2da58b5712de2e68db9fd2ce",
+        "erwartet": "0cb87addbe7005c884d54e3649ed30ede5ab4a0d2da58b5712de2e68db9fd2ce"
+      }
+    },
+    {
+      "name": "Symbol in Antwort AGG",
+      "ok": true,
+      "detail": "AGG"
+    },
+    {
+      "name": "Zeilen/Ausschüttungen AGG wie pruefsummen.json",
+      "ok": true,
+      "detail": {
+        "zeilenBisEnde": 5777,
+        "ersterTag": "2003-09-29",
+        "letzterTagBisEnde": "2026-09-15",
+        "ausschuettungenBisEnde": 275
+      }
+    },
+    {
+      "name": "Rohdaten AGG sauber bis 15.09.2026 (keine doppelten/Wochenend-Tage, alle 09:30 NY, keine fehlenden/nicht positiven Kurse)",
+      "ok": true,
+      "detail": {
+        "zeilenRoh": 5790,
+        "nachEnde": 13,
+        "doppelt": 0,
+        "wochenende": 0,
+        "uhrNicht0930": 0,
+        "eroeffnungFehlt": 0,
+        "schlussFehlt": 0,
+        "nichtPositiv": 0,
+        "nichtAufsteigend": 0
+      }
+    },
+    {
+      "name": "Ausschüttungen ohne Zeile am Ex-Tag (§2.5, Erwartung 0)",
+      "ok": true,
+      "detail": {
+        "ausschVerschobenTR": 0,
+        "ausschOhneZeileDanach": 0,
+        "ausschAusserhalbKalender": 0,
+        "zeilenAusserhalbKalender": 0
+      }
+    },
+    {
+      "name": "Zeilen der vier Reihen außerhalb des SPY-Kalenders (Erwartung 0)",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "Lücken der vier Reihen gegen den SPY-Kalender 01.12.2015–15.09.2026 (Erwartung 0)",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "Fenster A: erster Starttag und Endtag sind SPY-Handelstage",
+      "ok": true,
+      "detail": {
+        "erster": "2017-01-04",
+        "ende": "2021-09-15"
+      }
+    },
+    {
+      "name": "Fenster A: Zahl der Starttage = 22 (§5.2)",
+      "ok": true,
+      "detail": 22
+    },
+    {
+      "name": "Fenster A: k = 0 ist der erste Starttag",
+      "ok": true,
+      "detail": "2017-01-04"
+    },
+    {
+      "name": "Fenster A: Regel \"immer SPY\" mit Kosten = SPY-Endwert x (1/1,002)",
+      "ok": true,
+      "detail": {
+        "regelImmerSpy": 215118.1618188834,
+        "spyMal1durch1002": 215118.16181888347,
+        "relAbweichung": -2.220446049250313e-16
+      }
+    },
+    {
+      "name": "Fenster A: SPY Gesamtertrag > Kursertrag",
+      "ok": true,
+      "detail": {
+        "gesamt": 215548.39814252124,
+        "kurs": 198510.77678207672
+      }
+    },
+    {
+      "name": "Fenster A: Zahl der SPY-Ausschüttungen (Ex-Tage s..Endtag) = 18 (Quartalsrhythmus 03/2017–06/2021)",
+      "ok": true,
+      "detail": {
+        "exTage": 18,
+        "gutgeschrieben": 18
+      }
+    },
+    {
+      "name": "Fenster A: Gesamtertragsindex gegen adjclose je Reihe innerhalb 0,5 % (nur Datenprüfung)",
+      "ok": true,
+      "detail": {
+        "SPY": 0.00047333224407797303,
+        "BIL": -0.0000029908019000268737,
+        "ACWX": 0.00011331926586244379,
+        "AGG": -0.00001085550329238405
+      }
+    },
+    {
+      "name": "Fenster A: SPY Stückbuch = Renditekette (rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 215548.39814252124,
+        "kette": 215548.39814252156
+      }
+    },
+    {
+      "name": "Fenster A: SPY-Buch = 100.000 x C(s)/O(s) x TR(e)/TR(s) (Buch und Signalindex stimmen überein, rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 215548.39814252124,
+        "ausTR": 215548.39814252142
+      }
+    },
+    {
+      "name": "Fenster A R1: Stückbuch = Renditekette (rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 161020.2334073064,
+        "kette": 161020.2334073058
+      }
+    },
+    {
+      "name": "Fenster A R1: fehlende Kurse = 0 (§3.5)",
+      "ok": true,
+      "detail": {
+        "fehlendeKurse": 0,
+        "verschobeneWechsel": 0,
+        "ersatz": []
+      }
+    },
+    {
+      "name": "Fenster A R1: Wechselfolge schlüssig (von = voriges nach; R1/R2 nur am ersten Handelstag nach Monatsende)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster A R1: fehlende Kurse über alle Starttage = 0",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "Fenster A R2: Stückbuch = Renditekette (rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 141841.2670860713,
+        "kette": 141841.2670860712
+      }
+    },
+    {
+      "name": "Fenster A R2: fehlende Kurse = 0 (§3.5)",
+      "ok": true,
+      "detail": {
+        "fehlendeKurse": 0,
+        "verschobeneWechsel": 0,
+        "ersatz": []
+      }
+    },
+    {
+      "name": "Fenster A R2: Wechselfolge schlüssig (von = voriges nach; R1/R2 nur am ersten Handelstag nach Monatsende)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster A R2: fehlende Kurse über alle Starttage = 0",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "Fenster A R3: Stückbuch = Renditekette (rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 155669.6158136794,
+        "kette": 155669.61581367927
+      }
+    },
+    {
+      "name": "Fenster A R3: fehlende Kurse = 0 (§3.5)",
+      "ok": true,
+      "detail": {
+        "fehlendeKurse": 0,
+        "verschobeneWechsel": 0,
+        "ersatz": []
+      }
+    },
+    {
+      "name": "Fenster A R3: Wechselfolge schlüssig (von = voriges nach; R1/R2 nur am ersten Handelstag nach Monatsende)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster A R3: fehlende Kurse über alle Starttage = 0",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "Fenster B: erster Starttag und Endtag sind SPY-Handelstage",
+      "ok": true,
+      "detail": {
+        "erster": "2021-09-16",
+        "ende": "2026-09-15"
+      }
+    },
+    {
+      "name": "Fenster B: Zahl der Starttage = 22 (§5.2)",
+      "ok": true,
+      "detail": 22
+    },
+    {
+      "name": "Fenster B: k = 0 ist der erste Starttag",
+      "ok": true,
+      "detail": "2021-09-16"
+    },
+    {
+      "name": "Fenster B: Regel \"immer SPY\" mit Kosten = SPY-Endwert x (1/1,002)",
+      "ok": true,
+      "detail": {
+        "regelImmerSpy": 180832.22694006897,
+        "spyMal1durch1002": 180832.22694006894,
+        "relAbweichung": 2.220446049250313e-16
+      }
+    },
+    {
+      "name": "Fenster B: SPY Gesamtertrag > Kursertrag",
+      "ok": true,
+      "detail": {
+        "gesamt": 181193.89139394907,
+        "kurs": 169317.26778307933
+      }
+    },
+    {
+      "name": "Fenster B: Zahl der SPY-Ausschüttungen (Ex-Tage s..Endtag) = 20 (Auftrag)",
+      "ok": true,
+      "detail": {
+        "exTage": 20,
+        "gutgeschrieben": 20
+      }
+    },
+    {
+      "name": "Fenster B: Gesamtertragsindex gegen adjclose je Reihe innerhalb 0,5 % (nur Datenprüfung)",
+      "ok": true,
+      "detail": {
+        "SPY": 0.00018961966373676198,
+        "BIL": -0.0000391809149337119,
+        "ACWX": 0.0008083955681950084,
+        "AGG": -0.00007984545756678507
+      }
+    },
+    {
+      "name": "Fenster B: SPY Stückbuch = Renditekette (rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 181193.89139394907,
+        "kette": 181193.89139394928
+      }
+    },
+    {
+      "name": "Fenster B: SPY-Buch = 100.000 x C(s)/O(s) x TR(e)/TR(s) (Buch und Signalindex stimmen überein, rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 181193.89139394907,
+        "ausTR": 181193.8913939497
+      }
+    },
+    {
+      "name": "Fenster B R1: Stückbuch = Renditekette (rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 127172.89282959064,
+        "kette": 127172.89282959058
+      }
+    },
+    {
+      "name": "Fenster B R1: fehlende Kurse = 0 (§3.5)",
+      "ok": true,
+      "detail": {
+        "fehlendeKurse": 0,
+        "verschobeneWechsel": 0,
+        "ersatz": []
+      }
+    },
+    {
+      "name": "Fenster B R1: Wechselfolge schlüssig (von = voriges nach; R1/R2 nur am ersten Handelstag nach Monatsende)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster B R1: fehlende Kurse über alle Starttage = 0",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "Fenster B R2: Stückbuch = Renditekette (rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 157624.63553248154,
+        "kette": 157624.6355324814
+      }
+    },
+    {
+      "name": "Fenster B R2: fehlende Kurse = 0 (§3.5)",
+      "ok": true,
+      "detail": {
+        "fehlendeKurse": 0,
+        "verschobeneWechsel": 0,
+        "ersatz": []
+      }
+    },
+    {
+      "name": "Fenster B R2: Wechselfolge schlüssig (von = voriges nach; R1/R2 nur am ersten Handelstag nach Monatsende)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster B R2: fehlende Kurse über alle Starttage = 0",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "Fenster B R3: Stückbuch = Renditekette (rel. < 1e-9)",
+      "ok": true,
+      "detail": {
+        "buch": 157638.53983524046,
+        "kette": 157638.53983524075
+      }
+    },
+    {
+      "name": "Fenster B R3: fehlende Kurse = 0 (§3.5)",
+      "ok": true,
+      "detail": {
+        "fehlendeKurse": 0,
+        "verschobeneWechsel": 0,
+        "ersatz": []
+      }
+    },
+    {
+      "name": "Fenster B R3: Wechselfolge schlüssig (von = voriges nach; R1/R2 nur am ersten Handelstag nach Monatsende)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster B R3: fehlende Kurse über alle Starttage = 0",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "Signale R1: knappste Entscheidung 12/2016–09/2026 weiter als 1e-9 von der Schwelle (keine Gleitkomma-Kippe)",
+      "ok": true,
+      "detail": {
+        "monatsende": "2019-05-31",
+        "abstand": 0.0030993243364999534
+      }
+    },
+    {
+      "name": "Signale R2: knappste Entscheidung 12/2016–09/2026 weiter als 1e-9 von der Schwelle (keine Gleitkomma-Kippe)",
+      "ok": true,
+      "detail": {
+        "monatsende": "2025-08-29",
+        "abstand": 0.0009181964536479903
+      }
+    },
+    {
+      "name": "Signale R3: knappste Entscheidung 12/2016–09/2026 weiter als 1e-9 von der Schwelle (keine Gleitkomma-Kippe)",
+      "ok": true,
+      "detail": {
+        "tag": "2019-06-03",
+        "abstand": 0.0004543071569877988
+      }
+    },
+    {
+      "name": "R2 an jedem Monatsende ab 12/2016 berechenbar",
+      "ok": true,
+      "detail": {
+        "nichtBerechenbarGesamtSeit1993": 195
+      }
+    },
+    {
+      "name": "Fenster A R1: jeder Buchwechsel hat einen Signalwechsel am Vortag",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster A R2: jeder Buchwechsel hat einen Signalwechsel am Vortag",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster A R3: jeder Buchwechsel hat einen Signalwechsel am Vortag",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster B R1: jeder Buchwechsel hat einen Signalwechsel am Vortag",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster B R2: jeder Buchwechsel hat einen Signalwechsel am Vortag",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Fenster B R3: jeder Buchwechsel hat einen Signalwechsel am Vortag",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "BIL-Split 30.11.2017: Schluss ohne Sprung und Ausschüttungen vor/nach in gleicher Größe (Kurse und Beträge bereinigt)",
+      "ok": true,
+      "detail": {
+        "split": {
+          "tag": "2017-11-30",
+          "zaehler": 1,
+          "nenner": 2,
+          "text": "1:2"
+        },
+        "sprungSchluss": 0,
+        "verhaeltnisAusschNachherZuVorher": 1.17
+      }
+    }
+  ],
+  "probenOk": true,
+  "fenster": {
+    "A": {
+      "erster": "2017-01-04",
+      "ende": "2021-09-15",
+      "starttageZahl": 22,
+      "starttage": [
+        "2017-01-04",
+        "2017-01-05",
+        "2017-01-06",
+        "2017-01-09",
+        "2017-01-10",
+        "2017-01-11",
+        "2017-01-12",
+        "2017-01-13",
+        "2017-01-17",
+        "2017-01-18",
+        "2017-01-19",
+        "2017-01-20",
+        "2017-01-23",
+        "2017-01-24",
+        "2017-01-25",
+        "2017-01-26",
+        "2017-01-27",
+        "2017-01-30",
+        "2017-01-31",
+        "2017-02-01",
+        "2017-02-02",
+        "2017-02-03"
+      ],
+      "regeln": {
+        "R1": {
+          "k0": {
+            "start": "2017-01-04",
+            "ende": "2021-09-15",
+            "tage": 1715,
+            "startReihe": "SPY",
+            "regel": {
+              "endwert": 161020.2334073064,
+              "endwertCent": "161020.23",
+              "abstandZurHalbCentGrenzeDollar": 0.0015926936082541943,
+              "pa": 0.10677695522135489,
+              "tage": 1715,
+              "groessterRueckschlag": {
+                "wert": -0.23902173727308718,
+                "spitzeTag": "2018-09-20",
+                "tiefTag": "2019-08-05"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 833,
+                "von": "2018-09-20",
+                "bis": "2020-12-31",
+                "erholt": true
+              },
+              "handelstage": 1183,
+              "handelstageUnterWasser": 1037,
+              "anteilHandelstageUnterWasser": 0.8765849535080305,
+              "anteilTageJeReihe": {
+                "SPY": 0.8782755705832629,
+                "BIL": 0.12172442941673711
+              },
+              "kalenderjahre": {
+                "2017": 0.20332255873969096,
+                "2018": -0.08100952853348953,
+                "2019": 0.05182053950095078,
+                "2020": 0.14803655713762653,
+                "2021": 0.20584092700929357
+              },
+              "ausschuettungenGutgeschrieben": 22,
+              "ausschuettungsSumme": 9331.04890863302,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "spy": {
+              "endwert": 215548.39814252124,
+              "endwertCent": "215548.40",
+              "abstandZurHalbCentGrenzeDollar": 0.003142521232366562,
+              "pa": 0.1777043805289169,
+              "tage": 1715,
+              "groessterRueckschlag": {
+                "wert": -0.33699813656214483,
+                "spitzeTag": "2020-02-19",
+                "tiefTag": "2020-03-23"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 204,
+                "von": "2018-09-20",
+                "bis": "2019-04-12",
+                "erholt": true
+              },
+              "handelstage": 1183,
+              "handelstageUnterWasser": 958,
+              "anteilHandelstageUnterWasser": 0.8098055790363483,
+              "anteilTageJeReihe": {
+                "SPY": 1
+              },
+              "kalenderjahre": {
+                "2017": 0.20572920385717075,
+                "2018": -0.04556876991564318,
+                "2019": 0.31222021175017933,
+                "2020": 0.18373267393022008,
+                "2021": 0.20584092700929357
+              },
+              "ausschuettungenGutgeschrieben": 18,
+              "ausschuettungsSumme": 11033.638953987936,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "abstandPp": -7.092742530756202,
+            "vorn": false,
+            "wechsel": 8,
+            "wechselJeJahr": 1.7037900874635568,
+            "wechselListe": [
+              {
+                "tag": "2018-11-01",
+                "signalTag": "2018-10-31",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 495.29763727920266
+              },
+              {
+                "tag": "2018-12-03",
+                "signalTag": "2018-11-30",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 493.26645130165497
+              },
+              {
+                "tag": "2019-01-02",
+                "signalTag": "2018-12-31",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 434.4943339349567
+              },
+              {
+                "tag": "2019-03-01",
+                "signalTag": "2019-02-28",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 433.5120609105442
+              },
+              {
+                "tag": "2019-06-03",
+                "signalTag": "2019-05-31",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 426.53558691257814
+              },
+              {
+                "tag": "2019-07-01",
+                "signalTag": "2019-06-28",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 424.87928480147616
+              },
+              {
+                "tag": "2020-03-02",
+                "signalTag": "2020-02-28",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 430.2116701731909
+              },
+              {
+                "tag": "2020-06-01",
+                "signalTag": "2020-05-29",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 429.13135390065327
+              }
+            ],
+            "kosten": {
+              "gesamt": 3766.929177617451,
+              "erstkauf": 199.60079840319364,
+              "wechsel": 3567.3283792142574
+            },
+            "fehlendeKurse": 0,
+            "fehlendeKurseRegel": 0,
+            "fehlendeKurseSpy": 0
+          },
+          "starttage": [
+            {
+              "start": "2017-01-04",
+              "startReihe": "SPY",
+              "regelEndwert": 161020.2334073064,
+              "regelEndwertCent": "161020.23",
+              "spyEndwert": 215548.39814252124,
+              "spyEndwertCent": "215548.40",
+              "regelPa": 0.10677695522135489,
+              "spyPa": 0.1777043805289169,
+              "abstandPp": -7.092742530756202,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308718,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-05",
+              "startReihe": "SPY",
+              "regelEndwert": 160557.66822445966,
+              "regelEndwertCent": "160557.67",
+              "spyEndwert": 214929.1891022082,
+              "spyEndwertCent": "214929.19",
+              "regelPa": 0.10616412492120753,
+              "spyPa": 0.1770949340769845,
+              "abstandPp": -7.093080915577699,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308695,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-06",
+              "startReihe": "SPY",
+              "regelEndwert": 160373.3919167137,
+              "regelEndwertCent": "160373.39",
+              "spyEndwert": 214682.50915329903,
+              "spyEndwertCent": "214682.51",
+              "regelPa": 0.10595844168302615,
+              "spyPa": 0.17691876204750367,
+              "abstandPp": -7.0960320364477525,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308695,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-09",
+              "startReihe": "SPY",
+              "regelEndwert": 160104.8155162994,
+              "regelEndwertCent": "160104.82",
+              "spyEndwert": 214322.98158547012,
+              "spyEndwertCent": "214322.98",
+              "regelPa": 0.10575792704848319,
+              "spyPa": 0.17683376857316757,
+              "abstandPp": -7.107584152468438,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.2390217372730874,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-10",
+              "startReihe": "SPY",
+              "regelEndwert": 160408.7997194683,
+              "regelEndwertCent": "160408.80",
+              "spyEndwert": 214729.90751438698,
+              "spyEndwertCent": "214729.91",
+              "regelPa": 0.10627136514032398,
+              "spyPa": 0.17742312812952665,
+              "abstandPp": -7.115176298920267,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308706,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-11",
+              "startReihe": "SPY",
+              "regelEndwert": 160493.83361533482,
+              "regelEndwertCent": "160493.83",
+              "spyEndwert": 214843.73743286362,
+              "spyEndwertCent": "214843.74",
+              "regelPa": 0.10646217173433548,
+              "spyPa": 0.1776691847373537,
+              "abstandPp": -7.120701300301824,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308695,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-12",
+              "startReihe": "SPY",
+              "regelEndwert": 160394.63256125763,
+              "regelEndwertCent": "160394.63",
+              "spyEndwert": 214710.9427657096,
+              "spyEndwertCent": "214710.94",
+              "regelPa": 0.10638136942676035,
+              "spyPa": 0.17762620909092597,
+              "abstandPp": -7.124483966416562,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308718,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-13",
+              "startReihe": "SPY",
+              "regelEndwert": 160231.92766598813,
+              "regelEndwertCent": "160231.93",
+              "spyEndwert": 214493.13920895688,
+              "spyEndwertCent": "214493.14",
+              "regelPa": 0.10620653846727413,
+              "spyPa": 0.17748319193442486,
+              "abstandPp": -7.127665346715073,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.2390217372730873,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-17",
+              "startReihe": "SPY",
+              "regelEndwert": 160529.2946270253,
+              "regelEndwertCent": "160529.29",
+              "spyEndwert": 214891.20702165156,
+              "spyEndwertCent": "214891.21",
+              "regelPa": 0.10690933194226448,
+              "spyPa": 0.17840418834694227,
+              "abstandPp": -7.149485640467779,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308695,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-18",
+              "startReihe": "SPY",
+              "regelEndwert": 160366.31655249847,
+              "regelEndwertCent": "160366.32",
+              "spyEndwert": 214673.0377757548,
+              "spyEndwertCent": "214673.04",
+              "regelPa": 0.10673401145857331,
+              "spyPa": 0.178260898052937,
+              "abstandPp": -7.152688659436368,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308695,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-19",
+              "startReihe": "SPY",
+              "regelEndwert": 160154.2270394426,
+              "regelEndwertCent": "160154.23",
+              "spyEndwert": 214389.12591055222,
+              "spyEndwertCent": "214389.13",
+              "regelPa": 0.1064853751314454,
+              "spyPa": 0.17803958958421795,
+              "abstandPp": -7.155421445277255,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308695,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-20",
+              "startReihe": "SPY",
+              "regelEndwert": 160253.13085213312,
+              "regelEndwertCent": "160253.13",
+              "spyEndwert": 214521.52267799276,
+              "spyEndwertCent": "214521.52",
+              "regelPa": 0.10669814848491099,
+              "spyPa": 0.17830958053528567,
+              "abstandPp": -7.161143205037468,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.2390217372730873,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-23",
+              "startReihe": "SPY",
+              "regelEndwert": 160224.85399569303,
+              "regelEndwertCent": "160224.85",
+              "spyEndwert": 214483.6700989646,
+              "spyEndwertCent": "214483.67",
+              "regelPa": 0.1068545643959733,
+              "spyPa": 0.1786068272098995,
+              "abstandPp": -7.1752262813926215,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308718,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-24",
+              "startReihe": "SPY",
+              "regelEndwert": 160465.4825730055,
+              "regelEndwertCent": "160465.48",
+              "spyEndwert": 214805.78554551105,
+              "spyEndwertCent": "214805.79",
+              "regelPa": 0.1072788745338038,
+              "spyPa": 0.17910233604381753,
+              "abstandPp": -7.182346151001373,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308695,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-25",
+              "startReihe": "SPY",
+              "regelEndwert": 158851.70424093472,
+              "regelEndwertCent": "158851.70",
+              "spyEndwert": 212645.5145840657,
+              "spyEndwertCent": "212645.51",
+              "regelPa": 0.10493479289114305,
+              "spyPa": 0.1766498591625143,
+              "abstandPp": -7.171506627137125,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308706,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-26",
+              "startReihe": "SPY",
+              "regelEndwert": 158366.98012955618,
+              "regelEndwertCent": "158366.98",
+              "spyEndwert": 211996.64267810824,
+              "spyEndwertCent": "211996.64",
+              "regelPa": 0.10427160644142597,
+              "spyPa": 0.17598730922142614,
+              "abstandPp": -7.171570278000017,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308706,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-27",
+              "startReihe": "SPY",
+              "regelEndwert": 158353.17132367776,
+              "regelEndwertCent": "158353.17",
+              "spyEndwert": 211978.1576348044,
+              "spyEndwertCent": "211978.16",
+              "regelPa": 0.10431555405115822,
+              "spyPa": 0.17607784614666855,
+              "abstandPp": -7.176229209551033,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308706,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-30",
+              "startReihe": "SPY",
+              "regelEndwert": 159220.68881389592,
+              "regelEndwertCent": "159220.69",
+              "spyEndwert": 213139.45271816285,
+              "spyEndwertCent": "213139.45",
+              "regelPa": 0.10581592510599136,
+              "spyPa": 0.1778074213523857,
+              "abstandPp": -7.199149624639434,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308718,
+              "spyGroessterRueckschlag": -0.3369981365621447,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-31",
+              "startReihe": "SPY",
+              "regelEndwert": 160055.44523286412,
+              "regelEndwertCent": "160055.45",
+              "spyEndwert": 214256.89246558034,
+              "spyEndwertCent": "214256.89",
+              "regelPa": 0.10713379719120075,
+              "spyPa": 0.17925515170039508,
+              "abstandPp": -7.212135450919432,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308695,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-02-01",
+              "startReihe": "SPY",
+              "regelEndwert": 159668.54687308383,
+              "regelEndwertCent": "159668.55",
+              "spyEndwert": 213738.97418953566,
+              "spyEndwertCent": "213738.97",
+              "regelPa": 0.10662057572282913,
+              "spyPa": 0.1787525925469602,
+              "abstandPp": -7.213201682413106,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308684,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-02-02",
+              "startReihe": "SPY",
+              "regelEndwert": 159605.4171621481,
+              "regelEndwertCent": "159605.42",
+              "spyEndwert": 213654.46612629783,
+              "spyEndwertCent": "213654.47",
+              "regelPa": 0.1065922672295272,
+              "spyPa": 0.17876658646651555,
+              "abstandPp": -7.217431923698836,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308773,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-02-03",
+              "startReihe": "SPY",
+              "regelEndwert": 158768.39049152366,
+              "regelEndwertCent": "158768.39",
+              "spyEndwert": 212533.98732535538,
+              "spyEndwertCent": "212533.99",
+              "regelPa": 0.10539815091480365,
+              "spyPa": 0.1775387413101337,
+              "abstandPp": -7.214059039533005,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.23902173727308718,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            }
+          ],
+          "zusammenfassung": {
+            "starttage": 22,
+            "vorn": 0,
+            "anteilVorn": 0,
+            "medianAbstandPp": -7.158282325157361,
+            "minimumAbstandPp": -7.217431923698836,
+            "maximumAbstandPp": -7.092742530756202,
+            "spanneGroessterRueckschlagRegel": {
+              "min": -0.23902173727308773,
+              "max": -0.23902173727308684
+            },
+            "spanneGroessterRueckschlagSpy": {
+              "min": -0.33699813656214495,
+              "max": -0.3369981365621447
+            },
+            "fehlendeKurseSumme": 0
+          },
+          "bedingungen": {
+            "a": false,
+            "b": false,
+            "c": false
+          }
+        },
+        "R2": {
+          "k0": {
+            "start": "2017-01-04",
+            "ende": "2021-09-15",
+            "tage": 1715,
+            "startReihe": "SPY",
+            "regel": {
+              "endwert": 141841.2670860713,
+              "endwertCent": "141841.27",
+              "abstandZurHalbCentGrenzeDollar": 0.002086071316152811,
+              "pa": 0.07728340822702129,
+              "tage": 1715,
+              "groessterRueckschlag": {
+                "wert": -0.33699813656214495,
+                "spitzeTag": "2020-02-19",
+                "tiefTag": "2020-03-23"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 720,
+                "von": "2018-01-26",
+                "bis": "2020-01-16",
+                "erholt": true
+              },
+              "handelstage": 1183,
+              "handelstageUnterWasser": 1078,
+              "anteilHandelstageUnterWasser": 0.9112426035502958,
+              "anteilTageJeReihe": {
+                "SPY": 0.6999154691462384,
+                "ACWX": 0.231614539306847,
+                "AGG": 0.06846999154691462
+              },
+              "kalenderjahre": {
+                "2017": 0.18862307244496224,
+                "2018": -0.08341341642465572,
+                "2019": 0.14990977921658977,
+                "2020": -0.02077242135626911,
+                "2021": 0.15621219677473364
+              },
+              "ausschuettungenGutgeschrieben": 20,
+              "ausschuettungsSumme": 11868.815410121151,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "spy": {
+              "endwert": 215548.39814252124,
+              "endwertCent": "215548.40",
+              "abstandZurHalbCentGrenzeDollar": 0.003142521232366562,
+              "pa": 0.1777043805289169,
+              "tage": 1715,
+              "groessterRueckschlag": {
+                "wert": -0.33699813656214483,
+                "spitzeTag": "2020-02-19",
+                "tiefTag": "2020-03-23"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 204,
+                "von": "2018-09-20",
+                "bis": "2019-04-12",
+                "erholt": true
+              },
+              "handelstage": 1183,
+              "handelstageUnterWasser": 958,
+              "anteilHandelstageUnterWasser": 0.8098055790363483,
+              "anteilTageJeReihe": {
+                "SPY": 1
+              },
+              "kalenderjahre": {
+                "2017": 0.20572920385717075,
+                "2018": -0.04556876991564318,
+                "2019": 0.31222021175017933,
+                "2020": 0.18373267393022008,
+                "2021": 0.20584092700929357
+              },
+              "ausschuettungenGutgeschrieben": 18,
+              "ausschuettungsSumme": 11033.638953987936,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "abstandPp": -10.042097230189562,
+            "vorn": false,
+            "wechsel": 8,
+            "wechselJeJahr": 1.7037900874635568,
+            "wechselListe": [
+              {
+                "tag": "2017-06-01",
+                "signalTag": "2017-05-31",
+                "von": "SPY",
+                "nach": "ACWX",
+                "kosten": 429.13810103847493
+              },
+              {
+                "tag": "2018-06-01",
+                "signalTag": "2018-05-31",
+                "von": "ACWX",
+                "nach": "SPY",
+                "kosten": 468.8955197530893
+              },
+              {
+                "tag": "2019-01-02",
+                "signalTag": "2018-12-31",
+                "von": "SPY",
+                "nach": "AGG",
+                "kosten": 428.06399721002776
+              },
+              {
+                "tag": "2019-03-01",
+                "signalTag": "2019-02-28",
+                "von": "AGG",
+                "nach": "SPY",
+                "kosten": 428.30583875124285
+              },
+              {
+                "tag": "2020-04-01",
+                "signalTag": "2020-03-31",
+                "von": "SPY",
+                "nach": "AGG",
+                "kosten": 387.6894374658748
+              },
+              {
+                "tag": "2020-06-01",
+                "signalTag": "2020-05-29",
+                "von": "AGG",
+                "nach": "SPY",
+                "kosten": 393.5278343610607
+              },
+              {
+                "tag": "2021-06-01",
+                "signalTag": "2021-05-28",
+                "von": "SPY",
+                "nach": "ACWX",
+                "kosten": 555.3240363236774
+              },
+              {
+                "tag": "2021-07-01",
+                "signalTag": "2021-06-30",
+                "von": "ACWX",
+                "nach": "SPY",
+                "kosten": 544.3723282899739
+              }
+            ],
+            "kosten": {
+              "gesamt": 3834.9178915966145,
+              "erstkauf": 199.60079840319364,
+              "wechsel": 3635.317093193421
+            },
+            "fehlendeKurse": 0,
+            "fehlendeKurseRegel": 0,
+            "fehlendeKurseSpy": 0
+          },
+          "starttage": [
+            {
+              "start": "2017-01-04",
+              "startReihe": "SPY",
+              "regelEndwert": 141841.2670860713,
+              "regelEndwertCent": "141841.27",
+              "spyEndwert": 215548.39814252124,
+              "spyEndwertCent": "215548.40",
+              "regelPa": 0.07728340822702129,
+              "spyPa": 0.1777043805289169,
+              "abstandPp": -10.042097230189562,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214495,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-05",
+              "startReihe": "SPY",
+              "regelEndwert": 141433.79760067494,
+              "regelEndwertCent": "141433.80",
+              "spyEndwert": 214929.1891022082,
+              "spyEndwertCent": "214929.19",
+              "regelPa": 0.07666994214808676,
+              "spyPa": 0.1770949340769845,
+              "abstandPp": -10.042499192889775,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-06",
+              "startReihe": "SPY",
+              "regelEndwert": 141271.4702680688,
+              "regelEndwertCent": "141271.47",
+              "spyEndwert": 214682.50915329903,
+              "spyEndwertCent": "214682.51",
+              "regelPa": 0.07645276019120506,
+              "spyPa": 0.17691876204750367,
+              "abstandPp": -10.046600185629861,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-09",
+              "startReihe": "SPY",
+              "regelEndwert": 141034.88374637495,
+              "regelEndwertCent": "141034.88",
+              "spyEndwert": 214322.98158547012,
+              "spyEndwertCent": "214322.98",
+              "regelPa": 0.07620653789982201,
+              "spyPa": 0.17683376857316757,
+              "abstandPp": -10.062723067334556,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214495,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-10",
+              "startReihe": "SPY",
+              "regelEndwert": 141302.660681231,
+              "regelEndwertCent": "141302.66",
+              "spyEndwert": 214729.90751438698,
+              "spyEndwertCent": "214729.91",
+              "regelPa": 0.07668918808870329,
+              "spyPa": 0.17742312812952665,
+              "abstandPp": -10.073394004082337,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.3369981365621447,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-11",
+              "startReihe": "SPY",
+              "regelEndwert": 141377.56627091847,
+              "regelEndwertCent": "141377.57",
+              "spyEndwert": 214843.73743286362,
+              "spyEndwertCent": "214843.74",
+              "regelPa": 0.07685780350561022,
+              "spyPa": 0.1776691847373537,
+              "abstandPp": -10.081138123174348,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-12",
+              "startReihe": "SPY",
+              "regelEndwert": 141290.18095971353,
+              "regelEndwertCent": "141290.18",
+              "spyEndwert": 214710.9427657096,
+              "spyEndwertCent": "214710.94",
+              "regelPa": 0.076762055707847,
+              "spyPa": 0.17762620909092597,
+              "abstandPp": -10.086415338307898,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-13",
+              "startReihe": "SPY",
+              "regelEndwert": 141146.85568923183,
+              "regelEndwertCent": "141146.86",
+              "spyEndwert": 214493.13920895688,
+              "spyEndwertCent": "214493.14",
+              "regelPa": 0.07657478070387569,
+              "spyPa": 0.17748319193442486,
+              "abstandPp": -10.090841123054917,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214495,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-17",
+              "startReihe": "SPY",
+              "regelEndwert": 141408.8035553509,
+              "regelEndwertCent": "141408.80",
+              "spyEndwert": 214891.20702165156,
+              "spyEndwertCent": "214891.21",
+              "regelPa": 0.07719000842575485,
+              "spyPa": 0.17840418834694227,
+              "abstandPp": -10.121417992118742,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.3369981365621447,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-18",
+              "startReihe": "SPY",
+              "regelEndwert": 141265.2376437325,
+              "regelEndwertCent": "141265.24",
+              "spyEndwert": 214673.0377757548,
+              "spyEndwertCent": "214673.04",
+              "regelPa": 0.07700216297398188,
+              "spyPa": 0.178260898052937,
+              "abstandPp": -10.12587350789551,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-19",
+              "startReihe": "SPY",
+              "regelEndwert": 141078.40991015555,
+              "regelEndwertCent": "141078.41",
+              "spyEndwert": 214389.12591055222,
+              "spyEndwertCent": "214389.13",
+              "regelPa": 0.07674295788046837,
+              "spyPa": 0.17803958958421795,
+              "abstandPp": -10.129663170374958,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-20",
+              "startReihe": "SPY",
+              "regelEndwert": 141165.53338411162,
+              "regelEndwertCent": "141165.53",
+              "spyEndwert": 214521.52267799276,
+              "spyEndwertCent": "214521.52",
+              "regelPa": 0.07693274026561658,
+              "spyPa": 0.17830958053528567,
+              "abstandPp": -10.137684026966909,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.3369981365621447,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-23",
+              "startReihe": "SPY",
+              "regelEndwert": 141140.6245570544,
+              "regelEndwertCent": "141140.62",
+              "spyEndwert": 214483.6700989646,
+              "spyEndwertCent": "214483.67",
+              "regelPa": 0.07703300657727907,
+              "spyPa": 0.1786068272098995,
+              "abstandPp": -10.157382063262045,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-24",
+              "startReihe": "SPY",
+              "regelEndwert": 141352.5920941823,
+              "regelEndwertCent": "141352.59",
+              "spyEndwert": 214805.78554551105,
+              "spyEndwertCent": "214805.79",
+              "regelPa": 0.07742852350721208,
+              "spyPa": 0.17910233604381753,
+              "abstandPp": -10.167381253660546,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-25",
+              "startReihe": "SPY",
+              "regelEndwert": 139931.02935903243,
+              "regelEndwertCent": "139931.03",
+              "spyEndwert": 212645.5145840657,
+              "spyEndwertCent": "212645.51",
+              "regelPa": 0.0751302897062931,
+              "spyPa": 0.1766498591625143,
+              "abstandPp": -10.151956945622121,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-26",
+              "startReihe": "SPY",
+              "regelEndwert": 139504.04027393294,
+              "regelEndwertCent": "139504.04",
+              "spyEndwert": 211996.64267810824,
+              "spyEndwertCent": "211996.64",
+              "regelPa": 0.07446763765236897,
+              "spyPa": 0.17598730922142614,
+              "abstandPp": -10.151967156905716,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-27",
+              "startReihe": "SPY",
+              "regelEndwert": 139491.87622174333,
+              "regelEndwertCent": "139491.88",
+              "spyEndwert": 211978.1576348044,
+              "spyEndwertCent": "211978.16",
+              "regelPa": 0.07449302381403244,
+              "spyPa": 0.17607784614666855,
+              "abstandPp": -10.15848223326361,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-30",
+              "startReihe": "SPY",
+              "regelEndwert": 140256.0645316721,
+              "regelEndwertCent": "140256.06",
+              "spyEndwert": 213139.45271816285,
+              "spyEndwertCent": "213139.45",
+              "regelPa": 0.07590055799860473,
+              "spyPa": 0.1778074213523857,
+              "abstandPp": -10.190686335378096,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.3369981365621447,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-31",
+              "startReihe": "SPY",
+              "regelEndwert": 140991.39391027996,
+              "regelEndwertCent": "140991.39",
+              "spyEndwert": 214256.89246558034,
+              "spyEndwertCent": "214256.89",
+              "regelPa": 0.07716527686003061,
+              "spyPa": 0.17925515170039508,
+              "abstandPp": -10.208987484036447,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-02-01",
+              "startReihe": "SPY",
+              "regelEndwert": 140650.57864487186,
+              "regelEndwertCent": "140650.58",
+              "spyEndwert": 213738.97418953566,
+              "spyEndwertCent": "213738.97",
+              "regelPa": 0.07664843406455124,
+              "spyPa": 0.1787525925469602,
+              "abstandPp": -10.210415848240896,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-02-02",
+              "startReihe": "SPY",
+              "regelEndwert": 140594.96825355402,
+              "regelEndwertCent": "140594.97",
+              "spyEndwert": 213654.46612629783,
+              "spyEndwertCent": "213654.47",
+              "regelPa": 0.07660335875373137,
+              "spyPa": 0.17876658646651555,
+              "abstandPp": -10.216322771278419,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-02-03",
+              "startReihe": "SPY",
+              "regelEndwert": 139857.63903079793,
+              "regelEndwertCent": "139857.64",
+              "spyEndwert": 212533.98732535538,
+              "spyEndwertCent": "212533.99",
+              "regelPa": 0.07542406815103542,
+              "spyPa": 0.1775387413101337,
+              "abstandPp": -10.211467315909829,
+              "vorn": false,
+              "wechsel": 8,
+              "regelGroessterRueckschlag": -0.33699813656214483,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            }
+          ],
+          "zusammenfassung": {
+            "starttage": 22,
+            "vorn": 0,
+            "anteilVorn": 0,
+            "medianAbstandPp": -10.133673598670933,
+            "minimumAbstandPp": -10.216322771278419,
+            "maximumAbstandPp": -10.042097230189562,
+            "spanneGroessterRueckschlagRegel": {
+              "min": -0.33699813656214495,
+              "max": -0.3369981365621447
+            },
+            "spanneGroessterRueckschlagSpy": {
+              "min": -0.33699813656214495,
+              "max": -0.3369981365621447
+            },
+            "fehlendeKurseSumme": 0
+          },
+          "bedingungen": {
+            "a": false,
+            "b": false,
+            "c": false
+          }
+        },
+        "R3": {
+          "k0": {
+            "start": "2017-01-04",
+            "ende": "2021-09-15",
+            "tage": 1715,
+            "startReihe": "SPY",
+            "regel": {
+              "endwert": 155669.6158136794,
+              "endwertCent": "155669.62",
+              "abstandZurHalbCentGrenzeDollar": 0.0008136794157326221,
+              "pa": 0.09883979083433769,
+              "tage": 1715,
+              "groessterRueckschlag": {
+                "wert": -0.2655120406235143,
+                "spitzeTag": "2020-02-19",
+                "tiefTag": "2020-06-11"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 469,
+                "von": "2018-09-20",
+                "bis": "2020-01-02",
+                "erholt": true
+              },
+              "handelstage": 1183,
+              "handelstageUnterWasser": 1042,
+              "anteilHandelstageUnterWasser": 0.8808114961961115,
+              "anteilTageJeReihe": {
+                "SPY": 0.8850380388841927,
+                "BIL": 0.11496196111580727
+              },
+              "kalenderjahre": {
+                "2017": 0.20332255873969096,
+                "2018": -0.0690616558325271,
+                "2019": 0.1849041512840479,
+                "2020": -0.02741484749381795,
+                "2021": 0.20584092700929335
+              },
+              "ausschuettungenGutgeschrieben": 23,
+              "ausschuettungsSumme": 9494.039448563733,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "spy": {
+              "endwert": 215548.39814252124,
+              "endwertCent": "215548.40",
+              "abstandZurHalbCentGrenzeDollar": 0.003142521232366562,
+              "pa": 0.1777043805289169,
+              "tage": 1715,
+              "groessterRueckschlag": {
+                "wert": -0.33699813656214483,
+                "spitzeTag": "2020-02-19",
+                "tiefTag": "2020-03-23"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 204,
+                "von": "2018-09-20",
+                "bis": "2019-04-12",
+                "erholt": true
+              },
+              "handelstage": 1183,
+              "handelstageUnterWasser": 958,
+              "anteilHandelstageUnterWasser": 0.8098055790363483,
+              "anteilTageJeReihe": {
+                "SPY": 1
+              },
+              "kalenderjahre": {
+                "2017": 0.20572920385717075,
+                "2018": -0.04556876991564318,
+                "2019": 0.31222021175017933,
+                "2020": 0.18373267393022008,
+                "2021": 0.20584092700929357
+              },
+              "ausschuettungenGutgeschrieben": 18,
+              "ausschuettungsSumme": 11033.638953987936,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "abstandPp": -7.886458969457921,
+            "vorn": false,
+            "wechsel": 14,
+            "wechselJeJahr": 2.981632653061224,
+            "wechselListe": [
+              {
+                "tag": "2018-10-12",
+                "signalTag": "2018-10-11",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 504.7257678485307
+              },
+              {
+                "tag": "2018-10-17",
+                "signalTag": "2018-10-16",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 502.76584734183604
+              },
+              {
+                "tag": "2018-10-24",
+                "signalTag": "2018-10-23",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 488.063023661665
+              },
+              {
+                "tag": "2018-11-08",
+                "signalTag": "2018-11-07",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 486.5396708947791
+              },
+              {
+                "tag": "2018-11-13",
+                "signalTag": "2018-11-12",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 472.45263727495654
+              },
+              {
+                "tag": "2018-12-04",
+                "signalTag": "2018-12-03",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 471.16839051413194
+              },
+              {
+                "tag": "2018-12-06",
+                "signalTag": "2018-12-04",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 448.2987924216744
+              },
+              {
+                "tag": "2019-02-19",
+                "signalTag": "2019-02-15",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 448.5095084217488
+              },
+              {
+                "tag": "2020-02-28",
+                "signalTag": "2020-02-27",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 475.2895690002369
+              },
+              {
+                "tag": "2020-03-03",
+                "signalTag": "2020-03-02",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 473.53183549161326
+              },
+              {
+                "tag": "2020-03-04",
+                "signalTag": "2020-03-03",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 466.49076013462064
+              },
+              {
+                "tag": "2020-03-05",
+                "signalTag": "2020-03-04",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 464.78083594284345
+              },
+              {
+                "tag": "2020-03-09",
+                "signalTag": "2020-03-06",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 417.8744797259037
+              },
+              {
+                "tag": "2020-05-28",
+                "signalTag": "2020-05-27",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 416.27895282591817
+              }
+            ],
+            "kosten": {
+              "gesamt": 6736.370869903653,
+              "erstkauf": 199.60079840319364,
+              "wechsel": 6536.770071500459
+            },
+            "fehlendeKurse": 0,
+            "fehlendeKurseRegel": 0,
+            "fehlendeKurseSpy": 0
+          },
+          "starttage": [
+            {
+              "start": "2017-01-04",
+              "startReihe": "SPY",
+              "regelEndwert": 155669.6158136794,
+              "regelEndwertCent": "155669.62",
+              "spyEndwert": 215548.39814252124,
+              "spyEndwertCent": "215548.40",
+              "regelPa": 0.09883979083433769,
+              "spyPa": 0.1777043805289169,
+              "abstandPp": -7.886458969457921,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235143,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-05",
+              "startReihe": "SPY",
+              "regelEndwert": 155222.42142836016,
+              "regelEndwertCent": "155222.42",
+              "spyEndwert": 214929.1891022082,
+              "spyEndwertCent": "214929.19",
+              "regelPa": 0.09822674382346386,
+              "spyPa": 0.1770949340769845,
+              "abstandPp": -7.886819025352065,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235145,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-06",
+              "startReihe": "SPY",
+              "regelEndwert": 155044.2685253159,
+              "regelEndwertCent": "155044.27",
+              "spyEndwert": 214682.50915329903,
+              "spyEndwertCent": "214682.51",
+              "regelPa": 0.09801792040240387,
+              "spyPa": 0.17691876204750367,
+              "abstandPp": -7.890084164509981,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235143,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-09",
+              "startReihe": "SPY",
+              "regelEndwert": 154784.61677730645,
+              "regelEndwertCent": "154784.62",
+              "spyEndwert": 214322.98158547012,
+              "spyEndwertCent": "214322.98",
+              "regelPa": 0.09780496741080946,
+              "spyPa": 0.17683376857316757,
+              "abstandPp": -7.902880116235811,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235144,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-10",
+              "startReihe": "SPY",
+              "regelEndwert": 155078.4997454239,
+              "regelEndwertCent": "155078.50",
+              "spyEndwert": 214729.90751438698,
+              "spyEndwertCent": "214729.91",
+              "regelPa": 0.09831007375107759,
+              "spyPa": 0.17742312812952665,
+              "abstandPp": -7.911305437844907,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235145,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-11",
+              "startReihe": "SPY",
+              "regelEndwert": 155160.70800969348,
+              "regelEndwertCent": "155160.71",
+              "spyEndwert": 214843.73743286362,
+              "spyEndwertCent": "214843.74",
+              "regelPa": 0.09849486204742242,
+              "spyPa": 0.1776691847373537,
+              "abstandPp": -7.91743226899313,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351463,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-12",
+              "startReihe": "SPY",
+              "regelEndwert": 155064.8033544229,
+              "regelEndwertCent": "155064.80",
+              "spyEndwert": 214710.9427657096,
+              "spyEndwertCent": "214710.94",
+              "regelPa": 0.09840999133401862,
+              "spyPa": 0.17762620909092597,
+              "abstandPp": -7.921621775690735,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235145,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-13",
+              "startReihe": "SPY",
+              "regelEndwert": 154907.5050571739,
+              "regelEndwertCent": "154907.51",
+              "spyEndwert": 214493.13920895688,
+              "spyEndwertCent": "214493.14",
+              "regelPa": 0.09823176508007525,
+              "spyPa": 0.17748319193442486,
+              "abstandPp": -7.9251426854349605,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351463,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-17",
+              "startReihe": "SPY",
+              "regelEndwert": 155194.99067063243,
+              "regelEndwertCent": "155194.99",
+              "spyEndwert": 214891.20702165156,
+              "spyEndwertCent": "214891.21",
+              "regelPa": 0.09891080592560142,
+              "spyPa": 0.17840418834694227,
+              "abstandPp": -7.949338242134085,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351463,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-18",
+              "startReihe": "SPY",
+              "regelEndwert": 155037.4282717289,
+              "regelEndwertCent": "155037.43",
+              "spyEndwert": 214673.0377757548,
+              "spyEndwertCent": "214673.04",
+              "regelPa": 0.09873206784068156,
+              "spyPa": 0.178260898052937,
+              "abstandPp": -7.952883021225543,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351463,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-19",
+              "startReihe": "SPY",
+              "regelEndwert": 154832.3863815461,
+              "regelEndwertCent": "154832.39",
+              "spyEndwert": 214389.12591055222,
+              "spyEndwertCent": "214389.13",
+              "regelPa": 0.09848054030746267,
+              "spyPa": 0.17803958958421795,
+              "abstandPp": -7.955904927675528,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235145,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-20",
+              "startReihe": "SPY",
+              "regelEndwert": 154928.00367260491,
+              "regelEndwertCent": "154928.00",
+              "spyEndwert": 214521.52267799276,
+              "spyEndwertCent": "214521.52",
+              "regelPa": 0.09868707905188634,
+              "spyPa": 0.17830958053528567,
+              "abstandPp": -7.962250148339933,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235145,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-23",
+              "startReihe": "SPY",
+              "regelEndwert": 154900.666441219,
+              "regelEndwertCent": "154900.67",
+              "spyEndwert": 214483.6700989646,
+              "spyEndwertCent": "214483.67",
+              "regelPa": 0.09882824169699256,
+              "spyPa": 0.1786068272098995,
+              "abstandPp": -7.977858551290695,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235145,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-24",
+              "startReihe": "SPY",
+              "regelEndwert": 155133.29905757643,
+              "regelEndwertCent": "155133.30",
+              "spyEndwert": 214805.78554551105,
+              "spyEndwertCent": "214805.79",
+              "regelPa": 0.09924475508098629,
+              "spyPa": 0.17910233604381753,
+              "abstandPp": -7.985758096283124,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351463,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-25",
+              "startReihe": "SPY",
+              "regelEndwert": 153573.145729973,
+              "regelEndwertCent": "153573.15",
+              "spyEndwert": 212645.5145840657,
+              "spyEndwertCent": "212645.51",
+              "regelPa": 0.09691296603783872,
+              "spyPa": 0.1766498591625143,
+              "abstandPp": -7.973689312467558,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351463,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-26",
+              "startReihe": "SPY",
+              "regelEndwert": 153104.5287456524,
+              "regelEndwertCent": "153104.53",
+              "spyEndwert": 211996.64267810824,
+              "spyEndwertCent": "211996.64",
+              "regelPa": 0.09624987617512448,
+              "spyPa": 0.17598730922142614,
+              "abstandPp": -7.973743304630165,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351463,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-27",
+              "startReihe": "SPY",
+              "regelEndwert": 153091.1787991243,
+              "regelEndwertCent": "153091.18",
+              "spyEndwert": 211978.1576348044,
+              "spyEndwertCent": "211978.16",
+              "regelPa": 0.09628878064599533,
+              "spyPa": 0.17607784614666855,
+              "abstandPp": -7.978906550067322,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351486,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-30",
+              "startReihe": "SPY",
+              "regelEndwert": 153929.86913981155,
+              "regelEndwertCent": "153929.87",
+              "spyEndwert": 213139.45271816285,
+              "spyEndwertCent": "213139.45",
+              "regelPa": 0.09776402176437404,
+              "spyPa": 0.1778074213523857,
+              "abstandPp": -8.004339958801165,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351463,
+              "spyGroessterRueckschlag": -0.3369981365621447,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-01-31",
+              "startReihe": "SPY",
+              "regelEndwert": 154736.88704240057,
+              "regelEndwertCent": "154736.89",
+              "spyEndwert": 214256.89246558034,
+              "spyEndwertCent": "214256.89",
+              "regelPa": 0.0990675395476881,
+              "spyPa": 0.17925515170039508,
+              "abstandPp": -8.018761215270697,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.26551204062351486,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-02-01",
+              "startReihe": "SPY",
+              "regelEndwert": 154362.845111449,
+              "regelEndwertCent": "154362.85",
+              "spyEndwert": 213738.97418953566,
+              "spyEndwertCent": "213738.97",
+              "regelPa": 0.09855329552089831,
+              "spyPa": 0.1787525925469602,
+              "abstandPp": -8.019929702606188,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235144,
+              "spyGroessterRueckschlag": -0.33699813656214495,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-02-02",
+              "startReihe": "SPY",
+              "regelEndwert": 154301.8131675758,
+              "regelEndwertCent": "154301.81",
+              "spyEndwert": 213654.46612629783,
+              "spyEndwertCent": "213654.47",
+              "regelPa": 0.09852042614892342,
+              "spyPa": 0.17876658646651555,
+              "abstandPp": -8.024616031759212,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235145,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2017-02-03",
+              "startReihe": "SPY",
+              "regelEndwert": 153492.60045259766,
+              "regelEndwertCent": "153492.60",
+              "spyEndwert": 212533.98732535538,
+              "spyEndwertCent": "212533.99",
+              "regelPa": 0.0973302523685815,
+              "spyPa": 0.1775387413101337,
+              "abstandPp": -8.020848894155218,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.2655120406235145,
+              "spyGroessterRueckschlag": -0.33699813656214483,
+              "fehlendeKurse": 0
+            }
+          ],
+          "zusammenfassung": {
+            "starttage": 22,
+            "vorn": 0,
+            "anteilVorn": 0,
+            "medianAbstandPp": -7.9590775380077305,
+            "minimumAbstandPp": -8.024616031759212,
+            "maximumAbstandPp": -7.886458969457921,
+            "spanneGroessterRueckschlagRegel": {
+              "min": -0.26551204062351486,
+              "max": -0.2655120406235143
+            },
+            "spanneGroessterRueckschlagSpy": {
+              "min": -0.33699813656214495,
+              "max": -0.3369981365621447
+            },
+            "fehlendeKurseSumme": 0
+          },
+          "bedingungen": {
+            "a": false,
+            "b": false,
+            "c": false
+          }
+        }
+      }
+    },
+    "B": {
+      "erster": "2021-09-16",
+      "ende": "2026-09-15",
+      "starttageZahl": 22,
+      "starttage": [
+        "2021-09-16",
+        "2021-09-17",
+        "2021-09-20",
+        "2021-09-21",
+        "2021-09-22",
+        "2021-09-23",
+        "2021-09-24",
+        "2021-09-27",
+        "2021-09-28",
+        "2021-09-29",
+        "2021-09-30",
+        "2021-10-01",
+        "2021-10-04",
+        "2021-10-05",
+        "2021-10-06",
+        "2021-10-07",
+        "2021-10-08",
+        "2021-10-11",
+        "2021-10-12",
+        "2021-10-13",
+        "2021-10-14",
+        "2021-10-15"
+      ],
+      "regeln": {
+        "R1": {
+          "k0": {
+            "start": "2021-09-16",
+            "ende": "2026-09-15",
+            "tage": 1825,
+            "startReihe": "SPY",
+            "regel": {
+              "endwert": 127172.89282959064,
+              "endwertCent": "127172.89",
+              "abstandZurHalbCentGrenzeDollar": 0.0021704093553125857,
+              "pa": 0.04928438687294179,
+              "tage": 1825,
+              "groessterRueckschlag": {
+                "wert": -0.2642705004407834,
+                "spitzeTag": "2022-01-03",
+                "tiefTag": "2023-03-13"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 919,
+                "von": "2022-01-03",
+                "bis": "2024-07-10",
+                "erholt": true
+              },
+              "handelstage": 1254,
+              "handelstageUnterWasser": 1175,
+              "anteilHandelstageUnterWasser": 0.9370015948963317,
+              "anteilTageJeReihe": {
+                "SPY": 0.7807017543859649,
+                "BIL": 0.21929824561403508
+              },
+              "kalenderjahre": {
+                "2021": 0.06687411330633775,
+                "2022": -0.22192245157771906,
+                "2023": 0.09178708383431822,
+                "2024": 0.24885361818785623,
+                "2025": 0.11539704045373833,
+                "2026": 0.007347963140631908
+              },
+              "ausschuettungenGutgeschrieben": 29,
+              "ausschuettungsSumme": 8472.000371460555,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "spy": {
+              "endwert": 181193.89139394907,
+              "endwertCent": "181193.89",
+              "abstandZurHalbCentGrenzeDollar": 0.0036060509085655214,
+              "pa": 0.12632590436736035,
+              "tage": 1825,
+              "groessterRueckschlag": {
+                "wert": -0.2449724419928806,
+                "spitzeTag": "2022-01-03",
+                "tiefTag": "2022-10-12"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 709,
+                "von": "2022-01-03",
+                "bis": "2023-12-13",
+                "erholt": true
+              },
+              "handelstage": 1254,
+              "handelstageUnterWasser": 1095,
+              "anteilHandelstageUnterWasser": 0.8732057416267942,
+              "anteilTageJeReihe": {
+                "SPY": 1
+              },
+              "kalenderjahre": {
+                "2021": 0.06900786153295035,
+                "2022": -0.18171826731967755,
+                "2023": 0.2618931422125006,
+                "2024": 0.24885361818785579,
+                "2025": 0.17715038521015591,
+                "2026": 0.11658999307935991
+              },
+              "ausschuettungenGutgeschrieben": 20,
+              "ausschuettungsSumme": 7894.244347906785,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "abstandPp": -7.7041517494418565,
+            "vorn": false,
+            "wechsel": 12,
+            "wechselJeJahr": 2.4016438356164382,
+            "wechselListe": [
+              {
+                "tag": "2022-03-01",
+                "signalTag": "2022-02-28",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 390.10149796354654
+              },
+              {
+                "tag": "2022-04-01",
+                "signalTag": "2022-03-31",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 388.5442065545105
+              },
+              {
+                "tag": "2022-05-02",
+                "signalTag": "2022-04-29",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 351.7863350601076
+              },
+              {
+                "tag": "2022-12-01",
+                "signalTag": "2022-11-30",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 352.96913701893914
+              },
+              {
+                "tag": "2023-01-03",
+                "signalTag": "2022-12-30",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 333.062597093496
+              },
+              {
+                "tag": "2023-02-01",
+                "signalTag": "2023-01-31",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 331.5154096845415
+              },
+              {
+                "tag": "2023-11-01",
+                "signalTag": "2023-10-31",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 346.67539118302847
+              },
+              {
+                "tag": "2023-12-01",
+                "signalTag": "2023-11-30",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 345.3291982746247
+              },
+              {
+                "tag": "2025-04-01",
+                "signalTag": "2025-03-31",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 431.05321159110235
+              },
+              {
+                "tag": "2025-06-02",
+                "signalTag": "2025-05-30",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 430.8917340095593
+              },
+              {
+                "tag": "2026-04-01",
+                "signalTag": "2026-03-31",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 484.6038772189087
+              },
+              {
+                "tag": "2026-05-01",
+                "signalTag": "2026-04-30",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 482.72215054378813
+              }
+            ],
+            "kosten": {
+              "gesamt": 4868.855544599347,
+              "erstkauf": 199.60079840319364,
+              "wechsel": 4669.254746196153
+            },
+            "fehlendeKurse": 0,
+            "fehlendeKurseRegel": 0,
+            "fehlendeKurseSpy": 0
+          },
+          "starttage": [
+            {
+              "start": "2021-09-16",
+              "startReihe": "SPY",
+              "regelEndwert": 127172.89282959064,
+              "regelEndwertCent": "127172.89",
+              "spyEndwert": 181193.89139394907,
+              "spyEndwertCent": "181193.89",
+              "regelPa": 0.04928438687294179,
+              "spyPa": 0.12632590436736035,
+              "abstandPp": -7.7041517494418565,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407834,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-17",
+              "startReihe": "SPY",
+              "regelEndwert": 127446.58047245984,
+              "regelEndwertCent": "127446.58",
+              "spyEndwert": 181583.8371436645,
+              "spyEndwertCent": "181583.84",
+              "regelPa": 0.04976387383491243,
+              "spyPa": 0.1268843691678465,
+              "abstandPp": -7.712049533293408,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407835,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-20",
+              "startReihe": "SPY",
+              "regelEndwert": 130388.92029631401,
+              "regelEndwertCent": "130388.92",
+              "spyEndwert": 185776.03558018128,
+              "spyEndwertCent": "185776.04",
+              "regelPa": 0.05466512755370445,
+              "spyPa": 0.13227792231061608,
+              "abstandPp": -7.761279475691163,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407834,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-21",
+              "startReihe": "SPY",
+              "regelEndwert": 129896.07691038463,
+              "regelEndwertCent": "129896.08",
+              "spyEndwert": 185073.8402541383,
+              "spyEndwertCent": "185073.84",
+              "regelPa": 0.05389471395938905,
+              "spyPa": 0.1314949589392982,
+              "abstandPp": -7.760024497990914,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407835,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-22",
+              "startReihe": "SPY",
+              "regelEndwert": 130039.068644689,
+              "regelEndwertCent": "130039.07",
+              "spyEndwert": 185277.57257632812,
+              "spyEndwertCent": "185277.57",
+              "regelPa": 0.05415798563979002,
+              "spyPa": 0.13182182206124549,
+              "abstandPp": -7.766383642145547,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407835,
+              "spyGroessterRueckschlag": -0.24497244199288049,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-23",
+              "startReihe": "SPY",
+              "regelEndwert": 128915.61556959689,
+              "regelEndwertCent": "128915.62",
+              "spyEndwert": 183676.89471216084,
+              "spyEndwertCent": "183676.89",
+              "regelPa": 0.05235245274070244,
+              "spyPa": 0.1299274494857472,
+              "abstandPp": -7.7574996745044755,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.26427050044078326,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-24",
+              "startReihe": "SPY",
+              "regelEndwert": 128451.28212559785,
+              "regelEndwertCent": "128451.28",
+              "spyEndwert": 183015.31989263324,
+              "spyEndwertCent": "183015.32",
+              "regelPa": 0.05161894663343514,
+              "spyPa": 0.1291840727379272,
+              "abstandPp": -7.756512610449207,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407834,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-27",
+              "startReihe": "SPY",
+              "regelEndwert": 128053.87097797517,
+              "regelEndwertCent": "128053.87",
+              "spyEndwert": 182449.09488415148,
+              "spyEndwertCent": "182449.09",
+              "regelPa": 0.05105051068943989,
+              "spyPa": 0.12870654220648237,
+              "abstandPp": -7.765603151704248,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.26427050044078315,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-28",
+              "startReihe": "SPY",
+              "regelEndwert": 128962.52809996982,
+              "regelEndwertCent": "128962.53",
+              "spyEndwert": 183743.73493057754,
+              "spyEndwertCent": "183743.73",
+              "regelPa": 0.05257770879002366,
+              "spyPa": 0.1303910191171056,
+              "abstandPp": -7.781331032708194,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407835,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-29",
+              "startReihe": "SPY",
+              "regelEndwert": 130296.04075695701,
+              "regelEndwertCent": "130296.04",
+              "spyEndwert": 185643.7023070086,
+              "spyEndwertCent": "185643.70",
+              "regelPa": 0.054792451477035264,
+              "spyPa": 0.13281407723686023,
+              "abstandPp": -7.802162575982496,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407834,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-30",
+              "startReihe": "SPY",
+              "regelEndwert": 130048.01551276514,
+              "regelEndwertCent": "130048.02",
+              "spyEndwert": 185290.31993000093,
+              "spyEndwertCent": "185290.32",
+              "regelPa": 0.05441824954616159,
+              "spyPa": 0.1324568186550521,
+              "abstandPp": -7.803856910889051,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407834,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-01",
+              "startReihe": "SPY",
+              "regelEndwert": 131568.82651089923,
+              "regelEndwertCent": "131568.83",
+              "spyEndwert": 187457.14696912395,
+              "spyEndwertCent": "187457.15",
+              "regelPa": 0.05692592082748882,
+              "spyPa": 0.135194865135575,
+              "abstandPp": -7.8268944308086175,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407836,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-04",
+              "startReihe": "SPY",
+              "regelEndwert": 130955.04456149116,
+              "regelEndwertCent": "130955.04",
+              "spyEndwert": 186582.64032383086,
+              "spyEndwertCent": "186582.64",
+              "regelPa": 0.056024484192812585,
+              "spyPa": 0.13436120691933295,
+              "abstandPp": -7.833672272652037,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.26427050044078315,
+              "spyGroessterRueckschlag": -0.24497244199288049,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-05",
+              "startReihe": "SPY",
+              "regelEndwert": 131795.12732936835,
+              "regelEndwertCent": "131795.13",
+              "spyEndwert": 187779.57673392456,
+              "spyEndwertCent": "187779.58",
+              "regelPa": 0.05742298924680678,
+              "spyPa": 0.1359084608602743,
+              "abstandPp": -7.848547161346753,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407835,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-06",
+              "startReihe": "SPY",
+              "regelEndwert": 132092.9385849046,
+              "regelEndwertCent": "132092.94",
+              "spyEndwert": 188203.8934188005,
+              "spyEndwertCent": "188203.89",
+              "regelPa": 0.057938787086171395,
+              "spyPa": 0.13650762326235322,
+              "abstandPp": -7.856883617618182,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407835,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-07",
+              "startReihe": "SPY",
+              "regelEndwert": 129344.94947518024,
+              "regelEndwertCent": "129344.95",
+              "spyEndwert": 184288.60275252326,
+              "spyEndwertCent": "184288.60",
+              "regelPa": 0.05347819767490791,
+              "spyPa": 0.13176070571136367,
+              "abstandPp": -7.828250803645576,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407836,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-08",
+              "startReihe": "SPY",
+              "regelEndwert": 129024.14871580956,
+              "regelEndwertCent": "129024.15",
+              "spyEndwert": 183831.53099250302,
+              "spyEndwertCent": "183831.53",
+              "regelPa": 0.05297879365250946,
+              "spyPa": 0.13126916377777742,
+              "abstandPp": -7.829037012526796,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407834,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-11",
+              "startReihe": "SPY",
+              "regelEndwert": 129708.87963244026,
+              "regelEndwertCent": "129708.88",
+              "spyEndwert": 184807.12458467123,
+              "spyEndwertCent": "184807.12",
+              "regelPa": 0.054201030970304265,
+              "spyPa": 0.13271765994182272,
+              "abstandPp": -7.851662897151845,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407834,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-12",
+              "startReihe": "SPY",
+              "regelEndwert": 130152.48364007781,
+              "regelEndwertCent": "130152.48",
+              "spyEndwert": 185439.16443682354,
+              "spyEndwertCent": "185439.16",
+              "regelPa": 0.05496298311702019,
+              "spyPa": 0.13358162669270124,
+              "abstandPp": -7.861864357568105,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.26427050044078326,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-13",
+              "startReihe": "SPY",
+              "regelEndwert": 130439.91490815612,
+              "regelEndwertCent": "130439.91",
+              "spyEndwert": 185848.69188259143,
+              "spyEndwertCent": "185848.69",
+              "regelPa": 0.05546725708285316,
+              "spyPa": 0.13416881891477606,
+              "abstandPp": -7.8701561831922895,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.2642705004407835,
+              "spyGroessterRueckschlag": -0.24497244199288049,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-14",
+              "startReihe": "SPY",
+              "regelEndwert": 129141.696340544,
+              "regelEndwertCent": "129141.70",
+              "spyEndwert": 183999.0109567929,
+              "spyEndwertCent": "183999.01",
+              "regelPa": 0.053355254606783475,
+              "spyPa": 0.13194463355102837,
+              "abstandPp": -7.858937894424489,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.26427050044078326,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-15",
+              "startReihe": "SPY",
+              "regelEndwert": 127495.29914587003,
+              "regelEndwertCent": "127495.30",
+              "spyEndwert": 181653.2507256183,
+              "spyEndwertCent": "181653.25",
+              "regelPa": 0.05064065448767896,
+              "spyPa": 0.12907273612442927,
+              "abstandPp": -7.843208163675031,
+              "vorn": false,
+              "wechsel": 12,
+              "regelGroessterRueckschlag": -0.26427050044078304,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            }
+          ],
+          "zusammenfassung": {
+            "starttage": 22,
+            "vorn": 0,
+            "anteilVorn": 0,
+            "medianAbstandPp": -7.815375670848834,
+            "minimumAbstandPp": -7.8701561831922895,
+            "maximumAbstandPp": -7.7041517494418565,
+            "spanneGroessterRueckschlagRegel": {
+              "min": -0.2642705004407836,
+              "max": -0.26427050044078304
+            },
+            "spanneGroessterRueckschlagSpy": {
+              "min": -0.2449724419928807,
+              "max": -0.24497244199288049
+            },
+            "fehlendeKurseSumme": 0
+          },
+          "bedingungen": {
+            "a": false,
+            "b": false,
+            "c": false
+          }
+        },
+        "R2": {
+          "k0": {
+            "start": "2021-09-16",
+            "ende": "2026-09-15",
+            "tage": 1825,
+            "startReihe": "SPY",
+            "regel": {
+              "endwert": 157624.63553248154,
+              "endwertCent": "157624.64",
+              "abstandZurHalbCentGrenzeDollar": 0.0005324815399944782,
+              "pa": 0.09534742310416311,
+              "tage": 1825,
+              "groessterRueckschlag": {
+                "wert": -0.21553610141791535,
+                "spitzeTag": "2022-01-03",
+                "tiefTag": "2023-10-27"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 863,
+                "von": "2022-01-03",
+                "bis": "2024-05-15",
+                "erholt": true
+              },
+              "handelstage": 1254,
+              "handelstageUnterWasser": 1139,
+              "anteilHandelstageUnterWasser": 0.9082934609250398,
+              "anteilTageJeReihe": {
+                "SPY": 0.5590111642743222,
+                "AGG": 0.21690590111642744,
+                "ACWX": 0.2240829346092504
+              },
+              "kalenderjahre": {
+                "2021": 0.06687411330633775,
+                "2022": -0.16856872850354776,
+                "2023": 0.08542703921470785,
+                "2024": 0.248853618187856,
+                "2025": 0.1462611462415948,
+                "2026": 0.14363863506903374
+              },
+              "ausschuettungenGutgeschrieben": 27,
+              "ausschuettungsSumme": 10778.313412712816,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "spy": {
+              "endwert": 181193.89139394907,
+              "endwertCent": "181193.89",
+              "abstandZurHalbCentGrenzeDollar": 0.0036060509085655214,
+              "pa": 0.12632590436736035,
+              "tage": 1825,
+              "groessterRueckschlag": {
+                "wert": -0.2449724419928806,
+                "spitzeTag": "2022-01-03",
+                "tiefTag": "2022-10-12"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 709,
+                "von": "2022-01-03",
+                "bis": "2023-12-13",
+                "erholt": true
+              },
+              "handelstage": 1254,
+              "handelstageUnterWasser": 1095,
+              "anteilHandelstageUnterWasser": 0.8732057416267942,
+              "anteilTageJeReihe": {
+                "SPY": 1
+              },
+              "kalenderjahre": {
+                "2021": 0.06900786153295035,
+                "2022": -0.18171826731967755,
+                "2023": 0.2618931422125006,
+                "2024": 0.24885361818785579,
+                "2025": 0.17715038521015591,
+                "2026": 0.11658999307935991
+              },
+              "ausschuettungenGutgeschrieben": 20,
+              "ausschuettungsSumme": 7894.244347906785,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "abstandPp": -3.0978481263197244,
+            "vorn": false,
+            "wechsel": 9,
+            "wechselJeJahr": 1.8012328767123287,
+            "wechselListe": [
+              {
+                "tag": "2022-06-01",
+                "signalTag": "2022-05-31",
+                "von": "SPY",
+                "nach": "AGG",
+                "kosten": 373.4280425686974
+              },
+              {
+                "tag": "2023-07-03",
+                "signalTag": "2023-06-30",
+                "von": "AGG",
+                "nach": "SPY",
+                "kosten": 361.62949753036844
+              },
+              {
+                "tag": "2023-11-01",
+                "signalTag": "2023-10-31",
+                "von": "SPY",
+                "nach": "ACWX",
+                "kosten": 343.0073663384509
+              },
+              {
+                "tag": "2023-12-01",
+                "signalTag": "2023-11-30",
+                "von": "ACWX",
+                "nach": "SPY",
+                "kosten": 368.5345838770926
+              },
+              {
+                "tag": "2025-05-01",
+                "signalTag": "2025-04-30",
+                "von": "SPY",
+                "nach": "ACWX",
+                "kosten": 460.32650746781144
+              },
+              {
+                "tag": "2025-06-02",
+                "signalTag": "2025-05-30",
+                "von": "ACWX",
+                "nach": "SPY",
+                "kosten": 478.8554762160977
+              },
+              {
+                "tag": "2025-07-01",
+                "signalTag": "2025-06-30",
+                "von": "SPY",
+                "nach": "ACWX",
+                "kosten": 501.6336945488167
+              },
+              {
+                "tag": "2025-08-01",
+                "signalTag": "2025-07-31",
+                "von": "ACWX",
+                "nach": "SPY",
+                "kosten": 493.14883470034573
+              },
+              {
+                "tag": "2025-11-03",
+                "signalTag": "2025-10-31",
+                "von": "SPY",
+                "nach": "ACWX",
+                "kosten": 539.2250221651914
+              }
+            ],
+            "kosten": {
+              "gesamt": 4119.389823816066,
+              "erstkauf": 199.60079840319364,
+              "wechsel": 3919.7890254128724
+            },
+            "fehlendeKurse": 0,
+            "fehlendeKurseRegel": 0,
+            "fehlendeKurseSpy": 0
+          },
+          "starttage": [
+            {
+              "start": "2021-09-16",
+              "startReihe": "SPY",
+              "regelEndwert": 157624.63553248154,
+              "regelEndwertCent": "157624.64",
+              "spyEndwert": 181193.89139394907,
+              "spyEndwertCent": "181193.89",
+              "regelPa": 0.09534742310416311,
+              "spyPa": 0.12632590436736035,
+              "abstandPp": -3.0978481263197244,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791535,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-17",
+              "startReihe": "SPY",
+              "regelEndwert": 157963.85809789744,
+              "regelEndwertCent": "157963.86",
+              "spyEndwert": 181583.8371436645,
+              "spyEndwertCent": "181583.84",
+              "regelPa": 0.0958737716222604,
+              "spyPa": 0.1268843691678465,
+              "abstandPp": -3.1010597545586105,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791557,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-20",
+              "startReihe": "SPY",
+              "regelEndwert": 161610.74566983597,
+              "regelEndwertCent": "161610.75",
+              "spyEndwert": 185776.03558018128,
+              "spyEndwertCent": "185776.04",
+              "regelPa": 0.10106828143807012,
+              "spyPa": 0.13227792231061608,
+              "abstandPp": -3.1209640872545963,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791535,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-21",
+              "startReihe": "SPY",
+              "regelEndwert": 160999.89018520218,
+              "regelEndwertCent": "160999.89",
+              "spyEndwert": 185073.8402541383,
+              "spyEndwertCent": "185073.84",
+              "regelPa": 0.10029000154812184,
+              "spyPa": 0.1314949589392982,
+              "abstandPp": -3.1204957391176347,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791546,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-22",
+              "startReihe": "SPY",
+              "regelEndwert": 161177.12150787166,
+              "regelEndwertCent": "161177.12",
+              "spyEndwert": 185277.57257632812,
+              "spyEndwertCent": "185277.57",
+              "regelPa": 0.1005909292651288,
+              "spyPa": 0.13182182206124549,
+              "abstandPp": -3.1230892796116683,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791524,
+              "spyGroessterRueckschlag": -0.24497244199288049,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-23",
+              "startReihe": "SPY",
+              "regelEndwert": 159784.6558844268,
+              "regelEndwertCent": "159784.66",
+              "spyEndwert": 183676.89471216084,
+              "spyEndwertCent": "183676.89",
+              "regelPa": 0.0987319179987971,
+              "spyPa": 0.1299274494857472,
+              "abstandPp": -3.119553148695009,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791546,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-24",
+              "startReihe": "SPY",
+              "regelEndwert": 159209.1370907011,
+              "regelEndwertCent": "159209.14",
+              "spyEndwert": 183015.31989263324,
+              "spyEndwertCent": "183015.32",
+              "regelPa": 0.09799214649998156,
+              "spyPa": 0.1291840727379272,
+              "abstandPp": -3.1191926237945644,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791535,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-27",
+              "startReihe": "SPY",
+              "regelEndwert": 158716.5652390526,
+              "regelEndwertCent": "158716.57",
+              "spyEndwert": 182449.09488415148,
+              "spyEndwertCent": "182449.09",
+              "regelPa": 0.09747696349361679,
+              "spyPa": 0.12870654220648237,
+              "abstandPp": -3.122957871286558,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791524,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-28",
+              "startReihe": "SPY",
+              "regelEndwert": 159842.80169158275,
+              "regelEndwertCent": "159842.80",
+              "spyEndwert": 183743.73493057754,
+              "spyEndwertCent": "183743.73",
+              "regelPa": 0.0990978234632538,
+              "spyPa": 0.1303910191171056,
+              "abstandPp": -3.12931956538518,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791524,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-29",
+              "startReihe": "SPY",
+              "regelEndwert": 161495.62598344815,
+              "regelEndwertCent": "161495.63",
+              "spyEndwert": 185643.7023070086,
+              "spyEndwertCent": "185643.70",
+              "regelPa": 0.10143673775795081,
+              "spyPa": 0.13281407723686023,
+              "abstandPp": -3.1377339478909416,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791568,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-30",
+              "startReihe": "SPY",
+              "regelEndwert": 161188.21071712277,
+              "regelEndwertCent": "161188.21",
+              "spyEndwert": 185290.31993000093,
+              "spyEndwertCent": "185290.32",
+              "regelPa": 0.10107229647593097,
+              "spyPa": 0.1324568186550521,
+              "abstandPp": -3.1384522179121133,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791524,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-01",
+              "startReihe": "SPY",
+              "regelEndwert": 163073.18222292865,
+              "regelEndwertCent": "163073.18",
+              "spyEndwert": 187457.14696912395,
+              "spyEndwertCent": "187457.15",
+              "regelPa": 0.10371732347240648,
+              "spyPa": 0.135194865135575,
+              "abstandPp": -3.147754166316852,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791546,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-04",
+              "startReihe": "SPY",
+              "regelEndwert": 162312.42925176272,
+              "regelEndwertCent": "162312.43",
+              "spyEndwert": 186582.64032383086,
+              "spyEndwertCent": "186582.64",
+              "regelPa": 0.1028552926002404,
+              "spyPa": 0.13436120691933295,
+              "abstandPp": -3.1505914319092554,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791535,
+              "spyGroessterRueckschlag": -0.24497244199288049,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-05",
+              "startReihe": "SPY",
+              "regelEndwert": 163353.6711167347,
+              "regelEndwertCent": "163353.67",
+              "spyEndwert": 187779.57673392456,
+              "spyEndwertCent": "187779.58",
+              "regelPa": 0.10434234895764893,
+              "spyPa": 0.1359084608602743,
+              "abstandPp": -3.156611190262537,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791535,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-06",
+              "startReihe": "SPY",
+              "regelEndwert": 163722.79373057888,
+              "regelEndwertCent": "163722.79",
+              "spyEndwert": 188203.8934188005,
+              "spyEndwertCent": "188203.89",
+              "regelPa": 0.10490760921358522,
+              "spyPa": 0.13650762326235322,
+              "abstandPp": -3.1600014048768,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791513,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-07",
+              "startReihe": "SPY",
+              "regelEndwert": 160316.79444700546,
+              "regelEndwertCent": "160316.79",
+              "spyEndwert": 184288.60275252326,
+              "spyEndwertCent": "184288.60",
+              "regelPa": 0.10027547872331177,
+              "spyPa": 0.13176070571136367,
+              "abstandPp": -3.1485226988051895,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791513,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-08",
+              "startReihe": "SPY",
+              "regelEndwert": 159919.17745765156,
+              "regelEndwertCent": "159919.18",
+              "spyEndwert": 183831.53099250302,
+              "spyEndwertCent": "183831.53",
+              "regelPa": 0.0997804014435808,
+              "spyPa": 0.13126916377777742,
+              "abstandPp": -3.148876233419662,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791546,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-11",
+              "startReihe": "SPY",
+              "regelEndwert": 160767.868234202,
+              "regelEndwertCent": "160767.87",
+              "spyEndwert": 184807.12458467123,
+              "spyEndwertCent": "184807.12",
+              "regelPa": 0.10113676983656572,
+              "spyPa": 0.13271765994182272,
+              "abstandPp": -3.1580890105257,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791524,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-12",
+              "startReihe": "SPY",
+              "regelEndwert": 161317.69389648616,
+              "regelEndwertCent": "161317.69",
+              "spyEndwert": 185439.16443682354,
+              "spyEndwertCent": "185439.16",
+              "regelPa": 0.10195932791181805,
+              "spyPa": 0.13358162669270124,
+              "abstandPp": -3.1622298780883185,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791524,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-13",
+              "startReihe": "SPY",
+              "regelEndwert": 161673.95101908068,
+              "regelEndwertCent": "161673.95",
+              "spyEndwert": 185848.69188259143,
+              "spyEndwertCent": "185848.69",
+              "regelPa": 0.10251279116049572,
+              "spyPa": 0.13416881891477606,
+              "abstandPp": -3.1656027754280336,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791513,
+              "spyGroessterRueckschlag": -0.24497244199288049,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-14",
+              "startReihe": "SPY",
+              "regelEndwert": 160064.87203999693,
+              "regelEndwertCent": "160064.87",
+              "spyEndwert": 183999.0109567929,
+              "spyEndwertCent": "183999.01",
+              "regelPa": 0.10033335182500891,
+              "spyPa": 0.13194463355102837,
+              "abstandPp": -3.161128172601946,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791524,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-15",
+              "startReihe": "SPY",
+              "regelEndwert": 158024.24253178915,
+              "regelEndwertCent": "158024.24",
+              "spyEndwert": 181653.2507256183,
+              "spyEndwertCent": "181653.25",
+              "regelPa": 0.09752434783124664,
+              "spyPa": 0.12907273612442927,
+              "abstandPp": -3.1548388293182628,
+              "vorn": false,
+              "wechsel": 9,
+              "regelGroessterRueckschlag": -0.21553610141791546,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            }
+          ],
+          "zusammenfassung": {
+            "starttage": 22,
+            "vorn": 0,
+            "anteilVorn": 0,
+            "medianAbstandPp": -3.1431031921144825,
+            "minimumAbstandPp": -3.1656027754280336,
+            "maximumAbstandPp": -3.0978481263197244,
+            "spanneGroessterRueckschlagRegel": {
+              "min": -0.21553610141791568,
+              "max": -0.21553610141791513
+            },
+            "spanneGroessterRueckschlagSpy": {
+              "min": -0.2449724419928807,
+              "max": -0.24497244199288049
+            },
+            "fehlendeKurseSumme": 0
+          },
+          "bedingungen": {
+            "a": false,
+            "b": false,
+            "c": false
+          }
+        },
+        "R3": {
+          "k0": {
+            "start": "2021-09-16",
+            "ende": "2026-09-15",
+            "tage": 1825,
+            "startReihe": "SPY",
+            "regel": {
+              "endwert": 157638.53983524046,
+              "endwertCent": "157638.54",
+              "abstandZurHalbCentGrenzeDollar": 0.004835240468382835,
+              "pa": 0.09536676010189571,
+              "tage": 1825,
+              "groessterRueckschlag": {
+                "wert": -0.17397491803996,
+                "spitzeTag": "2022-01-03",
+                "tiefTag": "2023-03-22"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 760,
+                "von": "2022-01-03",
+                "bis": "2024-02-02",
+                "erholt": true
+              },
+              "handelstage": 1254,
+              "handelstageUnterWasser": 1128,
+              "anteilHandelstageUnterWasser": 0.8995215311004785,
+              "anteilTageJeReihe": {
+                "SPY": 0.7631578947368421,
+                "BIL": 0.23684210526315788
+              },
+              "kalenderjahre": {
+                "2021": 0.06687411330633775,
+                "2022": -0.10966011795207387,
+                "2023": 0.09235038208824076,
+                "2024": 0.248853618187856,
+                "2025": 0.1244654308349935,
+                "2026": 0.08186678717159968
+              },
+              "ausschuettungenGutgeschrieben": 27,
+              "ausschuettungsSumme": 8296.451713749431,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "spy": {
+              "endwert": 181193.89139394907,
+              "endwertCent": "181193.89",
+              "abstandZurHalbCentGrenzeDollar": 0.0036060509085655214,
+              "pa": 0.12632590436736035,
+              "tage": 1825,
+              "groessterRueckschlag": {
+                "wert": -0.2449724419928806,
+                "spitzeTag": "2022-01-03",
+                "tiefTag": "2022-10-12"
+              },
+              "laengsteZeitUnterWasser": {
+                "tage": 709,
+                "von": "2022-01-03",
+                "bis": "2023-12-13",
+                "erholt": true
+              },
+              "handelstage": 1254,
+              "handelstageUnterWasser": 1095,
+              "anteilHandelstageUnterWasser": 0.8732057416267942,
+              "anteilTageJeReihe": {
+                "SPY": 1
+              },
+              "kalenderjahre": {
+                "2021": 0.06900786153295035,
+                "2022": -0.18171826731967755,
+                "2023": 0.2618931422125006,
+                "2024": 0.24885361818785579,
+                "2025": 0.17715038521015591,
+                "2026": 0.11658999307935991
+              },
+              "ausschuettungenGutgeschrieben": 20,
+              "ausschuettungsSumme": 7894.244347906785,
+              "fehlendeKurse": 0,
+              "verschobeneWechsel": 0
+            },
+            "abstandPp": -3.0959144265464644,
+            "vorn": false,
+            "wechsel": 14,
+            "wechselJeJahr": 2.801917808219178,
+            "wechselListe": [
+              {
+                "tag": "2022-01-26",
+                "signalTag": "2022-01-25",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 395.19476204897023
+              },
+              {
+                "tag": "2022-02-01",
+                "signalTag": "2022-01-31",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 393.61713824837557
+              },
+              {
+                "tag": "2022-02-15",
+                "signalTag": "2022-02-14",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 386.0000342751148
+              },
+              {
+                "tag": "2022-03-28",
+                "signalTag": "2022-03-25",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 384.5936910113263
+              },
+              {
+                "tag": "2022-04-12",
+                "signalTag": "2022-04-11",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 375.44906831171375
+              },
+              {
+                "tag": "2023-01-24",
+                "signalTag": "2023-01-23",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 379.98150660346846
+              },
+              {
+                "tag": "2023-03-13",
+                "signalTag": "2023-03-10",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 362.268280476597
+              },
+              {
+                "tag": "2023-03-22",
+                "signalTag": "2023-03-21",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 361.2552619162204
+              },
+              {
+                "tag": "2023-10-26",
+                "signalTag": "2023-10-25",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 378.5511139510877
+              },
+              {
+                "tag": "2023-11-03",
+                "signalTag": "2023-11-02",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 377.44322337504843
+              },
+              {
+                "tag": "2025-03-11",
+                "signalTag": "2025-03-10",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 493.7423085852837
+              },
+              {
+                "tag": "2025-05-13",
+                "signalTag": "2025-05-12",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 495.34422160294235
+              },
+              {
+                "tag": "2026-03-23",
+                "signalTag": "2026-03-20",
+                "von": "SPY",
+                "nach": "BIL",
+                "kosten": 562.8869833633678
+              },
+              {
+                "tag": "2026-04-09",
+                "signalTag": "2026-04-08",
+                "von": "BIL",
+                "nach": "SPY",
+                "kosten": 561.5225214317497
+              }
+            ],
+            "kosten": {
+              "gesamt": 6107.45091360446,
+              "erstkauf": 199.60079840319364,
+              "wechsel": 5907.850115201266
+            },
+            "fehlendeKurse": 0,
+            "fehlendeKurseRegel": 0,
+            "fehlendeKurseSpy": 0
+          },
+          "starttage": [
+            {
+              "start": "2021-09-16",
+              "startReihe": "SPY",
+              "regelEndwert": 157638.53983524046,
+              "regelEndwertCent": "157638.54",
+              "spyEndwert": 181193.89139394907,
+              "spyEndwertCent": "181193.89",
+              "regelPa": 0.09536676010189571,
+              "spyPa": 0.12632590436736035,
+              "abstandPp": -3.0959144265464644,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803996,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-17",
+              "startReihe": "SPY",
+              "regelEndwert": 157977.79232398173,
+              "regelEndwertCent": "157977.79",
+              "spyEndwert": 181583.8371436645,
+              "spyEndwertCent": "181583.84",
+              "regelPa": 0.09589312851863419,
+              "spyPa": 0.1268843691678465,
+              "abstandPp": -3.0991240649212326,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995968,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-20",
+              "startReihe": "SPY",
+              "regelEndwert": 161625.001593279,
+              "regelEndwertCent": "161625.00",
+              "spyEndwert": 185776.03558018128,
+              "spyEndwertCent": "185776.04",
+              "regelPa": 0.10108776212822801,
+              "spyPa": 0.13227792231061608,
+              "abstandPp": -3.119016018238807,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803996012,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-21",
+              "startReihe": "SPY",
+              "regelEndwert": 161014.09222417738,
+              "regelEndwertCent": "161014.09",
+              "spyEndwert": 185073.8402541383,
+              "spyEndwertCent": "185073.84",
+              "regelPa": 0.10030947916473965,
+              "spyPa": 0.1314949589392982,
+              "abstandPp": -3.1185479774558544,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.1739749180399599,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-22",
+              "startReihe": "SPY",
+              "regelEndwert": 161191.33918068442,
+              "regelEndwertCent": "161191.34",
+              "spyEndwert": 185277.57257632812,
+              "spyEndwertCent": "185277.57",
+              "regelPa": 0.1006104229197402,
+              "spyPa": 0.13182182206124549,
+              "abstandPp": -3.121139914150528,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803996024,
+              "spyGroessterRueckschlag": -0.24497244199288049,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-23",
+              "startReihe": "SPY",
+              "regelEndwert": 159798.75072578285,
+              "regelEndwertCent": "159798.75",
+              "spyEndwert": 183676.89471216084,
+              "spyEndwertCent": "183676.89",
+              "regelPa": 0.09875138943118689,
+              "spyPa": 0.1299274494857472,
+              "abstandPp": -3.1176060054560306,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995957,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-24",
+              "startReihe": "SPY",
+              "regelEndwert": 159223.18116469128,
+              "regelEndwertCent": "159223.18",
+              "spyEndwert": 183015.31989263324,
+              "spyEndwertCent": "183015.32",
+              "regelPa": 0.09801161553147231,
+              "spyPa": 0.1291840727379272,
+              "abstandPp": -3.1172457206454895,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.1739749180399598,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-27",
+              "startReihe": "SPY",
+              "regelEndwert": 158730.56586254947,
+              "regelEndwertCent": "158730.57",
+              "spyEndwert": 182449.09488415148,
+              "spyEndwertCent": "182449.09",
+              "regelPa": 0.09749645557328313,
+              "spyPa": 0.12870654220648237,
+              "abstandPp": -3.121008663319924,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803996012,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-28",
+              "startReihe": "SPY",
+              "regelEndwert": 159856.9016620666,
+              "regelEndwertCent": "159856.90",
+              "spyEndwert": 183743.73493057754,
+              "spyEndwertCent": "183743.73",
+              "regelPa": 0.09911735509796538,
+              "spyPa": 0.1303910191171056,
+              "abstandPp": -3.1273664019140224,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803996024,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-29",
+              "startReihe": "SPY",
+              "regelEndwert": 161509.87175201313,
+              "regelEndwertCent": "161509.87",
+              "spyEndwert": 185643.7023070086,
+              "spyEndwertCent": "185643.70",
+              "regelPa": 0.1014563217586697,
+              "spyPa": 0.13281407723686023,
+              "abstandPp": -3.135775547819053,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995957,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-09-30",
+              "startReihe": "SPY",
+              "regelEndwert": 161202.42936813124,
+              "regelEndwertCent": "161202.43",
+              "spyEndwert": 185290.31993000093,
+              "spyEndwertCent": "185290.32",
+              "regelPa": 0.10109188480716647,
+              "spyPa": 0.1324568186550521,
+              "abstandPp": -3.1364933847885634,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995968,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-01",
+              "startReihe": "SPY",
+              "regelEndwert": 163087.56715006792,
+              "regelEndwertCent": "163087.57",
+              "spyEndwert": 187457.14696912395,
+              "spyEndwertCent": "187457.15",
+              "regelPa": 0.10373696970766155,
+              "spyPa": 0.135194865135575,
+              "abstandPp": -3.145789542791344,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995957,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-04",
+              "startReihe": "SPY",
+              "regelEndwert": 162326.74707175462,
+              "regelEndwertCent": "162326.75",
+              "spyEndwert": 186582.64032383086,
+              "spyEndwertCent": "186582.64",
+              "regelPa": 0.10287495608299158,
+              "spyPa": 0.13436120691933295,
+              "abstandPp": -3.148625083634138,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995968,
+              "spyGroessterRueckschlag": -0.24497244199288049,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-05",
+              "startReihe": "SPY",
+              "regelEndwert": 163368.0807862151,
+              "regelEndwertCent": "163368.08",
+              "spyEndwert": 187779.57673392456,
+              "spyEndwertCent": "187779.58",
+              "regelPa": 0.1043620498566813,
+              "spyPa": 0.1359084608602743,
+              "abstandPp": -3.154641100359301,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995968,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-06",
+              "startReihe": "SPY",
+              "regelEndwert": 163737.23596091202,
+              "regelEndwertCent": "163737.24",
+              "spyEndwert": 188203.8934188005,
+              "spyEndwertCent": "188203.89",
+              "regelPa": 0.10492733111687902,
+              "spyPa": 0.13650762326235322,
+              "abstandPp": -3.15802921454742,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803996035,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-07",
+              "startReihe": "SPY",
+              "regelEndwert": 160330.93622909312,
+              "regelEndwertCent": "160330.94",
+              "spyEndwert": 184288.60275252326,
+              "spyEndwertCent": "184288.60",
+              "regelPa": 0.10029512883258529,
+              "spyPa": 0.13176070571136367,
+              "abstandPp": -3.146557687877838,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.1739749180399598,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-08",
+              "startReihe": "SPY",
+              "regelEndwert": 159933.28416535497,
+              "regelEndwertCent": "159933.28",
+              "spyEndwert": 183831.53099250302,
+              "spyEndwertCent": "183831.53",
+              "regelPa": 0.0998000536048953,
+              "spyPa": 0.13126916377777742,
+              "abstandPp": -3.146911017288212,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803996012,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-11",
+              "startReihe": "SPY",
+              "regelEndwert": 160782.04980617692,
+              "regelEndwertCent": "160782.05",
+              "spyEndwert": 184807.12458467123,
+              "spyEndwertCent": "184807.12",
+              "regelPa": 0.10115647902934666,
+              "spyPa": 0.13271765994182272,
+              "abstandPp": -3.156118091247606,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.1739749180399598,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-12",
+              "startReihe": "SPY",
+              "regelEndwert": 161331.9239693978,
+              "regelEndwertCent": "161331.92",
+              "spyEndwert": 185439.16443682354,
+              "spyEndwertCent": "185439.16",
+              "regelPa": 0.10197906279144542,
+              "spyPa": 0.13358162669270124,
+              "abstandPp": -3.160256390125582,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995968,
+              "spyGroessterRueckschlag": -0.2449724419928807,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-13",
+              "startReihe": "SPY",
+              "regelEndwert": 161688.21251796122,
+              "regelEndwertCent": "161688.21",
+              "spyEndwert": 185848.69188259143,
+              "spyEndwertCent": "185848.69",
+              "regelPa": 0.10253254693366998,
+              "spyPa": 0.13416881891477606,
+              "abstandPp": -3.163627198110608,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.1739749180399599,
+              "spyGroessterRueckschlag": -0.24497244199288049,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-14",
+              "startReihe": "SPY",
+              "regelEndwert": 160078.99159963557,
+              "regelEndwertCent": "160078.99",
+              "spyEndwert": 183999.0109567929,
+              "spyEndwertCent": "183999.01",
+              "regelPa": 0.1003530795172316,
+              "spyPa": 0.13194463355102837,
+              "abstandPp": -3.1591554033796765,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995935,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            },
+            {
+              "start": "2021-10-15",
+              "startReihe": "SPY",
+              "regelEndwert": 158038.18208447396,
+              "regelEndwertCent": "158038.18",
+              "spyEndwert": 181653.2507256183,
+              "spyEndwertCent": "181653.25",
+              "regelPa": 0.0975440361176032,
+              "spyPa": 0.12907273612442927,
+              "abstandPp": -3.152870000682606,
+              "vorn": false,
+              "wechsel": 14,
+              "regelGroessterRueckschlag": -0.17397491803995957,
+              "spyGroessterRueckschlag": -0.2449724419928806,
+              "fehlendeKurse": 0
+            }
+          ],
+          "zusammenfassung": {
+            "starttage": 22,
+            "vorn": 0,
+            "anteilVorn": 0,
+            "medianAbstandPp": -3.1411414637899537,
+            "minimumAbstandPp": -3.163627198110608,
+            "maximumAbstandPp": -3.0959144265464644,
+            "spanneGroessterRueckschlagRegel": {
+              "min": -0.17397491803996035,
+              "max": -0.17397491803995935
+            },
+            "spanneGroessterRueckschlagSpy": {
+              "min": -0.2449724419928807,
+              "max": -0.24497244199288049
+            },
+            "fehlendeKurseSumme": 0
+          },
+          "bedingungen": {
+            "a": false,
+            "b": false,
+            "c": false
+          }
+        }
+      }
+    }
+  },
+  "urteile": {
+    "R1": {
+      "urteil": "schlägt SPY nicht",
+      "verfehlt": [
+        "Fenster A: (a) beim Start am ersten Tag vorn",
+        "Fenster A: (b) in mindestens 70 % der Starttage vorn",
+        "Fenster A: (c) Median des Abstands > 0",
+        "Fenster B: (a) beim Start am ersten Tag vorn",
+        "Fenster B: (b) in mindestens 70 % der Starttage vorn",
+        "Fenster B: (c) Median des Abstands > 0"
+      ]
+    },
+    "R2": {
+      "urteil": "schlägt SPY nicht",
+      "verfehlt": [
+        "Fenster A: (a) beim Start am ersten Tag vorn",
+        "Fenster A: (b) in mindestens 70 % der Starttage vorn",
+        "Fenster A: (c) Median des Abstands > 0",
+        "Fenster B: (a) beim Start am ersten Tag vorn",
+        "Fenster B: (b) in mindestens 70 % der Starttage vorn",
+        "Fenster B: (c) Median des Abstands > 0"
+      ]
+    },
+    "R3": {
+      "urteil": "schlägt SPY nicht",
+      "verfehlt": [
+        "Fenster A: (a) beim Start am ersten Tag vorn",
+        "Fenster A: (b) in mindestens 70 % der Starttage vorn",
+        "Fenster A: (c) Median des Abstands > 0",
+        "Fenster B: (a) beim Start am ersten Tag vorn",
+        "Fenster B: (b) in mindestens 70 % der Starttage vorn",
+        "Fenster B: (c) Median des Abstands > 0"
+      ]
+    }
+  },
+  "signale": {
+    "R1": {
+      "anfang": {
+        "monatsende": "2016-11-30",
+        "reihe": "SPY",
+        "P": 7.824791515727375,
+        "SMA10": 7.441705145179188,
+        "abstandRel": 0.051478305452125284
+      },
+      "wechsel": [
+        {
+          "monatsende": "2018-10-31",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 9.982131422656582,
+          "SMA10": 10.100192671828733,
+          "abstandRel": -0.0116890096068607
+        },
+        {
+          "monatsende": "2018-11-30",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 10.167292672963855,
+          "SMA10": 10.090568849396773,
+          "abstandRel": 0.007603518167528245
+        },
+        {
+          "monatsende": "2018-12-31",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 9.273204278966663,
+          "SMA10": 10.028854809053172,
+          "abstandRel": -0.0753476388355302
+        },
+        {
+          "monatsende": "2019-02-28",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 10.340334985103926,
+          "SMA10": 10.135643056544454,
+          "abstandRel": 0.02019525820093926
+        },
+        {
+          "monatsende": "2019-05-31",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 10.258575636848922,
+          "SMA10": 10.290469138283205,
+          "abstandRel": -0.0030993243364999534
+        },
+        {
+          "monatsende": "2019-06-28",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 10.972510972922842,
+          "SMA10": 10.321747746872916,
+          "abstandRel": 0.06304777466074807
+        },
+        {
+          "monatsende": "2020-02-28",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 11.200633721867925,
+          "SMA10": 11.325658574495112,
+          "abstandRel": -0.011039080138680601
+        },
+        {
+          "monatsende": "2020-05-29",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 11.576057806536019,
+          "SMA10": 11.331732158649833,
+          "abstandRel": 0.02156119156943581
+        },
+        {
+          "monatsende": "2022-02-28",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 17.048033962713724,
+          "SMA10": 17.280153156314423,
+          "abstandRel": -0.013432704646826554
+        },
+        {
+          "monatsende": "2022-03-31",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 17.688282624179813,
+          "SMA10": 17.425410286481643,
+          "abstandRel": 0.01508557522471099
+        },
+        {
+          "monatsende": "2022-04-29",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 16.135798876976878,
+          "SMA10": 17.378932504468985,
+          "abstandRel": -0.07153106942399567
+        },
+        {
+          "monatsende": "2022-11-30",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 16.101807626832173,
+          "SMA10": 15.909445426319142,
+          "abstandRel": 0.012091068881307843
+        },
+        {
+          "monatsende": "2022-12-30",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 15.17471730886005,
+          "SMA10": 15.722113760933775,
+          "abstandRel": -0.03481697565590025
+        },
+        {
+          "monatsende": "2023-01-31",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 16.12901544479328,
+          "SMA10": 15.566187042995121,
+          "abstandRel": 0.036157114150278336
+        },
+        {
+          "monatsende": "2023-10-31",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 16.779929663034874,
+          "SMA10": 16.93355471792356,
+          "abstandRel": -0.00907222715181466
+        },
+        {
+          "monatsende": "2023-11-30",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 18.312672339189845,
+          "SMA10": 17.151920407363217,
+          "abstandRel": 0.06767475036371584
+        },
+        {
+          "monatsende": "2025-03-31",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 22.89373080112417,
+          "SMA10": 23.382328261055534,
+          "abstandRel": -0.0208960140528498
+        },
+        {
+          "monatsende": "2025-05-30",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 24.1215180444581,
+          "SMA10": 23.62434586045095,
+          "abstandRel": 0.021044907949788083
+        },
+        {
+          "monatsende": "2026-03-31",
+          "von": "SPY",
+          "nach": "BIL",
+          "P": 26.921260036569475,
+          "SMA10": 27.33634112027621,
+          "abstandRel": -0.015184222419541538
+        },
+        {
+          "monatsende": "2026-04-30",
+          "von": "BIL",
+          "nach": "SPY",
+          "P": 29.749409871703445,
+          "SMA10": 27.77516142486666,
+          "abstandRel": 0.07107963898525793
+        }
+      ],
+      "knappsteEntscheidung": {
+        "monatsende": "2019-05-31",
+        "abstand": 0.0030993243364999534
+      }
+    },
+    "R2": {
+      "anfang": {
+        "monatsende": "2016-11-30",
+        "reihe": "SPY",
+        "monatsende12": "2015-11-30",
+        "rSPY": 0.07889064793873768,
+        "rBIL": 0.0006566556116420763,
+        "rACWX": -0.0023840834931582178
+      },
+      "wechsel": [
+        {
+          "monatsende": "2017-05-31",
+          "von": "SPY",
+          "nach": "ACWX",
+          "monatsende12": "2016-05-31",
+          "rSPY": 0.17442305482609788,
+          "rBIL": 0.002102134269036382,
+          "rACWX": 0.1809994352018538
+        },
+        {
+          "monatsende": "2018-05-31",
+          "von": "ACWX",
+          "nach": "SPY",
+          "monatsende12": "2017-05-31",
+          "rSPY": 0.143544985537708,
+          "rBIL": 0.01124623916299683,
+          "rACWX": 0.09513276552999628
+        },
+        {
+          "monatsende": "2018-12-31",
+          "von": "SPY",
+          "nach": "AGG",
+          "monatsende12": "2017-12-29",
+          "rSPY": -0.04556876991564163,
+          "rBIL": 0.017372913329027462,
+          "rACWX": -0.13936351606839448
+        },
+        {
+          "monatsende": "2019-02-28",
+          "von": "AGG",
+          "nach": "SPY",
+          "monatsende12": "2018-02-28",
+          "rSPY": 0.04549793936928248,
+          "rBIL": 0.01885041997340786,
+          "rACWX": -0.06130184332803412
+        },
+        {
+          "monatsende": "2020-03-31",
+          "von": "SPY",
+          "nach": "AGG",
+          "monatsende12": "2019-03-29",
+          "rSPY": -0.06864996701601334,
+          "rBIL": 0.019382695799947003,
+          "rACWX": -0.15869986333025032
+        },
+        {
+          "monatsende": "2020-05-29",
+          "von": "AGG",
+          "nach": "SPY",
+          "monatsende12": "2019-05-31",
+          "rSPY": 0.12842739736252318,
+          "rBIL": 0.014893228647423928,
+          "rACWX": -0.0353951007192046
+        },
+        {
+          "monatsende": "2021-05-28",
+          "von": "SPY",
+          "nach": "ACWX",
+          "monatsende12": "2020-05-29",
+          "rSPY": 0.4025250732024408,
+          "rBIL": -0.0004042562201127531,
+          "rACWX": 0.4224586794131777
+        },
+        {
+          "monatsende": "2021-06-30",
+          "von": "ACWX",
+          "nach": "SPY",
+          "monatsende12": "2020-06-30",
+          "rSPY": 0.40901977719409954,
+          "rBIL": -0.0006227343025895227,
+          "rACWX": 0.3567812680937934
+        },
+        {
+          "monatsende": "2022-05-31",
+          "von": "SPY",
+          "nach": "AGG",
+          "monatsende12": "2021-05-28",
+          "rSPY": -0.003910496433759181,
+          "rBIL": -0.00019664761840776368,
+          "rACWX": -0.12576773525487028
+        },
+        {
+          "monatsende": "2023-06-30",
+          "von": "AGG",
+          "nach": "SPY",
+          "monatsende12": "2022-06-30",
+          "rSPY": 0.19438938340155776,
+          "rBIL": 0.03556213354888915,
+          "rACWX": 0.12090190165395764
+        },
+        {
+          "monatsende": "2023-10-31",
+          "von": "SPY",
+          "nach": "ACWX",
+          "monatsende12": "2022-10-31",
+          "rSPY": 0.10004739230947068,
+          "rBIL": 0.047163905089990577,
+          "rACWX": 0.12673415460623838
+        },
+        {
+          "monatsende": "2023-11-30",
+          "von": "ACWX",
+          "nach": "SPY",
+          "monatsende12": "2022-11-30",
+          "rSPY": 0.137305373632304,
+          "rBIL": 0.04876026931200128,
+          "rACWX": 0.07608216748126528
+        },
+        {
+          "monatsende": "2025-04-30",
+          "von": "SPY",
+          "nach": "ACWX",
+          "monatsende12": "2024-04-30",
+          "rSPY": 0.11873053545982049,
+          "rBIL": 0.04802196795407143,
+          "rACWX": 0.12539309706277435
+        },
+        {
+          "monatsende": "2025-05-30",
+          "von": "ACWX",
+          "nach": "SPY",
+          "monatsende12": "2024-05-31",
+          "rSPY": 0.13179145852318652,
+          "rBIL": 0.04704011592041302,
+          "rACWX": 0.13067386749862653
+        },
+        {
+          "monatsende": "2025-06-30",
+          "von": "SPY",
+          "nach": "ACWX",
+          "monatsende12": "2024-06-28",
+          "rSPY": 0.14940197405660327,
+          "rBIL": 0.04636689089262647,
+          "rACWX": 0.179893387704811
+        },
+        {
+          "monatsende": "2025-07-31",
+          "von": "ACWX",
+          "nach": "SPY",
+          "monatsende12": "2024-07-31",
+          "rSPY": 0.16180602832272073,
+          "rBIL": 0.04538603671630814,
+          "rACWX": 0.14200876679566754
+        },
+        {
+          "monatsende": "2025-10-31",
+          "von": "SPY",
+          "nach": "ACWX",
+          "monatsende12": "2024-10-31",
+          "rSPY": 0.21398312389623086,
+          "rBIL": 0.0430291274420751,
+          "rACWX": 0.25096942859551774
+        }
+      ],
+      "knappsteEntscheidung": {
+        "monatsende": "2025-08-29",
+        "abstand": 0.0009181964536479903
+      }
+    },
+    "R3": {
+      "anfang": {
+        "tag": "2016-11-30",
+        "reihe": "SPY",
+        "verhaeltnis": 1.045501493583102
+      },
+      "wechsel": [
+        {
+          "tag": "2018-10-11",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9852096000720786
+        },
+        {
+          "tag": "2018-10-16",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.014473778588806
+        },
+        {
+          "tag": "2018-10-23",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9894866751064019
+        },
+        {
+          "tag": "2018-11-07",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.0179062176117006
+        },
+        {
+          "tag": "2018-11-12",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9877584121286753
+        },
+        {
+          "tag": "2018-12-03",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.0121049947081389
+        },
+        {
+          "tag": "2018-12-04",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9793307771621225
+        },
+        {
+          "tag": "2019-02-15",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.01145483681122
+        },
+        {
+          "tag": "2020-02-27",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9776399418818762
+        },
+        {
+          "tag": "2020-03-02",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.015077380740718
+        },
+        {
+          "tag": "2020-03-03",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9858102312008304
+        },
+        {
+          "tag": "2020-03-04",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.0267913451333337
+        },
+        {
+          "tag": "2020-03-06",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9757775887787766
+        },
+        {
+          "tag": "2020-05-27",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.0129643230931038
+        },
+        {
+          "tag": "2022-01-25",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9827690297682273
+        },
+        {
+          "tag": "2022-01-31",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.0165555555703039
+        },
+        {
+          "tag": "2022-02-14",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9882901703563854
+        },
+        {
+          "tag": "2022-03-25",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.0136177569134854
+        },
+        {
+          "tag": "2022-04-11",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9815081757914771
+        },
+        {
+          "tag": "2023-01-23",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.0124006108107257
+        },
+        {
+          "tag": "2023-03-10",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9815626743312316
+        },
+        {
+          "tag": "2023-03-21",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.0160058382135064
+        },
+        {
+          "tag": "2023-10-25",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9875188707263325
+        },
+        {
+          "tag": "2023-11-02",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.0170817570776023
+        },
+        {
+          "tag": "2025-03-10",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9800500732122895
+        },
+        {
+          "tag": "2025-05-12",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.016589421264845
+        },
+        {
+          "tag": "2026-03-20",
+          "von": "SPY",
+          "nach": "BIL",
+          "verhaeltnis": 0.9821397933694312
+        },
+        {
+          "tag": "2026-04-08",
+          "von": "BIL",
+          "nach": "SPY",
+          "verhaeltnis": 1.018700810343472
+        }
+      ],
+      "knappsteEntscheidung": {
+        "tag": "2019-06-03",
+        "abstand": 0.0004543071569877988
+      }
+    }
+  },
+  "auffaelligkeiten": [
+    {
+      "was": "BIL: Jahre ohne jede Ausschüttung (Nullzins-Zeit)",
+      "jahre": [
+        2010,
+        2012,
+        2013,
+        2014,
+        2015,
+        2021
+      ]
+    },
+    {
+      "was": "R2: Monatsenden ab 12/2016 mit negativem 12-Monats-Gesamtertrag von BIL (Geld schlägt sich selbst nicht; r_SPY muss nur > r_BIL sein)",
+      "zahl": 15,
+      "erstes": "2021-03-31",
+      "letztes": "2022-05-31"
+    },
+    {
+      "was": "BIL: Anteil der Tage mit Eröffnung = Schluss ab 12/2016 (Kursschritt 1 Cent bei ~91 $, kaum Schwankung)",
+      "anteil": 0.4497763318422123
+    },
+    {
+      "was": "Splits bis 15.09.2026 (Kurse und Beträge bei Yahoo bereinigt, ohne Wirkung auf das Buch, L7)",
+      "splits": [
+        "BIL 2017-11-30 1:2",
+        "EFA 2005-06-09 3:1"
+      ]
+    }
+  ]
+}

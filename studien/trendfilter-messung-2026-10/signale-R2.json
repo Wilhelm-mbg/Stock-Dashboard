@@ -1,0 +1,1530 @@
+{
+ "kennung": "trendfilter-messung-2026-10/v1",
+ "regel": "R2",
+ "titel": "Antonacci GEM",
+ "siegel": "6f9d06f",
+ "inhalt": "NUR Signal: 12-Monats-Gesamtertrag (TR aus kern.js) von SPY, Geld und Nicht-US an Monatsenden und das Ziel. Keine Kurse, keine Buchwerte, keine Ertraege der Regel.",
+ "erzeugtMit": "node studien/trendfilter-messung-2026-10/regel-R2.js --signale",
+ "datenShaKanonisch": {
+  "SPY": "3e24a46f28edbb7b8680c67c27ecc27a57edc4be46d955dc1ce07a8b25b9a56a",
+  "BIL": "b10f0f249a3f813b3eba856047ff0a8482aaa0f0bd99837c7e8093d3a2d6cabc",
+  "SHY": "82db57f648fa174f5b309ad57fe112759571f7fde7890db8538a3acb1313882e",
+  "ACWX": "d918ccd244cc6c83ec87832db07daa13f55eb8156a485a381ed5f45eb94b67a5",
+  "EFA": "04826a95e6501346820a2d7aa801bbc847b89a3603b0d3acf5543b44dc9fa35d",
+  "AGG": "6ad9f47432cb4b4b1f6ae4c0ed3cf34e4b662171727770cbe31e6381c71a9dad"
+ },
+ "kalender": {
+  "erster": "1993-01-29",
+  "letzter": "2026-09-15",
+  "handelstage": 8464,
+  "letztesMonatsende": "2026-08-31"
+ },
+ "renditenAls": "Bruch (0,1 = +10 %), ungerundet",
+ "wechselBegriff": "Monatsende M, dessen Entscheid vom vorigen berechenbaren Monatsende abweicht; Ausfuehrung zur Eroeffnung des naechsten SPY-Handelstags. Fensterzaehlung: Tage i in (Starttag, Endtag] mit ziel[i] !== ziel[i-1] (Erstkauf zaehlt nicht).",
+ "lesarten": {
+  "haupt": {
+   "titel": "Hauptlesart (entscheidet): Geld BIL, Nicht-US ACWX, Anleihen AGG, absolutes Momentum am S&P 500",
+   "optionen": {
+    "geld": "BIL",
+    "intl": "ACWX",
+    "anleihen": "AGG"
+   },
+   "erstesBerechenbaresMonatsende": "2009-04-30",
+   "ersterTagMitZiel": "2009-05-01",
+   "erstesZiel": "AGG",
+   "letztesMonatsende": "2026-08-31",
+   "zielNachLetztemMonatsende": "ACWX",
+   "berechenbareMonatsenden": 209,
+   "nichtBerechenbarAbErstem": [],
+   "monateJeZiel": {
+    "AGG": 27,
+    "ACWX": 36,
+    "SPY": 146
+   },
+   "wechselMonatsendenGesamt": 27,
+   "fensterSignalzaehlung": {
+    "A": {
+     "starttag": "2017-01-04",
+     "endtag": "2021-09-15",
+     "zielAmStarttag": "SPY",
+     "wechsel": 8,
+     "liste": [
+      {
+       "ausfuehrung": "2017-06-01",
+       "monatsende": "2017-05-31",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2018-06-01",
+       "monatsende": "2018-05-31",
+       "von": "ACWX",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2019-01-02",
+       "monatsende": "2018-12-31",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2019-03-01",
+       "monatsende": "2019-02-28",
+       "von": "AGG",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2020-04-01",
+       "monatsende": "2020-03-31",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2020-06-01",
+       "monatsende": "2020-05-29",
+       "von": "AGG",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2021-06-01",
+       "monatsende": "2021-05-28",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2021-07-01",
+       "monatsende": "2021-06-30",
+       "von": "ACWX",
+       "nach": "SPY"
+      }
+     ]
+    },
+    "B": {
+     "starttag": "2021-09-16",
+     "endtag": "2026-09-15",
+     "zielAmStarttag": "SPY",
+     "wechsel": 9,
+     "liste": [
+      {
+       "ausfuehrung": "2022-06-01",
+       "monatsende": "2022-05-31",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2023-07-03",
+       "monatsende": "2023-06-30",
+       "von": "AGG",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2023-11-01",
+       "monatsende": "2023-10-31",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2023-12-01",
+       "monatsende": "2023-11-30",
+       "von": "ACWX",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2025-05-01",
+       "monatsende": "2025-04-30",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2025-06-02",
+       "monatsende": "2025-05-30",
+       "von": "ACWX",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2025-07-01",
+       "monatsende": "2025-06-30",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2025-08-01",
+       "monatsende": "2025-07-31",
+       "von": "ACWX",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2025-11-03",
+       "monatsende": "2025-10-31",
+       "von": "SPY",
+       "nach": "ACWX"
+      }
+     ]
+    }
+   },
+   "wechselAb2016": [
+    {
+     "monatsende": "2016-01-29",
+     "ausfuehrung": "2016-02-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.008511921556396573,
+     "rGeld": -0.0008747193511421392,
+     "rIntl": -0.10727400293461264
+    },
+    {
+     "monatsende": "2016-03-31",
+     "ausfuehrung": "2016-04-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.01703631476435241,
+     "rGeld": -0.0008747193511421392,
+     "rIntl": -0.09644715701869577
+    },
+    {
+     "monatsende": "2017-05-31",
+     "ausfuehrung": "2017-06-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.17442305482609788,
+     "rGeld": 0.002102134269036382,
+     "rIntl": 0.1809994352018538
+    },
+    {
+     "monatsende": "2018-05-31",
+     "ausfuehrung": "2018-06-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.143544985537708,
+     "rGeld": 0.01124623916299683,
+     "rIntl": 0.09513276552999628
+    },
+    {
+     "monatsende": "2018-12-31",
+     "ausfuehrung": "2019-01-02",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.04556876991564163,
+     "rGeld": 0.017372913329027462,
+     "rIntl": -0.13936351606839448
+    },
+    {
+     "monatsende": "2019-02-28",
+     "ausfuehrung": "2019-03-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.04549793936928248,
+     "rGeld": 0.01885041997340786,
+     "rIntl": -0.06130184332803412
+    },
+    {
+     "monatsende": "2020-03-31",
+     "ausfuehrung": "2020-04-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.06864996701601334,
+     "rGeld": 0.019382695799947003,
+     "rIntl": -0.15869986333025032
+    },
+    {
+     "monatsende": "2020-05-29",
+     "ausfuehrung": "2020-06-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.12842739736252318,
+     "rGeld": 0.014893228647423928,
+     "rIntl": -0.0353951007192046
+    },
+    {
+     "monatsende": "2021-05-28",
+     "ausfuehrung": "2021-06-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.4025250732024408,
+     "rGeld": -0.0004042562201127531,
+     "rIntl": 0.4224586794131777
+    },
+    {
+     "monatsende": "2021-06-30",
+     "ausfuehrung": "2021-07-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.40901977719409954,
+     "rGeld": -0.0006227343025895227,
+     "rIntl": 0.3567812680937934
+    },
+    {
+     "monatsende": "2022-05-31",
+     "ausfuehrung": "2022-06-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.003910496433759181,
+     "rGeld": -0.00019664761840776368,
+     "rIntl": -0.12576773525487028
+    },
+    {
+     "monatsende": "2023-06-30",
+     "ausfuehrung": "2023-07-03",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.19438938340155776,
+     "rGeld": 0.03556213354888915,
+     "rIntl": 0.12090190165395764
+    },
+    {
+     "monatsende": "2023-10-31",
+     "ausfuehrung": "2023-11-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.10004739230947068,
+     "rGeld": 0.047163905089990577,
+     "rIntl": 0.12673415460623838
+    },
+    {
+     "monatsende": "2023-11-30",
+     "ausfuehrung": "2023-12-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.137305373632304,
+     "rGeld": 0.04876026931200128,
+     "rIntl": 0.07608216748126528
+    },
+    {
+     "monatsende": "2025-04-30",
+     "ausfuehrung": "2025-05-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.11873053545982049,
+     "rGeld": 0.04802196795407143,
+     "rIntl": 0.12539309706277435
+    },
+    {
+     "monatsende": "2025-05-30",
+     "ausfuehrung": "2025-06-02",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.13179145852318652,
+     "rGeld": 0.04704011592041302,
+     "rIntl": 0.13067386749862653
+    },
+    {
+     "monatsende": "2025-06-30",
+     "ausfuehrung": "2025-07-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.14940197405660327,
+     "rGeld": 0.04636689089262647,
+     "rIntl": 0.179893387704811
+    },
+    {
+     "monatsende": "2025-07-31",
+     "ausfuehrung": "2025-08-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.16180602832272073,
+     "rGeld": 0.04538603671630814,
+     "rIntl": 0.14200876679566754
+    },
+    {
+     "monatsende": "2025-10-31",
+     "ausfuehrung": "2025-11-03",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.21398312389623086,
+     "rGeld": 0.0430291274420751,
+     "rIntl": 0.25096942859551774
+    }
+   ],
+   "wechselVor2016": [
+    {
+     "monatsende": "2009-10-30",
+     "ausfuehrung": "2009-11-02",
+     "von": "AGG",
+     "nach": "ACWX",
+     "rSpy": 0.0974197331007074,
+     "rGeld": 0.0026205014129385695,
+     "rIntl": 0.2813960183230557
+    },
+    {
+     "monatsende": "2010-04-30",
+     "ausfuehrung": "2010-05-03",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.38629139804198376,
+     "rGeld": -0.0004142458641208657,
+     "rIntl": 0.38189352875129057
+    },
+    {
+     "monatsende": "2011-04-29",
+     "ausfuehrung": "2011-05-02",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.1710764811539891,
+     "rGeld": 0.00021811347076616805,
+     "rIntl": 0.2009370739955798
+    },
+    {
+     "monatsende": "2011-07-29",
+     "ausfuehrung": "2011-08-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.196334443325199,
+     "rGeld": 0.00021814910716111413,
+     "rIntl": 0.15131926123153994
+    },
+    {
+     "monatsende": "2012-05-31",
+     "ausfuehrung": "2012-06-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.005002124321025425,
+     "rGeld": -0.0006105272334111511,
+     "rIntl": -0.20670904271244084
+    },
+    {
+     "monatsende": "2012-06-29",
+     "ausfuehrung": "2012-07-02",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.05310270734802147,
+     "rGeld": -0.0010466661411339118,
+     "rIntl": -0.14680016899184078
+    },
+    {
+     "monatsende": "2015-09-30",
+     "ausfuehrung": "2015-10-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.007668197977538704,
+     "rGeld": -0.0015297136667782318,
+     "rIntl": -0.1190287429759338
+    },
+    {
+     "monatsende": "2015-10-30",
+     "ausfuehrung": "2015-11-02",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.051964515910463804,
+     "rGeld": -0.0015300479742994533,
+     "rIntl": -0.059206341248499106
+    }
+   ],
+   "knappeEntscheideAb2016": [
+    {
+     "monatsende": "2017-10-31",
+     "ziel": "ACWX",
+     "rSpy": 0.23432796147860047,
+     "rGeld": 0.005372256060649505,
+     "rIntl": 0.23915108211198088
+    },
+    {
+     "monatsende": "2022-04-29",
+     "ziel": "SPY",
+     "rSpy": 0.00037179353365957013,
+     "rGeld": -0.0006338735042393795,
+     "rIntl": -0.1147069496146429
+    },
+    {
+     "monatsende": "2022-05-31",
+     "ziel": "AGG",
+     "rSpy": -0.003910496433759181,
+     "rGeld": -0.00019664761840776368,
+     "rIntl": -0.12576773525487028
+    },
+    {
+     "monatsende": "2023-02-28",
+     "ziel": "AGG",
+     "rSpy": -0.07769490420900171,
+     "rGeld": 0.020665753312402613,
+     "rIntl": -0.07299907011894069
+    },
+    {
+     "monatsende": "2023-04-28",
+     "ziel": "AGG",
+     "rSpy": 0.026767913728757975,
+     "rGeld": 0.028098523990340407,
+     "rIntl": 0.04507349134083505
+    },
+    {
+     "monatsende": "2023-05-31",
+     "ziel": "AGG",
+     "rSpy": 0.02918453237880314,
+     "rGeld": 0.03161689461997241,
+     "rIntl": -0.011883151633075628
+    },
+    {
+     "monatsende": "2023-07-31",
+     "ziel": "SPY",
+     "rSpy": 0.12947518099352462,
+     "rGeld": 0.03918341464156927,
+     "rIntl": 0.1267937781772812
+    },
+    {
+     "monatsende": "2025-05-30",
+     "ziel": "SPY",
+     "rSpy": 0.13179145852318652,
+     "rGeld": 0.04704011592041302,
+     "rIntl": 0.13067386749862653
+    },
+    {
+     "monatsende": "2025-08-29",
+     "ziel": "SPY",
+     "rSpy": 0.15857494036026143,
+     "rGeld": 0.04443922702361891,
+     "rIntl": 0.15765674390661344
+    }
+   ]
+  },
+  "n5": {
+   "titel": "N5 (nachrichtlich): absolutes Momentum auf den Gewinner, BIL/ACWX/AGG",
+   "optionen": {
+    "geld": "BIL",
+    "intl": "ACWX",
+    "anleihen": "AGG",
+    "absolutAufGewinner": true
+   },
+   "erstesBerechenbaresMonatsende": "2009-04-30",
+   "ersterTagMitZiel": "2009-05-01",
+   "erstesZiel": "AGG",
+   "letztesMonatsende": "2026-08-31",
+   "zielNachLetztemMonatsende": "ACWX",
+   "berechenbareMonatsenden": 209,
+   "nichtBerechenbarAbErstem": [],
+   "monateJeZiel": {
+    "AGG": 25,
+    "ACWX": 38,
+    "SPY": 146
+   },
+   "wechselMonatsendenGesamt": 29,
+   "fensterSignalzaehlung": {
+    "A": {
+     "starttag": "2017-01-04",
+     "endtag": "2021-09-15",
+     "zielAmStarttag": "SPY",
+     "wechsel": 8,
+     "liste": [
+      {
+       "ausfuehrung": "2017-06-01",
+       "monatsende": "2017-05-31",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2018-06-01",
+       "monatsende": "2018-05-31",
+       "von": "ACWX",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2019-01-02",
+       "monatsende": "2018-12-31",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2019-03-01",
+       "monatsende": "2019-02-28",
+       "von": "AGG",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2020-04-01",
+       "monatsende": "2020-03-31",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2020-06-01",
+       "monatsende": "2020-05-29",
+       "von": "AGG",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2021-06-01",
+       "monatsende": "2021-05-28",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2021-07-01",
+       "monatsende": "2021-06-30",
+       "von": "ACWX",
+       "nach": "SPY"
+      }
+     ]
+    },
+    "B": {
+     "starttag": "2021-09-16",
+     "endtag": "2026-09-15",
+     "zielAmStarttag": "SPY",
+     "wechsel": 11,
+     "liste": [
+      {
+       "ausfuehrung": "2022-06-01",
+       "monatsende": "2022-05-31",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2023-05-01",
+       "monatsende": "2023-04-28",
+       "von": "AGG",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2023-06-01",
+       "monatsende": "2023-05-31",
+       "von": "ACWX",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2023-07-03",
+       "monatsende": "2023-06-30",
+       "von": "AGG",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2023-11-01",
+       "monatsende": "2023-10-31",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2023-12-01",
+       "monatsende": "2023-11-30",
+       "von": "ACWX",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2025-05-01",
+       "monatsende": "2025-04-30",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2025-06-02",
+       "monatsende": "2025-05-30",
+       "von": "ACWX",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2025-07-01",
+       "monatsende": "2025-06-30",
+       "von": "SPY",
+       "nach": "ACWX"
+      },
+      {
+       "ausfuehrung": "2025-08-01",
+       "monatsende": "2025-07-31",
+       "von": "ACWX",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2025-11-03",
+       "monatsende": "2025-10-31",
+       "von": "SPY",
+       "nach": "ACWX"
+      }
+     ]
+    }
+   },
+   "wechselAb2016": [
+    {
+     "monatsende": "2016-01-29",
+     "ausfuehrung": "2016-02-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.008511921556396573,
+     "rGeld": -0.0008747193511421392,
+     "rIntl": -0.10727400293461264
+    },
+    {
+     "monatsende": "2016-03-31",
+     "ausfuehrung": "2016-04-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.01703631476435241,
+     "rGeld": -0.0008747193511421392,
+     "rIntl": -0.09644715701869577
+    },
+    {
+     "monatsende": "2017-05-31",
+     "ausfuehrung": "2017-06-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.17442305482609788,
+     "rGeld": 0.002102134269036382,
+     "rIntl": 0.1809994352018538
+    },
+    {
+     "monatsende": "2018-05-31",
+     "ausfuehrung": "2018-06-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.143544985537708,
+     "rGeld": 0.01124623916299683,
+     "rIntl": 0.09513276552999628
+    },
+    {
+     "monatsende": "2018-12-31",
+     "ausfuehrung": "2019-01-02",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.04556876991564163,
+     "rGeld": 0.017372913329027462,
+     "rIntl": -0.13936351606839448
+    },
+    {
+     "monatsende": "2019-02-28",
+     "ausfuehrung": "2019-03-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.04549793936928248,
+     "rGeld": 0.01885041997340786,
+     "rIntl": -0.06130184332803412
+    },
+    {
+     "monatsende": "2020-03-31",
+     "ausfuehrung": "2020-04-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.06864996701601334,
+     "rGeld": 0.019382695799947003,
+     "rIntl": -0.15869986333025032
+    },
+    {
+     "monatsende": "2020-05-29",
+     "ausfuehrung": "2020-06-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.12842739736252318,
+     "rGeld": 0.014893228647423928,
+     "rIntl": -0.0353951007192046
+    },
+    {
+     "monatsende": "2021-05-28",
+     "ausfuehrung": "2021-06-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.4025250732024408,
+     "rGeld": -0.0004042562201127531,
+     "rIntl": 0.4224586794131777
+    },
+    {
+     "monatsende": "2021-06-30",
+     "ausfuehrung": "2021-07-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.40901977719409954,
+     "rGeld": -0.0006227343025895227,
+     "rIntl": 0.3567812680937934
+    },
+    {
+     "monatsende": "2022-05-31",
+     "ausfuehrung": "2022-06-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.003910496433759181,
+     "rGeld": -0.00019664761840776368,
+     "rIntl": -0.12576773525487028
+    },
+    {
+     "monatsende": "2023-04-28",
+     "ausfuehrung": "2023-05-01",
+     "von": "AGG",
+     "nach": "ACWX",
+     "rSpy": 0.026767913728757975,
+     "rGeld": 0.028098523990340407,
+     "rIntl": 0.04507349134083505
+    },
+    {
+     "monatsende": "2023-05-31",
+     "ausfuehrung": "2023-06-01",
+     "von": "ACWX",
+     "nach": "AGG",
+     "rSpy": 0.02918453237880314,
+     "rGeld": 0.03161689461997241,
+     "rIntl": -0.011883151633075628
+    },
+    {
+     "monatsende": "2023-06-30",
+     "ausfuehrung": "2023-07-03",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.19438938340155776,
+     "rGeld": 0.03556213354888915,
+     "rIntl": 0.12090190165395764
+    },
+    {
+     "monatsende": "2023-10-31",
+     "ausfuehrung": "2023-11-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.10004739230947068,
+     "rGeld": 0.047163905089990577,
+     "rIntl": 0.12673415460623838
+    },
+    {
+     "monatsende": "2023-11-30",
+     "ausfuehrung": "2023-12-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.137305373632304,
+     "rGeld": 0.04876026931200128,
+     "rIntl": 0.07608216748126528
+    },
+    {
+     "monatsende": "2025-04-30",
+     "ausfuehrung": "2025-05-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.11873053545982049,
+     "rGeld": 0.04802196795407143,
+     "rIntl": 0.12539309706277435
+    },
+    {
+     "monatsende": "2025-05-30",
+     "ausfuehrung": "2025-06-02",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.13179145852318652,
+     "rGeld": 0.04704011592041302,
+     "rIntl": 0.13067386749862653
+    },
+    {
+     "monatsende": "2025-06-30",
+     "ausfuehrung": "2025-07-01",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.14940197405660327,
+     "rGeld": 0.04636689089262647,
+     "rIntl": 0.179893387704811
+    },
+    {
+     "monatsende": "2025-07-31",
+     "ausfuehrung": "2025-08-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.16180602832272073,
+     "rGeld": 0.04538603671630814,
+     "rIntl": 0.14200876679566754
+    },
+    {
+     "monatsende": "2025-10-31",
+     "ausfuehrung": "2025-11-03",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.21398312389623086,
+     "rGeld": 0.0430291274420751,
+     "rIntl": 0.25096942859551774
+    }
+   ],
+   "wechselVor2016": [
+    {
+     "monatsende": "2009-09-30",
+     "ausfuehrung": "2009-10-01",
+     "von": "AGG",
+     "nach": "ACWX",
+     "rSpy": -0.06590099803526783,
+     "rGeld": 0.00024529061755251824,
+     "rIntl": 0.01621888363814139
+    },
+    {
+     "monatsende": "2010-04-30",
+     "ausfuehrung": "2010-05-03",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.38629139804198376,
+     "rGeld": -0.0004142458641208657,
+     "rIntl": 0.38189352875129057
+    },
+    {
+     "monatsende": "2011-04-29",
+     "ausfuehrung": "2011-05-02",
+     "von": "SPY",
+     "nach": "ACWX",
+     "rSpy": 0.1710764811539891,
+     "rGeld": 0.00021811347076616805,
+     "rIntl": 0.2009370739955798
+    },
+    {
+     "monatsende": "2011-07-29",
+     "ausfuehrung": "2011-08-01",
+     "von": "ACWX",
+     "nach": "SPY",
+     "rSpy": 0.196334443325199,
+     "rGeld": 0.00021814910716111413,
+     "rIntl": 0.15131926123153994
+    },
+    {
+     "monatsende": "2012-05-31",
+     "ausfuehrung": "2012-06-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.005002124321025425,
+     "rGeld": -0.0006105272334111511,
+     "rIntl": -0.20670904271244084
+    },
+    {
+     "monatsende": "2012-06-29",
+     "ausfuehrung": "2012-07-02",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.05310270734802147,
+     "rGeld": -0.0010466661411339118,
+     "rIntl": -0.14680016899184078
+    },
+    {
+     "monatsende": "2015-09-30",
+     "ausfuehrung": "2015-10-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.007668197977538704,
+     "rGeld": -0.0015297136667782318,
+     "rIntl": -0.1190287429759338
+    },
+    {
+     "monatsende": "2015-10-30",
+     "ausfuehrung": "2015-11-02",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.051964515910463804,
+     "rGeld": -0.0015300479742994533,
+     "rIntl": -0.059206341248499106
+    }
+   ],
+   "knappeEntscheideAb2016": [
+    {
+     "monatsende": "2017-10-31",
+     "ziel": "ACWX",
+     "rSpy": 0.23432796147860047,
+     "rGeld": 0.005372256060649505,
+     "rIntl": 0.23915108211198088
+    },
+    {
+     "monatsende": "2022-04-29",
+     "ziel": "SPY",
+     "rSpy": 0.00037179353365957013,
+     "rGeld": -0.0006338735042393795,
+     "rIntl": -0.1147069496146429
+    },
+    {
+     "monatsende": "2022-05-31",
+     "ziel": "AGG",
+     "rSpy": -0.003910496433759181,
+     "rGeld": -0.00019664761840776368,
+     "rIntl": -0.12576773525487028
+    },
+    {
+     "monatsende": "2023-02-28",
+     "ziel": "AGG",
+     "rSpy": -0.07769490420900171,
+     "rGeld": 0.020665753312402613,
+     "rIntl": -0.07299907011894069
+    },
+    {
+     "monatsende": "2023-05-31",
+     "ziel": "AGG",
+     "rSpy": 0.02918453237880314,
+     "rGeld": 0.03161689461997241,
+     "rIntl": -0.011883151633075628
+    },
+    {
+     "monatsende": "2023-07-31",
+     "ziel": "SPY",
+     "rSpy": 0.12947518099352462,
+     "rGeld": 0.03918341464156927,
+     "rIntl": 0.1267937781772812
+    },
+    {
+     "monatsende": "2025-05-30",
+     "ziel": "SPY",
+     "rSpy": 0.13179145852318652,
+     "rGeld": 0.04704011592041302,
+     "rIntl": 0.13067386749862653
+    },
+    {
+     "monatsende": "2025-08-29",
+     "ziel": "SPY",
+     "rSpy": 0.15857494036026143,
+     "rGeld": 0.04443922702361891,
+     "rIntl": 0.15765674390661344
+    }
+   ]
+  },
+  "ersatz": {
+   "titel": "Ersatzreihen = N2 und Zusatz 2003-2026 (nachrichtlich): Geld SHY, Nicht-US EFA, Anleihen AGG",
+   "optionen": {
+    "geld": "SHY",
+    "intl": "EFA",
+    "anleihen": "AGG"
+   },
+   "erstesBerechenbaresMonatsende": "2003-07-31",
+   "ersterTagMitZiel": "2003-08-01",
+   "erstesZiel": "SPY",
+   "letztesMonatsende": "2026-08-31",
+   "zielNachLetztemMonatsende": "EFA",
+   "berechenbareMonatsenden": 278,
+   "nichtBerechenbarAbErstem": [],
+   "monateJeZiel": {
+    "SPY": 142,
+    "EFA": 92,
+    "AGG": 44
+   },
+   "wechselMonatsendenGesamt": 40,
+   "fensterSignalzaehlung": {
+    "A": {
+     "starttag": "2017-01-04",
+     "endtag": "2021-09-15",
+     "zielAmStarttag": "SPY",
+     "wechsel": 8,
+     "liste": [
+      {
+       "ausfuehrung": "2017-07-03",
+       "monatsende": "2017-06-30",
+       "von": "SPY",
+       "nach": "EFA"
+      },
+      {
+       "ausfuehrung": "2018-06-01",
+       "monatsende": "2018-05-31",
+       "von": "EFA",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2019-01-02",
+       "monatsende": "2018-12-31",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2019-03-01",
+       "monatsende": "2019-02-28",
+       "von": "AGG",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2019-09-03",
+       "monatsende": "2019-08-30",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2019-11-01",
+       "monatsende": "2019-10-31",
+       "von": "AGG",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2020-04-01",
+       "monatsende": "2020-03-31",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2020-06-01",
+       "monatsende": "2020-05-29",
+       "von": "AGG",
+       "nach": "SPY"
+      }
+     ]
+    },
+    "B": {
+     "starttag": "2021-09-16",
+     "endtag": "2026-09-15",
+     "zielAmStarttag": "SPY",
+     "wechsel": 12,
+     "liste": [
+      {
+       "ausfuehrung": "2022-07-01",
+       "monatsende": "2022-06-30",
+       "von": "SPY",
+       "nach": "AGG"
+      },
+      {
+       "ausfuehrung": "2023-05-01",
+       "monatsende": "2023-04-28",
+       "von": "AGG",
+       "nach": "EFA"
+      },
+      {
+       "ausfuehrung": "2023-07-03",
+       "monatsende": "2023-06-30",
+       "von": "EFA",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2023-08-01",
+       "monatsende": "2023-07-31",
+       "von": "SPY",
+       "nach": "EFA"
+      },
+      {
+       "ausfuehrung": "2023-12-01",
+       "monatsende": "2023-11-30",
+       "von": "EFA",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2025-05-01",
+       "monatsende": "2025-04-30",
+       "von": "SPY",
+       "nach": "EFA"
+      },
+      {
+       "ausfuehrung": "2025-06-02",
+       "monatsende": "2025-05-30",
+       "von": "EFA",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2025-07-01",
+       "monatsende": "2025-06-30",
+       "von": "SPY",
+       "nach": "EFA"
+      },
+      {
+       "ausfuehrung": "2025-08-01",
+       "monatsende": "2025-07-31",
+       "von": "EFA",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2025-11-03",
+       "monatsende": "2025-10-31",
+       "von": "SPY",
+       "nach": "EFA"
+      },
+      {
+       "ausfuehrung": "2026-05-01",
+       "monatsende": "2026-04-30",
+       "von": "EFA",
+       "nach": "SPY"
+      },
+      {
+       "ausfuehrung": "2026-08-03",
+       "monatsende": "2026-07-31",
+       "von": "SPY",
+       "nach": "EFA"
+      }
+     ]
+    }
+   },
+   "wechselAb2016": [
+    {
+     "monatsende": "2016-01-29",
+     "ausfuehrung": "2016-02-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.008511921556396573,
+     "rGeld": 0.004541834623067009,
+     "rIntl": -0.0703956388179634
+    },
+    {
+     "monatsende": "2016-03-31",
+     "ausfuehrung": "2016-04-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.01703631476435241,
+     "rGeld": 0.007478694128162822,
+     "rIntl": -0.08627558472501362
+    },
+    {
+     "monatsende": "2017-06-30",
+     "ausfuehrung": "2017-07-03",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.17779194942092946,
+     "rGeld": -0.002089077439055731,
+     "rIntl": 0.199373971192228
+    },
+    {
+     "monatsende": "2018-05-31",
+     "ausfuehrung": "2018-06-01",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.143544985537708,
+     "rGeld": -0.0022857837019784055,
+     "rIntl": 0.07907164173306702
+    },
+    {
+     "monatsende": "2018-12-31",
+     "ausfuehrung": "2019-01-02",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.04556876991564163,
+     "rGeld": 0.014632713805174502,
+     "rIntl": -0.13806223055852207
+    },
+    {
+     "monatsende": "2019-02-28",
+     "ausfuehrung": "2019-03-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.04549793936928248,
+     "rGeld": 0.022007839560197473,
+     "rIntl": -0.05702155373089668
+    },
+    {
+     "monatsende": "2019-08-30",
+     "ausfuehrung": "2019-09-03",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": 0.02741062105560177,
+     "rGeld": 0.04275000133079354,
+     "rIntl": -0.030794300922581286
+    },
+    {
+     "monatsende": "2019-10-31",
+     "ausfuehrung": "2019-11-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.14324919395705127,
+     "rGeld": 0.04450175062408901,
+     "rIntl": 0.11452554361457734
+    },
+    {
+     "monatsende": "2020-03-31",
+     "ausfuehrung": "2020-04-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.06864996701601334,
+     "rGeld": 0.05178835819962124,
+     "rIntl": -0.14860974098290303
+    },
+    {
+     "monatsende": "2020-05-29",
+     "ausfuehrung": "2020-06-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.12842739736252318,
+     "rGeld": 0.0443577902827732,
+     "rIntl": -0.028316024946382745
+    },
+    {
+     "monatsende": "2022-06-30",
+     "ausfuehrung": "2022-07-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.10614456430553199,
+     "rGeld": -0.035454124382813146,
+     "rIntl": -0.17394915871154537
+    },
+    {
+     "monatsende": "2023-04-28",
+     "ausfuehrung": "2023-05-01",
+     "von": "AGG",
+     "nach": "EFA",
+     "rSpy": 0.026767913728757975,
+     "rGeld": 0.00923235478039075,
+     "rIntl": 0.10112572388476515
+    },
+    {
+     "monatsende": "2023-06-30",
+     "ausfuehrung": "2023-07-03",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.19438938340155776,
+     "rGeld": 0.0004727003488662618,
+     "rIntl": 0.18631290605524842
+    },
+    {
+     "monatsende": "2023-07-31",
+     "ausfuehrung": "2023-08-01",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.12947518099352462,
+     "rGeld": -0.0005745202150536644,
+     "rIntl": 0.1585032291286672
+    },
+    {
+     "monatsende": "2023-11-30",
+     "ausfuehrung": "2023-12-01",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.137305373632304,
+     "rGeld": 0.03147861471979474,
+     "rIntl": 0.103261159014721
+    },
+    {
+     "monatsende": "2025-04-30",
+     "ausfuehrung": "2025-05-01",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.11873053545982049,
+     "rGeld": 0.06575712388176513,
+     "rIntl": 0.13139824305542858
+    },
+    {
+     "monatsende": "2025-05-30",
+     "ausfuehrung": "2025-06-02",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.13179145852318652,
+     "rGeld": 0.05546274733168843,
+     "rIntl": 0.12849462790919342
+    },
+    {
+     "monatsende": "2025-06-30",
+     "ausfuehrung": "2025-07-01",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.14940197405660327,
+     "rGeld": 0.055898019284581046,
+     "rIntl": 0.17673036233265238
+    },
+    {
+     "monatsende": "2025-07-31",
+     "ausfuehrung": "2025-08-01",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.16180602832272073,
+     "rGeld": 0.04262759258379267,
+     "rIntl": 0.12300973938188187
+    },
+    {
+     "monatsende": "2025-10-31",
+     "ausfuehrung": "2025-11-03",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.21398312389623086,
+     "rGeld": 0.04754942715753541,
+     "rIntl": 0.22989250858759358
+    },
+    {
+     "monatsende": "2026-04-30",
+     "ausfuehrung": "2026-05-01",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.3108217301543439,
+     "rGeld": 0.029747695249614292,
+     "rIntl": 0.2505042352270066
+    },
+    {
+     "monatsende": "2026-07-31",
+     "ausfuehrung": "2026-08-03",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.19492307761991445,
+     "rGeld": 0.03036551722829839,
+     "rIntl": 0.24762179628018566
+    }
+   ],
+   "wechselVor2016": [
+    {
+     "monatsende": "2003-09-30",
+     "ausfuehrung": "2003-10-01",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.2420373570267318,
+     "rGeld": 0.02519286702255563,
+     "rIntl": 0.25246151114034676
+    },
+    {
+     "monatsende": "2007-12-31",
+     "ausfuehrung": "2008-01-02",
+     "von": "EFA",
+     "nach": "AGG",
+     "rSpy": 0.05135620519878992,
+     "rGeld": 0.07349600142253965,
+     "rIntl": 0.09939855872565917
+    },
+    {
+     "monatsende": "2009-10-30",
+     "ausfuehrung": "2009-11-02",
+     "von": "AGG",
+     "nach": "EFA",
+     "rSpy": 0.0974197331007074,
+     "rGeld": 0.022854903795671122,
+     "rIntl": 0.23660400021040995
+    },
+    {
+     "monatsende": "2010-04-30",
+     "ausfuehrung": "2010-05-03",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.38629139804198376,
+     "rGeld": 0.015976547553122167,
+     "rIntl": 0.3371524487869082
+    },
+    {
+     "monatsende": "2011-04-29",
+     "ausfuehrung": "2011-05-02",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.1710764811539891,
+     "rGeld": 0.0169781898249155,
+     "rIntl": 0.1976737782323974
+    },
+    {
+     "monatsende": "2011-07-29",
+     "ausfuehrung": "2011-08-01",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.196334443325199,
+     "rGeld": 0.012719871034372554,
+     "rIntl": 0.16395158791841413
+    },
+    {
+     "monatsende": "2011-09-30",
+     "ausfuehrung": "2011-10-03",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": 0.011056456304066264,
+     "rGeld": 0.01155799164716198,
+     "rIntl": -0.1046568993472905
+    },
+    {
+     "monatsende": "2011-10-31",
+     "ausfuehrung": "2011-11-01",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.08014655200153342,
+     "rGeld": 0.009689497011722725,
+     "rIntl": -0.05444162446559919
+    },
+    {
+     "monatsende": "2012-05-31",
+     "ausfuehrung": "2012-06-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": -0.005002124321025425,
+     "rGeld": 0.007809899745147897,
+     "rIntl": -0.2062080818477523
+    },
+    {
+     "monatsende": "2012-06-29",
+     "ausfuehrung": "2012-07-02",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.05310270734802147,
+     "rGeld": 0.006879604928731187,
+     "rIntl": -0.13951915982456253
+    },
+    {
+     "monatsende": "2012-12-31",
+     "ausfuehrung": "2013-01-02",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.1599131971071377,
+     "rGeld": 0.002502127920062547,
+     "rIntl": 0.1881943832037276
+    },
+    {
+     "monatsende": "2013-02-28",
+     "ausfuehrung": "2013-03-01",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.1310260054869492,
+     "rGeld": 0.00380920615312208,
+     "rIntl": 0.1024313031777353
+    },
+    {
+     "monatsende": "2013-04-30",
+     "ausfuehrung": "2013-05-01",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.1670462231055212,
+     "rGeld": 0.0035821794965178455,
+     "rIntl": 0.19272871524450874
+    },
+    {
+     "monatsende": "2013-06-28",
+     "ausfuehrung": "2013-07-01",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.20510617380763985,
+     "rGeld": 0.0016574685477868112,
+     "rIntl": 0.18261230355779223
+    },
+    {
+     "monatsende": "2013-09-30",
+     "ausfuehrung": "2013-10-01",
+     "von": "SPY",
+     "nach": "EFA",
+     "rSpy": 0.19261840654591,
+     "rGeld": 0.0020993554940877956,
+     "rIntl": 0.24123782731962629
+    },
+    {
+     "monatsende": "2013-10-31",
+     "ausfuehrung": "2013-11-01",
+     "von": "EFA",
+     "nach": "SPY",
+     "rSpy": 0.27097414674467246,
+     "rGeld": 0.003476628656257308,
+     "rIntl": 0.2678300664327369
+    },
+    {
+     "monatsende": "2015-08-31",
+     "ausfuehrung": "2015-09-01",
+     "von": "SPY",
+     "nach": "AGG",
+     "rSpy": 0.004184035543328246,
+     "rGeld": 0.006846029809298715,
+     "rIntl": -0.07701385515187897
+    },
+    {
+     "monatsende": "2015-10-30",
+     "ausfuehrung": "2015-11-02",
+     "von": "AGG",
+     "nach": "SPY",
+     "rSpy": 0.051964515910463804,
+     "rGeld": 0.006508627942978684,
+     "rIntl": -0.018876240783181286
+    }
+   ],
+   "knappeEntscheideAb2016": [
+    {
+     "monatsende": "2016-04-29",
+     "ziel": "SPY",
+     "rSpy": 0.011101586429180799,
+     "rGeld": 0.007526103227493142,
+     "rIntl": -0.09883572950635999
+    },
+    {
+     "monatsende": "2017-09-29",
+     "ziel": "EFA",
+     "rSpy": 0.18500485549442613,
+     "rGeld": 0.00143451956798879,
+     "rIntl": 0.18919413883194114
+    },
+    {
+     "monatsende": "2017-10-31",
+     "ziel": "EFA",
+     "rSpy": 0.23432796147860047,
+     "rGeld": 0.0010029265350832706,
+     "rIntl": 0.2365599231408677
+    },
+    {
+     "monatsende": "2019-05-31",
+     "ziel": "SPY",
+     "rSpy": 0.035805418729114136,
+     "rGeld": 0.03397923700615135,
+     "rIntl": -0.05812512929222935
+    },
+    {
+     "monatsende": "2019-09-30",
+     "ziel": "AGG",
+     "rSpy": 0.04122975937749951,
+     "rGeld": 0.042840016162942085,
+     "rIntl": -0.009687113952237203
+    },
+    {
+     "monatsende": "2022-11-30",
+     "ziel": "AGG",
+     "rSpy": -0.09153588672817059,
+     "rGeld": -0.04197030228316789,
+     "rIntl": -0.08919006662832651
+    },
+    {
+     "monatsende": "2025-05-30",
+     "ziel": "SPY",
+     "rSpy": 0.13179145852318652,
+     "rGeld": 0.05546274733168843,
+     "rIntl": 0.12849462790919342
+    }
+   ]
+  }
+ }
+}

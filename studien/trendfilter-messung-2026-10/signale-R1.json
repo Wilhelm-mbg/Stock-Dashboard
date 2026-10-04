@@ -1,0 +1,472 @@
+{
+  "kennung": "trendfilter-messung-2026-10/v1",
+  "regel": "R1",
+  "titel": "Faber 10 Monate",
+  "hinweis": "Nur das Signal (REGEL §4.1). Keine Buchwerte, keine Ertraege, keine Kurse. verhaeltnis = TR_SPY(M) / Mittel TR_SPY(M..M-9), ungerundet. Simulation, keine Anlageberatung.",
+  "daten": {
+    "quelle": "daten/SPY.json (Yahoo-Chart), Abruf 2026-10-04T22:34:22.000Z",
+    "shaKanonischSPY": "3e24a46f28edbb7b8680c67c27ecc27a57edc4be46d955dc1ce07a8b25b9a56a",
+    "kalender": "1993-01-29 bis 2026-09-15",
+    "monatsenden": 404,
+    "ersteEntscheidung": "1993-10-29",
+    "letztesMonatsende": "2026-08-31"
+  },
+  "knappsteEntscheidung1993bis2026": {
+    "monatsende": "2004-09-30",
+    "verhaeltnis": 1.0004328376469915,
+    "ziel": "SPY"
+  },
+  "hauptlesart": {
+    "geld": "BIL",
+    "von": "2016-01",
+    "bis": "2026-08",
+    "zustandDavor": {
+      "monatsende": "2015-12-31",
+      "ziel": "SPY",
+      "verhaeltnis": 1.003520435200294
+    },
+    "zahl": 22,
+    "wechsel": [
+      {
+        "monatsende": "2016-01-29",
+        "ausfuehrung": "2016-02-01",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9579890804220795
+      },
+      {
+        "monatsende": "2016-03-31",
+        "ausfuehrung": "2016-04-01",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.0280344292539532
+      },
+      {
+        "monatsende": "2018-10-31",
+        "ausfuehrung": "2018-11-01",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9883109903931387
+      },
+      {
+        "monatsende": "2018-11-30",
+        "ausfuehrung": "2018-12-03",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.007603518167528
+      },
+      {
+        "monatsende": "2018-12-31",
+        "ausfuehrung": "2019-01-02",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9246523611644696
+      },
+      {
+        "monatsende": "2019-02-28",
+        "ausfuehrung": "2019-03-01",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.0201952582009393
+      },
+      {
+        "monatsende": "2019-05-31",
+        "ausfuehrung": "2019-06-03",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9969006756635003
+      },
+      {
+        "monatsende": "2019-06-28",
+        "ausfuehrung": "2019-07-01",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.063047774660748
+      },
+      {
+        "monatsende": "2020-02-28",
+        "ausfuehrung": "2020-03-02",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9889609198613196
+      },
+      {
+        "monatsende": "2020-05-29",
+        "ausfuehrung": "2020-06-01",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.021561191569436
+      },
+      {
+        "monatsende": "2022-02-28",
+        "ausfuehrung": "2022-03-01",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9865672953531734
+      },
+      {
+        "monatsende": "2022-03-31",
+        "ausfuehrung": "2022-04-01",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.015085575224711
+      },
+      {
+        "monatsende": "2022-04-29",
+        "ausfuehrung": "2022-05-02",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9284689305760041
+      },
+      {
+        "monatsende": "2022-11-30",
+        "ausfuehrung": "2022-12-01",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.0120910688813078
+      },
+      {
+        "monatsende": "2022-12-30",
+        "ausfuehrung": "2023-01-03",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9651830243440997
+      },
+      {
+        "monatsende": "2023-01-31",
+        "ausfuehrung": "2023-02-01",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.0361571141502783
+      },
+      {
+        "monatsende": "2023-10-31",
+        "ausfuehrung": "2023-11-01",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9909277728481851
+      },
+      {
+        "monatsende": "2023-11-30",
+        "ausfuehrung": "2023-12-01",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.0676747503637158
+      },
+      {
+        "monatsende": "2025-03-31",
+        "ausfuehrung": "2025-04-01",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.97910398594715
+      },
+      {
+        "monatsende": "2025-05-30",
+        "ausfuehrung": "2025-06-02",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.021044907949788
+      },
+      {
+        "monatsende": "2026-03-31",
+        "ausfuehrung": "2026-04-01",
+        "von": "SPY",
+        "nach": "BIL",
+        "verhaeltnis": 0.9848157775804586
+      },
+      {
+        "monatsende": "2026-04-30",
+        "ausfuehrung": "2026-05-01",
+        "von": "BIL",
+        "nach": "SPY",
+        "verhaeltnis": 1.071079638985258
+      }
+    ]
+  },
+  "ersatz": {
+    "geld": "SHY",
+    "bemerkung": "Zeitpunkte unabhaengig von der Geld-Reihe; 2016 steht auch in der Hauptlesart",
+    "von": "2003-01",
+    "bis": "2016-12",
+    "zustandDavor": {
+      "monatsende": "2002-12-31",
+      "ziel": "SHY",
+      "verhaeltnis": 0.9229800423012706
+    },
+    "zahl": 15,
+    "wechsel": [
+      {
+        "monatsende": "2003-04-30",
+        "ausfuehrung": "2003-05-01",
+        "von": "SHY",
+        "nach": "SPY",
+        "verhaeltnis": 1.0476041474797702
+      },
+      {
+        "monatsende": "2004-08-31",
+        "ausfuehrung": "2004-09-01",
+        "von": "SPY",
+        "nach": "SHY",
+        "verhaeltnis": 0.9967589141200413
+      },
+      {
+        "monatsende": "2004-09-30",
+        "ausfuehrung": "2004-10-01",
+        "von": "SHY",
+        "nach": "SPY",
+        "verhaeltnis": 1.0004328376469915
+      },
+      {
+        "monatsende": "2007-12-31",
+        "ausfuehrung": "2008-01-02",
+        "von": "SPY",
+        "nach": "SHY",
+        "verhaeltnis": 0.9902956318207885
+      },
+      {
+        "monatsende": "2009-06-30",
+        "ausfuehrung": "2009-07-01",
+        "von": "SHY",
+        "nach": "SPY",
+        "verhaeltnis": 1.0326679983657698
+      },
+      {
+        "monatsende": "2010-06-30",
+        "ausfuehrung": "2010-07-01",
+        "von": "SPY",
+        "nach": "SHY",
+        "verhaeltnis": 0.9487011461901835
+      },
+      {
+        "monatsende": "2010-07-30",
+        "ausfuehrung": "2010-08-02",
+        "von": "SHY",
+        "nach": "SPY",
+        "verhaeltnis": 1.0077831304599378
+      },
+      {
+        "monatsende": "2010-08-31",
+        "ausfuehrung": "2010-09-01",
+        "von": "SPY",
+        "nach": "SHY",
+        "verhaeltnis": 0.959636153751654
+      },
+      {
+        "monatsende": "2010-09-30",
+        "ausfuehrung": "2010-10-01",
+        "von": "SHY",
+        "nach": "SPY",
+        "verhaeltnis": 1.039556716260545
+      },
+      {
+        "monatsende": "2011-08-31",
+        "ausfuehrung": "2011-09-01",
+        "von": "SPY",
+        "nach": "SHY",
+        "verhaeltnis": 0.9502039203437037
+      },
+      {
+        "monatsende": "2012-01-31",
+        "ausfuehrung": "2012-02-01",
+        "von": "SHY",
+        "nach": "SPY",
+        "verhaeltnis": 1.0387173069902653
+      },
+      {
+        "monatsende": "2015-08-31",
+        "ausfuehrung": "2015-09-01",
+        "von": "SPY",
+        "nach": "SHY",
+        "verhaeltnis": 0.9637145233595871
+      },
+      {
+        "monatsende": "2015-10-30",
+        "ausfuehrung": "2015-11-02",
+        "von": "SHY",
+        "nach": "SPY",
+        "verhaeltnis": 1.022148436481199
+      },
+      {
+        "monatsende": "2016-01-29",
+        "ausfuehrung": "2016-02-01",
+        "von": "SPY",
+        "nach": "SHY",
+        "verhaeltnis": 0.9579890804220795
+      },
+      {
+        "monatsende": "2016-03-31",
+        "ausfuehrung": "2016-04-01",
+        "von": "SHY",
+        "nach": "SPY",
+        "verhaeltnis": 1.0280344292539532
+      }
+    ]
+  },
+  "knappAb2016": {
+    "schwelle": "|verhaeltnis - 1| < 0,01",
+    "monatsenden": [
+      {
+        "monatsende": "2018-11-30",
+        "verhaeltnis": 1.007603518167528,
+        "ziel": "SPY"
+      },
+      {
+        "monatsende": "2019-01-31",
+        "verhaeltnis": 0.9947527050152144,
+        "ziel": "BIL"
+      },
+      {
+        "monatsende": "2019-05-31",
+        "verhaeltnis": 0.9969006756635003,
+        "ziel": "BIL"
+      },
+      {
+        "monatsende": "2023-10-31",
+        "verhaeltnis": 0.9909277728481851,
+        "ziel": "BIL"
+      }
+    ]
+  },
+  "fenster": {
+    "A": {
+      "start": "2017-01-04",
+      "ende": "2021-09-15",
+      "zielAmStart": "SPY",
+      "wechsel": 8,
+      "tage": [
+        {
+          "ausfuehrung": "2018-11-01",
+          "signaltag": "2018-10-31",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2018-12-03",
+          "signaltag": "2018-11-30",
+          "von": "BIL",
+          "nach": "SPY"
+        },
+        {
+          "ausfuehrung": "2019-01-02",
+          "signaltag": "2018-12-31",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2019-03-01",
+          "signaltag": "2019-02-28",
+          "von": "BIL",
+          "nach": "SPY"
+        },
+        {
+          "ausfuehrung": "2019-06-03",
+          "signaltag": "2019-05-31",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2019-07-01",
+          "signaltag": "2019-06-28",
+          "von": "BIL",
+          "nach": "SPY"
+        },
+        {
+          "ausfuehrung": "2020-03-02",
+          "signaltag": "2020-02-28",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2020-06-01",
+          "signaltag": "2020-05-29",
+          "von": "BIL",
+          "nach": "SPY"
+        }
+      ]
+    },
+    "B": {
+      "start": "2021-09-16",
+      "ende": "2026-09-15",
+      "zielAmStart": "SPY",
+      "wechsel": 12,
+      "tage": [
+        {
+          "ausfuehrung": "2022-03-01",
+          "signaltag": "2022-02-28",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2022-04-01",
+          "signaltag": "2022-03-31",
+          "von": "BIL",
+          "nach": "SPY"
+        },
+        {
+          "ausfuehrung": "2022-05-02",
+          "signaltag": "2022-04-29",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2022-12-01",
+          "signaltag": "2022-11-30",
+          "von": "BIL",
+          "nach": "SPY"
+        },
+        {
+          "ausfuehrung": "2023-01-03",
+          "signaltag": "2022-12-30",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2023-02-01",
+          "signaltag": "2023-01-31",
+          "von": "BIL",
+          "nach": "SPY"
+        },
+        {
+          "ausfuehrung": "2023-11-01",
+          "signaltag": "2023-10-31",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2023-12-01",
+          "signaltag": "2023-11-30",
+          "von": "BIL",
+          "nach": "SPY"
+        },
+        {
+          "ausfuehrung": "2025-04-01",
+          "signaltag": "2025-03-31",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2025-06-02",
+          "signaltag": "2025-05-30",
+          "von": "BIL",
+          "nach": "SPY"
+        },
+        {
+          "ausfuehrung": "2026-04-01",
+          "signaltag": "2026-03-31",
+          "von": "SPY",
+          "nach": "BIL"
+        },
+        {
+          "ausfuehrung": "2026-05-01",
+          "signaltag": "2026-04-30",
+          "von": "BIL",
+          "nach": "SPY"
+        }
+      ]
+    }
+  },
+  "fensterErsatz": {
+    "A": 8,
+    "B": 12
+  }
+}

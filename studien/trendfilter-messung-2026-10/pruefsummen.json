@@ -1,0 +1,149 @@
+{
+  "kennung": "trendfilter-messung-2026-10/v1",
+  "abgerufenUtc": "2026-10-04T22:34:22.000Z",
+  "ende": "2026-09-15",
+  "reihen": {
+    "SPY": {
+      "sym": "SPY",
+      "symbolInAntwort": "SPY",
+      "shaRoh": "a8a9c46689e1df9bd38ce5e404683d8993fd22d6e60b4065a29fa2271ecc633b",
+      "bytesRoh": 857214,
+      "shaKanonisch": "3e24a46f28edbb7b8680c67c27ecc27a57edc4be46d955dc1ce07a8b25b9a56a",
+      "zeilenGesamt": 8477,
+      "zeilenBisEnde": 8464,
+      "zeilenMitSchlussBisEnde": 8464,
+      "ersterTag": "1993-01-29",
+      "letzterTagBisEnde": "2026-09-15",
+      "letzterTagGesamt": "2026-10-02",
+      "ausschuettungenBisEnde": 135,
+      "splitsBisEnde": [],
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "versuche": [
+        {
+          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+          "status": 200,
+          "fehler": null
+        }
+      ]
+    },
+    "BIL": {
+      "sym": "BIL",
+      "symbolInAntwort": "BIL",
+      "shaRoh": "80da7428ccd1deb67468ffee8bcca592d2d0a1bb1d1aab1f91c6a23b0782b79f",
+      "bytesRoh": 521306,
+      "shaKanonisch": "b10f0f249a3f813b3eba856047ff0a8482aaa0f0bd99837c7e8093d3a2d6cabc",
+      "zeilenGesamt": 4868,
+      "zeilenBisEnde": 4855,
+      "zeilenMitSchlussBisEnde": 4855,
+      "ersterTag": "2007-05-30",
+      "letzterTagBisEnde": "2026-09-15",
+      "letzterTagGesamt": "2026-10-02",
+      "ausschuettungenBisEnde": 127,
+      "splitsBisEnde": [
+        "2017-11-30 1:2"
+      ],
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/BIL?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "versuche": [
+        {
+          "url": "https://query1.finance.yahoo.com/v8/finance/chart/BIL?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+          "status": 200,
+          "fehler": null
+        }
+      ]
+    },
+    "SHY": {
+      "sym": "SHY",
+      "symbolInAntwort": "SHY",
+      "shaRoh": "e0fba577cbf6b1e498c893010f9f7277e5bf4e838ebdc3bcc07fd6c65d4b3640",
+      "bytesRoh": 657029,
+      "shaKanonisch": "82db57f648fa174f5b309ad57fe112759571f7fde7890db8538a3acb1313882e",
+      "zeilenGesamt": 6084,
+      "zeilenBisEnde": 6071,
+      "zeilenMitSchlussBisEnde": 6071,
+      "ersterTag": "2002-07-30",
+      "letzterTagBisEnde": "2026-09-15",
+      "letzterTagGesamt": "2026-10-02",
+      "ausschuettungenBisEnde": 289,
+      "splitsBisEnde": [],
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHY?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "versuche": [
+        {
+          "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHY?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+          "status": 200,
+          "fehler": null
+        }
+      ]
+    },
+    "ACWX": {
+      "sym": "ACWX",
+      "symbolInAntwort": "ACWX",
+      "shaRoh": "6f5c6bf3455ce644bf0d579c2a9d75e6cef69e4dbe960d030218f638d07cb076",
+      "bytesRoh": 503699,
+      "shaKanonisch": "d918ccd244cc6c83ec87832db07daa13f55eb8156a485a381ed5f45eb94b67a5",
+      "zeilenGesamt": 4657,
+      "zeilenBisEnde": 4644,
+      "zeilenMitSchlussBisEnde": 4644,
+      "ersterTag": "2008-04-01",
+      "letzterTagBisEnde": "2026-09-15",
+      "letzterTagGesamt": "2026-10-02",
+      "ausschuettungenBisEnde": 37,
+      "splitsBisEnde": [],
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/ACWX?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "versuche": [
+        {
+          "url": "https://query1.finance.yahoo.com/v8/finance/chart/ACWX?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+          "status": 200,
+          "fehler": null
+        }
+      ]
+    },
+    "EFA": {
+      "sym": "EFA",
+      "symbolInAntwort": "EFA",
+      "shaRoh": "68af3e4e6773a0c5d5f9eb9c0444af9904a4528efecdb7b2a49a82469e63e9c9",
+      "bytesRoh": 685745,
+      "shaKanonisch": "04826a95e6501346820a2d7aa801bbc847b89a3603b0d3acf5543b44dc9fa35d",
+      "zeilenGesamt": 6312,
+      "zeilenBisEnde": 6299,
+      "zeilenMitSchlussBisEnde": 6299,
+      "ersterTag": "2001-08-27",
+      "letzterTagBisEnde": "2026-09-15",
+      "letzterTagGesamt": "2026-10-02",
+      "ausschuettungenBisEnde": 47,
+      "splitsBisEnde": [
+        "2005-06-09 3:1"
+      ],
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/EFA?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "versuche": [
+        {
+          "url": "https://query1.finance.yahoo.com/v8/finance/chart/EFA?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+          "status": 200,
+          "fehler": null
+        }
+      ]
+    },
+    "AGG": {
+      "sym": "AGG",
+      "symbolInAntwort": "AGG",
+      "shaRoh": "0cb87addbe7005c884d54e3649ed30ede5ab4a0d2da58b5712de2e68db9fd2ce",
+      "bytesRoh": 641387,
+      "shaKanonisch": "6ad9f47432cb4b4b1f6ae4c0ed3cf34e4b662171727770cbe31e6381c71a9dad",
+      "zeilenGesamt": 5790,
+      "zeilenBisEnde": 5777,
+      "zeilenMitSchlussBisEnde": 5777,
+      "ersterTag": "2003-09-29",
+      "letzterTagBisEnde": "2026-09-15",
+      "letzterTagGesamt": "2026-10-02",
+      "ausschuettungenBisEnde": 275,
+      "splitsBisEnde": [],
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AGG?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "versuche": [
+        {
+          "url": "https://query1.finance.yahoo.com/v8/finance/chart/AGG?period1=0&period2=1791153262&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+          "status": 200,
+          "fehler": null
+        }
+      ]
+    }
+  }
+}
