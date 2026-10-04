@@ -1,7 +1,12 @@
 'use strict';
 /* Pruefmodul der Generalprobe 23.11.2026 (Takt-Ablauf, Zustand, Zusammenspiel von mfdepot.js / mittelfrist.js / kurse.js).
  * Kleinsttest in der Sandbox von ../lib.js: feste Uhr (New York, Winterzeit), Kunstdaten, kein Netz, keine Schluessel.
- * Alles Simulation mit virtuellem Kapital. */
+ * Alles Simulation mit virtuellem Kapital.
+ * Angepasst (Fix Generalprobe): der Stub fuer ladeUniversum am Montag tat nichts - nach der Behebung (kein alter Bezug
+ * unter neuem Stand, der Takt stoesst wegen fehlender Marktreihe das Nachladen an) konnte der Nachweis so nie gruen
+ * werden, obwohl die App richtig handelt. Jetzt laedt der Montags-Lader wirklich (mittelfrist.js in der Sandbox, Uhr
+ * Mo 09:36, Attrappe liefert bis Freitag samt SPY und einen laufenden Montagsbalken), und es laufen zwei Takte:
+ * 09:36 und 10:06. Soll: Umschichtung zur Eroeffnung des 23.11., Stichtag 20.11., Tagespunkt nur fuer den 20.11. */
 global.path = global.path || require('path');   // lib.js benutzt path/fs ohne eigenes require
 global.fs = global.fs || require('fs');
 var L = require('../lib.js');
@@ -60,7 +65,8 @@ module.exports = {
   titel: 'SPY-Abruf scheitert im Freitagslauf: die Marktreihe bleibt einen Tag alt, gilt aber als gleicher Stand - Faelligkeit und Tagespunkt rechnen falsch, Umschichtung entfaellt am Montag',
   ausloeser: 'Freitag 16:30 New York: 193 Werte kommen, der letzte Abruf (SPY, Position 194 hinter 193 Abrufen - Yahoo drosselt bei ca. 200 in Folge) scheitert. ' +
     'mf_bezug behaelt die Reihe bis Donnerstag, traegt aber at = Freitag; der Bestand gilt als frisch, es wird nicht nachgeladen.',
-  erwartet: 'Montag 23.11. 09:36: 62 Balken seit dem letzten Ausfuehrungstag -> faellig -> Umschichtung am 23.11. (Kontrolllauf mit SPY: ja). Beobachtet: 61 gezaehlt, nicht faellig.',
+  erwartet: 'Montag 23.11.: der Takt sieht keinen Freitags-SPY, stoesst das Nachladen an (09:36) und schichtet nach dem Laden zur Eroeffnung des 23.11. um (Stichtag 20.11., ' +
+    'Tagespunkt fuer den 20.11.) - wie der Kontrolllauf mit SPY. Beobachtet vor der Behebung: alter SPY unter neuem Stand, 61 Balken gezaehlt, nicht faellig, kein Nachladen.',
   async lauf() {
     async function lauf1(spyFaellt) {
       var namen = L.universum();
@@ -76,6 +82,7 @@ module.exports = {
       }, jetztLade);
       await mf.MF.ladeUniversum();
       var bz = st.daten.mf_bezug, spyLetzt = new Date(bz.reihe[bz.reihe.length - 1][0]).toISOString().slice(0, 10);
+      var gelesen = await mf.MF.tagesdatenLesen(), bezugGelesen = !!(gelesen && gelesen.bezug);
       var jetzt = L.nyUTC(2026, 11, 23, 9, 36);
       st.daten.drift_markt = L.driftMarkt(spyF, jetztLade);
       var kaufIdx = tageF.length - 63;
@@ -83,13 +90,34 @@ module.exports = {
       var d = { momentumAn: true, mfBuch: L.buchMit(pos, tageF[kaufIdx] + 3600000), mfVerlauf: [] };
       d.mfBuch.letzteAusfuehrungTag = MH.nyTag(tageF[kaufIdx]);
       var eroeff = {}; namen.concat(['SPY']).forEach(function (k) { eroeff[k] = 100; });
-      var mf2 = L.mittelfristSandbox(st, async function () { return null; }, jetzt);
-      await L.taktLauf(depot(st, d, { tagesdatenLesen: mf2.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, jetzt, holeAm(eroeff, L.MO)));
-      return { spyLetzt: spyLetzt, bezugAt: bz.at === st.daten.mf_tagesdaten_index.at, umgeschichtet: L.umgeschichtet(d), punkt: d.mfVerlauf.map(function (p) { return p.tag; }).join(',') };
+      /* Der Montags-Lader: Yahoo liefert um 09:36 alles bis Freitag samt SPY und dazu den laufenden Montagsbalken
+       * (den der Lader abschneiden muss). */
+      function mitMontag(r) { var z = r[r.length - 1]; return r.concat([[L.MO, z[1] * 1.01, z[2], z[3] * 1.01]]); }
+      var mfMo = L.mittelfristSandbox(st, async function (sym, o) {
+        if (sym === 'SPY') return L.ladeAntwort(mitMontag(spyF), o);
+        return rohF[sym] ? L.ladeAntwort(mitMontag(rohF[sym]), o) : null;
+      }, jetzt);
+      var angestossen = 0, ladung = null;
+      var MF = { tagesdatenLesen: mfMo.MF.tagesdatenLesen,
+        ladeUniversum: function () { angestossen++; ladung = mfMo.MF.ladeUniversum(); return ladung; } };
+      var dep = depot(st, d, MF, jetzt, holeAm(eroeff, L.MO));
+      await L.taktLauf(dep);                                                         // Mo 09:36
+      var nach0936 = { angestossen: angestossen, umgeschichtet: L.umgeschichtet(d) };
+      if (ladung) await ladung;
+      dep.__uhr.jetzt = L.nyUTC(2026, 11, 23, 10, 6);
+      await L.taktLauf(dep);                                                         // Mo 10:06
+      var rebal = (d.tuneLog || []).filter(function (z) { return /^mfrebal-/.test(z.id); });
+      return { spyLetzt: spyLetzt, bezugAt: bz.at === st.daten.mf_tagesdaten_index.at, bezugGelesen: bezugGelesen, nach0936: nach0936,
+        umgeschichtet: rebal.length, ausfTag: d.mfBuch.letzteAusfuehrungTag, stichtag20: rebal.length === 1 && /Stichtags 20\.11\.2026/.test(rebal[0].txt),
+        punkt: d.mfVerlauf.map(function (p) { return p.tag; }).join(',') };
     }
+    function soll(x) { return x.umgeschichtet === 1 && x.ausfTag === '2026-11-23' && x.stichtag20 && x.punkt === '2026-11-20'; }
     var ohneSpy = await lauf1(true), mitSpy = await lauf1(false);
-    return { abweichung: mitSpy.umgeschichtet && !ohneSpy.umgeschichtet,
-      text: 'beobachtet (SPY-Abruf scheitert): SPY-Reihe endet ' + ohneSpy.spyLetzt + ' unter dem Stand Freitag (at gleich: ' + ohneSpy.bezugAt + '), Mo 09:36 umgeschichtet: ' +
-        ohneSpy.umgeschichtet + ', Tagespunkt fuer ' + ohneSpy.punkt + ' (statt 2026-11-20). Kontrolllauf mit SPY: SPY endet ' + mitSpy.spyLetzt + ', umgeschichtet: ' + mitSpy.umgeschichtet + '.' };
+    return { abweichung: !(soll(ohneSpy) && soll(mitSpy) && (ohneSpy.nach0936.umgeschichtet || ohneSpy.nach0936.angestossen > 0)),
+      text: 'beobachtet (SPY-Abruf scheitert Fr 16:30): mf_bezug endet ' + ohneSpy.spyLetzt + ', Stand gleich dem Index: ' + ohneSpy.bezugAt + ', vom Lesen als Bezug geliefert: ' +
+        ohneSpy.bezugGelesen + '; Mo 09:36 Nachladen angestossen: ' + ohneSpy.nach0936.angestossen + 'x, umgeschichtet: ' + ohneSpy.nach0936.umgeschichtet +
+        '; bis 10:06 Umschichtungen: ' + ohneSpy.umgeschichtet + ', Ausfuehrungstag ' + ohneSpy.ausfTag + ', Stichtag 20.11.: ' + ohneSpy.stichtag20 + ', Tagespunkt fuer ' +
+        (ohneSpy.punkt || '-') + ' (Soll 2026-11-20). Kontrolllauf mit SPY: SPY endet ' + mitSpy.spyLetzt + ', Umschichtungen ' + mitSpy.umgeschichtet + ', Ausfuehrungstag ' +
+        mitSpy.ausfTag + ', Tagespunkt ' + (mitSpy.punkt || '-') + '.' };
   }
 };

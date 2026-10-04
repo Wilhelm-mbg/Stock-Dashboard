@@ -198,7 +198,7 @@
     } else if (gespeichert && !frisch && !ereignisseDa) {
       stat('Gespeicherte Tageskurse ohne Splits und Ausschüttungen – lade neu, damit die Bücher sie buchen können …');
     } else if (gespeichert && !frisch && (!hatSpalte4(gespeichert.roh) || !gespeichert.bezug)) {
-      stat('Gespeicherte Tageskurse von vor der Umstellung (ohne vierte Spalte oder ohne SPY) – lade neu, damit die Rangfolge wie in der Messung rechnet …');
+      stat('Gespeicherte Tageskurse ohne vierte Spalte oder ohne Marktreihe SPY (Stand von vor der Umstellung, oder der SPY-Abruf scheiterte) – lade neu, damit die Rangfolge wie in der Messung rechnet …');
     }
     var gesperrt = !frisch && gespeichert && gespeichert.roh && Date.now() - FEHLVERSUCH < FEHLVERSUCH_PAUSE;
     if (frisch || gesperrt) {
@@ -239,14 +239,17 @@
       /* Angenommen: ein Wert ohne Antwort behaelt seine ALTE Reihe (unveraendert - ihr letzter
        * Balken ist dann eben alt) samt seinen Ereignissen und steht auf weg. Ein Wert verschwindet
        * so nie still aus dem Bestand; haelt ihn ein Buch, bucht es ihn nach fuenf Handelstagen
-       * ohne neuen Balken aus (A2, MFHandel.reihenendeAusbuchen). Dasselbe fuer SPY. */
+       * ohne neuen Balken aus (A2, MFHandel.reihenendeAusbuchen).
+       * SPY NICHT: ohne Antwort bleibt mf_bezug mit seinem ALTEN Stand stehen, tagesdatenLesen
+       * liefert dann keinen Bezug, der Bestand gilt nicht als frisch, und der Takt stoesst das
+       * Nachladen an. Die alte Reihe unter dem neuen Stand hiess einen Tag alte Marktreihe als
+       * frisch: Faelligkeit, Stichtag und Tagespunkt einen Tag zurueck (Generalprobe 23.11., Fund D-06). */
       var altRoh = (gespeichert && gespeichert.roh) || {}, behalten = [];
       weg.forEach(function (s) {
         if (!altRoh[s]) return;
         neu[s] = altRoh[s]; behalten.push(s);
         if (erAlt && erAlt.sym && erAlt.sym[s]) ereignisse[s] = erAlt.sym[s];
       });
-      if (!bezug && gespeichert && gespeichert.bezug) bezug = gespeichert.bezug;
       roh = neu;
       await tagesdatenSchreiben(roh, weg, Date.now(), ereignisse, bezug);
       if (behalten.length) {
