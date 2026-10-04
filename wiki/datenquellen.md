@@ -400,3 +400,18 @@ Papier: `studien/datenfundament-2026-10-04/TROCKENLAUF.md` (`95459b8`), mit Name
 | Panel-Ende | Minuten liegen für 13 Handelstage nach dem 15.09.2026 vor; Verlängerung per Vollbau 2–4 h | braucht vorher neue Maßnahmen-Daten ab 04.09.2026 (Abruf bei Alpaca — Wilhelms Entscheid) |
 
 **Nicht zählbar ohne neue Abrufe:** Splits und Maßnahmen nach dem 03.09.2026; Abgänge nach dem 21.08.2026 (die Polygon-Liste endet dort). **Von der Abnahme unabhängig nachgezählt:** die erste und zweite Zeile; die übrigen stehen auf den Listen des Trockenlaufs und werden in Phase 2 mit geänderten Regeln ohnehin neu gezählt.
+
+## Nachtrag der Maßnahmen und der Abgangsliste (Nr. 89, 04.10.2026) — neue Dateien, nichts überschrieben
+
+Wilhelms Entscheid vom 04.10.2026: „Beide, wenn kostenlos". Beide Abrufe gingen ohne Kosten (`studien/datenfundament-2026-10-04/abrufe/ABRUFE.md`; Commits `787f6ee`, `4b1d73a`, `addba01`, `fa08ae8`). Die vorhandenen Werkzeuge (`alpaca-vollsammlung.js --massnahmen`, `massive-verschwundene.js`) **überschreiben** ihre Zieldateien und wurden deshalb nicht gestartet.
+
+| Was | Wo | Inhalt |
+|---|---|---|
+| Maßnahmen bei Alpaca, 01.09.–03.10.2026 | `E:/Markt-Dashboard-Archiv/alpaca-massnahmen-nachtrag-2026-10/` (5.656 Kürzel-Dateien, `_nachtrag.json`, `_angekuendigt.json`; 4,2 MB) | ab 04.09.2026: 14 Splits vorwärts, 121 rückwärts, 4.046 Barausschüttungen, 33 Übernahmen, 42 Umbenennungen. Unter den 2.249 lebenden Aktienreihen nur zwei Splits: **NFE 50→1 (14.09.)** und **WHLR 9→1 (22.09.)**. |
+| Liste der Börsenabgänge, Stand 04.10.2026 | `Markt-Dashboard-Daten/massive/verschwundene-2026-10-04.json` (6.948 Einträge; die alte `verschwundene.json` vom 23.08. bleibt) | 67 neue Abgänge nach dem 21.08.2026 (August 19, September 41, Oktober 7). Alle 57 „Wechsler" aus dem Trockenlauf haben jetzt ein Abgangsdatum 0 bis 15 Tage nach ihrem letzten Minutentag (vorher 52). |
+
+**Geklärt:** BURU — Zusammenlegung 40→1 am 02.09.2026 (als BURUD), Rückbenennung am 14.09. (das war der „Kurssprung um das 19,5-fache" aus dem Trockenlauf); DBRG und GBTG — Barübernahmen zu 16,00 $ und 9,50 $; CSAN → CSANY (21.09.); APGE und CRNX — Barübernahmen; HLX → HOS.
+
+**Zwei Eigenheiten der Quelle, wichtig für Phase 2b:** (1) Der Abruf filtert nach dem Verarbeitungstag (bei Ausschüttungen der Zahltag), nicht nach dem Ex-Tag — 2.887 schon angekündigte Sätze mit späterem Zahltag liegen deshalb gesondert in `_angekuendigt.json`. (2) **Die Quelle ändert Sätze nachträglich:** bei gleichem Kennzeichen steht für AEG (Ex-Tag 03.09.) jetzt 0,206899 $ statt 0,208684 $ und für TAC (01.09.) 0,041765 $ statt 0,0525 $ (vom PM beim Abgleich gefunden) — Ausschüttungen ausländischer Werte werden offenbar erst zum Zahltag endgültig. Der alte Ordner ist also kein endgültiger Stand; beim Zusammenführen gilt je Kennzeichen der jüngere Satz, und die geänderten Sätze werden gezählt.
+
+**Abnahme des PM:** alter Maßnahmen-Ordner (8.348 Dateien, keine jünger als der 04.09.) und alte Liste (23.08.) unverändert; eigene Zählungen an den neuen Dateien: 4.046 Barausschüttungen, 14 Splits vorwärts, die zwei Splits bei lebenden Reihen, 67 neue Abgänge (19 / 41 / 7), 57 von 57 Wechslern — wie geliefert; Suche nach Zugangsdaten in den elf Repo-Dateien ohne Treffer, die `.cmd` holt den Zugang nur aus dem Benutzerprofil.
