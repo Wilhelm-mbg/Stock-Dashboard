@@ -1,0 +1,4843 @@
+{
+  "stand": "2026-10-05 00:57",
+  "quelle_hinweis": "Stammdaten je Fonds von der justETF-Profilseite (quelle_url), geöffnet am Stand-Tag; Yahoo-Symbole nur über den Such-Endpunkt v1/finance/search (ISIN und Kürzel). Keine Kurse oder Renditen geladen.",
+  "fonds": [
+    {
+      "gruppe": "Maßstab",
+      "us_gegenstueck": "SPY/IVV/VOO",
+      "name": "iShares Core S&P 500 UCITS ETF USD (Acc)",
+      "isin": "IE00B5BMR087",
+      "anbieter": "iShares",
+      "index": "S&P 500",
+      "klasse": "Maßstab",
+      "auflage": "2010-05-19",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.07,
+      "xetra_kuerzel": "SXR8",
+      "yahoo_symbole": [
+        {
+          "symbol": "SXR8.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "SXR8.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "SXR8.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "SXR8.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "SXR8.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "CSSPX.MI",
+          "boerse": "Milan"
+        },
+        {
+          "symbol": "SXR8.BD",
+          "boerse": "BUD"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B5BMR087",
+      "quelle2_url": null,
+      "bemerkung": "Maßstab der Studie.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Gleichgewicht",
+      "us_gegenstueck": "RSP",
+      "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C",
+      "isin": "IE00BLNMYC90",
+      "anbieter": "Xtrackers",
+      "index": "S&P 500 Equal Weight",
+      "klasse": "gleicher Index",
+      "auflage": "2014-06-10",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.15,
+      "xetra_kuerzel": "XDEW",
+      "yahoo_symbole": [
+        {
+          "symbol": "XDEW.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "XDEW.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "XDEW.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "XDEW.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "XDEW.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "XDEW.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "XDEW.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BLNMYC90",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Gleichgewicht",
+      "us_gegenstueck": "RSP",
+      "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 2D",
+      "isin": "IE000CXLGK86",
+      "anbieter": "Xtrackers",
+      "index": "S&P 500 Equal Weight",
+      "klasse": "gleicher Index",
+      "auflage": "2023-03-08",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.15,
+      "xetra_kuerzel": "XDED",
+      "yahoo_symbole": [
+        {
+          "symbol": "XDED.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000CXLGK86.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "XDED.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "XDED.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "XDED.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "XDED.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "XDEU.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "XDED.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000CXLGK86",
+      "quelle2_url": null,
+      "bemerkung": "Ausschüttende Klasse des 1C-Fonds (quartalsweise); nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Gleichgewicht",
+      "us_gegenstueck": "RSP",
+      "name": "iShares S&P 500 Equal Weight UCITS ETF USD (Acc)",
+      "isin": "IE000MLMNYS0",
+      "anbieter": "iShares",
+      "index": "S&P 500 Equal Weight",
+      "klasse": "gleicher Index",
+      "auflage": "2022-08-02",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.15,
+      "xetra_kuerzel": "O4J0",
+      "yahoo_symbole": [
+        {
+          "symbol": "O4J0.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000MLMNYS0.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "O4J0.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "O4J0.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "O4J0.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "O4J0.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "EWSP.AS",
+          "boerse": "Amsterdam"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000MLMNYS0",
+      "quelle2_url": null,
+      "bemerkung": "Nach 2021 aufgelegt. Ausschüttende Klasse IE000IKMJDQ6 (2025) nur Euronext Amsterdam, siehe ausgeschlossen.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Gleichgewicht",
+      "us_gegenstueck": "RSP",
+      "name": "Invesco S&P 500 Equal Weight UCITS ETF (Acc)",
+      "isin": "IE00BNGJJT35",
+      "anbieter": "Invesco",
+      "index": "S&P 500 Equal Weight",
+      "klasse": "gleicher Index",
+      "auflage": "2021-04-06",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "SP2Q",
+      "yahoo_symbole": [
+        {
+          "symbol": "SP2Q.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BNGJJT35.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "SP2Q.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "SP2Q.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "SP2Q.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "SP2Q.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "SPEQ.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BNGJJT35",
+      "quelle2_url": null,
+      "bemerkung": "Physisch.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Gleichgewicht",
+      "us_gegenstueck": "RSP",
+      "name": "Invesco S&P 500 Equal Weight UCITS ETF Dist",
+      "isin": "IE00BM8QRY62",
+      "anbieter": "Invesco",
+      "index": "S&P 500 Equal Weight",
+      "klasse": "gleicher Index",
+      "auflage": "2021-04-06",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "SP2D",
+      "yahoo_symbole": [
+        {
+          "symbol": "SP2D.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BM8QRY62.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "SP2D.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "SP2D.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "SP2D.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "SP2D.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "SPED.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BM8QRY62",
+      "quelle2_url": null,
+      "bemerkung": "Quartalsweise Ausschüttung; justETF nennt dasselbe Auflagedatum wie die Acc-Klasse.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Gleichgewicht",
+      "us_gegenstueck": "RSP",
+      "name": "Invesco S&P 500 Equal Weight Swap UCITS ETF Acc",
+      "isin": "IE0000TZZ2B2",
+      "anbieter": "Invesco",
+      "index": "S&P 500 Equal Weight",
+      "klasse": "gleicher Index",
+      "auflage": "2025-01-14",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "RSPS",
+      "yahoo_symbole": [
+        {
+          "symbol": "RSPS.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE0000TZZ2B2.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "RSPS.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "RSPS.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "RSPS.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "SPWS.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "RSPS.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "RSPS.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0000TZZ2B2",
+      "quelle2_url": null,
+      "bemerkung": "Synthetisch (Swap); nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Qualität",
+      "us_gegenstueck": "QUAL",
+      "name": "iShares Edge MSCI USA Quality Factor UCITS ETF USD (Acc)",
+      "isin": "IE00BD1F4L37",
+      "anbieter": "iShares",
+      "index": "MSCI USA Sector Neutral Quality",
+      "klasse": "gleicher Index",
+      "auflage": "2016-10-13",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "QDVB",
+      "yahoo_symbole": [
+        {
+          "symbol": "QDVB.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "QDVB.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QDVB.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "QDVB.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "QDVB.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IUQA.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4L37",
+      "quelle2_url": null,
+      "bemerkung": "Gleicher Index wie QUAL.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Qualität",
+      "us_gegenstueck": "QUAL",
+      "name": "iShares Edge MSCI USA Quality Factor UCITS ETF USD (Dist)",
+      "isin": "IE00BF2QSQ20",
+      "anbieter": "iShares",
+      "index": "MSCI USA Sector Neutral Quality",
+      "klasse": "gleicher Index",
+      "auflage": "2018-02-21",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "IS38.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IS38.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IUQD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BF2QSQ20",
+      "quelle2_url": null,
+      "bemerkung": "Kein Xetra-Listing laut justETF; halbjährliche Ausschüttung.",
+      "de_handelsplaetze": "gettex (IS38)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Qualität",
+      "us_gegenstueck": "QUAL",
+      "name": "HSBC MSCI USA Quality UCITS ETF USD",
+      "isin": "IE00B5WFQ436",
+      "anbieter": "HSBC",
+      "index": "MSCI USA Sector Neutral Quality (vorher MSCI USA)",
+      "klasse": "gleicher Index",
+      "auflage": "2010-06-01",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.15,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "IE00B5WFQ436.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "H4ZD.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "HMUS.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B5WFQ436",
+      "quelle2_url": "https://sharesmagazine.co.uk/news/market/LSE20250318123453_5578997/notice-of-egm",
+      "bemerkung": "ACHTUNG Indexwechsel: Fonds hieß HSBC MSCI USA UCITS ETF und bildete den breiten MSCI USA ab; Wechsel auf MSCI USA Sector Neutral Quality laut EGM-Mitteilung vom 18.03.2025 (Datum des Vollzugs nicht geprüft). Qualitäts-Historie also erst ab ca. 2025. Quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "gettex (H4ZD)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Qualität",
+      "us_gegenstueck": "SPHQ",
+      "name": "Invesco S&P 500 Quality UCITS ETF Acc",
+      "isin": "IE000E6TPCH9",
+      "anbieter": "Invesco",
+      "index": "S&P 500 Quality",
+      "klasse": "gleicher Index",
+      "auflage": "2025-06-23",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "QSPA",
+      "yahoo_symbole": [
+        {
+          "symbol": "QSPA.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000E6TPCH9.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "QSPA.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "QSPA.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QSPA.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "QSPA.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "SPQA.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000E6TPCH9",
+      "quelle2_url": null,
+      "bemerkung": "Gleicher Index wie SPHQ; nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Qualität",
+      "us_gegenstueck": "SPHQ",
+      "name": "Invesco S&P 500 Quality UCITS ETF Dist",
+      "isin": "IE000SNCKVM9",
+      "anbieter": "Invesco",
+      "index": "S&P 500 Quality",
+      "klasse": "gleicher Index",
+      "auflage": "2025-06-23",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "QSPD",
+      "yahoo_symbole": [
+        {
+          "symbol": "QSPD.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000SNCKVM9.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "QSPD.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QSPD.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "QSPD.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "QSPD.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "SPQD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000SNCKVM9",
+      "quelle2_url": null,
+      "bemerkung": "Quartalsweise Ausschüttung; nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Qualität",
+      "us_gegenstueck": "QUAL",
+      "name": "UBS Factor MSCI USA Quality Screened UCITS ETF USD dis",
+      "isin": "IE00BX7RRJ27",
+      "anbieter": "UBS",
+      "index": "MSCI USA Quality ESG Low Carbon Select (vorher MSCI USA Quality)",
+      "klasse": "US-Faktor",
+      "auflage": "2015-08-26",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "UBUT",
+      "yahoo_symbole": [
+        {
+          "symbol": "UBUT.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "UBUT.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "UBUT.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "UBUT.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "UQLTD.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "UBUT.AS",
+          "boerse": "Amsterdam"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BX7RRJ27",
+      "quelle2_url": "https://www.etfstream.com/articles/ubs-am-us-quality-and-value-etfs-to-undergo-esg-overhaul",
+      "bemerkung": "Indexwechsel auf ESG-Low-Carbon-Variante zum 31.07. (Jahr in der Quelle nicht lesbar; Suchauszug etfstream). Davor MSCI USA Quality. Gehedgte Klassen ausgelassen.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Qualität",
+      "us_gegenstueck": "QUAL",
+      "name": "iShares Edge MSCI World Quality Factor UCITS ETF USD (Acc)",
+      "isin": "IE00BP3QZ601",
+      "anbieter": "iShares",
+      "index": "MSCI World Sector Neutral Quality",
+      "klasse": "Welt",
+      "auflage": "2014-10-03",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "IS3Q",
+      "yahoo_symbole": [
+        {
+          "symbol": "IS3Q.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IS3Q.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IS3Q.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IS3Q.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IS3Q.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IS3Q.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "IWQU.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZ601",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Qualität",
+      "us_gegenstueck": "QUAL",
+      "name": "Xtrackers MSCI World Quality UCITS ETF 1C",
+      "isin": "IE00BL25JL35",
+      "anbieter": "Xtrackers",
+      "index": "MSCI World Sector Neutral Quality",
+      "klasse": "Welt",
+      "auflage": "2014-09-11",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "XDEQ",
+      "yahoo_symbole": [
+        {
+          "symbol": "XDEQ.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "XDEQ.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "XDEQ.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "XDEQ.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JL35",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "USMV",
+      "name": "Xtrackers MSCI USA Minimum Volatility UCITS ETF 1D",
+      "isin": "IE00BDB7J586",
+      "anbieter": "Xtrackers",
+      "index": "MSCI USA Minimum Volatility",
+      "klasse": "gleicher Index",
+      "auflage": "2016-11-08",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "IE00BDB7J586.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "XMVU.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "XMVU.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BDB7J586",
+      "quelle2_url": null,
+      "bemerkung": "Gleicher Index wie USMV; jährliche Ausschüttung; kein Xetra-Listing laut justETF.",
+      "de_handelsplaetze": "gettex (XMVU)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "USMV",
+      "name": "Amundi MSCI USA Minimum Volatility Factor UCITS ETF DR",
+      "isin": "LU1589349734",
+      "anbieter": "Amundi",
+      "index": "MSCI USA Minimum Volatility",
+      "klasse": "gleicher Index",
+      "auflage": "2017-04-10",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.18,
+      "xetra_kuerzel": "MIVU",
+      "yahoo_symbole": [
+        {
+          "symbol": "MIVU.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "MIVU.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "MIVU.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "MIVU.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "MIVU.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "MIVU.PA",
+          "boerse": "Paris"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1589349734",
+      "quelle2_url": null,
+      "bemerkung": "justETF meldet Replikation synthetisch (Unfunded Swap), obwohl der Name DR trägt - Widerspruch, ungeprüft.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "SPLV",
+      "name": "SPDR S&P 500 Low Volatility UCITS ETF (State Street)",
+      "isin": "IE00B802KR88",
+      "anbieter": "SPDR (State Street)",
+      "index": "S&P 500 Low Volatility",
+      "klasse": "gleicher Index",
+      "auflage": "2012-10-03",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.35,
+      "xetra_kuerzel": "SPY1",
+      "yahoo_symbole": [
+        {
+          "symbol": "SPY1.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "SPY1.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "SPY1.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "SPY1.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "SPY1.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "LOWV.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B802KR88",
+      "quelle2_url": null,
+      "bemerkung": "Gleicher Index wie SPLV. Invesco-Gegenstück IE00BKW9SX35 nicht in DE, siehe ausgeschlossen.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "USMV/SPLV",
+      "name": "iShares Edge S&P 500 Minimum Volatility UCITS ETF USD (Acc)",
+      "isin": "IE00B6SPMN59",
+      "anbieter": "iShares",
+      "index": "S&P 500 Minimum Volatility",
+      "klasse": "US-Faktor",
+      "auflage": "2012-11-30",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "IBCK",
+      "yahoo_symbole": [
+        {
+          "symbol": "IBCK.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IBCK.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IBCK.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IBCK.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IBCK.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "SPMV.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B6SPMN59",
+      "quelle2_url": null,
+      "bemerkung": "Optimierungs-Index (wie USMV), aber auf S&P 500 statt MSCI USA.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "USMV/SPLV",
+      "name": "iShares Edge S&P 500 Minimum Volatility UCITS ETF USD (Dist)",
+      "isin": "IE00BD93YH54",
+      "anbieter": "iShares",
+      "index": "S&P 500 Minimum Volatility",
+      "klasse": "US-Faktor",
+      "auflage": "2018-02-21",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "QDV1.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "QDV1.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "SPMD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD93YH54",
+      "quelle2_url": null,
+      "bemerkung": "Halbjährliche Ausschüttung; kein Xetra-Listing laut justETF.",
+      "de_handelsplaetze": "gettex (QDV1)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "USMV",
+      "name": "UBS Factor MSCI USA Low Volatility UCITS ETF USD dis",
+      "isin": "IE00BX7RQY03",
+      "anbieter": "UBS",
+      "index": "MSCI USA Select Dynamic 50% Risk Weighted",
+      "klasse": "US-Faktor",
+      "auflage": "2015-08-26",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.18,
+      "xetra_kuerzel": "UBUR",
+      "yahoo_symbole": [
+        {
+          "symbol": "UBUR.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "UBUR.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "UBUR.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "UBUR.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "UBUR.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "UC95.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "UBUR.AS",
+          "boerse": "Amsterdam"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BX7RQY03",
+      "quelle2_url": null,
+      "bemerkung": "Risikogewichteter Index, kein Minimum-Volatility-Optimierer.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "USMV",
+      "name": "iShares Edge MSCI World Minimum Volatility UCITS ETF USD (Acc)",
+      "isin": "IE00B8FHGS14",
+      "anbieter": "iShares",
+      "index": "MSCI World Minimum Volatility",
+      "klasse": "Welt",
+      "auflage": "2012-11-30",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "IQQ0",
+      "yahoo_symbole": [
+        {
+          "symbol": "IQQ0.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IQQ0.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "IQQ0.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IQQ0.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IQQ0.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IQQ0.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "MVOL.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B8FHGS14",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "USMV",
+      "name": "iShares Edge MSCI World Minimum Volatility UCITS ETF USD (Dist)",
+      "isin": "IE00BMCZLJ20",
+      "anbieter": "iShares",
+      "index": "MSCI World Minimum Volatility",
+      "klasse": "Welt",
+      "auflage": "2020-08-19",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "UEEH",
+      "yahoo_symbole": [
+        {
+          "symbol": "UEEH.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BMCZLJ20.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "UEEH.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "UEEH.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "UEEH.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "UEEH.HA",
+          "boerse": "Hannover"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BMCZLJ20",
+      "quelle2_url": null,
+      "bemerkung": "Halbjährliche Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "USMV",
+      "name": "Xtrackers MSCI World Minimum Volatility UCITS ETF 1C",
+      "isin": "IE00BL25JN58",
+      "anbieter": "Xtrackers",
+      "index": "MSCI World Minimum Volatility",
+      "klasse": "Welt",
+      "auflage": "2014-09-05",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "XDEB",
+      "yahoo_symbole": [
+        {
+          "symbol": "XDEB.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "XDEB.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "XDEB.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "XDEB.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "XDEB.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JN58",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Value",
+      "us_gegenstueck": "VLUE",
+      "name": "iShares Edge MSCI USA Value Factor UCITS ETF USD (Acc)",
+      "isin": "IE00BD1F4M44",
+      "anbieter": "iShares",
+      "index": "MSCI USA Enhanced Value",
+      "klasse": "gleicher Index",
+      "auflage": "2016-10-13",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "QDVI",
+      "yahoo_symbole": [
+        {
+          "symbol": "QDVI.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "QDVI.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "QDVI.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "QDVI.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QDVI.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "IUVL.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4M44",
+      "quelle2_url": null,
+      "bemerkung": "Gleicher Index wie VLUE.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Value",
+      "us_gegenstueck": "VLUE",
+      "name": "iShares Edge MSCI USA Value Factor UCITS ETF USD (Dist)",
+      "isin": "IE00BFF5RX68",
+      "anbieter": "iShares",
+      "index": "MSCI USA Enhanced Value",
+      "klasse": "gleicher Index",
+      "auflage": "2018-02-21",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "QDV2.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "QDV2.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IUVD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BFF5RX68",
+      "quelle2_url": null,
+      "bemerkung": "Halbjährliche Ausschüttung; kein Xetra-Listing laut justETF.",
+      "de_handelsplaetze": "gettex (QDV2)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Value",
+      "us_gegenstueck": "IWD",
+      "name": "Vanguard Russell 1000 U.S. Value UCITS ETF USD Acc",
+      "isin": "IE000US24HF4",
+      "anbieter": "Vanguard",
+      "index": "Russell 1000 Value",
+      "klasse": "gleicher Index",
+      "auflage": "2026-07-07",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.16,
+      "xetra_kuerzel": "V1VA",
+      "yahoo_symbole": [
+        {
+          "symbol": "V1VA.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000US24HF4.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "V1VA.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "V1VA.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "V1VA.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "V1VA.HA",
+          "boerse": "Hannover"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000US24HF4",
+      "quelle2_url": null,
+      "bemerkung": "Gleicher Index wie IWD; erst Juli 2026 aufgelegt (zu jung). Dist-Klasse IE000ELFEBZ3 nur LSE, siehe ausgeschlossen.",
+      "de_handelsplaetze": "Xetra",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Value",
+      "us_gegenstueck": "IWD",
+      "name": "UBS MSCI USA Value UCITS ETF USD dis",
+      "isin": "IE00B78JSG98",
+      "anbieter": "UBS",
+      "index": "MSCI USA Value",
+      "klasse": "US-Faktor",
+      "auflage": "2012-04-11",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "UBU5",
+      "yahoo_symbole": [
+        {
+          "symbol": "UBU5.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "UBU5.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "UBU5.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "UBU5.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "UBU5.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "USVUSY.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B78JSG98",
+      "quelle2_url": null,
+      "bemerkung": "Stil-Index (Value-Hälfte des MSCI USA), halbjährliche Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Value",
+      "us_gegenstueck": "IWD",
+      "name": "SPDR MSCI USA Value UCITS ETF (State Street)",
+      "isin": "IE00BSPLC520",
+      "anbieter": "SPDR (State Street)",
+      "index": "MSCI USA Value Weighted",
+      "klasse": "US-Faktor",
+      "auflage": "2015-02-18",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "ZPRU",
+      "yahoo_symbole": [
+        {
+          "symbol": "ZPRU.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "ZPRU.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "ZPRU.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "ZPRU.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "ZPRU.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "USVL.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BSPLC520",
+      "quelle2_url": null,
+      "bemerkung": "Wertgewichteter Index (Gewicht nach Value-Kennzahlen).",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Value",
+      "us_gegenstueck": "VLUE/RPV",
+      "name": "UBS Factor MSCI USA Prime Value Screened UCITS ETF USD dis",
+      "isin": "IE00BX7RR706",
+      "anbieter": "UBS",
+      "index": "MSCI USA Prime Value ESG Low Carbon Select (vorher MSCI USA Prime Value)",
+      "klasse": "US-Faktor",
+      "auflage": "2015-08-26",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "UBUS.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "UBUS.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "UBUS.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "UBUS.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "UBUS.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "UPVLD.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "UBUS.AS",
+          "boerse": "Amsterdam"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BX7RR706",
+      "quelle2_url": null,
+      "bemerkung": "ESG-Indexwechsel wie beim Quality-Schwesterfonds (Datum offen). Kein Xetra in der justETF-Liste, Yahoo führt aber UBUS.DE (XETRA).",
+      "de_handelsplaetze": "gettex, Stuttgart (UBUS)",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Value",
+      "us_gegenstueck": "VLUE",
+      "name": "iShares Edge MSCI World Value Factor UCITS ETF USD (Acc)",
+      "isin": "IE00BP3QZB59",
+      "anbieter": "iShares",
+      "index": "MSCI World Enhanced Value",
+      "klasse": "Welt",
+      "auflage": "2014-10-03",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "IS3S",
+      "yahoo_symbole": [
+        {
+          "symbol": "IS3S.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IS3S.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IS3S.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IS3S.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IS3S.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "IS3S.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IWVL.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZB59",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Value",
+      "us_gegenstueck": "VLUE",
+      "name": "iShares Edge MSCI World Value Factor UCITS ETF USD (Dist)",
+      "isin": "IE00BFYTYS33",
+      "anbieter": "iShares",
+      "index": "MSCI World Enhanced Value",
+      "klasse": "Welt",
+      "auflage": "2018-02-23",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "QDV3.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QDV3.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "QDV3.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "QDV3.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "IWVU.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BFYTYS33",
+      "quelle2_url": null,
+      "bemerkung": "Halbjährliche Ausschüttung; kein Xetra-Listing laut justETF.",
+      "de_handelsplaetze": "gettex (QDV3)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Value",
+      "us_gegenstueck": "VLUE",
+      "name": "Xtrackers MSCI World Value UCITS ETF 1C",
+      "isin": "IE00BL25JM42",
+      "anbieter": "Xtrackers",
+      "index": "MSCI World Enhanced Value",
+      "klasse": "Welt",
+      "auflage": "2014-09-11",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "XDEV",
+      "yahoo_symbole": [
+        {
+          "symbol": "XDEV.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "XDEV.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "XDEV.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "XDEV.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "XDEV.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "XDEV.MI",
+          "boerse": "Milan"
+        },
+        {
+          "symbol": "XDEV.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JM42",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "IWF",
+      "name": "Amundi Russell 1000 Growth UCITS ETF Acc",
+      "isin": "IE0005E8B9S4",
+      "anbieter": "Amundi",
+      "index": "Russell 1000 Growth",
+      "klasse": "gleicher Index",
+      "auflage": "2011-10-27",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.19,
+      "xetra_kuerzel": "MWOT",
+      "yahoo_symbole": [
+        {
+          "symbol": "MWOW.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "MWOT.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE0005E8B9S4.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "MWOT.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0005E8B9S4",
+      "quelle2_url": "https://www.test-achats.be/invest/investir/fonds-investissement-sicav/analyses/2024/07/fonds-tracker-etf-actions-americaines-amundi-disparu-fusion",
+      "bemerkung": "Auflagedatum stammt vom Vorgänger Lyxor Russell 1000 Growth UCITS ETF (FR0011119171), der am 09.07.2024 in diesen IE-Fonds verschmolzen wurde (Suchauszug). justETF: Xetra MWOT (USD) und MWOV (GBP), gettex MWOW (EUR); Yahoo führt MWOT.DE und MWOW.DE - Xetra-Kürzel unklar.",
+      "de_handelsplaetze": "Xetra, gettex (MWOW)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "IWF",
+      "name": "Vanguard Russell 1000 U.S. Growth UCITS ETF USD Acc",
+      "isin": "IE000J7AY5Y3",
+      "anbieter": "Vanguard",
+      "index": "Russell 1000 Growth",
+      "klasse": "gleicher Index",
+      "auflage": "2026-07-07",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.16,
+      "xetra_kuerzel": "VRGU",
+      "yahoo_symbole": [
+        {
+          "symbol": "VRGU.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000J7AY5Y3.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "VRGU.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "VRGU.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "VRGU.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "VRGU.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "VRGU.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000J7AY5Y3",
+      "quelle2_url": null,
+      "bemerkung": "Erst Juli 2026 aufgelegt (zu jung). Dist-Klasse IE000EJFRI08 nur LSE, siehe ausgeschlossen.",
+      "de_handelsplaetze": "Xetra",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "IWF/QQQ",
+      "name": "WisdomTree US Quality Growth UCITS ETF USD Unhedged Acc",
+      "isin": "IE000YGEAK03",
+      "anbieter": "WisdomTree",
+      "index": "WisdomTree US Quality Growth UCITS",
+      "klasse": "US-Faktor",
+      "auflage": "2024-04-16",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.33,
+      "xetra_kuerzel": "QGRW",
+      "yahoo_symbole": [
+        {
+          "symbol": "QGRW.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000YGEAK03.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "QGRW.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QGRW.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "QGRW.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "QGRW.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000YGEAK03",
+      "quelle2_url": null,
+      "bemerkung": "UCITS-Gegenstück zu QGRW (WisdomTree U.S. Quality Growth); nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "iShares Nasdaq 100 UCITS ETF (Acc)",
+      "isin": "IE00B53SZB19",
+      "anbieter": "iShares",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2010-01-26",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "SXRV",
+      "yahoo_symbole": [
+        {
+          "symbol": "SXRV.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "SXRV.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "SXRV.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "SXRV.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "SXRV.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "CSNDX.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B53SZB19",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "iShares Nasdaq 100 UCITS ETF (DE)",
+      "isin": "DE000A0F5UF5",
+      "anbieter": "iShares",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2006-03-27",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "EXXT",
+      "yahoo_symbole": [
+        {
+          "symbol": "EXXT.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "EXXT.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "EXXT.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "EXXT.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "EXXT.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "EXXT.HA",
+          "boerse": "Hannover"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=DE000A0F5UF5",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Deutsches Sondervermögen (Domizil DE).",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Invesco EQQQ Nasdaq-100 UCITS ETF",
+      "isin": "IE0032077012",
+      "anbieter": "Invesco",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2002-12-02",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "EQQQ",
+      "yahoo_symbole": [
+        {
+          "symbol": "EQQQ.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "EQQQ.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "EQQQ.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "EQQQ.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0032077012",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Invesco EQQQ Nasdaq-100 UCITS ETF Acc",
+      "isin": "IE00BFZXGZ54",
+      "anbieter": "Invesco",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2018-09-24",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "EQQB",
+      "yahoo_symbole": [
+        {
+          "symbol": "EQQB.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BFZXGZ54.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "EQQB.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "EQQB.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "EQQB.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "EQQB.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "EQAC.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BFZXGZ54",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Invesco Nasdaq-100 Swap UCITS ETF Acc",
+      "isin": "IE00BNRQM384",
+      "anbieter": "Invesco",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2021-03-22",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "EQQX",
+      "yahoo_symbole": [
+        {
+          "symbol": "EQQX.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BNRQM384.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "EQQX.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "EQQX.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "EQQX.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "EQQX.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "EQQS.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BNRQM384",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Synthetisch (Swap).",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Invesco Nasdaq-100 Swap UCITS ETF Dist",
+      "isin": "IE000RUF4QN8",
+      "anbieter": "Invesco",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2021-06-21",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "EQQD",
+      "yahoo_symbole": [
+        {
+          "symbol": "EQQD.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000RUF4QN8.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "EQQD.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "EQQD.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "EQQD.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "EQQD.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "EQQD.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "EQQD.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000RUF4QN8",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Synthetisch (Swap); quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Amundi Core Nasdaq-100 Swap UCITS ETF Acc",
+      "isin": "LU1829221024",
+      "anbieter": "Amundi",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2001-09-07",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.22,
+      "xetra_kuerzel": "LYMS",
+      "yahoo_symbole": [
+        {
+          "symbol": "LYMS.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "LYMS.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "LYMS.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "LYMS.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "LYMS.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "LYMS.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "UST.PA",
+          "boerse": "Paris"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1829221024",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Synthetisch (Unfunded Swap). Auflagedatum 2001 liegt vor der ISIN-Vergabe (LU1829…) - vermutlich Historie des früheren Lyxor-Nasdaq-Fonds übernommen.",
+      "de_handelsplaetze": "Xetra (in USD laut justETF), gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Amundi Core Nasdaq-100 Swap UCITS ETF Dist",
+      "isin": "LU2197908721",
+      "anbieter": "Amundi",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2020-09-10",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.22,
+      "xetra_kuerzel": "NADQ",
+      "yahoo_symbole": [
+        {
+          "symbol": "NADQ.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "LU2197908721.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "NADQ.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "NADQ.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "NADQ.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "NADQ.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU2197908721",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Synthetisch (Unfunded Swap).",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Amundi Nasdaq-100 Swap UCITS ETF EUR Acc",
+      "isin": "LU1681038243",
+      "anbieter": "Amundi",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2010-06-08",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "EUR",
+      "ter_prozent": 0.23,
+      "xetra_kuerzel": "6AQQ",
+      "yahoo_symbole": [
+        {
+          "symbol": "6AQQ.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "6AQQ.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "6AQQ.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "6AQQ.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "6AQQ.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "ANX.PA",
+          "boerse": "Paris"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1681038243",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Synthetisch; Fondswährung EUR, laut justETF nicht währungsgesichert. Auflagedatum liegt vor der ISIN-Vergabe (LU1681…, ab 2017/18) - vermutlich Historie eines verschmolzenen Vorgängers.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Amundi Nasdaq-100 Swap UCITS ETF USD Acc",
+      "isin": "LU1681038326",
+      "anbieter": "Amundi",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2010-07-02",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.23,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "LU1681038326.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "10A4.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "10A4.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "10A4.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "ANXU.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1681038326",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Synthetisch; USD-Klasse desselben Teilfonds wie 6AQQ (Annahme); Auflagedatum vermutlich vom Vorgänger übernommen.",
+      "de_handelsplaetze": "gettex (10A4)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Amundi Core Nasdaq-100 UCITS ETF Acc",
+      "isin": "IE000A2YGZU5",
+      "anbieter": "Amundi",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2026-03-03",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.13,
+      "xetra_kuerzel": "ANSD",
+      "yahoo_symbole": [
+        {
+          "symbol": "ANSD.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000A2YGZU5.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "ANSD.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "ANSD.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "ANSD.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "ANSD.HA",
+          "boerse": "Hannover"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000A2YGZU5",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Physisch; erst März 2026 aufgelegt (zu jung).",
+      "de_handelsplaetze": "Xetra",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Xtrackers Nasdaq 100 UCITS ETF 1C",
+      "isin": "IE00BMFKG444",
+      "anbieter": "Xtrackers",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2021-01-21",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "XNAS",
+      "yahoo_symbole": [
+        {
+          "symbol": "XNAS.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "XNAS.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "XNAS.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "XNAS.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "XNAS.MI",
+          "boerse": "Milan"
+        },
+        {
+          "symbol": "XNAS.ST",
+          "boerse": "Stockholm"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BMFKG444",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Physisch.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Xtrackers Nasdaq 100 Swap UCITS ETF 1C",
+      "isin": "IE000472H9T4",
+      "anbieter": "Xtrackers",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2025-07-09",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.18,
+      "xetra_kuerzel": "XNDQ",
+      "yahoo_symbole": [
+        {
+          "symbol": "XNDQ.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "XNDQ.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IE000472H9T4.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "XNDQ.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "XNDQ.MI",
+          "boerse": "Milan"
+        },
+        {
+          "symbol": "XNDQ.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000472H9T4",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Synthetisch; nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra (XNDQ EUR, XNDU USD), gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "Xtrackers NASDAQ 100 Swap UCITS ETF 1D",
+      "isin": "IE000EXUE0G2",
+      "anbieter": "Xtrackers",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2025-07-09",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.18,
+      "xetra_kuerzel": "XNDX",
+      "yahoo_symbole": [
+        {
+          "symbol": "XNDX.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "XNDX.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IE000EXUE0G2.SG",
+          "boerse": "Stuttgart"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000EXUE0G2",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Synthetisch; nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra (XNDX EUR, XNDD USD), gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "UBS Nasdaq-100 UCITS ETF USD acc",
+      "isin": "IE000SB4G4I4",
+      "anbieter": "UBS",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2025-03-11",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.13,
+      "xetra_kuerzel": "BCFP",
+      "yahoo_symbole": [
+        {
+          "symbol": "BCFP.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000SB4G4I4.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "BCFP.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "BCFP.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "BCFP.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "BCFP.HA",
+          "boerse": "Hannover"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000SB4G4I4",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "UBS Nasdaq-100 UCITS ETF USD dis",
+      "isin": "IE0003RQ9F90",
+      "anbieter": "UBS",
+      "index": "Nasdaq 100",
+      "klasse": "gleicher Index",
+      "auflage": "2025-03-11",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.13,
+      "xetra_kuerzel": "BCFN",
+      "yahoo_symbole": [
+        {
+          "symbol": "BCFN.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE0003RQ9F90.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "BCFN.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "BCFN.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "BCFN.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "BCFN.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "QQQE.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0003RQ9F90",
+      "quelle2_url": "https://www.justetf.com/de/how-to/nasdaq-100-etfs.html",
+      "bemerkung": "Halbjährliche Ausschüttung; nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Momentum",
+      "us_gegenstueck": "MTUM",
+      "name": "iShares Edge MSCI USA Momentum Factor UCITS ETF USD (Acc)",
+      "isin": "IE00BD1F4N50",
+      "anbieter": "iShares",
+      "index": "MSCI USA Momentum",
+      "klasse": "gleicher Index",
+      "auflage": "2016-10-13",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "QDVA",
+      "yahoo_symbole": [
+        {
+          "symbol": "QDVA.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "QDVA.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "QDVA.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "QDVA.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QDVA.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IUMO.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4N50",
+      "quelle2_url": "https://www.sec.gov/Archives/edgar/data/1100663/000119312520249191/d46734d497.htm",
+      "bemerkung": "MTUM folgt seit 23.11.2020 der MSCI USA Momentum SR Variant (gleiche Auswahl, Umschichtung über drei Tage gestaffelt; Suchauszug SEC 497) - daher Mutterindex = praktisch gleicher Index. Für SPMO/QMOM/PDP nur Faktor-Gegenstück.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Momentum",
+      "us_gegenstueck": "MTUM",
+      "name": "iShares Edge MSCI USA Momentum Factor UCITS ETF USD (Dist)",
+      "isin": "IE00BFF5RZ82",
+      "anbieter": "iShares",
+      "index": "MSCI USA Momentum",
+      "klasse": "gleicher Index",
+      "auflage": "2018-02-21",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "IQQ2.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IUMD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BFF5RZ82",
+      "quelle2_url": null,
+      "bemerkung": "Halbjährliche Ausschüttung; kein Xetra-Listing laut justETF.",
+      "de_handelsplaetze": "gettex (IQQ2)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Momentum",
+      "us_gegenstueck": "MTUM",
+      "name": "iShares Edge MSCI World Momentum Factor UCITS ETF USD (Acc)",
+      "isin": "IE00BP3QZ825",
+      "anbieter": "iShares",
+      "index": "MSCI World Momentum",
+      "klasse": "Welt",
+      "auflage": "2014-10-03",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "IS3R",
+      "yahoo_symbole": [
+        {
+          "symbol": "IS3R.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IS3R.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IS3R.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IS3R.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IS3R.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IS3R.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "IWMO.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZ825",
+      "quelle2_url": "https://www.justetf.com/de/how-to/invest-in-momentum-etfs.html",
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Momentum",
+      "us_gegenstueck": "MTUM",
+      "name": "Xtrackers MSCI World Momentum UCITS ETF 1C",
+      "isin": "IE00BL25JP72",
+      "anbieter": "Xtrackers",
+      "index": "MSCI World Momentum",
+      "klasse": "Welt",
+      "auflage": "2014-09-05",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "XDEM",
+      "yahoo_symbole": [
+        {
+          "symbol": "XDEM.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "XDEM.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "XDEM.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "XDEM.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "XDEM.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "XDEM.MI",
+          "boerse": "Milan"
+        },
+        {
+          "symbol": "XDEM.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JP72",
+      "quelle2_url": "https://www.justetf.com/de/how-to/invest-in-momentum-etfs.html",
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "SDY (NOBL)",
+      "name": "SPDR S&P U.S. Dividend Aristocrats UCITS ETF USD Unhedged (Dist)",
+      "isin": "IE00B6YX5D40",
+      "anbieter": "SPDR (State Street)",
+      "index": "S&P High Yield Dividend Aristocrats",
+      "klasse": "gleicher Index",
+      "auflage": "2011-10-14",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.35,
+      "xetra_kuerzel": "SPYD",
+      "yahoo_symbole": [
+        {
+          "symbol": "SPYD.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "SPYD.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "UDVD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B6YX5D40",
+      "quelle2_url": null,
+      "bemerkung": "Gleicher Index wie SDY (nicht NOBL: S&P 500 Dividend Aristocrats hat kein UCITS-Gegenstück gefunden). Quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "DGRW",
+      "name": "WisdomTree US Quality Dividend Growth UCITS ETF USD Acc",
+      "isin": "IE00BZ56RG20",
+      "anbieter": "WisdomTree",
+      "index": "WisdomTree US Quality Dividend Growth",
+      "klasse": "gleicher Index",
+      "auflage": "2016-06-03",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.33,
+      "xetra_kuerzel": "WTDM",
+      "yahoo_symbole": [
+        {
+          "symbol": "WTDM.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BZ56RG20.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "WTDM.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "WTDM.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "WTDM.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "WTDM.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "DGRA.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BZ56RG20",
+      "quelle2_url": null,
+      "bemerkung": "UCITS-Ausgabe des DGRW-Index (ggf. UCITS-Kappungsvariante, nicht geprüft). USD-Dist-Klasse IE00BZ56RD98 nur LSE/SIX, siehe ausgeschlossen.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "VYM/DHS",
+      "name": "WisdomTree US High Dividend UCITS ETF Dist (früher US Equity Income)",
+      "isin": "IE00BQZJBQ63",
+      "anbieter": "WisdomTree",
+      "index": "WisdomTree US High Dividend UCITS (mit ESG-Filter)",
+      "klasse": "US-Faktor",
+      "auflage": "2014-10-21",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.29,
+      "xetra_kuerzel": "WTEU",
+      "yahoo_symbole": [
+        {
+          "symbol": "WTEU.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BQZJBQ63.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "WTEU.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "WTEU.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "WTEU.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "WTEU.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "DHSD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BQZJBQ63",
+      "quelle2_url": null,
+      "bemerkung": "Umbenannt (Yahoo führt noch den alten Namen US Equity Income); Datum der Umbenennung/des ESG-Filters offen. Quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "VYM/DHS",
+      "name": "WisdomTree US High Dividend UCITS ETF Acc",
+      "isin": "IE00BD6RZT93",
+      "anbieter": "WisdomTree",
+      "index": "WisdomTree US High Dividend UCITS (mit ESG-Filter)",
+      "klasse": "US-Faktor",
+      "auflage": "2016-11-03",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.29,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "WTD9.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BD6RZT93.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "WTD9.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "WTD9.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "WTD9.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "WTD9.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "DHSA.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD6RZT93",
+      "quelle2_url": null,
+      "bemerkung": "Kein Xetra in der justETF-Liste, Yahoo führt aber WTD9.DE (XETRA).",
+      "de_handelsplaetze": "gettex (WTD9)",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "DGRW/VYM",
+      "name": "Fidelity US Quality Income UCITS ETF INC-USD",
+      "isin": "IE00BYXVGX24",
+      "anbieter": "Fidelity",
+      "index": "Fidelity US Quality Income",
+      "klasse": "US-Faktor",
+      "auflage": "2017-03-27",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "FUSD",
+      "yahoo_symbole": [
+        {
+          "symbol": "FUSD.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "FUSD.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "FUSD.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "FUSD.MI",
+          "boerse": "Milan"
+        },
+        {
+          "symbol": "FUSD.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BYXVGX24",
+      "quelle2_url": null,
+      "bemerkung": "Qualität + Dividende; quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "DGRW/VYM",
+      "name": "Fidelity US Quality Income UCITS ETF ACC-USD",
+      "isin": "IE00BYXVGY31",
+      "anbieter": "Fidelity",
+      "index": "Fidelity US Quality Income",
+      "klasse": "US-Faktor",
+      "auflage": "2017-03-27",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "FUSA",
+      "yahoo_symbole": [
+        {
+          "symbol": "FUSA.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "FUSA.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "FUSA.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "FUSA.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BYXVGY31",
+      "quelle2_url": null,
+      "bemerkung": "Qualität + Dividende.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "VYM (SPHD)",
+      "name": "Invesco S&P 500 High Dividend Low Volatility UCITS ETF",
+      "isin": "IE00BWTN6Y99",
+      "anbieter": "Invesco",
+      "index": "S&P 500 Low Volatility High Dividend",
+      "klasse": "US-Faktor",
+      "auflage": "2015-05-11",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "HDLV",
+      "yahoo_symbole": [
+        {
+          "symbol": "HDLV.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "HDLV.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "HDLV.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "HDLV.MI",
+          "boerse": "Milan"
+        },
+        {
+          "symbol": "HDLV.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BWTN6Y99",
+      "quelle2_url": null,
+      "bemerkung": "Entspricht dem US-Fonds SPHD (nicht in der Gruppenliste). Quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "VIG/DGRO/SCHD",
+      "name": "Franklin US Dividend Tilt UCITS ETF (Dis)",
+      "isin": "IE000Z4OBQK4",
+      "anbieter": "Franklin Templeton",
+      "index": "Morningstar US Dividend Enhanced Select",
+      "klasse": "US-Faktor",
+      "auflage": "2025-01-14",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.12,
+      "xetra_kuerzel": "UDVD",
+      "yahoo_symbole": [
+        {
+          "symbol": "UDVD.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000Z4OBQK4.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "UDVD.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "UDVD.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "UDVD.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "UDIV.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000Z4OBQK4",
+      "quelle2_url": null,
+      "bemerkung": "Nach 2021 aufgelegt. Achtung: LSE-Kürzel UDVD gehört dem SPDR-Aristokraten-ETF.",
+      "de_handelsplaetze": "Xetra",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "VIG/DGRO/SCHD",
+      "name": "Franklin US Dividend Tilt UCITS ETF (Acc)",
+      "isin": "IE000HSER094",
+      "anbieter": "Franklin Templeton",
+      "index": "Morningstar US Dividend Enhanced Select",
+      "klasse": "US-Faktor",
+      "auflage": "2025-01-14",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.12,
+      "xetra_kuerzel": "DVDU",
+      "yahoo_symbole": [
+        {
+          "symbol": "DVDU.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000HSER094.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "DVDU.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "DVDU.DU",
+          "boerse": "Duesseldorf"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000HSER094",
+      "quelle2_url": null,
+      "bemerkung": "Nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "SCHD/VYM (DVY)",
+      "name": "iShares Dow Jones US Select Dividend UCITS ETF (DE)",
+      "isin": "DE000A0D8Q49",
+      "anbieter": "iShares",
+      "index": "Dow Jones US Select Dividend",
+      "klasse": "US-Faktor",
+      "auflage": "2005-09-28",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.31,
+      "xetra_kuerzel": "EXX5",
+      "yahoo_symbole": [
+        {
+          "symbol": "EXX5.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "EXX5.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "EXX5.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "EXX5.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "EXX5.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "EXX5.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "EXX5.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=DE000A0D8Q49",
+      "quelle2_url": null,
+      "bemerkung": "Index wie US-Fonds DVY; Dow-Jones-Dividendenfamilie, aber nicht der SCHD-Index (Dow Jones U.S. Dividend 100).",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "VYM",
+      "name": "iShares MSCI USA Quality Dividend Advanced UCITS ETF USD (Dist)",
+      "isin": "IE00BKM4H312",
+      "anbieter": "iShares",
+      "index": "MSCI USA High Dividend Yield Advanced Select",
+      "klasse": "US-Faktor",
+      "auflage": "2014-06-06",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.35,
+      "xetra_kuerzel": "QDVD",
+      "yahoo_symbole": [
+        {
+          "symbol": "QDVD.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "QDVD.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "QDVD.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QDVD.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "QDVD.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "QDIV.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BKM4H312",
+      "quelle2_url": null,
+      "bemerkung": "Früher iShares MSCI USA Dividend IQ (Suchauszug); Index heute mit ESG-Auswahl (Advanced). Datum des Wechsels offen. Quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "PKW (SYLD)",
+      "name": "Invesco Global Buyback Achievers UCITS ETF",
+      "isin": "IE00BLSNMW37",
+      "anbieter": "Invesco",
+      "index": "Nasdaq Global Buyback Achievers",
+      "klasse": "Welt",
+      "auflage": "2014-10-24",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.39,
+      "xetra_kuerzel": "BBCK",
+      "yahoo_symbole": [
+        {
+          "symbol": "BBCK.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "BBCK.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "BBCK.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "BBCK.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "BBCK.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "BBCK.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "BUYB.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BLSNMW37",
+      "quelle2_url": null,
+      "bemerkung": "Welt-Version: Nasdaq US Buyback Achievers (PKW-Index) plus International Buyback Achievers. Quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IJR",
+      "name": "iShares S&P SmallCap 600 UCITS ETF",
+      "isin": "IE00B2QWCY14",
+      "anbieter": "iShares",
+      "index": "S&P SmallCap 600",
+      "klasse": "gleicher Index",
+      "auflage": "2008-05-09",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "IUS3",
+      "yahoo_symbole": [
+        {
+          "symbol": "IUS3.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IUS3.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "IUS3.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IUS3.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IUS3.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IUS3.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IDP6.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B2QWCY14",
+      "quelle2_url": null,
+      "bemerkung": "Halbjährliche Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IJR",
+      "name": "Invesco S&P SmallCap 600 UCITS ETF",
+      "isin": "IE00BH3YZ803",
+      "anbieter": "Invesco",
+      "index": "S&P SmallCap 600",
+      "klasse": "gleicher Index",
+      "auflage": "2019-01-28",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.14,
+      "xetra_kuerzel": "SMLK",
+      "yahoo_symbole": [
+        {
+          "symbol": "SMLK.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BH3YZ803.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "SMLK.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "SMLK.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "SMLK.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "USML.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BH3YZ803",
+      "quelle2_url": null,
+      "bemerkung": "Synthetisch (Swap).",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IWM",
+      "name": "SPDR Russell 2000 U.S. Small Cap UCITS ETF (State Street)",
+      "isin": "IE00BJ38QD84",
+      "anbieter": "SPDR (State Street)",
+      "index": "Russell 2000",
+      "klasse": "gleicher Index",
+      "auflage": "2014-06-30",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "ZPRR",
+      "yahoo_symbole": [
+        {
+          "symbol": "ZPRR.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "ZPRR.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "ZPRR.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "ZPRR.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "ZPRR.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "R2US.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BJ38QD84",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IWM",
+      "name": "Xtrackers Russell 2000 UCITS ETF 1C",
+      "isin": "IE00BJZ2DD79",
+      "anbieter": "Xtrackers",
+      "index": "Russell 2000",
+      "klasse": "gleicher Index",
+      "auflage": "2015-03-06",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "XRS2",
+      "yahoo_symbole": [
+        {
+          "symbol": "XRS2.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "XRS2.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "XRS2.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "XRS2.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "XRS2.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "XRSU.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "XRS2.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BJZ2DD79",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IWM",
+      "name": "Amundi Russell 2000 UCITS ETF EUR (C)",
+      "isin": "LU1681038672",
+      "anbieter": "Amundi",
+      "index": "Russell 2000",
+      "klasse": "gleicher Index",
+      "auflage": "2014-01-07",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "EUR",
+      "ter_prozent": 0.35,
+      "xetra_kuerzel": "RS2K",
+      "yahoo_symbole": [
+        {
+          "symbol": "RS2K.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "RS2K.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "RS2K.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "RS2K.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "RS2K.PA",
+          "boerse": "Paris"
+        },
+        {
+          "symbol": "RS2K.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1681038672",
+      "quelle2_url": null,
+      "bemerkung": "Synthetisch; laut justETF nicht währungsgesichert. Auflagedatum liegt vor der ISIN-Vergabe (LU1681…) - vermutlich Historie eines verschmolzenen Vorgängers.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IWM",
+      "name": "Amundi Russell 2000 UCITS ETF USD",
+      "isin": "LU1681038839",
+      "anbieter": "Amundi",
+      "index": "Russell 2000",
+      "klasse": "gleicher Index",
+      "auflage": "2014-01-07",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.35,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "LU1681038839.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "18MR.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "RS2U.PA",
+          "boerse": "Paris"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1681038839",
+      "quelle2_url": null,
+      "bemerkung": "Synthetisch; USD-Klasse; kein Xetra-Listing laut justETF.",
+      "de_handelsplaetze": "gettex (18MR)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IWM",
+      "name": "Invesco Russell 2000 UCITS ETF",
+      "isin": "IE00B60SX402",
+      "anbieter": "Invesco",
+      "index": "Russell 2000",
+      "klasse": "gleicher Index",
+      "auflage": "2009-03-31",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "SC0K",
+      "yahoo_symbole": [
+        {
+          "symbol": "SC0K.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "SC0K.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "SC0K.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "SC0K.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "SC0K.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "SC0K.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "RTYS.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B60SX402",
+      "quelle2_url": null,
+      "bemerkung": "Synthetisch (Swap).",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IWM",
+      "name": "Vanguard Russell 2000 U.S. Small-Cap UCITS ETF USD Acc",
+      "isin": "IE000GTBEXG4",
+      "anbieter": "Vanguard",
+      "index": "Russell 2000",
+      "klasse": "gleicher Index",
+      "auflage": "2026-07-07",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "V2SA",
+      "yahoo_symbole": [
+        {
+          "symbol": "V2SA.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000GTBEXG4.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "V2SA.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "V2SA.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "V2SA.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "V2SA.HA",
+          "boerse": "Hannover"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000GTBEXG4",
+      "quelle2_url": null,
+      "bemerkung": "Erst Juli 2026 aufgelegt (zu jung).",
+      "de_handelsplaetze": "Xetra",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "AVUV",
+      "name": "SPDR MSCI USA Small Cap Value Weighted UCITS ETF (State Street)",
+      "isin": "IE00BSPLC413",
+      "anbieter": "SPDR (State Street)",
+      "index": "MSCI USA Small Cap Value Weighted",
+      "klasse": "US-Faktor",
+      "auflage": "2015-02-18",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "ZPRV",
+      "yahoo_symbole": [
+        {
+          "symbol": "ZPRV.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "ZPRV.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "ZPRV.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "ZPRV.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "ZPRV.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "USSC.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BSPLC413",
+      "quelle2_url": null,
+      "bemerkung": "Einziges US-only Small-Value-Gegenstück in DE.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IWM",
+      "name": "iShares MSCI USA Small Cap ESG Enhanced CTB UCITS ETF USD (Acc)",
+      "isin": "IE00B3VWM098",
+      "anbieter": "iShares",
+      "index": "MSCI USA Small Cap ESG Enhanced Focus CTB (vorher vermutlich MSCI USA Small Cap)",
+      "klasse": "US-Faktor",
+      "auflage": "2009-07-01",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.43,
+      "xetra_kuerzel": "SXRG",
+      "yahoo_symbole": [
+        {
+          "symbol": "SXRG.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "SXRG.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "SXRG.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "SXRG.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "SXRG.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "SXRG.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "CSUSS.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B3VWM098",
+      "quelle2_url": null,
+      "bemerkung": "ESG-Index; Datum des Wechsels vom ursprünglichen Small-Cap-Index nicht geprüft.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IJR/IWM",
+      "name": "iShares MSCI USA Mid-Cap Equal Weight UCITS ETF USD (Acc) (früher Edge MSCI USA Size Factor)",
+      "isin": "IE00BD1F4K20",
+      "anbieter": "iShares",
+      "index": "MSCI USA Mid-Cap Equal Weighted",
+      "klasse": "US-Faktor",
+      "auflage": "2016-10-13",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "QDVC",
+      "yahoo_symbole": [
+        {
+          "symbol": "QDVC.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "QDVC.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "QDVC.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "QDVC.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QDVC.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IUSZ.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4K20",
+      "quelle2_url": null,
+      "bemerkung": "Size-Faktor (Mid-Cap gleichgewichtet), keine Small Caps im engeren Sinn. Umbenennungsdatum offen.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "AVUV",
+      "name": "Avantis Global Small Cap Value UCITS ETF USD Acc",
+      "isin": "IE0003R87OG3",
+      "anbieter": "Avantis (American Century)",
+      "index": "aktiv verwaltet (kein Index)",
+      "klasse": "Welt",
+      "auflage": "2024-09-25",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.39,
+      "xetra_kuerzel": "AVWS",
+      "yahoo_symbole": [
+        {
+          "symbol": "AVWS.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE0003R87OG3.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "AVWS.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "AVWS.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "AVWS.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "AVWS.HA",
+          "boerse": "Hannover"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0003R87OG3",
+      "quelle2_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/Stay-Informed/newsroom/press-releases/Deutsche-B-rse-welcomes-American-Century-as-a-new-ETF-issuer-on-Xetra-4131236",
+      "bemerkung": "Aktiv, bis ca. 70 % USA laut Deutsche-Börse-Mitteilung (Suchauszug); nach 2021 aufgelegt. Kein US-only Avantis-UCITS gefunden.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "IJR/IWM",
+      "name": "iShares MSCI World Mid-Cap Equal Weight UCITS ETF USD (Acc) (früher Edge MSCI World Size Factor)",
+      "isin": "IE00BP3QZD73",
+      "anbieter": "iShares",
+      "index": "MSCI World Mid Cap Equal Weighted",
+      "klasse": "Welt",
+      "auflage": "2014-10-03",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "IS3T",
+      "yahoo_symbole": [
+        {
+          "symbol": "IS3T.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IS3T.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IS3T.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IS3T.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IS3T.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "IWSZ.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZD73",
+      "quelle2_url": null,
+      "bemerkung": "Welt-Size-Faktor der iShares-Edge-Familie, umbenannt.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Moat",
+      "us_gegenstueck": "MOAT",
+      "name": "VanEck Morningstar US Wide Moat UCITS ETF A",
+      "isin": "IE0007I99HX7",
+      "anbieter": "VanEck",
+      "index": "Morningstar Wide Moat Focus",
+      "klasse": "gleicher Index",
+      "auflage": "2024-01-12",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.46,
+      "xetra_kuerzel": "WMOT",
+      "yahoo_symbole": [
+        {
+          "symbol": "WMOT.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE0007I99HX7.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "WMOT.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "WMOT.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "WMOT.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "WMOT.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "MOTU.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0007I99HX7",
+      "quelle2_url": null,
+      "bemerkung": "Gleicher Index wie MOAT; nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Moat",
+      "us_gegenstueck": "MOAT",
+      "name": "VanEck Morningstar US ESG Wide Moat UCITS ETF A",
+      "isin": "IE00BQQP9H09",
+      "anbieter": "VanEck",
+      "index": "Morningstar US Sustainability Moat Focus (bis 17.12.2021: Morningstar Wide Moat Focus)",
+      "klasse": "US-Faktor",
+      "auflage": "2015-10-16",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.49,
+      "xetra_kuerzel": "GMVM",
+      "yahoo_symbole": [
+        {
+          "symbol": "GMVM.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "GMVM.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "GMVM.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "GMVM.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "GMVM.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "GMVM.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "MOAT.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BQQP9H09",
+      "quelle2_url": "https://www.vaneck.com/de/en/moat/",
+      "bemerkung": "Bis 17.12.2021 gleicher Index wie MOAT, danach ESG-Variante; Kohlenstoff-Filter am 15.12.2023 entfernt (Suchauszug VanEck).",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Moat",
+      "us_gegenstueck": "MOAT (SMOT)",
+      "name": "VanEck Morningstar US SMID Moat UCITS ETF A",
+      "isin": "IE000SBU19F7",
+      "anbieter": "VanEck",
+      "index": "Morningstar US Small-Mid Cap Moat Focus",
+      "klasse": "US-Faktor",
+      "auflage": "2024-01-12",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.49,
+      "xetra_kuerzel": "SMTV",
+      "yahoo_symbole": [
+        {
+          "symbol": "SMTV.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE000SBU19F7.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "SMTV.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "SMTV.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "SMTV.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "SMTV.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "SMOT.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "SMTV.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000SBU19F7",
+      "quelle2_url": null,
+      "bemerkung": "Moat-Faktor auf kleinere/mittlere US-Werte; nach 2021 aufgelegt.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": true,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Moat",
+      "us_gegenstueck": "MOAT",
+      "name": "VanEck Morningstar Global Wide Moat UCITS ETF",
+      "isin": "IE00BL0BMZ89",
+      "anbieter": "VanEck",
+      "index": "Morningstar Global Wide Moat Focus",
+      "klasse": "Welt",
+      "auflage": "2020-07-07",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.52,
+      "xetra_kuerzel": "VVGM",
+      "yahoo_symbole": [
+        {
+          "symbol": "VVGM.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BL0BMZ89.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "VVGM.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "VVGM.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "VVGM.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "VVGM.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "GOAT.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL0BMZ89",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF",
+      "name": "iShares STOXX USA Equity Multifactor UCITS ETF USD (Acc)",
+      "isin": "IE00BZ0PKS76",
+      "anbieter": "iShares",
+      "index": "STOXX US Equity Factor Screened (vorher MSCI-Multifaktorindex)",
+      "klasse": "US-Faktor",
+      "auflage": "2015-09-04",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "IBCY",
+      "yahoo_symbole": [
+        {
+          "symbol": "IBCY.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IBCY.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IFSU.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BZ0PKS76",
+      "quelle2_url": "https://investing.com/news/company-news/ishares-etf-benchmark-index-change-postponed-to-january-2025-93CH-3746817",
+      "bemerkung": "Früher iShares Edge MSCI USA Multifactor; Wechsel auf STOXX um den 22.01.2025 (verschoben vom 26.11.2024; Suchauszug). LRGF folgt einem STOXX-Faktorindex - Nähe, aber nicht als identisch geprüft (UCITS = Screened-Variante).",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF",
+      "name": "iShares STOXX USA Equity Multifactor UCITS ETF USD (Dist)",
+      "isin": "IE00BG13YZ23",
+      "anbieter": "iShares",
+      "index": "STOXX US Equity Factor Screened",
+      "klasse": "US-Faktor",
+      "auflage": "2018-02-21",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "IQQ3.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "IQQ3.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "UFSD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BG13YZ23",
+      "quelle2_url": null,
+      "bemerkung": "Halbjährliche Ausschüttung; kein Xetra-Listing laut justETF.",
+      "de_handelsplaetze": "gettex (IQQ3)",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "GSLC",
+      "name": "Goldman Sachs ActiveBeta Paris-Aligned Sustainable US Large Cap Equity UCITS ETF USD (Acc)",
+      "isin": "IE00BJ5CNR11",
+      "anbieter": "Goldman Sachs",
+      "index": "GS ActiveBeta Paris-Aligned Sustainable U.S. Large Cap Equity (bis 10.09.2024: GS ActiveBeta U.S. Large Cap Equity)",
+      "klasse": "US-Faktor",
+      "auflage": "2019-09-23",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.14,
+      "xetra_kuerzel": "GACA",
+      "yahoo_symbole": [
+        {
+          "symbol": "GACA.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BJ5CNR11.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "GACA.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "GACA.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "GACA.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "GACA.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "GSLC.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BJ5CNR11",
+      "quelle2_url": "https://am.gs.com/en-gb/advisors/funds/detail/PV103353/IE00BJ5CNR11/goldman-sachs-active-beta-paris-aligned-sustainable-us-large-cap-equity-ucits-etf",
+      "bemerkung": "Bis 10.09.2024 gleicher Index wie GSLC und Name ohne Paris-Aligned (Suchauszug GSAM); justETF zeigt noch den alten Indexnamen.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF/GSLC",
+      "name": "Invesco S&P 500 QVM UCITS ETF",
+      "isin": "IE00BDZCKK11",
+      "anbieter": "Invesco",
+      "index": "S&P 500 Quality, Value & Momentum Multi-Factor",
+      "klasse": "US-Faktor",
+      "auflage": "2017-05-18",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.35,
+      "xetra_kuerzel": "QVMP",
+      "yahoo_symbole": [
+        {
+          "symbol": "QVMP.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "QVMP.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "QVMP.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "QVMP.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "QVMP.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "PQVM.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BDZCKK11",
+      "quelle2_url": null,
+      "bemerkung": "Quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF/GSLC",
+      "name": "UBS MSCI USA Select Factor Mix UCITS ETF USD acc",
+      "isin": "IE00BDGV0415",
+      "anbieter": "UBS",
+      "index": "MSCI USA Select Factor Mix",
+      "klasse": "US-Faktor",
+      "auflage": "2018-10-16",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": "USUE",
+      "yahoo_symbole": [
+        {
+          "symbol": "USUE.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IE00BDGV0415.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "USUE.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "USUE.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "USUE.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "USUE.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "USFMA.SW",
+          "boerse": "SIX"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BDGV0415",
+      "quelle2_url": null,
+      "bemerkung": "",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF/GSLC",
+      "name": "UBS MSCI USA Select Factor Mix UCITS ETF USD dis",
+      "isin": "IE00BDGV0308",
+      "anbieter": "UBS",
+      "index": "MSCI USA Select Factor Mix",
+      "klasse": "US-Faktor",
+      "auflage": "2017-04-27",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "UEQE.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "UEQE.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "UEQE.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "UEQE.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "USFM.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BDGV0308",
+      "quelle2_url": null,
+      "bemerkung": "Ausschüttende Klasse ist älter als die thesaurierende; halbjährlich.",
+      "de_handelsplaetze": "gettex (UEQE)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF/GSLC",
+      "name": "Franklin U.S. Equity UCITS ETF (früher Franklin LibertyQ U.S. Equity)",
+      "isin": "IE00BF2B0P08",
+      "anbieter": "Franklin Templeton",
+      "index": "Franklin US Equity Index",
+      "klasse": "US-Faktor",
+      "auflage": "2017-09-06",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.2,
+      "xetra_kuerzel": "FLXU",
+      "yahoo_symbole": [
+        {
+          "symbol": "FLXU.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "FLXU.MU",
+          "boerse": "Muenchen"
+        },
+        {
+          "symbol": "FLXU.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "FRUE.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "FLXU.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "FLXU.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "FLXU.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BF2B0P08",
+      "quelle2_url": "https://www.etfstrategy.com/franklin-templeton-removes-libertyshares-branding-in-europe-10339/",
+      "bemerkung": "Umbenennung (LibertyQ-Marke entfernt) zum 01.08.2022 (Suchauszug). Ob der heutige Index noch ein Multifaktor-Index ist, nicht bestätigt.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF",
+      "name": "iShares STOXX World Equity Multifactor UCITS ETF USD (Acc)",
+      "isin": "IE00BZ0PKT83",
+      "anbieter": "iShares",
+      "index": "STOXX Developed World Equity Factor Screened",
+      "klasse": "Welt",
+      "auflage": "2015-09-04",
+      "ertragsverwendung": "thesaurierend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.3,
+      "xetra_kuerzel": "IBCZ",
+      "yahoo_symbole": [
+        {
+          "symbol": "IBCZ.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "IBCZ.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "IBCZ.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "IBCZ.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "IBCZ.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "IFSW.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BZ0PKT83",
+      "quelle2_url": null,
+      "bemerkung": "Früher iShares Edge MSCI World Multifactor (Indexwechsel auf STOXX wie USA-Schwester, Datum nicht geprüft). EUR-gehedgte Klasse ausgelassen.",
+      "de_handelsplaetze": "Xetra, gettex",
+      "esg_filter": true,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF",
+      "name": "HSBC Multi-Factor Worldwide Equity UCITS ETF USD",
+      "isin": "IE00BKZGB098",
+      "anbieter": "HSBC",
+      "index": "HSBC Multi-Factor Worldwide Equity",
+      "klasse": "Welt",
+      "auflage": "2014-07-04",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.25,
+      "xetra_kuerzel": null,
+      "yahoo_symbole": [
+        {
+          "symbol": "IE00BKZGB098.SG",
+          "boerse": "Stuttgart"
+        },
+        {
+          "symbol": "H41J.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "HWWD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BKZGB098",
+      "quelle2_url": null,
+      "bemerkung": "Quartalsweise Ausschüttung; kein Xetra-Listing laut justETF.",
+      "de_handelsplaetze": "gettex (H41J)",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    },
+    {
+      "gruppe": "Fundamentalgewichtung",
+      "us_gegenstueck": "PRF",
+      "name": "Invesco RAFI US Fundamental Value UCITS ETF Dist (früher Invesco FTSE RAFI US 1000 UCITS ETF)",
+      "isin": "IE00B23D8S39",
+      "anbieter": "Invesco",
+      "index": "RAFI Fundamental US (bis 23.03.2026: FTSE RAFI US 1000)",
+      "klasse": "US-Faktor",
+      "auflage": "2007-11-12",
+      "ertragsverwendung": "ausschuettend",
+      "fondswaehrung": "USD",
+      "ter_prozent": 0.39,
+      "xetra_kuerzel": "6PSA",
+      "yahoo_symbole": [
+        {
+          "symbol": "6PSA.DE",
+          "boerse": "XETRA"
+        },
+        {
+          "symbol": "6PSA.HM",
+          "boerse": "Hamburg"
+        },
+        {
+          "symbol": "6PSA.DU",
+          "boerse": "Duesseldorf"
+        },
+        {
+          "symbol": "6PSA.HA",
+          "boerse": "Hannover"
+        },
+        {
+          "symbol": "6PSA.SG",
+          "boerse": "Stuttgart"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00B23D8S39",
+      "quelle2_url": "https://www.quilter.com/49303c/siteassets/fund-news/2026/march/8814-invesco-ftse-rafi---name-changes---cb3-.pdf",
+      "bemerkung": "Bis 23.03.2026 gleicher Index wie PRF damals; PRF selbst wechselte am 21.03.2025 auf RAFI Fundamental Select US 1000 (beides Suchauszug, Quilter-Mitteilung). Daher heute nur Faktor-Gegenstück. Quartalsweise Ausschüttung.",
+      "de_handelsplaetze": "Xetra, gettex, Stuttgart",
+      "esg_filter": false,
+      "nach_2021_aufgelegt": false,
+      "yahoo_de_gefunden": true
+    }
+  ],
+  "keine_gegenstuecke": [
+    {
+      "gruppe": "Free Cashflow",
+      "us_fonds": "COWZ",
+      "art": "kein in DE handelbares Gegenstück",
+      "suchspur": "WebSearch \"Cash Cows UCITS ETF Pacer\", \"UCITS ETF free cash flow US equities Xetra\"; justETF-Profil IE000IL7PZ05 (nur Amsterdam/LSE); Pacer-Mitteilung über etfgi.com (drei UCITS COWZ/ICOW/GCOW, alle Dublin/Amsterdam); Yahoo-Suche nur COWZ.AS. Bei den übrigen Anbietern der Liste kein US-Free-Cashflow-UCITS gefunden."
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_fonds": "SYLD",
+      "art": "kein Gegenstück (einziges liquidiert)",
+      "suchspur": "WebSearch \"Shareholder Yield UCITS\", \"UBS Factor MSCI USA Total Shareholder Yield UCITS ETF ISIN\" -> IE00BX7RRT25, justETF: liquidiert/verschmolzen. Nächster Verwandter nur Invesco Global Buyback Achievers (Welt)."
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_fonds": "PKW",
+      "art": "kein gleicher Index (nur Welt-Version)",
+      "suchspur": "WebSearch \"UCITS Buyback Achievers Invesco\" -> nur Nasdaq Global Buyback Achievers (IE00BLSNMW37); justETF: einziger ETF auf diesem Index."
+    },
+    {
+      "gruppe": "Momentum",
+      "us_fonds": "QMOM",
+      "art": "kein gleicher Index",
+      "suchspur": "Alpha Architect ohne UCITS-Fonds; justETF-Momentum-Leitfaden nennt nur MSCI-World-Momentum-ETFs; Faktor-Gegenstück nur iShares MSCI USA Momentum."
+    },
+    {
+      "gruppe": "Momentum",
+      "us_fonds": "PDP",
+      "art": "kein gleicher Index",
+      "suchspur": "WebSearch \"UCITS ETF Dorsey Wright OR Technical Leaders\" -> nur US-Fonds."
+    },
+    {
+      "gruppe": "Momentum",
+      "us_fonds": "SPMO",
+      "art": "kein gleicher Index",
+      "suchspur": "WebSearch \"S&P 500 Momentum UCITS ETF ISIN\", \"Invesco S&P 500 Momentum UCITS ETF launch\" -> nur US-Fonds SPMO und S&P 500 QVM (Multifaktor)."
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_fonds": "SCHD",
+      "art": "kein gleicher Index",
+      "suchspur": "WebSearch \"Dow Jones U.S. Dividend 100 UCITS ETF\" -> kein UCITS; nächster: iShares Dow Jones US Select Dividend (DE)."
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_fonds": "VIG",
+      "art": "kein gleicher Index",
+      "suchspur": "WebSearch \"UCITS Dividend Growers / US Dividend Growth\" -> keins auf S&P U.S. Dividend Growers."
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_fonds": "DGRO",
+      "art": "kein gleicher Index",
+      "suchspur": "WebSearch \"Morningstar US Dividend Growth UCITS\" -> keins; Franklin US Dividend Tilt nutzt Morningstar US Dividend Enhanced Select (anderer Index)."
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_fonds": "VYM",
+      "art": "kein gleicher Index",
+      "suchspur": "WebSearch \"FTSE USA High Dividend UCITS\" -> nur Vanguard FTSE All-World High Dividend Yield (Welt, nicht aufgenommen)."
+    },
+    {
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_fonds": "NOBL",
+      "art": "kein gleicher Index",
+      "suchspur": "WebSearch \"S&P 500 Dividend Aristocrats UCITS ETF ISIN\" -> nur SPDR auf S&P High Yield Dividend Aristocrats (= SDY-Index)."
+    },
+    {
+      "gruppe": "Value",
+      "us_fonds": "RPV",
+      "art": "kein gleicher Index",
+      "suchspur": "WebSearch \"S&P 500 Value / Pure Value UCITS ETF\" -> keine S&P-500-Value/Growth-UCITS gefunden."
+    },
+    {
+      "gruppe": "Kleine Werte",
+      "us_fonds": "AVUV",
+      "art": "kein gleicher Ansatz US-only",
+      "suchspur": "WebSearch \"Avantis America/US Small Cap Value UCITS\" -> nur Avantis Global Small Cap Value (aktiv, Welt); US-Faktor-Ersatz SPDR MSCI USA Small Cap Value Weighted."
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_fonds": "LRGF",
+      "art": "kein bestätigt gleicher Index",
+      "suchspur": "iShares STOXX USA Equity Multifactor folgt STOXX US Equity Factor Screened; Identität mit dem LRGF-Index nicht geprüft."
+    },
+    {
+      "gruppe": "Multifaktor",
+      "us_fonds": "GSLC",
+      "art": "gleicher Index nur bis 10.09.2024",
+      "suchspur": "Goldman-Sachs-UCITS IE00BJ5CNR11 seit 10.09.2024 auf Paris-Aligned-Variante."
+    },
+    {
+      "gruppe": "Fundamentalgewichtung",
+      "us_fonds": "PRF",
+      "art": "gleicher Index nur bis 21.03.2025",
+      "suchspur": "Invesco RAFI US (IE00B23D8S39): Index- und Namenswechsel 23.03.2026; PRF wechselte schon 21.03.2025 (Suchauszug Quilter)."
+    }
+  ],
+  "ausgeschlossen": [
+    {
+      "grund": "nicht an deutscher Börse gefunden",
+      "gruppe": "Gleichgewicht",
+      "us_gegenstueck": "RSP",
+      "name": "iShares S&P 500 Equal Weight UCITS ETF USD (Dist)",
+      "isin": "IE000IKMJDQ6",
+      "auflage": "2025-05-08",
+      "ertragsverwendung": "ausschuettend",
+      "bemerkung": "justETF: nur Euronext Amsterdam (EWSD). Yahoo EWSD.DE/.MU/.DU/.HM/.HA gehören zum Invesco EURO STOXX 50 Equal Weight - Kürzel-Kollision.",
+      "yahoo_symbole": [
+        {
+          "symbol": "EWSD.AS",
+          "boerse": "Amsterdam"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000IKMJDQ6"
+    },
+    {
+      "grund": "nicht an deutscher Börse gefunden",
+      "gruppe": "Value",
+      "us_gegenstueck": "IWD",
+      "name": "iShares Russell 1000 Value UCITS ETF USD (Acc)",
+      "isin": "IE0002EKOXU6",
+      "auflage": "2023-06-28",
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "Index Russell 1000 Value UCITS 30/18 Capped; justETF nur Amsterdam/LSE (R1VL), Yahoo nur R1VL.AS/.L.",
+      "yahoo_symbole": [
+        {
+          "symbol": "R1VL.AS",
+          "boerse": "Amsterdam"
+        },
+        {
+          "symbol": "R1VL.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0002EKOXU6"
+    },
+    {
+      "grund": "nicht an deutscher Börse gefunden",
+      "gruppe": "Value",
+      "us_gegenstueck": "IWD",
+      "name": "Vanguard Russell 1000 U.S. Value UCITS ETF USD Dist",
+      "isin": "IE000ELFEBZ3",
+      "auflage": "2026-07-07",
+      "ertragsverwendung": "ausschuettend",
+      "bemerkung": "Nur LSE (VRVD).",
+      "yahoo_symbole": [
+        {
+          "symbol": "VRVD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000ELFEBZ3"
+    },
+    {
+      "grund": "nicht an deutscher Börse gefunden",
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "IWF",
+      "name": "iShares Russell 1000 Growth UCITS ETF USD (Acc)",
+      "isin": "IE000NITTFF2",
+      "auflage": "2023-06-28",
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "Index Russell 1000 Growth UCITS 30/18 Capped; nur Amsterdam/LSE (R1GR).",
+      "yahoo_symbole": [
+        {
+          "symbol": "R1GR.AS",
+          "boerse": "Amsterdam"
+        },
+        {
+          "symbol": "R1GR.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000NITTFF2"
+    },
+    {
+      "grund": "nicht an deutscher Börse gefunden",
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "IWF",
+      "name": "Vanguard Russell 1000 U.S. Growth UCITS ETF USD Dis",
+      "isin": "IE000EJFRI08",
+      "auflage": "2026-07-07",
+      "ertragsverwendung": "ausschuettend",
+      "bemerkung": "Nur LSE (VRGD).",
+      "yahoo_symbole": [
+        {
+          "symbol": "VRGD.L",
+          "boerse": "London"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000EJFRI08"
+    },
+    {
+      "grund": "nicht an deutscher Börse gefunden",
+      "gruppe": "Niedrige Schwankung",
+      "us_gegenstueck": "SPLV",
+      "name": "Invesco S&P 500 Low Volatility UCITS ETF Acc",
+      "isin": "IE00BKW9SX35",
+      "auflage": "2021-07-14",
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "Gleicher Index wie SPLV; nur Borsa Italiana/LSE (SPLW/SPLG).",
+      "yahoo_symbole": [
+        {
+          "symbol": "SPLW.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "SPLW.MI",
+          "boerse": "Milan"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BKW9SX35"
+    },
+    {
+      "grund": "nicht an deutscher Börse gefunden",
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "DGRW",
+      "name": "WisdomTree US Quality Dividend Growth UCITS ETF USD (Dist)",
+      "isin": "IE00BZ56RD98",
+      "auflage": "2016-11-03",
+      "ertragsverwendung": "ausschuettend",
+      "bemerkung": "Nur LSE/SIX (DGRW).",
+      "yahoo_symbole": [
+        {
+          "symbol": "DGRW.L",
+          "boerse": "London"
+        },
+        {
+          "symbol": "DGRW.SW",
+          "boerse": "SIX"
+        },
+        {
+          "symbol": "DGRW.MX",
+          "boerse": "Mexico"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BZ56RD98"
+    },
+    {
+      "grund": "nicht an deutscher Börse gefunden",
+      "gruppe": "Free Cashflow",
+      "us_gegenstueck": "COWZ",
+      "name": "Pacer US Cash Cows 100 UCITS ETF Acc",
+      "isin": "IE000IL7PZ05",
+      "auflage": "2024-05-07",
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "Index Solactive Pacer US Cash Cows 100; justETF nur Euronext Amsterdam/LSE (COWZ), Yahoo nur COWZ.AS. Einziges COWZ-Gegenstück - in DE ggf. nur außerbörslich, nicht geprüft.",
+      "yahoo_symbole": [
+        {
+          "symbol": "COWZ.AS",
+          "boerse": "Amsterdam"
+        },
+        {
+          "symbol": "COWZ.FGI",
+          "boerse": "FTSEGlobal Index"
+        }
+      ],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000IL7PZ05"
+    },
+    {
+      "grund": "liquidiert/verschmolzen (justETF-Vermerk)",
+      "gruppe": "Value",
+      "us_gegenstueck": "IWD",
+      "name": "Lyxor Russell 1000 Value UCITS ETF Acc",
+      "isin": "FR0011119205",
+      "auflage": "2011-10-27",
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "Für Überlebensverzerrung relevant.",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=FR0011119205"
+    },
+    {
+      "grund": "verschmolzen",
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "IWF",
+      "name": "Lyxor Russell 1000 Growth UCITS ETF",
+      "isin": "FR0011119171",
+      "auflage": null,
+      "ertragsverwendung": null,
+      "bemerkung": "Am 09.07.2024 in Amundi Russell 1000 Growth (IE0005E8B9S4) verschmolzen (Suchauszug, Seite nicht geöffnet).",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=FR0011119171"
+    },
+    {
+      "grund": "liquidiert/verschmolzen (justETF-Vermerk)",
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "SYLD",
+      "name": "UBS ETF (IE) Factor MSCI USA Total Shareholder Yield UCITS ETF (USD) A-dis",
+      "isin": "IE00BX7RRT25",
+      "auflage": "2015-08-26",
+      "ertragsverwendung": "ausschuettend",
+      "bemerkung": "Index MSCI USA Total Shareholder Yield; war auf Xetra (UBUU). Einziges gefundenes Aktionärsrendite-Gegenstück - existiert nicht mehr.",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BX7RRT25"
+    },
+    {
+      "grund": "liquidiert/verschmolzen (justETF-Vermerk)",
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF/GSLC",
+      "name": "Amundi USA Equity Multi Smart Allocation Scientific Beta UCITS ETF",
+      "isin": "LU1589350070",
+      "auflage": "2017-05-10",
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "War auf Xetra (SMTU).",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1589350070"
+    },
+    {
+      "grund": "liquidiert/verschmolzen (justETF-Vermerk)",
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF",
+      "name": "Amundi Index Equity Global Multi Smart Allocation Scientific Beta UCITS ETF DR EUR (C)",
+      "isin": "LU1602145119",
+      "auflage": "2017-04-20",
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "Welt-Multifaktor.",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=LU1602145119"
+    },
+    {
+      "grund": "liquidiert 23.11.2022 (Suchauszug)",
+      "gruppe": "Multifaktor",
+      "us_gegenstueck": "LRGF",
+      "name": "JPMorgan US Equity Multi-Factor UCITS ETF",
+      "isin": "IE00BJRCLK89",
+      "auflage": null,
+      "ertragsverwendung": null,
+      "bemerkung": "Laut etfstream aktiv verwaltet, Auflage Juli 2019; Seite nicht geöffnet.",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE00BJRCLK89"
+    },
+    {
+      "grund": "ESG-Zwilling (Name trägt ESG/Advanced), nicht systematisch gesucht",
+      "gruppe": "Momentum",
+      "us_gegenstueck": "MTUM",
+      "name": "Amundi MSCI World Momentum Advanced UCITS ETF Acc",
+      "isin": "IE0001FQFU60",
+      "auflage": null,
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "Aus dem justETF-Momentum-Leitfaden.",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0001FQFU60"
+    },
+    {
+      "grund": "ESG-Zwilling (Name trägt ESG/Advanced), nicht systematisch gesucht",
+      "gruppe": "Momentum",
+      "us_gegenstueck": "MTUM",
+      "name": "Xtrackers MSCI World Momentum ESG UCITS ETF",
+      "isin": "IE000TL3PL69",
+      "auflage": null,
+      "ertragsverwendung": null,
+      "bemerkung": "Aus dem justETF-Momentum-Leitfaden.",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000TL3PL69"
+    },
+    {
+      "grund": "ESG-Zwilling (Name trägt ESG/Advanced), nicht systematisch gesucht",
+      "gruppe": "Momentum",
+      "us_gegenstueck": "MTUM",
+      "name": "iShares MSCI World Momentum Factor Advanced UCITS ETF USD (Acc)",
+      "isin": "IE000L5NW549",
+      "auflage": null,
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "Aus dem justETF-Momentum-Leitfaden.",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000L5NW549"
+    },
+    {
+      "grund": "währungsgesicherte Klasse",
+      "gruppe": "Dividende/Aktionärsrendite",
+      "us_gegenstueck": "DGRW",
+      "name": "WisdomTree US Quality Dividend Growth UCITS ETF - GBP Hedged",
+      "isin": "IE000IGMB3E1",
+      "auflage": "2023-07-31",
+      "ertragsverwendung": "ausschuettend",
+      "bemerkung": "Nur LSE.",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE000IGMB3E1"
+    },
+    {
+      "grund": "währungsgesicherte Klassen",
+      "gruppe": "Qualität/Value/Multifaktor",
+      "us_gegenstueck": "-",
+      "name": "UBS Quality Screened hGBP/hEUR, UBS Prime Value Screened hEUR, iShares STOXX World Multifactor EUR Hedged",
+      "isin": "IE00BXDZNK39, IE00BWT3KN65, IE00BWT3KL42, IE00BYXPXK00",
+      "auflage": null,
+      "ertragsverwendung": null,
+      "bemerkung": "Nur als Nebenfund notiert, nicht geprüft.",
+      "yahoo_symbole": [],
+      "quelle_url": null
+    },
+    {
+      "grund": "Anbieter nicht auf der Liste",
+      "gruppe": "Wachstum",
+      "us_gegenstueck": "QQQ",
+      "name": "BNP Paribas Easy II NASDAQ 100 UCITS ETF USD Acc; Deka Nasdaq-100 UCITS ETF",
+      "isin": "IE000QDFFK00, DE000ETFL623",
+      "auflage": null,
+      "ertragsverwendung": null,
+      "bemerkung": "Aus dem justETF-Nasdaq-Leitfaden (18 Nasdaq-100-ETFs).",
+      "yahoo_symbole": [],
+      "quelle_url": null
+    },
+    {
+      "grund": "institutionelle Klasse, nur SIX",
+      "gruppe": "Kleine Werte",
+      "us_gegenstueck": "AVUV",
+      "name": "Avantis Global Small Cap Value UCITS ETF I-USD Acc",
+      "isin": "IE0000EA7C44",
+      "auflage": "2025-06-18",
+      "ertragsverwendung": "thesaurierend",
+      "bemerkung": "",
+      "yahoo_symbole": [],
+      "quelle_url": "https://www.justetf.com/de/etf-profile.html?isin=IE0000EA7C44"
+    }
+  ]
+}

@@ -1,0 +1,2297 @@
+{
+ "kennung": "faktor-etf-realitaet-2026-10/v1",
+ "hinweis": "Gesiegelte Fondsliste - vor dem ersten Kurs erzeugt von fonds-bauen.js aus der Liste in REGEL.md B1/B2 und ucits-recherche.json (B3).",
+ "massstab": {
+  "id": "SPY",
+  "yahoo": [
+   "SPY"
+  ]
+ },
+ "massstabUcits": {
+  "id": "SXR8",
+  "yahoo": [
+   "SXR8.DE"
+  ],
+  "isin": "IE00B5BMR087"
+ },
+ "pruefgroessen": [
+  "^SP500TR",
+  "EZB-USD",
+  "EZB-GBP",
+  "EZB-CHF"
+ ],
+ "ucitsAuswahl": {
+  "zuJung": [
+   {
+    "isin": "IE000CXLGK86",
+    "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 2D",
+    "auflage": "2023-03-08"
+   },
+   {
+    "isin": "IE000MLMNYS0",
+    "name": "iShares S&P 500 Equal Weight UCITS ETF USD (Acc)",
+    "auflage": "2022-08-02"
+   },
+   {
+    "isin": "IE0000TZZ2B2",
+    "name": "Invesco S&P 500 Equal Weight Swap UCITS ETF Acc",
+    "auflage": "2025-01-14"
+   },
+   {
+    "isin": "IE000E6TPCH9",
+    "name": "Invesco S&P 500 Quality UCITS ETF Acc",
+    "auflage": "2025-06-23"
+   },
+   {
+    "isin": "IE000SNCKVM9",
+    "name": "Invesco S&P 500 Quality UCITS ETF Dist",
+    "auflage": "2025-06-23"
+   },
+   {
+    "isin": "IE000US24HF4",
+    "name": "Vanguard Russell 1000 U.S. Value UCITS ETF USD Acc",
+    "auflage": "2026-07-07"
+   },
+   {
+    "isin": "IE000J7AY5Y3",
+    "name": "Vanguard Russell 1000 U.S. Growth UCITS ETF USD Acc",
+    "auflage": "2026-07-07"
+   },
+   {
+    "isin": "IE000YGEAK03",
+    "name": "WisdomTree US Quality Growth UCITS ETF USD Unhedged Acc",
+    "auflage": "2024-04-16"
+   },
+   {
+    "isin": "IE000A2YGZU5",
+    "name": "Amundi Core Nasdaq-100 UCITS ETF Acc",
+    "auflage": "2026-03-03"
+   },
+   {
+    "isin": "IE000472H9T4",
+    "name": "Xtrackers Nasdaq 100 Swap UCITS ETF 1C",
+    "auflage": "2025-07-09"
+   },
+   {
+    "isin": "IE000EXUE0G2",
+    "name": "Xtrackers NASDAQ 100 Swap UCITS ETF 1D",
+    "auflage": "2025-07-09"
+   },
+   {
+    "isin": "IE000SB4G4I4",
+    "name": "UBS Nasdaq-100 UCITS ETF USD acc",
+    "auflage": "2025-03-11"
+   },
+   {
+    "isin": "IE0003RQ9F90",
+    "name": "UBS Nasdaq-100 UCITS ETF USD dis",
+    "auflage": "2025-03-11"
+   },
+   {
+    "isin": "IE000Z4OBQK4",
+    "name": "Franklin US Dividend Tilt UCITS ETF (Dis)",
+    "auflage": "2025-01-14"
+   },
+   {
+    "isin": "IE000HSER094",
+    "name": "Franklin US Dividend Tilt UCITS ETF (Acc)",
+    "auflage": "2025-01-14"
+   },
+   {
+    "isin": "IE000GTBEXG4",
+    "name": "Vanguard Russell 2000 U.S. Small-Cap UCITS ETF USD Acc",
+    "auflage": "2026-07-07"
+   },
+   {
+    "isin": "IE0003R87OG3",
+    "name": "Avantis Global Small Cap Value UCITS ETF USD Acc",
+    "auflage": "2024-09-25"
+   },
+   {
+    "isin": "IE0007I99HX7",
+    "name": "VanEck Morningstar US Wide Moat UCITS ETF A",
+    "auflage": "2024-01-12"
+   },
+   {
+    "isin": "IE000SBU19F7",
+    "name": "VanEck Morningstar US SMID Moat UCITS ETF A",
+    "auflage": "2024-01-12"
+   }
+  ],
+  "zweiteKlasse": [
+   {
+    "isin": "IE00BM8QRY62",
+    "name": "Invesco S&P 500 Equal Weight UCITS ETF Dist",
+    "auflage": "2021-04-06",
+    "statt": "IE00BNGJJT35"
+   },
+   {
+    "isin": "IE00BF2QSQ20",
+    "name": "iShares Edge MSCI USA Quality Factor UCITS ETF USD (Dist)",
+    "auflage": "2018-02-21",
+    "statt": "IE00BD1F4L37"
+   },
+   {
+    "isin": "IE00BD93YH54",
+    "name": "iShares Edge S&P 500 Minimum Volatility UCITS ETF USD (Dist)",
+    "auflage": "2018-02-21",
+    "statt": "IE00B6SPMN59"
+   },
+   {
+    "isin": "IE00BMCZLJ20",
+    "name": "iShares Edge MSCI World Minimum Volatility UCITS ETF USD (Dist)",
+    "auflage": "2020-08-19",
+    "statt": "IE00B8FHGS14"
+   },
+   {
+    "isin": "IE00BFF5RX68",
+    "name": "iShares Edge MSCI USA Value Factor UCITS ETF USD (Dist)",
+    "auflage": "2018-02-21",
+    "statt": "IE00BD1F4M44"
+   },
+   {
+    "isin": "IE00BFYTYS33",
+    "name": "iShares Edge MSCI World Value Factor UCITS ETF USD (Dist)",
+    "auflage": "2018-02-23",
+    "statt": "IE00BP3QZB59"
+   },
+   {
+    "isin": "IE00BFZXGZ54",
+    "name": "Invesco EQQQ Nasdaq-100 UCITS ETF Acc",
+    "auflage": "2018-09-24",
+    "statt": "IE0032077012"
+   },
+   {
+    "isin": "IE000RUF4QN8",
+    "name": "Invesco Nasdaq-100 Swap UCITS ETF Dist",
+    "auflage": "2021-06-21",
+    "statt": "IE00BNRQM384"
+   },
+   {
+    "isin": "LU2197908721",
+    "name": "Amundi Core Nasdaq-100 Swap UCITS ETF Dist",
+    "auflage": "2020-09-10",
+    "statt": "LU1829221024"
+   },
+   {
+    "isin": "LU1681038326",
+    "name": "Amundi Nasdaq-100 Swap UCITS ETF USD Acc",
+    "auflage": "2010-07-02",
+    "statt": "LU1681038243"
+   },
+   {
+    "isin": "IE00BFF5RZ82",
+    "name": "iShares Edge MSCI USA Momentum Factor UCITS ETF USD (Dist)",
+    "auflage": "2018-02-21",
+    "statt": "IE00BD1F4N50"
+   },
+   {
+    "isin": "IE00BD6RZT93",
+    "name": "WisdomTree US High Dividend UCITS ETF Acc",
+    "auflage": "2016-11-03",
+    "statt": "IE00BQZJBQ63"
+   },
+   {
+    "isin": "IE00BYXVGX24",
+    "name": "Fidelity US Quality Income UCITS ETF INC-USD",
+    "auflage": "2017-03-27",
+    "statt": "IE00BYXVGY31"
+   },
+   {
+    "isin": "LU1681038839",
+    "name": "Amundi Russell 2000 UCITS ETF USD",
+    "auflage": "2014-01-07",
+    "statt": "LU1681038672"
+   },
+   {
+    "isin": "IE00BG13YZ23",
+    "name": "iShares STOXX USA Equity Multifactor UCITS ETF USD (Dist)",
+    "auflage": "2018-02-21",
+    "statt": "IE00BZ0PKS76"
+   },
+   {
+    "isin": "IE00BDGV0415",
+    "name": "UBS MSCI USA Select Factor Mix UCITS ETF USD acc",
+    "auflage": "2018-10-16",
+    "statt": "IE00BDGV0308"
+   }
+  ],
+  "ausgeschlossen": [
+   {
+    "isin": "IE00B5WFQ436",
+    "name": "HSBC MSCI USA Quality UCITS ETF USD",
+    "grund": "bildete laut Recherche bis 2025 den breiten MSCI USA ab (Wechsel auf MSCI USA Sector Neutral Quality per Mitteilung vom 18.03.2025) - die Historie misst keinen Faktor"
+   }
+  ]
+ },
+ "fonds": [
+  {
+   "id": "RSP",
+   "name": "Invesco S&P 500 Equal Weight ETF",
+   "gruppe": "Gleichgewicht",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g1",
+   "yahoo": [
+    "RSP"
+   ]
+  },
+  {
+   "id": "QUAL",
+   "name": "iShares MSCI USA Quality Factor ETF",
+   "gruppe": "Qualität",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g1",
+   "yahoo": [
+    "QUAL"
+   ]
+  },
+  {
+   "id": "SPHQ",
+   "name": "Invesco S&P 500 Quality ETF",
+   "gruppe": "Qualität",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g1",
+   "yahoo": [
+    "SPHQ"
+   ]
+  },
+  {
+   "id": "USMV",
+   "name": "iShares MSCI USA Min Vol Factor ETF",
+   "gruppe": "Niedrige Schwankung",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g1",
+   "yahoo": [
+    "USMV"
+   ]
+  },
+  {
+   "id": "SPLV",
+   "name": "Invesco S&P 500 Low Volatility ETF",
+   "gruppe": "Niedrige Schwankung",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g1",
+   "yahoo": [
+    "SPLV"
+   ]
+  },
+  {
+   "id": "LRGF",
+   "name": "iShares U.S. Equity Factor ETF",
+   "gruppe": "Multifaktor",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g1",
+   "yahoo": [
+    "LRGF"
+   ]
+  },
+  {
+   "id": "GSLC",
+   "name": "Goldman Sachs ActiveBeta U.S. Large Cap Equity ETF",
+   "gruppe": "Multifaktor",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g1",
+   "yahoo": [
+    "GSLC"
+   ]
+  },
+  {
+   "id": "MOAT",
+   "name": "VanEck Morningstar Wide Moat ETF",
+   "gruppe": "Moat",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g1",
+   "yahoo": [
+    "MOAT"
+   ]
+  },
+  {
+   "id": "COWZ",
+   "name": "Pacer US Cash Cows 100 ETF",
+   "gruppe": "Free Cashflow",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g1",
+   "yahoo": [
+    "COWZ"
+   ]
+  },
+  {
+   "id": "VLUE",
+   "name": "iShares MSCI USA Value Factor ETF",
+   "gruppe": "Value",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g2",
+   "yahoo": [
+    "VLUE"
+   ]
+  },
+  {
+   "id": "IWD",
+   "name": "iShares Russell 1000 Value ETF",
+   "gruppe": "Value",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g2",
+   "yahoo": [
+    "IWD"
+   ]
+  },
+  {
+   "id": "RPV",
+   "name": "Invesco S&P 500 Pure Value ETF",
+   "gruppe": "Value",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g2",
+   "yahoo": [
+    "RPV"
+   ]
+  },
+  {
+   "id": "IWF",
+   "name": "iShares Russell 1000 Growth ETF",
+   "gruppe": "Wachstum",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g2",
+   "yahoo": [
+    "IWF"
+   ]
+  },
+  {
+   "id": "QQQ",
+   "name": "Invesco QQQ Trust (Nasdaq-100)",
+   "gruppe": "Wachstum",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g2",
+   "yahoo": [
+    "QQQ"
+   ]
+  },
+  {
+   "id": "MTUM",
+   "name": "iShares MSCI USA Momentum Factor ETF",
+   "gruppe": "Momentum",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g2",
+   "yahoo": [
+    "MTUM"
+   ]
+  },
+  {
+   "id": "SPMO",
+   "name": "Invesco S&P 500 Momentum ETF",
+   "gruppe": "Momentum",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g2",
+   "yahoo": [
+    "SPMO"
+   ]
+  },
+  {
+   "id": "QMOM",
+   "name": "Alpha Architect U.S. Quantitative Momentum ETF",
+   "gruppe": "Momentum",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g2",
+   "yahoo": [
+    "QMOM"
+   ]
+  },
+  {
+   "id": "PDP",
+   "name": "Invesco Dorsey Wright Momentum ETF",
+   "gruppe": "Momentum",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g2",
+   "yahoo": [
+    "PDP"
+   ]
+  },
+  {
+   "id": "SCHD",
+   "name": "Schwab U.S. Dividend Equity ETF",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g3",
+   "yahoo": [
+    "SCHD"
+   ]
+  },
+  {
+   "id": "VIG",
+   "name": "Vanguard Dividend Appreciation ETF",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g3",
+   "yahoo": [
+    "VIG"
+   ]
+  },
+  {
+   "id": "DGRO",
+   "name": "iShares Core Dividend Growth ETF",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g3",
+   "yahoo": [
+    "DGRO"
+   ]
+  },
+  {
+   "id": "VYM",
+   "name": "Vanguard High Dividend Yield ETF",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g3",
+   "yahoo": [
+    "VYM"
+   ]
+  },
+  {
+   "id": "PKW",
+   "name": "Invesco BuyBack Achievers ETF",
+   "gruppe": "Aktionärsrendite",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g3",
+   "yahoo": [
+    "PKW"
+   ]
+  },
+  {
+   "id": "SYLD",
+   "name": "Cambria Shareholder Yield ETF",
+   "gruppe": "Aktionärsrendite",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g3",
+   "yahoo": [
+    "SYLD"
+   ]
+  },
+  {
+   "id": "IJR",
+   "name": "iShares Core S&P Small-Cap ETF",
+   "gruppe": "Kleine Werte",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g3",
+   "yahoo": [
+    "IJR"
+   ]
+  },
+  {
+   "id": "IWM",
+   "name": "iShares Russell 2000 ETF",
+   "gruppe": "Kleine Werte",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g3",
+   "yahoo": [
+    "IWM"
+   ]
+  },
+  {
+   "id": "AVUV",
+   "name": "Avantis U.S. Small Cap Value ETF",
+   "gruppe": "Kleine Werte",
+   "art": "US",
+   "auftrag": true,
+   "lauf": "g3",
+   "yahoo": [
+    "AVUV"
+   ]
+  },
+  {
+   "id": "PRF",
+   "name": "Invesco FTSE RAFI US 1000 ETF",
+   "gruppe": "Fundamentalgewichtung",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g1",
+   "yahoo": [
+    "PRF"
+   ]
+  },
+  {
+   "id": "RWL",
+   "name": "Invesco S&P 500 Revenue ETF",
+   "gruppe": "Umsatzgewichtung",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g1",
+   "yahoo": [
+    "RWL"
+   ]
+  },
+  {
+   "id": "QUS",
+   "name": "SPDR MSCI USA StrategicFactors ETF",
+   "gruppe": "Multifaktor",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g1",
+   "yahoo": [
+    "QUS"
+   ]
+  },
+  {
+   "id": "IVE",
+   "name": "iShares S&P 500 Value ETF",
+   "gruppe": "Value",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g2",
+   "yahoo": [
+    "IVE"
+   ]
+  },
+  {
+   "id": "VTV",
+   "name": "Vanguard Value ETF",
+   "gruppe": "Value",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g2",
+   "yahoo": [
+    "VTV"
+   ]
+  },
+  {
+   "id": "IVW",
+   "name": "iShares S&P 500 Growth ETF",
+   "gruppe": "Wachstum",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g2",
+   "yahoo": [
+    "IVW"
+   ]
+  },
+  {
+   "id": "VUG",
+   "name": "Vanguard Growth ETF",
+   "gruppe": "Wachstum",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g2",
+   "yahoo": [
+    "VUG"
+   ]
+  },
+  {
+   "id": "SCHG",
+   "name": "Schwab U.S. Large-Cap Growth ETF",
+   "gruppe": "Wachstum",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g2",
+   "yahoo": [
+    "SCHG"
+   ]
+  },
+  {
+   "id": "MGK",
+   "name": "Vanguard Mega Cap Growth ETF",
+   "gruppe": "Wachstum",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g2",
+   "yahoo": [
+    "MGK"
+   ]
+  },
+  {
+   "id": "NOBL",
+   "name": "ProShares S&P 500 Dividend Aristocrats ETF",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g3",
+   "yahoo": [
+    "NOBL"
+   ]
+  },
+  {
+   "id": "SDY",
+   "name": "SPDR S&P Dividend ETF",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g3",
+   "yahoo": [
+    "SDY"
+   ]
+  },
+  {
+   "id": "DVY",
+   "name": "iShares Select Dividend ETF",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g3",
+   "yahoo": [
+    "DVY"
+   ]
+  },
+  {
+   "id": "HDV",
+   "name": "iShares Core High Dividend ETF",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g3",
+   "yahoo": [
+    "HDV"
+   ]
+  },
+  {
+   "id": "SPHD",
+   "name": "Invesco S&P 500 High Dividend Low Volatility ETF",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g3",
+   "yahoo": [
+    "SPHD"
+   ]
+  },
+  {
+   "id": "DGRW",
+   "name": "WisdomTree U.S. Quality Dividend Growth Fund",
+   "gruppe": "Dividende",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g3",
+   "yahoo": [
+    "DGRW"
+   ]
+  },
+  {
+   "id": "IJH",
+   "name": "iShares Core S&P Mid-Cap ETF",
+   "gruppe": "Mittlere Werte",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g3",
+   "yahoo": [
+    "IJH"
+   ]
+  },
+  {
+   "id": "VBR",
+   "name": "Vanguard Small-Cap Value ETF",
+   "gruppe": "Kleine Werte",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g3",
+   "yahoo": [
+    "VBR"
+   ]
+  },
+  {
+   "id": "IJS",
+   "name": "iShares S&P Small-Cap 600 Value ETF",
+   "gruppe": "Kleine Werte",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g3",
+   "yahoo": [
+    "IJS"
+   ]
+  },
+  {
+   "id": "IVV",
+   "name": "iShares Core S&P 500 ETF",
+   "gruppe": "Kontrolle",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g1",
+   "yahoo": [
+    "IVV"
+   ]
+  },
+  {
+   "id": "VOO",
+   "name": "Vanguard S&P 500 ETF",
+   "gruppe": "Kontrolle",
+   "art": "US",
+   "auftrag": false,
+   "lauf": "g1",
+   "yahoo": [
+    "VOO"
+   ]
+  },
+  {
+   "id": "XDEW",
+   "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C",
+   "gruppe": "Gleichgewicht",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BLNMYC90",
+   "anbieter": "Xtrackers",
+   "index": "S&P 500 Equal Weight",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "RSP",
+   "auflage": "2014-06-10",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.15,
+   "yahoo": [
+    "XDEW.DE",
+    "XDEW.L",
+    "XDEW.SW",
+    "XDEW.MI"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BLNMYC90",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "SP2Q",
+   "name": "Invesco S&P 500 Equal Weight UCITS ETF (Acc)",
+   "gruppe": "Gleichgewicht",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BNGJJT35",
+   "anbieter": "Invesco",
+   "index": "S&P 500 Equal Weight",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "RSP",
+   "auflage": "2021-04-06",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "SP2Q.DE",
+    "SPEQ.L",
+    "SP2Q.DU",
+    "SP2Q.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BNGJJT35",
+   "bemerkung": "Physisch.",
+   "esg_filter": false
+  },
+  {
+   "id": "QDVB",
+   "name": "iShares Edge MSCI USA Quality Factor UCITS ETF USD (Acc)",
+   "gruppe": "Qualität",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BD1F4L37",
+   "anbieter": "iShares",
+   "index": "MSCI USA Sector Neutral Quality",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "QUAL",
+   "auflage": "2016-10-13",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "QDVB.DE",
+    "IUQA.L",
+    "QDVB.DU",
+    "QDVB.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4L37",
+   "bemerkung": "Gleicher Index wie QUAL.",
+   "esg_filter": false
+  },
+  {
+   "id": "UBUT",
+   "name": "UBS Factor MSCI USA Quality Screened UCITS ETF USD dis",
+   "gruppe": "Qualität",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BX7RRJ27",
+   "anbieter": "UBS",
+   "index": "MSCI USA Quality ESG Low Carbon Select (vorher MSCI USA Quality)",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "QUAL",
+   "auflage": "2015-08-26",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "UBUT.DE",
+    "UBUT.AS",
+    "UQLTD.SW",
+    "UBUT.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BX7RRJ27",
+   "bemerkung": "Indexwechsel auf ESG-Low-Carbon-Variante zum 31.07. (Jahr in der Quelle nicht lesbar; Suchauszug etfstream). Davor MSCI USA Quality. Gehedgte Klassen ausgelassen.",
+   "esg_filter": true
+  },
+  {
+   "id": "IS3Q",
+   "name": "iShares Edge MSCI World Quality Factor UCITS ETF USD (Acc)",
+   "gruppe": "Qualität",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BP3QZ601",
+   "anbieter": "iShares",
+   "index": "MSCI World Sector Neutral Quality",
+   "klasse": "Welt",
+   "us_gegenstueck": "QUAL",
+   "auflage": "2014-10-03",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "IS3Q.DE",
+    "IWQU.L",
+    "IS3Q.DU",
+    "IS3Q.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZ601",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "XDEQ",
+   "name": "Xtrackers MSCI World Quality UCITS ETF 1C",
+   "gruppe": "Qualität",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BL25JL35",
+   "anbieter": "Xtrackers",
+   "index": "MSCI World Sector Neutral Quality",
+   "klasse": "Welt",
+   "us_gegenstueck": "QUAL",
+   "auflage": "2014-09-11",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "XDEQ.DE",
+    "XDEQ.L",
+    "XDEQ.SW",
+    "XDEQ.SG"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JL35",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "XMVU",
+   "name": "Xtrackers MSCI USA Minimum Volatility UCITS ETF 1D",
+   "gruppe": "Niedrige Schwankung",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BDB7J586",
+   "anbieter": "Xtrackers",
+   "index": "MSCI USA Minimum Volatility",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "USMV",
+   "auflage": "2016-11-08",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "XMVU.L",
+    "XMVU.DU",
+    "IE00BDB7J586.SG"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BDB7J586",
+   "bemerkung": "Gleicher Index wie USMV; jährliche Ausschüttung; kein Xetra-Listing laut justETF.",
+   "esg_filter": false
+  },
+  {
+   "id": "MIVU",
+   "name": "Amundi MSCI USA Minimum Volatility Factor UCITS ETF DR",
+   "gruppe": "Niedrige Schwankung",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "LU1589349734",
+   "anbieter": "Amundi",
+   "index": "MSCI USA Minimum Volatility",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "USMV",
+   "auflage": "2017-04-10",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.18,
+   "yahoo": [
+    "MIVU.DE",
+    "MIVU.PA",
+    "MIVU.DU",
+    "MIVU.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=LU1589349734",
+   "bemerkung": "justETF meldet Replikation synthetisch (Unfunded Swap), obwohl der Name DR trägt - Widerspruch, ungeprüft.",
+   "esg_filter": false
+  },
+  {
+   "id": "SPY1",
+   "name": "SPDR S&P 500 Low Volatility UCITS ETF (State Street)",
+   "gruppe": "Niedrige Schwankung",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00B802KR88",
+   "anbieter": "SPDR (State Street)",
+   "index": "S&P 500 Low Volatility",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "SPLV",
+   "auflage": "2012-10-03",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.35,
+   "yahoo": [
+    "SPY1.DE",
+    "LOWV.L",
+    "SPY1.DU",
+    "SPY1.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B802KR88",
+   "bemerkung": "Gleicher Index wie SPLV. Invesco-Gegenstück IE00BKW9SX35 nicht in DE, siehe ausgeschlossen.",
+   "esg_filter": false
+  },
+  {
+   "id": "IBCK",
+   "name": "iShares Edge S&P 500 Minimum Volatility UCITS ETF USD (Acc)",
+   "gruppe": "Niedrige Schwankung",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00B6SPMN59",
+   "anbieter": "iShares",
+   "index": "S&P 500 Minimum Volatility",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "USMV/SPLV",
+   "auflage": "2012-11-30",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "IBCK.DE",
+    "SPMV.L",
+    "IBCK.DU",
+    "IBCK.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B6SPMN59",
+   "bemerkung": "Optimierungs-Index (wie USMV), aber auf S&P 500 statt MSCI USA.",
+   "esg_filter": false
+  },
+  {
+   "id": "UBUR",
+   "name": "UBS Factor MSCI USA Low Volatility UCITS ETF USD dis",
+   "gruppe": "Niedrige Schwankung",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BX7RQY03",
+   "anbieter": "UBS",
+   "index": "MSCI USA Select Dynamic 50% Risk Weighted",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "USMV",
+   "auflage": "2015-08-26",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.18,
+   "yahoo": [
+    "UBUR.DE",
+    "UC95.L",
+    "UBUR.AS",
+    "UBUR.DU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BX7RQY03",
+   "bemerkung": "Risikogewichteter Index, kein Minimum-Volatility-Optimierer.",
+   "esg_filter": false
+  },
+  {
+   "id": "IQQ0",
+   "name": "iShares Edge MSCI World Minimum Volatility UCITS ETF USD (Acc)",
+   "gruppe": "Niedrige Schwankung",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00B8FHGS14",
+   "anbieter": "iShares",
+   "index": "MSCI World Minimum Volatility",
+   "klasse": "Welt",
+   "us_gegenstueck": "USMV",
+   "auflage": "2012-11-30",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "IQQ0.DE",
+    "MVOL.L",
+    "IQQ0.DU",
+    "IQQ0.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B8FHGS14",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "XDEB",
+   "name": "Xtrackers MSCI World Minimum Volatility UCITS ETF 1C",
+   "gruppe": "Niedrige Schwankung",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BL25JN58",
+   "anbieter": "Xtrackers",
+   "index": "MSCI World Minimum Volatility",
+   "klasse": "Welt",
+   "us_gegenstueck": "USMV",
+   "auflage": "2014-09-05",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "XDEB.DE",
+    "XDEB.SW",
+    "XDEB.MI",
+    "XDEB.DU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JN58",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "QDVI",
+   "name": "iShares Edge MSCI USA Value Factor UCITS ETF USD (Acc)",
+   "gruppe": "Value",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BD1F4M44",
+   "anbieter": "iShares",
+   "index": "MSCI USA Enhanced Value",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "VLUE",
+   "auflage": "2016-10-13",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "QDVI.DE",
+    "IUVL.L",
+    "QDVI.DU",
+    "QDVI.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4M44",
+   "bemerkung": "Gleicher Index wie VLUE.",
+   "esg_filter": false
+  },
+  {
+   "id": "UBU5",
+   "name": "UBS MSCI USA Value UCITS ETF USD dis",
+   "gruppe": "Value",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00B78JSG98",
+   "anbieter": "UBS",
+   "index": "MSCI USA Value",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "IWD",
+   "auflage": "2012-04-11",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "UBU5.DE",
+    "USVUSY.SW",
+    "UBU5.DU",
+    "UBU5.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B78JSG98",
+   "bemerkung": "Stil-Index (Value-Hälfte des MSCI USA), halbjährliche Ausschüttung.",
+   "esg_filter": false
+  },
+  {
+   "id": "ZPRU",
+   "name": "SPDR MSCI USA Value UCITS ETF (State Street)",
+   "gruppe": "Value",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BSPLC520",
+   "anbieter": "SPDR (State Street)",
+   "index": "MSCI USA Value Weighted",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "IWD",
+   "auflage": "2015-02-18",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "ZPRU.DE",
+    "USVL.L",
+    "ZPRU.DU",
+    "ZPRU.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BSPLC520",
+   "bemerkung": "Wertgewichteter Index (Gewicht nach Value-Kennzahlen).",
+   "esg_filter": false
+  },
+  {
+   "id": "UBUS",
+   "name": "UBS Factor MSCI USA Prime Value Screened UCITS ETF USD dis",
+   "gruppe": "Value",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BX7RR706",
+   "anbieter": "UBS",
+   "index": "MSCI USA Prime Value ESG Low Carbon Select (vorher MSCI USA Prime Value)",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "VLUE/RPV",
+   "auflage": "2015-08-26",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "UBUS.DE",
+    "UBUS.AS",
+    "UPVLD.SW",
+    "UBUS.DU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BX7RR706",
+   "bemerkung": "ESG-Indexwechsel wie beim Quality-Schwesterfonds (Datum offen). Kein Xetra in der justETF-Liste, Yahoo führt aber UBUS.DE (XETRA).",
+   "esg_filter": true
+  },
+  {
+   "id": "IS3S",
+   "name": "iShares Edge MSCI World Value Factor UCITS ETF USD (Acc)",
+   "gruppe": "Value",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BP3QZB59",
+   "anbieter": "iShares",
+   "index": "MSCI World Enhanced Value",
+   "klasse": "Welt",
+   "us_gegenstueck": "VLUE",
+   "auflage": "2014-10-03",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "IS3S.DE",
+    "IWVL.L",
+    "IS3S.DU",
+    "IS3S.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZB59",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "XDEV",
+   "name": "Xtrackers MSCI World Value UCITS ETF 1C",
+   "gruppe": "Value",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BL25JM42",
+   "anbieter": "Xtrackers",
+   "index": "MSCI World Enhanced Value",
+   "klasse": "Welt",
+   "us_gegenstueck": "VLUE",
+   "auflage": "2014-09-11",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "XDEV.DE",
+    "XDEV.L",
+    "XDEV.SW",
+    "XDEV.MI"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JM42",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "MWOT",
+   "name": "Amundi Russell 1000 Growth UCITS ETF Acc",
+   "gruppe": "Wachstum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE0005E8B9S4",
+   "anbieter": "Amundi",
+   "index": "Russell 1000 Growth",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "IWF",
+   "auflage": "2011-10-27",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.19,
+   "yahoo": [
+    "MWOW.DE",
+    "MWOT.DE",
+    "MWOT.L",
+    "IE0005E8B9S4.SG"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE0005E8B9S4",
+   "bemerkung": "Auflagedatum stammt vom Vorgänger Lyxor Russell 1000 Growth UCITS ETF (FR0011119171), der am 09.07.2024 in diesen IE-Fonds verschmolzen wurde (Suchauszug). justETF: Xetra MWOT (USD) und MWOV (GBP), gettex MWOW (EUR); Yahoo führt MWOT.DE und MWOW.DE - Xetra-Kürzel unklar.",
+   "esg_filter": false
+  },
+  {
+   "id": "SXRV",
+   "name": "iShares Nasdaq 100 UCITS ETF (Acc)",
+   "gruppe": "Wachstum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00B53SZB19",
+   "anbieter": "iShares",
+   "index": "Nasdaq 100",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "QQQ",
+   "auflage": "2010-01-26",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "SXRV.DE",
+    "CSNDX.SW",
+    "SXRV.DU",
+    "SXRV.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B53SZB19",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "EXXT",
+   "name": "iShares Nasdaq 100 UCITS ETF (DE)",
+   "gruppe": "Wachstum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "DE000A0F5UF5",
+   "anbieter": "iShares",
+   "index": "Nasdaq 100",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "QQQ",
+   "auflage": "2006-03-27",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "EXXT.DE",
+    "EXXT.DU",
+    "EXXT.MU",
+    "EXXT.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=DE000A0F5UF5",
+   "bemerkung": "Deutsches Sondervermögen (Domizil DE).",
+   "esg_filter": false
+  },
+  {
+   "id": "EQQQ",
+   "name": "Invesco EQQQ Nasdaq-100 UCITS ETF",
+   "gruppe": "Wachstum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE0032077012",
+   "anbieter": "Invesco",
+   "index": "Nasdaq 100",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "QQQ",
+   "auflage": "2002-12-02",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "EQQQ.DE",
+    "EQQQ.L",
+    "EQQQ.SW",
+    "EQQQ.MI"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE0032077012",
+   "bemerkung": "Quartalsweise Ausschüttung.",
+   "esg_filter": false
+  },
+  {
+   "id": "EQQX",
+   "name": "Invesco Nasdaq-100 Swap UCITS ETF Acc",
+   "gruppe": "Wachstum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BNRQM384",
+   "anbieter": "Invesco",
+   "index": "Nasdaq 100",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "QQQ",
+   "auflage": "2021-03-22",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "EQQX.DE",
+    "EQQS.L",
+    "EQQX.DU",
+    "EQQX.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BNRQM384",
+   "bemerkung": "Synthetisch (Swap).",
+   "esg_filter": false
+  },
+  {
+   "id": "LYMS",
+   "name": "Amundi Core Nasdaq-100 Swap UCITS ETF Acc",
+   "gruppe": "Wachstum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "LU1829221024",
+   "anbieter": "Amundi",
+   "index": "Nasdaq 100",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "QQQ",
+   "auflage": "2001-09-07",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.22,
+   "yahoo": [
+    "LYMS.DE",
+    "UST.PA",
+    "LYMS.DU",
+    "LYMS.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=LU1829221024",
+   "bemerkung": "Synthetisch (Unfunded Swap). Auflagedatum 2001 liegt vor der ISIN-Vergabe (LU1829…) - vermutlich Historie des früheren Lyxor-Nasdaq-Fonds übernommen.",
+   "esg_filter": false
+  },
+  {
+   "id": "6AQQ",
+   "name": "Amundi Nasdaq-100 Swap UCITS ETF EUR Acc",
+   "gruppe": "Wachstum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "LU1681038243",
+   "anbieter": "Amundi",
+   "index": "Nasdaq 100",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "QQQ",
+   "auflage": "2010-06-08",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "EUR",
+   "ter_prozent": 0.23,
+   "yahoo": [
+    "6AQQ.DE",
+    "ANX.PA",
+    "6AQQ.MU",
+    "6AQQ.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=LU1681038243",
+   "bemerkung": "Synthetisch; Fondswährung EUR, laut justETF nicht währungsgesichert. Auflagedatum liegt vor der ISIN-Vergabe (LU1681…, ab 2017/18) - vermutlich Historie eines verschmolzenen Vorgängers.",
+   "esg_filter": false
+  },
+  {
+   "id": "XNAS",
+   "name": "Xtrackers Nasdaq 100 UCITS ETF 1C",
+   "gruppe": "Wachstum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BMFKG444",
+   "anbieter": "Xtrackers",
+   "index": "Nasdaq 100",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "QQQ",
+   "auflage": "2021-01-21",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "XNAS.DE",
+    "XNAS.L",
+    "XNAS.SW",
+    "XNAS.MI"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BMFKG444",
+   "bemerkung": "Physisch.",
+   "esg_filter": false
+  },
+  {
+   "id": "QDVA",
+   "name": "iShares Edge MSCI USA Momentum Factor UCITS ETF USD (Acc)",
+   "gruppe": "Momentum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BD1F4N50",
+   "anbieter": "iShares",
+   "index": "MSCI USA Momentum",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "MTUM",
+   "auflage": "2016-10-13",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "QDVA.DE",
+    "IUMO.L",
+    "QDVA.DU",
+    "QDVA.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4N50",
+   "bemerkung": "MTUM folgt seit 23.11.2020 der MSCI USA Momentum SR Variant (gleiche Auswahl, Umschichtung über drei Tage gestaffelt; Suchauszug SEC 497) - daher Mutterindex = praktisch gleicher Index. Für SPMO/QMOM/PDP nur Faktor-Gegenstück.",
+   "esg_filter": false
+  },
+  {
+   "id": "IS3R",
+   "name": "iShares Edge MSCI World Momentum Factor UCITS ETF USD (Acc)",
+   "gruppe": "Momentum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BP3QZ825",
+   "anbieter": "iShares",
+   "index": "MSCI World Momentum",
+   "klasse": "Welt",
+   "us_gegenstueck": "MTUM",
+   "auflage": "2014-10-03",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "IS3R.DE",
+    "IWMO.L",
+    "IS3R.DU",
+    "IS3R.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZ825",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "XDEM",
+   "name": "Xtrackers MSCI World Momentum UCITS ETF 1C",
+   "gruppe": "Momentum",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g4",
+   "isin": "IE00BL25JP72",
+   "anbieter": "Xtrackers",
+   "index": "MSCI World Momentum",
+   "klasse": "Welt",
+   "us_gegenstueck": "MTUM",
+   "auflage": "2014-09-05",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "XDEM.DE",
+    "XDEM.L",
+    "XDEM.SW",
+    "XDEM.MI"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL25JP72",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "SPYD",
+   "name": "SPDR S&P U.S. Dividend Aristocrats UCITS ETF USD Unhedged (Dist)",
+   "gruppe": "Dividende/Aktionärsrendite",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00B6YX5D40",
+   "anbieter": "SPDR (State Street)",
+   "index": "S&P High Yield Dividend Aristocrats",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "SDY (NOBL)",
+   "auflage": "2011-10-14",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.35,
+   "yahoo": [
+    "SPYD.DE",
+    "UDVD.L",
+    "SPYD.HA"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B6YX5D40",
+   "bemerkung": "Gleicher Index wie SDY (nicht NOBL: S&P 500 Dividend Aristocrats hat kein UCITS-Gegenstück gefunden). Quartalsweise Ausschüttung.",
+   "esg_filter": false
+  },
+  {
+   "id": "WTDM",
+   "name": "WisdomTree US Quality Dividend Growth UCITS ETF USD Acc",
+   "gruppe": "Dividende/Aktionärsrendite",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BZ56RG20",
+   "anbieter": "WisdomTree",
+   "index": "WisdomTree US Quality Dividend Growth",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "DGRW",
+   "auflage": "2016-06-03",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.33,
+   "yahoo": [
+    "WTDM.DE",
+    "DGRA.L",
+    "WTDM.DU",
+    "WTDM.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BZ56RG20",
+   "bemerkung": "UCITS-Ausgabe des DGRW-Index (ggf. UCITS-Kappungsvariante, nicht geprüft). USD-Dist-Klasse IE00BZ56RD98 nur LSE/SIX, siehe ausgeschlossen.",
+   "esg_filter": false
+  },
+  {
+   "id": "WTEU",
+   "name": "WisdomTree US High Dividend UCITS ETF Dist (früher US Equity Income)",
+   "gruppe": "Dividende/Aktionärsrendite",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BQZJBQ63",
+   "anbieter": "WisdomTree",
+   "index": "WisdomTree US High Dividend UCITS (mit ESG-Filter)",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "VYM/DHS",
+   "auflage": "2014-10-21",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.29,
+   "yahoo": [
+    "WTEU.DE",
+    "DHSD.L",
+    "WTEU.DU",
+    "WTEU.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BQZJBQ63",
+   "bemerkung": "Umbenannt (Yahoo führt noch den alten Namen US Equity Income); Datum der Umbenennung/des ESG-Filters offen. Quartalsweise Ausschüttung.",
+   "esg_filter": true
+  },
+  {
+   "id": "FUSA",
+   "name": "Fidelity US Quality Income UCITS ETF ACC-USD",
+   "gruppe": "Dividende/Aktionärsrendite",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BYXVGY31",
+   "anbieter": "Fidelity",
+   "index": "Fidelity US Quality Income",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "DGRW/VYM",
+   "auflage": "2017-03-27",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "FUSA.DE",
+    "FUSA.L",
+    "FUSA.HM",
+    "FUSA.SG"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BYXVGY31",
+   "bemerkung": "Qualität + Dividende.",
+   "esg_filter": false
+  },
+  {
+   "id": "HDLV",
+   "name": "Invesco S&P 500 High Dividend Low Volatility UCITS ETF",
+   "gruppe": "Dividende/Aktionärsrendite",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BWTN6Y99",
+   "anbieter": "Invesco",
+   "index": "S&P 500 Low Volatility High Dividend",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "VYM (SPHD)",
+   "auflage": "2015-05-11",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "HDLV.L",
+    "HDLV.SW",
+    "HDLV.MI",
+    "HDLV.DU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BWTN6Y99",
+   "bemerkung": "Entspricht dem US-Fonds SPHD (nicht in der Gruppenliste). Quartalsweise Ausschüttung.",
+   "esg_filter": false
+  },
+  {
+   "id": "EXX5",
+   "name": "iShares Dow Jones US Select Dividend UCITS ETF (DE)",
+   "gruppe": "Dividende/Aktionärsrendite",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "DE000A0D8Q49",
+   "anbieter": "iShares",
+   "index": "Dow Jones US Select Dividend",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "SCHD/VYM (DVY)",
+   "auflage": "2005-09-28",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.31,
+   "yahoo": [
+    "EXX5.DE",
+    "EXX5.MI",
+    "EXX5.DU",
+    "EXX5.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=DE000A0D8Q49",
+   "bemerkung": "Index wie US-Fonds DVY; Dow-Jones-Dividendenfamilie, aber nicht der SCHD-Index (Dow Jones U.S. Dividend 100).",
+   "esg_filter": false
+  },
+  {
+   "id": "QDVD",
+   "name": "iShares MSCI USA Quality Dividend Advanced UCITS ETF USD (Dist)",
+   "gruppe": "Dividende/Aktionärsrendite",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BKM4H312",
+   "anbieter": "iShares",
+   "index": "MSCI USA High Dividend Yield Advanced Select",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "VYM",
+   "auflage": "2014-06-06",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.35,
+   "yahoo": [
+    "QDVD.DE",
+    "QDIV.L",
+    "QDVD.DU",
+    "QDVD.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BKM4H312",
+   "bemerkung": "Früher iShares MSCI USA Dividend IQ (Suchauszug); Index heute mit ESG-Auswahl (Advanced). Datum des Wechsels offen. Quartalsweise Ausschüttung.",
+   "esg_filter": true
+  },
+  {
+   "id": "BBCK",
+   "name": "Invesco Global Buyback Achievers UCITS ETF",
+   "gruppe": "Dividende/Aktionärsrendite",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BLSNMW37",
+   "anbieter": "Invesco",
+   "index": "Nasdaq Global Buyback Achievers",
+   "klasse": "Welt",
+   "us_gegenstueck": "PKW (SYLD)",
+   "auflage": "2014-10-24",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.39,
+   "yahoo": [
+    "BBCK.DE",
+    "BUYB.L",
+    "BBCK.DU",
+    "BBCK.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BLSNMW37",
+   "bemerkung": "Welt-Version: Nasdaq US Buyback Achievers (PKW-Index) plus International Buyback Achievers. Quartalsweise Ausschüttung.",
+   "esg_filter": false
+  },
+  {
+   "id": "IUS3",
+   "name": "iShares S&P SmallCap 600 UCITS ETF",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00B2QWCY14",
+   "anbieter": "iShares",
+   "index": "S&P SmallCap 600",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "IJR",
+   "auflage": "2008-05-09",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "IUS3.DE",
+    "IDP6.L",
+    "IUS3.DU",
+    "IUS3.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B2QWCY14",
+   "bemerkung": "Halbjährliche Ausschüttung.",
+   "esg_filter": false
+  },
+  {
+   "id": "SMLK",
+   "name": "Invesco S&P SmallCap 600 UCITS ETF",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BH3YZ803",
+   "anbieter": "Invesco",
+   "index": "S&P SmallCap 600",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "IJR",
+   "auflage": "2019-01-28",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.14,
+   "yahoo": [
+    "SMLK.DE",
+    "USML.L",
+    "SMLK.DU",
+    "SMLK.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BH3YZ803",
+   "bemerkung": "Synthetisch (Swap).",
+   "esg_filter": false
+  },
+  {
+   "id": "ZPRR",
+   "name": "SPDR Russell 2000 U.S. Small Cap UCITS ETF (State Street)",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BJ38QD84",
+   "anbieter": "SPDR (State Street)",
+   "index": "Russell 2000",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "IWM",
+   "auflage": "2014-06-30",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "ZPRR.DE",
+    "R2US.L",
+    "ZPRR.DU",
+    "ZPRR.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BJ38QD84",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "XRS2",
+   "name": "Xtrackers Russell 2000 UCITS ETF 1C",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BJZ2DD79",
+   "anbieter": "Xtrackers",
+   "index": "Russell 2000",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "IWM",
+   "auflage": "2015-03-06",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "XRS2.DE",
+    "XRSU.L",
+    "XRS2.MI",
+    "XRS2.DU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BJZ2DD79",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "RS2K",
+   "name": "Amundi Russell 2000 UCITS ETF EUR (C)",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "LU1681038672",
+   "anbieter": "Amundi",
+   "index": "Russell 2000",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "IWM",
+   "auflage": "2014-01-07",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "EUR",
+   "ter_prozent": 0.35,
+   "yahoo": [
+    "RS2K.DE",
+    "RS2K.MI",
+    "RS2K.PA",
+    "RS2K.DU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=LU1681038672",
+   "bemerkung": "Synthetisch; laut justETF nicht währungsgesichert. Auflagedatum liegt vor der ISIN-Vergabe (LU1681…) - vermutlich Historie eines verschmolzenen Vorgängers.",
+   "esg_filter": false
+  },
+  {
+   "id": "SC0K",
+   "name": "Invesco Russell 2000 UCITS ETF",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00B60SX402",
+   "anbieter": "Invesco",
+   "index": "Russell 2000",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "IWM",
+   "auflage": "2009-03-31",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "SC0K.DE",
+    "RTYS.L",
+    "SC0K.DU",
+    "SC0K.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B60SX402",
+   "bemerkung": "Synthetisch (Swap).",
+   "esg_filter": false
+  },
+  {
+   "id": "ZPRV",
+   "name": "SPDR MSCI USA Small Cap Value Weighted UCITS ETF (State Street)",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BSPLC413",
+   "anbieter": "SPDR (State Street)",
+   "index": "MSCI USA Small Cap Value Weighted",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "AVUV",
+   "auflage": "2015-02-18",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "ZPRV.DE",
+    "USSC.L",
+    "ZPRV.DU",
+    "ZPRV.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BSPLC413",
+   "bemerkung": "Einziges US-only Small-Value-Gegenstück in DE.",
+   "esg_filter": false
+  },
+  {
+   "id": "SXRG",
+   "name": "iShares MSCI USA Small Cap ESG Enhanced CTB UCITS ETF USD (Acc)",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00B3VWM098",
+   "anbieter": "iShares",
+   "index": "MSCI USA Small Cap ESG Enhanced Focus CTB (vorher vermutlich MSCI USA Small Cap)",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "IWM",
+   "auflage": "2009-07-01",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.43,
+   "yahoo": [
+    "SXRG.DE",
+    "CSUSS.MI",
+    "SXRG.DU",
+    "SXRG.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B3VWM098",
+   "bemerkung": "ESG-Index; Datum des Wechsels vom ursprünglichen Small-Cap-Index nicht geprüft.",
+   "esg_filter": true
+  },
+  {
+   "id": "QDVC",
+   "name": "iShares MSCI USA Mid-Cap Equal Weight UCITS ETF USD (Acc) (früher Edge MSCI USA Size Factor)",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BD1F4K20",
+   "anbieter": "iShares",
+   "index": "MSCI USA Mid-Cap Equal Weighted",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "IJR/IWM",
+   "auflage": "2016-10-13",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "QDVC.DE",
+    "IUSZ.L",
+    "QDVC.DU",
+    "QDVC.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BD1F4K20",
+   "bemerkung": "Size-Faktor (Mid-Cap gleichgewichtet), keine Small Caps im engeren Sinn. Umbenennungsdatum offen.",
+   "esg_filter": false
+  },
+  {
+   "id": "IS3T",
+   "name": "iShares MSCI World Mid-Cap Equal Weight UCITS ETF USD (Acc) (früher Edge MSCI World Size Factor)",
+   "gruppe": "Kleine Werte",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BP3QZD73",
+   "anbieter": "iShares",
+   "index": "MSCI World Mid Cap Equal Weighted",
+   "klasse": "Welt",
+   "us_gegenstueck": "IJR/IWM",
+   "auflage": "2014-10-03",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "IS3T.DE",
+    "IWSZ.L",
+    "IS3T.DU",
+    "IS3T.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BP3QZD73",
+   "bemerkung": "Welt-Size-Faktor der iShares-Edge-Familie, umbenannt.",
+   "esg_filter": false
+  },
+  {
+   "id": "GMVM",
+   "name": "VanEck Morningstar US ESG Wide Moat UCITS ETF A",
+   "gruppe": "Moat",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BQQP9H09",
+   "anbieter": "VanEck",
+   "index": "Morningstar US Sustainability Moat Focus (bis 17.12.2021: Morningstar Wide Moat Focus)",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "MOAT",
+   "auflage": "2015-10-16",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.49,
+   "yahoo": [
+    "GMVM.DE",
+    "MOAT.L",
+    "GMVM.DU",
+    "GMVM.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BQQP9H09",
+   "bemerkung": "Bis 17.12.2021 gleicher Index wie MOAT, danach ESG-Variante; Kohlenstoff-Filter am 15.12.2023 entfernt (Suchauszug VanEck).",
+   "esg_filter": true
+  },
+  {
+   "id": "VVGM",
+   "name": "VanEck Morningstar Global Wide Moat UCITS ETF",
+   "gruppe": "Moat",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BL0BMZ89",
+   "anbieter": "VanEck",
+   "index": "Morningstar Global Wide Moat Focus",
+   "klasse": "Welt",
+   "us_gegenstueck": "MOAT",
+   "auflage": "2020-07-07",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.52,
+   "yahoo": [
+    "VVGM.DE",
+    "GOAT.L",
+    "VVGM.DU",
+    "VVGM.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BL0BMZ89",
+   "bemerkung": null,
+   "esg_filter": false
+  },
+  {
+   "id": "IBCY",
+   "name": "iShares STOXX USA Equity Multifactor UCITS ETF USD (Acc)",
+   "gruppe": "Multifaktor",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BZ0PKS76",
+   "anbieter": "iShares",
+   "index": "STOXX US Equity Factor Screened (vorher MSCI-Multifaktorindex)",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "LRGF",
+   "auflage": "2015-09-04",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "IFSU.L",
+    "IBCY.DU",
+    "IBCY.SG"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BZ0PKS76",
+   "bemerkung": "Früher iShares Edge MSCI USA Multifactor; Wechsel auf STOXX um den 22.01.2025 (verschoben vom 26.11.2024; Suchauszug). LRGF folgt einem STOXX-Faktorindex - Nähe, aber nicht als identisch geprüft (UCITS = Screened-Variante).",
+   "esg_filter": true
+  },
+  {
+   "id": "GACA",
+   "name": "Goldman Sachs ActiveBeta Paris-Aligned Sustainable US Large Cap Equity UCITS ETF USD (Acc)",
+   "gruppe": "Multifaktor",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BJ5CNR11",
+   "anbieter": "Goldman Sachs",
+   "index": "GS ActiveBeta Paris-Aligned Sustainable U.S. Large Cap Equity (bis 10.09.2024: GS ActiveBeta U.S. Large Cap Equity)",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "GSLC",
+   "auflage": "2019-09-23",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.14,
+   "yahoo": [
+    "GACA.DE",
+    "GSLC.L",
+    "GACA.DU",
+    "GACA.MU"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BJ5CNR11",
+   "bemerkung": "Bis 10.09.2024 gleicher Index wie GSLC und Name ohne Paris-Aligned (Suchauszug GSAM); justETF zeigt noch den alten Indexnamen.",
+   "esg_filter": true
+  },
+  {
+   "id": "QVMP",
+   "name": "Invesco S&P 500 QVM UCITS ETF",
+   "gruppe": "Multifaktor",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BDZCKK11",
+   "anbieter": "Invesco",
+   "index": "S&P 500 Quality, Value & Momentum Multi-Factor",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "LRGF/GSLC",
+   "auflage": "2017-05-18",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.35,
+   "yahoo": [
+    "QVMP.DE",
+    "PQVM.L",
+    "QVMP.DU",
+    "QVMP.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BDZCKK11",
+   "bemerkung": "Quartalsweise Ausschüttung.",
+   "esg_filter": false
+  },
+  {
+   "id": "USFM",
+   "name": "UBS MSCI USA Select Factor Mix UCITS ETF USD dis",
+   "gruppe": "Multifaktor",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BDGV0308",
+   "anbieter": "UBS",
+   "index": "MSCI USA Select Factor Mix",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "LRGF/GSLC",
+   "auflage": "2017-04-27",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "USFM.L",
+    "UEQE.DU",
+    "UEQE.MU",
+    "UEQE.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BDGV0308",
+   "bemerkung": "Ausschüttende Klasse ist älter als die thesaurierende; halbjährlich.",
+   "esg_filter": false
+  },
+  {
+   "id": "FLXU",
+   "name": "Franklin U.S. Equity UCITS ETF (früher Franklin LibertyQ U.S. Equity)",
+   "gruppe": "Multifaktor",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BF2B0P08",
+   "anbieter": "Franklin Templeton",
+   "index": "Franklin US Equity Index",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "LRGF/GSLC",
+   "auflage": "2017-09-06",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.2,
+   "yahoo": [
+    "FLXU.DE",
+    "FRUE.L",
+    "FLXU.L",
+    "FLXU.SW"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BF2B0P08",
+   "bemerkung": "Umbenennung (LibertyQ-Marke entfernt) zum 01.08.2022 (Suchauszug). Ob der heutige Index noch ein Multifaktor-Index ist, nicht bestätigt.",
+   "esg_filter": false
+  },
+  {
+   "id": "IBCZ",
+   "name": "iShares STOXX World Equity Multifactor UCITS ETF USD (Acc)",
+   "gruppe": "Multifaktor",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BZ0PKT83",
+   "anbieter": "iShares",
+   "index": "STOXX Developed World Equity Factor Screened",
+   "klasse": "Welt",
+   "us_gegenstueck": "LRGF",
+   "auflage": "2015-09-04",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.3,
+   "yahoo": [
+    "IBCZ.DE",
+    "IFSW.L",
+    "IBCZ.DU",
+    "IBCZ.HM"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BZ0PKT83",
+   "bemerkung": "Früher iShares Edge MSCI World Multifactor (Indexwechsel auf STOXX wie USA-Schwester, Datum nicht geprüft). EUR-gehedgte Klasse ausgelassen.",
+   "esg_filter": true
+  },
+  {
+   "id": "HWWD",
+   "name": "HSBC Multi-Factor Worldwide Equity UCITS ETF USD",
+   "gruppe": "Multifaktor",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00BKZGB098",
+   "anbieter": "HSBC",
+   "index": "HSBC Multi-Factor Worldwide Equity",
+   "klasse": "Welt",
+   "us_gegenstueck": "LRGF",
+   "auflage": "2014-07-04",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.25,
+   "yahoo": [
+    "HWWD.L",
+    "H41J.DU",
+    "IE00BKZGB098.SG"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00BKZGB098",
+   "bemerkung": "Quartalsweise Ausschüttung; kein Xetra-Listing laut justETF.",
+   "esg_filter": false
+  },
+  {
+   "id": "6PSA",
+   "name": "Invesco RAFI US Fundamental Value UCITS ETF Dist (früher Invesco FTSE RAFI US 1000 UCITS ETF)",
+   "gruppe": "Fundamentalgewichtung",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00B23D8S39",
+   "anbieter": "Invesco",
+   "index": "RAFI Fundamental US (bis 23.03.2026: FTSE RAFI US 1000)",
+   "klasse": "US-Faktor",
+   "us_gegenstueck": "PRF",
+   "auflage": "2007-11-12",
+   "ertrag": "ausschuettend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.39,
+   "yahoo": [
+    "6PSA.DE",
+    "6PSA.DU",
+    "6PSA.HM",
+    "6PSA.HA"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B23D8S39",
+   "bemerkung": "Bis 23.03.2026 gleicher Index wie PRF damals; PRF selbst wechselte am 21.03.2025 auf RAFI Fundamental Select US 1000 (beides Suchauszug, Quilter-Mitteilung). Daher heute nur Faktor-Gegenstück. Quartalsweise Ausschüttung.",
+   "esg_filter": false
+  },
+  {
+   "id": "SXR8",
+   "name": "iShares Core S&P 500 UCITS ETF USD (Acc)",
+   "gruppe": "Kontrolle",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00B5BMR087",
+   "anbieter": "iShares",
+   "index": "S&P 500",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "SPY",
+   "auflage": "2010-05-19",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.07,
+   "yahoo": [
+    "SXR8.DE"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B5BMR087",
+   "bemerkung": "zweiter Massstab fuer UCITS (REGEL C6); als Kontrolle gegen SPY gerechnet",
+   "esg_filter": false
+  },
+  {
+   "id": "P500",
+   "name": "Invesco S&P 500 UCITS ETF (Acc, synthetisch)",
+   "gruppe": "Kontrolle",
+   "art": "UCITS",
+   "auftrag": false,
+   "lauf": "g5",
+   "isin": "IE00B3YCGJ38",
+   "anbieter": "Invesco",
+   "index": "S&P 500",
+   "klasse": "gleicher Index",
+   "us_gegenstueck": "SPY",
+   "auflage": "2010-05-20",
+   "ertrag": "thesaurierend",
+   "fondswaehrung": "USD",
+   "ter_prozent": 0.05,
+   "yahoo": [
+    "P500.DE",
+    "SPXS.L"
+   ],
+   "quelle": "https://www.justetf.com/de/etf-profile.html?isin=IE00B3YCGJ38",
+   "bemerkung": "Kontrolle: Swap-Bauform ohne Quellensteuerabzug gegen SXR8 (REGEL C6)",
+   "esg_filter": false
+  }
+ ]
+}
