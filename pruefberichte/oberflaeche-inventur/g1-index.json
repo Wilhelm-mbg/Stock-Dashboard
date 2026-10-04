@@ -448,25 +448,25 @@
   "datei": "index.html",
   "zeile": 2221,
   "wortlaut": "größter Rückschlag 52 % (2008)",
-  "klasse": "c",
+  "klasse": "b",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "| +4,29 ± 4,94 | −56,9 % / −24,5 % |"
   },
-  "belegsagt": "Rückblick 04.10.2026: größter Rückschlag Korb 187 −56,9 % (2021–2026) und −49,0 % (2017–2021), breiter Markt −40,2 %; 2008 liegt in keiner Belegmessung.",
-  "vorschlag": "größter Rückschlag im Rückblick −57 % (2021–2026) bzw. −49 % (2017–2021), S&P 500 −24 % / −34 %"
+  "belegsagt": "Bei der Endkontrolle von c auf b umgestuft: der Text steht unter dem Kopf „Überholt: …“ (index.html:2219 data-belege-kopf=\"momentum-liquide\", Auftrag Nr. 91). Der heutige Rückblick (2017–2026) nennt −56,9 % / −49,0 %. Ein Hinweis bleibt: „(2008)“ und „22 Jahre“ liegen ganz außerhalb des gemessenen Fensters.",
+  "vorschlag": ""
  },
  {
   "datei": "index.html",
   "zeile": 2222,
   "wortlaut": "in 8 von 22 Jahren schlechter als der Markt",
-  "klasse": "c",
+  "klasse": "b",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "| +4,29 ± 4,94 | −56,9 % / −24,5 % |"
   },
-  "belegsagt": "Belegstand misst 2017–2026: Korb 187 vor dem S&P 500, aber je Fenster aus einem Schub, vom Zufall nicht zu unterscheiden; breiter Markt 2021–2026 −2,06 Pp p. a.",
-  "vorschlag": "im Rückblick 2021–2026 Korb +7,96 Pp p. a. vor dem S&P 500, breiter Markt −2,06 Pp p. a. – vom Zufall nicht zu unterscheiden"
+  "belegsagt": "Bei der Endkontrolle von c auf b umgestuft: der Text steht unter dem Kopf „Überholt: …“ (index.html:2219 data-belege-kopf=\"momentum-liquide\", Auftrag Nr. 91). Der heutige Rückblick (2017–2026) nennt −56,9 % / −49,0 %. Ein Hinweis bleibt: „(2008)“ und „22 Jahre“ liegen ganz außerhalb des gemessenen Fensters.",
+  "vorschlag": ""
  },
  {
   "datei": "index.html",
