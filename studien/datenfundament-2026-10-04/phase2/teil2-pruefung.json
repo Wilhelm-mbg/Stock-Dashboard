@@ -1,0 +1,49 @@
+{
+ "stand": "2026-10-04T11:46:58.455Z",
+ "dateienImManifest": 209,
+ "dateienGeprueft": 209,
+ "sha256Stimmt": 209,
+ "kopfVollstaendig": 209,
+ "a": {
+  "dateien": 147,
+  "reihen": 44,
+  "kerzenNachExTagAnders": 0,
+  "kerzenDavorWieErwartet": 6418178,
+  "kerzenUnerwartet": 0,
+  "stichprobeKerzen": 441,
+  "stichprobeOk": 441,
+  "dateienOhneAenderung": 20
+ },
+ "b": {
+  "dateien": 62,
+  "kerzenBisAltVerglichen": 4531762,
+  "kerzenBisAltAnders": 0,
+  "nurInAlt": 0,
+  "reichtBisRohEnde": 62,
+  "aktienreihen": 31
+ },
+ "ausgenommen": [
+  {
+   "schluessel": "BURU/2026.json",
+   "sprung": {
+    "tagVor": "2026-07-17",
+    "schluss": 0.0727,
+    "tagAb": "2026-09-14",
+    "eroeffnung": 1.94,
+    "verhaeltnis": 26.685
+   }
+  },
+  {
+   "schluessel": "WHLR/2026.json",
+   "sprung": {
+    "tagVor": "2026-09-21",
+    "schluss": 0.2294,
+    "tagAb": "2026-09-22",
+    "eroeffnung": 2.03,
+    "verhaeltnis": 8.8492
+   }
+  }
+ ],
+ "fehler": [],
+ "bestanden": true
+}
