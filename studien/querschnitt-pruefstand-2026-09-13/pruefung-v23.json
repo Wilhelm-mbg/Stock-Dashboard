@@ -1,0 +1,177 @@
+{
+ "kennung": "querschnitt-pruefstand-2026-09-13/pruefung-v23/v1",
+ "stand": "2026-10-04T17:39:21.424Z",
+ "bestanden": true,
+ "gruende": [],
+ "v22": {
+  "kennung": "querschnitt-pruefstand-2026-09-13/panel/v2.2",
+  "zeilen": 9904017,
+  "reihen": 7479,
+  "letzterVollTag": "2026-09-15"
+ },
+ "v23": {
+  "kennung": "querschnitt-pruefstand-2026-09-13/panel/v2.3",
+  "zeilen": 9660883,
+  "reihen": 7092,
+  "letzterVollTag": "2026-09-15",
+  "gruendeKennung": "datenfundament-2026-10-04/tafel-v2/v1"
+ },
+ "doppelte": {
+  "liste": "querschnitt-pruefstand-2026-09-13/doppelte-abschnitte-v23/v1",
+  "stand": "2026-10-04T17:35:50.629Z",
+  "abschnitte": 387,
+  "zeilen": 243134
+ },
+ "zeilen": {
+  "zeilenV22": 9904017,
+  "zeilenV23": 9660883,
+  "wegZeilenListe": 243134,
+  "wegZeilenGezaehlt": 243134,
+  "jahre": [
+   {
+    "jahr": 2016,
+    "v22": 983226,
+    "weg": 38435,
+    "v23": 944791,
+    "gleich": true
+   },
+   {
+    "jahr": 2017,
+    "v22": 976411,
+    "weg": 36626,
+    "v23": 939785,
+    "gleich": true
+   },
+   {
+    "jahr": 2018,
+    "v22": 964541,
+    "weg": 33846,
+    "v23": 930695,
+    "gleich": true
+   },
+   {
+    "jahr": 2019,
+    "v22": 943858,
+    "weg": 27830,
+    "v23": 916028,
+    "gleich": true
+   },
+   {
+    "jahr": 2020,
+    "v22": 940816,
+    "weg": 27774,
+    "v23": 913042,
+    "gleich": true
+   },
+   {
+    "jahr": 2021,
+    "v22": 1059973,
+    "weg": 31013,
+    "v23": 1028960,
+    "gleich": true
+   },
+   {
+    "jahr": 2022,
+    "v22": 1078321,
+    "weg": 23601,
+    "v23": 1054720,
+    "gleich": true
+   },
+   {
+    "jahr": 2023,
+    "v22": 962319,
+    "weg": 15808,
+    "v23": 946511,
+    "gleich": true
+   },
+   {
+    "jahr": 2024,
+    "v22": 849277,
+    "weg": 6369,
+    "v23": 842908,
+    "gleich": true
+   },
+   {
+    "jahr": 2025,
+    "v22": 720431,
+    "weg": 1516,
+    "v23": 718915,
+    "gleich": true
+   },
+   {
+    "jahr": 2026,
+    "v22": 424844,
+    "weg": 316,
+    "v23": 424528,
+    "gleich": true
+   }
+  ],
+  "verglichen": 9660883,
+  "unerklaert": 0,
+  "unerklaertJeSpalte": {},
+  "wegNichtInV22": [],
+  "reihenZeilenAnders": []
+ },
+ "bitgleichGeprueft": [
+  "sym",
+  "tag",
+  "marken",
+  "klasse",
+  "kerzen",
+  "rohSchluss",
+  "rohEroeffnung",
+  "faktor",
+  "rendite",
+  "renditeOC",
+  "umsatzReg",
+  "umsatzAuktion"
+ ],
+ "stand_je_reihe": {
+  "schnitt": 164,
+  "ausTafelV2": 4678,
+  "ohneZeileInTafelV2": 2250,
+  "lebendMitGrund": 56,
+  "lebendAnders": [],
+  "grundAnders": [],
+  "vorgaengerAnders": [],
+  "grundGeaendertGegenV22": 903
+ },
+ "probeAufV23": {
+  "zaehler": {
+   "abschnitte": 7092,
+   "referenz": 1,
+   "ohneZeilen": 1,
+   "bisLetzterTag": 2215,
+   "endenVorher": 4875,
+   "zuKurzFuerA": 35,
+   "gepruefteEnden": 4840,
+   "nurA": 4,
+   "nurAWeiter": 2,
+   "abcOhneB1": 0,
+   "abcMitB1": 0,
+   "nurDurchB1": [],
+   "anB": 1,
+   "anC": 3,
+   "andererZwillingDurchB1": 0,
+   "doppelt": 0,
+   "zeilen": 0,
+   "gleicheTage": 0,
+   "zeilenOhneGegenstueck": 0,
+   "gruppen": 0,
+   "ketten": 0,
+   "kettenTiefe2": 0,
+   "behalteRegelWieNichtDoppelt": true,
+   "speicherSpitzeMB": 356
+  },
+  "nurA": [
+   "ACPW (PIOI b60/60 c1)",
+   "BTBT (DNJR b60/60 c0)",
+   "DNJR (BTBT b60/60 c0)",
+   "DTC (SBDS b4/60 c175)"
+  ],
+  "doppelt": []
+ },
+ "unerklaertBeispiele": [],
+ "speicherSpitzeMB": 350,
+ "sekunden": 9.7
+}

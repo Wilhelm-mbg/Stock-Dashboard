@@ -15,8 +15,10 @@ var ST = require('./statistik.js');
 /* =========================================================================================
  * 1. Die Tafel: Panel laden und zwei Indizes bauen (je Tag eine Zeilenspanne, je Reihe eine Zeilenliste)
  * ========================================================================================= */
-function Tafel(aus) {
-  var roh = P.ladePanel(aus);
+/** opt.panelKennung (v2.3, Auftrag Nr. 92): ausdrueckliche Kennung des Panels (K.PANEL_KENNUNG_V23) - ohne sie liest die Tafel
+ *  wie bisher (der Ordner waehlt v2.1/v2.2; ein v2.3-Ordner bricht an der Kennung ab). */
+function Tafel(aus, opt) {
+  var roh = (opt && opt.panelKennung) ? P.ladePanel(aus, { kennung: opt.panelKennung }) : P.ladePanel(aus);
   var stand = roh.stand, kal = K.kalender();
   var jahre = Object.keys(roh.jahre).map(Number).sort(function (a, b) { return a - b; });
   var n = 0; jahre.forEach(function (j) { n += roh.jahre[j].n; });

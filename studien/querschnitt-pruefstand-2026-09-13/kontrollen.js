@@ -3,6 +3,7 @@
  *
  * Aufruf:  node --max-old-space-size=6144 kontrollen.js --aus <ordner> [--nur orakel,zufall,momentum,leck]
  *                                                       [--bericht <datei.json>] [--kunst]
+ *          --v23: das Panel in <ordner> ist v2.3 (Gruende-Tafel v2, Auftrag Nr. 92) - nur mit dieser Option lesbar.
  *
  * Schreibt SOFORT nach jedem Teilergebnis auf die Platte (--bericht, Vorgabe <aus>/kontrollen.json).
  * Schlaegt eine Schranke fehl, wird das GEMELDET und der Lauf als nicht bestanden markiert - nichts wird
@@ -25,6 +26,7 @@ function args(argv) {
     else if (x === '--bericht') a.bericht = argv[++i];
     else if (x === '--kunst') a.kunst = true;
     else if (x === '--empfindlichkeit') a.empfindlichkeit = String(argv[++i]).split(',');
+    else if (x === '--v23') a.v23 = true;   /* Panel v2.3 mit Gruende-Tafel v2 (Auftrag Nr. 92) - nur mit dieser Option lesbar */
   }
   return a;
 }
@@ -121,7 +123,7 @@ function haupt() {
   var berichtPfad = a.bericht || path.join(a.aus, 'kontrollen.json');
   var t0 = Date.now();
   process.stdout.write('Tafel laden aus ' + a.aus + ' ...\n');
-  var T = PR.Tafel(a.aus);
+  var T = a.v23 ? PR.Tafel(a.aus, { panelKennung: K.PANEL_KENNUNG_V23 }) : PR.Tafel(a.aus);
   var regime = PR.spyRegime(T);
   process.stdout.write('Tafel: ' + T.g.n + ' Zeilen, ' + T.nSym + ' Reihen, bis ' + T.kal.tage[T.maxTag] + ' (' + ((Date.now() - t0) / 1000).toFixed(0) + ' s)\n');
 
