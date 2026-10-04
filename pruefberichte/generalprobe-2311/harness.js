@@ -517,10 +517,10 @@ function auswerten(ctx) {
   var tage = punkte.map(function (p) { return p.tag; });
   aus.punkte = punkte.map(function (p) { return { tag: p.tag, wert: p.momentum, spy: p.spy, t: nyStr(p.t) }; });
   var erwTage = welt.tage.filter(function (t) { return t >= '2026-11-20' && t <= '2026-11-24'; });
-  if (JSON.stringify(tage) !== JSON.stringify(erwTage)) abw('punkte-tage', 'Tagespunkte ' + tage.join(',') + ' gegen Soll (ein Punkt je Handelstag) ' + erwTage.join(','));
+  if (!ctx.opt.kurz && JSON.stringify(tage) !== JSON.stringify(erwTage)) abw('punkte-tage', 'Tagespunkte ' + tage.join(',') + ' gegen Soll (ein Punkt je Handelstag) ' + erwTage.join(','));
   else ok('ein Tagespunkt je abgeschlossenem Handelstag: ' + tage.join(', '));
   /* Wert der Punkte: Freitag = Buch VOR der Umschichtung zu den Schluessen; spaeter Tage = Soll-Buch nach Umschichtung zu Schluessen */
-  punkte.forEach(function (p) {
+  if (!ctx.opt.kurz) punkte.forEach(function (p) {
     var iT = welt.tageIdx[p.tag], bW = null;
     if (p.tag < soll.ausfTag) {
       var w = ctx.buch0.cash; ctx.buch0.positionen.forEach(function (q) { w += q.stueck * welt.splitBis(q.sym, '9999-12-31') * welt.barBis(q.sym, p.tag).c; }); bW = w;
@@ -570,6 +570,14 @@ var SZENARIEN = {
       s = s.concat(rest.slice(0, 45 - s.length));
       var leer = {}, drossel = {}; s.forEach(function (x, i) { if (i % 2 === 0) leer[x] = true; else drossel[x] = true; });
       return [{ von: nz(MO_T, 9, 30), bis: nz(MO_T, 11, 0), art: 'leer', syms: leer }, { von: nz(MO_T, 9, 30), bis: nz(MO_T, 11, 0), art: '429', syms: drossel }];
+    } }; } },
+  b3: { titel: 'Teilausfall (45 Werte leer) von Mo 09:30 bis Di 10:00 NY: auch das Nachladen am Montagabend scheitert', opt: function () {
+    return { ausfallFn: function (rollen, welt) {
+      var s = rollen.sold.slice(0, 3).concat(rollen.kept.slice(0, 2), rollen.neu.slice(0, 4));
+      var rest = welt.namen.filter(function (x) { return s.indexOf(x) < 0 && rollen.ziel.indexOf(x) < 0 && rollen.sold.indexOf(x) < 0; });
+      s = s.concat(rest.slice(0, 45 - s.length));
+      var leer = {}, drossel = {}; s.forEach(function (x, i) { if (i % 2 === 0) leer[x] = true; else drossel[x] = true; });
+      return [{ von: nz(MO_T, 9, 30), bis: nz(DI_T, 10, 0), art: 'leer', syms: leer }, { von: nz(MO_T, 9, 30), bis: nz(DI_T, 10, 0), art: '429', syms: drossel }];
     } }; } },
   c1: { titel: 'Split 2:1 am Freitag 20.11. in einem gehaltenen (bleibenden) Wert, Ausschuettung mit Ex-Tag Montag in einem anderen (bleibenden) und in einem verkauften', opt: function () {
     return { ereignisFn: function (r) { var e = {};
@@ -761,7 +769,15 @@ async function szenarioLaufen(k) {
   return aus;
 }
 
-module.exports = Object.assign({}, L, { baueWelt: baueWelt, lauf: lauf, auswerten: auswerten, sollRechnen: sollRechnen, handRang: handRang, handAusfuehren: handAusfuehren,
+/** Fuer die Fund-Module: ein kurzer Lauf (Vorab-Laden zur bereitT, nur die genannten Takte) samt Auswertung gegen das Soll.
+ *  Rueckgabe { ctx, aus, abw: [Kennungen] } - abw leer = gleich dem Soll. */
+async function kurzLauf(opt) {
+  opt = Object.assign({ kurz: true, bereitT: nz('2026-11-20', 16, 20) }, opt);
+  var ctx = await lauf(opt), aus = auswerten(ctx);
+  return { ctx: ctx, aus: aus, abw: aus.abw.map(function (a) { return a.id; }), abwText: aus.abw.map(function (a) { return a.id + ': ' + a.text; }) };
+}
+
+module.exports = Object.assign({}, L, { kurzLauf: kurzLauf, baueWelt: baueWelt, lauf: lauf, auswerten: auswerten, sollRechnen: sollRechnen, handRang: handRang, handAusfuehren: handAusfuehren,
   szenarioOpt: szenarioOpt, SZENARIEN: SZENARIEN, szenarioLaufen: szenarioLaufen, dstPruefung: dstPruefung, nz: nz, nyStr: nyStr, minuten: minuten, rollenBestimmen: rollenBestimmen,
   sandboxGem: sandboxGem, refNy: refNy, refZeit: refZeit, e0Tag: e0Tag, ORDNER: ORDNER });
 

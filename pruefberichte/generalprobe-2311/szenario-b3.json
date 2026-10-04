@@ -1,37 +1,37 @@
 {
- "kennung": "d2",
- "titel": "ein gehaltener, im Ziel bleibender Wert hat seine letzte Kerze am Mittwoch 18.11.",
+ "kennung": "b3",
+ "titel": "Teilausfall (45 Werte leer) von Mo 09:30 bis Di 10:00 NY: auch das Nachladen am Montagabend scheitert",
  "takte": 1440,
- "abrufe": 611,
+ "abrufe": 5263,
  "uebereinstimmung_mit_REGEL": false,
  "abweichungen": [
   {
    "id": "endbuch-positionen",
-   "text": "10 Positionen weichen vom Soll ab: ELV ist 58.9786 soll 0; LUV ist 55.078 soll 58.1599; XEL ist 55.4693 soll 58.5731; NKE ist 54.8762 soll 57.9468; COF ist 55.0927 soll 58.1755; NET ist 55.0059 soll 58.0839"
+   "text": "12 Positionen weichen vom Soll ab: WELL ist 58.6393 soll 0; TXN ist 58.6627 soll 0; CL ist 58.5985 soll 0; NET ist 42.7066 soll 58.1162; CCI ist 42.7402 soll 58.1619; DIS ist 42.5907 soll 57.9584"
   },
   {
    "id": "endbuch-cash",
-   "text": "Bargeld am Ende 2489.32 gegen Soll 5723.12 (Differenz -3233.8)"
+   "text": "Bargeld am Ende 13809.9 gegen Soll 0 (Differenz 13809.9)"
   },
   {
    "id": "erhaltung",
-   "text": "Kosten aus den Trades der App 213.83 gegen Soll 219.66 (Wert vor 116157.72, nach 115938.06 zu Eroeffnungskursen)"
+   "text": "Kosten aus den Trades der App 117.76 gegen Soll 218.8 (Wert vor 116222.41, nach 116003.61 zu Eroeffnungskursen)"
   },
   {
    "id": "punkt-wert-2026-11-23",
-   "text": "Tagespunkt 2026-11-23: Wert 116129.46 gegen Soll 116122.73 (Differenz 6.73)"
+   "text": "Tagespunkt 2026-11-23: Wert 116293.42 gegen Soll 116174.09 (Differenz 119.33)"
   },
   {
    "id": "punkt-wert-2026-11-24",
-   "text": "Tagespunkt 2026-11-24: Wert 116398.65 gegen Soll 116399.02 (Differenz -0.37)"
+   "text": "Tagespunkt 2026-11-24: Wert 116543.9 gegen Soll 116466.55 (Differenz 77.35)"
   }
  ],
  "pruefungen": [
   "genau ein Eintrag mfrebal-* im tuneLog (um 2026-11-23 09:35 Uhrzeit der App-Uhr)",
-  "kein Wert mit mehr als einem Trade (18 Werte gehandelt, 18 Trades)",
-  "alle 18 Trades zur Eroeffnung des Ausfuehrungstags 2026-11-23 (nie Schluss, nie laufender Kurs, nie spaeterer Kurs)",
+  "kein Wert mit mehr als einem Trade (11 Werte gehandelt, 11 Trades)",
+  "alle 11 Trades zur Eroeffnung des Ausfuehrungstags 2026-11-23 (nie Schluss, nie laufender Kurs, nie spaeterer Kurs)",
   "Journalzeile: Stichtag 20.11.2026 (Soll 20.11.2026)",
-  "keine verlorene Position (9 verkaufte/ausgebuchte, alle mit Trade belegt)",
+  "keine verlorene Position (6 verkaufte/ausgebuchte, alle mit Trade belegt)",
   "Bargeld in keinem der 1440 Takte negativ",
   "keine Statuszeile mit \"Fehler\"",
   "Karte ohne Fehler/NaN/undefined",
@@ -43,7 +43,7 @@
    "at": "2026-11-23 09:35",
    "quelle": "automatik",
    "applied": [
-    "Momentum-Rebalancing: 18 Orders"
+    "Momentum-Rebalancing: 11 Orders"
    ]
   }
  ],
@@ -52,25 +52,18 @@
   "stichtag": "20.11.2026"
  },
  "handelZeiten": {
-  "2026-11-23 09:35 (Uhr 09:35)": 18
+  "2026-11-23 09:35 (Uhr 09:35)": 11
  },
  "kursKlassen": {
-  "Eroeffnung des Tages 2026-11-23": 18
+  "Eroeffnung des Tages 2026-11-23": 11
  },
  "tradesJeSym": {
-  "WELL": 1,
-  "TXN": 1,
-  "CL": 1,
   "APTV": 1,
   "ABBV": 1,
   "FCX": 1,
   "KLAC": 1,
   "WMB": 1,
   "FIS": 1,
-  "LUV": 1,
-  "XEL": 1,
-  "NKE": 1,
-  "COF": 1,
   "NET": 1,
   "CCI": 1,
   "DIS": 1,
@@ -78,36 +71,6 @@
   "WDAY": 1
  },
  "trades": [
-  {
-   "T": "2026-11-23 09:35",
-   "uhr": "2026-11-23 09:35",
-   "t": 1795444500000,
-   "sym": "WELL",
-   "art": "verkauf",
-   "stueck": 58.6393,
-   "kurs": 104.7328,
-   "pnl": 866.02
-  },
-  {
-   "T": "2026-11-23 09:35",
-   "uhr": "2026-11-23 09:35",
-   "t": 1795444500000,
-   "sym": "TXN",
-   "art": "verkauf",
-   "stueck": 58.6627,
-   "kurs": 104.2315,
-   "pnl": 839.12
-  },
-  {
-   "T": "2026-11-23 09:35",
-   "uhr": "2026-11-23 09:35",
-   "t": 1795444500000,
-   "sym": "CL",
-   "art": "verkauf",
-   "stueck": 58.5985,
-   "kurs": 104.9636,
-   "pnl": 875.26
-  },
   {
    "T": "2026-11-23 09:35",
    "uhr": "2026-11-23 09:35",
@@ -172,45 +135,9 @@
    "T": "2026-11-23 09:35",
    "uhr": "2026-11-23 09:35",
    "t": 1795444500000,
-   "sym": "LUV",
-   "art": "kauf",
-   "stueck": 55.078,
-   "kurs": 105.1165
-  },
-  {
-   "T": "2026-11-23 09:35",
-   "uhr": "2026-11-23 09:35",
-   "t": 1795444500000,
-   "sym": "XEL",
-   "art": "kauf",
-   "stueck": 55.4693,
-   "kurs": 104.3749
-  },
-  {
-   "T": "2026-11-23 09:35",
-   "uhr": "2026-11-23 09:35",
-   "t": 1795444500000,
-   "sym": "NKE",
-   "art": "kauf",
-   "stueck": 54.8762,
-   "kurs": 105.503
-  },
-  {
-   "T": "2026-11-23 09:35",
-   "uhr": "2026-11-23 09:35",
-   "t": 1795444500000,
-   "sym": "COF",
-   "art": "kauf",
-   "stueck": 55.0927,
-   "kurs": 105.0883
-  },
-  {
-   "T": "2026-11-23 09:35",
-   "uhr": "2026-11-23 09:35",
-   "t": 1795444500000,
    "sym": "NET",
    "art": "kauf",
-   "stueck": 55.0059,
+   "stueck": 42.7066,
    "kurs": 105.2541
   },
   {
@@ -219,7 +146,7 @@
    "t": 1795444500000,
    "sym": "CCI",
    "art": "kauf",
-   "stueck": 55.0491,
+   "stueck": 42.7402,
    "kurs": 105.1715
   },
   {
@@ -228,7 +155,7 @@
    "t": 1795444500000,
    "sym": "DIS",
    "art": "kauf",
-   "stueck": 54.8566,
+   "stueck": 42.5907,
    "kurs": 105.5406
   },
   {
@@ -237,7 +164,7 @@
    "t": 1795444500000,
    "sym": "MMC",
    "art": "kauf",
-   "stueck": 55.3422,
+   "stueck": 42.9677,
    "kurs": 104.6146
   },
   {
@@ -246,7 +173,7 @@
    "t": 1795444500000,
    "sym": "WDAY",
    "art": "kauf",
-   "stueck": 55.003,
+   "stueck": 42.7043,
    "kurs": 105.2598
   }
  ],
@@ -289,8 +216,8 @@
    "EOG"
   ],
   "gleichHandUndMH": true,
-  "depotwertOpen": 116157.72,
-  "budget": 6113.56,
+  "depotwertOpen": 116222.41,
+  "budget": 6116.97,
   "orders": [
    "verkauf WELL 58.6393 @104.7328",
    "verkauf TXN 58.6627 @104.2315",
@@ -301,124 +228,132 @@
    "verkauf KLAC 58.1097 @104.3263",
    "verkauf WMB 57.8283 @103.9806",
    "verkauf FIS 58.1715 @104.2973",
-   "kauf LUV 58.1599 @105.1165",
-   "kauf XEL 58.5731 @104.3749",
-   "kauf NKE 57.9468 @105.503",
-   "kauf COF 58.1755 @105.0883",
-   "kauf NET 58.0839 @105.2541",
-   "kauf CCI 58.1295 @105.1715",
-   "kauf DIS 57.9262 @105.5406",
-   "kauf MMC 58.4389 @104.6146",
-   "kauf WDAY 58.0807 @105.2598"
+   "kauf LUV 58.1923 @105.1165",
+   "kauf XEL 58.6057 @104.3749",
+   "kauf NKE 57.9791 @105.503",
+   "kauf COF 58.2079 @105.0883",
+   "kauf NET 58.1162 @105.2541",
+   "kauf CCI 58.1619 @105.1715",
+   "kauf DIS 57.9584 @105.5406",
+   "kauf MMC 58.4715 @104.6146",
+   "kauf WDAY 53.7243 @105.2598"
   ],
-  "cashNachHandel": 5723.12,
-  "reihenende": [
-   "ELV (letzter Schluss 2026-11-18 104.3649)"
-  ],
+  "cashNachHandel": 0,
+  "reihenende": [],
   "dividenden": 0
  },
  "erhaltung": {
-  "wertSollVorOpen": 116157.72,
-  "wertSollNachOpen": 115938.06,
-  "kostenSoll": 219.66,
-  "kostenAusTrades": 213.83,
-  "notional": 106915.89
+  "wertSollVorOpen": 116222.41,
+  "wertSollNachOpen": 116003.61,
+  "kostenSoll": 218.8,
+  "kostenAusTrades": 117.76,
+  "notional": 58878.05
  },
  "punkte": [
   {
    "tag": "2026-11-20",
-   "wert": 116245.94,
-   "sollWert": 116245.94,
+   "wert": 116279.03,
+   "sollWert": 116279.03,
    "diff": 0,
    "spy": 442.7193,
    "geschrieben": "2026-11-20 16:20"
   },
   {
    "tag": "2026-11-23",
-   "wert": 116129.46,
-   "sollWert": 116122.73,
-   "diff": 6.73,
+   "wert": 116293.42,
+   "sollWert": 116174.09,
+   "diff": 119.33,
    "spy": 442.6844,
-   "geschrieben": "2026-11-23 16:20"
+   "geschrieben": "2026-11-24 10:20"
   },
   {
    "tag": "2026-11-24",
-   "wert": 116398.65,
-   "sollWert": 116399.02,
-   "diff": -0.37,
+   "wert": 116543.9,
+   "sollWert": 116466.55,
+   "diff": 77.35,
    "spy": 443.2111,
    "geschrieben": "2026-11-24 16:20"
   }
  ],
  "endbuch": {
-  "istPositionen": 19,
-  "sollPositionen": 18,
-  "cashIst": 2489.3247805880064,
-  "cashSoll": 5723.120102215117,
-  "cashSollOhneDividenden": 5723.120102215117,
+  "istPositionen": 18,
+  "sollPositionen": 19,
+  "cashIst": 13809.902536846517,
+  "cashSoll": 0.003725687619407836,
+  "cashSollOhneDividenden": 0.003725687619407836,
   "dividendenSoll": 0,
   "dividendenSollVerkauft": 0,
   "diffe": [
    {
-    "sym": "ELV",
-    "ist": 58.9786,
+    "sym": "WELL",
+    "ist": 58.6393,
     "soll": 0
    },
    {
-    "sym": "LUV",
-    "ist": 55.078,
-    "soll": 58.1599
+    "sym": "TXN",
+    "ist": 58.6627,
+    "soll": 0
    },
    {
-    "sym": "XEL",
-    "ist": 55.4693,
-    "soll": 58.5731
-   },
-   {
-    "sym": "NKE",
-    "ist": 54.8762,
-    "soll": 57.9468
-   },
-   {
-    "sym": "COF",
-    "ist": 55.0927,
-    "soll": 58.1755
+    "sym": "CL",
+    "ist": 58.5985,
+    "soll": 0
    },
    {
     "sym": "NET",
-    "ist": 55.0059,
-    "soll": 58.0839
+    "ist": 42.7066,
+    "soll": 58.1162
    },
    {
     "sym": "CCI",
-    "ist": 55.0491,
-    "soll": 58.1295
+    "ist": 42.7402,
+    "soll": 58.1619
    },
    {
     "sym": "DIS",
-    "ist": 54.8566,
-    "soll": 57.9262
+    "ist": 42.5907,
+    "soll": 57.9584
    },
    {
     "sym": "MMC",
-    "ist": 55.3422,
-    "soll": 58.4389
+    "ist": 42.9677,
+    "soll": 58.4715
    },
    {
     "sym": "WDAY",
-    "ist": 55.003,
-    "soll": 58.0807
+    "ist": 42.7043,
+    "soll": 53.7243
+   },
+   {
+    "sym": "LUV",
+    "ist": 0,
+    "soll": 58.1923
+   },
+   {
+    "sym": "XEL",
+    "ist": 0,
+    "soll": 58.6057
+   },
+   {
+    "sym": "NKE",
+    "ist": 0,
+    "soll": 57.9791
+   },
+   {
+    "sym": "COF",
+    "ist": 0,
+    "soll": 58.2079
    }
   ]
  },
  "buchVorher": {
   "cash": 0.09,
   "positionen": 19,
-  "wertFreitagSchluss": 116245.94
+  "wertFreitagSchluss": 116279.03
  },
  "buchNachher": {
-  "cash": 2489.32,
-  "positionen": 19,
+  "cash": 13809.9,
+  "positionen": 18,
   "offen": null
  },
  "massnahmen": [],
@@ -482,28 +417,29 @@
  },
  "fehlerTakte": [],
  "statuszeilen": {
-  "mfdStatus: Kurse vom TT.": 1437,
-  "mfdStatus: Kurse vom TT – nicht nach dem letzten Börsenschluss geladen, Nachladen angestoßen.": 3,
-  "mfStatus: Lade Tageskurse … 10/194": 3,
-  "mfStatus: Lade Tageskurse … 20/194": 3,
-  "mfStatus: Lade Tageskurse … 30/194": 3,
-  "mfStatus: Lade Tageskurse … 40/194": 3,
-  "mfStatus: Lade Tageskurse … 50/194": 3,
-  "mfStatus: Lade Tageskurse … 60/194": 3,
-  "mfStatus: Lade Tageskurse … 70/194": 3,
-  "mfStatus: Lade Tageskurse … 80/194": 3,
-  "mfStatus: Lade Tageskurse … 90/194": 3,
-  "mfStatus: Lade Tageskurse … 100/194": 3,
-  "mfStatus: Lade Tageskurse … 110/194": 3,
-  "mfStatus: Lade Tageskurse … 120/194": 3,
-  "mfStatus: Lade Tageskurse … 130/194": 3,
-  "mfStatus: Lade Tageskurse … 140/194": 3,
-  "mfStatus: Lade Tageskurse … 150/194": 3,
-  "mfStatus: Lade Tageskurse … 160/194": 3,
-  "mfStatus: Lade Tageskurse … 170/194": 3,
-  "mfStatus: Lade Tageskurse … 180/194": 3,
-  "mfStatus: Lade Tageskurse … 190/194": 3,
+  "mfdStatus: Kurse vom TT.": 1221,
+  "mfdStatus: Kurse vom TT – nicht nach dem letzten Börsenschluss geladen, Nachladen angestoßen.": 219,
+  "mfStatus: Lade Tageskurse … 10/194": 21,
+  "mfStatus: Lade Tageskurse … 20/194": 21,
+  "mfStatus: Lade Tageskurse … 30/194": 21,
+  "mfStatus: Lade Tageskurse … 40/194": 21,
+  "mfStatus: Lade Tageskurse … 50/194": 21,
+  "mfStatus: Lade Tageskurse … 60/194": 21,
+  "mfStatus: Lade Tageskurse … 70/194": 21,
+  "mfStatus: Lade Tageskurse … 80/194": 21,
+  "mfStatus: Lade Tageskurse … 90/194": 21,
+  "mfStatus: Lade Tageskurse … 100/194": 21,
+  "mfStatus: Lade Tageskurse … 110/194": 21,
+  "mfStatus: Lade Tageskurse … 120/194": 21,
+  "mfStatus: Lade Tageskurse … 130/194": 21,
+  "mfStatus: Lade Tageskurse … 140/194": 21,
+  "mfStatus: Lade Tageskurse … 150/194": 21,
+  "mfStatus: Lade Tageskurse … 160/194": 21,
+  "mfStatus: Lade Tageskurse … 170/194": 21,
+  "mfStatus: Lade Tageskurse … 180/194": 21,
+  "mfStatus: Lade Tageskurse … 190/194": 21,
   "mfStatus: 192 von 193 Werten geladen.  Nicht mehr abrufbar: UPS – vermutlich übernommen oder umbenannt. Das Universum besteht damit aus Überlebenden, was gemessene Vorsprünge nach oben verzerrt.": 1,
+  "mfStatus: Kursabruf unvollständig: 148 von 193 Werten geliefert (nötig mindestens 120 und 95 % der 192 zuletzt gelieferten, also 183) – der gespeicherte Bestand vom TT bleibt ganz stehen. Neuer Versuch frühestens in eine": 18,
   "mfStatus: 193 von 193 Werten geladen.": 2
  }
 }

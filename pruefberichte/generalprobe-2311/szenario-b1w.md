@@ -89,3 +89,7 @@ Keine.
 - 3x mfStatus: Lade Tageskurse … 110/194
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
+
+## Einordnung
+
+Wie b1, die Quelle wirft eine Ausnahme statt null: derselbe Ablauf, kein "Fehler" in der Statuszeile (eroeffnung() faengt sie ab).

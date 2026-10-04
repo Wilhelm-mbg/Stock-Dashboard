@@ -89,3 +89,7 @@ Keine.
 - 3x mfStatus: Lade Tageskurse … 110/194
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
+
+## Einordnung
+
+Gegenprobe ohne Befund. Die Uhr wird um 09:00 NY um 30 min zurueckgestellt: die App darf erst bei Weltzeit 10:05 handeln (Uhr 09:35), tut es dann einmal und zur Eroeffnung des Montags.

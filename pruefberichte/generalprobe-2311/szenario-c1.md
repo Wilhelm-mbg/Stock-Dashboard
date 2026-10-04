@@ -91,3 +91,7 @@ Generalprobe 23.11.2026, Code von HEAD, New-York-Zeit (Winter, UTC-5), 1440 Takt
 - 3x mfStatus: Lade Tageskurse … 110/194
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
+
+## Einordnung
+
+Befund in einem Teil. Der Split 2:1 am Freitag (SCHW, Wert mit genau 253 Balken) wird am Freitag 16:20 gebucht (Stueck 29,59 -> 59,19), die Umschichtung am Montag stimmt mit dem Soll ueberein. Die Ausschuettung auf einem BLEIBENDEN Wert (ELV, 29,49 $) wird Montag 16:20 gutgeschrieben, wie REGEL C.3. Die Ausschuettung auf einem zur Eroeffnung VERKAUFTEN Wert (TXN, 29,33 $) geht verloren: bucheMassnahmen laeuft erst nach dem Laden am Abend und nur ueber gehaltene Positionen (H-c1-div-verkaufte-position, A, klein). REGEL C.3 sagt: "ein Verkauf zur Eroeffnung des Ex-Tags zaehlt noch" - das ist auch im echten Depot so (T+1: Ex-Tag = Stichtag, der Verkaeufer behaelt die Dividende, verkauft aber zum Kurs nach Abschlag). Zweifel an der REGEL gibt es also nicht, die App weicht ab. Folge: Tagespunkte Montag und Dienstag je 29,33 $ unter dem Soll.

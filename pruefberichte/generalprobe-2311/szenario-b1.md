@@ -89,3 +89,7 @@ Keine.
 - 3x mfStatus: Lade Tageskurse … 110/194
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
+
+## Einordnung
+
+Gegenprobe ohne Befund. Solange alle Abrufe null liefern (08:00-12:00), steht auf der Karte "kein Tagesbalken fuer SPY ... kein Handel" (die SPY-Probe schuetzt vor einem Handel ohne Kurs), ab 12:00 wird einmal zur Eroeffnung des Montags umgeschichtet (nicht zum Kurs von 12:00). Das Nachladen wird in diesem Zeitraum nicht gebraucht (Bestand vom Freitagabend ist bis Mo 16:15 frisch).

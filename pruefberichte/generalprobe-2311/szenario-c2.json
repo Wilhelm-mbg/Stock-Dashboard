@@ -18,10 +18,6 @@
    "text": "Kosten aus den Trades der App 206.54 gegen Soll 218.8 (Wert vor 116222.41, nach 116003.61 zu Eroeffnungskursen)"
   },
   {
-   "id": "punkt-wert-2026-11-20",
-   "text": "Tagespunkt 2026-11-20: Wert 116279.02 gegen Soll 110114.08 (Differenz 6164.94)"
-  },
-  {
    "id": "punkt-wert-2026-11-23",
    "text": "Tagespunkt 2026-11-23: Wert 113146.41 gegen Soll 116232.9 (Differenz -3086.49)"
   },
@@ -330,8 +326,8 @@
   {
    "tag": "2026-11-20",
    "wert": 116279.02,
-   "sollWert": 110114.08,
-   "diff": 6164.94,
+   "sollWert": 116279.02,
+   "diff": 0,
    "spy": 442.7193,
    "geschrieben": "2026-11-20 16:20"
   },
@@ -411,7 +407,7 @@
  "buchVorher": {
   "cash": 0.11,
   "positionen": 19,
-  "wertFreitagSchluss": 110114.08
+  "wertFreitagSchluss": 116279.02
  },
  "buchNachher": {
   "cash": 29.5,

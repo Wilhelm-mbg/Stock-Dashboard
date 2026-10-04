@@ -90,3 +90,7 @@ Generalprobe 23.11.2026, Code von HEAD, New-York-Zeit (Winter, UTC-5), 1440 Takt
 - 3x mfStatus: Lade Tageskurse … 110/194
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
+
+## Einordnung
+
+BEFUND (Klasse B, H-g-uhr-vor-laufender-balken). -30 min um 09:50 (nach dem Handel) ohne Wirkung. +2 h um 13:00 (netto +90 min): ab 14:45 NY zeigt die Uhr 16:15, der Takt laedt nach und behaelt den LAUFENDEN Balken als Schluss (ohneLaufendenBalken prueft nur die Systemuhr); der Montagspunkt (14:50 NY geschrieben) steht 106,79 $ ueber dem Soll, der Dienstagspunkt (Uhr weiter +90 min) 115,33 $. Der Handel selbst ist richtig. Keine Doppelausfuehrung, kein negatives Bargeld, keine Statusfehler. Teil 2 (szenario-g-dst.md): nyTag/nyUhr/nyZeit/letzterFertigerWerktag/bestandFrisch ueber 08.03.2026, 01.11.2026, 14.03.2027 gegen eine unabhaengige Regelrechnung: 0 Abweichungen. Der Wechsel 2027 ist am 14.03.2027, nicht am 07.03.2027 (zweiter Sonntag im Maerz).

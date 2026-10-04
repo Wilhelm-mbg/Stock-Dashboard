@@ -88,3 +88,7 @@ Keine.
 - 3x mfStatus: Lade Tageskurse … 110/194
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
+
+## Einordnung
+
+Gegenprobe ohne Befund. Montag (Feiertag, SPY ohne Balken): die App haelt "faellig" (62 Balken seit der letzten Umschichtung), die SPY-Probe findet keinen Balken, es wird nicht gehandelt, keine Journalzeile, kein Montagspunkt. Dienstag 09:35: eine Umschichtung zur Eroeffnung des Dienstags, Stichtag Freitag 20.11., ein Punkt fuer Dienstag, keiner fuer Montag. Die Marktreihe ist am Montagabend nach 16:15 neu geladen worden (sonst haette stichtagPruefen am Dienstag abgelehnt).

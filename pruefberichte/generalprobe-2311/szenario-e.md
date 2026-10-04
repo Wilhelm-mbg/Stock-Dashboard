@@ -88,3 +88,7 @@ Keine.
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
 - 3x mfStatus: Lade Tageskurse … 140/194
+
+## Einordnung
+
+Gegenprobe ohne Befund. Start Montag 15:50: der Bestand ist vom Donnerstag (nicht frisch gegen die Uhr), der erste Takt laedt nach, der zweite (15:55) schichtet zur Eroeffnung des Montags um - 5 Minuten vor Schluss, aber zum richtigen Kurs. Der Freitagspunkt wird vor dem Handel geschrieben.

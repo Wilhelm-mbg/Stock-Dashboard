@@ -89,3 +89,7 @@ Keine.
 - 3x mfStatus: Lade Tageskurse … 110/194
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
+
+## Einordnung
+
+Gegenprobe ohne Befund. Der Takt um 09:35 NY (erster Takt nach "Boersenoeffnung + 5 Minuten") schichtet genau einmal um: 9 Verkaeufe, 9 Kaeufe zur Eroeffnung des Montags, Rangfolge auf den Schluessen von Freitag 20.11. (Journalzeile), Korb 190 zulaessig (zwei Kunstwerte mit zu wenig Umsatz und der Wert mit nur 252 Balken fehlen, der mit genau 253 Balken ist dabei), Zielzahl 19, der letzte Kauf wird mangels Bargeld auf 53,72 Stueck verkleinert, Bargeld danach 0. Von Hand nachgerechnet, mit MFHandel.planeUmschichtung/fuehreAus und von der App: Stueckzahlen auf 1e-3 gleich. Der Freitagspunkt wird um 16:20 NY geschrieben (der erste Takt nach dem Laden, das um 16:15 angestossen wurde) und traegt das Buch VOR der Umschichtung; Montag und Dienstag je ein Punkt.

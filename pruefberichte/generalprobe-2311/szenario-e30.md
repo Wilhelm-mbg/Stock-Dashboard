@@ -88,3 +88,7 @@ Keine.
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
 - 3x mfStatus: Lade Tageskurse … 140/194
+
+## Einordnung
+
+Gegenprobe ohne Befund, mit dem echten Takt der App (12 s nach dem Start, dann alle 30 min): der erste Takt (15:50:12) laedt nach, der zweite um 16:20:12 - NACH dem Schluss - schichtet zur Eroeffnung des Montags um; der Kurs ist richtig, die Uhrzeit nicht "zur Eroeffnung". Der Montagspunkt kommt erst 17:20, weil das Nachladen hoechstens einmal je Stunde angestossen wird (ladeAngestossen).

@@ -107,3 +107,7 @@ Generalprobe 23.11.2026, Code von HEAD, New-York-Zeit (Winter, UTC-5), 1440 Takt
 - 3x mfStatus: Lade Tageskurse … 110/194
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
+
+## Einordnung
+
+BEFUND (Klasse A, H-b2-budget-ohne-kurs). Die Umschichtung laeuft richtig an (um 09:35 die 11 Orders mit Kurs, um 11:00 die 7 uebrigen zur Eroeffnung des Montags - nie zum laufenden Kurs, keine Doppelausfuehrung), aber der Platzwert (Depotwert / Zielzahl) wird um 09:35 ohne die fuenf gehaltenen Positionen berechnet, deren Eroeffnung fehlt (planeUmschichtung: Position ohne Kurs zaehlt 0). Budget je Kauf ~4,5 statt ~6,1 Tsd. $, alle neun Kaeufe 42,7 statt 58,2 Stueck, und das Nachfassen um 11:00 uebernimmt dieses Budget (offen.kaeufe[].budget). Am Ende liegen 14.163,63 $ (12 % des Buchs) als Bargeld, Soll 0. Nach REGEL §1.3 ist "Position ohne Kurs gehalten" gemeint - dort ist der Wert der Position aber weiter im Buch; in der Messung hat jeder Wert an jedem Tag eine Eroeffnung.

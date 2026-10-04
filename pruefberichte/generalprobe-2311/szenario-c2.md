@@ -4,7 +4,7 @@ Generalprobe 23.11.2026, Code von HEAD, New-York-Zeit (Winter, UTC-5), 1440 Takt
 
 ## Ergebnis in einer Zeile
 
-**6 Abweichung(en) vom Soll:** endbuch-positionen, endbuch-cash, erhaltung, punkt-wert-2026-11-20, punkt-wert-2026-11-23, punkt-wert-2026-11-24
+**5 Abweichung(en) vom Soll:** endbuch-positionen, endbuch-cash, erhaltung, punkt-wert-2026-11-23, punkt-wert-2026-11-24
 
 ## Umschichtung
 
@@ -17,7 +17,7 @@ Generalprobe 23.11.2026, Code von HEAD, New-York-Zeit (Winter, UTC-5), 1440 Takt
 - Bargeld vorher 0.11 | Soll nach Handel 0 (+ Ausschuettungen Soll 58.82) | App am Ende 29.5
 - Positionen: vorher 19, App am Ende 19, Soll 19
 - Erhaltung (Eroeffnungskurse): {"wertSollVorOpen":116222.41,"wertSollNachOpen":116003.61,"kostenSoll":218.8,"kostenAusTrades":206.54,"notional":103271.04}
-- Tagespunkte (Schluessel tag, Wert, Soll): 2026-11-20 116279.02 (Soll 110114.08, Diff 6164.94, geschrieben 2026-11-20 16:20); 2026-11-23 113146.41 (Soll 116232.9, Diff -3086.49, geschrieben 2026-11-23 16:20); 2026-11-24 113431.41 (Soll 116525.36, Diff -3093.95, geschrieben 2026-11-24 16:20)
+- Tagespunkte (Schluessel tag, Wert, Soll): 2026-11-20 116279.02 (Soll 116279.02, Diff 0, geschrieben 2026-11-20 16:20); 2026-11-23 113146.41 (Soll 116232.9, Diff -3086.49, geschrieben 2026-11-23 16:20); 2026-11-24 113431.41 (Soll 116525.36, Diff -3093.95, geschrieben 2026-11-24 16:20)
 - Kapitalmassnahmen gebucht: split SCHW Ex 2026-11-20 09:30 gebucht 2026-11-20 16:20 2:1 Stueck 29.5947->59.1894; div ELV Ex 2026-11-23 09:30 gebucht 2026-11-23 16:20 29.49; split NVDA Ex 2026-11-23 09:30 gebucht 2026-11-23 16:20 2:1 Stueck 29.5269->59.0538
 
 ## Pruefungen, die stimmen
@@ -37,7 +37,6 @@ Generalprobe 23.11.2026, Code von HEAD, New-York-Zeit (Winter, UTC-5), 1440 Takt
 - **endbuch-positionen**: 9 Positionen weichen vom Soll ab: LUV ist 55.0949 soll 58.1923; XEL ist 55.4863 soll 58.6057; NKE ist 54.893 soll 57.9791; COF ist 55.1097 soll 58.2079; NET ist 55.0228 soll 58.1162; CCI ist 55.0661 soll 58.1619
 - **endbuch-cash**: Bargeld am Ende 29.5 gegen Soll 58.82 (Differenz -29.32)
 - **erhaltung**: Kosten aus den Trades der App 206.54 gegen Soll 218.8 (Wert vor 116222.41, nach 116003.61 zu Eroeffnungskursen)
-- **punkt-wert-2026-11-20**: Tagespunkt 2026-11-20: Wert 116279.02 gegen Soll 110114.08 (Differenz 6164.94)
 - **punkt-wert-2026-11-23**: Tagespunkt 2026-11-23: Wert 113146.41 gegen Soll 116232.9 (Differenz -3086.49)
 - **punkt-wert-2026-11-24**: Tagespunkt 2026-11-24: Wert 113431.41 gegen Soll 116525.36 (Differenz -3093.95)
 
@@ -92,3 +91,7 @@ Generalprobe 23.11.2026, Code von HEAD, New-York-Zeit (Winter, UTC-5), 1440 Takt
 - 3x mfStatus: Lade Tageskurse … 110/194
 - 3x mfStatus: Lade Tageskurse … 120/194
 - 3x mfStatus: Lade Tageskurse … 130/194
+
+## Einordnung
+
+BEFUND (Klasse A, H-c2-split-ex-tag). Split 2:1 mit Ex-Tag Montag in drei Werten, der Bestand der App ist vom Freitag. Yahoo meldet die Montagseroeffnung schon in neuer Stueckelung (halber Kurs), die App rechnet sie gegen die alte Stueckzahl: (1) der VERKAUFTE Wert (WELL) bringt 3.064,58 $ statt 6.129,16 $ - die Haelfte der Position ist weg; (2) der BLEIBENDE Wert (NVDA) geht mit halbem Wert in den Depotwert (und wird erst Montag 16:20 gebucht, 29,53 -> 59,05); (3) der Platzwert sinkt um ca. 5 %, die neun Kaeufe haben 55,1 statt 58,2 Stueck. Der NEU gekaufte Wert mit Split am selben Tag ist richtig (kursT = Stempel des Montagsbalkens, kein spaeteres Buchen). Tagespunkt Montag 113.146,41 gegen Soll 116.232,90 (-3.086,49 $, 2,7 % des Buchs). c1-Befund (verlorene Ausschuettung) ist hier mit enthalten. Die REGEL (Panel mit rueckwirkend bereinigten Kursen) kennt das Problem nicht; Soll = Stueckzahl mal Split vor der Umschichtung.
