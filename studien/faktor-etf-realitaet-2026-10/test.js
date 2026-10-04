@@ -189,6 +189,13 @@ var y6 = R.leseYahoo(kunstYahoo(t5, function (i, d) { return (d >= '2011-08-08' 
 var b6 = R.bereite(y6, markt6);
 ok('K1: -14 % bei Markt -15 % ist kein Bruch, Reihe bleibt ganz', b6.pruefung.brueche.length === 0 && b6.pruefung.anfangVerworfenBis === null && b6.pruefung.grosseBewegungen.length === 1);
 ok('ohne Markt keine Brueche (SPY selbst)', R.bereite(y5).pruefung.brueche.length === 0);
+/* K1b: echte Bewegung eines konzentrierten Fonds (+16,8 % bei Markt +4,8 %, wie QQQ am 03.01.2001) ohne eingefrorenen Lauf davor:
+ * gelistet, aber NICHT verworfen */
+var t7 = werktage('1999-03-10', '2003-12-31');
+var markt7 = t7.map(function (d, i) { return { d: d, v: (d >= '2001-01-03' ? 1.048 : 1) * Math.pow(1.0002, i) }; });
+var y7 = R.leseYahoo(kunstYahoo(t7, function (i, d) { return (d >= '2001-01-03' ? 1.168 : 1) * 80 * Math.pow(1.0002, i) * (1 + 0.001 * (i % 3)); }, {}));
+var b7 = R.bereite(y7, markt7);
+ok('K1b: echter Sprung ohne eingefrorenen Lauf davor -> gelistet, Reihe bleibt ab 1999 ganz', b7.pruefung.brueche.length === 1 && b7.pruefung.anfangVerworfenBis === null && b7.tr[0].d === '1999-03-10');
 
 /* ===== Teil II: Klinken an fonds.json und am Ordner ===== */
 var FJ = path.join(ORDNER, 'fonds.json');

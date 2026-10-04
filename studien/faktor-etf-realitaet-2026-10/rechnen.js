@@ -439,10 +439,20 @@ function bereite(reihe, markt) {
   const fehl = sprungpaare(reihe.tage);
   const fehlSet = new Set(fehl.map((x) => x.d));
   const tage0 = reihe.tage.filter((z) => !fehlSet.has(z.d));
-  /* K1: Bruch in den ersten 730 Tagen -> Reihe beginnt am (letzten solchen) Bruchtag */
+  /* K1 (Fassung K1b): Bruch in den ersten 730 Tagen, dem ein eingefrorener Lauf (>= 5 gleiche Schluesse bis zum Vortag)
+   * vorausgeht -> Reihe beginnt am (letzten solchen) Bruchtag. K1b ersetzt K1, weil K1 echte Marktbewegungen eines
+   * konzentrierten Fonds als Bruch las (QQQ 17.04.2000 +11,5 % und 03.01.2001 +16,8 % bei SPY +3,5/+4,8 % -> 22 Monate
+   * Historie verworfen). Ohne eingefrorenen Lauf davor wird ein Bruch nur gelistet. */
   const br = brueche(tage0, markt);
   let schnitt = null;
-  for (const b of br) if (tage0.length && tageZwischen(tage0[0].d, b.d) <= BRUCH.anfangTage) schnitt = b.d;
+  for (const b of br) {
+    if (!tage0.length || tageZwischen(tage0[0].d, b.d) > BRUCH.anfangTage) continue;
+    const i = tage0.findIndex((z) => z.d === b.d);
+    let lauf = 0;
+    for (let j = i - 1; j >= 0 && tage0[j].c === tage0[i - 1].c; j--) lauf++;
+    b.eingefrorenVorher = lauf;
+    if (lauf >= 5) schnitt = b.d;
+  }
   const tage = schnitt ? tage0.filter((z) => z.d >= schnitt) : tage0;
   /* Rand eingefroren? (Schluss am Fensterrand gleich dem Vortag) - nur Hinweis */
   const randGleich = {};
