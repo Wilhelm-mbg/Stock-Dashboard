@@ -147,8 +147,9 @@ Keine davon ist ein weiterer Parameter der Regel; jede füllt eine Stelle, an de
   `c = 0` 2.159 statt 2.155 Gewinner (63 Nulltrades unter 12.604), Eichung 3.937 statt 3.934 (3 Grenzfälle unter 23.190); jede andere
   verglichene Größe gleich bis 10⁻⁹. *Behoben:* L6 gilt unverändert („Netto-Ertrag größer null"), wird aber an den Kursen geprüft —
   Gewinn je Stück nach Gebühren größer als 10⁻⁹ des Einstiegskurses (dieselbe Rechengenauigkeits-Schranke wie L2); ein Ertrag von genau
-  null ist kein Gewinner. *Wirkung:* nur die Trefferquote, um höchstens wenige Trades je Lauf; Erträge, Tageserträge, t, `c*`, Trades,
-  Umsatz und alle Sätze bleiben bit-gleich (`vergleich-korrektur.js` vergleicht den ersten Lauf Feld für Feld mit dem wiederholten).
+  null ist kein Gewinner. *Wirkung (nach der Wiederholung gezählt, `vergleich-korrektur.log`):* nur die Trefferquote, nur auf den
+  Stufen `c = 0` (31 von 36 Läufen) und „Papier" (12 von 36), um 1 bis 25 Gewinner je Lauf, höchstens 0,20 Prozentpunkte; Erträge,
+  Tageserträge, t, `c*`, Trades, Umsatz und alle Sätze bleiben bit-gleich (7.136 Felder verglichen, 44 abweichend, alle `trefferquote`).
   Der erste Lauf liegt als `ergebnis-vor-korrektur-1.json` und `eichung-vor-korrektur-1.json` im Ordner.
 
 ## C. Vor dem Siegel gezählt (nur Aufbau und Vollständigkeit; `zaehlen.js`, `zaehlen-luecken.js`, `daten-zaehlung.json`)

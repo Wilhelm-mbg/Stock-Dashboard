@@ -147,7 +147,7 @@ function hauptlauf(sg) {
       fehler: 'Trefferquote: der Gewinner wurde am Vermoegen verglichen (Eneu > Evor). Bei einem Trade mit Ertrag genau null (Einstiegskurs = Ausstiegskurs bei c = 0; Kursgewinn genau 0,001 $ bei Papier-Kosten) entschied das letzte Bit der Gleitkommarechnung.',
       gefunden: 'Gegenrechnung nach dem ersten Lauf (gegenrechnung-vor-korrektur.log): Hauptlauf c = 0 2.159 statt 2.155 Gewinner bei 63 Nulltrades; Eichung 3.937 statt 3.934 Gewinner bei 3 Grenzfaellen. Alle anderen verglichenen Groessen gleich bis 1e-9.',
       behoben: 'Vergleich des Gewinns je Stueck nach Gebuehren an den Kursen, Schranke 1e-9 des Kurses (kern.js); zwei neue Pruefungen in test.js.',
-      wirkung: 'Nur das Feld trefferquote aendert sich (hoechstens wenige Trades je Lauf). Ertraege, Tagesertraege, t, c*, Trades, Umsatz und alle Saetze bit-gleich - siehe vergleich-korrektur.log.',
+      wirkung: 'Nur das Feld trefferquote aendert sich, nur auf den Stufen c = 0 (31 von 36 Laeufen) und Papier (12 von 36), um 1 bis 25 Gewinner je Lauf, hoechstens 0,20 Prozentpunkte. Ertraege, Tagesertraege, t, c*, Trades, Umsatz und alle Saetze bit-gleich (7.136 Felder verglichen) - siehe vergleich-korrektur.log.',
       kurz: 'Eine Korrektur am Code nach dem ersten Lauf: bei der Trefferquote zählte ein Trade mit Ertrag genau null je nach Rundung als Gewinner (Eichung 3 Trades, Hauptlauf 4 Trades); alle Erträge, t, c* und Sätze sind unverändert (REGEL.md Teil D).'
     }],
     datenluecken: 'QQQ am 02. und 03.05.2018 nur die Kerze 09:30 (kein Handel an diesen Tagen), QQQ am 22.02.2016 340 Kerzen, SPY und IWM am 12.08.2019 nur bis 15:31 bzw. 15:30, vier Tage im März 2020 je 376 Kerzen (Handelsunterbrechung).'
