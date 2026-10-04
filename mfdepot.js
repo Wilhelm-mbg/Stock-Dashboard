@@ -297,6 +297,10 @@
       if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; }
       await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader
     }
+    /* Generalprobe 23.11., Fund 7 (D-08): ausser SPY hat kein Ziel und keine Position eine Eroeffnung - das ist die Quelle,
+     * nicht der Markt (im Panel hat ein Ausfuehrungstag Zeilen). Nicht umgeschichtet, nichts gemerkt; neuer Versuch wie bei zuWenig. */
+    if (!Object.keys(preise).length) return { ok: false, hinweis: 'Umschichtung fällig, aber außer SPY hat um ' + MH.nyUhr(now) + ' New York kein Wert eine Eröffnung vom ' +
+      MH.datumDe(heute) + ' (die Quelle antwortet nicht) – nicht umgeschichtet; neuer Versuch beim nächsten Takt.' };
     /* Generalprobe 23.11., Fund 2 (D-04, D-05, H-b2): fehlt einer gehaltenen, handelnden Position die Eroeffnung noch,
      * waere der Platzwert zu klein. Bis 16:00 New York warten (gehandelt wird ohnehin zur Eroeffnung dieses Tages). */
     var warten = MH.eroeffnungAbwarten(d.mfBuch.positionen, preise, daten.roh, st.stichtag, now);
