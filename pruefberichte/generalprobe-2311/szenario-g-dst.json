@@ -1,0 +1,12 @@
+{
+ "anzahlMinutenraster": 10212,
+ "anzahlNyZeit": 204,
+ "anzahlFertig": 10212,
+ "anzahlFrisch": 204,
+ "abweichungen": [],
+ "info": {
+  "luecke_2026_03_08_0230": "2026-03-08T06:30:00.000Z",
+  "doppel_2026_11_01_0130": "2026-11-01T06:30:00.000Z",
+  "wechsel2027": "2027-03-06 EST, 2027-03-07 EST, 2027-03-08 EST, 2027-03-09 EST, 2027-03-10 EST, 2027-03-11 EST, 2027-03-12 EST, 2027-03-13 EST, 2027-03-14 EDT, 2027-03-15 EDT"
+ }
+}

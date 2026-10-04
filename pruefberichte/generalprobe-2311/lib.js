@@ -3,8 +3,9 @@
  * Uebernommen aus pruefberichte/live-gegen-messung-momentum.test.js (Hilfen-Abschnitt, unveraendert);
  * Erweiterungen stehen unten und in den eigenen Dateien der Unteraufgaben. Reines Node, keine
  * Kursdaten, keine Schluessel, kein Netz. Alles Simulation mit virtuellem Kapital. */
+var fs = require('fs');
+var path = require('path');
 var vm = require('vm');
-
 var WURZEL = process.env.PRUEF_WURZEL ? path.resolve(process.env.PRUEF_WURZEL) : path.join(__dirname, '..', '..');
 var MH = require(path.join(WURZEL, 'mfhandel.js'));
 var Ms = require(path.join(WURZEL, 'massstab.js'));
