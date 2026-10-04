@@ -408,8 +408,11 @@ function repoDateien(wurzel) {
 /* Quelldateien je Einheit: die Dateien, die sie selbst nennt; die, die der Vorspann
  * fuer eine von ihr benutzte Variable laedt (`var Q = require('./quant.js')` - wer Q
  * benutzt, haengt an quant.js); die ihrer Lieferanten (siehe abhaengigkeiten); und
- * von alldem die require()-Huelle. */
-function quelldateien(gl, wurzel, dateien) {
+ * von alldem die require()-Huelle.
+ * testDatei (Repo-Pfad, z. B. 'test-v6.js') zaehlt dabei NICHT als genannte Datei: sie
+ * laedt fast jedes Modul, ihre Huelle waere das ganze Repo - fuer sie gelten die
+ * geaenderten Zeilen (einheitenZuZeilen). */
+function quelldateien(gl, wurzel, dateien, testDatei) {
   const nachName = new Map();
   dateien.forEach(function (d) {
     const n = d.split('/').pop();
@@ -418,7 +421,11 @@ function quelldateien(gl, wurzel, dateien) {
   });
   const graph = requireGraph(wurzel, dateien);
   const body = gl.ast.body;
-  const genannt = body.map(function (st) { return genannteDateien(zeichenketten(st), dateien, nachName); });
+  const genannt = body.map(function (st) {
+    const s = genannteDateien(zeichenketten(st), dateien, nachName);
+    if (testDatei) s.delete(testDatei);
+    return s;
+  });
   const einheitVon = einheitVonAnweisung(gl);
   const eigene = new Map();
   gl.einheiten.forEach(function (e) {
@@ -499,7 +506,7 @@ function nurGeaendert(gl, wurzel, testDatei, gegen) {
     z.lfd.forEach(function (l) { gruende.set(l, [testRel + ' (Zeilen des Abschnitts)']); });
   }
   const dateien = repoDateien(wurzel);
-  const je = quelldateien(gl, wurzel, dateien);
+  const je = quelldateien(gl, wurzel, dateien, testRel);
   const ohneAbschnitt = [];
   geaendert.forEach(function (d) {
     if (d === testRel) return;
@@ -691,7 +698,7 @@ function haupt(argv) {
   }
   if (o.liste) {
     let je = null;
-    try { je = quelldateien(gl, wurzel, repoDateien(wurzel)); } catch (e) { console.log('(Quelldateien nicht ermittelbar: ' + e.message + ')'); }
+    try { je = quelldateien(gl, wurzel, repoDateien(wurzel), path.relative(wurzel, testDatei).replace(/\\/g, '/')); } catch (e) { console.log('(Quelldateien nicht ermittelbar: ' + e.message + ')'); }
     liste(gl, je);
     return 0;
   }
@@ -711,9 +718,8 @@ function haupt(argv) {
     kopfzeilen.push('Geaendert gegenueber ' + g.basis + ' (Abzweig ' + g.mergeBase.slice(0, 7) + '): ' +
       (g.geaendert.length ? g.geaendert.join(', ') : 'nichts'));
     if (g.alle) kopfzeilen.push('  Vorspann oder Schluss von test-v6.js geaendert - alle Abschnitte laufen');
-    else g.gruende.forEach(function (d, l) {
-      const e = gl.einheiten[l - 1];
-      kopfzeilen.push('  ' + e.kopf.slice(0, 60) + '  <- ' + d.join(', '));
+    else Array.from(g.gruende.keys()).sort(function (a, b) { return a - b; }).forEach(function (l) {
+      kopfzeilen.push('  ' + gl.einheiten[l - 1].kopf.slice(0, 60) + '  <- ' + g.gruende.get(l).join(', '));
     });
     if (g.ohneAbschnitt.length) kopfzeilen.push('  ohne Abschnitt (kein Test nennt sie): ' + g.ohneAbschnitt.join(', '));
     g.lfd.forEach(function (l) { if (lfd.indexOf(l) < 0) lfd.push(l); });
