@@ -817,7 +817,7 @@
         'PF – Profitfaktor: alle Gewinne geteilt durch alle Verluste. Über 1 heißt profitabel, unter 1 nicht. Sagt nichts über die Häufigkeit.',
         'Walk-Forward – auf alten Daten einstellen, auf den darauffolgenden, nie gesehenen Daten prüfen, dann weiterrücken. Der einzige Test, den eine überangepasste Regel nicht bestehen kann.',
         'Schattenbuch – ein Mitschrieb aller Signale, auch der nicht gehandelten. Es kostet nichts und ist die einzige Messbasis, die auch dann weiterläuft, wenn eine Regel abgeschaltet ist.',
-        'Regime – die Marktphase, in der eine Regel gelten soll (hier: SPY im Aufwärts- oder Abwärtstrend). Jede Kante wurde in genau einem Regime gemessen und wird nur dort eingesetzt.',
+        'Regime – die Marktphase, in der eine Regel gelten soll (hier: SPY im Aufwärts- oder Abwärtstrend). Jede Regel wurde in genau einem Regime gemessen und wird nur dort eingesetzt; belegt ist keine davon (Belegstand 04.10.2026).',
         'Aufgeld – der Betrag, den ein Optionsschein über seinem inneren Wert kostet. Er schmilzt bis zur Fälligkeit auf null; deshalb schlägt er bei kurzen Haltedauern durch.',
         'Omega – wie viel Prozent der Schein macht, wenn der Basiswert ein Prozent macht. Der Hebel, den man tatsächlich bekommt.',
         'Delta – wie viel Kurs der Schein macht, wenn der Basiswert einen Euro macht. Zwischen 0 und 1 (Call) bzw. −1 und 0 (Put).',
@@ -865,7 +865,7 @@
     'einstellungen.alpaca': {
       titel: 'Alpaca-Paper – das zweite Kosten-Gefäß',
       punkte: [
-        'Capital.com-Demo misst CFD-Runden, Alpaca-Paper misst echte US-Aktien mit Papiergeld. Beide Reihen bleiben getrennt: die Aktienhürde (0,06 Prozentpunkte je Umlauf) wird nur an Alpaca-Runden geprüft, die CFD-Hürde (0,10 %) nur an Capital-Runden.',
+        'Capital.com-Demo misst CFD-Runden, Alpaca-Paper misst echte US-Aktien mit Papiergeld. Beide Reihen bleiben getrennt: die Aktienhürde (geprüft wird gegen die alte Annahme 0,06 Prozentpunkte je Umlauf – überholt 03.09.2026: gemessen liegt die Kassa-Hürde je Umsatzklasse bei 0,0449 bis 0,1569 Pp) wird nur an Alpaca-Runden geprüft, die CFD-Hürde (0,10 %) nur an Capital-Runden.',
         'Eine Runde kauft rund 200 $ zum Markt und verkauft sofort wieder; gemessen werden beide Ausführungen gegen die Mitte davor. Das Paper-Konto füllt am besten Geld-/Briefkurs – gemessen wird also die Spanne, die unbekannte Größe.',
         'Alpaca füllt im Paper rund jede zehnte Order absichtlich nur teilweise. Das ist ein Simulationsartefakt: der Rest wird storniert, die Position glattgestellt, die Runde verworfen und als „Teilfüllung“ protokolliert.',
         'Gemessen wird nach Umsatzklasse (5–50, 50–250, 250–1.000, ab 1.000 Mio $ Median-Tagesumsatz über 20 Balken, die Umsatzregel des Momentum-Buchs), Ziel zehn Runden je Klasse, Werte aus Momentum-Korb und Intraday-Signalliste. Dazu eine Übernacht-Runde: Kauf in der Schlussauktion, Verkauf zur Folgeeröffnung, beide Fills gegen den offiziellen Schluss und die offizielle Eröffnung gehalten.',
@@ -1051,7 +1051,7 @@
     'heute.positionen': {
       titel: 'Nach welchen Regeln diese Positionen laufen',
       punkte: [
-        'Gemessene Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt.',
+        'Gemessene Intraday-Regeln (belegt ist keine: RSI(2) im Seitwärtskanal nicht entscheidbar, Kapitulations-Dip in der behaupteten Größe zurückgewiesen): nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt.',
         'Widerlegte Setups: Stop −25 % / Ziel +35 %, Glattstellung zum Tagesschluss.',
         'Altbestand der Stunden-Strategie: Stop −40 % / Ziel +80 %, Zeit-Ausstieg 10 Tage vor Fälligkeit.',
         'Bei Scheinen: Bezugsverhältnis 0,1 · Spanne 2 % · Ordergebühr je Kauf und Verkauf simuliert; Hebel = Omega (Maus über den Wert zeigt das aktuelle Aufgeld).'
@@ -1092,7 +1092,7 @@
     'vermoegen.buecher': {
       titel: 'Mittelfrist-Depot · die zwei Bücher',
       punkte: [
-        'Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details unter Werkzeuge → Betrieb, Messprotokolle.',
+        'Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b>. Belegt ist keine von beiden – beide sind nach heutigem Stand nicht entscheidbar (Belegstand 04.10.2026). Momentum: t = 0,74 nach Korrektur (liquide Fassung t 2,02, In-Sample und am Rand); Ergebnis-Drift, gemessen am 04.10.2026: Buch 13,01 % p. a. gegen S&P 500 12,63 % p. a., 16 von 200 Zufallsbüchern darüber. Details unter Werkzeuge → Betrieb, Messprotokolle.',
         'Bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Reiter „Regeln“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und erinnern („Rebalancing fällig“ mit Handlungsliste).'
       ],
       fuss: 'Alles Simulation, keine Anlageberatung.'
@@ -1229,7 +1229,7 @@
       titel: 'Momentum im Querschnitt',
       punkte: [
         'Diese Strategie vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel. Kein Chartmuster, kein Ein- und Ausstiegssignal – nur eine Rangfolge, die alle drei Monate neu gebildet wird.',
-        'Seit 02.09.2026 handelt das Buch <b>die gemessene liquide Konfiguration (Parameter wie gemessen)</b>: Rückblick 231 Handelstage, Lücke 21, Halten 63, stärkstes Zehntel, Korb nur Werte mit Median-Tagesumsatz ≥ 100 Mio $ (20 Balken bis zum Stichtag, vor der Rangbildung). Die Schwelle ist nominal und wird nicht angepasst – ihre Drift steht als Korbgröße je Umschichtung im Buch. Ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg.',
+        'Seit 02.09.2026 handelt das Buch <b>die gemessene liquide Konfiguration (Parameter wie gemessen)</b>: Rückblick 231 Handelstage, Lücke 21, Halten 63, stärkstes Zehntel, Korb nur Werte mit Median-Tagesumsatz ≥ 100 Mio $ (20 Balken bis zum Stichtag, vor der Rangbildung). Die Schwelle ist nominal und wird nicht angepasst – ihre Drift steht als Korbgröße je Umschichtung im Buch. Ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere Out-of-Sample – ein Beleg ist das nicht: Über Monate prüft das die Umsetzung (Kurse, Kosten, Ausschüttungen, Auswahl), nicht den Vorsprung.',
         'Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht darstellbar, der Zeitwertverfall frisst sie auf.',
         /* Auftrag Nr. 91: die drei Saetze darunter stammen vom Universum der Ueberlebenden.
          * Sie bleiben stehen; der Kopf darueber kommt beim Oeffnen aus dem Studienregister
@@ -1249,12 +1249,12 @@
       punkte: [
         /* U5 (04.09.2026): woertlich aus dem Absatz unter der Ueberschrift. Er sagte
          * dasselbe wie die beiden Punkte darunter, nur kuerzer. */
-        'Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – im <b>Basiswert</b>, nicht mit Hebelscheinen: Der Drift liefert nur ein Viertel bis ein Achtel der Schein-Kostenhürde.',
-        'Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter. Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – gleich viele, aus demselben Topf.',
-        'Anders als das Momentum ist das <b>kein Chartsignal</b>: Die Information kommt aus den Zahlen, nicht aus dem Kursverlauf. Deshalb bleibt neben dem Momentum messbar etwas übrig (Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. bei t = 2,20).',
-        '<b>Nicht mit Hebelscheinen handelbar.</b> Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 % laufen, damit ein Schein nach Zeitwertverfall und Spanne bei null herauskommt – der Drift liefert rund 1,3 % je Position. Faktor 4 bis 8 zu wenig. Gerechnet wird deshalb im Basiswert.',
-        '<b>Was gemessen ist.</b> 20.356 Ergebnistermine aus 197 Werten, 1993–2026. Marktneutral, 60 Handelstage, Rang nur gegen bereits veröffentlichte Zahlen: ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen. Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts.',
-        '<b>Was offen bleibt.</b> Die Überlebensverzerrung ist nur teilweise ausgeräumt: In der über zehn Jahre schwachen Hälfte der Werte bleiben nur +1,72 % (t = 0,58), in der starken +8,61 %. Ein guter Teil sitzt weiter in den Gewinnern von heute. Und es braucht <b>beide Beine</b> – long allein ist überwiegend Marktbeta.'
+        'Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – im <b>Basiswert</b>, nicht mit Hebelscheinen.',
+        'Die These: Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter. Gemessen am 04.10.2026: nicht entscheidbar. Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – gleich viele, aus demselben Topf.',
+        'Anders als das Momentum ist das <b>kein Chartsignal</b>: Die Information kommt aus den Zahlen, nicht aus dem Kursverlauf. Ob deshalb neben dem Momentum etwas übrig bleibt, ist nach heutigem Stand nicht belegt.',
+        '<b>Nicht mit Hebelscheinen handelbar.</b> Ein Schein verliert über die Haltedauer von 60 Handelstagen Zeitwert und Spanne; eine belegte Drift-Größe, die das trägt, gibt es nicht. Gerechnet wird deshalb im Basiswert.',
+        '<b>Was gemessen ist.</b> Am 04.10.2026: 14.184 Meldungen von 1.248 Firmen, Einstiegstage 16.09.2021 bis 15.09.2026. Nur die Kaufseite (oberstes Zehntel), Verkauf nach 60 Handelstagen, nach Kosten: Buch <b>+13,01 % p. a. gegen S&P 500 +12,63 % p. a.</b> (Abstand +0,38 Pp p. a.) – nicht entscheidbar, kein Vorwärtstest. Zufallsbücher (Zufallszahl statt Überraschung): Mitte +56,6 %, 16 von 200 über dem Buch. Überholt: die frühere Messung (20.356 Ergebnistermine aus 197 Werten, 1993–2026, marktneutral) ist durch diese ersetzt; das Ergebnis-Drift-Buch stand nach der Zeitzonen-Korrektur bei t 1,7–2,0.',
+        '<b>Was offen bleibt.</b> Ein Fenster, eine Regel, ein Lauf; die Überraschung stammt aus dem später eingereichten Bericht, kein Analysten-Konsens. Über 60 Handelstage gegen das Mittel der Umsatzklasse: Kaufseite nach Kosten +1,39 Pp (t 1,97), oberstes gegen unterstes Zehntel +2,09 Pp (t 1,67) – beides nicht entscheidbar. Die Regel dieses Buchs (oberstes und unterstes Fünftel, Kauf und Leerverkauf) ist so nicht gemessen.'
       ],
       fuss: 'Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.'
     },
@@ -1279,10 +1279,10 @@
     'regeln.param.risiko': {
       titel: 'Risiko & Kosten – was ein Trade kosten darf',
       punkte: [
-        'Hier entscheidet sich, ob von einem gemessenen Vorsprung überhaupt etwas übrig bleibt. Die Produkthürde – was der Basiswert laufen muss, damit ein Umlauf aus Spanne, Gebühr und Aufgeld bei null herauskommt – ist in diesem Projekt der Grund, an dem die meisten Intraday-Kanten scheitern.',
+        'Hier entscheidet sich, ob von einem gemessenen Vorsprung überhaupt etwas übrig bleibt. Die Produkthürde – was der Basiswert laufen muss, damit ein Umlauf aus Spanne, Gebühr und Aufgeld bei null herauskommt – ist in diesem Projekt der Grund, an dem die meisten Intraday-Regeln scheitern.',
         'Deshalb steht die Hürde bei den Hebel-Profilen in der Auswahl selbst: 0,07 Pp (Ruhig 60 T, BV 1,0), 0,09 Pp (Moderat, BV 1,0), 0,26 Pp (Moderat, BV 0,1), 0,61 Pp (Heiß, BV 0,1). Die Profile unterscheiden sich in der Hürde, nicht im Ergebnis.',
         'Der eigentliche Kostenhebel ist das Bezugsverhältnis, nicht der Hebel: Emittenten stellen die Spanne als festen Cent-Betrag. Ein BV-1,0-Schein kostet je Stück das Zehnfache, zahlt aber nur den doppelten Cent – also ein Fünftel des relativen Spreads bei gleichem Hebel.',
-        'Instrument „Aktie 1×“ ist Vorgabe, nicht Vorsicht: Für eine Strategie, deren Vorsprung unter der Schein-Kostenhürde liegt, ist der Basiswert der einzige gangbare Weg. Bei RSI(2) im Seitwärtskanal war dieselbe Strategie mit Schein im Backtest bei −96 %.',
+        'Instrument „Aktie 1×“ ist Vorgabe, nicht Vorsicht: Für eine Strategie, deren Vorsprung unter der Schein-Kostenhürde liegt, ist der Basiswert der einzige gangbare Weg. Bei RSI(2) im Seitwärtskanal liegt der gemessene Überschuss (+0,021 Pp je Signal, nicht entscheidbar) weit unter der Schein-Kostenhürde.',
         'Positionsgröße und Not-Stop ändern nicht, wie oft die Regel recht hat, sondern was ein Irrtum kostet. „Risiko X %“ bemisst den Einsatz so, dass ein ausgelöster Stop immer ungefähr X % des Depots kostet – bei „fix“ schwankt genau das mit der Schwankungsbreite des Werts.',
         'Die maximale Risikostufe wirkt depotweit und gilt auch für Käufe von Hand, vom Autopiloten und aus einer Empfehlung. Sie ist die einzige Grenze dieser Gruppe, die im Einzelfall niemand übergeht.'
       ],
@@ -1302,7 +1302,7 @@
     'regeln.param.haltedauer': {
       titel: 'Haltedauer & Ausstieg – wann der Trade endet',
       punkte: [
-        'Der Ausstieg ist Teil der Messung, nicht ihr Anhängsel: Dieselbe Regel misst sich völlig anders, je nachdem wann sie schließt. Streng bis Handelsschluss geschlossen ergab die Intraday-Kante −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %.',
+        'Der Ausstieg ist Teil der Messung, nicht ihr Anhängsel: Dieselbe Regel misst sich völlig anders, je nachdem wann sie schließt.',
         'Deshalb tragen zwei Haltedauern in der Liste einen Zusatz: 8 Handelsstunden für RSI(2) im Seitwärtskanal („gemessen“) und 26 für den Kapitulations-Dip („Neumessung: zurückgewiesen“) – es sind die Haltedauern, mit denen gemessen wurde, und beim Kapitulations-Dip ist das Ergebnis der Neumessung vom 03.10.2026 die Zurückweisung. Die übrigen Werte sind wählbar, aber es gibt keine Messung zu ihnen.',
         'Ein Trailing-Stop verkürzt die Haltedauer unbemerkt – er schließt, sobald der Kurs X % unter seinem Hoch steht. Damit läuft eine andere Haltedauer als die, für die das Protokoll gilt.',
         'Die Gruppe blendet sich aus, sobald der eingestellte Modus keinen ihrer Werte abfragt. Sie steht dann nicht wirkungslos da: Fehlt sie, bestimmt der Modus seinen Ausstieg selbst.'
@@ -1323,7 +1323,7 @@
          * (kein Markup in diesem Eintrag - eine Zusicherung haelt das fest). */
         'Diese Seite zeigt zuerst den laufenden Trend und seine drei Eigenschaften – Richtung, Güte, Breite – genau die drei, die auch der Aktien-Explorer zu einem Kanal nennt, aus derselben Rechnung.',
         'Der Trendwechsel steht daneben als das, was er ist: ein Sonderfall des Trends, nämlich der Moment, in dem ein junger Abschnitt gegen den Vortrend dreht (Wunsch #58).',
-        'Dieser Detektor (dein Winkel-Vorschlag aus #33) war der einzige Teilüberlebende der Trendwende-Studie – aber ein guter Teil seines Vorsprungs war Tageszeit-Effekt, und die 1-Minuten-Basis war mit 7 Tagen zu kurz für ein Urteil. Die App sammelt seit 8.23.25 jede Nacht 1-Minuten-Kurse; in 4–6 Wochen wird sauber nachgemessen. Bis dahin zeigt diese Seite live, was der Detektor sieht – zum Spielen und Beobachten, genau wie vorgeschlagen.',
+        'Dieser Detektor (dein Winkel-Vorschlag aus #33) ist nachgemessen: netto unentscheidbar, in der Maschine alle 10 gemessenen Varianten mit negativem Punktschätzer, die Long-Seite in der Größe ausgeschlossen (Belegstand, ergänzt 02.09.2026). Diese Seite zeigt live, was der Detektor sieht – zum Beobachten, nicht zum Handeln.',
         'Sekunden-Kerzen (1/5/10 s) sind mit der Kursquelle nicht möglich – Yahoo liefert feinstens 1 Minute, und nur 7 Tage zurück. Geprüft werden die 15 Standard-Werte plus deine Watchlist; der Winkel zur Horizontalen und die Drehung gegen den Vortrend entsprechen exakt der Studien-Rechnung.',
         /* Und die vier erklaerenden Absaetze der Legende unter der Tabelle
          * (wendeui.js). Sichtbar geblieben ist dort, was gemessen ist. */
@@ -1336,7 +1336,7 @@
          * MESSAUSSAGEN (-0,17 Pp / t = -4,1 und +0,25 Pp widerlegt) - sie stehen im
          * Kasten mit data-mess. Wie oben sind auch hier nur die Auszeichnungen
          * weggefallen; kein Wort und keine Zahl. */
-        'Warum hier keine Ertragszahl steht: Es war eine geplant – und sie ist beim Nachrechnen durchgefallen. Auf 4.000 Fünf-Minuten-Kerzen findet der Detektor rund sechs Drehungen. Bei sechs Fällen entscheidet ein einziger Trade das Mittel, und das Vorzeichen kippt, sobald man nur die Abtastdichte ändert (−0,028 / +0,166 / +0,230 % bei gleicher Fallzahl). Für eine belastbare Bewertung bräuchte es rund 30 Fälle je Wert, also etwa 20.000 Kerzen – das Archiv hat gut 5.000.',
+        'Warum hier keine Ertragszahl steht: Es war eine geplant – und sie ist beim Nachrechnen durchgefallen. Auf 4.000 Fünf-Minuten-Kerzen findet der Detektor rund sechs Drehungen. Bei sechs Fällen entscheidet ein einziger Trade das Mittel, und das Vorzeichen kippt, sobald man nur die Abtastdichte ändert. Für eine belastbare Bewertung bräuchte es rund 30 Fälle je Wert, also etwa 20.000 Kerzen – das Archiv hat gut 5.000.',
         'Das ist selbst ein Ergebnis: Dieser Reiter kann seine eigenen Signale nicht bewerten. Er zeigt die Marktstruktur, und dafür ist er gut. Ob eine Drehung etwas einbringt, ist damit nicht zu beantworten – und eine Zahl hinzuschreiben, die es zu beantworten scheint, wäre schlechter als keine.'
       ]
     }

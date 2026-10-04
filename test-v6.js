@@ -8546,7 +8546,9 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   var shellB11 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
   var eintragB11 = (shellB11.split("'vermoegen.buecher': {")[1] || '').split('\n    },')[0];
   ok(/data-info="vermoegen\.buecher"/.test(bestand) &&
-     /t = 1,62/.test(eintragB11) && /8,44 statt 14,07/.test(eintragB11),
+     /* seit fix/oberflaeche-texte die Zahlen des Belegstands statt "t = 1,62" und "8,44 statt 14,07" (beide unbelegt bzw.
+      * vor der Zeitzonen-Korrektur); geprueft wird weiter, dass sie ungeteilt im Eintrag stehen */
+     /t = 0,74 nach Korrektur/.test(eintragB11) && /16 von 200 Zufallsbüchern/.test(eintragB11),
      'Die Messzahlen der beiden Buecher haengen ungeteilt an der Buecher-Karte (i-Knopf)');
 
   /* --- Kein Wegweiser zeigt mehr auf einen Ort, den es nicht mehr gibt --- */
@@ -16517,7 +16519,8 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
      'F9: ebenso der Absatz "Dieser Reiter kann seine eigenen Signale nicht bewerten"');
   /* Verschoben heisst WOERTLICH: die Zahlen aus dem Absatz muessen im Register
    * alle wieder auftauchen. Faellt eine beim Umzug heraus, faellt es hier auf. */
-  ['4.000 Fünf-Minuten-Kerzen', '−0,028 / +0,166 / +0,230 %', '30 Fälle je Wert', '20.000 Kerzen']
+  /* '−0,028 / +0,166 / +0,230 %' seit fix/oberflaeche-texte gestrichen (nirgends im Belegkorpus); die Aussage des Satzes bleibt */
+  ['4.000 Fünf-Minuten-Kerzen', 'sobald man nur die Abtastdichte ändert', '30 Fälle je Wert', '20.000 Kerzen']
     .forEach(function (zahl) {
       ok(shell.indexOf(zahl) > -1, 'F9: die Zahl "' + zahl + '" ist beim Umzug mitgekommen');
     });
@@ -16531,8 +16534,9 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
      'F10: unter der Positionstabelle sitzt jetzt ein i-Knopf');
   ok(/'heute\.positionen': \{/.test(shell),
      'F10: und er findet einen Eintrag im Register');
-  ok(!/Gemessene Intraday-Kanten/.test(ohneKommentare(dep)) &&
-     /Gemessene Intraday-Kanten/.test(shell),
+  /* "Kanten" -> "Regeln" seit fix/oberflaeche-texte: der Belegstand zaehlt null belegte Kanten */
+  ok(!/Gemessene Intraday-Regeln/.test(ohneKommentare(dep)) &&
+     /Gemessene Intraday-Regeln/.test(shell),
      'F10: die Regelbeschreibung steht im Register, nicht mehr auf "Heute"');
   ['Stop −25 % / Ziel +35 %', 'Stop −40 % / Ziel +80 %', 'Bezugsverhältnis 0,1', '8 bzw. 26 Handelsstunden']
     .forEach(function (zahl) {
