@@ -5,6 +5,11 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 04.10.2026 Release v8.45.0 (Wache): Maßstab S&P 500 (mit Ausschüttungen) jetzt neben
+  jedem Buch, im Depotverlauf und beim Intraday-Depot; Kapitulations-Dip app-weit als
+  neu gemessen und zurückgewiesen gekennzeichnet, per Voreinstellung und in der
+  Automatik aus.
+
 - 19.09.2026 Neuer Knoten `mail-ueberblick.md` (Bauplan): der tägliche Mail-Überblick aus
   Thunderbird mit Ticket-Board am Handy lebt seit heute im eigenen Repo `Mail-Ueberblick`;
   die Dateien unter `tools/` sind aus diesem Repo entfernt. Index ergänzt.
