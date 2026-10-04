@@ -1,0 +1,193 @@
+{
+ "stand": "2026-10-04",
+ "startUSD": 100000,
+ "gemeinsam": {
+  "seed": 20261004,
+  "trials": 300,
+  "freibetrag": {
+   "2017": 801,
+   "2018": 801,
+   "2019": 801,
+   "2020": 801,
+   "2021": 801,
+   "2022": 801,
+   "standard": 1000
+  },
+  "buch": {
+   "positionen": 18,
+   "sigmaQuartal": 0.3,
+   "auswahlRauschen": 1,
+   "umschlagWert": 0.31,
+   "kostenBp": 20,
+   "devisenBp": 0,
+   "dividendenrendite": 0.0144,
+   "umschichtMonate": 3
+  },
+  "dividende": {
+   "quellensteuerUS": 0.15
+  },
+  "etf": {
+   "teilfreistellung": 0.3,
+   "basiszins": {
+    "2017": 0.0087,
+    "2018": 0.0087,
+    "2019": 0.0052,
+    "2020": 0.0007,
+    "2021": -0.0045,
+    "2022": -0.0005,
+    "2023": 0.0255,
+    "2024": 0.0229,
+    "2025": 0.0253,
+    "2026": 0.032
+   }
+  }
+ },
+ "fenster": {
+  "f1": {
+   "von": "2021-09-16",
+   "bis": "2026-09-15",
+   "buchGesamt": 1.501,
+   "buchPfad": {
+    "2021": -0.1142,
+    "2022": -0.3252,
+    "2023": 0.0611,
+    "2024": 0.775,
+    "2025": 0.6094,
+    "2026": 0.4067
+   },
+   "fx": [
+    {
+     "datum": "2021-09-16",
+     "kurs": 1.1763
+    },
+    {
+     "datum": "2021-12-31",
+     "kurs": 1.1326
+    },
+    {
+     "datum": "2022-12-30",
+     "kurs": 1.0666
+    },
+    {
+     "datum": "2023-12-29",
+     "kurs": 1.105
+    },
+    {
+     "datum": "2024-12-31",
+     "kurs": 1.0389
+    },
+    {
+     "datum": "2025-12-31",
+     "kurs": 1.175
+    },
+    {
+     "datum": "2026-09-15",
+     "kurs": 1.1539
+    }
+   ],
+   "spy": {
+    "pfad": {
+     "2021": 0.0688,
+     "2022": -0.1835,
+     "2023": 0.2592,
+     "2024": 0.2469,
+     "2025": 0.1758,
+     "2026": 0.1167
+    },
+    "gesamt": 0.8012317097529693,
+    "zielArt": "nettoFonds",
+    "basis": "USD",
+    "dividendenrendite": 0.0152,
+    "quelle": "CSPX-Factsheet 31.08.2026: 5 J p. a. 12,49 % (Fonds, USD); Pfadform: CSPX-Kalenderjahre, 2021/2026 Teilstuecke aus Projekt-SPY"
+   },
+   "momentum": {
+    "pfad": {
+     "2021": 0.0303,
+     "2022": -0.1778,
+     "2023": 0.09,
+     "2024": 0.3191,
+     "2025": 0.1733,
+     "2026": 0.2113
+    },
+    "gesamt": 0.6805088646809827,
+    "zielArt": "nettoFonds",
+    "basis": "USD",
+    "dividendenrendite": 0.0087,
+    "quelle": "IUMO-Factsheet 31.08.2026: 5 J p. a. 10,94 % (Fonds, USD); 2021-Teilstueck angenommen"
+   }
+  },
+  "f2": {
+   "von": "2017-01-04",
+   "bis": "2021-09-15",
+   "buchGesamt": 1.592,
+   "buchPfad": {
+    "2017": 0.154,
+    "2018": -0.099,
+    "2019": 0.298,
+    "2020": 0.781,
+    "2021": 0.071
+   },
+   "fx": [
+    {
+     "datum": "2017-01-04",
+     "kurs": 1.0437
+    },
+    {
+     "datum": "2017-12-29",
+     "kurs": 1.1993
+    },
+    {
+     "datum": "2018-12-31",
+     "kurs": 1.145
+    },
+    {
+     "datum": "2019-12-31",
+     "kurs": 1.1234
+    },
+    {
+     "datum": "2020-12-31",
+     "kurs": 1.2271
+    },
+    {
+     "datum": "2021-09-15",
+     "kurs": 1.1824
+    }
+   ],
+   "spy": {
+    "pfad": {
+     "2017": 0.214,
+     "2018": -0.0472,
+     "2019": 0.3102,
+     "2020": 0.1802,
+     "2021": 0.206
+    },
+    "gesamt": 1.1570536572304588,
+    "zielArt": "nettoFonds",
+    "basis": "USD",
+    "dividendenrendite": 0.0205,
+    "quelle": "CSPX-Kalenderjahre 2017-2020 (Factsheet), 2021 bis 15.09. = Projekt-SPY 20,6 %"
+   },
+   "momentum": {
+    "pfad": {
+     "2017": 0.3716,
+     "2018": -0.0196,
+     "2019": 0.2734,
+     "2020": 0.2912,
+     "2021": 0.091
+    },
+    "gesamt": 1.4122032181102355,
+    "zielArt": "nettoFonds",
+    "basis": "USD",
+    "dividendenrendite": 0.0087,
+    "quelle": "IUMO-Kalenderjahre 2017-2020 (Factsheet); 2021-Teilstueck angenommen = 20,6 % x (12,51/28,36)"
+   }
+  }
+ },
+ "kosten": {
+  "terMomentum": 0.002,
+  "terSP500": 0.0007,
+  "etfKaufBp": 3,
+  "etfVerkaufBp": 3,
+  "quelle": "teil2-kosten.md"
+ }
+}

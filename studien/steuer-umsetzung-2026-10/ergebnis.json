@@ -1,0 +1,1466 @@
+{
+ "stand": "2026-10-04",
+ "trials": 300,
+ "fenster": {
+  "f1": {
+   "von": "2021-09-16",
+   "bis": "2026-09-15",
+   "jahre": 4.996577686516085,
+   "buchEichung": 0.00419412745009142,
+   "etfVerschiebung": {
+    "b": -0.002623780200362208,
+    "c": 0.0032199267604289877
+   },
+   "basis": {
+    "startEUR": 85012.32678738418,
+    "a": {
+     "endMitVerkauf": 181524.23759406502,
+     "endOhneVerkauf": 205043.2613760022,
+     "steuer": 32371.681739389463,
+     "pa": 0.1639536168960194,
+     "p10": 180554.27706577143,
+     "p90": 182591.0710504355,
+     "kostenUSD": 2998.621390690248,
+     "verkaeufe": 156.06333333333333,
+     "kaeufe": 174.06333333333333
+    },
+    "b": {
+     "endMitVerkauf": 135124.77627542333,
+     "endOhneVerkauf": 145456.1327738086,
+     "steuer": 10399.654228753494,
+     "pa": 0.09718076663301445,
+     "vpSteuer": 111.93457020036811
+    },
+    "c": {
+     "endMitVerkauf": 143676.49801979365,
+     "endOhneVerkauf": 155816.68012103374,
+     "steuer": 12297.467002813697,
+     "pa": 0.11073891026638893,
+     "vpSteuer": 204.0299056099381
+    },
+    "schwelleB": {
+     "verschiebung": -0.07184493174449924,
+     "buchVorSteuerNoetig": 0.12240186490001381,
+     "buchVorSteuerIst": 0.20600304134791814,
+     "etfVorSteuer": 0.11362254246590386,
+     "vorsprungNoetig": 0.008779322434109949,
+     "vorsprungIst": 0.09238049888201427
+    },
+    "schwelleC": {
+     "verschiebung": -0.0568624721695869,
+     "buchVorSteuerNoetig": 0.13934245031958947,
+     "buchVorSteuerIst": 0.20600304134791814,
+     "etfVorSteuer": 0.12919226878503753,
+     "vorsprungNoetig": 0.010150181534551939,
+     "vorsprungIst": 0.0768107725628806
+    }
+   },
+   "sens": [
+    {
+     "name": "Basis",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 181524.23759406502,
+      "endOhneVerkauf": 205043.2613760022,
+      "steuer": 32371.681739389463,
+      "pa": 0.1639536168960194,
+      "p10": 180554.27706577143,
+      "p90": 182591.0710504355,
+      "kostenUSD": 2998.621390690248,
+      "verkaeufe": 156.06333333333333,
+      "kaeufe": 174.06333333333333
+     },
+     "b": {
+      "endMitVerkauf": 135124.77627542333,
+      "endOhneVerkauf": 145456.1327738086,
+      "steuer": 10399.654228753494,
+      "pa": 0.09718076663301445,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.07184493174449924,
+      "buchVorSteuerNoetig": 0.12240186490001381,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.008779322434109949,
+      "vorsprungIst": 0.09238049888201427
+     },
+     "schwelleC": {
+      "verschiebung": -0.0568624721695869,
+      "buchVorSteuerNoetig": 0.13934245031958947,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.12919226878503753,
+      "vorsprungNoetig": 0.010150181534551939,
+      "vorsprungIst": 0.0768107725628806
+     }
+    },
+    {
+     "name": "Umschlag halb",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 184829.55590945375,
+      "endOhneVerkauf": 214841.54758789795,
+      "steuer": 33593.25488524846,
+      "pa": 0.16816477803429009,
+      "p10": 184044.9647104142,
+      "p90": 185473.6581993736,
+      "kostenUSD": 1765.7517054413054,
+      "verkaeufe": 95.00333333333333,
+      "kaeufe": 113.00333333333333
+     },
+     "b": {
+      "endMitVerkauf": 135124.77627542333,
+      "endOhneVerkauf": 145456.1327738086,
+      "steuer": 10399.654228753494,
+      "pa": 0.09718076663301445,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.07435307804084912,
+      "buchVorSteuerNoetig": 0.1222255639509886,
+      "buchVorSteuerIst": 0.20884681198014987,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.008603021485084739,
+      "vorsprungIst": 0.09522426951424601
+     },
+     "schwelleC": {
+      "verschiebung": -0.05958209109580821,
+      "buchVorSteuerNoetig": 0.1389247385153105,
+      "buchVorSteuerIst": 0.20884681198014987,
+      "etfVorSteuer": 0.12919226878503753,
+      "vorsprungNoetig": 0.009732469730272975,
+      "vorsprungIst": 0.07965454319511234
+     }
+    },
+    {
+     "name": "Umschlag doppelt",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 174607.23370183597,
+      "endOhneVerkauf": 188068.08720694922,
+      "steuer": 29882.631277625784,
+      "pa": 0.15493856957122532,
+      "p10": 173854.71609274906,
+      "p90": 175423.48573251217,
+      "kostenUSD": 5394.106813704666,
+      "verkaeufe": 255.97,
+      "kaeufe": 273.97
+     },
+     "b": {
+      "endMitVerkauf": 135124.77627542333,
+      "endOhneVerkauf": 145456.1327738086,
+      "steuer": 10399.654228753494,
+      "pa": 0.09718076663301445,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.06552642932060736,
+      "buchVorSteuerNoetig": 0.12416055917623625,
+      "buchVorSteuerIst": 0.2002847489731734,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.010538016710332387,
+      "vorsprungIst": 0.08666220650726952
+     },
+     "schwelleC": {
+      "verschiebung": -0.049796980802648244,
+      "buchVorSteuerNoetig": 0.1419817628410449,
+      "buchVorSteuerIst": 0.2002847489731734,
+      "etfVorSteuer": 0.12919226878503753,
+      "vorsprungNoetig": 0.012789494056007378,
+      "vorsprungIst": 0.07109248018813585
+     }
+    },
+    {
+     "name": "Kosten 10 Bp je Seite",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 183766.5258075341,
+      "endOhneVerkauf": 207416.34618951203,
+      "steuer": 33162.413321156375,
+      "pa": 0.16681703572441675,
+      "p10": 182743.1732954793,
+      "p90": 184849.1017311676,
+      "kostenUSD": 1510.4652429470261,
+      "verkaeufe": 156.06666666666666,
+      "kaeufe": 174.06666666666666
+     },
+     "b": {
+      "endMitVerkauf": 135124.77627542333,
+      "endOhneVerkauf": 145456.1327738086,
+      "steuer": 10399.654228753494,
+      "pa": 0.09718076663301445,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.07484804206801526,
+      "buchVorSteuerNoetig": 0.12240332740407744,
+      "buchVorSteuerIst": 0.20963038661936562,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.00878078493817358,
+      "vorsprungIst": 0.09600784415346175
+     },
+     "schwelleC": {
+      "verschiebung": -0.05986235768436926,
+      "buchVorSteuerNoetig": 0.13934791901407828,
+      "buchVorSteuerIst": 0.20963038661936562,
+      "etfVorSteuer": 0.12919226878503753,
+      "vorsprungNoetig": 0.010155650229040747,
+      "vorsprungIst": 0.08043811783432808
+     }
+    },
+    {
+     "name": "Kosten 20 Bp je Seite (Basis)",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 181524.23759406502,
+      "endOhneVerkauf": 205043.2613760022,
+      "steuer": 32371.681739389463,
+      "pa": 0.1639536168960194,
+      "p10": 180554.27706577143,
+      "p90": 182591.0710504355,
+      "kostenUSD": 2998.621390690248,
+      "verkaeufe": 156.06333333333333,
+      "kaeufe": 174.06333333333333
+     },
+     "b": {
+      "endMitVerkauf": 135124.77627542333,
+      "endOhneVerkauf": 145456.1327738086,
+      "steuer": 10399.654228753494,
+      "pa": 0.09718076663301445,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.07184493174449924,
+      "buchVorSteuerNoetig": 0.12240186490001381,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.008779322434109949,
+      "vorsprungIst": 0.09238049888201427
+     },
+     "schwelleC": {
+      "verschiebung": -0.0568624721695869,
+      "buchVorSteuerNoetig": 0.13934245031958947,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.12919226878503753,
+      "vorsprungNoetig": 0.010150181534551939,
+      "vorsprungIst": 0.0768107725628806
+     }
+    },
+    {
+     "name": "Kosten 40 Bp je Seite",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 177114.53808926648,
+      "endOhneVerkauf": 200302.02304142146,
+      "steuer": 30818.326265927095,
+      "pa": 0.15823885248515746,
+      "p10": 176224.05285813706,
+      "p90": 178140.84158234514,
+      "kostenUSD": 5910.020641323892,
+      "verkaeufe": 156.23666666666668,
+      "kaeufe": 174.23666666666668
+     },
+     "b": {
+      "endMitVerkauf": 135124.77627542333,
+      "endOhneVerkauf": 145456.1327738086,
+      "steuer": 10399.654228753494,
+      "pa": 0.09718076663301445,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.06583113907358894,
+      "buchVorSteuerNoetig": 0.12240317764209196,
+      "buchVorSteuerIst": 0.1987800116124876,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.0087806351761881,
+      "vorsprungIst": 0.08515746914658373
+     },
+     "schwelleC": {
+      "verschiebung": -0.05086296526656042,
+      "buchVorSteuerNoetig": 0.13933293504788336,
+      "buchVorSteuerIst": 0.1987800116124876,
+      "etfVorSteuer": 0.12919226878503753,
+      "vorsprungNoetig": 0.010140666262845821,
+      "vorsprungIst": 0.06958774282745006
+     }
+    },
+    {
+     "name": "Devisenaufschlag Bank 35 Bp je Seite zusätzlich",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 173885.0083138816,
+      "endOhneVerkauf": 196885.38723482104,
+      "steuer": 29682.58736926488,
+      "pa": 0.15398089848689844,
+      "p10": 172905.32067599826,
+      "p90": 174879.66818131262,
+      "kostenUSD": 8030.91644312706,
+      "verkaeufe": 156.23666666666668,
+      "kaeufe": 174.23666666666668
+     },
+     "b": {
+      "endMitVerkauf": 135124.77627542333,
+      "endOhneVerkauf": 145456.1327738086,
+      "steuer": 10399.654228753494,
+      "pa": 0.09718076663301445,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.06132648290008545,
+      "buchVorSteuerNoetig": 0.12240180281365709,
+      "buchVorSteuerIst": 0.19339488901296287,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.008779260347753226,
+      "vorsprungIst": 0.079772346547059
+     },
+     "schwelleC": {
+      "verschiebung": -0.046359341831112025,
+      "buchVorSteuerNoetig": 0.13932496353738566,
+      "buchVorSteuerIst": 0.19339488901296287,
+      "etfVorSteuer": 0.12919226878503753,
+      "vorsprungNoetig": 0.010132694752348126,
+      "vorsprungIst": 0.06420262022792533
+     }
+    },
+    {
+     "name": "Kirchensteuer 8 %",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 179604.95743441075,
+      "endOhneVerkauf": 204325.16593822435,
+      "steuer": 34123.481051478346,
+      "pa": 0.1614801219673807,
+      "p10": 178603.08569949123,
+      "p90": 180710.76111438713,
+      "kostenUSD": 2996.6067455669963,
+      "verkaeufe": 156.07666666666665,
+      "kaeufe": 174.07666666666665
+     },
+     "b": {
+      "endMitVerkauf": 134554.719746516,
+      "endOhneVerkauf": 145448.60778114205,
+      "steuer": 10968.314726501756,
+      "pa": 0.09625282114934497,
+      "vpSteuer": 118.06127421003423
+     },
+     "c": {
+      "endMitVerkauf": 143002.72240967106,
+      "endOhneVerkauf": 155803.7747167253,
+      "steuer": 12969.50033181442,
+      "pa": 0.10969446679023243,
+      "vpSteuer": 215.18915717518496
+     },
+     "schwelleB": {
+      "verschiebung": -0.071238973087884,
+      "buchVorSteuerNoetig": 0.12308193327827177,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.009459390812367907,
+      "vorsprungIst": 0.09238049888201427
+     },
+     "schwelleC": {
+      "verschiebung": -0.056172596730584695,
+      "buchVorSteuerNoetig": 0.14012845599808976,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.12919226878503753,
+      "vorsprungNoetig": 0.010936187213052229,
+      "vorsprungIst": 0.0768107725628806
+     }
+    },
+    {
+     "name": "Kirchensteuer 9 %",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 179370.9774633096,
+      "endOhneVerkauf": 204239.80902288563,
+      "steuer": 34337.42639571003,
+      "pa": 0.1611771336451846,
+      "p10": 178361.45418145726,
+      "p90": 180481.0584762923,
+      "kostenUSD": 2996.2769761346285,
+      "verkaeufe": 156.07666666666665,
+      "kaeufe": 174.07666666666665
+     },
+     "b": {
+      "endMitVerkauf": 134485.0346809136,
+      "endOhneVerkauf": 145447.6878553882,
+      "steuer": 11037.829128148283,
+      "pa": 0.0961391713096067,
+      "vpSteuer": 118.81026003028681
+     },
+     "c": {
+      "endMitVerkauf": 142920.36133634302,
+      "endOhneVerkauf": 155802.19710612932,
+      "steuer": 13051.648420714326,
+      "pa": 0.10956652614822104,
+      "vpSteuer": 216.55331005988404
+     },
+     "schwelleB": {
+      "verschiebung": -0.07116330952844689,
+      "buchVorSteuerNoetig": 0.12316686853653969,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.009544326070635822,
+      "vorsprungIst": 0.09238049888201427
+     },
+     "schwelleC": {
+      "verschiebung": -0.056086346840538676,
+      "buchVorSteuerNoetig": 0.14022689614815387,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.12919226878503753,
+      "vorsprungNoetig": 0.011034627363116334,
+      "vorsprungIst": 0.0768107725628806
+     }
+    },
+    {
+     "name": "Euro-Dollar-Endkurs −10 % (Dollar stärker)",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 198327.92047963958,
+      "endOhneVerkauf": 226485.8897215585,
+      "steuer": 38373.02145669103,
+      "pa": 0.18476110624425668,
+      "p10": 197031.95672411827,
+      "p90": 199743.412616037,
+      "kostenUSD": 3024.139241832267,
+      "verkaeufe": 156.08,
+      "kaeufe": 174.08
+     },
+     "b": {
+      "endMitVerkauf": 148298.80171273233,
+      "endOhneVerkauf": 161617.9876734665,
+      "steuer": 13382.635134632505,
+      "pa": 0.11780037582883662,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 157788.9001701969,
+      "endOhneVerkauf": 173129.73095574675,
+      "steuer": 15492.92177187309,
+      "pa": 0.13176355054844557,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.07035637154981485,
+      "buchVorSteuerNoetig": 0.1480250685904465,
+      "buchVorSteuerIst": 0.2317000138812897,
+      "etfVorSteuer": 0.13735431549121957,
+      "vorsprungNoetig": 0.010670753099226937,
+      "vorsprungIst": 0.09434569839007012
+     },
+     "schwelleC": {
+      "verschiebung": -0.05534532086116996,
+      "buchVorSteuerNoetig": 0.16538541525661632,
+      "buchVorSteuerIst": 0.2317000138812897,
+      "etfVorSteuer": 0.1532558393422656,
+      "vorsprungNoetig": 0.01212957591435071,
+      "vorsprungIst": 0.07844417453902408
+     }
+    },
+    {
+     "name": "Euro-Dollar-Endkurs +10 % (Dollar schwächer)",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 167692.04134334877,
+      "endOhneVerkauf": 187390.77260745293,
+      "steuer": 27431.868941837944,
+      "pa": 0.14563566386489835,
+      "p10": 166987.9217938545,
+      "p90": 168479.7399825458,
+      "kostenUSD": 2977.4217379580678,
+      "verkaeufe": 156.06333333333333,
+      "kaeufe": 174.06333333333333
+     },
+     "b": {
+      "endMitVerkauf": 124346.03158897345,
+      "endOhneVerkauf": 132232.8017965503,
+      "steuer": 7959.034937238262,
+      "pa": 0.0790774789493216,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 132129.99192275899,
+      "endOhneVerkauf": 141651.46342734102,
+      "steuer": 9683.005971163766,
+      "pa": 0.09227032957454306,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.0732363328810152,
+      "buchVorSteuerNoetig": 0.09966595002476519,
+      "buchVorSteuerIst": 0.18321954340796598,
+      "etfVorSteuer": 0.09258140862849751,
+      "vorsprungNoetig": 0.007084541396267685,
+      "vorsprungIst": 0.09063813477946847
+     },
+     "schwelleC": {
+      "verschiebung": -0.0582567248025498,
+      "buchVorSteuerNoetig": 0.11626149213851278,
+      "buchVorSteuerIst": 0.18321954340796598,
+      "etfVorSteuer": 0.1078569556518647,
+      "vorsprungNoetig": 0.008404536486648073,
+      "vorsprungIst": 0.07536258775610127
+     }
+    }
+   ],
+   "bVarianten": [
+    {
+     "name": "IUMO gemessen (Basis)",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 181524.23759406502,
+      "endOhneVerkauf": 205043.2613760022,
+      "steuer": 32371.681739389463,
+      "pa": 0.1639536168960194,
+      "p10": 180554.27706577143,
+      "p90": 182591.0710504355,
+      "kostenUSD": 2998.621390690248,
+      "verkaeufe": 156.06333333333333,
+      "kaeufe": 174.06333333333333
+     },
+     "b": {
+      "endMitVerkauf": 135124.77627542333,
+      "endOhneVerkauf": 145456.1327738086,
+      "steuer": 10399.654228753494,
+      "pa": 0.09718076663301445,
+      "vpSteuer": 111.93457020036811
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.07184493174449924,
+      "buchVorSteuerNoetig": 0.12240186490001381,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.11362254246590386,
+      "vorsprungNoetig": 0.008779322434109949,
+      "vorsprungIst": 0.09238049888201427
+     }
+    },
+    {
+     "name": "Momentum-ETF −2 Pp p. a. gegen Basis",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 181524.23759406502,
+      "endOhneVerkauf": 205043.2613760022,
+      "steuer": 32371.681739389463,
+      "pa": 0.1639536168960194,
+      "p10": 180554.27706577143,
+      "p90": 182591.0710504355,
+      "kostenUSD": 2998.621390690248,
+      "verkaeufe": 156.06333333333333,
+      "kaeufe": 174.06333333333333
+     },
+     "b": {
+      "endMitVerkauf": 123836.66942173187,
+      "endOhneVerkauf": 131747.56710111306,
+      "steuer": 7871.373409250866,
+      "pa": 0.07819136945209304,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.09327646071255911,
+      "buchVorSteuerNoetig": 0.09860240047926205,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.09157133868957334,
+      "vorsprungNoetig": 0.007031061789688708,
+      "vorsprungIst": 0.11443170265834479
+     }
+    },
+    {
+     "name": "Momentum-ETF +2 Pp p. a. gegen Basis",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 181524.23759406502,
+      "endOhneVerkauf": 205043.2613760022,
+      "steuer": 32371.681739389463,
+      "pa": 0.1639536168960194,
+      "p10": 180554.27706577143,
+      "p90": 182591.0710504355,
+      "kostenUSD": 2998.621390690248,
+      "verkaeufe": 156.06333333333333,
+      "kaeufe": 174.06333333333333
+     },
+     "b": {
+      "endMitVerkauf": 147606.9290830571,
+      "endOhneVerkauf": 160718.57822701536,
+      "steuer": 13203.59653092487,
+      "pa": 0.1167547123128636,
+      "vpSteuer": 140.16296043470086
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.05029282313130354,
+      "buchVorSteuerNoetig": 0.1468522165229562,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.13611921010771755,
+      "vorsprungNoetig": 0.010733006415238666,
+      "vorsprungIst": 0.06988383124020059
+     }
+    },
+    {
+     "name": "Momentum-ETF = S&P-500-Fonds (Aufschlag 0)",
+     "startEUR": 85012.32678738418,
+     "a": {
+      "endMitVerkauf": 181524.23759406502,
+      "endOhneVerkauf": 205043.2613760022,
+      "steuer": 32371.681739389463,
+      "pa": 0.1639536168960194,
+      "p10": 180554.27706577143,
+      "p90": 182591.0710504355,
+      "kostenUSD": 2998.621390690248,
+      "verkaeufe": 156.06333333333333,
+      "kaeufe": 174.06333333333333
+     },
+     "b": {
+      "endMitVerkauf": 143676.49801979313,
+      "endOhneVerkauf": 155816.6801210331,
+      "steuer": 12297.467002813582,
+      "pa": 0.11073891026638805,
+      "vpSteuer": 204.02990560993607
+     },
+     "c": {
+      "endMitVerkauf": 143676.49801979365,
+      "endOhneVerkauf": 155816.68012103374,
+      "steuer": 12297.467002813697,
+      "pa": 0.11073891026638893,
+      "vpSteuer": 204.0299056099381
+     },
+     "schwelleB": {
+      "verschiebung": -0.0568624721695869,
+      "buchVorSteuerNoetig": 0.13934245031958947,
+      "buchVorSteuerIst": 0.20600304134791814,
+      "etfVorSteuer": 0.12919226878503665,
+      "vorsprungNoetig": 0.010150181534552827,
+      "vorsprungIst": 0.07681077256288149
+     }
+    }
+   ],
+   "vorSteuer": {
+    "startEUR": 85012.32678738418,
+    "a": {
+     "endMitVerkauf": 216743.21865007625,
+     "endOhneVerkauf": 217176.3983803439,
+     "steuer": 0,
+     "pa": 0.20600304134791814,
+     "p10": 216481.56489165808,
+     "p90": 216941.06037845748,
+     "kostenUSD": 3041.630510280487,
+     "verkaeufe": 155.97666666666666,
+     "kaeufe": 173.97666666666666
+    },
+    "b": {
+     "endMitVerkauf": 145549.93592234835,
+     "endOhneVerkauf": 145593.6140065503,
+     "steuer": 0,
+     "pa": 0.11362254246590386,
+     "vpSteuer": 0
+    },
+    "c": {
+     "endMitVerkauf": 156005.81790778876,
+     "endOhneVerkauf": 156052.63369789813,
+     "steuer": 0,
+     "pa": 0.12919226878503753,
+     "vpSteuer": 0
+    }
+   },
+   "sekunden": 42.926
+  },
+  "f2": {
+   "von": "2017-01-04",
+   "bis": "2021-09-15",
+   "jahre": 4.695414099931554,
+   "buchEichung": 0.009514355080546029,
+   "etfVerschiebung": {
+    "b": 0.0033050000000005293,
+    "c": 0.0037750000000003224
+   },
+   "basis": {
+    "startEUR": 95812.97307655455,
+    "a": {
+     "endMitVerkauf": 186938.71444766107,
+     "endOhneVerkauf": 204655.82476975312,
+     "steuer": 30200.106554811784,
+     "pa": 0.15297779842774561,
+     "p10": 186299.93906907228,
+     "p90": 187679.88102387448,
+     "kostenUSD": 3606.9472069230646,
+     "verkaeufe": 145.98,
+     "kaeufe": 163.98
+    },
+    "b": {
+     "endMitVerkauf": 184460.03888627252,
+     "endOhneVerkauf": 203947.86511711834,
+     "steuer": 19426.641871310694,
+     "pa": 0.14970480164552202,
+     "vpSteuer": 0
+    },
+    "c": {
+     "endMitVerkauf": 166736.0212742949,
+     "endOhneVerkauf": 182375.38406066416,
+     "steuer": 15584.65017115106,
+     "pa": 0.12523330161843838,
+     "vpSteuer": 0
+    },
+    "schwelleB": {
+     "verschiebung": -0.003463707706077912,
+     "buchVorSteuerNoetig": 0.18863390633613752,
+     "buchVorSteuerIst": 0.19275877901662897,
+     "etfVorSteuer": 0.1744859920170414,
+     "vorsprungNoetig": 0.014147914319096122,
+     "vorsprungIst": 0.018272786999587565
+    },
+    "schwelleC": {
+     "verschiebung": -0.02973648184574813,
+     "buchVorSteuerNoetig": 0.15780652214699753,
+     "buchVorSteuerIst": 0.19275877901662897,
+     "etfVorSteuer": 0.1468518995419421,
+     "vorsprungNoetig": 0.01095462260505542,
+     "vorsprungIst": 0.04590687947468686
+    }
+   },
+   "sens": [
+    {
+     "name": "Basis",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 186938.71444766107,
+      "endOhneVerkauf": 204655.82476975312,
+      "steuer": 30200.106554811784,
+      "pa": 0.15297779842774561,
+      "p10": 186299.93906907228,
+      "p90": 187679.88102387448,
+      "kostenUSD": 3606.9472069230646,
+      "verkaeufe": 145.98,
+      "kaeufe": 163.98
+     },
+     "b": {
+      "endMitVerkauf": 184460.03888627252,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 19426.641871310694,
+      "pa": 0.14970480164552202,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.003463707706077912,
+      "buchVorSteuerNoetig": 0.18863390633613752,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.014147914319096122,
+      "vorsprungIst": 0.018272786999587565
+     },
+     "schwelleC": {
+      "verschiebung": -0.02973648184574813,
+      "buchVorSteuerNoetig": 0.15780652214699753,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.1468518995419421,
+      "vorsprungNoetig": 0.01095462260505542,
+      "vorsprungIst": 0.04590687947468686
+     }
+    },
+    {
+     "name": "Umschlag halb",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 189781.23236043335,
+      "endOhneVerkauf": 214499.972895071,
+      "steuer": 31194.979151290507,
+      "pa": 0.15668945666112988,
+      "p10": 189126.06204647096,
+      "p90": 190294.45237038183,
+      "kostenUSD": 2118.0548485838126,
+      "verkaeufe": 89.24333333333334,
+      "kaeufe": 107.24333333333334
+     },
+     "b": {
+      "endMitVerkauf": 184460.03888627252,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 19426.641871310694,
+      "pa": 0.14970480164552202,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.0071745641003417415,
+      "buchVorSteuerNoetig": 0.18704704275017026,
+      "buchVorSteuerIst": 0.1955941549203568,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.012561050733128853,
+      "vorsprungIst": 0.02110816290331541
+     },
+     "schwelleC": {
+      "verschiebung": -0.03281771059005223,
+      "buchVorSteuerNoetig": 0.15698767049937046,
+      "buchVorSteuerIst": 0.1955941549203568,
+      "etfVorSteuer": 0.1468518995419421,
+      "vorsprungNoetig": 0.010135770957428347,
+      "vorsprungIst": 0.0487422553784147
+     }
+    },
+    {
+     "name": "Umschlag doppelt",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 180769.73386567523,
+      "endOhneVerkauf": 189340.72084625709,
+      "steuer": 28023.617626394866,
+      "pa": 0.14476716580332982,
+      "p10": 180204.7265179906,
+      "p90": 181418.49358820092,
+      "kostenUSD": 6504.953707844464,
+      "verkaeufe": 241.38333333333333,
+      "kaeufe": 259.3833333333333
+     },
+     "b": {
+      "endMitVerkauf": 184460.03888627252,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 19426.641871310694,
+      "pa": 0.14970480164552202,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": 0.005504729204722024,
+      "buchVorSteuerNoetig": 0.1936036427431307,
+      "buchVorSteuerIst": 0.18705028108893407,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.019117650726089286,
+      "vorsprungIst": 0.012564289071892665
+     },
+     "schwelleC": {
+      "verschiebung": -0.02199254786978599,
+      "buchVorSteuerNoetig": 0.16122663816769034,
+      "buchVorSteuerIst": 0.18705028108893407,
+      "etfVorSteuer": 0.1468518995419421,
+      "vorsprungNoetig": 0.014374738625748229,
+      "vorsprungIst": 0.04019838154699196
+     }
+    },
+    {
+     "name": "Kosten 10 Bp je Seite",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 189134.88412542202,
+      "endOhneVerkauf": 206925.5298132767,
+      "steuer": 30974.69181723361,
+      "pa": 0.15584934111812565,
+      "p10": 188482.70517500344,
+      "p90": 189905.86627595345,
+      "kostenUSD": 1815.7018470436008,
+      "verkaeufe": 145.94333333333333,
+      "kaeufe": 163.94333333333333
+     },
+     "b": {
+      "endMitVerkauf": 184460.03888627252,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 19426.641871310694,
+      "pa": 0.14970480164552202,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.006494793697993374,
+      "buchVorSteuerNoetig": 0.18865105931170167,
+      "buchVorSteuerIst": 0.1963975235983182,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.014165067294660272,
+      "vorsprungIst": 0.02191153158127679
+     },
+     "schwelleC": {
+      "verschiebung": -0.03276889978510554,
+      "buchVorSteuerNoetig": 0.15782167574631578,
+      "buchVorSteuerIst": 0.1963975235983182,
+      "etfVorSteuer": 0.1468518995419421,
+      "vorsprungNoetig": 0.010969776204373671,
+      "vorsprungIst": 0.04954562405637608
+     }
+    },
+    {
+     "name": "Kosten 20 Bp je Seite (Basis)",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 186938.71444766107,
+      "endOhneVerkauf": 204655.82476975312,
+      "steuer": 30200.106554811784,
+      "pa": 0.15297779842774561,
+      "p10": 186299.93906907228,
+      "p90": 187679.88102387448,
+      "kostenUSD": 3606.9472069230646,
+      "verkaeufe": 145.98,
+      "kaeufe": 163.98
+     },
+     "b": {
+      "endMitVerkauf": 184460.03888627252,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 19426.641871310694,
+      "pa": 0.14970480164552202,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.003463707706077912,
+      "buchVorSteuerNoetig": 0.18863390633613752,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.014147914319096122,
+      "vorsprungIst": 0.018272786999587565
+     },
+     "schwelleC": {
+      "verschiebung": -0.02973648184574813,
+      "buchVorSteuerNoetig": 0.15780652214699753,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.1468518995419421,
+      "vorsprungNoetig": 0.01095462260505542,
+      "vorsprungIst": 0.04590687947468686
+     }
+    },
+    {
+     "name": "Kosten 40 Bp je Seite",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 182627.65360325482,
+      "endOhneVerkauf": 200202.5466750874,
+      "steuer": 28679.78344080715,
+      "pa": 0.14726288182545333,
+      "p10": 182060.82484228027,
+      "p90": 183297.29177611924,
+      "kostenUSD": 7115.573879488819,
+      "verkaeufe": 146.07666666666665,
+      "kaeufe": 164.07666666666665
+     },
+     "b": {
+      "endMitVerkauf": 184460.03888627252,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 19426.641871310694,
+      "pa": 0.14970480164552202,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": 0.0025904975022513098,
+      "buchVorSteuerNoetig": 0.18859082987652487,
+      "buchVorSteuerIst": 0.18551425325972937,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.014104837859483466,
+      "vorsprungIst": 0.011028261242687964
+     },
+     "schwelleC": {
+      "verschiebung": -0.02366070931625472,
+      "buchVorSteuerNoetig": 0.1577851847747027,
+      "buchVorSteuerIst": 0.18551425325972937,
+      "etfVorSteuer": 0.1468518995419421,
+      "vorsprungNoetig": 0.010933285232760603,
+      "vorsprungIst": 0.03866235371778726
+     }
+    },
+    {
+     "name": "Devisenaufschlag Bank 35 Bp je Seite zusätzlich",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 179455.0704889301,
+      "endOhneVerkauf": 196893.74333667525,
+      "steuer": 27561.118358834687,
+      "pa": 0.14298897393008958,
+      "p10": 178858.76974857267,
+      "p90": 180093.84219979664,
+      "kostenUSD": 9684.02024138757,
+      "verkaeufe": 146.15666666666667,
+      "kaeufe": 164.15666666666667
+     },
+     "b": {
+      "endMitVerkauf": 184460.03888627252,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 19426.641871310694,
+      "pa": 0.14970480164552202,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": 0.007125446757027021,
+      "buchVorSteuerNoetig": 0.18855412474885913,
+      "buchVorSteuerIst": 0.18010882388226812,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.014068132731817728,
+      "vorsprungIst": 0.005622831865226718
+     },
+     "schwelleC": {
+      "verschiebung": -0.019108121010913234,
+      "buchVorSteuerNoetig": 0.15776651254141227,
+      "buchVorSteuerIst": 0.18010882388226812,
+      "etfVorSteuer": 0.1468518995419421,
+      "vorsprungNoetig": 0.010914612999470164,
+      "vorsprungIst": 0.03325692434032601
+     }
+    },
+    {
+     "name": "Kirchensteuer 8 %",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 185165.2866287632,
+      "endOhneVerkauf": 203774.59307652016,
+      "steuer": 31853.688268694208,
+      "pa": 0.15063956018816005,
+      "p10": 184503.54859954843,
+      "p90": 185921.5427575799,
+      "kostenUSD": 3602.480886519033,
+      "verkaeufe": 145.98,
+      "kaeufe": 163.98
+     },
+     "b": {
+      "endMitVerkauf": 183396.7276640625,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 20489.95309352071,
+      "pa": 0.1482901224448716,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 165883.0002771006,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 16437.671168345372,
+      "pa": 0.12400480184396434,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.0025226400711744644,
+      "buchVorSteuerNoetig": 0.1897534940847838,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.015267502067742411,
+      "vorsprungIst": 0.018272786999587565
+     },
+     "schwelleC": {
+      "verschiebung": -0.028977671217899112,
+      "buchVorSteuerNoetig": 0.15868566805524997,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.1468518995419421,
+      "vorsprungNoetig": 0.011833768513307863,
+      "vorsprungIst": 0.04590687947468686
+     }
+    },
+    {
+     "name": "Kirchensteuer 9 %",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 184948.83520949792,
+      "endOhneVerkauf": 203668.28705049842,
+      "steuer": 32055.63840293235,
+      "pa": 0.1503529668193817,
+      "p10": 184284.27152601356,
+      "p90": 185708.35230927498,
+      "kostenUSD": 3601.9088709239513,
+      "verkaeufe": 145.98,
+      "kaeufe": 163.98
+     },
+     "b": {
+      "endMitVerkauf": 183266.73851709306,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 20619.942240490152,
+      "pa": 0.14811673629337108,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 165778.71898160008,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 16541.9524638459,
+      "pa": 0.12385427766555135,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.002405354115353476,
+      "buchVorSteuerNoetig": 0.18989295837087328,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.015406966353831875,
+      "vorsprungIst": 0.018272786999587565
+     },
+     "schwelleC": {
+      "verschiebung": -0.028882930441113785,
+      "buchVorSteuerNoetig": 0.15879542124521606,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.1468518995419421,
+      "vorsprungNoetig": 0.011943521703273952,
+      "vorsprungIst": 0.04590687947468686
+     }
+    },
+    {
+     "name": "Euro-Dollar-Endkurs −10 % (Dollar stärker)",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 203757.43163790123,
+      "endOhneVerkauf": 225746.7735331192,
+      "steuer": 36204.309061269145,
+      "pa": 0.1743273854937093,
+      "p10": 202928.58355148372,
+      "p90": 204798.30540193454,
+      "kostenUSD": 3638.503757923568,
+      "verkaeufe": 145.98666666666668,
+      "kaeufe": 163.98666666666668
+     },
+     "b": {
+      "endMitVerkauf": 202931.60581101858,
+      "endOhneVerkauf": 226608.73901902043,
+      "steuer": 23609.150586296124,
+      "pa": 0.17331210960550858,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 183253.76766094274,
+      "endOhneVerkauf": 202639.3156229602,
+      "steuer": 19324.75616733056,
+      "pa": 0.14809942979380342,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.0010496379738924586,
+      "buchVorSteuerNoetig": 0.21854499612025013,
+      "buchVorSteuerIst": 0.21982484407842162,
+      "etfVorSteuer": 0.20113821958369082,
+      "vorsprungNoetig": 0.01740677653655931,
+      "vorsprungIst": 0.018686624494730797
+     },
+     "schwelleC": {
+      "verschiebung": -0.027485380469761362,
+      "buchVorSteuerNoetig": 0.1867479465281625,
+      "buchVorSteuerIst": 0.21982484407842162,
+      "etfVorSteuer": 0.17287703566071544,
+      "vorsprungNoetig": 0.013870910867447073,
+      "vorsprungIst": 0.04694780841770618
+     }
+    },
+    {
+     "name": "Euro-Dollar-Endkurs +10 % (Dollar schwächer)",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 173088.3749826013,
+      "endOhneVerkauf": 187268.1561221055,
+      "steuer": 25255.96769041732,
+      "pa": 0.13422951431539176,
+      "p10": 172561.95780941943,
+      "p90": 173579.93905810738,
+      "kostenUSD": 3579.954062801741,
+      "verkaeufe": 145.97,
+      "kaeufe": 163.97
+     },
+     "b": {
+      "endMitVerkauf": 169346.9386751167,
+      "endOhneVerkauf": 185407.15010647126,
+      "steuer": 16004.589286322635,
+      "pa": 0.12896299226711427,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 153221.50150340123,
+      "endOhneVerkauf": 165795.8036915129,
+      "steuer": 12524.563447004202,
+      "pa": 0.10515799445489993,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.005687811177404001,
+      "buchVorSteuerNoetig": 0.162162265974926,
+      "buchVorSteuerIst": 0.16879226991048535,
+      "etfVorSteuer": 0.15088594281190448,
+      "vorsprungNoetig": 0.011276323163021518,
+      "vorsprungIst": 0.017906327098580865
+     },
+     "schwelleC": {
+      "verschiebung": -0.031803992060440586,
+      "buchVorSteuerNoetig": 0.13219965622215168,
+      "buchVorSteuerIst": 0.16879226991048535,
+      "etfVorSteuer": 0.12380712808944305,
+      "vorsprungNoetig": 0.008392528132708632,
+      "vorsprungIst": 0.044985141821042296
+     }
+    }
+   ],
+   "bVarianten": [
+    {
+     "name": "IUMO gemessen (Basis)",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 186938.71444766107,
+      "endOhneVerkauf": 204655.82476975312,
+      "steuer": 30200.106554811784,
+      "pa": 0.15297779842774561,
+      "p10": 186299.93906907228,
+      "p90": 187679.88102387448,
+      "kostenUSD": 3606.9472069230646,
+      "verkaeufe": 145.98,
+      "kaeufe": 163.98
+     },
+     "b": {
+      "endMitVerkauf": 184460.03888627252,
+      "endOhneVerkauf": 203947.86511711834,
+      "steuer": 19426.641871310694,
+      "pa": 0.14970480164552202,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.003463707706077912,
+      "buchVorSteuerNoetig": 0.18863390633613752,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.1744859920170414,
+      "vorsprungNoetig": 0.014147914319096122,
+      "vorsprungIst": 0.018272786999587565
+     }
+    },
+    {
+     "name": "Momentum-ETF −2 Pp p. a. gegen Basis",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 186938.71444766107,
+      "endOhneVerkauf": 204655.82476975312,
+      "steuer": 30200.106554811784,
+      "pa": 0.15297779842774561,
+      "p10": 186299.93906907228,
+      "p90": 187679.88102387448,
+      "kostenUSD": 3606.9472069230646,
+      "verkaeufe": 145.98,
+      "kaeufe": 163.98
+     },
+     "b": {
+      "endMitVerkauf": 169553.35404078115,
+      "endOhneVerkauf": 185667.25426048698,
+      "steuer": 16058.200043427685,
+      "pa": 0.1292559212011959,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.025367732353379326,
+      "buchVorSteuerNoetig": 0.1628755806891773,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.15122961119247114,
+      "vorsprungNoetig": 0.011645969496706154,
+      "vorsprungIst": 0.04152916782415783
+     }
+    },
+    {
+     "name": "Momentum-ETF +2 Pp p. a. gegen Basis",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 186938.71444766107,
+      "endOhneVerkauf": 204655.82476975312,
+      "steuer": 30200.106554811784,
+      "pa": 0.15297779842774561,
+      "p10": 186299.93906907228,
+      "p90": 187679.88102387448,
+      "kostenUSD": 3606.9472069230646,
+      "verkaeufe": 145.98,
+      "kaeufe": 163.98
+     },
+     "b": {
+      "endMitVerkauf": 200834.04478911086,
+      "endOhneVerkauf": 224028.3665070722,
+      "steuer": 23127.11320800923,
+      "pa": 0.17071865666370423,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": 0.018568928247123036,
+      "buchVorSteuerNoetig": 0.2151167643287648,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.19821218289843956,
+      "vorsprungNoetig": 0.01690458143032525,
+      "vorsprungIst": -0.005453403881810592
+     }
+    },
+    {
+     "name": "Momentum-ETF = S&P-500-Fonds (Aufschlag 0)",
+     "startEUR": 95812.97307655455,
+     "a": {
+      "endMitVerkauf": 186938.71444766107,
+      "endOhneVerkauf": 204655.82476975312,
+      "steuer": 30200.106554811784,
+      "pa": 0.15297779842774561,
+      "p10": 186299.93906907228,
+      "p90": 187679.88102387448,
+      "kostenUSD": 3606.9472069230646,
+      "verkaeufe": 145.98,
+      "kaeufe": 163.98
+     },
+     "b": {
+      "endMitVerkauf": 166736.02127429508,
+      "endOhneVerkauf": 182375.38406066436,
+      "steuer": 15584.650171151095,
+      "pa": 0.1252333016184386,
+      "vpSteuer": 0
+     },
+     "c": {
+      "endMitVerkauf": 166736.0212742949,
+      "endOhneVerkauf": 182375.38406066416,
+      "steuer": 15584.65017115106,
+      "pa": 0.12523330161843838,
+      "vpSteuer": 0
+     },
+     "schwelleB": {
+      "verschiebung": -0.02973648184574813,
+      "buchVorSteuerNoetig": 0.15780652214699753,
+      "buchVorSteuerIst": 0.19275877901662897,
+      "etfVorSteuer": 0.14685189954194233,
+      "vorsprungNoetig": 0.010954622605055198,
+      "vorsprungIst": 0.045906879474686635
+     }
+    }
+   ],
+   "vorSteuer": {
+    "startEUR": 95812.97307655455,
+    "a": {
+     "endMitVerkauf": 219215.1556162271,
+     "endOhneVerkauf": 219653.41005056957,
+     "steuer": 0,
+     "pa": 0.19275877901662897,
+     "p10": 218989.1574711527,
+     "p90": 219308.26747630566,
+     "kostenUSD": 3679.0684150084776,
+     "verkaeufe": 145.82,
+     "kaeufe": 163.82
+    },
+    "b": {
+     "endMitVerkauf": 203886.6807575832,
+     "endOhneVerkauf": 203947.86511711834,
+     "steuer": 0,
+     "pa": 0.1744859920170414,
+     "vpSteuer": 0
+    },
+    "c": {
+     "endMitVerkauf": 182320.67144544597,
+     "endOhneVerkauf": 182375.38406066416,
+     "steuer": 0,
+     "pa": 0.1468518995419421,
+     "vpSteuer": 0
+    }
+   },
+   "sekunden": 39.323
+  }
+ }
+}
