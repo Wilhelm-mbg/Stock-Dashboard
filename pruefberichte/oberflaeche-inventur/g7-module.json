@@ -2,14 +2,39 @@
  {
   "datei": "scoreboard.js",
   "zeile": 454,
-  "wortlaut": "Aktie 0,04 · Schein am Geld 0,05",
-  "klasse": "c",
+  "wortlaut": "Aktie je Umsatzklasse 0,0449 bis 0,1569 Pp",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "ist gemessen** und klassenspezifisch (0,0449 bis 0,1569 Pp"
   },
   "belegsagt": "Kassa-Hürde (Aktie) ist seit 03.09.2026 gemessen und klassenspezifisch: 0,0449 (ab1000) bis 0,1569 Pp (5-50), Faktor 3,5; „Schein am Geld 0,05\" steht weder in belegstand.md noch in einer ERGEBNIS.md",
-  "vorschlag": "Aktie je Umsatzklasse 0,045 bis 0,157 Pp (gemessen 03.09.2026) · Schein am Geld: ohne Messung im Belegstand"
+  "vorschlag": "Aktie je Umsatzklasse 0,045 bis 0,157 Pp (gemessen 03.09.2026) · Schein am Geld: ohne Messung im Belegstand",
+  "alt": {
+   "klasse": "c",
+   "zeile": 454,
+   "wortlaut": "Aktie 0,04 · Schein am Geld 0,05"
+  },
+  "neu_begruendung": "Aktien-Hürde aus dem Belegstand (gemessen 03.09.2026, je Umsatzklasse); „Schein am Geld 0,05“ ohne Messung gestrichen und als ungemessen benannt."
+ },
+ {
+  "datei": "scoreboard.js",
+  "zeile": 454,
+  "wortlaut": "für den Schein am Geld liegt keine Messung im Belegstand vor",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| 0,23 Pp (Standard-Schein) | 40 |"
+  },
+  "belegsagt": "Kassa-Hürde (Aktie) ist seit 03.09.2026 gemessen und klassenspezifisch: 0,0449 (ab1000) bis 0,1569 Pp (5-50), Faktor 3,5; „Schein am Geld 0,05\" steht weder in belegstand.md noch in einer ERGEBNIS.md",
+  "vorschlag": "Aktie je Umsatzklasse 0,045 bis 0,157 Pp (gemessen 03.09.2026) · Schein am Geld: ohne Messung im Belegstand",
+  "zusatz": true,
+  "alt": {
+   "klasse": "c",
+   "zeile": 454,
+   "wortlaut": "Aktie 0,04 · Schein am Geld 0,05"
+  },
+  "neu_begruendung": "Ersetzt die unbelegte Zahl 0,05 für den Schein am Geld."
  },
  {
   "datei": "scoreboard.js",
@@ -50,14 +75,20 @@
  {
   "datei": "mfdepot.js",
   "zeile": 178,
-  "wortlaut": "liquiden Korb ist jede weitere ein Out-of-Sample-Beleg.",
-  "klasse": "c",
+  "wortlaut": "liquiden Korb ist jede weitere eine Out-of-Sample-Beobachtung – für sich kein Beleg.",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "Buch seit 02.09.2026 auf liquidem Korb — ab hier Out-of-Sample"
   },
   "belegsagt": "ab 02.09.2026 Out-of-Sample – aber ein Vorwärtstest über Monate prüft laut Realitätsprobe 04.10. die Umsetzung, nicht den Vorsprung; eine einzelne Umschichtung ist kein Beleg",
-  "vorschlag": "liquiden Korb ist jede weitere eine Out-of-Sample-Beobachtung (für sich kein Beleg)."
+  "vorschlag": "liquiden Korb ist jede weitere eine Out-of-Sample-Beobachtung (für sich kein Beleg).",
+  "alt": {
+   "klasse": "c",
+   "zeile": 178,
+   "wortlaut": "liquiden Korb ist jede weitere ein Out-of-Sample-Beleg."
+  },
+  "neu_begruendung": "Out-of-Sample ab 02.09.2026 laut Belegstand, aber eine einzelne Umschichtung ist eine Beobachtung, kein Beleg."
  },
  {
   "datei": "mfdepot.js",
@@ -74,29 +105,56 @@
  {
   "datei": "mittelfrist.js",
   "zeile": 344,
-  "wortlaut": "die Parameter wurden auf den Jahren <b>davor</b> ausgesucht und hier nicht mehr angepasst.",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "auf heute gelisteten Großwerten (nur Überlebende) – kein Prüfzeitraum im Sinne einer Bestätigung. Belegstand zum Monats-Momentum: <b>nicht entscheidbar</b>.",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| **Momentum-Buch (Monats-Momentum, H=63)** | t fiel von 4,74 auf **0,74** nach Korrektur."
+  },
   "belegsagt": "Kein Beleg für eine Parameterwahl vor 2005; Belegstand zum Monats-Momentum: „nicht entscheidbar\", liquide Fassung „In-Sample und am Rand\"; das Universum dieser Rechnung sind heutige Überlebende",
-  "vorschlag": "Rückrechnung ab 2005 auf den heute gelisteten Werten (Überlebende) – kein Prüfzeitraum im Sinne einer Bestätigung; Belegstand Momentum: nicht entscheidbar."
+  "vorschlag": "Rückrechnung ab 2005 auf den heute gelisteten Werten (Überlebende) – kein Prüfzeitraum im Sinne einer Bestätigung; Belegstand Momentum: nicht entscheidbar.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 344,
+   "wortlaut": "die Parameter wurden auf den Jahren <b>davor</b> ausgesucht und hier nicht mehr angepasst."
+  },
+  "neu_begruendung": "Die Parameterwahl vor 2005 ist nirgends belegt; der Text nennt jetzt Überlebende-Universum und das Urteil des Belegstands."
  },
  {
   "datei": "depotmigration.js",
   "zeile": 128,
-  "wortlaut": "Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre)",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "Die Stunden-Strategie wurde vermessen und ist widerlegt: Ihr Technik-Score ist ein ",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator"
+  },
   "belegsagt": "belegstand.md nennt für die Stunden-Strategie nur t = −11,6 (Fundstelle „Gedächtnisprotokoll\"); Signal-, Werte- und Jahreszahl stehen dort nicht",
-  "vorschlag": "Die Stunden-Strategie wurde vermessen: Ihr Technik-Score ist ein Kontraindikator (t = −11,6)"
+  "vorschlag": "Die Stunden-Strategie wurde vermessen: Ihr Technik-Score ist ein Kontraindikator (t = −11,6)",
+  "alt": {
+   "klasse": "d",
+   "zeile": 128,
+   "wortlaut": "Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre)"
+  },
+  "neu_begruendung": "Signal-, Werte- und Jahreszahl stehen nicht im Belegstand; Urteil „widerlegt“ wortgleich zur Tabelle."
  },
  {
   "datei": "depotmigration.js",
   "zeile": 129,
-  "wortlaut": "Kontraindikator (−0,74 Pp auf 20 Tage",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "Kontraindikator (Belegstand, t=−11,6)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator"
+  },
   "belegsagt": "−0,74 Pp auf 20 Tage steht weder in belegstand.md noch in einer ERGEBNIS.md; belegt ist nur t = −11,6",
-  "vorschlag": "Kontraindikator (t = −11,6)"
+  "vorschlag": "Kontraindikator (t = −11,6)",
+  "alt": {
+   "klasse": "d",
+   "zeile": 129,
+   "wortlaut": "Kontraindikator (−0,74 Pp auf 20 Tage"
+  },
+  "neu_begruendung": "Unbelegte −0,74 Pp gestrichen; belegt ist nur t = −11,6."
  },
  {
   "datei": "depotmigration.js",
@@ -113,14 +171,20 @@
  {
   "datei": "depotmigration.js",
   "zeile": 152,
-  "wortlaut": "txt: 'Die gemessene Kante war auf '",
-  "klasse": "c",
+  "wortlaut": "txt: 'Die gemessene Regel war auf '",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
-   "marke": "| `rsi2seit` (RSI2 im Seitwärtskanal) | Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle."
+   "marke": "**Belegte handelbare Kanten: NULL.**"
   },
   "belegsagt": "Belegte handelbare Kanten: NULL. rsi2seit nicht entscheidbar (+0,021 Pp je Signal), Kapitulation am 03.10.2026 zurückgewiesen – „gemessene Kante\" ist für keinen der beiden Modi gedeckt",
-  "vorschlag": "txt: 'Die gemessene Regel war auf '"
+  "vorschlag": "txt: 'Die gemessene Regel war auf '",
+  "alt": {
+   "klasse": "c",
+   "zeile": 152,
+   "wortlaut": "txt: 'Die gemessene Kante war auf '"
+  },
+  "neu_begruendung": "„Kante“ durch „Regel“ ersetzt – der Belegstand zählt null belegte Kanten."
  },
  {
   "datei": "depotmigration.js",
@@ -137,25 +201,37 @@
  {
   "datei": "depotmigration.js",
   "zeile": 268,
-  "wortlaut": "35 Beobachtungen an 10 Zeitpunkten, nötig wären rund",
-  "klasse": "c",
+  "wortlaut": "b = +0,0070 Pp je Score-Punkt, t = 0,31 – mitten im Placebo-Band",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "| **News-Sentiment (Übernacht, Großwerte)** | **b = +0,0070 Pp/Score-Punkt, t = 0,31** — mitten im Placebo-Band."
   },
   "belegsagt": "„35 Beobachtungen / Faktor 75\" ist seit 01.09.2026 überholt; News-Sentiment ist inzwischen gemessen und widerlegt (b = +0,0070 Pp/Score-Punkt, t = 0,31, 33.307 Beobachtungen)",
-  "vorschlag": "Journaltext als Stand vom Eintragstag kennzeichnen und ergänzen: „Überholt: Messung vom 01.09.2026 – widerlegt (t = 0,31).\""
+  "vorschlag": "Journaltext als Stand vom Eintragstag kennzeichnen und ergänzen: „Überholt: Messung vom 01.09.2026 – widerlegt (t = 0,31).\"",
+  "alt": {
+   "klasse": "c",
+   "zeile": 268,
+   "wortlaut": "35 Beobachtungen an 10 Zeitpunkten, nötig wären rund"
+  },
+  "neu_begruendung": "Migrationsmeldung nennt jetzt den heutigen Stand: News-Sentiment gemessen und widerlegt (01.09.2026)."
  },
  {
   "datei": "depotmigration.js",
   "zeile": 269,
   "wortlaut": "2.600. Es fehlt der Faktor 75. Unbelegt ist nicht widerlegt",
-  "klasse": "c",
+  "klasse": "gestrichen",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "| **News-Sentiment (Übernacht, Großwerte)** | **b = +0,0070 Pp/Score-Punkt, t = 0,31** — mitten im Placebo-Band."
   },
   "belegsagt": "Heute nicht mehr „unbelegt\", sondern widerlegt (Übernacht, Großwerte, t = 0,31); Faktor 75 galt nur für das App-Archiv und ist überholt",
-  "vorschlag": "„… Faktor 75 (Stand damals). Seit 01.09.2026 gemessen: widerlegt, t = 0,31.\""
+  "vorschlag": "„… Faktor 75 (Stand damals). Seit 01.09.2026 gemessen: widerlegt, t = 0,31.\"",
+  "alt": {
+   "klasse": "c",
+   "zeile": 269,
+   "wortlaut": "2.600. Es fehlt der Faktor 75. Unbelegt ist nicht widerlegt"
+  },
+  "begruendung": "Der Stand „unbelegt, Faktor 75“ (31.08.2026) ist seit der Vollmessung vom 01.09.2026 überholt; die Meldung nennt stattdessen das Urteil „widerlegt“ (t = 0,31), das im Eintrag davor belegt ist."
  }
 ]

@@ -125,8 +125,8 @@
         if (!D.tuneLog) D.tuneLog = [];
         D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
           applied: ['Stunden-Strategie aus (Messung: Kontraindikator)'],
-          txt: 'Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre): Ihr Technik-Score ist ein ' +
-            'Kontraindikator (−0,74 Pp auf 20 Tage, t=−11,6) – dazu Schein-Kosten über Tage. Sie wurde einmalig ' +
+          txt: 'Die Stunden-Strategie wurde vermessen und ist widerlegt: Ihr Technik-Score ist ein ' +
+            'Kontraindikator (Belegstand, t=−11,6) – dazu Schein-Kosten über Tage. Sie wurde einmalig ' +
             'abgeschaltet. Einschalten bleibt jederzeit möglich (Reiter „Regeln → ' +
             'Intraday“, im Archiv) und wird danach nie wieder automatisch geändert.' });
       }
@@ -149,7 +149,7 @@
         if (!D.tuneLog) D.tuneLog = [];
         D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
           applied: ['Zeitrahmen ' + altIv + ' → 60m', 'Haltedauer → ' + D.intraday.scalpHold + ' Min'],
-          txt: 'Die gemessene Kante war auf ' + altIv + '-Kerzen eingestellt, gemessen wurde sie auf 60-Minuten-Kerzen. ' +
+          txt: 'Die gemessene Regel war auf ' + altIv + '-Kerzen eingestellt, gemessen wurde sie auf 60-Minuten-Kerzen. ' +
             'Ursache war ein Fehler in der Auslöser-Auswahl, der jeden Umkehr-Auslöser auf 1 Minute stellte. ' +
             'Einmalig auf die gemessene Einstellung zurückgesetzt – jede Änderung von Hand bleibt ab jetzt unangetastet.' });
       }
@@ -264,9 +264,9 @@
       if (!D.tuneLog) D.tuneLog = [];
       D.tuneLog.unshift({ id: 'newsgewicht-null-' + Date.now(), at: Date.now(), quelle: 'messung',
         applied: ['News-Gewicht ' + Math.round(altNews * 100) + ' % → 0 %'],
-        txt: 'Das News-Sentiment ist zum ersten Mal gemessen worden – und die Messung konnte ' +
-          'die Frage nicht beantworten: 35 Beobachtungen an 10 Zeitpunkten, nötig wären rund ' +
-          '2.600. Es fehlt der Faktor 75. Unbelegt ist nicht widerlegt; der Score wird weiter ' +
+        txt: 'Das News-Sentiment ist gemessen und widerlegt (Übernacht, Großwerte, Scorer der App: ' +
+          'b = +0,0070 Pp je Score-Punkt, t = 0,31 – mitten im Placebo-Band; Messung vom 01.09.2026, Belegstand). ' +
+          'Der Score wird weiter ' +
           'berechnet und angezeigt, steuert aber keine Entscheidung mehr. Technik und Elliott ' +
           'behalten ihr Verhältnis zueinander. Wiedererhöhung nur mit einer belegten Messung.',
         konfigVorher: null, konfigNachher: null });

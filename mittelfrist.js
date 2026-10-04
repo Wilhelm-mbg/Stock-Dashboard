@@ -340,8 +340,8 @@
         '</td><td style="text-align:right;" class="' + U.signCls(rm) + '">' + U.signTxt(rm, ' %') + '</td></tr>';
     });
     el.innerHTML =
-      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Prüfzeitraum ab ' + PRUEFJAHR +
-        ' – die Parameter wurden auf den Jahren <b>davor</b> ausgesucht und hier nicht mehr angepasst.</div>' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Rückrechnung ab ' + PRUEFJAHR +
+        ' auf heute gelisteten Großwerten (nur Überlebende) – kein Prüfzeitraum im Sinne einer Bestätigung. Belegstand zum Monats-Momentum: <b>nicht entscheidbar</b>.</div>' +
       '<dl class="kv">' +
       '<dt>Depot</dt><dd><b>' + d.kapital.toFixed(1) + '×</b> (' + U.signTxt(d.proJahr, ' % p. a.') + ')</dd>' +
       '<dt>Marktdurchschnitt</dt><dd>' + d.markt.toFixed(1) + '× (' + U.signTxt(d.marktProJahr, ' % p. a.') + ')</dd>' +
@@ -353,7 +353,7 @@
       (dAll ? '<div style="font-size:var(--fs-neben); color:var(--muted); border-top:1px solid var(--grid); padding-top:8px; margin-top:4px;">' +
         'Über die <b>gesamte</b> Historie ab ' + new Date(DATEN.zeiten[0]).getFullYear() + ': ' + dAll.kapital.toFixed(0) + '× (' +
         U.signTxt(dAll.proJahr, ' % p. a.') + ') gegen ' + dAll.markt.toFixed(0) + '× (' + U.signTxt(dAll.marktProJahr, ' % p. a.') + '). ' +
-        'Diese Zahl enthält den Zeitraum, auf dem die Parameter ausgesucht wurden – sie ist deshalb zu schön und taugt nicht als Beleg.</div>' : '') +
+        'Auch diese Zahl rechnet nur auf heute gelisteten Werten (Überlebende) – sie taugt nicht als Beleg.</div>' : '') +
       '<div style="max-height:240px; overflow:auto; margin-top:8px;">' +
       '<table class="tbl"><thead><tr><th>Jahr</th><th style="text-align:right;">Depot</th><th style="text-align:right;">Markt</th></tr></thead><tbody>' +
       zeilen.join('') + '</tbody></table></div>';

@@ -2,38 +2,56 @@
  {
   "datei": "depot.js",
   "zeile": 635,
-  "wortlaut": "'Rohertrags Kontrolle (+0,065 Überschuss auf +0,170 roh) – ohne diese Spalte misst man '",
-  "klasse": "c",
+  "wortlaut": "ein Überschuss von +0,021 Pp je Signal – nicht entscheidbar (Messprotokoll 26.08.2026, Belegstand)",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
-   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle."
+   "marke": "`rsi2seit` (RSI2 im Seitwärtskanal) | Überschuss **+0,021 Pp je Signal**"
   },
   "belegsagt": "rsi2seit: nicht entscheidbar, +0,021 Pp je Signal, Tagesmittel +0,054 (Protokoll rsi2seit-2026-08-26); +0,065/+0,170 stehen weder in belegstand.md noch in einer ERGEBNIS.md",
-  "vorschlag": "Bei der gemessenen Intraday-Regel (RSI(2) im Seitwärtskanal) bleibt gegen die Kontrolle ein Überschuss von +0,021 Pp je Signal – nicht entscheidbar."
+  "vorschlag": "Bei der gemessenen Intraday-Regel (RSI(2) im Seitwärtskanal) bleibt gegen die Kontrolle ein Überschuss von +0,021 Pp je Signal – nicht entscheidbar.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 635,
+   "wortlaut": "'Rohertrags Kontrolle (+0,065 Überschuss auf +0,170 roh) – ohne diese Spalte misst man '"
+  },
+  "neu_begruendung": "Zahl und Urteil aus dem Belegstand (rsi2seit, Protokoll 26.08.2026); +0,065/+0,170 stehen dort nicht."
  },
  {
   "datei": "depot.js",
-  "zeile": 662,
-  "wortlaut": "txt: '+0,065 Pp Überschuss gegen eine Kontrolle aus echten Kerzen desselben Werts zur '",
-  "klasse": "c",
+  "zeile": 664,
+  "wortlaut": "txt: 'Überschuss +0,021 Pp je Signal gegen eine Kontrolle aus echten Kerzen desselben Werts zur '",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
-   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle."
+   "marke": "`rsi2seit` (RSI2 im Seitwärtskanal) | Überschuss **+0,021 Pp je Signal**"
   },
   "belegsagt": "rsi2seit heute: +0,021 Pp je Signal, Tagesmittel +0,054 (se 0,065), nicht entscheidbar",
-  "vorschlag": "+0,021 Pp Überschuss je Signal gegen die Kontrolle (Messprotokoll 26.08.2026), Tagesmittel +0,054 Pp – nicht entscheidbar."
+  "vorschlag": "+0,021 Pp Überschuss je Signal gegen die Kontrolle (Messprotokoll 26.08.2026), Tagesmittel +0,054 Pp – nicht entscheidbar.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 662,
+   "wortlaut": "txt: '+0,065 Pp Überschuss gegen eine Kontrolle aus echten Kerzen desselben Werts zur '"
+  },
+  "neu_begruendung": "Regelkopf-Text auf den Belegstand rsi2seit (+0,021 Pp je Signal) gesetzt; Logik (Protokoll-Urteil vor Text, depot.js ~690) unverändert."
  },
  {
   "datei": "depot.js",
-  "zeile": 663,
-  "wortlaut": "'selben Tagesstunde (6.509 Trades, 675 Tage). Die Rohkante von +0,170 Pp besteht '",
-  "klasse": "c",
+  "zeile": 665,
+  "wortlaut": "'selben Tagesstunde, Tagesmittel +0,054 Pp (Messprotokoll 26.08.2026) – nicht entscheidbar, '",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
-   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle."
+   "marke": "`rsi2seit` (RSI2 im Seitwärtskanal) | Überschuss **+0,021 Pp je Signal**"
   },
   "belegsagt": "6.509 Trades / 675 Tage / Rohkante +0,170 ohne Beleg; heutiger Stand +0,021 Pp je Signal",
-  "vorschlag": "Satz zur Rohkante streichen oder mit Fundstelle versehen; Belegstand nennt nur +0,021 Pp je Signal."
+  "vorschlag": "Satz zur Rohkante streichen oder mit Fundstelle versehen; Belegstand nennt nur +0,021 Pp je Signal.",
+  "alt": {
+   "klasse": "c",
+   "zeile": 663,
+   "wortlaut": "'selben Tagesstunde (6.509 Trades, 675 Tage). Die Rohkante von +0,170 Pp besteht '"
+  },
+  "neu_begruendung": "Rohkante/Trade- und Tageszahl ohne Beleg gestrichen; dafür das Tagesmittel +0,054 und das Urteil aus derselben Belegzeile."
  },
  {
   "datei": "depot.js",
@@ -73,33 +91,57 @@
  },
  {
   "datei": "depot.js",
-  "zeile": 1492,
-  "wortlaut": "Seitdem setzt <b>keine</b> Kante mehr automatisch aus, ",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 1493,
+  "wortlaut": "Seitdem setzt <b>keine</b> Regel mehr automatisch aus, ",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**Belegte handelbare Kanten: NULL.**"
+  },
   "belegsagt": "RSI(2)-Seitwärts und Kapitulations-Dip sind keine Kanten (belegte Kanten NULL; Kapitulation zurückgewiesen)",
-  "vorschlag": "Seitdem setzt <b>keine</b> Regel mehr automatisch aus, "
+  "vorschlag": "Seitdem setzt <b>keine</b> Regel mehr automatisch aus, ",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1492,
+   "wortlaut": "Seitdem setzt <b>keine</b> Kante mehr automatisch aus, "
+  },
+  "neu_begruendung": "„Kante“ durch „Regel“ ersetzt – der Belegstand zählt null belegte Kanten."
  },
  {
   "datei": "depot.js",
-  "zeile": 1506,
-  "wortlaut": "'Neue Einstiege ' + (offen.length > 1 ? 'dieser Kanten' : 'dieser Kante') + ' sind ausgesetzt'",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 1507,
+  "wortlaut": "'Neue Einstiege ' + (offen.length > 1 ? 'dieser Regeln' : 'dieser Regel') + ' sind ausgesetzt'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**Belegte handelbare Kanten: NULL.**"
+  },
   "belegsagt": "die beiden Arme sind keine belegten Kanten",
-  "vorschlag": "'Neue Einstiege ' + (offen.length > 1 ? 'dieser Regeln' : 'dieser Regel') + ' sind ausgesetzt'"
+  "vorschlag": "'Neue Einstiege ' + (offen.length > 1 ? 'dieser Regeln' : 'dieser Regel') + ' sind ausgesetzt'",
+  "alt": {
+   "klasse": "d",
+   "zeile": 1506,
+   "wortlaut": "'Neue Einstiege ' + (offen.length > 1 ? 'dieser Kanten' : 'dieser Kante') + ' sind ausgesetzt'"
+  },
+  "neu_begruendung": "„Kante“ durch „Regel“ ersetzt – der Belegstand zählt null belegte Kanten."
  },
  {
   "datei": "depot.js",
-  "zeile": 3105,
-  "wortlaut": "RSI(2) im Seitwärtskanal pausiert (verliert dort −0,17 Pp)",
-  "klasse": "c",
+  "zeile": 3106,
+  "wortlaut": "RSI(2) im Seitwärtskanal pausiert (alte Regime-Studie 21.08.2026: −0,169 Pp unter der Linie – nicht nachgemessen, weder bestätigt noch widerlegt)",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
    "marke": "in der App genannt: +0,148 Pp über, −0,169 Pp unter der Linie"
   },
   "belegsagt": "RSI-Teil der Regime-Zuteilung nicht neu gemessen, Skripte nicht im Repo, weder bestätigt noch widerlegt; R-TREND t = 3,2 kein Beleg der Zuteilung als Ganzes mehr",
-  "vorschlag": "RSI(2) im Seitwärtskanal pausiert (alte Regime-Studie vom 21.08.2026: −0,17 Pp unter der Linie – nicht nachgemessen)"
+  "vorschlag": "RSI(2) im Seitwärtskanal pausiert (alte Regime-Studie vom 21.08.2026: −0,17 Pp unter der Linie – nicht nachgemessen)",
+  "alt": {
+   "klasse": "c",
+   "zeile": 3105,
+   "wortlaut": "RSI(2) im Seitwärtskanal pausiert (verliert dort −0,17 Pp)"
+  },
+  "neu_begruendung": "Zahl mit Herkunft (Regime-Studie 21.08.2026) und dem Vermerk vom 04.10.2026 (nicht nachgemessen, weder bestätigt noch widerlegt)."
  },
  {
   "datei": "depot.js",
@@ -115,42 +157,75 @@
  },
  {
   "datei": "depot.js",
-  "zeile": 5813,
-  "wortlaut": "' Backtest vor der Kontrollmessung: +0,147 Pp auf 8 Handelsstunden über die übliche Drift",
-  "klasse": "c",
+  "zeile": 5814,
+  "wortlaut": "Stand laut Belegstand: Überschuss +0,021 Pp je Signal gegen die Kontrolle (Messprotokoll 26.08.2026) – nicht entscheidbar.",
+  "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
-   "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle."
+   "marke": "`rsi2seit` (RSI2 im Seitwärtskanal) | Überschuss **+0,021 Pp je Signal**"
   },
   "belegsagt": "Kontrollmessung liegt vor: +0,021 Pp je Signal, Tagesmittel +0,054, nicht entscheidbar; +0,147 ohne Beleg",
-  "vorschlag": "' Kein Messprotokoll im Datenordner. Stand laut Belegstand: +0,021 Pp je Signal gegen die Kontrolle – nicht entscheidbar.'"
+  "vorschlag": "' Kein Messprotokoll im Datenordner. Stand laut Belegstand: +0,021 Pp je Signal gegen die Kontrolle – nicht entscheidbar.'",
+  "alt": {
+   "klasse": "c",
+   "zeile": 5813,
+   "wortlaut": "' Backtest vor der Kontrollmessung: +0,147 Pp auf 8 Handelsstunden über die übliche Drift"
+  },
+  "neu_begruendung": "Ohne Protokoll im Datenordner nennt der Satz jetzt den Belegstand statt des unbelegten Backtest-Werts +0,147."
  },
  {
   "datei": "depot.js",
-  "zeile": 5824,
-  "wortlaut": "mit Schein war dieselbe Strategie im Backtest bei −96 %.",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 5825,
+  "wortlaut": "der gemessene Überschuss je Signal liegt weit UNTER der Kostenhürde des Scheins.",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "| 0,23 Pp (Standard-Schein) | 40 |"
+  },
   "belegsagt": "−96 % weder in belegstand.md noch in einer ERGEBNIS.md",
-  "vorschlag": "Achtung: eingestellt ist der Hebelschein – seine Kostenhürde liegt weit über dem gemessenen Überschuss je Signal."
- },
- {
-  "datei": "depot.js",
-  "zeile": 5842,
-  "wortlaut": "' seiner 200er-Linie – das ist die Phase dieser Kante, sie darf handeln.'",
-  "klasse": "d",
-  "beleg": null,
-  "belegsagt": "keine belegte Kante; Zuteilung als Ganzes seit 04.10. ohne Beleg",
-  "vorschlag": "' seiner 200er-Linie – in dieser Phase darf die Regel handeln.'"
+  "vorschlag": "Achtung: eingestellt ist der Hebelschein – seine Kostenhürde liegt weit über dem gemessenen Überschuss je Signal.",
+  "alt": {
+   "klasse": "d",
+   "zeile": 5824,
+   "wortlaut": "mit Schein war dieselbe Strategie im Backtest bei −96 %."
+  },
+  "neu_begruendung": "−96 % steht nirgends im Belegkorpus; geblieben ist die Aussage ohne Zahl (Standard-Schein-Hürde 0,23 Pp, rsi2seit +0,021 Pp)."
  },
  {
   "datei": "depot.js",
   "zeile": 5843,
-  "wortlaut": "' seiner 200er-Linie – das ist NICHT die Phase dieser Kante, sie pausiert. '",
-  "klasse": "d",
-  "beleg": null,
+  "wortlaut": "Linie – in dieser Phase darf die Regel handeln (die Zuteilung selbst ist ohne Beleg).'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "t = 3,2 ist damit **kein Beleg der Zuteilung als Ganzes mehr**"
+  },
+  "belegsagt": "keine belegte Kante; Zuteilung als Ganzes seit 04.10. ohne Beleg",
+  "vorschlag": "' seiner 200er-Linie – in dieser Phase darf die Regel handeln.'",
+  "alt": {
+   "klasse": "d",
+   "zeile": 5842,
+   "wortlaut": "' seiner 200er-Linie – das ist die Phase dieser Kante, sie darf handeln.'"
+  },
+  "neu_begruendung": "„Kante“ durch „Regel“ ersetzt und vermerkt, dass die Regime-Zuteilung seit 04.10.2026 ohne Beleg ist."
+ },
+ {
+  "datei": "depot.js",
+  "zeile": 5844,
+  "wortlaut": "Linie – in dieser Phase pausiert die Regel (die Zuteilung selbst ist ohne Beleg). '",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "t = 3,2 ist damit **kein Beleg der Zuteilung als Ganzes mehr**"
+  },
   "belegsagt": "keine belegte Kante",
-  "vorschlag": "' seiner 200er-Linie – in dieser Phase pausiert die Regel. '"
+  "vorschlag": "' seiner 200er-Linie – in dieser Phase pausiert die Regel. '",
+  "alt": {
+   "klasse": "d",
+   "zeile": 5843,
+   "wortlaut": "' seiner 200er-Linie – das ist NICHT die Phase dieser Kante, sie pausiert. '"
+  },
+  "neu_begruendung": "„Kante“ durch „Regel“ ersetzt und vermerkt, dass die Regime-Zuteilung seit 04.10.2026 ohne Beleg ist."
  },
  {
   "datei": "depot.js",
@@ -166,22 +241,40 @@
  },
  {
   "datei": "depot.js",
-  "zeile": 5885,
-  "wortlaut": "übernimmt nur doppelt bestätigte, robuste Ergebnisse",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 5886,
+  "wortlaut": "übernimmt nur Ergebnisse, die in zwei Nachtläufen mit neuen Handelstagen bestehen (das ist kein Beleg im Sinne des Belegstands)",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**Belegte handelbare Kanten: NULL.**"
+  },
   "belegsagt": "Autopilot-Läufe sind keine Messung im Belegstand; die App selbst sagt (Z. 6424), die zweite Messung sei kein unabhängiger zweiter Beleg",
-  "vorschlag": "übernimmt nur Ergebnisse, die in zwei Nachtläufen mit neuen Handelstagen bestehen (kein unabhängiger Beleg)"
+  "vorschlag": "übernimmt nur Ergebnisse, die in zwei Nachtläufen mit neuen Handelstagen bestehen (kein unabhängiger Beleg)",
+  "alt": {
+   "klasse": "d",
+   "zeile": 5885,
+   "wortlaut": "übernimmt nur doppelt bestätigte, robuste Ergebnisse"
+  },
+  "neu_begruendung": "Beschreibt, was der Autopilot tatsächlich prüft (zwei Nachtläufe mit Zuwachs an Handelstagen), ohne es „bestätigt“ zu nennen."
  },
  {
   "datei": "depot.js",
-  "zeile": 6214,
-  "wortlaut": "var urteil = (m > 0 && t >= 1.5) ? 'im Rahmen der Studie'",
-  "klasse": "d",
-  "beleg": null,
+  "zeile": 6215,
+  "wortlaut": "var urteil = (m > 0 && t >= 1.5) ? 'positiv (t ≥ 1,5) – eine Beobachtung im Archiv, kein Beleg'",
+  "klasse": "a",
+  "beleg": {
+   "datei": "wiki/belegstand.md",
+   "marke": "**Belegte handelbare Kanten: NULL.**"
+  },
   "belegsagt": "die Studie (rsi2seit) ist nicht entscheidbar, +0,021 Pp je Signal; es gibt keinen Studienvorsprung, in dessen Rahmen man liegen könnte",
   "vorschlag": "'positiv (t ≥ 1,5) – kein Beleg; die Studie selbst ist nicht entscheidbar'",
-  "nurUrteil": true
+  "nurUrteil": true,
+  "alt": {
+   "klasse": "d",
+   "zeile": 6214,
+   "wortlaut": "var urteil = (m > 0 && t >= 1.5) ? 'im Rahmen der Studie'"
+  },
+  "neu_begruendung": "Es gibt keinen belegten Studienvorsprung, in dessen Rahmen der Wächter liegen könnte; Schwelle 1.5 (Logik) unverändert."
  },
  {
   "datei": "depot.js",

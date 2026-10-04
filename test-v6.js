@@ -3681,9 +3681,12 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
 
   /* Nachgerechnet, weil eine falsche Kontrolle schlimmer ist als keine: Der Startindex
    * war zuerst 60 und ergab +0,128 statt +0,113 Pp - der Ueberschuss haette damit
-   * +0,036 statt +0,064 gelautet. Die Zahl im Regelkopf muss die korrigierte sein. */
-  ok(/\+0,065 Pp Überschuss/.test(dep) && !/\+0,114 Pp gegen Kontrolle/.test(dep),
-     'Der Regelkopf nennt den korrigierten Ueberschuss (+0,065), nicht den zu hohen (+0,114)');
+   * +0,036 statt +0,064 gelautet. Die Zahl im Regelkopf muss die korrigierte sein.
+   * Seit fix/oberflaeche-texte (04.10.2026) ist die korrigierte Zahl die des Belegstands: +0,021 Pp je Signal
+   * (Protokoll rsi2seit 26.08.2026, nicht entscheidbar). +0,065 steht nirgends im Belegstand und darf nicht
+   * zurueckkommen - deshalb prueft die Marke jetzt die neue Zahl und schliesst beide alten aus. */
+  ok(/Überschuss \+0,021 Pp je Signal/.test(dep) && !/\+0,114 Pp gegen Kontrolle/.test(dep) && !/\+0,065 Pp Überschuss/.test(dep),
+     'Der Regelkopf nennt den Ueberschuss laut Belegstand (+0,021 je Signal), weder +0,065 noch +0,114');
   ok(/Überschuss/.test(dep) && /Kontrolle/.test(dep),
      'Die Regelliste zeigt Kontrolle und Ueberschuss als eigene Spalten');
 
