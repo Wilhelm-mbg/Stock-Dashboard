@@ -55,9 +55,14 @@
      * Befunds ist der Urteilssatz der Studie WÖRTLICH (lauf/stufe-b.json, urteil.satz -
      * Vorregistrierung §9/§11), der Vermerk zu den verschwundenen Reihen ist Pflicht
      * (ERGEBNIS.md). Jede Zahl in zahlen wird von test-v6.js gegen stufe-b.json gehalten.
-     * etikett ist die Kennzeichnung, die Auswahl, Statuszeile und Regelkopf zeigen. */
+     * etikett ist die Kennzeichnung, die Auswahl, Statuszeile und Regelkopf zeigen.
+     * art und form (Auftrag Nr. 81, 04.10.2026): daraus setzt ueberholtKopf() unten den
+     * Kopf, den das Scoreboard ÜBER das alte Messprotokoll schreibt. form ist urteil.form
+     * der Studie WÖRTLICH - auch sie hält test-v6.js gegen stufe-b.json. */
     kapitulation: {
       etikett: 'Neumessung: zurückgewiesen',
+      art: 'Neumessung',
+      form: 'in der behaupteten Größe zurückgewiesen',
       befund: 'In der behaupteten Größe zurückgewiesen: obere Grenze +0,601 < 1,107 Pp (V2 netto −0,024 Pp je Signaltag, Band [−0,649; +0,601]). ' +
         'Neumessung vom 03.10.2026 auf sauberem Minutenarchiv mit den verschwundenen Reihen, 528 Signaltage im zuvor nie gemessenen Fenster 2016 bis 25.09.2023. ' +
         'Das Urteil hängt an der Buchung der verschwundenen Reihen (strenge Regel: nicht entscheidbar). ' +
@@ -96,6 +101,18 @@
       var v = EINTRAEGE[k] || null;
       if (pk && !(v && v.datum > String(pk.datum || ''))) return { protokoll: pk, register: null };
       return v ? { protokoll: null, register: v } : null;
+    },
+    /** Der Kopf über einem ÜBERHOLTEN Messprotokoll (Scoreboard, Auftrag Nr. 81):
+     *  „Überholt durch Neumessung 03.10.2026 – in der behaupteten Größe zurückgewiesen".
+     *  Art und Form stehen im Eintrag, der Tag ist sein datum - kein Leser setzt den
+     *  Satz selbst zusammen. Ein Eintrag ohne art/form (die älteren Verwerfungen) ergibt
+     *  „Überholt durch ein jüngeres Urteil vom …". */
+    ueberholtKopf: function (v) {
+      if (!v) return '';
+      var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v.datum || ''));
+      var tag = m ? m[3] + '.' + m[2] + '.' + m[1] : '';
+      return 'Überholt durch ' + (v.art ? v.art + (tag ? ' ' + tag : '') : 'ein jüngeres Urteil' + (tag ? ' vom ' + tag : '')) +
+        (v.form ? ' – ' + v.form : '');
     },
     /** Liefert das Vorwärtstest-Etikett zu einer Buch-Konfiguration, oder null.
      *  Mehr Urteilsarten gibt es hier absichtlich nicht (s. Kopf). */

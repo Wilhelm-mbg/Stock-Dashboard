@@ -9,13 +9,25 @@
  *
  * ISOLATION wie tools/ui-probe.js: eigenes Profil unter %TEMP%, Kunstdaten aus
  * tools/kunstinstanz.js. Die installierte App und ihr Datenordner werden nie beruehrt.
- * GEKLICKT werden nur Reiter, Pillen und die zwei Start-Dialoge (#erststartOk,
- * #diagNein) - kein Knopf, der holt, rechnet, handelt oder sendet.
+ * GEKLICKT werden nur Reiter, Pillen, die zwei Start-Dialoge (#erststartOk,
+ * #diagNein) und - seit Auftrag Nr. 81 - der Erklaerknopf (i) der Karte "Kurzfristig ·
+ * Intraday" (oeffnet nur das Erklaerfenster) - kein Knopf, der holt, rechnet, handelt
+ * oder sendet.
  *
  * Aufruf (aus der Repo-Wurzel):
- *   .\node_modules\.bin\electron.cmd tools\ui-auszug.js [--kapi-ohne-merker] [--aus <datei.json>]
+ *   .\node_modules\.bin\electron.cmd tools\ui-auszug.js [--kapi-ohne-merker] [--protokolle]
+ *                                                       [--aus <datei.json>] [--bild <datei.png>]
  * --kapi-ohne-merker  saet einen Bestand mit kapiZusatz: true OHNE den Merker der
  *                     Sicherung - der Auszug zeigt dann auch ihren Journal-Eintrag.
+ * --protokolle        legt zwei ECHTE Messprotokolle aus dem Repo (kapitulation und
+ *                     rsi2seit vom 26.08.2026) in den Test-Datenordner dieser Instanz -
+ *                     das Scoreboard zeigt dann den Kopf ueber dem wirklichen alten
+ *                     Protokoll (Auftrag Nr. 81), nicht ueber einem erfundenen.
+ * --bild              legt eine Aufnahme der Kopfzeile bei 1024 px Breite ab.
+ *
+ * Seit Nr. 81 liest der Auszug ausserdem: Kartentext und Belege hinter dem i der Karte
+ * "Kurzfristig · Intraday", die Zeilen unter dem Buecher-Verlauf (#buecherMassstab), die
+ * Zeile am Momentum-Buch und - bei 1024 px Fensterbreite - wie die Kopfzeile umbricht.
  */
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
@@ -46,8 +58,19 @@ if (KAPI) {
   delete d.kapitulationNeumessungGeprueft;
   fs.writeFileSync(dp, JSON.stringify(d));
 }
+const PROT = process.argv.indexOf('--protokolle') !== -1;
+if (PROT) {
+  /* Kopien zweier Repo-Dateien, geschrieben NUR in den Test-Datenordner unter %TEMP%. */
+  const pd = path.join(TESTROOT, 'downloads', 'Markt-Dashboard-Daten', 'protokolle');
+  fs.mkdirSync(pd, { recursive: true });
+  ['kapitulation-2026-08-26.json', 'rsi2seit-2026-08-26.json'].forEach((f) => {
+    fs.copyFileSync(path.join(WURZEL, 'studien', 'messmaschine', 'protokolle', f), path.join(pd, f));
+  });
+}
 const ausIdx = process.argv.indexOf('--aus');
 const AUS = ausIdx !== -1 ? process.argv[ausIdx + 1] : null;
+const bildIdx = process.argv.indexOf('--bild');
+const BILD = bildIdx !== -1 ? process.argv[bildIdx + 1] : null;
 
 const LESEN = "(function () {" +
   "function el(id) { return document.getElementById(id); }" +
@@ -73,6 +96,19 @@ const LESEN = "(function () {" +
   "  buchDriftKopf: txt('buchDriftKopf')," +
   "  buchIntradayKopf: txt('buchIntradayKopf')," +
   "  buecherLegende: txt('buecherLegende')," +
+  "  buecherMassstab: txt('buecherMassstab')," +
+  "  scoreboardUeberholt: (function () { var s = el('scoreboard'); if (!s) return null; var raus = [];" +
+  "    Array.prototype.forEach.call(s.querySelectorAll('tr'), function (tr, i, alle) {" +
+  "      var t = String(tr.innerText || tr.textContent || '').replace(/\\s+/g, ' ').trim();" +
+  "      if (t.indexOf('Überholt durch') === 0) { raus.push(t);" +
+  "        if (alle[i + 1]) raus.push(String(alle[i + 1].innerText || alle[i + 1].textContent || '').replace(/\\s+/g, ' ').trim()); } });" +
+  "    return raus; })()," +
+  "  scoreboardZeilen: (function () { var s = el('scoreboard'); return s ? Array.prototype.map.call(s.querySelectorAll('tr.sbRow'), function (tr) {" +
+  "    return String(tr.innerText || tr.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 90); }) : null; })()," +
+  "  strategienListeKapitulation: (function () { var s = el('strategienListe'), r = null; if (!s) return null;" +
+  "    Array.prototype.forEach.call(s.querySelectorAll('tr'), function (tr) {" +
+  "      var t = String(tr.innerText || tr.textContent || '').replace(/\\s+/g, ' ').trim(); if (t.indexOf('kapitulation') === 0) r = t; });" +
+  "    return r; })()," +
   "  benchInfo: txt('benchInfo')," +
   "  benchLegend: txt('benchLegend')," +
   "  depotStats: txt('depotStats')," +
@@ -99,7 +135,13 @@ app.on('browser-window-created', (ev, win) => {
       win.setContentSize(1280, 820);
       await klick('#erststartOk');
       await klick('#diagNein');
-      await warte(500);
+      /* Der Erststart-Dialog wartet auf das Ende der Diagnose-Frage und oeffnet sich
+       * bis zu eine Sekunde DANACH (erststart.js) - der Klick davor traf ihn nie, und er
+       * lag bis Nr. 81 ueber dem ganzen Auszug (fuer den Text gleichgueltig, fuer die
+       * Aufnahme der Kopfzeile nicht). */
+      await warte(1600);
+      await klick('#erststartOk');
+      await warte(400);
       /* Jede Flaeche einmal oeffnen, damit ihr Renderer geschrieben hat. */
       const wege = [['dashboard', null], ['strategien', 'einstellungen'], ['strategien', 'regeln'],
         ['werkzeuge', 'betrieb'], ['dashboard', null]];
@@ -112,7 +154,46 @@ app.on('browser-window-created', (ev, win) => {
       await js("(function () { if (window.__renderAnalytics) window.__renderAnalytics(); return 1; })()");
       await warte(6000);
       const erg = await js(LESEN);
-      erg.variante = KAPI ? 'kapiZusatz: true ohne Merker' : 'Kunstbestand unveraendert';
+      erg.variante = (KAPI ? 'kapiZusatz: true ohne Merker' : 'Kunstbestand unveraendert') + (PROT ? ' + zwei echte Protokolle vom 26.08.2026' : '');
+      /* ---- Nr. 81: die Karte "Kurzfristig · Intraday" samt den Belegen hinter dem i ----
+       * Bis hierher nahm der Auszug das KLEINSTE Element mit der Ueberschrift - das war
+       * der Kartenkopf. Jetzt: die Karte (.panel) ganz, dann ihr Erklaerknopf. */
+      await klick('nav.tabs button[data-tab="strategien"]');
+      await warte(600);
+      await klick('#tab-strategien .pills button[data-sub="regeln"]');
+      await warte(900);
+      const KARTE = "(function () { var p = null;" +
+        "Array.prototype.forEach.call(document.querySelectorAll('#sub-regeln .panel'), function (e) {" +
+        "  var s = e.querySelector('span'); if (s && s.textContent.trim() === 'Kurzfristig · Intraday') p = e; });" +
+        "return p; })()";
+      erg.karteKurzfristIntraday = await js("(function () { var p = " + KARTE + "; return p ? String(p.innerText || '').replace(/\\s+/g, ' ').trim() : null; })()");
+      const iDa = await js("(function () { var p = " + KARTE + "; var i = p && p.querySelector('button.info'); if (i) i.click(); return !!i; })()");
+      await warte(500);
+      erg.karteBelegeHinterDemI = iDa
+        ? await js("(function () { var k = document.getElementById('infoPop'); return k ? String(k.innerText || '').replace(/\\s+/g, ' ').trim() : null; })()")
+        : null;
+      await js("(function () { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); return 1; })()");
+      /* ---- Nr. 81: die Kopfzeile bei 1024 px ----
+       * #cockpit ist eine umbrechende Flex-Zeile. Gemessen wird, was dabei geschieht:
+       * in welcher Zeile jedes Feld steht, ob der Text in #ckBooks selbst umbricht und
+       * ob irgendetwas ueber den Rand laeuft (dann waere scrollWidth > clientWidth). */
+      await klick('nav.tabs button[data-tab="dashboard"]');
+      win.setContentSize(1024, 768);
+      await warte(1200);
+      erg.kopf1024 = await js("(function () {" +
+        "var c = document.getElementById('cockpit'), b = document.getElementById('ckBooks'); if (!c || !b) return null;" +
+        "var lh = parseFloat(getComputedStyle(b).lineHeight) || (parseFloat(getComputedStyle(b).fontSize) * 1.2);" +
+        "var r = b.getBoundingClientRect(), cr = c.getBoundingClientRect();" +
+        "return { fensterBreite: window.innerWidth, seiteScrollBreite: document.documentElement.scrollWidth," +
+        "  cockpit: { breite: Math.round(cr.width), hoehe: Math.round(cr.height), scrollBreite: c.scrollWidth, clientBreite: c.clientWidth }," +
+        "  felder: Array.prototype.map.call(c.querySelectorAll('.ck'), function (k) { var q = k.getBoundingClientRect();" +
+        "    return { name: (k.querySelector('.ckl') || {}).textContent, oben: Math.round(q.top - cr.top), links: Math.round(q.left), breite: Math.round(q.width), hoehe: Math.round(q.height) }; })," +
+        "  ckBooks: { text: b.textContent, breite: Math.round(r.width), hoehe: Math.round(r.height), zeilenhoehe: Math.round(lh * 10) / 10," +
+        "    zeilen: Math.round(r.height / lh), rechterRand: Math.round(r.right), scrollBreite: b.scrollWidth, clientBreite: b.clientWidth } }; })()");
+      if (BILD) {
+        const bild = await win.webContents.capturePage({ x: 0, y: 0, width: 1024, height: 260 });
+        fs.writeFileSync(BILD, bild.toPNG());
+      }
       const out = JSON.stringify(erg, null, 1);
       if (AUS) fs.writeFileSync(AUS, out);
       console.log(out);

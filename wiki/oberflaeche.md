@@ -241,7 +241,20 @@ aus, einmalige Sicherung, von Hand wieder einschaltbar. *Fundstelle: `uebergabe/
   `TUNE_ALLOW.mode` führt nur noch `rsi2seit`, der Autopilot nimmt den Modus nachts nicht mehr als Kandidaten, und eine
   Empfehlung, die ihn verlangt (auch eine früher vorgemerkte), wird ganz verworfen und im Experiment-Journal vermerkt
   (`quelle: 'verworfen'`). Die Wahl von Hand und der Edge-Wächter für den von Hand eingeschalteten Arm bleiben (test-v6 Abschnitt 93).
-- **Nicht umgestellt:** die Scoreboard-Zeile (altes Protokoll, Etikett „Zusatz-Standbein") und die Erklärtexte in `app-shell.js`.
+- **Scoreboard und Erklärtexte (seit Auftrag Nr. 81, 04.10.2026):** Werkzeuge → Betrieb, Klappe Scoreboard (`#scoreboard`): ein
+  Protokoll, das durch ein jüngeres Urteil im Studienregister überholt ist, steht nicht mehr unter den geltenden Urteilen, sondern am
+  Ende der Tabelle unter einem eigenen Kopf – für die Kapitulation „Überholt durch Neumessung 03.10.2026 – in der behaupteten Größe
+  zurückgewiesen", darunter Befund, Fundstelle und „Darunter steht das Messprotokoll vom 26.08.2026 – zum Nachlesen, nicht als
+  Stand"; das alte Urteil bleibt im Wortlaut, grau, mit „(überholt)". Aufgeklappt steht derselbe Kopf vor dem Entscheidungsweg. Kein
+  nachgebautes Protokoll. Strategieregister (`#strategienListe`): Spalte Urteil zeigt die Kennzeichnung des Registers, das alte
+  Urteil klein dabei; das Betriebs-Etikett heißt „handelt als Zusatz". Gefragt wird dieselbe Kette (`ueberholtDurch()` in
+  `scoreboard.js` → `StudienUrteile.gueltig`); den Kopf setzt `StudienUrteile.ueberholtKopf()` aus `art`, `datum` und `form` des
+  Eintrags. Erklärtexte `app-shell.js` (Nacht-Messung `regeln.autopilot`, Experten-Gruppen Signal/Filter/Haltedauer, Backtest,
+  Chart-Legende) und die Haltedauer-Liste `#idHold` („26 h (Kapitulations-Dip, Neumessung: zurückgewiesen)") sagen den Stand.
+  **Edge-Wächter, nachgelesen am Code:** er rechnet jede Nacht **beide** Arme (auch den Kapitulations-Dip, unabhängig davon, ob er
+  läuft); seine Pause greift aber nur an einem Kapitulations-Signal, und das entsteht nur mit dem Zusatz-Haken oder dem von Hand
+  gewählten Modus. So steht es im Text. Sperrklinke erweitert (test-v6 91.4b): wer im selben sichtbaren Text die Kapitulation nennt
+  und vom Messen spricht, sagt auch den Stand; kein Text spricht von „den beiden gemessenen Kanten".
 
 ## 6b. Der Maßstab: jedes Buch gegen den S&P 500 (seit 04.10.2026, Auftrag Nr. 73)
 

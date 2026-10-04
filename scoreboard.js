@@ -110,6 +110,32 @@
             'nicht für bare Münze genommen werden.') + '</div>';
   }
 
+  /* DIE KETTE (Auftrag Nr. 81, 04.10.2026). Das Scoreboard zeigt Protokolle als solche -
+   * und zeigte deshalb fuer den Kapitulations-Dip weiter das Protokoll der alten Maschine
+   * vom 26.08.2026 als Stand, obwohl die Neumessung vom 03.10.2026 juenger ist. Sie lief
+   * ausserhalb der Messmaschine und steht im Studienregister. Wer gewinnt, entscheidet
+   * dieselbe Funktion wie ueberall (StudienUrteile.gueltig, in depot.js belegKette).
+   * Hier wird NICHTS nachgebaut: das alte Protokoll bleibt vollstaendig stehen und
+   * aufklappbar, bekommt aber einen Kopf, der sagt, wodurch es ueberholt ist und wo das
+   * steht - und es wird nicht mehr unter die geltenden Urteile einsortiert.
+   * Rueckgabe: der Registereintrag, wenn er juenger ist als das Protokoll p, sonst null. */
+  function ueberholtDurch(key, p) {
+    var SU = window.StudienUrteile;
+    if (!SU || !SU.gueltig || !p) return null;
+    var g = SU.gueltig(key, { datum: String(p.gemessenAm || '').slice(0, 10) });
+    return g && g.register ? g.register : null;
+  }
+  function ueberholtKopf(reg) {
+    var SU = window.StudienUrteile;
+    return SU && SU.ueberholtKopf ? SU.ueberholtKopf(reg) : 'Überholt durch ein jüngeres Urteil';
+  }
+  /* Befund und Fundstelle woertlich aus dem Register; dazu, was die Zeile darunter ist. */
+  function ueberholtSatz(reg, p) {
+    var tag = String(p.gemessenAm || '').slice(0, 10).split('-').reverse().join('.');
+    return U.esc(reg.befund) + ' <b>Fundstelle:</b> ' + U.esc(reg.quelle) + '. ' +
+      'Darunter steht das Messprotokoll vom ' + U.esc(tag) + ' – zum Nachlesen, nicht als Stand.';
+  }
+
   var STAND = [];
   /* Wie viele Strategien im Register stehen. Gefuellt von strategienLaden(), also
    * erst, wenn die Klappe einmal offen war - vorher ist die Zahl schlicht nicht da,
@@ -319,8 +345,12 @@
       /* Ein gescheiterter Selbsttest entwertet die ganze Zeile. Er darf nicht erst
        * sichtbar werden, wenn man aufklappt. */
       var spOk = placeboOk(p);
+      /* Ein ueberholtes Protokoll behaelt sein Urteil im Wortlaut, aber nicht dessen
+       * Farbe - Gruen und Rot gehoeren dem Stand, und der steht im Kopf darueber. */
+      var alt = !!ueberholtDurch(z.key, p);
       return '<tr class="sbRow" data-i="' + i + '" style="cursor:pointer;">' +
-        '<td><b style="color:' + farbe(u) + ';">' + U.esc(label(u)) + '</b></td>' +
+        '<td><b style="color:' + (alt ? 'var(--muted)' : farbe(u)) + ';">' + U.esc(label(u)) + '</b>' +
+          (alt ? ' <span title="Urteil des überholten Protokolls – was gilt, steht im Kopf darüber" style="color:var(--muted);">(überholt)</span>' : '') + '</td>' +
         '<td><b>' + U.esc(z.key) + '</b>' + (p.tests > 1 ? ' <span style="color:var(--muted);">(' + p.tests + ' Varianten)</span>' : '') + '</td>' +
         '<td class="num">' + pp(b.tagesmittel) + '</td>' +
         '<td class="num">' + pp(b.jeSignal) + '</td>' +
@@ -343,12 +373,16 @@
      * gleiche Spalten, gleiche Klickbarkeit, nichts wird ausgeblendet oder
      * abgeschaltet. Die Reihenfolge innerhalb der Abschnitte bleibt die
      * bestehende Sortierung aus laden(). */
-    var oben = [], wand = [], gegen = [];
+    var oben = [], wand = [], gegen = [], ueberholt = [];
     /* EINMAL holen, nicht je Zeile: sonst koennte sich die Huerde mitten in der
      * Tabelle aendern und zwei Zeilen waeren gegen verschiedene Massstaebe geprueft. */
     var HL = liveHuerde();
     STAND.forEach(function (z, i) {
       var p9 = z.aktuell.protokoll;
+      /* Ein ueberholtes Protokoll (juengeres Urteil im Studienregister) wird nicht mehr
+       * einsortiert - weder oben als Stand noch hinter die Wand. Es steht am Ende der
+       * Tabelle unter seinem eigenen Kopf. */
+      if (ueberholtDurch(z.key, p9)) { ueberholt.push(i); return; }
       (gegenRichtung(p9) ? gegen : hinterWand(p9, HL) ? wand : oben).push(i);
     });
     /* WILHELMS AUFLAGE, woertlich: die Anzeige muss dazusagen, mit welchem Produkt
@@ -401,7 +435,13 @@
           'Das ist etwas anderes als „zu wenig Daten" – sie brauchen keine weiteren Daten, sie zeigen in die falsche Richtung. ' +
           'Auch sie bleiben wählbar und vollständig einsehbar.')
         : '') +
-      gegen.map(zeile).join('');
+      gegen.map(zeile).join('') +
+      /* Je ueberholtem Protokoll EIN Kopf direkt ueber seiner Zeile: wodurch ueberholt
+       * (Art, Tag, Urteilsform aus dem Register), der Befund und die Fundstelle. */
+      ueberholt.map(function (i) {
+        var p8 = STAND[i].aktuell.protokoll, reg = ueberholtDurch(STAND[i].key, p8);
+        return trennzeile(U.esc(ueberholtKopf(reg)), ueberholtSatz(reg, p8)) + zeile(i);
+      }).join('');
     el.innerHTML = '<div style="overflow:auto;"><table class="tbl" style="width:100%;">' +
       '<tr><th>Urteil</th><th>Strategie</th><th style="text-align:right;">Überschuss<br><span style="font-weight:400; color:var(--muted);">Tagesmittel</span></th>' +
       '<th style="text-align:right;">Überschuss<br><span style="font-weight:400; color:var(--muted);">je Signal</span></th>' +
@@ -435,6 +475,12 @@
       '<h3 style="margin:0;">' + U.esc(z.key) + ' – Entscheidungsweg</h3>' +
       '<span style="font-size:var(--fs-neben); color:var(--muted);">' + standText(p) + ' · ' + U.esc(z.aktuell.datei) +
         (maschineAktuell(p) === false ? ' · <b style="color:var(--series2);">⟳ alte Maschine</b>' : '') + '</span></div>' +
+      /* Ueberholt? Dann steht das VOR dem Entscheidungsweg - wer hier aufklappt, liest
+       * sonst 300 Zeilen eines Urteils, das nicht mehr gilt, ohne es zu erfahren. */
+      (ueberholtDurch(z.key, p)
+        ? '<div style="margin:8px 0 10px; padding:8px 10px; border-left:3px solid var(--down); font-size:var(--fs-neben);"><b>' +
+          U.esc(ueberholtKopf(ueberholtDurch(z.key, p))) + '.</b> ' + ueberholtSatz(ueberholtDurch(z.key, p), p) + '</div>'
+        : '') +
       '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin:6px 0 10px;"><b>Grund:</b> ' + U.esc(p.strategie.grund) + '</div>' +
       '<div style="font-size:var(--fs-neben); margin-bottom:10px;">Universum: <b>' + p.universum.werte + '</b> Werte, <b>' + p.universum.handelstage + '</b> Handelstage (' + U.esc(p.universum.von) + ' bis ' + U.esc(p.universum.bis) + '), Schnitt am <b>' + U.esc(p.universum.schnittTag) + '</b> · Haltedauer <b>' + p.strategie.haltedauerKerzen + '</b> Kerzen · Richtung <b>' + U.esc(p.strategie.richtung) + '</b> · ' + p.tests + ' Test(s)' + ausstiegText(p) + '</div>';
     h += placeboBand(p);
@@ -957,7 +1003,10 @@
       var grund = (pr.length && pr[0].protokoll.strategie && pr[0].protokoll.strategie.grund) || st.grundKurz || null;
       return { key: st.key, herkunft: st.herkunft || 'lokal', laeufe: pr.length,
         zuletzt: pr.length ? pr[0].mtime : 0, grund: grund,
-        urteil: pr.length ? pr[0].protokoll.bestesUrteil : null, hatDatei: true };
+        urteil: pr.length ? pr[0].protokoll.bestesUrteil : null, hatDatei: true,
+        /* Die Kette (Nr. 81): ist ein Registereintrag juenger als das juengste Protokoll,
+         * zeigt die Spalte Urteil dessen Kennzeichnung - das alte Urteil steht klein dabei. */
+        reg: pr.length ? ueberholtDurch(st.key, pr[0].protokoll) : null };
     });
     /* Ein Protokoll ohne auffindbare Datei ist der unangenehme Fall: das Ergebnis steht,
      * die Regel dahinter ist weg. Es bekommt eine Zeile, statt einfach zu fehlen. */
@@ -965,7 +1014,7 @@
       if (zeilen.some(function (z) { return z.key === k; })) return;
       var pr = jeKey[k];
       zeilen.push({ key: k, herkunft: null, laeufe: pr.length, zuletzt: pr[0].mtime,
-        urteil: pr[0].protokoll.bestesUrteil, hatDatei: false });
+        urteil: pr[0].protokoll.bestesUrteil, hatDatei: false, reg: ueberholtDurch(k, pr[0].protokoll) });
     });
 
     if (!zeilen.length) {
@@ -1012,7 +1061,7 @@
           : (rs.schatten ? 'eingestellt – Handel aus, Schattenbuch zeichnet auf' : 'eingestellt – Handel aus'));
       }
       if (key === 'kapitulation' && rs.kapiZusatz && rs.modus !== 'kapitulation') {
-        t.push(rs.intradayAn ? 'handelt als Zusatz-Standbein' : 'als Zusatz eingestellt – Handel aus');
+        t.push(rs.intradayAn ? 'handelt als Zusatz' : 'als Zusatz eingestellt – Handel aus');
       }
       if (key === 'momentum' && rs.momentumAn) t.push('Momentum-Buch handelt virtuell');
       if ((key === 'drift' || key === 'ergebnis-drift') && rs.driftAn) t.push('Drift-Buch handelt virtuell');
@@ -1044,8 +1093,12 @@
        * er ist der bessere - er macht aus dem Nullpunkt-Urteil dieselbe Beschriftung
        * wie oben im Scoreboard. Nur der Fall "gemessen, aber ohne Urteil im Protokoll"
        * gehoert hierher, den kennt label() nicht. */
+      var urteilAlt = U.esc(z.urteil ? label(z.urteil) : 'ohne Urteil');
       var urteil = !z.laeufe ? '<span style="color:var(--muted);">nie gemessen</span>'
-        : U.esc(z.urteil ? label(z.urteil) : 'ohne Urteil');
+        : z.reg ? '<b>' + U.esc(z.reg.etikett || 'gemessen und verworfen') + '</b>' +
+            '<div style="color:var(--muted); font-size:var(--fs-klein); line-height:1.4;">' + U.esc(ueberholtKopf(z.reg)) +
+            '. Das Protokoll sagte: ' + urteilAlt + '.</div>'
+        : urteilAlt;
       /* Stufe 3 (03.09.2026): Bis hierher schnitt die Zeile den Grund nach 110 Zeichen
        * ab - mitten im Satz ("... auf und werden ueber"). Das ist der VERTRAGSTEXT der
        * Strategie, also eine Vorregistrierung; ein halber Satz davon sagt nichts und

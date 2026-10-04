@@ -21634,6 +21634,12 @@ console.log('91) Kapitulation auf dem Messstand (Neumessung 03.10.2026)');
   ok(e && /zurückgewiesen/.test(e.etikett) && /belegstand\.md/.test(e.quelle) && /kapitulation-neu-2026-10-03/.test(e.quelle) &&
      /weder belegt noch ausgeschlossen/.test(e.befund),
      '91.1 Kennzeichnung, Fundstelle (Belegstand + Studie) und der Halbsatz zum kleinen Effekt sind da', e && e.etikett);
+  /* Auftrag Nr. 81: der Kopf ueber dem ueberholten Protokoll - Form woertlich aus der
+   * Studie, Tag aus dem Datum des Eintrags, zusammengesetzt an EINER Stelle. */
+  ok(e && e.form === UR.form && e.art === 'Neumessung' && e.etikett.indexOf(e.art + ':') === 0 &&
+     SU.ueberholtKopf(e) === 'Überholt durch Neumessung 03.10.2026 – ' + UR.form &&
+     SU.ueberholtKopf(SU.verworfen('donchian')) === 'Überholt durch ein jüngeres Urteil vom 23.08.2026' && SU.ueberholtKopf(null) === '',
+     '91.1 Kopf ueber einem ueberholten Protokoll: Urteilsform woertlich aus stufe-b.json (urteil.form), Tag aus datum', SU.ueberholtKopf(e));
 
   /* ---- 91.2 die eine Kette ---- */
   var altPk = { urteil: 'nicht-bestaetigt', datum: '2026-08-26', jeSignalPp: 1.1 };
@@ -21672,8 +21678,12 @@ console.log('91) Kapitulation auf dem Messstand (Neumessung 03.10.2026)');
     return /\.js$/.test(f) && !/^test-/.test(f) && /readProtokolle\(/.test(ohneKommentare(fs.readFileSync(__dirname + '/' + f, 'utf8')));
   }).sort().join(',');
   var mb91 = ohneKommentare(fs.readFileSync(__dirname + '/messband.js', 'utf8'));
-  ok(direkt91 === 'depot.js,messband.js,scoreboard.js' && /SU\.gueltig\(m, k \|\|/.test(mb91) && /if \(g && g\.register\) return \{ register: g\.register \};/.test(mb91),
-     '91.3 Protokolle selbst lesen nur depot.js, das Messband (ueber dieselbe Kette) und das Scoreboard (zeigt Protokolle als solche)', direkt91);
+  /* Seit Auftrag Nr. 81 fragt auch das Scoreboard die Kette: es zeigt Protokolle weiter
+   * als solche, aber ein ueberholtes nicht mehr als Stand (Verhalten: 91.7). */
+  var sb91 = ohneKommentare(fs.readFileSync(__dirname + '/scoreboard.js', 'utf8'));
+  ok(direkt91 === 'depot.js,messband.js,scoreboard.js' && /SU\.gueltig\(m, k \|\|/.test(mb91) && /if \(g && g\.register\) return \{ register: g\.register \};/.test(mb91) &&
+     /function ueberholtDurch\(key, p\) \{[\s\S]{0,160}var g = SU\.gueltig\(key, \{ datum: String\(p\.gemessenAm \|\| ''\)\.slice\(0, 10\) \}\);\s*return g && g\.register \? g\.register : null;/.test(sb91),
+     '91.3 Protokolle selbst lesen nur depot.js, das Messband und das Scoreboard - und alle drei fragen dieselbe Kette', direkt91);
   var ash91 = ohneKommentare(fs.readFileSync(__dirname + '/app-shell.js', 'utf8'));
   var strat91 = ohneKommentare(fs.readFileSync(__dirname + '/strategien.js', 'utf8'));
   ok(/A\.protokollKante\(st\.modus\) : null;\s*var su = !k && st\.modus && window\.StudienUrteile \? window\.StudienUrteile\.verworfen\(st\.modus\) : null;/.test(ash91) &&
@@ -21741,6 +21751,63 @@ console.log('91) Kapitulation auf dem Messstand (Neumessung 03.10.2026)');
   ok(dateien91['index.html'].indexOf('p=0,013') === -1 && dateien91['strategien.js'].indexOf('p = 0,013') === -1 &&
      /kein Beleg der Zuteilung mehr/.test(html91) && /kein Beleg der Zuteilung mehr/.test(dateien91['strategien.js']),
      '91.4 Regime-Zuteilung: der Gesamtvergleich steht nicht mehr als Beleg da; der Halbsatz dazu steht an beiden Stellen');
+
+  /* ---- 91.4b (Auftrag Nr. 81): dieselbe Behauptung in ihrer zweiten Form ----
+   * Die Klinke oben sieht ein t ab 3 und vier Woerter. Sie sah NICHT, dass die
+   * Erklaertexte den Kapitulations-Dip schlicht unter die Gemessenen zaehlten (Nacht-
+   * Messung, Haltedauer-Zusatz, Automatik) - ohne Zahl und ohne eines der Woerter.
+   * Die Eigenschaft: wer im selben Text die Kapitulation nennt UND vom Messen spricht,
+   * sagt auch den Stand. Und kein Text spricht von "den beiden" Gemessenen - eine der
+   * beiden ist zurueckgewiesen. Die Muster sind zusammengesetzt (s. Kopf dieses Abschnitts). */
+  var MESS91 = new RegExp('gemes' + 'sen', 'i');
+  var STAND91 = /zurückgewiesen|neu gemessen|nicht mehr dazu/i;
+  var BEIDE91 = new RegExp('beiden?\\s+(?:<b>)?gemes' + 'senen?\\s+(?:Kanten|Strategien|Modi)', 'i');
+  function verstoesse91b(dateien) {
+    var raus = [];
+    Object.keys(dateien).forEach(function (f) {
+      (/\.html$/.test(f) ? einheitenHtml(dateien[f]) : einheitenJs(dateien[f])).forEach(function (u) {
+        var kurz = f + ': ' + u.replace(/\s+/g, ' ').slice(0, 90);
+        if (BEIDE91.test(u)) raus.push(kurz);
+        else if (/kapitulation/i.test(u) && MESS91.test(u) && !STAND91.test(u)) raus.push(kurz);
+      });
+    });
+    return raus;
+  }
+  var v91b = verstoesse91b(dateien91);
+  ok(!scharf91 || v91b.length === 0,
+     '91.4b kein sichtbarer Text zaehlt die Kapitulation unter die Gemessenen, ohne ihren Stand zu sagen - und keiner spricht von "den beiden"',
+     v91b.length ? v91b.join(' | ') : 'keiner');
+  gegen91('der alte Erklaertext zur Nacht faellt auf',
+    verstoesse91b({ 'a.js': "x = 'Fährst du eine der <b>gemes" + "senen Strategien</b> (RSI2 im Seitwärtskanal / Kapitulations-Dip), arbeitet die Nacht als Edge-Wächter';" }).length === 1);
+  gegen91('der alte Zusatz an der Haltedauer faellt auf, im Erklaertext und in der Liste',
+    verstoesse91b({ 'a.js': "x = 'die Auslöser-Wahl ihre gemes" + "sene Haltedauer gleich mit: 8 Handelsstunden, 26 beim Kapitulations-Dip.';",
+      'a.html': '<select><option value="1560">26 h (Kapitulations-Dip, gemes' + 'sen)</option></select>' }).length === 2);
+  gegen91('"die beiden" faellt auf, auch ohne dass die Kapitulation genannt ist',
+    verstoesse91b({ 'a.js': "x = 'darf nur zwischen den beiden gemes" + "senen Kanten wechseln';" }).length === 1);
+  gegen91('ein Text, der den Stand sagt, faellt NICHT auf - und ein Kommentar auch nicht',
+    verstoesse91b({ 'a.js': "/* Kapitulation, einst gemes" + "sen */ x = 'Der Kapitulations-Dip wurde neu gemessen und zurückgewiesen.'; y = 'RSI(2): gemessen';" }).length === 0);
+  /* Die neuen Texte sagen, was gilt - und der Satz zum Edge-Waechter sagt, was der CODE
+   * tut (nachgelesen, nicht angenommen): der Waechter rechnet jede Nacht BEIDE Arme, seine
+   * Pause greift aber nur an einem Kapitulations-Signal, und das entsteht nur mit dem
+   * Zusatz-Haken oder dem von Hand gewaehlten Modus. */
+  function blk91(k) { var q = dateien91['app-shell.js'], a = q.indexOf("    '" + k + "': {"); return a === -1 ? '' : q.slice(a, q.indexOf('\n    },', a)); }
+  var auto91 = blk91('regeln.autopilot');
+  ok(e && auto91.indexOf('neu gemessen und ' + e.form) !== -1 && /per Voreinstellung aus/.test(auto91) && /die Nacht stellt nie auf ihn um/.test(auto91) &&
+     /pausieren kann er ihn aber nur, wenn der Dip von Hand eingeschaltet ist/.test(auto91),
+     '91.4b Erklaertext zur Nacht: neu gemessen und zurueckgewiesen, per Voreinstellung aus, die Nacht stellt nie um, Pause nur am von Hand eingeschalteten Dip');
+  ok(/for \(var _ai = 0; _ai < EDGE_ARME\.length; _ai\+\+\) \{\s*var ARM = EDGE_ARME\[_ai\];\s*var edge = await edgeZustand\(ARM\.key\);/.test(dep91) &&
+     /var isKapitulation = cfg\.mode === 'kapitulation';/.test(dep91) && /if \(!dir && cfg\.kapiZusatz\) \{/.test(dep91) &&
+     /if \(vsK2 && vsK2\.dir === 'call'\) \{ dir = 'call'; kapiTrade = true; \}/.test(dep91) && (dep91.match(/kapiTrade = true/g) || []).length === 1 &&
+     /var istKapiSignal = kapiTrade \|\| isKapitulation;\s*var armPause = istKapiSignal \? D\.intraday\.edgePauseKapi :/.test(dep91),
+     '91.4b ... und das ist, was der Code tut: der Waechter rechnet jeden Arm ohne Bedingung; die Pause haengt am Kapitulations-Signal (Haken oder eigener Modus)');
+  ok(e && ['regeln.param.signal', 'regeln.param.filter', 'regeln.param.haltedauer', 'betrieb.backtest'].every(function (k) {
+       var b = blk91(k); return /Kapitulations-Dip/.test(b) && (b.indexOf(e.form) !== -1 || b.indexOf(e.etikett) !== -1); }) &&
+     blk91('regeln.legende').indexOf('Kapitulations-Modus (' + e.etikett + ', per Voreinstellung aus)') !== -1 &&
+     html91.indexOf('<option value="1560">26 h (Kapitulations-Dip, ' + e.etikett + ')</option>') !== -1,
+     '91.4b Signal, Filter, Haltedauer, Backtest, Legende und die Haltedauer-Liste tragen Urteilsform oder Kennzeichnung des Registers');
+  ok(/stellt den Handels-Modus nur auf RSI\(2\) im Seitwärtskanal, nie auf einen anderen/.test(blk91('regeln.param.filter')) &&
+     /mode: \['rsi2seit'\],/.test(dep91),
+     '91.4b der Erklaertext zu "Empfehlungen uebernehmen" sagt dasselbe wie die Weissliste (TUNE_ALLOW.mode fuehrt nur rsi2seit)');
 
   /* ---- 91.5 Voreinstellung und Knopf ---- */
   ok(/intraday: \{[^\n]*kapiZusatz: false[^\n]*regimeZuteilung: false/.test(dep91) && dep91.indexOf('kapiZusatz: true') === -1,
@@ -21821,6 +21888,79 @@ console.log('91) Kapitulation auf dem Messstand (Neumessung 03.10.2026)');
      /exitMode: kapiTrade \? 'zeit' : mp\.exitMode/.test(dep91),
      '91.6 der Ausstieg einer offenen Position liest ihre eigenen Stempel (exitMode, maxHoldMin) - weder den Zusatz-Haken noch den Modus', aus91.length + ' Zeichen');
   ok(rot91 === g91, '91.x alle Gegenproben dieses Abschnitts schlagen an', rot91 + ' von ' + g91);
+
+  /* ---- 91.7 (Auftrag Nr. 81) das Scoreboard, am VERHALTEN ----
+   * scoreboard.js laeuft ganz, mit Attrappen fuer Fenster und Dokument und mit
+   * Kunstprotokollen. Geprueft wird die gezeichnete Tabelle - kein Protokoll wird
+   * nachgebaut, das alte bleibt stehen und bekommt einen Kopf. */
+  probe((async function () {
+    var sbQ = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+    var U91 = { esc: function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); },
+      dez: function (x, n) { return Number(x).toFixed(n).replace('.', ','); },
+      urteilText: function (u) { return ({ 'bestaetigt': 'bestätigt', 'nicht-entscheidbar': 'nicht entscheidbar' })[u] || String(u); },
+      nf0: { format: function (x) { return String(Math.round(x)); } } };
+    function kunstP(key, tag, urteil, mtime) {
+      return { datei: key + '-' + tag + '.json', mtime: mtime, protokoll: {
+        strategie: { key: key, grund: 'Kunstregel ' + key, haltedauerKerzen: 26, richtung: 'long' },
+        bestesUrteil: urteil, urteile: [urteil], tests: 1, gemessenAm: tag + 'T10:00:00.000Z', warnungen: [], entscheidungen: [],
+        universum: { werte: 10, handelstage: 100, von: 'a', bis: 'b', schnittTag: 'c' },
+        ergebnisse: [{ params: {}, signale: 100, entdeckung: { roh: { tagesmittel: 0.01 }, ueberschuss: { tagesmittel: 0.011, t: 2.1 } },
+          bestaetigung: { roh: { tagesmittel: 0.01 }, ueberschuss: { tagesmittel: 0.011, jeSignal: 0.011, t: 2.2, mde: 0.005, tage: 50, signale: 100 } } }] } };
+    }
+    async function sbLauf(quelle, protokolle) {
+      var els = {}, klicks = {};
+      function el(id) {
+        return els[id] || (els[id] = { innerHTML: '', querySelectorAll: function () {
+          var m, re = /<tr class="sbRow" data-i="(\d+)"/g, raus = [];
+          while ((m = re.exec(this.innerHTML))) (function (nr) {
+            raus.push({ getAttribute: function () { return nr; }, addEventListener: function (ev, fn) { klicks[nr] = fn; } });
+          })(m[1]);
+          return raus;
+        } });
+      }
+      var doc = { addEventListener: function () {},
+        getElementById: function (id) { return ['scoreboard', 'strategienListe', 'strategienFuss', 'sbDetail'].indexOf(id) !== -1 ? el(id) : null; } };
+      var win = { StudienUrteile: SU, U: U91,
+        api: { readProtokolle: async function () { return { ok: true, ordner: 'kunst', maschinenStand: null, protokolle: protokolle }; },
+          messStrategien: async function () { return { ok: true, quelle: 'kunst', hilfen: [],
+            liste: protokolle.map(function (x) { return { key: x.protokoll.strategie.key, herkunft: 'quelle' }; }) }; } },
+        DepotAPI: { kostenHuerde: function () { return null; },
+          regelStatus: function () { return { modus: 'rsi2seit', kapiZusatz: true, intradayAn: true, messRegeln: [] }; } } };
+      new Function('window', 'document', 'U', 'setTimeout', quelle)(win, doc, U91, function () {});
+      await win.Scoreboard.laden();
+      await win.Scoreboard.strategien();
+      return { tafel: el('scoreboard').innerHTML, register: el('strategienListe').innerHTML, klicks: klicks, detail: function () { return el('sbDetail').innerHTML; } };
+    }
+    var KOPF = 'Überholt durch Neumessung 03.10.2026 – ' + UR.form;
+    var alt = await sbLauf(sbQ, [kunstP('kapitulation', '2026-08-26', 'bestaetigt', 2), kunstP('rsi2seit', '2026-09-01', 'nicht-entscheidbar', 3)]);
+    var iKopf = alt.tafel.indexOf(KOPF), iKapi = alt.tafel.indexOf('<b>kapitulation</b>'), iRsi = alt.tafel.indexOf('<b>rsi2seit</b>');
+    ok(alt.tafel.split(KOPF).length === 2 && iKopf !== -1 && iRsi !== -1 && iRsi < iKopf && iKopf < iKapi,
+       '91.7 Scoreboard: ueber dem alten Protokoll der Kapitulation steht EIN Kopf "' + KOPF + '", die Zeile steht darunter und hinter den geltenden', iRsi + ' < ' + iKopf + ' < ' + iKapi);
+    var kopfTeil = alt.tafel.slice(iKopf, iKapi), kapiZeile = alt.tafel.slice(alt.tafel.lastIndexOf('<tr class="sbRow"', iKapi), iKapi);
+    ok(kopfTeil.indexOf(U91.esc(e.befund)) !== -1 && kopfTeil.indexOf('<b>Fundstelle:</b> ' + U91.esc(e.quelle)) !== -1 && /Messprotokoll vom 26\.08\.2026 – zum Nachlesen, nicht als Stand/.test(kopfTeil),
+       '91.7 der Kopf traegt den Befund des Registers woertlich, die Fundstelle und den Tag des alten Protokolls');
+    ok(/<b style="color:var\(--muted\);">bestätigt<\/b> <span title="[^"]*" style="color:var\(--muted\);">\(überholt\)<\/span>/.test(kapiZeile) && kapiZeile.indexOf('var(--up)') === -1 &&
+       alt.tafel.split('(überholt)').length === 2,
+       '91.7 das alte Urteil bleibt im Wortlaut stehen, aber grau und als ueberholt gekennzeichnet - nur an dieser einen Zeile');
+    ok(alt.register.indexOf('<b>' + e.etikett + '</b>') !== -1 && alt.register.indexOf(KOPF + '. Das Protokoll sagte: bestätigt.') !== -1 &&
+       alt.register.split(e.etikett).length === 2,
+       '91.7 Strategieregister: die Spalte Urteil zeigt die Kennzeichnung des Registers, das alte Urteil klein dabei');
+    ok(alt.register.indexOf('handelt als Zusatz</td>') !== -1 && sbQ.indexOf(W91[3]) === -1,
+       '91.7 das Betriebs-Etikett heisst "handelt als Zusatz" (das alte Wort steht nirgends mehr in scoreboard.js)');
+    var nrKapi = /data-i="(\d+)"[^>]*>(?:(?!<tr)[\s\S])*<b>kapitulation<\/b>/.exec(alt.tafel);
+    if (nrKapi && alt.klicks[nrKapi[1]]) alt.klicks[nrKapi[1]]();
+    ok(nrKapi && alt.detail().indexOf('<b>' + KOPF + '.</b>') !== -1 && alt.detail().indexOf('<b>' + KOPF + '.</b>') < alt.detail().indexOf('<b>Grund:</b>'),
+       '91.7 aufgeklappt steht der Kopf VOR dem Entscheidungsweg des alten Protokolls');
+    var neu = await sbLauf(sbQ, [kunstP('kapitulation', '2026-11-01', 'bestaetigt', 5), kunstP('rsi2seit', '2026-09-01', 'nicht-entscheidbar', 3)]);
+    ok(neu.tafel.indexOf('Überholt durch') === -1 && neu.tafel.indexOf('(überholt)') === -1 && neu.tafel.indexOf('<b>kapitulation</b>') < neu.tafel.indexOf('<b>rsi2seit</b>') &&
+       /<b style="color:var\(--up\);">bestätigt<\/b><\/td><td><b>kapitulation<\/b>/.test(neu.tafel) && neu.register.indexOf(e.etikett) === -1,
+       '91.7 ein Protokoll, das JUENGER ist als der Registereintrag, steht wie bisher da: kein Kopf, Urteil in Farbe, oben einsortiert');
+    var ohneKette = await sbLauf(sbQ.replace("return g && g.register ? g.register : null;", 'return null;'),
+      [kunstP('kapitulation', '2026-08-26', 'bestaetigt', 2), kunstP('rsi2seit', '2026-09-01', 'nicht-entscheidbar', 3)]);
+    ok(ohneKette.tafel.indexOf('Überholt durch') === -1 && /<b style="color:var\(--up\);">bestätigt<\/b><\/td><td><b>kapitulation<\/b>/.test(ohneKette.tafel) &&
+       ohneKette.tafel.indexOf('<b>kapitulation</b>') < ohneKette.tafel.indexOf('<b>rsi2seit</b>'),
+       '   Gegenprobe: ohne die Kette stuende das alte Urteil gruen, ohne Kopf und ganz oben');
+  })());
 })();
 
 

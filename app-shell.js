@@ -896,7 +896,8 @@
       punkte: [
         'Entscheidungskanal: die 200 Kerzen, die der Regel die Erlaubnis geben (Regression, 92-%-Kanten) – verankert an der Kerze, die gerade geprüft wird.',
         'Derselbe Kanal heute wird nur gezeigt, wenn ein historisches Signal ausgewählt ist.',
-        'Überdehnungsband um die Leitlinie: nur im Kapitulations-Modus – dort ist die Unterkante der Auslöser.',
+        /* Nr. 81 (04.10.2026): die Legende nennt den Modus - also auch seinen Stand. */
+        'Überdehnungsband um die Leitlinie: nur im Kapitulations-Modus (Neumessung: zurückgewiesen, per Voreinstellung aus) – dort ist die Unterkante der Auslöser.',
         'Die Ordnung eines Kanals („besser als X % des Zufalls“) ist beschreibend – die Regel fragt nur die Richtung ab, es gibt keine Schwelle, und kanalUeber liefert immer einen Kanal, nie „keiner“. Seit #80 wird sie als Perzentil gegen Rauschen gezeigt: die frühere Roh-Güte gab reinem Zufall im Median 75–94 von 100.',
         'Die Leitlinie EMA20 gehört zum Kapitulations-Modus; beim RSI(2)-Modus ist sie nur Orientierung und entscheidet dort nichts.'
       ]
@@ -1107,11 +1108,17 @@
       titel: 'Was die Nacht misst',
       punkte: [
         'Das <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft – die Messbasis wächst mit jedem Handelstag, statt an Yahoos kurzem Rückblick zu kleben.',
-        'Was die Nacht misst, hängt von deiner Strategie ab: Fährst du eine der <b>gemessenen Strategien</b> (RSI2 im Seitwärtskanal / Kapitulations-Dip), arbeitet die Nacht als <b>Edge-Wächter</b> – sie prüft auf dem vollen Handels-Universum, ob der gemessene Vorsprung im frischen Fenster noch trägt (Überschuss gegen die Drift, t über Symbole), und vergleicht nur noch die wenigen gemessenen Stellschrauben (Haltedauer-Varianten).',
+        /* Nr. 81 (04.10.2026): hier stand der Kapitulations-Dip als zweite der "gemessenen
+         * Strategien" mit "gemessenem Vorsprung". Der Text sagt jetzt, was gilt - und was
+         * der Code tut (nachgelesen: labCompute nimmt den Modus nachts nicht mehr als
+         * Kandidaten; der Waechter rechnet BEIDE Arme jede Nacht, seine Pause greift aber
+         * nur dort, wo der Arm laeuft). */
+        'Was die Nacht misst, hängt von deiner Strategie ab: Fährst du <b>RSI(2) im Seitwärtskanal</b>, vergleicht die Nacht nur noch dessen Haltedauer-Varianten, und der <b>Edge-Wächter</b> prüft auf dem vollen Handels-Universum, ob der Überschuss der Regel gegen die Drift im frischen Fenster noch trägt (t über Symbole).',
+        'Der <b>Kapitulations-Dip</b> zählt nicht mehr dazu: Er wurde am 03.10.2026 neu gemessen und in der behaupteten Größe zurückgewiesen, ist per Voreinstellung aus, und die Nacht stellt nie auf ihn um. Der Edge-Wächter rechnet seinen Überschuss zwar weiter mit, pausieren kann er ihn aber nur, wenn der Dip von Hand eingeschaltet ist.',
         'Das alte Setup-Rennen über die widerlegten Signale läuft dort bewusst nicht mehr – es hat Scheinsieger produziert.',
         'Fährst du ein anderes Setup, misst die Nacht wie bisher alle Kandidaten per Walk-Forward; übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt, angewendet morgens vor Handelsbeginn. Von Hand gesetzte Felder bleiben unangetastet.',
         /* Stufe 3 (03.09.2026): stand woertlich als Absatz ueber dem Autopilot-Schalter. */
-        'Die Nacht misst auf dem <b>Kursarchiv</b> – als Edge-Wächter auf den gemessenen Kanten, sonst per Walk-Forward über alle Kandidaten. Übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt; von Hand gesetzte Felder bleiben unangetastet.'
+        'Die Nacht misst auf dem <b>Kursarchiv</b> – als Edge-Wächter auf dem RSI(2)-Modus, sonst per Walk-Forward über alle Kandidaten. Übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt; von Hand gesetzte Felder bleiben unangetastet.'
       ]
     },
     /* --- Neu mit Stufe 3 (03.09.2026): die Erklaerabsaetze des Maschinenraums.
@@ -1156,7 +1163,7 @@
       titel: 'Was der Backtest rechnet – und was nicht',
       punkte: [
         'Rechnet das eingestellte Setup auf synthetischen <b>Optionsscheinen</b>, in beide Richtungen und mit Glattstellung am Abend.',
-        'Für die beiden gemessenen Kanten passt das nicht – sie handeln den Basiswert, nur Long und über Nacht –, deshalb verweigert der Backtest dort die Auskunft; sie misst der Autopilot nachts auf dem Kursarchiv.',
+        'Für RSI(2) im Seitwärtskanal und den Kapitulations-Dip passt das nicht – sie handeln den Basiswert, nur Long und über Nacht –, deshalb verweigert der Backtest dort die Auskunft. Den RSI(2)-Modus misst der Autopilot nachts auf dem Kursarchiv; der Kapitulations-Dip ist am 03.10.2026 neu gemessen und in der behaupteten Größe zurückgewiesen worden.',
         'Historische Nachrichten gibt es nicht, getestet wird der technische Kern.',
         'Der Belegstand jeder Strategie steht auf der Pille <b>Strategien</b> – der Backtest ist ein Rechenwerkzeug, kein Urteil.'
       ]
@@ -1255,7 +1262,7 @@
       titel: 'Signal – wann überhaupt gekauft wird',
       punkte: [
         'Diese Gruppe ist keine Feineinstellung. Setup, Auslöser, Zeitrahmen und Ausstieg bilden zusammen die Regel, die gemessen wurde – wer eines davon verstellt, handelt eine andere Regel als die, für die es ein Protokoll gibt.',
-        'Deshalb bringt die Auslöser-Wahl ihre gemessene Haltedauer gleich mit: 8 Handelsstunden bei RSI(2) im Seitwärtskanal, 26 beim Kapitulations-Dip. Wird sie danach von Hand geändert, steht das im Experiment-Journal und lässt sich dort einzeln zurücknehmen.',
+        'Deshalb bringt die Auslöser-Wahl die Haltedauer gleich mit, mit der gemessen wurde: 8 Handelsstunden bei RSI(2) im Seitwärtskanal, 26 beim Kapitulations-Dip (dessen Neumessung vom 03.10.2026: in der behaupteten Größe zurückgewiesen, per Voreinstellung aus). Wird sie danach von Hand geändert, steht das im Experiment-Journal und lässt sich dort einzeln zurücknehmen.',
         'Setup und Auslöser hängen zusammen: „Ausbruch“ handelt mit der Bewegung, „Umkehr“ gegen die Übertreibung. Die Auslöser-Liste wechselt deshalb mit dem Setup, und Felder, die im gewählten Modus nichts entscheiden, werden ausgeblendet statt wirkungslos dazustehen.',
         'Leitlinie und EMA-Periode wirken nur dort, wo der Modus sie abfragt: im Kapitulations-Modus ist die EMA20 der Bezug der Überdehnung, beim RSI(2)-Modus ist sie nur Orientierung und entscheidet nichts.',
         'Die Bestätigung ist ein Mindestabstand jenseits der Leitlinie und wirkt im Umkehr-Setup als z-Score-Schwelle (1,5 / 2,0 / 2,5). Sie entscheidet nicht über die Richtung, sondern darüber, wie weit der Kurs gelaufen sein muss, bevor die Regel überhaupt hinsieht.'
@@ -1282,14 +1289,14 @@
         'Der Event-Blackout sperrt die Kerzen um einen Quartalstermin herum. Dort reagiert der Kurs auf eine Nachricht und nicht auf das Muster, das die Regel erkennt – gemessen wurde ohne diese Kerzen.',
         '„Signale immer aufzeichnen“ ist der wichtigste Schalter der Gruppe und der einzige, der nichts kostet: Er lässt jedes Signal virtuell zu Ende laufen, auch bei ausgeschaltetem Handel. Ausschalten heißt: keine Beweisaufnahme mehr – und damit keine Grundlage, die Regel später zu bestätigen oder zu widerlegen.',
         'Zwei Schalter sammeln nur und handeln nichts: „Krypto-Messdaten sammeln“ füllt das Kursarchiv (24 Kerzen am Tag statt 6,5, keine Nachtlücken), der „Wellen-Screener“ rankt nach der Kennzahl des Wellental-Einstiegs – der hat keinen gemessenen Vorsprung.',
-        '„Empfehlungen übernehmen“ darf beim Handels-Modus nur zwischen den beiden gemessenen Kanten wechseln, nie zu einem widerlegten Modus, und das Instrument nie. Jede Übernahme steht im Experiment-Journal und lässt sich dort einzeln zurücknehmen.'
+        '„Empfehlungen übernehmen“ stellt den Handels-Modus nur auf RSI(2) im Seitwärtskanal, nie auf einen anderen – auch nicht auf den Kapitulations-Dip (Neumessung vom 03.10.2026: in der behaupteten Größe zurückgewiesen; abgeschaltet, nur von Hand wieder einschaltbar). Eine Empfehlung, die ihn verlangt, wird ganz verworfen und mit Grund im Experiment-Journal vermerkt. Das Instrument ändert sie nie. Jede Übernahme steht im Experiment-Journal und lässt sich dort einzeln zurücknehmen.'
       ]
     },
     'regeln.param.haltedauer': {
       titel: 'Haltedauer & Ausstieg – wann der Trade endet',
       punkte: [
         'Der Ausstieg ist Teil der Messung, nicht ihr Anhängsel: Dieselbe Regel misst sich völlig anders, je nachdem wann sie schließt. Streng bis Handelsschluss geschlossen ergab die Intraday-Kante −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %.',
-        'Deshalb tragen zwei Haltedauern in der Liste den Zusatz „gemessen“: 8 Handelsstunden für RSI(2) im Seitwärtskanal, 26 für den Kapitulations-Dip. Die übrigen Werte sind wählbar, aber es gibt kein Protokoll zu ihnen.',
+        'Deshalb tragen zwei Haltedauern in der Liste einen Zusatz: 8 Handelsstunden für RSI(2) im Seitwärtskanal („gemessen“) und 26 für den Kapitulations-Dip („Neumessung: zurückgewiesen“) – es sind die Haltedauern, mit denen gemessen wurde, und beim Kapitulations-Dip ist das Ergebnis der Neumessung vom 03.10.2026 die Zurückweisung. Die übrigen Werte sind wählbar, aber es gibt keine Messung zu ihnen.',
         'Ein Trailing-Stop verkürzt die Haltedauer unbemerkt – er schließt, sobald der Kurs X % unter seinem Hoch steht. Damit läuft eine andere Haltedauer als die, für die das Protokoll gilt.',
         'Die Gruppe blendet sich aus, sobald der eingestellte Modus keinen ihrer Werte abfragt. Sie steht dann nicht wirkungslos da: Fehlt sie, bestimmt der Modus seinen Ausstieg selbst.'
       ]
