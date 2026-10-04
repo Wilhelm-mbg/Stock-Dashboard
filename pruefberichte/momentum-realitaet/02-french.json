@@ -1,0 +1,236 @@
+{
+ "letzter_monat": "202608",
+ "fenster": {
+  "A_201701_202109": [
+   "201701",
+   "202109",
+   57
+  ],
+  "B_202110_202608": [
+   "202110",
+   "202608",
+   59
+  ],
+  "B2_gleichlang_202110_202606": [
+   "202110",
+   "202606",
+   57
+  ]
+ },
+ "ergebnis": {
+  "A_201701_202109": {
+   "BigHigh_VW": {
+    "monate": 57,
+    "endwert": 217.76,
+    "gesamtertrag_pct": 117.76,
+    "annualisiert_pct": 17.8,
+    "max_drawdown_monatsende_pct": -18.31,
+    "drawdown_tiefpunkt": "202003"
+   },
+   "BigHigh_EW": {
+    "monate": 57,
+    "endwert": 195.64,
+    "gesamtertrag_pct": 95.64,
+    "annualisiert_pct": 15.18,
+    "max_drawdown_monatsende_pct": -36.91,
+    "drawdown_tiefpunkt": "202003"
+   },
+   "HiPRIOR_VW": {
+    "monate": 57,
+    "endwert": 238.04,
+    "gesamtertrag_pct": 138.04,
+    "annualisiert_pct": 20.03,
+    "max_drawdown_monatsende_pct": -21.89,
+    "drawdown_tiefpunkt": "201812"
+   },
+   "HiPRIOR_EW": {
+    "monate": 57,
+    "endwert": 253.48,
+    "gesamtertrag_pct": 153.48,
+    "annualisiert_pct": 21.63,
+    "max_drawdown_monatsende_pct": -29.95,
+    "drawdown_tiefpunkt": "202003"
+   },
+   "Markt_MktRF_plus_RF": {
+    "monate": 57,
+    "endwert": 215.12,
+    "gesamtertrag_pct": 115.12,
+    "annualisiert_pct": 17.5,
+    "max_drawdown_monatsende_pct": -20.22,
+    "drawdown_tiefpunkt": "202003"
+   },
+   "Firmen_BigHigh_Anfang_Ende_Mittel": [
+    262.0,
+    224.0,
+    348.0
+   ],
+   "Firmen_HiPRIOR_Anfang_Ende_Mittel": [
+    321.0,
+    342.0,
+    433.7
+   ]
+  },
+  "B_202110_202608": {
+   "BigHigh_VW": {
+    "monate": 59,
+    "endwert": 182.5,
+    "gesamtertrag_pct": 82.5,
+    "annualisiert_pct": 13.02,
+    "max_drawdown_monatsende_pct": -24.14,
+    "drawdown_tiefpunkt": "202209"
+   },
+   "BigHigh_EW": {
+    "monate": 59,
+    "endwert": 122.19,
+    "gesamtertrag_pct": 22.19,
+    "annualisiert_pct": 4.16,
+    "max_drawdown_monatsende_pct": -32.94,
+    "drawdown_tiefpunkt": "202209"
+   },
+   "HiPRIOR_VW": {
+    "monate": 59,
+    "endwert": 237.61,
+    "gesamtertrag_pct": 137.61,
+    "annualisiert_pct": 19.25,
+    "max_drawdown_monatsende_pct": -31.21,
+    "drawdown_tiefpunkt": "202206"
+   },
+   "HiPRIOR_EW": {
+    "monate": 59,
+    "endwert": 122.52,
+    "gesamtertrag_pct": 22.52,
+    "annualisiert_pct": 4.22,
+    "max_drawdown_monatsende_pct": -31.98,
+    "drawdown_tiefpunkt": "202310"
+   },
+   "Markt_MktRF_plus_RF": {
+    "monate": 59,
+    "endwert": 182.12,
+    "gesamtertrag_pct": 82.12,
+    "annualisiert_pct": 12.97,
+    "max_drawdown_monatsende_pct": -24.84,
+    "drawdown_tiefpunkt": "202209"
+   },
+   "Firmen_BigHigh_Anfang_Ende_Mittel": [
+    218.0,
+    301.0,
+    314.7
+   ],
+   "Firmen_HiPRIOR_Anfang_Ende_Mittel": [
+    333.0,
+    462.0,
+    370.3
+   ]
+  },
+  "B2_gleichlang_202110_202606": {
+   "BigHigh_VW": {
+    "monate": 57,
+    "endwert": 190.47,
+    "gesamtertrag_pct": 90.47,
+    "annualisiert_pct": 14.53,
+    "max_drawdown_monatsende_pct": -24.14,
+    "drawdown_tiefpunkt": "202209"
+   },
+   "BigHigh_EW": {
+    "monate": 57,
+    "endwert": 119.4,
+    "gesamtertrag_pct": 19.4,
+    "annualisiert_pct": 3.8,
+    "max_drawdown_monatsende_pct": -32.94,
+    "drawdown_tiefpunkt": "202209"
+   },
+   "HiPRIOR_VW": {
+    "monate": 57,
+    "endwert": 281.07,
+    "gesamtertrag_pct": 181.07,
+    "annualisiert_pct": 24.3,
+    "max_drawdown_monatsende_pct": -31.21,
+    "drawdown_tiefpunkt": "202206"
+   },
+   "HiPRIOR_EW": {
+    "monate": 57,
+    "endwert": 138.57,
+    "gesamtertrag_pct": 38.57,
+    "annualisiert_pct": 7.11,
+    "max_drawdown_monatsende_pct": -31.98,
+    "drawdown_tiefpunkt": "202310"
+   },
+   "Markt_MktRF_plus_RF": {
+    "monate": 57,
+    "endwert": 177.57,
+    "gesamtertrag_pct": 77.57,
+    "annualisiert_pct": 12.85,
+    "max_drawdown_monatsende_pct": -24.84,
+    "drawdown_tiefpunkt": "202209"
+   },
+   "Firmen_BigHigh_Anfang_Ende_Mittel": [
+    218.0,
+    301.0,
+    314.8
+   ],
+   "Firmen_HiPRIOR_Anfang_Ende_Mittel": [
+    333.0,
+    421.0,
+    367.3
+   ]
+  }
+ },
+ "auffaellig": {
+  "BigHigh_VW": [
+   [
+    17.8,
+    "202604"
+   ],
+   [
+    12.74,
+    "202004"
+   ],
+   [
+    11.32,
+    "202311"
+   ]
+  ],
+  "BigHigh_EW": [
+   [
+    24.09,
+    "202011"
+   ],
+   [
+    22.75,
+    "202004"
+   ],
+   [
+    16.52,
+    "202301"
+   ]
+  ],
+  "HiPRIOR_VW": [
+   [
+    31.71,
+    "202604"
+   ],
+   [
+    20.04,
+    "202605"
+   ],
+   [
+    17.98,
+    "202210"
+   ]
+  ],
+  "HiPRIOR_EW": [
+   [
+    20.66,
+    "202101"
+   ],
+   [
+    19.54,
+    "202011"
+   ],
+   [
+    19.39,
+    "202004"
+   ]
+  ]
+ }
+}
