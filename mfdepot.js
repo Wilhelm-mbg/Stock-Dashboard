@@ -57,11 +57,16 @@
    * der letzte Lesevorgang sie fand. Seit Auftrag Nr. 81 ist sie der Markt des
    * Massstabs fuer ALLE drei Buecher: vergleich() unten reicht sie an massstab.js,
    * depot.js holt sie fuer das Intraday-Depot ueber MFDepot.markt(). Gelesen wird beim
-   * Start und bei jedem Takt; gezeichnet wird synchron aus diesem Merker. */
+   * Start und bei jedem Takt; gezeichnet wird synchron aus diesem Merker.
+   * Seit Auftrag Nr. 91 fuehrt der Merker beide Reihen desselben Abrufs: MARKT (bereinigt)
+   * und MARKT_ROH (unbereinigt, dieselben Balken). Aus beiden rechnet massstab.js den
+   * Faktor der Ausschuettungen je Balken; der Marktstand selbst kommt aus dem Punkt. */
   var MARKT = null;
+  var MARKT_ROH = null;
   async function ladeMarkt() {
     var c = await window.api.storeGet('drift_markt');
     MARKT = c && c.reihe ? c.reihe : null;
+    MARKT_ROH = MARKT && c.roh ? c.roh : null;
     return MARKT;
   }
 
@@ -311,8 +316,13 @@
       }
 
       /* ---- Verlauf für den Vergleich mit dem Markt ---- */
+      /* Der Marktstand, den die App in DIESEM Augenblick sieht (juengster Balken der
+       * geladenen Reihe), und seit Auftrag Nr. 91 der Zeitstempel dieses Balkens (spyT):
+       * massstab.js sucht ueber ihn den Faktor der Ausschuettungen genau dieses Balkens. */
       var spy = markt.length ? markt[markt.length - 1][1] : null;
+      var spyT = markt.length ? markt[markt.length - 1][0] : null;
       STAND.spy = spy;   // derselbe Marktstand fuer den Stand des letzten Takts (verlaufMitStand)
+      STAND.spyT = spyT;
       var bwM = MH.bewerte(d.mfBuch, daten.preise);
       var bwD = d.driftBuch ? MH.bewerteDrift(d.driftBuch, daten.preise) : null;
       if (!d.mfVerlauf) d.mfVerlauf = [];
@@ -322,7 +332,7 @@
          * Prozentstand frueher gegen eine fest verdrahtete 10000 und zeigte fuer ein
          * unberuehrtes Buch +900 %. Steht der Bezugswert im Punkt selbst, bleibt auch
          * ein alter Verlauf nach einer spaeteren Kapitalaenderung richtig lesbar. */
-        d.mfVerlauf.push({ t: now, momentum: bwM.wert, drift: bwD ? bwD.wert : null, spy: spy,
+        d.mfVerlauf.push({ t: now, momentum: bwM.wert, drift: bwD ? bwD.wert : null, spy: spy, spyT: spyT,
           startM: d.mfBuch ? d.mfBuch.start : START_KAPITAL,
           startD: d.driftBuch ? d.driftBuch.start : null });
         if (d.mfVerlauf.length > 750) d.mfVerlauf = d.mfVerlauf.slice(-750);
@@ -405,7 +415,7 @@
    * dieselbe Zahl an zwei Orten, verschieden alt.
    * Hier wird NICHTS nachgerechnet: abgelegt wird nur, was takt() ohnehin gerechnet
    * hat (MFHandel.bewerte / bewerteDrift). */
-  var STAND = { momentum: null, drift: null, spy: null };
+  var STAND = { momentum: null, drift: null, spy: null, spyT: null };
 
   /* ---- Der Massstab (Auftrag Nr. 73, 04.10.2026) ----
    * Der Verlauf, wie ihn Kopf, Karte und Buecher-Verlauf lesen: die Tagespunkte aus
@@ -420,21 +430,25 @@
     var at = Math.max(sM ? sM.at : 0, sD ? sD.at : 0);
     if (!at || (v.length && v[v.length - 1].t >= at)) return v;
     var mOk = sM && at - sM.at < 5000, dOk = sD && at - sD.at < 5000;
-    v.push({ t: at, momentum: mOk ? sM.wert : null, drift: dOk ? sD.wert : null, spy: STAND.spy,
+    v.push({ t: at, momentum: mOk ? sM.wert : null, drift: dOk ? sD.wert : null, spy: STAND.spy, spyT: STAND.spyT,
       startM: mOk ? sM.start : null, startD: dOk ? sD.start : null });
     return v;
   }
   /** Buch gegen den S&P 500 ueber denselben Zeitraum - gerechnet in massstab.js,
    *  hier nur mit den Daten des Buchs versorgt. name = 'momentum' | 'drift'.
-   *  Der Markt kommt aus der aktuell geladenen bereinigten Reihe (MARKT) - der im
-   *  Verlaufspunkt abgelegte Tagesstand bleibt nur der Rueckfall (Auftrag Nr. 81). */
+   *  Seit Auftrag Nr. 91 (punktKurs): der Marktwert eines Punkts ist der Stand, den die
+   *  App beim Bewerten des Buchs sah (im Punkt abgelegt), mal dem Faktor der
+   *  Ausschuettungen aus den zwei Reihen des Merkers (MARKT, MARKT_ROH) - nicht mehr ein
+   *  spaeter nachgeschlagener Balken. Die zwei Buecher buchen seit Nr. 87 Ausschuettungen
+   *  (buchAusschuettungen) - das sagt der Hinweis. */
   function vergleich(name) {
     var d = D();
     if (!d || !window.Massstab) return null;
     var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
     return window.Massstab.vergleich(verlaufMitStand(), name, name === 'momentum' ? 'startM' : 'startD', {
       an: name === 'momentum' ? !!d.momentumAn : !!d.driftAn,
-      start: buch ? buch.start : null, angelegt: buch ? buch.angelegt : null, markt: MARKT });
+      start: buch ? buch.start : null, angelegt: buch ? buch.angelegt : null,
+      punktKurs: true, marktRoh: MARKT_ROH, buchAusschuettungen: true, markt: MARKT });
   }
 
   function letzterPunkt(d) {
@@ -691,5 +705,8 @@
   window.MFDepot = { takt: takt, karten: karten, vergleich: vergleich,
     /** Die bereinigte SPY-Reihe, wie sie zuletzt gelesen wurde (oder null) - DIE eine
      *  Marktreihe des Massstabs, auch fuer das Intraday-Depot (depot.js). */
-    markt: function () { return MARKT; } };
+    markt: function () { return MARKT; },
+    /** Die UNBEREINIGTE SPY-Reihe desselben Abrufs (dieselben Balken wie markt()), oder
+     *  null - Auftrag Nr. 91, fuer den Faktor der Ausschuettungen je Balken. */
+    marktRoh: function () { return MARKT_ROH; } };
 })();

@@ -114,6 +114,13 @@
    *                        bereinigt; fuer alles, was ueber Monate rechnet)
    *               false -> close (der tatsaechlich gehandelte Kurs)
    *
+   *  o.mitRoh     true  -> zusaetzlich roh: [[t, schluss], ...] - der UNBEREINIGTE Schluss
+   *                        derselben Balken, dieselben Zeitstempel wie bars (Auftrag
+   *                        Nr. 91: aus bereinigt / roh entsteht der Faktor der
+   *                        Ausschuettungen je Balken). Ein fehlender roher Schluss steht
+   *                        als null da, der Balken bleibt. Ohne den Schalter traegt die
+   *                        Rueckgabe das Feld NICHT - sie ist zeichengleich wie zuvor.
+   *
    *  Rueckgabe: null bei unbrauchbarer Antwort, sonst
    *    { bars: [[t, schluss, volumen, hoch, tief, eroeffnung], ...],
    *      meta, verworfen, gesamt, feld }
@@ -137,10 +144,11 @@
       if (adj.adjclose && adj.adjclose.length) { schluss = adj.adjclose; feld = 'adjclose'; }
     }
     var his = q.high || [], los = q.low || [], vols = q.volume || [], ops = q.open || [];
-    var bars = [], verworfen = 0;
+    var bars = [], verworfen = 0, rohSchluss = o.mitRoh ? [] : null;
     for (var i = 0; i < ts.length; i++) {
       var c = schluss[i];
       if (!kursOk(c)) { verworfen++; continue; }
+      if (rohSchluss) rohSchluss.push([ts[i] * 1000, kursOk(roh[i]) ? roh[i] : null]);
       var hi = kursOk(his[i]) ? his[i] : c;
       var lo = kursOk(los[i]) ? los[i] : c;
       /* Vertauscht geliefert: kommt bei der inoffiziellen Schnittstelle vor. Nur
@@ -180,9 +188,12 @@
       var vorFilter = bars.length;
       bars = bars.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });
       ausserhalbFenster = vorFilter - bars.length;
+      /* Dieselbe Sperre fuer die Rohreihe - sie hat dieselben Zeitstempel wie bars. */
+      if (rohSchluss) rohSchluss = rohSchluss.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });
     }
     var ergebnis = { bars: bars, meta: r.meta || {}, verworfen: verworfen, gesamt: ts.length,
       feld: feld, ausserhalbFenster: ausserhalbFenster };
+    if (rohSchluss) ergebnis.roh = rohSchluss;
     /* o.ereignisse: die Kapitalmassnahmen derselben Antwort dazu (Auftrag Nr. 87). Ohne den
      * Schalter traegt die Rueckgabe das Feld NICHT - sie ist zeichengleich wie zuvor. */
     if (o.ereignisse) ergebnis.ereignisse = ereignisseAus(r.events, o);

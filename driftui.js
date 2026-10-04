@@ -113,15 +113,23 @@
   async function ladeMarkt() {
     var key = 'drift_markt';
     var c = await window.api.storeGet(key);
-    if (c && c.reihe && Date.now() - c.at < 20 * 3600000) return c.reihe;
+    /* Seit Auftrag Nr. 91 traegt der Bestand neben der bereinigten Reihe (reihe) die
+     * UNBEREINIGTE derselben Balken (roh): aus beiden rechnet massstab.js den Faktor der
+     * Ausschuettungen je Balken. Wer reihe liest, merkt davon nichts. Ein Bestand ohne
+     * roh (geschrieben vor diesem Auftrag) gilt nicht als frisch und wird einmal neu
+     * geladen. */
+    if (c && c.reihe && c.roh && Date.now() - c.at < 20 * 3600000) return c.reihe;
     try {
       /* BEREINIGT: Der Marktvergleich laeuft ueber Jahrzehnte (period1=0). Ohne
        * adjclose macht jeder Split aus einer Verdopplung eine Halbierung. */
-      var kd = await window.Kurse.hole('SPY', { von: 0, bis: Date.now(), interval: '1d', bereinigt: true });
+      var kd = await window.Kurse.hole('SPY', { von: 0, bis: Date.now(), interval: '1d', bereinigt: true, mitRoh: true });
       if (!kd) return c ? c.reihe : null;
       var reihe = window.Kurse.reihe(kd.bars);
       if (reihe.length < 500) return c ? c.reihe : null;
-      await window.api.storeSet(key, { at: Date.now(), reihe: reihe });
+      /* roh fehlt nur, wenn der Lader den Schalter nicht kennt - dann eine leere Liste,
+       * damit nicht jeder Aufruf neu laedt; massstab.js meldet dann rohreihe-fehlt. */
+      var roh = kd.roh || [];
+      await window.api.storeSet(key, { at: Date.now(), reihe: reihe, roh: roh });
       return reihe;
     } catch (e) { return c ? c.reihe : null; }
   }

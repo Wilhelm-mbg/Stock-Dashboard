@@ -22265,7 +22265,9 @@ console.log('92) Der Massstab: jedes Buch gegen den S&P 500');
     klinkeMarkt(dep92, mfd92, ber92 + "\n z.push('SPY ' + pctW(e0.spy, e1.spy));").length === 2);
   gegen92('ein Buch-Vergleich ohne die bereinigte Reihe macht die Klinke rot',
     klinkeMarkt(dep92, mfd92.replace(', markt: MARKT });', ' });'), ber92).length === 1);
-  ok(/storeSet\(key, \{ at: Date\.now\(\), reihe: reihe \}\)/.test(dui92) && /bereinigt: true/.test(dui92.slice(dui92.indexOf('async function ladeMarkt'), dui92.indexOf('/* ---------------- Anzeige'))) &&
+  /* Umgeschrieben mit Auftrag Nr. 91 (altes SOLL: der Bestand traegt nur { at, reihe }). Neu:
+   * dazu die unbereinigte Reihe derselben Balken (roh) - reihe bleibt die bereinigte. */
+  ok(/storeSet\(key, \{ at: Date\.now\(\), reihe: reihe, roh: roh \}\)/.test(dui92) && /bereinigt: true, mitRoh: true/.test(dui92.slice(dui92.indexOf('async function ladeMarkt'), dui92.indexOf('/* ---------------- Anzeige'))) &&
      /bereinigt: false/.test(dep92.slice(dep92.indexOf('async function getHistory'), dep92.indexOf('/* ================= News je Symbol'))),
      '92.6 nachgesehen: drift_markt ist die BEREINIGTE Reihe (driftui.js), getHistory liefert die ROHE - deshalb ist MARKT_SPY nur der Rueckfall');
   var wortlaut = ['Markt mit, Buch ohne', 'ohne Ausschüttungen', 'mit Ausschüttungen', 'SPY-Gesamtertrag', 'SPY-Tageskurs'];
@@ -23312,6 +23314,284 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
   gegen96('ohne die Sperre faellt auf: der zweite Split binnen 30 Tagen wuerde gebucht', !!ohneSperre && nurRot(ohneSperre, [10, 11]) && faelle(ohneSperre, [0, 3]).every(Boolean));
   gegen96('Ereignis-Zeitstempel in Sekunden statt Millisekunden faellt auf', !!sekunden && !alle(pruefeZerlege(sekunden)));
   ok(rot96 === g96 && g96 === 11, '96.x alle Gegenproben dieses Abschnitts schlagen an', rot96 + ' von ' + g96);
+})();
+
+/* ================= 97) Der Markt zum selben Zeitpunkt wie das Buch (Auftrag Nr. 91, 04.10.2026) =====
+ *
+ * Der Tagesbalken traegt den Stempel der Eroeffnung und den Kurs des Schlusses
+ * (wiki/fehlerformen.md). "Juengster Balken nicht nach dem Punkt" gab einem Punkt
+ * mitten in der Sitzung einen Kurs aus seiner Zukunft. Fuer die zwei Mittelfrist-Buecher
+ * ist der Marktwert eines Punkts seit Nr. 91 der Stand, den die App beim Bewerten des
+ * Buchs sah (p.spy), mal dem Faktor der Ausschuettungen f(b) = bereinigt(b) / roh(b),
+ * b = der Balken p.spyT (sonst der juengste mit Stempel <= p.t).
+ *   97.1 zerlege mit mitRoh (ohne den Schalter zeichengleich)
+ *   97.2 der Faktor an Handzahlen: zwei Ausschuettungen, Punkte vor, zwischen und nach
+ *        den Ex-Tagen; mit spyT, ohne spyT, ohne spy; am Ex-Tag vor und nach der Eroeffnung
+ *   97.3 alle Rueckfall-Gruende - der Rueckfall nimmt ALLES aus den abgelegten Staenden
+ *   97.4 ohne punktKurs zeichengleich zur eingefrorenen Altfassung
+ *        (test-daten/massstab-vor-nr91.js = massstab.js im Stand vor Nr. 91, byte-gleich)
+ *   97.5 der Hinweis: Buecher neu, Intraday-Depot wie vorher
+ *   97.6 die Abnahmezahl am echten Bestand als Handfall (Markt seit dem Start +1,06 %)
+ *   97.7 die Verdrahtung: driftui.js laedt beide Reihen, mfdepot.js fuehrt sie und legt spyT ab
+ * Alle Handzahlen sind von Hand gerechnet und stehen als Zahl da - nicht aus massstab.js. */
+console.log('97) Der Markt zum selben Zeitpunkt wie das Buch (Auftrag Nr. 91)');
+(function () {
+  var g97 = 0, rot97 = 0;
+  function gegen97(was, ergebnis) { g97++; if (ergebnis) rot97++; ok(ergebnis, '   Gegenprobe: ' + was); }
+  function nah97(a, b, eps) { return typeof a === 'number' && typeof b === 'number' && Math.abs(a - b) < (eps || 1e-9); }
+  var mstQ = fs.readFileSync(__dirname + '/massstab.js', 'utf8');
+  function ladeMst(q) { var m = { exports: {} }; new Function('module', q)(m); return m.exports; }
+  /* Eine Fassung mit genau EINER Aenderung; trifft das Muster nicht genau einmal, gibt es keine. */
+  function fassung97(q, von, nach) { return q.split(von).length === 2 ? ladeMst(q.replace(von, function () { return nach; })) : null; }
+  var Mst = ladeMst(mstQ);
+  var Alt = require('./test-daten/massstab-vor-nr91.js');
+  var shell97 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var pzQ97 = /pz1: (function \(v\) \{[\s\S]*?\n    \}),/.exec(shell97);
+  var pz97 = new Function('return ' + pzQ97[1])();
+
+  /* ---- 97.1 zerlege mit mitRoh ---- */
+  var K97 = require('./kurse.js');
+  var kuQ97 = fs.readFileSync(__dirname + '/kurse.js', 'utf8');
+  var TEXT97 = fs.readFileSync(__dirname + '/test-daten/yahoo-nvda-ereignisse.json', 'utf8');
+  var J97 = JSON.parse(TEXT97).chart.result[0], CL97 = J97.indicators.quote[0].close, TS97 = J97.timestamp;
+  var mitR = K97.zerlege(TEXT97, { bereinigt: true, mitRoh: true }), ohneR = K97.zerlege(TEXT97, { bereinigt: true });
+  var fenR = K97.zerlege(TEXT97, { bereinigt: true, mitRoh: true, von: 1709000000000, bis: 1718000000000 });
+  var unbR = K97.zerlege(TEXT97, { bereinigt: false, mitRoh: true });
+  function rohWieClose(z) {
+    return !!z && Array.isArray(z.roh) && z.roh.length === z.bars.length && z.bars.length > 0 &&
+      z.roh.every(function (r, i) { var k = TS97.indexOf(r[0] / 1000); return r[0] === z.bars[i][0] && k >= 0 && r[1] === CL97[k]; });
+  }
+  ok(rohWieClose(mitR) && mitR.bars.length === 78 && mitR.feld === 'adjclose' && mitR.bars.some(function (b, i) { return b[1] !== mitR.roh[i][1]; }) &&
+     rohWieClose(fenR) && fenR.bars.length < mitR.bars.length && rohWieClose(unbR) && unbR.bars.every(function (b, i) { return b[1] === unbR.roh[i][1]; }),
+     '97.1 mitRoh: roh = [[t, unbereinigter Schluss]] derselben Balken, dieselben Stempel wie bars - auch im Fenster und unbereinigt', mitR && mitR.roh.length);
+  /* Die Fassung VOR Nr. 91: die drei eingefuegten Stellen herausgenommen (jede muss genau einmal treffen). */
+  var kuAltQ = kuQ97, kuTreffer = 0;
+  [[/, rohSchluss = o\.mitRoh \? \[\] : null;/, ';'], [/\n      if \(rohSchluss\) rohSchluss\.push\([^\n]*\);/, ''],
+   [/\n      \/\* Dieselbe Sperre fuer die Rohreihe[^\n]*\n      if \(rohSchluss\) rohSchluss = rohSchluss\.filter\([^\n]*\);/, ''],
+   [/\n    if \(rohSchluss\) ergebnis\.roh = rohSchluss;/, '']].forEach(function (e) {
+    if ((kuAltQ.match(new RegExp(e[0].source, 'g')) || []).length === 1) kuTreffer++;
+    kuAltQ = kuAltQ.replace(e[0], function () { return e[1]; });
+  });
+  var KAlt = (function () { var m = { exports: {} }; new Function('module', kuAltQ)(m); return m.exports; })();
+  var OPT97 = [undefined, { bereinigt: true }, { bereinigt: false }, { bereinigt: true, offenRoh: true }, { bereinigt: true, von: 1709000000000, bis: 1718000000000 }, { bereinigt: true, ereignisse: true }];
+  ok(kuTreffer === 4 && !/rohSchluss/.test(kuAltQ) && !('roh' in ohneR) &&
+     OPT97.every(function (o) { return JSON.stringify(K97.zerlege(TEXT97, o)) === JSON.stringify(KAlt.zerlege(TEXT97, o)); }) &&
+     JSON.stringify(Object.assign({}, mitR, { roh: undefined })) === JSON.stringify(ohneR),
+     '97.1 ohne den Schalter zeichengleich wie vor Nr. 91 (sechs Optionssaetze gegen die Fassung ohne die eingefuegten Zeilen); mit ihm kommt nur roh dazu', kuTreffer);
+
+  /* ---- 97.2 der Faktor an Handzahlen ----
+   * Sechs Tagesbalken im September 2026, gestempelt 13:30 UTC (Eroeffnung), Kurs = Schluss.
+   * Rohe Schluesse 400, 400, 398, 404, 401, 405. Zwei Ausschuettungen: Ex-Tag 3. mit 2 $
+   * (Vortagesschluss 400, Faktor F1 = 1 - 2/400 = 0,995) und Ex-Tag 5. mit 3 $
+   * (Vortagesschluss 404, F2 = 1 - 3/404). Bereinigt wie Yahoo: jeder Balken VOR einem
+   * Ex-Tag mal dessen Faktor - Tag 1-2 mal F1*F2, Tag 3-4 mal F2, Tag 5-6 unveraendert. */
+  function U(tag, std, min) { return Date.UTC(2026, 8, tag, std, min || 0); }
+  var F1 = 1 - 2 / 400, F2 = 1 - 3 / 404;
+  var ROHK = [400, 400, 398, 404, 401, 405], FAK = [F1 * F2, F1 * F2, F2, F2, 1, 1];
+  var MR = ROHK.map(function (k, i) { return [U(i + 1, 13, 30), k]; });
+  var MB = ROHK.map(function (k, i) { return [U(i + 1, 13, 30), k * FAK[i]]; });
+  function pkt(t, spy, spyT, wert) {
+    var o = { t: t, momentum: wert == null ? 100000 : wert, startM: 100000 };
+    if (spy !== undefined) o.spy = spy;
+    if (spyT !== undefined) o.spyT = spyT;
+    return o;
+  }
+  function V(M, verlauf, extra) {
+    return M.vergleich(verlauf, 'momentum', 'startM', Object.assign({ an: true, angelegt: verlauf[0].t, punktKurs: true, markt: MB, marktRoh: MR, buchAusschuettungen: true }, extra || {}));
+  }
+  /* Punkte nach dem Schluss: A (Tag 2, vor beiden Ex-Tagen), B (Tag 4, dazwischen), C (Tag 6, danach). */
+  var A = pkt(U(2, 22), 400, U(2, 13, 30)), B = pkt(U(4, 22), 404, U(4, 13, 30)), C = pkt(U(6, 22), 405, U(6, 13, 30));
+  var vABC = V(Mst, [A, B, C]);
+  /* Handrechnung: Marktwert A = 400 * F1 * F2 = 395,0446; B = 404 * F2 = 401,0000; C = 405 * 1.
+   * C / A - 1 = +2,520082 %; B / A - 1 = 404 / 398 - 1 = +1,507538 %; Kursertrag allein +1,25 %. */
+  ok(vABC.ok && vABC.marktArt === 'gesamt' && vABC.marktGrund === null && nah97(vABC.marktPct, 2.520082, 1e-6) &&
+     nah97(vABC.marktReihe[1][1], 1.507538, 1e-6) && nah97(vABC.marktReihe[0][1], 0) && vABC.marktPct > 1.25,
+     '97.2 zwei Ausschuettungen, Punkte vor/zwischen/nach den Ex-Tagen: Markt +2,5201 % (von Hand: 405 / (400 * 0,995 * 401/404) - 1), dazwischen +1,5075 % (404/398 - 1); Gesamtertrag ueber dem Kursertrag (+1,25 %)',
+     vABC.marktPct.toFixed(6) + ' / ' + vABC.marktReihe[1][1].toFixed(6));
+  var ohneT = V(Mst, [pkt(A.t, 400), pkt(B.t, 404), pkt(C.t, 405)]);
+  ok(nah97(ohneT.marktPct, vABC.marktPct) && nah97(ohneT.marktReihe[1][1], vABC.marktReihe[1][1]),
+     '97.2 ohne spyT (Punkte von vor Nr. 91): der juengste Balken <= p.t - nach dem Schluss ist das derselbe Balken');
+  var mitLuecke = V(Mst, [pkt(U(1, 22), undefined, undefined, 99900), A, pkt(U(3, 22), null, U(3, 13, 30)), B, C]);
+  ok(mitLuecke.ok && mitLuecke.seit === A.t && nah97(mitLuecke.marktPct, vABC.marktPct) && mitLuecke.marktReihe.length === 3 && mitLuecke.buchReihe.length === 5,
+     '97.2 ein Punkt ohne spy hat keinen Marktwert: der Vergleich beginnt am ersten Punkt mit Stand, der Punkt dazwischen fehlt nur in der Marktlinie');
+  /* Am Ex-Tag (3.) vor der Eroeffnung: die App sah den Schluss des Vortags (400). */
+  var X1 = pkt(U(3, 12), 400, U(2, 13, 30)), X1o = pkt(U(3, 12), 400);
+  /* Am Ex-Tag nach der Eroeffnung: die App sah den laufenden Balken des Tages (399, ex). */
+  var X2 = pkt(U(3, 18), 399, U(3, 13, 30));
+  /* Am Ex-Tag nach der Eroeffnung, aber die geladene Reihe endete noch am Vortag (400, cum). */
+  var X3 = pkt(U(3, 18), 400, U(2, 13, 30)), X3o = pkt(U(3, 18), 400);
+  var vX1 = V(Mst, [A, X1]), vX1o = V(Mst, [A, X1o]), vX2 = V(Mst, [A, X2]), vX3 = V(Mst, [A, X3]), vX3o = V(Mst, [A, X3o]);
+  ok(nah97(vX1.marktPct, 0) && nah97(vX1o.marktPct, 0) && nah97(vX2.marktPct, 0.251256, 1e-6) && nah97(vX3.marktPct, 0),
+     '97.2 am Ex-Tag vor der Eroeffnung 0,0 % (Vortagesschluss mal F1*F2); nach der Eroeffnung mit dem Stand des Tages +0,2513 % (399 * F2 / (400 * F1 * F2) - 1 = 399/398 - 1); mit veralteter Reihe und spyT 0,0 %',
+     [vX1.marktPct, vX2.marktPct, vX3.marktPct].map(function (x) { return x.toFixed(6); }).join(' / '));
+  ok(nah97(vX3o.marktPct, 0.502513, 1e-6),
+     '97.2 bekannte Grenze der Punkte OHNE spyT: nach der Eroeffnung am Ex-Tag mit einem Stand vom Vortag zaehlt die Ausschuettung ohne den Abschlag (+0,5025 % = 1/F1 - 1) - genau das schliesst spyT', vX3o.marktPct.toFixed(6));
+
+  /* ---- 97.3 die Rueckfall-Gruende ---- */
+  var KURS = (405 / 400 - 1) * 100;    /* Kursertrag aus den abgelegten Staenden A -> C, von Hand: +1,25 % */
+  var andersKurs = MR.map(function (b, i) { return [b[0], i === 5 ? 500 : b[1]]; });
+  function nurAbgelegt(v, liste) {      /* jede Marktzahl der Linie ist p.spy / a.spy - nichts aus einer Reihe */
+    var a = liste.filter(function (p) { return p.spy != null; })[0];
+    return v.marktReihe.every(function (m, i) { var p = liste.filter(function (q) { return q.spy != null; })[i]; return nah97(m[1], (p.spy / a.spy - 1) * 100); });
+  }
+  var ABC = [A, B, C];
+  var faelle97 = [
+    ['reihe-fehlt', V(Mst, ABC, { markt: null, marktKurs: andersKurs })],
+    ['reihe-beginnt-spaeter', V(Mst, ABC, { markt: MB.slice(3), marktRoh: MR.slice(3) })],
+    ['reihe-beginnt-spaeter', V(Mst, ABC, { markt: MB.slice(3), marktRoh: null })],
+    ['rohreihe-fehlt', V(Mst, ABC, { marktRoh: null })],
+    ['rohreihe-fehlt', V(Mst, ABC, { marktRoh: MR.slice(1) })],
+    ['rohreihe-fehlt', V(Mst, ABC, { marktRoh: MR.map(function (b, i) { return [i === 2 ? b[0] + 1 : b[0], b[1]]; }) })],
+    ['rohreihe-fehlt', V(Mst, ABC, { marktRoh: MR.map(function (b, i) { return [b[0], i === 4 ? null : b[1]]; }) })],
+    ['rohreihe-fehlt', V(Mst, ABC, { marktRoh: MR.map(function (b, i) { return [b[0], i === 0 ? 0 : b[1]]; }), marktKurs: andersKurs })]
+  ];
+  var CD = ABC.concat([pkt(U(12, 22), 410, U(12, 13, 30))]);
+  var vZuAlt = V(Mst, CD);
+  ok(faelle97.every(function (f) { return f[1].ok && f[1].marktArt === 'kurs' && f[1].marktGrund === f[0] && nah97(f[1].marktPct, KURS) && nurAbgelegt(f[1], ABC); }) &&
+     vZuAlt.marktArt === 'kurs' && vZuAlt.marktGrund === 'reihe-zu-alt' && nah97(vZuAlt.marktPct, (410 / 400 - 1) * 100) && nurAbgelegt(vZuAlt, CD),
+     '97.3 alle Rueckfall-Gruende (Reihe fehlt / beginnt spaeter - auch vor rohreihe-fehlt geprueft / zu alt / Rohreihe fehlt, andere Laenge, anderer Stempel, Luecke, Null): Kursertrag +1,25 %, JEDE Marktzahl aus den abgelegten Staenden - auch wenn eine Rohreihe (marktKurs) daneben liegt',
+     faelle97.map(function (f) { return f[1].marktGrund; }).join(','));
+
+  /* ---- 97.4 ohne punktKurs zeichengleich zur eingefrorenen Altfassung ---- */
+  var saat97 = 91;
+  function zufall97() { saat97 = (saat97 * 1103515245 + 12345) % 2147483648; return saat97 / 2147483648; }
+  var OPTS97 = [
+    function () { return {}; }, function () { return { an: false }; }, function (v) { return { an: true, angelegt: v.length ? v[0].t : null }; },
+    function () { return { an: true, start: 100000 }; }, function () { return { markt: MB }; }, function () { return { markt: MB, marktKurs: MR }; },
+    function () { return { marktKurs: andersKurs }; }, function () { return { markt: MB.slice(3), marktKurs: MR }; },
+    function () { return { markt: MB, marktRoh: MR }; }, function () { return { markt: MB, marktRoh: MR, punktKurs: false }; }
+  ];
+  var gleich97 = 0, faelle97b = 0, abw97 = [];
+  for (var n97 = 0; n97 < 400; n97++) {
+    var len = Math.floor(zufall97() * 7), t0 = U(1, 0) + Math.floor(zufall97() * 3 * 86400000), verlauf = [];
+    for (var j97 = 0; j97 < len; j97++) {
+      t0 += Math.floor((0.2 + zufall97() * 3) * 86400000);
+      var p97 = { t: t0 };
+      if (zufall97() > 0.1) p97.momentum = 95000 + zufall97() * 10000;
+      var sw = zufall97();
+      if (sw > 0.2) p97.startM = sw > 0.9 ? 50000 : 100000;
+      var sp = zufall97();
+      if (sp > 0.15) p97.spy = sp > 0.9 ? null : 380 + zufall97() * 40;
+      if (zufall97() > 0.5) p97.spyT = t0 - 30000000;
+      verlauf.push(p97);
+    }
+    var o97 = OPTS97[n97 % OPTS97.length](verlauf);
+    var neu = Mst.vergleich(verlauf, 'momentum', 'startM', o97), alt = Alt.vergleich(verlauf, 'momentum', 'startM', JSON.parse(JSON.stringify(o97)));
+    faelle97b++;
+    var gl = JSON.stringify(neu) === JSON.stringify(alt) && Mst.hinweis(neu) === Alt.hinweis(alt) && Mst.langText('Buch', neu, pz97) === Alt.langText('Buch', alt, pz97) &&
+      Mst.kopfText([['Momentum', neu], ['Drift', neu]], pz97) === Alt.kopfText([['Momentum', alt], ['Drift', alt]], pz97) && Mst.marktName(neu) === Alt.marktName(alt);
+    if (gl) gleich97++; else if (abw97.length < 3) abw97.push(n97);
+  }
+  var mmGleich = [[[U(2, 10), 100000], [U(2, 15), 100100], [U(3, 15), 100500], [U(9, 15), 101000]]].every(function (r) {
+    return [MB, MR, null, MB.slice(3)].every(function (m) {
+      var a = Mst.mitMarkt(r, m, 'intraday', 'startI', 100000), b = Alt.mitMarkt(r, m, 'intraday', 'startI', 100000);
+      return JSON.stringify(a) === JSON.stringify(b) &&
+        JSON.stringify(Mst.vergleich(a, 'intraday', 'startI', { markt: MB, marktKurs: MR })) === JSON.stringify(Alt.vergleich(b, 'intraday', 'startI', { markt: MB, marktKurs: MR }));
+    });
+  });
+  ok(gleich97 === faelle97b && faelle97b === 400 && mmGleich,
+     '97.4 ohne punktKurs zeichengleich zur eingefrorenen Altfassung: 400 Zufallsverlaeufe (mit und ohne spyT, Luecken, aus, zehn Optionssaetze) - Ergebnis, Hinweis, Texte, Legende; dazu der Weg ueber mitMarkt',
+     gleich97 + ' von ' + faelle97b + (abw97.length ? ' · abweichend: ' + abw97.join(',') : ''));
+  ok(fs.readFileSync(__dirname + '/test-daten/massstab-vor-nr91.js', 'utf8').indexOf('punktKurs') === -1 && typeof Alt.vergleich === 'function',
+     '97.4 die eingefrorene Altfassung ist wirklich die alte (kennt punktKurs nicht)');
+
+  /* ---- 97.5 der Hinweis ---- */
+  var H_BUCH = 'S&P 500 als SPY-Gesamtertrag. Buch und Markt mit Ausschüttungen; Marktstand je Punkt so, wie die App ihn beim Bewerten des Buchs sah.';
+  var vRohF = faelle97[3][1], vAltF = vZuAlt;
+  ok(Mst.hinweis(vABC) === H_BUCH && vABC.buchAusschuettungen === true &&
+     Mst.hinweis(vRohF) === 'S&P 500 als SPY-Tageskurs. Buch mit, Markt ohne Ausschüttungen (die unbereinigte SPY-Reihe fehlt oder passt nicht zur bereinigten – deshalb der Kursertrag).' &&
+     Mst.hinweis(vAltF) === 'S&P 500 als SPY-Tageskurs. Buch mit, Markt ohne Ausschüttungen (die bereinigte SPY-Reihe ist zu alt – deshalb der Kursertrag).' &&
+     Mst.marktName(vABC) === 'S&P 500 (SPY, mit Ausschüttungen)' && Mst.marktName(vRohF) === 'S&P 500 (SPY, ohne Ausschüttungen)' &&
+     V(Mst, ABC, { an: false }).buchAusschuettungen === true && Mst.hinweis(V(Mst, ABC, { an: false })) === '',
+     '97.5 die zwei Buecher: "Buch und Markt mit Ausschuettungen; Marktstand je Punkt so, wie die App ihn beim Bewerten des Buchs sah" - im Rueckfall "Buch mit, Markt ohne" samt Grund', Mst.hinweis(vABC));
+  /* Das Intraday-Depot: derselbe Satz wie vor Nr. 91 - gegen die Altfassung gehalten. */
+  var iV97 = Mst.mitMarkt([[A.t, 100000], [C.t, 100200]], null, 'intraday', 'startI', 100000);
+  var iG97 = Mst.vergleich(iV97, 'intraday', 'startI', { markt: MB, marktKurs: MR }), iK97 = Mst.vergleich(iV97, 'intraday', 'startI', { markt: null, marktKurs: MR });
+  var iGa = Alt.vergleich(iV97, 'intraday', 'startI', { markt: MB, marktKurs: MR }), iKa = Alt.vergleich(iV97, 'intraday', 'startI', { markt: null, marktKurs: MR });
+  ok(Mst.hinweis(iG97) === Alt.hinweis(iGa) && Mst.hinweis(iK97) === Alt.hinweis(iKa) &&
+     Mst.hinweis(iG97) === 'S&P 500 als SPY-Gesamtertrag. Markt mit, Buch ohne Ausschüttungen – der Vergleich ist um die Ausschüttungen des Buchs zu streng.' &&
+     Mst.hinweise([['Momentum', vABC], ['Drift', vABC]]) === H_BUCH &&
+     Mst.hinweise([['Momentum', vABC], ['Intraday', iG97]]) === 'Momentum: ' + H_BUCH + ' Intraday: ' + Mst.hinweis(iG97),
+     '97.5 das Intraday-Depot behaelt seinen Satz (wie die Altfassung); Buecher und Depot an einer Stelle: je Buch mit Namen');
+
+  /* ---- 97.6 die Abnahmezahl am echten Bestand, als Handfall ----
+   * Momentum-Buch: erster Punkt 25.08.2026 mit spy 763,47 (Schluss des 24.08.), ohne spyT;
+   * juengster Punkt 04.10.2026 00:06 UTC mit spy 769,64 (Schluss des 02.10.). SPY-Ausschuettung
+   * Ex-Tag 18.09.2026 (1,889 $); im Bestand bereinigt / roh = 0,997523 am 24. und 25.08.
+   * Handrechnung: 763,47 * 0,997523 = 761,5789; 769,64 * 1 = 769,64; 769,64 / 761,5789 - 1
+   * = +1,0585 % (angezeigt +1,1 %). Kurs allein: 769,64 / 763,47 - 1 = +0,81 %. */
+  function bar(tag, monat, roh, f) { return [Date.UTC(2026, monat - 1, tag, 13, 30), roh, roh * f]; }
+  /* Schluss des 25.08. 765,83 (wiki/fehlerformen.md); die Schluesse vom 17./18.09. sind Fuellwerte. */
+  var EB = [bar(24, 8, 763.47, 0.997523), bar(25, 8, 765.83, 0.997523), bar(17, 9, 760.10, 0.997523), bar(18, 9, 758.50, 1), bar(2, 10, 769.64, 1)];
+  var E1 = { t: Date.UTC(2026, 7, 25, 18, 15), momentum: 99800, startM: 100000, spy: 763.47 };
+  var E2 = { t: Date.UTC(2026, 9, 4, 0, 6), momentum: 101000, startM: 100000, spy: 769.64 };
+  var vE = Mst.vergleich([E1, E2], 'momentum', 'startM', { an: true, angelegt: E1.t - 60000, punktKurs: true, buchAusschuettungen: true,
+    markt: EB.map(function (b) { return [b[0], b[2]]; }), marktRoh: EB.map(function (b) { return [b[0], b[1]]; }) });
+  var vEalt = Alt.vergleich([E1, E2], 'momentum', 'startM', { an: true, angelegt: E1.t - 60000, markt: EB.map(function (b) { return [b[0], b[2]]; }) });
+  ok(vE.marktArt === 'gesamt' && nah97(vE.marktPct, 1.058474, 1e-6) && pz97(vE.marktPct) === '+1,1 %' && nah97(Math.round(vE.marktPct * 100) / 100, 1.06),
+     '97.6 Abnahmezahl als Handfall: Markt seit dem Start +1,06 % (761,58 -> 769,64), angezeigt +1,1 %', vE.marktPct.toFixed(6));
+  ok(nah97(vEalt.marktPct, (769.64 / (765.83 * 0.997523) - 1) * 100) && pz97(vEalt.marktPct) === '+0,7 %' && vEalt.marktPct < (769.64 / 763.47 - 1) * 100,
+     '97.6 dieselben Zahlen durch die Altfassung: +0,7 % wie bisher in der App - der Balken des 25.08. (Stempel 13:30, Schluss 765,83) lag vor dem Punkt (18:15), ein Kurs aus seiner Zukunft; der Gesamtertrag lag UNTER dem Kursertrag', vEalt.marktPct.toFixed(4));
+
+  /* ---- 97.7 die Verdrahtung ---- */
+  var duiQ97 = fs.readFileSync(__dirname + '/driftui.js', 'utf8');
+  var lmQ = duiQ97.slice(duiQ97.indexOf('  async function ladeMarkt() {'), duiQ97.indexOf('  /* ---------------- Anzeige'));
+  function ladeMarkt97(bestand, antwort) {
+    var log = { hole: [], set: [] };
+    var win = { api: { storeGet: async function () { return bestand; }, storeSet: async function (k, v) { log.set.push([k, v]); } },
+      Kurse: { hole: async function (s, o) { log.hole.push([s, o]); return antwort; }, reihe: K97.reihe } };
+    return new Function('window', lmQ + '\n return ladeMarkt;')(win)().then(function (r) { log.r = r; return log; });
+  }
+  var BARS97 = []; for (var b97 = 0; b97 < 600; b97++) BARS97.push([b97 * 86400000, 100 + b97 / 10, 0, 0, 0, 0]);
+  var ROH97 = BARS97.map(function (b) { return [b[0], b[1] + 1]; });
+  offeneProben.push(Promise.all([
+    ladeMarkt97({ at: Date.now(), reihe: [[1, 2]], roh: [[1, 3]] }, { bars: BARS97, roh: ROH97 }),
+    ladeMarkt97({ at: Date.now(), reihe: [[1, 2]] }, { bars: BARS97, roh: ROH97 }),
+    ladeMarkt97({ at: Date.now(), reihe: [[1, 2]] }, null)
+  ]).then(function (L) {
+    var frisch = L[0], ohneRoh = L[1], fehl = L[2];
+    ok(lmQ.length > 300 && frisch.hole.length === 0 && JSON.stringify(frisch.r) === '[[1,2]]' &&
+       ohneRoh.hole.length === 1 && ohneRoh.hole[0][0] === 'SPY' && ohneRoh.hole[0][1].bereinigt === true && ohneRoh.hole[0][1].mitRoh === true &&
+       ohneRoh.set.length === 1 && ohneRoh.set[0][0] === 'drift_markt' && ohneRoh.set[0][1].reihe.length === 600 && ohneRoh.set[0][1].roh === ROH97 &&
+       JSON.stringify(ohneRoh.r) === JSON.stringify(K97.reihe(BARS97)) && JSON.stringify(fehl.r) === '[[1,2]]' && fehl.set.length === 0,
+       '97.7 driftui.js ladeMarkt: holt SPY bereinigt UND mitRoh, legt { at, reihe, roh } ab; ein Bestand ohne roh gilt nicht als frisch; wer reihe liest, bekommt dieselbe Reihe');
+  }));
+  var mfdQ97 = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  var vmsQ97 = mfdQ97.slice(mfdQ97.indexOf('  function verlaufMitStand() {'), mfdQ97.indexOf('  /** Buch gegen den S&P 500 ueber denselben Zeitraum'));
+  var vglQ97 = mfdQ97.slice(mfdQ97.indexOf('  function vergleich(name) {'), mfdQ97.indexOf('  function letzterPunkt(d) {'));
+  function mfVergleich(verlauf, STAND, MARKT, MARKT_ROH) {
+    return new Function('D', 'STAND', 'MARKT', 'MARKT_ROH', 'window', vmsQ97 + vglQ97 + '\n return vergleich;')(
+      function () { return { mfVerlauf: verlauf, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: verlauf[0].t - 60000 }, driftBuch: { start: 100000, angelegt: verlauf[0].t - 60000 } }; },
+      STAND, MARKT, MARKT_ROH, { Massstab: Mst });
+  }
+  var mfV = mfVergleich([A, B], { momentum: { wert: 100000, start: 100000, at: C.t }, drift: null, spy: 405, spyT: U(6, 13, 30) }, MB, MR)('momentum');
+  var mfVohne = mfVergleich([A, B], { momentum: { wert: 100000, start: 100000, at: C.t }, drift: null, spy: 405, spyT: U(6, 13, 30) }, MB, null)('momentum');
+  ok(vglQ97.length > 300 && mfV.marktArt === 'gesamt' && nah97(mfV.marktPct, 2.520082, 1e-6) && mfV.buchAusschuettungen === true && Mst.hinweis(mfV) === H_BUCH &&
+     mfVohne.marktGrund === 'rohreihe-fehlt' && nah97(mfVohne.marktPct, KURS),
+     '97.7 mfdepot.js vergleich(name): Verlauf samt Stand des letzten Takts (mit spyT), beide Reihen des Merkers, punktKurs und buchAusschuettungen - am Verhalten (+2,5201 %; ohne Rohreihe der Rueckfall)');
+  ok(/MARKT_ROH = MARKT && c\.roh \? c\.roh : null;/.test(mfdQ97) && /marktRoh: function \(\) \{ return MARKT_ROH; \}/.test(mfdQ97) &&
+     /var spyT = markt\.length \? markt\[markt\.length - 1\]\[0\] : null;/.test(mfdQ97) && /STAND\.spyT = spyT;/.test(mfdQ97) &&
+     /spy: spy, spyT: spyT,/.test(mfdQ97) && /spy: STAND\.spy, spyT: STAND\.spyT,/.test(vmsQ97) &&
+     /punktKurs: true, marktRoh: MARKT_ROH, buchAusschuettungen: true, markt: MARKT \}\);/.test(vglQ97),
+     '97.7 mfdepot.js: der Merker fuehrt beide Reihen (markt(), marktRoh()); jeder neue Tagespunkt und der Stand des Takts tragen spyT (Stempel des Balkens, aus dem spy stammt)');
+  var vmsLauf = new Function('D', 'STAND', vmsQ97 + '\n return verlaufMitStand();')(function () { return { mfVerlauf: [A] }; }, { momentum: { wert: 1, start: 1, at: C.t }, drift: null, spy: 405, spyT: U(6, 13, 30) });
+  ok(vmsLauf.length === 2 && vmsLauf[1].spyT === U(6, 13, 30) && vmsLauf[1].spy === 405,
+     '97.7 der Stand des letzten Takts geht mit spyT in den Verlauf');
+
+  /* ---- Gegenproben (Teil 1) ---- */
+  var nachDem = fassung97(mstQ, '  function balkenDesPunkts(m, p) {\n', '  function balkenDesPunkts(m, p) {\n    return Math.min(indexAn(m, p.t) + 1, m.length - 1);\n');
+  gegen97('f mit dem Balken NACH dem Punkt faellt auf', !!nachDem && !nah97(V(nachDem, ABC).marktPct, 2.520082, 1e-6));
+  var ohneF = fassung97(mstQ, 'return f == null ? null : s * f;', 'return f == null ? null : s;');
+  gegen97('spy nicht mit f malgenommen faellt auf (Kursertrag unter dem Namen Gesamtertrag)', !!ohneF && nah97(V(ohneF, ABC).marktPct, KURS) && V(ohneF, ABC).marktArt === 'gesamt');
+  var doppelt = fassung97(mstQ, 'return f == null ? null : s * f;', 'return f == null ? null : s * f * f;');
+  gegen97('f doppelt angewandt faellt auf', !!doppelt && !nah97(V(doppelt, ABC).marktPct, 2.520082, 1e-6));
+  var gemischt = fassung97(mstQ, "if (grund) return { art: 'kurs', grund: grund, wert: abgelegt };",
+    "if (grund) return { art: 'kurs', grund: grund, wert: function (p) { return (m && m.length ? marktAn(m, p.t) : null) || abgelegt(p); } };");
+  gegen97('ein Rueckfall, der Quellen mischt (Werte aus der bereinigten Reihe, wo es sie gibt), faellt auf',
+    !!gemischt && !nurAbgelegt(V(gemischt, ABC, { marktRoh: null }), ABC));
+  var intraGeaendert = fassung97(mstQ, 'return mit ? HINWEIS_BUCH_GESAMT : HINWEIS_GESAMT;', 'return HINWEIS_BUCH_GESAMT;');
+  gegen97('ein geaenderter Hinweis fuer das Intraday-Depot faellt auf', !!intraGeaendert && intraGeaendert.hinweis(intraGeaendert.vergleich(iV97, 'intraday', 'startI', { markt: MB, marktKurs: MR })) !== Alt.hinweis(iGa));
+  ok(rot97 === g97 && g97 === 5, '97.x alle Gegenproben von Teil 1 schlagen an', rot97 + ' von ' + g97);
 })();
 
 Promise.all(offeneProben).then(function () {
