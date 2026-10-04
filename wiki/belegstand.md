@@ -239,6 +239,7 @@ sie sind selbst kein Einstieg.**
 
 - **SPY > EMA200 als Gate:** +0,098 Pp, **t = 2,6** — eingebaut
 - **Regime-Zuteilung R-TREND:** **t = 3,2** — eingebaut (`rsi2seit` über der EMA200, Kapitulation darunter)
+  **Vermerk 04.10.2026 (PM):** Die Zahl stammt aus der Regime-Studie vom 21.08.2026 (altes Archiv ohne verschwundene Reihen; die Skripte lagen im Kratzordner einer früheren Sitzung und sind nicht im Repo — heute nicht nachrechenbar) und maß **beide Teile zusammen** (`rsi2seit` nur über, Kapitulation nur unter der EMA200, gegen die feste Einstellung). Der Kapitulations-Teil ist seit der Neumessung vom 03.10.2026 in der behaupteten Größe zurückgewiesen (Abschnitt „Kapitulation V2, Neumessung"); t = 3,2 ist damit **kein Beleg der Zuteilung als Ganzes mehr**. Der RSI-Teil für sich (in der App genannt: +0,148 Pp über, −0,169 Pp unter der Linie) ist nicht neu gemessen — weder bestätigt noch widerlegt. In der App (Auftrag Nr. 71, Wilhelm 04.10.): Kapitulation per Voreinstellung aus, der Regime-Schalter bleibt; unter der Linie ist dann Pause.
 
 Siehe [messmethodik.md](messmethodik.md) für die Frage, warum eine Bedingung leichter zu belegen
 ist als eine Strategie.
