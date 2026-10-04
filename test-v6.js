@@ -24560,6 +24560,27 @@ console.log('101) Generalprobe 23.11.2026: behobene Funde und Gegenproben');
   })());
 })();
 
+/* ================= 102) Lader-Stoerungen: Tagesbalken in kurse.js (Zweig fix/generalprobe-2311) =================
+ * Die Einzeltests des Pruefberichts pruefberichte/2026-10-lader-stoerungen.md fuer kurse.js laufen als eigener
+ * Prozess (sie sperren Netz und Schreiben fuer ihren ganzen Prozess, das soll diese Suite nicht treffen). Die
+ * behobenen Funde (KU-2, KU-5, KU-6, KU-9, KU-13, KU-14; vorher "ZEIGT ABWEICHUNG") und die vorher schon
+ * richtigen (KU-1, KU-3, KU-4, KU-12) muessen "kein Unterschied" melden; kein Test darf kaputt sein. Offen und
+ * deshalb nicht hier: KU-7, KU-8, KU-10, KU-11. Kunstdaten, feste Uhr, kein Netz. */
+console.log('102) Lader-Stoerungen: Tagesbalken je Handelstag in kurse.js (KU)');
+(function () {
+  var ku = '';
+  try {
+    ku = require('child_process').execFileSync(process.execPath, [__dirname + '/pruefberichte/lader-stoerungen.test.js', 'KU'],
+      { cwd: __dirname, encoding: 'utf8', timeout: 120000 });
+  } catch (e) { ku = String((e && e.stdout) || '') + '\nLAUF GESCHEITERT: ' + (e && e.message); }
+  ['KU-2', 'KU-5', 'KU-6', 'KU-9', 'KU-13', 'KU-14', 'KU-1', 'KU-3', 'KU-4', 'KU-12'].forEach(function (id) {
+    var zeile = ku.split('\n').filter(function (z) { return z.indexOf('[' + id + ']') >= 0; })[0] || '';
+    ok(/^kein Unterschied: /.test(zeile), '102 ' + id + ' - kein Unterschied', zeile ? undefined : 'Zeile fehlt');
+  });
+  ok(/ 0 kaputt; Netzversuche 0, Schreibversuche ausserhalb 0/.test(ku), '102 Lauf der KU-Tests: 0 kaputt, kein Netz, kein Schreiben ausserhalb',
+     (ku.split('\n').filter(function (z) { return /^--- /.test(z); })[0] || ku.slice(-200)));
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
