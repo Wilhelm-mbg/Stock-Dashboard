@@ -429,3 +429,43 @@ Bericht `studien/datenfundament-2026-10-04/phase2/PHASE2A.md` (Commits `c645241`
 **Gründe-Tafel, zweiter Trockenlauf über alle 5.050 Zeilen (keine Tafel entstanden).** Mit dem richtigen Anker und den drei Regeln des PM kippen 342 von 4.996 Gründen (125 auf „unbekannt"), 99 „unbekannt" bekommen einen Grund, 54 Reihen kommen hinzu; die Totalverlust-Eigenschaft änderte sich bei 261 Reihen (+160 / −101), davon 14 mit Klasse 1–3 (+7 / −7). **Zwei der drei Regeln des PM tragen so nicht:** (1) die Firmenkennung aus der Polygon-Liste ist bei mindestens 118 von 4.717 Zeilen eine fremde Firma (AFAM, YHOO) und bei 99 ein anderer Registrant — „Polygon gilt" tauscht einen Fehler gegen einen anderen; (2) ohne die fernen Vollzugsmeldungen fällt eine Übernahme auf die Abmelde-Meldung der Zielgesellschaft zurück und würde „Zwangs-Delisting" (58 Zeilen) — alle sieben neuen Totalverluste in Klasse 1–3 sind nach den Belegen keine. Die dritte Regel (Formular 25 allein ist nicht „freiwillig") wirkt wie gedacht (337 Zeilen). Richtig bleibt der Anker (Rüge am Reihenende bei 79 % statt 47 % der Zeilen). **Folge:** ein dritter Zähllauf mit verfeinerten Regeln (Nr. 90), erst danach die Tafel v2.
 
 **Abnahme des PM:** Lebenszeit-Datei gegen die eigene Zählung gehalten (dieselben 57); Kopien an drei Reihen Kerze für Kerze verglichen (CRWD und POWL 2026: jede Kerze der alten Kopie gleich, v2 reicht bis zum 02.10.; GSK 2022: v2 gleich dem Rohkurs, die alte Kopie lag vor dem Ex-Tag um den Faktor 1,25 daneben); in `alpaca1m-bereinigt/` keine Datei mit heutigem Datum; 66 Prüfungen selbst gefahren.
+
+## Dritter Zähllauf der Gründe-Tafel (Nr. 90, 04.10.2026) — die Regeln tragen fast; und: 310 Reihen stehen doppelt im Panel
+
+Nur gezählt, keine Tafel (`studien/datenfundament-2026-10-04/zaehllauf3/ZAEHLLAUF3.md`, `REGEL-ZAEHLLAUF3.md`; Commits `477c263` Regel vor dem Zählen, `d9ef334` Wortlisten nach der Lernprobe, `66d99b2` Zählungen). Über „Übernahme, Zwangs-Delisting oder freiwillig" entscheidet jetzt der **Wortlaut der Abmelde-Meldung** (8-K Punkt 3.01; 870 Texte bei der SEC geholt, 1.047 Anfragen, keine Sperre).
+
+| Größe | zweiter Lauf | dritter Lauf |
+|---|---|---|
+| Zwangs-Delisting | 628 | **372** |
+| Übernahme | 1.563 | 1.665 |
+| SPAC-Ende | 292 | 343 |
+| freiwillig | 23 | 108 |
+| abgemeldet, Anlass offen | 337 | 370 |
+| ausgesetzt (neu) | – | 23 |
+| unbekannt | 238 | 189 |
+| **Totalverlust in der Hauptlesart** (Insolvenz + Zwangs-Delisting) | 963 | **716** |
+| … davon mit Klasse 1–3 | 19 | **5** (SIVB, SAVE, NKLA, NOVA richtig; CCCX falsch) |
+
+**Die Wortlisten:** Prüfprobe des Chats 37 von 40; Eichprobe mit bekannter Wahrheit: 139 von 150 Übernahmen laut Alpaca lesen sich als Vollzug (2 als Rüge), 81 von 100 Insolvenz-Kürzeln als Rüge. **Leseprobe des PM** (24 andere Texte, eigene Saat): alle 22 eingestuften Texte richtig gelesen; die zwei nicht eingestuften zeigten Regel-Lücken (ein Mantel, eine Kapital-Umstellung).
+
+**Was der PM bei der Abnahme zusätzlich gezählt hat — und was daraus für die Tafel folgt (Entscheide, erst gezählt, dann entschieden):**
+
+| Nr. | Fund (Zahl) | Entscheid für die Tafel v2 |
+|---|---|---|
+| E1 | Das „Q am Ende" trifft auch gewöhnliche Kürzel: 8 von 22 Zeilen ohne Insolvenz-Meldung sind Umbenennungen (ARQ, INFQ, ARQQ, IONQ, CCAQ, ELIQ, NHIQ, TAIQ) | Insolvenz-Kürzel nur, wenn das neue Kürzel fünf Zeichen hat und auf Q endet oder genau das alte plus Q ist (alle 109 mit Insolvenz-Meldung erfüllen das) |
+| E2 | 21 Zwangs-Delistings sind Mäntel um 10 $ mit anderer Kennziffer (ATEK, CHPM, OTEC, PORT …) | Mantel = Kennziffer 6770 **oder** Mantel-Name, und roher letzter Kurs ab 8 $ → SPAC-Ende |
+| E3 | Eine Rüge 31 bis 180 Tage vor dem Reihenende ohne Formular der Börse ist oft nur eine Mahnung (CTRV, PHMD: später umbenannt): 42 von 50 Zeilen | eine frühe Rüge zählt nur mit dem Formular der Börse (25-NSE) höchstens 30 Tage am Reihenende |
+| E4 | „Wortlaut unklar → Zwangs-Delisting" trifft 30 Zeilen, mindestens 12 davon sind Umbenennungen, Mäntel, Abwicklungen (OZM, TSRA, NRCIB, CFD …) | unklarer Wortlaut → „abgemeldet, Anlass offen" (kein Totalverlust in der Hauptlesart) |
+| E5 | Formular 25 ohne Abmelde-Meldung: 61 von 370 liegen mehr als 30 Tage vom Reihenende (OZRK: ein Jahr davor) | zählt nur höchstens 30 Tage am Reihenende |
+| E6 | Nach verworfener Polygon-Kennung prüft niemand den Namen der Suchfirma (SYMC → Broadcom) | dieselbe Namensprobe auch für die Suchfirma; sonst keine Firma |
+| E7 | Der „letzte Kurs" der Arbeitsdatei ist **bereinigt**, nicht roh: bei 63 von 958 Zeilen weicht er um mehr als das 1,5-Fache ab (RNVA 58,9 Mrd statt 0,45 $; LFLY 283,50 statt 0,61 $) | jede Kursgrenze am **rohen letzten Minutenschluss**; die Tafel führt beide Kurse |
+| **V9** | **310 abgegangene Reihen haben einen Zwilling**, der weiterlebt (siehe unten); 109 davon tragen einen anderen Grund als „Umbenennung", 14 standen im dritten Lauf als Totalverlust | Zwilling → „Umbenennung, Nachfolger im Archiv"; die alte Reihe wird im Panel v2.3 als doppelt entfernt |
+| E8 | Nach V9 bleiben in Klasse 1–3: 9 der 18 „unbekannt" (DISCA, DISCK, DWDP, FRC, SBNY, YHOO, QVCA, MHFI, LGF) und die Zeilen mit „abgemeldet", „freiwillig", „ausgesetzt" | der PM liest diese Zeilen und trägt sie von Hand mit Quelle ein |
+
+**Doppelte Vorgänger-Reihen (Fund des PM, 15:28).** Alpaca liefert unter dem **neuen** Kürzel die Geschichte des alten mit. Das Archiv hat beide gesammelt: KORS (2016–2018) und CPRI (2016–2026) tragen bis Ende 2018 dieselben Kurse. Gezählt am Tages-Panel v2.2 (Zwilling = an den drei letzten Tagen der Reihe genau gleicher roher Schluss und gleiche Eröffnung, und die andere Reihe läuft weiter): **310 Reihen, 37 davon mit Klasse 1–3, 193.581 doppelte Panel-Zeilen (2,0 %)**. In der alten Gründe-Tafel — auf ihr liefen alle Studien — standen 32 dieser weiterlebenden Firmen als Totalverlust (darunter SLW und SYMC mit Klasse 1–3), 29 weitere nur in der strengen Lesart. Beispiele: KORS → CPRI, HRS → LHX, VRX → BHC, WYN → TNL, SYMC → GEN, CTRP → TCOM, OZRK → OZK, COH → TPR, DPS → KDP. Dieselbe Dopplung steckt im Minutenarchiv (rund 4 % der Aktienreihen). **Wirkung auf den Rückblick des Momentum-Buchs** (eigener Rechner des PM, mit Regel K, die 310 Reihen aus dem Universum genommen): Korb 187, 2017–2021 Median +7,27 statt +7,32 Pp p. a. (63 von 63 vorn, wie zuvor); 2021–2026 unverändert (+8,25, 61 von 63) — der Befund steht. Für Studien auf dem breiten Markt und für jede Regel, die Verlierer kauft, ist die Wirkung nicht gemessen.
+
+**Abnahme des PM:** die drei Commits berühren nur den neuen Ordner; `test.js` selbst gefahren (87 grün), Lint sauber; Zählung der Gründe und der Totalverlust-Liste aus `z3-gruende-neu.json` nachgerechnet (716; fünf Namen); eigene Leseprobe; die Zahlen des PM aus dem Auftrag hat der Chat nachgezählt (zwei kleine Abweichungen: 30 statt 29 verdeckte Ende-Maßnahmen, 183 / 160 statt 182 / 158). Verbrauch 458k bei 300k (Abrechnung; Chat schätzte 285k).
+
+## Ausschüttungen und Splits aus dem Tagesabruf der App (Nr. 87, 04.10.2026)
+
+Die App holt Splits und Ausschüttungen im selben Yahoo-Tagesabruf wie die Kurse (`&events=div,splits`, kein zusätzlicher Abruf; Bestand `mf_ereignisse`). Am 04.10.2026 live geprüft (NVDA, WMT): Yahoo nennt die Ausschüttung **in heutiger Stückelung** (NVDA vor dem Split 10:1: 0,004 statt gezahlter 0,04 $) und stempelt das Ereignis mit dem **Zeitstempel des Tagesbalkens des Ex-Tags** (265 von 265 Ausschüttungen, 15 von 16 Splits; die Ausnahme ist ein Tag ohne Handel). Zwei Eigenheiten: (1) bei ausländischen Hinterlegungsscheinen nennt Yahoo den Betrag **vor** der Quellensteuer des Heimatlands, Alpaca den Betrag danach (TSM: 1,107 gegen 0,875 $, 21 %) — die App bucht den Yahoo-Betrag, weil Buch und Maßstab beide vor Steuern gerechnet werden; (2) Yahoo meldet Abspaltungen als Split mit krummem Verhältnis (SPGI 1057 : 1000) — gebucht wird das wie ein Split, der Wert der Position bleibt dabei erhalten.
