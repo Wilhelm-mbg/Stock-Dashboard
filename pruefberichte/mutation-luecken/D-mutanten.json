@@ -1,0 +1,1618 @@
+[
+ {
+  "id": "D-01",
+  "datei": "mfdepot.js",
+  "suche": "cash: START_KAPITAL, positionen: [], trades: [],",
+  "ersatz": "cash: START_KAPITAL * 0.9, positionen: [], trades: [],",
+  "funktion": "buchInit",
+  "beschreibung": "Startbargeld 90 % statt 100 %"
+ },
+ {
+  "id": "D-02",
+  "datei": "mfdepot.js",
+  "suche": "angelegt: Date.now(), letztesRebalanceT: 0 };",
+  "ersatz": "angelegt: Date.now(), letztesRebalanceT: Date.now() };",
+  "funktion": "buchInit",
+  "beschreibung": "letztesRebalanceT startet mit Date.now() statt 0"
+ },
+ {
+  "id": "D-03",
+  "datei": "mfdepot.js",
+  "suche": "if (name === 'momentum' && window.MFHandel",
+  "ersatz": "if (name !== 'momentum' && window.MFHandel",
+  "funktion": "buchInit",
+  "beschreibung": "Konfig nur fuer NICHT-momentum-Buecher gesetzt"
+ },
+ {
+  "id": "D-04",
+  "datei": "mfdepot.js",
+  "suche": "b.konfigSeit = b.angelegt; b.liquideSeit = null;",
+  "ersatz": "b.konfigSeit = b.angelegt; b.liquideSeit = b.angelegt;",
+  "funktion": "buchInit",
+  "beschreibung": "liquideSeit startet mit angelegt statt null"
+ },
+ {
+  "id": "D-05",
+  "datei": "mfdepot.js",
+  "suche": "var START_KAPITAL = 100000;",
+  "ersatz": "var START_KAPITAL = 10000;",
+  "funktion": "buchInit",
+  "beschreibung": "START_KAPITAL 10000 statt 100000"
+ },
+ {
+  "id": "D-06",
+  "datei": "mfdepot.js",
+  "suche": "b.konfigSeit = b.angelegt;",
+  "ersatz": "b.konfigSeit = 0;",
+  "funktion": "buchInit",
+  "beschreibung": "konfigSeit 0 statt angelegt"
+ },
+ {
+  "id": "D-07",
+  "datei": "mfdepot.js",
+  "suche": "return k && k.kleinstAnteil > 0 ? k.kleinstAnteil : 0; }",
+  "ersatz": "return k && k.kleinstAnteil > 0 ? k.kleinstAnteil : 0.05; }",
+  "funktion": "kleinstWert",
+  "beschreibung": "fehlendes Feld zaehlt als 0,05 statt aus"
+ },
+ {
+  "id": "D-08",
+  "datei": "mfdepot.js",
+  "suche": "return k && k.kleinstAnteil > 0 ? k.kleinstAnteil : 0; }",
+  "ersatz": "return k && k.kleinstAnteil !== undefined ? k.kleinstAnteil : 0; }",
+  "funktion": "kleinstWert",
+  "beschreibung": "negativer/0-Wert wird nicht auf 0 gezwungen (>= 0 statt > 0 und Rueckgabe -1)"
+ },
+ {
+  "id": "D-09",
+  "datei": "mfdepot.js",
+  "suche": "a[k] === b[k]; }",
+  "ersatz": "a[k] <= b[k]; }",
+  "funktion": "feldGleich",
+  "beschreibung": "Vergleich a[k] <= b[k] statt ==="
+ },
+ {
+  "id": "D-10",
+  "datei": "mfdepot.js",
+  "suche": "k === 'kleinstAnteil' ? kleinstWert(a) === kleinstWert(b)",
+  "ersatz": "k === 'kleinstAnteil' ? a[k] === b[k]",
+  "funktion": "feldGleich",
+  "beschreibung": "kleinstAnteil wird roh verglichen statt ueber kleinstWert"
+ },
+ {
+  "id": "D-11",
+  "datei": "mfdepot.js",
+  "suche": "return KONFIG_FELDER.every(function (k) { return feldGleich(a, b, k); });",
+  "ersatz": "return KONFIG_FELDER.some(function (k) { return feldGleich(a, b, k); });",
+  "funktion": "konfigGleich",
+  "beschreibung": "every -> some"
+ },
+ {
+  "id": "D-12",
+  "datei": "mfdepot.js",
+  "suche": "if (!a || !b) return false;",
+  "ersatz": "if (!a || !b) return true;",
+  "funktion": "konfigGleich",
+  "beschreibung": "fehlende Konfig gilt als gleich"
+ },
+ {
+  "id": "D-13",
+  "datei": "mfdepot.js",
+  "suche": "'halten', 'anteil', 'mindestWerte', 'umsatzMin'",
+  "ersatz": "'halten', 'anteil', 'umsatzMin'",
+  "funktion": "KONFIG_FELDER",
+  "beschreibung": "Feld mindestWerte aus der Liste entfernt"
+ },
+ {
+  "id": "D-14",
+  "datei": "mfdepot.js",
+  "suche": "'mindestWerte', 'umsatzMin', 'umsatzFenster'",
+  "ersatz": "'mindestWerte', 'umsatzFenster'",
+  "funktion": "KONFIG_FELDER",
+  "beschreibung": "Feld umsatzMin aus der Liste entfernt"
+ },
+ {
+  "id": "D-15",
+  "datei": "mfdepot.js",
+  "suche": "'luecke', 'halten', 'anteil'",
+  "ersatz": "'luecke', 'anteil'",
+  "funktion": "KONFIG_FELDER",
+  "beschreibung": "Feld halten aus der Liste entfernt"
+ },
+ {
+  "id": "D-16",
+  "datei": "mfdepot.js",
+  "suche": "return k !== 'kleinstAnteil' && !feldGleich(d.mfBuch.konfig, KONFIG, k);",
+  "ersatz": "return k !== 'kleinstAnteil' && feldGleich(d.mfBuch.konfig, KONFIG, k);",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "andere Felder: feldGleich nicht negiert"
+ },
+ {
+  "id": "D-17",
+  "datei": "mfdepot.js",
+  "suche": "!d.mfBuch.konfig ? ['alle'] :",
+  "ersatz": "!d.mfBuch.konfig ? [] :",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "ohne Konfig gilt nichts als anders (Zweig \"nur Regel K\")"
+ },
+ {
+  "id": "D-18",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.kleinstSeit = now;\n      return true;",
+  "ersatz": "return true;",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "kleinstSeit nicht gesetzt"
+ },
+ {
+  "id": "D-19",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.kleinstSeit = now;\n      return true;",
+  "ersatz": "d.mfBuch.kleinstSeit = now;\n      return false;",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "Kleinst-Zweig meldet false (nicht speichern)"
+ },
+ {
+  "id": "D-20",
+  "datei": "mfdepot.js",
+  "suche": "var pz = String(Math.round(neuK * 1000) / 10)",
+  "ersatz": "var pz = String(Math.round(neuK * 100) / 10)",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "Prozentzahl in Journal: *100/10 statt *1000/10"
+ },
+ {
+  "id": "D-21",
+  "datei": "mfdepot.js",
+  "suche": "var stufe = function (x) { return x > 0 ? String(Math.round(x * 1000) / 10)",
+  "ersatz": "var stufe = function (x) { return x > 0 ? String(Math.round(x * 100) / 10)",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "stufe(): Prozent *100/10"
+ },
+ {
+  "id": "D-22",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.konfig = KONFIG;\n      d.mfBuch.kleinstSeit",
+  "ersatz": "d.mfBuch.kleinstSeit",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "Kleinst-Zweig setzt konfig nicht"
+ },
+ {
+  "id": "D-23",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.konfigSeit = now;\n    d.mfBuch.liquideSeit = null;",
+  "ersatz": "d.mfBuch.konfigSeit = now;",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "Umstellung setzt liquideSeit nicht zurueck"
+ },
+ {
+  "id": "D-24",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.liquideSeit = null;\n    d.mfBuch.korbVerlauf = [];\n    return true;",
+  "ersatz": "d.mfBuch.liquideSeit = null;\n    return true;",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "Umstellung setzt korbVerlauf nicht zurueck"
+ },
+ {
+  "id": "D-25",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.konfig = KONFIG;\n    d.mfBuch.konfigSeit = now;",
+  "ersatz": "d.mfBuch.konfigSeit = now;",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "Umstellung setzt konfig nicht"
+ },
+ {
+  "id": "D-26",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.konfig = KONFIG;\n    d.mfBuch.konfigSeit = now;",
+  "ersatz": "d.mfBuch.konfig = KONFIG;",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "Umstellung setzt konfigSeit nicht"
+ },
+ {
+  "id": "D-27",
+  "datei": "mfdepot.js",
+  "suche": "R\u00fcckblick 231, L\u00fccke 21, Halten 63 Handelstage",
+  "ersatz": "R\u00fcckblick 252, L\u00fccke 21, Halten 63 Handelstage",
+  "funktion": "umstellungPruefen",
+  "beschreibung": "Altwert-Text: Rueckblick 252 statt 231"
+ },
+ {
+  "id": "D-28",
+  "datei": "mfdepot.js",
+  "suche": "Math.round(k.anteil * 100)",
+  "ersatz": "Math.round(k.anteil * 10)",
+  "funktion": "konfigText",
+  "beschreibung": "anteil *10 statt *100"
+ },
+ {
+  "id": "D-29",
+  "datei": "mfdepot.js",
+  "suche": "Math.round(k.umsatzMin / 1e6)",
+  "ersatz": "Math.round(k.umsatzMin / 1e5)",
+  "funktion": "konfigText",
+  "beschreibung": "Umsatz in 1e5 statt 1e6"
+ },
+ {
+  "id": "D-30",
+  "datei": "mfdepot.js",
+  "suche": "String(Math.round(w * 1000) / 10)",
+  "ersatz": "String(Math.round(w * 100) / 10)",
+  "funktion": "kleinstText",
+  "beschreibung": "Prozent *100/10"
+ },
+ {
+  "id": "D-31",
+  "datei": "mfdepot.js",
+  "suche": "if (umstellungPruefen(d, KONFIG, now)) speichern();",
+  "ersatz": "umstellungPruefen(d, KONFIG, now);",
+  "funktion": "takt/Umstellung",
+  "beschreibung": "umstellungPruefen-Ergebnis fuehrt nicht zum Speichern"
+ },
+ {
+  "id": "D-32",
+  "datei": "mfdepot.js",
+  "suche": "[['momentum', d.mfBuch], ['drift', d.driftBuch]].forEach(function (x) {\n      if (!x[1]) return;\n      var res",
+  "ersatz": "[['momentum', d.mfBuch]].forEach(function (x) {\n      if (!x[1]) return;\n      var res",
+  "funktion": "massnahmenBuchen",
+  "beschreibung": "Drift-Buch wird nicht gebucht"
+ },
+ {
+  "id": "D-33",
+  "datei": "mfdepot.js",
+  "suche": "[['momentum', d.mfBuch], ['drift', d.driftBuch]].forEach(function (x) {\n      if (!x[1]) return;\n      var res",
+  "ersatz": "[['momentum', d.driftBuch], ['drift', d.mfBuch]].forEach(function (x) {\n      if (!x[1]) return;\n      var res",
+  "funktion": "massnahmenBuchen",
+  "beschreibung": "Buecher vertauscht"
+ },
+ {
+  "id": "D-34",
+  "datei": "mfdepot.js",
+  "suche": "MH.bucheMassnahmen(x[1], daten.ereignisse, daten.barZeit, now)",
+  "ersatz": "MH.bucheMassnahmen(x[1], null, daten.barZeit, now)",
+  "funktion": "massnahmenBuchen",
+  "beschreibung": "Ereignisse nicht uebergeben"
+ },
+ {
+  "id": "D-35",
+  "datei": "mfdepot.js",
+  "suche": "MH.bucheMassnahmen(x[1], daten.ereignisse, daten.barZeit, now)",
+  "ersatz": "MH.bucheMassnahmen(x[1], daten.ereignisse, {}, now)",
+  "funktion": "massnahmenBuchen",
+  "beschreibung": "barZeit nicht uebergeben"
+ },
+ {
+  "id": "D-36",
+  "datei": "mfdepot.js",
+  "suche": "MH.bucheMassnahmen(x[1], daten.ereignisse, daten.barZeit, now)",
+  "ersatz": "MH.bucheMassnahmen(x[1], daten.ereignisse, daten.barZeit, now + 86400000)",
+  "funktion": "massnahmenBuchen",
+  "beschreibung": "Zeit now + 1 Tag"
+ },
+ {
+  "id": "D-37",
+  "datei": "mfdepot.js",
+  "suche": "quelle: 'automatik', applied: zeile.applied, txt: zeile.txt });\n      geaendert = true;",
+  "ersatz": "quelle: 'automatik', applied: zeile.applied, txt: zeile.txt });",
+  "funktion": "massnahmenBuchen",
+  "beschreibung": "geaendert wird nach Buchung nicht gesetzt"
+ },
+ {
+  "id": "D-38",
+  "datei": "mfdepot.js",
+  "suche": "applied: zeile.applied, txt: zeile.txt });",
+  "ersatz": "applied: zeile.txt, txt: zeile.applied });",
+  "funktion": "massnahmenBuchen",
+  "beschreibung": "Journaltext aus applied statt txt vertauscht"
+ },
+ {
+  "id": "D-39",
+  "datei": "mfdepot.js",
+  "suche": "[['momentum', d.mfBuch], ['drift', d.driftBuch]].forEach(function (x) {\n      if (!x[1]) return;\n      MH.reihenendeAusbuchen",
+  "ersatz": "[['momentum', d.mfBuch]].forEach(function (x) {\n      if (!x[1]) return;\n      MH.reihenendeAusbuchen",
+  "funktion": "reihenendeBuchen",
+  "beschreibung": "Drift-Buch nicht ausgebucht"
+ },
+ {
+  "id": "D-40",
+  "datei": "mfdepot.js",
+  "suche": "[['momentum', d.mfBuch], ['drift', d.driftBuch]].forEach(function (x) {\n      if (!x[1]) return;\n      MH.reihenendeAusbuchen",
+  "ersatz": "[['drift', d.driftBuch]].forEach(function (x) {\n      if (!x[1]) return;\n      MH.reihenendeAusbuchen",
+  "funktion": "reihenendeBuchen",
+  "beschreibung": "Momentum-Buch nicht ausgebucht"
+ },
+ {
+  "id": "D-41",
+  "datei": "mfdepot.js",
+  "suche": "MH.reihenendeAusbuchen(x[1], daten.roh, daten.bezug, now)",
+  "ersatz": "MH.reihenendeAusbuchen(x[1], daten.roh, daten.bezug, now + 864000000)",
+  "funktion": "reihenendeBuchen",
+  "beschreibung": "Zeit now + 10 Tage"
+ },
+ {
+  "id": "D-42",
+  "datei": "mfdepot.js",
+  "suche": "MH.reihenendeJournal(x[0], r)",
+  "ersatz": "MH.reihenendeJournal('momentum', r)",
+  "funktion": "reihenendeBuchen",
+  "beschreibung": "Journal immer als momentum"
+ },
+ {
+  "id": "D-43",
+  "datei": "mfdepot.js",
+  "suche": "applied: z.applied, txt: z.txt });\n        geaendert = true;",
+  "ersatz": "applied: z.applied, txt: z.txt });",
+  "funktion": "reihenendeBuchen",
+  "beschreibung": "geaendert nicht gesetzt"
+ },
+ {
+  "id": "D-44",
+  "datei": "mfdepot.js",
+  "suche": "if (daten.bezug && !fl.veraltet && reihenendeBuchen(MH, d, daten, now)) speichern();",
+  "ersatz": "if (daten.bezug && reihenendeBuchen(MH, d, daten, now)) speichern();",
+  "funktion": "takt/Reihenende",
+  "beschreibung": "Reihenende auch bei veralteter Marktreihe"
+ },
+ {
+  "id": "D-45",
+  "datei": "mfdepot.js",
+  "suche": "if (lpTag && x.tag <= lpTag) return null;",
+  "ersatz": "if (lpTag && x.tag < lpTag) return null;",
+  "funktion": "tagespunkt",
+  "beschreibung": "gleicher Tag erzeugt zweiten Punkt (< statt <=)"
+ },
+ {
+  "id": "D-46",
+  "datei": "mfdepot.js",
+  "suche": "(lp.tag || MH.nyTag(lp.t))",
+  "ersatz": "(lp.tag || MH.nyTag(lp.t + 86400000))",
+  "funktion": "tagespunkt",
+  "beschreibung": "Tag des alten Punkts ohne tag um einen Tag verschoben"
+ },
+ {
+  "id": "D-47",
+  "datei": "mfdepot.js",
+  "suche": "letzteAusfuehrungTag > x.tag) return null;",
+  "ersatz": "letzteAusfuehrungTag >= x.tag) return null;",
+  "funktion": "tagespunkt",
+  "beschreibung": "Sperre nach Umschichtung >= statt >"
+ },
+ {
+  "id": "D-48",
+  "datei": "mfdepot.js",
+  "suche": "letzteAusfuehrungTag > x.tag) return null;",
+  "ersatz": "letzteAusfuehrungTag < x.tag) return null;",
+  "funktion": "tagespunkt",
+  "beschreibung": "Sperre nach Umschichtung < statt >"
+ },
+ {
+  "id": "D-49",
+  "datei": "mfdepot.js",
+  "suche": "MH.schluesseAm(daten.roh, x.tag)",
+  "ersatz": "MH.schluesseAm(daten.roh, MH.nyTag(now))",
+  "funktion": "tagespunkt",
+  "beschreibung": "Schluesse vom Takt-Tag statt vom Punkt-Tag"
+ },
+ {
+  "id": "D-50",
+  "datei": "mfdepot.js",
+  "suche": "MH.bargeldAm(d.mfBuch, x.t)",
+  "ersatz": "d.mfBuch.cash",
+  "funktion": "tagespunkt",
+  "beschreibung": "Momentum-Bargeld aktuell statt an X"
+ },
+ {
+  "id": "D-51",
+  "datei": "mfdepot.js",
+  "suche": "MH.bargeldAm(d.driftBuch, x.t)",
+  "ersatz": "d.driftBuch.cash",
+  "funktion": "tagespunkt",
+  "beschreibung": "Drift-Bargeld aktuell statt an X"
+ },
+ {
+  "id": "D-52",
+  "datei": "mfdepot.js",
+  "suche": "spyT: x.t, buchT: x.t,",
+  "ersatz": "spyT: x.t, buchT: now,",
+  "funktion": "tagespunkt",
+  "beschreibung": "buchT = now statt x.t"
+ },
+ {
+  "id": "D-53",
+  "datei": "mfdepot.js",
+  "suche": "spy: x.kurs, spyT: x.t,",
+  "ersatz": "spy: x.kurs, spyT: now,",
+  "funktion": "tagespunkt",
+  "beschreibung": "spyT = now statt x.t"
+ },
+ {
+  "id": "D-54",
+  "datei": "mfdepot.js",
+  "suche": "spy: x.kurs,",
+  "ersatz": "spy: daten.preise.SPY,",
+  "funktion": "tagespunkt",
+  "beschreibung": "spy = Schluss des Takts (daten.preise) statt x.kurs"
+ },
+ {
+  "id": "D-55",
+  "datei": "mfdepot.js",
+  "suche": "startM: d.mfBuch ? d.mfBuch.start : START_KAPITAL",
+  "ersatz": "startM: d.mfBuch ? d.mfBuch.start : 10000",
+  "funktion": "tagespunkt",
+  "beschreibung": "startM Fallback 10000"
+ },
+ {
+  "id": "D-56",
+  "datei": "mfdepot.js",
+  "suche": "d.driftBuch ? d.driftBuch.start : null };",
+  "ersatz": "d.driftBuch ? d.driftBuch.start : START_KAPITAL };",
+  "funktion": "tagespunkt",
+  "beschreibung": "startD = START_KAPITAL statt null ohne Drift-Buch"
+ },
+ {
+  "id": "D-57",
+  "datei": "mfdepot.js",
+  "suche": "drift: bwD ? bwD.wert : null,",
+  "ersatz": "drift: bwD ? bwD.wert : 0,",
+  "funktion": "tagespunkt",
+  "beschreibung": "drift 0 statt null ohne Buch"
+ },
+ {
+  "id": "D-58",
+  "datei": "mfdepot.js",
+  "suche": "d.mfVerlauf = v.slice(-750);",
+  "ersatz": "d.mfVerlauf = v.slice(-749);",
+  "funktion": "tagespunkt",
+  "beschreibung": "Kappung auf 749 statt 750"
+ },
+ {
+  "id": "D-59",
+  "datei": "mfdepot.js",
+  "suche": "d.mfVerlauf = v.slice(-750);",
+  "ersatz": "d.mfVerlauf = v.slice(-751);",
+  "funktion": "tagespunkt",
+  "beschreibung": "Kappung auf 751 statt 750"
+ },
+ {
+  "id": "D-60",
+  "datei": "mfdepot.js",
+  "suche": "MH.bewerte({ cash: MH.bargeldAm(d.mfBuch, x.t), positionen: d.mfBuch.positionen }, s.preise)",
+  "ersatz": "MH.bewerte({ cash: MH.bargeldAm(d.mfBuch, x.t), positionen: d.mfBuch.positionen }, daten.preise)",
+  "funktion": "tagespunkt",
+  "beschreibung": "Marktwert Momentum aus Buch mit mfBuch.cash statt bargeldAm und Positionen"
+ },
+ {
+  "id": "D-61",
+  "datei": "mfdepot.js",
+  "suche": "MH.nyZeit(MH.tagPlus(heute, 1), 0, 0)",
+  "ersatz": "MH.nyZeit(MH.tagPlus(heute, 2), 0, 0)",
+  "funktion": "eroeffnung",
+  "beschreibung": "Fensterende zwei Tage statt einen"
+ },
+ {
+  "id": "D-62",
+  "datei": "mfdepot.js",
+  "suche": "var von = MH.nyZeit(heute, 0, 0),",
+  "ersatz": "var von = MH.nyZeit(MH.tagPlus(heute, -1), 0, 0),",
+  "funktion": "eroeffnung",
+  "beschreibung": "Fensteranfang ein Tag frueher"
+ },
+ {
+  "id": "D-63",
+  "datei": "mfdepot.js",
+  "suche": "b[5] > 0 && (!best",
+  "ersatz": "b[5] >= 0 && (!best",
+  "funktion": "eroeffnung",
+  "beschreibung": "fehlende Eroeffnung (null) wird akzeptiert (>= 0)"
+ },
+ {
+  "id": "D-64",
+  "datei": "mfdepot.js",
+  "suche": "return best ? { kurs: best[5], t: best[0] } : null;",
+  "ersatz": "return best ? { kurs: best[1], t: best[0] } : null;",
+  "funktion": "eroeffnung",
+  "beschreibung": "Schluss statt Eroeffnung als Fuellkurs"
+ },
+ {
+  "id": "D-65",
+  "datei": "mfdepot.js",
+  "suche": "b[5] > 0 && (!best",
+  "ersatz": "b[1] > 0 && (!best",
+  "funktion": "eroeffnung",
+  "beschreibung": "Balken mit Eroeffnung wird ueber Schluss geprueft"
+ },
+ {
+  "id": "D-66",
+  "datei": "mfdepot.js",
+  "suche": "(!best || b[0] < best[0])",
+  "ersatz": "(!best || b[0] > best[0])",
+  "funktion": "eroeffnung",
+  "beschreibung": "spaetester statt frueher Balken"
+ },
+ {
+  "id": "D-67",
+  "datei": "mfdepot.js",
+  "suche": "{ kurs: best[5], t: best[0] }",
+  "ersatz": "{ kurs: best[5], t: von }",
+  "funktion": "eroeffnung",
+  "beschreibung": "Zeitstempel t = von statt Balkenzeit"
+ },
+ {
+  "id": "D-68",
+  "datei": "mfdepot.js",
+  "suche": "interval: '1d', bereinigt: false, offenRoh: true",
+  "ersatz": "interval: '1d', bereinigt: true, offenRoh: true",
+  "funktion": "eroeffnung",
+  "beschreibung": "bereinigt:true abgerufen"
+ },
+ {
+  "id": "D-69",
+  "datei": "mfdepot.js",
+  "suche": "bereinigt: false, offenRoh: true",
+  "ersatz": "bereinigt: false, offenRoh: false",
+  "funktion": "eroeffnung",
+  "beschreibung": "offenRoh:false (fehlende Eroeffnung faellt auf Schluss)"
+ },
+ {
+  "id": "D-70",
+  "datei": "mfdepot.js",
+  "suche": "{ von: von, bis: now, interval",
+  "ersatz": "{ von: von, bis: bis, interval",
+  "funktion": "eroeffnung",
+  "beschreibung": "bis=Mitternacht statt now im Abruf"
+ },
+ {
+  "id": "D-71",
+  "datei": "mfdepot.js",
+  "suche": "interval: '1d', bereinigt: false",
+  "ersatz": "interval: '1h', bereinigt: false",
+  "funktion": "eroeffnung",
+  "beschreibung": "interval 1h statt 1d"
+ },
+ {
+  "id": "D-72",
+  "datei": "mfdepot.js",
+  "suche": "MH.nyZeit(heute, MH.HANDEL_AB[0], MH.HANDEL_AB[1])",
+  "ersatz": "MH.nyZeit(heute, MH.HANDEL_AB[0], 30)",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Handelsbeginn 09:30 statt HANDEL_AB-Minute"
+ },
+ {
+  "id": "D-73",
+  "datei": "mfdepot.js",
+  "suche": "MH.nyZeit(heute, MH.HANDEL_AB[0], MH.HANDEL_AB[1])",
+  "ersatz": "MH.nyZeit(heute, MH.HANDEL_AB[0], 0)",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Handelsbeginn 09:00"
+ },
+ {
+  "id": "D-74",
+  "datei": "mfdepot.js",
+  "suche": "if (now < MH.nyZeit(heute, MH.HANDEL_AB[0]",
+  "ersatz": "if (now <= MH.nyZeit(heute, MH.HANDEL_AB[0]",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "now <= statt < Handelsbeginn"
+ },
+ {
+  "id": "D-75",
+  "datei": "mfdepot.js",
+  "suche": "MH.stichtagPruefen(daten.roh, daten.bezug, daten.stand, heute)",
+  "ersatz": "MH.stichtagPruefen(daten.roh, daten.bezug, now, heute)",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Frische gegen now statt Bestandsstand"
+ },
+ {
+  "id": "D-76",
+  "datei": "mfdepot.js",
+  "suche": "MH.stichtagPruefen(daten.roh, daten.bezug, daten.stand, heute)",
+  "ersatz": "MH.stichtagPruefen(daten.roh, daten.bezug, daten.stand, MH.nyTag(daten.stand))",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Frische mit falschem Tag (Stichtag statt heute)"
+ },
+ {
+  "id": "D-77",
+  "datei": "mfdepot.js",
+  "suche": "MH.momentumZiel(MH.rohBis(daten.roh, st.stichtag), { nowMs: st.stichtagT })",
+  "ersatz": "MH.momentumZiel(daten.roh, { nowMs: st.stichtagT })",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Ziel auf ungeschnittenen Rohdaten"
+ },
+ {
+  "id": "D-78",
+  "datei": "mfdepot.js",
+  "suche": "{ nowMs: st.stichtagT }",
+  "ersatz": "{ nowMs: now }",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Ziel mit nowMs = now statt Stichtag"
+ },
+ {
+  "id": "D-79",
+  "datei": "mfdepot.js",
+  "suche": "MH.buchKonfig().mindestWerte + ' zul\u00e4ssigen",
+  "ersatz": "MH.buchKonfig().halten + ' zul\u00e4ssigen",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Hinweistext nennt halten statt mindestWerte"
+ },
+ {
+  "id": "D-80",
+  "datei": "mfdepot.js",
+  "suche": "if (!spyF) return { ok: false,",
+  "ersatz": "if (false && !spyF) return { ok: false,",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "SPY-Handelstagspruefung entfernt"
+ },
+ {
+  "id": "D-81",
+  "datei": "mfdepot.js",
+  "suche": "eroeffnung(MH, 'SPY', heute, now)",
+  "ersatz": "eroeffnung(MH, 'SPY', st.stichtag, now)",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "SPY-Eroeffnung vom Stichtag"
+ },
+ {
+  "id": "D-82",
+  "datei": "mfdepot.js",
+  "suche": "eroeffnung(MH, syms[i], heute, now)",
+  "ersatz": "eroeffnung(MH, syms[i], st.stichtag, now)",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Wert-Eroeffnungen vom Stichtag"
+ },
+ {
+  "id": "D-83",
+  "datei": "mfdepot.js",
+  "suche": "if (syms.indexOf(p.sym) < 0) syms.push(p.sym);",
+  "ersatz": "if (syms.indexOf(p.sym) < 0) void 0;",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Positionen ausserhalb des Ziels werden nicht bepreist"
+ },
+ {
+  "id": "D-84",
+  "datei": "mfdepot.js",
+  "suche": "var syms = ziel.ziel.slice();",
+  "ersatz": "var syms = ziel.ziel.slice(1);",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Ziel-Werte ohne ersten bepreist"
+ },
+ {
+  "id": "D-85",
+  "datei": "mfdepot.js",
+  "suche": "if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; }\n      await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader\n    }\n    return { ok: true",
+  "ersatz": "if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = now; }\n      await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader\n    }\n    return { ok: true",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "barZeit = now statt Balkenstempel"
+ },
+ {
+  "id": "D-86",
+  "datei": "mfdepot.js",
+  "suche": "stichtag: st.stichtag, heute: heute }",
+  "ersatz": "stichtag: st.stichtag, heute: st.stichtag }",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Rueckgabe heute = Stichtag"
+ },
+ {
+  "id": "D-87",
+  "datei": "mfdepot.js",
+  "suche": "stichtag: st.stichtag, heute: heute }",
+  "ersatz": "stichtag: heute, heute: heute }",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Rueckgabe Stichtag = heute"
+ },
+ {
+  "id": "D-88",
+  "datei": "mfdepot.js",
+  "suche": "if (fl.veraltet) { nachladen(); return { ok: false, hinweis: 'Marktreihe veraltet seit",
+  "ersatz": "if (false) { nachladen(); return { ok: false, hinweis: 'Marktreihe veraltet seit",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "veraltete Marktreihe wird ignoriert"
+ },
+ {
+  "id": "D-89",
+  "datei": "mfdepot.js",
+  "suche": "if (!MH.istWerktag(heute)) return",
+  "ersatz": "if (false) return",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Wochenendsperre ignoriert"
+ },
+ {
+  "id": "D-90",
+  "datei": "mfdepot.js",
+  "suche": "txt: zE.txt });\n      return true;",
+  "ersatz": "txt: zE.txt });\n      return false;",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Ende gemeldet, aber nicht zum Speichern gemeldet"
+ },
+ {
+  "id": "D-91",
+  "datei": "mfdepot.js",
+  "suche": "if (!d.momentumAn) return false;",
+  "ersatz": "if (false) return false;",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Nachfassen auch bei ausgeschaltetem Buch"
+ },
+ {
+  "id": "D-92",
+  "datei": "mfdepot.js",
+  "suche": "eroeffnung(MH, syms[i], o.tag, now)",
+  "ersatz": "eroeffnung(MH, syms[i], MH.tagPlus(o.tag, 1), now)",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Eroeffnung vom Folgetag des Auftrags"
+ },
+ {
+  "id": "D-93",
+  "datei": "mfdepot.js",
+  "suche": "MH.nachfassen(b, preise, barZeit, now, 20,",
+  "ersatz": "MH.nachfassen(b, preise, barZeit, now, 10,",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Kosten 10 statt 20 Bp"
+ },
+ {
+  "id": "D-94",
+  "datei": "mfdepot.js",
+  "suche": "MH.nachfassen(b, preise, barZeit, now, 20,",
+  "ersatz": "MH.nachfassen(b, preise, barZeit, now, 30,",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Kosten 30 statt 20 Bp"
+ },
+ {
+  "id": "D-95",
+  "datei": "mfdepot.js",
+  "suche": "{ kleinstAnteil: kleinstAnteil });   // 20 Bp",
+  "ersatz": "{});   // 20 Bp",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Kleinstanteil nicht durchgereicht"
+ },
+ {
+  "id": "D-96",
+  "datei": "mfdepot.js",
+  "suche": "if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = f.t; }\n      await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader\n    }\n    var res",
+  "ersatz": "if (f) { preise[syms[i]] = f.kurs; barZeit[syms[i]] = now; }\n      await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader\n    }\n    var res",
+  "funktion": "offenNachfassen",
+  "beschreibung": "barZeit = now beim Nachfassen"
+ },
+ {
+  "id": "D-97",
+  "datei": "mfdepot.js",
+  "suche": "&& !k.bargeld) { k.bargeld = true; neuMerker = true; }",
+  "ersatz": "&& k.bargeld) { k.bargeld = true; neuMerker = true; }",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Merker bargeld nie gesetzt"
+ },
+ {
+  "id": "D-98",
+  "datei": "mfdepot.js",
+  "suche": "res.wartet.indexOf(k.sym) >= 0 && !k.bargeld",
+  "ersatz": "res.wartet.indexOf(k.sym) > 0 && !k.bargeld",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Merker: erster wartender Wert uebersehen"
+ },
+ {
+  "id": "D-99",
+  "datei": "mfdepot.js",
+  "suche": "return res.geaendert || neuMerker;",
+  "ersatz": "return res.geaendert;",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Rueckgabe ohne neuMerker"
+ },
+ {
+  "id": "D-100",
+  "datei": "mfdepot.js",
+  "suche": "if (b.offen && res.wartet.length) {",
+  "ersatz": "if (b.offen && !res.wartet.length) {",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Merker nur wenn keine wartenden"
+ },
+ {
+  "id": "D-101",
+  "datei": "mfdepot.js",
+  "suche": "if (z) d.tuneLog.unshift({ id: 'mfnach-'",
+  "ersatz": "if (!z) d.tuneLog.unshift({ id: 'mfnach-'",
+  "funktion": "offenNachfassen",
+  "beschreibung": "Journal-Zeile nur bei nicht-z"
+ },
+ {
+  "id": "D-102",
+  "datei": "mfdepot.js",
+  "suche": "if ((faellig && d.momentumAn) || manuell === 'momentum') {",
+  "ersatz": "if (faellig || manuell === 'momentum') {",
+  "funktion": "takt",
+  "beschreibung": "Umschichtung auch bei ausgeschaltetem Buch (faellig allein)"
+ },
+ {
+  "id": "D-103",
+  "datei": "mfdepot.js",
+  "suche": "MH.fuehreAus(d.mfBuch, plan, now, 20, {",
+  "ersatz": "MH.fuehreAus(d.mfBuch, plan, now, 10, {",
+  "funktion": "takt",
+  "beschreibung": "Kosten 10 statt 20 Bp"
+ },
+ {
+  "id": "D-104",
+  "datei": "mfdepot.js",
+  "suche": "MH.fuehreAus(d.mfBuch, plan, now, 20, {",
+  "ersatz": "MH.fuehreAus(d.mfBuch, plan, now, 30, {",
+  "funktion": "takt",
+  "beschreibung": "Kosten 30 statt 20 Bp"
+ },
+ {
+  "id": "D-105",
+  "datei": "mfdepot.js",
+  "suche": "MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil });",
+  "ersatz": "MH.fuehreAus(d.mfBuch, plan, now, 20, {});",
+  "funktion": "takt",
+  "beschreibung": "Kleinstanteil nicht an fuehreAus"
+ },
+ {
+  "id": "D-106",
+  "datei": "mfdepot.js",
+  "suche": "var plan = ziel.zuWenig ? null : MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil });",
+  "ersatz": "var plan = ziel.zuWenig ? null : MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, {});",
+  "funktion": "takt",
+  "beschreibung": "Kleinstanteil nicht an Vorab-Plan"
+ },
+ {
+  "id": "D-107",
+  "datei": "mfdepot.js",
+  "suche": "plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, { kleinstAnteil: KONFIG.kleinstAnteil });",
+  "ersatz": "plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, {});",
+  "funktion": "takt",
+  "beschreibung": "Kleinstanteil nicht an Ausfuehrungsplan"
+ },
+ {
+  "id": "D-108",
+  "datei": "mfdepot.js",
+  "suche": "plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise,",
+  "ersatz": "plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, daten.preise,",
+  "funktion": "takt",
+  "beschreibung": "Ausfuehrungsplan mit Schlusskursen statt Eroeffnungen"
+ },
+ {
+  "id": "D-109",
+  "datei": "mfdepot.js",
+  "suche": "plan = MH.planeUmschichtung(zielA.ziel,",
+  "ersatz": "plan = MH.planeUmschichtung(ziel.ziel,",
+  "funktion": "takt",
+  "beschreibung": "Ausfuehrungsplan mit Ziel vom Takt statt Stichtag"
+ },
+ {
+  "id": "D-110",
+  "datei": "mfdepot.js",
+  "suche": "offenNachfassen(MH, d, now, KONFIG.kleinstAnteil)",
+  "ersatz": "offenNachfassen(MH, d, now, 0)",
+  "funktion": "takt",
+  "beschreibung": "Kleinstanteil nicht an offenNachfassen"
+ },
+ {
+  "id": "D-111",
+  "datei": "mfdepot.js",
+  "suche": "MH.stempleKursT(d.mfBuch, ausf.barZeit, now);",
+  "ersatz": "MH.stempleKursT(d.mfBuch, daten.barZeit, now);",
+  "funktion": "takt",
+  "beschreibung": "Stempel mit Schluss-barZeit statt Eroeffnungs-Balken"
+ },
+ {
+  "id": "D-112",
+  "datei": "mfdepot.js",
+  "suche": "manuell === 'momentum' ? null : MH.offeneAuftraege",
+  "ersatz": "false ? null : MH.offeneAuftraege",
+  "funktion": "takt",
+  "beschreibung": "offene Auftraege auch beim Knopf"
+ },
+ {
+  "id": "D-113",
+  "datei": "mfdepot.js",
+  "suche": "if (offenNeu) d.mfBuch.offen = offenNeu;",
+  "ersatz": "if (offenNeu) void 0;",
+  "funktion": "takt",
+  "beschreibung": "offene Auftraege nie gemerkt"
+ },
+ {
+  "id": "D-114",
+  "datei": "mfdepot.js",
+  "suche": "return offenSyms.indexOf(s) < 0; });",
+  "ersatz": "return offenSyms.indexOf(s) >= 0; });",
+  "funktion": "takt",
+  "beschreibung": "fehltRest: offene Werte nicht ausgeschlossen"
+ },
+ {
+  "id": "D-115",
+  "datei": "mfdepot.js",
+  "suche": "return o.stueck > 0; }).length;",
+  "ersatz": "return o.stueck >= 0; }).length;",
+  "funktion": "takt",
+  "beschreibung": "gekauft zaehlt auch stueck 0"
+ },
+ {
+  "id": "D-116",
+  "datei": "mfdepot.js",
+  "suche": "var kleinstM = (plan.kleinst || []).length;",
+  "ersatz": "var kleinstM = 0;",
+  "funktion": "takt",
+  "beschreibung": "Kleinstbestaende: Zaehlung ohne plan.kleinst"
+ },
+ {
+  "id": "D-117",
+  "datei": "mfdepot.js",
+  "suche": "var spaet = manuell === 'momentum' ? 0 : (fl.verspaetung || 0);",
+  "ersatz": "var spaet = (fl.verspaetung || 0);",
+  "funktion": "takt",
+  "beschreibung": "Verspaetung fuer Knopf nicht genullt"
+ },
+ {
+  "id": "D-118",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.letztesRebalanceT = now;\n          d.mfBuch.letzteAusfuehrungTag",
+  "ersatz": "d.mfBuch.letzteAusfuehrungTag",
+  "funktion": "takt",
+  "beschreibung": "letztesRebalanceT nicht gesetzt"
+ },
+ {
+  "id": "D-119",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.letzteAusfuehrungTag = ausf.heute;",
+  "ersatz": "d.mfBuch.letzteAusfuehrungTag = ausf.stichtag;",
+  "funktion": "takt",
+  "beschreibung": "letzteAusfuehrungTag = Stichtag"
+ },
+ {
+  "id": "D-120",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.letzteAusfuehrungTag = ausf.heute;",
+  "ersatz": "void 0;",
+  "funktion": "takt",
+  "beschreibung": "letzteAusfuehrungTag nicht gesetzt"
+ },
+ {
+  "id": "D-121",
+  "datei": "mfdepot.js",
+  "suche": "var fl = MH.faelligkeit(daten.bezug, d.mfBuch.letzteAusfuehrungTag, KONFIG.halten, now);",
+  "ersatz": "var fl = MH.faelligkeit(daten.bezug, d.mfBuch.letzteAusfuehrungTag, KONFIG.halten - 1, now);",
+  "funktion": "takt",
+  "beschreibung": "Faelligkeit: halten - 1"
+ },
+ {
+  "id": "D-122",
+  "datei": "mfdepot.js",
+  "suche": "var fl = MH.faelligkeit(daten.bezug, d.mfBuch.letzteAusfuehrungTag, KONFIG.halten, now);",
+  "ersatz": "var fl = MH.faelligkeit(daten.bezug, d.mfBuch.letzteAusfuehrungTag, KONFIG.halten + 1, now);",
+  "funktion": "takt",
+  "beschreibung": "Faelligkeit: halten + 1"
+ },
+ {
+  "id": "D-123",
+  "datei": "mfdepot.js",
+  "suche": "fl = MH.faelligkeit(daten.bezug, d.mfBuch.letzteAusfuehrungTag, KONFIG.halten, now);\n          /*",
+  "ersatz": "void 0;\n          /*",
+  "funktion": "takt",
+  "beschreibung": "Faelligkeit nach Umschichtung nicht neu gerechnet"
+ },
+ {
+  "id": "D-124",
+  "datei": "mfdepot.js",
+  "suche": "plan = MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil });   // frisch f\u00fcr die Anzeige\n          faellig = false;",
+  "ersatz": "plan = MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil });   // frisch f\u00fcr die Anzeige",
+  "funktion": "takt",
+  "beschreibung": "faellig bleibt nach Umschichtung true"
+ },
+ {
+  "id": "D-125",
+  "datei": "mfdepot.js",
+  "suche": "if (!d.mfBuch.liquideSeit) d.mfBuch.liquideSeit = now;",
+  "ersatz": "d.mfBuch.liquideSeit = now;",
+  "funktion": "takt",
+  "beschreibung": "liquideSeit wird bei jeder Umschichtung ueberschrieben"
+ },
+ {
+  "id": "D-126",
+  "datei": "mfdepot.js",
+  "suche": "ziel: zielA.ziel.length });",
+  "ersatz": "ziel: plan.kaufen.length });",
+  "funktion": "takt",
+  "beschreibung": "korbVerlauf: ziel = Zahl der Kaeufe"
+ },
+ {
+  "id": "D-127",
+  "datei": "mfdepot.js",
+  "suche": "zulaessig: zielA.korb.zulaessig, geprueft: zielA.korb.geprueft,",
+  "ersatz": "zulaessig: zielA.korb.geprueft, geprueft: zielA.korb.zulaessig,",
+  "funktion": "takt",
+  "beschreibung": "korbVerlauf zulaessig/geprueft vertauscht"
+ },
+ {
+  "id": "D-128",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.korbVerlauf = d.mfBuch.korbVerlauf.slice(-120);",
+  "ersatz": "d.mfBuch.korbVerlauf = d.mfBuch.korbVerlauf.slice(-119);",
+  "funktion": "takt",
+  "beschreibung": "korbVerlauf Kappung 119"
+ },
+ {
+  "id": "D-129",
+  "datei": "mfdepot.js",
+  "suche": "if (!d.mfBuch.letzteAusfuehrungTag && d.mfBuch.letztesRebalanceT)",
+  "ersatz": "if (!d.mfBuch.letzteAusfuehrungTag || d.mfBuch.letztesRebalanceT)",
+  "funktion": "takt",
+  "beschreibung": "Altbuch: letzteAusfuehrungTag auch bei vorhandenem Tag gesetzt (||)"
+ },
+ {
+  "id": "D-130",
+  "datei": "mfdepot.js",
+  "suche": "MH.nyTag(d.mfBuch.letztesRebalanceT); speichern();",
+  "ersatz": "MH.nyTag(now); speichern();",
+  "funktion": "takt",
+  "beschreibung": "Altbuch: NY-Tag von now statt letztesRebalanceT"
+ },
+ {
+  "id": "D-131",
+  "datei": "mfdepot.js",
+  "suche": "{ nowMs: daten.juengster || now }",
+  "ersatz": "{ nowMs: now }",
+  "funktion": "takt",
+  "beschreibung": "Ziel mit now statt juengstem Balken"
+ },
+ {
+  "id": "D-132",
+  "datei": "mfdepot.js",
+  "suche": "ziel.korb.ohneUmsatz * 2 >= ziel.korb.geprueft",
+  "ersatz": "ziel.korb.ohneUmsatz * 2 > ziel.korb.geprueft",
+  "funktion": "takt",
+  "beschreibung": "Nachladen bei ohneUmsatz-Haelfte: > statt >="
+ },
+ {
+  "id": "D-133",
+  "datei": "mfdepot.js",
+  "suche": "(nM - gekauftM) + ' Verk\u00e4ufe",
+  "ersatz": "(nM - gekauftM + 1) + ' Verk\u00e4ufe",
+  "funktion": "takt",
+  "beschreibung": "Journal: Verkaeufe = nM - gekauft + 1"
+ },
+ {
+  "id": "D-134",
+  "datei": "mfdepot.js",
+  "suche": "'. Kosten 20 Bp je Seite.'",
+  "ersatz": "'. Kosten 10 Bp je Seite.'",
+  "funktion": "takt",
+  "beschreibung": "Journal: Kosten-Text 10 Bp"
+ },
+ {
+  "id": "D-135",
+  "datei": "mfdepot.js",
+  "suche": "if (Date.now() - ladeAngestossen < 3600000) return;",
+  "ersatz": "if (Date.now() - ladeAngestossen < 360000) return;",
+  "funktion": "nachladen",
+  "beschreibung": "Sperre 6 Minuten statt 1 Stunde"
+ },
+ {
+  "id": "D-136",
+  "datei": "mfdepot.js",
+  "suche": "if (bestandFrisch(stand)) return;\n    nachladen();",
+  "ersatz": "nachladen();",
+  "funktion": "kurseFrischHalten",
+  "beschreibung": "Frische-Pruefung entfernt"
+ },
+ {
+  "id": "D-137",
+  "datei": "mfdepot.js",
+  "suche": "if (bestandFrisch(stand)) return;",
+  "ersatz": "if (!bestandFrisch(stand)) return;",
+  "funktion": "kurseFrischHalten",
+  "beschreibung": "Nachladen auch wenn frisch"
+ },
+ {
+  "id": "D-138",
+  "datei": "mfdepot.js",
+  "suche": "preise[s] = r[r.length - 1][1]; barZeit[s]",
+  "ersatz": "preise[s] = r[r.length - 2] ? r[r.length - 2][1] : r[r.length - 1][1]; barZeit[s]",
+  "funktion": "ladeKurse",
+  "beschreibung": "Preis = vorletzter Balken"
+ },
+ {
+  "id": "D-139",
+  "datei": "mfdepot.js",
+  "suche": "barZeit[s] = r[r.length - 1][0];",
+  "ersatz": "barZeit[s] = r[0][0];",
+  "funktion": "ladeKurse",
+  "beschreibung": "barZeit = erster Balken"
+ },
+ {
+  "id": "D-140",
+  "datei": "mfdepot.js",
+  "suche": "if (r[r.length - 1][0] > juengster) juengster",
+  "ersatz": "if (r[r.length - 1][0] < juengster) juengster",
+  "funktion": "ladeKurse",
+  "beschreibung": "juengster: kleinster statt groesster"
+ },
+ {
+  "id": "D-141",
+  "datei": "mfdepot.js",
+  "suche": "r[r.length - 1].length >= 4",
+  "ersatz": "r[r.length - 1].length >= 3",
+  "funktion": "ladeKurse",
+  "beschreibung": "spalte4: 3 Spalten genuegen"
+ },
+ {
+  "id": "D-142",
+  "datei": "mfdepot.js",
+  "suche": "g.bezug && g.bezug.reihe && g.bezug.reihe.length ? g.bezug.reihe : null",
+  "ersatz": "g.bezug && g.bezug.reihe ? g.bezug.reihe : null",
+  "funktion": "ladeKurse",
+  "beschreibung": "Bezug ohne Laengenpruefung"
+ },
+ {
+  "id": "D-143",
+  "datei": "mfdepot.js",
+  "suche": "stand: g.at || 0,",
+  "ersatz": "stand: g.at || Date.now(),",
+  "funktion": "ladeKurse",
+  "beschreibung": "stand ohne at = Date.now"
+ },
+ {
+  "id": "D-144",
+  "datei": "kurse.js",
+  "suche": "isFinite(v) && v > 0; }",
+  "ersatz": "isFinite(v) && v >= 0; }",
+  "funktion": "kursOk",
+  "beschreibung": "0 gilt als Kurs (>= 0)"
+ },
+ {
+  "id": "D-145",
+  "datei": "kurse.js",
+  "suche": "typeof v === 'number' && isFinite(v) && v > 0; }",
+  "ersatz": "typeof v === 'number' && v > 0; }",
+  "funktion": "kursOk",
+  "beschreibung": "isFinite entfernt"
+ },
+ {
+  "id": "D-146",
+  "datei": "kurse.js",
+  "suche": "return typeof v === 'number' && isFinite(v) && v > 0; }",
+  "ersatz": "return isFinite(v) && v > 0; }",
+  "funktion": "kursOk",
+  "beschreibung": "typeof entfernt"
+ },
+ {
+  "id": "D-147",
+  "datei": "kurse.js",
+  "suche": "? x.date : Number(k)) * 1000; }",
+  "ersatz": "? x.date : Number(k)) * 100; }",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Zeit in 100 statt 1000"
+ },
+ {
+  "id": "D-148",
+  "datei": "kurse.js",
+  "suche": "typeof x.date === 'number' ? x.date : Number(k)",
+  "ersatz": "Number(k)",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Schluessel statt Feld date bevorzugt"
+ },
+ {
+  "id": "D-149",
+  "datei": "kurse.js",
+  "suche": "if (kursOk(t) && kursOk(x.amount)) div.push",
+  "ersatz": "if (kursOk(t)) div.push",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Betrag nicht geprueft"
+ },
+ {
+  "id": "D-150",
+  "datei": "kurse.js",
+  "suche": "x.numerator !== x.denominator) split.push",
+  "ersatz": "true) split.push",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Split mit z = n bleibt"
+ },
+ {
+  "id": "D-151",
+  "datei": "kurse.js",
+  "suche": "split.push([t, x.numerator, x.denominator])",
+  "ersatz": "split.push([t, x.denominator, x.numerator])",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Split Zaehler/Nenner vertauscht"
+ },
+ {
+  "id": "D-152",
+  "datei": "kurse.js",
+  "suche": "kursOk(x.numerator) && kursOk(x.denominator) && x.numerator",
+  "ersatz": "kursOk(x.numerator) && x.numerator",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Split ohne Nenner-Pruefung"
+ },
+ {
+  "id": "D-153",
+  "datei": "kurse.js",
+  "suche": "e[0] >= o.von && e[0] <= o.bis",
+  "ersatz": "e[0] > o.von && e[0] <= o.bis",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Fenster ohne untere Grenze einschliessend (> statt >=)"
+ },
+ {
+  "id": "D-154",
+  "datei": "kurse.js",
+  "suche": "e[0] >= o.von && e[0] <= o.bis",
+  "ersatz": "e[0] >= o.von && e[0] < o.bis",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Fenster obere Grenze ausschliessend"
+ },
+ {
+  "id": "D-155",
+  "datei": "kurse.js",
+  "suche": "!(o && o.von != null && o.bis != null)",
+  "ersatz": "!(o && o.von != null || o.bis != null)",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Fenster nur wenn eine Grenze fehlt (|| statt &&)"
+ },
+ {
+  "id": "D-156",
+  "datei": "kurse.js",
+  "suche": "function nachZeit(a, b) { return a[0] - b[0]; }",
+  "ersatz": "function nachZeit(a, b) { return b[0] - a[0]; }",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Sortierung absteigend"
+ },
+ {
+  "id": "D-157",
+  "datei": "kurse.js",
+  "suche": "div: div.filter(imFenster).sort(nachZeit)",
+  "ersatz": "div: div.filter(imFenster)",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Dividenden nicht sortiert"
+ },
+ {
+  "id": "D-158",
+  "datei": "kurse.js",
+  "suche": "split: split.filter(imFenster).sort(nachZeit)",
+  "ersatz": "split: split.filter(imFenster)",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Splits nicht sortiert"
+ },
+ {
+  "id": "D-159",
+  "datei": "kurse.js",
+  "suche": "split: split.filter(imFenster).sort(nachZeit)",
+  "ersatz": "split: split.sort(nachZeit)",
+  "funktion": "ereignisseAus",
+  "beschreibung": "Splits ohne Fensterfilter"
+ },
+ {
+  "id": "D-160",
+  "datei": "kurse.js",
+  "suche": "return x[0] >= abMs;",
+  "ersatz": "return x[0] > abMs;",
+  "funktion": "ereignisseAb",
+  "beschreibung": "ab-Grenze ausschliessend"
+ },
+ {
+  "id": "D-161",
+  "datei": "kurse.js",
+  "suche": "split: ((e && e.split) || []).filter(ab)",
+  "ersatz": "split: ((e && e.split) || [])",
+  "funktion": "ereignisseAb",
+  "beschreibung": "nur Dividenden gefiltert"
+ },
+ {
+  "id": "D-162",
+  "datei": "kurse.js",
+  "suche": "if (o.bereinigt) {\n      var adj",
+  "ersatz": "if (!o.bereinigt) {\n      var adj",
+  "funktion": "zerlege",
+  "beschreibung": "bereinigt invertiert"
+ },
+ {
+  "id": "D-163",
+  "datei": "kurse.js",
+  "suche": "schluss = adj.adjclose; feld = 'adjclose';",
+  "ersatz": "schluss = adj.adjclose;",
+  "funktion": "zerlege",
+  "beschreibung": "feld bleibt close trotz adjclose"
+ },
+ {
+  "id": "D-164",
+  "datei": "kurse.js",
+  "suche": "kursOk(roh[i]) ? roh[i] : null",
+  "ersatz": "roh[i]",
+  "funktion": "zerlege",
+  "beschreibung": "Roh-Schluss ohne kursOk"
+ },
+ {
+  "id": "D-165",
+  "datei": "kurse.js",
+  "suche": "rohSchluss.push([ts[i] * 1000,",
+  "ersatz": "rohSchluss.push([ts[i],",
+  "funktion": "zerlege",
+  "beschreibung": "Roh-Zeitstempel in Sekunden"
+ },
+ {
+  "id": "D-166",
+  "datei": "kurse.js",
+  "suche": "bars.push([ts[i] * 1000, c, vo, hi, lo, op]);",
+  "ersatz": "bars.push([ts[i], c, vo, hi, lo, op]);",
+  "funktion": "zerlege",
+  "beschreibung": "Balken-Zeitstempel in Sekunden"
+ },
+ {
+  "id": "D-167",
+  "datei": "kurse.js",
+  "suche": "if (lo > hi) {",
+  "ersatz": "if (lo < 0) {",
+  "funktion": "zerlege",
+  "beschreibung": "Hoch/Tief nicht getauscht"
+ },
+ {
+  "id": "D-168",
+  "datei": "kurse.js",
+  "suche": "bars.push([ts[i] * 1000, c, vo, hi, lo, op]);",
+  "ersatz": "bars.push([ts[i] * 1000, c, vo, lo, hi, op]);",
+  "funktion": "zerlege",
+  "beschreibung": "Hoch/Tief Reihenfolge im Balken vertauscht"
+ },
+ {
+  "id": "D-169",
+  "datei": "kurse.js",
+  "suche": "kursOk(ops[i]) ? ops[i] : (o.offenRoh ? null : c)",
+  "ersatz": "kursOk(ops[i]) ? ops[i] : c",
+  "funktion": "zerlege",
+  "beschreibung": "Eroeffnung faellt immer auf Schluss (offenRoh ignoriert)"
+ },
+ {
+  "id": "D-170",
+  "datei": "kurse.js",
+  "suche": "kursOk(ops[i]) ? ops[i] : (o.offenRoh ? null : c)",
+  "ersatz": "kursOk(ops[i]) ? ops[i] : null",
+  "funktion": "zerlege",
+  "beschreibung": "Eroeffnung bleibt immer leer"
+ },
+ {
+  "id": "D-171",
+  "datei": "kurse.js",
+  "suche": "var vo = (typeof vols[i] === 'number' && isFinite(vols[i])) ? vols[i] : 0;",
+  "ersatz": "var vo = vols[i];",
+  "funktion": "zerlege",
+  "beschreibung": "Volumen nicht auf 0 gesetzt"
+ },
+ {
+  "id": "D-172",
+  "datei": "kurse.js",
+  "suche": "var hi = kursOk(his[i]) ? his[i] : c;",
+  "ersatz": "var hi = his[i];",
+  "funktion": "zerlege",
+  "beschreibung": "Hoch faellt nicht auf Schluss"
+ },
+ {
+  "id": "D-173",
+  "datei": "kurse.js",
+  "suche": "var lo = kursOk(los[i]) ? los[i] : c;",
+  "ersatz": "var lo = kursOk(los[i]) ? los[i] : hi;",
+  "funktion": "zerlege",
+  "beschreibung": "Tief faellt auf Hoch statt Schluss"
+ },
+ {
+  "id": "D-174",
+  "datei": "kurse.js",
+  "suche": "if (!kursOk(c)) { verworfen++; continue; }",
+  "ersatz": "if (!kursOk(c)) { continue; }",
+  "funktion": "zerlege",
+  "beschreibung": "verworfen nicht gezaehlt"
+ },
+ {
+  "id": "D-175",
+  "datei": "kurse.js",
+  "suche": "if (!kursOk(c)) { verworfen++; continue; }",
+  "ersatz": "if (c == null) { verworfen++; continue; }",
+  "funktion": "zerlege",
+  "beschreibung": "kaputter Kurs wird nicht verworfen (nur null)"
+ },
+ {
+  "id": "D-176",
+  "datei": "kurse.js",
+  "suche": "bars = bars.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });",
+  "ersatz": "bars = bars.filter(function (b) { return b[0] > o.von && b[0] <= o.bis; });",
+  "funktion": "zerlege",
+  "beschreibung": "Fenster Balken: untere Grenze ausschliessend"
+ },
+ {
+  "id": "D-177",
+  "datei": "kurse.js",
+  "suche": "bars = bars.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });",
+  "ersatz": "bars = bars.filter(function (b) { return b[0] >= o.von && b[0] < o.bis; });",
+  "funktion": "zerlege",
+  "beschreibung": "Fenster Balken: obere Grenze ausschliessend"
+ },
+ {
+  "id": "D-178",
+  "datei": "kurse.js",
+  "suche": "rohSchluss = rohSchluss.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });",
+  "ersatz": "rohSchluss = rohSchluss.filter(function (b) { return b[0] >= o.von && b[0] < o.bis; });",
+  "funktion": "zerlege",
+  "beschreibung": "Fenster Rohreihe: obere Grenze ausschliessend"
+ },
+ {
+  "id": "D-179",
+  "datei": "kurse.js",
+  "suche": "if (rohSchluss) rohSchluss = rohSchluss.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });",
+  "ersatz": "",
+  "funktion": "zerlege",
+  "beschreibung": "Fenster Rohreihe: nicht gefiltert"
+ },
+ {
+  "id": "D-180",
+  "datei": "kurse.js",
+  "suche": "if (o.von != null && o.bis != null) {\n      var vorFilter",
+  "ersatz": "if (o.von != null || o.bis != null) {\n      var vorFilter",
+  "funktion": "zerlege",
+  "beschreibung": "Fenster nur bei von UND bis -> oder"
+ },
+ {
+  "id": "D-181",
+  "datei": "kurse.js",
+  "suche": "ausserhalbFenster = vorFilter - bars.length;",
+  "ersatz": "ausserhalbFenster = bars.length;",
+  "funktion": "zerlege",
+  "beschreibung": "ausserhalbFenster falsch gezaehlt"
+ },
+ {
+  "id": "D-182",
+  "datei": "kurse.js",
+  "suche": "gesamt: ts.length,",
+  "ersatz": "gesamt: bars.length,",
+  "funktion": "zerlege",
+  "beschreibung": "gesamt = bars.length"
+ },
+ {
+  "id": "D-183",
+  "datei": "kurse.js",
+  "suche": "if (o.ereignisse) ergebnis.ereignisse",
+  "ersatz": "if (true) ergebnis.ereignisse",
+  "funktion": "zerlege",
+  "beschreibung": "ereignisse immer"
+ },
+ {
+  "id": "D-184",
+  "datei": "kurse.js",
+  "suche": "if (rohSchluss) ergebnis.roh = rohSchluss;",
+  "ersatz": "",
+  "funktion": "zerlege",
+  "beschreibung": "roh nie zurueck"
+ },
+ {
+  "id": "D-185",
+  "datei": "kurse.js",
+  "suche": "var bars = [], verworfen = 0, rohSchluss = o.mitRoh ? [] : null;",
+  "ersatz": "var bars = [], verworfen = 0, rohSchluss = [];",
+  "funktion": "zerlege",
+  "beschreibung": "roh immer als Liste (mitRoh ignoriert)"
+ },
+ {
+  "id": "D-186",
+  "datei": "kurse.js",
+  "suche": "ergebnis.ereignisse = ereignisseAus(r.events, o);",
+  "ersatz": "ergebnis.ereignisse = ereignisseAus(r.events);",
+  "funktion": "zerlege",
+  "beschreibung": "ereignisse mit o ohne Fenster"
+ },
+ {
+  "id": "D-187",
+  "datei": "kurse.js",
+  "suche": "if (adj.adjclose && adj.adjclose.length) {",
+  "ersatz": "if (adj.adjclose) {",
+  "funktion": "zerlege",
+  "beschreibung": "adjclose-Pruefung: leere Liste genuegt"
+ },
+ {
+  "id": "D-188",
+  "datei": "kurse.js",
+  "suche": "return [b[0], b[1]]; }); }",
+  "ersatz": "return [b[0], b[2]]; }); }",
+  "funktion": "reihe",
+  "beschreibung": "Volumen statt Schluss"
+ },
+ {
+  "id": "D-189",
+  "datei": "kurse.js",
+  "suche": "Math.floor(o.von / 1000)",
+  "ersatz": "Math.ceil(o.von / 1000)",
+  "funktion": "url",
+  "beschreibung": "period1 aufgerundet"
+ },
+ {
+  "id": "D-190",
+  "datei": "kurse.js",
+  "suche": "'&events=div%2Csplits'",
+  "ersatz": "'&events=div'",
+  "funktion": "url",
+  "beschreibung": "Ereignisse nur Dividenden"
+ },
+ {
+  "id": "D-191",
+  "datei": "mfdepot.js",
+  "suche": "var heute = MH.nyTag(now);\n    if (!daten.bezug)",
+  "ersatz": "var heute = new Date(now).toISOString().slice(0, 10);\n    if (!daten.bezug)",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Ausfuehrungstag nach UTC statt New York"
+ },
+ {
+  "id": "D-192",
+  "datei": "mfdepot.js",
+  "suche": "(lp.tag || MH.nyTag(lp.t))",
+  "ersatz": "(lp.tag || new Date(lp.t).toISOString().slice(0, 10))",
+  "funktion": "tagespunkt",
+  "beschreibung": "Schreibtag eines alten Punkts nach UTC statt New York"
+ },
+ {
+  "id": "D-193",
+  "datei": "mfdepot.js",
+  "suche": "d.mfBuch.letzteAusfuehrungTag = MH.nyTag(d.mfBuch.letztesRebalanceT);",
+  "ersatz": "d.mfBuch.letzteAusfuehrungTag = new Date(d.mfBuch.letztesRebalanceT).toISOString().slice(0, 10);",
+  "funktion": "takt",
+  "beschreibung": "Ausfuehrungstag des Altbuchs nach UTC statt New York"
+ },
+ {
+  "id": "D-194",
+  "datei": "mfdepot.js",
+  "suche": "} catch (e) { return null; }",
+  "ersatz": "} catch (e) { throw e; }",
+  "funktion": "eroeffnung",
+  "beschreibung": "Fehler beim Abruf wird weitergereicht statt null"
+ },
+ {
+  "id": "D-195",
+  "datei": "mfdepot.js",
+  "suche": "if (v.length > 750) d.mfVerlauf",
+  "ersatz": "if (v.length > 7500) d.mfVerlauf",
+  "funktion": "tagespunkt",
+  "beschreibung": "Kappung erst ab 7500 Punkten"
+ },
+ {
+  "id": "D-196",
+  "datei": "mfdepot.js",
+  "suche": "if (v.length > 750) d.mfVerlauf",
+  "ersatz": "if (v.length >= 750) d.mfVerlauf",
+  "funktion": "tagespunkt",
+  "beschreibung": "Kappung ab >= 750 statt > 750 (vermutlich aequivalent)"
+ },
+ {
+  "id": "D-197",
+  "datei": "mfdepot.js",
+  "suche": "if (d.mfBuch.korbVerlauf.length > 120)",
+  "ersatz": "if (d.mfBuch.korbVerlauf.length >= 120)",
+  "funktion": "takt",
+  "beschreibung": "Korbverlauf-Kappung >= 120 statt > 120 (vermutlich aequivalent)"
+ },
+ {
+  "id": "D-198",
+  "datei": "mfdepot.js",
+  "suche": "if (lpTag && x.tag <= lpTag) return null;",
+  "ersatz": "if (lpTag && x.tag <= lpTag && false) return null;",
+  "funktion": "tagespunkt",
+  "beschreibung": "Marktstand-Preis x.kurs aus Bezug Spalte 1 ok; Tag X = juengster statt vorheriger (Bedingung <= statt <)"
+ },
+ {
+  "id": "D-199",
+  "datei": "mfdepot.js",
+  "suche": "var ende = MH.offenBeenden(b, now);",
+  "ersatz": "var ende = MH.offenBeenden(b, now + 6 * 3600000);",
+  "funktion": "offenNachfassen",
+  "beschreibung": "offenBeenden wird mit Uhr + 6 Stunden gefragt"
+ },
+ {
+  "id": "D-200",
+  "datei": "mfdepot.js",
+  "suche": "id: 'mfmass-' + x[0] + '-' + now",
+  "ersatz": "id: 'mfmass-' + now",
+  "funktion": "massnahmenBuchen",
+  "beschreibung": "Journal-Kennung ohne Buchnamen"
+ },
+ {
+  "id": "D-201",
+  "datei": "mfdepot.js",
+  "suche": "id: 'mfende-' + x[0] + '-' + r.sym + '-' + now",
+  "ersatz": "id: 'mfende-' + x[0] + '-' + now",
+  "funktion": "reihenendeBuchen",
+  "beschreibung": "Journal-Kennung ohne Wert"
+ },
+ {
+  "id": "D-202",
+  "datei": "mfdepot.js",
+  "suche": "await new Promise(function (w) { setTimeout(w, 90); });   // Tempo wie der Lader\n    }\n    return { ok: true",
+  "ersatz": "}\n    return { ok: true",
+  "funktion": "ausfuehrungVorbereiten",
+  "beschreibung": "Wartezeit 90 ms entfernt (Tempo)"
+ }
+]
