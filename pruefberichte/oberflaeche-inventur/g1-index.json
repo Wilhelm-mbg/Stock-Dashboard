@@ -65,7 +65,7 @@
  {
   "datei": "index.html",
   "zeile": 1627,
-  "wortlaut": "(20 Handelstage, t=−11,6",
+  "wortlaut": "t=−11,6",
   "klasse": "a",
   "beleg": {
    "datei": "wiki/belegstand.md",
@@ -117,13 +117,13 @@
   "datei": "index.html",
   "zeile": 1633,
   "wortlaut": "35 Beobachtungen an 10 Zeitpunkten, nötig wären rund 2.600",
-  "klasse": "b",
+  "klasse": "c",
   "beleg": {
    "datei": "wiki/belegstand.md",
-   "marke": "35 Beobachtungen an 10 Zeitpunkten"
+   "marke": "**b = +0,0070 Pp/Score-Punkt, t = 0,31**"
   },
-  "belegsagt": "Belegstand streicht dieses Urteil als überholt (01.09.); im App-Text als „die erste Messung\" gekennzeichnet – richtig, aber ohne die spätere Messung.",
-  "vorschlag": ""
+  "belegsagt": "Bei der Endkontrolle umgestuft (b → c): ein Überholt-Vermerk steht nicht dabei. Seit 01.09.2026 ist News-Sentiment über Nacht auf Großwerten gemessen und widerlegt (t = 0,31); „35 Beobachtungen / nötig 2.600“ galt nur für das App-Archiv.",
+  "vorschlag": "Das News-Sentiment steuert seit dem 31.08.2026 nichts mehr – gemessen am 01.09.2026: über Nacht auf Großwerten kein Effekt (t = 0,31)."
  },
  {
   "datei": "index.html",
@@ -420,7 +420,8 @@
    "marke": "**netto −0,024 Pp je Signaltag, Band [−0,649; +0,601], 528 Signaltage"
   },
   "belegsagt": "Kapitulation V2 zurückgewiesen.",
-  "vorschlag": ""
+  "vorschlag": "",
+  "nurUrteil": true
  },
  {
   "datei": "index.html",

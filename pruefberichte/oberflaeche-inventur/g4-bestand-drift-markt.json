@@ -69,7 +69,8 @@
    "marke": "Der Kauf an der unteren Kanallinie der App ist mit t bis −4,3 die schlechteste der gemessenen Regeln."
   },
   "belegsagt": "Kanal als Bedingung negativ (t −4,1), als Einstieg in jeder Klasse zu (t bis −4,3).",
-  "vorschlag": ""
+  "vorschlag": "",
+  "nurUrteil": true
  },
  {
   "datei": "wendeui.js",
@@ -189,7 +190,8 @@
   "klasse": "d",
   "beleg": null,
   "belegsagt": "Fester Wertungstext auf einer Differenz von 0,5 Pp ohne Standardfehler/MDE; kein Beleg für diese Schwelle.",
-  "vorschlag": "r.nutzen > 0.5 ? 'mit Filter besser (ohne Signifikanz)' : r.nutzen < -0.5 ? 'mit Filter schlechter (ohne Signifikanz)' : 'kein Unterschied sichtbar'"
+  "vorschlag": "r.nutzen > 0.5 ? 'mit Filter besser (ohne Signifikanz)' : r.nutzen < -0.5 ? 'mit Filter schlechter (ohne Signifikanz)' : 'kein Unterschied sichtbar'",
+  "nurUrteil": true
  },
  {
   "datei": "berichte.js",
@@ -198,7 +200,8 @@
   "klasse": "d",
   "beleg": null,
   "belegsagt": "Urteil ab 5 Schatten-Trades mit Faktor 1,5 – keine Messung im Sinne der Mühle.",
-  "vorschlag": "x.gerettet > x.verhindert * 1.5 ? 'bisher eher Verluste vermieden' : x.verhindert > x.gerettet * 1.5 ? 'bisher eher Gewinne verhindert' : 'kein Muster'"
+  "vorschlag": "x.gerettet > x.verhindert * 1.5 ? 'bisher eher Verluste vermieden' : x.verhindert > x.gerettet * 1.5 ? 'bisher eher Gewinne verhindert' : 'kein Muster'",
+  "nurUrteil": true
  },
  {
   "datei": "berichte.js",

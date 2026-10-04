@@ -195,7 +195,8 @@
    "marke": "| Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator, nicht nur wirkungslos"
   },
   "belegsagt": "Stunden-Strategie widerlegt (t −11,6).",
-  "vorschlag": ""
+  "vorschlag": "",
+  "nurUrteil": true
  },
  {
   "datei": "strategien.js",
@@ -1110,7 +1111,8 @@
    "marke": "Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle"
   },
   "belegsagt": "„gemessen“, nicht „belegt“ – sachlich richtig.",
-  "vorschlag": ""
+  "vorschlag": "",
+  "nurUrteil": true
  },
  {
   "datei": "strategiechart.js",

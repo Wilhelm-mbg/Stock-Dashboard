@@ -180,7 +180,8 @@
   "klasse": "d",
   "beleg": null,
   "belegsagt": "die Studie (rsi2seit) ist nicht entscheidbar, +0,021 Pp je Signal; es gibt keinen Studienvorsprung, in dessen Rahmen man liegen könnte",
-  "vorschlag": "'positiv (t ≥ 1,5) – kein Beleg; die Studie selbst ist nicht entscheidbar'"
+  "vorschlag": "'positiv (t ≥ 1,5) – kein Beleg; die Studie selbst ist nicht entscheidbar'",
+  "nurUrteil": true
  },
  {
   "datei": "depot.js",
