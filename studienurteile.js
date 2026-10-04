@@ -116,45 +116,48 @@
    * Seit Auftrag Nr. 95 (04.10.2026, Entscheide des PM zu B1 und A1 des Prüfgangs Nr. 83):
    * grenzen BEGINNT bei allen drei Momentum-Einträgen mit ZUFALL (Belegstand, Lesart zu
    * Nr. 78: das 95-%-Band schließt in allen fünf Läufen null ein - die Drift-Zeile nennt
-   * ihren Zufallsvergleich schon in der Zeile); die zwei Einträge zum Korb 187 enden mit
-   * ZWILLINGE. Die Zahlen bleiben die der Ergebnisdatei, bis der Rückblick auf dem Panel
-   * v2.3 nachgerechnet ist (eigener Auftrag). Beide Sätze sind feste Sätze des PM und
-   * stehen hinter „Grenzen:" - der Kleinsttest 10 prüft dort keine Zahl. */
+   * ihren Zufallsvergleich schon in der Zeile). ZUFALL ist ein fester Satz des PM und
+   * steht hinter „Grenzen:" - der Kleinsttest 10 prüft dort keine Zahl.
+   *
+   * Seit Auftrag Nr. 96 (04.10.2026): die drei Momentum-Einträge stehen auf dem bereinigten
+   * Panel v2.3 - dieselbe Regel und derselbe Rechner wie Nr. 85, nachgerechnet in
+   * studien/momentum-korb-v23-2026-10-04/ (ergebnis.json, laeufe.<Lauf>.mit). Der
+   * Halbsatz zu den doppelten Reihen (Vorgänger-Kürzel) ist aus grenzen weggefallen: das
+   * Panel ist bereinigt. */
   var ZUFALL = 'vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein)';
-  var ZWILLINGE = 'gerechnet auf einem Panel, in dem rund 2 % der Reihen doppelt stehen (Vorgänger-Kürzel); die Zahl je Starttag verschiebt sich dadurch, der Median kaum';
   var RUECKBLICK = {
     'momentum-liquide': [
       {
-        kennung: 'momentum-korb-kleinst-2026-10-04/v1',
+        kennung: 'momentum-korb-v23-2026-10-04/v1',
         lauf: 'B-187',
         korb: 'Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App)',
         regel: 'mit Regel K',
         zahlen: { von: '2021-09-16', bis: '2026-09-15', buchGesamt: 150.1, spyGesamt: 81.2, schlaegt: true,
           phasenVorn: 61, phasen: 63, medianAbstandPa: 8.2, rueckschlagBuch: -56.9, rueckschlagSpy: -24.5 },
-        grenzen: ZUFALL + '; der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); ' + ZWILLINGE,
-        quelle: 'studien/momentum-korb-kleinst-2026-10-04/ERGEBNIS.md, Lauf B-187 mit Regel K, 04.10.2026',
+        grenzen: ZUFALL + '; der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger)',
+        quelle: 'studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md, Lauf B-187 mit Regel K, Panel v2.3, 04.10.2026',
         datum: '2026-10-04'
       },
       {
-        kennung: 'momentum-korb-kleinst-2026-10-04/v1',
+        kennung: 'momentum-korb-v23-2026-10-04/v1',
         lauf: 'A-187',
         korb: 'Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App)',
         regel: 'mit Regel K',
-        zahlen: { von: '2017-01-04', bis: '2021-09-15', buchGesamt: 169.0, spyGesamt: 115.5, schlaegt: true,
+        zahlen: { von: '2017-01-04', bis: '2021-09-15', buchGesamt: 159.2, spyGesamt: 115.5, schlaegt: true,
           phasenVorn: 63, phasen: 63, medianAbstandPa: 7.3, rueckschlagBuch: -49.0, rueckschlagSpy: -33.8 },
-        grenzen: ZUFALL + '; der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); ' + ZWILLINGE,
-        quelle: 'studien/momentum-korb-kleinst-2026-10-04/ERGEBNIS.md, Lauf A-187 mit Regel K, 04.10.2026',
+        grenzen: ZUFALL + '; der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger)',
+        quelle: 'studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md, Lauf A-187 mit Regel K, Panel v2.3, 04.10.2026',
         datum: '2026-10-04'
       },
       {
-        kennung: 'momentum-korb-kleinst-2026-10-04/v1',
+        kennung: 'momentum-korb-v23-2026-10-04/v1',
         lauf: 'B-breit',
         korb: 'breiter Markt (alle zulässigen Werte, nicht die Liste der App)',
         regel: 'mit Regel K',
-        zahlen: { von: '2021-09-16', bis: '2026-09-15', buchGesamt: 64.3, spyGesamt: 81.2, schlaegt: false,
-          phasenVorn: 41, phasen: 63, medianAbstandPa: 1.8, rueckschlagBuch: -40.2, rueckschlagSpy: -24.5 },
+        zahlen: { von: '2021-09-16', bis: '2026-09-15', buchGesamt: 64.0, spyGesamt: 81.2, schlaegt: false,
+          phasenVorn: 43, phasen: 63, medianAbstandPa: 1.7, rueckschlagBuch: -40.3, rueckschlagSpy: -24.5 },
         grenzen: ZUFALL + '; vor Steuern (nach Steuern für den breiten Markt nicht gerechnet)',
-        quelle: 'studien/momentum-korb-kleinst-2026-10-04/ERGEBNIS.md, Lauf B-breit mit Regel K, 04.10.2026',
+        quelle: 'studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md, Lauf B-breit mit Regel K, Panel v2.3, 04.10.2026',
         datum: '2026-10-04'
       }
     ],

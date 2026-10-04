@@ -22428,29 +22428,40 @@ console.log('94) Der Rueckblick am Momentum-Buch');
    * Umgeschrieben mit Auftrag Nr. 91 (altes SOLL: EIN Eintrag, massstab-rueckblick v1, ohne
    * Regel K). Neu: drei Eintraege MIT Regel K aus momentum-korb-kleinst-2026-10-04 - jede
    * ihrer Zahlen haelt 97.8 gegen diese Datei. Hier bleibt die Bruecke zur alten Datei:
-   * der Lauf B-breit OHNE Regel K ist genau der fruehere Eintrag (v1). */
+   * der Lauf B-breit OHNE Regel K ist genau der fruehere Eintrag (v1).
+   * Seit Auftrag Nr. 96: die drei Eintraege kommen aus momentum-korb-v23-2026-10-04 (dieselbe
+   * Regel und derselbe Rechner wie Nr. 85, Panel v2.3). Die Bruecke Nr. 85 -> v1 bleibt
+   * (beide auf v2.2); dazu: die neue Datei traegt die Regel von Nr. 85, nur das Panel v2.3. */
   var kleinst94 = JSON.parse(fs.readFileSync(__dirname + '/studien/momentum-korb-kleinst-2026-10-04/ergebnis.json', 'utf8'));
+  var v23_94 = JSON.parse(fs.readFileSync(__dirname + '/studien/momentum-korb-v23-2026-10-04/ergebnis.json', 'utf8'));
   var bOhne94 = kleinst94.laeufe['B-breit'].ohne;
-  ok(liste.length === 3 && liste.every(function (e) { return e.kennung === kleinst94.kennung && e.datum === kleinst94.erzeugt.slice(0, 10); }) &&
+  var regelOhneKonfig = function (rg) { var o = JSON.parse(JSON.stringify(rg)); delete o.konfigBuch; return JSON.stringify(o); };
+  ok(v23_94.vollstaendig === true && v23_94.regelKennung === kleinst94.kennung && regelOhneKonfig(v23_94.regel) === regelOhneKonfig(kleinst94.regel) &&
+     kleinst94.panelKennung === 'querschnitt-pruefstand-2026-09-13/panel/v2.2' && v23_94.panelKennung === 'querschnitt-pruefstand-2026-09-13/panel/v2.3' &&
+     v23_94.panelOrdner === 'studien/querschnitt-pruefstand-2026-09-13/voll-v23c' && v23_94.selbstpruefung.bestanden === true,
+     '94.1 die Ergebnisdatei von Nr. 96: dieselbe Regel wie Nr. 85 (Regel K 5 %, Fenster, Korb, Kosten, 63 Startphasen), nur das Panel v2.3 (voll-v23c); Wiederholbarkeitsprobe bestanden',
+     v23_94.panelKennung + ' / ' + v23_94.regelKennung);
+  ok(liste.length === 3 && liste.every(function (e) { return e.kennung === v23_94.kennung && e.datum === v23_94.erzeugt.slice(0, 10); }) &&
      liste.map(function (e) { return e.lauf; }).join(',') === 'B-187,A-187,B-breit' && !liste.some(function (e) { return e.kennung === erg.kennung; }) &&
      r1(bOhne94.k0.buchGesamt) === r1(erg.haupt.buchGesamt) && r1(bOhne94.k0.spyGesamt) === r1(erg.haupt.spyGesamt) &&
      bOhne94.startphasen.vorDemMarkt === erg.zufallsbereich.startphasen.vorDemMarkt && bOhne94.startphasen.anzahl === erg.zufallsbereich.startphasen.anzahl &&
      r1(bOhne94.k0.rueckschlagBuch) === r1(erg.haupt.rueckschlagBuch) && kleinst94.regel.fenster.B.von === erg.fenster.von && kleinst94.regel.fenster.B.bis === erg.fenster.bis,
-     '94.1 der Eintrag ohne Regel K (massstab-rueckblick v1) ist ersetzt: B-breit OHNE Regel K ist genau v1 (+65,2 / +81,2 / 41 von 63 / -40,2) - im Register stehen drei Eintraege MIT Regel K',
+     '94.1 der Eintrag ohne Regel K (massstab-rueckblick v1) ist ersetzt: B-breit OHNE Regel K in Nr. 85 ist genau v1 (+65,2 / +81,2 / 41 von 63 / -40,2, beide v2.2) - im Register stehen drei Eintraege MIT Regel K aus Nr. 96',
      liste.map(function (e) { return e.lauf; }).join(','));
-  ok(fs.existsSync(__dirname + '/studien/momentum-korb-kleinst-2026-10-04/ERGEBNIS.md') &&
-     liste.every(function (e) { return e.quelle.indexOf('studien/momentum-korb-kleinst-2026-10-04/ERGEBNIS.md, Lauf ' + e.lauf + ' mit Regel K') === 0; }),
+  ok(fs.existsSync(__dirname + '/studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md') &&
+     liste.every(function (e) { return e.quelle.indexOf('studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md, Lauf ' + e.lauf + ' mit Regel K') === 0; }),
      '94.1 die Fundstelle (Studie, Lauf, Fassung) gibt es');
-  var SUfalsch = laden(suQ.replace('buchGesamt: 64.3,', 'buchGesamt: 65.3,'));
+  var SUfalsch = laden(suQ.replace('buchGesamt: 64.0,', 'buchGesamt: 65.0,'));
   gegen94('eine abgetippte Zahl, die nicht in der Ergebnisdatei steht, faellt auf',
-    SUfalsch.rueckblicke('momentum-liquide')[2].zahlen.buchGesamt !== r1(kleinst94.laeufe['B-breit'].mit.k0.buchGesamt));
+    SUfalsch.rueckblicke('momentum-liquide')[2].zahlen.buchGesamt !== r1(v23_94.laeufe['B-breit'].mit.k0.buchGesamt) &&
+    liste[2].zahlen.buchGesamt === r1(v23_94.laeufe['B-breit'].mit.k0.buchGesamt));
 
   /* ---- 94.2 der Satz ---- */
   var txt = SU.rueckblickText(r);
   ok(txt === 'Rückblick 16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: ' +
        'Buch +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen vorn, in der Mitte +8,2 Pp pro Jahr; ' +
-       'größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); gerechnet auf einem Panel, in dem rund 2 % der Reihen doppelt stehen (Vorgänger-Kürzel); die Zahl je Starttag verschiebt sich dadurch, der Median kaum.',
-     '94.2 der Satz, wie Karte und Antwort-Seite ihn zeigen (Grenzen seit Nr. 95 mit Zufall vorn und dem Panel mit den doppelten Reihen)', txt);
+       'größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
+     '94.2 der Satz, wie Karte und Antwort-Seite ihn zeigen (Grenzen seit Nr. 95 mit Zufall vorn; seit Nr. 96 Panel v2.3, ohne den Halbsatz zu den doppelten Reihen)', txt);
   var anders = JSON.parse(JSON.stringify(r));
   anders.korb = 'Korb wie in der App'; anders.regel = ''; anders.grenzen = ''; anders.quelle = 'Kunstfall';
   anders.zahlen = { von: '2023-01-02', bis: '2026-01-02', buchGesamt: 12.34, spyGesamt: -5.06, schlaegt: true, phasenVorn: 7, phasen: 9,
@@ -23641,7 +23652,10 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
   var suQ = fs.readFileSync(__dirname + '/studienurteile.js', 'utf8');
   function laden(q, doc) { var w = {}; new Function('window', 'document', q)(w, doc); return w.StudienUrteile; }
   var SU = laden(suQ);
-  var kl = JSON.parse(fs.readFileSync(__dirname + '/studien/momentum-korb-kleinst-2026-10-04/ergebnis.json', 'utf8'));
+  /* Seit Auftrag Nr. 96 halten die Zahlen gegen die Datei auf dem Panel v2.3 (kl); die Kontrollzahlen des PM aus Nr. 91
+   * bleiben die der Datei von Nr. 85 auf v2.2 (kl85) - sie beschreiben diese Datei, nicht die neue. */
+  var kl = JSON.parse(fs.readFileSync(__dirname + '/studien/momentum-korb-v23-2026-10-04/ergebnis.json', 'utf8'));
+  var kl85 = JSON.parse(fs.readFileSync(__dirname + '/studien/momentum-korb-kleinst-2026-10-04/ergebnis.json', 'utf8'));
   var drP = __dirname + '/studien/vorregistrierung-2026-10-04-ergebnis-drift/';
   var dr = JSON.parse(fs.readFileSync(drP + 'ergebnis.json', 'utf8'));
   var drMd = fs.readFileSync(drP + 'ERGEBNIS.md', 'utf8');
@@ -23677,21 +23691,21 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
   var rotM = pruefeMomentum(SU), rotD = pruefeDrift(SU);
   ok(rotM.length === 0, '97.8 Momentum: drei Eintraege (B-187, A-187, B-breit) - jede Zahl ist die der Ergebnisdatei, Fassung mit Regel K, auf eine Nachkommastelle', rotM.join(' | '));
   ok(rotD.length === 0, '97.8 Drift: jede Zahl ist die der Ergebnisdatei von Nr. 88 (Stufe 2), das Fenster aus ERGEBNIS.md', rotD.join(' | '));
-  /* Die Kontrollzahlen des PM aus dem Auftrag, gegen dieselbe Datei (Median auf zwei Stellen). */
+  /* Die Kontrollzahlen des PM aus dem Auftrag Nr. 91, gegen die Datei von Nr. 85 (v2.2; Median auf zwei Stellen). */
   var PM = { 'B-187': [150.1, 81.2, 61, 8.25, -56.9, -24.5], 'A-187': [169.0, 115.5, 63, 7.32, -49.0, -33.8], 'B-breit': [64.3, 81.2, 41, 1.76, -40.2, -24.5] };
   var pmAbw = [];
   Object.keys(PM).forEach(function (k) {
-    var m = kl.laeufe[k].mit, ist = [r1(m.k0.buchGesamt), r1(m.k0.spyGesamt), m.startphasen.vorDemMarkt, r2(m.startphasen.median), r1(m.k0.rueckschlagBuch), r1(m.k0.rueckschlagSpy)];
+    var m = kl85.laeufe[k].mit, ist = [r1(m.k0.buchGesamt), r1(m.k0.spyGesamt), m.startphasen.vorDemMarkt, r2(m.startphasen.median), r1(m.k0.rueckschlagBuch), r1(m.k0.rueckschlagSpy)];
     if (JSON.stringify(ist) !== JSON.stringify(PM[k])) pmAbw.push(k + ' ' + JSON.stringify(ist));
   });
-  ok(pmAbw.length === 0 && r1(kl.laeufe['B-187'].mit.startphasen.median) === 8.2,
-     '97.8 die Kontrollzahlen des PM stimmen mit der Datei ueberein; der Median von B-187 ist 8,2476 - auf eine Stelle +8,2 (im Auftragstext stand +8,3: doppelt gerundet ueber 8,25)', pmAbw.join(' | '));
+  ok(pmAbw.length === 0 && r1(kl85.laeufe['B-187'].mit.startphasen.median) === 8.2,
+     '97.8 die Kontrollzahlen des PM (Nr. 91) stimmen mit der Datei von Nr. 85 (v2.2) ueberein; der Median von B-187 ist dort 8,2476 - auf eine Stelle +8,2 (im Auftragstext stand +8,3: doppelt gerundet ueber 8,25)', pmAbw.join(' | '));
 
   /* ---- 97.9 die vier Zeilen im Wortlaut ---- */
   var SOLL = [
-    'Rückblick 16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen vorn, in der Mitte +8,2 Pp pro Jahr; größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); gerechnet auf einem Panel, in dem rund 2 % der Reihen doppelt stehen (Vorgänger-Kürzel); die Zahl je Starttag verschiebt sich dadurch, der Median kaum.',
-    'Rückblick 04.01.2017 bis 15.09.2021, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +169,0 % gegen S&P 500 +115,5 % – geschlagen; je nach Starttag in 63 von 63 Fällen vorn, in der Mitte +7,3 Pp pro Jahr; größter Rückschlag −49,0 % gegen −33,8 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger); gerechnet auf einem Panel, in dem rund 2 % der Reihen doppelt stehen (Vorgänger-Kürzel); die Zahl je Starttag verschiebt sich dadurch, der Median kaum.',
-    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,3 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 41 von 63 Fällen vorn, in der Mitte +1,8 Pp pro Jahr; größter Rückschlag −40,2 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); vor Steuern (nach Steuern für den breiten Markt nicht gerechnet).',
+    'Rückblick 16.09.2021 bis 15.09.2026, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +150,1 % gegen S&P 500 +81,2 % – geschlagen; je nach Starttag in 61 von 63 Fällen vorn, in der Mitte +8,2 Pp pro Jahr; größter Rückschlag −56,9 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2024/25); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
+    'Rückblick 04.01.2017 bis 15.09.2021, Korb der 187 umsatzstärksten Werte am Stichtag (nicht die Liste der App), mit Regel K: Buch +159,2 % gegen S&P 500 +115,5 % – geschlagen; je nach Starttag in 63 von 63 Fällen vorn, in der Mitte +7,3 Pp pro Jahr; größter Rückschlag −49,0 % gegen −33,8 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); der Vorsprung stammt aus einem Schub (2020); vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger).',
+    'Rückblick 16.09.2021 bis 15.09.2026, breiter Markt (alle zulässigen Werte, nicht die Liste der App), mit Regel K: Buch +64,0 % gegen S&P 500 +81,2 % – nicht geschlagen; je nach Starttag in 43 von 63 Fällen vorn, in der Mitte +1,7 Pp pro Jahr; größter Rückschlag −40,3 % gegen −24,5 %. Grenzen: vom Zufall nicht zu trennen (je Umschichtungsperiode schließt das 95-%-Band des Abstands null ein); vor Steuern (nach Steuern für den breiten Markt nicht gerechnet).',
     'Rückblick 16.09.2021 bis 15.09.2026, Kauf nach den stärksten Überraschungen (40 Plätze, 60 Handelstage, nur Kaufseite – nicht die Regel dieses Buchs): Buch +84,2 % gegen S&P 500 +81,2 % – knapp davor, aber 16 von 200 Zufallsbüchern liegen darüber: kein Vorwärtstest angezeigt; größter Rückschlag −21,6 % gegen −24,5 %.'
   ];
   var IST = SU.rueckblicke('momentum-liquide').concat(SU.rueckblicke('drift')).map(function (e) { return SU.rueckblickText(e); });
@@ -24366,14 +24380,19 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
   /* ---- 100.1 A1/B1 ---- */
   var mom = SU.rueckblicke('momentum-liquide'), dr = SU.rueckblicke('drift');
   var g = function (lauf) { return mom.filter(function (e) { return e.lauf === lauf; })[0] || {}; };
-  ok(mom.length === 3 && mom.every(function (e) { return String(e.grenzen).indexOf(ZUFALL + '; ') === 0; }) &&
-     [g('B-187'), g('A-187')].every(function (e) { return String(e.grenzen).slice(-ZWILL.length) === ZWILL; }) && String(g('B-breit').grenzen).indexOf(ZWILL) === -1 &&
-     g('A-187').zahlen.buchGesamt === 169.0 && g('A-187').zahlen.medianAbstandPa === 7.3 && !dr[0].grenzen,
-     '100.1 Grenzen: alle drei Momentum-Zeilen beginnen mit "vom Zufall nicht zu trennen (…95-%-Band…)", die zwei zum Korb 187 enden mit dem Panel mit den doppelten Reihen; die Zahl bleibt die der Ergebnisdatei (A-187 +169,0); die Drift-Zeile unveraendert',
-     String(g('A-187').grenzen).slice(0, 60));
+  /* Seit Auftrag Nr. 96: die Zahlen stehen auf dem Panel v2.3 (momentum-korb-v23-2026-10-04), der Halbsatz ZWILL zu den
+   * doppelten Reihen ist aus allen drei Saetzen weggefallen (das Panel ist bereinigt); alles andere im Satz bleibt. */
+  var v23 = JSON.parse(fs.readFileSync(__dirname + '/studien/momentum-korb-v23-2026-10-04/ergebnis.json', 'utf8')).laeufe['A-187'].mit;
+  var STEUER = 'vor Steuern (im Rechenmodell nach Steuern rund 2,4 Pp pro Jahr weniger)';
+  ok(mom.length === 3 && mom.every(function (e) { return String(e.grenzen).indexOf(ZUFALL + '; ') === 0 && String(e.grenzen).indexOf(ZWILL) === -1 && String(e.grenzen).indexOf('doppelt') === -1; }) &&
+     [g('B-187'), g('A-187')].every(function (e) { return String(e.grenzen).slice(-STEUER.length) === STEUER; }) &&
+     g('B-187').grenzen === ZUFALL + '; der Vorsprung stammt aus einem Schub (2024/25); ' + STEUER && g('A-187').grenzen === ZUFALL + '; der Vorsprung stammt aus einem Schub (2020); ' + STEUER &&
+     g('A-187').zahlen.buchGesamt === Math.round(v23.k0.buchGesamt * 10) / 10 && g('A-187').zahlen.medianAbstandPa === Math.round(v23.startphasen.median * 10) / 10 && !dr[0].grenzen,
+     '100.1 Grenzen: alle drei Momentum-Zeilen beginnen mit "vom Zufall nicht zu trennen (…95-%-Band…)", keine nennt mehr die doppelten Reihen (seit Nr. 96, Panel v2.3); die zwei zum Korb 187 enden mit "vor Steuern (…)"; die Zahl ist die der Ergebnisdatei von Nr. 96; die Drift-Zeile unveraendert',
+     String(g('A-187').grenzen).slice(-60));
   var tA = SU.rueckblickText(g('A-187')), iG = tA.indexOf(' Grenzen: ');
-  ok(iG > 0 && tA.slice(iG).indexOf('95-%-Band') > 0 && tA.slice(0, iG).indexOf('95') === -1 && tA.slice(0, iG).indexOf('2 %') === -1,
-     '100.1 die neuen Zahlen (95 %, 2 %) stehen nur hinter "Grenzen:" - dort liest der Kleinsttest 10 keine Zahl');
+  ok(iG > 0 && tA.slice(iG).indexOf('95-%-Band') > 0 && tA.slice(0, iG).indexOf('95') === -1 && tA.indexOf('rund 2 %') === -1,
+     '100.1 die Zahl 95 % steht nur hinter "Grenzen:" - dort liest der Kleinsttest 10 keine Zahl; "rund 2 %" (doppelte Reihen) steht nirgends mehr');
 
   /* ---- 100.2 B3 ---- */
   var KOPF = SU.belegeKopf('momentum-liquide');

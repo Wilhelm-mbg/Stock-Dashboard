@@ -454,7 +454,9 @@ TESTS[9] = function () {
  *      Drift-Zeile und ihre 60 Handelstage stehen nur in der genannten ERGEBNIS.md. Danach muss jede Zahl der gezeigten
  *      Zeile (rueckblickText) einem geprueften Feld gehoeren, und jedes Feld von zahlen muss geprueft sein. Ausgenommen
  *      ist nur der Satz "Grenzen: ..." - ein fester Satz des PM, dessen Zahlen in keiner der Quellen stehen; er wird
- *      genannt, nicht geprueft. */
+ *      genannt, nicht geprueft.
+ *      Seit Auftrag Nr. 96 nennen die drei Momentum-Eintraege studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md (Panel v2.3,
+ *      dieselbe Regel); der Test liest die Quelle weiter aus dem Eintrag - an ihm selbst aendert sich nichts. */
 TESTS[10] = function () {
   var win = sandbox(['studienurteile.js'], {}, Date.now());
   var SU = win.StudienUrteile;
