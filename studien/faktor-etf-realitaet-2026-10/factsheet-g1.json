@@ -1,0 +1,160 @@
+{
+ "gruppe": "g1",
+ "stand": "2026-10-05 01:29",
+ "stichproben": [
+  {
+   "id": "RSP",
+   "symbol": "RSP",
+   "anbieter_url": "https://www.invesco.com/us/en/financial-products/etfs/invesco-sp-500-equal-weight-etf.html",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 8.82,
+   "unser_5j_pa": 8.81,
+   "abweichung_pp": -0.01,
+   "bemerkung": "Anbieterwert 8.817 (NAV 8.801) aus der Invesco-Daten-API dng-api.invesco.com .../performance/standard?performanceSubType=annualized&performancePeriod=monthly. Gegenprobe Quartalsende 2026-06-30: Anbieter 8.93, unser 8.93."
+  },
+  {
+   "id": "QUAL",
+   "symbol": "QUAL",
+   "anbieter_url": "https://www.ishares.com/us/products/256101/ishares-msci-usa-quality-factor-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 11.87,
+   "unser_5j_pa": 11.87,
+   "abweichung_pp": 0,
+   "bemerkung": "Average Annual, Quartalsende (Monatsende nur per Skript der Seite); NAV 11,92."
+  },
+  {
+   "id": "SPHQ",
+   "symbol": "SPHQ",
+   "anbieter_url": "https://www.invesco.com/us/en/financial-products/etfs/invesco-sp-500-quality-etf.html",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 12.49,
+   "unser_5j_pa": 12.41,
+   "abweichung_pp": -0.08,
+   "bemerkung": "Anbieterwert 12.485 (NAV 12.483), Invesco-Daten-API dng-api.invesco.com .../performance/standard?performanceSubType=annualized&performancePeriod=monthly. Abweichung erklaert: Yahoo fehlt die Ausschuettung Ex 20.09.2021 (0,17302 USD, Invesco-Historie) im Fenster. Gegenprobe Quartalsende 2026-06-30: Anbieter 14.74, unser 14.66."
+  },
+  {
+   "id": "USMV",
+   "symbol": "USMV",
+   "anbieter_url": "https://www.ishares.com/us/products/239695/ishares-msci-usa-minimum-volatility-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 7.3,
+   "unser_5j_pa": 7.3,
+   "abweichung_pp": 0,
+   "bemerkung": "Average Annual, Quartalsende; NAV 7,29."
+  },
+  {
+   "id": "SPLV",
+   "symbol": "SPLV",
+   "anbieter_url": "https://www.invesco.com/us/en/financial-products/etfs/invesco-sp-500-low-volatility-etf.html",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 5.33,
+   "unser_5j_pa": 5.3,
+   "abweichung_pp": -0.04,
+   "bemerkung": "Anbieterwert 5.333 (NAV 5.324), Invesco-Daten-API dng-api.invesco.com .../performance/standard?performanceSubType=annualized&performancePeriod=monthly. Abweichung erklaert: Yahoo fehlt die Ausschuettung Ex 20.09.2021 (0,08853 USD). Gegenprobe Quartalsende 2026-06-30: Anbieter 6.45, unser 6.41."
+  },
+  {
+   "id": "LRGF",
+   "symbol": "LRGF",
+   "anbieter_url": "https://www.ishares.com/us/products/272824/ishares-u-s-equity-factor-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 13.65,
+   "unser_5j_pa": 13.64,
+   "abweichung_pp": -0.01,
+   "bemerkung": "Average Annual, Quartalsende; NAV 13,65."
+  },
+  {
+   "id": "GSLC",
+   "symbol": "GSLC",
+   "anbieter_url": "https://am.gs.com/public-assets/documents/575230c8-24d6-11ef-870d-5172ed5a38e2",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 11.4,
+   "unser_5j_pa": 11.41,
+   "abweichung_pp": 0.01,
+   "bemerkung": "Factsheet-PDF \"As of August 31, 2026\", Monthly Total Returns 5 Years: NAV 11,38 / Market Price 11,40 (S&P 500 12,78 als Lesekontrolle). Gegenprobe Quartalsende 30.06.2026: Anbieter 11,95, unser 11.95. Fondsseite am.gs.com nur per Skript; 10 Jahre bis 31.08.2026: Anbieter 14,49, unser 14.45 (fehlende Ausschuettungen 2016/2020, siehe Befunde)."
+  },
+  {
+   "id": "MOAT",
+   "symbol": "MOAT",
+   "anbieter_url": "https://www.vaneck.com/us/en/investments/morningstar-wide-moat-etf-moat-fact-sheet.pdf",
+   "stichtag": "2026-09-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 8.88,
+   "unser_5j_pa": 8.89,
+   "abweichung_pp": 0.01,
+   "bemerkung": "Factsheet \"As of September 30, 2026\", Average Annual Total Returns, Month End: NAV 8,86 / Market Price 8,88; 10 J. Anbieter 13,41, unser 13.42."
+  },
+  {
+   "id": "COWZ",
+   "symbol": "COWZ",
+   "anbieter_url": "https://www.paceretfs.com/products/cowz",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 9.87,
+   "unser_5j_pa": 9.88,
+   "abweichung_pp": 0.01,
+   "bemerkung": "Fondsseite \"Performance (%) as of 06/30/2026\": NAV 9,87 / Market Price 9,87 (Spaltenfolge seit Auflage, YTD, 1, 3, 5 J., geprueft am Russell-1000-Zeilenwert)."
+  },
+  {
+   "id": "PRF",
+   "symbol": "PRF",
+   "anbieter_url": "https://www.invesco.com/us/en/financial-products/etfs/invesco-rafi-us-1000-etf.html",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 13.26,
+   "unser_5j_pa": 13.25,
+   "abweichung_pp": -0.01,
+   "bemerkung": "Zusatzfonds. Anbieterwert 13.258 (NAV 13.252), Invesco-Daten-API dng-api.invesco.com .../performance/standard?performanceSubType=annualized&performancePeriod=monthly. Gegenprobe Quartalsende 2026-06-30: Anbieter 13.04, unser 13.06."
+  },
+  {
+   "id": "RWL",
+   "symbol": "RWL",
+   "anbieter_url": "https://www.invesco.com/us/en/financial-products/etfs/invesco-sp-500-revenue-etf.html",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 13.75,
+   "unser_5j_pa": 13.65,
+   "abweichung_pp": -0.1,
+   "bemerkung": "Zusatzfonds. Anbieterwert 13.749 (NAV 13.754), Invesco-Daten-API dng-api.invesco.com .../performance/standard?performanceSubType=annualized&performancePeriod=monthly. Abweichung erklaert: Yahoo fehlt die Ausschuettung Ex 20.09.2021 (0,27189 USD). Gegenprobe Quartalsende 2026-06-30: Anbieter 13.35, unser 13.27."
+  },
+  {
+   "id": "QUS",
+   "symbol": "QUS",
+   "anbieter_url": "https://www.ssga.com/us/en/intermediary/etfs/state-street-spdr-msci-usa-strategicfactors-etf-qus",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 10.79,
+   "unser_5j_pa": 10.8,
+   "abweichung_pp": 0.01,
+   "bemerkung": "Zusatzfonds. SSGA \"Market Value\" Monatsende; NAV 10,79. Gegenprobe Quartalsende 30.06.2026: Anbieter 11,00, unser 11.03."
+  },
+  {
+   "id": "IVV",
+   "symbol": "IVV",
+   "anbieter_url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 13.33,
+   "unser_5j_pa": 13.33,
+   "abweichung_pp": 0,
+   "bemerkung": "Kontrolle. Average Annual, Quartalsende; NAV 13,37. Zusaetzlich 30.09.2026 unser 13.77 (kein Anbieterwert zu diesem Tag gelesen)."
+  },
+  {
+   "id": "VOO",
+   "symbol": "VOO",
+   "anbieter_url": "https://investor.vanguard.com/investment-products/etfs/profile/voo",
+   "stichtag": "2026-09-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 13.76,
+   "unser_5j_pa": 13.77,
+   "abweichung_pp": 0.01,
+   "bemerkung": "Kontrolle. Vanguard-Daten-API api.vanguard.com/rs/ire/01/ind/fund/0968/performance.json, monthEndAvgAnnualRtn marketPriceFundReturn fiveYrPct (NAV 13,75)."
+  }
+ ]
+}

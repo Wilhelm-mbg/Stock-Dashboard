@@ -1,0 +1,3909 @@
+{
+ "kennung": "faktor-etf-realitaet-2026-10/v1 – zweiter Rechner (C10)",
+ "stand": "2026-10-05T01:15:39+0200",
+ "datenende": "2026-09-15",
+ "einheiten": "Renditen, Abstände, Median, Rückschlag als Dezimalbrüche (0.1234 = 12,34 % bzw. 12,34 Pp); Felder *Pp in Prozentpunkten.",
+ "quellen": {
+  "SPY": {
+   "sha256": "98d478d49980fa7f6b24d5c43c5a94eebae3030fe32d0ee47a5861bca06c2a5a",
+   "bytes": 857261,
+   "erster": "1993-01-29",
+   "letzter": "2026-10-02",
+   "tage": 8477,
+   "tageBisDatenende": 8464,
+   "ausschuettungen": 136,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 135,
+   "splits": [],
+   "waehrung": "USD",
+   "zeitzone": "America/New_York",
+   "name": "State Street SPDR S&P 500 ETF Trust",
+   "boerse": "NYSEArca",
+   "ersterHandelstagMeta": "1993-01-29",
+   "abruf": "2026-10-04T23:11:18.990Z"
+  },
+  "^SP500TR": {
+   "sha256": "47b3f8c770e0ae64950a7ff7af853cc240cc736e53758619edaefd0f2630e945",
+   "bytes": 948386,
+   "erster": "1988-01-04",
+   "letzter": "2026-10-02",
+   "tage": 9761,
+   "tageBisDatenende": 9748,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "USD",
+   "zeitzone": "America/New_York",
+   "name": "S&P 500 (TR)",
+   "boerse": "SNP",
+   "ersterHandelstagMeta": "1988-01-04",
+   "abruf": "2026-10-04T23:11:24.996Z"
+  },
+  "SPMO": {
+   "sha256": "d6958f2e4cb3d3c304ce61b7cce8cd3d12fec5ab94f3c62f6799a7730cff10f4",
+   "bytes": 296189,
+   "erster": "2015-10-12",
+   "letzter": "2026-10-02",
+   "tage": 2760,
+   "tageBisDatenende": 2747,
+   "ausschuettungen": 40,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 39,
+   "splits": [],
+   "waehrung": "USD",
+   "zeitzone": "America/New_York",
+   "name": "Invesco S&P 500 Momentum ETF",
+   "boerse": "NYSEArca",
+   "ersterHandelstagMeta": "2015-10-12",
+   "abruf": "2026-10-04T23:11:20.887Z"
+  },
+  "SCHD": {
+   "sha256": "bbab740e778e422293c1c41e44eb533f9a5d6503bc8e65f7b84d4737b7cbbd91",
+   "bytes": 421260,
+   "erster": "2011-10-20",
+   "letzter": "2026-10-02",
+   "tage": 3759,
+   "tageBisDatenende": 3746,
+   "ausschuettungen": 60,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 59,
+   "splits": [
+    {
+     "d": "2024-10-11",
+     "verhaeltnis": "3:1"
+    }
+   ],
+   "waehrung": "USD",
+   "zeitzone": "America/New_York",
+   "name": "Schwab U.S. Dividend Equity ETF",
+   "boerse": "NYSEArca",
+   "ersterHandelstagMeta": "2011-10-20",
+   "abruf": "2026-10-04T23:11:22.886Z"
+  },
+  "XDEW.DE": {
+   "sha256": "c6c9c9346f40cf768f149912b96c8ba5ed065278d652ddc6179ef2c592c7956b",
+   "bytes": 321579,
+   "erster": "2014-08-15",
+   "letzter": "2026-10-02",
+   "tage": 3074,
+   "tageBisDatenende": 3061,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C",
+   "boerse": "XETRA",
+   "ersterHandelstagMeta": "2014-08-15",
+   "abruf": "2026-10-04T23:11:26.875Z"
+  },
+  "XDEW.L": {
+   "sha256": "15e2daba094ee9049fbd58bff15b88d543f01355a8b4197bbb02bdc3c1c68458",
+   "bytes": 321408,
+   "erster": "2014-06-10",
+   "letzter": "2026-10-02",
+   "tage": 3114,
+   "tageBisDatenende": 3101,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "USD",
+   "zeitzone": "Europe/London",
+   "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C",
+   "boerse": "LSE",
+   "ersterHandelstagMeta": "2014-06-10",
+   "abruf": "2026-10-04T23:11:28.777Z"
+  },
+  "XDEW.SW": {
+   "sha256": "761e4e314da5805b1d533e43fa7c30083f351b5f296ae7c55ca86e8ce121baa2",
+   "bytes": 247310,
+   "erster": "2014-08-27",
+   "letzter": "2026-10-02",
+   "tage": 3038,
+   "tageBisDatenende": 3025,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "CHF",
+   "zeitzone": "Europe/Zurich",
+   "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C",
+   "boerse": "Swiss",
+   "ersterHandelstagMeta": "2014-08-27",
+   "abruf": "2026-10-04T23:11:30.661Z"
+  },
+  "XDEW.MI": {
+   "sha256": "9e34090019a35aa17ebc55d1a8cbba1d806fbd6dcf9d7dc26081ad60b11c94cc",
+   "bytes": 322657,
+   "erster": "2014-06-10",
+   "letzter": "2026-10-02",
+   "tage": 3099,
+   "tageBisDatenende": 3085,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Rome",
+   "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C",
+   "boerse": "Milan",
+   "ersterHandelstagMeta": "2014-06-10",
+   "abruf": "2026-10-04T23:11:32.541Z"
+  },
+  "EZB-USD": {
+   "sha256": "4244238abfc1fc0fbd316c5cc115489633439ba6cd42926adf27a37dc8933e8f",
+   "bytes": 1485245,
+   "erster": "1999-01-04",
+   "letzter": "2026-10-02",
+   "tage": 7106,
+   "leereWerte": 62,
+   "doppelteTage": 0,
+   "ausschuettungen": null,
+   "abruf": "2026-10-04T23:11:34.453Z"
+  },
+  "EZB-GBP": {
+   "sha256": "d90a4900b258599667107f4d7ebf7977483add3a27db89e7bd3fb7f7cb0f80ed",
+   "bytes": 1559928,
+   "erster": "1999-01-04",
+   "letzter": "2026-10-02",
+   "tage": 7106,
+   "leereWerte": 62,
+   "doppelteTage": 0,
+   "ausschuettungen": null,
+   "abruf": "2026-10-04T23:20:33.793Z"
+  },
+  "EZB-CHF": {
+   "sha256": "c187659f7f0a71ca4354c83dbb3fae868d7fcdd56011bb11071a36b19c414ea9",
+   "bytes": 1513888,
+   "erster": "1999-01-04",
+   "letzter": "2026-10-02",
+   "tage": 7106,
+   "leereWerte": 62,
+   "doppelteTage": 0,
+   "ausschuettungen": null,
+   "abruf": "2026-10-04T23:20:34.026Z"
+  },
+  "QQQ": {
+   "sha256": "c510fbe5de813737979e0eda49152e203da6a42db75fd8027c7c2d212d9b900a",
+   "bytes": 743698,
+   "erster": "1999-03-10",
+   "letzter": "2026-10-02",
+   "tage": 6935,
+   "tageBisDatenende": 6922,
+   "ausschuettungen": 90,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 89,
+   "splits": [
+    {
+     "d": "2000-03-20",
+     "verhaeltnis": "2:1"
+    }
+   ],
+   "waehrung": "USD",
+   "zeitzone": "America/New_York",
+   "name": "Invesco QQQ Trust",
+   "boerse": "NasdaqGM",
+   "ersterHandelstagMeta": "1999-03-10",
+   "abruf": "2026-10-04T23:19:47.280Z"
+  },
+  "IVW": {
+   "sha256": "51cf30b2db6a3df2d1087c5ba014b3bcdfa16e9bde48ead9bfcb67ea19893dff",
+   "bytes": 720734,
+   "erster": "2000-05-26",
+   "letzter": "2026-10-02",
+   "tage": 6627,
+   "tageBisDatenende": 6614,
+   "ausschuettungen": 107,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 107,
+   "splits": [
+    {
+     "d": "2020-10-19",
+     "verhaeltnis": "4:1"
+    }
+   ],
+   "waehrung": "USD",
+   "zeitzone": "America/New_York",
+   "name": "iShares S&P 500 Growth ETF",
+   "boerse": "NYSEArca",
+   "ersterHandelstagMeta": "2000-05-26",
+   "abruf": "2026-10-04T23:19:49.298Z"
+  },
+  "SCHG": {
+   "sha256": "1814dafa899b1e81112d77ebaceae538670531dad501816be8ced82232b02667",
+   "bytes": 460986,
+   "erster": "2010-01-04",
+   "letzter": "2026-10-02",
+   "tage": 4213,
+   "tageBisDatenende": 4200,
+   "ausschuettungen": 70,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 69,
+   "splits": [
+    {
+     "d": "2022-03-11",
+     "verhaeltnis": "2:1"
+    },
+    {
+     "d": "2024-10-11",
+     "verhaeltnis": "4:1"
+    }
+   ],
+   "waehrung": "USD",
+   "zeitzone": "America/New_York",
+   "name": "Schwab U.S. Large-Cap Growth ETF",
+   "boerse": "NYSEArca",
+   "ersterHandelstagMeta": "2010-01-04",
+   "abruf": "2026-10-04T23:19:51.307Z"
+  },
+  "MGK": {
+   "sha256": "78558b25d2c6fe74936a5acf3ebb2fcc8fc7d452fead1c2b2bf7569e754407f7",
+   "bytes": 520917,
+   "erster": "2007-12-27",
+   "letzter": "2026-10-02",
+   "tage": 4721,
+   "tageBisDatenende": 4708,
+   "ausschuettungen": 73,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 73,
+   "splits": [
+    {
+     "d": "2026-04-21",
+     "verhaeltnis": "5:1"
+    }
+   ],
+   "waehrung": "USD",
+   "zeitzone": "America/New_York",
+   "name": "Vanguard Morningstar Mega Cap Growth ETF",
+   "boerse": "NYSEArca",
+   "ersterHandelstagMeta": "2007-12-27",
+   "abruf": "2026-10-04T23:19:53.330Z"
+  },
+  "SXR8.DE": {
+   "sha256": "80e852466501cd2da21f31d224393c50ccc8d1f2fe730d02471b690b1dff2d69",
+   "bytes": 434090,
+   "erster": "2010-05-19",
+   "letzter": "2026-10-02",
+   "tage": 4160,
+   "tageBisDatenende": 4029,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "iShares Core S&P 500 UCITS ETF USD (Acc)",
+   "boerse": "XETRA",
+   "ersterHandelstagMeta": "2010-05-19",
+   "abruf": "2026-10-04T23:19:55.248Z"
+  },
+  "SXRV.DE": {
+   "sha256": "1e2fefb49141cdbbdf0c74403fb55dd009f76adc79dcee1c8e98b16bac94293f",
+   "bytes": 409396,
+   "erster": "2010-05-07",
+   "letzter": "2026-10-02",
+   "tage": 4110,
+   "tageBisDatenende": 4097,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "iShares NASDAQ 100 UCITS ETF USD (Acc)",
+   "boerse": "XETRA",
+   "ersterHandelstagMeta": "2010-05-07",
+   "abruf": "2026-10-04T23:19:57.144Z"
+  },
+  "CSNDX.SW": {
+   "sha256": "a8602056c07107c131d17a218bb021178b16c89d0bb3a625a64cd9af2f7db48c",
+   "bytes": 415917,
+   "erster": "2010-01-26",
+   "letzter": "2026-10-02",
+   "tage": 4190,
+   "tageBisDatenende": 4177,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "USD",
+   "zeitzone": "Europe/Zurich",
+   "name": "iShares NASDAQ 100 UCITS ETF USD (Acc)",
+   "boerse": "Swiss",
+   "ersterHandelstagMeta": "2010-01-26",
+   "abruf": "2026-10-04T23:19:59.042Z"
+  },
+  "SXRV.DU": {
+   "sha256": "aee06f08f8ef45790d7a38c7e0214b8545377e631819d95a6248522987c5a376",
+   "bytes": 1161,
+   "erster": "2026-10-02",
+   "letzter": "2026-10-02",
+   "tage": 1,
+   "tageBisDatenende": 0,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "iShsVII-NASDAQ 100 UCITS ETF  R",
+   "boerse": "Dusseldorf",
+   "ersterHandelstagMeta": null,
+   "abruf": "2026-10-04T23:20:00.698Z"
+  },
+  "SXRV.HM": {
+   "sha256": "a68c87b32ab8fdfe5726b0127302999cea0679941952c0acf88cbf707b557152",
+   "bytes": 1162,
+   "erster": "2026-10-02",
+   "letzter": "2026-10-02",
+   "tage": 1,
+   "tageBisDatenende": 0,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "iShsVII-NASDAQ 100 UCITS ETF  R",
+   "boerse": "Hamburg",
+   "ersterHandelstagMeta": null,
+   "abruf": "2026-10-04T23:20:02.357Z"
+  },
+  "EXXT.DE": {
+   "sha256": "1c013f4655031c26c34adaf50fb80d93dfbfbe79bf4838c349c596b25c35e079",
+   "bytes": 510955,
+   "erster": "2008-01-02",
+   "letzter": "2026-10-02",
+   "tage": 4763,
+   "tageBisDatenende": 4749,
+   "ausschuettungen": 46,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 46,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "iShares NASDAQ-100 UCITS ETF (DE)",
+   "boerse": "XETRA",
+   "ersterHandelstagMeta": "2008-01-02",
+   "abruf": "2026-10-04T23:20:04.385Z"
+  },
+  "EXXT.DU": {
+   "sha256": "ef9ad604cf7a7318c073e788cdeb84f6a2203bdf8b079f7895ec69b52f1657cd",
+   "bytes": 1164,
+   "erster": "2026-10-02",
+   "letzter": "2026-10-02",
+   "tage": 1,
+   "tageBisDatenende": 0,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "iShare.NASDAQ-100 UCITS ETF DEI",
+   "boerse": "Dusseldorf",
+   "ersterHandelstagMeta": null,
+   "abruf": "2026-10-04T23:20:06.033Z"
+  },
+  "EXXT.MU": {
+   "sha256": "f039494f05b034a21330f1bedc99e9806d598135002ae9c0866afee9b425ba9c",
+   "bytes": 1158,
+   "erster": "2026-10-02",
+   "letzter": "2026-10-02",
+   "tage": 1,
+   "tageBisDatenende": 0,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "iShare.NASDAQ-100 UCITS ETF DEI",
+   "boerse": "Munich",
+   "ersterHandelstagMeta": null,
+   "abruf": "2026-10-04T23:20:07.694Z"
+  },
+  "EXXT.HM": {
+   "sha256": "a4a9c7698538f993097d82bd0a543d531360e3e6f728340aba4cf5a475b619b9",
+   "bytes": 1159,
+   "erster": "2026-10-02",
+   "letzter": "2026-10-02",
+   "tage": 1,
+   "tageBisDatenende": 0,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "iShare.NASDAQ-100 UCITS ETF DEI",
+   "boerse": "Hamburg",
+   "ersterHandelstagMeta": null,
+   "abruf": "2026-10-04T23:20:09.340Z"
+  },
+  "EQQQ.DE": {
+   "sha256": "fabb95e31d0588d59aa1af17cf447aed72711686de90e912f7686deef8be0388",
+   "bytes": 491724,
+   "erster": "2008-01-02",
+   "letzter": "2026-10-02",
+   "tage": 4762,
+   "tageBisDatenende": 4727,
+   "ausschuettungen": 52,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 52,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "Invesco EQQQ NASDAQ-100 UCITS ETF",
+   "boerse": "XETRA",
+   "ersterHandelstagMeta": "2008-01-01",
+   "abruf": "2026-10-04T23:20:11.394Z"
+  },
+  "EQQQ.L": {
+   "sha256": "aaa8cf3b9ebd3fd1111bbd239bbf51ba6bdb55e53e3d1de022f111efeaa9e43f",
+   "bytes": 316459,
+   "erster": "2009-01-02",
+   "letzter": "2026-10-02",
+   "tage": 4483,
+   "tageBisDatenende": 4465,
+   "ausschuettungen": 52,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 52,
+   "splits": [],
+   "waehrung": "GBp",
+   "zeitzone": "Europe/London",
+   "name": "Invesco EQQQ NASDAQ-100 UCITS ETF",
+   "boerse": "LSE",
+   "ersterHandelstagMeta": "2009-01-01",
+   "abruf": "2026-10-04T23:20:13.410Z"
+  },
+  "EQQQ.SW": {
+   "sha256": "6fde86115cf1f34cedfff4ba73e005e17bde7cd1e6f61eeaea2500e094166486",
+   "bytes": 460412,
+   "erster": "2009-01-05",
+   "letzter": "2026-10-02",
+   "tage": 4462,
+   "tageBisDatenende": 4449,
+   "ausschuettungen": 56,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 56,
+   "splits": [],
+   "waehrung": "USD",
+   "zeitzone": "Europe/Zurich",
+   "name": "Invesco EQQQ NASDAQ-100 UCITS ETF",
+   "boerse": "Swiss",
+   "ersterHandelstagMeta": "2009-01-01",
+   "abruf": "2026-10-04T23:20:15.464Z"
+  },
+  "EQQQ.MI": {
+   "sha256": "2f839863980bf1b21e9e56becb53acff4ab84114000b6752020014a8dc4d2dac",
+   "bytes": 497309,
+   "erster": "2008-01-02",
+   "letzter": "2026-10-02",
+   "tage": 4760,
+   "tageBisDatenende": 4747,
+   "ausschuettungen": 52,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 52,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Rome",
+   "name": "Invesco EQQQ NASDAQ-100 UCITS ETF",
+   "boerse": "Milan",
+   "ersterHandelstagMeta": "2008-01-02",
+   "abruf": "2026-10-04T23:20:17.484Z"
+  },
+  "LYMS.DE": {
+   "sha256": "1de10fc1832560c33ee09ad215b044735ba248a63f59e937e205fc2a1765e78f",
+   "bytes": 290790,
+   "erster": "2016-01-04",
+   "letzter": "2026-10-02",
+   "tage": 2732,
+   "tageBisDatenende": 2719,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "Amundi Core Nasdaq-100 Swap UCITS ETF Acc",
+   "boerse": "XETRA",
+   "ersterHandelstagMeta": "2016-01-04",
+   "abruf": "2026-10-04T23:20:19.397Z"
+  },
+  "UST.PA": {
+   "sha256": "6f207ebb1fb870c30371b309182422a2f2f759ec304e8b2f3cc46e82452997f7",
+   "bytes": 499538,
+   "erster": "2008-01-02",
+   "letzter": "2026-10-02",
+   "tage": 4728,
+   "tageBisDatenende": 4715,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Paris",
+   "name": "Amundi Core Nasdaq-100 Swap UCITS ETF Acc",
+   "boerse": "Paris",
+   "ersterHandelstagMeta": "2008-01-02",
+   "abruf": "2026-10-04T23:20:21.410Z"
+  },
+  "LYMS.DU": {
+   "sha256": "e0e189a2f90ad2879396677ee689c6b71415382020754db7088ce77378421ddb",
+   "bytes": 1165,
+   "erster": "2026-10-02",
+   "letzter": "2026-10-02",
+   "tage": 1,
+   "tageBisDatenende": 0,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "MUL Amundi Core Nasd.-100 SWAPU",
+   "boerse": "Dusseldorf",
+   "ersterHandelstagMeta": null,
+   "abruf": "2026-10-04T23:20:23.052Z"
+  },
+  "LYMS.MU": {
+   "sha256": "0a87c7a7ded596cd236e8d32af5ca7815c1b7162e7e5a5928169c5513ce8f2b4",
+   "bytes": 1161,
+   "erster": "2026-10-02",
+   "letzter": "2026-10-02",
+   "tage": 1,
+   "tageBisDatenende": 0,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "MUL Amundi Core Nasd.-100 SWAPU",
+   "boerse": "Munich",
+   "ersterHandelstagMeta": null,
+   "abruf": "2026-10-04T23:20:24.707Z"
+  },
+  "6AQQ.DE": {
+   "sha256": "8f8c619472a434c7e2eae1e336f1d4a542be2be2a76f7ef65e1ea19badd30f0e",
+   "bytes": 222276,
+   "erster": "2018-04-19",
+   "letzter": "2026-10-02",
+   "tage": 2147,
+   "tageBisDatenende": 2134,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "Amundi Index Solutions - Amundi Nasdaq-100 Swap ETF EUR Acc",
+   "boerse": "XETRA",
+   "ersterHandelstagMeta": "2018-04-19",
+   "abruf": "2026-10-04T23:20:26.570Z"
+  },
+  "ANX.PA": {
+   "sha256": "e1047c5a82227fcaf1f36b8962c3712a878faf4a54191ea396d5c071ed0f633a",
+   "bytes": 430652,
+   "erster": "2010-06-08",
+   "letzter": "2026-10-02",
+   "tage": 4176,
+   "tageBisDatenende": 4163,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Paris",
+   "name": "Amundi Index Solutions - Amundi Nasdaq-100 Swap ETF EUR Acc",
+   "boerse": "Paris",
+   "ersterHandelstagMeta": "2010-06-08",
+   "abruf": "2026-10-04T23:20:28.580Z"
+  },
+  "6AQQ.MU": {
+   "sha256": "c9988cab2cf711e2bf9eff968c0338ac29635461ba7520d58ba9861cc110bfa4",
+   "bytes": 1158,
+   "erster": "2026-10-02",
+   "letzter": "2026-10-02",
+   "tage": 1,
+   "tageBisDatenende": 0,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "AIS-Amundi NASDAQ-100 Swap UE N",
+   "boerse": "Munich",
+   "ersterHandelstagMeta": null,
+   "abruf": "2026-10-04T23:20:30.231Z"
+  },
+  "6AQQ.HM": {
+   "sha256": "9ceedbd7cb16b39a241b18ac749873b16abd3a3bdceb61322f0c3e524065a225",
+   "bytes": 1164,
+   "erster": "2026-10-02",
+   "letzter": "2026-10-02",
+   "tage": 1,
+   "tageBisDatenende": 0,
+   "ausschuettungen": 0,
+   "kapitalgewinne": 0,
+   "ausschuettungenGebucht": 0,
+   "splits": [],
+   "waehrung": "EUR",
+   "zeitzone": "Europe/Berlin",
+   "name": "AIS-Amundi NASDAQ-100 Swap UE N",
+   "boerse": "Hamburg",
+   "ersterHandelstagMeta": null,
+   "abruf": "2026-10-04T23:20:31.874Z"
+  }
+ },
+ "spy": {
+  "A": {
+   "r": 1.1591203760607809,
+   "pa": 0.17801470550071397,
+   "startTag": "2017-01-03",
+   "endTag": "2021-09-15",
+   "jahre": 4.698151950718686,
+   "tageNominal": 1716,
+   "kontrolleAdjclose": {
+    "r": 1.1580980301032828,
+    "pa": 0.17789595768473476,
+    "differenzPp": -0.011874781597920325
+   },
+   "eichung": {
+    "soll": 1.1581,
+    "abweichungPp": 0.10203760607809809,
+    "toleranzPp": 0.3
+   },
+   "sp500tr": {
+    "r": 1.1674754370234162,
+    "pa": 0.17898350968873022,
+    "rueckstandSpyPp": 0.0968804188016259
+   }
+  },
+  "B": {
+   "r": 0.8096733933601787,
+   "pa": 0.1259707115855171,
+   "startTag": "2021-09-15",
+   "endTag": "2026-09-15",
+   "jahre": 4.999315537303217,
+   "tageNominal": 1826,
+   "kontrolleAdjclose": {
+    "r": 0.8093304835236395,
+    "pa": 0.12592803111426565,
+    "differenzPp": -0.004268047125144392
+   },
+   "eichung": {
+    "soll": 0.812,
+    "abweichungPp": -0.2326606639821316,
+    "toleranzPp": 0.5
+   },
+   "sp500tr": {
+    "r": 0.8184763594074222,
+    "pa": 0.12706416933636433,
+    "rueckstandSpyPp": 0.10934577508472376
+   }
+  }
+ },
+ "fonds": [
+  {
+   "id": "SPMO",
+   "symbol": "SPMO",
+   "A": {
+    "berechenbar": true,
+    "fonds": 1.4489795958134373,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.21002782374167994,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.032013118240965976,
+    "abstandPaPp": 3.2013118240965976,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 1.4484761544945002,
+     "fondsPa": 0.20997487359976863,
+     "differenzPp": -0.005295014191131209
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 1.4087838630476126,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.19225738475615284,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.06628667317063575,
+    "abstandPaPp": 6.628667317063575,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 1.4097784665887079,
+     "fondsPa": 0.1923558402433463,
+     "differenzPp": 0.009845548719344954
+    }
+   },
+   "rollierend": {
+    "n": 71,
+    "vorn": 61,
+    "anteil": 0.8591549295774648,
+    "median": 0.020022635380471776,
+    "schlechtester": -0.024612210308339932,
+    "schlechtesterStart": "2018-07",
+    "bester": 0.10238928134706704,
+    "besterStart": "2021-06",
+    "erstesFenster": "2015-10",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 2.0022635380471776,
+    "schlechtesterPp": -2.4612210308339932,
+    "besterPp": 10.238928134706704,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2015-10",
+      "abstand": 0.026175982288783928,
+      "vorn": true
+     },
+     {
+      "start": "2020-10",
+      "abstand": 0.04334970840345931,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.19415571795766295,
+    "spitze": "2022-11-03",
+    "tal": "2023-07-18",
+    "ersterGemeinsamerTag": "2015-10-12",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.3093442640460631,
+      "spitze": "2020-02-19",
+      "tal": "2020-03-23"
+     },
+     "spy": {
+      "tiefe": -0.33699813656214495,
+      "spitze": "2020-02-19",
+      "tal": "2020-03-23"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn"
+  },
+  {
+   "id": "SCHD",
+   "symbol": "SCHD",
+   "A": {
+    "berechenbar": true,
+    "fonds": 1.0130736586458742,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.16058358488918945,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": -0.01743112061152452,
+    "abstandPaPp": -1.743112061152452,
+    "vorn": false,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 1.0124619236620855,
+     "fondsPa": 0.16050850822561946,
+     "differenzPp": -0.007507666356998399
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.608917008265212,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.09979662828867064,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": -0.02617408329684645,
+    "abstandPaPp": -2.617408329684645,
+    "vorn": false,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.6082234915497533,
+     "fondsPa": 0.09970178643877547,
+     "differenzPp": -0.009484184989516642
+    }
+   },
+   "rollierend": {
+    "n": 119,
+    "vorn": 16,
+    "anteil": 0.13445378151260504,
+    "median": -0.009092642501733472,
+    "schlechtester": -0.06005526342540701,
+    "schlechtesterStart": "2020-10",
+    "bester": 0.023690085536321348,
+    "besterStart": "2017-12",
+    "erstesFenster": "2011-10",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": -0.9092642501733472,
+    "schlechtesterPp": -6.005526342540701,
+    "besterPp": 2.369008553632135,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2011-10",
+      "abstand": -0.00035661681959098246,
+      "vorn": false
+     },
+     {
+      "start": "2016-10",
+      "abstand": -0.019445455722487015,
+      "vorn": false
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.37992027485253166,
+    "spitze": "2023-01-06",
+    "tal": "2025-11-03",
+    "ersterGemeinsamerTag": "2011-10-20",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.3336707068801905,
+      "spitze": "2020-01-23",
+      "tal": "2020-03-23"
+     },
+     "spy": {
+      "tiefe": -0.33699813656214495,
+      "spitze": "2020-02-19",
+      "tal": "2020-03-23"
+     }
+    }
+   },
+   "urteil": "nicht verlässlich vorn"
+  },
+  {
+   "id": "XDEW",
+   "symbol": "XDEW.DE",
+   "A": {
+    "berechenbar": true,
+    "fonds": 0.89267255980035,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.1454481107369665,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": -0.03256659476374746,
+    "abstandPaPp": -3.256659476374746,
+    "vorn": false,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 0.8926725598003513,
+     "fondsPa": 0.14544811073696673,
+     "differenzPp": 2.220446049250313e-14
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.48646298285153033,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.08251901493173985,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": -0.04345169665377724,
+    "abstandPaPp": -4.345169665377724,
+    "vorn": false,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.4864629828515281,
+     "fondsPa": 0.08251901493173963,
+     "differenzPp": -2.220446049250313e-14
+    }
+   },
+   "rollierend": {
+    "n": 85,
+    "vorn": 0,
+    "anteil": 0,
+    "median": -0.02925711114949814,
+    "schlechtester": -0.058346745566689506,
+    "schlechtesterStart": "2021-05",
+    "bester": -0.004844834925535668,
+    "besterStart": "2018-02",
+    "erstesFenster": "2014-08",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": -2.925711114949814,
+    "schlechtesterPp": -5.834674556668951,
+    "besterPp": -0.4844834925535668,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2014-08",
+      "abstand": -0.024072963828238203,
+      "vorn": false
+     },
+     {
+      "start": "2019-08",
+      "abstand": -0.03662353562407206,
+      "vorn": false
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.3429646368867899,
+    "spitze": "2015-08-25",
+    "tal": "2026-05-13",
+    "ersterGemeinsamerTag": "2014-08-15",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.3889149334138896,
+      "spitze": "2020-02-17",
+      "tal": "2020-03-23"
+     },
+     "spy": {
+      "tiefe": -0.33699813656214495,
+      "spitze": "2020-02-19",
+      "tal": "2020-03-23"
+     }
+    }
+   },
+   "urteil": "nicht verlässlich vorn",
+   "isin": "IE00BLNMYC90",
+   "auflage": "2014-06-10",
+   "waehrungReihe": "EUR",
+   "umrechnung": "EZB-Referenzkurs USD je EUR, letzter Kurs <= Handelstag",
+   "symbolwahl": {
+    "regel": "erstes Symbol mit Datenbeginn <= 92 Tage nach Auflage",
+    "kandidaten": [
+     {
+      "symbol": "XDEW.DE",
+      "ladbar": true,
+      "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C | Xtr.(IE)-S+P 500 Equal Weight R",
+      "namePasst": true,
+      "beginn": "2014-08-15",
+      "tageNachAuflage": 66,
+      "waehrung": "EUR",
+      "tage": 3074,
+      "grund": null
+     },
+     {
+      "symbol": "XDEW.L",
+      "ladbar": true,
+      "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C | XTRACKERS (IE) PUBLIC LIMITED C",
+      "namePasst": true,
+      "beginn": "2014-06-10",
+      "tageNachAuflage": 0,
+      "waehrung": "USD",
+      "tage": 3114,
+      "grund": null
+     },
+     {
+      "symbol": "XDEW.SW",
+      "ladbar": true,
+      "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C | X SP EW DR",
+      "namePasst": true,
+      "beginn": "2014-08-27",
+      "tageNachAuflage": 78,
+      "waehrung": "CHF",
+      "tage": 3038,
+      "grund": null
+     },
+     {
+      "symbol": "XDEW.MI",
+      "ladbar": true,
+      "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C | XTRACKERS S&P 500 EQUAL WEIGHT ",
+      "namePasst": true,
+      "beginn": "2014-06-10",
+      "tageNachAuflage": 0,
+      "waehrung": "EUR",
+      "tage": 3099,
+      "grund": null
+     }
+    ]
+   },
+   "hinweisSxr8": "Vergleich gegen SXR8 (A1/C6) nicht Teil des Zweitrechner-Auftrags; ein „verlässlich vorn“ gegen SPY allein wäre nur vorläufig."
+  },
+  {
+   "id": "QQQ",
+   "symbol": "QQQ",
+   "A": {
+    "berechenbar": true,
+    "fonds": 2.2713779834631067,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.28694579491053696,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.10893108940982299,
+    "abstandPaPp": 10.893108940982298,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 2.2712394358390244,
+     "fondsPa": 0.28693419355353056,
+     "differenzPp": -0.001160135700639664
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.9201163669709718,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.13939226820698347,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.01342155662146638,
+    "abstandPaPp": 1.342155662146638,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.9202847728918535,
+     "fondsPa": 0.139412256572907,
+     "differenzPp": 0.001998836592354003
+    }
+   },
+   "rollierend": {
+    "n": 270,
+    "vorn": 228,
+    "anteil": 0.8444444444444444,
+    "median": 0.04146485480355111,
+    "schlechtester": -0.17720975839832187,
+    "schlechtesterStart": "2000-02",
+    "bester": 0.1056975184539175,
+    "besterStart": "2016-11",
+    "erstesFenster": "1999-03",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 4.1464854803551106,
+    "schlechtesterPp": -17.720975839832185,
+    "besterPp": 10.56975184539175,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "1999-03",
+      "abstand": -0.061452335103589495,
+      "vorn": false
+     },
+     {
+      "start": "2004-03",
+      "abstand": 0.020943102297767746,
+      "vorn": true
+     },
+     {
+      "start": "2009-03",
+      "abstand": 0.0387007413104512,
+      "vorn": true
+     },
+     {
+      "start": "2014-03",
+      "abstand": 0.05799931977061035,
+      "vorn": true
+     },
+     {
+      "start": "2019-03",
+      "abstand": 0.056523053535140644,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.7033534026570379,
+    "spitze": "2000-03-10",
+    "tal": "2002-09-05",
+    "ersterGemeinsamerTag": "1999-03-10",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.8296390703529312,
+      "spitze": "2000-03-27",
+      "tal": "2002-10-09"
+     },
+     "spy": {
+      "tiefe": -0.5520142834962469,
+      "spitze": "2007-10-09",
+      "tal": "2009-03-09"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn",
+   "nachtrag": true
+  },
+  {
+   "id": "IVW",
+   "symbol": "IVW",
+   "A": {
+    "berechenbar": true,
+    "fonds": 1.6937525422071946,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.23481383126354838,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.05679912576283441,
+    "abstandPaPp": 5.679912576283441,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 1.6932570959344804,
+     "fondsPa": 0.2347654870238356,
+     "differenzPp": -0.004834423971278312
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.8212370242696074,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.12740621222647652,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.0014355006409594306,
+    "abstandPaPp": 0.14355006409594306,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.8211034887540045,
+     "fondsPa": 0.12738967689409697,
+     "differenzPp": -0.0016535332379552514
+    }
+   },
+   "rollierend": {
+    "n": 256,
+    "vorn": 208,
+    "anteil": 0.8125,
+    "median": 0.010026766868098447,
+    "schlechtester": -0.05343370983707929,
+    "schlechtesterStart": "2000-06",
+    "bester": 0.058366119878878076,
+    "besterStart": "2016-11",
+    "erstesFenster": "2000-05",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 1.0026766868098447,
+    "schlechtesterPp": -5.3433709837079295,
+    "besterPp": 5.8366119878878076,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2000-05",
+      "abstand": -0.04328241086889373,
+      "vorn": false
+     },
+     {
+      "start": "2005-05",
+      "abstand": 0.005272511125871571,
+      "vorn": true
+     },
+     {
+      "start": "2010-05",
+      "abstand": 0.013086441990613373,
+      "vorn": true
+     },
+     {
+      "start": "2015-05",
+      "abstand": 0.0327705228614259,
+      "vorn": true
+     },
+     {
+      "start": "2020-05",
+      "abstand": 0.007601428666754728,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.29517231962957435,
+    "spitze": "2000-07-17",
+    "tal": "2007-05-15",
+    "ersterGemeinsamerTag": "2000-05-26",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.5732669245072979,
+      "spitze": "2000-07-17",
+      "tal": "2009-03-09"
+     },
+     "spy": {
+      "tiefe": -0.5520142834962469,
+      "spitze": "2007-10-09",
+      "tal": "2009-03-09"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn",
+   "nachtrag": true
+  },
+  {
+   "id": "SCHG",
+   "symbol": "SCHG",
+   "A": {
+    "berechenbar": true,
+    "fonds": 1.886232455013149,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.2530873838590624,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.07507267835834841,
+    "abstandPaPp": 7.507267835834841,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 1.886344757856527,
+     "fondsPa": 0.25309776170201514,
+     "differenzPp": 0.0010377842952769
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.8384731191990604,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.1295324139747347,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.0035617023892176025,
+    "abstandPaPp": 0.35617023892176025,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.838374337263841,
+     "fondsPa": 0.12952027400149846,
+     "differenzPp": -0.0012139973236235946
+    }
+   },
+   "rollierend": {
+    "n": 140,
+    "vorn": 137,
+    "anteil": 0.9785714285714285,
+    "median": 0.0207414480224698,
+    "schlechtester": -0.0015475305492644864,
+    "schlechtesterStart": "2011-06",
+    "bester": 0.07187277928592439,
+    "besterStart": "2016-11",
+    "erstesFenster": "2010-01",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 2.07414480224698,
+    "schlechtesterPp": -0.15475305492644864,
+    "besterPp": 7.187277928592439,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2010-01",
+      "abstand": 0.012856526475888419,
+      "vorn": true
+     },
+     {
+      "start": "2015-01",
+      "abstand": 0.022721812025306987,
+      "vorn": true
+     },
+     {
+      "start": "2020-01",
+      "abstand": 0.04504126661564345,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.20821523788260687,
+    "spitze": "2021-11-19",
+    "tal": "2023-01-06",
+    "ersterGemeinsamerTag": "2010-01-04",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.3458920683777269,
+      "spitze": "2021-11-19",
+      "tal": "2023-01-05"
+     },
+     "spy": {
+      "tiefe": -0.33699813656214495,
+      "spitze": "2020-02-19",
+      "tal": "2020-03-23"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn",
+   "nachtrag": true
+  },
+  {
+   "id": "MGK",
+   "symbol": "MGK",
+   "A": {
+    "berechenbar": true,
+    "fonds": 1.9485185488443793,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.25879502637467167,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.0807803208739577,
+    "abstandPaPp": 8.07803208739577,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 1.9489115511477477,
+     "fondsPa": 0.2588307369140208,
+     "differenzPp": 0.0035710539349143033
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.8407473245178467,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.1298117620990653,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.0038410505135482165,
+    "abstandPaPp": 0.38410505135482165,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.8408508884634247,
+     "fondsPa": 0.12982447662523144,
+     "differenzPp": 0.0012714526166135443
+    }
+   },
+   "rollierend": {
+    "n": 165,
+    "vorn": 161,
+    "anteil": 0.9757575757575757,
+    "median": 0.01664914979636789,
+    "schlechtester": -0.005204370034750161,
+    "schlechtesterStart": "2011-11",
+    "bester": 0.07771048576812745,
+    "besterStart": "2016-11",
+    "erstesFenster": "2007-12",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 1.664914979636789,
+    "schlechtesterPp": -0.5204370034750161,
+    "besterPp": 7.771048576812745,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2007-12",
+      "abstand": 0.01898990674705736,
+      "vorn": true
+     },
+     {
+      "start": "2012-12",
+      "abstand": 0.008096280151342228,
+      "vorn": true
+     },
+     {
+      "start": "2017-12",
+      "abstand": 0.006108505477717241,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.23007516633249592,
+    "spitze": "2020-09-01",
+    "tal": "2023-01-05",
+    "ersterGemeinsamerTag": "2007-12-27",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.4797080842649388,
+      "spitze": "2007-12-27",
+      "tal": "2009-03-09"
+     },
+     "spy": {
+      "tiefe": -0.5277581567856957,
+      "spitze": "2007-12-27",
+      "tal": "2009-03-09"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn",
+   "nachtrag": true
+  },
+  {
+   "id": "SXRV",
+   "symbol": "CSNDX.SW",
+   "A": {
+    "berechenbar": true,
+    "fonds": 2.2126849025207913,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.28199610221347493,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.10398139671276097,
+    "abstandPaPp": 10.398139671276097,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 2.2126849025207953,
+     "fondsPa": 0.28199610221347515,
+     "differenzPp": 2.220446049250313e-14
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.9192804439406626,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.13929303041354713,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.013322318828030033,
+    "abstandPaPp": 1.3322318828030033,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.9192804439406668,
+     "fondsPa": 0.13929303041354757,
+     "differenzPp": 4.440892098500626e-14
+    }
+   },
+   "rollierend": {
+    "n": 140,
+    "vorn": 139,
+    "anteil": 0.9928571428571429,
+    "median": 0.045357294578527996,
+    "schlechtester": -0.0006267218700048982,
+    "schlechtesterStart": "2020-08",
+    "bester": 0.10299384094410557,
+    "besterStart": "2016-06",
+    "erstesFenster": "2010-01",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 4.535729457852799,
+    "schlechtesterPp": -0.06267218700048982,
+    "besterPp": 10.299384094410557,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2010-01",
+      "abstand": 0.040619859011553405,
+      "vorn": true
+     },
+     {
+      "start": "2015-01",
+      "abstand": 0.05201910752135053,
+      "vorn": true
+     },
+     {
+      "start": "2020-01",
+      "abstand": 0.04620819153997835,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.24089595400395802,
+    "spitze": "2021-12-01",
+    "tal": "2023-01-31",
+    "ersterGemeinsamerTag": "2010-01-26",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.3511727339169113,
+      "spitze": "2021-11-22",
+      "tal": "2022-12-28"
+     },
+     "spy": {
+      "tiefe": -0.33699813656214495,
+      "spitze": "2020-02-19",
+      "tal": "2020-03-23"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn",
+   "isin": "IE00B53SZB19",
+   "auflage": "2010-01-26",
+   "waehrungReihe": "USD",
+   "umrechnung": "keine (Reihe in USD)",
+   "symbolwahl": {
+    "regel": "erstes Symbol mit Datenbeginn <= 92 Tage nach Auflage",
+    "kandidaten": [
+     {
+      "symbol": "SXRV.DE",
+      "ladbar": true,
+      "name": "iShares NASDAQ 100 UCITS ETF USD (Acc) | iShsVII-NASDAQ 100 UCITS ETF  R",
+      "namePasst": true,
+      "beginn": "2010-05-07",
+      "tageNachAuflage": 101,
+      "waehrung": "EUR",
+      "tage": 4110,
+      "grund": null
+     },
+     {
+      "symbol": "CSNDX.SW",
+      "ladbar": true,
+      "name": "iShares NASDAQ 100 UCITS ETF USD (Acc) | iSh Nasdaq 100 USD A",
+      "namePasst": true,
+      "beginn": "2010-01-26",
+      "tageNachAuflage": 0,
+      "waehrung": "USD",
+      "tage": 4190,
+      "grund": null
+     },
+     {
+      "symbol": "SXRV.DU",
+      "ladbar": true,
+      "name": "iShsVII-NASDAQ 100 UCITS ETF  R | iShsVII-NASDAQ 100 UCITS ETF  R",
+      "namePasst": true,
+      "beginn": "2026-10-02",
+      "tageNachAuflage": 6093,
+      "waehrung": "EUR",
+      "tage": 1,
+      "grund": null
+     },
+     {
+      "symbol": "SXRV.HM",
+      "ladbar": true,
+      "name": "iShsVII-NASDAQ 100 UCITS ETF  R | iShsVII-NASDAQ 100 UCITS ETF  R",
+      "namePasst": true,
+      "beginn": "2026-10-02",
+      "tageNachAuflage": 6093,
+      "waehrung": "EUR",
+      "tage": 1,
+      "grund": null
+     }
+    ]
+   },
+   "nachtrag": true,
+   "gegenSXR8": {
+    "massstab": "SXR8.DE",
+    "waehrung": "EUR",
+    "umrechnung": "Reihe in USD mit EZB-Referenzkurs (letzter Kurs <= Handelstag) in EUR",
+    "A": {
+     "berechenbar": true,
+     "fonds": 1.8216959330749676,
+     "sxr8": 0.8758250133584362,
+     "fondsPa": 0.24707031400954738,
+     "sxr8Pa": 0.14327021806676066,
+     "abstandPa": 0.10380009594278672,
+     "abstandPaPp": 10.380009594278672,
+     "vorn": true,
+     "startTag": "2017-01-03",
+     "endTag": "2021-09-15",
+     "jahre": 4.698151950718686,
+     "kontrolleAdjclose": {
+      "fonds": 1.8216959330749711,
+      "fondsPa": 0.2470703140095476,
+      "differenzPp": 2.220446049250313e-14
+     }
+    },
+    "B": {
+     "berechenbar": true,
+     "fonds": 0.9666844587186405,
+     "sxr8": 0.8472244116438603,
+     "fondsPa": 0.1448668496929444,
+     "sxr8Pa": 0.1306058539114765,
+     "abstandPa": 0.014260995781467889,
+     "abstandPaPp": 1.426099578146789,
+     "vorn": true,
+     "startTag": "2021-09-15",
+     "endTag": "2026-09-15",
+     "jahre": 4.999315537303217,
+     "kontrolleAdjclose": {
+      "fonds": 0.966684458718645,
+      "fondsPa": 0.14486684969294483,
+      "differenzPp": 4.440892098500626e-14
+     }
+    },
+    "rollierend": {
+     "n": 130,
+     "vorn": 130,
+     "anteil": 1,
+     "median": 0.049666505989660936,
+     "schlechtester": 0.0027612787917050685,
+     "schlechtesterStart": "2020-08",
+     "bester": 0.10228247188397299,
+     "besterStart": "2016-06",
+     "erstesFenster": "2010-11",
+     "letztesFenster": "2021-08",
+     "fehlend": 0,
+     "medianPp": 4.966650598966094,
+     "schlechtesterPp": 0.27612787917050685,
+     "besterPp": 10.2282471883973,
+     "fehlendListe": [],
+     "nichtUeberlappend": [
+      {
+       "start": "2010-11",
+       "abstand": 0.04136195765573114,
+       "vorn": true
+      },
+      {
+       "start": "2015-11",
+       "abstand": 0.08089086781218802,
+       "vorn": true
+      },
+      {
+       "start": "2020-11",
+       "abstand": 0.013501357730854036,
+       "vorn": true
+      }
+     ]
+    },
+    "rueckschlag": {
+     "tiefe": -0.21658568059768102,
+     "spitze": "2021-11-19",
+     "tal": "2023-01-27",
+     "ersterGemeinsamerTag": "2010-11-01",
+     "nachrichtlich": {
+      "fonds": {
+       "tiefe": -0.31254776274927076,
+       "spitze": "2021-11-19",
+       "tal": "2022-12-28"
+      },
+      "sxr8": {
+       "tiefe": -0.33783869700391234,
+       "spitze": "2020-02-19",
+       "tal": "2020-03-23"
+      }
+     }
+    },
+    "urteil": "verlässlich vorn"
+   },
+   "urteilGesamt": "verlässlich vorn"
+  },
+  {
+   "id": "EXXT",
+   "symbol": "EXXT.DE",
+   "A": {
+    "berechenbar": true,
+    "fonds": 2.2059331685799064,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.28142216239765006,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.10340745689693609,
+    "abstandPaPp": 10.340745689693609,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 2.2059645362433438,
+     "fondsPa": 0.28142483104510396,
+     "differenzPp": 0.0002668647453907269
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.9071431644279839,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.13784822577415867,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.01187751418864158,
+    "abstandPaPp": 1.187751418864158,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.9072306662478906,
+     "fondsPa": 0.1378586681569247,
+     "differenzPp": 0.0010442382766040481
+    }
+   },
+   "rollierend": {
+    "n": 164,
+    "vorn": 152,
+    "anteil": 0.926829268292683,
+    "median": 0.03941588142754948,
+    "schlechtester": -0.06863803782589262,
+    "schlechtesterStart": "2008-06",
+    "bester": 0.10129830493704839,
+    "besterStart": "2016-06",
+    "erstesFenster": "2008-01",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 3.941588142754948,
+    "schlechtesterPp": -6.863803782589262,
+    "besterPp": 10.129830493704839,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2008-01",
+      "abstand": -0.03684894590919896,
+      "vorn": false
+     },
+     {
+      "start": "2013-01",
+      "abstand": 0.052451340740626407,
+      "vorn": true
+     },
+     {
+      "start": "2018-01",
+      "abstand": 0.024142566464932402,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.45021409569188364,
+    "spitze": "2008-07-15",
+    "tal": "2009-01-02",
+    "ersterGemeinsamerTag": "2008-01-02",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.6701253801555269,
+      "spitze": "2008-05-19",
+      "tal": "2009-03-06"
+     },
+     "spy": {
+      "tiefe": -0.5188300859245886,
+      "spitze": "2008-01-02",
+      "tal": "2009-03-09"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn",
+   "isin": "DE000A0F5UF5",
+   "auflage": "2006-03-27",
+   "waehrungReihe": "EUR",
+   "umrechnung": "EZB-Referenzkurse (USD je EUR), letzter Kurs <= Handelstag",
+   "symbolwahl": {
+    "regel": "kein Symbol <= 92 Tage nach Auflage; laengste Historie (fruehester Datenbeginn, bei Gleichstand Reihenfolge in fonds.json)",
+    "kandidaten": [
+     {
+      "symbol": "EXXT.DE",
+      "ladbar": true,
+      "name": "iShares NASDAQ-100 UCITS ETF (DE) | iShare.NASDAQ-100 UCITS ETF DEI",
+      "namePasst": true,
+      "beginn": "2008-01-02",
+      "tageNachAuflage": 646,
+      "waehrung": "EUR",
+      "tage": 4763,
+      "grund": null
+     },
+     {
+      "symbol": "EXXT.DU",
+      "ladbar": true,
+      "name": "iShare.NASDAQ-100 UCITS ETF DEI | iShare.NASDAQ-100 UCITS ETF DEI",
+      "namePasst": true,
+      "beginn": "2026-10-02",
+      "tageNachAuflage": 7494,
+      "waehrung": "EUR",
+      "tage": 1,
+      "grund": null
+     },
+     {
+      "symbol": "EXXT.MU",
+      "ladbar": true,
+      "name": "iShare.NASDAQ-100 UCITS ETF DEI | iShare.NASDAQ-100 UCITS ETF DEI",
+      "namePasst": true,
+      "beginn": "2026-10-02",
+      "tageNachAuflage": 7494,
+      "waehrung": "EUR",
+      "tage": 1,
+      "grund": null
+     },
+     {
+      "symbol": "EXXT.HM",
+      "ladbar": true,
+      "name": "iShare.NASDAQ-100 UCITS ETF DEI | iShare.NASDAQ-100 UCITS ETF DEI",
+      "namePasst": true,
+      "beginn": "2026-10-02",
+      "tageNachAuflage": 7494,
+      "waehrung": "EUR",
+      "tage": 1,
+      "grund": null
+     }
+    ]
+   },
+   "nachtrag": true,
+   "gegenSXR8": {
+    "massstab": "SXR8.DE",
+    "waehrung": "EUR",
+    "umrechnung": "keine (Xetra/EUR gegen Xetra/EUR)",
+    "A": {
+     "berechenbar": true,
+     "fonds": 1.8157658961182626,
+     "sxr8": 0.8758250133584362,
+     "fondsPa": 0.24651201020105118,
+     "sxr8Pa": 0.14327021806676066,
+     "abstandPa": 0.10324179213429052,
+     "abstandPaPp": 10.324179213429051,
+     "vorn": true,
+     "startTag": "2017-01-03",
+     "endTag": "2021-09-15",
+     "jahre": 4.698151950718686,
+     "kontrolleAdjclose": {
+      "fonds": 1.8157934462861234,
+      "fondsPa": 0.24651460614577547,
+      "differenzPp": 0.000259594472429292
+     }
+    },
+    "B": {
+     "berechenbar": true,
+     "fonds": 0.9542474023915835,
+     "sxr8": 0.8472244116438603,
+     "fondsPa": 0.14341497656481872,
+     "sxr8Pa": 0.1306058539114765,
+     "abstandPa": 0.01280912265334222,
+     "abstandPaPp": 1.280912265334222,
+     "vorn": true,
+     "startTag": "2021-09-15",
+     "endTag": "2026-09-15",
+     "jahre": 4.999315537303217,
+     "kontrolleAdjclose": {
+      "fonds": 0.954337065405586,
+      "fondsPa": 0.1434254700353672,
+      "differenzPp": 0.001049347054848937
+     }
+    },
+    "rollierend": {
+     "n": 130,
+     "vorn": 130,
+     "anteil": 1,
+     "median": 0.04862748476660905,
+     "schlechtester": 0.00040823867691108795,
+     "schlechtesterStart": "2020-08",
+     "bester": 0.100609861714261,
+     "besterStart": "2016-06",
+     "erstesFenster": "2010-11",
+     "letztesFenster": "2021-08",
+     "fehlend": 0,
+     "medianPp": 4.862748476660905,
+     "schlechtesterPp": 0.040823867691108795,
+     "besterPp": 10.060986171426102,
+     "fehlendListe": [],
+     "nichtUeberlappend": [
+      {
+       "start": "2010-11",
+       "abstand": 0.03615137708782723,
+       "vorn": true
+      },
+      {
+       "start": "2015-11",
+       "abstand": 0.07974043359253913,
+       "vorn": true
+      },
+      {
+       "start": "2020-11",
+       "abstand": 0.010850960646394459,
+       "vorn": true
+      }
+     ]
+    },
+    "rueckschlag": {
+     "tiefe": -0.2122873198096933,
+     "spitze": "2021-02-03",
+     "tal": "2022-12-28",
+     "ersterGemeinsamerTag": "2010-11-01",
+     "nachrichtlich": {
+      "fonds": {
+       "tiefe": -0.31420088226845166,
+       "spitze": "2021-11-22",
+       "tal": "2022-12-28"
+      },
+      "sxr8": {
+       "tiefe": -0.33783869700391234,
+       "spitze": "2020-02-19",
+       "tal": "2020-03-23"
+      }
+     }
+    },
+    "urteil": "verlässlich vorn"
+   },
+   "urteilGesamt": "verlässlich vorn"
+  },
+  {
+   "id": "EQQQ",
+   "symbol": "EQQQ.DE",
+   "A": {
+    "berechenbar": true,
+    "fonds": 2.2298382103036722,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.28344998270063937,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.1054352771999254,
+    "abstandPaPp": 10.54352771999254,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 2.229347400111537,
+     "fondsPa": 0.28340846716266466,
+     "differenzPp": -0.00415155379747123
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.919922732331975,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.13936928367109092,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.013398572085573823,
+    "abstandPaPp": 1.3398572085573823,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.9197644348504603,
+     "fondsPa": 0.1393504922970994,
+     "differenzPp": -0.001879137399152242
+    }
+   },
+   "rollierend": {
+    "n": 164,
+    "vorn": 150,
+    "anteil": 0.9146341463414634,
+    "median": 0.040766020311140294,
+    "schlechtester": -0.06818448382275744,
+    "schlechtesterStart": "2008-07",
+    "bester": 0.10331560151048058,
+    "besterStart": "2016-06",
+    "erstesFenster": "2008-01",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 4.07660203111403,
+    "schlechtesterPp": -6.818448382275744,
+    "besterPp": 10.331560151048059,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2008-01",
+      "abstand": -0.0408856854571531,
+      "vorn": false
+     },
+     {
+      "start": "2013-01",
+      "abstand": 0.05596039080042958,
+      "vorn": true
+     },
+     {
+      "start": "2018-01",
+      "abstand": 0.025760479270545256,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.45264157179193143,
+    "spitze": "2008-07-15",
+    "tal": "2009-01-02",
+    "ersterGemeinsamerTag": "2008-01-02",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.6624163450130665,
+      "spitze": "2008-06-05",
+      "tal": "2009-03-10"
+     },
+     "spy": {
+      "tiefe": -0.5188300859245886,
+      "spitze": "2008-01-02",
+      "tal": "2009-03-09"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn",
+   "isin": "IE0032077012",
+   "auflage": "2002-12-02",
+   "waehrungReihe": "EUR",
+   "umrechnung": "EZB-Referenzkurse (USD je EUR), letzter Kurs <= Handelstag",
+   "symbolwahl": {
+    "regel": "kein Symbol <= 92 Tage nach Auflage; laengste Historie (fruehester Datenbeginn, bei Gleichstand Reihenfolge in fonds.json)",
+    "kandidaten": [
+     {
+      "symbol": "EQQQ.DE",
+      "ladbar": true,
+      "name": "Invesco EQQQ NASDAQ-100 UCITS ETF | InvescoMI3 NASDAQ100 ETF      R",
+      "namePasst": true,
+      "beginn": "2008-01-02",
+      "tageNachAuflage": 1857,
+      "waehrung": "EUR",
+      "tage": 4762,
+      "grund": null
+     },
+     {
+      "symbol": "EQQQ.L",
+      "ladbar": true,
+      "name": "Invesco EQQQ NASDAQ-100 UCITS ETF | INVESCO MARKETS III PLC INVESCO",
+      "namePasst": true,
+      "beginn": "2009-01-02",
+      "tageNachAuflage": 2223,
+      "waehrung": "GBp",
+      "tage": 4483,
+      "grund": null
+     },
+     {
+      "symbol": "EQQQ.SW",
+      "ladbar": true,
+      "name": "Invesco EQQQ NASDAQ-100 UCITS ETF | Invesco EQQQ",
+      "namePasst": true,
+      "beginn": "2009-01-05",
+      "tageNachAuflage": 2226,
+      "waehrung": "USD",
+      "tage": 4462,
+      "grund": null
+     },
+     {
+      "symbol": "EQQQ.MI",
+      "ladbar": true,
+      "name": "Invesco EQQQ NASDAQ-100 UCITS ETF | INVESCO EQQQ NASDAQ-100 UCITS E",
+      "namePasst": true,
+      "beginn": "2008-01-02",
+      "tageNachAuflage": 1857,
+      "waehrung": "EUR",
+      "tage": 4760,
+      "grund": null
+     }
+    ]
+   },
+   "nachtrag": true,
+   "gegenSXR8": {
+    "massstab": "SXR8.DE",
+    "waehrung": "EUR",
+    "umrechnung": "keine (Xetra/EUR gegen Xetra/EUR)",
+    "A": {
+     "berechenbar": true,
+     "fonds": 1.8367616554468573,
+     "sxr8": 0.8758250133584362,
+     "fondsPa": 0.24848458601281642,
+     "sxr8Pa": 0.14327021806676066,
+     "abstandPa": 0.10521436794605576,
+     "abstandPaPp": 10.521436794605577,
+     "vorn": true,
+     "startTag": "2017-01-03",
+     "endTag": "2021-09-15",
+     "jahre": 4.698151950718686,
+     "kontrolleAdjclose": {
+      "fonds": 1.8363305776520904,
+      "fondsPa": 0.2484442014945727,
+      "differenzPp": -0.004038451824373013
+     }
+    },
+    "B": {
+     "berechenbar": true,
+     "fonds": 0.9673426108929086,
+     "sxr8": 0.8472244116438603,
+     "fondsPa": 0.14494347600804725,
+     "sxr8Pa": 0.1306058539114765,
+     "abstandPa": 0.014337622096570746,
+     "abstandPaPp": 1.4337622096570746,
+     "vorn": true,
+     "startTag": "2021-09-15",
+     "endTag": "2026-09-15",
+     "jahre": 4.999315537303217,
+     "kontrolleAdjclose": {
+      "fonds": 0.9671804036460563,
+      "fondsPa": 0.14492459270009328,
+      "differenzPp": -0.00188833079539652
+     }
+    },
+    "rollierend": {
+     "n": 130,
+     "vorn": 129,
+     "anteil": 0.9923076923076923,
+     "median": 0.05072054974931317,
+     "schlechtester": -0.009505453215433723,
+     "schlechtesterStart": "2014-09",
+     "bester": 0.10259988183179547,
+     "besterStart": "2016-06",
+     "erstesFenster": "2010-11",
+     "letztesFenster": "2021-08",
+     "fehlend": 0,
+     "medianPp": 5.0720549749313175,
+     "schlechtesterPp": -0.9505453215433723,
+     "besterPp": 10.259988183179548,
+     "fehlendListe": [],
+     "nichtUeberlappend": [
+      {
+       "start": "2010-11",
+       "abstand": 0.03684788625075508,
+       "vorn": true
+      },
+      {
+       "start": "2015-11",
+       "abstand": 0.08215522172154532,
+       "vorn": true
+      },
+      {
+       "start": "2020-11",
+       "abstand": 0.012494789449001953,
+       "vorn": true
+      }
+     ]
+    },
+    "rueckschlag": {
+     "tiefe": -0.3588030147297666,
+     "spitze": "2011-08-29",
+     "tal": "2013-04-09",
+     "ersterGemeinsamerTag": "2010-11-01",
+     "nachrichtlich": {
+      "fonds": {
+       "tiefe": -0.37474206092841134,
+       "spitze": "2011-01-06",
+       "tal": "2011-08-22"
+      },
+      "sxr8": {
+       "tiefe": -0.33783869700391234,
+       "spitze": "2020-02-19",
+       "tal": "2020-03-23"
+      }
+     }
+    },
+    "urteil": "verlässlich vorn"
+   },
+   "urteilGesamt": "verlässlich vorn"
+  },
+  {
+   "id": "LYMS",
+   "symbol": "UST.PA",
+   "A": {
+    "berechenbar": true,
+    "fonds": 2.152605640099364,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.27685523165320247,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.0988405261524885,
+    "abstandPaPp": 9.884052615248851,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 2.152605640099346,
+     "fondsPa": 0.2768552316532009,
+     "differenzPp": -1.5543122344752192e-13
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.9350227549902299,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.1411561244563646,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.015185412870847514,
+    "abstandPaPp": 1.5185412870847514,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.9350227549902324,
+     "fondsPa": 0.14115612445636505,
+     "differenzPp": 4.440892098500626e-14
+    }
+   },
+   "rollierend": {
+    "n": 164,
+    "vorn": 164,
+    "anteil": 1,
+    "median": 0.037207885889998016,
+    "schlechtester": 0.0008594433637201249,
+    "schlechtesterStart": "2020-08",
+    "bester": 0.09962604973195788,
+    "besterStart": "2016-11",
+    "erstesFenster": "2008-01",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 3.7207885889998016,
+    "schlechtesterPp": 0.08594433637201249,
+    "besterPp": 9.962604973195788,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2008-01",
+      "abstand": 0.04298053477252006,
+      "vorn": true
+     },
+     {
+      "start": "2013-01",
+      "abstand": 0.04484921026221622,
+      "vorn": true
+     },
+     {
+      "start": "2018-01",
+      "abstand": 0.024216583664865787,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.24358840952147753,
+    "spitze": "2021-12-01",
+    "tal": "2023-01-06",
+    "ersterGemeinsamerTag": "2008-01-02",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.500512042347991,
+      "spitze": "2008-01-02",
+      "tal": "2008-11-21"
+     },
+     "spy": {
+      "tiefe": -0.5188300859245886,
+      "spitze": "2008-01-02",
+      "tal": "2009-03-09"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn",
+   "isin": "LU1829221024",
+   "auflage": "2001-09-07",
+   "waehrungReihe": "EUR",
+   "umrechnung": "EZB-Referenzkurse (USD je EUR), letzter Kurs <= Handelstag",
+   "symbolwahl": {
+    "regel": "kein Symbol <= 92 Tage nach Auflage; laengste Historie (fruehester Datenbeginn, bei Gleichstand Reihenfolge in fonds.json)",
+    "kandidaten": [
+     {
+      "symbol": "LYMS.DE",
+      "ladbar": true,
+      "name": "Amundi Core Nasdaq-100 Swap UCITS ETF Acc | MUL Amundi Core Nasd.-100 SWAPU",
+      "namePasst": true,
+      "beginn": "2016-01-04",
+      "tageNachAuflage": 5232,
+      "waehrung": "EUR",
+      "tage": 2732,
+      "grund": null
+     },
+     {
+      "symbol": "UST.PA",
+      "ladbar": true,
+      "name": "Amundi Core Nasdaq-100 Swap UCITS ETF Acc | Amundi Core Nasdaq-100 Swap UCI",
+      "namePasst": true,
+      "beginn": "2008-01-02",
+      "tageNachAuflage": 2308,
+      "waehrung": "EUR",
+      "tage": 4728,
+      "grund": null
+     },
+     {
+      "symbol": "LYMS.DU",
+      "ladbar": true,
+      "name": "MUL Amundi Core Nasd.-100 SWAPU | MUL Amundi Core Nasd.-100 SWAPU",
+      "namePasst": true,
+      "beginn": "2026-10-02",
+      "tageNachAuflage": 9156,
+      "waehrung": "EUR",
+      "tage": 1,
+      "grund": null
+     },
+     {
+      "symbol": "LYMS.MU",
+      "ladbar": true,
+      "name": "MUL Amundi Core Nasd.-100 SWAPU | MUL Amundi Core Nasd.-100 SWAPU",
+      "namePasst": true,
+      "beginn": "2026-10-02",
+      "tageNachAuflage": 9156,
+      "waehrung": "EUR",
+      "tage": 1,
+      "grund": null
+     }
+    ]
+   },
+   "nachtrag": true,
+   "gegenSXR8": {
+    "massstab": "SXR8.DE",
+    "waehrung": "EUR",
+    "umrechnung": "keine (Xetra/EUR gegen Xetra/EUR)",
+    "A": {
+     "berechenbar": true,
+     "fonds": 1.768928414447894,
+     "sxr8": 0.8758250133584362,
+     "fondsPa": 0.24206949766321673,
+     "sxr8Pa": 0.14327021806676066,
+     "abstandPa": 0.09879927959645607,
+     "abstandPaPp": 9.879927959645606,
+     "vorn": true,
+     "startTag": "2017-01-03",
+     "endTag": "2021-09-15",
+     "jahre": 4.698151950718686,
+     "kontrolleAdjclose": {
+      "fonds": 1.768928414447878,
+      "fondsPa": 0.24206949766321517,
+      "differenzPp": -1.5543122344752192e-13
+     }
+    },
+    "B": {
+     "berechenbar": true,
+     "fonds": 0.982815586706342,
+     "sxr8": 0.8472244116438603,
+     "fondsPa": 0.14673905864230297,
+     "sxr8Pa": 0.1306058539114765,
+     "abstandPa": 0.016133204730826467,
+     "abstandPaPp": 1.6133204730826467,
+     "vorn": true,
+     "startTag": "2021-09-15",
+     "endTag": "2026-09-15",
+     "jahre": 4.999315537303217,
+     "kontrolleAdjclose": {
+      "fonds": 0.9828155867063442,
+      "fondsPa": 0.1467390586423034,
+      "differenzPp": 4.440892098500626e-14
+     }
+    },
+    "rollierend": {
+     "n": 130,
+     "vorn": 130,
+     "anteil": 1,
+     "median": 0.044329519107723314,
+     "schlechtester": 0.0042545653391112825,
+     "schlechtesterStart": "2020-08",
+     "bester": 0.10044923755545332,
+     "besterStart": "2016-11",
+     "erstesFenster": "2010-11",
+     "letztesFenster": "2021-08",
+     "fehlend": 0,
+     "medianPp": 4.432951910772331,
+     "schlechtesterPp": 0.42545653391112825,
+     "besterPp": 10.044923755545332,
+     "fehlendListe": [],
+     "nichtUeberlappend": [
+      {
+       "start": "2010-11",
+       "abstand": 0.030411487480636046,
+       "vorn": true
+      },
+      {
+       "start": "2015-11",
+       "abstand": 0.07435907441517364,
+       "vorn": true
+      },
+      {
+       "start": "2020-11",
+       "abstand": 0.014272816589826931,
+       "vorn": true
+      }
+     ]
+    },
+    "rueckschlag": {
+     "tiefe": -0.20731408861509937,
+     "spitze": "2021-02-03",
+     "tal": "2022-12-28",
+     "ersterGemeinsamerTag": "2010-11-01",
+     "nachrichtlich": {
+      "fonds": {
+       "tiefe": -0.3116238387675977,
+       "spitze": "2021-11-22",
+       "tal": "2022-12-28"
+      },
+      "sxr8": {
+       "tiefe": -0.33783869700391234,
+       "spitze": "2020-02-19",
+       "tal": "2020-03-23"
+      }
+     }
+    },
+    "urteil": "verlässlich vorn"
+   },
+   "urteilGesamt": "verlässlich vorn"
+  },
+  {
+   "id": "6AQQ",
+   "symbol": "ANX.PA",
+   "A": {
+    "berechenbar": true,
+    "fonds": 2.2260830058749166,
+    "spy": 1.1591203760607809,
+    "fondsPa": 0.2831322195530215,
+    "spyPa": 0.17801470550071397,
+    "abstandPa": 0.10511751405230751,
+    "abstandPaPp": 10.51175140523075,
+    "vorn": true,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15",
+    "jahre": 4.698151950718686,
+    "kontrolleAdjclose": {
+     "fonds": 2.226083005874917,
+     "fondsPa": 0.2831322195530215,
+     "differenzPp": 0
+    }
+   },
+   "B": {
+    "berechenbar": true,
+    "fonds": 0.9333227964414483,
+    "spy": 0.8096733933601787,
+    "fondsPa": 0.14095552052711313,
+    "spyPa": 0.1259707115855171,
+    "abstandPa": 0.01498480894159604,
+    "abstandPaPp": 1.498480894159604,
+    "vorn": true,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15",
+    "jahre": 4.999315537303217,
+    "kontrolleAdjclose": {
+     "fonds": 0.9333227964414517,
+     "fondsPa": 0.14095552052711358,
+     "differenzPp": 4.440892098500626e-14
+    }
+   },
+   "rollierend": {
+    "n": 135,
+    "vorn": 135,
+    "anteil": 1,
+    "median": 0.04666227580315496,
+    "schlechtester": 0.0006058037590124243,
+    "schlechtesterStart": "2020-08",
+    "bester": 0.10554598312726715,
+    "besterStart": "2016-11",
+    "erstesFenster": "2010-06",
+    "letztesFenster": "2021-08",
+    "fehlend": 0,
+    "medianPp": 4.666227580315496,
+    "schlechtesterPp": 0.060580375901242434,
+    "besterPp": 10.554598312726714,
+    "fehlendListe": [],
+    "nichtUeberlappend": [
+     {
+      "start": "2010-06",
+      "abstand": 0.0406813517656075,
+      "vorn": true
+     },
+     {
+      "start": "2015-06",
+      "abstand": 0.08085336847445834,
+      "vorn": true
+     },
+     {
+      "start": "2020-06",
+      "abstand": 0.016670116316790384,
+      "vorn": true
+     }
+    ]
+   },
+   "rueckschlag": {
+    "tiefe": -0.24305545212751234,
+    "spitze": "2021-12-01",
+    "tal": "2023-01-06",
+    "ersterGemeinsamerTag": "2010-06-08",
+    "nachrichtlich": {
+     "fonds": {
+      "tiefe": -0.3541760501158777,
+      "spitze": "2021-11-22",
+      "tal": "2022-11-04"
+     },
+     "spy": {
+      "tiefe": -0.33699813656214495,
+      "spitze": "2020-02-19",
+      "tal": "2020-03-23"
+     }
+    }
+   },
+   "urteil": "verlässlich vorn",
+   "isin": "LU1681038243",
+   "auflage": "2010-06-08",
+   "waehrungReihe": "EUR",
+   "umrechnung": "EZB-Referenzkurse (USD je EUR), letzter Kurs <= Handelstag",
+   "symbolwahl": {
+    "regel": "erstes Symbol mit Datenbeginn <= 92 Tage nach Auflage",
+    "kandidaten": [
+     {
+      "symbol": "6AQQ.DE",
+      "ladbar": true,
+      "name": "Amundi Index Solutions - Amundi Nasdaq-100 Swap ETF EUR Acc | AIS-Amundi NASDAQ-100 Swap UE N",
+      "namePasst": true,
+      "beginn": "2018-04-19",
+      "tageNachAuflage": 2872,
+      "waehrung": "EUR",
+      "tage": 2147,
+      "grund": null
+     },
+     {
+      "symbol": "ANX.PA",
+      "ladbar": true,
+      "name": "Amundi Index Solutions - Amundi Nasdaq-100 Swap ETF EUR Acc | Amundi Nasdaq-100 Swap UCITS ET",
+      "namePasst": true,
+      "beginn": "2010-06-08",
+      "tageNachAuflage": 0,
+      "waehrung": "EUR",
+      "tage": 4176,
+      "grund": null
+     },
+     {
+      "symbol": "6AQQ.MU",
+      "ladbar": true,
+      "name": "AIS-Amundi NASDAQ-100 Swap UE N | AIS-Amundi NASDAQ-100 Swap UE N",
+      "namePasst": true,
+      "beginn": "2026-10-02",
+      "tageNachAuflage": 5960,
+      "waehrung": "EUR",
+      "tage": 1,
+      "grund": null
+     },
+     {
+      "symbol": "6AQQ.HM",
+      "ladbar": true,
+      "name": "AIS-Amundi NASDAQ-100 Swap UE N | AIS-Amundi NASDAQ-100 Swap UE N",
+      "namePasst": true,
+      "beginn": "2026-10-02",
+      "tageNachAuflage": 5960,
+      "waehrung": "EUR",
+      "tage": 1,
+      "grund": null
+     }
+    ]
+   },
+   "nachtrag": true,
+   "gegenSXR8": {
+    "massstab": "SXR8.DE",
+    "waehrung": "EUR",
+    "umrechnung": "keine (Xetra/EUR gegen Xetra/EUR)",
+    "A": {
+     "berechenbar": true,
+     "fonds": 1.8334634654948418,
+     "sxr8": 0.8758250133584362,
+     "fondsPa": 0.24817547977794074,
+     "sxr8Pa": 0.14327021806676066,
+     "abstandPa": 0.10490526171118009,
+     "abstandPaPp": 10.49052617111801,
+     "vorn": true,
+     "startTag": "2017-01-03",
+     "endTag": "2021-09-15",
+     "jahre": 4.698151950718686,
+     "kontrolleAdjclose": {
+      "fonds": 1.8334634654948423,
+      "fondsPa": 0.24817547977794097,
+      "differenzPp": 2.220446049250313e-14
+     }
+    },
+    "B": {
+     "berechenbar": true,
+     "fonds": 0.9810736411407996,
+     "sxr8": 0.8472244116438603,
+     "fondsPa": 0.14653747328859046,
+     "sxr8Pa": 0.1306058539114765,
+     "abstandPa": 0.01593161937711396,
+     "abstandPaPp": 1.593161937711396,
+     "vorn": true,
+     "startTag": "2021-09-15",
+     "endTag": "2026-09-15",
+     "jahre": 4.999315537303217,
+     "kontrolleAdjclose": {
+      "fonds": 0.981073641140803,
+      "fondsPa": 0.1465374732885909,
+      "differenzPp": 4.440892098500626e-14
+     }
+    },
+    "rollierend": {
+     "n": 130,
+     "vorn": 130,
+     "anteil": 1,
+     "median": 0.051649412393871885,
+     "schlechtester": 0.003999710359998465,
+     "schlechtesterStart": "2020-08",
+     "bester": 0.10629129358761724,
+     "besterStart": "2016-11",
+     "erstesFenster": "2010-11",
+     "letztesFenster": "2021-08",
+     "fehlend": 0,
+     "medianPp": 5.164941239387188,
+     "schlechtesterPp": 0.3999710359998465,
+     "besterPp": 10.629129358761723,
+     "fehlendListe": [],
+     "nichtUeberlappend": [
+      {
+       "start": "2010-11",
+       "abstand": 0.04162101643373406,
+       "vorn": true
+      },
+      {
+       "start": "2015-11",
+       "abstand": 0.08276031726487165,
+       "vorn": true
+      },
+      {
+       "start": "2020-11",
+       "abstand": 0.014189918064150264,
+       "vorn": true
+      }
+     ]
+    },
+    "rueckschlag": {
+     "tiefe": -0.20925447718855938,
+     "spitze": "2021-02-03",
+     "tal": "2023-01-04",
+     "ersterGemeinsamerTag": "2010-11-01",
+     "nachrichtlich": {
+      "fonds": {
+       "tiefe": -0.31279506066666163,
+       "spitze": "2021-11-22",
+       "tal": "2022-12-28"
+      },
+      "sxr8": {
+       "tiefe": -0.33783869700391234,
+       "spitze": "2020-02-19",
+       "tal": "2020-03-23"
+      }
+     }
+    },
+    "urteil": "verlässlich vorn"
+   },
+   "urteilGesamt": "verlässlich vorn"
+  }
+ ],
+ "lesarten": [
+  "Tagesdatum = Kalenderdatum des Kerzenstempels in meta.exchangeTimezoneName (Intl); Ausschüttungs-/Kapitalgewinn-/Split-Datum ebenso aus dem Ereignisstempel.",
+  "Kerzen mit Schluss null, 0 oder nicht endlich werden verworfen (kein Handelstag); eine Ausschüttung an so einem Tag wandert dadurch auf den nächsten Handelstag mit Kurs.",
+  "Doppelte Kalendertage: die Kerze mit dem späteren Zeitstempel bleibt (gemeldet in pruefungen.*.doppelteTage).",
+  "Datenende: nur Kerzen mit Datum <= 2026-09-15; Ausschüttungen nach dem Datenende und vor dem ersten Kurs der Reihe werden nicht gebucht (TR(erster Tag) = 1).",
+  "Ausschüttung an einem Nicht-Handelstag: gebucht am ersten Handelstag mit Datum >= Ereignisdatum (C2), wieder angelegt zu dessen Schluss.",
+  "Kapitalgewinn mit gleichem Datum und Betrag (|Diff| < 1e-9) wie eine Dividende zählt einmal; sonst werden beide addiert.",
+  "Ausschüttungsbeträge aus Yahoo unverändert (Yahoo liefert sie split-bereinigt wie close); geprüft über Betrag / Vortagsschluss.",
+  "Sprungpaare C7.1 auf dem Schluss (Kursrendite ohne Ausschüttung) vor der Ausschüttungsbuchung geprüft, wiederholt bis keins mehr vorliegt; Tag t entfernt.",
+  "C3 Sollrand: Start-Lücke = S − gefundener Handelstag (S selbst als Sollrand), Ende-Lücke = E − gefundener Handelstag; > 10 Tage = nicht berechenbar.",
+  "C3 nominale Länge: Tage von S − 1 Tag (= Datum des Schlusses vor S, hier 03.01.2017 bzw. 15.09.2021, beides Handelstage von SPY) bis E, / 365,25; A = 1716 Tage, B = 1826 Tage; für Fonds und SPY dieselbe.",
+  "„Vorn“ in A/B und in den rollierenden Fenstern: Gesamtertrag Fonds strikt größer als SPY (Gleichstand = nicht vorn).",
+  "C4: erster Startmonat = Monat des ersten Kurses der jüngeren Reihe (nach Bereinigung); Startwert = Schluss am letzten Handelstag dieses Monats; letzter Startmonat 2021-08 (Ende 2026-08). Lücke: letzter Handelstag des Monats liegt > 10 Tage vor dem Kalender-Monatsende (geprüft für Fonds und SPY an Start und Ende) → Fenster fehlt.",
+  "C4 Median bei gerader Zahl: Mittel der beiden mittleren Werte; Abstand und Median als Dezimalbruch (0,01 = 1 Pp p. a.), zusätzlich *Pp-Felder.",
+  "C5: relative Reihe auf den Handelstagen des Fonds, SPY = letzter Wert <= Tag (gleiches Kalenderdatum zählt, auch bei Xetra-Schluss vor dem US-Schluss); Tiefe als negativer Dezimalbruch.",
+  "C6 Symbolwahl: Kandidaten in der Reihenfolge von fonds.json; Datenbeginn = erste Kerze mit gültigem Schluss in der Rohantwort; Name passt, wenn longName/shortName „Equal Weight“, „500“ und Xtrackers enthält; „längste Historie“ = frühester Datenbeginn.",
+  "UCITS in USD: Gesamtertrag der EUR-Reihe × EZB-Referenzkurs USD je EUR (letzter Kurs <= Handelstag) – gleichwertig zur Umrechnung von Schluss und Ausschüttung am selben Tag.",
+  "Kontrollweg adjclose nur nachrichtlich (kontrolleAdjclose); es entscheidet der Hauptweg Schluss + Ausschüttungen.",
+  "Stillstandskurse (Volumen 0, Schluss wie Vortag) bleiben als Handelstag stehen – REGEL.md sieht dafür nichts vor.",
+  "EZB-Zeilen ohne Zahlenwert werden übersprungen; es gilt der letzte gültige Kurs <= Handelstag.",
+  "Keine Ergänzung fehlender Ausschüttungen: der Zweitrechner rechnet nur aus seinen eigenen Yahoo-Rohdaten; Verdachtsfälle stehen im BERICHT.",
+  "UCITS-Fenster A/B: Start-/Endtag sind Xetra-Handelstage (letzter vor S, letzter <= E), umgerechnet mit dem EZB-Kurs dieses Tages; SPY behält seine eigenen Randtage.",
+  "Nachtrag K1b (Lesart des Hauptrechners, vom Projektleiter am 05.10.2026 mitgeteilt, eigene Ausformung): Reihenanfang verworfen, wenn innerhalb der ersten 730 Kalendertage auf mindestens 5 unmittelbar aufeinanderfolgende gleiche Schlusskurse ein Sprung |r| > 10 % folgt, der „ungedeckt“ ist: |(1 + Sprung) / (1 + SPY-Kursbewegung vom ersten gleichen Tag bis zum Sprungtag) − 1| > 10 %. Verworfen wird alles vor dem Sprungtag, der Sprungtag ist der erste Tag der Reihe (bei mehreren Treffern der letzte). Angewandt vor den Sprungpaaren auf alle Reihen; Treffer in nachtrag.k1b.",
+  "Nachtrag C6 Namensprüfung je Fonds auf „longName | shortName“: SXRV = Nasdaq + iShares ohne „(DE)“; EXXT = Nasdaq + iShares mit „(DE)“/„ETF DEI“; EQQQ = Nasdaq + Invesco/EQQQ; LYMS = Nasdaq + Amundi/Lyxor mit „Core“; 6AQQ = Nasdaq + Amundi/Lyxor ohne „Core“. Regionalbörsen-Symbole (.DU/.MU/.HM) liefern nur eine einzige aktuelle Kerze und haben deshalb keinen frühen Datenbeginn.",
+  "Nachtrag C6 Gleichstand beim Datenbeginn (EQQQ.DE und EQQQ.MI, beide 02.01.2008): es entscheidet die Reihenfolge in fonds.json (Xetra zuerst).",
+  "Nachtrag Währungen: Reihen in USD gegen SPY ohne Umrechnung, gegen SXR8 mit dem EZB-Kurs USD je EUR in EUR; EUR-Reihen gegen SPY × USD je EUR; GBp = Pence / 100, GBP und CHF über die EZB-Kurse GBP bzw. CHF je EUR; je Handelstag der letzte EZB-Kurs <= Tag.",
+  "Nachtrag gegen SXR8: Fenster A/B, rollierende Fenster und relativer Rückschlag wie gegen SPY, beide Reihen in EUR; SXR8.DE mit K1b ab 01.11.2010, damit erster Startmonat der rollierenden Fenster 2010-11 (wenn der Fonds älter ist).",
+  "Nachtrag Urteil UCITS: „urteil“ = gegen SPY (wie im Erstlauf), „gegenSXR8.urteil“ = gegen SXR8, „urteilGesamt“ = „verlässlich vorn“ nur wenn beide erfüllt (A1)."
+ ],
+ "pruefungen": {
+  "SPY": {
+   "nullKurse": 0,
+   "nullKurseBeispiele": [],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [
+    {
+     "d": "2008-10-13",
+     "r": 0.14519772287142474,
+     "vortag": "2008-10-10"
+    },
+    {
+     "d": "2008-10-28",
+     "r": 0.11685533704112538,
+     "vortag": "2008-10-27"
+    },
+    {
+     "d": "2020-03-16",
+     "r": -0.10942373540494488,
+     "vortag": "2020-03-13"
+    },
+    {
+     "d": "2025-04-09",
+     "r": 0.10501930183911301,
+     "vortag": "2025-04-08"
+    }
+   ],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {
+    "1993": 4,
+    "1994": 4,
+    "1995": 4,
+    "1996": 4,
+    "1997": 4,
+    "1998": 4,
+    "1999": 4,
+    "2000": 4,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 5,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [
+    {
+     "grund": "nach Datenende",
+     "d": "2026-09-18",
+     "betrag": 1.889,
+     "art": "div"
+    }
+   ],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": 0.002348871546087323,
+   "quoteMax": 0.008052413401588032,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 0,
+   "stillstandAmMonatsende": []
+  },
+  "SPMO": {
+   "nullKurse": 0,
+   "nullKurseBeispiele": [],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [
+    {
+     "d": "2020-03-16",
+     "r": -0.15353691520070656,
+     "vortag": "2020-03-13"
+    },
+    {
+     "d": "2020-03-17",
+     "r": 0.10209474196532264,
+     "vortag": "2020-03-16"
+    },
+    {
+     "d": "2025-04-09",
+     "r": 0.11202509190161858,
+     "vortag": "2025-04-08"
+    }
+   ],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {
+    "2015": 1,
+    "2016": 3,
+    "2017": 3,
+    "2018": 4,
+    "2019": 4,
+    "2020": 3,
+    "2021": 3,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [
+    {
+     "grund": "nach Datenende",
+     "d": "2026-09-21",
+     "betrag": 0.243,
+     "art": "div"
+    }
+   ],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": 0.0005210142244875732,
+   "quoteMax": 0.010089810696153723,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 374,
+   "stillstandAmMonatsende": [
+    "2015-11-30",
+    "2015-12-31",
+    "2016-02-29",
+    "2016-03-31",
+    "2016-04-29",
+    "2016-05-31",
+    "2016-06-30",
+    "2016-07-29",
+    "2016-08-31",
+    "2016-09-30",
+    "2016-10-31",
+    "2017-03-31",
+    "2017-04-28",
+    "2017-05-31",
+    "2017-07-31",
+    "2017-09-29"
+   ]
+  },
+  "SCHD": {
+   "nullKurse": 0,
+   "nullKurseBeispiele": [],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {
+    "2011": 1,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [
+    {
+     "grund": "nach Datenende",
+     "d": "2026-09-23",
+     "betrag": 0.267,
+     "art": "div"
+    }
+   ],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": 0.0047843529411764705,
+   "quoteMax": 0.010486141776543107,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 0,
+   "stillstandAmMonatsende": []
+  },
+  "XDEW.DE": {
+   "nullKurse": 8,
+   "nullKurseBeispiele": [
+    "2014-09-04",
+    "2014-09-23",
+    "2014-10-06",
+    "2014-10-07",
+    "2014-10-08",
+    "2015-12-25",
+    "2025-10-24",
+    "2026-03-06"
+   ],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {},
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": null,
+   "quoteMax": null,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 26,
+   "stillstandAmMonatsende": [
+    "2017-10-31",
+    "2018-11-30"
+   ]
+  },
+  "QQQ": {
+   "nullKurse": 0,
+   "nullKurseBeispiele": [],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [
+    {
+     "d": "2000-01-07",
+     "r": 0.12368318376902065,
+     "vortag": "2000-01-06"
+    },
+    {
+     "d": "2000-04-17",
+     "r": 0.11508553654743392,
+     "vortag": "2000-04-14"
+    },
+    {
+     "d": "2000-05-30",
+     "r": 0.10048231511254024,
+     "vortag": "2000-05-26"
+    },
+    {
+     "d": "2001-01-03",
+     "r": 0.16842105263157903,
+     "vortag": "2001-01-02"
+    },
+    {
+     "d": "2001-04-18",
+     "r": 0.10424240574692245,
+     "vortag": "2001-04-17"
+    },
+    {
+     "d": "2002-05-08",
+     "r": 0.10696862763810566,
+     "vortag": "2002-05-07"
+    },
+    {
+     "d": "2008-10-13",
+     "r": 0.12164755461094834,
+     "vortag": "2008-10-10"
+    },
+    {
+     "d": "2008-10-28",
+     "r": 0.11049146104165697,
+     "vortag": "2008-10-27"
+    },
+    {
+     "d": "2020-03-16",
+     "r": -0.1197878430113809,
+     "vortag": "2020-03-13"
+    },
+    {
+     "d": "2025-04-09",
+     "r": 0.12003077136578888,
+     "vortag": "2025-04-08"
+    }
+   ],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {
+    "2003": 1,
+    "2004": 1,
+    "2005": 2,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 5,
+    "2011": 5,
+    "2012": 4,
+    "2013": 4,
+    "2014": 5,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 3,
+    "2021": 4,
+    "2022": 4,
+    "2023": 5,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [
+    {
+     "grund": "nach Datenende",
+     "d": "2026-09-21",
+     "betrag": 0.751,
+     "art": "div"
+    }
+   ],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": 0.000390624998336924,
+   "quoteMax": 0.00948685839204259,
+   "quotenAusserhalb005bis3Prozent": [
+    {
+     "d": "2003-12-24",
+     "ereignis": "2003-12-24",
+     "betrag": 0.014,
+     "art": "div",
+     "quote": 0.000390624998336924
+    }
+   ],
+   "stillstandskurse": 0,
+   "stillstandAmMonatsende": []
+  },
+  "IVW": {
+   "nullKurse": 0,
+   "nullKurseBeispiele": [],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [
+    {
+     "d": "2008-10-28",
+     "r": 0.106005360980443,
+     "vortag": "2008-10-27"
+    },
+    {
+     "d": "2020-03-16",
+     "r": -0.11880431807089131,
+     "vortag": "2020-03-13"
+    },
+    {
+     "d": "2025-04-09",
+     "r": 0.11282546665436799,
+     "vortag": "2025-04-08"
+    }
+   ],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {
+    "2000": 3,
+    "2001": 4,
+    "2002": 4,
+    "2003": 4,
+    "2004": 4,
+    "2005": 4,
+    "2006": 4,
+    "2007": 4,
+    "2008": 4,
+    "2009": 4,
+    "2010": 5,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 3
+   },
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": 0.0002653766413268832,
+   "quoteMax": 0.008932536410161989,
+   "quotenAusserhalb005bis3Prozent": [
+    {
+     "d": "2000-06-21",
+     "ereignis": "2000-06-21",
+     "betrag": 0.006,
+     "art": "div",
+     "quote": 0.0002653766413268832
+    },
+    {
+     "d": "2010-12-29",
+     "ereignis": "2010-12-29",
+     "betrag": 0.00475,
+     "art": "div",
+     "quote": 0.00028928136284589424
+    }
+   ],
+   "stillstandskurse": 1,
+   "stillstandAmMonatsende": []
+  },
+  "SCHG": {
+   "nullKurse": 0,
+   "nullKurseBeispiele": [],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [
+    {
+     "d": "2020-03-16",
+     "r": -0.12551490786817587,
+     "vortag": "2020-03-13"
+    },
+    {
+     "d": "2025-04-09",
+     "r": 0.1158509147136828,
+     "vortag": "2025-04-08"
+    }
+   ],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {
+    "2010": 5,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 4,
+    "2015": 4,
+    "2016": 3,
+    "2017": 4,
+    "2018": 5,
+    "2019": 4,
+    "2020": 4,
+    "2021": 5,
+    "2022": 4,
+    "2023": 5,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [
+    {
+     "grund": "nach Datenende",
+     "d": "2026-09-23",
+     "betrag": 0.037,
+     "art": "div"
+    }
+   ],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": 0.00019893899304892842,
+   "quoteMax": 0.006063243185337398,
+   "quotenAusserhalb005bis3Prozent": [
+    {
+     "d": "2010-12-29",
+     "ereignis": "2010-12-29",
+     "betrag": 0.00075,
+     "art": "div",
+     "quote": 0.00019893899304892842
+    },
+    {
+     "d": "2021-12-30",
+     "ereignis": "2021-12-30",
+     "betrag": 0.005125,
+     "art": "div",
+     "quote": 0.000247809010312802
+    },
+    {
+     "d": "2023-12-28",
+     "ereignis": "2023-12-28",
+     "betrag": 0.00625,
+     "art": "div",
+     "quote": 0.0002998680481754565
+    }
+   ],
+   "stillstandskurse": 0,
+   "stillstandAmMonatsende": []
+  },
+  "MGK": {
+   "nullKurse": 0,
+   "nullKurseBeispiele": [],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [
+    {
+     "d": "2008-10-13",
+     "r": 0.10969943965353868,
+     "vortag": "2008-10-10"
+    },
+    {
+     "d": "2008-10-28",
+     "r": 0.10043818554381456,
+     "vortag": "2008-10-27"
+    },
+    {
+     "d": "2020-03-16",
+     "r": -0.1255134360277934,
+     "vortag": "2020-03-13"
+    },
+    {
+     "d": "2025-04-09",
+     "r": 0.122300582860974,
+     "vortag": "2025-04-08"
+    }
+   ],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {
+    "2008": 4,
+    "2009": 4,
+    "2010": 4,
+    "2011": 4,
+    "2012": 4,
+    "2013": 4,
+    "2014": 3,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 2
+   },
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": 0.0007241070486391733,
+   "quoteMax": 0.00690514331549232,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 0,
+   "stillstandAmMonatsende": []
+  },
+  "SXR8.DE": {
+   "nullKurse": 2,
+   "nullKurseBeispiele": [
+    "2025-10-24",
+    "2026-03-06"
+   ],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {},
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": null,
+   "quoteMax": null,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 42,
+   "stillstandAmMonatsende": [
+    "2017-10-31"
+   ]
+  },
+  "CSNDX.SW": {
+   "nullKurse": 4,
+   "nullKurseBeispiele": [
+    "2025-10-24",
+    "2025-12-22",
+    "2025-12-29",
+    "2025-12-30"
+   ],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [],
+   "lueckenUeber7": [
+    {
+     "von": "2025-12-23",
+     "bis": "2026-01-05",
+     "tage": 13
+    }
+   ],
+   "ausschuettungenJeJahr": {},
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": null,
+   "quoteMax": null,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 21,
+   "stillstandAmMonatsende": [
+    "2023-01-31"
+   ]
+  },
+  "EXXT.DE": {
+   "nullKurse": 2,
+   "nullKurseBeispiele": [
+    "2026-03-06",
+    "2026-04-17"
+   ],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [
+    {
+     "d": "2025-10-24",
+     "vortag": 209.5500030517578,
+     "kurs": 246.5251007080078,
+     "folgetag": 215.25,
+     "r1": 0.17644999817593576,
+     "r2": -0.1268637579629307
+    }
+   ],
+   "bewegungenUeber10": [
+    {
+     "d": "2009-01-02",
+     "r": -0.26849539600435024,
+     "vortag": "2008-12-30"
+    }
+   ],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {
+    "2014": 4,
+    "2015": 4,
+    "2016": 4,
+    "2017": 5,
+    "2018": 4,
+    "2019": 4,
+    "2020": 3,
+    "2021": 3,
+    "2022": 4,
+    "2023": 3,
+    "2024": 3,
+    "2025": 3,
+    "2026": 2
+   },
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": 0.00008203136046645421,
+   "quoteMax": 0.008959324058314944,
+   "quotenAusserhalb005bis3Prozent": [
+    {
+     "d": "2018-09-17",
+     "ereignis": "2018-09-17",
+     "betrag": 0.020679,
+     "art": "div",
+     "quote": 0.00032735476649365964
+    },
+    {
+     "d": "2019-09-16",
+     "ereignis": "2019-09-16",
+     "betrag": 0.028579,
+     "art": "div",
+     "quote": 0.0004109129941911295
+    },
+    {
+     "d": "2021-12-15",
+     "ereignis": "2021-12-15",
+     "betrag": 0.011194,
+     "art": "div",
+     "quote": 0.00008203136046645421
+    },
+    {
+     "d": "2022-03-15",
+     "ereignis": "2022-03-15",
+     "betrag": 0.048429,
+     "art": "div",
+     "quote": 0.00041534305860860385
+    },
+    {
+     "d": "2022-09-15",
+     "ereignis": "2022-09-15",
+     "betrag": 0.02102,
+     "art": "div",
+     "quote": 0.0001779847609786892
+    },
+    {
+     "d": "2025-12-15",
+     "ereignis": "2025-12-15",
+     "betrag": 0.047346,
+     "art": "div",
+     "quote": 0.0002269702714030844
+    },
+    {
+     "d": "2026-03-16",
+     "ereignis": "2026-03-16",
+     "betrag": 0.094917,
+     "art": "div",
+     "quote": 0.0004566610402346029
+    }
+   ],
+   "stillstandskurse": 9,
+   "stillstandAmMonatsende": [
+    "2017-10-31"
+   ]
+  },
+  "EQQQ.DE": {
+   "nullKurse": 3,
+   "nullKurseBeispiele": [
+    "2015-12-25",
+    "2025-10-24",
+    "2026-03-06"
+   ],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [
+    {
+     "d": "2009-01-20",
+     "vortag": 22.190000534057617,
+     "kurs": 27.98979949951172,
+     "folgetag": 21.989999771118164,
+     "r1": 0.26136993356771065,
+     "r2": -0.21435665262619052
+    },
+    {
+     "d": "2009-01-30",
+     "vortag": 22.8799991607666,
+     "kurs": 29.063800811767578,
+     "folgetag": 22.850000381469727,
+     "r1": 0.2702710610935961,
+     "r2": -0.2137986174121438
+    },
+    {
+     "d": "2009-03-03",
+     "vortag": 21.31999969482422,
+     "kurs": 26.6382999420166,
+     "folgetag": 21.5,
+     "r1": 0.24945123467724484,
+     "r2": -0.19289143651062957
+    },
+    {
+     "d": "2009-03-05",
+     "vortag": 21.5,
+     "kurs": 26.487199783325195,
+     "folgetag": 20.969999313354492,
+     "r1": 0.2319627806197766,
+     "r2": -0.20829685716509805
+    },
+    {
+     "d": "2009-03-13",
+     "vortag": 21.610000610351562,
+     "kurs": 28.80620002746582,
+     "folgetag": 21.940000534057617,
+     "r1": 0.3330032028628058,
+     "r2": -0.23835839114015367
+    },
+    {
+     "d": "2009-03-17",
+     "vortag": 21.940000534057617,
+     "kurs": 29.388099670410156,
+     "folgetag": 22.3700008392334,
+     "r1": 0.33947579558126284,
+     "r2": -0.2388075074565993
+    },
+    {
+     "d": "2009-03-19",
+     "vortag": 22.3700008392334,
+     "kurs": 29.68429946899414,
+     "folgetag": 21.959999084472656,
+     "r1": 0.32696908159845184,
+     "r2": -0.26021501341440356
+    },
+    {
+     "d": "2009-03-24",
+     "vortag": 22.420000076293945,
+     "kurs": 30.476900100708008,
+     "folgetag": 22.8799991607666,
+     "r1": 0.35936217649406355,
+     "r2": -0.2492675080089567
+    },
+    {
+     "d": "2009-03-27",
+     "vortag": 22.979999542236328,
+     "kurs": 30.848400115966797,
+     "folgetag": 22.739999771118164,
+     "r1": 0.34240212056004005,
+     "r2": -0.2628467056433119
+    },
+    {
+     "d": "2009-04-29",
+     "vortag": 25.75,
+     "kurs": 34.03379821777344,
+     "folgetag": 26.350000381469727,
+     "r1": 0.3217009016611043,
+     "r2": -0.2257696242757592
+    },
+    {
+     "d": "2009-06-17",
+     "vortag": 25.90999984741211,
+     "kurs": 35.87089920043945,
+     "folgetag": 25.670000076293945,
+     "r1": 0.384442277564206,
+     "r2": -0.284378126880648
+    },
+    {
+     "d": "2009-06-19",
+     "vortag": 25.670000076293945,
+     "kurs": 36.24829864501953,
+     "folgetag": 25.739999771118164,
+     "r1": 0.4120879835327529,
+     "r2": -0.28989771290535293
+    },
+    {
+     "d": "2009-07-27",
+     "vortag": 27.40999984741211,
+     "kurs": 39.36980056762695,
+     "folgetag": 27.549999237060547,
+     "r1": 0.4363298353445273,
+     "r2": -0.30022507506135565
+    },
+    {
+     "d": "2009-08-14",
+     "vortag": 28.239999771118164,
+     "kurs": 39.687599182128906,
+     "folgetag": 27.559999465942383,
+     "r1": 0.4053682543835755,
+     "r2": -0.30557655202402645
+    },
+    {
+     "d": "2009-08-21",
+     "vortag": 27.780000686645508,
+     "kurs": 40.34230041503906,
+     "folgetag": 28.239999771118164,
+     "r1": 0.45220660251576406,
+     "r2": -0.29999034560283344
+    },
+    {
+     "d": "2010-07-29",
+     "vortag": 35.59000015258789,
+     "kurs": 45.75859832763672,
+     "folgetag": 35.040000915527344,
+     "r1": 0.2857150360059617,
+     "r2": -0.23424225836995727
+    },
+    {
+     "d": "2011-04-12",
+     "vortag": 39.45000076293945,
+     "kurs": 56.47809982299805,
+     "folgetag": 39.279998779296875,
+     "r1": 0.43163748366908306,
+     "r2": -0.30450920086900757
+    },
+    {
+     "d": "2011-06-02",
+     "vortag": 40.09000015258789,
+     "kurs": 57.24980163574219,
+     "folgetag": 38.95000076293945,
+     "r1": 0.4280319635281069,
+     "r2": -0.3196482843597803
+    },
+    {
+     "d": "2011-06-07",
+     "vortag": 38.65999984741211,
+     "kurs": 55.82789993286133,
+     "folgetag": 38.11000061035156,
+     "r1": 0.4440739822351145,
+     "r2": -0.3173663946488642
+    },
+    {
+     "d": "2012-05-28",
+     "vortag": 49.6150016784668,
+     "kurs": 62.17580032348633,
+     "folgetag": 50.22999954223633,
+     "r1": 0.2531653375005527,
+     "r2": -0.1921294252602903
+    },
+    {
+     "d": "2014-09-23",
+     "vortag": 77.72000122070312,
+     "kurs": 99.52239990234375,
+     "folgetag": 78.37999725341797,
+     "r1": 0.280524940030918,
+     "r2": -0.2124386336108428
+    },
+    {
+     "d": "2014-09-26",
+     "vortag": 77.66000366210938,
+     "kurs": 99.5780029296875,
+     "folgetag": 78.23999786376953,
+     "r1": 0.2822302116149913,
+     "r2": -0.21428432422956745
+    }
+   ],
+   "bewegungenUeber10": [
+    {
+     "d": "2008-09-29",
+     "r": -0.10519609494769899,
+     "vortag": "2008-09-26"
+    },
+    {
+     "d": "2008-10-13",
+     "r": 0.12568060864204478,
+     "vortag": "2008-10-10"
+    },
+    {
+     "d": "2008-10-28",
+     "r": 0.10915114883606325,
+     "vortag": "2008-10-27"
+    },
+    {
+     "d": "2009-01-02",
+     "r": -0.2642786343910357,
+     "vortag": "2008-12-30"
+    },
+    {
+     "d": "2009-01-08",
+     "r": 0.351669623809328,
+     "vortag": "2009-01-07"
+    },
+    {
+     "d": "2009-01-15",
+     "r": -0.25167883596534546,
+     "vortag": "2009-01-14"
+    },
+    {
+     "d": "2009-01-26",
+     "r": 0.3045437717732882,
+     "vortag": "2009-01-23"
+    },
+    {
+     "d": "2009-01-28",
+     "r": -0.23160091915476877,
+     "vortag": "2009-01-27"
+    },
+    {
+     "d": "2009-02-03",
+     "r": 0.31014873896711515,
+     "vortag": "2009-02-02"
+    },
+    {
+     "d": "2009-02-10",
+     "r": -0.2444593366055806,
+     "vortag": "2009-02-09"
+    },
+    {
+     "d": "2009-02-12",
+     "r": 0.30221180234221756,
+     "vortag": "2009-02-11"
+    },
+    {
+     "d": "2009-02-16",
+     "r": -0.2267373115738639,
+     "vortag": "2009-02-13"
+    },
+    {
+     "d": "2009-02-17",
+     "r": 0.24150685402832273,
+     "vortag": "2009-02-16"
+    },
+    {
+     "d": "2009-02-20",
+     "r": -0.2136682230525333,
+     "vortag": "2009-02-19"
+    },
+    {
+     "d": "2009-02-24",
+     "r": 0.2706074460643011,
+     "vortag": "2009-02-23"
+    },
+    {
+     "d": "2009-02-26",
+     "r": -0.21328087971687582,
+     "vortag": "2009-02-25"
+    },
+    {
+     "d": "2009-03-11",
+     "r": 0.3487706544865743,
+     "vortag": "2009-03-10"
+    },
+    {
+     "d": "2009-03-12",
+     "r": -0.2214772608506449,
+     "vortag": "2009-03-11"
+    },
+    {
+     "d": "2009-03-31",
+     "r": 0.34087516101117665,
+     "vortag": "2009-03-30"
+    },
+    {
+     "d": "2009-04-02",
+     "r": -0.24147347834604038,
+     "vortag": "2009-04-01"
+    },
+    {
+     "d": "2009-04-06",
+     "r": 0.34486686802258726,
+     "vortag": "2009-04-03"
+    },
+    {
+     "d": "2009-04-08",
+     "r": -0.23669228177579704,
+     "vortag": "2009-04-07"
+    },
+    {
+     "d": "2009-06-09",
+     "r": 0.41146889282374066,
+     "vortag": "2009-06-08"
+    },
+    {
+     "d": "2009-06-11",
+     "r": -0.2847875669835934,
+     "vortag": "2009-06-10"
+    },
+    {
+     "d": "2011-01-06",
+     "r": 0.3385198135304448,
+     "vortag": "2011-01-05"
+    },
+    {
+     "d": "2011-01-07",
+     "r": -0.23021815171424198,
+     "vortag": "2011-01-06"
+    },
+    {
+     "d": "2011-08-29",
+     "r": 0.5338464299265635,
+     "vortag": "2011-08-26"
+    },
+    {
+     "d": "2011-08-30",
+     "r": -0.30509225692227593,
+     "vortag": "2011-08-29"
+    },
+    {
+     "d": "2014-09-30",
+     "r": 0.2717127415865299,
+     "vortag": "2014-09-29"
+    },
+    {
+     "d": "2014-10-30",
+     "r": -0.20808681719107558,
+     "vortag": "2014-10-29"
+    },
+    {
+     "d": "2017-06-05",
+     "r": 0.13202936871641446,
+     "vortag": "2017-06-02"
+    },
+    {
+     "d": "2017-06-06",
+     "r": -0.11222486261790465,
+     "vortag": "2017-06-05"
+    }
+   ],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {
+    "2014": 5,
+    "2015": 4,
+    "2016": 4,
+    "2017": 4,
+    "2018": 4,
+    "2019": 4,
+    "2020": 4,
+    "2021": 4,
+    "2022": 4,
+    "2023": 4,
+    "2024": 4,
+    "2025": 4,
+    "2026": 3
+   },
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": 0.0005439417946645109,
+   "quoteMax": 0.0029097533984602264,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 9,
+   "stillstandAmMonatsende": [
+    "2017-09-29",
+    "2017-10-31"
+   ]
+  },
+  "UST.PA": {
+   "nullKurse": 71,
+   "nullKurseBeispiele": [
+    "2008-09-02",
+    "2008-11-28",
+    "2009-01-20",
+    "2009-02-17",
+    "2009-05-25",
+    "2009-07-03",
+    "2009-09-07",
+    "2009-11-26",
+    "2010-01-13",
+    "2010-01-18",
+    "2010-02-15",
+    "2010-05-31",
+    "2010-07-05",
+    "2010-09-06",
+    "2010-11-25",
+    "2011-01-17",
+    "2011-02-21",
+    "2011-05-30",
+    "2011-07-04",
+    "2011-09-05",
+    "2011-11-24",
+    "2012-01-02",
+    "2012-01-16",
+    "2012-02-20",
+    "2012-05-28",
+    "2012-07-04",
+    "2012-09-03",
+    "2012-10-29",
+    "2012-10-30",
+    "2012-11-22",
+    "2013-01-10",
+    "2013-01-21",
+    "2013-02-18",
+    "2013-04-10",
+    "2013-05-27",
+    "2013-07-04",
+    "2013-09-02",
+    "2013-11-28",
+    "2014-01-20",
+    "2014-02-17"
+   ],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [
+    {
+     "d": "2008-10-14",
+     "r": 0.11904763256341155,
+     "vortag": "2008-10-13"
+    },
+    {
+     "d": "2008-10-29",
+     "r": 0.10582006877682248,
+     "vortag": "2008-10-28"
+    }
+   ],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {},
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": null,
+   "quoteMax": null,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 44,
+   "stillstandAmMonatsende": [
+    "2008-01-31",
+    "2008-06-30"
+   ]
+  },
+  "ANX.PA": {
+   "nullKurse": 2,
+   "nullKurseBeispiele": [
+    "2013-01-10",
+    "2013-04-10"
+   ],
+   "doppelteTage": [],
+   "sprungpaareEntfernt": [],
+   "bewegungenUeber10": [],
+   "lueckenUeber7": [],
+   "ausschuettungenJeJahr": {},
+   "verschobeneAusschuettungen": [],
+   "ausserhalbDerReihe": [],
+   "kapitalgewinneAlsDoppelGezaehlt": [],
+   "quoteMin": null,
+   "quoteMax": null,
+   "quotenAusserhalb005bis3Prozent": [],
+   "stillstandskurse": 26,
+   "stillstandAmMonatsende": []
+  }
+ },
+ "nachtrag": {
+  "stand": "2026-10-05T01:26:39+0200",
+  "auftrag": "Projektleiter 05.10.2026: zusätzlich jeder Fonds, der nach dem vorläufigen Stand des Hauptrechners „verlässlich vorn“ ist (US: QQQ, IVW, SCHG, MGK gegen SPY; UCITS: SXRV, EXXT, EQQQ, LYMS, 6AQQ gegen SPY in USD und gegen SXR8.DE in EUR); Lesart K1b übernommen. Die Einträge stehen in „fonds“ hinter den drei Fonds des Erstlaufs (Feld nachtrag: true).",
+  "erstlaufUnveraendert": "K1b greift bei keiner Reihe des Erstlaufs (SPY, ^SP500TR, SPMO, SCHD, XDEW.*); dessen Einträge sind unverändert.",
+  "k1b": {
+   "SPY": null,
+   "^SP500TR": null,
+   "SPMO": null,
+   "SCHD": null,
+   "XDEW.DE": null,
+   "XDEW.L": null,
+   "XDEW.SW": null,
+   "XDEW.MI": null,
+   "QQQ": null,
+   "IVW": null,
+   "SCHG": null,
+   "MGK": null,
+   "SXR8.DE": {
+    "sprungTag": "2010-11-01",
+    "sprung": -0.24641567964568756,
+    "gleicheSchluesse": 20,
+    "gleichVon": "2010-10-04",
+    "gleichBis": "2010-10-29",
+    "spyBewegung": 0.04202196729052199,
+    "verworfenTage": 118,
+    "verworfenVon": "2010-05-19",
+    "verworfenBis": "2010-10-29",
+    "neuerBeginn": "2010-11-01"
+   },
+   "SXRV.DE": null,
+   "CSNDX.SW": null,
+   "SXRV.DU": null,
+   "SXRV.HM": null,
+   "EXXT.DE": null,
+   "EXXT.DU": null,
+   "EXXT.MU": null,
+   "EXXT.HM": null,
+   "EQQQ.DE": null,
+   "EQQQ.L": null,
+   "EQQQ.SW": null,
+   "EQQQ.MI": null,
+   "LYMS.DE": null,
+   "UST.PA": null,
+   "LYMS.DU": null,
+   "LYMS.MU": null,
+   "6AQQ.DE": null,
+   "ANX.PA": null,
+   "6AQQ.MU": null,
+   "6AQQ.HM": null
+  },
+  "sxr8": {
+   "symbol": "SXR8.DE",
+   "name": "iShares Core S&P 500 UCITS ETF USD (Acc) | iShs VII-Core S&P 500 U.ETF   R",
+   "namePasst": true,
+   "ersterTag": "2010-11-01",
+   "waehrung": "EUR",
+   "A": {
+    "r": 0.8758250133584362,
+    "pa": 0.14327021806676066,
+    "startTag": "2017-01-03",
+    "endTag": "2021-09-15"
+   },
+   "B": {
+    "r": 0.8472244116438603,
+    "pa": 0.1306058539114765,
+    "startTag": "2021-09-15",
+    "endTag": "2026-09-15"
+   },
+   "gegenSpyInUsd": {
+    "A": {
+     "sxr8Pa": 0.17528895273431688,
+     "spyPa": 0.17801470550071397,
+     "abstandPaPp": -0.27257527663970826
+    },
+    "B": {
+     "sxr8Pa": 0.12510146472628758,
+     "spyPa": 0.1259707115855171,
+     "abstandPaPp": -0.0869246859229511
+    }
+   }
+  }
+ }
+}

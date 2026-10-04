@@ -1,0 +1,171 @@
+{
+ "gruppe": "g2",
+ "stand": "2026-10-05",
+ "stichproben": [
+  {
+   "id": "VLUE",
+   "symbol": "VLUE",
+   "anbieter_url": "https://www.ishares.com/us/products/251616/ishares-msci-usa-value-factor-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 16.79,
+   "unser_5j_pa": 16.7883,
+   "abweichung_pp": -0.002,
+   "bemerkung": "Seite: Average Annual, Market Price, Quartalsende 30.06.2026 (NAV 16,81). Unser Fenster 2021-06-30..2026-06-30."
+  },
+  {
+   "id": "IWD",
+   "symbol": "IWD",
+   "anbieter_url": "https://www.ishares.com/us/products/239708/ishares-russell-1000-value-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 10.97,
+   "unser_5j_pa": 10.9739,
+   "abweichung_pp": 0.004,
+   "bemerkung": "Seite: Average Annual, Market Price, 30.06.2026 (NAV 10,98). Unser Fenster 2021-06-30..2026-06-30."
+  },
+  {
+   "id": "RPV",
+   "symbol": "RPV",
+   "anbieter_url": "https://www.invesco.com/us/en/financial-products/etfs/invesco-sp-500-pure-value-etf.html (Daten: https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V258/performance/standard?idType=cusip&performanceSubType=annualized&productType=ETF)",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 11.9987,
+   "unser_5j_pa": 11.8544,
+   "abweichung_pp": -0.144,
+   "bemerkung": "Invesco-API marketPrice y5, Monatsende (NAV 11,983). Abweichung -0,144: Yahoo fehlt die Ausschuettung Ex 20.09.2021 0,41952 $ (0,55 %, Beleg Invesco-Ausschuettungshistorie); allein das macht ~-0,12 Pp p. a. aus. Unser Fenster 2021-08-31..2026-08-31."
+  },
+  {
+   "id": "IWF",
+   "symbol": "IWF",
+   "anbieter_url": "https://www.ishares.com/us/products/239706/ishares-russell-1000-growth-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 13.51,
+   "unser_5j_pa": 13.5117,
+   "abweichung_pp": 0.002,
+   "bemerkung": "Seite: Market Price 30.06.2026 (NAV 13,52). Fenster enthaelt den Split 4:1 vom 29.04.2026 (Kurs stetig). Unser Fenster 2021-06-30..2026-06-30."
+  },
+  {
+   "id": "QQQ",
+   "symbol": "QQQ",
+   "anbieter_url": "https://www.invesco.com/qqq-etf/en/home.html (Daten: https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46090E103/performance/standard?idType=cusip&performanceSubType=annualized&productType=ETF)",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 14.2019,
+   "unser_5j_pa": 14.2151,
+   "abweichung_pp": 0.013,
+   "bemerkung": "Invesco-API marketPrice y5 (NAV 14,213). Unser Fenster 2021-08-31..2026-08-31."
+  },
+  {
+   "id": "MTUM",
+   "symbol": "MTUM",
+   "anbieter_url": "https://www.ishares.com/us/products/251614/ishares-msci-usa-momentum-factor-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 15.92,
+   "unser_5j_pa": 15.9179,
+   "abweichung_pp": -0.002,
+   "bemerkung": "Seite: Market Price 30.06.2026 (NAV 15,94). Unser Fenster 2021-06-30..2026-06-30."
+  },
+  {
+   "id": "SPMO",
+   "symbol": "SPMO",
+   "anbieter_url": "https://www.invesco.com/us/en/financial-products/etfs/invesco-sp-500-momentum-etf.html (Daten: https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46138E339/performance/standard?idType=cusip&performanceSubType=annualized&productType=ETF)",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 19.6622,
+   "unser_5j_pa": 19.6315,
+   "abweichung_pp": -0.031,
+   "bemerkung": "Invesco-API marketPrice y5 (NAV 19,657). Rest -0,03 = fehlende Ausschuettung Ex 20.09.2021 0,06993 $ bei Yahoo. Unser Fenster 2021-08-31..2026-08-31."
+  },
+  {
+   "id": "QMOM",
+   "symbol": "QMOM",
+   "anbieter_url": "https://funds.alphaarchitect.com/qmom/",
+   "stichtag": "2026-09-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 8.89,
+   "unser_5j_pa": 8.882,
+   "abweichung_pp": -0.008,
+   "bemerkung": "Fondsseite, Performance Month-End, QMOM MKT 5 Year (NAV 8,89). Unser Fenster 2021-09-30..2026-09-30."
+  },
+  {
+   "id": "PDP",
+   "symbol": "PDP",
+   "anbieter_url": "https://www.invesco.com/us/en/financial-products/etfs/invesco-dorsey-wright-momentum-etf.html (Daten: https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/46137V837/performance/standard?idType=cusip&performanceSubType=annualized&productType=ETF)",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 7.5282,
+   "unser_5j_pa": 7.5158,
+   "abweichung_pp": -0.012,
+   "bemerkung": "Invesco-API marketPrice y5 (NAV 7,512). Unser Fenster 2021-08-31..2026-08-31."
+  },
+  {
+   "id": "IVE",
+   "symbol": "IVE",
+   "anbieter_url": "https://www.ishares.com/us/products/239728/ishares-sp-500-value-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 11.09,
+   "unser_5j_pa": 11.0908,
+   "abweichung_pp": 0.001,
+   "bemerkung": "Zusatzfonds. Seite: Market Price 30.06.2026 (NAV 11,11). Unser Fenster 2021-06-30..2026-06-30."
+  },
+  {
+   "id": "VTV",
+   "symbol": "VTV",
+   "anbieter_url": "https://investor.vanguard.com/investment-products/etfs/profile/vtv",
+   "stichtag": "2026-09-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 12.43,
+   "unser_5j_pa": 12.4371,
+   "abweichung_pp": 0.007,
+   "bemerkung": "Zusatzfonds. Profilseite (eingebettetes JSON), monthEnd marketPriceFundReturn fiveYrPct (NAV 12,43). Unser Fenster 2021-09-30..2026-09-30."
+  },
+  {
+   "id": "IVW",
+   "symbol": "IVW",
+   "anbieter_url": "https://www.ishares.com/us/products/239725/ishares-sp-500-growth-etf",
+   "stichtag": "2026-06-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 14.34,
+   "unser_5j_pa": 14.3384,
+   "abweichung_pp": -0.002,
+   "bemerkung": "Zusatzfonds. Seite: Market Price 30.06.2026 (NAV 14,36); unsere NAV-Nachrechnung aus dem iShares-Monatsblatt ergibt 14,36 - Stichtag eindeutig. Unser Fenster 2021-06-30..2026-06-30."
+  },
+  {
+   "id": "VUG",
+   "symbol": "VUG",
+   "anbieter_url": "https://investor.vanguard.com/investment-products/etfs/profile/vug",
+   "stichtag": "2026-09-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 13.88,
+   "unser_5j_pa": 13.8745,
+   "abweichung_pp": -0.005,
+   "bemerkung": "Zusatzfonds. Profilseite, monthEnd marketPrice fiveYrPct (NAV 13,87). Fenster enthaelt den Split 6:1 vom 21.04.2026. Unser Fenster 2021-09-30..2026-09-30."
+  },
+  {
+   "id": "SCHG",
+   "symbol": "SCHG",
+   "anbieter_url": "https://www.schwabassetmanagement.com/products/schg",
+   "stichtag": "2026-08-31",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 13.26,
+   "unser_5j_pa": 13.2619,
+   "abweichung_pp": 0.002,
+   "bemerkung": "Zusatzfonds. Fondsseite, Monthly 08/31/2026, Market Price 5 Year (NAV 13,26); Quartal 30.06.2026: Anbieter 13,68, unser 13,681. Fenster enthaelt beide Splits (2:1 11.03.2022, 4:1 11.10.2024). Unser Fenster 2021-08-31..2026-08-31."
+  },
+  {
+   "id": "MGK",
+   "symbol": "MGK",
+   "anbieter_url": "https://investor.vanguard.com/investment-products/etfs/profile/mgk",
+   "stichtag": "2026-09-30",
+   "art": "Marktpreis",
+   "anbieter_5j_pa": 15.12,
+   "unser_5j_pa": 15.096,
+   "abweichung_pp": -0.024,
+   "bemerkung": "Zusatzfonds. Profilseite, monthEnd marketPrice fiveYrPct (NAV 15,11). Rest -0,02 = Ausschuettung Ex 28.09.2026 0,0765 $ fehlt bei Yahoo (Vanguard-API). Unser Fenster 2021-09-30..2026-09-30."
+  }
+ ]
+}

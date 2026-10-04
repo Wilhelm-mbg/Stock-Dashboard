@@ -1,0 +1,1146 @@
+{
+ "kennung": "faktor-etf-realitaet-2026-10/v1",
+ "alleInToleranz": true,
+ "zeilen": [
+  {
+   "name": "SPY A Rendite (Pp)",
+   "haupt": 115.91203760607809,
+   "zweit": 115.91203760607809,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SPY B Rendite (Pp)",
+   "haupt": 80.96733933601787,
+   "zweit": 80.96733933601787,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SPMO Symbol",
+   "haupt": "SPMO",
+   "zweit": "SPMO",
+   "ok": true
+  },
+  {
+   "name": "SPMO A Abstand p. a. (Pp)",
+   "haupt": 3.2013118240965976,
+   "zweit": 3.2013118240965976,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SPMO B Abstand p. a. (Pp)",
+   "haupt": 6.628667317063575,
+   "zweit": 6.628667317063575,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SPMO Zahl der Fenster n",
+   "haupt": 71,
+   "zweit": 71,
+   "ok": true
+  },
+  {
+   "name": "SPMO Fenster vor SPY",
+   "haupt": 61,
+   "zweit": 61,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "SPMO Median p. a. (Pp)",
+   "haupt": 2.0022635380471776,
+   "zweit": 2.0022635380471776,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SPMO schlechtester p. a. (Pp)",
+   "haupt": -2.4612210308339932,
+   "zweit": -2.4612210308339932,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SPMO erster/letzter Startmonat",
+   "haupt": "2015-10/2021-08",
+   "zweit": "2015-10/2021-08",
+   "ok": true
+  },
+  {
+   "name": "SPMO Rueckschlag gegen SPY (Pp)",
+   "haupt": -19.415571795766297,
+   "zweit": -19.415571795766297,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "SPMO Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "SCHD Symbol",
+   "haupt": "SCHD",
+   "zweit": "SCHD",
+   "ok": true
+  },
+  {
+   "name": "SCHD A Abstand p. a. (Pp)",
+   "haupt": -1.743112061152452,
+   "zweit": -1.743112061152452,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SCHD B Abstand p. a. (Pp)",
+   "haupt": -2.617408329684645,
+   "zweit": -2.617408329684645,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SCHD Zahl der Fenster n",
+   "haupt": 119,
+   "zweit": 119,
+   "ok": true
+  },
+  {
+   "name": "SCHD Fenster vor SPY",
+   "haupt": 16,
+   "zweit": 16,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "SCHD Median p. a. (Pp)",
+   "haupt": -0.9092642501733472,
+   "zweit": -0.9092642501733472,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SCHD schlechtester p. a. (Pp)",
+   "haupt": -6.005526342540701,
+   "zweit": -6.005526342540701,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SCHD erster/letzter Startmonat",
+   "haupt": "2011-10/2021-08",
+   "zweit": "2011-10/2021-08",
+   "ok": true
+  },
+  {
+   "name": "SCHD Rueckschlag gegen SPY (Pp)",
+   "haupt": -37.99202748525317,
+   "zweit": -37.99202748525317,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "SCHD Urteil gegen SPY",
+   "haupt": "nicht verlässlich vorn",
+   "zweit": "nicht verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "XDEW Symbol",
+   "haupt": "XDEW.DE",
+   "zweit": "XDEW.DE",
+   "ok": true
+  },
+  {
+   "name": "XDEW A Abstand p. a. (Pp)",
+   "haupt": -3.256659476374746,
+   "zweit": -3.256659476374746,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "XDEW B Abstand p. a. (Pp)",
+   "haupt": -4.345169665377724,
+   "zweit": -4.345169665377724,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "XDEW Zahl der Fenster n",
+   "haupt": 85,
+   "zweit": 85,
+   "ok": true
+  },
+  {
+   "name": "XDEW Fenster vor SPY",
+   "haupt": 0,
+   "zweit": 0,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "XDEW Median p. a. (Pp)",
+   "haupt": -2.925711114949814,
+   "zweit": -2.925711114949814,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "XDEW schlechtester p. a. (Pp)",
+   "haupt": -5.834674556668951,
+   "zweit": -5.834674556668951,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "XDEW erster/letzter Startmonat",
+   "haupt": "2014-08/2021-08",
+   "zweit": "2014-08/2021-08",
+   "ok": true
+  },
+  {
+   "name": "XDEW Rueckschlag gegen SPY (Pp)",
+   "haupt": -34.29646368867899,
+   "zweit": -34.29646368867899,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "XDEW Urteil gegen SPY",
+   "haupt": "nicht verlässlich vorn",
+   "zweit": "nicht verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "QQQ Symbol",
+   "haupt": "QQQ",
+   "zweit": "QQQ",
+   "ok": true
+  },
+  {
+   "name": "QQQ A Abstand p. a. (Pp)",
+   "haupt": 10.893108940982298,
+   "zweit": 10.893108940982298,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "QQQ B Abstand p. a. (Pp)",
+   "haupt": 1.342155662146638,
+   "zweit": 1.342155662146638,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "QQQ Zahl der Fenster n",
+   "haupt": 270,
+   "zweit": 270,
+   "ok": true
+  },
+  {
+   "name": "QQQ Fenster vor SPY",
+   "haupt": 228,
+   "zweit": 228,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "QQQ Median p. a. (Pp)",
+   "haupt": 4.1464854803551106,
+   "zweit": 4.1464854803551106,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "QQQ schlechtester p. a. (Pp)",
+   "haupt": -17.720975839832185,
+   "zweit": -17.720975839832185,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "QQQ erster/letzter Startmonat",
+   "haupt": "1999-03/2021-08",
+   "zweit": "1999-03/2021-08",
+   "ok": true
+  },
+  {
+   "name": "QQQ Rueckschlag gegen SPY (Pp)",
+   "haupt": -70.33534026570379,
+   "zweit": -70.33534026570379,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "QQQ Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "IVW Symbol",
+   "haupt": "IVW",
+   "zweit": "IVW",
+   "ok": true
+  },
+  {
+   "name": "IVW A Abstand p. a. (Pp)",
+   "haupt": 5.679912576283441,
+   "zweit": 5.679912576283441,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "IVW B Abstand p. a. (Pp)",
+   "haupt": 0.14355006409594306,
+   "zweit": 0.14355006409594306,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "IVW Zahl der Fenster n",
+   "haupt": 256,
+   "zweit": 256,
+   "ok": true
+  },
+  {
+   "name": "IVW Fenster vor SPY",
+   "haupt": 208,
+   "zweit": 208,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "IVW Median p. a. (Pp)",
+   "haupt": 1.0026766868098447,
+   "zweit": 1.0026766868098447,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "IVW schlechtester p. a. (Pp)",
+   "haupt": -5.3433709837079295,
+   "zweit": -5.3433709837079295,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "IVW erster/letzter Startmonat",
+   "haupt": "2000-05/2021-08",
+   "zweit": "2000-05/2021-08",
+   "ok": true
+  },
+  {
+   "name": "IVW Rueckschlag gegen SPY (Pp)",
+   "haupt": -29.517231962957435,
+   "zweit": -29.517231962957435,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "IVW Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "SCHG Symbol",
+   "haupt": "SCHG",
+   "zweit": "SCHG",
+   "ok": true
+  },
+  {
+   "name": "SCHG A Abstand p. a. (Pp)",
+   "haupt": 7.507267835834841,
+   "zweit": 7.507267835834841,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SCHG B Abstand p. a. (Pp)",
+   "haupt": 0.35617023892176025,
+   "zweit": 0.35617023892176025,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SCHG Zahl der Fenster n",
+   "haupt": 140,
+   "zweit": 140,
+   "ok": true
+  },
+  {
+   "name": "SCHG Fenster vor SPY",
+   "haupt": 137,
+   "zweit": 137,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "SCHG Median p. a. (Pp)",
+   "haupt": 2.07414480224698,
+   "zweit": 2.07414480224698,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SCHG schlechtester p. a. (Pp)",
+   "haupt": -0.15475305492644864,
+   "zweit": -0.15475305492644864,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SCHG erster/letzter Startmonat",
+   "haupt": "2010-01/2021-08",
+   "zweit": "2010-01/2021-08",
+   "ok": true
+  },
+  {
+   "name": "SCHG Rueckschlag gegen SPY (Pp)",
+   "haupt": -20.821523788260688,
+   "zweit": -20.821523788260688,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "SCHG Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "MGK Symbol",
+   "haupt": "MGK",
+   "zweit": "MGK",
+   "ok": true
+  },
+  {
+   "name": "MGK A Abstand p. a. (Pp)",
+   "haupt": 8.07803208739577,
+   "zweit": 8.07803208739577,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "MGK B Abstand p. a. (Pp)",
+   "haupt": 0.38410505135482165,
+   "zweit": 0.38410505135482165,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "MGK Zahl der Fenster n",
+   "haupt": 165,
+   "zweit": 165,
+   "ok": true
+  },
+  {
+   "name": "MGK Fenster vor SPY",
+   "haupt": 161,
+   "zweit": 161,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "MGK Median p. a. (Pp)",
+   "haupt": 1.664914979636789,
+   "zweit": 1.664914979636789,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "MGK schlechtester p. a. (Pp)",
+   "haupt": -0.5204370034750161,
+   "zweit": -0.5204370034750161,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "MGK erster/letzter Startmonat",
+   "haupt": "2007-12/2021-08",
+   "zweit": "2007-12/2021-08",
+   "ok": true
+  },
+  {
+   "name": "MGK Rueckschlag gegen SPY (Pp)",
+   "haupt": -23.00751663324959,
+   "zweit": -23.00751663324959,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "MGK Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "SXRV Symbol",
+   "haupt": "CSNDX.SW",
+   "zweit": "CSNDX.SW",
+   "ok": true
+  },
+  {
+   "name": "SXRV A Abstand p. a. (Pp)",
+   "haupt": 10.398139671276097,
+   "zweit": 10.398139671276097,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SXRV B Abstand p. a. (Pp)",
+   "haupt": 1.3322318828030033,
+   "zweit": 1.3322318828030033,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SXRV Zahl der Fenster n",
+   "haupt": 140,
+   "zweit": 140,
+   "ok": true
+  },
+  {
+   "name": "SXRV Fenster vor SPY",
+   "haupt": 139,
+   "zweit": 139,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "SXRV Median p. a. (Pp)",
+   "haupt": 4.535729457852799,
+   "zweit": 4.535729457852799,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SXRV schlechtester p. a. (Pp)",
+   "haupt": -0.06267218700048982,
+   "zweit": -0.06267218700048982,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SXRV erster/letzter Startmonat",
+   "haupt": "2010-01/2021-08",
+   "zweit": "2010-01/2021-08",
+   "ok": true
+  },
+  {
+   "name": "SXRV Rueckschlag gegen SPY (Pp)",
+   "haupt": -24.0895954003958,
+   "zweit": -24.0895954003958,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "SXRV Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "SXRV gg. SXR8 A Abstand p. a. (Pp)",
+   "haupt": 10.380009594278672,
+   "zweit": 10.380009594278672,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SXRV gg. SXR8 B Abstand p. a. (Pp)",
+   "haupt": 1.426099578146789,
+   "zweit": 1.426099578146789,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SXRV gg. SXR8 Zahl der Fenster n",
+   "haupt": 130,
+   "zweit": 130,
+   "ok": true
+  },
+  {
+   "name": "SXRV gg. SXR8 Fenster vorn",
+   "haupt": 130,
+   "zweit": 130,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "SXRV gg. SXR8 Median p. a. (Pp)",
+   "haupt": 4.966650598966094,
+   "zweit": 4.966650598966094,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "SXRV gg. SXR8 Rueckschlag (Pp)",
+   "haupt": -21.6585680597681,
+   "zweit": -21.6585680597681,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "SXRV Gesamturteil (SPY und SXR8)",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "EXXT Symbol",
+   "haupt": "EXXT.DE",
+   "zweit": "EXXT.DE",
+   "ok": true
+  },
+  {
+   "name": "EXXT A Abstand p. a. (Pp)",
+   "haupt": 10.340745689693609,
+   "zweit": 10.340745689693609,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EXXT B Abstand p. a. (Pp)",
+   "haupt": 1.187751418864158,
+   "zweit": 1.187751418864158,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EXXT Zahl der Fenster n",
+   "haupt": 164,
+   "zweit": 164,
+   "ok": true
+  },
+  {
+   "name": "EXXT Fenster vor SPY",
+   "haupt": 152,
+   "zweit": 152,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "EXXT Median p. a. (Pp)",
+   "haupt": 3.941588142754948,
+   "zweit": 3.941588142754948,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EXXT schlechtester p. a. (Pp)",
+   "haupt": -6.863803782589262,
+   "zweit": -6.863803782589262,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EXXT erster/letzter Startmonat",
+   "haupt": "2008-01/2021-08",
+   "zweit": "2008-01/2021-08",
+   "ok": true
+  },
+  {
+   "name": "EXXT Rueckschlag gegen SPY (Pp)",
+   "haupt": -45.021409569188364,
+   "zweit": -45.021409569188364,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "EXXT Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "EXXT gg. SXR8 A Abstand p. a. (Pp)",
+   "haupt": 10.324179213429051,
+   "zweit": 10.324179213429051,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EXXT gg. SXR8 B Abstand p. a. (Pp)",
+   "haupt": 1.280912265334222,
+   "zweit": 1.280912265334222,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EXXT gg. SXR8 Zahl der Fenster n",
+   "haupt": 130,
+   "zweit": 130,
+   "ok": true
+  },
+  {
+   "name": "EXXT gg. SXR8 Fenster vorn",
+   "haupt": 130,
+   "zweit": 130,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "EXXT gg. SXR8 Median p. a. (Pp)",
+   "haupt": 4.862748476660905,
+   "zweit": 4.862748476660905,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EXXT gg. SXR8 Rueckschlag (Pp)",
+   "haupt": -21.22873198096933,
+   "zweit": -21.22873198096933,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "EXXT Gesamturteil (SPY und SXR8)",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "EQQQ Symbol",
+   "haupt": "EQQQ.DE",
+   "zweit": "EQQQ.DE",
+   "ok": true
+  },
+  {
+   "name": "EQQQ A Abstand p. a. (Pp)",
+   "haupt": 10.54352771999254,
+   "zweit": 10.54352771999254,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EQQQ B Abstand p. a. (Pp)",
+   "haupt": 1.3398572085573823,
+   "zweit": 1.3398572085573823,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EQQQ Zahl der Fenster n",
+   "haupt": 164,
+   "zweit": 164,
+   "ok": true
+  },
+  {
+   "name": "EQQQ Fenster vor SPY",
+   "haupt": 150,
+   "zweit": 150,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "EQQQ Median p. a. (Pp)",
+   "haupt": 4.07660203111403,
+   "zweit": 4.07660203111403,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EQQQ schlechtester p. a. (Pp)",
+   "haupt": -6.818448382275744,
+   "zweit": -6.818448382275744,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EQQQ erster/letzter Startmonat",
+   "haupt": "2008-01/2021-08",
+   "zweit": "2008-01/2021-08",
+   "ok": true
+  },
+  {
+   "name": "EQQQ Rueckschlag gegen SPY (Pp)",
+   "haupt": -45.26415717919314,
+   "zweit": -45.26415717919314,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "EQQQ Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "EQQQ gg. SXR8 A Abstand p. a. (Pp)",
+   "haupt": 10.521436794605577,
+   "zweit": 10.521436794605577,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EQQQ gg. SXR8 B Abstand p. a. (Pp)",
+   "haupt": 1.4337622096570746,
+   "zweit": 1.4337622096570746,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EQQQ gg. SXR8 Zahl der Fenster n",
+   "haupt": 130,
+   "zweit": 130,
+   "ok": true
+  },
+  {
+   "name": "EQQQ gg. SXR8 Fenster vorn",
+   "haupt": 129,
+   "zweit": 129,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "EQQQ gg. SXR8 Median p. a. (Pp)",
+   "haupt": 5.0720549749313175,
+   "zweit": 5.0720549749313175,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "EQQQ gg. SXR8 Rueckschlag (Pp)",
+   "haupt": -35.88030147297666,
+   "zweit": -35.88030147297666,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "EQQQ Gesamturteil (SPY und SXR8)",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "LYMS Symbol",
+   "haupt": "UST.PA",
+   "zweit": "UST.PA",
+   "ok": true
+  },
+  {
+   "name": "LYMS A Abstand p. a. (Pp)",
+   "haupt": 9.884052615248851,
+   "zweit": 9.884052615248851,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "LYMS B Abstand p. a. (Pp)",
+   "haupt": 1.5185412870847514,
+   "zweit": 1.5185412870847514,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "LYMS Zahl der Fenster n",
+   "haupt": 164,
+   "zweit": 164,
+   "ok": true
+  },
+  {
+   "name": "LYMS Fenster vor SPY",
+   "haupt": 164,
+   "zweit": 164,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "LYMS Median p. a. (Pp)",
+   "haupt": 3.7207885889998016,
+   "zweit": 3.7207885889998016,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "LYMS schlechtester p. a. (Pp)",
+   "haupt": 0.08594433637201249,
+   "zweit": 0.08594433637201249,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "LYMS erster/letzter Startmonat",
+   "haupt": "2008-01/2021-08",
+   "zweit": "2008-01/2021-08",
+   "ok": true
+  },
+  {
+   "name": "LYMS Rueckschlag gegen SPY (Pp)",
+   "haupt": -24.35884095214775,
+   "zweit": -24.35884095214775,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "LYMS Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "LYMS gg. SXR8 A Abstand p. a. (Pp)",
+   "haupt": 9.879927959645606,
+   "zweit": 9.879927959645606,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "LYMS gg. SXR8 B Abstand p. a. (Pp)",
+   "haupt": 1.6133204730826467,
+   "zweit": 1.6133204730826467,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "LYMS gg. SXR8 Zahl der Fenster n",
+   "haupt": 130,
+   "zweit": 130,
+   "ok": true
+  },
+  {
+   "name": "LYMS gg. SXR8 Fenster vorn",
+   "haupt": 130,
+   "zweit": 130,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "LYMS gg. SXR8 Median p. a. (Pp)",
+   "haupt": 4.432951910772331,
+   "zweit": 4.432951910772331,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "LYMS gg. SXR8 Rueckschlag (Pp)",
+   "haupt": -20.731408861509937,
+   "zweit": -20.731408861509937,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "LYMS Gesamturteil (SPY und SXR8)",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "6AQQ Symbol",
+   "haupt": "ANX.PA",
+   "zweit": "ANX.PA",
+   "ok": true
+  },
+  {
+   "name": "6AQQ A Abstand p. a. (Pp)",
+   "haupt": 10.51175140523075,
+   "zweit": 10.51175140523075,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "6AQQ B Abstand p. a. (Pp)",
+   "haupt": 1.498480894159604,
+   "zweit": 1.498480894159604,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "6AQQ Zahl der Fenster n",
+   "haupt": 135,
+   "zweit": 135,
+   "ok": true
+  },
+  {
+   "name": "6AQQ Fenster vor SPY",
+   "haupt": 135,
+   "zweit": 135,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "6AQQ Median p. a. (Pp)",
+   "haupt": 4.666227580315496,
+   "zweit": 4.666227580315496,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "6AQQ schlechtester p. a. (Pp)",
+   "haupt": 0.060580375901242434,
+   "zweit": 0.060580375901242434,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "6AQQ erster/letzter Startmonat",
+   "haupt": "2010-06/2021-08",
+   "zweit": "2010-06/2021-08",
+   "ok": true
+  },
+  {
+   "name": "6AQQ Rueckschlag gegen SPY (Pp)",
+   "haupt": -24.305545212751234,
+   "zweit": -24.305545212751234,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "6AQQ Urteil gegen SPY",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  },
+  {
+   "name": "6AQQ gg. SXR8 A Abstand p. a. (Pp)",
+   "haupt": 10.49052617111801,
+   "zweit": 10.49052617111801,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "6AQQ gg. SXR8 B Abstand p. a. (Pp)",
+   "haupt": 1.593161937711396,
+   "zweit": 1.593161937711396,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "6AQQ gg. SXR8 Zahl der Fenster n",
+   "haupt": 130,
+   "zweit": 130,
+   "ok": true
+  },
+  {
+   "name": "6AQQ gg. SXR8 Fenster vorn",
+   "haupt": 130,
+   "zweit": 130,
+   "differenz": 0,
+   "toleranz": 1,
+   "ok": true
+  },
+  {
+   "name": "6AQQ gg. SXR8 Median p. a. (Pp)",
+   "haupt": 5.164941239387188,
+   "zweit": 5.164941239387188,
+   "differenz": 0,
+   "toleranz": 0.05,
+   "ok": true
+  },
+  {
+   "name": "6AQQ gg. SXR8 Rueckschlag (Pp)",
+   "haupt": -20.92544771885594,
+   "zweit": -20.92544771885594,
+   "differenz": 0,
+   "toleranz": 0.5,
+   "ok": true
+  },
+  {
+   "name": "6AQQ Gesamturteil (SPY und SXR8)",
+   "haupt": "verlässlich vorn",
+   "zweit": "verlässlich vorn",
+   "ok": true
+  }
+ ]
+}
