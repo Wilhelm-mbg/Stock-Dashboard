@@ -125,7 +125,8 @@ function bericht(E) {
     'Fassung P ist nicht ausführbar und dient nur der Eichung; Fassung N handelt zur nächsten Eröffnung ohne Spanne, Kosten gehen allein über c ein. ' +
     'Short ohne Leihgebühr, kein Zins auf Bargeld, Bruchstücke erlaubt, kein Hebel. R2 ist ein Nachbau der im Reel genannten Zutaten durch den PM, nicht die Regel aus dem Reel. ' +
     'Ein Hauptlauf; die elf Nebenläufe im Urteilsfenster stehen nachrichtlich daneben und zählen nicht als weitere Belege. Kurse roh (SIP), Kaufen-und-Halten ohne Ausschüttungen. ' +
-    'Datenlücken wurden gehandelt, wie sie sind: ' + E.datenluecken + ' Beschreibende Zahlen nach vorher festgelegter Regel (REGEL.md, Siegel ' + E.siegel.commit + '); keine Anlageberatung.');
+    'Datenlücken wurden gehandelt, wie sie sind: ' + E.datenluecken + ' ' +
+    (E.korrekturen || []).map(function (k) { return k.kurz + ' '; }).join('') + 'Beschreibende Zahlen nach vorher festgelegter Regel (REGEL.md, Siegel ' + E.siegel.commit + '); keine Anlageberatung.');
   zeilen.push('');
   return zeilen.join('\n');
 }
@@ -140,7 +141,15 @@ function hauptlauf(sg) {
 
   var E = {
     erstellt: new Date().toISOString(), siegel: sg, eichung: eich, hauptlauf: HAUPT, start: K.START,
-    fenster: K.FENSTER, kostenleiter: K.KOSTEN, daten: {}, laeufe: [], ereignisse: [], korrekturen: [],
+    fenster: K.FENSTER, kostenleiter: K.KOSTEN, daten: {}, laeufe: [], ereignisse: [],
+    korrekturen: [{
+      nr: 1, erstesSiegel: '3c96c2d',
+      fehler: 'Trefferquote: der Gewinner wurde am Vermoegen verglichen (Eneu > Evor). Bei einem Trade mit Ertrag genau null (Einstiegskurs = Ausstiegskurs bei c = 0; Kursgewinn genau 0,001 $ bei Papier-Kosten) entschied das letzte Bit der Gleitkommarechnung.',
+      gefunden: 'Gegenrechnung nach dem ersten Lauf (gegenrechnung-vor-korrektur.log): Hauptlauf c = 0 2.159 statt 2.155 Gewinner bei 63 Nulltrades; Eichung 3.937 statt 3.934 Gewinner bei 3 Grenzfaellen. Alle anderen verglichenen Groessen gleich bis 1e-9.',
+      behoben: 'Vergleich des Gewinns je Stueck nach Gebuehren an den Kursen, Schranke 1e-9 des Kurses (kern.js); zwei neue Pruefungen in test.js.',
+      wirkung: 'Nur das Feld trefferquote aendert sich (hoechstens wenige Trades je Lauf). Ertraege, Tagesertraege, t, c*, Trades, Umsatz und alle Saetze bit-gleich - siehe vergleich-korrektur.log.',
+      kurz: 'Eine Korrektur am Code nach dem ersten Lauf: bei der Trefferquote zählte ein Trade mit Ertrag genau null je nach Rundung als Gewinner (Eichung 3 Trades, Hauptlauf 4 Trades); alle Erträge, t, c* und Sätze sind unverändert (REGEL.md Teil D).'
+    }],
     datenluecken: 'QQQ am 02. und 03.05.2018 nur die Kerze 09:30 (kein Handel an diesen Tagen), QQQ am 22.02.2016 340 Kerzen, SPY und IWM am 12.08.2019 nur bis 15:31 bzw. 15:30, vier Tage im März 2020 je 376 Kerzen (Handelsunterbrechung).'
   };
   D.WERTE.forEach(function (sym) {

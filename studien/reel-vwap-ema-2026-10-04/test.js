@@ -172,6 +172,32 @@ var TAG_X = { c: [10, 10, 11, 10.5, 9, 9, 12], vw: [10, 10, 10, 10.5, 10, 9, 10]
   var sh = K.simuliere(Rs, Int8Array.from([-1, -1, 0]), 0, 1, 'P', { art: 'bp', c: 10 });
   var q = 100000 / (100 * 1.001);
   pruefe('short mit Kosten von Hand', nahe(sh.tagEnde[0], q * (200 - 90 - 0.09), 1e-6) && sh.gewinner === 1);
+  /* Korrektur 1: ein Trade mit Ertrag genau null ist kein Gewinner - auch wenn das Vermoegen krumm ist */
+  var tage = [], gewinnTage = 0;
+  for (var d = 0; d < 600; d++) {
+    var monat = 1 + Math.floor((d % 336) / 28), tagNr = 1 + d % 28;
+    var a = 300.07 + 0.13 * d, datum = (2020 + Math.floor(d / 336)) + '-' + (monat < 10 ? '0' : '') + monat + '-' + (tagNr < 10 ? '0' : '') + tagNr;
+    if (d % 3 === 0) { tage.push(tagAus(datum, [10, 10.37 + 0.01 * d, 10.5])); gewinnTage++; } else tage.push(tagAus(datum, [a, a + 0.11, a, a + 0.05]));
+  }
+  var Rn = D.ausTagen(tage), sn = new Int8Array(Rn.n);
+  for (var t = 0; t < Rn.tagA.length; t++) { sn[Rn.tagA[t]] = 1; if (Rn.tagE[t] - Rn.tagA[t] === 4) sn[Rn.tagA[t] + 1] = 1; }
+  var null0 = K.simuliere(Rn, sn, 0, Rn.tagA.length, 'P', { art: 'bp', c: 0 });
+  pruefe('Ertrag genau null ist kein Gewinner (600 Tage, krummes Vermoegen)', null0.trades === 600 && null0.gewinner === gewinnTage);
+  /* der Kunstfall muss den alten Fehler enthalten: nach dem alten Vergleich am Vermoegen waere mindestens ein Nulltrade Gewinner */
+  var altFalsch = 0;
+  for (t = 0; t < Rn.tagA.length; t++) {
+    if (Rn.tagE[t] - Rn.tagA[t] !== 4) continue;
+    var vor = t ? null0.tagEnde[t - 1] : K.START, kursA = Rn.c[Rn.tagA[t]];
+    if ((vor / kursA) * kursA > vor) altFalsch++;
+  }
+  pruefe('der Kunstfall enthaelt den alten Rundungsfehler (' + altFalsch + ' von 400 Nulltrades waeren Gewinner gewesen)', altFalsch > 0);
+  function einTrade(ein, aus, richtung, kosten) {
+    var Rt = D.ausTagen([tagAus('2020-03-02', [ein, aus, aus])]);
+    return K.simuliere(Rt, Int8Array.from([richtung, 0, 0]), 0, 1, 'P', kosten).gewinner;
+  }
+  var pap = { art: 'aktie', f: 0.0005 };
+  pruefe('Papier-Kosten: Kursgewinn genau 0,001 $ ist kein Gewinner, 0,0011 $ schon',
+    einTrade(300, 300.001, 1, pap) === 0 && einTrade(300, 300.0011, 1, pap) === 1 && einTrade(300.001, 300, -1, pap) === 0 && einTrade(300.0011, 300, -1, pap) === 1);
   pruefe('Kostenleiter wie im Auftrag', K.KOSTEN.map(function (x) { return x.name; }).join(' ') === '0 Papier 0,1 0,25 0,5 1,0 1,5');
 })();
 
