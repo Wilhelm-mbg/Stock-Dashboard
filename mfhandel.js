@@ -365,7 +365,7 @@
     Object.keys(rohMap || {}).forEach(function (s) {
       var x = rohMap[s];
       var i = x && x.length ? indexVor(x, bis) : -1;
-      if (i >= 0 && r.stichtagT - x[i][0] > 7 * 86400000) { r.ausgelassen++; return; }
+      if (i >= 0 && tagesMs(r.stichtagT) - tagesMs(x[i][0]) > 7 * 86400000) { r.ausgelassen++; return; }   // Runde 2 (M9): ganze Tage wie zielAmStichtag
       r.gesamt++;
       if (i >= 0 && x[i][0] >= von) r.mit++;
     });
@@ -387,6 +387,23 @@
       aus[s] = i === x.length - 1 ? x : x.slice(0, i + 1);
     });
     return aus;
+  }
+  /** Mitternacht UTC des New-Yorker Tags von ms - der "Zeitstempel des Tages" der Messung (REGEL Teil C.2). */
+  function tagesMs(ms) { var t = nyTag(ms); return Date.UTC(+t.slice(0, 4), +t.slice(5, 7) - 1, +t.slice(8, 10)); }
+  /** Runde 2 (Nr. 108, M9): das Ziel am Stichtag WIE IN DER MESSUNG - momentumZiel (unveraendert) auf den Reihen bis
+   *  einschliesslich stichtag (rohBis), jede Zeile mit dem Zeitstempel ihres Tages (Mitternacht UTC des New-Yorker
+   *  Datums), nowMs = Mitternacht UTC des Stichtags (REGEL §1.2 und Teil C.2: "7 Kalendertage" sind ganze Tage).
+   *  Bisher galten die Balkenstempel (09:30 New York: Sommer 13:30, Winter 14:30 UTC) - ueber den Herbstwechsel lag
+   *  eine Reihe, die genau 7 Kalendertage alt ist, 169 Stunden zurueck und flog als veraltet hinaus. Gebraucht werden
+   *  je Reihe nur die letzten rueckblick + luecke + 1 Zeilen (REGEL §1.2); eine kuerzere Reihe bleibt kurz. Rein. */
+  function zielAmStichtag(rohMap, stichtag) {
+    var K = buchKonfig(), n = K.rueckblick + K.luecke + 1, bis = rohBis(rohMap, stichtag), aus = {};
+    Object.keys(bis).forEach(function (s) {
+      var x = bis[s];
+      if (!x || !x.length) { aus[s] = x; return; }
+      aus[s] = x.slice(-n).map(function (b) { var z = b.slice(); z[0] = tagesMs(b[0]); return z; });
+    });
+    return momentumZiel(aus, { nowMs: Date.UTC(+stichtag.slice(0, 4), +stichtag.slice(5, 7) - 1, +stichtag.slice(8, 10)) });
   }
   /** A5 - die Schluesse des Tages tag: je Wert der Schluss (Spalte 1) des Balkens vom Tag, sonst
    *  der letzte davor (wie rueckblick.js Schritt 6: nie der Einstand). barT = Stempel dieses Balkens. */
@@ -975,7 +992,7 @@
     /* Auftrag Nr. 93 */
     nyTag: nyTag, nyZeit: nyZeit, tagPlus: tagPlus, istWerktag: istWerktag, werktagVor: werktagVor,
     letzterFertigerWerktag: letzterFertigerWerktag, bestandFrisch: bestandFrisch, ohneLaufendenBalken: ohneLaufendenBalken,
-    balkenNach: balkenNach, faelligkeit: faelligkeit, stichtagPruefen: stichtagPruefen, rohBis: rohBis,
+    balkenNach: balkenNach, faelligkeit: faelligkeit, stichtagPruefen: stichtagPruefen, rohBis: rohBis, zielAmStichtag: zielAmStichtag, tagesMs: tagesMs,
     schluesseAm: schluesseAm, punktTag: punktTag, bargeldAm: bargeldAm, datumDe: datumDe,
     reihenendeAusbuchen: reihenendeAusbuchen, reihenendeJournal: reihenendeJournal, REIHENENDE_TAGE: REIHENENDE_TAGE,
     SCHLUSS_FERTIG: SCHLUSS_FERTIG, HANDEL_AB: HANDEL_AB,

@@ -272,7 +272,7 @@ TESTS.push({
       new Date(letzter).toISOString().slice(0, 16) + ' (' + NAMEN[0] + '), SPY ' + new Date(spyLetzter).toISOString().slice(0, 16) +
       ' (Soll: Fr 30.10. 13:30 UTC, unverschoben); zerlege rechnet nicht mit gmtoffset (Stempel absolut, kurse.js:' +
       H.zeileVon('kurse.js', 'bars.push([ts[i] * 1000, c, vo, hi, lo, op]);') + '), den laufenden Balken schneidet mittelfrist.js:' +
-      H.zeileVon('mittelfrist.js', 'reihe = window.MFHandel.ohneLaufendenBalken(reihe, Date.now());') + ' (New-Yorker Tag, nicht UTC).' };
+      H.zeileVon('mittelfrist.js', 'reihe = window.MFHandel.ohneLaufendenBalken(reihe, LADE_BEGINN || Date.now());') + ' (New-Yorker Tag, nicht UTC).' };
   }
 });
 
@@ -401,7 +401,7 @@ TESTS.push({
       ' (Soll close Mo ' + zahl(soll, 4) + ', geliefert wird der Vortag ' + zahl(vortag, 4) + '). kurse.js:' + H.zeileVon('kurse.js', 'if (!kursOk(c)) { verworfen++; continue; }') +
       ' prueft den BEREINIGTEN Schluss -> mittelfrist.js:' + H.zeileVon('mittelfrist.js', 'reihe.push([b[0], r[1], b[2], b[1]]);') + ' -> mfdepot.js:' +
       H.zeileVon('mfdepot.js', 'var s = MH.schluesseAm(daten.roh, x.tag);') + ' (Tagespunkt) und MH.rohBis/momentumZiel (mfdepot.js:' +
-      H.zeileVon('mfdepot.js', 'var ziel = MH.momentumZiel(MH.rohBis(daten.roh, st.stichtag), { nowMs: st.stichtagT });') + ').' };
+      H.zeileVon('mfdepot.js', 'var ziel = MH.zielAmStichtag(daten.roh, st.stichtag);') + ').' };
   }
 });
 

@@ -4,7 +4,7 @@
  * Warum es dieses Modul gibt (Wilhelms Entscheid 02.09.2026): Das Momentum-Buch der App
  * uebernimmt EXAKT die gemessene liquide Konfiguration aus
  *   studien/vorregistrierung-2026-09-02-momentum-liquide/  (messen.js, periode())
- * damit jede kuenftige Umschichtung ein Out-of-Sample-Beleg ist. Die Regel dort:
+ * damit jede kuenftige Umschichtung Out-of-Sample ist (fuer sich kein Beleg). Die Regel dort:
  *
  *   Ein Wert ist am Stichtag t nur zulaessig, wenn sein Median-Tagesumsatz
  *   (Schluss x Stueck) ueber die 20 Balken bis einschliesslich t >= 100 Mio $ ist.

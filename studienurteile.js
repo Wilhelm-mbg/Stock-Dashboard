@@ -78,7 +78,7 @@
   };
   /* Vorwärtstest-Etiketten (Wilhelms Entscheid 02.09.2026): Das Momentum-Buch handelt
    * EXAKT die gemessene liquide Konfiguration; ab der ersten Umschichtung auf dem
-   * liquiden Korb ist jede weitere ein Out-of-Sample-Beleg, den die Studie nicht kennen
+   * liquiden Korb ist jede weitere Out-of-Sample (fuer sich kein Beleg, Runde 2 Nr. 108), die die Studie nicht kennen
    * konnte. Das Urteil steht hier WÖRTLICH wie in ERGEBNIS.md („lebt" nach registrierter
    * Regel — In-Sample, am Rand), das Datum des Vorwärtstests hängt der Leser
    * (strategien.js) aus dem Buch selbst an (DepotAPI.regelStatus().<buch>). */

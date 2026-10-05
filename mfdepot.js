@@ -189,11 +189,33 @@
    * MFHandel.bucheMassnahmen (rein, in Node getestet); hier nur der Aufruf und je Takt und
    * Buch hoechstens EINE Journalzeile - nur, wenn gebucht (oder ein Split neu gesperrt)
    * wurde. Rueckgabe: true, wenn gespeichert werden muss. */
+  /* Runde 2 (Nr. 108, M7, Test 27): ein Bestand, der WAEHREND der Sitzung des Ex-Tags eines Splits geladen wurde,
+   * traegt den Balken des Ex-Tags nicht (laufender Balken, abgeschnitten), aber die Vergangenheit kommt aus
+   * demselben Abruf schon geteilt, und das Split-Ereignis mit dem Stempel des Ex-Tags steht im Bestand. Ohne
+   * Buchung stand Stueck (alt) gegen Kurs (geteilt): der Tagespunkt hielt den halben Wert fest. Solche Splits
+   * (Ex-Tag = New-Yorker Tag des Ladevorgangs, nach dem juengsten Balken, nicht nach dem Laden) werden VOR den
+   * uebrigen Massnahmen gebucht - nur Splits (Regel 3/5), Ausschuettungen weiter erst mit dem Balken des Ex-Tags
+   * (REGEL Teil C.3). Kennung 'split:' + t wie immer: der Abend bucht ihn nicht noch einmal.
+   * Rueckgabe { SYM: Ex-Tag-Stempel } oder null. */
+  function splitsDesLadetags(MH, daten) {
+    var er = daten.ereignisse, stand = daten.stand, aus = null;
+    if (!er || !(stand > 0)) return null;
+    var tagStand = MH.nyTag(stand);
+    Object.keys(er).forEach(function (s) {
+      var bz = (daten.barZeit || {})[s];
+      ((er[s] && er[s].split) || []).forEach(function (x) {
+        if (x[0] > (bz || 0) && x[0] <= stand && MH.nyTag(x[0]) === tagStand) { if (!aus) aus = {}; aus[s] = Math.max(aus[s] || 0, x[0]); }
+      });
+    });
+    return aus;
+  }
   function massnahmenBuchen(MH, d, daten, now) {
-    var geaendert = false;
+    var geaendert = false, ladetag = splitsDesLadetags(MH, daten);
     [['momentum', d.mfBuch], ['drift', d.driftBuch]].forEach(function (x) {
       if (!x[1]) return;
+      var vor = ladetag ? MH.bucheMassnahmen(x[1], daten.ereignisse, ladetag, now, { nurSplits: true }) : null;
       var res = MH.bucheMassnahmen(x[1], daten.ereignisse, daten.barZeit, now);
+      if (vor) { res.buchungen = vor.buchungen.concat(res.buchungen); res.gesperrt = vor.gesperrt.concat(res.gesperrt); }
       var zeile = MH.massnahmenJournal(x[0], res, now);
       if (!zeile) return;
       if (!d.tuneLog) d.tuneLog = [];
@@ -302,7 +324,8 @@
     if (now < MH.nyZeit(heute, MH.HANDEL_AB[0], MH.HANDEL_AB[1])) return { ok: false, hinweis: 'Umschichtung heute nach Börsenöffnung' };
     var st = MH.stichtagPruefen(daten.roh, daten.bezug, daten.stand, heute);
     if (!st.ok) { nachladen(); return { ok: false, hinweis: 'Umschichtung fällig, aber Tageskurse nicht frisch genug (' + st.grund + ') – Nachladen angestoßen; kein Handel.' }; }
-    var ziel = MH.momentumZiel(MH.rohBis(daten.roh, st.stichtag), { nowMs: st.stichtagT });
+    /* Runde 2 (Nr. 108, M9): Zeitstempel des Tages wie die Messung (REGEL Teil C.2) - MH.zielAmStichtag, momentumZiel unveraendert. */
+    var ziel = MH.zielAmStichtag(daten.roh, st.stichtag);
     if (ziel.zuWenig) return { ok: false, hinweis: 'Umschichtung fällig, aber am Stichtag ' + MH.datumDe(st.stichtag) + ' unter ' + MH.buchKonfig().mindestWerte + ' zulässigen Werten – kein Korb; neuer Versuch beim nächsten Takt.' };
     /* Heute ein Handelstag? Das sagt der Balken von SPY mit heutigem Datum - einen Kalender
      * fuehrt die App nicht. Erst SPY, dann die Werte: an einem Feiertag bleibt es bei einem Abruf. */
@@ -482,6 +505,19 @@
           var ausgefallenM = plan.kaufen.length - gekauftM;
           var kleinstM = (plan.kleinst || []).length;
           var spaet = manuell === 'momentum' ? 0 : (fl.verspaetung || 0);
+          /* Runde 2 (Nr. 108, Test 32): der wahre Grund einer Verspaetung. Stand am faelligen Tag oder danach ein Grund
+           * auf der Karte (d.mfBuch.aufschub, unten gemerkt - etwa "Marktreihe (SPY) fehlt im Bestand"), nennt das
+           * Journal DEN, nicht pauschal "die App lief nicht". Faellig war der halten-te SPY-Balken nach der letzten
+           * Umschichtung (MH.faelligkeit). */
+          var faelligTag = null, aufschub = d.mfBuch.aufschub || null;
+          if (spaet && daten.bezug && d.mfBuch.letzteAusfuehrungTag) {
+            var nachLetzter = daten.bezug.filter(function (b) { return MH.nyTag(b[0]) > d.mfBuch.letzteAusfuehrungTag; });
+            if (nachLetzter.length >= KONFIG.halten) faelligTag = MH.nyTag(nachLetzter[KONFIG.halten - 1][0]);
+          }
+          var spaetGrund = spaet && aufschub && faelligTag && aufschub.tag >= faelligTag
+            ? 'am fälligen Tag ' + MH.datumDe(faelligTag) + ' oder danach kein Handel; zuletzt am ' + MH.datumDe(aufschub.tag) + ': ' + String(aufschub.grund).replace(/\.\s*$/, '')
+            : 'am fälligen Tag kam nach Börsenöffnung keine Umschichtung zustande – die App lief nicht oder bekam keine Eröffnungskurse';
+          delete d.mfBuch.aufschub;
           d.mfBuch.letztesRebalanceT = now;
           d.mfBuch.letzteAusfuehrungTag = ausf.heute;
           /* Die Faelligkeit neu ab DIESEM Ausfuehrungstag - sonst nennt die Karte bis zum naechsten
@@ -500,7 +536,7 @@
             txt: 'Momentum-Depot umgeschichtet: ' + (nM - gekauftM) + ' Verkäufe, ' + gekauftM +
               ' Käufe auf das stärkste Zehntel (' + zielA.ziel.length + ' Werte). Ausführungstag ' + MH.datumDe(ausf.heute) +
               ', Rangfolge auf den Schlusskursen des Stichtags ' + MH.datumDe(ausf.stichtag) + ', gehandelt zur Eröffnung' +
-              (spaet ? ' – ' + spaet + (spaet === 1 ? ' Handelstag' : ' Handelstage') + ' verspätet (am fälligen Tag kam nach Börsenöffnung keine Umschichtung zustande – die App lief nicht oder bekam keine Eröffnungskurse)' : '') +
+              (spaet ? ' – ' + spaet + (spaet === 1 ? ' Handelstag' : ' Handelstage') + ' verspätet (' + spaetGrund + ')' : '') +
               '. Kosten 20 Bp je Seite.' +
               (ausgefallenM ? ' ' + ausgefallenM + (ausgefallenM === 1 ? ' Kauf' : ' Käufe') + ' mangels Bargeld nicht ausgeführt.' : '') +
               (kleinstM ? ' ' + kleinstM + (kleinstM === 1 ? ' Kleinstbestand' : ' Kleinstbestände') + ' aufgelöst.' : '') +
@@ -514,6 +550,14 @@
           plan = MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil });   // frisch für die Anzeige
           faellig = false;
         }
+      }
+      /* Runde 2 (Nr. 108, Test 32): an einem Handelstag nach Boersenoeffnung den Grund merken, warum nicht umgeschichtet
+       * wurde (oder die Faelligkeit offen ist) - eine spaetere, verspaetete Umschichtung nennt ihn im Journal. */
+      var heuteM = MH.nyTag(now);
+      if (hinweisM && d.momentumAn && MH.istWerktag(heuteM) && now >= MH.nyZeit(heuteM, MH.HANDEL_AB[0], MH.HANDEL_AB[1]) &&
+          (!d.mfBuch.aufschub || d.mfBuch.aufschub.tag !== heuteM || d.mfBuch.aufschub.grund !== hinweisM)) {
+        d.mfBuch.aufschub = { tag: heuteM, grund: hinweisM };
+        speichern();
       }
       /* D-03: der aufgeschobene Punkt von heute - nur, wenn heute umgeschichtet wurde. */
       if (punktNachHandel && d.mfBuch.letzteAusfuehrungTag === MH.nyTag(now) && tagespunkt(MH, d, daten, now)) speichern();
@@ -660,13 +704,22 @@
   function verlaufMitStand() {
     var d = D();
     var v = (d && d.mfVerlauf) ? d.mfVerlauf.slice() : [];
-    var sM = STAND.momentum, sD = STAND.drift;
+    var sM = standVon('momentum', d), sD = standVon('drift', d);
     var at = Math.max(sM ? sM.at : 0, sD ? sD.at : 0);
     if (!at || (v.length && v[v.length - 1].t >= at)) return v;
     var mOk = sM && at - sM.at < 5000, dOk = sD && at - sD.at < 5000;
     v.push({ t: at, momentum: mOk ? sM.wert : null, drift: dOk ? sD.wert : null, spy: STAND.spy, spyT: STAND.spyT,
       startM: mOk ? sM.start : null, startD: dOk ? sD.start : null });
     return v;
+  }
+  /* Runde 2 (Nr. 108, Test 22): ein Stand gilt nur fuer DAS Buch, das ihn hatte (Merkmal angelegt, gesetzt in zeige()).
+   * Nach "Alle Buecher zuruecksetzen" zeigten Karte und Kopf bis zum naechsten Takt den Wert des geloeschten Buchs.
+   * Ein Stand ohne das Merkmal (Feld fehlt) gilt wie bisher. */
+  function standVon(name, d) {
+    var s = STAND[name], buch = d ? (name === 'momentum' ? d.mfBuch : d.driftBuch) : null;
+    if (!s) return null;
+    if (!('angelegt' in s)) return s;
+    return buch && s.angelegt === buch.angelegt ? s : null;
   }
   /** Buch gegen den S&P 500 ueber denselben Zeitraum - gerechnet in massstab.js,
    *  hier nur mit den Daten des Buchs versorgt. name = 'momentum' | 'drift'.
@@ -678,14 +731,38 @@
   /*  Seit Auftrag Nr. 95 (C1): verlauf (optional) - ein Ausschnitt der Tagespunkte, etwa die
    *  Woche im Wochenbericht (berichte.js). Dann rechnet derselbe Massstab mit denselben
    *  Optionen ueber diese Punkte; ohne verlauf wie bisher ueber den Verlauf samt Stand. */
+  /*  Runde 2 (Nr. 108, F9): beim MOMENTUM-Buch beginnt "Gegen den Markt" (Karte, Kopf, Buecher-Verlauf) mit
+   *  der ersten Umschichtung nach der gemessenen liquiden Regel (b.liquideSeit) - so starten Buch und SPY in
+   *  der Messung (REGEL §1.6/§1.8: am selben ersten Ausfuehrungstag). Bezug ist der letzte Tagespunkt VOR
+   *  diesem Ausfuehrungstag (der Schluss des Stichtags); ohne einen solchen Punkt (Buch am Tag der ersten
+   *  Umschichtung angelegt) der ganze Verlauf wie bisher. Solange es diese Umschichtung nicht gibt, steht
+   *  keine Zahl da, sondern der Satz (grund 'vor-liquide', voraussichtlich = Tag der naechsten
+   *  Umschichtung, wenn bekannt) - bis Nr. 108 las die Zeile vor allem die alte, breite Regel.
+   *  Ein Ausschnitt (verlauf, Wochenbericht) bleibt, wie er ist. */
   function vergleich(name, verlauf) {
     var d = D();
     if (!d || !window.Massstab) return null;
     var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
-    return window.Massstab.vergleich(verlauf || verlaufMitStand(), name, name === 'momentum' ? 'startM' : 'startD', {
-      an: name === 'momentum' ? !!d.momentumAn : !!d.driftAn,
-      start: buch ? buch.start : null, angelegt: buch ? buch.angelegt : null,
+    var an = name === 'momentum' ? !!d.momentumAn : !!d.driftAn;
+    var ab = !verlauf && name === 'momentum' && buch && an ? abLiquide(buch, verlaufMitStand()) : null;   // Runde 2 (F9)
+    var r = window.Massstab.vergleich(verlauf || (ab && ab.verlauf) || verlaufMitStand(), name, name === 'momentum' ? 'startM' : 'startD', {
+      an: an,
+      start: buch ? buch.start : null, angelegt: buch && !(ab && ab.geschnitten) ? buch.angelegt : null,
       punktKurs: true, marktRoh: MARKT_ROH, buchAusschuettungen: true, markt: MARKT });
+    if (!(ab && ab.vor)) return r;
+    var st = standVon('momentum', d), MH = window.MFHandel;
+    var tag = st && st.noch != null && typeof naechsteUmschichtung === 'function' ? naechsteUmschichtung(st.noch, st.at) : null;
+    return window.Massstab.vorLiquide(r, tag && MH ? MH.datumDe(tag) : null);
+  }
+  /** F9: { vor: true } ohne liquide Umschichtung; sonst { verlauf } ab dem letzten Tagespunkt vor dem Tag von liquideSeit
+   *  (geschnitten: der Bezug ist dieser Punkt, nicht die Anlage) oder der ganze Verlauf, wenn es davor keinen Punkt gibt. */
+  function abLiquide(buch, v) {
+    var MH = window.MFHandel;
+    if (!buch.liquideSeit) return { vor: true };
+    if (!MH) return { verlauf: v };
+    var liqTag = MH.nyTag(buch.liquideSeit), j = -1;
+    for (var i = 0; i < v.length; i++) if ((v[i].tag || MH.nyTag(v[i].t)) < liqTag) j = i;
+    return j < 0 ? { verlauf: v } : { verlauf: v.slice(j), geschnitten: true };
   }
 
   /* A5 (Auftrag Nr. 93): der erste Punkt des laufenden Buchs (Kauf 25.08.2026 mitten in der
@@ -714,7 +791,7 @@
     if (!d) return null;
     var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
     var an = name === 'momentum' ? !!d.momentumAn : !!d.driftAn;
-    var s = STAND[name], lp = letzterPunkt(d);
+    var s = standVon(name, d), lp = letzterPunkt(d);
     var wert = null, start = null, quelle = null, standT = null;
     if (s) { wert = s.wert; start = s.start; quelle = 'live'; standT = s.at; }
     else if (lp && lp[name] != null) {
@@ -885,7 +962,7 @@
      * Karte; gerechnet werden sie an derselben Stelle wie vorher. */
     if (mom) {
       var b = d.mfBuch, bw = mom.bewertung;
-      STAND.momentum = { wert: bw.wert, start: b.start, faellig: !!mom.faellig, at: Date.now(),
+      STAND.momentum = { wert: bw.wert, start: b.start, angelegt: b.angelegt, faellig: !!mom.faellig, at: Date.now(),
         /* Auftrag Nr. 93: der Grund, warum (noch) nicht umgeschichtet wird (A4/A6), wie viele
          * Handelstage bis zur naechsten fehlen, und Positionen ohne jede Kursreihe (A2). */
         hinweis: mom.hinweis || null, noch: mom.fl && mom.fl.noch != null ? mom.fl.noch : null, ohneKurs: bw.ohneKurs.slice() };
@@ -948,7 +1025,7 @@
     var eD = el('mfdDrift');
     if (drift) {
       var bD = d.driftBuch, bwD = drift.bewertung;
-      STAND.drift = { wert: bwD.wert, start: bD.start, at: Date.now() };
+      STAND.drift = { wert: bwD.wert, start: bD.start, angelegt: bD.angelegt, at: Date.now() };
       if (eD) {
         /* "Signale offen laut Modell" war bis zum 03.09.2026 eine Kachel. Sie gehoert
          * nicht auf die Karte (dort stehen die vier Groessen, die jedes Buch hat),

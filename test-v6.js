@@ -23318,7 +23318,7 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
   /* Umgeschrieben mit Auftrag Nr. 93 (A3/A5): derselbe EINE Abruf je Wert, dazu mitRoh (close fuer Spalte 1); SPY kommt im selben Ladevorgang mit. */
   ok(/window\.Kurse\.hole\(sym, \{ von: 0, bis: Date\.now\(\), interval: '1d', bereinigt: true, mitRoh: true, ereignisse: true \}\)/.test(mfr96) && mfr96.split('window.Kurse.hole(').length === 2 &&
      /var EREIGNIS_TAGE = 400;/.test(mfr96) && /window\.Kurse\.ereignisseAb\(kd\.ereignisse, Date\.now\(\) - EREIGNIS_TAGE \* 86400000\)/.test(mfr96) &&
-     /else if \(r\) \{ neu\[liste\[i\]\] = r\.reihe; ereignisse\[liste\[i\]\] = r\.ereignisse; geliefert\+\+; \}/.test(mfr96) && /await tagesdatenSchreiben\(roh, weg, Date\.now\(\), ereignisse, bezug\);/.test(mfr96) &&
+     /else if \(r\) \{ neu\[liste\[i\]\] = r\.reihe; ereignisse\[liste\[i\]\] = r\.ereignisse; geliefert\+\+; \}/.test(mfr96) && /var schreiben = await tagesdatenSchreiben\(roh, weg, LADE_BEGINN, ereignisse, bezug\);/.test(mfr96) &&
      /hatStueck\(gespeichert\.roh\) && ereignisseDa &&/.test(mfr96),
   '96.5 mittelfrist.js: EIN Abruf je Wert mit Ereignissen, abgelegt werden die letzten 400 Tage; ein Bestand ohne mf_ereignisse gilt nicht als frisch und wird einmal neu geladen');
   ok(!/bucheMassnahmen|mf_ereignisse|stempleKursT/.test(ohneKommentare(fs.readFileSync(__dirname + '/depot.js', 'utf8'))),
@@ -23616,11 +23616,12 @@ console.log('97) Der Markt zum selben Zeitpunkt wie das Buch (Auftrag Nr. 91)');
        '97.7 driftui.js ladeMarkt: holt SPY bereinigt UND mitRoh, legt { at, reihe, roh } ab; ein Bestand ohne roh gilt nicht als frisch; wer reihe liest, bekommt dieselbe Reihe');
   }));
   var mfdQ97 = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  /* Runde 2 (Nr. 108, F9): das Kunstbuch traegt liquideSeit = Anlage - ohne liquide Umschichtung nennt das Momentum-Buch statt einer Zahl den Satz. */
   var vmsQ97 = mfdQ97.slice(mfdQ97.indexOf('  function verlaufMitStand() {'), mfdQ97.indexOf('  /** Buch gegen den S&P 500 ueber denselben Zeitraum'));
   var vglQ97 = mfdQ97.slice(mfdQ97.indexOf('  function vergleich(name, verlauf) {'), mfdQ97.indexOf('  function letzterPunkt(d) {'));   // Signatur seit Nr. 95 (C1)
   function mfVergleich(verlauf, STAND, MARKT, MARKT_ROH) {
     return new Function('D', 'STAND', 'MARKT', 'MARKT_ROH', 'window', vmsQ97 + vglQ97 + '\n return vergleich;')(
-      function () { return { mfVerlauf: verlauf, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: verlauf[0].t - 60000 }, driftBuch: { start: 100000, angelegt: verlauf[0].t - 60000 } }; },
+      function () { return { mfVerlauf: verlauf, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: verlauf[0].t - 60000, liquideSeit: verlauf[0].t - 60000 }, driftBuch: { start: 100000, angelegt: verlauf[0].t - 60000 } }; },
       STAND, MARKT, MARKT_ROH, { Massstab: Mst });
   }
   var mfV = mfVergleich([A, B], { momentum: { wert: 100000, start: 100000, at: C.t }, drift: null, spy: 405, spyT: U(6, 13, 30) }, MB, MR)('momentum');
@@ -23809,8 +23810,11 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
     fremdeKoepfe(wurzel97.map(function (f) { return f[0] === 'app-shell.js' ? [f[0], f[1].replace("window.StudienUrteile.belegeKopf('momentum-liquide') : ''; },", "'Überholt: gemessen nur an Werten, die es heute noch gibt.' : ''; },")] : f; })).join() === 'app-shell.js');
 
   /* ---- 97.11 "exakt" gestrichen, "(Parameter wie gemessen)" ---- */
-  ok(stQ.indexOf("– die gemessene liquide Konfiguration (Parameter wie gemessen).',") !== -1 && stQ.indexOf('Das Buch handelt seither diese Konfiguration (Parameter wie gemessen) – ab der ersten Umschichtung') !== -1 &&
-     shQ.indexOf('handelt das Buch <b>die gemessene liquide Konfiguration (Parameter wie gemessen)</b>: Rückblick 231 Handelstage') !== -1 &&
+  /* Runde 2 (Nr. 108, F10): "handelt seither" / "Seit 02.09.2026 handelt das Buch" und "Out-of-Sample-Beleg" auf den
+   * Belegstand gebracht - das Buch rechnet seit 02.09. mit der Konfiguration und handelt sie ab seiner ersten Umschichtung. */
+  ok(stQ.indexOf("– die gemessene liquide Konfiguration (Parameter wie gemessen).',") !== -1 && stQ.indexOf('Das Buch rechnet seither mit dieser Konfiguration (Parameter wie gemessen) und handelt sie ab seiner ersten Umschichtung danach') !== -1 &&
+     shQ.indexOf('rechnet das Buch mit <b>der gemessenen liquiden Konfiguration (Parameter wie gemessen)</b> und handelt sie ab seiner ersten Umschichtung danach: Rückblick 231 Handelstage') !== -1 &&
+     [stQ, shQ].every(function (q) { return !/Out-of-Sample-Beleg|Seit 02\.09\.2026 handelt das Buch|handelt seither diese Konfiguration/.test(q); }) &&
      /id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\)/.test(html) &&
      [stQ, shQ, html].every(function (q) { return !/exakt die gemessene|seither exakt diese Konfiguration/.test(q); }) &&
      /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert/.test(html),
@@ -24100,7 +24104,7 @@ console.log('98) Live gleich Messung: das Momentum-Buch handelt wie gemessen (Au
     ok(!aF.ok && /vor dem Schluss des 23\.11\.2026 geladen/.test(aF.hinweis) && angF.n === 1 && hF.log.length === 0 && s19.ok && !s18.ok && /nur 18 von 20/.test(s18.grund),
        '98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom Stichtag ja, 18 nein', aF.hinweis);
     /* Gegenprobe: laufender Balken (Balken des Ausfuehrungstags) in der Rangfolge */
-    var qL = ersetze(mfdQ, 'MH.momentumZiel(MH.rohBis(daten.roh, st.stichtag), { nowMs: st.stichtagT })', 'MH.momentumZiel(daten.roh, { nowMs: st.stichtagT })');
+    var qL = ersetze(mfdQ, 'MH.zielAmStichtag(daten.roh, st.stichtag)', 'MH.momentumZiel(daten.roh, { nowMs: st.stichtagT })');
     var aL = qL ? await helfer(qL, holeOffen({}), { n: 0 }).vorbereiten(MH, buch5, daten5(mitDienstag(R5), ny(DI, 9, 36)), fl5, ny(DI, 9, 36)) : null;
     gegen98('ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel', !!aL && aL.ok && JSON.stringify(aL.ziel.ziel) !== JSON.stringify(sollZ5));
     /* Gegenprobe: Fuellkurs = letzter Schluss */
@@ -24529,7 +24533,7 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
     V.push({ t: Date.UTC(2026, 8, 1 + k, 20, 30), momentum: 100000 * (1 + 0.001 * k), startM: 100000, drift: 100000, startD: 100000, spy: roh + 5, spyT: st8 });
   }
   var vgl = new Function('D', 'STAND', 'MARKT', 'MARKT_ROH', 'window', vmsQ + vglQ + '\n return vergleich;')(
-    function () { return { mfVerlauf: V, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: V[0].t - 60000 }, driftBuch: { start: 100000, angelegt: V[0].t - 60000 } }; },
+    function () { return { mfVerlauf: V, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: V[0].t - 60000, liquideSeit: V[0].t - 60000 }, driftBuch: { start: 100000, angelegt: V[0].t - 60000 } }; },
     { momentum: null, drift: null }, MB, MR, { Massstab: Mst });
   var kopf8 = vgl('momentum'), woche = V.slice(3), w8 = vgl('momentum', woche);
   var mr = function (t) { return kopf8.marktReihe.filter(function (x) { return x[0] === t; })[0][1]; };
@@ -25196,6 +25200,26 @@ console.log('104) Lader-Stoerungen: Tagesbalken je Handelstag in kurse.js (KU)')
   });
   ok(/ 0 kaputt; Netzversuche 0, Schreibversuche ausserhalb 0/.test(ku), '104 Lauf der KU-Tests: 0 kaputt, kein Netz, kein Schreiben ausserhalb',
      (ku.split('\n').filter(function (z) { return /^--- /.test(z); })[0] || ku.slice(-200)));
+})();
+
+/* ================= 105) Live gegen Messung, zweite Durchsicht: Tests 16-34 (Auftrag Nr. 108, Zweig fix/runde2) =================
+ * Die Kleinsttests pruefberichte/live-gegen-messung-momentum-runde2.test.js laufen als eigener Prozess (Sandboxen mit
+ * Attrappen, rund 10 s). Gegen main vor Nr. 108 zeigten 16, 18-23, 26, 27, 29, 30, 33, 34 eine Abweichung und 32 war
+ * defekt; behoben oder an den Weg des Generalprobe-Fixes angepasst muessen sie - wie 17, 24, 25, 28, 31 schon vorher -
+ * "kein Unterschied" melden. Offen und deshalb nicht hier: 30 (Reihenende erst nach fuenf Handelstagen, Nr. 93 A2 -
+ * Entscheid Wilhelm). Kunstdaten, feste Uhr, kein Netz. */
+console.log('105) Live gegen Messung, zweite Durchsicht (Tests 16-34 ohne 30)');
+(function () {
+  var r2 = '';
+  try {
+    r2 = require('child_process').execFileSync(process.execPath, [__dirname + '/pruefberichte/live-gegen-messung-momentum-runde2.test.js'],
+      { cwd: __dirname, encoding: 'utf8', timeout: 180000, env: Object.assign({}, process.env, { PRUEF_WURZEL: '' }) });
+  } catch (e) { r2 = String((e && e.stdout) || '') + '\nLAUF GESCHEITERT: ' + (e && e.message); }
+  [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34].forEach(function (nr) {
+    var zeile = r2.split('\n').filter(function (z) { return z.indexOf('[' + nr + '] ') === 0; })[0] || '';
+    ok(/^\[\d+\] kein Unterschied: /.test(zeile), '105 Test ' + nr + ' - kein Unterschied', zeile ? zeile.slice(0, 160) : 'Zeile fehlt');
+  });
+  ok(!/TEST DEFEKT|LAUF GESCHEITERT/.test(r2), '105 Lauf der Tests 16-34: kein Test defekt');
 })();
 
 Promise.all(offeneProben).then(function () {
