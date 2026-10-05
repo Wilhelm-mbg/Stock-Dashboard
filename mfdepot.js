@@ -324,7 +324,8 @@
     if (now < MH.nyZeit(heute, MH.HANDEL_AB[0], MH.HANDEL_AB[1])) return { ok: false, hinweis: 'Umschichtung heute nach Börsenöffnung' };
     var st = MH.stichtagPruefen(daten.roh, daten.bezug, daten.stand, heute);
     if (!st.ok) { nachladen(); return { ok: false, hinweis: 'Umschichtung fällig, aber Tageskurse nicht frisch genug (' + st.grund + ') – Nachladen angestoßen; kein Handel.' }; }
-    var ziel = MH.momentumZiel(MH.rohBis(daten.roh, st.stichtag), { nowMs: st.stichtagT });
+    /* Runde 2 (Nr. 108, M9): Zeitstempel des Tages wie die Messung (REGEL Teil C.2) - MH.zielAmStichtag, momentumZiel unveraendert. */
+    var ziel = MH.zielAmStichtag(daten.roh, st.stichtag);
     if (ziel.zuWenig) return { ok: false, hinweis: 'Umschichtung fällig, aber am Stichtag ' + MH.datumDe(st.stichtag) + ' unter ' + MH.buchKonfig().mindestWerte + ' zulässigen Werten – kein Korb; neuer Versuch beim nächsten Takt.' };
     /* Heute ein Handelstag? Das sagt der Balken von SPY mit heutigem Datum - einen Kalender
      * fuehrt die App nicht. Erst SPY, dann die Werte: an einem Feiertag bleibt es bei einem Abruf. */

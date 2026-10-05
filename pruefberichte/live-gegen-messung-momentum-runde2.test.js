@@ -1111,7 +1111,11 @@ TESTS[34] = function () {
     for (var k = 0; k < 120; k++) r['W' + k] = buchReihe(tage, kursweg(tage.length, 0.01 * k));
     var rM = {};
     Object.keys(r).forEach(function (s) { rM[s] = r[s].map(function (b) { return [mitternacht(b[0]), b[1], b[2]]; }); });
-    var app = MH.momentumZiel(r, { nowMs: stichT }), mess = MH.momentumZiel(rM, { nowMs: mitternacht(stichT) });
+    /* Angepasst (Runde 2, Nr. 108): "App" ist der Weg, den ausfuehrungVorbereiten (mfdepot.js) heute geht -
+     * MH.zielAmStichtag; momentumZiel selbst bleibt als gemessene Funktion unveraendert. Fehlt zielAmStichtag (Stand
+     * vor Nr. 108), ruft die App wie damals momentumZiel mit den Balkenstempeln. Soll unveraendert. */
+    var app = MH.zielAmStichtag ? MH.zielAmStichtag(r, MH.nyTag(stichT)) : MH.momentumZiel(r, { nowMs: stichT });
+    var mess = MH.momentumZiel(rM, { nowMs: mitternacht(stichT) });
     var v = app.verworfen.filter(function (x) { return x.sym === 'STARK'; })[0];
     return { app: app.ziel.indexOf('STARK') >= 0, grund: v ? v.grund : 'zulaessig', mess: mess.ziel.indexOf('STARK') >= 0, stunden: (stichT - letzteT) / 3600000 };
   }

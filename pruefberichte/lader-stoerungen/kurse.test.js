@@ -401,7 +401,7 @@ TESTS.push({
       ' (Soll close Mo ' + zahl(soll, 4) + ', geliefert wird der Vortag ' + zahl(vortag, 4) + '). kurse.js:' + H.zeileVon('kurse.js', 'if (!kursOk(c)) { verworfen++; continue; }') +
       ' prueft den BEREINIGTEN Schluss -> mittelfrist.js:' + H.zeileVon('mittelfrist.js', 'reihe.push([b[0], r[1], b[2], b[1]]);') + ' -> mfdepot.js:' +
       H.zeileVon('mfdepot.js', 'var s = MH.schluesseAm(daten.roh, x.tag);') + ' (Tagespunkt) und MH.rohBis/momentumZiel (mfdepot.js:' +
-      H.zeileVon('mfdepot.js', 'var ziel = MH.momentumZiel(MH.rohBis(daten.roh, st.stichtag), { nowMs: st.stichtagT });') + ').' };
+      H.zeileVon('mfdepot.js', 'var ziel = MH.zielAmStichtag(daten.roh, st.stichtag);') + ').' };
   }
 });
 

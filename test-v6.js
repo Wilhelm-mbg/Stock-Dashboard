@@ -24100,7 +24100,7 @@ console.log('98) Live gleich Messung: das Momentum-Buch handelt wie gemessen (Au
     ok(!aF.ok && /vor dem Schluss des 23\.11\.2026 geladen/.test(aF.hinweis) && angF.n === 1 && hF.log.length === 0 && s19.ok && !s18.ok && /nur 18 von 20/.test(s18.grund),
        '98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom Stichtag ja, 18 nein', aF.hinweis);
     /* Gegenprobe: laufender Balken (Balken des Ausfuehrungstags) in der Rangfolge */
-    var qL = ersetze(mfdQ, 'MH.momentumZiel(MH.rohBis(daten.roh, st.stichtag), { nowMs: st.stichtagT })', 'MH.momentumZiel(daten.roh, { nowMs: st.stichtagT })');
+    var qL = ersetze(mfdQ, 'MH.zielAmStichtag(daten.roh, st.stichtag)', 'MH.momentumZiel(daten.roh, { nowMs: st.stichtagT })');
     var aL = qL ? await helfer(qL, holeOffen({}), { n: 0 }).vorbereiten(MH, buch5, daten5(mitDienstag(R5), ny(DI, 9, 36)), fl5, ny(DI, 9, 36)) : null;
     gegen98('ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel', !!aL && aL.ok && JSON.stringify(aL.ziel.ziel) !== JSON.stringify(sollZ5));
     /* Gegenprobe: Fuellkurs = letzter Schluss */
