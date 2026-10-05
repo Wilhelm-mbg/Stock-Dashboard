@@ -149,6 +149,18 @@ Ohne Regel K: Korb 187 2017–2021 Median +7,59 → +6,87 (63 von 63 vorn); 2021
 
 **Lesart.** (1) Urteil nach der Regel: **nicht entscheidbar** — in A liegt das Momentum-Buch knapp unter dem 95. Perzentil. (2) Der Korb der 187 umsatzstärksten trägt den Vorsprung **nicht**: ein zufälliges Buch daraus liegt im Median in beiden Fenstern hinter dem S&P 500. Was vorn liegt, kommt also aus der Auswahl — in B deutlich (nur 2 von 200 Zufallsbüchern besser), in A schwächer. (3) Beschreibend über 63 Starttage: keiner der 50 Buch-Mediane liegt über dem Momentum-Buch. (4) Zufallsbücher tauschen fast alles und zahlen rund 0,7 Pp p. a. mehr Kosten — ein Teil des Abstands ist Umschlag, nicht Auswahl. (5) Der „ganze Korb" hängt bei dieser Mechanik an der Reihenfolge der Zielliste (bei knappem Bargeld fallen die letzten Käufe aus): nach Zeichencode 240.024 $, nach Umsatz 232.170 $ (PM-Nachrechnung). **Abnahme:** die Zufallsbücher 1, 2, 100, 200 und der ganze Korb in beiden Fenstern mit dem PM-Rechner aus den gespeicherten Ziehungen nachgespielt — alle auf ≤ 0,4 Cent gleich.
 
+## Käufliche Faktor-ETFs gegen den S&P 500 (05.10.2026) — gemessen: **kein klassischer Faktor-ETF verlässlich vorn**
+
+103 Fonds (US und UCITS: Gleichgewicht, Qualität, niedrige Schwankung, Value, Wachstum, Momentum, Dividende/Aktionärsrendite, kleine Werte, Free Cashflow, Moat, Multifaktor), Gesamtertrag nach Fondskosten über alle rollierenden 5-Jahres-Fenster und die Fenster A/B; Regel und Fondsliste gesiegelt vor dem ersten Kurs (`7218e4d`), öffentliche Yahoo-Daten, 98 Stichproben gegen Factsheets (−0,22 bis +0,31 Pp p. a.), unabhängiger zweiter Rechner. Zweig `messung/faktor-etf-realitaet` (Ergebnis `b536254`).
+
+- „Verlässlich vorn" (≥ 80 % der 5-Jahres-Fenster und in A und B vorn) schaffen **10 von 103**: Nasdaq-100 (QQQ, fünf UCITS-Fonds), Wachstum (IVW, SCHG, MGK) und SPMO. **Alle übrigen Faktoren 0 von 82**; Momentum nur SPMO (1 von 7); der UCITS-Fonds auf MSCI USA Momentum lag in 7 von 59 Fenstern vorn.
+- **Die Regel ist schwach:** auch reine S&P-500-Fonds, die nur billiger sind als SPY (IVV, VOO), bestehen sie (Median +0,04 / +0,06 Pp p. a.) — „verlässlich vorn" heißt hier nicht „deutlich vorn".
+- Nasdaq-100 als UCITS in Fenster B nur +1,2 bis +1,5 Pp p. a. vorn, Daten erst ab 2008/2010; QQQ seit 1999: schlechtestes Fenster −17,7 Pp p. a., Rückschlag −70 % gegen SPY.
+- US-ETFs sind für deutsche Privatanleger mangels Basisinformationsblatt nicht kaufbar; ein UCITS-Gegenstück zu SPMO gibt es nicht.
+- **Überlebensverzerrung:** 156 seit 2010 geschlossene Faktor-ETFs mit Quelle belegt — die heute noch handelbaren sehen zu gut aus.
+
+**Lesart.** Wer den S&P 500 mit einem käuflichen Produkt schlagen wollte, fand 2010–2026 nur Wachstum/Nasdaq-100 vorn — eine Wette auf denselben Sektor, mit deutlich tieferen Rückschlägen, nicht ein belegter Faktor. **Abnahme PM:** Siegel vor dem ersten Kurs (Commit-Reihenfolge); Ergebnis nicht selbst nachgerechnet (SPMO und MTUM aus eigener Quelle schon in der Realitätsprobe bestätigt). Keine Anlageberatung.
+
 ## Sektor-Momentum (05.10.2026) — gemessen: **schlägt den S&P 500 nicht** (nur in einem Fenster vorn)
 
 Die drei stärksten der SPDR-Sektor-ETFs nach 12-Monats-Rendite, Takt 21 Tage, gleich gewichtet — die Regel wurde am 04.10. **ohne Daten** festgelegt (`c903255`, Cloud 3), der Zusatz vor dem ersten Kursabruf gesiegelt (`f2f4b67`, 00:30:59; Kurse ab 00:31:08). Zweig `messung/sektor-momentum` (Ergebnis `7ae2094`).
