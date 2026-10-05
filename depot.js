@@ -7746,12 +7746,17 @@
     if (!window.confirm('Depot wirklich zurücksetzen?\n\nGelöscht werden: ' + offen + ' offene Position(en), ' +
       geschlossen + ' geschlossene Trades, alle Trefferquoten, das Experiment-Journal und die Strategie-Farm.\n' +
       'Ebenfalls neu angelegt werden die beiden Mittelfrist-Bücher (Momentum und Ergebnis-Drift, zusammen ' +
-      mfT + ' Trades).\n\nAlle Bücher starten danach mit ' + U.nf0.format(START_CAPITAL) + ' $.\n\n' +
+      mfT + ' Trades).\n\nAlle Bücher starten danach mit ' + U.nf0.format(START_CAPITAL) + ' $; ihre Schalter („handelt selbst“ / „nur rechnen“) bleiben, wie sie sind.\n\n' +
       'Vorher wird eine Sicherung unter „depot_vor_reset" abgelegt – ein Reset ist damit umkehrbar.')) return;
     /* Sicherung VOR dem Loeschen. Der Knopf schrieb frueher selbst "Das laesst sich
      * nicht rueckgaengig machen" - das war wahr und unnoetig. Eine Kopie kostet nichts. */
     try { window.api.storeSet('depot_vor_reset', D); } catch (eSich) { /* Sicherung darf den Reset nicht verhindern */ }
+    /* Runde 2 (Nr. 108, F11): die Schalter der zwei Mittelfrist-Buecher bleiben, wie sie waren. defaultDepot()
+     * setzt momentumAn: true - ein Buch "nur rechnen" kaufte nach dem Zuruecksetzen beim naechsten Takt
+     * selbst, ohne dass die Rueckfrage es sagte, und der Vorwaertstest begann mit diesem Kauf. */
+    var schalterVorher = D || {};
     D = defaultDepot();
+    ['momentumAn', 'driftAn'].forEach(function (k) { if (typeof schalterVorher[k] === 'boolean') D[k] = schalterVorher[k]; });
     weightsBuilt = false;
     save();
     // Formularfelder auf die frischen Werte stellen – sonst schreibt das nächste

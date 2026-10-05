@@ -650,6 +650,12 @@
    * Hier wird NICHTS nachgerechnet: abgelegt wird nur, was takt() ohnehin gerechnet
    * hat (MFHandel.bewerte / bewerteDrift). */
   var STAND = { momentum: null, drift: null, spy: null, spyT: null };
+  /* Runde 2 (Nr. 108, Test 22): ein Stand gilt nur fuer DAS Buch, das ihn hatte (Merkmal angelegt). Nach "Alle Buecher
+   * zuruecksetzen" zeigten Karte und Kopf bis zum naechsten Takt den Wert des geloeschten Buchs. */
+  function standVon(name, d) {
+    var s = STAND[name], buch = d ? (name === 'momentum' ? d.mfBuch : d.driftBuch) : null;
+    return s && buch && s.angelegt === buch.angelegt ? s : null;
+  }
 
   /* ---- Der Massstab (Auftrag Nr. 73, 04.10.2026) ----
    * Der Verlauf, wie ihn Kopf, Karte und Buecher-Verlauf lesen: die Tagespunkte aus
@@ -660,7 +666,7 @@
   function verlaufMitStand() {
     var d = D();
     var v = (d && d.mfVerlauf) ? d.mfVerlauf.slice() : [];
-    var sM = STAND.momentum, sD = STAND.drift;
+    var sM = standVon('momentum', d), sD = standVon('drift', d);
     var at = Math.max(sM ? sM.at : 0, sD ? sD.at : 0);
     if (!at || (v.length && v[v.length - 1].t >= at)) return v;
     var mOk = sM && at - sM.at < 5000, dOk = sD && at - sD.at < 5000;
@@ -706,7 +712,7 @@
     if (verlauf || name !== 'momentum' || !buch || !opts.an) return window.Massstab.vergleich(verlauf || verlaufMitStand(), name, feld, opts);
     var ab = abLiquide(buch, verlaufMitStand());
     if (ab.vor) {
-      var s = STAND.momentum, MH = window.MFHandel;
+      var s = standVon('momentum', d), MH = window.MFHandel;
       var tag = s && s.noch != null ? naechsteUmschichtung(s.noch, s.at) : null;
       return window.Massstab.vorLiquide(window.Massstab.vergleich(verlaufMitStand(), name, feld, opts), tag && MH ? MH.datumDe(tag) : null);
     }
@@ -740,7 +746,7 @@
     if (!d) return null;
     var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
     var an = name === 'momentum' ? !!d.momentumAn : !!d.driftAn;
-    var s = STAND[name], lp = letzterPunkt(d);
+    var s = standVon(name, d), lp = letzterPunkt(d);
     var wert = null, start = null, quelle = null, standT = null;
     if (s) { wert = s.wert; start = s.start; quelle = 'live'; standT = s.at; }
     else if (lp && lp[name] != null) {
@@ -911,7 +917,7 @@
      * Karte; gerechnet werden sie an derselben Stelle wie vorher. */
     if (mom) {
       var b = d.mfBuch, bw = mom.bewertung;
-      STAND.momentum = { wert: bw.wert, start: b.start, faellig: !!mom.faellig, at: Date.now(),
+      STAND.momentum = { wert: bw.wert, start: b.start, angelegt: b.angelegt, faellig: !!mom.faellig, at: Date.now(),
         /* Auftrag Nr. 93: der Grund, warum (noch) nicht umgeschichtet wird (A4/A6), wie viele
          * Handelstage bis zur naechsten fehlen, und Positionen ohne jede Kursreihe (A2). */
         hinweis: mom.hinweis || null, noch: mom.fl && mom.fl.noch != null ? mom.fl.noch : null, ohneKurs: bw.ohneKurs.slice() };
@@ -974,7 +980,7 @@
     var eD = el('mfdDrift');
     if (drift) {
       var bD = d.driftBuch, bwD = drift.bewertung;
-      STAND.drift = { wert: bwD.wert, start: bD.start, at: Date.now() };
+      STAND.drift = { wert: bwD.wert, start: bD.start, angelegt: bD.angelegt, at: Date.now() };
       if (eD) {
         /* "Signale offen laut Modell" war bis zum 03.09.2026 eine Kachel. Sie gehoert
          * nicht auf die Karte (dort stehen die vier Groessen, die jedes Buch hat),
