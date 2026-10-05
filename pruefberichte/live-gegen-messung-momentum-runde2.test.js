@@ -32,6 +32,11 @@
  *   33  Ladevorgang ueber 16:15 New York: frischer Stand, erste Werte ohne den Balken des Tages  (Beleg f7)
  *   34  Sieben-Tage-Grenze von momentumZiel ueber den Herbstwechsel; dazu nyZeit 2026-2027      (Beleg p1)
  *
+ * UEBERNAHME (Auftrag Nr. 108, 05.10.2026, Zweig fix/runde2): aus origin/pruefung/live-gegen-messung (ba15db3) ins Repo
+ * gelegt und gegen main nach den Fixes der Generalprobe gefahren. Wo ein Test nicht mehr den heutigen Weg nahm, ist er
+ * angepasst, ohne sein Soll zu lockern ("Angepasst" / "Repariert" / "Ergaenzt (Runde 2, Nr. 108)" an der Stelle: 18, 20,
+ * 21, 26, 29, 32, 34). Test 30 (Reihenende erst nach fuenf Handelstagen, Nr. 93 A2) bleibt rot: Entscheid Wilhelm offen.
+ *
  * Jeder Test druckt GENAU EINE Zeile: "ZEIGT ABWEICHUNG: ..." oder "kein Unterschied: ...".
  * Reines Node, kein Netz, keine Schluessel, kein Electron. Die Fenster-Module laufen in einer
  * vm-Sandbox mit Attrappen fuer Speicher, Kursabruf und Uhr. Nicht in `npm test` eingehaengt.
