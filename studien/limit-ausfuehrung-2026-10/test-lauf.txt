@@ -1,0 +1,116 @@
+
+== 0. FESTLEGUNGEN UND ZELLENLAYOUT
+OK    0a k = 15 / 3 / 1 Takte, auf jedem Zeitrahmen 15 Minuten (REGEL §3)
+OK    0b Tick 0,01 $, Toleranz 1e-6 $
+OK    0c Kostenanteil je Zeilenart: Markt K, Limit K/2 (REGEL §5)
+OK    0d Huerden aus konfig.js der Minutenstudie 0,1569/0,0854/0,0647/0,0449, "in jeder Klasse zu" mit Limit bei 0,02245
+OK    0e Zellenindex und Dekoder sind Umkehrungen (2.000 Zufallskoordinaten, 0 Fehler)
+OK    0f Zeitrahmen-Satz unabhaengig von der Reihenfolge; Kennung traegt den Satz und die Kennung der Minutenstudie
+   (0.0 s)
+
+== 1. FUELLREGELN an Hand-Faellen (REGEL §3)
+OK    1a beruehrt (Tief = Limit 100,00): grosszuegig gefuellt in Kerze 2, streng nicht ({"limit":100,"streng":-1,"gross":2,"lueckeStreng":false,"ohneHT":0})
+OK    1b einen Tick unterschritten (Tief 99,99): beide gefuellt in Kerze 2, keine Luecke
+OK    1c weniger als ein Tick darunter (99,991): nur grosszuegig
+OK    1d nie erreicht: ungefuellt nach beiden Regeln
+OK    1e Luecke ueber das Limit (Eroeffnung 99,95): gefuellt in Kerze 1, als Luecke gezaehlt, Fuellpreis bleibt das Limit 100,00
+OK    1f Ertrag zum Limitpreis, nicht zur Eroeffnung der Lueckenkerze: (99,90 - 100,00)/100,00 = -0.1000 Pp
+OK    1g Beruehrung erst im Takt k+1 (t_i + 20 min): ausserhalb der Gueltigkeit, ungefuellt
+OK    1h fehlende Kerze im Fenster (10-Minuten-Takt ohne Handel), Fuellung im dritten Takt: Index 2
+OK    1i die ERSTE Kerze, die die Regel erfuellt, fuellt (Index 1)
+OK    1j Short spiegelbildlich: Hoch = Limit nur grosszuegig, Hoch = Limit + 1 Tick streng
+OK    1k bereinigte Datei mit Rueckrechnungsfaktor 4: Tick = 0,0025 Datei-Einheiten (99,9975 streng, 99,998 nicht)
+OK    1l Fenster endet am Tagesende (bis = 1): die Kerze danach zaehlt nicht
+OK    1m Tief fehlt: der Schluss (99,98) zaehlt und die Kerze wird gezaehlt
+OK    1n Gleitkomma-Toleranz: Tief 99,9900004 gilt als einen Tick darunter
+   (0.0 s)
+
+== 2. KUNSTLAUF: Marktorder-Kontrolle = messen.messeDatei der Minutenstudie, Bit fuer Bit (alle 13 Detektoren, 1m/5m/15m)
+OK    2a Signal-Markt (n, Summe r, Summe r^2) gleich den Kandidatenzellen der Minutenstudie: 2174 / 2174 Zellen, 4213 Beobachtungen, 0 Abweichungen
+OK    2b Signalzahlen je Detektor und Zeitrahmen gleich (1692 Signale)
+OK    2c gewertete Tage und Detektoraufrufe gleich ({"1m":40,"5m":40,"15m":40})
+OK    2d nur 5m/15m (Layout mit zwei Zeitrahmen): 1123 Zellen gleich, 0 Abweichungen
+   (42.0 s)
+
+== 3. ZAEHLER, PLACEBO-ZIEHUNG UND RICHTUNGEN im Kunstlauf
+OK    3a Fuellzaehler je (Detektor, ZR, Richtung) = Zellen bei "bis Schluss" (mit Einstieg / streng / grosszuegig), Signal und Placebo: 0 Abweichungen; Signale 1692, streng 1665 (98.40 %), grosszuegig 1669 (98.64 %)
+OK    3b je Signal genau eine Placebo-Ziehung (1664 + 28 ohne Kerze = 1692 Signale), jedes Signal mit Einstieg
+OK    3c streng gefuellt ist nie mehr als grosszuegig (Signal 1665 <= 1669, Placebo 1622 <= 1630)
+OK    3d Placebo traegt die Richtungen der Signale: 588 (Detektor, ZR, Tag), nie mehr Long/Short-Ziehungen als Signale (0 Verstoesse); Fehlbetrag 28 = Zaehler ohne spaetere Kerze 28
+OK    3g Placebo liegt immer NACH dem Signal (Nachtrag 1): mittlerer Versatz 1m 97.18 min, 5m 99.08 min, 15m 99.37 min
+OK    3e kein Ausstieg vor der Fuellung (0)
+OK    3f Fuellkerzen liegen im Fenster: 1m <= 15, 5m <= 3 ({"1":1041,"2":29,"3":11}), 15m = 1
+   (0.0 s)
+
+== 4. NAIVE NACHRECHNUNG (rsi2, 1m): Signale, Placebo-Ziehung mit Saat, Fuellung, Ertraege, Kosten
+OK    4a Zellen (Markt / streng / grosszuegig, Signal und Placebo, alle Haltedauern) = naive Rechnung mit eigener Saat-Nachbildung: 1213 (Art, Tag)-Paare, 3046 Handel, 0 Abweichungen; 232 Signale, 232 Ziehungen
+   rsi2 1m: Fuellquote streng Signal 99.14 %, Placebo 97.41 %
+OK    4b Kostenzerlegung: Tages-netto = brutto - K (Markt) bzw. - K/2 (Limit, Signal und Placebo), 108 Tage, 0 falsch
+OK    4c gemischte Klassen an einem Tag: netto 0.0402 = (0,4 - 0,1 - (2 x 0,1569 + 0,0449)/2) / 3 = 0.0402
+   (0.2 s)
+
+== 5. PLACEBO GESEEDET: gleiche Eingabe gleiche Zellen, andere Reihe andere Ziehung, Signale unberuehrt
+OK    5a zweimal dieselbe Eingabe: Placebo- und Signalzellen identisch
+OK    5b andere Reihe (Saat): Signalzellen identisch, Placebo-Ziehung anders
+OK    5c Kursniveau x 1,5 (Signale skaleninvariant): Placebo-Ziehungen je Tag gleich (40/40 Tage), Placebo-Marktertraege gleich (0 Abweichungen)
+   (0.5 s)
+
+== 6. KEINE INFORMATION AUS KERZEN NACH DEM EINSTIEG (Stoerungsprobe)
+OK    6a Kerzen NACH der Fuellkerze (bzw. nach dem Fenster) gestoert: Fuellentscheidung unveraendert in 592 gefuellten und 8 ungefuellten Faellen (0 / 0 Abweichungen)
+OK    6b Kerzen zwischen Fuellung und Ausstieg gestoert (ausser der Ausstiegskerze): 1h-Ertrag unveraendert (0 Abweichungen)
+OK    6c Gegenprobe: Stoerung IM Fenster (Tief der Kerze i+1 unter das Limit) verlegt die Fuellung in 83 von 83 moeglichen Faellen auf i+1 - die Probe kann rot werden
+   (0.1 s)
+
+== 7. GEGENPROBE GETEILTER KURS (wie Minutenstudie): Einstieg zum Signalschluss OHNE Fuellbedingung erzeugt den Scheineffekt
+   rsi2 long 1m 1h: n 224, Markt (Eroeffnung i+1) 0.0266 Pp, IMMER gefuellt zum Signalschluss 0.0840 Pp, Limit streng (nur gefuellte, n 219) 0.0791 Pp
+OK    7a FALSCH (immer zum Signalschluss gefuellt) 0.0840 Pp > +0,05 und 0.0574 ueber der Marktorder - der Scheineffekt entsteht, die Probe ist scharf
+OK    7b RICHTIG (Marktorder, Eroeffnung i+1) nahe null: 0.0266 Pp
+OK    7c fuer gefuellte Signale ist der Limit-Ertrag identisch mit dem Signalschluss-Ertrag (219 von 219) - der Schutz gegen den geteilten Kurs liegt im Placebo, nicht in der Fuellregel
+   (0.3 s)
+
+== 8. MARTINGAL-PROBE: auf einer reinen Irrfahrt ist Signal minus Placebo (streng) null; Tagesmittel und Ziehung vor dem Signal sind es nicht
+   Saat 4711: rsi2 1m long 1h -0.0093 (t -0.35) | rsi2 1m long schluss 0.0143 (t 0.42) | rsi2 1m short 1h 0.0045 (t 0.16) | rsi2 1m short schluss -0.0180 (t -0.53) | rsi2 5m long 1h -0.0070 (t -0.23) | rsi2 5m long schluss 0.0714 (t 1.67) | rsi2 5m short 1h -0.0160 (t -0.56) | rsi2 5m short schluss 0.0033 (t 0.09) | reversion 1m long 1h -0.0445 (t -0.83) | reversion 1m long schluss -0.0252 (t -0.40) | reversion 1m short 1h 0.0137 (t 0.23) | reversion 1m short schluss -0.0186 (t -0.43)
+OK    8a D (Signal-streng minus Placebo-streng, je Handel, Tage geclustert) im Band |t| < 3 auf dem Martingal: 37 Zeilen ueber drei Saaten
+OK    8b Placebo streng brutto auf dem Martingal ohne Scheingewinn: -0.0423 Pp je Handel (se 0.0109, n 1141; Erwartung leicht negativ, -Tick und Ueberschuss)
+OK    8c FALSCH (Fuellpreis = tiefstes Tief bis zum Ausstieg): 0.2765 Pp, t 21.92 - der Blick nach vorn erzeugt einen Scheingewinn, die Probe ist scharf
+OK    8d Tagesmittel minus handelsgewichtetes Mittel (Signal-Markt rsi2 1m bis Schluss, Martingal): -0.1661 / -0.1465 / -0.1377 / -0.1220 / -0.1364 / -0.1454, Mittel -0.1424 Pp < -0,05 - deshalb ist der Endpunkt handelsgewichtet mit Tages-Clustern
+OK    8e Gegenprobe der alten Ziehung: Placebo VOR dem Signal mit dessen Richtung verdient 0.2956 Pp, NACH dem Signal 0.0088 Pp - die Richtung traegt den Kursweg bis zum Signal, eine Ziehung davor blickt nach vorn
+   (33.4 s)
+
+== 9. POSITIVKONTROLLE: gepflanzte Kante an der 1h-Ausstiegskerze der Signale wird als D wiedergefunden
+   184 Ausstiegskerzen gepflanzt; Aenderung von D: long 1h 0.4569, short 1h 0.4385, long 3h 0.0000 (ohne Pflanzung D long 1h 0.0923)
+OK    9a D long 1h steigt durch die Pflanzung um 0.4569 Pp bei gepflanzten +0,50 (Toleranz 0,10)
+OK    9b D short 1h steigt um 0.4385 Pp - Richtung stimmt
+OK    9c Gegenprobe 3h (dort nichts gepflanzt): D aendert sich um 0.0000 Pp
+   (0.8 s)
+
+== 10. ECHTE DATEI AAPL/2024 (nur lesen, 5m/15m): Marktorder-Kontrolle = messen.messeDatei, Bit fuer Bit; Fuellquoten nur gezaehlt
+
+!!! WERTPAPIERART: Referenzkarte vorhanden, aber ohne Eintrag fuer GCI (erster Fall dieses Laufs; weitere werden nicht gemeldet) - solche Symbole fallen STILL aus dem Universum heraus.
+
+OK    10a AAPL in L.reihen()
+OK    10b AAPL/2024 gelesen (roh, 97740 regulaere 1m-Kerzen)
+OK    10c Signal-Markt = Kandidatenzellen der Minutenstudie: 9293 Zellen, 14317 Beobachtungen, 0 Abweichungen
+OK    10d Zaehlung: 5606 Signale mit Einstieg, streng gefuellt 5415 (96.59 %), grosszuegig 5538 (98.79 %); Ausstieg vor Fuellung 0, ohne Tief/Hoch 0
+   (22.3 s)
+
+== 11. FORTSETZBARKEIT UND BERICHTSNAME in Kindprozessen (Mini-Archiv)
+OK    11 echter Kalender erreichbar
+OK    11a Lauf (a) --max 2: Rueckgabe 0, 2 Dateien, "max erreicht"
+OK    11b unvollstaendiger Lauf heisst PILOT.md, nie ERGEBNIS.md
+OK    11c Fortsetzung: 4 Dateien, "vollstaendig", Beginn-Stempel behalten
+OK    11d _zellen.bin (a+b) und (c, am Stueck) byteidentisch bis auf den Stand-Schwanz (481628168 Bytes, Summe n 8176)
+OK    11e Fuellzaehler und Signalzahlen gleich
+OK    11f vollstaendiger Lauf ohne --reihen heisst ERGEBNIS.md (Rueckgabe 0)
+OK    11g fremde Kennung: Abbruch mit Rueckgabe 4
+   (13.0 s)
+
+== 12. URTEILSREGEL (REGEL §7) an Hand-Konfigurationen
+   {"traegt":"traegt / handelbar","short-traegt":"traegt","nur-placebo":"schlaegt Placebo, nicht nach Kosten","tor1-zu-klein":"kein Kandidat","tor2-blind":"nicht entscheidbar","wenig-tage":"nicht entscheidbar"} k1 5 k2 4
+OK    12a Tor 1: 5 bestehen (Entdeckung >= 4 x MDE_B), Tor 2 (delta80 < K_Kand/2): 4
+OK    12b long traegt und handelbar; Short traegt, aber nie handelbar (Leihe)
+OK    12c schlaegt nur das Placebo -> nicht "traegt"; Tor 1 verfehlt -> kein Kandidat; Tor 2 / < 30 Tage -> nicht entscheidbar
+   (0.0 s)
+
+66 OK, 0 FEHLT
+rc=0
