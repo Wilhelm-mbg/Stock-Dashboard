@@ -407,10 +407,17 @@ TESTS[18] = async function () {
   var liqTag = MH.nyTag(buch.liquideSeit);
   var bezugTag = verlauf.filter(function (p) { return p.tag < liqTag; }).slice(-1)[0].tag;   // letzter Punkt vor der Umschichtung (Schluss des Stichtags)
   var abLiquide = Ms.vergleich(verlauf.filter(function (p) { return p.tag >= bezugTag; }), 'momentum', 'startM', massstabOpts(100000, dm));
-  zeile(!(v && v.ok && abLiquide.ok && Math.abs(v.abstandPp - abLiquide.abstandPp) < 0.05),
+  /* Ergaenzt (Runde 2, Nr. 108 - Auftrag: "solange es keine solche Umschichtung gibt, steht dort ein klarer Satz statt einer
+   * Zahl"): dasselbe Buch ohne liquideSeit - die Karte darf keinen Abstand nennen, sondern den Satz. */
+  buch.liquideSeit = null;
+  var vVor = dep.MFDepot.vergleich('momentum'), tVor = Ms.langText('Momentum', vVor, function (x) { return pz(x); });
+  var satzOk = !!vVor && !vVor.ok && vVor.abstandPp == null && /Vergleich beginnt mit der ersten Umschichtung nach der gemessenen Regel/.test(tVor);
+  buch.liquideSeit = MH.nyZeit(MH.nyTag(liquide), 10, 0);
+  zeile(!(v && v.ok && abLiquide.ok && Math.abs(v.abstandPp - abLiquide.abstandPp) < 0.05) || !satzOk,
     'Karte/Kopf rechnen seit ' + tagDe(v.seit) + ' (Anlage des Buchs ' + tagDe(buch.angelegt) + '): Buch ' + pz(v.buchPct) + ' gegen S&P 500 ' + pz(v.marktPct) +
     ', Abstand ' + ppDe(v.abstandPp) + ' (Markt: ' + v.marktArt + '). Ab der ersten liquiden Umschichtung (' + tagDe(buch.liquideSeit) + ', Bezug Schluss des Stichtags), wie die Messung startet: Buch ' +
-    pz(abLiquide.buchPct) + ' gegen ' + pz(abLiquide.marktPct) + ', Abstand ' + ppDe(abLiquide.abstandPp) + '. MFDepot.vergleich uebergibt angelegt, liquideSeit liest es nicht.');
+    pz(abLiquide.buchPct) + ' gegen ' + pz(abLiquide.marktPct) + ', Abstand ' + ppDe(abLiquide.abstandPp) + '. Ohne liquideSeit (noch keine liquide Umschichtung): "' + tVor + '"' +
+    (satzOk ? '' : ' - kein Satz statt der Zahl') + '.');
 };
 
 /* 19 - "Alle Buecher zuruecksetzen" schaltet das Momentum-Buch ein; der naechste Takt kauft sofort (Fund F11).

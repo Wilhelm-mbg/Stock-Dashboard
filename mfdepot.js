@@ -678,14 +678,40 @@
   /*  Seit Auftrag Nr. 95 (C1): verlauf (optional) - ein Ausschnitt der Tagespunkte, etwa die
    *  Woche im Wochenbericht (berichte.js). Dann rechnet derselbe Massstab mit denselben
    *  Optionen ueber diese Punkte; ohne verlauf wie bisher ueber den Verlauf samt Stand. */
+  /*  Runde 2 (Nr. 108, F9): beim MOMENTUM-Buch beginnt "Gegen den Markt" (Karte, Kopf, Buecher-Verlauf) mit
+   *  der ersten Umschichtung nach der gemessenen liquiden Regel (b.liquideSeit) - so starten Buch und SPY in
+   *  der Messung (REGEL §1.6/§1.8: am selben ersten Ausfuehrungstag). Bezug ist der letzte Tagespunkt VOR
+   *  diesem Ausfuehrungstag (der Schluss des Stichtags); ohne einen solchen Punkt (Buch am Tag der ersten
+   *  Umschichtung angelegt) der ganze Verlauf wie bisher. Solange es diese Umschichtung nicht gibt, steht
+   *  keine Zahl da, sondern der Satz (grund 'vor-liquide', voraussichtlich = Tag der naechsten
+   *  Umschichtung, wenn bekannt) - bis Nr. 108 las die Zeile vor allem die alte, breite Regel.
+   *  Ein Ausschnitt (verlauf, Wochenbericht) bleibt, wie er ist. */
+  function abLiquide(buch, v) {
+    var MH = window.MFHandel;
+    if (!buch.liquideSeit) return { vor: true };
+    if (!MH) return { verlauf: v };
+    var liqTag = MH.nyTag(buch.liquideSeit), j = -1;
+    for (var i = 0; i < v.length; i++) if ((v[i].tag || MH.nyTag(v[i].t)) < liqTag) j = i;
+    return j < 0 ? { verlauf: v, ganz: true } : { verlauf: v.slice(j) };
+  }
   function vergleich(name, verlauf) {
     var d = D();
     if (!d || !window.Massstab) return null;
     var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
-    return window.Massstab.vergleich(verlauf || verlaufMitStand(), name, name === 'momentum' ? 'startM' : 'startD', {
+    var opts = {
       an: name === 'momentum' ? !!d.momentumAn : !!d.driftAn,
       start: buch ? buch.start : null, angelegt: buch ? buch.angelegt : null,
-      punktKurs: true, marktRoh: MARKT_ROH, buchAusschuettungen: true, markt: MARKT });
+      punktKurs: true, marktRoh: MARKT_ROH, buchAusschuettungen: true, markt: MARKT };
+    var feld = name === 'momentum' ? 'startM' : 'startD';
+    if (verlauf || name !== 'momentum' || !buch || !opts.an) return window.Massstab.vergleich(verlauf || verlaufMitStand(), name, feld, opts);
+    var ab = abLiquide(buch, verlaufMitStand());
+    if (ab.vor) {
+      var s = STAND.momentum, MH = window.MFHandel;
+      var tag = s && s.noch != null ? naechsteUmschichtung(s.noch, s.at) : null;
+      return window.Massstab.vorLiquide(window.Massstab.vergleich(verlaufMitStand(), name, feld, opts), tag && MH ? MH.datumDe(tag) : null);
+    }
+    if (!ab.ganz) opts.angelegt = null;                        // Bezug ist der Punkt vor der ersten liquiden Umschichtung
+    return window.Massstab.vergleich(ab.verlauf, name, feld, opts);
   }
 
   /* A5 (Auftrag Nr. 93): der erste Punkt des laufenden Buchs (Kauf 25.08.2026 mitten in der

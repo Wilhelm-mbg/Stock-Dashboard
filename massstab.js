@@ -248,7 +248,19 @@
 
   /* Was statt der Marktzahl dasteht, wenn es keine gibt - ein Grund, keine Null. */
   function marktLuecke(v) {
+    if (v.grund === 'vor-liquide') return VOR_LIQUIDE + (v.voraussichtlich ? ', voraussichtlich am ' + v.voraussichtlich : '');
     return v.grund === 'erst-ein-punkt' ? 'Markt: Vergleich ab dem zweiten Stand' : 'Markt: noch kein Stand';
+  }
+  /* Runde 2 (Nr. 108, F9): das Momentum-Buch wird erst ab seiner ersten Umschichtung nach der gemessenen Regel
+   * mit dem Markt verglichen (mfdepot.js vergleich). Bis dahin steht dieser Satz statt einer Zahl. */
+  var VOR_LIQUIDE = 'Vergleich beginnt mit der ersten Umschichtung nach der gemessenen Regel';
+  /** Ein Vergleich, der noch nicht beginnt: Stand des Buchs bleibt (standPct), Zeitraum und Markt fallen weg.
+   *  voraussichtlich = Datum der naechsten Umschichtung als Text ('TT.MM.JJJJ') oder null. */
+  function vorLiquide(r, voraussichtlich) {
+    var aus = leer('vor-liquide');
+    if (r) { aus.standPct = r.standPct; aus.standT = r.standT; aus.buchReihe = r.buchReihe; aus.buchAusschuettungen = r.buchAusschuettungen; }
+    aus.voraussichtlich = voraussichtlich || null;
+    return aus;
   }
 
   /** Die Buecher im Kopf, kurz: "Momentum +1,2 % · Drift -0,4 % · S&P 500 +2,0 %".
@@ -324,7 +336,7 @@
   function marktName(v) { return 'S&P 500 (SPY, ' + marktZusatz(v) + ')'; }
 
   var Massstab = {
-    prozent: prozent, vergleich: vergleich, mitMarkt: mitMarkt, marktAn: marktAn,
+    prozent: prozent, vergleich: vergleich, vorLiquide: vorLiquide, mitMarkt: mitMarkt, marktAn: marktAn,
     kopfText: kopfText, langText: langText, datum: datum,
     hinweis: hinweis, hinweise: hinweise, marktName: marktName, marktZusatz: marktZusatz,
     MARKT_MAX_ALTER: MARKT_MAX_ALTER
