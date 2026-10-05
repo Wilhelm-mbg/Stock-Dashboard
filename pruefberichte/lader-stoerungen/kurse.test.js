@@ -272,7 +272,7 @@ TESTS.push({
       new Date(letzter).toISOString().slice(0, 16) + ' (' + NAMEN[0] + '), SPY ' + new Date(spyLetzter).toISOString().slice(0, 16) +
       ' (Soll: Fr 30.10. 13:30 UTC, unverschoben); zerlege rechnet nicht mit gmtoffset (Stempel absolut, kurse.js:' +
       H.zeileVon('kurse.js', 'bars.push([ts[i] * 1000, c, vo, hi, lo, op]);') + '), den laufenden Balken schneidet mittelfrist.js:' +
-      H.zeileVon('mittelfrist.js', 'reihe = window.MFHandel.ohneLaufendenBalken(reihe, Date.now());') + ' (New-Yorker Tag, nicht UTC).' };
+      H.zeileVon('mittelfrist.js', 'reihe = window.MFHandel.ohneLaufendenBalken(reihe, LADE_BEGINN || Date.now());') + ' (New-Yorker Tag, nicht UTC).' };
   }
 });
 

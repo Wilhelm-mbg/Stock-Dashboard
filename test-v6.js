@@ -23318,7 +23318,7 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
   /* Umgeschrieben mit Auftrag Nr. 93 (A3/A5): derselbe EINE Abruf je Wert, dazu mitRoh (close fuer Spalte 1); SPY kommt im selben Ladevorgang mit. */
   ok(/window\.Kurse\.hole\(sym, \{ von: 0, bis: Date\.now\(\), interval: '1d', bereinigt: true, mitRoh: true, ereignisse: true \}\)/.test(mfr96) && mfr96.split('window.Kurse.hole(').length === 2 &&
      /var EREIGNIS_TAGE = 400;/.test(mfr96) && /window\.Kurse\.ereignisseAb\(kd\.ereignisse, Date\.now\(\) - EREIGNIS_TAGE \* 86400000\)/.test(mfr96) &&
-     /else if \(r\) \{ neu\[liste\[i\]\] = r\.reihe; ereignisse\[liste\[i\]\] = r\.ereignisse; geliefert\+\+; \}/.test(mfr96) && /await tagesdatenSchreiben\(roh, weg, Date\.now\(\), ereignisse, bezug\);/.test(mfr96) &&
+     /else if \(r\) \{ neu\[liste\[i\]\] = r\.reihe; ereignisse\[liste\[i\]\] = r\.ereignisse; geliefert\+\+; \}/.test(mfr96) && /var schreiben = await tagesdatenSchreiben\(roh, weg, LADE_BEGINN, ereignisse, bezug\);/.test(mfr96) &&
      /hatStueck\(gespeichert\.roh\) && ereignisseDa &&/.test(mfr96),
   '96.5 mittelfrist.js: EIN Abruf je Wert mit Ereignissen, abgelegt werden die letzten 400 Tage; ein Bestand ohne mf_ereignisse gilt nicht als frisch und wird einmal neu geladen');
   ok(!/bucheMassnahmen|mf_ereignisse|stempleKursT/.test(ohneKommentare(fs.readFileSync(__dirname + '/depot.js', 'utf8'))),
