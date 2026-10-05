@@ -189,11 +189,33 @@
    * MFHandel.bucheMassnahmen (rein, in Node getestet); hier nur der Aufruf und je Takt und
    * Buch hoechstens EINE Journalzeile - nur, wenn gebucht (oder ein Split neu gesperrt)
    * wurde. Rueckgabe: true, wenn gespeichert werden muss. */
+  /* Runde 2 (Nr. 108, M7, Test 27): ein Bestand, der WAEHREND der Sitzung des Ex-Tags eines Splits geladen wurde,
+   * traegt den Balken des Ex-Tags nicht (laufender Balken, abgeschnitten), aber die Vergangenheit kommt aus
+   * demselben Abruf schon geteilt, und das Split-Ereignis mit dem Stempel des Ex-Tags steht im Bestand. Ohne
+   * Buchung stand Stueck (alt) gegen Kurs (geteilt): der Tagespunkt hielt den halben Wert fest. Solche Splits
+   * (Ex-Tag = New-Yorker Tag des Ladevorgangs, nach dem juengsten Balken, nicht nach dem Laden) werden VOR den
+   * uebrigen Massnahmen gebucht - nur Splits (Regel 3/5), Ausschuettungen weiter erst mit dem Balken des Ex-Tags
+   * (REGEL Teil C.3). Kennung 'split:' + t wie immer: der Abend bucht ihn nicht noch einmal.
+   * Rueckgabe { SYM: Ex-Tag-Stempel } oder null. */
+  function splitsDesLadetags(MH, daten) {
+    var er = daten.ereignisse, stand = daten.stand, aus = null;
+    if (!er || !(stand > 0)) return null;
+    var tagStand = MH.nyTag(stand);
+    Object.keys(er).forEach(function (s) {
+      var bz = (daten.barZeit || {})[s];
+      ((er[s] && er[s].split) || []).forEach(function (x) {
+        if (x[0] > (bz || 0) && x[0] <= stand && MH.nyTag(x[0]) === tagStand) { if (!aus) aus = {}; aus[s] = Math.max(aus[s] || 0, x[0]); }
+      });
+    });
+    return aus;
+  }
   function massnahmenBuchen(MH, d, daten, now) {
-    var geaendert = false;
+    var geaendert = false, ladetag = splitsDesLadetags(MH, daten);
     [['momentum', d.mfBuch], ['drift', d.driftBuch]].forEach(function (x) {
       if (!x[1]) return;
+      var vor = ladetag ? MH.bucheMassnahmen(x[1], daten.ereignisse, ladetag, now, { nurSplits: true }) : null;
       var res = MH.bucheMassnahmen(x[1], daten.ereignisse, daten.barZeit, now);
+      if (vor) { res.buchungen = vor.buchungen.concat(res.buchungen); res.gesperrt = vor.gesperrt.concat(res.gesperrt); }
       var zeile = MH.massnahmenJournal(x[0], res, now);
       if (!zeile) return;
       if (!d.tuneLog) d.tuneLog = [];
