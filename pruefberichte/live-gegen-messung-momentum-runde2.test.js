@@ -283,6 +283,23 @@ function stk(x) { return String(x).replace('.', ','); }
 /** 'JJJJ-MM-TT' -> 'TT.MM.' */
 function tagKurz(s) { return s ? s.slice(8, 10) + '.' + s.slice(5, 7) + '.' : '-'; }
 
+/* Ergaenzt (Runde 2, Nr. 108) fuer 20 und 21: die beiden Kennzahlen messen die GROESSE von F3 und F8 unabhaengig vom Code.
+ * Ob der heutige Code den Fund noch hat, sagt diese Probe: ein Ladevorgang des echten Laders (mittelfrist.js) in der Sandbox,
+ * ein Wert mit adjclose != close (rangiert er auf close, Spalte 1 - wie die Messung ohne Ausschuettungen?) und ein junger
+ * Wert mit 300 Balken (laedt der Lader ihn, oder verwirft er ihn wie die alte 500-Balken-Huerde?). */
+async function laderProbe() {
+  var namen = universum(), jetzt = nyUTC(2026, 11, 24, 10, 0), tage = werktageBis(MO, 520), spy = spyAus(tage);
+  var roh = kunstUniversum(tage, namen), a = namen[0], b = namen[1];
+  roh[a] = roh[a].map(function (z) { return [z[0], z[1], z[2], z[1] * 0.98]; });     // adjclose 2 % unter close (Ausschuettungen)
+  roh[b] = roh[b].slice(-300);                                                      // junger Wert: 300 Balken
+  var st = speicher({});
+  var mf = mittelfristSandbox(st, async function (sym, o) { return sym === 'SPY' ? ladeAntwort(spy, o) : roh[sym] ? ladeAntwort(roh[sym], o) : null; }, jetzt);
+  await mf.MF.ladeUniversum();
+  var g = await mf.MF.tagesdatenLesen(), rA = g && g.roh[a], rB = g && g.roh[b];
+  return { a: a, b: b, spalte1Close: !!rA && Math.abs(rA[rA.length - 1][1] - roh[a][roh[a].length - 1][1]) < 1e-9,
+    kurzGeladen: !!rB && rB.length === 300 };
+}
+
 /* ---------------- Die Tests ---------------- */
 var TESTS = {};
 
@@ -465,7 +482,7 @@ TESTS[19] = async function () {
  *      geschnitten mit der App-Liste. Gemessen wird ohne Modell: der Vorsprung des Letzten im Ziel vor dem
  *      Ersten draussen, multiplikativ - so wirkt ein Ausschuettungsaufschlag (F3). Grenzen: Monats- statt
  *      63-Tage-Takt, Liquiditaetsfilter nicht angewandt, Filter des Pruefstands blenden einzelne Monate aus. */
-TESTS[20] = function () {
+TESTS[20] = async function () {
   var M = JSON.parse(fs.readFileSync(path.join(WURZEL, 'studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json'), 'utf8'));
   var app = universum(), luecken = [], genuegt = { 0.005: 0, 0.01: 0, 0.02: 0 }, nMin = Infinity, nMax = 0;
   M.signaltage.forEach(function (st) {
@@ -480,7 +497,10 @@ TESTS[20] = function () {
   var s = luecken.slice().sort(function (a, b) { return a - b; });
   var med = s[s.length >> 1] * 100, n = luecken.length;
   var anker = /0\.83 % im Jahr/.test(fs.readFileSync(path.join(WURZEL, 'studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-TEIL2.md'), 'utf8'));
-  zeile(genuegt['0.01'] > 0, n + ' Monatsstichtage (' + M.signaltage[0].tag + ' bis ' + M.signaltage[M.signaltage.length - 1].tag + ', ' + nMin + ' bis ' + nMax +
+  /* Angepasst (Runde 2, Nr. 108): Abweichung nur, solange der Code mit Ausschuettungen rangiert (F3) - die Groesse allein
+   * ist kein Befund ueber den heutigen Code. Gegen 450daed (adjclose in Spalte 1) weiter Abweichung. */
+  var pr = await laderProbe();
+  zeile(genuegt['0.01'] > 0 && !pr.spalte1Close, (pr.spalte1Close ? 'Heute rangiert der Lader auf close ohne Ausschuettungen wie die Messung (Probe ' + pr.a + ': Spalte 1 = close) - F3 behoben; die Groesse bleibt als Kennzahl: ' : 'Der Lader rangiert mit Ausschuettungen (Probe ' + pr.a + ': Spalte 1 = adjclose). ') + n + ' Monatsstichtage (' + M.signaltage[0].tag + ' bis ' + M.signaltage[M.signaltage.length - 1].tag + ', ' + nMin + ' bis ' + nMax +
     ' Werte der App-Liste): der Letzte im Ziel liegt im Median nur ' + med.toFixed(2).replace('.', ',') + ' Pp vor dem Ersten draussen. Ein Ausschuettungsvorsprung von 0,5 / 1 / 2 Pp ' +
     'im Rueckblickfenster reicht fuer einen Tausch an ' + genuegt['0.005'] + ' / ' + genuegt['0.01'] + ' / ' + genuegt['0.02'] + ' von ' + n + ' Stichtagen' +
     (anker ? ' (zum Vergleich: das Universum zahlt rund 1,7 % im Jahr, also ~1,6 Pp im 231-Tage-Fenster; das Momentum-Zehntel 0,83 %, ERGEBNIS-TEIL2.md)' : '') + '.');
@@ -491,7 +511,7 @@ TESTS[20] = function () {
  *      (studien/fundamental-machbarkeit-2026-09-16/panel.json). LIN und APTV sind ausgenommen: Kuerzelwechsel
  *      bzw. Fusion, die Yahoo-Reihe reicht dort weiter zurueck. Naeherung: der erste Stichtag mit Wert in
  *      momentum.json hat 253 Zeilen; die App rankt erst ab 501 Balken, rund 248 Handelstage = 12 Monatsstichtage spaeter. */
-TESTS[21] = function () {
+TESTS[21] = async function () {
   var M = JSON.parse(fs.readFileSync(path.join(WURZEL, 'studien/mehrfaktor-2026-09-22/zellen-rueckhalte/momentum.json'), 'utf8'));
   var P = JSON.parse(fs.readFileSync(path.join(WURZEL, 'studien/fundamental-machbarkeit-2026-09-16/panel.json'), 'utf8'));
   var app = universum(), erster = {};
@@ -514,7 +534,9 @@ TESTS[21] = function () {
     }
     if (treffer) { namensMonate += treffer; betroffen.push(sym + ' ' + treffer); }
   });
-  zeile(namensMonate > 0, jung.length + ' junge Werte der App-Liste; ' + betroffen.length + ' davon standen in ihren ersten 12 Monaten mit Wert im staerksten Zehntel der App-Liste (Paneldaten, monatlich, ohne Umsatzfilter), das die App bis Nr. 93 nicht gerankt haette: ' +
+  /* Angepasst (Runde 2, Nr. 108): Abweichung nur, solange der Lader junge Reihen verwirft (F8). */
+  var pr = await laderProbe();
+  zeile(namensMonate > 0 && !pr.kurzGeladen, (pr.kurzGeladen ? 'Heute laedt der Lader auch eine Reihe mit 300 Balken (Probe ' + pr.b + ') - F8 behoben; die Groesse bleibt als Kennzahl: ' : 'Der Lader verwirft eine Reihe mit 300 Balken (Probe ' + pr.b + '). ') + jung.length + ' junge Werte der App-Liste; ' + betroffen.length + ' davon standen in ihren ersten 12 Monaten mit Wert im staerksten Zehntel der App-Liste (Paneldaten, monatlich, ohne Umsatzfilter), das die App bis Nr. 93 nicht gerankt haette: ' +
     namensMonate + ' Namens-Monate an ' + Object.keys(tage).length + ' von ' + T.length + ' Monatsstichtagen (' + betroffen.join(', ') + '). Auf main laedt der Lader auch kurze Reihen (Abnahme-Test 12).');
 };
 
