@@ -1,0 +1,2813 @@
+{
+ "A-01": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 16 neu rot, z.B. ❌ 98.2 eine Reihe mit 253 Balken wird abgelegt (die Regel rangiert sie), eine mit 252 nicht (sie steht auf weg)"
+  ]
+ },
+ "A-02": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 20 neu rot, z.B. ❌    Gegenprobe: ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel"
+  ]
+ },
+ "A-03": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "A-04": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 98.3 die Zeile ist [t, close, stueck, adjclose]; die Rangfolge des Buchs liest Spalte 1 (close, ohne Ausschuettungen) - V107 nicht im Ziel, V108 drin, wie in "
+  ]
+ },
+ "A-05": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ Korbregel des Buchs = Korbregel der Studie (umsatzMin, mindestWerte aus lauf-*.json)  [100000000 / 99]"
+  ]
+ },
+ "A-06": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 11 neu rot, z.B. ❌ 99,9 Mio $ fliegt VOR der Rangbildung mit Grund heraus"
+  ]
+ },
+ "A-07": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-08": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 14 neu rot, z.B. ❌ 95.6 buchKonfig fuehrt den Schalter mit dem Wert 0,05 (an); die sieben Felder davor sind unveraendert  [0.5]"
+  ]
+ },
+ "A-09": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 15 neu rot, z.B. ❌ 95.6 buchKonfig fuehrt den Schalter mit dem Wert 0,05 (an); die sieben Felder davor sind unveraendert  [0]"
+  ]
+ },
+ "A-10": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-10 252 Balken: kein Absturz, verworfen mit Grund \"252 von 253\"  [Cannot read properties of undefined (reading '1')]"
+  ]
+ },
+ "A-11": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 11 neu rot, z.B. ❌ 98.2 eine Reihe mit 253 Balken wird abgelegt (die Regel rangiert sie), eine mit 252 nicht (sie steht auf weg)"
+  ]
+ },
+ "A-12": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-12 Alter 7 Tage + 1 Stunde: veraltet  [[]]"
+  ]
+ },
+ "A-13": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB A-13 Alter 6,5 Tage: bleibt  [[{\"sym\":\"X\",\"grund\":\"Kurse veraltet (7 Tage alt)\"}]]"
+  ]
+ },
+ "A-14": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-13/A-14 Alter genau 7 Tage: bleibt im Rang  [[{\"sym\":\"X\",\"grund\":\"Kurse veraltet (7 Tage alt)\"}]]"
+  ]
+ },
+ "A-15": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-16": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-17": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel"
+  ]
+ },
+ "A-18": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 1 neu rot, z.B. ❌ Live-Buch und validierte Staerke liefern auf derselben Reihe denselben Wert  [0.181223 / 1.181223]"
+  ]
+ },
+ "A-19": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 18 neu rot, z.B. ❌    Gegenprobe: Rangfolge auf adjclose (Spalte 1 = adjclose) bringt V107 ins Ziel",
+   "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "A-20": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-20 Zielzahl max(5, round(2)) = 5, die staerksten fuenf  [S19,S18,S17,S16]"
+  ]
+ },
+ "A-21": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 1 neu rot, z.B. ❌ AEQUIVALENZ: beide bilden DENSELBEN Korb (staerkstes Zehntel der Zulaessigen)  [13 / 12]"
+  ]
+ },
+ "A-22": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 1 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-23": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 11 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "A-24": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 98.2 eine Reihe mit 253 Balken wird abgelegt (die Regel rangiert sie), eine mit 252 nicht (sie steht auf weg)"
+  ]
+ },
+ "A-25": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-25 Korbzaehler: 4 geprueft, 2 ohneUmsatz, 1 unterSchwelle, 1 zulaessig  [{\"zulaessig\":1,\"geprueft\":4,\"ohneUmsatz\":1,\"unterSchwelle\":2,\"umsatzMin\":1000000"
+  ]
+ },
+ "A-26": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "A-27": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "A-28": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-29": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-29 Schlusskurs 0 am Stichtag: verworfen  [[] [\"Y\",\"X\"]]"
+  ]
+ },
+ "A-30": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 1 neu rot, z.B. ❌ genau 100 Mio $ Median-Tagesumsatz ist zulaessig (>=, wie in der Studie)  [0]"
+  ]
+ },
+ "A-31": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB A-31 der Balken des Umschichtungstags zaehlt nicht mit (4 nach + 1 am Tag, halten 5)"
+  ]
+ },
+ "A-32": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB A-32/A-34 halten 5: 5 Balken danach = faellig"
+  ]
+ },
+ "A-33": {
+  "urteil": "UEBERLEBT",
+  "gruende": [],
+  "nachlauf": "einzeln: GETOETET nur ueber 84.4 (1 neu rot, Rauschen) -> bleibt UEBERLEBT; Direktlauf test-v6 ohne Absturz, MB 281 gruen"
+ },
+ "A-34": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB A-32/A-34 halten 5: 5 Balken danach = faellig"
+  ]
+ },
+ "A-35": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB A-31/A-35/A-39 62 Balken nach dem Tag (ohne den Umschichtungstag): noch nicht faellig"
+  ]
+ },
+ "A-36": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB A-32/A-34/A-36/A-39 63 Balken nach dem Tag: faellig"
+  ]
+ },
+ "A-37": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB A-37 ohne letzte Umschichtung: faellig"
+  ]
+ },
+ "A-38": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-38 Zeitstempel zaehlt als New-Yorker Tag (05.01.), nicht als UTC-Tag (06.01.): 63 Balken -> faellig"
+  ]
+ },
+ "A-39": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "A-40": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-41": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-42": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-43": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-44": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "A-45": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: Exit 1",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "A-46": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-46 medianUmsatz(i = Laenge) = NaN ohne Absturz  [Cannot read properties of undefined (reading '1')]"
+  ]
+ },
+ "A-47": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-48": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 11 neu rot, z.B. ❌ 99,9 Mio $ fliegt VOR der Rangbildung mit Grund heraus"
+  ]
+ },
+ "A-49": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ Korbregel des Buchs = Korbregel der Studie (umsatzMin, mindestWerte aus lauf-*.json)  [100000001 / 100]"
+  ]
+ },
+ "A-50": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ Korbregel des Buchs = Korbregel der Studie (umsatzMin, mindestWerte aus lauf-*.json)  [100000000 / 99]"
+  ]
+ },
+ "A-51": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ Korbzaehler: 101 zulaessig, 1 unter der Schwelle, 103 geprueft  [{\"zulaessig\":100,\"geprueft\":103,\"ohneUmsatz\":1,\"unterSchwelle\":2,\"umsatzMin\":100000000,\"fenst"
+  ]
+ },
+ "A-52": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-52 umsatzMin 0, Reihe ohne Stueckzahlen: zulaessig"
+  ]
+ },
+ "A-53": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB A-52 umsatzMin 0, Reihe ohne Stueckzahlen: zulaessig"
+  ]
+ },
+ "A-54": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-54 Stueckzahl NaN/Infinity zaehlt nicht als vorhanden"
+  ]
+ },
+ "A-55": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-55 nur der Stichtagsbalken traegt Stueckzahl: hatUmsatz true"
+  ]
+ },
+ "A-56": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)  [12]"
+  ]
+ },
+ "A-57": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "A-58": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌ Fenster des Buchs = Fenster der Studie (Rueckblick/Luecke/Halten/Anteil aus lauf-*.json)  [[231,21,62,0.1]]"
+  ]
+ },
+ "A-59": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 98.3 die Zeile ist [t, close, stueck, adjclose]; die Rangfolge des Buchs liest Spalte 1 (close, ohne Ausschuettungen) - V107 nicht im Ziel, V108 drin, wie in "
+  ]
+ },
+ "A-60": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB A-60 STANDARD.minWerte = 25: 24 Werte -> keine Rangfolge, 25 -> Rangfolge"
+  ]
+ },
+ "B-01": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-02": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 21 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)",
+   "(Hinweis, kein Urteil) Kleinsttest-Text geaendert"
+  ]
+ },
+ "B-03": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 26 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)",
+   "(Hinweis, kein Urteil) Kleinsttest-Text geaendert"
+  ]
+ },
+ "B-04": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 15 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-05": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 14 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-06": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 11 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-07": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 13 neu rot, z.B. ❌ 95.1 Vorgabe aus: 400 Zufallsfaelle zeichengleich wie vor Nr. 85 - darunter Kleinstkaeufe, verkleinerte und ausgefallene Kaeufe und Reste als Ziel  [375 ungle",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,[14] TEST DEFEKT: TypeError: Cannot read properties of undefined (reading 'einst"
+  ]
+ },
+ "B-08": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 12 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-09": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 13 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-10": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "B-11": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 13 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-12": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 16 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-13": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 13 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-14": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 13 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-15": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 22 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)",
+   "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-16": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 20 neu rot, z.B. ❌    Gegenprobe: K2 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % waere ein Kleinstbestand)"
+  ]
+ },
+ "B-17": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-18": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 37 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-19": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 17 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt",
+   "Kleinsttest-Urteil geaendert: 14:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-20": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-21": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-22": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-23": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B fuehreAus: Kosten gleich Bargeld -> volle Stueckzahl  [{\"cash\":0.07014300600008028,\"positionen\":[{\"sym\":\"D\",\"stueck\":1.4874,\"einstand\":701.43006,\"seit\":1"
+  ]
+ },
+ "B-24": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-25": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 21 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)",
+   "Kleinsttest-Urteil geaendert: 13:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-26": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 23 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)",
+   "Kleinsttest-Urteil geaendert: 13:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-27": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-28": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)"
+  ]
+ },
+ "B-29": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-30": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)"
+  ]
+ },
+ "B-31": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 30 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)",
+   "Kleinsttest-Urteil geaendert: 14:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-32": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 14 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-33": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 18 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-34": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B fuehreAus: Tradeprotokoll auf 400 gekappt  [399 X2]"
+  ]
+ },
+ "B-35": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B fuehreAus: Tradeprotokoll auf 400 gekappt  [401 X0]"
+  ]
+ },
+ "B-36": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 23 neu rot, z.B. ❌    Gegenprobe: K1 mit \"kleiner gleich\" faellt an der Grenze auf (genau 5 % wuerde wegfallen)"
+  ]
+ },
+ "B-37": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 16 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt"
+  ]
+ },
+ "B-38": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "B-39": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 18 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt",
+   "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-40": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 16 neu rot, z.B. ❌    Gegenprobe: ohne K1 faellt auf: der Kleinstkauf wird wieder ausgefuehrt",
+   "Kleinsttest-Urteil geaendert: [14] TEST DEFEKT: TypeError: Cannot read properties of undefined (reading 'einst"
+  ]
+ },
+ "B-41": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B bewerte: Rundung, Einstand ohne Kurs, ohneKurs  [{\"wert\":145.369,\"ohneKurs\":[\"B\"]}]"
+  ]
+ },
+ "B-42": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B bewerte: Rundung, Einstand ohne Kurs, ohneKurs  [{\"wert\":145.4,\"ohneKurs\":[\"B\"]}]"
+  ]
+ },
+ "B-43": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.4 bewertet wird zum letzten Schluss der Reihe (A: 130, nicht der Einstand 100); nur D ohne jede Reihe zum Einstand, als ohneKurs gemeldet"
+  ]
+ },
+ "B-44": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "B-45": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "B-46": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌ 98.6 Grenze 63: Ausfuehrungstag = 0; 61 Balken danach -> nicht faellig (noch 1), 62 -> faellig (heute ist der 63.), 64 -> faellig mit 2 Handelstagen Verspaetu"
+  ]
+ },
+ "B-47": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌ 98.6 Grenze 63: Ausfuehrungstag = 0; 61 Balken danach -> nicht faellig (noch 1), 62 -> faellig (heute ist der 63.), 64 -> faellig mit 2 Handelstagen Verspaetu"
+  ]
+ },
+ "B-48": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 100.7 C3: die Karte nennt den Tag der naechsten Umschichtung, aus der Faelligkeit gerechnet (04.10.2026: 27 Balken seit dem 25.08., noch 35 -> Montag 23.11.20"
+  ]
+ },
+ "B-49": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.6 Grenze 63: Ausfuehrungstag = 0; 61 Balken danach -> nicht faellig (noch 1), 62 -> faellig (heute ist der 63.), 64 -> faellig mit 2 Handelstagen Verspaetu"
+  ]
+ },
+ "B-50": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.6 Grenze drei Tage: Marktreihe drei Werktage hinter der Uhr gilt noch, vier nicht - dann faellig = null (nie still \"nicht faellig\")  [3 / 4]"
+  ]
+ },
+ "B-51": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.6 Grenze drei Tage: Marktreihe drei Werktage hinter der Uhr gilt noch, vier nicht - dann faellig = null (nie still \"nicht faellig\")  [3 / 4]"
+  ]
+ },
+ "B-52": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "B-53": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B faelligkeit: ohne letzten Ausfuehrungstag faellig, erste  [{\"faellig\":false,\"tageSeit\":null,\"noch\":null,\"verspaetung\":0,\"veraltet\":false,\"letzterMarktTag"
+  ]
+ },
+ "B-54": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B faelligkeit: heute in New York, nicht UTC  []"
+  ]
+ },
+ "B-55": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "B-56": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB B faelligkeit: 61 Balken -> noch nicht faellig, noch 1  [{\"faellig\":true,\"tageSeit\":62,\"noch\":0,\"verspaetung\":0,\"veraltet\":false,\"letzterMarktTag\":\"2027-03"
+  ]
+ },
+ "B-57": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 18 neu rot, z.B. ❌ 100.7 C3: die Karte nennt den Tag der naechsten Umschichtung, aus der Faelligkeit gerechnet (04.10.2026: 27 Balken seit dem 25.08., noch 35 -> Montag 23.11.20"
+  ]
+ },
+ "B-58": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.5 am Ausfuehrungstag selbst, ab ihm gezaehlt: nicht faellig, noch 62 Handelstage (auch wenn der Bestand schon einen Balken von heute traegt)"
+  ]
+ },
+ "B-59": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB A-32/A-34 halten 5: 5 Balken danach = faellig"
+  ]
+ },
+ "B-60": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "B-61": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB A-31 der Balken des Umschichtungstags zaehlt nicht mit (4 nach + 1 am Tag, halten 5)"
+  ]
+ },
+ "B-62": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB A-37 ohne letzte Umschichtung: faellig"
+  ]
+ },
+ "B-63": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 24 neu rot, z.B. ❌    Gegenprobe: Faelligkeit ueber die Uhrzeit (Fassung bis Nr. 92: Balken nach dem Zeitstempel) faellt auf",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-64": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "B-65": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 15 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom "
+  ]
+ },
+ "B-66": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 98.5 Grenze 09:35 New York: um 09:34 kein Handel, kein Abruf, die Karte sagt \"Umschichtung heute nach Börsenöffnung\""
+  ]
+ },
+ "B-67": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB B Uhr: Zeitkonstanten  [[[16,15],[9,40],[16,0]]]"
+  ]
+ },
+ "B-68": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "B-69": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "B-70": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 16 neu rot, z.B. ❌ MB B Uhr: istWerktag  []"
+  ]
+ },
+ "B-71": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 15 neu rot, z.B. ❌ MB B Uhr: istWerktag  []"
+  ]
+ },
+ "B-72": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "B-73": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB B Uhr: bestandFrisch Grenze  []"
+  ]
+ },
+ "B-74": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "B-75": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB B Uhr: ohneLaufendenBalken genau ab 16:15 unveraendert  []"
+  ]
+ },
+ "B-76": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB B Uhr: ohneLaufendenBalken schneidet den Tag ab  []"
+  ]
+ },
+ "B-77": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB B balkenNach: Balken um 00:00 des Folgetags zaehlt  [0]"
+  ]
+ },
+ "B-78": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB B Uhr: ohneLaufendenBalken schneidet den Tag ab  []",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-79": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 14 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom ",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "B-80": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: Nachfassen am Folgetag (Grenze 16:00 des heutigen statt des Auftragstags) faellt auf"
+  ]
+ },
+ "B-81": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+  ]
+ },
+ "B-82": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌    Gegenprobe: Nachfassen am Folgetag (Grenze 16:00 des heutigen statt des Auftragstags) faellt auf"
+  ]
+ },
+ "B-83": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 99.1 die Journalzeile der Umschichtung nennt die offenen Auftraege  [ Um 09:36 New York noch ohne Eröffnung, offen – die App fasst heute bis 16:00 New York zu"
+  ]
+ },
+ "B-84": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 99.1 offene Auftraege: Verkauf = gehaltene Position ohne Eroeffnung, die kein Ziel ist (A); Kauf = Ziel ohne Eroeffnung (T1, T3) mit dem Platzwert des Plans ("
+  ]
+ },
+ "B-85": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B offeneAuftraege: Verkauf, Kaeufe nach Rang, Budget  [{\"tag\":\"2027-01-05\",\"verkaeufe\":[\"F\"],\"kaeufe\":[{\"sym\":\"C\",\"budget\":250,\"rang\":3},{\"sym\":\"B\",\"budget"
+  ]
+ },
+ "B-86": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 99.1 die Journalzeile der Umschichtung nennt die offenen Auftraege  [ Um 09:36 New York noch ohne Eröffnung, offen – die App fasst heute bis 16:00 New York zu"
+  ]
+ },
+ "B-87": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B offenWerte: Verkaeufe, dann Kaeufe nach Rang  []"
+  ]
+ },
+ "B-88": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 11 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+  ]
+ },
+ "B-89": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "B-90": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "B-91": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 99.4 nach dem Knopf: ein offener Kauf eines Werts, der schon im Buch ist, entfaellt (kein zweiter Kauf), ebenso ein Verkauf eines Werts, der nicht mehr im Buc"
+  ]
+ },
+ "B-92": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB B nachfassen: Bargeld und Rest  [999.6004004000001 {\"tag\":\"2027-01-05\",\"verkaeufe\":[\"W\",\"V\"],\"kaeufe\":[{\"sym\":\"K3\",\"budget\":100,\"rang\":4}]}]"
+  ]
+ },
+ "B-93": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 99.2 Eroeffnung erst beim dritten Takt (09:50, 10:20 ohne, 10:50 mit): die ersten zwei aendern nichts und schreiben keine Zeile, der dritte kauft zur Eroeffnu"
+  ]
+ },
+ "B-94": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B nachfassen: nur entfallen -> geaendert, offen geloescht  [{\"tag\":\"t\",\"verkauft\":[],\"gekauft\":[],\"wartet\":[],\"entfallen\":[\"W\"],\"rest\":null,\"geaendert\":fal"
+  ]
+ },
+ "B-95": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: Kaeufe vor Verkaeufen faellt auf"
+  ]
+ },
+ "B-96": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 99.2 Eroeffnung kommt beim ersten Nachfassen (10:05): Kauf zur Eroeffnung 50 (der Balken traegt als Schluss den laufenden Kurs 999), 200 Stueck = budget / Kur"
+  ]
+ },
+ "B-97": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+  ]
+ },
+ "B-98": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "B-99": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 14 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+  ]
+ },
+ "B-100": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 99.3 am Folgetag (Mittwoch 09:40) nichts mehr: kein Abruf, kein Kauf, offen geloescht mit einer Zeile  [Momentum-Buch: Nachfassen der Umschichtung vom 24.11.2"
+  ]
+ },
+ "B-101": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 10 neu rot, z.B. ❌ 99.2 Verkauf und Kauf zugleich offen (Bargeld 0): erst der Verkauf zur Eroeffnung (Erloes 4.990 $ ins Bargeld, 20 Bp), dann der Kauf aus dem Erloes, hoechsten"
+  ]
+ },
+ "B-102": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.4 stempleKursT: nur neue Positionen (seit === jetzt) ohne Stempel bekommen den Balken ihres Werts  [2]"
+  ]
+ },
+ "C-01": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 10 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+  ]
+ },
+ "C-02": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 36 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+  ]
+ },
+ "C-03": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 28 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+  ]
+ },
+ "C-04": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 16 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+  ]
+ },
+ "C-05": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌    Gegenprobe: Ausschuettung mit der Stueckzahl VOR dem Split faellt auf (5 $ statt 10 $)"
+  ]
+ },
+ "C-06": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 18 neu rot, z.B. ❌    Gegenprobe: Ausschuettung mit der Stueckzahl VOR dem Split faellt auf (5 $ statt 10 $)"
+  ]
+ },
+ "C-07": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6 bricht vor Abschnitt 101 mit nicht abgefangener Ausnahme ab: TypeError: Cannot read properties of undefined (reading 'join') (keine Abschlusszeile; der Harness sieht das nicht, weil die Basis schon mit Exit 1 endet und alle 17 Basis-Rotzeilen vor der Abbruchstelle liegen)"
+  ],
+  "harnessUrteil": "UEBERLEBT",
+  "harnessGruende": [],
+  "nachlauf": "einzeln: Harness UEBERLEBT; Direktlauf test-v6: Absturz; test-mutation-buecher.js allein: rot"
+ },
+ "C-08": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6 bricht vor Abschnitt 101 mit nicht abgefangener Ausnahme ab: TypeError: Cannot read properties of undefined (reading 'join') (keine Abschlusszeile; der Harness sieht das nicht, weil die Basis schon mit Exit 1 endet und alle 17 Basis-Rotzeilen vor der Abbruchstelle liegen)"
+  ],
+  "harnessUrteil": "UEBERLEBT",
+  "harnessGruende": [],
+  "nachlauf": "einzeln: Harness UEBERLEBT; Direktlauf test-v6: Absturz; test-mutation-buecher.js allein: rot"
+ },
+ "C-09": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.4 Sperre: genau 30 Tage Abstand ist gesperrt, 31 Tage wird gebucht  [40 / 40]"
+  ]
+ },
+ "C-10": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 96.4 Journal: ein gesperrter Split wird einmal gemeldet; ohne Buchung und ohne neue Sperre gibt es keine Zeile"
+  ]
+ },
+ "C-11": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C Splits zeitlich sortiert (C-11)  [{\"buchungen\":[{\"sym\":\"A\",\"art\":\"split\",\"t\":1769351400000,\"am\":1784903400000,\"kaufT\":1767623400000,\"zaehler\":3,\"nenner\":"
+  ]
+ },
+ "C-12": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C Betrag 0 und Nenner 0 ohne Buchung (C-12 C-13)  [{\"buchungen\":[{\"sym\":\"A\",\"art\":\"div\",\"t\":1794493800000,\"am\":1794493800000,\"kaufT\":1794321000000,\"betrag\""
+  ]
+ },
+ "C-13": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "C-14": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 12 neu rot, z.B. ❌    Gegenprobe: \"t >= Beginn\" statt \">\" faellt auf: der Kauf am Ex-Tag bekaeme die Ausschuettung"
+  ]
+ },
+ "C-15": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6 bricht vor Abschnitt 101 mit nicht abgefangener Ausnahme ab: TypeError: Cannot read properties of undefined (reading 'length') (keine Abschlusszeile; der Harness sieht das nicht, weil die Basis schon mit Exit 1 endet und alle 17 Basis-Rotzeilen vor der Abbruchstelle liegen)"
+  ],
+  "harnessUrteil": "UEBERLEBT",
+  "harnessGruende": [],
+  "nachlauf": "einzeln: Harness UEBERLEBT; Direktlauf test-v6: Absturz; test-mutation-buecher.js allein: rot"
+ },
+ "C-16": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C massnahmen auf 400 gekappt (C-16)  [399 1767882600000]"
+  ]
+ },
+ "C-17": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.4 Journal: ein gesperrter Split wird einmal gemeldet; ohne Buchung und ohne neue Sperre gibt es keine Zeile"
+  ]
+ },
+ "C-18": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.4 Journal: ein gesperrter Split wird einmal gemeldet; ohne Buchung und ohne neue Sperre gibt es keine Zeile"
+  ]
+ },
+ "C-19": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C Sperre mit Betrag des Abstands (C-19)  [{\"buchungen\":[],\"gesperrt\":[{\"sym\":\"A\",\"art\":\"split\",\"t\":1768487400000,\"zaehler\":2,\"nenner\":1,\"gebuchtT\":17736714"
+  ]
+ },
+ "C-20": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 14 neu rot, z.B. ❌    Gegenprobe: ohne den Merker p.gebucht faellt auf: der zweite Aufruf bucht noch einmal"
+  ]
+ },
+ "C-21": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "C-22": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.4 stempleKursT: nur neue Positionen (seit === jetzt) ohne Stempel bekommen den Balken ihres Werts  [2]"
+  ]
+ },
+ "C-23": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.4 stempleKursT: nur neue Positionen (seit === jetzt) ohne Stempel bekommen den Balken ihres Werts  [2]"
+  ]
+ },
+ "C-24": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "C-25": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 10 neu rot, z.B. ❌ 96.4 nach einer Umschichtung: A (gekauft zum Kurs des Ex-Tags) bekommt nichts, B (gekauft zum Kurs des Vortags) die Ausschuettung  [0]"
+  ]
+ },
+ "C-26": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 18 neu rot, z.B. ❌ 100.7 C3: die Karte nennt den Tag der naechsten Umschichtung, aus der Faelligkeit gerechnet (04.10.2026: 27 Balken seit dem 25.08., noch 35 -> Montag 23.11.20"
+  ]
+ },
+ "C-27": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.5 am Ausfuehrungstag selbst, ab ihm gezaehlt: nicht faellig, noch 62 Handelstage (auch wenn der Bestand schon einen Balken von heute traegt)"
+  ]
+ },
+ "C-28": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ MB B faelligkeit: 61 Balken -> noch nicht faellig, noch 1  [{\"faellig\":true,\"tageSeit\":62,\"noch\":0,\"verspaetung\":0,\"veraltet\":false,\"letzterMarktTag\":\"2027-03"
+  ]
+ },
+ "C-29": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6 bricht vor Abschnitt 101 mit nicht abgefangener Ausnahme ab: TypeError: Cannot read properties of undefined (reading 'stueck') (keine Abschlusszeile; der Harness sieht das nicht, weil die Basis schon mit Exit 1 endet und alle 17 Basis-Rotzeilen vor der Abbruchstelle liegen)"
+  ],
+  "harnessUrteil": "GETOETET",
+  "harnessGruende": [
+   "test-v6: 1 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ],
+  "nachlauf": "einzeln: Harness UEBERLEBT; Direktlauf test-v6: Absturz; test-mutation-buecher.js allein: rot"
+ },
+ "C-30": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB C rohBis schneidet bis einschliesslich Tag (C-30 C-31 C-32)  [3]"
+  ]
+ },
+ "C-31": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB C rohBis schneidet bis einschliesslich Tag (C-30 C-31 C-32)  [3]"
+  ]
+ },
+ "C-32": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (r"
+  ]
+ },
+ "C-33": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-34": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "C-35": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB C indexVor Reihe mit einem Balken (C-43 C-44)  [{\"preise\":{\"A\":7},\"barT\":{\"A\":1794493800001}}]"
+  ]
+ },
+ "C-36": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-37": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB B Uhr: ohneLaufendenBalken genau ab 16:15 unveraendert  []"
+  ]
+ },
+ "C-38": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB B Uhr: ohneLaufendenBalken schneidet den Tag ab  []"
+  ]
+ },
+ "C-39": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB B Uhr: ohneLaufendenBalken schneidet den Tag ab  []",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-40": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 98.7 Grenze 16:15 New York: um 16:14 ist der Dienstag noch laufend (Punkt fuer Montag; der Lader legt den Balken nicht ab), um 16:16 abgeschlossen"
+  ]
+ },
+ "C-41": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 98.7 Grenze 16:15 New York: um 16:14 ist der Dienstag noch laufend (Punkt fuer Montag; der Lader legt den Balken nicht ab), um 16:16 abgeschlossen",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-42": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB B balkenNach: Balken um 00:00 des Folgetags zaehlt  [0]"
+  ]
+ },
+ "C-43": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 25 neu rot, z.B. ❌ 100.7 C3: die Karte nennt den Tag der naechsten Umschichtung, aus der Faelligkeit gerechnet (04.10.2026: 27 Balken seit dem 25.08., noch 35 -> Montag 23.11.20",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-44": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 27 neu rot, z.B. ❌ 98.4 Grenze fuenf Handelstage: 4 ohne neuen Balken bleibt, 5 und 6 werden ausgebucht - zum letzten Schluss OHNE Kosten (100 × 130 = 13.000 $), der Leerverkauf",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-45": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom "
+  ]
+ },
+ "C-46": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom "
+  ]
+ },
+ "C-47": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "C-48": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB C 19 von 20 = 95 % reicht (C-45)  [{\"stichtag\":\"2026-11-24\",\"stichtagT\":1795530600000,\"mit\":19,\"gesamt\":20,\"ok\":false,\"grund\":\"Tageskurse vor dem Schluss d",
+   "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-49": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB C 19 von 20 = 95 % reicht (C-45)  [{\"stichtag\":\"2026-11-24\",\"stichtagT\":1795530600000,\"mit\":19,\"gesamt\":20,\"ok\":false,\"grund\":\"Tageskurse vor dem Schluss d"
+  ]
+ },
+ "C-50": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C leere Wertemenge nie ok (C-50)  [{\"stichtag\":\"2026-11-24\",\"stichtagT\":1795530600000,\"mit\":0,\"gesamt\":0,\"ok\":true,\"grund\":null}]"
+  ]
+ },
+ "C-51": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ MB C 18 von 20 = 90 % reicht nicht (C-46 C-52)  [{\"stichtag\":\"2026-11-25\",\"stichtagT\":1795617000000,\"mit\":0,\"gesamt\":20,\"ok\":false,\"grund\":\"nur 0 von 20 Werte"
+  ]
+ },
+ "C-52": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB C 18 von 20 = 90 % reicht nicht (C-46 C-52)  [{\"stichtag\":\"2026-11-24\",\"stichtagT\":1795530600000,\"mit\":20,\"gesamt\":20,\"ok\":true,\"grund\":null}]"
+  ]
+ },
+ "C-53": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.7 Grenze 16:15 New York: um 16:14 ist der Dienstag noch laufend (Punkt fuer Montag; der Lader legt den Balken nicht ab), um 16:16 abgeschlossen"
+  ]
+ },
+ "C-54": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C punktTag ab 16:15 genau: heute (C-54)  [{\"tag\":\"2026-11-23\",\"t\":1795444200000,\"kurs\":101}]"
+  ]
+ },
+ "C-55": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+  ]
+ },
+ "C-56": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "C-57": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "C-58": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C bargeldAm: nur spaetere Ausschuettungen abziehen (C-58 C-59 C-60 C-61)  [988]"
+  ]
+ },
+ "C-59": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "C-60": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "C-61": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C bargeldAm: nur spaetere Ausschuettungen abziehen (C-58 C-59 C-60 C-61)  [NaN]"
+  ]
+ },
+ "C-62": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.4 Grenze fuenf Handelstage: 4 ohne neuen Balken bleibt, 5 und 6 werden ausgebucht - zum letzten Schluss OHNE Kosten (100 × 130 = 13.000 $), der Leerverkauf"
+  ]
+ },
+ "C-63": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6 bricht vor Abschnitt 101 mit nicht abgefangener Ausnahme ab: TypeError: Cannot read properties of undefined (reading 'stueck') (keine Abschlusszeile; der Harness sieht das nicht, weil die Basis schon mit Exit 1 endet und alle 17 Basis-Rotzeilen vor der Abbruchstelle liegen)"
+  ],
+  "harnessUrteil": "UEBERLEBT",
+  "harnessGruende": [],
+  "nachlauf": "einzeln: Harness UEBERLEBT; Direktlauf test-v6: Absturz; test-mutation-buecher.js allein: rot"
+ },
+ "C-64": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 100.5 Reihenende: beim Leerverkauf die Rechnung der Gutschrift (10 × (2 × 100 − 80) = 1.200 $), bei Kurs ueber dem doppelten Einstand 0 $ mit Grund; beim Kauf"
+  ]
+ },
+ "C-65": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 100.5 Reihenende: beim Leerverkauf die Rechnung der Gutschrift (10 × (2 × 100 − 80) = 1.200 $), bei Kurs ueber dem doppelten Einstand 0 $ mit Grund; beim Kauf"
+  ]
+ },
+ "C-66": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 100.5 Reihenende: beim Leerverkauf die Rechnung der Gutschrift (10 × (2 × 100 − 80) = 1.200 $), bei Kurs ueber dem doppelten Einstand 0 $ mit Grund; beim Kauf",
+   "Kleinsttest-Urteil geaendert: 3:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-67": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 98.4 Grenze fuenf Handelstage: 4 ohne neuen Balken bleibt, 5 und 6 werden ausgebucht - zum letzten Schluss OHNE Kosten (100 × 130 = 13.000 $), der Leerverkauf",
+   "Kleinsttest-Urteil geaendert: 3:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-68": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌ 100.5 Reihenende: beim Leerverkauf die Rechnung der Gutschrift (10 × (2 × 100 − 80) = 1.200 $), bei Kurs ueber dem doppelten Einstand 0 $ mit Grund; beim Kauf"
+  ]
+ },
+ "C-69": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 98.4 Grenze fuenf Handelstage: 4 ohne neuen Balken bleibt, 5 und 6 werden ausgebucht - zum letzten Schluss OHNE Kosten (100 × 130 = 13.000 $), der Leerverkauf"
+  ]
+ },
+ "C-70": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C Reihenende nach 5 Balken, Lang (C-62 C-63 C-66 C-67 C-69 C-70 C-71)  [[{\"sym\":\"A\",\"letzterTag\":\"2026-11-12\",\"kurs\":50,\"stueck\":10,\"richtung\":1,\"gutschrif"
+  ]
+ },
+ "C-71": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "C-72": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C Reihenende Tag in New York, nicht UTC (C-72)  [[]]"
+  ]
+ },
+ "C-73": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C Reihenende Schluss 0: bleibt (C-73)  [[{\"sym\":\"A\",\"letzterTag\":\"2026-11-12\",\"kurs\":0,\"stueck\":3,\"richtung\":1,\"gutschrift\":0,\"tage\":5}]]"
+  ]
+ },
+ "C-74": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C Reihenende trades auf 400 gekappt (C-74)  [401]"
+  ]
+ },
+ "C-75": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 24 neu rot, z.B. ❌    Gegenprobe: Faelligkeit ueber die Uhrzeit (Fassung bis Nr. 92: Balken nach dem Zeitstempel) faellt auf",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-76": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "C-77": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,3:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG,9:ZEIGT ABWEICHUNG,15:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-78": {
+  "urteil": "UEBERLEBT",
+  "gruende": []
+ },
+ "C-79": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "C-80": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 16 neu rot, z.B. ❌ MB B Uhr: istWerktag  []"
+  ]
+ },
+ "C-81": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 15 neu rot, z.B. ❌ MB B Uhr: istWerktag  []"
+  ]
+ },
+ "C-82": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ MB B Uhr: letzterFertigerWerktag Schluss 16:15  []"
+  ]
+ },
+ "C-83": {
+  "urteil": "UEBERLEBT",
+  "gruende": [],
+  "nachlauf": "einzeln UEBERLEBT; Direktlauf ohne Absturz, MB 281 gruen"
+ },
+ "C-84": {
+  "urteil": "UEBERLEBT",
+  "gruende": [],
+  "nachlauf": "einzeln UEBERLEBT; Direktlauf ohne Absturz, MB 281 gruen"
+ },
+ "C-85": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌    Gegenprobe: Faelligkeit ueber die Uhrzeit (Fassung bis Nr. 92: Balken nach dem Zeitstempel) faellt auf"
+  ]
+ },
+ "C-86": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 15 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom "
+  ]
+ },
+ "C-87": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 98.5 Grenze 09:35 New York: um 09:34 kein Handel, kein Abruf, die Karte sagt \"Umschichtung heute nach Börsenöffnung\""
+  ]
+ },
+ "C-88": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB B Uhr: Zeitkonstanten  [[[16,15],[9,45],[16,0]]]"
+  ]
+ },
+ "C-89": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 15 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom "
+  ]
+ },
+ "C-90": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB B Uhr: letzterFertigerWerktag Schluss 16:15  []"
+  ]
+ },
+ "C-91": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB B Uhr: letzterFertigerWerktag Schluss 16:15  []"
+  ]
+ },
+ "C-92": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 12 neu rot, z.B. ❌ 98.6 Grenze drei Tage: Marktreihe drei Werktage hinter der Uhr gilt noch, vier nicht - dann faellig = null (nie still \"nicht faellig\")  [4 / 5]"
+  ]
+ },
+ "C-93": {
+  "urteil": "UEBERLEBT",
+  "gruende": [],
+  "nachlauf": "einzeln UEBERLEBT; Direktlauf ohne Absturz, MB 281 gruen"
+ },
+ "C-94": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB B Uhr: bestandFrisch Grenze  []"
+  ]
+ },
+ "C-95": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB B Uhr: bestandFrisch Grenze  []"
+  ]
+ },
+ "C-96": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB B Uhr: bestandFrisch Grenze  []"
+  ]
+ },
+ "C-97": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C bewerteDrift auf Cent gerundet (C-97)  [{\"wert\":105.1225,\"ohneKurs\":[]}]"
+  ]
+ },
+ "C-98": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB C bewerteDrift Short nie unter 0 (C-98)  [{\"wert\":-450,\"ohneKurs\":[]}]"
+  ]
+ },
+ "D-01": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB buchInit drift: gleiches Startkapital, keine Konfiguration  [{\"name\":\"drift\",\"start\":100000,\"cash\":90000,\"positionen\":[],\"trades\":[],\"angelegt\":17956206000"
+  ]
+ },
+ "D-02": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB buchInit drift: gleiches Startkapital, keine Konfiguration  [{\"name\":\"drift\",\"start\":100000,\"cash\":100000,\"positionen\":[],\"trades\":[],\"angelegt\":1795620600"
+  ]
+ },
+ "D-03": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB buchInit drift: gleiches Startkapital, keine Konfiguration  [{\"name\":\"drift\",\"start\":100000,\"cash\":100000,\"positionen\":[],\"trades\":[],\"angelegt\":1795620600"
+  ]
+ },
+ "D-04": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB buchInit momentum: 100.000 $ Bargeld und Start, angelegt = jetzt, gemessene Konfiguration, liquideSeit leer  [{\"name\":\"momentum\",\"start\":100000,\"cash\":1000"
+  ]
+ },
+ "D-05": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB buchInit drift: gleiches Startkapital, keine Konfiguration  [{\"name\":\"drift\",\"start\":10000,\"cash\":10000,\"positionen\":[],\"trades\":[],\"angelegt\":179562060000"
+  ]
+ },
+ "D-06": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB buchInit momentum: 100.000 $ Bargeld und Start, angelegt = jetzt, gemessene Konfiguration, liquideSeit leer  [{\"name\":\"momentum\",\"start\":100000,\"cash\":1000"
+  ]
+ },
+ "D-07": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 15 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+  ]
+ },
+ "D-08": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB kleinstWert: fehlend, null, 0 und negativ sind 0 (aus), 0,05 bleibt  [0,-1]"
+  ]
+ },
+ "D-09": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+  ]
+ },
+ "D-10": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB feldGleich: kleinstAnteil fehlend gleich 0; sonst genau gleich (nicht <=)"
+  ]
+ },
+ "D-11": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 16 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+  ]
+ },
+ "D-12": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt"
+  ]
+ },
+ "D-13": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+  ]
+ },
+ "D-14": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-15": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+  ]
+ },
+ "D-16": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 11 neu rot, z.B. ❌ 96.1 auch das Ausschalten bekaeme seine eigene Zeile (0,05 → aus) und setzte nichts zurueck"
+  ]
+ },
+ "D-17": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt"
+  ]
+ },
+ "D-18": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: setzt die K-Umstellung liquideSeit und korbVerlauf zurueck, faellt es auf"
+  ]
+ },
+ "D-19": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 96.1 auch das Ausschalten bekaeme seine eigene Zeile (0,05 → aus) und setzte nichts zurueck"
+  ]
+ },
+ "D-20": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.1 der Text nennt das Feld, alt → neu, was die Regel tut, ab wann sie greift, und \"Simulation\"  [Momentum-Buch: Regel K gegen Kleinstpositionen eingeschalte"
+  ]
+ },
+ "D-21": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 96.1 auch das Ausschalten bekaeme seine eigene Zeile (0,05 → aus) und setzte nichts zurueck"
+  ]
+ },
+ "D-22": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 96.1 das Buch merkt sich die neue Konfiguration (kleinstAnteil 0,05) und seit wann die Regel gilt"
+  ]
+ },
+ "D-23": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt"
+  ]
+ },
+ "D-24": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt"
+  ]
+ },
+ "D-25": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.1 eine echte Korb-Umstellung (anderes Feld weicht ab) setzt liquideSeit und korbVerlauf weiter zurueck - mit dem Text der Korb-Umstellung  [null / 0]"
+  ]
+ },
+ "D-26": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-27": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB umstellungPruefen ohne gemerkte Konfiguration: voller Zweig, Altwert \"Rückblick 231, Lücke 21, Halten 63 ... KEIN Umsatzfilter\" (D-17,27)  [Alt: Rückblick "
+  ]
+ },
+ "D-28": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB umstellungPruefen: Text mit alter und neuer Konfiguration in Zahlen (D-28,29,30)  [Alt: Rückblick 231, Lücke 21, Halten 60 Handelstage, stärkste 1 %, minde"
+  ]
+ },
+ "D-29": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB umstellungPruefen: Text mit alter und neuer Konfiguration in Zahlen (D-28,29,30)  [Alt: Rückblick 231, Lücke 21, Halten 60 Handelstage, stärkste 10 %, mind"
+  ]
+ },
+ "D-30": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)"
+  ]
+ },
+ "D-31": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB takt: eine Umstellung der Konfiguration wird gespeichert, ein ruhiger Takt speichert nichts (D-31)  [[0,0]]"
+  ]
+ },
+ "D-32": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-33": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 96.5 je Takt und Buch genau eine Journalzeile, wenn gebucht wurde  [2]"
+  ]
+ },
+ "D-34": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 96.5 der zweite Takt bucht nichts und schreibt keine Zeile  [0]"
+  ]
+ },
+ "D-35": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 96.5 der zweite Takt bucht nichts und schreibt keine Zeile  [0]"
+  ]
+ },
+ "D-36": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB massnahmenBuchen: Buchungszeit ist die Uhr des Takts (D-36)  [[{\"sym\":\"AAA\",\"art\":\"div\",\"t\":1794321000000,\"am\":1795707000000,\"kaufT\":1793629800000,\"betrag\""
+  ]
+ },
+ "D-37": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.5 mfdepot.js bucht fuer BEIDE Buecher, auch wenn beide Schalter aus sind  [5 / 98]"
+  ]
+ },
+ "D-38": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.5 je Takt und Buch genau eine Journalzeile, wenn gebucht wurde  [2]"
+  ]
+ },
+ "D-39": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB Testlauf ohne Ausnahme  [TypeError: Cannot read properties of undefined (reading 't') at teilBuchungen (/tmp/claude-0/mutarbeit-n1/test-mutation-buecher.js"
+  ]
+ },
+ "D-40": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB Testlauf ohne Ausnahme  [TypeError: Cannot read properties of undefined (reading 't') at teilBuchungen (/tmp/claude-0/mutarbeit-n2/test-mutation-buecher.js",
+   "Kleinsttest-Urteil geaendert: 3:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-41": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.4 im Takt: beide Buecher, nur mit einer Marktreihe, die nicht veraltet ist (sonst wird nicht gezaehlt und nichts ausgebucht)"
+  ]
+ },
+ "D-42": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB reihenendeBuchen: beide Buecher buchen die Position zum letzten Schluss aus, Zeile je Position mit Buchname, true (D-39,40,42,43)  [[true,1250,407,[{\"id\":\""
+  ]
+ },
+ "D-43": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB reihenendeBuchen: beide Buecher buchen die Position zum letzten Schluss aus, Zeile je Position mit Buchname, true (D-39,40,42,43)  [[false,1250,407,[{\"id\":"
+  ]
+ },
+ "D-44": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.4 im Takt: beide Buecher, nur mit einer Marktreihe, die nicht veraltet ist (sonst wird nicht gezaehlt und nichts ausgebucht)"
+  ]
+ },
+ "D-45": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+  ]
+ },
+ "D-46": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-47": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB tagespunkt: nach einer Umschichtung NACH X kein Punkt; am Tag X selbst und davor schon (D-47,48)"
+  ]
+ },
+ "D-48": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: Bewertung zum Einstand trotz Reihe (S ohne Balken von X zum Einstand 70 statt zum letzten Schluss 77) faellt auf",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-49": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌    Gegenprobe: Bewertung zum Einstand trotz Reihe (S ohne Balken von X zum Einstand 70 statt zum letzten Schluss 77) faellt auf"
+  ]
+ },
+ "D-50": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+  ]
+ },
+ "D-51": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB tagespunkt: Buecher zu den Schluessen des Punkt-Tags, Bargeld an X, Marktstand und Stempel aus dem SPY-Balken von X (D-49,50,51,52,53,54,60)  [{\"t\":1795530"
+  ]
+ },
+ "D-52": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-53": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 97.7 mfdepot.js: der Merker fuehrt beide Reihen (markt(), marktRoh()); jeder neue Tagespunkt und der Stand des Takts tragen spyT (Stempel des Balkens, aus dem"
+  ]
+ },
+ "D-54": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 97.7 mfdepot.js: der Merker fuehrt beide Reihen (markt(), marktRoh()); jeder neue Tagespunkt und der Stand des Takts tragen spyT (Stempel des Balkens, aus dem",
+   "(Hinweis, kein Urteil) Kleinsttest-Text geaendert"
+  ]
+ },
+ "D-55": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB tagespunkt ohne Buecher: momentum und drift null, startM 100000, startD null (D-55,56,57)  [{\"t\":1795530600000,\"tag\":\"2026-11-24\",\"momentum\":null,\"drift\":n"
+  ]
+ },
+ "D-56": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-57": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB tagespunkt ohne Buecher: momentum und drift null, startM 100000, startD null (D-55,56,57)  [{\"t\":1795530600000,\"tag\":\"2026-11-24\",\"momentum\":null,\"drift\":0"
+  ]
+ },
+ "D-58": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB tagespunkt: der Verlauf haelt hoechstens 750 Punkte, der aelteste faellt heraus (D-58,59)  [[749,{\"t\":1002,\"tag\":\"2020-01-01\",\"i\":2}]]"
+  ]
+ },
+ "D-59": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB tagespunkt: der Verlauf haelt hoechstens 750 Punkte, der aelteste faellt heraus (D-58,59)  [[751,{\"t\":1000,\"tag\":\"2020-01-01\",\"i\":0}]]"
+  ]
+ },
+ "D-60": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-61": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB eroeffnung: der Balken von MORGEN (nach Mitternacht New York) gehoert nicht zum Ausfuehrungstag (D-61)  [{\"kurs\":100,\"t\":1795617000000}]"
+  ]
+ },
+ "D-62": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (r"
+  ]
+ },
+ "D-63": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB eroeffnung: fehlt die Eroeffnung im Balken, ist das Ergebnis null - nie Schluss, nie ein Kurs null (D-63,65,69)  [{\"kurs\":null,\"t\":1795617000000}]"
+  ]
+ },
+ "D-64": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 17 neu rot, z.B. ❌    Gegenprobe: Fuellkurs = Schluss statt Eroeffnung faellt auf",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-65": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB eroeffnung: fehlt die Eroeffnung im Balken, ist das Ergebnis null - nie Schluss, nie ein Kurs null (D-63,65,69)  [{\"kurs\":null,\"t\":1795617000000}]"
+  ]
+ },
+ "D-66": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-67": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 10 neu rot, z.B. ❌    Gegenprobe: Fuellkurs = Schluss statt Eroeffnung faellt auf"
+  ]
+ },
+ "D-68": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (r"
+  ]
+ },
+ "D-69": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (r"
+  ]
+ },
+ "D-70": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 99.2 Eroeffnung erst beim dritten Takt (09:50, 10:20 ohne, 10:50 mit): die ersten zwei aendern nichts und schreiben keine Zeile, der dritte kauft zur Eroeffnu"
+  ]
+ },
+ "D-71": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB eroeffnung: Abruf unbereinigt mit offenRoh, Tagesbalken, von = Mitternacht New York, bis = jetzt (D-68,69,70,71)  [{\"von\":1795582800000,\"bis\":1795620600000"
+  ]
+ },
+ "D-72": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.5 Grenze 09:35 New York: um 09:34 kein Handel, kein Abruf, die Karte sagt \"Umschichtung heute nach Börsenöffnung\""
+  ]
+ },
+ "D-73": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.5 Grenze 09:35 New York: um 09:34 kein Handel, kein Abruf, die Karte sagt \"Umschichtung heute nach Börsenöffnung\""
+  ]
+ },
+ "D-74": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ausfuehrungVorbereiten: gehandelt wird erst ab 09:35 New York (09:20, 09:32, 09:34 nicht; 09:35 ja) (D-72,73,74)  [false:Umschichtung heute nach Börsenöffn"
+  ]
+ },
+ "D-75": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-76": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 10 neu rot, z.B. ❌ 98.5 Frische gegen die Uhr: ein Bestand von Montag 16:00 (vor 16:15) reicht nicht - kein Handel, Nachladen angestossen; Grenze 95 %: 19 von 20 mit Balken vom ",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-77": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌    Gegenprobe: ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel"
+  ]
+ },
+ "D-78": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌    Gegenprobe: ein Balken vom Ausfuehrungstag in der Rangfolge aendert das Ziel"
+  ]
+ },
+ "D-79": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ausfuehrungVorbereiten: zu wenig zulaessige Werte -> Hinweis mit der Mindestzahl der Konfiguration (D-79)  [{\"ok\":false,\"hinweis\":\"Umschichtung fällig, abe"
+  ]
+ },
+ "D-80": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.5 liefert der Abruf fuer SPY keinen Balken von heute, ist heute kein Handelstag: kein Handel, nur ein Abruf"
+  ]
+ },
+ "D-81": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 12 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-82": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 98.5 Fuellkurs = Eroeffnung des Ausfuehrungstags (50, nicht der Schluss 999); ein Wert ohne Eroeffnung bekommt keinen Kurs (Ziel nicht gekauft, Position gehal",
+   "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-83": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 98.5 Fuellkurs = Eroeffnung des Ausfuehrungstags (50, nicht der Schluss 999); ein Wert ohne Eroeffnung bekommt keinen Kurs (Ziel nicht gekauft, Position gehal",
+   "Kleinsttest-Urteil geaendert: 2:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-84": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ MB ausfuehrungVorbereiten: Eroeffnungen des Ausfuehrungstags fuer Ziel UND gehaltene Werte, Stempel = Balken (D-82,83,84,85)  [[{\"T2\":100,\"T3\":100,\"T4\":100,\"T",
+   "(Hinweis, kein Urteil) Kleinsttest-Text geaendert"
+  ]
+ },
+ "D-85": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.5 Fuellkurs = Eroeffnung des Ausfuehrungstags (50, nicht der Schluss 999); ein Wert ohne Eroeffnung bekommt keinen Kurs (Ziel nicht gekauft, Position gehal"
+  ]
+ },
+ "D-86": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ MB ausfuehrungVorbereiten: Handelstag, frischer Bestand -> ok mit Stichtag Dienstag und Ausfuehrungstag Mittwoch (D-86,87)  [[true,null,\"2026-11-24\",\"2026-11-"
+  ]
+ },
+ "D-87": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 98.5 um 09:36: Rangfolge auf den Schluessen des Stichtags (Montag) - auch wenn der Bestand schon einen Balken vom Dienstag traegt; erst SPY, dann die Werte (r"
+  ]
+ },
+ "D-88": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ausfuehrungVorbereiten: veraltete Marktreihe -> kein Handel, Hinweis mit Datum (D-88)  [{\"ok\":true,\"ziel\":{\"ziel\":[\"T1\",\"T2\",\"T3\",\"T4\",\"T5\"],\"rangfolge\":[]"
+  ]
+ },
+ "D-89": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ausfuehrungVorbereiten: am Samstag kein Handel, Hinweis \"am naechsten Handelstag\" (D-89)  [{\"ok\":false,\"hinweis\":\"Umschichtung fällig, aber Tageskurse nich"
+  ]
+ },
+ "D-90": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+  ]
+ },
+ "D-91": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 99.4 Schalter \"handelt selbst\" aus: kein Abruf, kein Handel; beendet wird trotzdem (16:05: offen geloescht)"
+  ]
+ },
+ "D-92": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 12 neu rot, z.B. ❌    Gegenprobe: Nachfassen zum laufenden Kurs (Schluss 999 statt Eroeffnung 50) faellt auf"
+  ]
+ },
+ "D-93": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-94": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 99.2 Eroeffnung erst beim dritten Takt (09:50, 10:20 ohne, 10:50 mit): die ersten zwei aendern nichts und schreiben keine Zeile, der dritte kauft zur Eroeffnu"
+  ]
+ },
+ "D-95": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 99.2 Schalter von Regel K wie bei der Umschichtung: 400 $ Bargeld bei 10.000 $ Platzwert - mit K1 (5 %) kein Kleinstkauf (bleibt offen), ohne Schalter gekauft"
+  ]
+ },
+ "D-96": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 99.2 Eroeffnung kommt beim ersten Nachfassen (10:05): Kauf zur Eroeffnung 50 (der Balken traegt als Schluss den laufenden Kurs 999), 200 Stueck = budget / Kur"
+  ]
+ },
+ "D-97": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+  ]
+ },
+ "D-98": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+  ]
+ },
+ "D-99": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB offenNachfassen: aendert sich nur der Merker (Eroeffnung da, Bargeld fehlt), wird trotzdem gespeichert: true (D-99)  [[false,{\"tag\":\"2026-11-25\",\"verkaeufe"
+  ]
+ },
+ "D-100": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+  ]
+ },
+ "D-101": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 99.2 Eroeffnung kommt beim ersten Nachfassen (10:05): Kauf zur Eroeffnung 50 (der Balken traegt als Schluss den laufenden Kurs 999), 200 Stueck = budget / Kur"
+  ]
+ },
+ "D-102": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.5 Takt UND Knopf (\"jetzt umschichten\" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag, und die Faelligkeit wird ab ihm neu g"
+  ]
+ },
+ "D-103": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs ",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-104": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 7 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs ",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG,14:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-105": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs "
+  ]
+ },
+ "D-106": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs "
+  ]
+ },
+ "D-107": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs "
+  ]
+ },
+ "D-108": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs ",
+   "Kleinsttest-Urteil geaendert: 6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-109": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs "
+  ]
+ },
+ "D-110": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 99.2 im Takt: nachgefasst (oder beendet) wird nach dem Tagespunkt und vor einer Umschichtung - in jedem Takt, solange offen steht"
+  ]
+ },
+ "D-111": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-112": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-113": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 99.1 offen setzt nur der Takt, gleich nach der Ausfuehrung der Umschichtung - der Knopf \"jetzt umschichten\" aendert nichts an offen; die Zeile der Umschichtun"
+  ]
+ },
+ "D-114": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB takt Automatik: 8 Handelstage verspaetet im Text, T5 ohne Eroeffnung bleibt als offener Auftrag (kein Eintrag \"nicht handelbar\"), Auftrag gemerkt (D-113,11"
+  ]
+ },
+ "D-115": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 96.2 der Journaltext nennt die ausgefuehrten Kaeufe (nicht plan.kaufen.length), dazu die mangels Bargeld ausgefallenen und die aufgeloesten Kleinstbestaende"
+  ]
+ },
+ "D-116": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 96.2 der Journaltext nennt die ausgefuehrten Kaeufe (nicht plan.kaufen.length), dazu die mangels Bargeld ausgefallenen und die aufgeloesten Kleinstbestaende"
+  ]
+ },
+ "D-117": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB takt Knopf: handelt auch bei ausgeschaltetem Buch, ohne Verspaetungssatz, Ziel ohne Eroeffnung als \"nicht handelbar\" und OHNE offene Auftraege (D-112,117,1"
+  ]
+ },
+ "D-118": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB takt Umschichtung: letztesRebalanceT = Uhr, Ausfuehrungstag = heute in New York (D-118,119,120)  [[1787668200000,\"2026-11-25\"]]"
+  ]
+ },
+ "D-119": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.5 Takt UND Knopf (\"jetzt umschichten\" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag, und die Faelligkeit wird ab ihm neu g"
+  ]
+ },
+ "D-120": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 98.5 Takt UND Knopf (\"jetzt umschichten\" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag, und die Faelligkeit wird ab ihm neu g"
+  ]
+ },
+ "D-121": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB takt Automatik: 8 Handelstage verspaetet im Text, T5 ohne Eroeffnung bleibt als offener Auftrag (kein Eintrag \"nicht handelbar\"), Auftrag gemerkt (D-113,11"
+  ]
+ },
+ "D-122": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ MB Testlauf ohne Ausnahme  [TypeError: Cannot read properties of undefined (reading 'length') at teilTakt (/tmp/claude-0/mutarbeit-n2/test-mutation-buecher.js"
+  ]
+ },
+ "D-123": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.5 Takt UND Knopf (\"jetzt umschichten\" = manuell) gehen durch dieselbe Vorbereitung; gemerkt wird der Ausfuehrungstag, und die Faelligkeit wird ab ihm neu g"
+  ]
+ },
+ "D-124": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB takt Umschichtung: nach der Umschichtung steht die Karte nicht mehr auf \"Rebalancing faellig\" (D-124)  [<div style=\"font-size:var(--fs-neben); color:var(--"
+  ]
+ },
+ "D-125": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB takt Umschichtung: der Beginn des Vorwaertstests bleibt, wenn er schon gesetzt ist (D-125)  [1795620600000]"
+  ]
+ },
+ "D-126": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB takt Umschichtung: Korbverlauf mit Zulaessig/Geprueft/Ziel, hoechstens 120 Eintraege (D-126,127,128)  [[{\"t\":1795620600000,\"zulaessig\":8,\"geprueft\":10,\"zie"
+  ]
+ },
+ "D-127": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB takt Umschichtung: Korbverlauf mit Zulaessig/Geprueft/Ziel, hoechstens 120 Eintraege (D-126,127,128)  [[{\"t\":1795620600000,\"zulaessig\":10,\"geprueft\":8,\"zie"
+  ]
+ },
+ "D-128": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-129": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 98.6 das laufende Buch: Ausfuehrungstag = New-Yorker Tag von letztesRebalanceT (25.08.2026 18:15 UTC -> 2026-08-25); letztesRebalanceT bleibt stehen"
+  ]
+ },
+ "D-130": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.6 das laufende Buch: Ausfuehrungstag = New-Yorker Tag von letztesRebalanceT (25.08.2026 18:15 UTC -> 2026-08-25); letztesRebalanceT bleibt stehen",
+   "Kleinsttest-Urteil geaendert: 1:ZEIGT ABWEICHUNG,2:ZEIGT ABWEICHUNG,6:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-131": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB takt: die Anzeige-Rangfolge rechnet mit der Uhr des juengsten Balkens des Bestands (D-131)  [{\"nowMs\":1795620600000}]"
+  ]
+ },
+ "D-132": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB takt: sind mindestens die Haelfte der Werte ohne Stueckzahlen (1 von 2), wird nachgeladen; bei 1 von 3 nicht (D-132,137)  [0/0]"
+  ]
+ },
+ "D-133": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.2 der Journaltext nennt die ausgefuehrten Kaeufe (nicht plan.kaufen.length), dazu die mangels Bargeld ausgefallenen und die aufgeloesten Kleinstbestaende"
+  ]
+ },
+ "D-134": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB takt Umschichtung: Journal - 1 Verkauf, 4 Kaeufe, 5 Werte, Tage, Kosten 20 Bp (D-133,134)  [Momentum-Depot umgeschichtet: 1 Verkäufe, 4 Käufe auf das stärk"
+  ]
+ },
+ "D-135": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-136": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB takt: ein vor dem letzten Schluss geladener Bestand stoesst das Nachladen an, ein frischer nicht (D-136,137)  [1/1]"
+  ]
+ },
+ "D-137": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB takt: ein vor dem letzten Schluss geladener Bestand stoesst das Nachladen an, ein frischer nicht (D-136,137)  [0/1]"
+  ]
+ },
+ "D-138": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.5 ladeKurse liefert barZeit (Zeitstempel des Balkens, aus dem der Kurs stammt) und die Ereignisse des Bestands mf_ereignisse - fehlt er, null",
+   "Kleinsttest-Urteil geaendert: 7:ZEIGT ABWEICHUNG"
+  ]
+ },
+ "D-139": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 96.5 ladeKurse liefert barZeit (Zeitstempel des Balkens, aus dem der Kurs stammt) und die Ereignisse des Bestands mf_ereignisse - fehlt er, null"
+  ]
+ },
+ "D-140": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-141": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ladeKurse: Bestand mit nur drei Spalten (von vor Nr. 93) ist spalte4 = false (D-141)  [true]"
+  ]
+ },
+ "D-142": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ladeKurse: eine leere Bezugsreihe ist keine Bezugsreihe (null) (D-142)  [[]]"
+  ]
+ },
+ "D-143": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ladeKurse: ohne Ladezeit im Bestand steht stand auf 0 (D-143)  [1795620600000]"
+  ]
+ },
+ "D-144": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 19 neu rot, z.B. ❌ 96.3 unbrauchbare Ereignisse fliegen raus (Betrag 0, negativ, keine Zahl, leerer Eintrag, Nenner 0, Split 1 : 1); fehlt date, gilt der Schluessel  [{\"div\":[[1"
+  ]
+ },
+ "D-145": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ Kurse: 0, negativ, NaN, unendlich, null und Text sind es nicht"
+  ]
+ },
+ "D-146": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ Kurse: 0, negativ, NaN, unendlich, null und Text sind es nicht"
+  ]
+ },
+ "D-147": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 13 neu rot, z.B. ❌    Gegenprobe: Ereignis-Zeitstempel in Sekunden statt Millisekunden faellt auf"
+  ]
+ },
+ "D-148": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ MB ereignisseAus: Dividenden und Splits werden nach Zeit sortiert, auch wenn die Schluessel anders laufen (D-156,157,158)  [{\"div\":[[100000,1],[200000,2]],\"sp"
+  ]
+ },
+ "D-149": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 8 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-150": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.3 unbrauchbare Ereignisse fliegen raus (Betrag 0, negativ, keine Zahl, leerer Eintrag, Nenner 0, Split 1 : 1); fehlt date, gilt der Schluessel  [{\"div\":[[1"
+  ]
+ },
+ "D-151": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 9 neu rot, z.B. ❌ 96.3 Ereignisse ausserhalb des angefragten Fensters fliegen raus - wie die Balken  [{\"div\":[[1709649000000,0.004]],\"split\":[[1718026200000,1,10]]}]"
+  ]
+ },
+ "D-152": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.3 unbrauchbare Ereignisse fliegen raus (Betrag 0, negativ, keine Zahl, leerer Eintrag, Nenner 0, Split 1 : 1); fehlt date, gilt der Schluessel  [{\"div\":[[1"
+  ]
+ },
+ "D-153": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ereignisseAus: Fenster schliesst von und bis ein, wirkt auch auf Splits (D-153,154,159)  [{\"div\":[[1700000100000,0.5]],\"split\":[[1750000000000,4,1]]}]"
+  ]
+ },
+ "D-154": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ereignisseAus: Fenster schliesst von und bis ein, wirkt auch auf Splits (D-153,154,159)  [{\"div\":[[1600000000000,0.25],[1700000100000,0.5]],\"split\":[]}]"
+  ]
+ },
+ "D-155": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 1 neu rot, z.B. ❌ test-mutation-buecher.js laeuft vollstaendig durch (mindestens 281 Zusicherungen, Abschlusszeile da)  [167 gruen, 0 rot, Exit 1 mutation-buecher.js:1531:3)"
+  ]
+ },
+ "D-156": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 96.3 zerlege liefert aus der echten Antwort die Ereignisse: zwei Ausschuettungen [tMs, Betrag], ein Split [tMs, Zaehler, Nenner], nach Zeit  [{\"div\":[[1718112"
+  ]
+ },
+ "D-157": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-158": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ereignisseAus: Dividenden und Splits werden nach Zeit sortiert, auch wenn die Schluessel anders laufen (D-156,157,158)  [{\"div\":[[300000,2],[900000,1]],\"sp"
+  ]
+ },
+ "D-159": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB ereignisseAus: Fenster schliesst von und bis ein, wirkt auch auf Splits (D-153,154,159)  [{\"div\":[[1600000000000,0.25],[1700000100000,0.5]],\"split\":[[15000"
+  ]
+ },
+ "D-160": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.3 ereignisseAb schneidet auf die Ereignisse ab einem Zeitpunkt (einschliesslich), ohne die Vorlage zu aendern"
+  ]
+ },
+ "D-161": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ereignisseAb: ab einschliesslich, Dividenden und Splits (D-160,161)  [{\"div\":[[200,2],[300,3]],\"split\":[[100,2,1],[200,3,1]]}]"
+  ]
+ },
+ "D-162": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 10 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+  ]
+ },
+ "D-163": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+  ]
+ },
+ "D-164": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB zerlege: mitRoh liefert den unbereinigten Schluss, kaputter roher Schluss steht als null, Zeit in ms (D-164,165,185)  [{\"bars\":[[1700000000000,5,100,11,8,9"
+  ]
+ },
+ "D-165": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 97.1 mitRoh: roh = [[t, unbereinigter Schluss]] derselben Balken, dieselben Stempel wie bars - auch im Fenster und unbereinigt  [78]"
+  ]
+ },
+ "D-166": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ Eine Kerze ausserhalb des angefragten Fensters fliegt raus  [0 Kerzen, 3 verworfen]"
+  ]
+ },
+ "D-167": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ Hoch/Tief: vertauscht geliefert wird zurueckgedreht (frueher nur in depot.js, nicht im Explorer)"
+  ]
+ },
+ "D-168": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+  ]
+ },
+ "D-169": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ Fehlt er im Archivpfad, bleibt er LEER - sonst koennte C7 nie warnen"
+  ]
+ },
+ "D-170": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ Fuer die Anzeige faellt er weiter auf den Schluss - dort ist die Luecke laestiger"
+  ]
+ },
+ "D-171": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-172": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-173": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-174": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ MB zerlege: Zeit in ms, kaputter Kurs verworfen und gezaehlt, Luecken mit Schluss/0 gefuellt (D-166,170,171,174,175,182)  [{\"bars\":[[1700000000000,10,100,11,8"
+  ]
+ },
+ "D-175": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 10 neu rot, z.B. ❌ MB zerlege: Fenster einschliesslich beider Grenzen, Balken und Rohreihe gleich gefiltert, ausserhalbFenster gezaehlt (D-176,177,178,179,181)  [{\"bars\":[[17001"
+  ]
+ },
+ "D-176": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-177": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 1 neu rot, z.B. ❌ Eine Kerze ausserhalb des angefragten Fensters fliegt raus  [1 Kerzen, 2 verworfen]"
+  ]
+ },
+ "D-178": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-179": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 97.1 mitRoh: roh = [[t, unbereinigter Schluss]] derselben Balken, dieselben Stempel wie bars - auch im Fenster und unbereinigt  [78]"
+  ]
+ },
+ "D-180": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB zerlege: nur eine Fenstergrenze filtert nicht (D-180)  [{\"bars\":[],\"meta\":{\"symbol\":\"X\"},\"verworfen\":1,\"gesamt\":4,\"feld\":\"close\",\"ausserhalbFenster\":3}]"
+  ]
+ },
+ "D-181": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+  ]
+ },
+ "D-182": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+  ]
+ },
+ "D-183": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.3 Kurse.hole reicht den Schalter an Adresse UND Zerlegung: ein Abruf je Wert, Ereignisse in derselben Antwort  [2 Abrufe]"
+  ]
+ },
+ "D-184": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6 bricht vor Abschnitt 101 mit nicht abgefangener Ausnahme ab: TypeError: Cannot read properties of undefined (reading 'length') (keine Abschlusszeile; der Harness sieht das nicht, weil die Basis schon mit Exit 1 endet und alle 17 Basis-Rotzeilen vor der Abbruchstelle liegen)"
+  ],
+  "harnessUrteil": "UEBERLEBT",
+  "harnessGruende": [],
+  "nachlauf": "einzeln: Harness UEBERLEBT; Direktlauf test-v6: Absturz; test-mutation-buecher.js allein: rot"
+ },
+ "D-185": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 96.3 ohne den Schalter zeichengleich wie vor Nr. 87 (fuenf Aufrufarten gegen die eingefrorene Altfassung); mit Schalter sind die Balken dieselben"
+  ]
+ },
+ "D-186": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.3 Ereignisse ausserhalb des angefragten Fensters fliegen raus - wie die Balken  [{\"div\":[[1709649000000,0.004],[1718112600000,0.01]],\"split\":[[171802620000"
+  ]
+ },
+ "D-187": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB zerlege: leere adjclose-Liste gilt nicht (D-187)  [{\"bars\":[],\"meta\":{\"symbol\":\"X\"},\"verworfen\":4,\"gesamt\":4,\"feld\":\"adjclose\",\"ausserhalbFenster\":0}]"
+  ]
+ },
+ "D-188": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB reihe: nur Zeit und Schluss, null/leer ergibt []"
+  ]
+ },
+ "D-189": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB url: Sekunden abgerundet, events div+splits (D-189,190)  [https://query1.finance.yahoo.com/v8/finance/chart/AB?period1=1700000001&period2=1700000100&interv"
+  ]
+ },
+ "D-190": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 5 neu rot, z.B. ❌ 96.3 Kurse.hole reicht den Schalter an Adresse UND Zerlegung: ein Abruf je Wert, Ereignisse in derselben Antwort  [2 Abrufe]"
+  ]
+ },
+ "D-191": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ausfuehrungVorbereiten: um 21:00 New York (UTC schon morgen) ist der Ausfuehrungstag der New-Yorker (D-191)  [[false,\"Umschichtung heute nach Börsenöffnung"
+  ]
+ },
+ "D-192": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB tagespunkt: der Schreibtag eines alten Punkts ist der New-Yorker, nicht der UTC-Tag (D-192)"
+  ]
+ },
+ "D-193": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 98.6 das laufende Buch: Ausfuehrungstag = New-Yorker Tag von letztesRebalanceT (25.08.2026 18:15 UTC -> 2026-08-25); letztesRebalanceT bleibt stehen"
+  ]
+ },
+ "D-194": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB eroeffnung: scheitert der Abruf mit einer Ausnahme, ist das Ergebnis null - ein Wert bricht nicht die ganze Umschichtung ab (D-194)  [Ausnahme: Netz weg]"
+  ]
+ },
+ "D-195": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ]
+ },
+ "D-196": {
+  "urteil": "UEBERLEBT",
+  "gruende": [],
+  "nachlauf": "einzeln UEBERLEBT; Direktlauf ohne Absturz, MB 281 gruen"
+ },
+ "D-197": {
+  "urteil": "UEBERLEBT",
+  "gruende": [],
+  "harnessUrteil": "GETOETET",
+  "harnessGruende": [
+   "test-v6: 1 neu rot, z.B. ❌ 84.4 fehlend, neu und nachgewachsen werden je einzeln genannt - der Anhang des Live-Sammlers ist kein Befund  [[[\"BBB/2026.json\"],[\"CCC/2026.json\"],[\"AAA/2026"
+  ],
+  "nachlauf": "einzeln UEBERLEBT; Erstlauf-Toetung nur ueber 84.4 (Rauschen); MB allein gruen"
+ },
+ "D-198": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 6 neu rot, z.B. ❌ 98.7 der Tagespunkt gehoert zu X = Montag: Buch zu den Schluessen von X (S ohne X-Balken: letzter Schluss davor, 77), spy = SPY-Schluss von X aus demselben Be"
+  ]
+ },
+ "D-199": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 13 neu rot, z.B. ❌ 100.6 der Takt merkt sich am Auftrag, dass die Eroeffnung da war und das Bargeld fehlte (bargeld), und speichert; die Zeile am Ende nennt den Grund - die Buch"
+  ]
+ },
+ "D-200": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 4 neu rot, z.B. ❌ 96.5 je Takt und Buch genau eine Journalzeile, wenn gebucht wurde  [2]"
+  ]
+ },
+ "D-201": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 3 neu rot, z.B. ❌ MB reihenendeBuchen: beide Buecher buchen die Position zum letzten Schluss aus, Zeile je Position mit Buchname, true (D-39,40,42,43)  [[true,1250,407,[{\"id\":\""
+  ]
+ },
+ "D-202": {
+  "urteil": "GETOETET",
+  "gruende": [
+   "test-v6: 2 neu rot, z.B. ❌ MB ausfuehrungVorbereiten: nach jedem Abruf eines Werts eine Pause von 90 ms (Tempo wie der Lader; Yahoo drosselt) - sechs Werte, sechs Pausen (D-202)  [0]"
+  ]
+ }
+}

@@ -1,6 +1,6 @@
 'use strict';
 /* Mutations-Harness fuer das Momentum-Buch (Auftrag "Mutationstest Buecher", 04.10.2026).
- * Aufruf:  node pruefberichte/mutation-buecher/harness.js <mutanten.json> <ergebnis.json> [arbeitsordner]
+ * Aufruf:  node pruefberichte/mutation-luecken/harness.js <mutanten.json> <ergebnis.json> [arbeitsordner]
  * mutanten.json: [{ id, datei, suche, ersatz, funktion, beschreibung, nr? }]
  *   suche muss in datei GENAU einmal vorkommen (sonst nr = 1-basiertes Vorkommen angeben).
  * Jeder Mutant laeuft in einer EIGENEN Kopie unter /tmp (nie im Arbeitsbaum): Quelltexte kopiert,
@@ -37,7 +37,9 @@ function unterschrift(wurzel) {
   var o = {};
   if (!NUR_NEU) {
     var v6 = lauf(wurzel, ['test-v6.js']);
-    o.v6 = { code: v6.code, rot: v6.sig.split('\n').filter(function (l) { return l.indexOf('❌') >= 0; }).map(function (l) { return l.trim().slice(0, 160); }).sort(), timeout: v6.timeout, aus: v6.code === null ? v6.sig.slice(-300) : '' };
+    o.v6 = { code: v6.code, rot: v6.sig.split('\n').filter(function (l) { return l.indexOf('❌') >= 0; }).map(function (l) { return l.trim().slice(0, 160); }).sort(), timeout: v6.timeout, aus: v6.code === null ? v6.sig.slice(-300) : '',
+      sig_ende: v6.code !== 0 ? v6.sig.split('\n').filter(function (l) { return /^[A-Za-z]*Error: /.test(l); }).slice(0, 1).join('').slice(0, 160) : '',
+      ende: /\n(ALLE TESTS BESTANDEN|\d+ TEST\(S\) FEHLGESCHLAGEN)/.test(v6.sig) };
     var ch = lauf(wurzel, ['test-channel.js']);
     o.channel = { code: ch.code, rot: ch.sig.split('\n').filter(function (l) { return l.indexOf('❌') >= 0; }).map(function (l) { return l.trim().slice(0, 160); }).sort() };
     var kl = lauf(wurzel, ['pruefberichte/live-gegen-messung-momentum.test.js']);
@@ -66,6 +68,10 @@ function vergleich(a, b) {
       var neu = b.v6.rot.filter(function (x) { return a.v6.rot.indexOf(x) < 0; });
       gruende.push('test-v6: ' + (neu.length ? neu.length + ' neu rot, z.B. ' + neu[0] : 'Exit ' + b.v6.code + (b.v6.aus ? ' ' + b.v6.aus : '')));
     }
+    /* Nachtrag 05.10.2026: Ist die Basis schon rot (fehlende Daten), aendert ein Absturz von test-v6
+     * hinter der letzten roten Basiszeile weder die Rotmenge noch den Exit-Code - der Mutant galt dann
+     * als ueberlebt (C-07, C-08, C-15, C-29, C-63, D-184). Fehlt die Abschlusszeile, ist er getoetet. */
+    if (a.v6.ende !== b.v6.ende) gruende.push('test-v6: Abschlusszeile fehlt (Absturz) ' + b.v6.sig_ende);
     if (a.channel.code !== b.channel.code || JSON.stringify(a.channel.rot) !== JSON.stringify(b.channel.rot)) gruende.push('test-channel rot');
     if (JSON.stringify(a.klein.urteile) !== JSON.stringify(b.klein.urteile) || a.klein.code !== b.klein.code) gruende.push('Kleinsttest-Urteil geaendert: ' + b.klein.urteile.filter(function (x, i) { return x !== a.klein.urteile[i]; }).join(','));
     else if (JSON.stringify(a.klein.voll) !== JSON.stringify(b.klein.voll)) gruende.push('(Hinweis, kein Urteil) Kleinsttest-Text geaendert');
