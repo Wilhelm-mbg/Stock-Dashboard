@@ -323,7 +323,7 @@ TESTS[16] = async function () {
     ' Werte, juengster Balken ' + alterTage + ' Tage alt). Erster Takt: ' + (ende ? 'gehaltene Position ' + sym + ' als "Reihenende" ausgebucht zu ' + kurs2(ende.kurs) +
     ' (alter Schluss, ohne Kosten) statt zum frischen Schluss ' + kurs2(frischKurs) : sym + ' nicht ausgebucht') + '; Umschichtung faellig, aber ' +
     (umgeschichtet(d) ? 'ausgefuehrt' : 'gesperrt (' + (hinweis || 'ohne Grund auf der Karte') + ')') + '; Neuversuch des Laders: ' + neuAbrufe +
-    ' Abrufe (der Bestand gilt bis zum naechsten Boersenschluss als frisch). tagesdatenSchreiben prueft die Rueckgabe von storeSet nicht.');
+    ' Abrufe' + (gemischt || ende ? ' (der Bestand gilt bis zum naechsten Boersenschluss als frisch). tagesdatenSchreiben prueft die Rueckgabe von storeSet nicht.' : ' (der alte Index bleibt, der Lader wartet eine Stunde).'));
 };
 
 /* 17 - Teilausfall beim Laden trifft alle gehaltenen Werte (Fund F1, Zusatz). Im Zweig (450daed): Umschichtung mit

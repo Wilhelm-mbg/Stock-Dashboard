@@ -44,7 +44,7 @@
   /* Auftrag Nr. 93 (A1): Grenzen, ab denen ein neuer Ladevorgang den gespeicherten Bestand
    * ersetzt - mindestens 120 Werte und mindestens 95 % der zuvor gelieferten. */
   var MIN_GELIEFERT = 120, MIN_ANTEIL_PZ = 95, FEHLVERSUCH_PAUSE = 3600000;
-  var FEHLVERSUCH = 0, LAEDT = null;
+  var FEHLVERSUCH = 0, LAEDT = null, LADE_BEGINN = 0;
 
   /* Tageskerzen über den vollen verfügbaren Zeitraum. period1=0 statt range=max –
    * letzteres liefert bei Tageskerzen nur rund 170 Monatswerte. */
@@ -78,7 +78,7 @@
       }
       /* Ein laufender Balken (heute in New York, vor 16:15) kommt nicht in den Bestand: sein Kurs
        * ist der von jetzt, sein Umsatz ein Teil des Tages (A4/A5: ein laufender Balken zaehlt nie). */
-      reihe = window.MFHandel.ohneLaufendenBalken(reihe, Date.now());
+      reihe = window.MFHandel.ohneLaufendenBalken(reihe, LADE_BEGINN || Date.now());   // Runde 2 (M8): EINE Grenze je Ladevorgang
       if (!(reihe.length >= MIN_BALKEN)) return null;
       /* Abgelegt werden nur die Ereignisse der letzten 400 Tage - gebucht wird, was seit dem
        * Kauf einer Position anfiel, nicht die Geschichte des Werts. */
@@ -94,26 +94,43 @@
    * und Teilzahl. Der Index wird ZULETZT geschrieben - wer liest, sieht nur
    * vollstaendige Staende; fehlt ein Teil, greift der alte Schluessel. */
   var TEIL_GROESSE = 25;
+  /* Runde 2 (Nr. 108, F13): jede Rueckgabe von storeSet wird geprueft. main.js antwortet im Fehlerfall
+   * { ok: false, msg } (Platte voll, Datei gesperrt) - bisher ging es still weiter, und der Index meldete
+   * einen frischen Stand ueber einem Teil mit zwei Wochen alten Reihen (gehaltene Position als "Reihenende"
+   * zum alten Kurs ausgebucht). Scheitert ein Teil, werden Ereignisse, Bezugsreihe und Index NICHT
+   * geschrieben: der Index bleibt beim alten Stand, der Bestand gilt nicht als frisch, und Faelligkeit und
+   * Reihenende zaehlen an der alten SPY-Reihe (veraltet -> kein Handel, kein Ausbuchen). Rueckgabe
+   * { ok, schluessel, msg }. */
+  function gescheitert(r) { return !!r && r.ok === false; }
   async function tagesdatenSchreiben(roh, weg, at, ereignisse, bezug) {
     var syms = Object.keys(roh).sort();
     var teile = Math.max(1, Math.ceil(syms.length / TEIL_GROESSE));
     for (var t = 0; t < teile; t++) {
       var stueck = {};
       syms.slice(t * TEIL_GROESSE, (t + 1) * TEIL_GROESSE).forEach(function (s) { stueck[s] = roh[s]; });
-      await window.api.storeSet('mf_tagesdaten_teil_' + t, { roh: stueck });
+      var rT = await window.api.storeSet('mf_tagesdaten_teil_' + t, { roh: stueck });
+      if (gescheitert(rT)) return { ok: false, schluessel: 'mf_tagesdaten_teil_' + t, msg: rT.msg || '' };
     }
     /* Kapitalmassnahmen aus demselben Abruf (Auftrag Nr. 87): eigener Schluessel
      * mf_ereignisse { at, sym: { SYM: { div: [[tMs, betrag]], split: [[tMs, zaehler, nenner]] } } },
      * geschrieben NACH den Teilen und VOR dem Index - wer ueber den Index liest, sieht nur
      * vollstaendige Staende. Ohne das Argument (die Wanderung des alten Klumpens) bleibt
      * der Schluessel, wie er ist. */
-    if (ereignisse) await window.api.storeSet('mf_ereignisse', { at: at || Date.now(), sym: ereignisse });
+    if (ereignisse) {
+      var rE = await window.api.storeSet('mf_ereignisse', { at: at || Date.now(), sym: ereignisse });
+      if (gescheitert(rE)) return { ok: false, schluessel: 'mf_ereignisse', msg: rE.msg || '' };
+    }
     /* Die Bezugsreihe (SPY, Auftrag Nr. 93) ebenso: nach den Teilen, vor dem Index, mit
      * demselben Stand at - tagesdatenLesen gibt sie nur zurueck, wenn ihr at zum Index passt. */
-    if (bezug) await window.api.storeSet('mf_bezug', { at: at || Date.now(), sym: bezug.sym, reihe: bezug.reihe });
-    await window.api.storeSet('mf_tagesdaten_index', { at: at || Date.now(), weg: weg || [], teile: teile });
+    if (bezug) {
+      var rB = await window.api.storeSet('mf_bezug', { at: at || Date.now(), sym: bezug.sym, reihe: bezug.reihe });
+      if (gescheitert(rB)) return { ok: false, schluessel: 'mf_bezug', msg: rB.msg || '' };
+    }
+    var rI = await window.api.storeSet('mf_tagesdaten_index', { at: at || Date.now(), weg: weg || [], teile: teile });
+    if (gescheitert(rI)) return { ok: false, schluessel: 'mf_tagesdaten_index', msg: rI.msg || '' };
     // Der alte Riesen-Schluessel wird zu einem kleinen Verweis - die 38 MB sind damit weg
     try { await window.api.storeSet('mf_tagesdaten', { ersetztDurch: 'mf_tagesdaten_index', at: at || Date.now() }); } catch (eM) { }
+    return { ok: true };
   }
   async function tagesdatenLesen() {
     var idx = await window.api.storeGet('mf_tagesdaten_index');
@@ -213,6 +230,7 @@
     } else {
       var weg = [], ereignisse = {}, neu = {}, geliefert = 0, bezug = null;
       var liste = UNIVERSUM.concat([BEZUG]);
+      LADE_BEGINN = Date.now();
       for (var i = 0; i < liste.length; i++) {
         var r = await holeTage(liste[i]);
         if (r && liste[i] === BEZUG) bezug = { sym: BEZUG, reihe: r.reihe };
@@ -251,7 +269,18 @@
         if (erAlt && erAlt.sym && erAlt.sym[s]) ereignisse[s] = erAlt.sym[s];
       });
       roh = neu;
-      await tagesdatenSchreiben(roh, weg, Date.now(), ereignisse, bezug);
+      /* Runde 2 (Nr. 108, M8): Stand at = BEGINN des Ladevorgangs - derselbe Zeitpunkt, mit dem holeTage jeden
+       * laufenden Balken abschneidet (LADE_BEGINN). Bisher schnitt jeder Wert mit der Uhr seines eigenen Abrufs
+       * und der Stand war das Ende: begann das Laden 16:14 und endete 16:18, fehlte den ersten Werten der Balken
+       * des Tages, der Bestand galt trotzdem als frisch, und am Folgetag rangierten sie mit dem Vortag. */
+      var schreiben = await tagesdatenSchreiben(roh, weg, LADE_BEGINN, ereignisse, bezug);
+      if (!schreiben.ok) {
+        /* Runde 2 (Nr. 108, F13): Speichern gescheitert - der alte Index bleibt, der Bestand gilt nicht als frisch. */
+        FEHLVERSUCH = Date.now();
+        stat('Tageskurse geladen, aber nicht vollständig gespeichert (' + schreiben.schluessel + (schreiben.msg ? ': ' + schreiben.msg : '') +
+          ') – der gespeicherte Bestand gilt weiter als alt, gehandelt und ausgebucht wird darauf nicht. Neuer Versuch frühestens in einer Stunde.');
+        return datenAus(roh);
+      }
       if (behalten.length) {
         stat(geliefert + ' von ' + UNIVERSUM.length + ' Werten geladen. Ohne Antwort, mit ihrer alten Reihe behalten: ' + behalten.join(', ') +
           '.' + (weg.length > behalten.length ? ' Nicht mehr abrufbar: ' + weg.filter(function (s) { return behalten.indexOf(s) < 0; }).join(', ') + '.' : ''));
