@@ -242,7 +242,10 @@ function werktageUm(endeT, n) {
 }
 /** mfdepot.js in der Sandbox wie mfdepotSandbox, aber der Eroeffnungsbalken traegt den angefragten New-Yorker Tag
  *  (09:30 New York) statt fest den 24.11. - so geht auch ein Ausfuehrungstag im Dezember (Test 32). */
-function mfdepotSandboxTag(st, d, MF, jetzt, eroeffnungen) {
+/*  Angepasst (Runde 2, Nr. 108): erHeute (optional) = {SYM: {div, split}} - die Kapitalmassnahmen, die die Quelle
+ *  zusammen mit der Eroeffnung liefert, wenn der Abruf sie verlangt (o.ereignisse; mfdepot.js eroeffnung seit dem
+ *  Fix der Generalprobe 23.11., Fund 1). Ohne erHeute wie vorher. */
+function mfdepotSandboxTag(st, d, MF, jetzt, eroeffnungen, erHeute) {
   var karte = { innerHTML: '' };
   var win = sandbox(['mfdepot.js'], {
     U: U_ATTRAPPE, api: st.api, MF: MF, MFHandel: MH, Massstab: Ms, __el: { buchMomentumKopf: karte },
@@ -250,7 +253,9 @@ function mfdepotSandboxTag(st, d, MF, jetzt, eroeffnungen) {
       var e = eroeffnungen && eroeffnungen[sym];
       if (!(e > 0) || !o || !(o.von > 0)) return { bars: [] };
       var t = MH.nyZeit(MH.nyTag(o.von + 3600000), 9, 30);
-      return { bars: [[t, e * 1.01, 1e6, e * 1.02, e * 0.99, e]], verworfen: 0, gesamt: 1, feld: 'close' };
+      var aus = { bars: [[t, e * 1.01, 1e6, e * 1.02, e * 0.99, e]], verworfen: 0, gesamt: 1, feld: 'close' };
+      if (o.ereignisse && erHeute && erHeute[sym]) aus.ereignisse = erHeute[sym];
+      return aus;
     }),
     __D: function () { return d; }, __save: function () { return Promise.resolve({ ok: true }); }
   }, jetzt);
@@ -264,9 +269,9 @@ function bestandAblegen(st, roh, at, spy, ereignisse) {
 }
 /** Ein Takt um jetzt auf dem abgelegten Bestand: frische Sandboxen fuer mittelfrist.js (der Abruf liefert nichts) und
  *  mfdepot.js (Eroeffnungen aus eroeff). */
-async function taktUm(st, d, jetzt, eroeff) {
+async function taktUm(st, d, jetzt, eroeff, erHeute) {
   var mf = mittelfristSandbox(st, async function () { return null; }, jetzt);
-  var dep = mfdepotSandboxTag(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, jetzt, eroeff);
+  var dep = mfdepotSandboxTag(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, jetzt, eroeff, erHeute);
   await taktLauf(dep);
   return dep;
 }
@@ -696,7 +701,9 @@ TESTS[26] = async function () {
     var d = { momentumAn: true, mfBuch: buchMit(pos, letzteAusf), mfVerlauf: [] };
     var eroeff = {}; Object.keys(roh).forEach(function (s) { eroeff[s] = roh[s][n - 1][1]; });
     eroeff.SPY = 430; eroeff.XSPL = xK / 2;                       // Eroeffnung des Ex-Tags, roh = geteilt
-    await taktUm(st, d, MH.nyZeit(ausf, 10, 0), eroeff);
+    /* Angepasst (Runde 2, Nr. 108): im Lauf 'app' liefert die Quelle mit der Eroeffnung des Ex-Tags auch das
+     * Split-Ereignis, wenn der Abruf es verlangt (der Weg des Generalprobe-Fixes, Fund 1). Soll unveraendert. */
+    await taktUm(st, d, MH.nyZeit(ausf, 10, 0), eroeff, art === 'app' ? { XSPL: { div: [], split: [[exT, 2, 1]] } } : null);
     return { d: d, st: st, eroeff: eroeff, x: d.mfBuch.trades.filter(function (t) { return t.sym === 'XSPL'; })[0],
       wert: MH.bewerte(d.mfBuch, eroeff).wert, gebucht: (d.mfBuch.massnahmen || []).length };
   }
@@ -709,10 +716,16 @@ TESTS[26] = async function () {
   await taktUm(a.st, a.d, MH.nyZeit('2026-11-25', 10, 0), {});
   var nachgeholt = (a.d.mfBuch.massnahmen || []).length, xsplDa = imBuch(a.d.mfBuch, 'XSPL');
   // Umkehr-Split 1:10 auf einem GEHALTENEN Ziel: z0 hat heute Ex-Tag, Eroeffnung roh = x10, Stueck noch alt (Planrechnung)
-  var z0 = ziel[0], bu = { cash: 0, positionen: ziel.slice(0, 10).map(function (s) { return { sym: s, stueck: 50 }; }).concat([{ sym: 'XSPL', stueck: 100 }]) };
+  var z0 = ziel[0], bu = { cash: 0, positionen: ziel.slice(0, 10).map(function (s) { return { sym: s, stueck: 50, kursT: tage[n - 63] }; }).concat([{ sym: 'XSPL', stueck: 100, kursT: tage[n - 63] }]) };
   var plOk = MH.planeUmschichtung(ziel, bu, a.eroeff, K);
   var pr2 = Object.assign({}, a.eroeff); pr2[z0] = a.eroeff[z0] * 10;
-  var plUm = MH.planeUmschichtung(ziel, bu, pr2, K);
+  /* Angepasst (Runde 2, Nr. 108): der heutige Weg vor dem Plan (mfdepot.js takt -> splitsHeuteBuchen ->
+   * MH.splitsAmAusfuehrungstag mit den Ereignissen aus dem Abruf der Eroeffnung). Fehlt die Funktion (Stand vor dem
+   * Fix der Generalprobe), wird wie damals mit der alten Stueckzahl geplant. */
+  var buUm = JSON.parse(JSON.stringify(bu)), erZ0 = {}, bzZ0 = {};
+  erZ0[z0] = { div: [], split: [[exT, 1, 10]] }; bzZ0[z0] = exT;
+  if (MH.splitsAmAusfuehrungstag) MH.splitsAmAusfuehrungstag(buUm, erZ0, bzZ0, MH.nyZeit(ausf, 10, 0));
+  var plUm = MH.planeUmschichtung(ziel, buUm, pr2, K);
   var verlust = a.wert - b.wert;
   zeile(Math.abs(verlust) > 1 || Math.abs(plUm.depotwert - plOk.depotwert) > 1,
     'Split 2:1 auf XSPL, Ex-Tag = Ausfuehrungstag 24.11.: vor dem Handel gebucht ' + jn(a.gebucht) + ', verkauft ' + a.x.stueck + ' Stueck zu ' + kurs2(a.x.kurs) + ' = ' +
@@ -849,13 +862,33 @@ TESTS[29] = function () {
   }
   var kurse = { ALT: 100 }; ziel.forEach(function (s) { kurse[s] = 100; });
   function messung(b) { MH.fuehreAus(b, MH.planeUmschichtung(ziel, b, kurse, K), vor, 20, K); return b; }
-  /** Die App: um 09:36 fehlt die Eroeffnung von fehlt; ist etwas offen, kommt sie um 10:05 (derselbe Kurs). */
+  /* Angepasst (Runde 2, Nr. 108): der heutige Weg. Seit dem Fix der Generalprobe (Fund 2) fragt ausfuehrungVorbereiten
+   * (mfdepot.js) vor dem Plan MH.eroeffnungAbwarten: fehlt einer GEHALTENEN Position mit Balken am Stichtag die
+   * Eroeffnung, wird bis 16:00 New York nicht gehandelt und beim naechsten Takt (10:05) mit allen Eroeffnungen geplant.
+   * Dafuer braucht die Rechnung den Bestand: jede Reihe hat einen Balken am Stichtag 23.11. Fehlt die Funktion (Stand
+   * vor dem Fix), laeuft der alte Weg: planen ohne den Wert, offen merken, um 10:05 nachfassen. Soll unveraendert. */
+  var stichtag = '2026-11-23', roh = {};
+  ziel.concat(['ALT']).forEach(function (s) { roh[s] = [[MH.nyZeit(stichtag, 9, 30), 100, 1e6]]; });
+  /** Die App: um 09:36 fehlt die Eroeffnung von fehlt; wartet sie, oder ist etwas offen, kommt sie um 10:05 (derselbe Kurs). */
   function app(b, fehlt) {
     var ohne = Object.assign({}, kurse); delete ohne[fehlt];
+    var warten = MH.eroeffnungAbwarten ? MH.eroeffnungAbwarten(b.positionen, ohne, roh, stichtag, vor) : [];
+    if (warten.length) {
+      var planW = MH.planeUmschichtung(ziel, b, kurse, K); MH.fuehreAus(b, planW, nach, 20, K);
+      return { plan: planW, offen: MH.offeneAuftraege(ziel, planW, tag), res: null, wartete: warten };
+    }
     var plan = MH.planeUmschichtung(ziel, b, ohne, K); MH.fuehreAus(b, plan, vor, 20, K);
     var offen = MH.offeneAuftraege(ziel, plan, tag), pr = {}, bt = {};
     pr[fehlt] = 100; bt[fehlt] = oeffT; b.offen = offen;
-    return { plan: plan, offen: offen, res: offen ? MH.nachfassen(b, pr, bt, nach, 20, K) : null };
+    return { plan: plan, offen: offen, res: offen ? MH.nachfassen(b, pr, bt, nach, 20, K) : null, wartete: [] };
+  }
+  /** Was um 09:36 und 10:05 geschah, als Text. */
+  function ablauf(x, fehlt) {
+    if (x.wartete.length) return '09:36 gewartet auf [' + x.wartete.join(', ') + '] (kein Handel), 10:05 mit allen Eroeffnungen geplant: Plan-Depotwert ' +
+      geld(x.plan.depotwert) + ', Kaeufe ' + x.plan.kaufen.filter(function (o) { return o.stueck > 0; }).length + ' ausgefuehrt';
+    return 'Plan-Depotwert ' + geld(x.plan.depotwert) + ' (ohne ' + fehlt + '), Kaeufe geplant ' + x.plan.kaufen.length + ' (' + syms(x.plan.kaufen) + ')' +
+      ', ausgefuehrt ' + jn(x.plan.kaufen.length && x.plan.kaufen[0].stueck > 0) + '; offen: Verkaeufe [' + syms(x.offen && x.offen.verkaeufe) + '], Kaeufe [' + syms(x.offen && x.offen.kaeufe) +
+      ']. 10:05 nachgefasst: verkauft [' + (x.res ? x.res.verkauft.map(function (v) { return v.sym + ' zu ' + kurs2(v.kurs); }).join(', ') : '') + '], gekauft [' + syms(x.res && x.res.gekauft) + ']';
   }
   function st5(b) { var p = b.positionen.filter(function (x) { return x.sym === 'T5'; })[0]; return p ? p.stueck : 0; }
   function syms(l) { return (l || []).map(function (x) { return x.sym || x; }).join(', '); }
@@ -863,11 +896,9 @@ TESTS[29] = function () {
   var kM = messung(buchKlein()), kA = buchKlein(), k = app(kA, 'T5');
   var bG = buch(), g = app(bG, 'T19');
   zeile(bA.positionen.length !== bM.positionen.length || Math.abs(bA.cash - bM.cash) > 100 || Math.abs(st5(kA) - st5(kM)) > 1,
-    '09:36 New York ohne Eroeffnung fuer ALT (kein Ziel, 5.000 $): Plan-Depotwert ' + geld(a.plan.depotwert) + ' (ohne ALT), Kaeufe geplant ' + a.plan.kaufen.length + ' (' + syms(a.plan.kaufen) + ')' +
-    ', ausgefuehrt ' + jn(a.plan.kaufen[0].stueck > 0) + '; offen: Verkaeufe [' + syms(a.offen.verkaeufe) + '], Kaeufe [' + syms(a.offen.kaeufe) + ']. 10:05 nachgefasst: verkauft [' +
-    a.res.verkauft.map(function (v) { return v.sym + ' zu ' + kurs2(v.kurs); }).join(', ') + '], gekauft [' + syms(a.res.gekauft) + '] -> T19 im Buch ' + jn(imBuch(bA, 'T19')) + ', ' +
+    '09:36 New York ohne Eroeffnung fuer ALT (kein Ziel, 5.000 $): ' + ablauf(a, 'ALT') + ' -> T19 im Buch ' + jn(imBuch(bA, 'T19')) + ', ' +
     bA.positionen.length + ' Positionen, Bargeld ' + betrag(bA.cash) + ' bis zur naechsten Umschichtung (63 Handelstage). Messung: T19 gekauft ' + jn(imBuch(bM, 'T19')) + ', ' +
-    bM.positionen.length + ' Positionen, Bargeld ' + betrag(bM.cash) + '. Kleinstbestand T5 (1 Stueck) ohne Eroeffnung: App ' + stk(st5(kA)) + ' Stueck, offen ' + (k.offen ? syms(k.offen.verkaeufe.concat(k.offen.kaeufe)) : 'nichts') +
+    bM.positionen.length + ' Positionen, Bargeld ' + betrag(bM.cash) + '. Kleinstbestand T5 (1 Stueck) ohne Eroeffnung: ' + (k.wartete.length ? '09:36 gewartet, 10:05 geplant; ' : '') + 'App ' + stk(st5(kA)) + ' Stueck, offen ' + (k.offen ? syms(k.offen.verkaeufe.concat(k.offen.kaeufe)) : 'nichts') +
     ', Bargeld ' + betrag(kA.cash) + ' bis zur naechsten Umschichtung; Messung ' + stk(st5(kM)) + ' Stueck (K2: verkauft, voll neu gekauft). Gegenprobe Kauf T19 ohne Eroeffnung um 09:36: offen [' +
     syms(g.offen && g.offen.kaeufe) + '], 10:05 gekauft [' + syms(g.res && g.res.gekauft) + '], ' + bG.positionen.length + ' Positionen, Bargeld ' + betrag(bG.cash) + '.');
 };
