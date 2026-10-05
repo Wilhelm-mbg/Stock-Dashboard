@@ -23809,8 +23809,11 @@ console.log('97b) Rueckblick-Zeilen und der Kopf ueber den alten Belegen (Auftra
     fremdeKoepfe(wurzel97.map(function (f) { return f[0] === 'app-shell.js' ? [f[0], f[1].replace("window.StudienUrteile.belegeKopf('momentum-liquide') : ''; },", "'Überholt: gemessen nur an Werten, die es heute noch gibt.' : ''; },")] : f; })).join() === 'app-shell.js');
 
   /* ---- 97.11 "exakt" gestrichen, "(Parameter wie gemessen)" ---- */
-  ok(stQ.indexOf("– die gemessene liquide Konfiguration (Parameter wie gemessen).',") !== -1 && stQ.indexOf('Das Buch handelt seither diese Konfiguration (Parameter wie gemessen) – ab der ersten Umschichtung') !== -1 &&
-     shQ.indexOf('handelt das Buch <b>die gemessene liquide Konfiguration (Parameter wie gemessen)</b>: Rückblick 231 Handelstage') !== -1 &&
+  /* Runde 2 (Nr. 108, F10): "handelt seither" / "Seit 02.09.2026 handelt das Buch" und "Out-of-Sample-Beleg" auf den
+   * Belegstand gebracht - das Buch rechnet seit 02.09. mit der Konfiguration und handelt sie ab seiner ersten Umschichtung. */
+  ok(stQ.indexOf("– die gemessene liquide Konfiguration (Parameter wie gemessen).',") !== -1 && stQ.indexOf('Das Buch rechnet seither mit dieser Konfiguration (Parameter wie gemessen) und handelt sie ab seiner ersten Umschichtung danach') !== -1 &&
+     shQ.indexOf('rechnet das Buch mit <b>der gemessenen liquiden Konfiguration (Parameter wie gemessen)</b> und handelt sie ab seiner ersten Umschichtung danach: Rückblick 231 Handelstage') !== -1 &&
+     [stQ, shQ].every(function (q) { return !/Out-of-Sample-Beleg|Seit 02\.09\.2026 handelt das Buch|handelt seither diese Konfiguration/.test(q); }) &&
      /id="mfKonfigZeile"[^>]*>Konfiguration \(Parameter wie gemessen, Studie 02\.09\.2026\)/.test(html) &&
      [stQ, shQ, html].every(function (q) { return !/exakt die gemessene|seither exakt diese Konfiguration/.test(q); }) &&
      /id="drKonfigZeile"[^>]*>Konfiguration seit Anlage des Buchs unverändert/.test(html),
