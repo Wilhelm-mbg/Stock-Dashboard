@@ -187,3 +187,31 @@ großzügige Regel ist deshalb nur beschreibend), Preisverbesserung bei Lücken,
 ---
 
 *Jede Abweichung von dieser Regel steht als datierter Nachtrag unter dieser Linie, nie darüber.*
+
+## NACHTRAG 1 — 05.10.2026, 10:33, vor dem Pilot und vor jeder Rendite auf echten Daten
+
+**Anlass:** die Martingal-Probe in `test.js` (Abschnitt 8): auf einer reinen Irrfahrt ohne jede Kante muss
+Signal minus Placebo null sein. Sie war es nicht — mit der Ziehung aus §6.1 lag D für `rsi2` 1m bei −0,10 bis
+−0,24 Pp (t −3 bis −9), **auch mit Marktorder**, und das Placebo verdiente long wie short +0,05 bis +0,14 Pp. Auf
+echten Daten wurde bis hier nur gezählt (Füllquoten AAPL/2024, `test.js` 10d), keine Rendite angesehen.
+
+1. **Placebo-Ziehung (ersetzt die Ziehung in §6.1).** Die Richtung eines Signals entsteht aus dem Kursweg bis zum
+   Signal. Ein Placebo, das *vor* dem Signal einsteigt und dessen Richtung trägt, blickt nach vorn. Neu: **je Signal
+   eine zulässige Kerze desselben Tages streng nach der Signalkerze**, gleichverteilt, Richtung dieses Signals, Saat
+   wie bisher (`Reihe|Tag|Detektor|Zeitrahmen|limit`); gibt es keine spätere zulässige Kerze, gibt es kein Placebo
+   (gezählt). Zu seinem Einstieg stehen Existenz und Richtung damit fest. Folge, ausgewiesen: das Placebo liegt im
+   Mittel später am Tag (mittlerer Versatz wird gezählt); für „bis Schluss" hält es kürzer. Alles andere aus §6.1
+   (dieselbe Limit-Mechanik, k, Füllregeln, Ausstieg, Kosten, Marktertrag nebenher) bleibt.
+2. **Schätzer (präzisiert §7 „Bündelung über Handelstage").** Das Mittel der *Tagesmittel* ist verzerrt, sobald die
+   Zahl der Handel eines Tages vom Kursweg *nach* einem Handel abhängt (Gewicht 1/k_t): auf dem Martingal lag es für
+   `rsi2` 1m bis Schluss mit Marktorder 0,05 bis 0,29 Pp unter null (t bis −4,8), das handelsgewichtete Mittel nicht.
+   Neu: Endpunkt ist das **handelsgewichtete Mittel** (Σ Erträge / Zahl der Handel) mit einem **nach Handelstagen
+   geclusterten Standardfehler** (Verhältnisschätzer, Delta-Methode; für D = A − B über die Vereinigung der Tage).
+   MDE_B = 2·se, Tore, Bonferroni, Schwellen und Wörter unverändert. Signaltage = Tage mit mindestens einem streng
+   gefüllten Signal. Das Mittel der Tagesmittel steht nachrichtlich daneben. Gilt gleich für die Netto-Bedingung
+   („trägt") und die Größenaussage.
+3. **Hinweis an den PM, nicht Teil dieser Studie:** die Minutenstudie urteilte über Tagesmittel. Im Querschnitt mit
+   Tausenden Signalen je Tag ist die Verzerrung je Reihe stark verdünnt, über gemeinsame Marktbewegungen aber nicht
+   ausgeschlossen; gemessen ist sie dort nicht.
+
+Kennung der Zellen `v1` → `v2` (Layout und Zeilenarten bleiben, die Kerze der Placebo-Ziehung wechselt; mit `v1` lief nur der Kunstdaten-Test).
