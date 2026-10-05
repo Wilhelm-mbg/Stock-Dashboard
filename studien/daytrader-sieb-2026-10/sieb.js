@@ -147,12 +147,19 @@ function main() {
   } else if (phase === 'bestaetigung') {
     var siegel = gitSauber('kandidaten.json');
     if (!siegel) throw new Error('kandidaten.json ist nicht committet oder veraendert - Bestaetigungstage bleiben verschlossen.');
-    var k = lies('kandidaten.json').kandidaten;
-    if (!k.length) { console.log('Keine Kandidaten - Bestaetigungstage bleiben verschlossen.'); return; }
-    var keys = k.map(function (x) { return x.setup; }).filter(function (x, i, a) { return a.indexOf(x) === i; });
-    var L2 = lauf('bestaetigung', keys), z2 = auswerten(L2).filter(function (z) { return k.some(function (x) { return x.setup === z.setup && x.richtung === z.richtung; }); });
-    schreib('ergebnis-bestaetigung.json', { erstellt: new Date().toISOString(), siegelKandidaten: siegel, zaehl: L2.zaehl, fehlt: L2.fehlt, zeilen: z2 });
-    z2.forEach(function (z) { console.log(z.setup, z.richtung, z.handel, z.tage, 'netto', z.netto && z.netto.toFixed(3), 't', z.tGebuendelt && z.tGebuendelt.toFixed(2), z.besteht ? 'BESTAETIGT' : 'nicht bestaetigt'); });
+    /* Nachtrag 2 (PM 05.10.): alle 18 Tests, Richtung wie auf den Suchtagen; REGEL.md muss ihn versiegelt tragen. */
+    var siegelRegel = gitSauber('REGEL.md');
+    if (!siegelRegel || fs.readFileSync(path.join(HIER, 'REGEL.md'), 'utf8').indexOf('## Nachtrag 2') === -1) throw new Error('REGEL.md ohne versiegelten Nachtrag 2 - Bestaetigungstage bleiben verschlossen.');
+    var such = lies('ergebnis-suche.json').zeilen;
+    var L2 = lauf('bestaetigung'), z2 = auswerten(L2);
+    z2.forEach(function (z) {
+      var a = such.filter(function (x) { return x.setup === z.setup && x.richtung === z.richtung; })[0];
+      z.richtungWieSuche = !!(a && a.ueberPlacebo > 0);
+      z.besteht = z.besteht && z.richtungWieSuche;
+      z.nurBestaetigung = z.tGebuendelt != null && z.tGebuendelt >= G.SIEB.tMin && !(a && a.besteht);
+    });
+    schreib('ergebnis-bestaetigung.json', { erstellt: new Date().toISOString(), siegelKandidaten: siegel, siegelNachtrag2: siegelRegel, zaehl: L2.zaehl, fehlt: L2.fehlt, zeilen: z2 });
+    z2.forEach(function (z) { console.log(z.setup, z.richtung, z.handel, z.tage, 'netto', z.netto && z.netto.toFixed(3), 't', z.tGebuendelt && z.tGebuendelt.toFixed(2), z.besteht ? 'VIELVERSPRECHEND' : '', z.nurBestaetigung ? 'nur Bestaetigungstage' : ''); });
   } else if (phase === 'bericht') {
     bericht();
   } else {
@@ -168,7 +175,7 @@ function bericht() {
   var zeilen = s.zeilen.map(function (z) {
     var ist = kand.some(function (x) { return x.setup === z.setup && x.richtung === z.richtung; });
     var bz = b && b.zeilen.filter(function (x) { return x.setup === z.setup && x.richtung === z.richtung; })[0];
-    return { suche: z, kandidat: ist, bestaetigung: bz || null, vielversprechend: !!(ist && bz && bz.besteht) };
+    return { suche: z, kandidat: ist, bestaetigung: bz || null, vielversprechend: !!(bz && bz.besteht), nurBestaetigung: !!(bz && bz.nurBestaetigung) };
   });
   schreib('ergebnis.json', { auftrag: 'Nr. 107 Daytrader-Sieb', tests: s.tests, zaehlSuche: s.zaehl, zaehlBestaetigung: b ? b.zaehl : null,
     siegelKandidaten: b ? b.siegelKandidaten : null, zeilen: zeilen });
@@ -176,7 +183,7 @@ function bericht() {
   md.push('# Daytrader-Sieb (Nr. 107) — Ergebnis');
   md.push('');
   md.push('50 US-Aktien aus 11 Sektoren, 1m-Kerzen, reguläre Sitzung. Suche: 20 geseedete Tage 2023–2024; Bestätigung: 20 andere Tage 2025–2026, '
-    + 'erst nach dem Siegel der Kandidatenliste geöffnet. Werte in Pp je Handel, Mittel über **Tagesmittel**; t über Tage gebündelt (Handel minus Placebo). '
+    + 'erst nach dem Siegel der Kandidatenliste und dem Nachtrag 2 geöffnet, alle 18 Tests. Werte in Pp je Handel, Mittel über **Tagesmittel**; t über Tage gebündelt (Handel minus Placebo). '
     + 'Netto = brutto − K der Umsatzklasse (Marktorder, Fenster „mitte"). Placebo = derselbe Wert zur selben Uhrzeit, gleiche Richtung, '
     + 'Mittel der anderen 19 Tage der Phase (REGEL §5; das Zufallsminuten-Placebo des Auftrags ist verzerrt und steht nur in `ergebnis.json`). Testzahl ' + s.tests + ' (9 Setups × long/short). Regel: `REGEL.md`. Keine Anlageberatung.');
   md.push('');
@@ -184,17 +191,26 @@ function bericht() {
   md.push('|---|---|---|---|---|---|---|---|---|---|---|');
   zeilen.forEach(function (z) {
     var a = z.suche, bz = z.bestaetigung;
-    var best = !z.kandidat ? '—' : !bz ? 'nicht gelaufen' : (bz.besteht ? '**ja**' : 'nein') + ' (' + f(bz.netto) + ' / ' + f(bz.tGebuendelt, 2) + ')';
+    var best = !bz ? 'nicht gelaufen' : (bz.besteht ? '**ja**' : bz.nurBestaetigung ? 'nur Bestätigungstage' : 'nein') + ' (' + f(bz.netto) + ' / ' + f(bz.tGebuendelt, 2) + ')';
     md.push('| ' + a.name + ' | ' + a.richtung + ' | ' + a.handel + ' | ' + a.tage + ' | ' + f(a.brutto) + ' | ' + f(a.netto) + ' | ' + f(a.placebo) + ' | '
       + f(a.ueberPlacebo) + ' | ' + f(a.tGebuendelt, 2) + ' | ' + (a.besteht ? '**ja**' : 'nein') + ' | ' + best + ' |');
   });
   md.push('');
   var vv = zeilen.filter(function (z) { return z.vielversprechend; });
   md.push('**Vielversprechend:** ' + (vv.length ? vv.map(function (z) { return z.suche.name + ' ' + z.suche.richtung; }).join(', ') : 'keiner') + '. '
-    + '**Im Sieb hängen geblieben:** ' + zeilen.filter(function (z) { return z.kandidat; }).length + ' von ' + s.tests + '.');
+    + '**Im Sieb hängen geblieben:** ' + zeilen.filter(function (z) { return z.kandidat; }).length + ' von ' + s.tests + '. **Nur Bestätigungstage (t ≥ 2, braucht eine dritte Stichprobe):** ' + (zeilen.filter(function (z) { return z.nurBestaetigung; }).map(function (z) { return z.suche.name + ' ' + z.suche.richtung; }).join(', ') || 'keiner') + '. Erwartete Zufallstreffer bei ' + s.tests + ' Prüfungen mit t ≥ 2 einseitig: etwa 0,4 (19 Freiheitsgrade: rund 0,5). Bestätigung nach Nachtrag 2 (REGEL.md): alle 18 Tests gerechnet, Urteil netto > 0, t ≥ 2, Richtung wie Suchtage.');
+  var woertlich = zeilen.filter(function (z) { var a = z.suche, n = a.nachrichtlichPlaceboZufallsminute; return a.tage >= G.SIEB.minTage && a.netto > 0 && n.t != null && n.t >= G.SIEB.tMin; });
+  md.push('');
+  md.push('**Nachrichtlich — Placebo laut Auftragstext (Zufallsminuten desselben Tages):** im Sieb wären '
+    + (woertlich.length ? woertlich.map(function (z) { return z.suche.name + ' ' + z.suche.richtung + ' (t ' + f(z.suche.nachrichtlichPlaceboZufallsminute.t, 2) + ')'; }).join(', ') : 'keine')
+    + '. Dieses Placebo erzeugt auf einem Zufallsweg ohne Kante |t| bis 14 (`test.js`), weil Fenster vor dem Signal die Signalbedingung tragen — kein Urteil.');
+  md.push('');
+  md.push('**Auflösung:** MDE₈₀ von Handel − Placebo (Suchtage) ' + f(Math.min.apply(null, s.zeilen.map(function (z) { return z.mde80 || Infinity; })), 2) + ' bis '
+    + f(Math.max.apply(null, s.zeilen.map(function (z) { return z.mde80 || 0; })), 2) + ' Pp je Handel — die Kassa-Hürde (0,045–0,065) liegt darunter. '
+    + 'Das Sieb fängt nur große Effekte; ein „nein" hier ist kein gemessenes Nein.');
   md.push('');
   md.push('Zählung Suche: ' + JSON.stringify(s.zaehl) + (b ? '; Bestätigung: ' + JSON.stringify(b.zaehl) : '') + '. Short braucht Leihe; die Hürde ist dort eine Untergrenze. '
-    + 'Netto mit Einstiegsfenster-Hürde (nachrichtlich, Eröffnung 1,8–2,7 × teurer) steht in `ergebnis.json`. 20 Cluster je Phase: ein t ≥ 2 ist ein Sieb, kein Beleg.');
+    + 'Netto mit Einstiegsfenster-Hürde (nachrichtlich, Eröffnung 1,8–2,1 × teurer) steht in `ergebnis.json`. 20 Cluster je Phase: ein t ≥ 2 ist ein Sieb, kein Beleg.');
   fs.writeFileSync(path.join(HIER, 'ERGEBNIS.md'), md.join('\n') + '\n');
   console.log(md.join('\n'));
 }

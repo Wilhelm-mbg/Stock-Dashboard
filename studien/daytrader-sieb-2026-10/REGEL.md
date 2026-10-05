@@ -132,6 +132,23 @@ Handelstages aus den 1m-Kerzen.
 - Aus der Literatur bekannt: Gao et al. und Baltussen et al. berichten Intraday-Momentum für **Indizes** (SPY bzw. Index-Futures);
   für Einzelaktien ist das nicht ihre Aussage.
 
+## Nachtrag 2 — PM, 05.10.2026, nach Siegel 2, vor jedem Blick auf die Bestätigungstage
+
+(Ein Nachtrag 1 existiert nicht; die Placebo-Abweichung in §5 stand schon im ersten Siegel.) Anlass: Wilhelm
+möchte, dass das Sieb nichts Vielversprechendes verliert; im Sieb bestanden 0 von 18, die Bestätigungstage
+waren zu diesem Zeitpunkt nicht gelesen. Der Wortlaut von §6 bleibt stehen; ab hier gilt zusätzlich:
+
+1. **Alle 18 Tests** werden auf den Bestätigungstagen gerechnet, unabhängig vom Sieb.
+2. **„Vielversprechend"** unverändert streng, auf den Bestätigungstagen: netto > 0 **und** t ≥ 2 gegen das
+   Placebo (über Tage gebündelt) **und** mindestens 5 Signaltage **und** dieselbe Richtung wie auf den
+   Suchtagen (Vorzeichen von Handel − Placebo auf den Suchtagen positiv).
+3. Erwartete Zufallstreffer bei 18 Prüfungen mit t ≥ 2 einseitig: **etwa 0,4** (Normalverteilung 2,3 % je
+   Test; mit 19 Freiheitsgraden eher 3 % je Test, also rund 0,5). Jeder Test mit t ≥ 2 auf den
+   Bestätigungstagen, der auf den Suchtagen schwach war, wird gesondert ausgewiesen als „**nur
+   Bestätigungstage, braucht eine dritte Stichprobe**".
+
+`sieb.js bestaetigung` verweigert, solange REGEL.md diesen Nachtrag nicht committet und unverändert trägt.
+
 ## §8 Was das Sieb nicht ist
 
 Kein Urteil „belegt" und keine handelbare Kante: 20 Tage × 50 Werte, 20 Cluster je Phase, MDE wird mit
