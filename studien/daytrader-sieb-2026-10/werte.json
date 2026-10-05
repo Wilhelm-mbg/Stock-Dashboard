@@ -1,0 +1,465 @@
+{
+ "regel": "REGEL.md §1",
+ "stichtag": "2022-12-30",
+ "quelleUmsatz": "Yahoo-Tagesbalken archiv1d, Median Schluss x Stueck der letzten 20 Balken bis Stichtag",
+ "quelleSektor": "SEC-SIC aus markt/stammdaten.json, Faltung stammdaten.js, Abweichung SIC 6798 -> Immobilien",
+ "gezaehlt": {
+  "stamm": 2268,
+  "keinSektor": 11,
+  "keineAktie": 72,
+  "keineReihe": 7,
+  "keinTagesbalken": 35,
+  "unter250": 1936
+ },
+ "kandidatenJeSektor": {
+  "Gesundheit": 23,
+  "Technologie": 68,
+  "Rohstoffe": 8,
+  "Versorger": 6,
+  "Finanzen": 22,
+  "Industrie": 20,
+  "Basiskonsum": 11,
+  "Zyklischer Konsum": 21,
+  "Energie": 16,
+  "Immobilien": 4,
+  "Telekommunikation": 7
+ },
+ "proSektor": {
+  "Industrie": 4,
+  "Technologie": 5,
+  "Zyklischer Konsum": 5,
+  "Energie": 5,
+  "Finanzen": 5,
+  "Gesundheit": 5,
+  "Telekommunikation": 4,
+  "Basiskonsum": 5,
+  "Rohstoffe": 4,
+  "Versorger": 4,
+  "Immobilien": 4
+ },
+ "spy": "vorhanden",
+ "werte": [
+  {
+   "sym": "TSLA",
+   "cik": 1318605,
+   "sektor": "Industrie",
+   "sic": 3711,
+   "umsatzMio": 20564.8,
+   "runde": 1
+  },
+  {
+   "sym": "AAPL",
+   "cik": 320193,
+   "sektor": "Technologie",
+   "sic": 3571,
+   "umsatzMio": 10244.4,
+   "runde": 1
+  },
+  {
+   "sym": "AMZN",
+   "cik": 1018724,
+   "sektor": "Zyklischer Konsum",
+   "sic": 5961,
+   "umsatzMio": 6437.9,
+   "runde": 1
+  },
+  {
+   "sym": "XOM",
+   "cik": 2115436,
+   "sektor": "Energie",
+   "sic": 2911,
+   "umsatzMio": 1675.2,
+   "runde": 1
+  },
+  {
+   "sym": "BAC",
+   "cik": 70858,
+   "sektor": "Finanzen",
+   "sic": 6021,
+   "umsatzMio": 1343.9,
+   "runde": 1
+  },
+  {
+   "sym": "MRNA",
+   "cik": 1682852,
+   "sektor": "Gesundheit",
+   "sic": 2836,
+   "umsatzMio": 1119.7,
+   "runde": 1
+  },
+  {
+   "sym": "VZ",
+   "cik": 732712,
+   "sektor": "Telekommunikation",
+   "sic": 4813,
+   "umsatzMio": 925.8,
+   "runde": 1
+  },
+  {
+   "sym": "PG",
+   "cik": 80424,
+   "sektor": "Basiskonsum",
+   "sic": 2840,
+   "umsatzMio": 884.6,
+   "runde": 1
+  },
+  {
+   "sym": "NKE",
+   "cik": 320187,
+   "sektor": "Rohstoffe",
+   "sic": 3021,
+   "umsatzMio": 767.7,
+   "runde": 1
+  },
+  {
+   "sym": "NEE",
+   "cik": 753308,
+   "sektor": "Versorger",
+   "sic": 4911,
+   "umsatzMio": 435.7,
+   "runde": 1
+  },
+  {
+   "sym": "PLD",
+   "cik": 1045609,
+   "sektor": "Immobilien",
+   "sic": 6798,
+   "umsatzMio": 362.2,
+   "runde": 1
+  },
+  {
+   "sym": "NVDA",
+   "cik": 1045810,
+   "sektor": "Technologie",
+   "sic": 3674,
+   "umsatzMio": 6486.4,
+   "runde": 2
+  },
+  {
+   "sym": "UNH",
+   "cik": 731766,
+   "sektor": "Finanzen",
+   "sic": 6324,
+   "umsatzMio": 1257.9,
+   "runde": 2
+  },
+  {
+   "sym": "CVX",
+   "cik": 93410,
+   "sektor": "Energie",
+   "sic": 2911,
+   "umsatzMio": 1214.2,
+   "runde": 2
+  },
+  {
+   "sym": "BA",
+   "cik": 12927,
+   "sektor": "Industrie",
+   "sic": 3721,
+   "umsatzMio": 1201.2,
+   "runde": 2
+  },
+  {
+   "sym": "DIS",
+   "cik": 1744489,
+   "sektor": "Zyklischer Konsum",
+   "sic": 7990,
+   "umsatzMio": 1137.3,
+   "runde": 2
+  },
+  {
+   "sym": "JNJ",
+   "cik": 200406,
+   "sektor": "Gesundheit",
+   "sic": 2834,
+   "umsatzMio": 1006.6,
+   "runde": 2
+  },
+  {
+   "sym": "CMCSA",
+   "cik": 1166691,
+   "sektor": "Telekommunikation",
+   "sic": 4841,
+   "umsatzMio": 806.9,
+   "runde": 2
+  },
+  {
+   "sym": "PEP",
+   "cik": 77476,
+   "sektor": "Basiskonsum",
+   "sic": 2080,
+   "umsatzMio": 772.8,
+   "runde": 2
+  },
+  {
+   "sym": "FCX",
+   "cik": 831259,
+   "sektor": "Rohstoffe",
+   "sic": 1000,
+   "umsatzMio": 421.4,
+   "runde": 2
+  },
+  {
+   "sym": "AMT",
+   "cik": 1053507,
+   "sektor": "Immobilien",
+   "sic": 6798,
+   "umsatzMio": 343,
+   "runde": 2
+  },
+  {
+   "sym": "D",
+   "cik": 715957,
+   "sektor": "Versorger",
+   "sic": 4911,
+   "umsatzMio": 328.8,
+   "runde": 2
+  },
+  {
+   "sym": "MSFT",
+   "cik": 789019,
+   "sektor": "Technologie",
+   "sic": 7372,
+   "umsatzMio": 5790.7,
+   "runde": 3
+  },
+  {
+   "sym": "JPM",
+   "cik": 19617,
+   "sektor": "Finanzen",
+   "sic": 6021,
+   "umsatzMio": 1186.6,
+   "runde": 3
+  },
+  {
+   "sym": "HD",
+   "cik": 354950,
+   "sektor": "Zyklischer Konsum",
+   "sic": 5211,
+   "umsatzMio": 1129,
+   "runde": 3
+  },
+  {
+   "sym": "PFE",
+   "cik": 78003,
+   "sektor": "Gesundheit",
+   "sic": 2834,
+   "umsatzMio": 859.4,
+   "runde": 3
+  },
+  {
+   "sym": "OXY",
+   "cik": 797468,
+   "sektor": "Energie",
+   "sic": 1311,
+   "umsatzMio": 751.9,
+   "runde": 3
+  },
+  {
+   "sym": "T",
+   "cik": 732717,
+   "sektor": "Telekommunikation",
+   "sic": 4813,
+   "umsatzMio": 739.5,
+   "runde": 3
+  },
+  {
+   "sym": "MCD",
+   "cik": 63908,
+   "sektor": "Basiskonsum",
+   "sic": 5812,
+   "umsatzMio": 702.6,
+   "runde": 3
+  },
+  {
+   "sym": "UPS",
+   "cik": 1090727,
+   "sektor": "Industrie",
+   "sic": 4210,
+   "umsatzMio": 587.7,
+   "runde": 3
+  },
+  {
+   "sym": "LIN",
+   "cik": 1707925,
+   "sektor": "Rohstoffe",
+   "sic": 2810,
+   "umsatzMio": 419,
+   "runde": 3
+  },
+  {
+   "sym": "SO",
+   "cik": 92122,
+   "sektor": "Versorger",
+   "sic": 4911,
+   "umsatzMio": 300.3,
+   "runde": 3
+  },
+  {
+   "sym": "CCI",
+   "cik": 1051470,
+   "sektor": "Immobilien",
+   "sic": 6798,
+   "umsatzMio": 284.3,
+   "runde": 3
+  },
+  {
+   "sym": "AMD",
+   "cik": 2488,
+   "sektor": "Technologie",
+   "sic": 3674,
+   "umsatzMio": 3998.1,
+   "runde": 4
+  },
+  {
+   "sym": "COST",
+   "cik": 909832,
+   "sektor": "Zyklischer Konsum",
+   "sic": 5331,
+   "umsatzMio": 1037.2,
+   "runde": 4
+  },
+  {
+   "sym": "MRK",
+   "cik": 310158,
+   "sektor": "Gesundheit",
+   "sic": 2834,
+   "umsatzMio": 815.3,
+   "runde": 4
+  },
+  {
+   "sym": "C",
+   "cik": 831001,
+   "sektor": "Finanzen",
+   "sic": 6021,
+   "umsatzMio": 791.6,
+   "runde": 4
+  },
+  {
+   "sym": "KO",
+   "cik": 21344,
+   "sektor": "Basiskonsum",
+   "sic": 2080,
+   "umsatzMio": 664.2,
+   "runde": 4
+  },
+  {
+   "sym": "COP",
+   "cik": 1163165,
+   "sektor": "Energie",
+   "sic": 2911,
+   "umsatzMio": 631.7,
+   "runde": 4
+  },
+  {
+   "sym": "TMUS",
+   "cik": 1283699,
+   "sektor": "Telekommunikation",
+   "sic": 4812,
+   "umsatzMio": 612.2,
+   "runde": 4
+  },
+  {
+   "sym": "F",
+   "cik": 37996,
+   "sektor": "Industrie",
+   "sic": 3711,
+   "umsatzMio": 580.2,
+   "runde": 4
+  },
+  {
+   "sym": "VALE",
+   "cik": 917851,
+   "sektor": "Rohstoffe",
+   "sic": 1000,
+   "umsatzMio": 391.9,
+   "runde": 4
+  },
+  {
+   "sym": "AEP",
+   "cik": 4904,
+   "sektor": "Versorger",
+   "sic": 4911,
+   "umsatzMio": 300.2,
+   "runde": 4
+  },
+  {
+   "sym": "O",
+   "cik": 726728,
+   "sektor": "Immobilien",
+   "sic": 6798,
+   "umsatzMio": 276.1,
+   "runde": 4
+  },
+  {
+   "sym": "META",
+   "cik": 1326801,
+   "sektor": "Technologie",
+   "sic": 7370,
+   "umsatzMio": 3365.5,
+   "runde": 5
+  },
+  {
+   "sym": "WMT",
+   "cik": 104169,
+   "sektor": "Zyklischer Konsum",
+   "sic": 5331,
+   "umsatzMio": 848.6,
+   "runde": 5
+  },
+  {
+   "sym": "LLY",
+   "cik": 59478,
+   "sektor": "Gesundheit",
+   "sic": 2834,
+   "umsatzMio": 813.7,
+   "runde": 5
+  },
+  {
+   "sym": "WFC",
+   "cik": 72971,
+   "sektor": "Finanzen",
+   "sic": 6021,
+   "umsatzMio": 789.9,
+   "runde": 5
+  },
+  {
+   "sym": "SBUX",
+   "cik": 829224,
+   "sektor": "Basiskonsum",
+   "sic": 5810,
+   "umsatzMio": 567.3,
+   "runde": 5
+  },
+  {
+   "sym": "DVN",
+   "cik": 1090012,
+   "sektor": "Energie",
+   "sic": 1311,
+   "umsatzMio": 561.2,
+   "runde": 5
+  }
+ ],
+ "ersetzt": [
+  {
+   "sym": "APD",
+   "sektor": "Rohstoffe",
+   "grund": "2023-08-31: 293 von 390 Kerzen"
+  },
+  {
+   "sym": "BKNG",
+   "sektor": "Industrie",
+   "grund": "2023-01-13: 198 von 390 Kerzen"
+  },
+  {
+   "sym": "HON",
+   "sektor": "Industrie",
+   "grund": "2025-10-31: Kapitalmassnahme +-10 Tage"
+  },
+  {
+   "sym": "CHTR",
+   "sektor": "Telekommunikation",
+   "grund": "2024-06-11: 309 von 390 Kerzen"
+  }
+ ]
+}
