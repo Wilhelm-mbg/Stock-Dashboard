@@ -1006,7 +1006,12 @@ TESTS[31] = async function () {
  *           (veraltet erst nach drei Werktagen, tageSeit an der SPY-Reihe), mfdepot.js:457 (Journal: "die App lief am
  *           faelligen Tag nicht nach Boersenoeffnung").
  *     Messung: rueckblick.js:218 (naechste = Q.ptage[o + halten], der 63. Panel-Handelstag), REGEL §1.3.
- *     Soll: umgeschichtet am faelligen Tag der Messung (oder gesperrt mit dem wahren Grund). Gegenprobe: SPY kommt jeden Abend. */
+ *     Soll: umgeschichtet am faelligen Tag der Messung (oder gesperrt mit dem wahren Grund). Gegenprobe: SPY kommt jeden Abend.
+ *     Repariert (Runde 2, Nr. 108): seit dem Fix der Generalprobe (Fund D-06) behaelt mittelfrist.js ohne SPY-Antwort die alte
+ *     Bezugsreihe NICHT mehr unter dem neuen Stand - tagesdatenLesen liefert dann bezug = null, und g.bezug.reihe warf einen
+ *     TypeError. Gezaehlt wird jetzt an dem, was der Bestand liefert (ohne SPY: nichts). "Gesperrt mit dem wahren Grund" heisst:
+ *     an jedem Tag ohne SPY nennt die Karte die fehlende Marktreihe, und das Journal der verspaeteten Umschichtung nennt sie
+ *     auch - nicht "die App lief nicht". Soll unveraendert. */
 TESTS[32] = async function () {
   var namen = universum();
   var ende = MH.nyZeit('2026-12-04', 9, 30);                      // Fr 04.12.2026
@@ -1030,23 +1035,27 @@ TESTS[32] = async function () {
       }, MH.nyZeit(MH.nyTag(alleTage[i]), 17, 0));
       await mf.MF.ladeUniversum();
       var g = await mf.MF.tagesdatenLesen(), r0 = g.roh[namen[0]];
-      var fl = MH.faelligkeit(g.bezug.reihe, MH.nyTag(letzteAusf), 63, MH.nyZeit(heute, 10, 0));
+      var fl = MH.faelligkeit(g.bezug ? g.bezug.reihe : null, MH.nyTag(letzteAusf), 63, MH.nyZeit(heute, 10, 0));
       var dep = mfdepotSandboxTag(st, d, { tagesdatenLesen: mf.MF.tagesdatenLesen, ladeUniversum: function () { return Promise.resolve(null); } }, MH.nyZeit(heute, 10, 0), eroeff);
       await taktLauf(dep);
       var z = (d.tuneLog || []).filter(function (x) { return /^mfrebal-/.test(x.id); })[0];
-      return { heute: heute, werteBis: MH.nyTag(r0[r0.length - 1][0]), fl: fl, um: !!z, spyOk: spyOk,
-        spaet: z ? ((/ – (\d+ Handelstage? verspätet \([^)]*\))/.exec(z.txt) || [])[1] || null) : null };
+      var karte = /Marktreihe \(SPY\) fehlt/.test(dep.__karte.innerHTML);
+      return { heute: heute, werteBis: MH.nyTag(r0[r0.length - 1][0]), fl: fl, um: !!z, spyOk: spyOk, karteSpy: karte, txt: z ? z.txt : '',
+        spaet: z ? ((/ – (\d+ Handelstage? verspätet \(.*?\))\. Kosten/.exec(z.txt) || [])[1] || null) : null };
     }
     var tageL = [];
     for (var k = 1; k <= 4 && !umgeschichtet(d); k++) tageL.push(await abend(k));
     return { tage: tageL, um: tageL.filter(function (t) { return t.um; })[0] };
   }
   var x = await lauf(3), gp = await lauf(0);
-  zeile(!x.um || x.um.heute !== messTag,
+  var ohneSpy = x.tage.filter(function (t) { return !t.spyOk; });
+  var mitGrund = ohneSpy.length > 0 && ohneSpy.every(function (t) { return t.karteSpy && !t.um; }) && !!x.um &&
+    /SPY/.test(x.um.txt) && !/die App lief nicht/.test(x.um.txt);
+  zeile((!x.um || x.um.heute !== messTag) && !mitGrund,
     'Messung: faellig am ' + tagKurz(messTag) + ' (63. Handelstag nach ' + tagKurz(MH.nyTag(alleTage[E])) + '). SPY-Abruf scheitert drei Abende, die Werte kommen: ' +
     x.tage.map(function (t) {
-      return tagKurz(t.heute) + ' Werte bis ' + tagKurz(t.werteBis) + ', SPY bis ' + tagKurz(t.fl.letzterMarktTag) + (t.spyOk ? '' : ' (alte Reihe, Stand at neu)') + ', tageSeit ' + t.fl.tageSeit + ', faellig ' + jn(t.fl.faellig) +
-        ', noch ' + t.fl.noch + ', veraltet ' + jn(t.fl.veraltet) + (t.um ? ', umgeschichtet' : '');
+      return tagKurz(t.heute) + ' Werte bis ' + tagKurz(t.werteBis) + ', SPY bis ' + tagKurz(t.fl.letzterMarktTag) + (t.spyOk ? '' : ' (Abruf gescheitert)') + ', tageSeit ' + t.fl.tageSeit + ', faellig ' + jn(t.fl.faellig) +
+        ', noch ' + t.fl.noch + ', veraltet ' + jn(t.fl.veraltet) + (t.spyOk ? '' : ', Karte nennt die fehlende Marktreihe ' + jn(t.karteSpy)) + (t.um ? ', umgeschichtet' : '');
     }).join('; ') + ' -> umgeschichtet ' + (x.um ? 'am ' + tagKurz(x.um.heute) + ', Journal: "' + (x.um.spaet || 'ohne Verspaetung') + '"' : 'gar nicht') +
     '. Gegenprobe SPY jeden Abend: umgeschichtet ' + (gp.um ? 'am ' + tagKurz(gp.um.heute) + (gp.um.spaet ? ', "' + gp.um.spaet + '"' : ', ohne Verspaetung') : 'gar nicht') + '.');
 };

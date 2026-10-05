@@ -505,6 +505,19 @@
           var ausgefallenM = plan.kaufen.length - gekauftM;
           var kleinstM = (plan.kleinst || []).length;
           var spaet = manuell === 'momentum' ? 0 : (fl.verspaetung || 0);
+          /* Runde 2 (Nr. 108, Test 32): der wahre Grund einer Verspaetung. Stand am faelligen Tag oder danach ein Grund
+           * auf der Karte (d.mfBuch.aufschub, unten gemerkt - etwa "Marktreihe (SPY) fehlt im Bestand"), nennt das
+           * Journal DEN, nicht pauschal "die App lief nicht". Faellig war der halten-te SPY-Balken nach der letzten
+           * Umschichtung (MH.faelligkeit). */
+          var faelligTag = null, aufschub = d.mfBuch.aufschub || null;
+          if (spaet && daten.bezug && d.mfBuch.letzteAusfuehrungTag) {
+            var nachLetzter = daten.bezug.filter(function (b) { return MH.nyTag(b[0]) > d.mfBuch.letzteAusfuehrungTag; });
+            if (nachLetzter.length >= KONFIG.halten) faelligTag = MH.nyTag(nachLetzter[KONFIG.halten - 1][0]);
+          }
+          var spaetGrund = spaet && aufschub && faelligTag && aufschub.tag >= faelligTag
+            ? 'am fälligen Tag ' + MH.datumDe(faelligTag) + ' oder danach kein Handel; zuletzt am ' + MH.datumDe(aufschub.tag) + ': ' + String(aufschub.grund).replace(/\.\s*$/, '')
+            : 'am fälligen Tag kam nach Börsenöffnung keine Umschichtung zustande – die App lief nicht oder bekam keine Eröffnungskurse';
+          delete d.mfBuch.aufschub;
           d.mfBuch.letztesRebalanceT = now;
           d.mfBuch.letzteAusfuehrungTag = ausf.heute;
           /* Die Faelligkeit neu ab DIESEM Ausfuehrungstag - sonst nennt die Karte bis zum naechsten
@@ -523,7 +536,7 @@
             txt: 'Momentum-Depot umgeschichtet: ' + (nM - gekauftM) + ' Verkäufe, ' + gekauftM +
               ' Käufe auf das stärkste Zehntel (' + zielA.ziel.length + ' Werte). Ausführungstag ' + MH.datumDe(ausf.heute) +
               ', Rangfolge auf den Schlusskursen des Stichtags ' + MH.datumDe(ausf.stichtag) + ', gehandelt zur Eröffnung' +
-              (spaet ? ' – ' + spaet + (spaet === 1 ? ' Handelstag' : ' Handelstage') + ' verspätet (am fälligen Tag kam nach Börsenöffnung keine Umschichtung zustande – die App lief nicht oder bekam keine Eröffnungskurse)' : '') +
+              (spaet ? ' – ' + spaet + (spaet === 1 ? ' Handelstag' : ' Handelstage') + ' verspätet (' + spaetGrund + ')' : '') +
               '. Kosten 20 Bp je Seite.' +
               (ausgefallenM ? ' ' + ausgefallenM + (ausgefallenM === 1 ? ' Kauf' : ' Käufe') + ' mangels Bargeld nicht ausgeführt.' : '') +
               (kleinstM ? ' ' + kleinstM + (kleinstM === 1 ? ' Kleinstbestand' : ' Kleinstbestände') + ' aufgelöst.' : '') +
@@ -537,6 +550,14 @@
           plan = MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil });   // frisch für die Anzeige
           faellig = false;
         }
+      }
+      /* Runde 2 (Nr. 108, Test 32): an einem Handelstag nach Boersenoeffnung den Grund merken, warum nicht umgeschichtet
+       * wurde (oder die Faelligkeit offen ist) - eine spaetere, verspaetete Umschichtung nennt ihn im Journal. */
+      var heuteM = MH.nyTag(now);
+      if (hinweisM && d.momentumAn && MH.istWerktag(heuteM) && now >= MH.nyZeit(heuteM, MH.HANDEL_AB[0], MH.HANDEL_AB[1]) &&
+          (!d.mfBuch.aufschub || d.mfBuch.aufschub.tag !== heuteM || d.mfBuch.aufschub.grund !== hinweisM)) {
+        d.mfBuch.aufschub = { tag: heuteM, grund: hinweisM };
+        speichern();
       }
       /* D-03: der aufgeschobene Punkt von heute - nur, wenn heute umgeschichtet wurde. */
       if (punktNachHandel && d.mfBuch.letzteAusfuehrungTag === MH.nyTag(now) && tagespunkt(MH, d, daten, now)) speichern();
