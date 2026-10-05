@@ -694,12 +694,6 @@
    * Hier wird NICHTS nachgerechnet: abgelegt wird nur, was takt() ohnehin gerechnet
    * hat (MFHandel.bewerte / bewerteDrift). */
   var STAND = { momentum: null, drift: null, spy: null, spyT: null };
-  /* Runde 2 (Nr. 108, Test 22): ein Stand gilt nur fuer DAS Buch, das ihn hatte (Merkmal angelegt). Nach "Alle Buecher
-   * zuruecksetzen" zeigten Karte und Kopf bis zum naechsten Takt den Wert des geloeschten Buchs. */
-  function standVon(name, d) {
-    var s = STAND[name], buch = d ? (name === 'momentum' ? d.mfBuch : d.driftBuch) : null;
-    return s && buch && s.angelegt === buch.angelegt ? s : null;
-  }
 
   /* ---- Der Massstab (Auftrag Nr. 73, 04.10.2026) ----
    * Der Verlauf, wie ihn Kopf, Karte und Buecher-Verlauf lesen: die Tagespunkte aus
@@ -717,6 +711,15 @@
     v.push({ t: at, momentum: mOk ? sM.wert : null, drift: dOk ? sD.wert : null, spy: STAND.spy, spyT: STAND.spyT,
       startM: mOk ? sM.start : null, startD: dOk ? sD.start : null });
     return v;
+  }
+  /* Runde 2 (Nr. 108, Test 22): ein Stand gilt nur fuer DAS Buch, das ihn hatte (Merkmal angelegt, gesetzt in zeige()).
+   * Nach "Alle Buecher zuruecksetzen" zeigten Karte und Kopf bis zum naechsten Takt den Wert des geloeschten Buchs.
+   * Ein Stand ohne das Merkmal (Feld fehlt) gilt wie bisher. */
+  function standVon(name, d) {
+    var s = STAND[name], buch = d ? (name === 'momentum' ? d.mfBuch : d.driftBuch) : null;
+    if (!s) return null;
+    if (!('angelegt' in s)) return s;
+    return buch && s.angelegt === buch.angelegt ? s : null;
   }
   /** Buch gegen den S&P 500 ueber denselben Zeitraum - gerechnet in massstab.js,
    *  hier nur mit den Daten des Buchs versorgt. name = 'momentum' | 'drift'.
@@ -736,32 +739,30 @@
    *  keine Zahl da, sondern der Satz (grund 'vor-liquide', voraussichtlich = Tag der naechsten
    *  Umschichtung, wenn bekannt) - bis Nr. 108 las die Zeile vor allem die alte, breite Regel.
    *  Ein Ausschnitt (verlauf, Wochenbericht) bleibt, wie er ist. */
+  function vergleich(name, verlauf) {
+    var d = D();
+    if (!d || !window.Massstab) return null;
+    var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
+    var an = name === 'momentum' ? !!d.momentumAn : !!d.driftAn;
+    var ab = !verlauf && name === 'momentum' && buch && an ? abLiquide(buch, verlaufMitStand()) : null;   // Runde 2 (F9)
+    var r = window.Massstab.vergleich(verlauf || (ab && ab.verlauf) || verlaufMitStand(), name, name === 'momentum' ? 'startM' : 'startD', {
+      an: an,
+      start: buch ? buch.start : null, angelegt: buch && !(ab && ab.geschnitten) ? buch.angelegt : null,
+      punktKurs: true, marktRoh: MARKT_ROH, buchAusschuettungen: true, markt: MARKT });
+    if (!(ab && ab.vor)) return r;
+    var st = standVon('momentum', d), MH = window.MFHandel;
+    var tag = st && st.noch != null && typeof naechsteUmschichtung === 'function' ? naechsteUmschichtung(st.noch, st.at) : null;
+    return window.Massstab.vorLiquide(r, tag && MH ? MH.datumDe(tag) : null);
+  }
+  /** F9: { vor: true } ohne liquide Umschichtung; sonst { verlauf } ab dem letzten Tagespunkt vor dem Tag von liquideSeit
+   *  (geschnitten: der Bezug ist dieser Punkt, nicht die Anlage) oder der ganze Verlauf, wenn es davor keinen Punkt gibt. */
   function abLiquide(buch, v) {
     var MH = window.MFHandel;
     if (!buch.liquideSeit) return { vor: true };
     if (!MH) return { verlauf: v };
     var liqTag = MH.nyTag(buch.liquideSeit), j = -1;
     for (var i = 0; i < v.length; i++) if ((v[i].tag || MH.nyTag(v[i].t)) < liqTag) j = i;
-    return j < 0 ? { verlauf: v, ganz: true } : { verlauf: v.slice(j) };
-  }
-  function vergleich(name, verlauf) {
-    var d = D();
-    if (!d || !window.Massstab) return null;
-    var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
-    var opts = {
-      an: name === 'momentum' ? !!d.momentumAn : !!d.driftAn,
-      start: buch ? buch.start : null, angelegt: buch ? buch.angelegt : null,
-      punktKurs: true, marktRoh: MARKT_ROH, buchAusschuettungen: true, markt: MARKT };
-    var feld = name === 'momentum' ? 'startM' : 'startD';
-    if (verlauf || name !== 'momentum' || !buch || !opts.an) return window.Massstab.vergleich(verlauf || verlaufMitStand(), name, feld, opts);
-    var ab = abLiquide(buch, verlaufMitStand());
-    if (ab.vor) {
-      var s = standVon('momentum', d), MH = window.MFHandel;
-      var tag = s && s.noch != null ? naechsteUmschichtung(s.noch, s.at) : null;
-      return window.Massstab.vorLiquide(window.Massstab.vergleich(verlaufMitStand(), name, feld, opts), tag && MH ? MH.datumDe(tag) : null);
-    }
-    if (!ab.ganz) opts.angelegt = null;                        // Bezug ist der Punkt vor der ersten liquiden Umschichtung
-    return window.Massstab.vergleich(ab.verlauf, name, feld, opts);
+    return j < 0 ? { verlauf: v } : { verlauf: v.slice(j), geschnitten: true };
   }
 
   /* A5 (Auftrag Nr. 93): der erste Punkt des laufenden Buchs (Kauf 25.08.2026 mitten in der

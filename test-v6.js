@@ -23616,11 +23616,12 @@ console.log('97) Der Markt zum selben Zeitpunkt wie das Buch (Auftrag Nr. 91)');
        '97.7 driftui.js ladeMarkt: holt SPY bereinigt UND mitRoh, legt { at, reihe, roh } ab; ein Bestand ohne roh gilt nicht als frisch; wer reihe liest, bekommt dieselbe Reihe');
   }));
   var mfdQ97 = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  /* Runde 2 (Nr. 108, F9): das Kunstbuch traegt liquideSeit = Anlage - ohne liquide Umschichtung nennt das Momentum-Buch statt einer Zahl den Satz. */
   var vmsQ97 = mfdQ97.slice(mfdQ97.indexOf('  function verlaufMitStand() {'), mfdQ97.indexOf('  /** Buch gegen den S&P 500 ueber denselben Zeitraum'));
   var vglQ97 = mfdQ97.slice(mfdQ97.indexOf('  function vergleich(name, verlauf) {'), mfdQ97.indexOf('  function letzterPunkt(d) {'));   // Signatur seit Nr. 95 (C1)
   function mfVergleich(verlauf, STAND, MARKT, MARKT_ROH) {
     return new Function('D', 'STAND', 'MARKT', 'MARKT_ROH', 'window', vmsQ97 + vglQ97 + '\n return vergleich;')(
-      function () { return { mfVerlauf: verlauf, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: verlauf[0].t - 60000 }, driftBuch: { start: 100000, angelegt: verlauf[0].t - 60000 } }; },
+      function () { return { mfVerlauf: verlauf, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: verlauf[0].t - 60000, liquideSeit: verlauf[0].t - 60000 }, driftBuch: { start: 100000, angelegt: verlauf[0].t - 60000 } }; },
       STAND, MARKT, MARKT_ROH, { Massstab: Mst });
   }
   var mfV = mfVergleich([A, B], { momentum: { wert: 100000, start: 100000, at: C.t }, drift: null, spy: 405, spyT: U(6, 13, 30) }, MB, MR)('momentum');
@@ -24532,7 +24533,7 @@ console.log('100) Funde des Pruefgangs Nr. 83 behoben (Auftrag Nr. 95)');
     V.push({ t: Date.UTC(2026, 8, 1 + k, 20, 30), momentum: 100000 * (1 + 0.001 * k), startM: 100000, drift: 100000, startD: 100000, spy: roh + 5, spyT: st8 });
   }
   var vgl = new Function('D', 'STAND', 'MARKT', 'MARKT_ROH', 'window', vmsQ + vglQ + '\n return vergleich;')(
-    function () { return { mfVerlauf: V, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: V[0].t - 60000 }, driftBuch: { start: 100000, angelegt: V[0].t - 60000 } }; },
+    function () { return { mfVerlauf: V, momentumAn: true, driftAn: true, mfBuch: { start: 100000, angelegt: V[0].t - 60000, liquideSeit: V[0].t - 60000 }, driftBuch: { start: 100000, angelegt: V[0].t - 60000 } }; },
     { momentum: null, drift: null }, MB, MR, { Massstab: Mst });
   var kopf8 = vgl('momentum'), woche = V.slice(3), w8 = vgl('momentum', woche);
   var mr = function (t) { return kopf8.marktReihe.filter(function (x) { return x[0] === t; })[0][1]; };
@@ -25199,6 +25200,26 @@ console.log('104) Lader-Stoerungen: Tagesbalken je Handelstag in kurse.js (KU)')
   });
   ok(/ 0 kaputt; Netzversuche 0, Schreibversuche ausserhalb 0/.test(ku), '104 Lauf der KU-Tests: 0 kaputt, kein Netz, kein Schreiben ausserhalb',
      (ku.split('\n').filter(function (z) { return /^--- /.test(z); })[0] || ku.slice(-200)));
+})();
+
+/* ================= 105) Live gegen Messung, zweite Durchsicht: Tests 16-34 (Auftrag Nr. 108, Zweig fix/runde2) =================
+ * Die Kleinsttests pruefberichte/live-gegen-messung-momentum-runde2.test.js laufen als eigener Prozess (Sandboxen mit
+ * Attrappen, rund 10 s). Gegen main vor Nr. 108 zeigten 16, 18-23, 26, 27, 29, 30, 33, 34 eine Abweichung und 32 war
+ * defekt; behoben oder an den Weg des Generalprobe-Fixes angepasst muessen sie - wie 17, 24, 25, 28, 31 schon vorher -
+ * "kein Unterschied" melden. Offen und deshalb nicht hier: 30 (Reihenende erst nach fuenf Handelstagen, Nr. 93 A2 -
+ * Entscheid Wilhelm). Kunstdaten, feste Uhr, kein Netz. */
+console.log('105) Live gegen Messung, zweite Durchsicht (Tests 16-34 ohne 30)');
+(function () {
+  var r2 = '';
+  try {
+    r2 = require('child_process').execFileSync(process.execPath, [__dirname + '/pruefberichte/live-gegen-messung-momentum-runde2.test.js'],
+      { cwd: __dirname, encoding: 'utf8', timeout: 180000, env: Object.assign({}, process.env, { PRUEF_WURZEL: '' }) });
+  } catch (e) { r2 = String((e && e.stdout) || '') + '\nLAUF GESCHEITERT: ' + (e && e.message); }
+  [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34].forEach(function (nr) {
+    var zeile = r2.split('\n').filter(function (z) { return z.indexOf('[' + nr + '] ') === 0; })[0] || '';
+    ok(/^\[\d+\] kein Unterschied: /.test(zeile), '105 Test ' + nr + ' - kein Unterschied', zeile ? zeile.slice(0, 160) : 'Zeile fehlt');
+  });
+  ok(!/TEST DEFEKT|LAUF GESCHEITERT/.test(r2), '105 Lauf der Tests 16-34: kein Test defekt');
 })();
 
 Promise.all(offeneProben).then(function () {
