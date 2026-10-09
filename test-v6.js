@@ -24368,8 +24368,8 @@ console.log('99) Eroeffnung am selben Tag nachfassen (Auftrag Nr. 94)');
     var MHk = mhAus(ersetze(mhQ, 'fuehreAus(buch, plan, nowMs, res.kostenBp, opts);',
       'fuehreAus(buch, { verkaufen: [], kaufen: plan.kaufen }, nowMs, res.kostenBp, opts); fuehreAus(buch, { verkaufen: plan.verkaufen, kaufen: [] }, nowMs, res.kostenBp, opts);'));
     gegen99('Kaeufe vor Verkaeufen faellt auf', !!MHk && !(await fallZugleich(MHk)).ok);
-    var MHe = mhAus(ersetze(mhQ, 'if (!buch || !buch.offen || offenLaeuft(buch.offen, nowMs)) return null;',
-      'if (!buch || !buch.offen || nyTag(nowMs) === buch.offen.tag) return null;'));
+    var MHe = mhAus(ersetze(mhQ, 'if (!buch || !buch.offen || offenLaeuft(buch.offen, nowMs) || nyTag(nowMs) < buch.offen.tag) return null;',
+      'if (!buch || !buch.offen || nyTag(nowMs) <= buch.offen.tag) return null;'));   // Textmarke seit dem Nachkauf (Abschnitt 106)
     gegen99('offen nach 16:00 nicht geloescht (erst am Folgetag) faellt auf', !!MHe && !(await fallNie(MHe)).ok);
   })());
   probe(Promise.all(warte99).then(function () {
@@ -25206,20 +25206,62 @@ console.log('104) Lader-Stoerungen: Tagesbalken je Handelstag in kurse.js (KU)')
  * Die Kleinsttests pruefberichte/live-gegen-messung-momentum-runde2.test.js laufen als eigener Prozess (Sandboxen mit
  * Attrappen, rund 10 s). Gegen main vor Nr. 108 zeigten 16, 18-23, 26, 27, 29, 30, 33, 34 eine Abweichung und 32 war
  * defekt; behoben oder an den Weg des Generalprobe-Fixes angepasst muessen sie - wie 17, 24, 25, 28, 31 schon vorher -
- * "kein Unterschied" melden. Offen und deshalb nicht hier: 30 (Reihenende erst nach fuenf Handelstagen, Nr. 93 A2 -
- * Entscheid Wilhelm). Kunstdaten, feste Uhr, kein Netz. */
-console.log('105) Live gegen Messung, zweite Durchsicht (Tests 16-34 ohne 30)');
+ * "kein Unterschied" melden. 30 (Reihenende erst nach fuenf Handelstagen, Nr. 93 A2) seit dem Entscheid Wilhelm vom
+ * 09.10.2026 ebenso: der ausgefallene Kauf wird nach dem Ausbuchen nachgeholt (Abschnitt 106). Kunstdaten, feste Uhr, kein Netz. */
+console.log('105) Live gegen Messung, zweite Durchsicht (Tests 16-34)');
 (function () {
   var r2 = '';
   try {
     r2 = require('child_process').execFileSync(process.execPath, [__dirname + '/pruefberichte/live-gegen-messung-momentum-runde2.test.js'],
       { cwd: __dirname, encoding: 'utf8', timeout: 180000, env: Object.assign({}, process.env, { PRUEF_WURZEL: '' }) });
   } catch (e) { r2 = String((e && e.stdout) || '') + '\nLAUF GESCHEITERT: ' + (e && e.message); }
-  [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34].forEach(function (nr) {
+  [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34].forEach(function (nr) {
     var zeile = r2.split('\n').filter(function (z) { return z.indexOf('[' + nr + '] ') === 0; })[0] || '';
     ok(/^\[\d+\] kein Unterschied: /.test(zeile), '105 Test ' + nr + ' - kein Unterschied', zeile ? zeile.slice(0, 160) : 'Zeile fehlt');
   });
   ok(!/TEST DEFEKT|LAUF GESCHEITERT/.test(r2), '105 Lauf der Tests 16-34: kein Test defekt');
+})();
+
+/* ================= 106) Nachkauf nach einem Reihenende (Entscheid Wilhelm, 09.10.2026; Kleinsttest 30) =================
+ * Die 5-Tage-Regel des Reihenendes bleibt. Kaeufe, die bei der Umschichtung mangels Bargeld ausfielen, merkt sich das Buch
+ * (nachkaufMerken) und holt sie nach, sobald ein Reihenende Bargeld frei gemacht hat (nachkaufAnlegen -> buch.offen ->
+ * nachfassen zur Eroeffnung). Randfaelle: ohne Reihenende nichts; nach 16:00 der naechste Werktag; ein offen fuer einen
+ * spaeteren Tag wird nicht vorzeitig beendet; kein zweiter Kauf. */
+console.log('106) Nachkauf nach einem Reihenende');
+(function () {
+  var MH = require('./mfhandel.js'), K = { kleinstAnteil: MH.buchKonfig().kleinstAnteil };
+  var umsch = MH.nyZeit('2026-11-24', 10, 0);
+  var plan = { kaufen: [{ sym: 'A', kurs: 100, budget: 4500, stueck: 45 }, { sym: 'B', kurs: 100, budget: 4500, stueck: 0 }],
+    verkaufen: [], halten: [], fehltKurs: [], depotwert: 9000 };
+  var nk = MH.nachkaufMerken(['A', 'B'], plan, '2026-11-24', umsch);
+  ok(nk && nk.kaeufe.length === 1 && nk.kaeufe[0].sym === 'B' && nk.kaeufe[0].rang === 2 && nk.depotwert === 9000 && nk.zielZahl === 2,
+    '106 nachkaufMerken: nur der mangels Bargeld ausgefallene Kauf (B, Rang 2), mit Depotwert und Zielzahl');
+  ok(MH.nachkaufMerken(['A'], { kaufen: [{ sym: 'A', budget: 1, stueck: 1 }] }, '2026-11-24', umsch) === null, '106 nachkaufMerken: nichts ausgefallen -> null');
+  function buch(mitEnde) {
+    var b = { cash: 4600, positionen: [{ sym: 'A', stueck: 45, einstand: 100 }], trades: [], nachkauf: JSON.parse(JSON.stringify(nk)) };
+    if (mitEnde) b.trades.push({ t: umsch + 5 * 86400000, sym: 'WEG', art: 'reihenende', stueck: 46, kurs: 100 });
+    return b;
+  }
+  var b0 = buch(false);
+  ok(MH.nachkaufAnlegen(b0, MH.nyZeit('2026-12-01', 10, 0), K) === null && !b0.offen, '106 ohne Reihenende seit der Umschichtung: kein Nachkauf');
+  var b1 = buch(true), x1 = MH.nachkaufAnlegen(b1, MH.nyZeit('2026-12-01', 10, 0), K);
+  ok(x1 && x1.tag === '2026-12-01' && b1.offen && b1.offen.nachkauf && b1.offen.kaeufe[0].sym === 'B' && b1.offen.kaeufe[0].budget === (9000 + 4600) / 2,
+    '106 Reihenende vor 16:00: Nachkauf heute, Platzwert (Depotwert + Gutschrift) / Zielzahl', JSON.stringify(b1.offen));
+  var r1 = MH.nachfassen(b1, { B: 100 }, {}, MH.nyZeit('2026-12-01', 10, 5), 20, K);
+  ok(r1.gekauft.length === 1 && !b1.offen && b1.cash >= 0, '106 nachfassen kauft B zur Eroeffnung, offen danach leer');
+  ok(MH.nachkaufAnlegen(b1, MH.nyZeit('2026-12-02', 10, 0), K) === null && !b1.nachkauf && !b1.offen, '106 B im Buch: Merker entfaellt, kein zweiter Kauf');
+  var b2 = buch(true), x2 = MH.nachkaufAnlegen(b2, MH.nyZeit('2026-12-04', 17, 0), K);
+  ok(x2 && x2.tag === '2026-12-07', '106 nach 16:00 am Freitag: Nachkauf zur Eroeffnung des Montags', x2 && x2.tag);
+  ok(MH.offenBeenden(b2, MH.nyZeit('2026-12-04', 18, 0)) === null && b2.offen, '106 offen fuer einen spaeteren Tag wird nicht vorzeitig beendet');
+  var e2 = MH.offenBeenden(b2, MH.nyZeit('2026-12-07', 16, 30));
+  ok(e2 && /Nachkauf zur Eröffnung vom 07\.12\.2026 beendet/.test(MH.offenEndeJournal(e2, MH.nyZeit('2026-12-07', 16, 30)).txt),
+    '106 nach 16:00 des Nachkauf-Tags beendet, die Zeile nennt den Nachkauf');
+  var b3 = buch(true); b3.cash = 50;
+  ok(MH.nachkaufAnlegen(b3, MH.nyZeit('2026-12-01', 10, 0), K) === null, '106 Bargeld unter der Grenze von Regel K1: kein Nachkauf');
+  var src = require('fs').readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  ok(/MH\.nachkaufMerken\(zielA\.ziel, plan, ausf\.heute, now\)/.test(src) && /MH\.nachkaufAnlegen\(d\.mfBuch, now/.test(src) &&
+     /d\.mfBuch\.nachkauf && d\.momentumAn && !faellig/.test(src) && /now < MH\.nyZeit\(o\.tag, MH\.HANDEL_AB\[0\], MH\.HANDEL_AB\[1\]\)/.test(src),
+    '106 mfdepot.js: merkt nach der Umschichtung, setzt im Takt an (nicht wenn faellig), fasst erst ab der Eroeffnung des Tages nach');
 })();
 
 Promise.all(offeneProben).then(function () {

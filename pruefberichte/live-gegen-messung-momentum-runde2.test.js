@@ -35,7 +35,8 @@
  * UEBERNAHME (Auftrag Nr. 108, 05.10.2026, Zweig fix/runde2): aus origin/pruefung/live-gegen-messung (ba15db3) ins Repo
  * gelegt und gegen main nach den Fixes der Generalprobe gefahren. Wo ein Test nicht mehr den heutigen Weg nahm, ist er
  * angepasst, ohne sein Soll zu lockern ("Angepasst" / "Repariert" / "Ergaenzt (Runde 2, Nr. 108)" an der Stelle: 18, 20,
- * 21, 26, 29, 32, 34). Test 30 (Reihenende erst nach fuenf Handelstagen, Nr. 93 A2) bleibt rot: Entscheid Wilhelm offen.
+ * 21, 26, 29, 32, 34). Test 30 (Reihenende erst nach fuenf Handelstagen, Nr. 93 A2): Entscheid Wilhelm 09.10.2026 -
+ * Nachkauf statt sofortigem Ausbuchen, Test angepasst (siehe dort).
  *
  * Jeder Test druckt GENAU EINE Zeile: "ZEIGT ABWEICHUNG: ..." oder "kein Unterschied: ...".
  * Reines Node, kein Netz, keine Schluessel, kein Electron. Die Fenster-Module laufen in einer
@@ -937,7 +938,11 @@ TESTS[29] = function () {
  *     main: mfhandel.js:426/436 (REIHENENDE_TAGE = 5), mfdepot.js:396 (Reihenende vor der Umschichtung des Takts).
  *     Messung: rueckblick.js:165 (Schritt 1: am ersten Handelstag nach der letzten Zeile, VOR Schritt 3), REGEL §1.4, Teil C.5.
  *     Soll: am 24.11. T19 gekauft, Bargeld nahe 0 wie die Messung. Gegenprobe: letzte Zeile am 16.11. - bis zum Stichtag
- *     liegen fuenf SPY-Balken dazwischen, die App bucht am 24.11. vor der Umschichtung aus. */
+ *     liegen fuenf SPY-Balken dazwischen, die App bucht am 24.11. vor der Umschichtung aus.
+ *     Angepasst (Nachkauf, Entscheid Wilhelm 09.10.2026): die 5-Tage-Regel bleibt; der Kauf, der am 24.11. mangels Bargeld
+ *     ausfiel, wird nach dem Ausbuchen zur naechsten Eroeffnung nachgeholt (nachkaufMerken/nachkaufAnlegen/nachfassen wie
+ *     mfdepot.js). Geprueft wird deshalb, dass T19 am Ende im Buch ist und das Bargeld nahe der Messung liegt. Was bewusst
+ *     bleibt: der Kauf kommt rund fuenf Handelstage spaeter, zum Eroeffnungskurs jenes Tages (hier gleich). */
 TESTS[30] = function () {
   var K = { kleinstAnteil: MH.buchKonfig().kleinstAnteil };
   function st(tag) { return MH.nyZeit(tag, 9, 30); }
@@ -964,18 +969,26 @@ TESTS[30] = function () {
     var b = buch(), heute = MH.nyZeit('2026-11-24', 10, 0);
     var aus1 = MH.reihenendeAusbuchen(b, roh, spyBis('2026-11-23'), heute);
     var plan = MH.planeUmschichtung(ziel, b, kurse, K); MH.fuehreAus(b, plan, heute, 20, K);
-    var offen = MH.offeneAuftraege(ziel, plan, '2026-11-24'), t19 = imBuch(b, 'T19'), spaeter = [];
+    b.nachkauf = MH.nachkaufMerken(ziel, plan, '2026-11-24', heute);   // wie mfdepot.js nach fuehreAus (Nachkauf, 09.10.2026)
+    var offen = MH.offeneAuftraege(ziel, plan, '2026-11-24'), t19 = imBuch(b, 'T19'), spaeter = [], nachkauf = [];
     ['2026-11-25', '2026-11-27', '2026-11-30', '2026-12-01'].forEach(function (tag) {
-      var a = MH.reihenendeAusbuchen(b, roh, spyBis(tag), MH.nyZeit(tag, 10, 0) + TAG);
+      var jetzt = MH.nyZeit(tag, 10, 0) + TAG;
+      var a = MH.reihenendeAusbuchen(b, roh, spyBis(tag), jetzt);
       if (a.length) spaeter.push(tagKurz(tag) + ' (' + a[0].tage + ' Balken)');
+      /* Der Takt danach (mfdepot.js): Nachkauf ansetzen, zur Eroeffnung seines Tages nachfassen. */
+      var nk = MH.nachkaufAnlegen(b, jetzt, K);
+      if (nk) {
+        var r = MH.nachfassen(b, kurse, {}, MH.nyZeit(nk.tag, 9, 40), 20, K);
+        nachkauf.push(tagKurz(nk.tag) + ' ' + r.gekauft.map(function (g) { return g.sym; }).join(', '));
+      }
     });
-    return { b: b, aus1: aus1.length, plan: plan, offen: offen, t19: t19, spaeter: spaeter };
+    return { b: b, aus1: aus1.length, plan: plan, offen: offen, t19: t19, spaeter: spaeter, nachkauf: nachkauf };
   }
   var x = app(rohMit(['2026-11-19', '2026-11-20'])), gp = app(rohMit(['2026-11-13', '2026-11-16']));
-  zeile(!x.t19 || Math.abs(x.b.cash - bM.cash) > 100,
+  zeile(!imBuch(x.b, 'T19') || Math.abs(x.b.cash - bM.cash) > 100,
     'WEG mit letzter Zeile Fr 20.11., Ausfuehrungstag Di 24.11.: App bucht am 24.11. ' + x.aus1 + ' Position(en) aus, WEG ohne Eroeffnung ' + (x.plan.halten.indexOf('WEG') >= 0 ? 'gehalten' : 'nicht gehalten') +
     ', Plan-Depotwert ' + geld(x.plan.depotwert) + ' (ohne WEG), T19 gekauft ' + jn(x.t19) + ', offener Verkauf ' + JSON.stringify(x.offen && x.offen.verkaeufe) + ' (kann nie gefuellt werden); ausgebucht am ' +
-    (x.spaeter.join(', ') || '-') + ' -> Bargeld ' + betrag(x.b.cash) + ' bis zur naechsten Umschichtung, T19 im Buch ' + jn(imBuch(x.b, 'T19')) + '. Messung: WEG am 23.11. ausgebucht, am 24.11. T19 gekauft ' +
+    (x.spaeter.join(', ') || '-') + ', nachgekauft zur Eroeffnung ' + (x.nachkauf.join('; ') || '-') + ' -> Bargeld ' + betrag(x.b.cash) + ' bis zur naechsten Umschichtung, T19 im Buch ' + jn(imBuch(x.b, 'T19')) + '. Messung: WEG am 23.11. ausgebucht, am 24.11. T19 gekauft ' +
     jn(imBuch(bM, 'T19')) + ', Bargeld ' + betrag(bM.cash) + '. Gegenprobe letzte Zeile Mo 16.11.: am 24.11. ' + gp.aus1 + ' ausgebucht, T19 gekauft ' + jn(gp.t19) + ', Bargeld ' + betrag(gp.b.cash) + '.');
 };
 

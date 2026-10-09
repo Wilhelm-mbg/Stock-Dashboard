@@ -1,0 +1,3 @@
+## Momentum-Buch: ausgefallene Käufe nach einem Reihenende nachholen
+
+Endet die Kursreihe eines gehaltenen Werts kurz vor einer Umschichtung, bucht das Buch ihn wie bisher erst nach fünf Handelstagen zum letzten Schlusskurs aus – live lässt sich ein echtes Ende nicht von einem Aussetzer der Datenquelle unterscheiden. Neu: Käufe, die bei der Umschichtung deshalb mangels Bargeld ausfielen, holt das Buch nach dem Ausbuchen zur nächsten Eröffnung nach, mit dem Platzwert wie in der Messung. Bisher blieb dieser Platz bis zur nächsten Umschichtung, also rund ein Quartal, leer. Das Journal nennt den angesetzten Nachkauf in einer eigenen Zeile. Entscheid Wilhelm vom 09.10.2026 – Simulation mit virtuellem Kapital, keine Anlageberatung.
