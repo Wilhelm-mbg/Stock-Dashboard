@@ -907,17 +907,20 @@
       if (k.stueck > 0) res.gekauft.push({ sym: k.sym, kurs: k.kurs, stueck: k.stueck });
       else { res.wartet.push(k.sym); restK.push({ sym: k.sym, budget: k.budget, rang: k.rang }); }
     });
-    if (restV.length || restK.length) buch.offen = { tag: o.tag, verkaeufe: restV, kaeufe: restK.sort(nachRang) };
-    else delete buch.offen;
+    if (restV.length || restK.length) {
+      buch.offen = { tag: o.tag, verkaeufe: restV, kaeufe: restK.sort(nachRang) };
+      if (o.nachkauf) buch.offen.nachkauf = true;
+    } else delete buch.offen;
     res.rest = buch.offen || null;
     res.geaendert = res.verkauft.length + res.gekauft.length + res.entfallen.length > 0;
     return res;
   }
 
   /** Regel 3: nach 16:00 New York oder an einem spaeteren Tag wird offen geloescht. Rueckgabe: das geloeschte
-   *  offen (mit den liegen gebliebenen Auftraegen) - oder null, wenn keins da ist oder es weiterlaeuft. */
+   *  offen (mit den liegen gebliebenen Auftraegen) - oder null, wenn keins da ist, es weiterlaeuft oder sein Tag
+   *  noch kommt (ein Nachkauf, angesetzt fuer den naechsten Handelstag). */
   function offenBeenden(buch, nowMs) {
-    if (!buch || !buch.offen || offenLaeuft(buch.offen, nowMs)) return null;
+    if (!buch || !buch.offen || offenLaeuft(buch.offen, nowMs) || nyTag(nowMs) < buch.offen.tag) return null;
     var o = buch.offen;
     delete buch.offen;
     return o;
@@ -973,12 +976,87 @@
     var heute = nyTag(nowMs);
     return {
       applied: ['Momentum-Buch: Nachfassen beendet, liegen geblieben ' + liste],
-      txt: 'Momentum-Buch: Nachfassen der Umschichtung vom ' + datumDe(offen.tag) + ' beendet ' +
+      txt: 'Momentum-Buch: ' + (offen.nachkauf ? 'Nachkauf zur Eröffnung vom ' : 'Nachfassen der Umschichtung vom ') + datumDe(offen.tag) + ' beendet ' +
         (heute === offen.tag ? '(16:00 New York vorbei)' : 'am ' + datumDe(heute) + ' (Auftragstag vorbei)') + ' – liegen geblieben ' + liste + '.' +
         (satz ? ' ' + satz.charAt(0).toUpperCase() + satz.slice(1) + ' – wie in der Messung (ohne Eröffnung kein Handel).' : '') +
         (geld.length ? ' Für ' + geld.join(', ') + ' reichte das Bargeld nicht – ' + (geld.length === 1 ? 'sein Platz bleibt' : 'ihre Plätze bleiben') +
           ' bis zur nächsten Umschichtung leer.' : '') +
         ' Simulation mit virtuellem Kapital, keine Anlageberatung.'
+    };
+  }
+
+  /* ================= Nachkauf nach einem Reihenende (Entscheid Wilhelm, 09.10.2026; Kleinsttest 30) =================
+   *
+   * Endet die Reihe eines gehaltenen Werts in den fuenf Handelstagen vor einer Umschichtung, hat er am
+   * Ausfuehrungstag keine Eroeffnung und wird erst nach REIHENENDE_TAGE ausgebucht (bewusste Regel aus Nr. 93 A2:
+   * live sind Ende und Aussetzer der Quelle nicht zu unterscheiden). Der Plan rechnet ohne ihn, und Kaeufe fallen
+   * mangels Bargeld aus. Die Messung bucht ihn am ersten Tag ohne Zeile aus und kauft mit dem Erloes. Die App
+   * holt das nach: die Kaeufe, die bei der Umschichtung mangels Bargeld ausfielen, merkt sich das Buch
+   * (buch.nachkauf); bucht danach ein Reihenende Bargeld ins Buch, setzt der Takt sie als offene Auftraege
+   * (buch.offen mit nachkauf: true) zur Eroeffnung des naechsten Handelstags an - gekauft wird wie beim
+   * Nachfassen (nachfassen, Platzwert der Umschichtung, hoechstens das Bargeld, Regel K). Die 5-Tage-Regel
+   * bleibt. Bis zur naechsten Umschichtung; sie ersetzt buch.nachkauf. Rein, in Node pruefbar. */
+
+  /** Die Kaeufe einer Umschichtung, die mangels Bargeld ausfielen (fuehreAus setzt ihr stueck auf 0).
+   *  ziel = die Zielliste in der Rangfolge, plan = der ausgefuehrte Plan, tag = Ausfuehrungstag, nowMs = Zeit
+   *  der Umschichtung. depotwert und zielZahl des Plans werden mitgemerkt (Platzwert beim Nachkauf, unten).
+   *  Rueckgabe { t, tag, depotwert, zielZahl, kaeufe: [{ sym, budget, rang }] } oder null. */
+  function nachkaufMerken(ziel, plan, tag, nowMs) {
+    var rang = {};
+    (ziel || []).forEach(function (s, i) { rang[s] = i + 1; });
+    var kaeufe = ((plan && plan.kaufen) || []).filter(function (o) { return !(o.stueck > 0) && o.budget > 0 && rang[o.sym]; })
+      .map(function (o) { return { sym: o.sym, budget: o.budget, rang: rang[o.sym] }; });
+    return kaeufe.length ? { t: nowMs, tag: tag, depotwert: plan.depotwert, zielZahl: ziel.length, kaeufe: kaeufe.sort(nachRang) } : null;
+  }
+
+  /** Der naechste Werktag nach 'JJJJ-MM-TT'. */
+  function werktagNach(tag) { var t = tagPlus(tag, 1); while (!istWerktag(t)) t = tagPlus(t, 1); return t; }
+
+  /** Den Nachkauf ansetzen: nur wenn seit der Umschichtung ein Reihenende gebucht wurde, ein gemerkter Kauf noch
+   *  fehlt und das Bargeld fuer den staerksten davon die Grenze von Regel K1 erreicht. Platzwert wie in der Messung:
+   *  (Depotwert des Plans + Gutschriften der Reihenenden seit der Umschichtung) / Zielzahl - die Messung haette die
+   *  ausgebuchte Position im Depotwert gehabt. Tag ist heute (Werktag, vor
+   *  16:00 New York) oder der naechste Werktag. Laeuft schon ein offen fuer diesen Tag, kommen die Kaeufe dazu;
+   *  eines fuer einen anderen Tag bleibt unberuehrt. Ist kein gemerkter Kauf mehr offen, entfaellt buch.nachkauf.
+   *  Mutiert das Buch. Rueckgabe { tag, kaeufe: [sym…] } oder null. */
+  function nachkaufAnlegen(buch, nowMs, opts) {
+    var n = buch && buch.nachkauf;
+    if (!n || !n.kaeufe) return null;
+    var imBuch = {};
+    (buch.positionen || []).forEach(function (p) { imBuch[p.sym] = true; });
+    var rest = n.kaeufe.filter(function (k) { return !imBuch[k.sym]; }).map(function (k) { return { sym: k.sym, budget: k.budget, rang: k.rang }; }).sort(nachRang);
+    if (!rest.length) { delete buch.nachkauf; return null; }
+    var gutschrift = 0, ende = false;
+    (buch.trades || []).forEach(function (t) {
+      if (t.art === 'reihenende' && t.t > n.t) { ende = true; gutschrift += t.stueck * t.kurs; }
+    });
+    if (!ende) return null;
+    var platz = n.depotwert > 0 && n.zielZahl > 0 ? (n.depotwert + gutschrift) / n.zielZahl : 0;
+    rest.forEach(function (k) { if (platz > k.budget) k.budget = platz; });
+    var kl = opts && opts.kleinstAnteil > 0 ? opts.kleinstAnteil : 0;
+    if (!(buch.cash > 0) || buch.cash < kl * rest[0].budget) return null;
+    var heute = nyTag(nowMs);
+    var tag = istWerktag(heute) && nowMs < nyZeit(heute, NACHFASSEN_BIS[0], NACHFASSEN_BIS[1]) ? heute : werktagNach(heute);
+    var neu = rest;
+    if (buch.offen) {
+      if (buch.offen.tag !== tag) return null;
+      var schon = {};
+      (buch.offen.kaeufe || []).forEach(function (k) { schon[k.sym] = true; });
+      neu = neu.filter(function (k) { return !schon[k.sym]; });
+      if (!neu.length) return null;
+      buch.offen.kaeufe = (buch.offen.kaeufe || []).concat(neu).sort(nachRang);
+    } else buch.offen = { tag: tag, verkaeufe: [], kaeufe: neu, nachkauf: true };
+    return { tag: tag, kaeufe: neu.map(function (k) { return k.sym; }) };
+  }
+
+  /** Die Journalzeile zum angesetzten Nachkauf. Rein. */
+  function nachkaufJournal(x, nowMs) {
+    return {
+      applied: ['Momentum-Buch: Nachkauf angesetzt – ' + x.kaeufe.join(', ')],
+      txt: 'Momentum-Buch: Ein Reihenende hat Bargeld frei gemacht. ' + (x.kaeufe.length === 1 ? 'Der Kauf ' : 'Die Käufe ') + x.kaeufe.join(', ') +
+        ', bei der letzten Umschichtung mangels Bargeld ausgefallen, ' + (x.kaeufe.length === 1 ? 'wird' : 'werden') + ' zur Eröffnung vom ' +
+        datumDe(x.tag) + ' nachgeholt (angesetzt um ' + nyUhr(nowMs) + ' New York; Platzwert wie in der Messung, höchstens das Bargeld). ' +
+        'Die Messung hätte ' + (x.kaeufe.length === 1 ? 'ihn' : 'sie') + ' schon am Ausführungstag gekauft. Simulation mit virtuellem Kapital, keine Anlageberatung.'
     };
   }
 
@@ -998,6 +1076,7 @@
     SCHLUSS_FERTIG: SCHLUSS_FERTIG, HANDEL_AB: HANDEL_AB,
     /* Auftrag Nr. 94 */
     nyUhr: nyUhr, offeneAuftraege: offeneAuftraege, offenLaeuft: offenLaeuft, offenWerte: offenWerte, nachfassen: nachfassen,
+    nachkaufMerken: nachkaufMerken, nachkaufAnlegen: nachkaufAnlegen, nachkaufJournal: nachkaufJournal, werktagNach: werktagNach,   /* Test 30 */
     offenBeenden: offenBeenden, offenText: offenText, nachfassenJournal: nachfassenJournal, offenEndeJournal: offenEndeJournal,
     eroeffnungAbwarten: eroeffnungAbwarten,   // Generalprobe 23.11., Fund 2
     NACHFASSEN_BIS: NACHFASSEN_BIS

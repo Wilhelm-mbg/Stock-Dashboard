@@ -368,6 +368,8 @@
       return true;
     }
     if (!d.momentumAn) return false;
+    /* Nachkauf (Test 30): angesetzt fuer einen spaeteren Handelstag - erst ab dessen Eroeffnung nachfassen. */
+    if (now < MH.nyZeit(o.tag, MH.HANDEL_AB[0], MH.HANDEL_AB[1])) return false;
     var syms = MH.offenWerte(o), preise = {}, barZeit = {}, ereignisse = {};
     for (var i = 0; i < syms.length; i++) {
       var f = await eroeffnung(MH, syms[i], o.tag, now);
@@ -463,6 +465,19 @@
       /* Nr. 94: offene Auftraege der Umschichtung von heute zur Eroeffnung dieses Tages nachfassen - oder beenden. */
       if (d.mfBuch.offen && await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil)) speichern();
       var faellig = fl.faellig === true;
+      /* Nachkauf nach einem Reihenende (Entscheid Wilhelm, 09.10.2026; Test 30): Kaeufe, die bei der Umschichtung mangels
+       * Bargeld ausfielen, zur naechsten Eroeffnung nachholen, sobald ein Reihenende Bargeld frei gemacht hat. Nicht, wenn
+       * die Umschichtung faellig ist - dann plant sie neu. */
+      if (d.mfBuch.nachkauf && d.momentumAn && !faellig) {
+        var nk = MH.nachkaufAnlegen(d.mfBuch, now, { kleinstAnteil: KONFIG.kleinstAnteil });
+        if (nk) {
+          var zN = MH.nachkaufJournal(nk, now);
+          if (!d.tuneLog) d.tuneLog = [];
+          d.tuneLog.unshift({ id: 'mfnachkauf-' + now, at: now, quelle: 'automatik', applied: zN.applied, txt: zN.txt });
+          speichern();
+          if (await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil)) speichern();   // heute schon nach der Eroeffnung: gleich kaufen
+        } else if (!d.mfBuch.nachkauf) speichern();                                    // alle gemerkten Kaeufe im Buch: Merker entfaellt
+      }
       var ziel = MH.momentumZiel(daten.roh, { nowMs: daten.juengster || now });
       /* Gespeicherte Tagesdaten ohne Stueckzahlen (Bestand von vor dem Korbfilter): der
        * Lader des Mittelfrist-Tabs erkennt das und laedt neu - er muss nur angestossen
@@ -493,6 +508,9 @@
            * "jetzt umschichten" aendert nichts an offen; seine fehlenden Werte bleiben wie bisher liegen. */
           var offenNeu = manuell === 'momentum' ? null : MH.offeneAuftraege(zielA.ziel, plan, ausf.heute);
           if (offenNeu) d.mfBuch.offen = offenNeu;
+          /* Test 30: Kaeufe, die mangels Bargeld ausfielen, fuer den Nachkauf nach einem Reihenende merken (ersetzt den alten Merker). */
+          var nkM = MH.nachkaufMerken(zielA.ziel, plan, ausf.heute, now);
+          if (nkM) d.mfBuch.nachkauf = nkM; else delete d.mfBuch.nachkauf;
           /* Generalprobe 23.11., Fund 5 (M-01, D-01, H-c1): zur Eroeffnung verkaufte Positionen behalten ihren Anspruch auf
            * Ausschuettungen bis zum Verkaufstag (REGEL C.3); gebucht wird nach dem Laden (bucheMassnahmen, Regel 7). */
           MH.anspruecheVormerken(d.mfBuch, vorherM, ausf.barZeit, now);
