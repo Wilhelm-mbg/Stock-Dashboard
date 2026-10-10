@@ -1,3 +1,0 @@
-## Momentum-Buch: fehlt beim Umschichten ein Eröffnungskurs, kauft oder verkauft die App ihn am selben Tag nach
-
-Hat ein Wert beim Umschichten um 09:35 Uhr New Yorker Zeit noch keinen Eröffnungskurs, merkt sich das Buch den Auftrag und holt ihn bei jedem Takt bis 16:00 Uhr New York nach – gehandelt wird immer zum Eröffnungskurs dieses Tages, wie in der Messung, nie zu einem späteren Kurs. Kommt bis dahin keiner, bleibt es wie bisher (Ziel nicht gekauft, Position gehalten), und je eine Zeile im Journal nennt jedes Nachfassen und was liegen geblieben ist; alles Simulation mit virtuellem Kapital, keine Anlageberatung.

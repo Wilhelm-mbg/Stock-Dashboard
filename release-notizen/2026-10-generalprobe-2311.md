@@ -1,3 +1,0 @@
-## Umschichtung des Momentum-Buchs: Generalprobe für den 23.11. nachgebessert
-
-Fehlt am Umschichtungstag die Eröffnung eines gehaltenen Werts noch, wartet das Buch jetzt bis höchstens 16:00 Uhr New Yorker Zeit auf sie, statt mit zu kleinen Käufen umzuschichten; gehandelt wird weiter zur Eröffnung des Tages, und ein Split oder eine Ausschüttung genau an diesem Tag, ein Ausfall des SPY-Abrufs oder eine Störung, bei der nur SPY antwortet, verschiebt oder verfälscht die Umschichtung nicht mehr still. Außerdem nimmt der Kurslader je Handelstag nur noch einen Tagesbalken (keine angehängte Stempel-Kerze, keine doppelten oder unsortierten Tage, keine Daten eines fremden Kürzels) – alles Simulation mit virtuellem Kapital, keine Anlageberatung.
