@@ -5,6 +5,11 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 10.10.2026 Release v8.45.1 (Wache): Momentum-Buch handelt zur Eröffnung wie gemessen
+  (Nachfassen fehlender Eröffnungskurse, Splits/Ausschüttungen gebucht, Regel gegen
+  Kleinstpositionen); Sicherheit gehärtet (Strategien nur nach Bestätigung, Links,
+  Sicherung).
+
 - 04.10.2026 Release v8.45.0 (Wache): Maßstab S&P 500 (mit Ausschüttungen) jetzt neben
   jedem Buch, im Depotverlauf und beim Intraday-Depot; Kapitulations-Dip app-weit als
   neu gemessen und zurückgewiesen gekennzeichnet, per Voreinstellung und in der
