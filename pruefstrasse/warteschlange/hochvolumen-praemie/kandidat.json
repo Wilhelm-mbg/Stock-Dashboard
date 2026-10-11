@@ -1,0 +1,15 @@
+{
+  "kennung": "hochvolumen-praemie",
+  "form": "tag",
+  "titel": "High-Volume Return Premium: Dollarumsatz des Tages unter den obersten 10 % der letzten 50 Tage, long",
+  "quelle": "Gervais, Kaniel & Mingelgrin, 'The High-Volume Return Premium', Journal of Finance 56(3) (2001) 877-919, Tabelle 2 (Regel und Parameter); bestaetigt nach 2010: Kaniel, Ozoguz & Starks, JFE 103(2) (2012) 255-279 (41 Laender inkl. USA), Wang, JFE 140(1) (2021) 325-345 (USA, nicht durch Faktoren erklaert); abgerufen 2026-10-11, URLs in REGEL.md",
+  "erwartung": { "groesse": "Quelle (1963-1996, Long-Seite gegen Referenzportfolio derselben Groessenklasse): +0,18 bis +0,28 Pp je Trade bei 10 Tagen, +0,29 bis +0,45 Pp bei 20 Tagen brutto; nach 2016 in liquiden Werten eher kleiner (Belegstand K4 'Umsatzschock mit Richtung' negativ) - eigene Erwartung gegen den Topf: 0 bis +0,2 Pp", "richtung": "positiv" },
+  "daten": "panel",
+  "konfigurationen": [
+    { "key": "H10", "richtung": "long", "haltedauer": 10, "klassen": [1, 2, 3] },
+    { "key": "H20", "richtung": "long", "haltedauer": 20, "klassen": [1, 2, 3] }
+  ],
+  "params": { "fenster": 50, "rangMin": 46, "mindestKurs": 5 },
+  "autor": "Ideen-Agent (geplante Routine)",
+  "datum": "2026-10-11"
+}
