@@ -9,7 +9,7 @@
     { "key": "H10", "richtung": "long", "haltedauer": 10, "klassen": [1, 2, 3] },
     { "key": "H20", "richtung": "long", "haltedauer": 20, "klassen": [1, 2, 3] }
   ],
-  "params": { "fenster": 50, "rangMin": 46, "mindestKurs": 5 },
+  "params": { "fenster": 50, "rangMin": 46, "mindestKurs": 0 },
   "autor": "Ideen-Agent (geplante Routine)",
   "datum": "2026-10-11"
 }

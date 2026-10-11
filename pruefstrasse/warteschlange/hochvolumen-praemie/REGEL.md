@@ -13,8 +13,10 @@ Käufer kommen nach. Alles Simulation mit virtuellem Kapital, keine Anlageberatu
    Abb. 2 („49 days" Referenz, „1 day" Bildung).
 3. **Signal am Tag i (long):** der Dollarumsatz von Tag i hat im Fenster **Rang ≥ 46 von 50** (Rang = 1 + Zahl der Referenztage mit
    kleinerem Umsatz), also gehört er zu den obersten 10 %. Fundstelle: GKM Gl. (2), „H, if Ψ ≥ 46".
-4. **Filter:** jeder der 50 Tage hat Schluss und Umsatz (sonst fällt das Fenster weg, GKM Fn. 7); der Schluss lag an keinem der 49
-   Referenztage unter **5 $** (GKM S. 4: „stocks whose price fell below $5 … in the first 49 days"). Die übrigen GKM-Filter (Fusion,
+4. **Filter:** jeder der 50 Tage hat Schluss und Umsatz (sonst fällt das Fenster weg, GKM Fn. 7). GKM verlangen zusätzlich, dass der
+   Schluss an keinem der 49 Referenztage unter **5 $** lag (GKM S. 4: „stocks whose price fell below $5 … in the first 49 days") —
+   **auf dem Panel abgeschaltet** (`mindestKurs: 0`, Nachtrag des PM unten): die Sicht liefert bereinigte Kurse, der Filter träfe dort
+   die falschen Reihen; die Umsatzklassen 1–3 (ab 50 Mio $ Tagesumsatz) übernehmen seine Aufgabe. Die übrigen GKM-Filter (Fusion,
    Delisting, Kapitalerhöhung im Vorjahr; mindestens ein Jahr Notiz) sind mit der Sicht nicht abbildbar und entfallen; die
    Prüfstraße zählt Abgänge selbst getrennt.
 5. **Einstieg:** Eröffnung des Tages nach dem Signal (Form `tag` ohne `bestaetigt`); GKM messen ab dem Schluss des Bildungstags —
@@ -35,7 +37,7 @@ Regel. Die Tag-Form prüft jeden Tag und rechnet die Überlappung mit Hansen-Hod
 | Fenster | 50 Handelstage (49 Referenz + 1 Bildung) | GKM S. 4, Abb. 2 |
 | Schwelle | Rang ≥ 46 von 50 (oberste 10 %) | GKM Gl. (2) |
 | Umsatzmaß | Dollarumsatz = Schluss × Stück | GKM Fn. 9 |
-| Mindestkurs | 5 $ im Referenzzeitraum | GKM S. 4, Fn. 8 |
+| Mindestkurs | Quelle: 5 $ im Referenzzeitraum — auf dem Panel **0** (abgeschaltet, Nachtrag PM) | GKM S. 4, Fn. 8 |
 | Haltedauern | 10 und 20 Handelstage | GKM Tabelle 2 |
 | Richtung | long (die Low-Volume-Short-Seite ist nicht handelbar, Leihe nicht gemessen) | — |
 
@@ -97,3 +99,17 @@ Regel. Die Tag-Form prüft jeden Tag und rechnet die Überlappung mit Hansen-Hod
 Richtung positiv. Größe gegen den Topf: Quelle +0,18–0,28 (H10) / +0,29–0,45 (H20) brutto; eigene Erwartung nach K4 und Publikations-
 abnutzung **0 bis +0,2 Pp**, netto um die Hürde (0,05–0,09 Pp) kleiner. Erwartetes Urteil: **nicht entscheidbar**, mit oberer Grenze
 nahe oder unter der Quellgröße; ein „nein" ist möglich.
+
+## Nachtrag PM (11.10.2026, vor der Messung, ohne Blick auf Renditen) — Mindestkurs auf dem Panel abgeschaltet
+
+Die Sicht der Tag-Form liefert auf dem Panel **bereinigte** Kurse (`c = rohSchluss / faktor`, Splits herausgerechnet, `tafel.js`) und
+bereinigte Stück (`v = Dollarumsatz / c`); der Dollarumsatz `c × v` ist damit exakt der rohe Dollarumsatz des Panels
+(`umsatzReg + umsatzAuktion`) — das Signal misst, was es messen soll. Der 5-$-Filter aber träfe den **bereinigten** Kurs, nicht den
+rohen, den GKM meinen (Fehlerform „Bereinigte Kurse messen den Cent-Boden falsch"). Zählung des PM auf den Jahren 2016–2022, nur
+Zeilen der Klassen 1–3 (1.403.463 Zeilen in 1.704 Reihen; Skript `hvrp-zaehlung.js`, nur Zählungen, keine Renditen): bereinigt < 5 $
+9.139 Zeilen, roh < 5 $ 11.130; **fälschlich gefiltert (nur bereinigt < 5 $): 967 Zeilen in 9 Reihen, davon NVDA 683 (2016–2019),
+GME 154, CVNA 76**; nicht gefiltert, obwohl roh < 5 $: 2.958 Zeilen. Signale ohne Filter 149.119 (87,1 je Tag an 1.713 Tagen ab
+2016-03-15, vor Cooldown), mit dem bereinigten Filter 147.595 — der Filter ändert 1 % der Signale, aber systematisch gegen einen
+späteren Großgewinner. Entscheidung: **`mindestKurs: 0`** — die Umsatzklassen 1–3 halten Pfennigwerte ohnehin fern, genau das wollten
+GKM mit 5 $. Keine andere Zahl des Kandidaten wurde angefasst. Ein roher Kurs in der Sicht (`sicht.roh`) steht als Verbesserung der
+Prüfstraße in `wiki/offene-auftraege.md`.
