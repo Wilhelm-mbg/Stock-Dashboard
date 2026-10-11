@@ -634,3 +634,4 @@ Fundstelle im Repo"** markiert — die zugehörigen Studienberichte liegen auße
 - 05.10.2026 (PM, 13:53) — **Nr. 108 abgenommen und gemischt (`68e66b3`).** Alle Tests der zweiten Durchsicht ohne Unterschied außer Test 30 (bewusste Regel, Entscheid offen). Nicht gepusht (Frage an Wilhelm offen).
 - 11.10.2026 (PM, 08:37) — **Nr. 109 Nachzügler-Studie: Parameter vor dem ersten Lauf festgeschrieben** (384 Konfigurationen; Entdeckung bis 2022, Prüfung ab 2023 im Code gesperrt). Wortlaut in [entscheide.md](entscheide.md).
 - 11.10.2026 (PM, 08:46) — **Nr. 109: Nachtrag 1 nach dem Zweitleser** (Kosten mit Eröffnungs- und Schlussfenster statt Mittagsspanne, E3-Zeitpunkt, Klasse, Standardfehler, Pilot ändert keine Parameter, Sperre ohne Umweg); Zweitleser 212k.
+- 11.10.2026 (PM, 09:40) — **Nr. 109 Nachzügler-Studie: nicht belegt** (0 von 384, 0 Kandidaten; Sperre und Siegel wie festgelegt). Kopf des Belegstands unverändert (NULL).
