@@ -47,6 +47,8 @@ IDEEN=pruefstrasse-ideen
 LAEUFER=pruefstrasse/laeufer.js
 ZEITGRENZE=${PRUEFSTRASSE_ZEITGRENZE:-6h}
 export PRUEFSTRASSE_DATEN=${PRUEFSTRASSE_DATEN:-$BASIS/archiv-spiegel}
+# Wertpapier-Klassifizierung (Polygon-Arten je Kuerzel) liegt auf dem Server unter daten/, nicht im Archiv-Spiegel (PM 11.10.).
+export PRUEFSTRASSE_WERTPAPIERARTEN=${PRUEFSTRASSE_WERTPAPIERARTEN:-$BASIS/daten/wertpapierarten.json}
 # Messungen laufen mit derselben Node-Version wie auf dem PC (v24.18.0, auf dem Server
 # "fuer Messungen daneben gelegt"). Fehlt sie, nimmt der Lauf das System-Node und sagt es.
 NODE=/opt/node-v24.18.0/bin/node
