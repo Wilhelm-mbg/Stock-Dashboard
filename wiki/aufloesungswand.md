@@ -83,3 +83,13 @@ Bei 4.665 vorhandenen Handelstagen:
 > der Befund — kein Nein, kein Ja. **34 von 38 frühen Messungen waren blind, ohne es zu wissen.**
 
 Siehe [messmethodik.md](messmethodik.md).
+
+## Nachtrag 11.10.2026 — die Wand in den Formen der Prüfstraße
+
+Die ersten beiden Läufe des Ideen-Agenten scheiterten nicht an der Form, sondern an der Wand (`pruefstrasse/ideen-verworfen.md`, Trendfaktor und Kurzfrist-Momentum):
+
+- **Korb-Form** (ein Buch gegen SPY je 63-Tage-Periode; Entdeckung 2016–2022 ≈ 27 Perioden): Standardfehler 2,6–4,3 Pp je Periode (aus dem Rückblick 04.10.: 3,07 Pp breit / 4,94 Pp Korb 187 über 20 Perioden) → **MDE₈₀ ≈ 7–12 Pp je Periode, grob 30–50 Pp p. a.**; Tor 1 verlangt das Vierfache der Bestätigungs-MDE (≈ 40–60 Pp je Periode). Realistische Kanten (3–7 Pp p. a.) sind dort unsichtbar — dieselbe Wand wie im Rückblick (+7,6 Pp p. a. nicht vom Zufall zu trennen).
+- **Tag-Form** (Ereignisse je Reihe, Tagescluster): fein nur mit tausenden Signaltagen; das Panel beginnt 04.01.2016, Vorläufe über ~4 Jahre scheiden aus (Trendfaktor: 1.000-Tage-Mittel + 12 Monate → 24 Signalmonate).
+- **Querschnitt** (Prüfstand 15.09., Top-Dezil gegen Universum, ~220 liquide Werte, 115 Monate): MDE₈₀ 0,97–1,76 Pp je Monat — die feinste Form, als Prüfstraßen-Adapter aber nicht gebaut; sie löst nur Größen ab ~12 Pp p. a. auf. Zurückgestellt (PM 11.10.).
+
+Folge für den Ideen-Agenten (Fassung 2, 11.10.): Maßstab ist ein **informatives Urteil** — einstellen, wenn die Messung die Behauptung bestätigen ODER in ihrer Größe ausschließen kann (MDE₈₀ ≤ 2 × behauptete Größe; ein Größen-Ausschluss zählt als Ergebnis); verwerfen nur, wenn beides unmöglich ist oder die Daten die Regel nicht tragen. Brutto-Belege genügen ab dem Dreifachen der Kassa-Hürde je Umlauf (0,157 / 0,085 / 0,065 / 0,045 Pp nach Umsatzklasse), die Kosten rechnet die Prüfstraße selbst.
