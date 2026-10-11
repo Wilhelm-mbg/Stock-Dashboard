@@ -65,9 +65,11 @@ ok(T0.gesperrt && T0.maxTag === sperrIdx && TAGE[sperrIdx] === '2022-12-30', 'Ku
 ok(TF.kunstTafel(reihen0, TAGE, { offen: true }).maxTag === TAGE.length - 1, 'mit Siegel bis zum Ende');
 var e1 = null; try { TF.oeffne({ quelle: 'panel', pruefzeit: true, ohneSpeicherpruefung: true }); } catch (e) { e1 = e; }
 ok(e1 && e1.sperre && /kein Siegel/.test(e1.message), 'Pruefzeit ohne Siegel-Pfad: Sperre wirft VOR dem Lesen', e1 && e1.message);
-var e2 = null; try { require('./paneltafel.js').oeffne({ pruefzeit: true, siegelPfad: 'pruefstrasse/test.js', ohneSpeicherpruefung: true }); } catch (e) { e2 = e; }
-ok(e2 && e2.sperre, 'Paneltafel: Siegel auf einer veraenderten/ungesicherten Datei scheitert', e2 && e2.message.slice(0, 80));
+/* PM 11.10.2026: die Probe lief vorher gegen pruefstrasse/test.js selbst und war nur rot, solange diese Datei im Arbeitsbaum
+ * ungesichert war (Testmarken-Falle). Jetzt gegen eine eigens angelegte, nie committete Datei - unabhaengig vom Arbeitsbaum. */
 var tmpS = path.join(K.REPO, 'pruefstrasse', 'ungesichert-tmp.json'); fs.writeFileSync(tmpS, '{}');
+var e2 = null; try { require('./paneltafel.js').oeffne({ pruefzeit: true, siegelPfad: 'pruefstrasse/ungesichert-tmp.json', ohneSpeicherpruefung: true }); } catch (e) { e2 = e; }
+ok(e2 && e2.sperre, 'Paneltafel: Siegel auf einer veraenderten/ungesicherten Datei scheitert', e2 && e2.message.slice(0, 80));
 var e3 = null; try { SG.pruefeSiegel(K.REPO, 'pruefstrasse/ungesichert-tmp.json'); } catch (e) { e3 = e; } finally { fs.unlinkSync(tmpS); }
 ok(e3 && e3.sperre && /keinem Commit/.test(e3.message), 'Siegel 2 auf einer Datei ohne Commit: SPERRE', e3 && e3.message);
 var s1 = SG.pruefeSiegel(K.REPO, 'pruefstrasse/FORM.md');
