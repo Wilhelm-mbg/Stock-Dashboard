@@ -1,0 +1,12 @@
+{
+  "daten": "E:/Markt-Dashboard-Archiv",
+  "panel": "studien/querschnitt-pruefstand-2026-09-13/voll-v23c",
+  "panelKennung": "querschnitt-pruefstand-2026-09-13/panel/v2.3",
+  "kalender": "<daten>/alpaca1m/_kalender.json",
+  "trendkanalTage": { "ordner": ["<daten>/studien-zellen/trendkanal-tage-2026-09-09/tage-0", "<daten>/studien-zellen/trendkanal-tage-2026-09-09/tage-1", "<daten>/studien-zellen/trendkanal-tage-2026-09-09/tage-2", "<daten>/studien-zellen/trendkanal-tage-2026-09-09/tage-3"], "von": "2016-01-04", "bis": "2026-08-31", "mindestDateien": 7000 },
+  "massnahmen": { "ordner": "<daten>/alpaca-massnahmen", "mindestDateien": 5000 },
+  "archiv60m": { "ordner": "<daten>/archiv60m", "mindestDateien": 2000 },
+  "sperreAb": "2023-01-01",
+  "entdeckungBis": "2022-12-30",
+  "speicherMinGb": 3.5
+}
