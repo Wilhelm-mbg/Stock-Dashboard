@@ -185,9 +185,9 @@ LETZTER_PUSH=$(cat "$LOGDIR/letzter-push.txt" 2>/dev/null || echo "noch keiner")
   fi
 } > STATUS.md
 
-# 8. Commit nur der Pruefstrassen-Pfade (pruefstrasse/ und STATUS.md), dann Push - nur dieser
+# 8. Commit nur der Pruefstrassen-Pfade (pruefstrasse/, STATUS.md, die zwei Wiki-Seiten des Laeufers), dann Push - nur dieser
 #    Zweig, mit vollem Refspec, damit nie etwas anderes geschoben wird.
-git add -A -- pruefstrasse STATUS.md
+git add -A -- pruefstrasse STATUS.md wiki/belegstand.md wiki/log.md   # PM 11.10.: der Laeufer haengt seinen Eintrag an belegstand.md und log.md an (Nr. 110) - mit committen, sonst bleibt der Spiegel schmutzig
 if git diff --cached --quiet; then
   z "Nichts zu committen"
 else
