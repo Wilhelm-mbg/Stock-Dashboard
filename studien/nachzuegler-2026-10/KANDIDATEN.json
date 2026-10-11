@@ -1,0 +1,23 @@
+{
+ "kennung": "nachzuegler-2026-10/v1",
+ "stand": "2026-10-11T07:29:27.522Z",
+ "ergebnisEntdeckungSha256": "ffcb91104736d2cd391b852ac370806d7d97425b7ea2c55f3767c48d3da7ae16",
+ "konfigurationen": 384,
+ "regel": "REGEL.md Z18: >= 30 Tage, netto > 0, t >= 2, Tor 1, kein Placebo-Verstoss",
+ "zahlen": {
+  "konfigurationen": 384,
+  "mitDaten": 384,
+  "pruefbar": 384,
+  "t2": 0,
+  "t2NegativSpiegel": 142,
+  "tor1": 0,
+  "placeboVerstoesse": {
+   "plA": 15,
+   "plB": 28,
+   "plC": 10
+  },
+  "kandidaten": 0,
+  "zufallErwartetT2": 8.736049877807801
+ },
+ "kandidaten": []
+}
