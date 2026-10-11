@@ -83,7 +83,9 @@ function naechster() {
 }
 
 /* ---------- Register (§6) ---------- */
-function register() { return fs.existsSync(K.REGISTER) ? liesJson(K.REGISTER) : { kennung: 'pruefstrasse/register/v1', konfigurationen: [], gesamt: 0 }; }
+function register() { return fs.existsSync(K.REGISTER) ? liesJson(K.REGISTER) : { kennung: 'pruefstrasse/register/v1', konfigurationen: [], gesamt: 0, zufallErwartet: 0 }; }
+/* Zahl fuer den Bericht - ein leeres Register (erster Lauf, Trockenlauf) hat noch keine Erwartung (PM 11.10.: Trockenlauf stuerzte an .toFixed). */
+function zufallText(Rg) { return typeof Rg.zufallErwartet === 'number' ? Rg.zufallErwartet.toFixed(1) : '–'; }
 function registerEintragen(Rg, kennung, form, konf, datum) {
   Rg.konfigurationen = Rg.konfigurationen.filter(function (e) { return e.kennung !== kennung; });
   konf.forEach(function (k) { Rg.konfigurationen.push({ kennung: kennung, form: form, key: k.key, urteil: k.urteil, datum: datum }); });
@@ -196,7 +198,7 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken) {
   o.push('');
   o.push('**Kurzfassung.** Kandidat `' + kand.kennung + '` (Form ' + kand.form + ', ' + konf.length + ' Konfigurationen, vorab festgelegt), gemessen ' + datumDe(E.stand) + ' auf ' + E.quelle + ' (' + (E.kennungTafel || E.archiv || '') + ').' +
     (trocken ? ' Trockenlauf: keine Urteile.' : ' **Urteil: ' + U.urteil + '** — ' + U.grund + '. Kandidaten nach der Entdeckung: ' + U.kandidaten + '.') +
-    ' Register: ' + Rg.gesamt + ' Konfigurationen bisher insgesamt geprueft, ' + Rg.zufallErwartet.toFixed(1) + ' Zufallstreffer (t ≥ 2) zu erwarten.' +
+    ' Register: ' + Rg.gesamt + ' Konfigurationen bisher insgesamt geprueft, ' + zufallText(Rg) + ' Zufallstreffer (t ≥ 2) zu erwarten.' +
     ' Erwartung vorab: ' + kand.erwartung.groesse + ' (' + kand.erwartung.richtung + ').');
   o.push('');
   o.push('Siegel 1 (Kandidatenordner) `' + (siegel1 ? siegel1.commit.slice(0, 12) : '–') + '`' + (siegel2 ? ', Siegel 2 (KANDIDATEN.json) `' + siegel2.commit.slice(0, 12) + '`' : ', kein Siegel 2 (keine Pruefung)') +
@@ -222,7 +224,7 @@ function belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2) {
   function bT(k) { var e = k.entdeckung; return e.uNetto ? e.uNetto.t : e.buch ? null : e.t; }
   return '- ' + datumDe(E.stand) + ' — **' + kand.titel + '** (`' + kand.kennung + '`, Form ' + kand.form + ', ' + konf.length + ' Konfigurationen): **' + U.urteil + '** — ' + U.grund + '. ' +
     'Beste Entdeckungszeile ' + beste.key + ': netto ' + de(bNetto(beste), kand.form === 'korb' ? 2 : 4) + (bT(beste) != null ? ' (t ' + de(bT(beste), 2) + ')' : '') + ', MDE80 ' + de(beste.mde80) + '. ' +
-    'Register: ' + Rg.gesamt + ' Konfigurationen bisher, ' + Rg.zufallErwartet.toFixed(1) + ' Zufallstreffer erwartet. Ordner `pruefstrasse/erledigt/' + kand.kennung + '/`, Siegel 1 `' + siegel1.commit.slice(0, 7) + '`' + (siegel2 ? ', Siegel 2 `' + siegel2.commit.slice(0, 7) + '`' : '') + '. Quelle ' + E.quelle + '.';
+    'Register: ' + Rg.gesamt + ' Konfigurationen bisher, ' + zufallText(Rg) + ' Zufallstreffer erwartet. Ordner `pruefstrasse/erledigt/' + kand.kennung + '/`, Siegel 1 `' + siegel1.commit.slice(0, 7) + '`' + (siegel2 ? ', Siegel 2 `' + siegel2.commit.slice(0, 7) + '`' : '') + '. Quelle ' + E.quelle + '.';
 }
 
 /* ---------- Git (ein Befehl, nur genannte Pfade) ---------- */
