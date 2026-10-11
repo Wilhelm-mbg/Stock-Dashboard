@@ -161,3 +161,8 @@ Topf ohne die ganze zulässige SIC-Gruppe von A (A, seine Partner, seine Gattung
 Tag derselbe. (b) Zufall der Placebos: (a) ein Zufallsstrom je (Auslöser, Richtung, Zeitraum), (b) einer je (Auslöser, Richtung,
 Verknüpfung, Tag), in fester Verarbeitungsreihenfolge gezogen; ein B′ je (Beobachtung, Haltedauer) dient H1 und H2. (c) Placebo (b)
 bei V1: „nicht verknüpft mit den beitragenden Ereignissen" heißt außerhalb der SIC-Gruppe von B (alle beitragenden A liegen in ihr).
+
+**N2 (11.10.2026, Änderungen aus dem Piloten — Nachtrag 1 (6); Code in Commit `07b5aa2`, vor dem Vollauf; hier nachgetragen, damals
+in `pilot/PILOT.md` beschrieben).** Nur Technik, keine Schwelle, kein Parameter: (1) V1 rechnet die H2-Summen der Ereignisse einer
+SIC-Gruppe einmal je Gruppe statt je B (Laufzeit; Ergebnis des Piloten bitgleich bis 6e-17); (2) der Auskunftszähler „A-Abgang" (H2)
+zählt je Ereignis und Haltedauer statt je B.

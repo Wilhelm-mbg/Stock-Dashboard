@@ -1,0 +1,73 @@
+{
+ "kennung": "nachzuegler-2026-10/v1",
+ "modus": "pruefung",
+ "stand": "2026-10-11T07:34:17.678Z",
+ "panel": "querschnitt-pruefstand-2026-09-13/panel/v2.3",
+ "gesperrt": false,
+ "siegel": {
+  "commit": "8bb8a94f0ed95759328ce3f7b65ef03fd794329e",
+  "blob": "55e64b7f50150aa41d66483563c98c3b32768592",
+  "sha256": "c277cb75bede10e3ef2dbc960a60251846efb2b4270adc049071b92c15158f3d",
+  "pfad": "studien/nachzuegler-2026-10/KANDIDATEN.json"
+ },
+ "letzterTag": "2026-09-15",
+ "zeitraum": {
+  "key": "pruefung",
+  "einstiegAb": "2023-01-03",
+  "ausstiegBis": "2026-09-15"
+ },
+ "cik": {
+  "reihen": 7102,
+  "tafel": 6489,
+  "gruende": 499,
+  "keine": 113,
+  "referenz": 1
+ },
+ "firmen": {
+  "ciks": 6174,
+  "dateien": 5846,
+  "fehlt": 328,
+  "ohneSic": 128,
+  "meldungen": 125485,
+  "formAnders": 1108,
+  "ohneZeit": 0
+ },
+ "e3": {
+  "meldungen": 125485,
+  "ohneReaktionstag": 0,
+  "reihenMitCik": 4732,
+  "tageJeReihe": 136247,
+  "ohneZeile": 18505,
+  "ohneVortag": 9,
+  "spyFehlt": 0,
+  "sdZuKurz": 3859,
+  "unterSchwelle": 67626,
+  "auf": 23457,
+  "ab": 22791
+ },
+ "zulaessig": {
+  "tage": 2439,
+  "zulaessig": 3324086,
+  "klasseEinstiegFehlt": 325
+ },
+ "v2": {
+  "n": 0,
+  "ms": 0
+ },
+ "laufzeitSek": 12.01,
+ "kandidaten": 0,
+ "zaehlungen": {
+  "ereignisse": [
+   41372,
+   37260,
+   26879,
+   21423,
+   6376,
+   6313
+  ]
+ },
+ "pruefung": {
+  "zeilen": [],
+  "belegt": 0
+ }
+}
