@@ -87,8 +87,12 @@ var VERFAHREN = {
    * meldete 1.1.0 vor und nach dieser Zeile bis zu 59 % verschiedene tage80. Wer die
    * Zahlen nebeneinanderlegt, haette keinen Anhaltspunkt. Deshalb neue Stelle.
    * Genau diese Frage soll die Sperrklinke in test-v6.js erzwingen - sie deshalb
-   * durchzuwinken waere ihr erster Ausfall gewesen. */
-  version: '1.6.2',
+   * durchzuwinken waere ihr erster Ausfall gewesen.
+   * 1.6.3 (11.10.2026, Pruefstrasse Nr. 110): ADDITIVE Option optionen.vonMs/bisMs - ladeUniversum schneidet jede Reihe VOR der
+   *   Datenpruefung auf ein Zeitfenster (fuer die Kalibrierung des minute-Adapters und die Holdout-Sperre der Pruefstrasse). Ohne die
+   *   Option aendert sich kein Messwert und kein Feld; MIT ihr ist das Universum ein anderes (universum.von/bis zeigen das Fenster),
+   *   deshalb eine neue Stelle: zwei Protokolle derselben Version muessen vergleichbar bleiben. */
+  version: '1.6.3',
   /* codeStand beantwortet 'war das dieselbe Datei?' und rechnet sich selbst aus. */
   codeStand: codeStand(),
   mindestKerzenVorlauf: 261,        // EMA100 + Kanal 200, wie die Detektoren es brauchen

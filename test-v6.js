@@ -4331,8 +4331,8 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * bleibt version, und nur der Stand wird nachgezogen). Genau diese Frage ist sieben
    * Mal nicht gestellt worden. Die Reibung IST der Zweck: sie kostet zwei Zeilen und
    * verhindert, dass Protokolle stillschweigend unvergleichbar werden. */
-  var MM_VERSION = '1.6.2';        // 27.08. Schranke haerten: Existenzpruefung VOR dem require
-  var MM_STAND = '7219af3eb974';   // sha256 ueber messmaschine.js, erste 12 Zeichen
+  var MM_VERSION = '1.6.3';   // 11.10.2026: additive Option vonMs/bisMs (Pruefstrasse Nr. 110), ohne sie kein Messwert geaendert        // 27.08. Schranke haerten: Existenzpruefung VOR dem require
+  var MM_STAND = '609f005ee317';   // sha256 ueber messmaschine.js, erste 12 Zeichen
   var mmV = require(__dirname + '/studien/messmaschine/messmaschine.js').VERFAHREN;
   ok(mmV.version === MM_VERSION && mmV.codeStand === MM_STAND,
      'Messmaschine: Version und Codestand stehen zusammen fest - eine Aenderung ohne Entscheid faellt auf',
