@@ -232,13 +232,23 @@ function messe(T, C, listen, Z, opt) {
         var sm = mem[m2], cm = cl[sm];
         for (var h = 0; h < NH; h++) { var x = rM[h * nS + sm]; if (x === x) { ES[cm * 4 + h] += x; EN[cm * 4 + h]++; } var y = rL[h * nS + sm]; if (y === y) { ESL[cm * 4 + h] += y; ENL[cm * 4 + h]++; } }
       }
+      /* H2-Summen der Ereignisse dieser Gruppe je Haltedauer (A der Klassen 2/3, gueltiger Ertrag), einmal je Gruppe */
+      var G = { sRA: [0, 0, 0, 0], nRA: [0, 0, 0, 0], sKA: [0, 0, 0, 0], sKKA: [0, 0, 0, 0], sRL: [0, 0, 0, 0], nRL: [0, 0, 0, 0], sKL: [0, 0, 0, 0] };
+      var evCik = new Map();
+      for (var q0 = 0; q0 < ev.length; q0++) {
+        var A0 = ev[q0], l0 = evCik.get(C.cik[A0]); if (!l0) { l0 = []; evCik.set(C.cik[A0], l0); } l0.push(A0);
+        h2Beitrag(G, A0, 1);
+        if (art === 0) for (var hA = 0; hA < NH; hA++) if (imZ[hA] && (cl[A0] === 2 || cl[A0] === 3) && ab[hA * nS + A0]) Zl.aAbgang[KN.konfIndex(a, r, 0, 1, hA, 0)]++;
+      }
+      var fremd = function (x) { return C.V1.gruppeId[x] !== gid; };
       var nPartner = 0;
       for (var bi = 0; bi < mem.length; bi++) {
-        var B = mem[bi], cB = C.cik[B];
+        var B = mem[bi], cB = C.cik[B], gleich = evCik.get(cB);
         /* verknuepft mit mindestens einem Ereignis anderer CIK (Z3) */
-        var nV = 0; for (var q = 0; q < ev.length; q++) if (C.cik[ev[q]] !== cB) nV++;
-        if (!nV) continue;
+        if (ev.length - (gleich ? gleich.length : 0) <= 0) continue;
         nPartner++;
+        var Gb = G;
+        if (gleich) { Gb = JSON.parse(JSON.stringify(G)); for (var gq = 0; gq < gleich.length; gq++) h2Beitrag(Gb, gleich[gq], -1); }
         var c = cl[B], eRowB = C.Z.eRow[D * nS + B], rowDB = vorzeile(T, eRowB);
         var ex1 = ((C.bits[rowDB] | C.bits[eRowB]) & MK.B_202) !== 0, ex2 = !ex1 && a < 2 && (C.bits[rowDB] & MK.bit(a, r)) !== 0;
         for (var h3 = 0; h3 < NH; h3++) {
@@ -246,14 +256,8 @@ function messe(T, C, listen, Z, opt) {
           var j = h3 * nS + B, ci4 = c * 4 + h3;
           var topf = (N[ci4] - EN[ci4]) > 0 ? (S[ci4] - ES[ci4]) / (N[ci4] - EN[ci4]) : NaN;
           /* H2: Mittel r_A ueber die verknuepften Ereignisse mit A der Klassen 2/3 und gueltigem Ertrag */
-          var sRA = 0, nRA = 0, sKA = 0, sKKA = 0, aAb = 0;
-          for (var q2 = 0; q2 < ev.length; q2++) {
-            var A = ev[q2]; if (C.cik[A] === cB) continue;
-            var cA = cl[A]; if (cA !== 2 && cA !== 3) continue;
-            var xa = rM[h3 * nS + A]; if (xa === xa) { sRA += xa; nRA++; sKA += KN.HUERDE[cA]; sKKA += KN.HUERDE_KASSA[cA]; } else if (ab[h3 * nS + A]) aAb++;
-          }
+          var sRA = Gb.sRA[h3], nRA = Gb.nRA[h3], sKA = Gb.sKA[h3], sKKA = Gb.sKKA[h3];
           var k1 = KN.konfIndex(a, r, 0, 0, h3, c), k2 = KN.konfIndex(a, r, 0, 1, h3, c);
-          if (art === 0 && aAb) Zl.aAbgang[k2] += aAb;
           if (ex1 || ex2) {
             if (art === 0) { var xb = rM[j]; if (xb === xb && topf === topf) { if (ex1) { Zl.ex1n[k1]++; Zl.ex1s[k1] += dir * (xb - topf); } else { Zl.ex2n[k1]++; Zl.ex2s[k1] += dir * (xb - topf); } } }
             continue;
@@ -269,22 +273,29 @@ function messe(T, C, listen, Z, opt) {
           if (nRA) zelle(art, k2, e, dir * (xB - sRA / nRA), KN.HUERDE[c] + sKA / nRA, KN.HUERDE_KASSA[c] + sKKA / nRA, leiheFaktor(h3));
           if (art !== 0) continue;
           /* Placebo (b): B' ausserhalb dieser SIC-Gruppe */
-          var b2 = ziehe(R, klassenListe[c], h3, function (x) { return C.V1.gruppeId[x] !== gid; });
+          var b2 = ziehe(R, klassenListe[c], h3, fremd);
           if (b2 >= 0) { zelleB(k1, e, dir * (rM[h3 * nS + b2] - topf)); if (nRA) zelleB(k2, e, dir * (rM[h3 * nS + b2] - sRA / nRA)); } else Zl.plBohne[k1]++;
           /* spaeter Einstieg (Z21 (1)) */
           var xl = rL[j];
           if (H[h3] >= 1 && xl === xl) {
             var nl = NL[ci4] - ENL[ci4], topfL = nl > 0 ? (SL[ci4] - ESL[ci4]) / nl : NaN;
             if (topfL === topfL) zelleL(k1, e, dir * (xl - topfL), KN.HUERDE[c], dir < 0 ? leiheFaktor(h3) : 0);
-            var sRL = 0, nRL = 0, sKL = 0;
-            for (var q3 = 0; q3 < ev.length; q3++) { var A2 = ev[q3]; if (C.cik[A2] === cB) continue; var cA2 = cl[A2]; if (cA2 !== 2 && cA2 !== 3) continue; var xa2 = rL[h3 * nS + A2]; if (xa2 === xa2) { sRL += xa2; nRL++; sKL += KN.HUERDE[cA2]; } }
-            if (nRL) zelleL(k2, e, dir * (xl - sRL / nRL), KN.HUERDE[c] + sKL / nRL, leiheFaktor(h3));
+            if (Gb.nRL[h3]) zelleL(k2, e, dir * (xl - Gb.sRL[h3] / Gb.nRL[h3]), KN.HUERDE[c] + Gb.sKL[h3] / Gb.nRL[h3], leiheFaktor(h3));
           }
         }
       }
       zz.mitPartner[schl] += nPartner > 0 ? ev.length : 0;
       zz.partner[schl] = (zz.partner[schl] || 0) + nPartner * ev.length;
     });
+  }
+
+  /** Beitrag eines Ereignisses (A) zu den H2-Summen einer Gruppe, vz = +1 hinzu, -1 weg (gleiche CIK wie B). */
+  function h2Beitrag(G0, A, vz) {
+    var cA = cl[A]; if (cA !== 2 && cA !== 3) return;
+    for (var h = 0; h < NH; h++) {
+      var xa = rM[h * nS + A]; if (xa === xa) { G0.sRA[h] += vz * xa; G0.nRA[h] += vz; G0.sKA[h] += vz * KN.HUERDE[cA]; G0.sKKA[h] += vz * KN.HUERDE_KASSA[cA]; }
+      var xl = rL[h * nS + A]; if (xl === xl) { G0.sRL[h] += vz * xl; G0.nRL[h] += vz; G0.sKL[h] += vz * KN.HUERDE[cA]; }
+    }
   }
 
   function abgang(k, B, dir, rab, ref) {
@@ -306,6 +317,7 @@ function messe(T, C, listen, Z, opt) {
       for (var t = 0; t < TOP; t++) { var b = top[A * TOP + t]; if (b >= 0 && cl[b] >= 0) links.push(b); }
       if (!links.length) continue;
       zz.mitPartner[schl]++; zz.partner[schl] += links.length;
+      if (art === 0 && (cA === 2 || cA === 3)) for (var hA = 0; hA < NH; hA++) if (imZ[hA] && ab[hA * nS + A]) Zl.aAbgang[KN.konfIndex(a, r, 1, 1, hA, 0)]++;
       /* Topf ohne A, seine Gattungen und alle Partner */
       ES.fill(0); EN.fill(0); ESL.fill(0); ENL.fill(0);
       var raus = [A].concat(C.geschwister[A] || [], links);
@@ -323,7 +335,6 @@ function messe(T, C, listen, Z, opt) {
           var topf = (N[ci4] - EN[ci4]) > 0 ? (S[ci4] - ES[ci4]) / (N[ci4] - EN[ci4]) : NaN;
           var k1 = KN.konfIndex(a, r, 1, 0, h3, c), k2 = KN.konfIndex(a, r, 1, 1, h3, c);
           var xa = (cA === 2 || cA === 3) ? rM[h3 * nS + A] : NaN, aOk = xa === xa;
-          if (art === 0 && (cA === 2 || cA === 3) && ab[h3 * nS + A]) Zl.aAbgang[k2]++;
           if (ex1 || ex2) {
             if (art === 0) { var xb = rM[j]; if (xb === xb && topf === topf) { if (ex1) { Zl.ex1n[k1]++; Zl.ex1s[k1] += dir * (xb - topf); } else { Zl.ex2n[k1]++; Zl.ex2s[k1] += dir * (xb - topf); } } }
             continue;
