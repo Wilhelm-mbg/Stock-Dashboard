@@ -18,7 +18,8 @@ var R = require(path.join(REPO, AMTLICH));
 var K = require(path.join(R.PRUEFSTAND, 'konfig.js'));
 
 var KENNUNG = 'momentum-korb-2026-10-04/v1';
-var MASSNAHMEN_ORDNER = 'E:/Markt-Dashboard-Archiv/alpaca-massnahmen';   /* nur lesen */
+/* Pruefstrasse (Nr. 110, ADDITIV): PRUEFSTRASSE_MASSNAHMEN ersetzt den fest verdrahteten Ordner (Server); ohne sie wie bisher. */
+var MASSNAHMEN_ORDNER = process.env.PRUEFSTRASSE_MASSNAHMEN || 'E:/Markt-Dashboard-Archiv/alpaca-massnahmen';   /* nur lesen */
 var KORB_N = 187;                     /* §1.2: Zahl der Werte, die die App fuehrt (vom PM am Bestand gezaehlt) */
 var START = R.START, KOSTEN_BP = R.KOSTEN_BP, PHASEN = R.PHASEN;
 var FENSTER = {
@@ -92,7 +93,7 @@ function korbZiel(T, Q, s, roh, r, n) {
   if (wahl.length !== n) throw new Error('KLINKE: Korb nicht voll am ' + T.kal.tage[s] + ': ' + wahl.length + ' von ' + n + ' (zulaessig ' + r.korb.zulaessig + ')');
   wahl.forEach(function (p) { imKorb[p.sym] = true; });
   Object.keys(roh).forEach(function (name) { if (imKorb[name]) roh2[name] = roh[name]; });      /* Reihenfolge des Panels bleibt */
-  var r2 = MH.momentumZiel(roh2, { nowMs: Q.ms[s] });
+  var r2 = (Q.zielfunktion || MH.momentumZiel)(roh2, { nowMs: Q.ms[s] });
   if (r2.zuWenig || r2.korb.zulaessig !== n || r2.korb.geprueft !== n) {
     throw new Error('KLINKE: Schritt (d) meldet nicht genau ' + n + ' zulaessige Werte am ' + T.kal.tage[s] + ': ' + r2.korb.zulaessig + ' von ' + r2.korb.geprueft + (r2.zuWenig ? ' (zuWenig)' : ''));
   }
@@ -104,7 +105,9 @@ function korbZiel(T, Q, s, roh, r, n) {
  *  Schritte (a) und (b) laufen je Stichtag einmal; Q.korbVorab nennt die Korbgroessen, die dabei gleich mitgerechnet werden. */
 function zielAm(T, Q, s, n) {
   var c = Q.korbCache || (Q.korbCache = {}), e = c[s], roh = null, r = null;
-  function rechne() { if (!roh) { roh = R.rohMapAm(T, Q, s); r = MH.momentumZiel(roh, { nowMs: Q.ms[s] }); } }
+  /* Pruefstrasse (Nr. 110, ADDITIV): Q.zielfunktion ersetzt momentumZiel durch die Zielfunktion eines Kandidaten (Form korb, FORM.md §3);
+   * ohne das Feld (alle bisherigen Laeufe) genau der alte Aufruf. */
+  function rechne() { if (!roh) { roh = R.rohMapAm(T, Q, s); r = (Q.zielfunktion || MH.momentumZiel)(roh, { nowMs: Q.ms[s] }); } }
   function korb(n2) { try { return korbZiel(T, Q, s, roh, r, n2); } catch (f) { return { fehler: f }; } }
   if (!e) {
     rechne();
@@ -575,7 +578,7 @@ function lauf(nurSelbstpruefung) {
   console.log('Laufzeit s', E.laufzeitSekunden);
 }
 
-module.exports = { KENNUNG: KENNUNG, KORB_N: KORB_N, FENSTER: FENSTER, LAEUFE: LAEUFE, SELBSTPRUEFUNG: SELBSTPRUEFUNG, VORAB: VORAB, ERGAENZUNGEN: ERGAENZUNGEN,
+module.exports = { MASSNAHMEN_ORDNER: MASSNAHMEN_ORDNER, KENNUNG: KENNUNG, KORB_N: KORB_N, FENSTER: FENSTER, LAEUFE: LAEUFE, SELBSTPRUEFUNG: SELBSTPRUEFUNG, VORAB: VORAB, ERGAENZUNGEN: ERGAENZUNGEN,
   dateiLeser: dateiLeser, mitErgaenzung: mitErgaenzung, Massnahmen: Massnahmen, korbWaehlen: korbWaehlen, zielAm: zielAm, gleichgewicht: gleichgewicht,
   simuliere: simuliere, startphasen: startphasen, satzGegenprobe: satzGegenprobe, satzZweiterLauf: satzZweiterLauf, ausschuettungsLuecken: ausschuettungsLuecken,
   einLauf: einLauf, fensterTage: fensterTage, spyZaehlung: spyZaehlung, spyKlinken: spyKlinken, saetzeBilden: saetzeBilden, ergebnisText: ergebnisText };

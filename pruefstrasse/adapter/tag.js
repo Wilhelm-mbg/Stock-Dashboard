@@ -1,0 +1,320 @@
+'use strict';
+/* ADAPTER tag (FORM.md §3): eine Regel signal(sicht, i, params) auf der Tafel - Topf derselben Zelle, Kassa-Huerde je Umsatzklasse,
+ * Hansen-Hodrick, Tor 1 / Tor 2 und die Pflicht-Gegenproben, nach dem Verfahren der Trendkanal-Studie
+ * (studien/vorregistrierung-2026-09-08-trendkanal-tage/: messen.js topfUndListen/messeReihe, auswerten.js momente/statistik -
+ * hier mit einer beliebigen Regel statt der vier Linien; festAusstieg/ertragLong/reiheAus kommen unveraendert aus kanaele.js).
+ *
+ * Zellen je Art x Konfiguration x Einstiegstag x Klasse x lebend: n, su (Summe dir*(rLong - Topf)), sr (Summe dir*r), sd (Dauer),
+ * dn/ds je Abgangsgruppe. Arten: echt, spaet (Einstieg einen Tag spaeter, Ausstieg fest), versatz (Signal 20 Tage spaeter),
+ * placebo (anderer Wert, gleicher Tag, gleiche Klasse, gleiche Richtung). Der Topf hat ein eigenes Feld (Dauer 1..61).
+ *
+ * Die Sicht: nur Zeilen <= i lesbar; jeder Zugriff dahinter zaehlt als Verstoss und liefert NaN (Messgeraet-Fehler).
+ * NUR LESEN. Simulation mit virtuellem Kapital, keine Anlageberatung. */
+var path = require('path');
+var K = require('../konfig.js');
+var C = require(path.join(K.TRENDKANAL_STUDIE, 'kanaele.js'));
+
+var ARTEN = ['echt', 'spaet', 'versatz', 'placebo'];
+var GRUPPEN = ['uebernahme', 'insolvenz', 'sonstige'];
+var POT_MAX_DAUER = 61, N_K = 4;
+
+function fnv(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function mulberry32(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+/* ---------- Die Sicht (eine je Reihe, Grenze `bis` wandert mit i) ---------- */
+function Sicht(S, TF) {
+  var bis = -1, verstoesse = 0, beispiele = [];
+  function lese(arr, j) { if (j > bis || j < 0 || j >= S.n) { if (j > bis && j < S.n) { verstoesse++; if (beispiele.length < 5) beispiele.push(S.reihe + '@' + j + ' (erlaubt bis ' + bis + ')'); } return NaN; } return arr[j]; }
+  return {
+    n: S.n, reihe: S.reihe, lebend: S.lebend, quelle: TF.quelle, hochTief: TF.hochTief,
+    setzeBis: function (i) { bis = i; }, bis: function () { return bis; },
+    tag: function (j) { return lese(S.tag, j); }, o: function (j) { return lese(S.o, j); }, h: function (j) { return lese(S.h, j); },
+    l: function (j) { return lese(S.l, j); }, c: function (j) { return lese(S.c, j); }, v: function (j) { return lese(S.v, j); },
+    klasse: function (j) { var k = lese(S.klasse, j); return k === k ? k : -1; },
+    zulaessig: function (j) { if (j > bis || j < 0 || j >= S.n) { lese(S.klasse, j); return false; } return S.klasse[j] >= 0 && !S.mass[j]; },
+    verstoesse: function () { return verstoesse; }, beispiele: function () { return beispiele; },
+  };
+}
+/** NUR FUER test.js der Kandidaten: Sicht auf Kunstspalten { tag, o, h, l, c, v, klasse?, mass? } mit Grenze i. */
+function kunstSicht(spalten, i) {
+  var S = C.reiheAus(spalten, Math.max.apply(null, spalten.tag) + 1);
+  S.reihe = spalten.reihe || 'KUNST'; S.klasse = Int8Array.from(spalten.klasse || new Array(S.n).fill(3)); S.mass = Uint8Array.from(spalten.mass || new Array(S.n).fill(0)); S.lebend = 1;
+  var s = Sicht(S, { quelle: 'kunst', hochTief: true }); s.setzeBis(i); return s;
+}
+
+/* ---------- Zellen ---------- */
+function Zellen(nKonf, nTage) {
+  var z = ARTEN.length * nKonf * nTage * N_K * 2;
+  this.nKonf = nKonf; this.nTage = nTage;
+  this.n = new Float64Array(z); this.su = new Float64Array(z); this.sr = new Float64Array(z); this.sd = new Float64Array(z);
+  this.dn = GRUPPEN.map(function () { return new Float64Array(z); }); this.ds = GRUPPEN.map(function () { return new Float64Array(z); });
+  this.tn = new Float64Array(nTage * POT_MAX_DAUER * N_K * 2); this.ts = new Float64Array(nTage * POT_MAX_DAUER * N_K * 2);
+}
+Zellen.prototype.idx = function (art, konf, tag, k, lebend) { return ((((art * this.nKonf + konf) * this.nTage + tag) * N_K) + k) * 2 + lebend; };
+Zellen.prototype.topfIdx = function (tag, dauer, k, lebend) { return ((tag * POT_MAX_DAUER + (dauer - 1)) * N_K + k) * 2 + lebend; };
+Zellen.prototype.add = function (i, dir, r, u, dauer, gruppe) {
+  this.n[i]++; this.su[i] += u; this.sr[i] += dir * r; this.sd[i] += dauer;
+  if (gruppe) { var g = GRUPPEN.indexOf(gruppe); if (g < 0) g = 2; this.dn[g][i]++; this.ds[g][i] += dir * r; }
+};
+
+/** Durchgang 1: Topf je (Tag, Dauer, Klasse, lebend) und zulaessige Reihen je Tag und Klasse (Trendkanal topfUndListen). */
+function topf(TF, Z, zaehler) {
+  var zulK = new Array(TF.nTage); for (var t = 0; t < TF.nTage; t++) zulK[t] = [[], [], [], []];
+  TF.reihen.forEach(function (S, ri) {
+    for (var p = 0; p < S.n; p++) {
+      var k = S.klasse[p];
+      if (k < 0) { zaehler.ohneKlasse++; continue; }
+      if (S.mass[p]) { zaehler.massnahmen++; continue; }
+      zaehler.zulaessig++; var tag = S.tag[p];
+      if (tag > TF.maxTag) continue;
+      zulK[tag][k].push(ri);
+      for (var d = 1; d <= POT_MAX_DAUER; d++) {
+        var e = C.ertragLong(S, p, C.festAusstieg(S, p, d), S.lebend);
+        if (!e) break;
+        var idx = Z.topfIdx(tag, d, k, S.lebend); Z.tn[idx]++; Z.ts[idx] += e.r;
+        if (e.delist) { for (var d2 = d + 1; d2 <= POT_MAX_DAUER; d2++) { var i2 = Z.topfIdx(tag, d2, k, S.lebend); Z.tn[i2]++; Z.ts[i2] += e.r; } break; }
+      }
+    }
+  });
+  return zulK;
+}
+
+/** Einen Trade buchen: Ertrag Long von ePos bis ausPos, gegen den Topf seiner Zelle. */
+function buche(TF, Z, art, kf, dir, S, ePos, ausPos, k, zaehler) {
+  var e = C.ertragLong(S, ePos, ausPos, S.lebend);
+  if (!e) { zaehler.ohneHorizont++; return null; }
+  var dauer = Math.min(POT_MAX_DAUER, Math.max(1, e.dauer)), tagE = S.tag[ePos];
+  if (tagE > TF.maxTag) { zaehler.nachMaxTag++; return null; }
+  var ti = Z.topfIdx(tagE, dauer, k, S.lebend), tp = Z.tn[ti] > 0 ? Z.ts[ti] / Z.tn[ti] : NaN;
+  if (tp !== tp) { zaehler.topfFehlt++; return null; }
+  Z.add(Z.idx(art, kf, tagE, k, S.lebend), dir, e.r, dir * (e.r - tp), e.dauer, e.delist ? (S.gruppe || 'sonstige') : null);
+  return e;
+}
+
+function leererZaehler() {
+  return { zulaessig: 0, ohneKlasse: 0, massnahmen: 0, signalAufrufe: 0, signale: 0, ohneBestaetigungstag: 0, abgelehnt: 0, cooldown: 0, ohneEinstieg: 0,
+    einstiegMassnahmen: 0, richtungOhneKonfiguration: 0, gebucht: 0, ohneHorizont: 0, topfFehlt: 0, nachMaxTag: 0, placeboOhnePartner: 0, versatzOhneTag: 0, spaetOhneTag: 0 };
+}
+
+/**
+ * Messung. TF = Tafel (tafel.js), regel = { signal, bestaetigt? }, kand = kandidat.json, opt = { schnitt (erster Pruefungstag, Vorgabe K.SPERRE_AB) }.
+ * Liefert { zaehler, verstoesse, beispiele, konfigurationen: [...], schnitt, ... } - alle Zahlen in Pp.
+ */
+function messe(TF, regel, kand, opt) {
+  opt = opt || {};
+  var konfs = kand.konfigurationen, params = kand.params || {}, nK = konfs.length, Z = new Zellen(nK, TF.nTage), zaehler = leererZaehler();
+  konfs.forEach(function (c) { if (!(c.haltedauer >= 1 && c.haltedauer <= 60)) throw new Error('Konfiguration ' + c.key + ': haltedauer 1..60 noetig'); if (c.richtung !== 'long' && c.richtung !== 'short') throw new Error('Konfiguration ' + c.key + ': richtung long|short'); });
+  var t0 = Date.now(), zulK = topf(TF, Z, zaehler), tTopf = Date.now() - t0;
+  var versatz = regel.bestaetigt ? 2 : 1, verstoesse = 0, beispiele = [];
+  TF.reihen.forEach(function (S, ri) {
+    var sicht = Sicht(S, TF), letzt = { 1: null, '-1': null };
+    for (var i = 0; i < S.n; i++) {
+      var k = S.klasse[i];
+      if (k < 0 || S.mass[i]) continue;
+      if (i + 1 >= S.n) continue;
+      sicht.setzeBis(i); zaehler.signalAufrufe++;
+      var sig = regel.signal(sicht, i, params);
+      if (!sig || !(sig.dir === 1 || sig.dir === -1)) continue;
+      var dir = sig.dir, tagI = S.tag[i];
+      if (letzt[dir] != null && tagI - letzt[dir] < K.COOLDOWN_TAGE) { zaehler.cooldown++; continue; }
+      if (regel.bestaetigt) {
+        if (i + 1 >= S.n) { zaehler.ohneBestaetigungstag++; continue; }
+        sicht.setzeBis(i + 1);
+        if (!regel.bestaetigt(sicht, i + 1, params, sig)) { zaehler.abgelehnt++; continue; }
+      }
+      var ePos = i + versatz;
+      if (ePos >= S.n) { zaehler.ohneEinstieg++; continue; }
+      if (S.mass[ePos]) { zaehler.einstiegMassnahmen++; continue; }
+      letzt[dir] = tagI; zaehler.signale++;
+      var tagE = S.tag[ePos], richtung = dir > 0 ? 'long' : 'short', rng = mulberry32(fnv(kand.kennung + '|' + tagE + '|' + dir));
+      var passend = 0;
+      for (var kf = 0; kf < nK; kf++) {
+        var c = konfs[kf];
+        if (c.richtung !== richtung) continue;
+        if (c.klassen && c.klassen.indexOf(k) === -1) continue;
+        passend++;
+        var ausPos = C.festAusstieg(S, ePos, c.haltedauer);
+        var e = buche(TF, Z, 0, kf, dir, S, ePos, ausPos, k, zaehler);
+        if (e) zaehler.gebucht++;
+        /* Gegenprobe 1: Einstieg einen Tag spaeter, Ausstieg fest (derselbe Ausstiegstag) */
+        if (ePos + 1 < S.n && (ausPos < 0 || ausPos > ePos + 1)) buche(TF, Z, 1, kf, dir, S, ePos + 1, ausPos, k, zaehler); else zaehler.spaetOhneTag++;
+        /* Gegenprobe 2: dasselbe Signal um 20 Handelstage verschoben */
+        var pV = (tagE + K.VERSATZ_TAGE < S.nextPos.length) ? S.nextPos[tagE + K.VERSATZ_TAGE] : -1;
+        if (pV >= 0) buche(TF, Z, 2, kf, dir, S, pV, C.festAusstieg(S, pV, c.haltedauer), k, zaehler); else zaehler.versatzOhneTag++;
+        /* Gegenprobe 3: Placebo - anderer zulaessiger Wert, gleicher Tag, gleiche Klasse, gleiche Richtung */
+        var liste = tagE <= TF.maxTag ? zulK[tagE][k] : [];
+        if (liste.length > 1) {
+          var rP = ri; while (rP === ri) rP = liste[Math.floor(rng() * liste.length)];
+          var P = TF.reihen[rP], pP = P.nextPos[tagE];
+          if (pP >= 0 && P.tag[pP] === tagE) buche(TF, Z, 3, kf, dir, P, pP, C.festAusstieg(P, pP, c.haltedauer), P.klasse[pP] >= 0 ? P.klasse[pP] : k, zaehler);
+        } else zaehler.placeboOhnePartner++;
+      }
+      if (!passend) zaehler.richtungOhneKonfiguration++;
+    }
+    verstoesse += sicht.verstoesse(); sicht.beispiele().forEach(function (b) { if (beispiele.length < 10) beispiele.push(b); });
+  });
+  var tMessen = Date.now() - t0 - tTopf;
+  return { zellen: Z, zaehler: zaehler, verstoesse: verstoesse, beispiele: beispiele, ms: { topf: tTopf, messen: tMessen }, konfs: konfs };
+}
+
+/* ---------- Statistik (Trendkanal auswerten.js: tagesreihe, momente, statistik) ---------- */
+/** Tagesreihe einer Zellenzeile; sicht 'alle' | 'lebend'. Je Tag: n, su, sr, sd, nh (Summe Huerden), dn/ds je Gruppe. */
+function tagesreihe(Z, klassen, art, kf, sicht) {
+  var aus = [], lVon = sicht === 'lebend' ? 1 : 0;
+  for (var t = 0; t < Z.nTage; t++) {
+    var z = { t: t, n: 0, su: 0, sr: 0, sd: 0, nh: 0, nK: [0, 0, 0, 0], dn: [0, 0, 0], ds: [0, 0, 0] };
+    for (var k = 0; k < N_K; k++) for (var l = lVon; l <= 1; l++) {
+      var i = Z.idx(art, kf, t, k, l), n = Z.n[i];
+      if (!(n > 0)) continue;
+      z.n += n; z.su += Z.su[i]; z.sr += Z.sr[i]; z.sd += Z.sd[i]; z.nK[k] += n; z.nh += n * klassen[k].huerde;
+      for (var g = 0; g < 3; g++) { z.dn[g] += Z.dn[g][i]; z.ds[g] += Z.ds[g][i]; }
+    }
+    if (!(z.n > 0)) continue;
+    z.uBrutto = z.su / z.n; z.uNetto = (z.su - z.nh) / z.n; z.roh = z.sr / z.n;
+    aus.push(z);
+  }
+  return aus;
+}
+/** Momente einer Tagesreihe (x_t an Kalendertagen t): Mittel, naiv, Hansen-Hodrick (Rechteck bis Lag L-1), Block; se = HH, sonst Block. */
+function momente(paare, L) {
+  var n = paare.length, m = { n: n, mittel: null, sd: null, se: null, seNaiv: null, seHH: null, seBlock: null, nEff: null, hh0: false, t: null, obere: null, untere: null };
+  if (!n) return m;
+  var su = 0, i, j; for (i = 0; i < n; i++) su += paare[i].x;
+  m.mittel = su / n;
+  if (n < 2) return m;
+  var x = new Float64Array(n), q = 0; for (i = 0; i < n; i++) { x[i] = paare[i].x - m.mittel; q += x[i] * x[i]; }
+  m.sd = Math.sqrt(q / (n - 1)); if (m.sd <= 1e-12 * Math.max(1, Math.abs(m.mittel))) m.sd = 0;
+  m.seNaiv = m.sd / Math.sqrt(n);
+  L = Math.max(1, L || 1);
+  var g0 = q / n, gamma = new Float64Array(L + 1);
+  for (i = 0; i < n; i++) for (j = i + 1; j < n; j++) { var k = paare[j].t - paare[i].t; if (k > L) break; if (k >= 1) gamma[k] += x[i] * x[j]; }
+  var lrv = g0; for (var k2 = 1; k2 <= L - 1; k2++) lrv += 2 * gamma[k2] / n;
+  m.seHH = lrv > 0 ? Math.sqrt(lrv / n) : null;
+  var bl = {}; for (i = 0; i < n; i++) { var b = Math.floor(paare[i].t / L), e = bl[b] || (bl[b] = { s: 0, n: 0 }); e.s += paare[i].x; e.n++; }
+  var bm = Object.keys(bl).map(function (kk) { return bl[kk].s / bl[kk].n; });
+  if (bm.length >= 2) { var mb = 0; bm.forEach(function (v) { mb += v; }); mb /= bm.length; var qb = 0; bm.forEach(function (v) { qb += (v - mb) * (v - mb); }); m.seBlock = Math.sqrt(qb / (bm.length - 1)) / Math.sqrt(bm.length); }
+  m.nEff = n / L;
+  if (m.seHH != null) m.se = m.seHH; else if (m.seBlock != null) { m.se = m.seBlock; m.hh0 = true; } else m.se = m.seNaiv;
+  if (m.sd === 0) { m.se = 0; m.seHH = 0; m.seBlock = 0; }
+  m.obere = m.mittel + 1.96 * m.se; m.untere = m.mittel - 1.96 * m.se;
+  m.t = m.se > 0 ? m.mittel / m.se : (m.mittel === 0 ? 0 : null);
+  return m;
+}
+function paare(zeilen, feld) { return zeilen.map(function (z) { return { t: z.t, x: z[feld] }; }); }
+/** Kennzahlen einer Tagesmenge: Trades, Huerde je Trade, Abgaenge je Gruppe, uBrutto/uNetto/roh als Momente (Lag L). */
+function statistik(zeilen, L) {
+  var N = 0, SU = 0, SR = 0, NH = 0, SD = 0, nK = [0, 0, 0, 0], dn = [0, 0, 0], ds = [0, 0, 0];
+  zeilen.forEach(function (z) { N += z.n; SU += z.su; SR += z.sr; NH += z.nh; SD += z.sd; for (var k = 0; k < N_K; k++) nK[k] += z.nK[k]; for (var g = 0; g < 3; g++) { dn[g] += z.dn[g]; ds[g] += z.ds[g]; } });
+  var st = { nTage: zeilen.length, nTr: N, nK: nK, kKand: N > 0 ? NH / N : null, dauerMittel: N > 0 ? SD / N : null,
+    abgaenge: GRUPPEN.map(function (g, i) { return { gruppe: g, n: dn[i], mittel: dn[i] > 0 ? ds[i] / dn[i] : null }; }),
+    uBrutto: momente(paare(zeilen, 'uBrutto'), L), uNetto: momente(paare(zeilen, 'uNetto'), L), roh: momente(paare(zeilen, 'roh'), L) };
+  st.uNetto.jeTrade = N > 0 ? (SU - NH) / N : null; st.uBrutto.jeTrade = N > 0 ? SU / N : null;
+  return st;
+}
+function kurz(m) { return m ? { n: m.n, mittel: m.mittel, se: m.se, seNaiv: m.seNaiv, t: m.t, obere: m.obere, untere: m.untere, nEff: m.nEff, hh0: m.hh0, jeTrade: m.jeTrade } : null; }
+function kurzSt(st) { return { nTage: st.nTage, nTr: st.nTr, nK: st.nK, kKand: st.kKand, dauerMittel: st.dauerMittel, abgaenge: st.abgaenge, uBrutto: kurz(st.uBrutto), uNetto: kurz(st.uNetto), roh: kurz(st.roh) }; }
+
+/**
+ * Auswertung (Entdeckung; mit opt.pruefung auch die Pruefzeit fuer die genannten Kandidaten).
+ * M = messe(...); iSchnitt = erster Kalendertag der Pruefzeit. TE/TB = Handelstage je Zeitraum fuer die projizierte se_B (Nr. 109).
+ */
+function auswerte(M, TF, opt) {
+  opt = opt || {};
+  var Z = M.zellen, KL = TF.klassen, iSchnitt = opt.iSchnitt, TE = opt.TE, TB = opt.TB, aus = [];
+  var ent = function (z) { return z.t < iSchnitt; }, prf = function (z) { return z.t >= iSchnitt; };
+  M.konfs.forEach(function (c, kf) {
+    var L = c.haltedauer, echt = tagesreihe(Z, KL, 0, kf, 'alle'), lebend = tagesreihe(Z, KL, 0, kf, 'lebend');
+    var e = statistik(echt.filter(ent), L), eL = statistik(lebend.filter(ent), L);
+    var sp = statistik(tagesreihe(Z, KL, 1, kf, 'alle').filter(ent), L), vs = statistik(tagesreihe(Z, KL, 2, kf, 'alle').filter(ent), L);
+    var pl = statistik(tagesreihe(Z, KL, 3, kf, 'alle').filter(ent), L);
+    var seB = (e.uNetto.se != null && TE > 0 && TB > 0) ? e.uNetto.se * Math.sqrt(TE / TB) : null, mdeB = seB != null ? 2 * seB : null;
+    var tor1 = e.uNetto.mittel != null && mdeB != null && e.uNetto.mittel > 0 && e.uNetto.mittel >= K.TOR1_FAKTOR * mdeB;
+    var plV = pl.uBrutto.mittel != null && pl.uBrutto.se != null && Math.abs(pl.uBrutto.mittel) > K.PLACEBO_T * pl.uBrutto.se && Math.abs(pl.uBrutto.mittel) > K.PLACEBO_ANTEIL_HUERDE * (e.kKand || KL[3].huerde);
+    var gruende = [];
+    if (!(e.nTage >= K.MIN_TAGE)) gruende.push('< ' + K.MIN_TAGE + ' Signaltage');
+    if (!(e.uNetto.mittel > 0)) gruende.push('netto <= 0');
+    if (!(e.uNetto.t >= K.KANDIDAT_T)) gruende.push('t < ' + K.KANDIDAT_T);
+    if (!tor1) gruende.push('Tor 1');
+    if (plV) gruende.push('Placebo-Verstoss');
+    var kandidat = gruende.length === 0;
+    var verschobenWirkt = vs.uNetto.mittel != null && vs.uNetto.mittel > 0 && vs.uNetto.t != null && vs.uNetto.t >= K.KANDIDAT_T;
+    var urteil = kandidat ? 'Kandidat' : (e.uNetto.obere != null && e.uNetto.obere < 0 && e.nTage >= K.MIN_TAGE) ? 'nein' : 'nicht entscheidbar';
+    var z1 = K.MDE_FAKTOR;
+    var k = { key: c.key, richtung: c.richtung, haltedauer: c.haltedauer, klassen: c.klassen || null,
+      entdeckung: kurzSt(e), lebend: { uNetto: kurz(eL.uNetto), nTr: eL.nTr, deltaAlleLebend: (e.uBrutto.mittel != null && eL.uBrutto.mittel != null) ? e.uBrutto.mittel - eL.uBrutto.mittel : null },
+      spaet: { uNetto: kurz(sp.uNetto), nTr: sp.nTr }, versatz: { uNetto: kurz(vs.uNetto), nTr: vs.nTr, wirkt: verschobenWirkt },
+      placebo: { uBrutto: kurz(pl.uBrutto), nTr: pl.nTr, schranke: { t: K.PLACEBO_T, mindestPp: K.PLACEBO_ANTEIL_HUERDE * (e.kKand || KL[3].huerde) }, verstoss: plV },
+      TE: TE, TB: TB, seBproj: seB, mdeBproj: mdeB, tor1: tor1, tor1Schwelle: mdeB != null ? K.TOR1_FAKTOR * mdeB : null,
+      mde80: e.uNetto.se != null ? z1 * e.uNetto.se : null, kandidat: kandidat, gruende: gruende, urteil: urteil };
+    if (opt.pruefung && opt.pruefung.indexOf(c.key) !== -1) {
+      var b = statistik(echt.filter(prf), L);
+      k.pruefung = kurzSt(b);
+      k.pruefung.mde80 = b.uNetto.se != null ? z1 * b.uNetto.se : null;
+      k.pruefung.gleicheRichtung = b.uNetto.mittel != null && e.uNetto.mittel != null && Math.sign(b.uNetto.mittel) === Math.sign(e.uNetto.mittel);
+      k.pruefung.pEinseitig = b.uNetto.t != null ? 1 - phi(b.uNetto.t) : null;
+    }
+    aus.push(k);
+  });
+  return aus;
+}
+/** Verteilungsfunktion der Standardnormalverteilung (erfc nach Numerical Recipes, Fehler < 1,2e-7). */
+function phi(z) {
+  var x = Math.abs(z) / Math.SQRT2, t = 1 / (1 + 0.5 * x);
+  var r = t * Math.exp(-x * x - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+  var erfc = z >= 0 ? r : 2 - r;                      /* erfc(z / sqrt 2); Phi(z) = 1 - erfc(z / sqrt 2) / 2 */
+  return 1 - 0.5 * erfc;
+}
+/** Handelstage mit mindestens einer zulaessigen Reihenzeile in [von, bis] (Kalenderindizes). */
+function handelstage(TF, von, bis) {
+  var da = new Uint8Array(TF.nTage);
+  TF.reihen.forEach(function (S) { for (var p = 0; p < S.n; p++) if (S.klasse[p] >= 0 && !S.mass[p]) da[S.tag[p]] = 1; });
+  var n = 0; for (var t = Math.max(0, von); t <= Math.min(bis, TF.nTage - 1); t++) if (da[t]) n++;
+  return n;
+}
+
+/** Erster Kalenderindex >= datum. */
+function indexAb(TF, datum) { for (var i = 0; i < TF.tage.length; i++) if (TF.tage[i] >= datum) return i; return TF.tage.length; }
+
+/**
+ * Ein ganzer Lauf: Tafel oeffnen, messen, auswerten. opt: quelle, pruefzeit, siegelPfad, schnitt (Vorgabe K.SPERRE_AB),
+ * pruefung (Liste der Kandidaten-Keys), nurReihen, ohneSpeicherpruefung, tafel (fertige Tafel, nur Tests).
+ */
+function lauf(regel, kand, opt) {
+  opt = opt || {};
+  var TF = opt.tafel || require('../tafel.js').oeffne(opt);
+  if (!TF.hochTief && regel.brauchtHochTief) throw new Error('MESSGERAET: die Regel braucht Hoch/Tief, die Quelle ' + TF.quelle + ' hat sie nicht');
+  var iSchnitt = indexAb(TF, opt.schnitt || K.SPERRE_AB);
+  var ersteZeile = TF.nTage; TF.reihen.forEach(function (S) { if (S.n && S.tag[0] < ersteZeile) ersteZeile = S.tag[0]; });
+  var TE = handelstage(TF, ersteZeile, iSchnitt - 1), TB = TF.gesperrt ? Math.max(1, Math.round(TE * (opt.tbAnteil || 0.5))) : handelstage(TF, iSchnitt, TF.maxTag);
+  if (TF.gesperrt && opt.tbHandelstage) TB = opt.tbHandelstage;
+  var M = messe(TF, regel, kand, opt);
+  var konf = auswerte(M, TF, { iSchnitt: iSchnitt, TE: TE, TB: TB, pruefung: opt.pruefung || null });
+  return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, reihen: TF.reihen.length, nTage: TF.nTage,
+    letzterTag: TF.tage[TF.maxTag], schnitt: TF.tage[iSchnitt] || null, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
+    konfigurationen: konf, klassen: TF.klassen.map(function (k) { return { name: k.name, huerde: k.huerde }; }) };
+}
+
+module.exports = { lauf: lauf, messe: messe, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, Zellen: Zellen, momente: momente, statistik: statistik,
+  tagesreihe: tagesreihe, phi: phi, handelstage: handelstage, indexAb: indexAb, fnv: fnv, mulberry32: mulberry32, ARTEN: ARTEN, GRUPPEN: GRUPPEN, POT_MAX_DAUER: POT_MAX_DAUER };
+
+/* Kalibrierung (FORM §3, Auftrag §3): node --max-old-space-size=6144 pruefstrasse/adapter/tag.js --kalibrierung [<ausgabe.json>]
+ * Donchian-20-Ausbruch long, H5 auf den Tagesdateien der Trendkanal-Studie mit DEREN Schnitt (Bestaetigung ab 07.02.2023, Siegel
+ * nicht noetig, weil nur die Tafel gelesen wird - die Trendkanal-Zahlen liegen offen in ERGEBNIS.md). */
+if (require.main === module && process.argv.indexOf('--kalibrierung') !== -1) {
+  var fs = require('fs');
+  var ordner = path.join(K.WARTESCHLANGE, 'donchian20-ausbruch-long');
+  var regel = require(path.join(ordner, 'regel.js')), kand = JSON.parse(fs.readFileSync(path.join(ordner, 'kandidat.json'), 'utf8'));
+  var kal = JSON.parse(JSON.stringify(kand)); kal.konfigurationen = kand.konfigurationen.filter(function (c) { return c.key === 'H5' || c.key === 'H10'; });
+  var TRENDKANAL_SCHNITT = '2023-02-07';
+  /* Die Tafel wird zur Kalibrierung ganz gelesen (pruefzeit) - mit dem Siegel der FORM.md, denn gelesen wird nur fuer die Eichung
+   * gegen veroeffentlichte Zahlen; der Laeufer selbst oeffnet die Pruefzeit nur mit Siegel 2 des Kandidaten. */
+  var E = lauf(regel, kal, { quelle: 'trendkanal-tage', pruefzeit: true, siegelPfad: 'pruefstrasse/FORM.md', schnitt: TRENDKANAL_SCHNITT, pruefung: ['H5', 'H10'] });
+  var out = process.argv[process.argv.indexOf('--kalibrierung') + 1];
+  if (out && out[0] !== '-') fs.writeFileSync(out, JSON.stringify(E, null, 1));
+  E.konfigurationen.forEach(function (k) {
+    var e = k.entdeckung, b = k.pruefung;
+    console.log(k.key + ' Ent nTage ' + e.nTage + ' nTr ' + e.nTr + ' u brutto ' + e.uBrutto.mittel.toFixed(4) + ' u netto ' + e.uNetto.mittel.toFixed(4) + ' t ' + e.uNetto.t.toFixed(2) +
+      ' | Bes nTage ' + b.nTage + ' nTr ' + b.nTr + ' u brutto ' + b.uBrutto.mittel.toFixed(4) + ' u netto ' + b.uNetto.mittel.toFixed(4) + ' t ' + b.uNetto.t.toFixed(2) + ' seHH ' + b.uNetto.se.toFixed(4));
+  });
+  console.log('Zaehler ' + JSON.stringify(E.zaehler) + ' Verstoesse ' + E.verstoesse + ' ms ' + JSON.stringify(E.ms));
+}

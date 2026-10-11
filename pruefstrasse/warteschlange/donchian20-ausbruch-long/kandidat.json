@@ -1,0 +1,16 @@
+{
+  "kennung": "donchian20-ausbruch-long",
+  "form": "tag",
+  "titel": "Donchian-20-Ausbruch nach oben, am Folgetag bestätigt, long",
+  "quelle": "Donchian-Kanal (Richard Donchian, 1960er; Turtle-Regeln, Faith 2003: 20-Tage-Ausbruch); Bestätigung und confirmBps 15 = Live-Parameter des August-Detektors der App (quant.js einstiegSignal); Studie Trendkanal auf Tagesbasis, Linie K3-20, Einstieg E1 (studien/vorregistrierung-2026-09-08-trendkanal-tage/VORREGISTRIERUNG.md §3-§5)",
+  "erwartung": { "groesse": "roh positiv wie der Markt, gegen den Topf null bis leicht negativ (Belegstand 09.09.2026: Donchian 20 Ausbruch long -0,04 bis +0,34 Pp, |t| <= 1,7, H5 'in jeder Klasse zu')", "richtung": "positiv behauptet (Trendfolge), gemessen: nicht positiv" },
+  "daten": "trendkanal-tage",
+  "konfigurationen": [
+    { "key": "H5", "richtung": "long", "haltedauer": 5 },
+    { "key": "H10", "richtung": "long", "haltedauer": 10 },
+    { "key": "H20", "richtung": "long", "haltedauer": 20 }
+  ],
+  "params": { "N": 20, "confirmBps": 15 },
+  "autor": "Werkzeug-Chat Nr. 110 (Trockenprobe: schon gemessener Kandidat)",
+  "datum": "2026-10-11"
+}

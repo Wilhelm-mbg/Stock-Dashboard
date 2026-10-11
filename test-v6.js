@@ -25222,6 +25222,50 @@ console.log('105) Live gegen Messung, zweite Durchsicht (Tests 16-34 ohne 30)');
   ok(!/TEST DEFEKT|LAUF GESCHEITERT/.test(r2), '105 Lauf der Tests 16-34: kein Test defekt');
 })();
 
+/* ================= 106) Pruefstrasse (Auftrag Nr. 110, 11.10.2026): Form, Sperre, Register, Gegenproben, Kalibrierung =================
+ * Die Pruefstrasse (pruefstrasse/) macht aus einem Kandidatenordner Siegel, Entdeckung, Gegenproben, Holdout-Sperre, Urteil und
+ * Belegstand-Eintrag. Ihre eigene Suite (pruefstrasse/test.js) laeuft hier im Schnellmodus als eigener Prozess (Kunstdaten, ~20 s);
+ * die Kalibrierung der drei Adapter gegen bekannte Ergebnisse steht in pruefstrasse/kalibrierung.json (geschrieben vom vollen Lauf
+ * `node pruefstrasse/test.js`) und wird hier gegen das Soll gehalten - eine veraltete oder fehlende Eichung macht die Suite rot.
+ * Dazu die additiven Optionen der Instrumente (korb.js, rueckblick.js, messmaschine.js, wertpapierart.js): ohne Variable wie bisher. */
+console.log('106) Pruefstrasse: Form, Sperre, Register, Gegenproben, Kalibrierung');
+(function () {
+  var ps = '';
+  try { ps = require('child_process').execFileSync(process.execPath, [__dirname + '/pruefstrasse/test.js', '--schnell'], { cwd: __dirname, encoding: 'utf8', timeout: 300000 }); }
+  catch (e) { ps = String((e && e.stdout) || '') + '\nLAUF GESCHEITERT: ' + (e && e.message); }
+  var zeilen = ps.split('\n');
+  ok(/ALLE TESTS GRUEN/.test(ps), '106 pruefstrasse/test.js --schnell: alle gruen', zeilen.filter(function (z) { return /ROT|GESCHEITERT/.test(z); })[0] || zeilen[zeilen.length - 2]);
+  ['Kunst-Kandidat mit Blick nach vorn', 'eingepflanzter Effekt', 'zeitfester Effekt', 'Pruefzeit ohne Siegel-Pfad', 'Register zaehlt jede Konfiguration', 'korb: A-187 und B-187', 'tag: Trades und Signaltage'].forEach(function (t) {
+    ok(zeilen.some(function (z) { return z.indexOf('  ok   ') === 0 && z.indexOf(t) >= 0; }), '106 Pruefung vorhanden und gruen: ' + t);
+  });
+  var kalPfad = __dirname + '/pruefstrasse/kalibrierung.json', kal = null;
+  try { kal = JSON.parse(require('fs').readFileSync(kalPfad, 'utf8')); } catch (e) { kal = null; }
+  ok(!!(kal && kal.tag && kal.korb && kal.minute), '106 kalibrierung.json liegt vor', kal && kal.stand);
+  if (kal) {
+    ok(kal.tag.entNTr === 100692 && kal.tag.besNTr === 49624 && Math.abs(kal.tag.entUNetto + 0.3830) < 5e-5 && Math.abs(kal.tag.besUNetto + 0.3396) < 5e-5 && Math.abs(kal.tag.besT + 3.14) < 5e-3,
+      '106 tag-Adapter trifft die Trendkanal-Zeile Donchian 20 Ausbruch long H5 (100.692 / 49.624 Trades, -0,3830 / -0,3396 Pp, t -3,14)', kal.tag.entNTr + ' / ' + kal.tag.besUNetto);
+    ok(Math.round(kal.korb['A-187'] * 100) === 25923874 && Math.round(kal.korb['B-187'] * 100) === 25012314, '106 korb-Adapter trifft Nr. 96 A-187 / B-187 auf den Cent (259.238,74 / 250.123,14 $)', kal.korb['A-187'] + ' / ' + kal.korb['B-187']);
+    ok(kal.minute.handelstage === 730 && kal.minute.schnittTag === '2025-03-12' && kal.minute.huerdePp === 0.1 && Math.abs(kal.minute.bruttoJeSignalPp - 0.0205) < 5e-3 && kal.minute.nettoJeSignalPp < 0,
+      '106 minute-Adapter trifft rsi2seit-2026-08-26 (730 Tage, Schnitt 2025-03-12, Huerde 0,10; brutto +0,02 Pp, netto < 0; Archiv lebt)', kal.minute.bruttoJeSignalPp + ' / ' + kal.minute.nettoJeSignalPp);
+  }
+  /* Additive Optionen: ohne Variable der alte Pfad - die Klinke sucht den Aufruf, der liest, nicht ein Wort im Kommentar. */
+  var rb = ohneKommentare(require('fs').readFileSync(__dirname + '/studien/massstab-rueckblick-2026-10-04/rueckblick.js', 'utf8'));
+  ok(rb.indexOf("var MASSNAHMEN_ORDNER = process.env.PRUEFSTRASSE_MASSNAHMEN || 'E:/Markt-Dashboard-Archiv/alpaca-massnahmen';") >= 0, '106 rueckblick.js: Massnahmen-Ordner nur per PRUEFSTRASSE_MASSNAHMEN ersetzbar, Vorgabe unveraendert');
+  var kb = ohneKommentare(require('fs').readFileSync(__dirname + '/studien/momentum-korb-2026-10-04/korb.js', 'utf8'));
+  ok(kb.indexOf("var MASSNAHMEN_ORDNER = process.env.PRUEFSTRASSE_MASSNAHMEN || 'E:/Markt-Dashboard-Archiv/alpaca-massnahmen';") >= 0 && kb.split('(Q.zielfunktion || MH.momentumZiel)(').length === 3 && kb.indexOf('MH.momentumZiel(roh') === -1,
+    '106 korb.js: Vorgabe unveraendert; beide Zielaufrufe fallen ohne Q.zielfunktion auf momentumZiel zurueck');
+  var mm = ohneKommentare(require('fs').readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8'));
+  ok(/ladeUniversum\(archivPfad, S\.zeitrahmen \|\| '60m', filter, \(optionen\.vonMs != null \|\| optionen\.bisMs != null\) \? \{ vonMs: optionen\.vonMs, bisMs: optionen\.bisMs \} : null\)/.test(mm), '106 messmaschine.js: Zeitfenster nur mit optionen.vonMs/bisMs, sonst null wie bisher');
+  var wp = ohneKommentare(require('fs').readFileSync(__dirname + '/studien/messmaschine/strategien/wertpapierart.js', 'utf8'));
+  ok(wp.indexOf("process.env.PRUEFSTRASSE_WERTPAPIERARTEN || path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten', 'massive', 'wertpapierarten.json')") >= 0, '106 wertpapierart.js: Vorgabepfad unveraendert');
+  /* Kein Windows-spezifischer Code und keine festen Datenpfade in der Pruefstrasse selbst (ausser konfig.json) */
+  var dateien = ['konfig.js', 'siegel.js', 'tafel.js', 'paneltafel.js', 'laeufer.js', 'adapter/tag.js', 'adapter/korb.js', 'adapter/minute.js'];
+  var fest = dateien.filter(function (f) { var q = ohneKommentare(require('fs').readFileSync(__dirname + '/pruefstrasse/' + f, 'utf8')); return /E:\/|C:\\|powershell|cmd\.exe|schtasks|APPDATA/.test(q); });
+  ok(fest.length === 0, '106 Pruefstrasse ohne feste Laufwerkspfade und ohne Windows-Aufrufe im Code', fest.join(', '));
+  var fm = require('fs').readFileSync(__dirname + '/pruefstrasse/FORM.md', 'utf8');
+  ok(/## 1\. Die vier Dateien/.test(fm) && /kandidat\.json/.test(fm) && /REGEL\.md/.test(fm) && /regel\.js/.test(fm) && /test\.js/.test(fm) && /Messgerät-Fehler/.test(fm) && /2,8016/.test(fm), '106 FORM.md nennt die vier Dateien, die Urteile und den MDE-Faktor');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

@@ -36,6 +36,9 @@ module.exports = {
   TRENDKANAL: { ordner: J.trendkanalTage.ordner.map(pfad), von: J.trendkanalTage.von, bis: J.trendkanalTage.bis, mindestDateien: J.trendkanalTage.mindestDateien },
   MASSNAHMEN: { ordner: pfad(J.massnahmen.ordner), mindestDateien: J.massnahmen.mindestDateien },
   ARCHIV60M: { ordner: pfad(J.archiv60m.ordner), mindestDateien: J.archiv60m.mindestDateien },
+  /* Minute: das 60m-Archiv beginnt erst 2023-09 - die Holdout-Sperre dieser Form ist deshalb ein eigenes Datum (FORM §3, minute). */
+  MINUTE: { sperreAb: J.minute.sperreAb, von: J.minute.von },
+  WERTPAPIERARTEN: J.wertpapierarten ? pfad(J.wertpapierarten) : null,
   SPERRE_AB: J.sperreAb, ENTDECKUNG_BIS: J.entdeckungBis, SPEICHER_MIN_GB: J.speicherMinGb,
   PRUEFSTAND: path.join(REPO, 'studien', 'querschnitt-pruefstand-2026-09-13'),
   TRENDKANAL_STUDIE: path.join(REPO, 'studien', 'vorregistrierung-2026-09-08-trendkanal-tage'),

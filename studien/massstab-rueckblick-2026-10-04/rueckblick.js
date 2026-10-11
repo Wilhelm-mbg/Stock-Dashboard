@@ -22,7 +22,10 @@ var PANEL_WAHL = process.env.RUECKBLICK_PANEL || '';
 if (PANEL_WAHL !== '' && PANEL_WAHL !== 'v2.3') throw new Error('KLINKE: RUECKBLICK_PANEL kennt nur v2.3 (oder leer), nicht ' + PANEL_WAHL);
 var PANEL_ORDNER = path.join(PRUEFSTAND, PANEL_WAHL === 'v2.3' ? 'voll-v23c' : 'voll-v22');
 var PANEL_OPTIONEN = PANEL_WAHL === 'v2.3' ? { panelKennung: K.PANEL_KENNUNG_V23 } : undefined;
-var MASSNAHMEN_ORDNER = 'E:/Markt-Dashboard-Archiv/alpaca-massnahmen';
+/* Pruefstrasse (Nr. 110, 11.10.2026, ADDITIV): die Umgebungsvariable PRUEFSTRASSE_MASSNAHMEN ersetzt den fest verdrahteten Ordner, damit
+ * der Laeufer auf dem Server (Linux, Spiegel des Archivs) rechnen kann. Ohne sie bleibt alles wie bisher - test-v6 Abschnitt 106 haelt
+ * den Vorgabewert fest. Pruefung auf Vorhandensein und Mindestzahl Dateien macht der Adapter (pruefstrasse/adapter/korb.js). */
+var MASSNAHMEN_ORDNER = process.env.PRUEFSTRASSE_MASSNAHMEN || 'E:/Markt-Dashboard-Archiv/alpaca-massnahmen';
 var KOSTEN_BP = 20;                 /* mfdepot.js Zeile 158: MH.fuehreAus(d.mfBuch, plan, now, 20) */
 var KOSTEN_FUNDSTELLE = 'mfdepot.js Zeile 158: MH.fuehreAus(d.mfBuch, plan, now, 20)';
 var START = 100000;
@@ -400,7 +403,7 @@ function lauf() {
   console.log('Laufzeit s', E.laufzeitSekunden);
 }
 
-module.exports = { KENNUNG: KENNUNG, KOSTEN_BP: KOSTEN_BP, START: START, PHASEN: PHASEN, MASSSTAB: MASSSTAB, PANEL_ORDNER: PANEL_ORDNER, PANEL_OPTIONEN: PANEL_OPTIONEN, PANEL_WAHL: PANEL_WAHL, PRUEFSTAND: PRUEFSTAND,
+module.exports = { MASSNAHMEN_ORDNER: MASSNAHMEN_ORDNER, KENNUNG: KENNUNG, KOSTEN_BP: KOSTEN_BP, START: START, PHASEN: PHASEN, MASSSTAB: MASSSTAB, PANEL_ORDNER: PANEL_ORDNER, PANEL_OPTIONEN: PANEL_OPTIONEN, PANEL_WAHL: PANEL_WAHL, PRUEFSTAND: PRUEFSTAND,
   FENSTER_VON: FENSTER_VON, FENSTER_BIS: FENSTER_BIS, vorbereiten: vorbereiten, endeBis: endeBis, tagAb: tagAb, rohMapAm: rohMapAm, klinkeReferenz: klinkeReferenz,
   zielAm: zielAm, Massnahmen: Massnahmen, ausschuettungenAm: ausschuettungenAm, simuliere: simuliere, kennzahlen: kennzahlen, maxRueckschlag: maxRueckschlag,
   kalenderjahre: kalenderjahre, periodenstreuung: periodenstreuung, median: median, startphasen: startphasen };

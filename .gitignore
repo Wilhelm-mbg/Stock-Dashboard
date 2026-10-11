@@ -25,3 +25,6 @@ wiki/.obsidian/
 *.p12
 *.key
 *.pem
+
+# Pruefstrasse: Sperre des Panel-Prozesses (Laeufer), Kratzdateien
+pruefstrasse/.panel.lock

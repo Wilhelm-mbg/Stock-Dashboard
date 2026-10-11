@@ -63,7 +63,8 @@ function laden() {
   if (KARTE !== null) return KARTE;
   KARTE = false;
   try {
-    var p = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten', 'massive', 'wertpapierarten.json');
+    /* Pruefstrasse (Nr. 110, ADDITIV): PRUEFSTRASSE_WERTPAPIERARTEN nennt die Datei auf dem Server; ohne sie wie bisher. */
+    var p = process.env.PRUEFSTRASSE_WERTPAPIERARTEN || path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten', 'massive', 'wertpapierarten.json');
     var j = JSON.parse(fs.readFileSync(p, 'utf8'));
     if (j && j.arten && Object.keys(j.arten).length > 1000) KARTE = j.arten;
   } catch (e) { KARTE = false; }

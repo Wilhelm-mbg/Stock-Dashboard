@@ -242,7 +242,9 @@ function eroeffnungKurs(bars, k) {
 }
 
 /* ---------- Archiv ---------- */
-function ladeUniversum(archivPfad, intervall, filter) {
+/* Pruefstrasse (Nr. 110, 11.10.2026, ADDITIV): fenster = { vonMs, bisMs } schneidet jede Reihe VOR der Datenpruefung auf die Kerzen
+ * in [vonMs, bisMs]; Reihen ohne Kerze im Fenster fallen aus dem Universum. Ohne fenster (alle bisherigen Aufrufe) unveraendert. */
+function ladeUniversum(archivPfad, intervall, filter, fenster) {
   ladeUniversum.verworfen = [];
   var dateien = fs.readdirSync(archivPfad).filter(function (f) { return f.indexOf('bars_' + intervall + '_') === 0; });
   var out = {};
@@ -251,6 +253,7 @@ function ladeUniversum(archivPfad, intervall, filter) {
     if (filter && !filter(sym)) return;
     try {
       var j = JSON.parse(fs.readFileSync(path.join(archivPfad, f), 'utf8'));
+      if (fenster && j && Array.isArray(j.series)) j.series = j.series.filter(function (b) { return b && (fenster.vonMs == null || b[0] >= fenster.vonMs) && (fenster.bisMs == null || b[0] <= fenster.bisMs); });
       if (j && Array.isArray(j.series) && j.series.length) {
         var kaputt = reiheKaputt(j.series);
         if (kaputt) { ladeUniversum.verworfen.push(sym + ': ' + kaputt); }
@@ -799,7 +802,7 @@ function messe(strategie, archivPfad, optionen) {
   var filter = null;
   if (typeof S.universum === 'function') filter = S.universum;
   else if (S.universum === 'aktien' || !S.universum) filter = function (sym) { return sym.indexOf('-USD') === -1; };
-  var U = ladeUniversum(archivPfad, S.zeitrahmen || '60m', filter);
+  var U = ladeUniversum(archivPfad, S.zeitrahmen || '60m', filter, (optionen.vonMs != null || optionen.bisMs != null) ? { vonMs: optionen.vonMs, bisMs: optionen.bisMs } : null);
   var syms = Object.keys(U);
   P.entscheide('E1 Universum', { archiv: archivPfad, zeitrahmen: S.zeitrahmen || '60m', filter: S.universum || 'aktien' },
     { werte: syms.length, klassifizierungDa: klassifizierung },
