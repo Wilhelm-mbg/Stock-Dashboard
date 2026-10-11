@@ -152,3 +152,12 @@ und prüft, dass keine andere Datei des Ordners das Panel anfasst.
 
 **Z22a Zahlen vorab.** 384 Konfigurationen. Zufallstreffer bei t ≥ 2 einseitig: höchstens 384 × 0,0228 ≈ **8,7** (Obergrenze; die
 Konfigurationen hängen zusammen); mit Tor 1 (t_E ≳ 10) praktisch **0**; belegt nach Holm: **< 0,05**.
+
+## 3. Nachträge
+
+**N1 (11.10.2026, beim Bau des Messgeräts, vor dem ersten Lauf auf echten Daten; keine Zahl der Regel geändert).**
+(a) „Ohne A" im Topf (Z11) umfasst A's andere Gattungen (gleiche CIK, Z3). Bei V1 ist der Topf eines Ereignisses damit der
+Topf ohne die ganze zulässige SIC-Gruppe von A (A, seine Partner, seine Gattungen) — für alle Ereignisse einer Gruppe am selben
+Tag derselbe. (b) Zufall der Placebos: (a) ein Zufallsstrom je (Auslöser, Richtung, Zeitraum), (b) einer je (Auslöser, Richtung,
+Verknüpfung, Tag), in fester Verarbeitungsreihenfolge gezogen; ein B′ je (Beobachtung, Haltedauer) dient H1 und H2. (c) Placebo (b)
+bei V1: „nicht verknüpft mit den beitragenden Ereignissen" heißt außerhalb der SIC-Gruppe von B (alle beitragenden A liegen in ihr).
