@@ -104,6 +104,14 @@ je Fenster (H4)**; H3: σ ≈ 1,7–2,4 → **MDE₈₀ ≈ 0,53–0,74 Pp**. Be
 Bestätigungs-MDE; Bestätigung 2023–2026 ≈ 44 Monatsenden → MDE_B ≈ 2 × se × √(1735/886) ≈ 0,6–0,9 Pp → Tor 1 ≈ 2,5–3,5 Pp) bleibt
 unerreichbar — ein „belegt" ist ausgeschlossen, ein Größen-Ausschluss oder ein „Kandidat" (netto > 0, t ≥ 2) ohne Tor 1 möglich.
 
+## Versatz
+
+`versatzTage: 10` statt der Vorgabe 20 (PM-Entscheid 12.10.2026, Nachlieferung Nr. 118): der Abstand zweier Monatswenden beträgt ≈ 21
+Handelstage, ein um 20 Handelstage verschobenes Signal landet ein bis drei Tage vor dem **nächsten** Monatsende — das verschobene Fenster
+überschneidet das nächste Signalfenster, die Gegenprobe zeigte den Effekt selbst und ein richtiges Messgerät würde als „verdächtig" gelesen.
++10 Handelstage liegen in der Monatsmitte (Tag +10/+11 des Folgemonats), außerhalb des Fensters −1…+3 beider Nachbarmonate. Der Wert ist
+kein Parameter der Regel, sondern der Gegenprobe.
+
 ## Erwartung (vorab)
 
 Richtung positiv. Überschuss (Zeitbewertung) in liquiden Werten 2016–2022: **+0,2 bis +0,5 Pp je Fenster (H4) brutto**, unter der Quelle
@@ -111,10 +119,9 @@ Richtung positiv. Überschuss (Zeitbewertung) in liquiden Werten 2016–2022: **
 **„nicht entscheidbar"** (erwartete Größe unter der MDE₈₀ von 0,6–0,9 Pp); ein „nein" in der gleichgewichteten Quellgröße ist möglich.
 Placebo (anderer Wert, gleicher Tag) sieht denselben Markttag und müsste in der Zeitbewertung denselben Überschuss zeigen — das ist bei einer
 Marktzeit-Regel kein Verstoß, sondern die Regel selbst. *Nr. 118:* dieses Placebo **entfällt** im Modus `zeit` und steht im Protokoll als
-„entfällt (zeit)"; Placebo ist das verschobene Signal. Verschobenes Signal (+20 Handelstage, `konfig.js`, unverändert) landet bei
-Monatsanfang + 20 ≈ Monatsende − 2: nahe am nächsten Fenster — das Protokoll weist je Konfiguration den **Anteil der verschobenen Fenster
-aus, die sich mit einem Signalfenster derselben Reihe überschneiden**; für die Monatswende wird er hoch sein, dann sagt die Verschiebung
-nichts gegen die Regel (ein „Messgerät-Fehler" aus dieser Gegenprobe wäre vom PM so zu lesen; ein anderer Versatz bliebe ein PM-Entscheid).
+„entfällt (zeit)"; Placebo ist das verschobene Signal. Verschobenes Signal: mit der Vorgabe +20 Handelstage läge es bei Monatsanfang + 20 ≈
+Monatsende − 2, also im nächsten Fenster — deshalb `versatzTage: 10` (Abschnitt „Versatz"); das Protokoll weist je Konfiguration den
+**Anteil der verschobenen Fenster aus, die sich mit einem Signalfenster derselben Reihe überschneiden** (erwartet ≈ 0 bei +10).
 
 ## Abweichungen von den Quellen (begründet)
 

@@ -6,6 +6,7 @@
   "erwartung": { "groesse": "Quelle (CRSP wertgewichtet 1987-2005): +0,14 Pp je Tag im Fenster -1..+3, also ~+0,56 Pp je Fenster (gleichgewichtet +0,24 je Tag, ~+0,96 je Fenster) gegen die uebrigen Tage; eigene Erwartung in liquiden Werten 2016-2022 vorsichtig darunter: +0,2 bis +0,5 Pp je Fenster (H4) brutto als Ueberschuss gegen den Topf aller Tage derselben Reihe (bewertung zeit), H3 etwas weniger. Gegen den Tagestopf derselben Zelle waere der Ueberschuss per Bau null (REGEL.md 'Bewertung')", "richtung": "positiv" },
   "daten": "panel",
   "bewertung": "zeit",
+  "versatzTage": 10,
   "konfigurationen": [
     { "key": "H4", "richtung": "long", "haltedauer": 4, "klassen": [1, 2, 3] },
     { "key": "H3", "richtung": "long", "haltedauer": 3, "klassen": [1, 2, 3] }
