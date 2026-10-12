@@ -1,6 +1,6 @@
 'use strict';
 /* Tests des Kandidaten vor-fomc-long (FORM.md §4): Kunstkalender je Regelzeile, Randfaelle, kein Blick nach vorn.
- *   node pruefstrasse/vorrat/vor-fomc-long/test.js   -> Rueckgabewert 0 = gruen  (im vorrat/ bis Auftrag Nr. 118, bewertung "zeit") */
+ *   node pruefstrasse/warteschlange/vor-fomc-long/test.js   -> Rueckgabewert 0 = gruen  (bewertung "zeit", Nr. 118; bis dahin im vorrat/) */
 var fs = require('fs');
 var path = require('path');
 var R = require('./regel.js');

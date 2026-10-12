@@ -1,4 +1,4 @@
-# Vor-FOMC-Drift, long (Bau-Agent Nr. 117, PM-Auftrag, 12.10.2026 — im `vorrat/` bis Auftrag Nr. 118)
+# Vor-FOMC-Drift, long (Bau-Agent Nr. 117, PM-Auftrag, 12.10.2026 — Bewertung `zeit`, seit Nr. 118 in der Warteschlange)
 
 Der S&P 500 stieg 1994–2011 in den **24 Stunden vor planmäßigen FOMC-Bekanntgaben** im Mittel um **49 Basispunkte** (14:00 des Vortags bis
 14:00 des Bekanntgabetags), unabhängig von der Richtung des Zinsentscheids — Lucca & Moench (2015), „pre-FOMC announcement drift". Nach
@@ -85,8 +85,11 @@ Form `tag` misst *welche Aktie*, nicht *welcher Tag*.
 
 **Zeitbewertung (Nr. 118):** Überschuss gegen den **Topf aller Tage derselben Reihe** — die mittlere H-Tage-Rendite der Reihe über alle ihre
 Einstiegstage (der FOMC-Vortag gegen den eigenen Durchschnittstag, wie Lucca & Moench den Vortag gegen alle übrigen Tage stellen) —, **Cluster
-je Kalendertag** (ein Signaltag = eine Sitzung = ein Cluster; Hansen-Hodrick über die Tagesreihe wie bisher). Der Topf aller Tage enthält den
-Fenstertag selbst (1 von ≈ 31 Handelstagen je Sitzungsintervall): Verdünnung ≈ 3 %, vernachlässigbar.
+je Kalendertag** (ein Signaltag = eine Sitzung = ein Cluster; Hansen-Hodrick über die Tagesreihe wie bisher). *Nachtrag Nr. 118 (12.10.2026,
+FORM.md §3):* der zeitliche Topf schließt die Signalfenster der Reihe und alle sich überschneidenden Fenster aus und wird je Zeitraum
+(Entdeckung / Prüfung) gerechnet — die hier angenommene Verdünnung ≈ 3 % entfällt ganz. Nicht gewählt wurde der Überschuss gegen null (der
+reine Fensterertrag, wie Lucca & Moench ihn ausweisen): er rechnete die unbedingte Drift der Reihe der Regel zu; der rohe Fensterertrag steht
+als `roh` im Protokoll daneben.
 
 **Auflösung, vorgerechnet.** Cluster 2016–2022: **55 planmäßige Bekanntgaben** (56 Sitzungen abzüglich der abgesagten vom 17./18.03.2020;
 54 mit Signal und Umsatzklasse). σ_Fenster = Streuung des Cluster-Mittels (gleichgewichtete H-Tage-Rendite der ≈ 814 liquiden Reihen abzüglich
@@ -103,8 +106,10 @@ Richtung positiv (behauptet). Überschuss (Zeitbewertung) in liquiden Werten 201
 je Termin brutto** — Kurov et al. sprechen für ≈ 0, die NY Fed für ~+0,4 an Pressekonferenz-Tagen (2016–2018 jede zweite Sitzung, ab 2019
 jede); H2 enthält die Bekanntgabe und ist unsicherer. Erwartetes Urteil: **„nicht entscheidbar"** (erwartete Größe unter der MDE₈₀); ein
 Ausschluss der Lucca-Moench-Größe ist möglich. Placebo (anderer Wert, gleicher Tag) sieht denselben Tag und zeigt in der Zeitbewertung
-denselben Überschuss — bei einer Marktzeit-Regel kein Verstoß, sondern die Regel selbst; Nr. 118 muss das Placebo als versetzten Kalendertag
-lesen. Verschobenes Signal (+20 Handelstage) landet mitten im Sitzungsintervall (≈ 31 Handelstage): dort ≈ 0 erwartet, die Gegenprobe trägt.
+denselben Überschuss — bei einer Marktzeit-Regel kein Verstoß, sondern die Regel selbst; *Nr. 118:* dieses Placebo **entfällt** im Modus
+`zeit` und steht im Protokoll als „entfällt (zeit)", Placebo ist das verschobene Signal. Verschobenes Signal (+20 Handelstage) landet mitten
+im Sitzungsintervall (≈ 31 Handelstage): dort ≈ 0 erwartet, die Gegenprobe trägt (das Protokoll weist den Anteil überschneidender verschobener
+Fenster aus; hier erwartet ≈ 0).
 
 ## Abweichungen von den Quellen (begründet)
 
@@ -114,5 +119,5 @@ lesen. Verschobenes Signal (+20 Handelstage) landet mitten im Sitzungsintervall 
 2. Signal am Tag A−2 über den **Werktag** statt den **Handelstag**: ein Feiertag auf A−1 verschöbe den Einstieg; 2016–2026 kommt das nicht vor.
 3. Universum: liquide US-Aktien des Panels (Klassen 1–3), gleichgewichtet je Reihe, statt S&P 500 (wertgewichtet); Zeitraum 2016–2022.
 4. Die Liste enthält nur planmäßige Sitzungen; die Notfallsitzungen vom März 2020 (02.03., 15.03.) fehlen, wie bei Lucca & Moench.
-5. Bewertung gegen den Topf aller Tage derselben Reihe statt gegen den Tagestopf der Form `tag` (oben begründet); bis Auftrag Nr. 118 liegt der
-   Kandidat im `pruefstrasse/vorrat/`, der Läufer liest ihn nicht.
+5. Bewertung gegen den zeitlichen Topf derselben Reihe statt gegen den Tagestopf der Form `tag` (oben begründet; `bewertung: "zeit"`, Nr. 118).
+   Bis Nr. 118 lag der Kandidat im `pruefstrasse/vorrat/`; seit dem 12.10.2026 steht er wieder in der Warteschlange.
