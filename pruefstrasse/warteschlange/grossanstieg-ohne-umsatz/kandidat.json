@@ -1,0 +1,15 @@
+{
+  "kennung": "grossanstieg-ohne-umsatz",
+  "form": "tag",
+  "titel": "Großer Tagesanstieg (über 8 %) bei unauffälligem Umsatz (ATV ≤ 1,52), long – Drift nach Kudryavtsev",
+  "quelle": "Kudryavtsev, 'The Effect of Trading Volumes on Stock Returns Following Large Price Moves', Economic Annals 64(220) (2019) 85-116, doi 10.2298/EKA1920085K, Abschnitt 4 (Ereignis, ATV), Tabelle 2 (Quintilgrenze 1,52), Tabelle 4A Panel A (CAR); S&P-500-Werte 1993-2017; abgerufen 2026-10-12, URLs in REGEL.md",
+  "erwartung": { "groesse": "Quelle (Proxy A, |SR|>8 %, unterstes ATV-Quintil, Marktmodell, ab Schluss des Ereignistags): CAR 1-5 +0,77 Pp (p 1,3 %), CAR 1-20 +1,08 Pp (p 0,2 %) brutto; ab Folgeeröffnung und gegen den Topf eigene Erwartung H5 0 bis +0,5 Pp, H20 0 bis +0,8 Pp", "richtung": "positiv" },
+  "daten": "panel",
+  "konfigurationen": [
+    { "key": "H5", "richtung": "long", "haltedauer": 5, "klassen": [1, 2, 3] },
+    { "key": "H20", "richtung": "long", "haltedauer": 20, "klassen": [1, 2, 3] }
+  ],
+  "params": { "schwelleLog": 0.08, "kappeLog": 0.5, "fenster": 250, "atvMax": 1.52 },
+  "autor": "Ideen-Agent (geplante Routine)",
+  "datum": "2026-10-12"
+}
