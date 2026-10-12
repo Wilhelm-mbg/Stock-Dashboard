@@ -37,7 +37,8 @@ misst genau diese Liste und trägt ihre Länge ins Register ein), `autor`, `datu
 
 Konfiguration je Form:
 - **tag:** `key`, `richtung` (`long` | `short`), `haltedauer` (Handelstage, 1–60; Ausstieg zur Eröffnung des ersten Handelstags
-  ≥ Einstiegstag + Haltedauer, wie Trendkanal §5). Optional `klassen` (Umsatzklassen 0–3, Vorgabe alle).
+  ≥ Einstiegstag + Haltedauer, wie Trendkanal §5). Optional `klassen` (Umsatzklassen 0–3, Vorgabe alle). Auf Kandidatenebene optional
+  `bewertung` (`topf` | `zeit`, Vorgabe `topf`; jeder andere Wert macht den Kandidaten ungültig — Absatz „Bewertung" in §3).
 - **korb:** `key`, optional `anzahl` (Zielzahl; sonst entscheidet die Zielfunktion), `korb` (Zahl der umsatzstärksten Werte als
   Universum, Vorgabe: alle zulässigen). Fenster, Takt (63 Starttage), Kosten (20 Bp je Seite) und Regel K setzt der Adapter.
 - **minute:** `key`, optional `params` (eine Parametervariante der Messmaschine). Zeitrahmen, Haltedauer, Richtung, Universum
@@ -66,9 +67,27 @@ nicht; Terminlisten, die in der Wirklichkeit vorab feststehen (FOMC-Sitzungen), 
 `datum(j)` verglichen — die Regel darf aus dem Datum rechnen (Wochentag), aber keinen Handelstag der Tafel hinter i lesen.
 Einstieg: Eröffnung des Tages nach dem Signal (ohne `bestaetigt`) bzw. zwei Tage danach (mit `bestaetigt`, das am Folgetag mit
 Sicht bis dorthin gefragt wird — die Form des „bestätigten Ausbruchs" der Trendkanal-Studie). Cooldown 5 Handelstage je Richtung.
-Bewertung: Überschuss gegen den **Topf derselben Zelle** (Einstiegstag, Dauer, Klasse, lebend), Kassa-Hürde je Umsatzklasse,
-Standardfehler Hansen-Hodrick über die Tagesreihe (Lag = Haltedauer), Tor 1 (Entdeckung ≥ 4 × projizierte Bestätigungs-MDE), Tor 2
-(delta80 unter der Hürde) — wie die Trendkanal-Studie (`studien/vorregistrierung-2026-09-08-trendkanal-tage/`).
+**Bewertung `topf` | `zeit`** (`kandidat.json` `bewertung`, Nr. 118). **`topf`** (Vorgabe): Überschuss gegen den **Topf derselben Zelle**
+(Einstiegstag, Dauer, Klasse, lebend), Kassa-Hürde je Umsatzklasse, Standardfehler Hansen-Hodrick über die Tagesreihe (Lag = Haltedauer),
+Tor 1 (Entdeckung ≥ 4 × projizierte Bestätigungs-MDE), Tor 2 (delta80 unter der Hürde) — wie die Trendkanal-Studie
+(`studien/vorregistrierung-2026-09-08-trendkanal-tage/`); Placebo = anderer Wert gleicher Klasse am selben Tag. **`zeit`:** für Regeln, die an
+einem Tag **alle oder fast alle** Reihen treffen (Kalender- und Terminregeln: Monatswende, Vor-FOMC, Vorfeiertag) — dort **ist** die Signalmenge
+der Topf der Zelle, der Überschuss ist per Bau null und ein „nein" sagt nichts (Fehlerform „Tagestopf löscht marktweite Effekte"). Im Modus
+`zeit` ist der Topf eines Trades der **zeitliche Topf seiner Reihe**: das Mittel der Renditen gleicher Dauer (Eröffnung → Eröffnung, wie der
+Trade) über alle zulässigen Starttage **desselben Zeitraums** (Entdeckung bzw. Prüfung — ein Entdeckungs-Topf auf Prüfungs-Trades läse jeden
+Regimewechsel als Effekt), **ohne die Signalfenster der Reihe und ohne Fenster, die sich mit ihnen überschneiden** (Starttag näher als die
+Dauer an einem Einstiegstag der Reihe): sonst enthielte der Topf den gemessenen Effekt anteilig (Monatswende: 4 von ≈ 21 Tagen) und
+verdünnte ihn. Rechtszensierte Fenster zählen nicht, Abgänge mit ihrem letzten Schluss — wie im Tagestopf. Kassa-Hürde, Tagesreihe (Mittel
+je Einstiegstag), Hansen-Hodrick, Tor 1/2 und MDE80 = 2,8016 × se bleiben; bei einer marktweiten Regel ist jeder Signaltag **ein** Cluster,
+die Auflösung hängt an der Zahl der Ereignisfenster (Monatswende ≈ 84 in 2016–2022), nicht an der Zahl der Trades — das Protokoll nennt
+Signaltage, Trades und Trades je Signaltag und sagt das in einem Satz. **Nicht gewählt:** Überschuss gegen null (reiner Fensterertrag, wie
+Lucca & Moench ihn ausweisen) — er rechnete die unbedingte Drift der Reihe der Regel zu; der rohe Fensterertrag steht als `roh` im Protokoll
+daneben. **Wann welcher:** die Regel wählt **Aktien** (Querschnittsregel) → `topf`; die Regel wählt den **Tag** → `zeit`. Kennzahl in beiden
+Modi: der **Anteil der zulässigen Reihen mit Signal am Signaltag** (`signalAnteil`, Mittel über die Signaltage der Entdeckung). Grenzfall:
+Anteil > 50 % im Modus `topf` → der Läufer schreibt eine Warnung ins Protokoll („Bewertung zeit erwägen"); Anteil ≤ 50 % im Modus `zeit` →
+Warnung („gehört in die Bewertung topf"). `ergebnis.json` trägt `bewertung` und `bewertungDetail` (die Rechenvorschrift in einem Satz);
+Register (`register.json`) und Belegstand-Zeile nennen den Modus. Sperrklinke: der Modus `topf` liefert bitgleiche Zahlen (Kalibrierung §6
+des Tests; Kunst-Eichung in `test.js`).
 
 **korb** — `zielfunktion(roh, opts)` und `placeboZiel(roh, opts)` **genau in der Form von `momentumZiel`** (`mfhandel.js`) bzw.
 der blind gesiegelten `studien/kandidaten-blind-2026-10/sektor-momentum/ziel.js`: `roh = { KUERZEL: [[zeitMs, schlussBereinigt,
@@ -96,8 +115,9 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   Siegel 2 lesbar (Sperre aus Nr. 109: ohne Commit von `KANDIDATEN.json` öffnet der Adapter die Prüfzeit nicht).
 - **Siegel 1:** der Kandidatenordner liegt in mindestens einem Commit und hat nichts Ungesichertes. **Siegel 2:** der Läufer
   committet `erledigt/<kennung>/KANDIDATEN.json`.
-- **Kandidat** (je Konfiguration, Entdeckung): netto > 0, t ≥ 2, Tor 1, kein Placebo-Verstoß (|Placebo| > 2 se **und** > ¼ Hürde).
-  „t ≥ 2" ist das Kandidaten-Kriterium; **MDE80 = 2,8016 × se** (`konfig.js` des Prüfstands) ist die Auflösung — zwei Zahlen, zwei Namen.
+- **Kandidat** (je Konfiguration, Entdeckung): netto > 0, t ≥ 2, Tor 1, kein Placebo-Verstoß (|Placebo| > 2 se **und** > ¼ Hürde; im
+  Modus `zeit` gegenstandslos, siehe Gegenproben). „t ≥ 2" ist das Kandidaten-Kriterium; **MDE80 = 2,8016 × se** (`konfig.js` des
+  Prüfstands) ist die Auflösung — zwei Zahlen, zwei Namen.
 - **Urteile:** `belegt-Vorschlag` (Prüfung: Holm über alle Konfigurationen des Kandidaten, einseitig 5 %, gleiche Richtung wie in
   der Entdeckung, netto > 0; nachrichtlich, ob der Treffer Holm über **alle** Konfigurationen des Registers überstünde) ·
   `nicht entscheidbar` (nichts belegt, aber auch nicht ausgeschlossen; MDE80 steht daneben) · `nein` (jede Konfiguration in der
@@ -105,7 +125,12 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   Blick nach vorn", oder eine Gegenprobe fällt gegen die Regel: das um 20 Tage verschobene Signal wirkt ebenso).
 - **Gegenproben (Pflicht, tag):** Einstieg einen Tag später bei festem Ausstieg; Signal um 20 Handelstage verschoben; Placebo mit
   zufälligen Signalen gleicher Tagesverteilung (anderer Wert, gleicher Tag, gleiche Klasse, gleiche Richtung); „alle gegen lebend";
-  Abgänge (Übernahme, Insolvenz, sonstige) getrennt gezählt.
+  Abgänge (Übernahme, Insolvenz, sonstige) getrennt gezählt. **Im Modus `zeit`** (§3) entfällt das Placebo „anderer Wert gleicher Klasse"
+  — es träfe dieselbe Zelle, also denselben Markttag — und steht im Protokoll als „entfällt (zeit)", nicht stillschweigend weg; Placebo ist
+  dort das verschobene Signal (wirkt es ebenso, bleibt es Messgerät-Fehler). Das Protokoll nennt je Konfiguration den **Anteil der
+  verschobenen Fenster, die sich mit einem Signalfenster derselben Reihe überschneiden**: eine Regel mit Periode nahe 20 Handelstagen
+  (Monatswende: +20 landet um das nächste Monatsende) trifft verschoben ihr eigenes nächstes Fenster — dann sagt die Verschiebung nichts
+  gegen die Regel, und der PM liest sie entsprechend.
 - **Register:** `pruefstrasse/register.json` zählt jede je gemessene Konfiguration; jedes ERGEBNIS nennt die Gesamtzahl und die
   erwarteten Zufallstreffer (2,28 % je Konfiguration bei t ≥ 2 einseitig).
 - **Ausgabe:** `erledigt/<kennung>/` mit `LAUF.log`, `KANDIDATEN.json`, `ergebnis.json`, `ERGEBNIS.md`, `belegstand-eintrag.md`;

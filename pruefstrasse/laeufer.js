@@ -18,6 +18,7 @@ var SG = require('./siegel.js');
 var URTEILE = ['belegt-Vorschlag', 'nicht entscheidbar', 'nein', 'Messgeraet-Fehler'];
 var PFLICHT = ['kennung', 'form', 'titel', 'quelle', 'erwartung', 'konfigurationen', 'autor', 'datum'];
 var SCHNITTSTELLE = { tag: ['signal'], korb: ['zielfunktion', 'placeboZiel'], minute: ['key', 'grund', 'zeitrahmen', 'haltedauerKerzen', 'signal'] };
+var BEWERTUNGEN = ['topf', 'zeit'];          /* Tag-Form, Nr. 118 (FORM.md §3): Vorgabe topf; der Adapter prueft dasselbe (adapter/tag.js BEWERTUNGEN) */
 
 function jetzt() { return new Date().toISOString(); }
 function rel(p) { return path.relative(K.REPO, p).replace(/\\/g, '/'); }
@@ -47,6 +48,10 @@ function ladeKandidat(kennung) {
     });
   }
   if (!kand.erwartung || !kand.erwartung.groesse || !kand.erwartung.richtung) fehler.push('erwartung braucht groesse und richtung');
+  if (kand.bewertung != null) {
+    if (kand.form !== 'tag') fehler.push('bewertung gibt es nur in der Form tag');
+    else if (BEWERTUNGEN.indexOf(kand.bewertung) === -1) fehler.push('bewertung muss topf | zeit sein (' + JSON.stringify(kand.bewertung) + ')');
+  }
   if (fs.readFileSync(path.join(ordner, 'REGEL.md'), 'utf8').trim().length < 200) fehler.push('REGEL.md zu kurz (Prosa mit Fundstellen)');
   try {
     regel = require(path.join(ordner, 'regel.js'));
@@ -86,9 +91,9 @@ function naechster() {
 function register() { return fs.existsSync(K.REGISTER) ? liesJson(K.REGISTER) : { kennung: 'pruefstrasse/register/v1', konfigurationen: [], gesamt: 0, zufallErwartet: 0 }; }
 /* Zahl fuer den Bericht - ein leeres Register (erster Lauf, Trockenlauf) hat noch keine Erwartung (PM 11.10.: Trockenlauf stuerzte an .toFixed). */
 function zufallText(Rg) { return typeof Rg.zufallErwartet === 'number' ? Rg.zufallErwartet.toFixed(1) : '–'; }
-function registerEintragen(Rg, kennung, form, konf, datum) {
+function registerEintragen(Rg, kennung, form, konf, datum, bewertung) {
   Rg.konfigurationen = Rg.konfigurationen.filter(function (e) { return e.kennung !== kennung; });
-  konf.forEach(function (k) { Rg.konfigurationen.push({ kennung: kennung, form: form, key: k.key, urteil: k.urteil, datum: datum }); });
+  konf.forEach(function (k) { var e = { kennung: kennung, form: form, key: k.key, urteil: k.urteil, datum: datum }; if (bewertung) e.bewertung = bewertung; Rg.konfigurationen.push(e); });
   Rg.gesamt = Rg.konfigurationen.length; Rg.zufallErwartet = Rg.gesamt * K.ZUFALL_JE_KONFIGURATION; Rg.stand = datum;
   return Rg;
 }
@@ -172,7 +177,7 @@ function urteile(E, P, Rg) {
 function zeileTag(k) {
   var e = k.entdeckung, u = e.uNetto;
   return '| ' + k.key + ' | ' + k.richtung + ' ' + k.haltedauer + ' T | ' + e.nTage + ' | ' + ganz(e.nTr) + ' | ' + de(e.uBrutto.mittel) + ' | ' + de(u.mittel) + ' | ' + de(u.t, 2) + ' | ' + de(u.se) + ' | ' + de(k.mde80) + ' | ' +
-    (k.tor1 ? 'ja' : 'nein') + ' | ' + (k.placebo.verstoss ? 'VERSTOSS' : de(k.placebo.uBrutto.mittel) + ' (t ' + de(k.placebo.uBrutto.t, 2) + ')') + ' | ' + de(k.versatz.uNetto.mittel) + ' (t ' + de(k.versatz.uNetto.t, 2) + ')' + ' | ' +
+    (k.tor1 ? 'ja' : 'nein') + ' | ' + (k.placebo.verstoss ? 'VERSTOSS' : k.placebo.entfaellt ? 'entfaellt (zeit)' : de(k.placebo.uBrutto.mittel) + ' (t ' + de(k.placebo.uBrutto.t, 2) + ')') + ' | ' + de(k.versatz.uNetto.mittel) + ' (t ' + de(k.versatz.uNetto.t, 2) + ')' + ' | ' +
     de(k.spaet.uNetto.mittel) + ' | ' + de(k.lebend.deltaAlleLebend) + ' | ' + e.abgaenge.map(function (a) { return a.gruppe.slice(0, 4) + ' ' + a.n; }).join(', ') + ' | ' + k.urteil +
     (k.pruefung ? ' | ' + k.pruefung.nTage + ' / ' + de(k.pruefung.uNetto.mittel) + ' / ' + de(k.pruefung.uNetto.t, 2) + (k.belegt ? ' Holm ja' : '') : '') + ' |';
 }
@@ -196,7 +201,7 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken) {
   var konf = E.konfigurationen, o = [];
   o.push('# ' + kand.titel + ' — ' + (trocken ? 'TROCKENLAUF (nur Zaehlungen)' : '**' + U.urteil + '**'));
   o.push('');
-  o.push('**Kurzfassung.** Kandidat `' + kand.kennung + '` (Form ' + kand.form + ', ' + konf.length + ' Konfigurationen, vorab festgelegt), gemessen ' + datumDe(E.stand) + ' auf ' + E.quelle + ' (' + (E.kennungTafel || E.archiv || '') + ').' +
+  o.push('**Kurzfassung.** Kandidat `' + kand.kennung + '` (Form ' + kand.form + modusText(kand, E) + ', ' + konf.length + ' Konfigurationen, vorab festgelegt), gemessen ' + datumDe(E.stand) + ' auf ' + E.quelle + ' (' + (E.kennungTafel || E.archiv || '') + ').' +
     (trocken ? ' Trockenlauf: keine Urteile.' : ' **Urteil: ' + U.urteil + '** — ' + U.grund + '. Kandidaten nach der Entdeckung: ' + U.kandidaten + '.') +
     ' Register: ' + Rg.gesamt + ' Konfigurationen bisher insgesamt geprueft, ' + zufallText(Rg) + ' Zufallstreffer (t ≥ 2) zu erwarten.' +
     ' Erwartung vorab: ' + kand.erwartung.groesse + ' (' + kand.erwartung.richtung + ').');
@@ -210,7 +215,17 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken) {
   o.push(KOPF[kand.form]); o.push(KOPF[kand.form].replace(/[^|]+/g, '---'));
   konf.forEach(function (k) { o.push(kand.form === 'tag' ? zeileTag(k) : kand.form === 'korb' ? zeileKorb(k) : zeileMinute(k)); });
   o.push('');
-  o.push('Alle Groessen in Pp' + (kand.form === 'korb' ? ' p. a. bzw. $' : ' je Trade/Signal (Tagesmittel), se Hansen-Hodrick') + '. ' + (kand.form === 'tag' ? 'Gegenproben: Placebo = anderer Wert gleicher Klasse am selben Tag, gleiche Richtung; verschoben = dasselbe Signal 20 Handelstage spaeter (wirkt es, ist das Messgeraet verdaechtig); Einstieg +1 T bei festem Ausstieg; Δ alle−lebend = Ueberlebensprobe; Abgaenge getrennt (uebernahme / insolvenz / sonstige).' : kand.form === 'korb' ? 'Placebo = 200 Zufallsbuecher derselben Zielzahl aus denselben zulaessigen Werten (Nr. 100); Startphasen = 63 Starttage; Reihenenden getrennt nach Grund. Die Gegenproben "Signal verschoben" und "alle gegen lebend" sind fuer diese Form nicht abbildbar (die Zielfunktion lehnt veraltete Kurse ab; Reihenenden buchen nach der Hauptregel).' : 'Zahlen der Messmaschine (Bestaetigungshaelfte ihres Schnitts B5); Placebo und Kontrolle A7 der Maschine im Protokoll.'));
+  var zeit = kand.form === 'tag' && E.bewertung === 'zeit';
+  o.push('Alle Groessen in Pp' + (kand.form === 'korb' ? ' p. a. bzw. $' : ' je Trade/Signal (Tagesmittel), se Hansen-Hodrick') + '. ' + (kand.form === 'tag' ? 'Gegenproben: ' + (zeit ? 'Placebo "anderer Wert gleicher Klasse am selben Tag" entfaellt im Modus zeit (traefe dieselbe Zelle); Placebo ist hier das verschobene Signal' : 'Placebo = anderer Wert gleicher Klasse am selben Tag, gleiche Richtung') + '; verschoben = dasselbe Signal 20 Handelstage spaeter (wirkt es, ist das Messgeraet verdaechtig); Einstieg +1 T bei festem Ausstieg; Δ alle−lebend = Ueberlebensprobe; Abgaenge getrennt (uebernahme / insolvenz / sonstige).' : kand.form === 'korb' ? 'Placebo = 200 Zufallsbuecher derselben Zielzahl aus denselben zulaessigen Werten (Nr. 100); Startphasen = 63 Starttage; Reihenenden getrennt nach Grund. Die Gegenproben "Signal verschoben" und "alle gegen lebend" sind fuer diese Form nicht abbildbar (die Zielfunktion lehnt veraltete Kurse ab; Reihenenden buchen nach der Hauptregel).' : 'Zahlen der Messmaschine (Bestaetigungshaelfte ihres Schnitts B5); Placebo und Kontrolle A7 der Maschine im Protokoll.'));
+  if (kand.form === 'tag') {
+    /* Nr. 118: Bewertungsmodus, Signaltage als Cluster, Anteil der Reihen mit Signal am Signaltag, Warnungen des Adapters */
+    var SA = E.signalAnteil, pz = function (x) { return x == null ? '–' : (100 * x).toFixed(0) + ' %'; }, jeTag = function (x) { return x == null ? '–' : x.toFixed(1).replace('.', ','); };
+    o.push('');
+    o.push('**Bewertung ' + (E.bewertung || 'topf') + '.** ' + (E.bewertungDetail || '') + (SA && SA.tage > 0 ? ' Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): im Mittel ' + pz(SA.mittel) + ', hoechstens ' + pz(SA.max) + ' (' + SA.tageUeber50 + ' von ' + SA.tage + ' Signaltagen ueber 50 %).' : ''));
+    o.push('Signaltage und Trades (Entdeckung): ' + konf.map(function (k) { var e = k.entdeckung; return k.key + ' ' + e.nTage + ' Signaltage / ' + ganz(e.nTr) + ' Trades (' + jeTag(e.tradesJeTag) + ' je Signaltag)' + (zeit && k.versatz && k.versatz.ueberlappung && k.versatz.ueberlappung.anteil != null ? ', verschobene Fenster mit Ueberschneidung eines Signalfensters ' + pz(k.versatz.ueberlappung.anteil) : ''); }).join('; ') +
+      '. Die Aufloesung (se Hansen-Hodrick ueber die Tagesreihe, Lag = Haltedauer) haengt an der Zahl der Signaltage, nicht an der Zahl der Trades' + (zeit ? ' - bei einer marktweiten Regel ist jeder Signaltag ein Cluster, die effektive Zahl ist die Zahl der Ereignisfenster' : '') + '.');
+    (E.warnungen || []).forEach(function (w) { o.push('**WARNUNG:** ' + w); });
+  }
   o.push('');
   o.push('## Zaehler und Quelle');
   o.push('');
@@ -218,11 +233,13 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken) {
   o.push('Quelle: ' + E.quelle + (E.reihen ? ', ' + E.reihen + ' Reihen, letzter Tag ' + E.letzterTag : '') + (E.korb ? ', Korb ' + E.korb : '') + '. Alles Simulation mit virtuellem Kapital, keine Anlageberatung.');
   return o.join('\n') + '\n';
 }
+/** ", Bewertung topf|zeit" fuer Kurzfassung, Belegstand-Zeile und Log (Tag-Form, Nr. 118); andere Formen leer. */
+function modusText(kand, E) { return kand.form === 'tag' ? ', Bewertung ' + ((E && E.bewertung) || kand.bewertung || 'topf') : ''; }
 function belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2) {
   var konf = E.konfigurationen, beste = konf.slice().sort(function (a, b) { return (bNetto(b) || -1e9) - (bNetto(a) || -1e9); })[0];
   function bNetto(k) { var e = k.entdeckung; return e.uNetto ? e.uNetto.mittel : e.buch ? e.buch.startphasen.median : e.nettoJeSignalPp; }
   function bT(k) { var e = k.entdeckung; return e.uNetto ? e.uNetto.t : e.buch ? null : e.t; }
-  return '- ' + datumDe(E.stand) + ' — **' + kand.titel + '** (`' + kand.kennung + '`, Form ' + kand.form + ', ' + konf.length + ' Konfigurationen): **' + U.urteil + '** — ' + U.grund + '. ' +
+  return '- ' + datumDe(E.stand) + ' — **' + kand.titel + '** (`' + kand.kennung + '`, Form ' + kand.form + modusText(kand, E) + ', ' + konf.length + ' Konfigurationen): **' + U.urteil + '** — ' + U.grund + '. ' +
     'Beste Entdeckungszeile ' + beste.key + ': netto ' + de(bNetto(beste), kand.form === 'korb' ? 2 : 4) + (bT(beste) != null ? ' (t ' + de(bT(beste), 2) + ')' : '') + ', MDE80 ' + de(beste.mde80) + '. ' +
     'Register: ' + Rg.gesamt + ' Konfigurationen bisher, ' + zufallText(Rg) + ' Zufallstreffer erwartet. Ordner `pruefstrasse/erledigt/' + kand.kennung + '/`, Siegel 1 `' + siegel1.commit.slice(0, 7) + '`' + (siegel2 ? ', Siegel 2 `' + siegel2.commit.slice(0, 7) + '`' : '') + '. Quelle ' + E.quelle + '.';
 }
@@ -248,10 +265,12 @@ function laufe(kennung, opt) {
   log('Form gueltig, test.js gruen (' + P1.test.letzteZeile + ')');
   var siegel1 = P1.siegel1; log('Siegel 1: Kandidatenordner in Commit ' + siegel1.commit + ', nichts Ungesichertes');
   var L = ladeKandidat(kennung), kand = L.kand;
-  log('Entdeckung bis ' + (kand.form === 'minute' ? 'vor ' + K.MINUTE.sperreAb : K.ENTDECKUNG_BIS) + ' ueber ' + kand.konfigurationen.length + ' Konfigurationen (Form ' + kand.form + ', Adapter ' + kand.form + ', Quelle ' + (kand.daten || (kand.form === 'tag' ? 'panel' : kand.form === 'korb' ? 'panel' : '60m-archiv')) + ')');
+  log('Entdeckung bis ' + (kand.form === 'minute' ? 'vor ' + K.MINUTE.sperreAb : K.ENTDECKUNG_BIS) + ' ueber ' + kand.konfigurationen.length + ' Konfigurationen (Form ' + kand.form + ', Adapter ' + kand.form + ', Quelle ' + (kand.daten || (kand.form === 'tag' ? 'panel' : kand.form === 'korb' ? 'panel' : '60m-archiv')) + modusText(kand, null) + ')');
   var E = messenImKind(kennung, 'entdeckung', path.join(aus, 'ergebnis-entdeckung.json'), log);
   if (E.konfigurationen.length !== kand.konfigurationen.length) throw new Error('Adapter lieferte ' + E.konfigurationen.length + ' statt ' + kand.konfigurationen.length + ' Konfigurationen');
   log('Entdeckung fertig: ' + JSON.stringify(E.zaehler || {}).slice(0, 400) + (E.verstoesse != null ? ' | Verstoesse ' + E.verstoesse : ''));
+  if (E.signalAnteil && E.signalAnteil.tage > 0) log('Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): Mittel ' + (100 * E.signalAnteil.mittel).toFixed(1) + ' %, max ' + (100 * E.signalAnteil.max).toFixed(1) + ' %, ' + E.signalAnteil.tageUeber50 + ' von ' + E.signalAnteil.tage + ' Signaltagen ueber 50 %' + modusText(kand, E));
+  (E.warnungen || []).forEach(function (w) { log('WARNUNG: ' + w); });
   E.konfigurationen.forEach(function (k) { var e = k.entdeckung; log('  ' + k.key + ': ' + (e.uNetto ? 'Tage ' + e.nTage + ', Trades ' + e.nTr + ', netto ' + de(e.uNetto.mittel) + ', t ' + de(e.uNetto.t, 2) : e.buch ? 'Median ' + de(e.buch.startphasen.median, 2) + ', Rang ' + e.rang + '/' + e.von : 'Signale ' + e.signale + ', netto ' + de(e.nettoJeSignalPp) + ', t ' + de(e.t, 2)) + (opt.trocken ? '' : ' -> ' + k.urteil + (k.gruende && k.gruende.length ? ' (' + k.gruende.join(', ') + ')' : ''))); });
   var Rg = register();
   if (opt.trocken) {
@@ -279,9 +298,9 @@ function laufe(kennung, opt) {
     P = messenImKind(kennung, 'pruefung', path.join(aus, 'ergebnis-pruefung.json'), log);
     log('Pruefung fertig' + (P.verstoesse != null ? ', Verstoesse ' + P.verstoesse : ''));
   } else log(kandidaten.length ? 'Keine Pruefung: Messgeraet-Fehler' : 'Keine Pruefung: kein Kandidat');
-  var U = urteile(E, P, registerEintragen(JSON.parse(JSON.stringify(Rg)), kennung, kand.form, E.konfigurationen, E.stand));
+  var U = urteile(E, P, registerEintragen(JSON.parse(JSON.stringify(Rg)), kennung, kand.form, E.konfigurationen, E.stand, E.bewertung));
   log('URTEIL: ' + U.urteil + ' - ' + U.grund);
-  Rg = registerEintragen(Rg, kennung, kand.form, E.konfigurationen, E.stand); schreibeJson(K.REGISTER, Rg);
+  Rg = registerEintragen(Rg, kennung, kand.form, E.konfigurationen, E.stand, E.bewertung); schreibeJson(K.REGISTER, Rg);
   log('Register: ' + Rg.gesamt + ' Konfigurationen insgesamt, ' + Rg.zufallErwartet.toFixed(2) + ' Zufallstreffer erwartet');
   var ergebnis = { kennung: kennung, form: kand.form, titel: kand.titel, stand: E.stand, urteil: U.urteil, grund: U.grund, kandidaten: U.kandidaten, messgeraetFehler: U.fehler,
     siegel1: siegel1, siegel2: siegel2, register: { gesamt: Rg.gesamt, zufallErwartet: Rg.zufallErwartet }, entdeckung: E, pruefung: P };

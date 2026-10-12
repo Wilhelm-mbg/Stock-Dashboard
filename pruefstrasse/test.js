@@ -1,7 +1,9 @@
 'use strict';
 /* Tests der Pruefstrasse (Auftrag Nr. 110 §3): Form, Sperre, Register, Gegenproben (Kunst-Kandidat mit Blick nach vorn -> Messgeraet-
  * Fehler; eingepflanzter Effekt -> Kandidat; zeitfester Effekt -> verschobenes Signal wirkt -> Messgeraet-Fehler), Sicht roh/markt (Nr. 113),
- * additive Optionen der Instrumente bitgleich, und die KALIBRIERUNG der drei Adapter gegen bekannte Ergebnisse (schreibt pruefstrasse/kalibrierung.json).
+ * Kalender (Nr. 117), Bewertung zeit (Nr. 118: marktweite Kunstregel im Modus topf genau 0, im Modus zeit der eingesaete Effekt, gepaarter
+ * Placebo ~ 0, topf bitgleich zur Kunst-Eichung), additive Optionen der Instrumente bitgleich, und die KALIBRIERUNG der drei Adapter gegen
+ * bekannte Ergebnisse (schreibt pruefstrasse/kalibrierung.json). Temp-Dateien tragen die Prozessnummer (gleichzeitige Laeufe).
  *   node pruefstrasse/test.js            alles (Kalibrierung laeuft tag ~1 min, korb ~10 s, minute ~5 min)
  *   node pruefstrasse/test.js --schnell  ohne die Adapterlaeufe; prueft die abgelegte kalibrierung.json gegen das Soll
  * Simulation mit virtuellem Kapital, keine Anlageberatung. */
@@ -48,15 +50,16 @@ var L0 = LF.ladeKandidat('gibt-es-nicht');
 ok(L0.fehler.length === 1 && /Ordner fehlt/.test(L0.fehler[0]), 'fehlender Kandidat wird als ungueltig gemeldet', L0.fehler[0]);
 var P1 = LF.pruefen('donchian20-ausbruch-long', { ohneSiegel: true });
 ok(P1.form.length === 0 && P1.test && P1.test.status === 0, 'donchian20-ausbruch-long: Form gueltig, test.js gruen', P1.form.join('; ') || P1.test.letzteZeile);
-var tmpK = path.join(K.WARTESCHLANGE, 'kunst-ungueltig-tmp');
+/* Temp-Namen je Prozess (PM 12.10.2026): gleichzeitige Testlaeufe stoerten sich an festen Namen. */
+var tmpName = 'kunst-ungueltig-tmp-' + process.pid, tmpK = path.join(K.WARTESCHLANGE, tmpName);
 try {
   fs.mkdirSync(tmpK, { recursive: true });
-  fs.writeFileSync(path.join(tmpK, 'kandidat.json'), JSON.stringify({ kennung: 'kunst-ungueltig-tmp', form: 'tag', titel: 'x', konfigurationen: [{ key: 'a', richtung: 'long', haltedauer: 99 }] }));
+  fs.writeFileSync(path.join(tmpK, 'kandidat.json'), JSON.stringify({ kennung: tmpName, form: 'tag', titel: 'x', bewertung: 'null', konfigurationen: [{ key: 'a', richtung: 'long', haltedauer: 99 }] }));
   fs.writeFileSync(path.join(tmpK, 'regel.js'), 'module.exports = {};'); fs.writeFileSync(path.join(tmpK, 'test.js'), 'process.exit(0);'); fs.writeFileSync(path.join(tmpK, 'REGEL.md'), 'kurz');
-  var L1 = LF.ladeKandidat('kunst-ungueltig-tmp');
-  ok(L1.fehler.some(function (f) { return /ohne quelle/.test(f); }) && L1.fehler.some(function (f) { return /haltedauer/.test(f); }) && L1.fehler.some(function (f) { return /REGEL.md zu kurz/.test(f); }) && L1.fehler.some(function (f) { return /ohne signal/.test(f); }),
-    'Pflichtfelder, Haltedauer, REGEL.md und Schnittstelle werden einzeln gemeldet', L1.fehler.length + ' Fehler');
-  ok(LF.naechster() !== 'kunst-ungueltig-tmp', '--naechster ueberspringt den ungueltigen Kandidaten');
+  var L1 = LF.ladeKandidat(tmpName);
+  ok(L1.fehler.some(function (f) { return /ohne quelle/.test(f); }) && L1.fehler.some(function (f) { return /haltedauer/.test(f); }) && L1.fehler.some(function (f) { return /REGEL.md zu kurz/.test(f); }) && L1.fehler.some(function (f) { return /ohne signal/.test(f); }) && L1.fehler.some(function (f) { return /bewertung muss topf \| zeit/.test(f); }),
+    'Pflichtfelder, Haltedauer, REGEL.md, Schnittstelle und bewertung (Nr. 118: nur topf | zeit, hier "null") werden einzeln gemeldet', L1.fehler.length + ' Fehler');
+  ok(LF.naechster() !== tmpName, '--naechster ueberspringt den ungueltigen Kandidaten');
 } finally { fs.rmSync(tmpK, { recursive: true, force: true }); }
 
 console.log('2) Sperre (Nr. 109): ohne Siegel keine Pruefzeit');
@@ -67,13 +70,14 @@ var e1 = null; try { TF.oeffne({ quelle: 'panel', pruefzeit: true, ohneSpeicherp
 ok(e1 && e1.sperre && /kein Siegel/.test(e1.message), 'Pruefzeit ohne Siegel-Pfad: Sperre wirft VOR dem Lesen', e1 && e1.message);
 /* PM 11.10.2026: die Probe lief vorher gegen pruefstrasse/test.js selbst und war nur rot, solange diese Datei im Arbeitsbaum
  * ungesichert war (Testmarken-Falle). Jetzt gegen eine eigens angelegte, nie committete Datei - unabhaengig vom Arbeitsbaum. */
-var tmpS = path.join(K.REPO, 'pruefstrasse', 'ungesichert-tmp.json'); fs.writeFileSync(tmpS, '{}');
-var e2 = null; try { require('./paneltafel.js').oeffne({ pruefzeit: true, siegelPfad: 'pruefstrasse/ungesichert-tmp.json', ohneSpeicherpruefung: true }); } catch (e) { e2 = e; }
+var tmpSrel = 'pruefstrasse/ungesichert-tmp-' + process.pid + '.json', tmpS = path.join(K.REPO, tmpSrel); fs.writeFileSync(tmpS, '{}');   /* Name je Prozess (PM 12.10.) */
+var e2 = null; try { require('./paneltafel.js').oeffne({ pruefzeit: true, siegelPfad: tmpSrel, ohneSpeicherpruefung: true }); } catch (e) { e2 = e; }
 ok(e2 && e2.sperre, 'Paneltafel: Siegel auf einer veraenderten/ungesicherten Datei scheitert', e2 && e2.message.slice(0, 80));
-var e3 = null; try { SG.pruefeSiegel(K.REPO, 'pruefstrasse/ungesichert-tmp.json'); } catch (e) { e3 = e; } finally { fs.unlinkSync(tmpS); }
+var e3 = null; try { SG.pruefeSiegel(K.REPO, tmpSrel); } catch (e) { e3 = e; } finally { fs.unlinkSync(tmpS); }
 ok(e3 && e3.sperre && /keinem Commit/.test(e3.message), 'Siegel 2 auf einer Datei ohne Commit: SPERRE', e3 && e3.message);
-var s1 = SG.pruefeSiegel(K.REPO, 'pruefstrasse/FORM.md');
-ok(/^[0-9a-f]{40}$/.test(s1.commit) && s1.sha256.length === 64, 'Siegel 2 auf FORM.md (committet) liefert Commit und Pruefsumme', s1.commit.slice(0, 7));
+/* Nr. 118: Marke ist konfig.json, nicht FORM.md - FORM.md aendert jeder Form-Auftrag im Arbeitsbaum und die Probe war dann rot (Testmarken-Falle). */
+var s1 = SG.pruefeSiegel(K.REPO, 'pruefstrasse/konfig.json');
+ok(/^[0-9a-f]{40}$/.test(s1.commit) && s1.sha256.length === 64, 'Siegel 2 auf konfig.json (committet, von Bau-Auftraegen nie angefasst) liefert Commit und Pruefsumme', s1.commit.slice(0, 7));
 var e4 = null; try { SG.siegel1(K.REPO, 'pruefstrasse/gibt-es-nicht'); } catch (e) { e4 = e; }
 ok(e4 && e4.sperre, 'Siegel 1 auf einem fehlenden Ordner: SPERRE');
 var E0 = A.lauf(zufallSignal, KAND, { tafel: T0 });
@@ -208,6 +212,60 @@ ok(Ez.konfigurationen[0].entdeckung.uNetto.mittel > 1 && Ez.konfigurationen[0].e
 var Ta = TF.kunstTafel(kunstReihen(function (r, i) { return (A.fnv('T|' + (i - 1)) % 10) === 0 ? 0.02 : 0; }), TAGE);
 var Ea = A.lauf(zufallSignal, KAND, { tafel: Ta });
 ok(Math.abs(Ea.konfigurationen[0].entdeckung.uBrutto.mittel) < 0.3 && Ea.konfigurationen[0].entdeckung.roh.mittel > 0.3, 'Markttag-Effekt steckt im Topf: roh positiv, Ueberschuss gegen den Topf ~ null', 'u ' + Ea.konfigurationen[0].entdeckung.uBrutto.mittel.toFixed(3) + ' roh ' + Ea.konfigurationen[0].entdeckung.roh.mittel.toFixed(3));
+
+console.log('3b) Bewertung zeit (Nr. 118): marktweite Regel ohne Tagestopf');
+/* Marktweite Kunstregel: ALLE 40 Reihen signalisieren am selben Tag (Einstieg an jedem 16. Kalendertag), der Effekt (+2 % Eroeffnung -> Schluss) sitzt in
+ * allen Reihen genau an diesen Einstiegstagen. Konfigurationen H5 und H3 (bei Periode 16 haette H10 keinen ueberschneidungsfreien Starttag im zeitlichen
+ * Topf). Verschiebung um 20 = 16 + 4 Tage: das verschobene H5-Fenster teilt seinen ersten Tag mit dem letzten des naechsten Signalfensters
+ * (Ueberlappung 100 % ausgewiesen), enthaelt den Effekt aber nicht; H3 ueberlappt nicht. Welten NACH den bisherigen gebaut (gleicher Zufallsstrom). */
+var KANDZ = { kennung: 'kunst-zeit', form: 'tag', bewertung: 'zeit', konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5 }, { key: 'H3', richtung: 'long', haltedauer: 3 }], params: {} };
+var KANDT = JSON.parse(JSON.stringify(KANDZ)); KANDT.bewertung = 'topf';
+var marktweit = { signal: function (sicht, i) { return (i + 1) % 16 === 0 ? { dir: 1 } : null; } };
+var Tm = TF.kunstTafel(kunstReihen(function (r, i) { return (i % 16) === 0 ? 0.02 : 0; }), TAGE);
+var Emt = A.lauf(marktweit, KANDT, { tafel: Tm }), Emz = A.lauf(marktweit, KANDZ, { tafel: Tm }), Em0 = A.lauf(marktweit, KANDZ, { tafel: T0 });
+var h5t = Emt.konfigurationen[0].entdeckung, h5z = Emz.konfigurationen[0].entdeckung, h3z = Emz.konfigurationen[1].entdeckung, h50 = Em0.konfigurationen[0].entdeckung;
+ok(Emt.bewertung === 'topf' && h5t.nTage === 32 && h5t.nTr === 1280 && Math.abs(h5t.uBrutto.mittel) < 1e-9 && h5t.roh.mittel > 1.5 && Emt.konfigurationen[0].urteil === 'nein' && !Emt.konfigurationen[0].placebo.entfaellt,
+  'topf: marktweite Regel mit eingesaetem Effekt - roh > +1,5 Pp, Ueberschuss gegen den Tagestopf genau 0 (|u| < 1e-9), Urteil "nein" ohne Aussage', 'u ' + h5t.uBrutto.mittel.toExponential(2) + ' roh ' + h5t.roh.mittel.toFixed(3));
+ok(Emt.signalAnteil.tage === 32 && Emt.signalAnteil.mittel === 1 && Emt.signalAnteil.max === 1 && Emt.signalAnteil.tageUeber50 === 32 && Emt.warnungen.length === 1 && /Bewertung zeit erwaegen/.test(Emt.warnungen[0]),
+  'topf: Anteil der zulaessigen Reihen mit Signal am Signaltag 100 % an allen 32 Signaltagen -> Warnung "Bewertung zeit erwaegen" im Protokoll', Emt.warnungen[0] && Emt.warnungen[0].slice(0, 72));
+ok(Emz.bewertung === 'zeit' && /zeitlicher Topf/.test(Emz.bewertungDetail) && h5z.nTage === 32 && h5z.nTr === 1280 && h5z.tradesJeTag === 40 && h5z.uBrutto.mittel > 1.5 && h5z.uBrutto.mittel < 2.4 && h5z.uNetto.t > 10 && h3z.uBrutto.mittel > 1.5 && h3z.uBrutto.mittel < 2.4 && Emz.konfigurationen[0].kandidat && Emz.konfigurationen[1].kandidat,
+  'zeit: dieselbe Regel findet den eingesaeten Effekt (+2 Pp je Fenster; > 1,5 heisst: die Signalfenster sind aus dem zeitlichen Topf ausgeschlossen, sonst ~1,25), 40 Trades je Signaltag, H5 und H3 Kandidaten', 'H5 u ' + h5z.uBrutto.mittel.toFixed(3) + ' t ' + h5z.uNetto.t.toFixed(1) + ' / H3 u ' + h3z.uBrutto.mittel.toFixed(3) + ' t ' + h3z.uNetto.t.toFixed(1));
+ok(Math.abs(h50.uBrutto.mittel) < 0.3 && Math.abs(h50.uNetto.t) < 2.5 && !Em0.konfigurationen[0].kandidat && !Em0.konfigurationen[1].kandidat && LF.urteile(Em0, null, Rg0).urteil !== 'Messgeraet-Fehler',
+  'zeit, gepaarter Placebo: dieselbe Regel auf der Kunstwelt OHNE Effekt ~ 0, kein Kandidat, kein Messgeraet-Fehler', 'u ' + h50.uBrutto.mittel.toFixed(3) + ' t ' + h50.uNetto.t.toFixed(2));
+var k5z = Emz.konfigurationen[0], k3z = Emz.konfigurationen[1];
+ok(k5z.placebo.entfaellt === true && k5z.placebo.verstoss === false && k5z.placebo.uBrutto === null && /entfaellt im Modus zeit/.test(k5z.placebo.grund) && Emz.zaehler.placeboEntfaellt === 3840 && Emz.zaehler.placeboOhnePartner === 0 && Emt.zaehler.placeboEntfaellt === undefined,
+  'zeit: Placebo "anderer Wert gleicher Klasse" entfaellt und wird so ausgewiesen (Feld entfaellt, Zaehler placeboEntfaellt); im Modus topf wie bisher', Emz.zaehler.placeboEntfaellt + ' entfallen');
+ok(k5z.versatz.wirkt === false && Math.abs(k5z.versatz.uNetto.mittel) < 0.4 && k3z.versatz.wirkt === false && Math.abs(k3z.versatz.uNetto.mittel) < 0.4 && k5z.spaet.uNetto.mittel < h5z.uNetto.mittel / 3 && k5z.versatz.ueberlappung.anteil === 1 && k3z.versatz.ueberlappung.anteil === 0 && LF.urteile(Emz, null, Rg0).urteil !== 'Messgeraet-Fehler',
+  'zeit: verschobenes Signal ~ 0 (wirkt nicht), Einstieg +1 T verfehlt den Effekt, Ueberlappung der verschobenen Fenster ausgewiesen (H5 100 %: 20 = 16 + 4 teilt einen Tag; H3 0 %), kein Messgeraet-Fehler', 'versatz ' + k5z.versatz.uNetto.mittel.toFixed(3) + ' spaet ' + k5z.spaet.uNetto.mittel.toFixed(3));
+ok(Emz.warnungen.length === 0 && Emz.signalAnteil.mittel === 1 && Emz.ms.topf <= Emt.ms.topf, 'zeit bei 100 % Signalanteil: keine Warnung; der Tagestopf wird nicht gerechnet');
+var Ezz = A.lauf(zufallSignal, KANDZ, { tafel: T0 });
+ok(Ezz.bewertung === 'zeit' && Ezz.warnungen.length === 1 && /Bewertung topf/.test(Ezz.warnungen[0]) && Ezz.signalAnteil.mittel < 0.1 && Ezz.konfigurationen[0].entdeckung.nTr === 782,
+  'zeit bei einer Querschnittsregel (Zufallssignal, ~5 % der Reihen je Tag): Warnung "gehoert in die Bewertung topf"', (100 * Ezz.signalAnteil.mittel).toFixed(1) + ' %');
+/* zeitTopf direkt: Reihe mit +10 % je Tag (jedes 1-Tage-Fenster 10 %, jedes 2-Tage-Fenster 21 %), Signalfenster und Zeitraum ausgeschlossen */
+var oG = []; for (var g = 0; g < 10; g++) oG.push(100 * Math.pow(1.1, g));
+var TG = TF.kunstTafel([{ reihe: 'G', tag: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], o: oG, h: oG, l: oG, c: oG, v: oG.map(function () { return 1; }) }], TAGE.slice(0, 10), { offen: true }), SG1 = TG.reihen[0];
+var z1 = A.zeitTopf(SG1, Int32Array.from([]), 1, 0, 9), z2 = A.zeitTopf(SG1, Int32Array.from([4]), 1, 0, 9), z3 = A.zeitTopf(SG1, Int32Array.from([4]), 2, 0, 9), z4 = A.zeitTopf(SG1, Int32Array.from([]), 1, 2, 5), z5 = A.zeitTopf(SG1, Int32Array.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), 1, 0, 9);
+ok(z1.n === 9 && nahe(z1.mittel, 10, 1e-9) && z2.n === 8 && nahe(z2.mittel, 10, 1e-9) && z3.n === 5 && nahe(z3.mittel, 21, 1e-9) && z4.n === 4 && z5.n === 0 && isNaN(z5.mittel),
+  'zeitTopf: 9 Ein-Tages-Fenster (10 %), ohne den Signaltag 8, Dauer 2 ohne Starttage 3..5 (21 %, n 5), Zeitraum 2..5 (n 4), alles Signal -> NaN', z1.n + '/' + z2.n + '/' + z3.n + '/' + z4.n + '/' + z5.n);
+ok(A.ueberlappt(Int32Array.from([4, 20]), 6, 3) === true && A.ueberlappt(Int32Array.from([4, 20]), 7, 3) === false && A.ueberlappt(Int32Array.from([4, 20]), 18, 3) === true && A.ueberlappt(Int32Array.from([4, 20]), 1, 3) === false && A.ueberlappt(Int32Array.from([]), 5, 3) === false,
+  'ueberlappt: |t - e| < d (6 und 18 ja, 7 und 1 nein, leere Menge nein)');
+var eB = null; try { A.lauf(zufallSignal, Object.assign({}, KAND, { bewertung: 'null' }), { tafel: T0 }); } catch (e) { eB = e; }
+ok(eB && /bewertung muss topf \| zeit/.test(eB.message), 'Adapter: bewertung ausser topf | zeit wirft (auch ohne den Laeufer)', eB && eB.message);
+/* Sperrklinke topf: die Kunst-Eichung (Zufallssignal auf T0) liefert dieselben Zahlen wie der Adapter vor Nr. 118 (12.10.2026, 1e-12) */
+var eh5 = E0.konfigurationen[0].entdeckung, eh10 = E0.konfigurationen[1].entdeckung;
+ok(E0.bewertung === 'topf' && eh5.nTage === 428 && eh5.nTr === 782 && nahe(eh5.uBrutto.mittel, 0.029470027222302034, 1e-12) && nahe(eh5.uNetto.t, -0.16636927504682703, 1e-12) && nahe(eh10.uBrutto.mittel, -0.12499646857363268, 1e-12) && nahe(eh10.uNetto.t, -1.6507233659844247, 1e-12) && nahe(E0.konfigurationen[0].placebo.uBrutto.mittel, 0.045138616437735465, 1e-12),
+  'topf bitgleich: Kunst-Eichung (Zufallssignal, 428 Tage, 782 Trades) H5/H10 u brutto, t und Placebo wie vor Nr. 118 (alter Adapter, 1e-12)', eh5.uBrutto.mittel + ' / ' + eh10.uNetto.t);
+/* Laeufer: Register nennt den Modus, ERGEBNIS.md und Belegstand-Zeile ebenso, Placebo "entfaellt (zeit)", Signaltage/Trades/je Signaltag, Satz zur Aufloesung, Warnung */
+var RgZ = LF.registerEintragen({ kennung: 'x', konfigurationen: [], gesamt: 0 }, 'z', 'tag', [{ key: 'H5', urteil: 'nein' }], '2026-10-12T00:00:00Z', 'zeit');
+RgZ = LF.registerEintragen(RgZ, 'k', 'korb', [{ key: 'k', urteil: 'nein' }], '2026-10-12T00:00:00Z', undefined);
+ok(RgZ.konfigurationen[0].bewertung === 'zeit' && RgZ.konfigurationen[1].bewertung === undefined && RgZ.gesamt === 2, 'Register: Zeile der Tag-Form traegt bewertung, andere Formen kein Feld');
+var kandZ = Object.assign({ titel: 'Kunst zeit', erwartung: { groesse: 'x', richtung: 'positiv' } }, KANDZ), siegelK = { commit: '0123456789abcdef0123456789abcdef01234567' };
+Emz.stand = '2026-10-12T00:00:00Z'; Emt.stand = Emz.stand;
+var mdZ = LF.ergebnisMarkdown(kandZ, Emz, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null, false), bsZ = LF.belegstandAbsatz(kandZ, Emz, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null);
+ok(/Form tag, Bewertung zeit, 2 Konfigurationen/.test(mdZ) && /\| entfaellt \(zeit\) \|/.test(mdZ) && /\*\*Bewertung zeit\.\*\* Ueberschuss = Rendite/.test(mdZ) && /H5 32 Signaltage \/ 1\.280 Trades \(40,0 je Signaltag\), verschobene Fenster mit Ueberschneidung eines Signalfensters 100 %/.test(mdZ) && /haengt an der Zahl der Signaltage, nicht an der Zahl der Trades - bei einer marktweiten Regel ist jeder Signaltag ein Cluster/.test(mdZ) && /im Mittel 100 %, hoechstens 100 % \(32 von 32 Signaltagen ueber 50 %\)/.test(mdZ) && !/WARNUNG/.test(mdZ) && /Form tag, Bewertung zeit/.test(bsZ),
+  'ERGEBNIS.md (zeit): Modus in Kurzfassung und Belegstand-Zeile, Placebo "entfaellt (zeit)", Signaltage / Trades / je Signaltag, Ueberlappung, Satz zur Aufloesung, Signalanteil, keine Warnung');
+var mdT = LF.ergebnisMarkdown(Object.assign({}, kandZ, { bewertung: 'topf' }), Emt, LF.urteile(Emt, null, Rg0), Rg0, siegelK, null, false);
+ok(/Form tag, Bewertung topf/.test(mdT) && /\*\*WARNUNG:\*\* Bewertung topf, aber die Regel trifft im Mittel 100 %/.test(mdT) && !/entfaellt \(zeit\)/.test(mdT), 'ERGEBNIS.md (topf) traegt die Warnung des Adapters und das Placebo wie bisher');
 /* Holm */
 var H = LF.holm([0.001, 0.03, 0.2], 3, 0.05);
 ok(H.bestanden[0] && !H.bestanden[1] && !H.bestanden[2] && nahe(H.schwelle[0], 0.05 / 3, 1e-12) && nahe(H.schwelle[1], 0.025, 1e-12), 'Holm: 0,001 besteht alpha/3, 0,03 verfehlt alpha/2, danach Abbruch');
