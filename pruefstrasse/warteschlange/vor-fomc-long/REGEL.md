@@ -100,6 +100,13 @@ gleichgewichteten liquiden US-Markts 2016–2022 ≈ 1,0 Pp (ohne 2020) bis 1,4 
 ihr Ausschluss (obere Grenze unter 0,49), wenn die Drift wie bei Kurov et al. fehlt, möglich. Tor 1 (4 × projizierte Bestätigungs-MDE;
 Bestätigung 2023–2026 ≈ 29 Termine → MDE_B ≈ 2 × se × √(1735/886) ≈ 0,36–0,53 → Tor 1 ≈ 1,5–2,1 Pp) bleibt unerreichbar.
 
+## Versatz
+
+Vorgabe 20 Handelstage **beibehalten** (kein `versatzTage`-Feld; geprüft 12.10.2026, Nachlieferung Nr. 118, gegen den Handelskalender des
+Panels 2016–2022, Skript `fomc-versatz.js` im Kratzordner des Bau-Agenten): die Abstände aufeinanderfolgender Einstiegstage (A−1) betragen
+27 bis 63 Handelstage; ein um 20 Handelstage verschobener Einstieg trifft **kein** anderes Fenster (H1: 0 Treffer, H2: 0 Treffer von 55
+Bekanntgaben), ebenso 5–25; erst ein Versatz von 30 träfe 5 (H1) bzw. 24 (H2) Fenster.
+
 ## Erwartung (vorab)
 
 Richtung positiv (behauptet). Überschuss (Zeitbewertung) in liquiden Werten 2016–2022, H1 (Eröffnung A−1 bis Eröffnung A): **0 bis +0,3 Pp
