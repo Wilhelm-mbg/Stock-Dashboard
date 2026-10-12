@@ -12,7 +12,7 @@
  * beim Reset neu zugewiesen), die Sentiment-Historie und die Archiv-Abdeckung
  * (beide werden im Handelsmodul neu zugewiesen) sowie Kursreihen/Tagescache. */
 (function () {
-  var U = window.U;
+  var U = window.U, Q = window.Quant;
   /* Von depot.js hereingereicht (verkabeln) - vorher zeigen die Knoepfe nichts. */
   var holeDepot = null, equityNow = null, istMess = null, stratOf = null,
       normWeights = null, kiSuggestions = null, getHistory = null,
