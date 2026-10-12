@@ -28,10 +28,20 @@ var ARTEN = ['echt', 'spaet', 'versatz', 'placebo'];
 var GRUPPEN = ['uebernahme', 'insolvenz', 'sonstige'];
 var POT_MAX_DAUER = 61, N_K = 4;
 var BEWERTUNGEN = ['topf', 'zeit'];
-var BEWERTUNG_DETAIL = {
-  topf: 'Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus Topf derselben Zelle (Einstiegstag, Dauer, Umsatzklasse, lebend) - das Verfahren der Trendkanal-Studie; Kassa-Huerde je Klasse; Placebo = anderer zulaessiger Wert gleicher Klasse am selben Tag, gleiche Richtung.',
-  zeit: 'Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus zeitlicher Topf derselben Reihe: Mittel der Renditen gleicher Dauer ueber alle zulaessigen Starttage desselben Zeitraums (Entdeckung | Pruefung), ohne Fenster, die sich mit einem Signalfenster der Reihe ueberschneiden (|Starttag - Einstiegstag| < Dauer); Kassa-Huerde je Klasse wie bisher; Placebo "anderer Wert gleicher Klasse" entfaellt (traefe dieselbe Zelle), Placebo ist das um ' + K.VERSATZ_TAGE + ' Handelstage verschobene Signal.',
-};
+var VERSATZ_MIN = 5, VERSATZ_MAX = 60;
+/** Rechenvorschrift des Modus in einem Satz (ergebnis.json bewertungDetail); versatz = Handelstage der Verschiebungs-Gegenprobe. */
+function bewertungDetail(modus, versatz) {
+  return modus === 'zeit'
+    ? 'Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus zeitlicher Topf derselben Reihe: Mittel der Renditen gleicher Dauer ueber alle zulaessigen Starttage desselben Zeitraums (Entdeckung | Pruefung), ohne Fenster, die sich mit einem Signalfenster der Reihe ueberschneiden (|Starttag - Einstiegstag| < Dauer); Kassa-Huerde je Klasse wie bisher; Placebo "anderer Wert gleicher Klasse" entfaellt (traefe dieselbe Zelle), Placebo ist das um ' + versatz + ' Handelstage verschobene Signal.'
+    : 'Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus Topf derselben Zelle (Einstiegstag, Dauer, Umsatzklasse, lebend) - das Verfahren der Trendkanal-Studie; Kassa-Huerde je Klasse; Placebo = anderer zulaessiger Wert gleicher Klasse am selben Tag, gleiche Richtung; Verschiebung um ' + versatz + ' Handelstage.';
+}
+/** Versatz der Verschiebungs-Gegenprobe (Nachlieferung Nr. 118): kandidat.json versatzTage (ganze Zahl 5..60), Vorgabe K.VERSATZ_TAGE. Bei
+ *  Kalenderregeln darf die Verschiebung nicht auf das naechste Ereignisfenster fallen (Monatswende: +20 ~ naechstes Monatsende, +10 = Monatsmitte). */
+function versatzVon(kand) {
+  var v = kand.versatzTage == null ? K.VERSATZ_TAGE : kand.versatzTage;
+  if (!(Number.isInteger(v) && v >= VERSATZ_MIN && v <= VERSATZ_MAX)) throw new Error('kandidat.json: versatzTage muss eine ganze Zahl ' + VERSATZ_MIN + '..' + VERSATZ_MAX + ' sein, nicht ' + JSON.stringify(kand.versatzTage));
+  return v;
+}
 
 function fnv(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function mulberry32(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -192,7 +202,7 @@ function messe(TF, regel, kand, opt) {
   var konfs = kand.konfigurationen, params = kand.params || {}, nK = konfs.length, Z = new Zellen(nK, TF.nTage), zaehler = leererZaehler();
   var bewertung = kand.bewertung == null ? 'topf' : kand.bewertung;
   if (BEWERTUNGEN.indexOf(bewertung) === -1) throw new Error('kandidat.json: bewertung muss topf | zeit sein, nicht ' + JSON.stringify(kand.bewertung));
-  var zeit = bewertung === 'zeit', iSchnitt = opt.iSchnitt != null ? opt.iSchnitt : indexAb(TF, opt.schnitt || K.SPERRE_AB);
+  var zeit = bewertung === 'zeit', iSchnitt = opt.iSchnitt != null ? opt.iSchnitt : indexAb(TF, opt.schnitt || K.SPERRE_AB), versatzTage = versatzVon(kand);
   konfs.forEach(function (c) { if (!(c.haltedauer >= 1 && c.haltedauer <= 60)) throw new Error('Konfiguration ' + c.key + ': haltedauer 1..60 noetig'); if (c.richtung !== 'long' && c.richtung !== 'short') throw new Error('Konfiguration ' + c.key + ': richtung long|short'); });
   var t0 = Date.now(), zulK = topf(TF, Z, zaehler, !zeit), tTopf = Date.now() - t0;
   var sigTag = new Int32Array(TF.nTage), zulTag = new Int32Array(TF.nTage);
@@ -250,9 +260,9 @@ function messe(TF, regel, kand, opt) {
         if (e) zaehler.gebucht++;
         /* Gegenprobe 1: Einstieg einen Tag spaeter, Ausstieg fest (derselbe Ausstiegstag) */
         if (ePos + 1 < S.n && (ausPos < 0 || ausPos > ePos + 1)) buche(TF, Z, 1, kf, dir, S, ePos + 1, ausPos, k, zaehler, zeitlich); else zaehler.spaetOhneTag++;
-        /* Gegenprobe 2: dasselbe Signal um 20 Handelstage verschoben; Ueberlappung des verschobenen Fensters mit einem Signalfenster der Reihe gezaehlt
-         * (eine Regel mit Periode nahe 20 Handelstagen trifft verschoben ihr naechstes eigenes Fenster - das Protokoll weist den Anteil aus) */
-        var pV = (tagE + K.VERSATZ_TAGE < S.nextPos.length) ? S.nextPos[tagE + K.VERSATZ_TAGE] : -1;
+        /* Gegenprobe 2: dasselbe Signal um versatzTage Handelstage verschoben (Vorgabe 20, kandidat.json versatzTage); Ueberlappung des verschobenen Fensters
+         * mit einem Signalfenster der Reihe gezaehlt (eine Regel mit Periode nahe dem Versatz trifft verschoben ihr naechstes eigenes Fenster) */
+        var pV = (tagE + versatzTage < S.nextPos.length) ? S.nextPos[tagE + versatzTage] : -1;
         if (pV >= 0) {
           var eV = buche(TF, Z, 2, kf, dir, S, pV, C.festAusstieg(S, pV, c.haltedauer), k, zaehler, zeitlich);
           if (eV && S.tag[pV] < iSchnitt) { ueberlappung.von[kf]++; if (ueberlappt(ES, S.tag[pV], c.haltedauer)) ueberlappung.n[kf]++; }
@@ -271,7 +281,7 @@ function messe(TF, regel, kand, opt) {
   });
   var tMessen = Date.now() - t0 - tTopf;
   return { zellen: Z, zaehler: zaehler, verstoesse: verstoesse, beispiele: beispiele, ms: { topf: tTopf, messen: tMessen }, konfs: konfs,
-    bewertung: bewertung, iSchnitt: iSchnitt, sigTag: sigTag, zulTag: zulTag, ueberlappung: ueberlappung };
+    bewertung: bewertung, versatzTage: versatzTage, iSchnitt: iSchnitt, sigTag: sigTag, zulTag: zulTag, ueberlappung: ueberlappung };
 }
 
 /* ---------- Statistik (Trendkanal auswerten.js: tagesreihe, momente, statistik) ---------- */
@@ -362,7 +372,7 @@ function auswerte(M, TF, opt) {
     var k = { key: c.key, richtung: c.richtung, haltedauer: c.haltedauer, klassen: c.klassen || null,
       entdeckung: kurzSt(e), lebend: { uNetto: kurz(eL.uNetto), nTr: eL.nTr, deltaAlleLebend: (e.uBrutto.mittel != null && eL.uBrutto.mittel != null) ? e.uBrutto.mittel - eL.uBrutto.mittel : null },
       spaet: { uNetto: kurz(sp.uNetto), nTr: sp.nTr }, versatz: { uNetto: kurz(vs.uNetto), nTr: vs.nTr, wirkt: verschobenWirkt, ueberlappung: ueb },
-      placebo: zeit ? { entfaellt: true, grund: 'entfaellt im Modus zeit: ein anderer Wert gleicher Klasse am selben Tag traefe dieselbe Zelle (den Markttag); Placebo ist das um ' + K.VERSATZ_TAGE + ' Handelstage verschobene Signal', uBrutto: null, nTr: 0, schranke: null, verstoss: false }
+      placebo: zeit ? { entfaellt: true, grund: 'entfaellt im Modus zeit: ein anderer Wert gleicher Klasse am selben Tag traefe dieselbe Zelle (den Markttag); Placebo ist das um ' + (M.versatzTage || K.VERSATZ_TAGE) + ' Handelstage verschobene Signal', uBrutto: null, nTr: 0, schranke: null, verstoss: false }
         : { uBrutto: kurz(pl.uBrutto), nTr: pl.nTr, schranke: { t: K.PLACEBO_T, mindestPp: K.PLACEBO_ANTEIL_HUERDE * (e.kKand || KL[3].huerde) }, verstoss: plV },
       TE: TE, TB: TB, seBproj: seB, mdeBproj: mdeB, tor1: tor1, tor1Schwelle: mdeB != null ? K.TOR1_FAKTOR * mdeB : null,
       mde80: e.uNetto.se != null ? z1 * e.uNetto.se : null, kandidat: kandidat, gruende: gruende, urteil: urteil };
@@ -438,13 +448,14 @@ function lauf(regel, kand, opt) {
   var SA = signalAnteil(M, TF);
   return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum, reihen: TF.reihen.length, nTage: TF.nTage,
     letzterTag: TF.tage[TF.maxTag], schnitt: TF.tage[iSchnitt] || null, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
-    bewertung: M.bewertung, bewertungDetail: BEWERTUNG_DETAIL[M.bewertung], signalAnteil: SA, warnungen: warnungen(M.bewertung, SA),
+    bewertung: M.bewertung, bewertungDetail: bewertungDetail(M.bewertung, M.versatzTage), versatzTage: M.versatzTage, signalAnteil: SA, warnungen: warnungen(M.bewertung, SA),
     konfigurationen: konf, klassen: TF.klassen.map(function (k) { return { name: k.name, huerde: k.huerde }; }) };
 }
 
 module.exports = { lauf: lauf, messe: messe, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, kunstKalender: kunstKalender, Zellen: Zellen, momente: momente, statistik: statistik,
   tagesreihe: tagesreihe, phi: phi, handelstage: handelstage, indexAb: indexAb, fnv: fnv, mulberry32: mulberry32, ARTEN: ARTEN, GRUPPEN: GRUPPEN, POT_MAX_DAUER: POT_MAX_DAUER,
-  zeitTopf: zeitTopf, ueberlappt: ueberlappt, signalAnteil: signalAnteil, warnungen: warnungen, BEWERTUNGEN: BEWERTUNGEN, BEWERTUNG_DETAIL: BEWERTUNG_DETAIL };
+  zeitTopf: zeitTopf, ueberlappt: ueberlappt, signalAnteil: signalAnteil, warnungen: warnungen, bewertungDetail: bewertungDetail, versatzVon: versatzVon,
+  BEWERTUNGEN: BEWERTUNGEN, VERSATZ_MIN: VERSATZ_MIN, VERSATZ_MAX: VERSATZ_MAX };
 
 /* Kalibrierung (FORM §3, Auftrag §3): node --max-old-space-size=6144 pruefstrasse/adapter/tag.js --kalibrierung [<ausgabe.json>]
  * Donchian-20-Ausbruch long, H5 auf den Tagesdateien der Trendkanal-Studie mit DEREN Schnitt (Bestaetigung ab 07.02.2023, Siegel

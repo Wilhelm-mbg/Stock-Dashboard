@@ -265,7 +265,40 @@ var mdZ = LF.ergebnisMarkdown(kandZ, Emz, LF.urteile(Emz, null, Rg0), Rg0, siege
 ok(/Form tag, Bewertung zeit, 2 Konfigurationen/.test(mdZ) && /\| entfaellt \(zeit\) \|/.test(mdZ) && /\*\*Bewertung zeit\.\*\* Ueberschuss = Rendite/.test(mdZ) && /H5 32 Signaltage \/ 1\.280 Trades \(40,0 je Signaltag\), verschobene Fenster mit Ueberschneidung eines Signalfensters 100 %/.test(mdZ) && /haengt an der Zahl der Signaltage, nicht an der Zahl der Trades - bei einer marktweiten Regel ist jeder Signaltag ein Cluster/.test(mdZ) && /im Mittel 100 %, hoechstens 100 % \(32 von 32 Signaltagen ueber 50 %\)/.test(mdZ) && !/WARNUNG/.test(mdZ) && /Form tag, Bewertung zeit/.test(bsZ),
   'ERGEBNIS.md (zeit): Modus in Kurzfassung und Belegstand-Zeile, Placebo "entfaellt (zeit)", Signaltage / Trades / je Signaltag, Ueberlappung, Satz zur Aufloesung, Signalanteil, keine Warnung');
 var mdT = LF.ergebnisMarkdown(Object.assign({}, kandZ, { bewertung: 'topf' }), Emt, LF.urteile(Emt, null, Rg0), Rg0, siegelK, null, false);
-ok(/Form tag, Bewertung topf/.test(mdT) && /\*\*WARNUNG:\*\* Bewertung topf, aber die Regel trifft im Mittel 100 %/.test(mdT) && !/entfaellt \(zeit\)/.test(mdT), 'ERGEBNIS.md (topf) traegt die Warnung des Adapters und das Placebo wie bisher');
+ok(/Form tag, Bewertung topf/.test(mdT) && /\*\*WARNUNG:\*\* Bewertung topf, aber die Regel trifft im Mittel 100 %/.test(mdT) && !/entfaellt \(zeit\)/.test(mdT) && /verschoben 20 T/.test(mdT) && /Versatz 20 Handelstage \(Vorgabe\)\./.test(mdT), 'ERGEBNIS.md (topf) traegt die Warnung des Adapters, das Placebo wie bisher und den Versatz der Vorgabe');
+
+console.log('3c) Versatz der Verschiebungs-Gegenprobe (Nachlieferung Nr. 118): versatzTage 5..60, Vorgabe ' + K.VERSATZ_TAGE);
+/* Kunst-Kalenderregel mit Periode 20 (Einstieg aller Reihen an jedem 20. Kalendertag, Effekt +2 % dort), Modus zeit: mit dem Versatz 20 der Vorgabe
+ * landet das verschobene Signal GENAU auf dem naechsten Ereignisfenster (Placebo = Effekt, "wirkt" -> Messgeraet-Fehler, obwohl das Messgeraet
+ * richtig ist); mit versatzTage 10 liegt es in der Mitte des Intervalls (Placebo ~ 0). Welt nach den bisherigen gebaut. */
+var kal20 = { signal: function (sicht, i) { return (i + 1) % 20 === 0 ? { dir: 1 } : null; } };
+var T20 = TF.kunstTafel(kunstReihen(function (r, i) { return (i % 20) === 0 ? 0.02 : 0; }), TAGE);
+var KV20 = JSON.parse(JSON.stringify(KANDZ)), KV10 = JSON.parse(JSON.stringify(KANDZ)); KV10.versatzTage = 10;
+var Ev20 = A.lauf(kal20, KV20, { tafel: T20 }), Ev10 = A.lauf(kal20, KV10, { tafel: T20 }), v20 = Ev20.konfigurationen[0], v10 = Ev10.konfigurationen[0];
+ok(Ev20.versatzTage === 20 && v20.entdeckung.uBrutto.mittel > 1.5 && v20.versatz.uNetto.mittel > 1 && v20.versatz.wirkt === true && v20.versatz.ueberlappung.anteil === 1 && LF.urteile(Ev20, null, Rg0).urteil === 'Messgeraet-Fehler' && /um 20 Tage verschobene Signal wirkt ebenso/.test(LF.urteile(Ev20, null, Rg0).grund),
+  'Kalenderregel Periode 20, Versatz 20 (Vorgabe): das verschobene Signal trifft das naechste Fenster - Placebo = Effekt, "wirkt", Messgeraet-Fehler', 'echt ' + v20.entdeckung.uBrutto.mittel.toFixed(3) + ' verschoben ' + v20.versatz.uNetto.mittel.toFixed(3));
+ok(Ev10.versatzTage === 10 && nahe(v10.entdeckung.uBrutto.mittel, v20.entdeckung.uBrutto.mittel, 1e-12) && Math.abs(v10.versatz.uNetto.mittel) < 0.4 && v10.versatz.wirkt === false && v10.versatz.ueberlappung.anteil === 0 && LF.urteile(Ev10, null, Rg0).urteil !== 'Messgeraet-Fehler' && /um 10 Handelstage verschobene Signal/.test(v10.placebo.grund) && /um 10 Handelstage/.test(Ev10.bewertungDetail),
+  'dieselbe Regel mit versatzTage 10: Entdeckung bitgleich, verschobenes Signal in der Intervallmitte ~ 0, kein Messgeraet-Fehler; Texte nennen 10', 'verschoben ' + v10.versatz.uNetto.mittel.toFixed(3));
+var eV = null; try { A.lauf(kal20, Object.assign({}, KANDZ, { versatzTage: 4 }), { tafel: T20 }); } catch (e) { eV = e; }
+var eV2 = null; try { A.lauf(kal20, Object.assign({}, KANDZ, { versatzTage: 10.5 }), { tafel: T20 }); } catch (e) { eV2 = e; }
+ok(eV && /versatzTage muss eine ganze Zahl 5\.\.60/.test(eV.message) && eV2 && /versatzTage muss eine ganze Zahl/.test(eV2.message) && A.versatzVon({}) === K.VERSATZ_TAGE && A.versatzVon({ versatzTage: 60 }) === 60, 'Adapter: versatzTage 4 und 10,5 werfen, ohne Feld die Vorgabe, 60 erlaubt', eV && eV.message);
+/* Laeufer: --pruefen verlangt Bereich und den REGEL.md-Abschnitt "Versatz" (Kunst-Kandidat je Prozess) */
+var tmpV = 'kunst-versatz-tmp-' + process.pid, tmpVK = path.join(K.WARTESCHLANGE, tmpV), regelOk = 'module.exports = { signal: function () { return null; } };';
+var langeProsa = 'Prosa der Regel mit Fundstelle. '.repeat(10);
+try {
+  fs.mkdirSync(tmpVK, { recursive: true });
+  var kv = { kennung: tmpV, form: 'tag', titel: 'x', quelle: 'q', erwartung: { groesse: 'g', richtung: 'positiv' }, konfigurationen: [{ key: 'a', richtung: 'long', haltedauer: 5 }], autor: 'a', datum: '2026-10-12', versatzTage: 3 };
+  fs.writeFileSync(path.join(tmpVK, 'kandidat.json'), JSON.stringify(kv)); fs.writeFileSync(path.join(tmpVK, 'regel.js'), regelOk); fs.writeFileSync(path.join(tmpVK, 'test.js'), 'process.exit(0);'); fs.writeFileSync(path.join(tmpVK, 'REGEL.md'), '# Regel\n\n' + langeProsa + '\n');
+  var LV1 = LF.ladeKandidat(tmpV);
+  ok(LV1.fehler.some(function (f) { return /versatzTage muss eine ganze Zahl 5\.\.60/.test(f); }) && LV1.fehler.some(function (f) { return /ohne Ueberschrift "Versatz"/.test(f); }), 'ladeKandidat: versatzTage 3 -> Bereichsfehler UND fehlender Abschnitt "Versatz" gemeldet', LV1.fehler.join(' | '));
+  kv.versatzTage = 10; fs.writeFileSync(path.join(tmpVK, 'kandidat.json'), JSON.stringify(kv));
+  fs.writeFileSync(path.join(tmpVK, 'REGEL.md'), '# Regel\n\n' + langeProsa + '\n\n## Versatz\n\nMonatsabstand etwa 21 Handelstage, +20 landet im naechsten Fenster, +10 in der Monatsmitte.\n\n## Beleg\n\nx\n');
+  var LV2 = LF.ladeKandidat(tmpV);
+  ok(LV2.fehler.length === 0 && LV2.versatzGrund === 'Monatsabstand etwa 21 Handelstage, +20 landet im naechsten Fenster, +10 in der Monatsmitte.', 'ladeKandidat: versatzTage 10 mit Abschnitt "Versatz" gueltig, Begruendung gelesen (bis zur naechsten Ueberschrift)', LV2.versatzGrund);
+  Ev10.stand = '2026-10-12T00:00:00Z'; Ev10.versatzGrund = LV2.versatzGrund;
+  var mdV = LF.ergebnisMarkdown(Object.assign({}, kandZ, { versatzTage: 10 }), Ev10, LF.urteile(Ev10, null, Rg0), Rg0, siegelK, null, false);
+  ok(/verschoben 10 T/.test(mdV) && /dasselbe Signal 10 Handelstage spaeter/.test(mdV) && /Versatz 10 Handelstage, Grund: Monatsabstand etwa 21 Handelstage/.test(mdV), 'ERGEBNIS.md weist den Versatz mit Grund aus ("Versatz 10 Handelstage, Grund: ...", Spalte "verschoben 10 T")');
+} finally { fs.rmSync(tmpVK, { recursive: true, force: true }); }
 /* Holm */
 var H = LF.holm([0.001, 0.03, 0.2], 3, 0.05);
 ok(H.bestanden[0] && !H.bestanden[1] && !H.bestanden[2] && nahe(H.schwelle[0], 0.05 / 3, 1e-12) && nahe(H.schwelle[1], 0.025, 1e-12), 'Holm: 0,001 besteht alpha/3, 0,03 verfehlt alpha/2, danach Abbruch');

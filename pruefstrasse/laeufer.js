@@ -52,13 +52,30 @@ function ladeKandidat(kennung) {
     if (kand.form !== 'tag') fehler.push('bewertung gibt es nur in der Form tag');
     else if (BEWERTUNGEN.indexOf(kand.bewertung) === -1) fehler.push('bewertung muss topf | zeit sein (' + JSON.stringify(kand.bewertung) + ')');
   }
-  if (fs.readFileSync(path.join(ordner, 'REGEL.md'), 'utf8').trim().length < 200) fehler.push('REGEL.md zu kurz (Prosa mit Fundstellen)');
+  var regelText = fs.readFileSync(path.join(ordner, 'REGEL.md'), 'utf8'), versatzGrund = null;
+  if (regelText.trim().length < 200) fehler.push('REGEL.md zu kurz (Prosa mit Fundstellen)');
+  /* Nachlieferung Nr. 118: versatzTage (Verschiebungs-Gegenprobe) ganze Zahl 5..60; gesetzt nur mit Begruendung in REGEL.md unter einer Ueberschrift "Versatz" */
+  if (kand.versatzTage != null) {
+    var v = kand.versatzTage;
+    if (kand.form !== 'tag') fehler.push('versatzTage gibt es nur in der Form tag');
+    else if (!(Number.isInteger(v) && v >= 5 && v <= 60)) fehler.push('versatzTage muss eine ganze Zahl 5..60 sein (' + JSON.stringify(v) + ')');
+    versatzGrund = versatzAbschnitt(regelText);
+    if (!versatzGrund) fehler.push('versatzTage gesetzt, aber REGEL.md ohne Ueberschrift "Versatz" mit Begruendung (mindestens 20 Zeichen)');
+  }
   try {
     regel = require(path.join(ordner, 'regel.js'));
     (SCHNITTSTELLE[kand.form] || []).forEach(function (f) { if (regel[f] == null) fehler.push('regel.js ohne ' + f + ' (Form ' + kand.form + ')'); });
     if (kand.form === 'tag' && kand.daten && kand.daten !== 'panel' && kand.daten !== 'trendkanal-tage') fehler.push('daten muss panel | trendkanal-tage sein');
   } catch (e) { fehler.push('regel.js laedt nicht: ' + e.message); }
-  return { kennung: kennung, ordner: ordner, kand: kand, regel: regel, fehler: fehler };
+  return { kennung: kennung, ordner: ordner, kand: kand, regel: regel, fehler: fehler, versatzGrund: versatzGrund };
+}
+/** Text unter der Markdown-Ueberschrift "Versatz" (bis zur naechsten Ueberschrift), Leerraum zusammengezogen, hoechstens 400 Zeichen; null, wenn
+ *  es sie nicht gibt oder weniger als 20 Zeichen folgen. */
+function versatzAbschnitt(text) {
+  var m = /^#{1,6}[ \t]*Versatz\b[^\n]*\n([\s\S]*?)(?=\n#{1,6}[ \t]|$(?![\s\S]))/m.exec(text.replace(/\r\n/g, '\n'));
+  if (!m) return null;
+  var t = m[1].replace(/\s+/g, ' ').trim();
+  return t.length >= 20 ? (t.length > 400 ? t.slice(0, 397) + '...' : t) : null;
 }
 /** --pruefen: Form, test.js (eigener Prozess), Siegel 1. */
 function pruefen(kennung, opt) {
@@ -149,7 +166,7 @@ function urteile(E, P, Rg) {
   if (E.verstoesse > 0) fehler.push('Blick nach vorn: ' + E.verstoesse + ' Verstoesse (' + (E.beispiele || []).slice(0, 3).join(', ') + ')');
   /* Gegenprobe "Signal um 20 Tage verschoben": zeigt eine Konfiguration mit Wirkung (netto > 0, t >= 2) dieselbe Wirkung auch verschoben,
    * sitzt sie nicht in der Regel, sondern im Messgeraet (Kalender, Zelle, Daten) - unabhaengig davon, ob Tor 1 oder Placebo sie schon kippen. */
-  konf.forEach(function (k) { var e = k.entdeckung && k.entdeckung.uNetto; if (e && e.mittel > 0 && e.t >= K.KANDIDAT_T && k.versatz && k.versatz.wirkt) fehler.push(k.key + ': das um ' + K.VERSATZ_TAGE + ' Tage verschobene Signal wirkt ebenso (netto ' + de(k.versatz.uNetto.mittel) + ', t ' + de(k.versatz.uNetto.t, 2) + ')'); });
+  konf.forEach(function (k) { var e = k.entdeckung && k.entdeckung.uNetto; if (e && e.mittel > 0 && e.t >= K.KANDIDAT_T && k.versatz && k.versatz.wirkt) fehler.push(k.key + ': das um ' + (E.versatzTage || K.VERSATZ_TAGE) + ' Tage verschobene Signal wirkt ebenso (netto ' + de(k.versatz.uNetto.mittel) + ', t ' + de(k.versatz.uNetto.t, 2) + ')'); });
   var kandidaten = konf.filter(function (k) { return k.kandidat; });
   var urteil, grund;
   if (fehler.length) { urteil = 'Messgeraet-Fehler'; grund = fehler.join('; '); }
@@ -212,16 +229,18 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken) {
   o.push('');
   o.push('## Konfigurationen');
   o.push('');
-  o.push(KOPF[kand.form]); o.push(KOPF[kand.form].replace(/[^|]+/g, '---'));
+  var versatz = E.versatzTage || K.VERSATZ_TAGE, kopf = kand.form === 'tag' ? KOPF.tag.replace('verschoben 20 T', 'verschoben ' + versatz + ' T') : KOPF[kand.form];
+  o.push(kopf); o.push(kopf.replace(/[^|]+/g, '---'));
   konf.forEach(function (k) { o.push(kand.form === 'tag' ? zeileTag(k) : kand.form === 'korb' ? zeileKorb(k) : zeileMinute(k)); });
   o.push('');
   var zeit = kand.form === 'tag' && E.bewertung === 'zeit';
-  o.push('Alle Groessen in Pp' + (kand.form === 'korb' ? ' p. a. bzw. $' : ' je Trade/Signal (Tagesmittel), se Hansen-Hodrick') + '. ' + (kand.form === 'tag' ? 'Gegenproben: ' + (zeit ? 'Placebo "anderer Wert gleicher Klasse am selben Tag" entfaellt im Modus zeit (traefe dieselbe Zelle); Placebo ist hier das verschobene Signal' : 'Placebo = anderer Wert gleicher Klasse am selben Tag, gleiche Richtung') + '; verschoben = dasselbe Signal 20 Handelstage spaeter (wirkt es, ist das Messgeraet verdaechtig); Einstieg +1 T bei festem Ausstieg; Δ alle−lebend = Ueberlebensprobe; Abgaenge getrennt (uebernahme / insolvenz / sonstige).' : kand.form === 'korb' ? 'Placebo = 200 Zufallsbuecher derselben Zielzahl aus denselben zulaessigen Werten (Nr. 100); Startphasen = 63 Starttage; Reihenenden getrennt nach Grund. Die Gegenproben "Signal verschoben" und "alle gegen lebend" sind fuer diese Form nicht abbildbar (die Zielfunktion lehnt veraltete Kurse ab; Reihenenden buchen nach der Hauptregel).' : 'Zahlen der Messmaschine (Bestaetigungshaelfte ihres Schnitts B5); Placebo und Kontrolle A7 der Maschine im Protokoll.'));
+  o.push('Alle Groessen in Pp' + (kand.form === 'korb' ? ' p. a. bzw. $' : ' je Trade/Signal (Tagesmittel), se Hansen-Hodrick') + '. ' + (kand.form === 'tag' ? 'Gegenproben: ' + (zeit ? 'Placebo "anderer Wert gleicher Klasse am selben Tag" entfaellt im Modus zeit (traefe dieselbe Zelle); Placebo ist hier das verschobene Signal' : 'Placebo = anderer Wert gleicher Klasse am selben Tag, gleiche Richtung') + '; verschoben = dasselbe Signal ' + versatz + ' Handelstage spaeter (wirkt es, ist das Messgeraet verdaechtig); Einstieg +1 T bei festem Ausstieg; Δ alle−lebend = Ueberlebensprobe; Abgaenge getrennt (uebernahme / insolvenz / sonstige).' : kand.form === 'korb' ? 'Placebo = 200 Zufallsbuecher derselben Zielzahl aus denselben zulaessigen Werten (Nr. 100); Startphasen = 63 Starttage; Reihenenden getrennt nach Grund. Die Gegenproben "Signal verschoben" und "alle gegen lebend" sind fuer diese Form nicht abbildbar (die Zielfunktion lehnt veraltete Kurse ab; Reihenenden buchen nach der Hauptregel).' : 'Zahlen der Messmaschine (Bestaetigungshaelfte ihres Schnitts B5); Placebo und Kontrolle A7 der Maschine im Protokoll.'));
   if (kand.form === 'tag') {
-    /* Nr. 118: Bewertungsmodus, Signaltage als Cluster, Anteil der Reihen mit Signal am Signaltag, Warnungen des Adapters */
+    /* Nr. 118: Bewertungsmodus, Signaltage als Cluster, Anteil der Reihen mit Signal am Signaltag, Versatz der Verschiebung, Warnungen des Adapters */
     var SA = E.signalAnteil, pz = function (x) { return x == null ? '–' : (100 * x).toFixed(0) + ' %'; }, jeTag = function (x) { return x == null ? '–' : x.toFixed(1).replace('.', ','); };
     o.push('');
-    o.push('**Bewertung ' + (E.bewertung || 'topf') + '.** ' + (E.bewertungDetail || '') + (SA && SA.tage > 0 ? ' Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): im Mittel ' + pz(SA.mittel) + ', hoechstens ' + pz(SA.max) + ' (' + SA.tageUeber50 + ' von ' + SA.tage + ' Signaltagen ueber 50 %).' : ''));
+    o.push('**Bewertung ' + (E.bewertung || 'topf') + '.** ' + (E.bewertungDetail || '') + (SA && SA.tage > 0 ? ' Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): im Mittel ' + pz(SA.mittel) + ', hoechstens ' + pz(SA.max) + ' (' + SA.tageUeber50 + ' von ' + SA.tage + ' Signaltagen ueber 50 %).' : '') +
+      ' Verschiebungs-Gegenprobe: Versatz ' + versatz + ' Handelstage' + (kand.versatzTage != null ? ', Grund: ' + (E.versatzGrund || 'siehe REGEL.md, Abschnitt "Versatz"') : ' (Vorgabe)') + '.');
     o.push('Signaltage und Trades (Entdeckung): ' + konf.map(function (k) { var e = k.entdeckung; return k.key + ' ' + e.nTage + ' Signaltage / ' + ganz(e.nTr) + ' Trades (' + jeTag(e.tradesJeTag) + ' je Signaltag)' + (zeit && k.versatz && k.versatz.ueberlappung && k.versatz.ueberlappung.anteil != null ? ', verschobene Fenster mit Ueberschneidung eines Signalfensters ' + pz(k.versatz.ueberlappung.anteil) : ''); }).join('; ') +
       '. Die Aufloesung (se Hansen-Hodrick ueber die Tagesreihe, Lag = Haltedauer) haengt an der Zahl der Signaltage, nicht an der Zahl der Trades' + (zeit ? ' - bei einer marktweiten Regel ist jeder Signaltag ein Cluster, die effektive Zahl ist die Zahl der Ereignisfenster' : '') + '.');
     (E.warnungen || []).forEach(function (w) { o.push('**WARNUNG:** ' + w); });
@@ -268,6 +287,7 @@ function laufe(kennung, opt) {
   log('Entdeckung bis ' + (kand.form === 'minute' ? 'vor ' + K.MINUTE.sperreAb : K.ENTDECKUNG_BIS) + ' ueber ' + kand.konfigurationen.length + ' Konfigurationen (Form ' + kand.form + ', Adapter ' + kand.form + ', Quelle ' + (kand.daten || (kand.form === 'tag' ? 'panel' : kand.form === 'korb' ? 'panel' : '60m-archiv')) + modusText(kand, null) + ')');
   var E = messenImKind(kennung, 'entdeckung', path.join(aus, 'ergebnis-entdeckung.json'), log);
   if (E.konfigurationen.length !== kand.konfigurationen.length) throw new Error('Adapter lieferte ' + E.konfigurationen.length + ' statt ' + kand.konfigurationen.length + ' Konfigurationen');
+  if (kand.form === 'tag') { E.versatzGrund = L.versatzGrund || null; if (kand.versatzTage != null) log('Verschiebungs-Gegenprobe: Versatz ' + E.versatzTage + ' Handelstage statt Vorgabe ' + K.VERSATZ_TAGE + ', Grund (REGEL.md "Versatz"): ' + E.versatzGrund); }
   log('Entdeckung fertig: ' + JSON.stringify(E.zaehler || {}).slice(0, 400) + (E.verstoesse != null ? ' | Verstoesse ' + E.verstoesse : ''));
   if (E.signalAnteil && E.signalAnteil.tage > 0) log('Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): Mittel ' + (100 * E.signalAnteil.mittel).toFixed(1) + ' %, max ' + (100 * E.signalAnteil.max).toFixed(1) + ' %, ' + E.signalAnteil.tageUeber50 + ' von ' + E.signalAnteil.tage + ' Signaltagen ueber 50 %' + modusText(kand, E));
   (E.warnungen || []).forEach(function (w) { log('WARNUNG: ' + w); });

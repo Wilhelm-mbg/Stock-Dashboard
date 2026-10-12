@@ -38,7 +38,9 @@ misst genau diese Liste und trägt ihre Länge ins Register ein), `autor`, `datu
 Konfiguration je Form:
 - **tag:** `key`, `richtung` (`long` | `short`), `haltedauer` (Handelstage, 1–60; Ausstieg zur Eröffnung des ersten Handelstags
   ≥ Einstiegstag + Haltedauer, wie Trendkanal §5). Optional `klassen` (Umsatzklassen 0–3, Vorgabe alle). Auf Kandidatenebene optional
-  `bewertung` (`topf` | `zeit`, Vorgabe `topf`; jeder andere Wert macht den Kandidaten ungültig — Absatz „Bewertung" in §3).
+  `bewertung` (`topf` | `zeit`, Vorgabe `topf`; jeder andere Wert macht den Kandidaten ungültig — Absatz „Bewertung" in §3) und optional
+  `versatzTage` (ganze Zahl 5–60, Vorgabe 20: Handelstage der Verschiebungs-Gegenprobe; gesetzt nur mit Begründung in `REGEL.md` unter einer
+  Überschrift „Versatz", sonst ungültig — §5 Gegenproben).
 - **korb:** `key`, optional `anzahl` (Zielzahl; sonst entscheidet die Zielfunktion), `korb` (Zahl der umsatzstärksten Werte als
   Universum, Vorgabe: alle zulässigen). Fenster, Takt (63 Starttage), Kosten (20 Bp je Seite) und Regel K setzt der Adapter.
 - **minute:** `key`, optional `params` (eine Parametervariante der Messmaschine). Zeitrahmen, Haltedauer, Richtung, Universum
@@ -128,9 +130,13 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   Abgänge (Übernahme, Insolvenz, sonstige) getrennt gezählt. **Im Modus `zeit`** (§3) entfällt das Placebo „anderer Wert gleicher Klasse"
   — es träfe dieselbe Zelle, also denselben Markttag — und steht im Protokoll als „entfällt (zeit)", nicht stillschweigend weg; Placebo ist
   dort das verschobene Signal (wirkt es ebenso, bleibt es Messgerät-Fehler). Das Protokoll nennt je Konfiguration den **Anteil der
-  verschobenen Fenster, die sich mit einem Signalfenster derselben Reihe überschneiden**: eine Regel mit Periode nahe 20 Handelstagen
-  (Monatswende: +20 landet um das nächste Monatsende) trifft verschoben ihr eigenes nächstes Fenster — dann sagt die Verschiebung nichts
-  gegen die Regel, und der PM liest sie entsprechend.
+  verschobenen Fenster, die sich mit einem Signalfenster derselben Reihe überschneiden**: eine Regel mit Periode nahe dem Versatz
+  (Monatswende: +20 landet um das nächste Monatsende) trifft verschoben ihr eigenes nächstes Fenster, und ein richtiges Messgerät würde als
+  „verdächtig" gelesen. Deshalb darf die Verschiebung bei Kalenderregeln **nicht auf das nächste Ereignisfenster fallen**: `kandidat.json`
+  `versatzTage` (5–60, Vorgabe 20) setzt den Versatz; das Feld verlangt eine Begründung in `REGEL.md` unter einer Überschrift „Versatz"
+  (`--pruefen` prüft Bereich und Abschnitt), der Adapter benutzt den Wert für die Gegenprobe, und das Protokoll weist ihn mit Grund aus
+  („Versatz 10 Handelstage, Grund: …"). Vor dem Setzen die Terminliste gegen den Handelskalender prüfen (Vor-FOMC: +20 trifft 2016–2022 kein
+  anderes Fenster, Abstände 27–63 Handelstage — Vorgabe bleibt).
 - **Register:** `pruefstrasse/register.json` zählt jede je gemessene Konfiguration; jedes ERGEBNIS nennt die Gesamtzahl und die
   erwarteten Zufallstreffer (2,28 % je Konfiguration bei t ≥ 2 einseitig).
 - **Ausgabe:** `erledigt/<kennung>/` mit `LAUF.log`, `KANDIDATEN.json`, `ergebnis.json`, `ERGEBNIS.md`, `belegstand-eintrag.md`;
