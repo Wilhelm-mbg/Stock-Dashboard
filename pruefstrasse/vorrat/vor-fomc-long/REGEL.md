@@ -1,4 +1,4 @@
-# Vor-FOMC-Drift, long (Bau-Agent Nr. 117, PM-Auftrag, 12.10.2026)
+# Vor-FOMC-Drift, long (Bau-Agent Nr. 117, PM-Auftrag, 12.10.2026 — im `vorrat/` bis Auftrag Nr. 118)
 
 Der S&P 500 stieg 1994–2011 in den **24 Stunden vor planmäßigen FOMC-Bekanntgaben** im Mittel um **49 Basispunkte** (14:00 des Vortags bis
 14:00 des Bekanntgabetags), unabhängig von der Richtung des Zinsentscheids — Lucca & Moench (2015), „pre-FOMC announcement drift". Nach
@@ -34,6 +34,7 @@ Vortag der Bekanntgabe (unten); 2016–2026 liegt keine Sitzung neben einem Feie
 | Haltedauer | 1 Handelstag (H1 ≈ Quelle), 2 (H2 mit Bekanntgabe) | Lucca & Moench (2015): 24-Stunden-Fenster |
 | Klassen | 1–3 (≥ 50 Mio $ Tagesumsatz) | Auftragsregel 2 des Ideen-Agenten |
 | Richtung | long | Quelle (+49 Bp) |
+| Bewertung | `zeit` (Topf aller Tage derselben Reihe, Cluster je Kalendertag) | PM-Entscheid 12.10.2026, Auftrag Nr. 118 — Abschnitt „Bewertung" |
 
 ## Beleg
 
@@ -58,37 +59,52 @@ Vortag der Bekanntgabe (unten); 2016–2026 liegt keine Sitzung neben einem Feie
 
 ## Wogegen geprüft (Regel 1)
 
-- `pruefstrasse/register.json` (nur Donchian-20), `warteschlange/` (Donchian-20, HVRP), `erledigt/` (Donchian-20), `ideen-verworfen.md`
-  (Trendfaktor, Kurzfrist-Momentum-Umschlag): keine FOMC- oder Terminregel.
+- `pruefstrasse/register.json` (nur Donchian-20), `warteschlange/` (Donchian-20, HVRP; später am Tag `grossanstieg-ohne-umsatz` — Kursregel),
+  `erledigt/` (Donchian-20), `ideen-verworfen.md` (Trendfaktor, Kurzfrist-Momentum-Umschlag): keine FOMC- oder Terminregel.
 - `wiki/belegstand.md`: kein Eintrag zu FOMC, Zinsentscheiden oder Makro-Terminen (gesucht: fomc, Kalender, Saison). Nächstverwandt sind die
   Übernacht-Familie (vier NEIN, gedeckelt — aber jede Nacht, nicht der FOMC-Vortag) und Nachrichten-Stimmung (GDELT-Ton, nicht belegt).
-  `wiki/aufloesungswand.md`: Übernacht-Klasse „~735–872 nötige Tage" — hier sind es 54 Termine; die Wand steht (unten).
+  `wiki/aufloesungswand.md`: Übernacht-Klasse „~735–872 nötige Tage" — hier sind es 55 Termine; die Wand steht (unten).
 
-## Machbarkeit vor der Auflösungswand (Regel 3) — und was das Messgerät hier misst
+## Machbarkeit vor der Auflösungswand (Regel 3)
 
 - **Signaltage / Trades (gezählt 12.10.2026, Panel 2016–2022, nur Zählung, keine Renditen; Skript `kalender-zaehlung.js` im Kratzordner des
   PM-Chats):** 55 planmäßige Bekanntgaben in der Entdeckung, **54 Signaltage** (27.01.2016 ohne Umsatzklasse am Panelanfang), **43.949 Signale,
   814 je Tag, 1.648 Reihen**; **alle 43.949 Einstiege exakt am Vortag der Bekanntgabe**, 5 ohne Folgezeile. Erster Signaltag 14.03.2016,
-  letzter 12.12.2022.
-- **Messgerät (FORM.md §3): Überschuss gegen den Topf derselben Zelle.** Das Signal feuert am Tag A−2 für **praktisch jede zulässige Reihe der
-  Klasse** — der Topf (gleicher Einstiegstag, gleiche Dauer, Klasse, lebend) ist dieselbe Menge, der Überschuss `u = r − Topf` ist **per Bau
-  ≈ 0**, `uNetto = −Hürde`, das Urteil wird **„nein"** sein — gleichgültig, ob die Drift existiert (so prüft `pruefstrasse/test.js` den Adapter:
-  „Markttag-Effekt steckt im Topf"). **Die Tag-Form misst Querschnittsregeln, nicht Marktzeit-Regeln.** Die Drift selbst steht nur in der
-  Rohreihe (`entdeckung.roh`), die der Läufer ausweist, aber nicht beurteilt. Dem PM in der Übergabe gemeldet; ein Kalender-Kandidat braucht
-  eine Bewertung gegen Nicht-Termin-Tage oder gegen `markt` (Läufer-Änderung, nicht dieser Ordner).
-- **Auflösung der Rohreihe (nachrichtlich):** 54 Termine = 54 Cluster (der Querschnitt bewegt sich am FOMC-Vortag gemeinsam). Streuung einer
-  Tagesrendite liquider Aktien 2016–2022 grob 1,3–1,6 Pp → se ≈ 0,18–0,22 Pp → **MDE₈₀ ≈ 0,5–0,6 Pp je Termin (H1)**, H2 ≈ 0,7–0,85.
-  **Behauptung:** +0,49 Pp (1994–2011), nach 2015 ≈ 0. **Kriterium MDE₈₀ ≤ 2 × Behauptung:** 0,6 ≤ 0,98 ✓ — die Rohreihe könnte die alte
-  Größe ausschließen (erwartet) oder bestätigen; das Topf-Urteil kann beides nicht.
-- Tor 1 (4 × Bestätigungs-MDE) ist für den Überschuss gegenstandslos (≈ 0), für die Rohreihe unerreichbar (≈ 2 Pp).
+  letzter 12.12.2022. Cooldown greift nicht (ein Signal je Sitzung).
+- Die Auflösung hängt an der **Bewertung** (nächster Abschnitt): mit dem Tagestopf der Form `tag` ist sie null, mit der Zeitbewertung
+  MDE₈₀ ≈ 0,4–0,55 Pp je Termin (H1) gegen eine Behauptung von +0,49 Pp — Kriterium MDE₈₀ ≤ 2 × Behauptung erfüllt.
+
+## Bewertung (`bewertung: "zeit"`, Auftrag Nr. 118) — warum der Tagestopf hier null ergibt
+
+Der Tag-Adapter bewertet jeden Trade gegen den **Topf derselben Zelle**: alle zulässigen Reihen derselben Umsatzklasse mit demselben
+Einstiegstag, derselben Dauer und demselben Lebend-Status (FORM.md §3). Die FOMC-Regel signalisiert am Tag A−2 **alle** Reihen der Klasse —
+die Signalmenge **ist** der Topf. Der Überschuss `u = r − Topf` ist dann exakt null (bis auf Reihen ohne Zeile am Signaltag, Cooldown und
+Maßnahmenfenster), gleichgültig, ob die Drift existiert; `uNetto = −Hürde`, keine Streuung, der Läufer spräche „nein" und trüge zwei
+Registerzeilen ein, die nichts über die Drift sagen. So prüft `pruefstrasse/test.js` den Adapter („Markttag-Effekt steckt im Topf"). Die
+Form `tag` misst *welche Aktie*, nicht *welcher Tag*.
+
+**Zeitbewertung (Nr. 118):** Überschuss gegen den **Topf aller Tage derselben Reihe** — die mittlere H-Tage-Rendite der Reihe über alle ihre
+Einstiegstage (der FOMC-Vortag gegen den eigenen Durchschnittstag, wie Lucca & Moench den Vortag gegen alle übrigen Tage stellen) —, **Cluster
+je Kalendertag** (ein Signaltag = eine Sitzung = ein Cluster; Hansen-Hodrick über die Tagesreihe wie bisher). Der Topf aller Tage enthält den
+Fenstertag selbst (1 von ≈ 31 Handelstagen je Sitzungsintervall): Verdünnung ≈ 3 %, vernachlässigbar.
+
+**Auflösung, vorgerechnet.** Cluster 2016–2022: **55 planmäßige Bekanntgaben** (56 Sitzungen abzüglich der abgesagten vom 17./18.03.2020;
+54 mit Signal und Umsatzklasse). σ_Fenster = Streuung des Cluster-Mittels (gleichgewichtete H-Tage-Rendite der ≈ 814 liquiden Reihen abzüglich
+Topf) über die Termine; der Querschnitt bewegt sich am FOMC-Vortag gemeinsam und bringt keine Unabhängigkeit. Tagesstreuung des
+gleichgewichteten liquiden US-Markts 2016–2022 ≈ 1,0 Pp (ohne 2020) bis 1,4 Pp (mit 2020) → H1: σ ≈ 1,0–1,4 Pp → se = σ/√55 ≈ 0,13–0,19 Pp →
+**MDE₈₀ = 2,8016 × se ≈ 0,38–0,53 Pp je Termin (H1)**; H2: σ ≈ 1,4–2,0 (× √2) → **MDE₈₀ ≈ 0,53–0,76 Pp**. Behauptung +0,49 Pp (1994–2011):
+**MDE₈₀ ≤ 2 × Behauptung erfüllt** (0,53 ≤ 0,98), die alte Größe läge etwa an der MDE₈₀ — ihre Bestätigung bei 80 % Macht ist grenzwertig,
+ihr Ausschluss (obere Grenze unter 0,49), wenn die Drift wie bei Kurov et al. fehlt, möglich. Tor 1 (4 × projizierte Bestätigungs-MDE;
+Bestätigung 2023–2026 ≈ 29 Termine → MDE_B ≈ 2 × se × √(1735/886) ≈ 0,36–0,53 → Tor 1 ≈ 1,5–2,1 Pp) bleibt unerreichbar.
 
 ## Erwartung (vorab)
 
-Richtung positiv (behauptet). **Roh** in liquiden Werten 2016–2022, H1 (Eröffnung A−1 bis Eröffnung A): **0 bis +0,3 Pp je Termin** — Kurov et
-al. sprechen für ≈ 0, die NY Fed für ~+0,4 an Pressekonferenz-Tagen (2016–2018 jede zweite Sitzung, ab 2019 jede); H2 enthält die Bekanntgabe
-und ist unsicherer. **Überschuss gegen den Topf:** ≈ 0 brutto, netto −Hürde — erwartetes Urteil des Läufers **„nein"**, das nur „kein
-Querschnittseffekt" bedeutet. Placebo (anderer Wert, gleicher Tag) sieht denselben Tag: ≈ 0. Verschobenes Signal (+20 Handelstage) landet
-mitten im Sitzungsintervall: ebenfalls ≈ 0.
+Richtung positiv (behauptet). Überschuss (Zeitbewertung) in liquiden Werten 2016–2022, H1 (Eröffnung A−1 bis Eröffnung A): **0 bis +0,3 Pp
+je Termin brutto** — Kurov et al. sprechen für ≈ 0, die NY Fed für ~+0,4 an Pressekonferenz-Tagen (2016–2018 jede zweite Sitzung, ab 2019
+jede); H2 enthält die Bekanntgabe und ist unsicherer. Erwartetes Urteil: **„nicht entscheidbar"** (erwartete Größe unter der MDE₈₀); ein
+Ausschluss der Lucca-Moench-Größe ist möglich. Placebo (anderer Wert, gleicher Tag) sieht denselben Tag und zeigt in der Zeitbewertung
+denselben Überschuss — bei einer Marktzeit-Regel kein Verstoß, sondern die Regel selbst; Nr. 118 muss das Placebo als versetzten Kalendertag
+lesen. Verschobenes Signal (+20 Handelstage) landet mitten im Sitzungsintervall (≈ 31 Handelstage): dort ≈ 0 erwartet, die Gegenprobe trägt.
 
 ## Abweichungen von den Quellen (begründet)
 
@@ -98,3 +114,5 @@ mitten im Sitzungsintervall: ebenfalls ≈ 0.
 2. Signal am Tag A−2 über den **Werktag** statt den **Handelstag**: ein Feiertag auf A−1 verschöbe den Einstieg; 2016–2026 kommt das nicht vor.
 3. Universum: liquide US-Aktien des Panels (Klassen 1–3), gleichgewichtet je Reihe, statt S&P 500 (wertgewichtet); Zeitraum 2016–2022.
 4. Die Liste enthält nur planmäßige Sitzungen; die Notfallsitzungen vom März 2020 (02.03., 15.03.) fehlen, wie bei Lucca & Moench.
+5. Bewertung gegen den Topf aller Tage derselben Reihe statt gegen den Tagestopf der Form `tag` (oben begründet); bis Auftrag Nr. 118 liegt der
+   Kandidat im `pruefstrasse/vorrat/`, der Läufer liest ihn nicht.
