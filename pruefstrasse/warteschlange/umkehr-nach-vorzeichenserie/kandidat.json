@@ -1,0 +1,14 @@
+{
+  "kennung": "umkehr-nach-vorzeichenserie",
+  "form": "tag",
+  "titel": "Umkehr nach fünf und mehr Handelstagen ohne Kursanstieg in Folge, long – Gambler's-Fallacy-Umkehr nach Kudryavtsev",
+  "quelle": "Kudryavtsev, 'The Effect of Preceding Sequences on Stock Returns', European Financial and Accounting Journal 12(4) (2017) 83-96, doi 10.18267/j.efaj.202, Abschnitt 5.1 (Folgenbildung, Nulltage), Tabelle 1 Panel B (AR nach Folgen von 3/4/5/6/7+ Minustagen), Tabelle 2 Panel B (nach Börsenwert), Tabelle 5 (Regression, NEG5 +0,277 t 2,84); S&P-500-Werte (Stand 31.12.2016) 1990-2016, Yahoo; abgerufen 2026-10-12, URLs in REGEL.md",
+  "erwartung": { "groesse": "Quelle (Folge von 5 Minustagen, Marktmodell, Schluss zu Schluss am Folgetag): +0,343 Pp (Tabelle 1, p < 5 %), +0,277 Pp nach Kontrollen (Tabelle 5), große Werte +0,288 Pp (Tabelle 2) brutto; ab Folgeeröffnung und gegen den Topf eigene Erwartung H1 0 bis +0,15 Pp brutto (Übernachtanteil fehlt, Zahlen der Quelle mit inneren Widersprüchen, siehe REGEL.md)", "richtung": "positiv" },
+  "daten": "panel",
+  "konfigurationen": [
+    { "key": "H1", "richtung": "long", "haltedauer": 1, "klassen": [1, 2, 3] }
+  ],
+  "params": { "folgeMin": 5 },
+  "autor": "Ideen-Agent (geplante Routine)",
+  "datum": "2026-10-13"
+}

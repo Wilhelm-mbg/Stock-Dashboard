@@ -58,7 +58,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | MDE80 | bei N = 50.000: H1 **0,15 Pp**, H2 0,21, H5 0,33 (Faustregel). Fein genug für jede Größe ab der Hürde. |
 | Verwandt, nicht gleich | Kurzfrist-Umkehr 5 Tage (Querschnitt 15.09., Renditerang, t 1,19); Dip-Familie der Minutenstudie (Nein). Hier: Vorzeichenfolge als Ereignis, keine Rangfolge — Regel 1 ausdrücklich prüfen. |
 | Urteil | **einstellbar, sobald der Volltext die Größe und n liefert** (Auflösung reicht); ohne Zahl nicht einstellen. Der Ideen-Agent hat WebFetch — der Volltext ist frei. |
-| Stand | |
+| Stand | eingestellt als `umkehr-nach-vorzeichenserie` (Ideen-Agent 13.10.2026): Volltext gelesen, n = 5 (Tabelle 1 Panel B +0,343 %, Tabelle 5 NEG5 +0,277, t 2,84), H1, Klassen 1–3; MDE80 ≈ 0,26–0,40 Pp; Statistik der Quelle in sich widersprüchlich (in REGEL.md). |
 
 ## 3. Umkehr nach Übernacht-Sprung (Eröffnungslücke)
 
