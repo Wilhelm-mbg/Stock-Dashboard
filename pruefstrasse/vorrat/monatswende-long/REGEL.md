@@ -1,4 +1,4 @@
-# Monatswende (Turn of the Month), long (Bau-Agent Nr. 117, PM-Auftrag, 12.10.2026)
+# Monatswende (Turn of the Month), long (Bau-Agent Nr. 117, PM-Auftrag, 12.10.2026 — im `vorrat/` bis Auftrag Nr. 118)
 
 Aktienkurse steigen im Mittel vom **letzten Handelstag eines Monats (−1) bis zum dritten Handelstag des Folgemonats (+3)** stärker als an
 den übrigen Tagen; McConnell & Xu (2008) zeigen für CRSP 1926–2005, dass die gesamte Überrendite des US-Markts über den risikolosen
@@ -35,6 +35,7 @@ mit Einstieg exakt am letzten Handelstag, 2 verschoben, 3 Monatsenden ohne Signa
 | Haltedauer | 4 Handelstage (H4 = Fenster der Quelle), 3 (H3) | McConnell & Xu (2008): vier Tage −1…+3 |
 | Klassen | 1–3 (≥ 50 Mio $ Tagesumsatz) | Auftragsregel 2 des Ideen-Agenten (Hürde Klasse 0) |
 | Richtung | long | Quelle (positive Überrendite im Fenster) |
+| Bewertung | `zeit` (Topf aller Tage derselben Reihe, Cluster je Kalendertag) | PM-Entscheid 12.10.2026, Auftrag Nr. 118 — Abschnitt „Bewertung" |
 
 `params` ist leer: die Regel braucht nur `sicht.datum(i)` (`brauchtDatum: true`, Nr. 117).
 
@@ -60,41 +61,56 @@ mit Einstieg exakt am letzten Handelstag, 2 verschoben, 3 Monatsenden ohne Signa
 
 ## Wogegen geprüft (Regel 1)
 
-- `pruefstrasse/register.json`: nur `donchian20-ausbruch-long` (H5/H10/H20 nein). `warteschlange/`: `donchian20-ausbruch-long`, `hochvolumen-praemie`.
-  `erledigt/`: `donchian20-ausbruch-long`. `ideen-verworfen.md`: Trendfaktor, Kurzfrist-Momentum-Umschlag — keine Kalenderregel.
+- `pruefstrasse/register.json`: nur `donchian20-ausbruch-long` (H5/H10/H20 nein). `warteschlange/` (Stand 16:10): `donchian20-ausbruch-long`,
+  `hochvolumen-praemie` (später am Tag kam `grossanstieg-ohne-umsatz` hinzu — Kursregel, keine Kalenderregel). `erledigt/`: `donchian20-ausbruch-long`.
+  `ideen-verworfen.md`: Trendfaktor, Kurzfrist-Momentum-Umschlag — keine Kalenderregel.
 - `wiki/belegstand.md`: **„Monatswende | war Marktzeitgeschäft, nicht Saisonalität | Gedächtnisprotokoll"** (Tabelle der Verworfenen) und in den
   Größen-Ausschlüssen (02.09.2026) „monatswende, monatsende: **ungemessen**, nicht ‚vielversprechend'" (Punkt über der Hürde, Band bis unter
   null). `wiki/aufloesungswand.md`: „Monatswende: hätte 79.500 Tage gebraucht → strukturell unmöglich" — gerechnet für eine **einzelne Index-
   Zeitreihe am CFD-Gefäß**. Nichts davon ist eine Messung in der Tag-Form auf dem Panel; die Regel hier (Fenster, Signaltag, Haltedauer) ist
   die der Quelle und wurde so noch nicht gemessen. Verwandt, aber verschieden: Monats-Momentum (H = 63), Querschnitt-Prüfstand (Rangfunktionen).
 
-## Machbarkeit vor der Auflösungswand (Regel 3) — und was das Messgerät hier misst
+## Machbarkeit vor der Auflösungswand (Regel 3)
 
 - **Signaltage / Trades (gezählt 12.10.2026, Panel 2016–2022, nur Zählung, keine Renditen; Skript `kalender-zaehlung.js` im Kratzordner des
   PM-Chats):** 84 Monatsenden, **79 Signaltage** (Januar/Februar 2016 ohne Umsatzklasse; Mai 2016, Nov 2019, Mai 2022 Feiertag am vorletzten
   Werktag), **64.400 Signale, 815 je Tag, 1.660 Reihen**; 62.566 Einstiege exakt am letzten Handelstag, 1.834 um einen Tag verschoben
-  (02.04.2018, 01.06.2021), 17 ohne Folgezeile. Erster Signaltag 30.03.2016, letzter 29.12.2022.
-- **Messgerät (FORM.md §3): Überschuss gegen den Topf derselben Zelle** (Einstiegstag, Dauer, Klasse, lebend). Das Signal feuert an einem
-  Monatsende für **praktisch jede zulässige Reihe der Klasse** — der Topf ist dieselbe Menge. Der Überschuss `u = r − Topf` ist deshalb **per
-  Bau ≈ 0** (bis auf Reihen mit Lücke am Signaltag und Cooldown), unabhängig davon, ob der Kalendereffekt existiert; `uNetto = −Hürde`, die
-  Tagesreihe hat fast keine Streuung, das Urteil wird **„nein"** sein. So prüft `pruefstrasse/test.js` den Adapter ausdrücklich („Markttag-
-  Effekt steckt im Topf: roh positiv, Überschuss gegen den Topf ~ null"). **Die Tag-Form misst Querschnittsregeln (welche Aktie), nicht
-  Marktzeit-Regeln (welcher Tag).** Den Kalendereffekt selbst trägt nur die Rohreihe (`entdeckung.roh`: mittlere Rohrendite je Signaltag), die
-  der Läufer ausweist, aber nicht beurteilt. Diese Grenze ist dem PM in der Übergabe gemeldet; ein Kalender-Kandidat braucht eine Bewertung
-  gegen die Nicht-Fenster-Tage oder gegen `markt` — das wäre eine Änderung am Läufer, nicht an diesem Ordner.
-- **Auflösung der Rohreihe (nachrichtlich):** 79 Signaltage sind 79 Cluster — die 815 Reihen je Tag bewegen sich gemeinsam, der Querschnitt
-  liefert für einen Markteffekt keine zusätzliche Unabhängigkeit. Streuung einer 4-Tage-Rendite liquider Aktien (2016–2022, mit 2020) grob
-  2,5–3 Pp → se ≈ 0,3 Pp → **MDE₈₀ ≈ 0,8–0,95 Pp je Fenster (H4)**, H3 etwas kleiner. **Behauptung:** +0,56 (wertgewichtet) bis +0,96 Pp
-  (gleichgewichtet). **Kriterium MDE₈₀ ≤ 2 × Behauptung:** 0,95 ≤ 1,12 ✓ — die Rohreihe könnte die Quellgröße bestätigen oder ausschließen; das
-  Topf-Urteil kann es nicht.
-- Tor 1 (4 × Bestätigungs-MDE) ist für den Überschuss gegenstandslos (≈ 0), für die Rohreihe unerreichbar (≈ 3 Pp).
+  (02.04.2018, 01.06.2021), 17 ohne Folgezeile. Erster Signaltag 30.03.2016, letzter 29.12.2022. Cooldown greift nicht (ein Signal je Monat).
+- Die Auflösung hängt an der **Bewertung** (nächster Abschnitt): mit dem Tagestopf der Form `tag` ist sie null, mit der Zeitbewertung
+  MDE₈₀ ≈ 0,6–0,9 Pp je Fenster gegen eine Behauptung von +0,56 bis +0,96 Pp — Kriterium MDE₈₀ ≤ 2 × Behauptung erfüllt.
+
+## Bewertung (`bewertung: "zeit"`, Auftrag Nr. 118) — warum der Tagestopf hier null ergibt
+
+Der Tag-Adapter bewertet jeden Trade gegen den **Topf derselben Zelle**: alle zulässigen Reihen derselben Umsatzklasse mit demselben
+Einstiegstag, derselben Dauer und demselben Lebend-Status (FORM.md §3). Eine marktweite Kalenderregel signalisiert am Tag −2 **alle** Reihen
+der Klasse — die Signalmenge **ist** der Topf. Der Überschuss `u = r − Topf` ist dann exakt null (bis auf Reihen ohne Zeile am Signaltag,
+Cooldown und Maßnahmenfenster), gleichgültig, ob der Kalendereffekt existiert; `uNetto = −Hürde`, die Tagesreihe hat keine Streuung, der Läufer
+spräche „nein" und trüge zwei Registerzeilen ein, die nichts über die Monatswende sagen. Genau so prüft `pruefstrasse/test.js` den Adapter
+(„Markttag-Effekt steckt im Topf: roh positiv, Überschuss gegen den Topf ~ null"). Die Form `tag` misst *welche Aktie*, nicht *welcher Tag*.
+
+**Zeitbewertung (Nr. 118):** Überschuss gegen den **Topf aller Tage derselben Reihe** — die mittlere H-Tage-Rendite der Reihe über alle ihre
+Einstiegstage (das Fenster gegen den eigenen Durchschnittstag, wie McConnell & Xu Fenster gegen Nicht-Fenster stellen) —, **Cluster je
+Kalendertag** (ein Signaltag = ein Monatsende = ein Cluster; Hansen-Hodrick über die Tagesreihe wie bisher). Der Topf aller Tage enthält
+die Fenstertage selbst (4 von ≈ 21 Handelstagen je Monat), der gemessene Überschuss ist also ≈ (1 − 4/21) ≈ 0,81 × (Fenster − Nicht-Fenster).
+
+**Auflösung, vorgerechnet.** Cluster 2016–2022: **84 Monatswenden** (79 mit Signal und Umsatzklasse). σ_Fenster = Streuung des Cluster-Mittels
+(gleichgewichtete H-Tage-Rendite der ≈ 815 liquiden Reihen abzüglich Topf) über die Monatsenden — die ≈ 815 Reihen bewegen sich an einem
+Markttag gemeinsam, der Querschnitt bringt keine Unabhängigkeit. Tagesstreuung des gleichgewichteten liquiden US-Markts 2016–2022 ≈ 1,0 Pp
+(ohne 2020) bis 1,4 Pp (mit 2020) → 4-Tage-Fenster σ ≈ 2,0–2,8 Pp (× √4) → se = σ/√84 ≈ 0,22–0,31 Pp → **MDE₈₀ = 2,8016 × se ≈ 0,61–0,86 Pp
+je Fenster (H4)**; H3: σ ≈ 1,7–2,4 → **MDE₈₀ ≈ 0,53–0,74 Pp**. Behauptung +0,56 (wertgewichtet) bis +0,96 Pp (gleichgewichtet): **MDE₈₀ ≤
+2 × Behauptung erfüllt** (0,86 ≤ 1,12); die gleichgewichtete Quellgröße läge über der MDE₈₀, die wertgewichtete an ihr. Tor 1 (4 × projizierte
+Bestätigungs-MDE; Bestätigung 2023–2026 ≈ 44 Monatsenden → MDE_B ≈ 2 × se × √(1735/886) ≈ 0,6–0,9 Pp → Tor 1 ≈ 2,5–3,5 Pp) bleibt
+unerreichbar — ein „belegt" ist ausgeschlossen, ein Größen-Ausschluss oder ein „Kandidat" (netto > 0, t ≥ 2) ohne Tor 1 möglich.
 
 ## Erwartung (vorab)
 
-Richtung positiv. **Roh** in liquiden Werten 2016–2022: +0,2 bis +0,5 Pp je Fenster (H4), unter der Quelle (Publikationsabnutzung,
-wertgewichtete Großwerte). **Überschuss gegen den Topf:** ≈ 0 brutto, netto −Hürde — erwartetes Urteil des Läufers **„nein"**, das aber nur
-„kein Querschnittseffekt" bedeutet und über den Kalendereffekt nichts sagt. Placebo (anderer Wert, gleicher Tag) sieht denselben Markttag:
-Placebo-Überschuss ebenfalls ≈ 0, kein Verstoß. Verschobenes Signal (+20 Handelstage) trifft den Monatsanfang +20 ≈ Monatsende −2: auch dort ≈ 0.
+Richtung positiv. Überschuss (Zeitbewertung) in liquiden Werten 2016–2022: **+0,2 bis +0,5 Pp je Fenster (H4) brutto**, unter der Quelle
+(Publikationsabnutzung, wertgewichtete Großwerte), netto um die Hürde (0,045–0,085 Pp) kleiner; H3 etwas weniger. Erwartetes Urteil:
+**„nicht entscheidbar"** (erwartete Größe unter der MDE₈₀ von 0,6–0,9 Pp); ein „nein" in der gleichgewichteten Quellgröße ist möglich.
+Placebo (anderer Wert, gleicher Tag) sieht denselben Markttag und müsste in der Zeitbewertung denselben Überschuss zeigen — das ist bei einer
+Marktzeit-Regel kein Verstoß, sondern die Regel selbst; Nr. 118 muss das Placebo entsprechend lesen (versetzter Kalendertag statt versetzter
+Wert). Verschobenes Signal (+20 Handelstage) landet bei Monatsanfang + 20 ≈ Monatsende − 2: nahe am nächsten Fenster — auch das ist für
+Nr. 118 zu bedenken (Versatz von 10 statt 20 Tagen oder Mitte des Monats).
 
 ## Abweichungen von den Quellen (begründet)
 
@@ -104,3 +120,5 @@ Placebo-Überschuss ebenfalls ≈ 0, kein Verstoß. Verschobenes Signal (+20 Han
 3. Einstieg zur Eröffnung von −1 statt zum Schluss von −2 (die Quelle rechnet Tagesrenditen Schluss-zu-Schluss): die Übernacht-Rendite
    −2 → −1 fehlt; die Gegenprobe „Einstieg einen Tag später" zeigt den Beitrag des Tages −1.
 4. Universum: liquide US-Aktien des Panels (Klassen 1–3) statt CRSP gesamt; Zeitraum 2016–2022 statt 1926–2005.
+5. Bewertung gegen den Topf aller Tage derselben Reihe statt gegen den Tagestopf der Form `tag` (oben begründet); bis Auftrag Nr. 118 liegt der
+   Kandidat im `pruefstrasse/vorrat/`, der Läufer liest ihn nicht.
