@@ -305,9 +305,9 @@
     return {
       antwort: { ueberschrift: 'Was wird gehandelt – und warum', absaetze: absaetze, handelt: handelt },
       strategien: strategien,
-      /* kostenHürde: Schreibweise der Referenzdatei (Fassung 2) - der Schluessel ist das Soll. */
+      /* kostenHuerde: Schreibweise der Referenzdatei (Fassung 2) - der Schluessel ist das Soll. */
       intraday: { an: !!I.enabled, modus: text(I.mode), klartext: text(q.intradayKlartext || null),
-        'kostenHürde': huerde ? z4(huerde.pp) : null,
+        'kostenHuerde': huerde ? z4(huerde.pp) : null,
         edge: { text: edge ? text(edge.text || edge.satz || null) : null, zeit: edge ? isoAus(edge.at || edge.zeit) : null },
         regime: { setup: regime ? text(regime.setup || regime.key || null) : null, begruendung: regime ? text(regime.txt || regime.begruendung || null) : null,
           zeit: regime ? isoAus(regime.at || regime.t) : null, pause: !!pause } },
@@ -337,7 +337,7 @@
         hintergrundRechnerAusfaelle: zahl(gq.hintergrundRechnerAusfaelle) ? gq.hintergrundRechnerAusfaelle : null,
         analyseExportFehler: zahl(gq.analyseExportFehler) ? gq.analyseExportFehler : null,
         /* Schreibweise der Referenzdatei (Fassung 2) - der Schluessel ist das Soll. */
-        'edgeWächterAusfaelle': zahl(gq.edgeWaechterAusfaelle) ? gq.edgeWaechterAusfaelle : null,
+        'edgeWaechterAusfaelle': zahl(gq.edgeWaechterAusfaelle) ? gq.edgeWaechterAusfaelle : null,
         letzterFehler: lf ? fehlerZeile(lf, null) : null, marktOffen: !!gq.marktOffen,
         scanIntervallSollMs: zahl(gq.scanIntervallSollMs) ? gq.scanIntervallSollMs : null,
         scanLueckenMin: Array.isArray(gq.scanLueckenMin) ? gq.scanLueckenMin : [] };

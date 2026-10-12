@@ -2,7 +2,7 @@
   "kennung": "markt-dashboard/lagebild/v1",
   "exportiert": "2026-10-12T14:35:00Z",
   "appVersion": "8.45.1",
-  "hinweis": "Simulation mit virtuellem Kapital, keine Anlageberatung. KUNSTDATEN zum Testen des Reiters - keine echten Werte. Fassung 2 (12.10., nach Zweitleser): Zeiten 2026, Sitzung passt zur Uhrzeit (14:35 UTC = 10:35 New York = haupt), Umlaute wie in der App.",
+  "hinweis": "Simulation mit virtuellem Kapital, keine Anlageberatung. KUNSTDATEN zum Testen des Reiters - keine echten Werte. Fassung 3 (12.10.: Schluessel ohne Umlaute - kostenHuerde, edgeWaechterAusfaelle; sonst wie Fassung 2, nach Zweitleser): Zeiten 2026, Sitzung passt zur Uhrzeit (14:35 UTC = 10:35 New York = haupt), Umlaute wie in der App.",
   "kopf": {
     "gesamtwert": 103250.4,
     "tagPct": 0.42,
@@ -480,7 +480,7 @@
       "an": false,
       "modus": "rsi2seit",
       "klartext": "RSI(2) kauft kurzfristige Übertreibung im Seitwärtskanal, 60-Minuten-Kerzen, Haltedauer 8 Kerzen.",
-      "kostenHürde": 0.1,
+      "kostenHuerde": 0.1,
       "edge": {
         "text": "Edge-Wächter (rsi2seit, letzte 120 Tage, Archiv): 511 Signale ueber 96 Werte - Überschuss +0,057 Pp/8 h - t über Symbole 0,39 -> positiv, aber statistisch dünn - weiter beobachten",
         "zeit": "2026-10-12T09:01:00Z"
@@ -537,7 +537,7 @@
       "killSwitchAusloesungen": 0,
       "hintergrundRechnerAusfaelle": 0,
       "analyseExportFehler": 0,
-      "edgeWächterAusfaelle": 1,
+      "edgeWaechterAusfaelle": 1,
       "letzterFehler": {
         "zeit": "2026-10-12T09:01:00Z",
         "text": "Q is not defined"
