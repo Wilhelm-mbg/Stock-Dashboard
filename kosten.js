@@ -1076,6 +1076,23 @@
   }
   if (typeof window !== 'undefined') window.__alpacaBilanz = alpacaBilanz;
 
+  /** Leseauskunft fuer das Lagebild (Auftrag Nr. 116, 12.10.2026) in der Vertragsform von
+   *  lagebild.json betrieb.kosten = { runden, huerdeGemessen, annahme, stand }: DIESELBEN
+   *  Zahlen wie kostenBilanz() (CFD-Gefaess, ohne Krypto, Median statt Mittel) - runden = n,
+   *  huerdeGemessen = medianPct, annahme = annahmePct (0,10), stand = Tag der juengsten
+   *  gezaehlten Runde. Ohne Runden null; nichts wird geschaetzt. */
+  function kostenAuskunft() {
+    var b = kostenBilanz();
+    if (!b || !(b.n > 0)) return null;
+    var letzte = 0;
+    kostenRunden().forEach(function (r) {
+      if (!r || istAlpaca(r) || r.krypto || r.runde == null || !isFinite(r.runde)) return;
+      if (r.at > letzte) letzte = r.at;
+    });
+    return { runden: b.n, huerdeGemessen: (b.medianPct != null && isFinite(b.medianPct)) ? b.medianPct : null,
+             annahme: b.annahmePct, stand: letzte > 0 ? new Date(letzte).toISOString().slice(0, 10) : null };
+  }
+
   /* ================= Der Messautomat (Wilhelms Auftrag 27.08.2026) =================
    *
    * WARUM ES IHN GIBT. Die Freigabeschwelle verlangt Runden ueber verschiedene
@@ -1347,6 +1364,7 @@
     spannenHistorie: mitFrischemD(spannenHistorie),
     kostenRundeMessen: mitFrischemD(kostenRundeMessen),
     kostenBilanz: mitFrischemD(kostenBilanz),
+    lagebild: mitFrischemD(kostenAuskunft),   /* Lagebild-Export (Nr. 116): { runden, huerdeGemessen, annahme, stand } */
     kostenStreuung: kostenStreuung,   /* rein rechnend, braucht kein frisches D */
     kostenRunden: mitFrischemD(kostenRunden),
     automatNachsehen: mitFrischemD(automatNachsehen),

@@ -25271,7 +25271,9 @@ console.log('106) Pruefstrasse: Form, Sperre, Register, Gegenproben, Kalibrierun
  * lagebild.js ist ein reines Modul: bau(quellen) wirft nie, jeder Schluessel der Referenz
  * (test-daten/lagebild-beispiel.json = Kopie von Markt-Dashboard-Daten/uebergabe/lagebild-beispiel.json)
  * steht im Export, Texte mit Urteil oder Beleg kommen aus denselben Funktionen wie auf der Karte.
- * Kunstdaten, kein Netz, keine echten Schluessel. */
+ * Kunstdaten, kein Netz, keine echten Schluessel. Nr. 116 (12.10.2026): Teil (h) - die leeren Abschnitte
+ * (Markt-Ueberblick, Marktkarte, Klartext, Kosten, Wochenbericht, Positionskurse, Nacht-Logzeile). */
+console.log('107) Lagebild-Export fuer den Reiter "Markt" im Management-Tool (Auftrag Nr. 115/116)');
 (function () {
   var fs = require('fs'), path = require('path'), os = require('os'), vm = require('vm'), cp = require('child_process');
   var L = require('./lagebild.js'), Mst = require('./massstab.js'), Boerse = require('./boerse.js'), Drift = require('./drift.js');
@@ -25327,7 +25329,23 @@ console.log('106) Pruefstrasse: Form, Sperre, Register, Gegenproben, Kalibrierun
     equityNow: function () { return 2031; }, startKapital: 2000, scanMs: 300000, abdeckung: { at: T0, min1: { werte: 1840, handelstage: 700, von: '2023-09-01', bis: '2026-10-09' }, zielTage: 730 },
     gesundheit: { appLaeuftSeit: new Date(T0 - TAG).toISOString(), scansGesamt: 412, scanFehler: 0, letzterScan: new Date(T0 - 60000).toISOString(), kursAbrufeOk: 3980, kursAbrufeFehler: 2, killSwitchAusloesungen: 0, hintergrundRechnerAusfaelle: 0, analyseExportFehler: 0, edgeWaechterAusfaelle: 1, letzterFehler: HEALTH.lastError, marktOffen: true, scanIntervallSollMs: 300000, scanLueckenMin: [] },
     kursVon: function () { return 234.1; }, nameVon: function (s) { return s === 'AAPL' ? 'Apple' : null; }, termine: [{ dt: new Date(T0 + 2 * TAG), name: 'US-Inflationsdaten (CPI)' }],
-    signale: [{ sym: 'NVDA', t: T0 - 60000, grund: 'kein Signal' }], sammler: { laeuft: true, stand: T0 - 120000, menge: 184, sperre: null } };
+    signale: [{ sym: 'NVDA', t: T0 - 60000, grund: 'kein Signal' }], sammler: { laeuft: true, stand: T0 - 120000, menge: 184, sperre: null },
+    /* Nr. 116: der gezeichnete Stand des Reiters Markt (Form von marktui.js standRechnen), die Karte, Kosten, Klartext, Wochenreport */
+    MarktUebersicht: require('./markt/uebersicht.js'),
+    marktStand: { zeit: T0 - 30000, universum: 600, gezeigt: 598,
+      sektoren: { t1: [{ sektor: 'Technologie', pct: 0.9, n: 80, kap: 1e13 }, { sektor: 'Energie', pct: -0.6, n: 20, kap: 2e12 }],
+        w1: [{ sektor: 'Technologie', pct: 2.1, n: 80, kap: 1e13 }, { sektor: 'Versorger', pct: 1.0, n: 12, kap: 5e11 }],
+        m1: [{ sektor: 'Energie', pct: 0.3, n: 20, kap: 2e12 }, { sektor: 'Technologie', pct: 4.8, n: 80, kap: 1e13 }] },
+      hotlists: { gewinner: [{ sym: 'CEG', name: 'Constellation Energy', kurs: 300, pct: 4.2, volumen: 1366666, umsatz: null, relVol: null, relTage: null, hoch52: 310, naehe: null }],
+        verlierer: [{ sym: 'FAST', name: 'Fastenal', kurs: 40, pct: -3.1, volumen: 5500000, umsatz: null }],
+        umsatz: [{ sym: 'NVDA', name: 'Nvidia', kurs: 180, pct: 1.1, volumen: 116666666, umsatz: 21000000000 }],
+        volumen: [{ sym: 'MDB', name: 'MongoDB', kurs: 300, pct: 5.6, volumen: 1266666, umsatz: null, relVol: 3.2, relTage: 50 }],
+        hoch52: [{ sym: 'PYPL', name: 'PayPal', kurs: 80, pct: 2.8, volumen: 7000000, umsatz: null, hoch52: 80.2, naehe: 0.9975 }] },
+      naheAm: 0.995, earnings: [], earningsGrund: '', earningsNaechst: null },
+    Marktwerte: { lagebild: function () { return { zeit: T0 - 20000, sektoren: [{ sektor: 'Technologie', werte: [{ sym: 'NVDA', name: 'Nvidia', pct: 1.1, umsatz: 21000000000, mcap: 4500000000000 }, { sym: 'AAPL', name: 'Apple', pct: 0.8, umsatz: 9800000000, mcap: 3600000000000 }] }] }; } },
+    Kosten: { lagebild: function () { return { runden: 16, huerdeGemessen: 0.10412345, annahme: 0.10, stand: '2026-09-01' }; } },
+    intradayKlartext: 'RSI(2)-Rücklauf · 60-Minuten-Kerzen\nKauft den RSI(2)-Rücklauf (Kunst)',
+    wochenbericht: function () { return '## Wochenreport KW 42 (Kunst)\n- Wochen-Performance: +0,4 %'; } };
 
   /* (a) volle Kunstquellen gegen die Referenz */
   var refPfad = __dirname + '/test-daten/lagebild-beispiel.json';
@@ -25335,8 +25353,8 @@ console.log('106) Pruefstrasse: Form, Sperre, Register, Gegenproben, Kalibrierun
   var voll = L.bau(quellen);
   var schema = L.pruefeSchema(voll, ref);
   ok(schema.fehlend.length === 0, '107a Lagebild.bau mit vollen Kunstquellen: kein Schluessel der Referenz fehlt', schema.fehlend.join(' | '));
-  var fremdErlaubt = ['buecher[0].buchSatz', 'buecher[1].buchSatz', 'buecher[2].buchSatz'];
-  ok(schema.fremd.every(function (k) { return fremdErlaubt.indexOf(k) !== -1; }), '107a nur die angekuendigten Zusaetze (buchSatz je Buch) stehen ueber der Referenz', schema.fremd.filter(function (k) { return fremdErlaubt.indexOf(k) === -1; }).join(' | '));
+  var fremdErlaubt = ['buecher[0].buchSatz', 'buecher[1].buchSatz', 'buecher[2].buchSatz', 'markt.hotlists.volumen'];
+  ok(schema.fremd.every(function (k) { return fremdErlaubt.indexOf(k) !== -1; }), '107a nur die angekuendigten Zusaetze (buchSatz je Buch, hotlists.volumen) stehen ueber der Referenz', schema.fremd.filter(function (k) { return fremdErlaubt.indexOf(k) === -1; }).join(' | '));
   ok(Object.keys(voll).every(function (k) { return voll[k] !== null; }) && voll.kennung === 'markt-dashboard/lagebild/v1' && voll.appVersion === '8.45.1' && voll.exportiert === new Date(T0).toISOString(),
     '107a alle neun Abschnitte gefuellt, Kennung/Version/Stempel wie vereinbart', Object.keys(voll).filter(function (k) { return voll[k] === null; }).join(','));
   ok(voll.buecher.length === 3 && voll.buecher.map(function (b) { return b.name; }).join(',') === 'momentum,drift,intraday' && voll.buecher[0].rueckblick.length === 3 && voll.buecher[1].rueckblick.length === 1 && voll.buecher[0].naechsteUmschichtung === new Date(T0 + 40 * TAG).toISOString().slice(0, 10),
@@ -25436,7 +25454,7 @@ console.log('106) Pruefstrasse: Form, Sperre, Register, Gegenproben, Kalibrierun
   schreib('pruefstrasse/erledigt/kunst-a/ERGEBNIS.md', '# Kunst A\n\n| Konf | R | Tage | Trades | brutto | netto | t |\n|---|---|---|---|---|---|---|\n| H5 | long | 10 | 20 | 0,1 | 0,05 | −3,01 |\n| H10 | long | 10 | 20 | 0,1 | 0,05 | −2,31 |\n');
   schreib('pruefstrasse/warteschlange/kunst-b/kandidat.json', JSON.stringify({ kennung: 'kunst-b', titel: 'Kunst B', form: 'tag', konfigurationen: [{}, {}] }));
   schreib('pruefstrasse/ideen-verworfen.md', '# Verworfen\n\n## 2026-10-11 · `kunst-c` — verworfen (Datenlaenge und Aufloesung)\n\n**Regel:** Erster Satz. Zweiter Satz.\n\n## 2026-10-12 · `kunst-d` — verworfen\n\nDie Groesse liegt unter der Wand. Mehr Text.\n');
-  schreib('wiki/log.md', '- 11.10.2026 — Nachtlauf eingerichtet.\n- 12.10.2026 — Nachtlauf gelaufen, rc 0.\n');
+  schreib('wiki/log.md', '- 11.10.2026 — Nachtlauf eingerichtet.\n- 12.10.2026 — Nachtlauf gelaufen, rc 0.\n- 12.10.2026 (PM, 15:05) — Wilhelm: Reiter Markt.\n');
   var ausDir = path.join(tmp, 'aus');
   var lauf = cp.spawnSync(process.execPath, [__dirname + '/tools/pruefstrasse-lagebild.js', '--repo', tmp, '--aus', ausDir], { encoding: 'utf8' });
   var ps = null;
@@ -25458,6 +25476,55 @@ console.log('106) Pruefstrasse: Form, Sperre, Register, Gegenproben, Kalibrierun
   ok(lauf2.status === 0 && !!ps2 && ps2.warteschlange === null && ps2.urteile === null && ps2.register === null && ps2.ideenAgent === null && ps2.nacht === null,
     '107g ohne Quellen: jeder Abschnitt null, kein Abbruch');
   try { fs.rmSync(tmp, { recursive: true, force: true }); fs.rmSync(leerDir, { recursive: true, force: true }); } catch (e) { /* Temp */ }
+
+  /* (h) Nr. 116: die leeren Abschnitte - Markt-Ueberblick, Marktkarte, Klartext, Kosten, Wochenbericht, Positionskurse */
+  var MU2 = require('./markt/uebersicht.js');
+  var ueb = MU2.lagebild(quellen.marktStand);
+  ok(ueb.sektoren.length === 3 && ueb.sektoren.map(function (s) { return s.name; }).join(',') === 'Technologie,Energie,Versorger' && ueb.sektoren[0].pct1T === 0.9 && ueb.sektoren[0].pct1W === 2.1 && ueb.sektoren[0].pct1M === 4.8 && ueb.sektoren[1].pct1W === null && ueb.sektoren[2].pct1T === null,
+    '107h MarktUebersicht.lagebild: eine Zeile je Sektor in der Reihenfolge der Tagesleiste, fehlende Zeitraeume null');
+  ok(ueb.hotlists.ausbrueche[0].sym === 'PYPL' && ueb.hotlists.luecken.length === 0 && ueb.hotlists.volumen[0].sym === 'MDB' && ueb.hotlists.gewinner[0].umsatz === 300 * 1366666 && ueb.hotlists.umsatz[0].umsatz === 21000000000 && MU2.lagebild(null) === null && MU2.lagebild({ sektoren: {} }) === null,
+    '107h Hotlists: ausbrueche = 52-Wochen-Hoch-Liste, luecken leer, volumen als Zusatz, umsatz = Kurs x Stueck wie hotlists(); ohne Stand null');
+  var m = voll.markt;
+  ok(m.sektoren.length === 3 && m.sektoren[0].name === 'Technologie' && m.sektoren[0].pct1M === 4.8 && m.hotlists.gewinner[0].umsatz === Math.round(300 * 1366666 * 100) / 100 && m.hotlists.ausbrueche[0].sym === 'PYPL' && m.hotlists.luecken.length === 0 && m.hotlists.volumen.length === 1,
+    '107h lagebild.json markt.sektoren/hotlists aus dem gezeichneten Stand des Reiters (marktStand), gerundet');
+  ok(m.marktkarte.length === 1 && m.marktkarte[0].sektor === 'Technologie' && m.marktkarte[0].werte[0].sym === 'NVDA' && m.marktkarte[0].werte[0].mcap === 4500000000000 && m.marktkarte[0].werte[1].umsatz === 9800000000,
+    '107h markt.marktkarte aus Marktwerte.lagebild(): Sektor -> Werte mit pct, umsatz, mcap');
+  ok(voll.regeln.intraday.klartext === quellen.intradayKlartext && voll.betrieb.berichte.wochenbericht === quellen.wochenbericht() && voll.betrieb.berichte.messbericht === '# Messbericht (Kunst)',
+    '107h regeln.intraday.klartext und betrieb.berichte.wochenbericht woertlich aus den Quellen');
+  ok(voll.betrieb.kosten.runden === 16 && voll.betrieb.kosten.huerdeGemessen === 0.1041 && voll.betrieb.kosten.annahme === 0.1 && voll.betrieb.kosten.stand === '2026-09-01',
+    '107h betrieb.kosten in der Vertragsform { runden, huerdeGemessen, annahme, stand } aus Kosten.lagebild()');
+  var ohne = L.bau(Object.assign({}, quellen, { marktStand: null, Marktwerte: null, Kosten: { lagebild: function () { return null; } }, intradayKlartext: null, wochenbericht: function () { throw new Error('kein Dialog'); }, kursVon: function () { return null; } }));
+  ok(ohne.markt.sektoren.length === 0 && ohne.markt.marktkarte.length === 0 && ohne.markt.hotlists.gewinner.length === 0 && 'luecken' in ohne.markt.hotlists && ohne.betrieb.kosten === null && ohne.betrieb.berichte.wochenbericht === null && ohne.regeln.intraday.klartext === null && L.pruefeSchema(ohne, ref).fehlend.length === 0,
+    '107h ohne Markt-Stand, Karte, Kosten, Klartext, Wochenbericht: leere Listen bzw. null, Schema haelt', L.pruefeSchema(ohne, ref).fehlend.join('|'));
+  ok(ohne.buecher[0].positionen[0].kurs === null && ohne.buecher[0].positionen[0].wert === null && ohne.buecher[0].positionen[0].pct === null && ohne.buecher[2].positionen[0].kurs === null && voll.buecher[0].positionen[0].kurs === 234.1 && voll.buecher[0].positionen[0].wert === Math.round(234.1 * 12 * 100) / 100,
+    '107h Positionen: kurs/wert/pct nur mit frischem Kurs (kursVon), sonst null - nie geschaetzt');
+  /* Index-Kacheln: dieselbe Liste wie renderer.js INDICES - Kuerzel und Namen, dieselbe Reihenfolge */
+  var rq = ohneKommentare(fs.readFileSync(__dirname + '/renderer.js', 'utf8'));
+  var indAb = rq.indexOf('var INDICES = ['), indBlock = indAb !== -1 ? rq.slice(indAb, rq.indexOf('];', indAb)) : '';
+  var rIdx = [], mI, reI = /y: '([^']+)',\s*id: '[^']+',\s*name: '([^']+)'/g;
+  while ((mI = reI.exec(indBlock))) rIdx.push(mI[1] + '=' + mI[2]);
+  var lbIdx = /var INDIZES = \[([\s\S]*?)\];/.exec(lbQ), lIdx = [], mL, reL = /\['([^']+)', '([^']+)'\]/g;
+  while (lbIdx && (mL = reL.exec(lbIdx[1]))) lIdx.push(mL[1] + '=' + mL[2]);
+  ok(rIdx.length === 10 && rIdx.join('|') === lIdx.join('|'), '107h markt.indizes: dieselben zehn Kacheln (Kuerzel und Name) wie renderer.js INDICES - nichts wird neu abgerufen', rIdx.join('|') + ' <> ' + lIdx.join('|'));
+  /* Verdrahtung im Renderer per Textmarke */
+  var mkQ = ohneKommentare(fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8')), koQ = ohneKommentare(fs.readFileSync(__dirname + '/kosten.js', 'utf8')), muiQ = ohneKommentare(fs.readFileSync(__dirname + '/marktui.js', 'utf8'));
+  ok(/GEZEICHNET = \{ zeit: Date\.now\(\), werte: werte \};/.test(mkQ) && /lagebild: function \(\) \{\s*if \(!GEZEICHNET/.test(mkQ) && /kursZuletzt: function \(sym\)/.test(mkQ),
+    '107h marktkarteui.js merkt sich die gezeichneten Werte und gibt sie als Marktwerte.lagebild() heraus; kursZuletzt traegt den Stempel');
+  ok(/function kostenAuskunft\(\) \{\s*var b = kostenBilanz\(\);/.test(koQ) && /lagebild: mitFrischemD\(kostenAuskunft\)/.test(koQ),
+    '107h kosten.js: Kosten.lagebild() rechnet aus kostenBilanz(), kein zweiter Median');
+  var lq = ber.slice(ber.indexOf('function lagebildQuellen'), ber.indexOf('async function exportAnalysis'));
+  ok(/STAND_KEY = 'marktUeberblickStand'/.test(muiQ) && /storeGet\('marktUeberblickStand'\)/.test(ber) && /marktStand: MARKT_STAND/.test(lq) && /MarktUebersicht: window\.MarktUebersicht/.test(lq) && /Marktwerte: window\.Marktwerte, Kosten: window\.Kosten/.test(lq) && /intradayKlartext: klartextLesen\(\)/.test(lq) && /wochenberichtText\(''/.test(lq),
+    '107h berichte.js reicht den gespeicherten Stand des Reiters Markt (derselbe Schluessel wie marktui.js), Marktwerte, Kosten, Klartext und Wochenbericht herein');
+  ok(/function wochenberichtText\(spx, now\)/.test(ber) && /var w = wochenberichtText\(spx, now\);/.test(ber) && (ber.match(/lines\.push\('## Wochenreport KW '/g) || []).length === 1 && /getElementById\('idKlartext'\)/.test(ber) && /k\.tagName === 'BUTTON'/.test(ber),
+    '107h Wochenreport: EINE Textfunktion fuer Dialog und Export; Klartext aus der Karte ohne den Knopf');
+  ok(/jetzt - k\.at <= HANDELSTAG_MS/.test(ber) && /jetzt - HEALTH\.lastScanT <= HANDELSTAG_MS/.test(ber) && /HANDELSTAG_MS = 86400000/.test(ber),
+    '107h kursVon: Kurs nur, wenn juenger als ein Handelstag (Sammelabruf mit Stempel, Scanner nur nach frischem Scan)');
+  /* pruefstrasse-lagebild: die letzte NACHT-Zeile, nicht die letzte Zeile */
+  var PL = require('./tools/pruefstrasse-lagebild.js');
+  var logK = '- 11.10.2026 — Nachtlauf eingerichtet.\n- 12.10.2026 (Prüfstraße, 02:00 UTC) — **kunst-a: nein** (3 Konfigurationen).\n- 12.10.2026 (PM, 10:31) — **Erste Nacht der Prüfstraße gelaufen.** Rechenknecht 04:00 MESZ, 45 s: kunst-a nein.\n- 12.10.2026 (PM, 15:05) — Wilhelm: Reiter Markt.\n';
+  ok(/Rechenknecht 04:00 MESZ, 45 s: kunst-a nein/.test(PL.nachtLogzeile(logK)) && PL.nachtLogzeile('- 12.10.2026 (PM, 15:05) — Wilhelm: Reiter Markt.\n') === null && PL.nachtLogzeile(null) === null && PL.nachtLogzeile(logK.split('\n').slice(0, 2).join('\n')).indexOf('kunst-a: nein') !== -1,
+    '107h nacht.logzeile = letzte Zeile, die den Nachtlauf beschreibt (Laeufer-Eintrag, "Nacht der Pruefstrasse", Nachtlauf); sonst null', PL.nachtLogzeile(logK));
+  ok(!!ps && /Nachtlauf gelaufen, rc 0/.test(ps.nacht.logzeile), '107h 107g-Kunstlog: die PM-Zeile danach verdraengt die Nachtlauf-Zeile nicht', ps && ps.nacht && ps.nacht.logzeile);
 })();
 
 Promise.all(offeneProben).then(function () {

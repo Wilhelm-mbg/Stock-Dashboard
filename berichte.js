@@ -116,10 +116,15 @@
     '„Wirtschaft kann man nicht dozieren, man muss sie selbst erleben – und überleben.“'
   ];
 
-  async function runWeekly() {
-    var st = document.getElementById('reportStatus');
-    st.textContent = 'Erstelle Wochenreport …';
-    var now = Date.now(), weekAgo = now - 7 * 86400000;
+  /** Der Text des Wochenreports - EINE Funktion fuer den Dialog (runWeekly) und das Lagebild
+   *  (Nr. 116, betrieb.berichte.wochenbericht). spx = der S&P-500-Halbsatz derselben Woche als
+   *  fertiger Text; runWeekly holt ihn aus der Kurshistorie, der Export laesst ihn weg (kein
+   *  Abruf im Exporttakt) - dann fehlt genau dieser Halbsatz, wie im Dialog ohne Historie.
+   *  Liefert { kw, body }; ohne Depot null. */
+  function wochenberichtText(spx, now) {
+    if (!D) return null;
+    now = (typeof now === 'number' && isFinite(now)) ? now : Date.now();
+    var weekAgo = now - 7 * 86400000;
     var closed = D.trades.filter(function (t) { return t.status === 'closed' && t.closeT >= weekAgo && istMess(t); });
     var wins = closed.filter(function (t) { return t.pnl > 0; }).length;
     var pnlW = closed.reduce(function (a, t) { return a + t.pnl; }, 0);
@@ -131,14 +136,9 @@
     var eqEnd = equityNow();
     var agg = { hourly: { n: 0, pnl: 0 }, intraday: { n: 0, pnl: 0 } };
     closed.forEach(function (t) { var a = agg[stratOf(t)]; a.n++; a.pnl += t.pnl; });
-    var spx = '';
-    var h = await getHistory('^GSPC', '2y');
-    if (h && h.length > 6) {
-      var wk = h.filter(function (p) { return p[0] >= weekAgo; });
-      if (wk.length >= 2) spx = U.signTxt((wk[wk.length - 1][1] / wk[0][1] - 1) * 100, ' %');
-    }
+    spx = spx || '';
     var events = window.Cal ? window.Cal.next(5) : [];
-    var kw = (function (dt) { var d1 = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate())); var dayNum = d1.getUTCDay() || 7; d1.setUTCDate(d1.getUTCDate() + 4 - dayNum); var y0 = new Date(Date.UTC(d1.getUTCFullYear(), 0, 1)); return Math.ceil(((d1 - y0) / 86400000 + 1) / 7); })(new Date());
+    var kw = (function (dt) { var d1 = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate())); var dayNum = d1.getUTCDay() || 7; d1.setUTCDate(d1.getUTCDate() + 4 - dayNum); var y0 = new Date(Date.UTC(d1.getUTCFullYear(), 0, 1)); return Math.ceil(((d1 - y0) / 86400000 + 1) / 7); })(new Date(now));
 
     var lines = [];
     lines.push('## Wochenreport KW ' + kw + ' (' + new Date(weekAgo).toLocaleDateString('de-DE') + ' – ' + new Date(now).toLocaleDateString('de-DE') + ')');
@@ -162,7 +162,21 @@
       lines.push('## Nächste Woche wichtig');
       events.forEach(function (e) { lines.push('- ' + e.dt.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' }) + ': ' + e.name); });
     }
-    var body = lines.join('\n');
+    return { kw: kw, body: lines.join('\n') };
+  }
+
+  async function runWeekly() {
+    var st = document.getElementById('reportStatus');
+    st.textContent = 'Erstelle Wochenreport …';
+    var now = Date.now(), weekAgo = now - 7 * 86400000;
+    var spx = '';
+    var h = await getHistory('^GSPC', '2y');
+    if (h && h.length > 6) {
+      var wk = h.filter(function (p) { return p[0] >= weekAgo; });
+      if (wk.length >= 2) spx = U.signTxt((wk[wk.length - 1][1] / wk[0][1] - 1) * 100, ' %');
+    }
+    var w = wochenberichtText(spx, now);
+    var kw = w.kw, body = w.body;
     st.textContent = '';
     document.getElementById('aiTitle').textContent = 'Wochenreport KW ' + kw;
     document.getElementById('aiBody').innerHTML = U.md(body) +
@@ -215,7 +229,8 @@
    * bleiben wie bei lastAnalysisExport auch im Fehlerfall gesetzt (Begruendung unten). */
   var lastLagebildExport = 0, lastChartExport = 0;
   var LAGEBILD_TAKT = { offen: 2 * 60000, zu: 10 * 60000, chart: 15 * 60000 };
-  var VIEWER_ZULETZT = [], CHART_SOFORT = [], APP_VERSION = null, SAMMLER_STAND = null;
+  var VIEWER_ZULETZT = [], CHART_SOFORT = [], APP_VERSION = null, SAMMLER_STAND = null, MARKT_STAND = null;
+  var HANDELSTAG_MS = 86400000;
   function lagebildTakt(sitzung) { return (sitzung === 'vor' || sitzung === 'haupt' || sitzung === 'nach') ? LAGEBILD_TAKT.offen : LAGEBILD_TAKT.zu; }
   function viewerGeoeffnet(sym) {
     sym = String(sym || '').toUpperCase();
@@ -239,11 +254,33 @@
     CHART_SOFORT = [];
     return auftrag;
   }
+  /** Ein Kurs, der juenger als ein Handelstag ist (Nr. 116) - sonst null, nie geschaetzt:
+   *  1. der Sammelabruf der Marktkarte (traegt seinen Stempel), 2. die Reihe des Intraday-
+   *  Scanners, die hoechstens so alt ist wie der letzte Scan. */
   function kursVon(sym) {
-    var k = window.Marktwerte && window.Marktwerte.kurs ? window.Marktwerte.kurs(sym) : null;
-    if (k && isFinite(k.kurs)) return k.kurs;
+    var jetzt = Date.now();
+    var k = window.Marktwerte && window.Marktwerte.kursZuletzt ? window.Marktwerte.kursZuletzt(sym) : null;
+    if (k && isFinite(k.kurs) && k.kurs > 0 && isFinite(k.at) && jetzt - k.at <= HANDELSTAG_MS) return k.kurs;
+    if (!(HEALTH && HEALTH.lastScanT > 0 && jetzt - HEALTH.lastScanT <= HANDELSTAG_MS)) return null;
     var l = window.DepotAPI && window.DepotAPI.letzterKurs ? window.DepotAPI.letzterKurs(sym) : null;
     return l && isFinite(l.kurs) ? l.kurs : null;
+  }
+  /** Die Klartext-Karte (depot.js renderKlartext, #idKlartext) als Text, wie sie dasteht: die
+   *  Textbloecke der Karte, je Block eine Zeile; der Knopf "Autopilot einschalten" gehoert nicht
+   *  zum Text. Ohne Karte null. Gelesen wird die Anzeige selbst - depot.js hat fuer die Karte
+   *  keine Textfunktion (Nr. 116, Uebergabe). */
+  function klartextLesen() {
+    if (typeof document === 'undefined') return null;
+    var el = document.getElementById('idKlartext');
+    if (!el) return null;
+    var zeilen = [];
+    for (var i = 0; i < el.children.length; i++) {
+      var k = el.children[i];
+      if (k.tagName === 'BUTTON') continue;
+      var t = (k.textContent || '').trim();
+      if (t) zeilen.push(t);
+    }
+    return zeilen.length ? zeilen.join('\n') : null;
   }
   /** Die Quellen des Lagebilds - nur Leseauskuenfte und Zustand, nichts aus Einstellungen. */
   function lagebildQuellen(gesundheit, jetzt) {
@@ -261,11 +298,19 @@
       gesundheit: gesundheit, kursVon: kursVon,
       nameVon: function (sym) { var e = window.Marktwerte && window.Marktwerte.stammEintrag ? window.Marktwerte.stammEintrag(sym) : null; return e ? e.name : null; },
       termine: window.Cal && window.Cal.next ? window.Cal.next(6) : [], signale: signale,
-      sammler: sm ? { laeuft: !!sm.laeuft, stand: sm.fortschritt ? sm.fortschritt.begonnen : null, menge: Array.isArray(sm.zeilen) ? sm.zeilen.length : null, sperre: sm.fehler || null } : null };
+      sammler: sm ? { laeuft: !!sm.laeuft, stand: sm.fortschritt ? sm.fortschritt.begonnen : null, menge: Array.isArray(sm.zeilen) ? sm.zeilen.length : null, sperre: sm.fehler || null } : null,
+      /* Nr. 116: der gezeichnete Stand des Reiters Markt (marktui.js schreibt ihn unter demselben
+       * Schluessel in den Store), die Karte, die Kostenmessung, die Klartext-Karte, der Wochenreport. */
+      MarktUebersicht: window.MarktUebersicht, marktStand: MARKT_STAND, Marktwerte: window.Marktwerte, Kosten: window.Kosten,
+      intradayKlartext: klartextLesen(),
+      wochenbericht: function () { var w = wochenberichtText('', jetzt); return w ? w.body : null; } };
   }
   function nebenstaendeHolen() {
     try { if (!APP_VERSION && window.api.appVersion) window.api.appVersion().then(function (v) { APP_VERSION = v && v.version ? v.version : (typeof v === 'string' ? v : null); }, function () {}); } catch (e) { /* ohne Version */ }
     try { if (window.api.sammlerStand) window.api.sammlerStand().then(function (s) { SAMMLER_STAND = s || null; }, function () {}); } catch (e) { /* ohne Sammler-Stand */ }
+    /* Der Reiter Markt merkt sich seinen gezeichneten Stand im Store (marktui.js STAND_KEY) -
+     * von dort liest ihn das Lagebild: dieselben Listen, kein zweiter Rechenweg. */
+    try { if (window.api.storeGet) window.api.storeGet('marktUeberblickStand').then(function (g) { MARKT_STAND = (g && g.sektoren && g.hotlists) ? g : null; }, function () {}); } catch (e) { /* ohne Markt-Stand */ }
   }
 
   async function exportAnalysis(force) {

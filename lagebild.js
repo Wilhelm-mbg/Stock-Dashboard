@@ -231,12 +231,25 @@
     return aus;
   }
 
-  var INDIZES = [['^GSPC', 'S&P 500'], ['^IXIC', 'Nasdaq'], ['^DJI', 'Dow Jones'], ['^VIX', 'VIX'], ['GC=F', 'Gold'], ['CL=F', 'Oel'],
-    ['DX-Y.NYB', 'Dollar-Index'], ['^TNX', 'US-Rendite 10 J.'], ['BTC-USD', 'Bitcoin'], ['EURUSD=X', 'Euro/Dollar']];
+  /* Die Kacheln der App (renderer.js INDICES) - dieselben Kuerzel und Namen in derselben
+   * Reihenfolge; nichts wird neu abgerufen: Dash.quote kennt nur, was die Kachelreihe geholt
+   * hat (Nr. 116). Fuehrt der Renderer die Liste einmal selbst heraus (Dash.INDICES), gilt sie. */
+  var INDIZES = [['^GSPC', 'S&P 500'], ['^IXIC', 'Nasdaq Composite'], ['^DJI', 'Dow Jones'], ['^GDAXI', 'DAX'], ['^SOX', 'PHLX Semiconductor'],
+    ['^VIX', 'VIX (Volatilität)'], ['GC=F', 'Gold (Future)'], ['CL=F', 'Öl WTI (Future)'], ['DX-Y.NYB', 'Dollar-Index'], ['BTC-USD', 'Bitcoin']];
+  function hotliste(l) {
+    return (l || []).map(function (w) { return { sym: text(w.sym), name: text(w.name), pct: z2(w.pct), umsatz: z2(w.umsatz) }; });
+  }
   function markt(q) {
     var Dash = q.Dash;
     if (!Dash || typeof Dash.quote !== 'function') return null;
-    var indizes = INDIZES.map(function (i) {
+    var liste = Array.isArray(Dash.INDICES) ? Dash.INDICES.map(function (i) { return [i.y, i.name]; }) : INDIZES;
+    /* Sektoren und Hotlists: der GEZEICHNETE Stand des Reiters Markt (marktui.js standRechnen,
+     * ueber den Store gelesen), in die Vertragsform gebracht von MarktUebersicht.lagebild -
+     * kein zweiter Rechenweg. Marktkarte: Marktwerte.lagebild() = die zuletzt gezeichnete Karte. */
+    var MU = q.MarktUebersicht;
+    var ueb = abschnitt(function () { return (MU && typeof MU.lagebild === 'function') ? MU.lagebild(q.marktStand) : null; });
+    var mk = abschnitt(function () { return (q.Marktwerte && typeof q.Marktwerte.lagebild === 'function') ? q.Marktwerte.lagebild() : null; });
+    var indizes = liste.map(function (i) {
       var quote = Dash.quote(i[0]);
       if (!quote) return null;
       var kurve = Array.isArray(quote.series) ? quote.series.filter(function (p) { return Array.isArray(p) && zahl(p[0]) && zahl(p[1]); })
@@ -250,9 +263,16 @@
     var nachrichten = (Dash.nachrichten && typeof Dash.nachrichten === 'function') ? Dash.nachrichten() : (q.nachrichten || []);
     return {
       indizes: indizes,
-      sektoren: Array.isArray(q.sektoren) ? q.sektoren : [],
-      hotlists: { gewinner: [], verlierer: [], umsatz: [], ausbrueche: [], luecken: [] },
-      marktkarte: Array.isArray(q.marktkarte) ? q.marktkarte : [],
+      sektoren: ueb ? (ueb.sektoren || []).map(function (s) { return { name: text(s.name), pct1T: z2(s.pct1T), pct1W: z2(s.pct1W), pct1M: z2(s.pct1M) }; }) : [],
+      /* ausbrueche = die 52-Wochen-Hoch-Liste des Reiters; luecken fuehrt der Reiter nicht (Vorboersen-
+       * Luecken: radar.vormarkt); volumen (relatives Volumen) ist ein angekuendigter Zusatz. */
+      hotlists: { gewinner: hotliste(ueb && ueb.hotlists.gewinner), verlierer: hotliste(ueb && ueb.hotlists.verlierer), umsatz: hotliste(ueb && ueb.hotlists.umsatz),
+        ausbrueche: hotliste(ueb && ueb.hotlists.ausbrueche), luecken: hotliste(ueb && ueb.hotlists.luecken), volumen: hotliste(ueb && ueb.hotlists.volumen) },
+      marktkarte: mk ? (mk.sektoren || []).map(function (s) {
+        return { sektor: text(s.sektor), werte: (s.werte || []).map(function (w) {
+          return { sym: text(w.sym), name: text(w.name), pct: z2(w.pct), umsatz: z2(w.umsatz), mcap: z2(w.mcap) };
+        }) };
+      }) : [],
       termine: termine,
       nachrichten: (nachrichten || []).slice(0, 25).map(function (n) {
         return { zeit: iso(n.t), quelle: text(n.source || null), titel: text(n.title), sym: text(n.sym || null), url: text(n.url) };
@@ -375,17 +395,22 @@
       return { grund: gr, n: zahl(s.n) ? s.n : null, summePct: z2(s.sumPct != null ? s.sumPct : s.summePct), gerettet: zahl(s.gerettet) ? s.gerettet : null, verhindert: zahl(s.verhindert) ? s.verhindert : null };
     });
     var bench = (API && API.intradayGegenMarkt) ? API.intradayGegenMarkt() : null;
+    /* kosten: die Auskunft aus kosten.js (Kosten.lagebild = kostenBilanz in Vertragsform);
+     * ohne Runden null. wochenbericht: die Textfunktion des Wochenreports (berichte.js
+     * wochenberichtText) ohne Dialog - bricht sie, steht null (Nr. 116). */
+    var ko = abschnitt(function () { return (q.Kosten && typeof q.Kosten.lagebild === 'function') ? q.Kosten.lagebild() : (q.kosten || null); });
+    var wb = abschnitt(function () { return typeof q.wochenbericht === 'function' ? text(q.wochenbericht() || null) : null; });
     return {
       gesundheit: g,
       archiv: { abdeckung: abdeckung },
       sammler: q.sammler ? { laeuft: !!q.sammler.laeuft, stand: isoAus(q.sammler.stand || q.sammler.at), menge: zahl(q.sammler.menge) ? q.sammler.menge : null, sperre: text(q.sammler.sperre || null) } : null,
-      kosten: q.kosten || null,
+      kosten: ko ? { runden: zahl(ko.runden) ? ko.runden : null, huerdeGemessen: z4(ko.huerdeGemessen), annahme: z4(ko.annahme), stand: tagAus(ko.stand) } : null,
       scoreboard: scoreboard,
       register: register,
       journal: (D ? (D.tuneLog || []) : []).slice(-60).map(function (j) { return { zeit: isoAus(j.at || j.t), text: text(j.txt || j.text), quelle: text(j.quelle || j.wer || null) }; }),
       schattenbuch: { bilanz: bilanz, offen: schatten.filter(function (x) { return x && x.status === 'open'; }).length,
         letzte: schatten.slice(0, 20).map(function (x) { return { sym: text(x.sym), richtung: text(x.dir), grund: text(x.grund || x.why), zeit: iso(x.openT || x.t) }; }) },
-      berichte: { messbericht: D && D.central ? text(D.central.berichtMd || null) : null, wochenbericht: null, stand: D && D.central ? isoAus(D.central.at) : null },
+      berichte: { messbericht: D && D.central ? text(D.central.berichtMd || null) : null, wochenbericht: wb, stand: D && D.central ? isoAus(D.central.at) : null },
       benchmark: bench && bench.v && bench.v.ok ? { text: text(bench.text), punkte: (bench.v.marktReihe || []).map(function (p) { return [p[0], null, z2(100 + p[1]), null]; }) } : { text: bench ? text(bench.text) : null, punkte: [] },
       regelbuch: (D && Array.isArray(D.regeln) ? D.regeln : []).map(function (r) { return { name: text(r.name), text: text(r.txt || r.text || (r.cfg && r.cfg.mode) || null) }; }),
       trendfinder: { text: 'Winkel-Detektor: +0,25 widerlegt, marktneutral - nur im Archiv.', fundstelle: 'wiki/belegstand.md' }

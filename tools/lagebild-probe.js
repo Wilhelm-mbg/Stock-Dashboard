@@ -38,6 +38,20 @@ const schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const MUSTER = [/\bsk-[A-Za-z0-9]{12,}/, /APCA-API/i, /\bPK[A-Z0-9]{16,}\b/, /\bBearer\s+[A-Za-z0-9._-]{8,}/, /"[a-zA-Z]*token[a-zA-Z]*"\s*:/i, /passwort/i, /C:\\\\Users|C:\/Users/i];
 
+/** Die Abschnitte aus §6 der Nr.-115-Uebergabe: Zahl der Zeilen bzw. Anfang des Textes, null bleibt null. */
+function gefuellt116(obj) {
+  const m = obj.markt || {}, h = m.hotlists || {}, r = (obj.regeln && obj.regeln.intraday) || {}, b = obj.betrieb || {};
+  const kurz = (t) => (t == null ? null : String(t).slice(0, 120));
+  const positionen = [];
+  (obj.buecher || []).forEach((bu) => (bu.positionen || []).forEach((p) => positionen.push(bu.name + ':' + p.sym + ':' + (p.kurs == null ? 'null' : p.kurs))));
+  return {
+    indizes: (m.indizes || []).map((i) => i.sym), sektoren: (m.sektoren || []).length,
+    hotlists: Object.keys(h).map((k) => k + ':' + (h[k] || []).length).join(' '),
+    marktkarte: (m.marktkarte || []).map((s) => s.sektor + ':' + (s.werte || []).length).join(' '),
+    klartext: kurz(r.klartext), kosten: b.kosten || null, wochenbericht: kurz(b.berichte && b.berichte.wochenbericht), positionen: positionen
+  };
+}
+
 async function auswerten() {
   const L = require(path.join(WURZEL, 'lagebild.js'));
   const ref = JSON.parse(fs.readFileSync(path.join(WURZEL, 'test-daten', 'lagebild-beispiel.json'), 'utf8'));
@@ -55,7 +69,9 @@ async function auswerten() {
       nullAbschnitte: obj ? Object.keys(obj).filter((k) => obj[k] === null) : null,
       schema: schema, muster: MUSTER.filter((m) => m.test(text)).map(String),
       ausschnitt: obj ? { kopf: obj.kopf, buecher: (obj.buecher || []).map((b) => ({ name: b.name, wert: b.wert, gegenMarkt: b.gegenMarkt && b.gegenMarkt.text, rueckblick: (b.rueckblick || []).length })),
-        antwort: obj.regeln && obj.regeln.antwort, fehler: obj.fehler } : null };
+        antwort: obj.regeln && obj.regeln.antwort, fehler: obj.fehler } : null,
+      /* Nr. 116: die Abschnitte, die bis Nr. 115 null/[] blieben - wie weit sind sie jetzt gefuellt? */
+      nr116: obj ? gefuellt116(obj) : null };
   }
   const cd = path.join(daten, 'markt-chart');
   if (fs.existsSync(cd)) {

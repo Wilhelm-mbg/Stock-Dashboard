@@ -363,9 +363,13 @@
     return null;
   }
 
+  /* Was die Karte zuletzt gezeichnet hat - die Objekte, die zeichnen() bekam, mit
+   * Stempel. Nur fuer die Leseauskunft Marktwerte.lagebild() (Auftrag Nr. 116). */
+  var GEZEICHNET = null;
   function zeichnen(werte, info) {
     var kasten = document.getElementById('mkKarte');
     if (!kasten) return;
+    GEZEICHNET = { zeit: Date.now(), werte: werte };
     var b = kasten.clientWidth || 900;
     var h = kasten.clientHeight || 620;
     var karte = window.Marktkarte.baue(werte, b, h, { rand: 3, kopf: 15 });
@@ -694,6 +698,38 @@
     kurs: function (sym) {
       if (!kursFrisch(sym)) return null;
       return { kurs: KURSE[sym].kurs, pct: KURSE[sym].pct };
+    },
+    /** Kurs, Prozent und Stempel des letzten Sammelabrufs OHNE Frischegrenze - der
+     *  Aufrufer beurteilt das Alter selbst (Lagebild Nr. 116: juenger als ein Handelstag).
+     *  Kein Abruf, nie geschaetzt; ohne Eintrag null. */
+    kursZuletzt: function (sym) {
+      var c = KURSE[sym];
+      return (c && c.kurs > 0) ? { kurs: c.kurs, pct: c.pct, at: c.at } : null;
+    },
+    /** Lagebild (Nr. 116): die zuletzt GEZEICHNETE Karte als Liste Sektor -> Werte in der
+     *  Vertragsform von lagebild.json (markt.marktkarte). Dieselben Objekte, die zeichnen()
+     *  bekam - kein zweiter Rechenweg: mcap ist die Flaeche der Kachel (Kurs x Stueckzahl
+     *  aus den Stammdaten), umsatz = Kurs x Tagesvolumen aus dem Sammelabruf (null, wenn
+     *  der Kurs aus der App kam - der traegt kein Volumen). Sektoren und Werte nach
+     *  Groesse, wie die Karte ihre Flaechen verteilt. Vor dem ersten Zeichnen null. */
+    lagebild: function () {
+      if (!GEZEICHNET || !Array.isArray(GEZEICHNET.werte)) return null;
+      var je = {}, reihenfolge = [];
+      GEZEICHNET.werte.forEach(function (w) {
+        if (!w || !w.sym || !w.sektor) return;
+        if (!je[w.sektor]) { je[w.sektor] = { sektor: w.sektor, groesse: 0, werte: [] }; reihenfolge.push(w.sektor); }
+        var c = KURSE[w.sym];
+        var vol = (c && c.volumen > 0) ? c.volumen : null;
+        je[w.sektor].groesse += w.groesse > 0 ? w.groesse : 0;
+        je[w.sektor].werte.push({ sym: w.sym, name: w.name || w.sym, pct: (w.pct != null && isFinite(w.pct)) ? w.pct : null,
+          umsatz: (vol && w.kurs > 0) ? w.kurs * vol : null, mcap: w.groesse > 0 ? w.groesse : null });
+      });
+      var sektoren = reihenfolge.map(function (s) { return je[s]; }).sort(function (a, b) { return b.groesse - a.groesse; })
+        .map(function (s) {
+          s.werte.sort(function (a, b) { return (b.mcap || 0) - (a.mcap || 0); });
+          return { sektor: s.sektor, werte: s.werte };
+        });
+      return { zeit: GEZEICHNET.zeit, sektoren: sektoren };
     }
   };
 })();

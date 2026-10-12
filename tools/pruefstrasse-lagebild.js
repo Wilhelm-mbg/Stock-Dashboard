@@ -108,11 +108,24 @@ function ideenAgent(md, ws) {
   return { letzterLauf: letzter, ergebnis: eingestellt + ' in der Warteschlange, ' + verworfen.length + ' verworfen', verworfen: verworfen };
 }
 
+/* wiki/log.md: die LETZTE Zeile, die den Nachtlauf beschreibt - nicht die letzte Zeile ueberhaupt
+ * (die ist meist eine PM-Notiz zu etwas anderem). Am Bestand vom 12.10.2026 sind das die Formen
+ *   "12.10.2026 (Prüfstraße, 02:00 UTC) — donchian20-ausbruch-long: nein ..."           (der Laeufer)
+ *   "12.10.2026 (PM, 10:31) — Erste Nacht der Prüfstraße gelaufen. Rechenknecht 04:00 MESZ, 45 s: ..."
+ *   "- 12.10.2026 — Nachtlauf gelaufen, rc 0."                                            (Kunstlog im Test)
+ * Keine passende Zeile -> null (Nr. 116). */
+const NACHT_RE = /Nacht der Pr[üu]fstra[ßs]e|Nachtlauf|\(Pr[üu]fstra[ßs]e,|Rechenknecht[^\n]*?\b\d+ s:/;
+function nachtLogzeile(log) {
+  if (log == null) return null;
+  const z = log.split('\n').filter((x) => NACHT_RE.test(x)).pop();
+  return z ? z.slice(0, 400) : null;
+}
+
 function bauen() {
   const status = lies(path.join(REPO, 'STATUS.md'));
   const ws = abschnitt(warteschlange);
   const log = lies(path.join(REPO, 'wiki', 'log.md'));
-  const logzeile = log ? (log.split('\n').filter((z) => /Nachtlauf/.test(z)).pop() || null) : null;
+  const logzeile = nachtLogzeile(log);
   const n = abschnitt(() => nacht(status));
   return {
     kennung: 'pruefstrasse/lagebild/v1',
@@ -121,7 +134,7 @@ function bauen() {
     urteile: abschnitt(urteile),
     register: abschnitt(register),
     ideenAgent: abschnitt(() => ideenAgent(lies(path.join(REPO, 'pruefstrasse', 'ideen-verworfen.md')), ws)),
-    nacht: n ? Object.assign(n, { logzeile: logzeile ? logzeile.slice(0, 400) : null }) : null
+    nacht: n ? Object.assign(n, { logzeile: logzeile }) : null
   };
 }
 
@@ -136,4 +149,4 @@ if (require.main === module) {
   console.log('pruefstrasse.json geschrieben: ' + ziel + ' (' + (aus.urteile || []).length + ' Urteile, ' +
     (aus.warteschlange || []).length + ' in der Warteschlange' + (leer.length ? '; null: ' + leer.join(', ') : '') + ')');
 }
-module.exports = { bauen, nacht, besteZeile, ideenAgent };
+module.exports = { bauen, nacht, besteZeile, ideenAgent, nachtLogzeile, NACHT_RE };

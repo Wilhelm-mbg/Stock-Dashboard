@@ -301,8 +301,51 @@
     return n > 0 ? aus.slice(-n) : aus;
   }
 
+  /* ---------------------------------------------------------------------------
+   * 7) Die Leseauskunft fuer das Lagebild (Auftrag Nr. 116, 12.10.2026)
+   *
+   * stand = der GEZEICHNETE Stand des Reiters Markt (marktui.js standRechnen():
+   * sektoren { t1, w1, m1 } aus sektorLeiste(), hotlists aus hotlists()) - also das
+   * Ergebnis, das die Oberflaeche zeigt, kein zweiter Rechenweg. Hier wird nur in
+   * die Vertragsform von lagebild.json (markt.sektoren, markt.hotlists) umgeformt:
+   *   sektoren  [{ name, pct1T, pct1W, pct1M }] - eine Zeile je Sektor in der Reihen-
+   *             folge der Tagesleiste, danach die, die nur in Woche/Monat stehen;
+   *             fehlt ein Zeitraum fuer einen Sektor (unter minWerte), steht dort null
+   *   hotlists  gewinner, verlierer, umsatz wie gezeigt; ausbrueche = die Liste "am
+   *             52-Wochen-Hoch" (die einzige Ausbruchsliste des Reiters); luecken bleibt
+   *             leer - der Reiter fuehrt keine Lueckenliste (die Vorboersen-Luecken
+   *             stehen im Radar); volumen (relatives Volumen) faehrt als Zusatz mit.
+   *             umsatz je Zeile = Kurs x Stueck, dieselbe Rechnung wie in hotlists().
+   * Gerundet wird hier nichts; ohne Stand null. */
+  function lagebild(stand) {
+    if (!stand || !stand.sektoren || !stand.hotlists) return null;
+    var s = stand.sektoren, reihen = {}, namen = [];
+    function nimm(liste, feld) {
+      (liste || []).forEach(function (e) {
+        if (!e || typeof e.sektor !== 'string' || !e.sektor) return;
+        if (!reihen[e.sektor]) { reihen[e.sektor] = { name: e.sektor, pct1T: null, pct1W: null, pct1M: null }; namen.push(e.sektor); }
+        reihen[e.sektor][feld] = zahl(e.pct) ? e.pct : null;
+      });
+    }
+    nimm(s.t1, 'pct1T'); nimm(s.w1, 'pct1W'); nimm(s.m1, 'pct1M');
+    function zeile(w) {
+      var umsatz = zahl(w.umsatz) ? w.umsatz
+        : ((zahl(w.kurs) && w.kurs > 0 && zahl(w.volumen) && w.volumen > 0) ? w.kurs * w.volumen : null);
+      return { sym: w.sym, name: w.name == null ? null : String(w.name), pct: zahl(w.pct) ? w.pct : null, umsatz: umsatz };
+    }
+    function liste(l) { return (l || []).filter(function (w) { return w && typeof w.sym === 'string' && w.sym; }).map(zeile); }
+    var h = stand.hotlists;
+    return {
+      sektoren: namen.map(function (n) { return reihen[n]; }),
+      hotlists: { gewinner: liste(h.gewinner), verlierer: liste(h.verlierer), umsatz: liste(h.umsatz),
+        ausbrueche: liste(h.hoch52), luecken: [], volumen: liste(h.volumen) },
+      zeit: zahl(stand.zeit) ? stand.zeit : null
+    };
+  }
+
   var Uebersicht = {
     VOR_MIN: VOR_MIN, NACH_MIN: NACH_MIN,
+    lagebild: lagebild,
     median: median,
     sitzungszustand: sitzungszustand,
     glockenEreignis: glockenEreignis,
