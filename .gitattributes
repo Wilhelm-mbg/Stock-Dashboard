@@ -6,3 +6,6 @@
 *.yml text eol=lf
 *.md text eol=lf
 *.sh text eol=lf
+
+# wiki/log.md ist reine Anhaenge-Datei: PM am Tag, Pruefstrasse nachts - beide Seiten behalten (PM 12.10.2026)
+wiki/log.md merge=union
