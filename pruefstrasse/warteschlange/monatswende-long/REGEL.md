@@ -1,4 +1,4 @@
-# Monatswende (Turn of the Month), long (Bau-Agent Nr. 117, PM-Auftrag, 12.10.2026 — im `vorrat/` bis Auftrag Nr. 118)
+# Monatswende (Turn of the Month), long (Bau-Agent Nr. 117, PM-Auftrag, 12.10.2026 — Bewertung `zeit`, seit Nr. 118 in der Warteschlange)
 
 Aktienkurse steigen im Mittel vom **letzten Handelstag eines Monats (−1) bis zum dritten Handelstag des Folgemonats (+3)** stärker als an
 den übrigen Tagen; McConnell & Xu (2008) zeigen für CRSP 1926–2005, dass die gesamte Überrendite des US-Markts über den risikolosen
@@ -90,8 +90,10 @@ spräche „nein" und trüge zwei Registerzeilen ein, die nichts über die Monat
 
 **Zeitbewertung (Nr. 118):** Überschuss gegen den **Topf aller Tage derselben Reihe** — die mittlere H-Tage-Rendite der Reihe über alle ihre
 Einstiegstage (das Fenster gegen den eigenen Durchschnittstag, wie McConnell & Xu Fenster gegen Nicht-Fenster stellen) —, **Cluster je
-Kalendertag** (ein Signaltag = ein Monatsende = ein Cluster; Hansen-Hodrick über die Tagesreihe wie bisher). Der Topf aller Tage enthält
-die Fenstertage selbst (4 von ≈ 21 Handelstagen je Monat), der gemessene Überschuss ist also ≈ (1 − 4/21) ≈ 0,81 × (Fenster − Nicht-Fenster).
+Kalendertag** (ein Signaltag = ein Monatsende = ein Cluster; Hansen-Hodrick über die Tagesreihe wie bisher). *Nachtrag Nr. 118 (12.10.2026,
+FORM.md §3):* der zeitliche Topf schließt die Signalfenster der Reihe **und alle Fenster, die sich mit ihnen überschneiden**, aus und wird je
+Zeitraum (Entdeckung / Prüfung) gerechnet — die hier zunächst angenommene Verdünnung ≈ 0,81 (Fenstertage im Topf) entfällt, der gemessene
+Überschuss ist Fenster − Nicht-Fenster.
 
 **Auflösung, vorgerechnet.** Cluster 2016–2022: **84 Monatswenden** (79 mit Signal und Umsatzklasse). σ_Fenster = Streuung des Cluster-Mittels
 (gleichgewichtete H-Tage-Rendite der ≈ 815 liquiden Reihen abzüglich Topf) über die Monatsenden — die ≈ 815 Reihen bewegen sich an einem
@@ -108,9 +110,11 @@ Richtung positiv. Überschuss (Zeitbewertung) in liquiden Werten 2016–2022: **
 (Publikationsabnutzung, wertgewichtete Großwerte), netto um die Hürde (0,045–0,085 Pp) kleiner; H3 etwas weniger. Erwartetes Urteil:
 **„nicht entscheidbar"** (erwartete Größe unter der MDE₈₀ von 0,6–0,9 Pp); ein „nein" in der gleichgewichteten Quellgröße ist möglich.
 Placebo (anderer Wert, gleicher Tag) sieht denselben Markttag und müsste in der Zeitbewertung denselben Überschuss zeigen — das ist bei einer
-Marktzeit-Regel kein Verstoß, sondern die Regel selbst; Nr. 118 muss das Placebo entsprechend lesen (versetzter Kalendertag statt versetzter
-Wert). Verschobenes Signal (+20 Handelstage) landet bei Monatsanfang + 20 ≈ Monatsende − 2: nahe am nächsten Fenster — auch das ist für
-Nr. 118 zu bedenken (Versatz von 10 statt 20 Tagen oder Mitte des Monats).
+Marktzeit-Regel kein Verstoß, sondern die Regel selbst. *Nr. 118:* dieses Placebo **entfällt** im Modus `zeit` und steht im Protokoll als
+„entfällt (zeit)"; Placebo ist das verschobene Signal. Verschobenes Signal (+20 Handelstage, `konfig.js`, unverändert) landet bei
+Monatsanfang + 20 ≈ Monatsende − 2: nahe am nächsten Fenster — das Protokoll weist je Konfiguration den **Anteil der verschobenen Fenster
+aus, die sich mit einem Signalfenster derselben Reihe überschneiden**; für die Monatswende wird er hoch sein, dann sagt die Verschiebung
+nichts gegen die Regel (ein „Messgerät-Fehler" aus dieser Gegenprobe wäre vom PM so zu lesen; ein anderer Versatz bliebe ein PM-Entscheid).
 
 ## Abweichungen von den Quellen (begründet)
 
@@ -120,5 +124,5 @@ Nr. 118 zu bedenken (Versatz von 10 statt 20 Tagen oder Mitte des Monats).
 3. Einstieg zur Eröffnung von −1 statt zum Schluss von −2 (die Quelle rechnet Tagesrenditen Schluss-zu-Schluss): die Übernacht-Rendite
    −2 → −1 fehlt; die Gegenprobe „Einstieg einen Tag später" zeigt den Beitrag des Tages −1.
 4. Universum: liquide US-Aktien des Panels (Klassen 1–3) statt CRSP gesamt; Zeitraum 2016–2022 statt 1926–2005.
-5. Bewertung gegen den Topf aller Tage derselben Reihe statt gegen den Tagestopf der Form `tag` (oben begründet); bis Auftrag Nr. 118 liegt der
-   Kandidat im `pruefstrasse/vorrat/`, der Läufer liest ihn nicht.
+5. Bewertung gegen den zeitlichen Topf derselben Reihe statt gegen den Tagestopf der Form `tag` (oben begründet; `bewertung: "zeit"`, Nr. 118).
+   Bis Nr. 118 lag der Kandidat im `pruefstrasse/vorrat/`; seit dem 12.10.2026 steht er wieder in der Warteschlange.
