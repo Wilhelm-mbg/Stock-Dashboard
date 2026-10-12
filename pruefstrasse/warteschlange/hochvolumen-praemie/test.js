@@ -7,10 +7,10 @@ var A = require(path.join(__dirname, '..', '..', 'adapter', 'tag.js'));
 var fails = 0;
 function ok(c, name, extra) { console.log((c ? '  ok   ' : '  ROT  ') + name + (extra !== undefined ? '  [' + extra + ']' : '')); if (!c) fails++; }
 
-/** Kunstreihe: n Tage, Kurs 20, Stueckumsatz 1000 + (i mod 7) * 10 (verschieden, damit Raenge eindeutig sind). */
+/** Kunstreihe: n Tage, Kurs 20 (bereinigt UND roh), Stueckumsatz 1000 + (i mod 7) * 10 (verschieden, damit Raenge eindeutig sind). */
 function reihe(n, aenderungen) {
-  var sp = { reihe: 'KUNST', tag: [], o: [], h: [], l: [], c: [], v: [] };
-  for (var i = 0; i < n; i++) { sp.tag.push(i); sp.o.push(20); sp.h.push(20.2); sp.l.push(19.8); sp.c.push(20); sp.v.push(1000 + (i % 7) * 10); }
+  var sp = { reihe: 'KUNST', tag: [], o: [], h: [], l: [], c: [], v: [], roh: [] };
+  for (var i = 0; i < n; i++) { sp.tag.push(i); sp.o.push(20); sp.h.push(20.2); sp.l.push(19.8); sp.c.push(20); sp.v.push(1000 + (i % 7) * 10); sp.roh.push(20); }
   (aenderungen || []).forEach(function (a) { Object.keys(a).forEach(function (f) { if (f !== 'i') sp[f][a.i] = a[f]; }); });
   return sp;
 }
@@ -38,8 +38,12 @@ ok(R.signal(A.kunstSicht(reihe(80, [{ i: 48, v: 9000 }]), 48), 48, P) === null, 
 ok(R.signal(A.kunstSicht(reihe(80, [{ i: 49, v: 9000 }]), 49), 49, P) !== null, 'am Tag 49 ist das Fenster voll');
 ok(R.signal(A.kunstSicht(reihe(80, [{ i: 60, v: 9000 }, { i: 30, c: NaN }]), 60), 60, P) === null, 'fehlender Schluss im Fenster: kein Signal');
 ok(R.signal(A.kunstSicht(reihe(80, [{ i: 60, v: NaN }]), 60), 60, P) === null, 'fehlender Umsatz am Signaltag: kein Signal');
-ok(R.signal(A.kunstSicht(reihe(80, [{ i: 60, v: 9000 }, { i: 25, c: 4.9 }]), 60), 60, P) === null, 'Kurs unter 5 $ im Referenzzeitraum: kein Signal');
-ok(R.signal(A.kunstSicht(reihe(80, [{ i: 60, v: 9000 }, { i: 5, c: 4.9 }]), 60), 60, P) !== null, 'Kurs unter 5 $ vor dem Fenster zaehlt nicht');
+ok(R.signal(A.kunstSicht(reihe(80, [{ i: 60, v: 9000 }, { i: 25, roh: 4.9 }]), 60), 60, P) === null, 'roher Kurs unter 5 $ im Referenzzeitraum: kein Signal');
+ok(R.signal(A.kunstSicht(reihe(80, [{ i: 60, v: 9000 }, { i: 5, roh: 4.9 }]), 60), 60, P) !== null, 'roher Kurs unter 5 $ vor dem Fenster zaehlt nicht');
+/* 5b. Der Filter sitzt auf dem ROHEN Kurs (Nr. 113): bereinigter Kurs 2 $ bei rohem 20 $ (spaeterer Split) filtert NICHT; roher 4,9 $ bei bereinigtem 20 $ filtert */
+ok(R.signal(A.kunstSicht(reihe(80, [{ i: 60, v: 9000 }, { i: 25, c: 2 }]), 60), 60, P) !== null, 'bereinigter Kurs 2 $ bei rohem 20 $: Signal bleibt (Split-Fall, kein Fehlfilter)');
+ok(R.signal(A.kunstSicht(reihe(80, [{ i: 60, v: 9000 }, { i: 25, c: 20, roh: 4.9 }]), 60), 60, P) === null, 'roher Kurs 4,9 $ bei bereinigtem 20 $: gefiltert');
+ok(R.brauchtRoh === true, 'die Regel verlangt den rohen Schluss (brauchtRoh) - laeuft nur auf dem Panel');
 ok(R.brauchtHochTief === false, 'die Regel braucht kein Hoch/Tief (laeuft auf dem Panel)');
 /* 6. Kein Blick nach vorn: Zeilen nach i veraendern -> Signal unveraendert; Zugriff hinter i liefert NaN und zaehlt */
 var vorn = reihe(80, [{ i: 60, v: 5000 }]);

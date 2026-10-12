@@ -15,8 +15,8 @@ Käufer kommen nach. Alles Simulation mit virtuellem Kapital, keine Anlageberatu
    kleinerem Umsatz), also gehört er zu den obersten 10 %. Fundstelle: GKM Gl. (2), „H, if Ψ ≥ 46".
 4. **Filter:** jeder der 50 Tage hat Schluss und Umsatz (sonst fällt das Fenster weg, GKM Fn. 7). GKM verlangen zusätzlich, dass der
    Schluss an keinem der 49 Referenztage unter **5 $** lag (GKM S. 4: „stocks whose price fell below $5 … in the first 49 days") —
-   **auf dem Panel abgeschaltet** (`mindestKurs: 0`, Nachtrag des PM unten): die Sicht liefert bereinigte Kurse, der Filter träfe dort
-   die falschen Reihen; die Umsatzklassen 1–3 (ab 50 Mio $ Tagesumsatz) übernehmen seine Aufgabe. Die übrigen GKM-Filter (Fusion,
+   geprüft am **rohen** Schluss `sicht.roh(j)` (seit Nr. 113; `brauchtRoh: true`, die Regel läuft nur auf dem Panel), nicht am
+   bereinigten, der bei späteren Splits die falschen Reihen träfe (Nachträge des PM unten). Die übrigen GKM-Filter (Fusion,
    Delisting, Kapitalerhöhung im Vorjahr; mindestens ein Jahr Notiz) sind mit der Sicht nicht abbildbar und entfallen; die
    Prüfstraße zählt Abgänge selbst getrennt.
 5. **Einstieg:** Eröffnung des Tages nach dem Signal (Form `tag` ohne `bestaetigt`); GKM messen ab dem Schluss des Bildungstags —
@@ -37,7 +37,7 @@ Regel. Die Tag-Form prüft jeden Tag und rechnet die Überlappung mit Hansen-Hod
 | Fenster | 50 Handelstage (49 Referenz + 1 Bildung) | GKM S. 4, Abb. 2 |
 | Schwelle | Rang ≥ 46 von 50 (oberste 10 %) | GKM Gl. (2) |
 | Umsatzmaß | Dollarumsatz = Schluss × Stück | GKM Fn. 9 |
-| Mindestkurs | Quelle: 5 $ im Referenzzeitraum — auf dem Panel **0** (abgeschaltet, Nachtrag PM) | GKM S. 4, Fn. 8 |
+| Mindestkurs | 5 $ im Referenzzeitraum, am **rohen** Schluss (`sicht.roh`, Nachtrag PM 2) | GKM S. 4, Fn. 8 |
 | Haltedauern | 10 und 20 Handelstage | GKM Tabelle 2 |
 | Richtung | long (die Low-Volume-Short-Seite ist nicht handelbar, Leihe nicht gemessen) | — |
 
@@ -113,3 +113,12 @@ GME 154, CVNA 76**; nicht gefiltert, obwohl roh < 5 $: 2.958 Zeilen. Signale ohn
 späteren Großgewinner. Entscheidung: **`mindestKurs: 0`** — die Umsatzklassen 1–3 halten Pfennigwerte ohnehin fern, genau das wollten
 GKM mit 5 $. Keine andere Zahl des Kandidaten wurde angefasst. Ein roher Kurs in der Sicht (`sicht.roh`) steht als Verbesserung der
 Prüfstraße in `wiki/offene-auftraege.md`.
+
+## Nachtrag PM 2 (12.10.2026, vor der Messung, ohne Blick auf Renditen) — Mindestkurs wieder an, auf dem rohen Kurs
+
+Auftrag Nr. 113 (12.10.) hat der Sicht den rohen Schluss gegeben (`sicht.roh(j)`, nur Quelle `panel`; Regelflag `brauchtRoh`). Damit ist
+der 5-$-Filter so abbildbar, wie GKM ihn meinen: `mindestKurs: 5` steht wieder in `kandidat.json`, `regel.js` prüft `roh(j) ≥ 5` an den
+49 Referenztagen und meldet `brauchtRoh: true` (auf `trendkanal-tage` bräche der Lauf mit `MESSGERAET:` ab — gewollt). Erwartete Wirkung
+nach der Zählung vom 11.10.: 2.958 Zeilen mit rohem Kurs < 5 $ werden gefiltert (zuvor unbemerkt), die 967 fälschlich gefilterten Zeilen
+(NVDA 2016–19 u. a.) bleiben drin — zusammen rund 1 % der Signale. Keine andere Zahl angefasst; die Messung steht noch aus, Siegel 1 ist
+der Commit dieses Stands.
