@@ -99,3 +99,60 @@ Nettobeleg nach Kosten gefunden** (Regel 2); Wiedervorlage, sobald ein Nachbau n
 **Urteil vorab:** strukturell blind in der Korb-Form — „nicht messbar", kein Nein. Wieder vorlegen, wenn die
 Prüfstraße eine Querschnittsform mit Tagesclusterung über Einzelwerte bekommt (Auflösung wie im Querschnitt-
 Prüfstand) oder die Tagesdaten vor 2016 zurückreichen.
+
+---
+
+## 2026-10-11 (vierter Lauf) · `umkehr-nach-grossbewegung` — verworfen (Form und Auflösung)
+
+**Regel (aus der Quelle, nicht erfunden):** Kudryavtsev, „Stock Price Dynamics Surrounding Company-Specific Shocks",
+*Economic Studies* 30(7) (2021) 32–45. S&P-500-Werte 1993–2019, Tagesdaten von Yahoo. Ereignis: Tagesrendite |r| > 10 %
+(Kappung bei 50 %, ≥ 250 Vortage). Abnormale Renditen nach dem Marktmodell gegen den S&P 500 (Schätzfenster Tag −261 bis −11).
+Die Ereignisse werden nach der **5- bzw. 10-Tage-CAR vor dem Ereignis** in Quintile/Dezile **der ganzen Stichprobe** geteilt.
+Kaufsignal: großer Kurssturz, dem das unterste Dezil der 5-Tage-CAR vorausging. Halten 21 / 42 / 63 Tage.
+
+**Beleg (brutto):** nach Stürzen mit unterstem Vor-CAR-Dezil CAR(1…63) **+1,52 %**; Abstand oberstes gegen unterstes Dezil
+−2,06 % (Anstiege) / −2,20 % (Stürze). Über **alle** großen Bewegungen ohne die Vorbedingung: Umkehr „nicht signifikant oder
+knapp signifikant" (Tabelle 1). 4.699 Ereignisse in 27 Jahren (1.887 Anstiege, 2.812 Stürze). Kein Nettobeleg; der Autor
+nennt die Regel „vielversprechend … in einem Markt ohne Kommissionen". Quellen:
+https://www.iki.bas.bg/Journals/EconomicStudies/2021/2021-7/3_Andrey-Kudryavtsev_f-F.pdf (Volltext, §4–5). Dazu die
+Vorarbeit Kudryavtsev, „The Availability Heuristic and Reversals Following Large Stock Price Changes", *Journal of Behavioral
+Finance* 19(2) (2018) 159–176, https://ideas.repec.org/a/taf/hbhfxx/v19y2018i2p159-176.html (nur die Zusammenfassung frei:
+Umkehr nach 2, 5 und 20 Tagen, wenn der S&P 500 am Ereignistag in dieselbe Richtung lief, keine Zahlen frei). Beide abgerufen
+2026-10-11.
+
+**Wogegen geprüft:** `pruefstrasse/register.json` gibt es noch nicht; Zweig `pruefstrasse-ergebnisse` existiert auf origin
+nicht; `warteschlange/`: `donchian20-ausbruch-long`, `hochvolumen-praemie`; `ideen-verworfen.md`: Trendfaktor, Kurzfrist-Momentum
+mit Umschlag, Sprung-Fortsetzung (Jiang & Zhu). Im Belegstand nächstverwandt: **Kapitulation V2** (Kurssturz mit Volumen, 60m,
+in der behaupteten Größe zurückgewiesen 03.10.), die **Dip-Familie** der Minutenstudie (NEIN), die **Kurzfrist-Umkehr 5 Tage**
+im Querschnitt (15.09., +0,151 Pp je Woche, t 1,19). Die Regel ist eine Ereignis-Umkehr auf Tagesbasis mit Vorbedingung — neu,
+aber am Rand der Dip-/Umkehr-Familie.
+
+**Warum nicht eingestellt:**
+
+1. **Form.** Die Tag-Form sieht eine Reihe allein (`adapter/tag.js`, Sicht ohne Marktreihe). Beide Bedingungen der Quelle brauchen
+   den S&P 500: die Vor-CAR (Marktmodell oder marktbereinigt) und, für die Fassung von 2018, das Vorzeichen des Markttags. Die
+   Dezilgrenzen der Vor-CAR sind über die **ganze** Stichprobe 1993–2019 gezogen — als Regel ein Blick nach vorn; feste Schwellen
+   an ihrer Stelle wären erfunden (Regel 2). Ohne die Bedingungen bleibt die unbedingte Umkehr, die die Quelle selbst als
+   „nicht oder knapp signifikant" führt. Haltedauer 63 Tage liegt außerdem über dem Höchstwert 60 der Tag-Form.
+2. **Auflösung, auch wenn die Form ginge.** Panel 2016–2022, Klassen 1–3: im Mittel ≈ 809 Reihen je Tag (Zählung des PM zur
+   `hochvolumen-praemie`, 1.403.463 Zeilen an 1.735 Tagen). S&P 500 lieferte 0,35 Ereignisse je Wert und Jahr; die breitere,
+   schwankungsreichere Menge grob 0,5–1 → 2.800–5.600 Ereignisse in der Entdeckung, davon Stürze im untersten Vor-CAR-Dezil
+   **≈ 170–340**. Streuung einer 21-Tage-Rendite nach einem 10-%-Sturz ≈ 15–20 Pp → se ≈ 1,0–1,3 Pp, **MDE₈₀ ≈ 2,9–3,6 Pp**
+   (H21); bei 63 Tagen σ ≈ 28 Pp → MDE₈₀ ≈ 4–6 Pp. Behauptete Größe: +1,52 Pp (63 Tage), bei 21 Tagen kleiner. **MDE₈₀ liegt
+   über dem Doppelten der Behauptung** — weder Bestätigung noch Größen-Ausschluss möglich.
+
+**Urteil vorab:** nicht messbar (Form fehlt, Auflösung fehlt) — kein Nein. Wieder vorlegen, wenn die Sicht der Tag-Form eine
+Marktreihe (SPY) mitliefert **und** eine Fassung mit festen Schwellen aus einer Quelle vorliegt; die Auflösung bleibt auch dann
+das Hindernis, solange das Panel erst 2016 beginnt.
+
+**Mitgeprüft und verworfen in diesem Lauf:**
+- Gutierrez, „Reversal of 3-day losers and continuation of 3-day winners on the NASDAQ", *Review of Financial Economics* 30 (2016)
+  68–73, https://ideas.repec.org/a/eee/revfin/v30y2016icp68-73.html: Rangfolge der drei schlechtesten aus 200 Großwerten. Das ist
+  eine Querschnittsregel und eine Abwandlung der gemessenen Kurzfrist-Umkehr (Regel 1).
+- IBS < 0,2 (Pagonidis 2014; Nachbau https://arxiv.org/html/2306.12434v1): belegt nur für Länder-ETFs, Einstieg zum Schluss und
+  ein Tag Haltedauer. Die Tag-Form steigt zur Folgeeröffnung ein; für Einzelaktien liegt kein Beleg vor.
+- Plastun, Sibande, Gupta & Ji, „Price effects after one-day abnormal returns and crises", *RIBAF* 70 (2024),
+  https://ideas.repec.org/a/eee/riibaf/v70y2024ipas0275531924001016.html: die Autoren sagen selbst „schwach, schlägt den Markt
+  nicht" und arbeiten auf Indexebene.
+- Aktiensplits als Ereignis: die Sicht liefert bereinigte Kurse, deshalb ist ein Split dort unsichtbar. Das hängt am offenen
+  Auftrag `sicht.roh`.

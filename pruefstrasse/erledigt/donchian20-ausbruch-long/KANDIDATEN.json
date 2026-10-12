@@ -1,0 +1,9 @@
+{
+ "kennung": "donchian20-ausbruch-long",
+ "stand": "2026-10-12T02:00:49.483Z",
+ "ergebnisEntdeckungSha256": "5cf5b5b9dc9235781e6fe14910e7f0763b6a6ea3ed3d6d76c61725639bebe74a",
+ "konfigurationen": 3,
+ "regel": "FORM.md §5: netto > 0, t >= 2, Tor 1, kein Placebo-Verstoss",
+ "messgeraetFehler": [],
+ "kandidaten": []
+}
