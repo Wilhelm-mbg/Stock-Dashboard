@@ -50,8 +50,13 @@ Die Regel sieht eine Reihe (Tageskerzen einer Aktie) durch `sicht`; **lesbar sin
 als Verstoß, liefert NaN und macht das Urteil zu „Messgerät-Fehler" — der Adapter kapselt das, die Regel kann es nicht umgehen.
 `sicht.n`, `sicht.tag(j)` (Kalenderindex), `sicht.o(j)`, `sicht.h(j)`, `sicht.l(j)`, `sicht.c(j)`, `sicht.v(j)` (Stück),
 `sicht.klasse(j)` (Umsatzklasse 0–3, −1 ohne), `sicht.zulaessig(j)` (Klasse da, kein Maßnahmenfenster), `sicht.lebend`
-(Reihe lebt am Archivende), `sicht.quelle` (`panel` | `trendkanal-tage`). Auf der Panel-Quelle sind Hoch und Tief **nicht**
-vorhanden (NaN) — eine Regel, die sie braucht, meldet das und läuft nur auf `trendkanal-tage`.
+(Reihe lebt am Archivende), `sicht.quelle` (`panel` | `trendkanal-tage`), `sicht.roh(j)` (roher Schluss, unbereinigt; nur Quelle
+`panel`, sonst NaN), `sicht.markt(j)` (bereinigter SPY-Schluss am Kalendertag von Zeile j; NaN, wenn SPY dort fehlt), `sicht.hatRoh`,
+`sicht.hatMarkt`. `o/h/l/c` sind **bereinigt**: Preisfilter der Literatur (Mindestkurs) gehören auf den **rohen** Kurs `roh` (Fehlerform
+„Bereinigte Kurse messen den Cent-Boden falsch"), Marktmodelle (marktbereinigte Rendite) auf `markt`. Auf der Panel-Quelle sind Hoch und
+Tief **nicht** vorhanden (NaN) — eine Regel, die sie braucht, meldet das und läuft nur auf `trendkanal-tage`. Bedarf meldet die Regel mit
+den Flags `brauchtHochTief`, `brauchtRoh`, `brauchtMarkt` (Boolean auf `module.exports`); fehlt die Spalte der Quelle, bricht der Lauf mit
+`MESSGERAET:` ab, statt mit NaN zu rechnen.
 Einstieg: Eröffnung des Tages nach dem Signal (ohne `bestaetigt`) bzw. zwei Tage danach (mit `bestaetigt`, das am Folgetag mit
 Sicht bis dorthin gefragt wird — die Form des „bestätigten Ausbruchs" der Trendkanal-Studie). Cooldown 5 Handelstage je Richtung.
 Bewertung: Überschuss gegen den **Topf derselben Zelle** (Einstiegstag, Dauer, Klasse, lebend), Kassa-Hürde je Umsatzklasse,

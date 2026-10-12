@@ -1,7 +1,7 @@
 'use strict';
 /* Tests der Pruefstrasse (Auftrag Nr. 110 §3): Form, Sperre, Register, Gegenproben (Kunst-Kandidat mit Blick nach vorn -> Messgeraet-
- * Fehler; eingepflanzter Effekt -> Kandidat; zeitfester Effekt -> verschobenes Signal wirkt -> Messgeraet-Fehler), additive Optionen der
- * Instrumente bitgleich, und die KALIBRIERUNG der drei Adapter gegen bekannte Ergebnisse (schreibt pruefstrasse/kalibrierung.json).
+ * Fehler; eingepflanzter Effekt -> Kandidat; zeitfester Effekt -> verschobenes Signal wirkt -> Messgeraet-Fehler), Sicht roh/markt (Nr. 113),
+ * additive Optionen der Instrumente bitgleich, und die KALIBRIERUNG der drei Adapter gegen bekannte Ergebnisse (schreibt pruefstrasse/kalibrierung.json).
  *   node pruefstrasse/test.js            alles (Kalibrierung laeuft tag ~1 min, korb ~10 s, minute ~5 min)
  *   node pruefstrasse/test.js --schnell  ohne die Adapterlaeufe; prueft die abgelegte kalibrierung.json gegen das Soll
  * Simulation mit virtuellem Kapital, keine Anlageberatung. */
@@ -78,6 +78,57 @@ var e4 = null; try { SG.siegel1(K.REPO, 'pruefstrasse/gibt-es-nicht'); } catch (
 ok(e4 && e4.sperre, 'Siegel 1 auf einem fehlenden Ordner: SPERRE');
 var E0 = A.lauf(zufallSignal, KAND, { tafel: T0 });
 ok(E0.konfigurationen.every(function (k) { return k.entdeckung.nTr > 0; }) && E0.konfigurationen.every(function (k) { return !k.pruefung; }) && E0.letzterTag === '2022-12-30', 'gesperrte Tafel: Entdeckung rechnet, Pruefung gibt es nicht', E0.konfigurationen[0].entdeckung.nTr + ' Trades');
+
+console.log('2b) Sicht: roher Schluss und Marktreihe (Nr. 113)');
+/* Kunst-Sicht mit roh- und markt-Spalte: lesbar bis i, dahinter NaN UND Verstoss (wie c) */
+var ks1 = { reihe: 'K', tag: [0, 1, 2, 4, 5], o: [10, 11, 12, 13, 14], h: [10, 11, 12, 13, 14], l: [10, 11, 12, 13, 14], c: [10, 11, 12, 13, 14], v: [1, 1, 1, 1, 1], roh: [40, 44, 48, 13, 14], markt: [400, 401, 402, 403, 404, 405] };
+var sk1 = A.kunstSicht(ks1, 2), v0 = sk1.verstoesse(), r1 = sk1.roh(1), m2 = sk1.markt(2), r3 = sk1.roh(3), m3 = sk1.markt(3);
+ok(sk1.hatRoh === true && sk1.hatMarkt === true && v0 === 0 && r1 === 44 && m2 === 402 && isNaN(r3) && isNaN(m3) && sk1.verstoesse() === 2, 'Kunst-Sicht: roh(j)/markt(j) lesbar bis i, fuer j > i NaN und je ein Verstoss (wie c)', 'roh(1) ' + r1 + ' markt(2) ' + m2 + ' Verstoesse ' + sk1.verstoesse());
+/* Vorgaben: ohne roh-Spalte roh = c; ohne markt hatMarkt false und NaN ohne Verstoss */
+var ks2 = { reihe: 'K', tag: [0, 1, 2, 3], o: [10, 11, 12, 13], h: [10, 11, 12, 13], l: [10, 11, 12, 13], c: [10, 11, 12, 13], v: [1, 1, 1, 1] };
+var sk2 = A.kunstSicht(ks2, 3);
+ok(sk2.roh(0) === sk2.c(0) && sk2.roh(3) === 13 && sk2.hatMarkt === false && isNaN(sk2.markt(2)) && sk2.verstoesse() === 0, 'Kunst ohne roh-Spalte: roh(j) = c(j); ohne markt: hatMarkt false, markt(j) NaN ohne Verstoss', 'Verstoesse ' + sk2.verstoesse());
+/* Kunst-Tafel: Reihe mit Kalenderluecke (Zeile 2 ist Kalendertag 4) - markt(j) = SPY-Schluss DESSELBEN KALENDERTAGS, nicht derselben Zeile */
+var tage3 = TAGE.slice(0, 8), eins = [1, 1, 1, 1, 1, 1, 1, 1];
+var spy3 = { reihe: 'SPY', tag: [0, 1, 2, 3, 4, 5, 6, 7], o: eins, h: eins, l: eins, c: [400, 401, 402, 403, 404, 405, 406, 407], v: eins };
+var k3 = { reihe: 'K0', tag: [0, 1, 4, 5, 7], o: eins.slice(0, 5), h: eins.slice(0, 5), l: eins.slice(0, 5), c: eins.slice(0, 5), v: eins.slice(0, 5) };
+var T3 = TF.kunstTafel([k3, spy3], tage3), s3 = A.Sicht(T3.reihen[0], T3); s3.setzeBis(4);
+ok(T3.hatMarkt === true && T3.hatRoh === true && s3.markt(0) === 400 && s3.markt(2) === 404 && s3.markt(3) === 405 && s3.markt(4) === 407 && s3.verstoesse() === 0, 'Kunst-Tafel: markt(j) ist der SPY-Schluss desselben Kalendertags (Zeile 2 = Tag 4 -> 404), nicht derselben Zeilennummer (402)', s3.markt(2) + ' / ' + s3.markt(4));
+var spyL = { reihe: 'SPY', tag: [0, 1, 3, 4, 5, 6, 7], o: eins.slice(0, 7), h: eins.slice(0, 7), l: eins.slice(0, 7), c: [400, 401, 403, 404, 405, 406, 407], v: eins.slice(0, 7) };
+var kV = { reihe: 'K0', tag: [0, 1, 2, 3, 4, 5, 6, 7], o: eins, h: eins, l: eins, c: eins, v: eins };
+var T3b = TF.kunstTafel([kV, spyL], tage3), s3b = A.Sicht(T3b.reihen[0], T3b); s3b.setzeBis(7);
+ok(isNaN(s3b.markt(2)) && s3b.markt(1) === 401 && s3b.markt(3) === 403 && s3b.verstoesse() === 0, 'SPY fehlt an einem Kalendertag: markt(j) dort NaN ohne Verstoss, Nachbartage unberuehrt');
+/* Regelflags: fehlt die Spalte der Quelle, bricht lauf mit MESSGERAET: ab und nennt die Quelle */
+var ohneRoh = Object.assign({}, T0, { hatRoh: false }), e5 = null, e6 = null;
+try { A.lauf({ signal: function () { return null; }, brauchtRoh: true }, KAND, { tafel: ohneRoh }); } catch (e) { e5 = e; }
+var T0ohneSpy = TF.kunstTafel(reihen0.filter(function (r) { return r.reihe !== 'SPY'; }), TAGE);
+try { A.lauf({ signal: function () { return null; }, brauchtMarkt: true }, KAND, { tafel: T0ohneSpy }); } catch (e) { e6 = e; }
+ok(e5 && /^MESSGERAET:/.test(e5.message) && /Quelle kunst/.test(e5.message) && T0ohneSpy.hatMarkt === false && e6 && /^MESSGERAET:/.test(e6.message) && /Quelle kunst/.test(e6.message), 'brauchtRoh/brauchtMarkt auf einer Tafel ohne die Spalte: Fehler beginnt mit MESSGERAET: und nennt die Quelle', (e5 && e5.message.slice(0, 60)) + ' | ' + (e6 && e6.message.slice(0, 60)));
+/* Positivkontrolle: eine Regel, die roh und markt wirklich liest, laeuft auf der Kunst-Tafel ohne Verstoss durch */
+var marktRegel = { brauchtRoh: true, brauchtMarkt: true, signal: function (sicht, i) { return i > 0 && sicht.markt(i) > sicht.markt(i - 1) && sicht.roh(i) > 5 && (A.fnv(sicht.reihe + '|' + i) % 25) === 0 ? { dir: 1 } : null; } };
+var Em = A.lauf(marktRegel, KAND, { tafel: T0 });
+ok(Em.hatRoh === true && Em.hatMarkt === true && Em.verstoesse === 0 && Em.konfigurationen[0].entdeckung.nTr > 0, 'Regel mit brauchtRoh/brauchtMarkt liest roh(i) und markt(i) auf der Kunst-Tafel: Trades, keine Verstoesse', Em.konfigurationen[0].entdeckung.nTr + ' Trades');
+/* Panel (nur wenn voll-v23c vorhanden): Split aus den Daten und markt(j) gegen die SPY-Reihe am selben Kalenderindex */
+if (!fs.existsSync(path.join(K.PANEL, 'panel', '_stand.json'))) {
+  ok(true, 'Panel ' + K.PANEL + ' nicht vorhanden - Split-Probe (roh/c am Ex-Tag) uebersprungen');
+  ok(true, 'Panel nicht vorhanden - Marktprobe (markt(j) = spy.c am Kalenderindex) uebersprungen');
+} else {
+  var TP = TF.oeffne({ quelle: 'panel' }), aapl = null; TP.reihen.forEach(function (S) { if (S.reihe === 'AAPL') aapl = S; });
+  var sA = A.Sicht(aapl, TP); sA.setzeBis(aapl.n - 1);
+  var ex = -1, qVor = NaN, qNach = NaN;
+  for (var jA = 1; jA < aapl.n; jA++) { var qa = sA.roh(jA - 1) / sA.c(jA - 1), qb = sA.roh(jA) / sA.c(jA); if (Math.abs(qb - qa) > 1e-9) { ex = jA; qVor = qa; qNach = qb; break; } }
+  ok(TP.hatRoh === true && TP.quelle === 'panel' && ex > 0 && TP.tage[aapl.tag[ex]] === '2020-08-31' && nahe(qVor, 4, 1e-9) && nahe(qNach, 1, 1e-9) && Math.abs(sA.c(ex) / sA.c(ex - 1) - 1) < 0.1 && sA.roh(ex) / sA.roh(ex - 1) < 0.3 && sA.verstoesse() === 0,
+    'Panel AAPL: roh/c springt am Ex-Tag 2020-08-31 von 4 auf 1 (Split 4:1 aus den Daten), c selbst nicht', (ex > 0 ? TP.tage[aapl.tag[ex]] + ' roh ' + sA.roh(ex - 1) + ' -> ' + sA.roh(ex) + ', c ' + sA.c(ex - 1).toFixed(2) + ' -> ' + sA.c(ex).toFixed(2) : 'kein Sprung'));
+  var spyJeTag = {}; for (var pS = 0; pS < TP.spy.n; pS++) spyJeTag[TP.spy.tag[pS]] = TP.spy.c[pS];
+  var verglichen = 0, ohneSpy = 0, falsch = 0, mitLuecke = 0;
+  TP.reihen.slice(0, 300).forEach(function (S) {
+    var s = A.Sicht(S, TP); s.setzeBis(S.n - 1); if (S.n < S.tag[S.n - 1] - S.tag[0] + 1) mitLuecke++;
+    for (var j = 0; j < S.n; j++) { var soll = spyJeTag[S.tag[j]], m = s.markt(j); if (soll === undefined) { ohneSpy++; if (m === m) falsch++; } else { verglichen++; if (m !== soll) falsch++; } }
+    if (s.verstoesse()) falsch++;
+  });
+  ok(TP.hatMarkt === true && verglichen > 100000 && mitLuecke > 0 && falsch === 0, 'Panel: markt(j) = spy.c am selben Kalenderindex (300 Reihen, alle Zeilen, darunter Reihen mit Kalenderluecken), ohne Verstoss', verglichen + ' verglichen, ' + mitLuecke + ' Reihen mit Luecke, ' + ohneSpy + ' ohne SPY, ' + falsch + ' falsch');
+  TP = null; aapl = null; sA = null; spyJeTag = null;
+}
 
 console.log('3) Gegenproben und Urteile (FORM §5)');
 var Rg0 = { kennung: 'pruefstrasse/register/v1', konfigurationen: [], gesamt: 0, zufallErwartet: 0 };
@@ -156,6 +207,7 @@ var Kal = fs.existsSync(KAL) ? JSON.parse(fs.readFileSync(KAL, 'utf8')) : { stan
 if (!SCHNELL) {
   var tagAus = path.join(SCRATCH, 'tag.json'); adapterLauf('tag', ['--kalibrierung', tagAus], 900000);
   var Et = JSON.parse(fs.readFileSync(tagAus, 'utf8')), h5 = Et.konfigurationen.filter(function (k) { return k.key === 'H5'; })[0];
+  ok(Et.hatRoh === false && Et.hatMarkt === true, 'trendkanal-tage: Tafel meldet hatRoh false (Tagesdateien aus bereinigten Minuten, Faktor ungeprueft) und hatMarkt true (SPY)', Et.hatRoh + ' / ' + Et.hatMarkt);
   Kal.tag = { entNTage: h5.entdeckung.nTage, entNTr: h5.entdeckung.nTr, entUBrutto: h5.entdeckung.uBrutto.mittel, entUNetto: h5.entdeckung.uNetto.mittel, entT: h5.entdeckung.uNetto.t,
     besNTage: h5.pruefung.nTage, besNTr: h5.pruefung.nTr, besUBrutto: h5.pruefung.uBrutto.mittel, besUNetto: h5.pruefung.uNetto.mittel, besT: h5.pruefung.uNetto.t, reihen: Et.reihen, verstoesse: Et.verstoesse, ms: Et.ms };
   var Ek = JSON.parse(adapterLauf('korb', ['--kalibrierung'], 900000).trim().split(' ms ')[0]);

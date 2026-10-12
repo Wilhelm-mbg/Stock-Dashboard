@@ -6,7 +6,9 @@
  *                              gelesen mit deren eigenem Leser (M.ladeTage); ohne Siegel wird jede Reihe am letzten Tag vor
  *                              SPERRE_AB abgeschnitten. Fuer die Kalibrierung gegen die Studie und fuer Regeln, die Hoch/Tief brauchen.
  * Reihe S = { reihe, n, tag (Kalenderindex), o, h, l, c, v, klasse (Int8, -1 ohne), mass (Uint8: 1 = Massnahmenfenster), lebend (0/1),
- *             gruppe ('uebernahme' | 'insolvenz' | 'sonstige' | null), nextPos } - die Form von kanaele.js (reiheAus).
+ *             gruppe ('uebernahme' | 'insolvenz' | 'sonstige' | null), nextPos } - die Form von kanaele.js (reiheAus);
+ *             dazu roh (Float64, roher = unbereinigter Schluss; Nr. 113) nur, wo die Quelle ihn traegt - die Tafel meldet hatRoh.
+ * Die Tafel meldet hatRoh (roh je Reihe vorhanden) und hatMarkt (spy = bereinigte SPY-Reihe vorhanden) neben hochTief.
  * NUR LESEN. Simulation mit virtuellem Kapital, keine Anlageberatung. */
 var fs = require('fs');
 var path = require('path');
@@ -51,7 +53,7 @@ function ausPanel(opt) {
   var tage = stand.tage, sperrIdx = sperrIndex(tage), nTage = tage.length;
   var jahre = stand.jahre.map(function (j) { return j.jahr; }).filter(function (j) { return offen || j < +K.SPERRE_AB.slice(0, 4); }).sort(function (a, b) { return a - b; });
   var nSym = stand.symbole.length, sp = [];
-  for (var s = 0; s < nSym; s++) sp.push({ tag: [], o: [], h: [], l: [], c: [], v: [], klasse: [], mass: [] });
+  for (var s = 0; s < nSym; s++) sp.push({ tag: [], o: [], h: [], l: [], c: [], v: [], klasse: [], mass: [], roh: [] });
   jahre.forEach(function (j) {
     var b = PR.leseBlock(path.join(ordner, j + '.bin'), kennung);
     for (var q = 0; q < b.n; q++) {
@@ -60,6 +62,7 @@ function ausPanel(opt) {
       r.tag.push(b.tag[q]); r.o.push(b.rohEroeffnung[q] / f); r.h.push(NaN); r.l.push(NaN); r.c.push(cs);
       r.v.push(cs > 0 ? (b.umsatzReg[q] + b.umsatzAuktion[q]) / cs : 0);
       r.klasse.push(b.klasse[q]); r.mass.push((b.marken[q] & KP.M_MASSNAHME_NAH) ? 1 : 0);
+      r.roh.push(b.rohSchluss[q]);                                   /* Nr. 113: roher Schluss ohne Division (Preisfilter der Literatur) */
     }
   });
   var maxTag = offen ? stand.letzterVollTagIdx : Math.min(stand.letzterVollTagIdx, sperrIdx);
@@ -68,12 +71,13 @@ function ausPanel(opt) {
     var r = sp[s2]; if (!r.tag.length) return;
     var S = C.reiheAus(r, nTage);
     S.reihe = sym.reihe; S.klasse = Int8Array.from(r.klasse); S.mass = Uint8Array.from(r.mass); S.lebend = sym.lebend ? 1 : 0;
+    S.roh = Float64Array.from(r.roh);
     S.gruppe = gruppeVon(sym.ende_grund, S.lebend); S.art = sym.art;
     if (sym.referenz) { if (sym.reihe === 'SPY') spy = S; return; }
     reihen.push(S);
   });
   sp = null;
-  return { quelle: 'panel', hochTief: false, nTage: nTage, tage: tage, idx: stand.tage.reduce(function (m, t, i) { m[t] = i; return m; }, {}),
+  return { quelle: 'panel', hochTief: false, hatRoh: true, hatMarkt: !!spy, nTage: nTage, tage: tage, idx: stand.tage.reduce(function (m, t, i) { m[t] = i; return m; }, {}),
     reihen: reihen, spy: spy, sperrIdx: sperrIdx, maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: stand.kennung, jahreGelesen: jahre };
 }
 
@@ -95,6 +99,10 @@ function ausTrendkanal(opt) {
   function fertig(S) {
     S.mass = new Uint8Array(S.n); for (var p = 0; p < S.n; p++) S.mass[p] = (S.flags[p] & KT.FLAG.massnahmen) ? 1 : 0;
     S.gruppe = gruppeVon(S.ende && S.ende.art, S.lebend);
+    /* Nr. 113: ladeTage liefert in S.roh den ROHKURS-FAKTOR je Tag (tagesbalken.js, lesen.js rohFaktorFunktion), keinen Rohkurs - er traegt
+     * Alpacas Massnahmen ungeprueft (Kreuzprobe 12.10.: 1.204 von 273.919 Tagen anders als der Panel-Faktor mit Split-Sperre). Kein roh hier
+     * (hatRoh false); der Faktor bleibt unter rohFaktor erhalten, damit roh(j) ihn nicht als Kurs liest. */
+    S.rohFaktor = S.roh || null; S.roh = null;
     if (offen) return S;
     var n = 0; while (n < S.n && S.tag[n] <= sperrIdx) n++;
     if (n === S.n) return S;
@@ -106,7 +114,7 @@ function ausTrendkanal(opt) {
   }
   var reihen = T.reihen.map(fertig), spy = fertig(T.spy);
   var maxTag = nTage - 1; if (!offen) maxTag = Math.min(maxTag, sperrIdx);
-  return { quelle: 'trendkanal-tage', hochTief: true, nTage: nTage, tage: kal.tage, idx: kal.idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
+  return { quelle: 'trendkanal-tage', hochTief: true, hatRoh: false, hatMarkt: !!spy, nTage: nTage, tage: kal.tage, idx: kal.idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
     maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: F.kennung, dateien: T.dateien };
 }
 
@@ -121,7 +129,8 @@ function oeffne(opt) {
   throw new Error('unbekannte Quelle ' + q);
 }
 
-/** NUR FUER TESTS: Tafel aus Kunstreihen { reihe, tag, o, h, l, c, v, klasse?, mass?, lebend?, gruppe? } ueber einen Kunstkalender. */
+/** NUR FUER TESTS: Tafel aus Kunstreihen { reihe, tag, o, h, l, c, v, klasse?, mass?, lebend?, gruppe?, roh? (Vorgabe = c) } ueber einen
+ *  Kunstkalender. Die Reihe 'SPY' wird zur Marktreihe (spy, hatMarkt), wie bei den echten Quellen. */
 function kunstTafel(reihenSpalten, tage, opt) {
   opt = opt || {};
   var C = require(path.join(K.TRENDKANAL_STUDIE, 'kanaele.js'));
@@ -131,11 +140,12 @@ function kunstTafel(reihenSpalten, tage, opt) {
     var S = C.reiheAus(r, nTage);
     S.reihe = r.reihe; S.klasse = Int8Array.from(r.klasse || new Array(S.n).fill(3)); S.mass = Uint8Array.from(r.mass || new Array(S.n).fill(0));
     S.lebend = r.lebend == null ? 1 : r.lebend; S.gruppe = r.gruppe || null;
+    S.roh = Float64Array.from(r.roh || r.c);
     return S;
   }
   var alle = reihenSpalten.map(bau), spy = null, reihen = [];
   alle.forEach(function (S) { if (S.reihe === 'SPY') spy = S; else reihen.push(S); });
-  return { quelle: opt.quelle || 'kunst', hochTief: true, nTage: nTage, tage: tage, idx: idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
+  return { quelle: opt.quelle || 'kunst', hochTief: true, hatRoh: true, hatMarkt: !!spy, nTage: nTage, tage: tage, idx: idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
     maxTag: offen ? nTage - 1 : Math.min(nTage - 1, sperrIdx), gesperrt: !offen, siegel: null, klassen: opt.klassen || klassen(), kennung: 'kunst' };
 }
 
