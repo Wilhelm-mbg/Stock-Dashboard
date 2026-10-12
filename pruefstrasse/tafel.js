@@ -8,7 +8,8 @@
  * Reihe S = { reihe, n, tag (Kalenderindex), o, h, l, c, v, klasse (Int8, -1 ohne), mass (Uint8: 1 = Massnahmenfenster), lebend (0/1),
  *             gruppe ('uebernahme' | 'insolvenz' | 'sonstige' | null), nextPos } - die Form von kanaele.js (reiheAus);
  *             dazu roh (Float64, roher = unbereinigter Schluss; Nr. 113) nur, wo die Quelle ihn traegt - die Tafel meldet hatRoh.
- * Die Tafel meldet hatRoh (roh je Reihe vorhanden) und hatMarkt (spy = bereinigte SPY-Reihe vorhanden) neben hochTief.
+ * Die Tafel meldet hatRoh (roh je Reihe vorhanden), hatMarkt (spy = bereinigte SPY-Reihe vorhanden) und hatDatum (Kalender tage je Index,
+ * Nr. 117: sicht.datum(j) und die Monatsfunktionen) neben hochTief.
  * NUR LESEN. Simulation mit virtuellem Kapital, keine Anlageberatung. */
 var fs = require('fs');
 var path = require('path');
@@ -77,7 +78,7 @@ function ausPanel(opt) {
     reihen.push(S);
   });
   sp = null;
-  return { quelle: 'panel', hochTief: false, hatRoh: true, hatMarkt: !!spy, nTage: nTage, tage: tage, idx: stand.tage.reduce(function (m, t, i) { m[t] = i; return m; }, {}),
+  return { quelle: 'panel', hochTief: false, hatRoh: true, hatMarkt: !!spy, hatDatum: true, nTage: nTage, tage: tage, idx: stand.tage.reduce(function (m, t, i) { m[t] = i; return m; }, {}),
     reihen: reihen, spy: spy, sperrIdx: sperrIdx, maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: stand.kennung, jahreGelesen: jahre };
 }
 
@@ -114,7 +115,7 @@ function ausTrendkanal(opt) {
   }
   var reihen = T.reihen.map(fertig), spy = fertig(T.spy);
   var maxTag = nTage - 1; if (!offen) maxTag = Math.min(maxTag, sperrIdx);
-  return { quelle: 'trendkanal-tage', hochTief: true, hatRoh: false, hatMarkt: !!spy, nTage: nTage, tage: kal.tage, idx: kal.idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
+  return { quelle: 'trendkanal-tage', hochTief: true, hatRoh: false, hatMarkt: !!spy, hatDatum: true, nTage: nTage, tage: kal.tage, idx: kal.idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
     maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: F.kennung, dateien: T.dateien };
 }
 
@@ -145,7 +146,7 @@ function kunstTafel(reihenSpalten, tage, opt) {
   }
   var alle = reihenSpalten.map(bau), spy = null, reihen = [];
   alle.forEach(function (S) { if (S.reihe === 'SPY') spy = S; else reihen.push(S); });
-  return { quelle: opt.quelle || 'kunst', hochTief: true, hatRoh: true, hatMarkt: !!spy, nTage: nTage, tage: tage, idx: idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
+  return { quelle: opt.quelle || 'kunst', hochTief: true, hatRoh: true, hatMarkt: !!spy, hatDatum: true, nTage: nTage, tage: tage, idx: idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
     maxTag: offen ? nTage - 1 : Math.min(nTage - 1, sperrIdx), gesperrt: !offen, siegel: null, klassen: opt.klassen || klassen(), kennung: 'kunst' };
 }
 

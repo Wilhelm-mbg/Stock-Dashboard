@@ -55,8 +55,15 @@ als Verstoß, liefert NaN und macht das Urteil zu „Messgerät-Fehler" — der 
 `sicht.hatMarkt`. `o/h/l/c` sind **bereinigt**: Preisfilter der Literatur (Mindestkurs) gehören auf den **rohen** Kurs `roh` (Fehlerform
 „Bereinigte Kurse messen den Cent-Boden falsch"), Marktmodelle (marktbereinigte Rendite) auf `markt`. Auf der Panel-Quelle sind Hoch und
 Tief **nicht** vorhanden (NaN) — eine Regel, die sie braucht, meldet das und läuft nur auf `trendkanal-tage`. Bedarf meldet die Regel mit
-den Flags `brauchtHochTief`, `brauchtRoh`, `brauchtMarkt` (Boolean auf `module.exports`); fehlt die Spalte der Quelle, bricht der Lauf mit
-`MESSGERAET:` ab, statt mit NaN zu rechnen.
+den Flags `brauchtHochTief`, `brauchtRoh`, `brauchtMarkt`, `brauchtDatum` (Boolean auf `module.exports`); fehlt die Spalte der Quelle, bricht
+der Lauf mit `MESSGERAET:` ab, statt mit NaN zu rechnen.
+Kalender (Nr. 117): `sicht.datum(j)` ist das Kalenderdatum der Zeile j als `JJJJ-MM-TT`, hinter derselben Schranke wie `c(j)`; dazu
+`sicht.istLetzterHandelstagImMonat(j)` und `sicht.istErsterHandelstagImMonat(j)` (`true | false | null`), berechnet aus dem Kalender der
+Tafel **nur bis zur Schranke**, und `sicht.hatDatum`. **Blick-nach-vorn-Regel:** „letzter Handelstag im Monat" darf erst entschieden werden,
+wenn der nächste Kalendertag der Tafel bekannt ist, also für j < i; für j = i liefert die Funktion `null` (unbekannt). „Erster Handelstag im
+Monat" braucht nur den Vortag und ist für jedes j ≤ i entschieden (am Kalenderanfang `null`). Einen Kalender nach vorn (`sicht.tage`) gibt es
+nicht; Terminlisten, die in der Wirklichkeit vorab feststehen (FOMC-Sitzungen), gehören als `params` in `kandidat.json` und werden gegen
+`datum(j)` verglichen — die Regel darf aus dem Datum rechnen (Wochentag), aber keinen Handelstag der Tafel hinter i lesen.
 Einstieg: Eröffnung des Tages nach dem Signal (ohne `bestaetigt`) bzw. zwei Tage danach (mit `bestaetigt`, das am Folgetag mit
 Sicht bis dorthin gefragt wird — die Form des „bestätigten Ausbruchs" der Trendkanal-Studie). Cooldown 5 Handelstage je Richtung.
 Bewertung: Überschuss gegen den **Topf derselben Zelle** (Einstiegstag, Dauer, Klasse, lebend), Kassa-Hürde je Umsatzklasse,
@@ -81,7 +88,7 @@ Läuft mit `node pruefstrasse/warteschlange/<kennung>/test.js`, Rückgabewert 0 
 **feuert** (ein Test, der nie ein Signal sieht, prüft nichts — „Nullbefund vom toten Werkzeug"), (b) Randfälle (zu kurze Reihe,
 fehlende Werte), (c) die Gegenprobe „kein Blick nach vorn": Zeilen nach i verändern → Signal unverändert (tag/minute) bzw.
 Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidaten liefert `pruefstrasse/adapter/tag.js` dafür
-`kunstSicht(spalten)`.
+`kunstSicht(spalten, i)` (Spalten `roh`, `markt`, `datum` optional; ohne `datum` ein Werktagskalender ab 2020-01-02, `kunstKalender(n)`).
 
 ## 5. Zeiträume, Siegel, Urteile (gilt für alle Formen)
 

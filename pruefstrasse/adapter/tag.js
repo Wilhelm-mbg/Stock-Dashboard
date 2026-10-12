@@ -8,7 +8,8 @@
  * dn/ds je Abgangsgruppe. Arten: echt, spaet (Einstieg einen Tag spaeter, Ausstieg fest), versatz (Signal 20 Tage spaeter),
  * placebo (anderer Wert, gleicher Tag, gleiche Klasse, gleiche Richtung). Der Topf hat ein eigenes Feld (Dauer 1..61).
  *
- * Die Sicht: nur Zeilen <= i lesbar; jeder Zugriff dahinter zaehlt als Verstoss und liefert NaN (Messgeraet-Fehler).
+ * Die Sicht: nur Zeilen <= i lesbar; jeder Zugriff dahinter zaehlt als Verstoss und liefert NaN (Messgeraet-Fehler). Dazu roh/markt (Nr. 113)
+ * und datum(j) mit den Monatsfunktionen (Nr. 117; Kalender nur bis zur Schranke). Regelflags brauchtHochTief/brauchtRoh/brauchtMarkt/brauchtDatum.
  * NUR LESEN. Simulation mit virtuellem Kapital, keine Anlageberatung. */
 var path = require('path');
 var K = require('../konfig.js');
@@ -23,11 +24,26 @@ function mulberry32(seed) { var a = seed >>> 0; return function () { a = (a + 0x
 
 /* ---------- Die Sicht (eine je Reihe, Grenze `bis` wandert mit i) ---------- */
 function Sicht(S, TF) {
-  var bis = -1, verstoesse = 0, beispiele = [], spy = TF.spy || null;
+  var bis = -1, verstoesse = 0, beispiele = [], spy = TF.spy || null, tage = TF.hatDatum ? (TF.tage || null) : null;
   function lese(arr, j) { if (j > bis || j < 0 || j >= S.n) { if (j > bis && j < S.n) { verstoesse++; if (beispiele.length < 5) beispiele.push(S.reihe + '@' + j + ' (erlaubt bis ' + bis + ')'); } return NaN; } return arr[j]; }
+  /* Nr. 117: Kalenderdatum der Zeile j (JJJJ-MM-TT, TF.tage[S.tag[j]]) hinter derselben Schranke wie c(j). Die Monatsfunktionen lesen den
+   * Kalender der Tafel NUR bis zur Schranke (Blick-nach-vorn-Regel, FORM.md §3): "letzter Handelstag im Monat" ist erst entschieden, wenn der
+   * naechste Kalendertag der Tafel bekannt ist, also fuer j < bis; fuer j = bis null (unbekannt). "Erster Handelstag im Monat" braucht nur den
+   * Vortag und ist fuer jedes j <= bis entschieden (am Kalenderanfang null). sicht.tage gibt es absichtlich nicht. */
+  function monat(d) { return d.slice(0, 7); }
+  function datum(j) { var t = lese(S.tag, j); if (t !== t || !tage) return NaN; var d = tage[t]; return d == null ? NaN : d; }
+  function istLetzterHandelstagImMonat(j) {
+    var t = lese(S.tag, j); if (t !== t || !tage || !(j < bis)) return null;
+    var d = tage[t], n = tage[t + 1]; return (d == null || n == null) ? null : monat(n) !== monat(d);
+  }
+  function istErsterHandelstagImMonat(j) {
+    var t = lese(S.tag, j); if (t !== t || !tage || t < 1) return null;
+    var d = tage[t], v = tage[t - 1]; return (d == null || v == null) ? null : monat(v) !== monat(d);
+  }
   return {
-    n: S.n, reihe: S.reihe, lebend: S.lebend, quelle: TF.quelle, hochTief: TF.hochTief, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt,
+    n: S.n, reihe: S.reihe, lebend: S.lebend, quelle: TF.quelle, hochTief: TF.hochTief, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!tage,
     setzeBis: function (i) { bis = i; }, bis: function () { return bis; },
+    datum: datum, istLetzterHandelstagImMonat: istLetzterHandelstagImMonat, istErsterHandelstagImMonat: istErsterHandelstagImMonat,
     tag: function (j) { return lese(S.tag, j); }, o: function (j) { return lese(S.o, j); }, h: function (j) { return lese(S.h, j); },
     l: function (j) { return lese(S.l, j); }, c: function (j) { return lese(S.c, j); }, v: function (j) { return lese(S.v, j); },
     /* Nr. 113: roher (unbereinigter) Schluss der Zeile j und bereinigter SPY-Schluss am KALENDERTAG der Zeile j - beide hinter derselben
@@ -40,11 +56,20 @@ function Sicht(S, TF) {
     verstoesse: function () { return verstoesse; }, beispiele: function () { return beispiele; },
   };
 }
-/** NUR FUER test.js der Kandidaten: Sicht auf Kunstspalten { tag, o, h, l, c, v, klasse?, mass?, roh? (Vorgabe = c), markt? } mit Grenze i.
- *  markt (Nr. 113) ist ein Array JE KALENDERINDEX (SPY-Schluss; null/NaN = kein SPY an dem Tag); ohne markt ist hatMarkt false und markt(j) NaN. */
+/** Kunstkalender fuer Tests (Nr. 117): n Werktage (Mo-Fr, ohne Feiertage) ab 2020-01-02 als JJJJ-MM-TT. */
+function kunstKalender(n) {
+  var t = [], ms = Date.UTC(2020, 0, 2);
+  while (t.length < n) { var d = new Date(ms), w = d.getUTCDay(); if (w !== 0 && w !== 6) t.push(d.toISOString().slice(0, 10)); ms += 86400000; }
+  return t;
+}
+/** NUR FUER test.js der Kandidaten: Sicht auf Kunstspalten { tag, o, h, l, c, v, klasse?, mass?, roh? (Vorgabe = c), markt?, datum? } mit Grenze i.
+ *  markt (Nr. 113) ist ein Array JE KALENDERINDEX (SPY-Schluss; null/NaN = kein SPY an dem Tag); ohne markt ist hatMarkt false und markt(j) NaN.
+ *  datum (Nr. 117) ist ein Array JE KALENDERINDEX (JJJJ-MM-TT); ohne Angabe der Kunstkalender aus Werktagen ab 2020-01-02 (kunstKalender). */
 function kunstSicht(spalten, i) {
-  var markt = spalten.markt || null, nTage = Math.max.apply(null, spalten.tag) + 1;
+  var markt = spalten.markt || null, datum = spalten.datum || null, nTage = Math.max.apply(null, spalten.tag) + 1;
   if (markt) nTage = Math.max(nTage, markt.length);
+  if (datum) nTage = Math.max(nTage, datum.length);
+  var tage = datum ? datum.slice() : kunstKalender(nTage);
   var S = C.reiheAus(spalten, nTage);
   S.reihe = spalten.reihe || 'KUNST'; S.klasse = Int8Array.from(spalten.klasse || new Array(S.n).fill(3)); S.mass = Uint8Array.from(spalten.mass || new Array(S.n).fill(0)); S.lebend = 1;
   S.roh = Float64Array.from(spalten.roh || spalten.c);
@@ -54,7 +79,7 @@ function kunstSicht(spalten, i) {
     for (var t = 0; t < markt.length; t++) { var m = markt[t]; if (m == null || m !== m) continue; sp.tag.push(t); sp.o.push(m); sp.h.push(m); sp.l.push(m); sp.c.push(m); sp.v.push(0); }
     spy = C.reiheAus(sp, nTage); spy.reihe = 'SPY';
   }
-  var s = Sicht(S, { quelle: 'kunst', hochTief: true, hatRoh: true, hatMarkt: !!spy, spy: spy }); s.setzeBis(i); return s;
+  var s = Sicht(S, { quelle: 'kunst', hochTief: true, hatRoh: true, hatMarkt: !!spy, spy: spy, hatDatum: true, tage: tage }); s.setzeBis(i); return s;
 }
 
 /* ---------- Zellen ---------- */
@@ -300,18 +325,19 @@ function lauf(regel, kand, opt) {
   if (!TF.hochTief && regel.brauchtHochTief) throw new Error('MESSGERAET: die Regel braucht Hoch/Tief, die Quelle ' + TF.quelle + ' hat sie nicht');
   if (!TF.hatRoh && regel.brauchtRoh) throw new Error('MESSGERAET: die Regel braucht den rohen Schluss (roh), die Quelle ' + TF.quelle + ' hat ihn nicht');
   if (!TF.hatMarkt && regel.brauchtMarkt) throw new Error('MESSGERAET: die Regel braucht die Marktreihe (markt = SPY), die Quelle ' + TF.quelle + ' hat sie nicht');
+  if (!TF.hatDatum && regel.brauchtDatum) throw new Error('MESSGERAET: die Regel braucht das Kalenderdatum (datum, Monatsfunktionen), die Quelle ' + TF.quelle + ' hat keinen Kalender');
   var iSchnitt = indexAb(TF, opt.schnitt || K.SPERRE_AB);
   var ersteZeile = TF.nTage; TF.reihen.forEach(function (S) { if (S.n && S.tag[0] < ersteZeile) ersteZeile = S.tag[0]; });
   var TE = handelstage(TF, ersteZeile, iSchnitt - 1), TB = TF.gesperrt ? Math.max(1, Math.round(TE * (opt.tbAnteil || 0.5))) : handelstage(TF, iSchnitt, TF.maxTag);
   if (TF.gesperrt && opt.tbHandelstage) TB = opt.tbHandelstage;
   var M = messe(TF, regel, kand, opt);
   var konf = auswerte(M, TF, { iSchnitt: iSchnitt, TE: TE, TB: TB, pruefung: opt.pruefung || null });
-  return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, reihen: TF.reihen.length, nTage: TF.nTage,
+  return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum, reihen: TF.reihen.length, nTage: TF.nTage,
     letzterTag: TF.tage[TF.maxTag], schnitt: TF.tage[iSchnitt] || null, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
     konfigurationen: konf, klassen: TF.klassen.map(function (k) { return { name: k.name, huerde: k.huerde }; }) };
 }
 
-module.exports = { lauf: lauf, messe: messe, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, Zellen: Zellen, momente: momente, statistik: statistik,
+module.exports = { lauf: lauf, messe: messe, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, kunstKalender: kunstKalender, Zellen: Zellen, momente: momente, statistik: statistik,
   tagesreihe: tagesreihe, phi: phi, handelstage: handelstage, indexAb: indexAb, fnv: fnv, mulberry32: mulberry32, ARTEN: ARTEN, GRUPPEN: GRUPPEN, POT_MAX_DAUER: POT_MAX_DAUER };
 
 /* Kalibrierung (FORM §3, Auftrag §3): node --max-old-space-size=6144 pruefstrasse/adapter/tag.js --kalibrierung [<ausgabe.json>]

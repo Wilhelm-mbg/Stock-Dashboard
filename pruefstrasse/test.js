@@ -130,6 +130,59 @@ if (!fs.existsSync(path.join(K.PANEL, 'panel', '_stand.json'))) {
   TP = null; aapl = null; sA = null; spyJeTag = null;
 }
 
+console.log('2c) Sicht: Kalenderdatum und Monatsfunktionen (Nr. 117)');
+/* Kunst-Sicht ohne datum-Spalte: Werktagskalender ab 2020-01-02 (Do 02.01., Fr 03.01., Mo 06.01. ...); datum(j) lesbar bis i, dahinter NaN UND Verstoss */
+var kd1 = A.kunstSicht(ks1, 2), kdA = kd1.datum(0), kdB = kd1.datum(2), kdC = kd1.datum(3);
+ok(kd1.hatDatum === true && kdA === '2020-01-02' && kd1.datum(1) === '2020-01-03' && kdB === '2020-01-06' && kdC !== kdC && kd1.verstoesse() === 1,
+  'Kunst-Sicht ohne datum-Spalte: Kunstkalender aus Werktagen ab 2020-01-02 (Kalenderindex 2 = Montag 06.01.), datum(j) lesbar bis i, fuer j > i NaN und Verstoss', kdA + ' / ' + kdB + ' / Verstoesse ' + kd1.verstoesse());
+/* Monatswende an einem Kunstkalender mit Feiertag (Karfreitag 30.03.2018) und Wochenende; Kalender laenger als die Sicht */
+var kalM = ['2018-03-27', '2018-03-28', '2018-03-29', '2018-04-02', '2018-04-03', '2018-04-30', '2018-05-01', '2018-05-02'], e8 = [1, 1, 1, 1, 1, 1, 1, 1];
+var ksM = { reihe: 'K', tag: [0, 1, 2, 3, 4, 5, 6, 7], o: e8, h: e8, l: e8, c: e8, v: e8, datum: kalM };
+var sM = A.kunstSicht(ksM, 7);
+ok(sM.istLetzterHandelstagImMonat(2) === true && sM.istLetzterHandelstagImMonat(1) === false && sM.istLetzterHandelstagImMonat(3) === false && sM.istLetzterHandelstagImMonat(5) === true && sM.istLetzterHandelstagImMonat(0) === false && sM.istLetzterHandelstagImMonat(7) === null,
+  'letzter Handelstag im Monat: 29.03.2018 (Karfreitag 30.03. kein Handelstag, dann Wochenende) und 30.04.2018, Nachbartage false, j = i null');
+ok(sM.istErsterHandelstagImMonat(3) === true && sM.istErsterHandelstagImMonat(6) === true && sM.istErsterHandelstagImMonat(2) === false && sM.istErsterHandelstagImMonat(4) === false && sM.istErsterHandelstagImMonat(7) === false && sM.istErsterHandelstagImMonat(0) === null && sM.verstoesse() === 0,
+  'erster Handelstag im Monat: 02.04. (Montag nach Karfreitag) und 01.05.; fuer j = i entschieden; am Kalenderanfang null; keine Verstoesse');
+/* Blick-nach-vorn-Regel: fuer j = bis null, obwohl der Kalender weitergeht; einen Tag spaeter entschieden; j > bis null und Verstoss */
+var sM2 = A.kunstSicht(ksM, 2), lM2 = sM2.istLetzterHandelstagImMonat(2), lM1 = sM2.istLetzterHandelstagImMonat(1), lM3 = sM2.istLetzterHandelstagImMonat(3), vM = sM2.verstoesse(), eM2 = sM2.istErsterHandelstagImMonat(2);
+sM2.setzeBis(3); var lM2b = sM2.istLetzterHandelstagImMonat(2), eM3 = sM2.istErsterHandelstagImMonat(3);
+ok(lM2 === null && lM1 === false && lM3 === null && vM === 1 && eM2 === false && lM2b === true && eM3 === true && sM2.datum(2) === '2018-03-29' && sM2.verstoesse() === 1,
+  'Blick-nach-vorn-Regel: am Tag i = 29.03. ist "letzter Handelstag" fuer i selbst null (Kalender geht weiter, darf aber nicht gelesen werden), j > i null + Verstoss, einen Tag spaeter true', lM2 + ' / ' + lM3 + ' / Verstoesse ' + vM + ' / spaeter ' + lM2b);
+/* Kunst-Tafel (Werktage 2021-01-04 .. 2023-12-29, ohne Feiertage): Zaehlung ueber die ganze Reihe gegen den Kalender */
+var sT0 = A.Sicht(T0.reihen[0], T0); sT0.setzeBis(T0.reihen[0].n - 1);
+var nLetzte = 0, nErste = 0, nNull = 0; for (var jT = 0; jT < T0.reihen[0].n; jT++) { var lT = sT0.istLetzterHandelstagImMonat(jT), eT = sT0.istErsterHandelstagImMonat(jT); if (lT === true) nLetzte++; if (eT === true) nErste++; if (lT === null) nNull++; if (eT === null) nNull++; }
+ok(T0.hatDatum === true && sT0.datum(0) === '2021-01-04' && sT0.datum(T0.reihen[0].n - 1) === '2023-12-29' && nLetzte === 35 && nErste === 35 && nNull === 2 && sT0.verstoesse() === 0,
+  'Kunst-Tafel: datum(j) = Kalendertag, 35 letzte und 35 erste Handelstage in 36 Monaten (Dezember 2023 am Rand unbekannt, Januar 2021 am Anfang unbekannt)', nLetzte + ' / ' + nErste + ' / null ' + nNull);
+/* Regelflag brauchtDatum: Tafel ohne Kalender -> MESSGERAET:; Positivkontrolle: Regel liest datum und Monatsfunktion ohne Verstoss */
+var ohneDatum = Object.assign({}, T0, { hatDatum: false }), e7 = null;
+try { A.lauf({ signal: function () { return null; }, brauchtDatum: true }, KAND, { tafel: ohneDatum }); } catch (e) { e7 = e; }
+ok(e7 && /^MESSGERAET:/.test(e7.message) && /Quelle kunst/.test(e7.message), 'brauchtDatum auf einer Tafel ohne Kalender: Fehler beginnt mit MESSGERAET: und nennt die Quelle', e7 && e7.message.slice(0, 70));
+var datumRegel = { brauchtDatum: true, signal: function (sicht, i) { return i > 0 && sicht.istLetzterHandelstagImMonat(i - 1) === true && typeof sicht.datum(i) === 'string' ? { dir: 1 } : null; } };
+var Ed = A.lauf(datumRegel, KAND, { tafel: T0 });
+ok(Ed.hatDatum === true && Ed.verstoesse === 0 && Ed.zaehler.signale > 0 && Ed.konfigurationen[0].entdeckung.nTage === 23, 'Regel mit brauchtDatum (Signal am ersten Handelstag des Monats ueber istLetzterHandelstagImMonat(i-1)): 23 Signaltage 2021-02 .. 2022-12, keine Verstoesse', Ed.konfigurationen[0].entdeckung.nTage + ' Signaltage, ' + Ed.zaehler.signale + ' Signale');
+/* Panel (nur wenn vorhanden): datum(j) = Kalendertag aus _stand.json; Monatsfunktionen = unabhaengige Rechnung ueber denselben Kalender */
+if (!fs.existsSync(path.join(K.PANEL, 'panel', '_stand.json'))) {
+  ok(true, 'Panel nicht vorhanden - Datumsprobe (datum(j) = Kalendertag aus _stand.json) uebersprungen');
+} else {
+  var TP2 = TF.oeffne({ quelle: 'panel' }), standTage = JSON.parse(fs.readFileSync(path.join(K.PANEL, 'panel', '_stand.json'), 'utf8')).tage;
+  var geprueftD = 0, falschD = 0, letzteD = 0, ersteD = 0;
+  var monD = function (d) { return d.slice(0, 7); };
+  TP2.reihen.slice(0, 200).forEach(function (S) {
+    var s = A.Sicht(S, TP2); s.setzeBis(S.n - 1);
+    for (var j = 0; j < S.n; j++) {
+      var t = S.tag[j]; geprueftD++;
+      if (s.datum(j) !== standTage[t]) falschD++;
+      var sollL = (j < S.n - 1 && t + 1 < standTage.length) ? monD(standTage[t + 1]) !== monD(standTage[t]) : null;
+      var sollE = t > 0 ? monD(standTage[t - 1]) !== monD(standTage[t]) : null;
+      if (s.istLetzterHandelstagImMonat(j) !== sollL || s.istErsterHandelstagImMonat(j) !== sollE) falschD++;
+      if (sollL === true) letzteD++; if (sollE === true) ersteD++;
+    }
+    if (s.verstoesse()) falschD++;
+  });
+  ok(TP2.hatDatum === true && geprueftD > 100000 && falschD === 0 && letzteD > 0, 'Panel: datum(j) = Kalendertag aus _stand.json, Monatsfunktionen = unabhaengige Rechnung ueber den Kalender (200 Reihen, alle Zeilen), ohne Verstoss', geprueftD + ' Zeilen, ' + letzteD + ' letzte / ' + ersteD + ' erste Handelstage, ' + falschD + ' falsch');
+  TP2 = null; standTage = null;
+}
+
 console.log('3) Gegenproben und Urteile (FORM §5)');
 var Rg0 = { kennung: 'pruefstrasse/register/v1', konfigurationen: [], gesamt: 0, zufallErwartet: 0 };
 var U0 = LF.urteile(E0, null, Rg0);
