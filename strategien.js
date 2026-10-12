@@ -419,24 +419,10 @@
     var a = api && api.antwort ? api.antwort() : null;
     var st = api && api.regelStatus ? api.regelStatus() : null;
     if (!a || !st) { elH.innerHTML = '<div class="loading">Lade Strategie-Stand …</div>'; return; }
-    var zeilen = [];
-    if (st.intradayAn) {
-      var cI = antwortChip([st.modus]) || { txt: 'nicht gemessen', farbe: 'muted' };
-      zeilen.push('<div><b>Intraday</b> · ' + U.esc(a.modusName || st.modus || '?') +
-        ' – handelt ' + (a.instrument === 'schein' ? 'Hebelscheine' : 'die Aktie selbst (1×)') +
-        ' ' + chipHtml(cI) +
-        /* Der Zusatz traegt sein EIGENES Etikett aus der Kette - nicht das des Hauptmodus. */
-        (st.kapiZusatz && st.modus !== 'kapitulation'
-          ? ' <span>+ Kapitulations-Dip von Hand zugeschaltet</span> ' +
-            chipHtml(antwortChip(['kapitulation']) || { txt: 'nicht gemessen', farbe: 'muted' })
-          : '') + '</div>');
-    }
-    STRATEGIEN.forEach(function (s) {
-      if (s.key === 'kurz' || s.fussnote || !s.schalter) return;
-      if (!anZustand(s.key)) return;
-      var c = antwortChip(s.messKeys || []) ||
-        { txt: s.stand, farbe: s.farbe, quelle: 'Stand aus strategien.js (kein Messprotokoll im Datenordner)' };
-      zeilen.push('<div><b>' + U.esc(s.name) + '</b> · ' + U.esc(s.tut || ersterSatz(s.was)) + ' ' + chipHtml(c) + rueckblickZeilen(s.messKeys || []) + '</div>');
+    var zeilen = antwortHandeltZeilen(a, st).map(function (s) {
+      var c = s.chip;
+      if (s.zusatz) return '<div><b>' + U.esc(s.name) + '</b> · ' + U.esc(s.text) + ' ' + chipHtml(c) + ' <span>+ ' + U.esc(s.zusatz.text) + '</span> ' + chipHtml(s.zusatz.chip) + '</div>';
+      return '<div><b>' + U.esc(s.name) + '</b> · ' + U.esc(s.text) + ' ' + chipHtml(c) + rueckblickZeilen(s.messKeys || []) + '</div>';
     });
     if (!zeilen.length) zeilen.push('<div>Es handelt gerade keine Strategie.</div>');
     if (!st.intradayAn && st.schatten) {
@@ -452,21 +438,52 @@
     }
     var elS = document.getElementById('antwortStatus');
     if (elS) {
-      var teile = [];
-      teile.push('Autopilot: ' + (a.pilotAn ? 'an' : 'aus') +
-        (a.pilotZuletzt ? ' (letzte Nachtmessung ' + U.dt(a.pilotZuletzt) + ')' : ''));
-      teile.push('Marktlage: ' + (a.regime
-        ? U.esc(a.regime.txt) + (a.regime.pause ? ' – <b style="color:var(--down);">neue Einstiege ausgesetzt</b>' : '')
-        : 'noch keine Messung'));
-      teile.push('Risiko: ' + a.positionen + (a.maxPos ? ' von max. ' + a.maxPos : '') + ' Positionen offen' +
-        (a.tagPct != null ? ' · heute ' + (a.tagPct >= 0 ? '+' : '') + U.dez(a.tagPct, 1) + ' %' : '') +
-        (a.dayLossPct ? ' (Tageslimit −' + a.dayLossPct + ' %)' : '') +
-        (a.killSwitch ? ' · <b style="color:var(--down);">Kill-Switch: Handel bis Tagesende gesperrt</b>' : ''));
+      var teile = antwortStatusZeilen(a).map(function (z) {
+        return U.esc(z.text) + (z.warnung ? z.trenner + '<b style="color:var(--down);">' + U.esc(z.warnung) + '</b>' : '');
+      });
       elS.innerHTML = '<div style="display:grid; gap:4px; font-size:var(--fs-neben); color:var(--ink-2);">' +
         teile.map(function (t) { return '<div>' + t + '</div>'; }).join('') + '</div>';
     }
   }
-  if (typeof window !== 'undefined') window.__antwortRender = renderAntwort;
+  /* ---- Die TEXTE der Antwort-Seite, herausgeloest (Lagebild-Export, Auftrag Nr. 115) ----
+   * renderAntwort baut nur noch das Markup darum; lagebild.js liest dieselben Funktionen
+   * (window.__antwortTexte). Kein Urteil entsteht hier: die Etiketten kommen aus antwortChip
+   * (Messprotokoll -> Studienregister), die Zustandswoerter aus DepotAPI.antwort(). */
+  function antwortHandeltZeilen(a, st) {
+    var zeilen = [];
+    if (st.intradayAn) {
+      zeilen.push({ name: 'Intraday', text: (a.modusName || st.modus || '?') + ' – handelt ' +
+          (a.instrument === 'schein' ? 'Hebelscheine' : 'die Aktie selbst (1×)'),
+        chip: antwortChip([st.modus]) || { txt: 'nicht gemessen', farbe: 'muted' },
+        /* Der Zusatz traegt sein EIGENES Etikett aus der Kette - nicht das des Hauptmodus. */
+        zusatz: (st.kapiZusatz && st.modus !== 'kapitulation')
+          ? { text: 'Kapitulations-Dip von Hand zugeschaltet', chip: antwortChip(['kapitulation']) || { txt: 'nicht gemessen', farbe: 'muted' } }
+          : null,
+        messKeys: [] });
+    }
+    STRATEGIEN.forEach(function (s) {
+      if (s.key === 'kurz' || s.fussnote || !s.schalter) return;
+      if (!anZustand(s.key)) return;
+      var c = antwortChip(s.messKeys || []) ||
+        { txt: s.stand, farbe: s.farbe, quelle: 'Stand aus strategien.js (kein Messprotokoll im Datenordner)' };
+      zeilen.push({ name: s.name, text: s.tut || ersterSatz(s.was), chip: c, zusatz: null, messKeys: s.messKeys || [] });
+    });
+    return zeilen;
+  }
+  function antwortStatusZeilen(a) {
+    return [
+      { text: 'Autopilot: ' + (a.pilotAn ? 'an' : 'aus') + (a.pilotZuletzt ? ' (letzte Nachtmessung ' + U.dt(a.pilotZuletzt) + ')' : ''), warnung: null, trenner: '' },
+      { text: 'Marktlage: ' + (a.regime ? a.regime.txt : 'noch keine Messung'), warnung: (a.regime && a.regime.pause) ? 'neue Einstiege ausgesetzt' : null, trenner: ' – ' },
+      { text: 'Risiko: ' + a.positionen + (a.maxPos ? ' von max. ' + a.maxPos : '') + ' Positionen offen' +
+          (a.tagPct != null ? ' · heute ' + (a.tagPct >= 0 ? '+' : '') + U.dez(a.tagPct, 1) + ' %' : '') +
+          (a.dayLossPct ? ' (Tageslimit −' + a.dayLossPct + ' %)' : ''),
+        warnung: a.killSwitch ? 'Kill-Switch: Handel bis Tagesende gesperrt' : null, trenner: ' · ' }
+    ];
+  }
+  if (typeof window !== 'undefined') {
+    window.__antwortRender = renderAntwort;
+    window.__antwortTexte = { handelt: antwortHandeltZeilen, status: antwortStatusZeilen };
+  }
 
   /* ===== Belegstand-Gruppen (Regeln-Neubau Stufe 3, 31.08.2026) =====
    * Jede Strategie GENAU EINMAL, einsortiert nach dem echten Belegstand:

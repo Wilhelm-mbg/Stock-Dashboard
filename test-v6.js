@@ -25266,6 +25266,200 @@ console.log('106) Pruefstrasse: Form, Sperre, Register, Gegenproben, Kalibrierun
   ok(/## 1\. Die vier Dateien/.test(fm) && /kandidat\.json/.test(fm) && /REGEL\.md/.test(fm) && /regel\.js/.test(fm) && /test\.js/.test(fm) && /Messgerät-Fehler/.test(fm) && /2,8016/.test(fm), '106 FORM.md nennt die vier Dateien, die Urteile und den MDE-Faktor');
 })();
 
+/* ================= 107) Lagebild-Export fuer den Reiter "Markt" im Management-Tool (Auftrag Nr. 115, 12.10.2026) =====
+ *
+ * lagebild.js ist ein reines Modul: bau(quellen) wirft nie, jeder Schluessel der Referenz
+ * (test-daten/lagebild-beispiel.json = Kopie von Markt-Dashboard-Daten/uebergabe/lagebild-beispiel.json)
+ * steht im Export, Texte mit Urteil oder Beleg kommen aus denselben Funktionen wie auf der Karte.
+ * Kunstdaten, kein Netz, keine echten Schluessel. */
+(function () {
+  var fs = require('fs'), path = require('path'), os = require('os'), vm = require('vm'), cp = require('child_process');
+  var L = require('./lagebild.js'), Mst = require('./massstab.js'), Boerse = require('./boerse.js'), Drift = require('./drift.js');
+  function pz1(v) { if (!isFinite(v)) return '–'; var r = Math.round(v * 10) / 10; return (r > 0 ? '+' : r < 0 ? '-' : '±') + Math.abs(r).toFixed(1).replace('.', ',') + ' %'; }
+  var win = { Massstab: Mst, U: { pz1: pz1 } };
+  vm.runInNewContext(fs.readFileSync(__dirname + '/studienurteile.js', 'utf8'), { window: win, document: undefined, Array: Array, String: String, Object: Object, Math: Math, isFinite: isFinite, RegExp: RegExp });
+  var SU = win.StudienUrteile;
+  /* (d) die Textfunktionen der Karten, aus dem Quelltext geholt - DIESELBEN, die karteHtml und renderIntradayKarte rufen */
+  var mfdQ = ohneKommentare(fs.readFileSync(__dirname + '/mfdepot.js', 'utf8')), depQ = ohneKommentare(fs.readFileSync(__dirname + '/depot.js', 'utf8'));
+  var fnM = /function gegenMarktText\(v\) \{[^\n]*\}/.exec(mfdQ), fnI = /function intradayGegenMarktText\(vI\) \{[^\n]*\}/.exec(depQ);
+  ok(!!fnM && /U\.esc\(gegenMarktText\(v\)\)/.test(mfdQ) && /gegenMarktText: gegenMarktText/.test(mfdQ), '107 mfdepot.js: die Karte schreibt "Gegen den Markt" ueber gegenMarktText(v) und gibt die Funktion heraus');
+  ok(!!fnI && /U\.esc\(intradayGegenMarktText\(vI\)\)/.test(depQ) && /text: intradayGegenMarktText\(v\)/.test(depQ), '107 depot.js: die Intraday-Karte und DepotAPI.intradayGegenMarkt benutzen dieselbe Textfunktion');
+  var gegenMarktText = fnM ? vm.runInNewContext('(function (window, U) { ' + fnM[0] + '; return gegenMarktText; })', {})(win, win.U) : null;
+  var intradayGegenMarktText = fnI ? vm.runInNewContext('(function (Massstab, pz1) { ' + fnI[0] + '; return intradayGegenMarktText; })', {})(Mst, pz1) : null;
+
+  var T0 = Date.parse('2026-10-12T14:35:00Z'), TAG = 86400000;
+  var markt = [], roh = [];
+  for (var i = 40; i >= 0; i--) { markt.push([T0 - i * TAG - 3600000 * 10, 600 + (40 - i) * 0.9]); roh.push([T0 - i * TAG - 3600000 * 10, 600 + (40 - i) * 0.88]); }
+  var verlauf = [], eq = [];
+  for (var j = 30; j >= 0; j--) {
+    var t = T0 - j * TAG - 3600000 * 2, k = -1;
+    for (var a = 0; a < roh.length; a++) if (roh[a][0] <= t) k = a;
+    verlauf.push({ t: t, tag: 'd', momentum: 50000 + (30 - j) * 60, drift: 50000 - (30 - j) * 20, startM: 50000, startD: 50000, spy: k >= 0 ? roh[k][1] : null, spyT: k >= 0 ? roh[k][0] : null });
+    eq.push([t, 2000 + (30 - j)]);
+  }
+  var D = { positions: [{ sym: 'CEG', qty: 1, entry: 300, openT: T0 - TAG, dir: 'call' }],
+    trades: [{ sym: 'AVGO', dir: 'call', qty: 1, entry: 340, pnl: -1.25, openT: T0 - 3 * TAG, closeT: T0 - TAG, status: 'closed', why: 'Altlast C:\\Users\\Wilhe\\Downloads\\x.json', strategy: 'intraday' }],
+    mfBuch: { start: 50000, angelegt: T0 - 30 * TAG, liquideSeit: T0 - 25 * TAG, konfig: { rueckblick: 231, luecke: 21, halten: 63 }, positionen: [{ sym: 'AAPL', stueck: 12, einstand: 228.4, seit: T0 - 20 * TAG }], trades: [{ t: T0 - 20 * TAG, sym: 'AAPL', art: 'kauf', stueck: 12, kurs: 228 }] },
+    driftBuch: { start: 50000, angelegt: T0 - 30 * TAG, positionen: [], trades: [{ t: T0 - 6 * TAG, sym: 'SPY', art: 'verkauf', stueck: 60, kurs: 636, pnl: -5 }] },
+    momentumAn: true, driftAn: true, intraday: { enabled: true, mode: 'rsi2seit', interval: '60m', scalpHold: 480, confirmBps: 15, instrument: 'basis' },
+    mfVerlauf: verlauf, equityHist: eq, watchlist: [{ y: 'NVDA', name: 'Nvidia' }], tuneLog: [{ at: T0 - TAG, txt: 'Automatik stellt nie auf Kapitulation' }],
+    schatten: [{ sym: 'CEG', dir: 'call', grund: 'Regime-Filter', openT: T0 - 3600000, status: 'open' }], schattenStat: { Einstieg: { n: 46, sumPct: -8.22 } },
+    regeln: [{ name: 'Haltedauer', txt: '8 Kerzen' }], autoOpt: { enabled: true, lastCheck: { at: T0 - 5 * 3600000, fehler: 'Fehler: Q is not defined' } },
+    lossStreak: 1, maxRisikostufe: 3, lastTune: { at: T0 - 40 * TAG, txt: 'Bremse bleibt' }, central: { berichtMd: '# Messbericht (Kunst)', at: T0 - 5 * 3600000 }, regime: { txt: 'kein Setup passt', pause: true, at: T0 - 5 * 3600000 } };
+  var HEALTH = { lastScanT: T0 - 60000, lastError: { t: T0 - 5 * 3600000, msg: 'Q is not defined in C:\\Users\\Wilhe\\AppData\\x' } };
+  function vgl(name) { return Mst.vergleich(verlauf, name, name === 'momentum' ? 'startM' : 'startD', { an: true, start: 50000, angelegt: T0 - 30 * TAG, punktKurs: true, marktRoh: roh, markt: markt, buchAusschuettungen: true }); }
+  var vI = Mst.vergleich(Mst.mitMarkt(eq, null, 'intraday', 'startI', 2000), 'intraday', 'startI', { an: true, markt: markt });
+  var pk = { urteil: 'nicht entscheidbar', datum: '2026-08-26', jeSignalPp: 0.0205 };
+  var quellen = { D: D, HEALTH: HEALTH, jetzt: T0, appVersion: '8.45.1', Massstab: Mst, StudienUrteile: SU, Boerse: Boerse, Drift: Drift,
+    MFDepot: { karteDaten: function (name) { var b = name === 'momentum' ? D.mfBuch : D.driftBuch; var lp = verlauf[verlauf.length - 1]; return { name: name, an: true, buch: b, wert: lp[name], start: 50000, massstab: vgl(name), naechsteUmschichtung: name === 'momentum' ? T0 + 40 * TAG : null }; },
+      gegenMarktText: gegenMarktText, vergleich: vgl },
+    DepotAPI: { kopfzahlen: function () { return { equity: 2031, tagPct: 0.42 }; }, handlungen: function () { return [{ at: T0 - 20 * TAG, buch: 'Momentum-Buch', art: 'kauf AAPL' }]; },
+      intradayGegenMarkt: function () { return { v: vI, text: intradayGegenMarktText(vI) }; }, protokollKennungen: function () { return ['rsi2seit', 'kapitulation']; },
+      protokollKante: function (k) { return k === 'rsi2seit' ? pk : { urteil: 'bestaetigt', datum: '2026-08-26', jeSignalPp: 1.107 }; },
+      signal: function () { return { t: T0 - 60000, grund: 'kein Signal' }; }, antwort: function () { return { pilotAn: true, regime: { txt: 'kein Setup passt', pause: true }, positionen: 1, maxPos: 12, tagPct: 0.4, dayLossPct: 5, handlung: { at: T0 - TAG, txt: 'AVGO geschlossen' } }; },
+      regelStatus: function () { return { intradayAn: true, modus: 'rsi2seit' }; }, kostenHuerde: function () { return { pp: 0.1 }; } },
+    Scoreboard: { ueberholtDurch: function (k, p) { var g = SU.gueltig(k, { datum: p.gemessenAm }); return g && g.register ? g.register : null; } },
+    Dash: { quote: function (s) { return s === '^GSPC' ? { price: 7811.54, pct: 0.59, series: [[T0 - 3600000, 7765.1], [T0, 7811.5]] } : null; },
+      radar: function () { return { insider: [{ sym: 'CEG', wert: 1200000, zeit: T0 - 3 * TAG, wer: [{ person: 'Vorstand (Kunst)' }] }], spekulation: [{ sym: 'FUBO', these: 'Beispiel (Kunst)', art: 'Gerücht' }], vormarkt: { zeilen: [{ sym: 'MDB', luecke: 5.6, kerzen: 42 }] } }; },
+      nachrichten: function () { return [{ t: T0 - 1500000, source: 'Yahoo Finance', title: 'Beispielmeldung', url: 'https://finance.yahoo.com/' }]; } },
+    antwortTexte: { status: function (a) { return [{ text: 'Autopilot: an', warnung: null, trenner: '' }, { text: 'Marktlage: ' + a.regime.txt, warnung: 'neue Einstiege ausgesetzt', trenner: ' – ' }]; },
+      handelt: function () { return [{ name: 'Intraday', text: 'rsi2seit – handelt die Aktie selbst (1×)', chip: { txt: 'nicht entscheidbar', quelle: 'Messprotokoll rsi2seit vom 2026-08-26' }, zusatz: null, messKeys: [] }]; } },
+    equityNow: function () { return 2031; }, startKapital: 2000, scanMs: 300000, abdeckung: { at: T0, min1: { werte: 1840, handelstage: 700, von: '2023-09-01', bis: '2026-10-09' }, zielTage: 730 },
+    gesundheit: { appLaeuftSeit: new Date(T0 - TAG).toISOString(), scansGesamt: 412, scanFehler: 0, letzterScan: new Date(T0 - 60000).toISOString(), kursAbrufeOk: 3980, kursAbrufeFehler: 2, killSwitchAusloesungen: 0, hintergrundRechnerAusfaelle: 0, analyseExportFehler: 0, edgeWaechterAusfaelle: 1, letzterFehler: HEALTH.lastError, marktOffen: true, scanIntervallSollMs: 300000, scanLueckenMin: [] },
+    kursVon: function () { return 234.1; }, nameVon: function (s) { return s === 'AAPL' ? 'Apple' : null; }, termine: [{ dt: new Date(T0 + 2 * TAG), name: 'US-Inflationsdaten (CPI)' }],
+    signale: [{ sym: 'NVDA', t: T0 - 60000, grund: 'kein Signal' }], sammler: { laeuft: true, stand: T0 - 120000, menge: 184, sperre: null } };
+
+  /* (a) volle Kunstquellen gegen die Referenz */
+  var refPfad = __dirname + '/test-daten/lagebild-beispiel.json';
+  var ref = JSON.parse(fs.readFileSync(refPfad, 'utf8'));
+  var voll = L.bau(quellen);
+  var schema = L.pruefeSchema(voll, ref);
+  ok(schema.fehlend.length === 0, '107a Lagebild.bau mit vollen Kunstquellen: kein Schluessel der Referenz fehlt', schema.fehlend.join(' | '));
+  var fremdErlaubt = ['buecher[0].buchSatz', 'buecher[1].buchSatz', 'buecher[2].buchSatz'];
+  ok(schema.fremd.every(function (k) { return fremdErlaubt.indexOf(k) !== -1; }), '107a nur die angekuendigten Zusaetze (buchSatz je Buch) stehen ueber der Referenz', schema.fremd.filter(function (k) { return fremdErlaubt.indexOf(k) === -1; }).join(' | '));
+  ok(Object.keys(voll).every(function (k) { return voll[k] !== null; }) && voll.kennung === 'markt-dashboard/lagebild/v1' && voll.appVersion === '8.45.1' && voll.exportiert === new Date(T0).toISOString(),
+    '107a alle neun Abschnitte gefuellt, Kennung/Version/Stempel wie vereinbart', Object.keys(voll).filter(function (k) { return voll[k] === null; }).join(','));
+  ok(voll.buecher.length === 3 && voll.buecher.map(function (b) { return b.name; }).join(',') === 'momentum,drift,intraday' && voll.buecher[0].rueckblick.length === 3 && voll.buecher[1].rueckblick.length === 1 && voll.buecher[0].naechsteUmschichtung === new Date(T0 + 40 * TAG).toISOString().slice(0, 10),
+    '107a drei Buecher in fester Reihenfolge, Rueckblicke aus studienurteile.js (3 Momentum, 1 Drift), Umschichtung als JJJJ-MM-TT');
+  ok(voll.protokoll.trades.length === 3 && voll.protokoll.trades.map(function (t) { return t.buch; }).sort().join(',') === 'drift,intraday,momentum' && voll.protokoll.trades.every(function (t) { return 'pnlPct' in t && 'modus' in t; }),
+    '107a Protokoll fuehrt die Trades aller drei Buecher mit buch; Felder ohne Quelle stehen als null da');
+  ok(voll.kopf.sitzung === 'haupt' && voll.kopf.marktOffen === true && voll.kopf.naechsterScan === new Date(T0 - 60000 + 300000).toISOString() && voll.kopf.gesamtwert === 2031 && voll.kopf.tagPct === 0.42,
+    '107a Kopf: Sitzung haupt um 14:35 UTC, naechster Scan aus letztem Scan + Takt, Zahlen des Kopf-Cockpits');
+  ok(voll.markt.radar.ueberschrift === 'Gehandelt wird hiervon nichts' && voll.markt.radar.insider.length === 1 && voll.markt.radar.spekulation[0].text === 'Beispiel (Kunst)' && voll.markt.indizes.length === 1 && voll.markt.indizes[0].kurve.length === 2,
+    '107a Radar unter der festen Ueberschrift, Index-Kacheln nur fuer vorhandene Quotes mit Kurve');
+  ok(voll.betrieb.scoreboard.length === 2 && voll.betrieb.scoreboard[1].ueberholtDurch === SU.ueberholtKopf(SU.verworfen('kapitulation')) && voll.betrieb.scoreboard[0].ueberholtDurch === null,
+    '107a Scoreboard: "ueberholt durch" aus ueberholtKopf() fuer das ueberholte Kapitulations-Protokoll, sonst null', voll.betrieb.scoreboard[1].ueberholtDurch);
+  ok(voll.regeln.antwort.absaetze[1] === 'Marktlage: kein Setup passt – neue Einstiege ausgesetzt' && voll.regeln.antwort.handelt[0].beleg === 'nicht entscheidbar' && voll.regeln.autopilot.pruefung.text === 'Fehler: Q is not defined' && voll.fehler.length === 2,
+    '107a Antwort-Seite aus den Textfunktionen; der Autopilot-Fehler steht woertlich in autopilot.pruefung und in fehler[]');
+  var orig = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten', 'uebergabe', 'lagebild-beispiel.json');
+  ok(fs.existsSync(orig) ? fs.readFileSync(orig, 'utf8') === fs.readFileSync(refPfad, 'utf8') : true,
+    '107a test-daten/lagebild-beispiel.json ist die unveraenderte Kopie der Referenz in Markt-Dashboard-Daten/uebergabe');
+  ok(fs.existsSync(__dirname + '/test-daten/lagebild-beispiel.QUELLE.md'), '107a der Quellenvermerk liegt neben der Kopie');
+  var nullRef = { kennung: 1, exportiert: 1, appVersion: 1, hinweis: 1, kopf: null, buecher: null, verlauf: null, protokoll: null, papiere: null, markt: null, regeln: null, betrieb: null, fehler: null };
+  ok(L.pruefeSchema(nullRef, ref).ok && !L.pruefeSchema({ kennung: 1 }, ref).ok && L.pruefeSchema({ kennung: 1 }, ref).fehlend.length === 12,
+    '107a pruefeSchema: ganze Abschnitte duerfen null sein, fehlende Schluessel werden je Abschnitt genannt');
+  ok(!L.pruefeSchema({ kennung: 1, exportiert: 1, appVersion: 1, hinweis: 1, kopf: { gesamtwert: 1 }, buecher: null, verlauf: null, protokoll: null, papiere: null, markt: null, regeln: null, betrieb: null, fehler: null }, ref).ok,
+    '107a pruefeSchema: ein teilweise gefuellter Abschnitt ohne seine Pflichtschluessel ist rot (Rueckfrage 5)');
+
+  /* (b) leere Quellen */
+  var leer = L.bau({}), leer2 = L.bau(null), leer3 = L.bau({ D: {}, HEALTH: null, MFDepot: {}, DepotAPI: null, Dash: { quote: 1 } });
+  ok(['kopf', 'buecher', 'verlauf', 'protokoll', 'papiere', 'markt', 'regeln', 'betrieb', 'fehler'].every(function (k) { return k in leer && leer[k] === null && leer2[k] === null; }) && leer.kennung === 'markt-dashboard/lagebild/v1' && typeof leer.hinweis === 'string' && leer.appVersion === null,
+    '107b leere Quellen: alle neun Abschnitte null, Pflichtschluessel da, keine Ausnahme');
+  ok(L.pruefeSchema(leer3, ref).fehlend.length === 0 && leer3.buecher === null && leer3.markt === null, '107b halbe Quellen (D ohne Inhalt, Dash ohne quote): kein Abschnitt bricht, Schema haelt', L.pruefeSchema(leer3, ref).fehlend.join('|'));
+
+  /* (c) Sitzung nach NYSE-Zeit */
+  var faelle = [['2026-10-12T12:00:00Z', 'vor'], ['2026-10-12T14:35:00Z', 'haupt'], ['2026-10-12T21:00:00Z', 'nach'], ['2026-10-13T03:00:00Z', 'zu'],
+    ['2026-11-26T15:00:00Z', 'zu'], ['2026-11-27T18:30:00Z', 'nach'], ['2026-11-27T16:30:00Z', 'haupt'], ['2026-10-10T15:00:00Z', 'zu'], ['2026-07-13T13:29:00Z', 'vor'], ['2026-07-13T13:30:00Z', 'haupt']];
+  var rotS = faelle.filter(function (f) { return L.sitzung(Date.parse(f[0]), Boerse) !== f[1]; });
+  ok(rotS.length === 0, '107c Sitzung: Vorboerse, Haupt, Nachboerse, Nacht, Thanksgiving, Kurztag (13:00 NY), Samstag, Sommerzeit-Oeffnung', rotS.map(function (f) { return f[0] + ' -> ' + L.sitzung(Date.parse(f[0]), Boerse) + ' statt ' + f[1]; }).join(' | '));
+  ok(L.bau(Object.assign({}, quellen, { jetzt: Date.parse('2026-10-13T03:00:00Z') })).kopf.naechsterScan === null, '107c ausserhalb der Hauptsitzung: naechsterScan null (Rueckfrage 6)');
+
+  /* (d) Buch-Texte bitgleich mit der Karte: dieselbe Funktion, nicht derselbe String */
+  var vM = vgl('momentum'), vD = vgl('drift');
+  ok(!!gegenMarktText && voll.buecher[0].gegenMarkt.text === gegenMarktText(vM) && voll.buecher[1].gegenMarkt.text === gegenMarktText(vD) && /^Buch [+-]\d/.test(voll.buecher[0].gegenMarkt.text),
+    '107d gegenMarkt.text der zwei Mittelfrist-Buecher = gegenMarktText(v) aus mfdepot.js', voll.buecher[0].gegenMarkt.text);
+  ok(!!intradayGegenMarktText && voll.buecher[2].gegenMarkt.text === intradayGegenMarktText(vI) && voll.buecher[2].gegenMarkt.hinweis === Mst.hinweis(vI) && voll.buecher[0].gegenMarkt.hinweis === Mst.hinweis(vM),
+    '107d Intraday: Text aus intradayGegenMarktText(vI) (depot.js), Hinweise aus Massstab.hinweis', voll.buecher[2].gegenMarkt.text);
+  ok(voll.buecher[0].rueckblick.every(function (z, i) { return z.text === SU.rueckblickText(SU.rueckblicke('momentum-liquide')[i]) && z.fundstelle === SU.rueckblicke('momentum-liquide')[i].quelle; }) && voll.buecher[1].buchSatz === SU.buchSatz('drift'),
+    '107d rueckblick[].text = StudienUrteile.rueckblickText, fundstelle = quelle; buchSatz des Drift-Buchs woertlich');
+  ok(voll.buecher[0].gegenMarkt.buchPct === Math.round(vM.buchPct * 100) / 100 && voll.buecher[0].gegenMarkt.abstandPp === vM.abstandPp && voll.buecher[0].ergebnisPct === Math.round(Mst.prozent(verlauf[30].momentum, 50000) * 100) / 100,
+    '107d Zahlen nur aus dem Massstab (vergleich, prozent) - kein zweiter Rechenweg');
+  var lbQ = ohneKommentare(fs.readFileSync(__dirname + '/lagebild.js', 'utf8'));
+  ok(!/Massstab\.vergleich\(|\.langText\(|\/ basis - 1/.test(lbQ) && (lbQ.match(/q_pz\(/g) || []).length >= 4 && !/Ausschüttungen|SPY-Gesamtertrag|SPY-Tageskurs/.test(lbQ),
+    '107d lagebild.js rechnet keinen Vergleich und keinen Prozentstand selbst (nur Massstab.prozent) und traegt keinen Wortlaut der Beschriftung');
+
+  /* (e) Schluesselmuster und Pfade */
+  var js = JSON.stringify(voll);
+  var muster = [/\bsk-[A-Za-z0-9]{12,}/, /APCA-API/i, /\bPK[A-Z0-9]{16,}\b/, /\bBearer\s+[A-Za-z0-9._-]{8,}/, /"[a-zA-Z]*token[a-zA-Z]*"\s*:/i, /passwort/i, /C:\\\\Users|C:\/Users|C:\\Users/i];
+  var treffer = muster.filter(function (m) { return m.test(js); });
+  ok(treffer.length === 0 && js.indexOf('<Pfad>') !== -1 && voll.fehler[0].text === 'Q is not defined in <Pfad>' && voll.protokoll.trades[0].warum === 'Altlast <Pfad>',
+    '107e keine Schluesselmuster, kein C:\\Users im Export; Benutzerpfade in Fehlertexten werden zu <Pfad>', treffer.map(String).join(' ') + ' ' + voll.fehler[0].text);
+  ok(L.entschaerfen('ok PKG risk-token Bearer') === 'ok PKG risk-token Bearer' && L.entschaerfen({ a: ['C:/Users/x/y.json'] }).a[0] === '<Pfad>', '107e entschaerfen: ersetzt nur Benutzerpfade, laesst Ticker wie PKG und Woerter stehen');
+  var ber = ohneKommentare(fs.readFileSync(__dirname + '/berichte.js', 'utf8'));
+  ok(!/getSettings|alpKey|alpSecret|capPass|massive\.key|telemetrie/.test(lbQ) && !/getSettings\(/.test(ber.slice(ber.indexOf('function lagebildQuellen'), ber.indexOf('async function exportAnalysis'))),
+    '107e weder lagebild.js noch die Quellensammlung in berichte.js lesen Einstellungen oder Zugangsdaten');
+
+  /* (f) Chart-Grenzen und Kappung */
+  var k1d = [], k1m = [], k60 = [];
+  for (var y = 0; y < 365 * 80; y++) k1d.push([T0 - y * TAG, 100 + y % 7, 101, 99, 100.5, 1000 + y]);
+  for (var mi = 0; mi < 390 * 5; mi++) k1m.push([T0 - Math.floor(mi / 390) * TAG - (mi % 390) * 60000, 10, 10.1, 9.9, 10, 5]);
+  for (var h = 0; h < 7 * 400; h++) k60.push([T0 - h * 3600000, 10, 10.1, 9.9, 10, 5]);
+  var ch = L.chart('aapl', { name: 'Apple', kerzen: { '1d': k1d, '1m': k1m, '60m': k60, '5m': [], '15m': [] }, jetzt: T0, zeichnungen: [{ art: 'linie' }] });
+  var tage1m = {}; ch.rahmen['1m'].forEach(function (k) { tage1m[Math.floor(k[0] / TAG)] = 1; });
+  ok(ch.sym === 'AAPL' && Object.keys(tage1m).length === 2 && ch.rahmen['1m'].length === 780 && ch.rahmen['60m'].every(function (k) { return k[0] >= T0 - 366 * TAG; }) && ch.rahmen['5m'].length === 0 && ch.zeichnungen.length === 1,
+    '107f Chart: 1m auf 2 Handelstage, 60m auf ein Jahr, leere Rahmen bleiben [], Zeichnungen in gespeicherter Form', ch.rahmen['1m'].length + ' / ' + Object.keys(tage1m).length);
+  ok(ch.gekappt === true && ch.rahmen['1d'].every(function (k) { return k[0] >= T0 - 3653 * TAG; }) && ch.rahmen['1d'].length > 3000 && JSON.stringify(ch).length <= L.CHART_MAX,
+    '107f 80 Jahre Tageskerzen sprengen 1 MB: 1d auf zehn Jahre gekappt, gekappt: true, Datei unter 1 MB', JSON.stringify(ch).length);
+  var chK = L.chart('SPY', { kerzen: { '1d': k1d.slice(0, 400) }, jetzt: T0 });
+  ok(chK.gekappt === false && chK.rahmen['1d'].length === 400 && chK.rahmen['1m'].length === 0 && 'kennzahlen' in chK && 'signale' in chK && 'termine' in chK && 'exportiert' in chK, '107f kleine Datei: nichts gekappt, alle Vertragsschluessel da');
+  var mainQ = ohneKommentare(fs.readFileSync(__dirname + '/main.js', 'utf8'));
+  var cs = mainQ.slice(mainQ.indexOf('async function chartsSchreiben'), mainQ.indexOf('async function chartsSchreiben') + 3000);
+  ok(/async function archivKerzenLesen\(symbol, zeitrahmen, anzahl\)/.test(mainQ) && /ipcMain\.handle\('archiv-kerzen', \(_ev, symbol, zeitrahmen, anzahl\) => archivKerzenLesen\(symbol, zeitrahmen, anzahl\)\)/.test(mainQ) &&
+     /await archivKerzenLesen\(sym, CHART_RAHMEN\[r\]\[0\], CHART_RAHMEN\[r\]\[1\]\)/.test(mainQ) && /await schreibAtomarAsync\(ziel, text\)/.test(mainQ) && /fs\.promises\.mkdir\(ordner, \{ recursive: true \}\)/.test(mainQ) && !/unlink|rmSync|\brm\(/.test(cs),
+    '107f main.js: der Chart-Export liest die Kerzen ueber denselben Leser wie der Viewer, schreibt asynchron und atomar, legt den Ordner an und loescht nie');
+  ok(/if \(Buffer\.byteLength\(lb, 'utf8'\) > LAGEBILD_MAX\) return \{ ok: false/.test(mainQ) && /schreibAtomar\(path\.join\(dir, 'lagebild\.json'\), lb\)/.test(mainQ) && /LAGEBILD_MAX = 2 \* 1024 \* 1024/.test(mainQ),
+    '107f main.js: lagebild.json atomar, Einrueckung 0, ueber 2 MB nicht geschrieben (Fehler zaehlt in HEALTH.exportFail)');
+  ok(/LAGEBILD_TAKT = \{ offen: 2 \* 60000, zu: 10 \* 60000, chart: 15 \* 60000 \}/.test(ber) && /nowE - lastAnalysisExport >= 10 \* 60000/.test(ber) && /lagebildFaellig = !!LB && \(!!force \|\| nowE - lastLagebildExport >= lagebildTakt\(sitz\)\)/.test(ber) &&
+     /kurse = null/.test(ber) && /setInterval\(function \(\) \{ if \(holeDepot\) mitFrisch\(exportAnalysis\)\(false\); \}, 60000\)/.test(ber) && /viewerGeoeffnet: mitFrisch\(viewerGeoeffnet\)/.test(ber),
+    '107f berichte.js Takt: 2 Min in vor/haupt/nach, 10 sonst, sofort bei force; analyse-daten bleibt bei 10 Min; Charts 15 Min und beim Oeffnen im Viewer; Minutentakt unabhaengig von save()');
+  ok(/window\.Berichte\.viewerGeoeffnet\(sym\)/.test(ohneKommentare(fs.readFileSync(__dirname + '/explorer.js', 'utf8'))) && /<script src="lagebild\.js"><\/script>\s*<script src="mfdepot\.js">/.test(fs.readFileSync(__dirname + '/index.html', 'utf8')),
+    '107f der Viewer meldet den geoeffneten Wert; lagebild.js wird vor mfdepot.js geladen');
+  var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+  ok(pkg.build.files.indexOf('*.js') !== -1 && Object.keys(pkg.dependencies).length === 1, '107f lagebild.js faehrt mit dem Paket (*.js), keine neue Abhaengigkeit');
+
+  /* (g) tools/pruefstrasse-lagebild.js gegen einen Kunst-Ordner im Temp */
+  var tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'md-pruefstrasse-lagebild-'));
+  function schreib(rel, inhalt) { var p = path.join(tmp, rel); fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, inhalt, 'utf8'); }
+  schreib('STATUS.md', '# Stand\n\n- Letzter Lauf: 2026-10-12T02:00:04+00:00 bis 2026-10-12T02:00:49+00:00, Dauer 45 s (Zeitgrenze 6h)\n- Laeufer: `x`, Node v24, rc=0 (ok)\n- Push der Vornacht: noch keiner\n');
+  schreib('pruefstrasse/register.json', JSON.stringify({ kennung: 'pruefstrasse/register/v1', konfigurationen: [{}, {}, {}], gesamt: 3, zufallErwartet: 0.06825 }));
+  schreib('pruefstrasse/erledigt/kunst-a/ergebnis.json', JSON.stringify({ kennung: 'kunst-a', titel: 'Kunst A', urteil: 'nein', grund: 'ausgeschlossen', stand: '2026-10-12T02:00:49.483Z' }));
+  schreib('pruefstrasse/erledigt/kunst-a/ERGEBNIS.md', '# Kunst A\n\n| Konf | R | Tage | Trades | brutto | netto | t |\n|---|---|---|---|---|---|---|\n| H5 | long | 10 | 20 | 0,1 | 0,05 | −3,01 |\n| H10 | long | 10 | 20 | 0,1 | 0,05 | −2,31 |\n');
+  schreib('pruefstrasse/warteschlange/kunst-b/kandidat.json', JSON.stringify({ kennung: 'kunst-b', titel: 'Kunst B', form: 'tag', konfigurationen: [{}, {}] }));
+  schreib('pruefstrasse/ideen-verworfen.md', '# Verworfen\n\n## 2026-10-11 · `kunst-c` — verworfen (Datenlaenge und Aufloesung)\n\n**Regel:** Erster Satz. Zweiter Satz.\n\n## 2026-10-12 · `kunst-d` — verworfen\n\nDie Groesse liegt unter der Wand. Mehr Text.\n');
+  schreib('wiki/log.md', '- 11.10.2026 — Nachtlauf eingerichtet.\n- 12.10.2026 — Nachtlauf gelaufen, rc 0.\n');
+  var ausDir = path.join(tmp, 'aus');
+  var lauf = cp.spawnSync(process.execPath, [__dirname + '/tools/pruefstrasse-lagebild.js', '--repo', tmp, '--aus', ausDir], { encoding: 'utf8' });
+  var ps = null;
+  try { ps = JSON.parse(fs.readFileSync(path.join(ausDir, 'pruefstrasse.json'), 'utf8')); } catch (e) { ps = null; }
+  ok(lauf.status === 0 && !!ps && ps.kennung === 'pruefstrasse/lagebild/v1' && ps.register.gesamt === 3 && ps.register.zufallErwartet === 0.06825,
+    '107g pruefstrasse-lagebild.js schreibt pruefstrasse.json mit Kennung und Register', (lauf.stderr || '').slice(0, 200));
+  ok(!!ps && ps.urteile.length === 1 && ps.urteile[0].urteil === 'nein' && /^\| H10 /.test(ps.urteile[0].zeile) && ps.urteile[0].fundstelle === 'pruefstrasse/erledigt/kunst-a/ERGEBNIS.md' && ps.urteile[0].datum === '2026-10-12T02:00:49.483Z',
+    '107g Urteile: Kennung, Urteil, Grund, beste Zeile (groesstes t), Datum, Fundstelle', ps && ps.urteile[0] && ps.urteile[0].zeile);
+  ok(!!ps && ps.warteschlange.length === 1 && ps.warteschlange[0].konfigurationen === 2 && ps.warteschlange[0].form === 'tag' && !!ps.warteschlange[0].datum,
+    '107g Warteschlange aus kandidat.json mit Zahl der Konfigurationen');
+  ok(!!ps && ps.ideenAgent.verworfen.length === 2 && ps.ideenAgent.verworfen[0].grund === 'Datenlaenge und Aufloesung' && ps.ideenAgent.verworfen[1].grund === 'Die Groesse liegt unter der Wand.' && ps.ideenAgent.letzterLauf === '2026-10-12',
+    '107g Ideen-Agent: Kennung + erster Satz der Begruendung je Eintrag, letzter Lauf', JSON.stringify(ps && ps.ideenAgent));
+  ok(!!ps && ps.nacht.rc === 0 && ps.nacht.dauer === '45 s' && ps.nacht.letzterLauf === '2026-10-12T02:00:49.000Z' && ps.nacht.push === 'noch keiner' && /rc 0/.test(ps.nacht.logzeile),
+    '107g Nacht: letzter Lauf, Dauer, rc, Push aus STATUS.md, letzte Nachtlauf-Zeile aus wiki/log.md', JSON.stringify(ps && ps.nacht));
+  var leerDir = fs.mkdtempSync(path.join(os.tmpdir(), 'md-pruefstrasse-leer-'));
+  var lauf2 = cp.spawnSync(process.execPath, [__dirname + '/tools/pruefstrasse-lagebild.js', '--repo', leerDir, '--aus', path.join(leerDir, 'aus')], { encoding: 'utf8' });
+  var ps2 = null;
+  try { ps2 = JSON.parse(fs.readFileSync(path.join(leerDir, 'aus', 'pruefstrasse.json'), 'utf8')); } catch (e) { ps2 = null; }
+  ok(lauf2.status === 0 && !!ps2 && ps2.warteschlange === null && ps2.urteile === null && ps2.register === null && ps2.ideenAgent === null && ps2.nacht === null,
+    '107g ohne Quellen: jeder Abschnitt null, kein Abbruch');
+  try { fs.rmSync(tmp, { recursive: true, force: true }); fs.rmSync(leerDir, { recursive: true, force: true }); } catch (e) { /* Temp */ }
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

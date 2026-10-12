@@ -1157,6 +1157,16 @@ ipcMain.handle('export-analysis', async (_ev, payload) => {
     // 🤖 Messbericht des Autopiloten: Klartext, was funktioniert und woran der Rest scheitert –
     // gedacht zum Nachlesen und für die Auswertung mit Claude (liest denselben Ordner).
     if (payload.bericht) schreibAtomar(path.join(dir, 'messbericht.md'), payload.bericht);
+    /* Lagebild (Auftrag Nr. 115): eine Datei <= 2 MB, Einrueckung 0, atomar - ueber den
+     * bestehenden Weg; groesser wird nicht geschrieben (Fehler zaehlt in HEALTH.exportFail). */
+    if (payload.lagebild != null) {
+      const lb = JSON.stringify(payload.lagebild);
+      if (Buffer.byteLength(lb, 'utf8') > LAGEBILD_MAX) return { ok: false, msg: 'lagebild.json groesser als 2 MB (' + lb.length + ' Zeichen) - nicht geschrieben' };
+      schreibAtomar(path.join(dir, 'lagebild.json'), lb);
+    }
+    /* markt-chart/<SYM>.json: asynchron (fs.promises, .tmp + rename), nur geaenderte Dateien,
+     * nie loeschen - der Renderer liefert die Symbolliste, die Kerzen liest der Hauptprozess. */
+    if (payload.charts && Array.isArray(payload.charts.symbole)) chartsSchreiben(path.join(dir, 'markt-chart'), payload.charts).catch(() => {});
     // Rechen-Engine mitliefern, damit externe Auswertungen exakt dieselbe Logik nutzen
     try {
       var eng = fs.readFileSync(path.join(__dirname, 'quant.js'), 'utf8');
@@ -1289,6 +1299,58 @@ function schreibAtomar(pfad, inhalt) {
   const tmp = pfad + '.tmp';
   fs.writeFileSync(tmp, inhalt, 'utf8');
   fs.renameSync(tmp, pfad);
+}
+async function schreibAtomarAsync(pfad, inhalt) {
+  const tmp = pfad + '.tmp';
+  await fs.promises.writeFile(tmp, inhalt, 'utf8');
+  await fs.promises.rename(tmp, pfad);
+}
+
+/* ---- Lagebild-Export (Auftrag Nr. 115): markt-chart/<SYM>.json im Hauptprozess ----
+ * Kerzen aus denselben Lesern wie der Viewer (archivKerzenLesen je Zeitrahmen), Zeichnungen
+ * aus dem Store viewerZeichnungen (gespeicherte Form), Grenzen und Kappung in lagebild.js.
+ * Schreibt nur, was sich geaendert hat; ein Wert, der aus der Auswahl faellt, bleibt liegen.
+ * Ordner-Deckel 40 MB: ist er voll, werden keine neuen Dateien angelegt. */
+const Lagebild = require('./lagebild.js');
+const LAGEBILD_MAX = 2 * 1024 * 1024, CHART_ORDNER_MAX = 40 * 1024 * 1024;
+const CHART_RAHMEN = { '1m': ['1m', 800], '5m': ['5m', 800], '15m': ['15m', 800], '60m': ['1h', 1800], '1d': ['1T', 5000] };
+let chartsLaufen = false;
+async function chartsSchreiben(ordner, auftrag) {
+  if (chartsLaufen) return;
+  chartsLaufen = true;
+  try {
+    await fs.promises.mkdir(ordner, { recursive: true });
+    let zeichnungenAlle = {};
+    try {
+      const f = path.join(storeDir(), safeName('viewerZeichnungen') + '.json');
+      if (fs.existsSync(f)) zeichnungenAlle = JSON.parse(fs.readFileSync(f, 'utf8')) || {};
+    } catch (e) { zeichnungenAlle = {}; }
+    const vorhanden = (await fs.promises.readdir(ordner)).filter((n) => /\.json$/.test(n));
+    let groesse = 0;
+    for (const n of vorhanden) { try { groesse += (await fs.promises.stat(path.join(ordner, n))).size; } catch (e) { /* weg */ } }
+    const jetzt = Date.now();
+    for (const sym of auftrag.symbole.slice(0, 60)) {
+      const kerzen = {};
+      for (const r of Object.keys(CHART_RAHMEN)) {
+        const erg = await archivKerzenLesen(sym, CHART_RAHMEN[r][0], CHART_RAHMEN[r][1]);
+        kerzen[r] = erg && erg.ok && Array.isArray(erg.kerzen) ? erg.kerzen : [];
+      }
+      const z = zeichnungenAlle && zeichnungenAlle[sym];
+      const chart = Lagebild.chart(sym, { name: (auftrag.namen || {})[sym] || null, kerzen: kerzen, jetzt: jetzt,
+        zeichnungen: Array.isArray(z) ? z : (z && Array.isArray(z.liste) ? z.liste : []), signale: [], termine: [] });
+      const text = JSON.stringify(chart);
+      const ziel = path.join(ordner, sym.replace(/[^A-Z0-9.^=-]/g, '_') + '.json');
+      let alt = null;
+      try { alt = await fs.promises.readFile(ziel, 'utf8'); } catch (e) { alt = null; }
+      if (alt !== null) {
+        /* nur geaendert: alles ausser dem Stempel vergleichen */
+        if (alt.replace(/"exportiert":"[^"]*"/, '') === text.replace(/"exportiert":"[^"]*"/, '')) continue;
+        groesse -= Buffer.byteLength(alt, 'utf8');
+      } else if (groesse + Buffer.byteLength(text, 'utf8') > CHART_ORDNER_MAX) continue;
+      groesse += Buffer.byteLength(text, 'utf8');
+      await schreibAtomarAsync(ziel, text);
+    }
+  } finally { chartsLaufen = false; }
 }
 
 /* Eine unlesbare Datei darf NIE stillschweigend durch eine leere ersetzt werden.
@@ -2230,7 +2292,10 @@ function alpacaVerdichtet(sym, zr, n, appBis) {
            von: v.kerzen[0][0], bis: v.kerzen[v.kerzen.length - 1][0], minutenBis: alpacaBis,
            ablage: 'alpaca-roh', dateien: dateien, gelesen: gelesen };
 }
-ipcMain.handle('archiv-kerzen', async (_ev, symbol, zeitrahmen, anzahl) => {
+/* Lagebild-Export (Nr. 115): der Leser ist eine Funktion, damit der Chart-Export im Hauptprozess
+ * dieselben Kerzen liest wie der Viewer - der IPC-Weg darunter ruft nur noch sie. */
+ipcMain.handle('archiv-kerzen', (_ev, symbol, zeitrahmen, anzahl) => archivKerzenLesen(symbol, zeitrahmen, anzahl));
+async function archivKerzenLesen(symbol, zeitrahmen, anzahl) {
   try {
     const t0 = Date.now();
     const sym = String(symbol || '').toUpperCase().replace(/[^A-Z0-9.^-]/g, '').slice(0, 12);
@@ -2337,7 +2402,7 @@ ipcMain.handle('archiv-kerzen', async (_ev, symbol, zeitrahmen, anzahl) => {
              gelesen: Math.min(fs.statSync(datei).size, kerzenSchwanz(n)) + kopfLaenge,
              ms: Date.now() - t0 };
   } catch (e) { return { ok: false, grund: String((e && e.message) || e) }; }
-});
+}
 
 /* ---- Ergebnistermine des Marktes: heute und morgen ----
  *

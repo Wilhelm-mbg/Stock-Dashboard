@@ -2498,6 +2498,8 @@
   }
   async function vzLaden(sym) {
     VZ.sym = sym;
+    /* Lagebild-Export (Nr. 115): ein im Viewer geoeffneter Wert bekommt seine markt-chart-Datei. */
+    if (window.Berichte && window.Berichte.viewerGeoeffnet) window.Berichte.viewerGeoeffnet(sym);
     VZ.liste = [];
     VZ.ausgewaehlt = null;
     VZ.entwurf = null;

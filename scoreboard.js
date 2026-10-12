@@ -1183,5 +1183,7 @@
    * Die Statuszeile im Klappentitel unterscheidet beides - "0" und "noch nichts
    * gelesen" sind von aussen sonst nicht zu trennen (wiki/fehlerformen.md). */
   window.Scoreboard = { laden: laden, strategien: strategienLaden,
+    /** Lagebild-Export (Nr. 115): dieselbe Entscheidung "ueberholt durch", nur lesend. */
+    ueberholtDurch: ueberholtDurch,
     registerStand: function () { return REGISTER_N; } };
 })();

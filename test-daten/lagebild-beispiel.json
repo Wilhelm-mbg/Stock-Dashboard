@@ -1,0 +1,679 @@
+{
+  "kennung": "markt-dashboard/lagebild/v1",
+  "exportiert": "2026-10-12T14:35:00Z",
+  "appVersion": "8.45.1",
+  "hinweis": "Simulation mit virtuellem Kapital, keine Anlageberatung. KUNSTDATEN zum Testen des Reiters - keine echten Werte. Fassung 2 (12.10., nach Zweitleser): Zeiten 2026, Sitzung passt zur Uhrzeit (14:35 UTC = 10:35 New York = haupt), Umlaute wie in der App.",
+  "kopf": {
+    "gesamtwert": 103250.4,
+    "tagPct": 0.42,
+    "offenePositionen": 3,
+    "marktOffen": true,
+    "sitzung": "haupt",
+    "letzterScan": "2026-10-12T14:34:10Z",
+    "naechsterScan": "2026-10-12T14:39:10Z"
+  },
+  "buecher": [
+    {
+      "name": "momentum",
+      "titel": "Momentum-Buch",
+      "an": true,
+      "wert": 51840.2,
+      "start": 50000,
+      "ergebnisPct": 3.68,
+      "ergebnisEuro": 1840.2,
+      "positionen": [
+        {
+          "sym": "AAPL",
+          "menge": 12,
+          "einstand": 228.4,
+          "kurs": 234.1,
+          "wert": 2809.2,
+          "pct": 2.5,
+          "seit": "2026-09-16T13:31:00Z"
+        },
+        {
+          "sym": "AVGO",
+          "menge": 8,
+          "einstand": 341,
+          "kurs": 352.6,
+          "wert": 2820.8,
+          "pct": 3.4,
+          "seit": "2026-09-16T13:31:00Z"
+        }
+      ],
+      "letzteHandlung": {
+        "zeit": "2026-09-16T13:31:00Z",
+        "text": "Umschichtung: 19 Werte gekauft, 2 verkauft"
+      },
+      "naechsteUmschichtung": "2026-11-23",
+      "gegenMarkt": {
+        "text": "Gegen den Markt seit 16.09.2026: Buch +3,68 %, S&P 500 +4,10 % - Abstand -0,42 Pp. S&P 500 als SPY-Gesamtertrag. Markt mit, Buch ohne Ausschüttungen - der Vergleich ist um die Ausschüttungen des Buchs zu streng.",
+        "buchPct": 3.68,
+        "marktPct": 4.1,
+        "abstandPp": -0.42,
+        "von": "2026-09-16",
+        "bis": "2026-10-12",
+        "hinweis": "S&P 500 als SPY-Gesamtertrag. Markt mit, Buch ohne Ausschüttungen - der Vergleich ist um die Ausschüttungen des Buchs zu streng."
+      },
+      "rueckblick": [
+        {
+          "text": "Rückblick fünf Jahre bis 15.09.2026, Regel auf dem breiten Markt (515 bis 923 Werte, nicht der Korb der App): Buch +65,2 % gegen S&P 500 +81,2 % - nicht geschlagen; je nach Starttag liegt das Buch in 41 von 63 Fällen vorn; größter Rückschlag -40,2 % gegen -24,5 %.",
+          "fundstelle": "studien/massstab-rueckblick-2026-10-04/ergebnis.json"
+        }
+      ],
+      "konfiguration": {
+        "rueckblickTage": 252,
+        "luecke": 21,
+        "halten": 63,
+        "anteil": 0.05,
+        "kostenBp": 20,
+        "korb": 187,
+        "quelle": "gemessene Konfiguration (liquide.js), nur Anzeige"
+      }
+    },
+    {
+      "name": "drift",
+      "titel": "Drift-Buch",
+      "an": true,
+      "wert": 49410.2,
+      "start": 50000,
+      "ergebnisPct": -1.18,
+      "ergebnisEuro": -589.8,
+      "positionen": [
+        {
+          "sym": "SPY",
+          "menge": 60,
+          "einstand": 640.1,
+          "kurs": 636.5,
+          "wert": 38190,
+          "pct": -0.56,
+          "seit": "2026-10-06T13:31:00Z"
+        }
+      ],
+      "letzteHandlung": {
+        "zeit": "2026-10-06T13:31:00Z",
+        "text": "Drift-Takt: SPY gehalten"
+      },
+      "naechsteUmschichtung": "2026-10-13",
+      "gegenMarkt": {
+        "text": "Gegen den Markt seit 06.04.2026: Buch -1,18 %, S&P 500 +2,30 % - Abstand -3,48 Pp. S&P 500 als SPY-Gesamtertrag. Markt mit, Buch ohne Ausschüttungen - der Vergleich ist um die Ausschüttungen des Buchs zu streng.",
+        "buchPct": -1.18,
+        "marktPct": 2.3,
+        "abstandPp": -3.48,
+        "von": "2026-04-06",
+        "bis": "2026-10-12",
+        "hinweis": "S&P 500 als SPY-Gesamtertrag. Markt mit, Buch ohne Ausschüttungen - der Vergleich ist um die Ausschüttungen des Buchs zu streng."
+      },
+      "rueckblick": [],
+      "konfiguration": {
+        "takt": "woechentlich",
+        "quelle": "Drift.STANDARD, nur Anzeige"
+      }
+    },
+    {
+      "name": "intraday",
+      "titel": "Intraday-Depot",
+      "an": false,
+      "wert": 2000,
+      "start": 2000,
+      "ergebnisPct": 0,
+      "ergebnisEuro": 0,
+      "positionen": [],
+      "letzteHandlung": {
+        "zeit": "2026-10-11T05:43:00Z",
+        "text": "Altlast-Glattstellung beim Start: AVGO call -1,25 EUR"
+      },
+      "naechsteUmschichtung": null,
+      "gegenMarkt": {
+        "text": "Gegen den Markt: Buch aus - kein Vergleich.",
+        "buchPct": null,
+        "marktPct": null,
+        "abstandPp": null,
+        "von": null,
+        "bis": null,
+        "hinweis": "Buch aus."
+      },
+      "rueckblick": [],
+      "konfiguration": {
+        "modus": "rsi2seit",
+        "zeitrahmen": "60m",
+        "haltedauer": 480,
+        "bestaetigung": 15,
+        "quelle": "nur Anzeige"
+      }
+    }
+  ],
+  "verlauf": {
+    "punkte": [
+      [
+        1789588800000,
+        100000,
+        50000,
+        50000,
+        0
+      ],
+      [
+        1790193600000,
+        100980.5,
+        50610.1,
+        50370.4,
+        0
+      ],
+      [
+        1790798400000,
+        102140.3,
+        51420,
+        50720.3,
+        0
+      ],
+      [
+        1791815400000,
+        103250.4,
+        51840.2,
+        49410.2,
+        2000
+      ]
+    ],
+    "markt": [
+      [
+        1789588800000,
+        100
+      ],
+      [
+        1790193600000,
+        101.2
+      ],
+      [
+        1790798400000,
+        102.8
+      ],
+      [
+        1791815400000,
+        104.1
+      ]
+    ],
+    "hinweis": "markt = SPY-Gesamtertrag als Index (100 = erster gemeinsamer Stand)."
+  },
+  "protokoll": {
+    "trades": [
+      {
+        "zu": "2026-10-11T05:43:00Z",
+        "auf": "2026-10-08T16:30:00Z",
+        "sym": "AVGO",
+        "richtung": "call",
+        "buch": "intraday",
+        "modus": "rsi2seit",
+        "menge": 1,
+        "pnl": -1.25,
+        "pnlPct": -0.63,
+        "warum": "Altlast-Glattstellung beim Start: kurzfristige Position seit 2,4 Tagen offen, weil die App nicht lief."
+      },
+      {
+        "zu": "2026-10-09T19:30:00Z",
+        "auf": "2026-10-09T13:30:00Z",
+        "sym": "CEG",
+        "richtung": "call",
+        "buch": "intraday",
+        "modus": "rsi2seit",
+        "menge": 1,
+        "pnl": 74.86,
+        "pnlPct": 3.74,
+        "warum": "Haltedauer erreicht (8 Handelskerzen a 60 Min)"
+      }
+    ]
+  },
+  "papiere": [
+    {
+      "sym": "AAPL",
+      "name": "Apple",
+      "menge": 12,
+      "einstand": 228.4,
+      "kurs": 234.1,
+      "wert": 2809.2,
+      "buch": "momentum"
+    },
+    {
+      "sym": "SPY",
+      "name": "SPDR S&P 500 ETF",
+      "menge": 60,
+      "einstand": 640.1,
+      "kurs": 636.5,
+      "wert": 38190,
+      "buch": "drift"
+    }
+  ],
+  "markt": {
+    "indizes": [
+      {
+        "sym": "^GSPC",
+        "name": "S&P 500",
+        "kurs": 7811.54,
+        "pct": 0.59,
+        "kurve": [
+          [
+            1791811800000,
+            7765.1
+          ],
+          [
+            1791813600000,
+            7790.3
+          ],
+          [
+            1791815400000,
+            7811.5
+          ]
+        ]
+      },
+      {
+        "sym": "^IXIC",
+        "name": "Nasdaq",
+        "kurs": 27366.17,
+        "pct": 0.64,
+        "kurve": [
+          [
+            1791811800000,
+            27190
+          ],
+          [
+            1791813600000,
+            27300.2
+          ],
+          [
+            1791815400000,
+            27366.2
+          ]
+        ]
+      },
+      {
+        "sym": "^VIX",
+        "name": "VIX",
+        "kurs": 15.42,
+        "pct": 3.91,
+        "kurve": [
+          [
+            1791811800000,
+            14.9
+          ],
+          [
+            1791813600000,
+            15.2
+          ],
+          [
+            1791815400000,
+            15.4
+          ]
+        ]
+      }
+    ],
+    "sektoren": [
+      {
+        "name": "Technologie",
+        "pct1T": 0.9,
+        "pct1W": 2.1,
+        "pct1M": 4.8
+      },
+      {
+        "name": "Energie",
+        "pct1T": -0.6,
+        "pct1W": -1.4,
+        "pct1M": 0.3
+      }
+    ],
+    "hotlists": {
+      "gewinner": [
+        {
+          "sym": "CEG",
+          "name": "Constellation Energy",
+          "pct": 4.2,
+          "umsatz": 410000000
+        }
+      ],
+      "verlierer": [
+        {
+          "sym": "FAST",
+          "name": "Fastenal",
+          "pct": -3.1,
+          "umsatz": 220000000
+        }
+      ],
+      "umsatz": [
+        {
+          "sym": "NVDA",
+          "name": "Nvidia",
+          "pct": 1.1,
+          "umsatz": 21000000000
+        }
+      ],
+      "ausbrueche": [
+        {
+          "sym": "PYPL",
+          "name": "PayPal",
+          "pct": 2.8,
+          "umsatz": 560000000
+        }
+      ],
+      "luecken": [
+        {
+          "sym": "MDB",
+          "name": "MongoDB",
+          "pct": 5.6,
+          "umsatz": 380000000
+        }
+      ]
+    },
+    "marktkarte": [
+      {
+        "sektor": "Technologie",
+        "werte": [
+          {
+            "sym": "AAPL",
+            "name": "Apple",
+            "pct": 0.8,
+            "umsatz": 9800000000,
+            "mcap": 3600000000000
+          },
+          {
+            "sym": "NVDA",
+            "name": "Nvidia",
+            "pct": 1.1,
+            "umsatz": 21000000000,
+            "mcap": 4500000000000
+          }
+        ]
+      }
+    ],
+    "termine": [
+      {
+        "datum": "2026-10-30",
+        "sym": "AAPL",
+        "art": "Quartalszahlen"
+      }
+    ],
+    "nachrichten": [
+      {
+        "zeit": "2026-10-12T14:10:00Z",
+        "quelle": "Yahoo Finance",
+        "titel": "Beispielmeldung zu Apple (Kunstdaten)",
+        "sym": "AAPL",
+        "url": "https://finance.yahoo.com/"
+      }
+    ],
+    "radar": {
+      "ueberschrift": "Gehandelt wird hiervon nichts",
+      "insider": [
+        {
+          "datum": "2026-10-09",
+          "sym": "CEG",
+          "person": "Vorstand (Kunst)",
+          "art": "Kauf",
+          "betrag": 1200000,
+          "quelle": "SEC Form 4"
+        }
+      ],
+      "vormarkt": [
+        {
+          "sym": "MDB",
+          "pct": 5.6,
+          "kerzen": 42,
+          "hinweis": "Vorbörse: Kerzenzahl statt Umsatz (Yahoo hat vorbörslich kein Volumen)"
+        }
+      ],
+      "spekulation": [
+        {
+          "sym": "FUBO",
+          "text": "Beispiel (Kunst)",
+          "quelle": "Radar"
+        }
+      ]
+    }
+  },
+  "regeln": {
+    "antwort": {
+      "ueberschrift": "Was wird gehandelt - und warum",
+      "absaetze": [
+        "Belegte handelbare Kanten: NULL. Gehandelt wird mit virtuellem Kapital nach gemessenen Konfigurationen; echtes Geld nur für ein Buch, das den S&P 500 nach Kosten schlägt (Entscheid 04.10.2026)."
+      ],
+      "handelt": [
+        {
+          "buch": "momentum",
+          "text": "Mittelfristig - Momentum im Querschnitt, Korb der 187 umsatzstärksten, 63 Tage Haltedauer.",
+          "beleg": "nicht entscheidbar (Rückblick 04.10.2026)",
+          "fundstelle": "wiki/belegstand.md"
+        }
+      ]
+    },
+    "strategien": [
+      {
+        "name": "Momentum im Querschnitt",
+        "gruppe": "messung",
+        "etikett": "nicht entscheidbar",
+        "protokollzeile": "Rückblick 04.10.2026: +7,6 / +8,4 Pp p. a. im Korb 187, vom Zufall nicht zu unterscheiden",
+        "belegText": "siehe Belegstand",
+        "fundstelle": "wiki/belegstand.md"
+      },
+      {
+        "name": "RSI2 im Seitwärtskanal (Intraday)",
+        "gruppe": "messung",
+        "etikett": "positiv, aber statistisch dünn",
+        "protokollzeile": "Edge-Wächter: 511 Signale ueber 96 Werte, Überschuss +0,057 Pp/8 h, t 0,39",
+        "belegText": "rsi2seit-2026-08-26.json",
+        "fundstelle": "studien/messmaschine"
+      },
+      {
+        "name": "Kapitulations-Dip",
+        "gruppe": "verworfen",
+        "etikett": "Neumessung: zurückgewiesen",
+        "protokollzeile": "03.10.2026: in der behaupteten Größe zurückgewiesen",
+        "belegText": "netto -0,02 Pp, +1,107 hält nicht",
+        "fundstelle": "wiki/belegstand.md"
+      },
+      {
+        "name": "Stunden-Strategie",
+        "gruppe": "archiv",
+        "etikett": "widerlegt - abgeschaltet",
+        "protokollzeile": "Technik-Score ist Kontraindikator (t -11,6)",
+        "belegText": "siehe Archiv",
+        "fundstelle": "wiki/belegstand.md"
+      }
+    ],
+    "intraday": {
+      "an": false,
+      "modus": "rsi2seit",
+      "klartext": "RSI(2) kauft kurzfristige Übertreibung im Seitwärtskanal, 60-Minuten-Kerzen, Haltedauer 8 Kerzen.",
+      "kostenHürde": 0.1,
+      "edge": {
+        "text": "Edge-Wächter (rsi2seit, letzte 120 Tage, Archiv): 511 Signale ueber 96 Werte - Überschuss +0,057 Pp/8 h - t über Symbole 0,39 -> positiv, aber statistisch dünn - weiter beobachten",
+        "zeit": "2026-10-12T09:01:00Z"
+      },
+      "regime": {
+        "setup": "pause",
+        "begruendung": "Weder Trend (50 % im Trend) noch Wellen (Score 31) - kein Setup passt",
+        "zeit": "2026-10-12T09:01:00Z",
+        "pause": true
+      }
+    },
+    "risiko": {
+      "maxPositionen": 12,
+      "tagesverlustPct": 5,
+      "exposure": 0.5,
+      "verlustSerie": 1,
+      "bremse": "kleinste Stufe",
+      "letzteAnpassung": {
+        "zeit": "2026-08-25T17:55:00Z",
+        "text": "Tagesverlust -21 % (6 Zombie-Stops aus 13.08.), F1/F11 offen, 7 Waisen im Buch. Bremse bleibt auf kleinster Stufe."
+      }
+    },
+    "watchlist": [
+      "AAPL",
+      "NVDA",
+      "SPY"
+    ],
+    "monitor": [
+      {
+        "sym": "CEG",
+        "signal": "rsi2seit",
+        "zeit": "2026-10-12T14:00:00Z",
+        "text": "Signal gesehen, Regime pausiert - nicht gehandelt"
+      }
+    ],
+    "autopilot": {
+      "an": true,
+      "pruefung": {
+        "zeit": "2026-10-12T09:01:00Z",
+        "ok": false,
+        "text": "Fehler: Q is not defined"
+      },
+      "edge": "siehe intraday.edge.text"
+    }
+  },
+  "betrieb": {
+    "gesundheit": {
+      "appLaeuftSeit": "2026-10-11T05:40:00Z",
+      "scansGesamt": 412,
+      "scanFehler": 0,
+      "letzterScan": "2026-10-12T14:34:10Z",
+      "kursAbrufeOk": 3980,
+      "kursAbrufeFehler": 2,
+      "killSwitchAusloesungen": 0,
+      "hintergrundRechnerAusfaelle": 0,
+      "analyseExportFehler": 0,
+      "edgeWächterAusfaelle": 1,
+      "letzterFehler": {
+        "zeit": "2026-10-12T09:01:00Z",
+        "text": "Q is not defined"
+      },
+      "marktOffen": true,
+      "scanIntervallSollMs": 300000,
+      "scanLueckenMin": []
+    },
+    "archiv": {
+      "abdeckung": [
+        {
+          "rahmen": "1m",
+          "werte": 1840,
+          "von": "2023-09-01",
+          "bis": "2026-10-09",
+          "luecken": 12,
+          "anteil": 0.98
+        },
+        {
+          "rahmen": "1d",
+          "werte": 2965,
+          "von": "1986-01-02",
+          "bis": "2026-10-09",
+          "luecken": 0,
+          "anteil": 1
+        }
+      ]
+    },
+    "sammler": {
+      "laeuft": true,
+      "stand": "2026-10-12T14:33:00Z",
+      "menge": 184,
+      "sperre": null
+    },
+    "kosten": {
+      "runden": 16,
+      "huerdeGemessen": 0.104,
+      "annahme": 0.1,
+      "stand": "2026-09-01"
+    },
+    "scoreboard": [
+      {
+        "kennung": "rsi2seit",
+        "urteil": "positiv, aber statistisch dünn",
+        "zahl": "+0,0205 Pp brutto, Hürde 0,10",
+        "stand": "2026-08-26",
+        "ueberholtDurch": null
+      },
+      {
+        "kennung": "kapitulation",
+        "urteil": "in der behaupteten Größe zurückgewiesen",
+        "zahl": "netto -0,02 Pp",
+        "stand": "2026-10-03",
+        "ueberholtDurch": "Neumessung 03.10.2026"
+      }
+    ],
+    "register": [
+      {
+        "name": "Kapitulations-Dip",
+        "urteil": "Neumessung: zurückgewiesen",
+        "altesUrteil": "+1,107 Pp (26.08.2026, ueberholt)",
+        "etikett": "handelt als Zusatz - per Voreinstellung aus"
+      }
+    ],
+    "journal": [
+      {
+        "zeit": "2026-10-04T10:00:00Z",
+        "text": "Automatik stellt nie auf Kapitulation (AUTOMATIK_NIE)",
+        "quelle": "Nr. 73"
+      }
+    ],
+    "schattenbuch": {
+      "bilanz": [
+        {
+          "grund": "Einstieg",
+          "n": 46,
+          "summePct": -8.22,
+          "gerettet": 13,
+          "verhindert": 8
+        },
+        {
+          "grund": "Regime-Filter",
+          "n": 6,
+          "summePct": -5.1,
+          "gerettet": 3,
+          "verhindert": 0
+        }
+      ],
+      "offen": 0,
+      "letzte": [
+        {
+          "sym": "CEG",
+          "richtung": "call",
+          "grund": "Regime-Filter",
+          "zeit": "2026-10-12T14:00:00Z"
+        }
+      ]
+    },
+    "berichte": {
+      "messbericht": "Messbericht (Kunst): Trefferquote 37 % (17 von 46), Geduld-Bilanz ausgeglichen.",
+      "wochenbericht": "Wochenbericht (Kunst): Depot +0,4 % gegen S&P 500 +1,1 %.",
+      "stand": "2026-10-12T09:00:00Z"
+    },
+    "benchmark": {
+      "text": "Intraday-Depot gegen SPY seit 06.04.2026: Buch 0,0 %, SPY +17,4 %, Nasdaq +21,0 % (Kursindex).",
+      "punkte": [
+        [
+          1789588800000,
+          100,
+          100,
+          100
+        ],
+        [
+          1791815400000,
+          100,
+          117.4,
+          121
+        ]
+      ]
+    },
+    "regelbuch": [
+      {
+        "name": "Haltedauer Intraday",
+        "text": "8 Handelskerzen a 60 Min, dann Ausstieg zur Eröffnung der nächsten Kerze."
+      }
+    ],
+    "trendfinder": {
+      "text": "Winkel-Detektor: +0,25 widerlegt, marktneutral - nur im Archiv.",
+      "fundstelle": "wiki/belegstand.md"
+    }
+  },
+  "fehler": [
+    {
+      "zeit": "2026-10-12T09:01:00Z",
+      "quelle": "Autopilot-Prüfung",
+      "text": "Fehler: Q is not defined"
+    }
+  ]
+}

@@ -3936,6 +3936,9 @@
     return Massstab.vergleich(intradayVerlauf(), 'intraday', 'startI',
       { an: !!(D.intraday && D.intraday.enabled), markt: marktGesamt(), marktKurs: MARKT_SPY });
   }
+  /** Die Zeile "Gegen den Markt" der Intraday-Karte als TEXT - EINE Funktion fuer die Karte
+   *  (renderIntradayKarte) und den Lagebild-Export (DepotAPI.intradayGegenMarkt). */
+  function intradayGegenMarktText(vI) { return Massstab.langText('Depot', vI, pz1); }
 
   function renderIntradayKarte() {
     var el = document.getElementById('buchIntradayKopf');
@@ -3960,7 +3963,7 @@
       '<div class="buch-erg ' + cls + '">' + U.signTxt(Math.round(pnl * 100) / 100, ' $') +
         ' · ' + pz1(Massstab.prozent(eq, START_CAPITAL)) + '</div>' +
       '<dl class="buch-fakten">' +
-        '<dt>Gegen den Markt</dt><dd>' + U.esc(Massstab.langText('Depot', vI, pz1)) + (vI.ok
+        '<dt>Gegen den Markt</dt><dd>' + U.esc(intradayGegenMarktText(vI)) + (vI.ok
           ? '<br><span style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(Massstab.hinweis(vI)) + '</span>' : '') + '</dd>' +
         '<dt>Positionen</dt><dd>' + D.positions.length + '</dd>' +
         '<dt>Status</dt><dd>handelt selbst</dd>' +
@@ -4674,6 +4677,20 @@
      * regelStatus: was die App aus den Regeln gerade MACHT (handelt, zeichnet auf,
      * Buch laeuft). Das ist Depot-Zustand, kein Urteil - beide gehoeren nebeneinander
      * angezeigt, nie vermischt. */
+    /* ---- Lagebild-Export (Auftrag Nr. 115, 12.10.2026) - nur Kopien, nichts wird gerechnet,
+     * was die Karten nicht auch rechnen: der Vergleich der Intraday-Karte samt ihrem Text
+     * (dieselbe Funktion wie renderIntradayKarte), die zwei Zahlen des Kopf-Cockpits
+     * (equityNow, tagesPnl - so wie #ckEquity/#ckDay sie zeigen). */
+    intradayGegenMarkt: function () {
+      if (!D) return null;
+      var v = intradayVergleich();
+      return { v: v, text: intradayGegenMarktText(v) };
+    },
+    kopfzahlen: function () {
+      if (!D) return null;
+      var tp = tagesPnl();
+      return { equity: equityNow(), tagPnl: tp ? tp.pnl : null, tagPct: tp ? tp.pct : null };
+    },
     protokollKante: function (key) {
       /* Nur das GUELTIGE Protokoll (04.10.2026): ist ein Registereintrag juenger, gibt
        * es hier nichts - der Leser faellt dann von selbst auf das Studienregister. */

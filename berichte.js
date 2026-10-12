@@ -208,11 +208,79 @@
     });
     return '﻿' + head.map(f).join(';') + '\n' + rows.join('\n');
   }
+  /* ---- Lagebild-Export (Auftrag Nr. 115, 12.10.2026): eigener Takt neben den 10 Minuten ----
+   * lagebild.json und kursdaten.json alle 2 Minuten in vor/haupt/nach, sonst alle 10, dazu
+   * sofort bei force (jede Depot-Aenderung); analyse-daten.json behaelt seine 10 Minuten.
+   * markt-chart/ alle 15 Minuten und sofort fuer einen im Viewer geoeffneten Wert. Die Sperren
+   * bleiben wie bei lastAnalysisExport auch im Fehlerfall gesetzt (Begruendung unten). */
+  var lastLagebildExport = 0, lastChartExport = 0;
+  var LAGEBILD_TAKT = { offen: 2 * 60000, zu: 10 * 60000, chart: 15 * 60000 };
+  var VIEWER_ZULETZT = [], CHART_SOFORT = [], APP_VERSION = null, SAMMLER_STAND = null;
+  function lagebildTakt(sitzung) { return (sitzung === 'vor' || sitzung === 'haupt' || sitzung === 'nach') ? LAGEBILD_TAKT.offen : LAGEBILD_TAKT.zu; }
+  function viewerGeoeffnet(sym) {
+    sym = String(sym || '').toUpperCase();
+    if (!sym) return;
+    VIEWER_ZULETZT = [sym].concat(VIEWER_ZULETZT.filter(function (s) { return s !== sym; })).slice(0, 20);
+    if (CHART_SOFORT.indexOf(sym) === -1) CHART_SOFORT.push(sym);
+    exportAnalysis(false);
+  }
+  /** Welche Werte eine markt-chart-Datei bekommen: Watchlist, Positionen aller Buecher,
+   *  zuletzt im Viewer geoeffnete - hoechstens 60. Kerzen liest der Hauptprozess selbst. */
+  function chartAuftrag() {
+    var syms = [], seen = {};
+    function nimm(s) { s = String(s || '').toUpperCase(); if (s && !seen[s] && syms.length < 60) { seen[s] = 1; syms.push(s); } }
+    CHART_SOFORT.forEach(nimm);
+    VIEWER_ZULETZT.forEach(nimm);
+    (D.positions || []).forEach(function (p) { nimm(p && p.sym); });
+    [D.mfBuch, D.driftBuch].forEach(function (b) { ((b && b.positionen) || []).forEach(function (p) { nimm(p && p.sym); }); });
+    (D.watchlist || []).forEach(function (w) { nimm(w && w.y); });
+    var auftrag = { symbole: syms, sofort: CHART_SOFORT.slice(), namen: {} };
+    syms.forEach(function (s) { var e = window.Marktwerte && window.Marktwerte.stammEintrag ? window.Marktwerte.stammEintrag(s) : null; if (e) auftrag.namen[s] = e.name; });
+    CHART_SOFORT = [];
+    return auftrag;
+  }
+  function kursVon(sym) {
+    var k = window.Marktwerte && window.Marktwerte.kurs ? window.Marktwerte.kurs(sym) : null;
+    if (k && isFinite(k.kurs)) return k.kurs;
+    var l = window.DepotAPI && window.DepotAPI.letzterKurs ? window.DepotAPI.letzterKurs(sym) : null;
+    return l && isFinite(l.kurs) ? l.kurs : null;
+  }
+  /** Die Quellen des Lagebilds - nur Leseauskuenfte und Zustand, nichts aus Einstellungen. */
+  function lagebildQuellen(gesundheit, jetzt) {
+    var API = window.DepotAPI;
+    var signale = [];
+    (D.watchlist || []).forEach(function (w) {
+      var s = w && API && API.signal ? API.signal(w.y) : null;
+      if (s) signale.push({ sym: w.y, signal: null, t: s.t, grund: s.grund });
+    });
+    var sm = SAMMLER_STAND;
+    return { D: D, HEALTH: HEALTH, jetzt: jetzt, appVersion: APP_VERSION, DepotAPI: API, MFDepot: window.MFDepot,
+      StudienUrteile: window.StudienUrteile, Massstab: window.Massstab, Boerse: window.Boerse, Dash: window.Dash,
+      Drift: window.Drift, Scoreboard: window.Scoreboard, antwortTexte: window.__antwortTexte,
+      equityNow: equityNow, startKapital: START_CAPITAL, scanMs: modeParams().scanMs, abdeckung: EXPORT_ABDECKUNG,
+      gesundheit: gesundheit, kursVon: kursVon,
+      nameVon: function (sym) { var e = window.Marktwerte && window.Marktwerte.stammEintrag ? window.Marktwerte.stammEintrag(sym) : null; return e ? e.name : null; },
+      termine: window.Cal && window.Cal.next ? window.Cal.next(6) : [], signale: signale,
+      sammler: sm ? { laeuft: !!sm.laeuft, stand: sm.fortschritt ? sm.fortschritt.begonnen : null, menge: Array.isArray(sm.zeilen) ? sm.zeilen.length : null, sperre: sm.fehler || null } : null };
+  }
+  function nebenstaendeHolen() {
+    try { if (!APP_VERSION && window.api.appVersion) window.api.appVersion().then(function (v) { APP_VERSION = v && v.version ? v.version : (typeof v === 'string' ? v : null); }, function () {}); } catch (e) { /* ohne Version */ }
+    try { if (window.api.sammlerStand) window.api.sammlerStand().then(function (s) { SAMMLER_STAND = s || null; }, function () {}); } catch (e) { /* ohne Sammler-Stand */ }
+  }
+
   async function exportAnalysis(force) {
     if (!D || !window.api.exportAnalysis) return null;
     var nowE = Date.now();
-    if (!force && nowE - lastAnalysisExport < 10 * 60000) return null;
-    lastAnalysisExport = nowE;
+    var LB = window.Lagebild || null;
+    var sitz = LB ? LB.sitzung(nowE, window.Boerse) : null;
+    var analyseFaellig = !!force || nowE - lastAnalysisExport >= 10 * 60000;
+    var lagebildFaellig = !!LB && (!!force || nowE - lastLagebildExport >= lagebildTakt(sitz));
+    var chartFaellig = !!LB && (CHART_SOFORT.length > 0 || nowE - lastChartExport >= LAGEBILD_TAKT.chart);
+    if (!analyseFaellig && !lagebildFaellig && !chartFaellig) return null;
+    if (analyseFaellig) lastAnalysisExport = nowE;
+    if (lagebildFaellig) lastLagebildExport = nowE;
+    if (chartFaellig) lastChartExport = nowE;
+    nebenstaendeHolen();
     // Bewusst OHNE Einstellungen/Zugangsdaten – nur Handels- und Auswertungsdaten.
     var payload = {
       json: {
@@ -295,6 +363,13 @@
       csv: csvString(),
       bericht: (D.central && D.central.berichtMd) || null
     };
+    /* Der Lagebild-Takt: was nicht faellig ist, faehrt nicht mit (main.js schreibt nur, was da ist). */
+    if (lagebildFaellig) {
+      try { payload.lagebild = LB.bau(lagebildQuellen(payload.json.gesundheit, nowE)); }
+      catch (e) { payload.lagebild = null; }
+    }
+    if (chartFaellig) payload.charts = chartAuftrag();
+    if (!analyseFaellig) { payload.json = null; payload.csv = null; payload.bericht = null; if (!lagebildFaellig) payload.kurse = null; }
     /* Der Analyse-Export ist die Leitung, ueber die SAEMTLICHE HEALTH-Zaehler die App
      * verlassen (gesundheit:, weiter oben). Bis zum 25.08.2026 wurde sein Ergebnis
      * verworfen: schlug er fehl, meldete niemand etwas - und mit ihm schwiegen still
@@ -606,9 +681,13 @@
     if (sb) sb.addEventListener('click', mitFrisch(showReport));
   }
 
+  /* Der 2-Minuten-Takt haengt nicht an save(): einmal je Minute nachsehen, ob etwas faellig ist. */
+  if (typeof setInterval === 'function') setInterval(function () { if (holeDepot) mitFrisch(exportAnalysis)(false); }, 60000);
+
   window.Berichte = {
     verkabeln: verkabeln,
     exportAnalysis: mitFrisch(exportAnalysis),
+    viewerGeoeffnet: mitFrisch(viewerGeoeffnet),
     csvString: mitFrisch(csvString),
     baueMessbericht: mitFrisch(baueMessbericht)
   };

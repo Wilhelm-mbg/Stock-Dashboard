@@ -628,6 +628,7 @@
       }
       ein.sort(function (a, b) { return (RANG[a.chance] - RANG[b.chance]) || (b.zeit - a.zeit); });
       ein = ein.slice(0, 12);
+      RADAR_STAND.spekulation = ein;
       if (!ein.length) {
         el.innerHTML = '<div class="loading">Gerade keine nennenswerten Spekulationen im Radar (Stand ' +
           new Date(r.mtime).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr, ' + quelleText(r) + ').</div>';
@@ -743,6 +744,7 @@
         return (b.anzahl - a.anzahl) || (b.wert - a.wert) || (b.rang - a.rang);
       });
       ein = ein.slice(0, 12);
+      RADAR_STAND.insider = ein;
       if (!ein.length) {
         el.innerHTML = '<div class="loading">Zurzeit keine gemeldeten Insider-Käufe über der Schwelle (Stand ' +
           new Date(r.mtime).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr, ' + quelleText(r) + ').</div>';
@@ -823,6 +825,9 @@
   var VM_SCREENER = ['day_gainers', 'small_cap_gainers', 'most_actives'];
   var vormarktLaeuft = false;
   var vormarktStand = null;   // { zeit, geprueft, zeilen: [...] }
+  /* Lagebild-Export (Nr. 115): was die Radar-Karten nach dem Laden im Speicher haben -
+   * dieselben bereinigten Listen, die gezeigt werden; null, bis die Ablage gelesen ist. */
+  var RADAR_STAND = { insider: null, spekulation: null };
 
   function vormarktZeilenSauber(roh) {
     var aus = [];
@@ -1503,7 +1508,11 @@
      * Das Ereignis kommt von der Auswahl neben dem Knopf, damit beides hoerbar ist:
      * die Oeffnung ohne Hammer, der Schluss mit. */
     glockeProbe: function (ereignis) { return glockeTon(ereignis); },
-    bandTempo: bandTempo
+    bandTempo: bandTempo,
+    /** Lagebild-Export (Nr. 115): Radar-Listen, Vormarkt-Stand und Schlagzeilen, wie die
+     *  Karten sie zeigen - nur Kopien, kein Abruf. */
+    radar: function () { return { insider: RADAR_STAND.insider, spekulation: RADAR_STAND.spekulation, vormarkt: vormarktStand }; },
+    nachrichten: function () { return NEWS_ALLE.slice(); }
   };
 
   // Lade-Skeletons, bis die ersten Kurse da sind

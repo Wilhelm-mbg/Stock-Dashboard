@@ -813,7 +813,9 @@
       /* Auftrag Nr. 93: Grund statt stillem "nicht faellig" (A4/A6), Handelstage bis zur naechsten
        * Umschichtung, Positionen ohne jede Kursreihe (A2), der Satz zum ersten Punkt (A5). */
       hinweis: s && s.hinweis ? s.hinweis : null, noch: s && s.noch != null ? s.noch : null,
-      ohneKurs: s && s.ohneKurs ? s.ohneKurs : [], ersterSatz: ersterPunktSatz(d)
+      ohneKurs: s && s.ohneKurs ? s.ohneKurs : [], ersterSatz: ersterPunktSatz(d),
+      /* Lagebild (Nr. 115): der Tag der naechsten Umschichtung als Zeitpunkt, nicht als Text. */
+      naechsteUmschichtung: (s && s.noch != null) ? naechsteUmschichtung(s.noch, s.at) : null
     };
   }
 
@@ -826,6 +828,10 @@
   /** Ein Strich MIT Grund. Eine Karte, die eine Zahl nicht hat, sagt warum; sie laesst
    *  das Feld nicht leer und setzt keine Null an die Stelle einer fehlenden Messung. */
   function ohne(grund) { return '–<span style="color:var(--muted);"> · ' + U.esc(grund) + '</span>'; }
+
+  /** Die Zeile "Gegen den Markt" einer Buch-Karte als TEXT - EINE Funktion fuer die Karte
+   *  (karteHtml) und den Lagebild-Export (lagebild.js ueber MFDepot.gegenMarktText). */
+  function gegenMarktText(v) { return window.Massstab.langText('Buch', v, U.pz1); }
 
   function handlungText(t) {
     if (!t) return ohne('noch keine Order');
@@ -898,7 +904,7 @@
      * Marktstand, steht der Grund da, keine Null. Der Hinweis zur Bauart des
      * Vergleichs steht wortgleich an jeder Stelle (Massstab.hinweis). */
     var M = window.Massstab, v = k.massstab;
-    var gegen = U.esc(M.langText('Buch', v, U.pz1)) + (v && v.ok
+    var gegen = U.esc(gegenMarktText(v)) + (v && v.ok
       ? '<br><span style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(M.hinweis(v)) +
         (k.ersterSatz ? ' ' + U.esc(k.ersterSatz) : '') + '</span>' : '');
     /* Der Rueckblick (Auftrag Nr. 81): Wilhelms Regel hat zwei Stufen - Rueckblick ueber
@@ -1083,6 +1089,9 @@
    * und die zwei Buch-Karten gehoeren dazu. Der Schreiber bleibt trotzdem diese
    * Datei - render() bestellt nur, es formuliert nicht. */
   window.MFDepot = { takt: takt, karten: karten, vergleich: vergleich,
+    /** Lagebild-Export (Nr. 115): die Daten einer Buch-Karte und der Text ihrer Zeile
+     *  "Gegen den Markt" - dieselben Funktionen, die die Karte selbst benutzt. */
+    karteDaten: buchKarteDaten, gegenMarktText: gegenMarktText,
     /** Die bereinigte SPY-Reihe, wie sie zuletzt gelesen wurde (oder null) - DIE eine
      *  Marktreihe des Massstabs, auch fuer das Intraday-Depot (depot.js). */
     markt: function () { return MARKT; },
