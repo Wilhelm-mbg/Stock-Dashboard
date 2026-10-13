@@ -42,7 +42,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | Signalzahl | Schätzung aus `ideen-verworfen.md`: 2.800–5.600 Bewegungen ≥ 10 % in der Entdeckung; davon rund die Hälfte marktgleich, nur Stürze → **≈ 700–1.400 Trades**, ~0,4–0,8 je Tag. |
 | MDE80 | Faustregel bei N = 1.000: H2 1,5 Pp · H5 2,3 Pp · H20 4,6 Pp. Ereignisstreuung nach 10-%-Sturz grob doppelt → **≈ 3 / 4,6 / 9 Pp**. |
 | Urteil | **zu klein, solange die Größe der Quelle nicht vorliegt** (Form heute erfüllt). Einstellbar, wenn der Volltext für die 2-Tage-Umkehr ≥ 1,5 Pp (H2) bzw. ≥ 2,3 Pp (H5) nennt — sonst in `ideen-verworfen.md` mit der Zahl. |
-| Stand | |
+| Stand | zurückgestellt (Ideen-Agent 14.10.2026): Volltext JBF 2018 weiter nicht frei, keine Zahl; nur mit Zahl aus dem Volltext wieder aufnehmen — siehe ideen-verworfen.md 14.10. |
 
 ## 2. Umkehr nach einer Serie gleicher Tagesvorzeichen
 
@@ -73,7 +73,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | Signalzahl | unbekannt; Sprünge nach Lee-Mykland sind selten — vor dem Einstellen zählen (eigenes Zählskript ohne Renditen). Annahme 1–2 % der Wert-Tage → ≈ 15.000–30.000 in der Entdeckung. |
 | MDE80 | bei N = 20.000: H1 0,23 Pp · H5 0,52 Pp (Faustregel; Ereignisstreuung eher höher). |
 | Urteil | **Form erfüllt, Größe fehlt**; bei den Warnungen (liquide Werte: verschwunden; netto negativ) eher Größen-Ausschluss als Bestätigung zu erwarten — als informatives Urteil zulässig. Einstellen nur mit den Zahlen der Quelle. |
-| Stand | |
+| Stand | verworfen (Ideen-Agent 14.10.2026): Volltext gelesen — Größe nur als Grafik, Tag 1 = Intraday des Sprungtags (Tag-Form verpasst ihn), eigene Strategie der Autoren −0,2 % (D1, t −0,71); siehe ideen-verworfen.md |
 
 ## 4. Sprung-Fortsetzung über 1–3 Monate
 
@@ -88,7 +88,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | Signalzahl | wie Nr. 3: ≈ 15.000–30.000 (Annahme, zu zählen). |
 | MDE80 | bei N = 20.000: H20 **1,0 Pp** · H40 1,46 · H60 1,8 Pp (Faustregel). Kriterium erfüllt, wenn die Long-Seite ≥ 0,5 Pp je 20 Tage trägt. |
 | Urteil | **Form erfüllt, Größe fehlt** — mit Volltext voraussichtlich einstellbar (Monatshorizont, viele Ereignisse). |
-| Stand | |
+| Stand | verworfen (Ideen-Agent 14.10.2026): Quelle ist Dezilsortierung (Korb); Nachbau Bahcivan et al. 2023 (Table 7): D10 +0,4 %/Monat FF4, t 1,49 — nicht signifikant, unter MDE80; siehe ideen-verworfen.md |
 
 ## 5. Dividendenmonat-Prämie (Vorlauf zum Ex-Tag)
 

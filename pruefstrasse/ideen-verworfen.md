@@ -156,3 +156,45 @@ das Hindernis, solange das Panel erst 2016 beginnt.
   nicht" und arbeiten auf Indexebene.
 - Aktiensplits als Ereignis: die Sicht liefert bereinigte Kurse, deshalb ist ein Split dort unsichtbar. Das hängt am offenen
   Auftrag `sicht.roh`.
+
+---
+
+## 2026-10-14 · kein Kandidat — Vorrat Nr. 1, 3, 4 nachgeprüft, nichts einstellbar
+
+**Vorrat.** Im Vorrat steht kein Eintrag mit dem Urteil „einstellbar“ und leerer Spalte „Stand“ mehr. Nr. 2 ist am 13.10. eingestellt
+worden. Nr. 1, 3 und 4 hängen an Größen, die erst im Volltext stehen sollten. Diese drei habe ich nachgesehen:
+
+- **Nr. 3 `umkehr-uebernachtsprung` — verworfen.** Volltext gelesen: Bahcivan, Dam & Gonenc, „New Avenues in Expected Returns:
+  Investor Overreaction and Overnight Price Jumps in US Stock Markets“, FEBRI Research Report 2023002-EEF (Februar 2023),
+  https://www.rug.nl/feb/research/febri-research-reports/docs-2023/2023002-eef-def.pdf (abgerufen 2026-10-14). Stichprobe: CRSP,
+  Juni 1993 bis Dezember 2021. Sprungtest: Lee-Mykland mit K = 16; α steht nicht im Text.
+  (1) **Die Studie nennt keine Größe als Zahl.** Die Umkehr gibt es nur als Grafik (Figure 1). Sonst stehen da Fama-MacBeth-Koeffizienten
+  von −0,80 bzw. −0,37 auf die kumulierte Sprungrendite; t sinkt von 3,70/5,76 bis Tag 5 auf 3,30/2,26.
+  (2) **Tag 1 ist die Intraday-Rendite des Sprungtags selbst** („post-jump intraday return … at the end of the first day“, Table 2).
+  Die Tag-Form steigt aber erst zur Folgeeröffnung ein. Diesen Teil hat der Vorrat schon unter „Eröffnungslücke → Umkehr am
+  selben Tag“ ausgeschlossen.
+  (3) **Die eigene Handelsstrategie der Autoren verliert** (Table 7, FF4-Alpha, 1 Monat): D1 long −0,2 % (t −0,71), D1−D10
+  −0,8 % (t −2,26). Die Autoren schreiben selbst „short-term market phenomena“.
+  Damit bleibt für die Tag-Form keine belegte Größe ab Tag 2, gegen die eine MDE80 stehen könnte.
+- **Nr. 4 `sprung-fortsetzung` (Jiang & Zhu 2017) — verworfen.** Ein Arbeitspapier im Volltext ist nicht frei zu finden. Die Regel der
+  Quelle sortiert monatlich in Dezile (Querschnitt), gehört also in die Korb-Form, und die löst nur 7–12 Pp je Periode auf. Der
+  unabhängige Nachbau nach 2010 ist dieselbe Groninger Studie (Table 7, Überschrift „relative strength“, Übernacht-Sprünge 1993–2021):
+  D10 long +0,4 % FF4-Alpha je Monat (t 1,49), D10−D1 +0,4 % (t 1,22) — **nicht signifikant**. Auch eine Long-Seite von 0,4 Pp je
+  20 Tage läge unter der halben MDE80 der Tag-Form (≈ 1,0 Pp bei H20, siehe Vorrat).
+- **Nr. 1 `umkehr-grossbewegung-marktgleich` — zurückgestellt.** Der Volltext von Kudryavtsev (JBF 2018) ist weiter nicht frei. Gefunden
+  habe ich nur das Abstract, die IDEAS-Seite und das Kapitel bei World Scientific, alle ohne Zahl. Laut Vorrat-Urteil wird der Eintrag ohne
+  Zahl nicht eingestellt.
+
+**Eigene Suche.** Gesucht habe ich nach Ereignisregeln mit festen Schwellen aus Quellen nach 2010, die die Panel-Sicht trägt (o, c, v,
+roh, markt, datum). Keine war neu und auflösbar:
+- **Dividendenmonat:** geht nicht über roh/c, weil das Panel nur um Splits und Abspaltungen bereinigt, nicht um Bardividenden
+  (`studien/querschnitt-pruefstand-2026-09-13/ERGEBNIS-KUNST.md` Z. 51).
+- **Persistence or reversal? Abnormal trading volume** (European Journal of Finance 2024): Umsatzregel, Abwandlung von
+  `hochvolumen-praemie` (Regel 1).
+- **Graziani, „Time Series Reversal: A Payment Cycle Friction“** und **Boyarchenko et al., „The Overnight Drift“** (NY Fed SR 917): beide
+  marktweit (Topf ≡ 0) bzw. Übernacht-Haltung, die die Tag-Form nicht kennt.
+- **Akbas, Boehmer, Jiang & Koch (JFE 2022):** monatlicher Querschnitt (Korb), Übernacht-/Tag-Zerlegung — Form fehlt (wie Vorrat Nr. 9).
+
+**Wogegen geprüft:** `register.json` (donchian20-ausbruch-long H5/H10/H20), `erledigt/donchian20-ausbruch-long`. Warteschlange:
+donchian20-ausbruch-long, grossanstieg-ohne-umsatz, hochvolumen-praemie, monatswende-long, vor-fomc-long,
+umkehr-nach-vorzeichenserie. Dazu `vorrat/` (nur LIESMICH), diese Datei, der Vorrat Nr. 1–17 und dessen Liste „bewusst nicht aufgenommen“.
