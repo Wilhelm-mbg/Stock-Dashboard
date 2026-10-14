@@ -198,3 +198,42 @@ roh, markt, datum). Keine war neu und auflösbar:
 **Wogegen geprüft:** `register.json` (donchian20-ausbruch-long H5/H10/H20), `erledigt/donchian20-ausbruch-long`. Warteschlange:
 donchian20-ausbruch-long, grossanstieg-ohne-umsatz, hochvolumen-praemie, monatswende-long, vor-fomc-long,
 umkehr-nach-vorzeichenserie. Dazu `vorrat/` (nur LIESMICH), diese Datei, der Vorrat Nr. 1–17 und dessen Liste „bewusst nicht aufgenommen“.
+
+---
+
+## 2026-10-14 (zweiter Lauf) · kein Kandidat — Vorrat Nr. 1 verworfen, eigene Suche ohne auflösbare Tagesregel
+
+**Vorrat.** Weiter kein Eintrag mit Urteil „einstellbar“ und leerer Spalte „Stand“. Nr. 1 war am Vormittag nur zurückgestellt, weil der
+Volltext von Kudryavtsev (JBF 2018) nicht frei ist. Das ist so geblieben. Gelesen habe ich jetzt den Volltext des **unabhängigen Nachbaus
+nach 2010**: Matos, Pacheco & Lobão, „Availability heuristic and reversals following large stock price changes: Evidence from the
+FTSE 100“, *Quantitative Finance and Economics* 6(1) (2022) 54–82, DOI 10.3934/QFE.2022003,
+https://www.aimspress.com/aimspress-data/qfe/2022/1/PDF/QFE-06-01-003.pdf (abgerufen 2026-10-14). Er baut die Regel der Quelle mit
+denselben drei Ereignis-Proxys nach (|SR| > 8 / 10 %, |SR| > 3σ / 4σ über 250 Tage, |AR| > 8 / 10 % Marktmodell). Ergebnis: „no significant
+evidence of price overreaction for both price decreases and increases“. Für die Long-Seite unserer Regel (Sturz bei fallendem Markt) zeigt
+Tabelle 6 bei |SR| > 10 % und MR < 0 eine mittlere AR über Tag 1–5 von **−0,45 %** (große Werte, 53 Ereignisse) bzw. **−0,18 %**
+(kleine, 98), über Tag 1–20 −0,06 % / +0,16 %, alles nicht signifikant. Das ist eher Fortsetzung als Umkehr. Tabelle 7 (4σ, MR < 0, 153/216
+Ereignisse): Tag 1–5 −0,14 % / −0,04 %. **Nr. 1 ist damit verworfen.** Der einzige frei lesbare Nachbau nach 2010 hat in liquiden Werten
+keine Größe, gegen die eine MDE80 (≈ 3 / 4,6 / 9 Pp bei H2 / H5 / H20 laut Vorrat) stehen könnte. Wiedervorlage nur, wenn der Volltext der
+Quelle doch auftaucht **und** ein US-Nachbau nach 2010 eine Umkehr ≥ 2,3 Pp (H5) zeigt.
+
+**Eigene Suche.** Gesucht habe ich Ereignisregeln mit festen Schwellen, Haltedauer ab einem Tag und einem Beleg nach 2010, die die
+Panel-Sicht trägt (o, c, v, roh, markt, datum). Gefunden habe ich nichts, das neu, belegt und auflösbar wäre:
+- **Große Bewegung nahe dem 52-Wochen-Hoch/-Tief (Anker-Drift; Brady & Premti 2019 nach einer koreanischen Studie 2023):** die Quelle
+  selbst war nicht auffindbar, und der koreanische Nachbau (KOSPI) ist kein US-Beleg. Die Long-Seite (Anstieg ≥ 10 % auf ein neues Hoch)
+  ist außerdem eine Abwandlung von Ausbruch/52-Wochen-Hoch (Donchian 20/55, Querschnitt 15.09.) und von `grossanstieg-ohne-umsatz`
+  (Regel 1).
+- **Kudryavtsev 2017, große Bewegungen vor Feiertagen → Drift** (https://rfb.ase.ro/vol9-2017/dec1a.asp): rund 9 Vorfeiertage im Jahr mal
+  wenige Bewegungen über 10 % je Tag ergeben in der Entdeckung grob 100–300 Ereignisse. Die MDE80 (H5 ≈ 4–6 Pp) liegt weit über jeder
+  plausiblen Größe.
+- **Kurssturz mit hohem Umsatz → Umkehr (Kudryavtsev 2019, Gegenseite von `grossanstieg-ohne-umsatz`):** im Vorrat als Tagesfassung der
+  gemessenen Kapitulation ausgeschlossen (Regel 1).
+- **Tägliche Gewinner/Verlierer (Atkins & Dyl, Cox & Peterson):** vor 2010. Nach Spanne und Kosten nicht signifikant; der einzige neue
+  Nachbau ist der oben genannte (null).
+
+**Wogegen geprüft:** `register.json` (donchian20-ausbruch-long H5/H10/H20), `erledigt/donchian20-ausbruch-long`. Warteschlange:
+donchian20-ausbruch-long, grossanstieg-ohne-umsatz, hochvolumen-praemie, monatswende-long, umkehr-nach-vorzeichenserie, vor-fomc-long.
+Dazu `vorrat/` (nur LIESMICH), diese Datei (alle Einträge bis zum ersten Lauf vom 14.10.), der Vorrat Nr. 1–17, dessen Liste „bewusst
+nicht aufgenommen“ und `wiki/belegstand.md`. Der Zweig `origin/pruefstrasse-ergebnisse` fehlt.
+
+**Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
+(Nr. 9–12). Ohne eine dieser Erweiterungen ist der Vorrat an belegten, auflösbaren Tagesregeln für die Panel-Sicht vorerst leer.

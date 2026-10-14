@@ -42,7 +42,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | Signalzahl | Schätzung aus `ideen-verworfen.md`: 2.800–5.600 Bewegungen ≥ 10 % in der Entdeckung; davon rund die Hälfte marktgleich, nur Stürze → **≈ 700–1.400 Trades**, ~0,4–0,8 je Tag. |
 | MDE80 | Faustregel bei N = 1.000: H2 1,5 Pp · H5 2,3 Pp · H20 4,6 Pp. Ereignisstreuung nach 10-%-Sturz grob doppelt → **≈ 3 / 4,6 / 9 Pp**. |
 | Urteil | **zu klein, solange die Größe der Quelle nicht vorliegt** (Form heute erfüllt). Einstellbar, wenn der Volltext für die 2-Tage-Umkehr ≥ 1,5 Pp (H2) bzw. ≥ 2,3 Pp (H5) nennt — sonst in `ideen-verworfen.md` mit der Zahl. |
-| Stand | zurückgestellt (Ideen-Agent 14.10.2026): Volltext JBF 2018 weiter nicht frei, keine Zahl; nur mit Zahl aus dem Volltext wieder aufnehmen — siehe ideen-verworfen.md 14.10. |
+| Stand | verworfen (Ideen-Agent 14.10.2026, zweiter Lauf): Volltext JBF 2018 weiter nicht frei; der unabhängige Nachbau nach 2010 (Matos, Pacheco & Lobão 2022, FTSE 100 2010–2018, Volltext gelesen) findet nach Stürzen mit fallendem Markt keine Umkehr (Tab. 6: \|SR\| > 10 %, MR < 0, mittlere AR Tag 1–5 −0,45 % groß / −0,18 % klein, n. s.) — siehe ideen-verworfen.md 14.10. (zweiter Lauf) |
 
 ## 2. Umkehr nach einer Serie gleicher Tagesvorzeichen
 
