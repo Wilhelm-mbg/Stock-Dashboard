@@ -237,3 +237,41 @@ nicht aufgenommen“ und `wiki/belegstand.md`. Der Zweig `origin/pruefstrasse-er
 
 **Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
 (Nr. 9–12). Ohne eine dieser Erweiterungen ist der Vorrat an belegten, auflösbaren Tagesregeln für die Panel-Sicht vorerst leer.
+
+---
+
+## 2026-10-15 · kein Kandidat — Vorrat leer, Optionsverfallswoche und Makro-Bekanntgabetage verworfen (Auflösung)
+
+**Vorrat.** Kein Eintrag mit Urteil „einstellbar“ und leerer Spalte „Stand“ (Nr. 1–4 erledigt, Nr. 5–12 und 16–17 „Form fehlt“ bzw. „zu
+klein“, Nr. 13–15 eingestellt). Deshalb eigene Suche, diesmal in der Lücke, die der Vorrat ausdrücklich offen ließ („Wochentagseffekte,
+Optionsverfall …: nicht recherchiert“). Der Bewertungsmodus `zeit` (Nr. 118) ist inzwischen da, die Form wäre also erfüllt — beide Ideen
+scheitern an der Auflösung, nicht an der Form.
+
+- **`optionsverfall-woche-long` — verworfen (MDE80 > 2 × Behauptung).** Quelle: Stivers & Sun, „Returns and option activity over the
+  option-expiration week for S&P 100 stocks“, *Journal of Banking & Finance* 37(11) (2013) 4226–4240,
+  https://ideas.repec.org/a/eee/jbfina/v37y2013i11p4226-4240.html (abgerufen 2026-10-15; Volltext nicht frei). Zahlen nur aus Sekundärquellen:
+  Arbeitspapier 2010 (28 optionsstarke Großwerte, 1996–2008) Woche mit dem dritten Freitag **+0,45 %** gegen +0,12 % in den übrigen Wochen,
+  also **≈ +0,33 Pp je Woche** (https://cxoadvisory.com/calendar-effects/option-expiration-week-stock-return-drill-down); Quantpedia nennt aus
+  Tab. 3 der JBF-Fassung +0,528 % je Verfallswoche roh, ohne Vergleichswoche (https://quantpedia.com/screener/details/102). Die größeren Spannen
+  (0,68–0,83 Pp) gelten nur für Wochen mit hohem Options-/Aktienumsatz — Optionsumsätze hat die Sicht nicht. Kein Nachbau nach 2010 mit Zahl
+  gefunden. **Rechnung:** marktweit (alle Reihen derselben Woche) → Bewertung `zeit`, je Verfallswoche ein Cluster: 12 × 7 = **84 Cluster**
+  in 2016–2022 (≈ 800 Reihen je Signaltag, ≈ 67.000 Trades, aber Auflösung an den 84 Wochen). σ der 5-Tage-Rendite des gleichgewichteten
+  liquiden Markts = 1,0–1,4 Pp × √5 = 2,2–3,1 Pp (Tagesstreuung wie in `warteschlange/monatswende-long/REGEL.md`) → se = 0,24–0,34 Pp →
+  **MDE80 ≈ 0,68–0,96 Pp (H5)** gegen eine Behauptung von **0,33 Pp**: weder Größe ≥ MDE80 noch MDE80 ≤ 2 × Behauptung (0,66). Brutto-Hürde
+  (3 × Kassa-Hürde Klasse 1 = 0,255 Pp) wäre erfüllt. Wiedervorlage nur mit Optionsumsatz je Reihe (dann Topf-Form: optionsstarke gegen
+  optionsschwache Werte derselben Woche, Spanne 0,68 Pp) oder mit einem Nachbau nach 2010, der ≥ 0,5 Pp je Woche zeigt.
+- **Makro-Bekanntgabetage (Savor & Wilson, „How Much Do Investors Care About Macroeconomic Risk?“, JFQA 48(2) (2013) 343–375,
+  https://ideas.repec.org/a/cup/jfinqa/v48y2013i02p343-375_00.html, abgerufen 2026-10-15) — verworfen (Größe).** Inflation, Arbeitsmarkt, FOMC:
+  **+11,4 Bp** am Bekanntgabetag gegen +1,1 Bp an den übrigen Tagen (1958–2009; NBER-Fortschreibung bis 2023: 10,7 gegen 0,9 Bp). Der
+  Unterschied von ≈ 0,10 Pp je Tag liegt **unter dem Dreifachen jeder Kassa-Hürde** der Klassen 1–3 (0,255 / 0,195 / 0,135 Pp) — Regel 2
+  verlangt dann einen Netto-Beleg, den es nicht gibt. Auflösung zudem zu grob: ≈ 30 Termine im Jahr → ≈ 210 Cluster, σ 1,0–1,4 Pp →
+  MDE80 ≈ 0,19–0,27 Pp (H1) > 2 × 0,10. Der FOMC-Teil ist ohnehin als `vor-fomc-long` eingestellt.
+- **Wochentag (Montag/Wochenende):** nach 2010 klein und uneinheitlich, je Tag weit unter der dreifachen Hürde; nicht weiter verfolgt.
+
+**Wogegen geprüft:** `register.json` (donchian20-ausbruch-long H5/H10/H20), `erledigt/donchian20-ausbruch-long`. Warteschlange:
+donchian20-ausbruch-long, grossanstieg-ohne-umsatz, hochvolumen-praemie, monatswende-long, umkehr-nach-vorzeichenserie, vor-fomc-long.
+`vorrat/` (nur LIESMICH), diese Datei bis zum zweiten Lauf vom 14.10., der Vorrat Nr. 1–17 samt „bewusst nicht aufgenommen“,
+`wiki/belegstand.md` (Optionsverfall dort nicht gemessen). Der Zweig `origin/pruefstrasse-ergebnisse` fehlt.
+
+**Was freischalten würde (unverändert, ergänzt):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit
+Tagesclusterung (Nr. 9–12) — und neu **Optionsumsatz je Reihe** (macht die Optionsverfallswoche als Querschnittsregel in der Topf-Form messbar).
