@@ -275,3 +275,35 @@ donchian20-ausbruch-long, grossanstieg-ohne-umsatz, hochvolumen-praemie, monatsw
 
 **Was freischalten würde (unverändert, ergänzt):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit
 Tagesclusterung (Nr. 9–12) — und neu **Optionsumsatz je Reihe** (macht die Optionsverfallswoche als Querschnittsregel in der Topf-Form messbar).
+
+---
+
+## 2026-10-16 · kein Kandidat — Vorrat leer, Split-Ex-Tag und Residual-Umkehr großer Werte verworfen
+
+**Vorrat.** Kein Eintrag mit Urteil „einstellbar“ und leerer Spalte „Stand“ (Nr. 1–4 erledigt, Nr. 5–12 und 16–17 „Form fehlt“ bzw. „zu
+klein“, Nr. 13–15 eingestellt). Deshalb eigene Suche, diesmal gezielt nach dem, was `sicht.roh` neu sichtbar macht: der Quotient
+`roh(j)/c(j)` springt am Ex-Tag eines Splits (das Panel bereinigt nur Splits und Abspaltungen), am Tag i ohne Blick nach vorn erkennbar.
+
+- **`split-extag-long` — verworfen (Beleg nach 2010 fehlt, Effekt verschwunden, Auflösung).** Ex-Tag-Prämie: Kadapakkam, Krishnamurthy & Tse,
+  „Stock Splits, Broker Promotion, and Decimalization“, *JFQA* 40(4) (2005) 873–895, https://ideas.repec.org/a/cup/jfinqa/v40y2005i04p873-895_00.html
+  (abgerufen 2026-10-16): „significant positive abnormal returns around the ex-date during the 1/8th pricing period, **but not in the decimal
+  pricing period**“ — die Quelle selbst sagt, dass der Effekt seit 2001 fehlt. Nach dem Ex-Tag: Boehme & Danielsen (*Financial Review* 42(4)
+  (2007), https://ideas.repec.org/a/bla/finrev/v42y2007i4p485-506.html, 1950–2000): positive Renditen nach der Ankündigung „do not persist after
+  the actual date of the stock split“; Chan, Li & Lin (*JBF* 2019, laut Suchzusammenfassung): Drift kurzlebig, an Bilanzpolitik gebunden, Markt
+  unklar. Kein US-Nachbau nach 2010 mit Zahl gefunden. Die Tag-Form steigt außerdem erst zur Eröffnung nach dem Ex-Tag ein und verpasst den Ex-Tag
+  selbst. **Rechnung:** Vorwärts-Splits in den Klassen 1–3 grob 20–30 je Jahr → ≈ 150–200 Ereignisse 2016–2022 (< 0,1 je Tag), σ einer
+  5-Tage-Einzelrendite ≈ 5 Pp → se ≈ 0,38 Pp → **MDE80 ≈ 1,1 Pp (H5)** gegen eine behauptete Größe nach dem Ex-Tag von ≈ 0. Ankündigungstage
+  (dort lag die Drift) sieht die Sicht nicht.
+- **Residual-Umkehr großer Werte am Folgetag (Collin-Dufresne & Daniel, https://business.columbia.edu/sites/default/files-efs/pubfiles/11568/str1.pdf;
+  Hameed, Lof & Suominen, „slow trading“, AEA 2017, https://topcat.aeaweb.org/conference/2017/preliminary/paper/D7FhZBRb; beide abgerufen 2026-10-16)
+  — verworfen (Regel 1, Größe).** Stichprobe bis 2014; große Werte zeigen dort „little predictable idiosyncratic component“, Halbwertszeit des
+  vorübergehenden Teils ≈ 2,5 Tage. Das ist die gemessene Kurzfrist-Umkehr (Querschnitt 15.09., t 1,19) bzw. `umkehr-nach-vorzeichenserie` in
+  anderer Gestalt, und die Größe je Tag liegt unter dem Dreifachen der Kassa-Hürde.
+
+**Wogegen geprüft:** `register.json` (donchian20-ausbruch-long H5/H10/H20), `erledigt/donchian20-ausbruch-long`. Warteschlange:
+donchian20-ausbruch-long, grossanstieg-ohne-umsatz, hochvolumen-praemie, monatswende-long, umkehr-nach-vorzeichenserie, vor-fomc-long.
+`vorrat/` (nur LIESMICH), diese Datei bis zum Lauf vom 15.10., der Vorrat Nr. 1–17, `wiki/belegstand.md` (Splits dort nicht gemessen; „Aktiensplits“
+in dieser Datei am 11.10. nur wegen fehlendem `roh` zurückgestellt). Der Zweig `origin/pruefstrasse-ergebnisse` fehlt.
+
+**Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
+(Nr. 9–12), Optionsumsatz je Reihe; für Splits zusätzlich die **Ankündigungstage** (8-K), weil die Literatur die Drift dort misst, nicht am Ex-Tag.
