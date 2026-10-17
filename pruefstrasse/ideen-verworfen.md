@@ -307,3 +307,44 @@ in dieser Datei am 11.10. nur wegen fehlendem `roh` zurückgestellt). Der Zweig 
 
 **Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
 (Nr. 9–12), Optionsumsatz je Reihe; für Splits zusätzlich die **Ankündigungstage** (8-K), weil die Literatur die Drift dort misst, nicht am Ex-Tag.
+
+---
+
+## 2026-10-17 · kein Kandidat — Vorrat leer, Tauziehen-Intensität, Sturz-Fortsetzung und Korea-Umkehr verworfen
+
+**Vorrat.** Kein Eintrag mit Urteil „einstellbar“ und leerer Spalte „Stand“. Nr. 1–4 sind erledigt, Nr. 5–12 und 16–17 stehen auf „Form
+fehlt“ bzw. „zu klein“, Nr. 13–15 sind eingestellt. Die Spalte „Stand“ bleibt deshalb unverändert. Eigene Suche, diesmal nach Regeln aus
+o/c allein (Übernacht gegen Tag) und nach neuen Nachbauten der Großbewegungs-Familie.
+
+- **`tauziehen-intensitaet` — verworfen (Korb-Form, Auflösung).** Quelle: Akbas, Boehmer, Jiang & Koch, „Overnight returns, daytime reversals,
+  and future stock returns“, *JFE* 145(3) (2022) 850–875, https://academicnewsletter.sufe.edu.cn/info/355173. Zahlen nach
+  https://cxoadvisory.com/?p=32204 (beide abgerufen 2026-10-17). US-Aktien 05/1993–12/2017. Das Signal ist der Monatsanteil der Tage mit
+  „negativer Tagesumkehr“ (Übernacht positiv, Tag negativ), geteilt durch das 12-Monats-Mittel. Gebildet wird ein **Dezil gegen Dezil**,
+  gleichgewichtet: **+0,92 % je Monat** Long-Short brutto, bei großen Werten nur **+0,43 %**. o/c trägt die Sicht zwar, aber die Quelle
+  sortiert im Querschnitt; eine feste Schwelle für die Tag-Form wäre erfunden (Regel 2). Als Korb kommt man auf ≈ 2,8 Pp je 63-Tage-Periode
+  Long-Short (Long-Seite allein kleiner) gegen eine Auflösung von 7–12 Pp (`aufloesungswand.md`, Nachtrag 11.10.). Nachbauten:
+  G7 nur USA/Kanada, China null (laut Suchzusammenfassung). Verwandt mit Vorrat Nr. 9 (Lou/Polk/Skouras, „Form fehlt“). Wiedervorlage mit dem
+  Querschnitts-Adapter mit Tagesclusterung.
+- **Fortsetzung nach großem Tagessturz (Short), S&P 100 2018–2025, Schwellen 2/4/6/8 % — verworfen (Beleg, Regel 1).** Nur aus einer
+  Suchzusammenfassung bekannt: „continued momentum following negative shocks“, abnormal schwach und je Jahr instabil, ohne Kosten. Die Quelle
+  war nicht auffindbar, also gibt es keine Größe. Zugleich ist es die Gegenrichtung von Vorrat Nr. 1, und dort fand der gelesene Nachbau
+  (Matos et al. 2022) nach Stürzen nur −0,45 / −0,18 % über Tag 1–5, n. s. Das liegt unter jeder MDE80 der Ereignisgröße (≈ 4,6 Pp H5 bei
+  ≈ 1.000 Ereignissen).
+- **Umkehr nach Kursschock mit Umsatz (Lee, Park & Son, *Journal of Distribution Science* 21(3) (2023) 93–100, DOI 10.15722/jds.21.03.202303.93,
+  Volltext gelesen, abgerufen 2026-10-17) — verworfen.** Grundlage sind KOSPI-Handelswerte 2004–2022, also kein US-Beleg. Bedingt wird auf den
+  Umsatz am Ereignistag; Umsatzregeln sind durch `hochvolumen-praemie` und `grossanstieg-ohne-umsatz` sowie die gemessene Kapitulation
+  abgedeckt (Regel 1).
+- **Relative Stärke an Markt-Sturztagen (Wert steigt, Markt fällt → Fortsetzung):** Kudryavtsev (2018, Vorrat Nr. 1) findet bei gegenläufigem
+  Markt „nonsignificant price drifts“. Damit fehlt ein Beleg, nicht weiter verfolgt.
+- **Kerzenmuster (Engulfing, Hammer):** Hoch/Tief gibt es nur auf trendkanal-tage. Kein US-Beleg nach 2010 mit Gewinn gefunden; Duvinage et al.
+  (2013) an Dow-30-Werten ohne Ertrag nach Kosten (aus Erinnerung, nicht nachgelesen). Nicht weiter verfolgt.
+
+**Wogegen geprüft:** `register.json` (donchian20-ausbruch-long H5/H10/H20), `erledigt/donchian20-ausbruch-long`. Warteschlange:
+donchian20-ausbruch-long, grossanstieg-ohne-umsatz, hochvolumen-praemie, monatswende-long, umkehr-nach-vorzeichenserie, vor-fomc-long.
+Dazu `vorrat/` (nur LIESMICH), diese Datei bis zum Lauf vom 16.10., der Vorrat Nr. 1–17 samt „bewusst nicht aufgenommen“ und
+`wiki/belegstand.md`. Der Zweig `origin/pruefstrasse-ergebnisse` fehlt.
+
+**Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
+(Nr. 9–12 und neu Akbas et al. 2022), Optionsumsatz je Reihe, Split-Ankündigungstage. Ohne eine dieser Erweiterungen ist an belegten,
+auflösbaren Tagesregeln für die Panel-Sicht der vierte Lauf in Folge nichts zu finden. Ein Lauf je Nacht ist damit vorerst überflüssig, der
+Engpass ist das Messgerät, nicht die Suche.
