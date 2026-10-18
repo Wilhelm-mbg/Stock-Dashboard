@@ -149,7 +149,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | Signalzahl | ≈ 8 × 4 × 7 ≈ 220 Wochen in der Entdeckung, **ein Cluster je Woche** — die Faustregel (je Trade) gilt hier nicht; se aus der SPY-Wochenstreuung (`markt(j)`) vor dem Einstellen aus der Tafel ziehen. |
 | MDE80 | nicht nach der Faustregel schätzbar; mit 220 Clustern grob in der Größenordnung einer Wochen-Marktstreuung geteilt durch √220 (Zahl erst aus der Tafel). |
 | Urteil | **Form fehlt (Topf) und Zahl der Quelle fehlt.** |
-| Stand | |
+| Stand | eingestellt als `fomc-gerade-wochen-long` (Ideen-Agent 18.10.2026): Volltext Arbeitspapier 2015 gelesen — Wochen 0/2/4/6 = Tage −1…3, 9…13, 19…23, 29…33, +0,57/+0,30/+0,42/+0,61 % gegen ungerade −0,12…−0,17 % (Tab. 1: +13,6 bzw. +10 Bp/Tag); H5, Klassen 1–3, Bewertung `zeit`, Versatz 5; 171 Signaltage, MDE80 ≈ 0,47–0,67 gegen ≈ 0,55 Pp; ohne Woche 0 nicht auflösbar |
 
 ## 9. Übernacht-Fortsetzung gegen Tag-Umkehr
 
