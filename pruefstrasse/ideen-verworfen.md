@@ -348,3 +348,43 @@ Dazu `vorrat/` (nur LIESMICH), diese Datei bis zum Lauf vom 16.10., der Vorrat N
 (Nr. 9–12 und neu Akbas et al. 2022), Optionsumsatz je Reihe, Split-Ankündigungstage. Ohne eine dieser Erweiterungen ist an belegten,
 auflösbaren Tagesregeln für die Panel-Sicht der vierte Lauf in Folge nichts zu finden. Ein Lauf je Nacht ist damit vorerst überflüssig, der
 Engpass ist das Messgerät, nicht die Suche.
+
+---
+
+## 2026-10-19 · kein Kandidat — Vorrat leer, Monatsend-Umkehr (Graziani) und Reverse-Split verworfen
+
+**Vorrat.** Kein Eintrag mit Urteil „einstellbar" und leerer Spalte „Stand". Nr. 1–4 sind erledigt, Nr. 5–7, 9–12 und 16–17 stehen auf „Form
+fehlt" bzw. „zu klein". Nr. 8 (`fomc-gerade-wochen-long`, 18.10.) sowie Nr. 13–15 sind eingestellt. Die Spalte „Stand" bleibt deshalb
+unverändert. Neu seit dem 14.10. ist der Bewertungsmodus `zeit` (Nr. 118). Deshalb habe ich gezielt eine Regel nachgeprüft, die ein
+früherer Lauf nur wegen „Topf ≡ 0" zurückgestellt hatte (14.10., Graziani).
+
+- **`monatsend-umkehr-long` — verworfen (Auflösung: MDE80 > 2 × Behauptung).** Quelle: Graziani, „Time Series Reversal: An End-of-the-Month
+  Perspective", Arbeitspapier Bocconi, 02.11.2024 (früher „Time Series Reversal: A Payment Cycle Friction" und „Monthly Return
+  Autocorrelation"), https://csef.it/wp-content/uploads/JMP_GG_02Nov2024.pdf. Den Volltext habe ich gelesen (abgerufen 2026-10-19).
+  Regel: Der S&P 500 legt vom Schluss des 4. Freitags bis zum letzten Handelstag des Monats eine Rendite r(w=4) zurück. Ist sie negativ,
+  wird der ganze Folgemonat long gehalten (Long-Bein TSR^L, Gl. (1)). Die Stichprobe reicht von 1975 bis 2019, ein Anhang verlängert sie bis
+  2023. Zahlen aus Tab. 3: Das Long-Bein bringt 4,689 % p. a. Überschuss bei 44 % Aktivität. Das sind ≈ **+0,89 % je Signalmonat**, gegen
+  ≈ −0,12 % in den übrigen Monaten (eigene Rechnung aus dem Mittel 0,326 %/Monat in Tab. 1). Die Spanne beträgt also ≈ **1,0 Pp je
+  Monat** und liegt brutto über dem Dreifachen der Hürde. γ = −0,353 (t −3,78, Tab. 4).
+  Zwei Warnungen aus der Quelle: Am Russell 2000 verschwindet der Effekt (Tab. 7: α 0,88 %, γ −0,19, R²OS −0,71). Und 2010–2019 schlägt
+  TSR den Index nur in 3 von 10 Jahren (Tab. 5.A). Unser gleichgewichtetes Panel aus ≈ 800 Reihen liegt näher am Russell als am S&P 500.
+  **Rechnung (Bewertung `zeit`, marktweit):** In 2016–2022 gibt es 84 Monate, davon ≈ 44 % Signalmonate, also ≈ **37 Cluster**. Das sind
+  ≈ 800 Reihen je Signaltag und ≈ 30.000 Trades, aber die Auflösung hängt an den 37 Monaten. Die Monatsstreuung des gleichgewichteten
+  liquiden Markts liegt bei ≈ 5 Pp (S&P 4,27 % laut Tab. 1). Daraus folgt se ≈ 5 × √(1/37 + 1/47) ≈ 1,1 Pp und **MDE80 ≈ 2,3–3,1 Pp (H20)**
+  gegen eine Behauptung von ≈ 1,0 Pp. Damit ist weder Größe ≥ MDE80 noch MDE80 ≤ 2 × Behauptung erfüllt. Zudem überschneidet sich das
+  Signalfenster mit `monatswende-long` (Tage −1…+3). Wiedervorlage nur mit Daten vor 2016, also mit mehr Monaten.
+- **Reverse-Split, Drift nach dem Ex-Tag (über `roh/c` sichtbar) — verworfen (kein Beleg nach 2010).** Ich habe keinen US-Nachbau nach 2010
+  mit Zahl gefunden, nur Brasilien 1987–2016 und Indonesien 2018–2019 (Suche 2026-10-19). Reverse-Splits sind in den Klassen 1–3 zudem selten
+  (geschätzt < 200 Ereignisse in der Entdeckung).
+- **Wochentag im Querschnitt (Birru, „Day of the week and the cross-section of returns", *JFE* 130(1) (2018) 182–214,
+  https://ideas.repec.org/a/eee/jfinec/v130y2018i1p182-214.html) — nicht weiter verfolgt.** Das Signal braucht Anomalie-Merkmale
+  (spekulative Werte), die die Sicht nicht hat. Die Größe je Tag (H1) liegt nach dem Abstract nicht beim Dreifachen der Hürde.
+
+**Wogegen geprüft:** `register.json` (donchian20-ausbruch-long H5/H10/H20), `erledigt/donchian20-ausbruch-long`. Warteschlange:
+donchian20-ausbruch-long, fomc-gerade-wochen-long, grossanstieg-ohne-umsatz, hochvolumen-praemie, monatswende-long,
+umkehr-nach-vorzeichenserie, vor-fomc-long. Dazu `vorrat/` (nur LIESMICH), diese Datei bis zum Lauf vom 17.10., der Vorrat Nr. 1–17 samt
+„bewusst nicht aufgenommen" und `wiki/belegstand.md`. Der Zweig `origin/pruefstrasse-ergebnisse` fehlt.
+
+**Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
+(Nr. 9–12), Optionsumsatz je Reihe, Split-Ankündigungstage. Für Monatsregeln im Modus `zeit` kommen **Tagesdaten vor 2016** hinzu, denn mit
+84 Monaten löst `zeit` nur Effekte ab ≈ 2–3 Pp je Monat auf.
