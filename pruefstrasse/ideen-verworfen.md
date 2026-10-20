@@ -388,3 +388,38 @@ umkehr-nach-vorzeichenserie, vor-fomc-long. Dazu `vorrat/` (nur LIESMICH), diese
 **Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
 (Nr. 9–12), Optionsumsatz je Reihe, Split-Ankündigungstage. Für Monatsregeln im Modus `zeit` kommen **Tagesdaten vor 2016** hinzu, denn mit
 84 Monaten löst `zeit` nur Effekte ab ≈ 2–3 Pp je Monat auf.
+
+---
+
+## 2026-10-20 · kein Kandidat — Vorrat leer, Aufmerksamkeits-Umkehr (Berkman et al.) und Mittelwert-Abstand (MAD) verworfen
+
+**Vorrat.** Kein Eintrag mit Urteil „einstellbar“ und leerer Spalte „Stand“. Nr. 1–4 sind erledigt, Nr. 5–7, 9–12 und 16–17 stehen auf
+„Form fehlt“ bzw. „zu klein“, Nr. 8 und 13–15 sind eingestellt und inzwischen gemessen (Belegstand 20.10.). Die Spalte „Stand“ bleibt
+unverändert. Neu seit gestern: Audit Nr. 120. Der Modus `zeit` hat zwei Rechenfehler, seine Urteile stehen unter Vorbehalt, und Nr. 121
+sagt: **keine Kalenderregeln auf dem Querschnitt mehr**. Gesucht habe ich deshalb nur Ereignisregeln je Aktie in der Bewertung `topf`.
+
+- **Aufmerksamkeits-Umkehr Übernacht → Tag** (Berkman, Koch, Tuttle & Zhang, „Paying Attention: Overnight Returns and the Hidden Cost of
+  Buying at the Open“, *JFQA* 47(4) (2012) 715–741, https://ideas.repec.org/a/cup/jfinqa/v47y2012i04p715-741_00.html, abgerufen
+  2026-10-20; Daten vor 2010, Volltext nicht gelesen) — **verworfen (Form).** Nach einem Tag mit hoher Aufmerksamkeit (quadrierte Rendite,
+  Nettokäufe) folgen eine hohe Übernacht-Rendite und eine Umkehr **innerhalb des Folgetags**. Gemessen wird also Eröffnung → Schluss. Die
+  Tag-Form hält Eröffnung → Eröffnung und nimmt die nächste Übernacht-Rendite mit, die nach der Quelle wieder positiv ist. Damit messen wir
+  ein anderes Fenster als die Quelle. Dazu kommt Regel 1: Inhaltlich ist es Umkehr nach Großbewegung (Vorrat Nr. 1 und 3, verworfen).
+- **Abstand der gleitenden Mittel 21/200 (MAD)** (Avramov, Kaplanski & Subrahmanyam, „Moving Average Distance as a Predictor of Equity
+  Returns“, Fassung 12/2023, Zusammenfassung https://alphaarchitect.com/moving-average-distance/, abgerufen 2026-10-20) — **verworfen
+  (Korb-Form, Regel 1).** Die Quelle sortiert monatlich in Dezile. Die Alphas betragen 8,35 % p. a. bei 3 Monaten (t 2,92) bzw. 5,43 %
+  bei 12 Monaten. Eine feste Schwelle für die Tag-Form wäre erfunden (Regel 2). Als Korb sind das ≈ 2 Pp je 63-Tage-Periode Long-Short
+  gegen eine Auflösung von 7–12 Pp. Dem Gehalt nach gehört die Regel zur Trend-/Momentum-Familie (Donchian nein, Momentum 16.09.,
+  Trendfaktor 11.10.).
+- **Rundzahl-Schwellen je Aktie** (Lobão & Fernandes, 30 Großwerte aus US/UK/JP, 2000–2014, laut Suchergebnis
+  https://repositorio-aberto.up.pt/bitstream/10216/121036/2/206001.pdf): „no consistent psychological barriers“. Damit fehlen sowohl ein
+  Beleg als auch eine Größe.
+
+**Wogegen geprüft:** `register.json` und `erledigt/` (donchian20-ausbruch-long, fomc-gerade-wochen-long, grossanstieg-ohne-umsatz,
+hochvolumen-praemie, monatswende-long, umkehr-nach-vorzeichenserie, vor-fomc-long) sowie die Warteschlange mit denselben sieben Ordnern.
+Dazu `vorrat/` (nur LIESMICH), diese Datei bis zum Lauf vom 19.10., der Vorrat Nr. 1–17 samt „bewusst nicht aufgenommen“,
+`wiki/belegstand.md` einschließlich der Prüfstraßen-Absätze vom 20.10. und `wiki/log.md` (Audit Nr. 120). Der Zweig
+`origin/pruefstrasse-ergebnisse` fehlt.
+
+**Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
+(Nr. 9–12, MAD, Akbas et al.) und eine Haltung Eröffnung → Schluss (Berkman et al., Vorrat Nr. 9). Ohne eine davon ist dies der sechste
+leere Lauf in sieben Nächten. Der Engpass ist das Messgerät, nicht die Suche.
