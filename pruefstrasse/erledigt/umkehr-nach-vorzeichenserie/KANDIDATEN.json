@@ -1,0 +1,9 @@
+{
+ "kennung": "umkehr-nach-vorzeichenserie",
+ "stand": "2026-10-20T15:17:09.577Z",
+ "ergebnisEntdeckungSha256": "aeac039a7a5021c87a47840604ad27cefc0d307dbf91ad5eb66a3ecb64cd0050",
+ "konfigurationen": 1,
+ "regel": "FORM.md §5: netto > 0, t >= 2, Tor 1, kein Placebo-Verstoss",
+ "messgeraetFehler": [],
+ "kandidaten": []
+}

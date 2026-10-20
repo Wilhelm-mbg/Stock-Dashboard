@@ -1,0 +1,237 @@
+{
+ "quelle": "panel",
+ "kennungTafel": "querschnitt-pruefstand-2026-09-13/panel/v2.3",
+ "gesperrt": true,
+ "siegel": null,
+ "hatRoh": true,
+ "hatMarkt": true,
+ "hatDatum": true,
+ "reihen": 6706,
+ "nTage": 2765,
+ "letzterTag": "2022-12-30",
+ "schnitt": "2023-01-03",
+ "TE": 1722,
+ "TB": 861,
+ "zaehler": {
+  "zulaessig": 3768932,
+  "ohneKlasse": 2959271,
+  "massnahmen": 802,
+  "signalAufrufe": 3765887,
+  "signale": 54767,
+  "ohneBestaetigungstag": 0,
+  "abgelehnt": 0,
+  "cooldown": 45983,
+  "ohneEinstieg": 0,
+  "einstiegMassnahmen": 1,
+  "richtungOhneKonfiguration": 35417,
+  "gebucht": 19348,
+  "ohneHorizont": 7,
+  "topfFehlt": 1,
+  "nachMaxTag": 0,
+  "placeboOhnePartner": 0,
+  "versatzOhneTag": 460,
+  "spaetOhneTag": 19350
+ },
+ "verstoesse": 0,
+ "beispiele": [],
+ "ms": {
+  "topf": 6837,
+  "messen": 256
+ },
+ "bewertung": "topf",
+ "bewertungDetail": "Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus Topf derselben Zelle (Einstiegstag, Dauer, Umsatzklasse, lebend) - das Verfahren der Trendkanal-Studie; Kassa-Huerde je Klasse; Placebo = anderer zulaessiger Wert gleicher Klasse am selben Tag, gleiche Richtung; Verschiebung um 20 Handelstage.",
+ "versatzTage": 20,
+ "signalAnteil": {
+  "tage": 1667,
+  "mittel": 0.014840436878235812,
+  "max": 0.4063694267515924,
+  "tageUeber50": 0
+ },
+ "warnungen": [],
+ "konfigurationen": [
+  {
+   "key": "H1",
+   "richtung": "long",
+   "haltedauer": 1,
+   "klassen": [
+    1,
+    2,
+    3
+   ],
+   "entdeckung": {
+    "nTage": 1484,
+    "nTr": 19348,
+    "nK": [
+     0,
+     14911,
+     3810,
+     627
+    ],
+    "kKand": 0.0800113034939013,
+    "dauerMittel": 1.0001550547860243,
+    "abgaenge": [
+     {
+      "gruppe": "uebernahme",
+      "n": 0,
+      "mittel": null
+     },
+     {
+      "gruppe": "insolvenz",
+      "n": 0,
+      "mittel": null
+     },
+     {
+      "gruppe": "sonstige",
+      "n": 1,
+      "mittel": -20.918580375782874
+     }
+    ],
+    "uBrutto": {
+     "n": 1484,
+     "mittel": 0.07876783506355715,
+     "se": 0.048998366734975575,
+     "seNaiv": 0.04901488396677288,
+     "t": 1.6075604211381154,
+     "obere": 0.17480463386410927,
+     "untere": -0.017268963736994977,
+     "nEff": 1484,
+     "hh0": false,
+     "jeTrade": 0.19814723082362917
+    },
+    "uNetto": {
+     "n": 1484,
+     "mittel": -0.0017136266478648046,
+     "se": 0.04900286841396445,
+     "seNaiv": 0.04901938716326693,
+     "t": -0.03496992529883146,
+     "obere": 0.09433199544350553,
+     "untere": -0.09775924873923512,
+     "nEff": 1484,
+     "hh0": false,
+     "jeTrade": 0.11813592732972787
+    },
+    "roh": {
+     "n": 1484,
+     "mittel": 0.12366930431163213,
+     "se": 0.06253015892305767,
+     "seNaiv": 0.06255123768951618,
+     "t": 1.9777545178448237,
+     "obere": 0.24622841580082516,
+     "untere": 0.001110192822439085,
+     "nEff": 1484,
+     "hh0": false
+    },
+    "tradesJeTag": 13.037735849056604
+   },
+   "lebend": {
+    "uNetto": {
+     "n": 1422,
+     "mittel": 0.009254484981271672,
+     "se": 0.04396161638041293,
+     "seNaiv": 0.043977082208993545,
+     "t": 0.2105128460516525,
+     "obere": 0.09541925308688101,
+     "untere": -0.07691028312433767,
+     "nEff": 1422,
+     "hh0": false,
+     "jeTrade": 0.12120388787298647
+    },
+    "nTr": 16230,
+    "deltaAlleLebend": -0.010318614577558213
+   },
+   "spaet": {
+    "uNetto": {
+     "n": 0,
+     "mittel": null,
+     "se": null,
+     "seNaiv": null,
+     "t": null,
+     "obere": null,
+     "untere": null,
+     "nEff": null,
+     "hh0": false,
+     "jeTrade": null
+    },
+    "nTr": 0
+   },
+   "versatz": {
+    "uNetto": {
+     "n": 1468,
+     "mittel": -0.10907323745810457,
+     "se": 0.03837756489784523,
+     "seNaiv": 0.03839064295748463,
+     "t": -2.842109387305828,
+     "obere": -0.03385321025832792,
+     "untere": -0.1842932646578812,
+     "nEff": 1468,
+     "hh0": false,
+     "jeTrade": -0.15736136448639457
+    },
+    "nTr": 18886,
+    "wirkt": false,
+    "ueberlappung": {
+     "n": 310,
+     "von": 18886,
+     "anteil": 0.016414275124430795
+    }
+   },
+   "placebo": {
+    "uBrutto": {
+     "n": 1484,
+     "mittel": -0.01675594354081411,
+     "se": 0.052048988738539456,
+     "seNaiv": 0.052066534327690615,
+     "t": -0.32192639947310336,
+     "obere": 0.08526007438672323,
+     "untere": -0.11877196146835145,
+     "nEff": 1484,
+     "hh0": false,
+     "jeTrade": 0.00032441859215843533
+    },
+    "nTr": 19348,
+    "schranke": {
+     "t": 2,
+     "mindestPp": 0.020002825873475325
+    },
+    "verstoss": false
+   },
+   "TE": 1722,
+   "TB": 861,
+   "seBproj": 0.0693005211062127,
+   "mdeBproj": 0.1386010422124254,
+   "tor1": false,
+   "tor1Schwelle": 0.5544041688497016,
+   "mde80": 0.1372864361485628,
+   "kandidat": false,
+   "gruende": [
+    "netto <= 0",
+    "t < 2",
+    "Tor 1"
+   ],
+   "urteil": "nicht entscheidbar"
+  }
+ ],
+ "klassen": [
+  {
+   "name": "5-50",
+   "huerde": 0.1569
+  },
+  {
+   "name": "50-250",
+   "huerde": 0.0854
+  },
+  {
+   "name": "250-1000",
+   "huerde": 0.0647
+  },
+  {
+   "name": "ab1000",
+   "huerde": 0.0449
+  }
+ ],
+ "kennung": "umkehr-nach-vorzeichenserie",
+ "form": "tag",
+ "phase": "entdeckung",
+ "stand": "2026-10-20T15:17:09.577Z",
+ "konfigurationenSoll": 1
+}
