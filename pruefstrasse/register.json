@@ -69,9 +69,25 @@
    "urteil": "nicht entscheidbar",
    "datum": "2026-10-20T15:16:22.885Z",
    "bewertung": "zeit"
+  },
+  {
+   "kennung": "vor-fomc-long",
+   "form": "tag",
+   "key": "H1",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-20T15:16:48.741Z",
+   "bewertung": "zeit"
+  },
+  {
+   "kennung": "vor-fomc-long",
+   "form": "tag",
+   "key": "H2",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-20T15:16:48.741Z",
+   "bewertung": "zeit"
   }
  ],
- "gesamt": 9,
- "zufallErwartet": 0.20475,
- "stand": "2026-10-20T15:16:22.885Z"
+ "gesamt": 11,
+ "zufallErwartet": 0.25025,
+ "stand": "2026-10-20T15:16:48.741Z"
 }

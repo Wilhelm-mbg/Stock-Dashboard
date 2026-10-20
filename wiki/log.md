@@ -667,3 +667,4 @@ Fundstelle im Repo"** markiert — die zugehörigen Studienberichte liegen auße
 - 20.10.2026 (Prüfstraße, 15:13 UTC) — **hochvolumen-praemie: nein** (2 Konfigurationen, 0 Kandidaten; Register 5). Ordner `pruefstrasse/erledigt/hochvolumen-praemie/`.
 - 20.10.2026 (Prüfstraße, 15:15 UTC) — **grossanstieg-ohne-umsatz: nicht entscheidbar** (2 Konfigurationen, 0 Kandidaten; Register 7). Ordner `pruefstrasse/erledigt/grossanstieg-ohne-umsatz/`.
 - 20.10.2026 (Prüfstraße, 15:16 UTC) — **monatswende-long: nicht entscheidbar** (2 Konfigurationen, 0 Kandidaten; Register 9). Ordner `pruefstrasse/erledigt/monatswende-long/`.
+- 20.10.2026 (Prüfstraße, 15:16 UTC) — **vor-fomc-long: nicht entscheidbar** (2 Konfigurationen, 0 Kandidaten; Register 11). Ordner `pruefstrasse/erledigt/vor-fomc-long/`.
