@@ -2,24 +2,15 @@
 
 Geschrieben von tools/pruefstrasse-nacht.sh auf rechenknecht, alle Zeiten UTC.
 
-- Letzter Lauf: 2026-10-20T15:16:03+00:00 bis 2026-10-20T15:16:23+00:00, Dauer 20 s (Zeitgrenze 6h)
+- Letzter Lauf: 2026-10-20T15:16:29+00:00 bis 2026-10-20T15:16:49+00:00, Dauer 20 s (Zeitgrenze 6h)
 - Laeufer: `pruefstrasse/laeufer.js --naechster`, Node v24.18.0, rc=0 (ok)
-- Daten: `/archiv/markt-dashboard/archiv-spiegel`; Stand vor dem Lauf: 28bbdcd
-- Push der Vornacht: gescheitert 2026-10-20T15:15:57+00:00 (oertlich 28bbdcd)
+- Daten: `/archiv/markt-dashboard/archiv-spiegel`; Stand vor dem Lauf: 4a1602e
+- Push der Vornacht: gescheitert 2026-10-20T15:16:24+00:00 (oertlich 4a1602e)
 - Log: `/archiv/markt-dashboard/pruefstrasse-logs/2026-10-20.log`, Laeufer-Ausgabe: `/archiv/markt-dashboard/pruefstrasse-logs/2026-10-20-laeufer.log`
 
 ## Warteschlange und letzte Urteile (Laeufer-Ausgabe, letzte 60 Zeilen)
 
 ```
-2026-10-20T15:13:12.384Z  START hochvolumen-praemie auf Zweig pruefstrasse-ergebnisse
-2026-10-20T15:13:12.649Z  Form gueltig, test.js gruen (ALLE TESTS GRUEN)
-2026-10-20T15:13:12.650Z  Siegel 1: Kandidatenordner in Commit 815a7aa7de9f53224fd8920861a4160c559e6858, nichts Ungesichertes
-2026-10-20T15:13:12.651Z  Entdeckung bis 2022-12-30 ueber 2 Konfigurationen (Form tag, Adapter tag, Quelle panel, Bewertung topf)
-2026-10-20T15:13:43.098Z    [entdeckung] fertig entdeckung
-2026-10-20T15:13:43.099Z  Entdeckung fertig: {"zulaessig":3768932,"ohneKlasse":2959271,"massnahmen":802,"signalAufrufe":3765887,"signale":208715,"ohneBestaetigungstag":0,"abgelehnt":0,"cooldown":182836,"ohneEinstieg":0,"einstiegMassnahmen":1,"richtungOhneKonfiguration":130324,"gebucht":155702,"ohneHorizont":4687,"topfFehlt":4,"nachMaxTag":0,"placeboOhnePartner":0,"versatzOhneTag":2084,"spaetOhneTag":72} | Verstoesse 0
-2026-10-20T15:13:43.099Z  Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): Mittel 5.6 %, max 50.7 %, 1 von 1712 Signaltagen ueber 50 %, Bewertung topf
-2026-10-20T15:13:43.099Z    H10: Tage 1703, Trades 78007, netto −0,1519, t −2,73 -> nein (netto <= 0, t < 2, Tor 1)
-2026-10-20T15:13:43.099Z    H20: Tage 1701, Trades 77695, netto −0,1795, t −3,04 -> nein (netto <= 0, t < 2, Tor 1)
 2026-10-20T15:13:43.100Z  Gegenproben: ohne Befund; Kandidaten 0 von 2
 2026-10-20T15:13:43.179Z  Siegel 2: KANDIDATEN.json committet in 7d692d89832eb8946f10f30890365894352f81d3 (Blob b291b80aa71f)
 2026-10-20T15:13:43.179Z  Keine Pruefung: kein Kandidat
@@ -63,6 +54,23 @@ Geschrieben von tools/pruefstrasse-nacht.sh auf rechenknecht, alle Zeiten UTC.
 2026-10-20T15:16:23.196Z  ENDE nicht entscheidbar - Belegstand und Log angehaengt, Commit folgt
 2026-10-20T15:16:23.246Z  Commit aa28e027f08a5b9a72f273c2970384806bb45a77
 {"urteil":"nicht entscheidbar","grund":"kein Kandidat (0 von 2 ausgeschlossen, Rest unter der Aufloesung)","commit":"aa28e027f08a5b9a72f273c2970384806bb45a77","siegel1":"8cd45a67a001e5d78992a8372d9cde54bdde84f7","siegel2":"c28f392112bbcbeae18ddc6461e21dd02f7a1e6b"}
+2026-10-20T15:16:29.866Z  START vor-fomc-long auf Zweig pruefstrasse-ergebnisse
+2026-10-20T15:16:29.993Z  Form gueltig, test.js gruen (ALLE TESTS GRUEN)
+2026-10-20T15:16:29.994Z  Siegel 1: Kandidatenordner in Commit 720bbbaffef1f68566dc1620b34a7fa55acbe71e, nichts Ungesichertes
+2026-10-20T15:16:29.994Z  Entdeckung bis 2022-12-30 ueber 2 Konfigurationen (Form tag, Adapter tag, Quelle panel, Bewertung zeit)
+2026-10-20T15:16:48.957Z    [entdeckung] fertig entdeckung
+2026-10-20T15:16:48.958Z  Entdeckung fertig: {"zulaessig":3768932,"ohneKlasse":2959271,"massnahmen":802,"signalAufrufe":3765887,"signale":118144,"ohneBestaetigungstag":0,"abgelehnt":0,"cooldown":0,"ohneEinstieg":0,"einstiegMassnahmen":1,"richtungOhneKonfiguration":74209,"gebucht":87870,"ohneHorizont":0,"topfFehlt":0,"nachMaxTag":0,"placeboOhnePartner":0,"versatzOhneTag":2060,"spaetOhneTag":43940,"placeboEntfaellt":87870} | Verstoesse 0
+2026-10-20T15:16:48.958Z  Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): Mittel 96.4 %, max 100.3 %, 54 von 56 Signaltagen ueber 50 %, Bewertung zeit
+2026-10-20T15:16:48.958Z    H1: Tage 54, Trades 43935, netto −0,0354, t −0,28 -> nicht entscheidbar (netto <= 0, t < 2, Tor 1)
+2026-10-20T15:16:48.959Z    H2: Tage 54, Trades 43935, netto −0,4091, t −1,59 -> nicht entscheidbar (netto <= 0, t < 2, Tor 1)
+2026-10-20T15:16:48.959Z  Gegenproben: ohne Befund; Kandidaten 0 von 2
+2026-10-20T15:16:49.031Z  Siegel 2: KANDIDATEN.json committet in 6916cd3dacba5617859fe94d6e4930912051834b (Blob 05afb4103a6c)
+2026-10-20T15:16:49.031Z  Keine Pruefung: kein Kandidat
+2026-10-20T15:16:49.032Z  URTEIL: nicht entscheidbar - kein Kandidat (0 von 2 ausgeschlossen, Rest unter der Aufloesung)
+2026-10-20T15:16:49.033Z  Register: 11 Konfigurationen insgesamt, 0.25 Zufallstreffer erwartet
+2026-10-20T15:16:49.049Z  ENDE nicht entscheidbar - Belegstand und Log angehaengt, Commit folgt
+2026-10-20T15:16:49.185Z  Commit 1eaef33ec82cf5a6075fd515116ec7cedf5f7742
+{"urteil":"nicht entscheidbar","grund":"kein Kandidat (0 von 2 ausgeschlossen, Rest unter der Aufloesung)","commit":"1eaef33ec82cf5a6075fd515116ec7cedf5f7742","siegel1":"720bbbaffef1f68566dc1620b34a7fa55acbe71e","siegel2":"6916cd3dacba5617859fe94d6e4930912051834b"}
 ```
 
 ## Fehler
