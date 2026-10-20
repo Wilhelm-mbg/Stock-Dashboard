@@ -1,0 +1,9 @@
+{
+ "kennung": "grossanstieg-ohne-umsatz",
+ "stand": "2026-10-20T15:15:56.477Z",
+ "ergebnisEntdeckungSha256": "ed65579e6fa700c439b8661c01d757c112bdbf820f4c4ea281730c680db471da",
+ "konfigurationen": 2,
+ "regel": "FORM.md §5: netto > 0, t >= 2, Tor 1, kein Placebo-Verstoss",
+ "messgeraetFehler": [],
+ "kandidaten": []
+}
