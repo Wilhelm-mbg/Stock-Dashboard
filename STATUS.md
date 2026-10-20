@@ -2,16 +2,15 @@
 
 Geschrieben von tools/pruefstrasse-nacht.sh auf rechenknecht, alle Zeiten UTC.
 
-- Letzter Lauf: 2026-10-20T15:17:16+00:00 bis 2026-10-20T15:17:44+00:00, Dauer 28 s (Zeitgrenze 6h)
+- Letzter Lauf: 2026-10-20T15:17:52+00:00 bis 2026-10-20T15:17:52+00:00, Dauer 0 s (Zeitgrenze 6h)
 - Laeufer: `pruefstrasse/laeufer.js --naechster`, Node v24.18.0, rc=0 (ok)
-- Daten: `/archiv/markt-dashboard/archiv-spiegel`; Stand vor dem Lauf: 164ac94
-- Push der Vornacht: gescheitert 2026-10-20T15:17:10+00:00 (oertlich 735dbd6)
+- Daten: `/archiv/markt-dashboard/archiv-spiegel`; Stand vor dem Lauf: 324db34
+- Push der Vornacht: gescheitert 2026-10-20T15:17:46+00:00 (oertlich 324db34)
 - Log: `/archiv/markt-dashboard/pruefstrasse-logs/2026-10-20.log`, Laeufer-Ausgabe: `/archiv/markt-dashboard/pruefstrasse-logs/2026-10-20-laeufer.log`
 
 ## Warteschlange und letzte Urteile (Laeufer-Ausgabe, letzte 60 Zeilen)
 
 ```
-2026-10-20T15:16:23.107Z    H4: Tage 80, Trades 63554, netto −0,0253, t −0,09 -> nicht entscheidbar (netto <= 0, t < 2, Tor 1)
 2026-10-20T15:16:23.108Z    H3: Tage 80, Trades 63554, netto +0,0375, t +0,16 -> nicht entscheidbar (t < 2, Tor 1)
 2026-10-20T15:16:23.108Z  Gegenproben: ohne Befund; Kandidaten 0 von 2
 2026-10-20T15:16:23.190Z  Siegel 2: KANDIDATEN.json committet in c28f392112bbcbeae18ddc6461e21dd02f7a1e6b (Blob a6a0a0ac388a)
@@ -71,6 +70,7 @@ Geschrieben von tools/pruefstrasse-nacht.sh auf rechenknecht, alle Zeiten UTC.
 2026-10-20T15:17:44.568Z  ENDE nein - Belegstand und Log angehaengt, Commit folgt
 2026-10-20T15:17:44.966Z  Commit e286a862c7d9b666f04f64df5630c7af63a723f3
 {"urteil":"nein","grund":"jede Konfiguration in der behaupteten Richtung ausgeschlossen (obere 95-%-Grenze netto < 0)","commit":"e286a862c7d9b666f04f64df5630c7af63a723f3","siegel1":"464539ec6c5d954d3894d20f1e0f415bed25cf2c","siegel2":"ae8128aa146dc74722edbd6363253ad99c565229"}
+Warteschlange: kein gueltiger Kandidat
 ```
 
 ## Fehler
