@@ -21,9 +21,25 @@
    "key": "H20",
    "urteil": "nein",
    "datum": "2026-10-12T02:00:49.483Z"
+  },
+  {
+   "kennung": "hochvolumen-praemie",
+   "form": "tag",
+   "key": "H10",
+   "urteil": "nein",
+   "datum": "2026-10-20T15:13:42.908Z",
+   "bewertung": "topf"
+  },
+  {
+   "kennung": "hochvolumen-praemie",
+   "form": "tag",
+   "key": "H20",
+   "urteil": "nein",
+   "datum": "2026-10-20T15:13:42.908Z",
+   "bewertung": "topf"
   }
  ],
- "gesamt": 3,
- "zufallErwartet": 0.06825,
- "stand": "2026-10-12T02:00:49.483Z"
+ "gesamt": 5,
+ "zufallErwartet": 0.11374999999999999,
+ "stand": "2026-10-20T15:13:42.908Z"
 }

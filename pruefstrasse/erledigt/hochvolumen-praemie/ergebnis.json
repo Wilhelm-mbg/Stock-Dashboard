@@ -1,0 +1,424 @@
+{
+ "kennung": "hochvolumen-praemie",
+ "form": "tag",
+ "titel": "High-Volume Return Premium: Dollarumsatz des Tages unter den obersten 10 % der letzten 50 Tage, long",
+ "stand": "2026-10-20T15:13:42.908Z",
+ "urteil": "nein",
+ "grund": "jede Konfiguration in der behaupteten Richtung ausgeschlossen (obere 95-%-Grenze netto < 0)",
+ "kandidaten": 0,
+ "messgeraetFehler": [],
+ "siegel1": {
+  "commit": "815a7aa7de9f53224fd8920861a4160c559e6858",
+  "ordner": "pruefstrasse/warteschlange/hochvolumen-praemie"
+ },
+ "siegel2": {
+  "commit": "7d692d89832eb8946f10f30890365894352f81d3",
+  "blob": "b291b80aa71f9400bc972a6e80c45dbb2d3e5017",
+  "sha256": "167659841eff172562e666c3bcffdcc16ab80fd68beb4769e09fae96da2d7fbc",
+  "pfad": "pruefstrasse/erledigt/hochvolumen-praemie/KANDIDATEN.json"
+ },
+ "register": {
+  "gesamt": 5,
+  "zufallErwartet": 0.11374999999999999
+ },
+ "entdeckung": {
+  "quelle": "panel",
+  "kennungTafel": "querschnitt-pruefstand-2026-09-13/panel/v2.3",
+  "gesperrt": true,
+  "siegel": null,
+  "hatRoh": true,
+  "hatMarkt": true,
+  "hatDatum": true,
+  "reihen": 6706,
+  "nTage": 2765,
+  "letzterTag": "2022-12-30",
+  "schnitt": "2023-01-03",
+  "TE": 1722,
+  "TB": 861,
+  "zaehler": {
+   "zulaessig": 3768932,
+   "ohneKlasse": 2959271,
+   "massnahmen": 802,
+   "signalAufrufe": 3765887,
+   "signale": 208715,
+   "ohneBestaetigungstag": 0,
+   "abgelehnt": 0,
+   "cooldown": 182836,
+   "ohneEinstieg": 0,
+   "einstiegMassnahmen": 1,
+   "richtungOhneKonfiguration": 130324,
+   "gebucht": 155702,
+   "ohneHorizont": 4687,
+   "topfFehlt": 4,
+   "nachMaxTag": 0,
+   "placeboOhnePartner": 0,
+   "versatzOhneTag": 2084,
+   "spaetOhneTag": 72
+  },
+  "verstoesse": 0,
+  "beispiele": [],
+  "ms": {
+   "topf": 6347,
+   "messen": 7315
+  },
+  "bewertung": "topf",
+  "bewertungDetail": "Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus Topf derselben Zelle (Einstiegstag, Dauer, Umsatzklasse, lebend) - das Verfahren der Trendkanal-Studie; Kassa-Huerde je Klasse; Placebo = anderer zulaessiger Wert gleicher Klasse am selben Tag, gleiche Richtung; Verschiebung um 20 Handelstage.",
+  "versatzTage": 20,
+  "signalAnteil": {
+   "tage": 1712,
+   "mittel": 0.055718376031096334,
+   "max": 0.5072874493927125,
+   "tageUeber50": 1
+  },
+  "warnungen": [],
+  "konfigurationen": [
+   {
+    "key": "H10",
+    "richtung": "long",
+    "haltedauer": 10,
+    "klassen": [
+     1,
+     2,
+     3
+    ],
+    "entdeckung": {
+     "nTage": 1703,
+     "nTr": 78007,
+     "nK": [
+      0,
+      60433,
+      15203,
+      2371
+     ],
+     "kKand": 0.0801347340623277,
+     "dauerMittel": 9.983847603420205,
+     "abgaenge": [
+      {
+       "gruppe": "uebernahme",
+       "n": 199,
+       "mittel": 0.020567767602694572
+      },
+      {
+       "gruppe": "insolvenz",
+       "n": 1,
+       "mittel": 0.9904461390130558
+      },
+      {
+       "gruppe": "sonstige",
+       "n": 27,
+       "mittel": -3.899672213133124
+      }
+     ],
+     "uBrutto": {
+      "n": 1703,
+      "mittel": -0.07127868903099492,
+      "se": 0.05570540819784092,
+      "seNaiv": 0.041285091645414336,
+      "t": -1.279564971103786,
+      "obere": 0.03790391103677328,
+      "untere": -0.18046128909876313,
+      "nEff": 170.3,
+      "hh0": false,
+      "jeTrade": -0.05879024850372777
+     },
+     "uNetto": {
+      "n": 1703,
+      "mittel": -0.15187977234505337,
+      "se": 0.05570046721373046,
+      "seNaiv": 0.0412827318983856,
+      "t": -2.7267234898096904,
+      "obere": -0.042706856606141666,
+      "untere": -0.2610526880839651,
+      "nEff": 170.3,
+      "hh0": false,
+      "jeTrade": -0.13892498256605545
+     },
+     "roh": {
+      "n": 1703,
+      "mittel": 0.3400978975937338,
+      "se": 0.3054876825730536,
+      "seNaiv": 0.10176079088466858,
+      "t": 1.11329496079569,
+      "obere": 0.9388537554369187,
+      "untere": -0.25865796024945115,
+      "nEff": 170.3,
+      "hh0": false
+     },
+     "tradesJeTag": 45.80563711098062
+    },
+    "lebend": {
+     "uNetto": {
+      "n": 1697,
+      "mittel": -0.15964890711895008,
+      "se": 0.05257264391763216,
+      "seNaiv": 0.04254719808182049,
+      "t": -3.0367296605641316,
+      "obere": -0.05660652504039104,
+      "untere": -0.2626912891975091,
+      "nEff": 169.7,
+      "hh0": false,
+      "jeTrade": -0.15247664323307672
+     },
+     "nTr": 66654,
+     "deltaAlleLebend": 0.008294222185006014
+    },
+    "spaet": {
+     "uNetto": {
+      "n": 1702,
+      "mittel": -0.13143915273067336,
+      "se": 0.05397383294293259,
+      "seNaiv": 0.03993658764209544,
+      "t": -2.435238439887086,
+      "obere": -0.025650440162525476,
+      "untere": -0.23722786529882123,
+      "nEff": 170.2,
+      "hh0": false,
+      "jeTrade": -0.12862442543600874
+     },
+     "nTr": 77975
+    },
+    "versatz": {
+     "uNetto": {
+      "n": 1687,
+      "mittel": -0.019929309283559765,
+      "se": 0.04301035684643722,
+      "seNaiv": 0.040121115637865704,
+      "t": -0.4633607052997659,
+      "obere": 0.06437099013545718,
+      "untere": -0.1042296087025767,
+      "nEff": 168.7,
+      "hh0": false,
+      "jeTrade": -0.0477591691558705
+     },
+     "nTr": 76894,
+     "wirkt": false,
+     "ueberlappung": {
+      "n": 53967,
+      "von": 76894,
+      "anteil": 0.701836294119177
+     }
+    },
+    "placebo": {
+     "uBrutto": {
+      "n": 1699,
+      "mittel": -0.262572735778679,
+      "se": 0.15252731000853853,
+      "seNaiv": 0.1423180723848449,
+      "t": -1.721480145188295,
+      "obere": 0.03638079183805648,
+      "untere": -0.5615262633954146,
+      "nEff": 169.9,
+      "hh0": false,
+      "jeTrade": -0.3895024338891545
+     },
+     "nTr": 77975,
+     "schranke": {
+      "t": 2,
+      "mindestPp": 0.020033683515581924
+     },
+     "verstoss": false
+    },
+    "TE": 1722,
+    "TB": 861,
+    "seBproj": 0.07877235616417555,
+    "mdeBproj": 0.1575447123283511,
+    "tor1": false,
+    "tor1Schwelle": 0.6301788493134044,
+    "mde80": 0.15605042894598725,
+    "kandidat": false,
+    "gruende": [
+     "netto <= 0",
+     "t < 2",
+     "Tor 1"
+    ],
+    "urteil": "nein"
+   },
+   {
+    "key": "H20",
+    "richtung": "long",
+    "haltedauer": 20,
+    "klassen": [
+     1,
+     2,
+     3
+    ],
+    "entdeckung": {
+     "nTage": 1701,
+     "nTr": 77695,
+     "nK": [
+      0,
+      60193,
+      15143,
+      2359
+     ],
+     "kKand": 0.0801358311345646,
+     "dauerMittel": 19.94619988416243,
+     "abgaenge": [
+      {
+       "gruppe": "uebernahme",
+       "n": 298,
+       "mittel": 0.0730992530283482
+      },
+      {
+       "gruppe": "insolvenz",
+       "n": 3,
+       "mittel": 0.16963173482930802
+      },
+      {
+       "gruppe": "sonstige",
+       "n": 45,
+       "mittel": -6.574485820017045
+      }
+     ],
+     "uBrutto": {
+      "n": 1701,
+      "mittel": -0.0988853282189554,
+      "se": 0.05899189966394809,
+      "seNaiv": 0.05397893836648997,
+      "t": -1.6762526513345612,
+      "obere": 0.016738795122382855,
+      "untere": -0.21450945156029366,
+      "nEff": 85.05,
+      "hh0": false,
+      "jeTrade": -0.0818857152285725
+     },
+     "uNetto": {
+      "n": 1701,
+      "mittel": -0.17950555961201062,
+      "se": 0.05897061916830841,
+      "seNaiv": 0.05398043346676444,
+      "t": -3.043982955303262,
+      "obere": -0.06392314604212614,
+      "untere": -0.2950879731818951,
+      "nEff": 85.05,
+      "hh0": false,
+      "jeTrade": -0.1620215463631371
+     },
+     "roh": {
+      "n": 1701,
+      "mittel": 0.7208281537192786,
+      "se": 0.57998756101947,
+      "seNaiv": 0.1453835150889208,
+      "t": 1.2428338160429626,
+      "obere": 1.85760377331744,
+      "untere": -0.41594746587888276,
+      "nEff": 85.05,
+      "hh0": false
+     },
+     "tradesJeTag": 45.67607289829512
+    },
+    "lebend": {
+     "uNetto": {
+      "n": 1687,
+      "mittel": -0.1953955837582874,
+      "se": 0.05909318478560104,
+      "seNaiv": 0.056271752336586996,
+      "t": -3.3065671526625606,
+      "obere": -0.07957294157850935,
+      "untere": -0.3112182259380654,
+      "nEff": 84.35,
+      "hh0": false,
+      "jeTrade": -0.19137593363381825
+     },
+     "nTr": 66342,
+     "deltaAlleLebend": 0.016435044324698264
+    },
+    "spaet": {
+     "uNetto": {
+      "n": 1700,
+      "mittel": -0.15205602239453533,
+      "se": 0.05974887879960673,
+      "seNaiv": 0.051531990211270924,
+      "t": -2.544918422729234,
+      "obere": -0.03494821994730614,
+      "untere": -0.26916382484176454,
+      "nEff": 85,
+      "hh0": false,
+      "jeTrade": -0.15084819990883833
+     },
+     "nTr": 77663
+    },
+    "versatz": {
+     "uNetto": {
+      "n": 1687,
+      "mittel": -0.04150065316387615,
+      "se": 0.06505923671472168,
+      "seNaiv": 0.054290688964987725,
+      "t": -0.6378902560116468,
+      "obere": 0.08601545079697832,
+      "untere": -0.16901675712473063,
+      "nEff": 84.35,
+      "hh0": false,
+      "jeTrade": 0.0055166262786035935
+     },
+     "nTr": 76209,
+     "wirkt": false,
+     "ueberlappung": {
+      "n": 69360,
+      "von": 76209,
+      "anteil": 0.9101287249537456
+     }
+    },
+    "placebo": {
+     "uBrutto": {
+      "n": 1690,
+      "mittel": 0.2529948008102049,
+      "se": 0.1699020955370397,
+      "seNaiv": 0.20385471219844234,
+      "t": 1.4890622744264534,
+      "obere": 0.5860029080628026,
+      "untere": -0.08001330644239285,
+      "nEff": 84.5,
+      "hh0": false,
+      "jeTrade": 0.397159524691703
+     },
+     "nTr": 77863,
+     "schranke": {
+      "t": 2,
+      "mindestPp": 0.02003395778364115
+     },
+     "verstoss": false
+    },
+    "TE": 1722,
+    "TB": 861,
+    "seBproj": 0.08339704940936056,
+    "mdeBproj": 0.16679409881872112,
+    "tor1": false,
+    "tor1Schwelle": 0.6671763952748845,
+    "mde80": 0.16521208666193285,
+    "kandidat": false,
+    "gruende": [
+     "netto <= 0",
+     "t < 2",
+     "Tor 1"
+    ],
+    "urteil": "nein"
+   }
+  ],
+  "klassen": [
+   {
+    "name": "5-50",
+    "huerde": 0.1569
+   },
+   {
+    "name": "50-250",
+    "huerde": 0.0854
+   },
+   {
+    "name": "250-1000",
+    "huerde": 0.0647
+   },
+   {
+    "name": "ab1000",
+    "huerde": 0.0449
+   }
+  ],
+  "kennung": "hochvolumen-praemie",
+  "form": "tag",
+  "phase": "entdeckung",
+  "stand": "2026-10-20T15:13:42.908Z",
+  "konfigurationenSoll": 2,
+  "versatzGrund": null
+ },
+ "pruefung": null
+}
