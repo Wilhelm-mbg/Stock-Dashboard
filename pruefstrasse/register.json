@@ -93,9 +93,17 @@
    "urteil": "nicht entscheidbar",
    "datum": "2026-10-20T15:17:09.577Z",
    "bewertung": "topf"
+  },
+  {
+   "kennung": "fomc-gerade-wochen-long",
+   "form": "tag",
+   "key": "W0246-H5",
+   "urteil": "nein",
+   "datum": "2026-10-20T15:17:44.265Z",
+   "bewertung": "zeit"
   }
  ],
- "gesamt": 12,
- "zufallErwartet": 0.273,
- "stand": "2026-10-20T15:17:09.577Z"
+ "gesamt": 13,
+ "zufallErwartet": 0.29575,
+ "stand": "2026-10-20T15:17:44.265Z"
 }

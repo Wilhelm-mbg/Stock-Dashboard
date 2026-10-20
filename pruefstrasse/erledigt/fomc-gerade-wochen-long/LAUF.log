@@ -1,0 +1,15 @@
+2026-10-20T15:17:17.593Z  START fomc-gerade-wochen-long auf Zweig pruefstrasse-ergebnisse
+2026-10-20T15:17:18.108Z  Form gueltig, test.js gruen (ALLE TESTS GRUEN)
+2026-10-20T15:17:18.109Z  Siegel 1: Kandidatenordner in Commit 464539ec6c5d954d3894d20f1e0f415bed25cf2c, nichts Ungesichertes
+2026-10-20T15:17:18.110Z  Entdeckung bis 2022-12-30 ueber 1 Konfigurationen (Form tag, Adapter tag, Quelle panel, Bewertung zeit)
+2026-10-20T15:17:44.489Z    [entdeckung] fertig entdeckung
+2026-10-20T15:17:44.490Z  Verschiebungs-Gegenprobe: Versatz 5 Handelstage statt Vorgabe 20, Grund (REGEL.md "Versatz"): `versatzTage: 5` statt der Vorgabe 20. Die Regel hat eine **Periode von 10 Handelstagen** (Woche 0 → 2 → 4 → 6). Um 20 verschoben träfe jedes Signal das übernächste eigene Fenster (Woche 0 → Woche 4, Woche 2 → Woche 6 oder die nächste Woche 0). Ein richtiges Messgerät sähe dann denselben Effekt und hieße „Messgerät-Fehler“. Mit +5 Handelstagen landet jedes Fenster in der **folgenden ungeraden W...
+2026-10-20T15:17:44.490Z  Entdeckung fertig: {"zulaessig":3768932,"ohneKlasse":2959271,"massnahmen":802,"signalAufrufe":3765887,"signale":367843,"ohneBestaetigungstag":0,"abgelehnt":0,"cooldown":0,"ohneEinstieg":0,"einstiegMassnahmen":1,"richtungOhneKonfiguration":231042,"gebucht":135967,"ohneHorizont":1668,"topfFehlt":0,"nachMaxTag":0,"placeboOhnePartner":0,"versatzOhneTag":1010,"spaetOhneTag":14,"placeboEntfaellt":136801} | Verstoesse 0
+2026-10-20T15:17:44.490Z  Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): Mittel 82.3 %, max 100.3 %, 168 von 204 Signaltagen ueber 50 %, Bewertung zeit
+2026-10-20T15:17:44.490Z    W0246-H5: Tage 177, Trades 135967, netto −1,0110, t −4,62 -> nein (netto <= 0, t < 2, Tor 1)
+2026-10-20T15:17:44.491Z  Gegenproben: ohne Befund; Kandidaten 0 von 1
+2026-10-20T15:17:44.558Z  Siegel 2: KANDIDATEN.json committet in ae8128aa146dc74722edbd6363253ad99c565229 (Blob 11c704b89c0d)
+2026-10-20T15:17:44.558Z  Keine Pruefung: kein Kandidat
+2026-10-20T15:17:44.559Z  URTEIL: nein - jede Konfiguration in der behaupteten Richtung ausgeschlossen (obere 95-%-Grenze netto < 0)
+2026-10-20T15:17:44.560Z  Register: 13 Konfigurationen insgesamt, 0.30 Zufallstreffer erwartet
+2026-10-20T15:17:44.568Z  ENDE nein - Belegstand und Log angehaengt, Commit folgt
