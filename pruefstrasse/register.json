@@ -53,9 +53,25 @@
    "urteil": "nicht entscheidbar",
    "datum": "2026-10-20T15:15:56.477Z",
    "bewertung": "topf"
+  },
+  {
+   "kennung": "monatswende-long",
+   "form": "tag",
+   "key": "H4",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-20T15:16:22.885Z",
+   "bewertung": "zeit"
+  },
+  {
+   "kennung": "monatswende-long",
+   "form": "tag",
+   "key": "H3",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-20T15:16:22.885Z",
+   "bewertung": "zeit"
   }
  ],
- "gesamt": 7,
- "zufallErwartet": 0.15925,
- "stand": "2026-10-20T15:15:56.477Z"
+ "gesamt": 9,
+ "zufallErwartet": 0.20475,
+ "stand": "2026-10-20T15:16:22.885Z"
 }
