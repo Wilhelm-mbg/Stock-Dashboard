@@ -2,32 +2,15 @@
 
 Geschrieben von tools/pruefstrasse-nacht.sh auf rechenknecht, alle Zeiten UTC.
 
-- Letzter Lauf: 2026-10-20T15:16:55+00:00 bis 2026-10-20T15:17:09+00:00, Dauer 14 s (Zeitgrenze 6h)
+- Letzter Lauf: 2026-10-20T15:17:16+00:00 bis 2026-10-20T15:17:44+00:00, Dauer 28 s (Zeitgrenze 6h)
 - Laeufer: `pruefstrasse/laeufer.js --naechster`, Node v24.18.0, rc=0 (ok)
-- Daten: `/archiv/markt-dashboard/archiv-spiegel`; Stand vor dem Lauf: da58a25
-- Push der Vornacht: gescheitert 2026-10-20T15:16:50+00:00 (oertlich da58a25)
+- Daten: `/archiv/markt-dashboard/archiv-spiegel`; Stand vor dem Lauf: 164ac94
+- Push der Vornacht: gescheitert 2026-10-20T15:17:10+00:00 (oertlich 735dbd6)
 - Log: `/archiv/markt-dashboard/pruefstrasse-logs/2026-10-20.log`, Laeufer-Ausgabe: `/archiv/markt-dashboard/pruefstrasse-logs/2026-10-20-laeufer.log`
 
 ## Warteschlange und letzte Urteile (Laeufer-Ausgabe, letzte 60 Zeilen)
 
 ```
-2026-10-20T15:15:56.682Z    H20: Tage 656, Trades 4722, netto −0,0715, t −0,06 -> nicht entscheidbar (netto <= 0, t < 2, Tor 1)
-2026-10-20T15:15:56.683Z  Gegenproben: ohne Befund; Kandidaten 0 von 2
-2026-10-20T15:15:56.770Z  Siegel 2: KANDIDATEN.json committet in dc84c11e5496967cc6337c7c76316e2526d28e6b (Blob d4335083508a)
-2026-10-20T15:15:56.770Z  Keine Pruefung: kein Kandidat
-2026-10-20T15:15:56.770Z  URTEIL: nicht entscheidbar - kein Kandidat (0 von 2 ausgeschlossen, Rest unter der Aufloesung)
-2026-10-20T15:15:56.770Z  Register: 7 Konfigurationen insgesamt, 0.16 Zufallstreffer erwartet
-2026-10-20T15:15:56.776Z  ENDE nicht entscheidbar - Belegstand und Log angehaengt, Commit folgt
-2026-10-20T15:15:56.822Z  Commit 566f1bd7a40fab72a9c040cdf0468eeec6db9b8e
-{"urteil":"nicht entscheidbar","grund":"kein Kandidat (0 von 2 ausgeschlossen, Rest unter der Aufloesung)","commit":"566f1bd7a40fab72a9c040cdf0468eeec6db9b8e","siegel1":"4cfa64f17f8588d005e3a06f400dd7867dd5d728","siegel2":"dc84c11e5496967cc6337c7c76316e2526d28e6b"}
-2026-10-20T15:16:03.964Z  START monatswende-long auf Zweig pruefstrasse-ergebnisse
-2026-10-20T15:16:04.272Z  Form gueltig, test.js gruen (ALLE TESTS GRUEN)
-2026-10-20T15:16:04.273Z  Siegel 1: Kandidatenordner in Commit 8cd45a67a001e5d78992a8372d9cde54bdde84f7, nichts Ungesichertes
-2026-10-20T15:16:04.274Z  Entdeckung bis 2022-12-30 ueber 2 Konfigurationen (Form tag, Adapter tag, Quelle panel, Bewertung zeit)
-2026-10-20T15:16:23.106Z    [entdeckung] fertig entdeckung
-2026-10-20T15:16:23.107Z  Verschiebungs-Gegenprobe: Versatz 10 Handelstage statt Vorgabe 20, Grund (REGEL.md "Versatz"): `versatzTage: 10` statt der Vorgabe 20 (PM-Entscheid 12.10.2026, Nachlieferung Nr. 118): der Abstand zweier Monatswenden beträgt ≈ 21 Handelstage, ein um 20 Handelstage verschobenes Signal landet ein bis drei Tage vor dem **nächsten** Monatsende — das verschobene Fenster überschneidet das nächste Signalfenster, die Gegenprobe zeigte den Effekt selbst und ein richtiges Messgerät würde als „verdä...
-2026-10-20T15:16:23.107Z  Entdeckung fertig: {"zulaessig":3768932,"ohneKlasse":2959271,"massnahmen":802,"signalAufrufe":3765887,"signale":173092,"ohneBestaetigungstag":0,"abgelehnt":0,"cooldown":0,"ohneEinstieg":0,"einstiegMassnahmen":1,"richtungOhneKonfiguration":108712,"gebucht":127108,"ohneHorizont":1652,"topfFehlt":0,"nachMaxTag":0,"placeboOhnePartner":0,"versatzOhneTag":1990,"spaetOhneTag":1838,"placeboEntfaellt":128760} | Verstoesse 0
-2026-10-20T15:16:23.107Z  Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): Mittel 98.7 %, max 100.3 %, 79 von 80 Signaltagen ueber 50 %, Bewertung zeit
 2026-10-20T15:16:23.107Z    H4: Tage 80, Trades 63554, netto −0,0253, t −0,09 -> nicht entscheidbar (netto <= 0, t < 2, Tor 1)
 2026-10-20T15:16:23.108Z    H3: Tage 80, Trades 63554, netto +0,0375, t +0,16 -> nicht entscheidbar (t < 2, Tor 1)
 2026-10-20T15:16:23.108Z  Gegenproben: ohne Befund; Kandidaten 0 von 2
@@ -71,6 +54,23 @@ Geschrieben von tools/pruefstrasse-nacht.sh auf rechenknecht, alle Zeiten UTC.
 2026-10-20T15:17:09.837Z  ENDE nicht entscheidbar - Belegstand und Log angehaengt, Commit folgt
 2026-10-20T15:17:09.897Z  Commit 7b26dec372008b116e4f5299d53e9c648b8f7d5b
 {"urteil":"nicht entscheidbar","grund":"kein Kandidat (0 von 1 ausgeschlossen, Rest unter der Aufloesung)","commit":"7b26dec372008b116e4f5299d53e9c648b8f7d5b","siegel1":"1c9238625c506a5ff140c3b10b77f143be36e00b","siegel2":"c0d992afdbb79793f10efea976b742c0d52762db"}
+2026-10-20T15:17:17.593Z  START fomc-gerade-wochen-long auf Zweig pruefstrasse-ergebnisse
+2026-10-20T15:17:18.108Z  Form gueltig, test.js gruen (ALLE TESTS GRUEN)
+2026-10-20T15:17:18.109Z  Siegel 1: Kandidatenordner in Commit 464539ec6c5d954d3894d20f1e0f415bed25cf2c, nichts Ungesichertes
+2026-10-20T15:17:18.110Z  Entdeckung bis 2022-12-30 ueber 1 Konfigurationen (Form tag, Adapter tag, Quelle panel, Bewertung zeit)
+2026-10-20T15:17:44.489Z    [entdeckung] fertig entdeckung
+2026-10-20T15:17:44.490Z  Verschiebungs-Gegenprobe: Versatz 5 Handelstage statt Vorgabe 20, Grund (REGEL.md "Versatz"): `versatzTage: 5` statt der Vorgabe 20. Die Regel hat eine **Periode von 10 Handelstagen** (Woche 0 → 2 → 4 → 6). Um 20 verschoben träfe jedes Signal das übernächste eigene Fenster (Woche 0 → Woche 4, Woche 2 → Woche 6 oder die nächste Woche 0). Ein richtiges Messgerät sähe dann denselben Effekt und hieße „Messgerät-Fehler“. Mit +5 Handelstagen landet jedes Fenster in der **folgenden ungeraden W...
+2026-10-20T15:17:44.490Z  Entdeckung fertig: {"zulaessig":3768932,"ohneKlasse":2959271,"massnahmen":802,"signalAufrufe":3765887,"signale":367843,"ohneBestaetigungstag":0,"abgelehnt":0,"cooldown":0,"ohneEinstieg":0,"einstiegMassnahmen":1,"richtungOhneKonfiguration":231042,"gebucht":135967,"ohneHorizont":1668,"topfFehlt":0,"nachMaxTag":0,"placeboOhnePartner":0,"versatzOhneTag":1010,"spaetOhneTag":14,"placeboEntfaellt":136801} | Verstoesse 0
+2026-10-20T15:17:44.490Z  Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): Mittel 82.3 %, max 100.3 %, 168 von 204 Signaltagen ueber 50 %, Bewertung zeit
+2026-10-20T15:17:44.490Z    W0246-H5: Tage 177, Trades 135967, netto −1,0110, t −4,62 -> nein (netto <= 0, t < 2, Tor 1)
+2026-10-20T15:17:44.491Z  Gegenproben: ohne Befund; Kandidaten 0 von 1
+2026-10-20T15:17:44.558Z  Siegel 2: KANDIDATEN.json committet in ae8128aa146dc74722edbd6363253ad99c565229 (Blob 11c704b89c0d)
+2026-10-20T15:17:44.558Z  Keine Pruefung: kein Kandidat
+2026-10-20T15:17:44.559Z  URTEIL: nein - jede Konfiguration in der behaupteten Richtung ausgeschlossen (obere 95-%-Grenze netto < 0)
+2026-10-20T15:17:44.560Z  Register: 13 Konfigurationen insgesamt, 0.30 Zufallstreffer erwartet
+2026-10-20T15:17:44.568Z  ENDE nein - Belegstand und Log angehaengt, Commit folgt
+2026-10-20T15:17:44.966Z  Commit e286a862c7d9b666f04f64df5630c7af63a723f3
+{"urteil":"nein","grund":"jede Konfiguration in der behaupteten Richtung ausgeschlossen (obere 95-%-Grenze netto < 0)","commit":"e286a862c7d9b666f04f64df5630c7af63a723f3","siegel1":"464539ec6c5d954d3894d20f1e0f415bed25cf2c","siegel2":"ae8128aa146dc74722edbd6363253ad99c565229"}
 ```
 
 ## Fehler
