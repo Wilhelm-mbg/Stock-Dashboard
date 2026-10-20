@@ -1,0 +1,14 @@
+2026-10-20T15:16:56.387Z  START umkehr-nach-vorzeichenserie auf Zweig pruefstrasse-ergebnisse
+2026-10-20T15:16:56.634Z  Form gueltig, test.js gruen (ALLE TESTS GRUEN)
+2026-10-20T15:16:56.634Z  Siegel 1: Kandidatenordner in Commit 1c9238625c506a5ff140c3b10b77f143be36e00b, nichts Ungesichertes
+2026-10-20T15:16:56.637Z  Entdeckung bis 2022-12-30 ueber 1 Konfigurationen (Form tag, Adapter tag, Quelle panel, Bewertung topf)
+2026-10-20T15:17:09.777Z    [entdeckung] fertig entdeckung
+2026-10-20T15:17:09.778Z  Entdeckung fertig: {"zulaessig":3768932,"ohneKlasse":2959271,"massnahmen":802,"signalAufrufe":3765887,"signale":54767,"ohneBestaetigungstag":0,"abgelehnt":0,"cooldown":45983,"ohneEinstieg":0,"einstiegMassnahmen":1,"richtungOhneKonfiguration":35417,"gebucht":19348,"ohneHorizont":7,"topfFehlt":1,"nachMaxTag":0,"placeboOhnePartner":0,"versatzOhneTag":460,"spaetOhneTag":19350} | Verstoesse 0
+2026-10-20T15:17:09.778Z  Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): Mittel 1.5 %, max 40.6 %, 0 von 1667 Signaltagen ueber 50 %, Bewertung topf
+2026-10-20T15:17:09.778Z    H1: Tage 1484, Trades 19348, netto −0,0017, t −0,03 -> nicht entscheidbar (netto <= 0, t < 2, Tor 1)
+2026-10-20T15:17:09.779Z  Gegenproben: ohne Befund; Kandidaten 0 von 1
+2026-10-20T15:17:09.831Z  Siegel 2: KANDIDATEN.json committet in c0d992afdbb79793f10efea976b742c0d52762db (Blob 9be56c1bde55)
+2026-10-20T15:17:09.831Z  Keine Pruefung: kein Kandidat
+2026-10-20T15:17:09.832Z  URTEIL: nicht entscheidbar - kein Kandidat (0 von 1 ausgeschlossen, Rest unter der Aufloesung)
+2026-10-20T15:17:09.832Z  Register: 12 Konfigurationen insgesamt, 0.27 Zufallstreffer erwartet
+2026-10-20T15:17:09.837Z  ENDE nicht entscheidbar - Belegstand und Log angehaengt, Commit folgt

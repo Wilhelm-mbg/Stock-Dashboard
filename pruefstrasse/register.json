@@ -85,9 +85,17 @@
    "urteil": "nicht entscheidbar",
    "datum": "2026-10-20T15:16:48.741Z",
    "bewertung": "zeit"
+  },
+  {
+   "kennung": "umkehr-nach-vorzeichenserie",
+   "form": "tag",
+   "key": "H1",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-20T15:17:09.577Z",
+   "bewertung": "topf"
   }
  ],
- "gesamt": 11,
- "zufallErwartet": 0.25025,
- "stand": "2026-10-20T15:16:48.741Z"
+ "gesamt": 12,
+ "zufallErwartet": 0.273,
+ "stand": "2026-10-20T15:17:09.577Z"
 }
