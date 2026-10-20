@@ -1,0 +1,9 @@
+{
+ "kennung": "hochvolumen-praemie",
+ "stand": "2026-10-20T15:13:42.908Z",
+ "ergebnisEntdeckungSha256": "5ce6c252158ab8fb073dfc3b3e64297ed9679ab96da82786979c4957719e99cb",
+ "konfigurationen": 2,
+ "regel": "FORM.md §5: netto > 0, t >= 2, Tor 1, kein Placebo-Verstoss",
+ "messgeraetFehler": [],
+ "kandidaten": []
+}
