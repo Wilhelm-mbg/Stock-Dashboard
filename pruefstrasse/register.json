@@ -37,9 +37,25 @@
    "urteil": "nein",
    "datum": "2026-10-20T15:13:42.908Z",
    "bewertung": "topf"
+  },
+  {
+   "kennung": "grossanstieg-ohne-umsatz",
+   "form": "tag",
+   "key": "H5",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-20T15:15:56.477Z",
+   "bewertung": "topf"
+  },
+  {
+   "kennung": "grossanstieg-ohne-umsatz",
+   "form": "tag",
+   "key": "H20",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-20T15:15:56.477Z",
+   "bewertung": "topf"
   }
  ],
- "gesamt": 5,
- "zufallErwartet": 0.11374999999999999,
- "stand": "2026-10-20T15:13:42.908Z"
+ "gesamt": 7,
+ "zufallErwartet": 0.15925,
+ "stand": "2026-10-20T15:15:56.477Z"
 }
