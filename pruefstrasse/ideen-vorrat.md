@@ -42,7 +42,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | Signalzahl | Schätzung aus `ideen-verworfen.md`: 2.800–5.600 Bewegungen ≥ 10 % in der Entdeckung; davon rund die Hälfte marktgleich, nur Stürze → **≈ 700–1.400 Trades**, ~0,4–0,8 je Tag. |
 | MDE80 | Faustregel bei N = 1.000: H2 1,5 Pp · H5 2,3 Pp · H20 4,6 Pp. Ereignisstreuung nach 10-%-Sturz grob doppelt → **≈ 3 / 4,6 / 9 Pp**. |
 | Urteil | **zu klein, solange die Größe der Quelle nicht vorliegt** (Form heute erfüllt). Einstellbar, wenn der Volltext für die 2-Tage-Umkehr ≥ 1,5 Pp (H2) bzw. ≥ 2,3 Pp (H5) nennt — sonst in `ideen-verworfen.md` mit der Zahl. |
-| Stand | |
+| Stand | verworfen (Ideen-Agent 14.10.2026, zweiter Lauf): Volltext JBF 2018 weiter nicht frei; der unabhängige Nachbau nach 2010 (Matos, Pacheco & Lobão 2022, FTSE 100 2010–2018, Volltext gelesen) findet nach Stürzen mit fallendem Markt keine Umkehr (Tab. 6: \|SR\| > 10 %, MR < 0, mittlere AR Tag 1–5 −0,45 % groß / −0,18 % klein, n. s.) — siehe ideen-verworfen.md 14.10. (zweiter Lauf) |
 
 ## 2. Umkehr nach einer Serie gleicher Tagesvorzeichen
 
@@ -58,7 +58,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | MDE80 | bei N = 50.000: H1 **0,15 Pp**, H2 0,21, H5 0,33 (Faustregel). Fein genug für jede Größe ab der Hürde. |
 | Verwandt, nicht gleich | Kurzfrist-Umkehr 5 Tage (Querschnitt 15.09., Renditerang, t 1,19); Dip-Familie der Minutenstudie (Nein). Hier: Vorzeichenfolge als Ereignis, keine Rangfolge — Regel 1 ausdrücklich prüfen. |
 | Urteil | **einstellbar, sobald der Volltext die Größe und n liefert** (Auflösung reicht); ohne Zahl nicht einstellen. Der Ideen-Agent hat WebFetch — der Volltext ist frei. |
-| Stand | |
+| Stand | eingestellt als `umkehr-nach-vorzeichenserie` (Ideen-Agent 13.10.2026): Volltext gelesen, n = 5 (Tabelle 1 Panel B +0,343 %, Tabelle 5 NEG5 +0,277, t 2,84), H1, Klassen 1–3; MDE80 ≈ 0,26–0,40 Pp; Statistik der Quelle in sich widersprüchlich (in REGEL.md). |
 
 ## 3. Umkehr nach Übernacht-Sprung (Eröffnungslücke)
 
@@ -73,7 +73,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | Signalzahl | unbekannt; Sprünge nach Lee-Mykland sind selten — vor dem Einstellen zählen (eigenes Zählskript ohne Renditen). Annahme 1–2 % der Wert-Tage → ≈ 15.000–30.000 in der Entdeckung. |
 | MDE80 | bei N = 20.000: H1 0,23 Pp · H5 0,52 Pp (Faustregel; Ereignisstreuung eher höher). |
 | Urteil | **Form erfüllt, Größe fehlt**; bei den Warnungen (liquide Werte: verschwunden; netto negativ) eher Größen-Ausschluss als Bestätigung zu erwarten — als informatives Urteil zulässig. Einstellen nur mit den Zahlen der Quelle. |
-| Stand | |
+| Stand | verworfen (Ideen-Agent 14.10.2026): Volltext gelesen — Größe nur als Grafik, Tag 1 = Intraday des Sprungtags (Tag-Form verpasst ihn), eigene Strategie der Autoren −0,2 % (D1, t −0,71); siehe ideen-verworfen.md |
 
 ## 4. Sprung-Fortsetzung über 1–3 Monate
 
@@ -88,7 +88,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | Signalzahl | wie Nr. 3: ≈ 15.000–30.000 (Annahme, zu zählen). |
 | MDE80 | bei N = 20.000: H20 **1,0 Pp** · H40 1,46 · H60 1,8 Pp (Faustregel). Kriterium erfüllt, wenn die Long-Seite ≥ 0,5 Pp je 20 Tage trägt. |
 | Urteil | **Form erfüllt, Größe fehlt** — mit Volltext voraussichtlich einstellbar (Monatshorizont, viele Ereignisse). |
-| Stand | |
+| Stand | verworfen (Ideen-Agent 14.10.2026): Quelle ist Dezilsortierung (Korb); Nachbau Bahcivan et al. 2023 (Table 7): D10 +0,4 %/Monat FF4, t 1,49 — nicht signifikant, unter MDE80; siehe ideen-verworfen.md |
 
 ## 5. Dividendenmonat-Prämie (Vorlauf zum Ex-Tag)
 
@@ -149,7 +149,7 @@ Tagesreihe bleibt) oder eine Korb-Form, die ihn trägt. Das betrifft auch die be
 | Signalzahl | ≈ 8 × 4 × 7 ≈ 220 Wochen in der Entdeckung, **ein Cluster je Woche** — die Faustregel (je Trade) gilt hier nicht; se aus der SPY-Wochenstreuung (`markt(j)`) vor dem Einstellen aus der Tafel ziehen. |
 | MDE80 | nicht nach der Faustregel schätzbar; mit 220 Clustern grob in der Größenordnung einer Wochen-Marktstreuung geteilt durch √220 (Zahl erst aus der Tafel). |
 | Urteil | **Form fehlt (Topf) und Zahl der Quelle fehlt.** |
-| Stand | |
+| Stand | eingestellt als `fomc-gerade-wochen-long` (Ideen-Agent 18.10.2026): Volltext Arbeitspapier 2015 gelesen — Wochen 0/2/4/6 = Tage −1…3, 9…13, 19…23, 29…33, +0,57/+0,30/+0,42/+0,61 % gegen ungerade −0,12…−0,17 % (Tab. 1: +13,6 bzw. +10 Bp/Tag); H5, Klassen 1–3, Bewertung `zeit`, Versatz 5; 171 Signaltage, MDE80 ≈ 0,47–0,67 gegen ≈ 0,55 Pp; ohne Woche 0 nicht auflösbar |
 
 ## 9. Übernacht-Fortsetzung gegen Tag-Umkehr
 
