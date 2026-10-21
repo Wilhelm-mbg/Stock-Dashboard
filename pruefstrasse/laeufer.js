@@ -243,7 +243,7 @@ function zeileMinute(k) {
     (k.pruefung ? ' | ' + de(k.pruefung.nettoJeSignalPp) + ' / ' + de(k.pruefung.t, 2) + (k.belegt ? ' Holm ja' : '') : '') + ' |';
 }
 var KOPF = {
-  tag: '| Konf | Richtung, H | Ent Tage | Trades | u brutto | u netto | t | se HH | MDE80 | Tor 1 | Placebo | verschoben 20 T | Einstieg +1 T | Δ alle−lebend | Abgaenge | Urteil | Pruefung Tage / netto / t |',
+  tag: '| Konf | Richtung, H | Ent Tage | Trades | u brutto | u netto | t | se HH | MDE80 | Tor 1 | Placebo | verschoben 20 T | Ein-/Ausstieg +1 T | Δ alle−lebend | Abgaenge | Urteil | Pruefung Tage / netto / t |',
   korb: '| Konf | Fenster | Buch / SPY | Abstand p. a. | Median 63 | vorn | Rang gegen 200 Zufallsbuecher | Rueckschlag | Reihenenden | Urteil | Pruefung Median / Rang |',
   minute: '| Konf | Signale | brutto je Signal | Huerde | netto je Signal | t | MDE | delta80 | Maschine | Urteil | Pruefung netto / t |',
 };
@@ -259,7 +259,7 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung
   o.push('');
   o.push('Siegel 1 (Kandidatenordner) `' + (siegel1 ? siegel1.commit.slice(0, 12) : '–') + '`' + (siegel2 ? ', Siegel 2 (KANDIDATEN.json) `' + siegel2.commit.slice(0, 12) + '`' : ', kein Siegel 2 (keine Pruefung)') +
     '. Entdeckung bis ' + (E.schnitt ? 'vor ' + E.schnitt : K.ENTDECKUNG_BIS) + ', Pruefung ab ' + (E.form === 'minute' ? K.MINUTE.sperreAb : K.SPERRE_AB) + ' nur fuer Kandidaten. Kriterien: netto > 0, t ≥ ' + K.KANDIDAT_T +
-    ' (Kandidaten-Kriterium), Tor 1 (Entdeckung ≥ ' + K.TOR1_FAKTOR + ' × projizierte Bestaetigungs-MDE), kein Placebo-Verstoss (|Placebo| > ' + K.PLACEBO_T + ' se und > ¼ Huerde); MDE80 = ' + K.MDE_FAKTOR + ' × se ist die Aufloesung, kein Kriterium.');
+    ' (Kandidaten-Kriterium), Tor 1 (Entdeckung ≥ ' + K.TOR1_FAKTOR + ' × projizierte Bestaetigungs-MDE' + (kand.form === 'tag' ? ', gesperrt = netto ≥ 11,31 × se' : '') + '), kein Placebo-Verstoss (|Placebo| > ' + K.PLACEBO_T + ' se und > ¼ Huerde); das verschobene Signal mit derselben Schranke zweiseitig (sonst Messgeraet-Fehler); MDE80 = ' + K.MDE_FAKTOR + ' × se ist die Aufloesung, kein Kriterium.');
   o.push('');
   o.push('## Konfigurationen');
   o.push('');
@@ -268,7 +268,7 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung
   konf.forEach(function (k) { o.push(kand.form === 'tag' ? zeileTag(k) : kand.form === 'korb' ? zeileKorb(k) : zeileMinute(k)); });
   o.push('');
   var zeit = kand.form === 'tag' && E.bewertung === 'zeit';
-  o.push('Alle Groessen in Pp' + (kand.form === 'korb' ? ' p. a. bzw. $' : ' je Trade/Signal (Tagesmittel), se Hansen-Hodrick') + '. ' + (kand.form === 'tag' ? 'Gegenproben: ' + (zeit ? 'Placebo "anderer Wert gleicher Klasse am selben Tag" entfaellt im Modus zeit (traefe dieselbe Zelle); Placebo ist hier das verschobene Signal' : 'Placebo = anderer Wert gleicher Klasse am selben Tag, gleiche Richtung') + '; verschoben = dasselbe Signal ' + versatz + ' Handelstage spaeter (wirkt es, ist das Messgeraet verdaechtig); Einstieg +1 T bei festem Ausstieg; Δ alle−lebend = Ueberlebensprobe; Abgaenge getrennt (uebernahme / insolvenz / sonstige).' : kand.form === 'korb' ? 'Placebo = 200 Zufallsbuecher derselben Zielzahl aus denselben zulaessigen Werten (Nr. 100); Startphasen = 63 Starttage; Reihenenden getrennt nach Grund. Die Gegenproben "Signal verschoben" und "alle gegen lebend" sind fuer diese Form nicht abbildbar (die Zielfunktion lehnt veraltete Kurse ab; Reihenenden buchen nach der Hauptregel).' : 'Zahlen der Messmaschine (Bestaetigungshaelfte ihres Schnitts B5); Placebo und Kontrolle A7 der Maschine im Protokoll.'));
+  o.push('Alle Groessen in Pp' + (kand.form === 'korb' ? ' p. a. bzw. $' : ' je Trade/Signal (Tagesmittel), se Hansen-Hodrick') + '. ' + (kand.form === 'tag' ? 'Gegenproben: ' + (zeit ? 'Placebo "anderer Wert gleicher Klasse am selben Tag" entfaellt im Modus zeit (traefe dieselbe Zelle); Placebo ist hier das verschobene Signal' : 'Placebo = anderer Wert gleicher Klasse am selben Tag, gleiche Richtung') + '; verschoben = dasselbe Signal ' + versatz + ' Handelstage spaeter (zeigt es einen Ausschlag in eine der beiden Richtungen, ist das Messgeraet verdaechtig; Fenster mit Ueberschneidung eines Signalfensters der Reihe gezaehlt, nicht gewertet); Ein-/Ausstieg +1 T = Einstieg und Ausstieg einen Handelstag spaeter (gleiche Haltedauer); Δ alle−lebend = Ueberlebensprobe; Abgaenge getrennt (uebernahme / insolvenz / sonstige / zensiert = Reihe endet nur an der Sperre).' : kand.form === 'korb' ? 'Placebo = ' + (E.placeboBuecher || 200) + ' Zufallsbuecher derselben Zielzahl aus denselben zulaessigen Werten (Nr. 100; B = max(200, 20 m + 1), m = ' + (E.registerM != null ? E.registerM : '–') + ', p-Boden ' + (E.pBoden != null ? E.pBoden.toFixed(4).replace('.', ',') : '–') + '); Startphasen = 63 Starttage; Reihenenden getrennt nach Grund. Die Gegenproben "Signal verschoben" und "alle gegen lebend" sind fuer diese Form nicht abbildbar (die Zielfunktion lehnt veraltete Kurse ab; Reihenenden buchen nach der Hauptregel).' : 'Zahlen der Messmaschine (Bestaetigungshaelfte ihres Schnitts B5); Placebo und Kontrolle A7 der Maschine im Protokoll.'));
   if (kand.form === 'tag') {
     /* Nr. 118: Bewertungsmodus, Signaltage als Cluster, Anteil der Reihen mit Signal am Signaltag, Versatz der Verschiebung, Warnungen des Adapters */
     var SA = E.signalAnteil, pz = function (x) { return x == null ? '–' : (100 * x).toFixed(0) + ' %'; }, jeTag = function (x) { return x == null ? '–' : x.toFixed(1).replace('.', ','); };
@@ -278,6 +278,7 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung
     o.push('Signaltage und Trades (Entdeckung): ' + konf.map(function (k) { var e = k.entdeckung; return k.key + ' ' + e.nTage + ' Signaltage / ' + ganz(e.nTr) + ' Trades (' + jeTag(e.tradesJeTag) + ' je Signaltag)' + (zeit && k.versatz && k.versatz.ueberlappung && k.versatz.ueberlappung.anteil != null ? ', verschobene Fenster mit Ueberschneidung eines Signalfensters ' + pz(k.versatz.ueberlappung.anteil) : ''); }).join('; ') +
       '. Die Aufloesung (se Hansen-Hodrick ueber die Tagesreihe, Lag = Haltedauer) haengt an der Zahl der Signaltage, nicht an der Zahl der Trades' + (zeit ? ' - bei einer marktweiten Regel ist jeder Signaltag ein Cluster, die effektive Zahl ist die Zahl der Ereignisfenster' : '') + '.');
     (E.warnungen || []).forEach(function (w) { o.push('**WARNUNG:** ' + w); });
+    messgeraetDetails(kand, E).forEach(function (z) { o.push(z); });
   }
   o.push('');
   o.push('## Zaehler und Quelle');
@@ -285,6 +286,30 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung
   o.push('`' + JSON.stringify(E.zaehler || {}) + '`' + (E.verstoesse != null ? ' — Verstoesse gegen „kein Blick nach vorn": ' + E.verstoesse : '') + (E.ms ? ' — Laufzeit ' + JSON.stringify(E.ms) : ''));
   o.push('Quelle: ' + E.quelle + (E.reihen ? ', ' + E.reihen + ' Reihen, letzter Tag ' + E.letzterTag : '') + (E.korb ? ', Korb ' + E.korb : '') + '. Alles Simulation mit virtuellem Kapital, keine Anlageberatung.');
   return o.join('\n') + '\n';
+}
+/** Nr. 121-1 (Auftrag Teil E): Zahlen des Messgeraets je Konfiguration, alle als Text neben der Tabelle (Tag-Form). */
+function messgeraetDetails(kand, E) {
+  var o = [''], konf = E.konfigurationen, Z = E.zaehler || {}, pz = function (x) { return x == null || x !== x ? '–' : (100 * x).toFixed(1).replace('.', ',') + ' %'; };
+  o.push('## Messgeraet (Nr. 121-1)');
+  o.push('');
+  konf.forEach(function (k) {
+    var e = k.entdeckung, se = e.uNetto.se, v = k.versatz || {}, ub = v.ueberlappung || {}, eo = e.uNettoEroeffnung;
+    var z = '- **' + k.key + '.** Tor 1 verlangt netto ≥ ' + de(k.tor1FaktorSe, 2) + ' × se = ' + de(k.tor1Schwelle, 2) + ' Pp; MDE80 = ' + K.MDE_FAKTOR.toFixed(2).replace('.', ',') + ' × se = ' + de(k.mde80, 2) + ' Pp (se ' + de(se) + ').' +
+      ' Netto mit Eroeffnungshuerde (nachrichtlich, Huerde × 2,68 / 2,46 / 2,07 / 1,81 je Klasse, Minutenstudie; Urteil auf der Kassa-Huerde): ' + de(eo && eo.mittel) + ' (t ' + de(eo && eo.t, 2) + ', Huerde je Trade ' + de(e.kKandEroeffnung) + ' statt ' + de(e.kKand) + ').' +
+      ' Verschoben: brutto ' + de(v.uBrutto && v.uBrutto.mittel) + ' (t ' + de(v.uBrutto && v.uBrutto.t, 2) + '), Schranke zweiseitig ' + K.PLACEBO_T + ' se und ' + de(v.schranke && v.schranke.mindestPp) + ' Pp' + (v.verstoss ? ' — **VERSTOSS**' : '') + '; Ueberschneidung mit einem Signalfenster ' + ganz(ub.n) + ' von ' + ganz(ub.von) + ' (' + pz(ub.anteil) + '), nicht gewertet.' +
+      ' Abgaenge: ' + (e.abgaenge || []).map(function (a) { return a.gruppe + ' ' + a.n; }).join(', ') + ' (zensiert = Reihe endet nur an der Sperre, kein Abgang).';
+    var zt = k.zeitTopf;
+    if (zt && zt.art === 'lokal') z += ' **Lokaler Topf:** R = ' + zt.R + ' Handelstage, HH-Lag ' + zt.hhLag + ', Topf-n je Trade Median ' + zt.topfN.median + ', Min ' + zt.topfN.min + ' (mindestens ' + zt.nMin + '), topfFehlt ' + ganz(zt.topfFehlt) + ', Topf-Mittel ' + de(zt.topfMittel) + '; nachrichtlich (kein Urteil): gegen den globalen Topf ohne Ausschluss netto ' + de(zt.global.uNetto.mittel) + ' (t ' + de(zt.global.uNetto.t, 2) + '), R = 2 H netto ' + de(zt.sensitivitaet.R2H.uNetto.mittel) + ' (t ' + de(zt.sensitivitaet.R2H.uNetto.t, 2) + '), R = 8 H netto ' + de(zt.sensitivitaet.R8H.uNetto.mittel) + ' (t ' + de(zt.sensitivitaet.R8H.uNetto.t, 2) + '); Zufallsplan-Rang: ' + zt.zufallsplanRang + '. Topf-Starttage relativ zum Signal (Abstand:Anzahl): ' + (zt.histogramm || []).map(function (h) { return h[0] + ':' + h[1]; }).join(' ') + '.';
+    if (k.pruefung) z += ' Pruefung: n_eff ' + de(k.pruefung.nEff, 1) + ', df ' + de(k.pruefung.df, 1) + ', p einseitig (t-Verteilung) ' + de(k.pruefung.pEinseitig) + ' (Phi: ' + de(k.pruefung.pEinseitigNormal) + ').';
+    o.push(z);
+  });
+  var zeilen = (Z.ohneKlasse || 0) + (Z.zeilenJeKlasse || []).reduce(function (s, x) { return s + x; }, 0);
+  if (zeilen > 0 && Z.zeilenJeKlasse) {
+    var uni = konf.map(function (k) { var kl = k.klassen || [0, 1, 2, 3], n = 0; kl.forEach(function (c) { n += Z.zeilenJeKlasse[c] || 0; }); return k.key + ' ' + pz(n / zeilen); }).join(', ');
+    o.push('- **Ohne Klasse:** ' + pz(Z.ohneKlasse / zeilen) + ' der Zeilen, ' + ganz(Z.reihenOhneKlasse) + ' von ' + ganz(Z.reihen) + ' Reihen nie mit Klasse — Median-Dollarumsatz unter 5 Mio $ (dort gibt es keine Kassa-Huerde) oder Anlaufzeit (die Klasse braucht 40 von 60 Vortagen); Universum mit den Klassen der Konfiguration: ' + uni + ' der Zeilen.');
+  }
+  if (Z.cooldown != null) o.push('- **Cooldown** (' + K.COOLDOWN_TAGE + ' Handelstage je Richtung, vor dem Klassenfilter wie in der Referenz): ' + ganz(Z.cooldown) + ' Signale gesperrt, davon ' + ganz(Z.cooldownDurchOhneKlasse) + ' durch ein nicht gebuchtes Signal (Klasse ohne Konfiguration).');
+  return o;
 }
 /** ", Bewertung topf|zeit" fuer Kurzfassung, Belegstand-Zeile und Log (Tag-Form, Nr. 118); andere Formen leer. */
 function modusText(kand, E) { return kand.form === 'tag' ? ', Bewertung ' + ((E && E.bewertung) || kand.bewertung || 'topf') : ''; }
@@ -294,7 +319,8 @@ function belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2, nachmessung) {
   function bNetto(k) { var e = k.entdeckung; return e.uNetto ? e.uNetto.mittel : e.buch ? e.buch.startphasen.median : e.nettoJeSignalPp; }
   function bT(k) { var e = k.entdeckung; return e.uNetto ? e.uNetto.t : e.buch ? null : e.t; }
   return '- ' + datumDe(E.stand) + ' — ' + vorsatz + '**' + kand.titel + '** (`' + kand.kennung + '`, Form ' + kand.form + modusText(kand, E) + ', ' + konf.length + ' Konfigurationen): **' + U.urteil + '** — ' + U.grund + '. ' +
-    'Beste Entdeckungszeile ' + beste.key + ': netto ' + de(bNetto(beste), kand.form === 'korb' ? 2 : 4) + (bT(beste) != null ? ' (t ' + de(bT(beste), 2) + ')' : '') + ', MDE80 ' + de(beste.mde80) + '. ' +
+    'Beste Entdeckungszeile ' + beste.key + ': netto ' + de(bNetto(beste), kand.form === 'korb' ? 2 : 4) + (bT(beste) != null ? ' (t ' + de(bT(beste), 2) + ')' : '') +
+    (beste.tor1FaktorSe != null ? '; Tor 1 verlangt netto ≥ ' + de(beste.tor1FaktorSe, 2) + ' × se = ' + de(beste.tor1Schwelle, 2) + ' Pp; MDE80 = ' + K.MDE_FAKTOR.toFixed(2).replace('.', ',') + ' × se = ' + de(beste.mde80, 2) + ' Pp' : ', MDE80 ' + de(beste.mde80)) + '. ' +
     'Register: ' + Rg.gesamt + ' Konfigurationen bisher, ' + zufallText(Rg) + ' Zufallstreffer erwartet. Ordner `pruefstrasse/erledigt/' + kand.kennung + '/`, Siegel 1 `' + siegel1.commit.slice(0, 7) + '`' + (siegel2 ? ', Siegel 2 `' + siegel2.commit.slice(0, 7) + '`' : '') + '. Quelle ' + E.quelle + '.';
 }
 
