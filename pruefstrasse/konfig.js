@@ -58,5 +58,8 @@ module.exports = {
    * Radius in Vielfachen der Haltedauer H (kandidat.json topfRadius in Handelstagen, Bereich min H .. max H, Vorgabe vorgabe H) */
   TOPF_N_MIN: 2, TOPF_RADIUS: { min: 2, max: 12, vorgabe: 4 },
   KORB: { kostenBp: 20, phasen: 63, kleinstAnteil: 0.05, placeboBuecher: 200, rangMin: 0.95 },
+  /* A10 / B-V10 (Nr. 121-1): Zufallsbuecher B = max(200, 20 m + 1), m = Konfigurationen im Register + 1 (Register-Holm: kleinster p = 1/(B + 1)
+   * <= alpha/m). Bei m <= 9 bleibt B = 200 (die Korb-Kalibrierung A-187/B-187 rechnet ohne Zufallsbuecher und ist davon unberuehrt). */
+  korbBuecher: function (m) { return Math.max(200, 20 * m + 1); },
   FORMEN: ['tag', 'korb', 'minute'],
 };

@@ -90,7 +90,8 @@ function lauf(regel, kand, opt) {
   var ziel = function (roh, o) { return regel.zielfunktion(roh, Object.assign({}, o, konf.anzahl ? { anzahl: konf.anzahl } : {})); };
   var fensterE = fenster(T, Q, (opt.entdeckung && opt.entdeckung.von) || '2017-01-04', (opt.entdeckung && opt.entdeckung.bis) || K.ENTDECKUNG_BIS);
   var aus = { quelle: 'panel', kennungTafel: T.stand.kennung, gesperrt: T.gesperrt, siegel: T.siegel, letzterTag: String(T.kal.tage[T.maxTag]), korb: korb,
-    kostenBp: K.KORB.kostenBp, kleinstAnteil: K.KORB.kleinstAnteil, phasen: K.KORB.phasen, massnahmen: { ordner: K.MASSNAHMEN.ordner, ergaenzt: V.protokoll.ergaenzt }, konfigurationen: [] };
+    kostenBp: K.KORB.kostenBp, kleinstAnteil: K.KORB.kleinstAnteil, phasen: K.KORB.phasen, massnahmen: { ordner: K.MASSNAHMEN.ordner, ergaenzt: V.protokoll.ergaenzt }, konfigurationen: [],
+    placeboBuecher: nB, pBoden: 1 / (nB + 1), registerM: opt.registerM == null ? null : opt.registerM };     /* A10 (Nr. 121-1): B und p-Boden im Protokoll */
   function messeFenster(F, art) {
     var buch = rueckblick(V, F, ziel, korb, art);
     buch.abgaenge = abgaenge(V, F, ziel, korb, art);

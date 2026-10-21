@@ -3,6 +3,8 @@
  *   node pruefstrasse/laeufer.js --pruefen <kennung>              Form, test.js, Siegel 1 moeglich?  (Rueckgabe 0 = gueltig)
  *   node pruefstrasse/laeufer.js --kandidat <kennung> [--trocken]  ein Kandidat durch die Strasse (--trocken: nur Zaehlungen)
  *   node pruefstrasse/laeufer.js --naechster [--trocken]           der aelteste gueltige Kandidat der Warteschlange
+ *   node pruefstrasse/laeufer.js --nachmessen <kennung> --grund "<Text>" --korrektur <commit>   NUR PM (Nr. 121-1): ein Urteil nach einer
+ *        belegten Korrektur des Messgeraets ersetzen - alte Ausgabe nach erledigt/<kennung>/v<n>-<datum>/, Lauf wie --kandidat, Register ersetzt
  *   node pruefstrasse/laeufer.js --messen <kennung> --phase entdeckung|pruefung --aus <datei>   (intern: ein Adapterlauf im Kindprozess)
  * Ablauf je Kandidat, jeder Schritt mit Zeile in erledigt/<kennung>/LAUF.log: Siegel 1 - Entdeckung (alle Konfigurationen, bis
  * ENTDECKUNG_BIS) - Gegenproben - Kandidatenliste KANDIDATEN.json committet (Siegel 2) - Pruefung ab SPERRE_AB nur fuer Kandidaten
@@ -125,9 +127,9 @@ function naechster() {
 function register() { return fs.existsSync(K.REGISTER) ? liesJson(K.REGISTER) : { kennung: 'pruefstrasse/register/v1', konfigurationen: [], gesamt: 0, zufallErwartet: 0 }; }
 /* Zahl fuer den Bericht - ein leeres Register (erster Lauf, Trockenlauf) hat noch keine Erwartung (PM 11.10.: Trockenlauf stuerzte an .toFixed). */
 function zufallText(Rg) { return typeof Rg.zufallErwartet === 'number' ? Rg.zufallErwartet.toFixed(1) : '–'; }
-function registerEintragen(Rg, kennung, form, konf, datum, bewertung) {
-  Rg.konfigurationen = Rg.konfigurationen.filter(function (e) { return e.kennung !== kennung; });
-  konf.forEach(function (k) { var e = { kennung: kennung, form: form, key: k.key, urteil: k.urteil, datum: datum }; if (bewertung) e.bewertung = bewertung; Rg.konfigurationen.push(e); });
+function registerEintragen(Rg, kennung, form, konf, datum, bewertung, zusatz) {
+  Rg.konfigurationen = Rg.konfigurationen.filter(function (e) { return e.kennung !== kennung; });   /* ersetzt, nie doppelt (auch bei Nachmessung) */
+  konf.forEach(function (k) { var e = { kennung: kennung, form: form, key: k.key, urteil: k.urteil, datum: datum }; if (bewertung) e.bewertung = bewertung; if (zusatz) Object.keys(zusatz).forEach(function (f) { e[f] = zusatz[f]; }); Rg.konfigurationen.push(e); });
   Rg.gesamt = Rg.konfigurationen.length; Rg.zufallErwartet = Rg.gesamt * K.ZUFALL_JE_KONFIGURATION; Rg.stand = datum;
   return Rg;
 }
@@ -162,7 +164,7 @@ function messen(kennung, phase, ausDatei, extra) {
   var E;
   try {
     if (kand.form === 'tag') E = require('./adapter/tag.js').lauf(regel, kand, { quelle: kand.daten || 'panel', pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: keys, tafel: extra && extra.tafel });
-    else if (kand.form === 'korb') E = require('./adapter/korb.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: pruefzeit ? { von: '2023-01-03' } : null });
+    else if (kand.form === 'korb') { var mK = (register().gesamt || 0) + 1; E = require('./adapter/korb.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: pruefzeit ? { von: '2023-01-03' } : null, placeboBuecher: K.korbBuecher(mK), registerM: mK }); }
     else E = require('./adapter/minute.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad });
   } finally { try { if (+fs.readFileSync(SPERRDATEI, 'utf8') === process.pid) fs.unlinkSync(SPERRDATEI); } catch (e) { /* Sperre ist Komfort */ } }
   E.kennung = kennung; E.form = kand.form; E.phase = phase; E.stand = jetzt(); E.konfigurationenSoll = kand.konfigurationen.length;
@@ -178,6 +180,13 @@ function messenImKind(kennung, phase, ausDatei, log) {
 }
 
 /* ---------- Urteil (FORM §5) ---------- */
+/** A15 (Nr. 121-1): obere 95-%-Grenze netto der Pruefung - tag: uNetto.obere; minute: netto + 1,96 |netto / t|; korb: keine (null, nie "nein" aus der Pruefung). */
+function obereGrenze(pr) {
+  if (!pr) return null;
+  if (pr.uNetto) return pr.uNetto.obere != null ? pr.uNetto.obere : null;
+  if (pr.nettoJeSignalPp != null && pr.t) return pr.nettoJeSignalPp + 1.96 * Math.abs(pr.nettoJeSignalPp / pr.t);
+  return null;
+}
 function urteile(E, P, Rg) {
   var konf = E.konfigurationen, fehler = [];
   if (E.verstoesse > 0) fehler.push('Blick nach vorn: ' + E.verstoesse + ' Verstoesse (' + (E.beispiele || []).slice(0, 3).join(', ') + ')');
@@ -202,11 +211,12 @@ function urteile(E, P, Rg) {
       z.holm = H1.bestanden[i]; z.holmSchwelle = H1.schwelle[i]; z.holmRegister = H2.bestanden[i]; z.belegt = z.holm && pr.gleicheRichtung !== false && netto > 0;
       z.netto = netto;
       var k = konf.filter(function (x) { return x.key === z.key; })[0]; k.pruefung = pr; k.holm = z.holm; k.holmSchwelle = z.holmSchwelle; k.holmRegister = z.holmRegister; k.belegt = z.belegt;
-      k.urteil = z.belegt ? 'belegt-Vorschlag' : (netto != null && netto <= 0 && (pr.uNetto ? pr.uNetto.t <= -K.KANDIDAT_T : true)) ? 'nein' : 'nicht entscheidbar';
+      var ob = obereGrenze(pr); k.obereGrenzePruefung = ob;
+      k.urteil = z.belegt ? 'belegt-Vorschlag' : (ob != null && ob < 0) ? 'nein' : 'nicht entscheidbar';
     });
     var belegt = zeilen.filter(function (z) { return z.belegt; });
     if (belegt.length) { urteil = 'belegt-Vorschlag'; grund = belegt.map(function (z) { return z.key; }).join(', ') + ' bestehen Holm ueber ' + konf.length + ' Konfigurationen (einseitig 5 %), gleiche Richtung, netto > 0' + (belegt.every(function (z) { return z.holmRegister; }) ? '; auch Holm ueber das Register (' + Rg.gesamt + ')' : '; NICHT Holm ueber das Register (' + Rg.gesamt + ')'); }
-    else if (zeilen.every(function (z) { return z.netto != null && z.netto <= 0; })) { urteil = 'nein'; grund = 'alle ' + zeilen.length + ' Kandidaten in der Pruefung netto <= 0'; }
+    else if (konf.every(function (k) { return k.urteil === 'nein'; })) { urteil = 'nein'; grund = 'jede Konfiguration in der behaupteten Richtung ausgeschlossen (obere 95-%-Grenze netto < 0, Entdeckung bzw. Pruefung)'; }
     else { urteil = 'nicht entscheidbar'; grund = 'Pruefung ohne Holm-Treffer (p ' + zeilen.map(function (z) { return z.key + ' ' + z.p.toFixed(3); }).join(', ') + ')'; }
   } else if (konf.every(function (k) { return k.urteil === 'nein'; })) { urteil = 'nein'; grund = 'jede Konfiguration in der behaupteten Richtung ausgeschlossen (obere 95-%-Grenze netto < 0)'; }
   else { urteil = 'nicht entscheidbar'; grund = 'kein Kandidat (' + konf.filter(function (k) { return k.urteil === 'nein'; }).length + ' von ' + konf.length + ' ausgeschlossen, Rest unter der Aufloesung)'; }
@@ -237,10 +247,11 @@ var KOPF = {
   korb: '| Konf | Fenster | Buch / SPY | Abstand p. a. | Median 63 | vorn | Rang gegen 200 Zufallsbuecher | Rueckschlag | Reihenenden | Urteil | Pruefung Median / Rang |',
   minute: '| Konf | Signale | brutto je Signal | Huerde | netto je Signal | t | MDE | delta80 | Maschine | Urteil | Pruefung netto / t |',
 };
-function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken) {
+function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung) {
   var konf = E.konfigurationen, o = [];
   o.push('# ' + kand.titel + ' — ' + (trocken ? 'TROCKENLAUF (nur Zaehlungen)' : '**' + U.urteil + '**'));
   o.push('');
+  if (nachmessung) { o.push(nachmessungAbsatz(nachmessung, E)); o.push(''); }
   o.push('**Kurzfassung.** Kandidat `' + kand.kennung + '` (Form ' + kand.form + modusText(kand, E) + ', ' + konf.length + ' Konfigurationen, vorab festgelegt), gemessen ' + datumDe(E.stand) + ' auf ' + E.quelle + ' (' + (E.kennungTafel || E.archiv || '') + ').' +
     (trocken ? ' Trockenlauf: keine Urteile.' : ' **Urteil: ' + U.urteil + '** — ' + U.grund + '. Kandidaten nach der Entdeckung: ' + U.kandidaten + '.') +
     ' Register: ' + Rg.gesamt + ' Konfigurationen bisher insgesamt geprueft, ' + zufallText(Rg) + ' Zufallstreffer (t ≥ 2) zu erwarten.' +
@@ -277,11 +288,12 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken) {
 }
 /** ", Bewertung topf|zeit" fuer Kurzfassung, Belegstand-Zeile und Log (Tag-Form, Nr. 118); andere Formen leer. */
 function modusText(kand, E) { return kand.form === 'tag' ? ', Bewertung ' + ((E && E.bewertung) || kand.bewertung || 'topf') : ''; }
-function belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2) {
+function belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2, nachmessung) {
+  var vorsatz = nachmessung ? '**Nachmessung ' + nachmessung.n + '** (ersetzt den Absatz vom ' + datumDe(nachmessung.alt.stand) + ', Grund: ' + nachmessung.grund + ', Korrektur `' + nachmessung.korrektur.slice(0, 7) + '`' + (nachmessung.blickePruefzeit > 0 ? '; ' + (nachmessung.blickePruefzeit + 1) + '. Blick auf die Pruefzeit' : '') + ') ' : '';
   var konf = E.konfigurationen, beste = konf.slice().sort(function (a, b) { return (bNetto(b) || -1e9) - (bNetto(a) || -1e9); })[0];
   function bNetto(k) { var e = k.entdeckung; return e.uNetto ? e.uNetto.mittel : e.buch ? e.buch.startphasen.median : e.nettoJeSignalPp; }
   function bT(k) { var e = k.entdeckung; return e.uNetto ? e.uNetto.t : e.buch ? null : e.t; }
-  return '- ' + datumDe(E.stand) + ' — **' + kand.titel + '** (`' + kand.kennung + '`, Form ' + kand.form + modusText(kand, E) + ', ' + konf.length + ' Konfigurationen): **' + U.urteil + '** — ' + U.grund + '. ' +
+  return '- ' + datumDe(E.stand) + ' — ' + vorsatz + '**' + kand.titel + '** (`' + kand.kennung + '`, Form ' + kand.form + modusText(kand, E) + ', ' + konf.length + ' Konfigurationen): **' + U.urteil + '** — ' + U.grund + '. ' +
     'Beste Entdeckungszeile ' + beste.key + ': netto ' + de(bNetto(beste), kand.form === 'korb' ? 2 : 4) + (bT(beste) != null ? ' (t ' + de(bT(beste), 2) + ')' : '') + ', MDE80 ' + de(beste.mde80) + '. ' +
     'Register: ' + Rg.gesamt + ' Konfigurationen bisher, ' + zufallText(Rg) + ' Zufallstreffer erwartet. Ordner `pruefstrasse/erledigt/' + kand.kennung + '/`, Siegel 1 `' + siegel1.commit.slice(0, 7) + '`' + (siegel2 ? ', Siegel 2 `' + siegel2.commit.slice(0, 7) + '`' : '') + '. Quelle ' + E.quelle + '.';
 }
@@ -341,15 +353,17 @@ function laufe(kennung, opt) {
     P = messenImKind(kennung, 'pruefung', path.join(aus, 'ergebnis-pruefung.json'), log);
     log('Pruefung fertig' + (P.verstoesse != null ? ', Verstoesse ' + P.verstoesse : ''));
   } else log(kandidaten.length ? 'Keine Pruefung: Messgeraet-Fehler' : 'Keine Pruefung: kein Kandidat');
-  var U = urteile(E, P, registerEintragen(JSON.parse(JSON.stringify(Rg)), kennung, kand.form, E.konfigurationen, E.stand, E.bewertung));
+  var NM = opt.nachmessung || null, zusatz = NM ? { nachmessung: NM.n, ersetzt: NM.alt.stand } : null;
+  var U = urteile(E, P, registerEintragen(JSON.parse(JSON.stringify(Rg)), kennung, kand.form, E.konfigurationen, E.stand, E.bewertung, zusatz));
+  if (NM && U.urteil === 'belegt-Vorschlag') U.grund += ' - nach Nachmessung: zweiter unabhaengiger Lauf durch den PM Pflicht';
   log('URTEIL: ' + U.urteil + ' - ' + U.grund);
-  Rg = registerEintragen(Rg, kennung, kand.form, E.konfigurationen, E.stand, E.bewertung); schreibeJson(K.REGISTER, Rg);
+  Rg = registerEintragen(Rg, kennung, kand.form, E.konfigurationen, E.stand, E.bewertung, zusatz); schreibeJson(K.REGISTER, Rg);
   log('Register: ' + Rg.gesamt + ' Konfigurationen insgesamt, ' + Rg.zufallErwartet.toFixed(2) + ' Zufallstreffer erwartet');
   var ergebnis = { kennung: kennung, form: kand.form, titel: kand.titel, stand: E.stand, urteil: U.urteil, grund: U.grund, kandidaten: U.kandidaten, messgeraetFehler: U.fehler,
-    siegel1: siegel1, siegel2: siegel2, register: { gesamt: Rg.gesamt, zufallErwartet: Rg.zufallErwartet }, entdeckung: E, pruefung: P };
+    siegel1: siegel1, siegel2: siegel2, register: { gesamt: Rg.gesamt, zufallErwartet: Rg.zufallErwartet }, entdeckung: E, pruefung: P, nachmessung: NM };
   schreibeJson(path.join(aus, 'ergebnis.json'), ergebnis);
-  fs.writeFileSync(path.join(aus, 'ERGEBNIS.md'), ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, false));
-  var absatz = belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2);
+  fs.writeFileSync(path.join(aus, 'ERGEBNIS.md'), ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, false, NM));
+  var absatz = belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2, NM);
   fs.writeFileSync(path.join(aus, 'belegstand-eintrag.md'), absatz + '\n');
   /* Belegstand: nur anhaengen unter der festen Ueberschrift, der Kopf bleibt unberuehrt */
   var bs = path.join(K.REPO, 'wiki', 'belegstand.md'), text = fs.readFileSync(bs, 'utf8'), ueber = '## Prüfstraße (automatisch gemessen)';
@@ -357,22 +371,81 @@ function laufe(kennung, opt) {
   text = text.replace(/\s*$/, '\n' + absatz + '\n');
   fs.writeFileSync(bs, text);
   var lg = path.join(K.REPO, 'wiki', 'log.md'), hhmm = new Date().toISOString().slice(11, 16);
-  fs.appendFileSync(lg, '- ' + datumDe(E.stand) + ' (Prüfstraße, ' + hhmm + ' UTC) — **' + kennung + ': ' + U.urteil + '** (' + E.konfigurationen.length + ' Konfigurationen, ' + U.kandidaten + ' Kandidaten; Register ' + Rg.gesamt + '). Ordner `pruefstrasse/erledigt/' + kennung + '/`.\n');
+  fs.appendFileSync(lg, '- ' + datumDe(E.stand) + ' (Prüfstraße, ' + hhmm + ' UTC) — ' + (NM ? 'Nachmessung ' + NM.n + ' ' : '') + '**' + kennung + ': ' + U.urteil + '** (' + E.konfigurationen.length + ' Konfigurationen, ' + U.kandidaten + ' Kandidaten; Register ' + Rg.gesamt + '). Ordner `pruefstrasse/erledigt/' + kennung + '/`.\n');
   var pfade = [relAus + '/ERGEBNIS.md', relAus + '/ergebnis.json', relAus + '/belegstand-eintrag.md', relAus + '/LAUF.log', 'pruefstrasse/register.json', 'wiki/belegstand.md', 'wiki/log.md'];
   if (P) pfade.push(relAus + '/ergebnis-pruefung.json');
+  if (NM) pfade = [relAus].concat(pfade.filter(function (x) { return x.indexOf(relAus + '/') !== 0; }));   /* Nachmessung: der ganze Ordner (Verschiebung nach v<n> und neue Dateien) */
   if (U.urteil === 'belegt-Vorschlag') {
     fs.appendFileSync(K.VORSCHLAEGE, (fs.existsSync(K.VORSCHLAEGE) ? '' : '# Vorschlaege der Pruefstrasse an den PM (zweiter unabhaengiger Lauf ist Menschensache)\n\n') + absatz + '\n');
     pfade.push('pruefstrasse/VORSCHLAEGE.md');
     log('belegt-Vorschlag in pruefstrasse/VORSCHLAEGE.md eingetragen');
   }
   log('ENDE ' + U.urteil + ' - Belegstand und Log angehaengt, Commit folgt');
-  var h3 = commit(pfade, 'Pruefstrasse: ' + kennung + ' - ' + U.urteil + ' (' + E.konfigurationen.length + ' Konfigurationen, ' + U.kandidaten + ' Kandidaten)');
+  var h3 = commit(pfade, 'Pruefstrasse: ' + kennung + ' - ' + (NM ? 'Nachmessung ' + NM.n + ': ' : '') + U.urteil + ' (' + E.konfigurationen.length + ' Konfigurationen, ' + U.kandidaten + ' Kandidaten)');
   console.log(jetzt() + '  Commit ' + h3);
   return { urteil: U.urteil, grund: U.grund, commit: h3, siegel1: siegel1.commit, siegel2: siegel2.commit };
 }
 
+/* ---------- Nachmessung (Nr. 121-1, Auftrag Teil C; nur PM, nie der Nachtlauf) ----------
+ * Die REGEL wird nie nachgemessen, nur das Geraet: Voraussetzung ist ein erledigtes Protokoll, ein unveraenderter Kandidatenordner (gleicher Baum
+ * wie im Commit von ergebnis.json.siegel1) und ein belegter Messgeraet-Fehler mit dem Commit seiner Korrektur (--korrektur, Vorfahr von HEAD).
+ * Die alte Ausgabe wandert nach erledigt/<kennung>/v<n>-<datum der alten Messung>/ (Dateien verschoben, der Abschlusscommit nimmt den ganzen Ordner
+ * - git sieht die Umbenennung); das Register ERSETZT die Zeilen der Kennung (Feld nachmessung, ersetzt); der alte Belegstand-Absatz bleibt
+ * unveraendert stehen (append-only), der neue nennt, wen er ersetzt. ort = { repo, erledigt, warteschlange } nur fuer Tests (Temp-Repo). */
+var NACHMESS_DATEIEN = ['ERGEBNIS.md', 'ergebnis.json', 'ergebnis-entdeckung.json', 'ergebnis-pruefung.json', 'KANDIDATEN.json', 'LAUF.log', 'belegstand-eintrag.md', 'ERGEBNIS-TROCKEN.md', 'TROCKEN.json'];
+function nachmessungPruefen(kennung, grund, korrektur, ort) {
+  ort = ort || {};
+  var repo = ort.repo || K.REPO, erl = path.join(ort.erledigt || K.ERLEDIGT, kennung), ordnerAbs = path.join(ort.warteschlange || K.WARTESCHLANGE, kennung);
+  var ordnerRel = path.relative(repo, ordnerAbs).replace(/\\/g, '/'), fehler = [];
+  if (!/^[a-z0-9-]+$/.test(String(kennung))) fehler.push('Kennung nur [a-z0-9-]');
+  if (!grund || String(grund).trim().length < 20) fehler.push('--grund fehlt oder ist kuerzer als 20 Zeichen (belegter Messgeraet-Fehler)');
+  if (!korrektur || !/^[0-9a-f]{7,40}$/.test(String(korrektur))) fehler.push('--korrektur <commit> fehlt (Commit der Korrektur des Messgeraets)');
+  var altPfad = path.join(erl, 'ergebnis.json');
+  if (!fs.existsSync(altPfad)) fehler.push('kein erledigtes Protokoll: ' + path.relative(repo, altPfad).replace(/\\/g, '/') + ' fehlt');
+  if (fehler.length) throw new Error('NACHMESSUNG abgelehnt: ' + fehler.join('; '));
+  var alt = liesJson(altPfad), korr = SG.aus(SG.git(repo, ['rev-parse', '--verify', '--quiet', korrektur + '^{commit}']));
+  if (!korr) throw new Error('NACHMESSUNG abgelehnt: --korrektur ' + korrektur + ' ist kein Commit');
+  if (SG.git(repo, ['merge-base', '--is-ancestor', korr, 'HEAD']).status !== 0) throw new Error('NACHMESSUNG abgelehnt: Korrektur ' + korr.slice(0, 7) + ' liegt nicht auf dem aktuellen Zweig');
+  if (!alt.siegel1 || !alt.siegel1.commit) throw new Error('NACHMESSUNG abgelehnt: ergebnis.json ohne siegel1');
+  var s1 = SG.siegel1(repo, ordnerRel);                                           /* wirft bei Ungesichertem */
+  var baumAlt = SG.aus(SG.git(repo, ['rev-parse', alt.siegel1.commit + ':' + ordnerRel])), baumNeu = SG.aus(SG.git(repo, ['rev-parse', s1.commit + ':' + ordnerRel]));
+  if (!baumAlt || baumAlt !== baumNeu) throw new Error('NACHMESSUNG abgelehnt: der Kandidatenordner hat sich seit Siegel 1 der Vormessung (' + alt.siegel1.commit.slice(0, 7) + ') veraendert - die Regel wird nie nachgemessen, nur das Geraet');
+  var vorher = fs.readdirSync(erl).filter(function (d) { return /^v\d+-\d{4}-\d{2}-\d{2}$/.test(d) && fs.statSync(path.join(erl, d)).isDirectory(); });
+  var n = vorher.length + 1, ziel = 'v' + n + '-' + String(alt.stand || '').slice(0, 10);
+  var blicke = (alt.pruefung != null ? 1 : 0) + vorher.filter(function (d) { var f = path.join(erl, d, 'ergebnis.json'); return fs.existsSync(f) && liesJson(f).pruefung != null; }).length;
+  var konf = ((alt.entdeckung && alt.entdeckung.konfigurationen) || []).map(function (k) { var e = k.entdeckung || {}; return { key: k.key, netto: e.uNetto ? e.uNetto.mittel : null, t: e.uNetto ? e.uNetto.t : null, urteil: k.urteil }; });
+  return { n: n, grund: String(grund).trim(), korrektur: korr, ziel: ziel, erledigt: erl, blickePruefzeit: blicke,
+    alt: { stand: alt.stand, urteil: alt.urteil, grund: alt.grund, ordner: path.relative(repo, path.join(erl, ziel)).replace(/\\/g, '/'), konf: konf, pruefungGelesen: alt.pruefung != null, siegel1: alt.siegel1.commit } };
+}
+/** Alte Ausgabe nach erledigt/<kennung>/<ziel>/ verschieben (nur die bekannten Ausgabedateien; ergebnis.json zuletzt geprueft). */
+function nachmessungVerschieben(NM) {
+  var zielAbs = path.join(NM.erledigt, NM.ziel);
+  if (fs.existsSync(zielAbs)) throw new Error('NACHMESSUNG: ' + NM.ziel + ' gibt es schon');
+  fs.mkdirSync(zielAbs);
+  var bewegt = [];
+  NACHMESS_DATEIEN.forEach(function (f) { var q = path.join(NM.erledigt, f); if (fs.existsSync(q)) { fs.renameSync(q, path.join(zielAbs, f)); bewegt.push(f); } });
+  NM.verschoben = bewegt;
+  return NM;
+}
+/** Kopfabsatz der ERGEBNIS.md einer Nachmessung: Grund, wen sie ersetzt, was sich geaendert hat, Vergleich je Konfiguration (alt -> neu). */
+function nachmessungAbsatz(NM, E) {
+  var neu = {}; (E.konfigurationen || []).forEach(function (k) { var e = k.entdeckung || {}; neu[k.key] = { netto: e.uNetto ? e.uNetto.mittel : null, t: e.uNetto ? e.uNetto.t : null, urteil: k.urteil }; });
+  var zeilen = NM.alt.konf.map(function (a) { var b = neu[a.key] || {}; return a.key + ': netto ' + de(a.netto) + ' / t ' + de(a.t, 2) + ' (' + a.urteil + ') -> ' + de(b.netto) + ' / t ' + de(b.t, 2) + ' (' + (b.urteil || '–') + ')'; });
+  return '**Nachmessung ' + NM.n + '** (' + datumDe(E.stand || new Date().toISOString()) + '), Grund: ' + NM.grund + ' Korrektur `' + NM.korrektur.slice(0, 12) + '`. Ersetzt v' + (NM.n) + ' vom ' + datumDe(NM.alt.stand) + ' (Urteil ' + NM.alt.urteil + ', Ordner `' + NM.alt.ordner + '/`).' +
+    ' Was sich geaendert hat: Messgeraet (FORM.md, Nr. 121-1) - im Modus zeit lokaler Topf je Signal statt globalem zeitlichem Topf (die Topf-Streuung steckt damit im se, Hansen-Hodrick-Lag = H), Verschiebungs-Sperrklinke zweiseitig, verschobene Fenster mit Ueberschneidung nicht gewertet; die Regel (Siegel 1 `' + NM.alt.siegel1.slice(0, 7) + '`) ist unveraendert.' +
+    (NM.blickePruefzeit > 0 ? ' **' + (NM.blickePruefzeit + 1) + '. Blick auf die Pruefzeit** (die Vormessung hat sie gelesen).' : ' Die Vormessung hat die Pruefzeit nicht gelesen (kein Kandidat) - die Nachmessung verbraucht kein Holdout.') +
+    ' Vergleich (Entdeckung, alt -> neu): ' + zeilen.join('; ') + '.';
+}
+/** --nachmessen: pruefen, verschieben, Lauf wie --kandidat. */
+function nachmessen(kennung, grund, korrektur) {
+  var NM = nachmessungVerschieben(nachmessungPruefen(kennung, grund, korrektur));
+  console.log(jetzt() + '  Nachmessung ' + NM.n + ' von ' + kennung + ': alte Ausgabe nach ' + NM.alt.ordner + '/ (' + NM.verschoben.join(', ') + ')');
+  return laufe(kennung, { nachmessung: NM });
+}
+
 module.exports = { ladeKandidat: ladeKandidat, pruefen: pruefen, naechster: naechster, laufe: laufe, messen: messen, urteile: urteile, holm: holm, register: register,
-  registerEintragen: registerEintragen, ergebnisMarkdown: ergebnisMarkdown, belegstandAbsatz: belegstandAbsatz, URTEILE: URTEILE, PFLICHT: PFLICHT };
+  registerEintragen: registerEintragen, ergebnisMarkdown: ergebnisMarkdown, belegstandAbsatz: belegstandAbsatz, URTEILE: URTEILE, PFLICHT: PFLICHT,
+  nachmessungPruefen: nachmessungPruefen, nachmessungVerschieben: nachmessungVerschieben, nachmessungAbsatz: nachmessungAbsatz, nachmessen: nachmessen, obereGrenze: obereGrenze, versatzAbschnitt: versatzAbschnitt };
 
 if (require.main === module) {
   var a = process.argv.slice(2), arg = function (n) { var i = a.indexOf(n); return i >= 0 ? a[i + 1] : null; }, trocken = a.indexOf('--trocken') !== -1;
@@ -380,7 +453,8 @@ if (require.main === module) {
     if (a.indexOf('--pruefen') !== -1) { var B = pruefen(arg('--pruefen')); console.log(JSON.stringify(B, null, 1)); process.exit(B.gueltig ? 0 : 1); }
     else if (a.indexOf('--messen') !== -1) { messen(arg('--messen'), arg('--phase'), arg('--aus')); console.log('fertig ' + arg('--phase')); }
     else if (a.indexOf('--kandidat') !== -1) { var r = laufe(arg('--kandidat'), { trocken: trocken }); console.log(JSON.stringify(r)); process.exit(r.abbruch ? 1 : 0); }
+    else if (a.indexOf('--nachmessen') !== -1) { var rN = nachmessen(arg('--nachmessen'), arg('--grund'), arg('--korrektur')); console.log(JSON.stringify(rN)); process.exit(rN.abbruch ? 1 : 0); }
     else if (a.indexOf('--naechster') !== -1) { var n = naechster(); if (!n) { console.log('Warteschlange: kein gueltiger Kandidat'); process.exit(0); } var r2 = laufe(n, { trocken: trocken }); console.log(JSON.stringify(r2)); process.exit(r2.abbruch ? 1 : 0); }
-    else { console.log('--pruefen <kennung> | --kandidat <kennung> [--trocken] | --naechster [--trocken]'); process.exit(2); }
+    else { console.log('--pruefen <kennung> | --kandidat <kennung> [--trocken] | --naechster [--trocken] | --nachmessen <kennung> --grund "<Text>" --korrektur <commit> (nur PM)'); process.exit(2); }
   } catch (e) { console.error(e.stack || e.message); process.exit(1); }
 }
