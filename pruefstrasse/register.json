@@ -98,12 +98,14 @@
    "kennung": "fomc-gerade-wochen-long",
    "form": "tag",
    "key": "W0246-H5",
-   "urteil": "nein",
-   "datum": "2026-10-20T15:17:44.265Z",
-   "bewertung": "zeit"
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-21T13:33:34.363Z",
+   "bewertung": "zeit",
+   "nachmessung": 1,
+   "ersetzt": "2026-10-20T15:17:44.265Z"
   }
  ],
  "gesamt": 13,
  "zufallErwartet": 0.29575,
- "stand": "2026-10-20T15:17:44.265Z"
+ "stand": "2026-10-21T13:33:34.363Z"
 }

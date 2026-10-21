@@ -1,0 +1,226 @@
+{
+ "quelle": "panel",
+ "kennungTafel": "querschnitt-pruefstand-2026-09-13/panel/v2.3",
+ "gesperrt": true,
+ "siegel": null,
+ "hatRoh": true,
+ "hatMarkt": true,
+ "hatDatum": true,
+ "reihen": 6706,
+ "nTage": 2765,
+ "letzterTag": "2022-12-30",
+ "schnitt": "2023-01-03",
+ "TE": 1722,
+ "TB": 861,
+ "zaehler": {
+  "zulaessig": 3768932,
+  "ohneKlasse": 2959271,
+  "massnahmen": 802,
+  "signalAufrufe": 3765887,
+  "signale": 367843,
+  "ohneBestaetigungstag": 0,
+  "abgelehnt": 0,
+  "cooldown": 0,
+  "ohneEinstieg": 0,
+  "einstiegMassnahmen": 1,
+  "richtungOhneKonfiguration": 231042,
+  "gebucht": 135967,
+  "ohneHorizont": 1668,
+  "topfFehlt": 0,
+  "nachMaxTag": 0,
+  "placeboOhnePartner": 0,
+  "versatzOhneTag": 1010,
+  "spaetOhneTag": 14,
+  "placeboEntfaellt": 136801
+ },
+ "verstoesse": 0,
+ "beispiele": [],
+ "ms": {
+  "topf": 182,
+  "messen": 18917
+ },
+ "bewertung": "zeit",
+ "bewertungDetail": "Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus zeitlicher Topf derselben Reihe: Mittel der Renditen gleicher Dauer ueber alle zulaessigen Starttage desselben Zeitraums (Entdeckung | Pruefung), ohne Fenster, die sich mit einem Signalfenster der Reihe ueberschneiden (|Starttag - Einstiegstag| < Dauer); Kassa-Huerde je Klasse wie bisher; Placebo \"anderer Wert gleicher Klasse\" entfaellt (traefe dieselbe Zelle), Placebo ist das um 5 Handelstage verschobene Signal.",
+ "versatzTage": 5,
+ "signalAnteil": {
+  "tage": 204,
+  "mittel": 0.8234367423829829,
+  "max": 1.0028971511347176,
+  "tageUeber50": 168
+ },
+ "warnungen": [],
+ "konfigurationen": [
+  {
+   "key": "W0246-H5",
+   "richtung": "long",
+   "haltedauer": 5,
+   "klassen": [
+    1,
+    2,
+    3
+   ],
+   "entdeckung": {
+    "nTage": 177,
+    "nTr": 135967,
+    "nK": [
+     0,
+     105430,
+     26192,
+     4345
+    ],
+    "kKand": 0.08011822648142564,
+    "dauerMittel": 4.996256444578464,
+    "abgaenge": [
+     {
+      "gruppe": "uebernahme",
+      "n": 148,
+      "mittel": -0.2426099815432649
+     },
+     {
+      "gruppe": "insolvenz",
+      "n": 4,
+      "mittel": 2.6403424850443686
+     },
+     {
+      "gruppe": "sonstige",
+      "n": 24,
+      "mittel": -2.7057738000085205
+     }
+    ],
+    "uBrutto": {
+     "n": 177,
+     "mittel": -0.9306930749341339,
+     "se": 0.21882711047864298,
+     "seNaiv": 0.21697703793195647,
+     "t": -4.25309767559613,
+     "obere": -0.5017919383959937,
+     "untere": -1.359594211472274,
+     "nEff": 35.4,
+     "hh0": false,
+     "jeTrade": -0.9029416300144096
+    },
+    "uNetto": {
+     "n": 177,
+     "mittel": -1.011022561397372,
+     "se": 0.21883124425841088,
+     "seNaiv": 0.216980166848134,
+     "t": -4.620101507093235,
+     "obere": -0.5821133226508867,
+     "untere": -1.4399318001438575,
+     "nEff": 35.4,
+     "hh0": false,
+     "jeTrade": -0.9830598564958353
+    },
+    "roh": {
+     "n": 177,
+     "mittel": -0.012384630490321296,
+     "se": 0.21890474729082368,
+     "seNaiv": 0.2163246107837552,
+     "t": -0.05657543129417756,
+     "obere": 0.4166686741996931,
+     "untere": -0.4414379351803357,
+     "nEff": 35.4,
+     "hh0": false
+    },
+    "tradesJeTag": 768.1751412429378
+   },
+   "lebend": {
+    "uNetto": {
+     "n": 172,
+     "mittel": -0.9926738323449693,
+     "se": 0.21611914639065716,
+     "seNaiv": 0.2177367596946994,
+     "t": -4.5931785726684815,
+     "obere": -0.5690803054192812,
+     "untere": -1.4162673592706574,
+     "nEff": 34.4,
+     "hh0": false,
+     "jeTrade": -0.9767396657555186
+    },
+    "nTr": 114973,
+    "deltaAlleLebend": -0.01766884588471518
+   },
+   "spaet": {
+    "uNetto": {
+     "n": 177,
+     "mittel": -0.5831355548301284,
+     "se": 0.17708165008476134,
+     "seNaiv": 0.1805749880971594,
+     "t": -3.2930320818165324,
+     "obere": -0.23605552066399615,
+     "untere": -0.9302155889962606,
+     "nEff": 35.4,
+     "hh0": false,
+     "jeTrade": -0.5137054454471813
+    },
+    "nTr": 135953
+   },
+   "versatz": {
+    "uNetto": {
+     "n": 178,
+     "mittel": -0.5642601298176375,
+     "se": 0.24118708519368418,
+     "seNaiv": 0.23175864500858692,
+     "t": -2.3395122063211264,
+     "obere": -0.09153344283801651,
+     "untere": -1.0369868167972585,
+     "nEff": 35.6,
+     "hh0": false,
+     "jeTrade": -0.6291125204423376
+    },
+    "nTr": 135791,
+    "wirkt": false,
+    "ueberlappung": {
+     "n": 24571,
+     "von": 135791,
+     "anteil": 0.18094719090366815
+    }
+   },
+   "placebo": {
+    "entfaellt": true,
+    "grund": "entfaellt im Modus zeit: ein anderer Wert gleicher Klasse am selben Tag traefe dieselbe Zelle (den Markttag); Placebo ist das um 5 Handelstage verschobene Signal",
+    "uBrutto": null,
+    "nTr": 0,
+    "schranke": null,
+    "verstoss": false
+   },
+   "TE": 1722,
+   "TB": 861,
+   "seBproj": 0.30947411350122417,
+   "mdeBproj": 0.6189482270024483,
+   "tor1": false,
+   "tor1Schwelle": 2.4757929080097933,
+   "mde80": 0.613077613914364,
+   "kandidat": false,
+   "gruende": [
+    "netto <= 0",
+    "t < 2",
+    "Tor 1"
+   ],
+   "urteil": "nein"
+  }
+ ],
+ "klassen": [
+  {
+   "name": "5-50",
+   "huerde": 0.1569
+  },
+  {
+   "name": "50-250",
+   "huerde": 0.0854
+  },
+  {
+   "name": "250-1000",
+   "huerde": 0.0647
+  },
+  {
+   "name": "ab1000",
+   "huerde": 0.0449
+  }
+ ],
+ "kennung": "fomc-gerade-wochen-long",
+ "form": "tag",
+ "phase": "entdeckung",
+ "stand": "2026-10-20T15:17:44.265Z",
+ "konfigurationenSoll": 1
+}

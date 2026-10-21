@@ -2,9 +2,9 @@
  "kennung": "fomc-gerade-wochen-long",
  "form": "tag",
  "titel": "FOMC-Zyklus: long in den geraden Wochen 0, 2, 4, 6 nach planmaessigen FOMC-Bekanntgaben (je 5 Handelstage)",
- "stand": "2026-10-20T15:17:44.265Z",
- "urteil": "nein",
- "grund": "jede Konfiguration in der behaupteten Richtung ausgeschlossen (obere 95-%-Grenze netto < 0)",
+ "stand": "2026-10-21T13:33:34.363Z",
+ "urteil": "nicht entscheidbar",
+ "grund": "kein Kandidat (0 von 1 ausgeschlossen, Rest unter der Aufloesung)",
  "kandidaten": 0,
  "messgeraetFehler": [],
  "siegel1": {
@@ -12,9 +12,9 @@
   "ordner": "pruefstrasse/warteschlange/fomc-gerade-wochen-long"
  },
  "siegel2": {
-  "commit": "ae8128aa146dc74722edbd6363253ad99c565229",
-  "blob": "11c704b89c0d02a9b0570bb94d5429544d9e8a2c",
-  "sha256": "bd5a2b9c57055e14f210e96065122e4cdc7bb1135cf61f33cc391460204b75d5",
+  "commit": "deae2a7e02794072d9423b757677f83d72236b82",
+  "blob": "397e34e3480f2feb34f653e2281b0cfcba999b8f",
+  "sha256": "4edb605e0263971f5322216b91617423a5bfc3005cfd1e11808e87ff4defbe79",
   "pfad": "pruefstrasse/erledigt/fomc-gerade-wochen-long/KANDIDATEN.json"
  },
  "register": {
@@ -47,28 +47,39 @@
    "ohneEinstieg": 0,
    "einstiegMassnahmen": 1,
    "richtungOhneKonfiguration": 231042,
-   "gebucht": 135967,
+   "gebucht": 109997,
    "ohneHorizont": 1668,
-   "topfFehlt": 0,
+   "topfFehlt": 159235,
    "nachMaxTag": 0,
    "placeboOhnePartner": 0,
    "versatzOhneTag": 1010,
    "spaetOhneTag": 14,
+   "cooldownDurchOhneKlasse": 0,
+   "versatzUeberschneidung": 24571,
+   "reihen": 6706,
+   "reihenOhneKlasse": 2804,
+   "zeilenJeKlasse": [
+    2366271,
+    1087205,
+    271180,
+    45078
+   ],
    "placeboEntfaellt": 136801
   },
   "verstoesse": 0,
   "beispiele": [],
   "ms": {
-   "topf": 182,
-   "messen": 18917
+   "topf": 101,
+   "messen": 15278
   },
   "bewertung": "zeit",
-  "bewertungDetail": "Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus zeitlicher Topf derselben Reihe: Mittel der Renditen gleicher Dauer ueber alle zulaessigen Starttage desselben Zeitraums (Entdeckung | Pruefung), ohne Fenster, die sich mit einem Signalfenster der Reihe ueberschneiden (|Starttag - Einstiegstag| < Dauer); Kassa-Huerde je Klasse wie bisher; Placebo \"anderer Wert gleicher Klasse\" entfaellt (traefe dieselbe Zelle), Placebo ist das um 5 Handelstage verschobene Signal.",
+  "topfArt": "lokal",
+  "bewertungDetail": "Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus LOKALER Topf des Signals (Nr. 121-1): Mittel der Fenster gleicher Haltedauer H (Konfiguration) derselben Reihe und desselben Zeitraums (Entdeckung | Pruefung) an zulaessigen Starttagen mit Klasse der Konfiguration, ohne Fenster, die sich mit einem Signalfenster der Reihe ueberschneiden (|Starttag - Einstiegstag| < H); jeder Starttag gehoert dem naechstgelegenen Signal der Reihe (Gleichstand: dem frueheren), hoechstens R = topfRadius Handelstage entfernt (Vorgabe 4 H), mindestens 1 Fenster je Signal; Kassa-Huerde je Klasse wie bisher; se Hansen-Hodrick ueber die Tagesreihe (Lag H, die Topf-Streuung steckt im Ueberschuss je Trade); Placebo \"anderer Wert gleicher Klasse\" entfaellt (traefe dieselbe Zelle), Placebo ist das um 5 Handelstage verschobene Signal mit eigenem lokalem Topf.",
   "versatzTage": 5,
   "signalAnteil": {
    "tage": 204,
-   "mittel": 0.8234367423829829,
-   "max": 1.0028971511347176,
+   "mittel": 0.8223699068024978,
+   "max": 1,
    "tageUeber50": 168
   },
   "warnungen": [],
@@ -83,116 +94,153 @@
      3
     ],
     "entdeckung": {
-     "nTage": 177,
-     "nTr": 135967,
+     "nTage": 156,
+     "nTr": 109997,
      "nK": [
       0,
-      105430,
-      26192,
-      4345
+      85037,
+      21412,
+      3548
      ],
-     "kKand": 0.08011822648142564,
-     "dauerMittel": 4.996256444578464,
+     "kKand": 0.08006419629626262,
+     "kKandEroeffnung": 0.19110469620080547,
+     "dauerMittel": 4.999836359173432,
      "abgaenge": [
       {
        "gruppe": "uebernahme",
-       "n": 148,
-       "mittel": -0.2426099815432649
+       "n": 8,
+       "mittel": -0.6480337776226804
       },
       {
        "gruppe": "insolvenz",
-       "n": 4,
-       "mittel": 2.6403424850443686
+       "n": 0,
+       "mittel": null
       },
       {
        "gruppe": "sonstige",
-       "n": 24,
-       "mittel": -2.7057738000085205
+       "n": 0,
+       "mittel": null
+      },
+      {
+       "gruppe": "zensiert",
+       "n": 0,
+       "mittel": null
       }
      ],
      "uBrutto": {
-      "n": 177,
-      "mittel": -0.9306930749341339,
-      "se": 0.21882711047864298,
-      "seNaiv": 0.21697703793195647,
-      "t": -4.25309767559613,
-      "obere": -0.5017919383959937,
-      "untere": -1.359594211472274,
-      "nEff": 35.4,
+      "n": 156,
+      "mittel": -0.43405523396365747,
+      "se": 0.36187659354106033,
+      "seNaiv": 0.3618870771161896,
+      "t": -1.1994565045401517,
+      "obere": 0.27522288937682077,
+      "untere": -1.1433333573041358,
+      "nEff": 31.2,
       "hh0": false,
-      "jeTrade": -0.9029416300144096
+      "jeTrade": -0.391557032368743
      },
      "uNetto": {
-      "n": 177,
-      "mittel": -1.011022561397372,
-      "se": 0.21883124425841088,
-      "seNaiv": 0.216980166848134,
-      "t": -4.620101507093235,
-      "obere": -0.5821133226508867,
-      "untere": -1.4399318001438575,
-      "nEff": 35.4,
+      "n": 156,
+      "mittel": -0.5145640409401186,
+      "se": 0.3618751092958206,
+      "seNaiv": 0.36188432381156665,
+      "t": -1.421938198350857,
+      "obere": 0.1947111732796898,
+      "untere": -1.223839255159927,
+      "nEff": 31.2,
       "hh0": false,
-      "jeTrade": -0.9830598564958353
+      "jeTrade": -0.4716212286650056
      },
      "roh": {
-      "n": 177,
-      "mittel": -0.012384630490321296,
-      "se": 0.21890474729082368,
-      "seNaiv": 0.2163246107837552,
-      "t": -0.05657543129417756,
-      "obere": 0.4166686741996931,
-      "untere": -0.4414379351803357,
-      "nEff": 35.4,
+      "n": 156,
+      "mittel": -0.057742599646742096,
+      "se": 0.2546768159982825,
+      "seNaiv": 0.2528742686891395,
+      "t": -0.2267289208104891,
+      "obere": 0.4414239597098916,
+      "untere": -0.5569091590033758,
+      "nEff": 31.2,
       "hh0": false
      },
-     "tradesJeTag": 768.1751412429378
+     "uNettoEroeffnung": {
+      "n": 156,
+      "mittel": -0.6266836559128992,
+      "se": 0.36187045545815133,
+      "seNaiv": 0.3618762524027121,
+      "t": -1.7317900548677767,
+      "obere": 0.08258243678507737,
+      "untere": -1.3359497486108758,
+      "nEff": 31.2,
+      "hh0": false,
+      "jeTrade": -0.5826617285695485
+     },
+     "tradesJeTag": 705.1089743589744
     },
     "lebend": {
      "uNetto": {
-      "n": 172,
-      "mittel": -0.9926738323449693,
-      "se": 0.21611914639065716,
-      "seNaiv": 0.2177367596946994,
-      "t": -4.5931785726684815,
-      "obere": -0.5690803054192812,
-      "untere": -1.4162673592706574,
-      "nEff": 34.4,
+      "n": 148,
+      "mittel": -0.6791919743445848,
+      "se": 0.36245827915233403,
+      "seNaiv": 0.3681287401408381,
+      "t": -1.8738486976569622,
+      "obere": 0.03122625279398994,
+      "untere": -1.3896102014831595,
+      "nEff": 29.6,
       "hh0": false,
-      "jeTrade": -0.9767396657555186
+      "jeTrade": -0.49979984597756427
      },
-     "nTr": 114973,
-     "deltaAlleLebend": -0.01766884588471518
+     "nTr": 93243,
+     "deltaAlleLebend": 0.16538245949753844
     },
     "spaet": {
      "uNetto": {
-      "n": 177,
-      "mittel": -0.5831355548301284,
-      "se": 0.17708165008476134,
-      "seNaiv": 0.1805749880971594,
-      "t": -3.2930320818165324,
-      "obere": -0.23605552066399615,
-      "untere": -0.9302155889962606,
-      "nEff": 35.4,
+      "n": 156,
+      "mittel": -0.2856535445377804,
+      "se": 0.33507371041173045,
+      "seNaiv": 0.3356190279690094,
+      "t": -0.8525095692729109,
+      "obere": 0.3710909278692112,
+      "untere": -0.9423980169447721,
+      "nEff": 31.2,
       "hh0": false,
-      "jeTrade": -0.5137054454471813
+      "jeTrade": -0.4175662613715745
      },
-     "nTr": 135953
+     "nTr": 109996,
+     "art": "Einstieg +1 T, Ausstieg +1 T (gleiche Haltedauer)"
     },
     "versatz": {
      "uNetto": {
-      "n": 178,
-      "mittel": -0.5642601298176375,
-      "se": 0.24118708519368418,
-      "seNaiv": 0.23175864500858692,
-      "t": -2.3395122063211264,
-      "obere": -0.09153344283801651,
-      "untere": -1.0369868167972585,
-      "nEff": 35.6,
+      "n": 136,
+      "mittel": 0.052411166719578454,
+      "se": 0.42779296074505596,
+      "seNaiv": 0.4293744558271034,
+      "t": 0.12251526212188656,
+      "obere": 0.8908853697798881,
+      "untere": -0.7860630363407312,
+      "nEff": 27.2,
       "hh0": false,
-      "jeTrade": -0.6291125204423376
+      "jeTrade": 1.1032046349073519
      },
-     "nTr": 135791,
+     "uBrutto": {
+      "n": 136,
+      "mittel": 0.13729162263392689,
+      "se": 0.4277922183265088,
+      "seNaiv": 0.42937371066393115,
+      "t": 0.3209306218121532,
+      "obere": 0.9757643705538842,
+      "untere": -0.7011811252860304,
+      "nEff": 27.2,
+      "hh0": false,
+      "jeTrade": 1.1850258005515237
+     },
+     "nTr": 3912,
      "wirkt": false,
+     "verstoss": false,
+     "schranke": {
+      "t": 2,
+      "mindestPp": 0.020016049074065654,
+      "zweiseitig": true
+     },
      "ueberlappung": {
       "n": 24571,
       "von": 135791,
@@ -209,18 +257,254 @@
     },
     "TE": 1722,
     "TB": 861,
-    "seBproj": 0.30947411350122417,
-    "mdeBproj": 0.6189482270024483,
+    "seBproj": 0.5117686874513956,
+    "mdeBproj": 1.0235373749027912,
     "tor1": false,
-    "tor1Schwelle": 2.4757929080097933,
-    "mde80": 0.613077613914364,
+    "tor1Schwelle": 4.094149499611165,
+    "tor1FaktorSe": 11.31370849898476,
+    "mde80": 1.0138293062031711,
     "kandidat": false,
     "gruende": [
      "netto <= 0",
      "t < 2",
      "Tor 1"
     ],
-    "urteil": "nein"
+    "urteil": "nicht entscheidbar",
+    "zeitTopf": {
+     "art": "lokal",
+     "R": 20,
+     "nMin": 1,
+     "hhLag": 5,
+     "topfN": {
+      "trades": 109997,
+      "median": 1,
+      "min": 1,
+      "max": 16,
+      "anteilN1": 0.7353655099684537,
+      "verteilung": {
+       "1": 80888,
+       "2": 5239,
+       "3": 21382,
+       "4": 35,
+       "5": 33,
+       "6": 733,
+       "7": 14,
+       "8": 9,
+       "9": 4,
+       "10": 7,
+       "11": 7,
+       "12": 802,
+       "13": 840,
+       "14": 1,
+       "16": 3
+      }
+     },
+     "topfFehlt": 25970,
+     "topfMittel": 0.3804643321218588,
+     "histogramm": [
+      [
+       -16,
+       870
+      ],
+      [
+       -15,
+       873
+      ],
+      [
+       -14,
+       878
+      ],
+      [
+       -13,
+       882
+      ],
+      [
+       -12,
+       881
+      ],
+      [
+       -11,
+       884
+      ],
+      [
+       -10,
+       902
+      ],
+      [
+       -9,
+       1658
+      ],
+      [
+       -8,
+       1671
+      ],
+      [
+       -7,
+       1685
+      ],
+      [
+       -6,
+       12630
+      ],
+      [
+       -5,
+       15422
+      ],
+      [
+       5,
+       111369
+      ],
+      [
+       6,
+       14010
+      ],
+      [
+       7,
+       11838
+      ],
+      [
+       8,
+       879
+      ],
+      [
+       9,
+       860
+      ],
+      [
+       10,
+       850
+      ],
+      [
+       11,
+       853
+      ],
+      [
+       12,
+       859
+      ],
+      [
+       13,
+       861
+      ],
+      [
+       14,
+       865
+      ],
+      [
+       15,
+       865
+      ],
+      [
+       16,
+       870
+      ],
+      [
+       17,
+       3
+      ],
+      [
+       18,
+       3
+      ],
+      [
+       19,
+       2
+      ],
+      [
+       20,
+       2
+      ]
+     ],
+     "global": {
+      "nTage": 156,
+      "nTr": 109997,
+      "uBrutto": {
+       "n": 156,
+       "mittel": -0.3473375629348349,
+       "se": 0.25220416756644365,
+       "seNaiv": 0.2509328349082407,
+       "t": -1.3772078641140146,
+       "obere": 0.1469826054953946,
+       "untere": -0.8416577313650644,
+       "nEff": 31.2,
+       "hh0": false,
+       "jeTrade": -0.3143423825403149
+      },
+      "uNetto": {
+       "n": 156,
+       "mittel": -0.4278463699112959,
+       "se": 0.25221552592774343,
+       "seNaiv": 0.25094095291395174,
+       "t": -1.696352230250363,
+       "obere": 0.06649606090708127,
+       "untere": -0.922188800729673,
+       "nEff": 31.2,
+       "hh0": false,
+       "jeTrade": -0.3944065788365775
+      }
+     },
+     "sensitivitaet": {
+      "R2H": {
+       "R": 10,
+       "nTage": 156,
+       "nTr": 109997,
+       "uBrutto": {
+        "n": 156,
+        "mittel": -0.44468923354278145,
+        "se": 0.3713680433199031,
+        "seNaiv": 0.371428533652389,
+        "t": -1.1974353785732668,
+        "obere": 0.2831921313642286,
+        "untere": -1.1725705984497914,
+        "nEff": 31.2,
+        "hh0": false,
+        "jeTrade": -0.4023870063585765
+       },
+       "uNetto": {
+        "n": 156,
+        "mittel": -0.5251980405192429,
+        "se": 0.3713667114576521,
+        "seNaiv": 0.3714259633556357,
+        "t": -1.414230258974444,
+        "obere": 0.20268071393775522,
+        "untere": -1.253076794976241,
+        "nEff": 31.2,
+        "hh0": false,
+        "jeTrade": -0.48245120265483915
+       }
+      },
+      "R8H": {
+       "R": 40,
+       "nTage": 156,
+       "nTr": 109997,
+       "uBrutto": {
+        "n": 156,
+        "mittel": -0.4340410441170836,
+        "se": 0.36186993063178163,
+        "seNaiv": 0.36188038527600774,
+        "t": -1.1994393769034633,
+        "obere": 0.27522401992120843,
+        "untere": -1.1433061081553757,
+        "nEff": 31.2,
+        "hh0": false,
+        "jeTrade": -0.3915409932767294
+       },
+       "uNetto": {
+        "n": 156,
+        "mittel": -0.5145498510935449,
+        "se": 0.3618684464769321,
+        "seNaiv": 0.3618776320429034,
+        "t": -1.4219251667369281,
+        "obere": 0.19471230400124206,
+        "untere": -1.2238120061883317,
+        "nEff": 31.2,
+        "hh0": false,
+        "jeTrade": -0.4716051895729921
+       }
+      }
+     },
+     "zufallsplanRang": "nicht gerechnet"
+    }
    }
   ],
   "klassen": [
@@ -244,9 +528,50 @@
   "kennung": "fomc-gerade-wochen-long",
   "form": "tag",
   "phase": "entdeckung",
-  "stand": "2026-10-20T15:17:44.265Z",
+  "stand": "2026-10-21T13:33:34.363Z",
   "konfigurationenSoll": 1,
   "versatzGrund": "`versatzTage: 5` statt der Vorgabe 20. Die Regel hat eine **Periode von 10 Handelstagen** (Woche 0 → 2 → 4 → 6). Um 20 verschoben träfe jedes Signal das übernächste eigene Fenster (Woche 0 → Woche 4, Woche 2 → Woche 6 oder die nächste Woche 0). Ein richtiges Messgerät sähe dann denselben Effekt und hieße „Messgerät-Fehler“. Mit +5 Handelstagen landet jedes Fenster in der **folgenden ungeraden W..."
  },
- "pruefung": null
+ "pruefung": null,
+ "nachmessung": {
+  "n": 1,
+  "grund": "Messgeraet-Fehler Modus zeit (Audit Nr. 120, Auftrag Nr. 121-1): zeitlicher Topf bei Luecken im Signalplan verzerrt (fomc: Topf +0,90 gegen +0,30 aller Fenster), Topf-Streuung fehlte im se, Placebo-Sperrklinke einseitig. Korrektur: lokaler Topf mit eindeutiger Zuordnung, Streuung im se, zweiseitige Sperrklinke, Verschiebungsprobe ohne Ueberschneidung",
+  "korrektur": "866f70edeba4ffe33d9e6dc7a3de6bf0ed472a6c",
+  "korrekturTitel": "Nr. 121-1 Nachbesserung QS: Nachmessung mit Rueckweg und Marke, --korrektur Nachfahre, Protokoll-Test",
+  "korrekturDateien": [
+   "pruefstrasse/FORM.md",
+   "pruefstrasse/laeufer.js",
+   "pruefstrasse/test.js"
+  ],
+  "vormessungCommit": "e286a862c7d9b666f04f64df5630c7af63a723f3",
+  "repo": "C:\\Users\\Wilhe\\Downloads\\Stock-Dashboard",
+  "ziel": "v1-2026-10-20",
+  "erledigt": "C:\\Users\\Wilhe\\Downloads\\Stock-Dashboard\\pruefstrasse\\erledigt\\fomc-gerade-wochen-long",
+  "blickePruefzeit": 0,
+  "alt": {
+   "stand": "2026-10-20T15:17:44.265Z",
+   "urteil": "nein",
+   "grund": "jede Konfiguration in der behaupteten Richtung ausgeschlossen (obere 95-%-Grenze netto < 0)",
+   "ordner": "pruefstrasse/erledigt/fomc-gerade-wochen-long/v1-2026-10-20",
+   "konf": [
+    {
+     "key": "W0246-H5",
+     "netto": -1.011022561397372,
+     "t": -4.620101507093235,
+     "urteil": "nein"
+    }
+   ],
+   "pruefungGelesen": false,
+   "siegel1": "464539ec6c5d954d3894d20f1e0f415bed25cf2c"
+  },
+  "marke": "C:\\Users\\Wilhe\\Downloads\\Stock-Dashboard\\pruefstrasse\\erledigt\\fomc-gerade-wochen-long\\NACHMESSUNG-LAEUFT.json",
+  "verschoben": [
+   "ERGEBNIS.md",
+   "ergebnis.json",
+   "ergebnis-entdeckung.json",
+   "KANDIDATEN.json",
+   "LAUF.log",
+   "belegstand-eintrag.md"
+  ]
+ }
 }
