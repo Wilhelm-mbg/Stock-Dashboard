@@ -54,6 +54,9 @@ module.exports = {
   KANDIDAT_T: 2, TOR1_FAKTOR: 4, MDE_FAKTOR: 2.8016, Z_POWER80: 0.8416, HOLM_ALPHA: 0.05,
   PLACEBO_T: 2, PLACEBO_ANTEIL_HUERDE: 0.25, VERSATZ_TAGE: 20, COOLDOWN_TAGE: 5, MIN_TAGE: 30,
   ZUFALL_JE_KONFIGURATION: 0.02275,            /* P(t >= 2) einseitig unter der Null */
+  /* Modus zeit, lokaler Topf (Nr. 121-1, FORM.md §3): mindestens TOPF_N_MIN Fenster je Signal (Setzung: ein Fenster allein ist keine Erwartung),
+   * Radius in Vielfachen der Haltedauer H (kandidat.json topfRadius in Handelstagen, Bereich min H .. max H, Vorgabe vorgabe H) */
+  TOPF_N_MIN: 2, TOPF_RADIUS: { min: 2, max: 12, vorgabe: 4 },
   KORB: { kostenBp: 20, phasen: 63, kleinstAnteil: 0.05, placeboBuecher: 200, rangMin: 0.95 },
   FORMEN: ['tag', 'korb', 'minute'],
 };

@@ -202,9 +202,12 @@ ok(Ep.konfigurationen[0].kandidat && Ep.konfigurationen[0].entdeckung.uNetto.t >
 ok(Up.urteil !== 'Messgeraet-Fehler' && Up.kandidaten >= 1, 'Positivkontrolle: Kandidat, kein Messgeraet-Fehler', Up.urteil + ' ' + Up.grund);
 ok(Ep.konfigurationen[0].placebo.verstoss === false && Math.abs(Ep.konfigurationen[0].placebo.uBrutto.mittel) < 0.5, 'Placebo (anderer Wert, gleicher Tag) sieht den Effekt nicht', Ep.konfigurationen[0].placebo.uBrutto.mittel.toFixed(3));
 ok(Ep.konfigurationen[0].spaet.uNetto.mittel < Ep.konfigurationen[0].entdeckung.uNetto.mittel / 3, 'Einstieg einen Tag spaeter verfehlt den Effekt', Ep.konfigurationen[0].spaet.uNetto.mittel.toFixed(3));
-/* Zeitfester Effekt in zehn Reihen (jeder 20. Kalendertag +3 %), Signal in genau diesen Reihen am Vortag -> das um 20 Tage verschobene
- * Signal trifft denselben Kalender und wirkt ebenso: Messgeraet-Fehler (ein Markteffekt aller Reihen wuerde dagegen im Topf verschwinden) */
-var zeitfest = { signal: function (sicht, i) { return parseInt(sicht.reihe.slice(1), 10) < 10 && (i % 20) === 19 ? { dir: 1 } : null; } };
+/* Zeitfester Effekt in zehn Reihen (jeder 20. Kalendertag +3 %), Signal in genau diesen Reihen am Vortag JEDES ZWEITEN Effekttags -> das um
+ * 20 Tage verschobene Signal trifft denselben Kalender (die andere Haelfte der Effekttage) und wirkt ebenso: Messgeraet-Fehler (ein Markteffekt
+ * aller Reihen wuerde dagegen im Topf verschwinden). Nr. 121-1: bis dahin feuerte das Signal an JEDEM Effekttag - dann faellt das verschobene
+ * Fenster genau auf das naechste eigene Signalfenster und wird seit B-V5 nicht mehr gewertet (Test 3c / D-iv); das Signal an jedem zweiten Tag
+ * haelt die Aussage "der Effekt gehoert dem Kalender, nicht der Regel" aufrecht. Kunstwelt unveraendert (gleicher Zufallsstrom). */
+var zeitfest = { signal: function (sicht, i) { return parseInt(sicht.reihe.slice(1), 10) < 10 && (i % 40) === 19 ? { dir: 1 } : null; } };
 var Tz = TF.kunstTafel(kunstReihen(function (r, i) { return r < 10 && (i % 20) === 0 ? 0.03 : 0; }), TAGE);
 var Ez = A.lauf(zeitfest, KAND, { tafel: Tz }), Uz = LF.urteile(Ez, null, Rg0);
 ok(Ez.konfigurationen[0].entdeckung.uNetto.mittel > 1 && Ez.konfigurationen[0].entdeckung.uNetto.t >= 2 && Ez.konfigurationen[0].versatz.wirkt === true && Uz.urteil === 'Messgeraet-Fehler', 'zeitfester Effekt: verschobenes Signal wirkt -> Messgeraet-Fehler', Uz.urteil + ' / netto ' + Ez.konfigurationen[0].entdeckung.uNetto.mittel.toFixed(2) + ' verschoben ' + Ez.konfigurationen[0].versatz.uNetto.mittel.toFixed(2));
@@ -228,25 +231,27 @@ ok(Emt.bewertung === 'topf' && h5t.nTage === 32 && h5t.nTr === 1280 && Math.abs(
   'topf: marktweite Regel mit eingesaetem Effekt - roh > +1,5 Pp, Ueberschuss gegen den Tagestopf genau 0 (|u| < 1e-9), Urteil "nein" ohne Aussage', 'u ' + h5t.uBrutto.mittel.toExponential(2) + ' roh ' + h5t.roh.mittel.toFixed(3));
 ok(Emt.signalAnteil.tage === 32 && Emt.signalAnteil.mittel === 1 && Emt.signalAnteil.max === 1 && Emt.signalAnteil.tageUeber50 === 32 && Emt.warnungen.length === 1 && /Bewertung zeit erwaegen/.test(Emt.warnungen[0]),
   'topf: Anteil der zulaessigen Reihen mit Signal am Signaltag 100 % an allen 32 Signaltagen -> Warnung "Bewertung zeit erwaegen" im Protokoll', Emt.warnungen[0] && Emt.warnungen[0].slice(0, 72));
-ok(Emz.bewertung === 'zeit' && /zeitlicher Topf/.test(Emz.bewertungDetail) && h5z.nTage === 32 && h5z.nTr === 1280 && h5z.tradesJeTag === 40 && h5z.uBrutto.mittel > 1.5 && h5z.uBrutto.mittel < 2.4 && h5z.uNetto.t > 10 && h3z.uBrutto.mittel > 1.5 && h3z.uBrutto.mittel < 2.4 && Emz.konfigurationen[0].kandidat && Emz.konfigurationen[1].kandidat,
+ok(Emz.bewertung === 'zeit' && /LOKALER Topf des Signals/.test(Emz.bewertungDetail) && Emz.topfArt === 'lokal' && h5z.nTage === 32 && h5z.nTr === 1280 && h5z.tradesJeTag === 40 && h5z.uBrutto.mittel > 1.5 && h5z.uBrutto.mittel < 2.4 && h5z.uNetto.t > 10 && h3z.uBrutto.mittel > 1.5 && h3z.uBrutto.mittel < 2.4 && Emz.konfigurationen[0].kandidat && Emz.konfigurationen[1].kandidat,
   'zeit: dieselbe Regel findet den eingesaeten Effekt (+2 Pp je Fenster; > 1,5 heisst: die Signalfenster sind aus dem zeitlichen Topf ausgeschlossen, sonst ~1,25), 40 Trades je Signaltag, H5 und H3 Kandidaten', 'H5 u ' + h5z.uBrutto.mittel.toFixed(3) + ' t ' + h5z.uNetto.t.toFixed(1) + ' / H3 u ' + h3z.uBrutto.mittel.toFixed(3) + ' t ' + h3z.uNetto.t.toFixed(1));
 ok(Math.abs(h50.uBrutto.mittel) < 0.3 && Math.abs(h50.uNetto.t) < 2.5 && !Em0.konfigurationen[0].kandidat && !Em0.konfigurationen[1].kandidat && LF.urteile(Em0, null, Rg0).urteil !== 'Messgeraet-Fehler',
   'zeit, gepaarter Placebo: dieselbe Regel auf der Kunstwelt OHNE Effekt ~ 0, kein Kandidat, kein Messgeraet-Fehler', 'u ' + h50.uBrutto.mittel.toFixed(3) + ' t ' + h50.uNetto.t.toFixed(2));
 var k5z = Emz.konfigurationen[0], k3z = Emz.konfigurationen[1];
 ok(k5z.placebo.entfaellt === true && k5z.placebo.verstoss === false && k5z.placebo.uBrutto === null && /entfaellt im Modus zeit/.test(k5z.placebo.grund) && Emz.zaehler.placeboEntfaellt === 3840 && Emz.zaehler.placeboOhnePartner === 0 && Emt.zaehler.placeboEntfaellt === undefined,
   'zeit: Placebo "anderer Wert gleicher Klasse" entfaellt und wird so ausgewiesen (Feld entfaellt, Zaehler placeboEntfaellt); im Modus topf wie bisher', Emz.zaehler.placeboEntfaellt + ' entfallen');
-ok(k5z.versatz.wirkt === false && Math.abs(k5z.versatz.uNetto.mittel) < 0.4 && k3z.versatz.wirkt === false && Math.abs(k3z.versatz.uNetto.mittel) < 0.4 && k5z.spaet.uNetto.mittel < h5z.uNetto.mittel / 3 && k5z.versatz.ueberlappung.anteil === 1 && k3z.versatz.ueberlappung.anteil === 0 && LF.urteile(Emz, null, Rg0).urteil !== 'Messgeraet-Fehler',
-  'zeit: verschobenes Signal ~ 0 (wirkt nicht), Einstieg +1 T verfehlt den Effekt, Ueberlappung der verschobenen Fenster ausgewiesen (H5 100 %: 20 = 16 + 4 teilt einen Tag; H3 0 %), kein Messgeraet-Fehler', 'versatz ' + k5z.versatz.uNetto.mittel.toFixed(3) + ' spaet ' + k5z.spaet.uNetto.mittel.toFixed(3));
+/* Nr. 121-1 (B-V5): H5 verschoben um 20 = 16 + 4 schneidet das naechste Signalfenster -> alle verschobenen H5-Fenster gezaehlt, NICHT gewertet (nTr 0);
+ * H3 schneidet nicht (|20 - 16| = 4 >= 3) -> gewertet, ~ 0 */
+ok(k5z.versatz.wirkt === false && k5z.versatz.nTr === 0 && k5z.versatz.uNetto.mittel === null && k3z.versatz.wirkt === false && k3z.versatz.nTr > 1000 && Math.abs(k3z.versatz.uNetto.mittel) < 0.4 && k5z.spaet.uNetto.mittel < h5z.uNetto.mittel / 3 && k5z.versatz.ueberlappung.anteil === 1 && k3z.versatz.ueberlappung.anteil === 0 && Emz.zaehler.versatzUeberschneidung > 0 && LF.urteile(Emz, null, Rg0).urteil !== 'Messgeraet-Fehler',
+  'zeit: verschobenes H5-Fenster schneidet das naechste Signalfenster (100 %) -> gezaehlt, nicht gewertet; H3 (0 %) gewertet ~ 0; Einstieg +1 T verfehlt den Effekt; kein Messgeraet-Fehler', 'H5 nTr ' + k5z.versatz.nTr + ', H3 versatz ' + (k3z.versatz.uNetto.mittel || 0).toFixed(3) + ' spaet ' + k5z.spaet.uNetto.mittel.toFixed(3));
 ok(Emz.warnungen.length === 0 && Emz.signalAnteil.mittel === 1 && Emz.ms.topf <= Emt.ms.topf, 'zeit bei 100 % Signalanteil: keine Warnung; der Tagestopf wird nicht gerechnet');
 var Ezz = A.lauf(zufallSignal, KANDZ, { tafel: T0 });
-ok(Ezz.bewertung === 'zeit' && Ezz.warnungen.length === 1 && /Bewertung topf/.test(Ezz.warnungen[0]) && Ezz.signalAnteil.mittel < 0.1 && Ezz.konfigurationen[0].entdeckung.nTr === 782,
+ok(Ezz.bewertung === 'zeit' && Ezz.warnungen.length === 1 && /Bewertung topf/.test(Ezz.warnungen[0]) && Ezz.signalAnteil.mittel < 0.1 && Ezz.konfigurationen[0].entdeckung.nTr + Ezz.konfigurationen[0].zeitTopf.topfFehlt === 782,
   'zeit bei einer Querschnittsregel (Zufallssignal, ~5 % der Reihen je Tag): Warnung "gehoert in die Bewertung topf"', (100 * Ezz.signalAnteil.mittel).toFixed(1) + ' %');
 /* zeitTopf direkt: Reihe mit +10 % je Tag (jedes 1-Tage-Fenster 10 %, jedes 2-Tage-Fenster 21 %), Signalfenster und Zeitraum ausgeschlossen */
 var oG = []; for (var g = 0; g < 10; g++) oG.push(100 * Math.pow(1.1, g));
 var TG = TF.kunstTafel([{ reihe: 'G', tag: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], o: oG, h: oG, l: oG, c: oG, v: oG.map(function () { return 1; }) }], TAGE.slice(0, 10), { offen: true }), SG1 = TG.reihen[0];
-var z1 = A.zeitTopf(SG1, Int32Array.from([]), 1, 0, 9), z2 = A.zeitTopf(SG1, Int32Array.from([4]), 1, 0, 9), z3 = A.zeitTopf(SG1, Int32Array.from([4]), 2, 0, 9), z4 = A.zeitTopf(SG1, Int32Array.from([]), 1, 2, 5), z5 = A.zeitTopf(SG1, Int32Array.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), 1, 0, 9);
+var z1 = A.zeitTopfGlobal(SG1, Int32Array.from([]), 1, 0, 9), z2 = A.zeitTopfGlobal(SG1, Int32Array.from([4]), 1, 0, 9), z3 = A.zeitTopfGlobal(SG1, Int32Array.from([4]), 2, 0, 9), z4 = A.zeitTopfGlobal(SG1, Int32Array.from([]), 1, 2, 5), z5 = A.zeitTopfGlobal(SG1, Int32Array.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), 1, 0, 9);
 ok(z1.n === 9 && nahe(z1.mittel, 10, 1e-9) && z2.n === 8 && nahe(z2.mittel, 10, 1e-9) && z3.n === 5 && nahe(z3.mittel, 21, 1e-9) && z4.n === 4 && z5.n === 0 && isNaN(z5.mittel),
-  'zeitTopf: 9 Ein-Tages-Fenster (10 %), ohne den Signaltag 8, Dauer 2 ohne Starttage 3..5 (21 %, n 5), Zeitraum 2..5 (n 4), alles Signal -> NaN', z1.n + '/' + z2.n + '/' + z3.n + '/' + z4.n + '/' + z5.n);
+  'zeitTopfGlobal (Nr. 118, bleibt nachrichtlich): 9 Ein-Tages-Fenster (10 %), ohne den Signaltag 8, Dauer 2 ohne Starttage 3..5 (21 %, n 5), Zeitraum 2..5 (n 4), alles Signal -> NaN', z1.n + '/' + z2.n + '/' + z3.n + '/' + z4.n + '/' + z5.n);
 ok(A.ueberlappt(Int32Array.from([4, 20]), 6, 3) === true && A.ueberlappt(Int32Array.from([4, 20]), 7, 3) === false && A.ueberlappt(Int32Array.from([4, 20]), 18, 3) === true && A.ueberlappt(Int32Array.from([4, 20]), 1, 3) === false && A.ueberlappt(Int32Array.from([]), 5, 3) === false,
   'ueberlappt: |t - e| < d (6 und 18 ja, 7 und 1 nein, leere Menge nein)');
 var eB = null; try { A.lauf(zufallSignal, Object.assign({}, KAND, { bewertung: 'null' }), { tafel: T0 }); } catch (e) { eB = e; }
@@ -269,14 +274,16 @@ ok(/Form tag, Bewertung topf/.test(mdT) && /\*\*WARNUNG:\*\* Bewertung topf, abe
 
 console.log('3c) Versatz der Verschiebungs-Gegenprobe (Nachlieferung Nr. 118): versatzTage 5..60, Vorgabe ' + K.VERSATZ_TAGE);
 /* Kunst-Kalenderregel mit Periode 20 (Einstieg aller Reihen an jedem 20. Kalendertag, Effekt +2 % dort), Modus zeit: mit dem Versatz 20 der Vorgabe
- * landet das verschobene Signal GENAU auf dem naechsten Ereignisfenster (Placebo = Effekt, "wirkt" -> Messgeraet-Fehler, obwohl das Messgeraet
- * richtig ist); mit versatzTage 10 liegt es in der Mitte des Intervalls (Placebo ~ 0). Welt nach den bisherigen gebaut. */
+ * landet das verschobene Signal GENAU auf dem naechsten Ereignisfenster. Bis Nr. 121-1 hiess das: Placebo = Effekt, "wirkt" -> Messgeraet-Fehler,
+ * obwohl das Messgeraet richtig ist (dieser Test verlangte es und war auf fc1187a gruen = der Rot-Nachweis fuer D-iv). Seit B-V5 werden solche
+ * verschobenen Fenster als Ueberschneidung GEZAEHLT und NICHT gewertet (D-iv): Anteil 100 %, kein Messgeraet-Fehler aus eigener Periodik. Mit
+ * versatzTage 10 liegt es in der Mitte des Intervalls (Placebo ~ 0). Welt nach den bisherigen gebaut. */
 var kal20 = { signal: function (sicht, i) { return (i + 1) % 20 === 0 ? { dir: 1 } : null; } };
 var T20 = TF.kunstTafel(kunstReihen(function (r, i) { return (i % 20) === 0 ? 0.02 : 0; }), TAGE);
 var KV20 = JSON.parse(JSON.stringify(KANDZ)), KV10 = JSON.parse(JSON.stringify(KANDZ)); KV10.versatzTage = 10;
 var Ev20 = A.lauf(kal20, KV20, { tafel: T20 }), Ev10 = A.lauf(kal20, KV10, { tafel: T20 }), v20 = Ev20.konfigurationen[0], v10 = Ev10.konfigurationen[0];
-ok(Ev20.versatzTage === 20 && v20.entdeckung.uBrutto.mittel > 1.5 && v20.versatz.uNetto.mittel > 1 && v20.versatz.wirkt === true && v20.versatz.ueberlappung.anteil === 1 && LF.urteile(Ev20, null, Rg0).urteil === 'Messgeraet-Fehler' && /um 20 Tage verschobene Signal wirkt ebenso/.test(LF.urteile(Ev20, null, Rg0).grund),
-  'Kalenderregel Periode 20, Versatz 20 (Vorgabe): das verschobene Signal trifft das naechste Fenster - Placebo = Effekt, "wirkt", Messgeraet-Fehler', 'echt ' + v20.entdeckung.uBrutto.mittel.toFixed(3) + ' verschoben ' + v20.versatz.uNetto.mittel.toFixed(3));
+ok(Ev20.versatzTage === 20 && v20.entdeckung.uBrutto.mittel > 1.5 && v20.versatz.nTr === 0 && v20.versatz.uNetto.mittel === null && v20.versatz.wirkt === false && v20.versatz.ueberlappung.anteil === 1 && v20.versatz.ueberlappung.von === 960 && Ev20.zaehler.versatzUeberschneidung > 0 && LF.urteile(Ev20, null, Rg0).urteil !== 'Messgeraet-Fehler',
+  'D-iv: Kalenderregel Periode 20, Versatz 20 (Vorgabe): jedes verschobene Fenster schneidet das naechste Signalfenster -> gezaehlt (100 %), nicht gewertet, kein Messgeraet-Fehler aus eigener Periodik', 'echt ' + v20.entdeckung.uBrutto.mittel.toFixed(3) + ', Ueberschneidung ' + v20.versatz.ueberlappung.n + ' / ' + v20.versatz.ueberlappung.von);
 ok(Ev10.versatzTage === 10 && nahe(v10.entdeckung.uBrutto.mittel, v20.entdeckung.uBrutto.mittel, 1e-12) && Math.abs(v10.versatz.uNetto.mittel) < 0.4 && v10.versatz.wirkt === false && v10.versatz.ueberlappung.anteil === 0 && LF.urteile(Ev10, null, Rg0).urteil !== 'Messgeraet-Fehler' && /um 10 Handelstage verschobene Signal/.test(v10.placebo.grund) && /um 10 Handelstage/.test(Ev10.bewertungDetail),
   'dieselbe Regel mit versatzTage 10: Entdeckung bitgleich, verschobenes Signal in der Intervallmitte ~ 0, kein Messgeraet-Fehler; Texte nennen 10', 'verschoben ' + v10.versatz.uNetto.mittel.toFixed(3));
 var eV = null; try { A.lauf(kal20, Object.assign({}, KANDZ, { versatzTage: 4 }), { tafel: T20 }); } catch (e) { eV = e; }

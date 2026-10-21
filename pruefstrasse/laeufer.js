@@ -62,17 +62,34 @@ function ladeKandidat(kennung) {
     versatzGrund = versatzAbschnitt(regelText);
     if (!versatzGrund) fehler.push('versatzTage gesetzt, aber REGEL.md ohne Ueberschrift "Versatz" mit Begruendung (mindestens 20 Zeichen)');
   }
+  /* Nr. 121-1: topfRadius (Modus zeit, lokaler Topf) ganze Zahl in Handelstagen, fuer JEDE Konfiguration 2 H .. 12 H; gesetzt nur mit Begruendung in
+   * REGEL.md unter einer Ueberschrift "Topfradius"; Vorgabe 4 H braucht keinen Absatz (adapter/tag.js topfRadiusVon prueft dasselbe) */
+  var topfRadiusGrund = null;
+  if (kand.topfRadius != null) {
+    var r = kand.topfRadius;
+    if (kand.form !== 'tag' || kand.bewertung !== 'zeit') fehler.push('topfRadius gibt es nur in der Form tag mit bewertung zeit');
+    else (kand.konfigurationen || []).forEach(function (c) {
+      var lo = K.TOPF_RADIUS.min * c.haltedauer, hi = K.TOPF_RADIUS.max * c.haltedauer;
+      if (!(Number.isInteger(r) && r >= lo && r <= hi)) fehler.push('topfRadius muss eine ganze Zahl ' + lo + '..' + hi + ' sein (' + K.TOPF_RADIUS.min + ' H .. ' + K.TOPF_RADIUS.max + ' H fuer ' + c.key + ', H = ' + c.haltedauer + '; ' + JSON.stringify(r) + ')');
+    });
+    topfRadiusGrund = versatzAbschnitt(regelText, 'Topfradius');
+    if (!topfRadiusGrund) fehler.push('topfRadius gesetzt, aber REGEL.md ohne Ueberschrift "Topfradius" mit Begruendung (mindestens 20 Zeichen)');
+  }
+  /* A9 (Nr. 121-1): der Korb-Adapter misst genau eine Konfiguration (adapter/korb.js liest konfigurationen[0]) */
+  if (kand.form === 'korb' && Array.isArray(kand.konfigurationen) && kand.konfigurationen.length !== 1) fehler.push('korb: genau eine Konfiguration (FORM.md §2), nicht ' + kand.konfigurationen.length);
   try {
     regel = require(path.join(ordner, 'regel.js'));
     (SCHNITTSTELLE[kand.form] || []).forEach(function (f) { if (regel[f] == null) fehler.push('regel.js ohne ' + f + ' (Form ' + kand.form + ')'); });
     if (kand.form === 'tag' && kand.daten && kand.daten !== 'panel' && kand.daten !== 'trendkanal-tage') fehler.push('daten muss panel | trendkanal-tage sein');
   } catch (e) { fehler.push('regel.js laedt nicht: ' + e.message); }
-  return { kennung: kennung, ordner: ordner, kand: kand, regel: regel, fehler: fehler, versatzGrund: versatzGrund };
+  return { kennung: kennung, ordner: ordner, kand: kand, regel: regel, fehler: fehler, versatzGrund: versatzGrund, topfRadiusGrund: topfRadiusGrund };
 }
-/** Text unter der Markdown-Ueberschrift "Versatz" (bis zur naechsten Ueberschrift), Leerraum zusammengezogen, hoechstens 400 Zeichen; null, wenn
- *  es sie nicht gibt oder weniger als 20 Zeichen folgen. */
-function versatzAbschnitt(text) {
-  var m = /^#{1,6}[ \t]*Versatz\b[^\n]*\n([\s\S]*?)(?=\n#{1,6}[ \t]|$(?![\s\S]))/m.exec(text.replace(/\r\n/g, '\n'));
+/** Text unter der Markdown-Ueberschrift "Versatz" (oder name, Nr. 121-1: "Topfradius") bis zur naechsten Ueberschrift, Leerraum zusammengezogen,
+ *  hoechstens 400 Zeichen; null, wenn es sie nicht gibt oder weniger als 20 Zeichen folgen. */
+function versatzAbschnitt(text, name) {
+  var kopf = name || 'Versatz';
+  if (!/^[A-Za-z]+$/.test(kopf)) throw new Error('Abschnittsname nur Buchstaben');
+  var m = new RegExp('^#{1,6}[ \\t]*' + kopf + '\\b[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]|$(?![\\s\\S]))', 'm').exec(text.replace(/\r\n/g, '\n'));
   if (!m) return null;
   var t = m[1].replace(/\s+/g, ' ').trim();
   return t.length >= 20 ? (t.length > 400 ? t.slice(0, 397) + '...' : t) : null;
@@ -164,9 +181,15 @@ function messenImKind(kennung, phase, ausDatei, log) {
 function urteile(E, P, Rg) {
   var konf = E.konfigurationen, fehler = [];
   if (E.verstoesse > 0) fehler.push('Blick nach vorn: ' + E.verstoesse + ' Verstoesse (' + (E.beispiele || []).slice(0, 3).join(', ') + ')');
-  /* Gegenprobe "Signal um 20 Tage verschoben": zeigt eine Konfiguration mit Wirkung (netto > 0, t >= 2) dieselbe Wirkung auch verschoben,
-   * sitzt sie nicht in der Regel, sondern im Messgeraet (Kalender, Zelle, Daten) - unabhaengig davon, ob Tor 1 oder Placebo sie schon kippen. */
-  konf.forEach(function (k) { var e = k.entdeckung && k.entdeckung.uNetto; if (e && e.mittel > 0 && e.t >= K.KANDIDAT_T && k.versatz && k.versatz.wirkt) fehler.push(k.key + ': das um ' + (E.versatzTage || K.VERSATZ_TAGE) + ' Tage verschobene Signal wirkt ebenso (netto ' + de(k.versatz.uNetto.mittel) + ', t ' + de(k.versatz.uNetto.t, 2) + ')'); });
+  /* Gegenprobe "Signal um versatzTage verschoben" (A3, Nr. 121-1: zweiseitig, beide Modi, dieselbe Regel wie der Placebo "anderer Wert"): zeigt das
+   * verschobene Signal einen Ausschlag (|u brutto| > 2 se und > 1/4 Huerde, adapter/tag.js versatz.verstoss) - in welche Richtung auch immer, und
+   * unabhaengig vom Signal selbst -, sitzt die Wirkung im Messgeraet (Kalender, Topf, Zelle, Daten), nicht in der Regel. Verschobene Fenster, die ein
+   * Signalfenster derselben Reihe schneiden, sind dabei nicht gewertet (B-V5). Alte ergebnis-Dateien ohne `verstoss` lesen `wirkt`. */
+  konf.forEach(function (k) {
+    var v = k.versatz; if (!v || !(v.verstoss != null ? v.verstoss : v.wirkt)) return;
+    var u = v.uBrutto || v.uNetto;
+    fehler.push(k.key + ': das um ' + (E.versatzTage || K.VERSATZ_TAGE) + ' Tage verschobene Signal zeigt einen Ausschlag (brutto ' + de(u.mittel) + ', t ' + de(u.t, 2) + '; Schranke ' + K.PLACEBO_T + ' se und ' + de(v.schranke ? v.schranke.mindestPp : null) + ' Pp, zweiseitig)');
+  });
   var kandidaten = konf.filter(function (k) { return k.kandidat; });
   var urteil, grund;
   if (fehler.length) { urteil = 'Messgeraet-Fehler'; grund = fehler.join('; '); }
