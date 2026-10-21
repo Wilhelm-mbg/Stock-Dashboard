@@ -100,6 +100,8 @@ function versatzAbschnitt(text, name) {
 function pruefen(kennung, opt) {
   opt = opt || {};
   var L = ladeKandidat(kennung), bericht = { kennung: kennung, form: L.fehler, test: null, siegel1: null, gueltig: false };
+  var sperre = opt.nachmessung ? null : nachmessSperre(kennung);
+  if (sperre) bericht.form.push(sperre);
   if (!L.fehler.length) {
     var t = cp.spawnSync(process.execPath, [path.join(L.ordner, 'test.js')], { cwd: K.REPO, encoding: 'utf8', timeout: 300000 });
     bericht.test = { status: t.status, letzteZeile: String(t.stdout || '').trim().split('\n').pop(), fehler: String(t.stderr || '').slice(0, 500) };
@@ -110,14 +112,18 @@ function pruefen(kennung, opt) {
   return bericht;
 }
 /** --naechster: aeltester (datum, dann Kennung) gueltiger Kandidat, der noch kein ergebnis.json hat. */
-function naechster() {
-  if (!fs.existsSync(K.WARTESCHLANGE)) return null;
-  var liste = fs.readdirSync(K.WARTESCHLANGE).filter(function (d) { return fs.existsSync(path.join(K.WARTESCHLANGE, d, 'kandidat.json')); })
-    .map(function (d) { var k = null; try { k = liesJson(path.join(K.WARTESCHLANGE, d, 'kandidat.json')); } catch (e) { k = {}; } return { kennung: d, datum: String(k.datum || '9999') }; })
+function naechster(ort) {
+  ort = ort || {};
+  var WS = ort.warteschlange || K.WARTESCHLANGE, ERL = ort.erledigt || K.ERLEDIGT;
+  if (!fs.existsSync(WS)) return null;
+  var liste = fs.readdirSync(WS).filter(function (d) { return fs.existsSync(path.join(WS, d, 'kandidat.json')); })
+    .map(function (d) { var k = null; try { k = liesJson(path.join(WS, d, 'kandidat.json')); } catch (e) { k = {}; } return { kennung: d, datum: String(k.datum || '9999') }; })
     .sort(function (a, b) { return a.datum < b.datum ? -1 : a.datum > b.datum ? 1 : (a.kennung < b.kennung ? -1 : 1); });
   for (var i = 0; i < liste.length; i++) {
     var k = liste[i].kennung;
-    if (fs.existsSync(path.join(K.ERLEDIGT, k, 'ergebnis.json'))) continue;
+    if (fs.existsSync(path.join(ERL, k, 'ergebnis.json'))) continue;
+    /* Nachbesserung QS F1: nachgemessen (v<n>-<datum>/ergebnis.json) oder Nachmessung laeuft/abgebrochen (Marke) -> nie als frischer Kandidat */
+    if (nachmessSperre(k, ort)) { console.log('naechster: ' + k + ' uebersprungen - ' + nachmessSperre(k, ort)); continue; }
     if (pruefen(k).gueltig) return k;
   }
   return null;
@@ -340,7 +346,7 @@ function laufe(kennung, opt) {
   var logDatei = path.join(aus, 'LAUF.log');
   function log(t) { var z = jetzt() + '  ' + t; fs.appendFileSync(logDatei, z + '\n'); console.log(z); }
   log('START ' + kennung + (opt.trocken ? ' (trocken)' : '') + ' auf Zweig ' + SG.aus(SG.git(K.REPO, ['rev-parse', '--abbrev-ref', 'HEAD'])));
-  var P1 = pruefen(kennung);
+  var P1 = pruefen(kennung, { nachmessung: !!opt.nachmessung });
   if (!P1.gueltig) { log('ABBRUCH: Kandidat ungueltig: ' + P1.form.join('; ')); return { urteil: null, abbruch: P1.form }; }
   log('Form gueltig, test.js gruen (' + P1.test.letzteZeile + ')');
   var siegel1 = P1.siegel1; log('Siegel 1: Kandidatenordner in Commit ' + siegel1.commit + ', nichts Ungesichertes');
@@ -407,6 +413,7 @@ function laufe(kennung, opt) {
     log('belegt-Vorschlag in pruefstrasse/VORSCHLAEGE.md eingetragen');
   }
   log('ENDE ' + U.urteil + ' - Belegstand und Log angehaengt, Commit folgt');
+  if (NM && NM.marke && fs.existsSync(NM.marke)) fs.unlinkSync(NM.marke);       /* Marke nie in den Commit (Ordner-Pfadspezifikation); bei Fehler schreibt nachmessen sie neu */
   var h3 = commit(pfade, 'Pruefstrasse: ' + kennung + ' - ' + (NM ? 'Nachmessung ' + NM.n + ': ' : '') + U.urteil + ' (' + E.konfigurationen.length + ' Konfigurationen, ' + U.kandidaten + ' Kandidaten)');
   console.log(jetzt() + '  Commit ' + h3);
   return { urteil: U.urteil, grund: U.grund, commit: h3, siegel1: siegel1.commit, siegel2: siegel2.commit };
@@ -432,6 +439,14 @@ function nachmessungPruefen(kennung, grund, korrektur, ort) {
   var alt = liesJson(altPfad), korr = SG.aus(SG.git(repo, ['rev-parse', '--verify', '--quiet', korrektur + '^{commit}']));
   if (!korr) throw new Error('NACHMESSUNG abgelehnt: --korrektur ' + korrektur + ' ist kein Commit');
   if (SG.git(repo, ['merge-base', '--is-ancestor', korr, 'HEAD']).status !== 0) throw new Error('NACHMESSUNG abgelehnt: Korrektur ' + korr.slice(0, 7) + ' liegt nicht auf dem aktuellen Zweig');
+  /* Nachbesserung QS F2: die Korrektur liegt NACH der Vormessung (Nachfahre des Ergebnis-Commits = letzter Commit von erledigt/<k>/ergebnis.json,
+   * ersatzweise Siegel 2) und ist ein Messgeraet-Commit (aendert eine Datei unter pruefstrasse/ ausserhalb erledigt/ und warteschlange/) */
+  var ergRel = path.relative(repo, altPfad).replace(/\\/g, '/'), ergCommit = SG.aus(SG.git(repo, ['log', '-1', '--format=%H', '--', ergRel])) || (alt.siegel2 && alt.siegel2.commit) || '';
+  if (!/^[0-9a-f]{40}$/.test(ergCommit)) throw new Error('NACHMESSUNG abgelehnt: Commit der Vormessung (' + ergRel + ') nicht gefunden');
+  if (korr === ergCommit || SG.git(repo, ['merge-base', '--is-ancestor', ergCommit, korr]).status !== 0) throw new Error('NACHMESSUNG abgelehnt: Korrektur ' + korr.slice(0, 7) + ' liegt nicht nach der Vormessung (kein Nachfahre von ' + ergCommit.slice(0, 7) + ') - ein Messgeraet-Fehler wird nach dem Urteil korrigiert');
+  var geaendert = (SG.aus(SG.git(repo, ['diff-tree', '--no-commit-id', '--name-only', '-r', '--root', korr])) || '').split('\n').filter(function (f) { return /^pruefstrasse\//.test(f) && !/^pruefstrasse\/(erledigt|warteschlange)\//.test(f); });
+  if (!geaendert.length) throw new Error('NACHMESSUNG abgelehnt: Korrektur ' + korr.slice(0, 7) + ' aendert keine Datei des Messgeraets (pruefstrasse/ ausserhalb erledigt/ und warteschlange/) - ein Kandidaten- oder Ergebnis-Commit ist keine Korrektur');
+  var korrTitel = SG.aus(SG.git(repo, ['log', '-1', '--format=%s', korr])) || '';
   if (!alt.siegel1 || !alt.siegel1.commit) throw new Error('NACHMESSUNG abgelehnt: ergebnis.json ohne siegel1');
   var s1 = SG.siegel1(repo, ordnerRel);                                           /* wirft bei Ungesichertem */
   var baumAlt = SG.aus(SG.git(repo, ['rev-parse', alt.siegel1.commit + ':' + ordnerRel])), baumNeu = SG.aus(SG.git(repo, ['rev-parse', s1.commit + ':' + ordnerRel]));
@@ -440,7 +455,7 @@ function nachmessungPruefen(kennung, grund, korrektur, ort) {
   var n = vorher.length + 1, ziel = 'v' + n + '-' + String(alt.stand || '').slice(0, 10);
   var blicke = (alt.pruefung != null ? 1 : 0) + vorher.filter(function (d) { var f = path.join(erl, d, 'ergebnis.json'); return fs.existsSync(f) && liesJson(f).pruefung != null; }).length;
   var konf = ((alt.entdeckung && alt.entdeckung.konfigurationen) || []).map(function (k) { var e = k.entdeckung || {}; return { key: k.key, netto: e.uNetto ? e.uNetto.mittel : null, t: e.uNetto ? e.uNetto.t : null, urteil: k.urteil }; });
-  return { n: n, grund: String(grund).trim(), korrektur: korr, ziel: ziel, erledigt: erl, blickePruefzeit: blicke,
+  return { n: n, grund: String(grund).trim(), korrektur: korr, korrekturTitel: korrTitel, korrekturDateien: geaendert, vormessungCommit: ergCommit, repo: repo, ziel: ziel, erledigt: erl, blickePruefzeit: blicke,
     alt: { stand: alt.stand, urteil: alt.urteil, grund: alt.grund, ordner: path.relative(repo, path.join(erl, ziel)).replace(/\\/g, '/'), konf: konf, pruefungGelesen: alt.pruefung != null, siegel1: alt.siegel1.commit } };
 }
 /** Alte Ausgabe nach erledigt/<kennung>/<ziel>/ verschieben (nur die bekannten Ausgabedateien; ergebnis.json zuletzt geprueft). */
@@ -457,21 +472,70 @@ function nachmessungVerschieben(NM) {
 function nachmessungAbsatz(NM, E) {
   var neu = {}; (E.konfigurationen || []).forEach(function (k) { var e = k.entdeckung || {}; neu[k.key] = { netto: e.uNetto ? e.uNetto.mittel : null, t: e.uNetto ? e.uNetto.t : null, urteil: k.urteil }; });
   var zeilen = NM.alt.konf.map(function (a) { var b = neu[a.key] || {}; return a.key + ': netto ' + de(a.netto) + ' / t ' + de(a.t, 2) + ' (' + a.urteil + ') -> ' + de(b.netto) + ' / t ' + de(b.t, 2) + ' (' + (b.urteil || '–') + ')'; });
-  return '**Nachmessung ' + NM.n + '** (' + datumDe(E.stand || new Date().toISOString()) + '), Grund: ' + NM.grund + ' Korrektur `' + NM.korrektur.slice(0, 12) + '`. Ersetzt v' + (NM.n) + ' vom ' + datumDe(NM.alt.stand) + ' (Urteil ' + NM.alt.urteil + ', Ordner `' + NM.alt.ordner + '/`).' +
-    ' Was sich geaendert hat: Messgeraet (FORM.md, Nr. 121-1) - im Modus zeit lokaler Topf je Signal statt globalem zeitlichem Topf (die Topf-Streuung steckt damit im se, Hansen-Hodrick-Lag = H), Verschiebungs-Sperrklinke zweiseitig, verschobene Fenster mit Ueberschneidung nicht gewertet; die Regel (Siegel 1 `' + NM.alt.siegel1.slice(0, 7) + '`) ist unveraendert.' +
+  var grundSatz = NM.grund.replace(/[.\s]+$/, '');
+  return '**Nachmessung ' + NM.n + '** (' + datumDe(E.stand || new Date().toISOString()) + '), Grund: ' + grundSatz + '. Korrektur `' + NM.korrektur.slice(0, 12) + '`' + (NM.korrekturTitel ? ' („' + NM.korrekturTitel + '")' : '') + '. Ersetzt v' + (NM.n) + ' vom ' + datumDe(NM.alt.stand) + ' (Urteil ' + NM.alt.urteil + ', Ordner `' + NM.alt.ordner + '/`).' +
+    ' Was sich geaendert hat: das Messgeraet laut Korrektur-Commit (' + ((NM.korrekturDateien || []).slice(0, 6).join(', ') || '–') + ((NM.korrekturDateien || []).length > 6 ? ', ...' : '') + '); die Regel (Siegel 1 `' + NM.alt.siegel1.slice(0, 7) + '`) ist unveraendert.' +
     (NM.blickePruefzeit > 0 ? ' **' + (NM.blickePruefzeit + 1) + '. Blick auf die Pruefzeit** (die Vormessung hat sie gelesen).' : ' Die Vormessung hat die Pruefzeit nicht gelesen (kein Kandidat) - die Nachmessung verbraucht kein Holdout.') +
     ' Vergleich (Entdeckung, alt -> neu): ' + zeilen.join('; ') + '.';
 }
 /** --nachmessen: pruefen, verschieben, Lauf wie --kandidat. */
-function nachmessen(kennung, grund, korrektur) {
-  var NM = nachmessungVerschieben(nachmessungPruefen(kennung, grund, korrektur));
-  console.log(jetzt() + '  Nachmessung ' + NM.n + ' von ' + kennung + ': alte Ausgabe nach ' + NM.alt.ordner + '/ (' + NM.verschoben.join(', ') + ')');
-  return laufe(kennung, { nachmessung: NM });
+/** Sperre durch Nachmessung (Nachbesserung QS F1): Text, wenn unter erledigt/<k>/ eine Marke NACHMESSUNG-LAEUFT.json oder irgendein v<n>-<datum>/ergebnis.json
+ *  liegt - dann misst weder --naechster noch --kandidat den Kandidaten als frischen; nur --nachmessen (oder der PM nach Aufraeumen). Sonst null. */
+var NACHMESS_MARKE = 'NACHMESSUNG-LAEUFT.json';
+function nachmessSperre(kennung, ort) {
+  var erl = path.join((ort && ort.erledigt) || K.ERLEDIGT, kennung);
+  if (!fs.existsSync(erl)) return null;
+  if (fs.existsSync(path.join(erl, NACHMESS_MARKE))) { var m = {}; try { m = liesJson(path.join(erl, NACHMESS_MARKE)); } catch (e) { m = {}; } return 'Nachmessung ' + (m.fehler ? 'ABGEBROCHEN (' + String(m.fehler).slice(0, 160) + ')' : 'laeuft') + ' - Marke ' + NACHMESS_MARKE + ' liegt, nur der PM raeumt auf'; }
+  var v = fs.readdirSync(erl).filter(function (d) { return /^v\d+-/.test(d) && fs.existsSync(path.join(erl, d, 'ergebnis.json')); });
+  return v.length ? 'nachgemessen (' + v.join(', ') + ') - nur --nachmessen misst ihn wieder' : null;
+}
+/** --nachmessen: pruefen, Marke schreiben, verschieben, Lauf wie --kandidat. Rueckweg (QS F1): scheitert irgendein Schritt nach dem Verschieben, werden
+ *  die Teilausgaben des Laufs entfernt, die alte Ausgabe zurueckgestellt, der Index NUR fuer die eigenen Pfade zurueckgesetzt (erledigt/<k>/, Register,
+ *  Belegstand, Log - nur wenn sie vorher nicht gestaged waren), Register/Belegstand/Log auf den Stand davor gesetzt (nur wenn der Lauf sie bloss
+ *  ergaenzt hat), und die Marke bleibt mit `fehler` liegen. opt = { ort, lauf } nur fuer Tests (Temp-Repo, simulierter Lauf). */
+function nachmessen(kennung, grund, korrektur, opt) {
+  opt = opt || {};
+  var ort = opt.ort || {}, lauf = opt.lauf || laufe, NM = nachmessungPruefen(kennung, grund, korrektur, ort), repo = NM.repo;
+  var marke = path.join(NM.erledigt, NACHMESS_MARKE);
+  if (fs.existsSync(marke)) throw new Error('NACHMESSUNG abgelehnt: ' + NACHMESS_MARKE + ' liegt schon (laufende oder abgebrochene Nachmessung) - erst aufraeumen');
+  var relErl = path.relative(repo, NM.erledigt).replace(/\\/g, '/');
+  var weitere = (opt.weiterePfade || ['pruefstrasse/register.json', 'wiki/belegstand.md', 'wiki/log.md', 'pruefstrasse/VORSCHLAEGE.md']);
+  var vorher = weitere.map(function (r) { var a = path.join(repo, r); return { rel: r, abs: a, text: fs.existsSync(a) ? fs.readFileSync(a, 'utf8') : null, gestaged: (SG.aus(SG.git(repo, ['diff', '--cached', '--name-only', '--', r])) || '') !== '' }; });
+  var erlGestaged = (SG.aus(SG.git(repo, ['diff', '--cached', '--name-only', '--', relErl])) || '') !== '', headVor = SG.aus(SG.git(repo, ['rev-parse', 'HEAD']));
+  var M = { kennung: kennung, n: NM.n, grund: NM.grund, korrektur: NM.korrektur, ziel: NM.ziel, zeit: jetzt(), head: headVor };
+  schreibeJson(marke, M); NM.marke = marke;
+  try {
+    nachmessungVerschieben(NM);
+    console.log(jetzt() + '  Nachmessung ' + NM.n + ' von ' + kennung + ': alte Ausgabe nach ' + NM.alt.ordner + '/ (' + NM.verschoben.join(', ') + '), Marke ' + NACHMESS_MARKE);
+    var r = lauf(kennung, { nachmessung: NM });
+    if (!r || r.abbruch) throw new Error('Lauf abgebrochen: ' + JSON.stringify(r && r.abbruch));
+    if (fs.existsSync(marke)) fs.unlinkSync(marke);
+    return r;
+  } catch (fehler) {
+    var log = null; try { log = fs.readFileSync(path.join(NM.erledigt, 'LAUF.log'), 'utf8').split('\n').slice(-12).join('\n'); } catch (e) { log = null; }
+    var zielAbs = path.join(NM.erledigt, NM.ziel), notizen = [];
+    NACHMESS_DATEIEN.forEach(function (f) { var q = path.join(NM.erledigt, f); if (fs.existsSync(q)) fs.unlinkSync(q); });                    /* Teilausgaben des Laufs */
+    (NM.verschoben || []).forEach(function (f) { var q = path.join(zielAbs, f); if (fs.existsSync(q)) fs.renameSync(q, path.join(NM.erledigt, f)); });
+    if (fs.existsSync(zielAbs) && !fs.readdirSync(zielAbs).length) fs.rmdirSync(zielAbs);
+    if (!erlGestaged) SG.git(repo, ['restore', '--staged', '--', relErl]);
+    vorher.forEach(function (v) {
+      var jetztText = fs.existsSync(v.abs) ? fs.readFileSync(v.abs, 'utf8') : null;
+      if (jetztText !== v.text) {
+        if (v.text != null && jetztText != null && (jetztText.indexOf(v.text.replace(/\s*$/, '')) === 0 || v.rel === 'pruefstrasse/register.json')) fs.writeFileSync(v.abs, v.text);
+        else notizen.push(v.rel + ' veraendert, nicht zurueckgesetzt');
+      }
+      if (!v.gestaged) SG.git(repo, ['restore', '--staged', '--', v.rel]);
+    });
+    var headNach = SG.aus(SG.git(repo, ['rev-parse', 'HEAD']));
+    if (headNach !== headVor) notizen.push('HEAD bewegt (' + headVor.slice(0, 7) + ' -> ' + headNach.slice(0, 7) + ', vermutlich Siegel-2-Commit der neuen KANDIDATEN.json): der Arbeitsbaum traegt wieder die alte Ausgabe, der PM entscheidet');
+    M.fehler = String(fehler && fehler.message || fehler).slice(0, 600); M.abgebrochen = jetzt(); M.notizen = notizen; M.logEnde = log; schreibeJson(marke, M);
+    throw new Error('NACHMESSUNG abgebrochen, zurueckgestellt, Marke liegt (' + path.relative(repo, marke).replace(/\\/g, '/') + '): ' + M.fehler + (notizen.length ? ' | ' + notizen.join('; ') : ''));
+  }
 }
 
 module.exports = { ladeKandidat: ladeKandidat, pruefen: pruefen, naechster: naechster, laufe: laufe, messen: messen, urteile: urteile, holm: holm, register: register,
-  registerEintragen: registerEintragen, ergebnisMarkdown: ergebnisMarkdown, belegstandAbsatz: belegstandAbsatz, URTEILE: URTEILE, PFLICHT: PFLICHT,
-  nachmessungPruefen: nachmessungPruefen, nachmessungVerschieben: nachmessungVerschieben, nachmessungAbsatz: nachmessungAbsatz, nachmessen: nachmessen, obereGrenze: obereGrenze, versatzAbschnitt: versatzAbschnitt };
+  registerEintragen: registerEintragen, ergebnisMarkdown: ergebnisMarkdown, belegstandAbsatz: belegstandAbsatz, messgeraetDetails: messgeraetDetails, URTEILE: URTEILE, PFLICHT: PFLICHT,
+  nachmessungPruefen: nachmessungPruefen, nachmessungVerschieben: nachmessungVerschieben, nachmessSperre: nachmessSperre, NACHMESS_MARKE: NACHMESS_MARKE, nachmessungAbsatz: nachmessungAbsatz, nachmessen: nachmessen, obereGrenze: obereGrenze, versatzAbschnitt: versatzAbschnitt };
 
 if (require.main === module) {
   var a = process.argv.slice(2), arg = function (n) { var i = a.indexOf(n); return i >= 0 ? a[i + 1] : null; }, trocken = a.indexOf('--trocken') !== -1;

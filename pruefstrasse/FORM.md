@@ -102,7 +102,7 @@ Terminlücke verschiebt nichts mehr. Der frühere Topf „über alle zulässigen
 Signalplan zeitlich verzerrt (Audit Nr. 120: fomc Topf +0,90 Pp je 5 Tage gegen +0,30 aller Fenster, 2020 trägt 0,55) und seine Streuung fehlte
 im se; er bleibt als `zeitTopfGlobal` nur nachrichtlich („Überschuss gegen den globalen Topf ohne Ausschluss") und für den Rot-vor-Grün-Test.
 **Standardfehler:** die Streuung des lokalen Topfs steckt im Überschuss jedes Trades und damit in der Tagesreihe; weil die Töpfe disjunkt sind,
-bleibt der Hansen-Hodrick-Lag = H wie im Modus `topf` (Beweis: Kunsttest D-i in `test.js`, 100 Seeds unter der Null mit unregelmäßigem Plan
+bleibt der Hansen-Hodrick-Lag = H wie im Modus `topf` (Beweis: Kunsttest D-i in `test.js`, 300 Seeds unter der Null mit unregelmäßigem Plan
 und Regime-Block). Nachrichtlich im Protokoll: Topf-n je Trade (Median, Min, Anteil n = 1), Histogramm der Topf-Starttage relativ zum Signal, Topf-Mittel,
 Überschuss gegen den globalen Topf, Sensitivität für R = 2 H und 8 H (kein Urteil). Kassa-Hürde, Tagesreihe (Mittel
 je Einstiegstag), Hansen-Hodrick, Tor 1 und MDE80 = 2,8016 × se bleiben; bei einer marktweiten Regel ist jeder Signaltag **ein** Cluster,
@@ -175,14 +175,18 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   erwarteten Zufallstreffer (2,28 % je Konfiguration bei t ≥ 2 einseitig). Korb: Zufallsbücher B = max(200, 20 · m + 1) mit m = Konfigurationen
   im Register + 1 (`konfig.js` `korbBuecher`; kleinster p = 1/(B + 1) ≤ α/m), das Protokoll nennt B und den p-Boden.
 - **Nachmessung (Nr. 121-1, nur PM, nie der Nachtlauf):** `node pruefstrasse/laeufer.js --nachmessen <kennung> --grund "<Text>" --korrektur <commit>`
-  ersetzt ein Urteil, wenn das **Messgerät** einen belegten Fehler hatte und korrigiert ist (Commit der Korrektur, Vorfahr von HEAD); die
+  ersetzt ein Urteil, wenn das **Messgerät** einen belegten Fehler hatte und korrigiert ist (Commit der Korrektur: Vorfahr von HEAD, **Nachfahre des
+  Ergebnis-Commits der Vormessung** und ändert eine Datei unter `pruefstrasse/` außerhalb `erledigt/` und `warteschlange/`); die
   **Regel** wird nie nachgemessen: der Kandidatenordner muss derselbe Baum sein wie im Commit von Siegel 1 der Vormessung. Die alte Ausgabe
   wandert nach `erledigt/<kennung>/v<n>-<datum>/`, der Lauf geht wie `--kandidat` (Siegel 2 neu, Prüfung nur für Kandidaten); ERGEBNIS.md
   trägt oben den Absatz „Nachmessung n" (Grund, was ersetzt wird, was sich geändert hat, alt → neu je Konfiguration); das Register **ersetzt**
   die Zeilen der Kennung (Felder `nachmessung`, `ersetzt`), der alte Belegstand-Absatz bleibt unverändert stehen, der neue sagt, wen er
   ersetzt. Hat die Vormessung die Prüfzeit gelesen, steht „n. Blick auf die Prüfzeit" in Kopf und Belegstand-Absatz, und ein
   `belegt-Vorschlag` aus einer Nachmessung verlangt einen zweiten unabhängigen Lauf durch den PM (α-Teilung: Stufe 2). `--naechster`
-  überspringt erledigte Kandidaten wie bisher.
+  überspringt erledigte Kandidaten wie bisher. **Rückweg:** vor dem Verschieben liegt die Marke `erledigt/<kennung>/NACHMESSUNG-LAEUFT.json`
+  (Grund, Korrektur, Zielordner, Zeit); scheitert ein Schritt, stellt der Läufer die alte Ausgabe zurück, setzt den Index nur für die eigenen
+  Pfade zurück und lässt die Marke mit `fehler` liegen. Solange die Marke oder ein `v*-*/ergebnis.json` liegt, messen `--naechster` und
+  `--kandidat` den Kandidaten nicht als frischen (`--pruefen` meldet es).
 - **Ausgabe:** `erledigt/<kennung>/` mit `LAUF.log`, `KANDIDATEN.json`, `ergebnis.json`, `ERGEBNIS.md`, `belegstand-eintrag.md`;
   der Absatz wird unter `## Prüfstraße (automatisch gemessen)` an `wiki/belegstand.md` angehängt und mit einer Zeile in `wiki/log.md`
   committet (kein Push). Der Kopf des Belegstands bleibt unberührt; `belegt-Vorschlag` landet zusätzlich in `pruefstrasse/VORSCHLAEGE.md`.

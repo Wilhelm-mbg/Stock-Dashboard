@@ -450,38 +450,74 @@ ok(xiA.gesamt === 'nicht entscheidbar' && xiA.konf === 'nicht entscheidbar' && x
 /* A16: p der Pruefung aus der t-Verteilung (df = n_eff - 1); Monatswende n_eff ~ 10: p(t = 2,5) einseitig 0,017 statt 0,006 (Phi) */
 ok(nahe(1 - A.tVerteilung(2.5, 9), 0.0169, 5e-4) && nahe(1 - A.phi(2.5), 0.00621, 1e-4) && nahe(A.tVerteilung(0, 5), 0.5, 1e-12) && nahe(A.tVerteilung(-2.5, 9) + A.tVerteilung(2.5, 9), 1, 1e-12) && nahe(1 - A.tVerteilung(1.96, 1e6), 0.025, 1e-4),
   'A16: t-Verteilung - einseitig p(2,5; df 9) = 0,017 (Phi: 0,006), symmetrisch, df gross -> Normalverteilung', (1 - A.tVerteilung(2.5, 9)).toFixed(4));
-/* D-viii: Nachmessung an einem Kunst-Kandidaten in einem Temp-Repo (nie gegen das echte Repo/Wiki) */
+/* D-viii: Nachmessung an einem Kunst-Kandidaten in einem Temp-Repo (nie gegen das echte Repo/Wiki). Nachbesserung QS: F2 (Korrektur nach der Vormessung,
+ * Messgeraet-Commit), F1 (Abbruch mitten im Lauf -> Ausgangszustand, Marke liegt, --naechster liefert den Kandidaten nicht). */
 var NMR = fs.mkdtempSync(path.join(require('os').tmpdir(), 'pruefstrasse-nachmessung-')), gitT = function (args) { var r = cp.spawnSync('git', ['-c', 'user.name=test', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false'].concat(args), { cwd: NMR, encoding: 'utf8' }); if (r.status !== 0) throw new Error('git ' + args.join(' ') + ': ' + r.stderr); return r.stdout.trim(); };
 try {
   var ortT = { repo: NMR, erledigt: path.join(NMR, 'pruefstrasse', 'erledigt'), warteschlange: path.join(NMR, 'pruefstrasse', 'warteschlange') }, kn = 'kunst-nm', kOrd = path.join(ortT.warteschlange, kn), kErl = path.join(ortT.erledigt, kn);
-  gitT(['init', '-q']); fs.mkdirSync(kOrd, { recursive: true }); fs.mkdirSync(kErl, { recursive: true });
+  var GRUND = 'Messgeraet-Fehler: globaler Topf verzerrt (Audit Nr. 120)', ALTE = ['ERGEBNIS.md', 'ergebnis-entdeckung.json', 'KANDIDATEN.json', 'LAUF.log', 'belegstand-eintrag.md'];
+  gitT(['init', '-q']); fs.mkdirSync(kOrd, { recursive: true }); fs.mkdirSync(kErl, { recursive: true }); fs.mkdirSync(path.join(NMR, 'pruefstrasse', 'adapter'), { recursive: true });
   fs.writeFileSync(path.join(kOrd, 'kandidat.json'), JSON.stringify({ kennung: kn, form: 'tag', bewertung: 'zeit', konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5 }] })); fs.writeFileSync(path.join(kOrd, 'REGEL.md'), '# Regel\n');
+  fs.writeFileSync(path.join(NMR, 'pruefstrasse', 'adapter', 'tag.js'), '// Messgeraet alt\n'); fs.writeFileSync(path.join(NMR, 'pruefstrasse', 'register.json'), '{"gesamt":1}\n');
   gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Kandidat']); var cK = gitT(['rev-parse', 'HEAD']);
   var altE = { kennung: kn, stand: '2026-10-12T02:00:00.000Z', urteil: 'nein', grund: 'alt', siegel1: { commit: cK, ordner: 'pruefstrasse/warteschlange/' + kn }, pruefung: null,
     entdeckung: { konfigurationen: [{ key: 'H5', urteil: 'nein', entdeckung: { uNetto: { mittel: -1, t: -4 } } }] } };
-  fs.writeFileSync(path.join(kErl, 'ergebnis.json'), JSON.stringify(altE)); ['ERGEBNIS.md', 'ergebnis-entdeckung.json', 'KANDIDATEN.json', 'LAUF.log', 'belegstand-eintrag.md'].forEach(function (f) { fs.writeFileSync(path.join(kErl, f), 'alt ' + f); });
-  gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Protokoll']); var cKorr = gitT(['rev-parse', 'HEAD']);
-  var eNM0 = null; try { LF.nachmessungPruefen(kn, 'kurz', cKorr, ortT); } catch (e) { eNM0 = e; }
-  var eNM1 = null; try { LF.nachmessungPruefen(kn, 'Messgeraet-Fehler: globaler Topf verzerrt (Audit Nr. 120)', 'deadbeef', ortT); } catch (e) { eNM1 = e; }
-  var NM = LF.nachmessungPruefen(kn, 'Messgeraet-Fehler: globaler Topf verzerrt (Audit Nr. 120)', cKorr, ortT);
+  fs.writeFileSync(path.join(kErl, 'ergebnis.json'), JSON.stringify(altE)); ALTE.forEach(function (f) { fs.writeFileSync(path.join(kErl, f), 'alt ' + f); });
+  gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Protokoll']); var cProt = gitT(['rev-parse', 'HEAD']);
+  fs.writeFileSync(path.join(kErl, 'notiz.md'), 'nur Ergebnis\n'); gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Notiz im Ergebnisordner']); var cNotiz = gitT(['rev-parse', 'HEAD']);
+  fs.writeFileSync(path.join(NMR, 'pruefstrasse', 'adapter', 'tag.js'), '// Messgeraet korrigiert\n'); gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Messgeraet: Topf korrigiert']); var cKorr = gitT(['rev-parse', 'HEAD']);
+  function fehlerVon(fn) { try { fn(); } catch (e) { return e; } return null; }
+  var eNM0 = fehlerVon(function () { LF.nachmessungPruefen(kn, 'kurz', cKorr, ortT); }), eNM1 = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, 'deadbeef', ortT); });
+  var eF2a = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cK, ortT); }), eF2b = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cProt, ortT); }), eF2c = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cNotiz, ortT); });
+  ok(eNM0 && /kuerzer als 20 Zeichen/.test(eNM0.message) && eNM1 && /kein Commit/.test(eNM1.message) && eF2a && /liegt nicht nach der Vormessung/.test(eF2a.message) && eF2b && /liegt nicht nach der Vormessung/.test(eF2b.message) && eF2c && /aendert keine Datei des Messgeraets/.test(eF2c.message),
+    'D-viii (F2): ohne Grund / kein Commit abgelehnt; Korrektur VOR der Vormessung (Kandidaten-Commit) und = Ergebnis-Commit abgelehnt; Commit nur im Ergebnisordner (kein Messgeraet-Commit) abgelehnt', eF2c && eF2c.message.slice(0, 90));
+  /* F1: Abbruch mitten im Lauf (simulierter Kind-Fehler nach Teilausgaben, gestagten Pfaden und Register-Aenderung) */
+  var lauf1 = function () {
+    fs.writeFileSync(path.join(kErl, 'LAUF.log'), 'neu: START\nneu: Kind-Fehler\n'); fs.writeFileSync(path.join(kErl, 'KANDIDATEN.json'), '{"neu":true}');
+    fs.writeFileSync(path.join(NMR, 'pruefstrasse', 'register.json'), '{"gesamt":1}\n{"halb":true}\n');
+    gitT(['add', '--', 'pruefstrasse/erledigt/' + kn, 'pruefstrasse/register.json']);
+    throw new Error('Kind-Fehler simuliert');
+  };
+  var eF1 = fehlerVon(function () { LF.nachmessen(kn, GRUND, cKorr, { ort: ortT, lauf: lauf1, weiterePfade: ['pruefstrasse/register.json'] }); });
+  var markeF1 = path.join(kErl, LF.NACHMESS_MARKE), mF1 = fs.existsSync(markeF1) ? JSON.parse(fs.readFileSync(markeF1, 'utf8')) : {};
+  var alleZurueck = ALTE.every(function (f) { return fs.readFileSync(path.join(kErl, f), 'utf8') === 'alt ' + f; }) && JSON.parse(fs.readFileSync(path.join(kErl, 'ergebnis.json'), 'utf8')).stand === altE.stand;
+  var gestagt = gitT(['diff', '--cached', '--name-only']), statusT = gitT(['status', '--porcelain', '--', 'pruefstrasse/erledigt', 'pruefstrasse/register.json']);
+  ok(eF1 && /NACHMESSUNG abgebrochen, zurueckgestellt, Marke liegt/.test(eF1.message) && /Kind-Fehler simuliert/.test(mF1.fehler || '') && mF1.korrektur === cKorr && mF1.ziel === 'v1-2026-10-12' && alleZurueck && !fs.existsSync(path.join(kErl, 'v1-2026-10-12')) && gestagt === '' &&
+    fs.readFileSync(path.join(NMR, 'pruefstrasse', 'register.json'), 'utf8') === '{"gesamt":1}\n' && statusT === '?? pruefstrasse/erledigt/kunst-nm/' + LF.NACHMESS_MARKE,
+    'D-viii (F1): Abbruch mitten im Lauf -> alte Ausgabe zurueck, v1-Ordner weg, Index der eigenen Pfade leer, Register auf dem Stand davor, Marke liegt mit fehler (einzige Aenderung im Arbeitsbaum)', (eF1 && eF1.message.slice(0, 80)) + ' | status ' + statusT);
+  fs.unlinkSync(path.join(kErl, 'ergebnis.json'));          /* schlimmster Fall: Prozess hart beendet, kein Rueckweg - nur die Marke schuetzt */
+  var sperreM = LF.nachmessSperre(kn, ortT), naechsterM = LF.naechster(ortT), eDoppelt = fehlerVon(function () { LF.nachmessen(kn, GRUND, cKorr, { ort: ortT, lauf: lauf1 }); });
+  ok(/ABGEBROCHEN/.test(sperreM || '') && naechsterM === null && eDoppelt && /liegt schon|kein erledigtes Protokoll/.test(eDoppelt.message), 'D-viii (F1): Marke liegt (ergebnis.json fehlt) -> --naechster liefert den Kandidaten NICHT, --pruefen meldet "Nachmessung ABGEBROCHEN", keine zweite Nachmessung darueber', sperreM);
+  fs.unlinkSync(markeF1); fs.writeFileSync(path.join(kErl, 'ergebnis.json'), JSON.stringify(altE));
+  /* Erfolgsweg der Bausteine: verschieben, Register ersetzt, Kopfabsatz */
+  var NM = LF.nachmessungPruefen(kn, GRUND, cKorr, ortT);
   LF.nachmessungVerschieben(NM);
-  var imZiel = fs.readdirSync(path.join(kErl, 'v1-2026-10-12')).sort(), uebrig = fs.readdirSync(kErl).filter(function (f) { return f !== 'v1-2026-10-12'; });
+  var imZiel = fs.readdirSync(path.join(kErl, 'v1-2026-10-12')).sort(), uebrig = fs.readdirSync(kErl).filter(function (f) { return f !== 'v1-2026-10-12' && f !== 'notiz.md'; });
+  ok(NM.n === 1 && NM.blickePruefzeit === 0 && NM.vormessungCommit === cProt && NM.korrekturDateien.join(',') === 'pruefstrasse/adapter/tag.js' && imZiel.join(',') === 'ERGEBNIS.md,KANDIDATEN.json,LAUF.log,belegstand-eintrag.md,ergebnis-entdeckung.json,ergebnis.json' && uebrig.length === 0 && /nachgemessen \(v1-2026-10-12\)/.test(LF.nachmessSperre(kn, ortT) || '') && LF.naechster(ortT) === null,
+    'D-viii: Nachmessung - alte Ausgabe nach erledigt/<k>/v1-2026-10-12/ verschoben (6 Dateien), nichts bleibt liegen; v1/ergebnis.json sperrt --naechster', imZiel.join(','));
   var RgN = { kennung: 'x', konfigurationen: [{ kennung: kn, form: 'tag', key: 'H5', urteil: 'nein', datum: altE.stand }, { kennung: 'anderer', form: 'tag', key: 'H1', urteil: 'nein', datum: altE.stand }], gesamt: 2 };
   RgN = LF.registerEintragen(RgN, kn, 'tag', [{ key: 'H5', urteil: 'nicht entscheidbar' }], '2026-10-21T00:00:00Z', 'zeit', { nachmessung: NM.n, ersetzt: NM.alt.stand });
   var zN = RgN.konfigurationen.filter(function (e) { return e.kennung === kn; });
   var EN = { stand: '2026-10-21T00:00:00.000Z', konfigurationen: [{ key: 'H5', urteil: 'nicht entscheidbar', entdeckung: { uNetto: { mittel: -0.4, t: -1.2 } } }] };
   var absN = LF.nachmessungAbsatz(NM, EN), mdN = LF.ergebnisMarkdown(kandZ, Emz, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null, false, NM), bsN = LF.belegstandAbsatz(kandZ, Emz, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null, NM);
-  ok(eNM0 && /kuerzer als 20 Zeichen/.test(eNM0.message) && eNM1 && /kein Commit/.test(eNM1.message) && NM.n === 1 && NM.blickePruefzeit === 0 && imZiel.join(',') === 'ERGEBNIS.md,KANDIDATEN.json,LAUF.log,belegstand-eintrag.md,ergebnis-entdeckung.json,ergebnis.json' && uebrig.length === 0,
-    'D-viii: Nachmessung - ohne Grund / ohne Korrektur-Commit abgelehnt; alte Ausgabe nach erledigt/<k>/v1-2026-10-12/ verschoben (6 Dateien), nichts bleibt liegen', imZiel.join(','));
   ok(RgN.gesamt === 2 && zN.length === 1 && zN[0].nachmessung === 1 && zN[0].ersetzt === altE.stand && zN[0].urteil === 'nicht entscheidbar', 'D-viii: Register ersetzt die Zeile der Kennung (nicht ergaenzt): 2 Konfigurationen, Feld nachmessung 1, ersetzt', JSON.stringify(zN[0]));
-  ok(/^\*\*Nachmessung 1\*\* \(21\.10\.2026\), Grund: Messgeraet-Fehler: globaler Topf verzerrt/.test(absN) && /Ersetzt v1 vom 12\.10\.2026 \(Urteil nein, Ordner `pruefstrasse\/erledigt\/kunst-nm\/v1-2026-10-12\/`\)/.test(absN) && /H5: netto −1,0000 \/ t −4,00 \(nein\) -> −0,4000 \/ t −1,20 \(nicht entscheidbar\)/.test(absN) && /verbraucht kein Holdout/.test(absN) && /\n\*\*Nachmessung 1\*\*/.test(mdN) && /— \*\*Nachmessung 1\*\* \(ersetzt den Absatz vom 12\.10\.2026/.test(bsN),
-    'D-viii: Kopfabsatz "Nachmessung 1" mit Grund, ersetzter Version, Vergleich alt -> neu je Konfiguration und Holdout-Satz in ERGEBNIS.md; Belegstand-Absatz nennt, wen er ersetzt', absN.slice(0, 90));
+  ok(/^\*\*Nachmessung 1\*\* \(21\.10\.2026\), Grund: Messgeraet-Fehler: globaler Topf verzerrt \(Audit Nr\. 120\)\. Korrektur `[0-9a-f]{12}` \(„Messgeraet: Topf korrigiert"\)\./.test(absN) && /Was sich geaendert hat: das Messgeraet laut Korrektur-Commit \(pruefstrasse\/adapter\/tag\.js\)/.test(absN) && !/Nr\. 121-1/.test(absN) &&
+    /Ersetzt v1 vom 12\.10\.2026 \(Urteil nein, Ordner `pruefstrasse\/erledigt\/kunst-nm\/v1-2026-10-12\/`\)/.test(absN) && /H5: netto −1,0000 \/ t −4,00 \(nein\) -> −0,4000 \/ t −1,20 \(nicht entscheidbar\)/.test(absN) && /verbraucht kein Holdout/.test(absN) && /\n\*\*Nachmessung 1\*\*/.test(mdN) && /— \*\*Nachmessung 1\*\* \(ersetzt den Absatz vom 12\.10\.2026/.test(bsN),
+    'D-viii: Kopfabsatz "Nachmessung 1" aus --grund/--korrektur (Commit-Titel, geaenderte Dateien; nichts fest verdrahtet), ersetzte Version, alt -> neu je Konfiguration, Holdout-Satz; Belegstand-Absatz nennt, wen er ersetzt', absN.slice(0, 90));
   /* Abbruch: Kandidatenordner nach Siegel 1 der Vormessung veraendert (committet) bzw. ungesichert */
   fs.writeFileSync(path.join(kErl, 'ergebnis.json'), JSON.stringify(altE));
-  fs.writeFileSync(path.join(kOrd, 'REGEL.md'), '# Regel\n\nungesichert\n'); var eNM2 = null; try { LF.nachmessungPruefen(kn, 'Messgeraet-Fehler: globaler Topf verzerrt (Audit Nr. 120)', cKorr, ortT); } catch (e) { eNM2 = e; }
-  gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Regel geaendert']); var eNM3 = null; try { LF.nachmessungPruefen(kn, 'Messgeraet-Fehler: globaler Topf verzerrt (Audit Nr. 120)', cKorr, ortT); } catch (e) { eNM3 = e; }
+  fs.writeFileSync(path.join(kOrd, 'REGEL.md'), '# Regel\n\nungesichert\n'); var eNM2 = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cKorr, ortT); });
+  gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Regel geaendert']); var eNM3 = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cKorr, ortT); });
   ok(eNM2 && /Ungesichertes/.test(eNM2.message) && eNM3 && /hat sich seit Siegel 1 der Vormessung/.test(eNM3.message), 'D-viii: Abbruch bei veraendertem Kandidatenordner (ungesichert: Siegel 1; committet: anderer Baum als in Siegel 1 der Vormessung)', eNM3 && eNM3.message.slice(0, 90));
 } finally { fs.rmSync(NMR, { recursive: true, force: true }); }
+/* F4 (QS): Protokollabschnitt "Messgeraet" an einem Kunst-Ergebnis (Modus zeit, mit Kunst-Pruefung) auf die Pflichtfelder pruefen */
+var EP4 = JSON.parse(JSON.stringify(Emz)); EP4.konfigurationen[0].pruefung = { nTage: 40, nTr: 1600, uNetto: { mittel: 0.1, t: 2, obere: 0.2 }, nEff: 8, df: 7, pEinseitig: 0.04, pEinseitigNormal: 0.023 };
+var dP4 = LF.messgeraetDetails(kandZ, EP4).join('\n'), mdP4 = LF.ergebnisMarkdown(kandZ, EP4, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null, false), bsP4 = LF.belegstandAbsatz(kandZ, EP4, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null);
+var pflicht4 = [/Topf-n je Trade Median \d+, Min \d+, Anteil n = 1 [\d,]+ %/, /Topf-Starttage relativ zum Signal \(Abstand:Anzahl\): -?\d+:\d+/, /Tor 1 verlangt netto ≥ \+11,31 × se = [+−][\d,]+ Pp; MDE80 = 2,80 × se = [+−][\d,]+ Pp/,
+  /\*\*Ohne Klasse:\*\* [\d,]+ % der Zeilen, \d+ von \d+ Reihen nie mit Klasse/, /Netto mit Eroeffnungshuerde \(nachrichtlich[^)]*\): [+−][\d,]+ \(t /, /zensiert \d+/, /Ueberschneidung mit einem Signalfenster [\d.]+ von [\d.]+ \([\d,]+ %\), nicht gewertet/, /Pruefung: n_eff \+8,0, df \+7,0, p einseitig \(t-Verteilung\) \+0,0400/];
+var fehlt4 = pflicht4.filter(function (re) { return !re.test(dP4); }).map(String);
+ok(fehlt4.length === 0 && mdP4.indexOf('## Messgeraet (Nr. 121-1)') !== -1 && mdP4.indexOf(dP4.trim()) !== -1 && /Tor 1 verlangt netto ≥ \+11,31 × se = [+−][\d,]+ Pp; MDE80 = 2,80 × se/.test(bsP4),
+  'F4: Protokollabschnitt "Messgeraet" traegt die Pflichtfelder (Topf-n Median/Min/Anteil n = 1, Histogramm, Tor 1 in t und Pp, MDE80, ohne Klasse, Eroeffnungs-Netto, zensiert, Versatz-Ueberschneidung, n_eff/df/p) und steht in ERGEBNIS.md; Belegstand nennt Tor 1 und MDE80', fehlt4.join(' | ') || 'alle da');
 
 console.log('4) Register (§6)');
 var Rg = LF.registerEintragen({ kennung: 'x', konfigurationen: [], gesamt: 0 }, 'a', 'tag', [{ key: 'H5', urteil: 'nein' }, { key: 'H10', urteil: 'nicht entscheidbar' }], '2026-10-11T00:00:00Z');
