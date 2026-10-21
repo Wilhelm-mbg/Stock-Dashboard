@@ -1,5 +1,5 @@
 {
- "stand": "2026-10-11T09:02:50.920Z",
+ "stand": "2026-10-21T13:08:31.832Z",
  "hinweis": "geschrieben von node pruefstrasse/test.js (ohne --schnell) bzw. den --kalibrierung-Laeufen der Adapter am 11.10.2026",
  "tag": {
   "entNTage": 1735,
@@ -15,8 +15,8 @@
   "reihen": 7299,
   "verstoesse": 0,
   "ms": {
-   "topf": 5208,
-   "messen": 4097
+   "topf": 4818,
+   "messen": 3866
   }
  },
  "korb": {
@@ -26,14 +26,14 @@
   "spyB": 181193.8652188327
  },
  "minute": {
-  "bruttoJeSignalPp": 0.024144115253097734,
+  "bruttoJeSignalPp": 0.025445960336359336,
   "huerdePp": 0.1,
-  "nettoJeSignalPp": -0.07585588474690227,
-  "werte": 2892,
+  "nettoJeSignalPp": -0.07455403966364067,
+  "werte": 2894,
   "handelstage": 730,
   "schnittTag": "2025-03-12",
-  "signale": 105484,
-  "t": 0.9177733601987259
+  "signale": 105623,
+  "t": 0.9306674798120459
  },
  "soll": {
   "tag": {
