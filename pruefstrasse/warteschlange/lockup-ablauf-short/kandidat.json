@@ -1,0 +1,15 @@
+{
+  "kennung": "lockup-ablauf-short",
+  "form": "tag",
+  "titel": "Ablauf der Lock-up-Frist (180 Tage nach dem Boersengang), short von Tag -10 bis Tag +1",
+  "quelle": "What Works in Trading, 'US IPO lockup expirations, 2007-2025, built from the point-in-time IPO calendar' (vorregistriert; 1.123 US-Ablaeufe 2007-2025, Ablauf = Preisfeststellung + 180 Kalendertage, Fenster (-10, +1), marktbereinigte CAR -1,97 %, t -4,47; 2013-2018 -2,68 %, 2019-2025 -1,92 %), https://whatworksintrading.substack.com/p/us-ipo-lockup-expirations-20072025; Klassiker Field & Hanka, 'The Expiration of IPO Share Lockups', Journal of Finance 56(2) (2001) 471-500 (-1,8 % in der Ablaufwoche, Daten 1988-1997); Gibbs & Hao, Leerverkaeufe vor dem Ablauf (SWFA 2014); alles abgerufen 2026-10-21, URLs in REGEL.md",
+  "erwartung": { "groesse": "Quelle brutto -1,97 Pp je Umlauf (Schluss Tag -10 bis Schluss Tag +1, gegen SPY), liquidestes Quintil -3,23 Pp; eigene Erwartung ab Eroeffnung Tag -9 gegen den Tagestopf und mit der Verduennung durch Reihenanfaenge, die keine Boersengaenge sind: -0,8 bis -1,6 Pp brutto, short also +0,8 bis +1,6 Pp", "richtung": "negativ (Kurs faellt; die Konfiguration ist short)" },
+  "daten": "panel",
+  "versatzTage": 60,
+  "konfigurationen": [
+    { "key": "L180-H11", "richtung": "short", "haltedauer": 11 }
+  ],
+  "params": { "sperrTage": 180, "preisVorNotierung": 1, "vorlaufKalendertage": 14, "ersteZeileAb": "2016-02-01" },
+  "autor": "Ideen-Agent (geplante Routine)",
+  "datum": "2026-10-21"
+}
