@@ -1,7 +1,7 @@
 {
  "kennung": "vor-fomc-long",
- "stand": "2026-10-20T15:16:48.741Z",
- "ergebnisEntdeckungSha256": "7681592999e2cdae5559a390e4671512920f1fa81e1f2047d0fb2a265008e996",
+ "stand": "2026-10-21T13:34:07.528Z",
+ "ergebnisEntdeckungSha256": "f78dcafed0bd61f7a0a6b0714cd203ad10757c11e070c7ce6fe8257ca6866751",
  "konfigurationen": 2,
  "regel": "FORM.md §5: netto > 0, t >= 2, Tor 1, kein Placebo-Verstoss",
  "messgeraetFehler": [],
