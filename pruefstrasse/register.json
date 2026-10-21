@@ -55,22 +55,6 @@
    "bewertung": "topf"
   },
   {
-   "kennung": "monatswende-long",
-   "form": "tag",
-   "key": "H4",
-   "urteil": "nicht entscheidbar",
-   "datum": "2026-10-20T15:16:22.885Z",
-   "bewertung": "zeit"
-  },
-  {
-   "kennung": "monatswende-long",
-   "form": "tag",
-   "key": "H3",
-   "urteil": "nicht entscheidbar",
-   "datum": "2026-10-20T15:16:22.885Z",
-   "bewertung": "zeit"
-  },
-  {
    "kennung": "vor-fomc-long",
    "form": "tag",
    "key": "H1",
@@ -103,9 +87,29 @@
    "bewertung": "zeit",
    "nachmessung": 1,
    "ersetzt": "2026-10-20T15:17:44.265Z"
+  },
+  {
+   "kennung": "monatswende-long",
+   "form": "tag",
+   "key": "H4",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-21T13:33:50.274Z",
+   "bewertung": "zeit",
+   "nachmessung": 1,
+   "ersetzt": "2026-10-20T15:16:22.885Z"
+  },
+  {
+   "kennung": "monatswende-long",
+   "form": "tag",
+   "key": "H3",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-21T13:33:50.274Z",
+   "bewertung": "zeit",
+   "nachmessung": 1,
+   "ersetzt": "2026-10-20T15:16:22.885Z"
   }
  ],
  "gesamt": 13,
  "zufallErwartet": 0.29575,
- "stand": "2026-10-21T13:33:34.363Z"
+ "stand": "2026-10-21T13:33:50.274Z"
 }

@@ -1,0 +1,9 @@
+{
+ "kennung": "monatswende-long",
+ "stand": "2026-10-20T15:16:22.885Z",
+ "ergebnisEntdeckungSha256": "1111c6782a72ac8eef60d51cc9875d0695e773c84ac045fcf3f451d83572c21e",
+ "konfigurationen": 2,
+ "regel": "FORM.md §5: netto > 0, t >= 2, Tor 1, kein Placebo-Verstoss",
+ "messgeraetFehler": [],
+ "kandidaten": []
+}
