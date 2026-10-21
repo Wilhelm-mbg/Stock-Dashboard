@@ -398,12 +398,16 @@ ok(z12b[30][1] === 20 && z12b[10][1] === 16, 'D-xii: fremdes Signalfenster (Eins
 ok(z12c[10][1] === 12 && z12c[30][1] === 25, 'D-xii: Kalenderluecke der Reihe (Tafeltage 14..17 fehlen): Zuordnung nach Tafeltagen, nicht nach Zeilen (Topf 10: 0..7, 13, 18..20)', z12c[10][1] + ' / ' + z12c[30][1]);
 ok(z12d[10][1] === 16 && z12d[30][1] === 5, 'D-xii: Zeitraum-Ende (bis 25): kein Starttag dahinter, auch wenn er naeher am Signal laege (Entdeckungs-Topf ohne Pruefzeit-Start)', z12d[30][1]);
 ok(z12e[10][1] === 4 && Object.keys(z12e).length === 1, 'D-xii: Starttage weiter als R vom Signal bleiben unzugeordnet (R 4: nur 6, 7, 13, 14)', z12e[10][1]);
-ok(isNaN(A.topfMittel({ 10: [5, 1] }, 10)) && A.topfMittel({ 10: [5, 2] }, 10) === 2.5 && K.TOPF_N_MIN === 2, 'D-xii: Topf mit < 2 Fenstern -> NaN (topfFehlt), mit 2 das Mittel');
-/* D-xii (Lauf): Plan alle 10 Tage, H5 -> zwischen zwei Signalen genau ein zulaessiger Starttag (Gleichstand -> frueheres Signal): jeder Topf hat 1 Fenster
- * -> topfFehlt, kein Trade; nur das letzte Signal hat mehr. Zaehler und Trades gehen auf (Trades + topfFehlt = Signale x Reihen). */
-var W10 = weltD(3000, { regime: false }), ip10 = new Uint8Array(N_D); for (var p10 = 50; p10 < 400; p10 += 10) ip10[p10] = 1;
+ok(isNaN(A.topfMittel({}, 10)) && isNaN(A.topfMittel({ 10: [0, 0] }, 10)) && A.topfMittel({ 10: [5, 1] }, 10) === 5 && A.topfMittel({ 10: [5, 2] }, 10) === 2.5 && K.TOPF_N_MIN === 1 && isNaN(A.topfMittel({ 10: [5, 1] }, 10, 2)),
+  'D-xii: Topf ohne Fenster (n = 0) -> NaN (topfFehlt); n = 1 gueltig (gepaarter Vergleich, Entscheid PM: TOPF_N_MIN 1); mit Schwelle 2 waere n = 1 NaN');
+/* D-xii (Lauf): Plan alle 10 Tage, H5 -> zwischen zwei Signalen genau ein zulaessiger Starttag (Gleichstand -> frueheres Signal): jeder innere Topf hat
+ * n = 1 -> gueltig (gepaarter Vergleich), alle 35 x 20 Trades gebucht, Anteil n = 1 = 33/35. Plan alle 9 Tage: zwischen zwei Signalen KEIN zulaessiger
+ * Starttag -> n = 0 -> topfFehlt (gezaehlt), kein Trade; nur erstes und letztes Signal haben Fenster. Trades + topfFehlt = Signale x Reihen. */
+var W10 = weltD(3000, { regime: false }), ip10 = new Uint8Array(N_D), ip9 = new Uint8Array(N_D); for (var p10 = 50; p10 < 400; p10 += 10) ip10[p10] = 1; for (var p9 = 50; p9 < 365; p9 += 9) ip9[p9] = 1;
 var E10 = A.lauf({ signal: function (sicht, i) { var tg = sicht.tag(i); return ip10[tg + 1] ? { dir: 1 } : null; } }, KD, { tafel: W10.tafel }), k10 = E10.konfigurationen[0];
-ok(k10.zeitTopf.topfFehlt === 33 * 20 && k10.entdeckung.nTr === 2 * 20 && k10.entdeckung.nTr + k10.zeitTopf.topfFehlt === 35 * 20 && k10.zeitTopf.topfN.min >= 2, 'D-xii (Lauf): Signale im Abstand 2 H haben je 1 Topf-Fenster -> topfFehlt (gezaehlt), kein Trade; Trades + topfFehlt = Signale', 'Trades ' + k10.entdeckung.nTr + ', topfFehlt ' + k10.zeitTopf.topfFehlt);
+var E9 = A.lauf({ signal: function (sicht, i) { var tg = sicht.tag(i); return ip9[tg + 1] ? { dir: 1 } : null; } }, KD, { tafel: W10.tafel }), k9 = E9.konfigurationen[0];
+ok(k10.zeitTopf.topfFehlt === 0 && k10.entdeckung.nTr === 35 * 20 && k10.zeitTopf.topfN.min === 1 && nahe(k10.zeitTopf.topfN.anteilN1, 33 / 35, 1e-12) && k9.zeitTopf.topfFehlt === 33 * 20 && k9.entdeckung.nTr === 2 * 20 && k9.entdeckung.nTr + k9.zeitTopf.topfFehlt === 35 * 20,
+  'D-xii (Lauf): Abstand 2 H -> je 1 Topf-Fenster, gueltig (35 x 20 Trades, Anteil n = 1 33/35); Abstand 9 -> 0 Fenster -> topfFehlt (gezaehlt), kein Trade; Trades + topfFehlt = Signale', 'Abstand 10: Trades ' + k10.entdeckung.nTr + ', Anteil n = 1 ' + (k10.zeitTopf.topfN.anteilN1 || 0).toFixed(3) + ' | Abstand 9: Trades ' + k9.entdeckung.nTr + ', topfFehlt ' + k9.zeitTopf.topfFehlt);
 /* D-vi: topfRadius - Adapter und --pruefen (Bereich 2 H .. 12 H, Abschnitt "Topfradius"; Vorgabe 4 H ohne Absatz) */
 var eR = null; try { A.topfRadiusVon({ topfRadius: 9 }, 5); } catch (e) { eR = e; }
 ok(eR && /topfRadius muss eine ganze Zahl 10\.\.60/.test(eR.message) && A.topfRadiusVon({}, 5) === 20 && A.topfRadiusVon({ topfRadius: 60 }, 5) === 60, 'D-vi: Adapter - topfRadius 9 bei H 5 wirft (10..60), ohne Feld 4 H = 20, 60 erlaubt', eR && eR.message);

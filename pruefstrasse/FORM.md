@@ -90,7 +90,11 @@ einem Einstiegstag), nicht rechtszensiert, nicht kurslos; Abgänge zählen mit i
 gehört genau einem Signal**: dem nächstgelegenen Einstiegstag derselben Reihe (Gleichstand → der frühere), und nur bis zum Abstand
 `R` = `topfRadius` (`kandidat.json`, Handelstage, für jede Konfiguration 2 H … 12 H, **Vorgabe 4 H**; gesetzt nur mit Begründung in `REGEL.md`
 unter einer Überschrift „Topfradius", `--pruefen` prüft Bereich und Abschnitt) — die Töpfe benachbarter Signale sind disjunkt. (3) Topf = Mittel
-der zugeordneten Fenster, **mindestens 2** (`konfig.js` `TOPF_N_MIN`, eine Setzung), sonst entfällt der Trade und wird als `topfFehlt` gezählt.
+der zugeordneten Fenster, **mindestens 1** (`konfig.js` `TOPF_N_MIN`; Entscheid PM 21.10.2026), sonst entfällt der Trade und wird als `topfFehlt`
+gezählt. Ein einzelnes Vergleichsfenster ist ein **gepaarter Vergleich** (Signalwoche gegen die folgende ungerade Woche — genau der Vergleich der
+Quelle); seine Streuung steht über den Überschuss je Trade in der Tagesreihe, also im se. Die frühere Schwelle 2 wählte dagegen eine verzerrte
+Teilmenge (Zyklusenden, Lücken — die Gewichtung, die der lokale Topf beseitigen soll; fomc-gerade: 79 % der Trades fielen weg). Das Protokoll
+weist die Verteilung von Topf-n aus (Median, Min, Anteil n = 1), damit ein Leser sieht, wie dünn der Topf ist.
 (4) Zuordnung je Zeitraum (Entdeckung bzw. Prüfung — ein Entdeckungs-Topf enthält keinen Prüfzeit-Start); Fenster dürfen über das Zeitraumende
 hinauslaufen wie der Trade selbst. **Warum lokal:** der lokale Topf vergleicht das Signalfenster mit **seiner eigenen Periode** — gerade gegen
 ungerade FOMC-Wochen, Monatswende gegen Monatsmitte —, wie die Quellen selbst messen; ein Regime (2020) trifft Signal und Topf gleich; eine
@@ -99,7 +103,7 @@ Signalplan zeitlich verzerrt (Audit Nr. 120: fomc Topf +0,90 Pp je 5 Tage gegen 
 im se; er bleibt als `zeitTopfGlobal` nur nachrichtlich („Überschuss gegen den globalen Topf ohne Ausschluss") und für den Rot-vor-Grün-Test.
 **Standardfehler:** die Streuung des lokalen Topfs steckt im Überschuss jedes Trades und damit in der Tagesreihe; weil die Töpfe disjunkt sind,
 bleibt der Hansen-Hodrick-Lag = H wie im Modus `topf` (Beweis: Kunsttest D-i in `test.js`, 100 Seeds unter der Null mit unregelmäßigem Plan
-und Regime-Block). Nachrichtlich im Protokoll: Topf-n je Trade (Median, Min), Histogramm der Topf-Starttage relativ zum Signal, Topf-Mittel,
+und Regime-Block). Nachrichtlich im Protokoll: Topf-n je Trade (Median, Min, Anteil n = 1), Histogramm der Topf-Starttage relativ zum Signal, Topf-Mittel,
 Überschuss gegen den globalen Topf, Sensitivität für R = 2 H und 8 H (kein Urteil). Kassa-Hürde, Tagesreihe (Mittel
 je Einstiegstag), Hansen-Hodrick, Tor 1 und MDE80 = 2,8016 × se bleiben; bei einer marktweiten Regel ist jeder Signaltag **ein** Cluster,
 die Auflösung hängt an der Zahl der Ereignisfenster (Monatswende ≈ 84 in 2016–2022), nicht an der Zahl der Trades — das Protokoll nennt

@@ -565,7 +565,7 @@ function zeitTopfBericht(M, Z, KL, kf, L, ent) {
   for (var i = 0; i < ns.length; i++) { lauf += dt.topfN[ns[i]]; if (med === null && lauf * 2 >= tot) med = ns[i]; }
   function zeile(art) { var s = statistik(tagesreihe(Z, KL, art, kf, 'alle').filter(ent), L); return { nTage: s.nTage, nTr: s.nTr, uBrutto: kurz(s.uBrutto), uNetto: kurz(s.uNetto) }; }
   var hist = Object.keys(dt.hist).map(Number).sort(function (a, b) { return a - b; }).map(function (o) { return [o, dt.hist[o]]; });
-  return { art: 'lokal', R: dt.R, nMin: dt.nMin, hhLag: L, topfN: { trades: tot, median: med, min: ns.length ? ns[0] : null, max: ns.length ? ns[ns.length - 1] : null, verteilung: dt.topfN },
+  return { art: 'lokal', R: dt.R, nMin: dt.nMin, hhLag: L, topfN: { trades: tot, median: med, min: ns.length ? ns[0] : null, max: ns.length ? ns[ns.length - 1] : null, anteilN1: tot ? (dt.topfN[1] || 0) / tot : null, verteilung: dt.topfN },
     topfFehlt: dt.topfFehlt, topfMittel: dt.topfTrades ? dt.topfSumme / dt.topfTrades : null, histogramm: hist,
     global: zeile(4), sensitivitaet: { R2H: Object.assign({ R: 2 * L }, zeile(5)), R8H: Object.assign({ R: 8 * L }, zeile(6)) }, zufallsplanRang: 'nicht gerechnet' };
 }
