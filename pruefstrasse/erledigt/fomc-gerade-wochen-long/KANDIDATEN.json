@@ -1,7 +1,7 @@
 {
  "kennung": "fomc-gerade-wochen-long",
- "stand": "2026-10-20T15:17:44.265Z",
- "ergebnisEntdeckungSha256": "e8f02cff9d1baf0e46b83b9c54f2b9cb352551caba14a902f8c7b735568d2a3d",
+ "stand": "2026-10-21T13:33:34.363Z",
+ "ergebnisEntdeckungSha256": "d116cf71603fa0b2db808b7c00df91095f8577b6994cbc933fe7849344ec6a16",
  "konfigurationen": 1,
  "regel": "FORM.md §5: netto > 0, t >= 2, Tor 1, kein Placebo-Verstoss",
  "messgeraetFehler": [],

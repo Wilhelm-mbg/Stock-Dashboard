@@ -54,6 +54,15 @@ module.exports = {
   KANDIDAT_T: 2, TOR1_FAKTOR: 4, MDE_FAKTOR: 2.8016, Z_POWER80: 0.8416, HOLM_ALPHA: 0.05,
   PLACEBO_T: 2, PLACEBO_ANTEIL_HUERDE: 0.25, VERSATZ_TAGE: 20, COOLDOWN_TAGE: 5, MIN_TAGE: 30,
   ZUFALL_JE_KONFIGURATION: 0.02275,            /* P(t >= 2) einseitig unter der Null */
+  /* Modus zeit, lokaler Topf (Nr. 121-1, FORM.md §3): mindestens TOPF_N_MIN Fenster je Signal. Entscheid PM 21.10.: 1 statt 2 - ein einzelnes
+   * Vergleichsfenster ist ein gepaarter Vergleich (Signalwoche gegen die folgende ungerade Woche, der Vergleich der Quelle), seine Streuung steht ueber
+   * den Ueberschuss je Trade in der Tagesreihe und damit im se; die Schwelle 2 waehlte eine verzerrte Teilmenge (Zyklusenden, Luecken - fomc: 79 %
+   * der Trades fielen weg). Das Protokoll nennt Topf-n (Median, Min, Anteil n = 1).
+   * Radius in Vielfachen der Haltedauer H (kandidat.json topfRadius in Handelstagen, Bereich min H .. max H, Vorgabe vorgabe H) */
+  TOPF_N_MIN: 1, TOPF_RADIUS: { min: 2, max: 12, vorgabe: 4 },
   KORB: { kostenBp: 20, phasen: 63, kleinstAnteil: 0.05, placeboBuecher: 200, rangMin: 0.95 },
+  /* A10 / B-V10 (Nr. 121-1): Zufallsbuecher B = max(200, 20 m + 1), m = Konfigurationen im Register + 1 (Register-Holm: kleinster p = 1/(B + 1)
+   * <= alpha/m). Bei m <= 9 bleibt B = 200 (die Korb-Kalibrierung A-187/B-187 rechnet ohne Zufallsbuecher und ist davon unberuehrt). */
+  korbBuecher: function (m) { return Math.max(200, 20 * m + 1); },
   FORMEN: ['tag', 'korb', 'minute'],
 };

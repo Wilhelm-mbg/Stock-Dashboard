@@ -40,8 +40,11 @@ Konfiguration je Form:
   ≥ Einstiegstag + Haltedauer, wie Trendkanal §5). Optional `klassen` (Umsatzklassen 0–3, Vorgabe alle). Auf Kandidatenebene optional
   `bewertung` (`topf` | `zeit`, Vorgabe `topf`; jeder andere Wert macht den Kandidaten ungültig — Absatz „Bewertung" in §3) und optional
   `versatzTage` (ganze Zahl 5–60, Vorgabe 20: Handelstage der Verschiebungs-Gegenprobe; gesetzt nur mit Begründung in `REGEL.md` unter einer
-  Überschrift „Versatz", sonst ungültig — §5 Gegenproben).
-- **korb:** `key`, optional `anzahl` (Zielzahl; sonst entscheidet die Zielfunktion), `korb` (Zahl der umsatzstärksten Werte als
+  Überschrift „Versatz", sonst ungültig — §5 Gegenproben) und, nur mit `bewertung` `zeit`, optional `topfRadius` (ganze Zahl in Handelstagen,
+  für jede Konfiguration 2 H … 12 H, Vorgabe 4 H: Radius des lokalen Topfs, §3; gesetzt nur mit Begründung unter einer Überschrift
+  „Topfradius", sonst ungültig).
+- **korb:** **genau eine** Konfiguration (der Adapter misst `konfigurationen[0]`; `--pruefen` lehnt jede andere Zahl ab, Nr. 121-1):
+  `key`, optional `anzahl` (Zielzahl; sonst entscheidet die Zielfunktion), `korb` (Zahl der umsatzstärksten Werte als
   Universum, Vorgabe: alle zulässigen). Fenster, Takt (63 Starttage), Kosten (20 Bp je Seite) und Regel K setzt der Adapter.
 - **minute:** `key`, optional `params` (eine Parametervariante der Messmaschine). Zeitrahmen, Haltedauer, Richtung, Universum
   stehen im Modul (`regel.js`), wie `strategien/rsi2seit.js`.
@@ -68,19 +71,41 @@ Monat" braucht nur den Vortag und ist für jedes j ≤ i entschieden (am Kalende
 nicht; Terminlisten, die in der Wirklichkeit vorab feststehen (FOMC-Sitzungen), gehören als `params` in `kandidat.json` und werden gegen
 `datum(j)` verglichen — die Regel darf aus dem Datum rechnen (Wochentag), aber keinen Handelstag der Tafel hinter i lesen.
 Einstieg: Eröffnung des Tages nach dem Signal (ohne `bestaetigt`) bzw. zwei Tage danach (mit `bestaetigt`, das am Folgetag mit
-Sicht bis dorthin gefragt wird — die Form des „bestätigten Ausbruchs" der Trendkanal-Studie). Cooldown 5 Handelstage je Richtung.
+Sicht bis dorthin gefragt wird — die Form des „bestätigten Ausbruchs" der Trendkanal-Studie). Cooldown 5 Handelstage je Richtung, vor dem
+Klassenfilter der Konfiguration wie in der Referenz (`trendkanal-tage/messen.js`: Cooldown je Linie/Richtung, kein Klassenfilter); das Protokoll
+zählt die Signale, die ein nicht gebuchtes Signal (Klasse ohne Konfiguration) sperrte (`cooldownDurchOhneKlasse`).
 **Bewertung `topf` | `zeit`** (`kandidat.json` `bewertung`, Nr. 118). **`topf`** (Vorgabe): Überschuss gegen den **Topf derselben Zelle**
 (Einstiegstag, Dauer, Klasse, lebend), Kassa-Hürde je Umsatzklasse, Standardfehler Hansen-Hodrick über die Tagesreihe (Lag = Haltedauer),
-Tor 1 (Entdeckung ≥ 4 × projizierte Bestätigungs-MDE), Tor 2 (delta80 unter der Hürde) — wie die Trendkanal-Studie
+Tor 1 (Entdeckung ≥ 4 × projizierte Bestätigungs-„MDE" = 4 × 2 × se_E × √(TE/TB); gesperrt TB = ½ TE, also **netto ≥ 11,31 × se** — das
+Protokoll nennt die Schwelle als t-Wert und in Pp neben MDE80 = 2,8016 × se, zwei Zahlen, zwei Namen), **Tor 2 (delta80 unter der Hürde):
+für die Form tag nicht gebaut — Entscheid Stufe 2** — wie die Trendkanal-Studie
 (`studien/vorregistrierung-2026-09-08-trendkanal-tage/`); Placebo = anderer Wert gleicher Klasse am selben Tag. **`zeit`:** für Regeln, die an
 einem Tag **alle oder fast alle** Reihen treffen (Kalender- und Terminregeln: Monatswende, Vor-FOMC, Vorfeiertag) — dort **ist** die Signalmenge
 der Topf der Zelle, der Überschuss ist per Bau null und ein „nein" sagt nichts (Fehlerform „Tagestopf löscht marktweite Effekte"). Im Modus
-`zeit` ist der Topf eines Trades der **zeitliche Topf seiner Reihe**: das Mittel der Renditen gleicher Dauer (Eröffnung → Eröffnung, wie der
-Trade) über alle zulässigen Starttage **desselben Zeitraums** (Entdeckung bzw. Prüfung — ein Entdeckungs-Topf auf Prüfungs-Trades läse jeden
-Regimewechsel als Effekt), **ohne die Signalfenster der Reihe und ohne Fenster, die sich mit ihnen überschneiden** (Starttag näher als die
-Dauer an einem Einstiegstag der Reihe): sonst enthielte der Topf den gemessenen Effekt anteilig (Monatswende: 4 von ≈ 21 Tagen) und
-verdünnte ihn. Rechtszensierte Fenster zählen nicht, Abgänge mit ihrem letzten Schluss — wie im Tagestopf. Kassa-Hürde, Tagesreihe (Mittel
-je Einstiegstag), Hansen-Hodrick, Tor 1/2 und MDE80 = 2,8016 × se bleiben; bei einer marktweiten Regel ist jeder Signaltag **ein** Cluster,
+`zeit` ist der Topf eines Trades seit Nr. 121-1 der **lokale Topf seines Signals** (`adapter/tag.js` `lokalerTopf`). Alle Indizes sind
+Tafelindizes (Handelstage der Tafel, nicht Zeilen der Reihe); `H` ist die Haltedauer der **Konfiguration**; Topf-Fenster rechnen wie der Trade
+(Eröffnung → Eröffnung, Ausstieg am ersten Handelstag ≥ Start + H). (1) Zulässige Topf-Starttage einer Reihe: Klasse in `klassen` der
+Konfiguration, kein Maßnahmentag, **kein** Fenster, das sich mit irgendeinem Signalfenster der Reihe überschneidet (Starttag näher als H an
+einem Einstiegstag), nicht rechtszensiert, nicht kurslos; Abgänge zählen mit ihrem letzten Schluss wie im Tagestopf. (2) **Jeder Topf-Starttag
+gehört genau einem Signal**: dem nächstgelegenen Einstiegstag derselben Reihe (Gleichstand → der frühere), und nur bis zum Abstand
+`R` = `topfRadius` (`kandidat.json`, Handelstage, für jede Konfiguration 2 H … 12 H, **Vorgabe 4 H**; gesetzt nur mit Begründung in `REGEL.md`
+unter einer Überschrift „Topfradius", `--pruefen` prüft Bereich und Abschnitt) — die Töpfe benachbarter Signale sind disjunkt. (3) Topf = Mittel
+der zugeordneten Fenster, **mindestens 1** (`konfig.js` `TOPF_N_MIN`; Entscheid PM 21.10.2026), sonst entfällt der Trade und wird als `topfFehlt`
+gezählt. Ein einzelnes Vergleichsfenster ist ein **gepaarter Vergleich** (Signalwoche gegen die folgende ungerade Woche — genau der Vergleich der
+Quelle); seine Streuung steht über den Überschuss je Trade in der Tagesreihe, also im se. Die frühere Schwelle 2 wählte dagegen eine verzerrte
+Teilmenge (Zyklusenden, Lücken — die Gewichtung, die der lokale Topf beseitigen soll; fomc-gerade: 79 % der Trades fielen weg). Das Protokoll
+weist die Verteilung von Topf-n aus (Median, Min, Anteil n = 1), damit ein Leser sieht, wie dünn der Topf ist.
+(4) Zuordnung je Zeitraum (Entdeckung bzw. Prüfung — ein Entdeckungs-Topf enthält keinen Prüfzeit-Start); Fenster dürfen über das Zeitraumende
+hinauslaufen wie der Trade selbst. **Warum lokal:** der lokale Topf vergleicht das Signalfenster mit **seiner eigenen Periode** — gerade gegen
+ungerade FOMC-Wochen, Monatswende gegen Monatsmitte —, wie die Quellen selbst messen; ein Regime (2020) trifft Signal und Topf gleich; eine
+Terminlücke verschiebt nichts mehr. Der frühere Topf „über alle zulässigen Starttage desselben Zeitraums" (Nr. 118) war bei unregelmäßigem
+Signalplan zeitlich verzerrt (Audit Nr. 120: fomc Topf +0,90 Pp je 5 Tage gegen +0,30 aller Fenster, 2020 trägt 0,55) und seine Streuung fehlte
+im se; er bleibt als `zeitTopfGlobal` nur nachrichtlich („Überschuss gegen den globalen Topf ohne Ausschluss") und für den Rot-vor-Grün-Test.
+**Standardfehler:** die Streuung des lokalen Topfs steckt im Überschuss jedes Trades und damit in der Tagesreihe; weil die Töpfe disjunkt sind,
+bleibt der Hansen-Hodrick-Lag = H wie im Modus `topf` (Beweis: Kunsttest D-i in `test.js`, 300 Seeds unter der Null mit unregelmäßigem Plan
+und Regime-Block). Nachrichtlich im Protokoll: Topf-n je Trade (Median, Min, Anteil n = 1), Histogramm der Topf-Starttage relativ zum Signal, Topf-Mittel,
+Überschuss gegen den globalen Topf, Sensitivität für R = 2 H und 8 H (kein Urteil). Kassa-Hürde, Tagesreihe (Mittel
+je Einstiegstag), Hansen-Hodrick, Tor 1 und MDE80 = 2,8016 × se bleiben; bei einer marktweiten Regel ist jeder Signaltag **ein** Cluster,
 die Auflösung hängt an der Zahl der Ereignisfenster (Monatswende ≈ 84 in 2016–2022), nicht an der Zahl der Trades — das Protokoll nennt
 Signaltage, Trades und Trades je Signaltag und sagt das in einem Satz. **Nicht gewählt:** Überschuss gegen null (reiner Fensterertrag, wie
 Lucca & Moench ihn ausweisen) — er rechnete die unbedingte Drift der Reihe der Regel zu; der rohe Fensterertrag steht als `roh` im Protokoll
@@ -118,27 +143,50 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
 - **Siegel 1:** der Kandidatenordner liegt in mindestens einem Commit und hat nichts Ungesichertes. **Siegel 2:** der Läufer
   committet `erledigt/<kennung>/KANDIDATEN.json`.
 - **Kandidat** (je Konfiguration, Entdeckung): netto > 0, t ≥ 2, Tor 1, kein Placebo-Verstoß (|Placebo| > 2 se **und** > ¼ Hürde; im
-  Modus `zeit` gegenstandslos, siehe Gegenproben). „t ≥ 2" ist das Kandidaten-Kriterium; **MDE80 = 2,8016 × se** (`konfig.js` des
+  Modus `zeit` gegenstandslos, dort wirkt dieselbe Regel auf das verschobene Signal, siehe Gegenproben). „t ≥ 2" ist das Kandidaten-Kriterium; **MDE80 = 2,8016 × se** (`konfig.js` des
   Prüfstands) ist die Auflösung — zwei Zahlen, zwei Namen.
 - **Urteile:** `belegt-Vorschlag` (Prüfung: Holm über alle Konfigurationen des Kandidaten, einseitig 5 %, gleiche Richtung wie in
-  der Entdeckung, netto > 0; nachrichtlich, ob der Treffer Holm über **alle** Konfigurationen des Registers überstünde) ·
+  der Entdeckung, netto > 0; p einseitig aus der t-Verteilung mit df = n_eff − 1, n_eff = Signaltage / H, Nr. 121-1; nachrichtlich, ob der
+  Treffer Holm über **alle** Konfigurationen des Registers überstünde) ·
   `nicht entscheidbar` (nichts belegt, aber auch nicht ausgeschlossen; MDE80 steht daneben) · `nein` (jede Konfiguration in der
-  behaupteten Richtung ausgeschlossen: obere 95-%-Grenze netto < 0, oder Prüfung negativ) · `Messgerät-Fehler` (Verstoß gegen „kein
-  Blick nach vorn", oder eine Gegenprobe fällt gegen die Regel: das um 20 Tage verschobene Signal wirkt ebenso).
-- **Gegenproben (Pflicht, tag):** Einstieg einen Tag später bei festem Ausstieg; Signal um 20 Handelstage verschoben; Placebo mit
+  behaupteten Richtung ausgeschlossen: obere 95-%-Grenze netto < 0 in der Entdeckung (≥ 30 Signaltage) **oder** in der Prüfung — ein
+  Maßstab je Konfiguration und gesamt; „netto ≤ 0" allein ist **nicht** „nein", Nr. 121-1) · `Messgerät-Fehler` (Verstoß gegen „kein
+  Blick nach vorn", oder eine Gegenprobe fällt gegen die Regel: das verschobene Signal zeigt einen Ausschlag, zweiseitig — siehe Gegenproben).
+- **Gegenproben (Pflicht, tag):** Einstieg einen Tag später **und** Ausstieg einen Tag später (gleiche Haltedauer; Nr. 121-1 — bis dahin
+  „bei festem Ausstieg", bei H1 leer); Signal um 20 Handelstage verschoben; Placebo mit
   zufälligen Signalen gleicher Tagesverteilung (anderer Wert, gleicher Tag, gleiche Klasse, gleiche Richtung); „alle gegen lebend";
-  Abgänge (Übernahme, Insolvenz, sonstige) getrennt gezählt. **Im Modus `zeit`** (§3) entfällt das Placebo „anderer Wert gleicher Klasse"
+  Abgänge (Übernahme, Insolvenz, sonstige) getrennt gezählt, dazu **„zensiert"**: eine Reihe der gesperrten Tafel, deren letzte Zeile der
+  letzte Tag vor der Sperre ist, ist nicht abgegangen, nur die Sperre schneidet sie ab (Nr. 121-1; nur Zählung und Spalte — Ertrag, `lebend`
+  und Zelle bleiben). **Im Modus `zeit`** (§3) entfällt das Placebo „anderer Wert gleicher Klasse"
   — es träfe dieselbe Zelle, also denselben Markttag — und steht im Protokoll als „entfällt (zeit)", nicht stillschweigend weg; Placebo ist
-  dort das verschobene Signal (wirkt es ebenso, bleibt es Messgerät-Fehler). Das Protokoll nennt je Konfiguration den **Anteil der
-  verschobenen Fenster, die sich mit einem Signalfenster derselben Reihe überschneiden**: eine Regel mit Periode nahe dem Versatz
-  (Monatswende: +20 landet um das nächste Monatsende) trifft verschoben ihr eigenes nächstes Fenster, und ein richtiges Messgerät würde als
-  „verdächtig" gelesen. Deshalb darf die Verschiebung bei Kalenderregeln **nicht auf das nächste Ereignisfenster fallen**: `kandidat.json`
+  dort das verschobene Signal (mit eigenem lokalem Topf derselben Bauart). **Sperrklinke auf das verschobene Signal (Nr. 121-1, beide Modi,
+  zweiseitig):** `Messgerät-Fehler`, wenn |u brutto verschoben| > 2 se **und** > ¼ der mittleren Hürde der Signaltrades — dieselbe Regel wie
+  der Placebo „anderer Wert", in welche Richtung auch immer und unabhängig vom Signal selbst. **Verschobene Fenster, die sich mit einem
+  Signalfenster derselben Reihe überschneiden** (Starttag näher als H an einem Einstiegstag), werden **nicht gewertet, aber gezählt**: eine echte
+  Kante darf nicht als Messgerät-Fehler gelesen werden, nur weil ihr Placebo in ihr eigenes nächstes Signal fällt (Hochvolumen H20: 91 % der
+  verschobenen Fenster). Das Protokoll nennt je Konfiguration diesen **Anteil**: eine Regel mit Periode nahe dem Versatz
+  (Monatswende: +20 landet um das nächste Monatsende) trifft verschoben ihr eigenes nächstes Fenster — gezählt, nicht gewertet; bleibt zu wenig
+  übrig, ist der Versatz zu ändern. Deshalb darf die Verschiebung bei Kalenderregeln **nicht auf das nächste Ereignisfenster fallen**: `kandidat.json`
   `versatzTage` (5–60, Vorgabe 20) setzt den Versatz; das Feld verlangt eine Begründung in `REGEL.md` unter einer Überschrift „Versatz"
   (`--pruefen` prüft Bereich und Abschnitt), der Adapter benutzt den Wert für die Gegenprobe, und das Protokoll weist ihn mit Grund aus
   („Versatz 10 Handelstage, Grund: …"). Vor dem Setzen die Terminliste gegen den Handelskalender prüfen (Vor-FOMC: +20 trifft 2016–2022 kein
   anderes Fenster, Abstände 27–63 Handelstage — Vorgabe bleibt).
 - **Register:** `pruefstrasse/register.json` zählt jede je gemessene Konfiguration; jedes ERGEBNIS nennt die Gesamtzahl und die
-  erwarteten Zufallstreffer (2,28 % je Konfiguration bei t ≥ 2 einseitig).
+  erwarteten Zufallstreffer (2,28 % je Konfiguration bei t ≥ 2 einseitig). Korb: Zufallsbücher B = max(200, 20 · m + 1) mit m = Konfigurationen
+  im Register + 1 (`konfig.js` `korbBuecher`; kleinster p = 1/(B + 1) ≤ α/m), das Protokoll nennt B und den p-Boden.
+- **Nachmessung (Nr. 121-1, nur PM, nie der Nachtlauf):** `node pruefstrasse/laeufer.js --nachmessen <kennung> --grund "<Text>" --korrektur <commit>`
+  ersetzt ein Urteil, wenn das **Messgerät** einen belegten Fehler hatte und korrigiert ist (Commit der Korrektur: Vorfahr von HEAD, **Nachfahre des
+  Ergebnis-Commits der Vormessung** und ändert eine Datei unter `pruefstrasse/` außerhalb `erledigt/` und `warteschlange/`); die
+  **Regel** wird nie nachgemessen: der Kandidatenordner muss derselbe Baum sein wie im Commit von Siegel 1 der Vormessung. Die alte Ausgabe
+  wandert nach `erledigt/<kennung>/v<n>-<datum>/`, der Lauf geht wie `--kandidat` (Siegel 2 neu, Prüfung nur für Kandidaten); ERGEBNIS.md
+  trägt oben den Absatz „Nachmessung n" (Grund, was ersetzt wird, was sich geändert hat, alt → neu je Konfiguration); das Register **ersetzt**
+  die Zeilen der Kennung (Felder `nachmessung`, `ersetzt`), der alte Belegstand-Absatz bleibt unverändert stehen, der neue sagt, wen er
+  ersetzt. Hat die Vormessung die Prüfzeit gelesen, steht „n. Blick auf die Prüfzeit" in Kopf und Belegstand-Absatz, und ein
+  `belegt-Vorschlag` aus einer Nachmessung verlangt einen zweiten unabhängigen Lauf durch den PM (α-Teilung: Stufe 2). `--naechster`
+  überspringt erledigte Kandidaten wie bisher. **Rückweg:** vor dem Verschieben liegt die Marke `erledigt/<kennung>/NACHMESSUNG-LAEUFT.json`
+  (Grund, Korrektur, Zielordner, Zeit); scheitert ein Schritt, stellt der Läufer die alte Ausgabe zurück, setzt den Index nur für die eigenen
+  Pfade zurück und lässt die Marke mit `fehler` liegen. Solange die Marke oder ein `v*-*/ergebnis.json` liegt, messen `--naechster` und
+  `--kandidat` den Kandidaten nicht als frischen (`--pruefen` meldet es).
 - **Ausgabe:** `erledigt/<kennung>/` mit `LAUF.log`, `KANDIDATEN.json`, `ergebnis.json`, `ERGEBNIS.md`, `belegstand-eintrag.md`;
   der Absatz wird unter `## Prüfstraße (automatisch gemessen)` an `wiki/belegstand.md` angehängt und mit einer Zeile in `wiki/log.md`
   committet (kein Push). Der Kopf des Belegstands bleibt unberührt; `belegt-Vorschlag` landet zusätzlich in `pruefstrasse/VORSCHLAEGE.md`.

@@ -202,9 +202,12 @@ ok(Ep.konfigurationen[0].kandidat && Ep.konfigurationen[0].entdeckung.uNetto.t >
 ok(Up.urteil !== 'Messgeraet-Fehler' && Up.kandidaten >= 1, 'Positivkontrolle: Kandidat, kein Messgeraet-Fehler', Up.urteil + ' ' + Up.grund);
 ok(Ep.konfigurationen[0].placebo.verstoss === false && Math.abs(Ep.konfigurationen[0].placebo.uBrutto.mittel) < 0.5, 'Placebo (anderer Wert, gleicher Tag) sieht den Effekt nicht', Ep.konfigurationen[0].placebo.uBrutto.mittel.toFixed(3));
 ok(Ep.konfigurationen[0].spaet.uNetto.mittel < Ep.konfigurationen[0].entdeckung.uNetto.mittel / 3, 'Einstieg einen Tag spaeter verfehlt den Effekt', Ep.konfigurationen[0].spaet.uNetto.mittel.toFixed(3));
-/* Zeitfester Effekt in zehn Reihen (jeder 20. Kalendertag +3 %), Signal in genau diesen Reihen am Vortag -> das um 20 Tage verschobene
- * Signal trifft denselben Kalender und wirkt ebenso: Messgeraet-Fehler (ein Markteffekt aller Reihen wuerde dagegen im Topf verschwinden) */
-var zeitfest = { signal: function (sicht, i) { return parseInt(sicht.reihe.slice(1), 10) < 10 && (i % 20) === 19 ? { dir: 1 } : null; } };
+/* Zeitfester Effekt in zehn Reihen (jeder 20. Kalendertag +3 %), Signal in genau diesen Reihen am Vortag JEDES ZWEITEN Effekttags -> das um
+ * 20 Tage verschobene Signal trifft denselben Kalender (die andere Haelfte der Effekttage) und wirkt ebenso: Messgeraet-Fehler (ein Markteffekt
+ * aller Reihen wuerde dagegen im Topf verschwinden). Nr. 121-1: bis dahin feuerte das Signal an JEDEM Effekttag - dann faellt das verschobene
+ * Fenster genau auf das naechste eigene Signalfenster und wird seit B-V5 nicht mehr gewertet (Test 3c / D-iv); das Signal an jedem zweiten Tag
+ * haelt die Aussage "der Effekt gehoert dem Kalender, nicht der Regel" aufrecht. Kunstwelt unveraendert (gleicher Zufallsstrom). */
+var zeitfest = { signal: function (sicht, i) { return parseInt(sicht.reihe.slice(1), 10) < 10 && (i % 40) === 19 ? { dir: 1 } : null; } };
 var Tz = TF.kunstTafel(kunstReihen(function (r, i) { return r < 10 && (i % 20) === 0 ? 0.03 : 0; }), TAGE);
 var Ez = A.lauf(zeitfest, KAND, { tafel: Tz }), Uz = LF.urteile(Ez, null, Rg0);
 ok(Ez.konfigurationen[0].entdeckung.uNetto.mittel > 1 && Ez.konfigurationen[0].entdeckung.uNetto.t >= 2 && Ez.konfigurationen[0].versatz.wirkt === true && Uz.urteil === 'Messgeraet-Fehler', 'zeitfester Effekt: verschobenes Signal wirkt -> Messgeraet-Fehler', Uz.urteil + ' / netto ' + Ez.konfigurationen[0].entdeckung.uNetto.mittel.toFixed(2) + ' verschoben ' + Ez.konfigurationen[0].versatz.uNetto.mittel.toFixed(2));
@@ -228,25 +231,27 @@ ok(Emt.bewertung === 'topf' && h5t.nTage === 32 && h5t.nTr === 1280 && Math.abs(
   'topf: marktweite Regel mit eingesaetem Effekt - roh > +1,5 Pp, Ueberschuss gegen den Tagestopf genau 0 (|u| < 1e-9), Urteil "nein" ohne Aussage', 'u ' + h5t.uBrutto.mittel.toExponential(2) + ' roh ' + h5t.roh.mittel.toFixed(3));
 ok(Emt.signalAnteil.tage === 32 && Emt.signalAnteil.mittel === 1 && Emt.signalAnteil.max === 1 && Emt.signalAnteil.tageUeber50 === 32 && Emt.warnungen.length === 1 && /Bewertung zeit erwaegen/.test(Emt.warnungen[0]),
   'topf: Anteil der zulaessigen Reihen mit Signal am Signaltag 100 % an allen 32 Signaltagen -> Warnung "Bewertung zeit erwaegen" im Protokoll', Emt.warnungen[0] && Emt.warnungen[0].slice(0, 72));
-ok(Emz.bewertung === 'zeit' && /zeitlicher Topf/.test(Emz.bewertungDetail) && h5z.nTage === 32 && h5z.nTr === 1280 && h5z.tradesJeTag === 40 && h5z.uBrutto.mittel > 1.5 && h5z.uBrutto.mittel < 2.4 && h5z.uNetto.t > 10 && h3z.uBrutto.mittel > 1.5 && h3z.uBrutto.mittel < 2.4 && Emz.konfigurationen[0].kandidat && Emz.konfigurationen[1].kandidat,
+ok(Emz.bewertung === 'zeit' && /LOKALER Topf des Signals/.test(Emz.bewertungDetail) && Emz.topfArt === 'lokal' && h5z.nTage === 32 && h5z.nTr === 1280 && h5z.tradesJeTag === 40 && h5z.uBrutto.mittel > 1.5 && h5z.uBrutto.mittel < 2.4 && h5z.uNetto.t > 10 && h3z.uBrutto.mittel > 1.5 && h3z.uBrutto.mittel < 2.4 && Emz.konfigurationen[0].kandidat && Emz.konfigurationen[1].kandidat,
   'zeit: dieselbe Regel findet den eingesaeten Effekt (+2 Pp je Fenster; > 1,5 heisst: die Signalfenster sind aus dem zeitlichen Topf ausgeschlossen, sonst ~1,25), 40 Trades je Signaltag, H5 und H3 Kandidaten', 'H5 u ' + h5z.uBrutto.mittel.toFixed(3) + ' t ' + h5z.uNetto.t.toFixed(1) + ' / H3 u ' + h3z.uBrutto.mittel.toFixed(3) + ' t ' + h3z.uNetto.t.toFixed(1));
 ok(Math.abs(h50.uBrutto.mittel) < 0.3 && Math.abs(h50.uNetto.t) < 2.5 && !Em0.konfigurationen[0].kandidat && !Em0.konfigurationen[1].kandidat && LF.urteile(Em0, null, Rg0).urteil !== 'Messgeraet-Fehler',
   'zeit, gepaarter Placebo: dieselbe Regel auf der Kunstwelt OHNE Effekt ~ 0, kein Kandidat, kein Messgeraet-Fehler', 'u ' + h50.uBrutto.mittel.toFixed(3) + ' t ' + h50.uNetto.t.toFixed(2));
 var k5z = Emz.konfigurationen[0], k3z = Emz.konfigurationen[1];
 ok(k5z.placebo.entfaellt === true && k5z.placebo.verstoss === false && k5z.placebo.uBrutto === null && /entfaellt im Modus zeit/.test(k5z.placebo.grund) && Emz.zaehler.placeboEntfaellt === 3840 && Emz.zaehler.placeboOhnePartner === 0 && Emt.zaehler.placeboEntfaellt === undefined,
   'zeit: Placebo "anderer Wert gleicher Klasse" entfaellt und wird so ausgewiesen (Feld entfaellt, Zaehler placeboEntfaellt); im Modus topf wie bisher', Emz.zaehler.placeboEntfaellt + ' entfallen');
-ok(k5z.versatz.wirkt === false && Math.abs(k5z.versatz.uNetto.mittel) < 0.4 && k3z.versatz.wirkt === false && Math.abs(k3z.versatz.uNetto.mittel) < 0.4 && k5z.spaet.uNetto.mittel < h5z.uNetto.mittel / 3 && k5z.versatz.ueberlappung.anteil === 1 && k3z.versatz.ueberlappung.anteil === 0 && LF.urteile(Emz, null, Rg0).urteil !== 'Messgeraet-Fehler',
-  'zeit: verschobenes Signal ~ 0 (wirkt nicht), Einstieg +1 T verfehlt den Effekt, Ueberlappung der verschobenen Fenster ausgewiesen (H5 100 %: 20 = 16 + 4 teilt einen Tag; H3 0 %), kein Messgeraet-Fehler', 'versatz ' + k5z.versatz.uNetto.mittel.toFixed(3) + ' spaet ' + k5z.spaet.uNetto.mittel.toFixed(3));
+/* Nr. 121-1 (B-V5): H5 verschoben um 20 = 16 + 4 schneidet das naechste Signalfenster -> alle verschobenen H5-Fenster gezaehlt, NICHT gewertet (nTr 0);
+ * H3 schneidet nicht (|20 - 16| = 4 >= 3) -> gewertet, ~ 0 */
+ok(k5z.versatz.wirkt === false && k5z.versatz.nTr === 0 && k5z.versatz.uNetto.mittel === null && k3z.versatz.wirkt === false && k3z.versatz.nTr > 1000 && Math.abs(k3z.versatz.uNetto.mittel) < 0.4 && k5z.spaet.uNetto.mittel < h5z.uNetto.mittel / 3 && k5z.versatz.ueberlappung.anteil === 1 && k3z.versatz.ueberlappung.anteil === 0 && Emz.zaehler.versatzUeberschneidung > 0 && LF.urteile(Emz, null, Rg0).urteil !== 'Messgeraet-Fehler',
+  'zeit: verschobenes H5-Fenster schneidet das naechste Signalfenster (100 %) -> gezaehlt, nicht gewertet; H3 (0 %) gewertet ~ 0; Einstieg +1 T verfehlt den Effekt; kein Messgeraet-Fehler', 'H5 nTr ' + k5z.versatz.nTr + ', H3 versatz ' + (k3z.versatz.uNetto.mittel || 0).toFixed(3) + ' spaet ' + k5z.spaet.uNetto.mittel.toFixed(3));
 ok(Emz.warnungen.length === 0 && Emz.signalAnteil.mittel === 1 && Emz.ms.topf <= Emt.ms.topf, 'zeit bei 100 % Signalanteil: keine Warnung; der Tagestopf wird nicht gerechnet');
 var Ezz = A.lauf(zufallSignal, KANDZ, { tafel: T0 });
-ok(Ezz.bewertung === 'zeit' && Ezz.warnungen.length === 1 && /Bewertung topf/.test(Ezz.warnungen[0]) && Ezz.signalAnteil.mittel < 0.1 && Ezz.konfigurationen[0].entdeckung.nTr === 782,
+ok(Ezz.bewertung === 'zeit' && Ezz.warnungen.length === 1 && /Bewertung topf/.test(Ezz.warnungen[0]) && Ezz.signalAnteil.mittel < 0.1 && Ezz.konfigurationen[0].entdeckung.nTr + Ezz.konfigurationen[0].zeitTopf.topfFehlt === 782,
   'zeit bei einer Querschnittsregel (Zufallssignal, ~5 % der Reihen je Tag): Warnung "gehoert in die Bewertung topf"', (100 * Ezz.signalAnteil.mittel).toFixed(1) + ' %');
 /* zeitTopf direkt: Reihe mit +10 % je Tag (jedes 1-Tage-Fenster 10 %, jedes 2-Tage-Fenster 21 %), Signalfenster und Zeitraum ausgeschlossen */
 var oG = []; for (var g = 0; g < 10; g++) oG.push(100 * Math.pow(1.1, g));
 var TG = TF.kunstTafel([{ reihe: 'G', tag: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], o: oG, h: oG, l: oG, c: oG, v: oG.map(function () { return 1; }) }], TAGE.slice(0, 10), { offen: true }), SG1 = TG.reihen[0];
-var z1 = A.zeitTopf(SG1, Int32Array.from([]), 1, 0, 9), z2 = A.zeitTopf(SG1, Int32Array.from([4]), 1, 0, 9), z3 = A.zeitTopf(SG1, Int32Array.from([4]), 2, 0, 9), z4 = A.zeitTopf(SG1, Int32Array.from([]), 1, 2, 5), z5 = A.zeitTopf(SG1, Int32Array.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), 1, 0, 9);
+var z1 = A.zeitTopfGlobal(SG1, Int32Array.from([]), 1, 0, 9), z2 = A.zeitTopfGlobal(SG1, Int32Array.from([4]), 1, 0, 9), z3 = A.zeitTopfGlobal(SG1, Int32Array.from([4]), 2, 0, 9), z4 = A.zeitTopfGlobal(SG1, Int32Array.from([]), 1, 2, 5), z5 = A.zeitTopfGlobal(SG1, Int32Array.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), 1, 0, 9);
 ok(z1.n === 9 && nahe(z1.mittel, 10, 1e-9) && z2.n === 8 && nahe(z2.mittel, 10, 1e-9) && z3.n === 5 && nahe(z3.mittel, 21, 1e-9) && z4.n === 4 && z5.n === 0 && isNaN(z5.mittel),
-  'zeitTopf: 9 Ein-Tages-Fenster (10 %), ohne den Signaltag 8, Dauer 2 ohne Starttage 3..5 (21 %, n 5), Zeitraum 2..5 (n 4), alles Signal -> NaN', z1.n + '/' + z2.n + '/' + z3.n + '/' + z4.n + '/' + z5.n);
+  'zeitTopfGlobal (Nr. 118, bleibt nachrichtlich): 9 Ein-Tages-Fenster (10 %), ohne den Signaltag 8, Dauer 2 ohne Starttage 3..5 (21 %, n 5), Zeitraum 2..5 (n 4), alles Signal -> NaN', z1.n + '/' + z2.n + '/' + z3.n + '/' + z4.n + '/' + z5.n);
 ok(A.ueberlappt(Int32Array.from([4, 20]), 6, 3) === true && A.ueberlappt(Int32Array.from([4, 20]), 7, 3) === false && A.ueberlappt(Int32Array.from([4, 20]), 18, 3) === true && A.ueberlappt(Int32Array.from([4, 20]), 1, 3) === false && A.ueberlappt(Int32Array.from([]), 5, 3) === false,
   'ueberlappt: |t - e| < d (6 und 18 ja, 7 und 1 nein, leere Menge nein)');
 var eB = null; try { A.lauf(zufallSignal, Object.assign({}, KAND, { bewertung: 'null' }), { tafel: T0 }); } catch (e) { eB = e; }
@@ -269,14 +274,16 @@ ok(/Form tag, Bewertung topf/.test(mdT) && /\*\*WARNUNG:\*\* Bewertung topf, abe
 
 console.log('3c) Versatz der Verschiebungs-Gegenprobe (Nachlieferung Nr. 118): versatzTage 5..60, Vorgabe ' + K.VERSATZ_TAGE);
 /* Kunst-Kalenderregel mit Periode 20 (Einstieg aller Reihen an jedem 20. Kalendertag, Effekt +2 % dort), Modus zeit: mit dem Versatz 20 der Vorgabe
- * landet das verschobene Signal GENAU auf dem naechsten Ereignisfenster (Placebo = Effekt, "wirkt" -> Messgeraet-Fehler, obwohl das Messgeraet
- * richtig ist); mit versatzTage 10 liegt es in der Mitte des Intervalls (Placebo ~ 0). Welt nach den bisherigen gebaut. */
+ * landet das verschobene Signal GENAU auf dem naechsten Ereignisfenster. Bis Nr. 121-1 hiess das: Placebo = Effekt, "wirkt" -> Messgeraet-Fehler,
+ * obwohl das Messgeraet richtig ist (dieser Test verlangte es und war auf fc1187a gruen = der Rot-Nachweis fuer D-iv). Seit B-V5 werden solche
+ * verschobenen Fenster als Ueberschneidung GEZAEHLT und NICHT gewertet (D-iv): Anteil 100 %, kein Messgeraet-Fehler aus eigener Periodik. Mit
+ * versatzTage 10 liegt es in der Mitte des Intervalls (Placebo ~ 0). Welt nach den bisherigen gebaut. */
 var kal20 = { signal: function (sicht, i) { return (i + 1) % 20 === 0 ? { dir: 1 } : null; } };
 var T20 = TF.kunstTafel(kunstReihen(function (r, i) { return (i % 20) === 0 ? 0.02 : 0; }), TAGE);
 var KV20 = JSON.parse(JSON.stringify(KANDZ)), KV10 = JSON.parse(JSON.stringify(KANDZ)); KV10.versatzTage = 10;
 var Ev20 = A.lauf(kal20, KV20, { tafel: T20 }), Ev10 = A.lauf(kal20, KV10, { tafel: T20 }), v20 = Ev20.konfigurationen[0], v10 = Ev10.konfigurationen[0];
-ok(Ev20.versatzTage === 20 && v20.entdeckung.uBrutto.mittel > 1.5 && v20.versatz.uNetto.mittel > 1 && v20.versatz.wirkt === true && v20.versatz.ueberlappung.anteil === 1 && LF.urteile(Ev20, null, Rg0).urteil === 'Messgeraet-Fehler' && /um 20 Tage verschobene Signal wirkt ebenso/.test(LF.urteile(Ev20, null, Rg0).grund),
-  'Kalenderregel Periode 20, Versatz 20 (Vorgabe): das verschobene Signal trifft das naechste Fenster - Placebo = Effekt, "wirkt", Messgeraet-Fehler', 'echt ' + v20.entdeckung.uBrutto.mittel.toFixed(3) + ' verschoben ' + v20.versatz.uNetto.mittel.toFixed(3));
+ok(Ev20.versatzTage === 20 && v20.entdeckung.uBrutto.mittel > 1.5 && v20.versatz.nTr === 0 && v20.versatz.uNetto.mittel === null && v20.versatz.wirkt === false && v20.versatz.ueberlappung.anteil === 1 && v20.versatz.ueberlappung.von === 960 && Ev20.zaehler.versatzUeberschneidung > 0 && LF.urteile(Ev20, null, Rg0).urteil !== 'Messgeraet-Fehler',
+  'D-iv: Kalenderregel Periode 20, Versatz 20 (Vorgabe): jedes verschobene Fenster schneidet das naechste Signalfenster -> gezaehlt (100 %), nicht gewertet, kein Messgeraet-Fehler aus eigener Periodik', 'echt ' + v20.entdeckung.uBrutto.mittel.toFixed(3) + ', Ueberschneidung ' + v20.versatz.ueberlappung.n + ' / ' + v20.versatz.ueberlappung.von);
 ok(Ev10.versatzTage === 10 && nahe(v10.entdeckung.uBrutto.mittel, v20.entdeckung.uBrutto.mittel, 1e-12) && Math.abs(v10.versatz.uNetto.mittel) < 0.4 && v10.versatz.wirkt === false && v10.versatz.ueberlappung.anteil === 0 && LF.urteile(Ev10, null, Rg0).urteil !== 'Messgeraet-Fehler' && /um 10 Handelstage verschobene Signal/.test(v10.placebo.grund) && /um 10 Handelstage/.test(Ev10.bewertungDetail),
   'dieselbe Regel mit versatzTage 10: Entdeckung bitgleich, verschobenes Signal in der Intervallmitte ~ 0, kein Messgeraet-Fehler; Texte nennen 10', 'verschoben ' + v10.versatz.uNetto.mittel.toFixed(3));
 var eV = null; try { A.lauf(kal20, Object.assign({}, KANDZ, { versatzTage: 4 }), { tafel: T20 }); } catch (e) { eV = e; }
@@ -304,6 +311,213 @@ var H = LF.holm([0.001, 0.03, 0.2], 3, 0.05);
 ok(H.bestanden[0] && !H.bestanden[1] && !H.bestanden[2] && nahe(H.schwelle[0], 0.05 / 3, 1e-12) && nahe(H.schwelle[1], 0.025, 1e-12), 'Holm: 0,001 besteht alpha/3, 0,03 verfehlt alpha/2, danach Abbruch');
 var H2 = LF.holm([0.001, 0.02], 2, 0.05);
 ok(H2.bestanden[0] && H2.bestanden[1], 'Holm: 0,001 und 0,02 bestehen bei m = 2 (0,025 / 0,05)');
+
+console.log('3d) Nr. 121-1: lokaler Topf (D-i, D-ii, D-v, D-xii), zweiseitige Sperrklinke (D-iii), Radius (D-vi), Abgaenge an der Sperre (D-vii), Nachmessung (D-viii), Korb (D-ix), Nein-Massstab (D-xi)');
+/* Kunstwelt D (deterministisch je Seed, eigener Zufallsstrom - die Welten oben bleiben unberuehrt): 20 Reihen x 1.500 Werktage ab 2010-01-04
+ * (offene Tafel, alles Entdeckung), Tagesrendite = Marktfaktor 0,3 % + eigenes Rauschen 0,8 % (log), marktweite Kunstregel H5 (Einstieg ALLER Reihen
+ * an den Plantagen), unregelmaessiger Plan aus dem Seed (Abstaende 25-45 Handelstage, eine Luecke von 90), Regime-Block 60 Tage +0,3 %/Tag fuer
+ * alle Reihen IN der Luecke (Lage aus dem Seed): die Sonderphase faellt nur in den Topf - die Fehlerform von fomc 2020 (Audit Nr. 120 A §3b).
+ * Parameter vor dem Test festgelegt (Vorstudie d1-probe.js im Kratzordner, Uebergabe Nr. 121-1). o.effekt / o.effektVersatz: Pp je Signalfenster /
+ * je um 20 Tage verschobenem Fenster (log-Zuschlag auf die 5 Tage des Fensters). */
+var N_D = 1500, TAGE_D = (function () { var t = [], d = new Date('2010-01-04T00:00:00Z'); while (t.length < N_D) { var w = d.getUTCDay(); if (w !== 0 && w !== 6) t.push(d.toISOString().slice(0, 10)); d = new Date(d.getTime() + 86400000); } return t; })();
+function weltD(seed, o) {
+  o = o || {};
+  var rr = A.mulberry32(A.fnv('nr121-d|' + seed)), g = function () { var u = 1 - rr(), v = rr(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  var plan = [], t = 30 + Math.floor(rr() * 20), nAbst = 0, lueckeBei = 10 + Math.floor(rr() * 20), lueckeVon = -1;
+  while (t < N_D - 10) { plan.push(t); var ab = (nAbst === lueckeBei) ? 90 : 25 + Math.floor(rr() * 21); if (ab === 90) lueckeVon = t; t += ab; nAbst++; }
+  var rs = lueckeVon + 5 + Math.floor(rr() * 26), rsFrei = Math.floor(rr() * (N_D - 60)), m = [];
+  if (o.regime === 'frei') rs = rsFrei;                                     /* (a) Lage aus dem Seed, unabhaengig vom Plan */
+  for (var d = 0; d < N_D; d++) m.push(0.003 * g() + (o.regime !== false && d >= rs && d < rs + 60 ? 0.003 : 0));
+  plan.forEach(function (e) { for (var q = 0; q < 5; q++) { if (o.effekt && e + q < N_D) m[e + q] += o.effekt / 500; if (o.effektVersatz && e + 20 + q < N_D) m[e + 20 + q] += o.effektVersatz / 500; } });
+  var reihen = [];
+  for (var r = 0; r < 20; r++) {
+    var sp = { reihe: 'D' + r, tag: [], o: [], h: [], l: [], c: [], v: [] }, P = 50 + 50 * rr();
+    for (var j = 0; j < N_D; j++) { sp.tag.push(j); sp.o.push(P); sp.c.push(P); sp.h.push(P); sp.l.push(P); sp.v.push(1e6); P = P * Math.exp(m[j] + 0.008 * g()); }
+    reihen.push(sp);
+  }
+  var istPlan = new Uint8Array(N_D); plan.forEach(function (p) { istPlan[p] = 1; });
+  return { tafel: TF.kunstTafel(reihen, TAGE_D, { offen: true }), istPlan: istPlan, plan: plan, lueckeVon: lueckeVon, regimeVon: rs };
+}
+function regelD(W) { return { signal: function (sicht, i) { var tg = sicht.tag(i); return (tg + 1 < N_D && W.istPlan[tg + 1]) ? { dir: 1 } : null; } }; }
+var KD = { kennung: 'kunst-d', form: 'tag', bewertung: 'zeit', konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5 }], params: {} };
+function verteilung(x) { var nn = x.length, mm = 0; x.forEach(function (v) { mm += v; }); mm /= nn; var q = 0; x.forEach(function (v) { q += (v - mm) * (v - mm); }); return { mittel: mm, sd: Math.sqrt(q / (nn - 1)), anteil: x.filter(function (v) { return Math.abs(v) > 1.96; }).length / nn, n: nn }; }
+function vText(v) { return 'Mittel ' + v.mittel.toFixed(3) + ', sd ' + v.sd.toFixed(3) + ', |t| > 1,96 ' + (100 * v.anteil).toFixed(1) + ' %'; }
+/* D-i: Seeds unter der Null, je Seed neue Reihen, neuer Plan, neue Regime-Lage. 300 Seeds statt 100: mit 100 hat der Anteil |t| > 1,96 eine
+ * Binomial-Streuung von 2,2 Pp und das Mittel der t eine von 0,10 - die Schranken 2..9 % und 0,15 entschiede der Zufall. Zwei Welten:
+ * (a) Regime-Block frei (Lage aus dem Seed, unabhaengig vom Plan) = die strenge Null: lokal muss alle drei Schranken halten, Signal und verschoben;
+ * (b) Regime-Block IN der 90-Tage-Luecke (Fehlerform fomc 2020: die Sonderphase faellt nur in den Topf): der globale Topf von Nr. 118 MUSS die
+ *     Verzerrung zeigen (Rot), der lokale haelt sd und Anteil und verkleinert die Verzerrung auf hoechstens ein Drittel; ganz verschwindet sie nicht,
+ *     weil die zwei Signale am Rand der Luecke Regime-Fenster bis R = 4 H in ihrem Topf haben (Rest in der Uebergabe beziffert). */
+var tD0 = Date.now(), DI = { a: { lokal: { s: [], v: [] }, global: { s: [], v: [] } }, b: { lokal: { s: [], v: [] }, global: { s: [], v: [] } } };
+for (var sD = 0; sD < 300; sD++) {
+  [['a', weltD(sD, { regime: 'frei' })], ['b', weltD(sD)]].forEach(function (wv) {
+    var RD = regelD(wv[1]);
+    ['lokal', 'global'].forEach(function (art) { var Ex = A.lauf(RD, KD, { tafel: wv[1].tafel, topfArt: art }), kx = Ex.konfigurationen[0]; DI[wv[0]][art].s.push(kx.entdeckung.uBrutto.t); DI[wv[0]][art].v.push(kx.versatz.uBrutto.t); });
+  });
+}
+var dLs = verteilung(DI.a.lokal.s), dLv = verteilung(DI.a.lokal.v), dGs = verteilung(DI.b.global.s), dGv = verteilung(DI.b.global.v), dBs = verteilung(DI.b.lokal.s), dBv = verteilung(DI.b.lokal.v), dAg = verteilung(DI.a.global.s), msD = Date.now() - tD0;
+function unterNull(v) { return Math.abs(v.mittel) <= 0.15 && v.sd >= 0.8 && v.sd <= 1.25 && v.anteil >= 0.02 && v.anteil <= 0.09; }
+function streuungOk(v) { return v.sd >= 0.8 && v.sd <= 1.25 && v.anteil >= 0.02 && v.anteil <= 0.09; }
+ok(unterNull(dLs) && unterNull(dLv) && msD < 60000, 'D-i (a): lokaler Topf, 300 Seeds unter der Null (unregelmaessiger Plan mit 90-Tage-Luecke, Regime-Block frei): t des Signals und des verschobenen Signals |Mittel| <= 0,15, sd 0,8..1,25, Anteil |t| > 1,96 2..9 % (HH-Lag = H)', 'Signal ' + vText(dLs) + ' | verschoben ' + vText(dLv) + ' | global ' + vText(dAg) + ' | ' + msD + ' ms');
+ok((Math.abs(dGs.mittel) > 0.5 || dGs.sd > 1.3 || dGs.anteil > 0.12) && streuungOk(dBs) && streuungOk(dBv) && Math.abs(dBs.mittel) <= Math.abs(dGs.mittel) / 3 && Math.abs(dBv.mittel) <= 0.15,
+  'D-i (b) Rot vor Gruen: Regime-Block in der Luecke - der globale Topf von Nr. 118 zeigt die Verzerrung (|Mittel t| > 0,5 oder sd > 1,3 oder Anteil > 12 %), der lokale haelt sd/Anteil und hoechstens ein Drittel der Verzerrung', 'global ' + vText(dGs) + ' | lokal ' + vText(dBs) + ' | lokal verschoben ' + vText(dBv) + ' | global verschoben ' + vText(dGv));
+/* D-ii: eingesaeter Effekt +0,5 Pp NUR in den Signalfenstern, Mittel ueber 20 Seeds: Modus zeit 0,5 +- 20 % (ohne und mit Regime-Block), Modus topf ~ 0 */
+var DII = { ohne: [], mit: [], topf: [] }, KDT = JSON.parse(JSON.stringify(KD)); KDT.bewertung = 'topf';
+for (var sE = 0; sE < 20; sE++) {
+  var W0e = weltD(1000 + sE, { regime: false, effekt: 0.5 }), W1e = weltD(1000 + sE, { effekt: 0.5 });
+  DII.ohne.push(A.lauf(regelD(W0e), KD, { tafel: W0e.tafel }).konfigurationen[0].entdeckung.uBrutto.mittel);
+  DII.mit.push(A.lauf(regelD(W1e), KD, { tafel: W1e.tafel }).konfigurationen[0].entdeckung.uBrutto.mittel);
+  DII.topf.push(A.lauf(regelD(W0e), KDT, { tafel: W0e.tafel }).konfigurationen[0].entdeckung.uBrutto.mittel);
+}
+var mOhne = verteilung(DII.ohne).mittel, mMit = verteilung(DII.mit).mittel, mTopf = Math.max.apply(null, DII.topf.map(Math.abs));
+ok(mOhne >= 0.4 && mOhne <= 0.6 && mMit >= 0.4 && mMit <= 0.6 && mTopf < 1e-9, 'D-ii: eingesaeter Effekt +0,5 Pp nur in den Signalfenstern - Modus zeit findet ihn (0,5 +- 20 %, 20 Seeds) ohne und mit Regime-Block, Modus topf ~ 0 (Tagestopf)', 'zeit ohne Regime ' + mOhne.toFixed(3) + ', mit Regime ' + mMit.toFixed(3) + ', topf max |u| ' + mTopf.toExponential(1));
+/* D-iii: zweiseitige Sperrklinke - Effekt nur in den verschobenen Fenstern (-1 bzw. +1 Pp), das Signal selbst ~ 0: beide Richtungen -> Messgeraet-Fehler */
+var W3n = weltD(2000, { regime: false, effektVersatz: -1 }), W3p = weltD(2000, { regime: false, effektVersatz: 1 }), W30 = weltD(2000, { regime: false });
+var E3n = A.lauf(regelD(W3n), KD, { tafel: W3n.tafel }), E3p = A.lauf(regelD(W3p), KD, { tafel: W3p.tafel }), E30 = A.lauf(regelD(W30), KD, { tafel: W30.tafel });
+var U3n = LF.urteile(E3n, null, Rg0), U3p = LF.urteile(E3p, null, Rg0), U30 = LF.urteile(E30, null, Rg0);
+ok(E3n.konfigurationen[0].versatz.verstoss === true && U3n.urteil === 'Messgeraet-Fehler' && /zweiseitig/.test(U3n.grund) && E3p.konfigurationen[0].versatz.verstoss === true && U3p.urteil === 'Messgeraet-Fehler' && /verschobene Signal zeigt einen Ausschlag/.test(U3p.grund) && E30.konfigurationen[0].versatz.verstoss === false && U30.urteil !== 'Messgeraet-Fehler',
+  'D-iii: verschobenes Signal mit eingesaetem NEGATIVEM Effekt -> Messgeraet-Fehler, mit positivem ebenso (Grund: das verschobene Signal), ohne Effekt nicht', 'verschoben ' + E3n.konfigurationen[0].versatz.uBrutto.mittel.toFixed(3) + ' (t ' + E3n.konfigurationen[0].versatz.uBrutto.t.toFixed(1) + ') / ' + E3p.konfigurationen[0].versatz.uBrutto.mittel.toFixed(3) + ' / ohne ' + E30.konfigurationen[0].versatz.uBrutto.mittel.toFixed(3));
+/* D-v: Topf klassengleich - Reihe wechselt bei Tafeltag 20 von Klasse 3 auf Klasse 1; Fenster ab Klasse-1-Tagen bringen +10 %, sonst 0 */
+var oV = [], kV5 = []; for (var qv = 0; qv < 40; qv++) { oV.push(qv <= 20 ? 100 : 100 * Math.pow(1.1, qv - 20)); kV5.push(qv < 20 ? 3 : 1); }
+var TV5 = TF.kunstTafel([{ reihe: 'V', tag: oV.map(function (x, i) { return i; }), o: oV, h: oV, l: oV, c: oV, v: oV.map(function () { return 1; }), klasse: kV5 }], TAGE.slice(0, 40), { offen: true }), SV5 = TV5.reihen[0];
+var tv3 = A.lokalerTopf(SV5, Int32Array.from([18]), [18], 1, [30], [3], 0, 39)[0][18], tvAlle = A.lokalerTopf(SV5, Int32Array.from([18]), [18], 1, [30], null, 0, 39)[0][18], tvAlt = A.zeitTopfGlobal(SV5, Int32Array.from([18]), 1, 0, 39);
+ok(tv3[1] === 19 && Math.abs(tv3[0]) < 1e-9 && tvAlle[1] === 38 && tvAlle[0] / tvAlle[1] > 4 && tvAlt.mittel > 4,
+  'D-v: lokaler Topf nimmt nur Starttage mit Klasse in klassen der Konfiguration (19 Fenster Klasse 3, Mittel 0); ohne klassen 38 Fenster; der alte globale Topf mischte die Klassen (Rot)', 'Klasse 3: n ' + tv3[1] + ' Mittel ' + (tv3[0] / tv3[1]).toFixed(3) + ' | alle: n ' + tvAlle[1] + ' Mittel ' + (tvAlle[0] / tvAlle[1]).toFixed(3) + ' | alt ' + tvAlt.mittel.toFixed(3));
+/* D-xii: Zuordnung im Einzelnen (Reihe 0..59 ohne Luecke, H 3, R 20): fremde Signalfenster ausgeschlossen, jeder Starttag in genau einem Topf
+ * (Gleichstand -> frueheres Signal), Kalenderluecke zaehlt nach Tafeltagen, Zeitraum-Ende begrenzt die Starts, R begrenzt die Zuordnung, < 2 -> NaN */
+var o60 = []; for (var q6 = 0; q6 < 60; q6++) o60.push(100 + q6);
+var T60 = TF.kunstTafel([{ reihe: 'Z', tag: o60.map(function (x, i) { return i; }), o: o60, h: o60, l: o60, c: o60, v: o60.map(function () { return 1; }) }], TAGE.slice(0, 60), { offen: true }), S60 = T60.reihen[0];
+var tagL = [], oL = []; for (var qL = 0; qL < 60; qL++) if (qL < 14 || qL > 17) { tagL.push(qL); oL.push(100 + qL); }
+var T60L = TF.kunstTafel([{ reihe: 'L', tag: tagL, o: oL, h: oL, l: oL, c: oL, v: oL.map(function () { return 1; }) }], TAGE.slice(0, 60), { offen: true }), S60L = T60L.reihen[0];
+var z12a = A.lokalerTopf(S60, Int32Array.from([10, 30]), [10, 30], 3, [20], null, 0, 59)[0], z12b = A.lokalerTopf(S60, Int32Array.from([10, 30, 40]), [10, 30], 3, [20], null, 0, 59)[0];
+var z12c = A.lokalerTopf(S60L, Int32Array.from([10, 30]), [10, 30], 3, [20], null, 0, 59)[0], z12d = A.lokalerTopf(S60, Int32Array.from([10, 30]), [10, 30], 3, [20], null, 0, 25)[0], z12e = A.lokalerTopf(S60, Int32Array.from([10]), [10], 3, [4], null, 0, 59)[0];
+var z12alt = A.zeitTopfGlobal(S60, Int32Array.from([10, 30]), 3, 0, 59);
+ok(z12a[10][1] === 16 && z12a[30][1] === 25 && z12a[10][1] + z12a[30][1] === z12alt.n - 6,
+  'D-xii: zwei Signale (10, 30), H 3, R 20: Starttage 0..7, 13..20 (20: Gleichstand -> frueheres Signal) zu 10, 21..27 und 33..50 zu 30 - jeder Starttag in genau einem Topf (16 + 25 = alle 47 zulaessigen Fenster ausser 51..56 jenseits R)', z12a[10][1] + ' / ' + z12a[30][1] + ' / alt ' + z12alt.n);
+ok(z12b[30][1] === 20 && z12b[10][1] === 16, 'D-xii: fremdes Signalfenster (Einstieg 40, nicht zugeordnet) wird ausgeschlossen - nicht nur das eigene (Topf 30: 25 -> 20)', z12b[30][1]);
+ok(z12c[10][1] === 12 && z12c[30][1] === 25, 'D-xii: Kalenderluecke der Reihe (Tafeltage 14..17 fehlen): Zuordnung nach Tafeltagen, nicht nach Zeilen (Topf 10: 0..7, 13, 18..20)', z12c[10][1] + ' / ' + z12c[30][1]);
+ok(z12d[10][1] === 16 && z12d[30][1] === 5, 'D-xii: Zeitraum-Ende (bis 25): kein Starttag dahinter, auch wenn er naeher am Signal laege (Entdeckungs-Topf ohne Pruefzeit-Start)', z12d[30][1]);
+ok(z12e[10][1] === 4 && Object.keys(z12e).length === 1, 'D-xii: Starttage weiter als R vom Signal bleiben unzugeordnet (R 4: nur 6, 7, 13, 14)', z12e[10][1]);
+ok(isNaN(A.topfMittel({}, 10)) && isNaN(A.topfMittel({ 10: [0, 0] }, 10)) && A.topfMittel({ 10: [5, 1] }, 10) === 5 && A.topfMittel({ 10: [5, 2] }, 10) === 2.5 && K.TOPF_N_MIN === 1 && isNaN(A.topfMittel({ 10: [5, 1] }, 10, 2)),
+  'D-xii: Topf ohne Fenster (n = 0) -> NaN (topfFehlt); n = 1 gueltig (gepaarter Vergleich, Entscheid PM: TOPF_N_MIN 1); mit Schwelle 2 waere n = 1 NaN');
+/* D-xii (Lauf): Plan alle 10 Tage, H5 -> zwischen zwei Signalen genau ein zulaessiger Starttag (Gleichstand -> frueheres Signal): jeder innere Topf hat
+ * n = 1 -> gueltig (gepaarter Vergleich), alle 35 x 20 Trades gebucht, Anteil n = 1 = 33/35. Plan alle 9 Tage: zwischen zwei Signalen KEIN zulaessiger
+ * Starttag -> n = 0 -> topfFehlt (gezaehlt), kein Trade; nur erstes und letztes Signal haben Fenster. Trades + topfFehlt = Signale x Reihen. */
+var W10 = weltD(3000, { regime: false }), ip10 = new Uint8Array(N_D), ip9 = new Uint8Array(N_D); for (var p10 = 50; p10 < 400; p10 += 10) ip10[p10] = 1; for (var p9 = 50; p9 < 365; p9 += 9) ip9[p9] = 1;
+var E10 = A.lauf({ signal: function (sicht, i) { var tg = sicht.tag(i); return ip10[tg + 1] ? { dir: 1 } : null; } }, KD, { tafel: W10.tafel }), k10 = E10.konfigurationen[0];
+var E9 = A.lauf({ signal: function (sicht, i) { var tg = sicht.tag(i); return ip9[tg + 1] ? { dir: 1 } : null; } }, KD, { tafel: W10.tafel }), k9 = E9.konfigurationen[0];
+ok(k10.zeitTopf.topfFehlt === 0 && k10.entdeckung.nTr === 35 * 20 && k10.zeitTopf.topfN.min === 1 && nahe(k10.zeitTopf.topfN.anteilN1, 33 / 35, 1e-12) && k9.zeitTopf.topfFehlt === 33 * 20 && k9.entdeckung.nTr === 2 * 20 && k9.entdeckung.nTr + k9.zeitTopf.topfFehlt === 35 * 20,
+  'D-xii (Lauf): Abstand 2 H -> je 1 Topf-Fenster, gueltig (35 x 20 Trades, Anteil n = 1 33/35); Abstand 9 -> 0 Fenster -> topfFehlt (gezaehlt), kein Trade; Trades + topfFehlt = Signale', 'Abstand 10: Trades ' + k10.entdeckung.nTr + ', Anteil n = 1 ' + (k10.zeitTopf.topfN.anteilN1 || 0).toFixed(3) + ' | Abstand 9: Trades ' + k9.entdeckung.nTr + ', topfFehlt ' + k9.zeitTopf.topfFehlt);
+/* D-vi: topfRadius - Adapter und --pruefen (Bereich 2 H .. 12 H, Abschnitt "Topfradius"; Vorgabe 4 H ohne Absatz) */
+var eR = null; try { A.topfRadiusVon({ topfRadius: 9 }, 5); } catch (e) { eR = e; }
+ok(eR && /topfRadius muss eine ganze Zahl 10\.\.60/.test(eR.message) && A.topfRadiusVon({}, 5) === 20 && A.topfRadiusVon({ topfRadius: 60 }, 5) === 60, 'D-vi: Adapter - topfRadius 9 bei H 5 wirft (10..60), ohne Feld 4 H = 20, 60 erlaubt', eR && eR.message);
+var tmpR = 'kunst-radius-tmp-' + process.pid, tmpRK = path.join(K.WARTESCHLANGE, tmpR);
+try {
+  fs.mkdirSync(tmpRK, { recursive: true });
+  var kr = { kennung: tmpR, form: 'tag', titel: 'x', quelle: 'q', erwartung: { groesse: 'g', richtung: 'positiv' }, konfigurationen: [{ key: 'a', richtung: 'long', haltedauer: 5 }], autor: 'a', datum: '2026-10-21', bewertung: 'zeit' };
+  fs.writeFileSync(path.join(tmpRK, 'regel.js'), regelOk); fs.writeFileSync(path.join(tmpRK, 'test.js'), 'process.exit(0);'); fs.writeFileSync(path.join(tmpRK, 'REGEL.md'), '# Regel\n\n' + langeProsa + '\n');
+  var lr = function (felder, regelMd) { var x = Object.assign({}, kr, felder); fs.writeFileSync(path.join(tmpRK, 'kandidat.json'), JSON.stringify(x)); if (regelMd) fs.writeFileSync(path.join(tmpRK, 'REGEL.md'), regelMd); return LF.ladeKandidat(tmpR); };
+  var R0 = lr({}), R9 = lr({ topfRadius: 9 }), R61 = lr({ topfRadius: 61 }), R20 = lr({ topfRadius: 20 }), RT = lr({ topfRadius: 20, bewertung: 'topf' });
+  var R20a = lr({ topfRadius: 20 }, '# Regel\n\n' + langeProsa + '\n\n## Topfradius\n\nZwei Sitzungsabstaende decken die Periode; 4 H waere kuerzer als der halbe Zyklus.\n');
+  ok(R0.fehler.length === 0 && R9.fehler.some(function (f) { return /topfRadius muss eine ganze Zahl 10\.\.60/.test(f); }) && R61.fehler.some(function (f) { return /topfRadius muss/.test(f); }) && R20.fehler.some(function (f) { return /ohne Ueberschrift "Topfradius"/.test(f); }) && RT.fehler.some(function (f) { return /nur in der Form tag mit bewertung zeit/.test(f); }) && R20a.fehler.length === 0 && /Zwei Sitzungsabstaende/.test(R20a.topfRadiusGrund),
+    'D-vi: --pruefen - Vorgabe ohne Absatz gueltig, 9 und 61 Bereichsfehler, 20 ohne Abschnitt "Topfradius" ungueltig, mit Abschnitt gueltig, topfRadius bei bewertung topf ungueltig', [R0.fehler.length, R9.fehler.length, R61.fehler.length, R20.fehler.length, RT.fehler.length, R20a.fehler.length].join('/'));
+} finally { fs.rmSync(tmpRK, { recursive: true, force: true }); }
+/* D-vii: Schein-Abgaenge an der Sperre - gesperrte Kunsttafel (Sperre 2023), zwei nicht lebende Reihen: Z1 endet am letzten Tag vor der Sperre
+ * (2022-12-30) -> "zensiert", Z2 einen Tag frueher -> Abgang "sonstige"; Signal drei Zeilen vor dem Ende, Ausstieg H5 hinter dem Ende (Abgang) */
+var iS7 = TF.sperrIndex(TAGE), mk7 = function (name, letzt) { var sp = { reihe: name, tag: [], o: [], h: [], l: [], c: [], v: [], lebend: 0 }; for (var q7 = 0; q7 <= letzt; q7++) { sp.tag.push(q7); sp.o.push(100); sp.c.push(100); sp.h.push(100); sp.l.push(100); sp.v.push(1); } return sp; };
+var T7 = TF.kunstTafel([mk7('Z1', iS7), mk7('Z2', iS7 - 1)], TAGE), E7 = A.lauf({ signal: function (sicht, i) { return i === sicht.n - 3 ? { dir: 1 } : null; } }, { kennung: 'kunst-sperre', form: 'tag', konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5 }] }, { tafel: T7 });
+var ab7 = {}; E7.konfigurationen[0].entdeckung.abgaenge.forEach(function (x) { ab7[x.gruppe] = x.n; });
+ok(T7.gesperrt && TAGE[iS7] === '2022-12-30' && ab7.zensiert === 1 && ab7.sonstige === 1 && A.zensiertAnSperre(T7, T7.reihen[0]) && !A.zensiertAnSperre(T7, T7.reihen[1]), 'D-vii: Reihe endet am letzten Tag vor der Sperre -> Abgangsgruppe "zensiert", einen Tag frueher -> Abgang (sonstige)', JSON.stringify(ab7));
+/* D-ix: Korb - --pruefen lehnt zwei Konfigurationen ab; Zufallsbuecher B = max(200, 20 m + 1) */
+var tmpKo = 'kunst-korb-tmp-' + process.pid, tmpKoK = path.join(K.WARTESCHLANGE, tmpKo);
+try {
+  fs.mkdirSync(tmpKoK, { recursive: true });
+  fs.writeFileSync(path.join(tmpKoK, 'kandidat.json'), JSON.stringify({ kennung: tmpKo, form: 'korb', titel: 'x', quelle: 'q', erwartung: { groesse: 'g', richtung: 'positiv' }, konfigurationen: [{ key: 'a' }, { key: 'b' }], autor: 'a', datum: '2026-10-21' }));
+  fs.writeFileSync(path.join(tmpKoK, 'regel.js'), 'module.exports = { zielfunktion: function () {}, placeboZiel: function () {} };'); fs.writeFileSync(path.join(tmpKoK, 'test.js'), 'process.exit(0);'); fs.writeFileSync(path.join(tmpKoK, 'REGEL.md'), '# Regel\n\n' + langeProsa + '\n');
+  var LKo = LF.ladeKandidat(tmpKo);
+  ok(LKo.fehler.some(function (f) { return /korb: genau eine Konfiguration/.test(f); }) && K.korbBuecher(1) === 200 && K.korbBuecher(9) === 200 && K.korbBuecher(10) === 201 && K.korbBuecher(14) === 281,
+    'D-ix: Korb - --pruefen lehnt zwei Konfigurationen ab; Zufallsbuecher 200 bei m <= 9, 20 m + 1 darueber (m 10 -> 201, m 14 -> 281)', LKo.fehler.join(' | '));
+} finally { fs.rmSync(tmpKoK, { recursive: true, force: true }); }
+/* D-xi: Nein-Massstab - Kandidat mit Pruefung netto -0,01, obere Grenze +0,2 -> "nicht entscheidbar", nicht "nein"; obere -0,05 -> "nein" */
+function fallXI(obere) {
+  var Ex = { verstoesse: 0, konfigurationen: [{ key: 'a', kandidat: true, urteil: 'Kandidat', entdeckung: { uNetto: { mittel: 0.5, t: 3 } }, versatz: { verstoss: false } }] };
+  var Px = { konfigurationen: [{ key: 'a', pruefung: { uNetto: { mittel: -0.01, t: -0.1, obere: obere }, pEinseitig: 0.54, gleicheRichtung: false } }] };
+  var Ux = LF.urteile(Ex, Px, Rg0); return { gesamt: Ux.urteil, konf: Ex.konfigurationen[0].urteil };
+}
+var xiA = fallXI(0.2), xiB = fallXI(-0.05);
+ok(xiA.gesamt === 'nicht entscheidbar' && xiA.konf === 'nicht entscheidbar' && xiB.gesamt === 'nein' && xiB.konf === 'nein' && LF.obereGrenze({ nettoJeSignalPp: -0.1, t: -1 }) > 0 && LF.obereGrenze({ buch: {} }) === null,
+  'D-xi: ein Massstab fuer "nein" - Pruefung netto -0,01, obere +0,2 -> nicht entscheidbar (je Konfiguration und gesamt); obere -0,05 -> nein', JSON.stringify(xiA) + ' / ' + JSON.stringify(xiB));
+/* A16: p der Pruefung aus der t-Verteilung (df = n_eff - 1); Monatswende n_eff ~ 10: p(t = 2,5) einseitig 0,017 statt 0,006 (Phi) */
+ok(nahe(1 - A.tVerteilung(2.5, 9), 0.0169, 5e-4) && nahe(1 - A.phi(2.5), 0.00621, 1e-4) && nahe(A.tVerteilung(0, 5), 0.5, 1e-12) && nahe(A.tVerteilung(-2.5, 9) + A.tVerteilung(2.5, 9), 1, 1e-12) && nahe(1 - A.tVerteilung(1.96, 1e6), 0.025, 1e-4),
+  'A16: t-Verteilung - einseitig p(2,5; df 9) = 0,017 (Phi: 0,006), symmetrisch, df gross -> Normalverteilung', (1 - A.tVerteilung(2.5, 9)).toFixed(4));
+/* D-viii: Nachmessung an einem Kunst-Kandidaten in einem Temp-Repo (nie gegen das echte Repo/Wiki). Nachbesserung QS: F2 (Korrektur nach der Vormessung,
+ * Messgeraet-Commit), F1 (Abbruch mitten im Lauf -> Ausgangszustand, Marke liegt, --naechster liefert den Kandidaten nicht). */
+var NMR = fs.mkdtempSync(path.join(require('os').tmpdir(), 'pruefstrasse-nachmessung-')), gitT = function (args) { var r = cp.spawnSync('git', ['-c', 'user.name=test', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false'].concat(args), { cwd: NMR, encoding: 'utf8' }); if (r.status !== 0) throw new Error('git ' + args.join(' ') + ': ' + r.stderr); return r.stdout.trim(); };
+try {
+  var ortT = { repo: NMR, erledigt: path.join(NMR, 'pruefstrasse', 'erledigt'), warteschlange: path.join(NMR, 'pruefstrasse', 'warteschlange') }, kn = 'kunst-nm', kOrd = path.join(ortT.warteschlange, kn), kErl = path.join(ortT.erledigt, kn);
+  var GRUND = 'Messgeraet-Fehler: globaler Topf verzerrt (Audit Nr. 120)', ALTE = ['ERGEBNIS.md', 'ergebnis-entdeckung.json', 'KANDIDATEN.json', 'LAUF.log', 'belegstand-eintrag.md'];
+  gitT(['init', '-q']); fs.mkdirSync(kOrd, { recursive: true }); fs.mkdirSync(kErl, { recursive: true }); fs.mkdirSync(path.join(NMR, 'pruefstrasse', 'adapter'), { recursive: true });
+  fs.writeFileSync(path.join(kOrd, 'kandidat.json'), JSON.stringify({ kennung: kn, form: 'tag', bewertung: 'zeit', konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5 }] })); fs.writeFileSync(path.join(kOrd, 'REGEL.md'), '# Regel\n');
+  fs.writeFileSync(path.join(NMR, 'pruefstrasse', 'adapter', 'tag.js'), '// Messgeraet alt\n'); fs.writeFileSync(path.join(NMR, 'pruefstrasse', 'register.json'), '{"gesamt":1}\n');
+  gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Kandidat']); var cK = gitT(['rev-parse', 'HEAD']);
+  var altE = { kennung: kn, stand: '2026-10-12T02:00:00.000Z', urteil: 'nein', grund: 'alt', siegel1: { commit: cK, ordner: 'pruefstrasse/warteschlange/' + kn }, pruefung: null,
+    entdeckung: { konfigurationen: [{ key: 'H5', urteil: 'nein', entdeckung: { uNetto: { mittel: -1, t: -4 } } }] } };
+  fs.writeFileSync(path.join(kErl, 'ergebnis.json'), JSON.stringify(altE)); ALTE.forEach(function (f) { fs.writeFileSync(path.join(kErl, f), 'alt ' + f); });
+  gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Protokoll']); var cProt = gitT(['rev-parse', 'HEAD']);
+  fs.writeFileSync(path.join(kErl, 'notiz.md'), 'nur Ergebnis\n'); gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Notiz im Ergebnisordner']); var cNotiz = gitT(['rev-parse', 'HEAD']);
+  fs.writeFileSync(path.join(NMR, 'pruefstrasse', 'adapter', 'tag.js'), '// Messgeraet korrigiert\n'); gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Messgeraet: Topf korrigiert']); var cKorr = gitT(['rev-parse', 'HEAD']);
+  function fehlerVon(fn) { try { fn(); } catch (e) { return e; } return null; }
+  var eNM0 = fehlerVon(function () { LF.nachmessungPruefen(kn, 'kurz', cKorr, ortT); }), eNM1 = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, 'deadbeef', ortT); });
+  var eF2a = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cK, ortT); }), eF2b = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cProt, ortT); }), eF2c = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cNotiz, ortT); });
+  ok(eNM0 && /kuerzer als 20 Zeichen/.test(eNM0.message) && eNM1 && /kein Commit/.test(eNM1.message) && eF2a && /liegt nicht nach der Vormessung/.test(eF2a.message) && eF2b && /liegt nicht nach der Vormessung/.test(eF2b.message) && eF2c && /aendert keine Datei des Messgeraets/.test(eF2c.message),
+    'D-viii (F2): ohne Grund / kein Commit abgelehnt; Korrektur VOR der Vormessung (Kandidaten-Commit) und = Ergebnis-Commit abgelehnt; Commit nur im Ergebnisordner (kein Messgeraet-Commit) abgelehnt', eF2c && eF2c.message.slice(0, 90));
+  /* F1: Abbruch mitten im Lauf (simulierter Kind-Fehler nach Teilausgaben, gestagten Pfaden und Register-Aenderung) */
+  var lauf1 = function () {
+    fs.writeFileSync(path.join(kErl, 'LAUF.log'), 'neu: START\nneu: Kind-Fehler\n'); fs.writeFileSync(path.join(kErl, 'KANDIDATEN.json'), '{"neu":true}');
+    fs.writeFileSync(path.join(NMR, 'pruefstrasse', 'register.json'), '{"gesamt":1}\n{"halb":true}\n');
+    gitT(['add', '--', 'pruefstrasse/erledigt/' + kn, 'pruefstrasse/register.json']);
+    throw new Error('Kind-Fehler simuliert');
+  };
+  var eF1 = fehlerVon(function () { LF.nachmessen(kn, GRUND, cKorr, { ort: ortT, lauf: lauf1, weiterePfade: ['pruefstrasse/register.json'] }); });
+  var markeF1 = path.join(kErl, LF.NACHMESS_MARKE), mF1 = fs.existsSync(markeF1) ? JSON.parse(fs.readFileSync(markeF1, 'utf8')) : {};
+  var alleZurueck = ALTE.every(function (f) { return fs.readFileSync(path.join(kErl, f), 'utf8') === 'alt ' + f; }) && JSON.parse(fs.readFileSync(path.join(kErl, 'ergebnis.json'), 'utf8')).stand === altE.stand;
+  var gestagt = gitT(['diff', '--cached', '--name-only']), statusT = gitT(['status', '--porcelain', '--', 'pruefstrasse/erledigt', 'pruefstrasse/register.json']);
+  ok(eF1 && /NACHMESSUNG abgebrochen, zurueckgestellt, Marke liegt/.test(eF1.message) && /Kind-Fehler simuliert/.test(mF1.fehler || '') && mF1.korrektur === cKorr && mF1.ziel === 'v1-2026-10-12' && alleZurueck && !fs.existsSync(path.join(kErl, 'v1-2026-10-12')) && gestagt === '' &&
+    fs.readFileSync(path.join(NMR, 'pruefstrasse', 'register.json'), 'utf8') === '{"gesamt":1}\n' && statusT === '?? pruefstrasse/erledigt/kunst-nm/' + LF.NACHMESS_MARKE,
+    'D-viii (F1): Abbruch mitten im Lauf -> alte Ausgabe zurueck, v1-Ordner weg, Index der eigenen Pfade leer, Register auf dem Stand davor, Marke liegt mit fehler (einzige Aenderung im Arbeitsbaum)', (eF1 && eF1.message.slice(0, 80)) + ' | status ' + statusT);
+  fs.unlinkSync(path.join(kErl, 'ergebnis.json'));          /* schlimmster Fall: Prozess hart beendet, kein Rueckweg - nur die Marke schuetzt */
+  var sperreM = LF.nachmessSperre(kn, ortT), naechsterM = LF.naechster(ortT), eDoppelt = fehlerVon(function () { LF.nachmessen(kn, GRUND, cKorr, { ort: ortT, lauf: lauf1 }); });
+  ok(/ABGEBROCHEN/.test(sperreM || '') && naechsterM === null && eDoppelt && /liegt schon|kein erledigtes Protokoll/.test(eDoppelt.message), 'D-viii (F1): Marke liegt (ergebnis.json fehlt) -> --naechster liefert den Kandidaten NICHT, --pruefen meldet "Nachmessung ABGEBROCHEN", keine zweite Nachmessung darueber', sperreM);
+  fs.unlinkSync(markeF1); fs.writeFileSync(path.join(kErl, 'ergebnis.json'), JSON.stringify(altE));
+  /* Erfolgsweg der Bausteine: verschieben, Register ersetzt, Kopfabsatz */
+  var NM = LF.nachmessungPruefen(kn, GRUND, cKorr, ortT);
+  LF.nachmessungVerschieben(NM);
+  var imZiel = fs.readdirSync(path.join(kErl, 'v1-2026-10-12')).sort(), uebrig = fs.readdirSync(kErl).filter(function (f) { return f !== 'v1-2026-10-12' && f !== 'notiz.md'; });
+  ok(NM.n === 1 && NM.blickePruefzeit === 0 && NM.vormessungCommit === cProt && NM.korrekturDateien.join(',') === 'pruefstrasse/adapter/tag.js' && imZiel.join(',') === 'ERGEBNIS.md,KANDIDATEN.json,LAUF.log,belegstand-eintrag.md,ergebnis-entdeckung.json,ergebnis.json' && uebrig.length === 0 && /nachgemessen \(v1-2026-10-12\)/.test(LF.nachmessSperre(kn, ortT) || '') && LF.naechster(ortT) === null,
+    'D-viii: Nachmessung - alte Ausgabe nach erledigt/<k>/v1-2026-10-12/ verschoben (6 Dateien), nichts bleibt liegen; v1/ergebnis.json sperrt --naechster', imZiel.join(','));
+  var RgN = { kennung: 'x', konfigurationen: [{ kennung: kn, form: 'tag', key: 'H5', urteil: 'nein', datum: altE.stand }, { kennung: 'anderer', form: 'tag', key: 'H1', urteil: 'nein', datum: altE.stand }], gesamt: 2 };
+  RgN = LF.registerEintragen(RgN, kn, 'tag', [{ key: 'H5', urteil: 'nicht entscheidbar' }], '2026-10-21T00:00:00Z', 'zeit', { nachmessung: NM.n, ersetzt: NM.alt.stand });
+  var zN = RgN.konfigurationen.filter(function (e) { return e.kennung === kn; });
+  var EN = { stand: '2026-10-21T00:00:00.000Z', konfigurationen: [{ key: 'H5', urteil: 'nicht entscheidbar', entdeckung: { uNetto: { mittel: -0.4, t: -1.2 } } }] };
+  var absN = LF.nachmessungAbsatz(NM, EN), mdN = LF.ergebnisMarkdown(kandZ, Emz, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null, false, NM), bsN = LF.belegstandAbsatz(kandZ, Emz, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null, NM);
+  ok(RgN.gesamt === 2 && zN.length === 1 && zN[0].nachmessung === 1 && zN[0].ersetzt === altE.stand && zN[0].urteil === 'nicht entscheidbar', 'D-viii: Register ersetzt die Zeile der Kennung (nicht ergaenzt): 2 Konfigurationen, Feld nachmessung 1, ersetzt', JSON.stringify(zN[0]));
+  ok(/^\*\*Nachmessung 1\*\* \(21\.10\.2026\), Grund: Messgeraet-Fehler: globaler Topf verzerrt \(Audit Nr\. 120\)\. Korrektur `[0-9a-f]{12}` \(„Messgeraet: Topf korrigiert"\)\./.test(absN) && /Was sich geaendert hat: das Messgeraet laut Korrektur-Commit \(pruefstrasse\/adapter\/tag\.js\)/.test(absN) && !/Nr\. 121-1/.test(absN) &&
+    /Ersetzt v1 vom 12\.10\.2026 \(Urteil nein, Ordner `pruefstrasse\/erledigt\/kunst-nm\/v1-2026-10-12\/`\)/.test(absN) && /H5: netto −1,0000 \/ t −4,00 \(nein\) -> −0,4000 \/ t −1,20 \(nicht entscheidbar\)/.test(absN) && /verbraucht kein Holdout/.test(absN) && /\n\*\*Nachmessung 1\*\*/.test(mdN) && /— \*\*Nachmessung 1\*\* \(ersetzt den Absatz vom 12\.10\.2026/.test(bsN),
+    'D-viii: Kopfabsatz "Nachmessung 1" aus --grund/--korrektur (Commit-Titel, geaenderte Dateien; nichts fest verdrahtet), ersetzte Version, alt -> neu je Konfiguration, Holdout-Satz; Belegstand-Absatz nennt, wen er ersetzt', absN.slice(0, 90));
+  /* Abbruch: Kandidatenordner nach Siegel 1 der Vormessung veraendert (committet) bzw. ungesichert */
+  fs.writeFileSync(path.join(kErl, 'ergebnis.json'), JSON.stringify(altE));
+  fs.writeFileSync(path.join(kOrd, 'REGEL.md'), '# Regel\n\nungesichert\n'); var eNM2 = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cKorr, ortT); });
+  gitT(['add', '-A']); gitT(['commit', '-q', '-m', 'Regel geaendert']); var eNM3 = fehlerVon(function () { LF.nachmessungPruefen(kn, GRUND, cKorr, ortT); });
+  ok(eNM2 && /Ungesichertes/.test(eNM2.message) && eNM3 && /hat sich seit Siegel 1 der Vormessung/.test(eNM3.message), 'D-viii: Abbruch bei veraendertem Kandidatenordner (ungesichert: Siegel 1; committet: anderer Baum als in Siegel 1 der Vormessung)', eNM3 && eNM3.message.slice(0, 90));
+} finally { fs.rmSync(NMR, { recursive: true, force: true }); }
+/* F4 (QS): Protokollabschnitt "Messgeraet" an einem Kunst-Ergebnis (Modus zeit, mit Kunst-Pruefung) auf die Pflichtfelder pruefen */
+var EP4 = JSON.parse(JSON.stringify(Emz)); EP4.konfigurationen[0].pruefung = { nTage: 40, nTr: 1600, uNetto: { mittel: 0.1, t: 2, obere: 0.2 }, nEff: 8, df: 7, pEinseitig: 0.04, pEinseitigNormal: 0.023 };
+var dP4 = LF.messgeraetDetails(kandZ, EP4).join('\n'), mdP4 = LF.ergebnisMarkdown(kandZ, EP4, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null, false), bsP4 = LF.belegstandAbsatz(kandZ, EP4, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null);
+var pflicht4 = [/Topf-n je Trade Median \d+, Min \d+, Anteil n = 1 [\d,]+ %/, /Topf-Starttage relativ zum Signal \(Abstand:Anzahl\): -?\d+:\d+/, /Tor 1 verlangt netto ≥ \+11,31 × se = [+−][\d,]+ Pp; MDE80 = 2,80 × se = [+−][\d,]+ Pp/,
+  /\*\*Ohne Klasse:\*\* [\d,]+ % der Zeilen, \d+ von \d+ Reihen nie mit Klasse/, /Netto mit Eroeffnungshuerde \(nachrichtlich[^)]*\): [+−][\d,]+ \(t /, /zensiert \d+/, /Ueberschneidung mit einem Signalfenster [\d.]+ von [\d.]+ \([\d,]+ %\), nicht gewertet/, /Pruefung: n_eff \+8,0, df \+7,0, p einseitig \(t-Verteilung\) \+0,0400/];
+var fehlt4 = pflicht4.filter(function (re) { return !re.test(dP4); }).map(String);
+ok(fehlt4.length === 0 && mdP4.indexOf('## Messgeraet (Nr. 121-1)') !== -1 && mdP4.indexOf(dP4.trim()) !== -1 && /Tor 1 verlangt netto ≥ \+11,31 × se = [+−][\d,]+ Pp; MDE80 = 2,80 × se/.test(bsP4),
+  'F4: Protokollabschnitt "Messgeraet" traegt die Pflichtfelder (Topf-n Median/Min/Anteil n = 1, Histogramm, Tor 1 in t und Pp, MDE80, ohne Klasse, Eroeffnungs-Netto, zensiert, Versatz-Ueberschneidung, n_eff/df/p) und steht in ERGEBNIS.md; Belegstand nennt Tor 1 und MDE80', fehlt4.join(' | ') || 'alle da');
 
 console.log('4) Register (§6)');
 var Rg = LF.registerEintragen({ kennung: 'x', konfigurationen: [], gesamt: 0 }, 'a', 'tag', [{ key: 'H5', urteil: 'nein' }, { key: 'H10', urteil: 'nicht entscheidbar' }], '2026-10-11T00:00:00Z');
