@@ -1,0 +1,22 @@
+# Vor-FOMC-Drift: long vom Vortag einer planmaessigen FOMC-Bekanntgabe (Eroeffnung A-1) bis zur Eroeffnung des Bekanntgabetags — **nicht entscheidbar**
+
+**Kurzfassung.** Kandidat `vor-fomc-long` (Form tag, Bewertung zeit, 2 Konfigurationen, vorab festgelegt), gemessen 20.10.2026 auf panel (querschnitt-pruefstand-2026-09-13/panel/v2.3). **Urteil: nicht entscheidbar** — kein Kandidat (0 von 2 ausgeschlossen, Rest unter der Aufloesung). Kandidaten nach der Entdeckung: 0. Register: 11 Konfigurationen bisher insgesamt geprueft, 0.3 Zufallstreffer (t ≥ 2) zu erwarten. Erwartung vorab: Quelle 1994-2011: +0,49 Pp je Sitzung im S&P 500 (14:00-14:00); nach 2015 laut Kurov et al. ~0, nach 2011 laut NY Fed ~+0,4 Pp nur mit Pressekonferenz (ab 2019 jede Sitzung). Eigene Erwartung in liquiden Werten 2016-2022, Fenster Eroeffnung A-1 bis Eroeffnung A (H1), als Ueberschuss gegen den Topf aller Tage derselben Reihe (bewertung zeit): 0 bis +0,3 Pp je Sitzung; H2 (bis Eroeffnung A+1, enthaelt die Bekanntgabe) ebenso unsicher. Gegen den Tagestopf derselben Zelle waere der Ueberschuss per Bau null (REGEL.md 'Bewertung') (positiv).
+
+Siegel 1 (Kandidatenordner) `720bbbaffef1`, Siegel 2 (KANDIDATEN.json) `6916cd3dacba`. Entdeckung bis vor 2023-01-03, Pruefung ab 2023-01-01 nur fuer Kandidaten. Kriterien: netto > 0, t ≥ 2 (Kandidaten-Kriterium), Tor 1 (Entdeckung ≥ 4 × projizierte Bestaetigungs-MDE), kein Placebo-Verstoss (|Placebo| > 2 se und > ¼ Huerde); MDE80 = 2.8016 × se ist die Aufloesung, kein Kriterium.
+
+## Konfigurationen
+
+| Konf | Richtung, H | Ent Tage | Trades | u brutto | u netto | t | se HH | MDE80 | Tor 1 | Placebo | verschoben 20 T | Einstieg +1 T | Δ alle−lebend | Abgaenge | Urteil | Pruefung Tage / netto / t |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| H1 | long 1 T | 54 | 43.935 | +0,0448 | −0,0354 | −0,28 | +0,1286 | +0,3602 | nein | entfaellt (zeit) | −0,2629 (t −1,32) | – | −0,0231 | uebe 5, inso 0, sons 0 | nicht entscheidbar |
+| H2 | long 2 T | 54 | 43.935 | −0,3289 | −0,4091 | −1,59 | +0,2579 | +0,7226 | nein | entfaellt (zeit) | −0,3843 (t −1,63) | −0,4298 | −0,0278 | uebe 8, inso 0, sons 1 | nicht entscheidbar |
+
+Alle Groessen in Pp je Trade/Signal (Tagesmittel), se Hansen-Hodrick. Gegenproben: Placebo "anderer Wert gleicher Klasse am selben Tag" entfaellt im Modus zeit (traefe dieselbe Zelle); Placebo ist hier das verschobene Signal; verschoben = dasselbe Signal 20 Handelstage spaeter (wirkt es, ist das Messgeraet verdaechtig); Einstieg +1 T bei festem Ausstieg; Δ alle−lebend = Ueberlebensprobe; Abgaenge getrennt (uebernahme / insolvenz / sonstige).
+
+**Bewertung zeit.** Ueberschuss = Rendite (Eroeffnung Einstieg -> Eroeffnung Ausstieg) minus zeitlicher Topf derselben Reihe: Mittel der Renditen gleicher Dauer ueber alle zulaessigen Starttage desselben Zeitraums (Entdeckung | Pruefung), ohne Fenster, die sich mit einem Signalfenster der Reihe ueberschneiden (|Starttag - Einstiegstag| < Dauer); Kassa-Huerde je Klasse wie bisher; Placebo "anderer Wert gleicher Klasse" entfaellt (traefe dieselbe Zelle), Placebo ist das um 20 Handelstage verschobene Signal. Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): im Mittel 96 %, hoechstens 100 % (54 von 56 Signaltagen ueber 50 %). Verschiebungs-Gegenprobe: Versatz 20 Handelstage (Vorgabe).
+Signaltage und Trades (Entdeckung): H1 54 Signaltage / 43.935 Trades (813,6 je Signaltag), verschobene Fenster mit Ueberschneidung eines Signalfensters 0 %; H2 54 Signaltage / 43.935 Trades (813,6 je Signaltag), verschobene Fenster mit Ueberschneidung eines Signalfensters 0 %. Die Aufloesung (se Hansen-Hodrick ueber die Tagesreihe, Lag = Haltedauer) haengt an der Zahl der Signaltage, nicht an der Zahl der Trades - bei einer marktweiten Regel ist jeder Signaltag ein Cluster, die effektive Zahl ist die Zahl der Ereignisfenster.
+
+## Zaehler und Quelle
+
+`{"zulaessig":3768932,"ohneKlasse":2959271,"massnahmen":802,"signalAufrufe":3765887,"signale":118144,"ohneBestaetigungstag":0,"abgelehnt":0,"cooldown":0,"ohneEinstieg":0,"einstiegMassnahmen":1,"richtungOhneKonfiguration":74209,"gebucht":87870,"ohneHorizont":0,"topfFehlt":0,"nachMaxTag":0,"placeboOhnePartner":0,"versatzOhneTag":2060,"spaetOhneTag":43940,"placeboEntfaellt":87870}` — Verstoesse gegen „kein Blick nach vorn": 0 — Laufzeit {"topf":177,"messen":12433}
+Quelle: panel, 6706 Reihen, letzter Tag 2022-12-30. Alles Simulation mit virtuellem Kapital, keine Anlageberatung.

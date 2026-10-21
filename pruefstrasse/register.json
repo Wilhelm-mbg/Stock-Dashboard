@@ -55,22 +55,6 @@
    "bewertung": "topf"
   },
   {
-   "kennung": "vor-fomc-long",
-   "form": "tag",
-   "key": "H1",
-   "urteil": "nicht entscheidbar",
-   "datum": "2026-10-20T15:16:48.741Z",
-   "bewertung": "zeit"
-  },
-  {
-   "kennung": "vor-fomc-long",
-   "form": "tag",
-   "key": "H2",
-   "urteil": "nicht entscheidbar",
-   "datum": "2026-10-20T15:16:48.741Z",
-   "bewertung": "zeit"
-  },
-  {
    "kennung": "umkehr-nach-vorzeichenserie",
    "form": "tag",
    "key": "H1",
@@ -107,9 +91,29 @@
    "bewertung": "zeit",
    "nachmessung": 1,
    "ersetzt": "2026-10-20T15:16:22.885Z"
+  },
+  {
+   "kennung": "vor-fomc-long",
+   "form": "tag",
+   "key": "H1",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-21T13:34:07.528Z",
+   "bewertung": "zeit",
+   "nachmessung": 1,
+   "ersetzt": "2026-10-20T15:16:48.741Z"
+  },
+  {
+   "kennung": "vor-fomc-long",
+   "form": "tag",
+   "key": "H2",
+   "urteil": "nicht entscheidbar",
+   "datum": "2026-10-21T13:34:07.528Z",
+   "bewertung": "zeit",
+   "nachmessung": 1,
+   "ersetzt": "2026-10-20T15:16:48.741Z"
   }
  ],
  "gesamt": 13,
  "zufallErwartet": 0.29575,
- "stand": "2026-10-21T13:33:50.274Z"
+ "stand": "2026-10-21T13:34:07.528Z"
 }
