@@ -423,3 +423,45 @@ Dazu `vorrat/` (nur LIESMICH), diese Datei bis zum Lauf vom 19.10., der Vorrat N
 **Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
 (Nr. 9–12, MAD, Akbas et al.) und eine Haltung Eröffnung → Schluss (Berkman et al., Vorrat Nr. 9). Ohne eine davon ist dies der sechste
 leere Lauf in sieben Nächten. Der Engpass ist das Messgerät, nicht die Suche.
+
+---
+
+## 2026-10-22 · kein Kandidat — Vorrat leer, Ende der IPO-Quiet-Period, Episodic Pivot und 5-$-Schwelle verworfen
+
+**Vorrat.** Kein Eintrag mit Urteil „einstellbar“ und leerer Spalte „Stand“. Nr. 1–4 sind erledigt. Nr. 5–7, 9–12 und 16–17 stehen auf „Form
+fehlt“ bzw. „zu klein“, Nr. 8 und 13–15 sind eingestellt und gemessen. Die Spalte „Stand“ bleibt unverändert. Neu seit gestern ist
+`lockup-ablauf-short` (21.10.). Es zeigt, dass `datum(0)` den Tag des Börsengangs ersetzt. Gesucht habe ich deshalb zuerst nach weiteren
+Ereignissen je Aktie, die am Alter der Reihe hängen. Bewertung wäre jeweils `topf`.
+
+- **`quiet-period-ende-long` — verworfen (Beleg nach 2010 zeigt null).** Klassiker: Bradley, Jordan & Ritter, „The Quiet Period Goes out with a
+  Bang“, *JF* 58(1) (2003) 1–36, https://ideas.repec.org/a/bla/jfinan/v58y2003i1p1-36.html. Dort bringen IPOs von 1996–2000 um das Ende der
+  25-Tage-Frist **+4,1 %** in fünf Tagen (Erstberichte der Konsortialbanken, fast immer „Kaufen“). Die Nachbauten nach 2010 habe ich im Volltext
+  gelesen:
+  (1) Kempen, „The IPO Quiet Period Anomaly“, Masterarbeit Erasmus 2018, https://thesis.eur.nl/pub/45325/Kempen-F.R.M.-450773-.pdf
+  (abgerufen 2026-10-22). Tab. VI, nach dem JOBS Act (07/2012–06/2015, N 538, 40-Tage-Frist): CMAR(−2, +2) **−0,12 %, t −0,22**, und
+  CMAR(0, +2) −0,27 % (t −0,58). Der Bullenmarkt 03/2009–09/2011 bringt noch +1,17 % (t 2,01), davon +1,13 % vor dem Ablauf.
+  (2) Nair, „Media sentiment and the IPO Quiet Period Anomaly“, Bachelorarbeit Erasmus 2023, https://thesis.eur.nl/pub/67737/561959.pdf
+  (abgerufen 2026-10-22). Tab. 1, 2012–2018, N 225: CMAR(−2, +2) im Mittel **−0,05 %**, Standardabweichung 7,37 Pp.
+  Hinzu kommt, dass die Frist seit FINRA Rule 2241 (2015) **10 Tage** beträgt, für die ganze Entdeckung 2016–2022 (Kempen, Fn. 2). Die Banken
+  folgen aber oft weiter der 25-Tage-Gewohnheit. Damit ist schon der Ereignistag nicht eindeutig.
+  **Rechnung:** In den Klassen 0–3 liegen ≈ 600 Börsengänge (Zählung wie in `lockup-ablauf-short`). Das sind < 0,4 Signale je Handelstag bei
+  ≈ 800 Reihen. Mit der Streuung der Quelle ist se ≈ 7,4 / √600 ≈ 0,30 Pp, mit Zuschlag für Hansen-Hodrick und Ballung 2020/21 ≈ 0,36 Pp.
+  Daraus folgt **MDE80 ≈ 1,0 Pp (H5)**. Die behauptete Größe nach 2012 liegt bei −0,12 bzw. −0,05 Pp. Weder ist die Größe ≥ MDE80, noch ist
+  MDE80 ≤ 2 × Behauptung. Die Bruttogröße erreicht außerdem nicht das Dreifache der Hürde (Regel 2).
+- **Episodic Pivot (Kurslücke nach oben mit hohem Umsatz → Fortsetzung)**, What Works in Trading, mehrere Posts vom 27.09. bis 22.10.2026,
+  https://whatworksintrading.substack.com/archive (abgerufen 2026-10-22) — **verworfen (Regel 1).** Das ist die Gegenseite der Regel, die
+  `grossanstieg-ohne-umsatz` umsetzt (Kudryavtsev 2019: Anstieg mit hohem ATV → Umkehr, die Quelle prüft beide Seiten). Zugleich ist es eine
+  Umsatzregel aus der Familie von `hochvolumen-praemie` und der Kapitulation.
+- **5-$-Schwelle (Kurs kreuzt 5 $ nach oben → institutionelle Käufe)** — **verworfen (kein Beleg).** Ich habe nur Praktikertexte gefunden
+  (Benzinga 2016, Motley Fool 2017; die zweite Quelle widerspricht der behaupteten Anlagegrenze). Eine Ereignisstudie mit Zahl fehlt. `roh`
+  hätte die Schwelle getragen.
+
+**Wogegen geprüft:** `register.json` (13 Konfigurationen) und `erledigt/` mit sieben Kennungen (donchian20-ausbruch-long,
+fomc-gerade-wochen-long, grossanstieg-ohne-umsatz, hochvolumen-praemie, monatswende-long, umkehr-nach-vorzeichenserie, vor-fomc-long).
+Die Warteschlange enthält dieselben sieben Ordner und dazu `lockup-ablauf-short`. Außerdem `vorrat/` (nur LIESMICH), diese Datei bis zum Lauf
+vom 20.10., der Vorrat Nr. 1–17 samt „bewusst nicht aufgenommen“ und `wiki/belegstand.md`. Der Zweig `origin/pruefstrasse-ergebnisse` fehlt.
+
+**Was freischalten würde (unverändert):** Ex-Tage je Reihe (Vorrat Nr. 5), Form-4-Tafel (Nr. 7), Querschnitts-Adapter mit Tagesclusterung
+(Nr. 9–12), Optionsumsatz je Reihe, Split-Ankündigungstage. Für Ereignisse am Alter der Reihe fehlt außerdem eine **Kennung „Börsengang“**
+je Reihe, die Abspaltungen, Hochstufungen und Datenlücken von echten Neuemissionen trennt. `lockup-ablauf-short` rechnet heute 20–30 %
+Verdünnung dafür ein.
