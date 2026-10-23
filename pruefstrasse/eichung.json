@@ -39,8 +39,12 @@
     "mittel": 0.289063143006773,
     "sd": 0.7729937840373824,
     "seMittel": 0.14112871077618372,
+    "seJeLaufMittel": 0.5809048657833666,
     "soll": 0.3,
+    "kriterium": "marktpfad",
     "innerhalb2se": true,
+    "innerhalb2seMittel": true,
+    "hinweis": "Kriterium mit 2 x mittlerer se je Lauf; se_Mittel nachrichtlich - Seeds teilen den Marktpfad, nicht unabhaengig",
     "spanneOk": true,
     "bestanden": true
    },
@@ -49,11 +53,15 @@
     "mittel": -0.16030754454861854,
     "sd": 0.4126604220462143,
     "seMittel": 0.07534114058143791,
+    "seJeLaufMittel": 0.5458942493886089,
     "soll": 0,
-    "innerhalb2se": false,
+    "kriterium": "marktpfad",
+    "innerhalb2se": true,
+    "innerhalb2seMittel": false,
+    "hinweis": "Kriterium mit 2 x mittlerer se je Lauf; se_Mittel nachrichtlich - Seeds teilen den Marktpfad, nicht unabhaengig",
     "tUeber2": 0,
     "anteilTUeber2": 0,
-    "bestanden": false
+    "bestanden": true
    }
   },
   "querschnitt": {
@@ -63,8 +71,11 @@
     "mittel": 0.303171081993943,
     "sd": 0.036058885928170345,
     "seMittel": 0.006583421740454835,
+    "seJeLaufMittel": 0.03448267734797186,
     "soll": 0.3,
+    "kriterium": "unabhaengig",
     "innerhalb2se": true,
+    "innerhalb2seMittel": true,
     "spanneOk": true,
     "bestanden": true
    },
@@ -73,15 +84,18 @@
     "mittel": 0.003615379380145725,
     "sd": 0.03842513040163689,
     "seMittel": 0.00701543689868469,
+    "seJeLaufMittel": 0.03562224199147578,
     "soll": 0,
+    "kriterium": "unabhaengig",
     "innerhalb2se": true,
+    "innerhalb2seMittel": true,
     "tUeber2": 2,
     "anteilTUeber2": 0.06666666666666667,
     "bestanden": true
    }
   }
  },
- "bestanden": false,
+ "bestanden": true,
  "laufzeitMs": 425686,
  "lesenMs": 3078,
  "laeufe": [
@@ -1766,5 +1780,12 @@
    "ms": 5209
   }
  ],
- "waechter": "sauber"
+ "waechter": "sauber",
+ "neuBewertet": {
+  "stand": "2026-10-23T12:42:16.110Z",
+  "grund": "Kriterium marktweit: Seeds teilen den Marktpfad (Entscheid PM 23.10.)",
+  "vorher": {
+   "bestanden": false
+  }
+ }
 }

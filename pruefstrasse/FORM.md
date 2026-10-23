@@ -185,7 +185,12 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
 - **Eichung (Nr. 121-2a D, nur PM, vor jeder Freigabe):** `laeufer.js --eichung` — Zufallsregel in zwei Dichten auf dem Panel im Eichfenster, H = 5:
   marktweit (ein Signaltag je ~10 Handelstage für alle Reihen, Modus zeit; Entscheid PM 23.10.) und Querschnitt (~1 % der Reihen je Tag, Modus topf); Einsaat
   +0,30 Pp brutto **nur** auf die Signalfenster (nicht Placebo-, Verschiebungs-, Topf-Fenster), 30 Seeds Einsaat + 30 Seeds Zufall je Dichte. Kriterien:
-  Einsaat — Mittel innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40; Zufall — Mittel innerhalb ± 2 · se_Mittel um 0, Anteil |t| > 2 höchstens 15 %. Schreibt
+  **Querschnitt** (Seeds ziehen verschiedene Reihen, nahezu unabhängig): Einsaat — Mittel innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40;
+  Zufall — Mittel innerhalb ± 2 · se_Mittel um 0, Anteil |t| > 2 höchstens 15 %. **Marktweit** (Entscheid PM 23.10.): die Seeds ziehen verschiedene Pläne aus
+  **demselben** Marktpfad 2016–2022 und sind nicht unabhängig; se_Mittel = sd/√n unterschätzt die Unsicherheit, weil ein gemeinsamer Marktzustand (ein Regime,
+  das jeden Plan trifft) nicht wegmittelt. Dort gilt: (a) Anteil |t| > 2 je Lauf höchstens 15 %, (b) |Mittel über Seeds| ≤ 2 × mittlere se **je Lauf**,
+  (c) Einsaat Mittel zwischen 0,20 und 0,40 und innerhalb ± 2 × mittlere se je Lauf um 0,30; se_Mittel steht nachrichtlich („nicht unabhängig").
+  `--eichung-bewerten` bewertet die gespeicherten Läufe von `eichung.json` neu, ohne neuen Lauf. Schreibt
   ausschließlich `EICHUNG.md` und `eichung.json` (der Code prüft es); `test.js` prüft Form und Alter (> 60 Tage: Warnung).
 - **Siegel 1:** der Kandidatenordner liegt in mindestens einem Commit und hat nichts Ungesichertes. **Siegel 2:** der Läufer
   committet `erledigt/<kennung>/KANDIDATEN.json`.

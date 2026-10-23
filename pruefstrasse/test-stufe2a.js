@@ -259,6 +259,14 @@ module.exports = function (C) {
     var z1 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [0.3, -1, 2.1, 0.5, -0.2, 1, -1.5, 0.1, 0, -0.4], 0), z2 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [2.3, -2.1, 0.2, 0.5, -0.4, 1, -0.5, 0.1, 0, -0.4], 0);
     return [e1.bestanden && !e2.bestanden && z1.bestanden && z1.tUeber2 === 1 && !z2.bestanden && z2.tUeber2 === 2 && LF.EICHUNG.zufallAnteilMax === 0.15 && LF.EICHUNG.dichteMarkt === 0.1 && LF.EICHUNG.seeds === 30, 'e1 ' + e1.mittel.toFixed(3) + ' se ' + e1.seMittel.toFixed(3) + ' | e2 ' + e2.mittel.toFixed(3) + ' | z1 ' + z1.tUeber2 + ' | z2 ' + z2.tUeber2];
   });
+  probe('D-2b: marktweit (Seeds teilen den Marktpfad, PM 23.10.): |Mittel| <= 2 x mittlere se JE LAUF statt se_Mittel; Einsaat Spanne + 2 x se je Lauf; se_Mittel nur nachrichtlich', function () {
+    var B = LF.eichungBewerten, w = [], t = [], se = [];
+    for (var i = 0; i < 30; i++) { w.push(-0.16 + (i % 2 ? 0.4 : -0.4)); se.push(0.5); t.push(w[i] / 0.5); }
+    var z = B(w, t, 0, { seJeLauf: se, marktpfad: true }), zAlt = B(w, t, 0), e = B(w.map(function (x) { return x + 0.46; }), t, 0.30, { seJeLauf: se, marktpfad: true }), e2 = B(w.map(function (x) { return x + 0.66; }), t, 0.30, { seJeLauf: se, marktpfad: true });
+    var zu = B(w.map(function (x) { return x - 1.0; }), t, 0, { seJeLauf: se, marktpfad: true });
+    return [z.bestanden && !zAlt.bestanden && z.kriterium === 'marktpfad' && Math.abs(z.seJeLaufMittel - 0.5) < 1e-12 && z.innerhalb2seMittel === false && /nicht unabhaengig/.test(z.hinweis) && e.bestanden && !e2.bestanden && !zu.bestanden,
+      'Zufall -0,16: se je Lauf ' + z.seJeLaufMittel + ' -> ' + z.bestanden + ' (alt se_Mittel ' + zAlt.seMittel.toFixed(3) + ' -> ' + zAlt.bestanden + '); Einsaat 0,30 ' + e.bestanden + ', 0,50 ' + e2.bestanden + '; Zufall -1,16 ' + zu.bestanden];
+  });
   probe('D-3: --eichung schreibt ausschliesslich EICHUNG.md und eichung.json (Kunstlauf in einen Temp-Ordner; Waechter erkennt fremde Pfade)', function () {
     var dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'pruefstrasse-eichung-')), J;
     try { J = LF.eichung({ tafel: TF.kunstTafel(C.kunstReihen(null), TAGE), seeds: 2, aus: dir, log: function () {} }); var da = fs.readdirSync(dir).sort().join(','); } finally { fs.rmSync(dir, { recursive: true, force: true }); }
@@ -271,7 +279,7 @@ module.exports = function (C) {
     var f = path.join(K.HIER, 'eichung.json');
     if (!fs.existsSync(f)) return [false, 'eichung.json fehlt - der PM faehrt node pruefstrasse/laeufer.js --eichung'];
     var J = JSON.parse(fs.readFileSync(f, 'utf8')), alter = (Date.now() - Date.parse(J.datum + 'T00:00:00Z')) / 86400000;
-    var form = /^\d{4}-\d{2}-\d{2}$/.test(J.datum) && J.panelKennung && J.eichfenster && J.eichfenster.bis === K.EICHUNG.bis && J.seeds && J.ergebnis.marktweit && J.ergebnis.querschnitt && typeof J.bestanden === 'boolean' && J.laufzeitMs > 0 && J.laeufe.length === 4 * (J.seeds.einsaat[1] - J.seeds.einsaat[0] + 1) && J.einstellungen.dichteMarkt === LF.EICHUNG.dichteMarkt && J.waechter === 'sauber' && fs.existsSync(path.join(K.HIER, 'EICHUNG.md'));
+    var form = /^\d{4}-\d{2}-\d{2}$/.test(J.datum) && J.panelKennung && J.eichfenster && J.eichfenster.bis === K.EICHUNG.bis && J.seeds && J.ergebnis.marktweit && J.ergebnis.querschnitt && typeof J.bestanden === 'boolean' && J.laufzeitMs > 0 && J.laeufe.length === 4 * (J.seeds.einsaat[1] - J.seeds.einsaat[0] + 1) && J.einstellungen.dichteMarkt === LF.EICHUNG.dichteMarkt && J.waechter === 'sauber' && J.ergebnis.marktweit.zufall.kriterium === 'marktpfad' && J.ergebnis.querschnitt.zufall.kriterium === 'unabhaengig' && J.ergebnis.marktweit.zufall.seJeLaufMittel > 0 && fs.existsSync(path.join(K.HIER, 'EICHUNG.md'));
     if (alter > LF.EICHUNG.alterWarnTage) console.log('  WARNUNG eichung.json ist ' + alter.toFixed(0) + ' Tage alt (> ' + LF.EICHUNG.alterWarnTage + ') - vor der naechsten Freigabe neu eichen');
     return [form, 'Datum ' + J.datum + ' (' + alter.toFixed(0) + ' Tage), bestanden ' + J.bestanden + ', ' + (J.laufzeitMs / 1000).toFixed(0) + ' s'];
   });

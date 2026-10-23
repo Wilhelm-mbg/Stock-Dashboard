@@ -865,9 +865,18 @@ function eichRegel(art, seed) {
     : function (sicht, i) { return A.mulberry32(A.fnv('eichung-quer|' + seed + '|' + sicht.reihe + '|' + sicht.tag(i)))() < p ? { dir: 1 } : null; } };
 }
 /** Kriterien einer Zehnerreihe (Werte = u brutto der Schaetzungen, t = t-Werte). */
-function eichungBewerten(werte, tWerte, soll) {
+/* Entscheid PM 23.10. (Kriterium marktweit): die Seeds der marktweiten Dichte ziehen verschiedene Plaene aus DEMSELBEN Marktpfad 2016-2022 - sie sind nicht
+ * unabhaengig; se_Mittel = sd/Wurzel(n) unterschaetzt die Unsicherheit, weil ein gemeinsamer Marktzustand (ein Regime, das jeden Plan trifft) nicht wegmittelt.
+ * Marktweit (opt.marktpfad) gilt deshalb: Zufall |Mittel| <= 2 x MITTLERE se JE LAUF und Anteil |t| > 2 <= 15 %; Einsaat Mittel in 0,20..0,40 und innerhalb
+ * +- 2 x mittlere se je Lauf um 0,30. Die se_Mittel-Rechnung steht nachrichtlich daneben ("nicht unabhaengig"). Querschnitt (verschiedene Reihen, Seeds
+ * nahezu unabhaengig): Kriterium mit se_Mittel wie bisher. */
+function eichungBewerten(werte, tWerte, soll, opt) {
+  opt = opt || {};
   var n = werte.length, m = werte.reduce(function (s, x) { return s + x; }, 0) / n, sd = Math.sqrt(werte.reduce(function (s, x) { return s + (x - m) * (x - m); }, 0) / (n - 1)), se = sd / Math.sqrt(n);
-  var innen = Math.abs(m - soll) <= 2 * se, aus = { n: n, mittel: m, sd: sd, seMittel: se, soll: soll, innerhalb2se: innen };
+  var seLauf = opt.seJeLauf && opt.seJeLauf.length ? opt.seJeLauf.reduce(function (s, x) { return s + x; }, 0) / opt.seJeLauf.length : null;
+  var innenMittel = Math.abs(m - soll) <= 2 * se, innen = opt.marktpfad ? (seLauf != null && Math.abs(m - soll) <= 2 * seLauf) : innenMittel;
+  var aus = { n: n, mittel: m, sd: sd, seMittel: se, seJeLaufMittel: seLauf, soll: soll, kriterium: opt.marktpfad ? 'marktpfad' : 'unabhaengig', innerhalb2se: innen, innerhalb2seMittel: innenMittel };
+  if (opt.marktpfad) aus.hinweis = 'Kriterium mit 2 x mittlerer se je Lauf; se_Mittel nachrichtlich - Seeds teilen den Marktpfad, nicht unabhaengig';
   if (soll > 0) { aus.spanneOk = m >= 0.20 && m <= 0.40; aus.bestanden = innen && aus.spanneOk; }
   else { aus.tUeber2 = tWerte.filter(function (t) { return Math.abs(t) > 2; }).length; aus.anteilTUeber2 = aus.tUeber2 / n; aus.bestanden = innen && aus.anteilTUeber2 <= EICHUNG.zufallAnteilMax; }
   return aus;
@@ -902,28 +911,58 @@ function eichung(opt) {
         log('  ' + art + ' ' + typ + ' Seed ' + seed + ': u brutto ' + de(z.uBrutto) + ' (se ' + de(z.se) + ', t ' + de(z.t, 2) + '), ' + z.nTage + ' Signaltage, ' + z.nTr + ' Trades, ' + z.ms + ' ms');
       }
     });
-    ergebnis[art] = { modus: modus, einsaat: eichungBewerten(reihen.einsaat.map(function (z) { return z.uBrutto; }), reihen.einsaat.map(function (z) { return z.t; }), EICHUNG.einsaatPp),
-      zufall: eichungBewerten(reihen.zufall.map(function (z) { return z.uBrutto; }), reihen.zufall.map(function (z) { return z.t; }), 0) };
   });
-  var ms = Date.now() - t0, bestanden = ['marktweit', 'querschnitt'].every(function (a) { return ergebnis[a].einsaat.bestanden && ergebnis[a].zufall.bestanden; });
+  var A2 = eichungAuswerten(zeilen); ergebnis = A2.ergebnis;
+  var ms = Date.now() - t0, bestanden = A2.bestanden;
   var J = { kennung: 'pruefstrasse/eichung/v1', stand: jetzt(), datum: jetzt().slice(0, 10), panelKennung: TF.kennung, quelle: TF.quelle, eichfenster: { von: K.EICHUNG.von, bis: K.EICHUNG.bis, letzterTag: TF.tage[TF.maxTag], gesperrt: !!TF.gesperrt },
     einstellungen: EICHUNG, seeds: { einsaat: [EICHUNG.seedEinsaat, EICHUNG.seedEinsaat + seeds - 1], zufall: [EICHUNG.seedZufall, EICHUNG.seedZufall + seeds - 1] }, ergebnis: ergebnis, bestanden: bestanden, laufzeitMs: ms, lesenMs: tLesen, laeufe: zeilen };
   schreibeJson(path.join(ausOrd, 'eichung.json'), J);
-  var o = ['# Eichung der Pruefstrasse (Nr. 121-2a) — ' + (bestanden ? '**bestanden**' : '**NICHT bestanden**'), '',
-    'Datum ' + J.datum + ', Panel `' + J.panelKennung + '` (' + J.quelle + '), Eichfenster ' + K.EICHUNG.von + ' … ' + K.EICHUNG.bis + ' (letzter gelesener Tag ' + J.eichfenster.letzterTag + '), H = ' + EICHUNG.H + ', Einsaat +' + EICHUNG.einsaatPp.toFixed(2).replace('.', ',') + ' Pp brutto nur auf die Signalfenster (im Speicher), Seeds Einsaat ' + J.seeds.einsaat.join('–') + ', Zufall ' + J.seeds.zufall.join('–') + '. Laufzeit ' + (ms / 1000).toFixed(0) + ' s (davon Lesen ' + (tLesen / 1000).toFixed(0) + ' s).', '',
-    '| Dichte | Modus | Reihe | Mittel u brutto | sd | se_Mittel | Soll | innerhalb ± 2 se | weiteres Kriterium | bestanden |', '|---|---|---|---|---|---|---|---|---|---|'];
-  ['marktweit', 'querschnitt'].forEach(function (a) { ['einsaat', 'zufall'].forEach(function (typ) { var b = ergebnis[a][typ]; o.push('| ' + a + ' | ' + ergebnis[a].modus + ' | ' + typ + ' | ' + de(b.mittel) + ' | ' + de(b.sd) + ' | ' + de(b.seMittel) + ' | ' + de(b.soll, 2) + ' | ' + (b.innerhalb2se ? 'ja' : 'nein') + ' | ' + (typ === 'einsaat' ? 'Mittel in 0,20 … 0,40: ' + (b.spanneOk ? 'ja' : 'nein') : '|t| > 2: ' + b.tUeber2 + ' von ' + b.n + ' = ' + (100 * b.anteilTUeber2).toFixed(0) + ' % (höchstens 15 %)') + ' | ' + (b.bestanden ? 'ja' : '**nein**') + ' |'); }); });
-  o.push(''); o.push('Einzelläufe: ' + zeilen.map(function (z) { return z.art.slice(0, 5) + '/' + z.typ.slice(0, 3) + '/' + z.seed + ' ' + de(z.uBrutto, 3) + ' (t ' + de(z.t, 1) + ', ' + z.nTage + ' T)'; }).join('; ') + '.');
-  o.push(''); o.push('Kriterien statistisch (FORM.md §5): Einsaat — Mittel der Schätzungen innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40; Zufall — Mittel innerhalb ± 2 · se_Mittel um 0, Anteil |t| > 2 höchstens 15 % (Entscheid PM 23.10.: marktweit ein Signaltag je 10 Handelstage, 30 Seeds je Reihe). Die Eichung fährt der PM vor jeder Freigabe (`node pruefstrasse/laeufer.js --eichung`); `test.js` prüft Form und Alter (> ' + EICHUNG.alterWarnTage + ' Tage: Warnung). Simulation mit virtuellem Kapital, keine Anlageberatung.');
-  fs.writeFileSync(path.join(ausOrd, 'EICHUNG.md'), o.join('\n') + '\n');
+  fs.writeFileSync(path.join(ausOrd, 'EICHUNG.md'), eichungMarkdown(J));
+  return eichungWaechter(J, vor, REPO, ausOrd, erlaubt, log);
+}
+/** Ergebnis je Dichte aus den gespeicherten Einzellaeufen (art, typ, uBrutto, se, t); marktweit mit dem Marktpfad-Kriterium. */
+function eichungAuswerten(zeilen) {
+  var ergebnis = {};
+  [['marktweit', 'zeit'], ['querschnitt', 'topf']].forEach(function (dm) {
+    var art = dm[0], z = function (typ) { return zeilen.filter(function (x) { return x.art === art && x.typ === typ; }); }, op = { marktpfad: art === 'marktweit' };
+    var ze = z('einsaat'), zz = z('zufall');
+    ergebnis[art] = { modus: dm[1], einsaat: eichungBewerten(ze.map(function (x) { return x.uBrutto; }), ze.map(function (x) { return x.t; }), EICHUNG.einsaatPp, Object.assign({ seJeLauf: ze.map(function (x) { return x.se; }) }, op)),
+      zufall: eichungBewerten(zz.map(function (x) { return x.uBrutto; }), zz.map(function (x) { return x.t; }), 0, Object.assign({ seJeLauf: zz.map(function (x) { return x.se; }) }, op)) };
+  });
+  return { ergebnis: ergebnis, bestanden: ['marktweit', 'querschnitt'].every(function (a) { return ergebnis[a].einsaat.bestanden && ergebnis[a].zufall.bestanden; }) };
+}
+function eichungWaechter(J, vor, REPO, ausOrd, erlaubt, log) {
   var fremd = fremdGeschrieben(vor, statusZeilen(REPO), erlaubt);
   if (fremd.length) { J.waechter = 'fremd: ' + fremd.join(', '); schreibeJson(path.join(ausOrd, 'eichung.json'), J); throw new Error('EICHUNG: hat ausser EICHUNG.md/eichung.json geschrieben: ' + fremd.join(', ')); }
   J.waechter = 'sauber'; schreibeJson(path.join(ausOrd, 'eichung.json'), J);
-  log('Eichung ' + (bestanden ? 'bestanden' : 'NICHT bestanden') + ' in ' + (ms / 1000).toFixed(0) + ' s - ' + erlaubt.join(', '));
+  log('Eichung ' + (J.bestanden ? 'bestanden' : 'NICHT bestanden') + ' in ' + (J.laufzeitMs / 1000).toFixed(0) + ' s - ' + erlaubt.join(', '));
   return J;
 }
+/** --eichung-bewerten (PM): die gespeicherten Einzellaeufe aus eichung.json nach dem geltenden Kriterium neu bewerten - kein neuer Lauf. */
+function eichungNeuBewerten(opt) {
+  opt = opt || {};
+  var REPO = opt.repo || K.REPO, ausOrd = opt.aus || K.HIER, log = opt.log || function (t) { console.log(jetzt() + '  ' + t); };
+  var erlaubt = [path.relative(REPO, path.join(ausOrd, 'EICHUNG.md')).replace(/\\/g, '/'), path.relative(REPO, path.join(ausOrd, 'eichung.json')).replace(/\\/g, '/')], vor = statusZeilen(REPO);
+  var J = liesJson(path.join(ausOrd, 'eichung.json'));
+  if (!J.laeufe || !J.laeufe.every(function (z) { return z.se != null && z.t != null; })) throw new Error('EICHUNG: eichung.json ohne se/t je Lauf - neu eichen (--eichung)');
+  var A2 = eichungAuswerten(J.laeufe), alt = { bestanden: J.bestanden, ergebnis: J.ergebnis };
+  J.ergebnis = A2.ergebnis; J.bestanden = A2.bestanden; J.neuBewertet = { stand: jetzt(), grund: 'Kriterium marktweit: Seeds teilen den Marktpfad (Entscheid PM 23.10.)', vorher: { bestanden: alt.bestanden } };
+  schreibeJson(path.join(ausOrd, 'eichung.json'), J);
+  fs.writeFileSync(path.join(ausOrd, 'EICHUNG.md'), eichungMarkdown(J));
+  return eichungWaechter(J, vor, REPO, ausOrd, erlaubt, log);
+}
+function eichungMarkdown(J) {
+  var ergebnis = J.ergebnis, bestanden = J.bestanden, zeilen = J.laeufe, ms = J.laufzeitMs, tLesen = J.lesenMs, E1 = J.einstellungen || EICHUNG;
+  var o = ['# Eichung der Pruefstrasse (Nr. 121-2a) — ' + (bestanden ? '**bestanden**' : '**NICHT bestanden**'), '',
+    'Datum ' + J.datum + ', Panel `' + J.panelKennung + '` (' + J.quelle + '), Eichfenster ' + K.EICHUNG.von + ' … ' + K.EICHUNG.bis + ' (letzter gelesener Tag ' + J.eichfenster.letzterTag + '), H = ' + E1.H + ', marktweit ein Signaltag je ' + Math.round(1 / E1.dichteMarkt) + ' Handelstage, Querschnitt ' + (100 * E1.dichteQuer).toFixed(0) + ' % der Reihen je Tag, Einsaat +' + E1.einsaatPp.toFixed(2).replace('.', ',') + ' Pp brutto nur auf die Signalfenster (im Speicher), Seeds Einsaat ' + J.seeds.einsaat.join('–') + ', Zufall ' + J.seeds.zufall.join('–') + '. Laufzeit ' + (ms / 1000).toFixed(0) + ' s (davon Lesen ' + (tLesen / 1000).toFixed(0) + ' s).' + (J.neuBewertet ? ' **Neu bewertet** ' + J.neuBewertet.stand.slice(0, 16).replace('T', ' ') + ' UTC aus den gespeicherten Läufen (kein neuer Lauf): ' + J.neuBewertet.grund + '; vorher bestanden: ' + J.neuBewertet.vorher.bestanden + '.' : ''), '',
+    '| Dichte | Modus | Reihe | Mittel u brutto | sd | Bezugs-se (Kriterium) | se_Mittel (nachrichtlich) | Soll | innerhalb ± 2 Bezugs-se | weiteres Kriterium | bestanden |', '|---|---|---|---|---|---|---|---|---|---|---|'];
+  ['marktweit', 'querschnitt'].forEach(function (a) { ['einsaat', 'zufall'].forEach(function (typ) { var b = ergebnis[a][typ], mp = b.kriterium === 'marktpfad'; o.push('| ' + a + ' | ' + ergebnis[a].modus + ' | ' + typ + ' | ' + de(b.mittel) + ' | ' + de(b.sd) + ' | ' + (mp ? de(b.seJeLaufMittel) + ' (mittlere se je Lauf)' : de(b.seMittel) + ' (se_Mittel)') + ' | ' + de(b.seMittel) + (mp ? ' — nicht unabhängig, ± 2 se_Mittel: ' + (b.innerhalb2seMittel ? 'ja' : 'nein') : '') + ' | ' + de(b.soll, 2) + ' | ' + (b.innerhalb2se ? 'ja' : 'nein') + ' | ' + (typ === 'einsaat' ? 'Mittel in 0,20 … 0,40: ' + (b.spanneOk ? 'ja' : 'nein') : '|t| > 2: ' + b.tUeber2 + ' von ' + b.n + ' = ' + (100 * b.anteilTUeber2).toFixed(0) + ' % (höchstens 15 %)') + ' | ' + (b.bestanden ? 'ja' : '**nein**') + ' |'); }); });
+  o.push(''); o.push('Einzelläufe: ' + zeilen.map(function (z) { return z.art.slice(0, 5) + '/' + z.typ.slice(0, 3) + '/' + z.seed + ' ' + de(z.uBrutto, 3) + ' (t ' + de(z.t, 1) + ', ' + z.nTage + ' T)'; }).join('; ') + '.');
+  o.push(''); o.push('Kriterien (FORM.md §5, Entscheid PM 23.10.). **Querschnitt** (verschiedene Reihen, Seeds nahezu unabhängig): Einsaat — Mittel innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40; Zufall — Mittel innerhalb ± 2 · se_Mittel um 0, Anteil |t| > 2 höchstens 15 %. **Marktweit**: die Seeds ziehen verschiedene Pläne aus **demselben** Marktpfad 2016–2022 und sind nicht unabhängig; se_Mittel = sd/√n unterschätzt die Unsicherheit, weil ein gemeinsamer Marktzustand (ein Regime, das jeden Plan trifft) nicht wegmittelt — deshalb (a) Anteil |t| > 2 je Lauf höchstens 15 %, (b) |Mittel über Seeds| ≤ 2 × mittlere se **je Lauf**, (c) Einsaat Mittel zwischen 0,20 und 0,40 und innerhalb ± 2 × mittlere se je Lauf um 0,30; se_Mittel steht nachrichtlich daneben. Die Eichung fährt der PM vor jeder Freigabe (`node pruefstrasse/laeufer.js --eichung`, Neubewertung gespeicherter Läufe: `--eichung-bewerten`); `test.js` prüft Form und Alter (> ' + EICHUNG.alterWarnTage + ' Tage: Warnung). Simulation mit virtuellem Kapital, keine Anlageberatung.');
+  return o.join('\n') + '\n';
+}
 
-module.exports = { eichung: eichung, eichRegel: eichRegel, eichungBewerten: eichungBewerten, fremdGeschrieben: fremdGeschrieben, EICHUNG: EICHUNG, vorwaerts: vorwaerts, vorwaertsKind: vorwaertsKind, vormerken: vormerken, wiedervorlagen: wiedervorlagen, machbarkeitsPhase: machbarkeitsPhase, stichtagNach: stichtagNach, VORWAERTS_MARKE: VORWAERTS_MARKE, ladeKandidat: ladeKandidat, pruefen: pruefen, naechster: naechster, laufe: laufe, messen: messen, urteile: urteile, holm: holm, register: register,
+module.exports = { eichungNeuBewerten: eichungNeuBewerten, eichungAuswerten: eichungAuswerten, eichung: eichung, eichRegel: eichRegel, eichungBewerten: eichungBewerten, fremdGeschrieben: fremdGeschrieben, EICHUNG: EICHUNG, vorwaerts: vorwaerts, vorwaertsKind: vorwaertsKind, vormerken: vormerken, wiedervorlagen: wiedervorlagen, machbarkeitsPhase: machbarkeitsPhase, stichtagNach: stichtagNach, VORWAERTS_MARKE: VORWAERTS_MARKE, ladeKandidat: ladeKandidat, pruefen: pruefen, naechster: naechster, laufe: laufe, messen: messen, urteile: urteile, holm: holm, register: register,
   registerEintragen: registerEintragen, ergebnisMarkdown: ergebnisMarkdown, belegstandAbsatz: belegstandAbsatz, messgeraetDetails: messgeraetDetails, URTEILE: URTEILE, PFLICHT: PFLICHT,
   nachmessungPruefen: nachmessungPruefen, nachmessungVerschieben: nachmessungVerschieben, nachmessSperre: nachmessSperre, NACHMESS_MARKE: NACHMESS_MARKE, nachmessungAbsatz: nachmessungAbsatz, nachmessen: nachmessen, obereGrenze: obereGrenze, versatzAbschnitt: versatzAbschnitt };
 
@@ -934,6 +973,7 @@ if (require.main === module) {
     else if (a.indexOf('--messen') !== -1) { var xd = arg('--extra'), ex = xd ? liesJson(xd) : null; if (xd) fs.unlinkSync(xd); messen(arg('--messen'), arg('--phase'), arg('--aus'), ex); console.log('fertig ' + arg('--phase')); }
     else if (a.indexOf('--kandidat') !== -1) { var r = laufe(arg('--kandidat'), { trocken: trocken }); console.log(JSON.stringify(r)); process.exit(r.abbruch ? 1 : 0); }
     else if (a.indexOf('--nachmessen') !== -1) { var rN = a.indexOf('--grund-daten') !== -1 ? nachmessen(arg('--nachmessen'), arg('--grund-daten'), null, { art: 'daten' }) : nachmessen(arg('--nachmessen'), arg('--grund'), arg('--korrektur')); console.log(JSON.stringify(rN)); process.exit(rN.abbruch ? 1 : 0); }
+    else if (a.indexOf('--eichung-bewerten') !== -1) { var J2 = eichungNeuBewerten({}); process.exit(J2.bestanden ? 0 : 1); }
     else if (a.indexOf('--eichung') !== -1) { var J = eichung({}); process.exit(J.bestanden ? 0 : 1); }
     else if (a.indexOf('--vorwaerts') !== -1) { var rV = vorwaerts({}); console.log(JSON.stringify({ geaendert: rV.geaendert, commit: rV.commit, statuswechsel: rV.statuswechsel })); process.exit(0); }
     else if (a.indexOf('--naechster') !== -1) { var n = naechster(); if (!n) { console.log('Warteschlange: kein gueltiger Kandidat'); process.exit(0); } var r2 = laufe(n, { trocken: trocken }); console.log(JSON.stringify(r2)); process.exit(r2.abbruch ? 1 : 0); }
