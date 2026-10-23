@@ -607,7 +607,7 @@ if (Kal.tag) {
   var tr = SOLL.tagRegel;
   if (t.regel) ok(nahe(t.regel.entUNetto, tr.entUNetto, 5e-5) && nahe(t.regel.besUNetto, tr.besUNetto, 5e-5) && nahe(t.regel.entT, tr.entT, 5e-3) && nahe(t.regel.besT, tr.besT, 5e-3) && nahe(t.regel.entHuerde, tr.entHuerde, 5e-5) && nahe(t.regel.besHuerde, tr.besHuerde, 5e-5),
     'tag: Netto der Kostenregel (Eroeffnung + IBKR) wie Nr. 121-2b (-0,6281 / -0,5640, t -5,13 / -5,22; alt Kassa -0,3830 / -0,3396)', t.regel.entUNetto.toFixed(4) + ' / ' + t.regel.besUNetto.toFixed(4) + ', t ' + t.regel.entT.toFixed(2) + ' / ' + t.regel.besT.toFixed(2));
-  else ok(true, 'tag: Netto der Kostenregel - uebersprungen (Vollauf noetig: kalibrierung.json ohne Block tag.regel)');
+  else ok(false, 'tag: Netto der Kostenregel - Block tag.regel fehlt in kalibrierung.json (seit Vollauf 101ee61 Pflicht)');
 }
 if (Kal.korb) {
   var c = Kal.korb, sk = SOLL.korb;
@@ -618,7 +618,7 @@ if (Kal.korbRegel) {
   var kr = Kal.korbRegel, skr = SOLL.korbRegel;
   ok(['A-187', 'B-187'].every(function (n) { return nahe(kr[n].buchB, skr[n].buchB, skr.toleranzPp) && nahe(kr[n].nasdaqB, skr[n].nasdaqB, skr.toleranzPp); }), 'korb: Kostenregel / Nasdaq-100 nach Steuer trifft Nr. 122 (Buch 18,39 / 16,51, Nasdaq-ETF 24,87 / 11,81 % p. a., 0,1 Pp)',
     kr['A-187'].buchB.toFixed(2) + ' / ' + kr['A-187'].nasdaqB.toFixed(2) + ' | ' + kr['B-187'].buchB.toFixed(2) + ' / ' + kr['B-187'].nasdaqB.toFixed(2));
-} else ok(true, 'korb: Gegenprobe Kostenregel / Nasdaq-100 nach Steuer - in kalibrierung.json noch nicht gerechnet (PM-Vollauf, Nr. 121-2b)');
+} else ok(false, 'korb: Gegenprobe Kostenregel / Nasdaq-100 nach Steuer - Block korbRegel fehlt in kalibrierung.json (seit Vollauf 101ee61 Pflicht)');
 if (Kal.minute) {
   var m = Kal.minute, sm = SOLL.minute;
   /* Das 60m-Archiv LEBT (die App sammelt; am 03.09. wurden alle Dateien neu geschrieben): die 2.874 Werte des Protokolls sind heute

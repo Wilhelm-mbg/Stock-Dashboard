@@ -151,10 +151,17 @@ function erwartungFuer(kand, key, alt) {
     if (a) { var z = (a.konfigurationen && a.konfigurationen[key]) || a; netto = z.nettoPp; brutto = z.bruttoPp; fenster = a.fensterWieQuelle; quelle = 'pruefstrasse/erwartungen-alt.json (' + (a.quelle || '') + ')'; }
   }
   if (!(typeof netto === 'number' && isFinite(netto))) return null;
-  var h1 = kassaHuerdeKlasse1();
+  /* Entscheid PM 23.10. (QS 2b N3): nettoPp ist die Behauptung nach der Kostenregel; fehlt bruttoPp, ist brutto = netto + Huerde der Kostenregel zur Eroeffnung
+   * in der teuersten Klasse der Konfiguration (klassen; ohne klassen Klasse 2 = Index 1, die Klasse des frueheren Kassa-Ersatzes) */
+  var h1 = typeof brutto === 'number' ? 0 : huerdeKostenregel(kand, key);
   return { nettoPp: netto, bruttoPp: typeof brutto === 'number' ? brutto : netto + h1, bruttoAusNetto: typeof brutto !== 'number', fensterWieQuelle: fenster === true, quelle: quelle };
 }
-/** Kassa-Huerde der Umsatzklasse 1 (50-250 Mio $, Trendkanal-/Minutenstudie), Ersatz fuer ein fehlendes bruttoPp (A2). */
+/** Huerde der Kostenregel (Eroeffnung + IBKR Fixed, Position K.POSITION_USD, Median-Kurs der Klasse) fuer den brutto-Ersatz (QS 2b N3). */
+function huerdeKostenregel(kand, key) {
+  var c = (kand.konfigurationen || []).filter(function (x) { return x && x.key === key; })[0], kl = c && Array.isArray(c.klassen) && c.klassen.length ? Math.min.apply(null, c.klassen) : 1;
+  return require('./kosten.js').huerdeUmlauf(kl, 'eroeffnung', K.POSITION_USD, null).gesamtPp;
+}
+/** Kassa-Huerde der Umsatzklasse 1 (50-250 Mio $, Trendkanal-/Minutenstudie) - bis QS 2b der Ersatz fuer ein fehlendes bruttoPp, jetzt nur nachrichtlich. */
 function kassaHuerdeKlasse1() { return require(path.join(K.TRENDKANAL_STUDIE, 'konfig.js')).KLASSEN[1].huerde; }
 function erwartungenAlt() { return fs.existsSync(ERWARTUNGEN_ALT) ? JSON.parse(fs.readFileSync(ERWARTUNGEN_ALT, 'utf8')) : null; }
 
@@ -197,4 +204,4 @@ function holm(pListe, alpha) {
 module.exports = { tVerteilung: tVerteilung, pEinseitig: pEinseitig, tQuantil: tQuantil, dfAus: dfAus, kandidatSchwelle: kandidatSchwelle, istKandidat: istKandidat,
   streuung: streuung, seGeschaetzt: seGeschaetzt, machbarkeit: machbarkeit, nBedarf: nBedarf, wiedervorlage: wiedervorlage, datumPlusJahre: datumPlusJahre,
   groessenAussage: groessenAussage, erwartungFuer: erwartungFuer, erwartungenAlt: erwartungenAlt, gewicht: gewicht, registerM: registerM, registerZahlen: registerZahlen,
-  hausregelMarke: hausregelMarke, holm: holm, kassaHuerdeKlasse1: kassaHuerdeKlasse1, STREUUNG: STREUUNG, ERWARTUNGEN_ALT: ERWARTUNGEN_ALT };
+  hausregelMarke: hausregelMarke, holm: holm, kassaHuerdeKlasse1: kassaHuerdeKlasse1, huerdeKostenregel: huerdeKostenregel, STREUUNG: STREUUNG, ERWARTUNGEN_ALT: ERWARTUNGEN_ALT };

@@ -728,7 +728,7 @@ function vorbehaltDichte(M) {
 /** Kostenregel des Laufs fuer Protokoll und ergebnis.json (Nr. 121-2b). */
 function kostenBeschreibung() {
   return { regel: 'Urteilshuerde je Trade = Spanne der Kostenklasse zur Eroeffnung (Ein- und Ausstieg) + IBKR Ireland ' + K.KOSTEN.modell + ' (Kauf + Verkauf) bei ' + K.POSITION_USD.toFixed(0) + ' $ Position, Pp je Umlauf; Kassa-Huerde nachrichtlich (uNettoKassa)',
-    ausfuehrung: K.KOSTEN.ausfuehrungTag, modell: K.KOSTEN.modell, positionUsd: K.POSITION_USD, klasse5UmsatzUsd: K.KLASSE5_UMSATZ, klasse5: K.KLASSE5_UMSATZ != null ? 'gemessen (spannen/ 2021-2026)' : 'Klasse 5 nicht gemessen',
+    ausfuehrung: K.KOSTEN.ausfuehrungTag, modell: K.KOSTEN.modell, positionUsd: K.POSITION_USD, klasse5UmsatzUsd: K.KLASSE5_UMSATZ, klasse5: K.KLASSE5_UMSATZ != null ? 'vorlaeufig, 11 Symbole, 95-%-Band 0,012-0,036 (spannen/ 2021-2026, QS 23.10.2026)' : 'Klasse 5 nicht gemessen',
     kurs: 'rohe Eroeffnung des Einstiegstags; ohne roh der Median-Kurs der Klasse', spannenZeitraum: 'ab 2021 gemessen, 2016-2020 ungeprueft (dort kleiner - vorsichtig)', seit: K.KOSTEN.seit, grund: K.KOSTEN.grund,
     tabelle: KO.tabelle([K.POSITION_USD]).filter(function (z) { return z.klasse !== 'index'; }).map(function (z) { return { klasse: z.name, ausfuehrung: z.ausfuehrung, kurs: z.kurs, spannePp: z.spannePp, gebuehrPp: z.gebuehrFixedPp, gesamtPp: z.gesamtFixedPp }; }) };
 }

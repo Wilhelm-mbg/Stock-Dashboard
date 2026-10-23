@@ -32,9 +32,9 @@ Schnittstelle, `test.js` grün, Siegel 1 möglich). Ein ungültiger Kandidat wir
 ```
 
 Pflichtfelder: `kennung` (= Ordnername, `[a-z0-9-]+`), `form` (`tag` | `korb` | `minute`), `titel`, `quelle`, `erwartung`
-(`groesse` und `richtung` **vorab**; Form tag seit Nr. 121-2a zusätzlich **`nettoPp`** = behauptete Kante je Trade **nach Kosten** in Pp, Zahl oder
-`{ "<key>": Zahl }` je Konfiguration — sie trägt das Machbarkeitstor; optional `bruttoPp` (fehlt es, gilt netto + Kassa-Hürde der Klasse 1 = 0,0854 Pp
-als brutto; trägt die Größenaussage) und `fensterWieQuelle` (`true` nur, wenn die Quelle **dasselbe** Fenster misst — sonst steht jede Größenaussage
+(`groesse` und `richtung` **vorab**; Form tag seit Nr. 121-2a zusätzlich **`nettoPp`** = behauptete Kante je Trade **nach der Kostenregel der Prüfstraße** (Eröffnung + IBKR Fixed, Klasse der Konfiguration; §3 Kostenregel, Entscheid PM
+23.10.2026 — nicht nach der Kassa-Hürde) in Pp, Zahl oder `{ "<key>": Zahl }` je Konfiguration — sie trägt das Machbarkeitstor; optional `bruttoPp` (fehlt es,
+gilt netto + Hürde der Kostenregel zur Eröffnung in der teuersten Klasse der Konfiguration, ohne `klassen` Klasse 2 = 0,2502 Pp, als brutto; trägt die Größenaussage) und `fensterWieQuelle` (`true` nur, wenn die Quelle **dasselbe** Fenster misst — sonst steht jede Größenaussage
 „im gemessenen Fenster"). Die sieben vor dem 23.10.2026 gemessenen Kandidaten tragen das Feld nicht; der Läufer liest ihre Zahl aus
 `pruefstrasse/erwartungen-alt.json` (Quelle je Zeile), ihre Ordner bleiben unverändert), `konfigurationen` (nicht leer; **die Zahl steht fest, bevor gemessen wird** — der Läufer
 misst genau diese Liste und trägt ihre Länge ins Register ein), `autor`, `datum`. `params` ist frei und wird der Regel durchgereicht.
@@ -61,7 +61,7 @@ als Verstoß, liefert NaN und macht das Urteil zu „Messgerät-Fehler" — der 
 `sicht.n`, `sicht.tag(j)` (Kalenderindex), `sicht.o(j)`, `sicht.h(j)`, `sicht.l(j)`, `sicht.c(j)`, `sicht.v(j)` (Stück),
 `sicht.klasse(j)` (Umsatzklasse 0–3, −1 ohne), `sicht.zulaessig(j)` (Klasse da, kein Maßnahmenfenster), `sicht.lebend`
 (Reihe lebt am Archivende), `sicht.quelle` (`panel` | `trendkanal-tage`), `sicht.roh(j)` (roher Schluss, unbereinigt; nur Quelle
-`panel`, sonst NaN), `sicht.markt(j)` (seit 23.10.2026, Nr. 121-2b: **QQQ = Nasdaq-100**, Kurs am Kalendertag von Zeile j aus `pruefstrasse/daten/qqq-tage.json`,
+`panel`, sonst NaN), `sicht.markt(j)` (seit 23.10.2026, Nr. 121-2b: **QQQ = Nasdaq-100**, **Kurs ohne Ausschüttungen (SPY-Konvention)** am Kalendertag von Zeile j aus `pruefstrasse/daten/qqq-tage.json`,
 ohne Ausschüttungen wie vorher die Panel-SPY-Reihe; NaN, wenn QQQ dort fehlt), `sicht.marktGesamt(j)` (QQQ mit wieder angelegten Ausschüttungen), `sicht.marktSpy(j)`
 (bereinigter SPY-Schluss des Panels, nachrichtlich — vorher `markt`), `sicht.hatRoh`,
 `sicht.hatMarkt`. `o/h/l/c` sind **bereinigt**: Preisfilter der Literatur (Mindestkurs) gehören auf den **rohen** Kurs `roh` (Fehlerform
@@ -164,12 +164,12 @@ die Mindestgebühr: +0,20 Pp je Umlauf). Herkunft: Klassen 1–4, Faktoren und G
 | 2 | 50–250 Mio $ | 0,0854 | 0,2101 (× 2,46) | 0,1255 | **0,2502** |
 | 3 | 250–1.000 Mio $ | 0,0647 | 0,1339 (× 2,07) | 0,1048 | **0,1740** |
 | 4 | ab 1.000 Mio $ | 0,0449 | 0,0813 (× 1,81) | 0,0850 | **0,1213** |
-| 5 „größte" | ab 3.800 Mio $ (`KLASSE5_UMSATZ`, gemessen) | 0,0188 | 0,0309 (gemessen, × 1,65) | 0,0589 | **0,0710** |
+| 5 „größte" (vorläufig, 11 Symbole, 95-%-Band 0,012–0,036) | ab 3.800 Mio $ (`KLASSE5_UMSATZ`) | 0,0188 | 0,0309 (direkt, × 1,65) | 0,0589 | **0,0710** |
 | index (SPY, QQQ) | — | 0,0449 | 0,0813 | 0,0850 | **0,1213** — **Index-Spanne nicht gemessen** (Platzhalter = Klasse-4-Spanne) |
 
 (Gebühr bei dem Median-Kurs der Klasse 35,67 / 68,47 / 110,34 / 170,87 / 201,78 $; index mit 400 $.) **Klasse 5** verfeinert die Panel-Klasse 4 **zur
 Laufzeit** (Median von c × v der 20 Tafelzeilen vor dem Einstieg, volle 20 Zeilen nötig) — das Panelfeld bleibt unverändert, und die **Topf-Zelle bleibt
-die Panel-Klasse** (vier Klassen): Klasse 5 bewegt nur die Hürde, u brutto bleibt bitgleich. Die Grenze ist **gemessen** (`E:/Markt-Dashboard-Archiv/spannen/`,
+die Panel-Klasse** (vier Klassen): Klasse 5 bewegt nur die Hürde, u brutto bleibt bitgleich. Klasse 5 ist **vorläufig, 11 Symbole, 95-%-Band 0,012–0,036** (QS 23.10.: Bootstrap über die Symbole; „≥ 30 % unter Klasse 4" hält in 94,6 % der Züge; im Dezil AVGO 0,0598 über Klasse 4; die Eröffnungsspanne der Klasse 5 ist direkt 2021–2026 gemessen, die der Klassen 1–4 über den Faktor aller Jahre — der Abstand 4 → 5 ist um ≈ 0,007 Pp überzeichnet). Grundlage (`E:/Markt-Dashboard-Archiv/spannen/`,
 2021–2026, Klasse ab 1.000 Mio $, 110 Symbole; Positivkontrolle: alle 110 ergeben die 0,0449 der Studie exakt): Klasse 5 beginnt am ersten Umsatz-Dezil, ab dem
 jedes höhere Dezil und der Pool ≤ 0,7 × 0,0449 liegen — das oberste Dezil (11 Symbole, ab 3.833 Mio $; das Dezil darunter endet bei 3.680 Mio $). **Index-
 Instrumente** sind eine eigene Klasse; `spannen/` führt keine ETFs, deshalb Platzhalter mit Marke (0,0449 ist die Kassa-Spanne der Klasse ab 1.000 Mio $,

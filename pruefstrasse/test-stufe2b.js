@@ -118,6 +118,28 @@ module.exports = function (C) {
     var J = r.status === 0 ? JSON.parse(fs.readFileSync(aus, 'utf8')) : { zeilen: [] };
     return [r.status === 0 && J.zeilen.length === 13 && J.zeilen.every(function (z) { return !z.messbarNeu && z.nettoNeu < z.nettoAlt; }), String(r.stdout || r.stderr).trim().split('\n').pop().slice(0, 200)];
   });
+
+  console.log('Q) Nachbesserung QS 2b (N1-N3, U1, U3)');
+  probe('Q-1 (N3): erwartung.nettoPp ist die Behauptung nach der Kostenregel - fehlt bruttoPp, ist brutto = netto + Huerde(Eroeffnung + IBKR, teuerste Klasse der Konfiguration; ohne klassen Klasse 2)', function () {
+    var TO = require('./tore.js'), kand = { kennung: 'q1', erwartung: { nettoPp: 0.5 }, konfigurationen: [{ key: 'A', klassen: [0, 2] }, { key: 'B' }] };
+    var a = TO.erwartungFuer(kand, 'A', null), b = TO.erwartungFuer(kand, 'B', null), hA = KO.huerdeUmlauf(0, 'eroeffnung', K.POSITION_USD, null).gesamtPp, hB = KO.huerdeUmlauf(1, 'eroeffnung', K.POSITION_USD, null).gesamtPp;
+    var F = fs.readFileSync(path.join(K.HIER, 'FORM.md'), 'utf8');
+    return [Math.abs(a.bruttoPp - (0.5 + hA)) < 1e-12 && Math.abs(b.bruttoPp - (0.5 + hB)) < 1e-12 && a.bruttoAusNetto && /nach der Kostenregel der Prüfstraße/.test(F) && F.indexOf('netto + Kassa-Hürde der Klasse 1') === -1, 'A ' + a.bruttoPp.toFixed(4) + ' / B ' + b.bruttoPp.toFixed(4)];
+  });
+  probe('Q-2 (N2): fehlende Bloecke tag.regel / korbRegel in kalibrierung.json sind ROT, nicht uebersprungen', function () {
+    var T = fs.readFileSync(path.join(K.HIER, 'test.js'), 'utf8');
+    return [/else ok\(false, 'tag: Netto der Kostenregel/.test(T) && /else ok\(false, 'korb: Gegenprobe Kostenregel/.test(T) && !/uebersprungen \(Vollauf noetig/.test(T), 'test.js'];
+  });
+  probe('Q-3 (N1, U1): Klasse 5 heisst "vorlaeufig, 11 Symbole, 95-%-Band 0,012-0,036" (FORM.md, kosten.js, Protokoll, Belegstand); markt(j) als Kurs ohne Ausschuettungen (SPY-Konvention)', function () {
+    var F = fs.readFileSync(path.join(K.HIER, 'FORM.md'), 'utf8'), L = fs.readFileSync(path.join(K.HIER, 'laeufer.js'), 'utf8'), d = A.kostenBeschreibung();
+    return [/vorläufig, 11 Symbole, 95-%-Band 0,012–0,036/.test(F) && !/`KLASSE5_UMSATZ`, gemessen/.test(F) && /vorlaeufig/.test(KO.KLASSEN[4].quelle) && /vorlaeufig, 11 Symbole/.test(d.klasse5) && /Klasse 5 vorlaeufig/.test(L) && /Kurs ohne Ausschüttungen \(SPY-Konvention\)/.test(F), d.klasse5];
+  });
+  probe('Q-4 (U3): Lagebild - eine Tabelle ohne Konf-Kopf erbt den t-Index nicht', function () {
+    var LB = require(path.join(K.REPO, 'tools', 'pruefstrasse-lagebild.js'));
+    var md = '| Konf | a | t |\n|---|---|---|\n| H1 | 1 | 2,0 |\n\n| Z | b | c |\n|---|---|---|\n| Z1 | 9 | 99 |\n';
+    var z = LB.besteZeile(md);
+    return [/^\| H1 /.test(z), z];
+  });
 };
 /* Eigene kleine Kunstwelt (eigener Zufall, unabhaengig von der Reihenfolge in test.js): 12 Reihen ueber 300 Werktage, Klasse 3 (ab 1.000 Mio $),
  * Umsatz je Reihe waehlbar (v), Signal jeder 9. Tag. */

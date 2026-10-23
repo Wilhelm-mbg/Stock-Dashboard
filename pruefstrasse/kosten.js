@@ -28,7 +28,7 @@ var KLASSEN = [
   { name: '250-1000', von: 250e6, kassa: 0.0647, faktor: 2.07, kurs: 110.34, quelle: 'Nr. 122 kosten.js (Spannen-Studie 03.09.2026, mitte ab 2021; Faktor Minutenstudie)' },
   { name: 'ab1000', von: 1e9, kassa: 0.0449, faktor: 1.81, kurs: 170.87, quelle: 'Nr. 122 kosten.js (Spannen-Studie 03.09.2026, mitte ab 2021; Faktor Minutenstudie)' },
   { name: 'groesste', von: K.KLASSE5_UMSATZ, kassa: 0.0188, eroeffnungGemessen: 0.0309, kurs: 201.78, gemessen: K.KLASSE5_UMSATZ != null,
-    quelle: 'Nr. 121-2b Messung spannen/ 2021-2026, Klasse ab1000, oberstes Umsatz-Dezil (11 Symbole), Kassa und Eroeffnung gemessen' },
+    quelle: 'Nr. 121-2b Messung spannen/ 2021-2026, Klasse ab1000, oberstes Umsatz-Dezil - vorlaeufig, 11 Symbole, 95-%-Band 0,012-0,036 (QS 23.10.2026), Kassa und Eroeffnung direkt' },
 ];
 KLASSEN.forEach(function (k) { k.eroeffnung = k.eroeffnungGemessen != null ? k.eroeffnungGemessen : k.kassa * k.faktor; if (k.faktor == null) k.faktor = k.eroeffnung / k.kassa; });
 var INDEX = { name: 'index', kassa: KLASSEN[3].kassa, faktor: KLASSEN[3].faktor, eroeffnung: KLASSEN[3].eroeffnung, kurs: null, gemessen: false,
@@ -83,7 +83,9 @@ function huerdeUmlauf(klasse, ausfuehrung, positionUsd, kurs, modell) {
 }
 /** Schneller Zahlpfad fuer die Buchung je Trade (gleiche Rechnung wie huerdeUmlauf, nur gesamtPp). */
 function gesamtPp(klasse, ausfuehrung, positionUsd, kurs, modell) {
-  var k = klasse === 'index' ? INDEX : KLASSEN[klasse], px = kurs > 0 ? kurs : (k.kurs || KLASSEN[3].kurs), stueck = positionUsd / px, md = modell || 'fixed';
+  var k = klasse === 'index' ? INDEX : KLASSEN[klasse];
+  if (!k || (ausfuehrung !== 'kassa' && ausfuehrung !== 'eroeffnung')) throw new Error('kosten.js gesamtPp: Klasse ' + JSON.stringify(klasse) + ' / Ausfuehrung ' + JSON.stringify(ausfuehrung));   /* QS U5 */
+  var px = kurs > 0 ? kurs : (k.kurs || KLASSEN[3].kurs), stueck = positionUsd / px, md = modell || 'fixed';
   return (ausfuehrung === 'kassa' ? k.kassa : k.eroeffnung) + (ibkrGebuehr(md, 'kauf', stueck, px) + ibkrGebuehr(md, 'verkauf', stueck, px)) / positionUsd * 100;
 }
 /** Spannenanteil der Huerde (Pp je Umlauf) einer Klasse zur Ausfuehrungszeit - fuer die Zerlegung Spanne + Gebuehr im Protokoll. */

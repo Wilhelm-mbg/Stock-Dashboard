@@ -46,6 +46,8 @@ function besteZeile(md) {
   let tIdx = -1;
   md.split('\n').forEach((z) => {
     if (/^\|\s*Konf\b/.test(z)) { tIdx = z.split('|').map((s) => s.trim()).indexOf('t'); return; }
+    if (!/^\|/.test(z)) { tIdx = -2; return; }                 /* Tabellenende: die naechste Tabelle erbt den Index nicht (QS 2b U3) */
+    if (tIdx === -2) return;                                  /* Tabelle ohne Konf-Kopf: keine Kandidatenzeile */
     if (/^\|\s*[^|-]/.test(z)) zeilen.push({ z: z, tIdx: tIdx });
   });
   let beste = null, bestT = -Infinity;
