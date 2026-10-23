@@ -1,0 +1,14 @@
+# Eichung der Pruefstrasse (Nr. 121-2a) — **NICHT bestanden**
+
+Datum 2026-10-23, Panel `querschnitt-pruefstand-2026-09-13/panel/v2.3` (panel), Eichfenster 2016-01-04 … 2022-12-30 (letzter gelesener Tag 2022-12-30), H = 5, Einsaat +0,30 Pp brutto nur auf die Signalfenster (im Speicher), Seeds Einsaat 1–10, Zufall 101–110. Laufzeit 143 s (davon Lesen 3 s).
+
+| Dichte | Modus | Reihe | Mittel u brutto | sd | se_Mittel | Soll | innerhalb ± 2 se | weiteres Kriterium | bestanden |
+|---|---|---|---|---|---|---|---|---|---|
+| marktweit | zeit | einsaat | +0,6348 | +0,6805 | +0,2152 | +0,30 | ja | Mittel in 0,20 … 0,40: nein | **nein** |
+| marktweit | zeit | zufall | +0,0086 | +0,6510 | +0,2059 | +0,00 | ja | |t| > 2: 0 von 10 (höchstens 3) | ja |
+| querschnitt | topf | einsaat | +0,3030 | +0,0340 | +0,0107 | +0,30 | ja | Mittel in 0,20 … 0,40: ja | ja |
+| querschnitt | topf | zufall | +0,0095 | +0,0309 | +0,0098 | +0,00 | ja | |t| > 2: 0 von 10 (höchstens 3) | ja |
+
+Einzelläufe: markt/ein/1 +0,531 (t +1,2, 97 T); markt/ein/2 +0,058 (t +0,1, 71 T); markt/ein/3 +0,399 (t +0,7, 86 T); markt/ein/4 +1,596 (t +1,7, 77 T); markt/ein/5 +0,361 (t +0,4, 71 T); markt/ein/6 −0,285 (t −0,5, 81 T); markt/ein/7 +0,683 (t +1,3, 87 T); markt/ein/8 +1,988 (t +2,1, 62 T); markt/ein/9 +0,336 (t +0,8, 82 T); markt/ein/10 +0,680 (t +1,5, 93 T); markt/zuf/101 +0,915 (t +1,9, 77 T); markt/zuf/102 +0,486 (t +0,8, 73 T); markt/zuf/103 +0,443 (t +0,7, 74 T); markt/zuf/104 −0,312 (t −0,8, 101 T); markt/zuf/105 +0,612 (t +1,1, 80 T); markt/zuf/106 −0,725 (t −1,5, 104 T); markt/zuf/107 +0,487 (t +0,7, 80 T); markt/zuf/108 −0,772 (t −1,6, 102 T); markt/zuf/109 −0,811 (t −1,4, 96 T); markt/zuf/110 −0,238 (t −0,6, 83 T); quers/ein/1 +0,265 (t +9,9, 1721 T); quers/ein/2 +0,368 (t +9,1, 1721 T); quers/ein/3 +0,345 (t +11,0, 1721 T); quers/ein/4 +0,305 (t +11,0, 1721 T); quers/ein/5 +0,297 (t +9,1, 1721 T); quers/ein/6 +0,304 (t +9,1, 1721 T); quers/ein/7 +0,269 (t +9,5, 1721 T); quers/ein/8 +0,318 (t +9,7, 1721 T); quers/ein/9 +0,294 (t +9,7, 1721 T); quers/ein/10 +0,267 (t +8,4, 1721 T); quers/zuf/101 −0,026 (t −0,8, 1721 T); quers/zuf/102 +0,042 (t +1,3, 1721 T); quers/zuf/103 +0,045 (t +1,4, 1721 T); quers/zuf/104 −0,008 (t −0,3, 1721 T); quers/zuf/105 +0,003 (t +0,1, 1721 T); quers/zuf/106 −0,013 (t −0,4, 1720 T); quers/zuf/107 −0,025 (t −0,7, 1721 T); quers/zuf/108 −0,004 (t −0,1, 1721 T); quers/zuf/109 +0,022 (t +0,6, 1721 T); quers/zuf/110 +0,060 (t +0,7, 1721 T).
+
+Kriterien statistisch (FORM.md §5): Einsaat — Mittel der Schätzungen innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40; Zufall — Mittel innerhalb ± 2 · se_Mittel um 0, höchstens 3 von 10 mit |t| > 2. Die Eichung fährt der PM vor jeder Freigabe (`node pruefstrasse/laeufer.js --eichung`); `test.js` prüft Form und Alter (> 60 Tage: Warnung). Simulation mit virtuellem Kapital, keine Anlageberatung.

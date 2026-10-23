@@ -235,7 +235,7 @@ function eindeutig(arr) { var a = Int32Array.from(arr).sort(), o = []; for (var 
 /** Einen Trade buchen: Ertrag Long von ePos bis ausPos, gegen den Topf seiner Zelle - oder im Modus zeit gegen tpZeit: eine Zahl (lokaler
  *  Topf des Signals; NaN = topfFehlt) bzw. eine Funktion (dauer, tagE) (globaler Topf, Nr. 118, nur opt.topfArt 'global').
  *  Abgang einer Reihe, deren letzte Zeile der letzte Tag vor der Sperre ist (gesperrte Tafel): Gruppe "zensiert" (A7). */
-function buche(TF, Z, art, kf, dir, S, ePos, ausPos, k, zaehler, tpZeit) {
+function buche(TF, Z, art, kf, dir, S, ePos, ausPos, k, zaehler, tpZeit, plus) {
   var e = C.ertragLong(S, ePos, ausPos, S.lebend);
   if (!e) { zaehler.ohneHorizont++; return null; }
   var dauer = Math.min(POT_MAX_DAUER, Math.max(1, e.dauer)), tagE = S.tag[ePos], tp;
@@ -244,7 +244,8 @@ function buche(TF, Z, art, kf, dir, S, ePos, ausPos, k, zaehler, tpZeit) {
   else if (tpZeit != null) tp = tpZeit;
   else { var ti = Z.topfIdx(tagE, dauer, k, S.lebend); tp = Z.tn[ti] > 0 ? Z.ts[ti] / Z.tn[ti] : NaN; }
   if (tp !== tp) { zaehler.topfFehlt++; return null; }
-  Z.add(Z.idx(art, kf, tagE, k, S.lebend), dir, e.r, dir * (e.r - tp), e.dauer, e.delist ? (zensiertAnSperre(TF, S) ? 'zensiert' : (S.gruppe || 'sonstige')) : null);
+  var r = plus ? e.r + plus : e.r;                     /* Nr. 121-2a D: Einsaat (nur --eichung, nur Signalfenster), sonst e.r unveraendert */
+  Z.add(Z.idx(art, kf, tagE, k, S.lebend), dir, r, dir * (r - tp), e.dauer, e.delist ? (zensiertAnSperre(TF, S) ? 'zensiert' : (S.gruppe || 'sonstige')) : null);
   return e;
 }
 /** A7: gesperrte Tafel und die letzte Zeile der Reihe ist der letzte Tag vor der Sperre -> die Reihe endet nur an der Sperre. */
@@ -352,6 +353,7 @@ function messe(TF, regel, kand, opt) {
   var ueberlappung = { n: new Array(nK).fill(0), von: new Array(nK).fill(0) };
   if (zeit) zaehler.placeboEntfaellt = 0;
   var versatz = regel.bestaetigt ? 2 : 1, verstoesse = 0, beispiele = [];
+  var einsaat = opt.einsaat || 0;                       /* Nr. 121-2a D: Pp auf die Rendite der Signalfenster (art echt), nur --eichung */
   /* Modus zeit (Nr. 121-1): lokaler Topf je Signal; opt.topfArt 'global' = der globale Topf von Nr. 118 (nur Tests, Rot-vor-Gruen). Radien je
    * Konfiguration [R, 2 H, 8 H] (R = topfRadius, Vorgabe 4 H; 2 H / 8 H nachrichtlich als Sensitivitaet). zN zaehlt die nachrichtlichen Buchungen. */
   var topfArt = opt.topfArt || 'lokal', nMin = opt.topfNMin || K.TOPF_N_MIN;     /* topfNMin: nur Tests/Nachbau (Schwelle ist Setzung, konfig.js) */
@@ -415,7 +417,7 @@ function messe(TF, regel, kand, opt) {
         passend++;
         var T = TZ ? TZ[kf] : null, tpE = T ? T.topf(tagE, 0) : zeitlichAlt, vorTF = zaehler.topfFehlt;
         var ausPos = C.festAusstieg(S, ePos, c.haltedauer);
-        var e = buche(TF, Z, 0, kf, dir, S, ePos, ausPos, k, zaehler, tpE);
+        var e = buche(TF, Z, 0, kf, dir, S, ePos, ausPos, k, zaehler, tpE, einsaat);
         if (e) zaehler.gebucht++;
         if (T && tagE < iSchnitt) {
           var dt = detail[kf];

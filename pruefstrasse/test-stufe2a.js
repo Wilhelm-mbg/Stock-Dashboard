@@ -232,6 +232,38 @@ module.exports = function (C) {
       return [eKurz && /grund-daten/.test(eKurz.message) && NM.art === 'daten' && NM.zaehlt === 2 && h5.zaehlt === 2 && h10.zaehlt === 0 && m1 === m0 + 1 && /zaehlt im Register 2-fach/i.test(md), 'm ' + m0 + ' -> ' + m1 + ', H5 zaehlt ' + h5.zaehlt + ', H10 ' + h10.zaehlt];
     });
   }
+
+  console.log('D) Eichung an bekanntem Effekt und Zufallssignal (Nr. 121-2a)');
+  probe('D-1: Einsaat trifft NUR die Signalfenster: gleicher Seed mit/ohne +0,30 -> u brutto genau +0,30, Placebo, Verschiebung, Ein-/Ausstieg +1 T und Topf bitgleich (beide Modi)', function () {
+    var T = TF.kunstTafel(C.kunstReihen(null), TAGE), gut = true, txt = [];
+    [['marktweit', 'zeit'], ['querschnitt', 'topf']].forEach(function (dm) {
+      var kand = { kennung: 'eichung-test', form: 'tag', bewertung: dm[1], konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5 }], params: {} };
+      var R = LF.eichRegel(dm[0], 7), E0 = A.lauf(R, kand, { tafel: T }), E3 = A.lauf(R, kand, { tafel: T, einsaat: 0.30 }), a = E0.konfigurationen[0], b = E3.konfigurationen[0];
+      var d = b.entdeckung.uBrutto.mittel - a.entdeckung.uBrutto.mittel, gleich = JSON.stringify([a.placebo, a.versatz, a.spaet, a.zeitTopf && a.zeitTopf.topfMittel]) === JSON.stringify([b.placebo, b.versatz, b.spaet, b.zeitTopf && b.zeitTopf.topfMittel]);
+      if (!(Math.abs(d - 0.30) < 1e-9 && gleich && a.entdeckung.nTage > 20)) gut = false;
+      txt.push(dm[0] + ' Differenz ' + d.toFixed(10) + ', Gegenproben gleich ' + gleich + ', ' + a.entdeckung.nTage + ' Signaltage');
+    });
+    return [gut, txt.join(' | ')];
+  });
+  probe('D-2: Kriterien statistisch: Einsaat 0,30 +- Streuung besteht, Mittel 0,15 nicht; Zufall mit 4 von 10 |t| > 2 besteht nicht', function () {
+    var B = LF.eichungBewerten, e1 = B([0.25, 0.32, 0.29, 0.35, 0.28, 0.31, 0.27, 0.33, 0.30, 0.30], [], 0.30), e2 = B([0.15, 0.14, 0.16, 0.15, 0.13, 0.17, 0.15, 0.16, 0.14, 0.15], [], 0.30);
+    var z1 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [0.3, -1, 2.1, 0.5, -0.2, 1, -2.5, 0.1, 0, -0.4], 0), z2 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [2.3, -2.1, 2.2, 0.5, -2.4, 1, -0.5, 0.1, 0, -0.4], 0);
+    return [e1.bestanden && !e2.bestanden && z1.bestanden && z1.tUeber2 === 2 && !z2.bestanden && z2.tUeber2 === 4, 'e1 ' + e1.mittel.toFixed(3) + ' se ' + e1.seMittel.toFixed(3) + ' | e2 ' + e2.mittel.toFixed(3) + ' | z1 ' + z1.tUeber2 + ' | z2 ' + z2.tUeber2];
+  });
+  probe('D-3: --eichung schreibt ausschliesslich EICHUNG.md und eichung.json (Kunstlauf in einen Temp-Ordner; Waechter erkennt fremde Pfade)', function () {
+    var dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'pruefstrasse-eichung-')), J;
+    try { J = LF.eichung({ tafel: TF.kunstTafel(C.kunstReihen(null), TAGE), seeds: 2, aus: dir, log: function () {} }); var da = fs.readdirSync(dir).sort().join(','); } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+    var fr = LF.fremdGeschrieben([' M pruefstrasse/a.js'], [' M pruefstrasse/a.js', '?? pruefstrasse/EICHUNG.md', '?? pruefstrasse/x.json'], ['pruefstrasse/EICHUNG.md', 'pruefstrasse/eichung.json']);
+    return [da === 'EICHUNG.md,eichung.json' && J.laeufe.length === 8 && J.ergebnis.marktweit && J.ergebnis.querschnitt && fr.length === 1 && /x\.json/.test(fr[0]), 'Dateien ' + da + ', Laeufe ' + J.laeufe.length + ', fremd erkannt: ' + fr.join(',')];
+  });
+  probe('D-4: pruefstrasse/eichung.json - Form (Datum, Panel, Eichfenster, Seeds, Ergebnis je Dichte, Laufzeit) und Alter (> 60 Tage nur Warnung)', function () {
+    var f = path.join(K.HIER, 'eichung.json');
+    if (!fs.existsSync(f)) return [false, 'eichung.json fehlt - der PM faehrt node pruefstrasse/laeufer.js --eichung'];
+    var J = JSON.parse(fs.readFileSync(f, 'utf8')), alter = (Date.now() - Date.parse(J.datum + 'T00:00:00Z')) / 86400000;
+    var form = /^\d{4}-\d{2}-\d{2}$/.test(J.datum) && J.panelKennung && J.eichfenster && J.eichfenster.bis === K.EICHUNG.bis && J.seeds && J.ergebnis.marktweit && J.ergebnis.querschnitt && typeof J.bestanden === 'boolean' && J.laufzeitMs > 0 && J.laeufe.length === 40 && fs.existsSync(path.join(K.HIER, 'EICHUNG.md'));
+    if (alter > LF.EICHUNG.alterWarnTage) console.log('  WARNUNG eichung.json ist ' + alter.toFixed(0) + ' Tage alt (> ' + LF.EICHUNG.alterWarnTage + ') - vor der naechsten Freigabe neu eichen');
+    return [form, 'Datum ' + J.datum + ' (' + alter.toFixed(0) + ' Tage), bestanden ' + J.bestanden + ', ' + (J.laufzeitMs / 1000).toFixed(0) + ' s'];
+  });
   /* MARKE-ENDE */
   if (C.LR) fs.rmSync(C.LR, { recursive: true, force: true });
 
