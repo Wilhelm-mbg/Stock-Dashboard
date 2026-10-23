@@ -566,6 +566,10 @@ var KAL = path.join(K.HIER, 'kalibrierung.json'), SOLL = {
   korb: { quelle: 'Nr. 96 (studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md), Regel K, Panel v2.3', 'A-187': 259238.74, 'B-187': 250123.14, spyA: 215535.73, spyB: 181193.87 },
   /* Nr. 121-2b B.3: Gegenprobe Kostenregel / Nasdaq-100 nach Steuer (k = 0, Szenario eroeffnung-fixed-100k der Nr. 122; Toleranz 0,1 Pp p. a.) -
    * gemessen 23.10.2026 (Bau): A 18,395 / 24,869, B 16,520 / 11,806; mit dem Satz der Nr. 122 trifft das Buch deren Zahl auf das Bit */
+  /* Nr. 121-2b: Soll der Kostenregel (Eroeffnung + IBKR Fixed 5.263 $; Quelle trendkanal-tage ohne roh -> Median-Kurs der Klasse), alt = Kassa-Soll oben (bleibt eigene Pruefung) */
+  tagRegel: { quelle: 'Nr. 121-2b kal-tag-nachher (Kostenregel: Eroeffnung + IBKR Fixed 5.263 $, Kurs = Median-Kurs der Klasse, Quelle trendkanal-tage ohne roh)',
+    entUNetto: -0.6281, entT: -5.13, entHuerde: 0.37125, besUNetto: -0.5640, besT: -5.22, besHuerde: 0.34365,
+    alt: { entUNetto: -0.3830, entT: -3.13, besUNetto: -0.3396, besT: -3.14, grund: 'Kassa-Huerde (Trendkanal-Studie), seit 23.10.2026 nachrichtlich' }, grund: 'Kostenregel Nr. 121-2b' },
   korbRegel: { quelle: 'studien/momentum-wiedervorlage-2026-10-23/massstab.json steuer.eroeffnung-fixed-100k (Nr. 122)', 'A-187': { buchB: 18.39, nasdaqB: 24.87 }, 'B-187': { buchB: 16.51, nasdaqB: 11.81 }, toleranzPp: 0.1 },
   minute: { quelle: 'Markt-Dashboard-Daten/protokolle/rsi2seit-2026-08-26.json', bruttoJeSignalPp: 0.02054524106238242, huerdePp: 0.1, nettoJeSignalPp: -0.07945475893761758, werte: 2874, handelstage: 730, schnittTag: '2025-03-12' },
 };
@@ -579,8 +583,11 @@ if (!SCHNELL) {
   var tagAus = path.join(SCRATCH, 'tag.json'); adapterLauf('tag', ['--kalibrierung', tagAus], 900000);
   var Et = JSON.parse(fs.readFileSync(tagAus, 'utf8')), h5 = Et.konfigurationen.filter(function (k) { return k.key === 'H5'; })[0];
   ok(Et.hatRoh === false && Et.hatMarkt === true, 'trendkanal-tage: Tafel meldet hatRoh false (Tagesdateien aus bereinigten Minuten, Faktor ungeprueft) und hatMarkt true (SPY)', Et.hatRoh + ' / ' + Et.hatMarkt);
-  Kal.tag = { entNTage: h5.entdeckung.nTage, entNTr: h5.entdeckung.nTr, entUBrutto: h5.entdeckung.uBrutto.mittel, entUNetto: h5.entdeckung.uNetto.mittel, entT: h5.entdeckung.uNetto.t,
-    besNTage: h5.pruefung.nTage, besNTr: h5.pruefung.nTr, besUBrutto: h5.pruefung.uBrutto.mittel, besUNetto: h5.pruefung.uNetto.mittel, besT: h5.pruefung.uNetto.t, reihen: Et.reihen, verstoesse: Et.verstoesse, ms: Et.ms };
+  /* Nr. 121-2b: die Studienzahlen sind Kassa-Netto -> uNettoKassa (bitgleich zum uNetto vor der Kostenregel); das Netto der Kostenregel im Block regel */
+  Kal.tag = { entNTage: h5.entdeckung.nTage, entNTr: h5.entdeckung.nTr, entUBrutto: h5.entdeckung.uBrutto.mittel, entUNetto: h5.entdeckung.uNettoKassa.mittel, entT: h5.entdeckung.uNettoKassa.t,
+    besNTage: h5.pruefung.nTage, besNTr: h5.pruefung.nTr, besUBrutto: h5.pruefung.uBrutto.mittel, besUNetto: h5.pruefung.uNettoKassa.mittel, besT: h5.pruefung.uNettoKassa.t,
+    regel: { entUNetto: h5.entdeckung.uNetto.mittel, entT: h5.entdeckung.uNetto.t, entHuerde: h5.entdeckung.kKand, besUNetto: h5.pruefung.uNetto.mittel, besT: h5.pruefung.uNetto.t, besHuerde: h5.pruefung.kKand, grund: 'Kostenregel Nr. 121-2b' },
+    reihen: Et.reihen, verstoesse: Et.verstoesse, ms: Et.ms };
   var Ek = JSON.parse(adapterLauf('korb', ['--kalibrierung'], 900000).trim().split(' ms ')[0]);
   Kal.korb = { 'A-187': Ek['A-187'].buchEnde, 'B-187': Ek['B-187'].buchEnde, spyA: Ek['A-187'].spyEnde, spyB: Ek['B-187'].spyEnde };
   Kal.korbRegel = JSON.parse(adapterLauf('korb', ['--kalibrierung-regel'], 900000).trim().split(' ms ')[0]);   /* Nr. 121-2b */
@@ -597,6 +604,10 @@ if (Kal.tag) {
   ok(nahe(t.entUBrutto, s.entUBrutto, 5e-5) && nahe(t.entUNetto, s.entUNetto, 5e-5) && nahe(t.besUBrutto, s.besUBrutto, 5e-5) && nahe(t.besUNetto, s.besUNetto, 5e-5), 'tag: Ueberschuss brutto/netto in der Rundung der Studie (4 Stellen)', t.entUNetto.toFixed(4) + ' / ' + t.besUNetto.toFixed(4));
   ok(nahe(t.entT, s.entT, 5e-3) && nahe(t.besT, s.besT, 5e-3), 'tag: t Hansen-Hodrick in der Rundung der Studie (2 Stellen)', t.entT.toFixed(2) + ' / ' + t.besT.toFixed(2));
   ok(t.verstoesse === 0, 'tag: kein Blick nach vorn im Kalibrierungslauf');
+  var tr = SOLL.tagRegel;
+  if (t.regel) ok(nahe(t.regel.entUNetto, tr.entUNetto, 5e-5) && nahe(t.regel.besUNetto, tr.besUNetto, 5e-5) && nahe(t.regel.entT, tr.entT, 5e-3) && nahe(t.regel.besT, tr.besT, 5e-3) && nahe(t.regel.entHuerde, tr.entHuerde, 5e-5) && nahe(t.regel.besHuerde, tr.besHuerde, 5e-5),
+    'tag: Netto der Kostenregel (Eroeffnung + IBKR) wie Nr. 121-2b (-0,6281 / -0,5640, t -5,13 / -5,22; alt Kassa -0,3830 / -0,3396)', t.regel.entUNetto.toFixed(4) + ' / ' + t.regel.besUNetto.toFixed(4) + ', t ' + t.regel.entT.toFixed(2) + ' / ' + t.regel.besT.toFixed(2));
+  else ok(true, 'tag: Netto der Kostenregel - uebersprungen (Vollauf noetig: kalibrierung.json ohne Block tag.regel)');
 }
 if (Kal.korb) {
   var c = Kal.korb, sk = SOLL.korb;
