@@ -383,8 +383,10 @@ ok(E3n.konfigurationen[0].versatz.verstoss === true && U3n.urteil === 'Messgerae
 var oV = [], kV5 = []; for (var qv = 0; qv < 40; qv++) { oV.push(qv <= 20 ? 100 : 100 * Math.pow(1.1, qv - 20)); kV5.push(qv < 20 ? 3 : 1); }
 var TV5 = TF.kunstTafel([{ reihe: 'V', tag: oV.map(function (x, i) { return i; }), o: oV, h: oV, l: oV, c: oV, v: oV.map(function () { return 1; }), klasse: kV5 }], TAGE.slice(0, 40), { offen: true }), SV5 = TV5.reihen[0];
 var tv3 = A.lokalerTopf(SV5, Int32Array.from([18]), [18], 1, [30], [3], 0, 39)[0][18], tvAlle = A.lokalerTopf(SV5, Int32Array.from([18]), [18], 1, [30], null, 0, 39)[0][18], tvAlt = A.zeitTopfGlobal(SV5, Int32Array.from([18]), 1, 0, 39);
-ok(tv3[1] === 19 && Math.abs(tv3[0]) < 1e-9 && tvAlle[1] === 38 && tvAlle[0] / tvAlle[1] > 4 && tvAlt.mittel > 4,
-  'D-v: lokaler Topf nimmt nur Starttage mit Klasse in klassen der Konfiguration (19 Fenster Klasse 3, Mittel 0); ohne klassen 38 Fenster; der alte globale Topf mischte die Klassen (Rot)', 'Klasse 3: n ' + tv3[1] + ' Mittel ' + (tv3[0] / tv3[1]).toFixed(3) + ' | alle: n ' + tvAlle[1] + ' Mittel ' + (tvAlle[0] / tvAlle[1]).toFixed(3) + ' | alt ' + tvAlt.mittel.toFixed(3));
+/* Nachbesserung 4 (23.10.): A6 "klassengleich" zurueckgenommen - die Klasse am Topf-Start ist Information nach dem Signal (Auswahl auf Zukunft); der Topf
+ * nimmt jetzt alle 38 Fenster, gleich ob klassen gesetzt ist (Umkehr der Aussage dieses Tests, Kunstwelt unveraendert) */
+ok(tv3[1] === 38 && tvAlle[1] === 38 && tv3[0] === tvAlle[0] && tvAlle[0] / tvAlle[1] > 4 && tvAlt.mittel > 4,
+  'D-v: lokaler Topf OHNE Klassenfilter (Nachbesserung 4): mit klassen [3] dieselben 38 Fenster wie ohne (vorher 19, A6 zurueckgenommen)', 'Klasse 3: n ' + tv3[1] + ' Mittel ' + (tv3[0] / tv3[1]).toFixed(3) + ' | alle: n ' + tvAlle[1] + ' Mittel ' + (tvAlle[0] / tvAlle[1]).toFixed(3) + ' | alt ' + tvAlt.mittel.toFixed(3));
 /* D-xii: Zuordnung im Einzelnen (Reihe 0..59 ohne Luecke, H 3, R 20): fremde Signalfenster ausgeschlossen, jeder Starttag in genau einem Topf
  * (Gleichstand -> frueheres Signal), Kalenderluecke zaehlt nach Tafeltagen, Zeitraum-Ende begrenzt die Starts, R begrenzt die Zuordnung, < 2 -> NaN */
 var o60 = []; for (var q6 = 0; q6 < 60; q6++) o60.push(100 + q6);

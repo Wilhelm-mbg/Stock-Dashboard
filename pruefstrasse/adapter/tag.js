@@ -197,22 +197,23 @@ function ueberlappt(ES, t, d) {
 }
 
 /** LOKALER Topf (Modus zeit, Nr. 121-1, FORM.md §3). Alle Indizes sind Tafelindizes (S.tag), nicht Zeilen der Reihe.
- *  Zulaessige Topf-Starttage t der Reihe S: t in [von, bis], Klasse da und (klassen gesetzt) in klassen, kein Massnahmentag, KEIN Fenster
+ *  Zulaessige Topf-Starttage t der Reihe S: t in [von, bis], kein Massnahmentag (gezaehlt in zl.topfMassnahme; zl.mitMassnahmen = Diagnose ohne
+ *  Ausschluss), KEIN Fenster
+ *  [Nachbesserung 4, 23.10.: OHNE Klassenfilter - die Klasse am Topf-Start haengt am Umsatz der 20 Vortage bis zum Topf-Start, also an Information NACH dem
+ *  Signal; bei einem Kandidatenfenster je Signal wurde der Topf damit auf Zukunft ausgewaehlt (Eichung Dichte 1/10: Nullpunkt -0,166). Die Klasse des Trades
+ *  entscheidet die Huerde, nicht den Topf. Der Parameter klassen bleibt in der Signatur und wird nicht mehr benutzt.]
  *  [t, t + H), das ein Signalfenster [e, e + H) schneidet (|t - e| < H fuer ein e aus ES, aufsteigend), Fenster nicht rechtszensiert/kurslos
  *  (ertragLong mit festAusstieg(S, t, H), Eroeffnung -> Eroeffnung wie der Trade; das Fenster darf ueber `bis` hinauslaufen wie der Trade).
  *  Jeder solche Starttag gehoert GENAU EINEM Zuordnungstag aus EP (aufsteigend, eindeutig): dem naechstgelegenen (kleinstes |t - e|,
  *  Gleichstand -> der fruehere), und nur bis zum Abstand radien[x]. Liefert je Radius ein Objekt { e -> [Summe, n] }; hist (Objekt, optional)
  *  zaehlt die Abstaende t - e der Fenster im ersten Radius. Die Toepfe zweier Zuordnungstage sind disjunkt. */
-function lokalerTopf(S, ES, EP, H, radien, klassen, von, bis, hist) {
+function lokalerTopf(S, ES, EP, H, radien, klassen, von, bis, hist, zl) {
   var aus = radien.map(function () { return {}; }), rMax = Math.max.apply(null, radien), j = 0, q = -1;
   if (!EP.length) return aus;
   for (var p = 0; p < S.n; p++) {
     var t = S.tag[p];
     if (t < von) continue;
     if (t > bis) break;
-    var k = S.klasse[p];
-    if (k < 0 || S.mass[p]) continue;
-    if (klassen && klassen.indexOf(k) === -1) continue;
     while (j < ES.length && ES[j] <= t - H) j++;
     if (j < ES.length && ES[j] < t + H) continue;
     while (q + 1 < EP.length && EP[q + 1] <= t) q++;
@@ -221,6 +222,7 @@ function lokalerTopf(S, ES, EP, H, radien, klassen, von, bis, hist) {
     else if (q + 1 < EP.length && EP[q + 1] - t < t - EP[q]) { e = EP[q + 1]; d = e - t; }
     else { e = EP[q]; d = t - e; }
     if (d > rMax) continue;
+    if (S.mass[p] && !(zl && zl.mitMassnahmen)) { if (zl && d <= radien[0]) zl.topfMassnahme++; continue; }
     var r = C.ertragLong(S, p, C.festAusstieg(S, p, H), S.lebend);
     if (!r) continue;
     for (var x = 0; x < radien.length; x++) if (d <= radien[x]) { var z = aus[x][e] || (aus[x][e] = [0, 0]); z[0] += r.r; z[1]++; }
@@ -259,7 +261,9 @@ function leererZaehler() {
      * reihenOhneKlasse, zeilenJeKlasse (A5) */
     cooldownDurchOhneKlasse: 0, versatzUeberschneidung: 0, reihen: 0, reihenOhneKlasse: 0, zeilenJeKlasse: [0, 0, 0, 0],
     /* Nachbesserung QS 23.10. (Randregel, nur Modus zeit/lokal): Signale, deren Reihe nicht beidseitig mindestens R Tafeltage um den Einstieg hat */
-    randFehlt: 0 };
+    randFehlt: 0,
+    /* Nachbesserung 4: Topf-Starttage (Signal und Pruefzeit, erster Radius), die nur wegen eines Massnahmentags entfallen */
+    topfMassnahme: 0 };
 }
 
 /** Phase 1 einer Reihe (Nr. 121-2a als Funktion herausgeloest, Schritte und Reihenfolge unveraendert): Sicht, Cooldown je Richtung, Bestaetigung,
@@ -362,7 +366,7 @@ function messe(TF, regel, kand, opt) {
   if (['lokal', 'global'].indexOf(topfArt) === -1) throw new Error('topfArt muss lokal | global sein');
   var bisEnt = Math.min(TF.maxTag, iSchnitt - 1), LEER = new Int32Array(0), zN = leererZaehler();
   var radien = konfs.map(function (c) { var H = c.haltedauer; return zeit ? [topfRadiusVon(kand, H), 2 * H, 8 * H] : null; });
-  var detail = konfs.map(function (c, kf) { return { R: radien[kf] ? radien[kf][0] : null, nMin: nMin, topfN: {}, hist: {}, topfSumme: 0, topfTrades: 0, topfFehlt: 0, randFehlt: 0 }; });
+  var detail = konfs.map(function (c, kf) { return { R: radien[kf] ? radien[kf][0] : null, nMin: nMin, topfN: {}, hist: {}, topfSumme: 0, topfTrades: 0, topfFehlt: 0, randFehlt: 0, topfMassnahme: 0 }; });
   /* bucht[dir][k]: bucht irgendeine Konfiguration dieser Richtung die Klasse k? (Zaehler cooldownDurchOhneKlasse, A13) */
   var bucht = buchtTafel(konfs);
   /** Lokale Toepfe einer Reihe je Konfiguration: Zuordnung je Zeitraum (Entdeckung: Einstiegstage <= bisEnt, Starttage 0..bisEnt; Pruefung: ab
@@ -372,7 +376,9 @@ function messe(TF, regel, kand, opt) {
     var ESa = Array.prototype.slice.call(ES), EPe = eindeutig(ESa.filter(function (t) { return t <= bisEnt; })), EPp = eindeutig(ESa.filter(function (t) { return t >= iSchnitt && t <= TF.maxTag; }));
     return konfs.map(function (c, kf) {
       var H = c.haltedauer, kl = c.klassen || null, rad = radien[kf];
-      var Te = lokalerTopf(S, ES, EPe, H, rad, kl, 0, bisEnt, detail[kf].hist), Tp = lokalerTopf(S, ES, EPp, H, rad, kl, iSchnitt, TF.maxTag, null);
+      var zlE = { topfMassnahme: 0, mitMassnahmen: !!opt.topfMitMassnahmen }, zlP = { topfMassnahme: 0, mitMassnahmen: !!opt.topfMitMassnahmen };
+      var Te = lokalerTopf(S, ES, EPe, H, rad, kl, 0, bisEnt, detail[kf].hist, zlE), Tp = lokalerTopf(S, ES, EPp, H, rad, kl, iSchnitt, TF.maxTag, null, zlP);
+      detail[kf].topfMassnahme += zlE.topfMassnahme; zaehler.topfMassnahme += zlE.topfMassnahme + zlP.topfMassnahme;
       var EValle = [], EVok = [];
       sigs.forEach(function (sg) {
         if ((sg.dir > 0 ? 'long' : 'short') !== c.richtung || (kl && kl.indexOf(sg.k) === -1)) return;
@@ -381,8 +387,9 @@ function messe(TF, regel, kand, opt) {
         var tV = S.tag[pV]; EValle.push(tV); if (!ueberlappt(ES, tV, H)) EVok.push(tV);
       });
       var ESV = Int32Array.from(ESa.concat(EValle)).sort();
-      var Ve = lokalerTopf(S, ESV, eindeutig(EVok.filter(function (t) { return t <= bisEnt; })), H, [rad[0]], kl, 0, bisEnt, null)[0];
-      var Vp = lokalerTopf(S, ESV, eindeutig(EVok.filter(function (t) { return t >= iSchnitt && t <= TF.maxTag; })), H, [rad[0]], kl, iSchnitt, TF.maxTag, null)[0];
+      var zlV = { topfMassnahme: 0, mitMassnahmen: !!opt.topfMitMassnahmen };
+      var Ve = lokalerTopf(S, ESV, eindeutig(EVok.filter(function (t) { return t <= bisEnt; })), H, [rad[0]], kl, 0, bisEnt, null, zlV)[0];
+      var Vp = lokalerTopf(S, ESV, eindeutig(EVok.filter(function (t) { return t >= iSchnitt && t <= TF.maxTag; })), H, [rad[0]], kl, iSchnitt, TF.maxTag, null, zlV)[0];
       var G = {};
       return {
         topf: function (e, x) { return topfMittel((e < iSchnitt ? Te : Tp)[x || 0], e, nMin); },
@@ -633,7 +640,7 @@ function zeitTopfBericht(M, Z, KL, kf, L, ent) {
   function zeile(art) { var s = statistik(tagesreihe(Z, KL, art, kf, 'alle').filter(ent), L); return { nTage: s.nTage, nTr: s.nTr, uBrutto: kurz(s.uBrutto), uNetto: kurz(s.uNetto) }; }
   var hist = Object.keys(dt.hist).map(Number).sort(function (a, b) { return a - b; }).map(function (o) { return [o, dt.hist[o]]; });
   return { art: 'lokal', R: dt.R, nMin: dt.nMin, hhLag: L, topfN: { trades: tot, median: med, min: ns.length ? ns[0] : null, max: ns.length ? ns[ns.length - 1] : null, anteilN1: tot ? (dt.topfN[1] || 0) / tot : null, verteilung: dt.topfN },
-    topfFehlt: dt.topfFehlt, randFehlt: dt.randFehlt, topfMittel: dt.topfTrades ? dt.topfSumme / dt.topfTrades : null, histogramm: hist,
+    topfFehlt: dt.topfFehlt, randFehlt: dt.randFehlt, topfMassnahme: dt.topfMassnahme, topfMittel: dt.topfTrades ? dt.topfSumme / dt.topfTrades : null, histogramm: hist,
     global: zeile(4), sensitivitaet: { R2H: Object.assign({ R: 2 * L }, zeile(5)), R8H: Object.assign({ R: 8 * L }, zeile(6)) }, zufallsplanRang: 'nicht gerechnet' };
 }
 /** Verteilungsfunktion der Standardnormalverteilung (erfc nach Numerical Recipes, Fehler < 1,2e-7). */
@@ -692,7 +699,7 @@ function lauf(regel, kand, opt) {
   /* TB nur noch fuer die nachrichtliche Tor-1-Schwelle: gesperrt oder ohne Pruefzeit (panelende) wie bisher TE / 2 (= 11,31 x se) */
   var TE = handelstage(TF, ersteZeile, iSchnitt - 1), TB = (TF.gesperrt || iSchnitt > TF.maxTag) ? Math.max(1, Math.round(TE * (opt.tbAnteil || 0.5))) : handelstage(TF, iSchnitt, TF.maxTag);
   if (TF.gesperrt && opt.tbHandelstage) TB = opt.tbHandelstage;
-  var M = messe(TF, regel, kand, { iSchnitt: iSchnitt, topfArt: opt.topfArt, topfNMin: opt.topfNMin, einsaat: opt.einsaat });
+  var M = messe(TF, regel, kand, { iSchnitt: iSchnitt, topfArt: opt.topfArt, topfNMin: opt.topfNMin, einsaat: opt.einsaat, topfMitMassnahmen: opt.topfMitMassnahmen });
   var konf = auswerte(M, TF, { iSchnitt: iSchnitt, TE: TE, TB: TB, pruefung: opt.pruefung || null, registerM: opt.registerM });
   var SA = signalAnteil(M, TF);
   return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum, reihen: TF.reihen.length, nTage: TF.nTage,
