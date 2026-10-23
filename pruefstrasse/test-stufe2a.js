@@ -153,15 +153,16 @@ module.exports = function (C) {
     return [Ez.zaehler.randFehlt === soll && rz[0] + rz[1] === soll && (Et.zaehler.randFehlt || 0) === 0 && soll > 0, 'randFehlt ' + Ez.zaehler.randFehlt + ' (Soll ' + soll + ', je Konf ' + rz.join('/') + '), topf ' + (Et.zaehler.randFehlt || 0)];
   });
   console.log('T) Topf ohne Klassenfilter (Nachbesserung 4: Auswahl auf Zukunft)');
-  probe('T-1: lokaler Topf unabhaengig von der Klasse des Topf-Fensters (Reihe mit Klassenwechsel und Luecke ohne Klasse: Topf-n und Topf-Summe gleich wie ohne Wechsel); Massnahmentage weiter aus, aber gezaehlt', function () {
+  probe('T-1: lokaler Topf unabhaengig von der Klasse des Topf-Fensters (Klassenwechsel 3 -> 1: Topf-n und -Summe gleich), aber nur mit Klasse >= 0 (klassenlose Luecke: weniger Fenster); Massnahmentage weiter aus, aber gezaehlt', function () {
     var n = 200, o = [], kl3 = [], klW = [], ms = [];
-    for (var i = 0; i < n; i++) { o.push(100 * Math.pow(1.001, i) * (1 + 0.01 * Math.sin(i))); kl3.push(3); klW.push(i < 60 ? 3 : i < 90 ? -1 : 1); ms.push(i >= 150 && i < 160 ? 1 : 0); }
+    var klL = []; for (var i = 0; i < n; i++) { o.push(100 * Math.pow(1.001, i) * (1 + 0.01 * Math.sin(i))); kl3.push(3); klW.push(i < 90 ? 3 : 1); klL.push(i >= 95 && i < 120 ? -1 : 3); ms.push(i >= 150 && i < 160 ? 1 : 0); }
     var base = { tag: o.map(function (x, i) { return i; }), o: o, h: o, l: o, c: o, v: o.map(function () { return 1e6; }) };
-    var T = TF.kunstTafel([Object.assign({ reihe: 'A', klasse: kl3 }, base), Object.assign({ reihe: 'B', klasse: klW }, base), Object.assign({ reihe: 'M', klasse: kl3, mass: ms }, base)], TAGE.slice(0, n), { offen: true });
+    var T = TF.kunstTafel([Object.assign({ reihe: 'A', klasse: kl3 }, base), Object.assign({ reihe: 'B', klasse: klW }, base), Object.assign({ reihe: 'M', klasse: kl3, mass: ms }, base), Object.assign({ reihe: 'L', klasse: klL }, base)], TAGE.slice(0, n), { offen: true });
     var ES = Int32Array.from([50, 100, 155]), EP = [50, 100, 155], zA = { topfMassnahme: 0 }, zB = { topfMassnahme: 0 }, zM = { topfMassnahme: 0 };
     var a = A.lokalerTopf(T.reihen[0], ES, EP, 5, [20], [3], 0, n - 1, null, zA)[0], b = A.lokalerTopf(T.reihen[1], ES, EP, 5, [20], [3], 0, n - 1, null, zB)[0], m = A.lokalerTopf(T.reihen[2], ES, EP, 5, [20], [3], 0, n - 1, null, zM)[0];
-    var gleich = JSON.stringify(a) === JSON.stringify(b);
-    return [gleich && a[100] && a[100][1] > 0 && zM.topfMassnahme > 0 && m[155] && m[155][1] === a[155][1] - zM.topfMassnahme && zA.topfMassnahme === 0, 'Topf A ' + JSON.stringify(a[100]) + ' / B ' + JSON.stringify(b[100]) + ', gleich ' + gleich + '; Massnahme: ' + zM.topfMassnahme + ' Fenster gezaehlt, Topf 155 ' + (m[155] && m[155][1]) + ' statt ' + (a[155] && a[155][1])];
+    var gleich = JSON.stringify(a) === JSON.stringify(b), l = A.lokalerTopf(T.reihen[3], ES, EP, 5, [20], [3], 0, n - 1, null, { topfMassnahme: 0 })[0];
+    /* Nachbesserung 5: Klassenwechsel 3 -> 1 aendert den Topf nicht (Klasse der Konfiguration egal); Tage OHNE Klasse (-1) zaehlen nicht (illiquide) */
+    return [gleich && a[100] && a[100][1] > 0 && l[100] && l[100][1] < a[100][1] && zM.topfMassnahme > 0 && m[155] && m[155][1] === a[155][1] - zM.topfMassnahme && zA.topfMassnahme === 0, 'Topf A ' + JSON.stringify(a[100]) + ' / B ' + JSON.stringify(b[100]) + ', gleich ' + gleich + ', mit Luecke ' + (l[100] && l[100][1]) + '; Massnahme: ' + zM.topfMassnahme + ' Fenster gezaehlt, Topf 155 ' + (m[155] && m[155][1]) + ' statt ' + (a[155] && a[155][1])];
   });
   probe('T-2: Adapter und Protokoll: topfMassnahme im zeitTopf-Bericht, FORM.md nennt die Ruecknahme von A6 (Auswahl auf Zukunft)', function () {
     var T = TF.kunstTafel(C.kunstReihen(null), TAGE), KZ = { kennung: 'kunst-t2', form: 'tag', bewertung: 'zeit', konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5, klassen: [3] }], params: {} };

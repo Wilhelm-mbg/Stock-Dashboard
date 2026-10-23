@@ -88,8 +88,9 @@ einem Tag **alle oder fast alle** Reihen treffen (Kalender- und Terminregeln: Mo
 der Topf der Zelle, der Überschuss ist per Bau null und ein „nein" sagt nichts (Fehlerform „Tagestopf löscht marktweite Effekte"). Im Modus
 `zeit` ist der Topf eines Trades seit Nr. 121-1 der **lokale Topf seines Signals** (`adapter/tag.js` `lokalerTopf`). Alle Indizes sind
 Tafelindizes (Handelstage der Tafel, nicht Zeilen der Reihe); `H` ist die Haltedauer der **Konfiguration**; Topf-Fenster rechnen wie der Trade
-(Eröffnung → Eröffnung, Ausstieg am ersten Handelstag ≥ Start + H). (1) Zulässige Topf-Starttage einer Reihe: **ohne Klassenfilter**
-(Nachbesserung 4, 23.10.2026; A6 „klassengleich" aus Nr. 121-1 zurückgenommen — die Klasse am Topf-Start hängt am Umsatz der 20 Vortage bis zum Topf-Start,
+(Eröffnung → Eröffnung, Ausstieg am ersten Handelstag ≥ Start + H). (1) Zulässige Topf-Starttage einer Reihe: **Klasse vorhanden (≥ 0), aber
+nicht die Klasse der Konfiguration** (Nachbesserung 5, 23.10.2026: ganz ohne Klassenfilter kamen illiquide Fenster ohne Klasse — Umsatz unter 5 Mio $ oder
+Anlaufzeit — in den Topf und verzerrten ihn, Eichung Dichte 1/10: Nullpunkt −0,582 statt −0,166 Pp; Nachbesserung 4, 23.10.2026; A6 „klassengleich" aus Nr. 121-1 zurückgenommen — die Klasse am Topf-Start hängt am Umsatz der 20 Vortage bis zum Topf-Start,
 also an Information **nach** dem Signal; bei einem einzigen Kandidatenfenster je Signal wurde der Topf damit **auf Zukunft ausgewählt** — gewertet wurde genau
 dann, wenn das Folgefenster nach einer umsatzstarken Phase begann; Fehlerform „Auswahl auf Zukunft"; die Klasse des **Trades** entscheidet die Hürde, nicht
 den Topf), kein Maßnahmentag (ausgeschlossen, aber gezählt: `topfMassnahme`), **kein** Fenster, das sich mit irgendeinem Signalfenster der Reihe überschneidet (Starttag näher als H an
