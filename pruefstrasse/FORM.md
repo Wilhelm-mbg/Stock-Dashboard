@@ -166,7 +166,7 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   Register „Literaturgröße ausgeschlossen" — mit dem Zusatz **„(im gemessenen Fenster)"**, wenn die Quelle ein anderes Fenster misst
   (`fensterWieQuelle` nicht `true`; Umkehr, Vor-FOMC, Großanstieg).
 - **Vorwärtsbestätigung (ein vorregistrierter Blick, Form tag).** Ein Kandidat erhält Status `vorgemerkt` (`register.json` je Konfiguration: `status`,
-  `siegel2Datum`, `stichtag`, `nBedarf`, `nStand`). **Stichtag** = erster Handelstag des Panels **nach** dem Commit-Tag (UTC) von `KANDIDATEN.json`;
+  `siegel2Datum`, `stichtag`, `nBedarf`, `nStand`). **Stichtag** = erster Handelstag des Panel-Kalenders **nach** dem Commit-Tag (Committer-Zeit nach UTC) von `KANDIDATEN.json` — nie die Systemuhr; ohne lesbare Commit-Zeit bricht der Lauf ab;
   **nBedarf** = Signaltage, bei denen MDE80_vorwärts = (t_(0,95; df) + 0,8416) · se_g ≤ nettoPp (mindestens 30), mit geschätztem Datum im Protokoll.
   `laeufer.js --vorwaerts` (nachtlauftauglich, idempotent — schreibt `erledigt/<k>/vorwaerts.json`, `VORWAERTS.md`, Register nur bei geändertem Inhalt und
   committet nur dann) zählt je vorgemerkter Konfiguration die Signaltage ab dem Stichtag **ohne Renditen** (nur Einstiege, deren Fenster ganz in der Tafel
@@ -183,9 +183,9 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   `laeufer.js --nachmessen <kennung> --grund-daten "<Text>"` (Kandidatenordner unverändert, kein Messgerät-Fehler nötig); die Kennung zählt danach im
   Register **doppelt** (Gewicht alte Zahl + 1, bewusst konservativ).
 - **Eichung (Nr. 121-2a D, nur PM, vor jeder Freigabe):** `laeufer.js --eichung` — Zufallsregel in zwei Dichten auf dem Panel im Eichfenster, H = 5:
-  marktweit (ein Signaltag je ~21 Handelstage für alle Reihen, Modus zeit) und Querschnitt (~1 % der Reihen je Tag, Modus topf); Einsaat +0,30 Pp brutto
-  **nur** auf die Signalfenster (nicht Placebo-, Verschiebungs-, Topf-Fenster), 10 Seeds Einsaat + 10 Seeds Zufall je Dichte. Kriterien: Einsaat — Mittel
-  innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40; Zufall — Mittel innerhalb ± 2 · se_Mittel um 0, höchstens 3 von 10 mit |t| > 2. Schreibt
+  marktweit (ein Signaltag je ~10 Handelstage für alle Reihen, Modus zeit; Entscheid PM 23.10.) und Querschnitt (~1 % der Reihen je Tag, Modus topf); Einsaat
+  +0,30 Pp brutto **nur** auf die Signalfenster (nicht Placebo-, Verschiebungs-, Topf-Fenster), 30 Seeds Einsaat + 30 Seeds Zufall je Dichte. Kriterien:
+  Einsaat — Mittel innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40; Zufall — Mittel innerhalb ± 2 · se_Mittel um 0, Anteil |t| > 2 höchstens 15 %. Schreibt
   ausschließlich `EICHUNG.md` und `eichung.json` (der Code prüft es); `test.js` prüft Form und Alter (> 60 Tage: Warnung).
 - **Siegel 1:** der Kandidatenordner liegt in mindestens einem Commit und hat nichts Ungesichertes. **Siegel 2:** der Läufer
   committet `erledigt/<kennung>/KANDIDATEN.json`.

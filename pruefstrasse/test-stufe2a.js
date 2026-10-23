@@ -218,6 +218,15 @@ module.exports = function (C) {
       return [r1.statuswechsel.length === 1 && ['bestaetigt', 'abgelehnt', 'offen'].indexOf(e.status) !== -1 && e.vorwaerts && e.vorwaerts.holmM === 1 && e.vorwaerts.nTage >= 30 && /\*\*Vorwaertsmessung\*\* `kunst-v2a` H5/.test(bs) && !r2.geaendert && aufrufe === 0 && (e.urteil !== 'belegt-Vorschlag' || fs.existsSync(vsl)),
         'Status ' + e.status + ', Urteil ' + e.urteil + ', n ' + (e.vorwaerts && e.vorwaerts.nTage) + ', p ' + (e.vorwaerts && e.vorwaerts.p.toFixed(5)) + ', zweiter Lauf Messer-Aufrufe ' + aufrufe];
     });
+    probe('C-12: Stichtag-Herkunft: siegel2Datum = Commit-Zeitpunkt von KANDIDATEN.json (UTC), nicht die Systemuhr; ohne Commit-Zeit Abbruch statt "heute"', function () {
+      fs.writeFileSync(path.join(LR, 'stichtag-probe.txt'), 'x\n'); gitL(['add', '--', 'stichtag-probe.txt']);
+      var r = C.cp.spawnSync('git', ['commit', '-q', '-m', 'Commit mit Datum', '--', 'stichtag-probe.txt'], { cwd: LR, encoding: 'utf8', env: Object.assign({}, process.env, { GIT_COMMITTER_DATE: '2026-01-15T22:30:00-05:00', GIT_AUTHOR_DATE: '2026-01-15T22:30:00-05:00' }) });
+      var h = gitL(['rev-parse', 'HEAD']), E = A.lauf(C.regelZ, kandV, { tafel: C.TL, schnitt: 'panelende' }), k = E.konfigurationen.filter(function (x) { return x.kandidat; });
+      LF.vormerken(kandV, E, k, { commit: h }, LR, function () {});
+      var e2 = null; try { LF.vormerken(kandV, E, k, { commit: 'deadbeef' }, LR, function () {}); } catch (e) { e2 = e; }
+      var d = k[0].vorwaerts.siegel2Datum, iS = LF.stichtagNach(['2026-01-15', '2026-01-16', '2026-01-19'], d);
+      return [r.status === 0 && d === '2026-01-16' && iS === 2 && e2 && /Commit-Zeit/.test(e2.message), 'Commit 22:30 New York = ' + d + ' UTC -> Stichtag-Index ' + iS + ' (2026-01-19); ohne Commit: ' + (e2 && e2.message.slice(0, 70))];
+    });
     probe('C-11: --grund-daten: Wiedervorlage ohne Messgeraet-Korrektur, Register zaehlt die Kennung danach doppelt (m), "nicht messbar" bleibt 0', function () {
       var ws = path.join(LR, 'pruefstrasse', 'warteschlange', 'kunst-m2a'); fs.mkdirSync(ws, { recursive: true }); fs.writeFileSync(path.join(ws, 'kandidat.json'), JSON.stringify(C.kandM));
       gitL(['add', '-A']); gitL(['commit', '-q', '-m', 'Kandidatenordner']); var cK = gitL(['rev-parse', 'HEAD']);
@@ -245,22 +254,24 @@ module.exports = function (C) {
     });
     return [gut, txt.join(' | ')];
   });
-  probe('D-2: Kriterien statistisch: Einsaat 0,30 +- Streuung besteht, Mittel 0,15 nicht; Zufall mit 4 von 10 |t| > 2 besteht nicht', function () {
+  probe('D-2: Kriterien statistisch: Einsaat 0,30 +- Streuung besteht, Mittel 0,15 nicht; Zufall: Anteil |t| > 2 hoechstens 15 % (1 von 10 besteht, 2 von 10 nicht; PM 23.10.)', function () {
     var B = LF.eichungBewerten, e1 = B([0.25, 0.32, 0.29, 0.35, 0.28, 0.31, 0.27, 0.33, 0.30, 0.30], [], 0.30), e2 = B([0.15, 0.14, 0.16, 0.15, 0.13, 0.17, 0.15, 0.16, 0.14, 0.15], [], 0.30);
-    var z1 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [0.3, -1, 2.1, 0.5, -0.2, 1, -2.5, 0.1, 0, -0.4], 0), z2 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [2.3, -2.1, 2.2, 0.5, -2.4, 1, -0.5, 0.1, 0, -0.4], 0);
-    return [e1.bestanden && !e2.bestanden && z1.bestanden && z1.tUeber2 === 2 && !z2.bestanden && z2.tUeber2 === 4, 'e1 ' + e1.mittel.toFixed(3) + ' se ' + e1.seMittel.toFixed(3) + ' | e2 ' + e2.mittel.toFixed(3) + ' | z1 ' + z1.tUeber2 + ' | z2 ' + z2.tUeber2];
+    var z1 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [0.3, -1, 2.1, 0.5, -0.2, 1, -1.5, 0.1, 0, -0.4], 0), z2 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [2.3, -2.1, 0.2, 0.5, -0.4, 1, -0.5, 0.1, 0, -0.4], 0);
+    return [e1.bestanden && !e2.bestanden && z1.bestanden && z1.tUeber2 === 1 && !z2.bestanden && z2.tUeber2 === 2 && LF.EICHUNG.zufallAnteilMax === 0.15 && LF.EICHUNG.dichteMarkt === 0.1 && LF.EICHUNG.seeds === 30, 'e1 ' + e1.mittel.toFixed(3) + ' se ' + e1.seMittel.toFixed(3) + ' | e2 ' + e2.mittel.toFixed(3) + ' | z1 ' + z1.tUeber2 + ' | z2 ' + z2.tUeber2];
   });
   probe('D-3: --eichung schreibt ausschliesslich EICHUNG.md und eichung.json (Kunstlauf in einen Temp-Ordner; Waechter erkennt fremde Pfade)', function () {
     var dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'pruefstrasse-eichung-')), J;
     try { J = LF.eichung({ tafel: TF.kunstTafel(C.kunstReihen(null), TAGE), seeds: 2, aus: dir, log: function () {} }); var da = fs.readdirSync(dir).sort().join(','); } finally { fs.rmSync(dir, { recursive: true, force: true }); }
     var fr = LF.fremdGeschrieben([' M pruefstrasse/a.js'], [' M pruefstrasse/a.js', '?? pruefstrasse/EICHUNG.md', '?? pruefstrasse/x.json'], ['pruefstrasse/EICHUNG.md', 'pruefstrasse/eichung.json']);
-    return [da === 'EICHUNG.md,eichung.json' && J.laeufe.length === 8 && J.ergebnis.marktweit && J.ergebnis.querschnitt && fr.length === 1 && /x\.json/.test(fr[0]), 'Dateien ' + da + ', Laeufe ' + J.laeufe.length + ', fremd erkannt: ' + fr.join(',')];
+    /* Fehlalarm 23.10.: erste Statuszeile vorher ohne fuehrenden Leerraum (getrimmt), nachher mit - darf NICHT als fremd gelten */
+    var fr2 = LF.fremdGeschrieben(['M pruefstrasse/FORM.md', ' M pruefstrasse/a.js'], [' M pruefstrasse/EICHUNG.md', ' M pruefstrasse/FORM.md', ' M pruefstrasse/a.js'], ['pruefstrasse/EICHUNG.md', 'pruefstrasse/eichung.json']);
+    return [da === 'EICHUNG.md,eichung.json' && J.laeufe.length === 8 && J.ergebnis.marktweit && J.ergebnis.querschnitt && fr.length === 1 && /x\.json/.test(fr[0]) && fr2.length === 0 && J.waechter === 'sauber', 'Dateien ' + da + ', Laeufe ' + J.laeufe.length + ', fremd erkannt: ' + fr.join(',') + ', Fehlalarm-Fall: ' + (fr2.join(',') || 'keiner')];
   });
   probe('D-4: pruefstrasse/eichung.json - Form (Datum, Panel, Eichfenster, Seeds, Ergebnis je Dichte, Laufzeit) und Alter (> 60 Tage nur Warnung)', function () {
     var f = path.join(K.HIER, 'eichung.json');
     if (!fs.existsSync(f)) return [false, 'eichung.json fehlt - der PM faehrt node pruefstrasse/laeufer.js --eichung'];
     var J = JSON.parse(fs.readFileSync(f, 'utf8')), alter = (Date.now() - Date.parse(J.datum + 'T00:00:00Z')) / 86400000;
-    var form = /^\d{4}-\d{2}-\d{2}$/.test(J.datum) && J.panelKennung && J.eichfenster && J.eichfenster.bis === K.EICHUNG.bis && J.seeds && J.ergebnis.marktweit && J.ergebnis.querschnitt && typeof J.bestanden === 'boolean' && J.laufzeitMs > 0 && J.laeufe.length === 40 && fs.existsSync(path.join(K.HIER, 'EICHUNG.md'));
+    var form = /^\d{4}-\d{2}-\d{2}$/.test(J.datum) && J.panelKennung && J.eichfenster && J.eichfenster.bis === K.EICHUNG.bis && J.seeds && J.ergebnis.marktweit && J.ergebnis.querschnitt && typeof J.bestanden === 'boolean' && J.laufzeitMs > 0 && J.laeufe.length === 4 * (J.seeds.einsaat[1] - J.seeds.einsaat[0] + 1) && J.einstellungen.dichteMarkt === LF.EICHUNG.dichteMarkt && J.waechter === 'sauber' && fs.existsSync(path.join(K.HIER, 'EICHUNG.md'));
     if (alter > LF.EICHUNG.alterWarnTage) console.log('  WARNUNG eichung.json ist ' + alter.toFixed(0) + ' Tage alt (> ' + LF.EICHUNG.alterWarnTage + ') - vor der naechsten Freigabe neu eichen');
     return [form, 'Datum ' + J.datum + ' (' + alter.toFixed(0) + ' Tage), bestanden ' + J.bestanden + ', ' + (J.laufzeitMs / 1000).toFixed(0) + ' s'];
   });
