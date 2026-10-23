@@ -6,3 +6,5 @@ pilot/
 *.log
 *.stdout
 *.stderr
+voll-v23f-*/
+voll-v23f-*.tmp/
