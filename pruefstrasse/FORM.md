@@ -61,7 +61,9 @@ als Verstoß, liefert NaN und macht das Urteil zu „Messgerät-Fehler" — der 
 `sicht.n`, `sicht.tag(j)` (Kalenderindex), `sicht.o(j)`, `sicht.h(j)`, `sicht.l(j)`, `sicht.c(j)`, `sicht.v(j)` (Stück),
 `sicht.klasse(j)` (Umsatzklasse 0–3, −1 ohne), `sicht.zulaessig(j)` (Klasse da, kein Maßnahmenfenster), `sicht.lebend`
 (Reihe lebt am Archivende), `sicht.quelle` (`panel` | `trendkanal-tage`), `sicht.roh(j)` (roher Schluss, unbereinigt; nur Quelle
-`panel`, sonst NaN), `sicht.markt(j)` (bereinigter SPY-Schluss am Kalendertag von Zeile j; NaN, wenn SPY dort fehlt), `sicht.hatRoh`,
+`panel`, sonst NaN), `sicht.markt(j)` (seit 23.10.2026, Nr. 121-2b: **QQQ = Nasdaq-100**, Kurs am Kalendertag von Zeile j aus `pruefstrasse/daten/qqq-tage.json`,
+ohne Ausschüttungen wie vorher die Panel-SPY-Reihe; NaN, wenn QQQ dort fehlt), `sicht.marktGesamt(j)` (QQQ mit wieder angelegten Ausschüttungen), `sicht.marktSpy(j)`
+(bereinigter SPY-Schluss des Panels, nachrichtlich — vorher `markt`), `sicht.hatRoh`,
 `sicht.hatMarkt`. `o/h/l/c` sind **bereinigt**: Preisfilter der Literatur (Mindestkurs) gehören auf den **rohen** Kurs `roh` (Fehlerform
 „Bereinigte Kurse messen den Cent-Boden falsch"), Marktmodelle (marktbereinigte Rendite) auf `markt`. Auf der Panel-Quelle sind Hoch und
 Tief **nicht** vorhanden (NaN) — eine Regel, die sie braucht, meldet das und läuft nur auf `trendkanal-tage`. Bedarf meldet die Regel mit
@@ -132,8 +134,14 @@ der blind gesiegelten `studien/kandidaten-blind-2026-10/sektor-momentum/ziel.js`
 umsatzStueck], …] }`, `opts.nowMs` = Stichtag; Rückgabe `{ ziel, rangfolge, korb, zuWenig, uebersprungen, verworfen }`. Zeilen nach
 `nowMs` dürfen nicht gelesen werden (der Adapter prüft es am Kunstfall). `placeboZiel` zieht dieselbe Zahl Werte zufällig und
 deterministisch (`opts.placeboWort`) aus denselben zulässigen — das sind die 200 Zufallsbücher (Nr. 100).
-Bewertung: Rückblick gegen SPY (Gesamtertrag beide Seiten, 20 Bp je Seite, Regel K 5 %, Hauptregel der Reihenenden), 63 Starttage,
-Median der 63 Abstände p. a., Rang gegen 200 Zufallsbücher — der Rechner von Nr. 78/85/96 (`kleinst.js` → `korb.js` → `mfhandel.js`).
+Bewertung: Rückblick (Gesamtertrag beide Seiten, Regel K 5 %, Hauptregel der Reihenenden), 63 Starttage, Median der 63 Abstände p. a., Rang gegen
+200 Zufallsbücher — der Rechner von Nr. 78/85/96 (`kleinst.js` → `korb.js` → `mfhandel.js`). **Maßstab Nasdaq-100 nach Steuer (seit 23.10.2026, Nr. 121-2b;
+vorher S&P 500):** der Läufer übergibt dem Adapter `kostenBpJeSeite: 'regel'` (Kostenregel je Handel, `adapter/korb-kosten.js`, Kopie der Handelshülle
+der Nr. 122) und `massstab: 'nasdaq100-steuer'` (`konfig.js` `KORB`); das Fenster urteilt auf Median und erstem Tag **nach Steuer** (Steuerrechner Nr. 82,
+Modell unverändert: 26,375 %, Teilfreistellung 30 %, Vorabpauschale, Pauschbetrag nicht angerechnet, Dollar wie Euro; Buch mit dem effektiven Satz je
+Seite, Fehler ≤ 0,03 Pp p. a.) gegen den Nasdaq-ETF (QQQ-Kurs mit Ausschüttungen, `pruefstrasse/daten/qqq-tage.json`); der Rang gegen die Zufallsbücher
+bleibt vor Steuern (Bücher im selben Fenster, der Maßstab fällt heraus); vor Steuern und SPY nachrichtlich. Die Adapter-Vorgabe bleibt 20 Bp je Seite /
+SPY — damit rechnet die Kalibrierung A-187/B-187 (Nr. 96) bitgleich.
 
 **minute** — ein Modul in der Form von `studien/messmaschine/strategien/rsi2seit.js`: `key`, `grund` (≥ 20 Zeichen), `zeitrahmen`,
 `haltedauerKerzen`, `richtung`, `universum`, `kosten`, `params`, `leseFensterKerzen`, `signal(bars, i, params) → { dir } | null`.

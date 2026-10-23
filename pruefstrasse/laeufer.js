@@ -130,6 +130,9 @@ function pruefen(kennung, opt) {
     if (t.status !== 0) bericht.form.push('test.js rot (Status ' + t.status + ')');
     try { bericht.siegel1 = SG.siegel1(K.REPO, rel(L.ordner)); } catch (e) { bericht.siegel1 = { fehler: e.message }; if (!opt.ohneSiegel) bericht.form.push(e.message); }
   }
+  /* Nr. 121-2b B.1: die Marktreihe QQQ (pruefstrasse/daten/qqq-tage.json) - Kennung/Datum falsch = Fehler, aelter als 60 Tage = Warnung */
+  try { var DQ = require('./daten/qqq.js'), PQ = DQ.pruefe(DQ.lade()); PQ.fehler.forEach(function (f) { bericht.form.push(f); }); bericht.warnungen = PQ.warnungen; }
+  catch (e) { bericht.form.push(e.message); }
   bericht.gueltig = bericht.form.length === 0;
   return bericht;
 }
@@ -206,7 +209,7 @@ function messen(kennung, phase, ausDatei, extra) {
     else if (kand.form === 'tag' && phase === 'entdeckung') E = require('./adapter/tag.js').lauf(regel, kand, { quelle: kand.daten || 'panel', bisPanelende: true, schnitt: 'panelende', registerM: extra.m, tafel: extra.tafel });
     else if (kand.form === 'tag' && phase === 'vorwaerts') { var TFv = extra.tafel || require('./tafel.js').oeffne({ quelle: kand.daten || 'panel', pruefzeit: true, siegelPfad: siegelPfad }); E = vorwaertsKind(TFv, regel, kand, extra); }
     else if (kand.form === 'tag') E = require('./adapter/tag.js').lauf(regel, kand, { quelle: kand.daten || 'panel', pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: keys, tafel: extra.tafel, registerM: extra.m });
-    else if (kand.form === 'korb') { var mK = (register().gesamt || 0) + 1; E = require('./adapter/korb.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: pruefzeit ? { von: '2023-01-03' } : null, placeboBuecher: K.korbBuecher(mK), registerM: mK }); }
+    else if (kand.form === 'korb') { var mK = (register().gesamt || 0) + 1; E = require('./adapter/korb.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: pruefzeit ? { von: '2023-01-03' } : null, placeboBuecher: K.korbBuecher(mK), registerM: mK, kostenBpJeSeite: K.KORB.kostenRegel, massstab: K.KORB.massstab }); }   /* Nr. 121-2b: Kostenregel + Nasdaq-100 nach Steuer */
     else E = require('./adapter/minute.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad });
   } finally { try { if (+fs.readFileSync(SPERRDATEI, 'utf8') === process.pid) fs.unlinkSync(SPERRDATEI); } catch (e) { /* Sperre ist Komfort */ } }
   E.kennung = kennung; E.form = kand.form; E.phase = phase; E.stand = jetzt(); E.konfigurationenSoll = kand.konfigurationen.length;
@@ -276,7 +279,11 @@ function zeileTag(k) {
     (k.pruefung ? ' | ' + k.pruefung.nTage + ' / ' + de(k.pruefung.uNetto.mittel) + ' / ' + de(k.pruefung.uNetto.t, 2) + (k.belegt ? ' Holm ja' : '') : '') + ' |';
 }
 function zeileKorb(k) {
-  var e = k.entdeckung, b = e.buch;
+  var e = k.entdeckung, b = e.buch, ns = e.nachSteuer;
+  /* Nr. 121-2b: mit Massstab Nasdaq-100 nach Steuer stehen Buch/ETF, Abstand, Median und vorn nach Steuer; vor Steuern (Buch / SPY in $) in Klammern */
+  if (ns) return '| ' + k.key + ' | ' + e.fenster.von + '–' + e.fenster.bis + ' | nach Steuer ' + de(ns.k0.buchB, 2) + ' / Nasdaq-ETF ' + de(ns.k0.nasdaqB, 2) + ' % p. a. (vor Steuern ' + ganz(b.buchEnde) + ' $ / SPY ' + ganz(b.spyEnde) + ' $) | ' + de(ns.k0.buchB - ns.k0.nasdaqB, 2) + ' | ' + de(ns.median.abstandNasdaqB, 2) + ' | ' + ns.vornGegenNasdaqB + ' von ' + ns.phasen + ' | ' +
+    e.rang + ' von ' + e.von + ' (vor Steuern; Median ' + de(e.zufall.median, 2) + ', P95 ' + de(e.zufall.p95, 2) + ') | ' + de(b.rueckschlagBuch, 1) + ' % | ' + JSON.stringify(b.abgaenge) + ' | ' + k.urteil +
+    (k.pruefung && k.pruefung.buch ? ' | ' + de(k.pruefung.nachSteuer ? k.pruefung.nachSteuer.median.abstandNasdaqB : k.pruefung.buch.startphasen.median, 2) + ' / Rang ' + k.pruefung.rang + (k.belegt ? ' Holm ja' : '') : '') + ' |';
   return '| ' + k.key + ' | ' + e.fenster.von + '–' + e.fenster.bis + ' | ' + ganz(b.buchEnde) + ' $ / ' + ganz(b.spyEnde) + ' $ | ' + de(b.abstandPa, 2) + ' | ' + de(b.startphasen.median, 2) + ' | ' + b.startphasen.vorDemMarkt + ' von ' + b.startphasen.anzahl + ' | ' +
     e.rang + ' von ' + e.von + ' (Median ' + de(e.zufall.median, 2) + ', P95 ' + de(e.zufall.p95, 2) + ') | ' + de(b.rueckschlagBuch, 1) + ' % | ' + JSON.stringify(b.abgaenge) + ' | ' + k.urteil +
     (k.pruefung && k.pruefung.buch ? ' | ' + de(k.pruefung.buch.startphasen.median, 2) + ' / Rang ' + k.pruefung.rang + (k.belegt ? ' Holm ja' : '') : '') + ' |';
@@ -288,7 +295,7 @@ function zeileMinute(k) {
 }
 var KOPF = {
   tag: '| Konf | Richtung, H | Ent Tage | Trades | u brutto | u netto | t | se HH | MDE80 | Tor 1 | Placebo | verschoben 20 T | Ein-/Ausstieg +1 T | Δ alle−lebend | Abgaenge | Urteil | Pruefung Tage / netto / t |',
-  korb: '| Konf | Fenster | Buch / SPY | Abstand p. a. | Median 63 | vorn | Rang gegen 200 Zufallsbuecher | Rueckschlag | Reihenenden | Urteil | Pruefung Median / Rang |',
+  korb: '| Konf | Fenster | Buch / Massstab | Abstand p. a. | Median 63 | vorn | Rang gegen 200 Zufallsbuecher | Rueckschlag | Reihenenden | Urteil | Pruefung Median / Rang |',
   minute: '| Konf | Signale | brutto je Signal | Huerde | netto je Signal | t | MDE | delta80 | Maschine | Urteil | Pruefung netto / t |',
 };
 function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung) {

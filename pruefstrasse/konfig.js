@@ -90,7 +90,8 @@ module.exports = {
    * tag-Form (Ein- und Ausstieg zur Eroeffnung), Kassa nachrichtlich; modell IBKR Fixed (Tiered nachrichtlich). UMSATZ_FENSTER wie Nr. 122 klasseVon. */
   POSITION_USD: 100000 / 19, POSITION_SENSITIV_USD: 1000, KLASSE5_UMSATZ: 3.8e9, UMSATZ_FENSTER: 20,
   KOSTEN: { ausfuehrungTag: 'eroeffnung', modell: 'fixed', seit: '2026-10-23', grund: 'Kostenregel Nr. 121-2b' },
-  KORB: { kostenBp: 20, phasen: 63, kleinstAnteil: 0.05, placeboBuecher: 200, rangMin: 0.95 },
+  /* KORB.kostenRegel / massstab (Nr. 121-2b): was der Laeufer dem Korb-Adapter uebergibt; die Adapter-Vorgabe bleibt 20 Bp / SPY (Kalibrierung A-187/B-187) */
+  KORB: { kostenBp: 20, kostenRegel: 'regel', massstab: 'nasdaq100-steuer', phasen: 63, kleinstAnteil: 0.05, placeboBuecher: 200, rangMin: 0.95 },
   /* A10 / B-V10 (Nr. 121-1): Zufallsbuecher B = max(200, 20 m + 1), m = Konfigurationen im Register + 1 (Register-Holm: kleinster p = 1/(B + 1)
    * <= alpha/m). Bei m <= 9 bleibt B = 200 (die Korb-Kalibrierung A-187/B-187 rechnet ohne Zufallsbuecher und ist davon unberuehrt). */
   korbBuecher: function (m) { return Math.max(200, 20 * m + 1); },

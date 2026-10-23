@@ -69,12 +69,13 @@ function mulberry32(seed) { var a = seed >>> 0; return function () { a = (a + 0x
 
 /* ---------- Die Sicht (eine je Reihe, Grenze `bis` wandert mit i) ---------- */
 function Sicht(S, TF) {
-  var bis = -1, verstoesse = 0, beispiele = [], spy = TF.spy || null, tage = TF.hatDatum ? (TF.tage || null) : null;
+  var bis = -1, verstoesse = 0, beispiele = [], spy = TF.spy || null, mr = TF.marktReihe || null, tage = TF.hatDatum ? (TF.tage || null) : null;
   function lese(arr, j) { if (j > bis || j < 0 || j >= S.n) { if (j > bis && j < S.n) { verstoesse++; if (beispiele.length < 5) beispiele.push(S.reihe + '@' + j + ' (erlaubt bis ' + bis + ')'); } return NaN; } return arr[j]; }
   /* Nr. 117: Kalenderdatum der Zeile j (JJJJ-MM-TT, TF.tage[S.tag[j]]) hinter derselben Schranke wie c(j). Die Monatsfunktionen lesen den
    * Kalender der Tafel NUR bis zur Schranke (Blick-nach-vorn-Regel, FORM.md §3): "letzter Handelstag im Monat" ist erst entschieden, wenn der
    * naechste Kalendertag der Tafel bekannt ist, also fuer j < bis; fuer j = bis null (unbekannt). "Erster Handelstag im Monat" braucht nur den
    * Vortag und ist fuer jedes j <= bis entschieden (am Kalenderanfang null). sicht.tage gibt es absichtlich nicht. */
+  function spyAm(t) { if (!spy || t >= spy.nextPos.length) return NaN; var p = spy.nextPos[t]; return (p >= 0 && spy.tag[p] === t) ? spy.c[p] : NaN; }
   function monat(d) { return d.slice(0, 7); }
   function datum(j) { var t = lese(S.tag, j); if (t !== t || !tage) return NaN; var d = tage[t]; return d == null ? NaN : d; }
   function istLetzterHandelstagImMonat(j) {
@@ -95,7 +96,11 @@ function Sicht(S, TF) {
      * Schranke (j > bis: NaN + Verstoss). Ohne Spalte NaN ohne Verstoss. SPY-Zeile zum Kalendertag ueber spy.nextPos (einmal je Tafel gebaut,
      * kanaele.js reiheAus); tag(j) <= tag(bis) fuer j <= bis, also kein Blick nach vorn. */
     roh: function (j) { var t = lese(S.tag, j); return (t === t && S.roh) ? S.roh[j] : NaN; },
-    markt: function (j) { var t = lese(S.tag, j); if (t !== t || !spy || t >= spy.nextPos.length) return NaN; var p = spy.nextPos[t]; return (p >= 0 && spy.tag[p] === t) ? spy.c[p] : NaN; },
+    /* Nr. 121-2b B.2: markt(j) = QQQ-Kurs (Nasdaq-100) am Kalendertag von Zeile j (TF.marktReihe je Kalenderindex), marktGesamt(j) = QQQ mit Ausschuettungen;
+     * ohne marktReihe (Kunsttafeln vor Nr. 121-2b) die Reihe SPY wie bisher. marktSpy(j) = Panel-SPY nachrichtlich. Alle hinter derselben Schranke. */
+    markt: function (j) { var t = lese(S.tag, j); if (t !== t) return NaN; if (mr) { var x = t < mr.c.length ? mr.c[t] : NaN; return x > 0 ? x : NaN; } return spyAm(t); },
+    marktGesamt: function (j) { var t = lese(S.tag, j); if (t !== t || !mr) return NaN; var x = t < mr.cb.length ? mr.cb[t] : NaN; return x > 0 ? x : NaN; },
+    marktSpy: function (j) { var t = lese(S.tag, j); return t !== t ? NaN : spyAm(t); },
     klasse: function (j) { var k = lese(S.klasse, j); return k === k ? k : -1; },
     zulaessig: function (j) { if (j > bis || j < 0 || j >= S.n) { lese(S.klasse, j); return false; } return S.klasse[j] >= 0 && !S.mass[j]; },
     verstoesse: function () { return verstoesse; }, beispiele: function () { return beispiele; },
@@ -108,7 +113,7 @@ function kunstKalender(n) {
   return t;
 }
 /** NUR FUER test.js der Kandidaten: Sicht auf Kunstspalten { tag, o, h, l, c, v, klasse?, mass?, roh? (Vorgabe = c), markt?, datum? } mit Grenze i.
- *  markt (Nr. 113) ist ein Array JE KALENDERINDEX (SPY-Schluss; null/NaN = kein SPY an dem Tag); ohne markt ist hatMarkt false und markt(j) NaN.
+ *  markt (Nr. 113) ist ein Array JE KALENDERINDEX (Marktschluss; null/NaN = keiner an dem Tag); ohne markt ist hatMarkt false und markt(j) NaN.
  *  datum (Nr. 117) ist ein Array JE KALENDERINDEX (JJJJ-MM-TT); ohne Angabe der Kunstkalender aus Werktagen ab 2020-01-02 (kunstKalender). */
 function kunstSicht(spalten, i) {
   var markt = spalten.markt || null, datum = spalten.datum || null, nTage = Math.max.apply(null, spalten.tag) + 1;
@@ -735,7 +740,7 @@ function lauf(regel, kand, opt) {
   var TF = opt.tafel || require('../tafel.js').oeffne(opt);
   if (!TF.hochTief && regel.brauchtHochTief) throw new Error('MESSGERAET: die Regel braucht Hoch/Tief, die Quelle ' + TF.quelle + ' hat sie nicht');
   if (!TF.hatRoh && regel.brauchtRoh) throw new Error('MESSGERAET: die Regel braucht den rohen Schluss (roh), die Quelle ' + TF.quelle + ' hat ihn nicht');
-  if (!TF.hatMarkt && regel.brauchtMarkt) throw new Error('MESSGERAET: die Regel braucht die Marktreihe (markt = SPY), die Quelle ' + TF.quelle + ' hat sie nicht');
+  if (!TF.hatMarkt && regel.brauchtMarkt) throw new Error('MESSGERAET: die Regel braucht die Marktreihe (markt = QQQ, pruefstrasse/daten/qqq-tage.json), die Quelle ' + TF.quelle + ' hat sie nicht');
   if (!TF.hatDatum && regel.brauchtDatum) throw new Error('MESSGERAET: die Regel braucht das Kalenderdatum (datum, Monatsfunktionen), die Quelle ' + TF.quelle + ' hat keinen Kalender');
   /* Nr. 121-2a C1: schnitt 'panelende' = Entdeckung bis zum letzten Tag der Tafel, keine Pruefzeit (die Bestaetigung ist vorwaerts) */
   var iSchnitt = opt.schnitt === 'panelende' ? TF.maxTag + 1 : indexAb(TF, opt.schnitt || K.EICHUNG.schnitt);
@@ -747,7 +752,8 @@ function lauf(regel, kand, opt) {
   var konf = auswerte(M, TF, { iSchnitt: iSchnitt, TE: TE, TB: TB, pruefung: opt.pruefung || null, registerM: opt.registerM });
   var SA = signalAnteil(M, TF), W = warnungen(M.bewertung, SA), vb = vorbehaltDichte(M);
   if (vb) W.push(vb);
-  return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum, reihen: TF.reihen.length, nTage: TF.nTage,
+  return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum,
+    marktreihe: TF.marktReihe ? TF.marktReihe.name : (TF.spy ? 'SPY (Panel-Referenz)' : null), marktreiheSeit: 'Nasdaq-100 (QQQ) seit 23.10.2026, vorher S&P 500 (SPY)', reihen: TF.reihen.length, nTage: TF.nTage,
     letzterTag: TF.tage[TF.maxTag], schnitt: opt.schnitt === 'panelende' ? null : (TF.tage[iSchnitt] || null), entdeckungBis: TF.tage[Math.min(TF.maxTag, iSchnitt - 1)], registerM: opt.registerM == null ? null : opt.registerM, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
     bewertung: M.bewertung, topfArt: M.topfArt, bewertungDetail: bewertungDetail(M.bewertung, M.versatzTage), versatzTage: M.versatzTage, signalAnteil: SA, warnungen: W, planAbstand: M.planAbstand, vorbehalt: vb,
     konfigurationen: konf, klassen: TF.klassen.map(function (k) { return { name: k.name, huerde: k.huerde, kassa: k.kassa, eroeffnung: k.eroeffnung, nurKosten: !!k.nurKosten }; }),

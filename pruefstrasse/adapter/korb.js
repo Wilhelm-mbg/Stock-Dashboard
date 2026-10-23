@@ -16,6 +16,7 @@ var KS = require(path.join(K.REPO, 'studien', 'momentum-korb-kleinst-2026-10-04'
 var S = KS.S, R = KS.R, MH = KS.MH;
 var KP = require(path.join(K.PRUEFSTAND, 'konfig.js'));
 var PT = require('../paneltafel.js');
+var KK = require('./korb-kosten.js');      /* Nr. 121-2b: Kostenregel je Handel und Massstab Nasdaq-100 nach Steuer als Parameter (Vorgabe = heute) */
 if (S.MASSNAHMEN_ORDNER !== K.MASSNAHMEN.ordner || R.MASSNAHMEN_ORDNER !== K.MASSNAHMEN.ordner) throw new Error('KLINKE: korb.js/rueckblick.js lesen nicht den Massnahmen-Ordner der Pruefstrasse');
 
 /** Fenster [von, bis] als Panel-Handelstage; wirft, wenn ein Datum ausserhalb der (gesperrten) Tafel liegt. */
@@ -79,29 +80,62 @@ function urteil(buch, buecher) {
     zufall: { buecher: ab.length, median: q(0.5), p5: q(0.05), p95: q(0.95), vorSpy: buecher.filter(function (b) { return b.schlaegt; }).length } };
 }
 
+/** Effektiver Kostensatz je Seite des Laufs k = 0 (gezahlte Kosten / gehandeltes Volumen, Bp) - der Steuerrechner kennt nur EINEN Satz (Nr. 122). */
+function bpEffektiv(V, F, zielfunktion, korb, name, kostenArt) {
+  if (!kostenArt) return K.KORB.kostenBp;
+  return KK.mitKosten(KS, V, kostenArt, function () {
+    V.Q.zielfunktion = zielfunktion; V.Q.korbCache = {}; V.Q.zielCache = {}; V.F = {}; V.F[name] = F;
+    var e = KS.k0(V, { name: name, fenster: name, korb: korb || null }, K.KORB.kleinstAnteil);
+    return e.zaehler.volumen > 0 ? e.L.zaehler.kosten / e.zaehler.volumen * 10000 : 0;
+  });
+}
+/** Ein Fenster nach Steuer gegen den Nasdaq-ETF (63 Startphasen, korb-kosten.js nachSteuer). */
+function nachSteuerFenster(V, F, zielfunktion, korb, name, kostenArt, QQQ, nPhasen) {
+  var bp = bpEffektiv(V, F, zielfunktion, korb, name, kostenArt);
+  V.Q.zielfunktion = zielfunktion; V.Q.korbCache = {}; V.Q.zielCache = {};
+  return KK.nachSteuer(KS, V, F, korb, bp, QQQ, nPhasen == null ? K.KORB.phasen : nPhasen);
+}
+/** Urteil nach Steuer: Median der Abstaende zum Nasdaq-ETF und Start am ersten Tag nach Steuer; Rang (vor Steuern) unveraendert. */
+function urteilNachSteuer(u, ns) {
+  var med = ns.median.abstandNasdaqB, ab0 = ns.k0.buchB - ns.k0.nasdaqB, kandidat = med > 0 && ab0 > 0 && u.rang <= u.rangMax, gruende = [];
+  if (!(med > 0)) gruende.push('Median der Startphasen nach Steuer gegen den Nasdaq-ETF <= 0');
+  if (!(ab0 > 0)) gruende.push('Start am ersten Tag nach Steuer nicht vor dem Nasdaq-ETF');
+  if (!(u.rang <= u.rangMax)) gruende.push('Rang ' + u.rang + ' von ' + u.von + ' gegen die Zufallsbuecher (noetig <= ' + u.rangMax + ')');
+  return Object.assign({}, u, { kandidat: kandidat, gruende: gruende, urteil: kandidat ? 'Kandidat' : (med <= 0 && ns.vornGegenNasdaqB <= ns.phasen / 2) ? 'nein' : 'nicht entscheidbar',
+    massstab: 'Nasdaq-100 nach Steuer', abstandNachSteuer: ab0, medianNachSteuer: med });
+}
+
 /**
  * Ein ganzer Lauf. regel = { zielfunktion, placeboZiel }, kand = kandidat.json (form korb; konfigurationen[0].korb optional),
- * opt = { pruefzeit, siegelPfad, repo, entdeckung: {von, bis}, pruefung: {von, bis}, placeboBuecher (Vorgabe 200), kalibrierung }.
+ * opt = { pruefzeit, siegelPfad, repo, entdeckung: {von, bis}, pruefung: {von, bis}, placeboBuecher (Vorgabe 200), kalibrierung,
+ *         kostenBpJeSeite (Nr. 121-2b: null = 20 Bp je Seite wie bisher | 'regel' = Kostenregel je Handel), massstab ('SPY' wie bisher | 'nasdaq100-steuer') }.
+ * Mit massstab 'nasdaq100-steuer' urteilt das Fenster nach Steuer (Modell Nr. 82) gegen den Nasdaq-ETF: Median der 63 Abstaende und Start am ersten Tag
+ * nach Steuer; der Rang gegen die Zufallsbuecher bleibt vor Steuern (er vergleicht Buecher im selben Fenster, der Massstab faellt heraus). SPY nachrichtlich.
  */
 function lauf(regel, kand, opt) {
   opt = opt || {};
-  var V = vorbereiten(opt), T = V.T, Q = V.Q;
+  var kostenArt = opt.kostenBpJeSeite === undefined ? KK.VORGABE.kostenBpJeSeite : opt.kostenBpJeSeite, massstab = opt.massstab || KK.VORGABE.massstab;
+  if (KK.MASSSTAEBE.indexOf(massstab) === -1) throw new Error('korb: massstab muss ' + KK.MASSSTAEBE.join(' | ') + ' sein, nicht ' + JSON.stringify(massstab));
+  var V = vorbereiten(opt), T = V.T, Q = V.Q, QQQ = massstab === 'nasdaq100-steuer' ? require('../daten/qqq.js').lade() : null;
   var konf = kand.konfigurationen[0] || {}, korb = konf.korb || null, nB = opt.placeboBuecher == null ? K.KORB.placeboBuecher : opt.placeboBuecher;
   var ziel = function (roh, o) { return regel.zielfunktion(roh, Object.assign({}, o, konf.anzahl ? { anzahl: konf.anzahl } : {})); };
   var fensterE = fenster(T, Q, (opt.entdeckung && opt.entdeckung.von) || '2017-01-04', (opt.entdeckung && opt.entdeckung.bis) || K.EICHUNG.bis);   /* Nr. 121-2a: Korb bleibt im Eichfenster (Vorwaerts fuer Korb nicht gebaut) */
   var aus = { quelle: 'panel', kennungTafel: T.stand.kennung, gesperrt: T.gesperrt, siegel: T.siegel, letzterTag: String(T.kal.tage[T.maxTag]), korb: korb,
-    kostenBp: K.KORB.kostenBp, kleinstAnteil: K.KORB.kleinstAnteil, phasen: K.KORB.phasen, massnahmen: { ordner: K.MASSNAHMEN.ordner, ergaenzt: V.protokoll.ergaenzt }, konfigurationen: [],
+    kostenBp: kostenArt ? null : K.KORB.kostenBp, kosten: kostenArt ? 'Kostenregel Nr. 121-2b (Eroeffnung + IBKR ' + K.KOSTEN.modell + ', Klasse 1-5, echter Handelswert)' : K.KORB.kostenBp + ' Bp je Seite',
+    massstab: massstab === 'SPY' ? 'SPY (S&P 500, Gesamtertrag, vor Steuern)' : 'Nasdaq-100 nach Steuer (QQQ mit Ausschuettungen, Modell Nr. 82; seit 23.10.2026, vorher S&P 500); SPY nachrichtlich', kleinstAnteil: K.KORB.kleinstAnteil, phasen: K.KORB.phasen, massnahmen: { ordner: K.MASSNAHMEN.ordner, ergaenzt: V.protokoll.ergaenzt }, konfigurationen: [],
     placeboBuecher: nB, pBoden: 1 / (nB + 1), registerM: opt.registerM == null ? null : opt.registerM };     /* A10 (Nr. 121-1): B und p-Boden im Protokoll */
   function messeFenster(F, art) {
-    var buch = rueckblick(V, F, ziel, korb, art);
-    buch.abgaenge = abgaenge(V, F, ziel, korb, art);
+    var buch = KK.mitKosten(KS, V, kostenArt, function () { return rueckblick(V, F, ziel, korb, art); });
+    buch.abgaenge = KK.mitKosten(KS, V, kostenArt, function () { return abgaenge(V, F, ziel, korb, art); });
+    var ns = QQQ ? nachSteuerFenster(V, F, ziel, korb, art, kostenArt, QQQ) : null;
     var buecher = [];
     for (var b = 0; b < nB; b++) {
       var wort = kand.kennung + '#' + b;
-      buecher.push(k0(V, F, function (roh, o) { return regel.placeboZiel(roh, Object.assign({}, o, { placeboWort: wort }, konf.anzahl ? { anzahl: konf.anzahl } : {})); }, korb, art + '-placebo'));
+      buecher.push(KK.mitKosten(KS, V, kostenArt, function () { return k0(V, F, function (roh, o) { return regel.placeboZiel(roh, Object.assign({}, o, { placeboWort: wort }, konf.anzahl ? { anzahl: konf.anzahl } : {})); }, korb, art + '-placebo'); }));
     }
     var u = urteil(buch, buecher);
-    return { fenster: { von: F.vonText, bis: F.bisText }, buch: buch, zufall: u.zufall, rang: u.rang, von: u.von, rangMax: u.rangMax, pEinseitig: u.pEinseitig, kandidat: u.kandidat, gruende: u.gruende, urteil: u.urteil };
+    if (ns) u = urteilNachSteuer(u, ns);
+    return { fenster: { von: F.vonText, bis: F.bisText }, buch: buch, nachSteuer: ns, zufall: u.zufall, rang: u.rang, von: u.von, rangMax: u.rangMax, pEinseitig: u.pEinseitig, kandidat: u.kandidat, gruende: u.gruende, urteil: u.urteil };
   }
   var e = messeFenster(fensterE, 'entdeckung');
   var k = { key: konf.key || 'korb', entdeckung: e, kandidat: e.kandidat, gruende: e.gruende, urteil: e.urteil, tor1: null, mde80: null };
@@ -123,9 +157,31 @@ function kalibrierung(opt) {
   return { 'A-187': a, 'B-187': b, soll: { 'A-187': 259238.74, 'B-187': 250123.14, spyA: 215535.73, spyB: 181193.87 } };
 }
 
-module.exports = { lauf: lauf, kalibrierung: kalibrierung, vorbereiten: vorbereiten, fenster: fenster, urteil: urteil, rueckblick: rueckblick, k0: k0, KS: KS, S: S, R: R, MH: MH };
+/** Nr. 121-2b B.3 Gegenprobe (nicht in der Vorgabe-Kalibrierung): A-187 / B-187 mit Kostenregel und Nasdaq-100 nach Steuer, k = 0 und 63 Startphasen;
+ *  dazu die Positivkontrolle mit dem effektiven Satz der Nr. 122 (bpNr122: { 'A-187': x, 'B-187': y }) - dann muss buchB die Nr.-122-Zahl treffen. */
+function kalibrierungRegel(opt) {
+  opt = opt || {};
+  var V = vorbereiten(Object.assign({ pruefzeit: true }, opt)), T = V.T, Q = V.Q, QQQ = require('../daten/qqq.js').lade(), aus = {};
+  var F = { 'A-187': fenster(T, Q, '2017-01-04', '2021-09-15'), 'B-187': fenster(T, Q, '2021-09-16', '2026-09-15') };
+  (opt.laeufe || ['A-187', 'B-187']).forEach(function (n) {
+    var bp = bpEffektiv(V, F[n], MH.momentumZiel, S.KORB_N, n, 'regel');
+    var vor = KK.mitKosten(KS, V, 'regel', function () { return k0(V, F[n], MH.momentumZiel, S.KORB_N, n); });
+    V.Q.zielfunktion = MH.momentumZiel; V.Q.korbCache = {}; V.Q.zielCache = {};
+    var ns = KK.nachSteuer(KS, V, F[n], S.KORB_N, bp, QQQ, opt.phasen == null ? K.KORB.phasen : opt.phasen), kontrolle = null;
+    if (opt.bpNr122 && opt.bpNr122[n] != null) { V.Q.zielfunktion = MH.momentumZiel; V.Q.korbCache = {}; V.Q.zielCache = {}; kontrolle = KK.nachSteuer(KS, V, F[n], S.KORB_N, opt.bpNr122[n], QQQ, 1).k0; }
+    aus[n] = { bpJeSeite: bp, vorSteuern: vor, nachSteuer: ns, kontrolleNr122Satz: kontrolle, statistik: KK.KF.statistik };
+  });
+  return aus;
+}
 
-if (require.main === module && process.argv.indexOf('--kalibrierung') !== -1) {
+module.exports = { lauf: lauf, kalibrierung: kalibrierung, kalibrierungRegel: kalibrierungRegel, bpEffektiv: bpEffektiv, nachSteuerFenster: nachSteuerFenster, urteilNachSteuer: urteilNachSteuer, vorbereiten: vorbereiten, fenster: fenster, urteil: urteil, rueckblick: rueckblick, k0: k0, KS: KS, S: S, R: R, MH: MH };
+
+/* Nr. 121-2b: Gegenprobe Kostenregel / Nasdaq-100 nach Steuer (k = 0 und 63 Startphasen, ~2 min): node pruefstrasse/adapter/korb.js --kalibrierung-regel */
+if (require.main === module && process.argv.indexOf('--kalibrierung-regel') !== -1) {
+  var t1 = Date.now(), ER = kalibrierungRegel({ siegelPfad: 'pruefstrasse/FORM.md' }), kurzR = {};
+  Object.keys(ER).forEach(function (n) { var e = ER[n]; kurzR[n] = { bpJeSeite: e.bpJeSeite, buchEnde: e.vorSteuern.buchEnde, buchB: e.nachSteuer.k0.buchB, nasdaqB: e.nachSteuer.k0.nasdaqB, spyB: e.nachSteuer.k0.spyB, medianAbstand: e.nachSteuer.median.abstandNasdaqB, vorn: e.nachSteuer.vornGegenNasdaqB }; });
+  console.log(JSON.stringify(kurzR) + ' ms ' + (Date.now() - t1));
+} else if (require.main === module && process.argv.indexOf('--kalibrierung') !== -1) {
   var t0 = Date.now(), E = kalibrierung({ siegelPfad: 'pruefstrasse/FORM.md' });
   console.log(JSON.stringify(E) + ' ms ' + (Date.now() - t0));
 }

@@ -38,17 +38,24 @@ function nacht(statusText) {
     rc: rc ? parseInt(rc[1], 10) : null, push: push ? push[1].trim() : null };
 }
 
-/* ERGEBNIS.md: die Zeile der besten Konfiguration = die Tabellenzeile mit dem groessten t. */
+/* ERGEBNIS.md: die Zeile der besten Konfiguration = die Tabellenzeile mit dem groessten t. Die Spalte t kommt aus der KOPFZEILE der Tabelle
+ * ("| Konf | ... | t | ..."), nicht aus einem festen Index (Nr. 121-2b: neue Spalten verschoben sp[7]); ohne Spalte t die erste Zeile. */
 function besteZeile(md) {
   if (!md) return null;
-  const zeilen = md.split('\n').filter((z) => /^\|\s*[^|-]/.test(z) && !/^\|\s*Konf\b/.test(z));
-  let beste = null, bestT = -Infinity;
-  zeilen.forEach((z) => {
-    const sp = z.split('|').map((s) => s.trim());
-    const t = parseFloat(String(sp[7] || '').replace('−', '-').replace(',', '.'));
-    if (isFinite(t) && t > bestT) { bestT = t; beste = z.trim(); }
+  const zeilen = [];
+  let tIdx = -1;
+  md.split('\n').forEach((z) => {
+    if (/^\|\s*Konf\b/.test(z)) { tIdx = z.split('|').map((s) => s.trim()).indexOf('t'); return; }
+    if (/^\|\s*[^|-]/.test(z)) zeilen.push({ z: z, tIdx: tIdx });
   });
-  return beste || (zeilen[0] ? zeilen[0].trim() : null);
+  let beste = null, bestT = -Infinity;
+  zeilen.forEach((x) => {
+    if (x.tIdx < 0) return;
+    const sp = x.z.split('|').map((s) => s.trim());
+    const t = parseFloat(String(sp[x.tIdx] || '').replace('−', '-').replace(',', '.'));
+    if (isFinite(t) && t > bestT) { bestT = t; beste = x.z.trim(); }
+  });
+  return beste || (zeilen[0] ? zeilen[0].z.trim() : null);
 }
 
 function urteile() {

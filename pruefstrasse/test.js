@@ -129,10 +129,10 @@ if (!fs.existsSync(path.join(K.PANEL, 'panel', '_stand.json'))) {
   var verglichen = 0, ohneSpy = 0, falsch = 0, mitLuecke = 0;
   TP.reihen.slice(0, 300).forEach(function (S) {
     var s = A.Sicht(S, TP); s.setzeBis(S.n - 1); if (S.n < S.tag[S.n - 1] - S.tag[0] + 1) mitLuecke++;
-    for (var j = 0; j < S.n; j++) { var soll = spyJeTag[S.tag[j]], m = s.markt(j); if (soll === undefined) { ohneSpy++; if (m === m) falsch++; } else { verglichen++; if (m !== soll) falsch++; } }
+    for (var j = 0; j < S.n; j++) { var soll = spyJeTag[S.tag[j]], m = s.marktSpy(j), q = TP.marktReihe.c[S.tag[j]], mq = s.markt(j); if (soll === undefined) { ohneSpy++; if (m === m) falsch++; } else { verglichen++; if (m !== soll) falsch++; } if (q > 0 ? mq !== q : mq === mq) falsch++; }   /* Nr. 121-2b: markt = QQQ, marktSpy = Panel-SPY */
     if (s.verstoesse()) falsch++;
   });
-  ok(TP.hatMarkt === true && verglichen > 100000 && mitLuecke > 0 && falsch === 0, 'Panel: markt(j) = spy.c am selben Kalenderindex (300 Reihen, alle Zeilen, darunter Reihen mit Kalenderluecken), ohne Verstoss', verglichen + ' verglichen, ' + mitLuecke + ' Reihen mit Luecke, ' + ohneSpy + ' ohne SPY, ' + falsch + ' falsch');
+  ok(TP.hatMarkt === true && verglichen > 100000 && mitLuecke > 0 && falsch === 0, 'Panel: marktSpy(j) = spy.c und markt(j) = QQQ (qqq-tage.json) am selben Kalenderindex (300 Reihen, alle Zeilen, darunter Reihen mit Kalenderluecken), ohne Verstoss', verglichen + ' verglichen, ' + mitLuecke + ' Reihen mit Luecke, ' + ohneSpy + ' ohne SPY, ' + falsch + ' falsch');
   TP = null; aapl = null; sA = null; spyJeTag = null;
 }
 
@@ -564,6 +564,9 @@ console.log('6) Kalibrierung der Adapter gegen bekannte Ergebnisse (Auftrag §3)
 var KAL = path.join(K.HIER, 'kalibrierung.json'), SOLL = {
   tag: { quelle: 'Trendkanal-Studie ERGEBNIS.md Zeile K3-20 E1 long H5 (Bestaetigung ab 07.02.2023)', entNTage: 1735, entNTr: 100692, entUBrutto: -0.2556, entUNetto: -0.3830, entT: -3.13, besNTage: 886, besNTr: 49624, besUBrutto: -0.2221, besUNetto: -0.3396, besT: -3.14 },
   korb: { quelle: 'Nr. 96 (studien/momentum-korb-v23-2026-10-04/ERGEBNIS.md), Regel K, Panel v2.3', 'A-187': 259238.74, 'B-187': 250123.14, spyA: 215535.73, spyB: 181193.87 },
+  /* Nr. 121-2b B.3: Gegenprobe Kostenregel / Nasdaq-100 nach Steuer (k = 0, Szenario eroeffnung-fixed-100k der Nr. 122; Toleranz 0,1 Pp p. a.) -
+   * gemessen 23.10.2026 (Bau): A 18,395 / 24,869, B 16,520 / 11,806; mit dem Satz der Nr. 122 trifft das Buch deren Zahl auf das Bit */
+  korbRegel: { quelle: 'studien/momentum-wiedervorlage-2026-10-23/massstab.json steuer.eroeffnung-fixed-100k (Nr. 122)', 'A-187': { buchB: 18.39, nasdaqB: 24.87 }, 'B-187': { buchB: 16.51, nasdaqB: 11.81 }, toleranzPp: 0.1 },
   minute: { quelle: 'Markt-Dashboard-Daten/protokolle/rsi2seit-2026-08-26.json', bruttoJeSignalPp: 0.02054524106238242, huerdePp: 0.1, nettoJeSignalPp: -0.07945475893761758, werte: 2874, handelstage: 730, schnittTag: '2025-03-12' },
 };
 function adapterLauf(name, args, zeit) {
@@ -580,6 +583,7 @@ if (!SCHNELL) {
     besNTage: h5.pruefung.nTage, besNTr: h5.pruefung.nTr, besUBrutto: h5.pruefung.uBrutto.mittel, besUNetto: h5.pruefung.uNetto.mittel, besT: h5.pruefung.uNetto.t, reihen: Et.reihen, verstoesse: Et.verstoesse, ms: Et.ms };
   var Ek = JSON.parse(adapterLauf('korb', ['--kalibrierung'], 900000).trim().split(' ms ')[0]);
   Kal.korb = { 'A-187': Ek['A-187'].buchEnde, 'B-187': Ek['B-187'].buchEnde, spyA: Ek['A-187'].spyEnde, spyB: Ek['B-187'].spyEnde };
+  Kal.korbRegel = JSON.parse(adapterLauf('korb', ['--kalibrierung-regel'], 900000).trim().split(' ms ')[0]);   /* Nr. 121-2b */
   var minAus = path.join(SCRATCH, 'minute.json'); adapterLauf('minute', ['--kalibrierung', minAus], 1800000);
   var Em = JSON.parse(fs.readFileSync(minAus, 'utf8'));
   Kal.minute = { bruttoJeSignalPp: Em.zahlen.bruttoJeSignalPp, huerdePp: Em.zahlen.huerdePp, nettoJeSignalPp: Em.zahlen.nettoJeSignalPp, werte: Em.zahlen.universum.werte, handelstage: Em.zahlen.universum.handelstage, schnittTag: Em.schnittTag, signale: Em.zahlen.signale, t: Em.zahlen.t };
@@ -599,6 +603,11 @@ if (Kal.korb) {
   ok(Math.round(c['A-187'] * 100) === Math.round(sk['A-187'] * 100) && Math.round(c['B-187'] * 100) === Math.round(sk['B-187'] * 100), 'korb: A-187 und B-187 mit Regel K auf den Cent (259.238,74 / 250.123,14 $)', c['A-187'].toFixed(2) + ' / ' + c['B-187'].toFixed(2));
   ok(Math.round(c.spyA * 100) === Math.round(sk.spyA * 100) && Math.round(c.spyB * 100) === Math.round(sk.spyB * 100), 'korb: S&P 500 auf den Cent');
 }
+if (Kal.korbRegel) {
+  var kr = Kal.korbRegel, skr = SOLL.korbRegel;
+  ok(['A-187', 'B-187'].every(function (n) { return nahe(kr[n].buchB, skr[n].buchB, skr.toleranzPp) && nahe(kr[n].nasdaqB, skr[n].nasdaqB, skr.toleranzPp); }), 'korb: Kostenregel / Nasdaq-100 nach Steuer trifft Nr. 122 (Buch 18,39 / 16,51, Nasdaq-ETF 24,87 / 11,81 % p. a., 0,1 Pp)',
+    kr['A-187'].buchB.toFixed(2) + ' / ' + kr['A-187'].nasdaqB.toFixed(2) + ' | ' + kr['B-187'].buchB.toFixed(2) + ' / ' + kr['B-187'].nasdaqB.toFixed(2));
+} else ok(true, 'korb: Gegenprobe Kostenregel / Nasdaq-100 nach Steuer - in kalibrierung.json noch nicht gerechnet (PM-Vollauf, Nr. 121-2b)');
 if (Kal.minute) {
   var m = Kal.minute, sm = SOLL.minute;
   /* Das 60m-Archiv LEBT (die App sammelt; am 03.09. wurden alle Dateien neu geschrieben): die 2.874 Werte des Protokolls sind heute

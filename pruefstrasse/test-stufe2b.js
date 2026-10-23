@@ -52,6 +52,54 @@ module.exports = function (C) {
     var F = fs.readFileSync(path.join(K.HIER, 'FORM.md'), 'utf8'), L = fs.readFileSync(path.join(K.HIER, 'laeufer.js'), 'utf8');
     return [/Kostenregel/.test(F) && /Minute: Kostenregel folgt mit Stufe 3/.test(F) && /5\.263/.test(F) && /Index-Spanne nicht gemessen/.test(F) && /2016.2020 ungeprueft|2016–2020 ungeprüft/.test(F) && L.indexOf('Urteil auf der Kassa-Huerde') === -1, 'FORM.md / laeufer.js'];
   });
+
+  console.log('B) Massstab Nasdaq-100 (Nr. 121-2b): QQQ-Tagesreihe aus Minuten, Sicht markt = QQQ, Korb-Parameter, Lagebild ueber die Kopfzeile');
+  var QB = lade('./daten/qqq-bauen.js'), DT = lade('./daten/qqq.js');
+  function ms(d, hhmm, ny) { var p = hhmm.split(':'); return Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10), +p[0] - ny, +p[1]); }
+  probe('B-1: qqq-bauen tageAus - Eroeffnung 09:30, Schluss = Eroeffnung der 16:00-Kerze (Halbtag 13:00), sonst letzte Kerze davor; Zeitzone Maerz/November; Sekunden-Zeitstempel brechen ab; Doppelsatz entfernt; cb mit Ausschuettung', function () {
+    var kal = { '2026-03-06': { open: '09:30', close: '16:00' }, '2026-03-09': { open: '09:30', close: '16:00' }, '2026-11-27': { open: '09:30', close: '13:00' }, '2026-11-02': { open: '09:30', close: '16:00' } };
+    var k = [
+      [ms('2026-03-06', '09:30', -5), 100.5, 1, 0, 0, 100], [ms('2026-03-06', '15:59', -5), 101, 1, 0, 0, 100.9], [ms('2026-03-06', '16:00', -5), 101.3, 1, 0, 0, 101.2],
+      [ms('2026-03-09', '09:30', -4), 99, 1, 0, 0, 99.5], [ms('2026-03-09', '15:59', -4), 102, 1, 0, 0, 101.5],                          /* nach der Umstellung (8.3.), ohne 16:00-Kerze */
+      [ms('2026-11-02', '09:30', -5), 50, 1, 0, 0, 50], [ms('2026-11-02', '16:00', -5), 51, 1, 0, 0, 51.5],                                /* nach der Rueckstellung (1.11.) */
+      [ms('2026-11-27', '09:30', -5), 60, 1, 0, 0, 60], [ms('2026-11-27', '13:00', -5), 61, 1, 0, 0, 60.7], [ms('2026-11-27', '15:00', -5), 99, 1, 0, 0, 99]];
+    var A2 = QB.ausschuettungen([{ _art: 'cash_dividends', ex_date: '2026-03-09', rate: 1, process_date: 'a' }, { _art: 'cash_dividends', ex_date: '2026-03-09', rate: 1, process_date: 'b' }], []);
+    var T = QB.tageAus(k, kal, A2.je).tage, d = {}; T.forEach(function (x) { d[x.d] = x; });
+    var wirft = false; try { QB.zeitPruefen([[1772800000, 1], [1772800060, 1]], 'kunst'); } catch (e) { wirft = /ZEITSTEMPEL/.test(e.message); }
+    var cbOk = Math.abs(d['2026-03-09'].cb - 101.2 * (102 + 1) / 101.2) < 1e-9;
+    return [d['2026-03-06'].o === 100 && d['2026-03-06'].c === 101.2 && d['2026-03-09'].o === 99.5 && d['2026-03-09'].c === 102 && /letzte/.test(d['2026-03-09'].schlussArt) && d['2026-11-02'].c === 51.5 &&
+      d['2026-11-27'].halb === true && d['2026-11-27'].c === 60.7 && wirft && A2.doppelt.length === 1 && A2.je['2026-03-09'].length === 1 && cbOk, JSON.stringify(T.map(function (x) { return [x.d, x.o, x.c, x.halb || false]; }))];
+  });
+  probe('B-2: pruefstrasse/daten/qqq-tage.json - Kennung, Quelle, Erzeugungsdatum, Zeitstempel-Format, Doppelsatz 2022-09-19 entdoppelt, Halbtage; Pruefung warnt ab 60 Tagen Alter', function () {
+    var Q = DT.lade(), p = DT.pruefe(Q, Date.parse(Q.erzeugt) + 10 * 86400000), alt = DT.pruefe(Q, Date.parse(Q.erzeugt) + 61 * 86400000), falsch = DT.pruefe(Object.assign({}, Q, { kennung: 'x' }), Date.parse(Q.erzeugt));
+    return [Q.kennung === DT.KENNUNG && Q.sym === 'QQQ' && /Millisekunden/.test(Q.zeitstempel.format) && Q.doppelt.length === 1 && Q.doppelt[0].exTag === '2022-09-19' && Q.halbtage.length >= 20 && Q.n > 2600 &&
+      !p.fehler.length && !p.warnungen.length && alt.warnungen.length === 1 && falsch.fehler.length === 1, Q.n + ' Tage ' + Q.von + '..' + Q.bis + ', erzeugt ' + Q.erzeugt + ', Warnung nach 61 Tagen: ' + alt.warnungen[0]];
+  });
+  probe('B-3: Sicht - markt(j) = QQQ-Kurs am Kalendertag von Zeile j, marktGesamt(j) mit Ausschuettungen, marktSpy(j) = Panel-SPY nachrichtlich; hinter der Schranke NaN + Verstoss; Protokoll nennt die Marktreihe', function () {
+    var W = welt(A, function () { return 1e6; }), tage = W.tage, spy = { reihe: 'SPY', tag: [], o: [], h: [], l: [], c: [], v: [] };
+    for (var i = 0; i < tage.length; i++) { spy.tag.push(i); spy.o.push(400 + i); spy.h.push(400 + i); spy.l.push(400 + i); spy.c.push(400 + i); spy.v.push(1); }
+    var mr = { c: new Float64Array(tage.length).fill(NaN), cb: new Float64Array(tage.length).fill(NaN), name: 'QQQ (Kunst)' };
+    for (var j = 0; j < tage.length; j++) if (j !== 7) { mr.c[j] = 300 + j; mr.cb[j] = 310 + j; }
+    var T = TF.kunstTafel(W.reihen.concat([spy]), tage, { offen: true, marktReihe: mr }), S = T.reihen[0], sicht = A.Sicht(S, T);
+    sicht.setzeBis(10);
+    var a = [sicht.markt(5), sicht.marktGesamt(5), sicht.marktSpy(5), sicht.markt(7), sicht.markt(11)], v = sicht.verstoesse();
+    var E = A.lauf(REGEL, KANDW, { tafel: T, schnitt: 'panelende' });
+    return [a[0] === 305 && a[1] === 315 && a[2] === 405 && a[3] !== a[3] && a[4] !== a[4] && v === 1 && E.marktreihe === 'QQQ (Kunst)' && E.hatMarkt === true, JSON.stringify(a) + ' Verstoesse ' + v + ', Marktreihe ' + E.marktreihe];
+  });
+  probe('B-4: Korb-Adapter - Parameter kostenBpJeSeite und massstab mit Vorgabe = heute (20 Bp je Seite, SPY); die Kostenregel je Seite = huerdeUmlauf / 2 mit echtem Handelswert', function () {
+    var KB = lade('./adapter/korb-kosten.js'), v = KB.VORGABE, f20 = KB.kostenFunktion(null), fr = KB.kostenFunktion('regel');
+    var h = KO.huerdeUmlauf(3, 'eroeffnung', 5000, 170.87), seiteKauf = KB.anteilSeite(3, 'eroeffnung', 'kauf', 5000, 170.87);
+    var geb = KO.ibkrGebuehr('fixed', 'kauf', 5000 / 170.87, 170.87) / 5000;
+    return [v.kostenBpJeSeite === null && v.massstab === 'SPY' && f20() === 20 / 10000 && typeof fr === 'function' && Math.abs(seiteKauf - (h.spannePp / 200 + geb)) < 1e-15 && KB.MASSSTAEBE.indexOf('nasdaq100-steuer') >= 0,
+      'Vorgabe ' + JSON.stringify(v) + ', Kauf Klasse 4 ' + (seiteKauf * 10000).toFixed(3) + ' Bp'];
+  });
+  probe('B-5: Lagebild liest t ueber die Kopfzeile (eine neue Spalte vor t bricht es nicht mehr)', function () {
+    var LB = require(path.join(K.REPO, 'tools', 'pruefstrasse-lagebild.js'));
+    var md1 = '| Konf | a | b | c | d | e | t | x |\n|---|---|---|---|---|---|---|---|\n| H1 | 1 | 1 | 1 | 1 | 1 | 2,5 | 0 |\n| H2 | 1 | 1 | 1 | 1 | 1 | −1,0 | 0 |\n';
+    var md2 = '| Konf | neu | a | b | c | d | e | t | x |\n|---|---|---|---|---|---|---|---|---|\n| H1 | 9 | 1 | 1 | 1 | 1 | 1 | −1,0 | 0 |\n| H2 | 9 | 1 | 1 | 1 | 1 | 1 | 3,5 | 0 |\n';
+    var z1 = LB.besteZeile(md1), z2 = LB.besteZeile(md2);
+    return [/^\| H1 /.test(z1) && /^\| H2 /.test(z2), z1 + ' / ' + z2];
+  });
 };
 /* Eigene kleine Kunstwelt (eigener Zufall, unabhaengig von der Reihenfolge in test.js): 12 Reihen ueber 300 Werktage, Klasse 3 (ab 1.000 Mio $),
  * Umsatz je Reihe waehlbar (v), Signal jeder 9. Tag. */

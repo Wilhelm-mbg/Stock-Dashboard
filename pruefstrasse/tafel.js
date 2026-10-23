@@ -9,7 +9,8 @@
  * Reihe S = { reihe, n, tag (Kalenderindex), o, h, l, c, v, klasse (Int8, -1 ohne), mass (Uint8: 1 = Massnahmenfenster), lebend (0/1),
  *             gruppe ('uebernahme' | 'insolvenz' | 'sonstige' | null), nextPos } - die Form von kanaele.js (reiheAus);
  *             dazu roh (Float64, roher = unbereinigter Schluss; Nr. 113) nur, wo die Quelle ihn traegt - die Tafel meldet hatRoh.
- * Die Tafel meldet hatRoh (roh je Reihe vorhanden), hatMarkt (spy = bereinigte SPY-Reihe vorhanden) und hatDatum (Kalender tage je Index,
+ * Marktreihe (Nr. 121-2b B.2): marktReihe = QQQ (Nasdaq-100) aus pruefstrasse/daten/qqq-tage.json je Kalenderindex (daten/qqq.js); spy (Panel-Referenz
+ * SPY) bleibt fuer sicht.marktSpy(j) nachrichtlich. Die Tafel meldet hatRoh (roh je Reihe vorhanden), hatMarkt (Marktreihe QQQ vorhanden) und hatDatum (Kalender tage je Index,
  * Nr. 117: sicht.datum(j) und die Monatsfunktionen) neben hochTief.
  * NUR LESEN. Simulation mit virtuellem Kapital, keine Anlageberatung. */
 var fs = require('fs');
@@ -53,6 +54,14 @@ function siegelFuer(opt) {
   return SG.pruefeSiegel(opt.repo || K.REPO, opt.siegelPfad);
 }
 
+/** Marktreihe QQQ auf den Kalender der Tafel (Nr. 121-2b); opt.ohneMarktReihe (nur Tests) oder fehlende Datei -> null (hatMarkt false; eine Regel mit
+ *  brauchtMarkt bricht dann laut ab). Die Sperre am Eichfenster wirkt ueber die Sicht (markt(j) liest nur Kalendertage von Zeilen <= bis). */
+function marktReiheFuer(tage, opt) {
+  if (opt && opt.ohneMarktReihe) return null;
+  var DQ = require('./daten/qqq.js');
+  try { return DQ.marktReihe(tage, DQ.lade(opt && opt.qqqDatei)); } catch (e) { if (/DATENQUELLE FEHLT/.test(e.message)) return null; throw e; }
+}
+
 /* ---------- Quelle 1: das Panel ---------- */
 function ausPanel(opt) {
   var PR = require(path.join(K.PRUEFSTAND, 'paneldaten.js'));
@@ -91,7 +100,8 @@ function ausPanel(opt) {
     reihen.push(S);
   });
   sp = null;
-  return { quelle: 'panel', hochTief: false, hatRoh: true, hatMarkt: !!spy, hatDatum: true, nTage: nTage, tage: tage, idx: stand.tage.reduce(function (m, t, i) { m[t] = i; return m; }, {}),
+  var mr = marktReiheFuer(tage, opt);
+  return { quelle: 'panel', hochTief: false, hatRoh: true, hatMarkt: !!mr, marktReihe: mr, hatDatum: true, nTage: nTage, tage: tage, idx: stand.tage.reduce(function (m, t, i) { m[t] = i; return m; }, {}),
     reihen: reihen, spy: spy, sperrIdx: sperrIdx, maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: stand.kennung, jahreGelesen: jahre };
 }
 
@@ -128,7 +138,8 @@ function ausTrendkanal(opt) {
   }
   var reihen = T.reihen.map(fertig), spy = fertig(T.spy);
   var maxTag = nTage - 1; if (!offen) maxTag = Math.min(maxTag, sperrIdx);
-  return { quelle: 'trendkanal-tage', hochTief: true, hatRoh: false, hatMarkt: !!spy, hatDatum: true, nTage: nTage, tage: kal.tage, idx: kal.idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
+  var mr = marktReiheFuer(kal.tage, opt);
+  return { quelle: 'trendkanal-tage', hochTief: true, hatRoh: false, hatMarkt: !!mr, marktReihe: mr, hatDatum: true, nTage: nTage, tage: kal.tage, idx: kal.idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
     maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: F.kennung, dateien: T.dateien };
 }
 
@@ -145,7 +156,8 @@ function oeffne(opt) {
 }
 
 /** NUR FUER TESTS: Tafel aus Kunstreihen { reihe, tag, o, h, l, c, v, klasse?, mass?, lebend?, gruppe?, roh? (Vorgabe = c) } ueber einen
- *  Kunstkalender. Die Reihe 'SPY' wird zur Marktreihe (spy, hatMarkt), wie bei den echten Quellen. */
+ *  Kunstkalender. Die Reihe 'SPY' wird zur Referenz spy; opt.marktReihe ({ c, cb, name } je Kalenderindex) ist die Marktreihe, ohne sie liest markt(j)
+ *  die Reihe SPY (Kunsttests vor Nr. 121-2b unveraendert). */
 function kunstTafel(reihenSpalten, tage, opt) {
   opt = opt || {};
   var C = require(path.join(K.TRENDKANAL_STUDIE, 'kanaele.js'));
@@ -160,7 +172,7 @@ function kunstTafel(reihenSpalten, tage, opt) {
   }
   var alle = reihenSpalten.map(bau), spy = null, reihen = [];
   alle.forEach(function (S) { if (S.reihe === 'SPY') spy = S; else reihen.push(S); });
-  return { quelle: opt.quelle || 'kunst', hochTief: true, hatRoh: true, hatMarkt: !!spy, hatDatum: true, nTage: nTage, tage: tage, idx: idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
+  return { quelle: opt.quelle || 'kunst', hochTief: true, hatRoh: true, hatMarkt: !!(opt.marktReihe || spy), marktReihe: opt.marktReihe || null, hatDatum: true, nTage: nTage, tage: tage, idx: idx, reihen: reihen, spy: spy, sperrIdx: sperrIdx,
     maxTag: offen ? nTage - 1 : Math.min(nTage - 1, sperrIdx), gesperrt: !offen, siegel: null, klassen: opt.klassen || klassen(), kennung: 'kunst' };
 }
 
