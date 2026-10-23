@@ -1,5 +1,5 @@
 {
- "stand": "2026-10-23T14:16:45.430Z",
+ "stand": "2026-10-23T15:14:03.833Z",
  "hinweis": "geschrieben von node pruefstrasse/test.js (ohne --schnell) bzw. den --kalibrierung-Laeufen der Adapter am 11.10.2026",
  "tag": {
   "entNTage": 1735,
@@ -12,11 +12,20 @@
   "besUBrutto": -0.22210786617420275,
   "besUNetto": -0.3395760104796078,
   "besT": -3.1449106924201446,
+  "regel": {
+   "entUNetto": -0.6281175802828329,
+   "entT": -5.126939467863935,
+   "entHuerde": 0.37124777876940235,
+   "besUNetto": -0.5640379446314175,
+   "besT": -5.221985783546057,
+   "besHuerde": 0.3436469133282804,
+   "grund": "Kostenregel Nr. 121-2b"
+  },
   "reihen": 7299,
   "verstoesse": 0,
   "ms": {
-   "topf": 4849,
-   "messen": 3909
+   "topf": 4880,
+   "messen": 3974
   }
  },
  "korb": {
@@ -56,6 +65,35 @@
    "spyA": 215535.73,
    "spyB": 181193.87
   },
+  "tagRegel": {
+   "quelle": "Nr. 121-2b kal-tag-nachher (Kostenregel: Eroeffnung + IBKR Fixed 5.263 $, Kurs = Median-Kurs der Klasse, Quelle trendkanal-tage ohne roh)",
+   "entUNetto": -0.6281,
+   "entT": -5.13,
+   "entHuerde": 0.37125,
+   "besUNetto": -0.564,
+   "besT": -5.22,
+   "besHuerde": 0.34365,
+   "alt": {
+    "entUNetto": -0.383,
+    "entT": -3.13,
+    "besUNetto": -0.3396,
+    "besT": -3.14,
+    "grund": "Kassa-Huerde (Trendkanal-Studie), seit 23.10.2026 nachrichtlich"
+   },
+   "grund": "Kostenregel Nr. 121-2b"
+  },
+  "korbRegel": {
+   "quelle": "studien/momentum-wiedervorlage-2026-10-23/massstab.json steuer.eroeffnung-fixed-100k (Nr. 122)",
+   "A-187": {
+    "buchB": 18.39,
+    "nasdaqB": 24.87
+   },
+   "B-187": {
+    "buchB": 16.51,
+    "nasdaqB": 11.81
+   },
+   "toleranzPp": 0.1
+  },
   "minute": {
    "quelle": "Markt-Dashboard-Daten/protokolle/rsi2seit-2026-08-26.json",
    "bruttoJeSignalPp": 0.02054524106238242,
@@ -64,6 +102,26 @@
    "werte": 2874,
    "handelstage": 730,
    "schnittTag": "2025-03-12"
+  }
+ },
+ "korbRegel": {
+  "A-187": {
+   "bpJeSeite": 8.900612353129159,
+   "buchEnde": 264025.76,
+   "buchB": 18.39456080849027,
+   "nasdaqB": 24.869196795460226,
+   "spyB": 14.829595364336768,
+   "medianAbstand": -4.0645611903524355,
+   "vorn": 7
+  },
+  "B-187": {
+   "bpJeSeite": 8.17039792589118,
+   "buchEnde": 254871.42,
+   "buchB": 16.51965067778487,
+   "nasdaqB": 11.805565029305832,
+   "spyB": 10.404524050872489,
+   "medianAbstand": 4.842405979767214,
+   "vorn": 58
   }
  }
 }
