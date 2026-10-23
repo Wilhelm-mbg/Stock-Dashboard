@@ -31,6 +31,7 @@ var path = require('path');
 var K = require('../konfig.js');
 var C = require(path.join(K.TRENDKANAL_STUDIE, 'kanaele.js'));
 var TO = require('../tore.js');
+var KO = require('../kosten.js');
 
 /* Arten der Zellen: echt, spaet (Einstieg +1 T, Ausstieg +1 T), versatz, placebo; nur Modus zeit, nachrichtlich: global (Ueberschuss gegen den
  * globalen Topf der Reihe OHNE Ausschluss der Signalfenster, Audit A §3d "alle Fenster"), radiusKlein/radiusGross (lokaler Topf mit R = 2 H / 8 H). */
@@ -38,7 +39,8 @@ var ARTEN = ['echt', 'spaet', 'versatz', 'placebo', 'global', 'radiusKlein', 'ra
 /* Abgangsgruppen; "zensiert" (A7, Nr. 121-1) = Reihe, deren letzte Zeile der letzte Tag vor der Sperre ist (gesperrte Tafel): kein Abgang,
  * nur die Sperre schneidet ab. Nur die Abgangs-Zaehlung und -Spalte; Ertrag, S.lebend und der Zellenschluessel bleiben unveraendert. */
 var GRUPPEN = ['uebernahme', 'insolvenz', 'sonstige', 'zensiert'];
-var POT_MAX_DAUER = 61, N_K = 4;
+/* N_K = 4 Topf-/Panel-Klassen (Zellen); N_KK = 5 Kostenklassen (Nr. 121-2b: Klasse 5 verfeinert Klasse 4 nur fuer die Huerde, Topf bleibt bitgleich) */
+var POT_MAX_DAUER = 61, N_K = 4, N_KK = 5;
 var BEWERTUNGEN = ['topf', 'zeit'];
 var VERSATZ_MIN = 5, VERSATZ_MAX = 60;
 /** Rechenvorschrift des Modus in einem Satz (ergebnis.json bewertungDetail); versatz = Handelstage der Verschiebungs-Gegenprobe. */
@@ -130,13 +132,16 @@ function Zellen(nKonf, nTage) {
   var z = ARTEN.length * nKonf * nTage * N_K * 2;
   this.nKonf = nKonf; this.nTage = nTage;
   this.n = new Float64Array(z); this.su = new Float64Array(z); this.sr = new Float64Array(z); this.sd = new Float64Array(z);
+  this.sh = new Float64Array(z); this.n5 = new Float64Array(z);       /* Nr. 121-2b: Summe der Urteilshuerden (Pp je Umlauf) und Trades der Kostenklasse 5 */
   this.dn = GRUPPEN.map(function () { return new Float64Array(z); }); this.ds = GRUPPEN.map(function () { return new Float64Array(z); });
   this.tn = new Float64Array(nTage * POT_MAX_DAUER * N_K * 2); this.ts = new Float64Array(nTage * POT_MAX_DAUER * N_K * 2);
 }
 Zellen.prototype.idx = function (art, konf, tag, k, lebend) { return ((((art * this.nKonf + konf) * this.nTage + tag) * N_K) + k) * 2 + lebend; };
 Zellen.prototype.topfIdx = function (tag, dauer, k, lebend) { return ((tag * POT_MAX_DAUER + (dauer - 1)) * N_K + k) * 2 + lebend; };
-Zellen.prototype.add = function (i, dir, r, u, dauer, gruppe) {
+Zellen.prototype.add = function (i, dir, r, u, dauer, gruppe, h, k5) {
   this.n[i]++; this.su[i] += u; this.sr[i] += dir * r; this.sd[i] += dauer;
+  if (h != null) this.sh[i] += h;
+  if (k5) this.n5[i]++;
   if (gruppe) { var g = GRUPPEN.indexOf(gruppe); if (g < 0) g = 2; this.dn[g][i]++; this.ds[g][i] += dir * r; }
 };
 
@@ -238,6 +243,17 @@ function lokalerTopf(S, ES, EP, H, radien, klassen, von, bis, hist, zl) {
 function topfMittel(T, e, nMin) { var z = T[e]; return z && z[1] >= (nMin || K.TOPF_N_MIN) ? z[0] / z[1] : NaN; }
 function eindeutig(arr) { var a = Int32Array.from(arr).sort(), o = []; for (var i = 0; i < a.length; i++) if (!o.length || o[o.length - 1] !== a[i]) o.push(a[i]); return o; }
 
+/** Kostenregel je Trade (Nr. 121-2b A.2/A.4): Kostenklasse = Panel-Klasse k, bei k = 3 (ab 1.000 Mio $) Klasse 5 (Index 4), wenn der Median-Dollarumsatz
+ *  (c x v) der K.UMSATZ_FENSTER Tafelzeilen VOR dem Einstieg >= K.KLASSE5_UMSATZ ist (volle 20 Zeilen noetig, sonst Klasse 4 - die teurere). */
+function kostenKlasse(S, ePos, k) {
+  if (k !== 3 || K.KLASSE5_UMSATZ == null || ePos < K.UMSATZ_FENSTER) return k;
+  var w = []; for (var j = ePos - K.UMSATZ_FENSTER; j < ePos; j++) { var u = S.c[j] * S.v[j]; if (!(u >= 0)) return k; w.push(u); }
+  w.sort(function (a, b) { return a - b; }); var m = w.length >> 1, med = w.length % 2 ? w[m] : (w[m - 1] + w[m]) / 2;
+  return KO.klasseZurLaufzeit(3, med);
+}
+/** Roher Kurs fuer die Stueckzahl: rohe Eroeffnung des Einstiegstags (o x roh / c der Zeile ePos; Panel: rohEroeffnung) - nur die Einstiegszeile, also
+ *  kein Kurs vor einem Vorwaerts-Stichtag (Test C-3); ohne roh (Quelle trendkanal-tage, hatRoh false) null -> der Median-Kurs der Klasse (kosten.js). */
+function kursEinstieg(S, ePos) { if (!S.roh || !(S.roh[ePos] > 0) || !(S.c[ePos] > 0)) return null; var k = S.o[ePos] * S.roh[ePos] / S.c[ePos]; return k > 0 ? k : null; }
 /** Einen Trade buchen: Ertrag Long von ePos bis ausPos, gegen den Topf seiner Zelle - oder im Modus zeit gegen tpZeit: eine Zahl (lokaler
  *  Topf des Signals; NaN = topfFehlt) bzw. eine Funktion (dauer, tagE) (globaler Topf, Nr. 118, nur opt.topfArt 'global').
  *  Abgang einer Reihe, deren letzte Zeile der letzte Tag vor der Sperre ist (gesperrte Tafel): Gruppe "zensiert" (A7). */
@@ -251,7 +267,9 @@ function buche(TF, Z, art, kf, dir, S, ePos, ausPos, k, zaehler, tpZeit, plus) {
   else { var ti = Z.topfIdx(tagE, dauer, k, S.lebend); tp = Z.tn[ti] > 0 ? Z.ts[ti] / Z.tn[ti] : NaN; }
   if (tp !== tp) { zaehler.topfFehlt++; return null; }
   var r = plus ? e.r + plus : e.r;                     /* Nr. 121-2a D: Einsaat (nur --eichung, nur Signalfenster), sonst e.r unveraendert */
-  Z.add(Z.idx(art, kf, tagE, k, S.lebend), dir, r, dir * (r - tp), e.dauer, e.delist ? (zensiertAnSperre(TF, S) ? 'zensiert' : (S.gruppe || 'sonstige')) : null);
+  var kk = kostenKlasse(S, ePos, k);
+  Z.add(Z.idx(art, kf, tagE, k, S.lebend), dir, r, dir * (r - tp), e.dauer, e.delist ? (zensiertAnSperre(TF, S) ? 'zensiert' : (S.gruppe || 'sonstige')) : null,
+    KO.gesamtPp(kk, K.KOSTEN.ausfuehrungTag, K.POSITION_USD, kursEinstieg(S, ePos), K.KOSTEN.modell), kk === 4);
   return e;
 }
 /** A7: gesperrte Tafel und die letzte Zeile der Reihe ist der letzte Tag vor der Sperre -> die Reihe endet nur an der Sperre. */
@@ -485,21 +503,23 @@ function messe(TF, regel, kand, opt) {
 }
 
 /* ---------- Statistik (Trendkanal auswerten.js: tagesreihe, momente, statistik) ---------- */
-/** Tagesreihe einer Zellenzeile; sicht 'alle' | 'lebend'. Je Tag: n, su, sr, sd, nh (Summe Huerden), nhF (Summe Eroeffnungshuerden, A17
- *  nachrichtlich: Huerde x Eroeffnungsfaktor je Klasse der Minutenstudie), dn/ds je Gruppe. */
+/** Tagesreihe einer Zellenzeile; sicht 'alle' | 'lebend'. Je Tag: n, su, sr, sd, nhU (Summe der URTEILSHUERDEN je Trade, Kostenregel Nr. 121-2b:
+ *  Eroeffnung + IBKR Fixed, Klasse 1-5), nh (Summe Kassa-Huerden je Panel-Klasse, seit Nr. 121-2b nachrichtlich), nhF (Summe Eroeffnungsspannen ohne
+ *  Gebuehr, A17 nachrichtlich: Huerde x Eroeffnungsfaktor je Klasse der Minutenstudie), n5 (Trades der Kostenklasse 5), dn/ds je Gruppe.
+ *  uNetto = (su - nhU) / n ist das Urteil; uNettoKassa = (su - nh) / n die alte Groesse (bitgleich zum Stand vor Nr. 121-2b). */
 function tagesreihe(Z, klassen, art, kf, sicht) {
   var aus = [], lVon = sicht === 'lebend' ? 1 : 0, nG = GRUPPEN.length;
   var hF = klassen.map(function (kl) { return kl.huerdeEroeffnung != null ? kl.huerdeEroeffnung : kl.huerde * (kl.eroeffnungFaktor || 1); });
   for (var t = 0; t < Z.nTage; t++) {
-    var z = { t: t, n: 0, su: 0, sr: 0, sd: 0, nh: 0, nhF: 0, nK: [0, 0, 0, 0], dn: GRUPPEN.map(function () { return 0; }), ds: GRUPPEN.map(function () { return 0; }) };
+    var z = { t: t, n: 0, su: 0, sr: 0, sd: 0, nh: 0, nhF: 0, nhU: 0, n5: 0, nK: [0, 0, 0, 0], dn: GRUPPEN.map(function () { return 0; }), ds: GRUPPEN.map(function () { return 0; }) };
     for (var k = 0; k < N_K; k++) for (var l = lVon; l <= 1; l++) {
       var i = Z.idx(art, kf, t, k, l), n = Z.n[i];
       if (!(n > 0)) continue;
-      z.n += n; z.su += Z.su[i]; z.sr += Z.sr[i]; z.sd += Z.sd[i]; z.nK[k] += n; z.nh += n * klassen[k].huerde; z.nhF += n * hF[k];
+      z.n += n; z.su += Z.su[i]; z.sr += Z.sr[i]; z.sd += Z.sd[i]; z.nK[k] += n; z.nh += n * klassen[k].huerde; z.nhF += n * hF[k]; z.nhU += Z.sh[i]; z.n5 += Z.n5[i];
       for (var g = 0; g < nG; g++) { z.dn[g] += Z.dn[g][i]; z.ds[g] += Z.ds[g][i]; }
     }
     if (!(z.n > 0)) continue;
-    z.uBrutto = z.su / z.n; z.uNetto = (z.su - z.nh) / z.n; z.roh = z.sr / z.n; z.uNettoEroeffnung = (z.su - z.nhF) / z.n;
+    z.uBrutto = z.su / z.n; z.uNetto = (z.su - z.nhU) / z.n; z.uNettoKassa = (z.su - z.nh) / z.n; z.roh = z.sr / z.n; z.uNettoEroeffnung = (z.su - z.nhF) / z.n;
     aus.push(z);
   }
   return aus;
@@ -532,17 +552,19 @@ function momente(paare, L) {
 function paare(zeilen, feld) { return zeilen.map(function (z) { return { t: z.t, x: z[feld] }; }); }
 /** Kennzahlen einer Tagesmenge: Trades, Huerde je Trade, Abgaenge je Gruppe, uBrutto/uNetto/roh als Momente (Lag L). */
 function statistik(zeilen, L) {
-  var nG = GRUPPEN.length, N = 0, SU = 0, SR = 0, NH = 0, NHF = 0, SD = 0, nK = [0, 0, 0, 0], dn = GRUPPEN.map(function () { return 0; }), ds = GRUPPEN.map(function () { return 0; });
-  zeilen.forEach(function (z) { N += z.n; SU += z.su; SR += z.sr; NH += z.nh; NHF += z.nhF || 0; SD += z.sd; for (var k = 0; k < N_K; k++) nK[k] += z.nK[k]; for (var g = 0; g < nG; g++) { dn[g] += z.dn[g]; ds[g] += z.ds[g]; } });
-  var st = { nTage: zeilen.length, nTr: N, nK: nK, kKand: N > 0 ? NH / N : null, kKandEroeffnung: N > 0 ? NHF / N : null, dauerMittel: N > 0 ? SD / N : null,
+  var nG = GRUPPEN.length, N = 0, SU = 0, SR = 0, NH = 0, NHF = 0, NHU = 0, N5 = 0, SD = 0, nK = [0, 0, 0, 0], dn = GRUPPEN.map(function () { return 0; }), ds = GRUPPEN.map(function () { return 0; });
+  zeilen.forEach(function (z) { N += z.n; SU += z.su; SR += z.sr; NH += z.nh; NHF += z.nhF || 0; NHU += z.nhU || 0; N5 += z.n5 || 0; SD += z.sd; for (var k = 0; k < N_K; k++) nK[k] += z.nK[k]; for (var g = 0; g < nG; g++) { dn[g] += z.dn[g]; ds[g] += z.ds[g]; } });
+  /* nKosten: Trades je Kostenklasse 1-5 (Klasse 5 aus Klasse 4 herausgerechnet); kKand = mittlere Urteilshuerde je Trade (Nr. 121-2b), kKandKassa die alte */
+  var nKosten = [nK[0], nK[1], nK[2], nK[3] - N5, N5]; if (nKosten.length !== N_KK) throw new Error('nKosten');
+  var st = { nTage: zeilen.length, nTr: N, nK: nK, nKosten: nKosten, kKand: N > 0 ? NHU / N : null, kKandKassa: N > 0 ? NH / N : null, kKandEroeffnung: N > 0 ? NHF / N : null, dauerMittel: N > 0 ? SD / N : null,
     abgaenge: GRUPPEN.map(function (g, i) { return { gruppe: g, n: dn[i], mittel: dn[i] > 0 ? ds[i] / dn[i] : null }; }),
     uBrutto: momente(paare(zeilen, 'uBrutto'), L), uNetto: momente(paare(zeilen, 'uNetto'), L), roh: momente(paare(zeilen, 'roh'), L),
-    uNettoEroeffnung: momente(paare(zeilen, 'uNettoEroeffnung'), L) };
-  st.uNetto.jeTrade = N > 0 ? (SU - NH) / N : null; st.uBrutto.jeTrade = N > 0 ? SU / N : null; st.uNettoEroeffnung.jeTrade = N > 0 ? (SU - NHF) / N : null;
+    uNettoEroeffnung: momente(paare(zeilen, 'uNettoEroeffnung'), L), uNettoKassa: momente(paare(zeilen, 'uNettoKassa'), L) };
+  st.uNetto.jeTrade = N > 0 ? (SU - NHU) / N : null; st.uNettoKassa.jeTrade = N > 0 ? (SU - NH) / N : null; st.uBrutto.jeTrade = N > 0 ? SU / N : null; st.uNettoEroeffnung.jeTrade = N > 0 ? (SU - NHF) / N : null;
   return st;
 }
 function kurz(m) { return m ? { n: m.n, mittel: m.mittel, se: m.se, seNaiv: m.seNaiv, t: m.t, obere: m.obere, untere: m.untere, nEff: m.nEff, hh0: m.hh0, jeTrade: m.jeTrade } : null; }
-function kurzSt(st) { return { nTage: st.nTage, nTr: st.nTr, nK: st.nK, kKand: st.kKand, kKandEroeffnung: st.kKandEroeffnung, dauerMittel: st.dauerMittel, abgaenge: st.abgaenge, uBrutto: kurz(st.uBrutto), uNetto: kurz(st.uNetto), roh: kurz(st.roh), uNettoEroeffnung: kurz(st.uNettoEroeffnung) }; }
+function kurzSt(st) { return { nTage: st.nTage, nTr: st.nTr, nK: st.nK, nKosten: st.nKosten, kKand: st.kKand, kKandKassa: st.kKandKassa, kKandEroeffnung: st.kKandEroeffnung, dauerMittel: st.dauerMittel, abgaenge: st.abgaenge, uBrutto: kurz(st.uBrutto), uNetto: kurz(st.uNetto), roh: kurz(st.roh), uNettoEroeffnung: kurz(st.uNettoEroeffnung), uNettoKassa: kurz(st.uNettoKassa) }; }
 /** Verteilungsfunktion der Student-t-Verteilung P(T <= t) mit df Freiheitsgraden (A16, Nr. 121-1): regularisierte unvollstaendige Beta-Funktion
  *  (Kettenbruch nach Numerical Recipes betacf), df > 0 auch nicht ganzzahlig. */
 function tVerteilung(t, df) {
@@ -589,7 +611,7 @@ function auswerte(M, TF, opt) {
     var seB = (e.uNetto.se != null && TE > 0 && TB > 0) ? e.uNetto.se * Math.sqrt(TE / TB) : null, mdeB = seB != null ? 2 * seB : null;
     var tor1 = e.uNetto.mittel != null && mdeB != null && e.uNetto.mittel > 0 && e.uNetto.mittel >= K.TOR1_FAKTOR * mdeB;
     /* Placebo "anderer Wert gleicher Klasse" gibt es nur im Modus topf; im Modus zeit entfaellt er (traefe dieselbe Zelle) und wird so ausgewiesen */
-    var plV = !zeit && pl.uBrutto.mittel != null && pl.uBrutto.se != null && Math.abs(pl.uBrutto.mittel) > K.PLACEBO_T * pl.uBrutto.se && Math.abs(pl.uBrutto.mittel) > K.PLACEBO_ANTEIL_HUERDE * (e.kKand || KL[3].huerde);
+    var plV = !zeit && pl.uBrutto.mittel != null && pl.uBrutto.se != null && Math.abs(pl.uBrutto.mittel) > K.PLACEBO_T * pl.uBrutto.se && Math.abs(pl.uBrutto.mittel) > K.PLACEBO_ANTEIL_HUERDE * (e.kKandKassa || KL[3].huerde);
     var ueb = M.ueberlappung ? { n: M.ueberlappung.n[kf], von: M.ueberlappung.von[kf], anteil: M.ueberlappung.von[kf] > 0 ? M.ueberlappung.n[kf] / M.ueberlappung.von[kf] : null } : null;
     var gruende = [];
     if (!(e.nTage >= K.MIN_TAGE)) gruende.push('< ' + K.MIN_TAGE + ' Signaltage');
@@ -605,7 +627,7 @@ function auswerte(M, TF, opt) {
     /* A3 (Nr. 121-1, beide Modi): Sperrklinke auf das verschobene Signal ZWEISEITIG, dieselbe Regel wie der Placebo "anderer Wert": |u brutto| > PLACEBO_T se
      * und > PLACEBO_ANTEIL_HUERDE x mittlere Huerde der Signaltrades -> Messgeraet-Fehler (laeufer.js urteile). Gewertet werden nur verschobene Fenster
      * ohne Ueberschneidung mit einem Signalfenster der Reihe (B-V5, messe). `wirkt` = `verstoss` (gleiche Bedeutung, Feld bleibt fuer alte Leser). */
-    var vsSchranke = K.PLACEBO_ANTEIL_HUERDE * (e.kKand || KL[3].huerde);
+    var vsSchranke = K.PLACEBO_ANTEIL_HUERDE * (e.kKandKassa || KL[3].huerde);
     var vsV = vs.uBrutto.mittel != null && vs.uBrutto.se != null && Math.abs(vs.uBrutto.mittel) > K.PLACEBO_T * vs.uBrutto.se && Math.abs(vs.uBrutto.mittel) > vsSchranke;
     var urteil = kandidat ? 'Kandidat' : (e.uNetto.obere != null && e.uNetto.obere < 0 && e.nTage >= K.MIN_TAGE) ? 'nein' : 'nicht entscheidbar';
     var z1 = K.MDE_FAKTOR;
@@ -614,7 +636,7 @@ function auswerte(M, TF, opt) {
       spaet: { uNetto: kurz(sp.uNetto), nTr: sp.nTr, art: 'Einstieg +1 T, Ausstieg +1 T (gleiche Haltedauer)' },
       versatz: { uNetto: kurz(vs.uNetto), uBrutto: kurz(vs.uBrutto), nTr: vs.nTr, wirkt: vsV, verstoss: vsV, schranke: { t: K.PLACEBO_T, mindestPp: vsSchranke, zweiseitig: true }, ueberlappung: ueb },
       placebo: zeit ? { entfaellt: true, grund: 'entfaellt im Modus zeit: ein anderer Wert gleicher Klasse am selben Tag traefe dieselbe Zelle (den Markttag); Placebo ist das um ' + (M.versatzTage || K.VERSATZ_TAGE) + ' Handelstage verschobene Signal', uBrutto: null, nTr: 0, schranke: null, verstoss: false }
-        : { uBrutto: kurz(pl.uBrutto), nTr: pl.nTr, schranke: { t: K.PLACEBO_T, mindestPp: K.PLACEBO_ANTEIL_HUERDE * (e.kKand || KL[3].huerde) }, verstoss: plV },
+        : { uBrutto: kurz(pl.uBrutto), nTr: pl.nTr, schranke: { t: K.PLACEBO_T, mindestPp: K.PLACEBO_ANTEIL_HUERDE * (e.kKandKassa || KL[3].huerde) }, verstoss: plV },
       TE: TE, TB: TB, seBproj: seB, mdeBproj: mdeB, tor1: tor1, tor1Schwelle: mdeB != null ? K.TOR1_FAKTOR * mdeB : null,
       /* A4 / B-V8: Tor 1 als t-Wert (Schwelle / se der Entdeckung, gesperrt 4 x 2 x Wurzel 2 = 11,31) neben MDE80 = 2,8016 se - zwei Zahlen, zwei Namen */
       tor1FaktorSe: (mdeB != null && e.uNetto.se > 0) ? K.TOR1_FAKTOR * mdeB / e.uNetto.se : null,
@@ -697,6 +719,13 @@ function vorbehaltDichte(M) {
   return 'Messgeraet unter Vorbehalt: dichter Plan (mittlerer Abstand der Signaltage je Reihe ' + pa.mittel.toFixed(1).replace('.', ',') + ' Handelstage < ' + K.ZEIT_DICHTE_WARNUNG + '). Eichung 23.10.2026: bei Dichte 1/10 Geraetversatz -0,17 +- 0,05 Pp brutto, Ursache offen (Nr. 124); bei Dichte 1/21 kein Versatz.';
 }
 
+/** Kostenregel des Laufs fuer Protokoll und ergebnis.json (Nr. 121-2b). */
+function kostenBeschreibung() {
+  return { regel: 'Urteilshuerde je Trade = Spanne der Kostenklasse zur Eroeffnung (Ein- und Ausstieg) + IBKR Ireland ' + K.KOSTEN.modell + ' (Kauf + Verkauf) bei ' + K.POSITION_USD.toFixed(0) + ' $ Position, Pp je Umlauf; Kassa-Huerde nachrichtlich (uNettoKassa)',
+    ausfuehrung: K.KOSTEN.ausfuehrungTag, modell: K.KOSTEN.modell, positionUsd: K.POSITION_USD, klasse5UmsatzUsd: K.KLASSE5_UMSATZ, klasse5: K.KLASSE5_UMSATZ != null ? 'gemessen (spannen/ 2021-2026)' : 'Klasse 5 nicht gemessen',
+    kurs: 'rohe Eroeffnung des Einstiegstags; ohne roh der Median-Kurs der Klasse', spannenZeitraum: 'ab 2021 gemessen, 2016-2020 ungeprueft (dort kleiner - vorsichtig)', seit: K.KOSTEN.seit, grund: K.KOSTEN.grund,
+    tabelle: KO.tabelle([K.POSITION_USD]).filter(function (z) { return z.klasse !== 'index'; }).map(function (z) { return { klasse: z.name, ausfuehrung: z.ausfuehrung, kurs: z.kurs, spannePp: z.spannePp, gebuehrPp: z.gebuehrFixedPp, gesamtPp: z.gesamtFixedPp }; }) };
+}
 /**
  * Ein ganzer Lauf: Tafel oeffnen, messen, auswerten. opt: quelle, pruefzeit, siegelPfad, schnitt (Vorgabe K.EICHUNG.schnitt),
  * pruefung (Liste der Kandidaten-Keys), nurReihen, ohneSpeicherpruefung, tafel (fertige Tafel, nur Tests), topfArt (Modus zeit: lokal | global, nur Tests).
@@ -721,13 +750,14 @@ function lauf(regel, kand, opt) {
   return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum, reihen: TF.reihen.length, nTage: TF.nTage,
     letzterTag: TF.tage[TF.maxTag], schnitt: opt.schnitt === 'panelende' ? null : (TF.tage[iSchnitt] || null), entdeckungBis: TF.tage[Math.min(TF.maxTag, iSchnitt - 1)], registerM: opt.registerM == null ? null : opt.registerM, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
     bewertung: M.bewertung, topfArt: M.topfArt, bewertungDetail: bewertungDetail(M.bewertung, M.versatzTage), versatzTage: M.versatzTage, signalAnteil: SA, warnungen: W, planAbstand: M.planAbstand, vorbehalt: vb,
-    konfigurationen: konf, klassen: TF.klassen.map(function (k) { return { name: k.name, huerde: k.huerde }; }) };
+    konfigurationen: konf, klassen: TF.klassen.map(function (k) { return { name: k.name, huerde: k.huerde, kassa: k.kassa, eroeffnung: k.eroeffnung, nurKosten: !!k.nurKosten }; }),
+    kosten: kostenBeschreibung() };
 }
 
 module.exports = { lauf: lauf, messe: messe, zaehle: zaehle, signaleSammeln: signaleSammeln, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, kunstKalender: kunstKalender, Zellen: Zellen, momente: momente, statistik: statistik,
   tagesreihe: tagesreihe, phi: phi, handelstage: handelstage, indexAb: indexAb, fnv: fnv, mulberry32: mulberry32, ARTEN: ARTEN, GRUPPEN: GRUPPEN, POT_MAX_DAUER: POT_MAX_DAUER,
   zeitTopfGlobal: zeitTopfGlobal, lokalerTopf: lokalerTopf, topfMittel: topfMittel, topfRadiusVon: topfRadiusVon, zensiertAnSperre: zensiertAnSperre, tVerteilung: tVerteilung, ueberlappt: ueberlappt, signalAnteil: signalAnteil, warnungen: warnungen, bewertungDetail: bewertungDetail, versatzVon: versatzVon,
-  vorbehaltDichte: vorbehaltDichte, BEWERTUNGEN: BEWERTUNGEN, VERSATZ_MIN: VERSATZ_MIN, VERSATZ_MAX: VERSATZ_MAX };
+  vorbehaltDichte: vorbehaltDichte, kostenKlasse: kostenKlasse, kursEinstieg: kursEinstieg, kostenBeschreibung: kostenBeschreibung, N_KK: N_KK, BEWERTUNGEN: BEWERTUNGEN, VERSATZ_MIN: VERSATZ_MIN, VERSATZ_MAX: VERSATZ_MAX };
 
 /* Kalibrierung (FORM §3, Auftrag §3): node --max-old-space-size=6144 pruefstrasse/adapter/tag.js --kalibrierung [<ausgabe.json>]
  * Donchian-20-Ausbruch long, H5 auf den Tagesdateien der Trendkanal-Studie mit DEREN Schnitt (Bestaetigung ab 07.02.2023, Siegel
@@ -745,8 +775,8 @@ if (require.main === module && process.argv.indexOf('--kalibrierung') !== -1) {
   if (out && out[0] !== '-') fs.writeFileSync(out, JSON.stringify(E, null, 1));
   E.konfigurationen.forEach(function (k) {
     var e = k.entdeckung, b = k.pruefung;
-    console.log(k.key + ' Ent nTage ' + e.nTage + ' nTr ' + e.nTr + ' u brutto ' + e.uBrutto.mittel.toFixed(4) + ' u netto ' + e.uNetto.mittel.toFixed(4) + ' t ' + e.uNetto.t.toFixed(2) +
-      ' | Bes nTage ' + b.nTage + ' nTr ' + b.nTr + ' u brutto ' + b.uBrutto.mittel.toFixed(4) + ' u netto ' + b.uNetto.mittel.toFixed(4) + ' t ' + b.uNetto.t.toFixed(2) + ' seHH ' + b.uNetto.se.toFixed(4));
+    console.log(k.key + ' Ent nTage ' + e.nTage + ' nTr ' + e.nTr + ' u brutto ' + e.uBrutto.mittel.toFixed(4) + ' u netto ' + e.uNetto.mittel.toFixed(4) + ' t ' + e.uNetto.t.toFixed(2) + ' (Kassa ' + e.uNettoKassa.mittel.toFixed(4) + ' t ' + e.uNettoKassa.t.toFixed(2) + ')' +
+      ' | Bes nTage ' + b.nTage + ' nTr ' + b.nTr + ' u brutto ' + b.uBrutto.mittel.toFixed(4) + ' u netto ' + b.uNetto.mittel.toFixed(4) + ' t ' + b.uNetto.t.toFixed(2) + ' (Kassa ' + b.uNettoKassa.mittel.toFixed(4) + ' t ' + b.uNettoKassa.t.toFixed(2) + ')' + ' seHH ' + b.uNetto.se.toFixed(4));
   });
   console.log('Zaehler ' + JSON.stringify(E.zaehler) + ' Verstoesse ' + E.verstoesse + ' ms ' + JSON.stringify(E.ms));
 }

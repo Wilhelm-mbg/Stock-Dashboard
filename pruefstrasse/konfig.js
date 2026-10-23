@@ -83,6 +83,13 @@ module.exports = {
    * der Trades fielen weg). Das Protokoll nennt Topf-n (Median, Min, Anteil n = 1).
    * Radius in Vielfachen der Haltedauer H (kandidat.json topfRadius in Handelstagen, Bereich min H .. max H, Vorgabe vorgabe H) */
   TOPF_N_MIN: 1, TOPF_RADIUS: { min: 2, max: 12, vorgabe: 4 },
+  /* KOSTENREGEL (Nr. 121-2b, pruefstrasse/kosten.js, FORM.md §3): POSITION_USD = 100.000 $ / 19 Plaetze (Nr. 122 kosten.js PLAETZE, Startsumme der
+   * Rueckblicke), Sensitivitaet 1.000 $ nachrichtlich (Mindestgebuehr 1 $ je Order). KLASSE5_UMSATZ = Median-Dollarumsatz der 20 Tage vor dem Einstieg,
+   * ab dem Panel-Klasse 4 zur Kostenklasse 5 wird - GEMESSEN 23.10.2026 aus spannen/ (oberstes Dezil der Klasse ab 1.000 Mio $ beginnt bei 3.833 Mio $,
+   * das Dezil darunter endet bei 3.680 Mio $; 3.800 Mio $ trennt dieselben Symbole); null = Klasse 5 aus. KOSTEN.ausfuehrungTag: Urteilshuerde der
+   * tag-Form (Ein- und Ausstieg zur Eroeffnung), Kassa nachrichtlich; modell IBKR Fixed (Tiered nachrichtlich). UMSATZ_FENSTER wie Nr. 122 klasseVon. */
+  POSITION_USD: 100000 / 19, POSITION_SENSITIV_USD: 1000, KLASSE5_UMSATZ: 3.8e9, UMSATZ_FENSTER: 20,
+  KOSTEN: { ausfuehrungTag: 'eroeffnung', modell: 'fixed', seit: '2026-10-23', grund: 'Kostenregel Nr. 121-2b' },
   KORB: { kostenBp: 20, phasen: 63, kleinstAnteil: 0.05, placeboBuecher: 200, rangMin: 0.95 },
   /* A10 / B-V10 (Nr. 121-1): Zufallsbuecher B = max(200, 20 m + 1), m = Konfigurationen im Register + 1 (Register-Holm: kleinster p = 1/(B + 1)
    * <= alpha/m). Bei m <= 9 bleibt B = 200 (die Korb-Kalibrierung A-187/B-187 rechnet ohne Zufallsbuecher und ist davon unberuehrt). */

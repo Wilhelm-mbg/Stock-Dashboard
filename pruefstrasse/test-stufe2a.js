@@ -125,7 +125,7 @@ module.exports = function (C) {
     return [gut, 'df9/m14 ' + a.t.toFixed(2) + ' | df53/m14 ' + b.t.toFixed(2) + ' | df9/m60 ' + c.t.toFixed(2) + ' | df53/m60 ' + d.t.toFixed(2) + ' | extern m 3.414 df 9: ' + a.nachrichtlichExtern.t.toFixed(2)];
   });
   probe('B-3: Adapter wendet die Schwelle an: t 3,2 bei df ~85 wird mit m 2 Kandidat, mit m 200 nicht; Grund nennt die Schwelle', function () {
-    var T = TF.kunstTafel(C.kunstReihen(function (r, i) { return (A.fnv('K' + r + '|' + (i - 1)) % 25) === 0 ? 0.0059 : 0; }), TAGE);
+    var T = TF.kunstTafel(C.kunstReihen(function (r, i) { return (A.fnv('K' + r + '|' + (i - 1)) % 25) === 0 ? 0.0067 : 0; }), TAGE);   /* Nr. 121-2b: 0,0059 -> 0,0067 (Urteilshuerde Eroeffnung + IBKR statt Kassa, +0,076 Pp je Trade; t wieder ~3,2) */
     var E2 = A.lauf(C.regelZ, C.KAND, { tafel: T, registerM: 2 }), E60 = A.lauf(C.regelZ, C.KAND, { tafel: T, registerM: 200 }), k2 = E2.konfigurationen[0], k60 = E60.konfigurationen[0], t = k2.entdeckung.uNetto.t;
     return [t > k2.schwelle.t && t < k60.schwelle.t && k2.kandidat && !k60.kandidat && k60.gruende.some(function (g) { return /^t < 3,/.test(g); }) && k2.schwelle.m === 2 && k60.schwelle.m === 200, 't ' + t.toFixed(2) + ' df ' + k2.schwelle.df.toFixed(0) + ', Schwelle m 2 ' + k2.schwelle.t.toFixed(2) + ' / m 200 ' + k60.schwelle.t.toFixed(2) + ', Gruende ' + JSON.stringify(k60.gruende)];
   });

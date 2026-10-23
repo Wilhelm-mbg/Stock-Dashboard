@@ -235,8 +235,9 @@ ok(Emt.signalAnteil.tage === 32 && Emt.signalAnteil.mittel === 1 && Emt.signalAn
   'topf: Anteil der zulaessigen Reihen mit Signal am Signaltag 100 % an allen 32 Signaltagen -> Warnung "Bewertung zeit erwaegen" im Protokoll', Emt.warnungen[0] && Emt.warnungen[0].slice(0, 72));
 ok(Emz.bewertung === 'zeit' && /LOKALER Topf des Signals/.test(Emz.bewertungDetail) && Emz.topfArt === 'lokal' && h5z.nTage + Emz.konfigurationen[0].zeitTopf.randFehlt / 40 === 32 && h5z.nTr + Emz.konfigurationen[0].zeitTopf.randFehlt === 1280 && h5z.tradesJeTag === 40 /* Nr. 121-2a QS: Randregel nimmt Signale nahe dem Reihenanfang heraus (randFehlt) */ && h5z.uBrutto.mittel > 1.5 && h5z.uBrutto.mittel < 2.4 && h5z.uNetto.t > 10 && h3z.uBrutto.mittel > 1.5 && h3z.uBrutto.mittel < 2.4 && Emz.konfigurationen[0].kandidat && Emz.konfigurationen[1].kandidat,
   'zeit: dieselbe Regel findet den eingesaeten Effekt (+2 Pp je Fenster; > 1,5 heisst: die Signalfenster sind aus dem zeitlichen Topf ausgeschlossen, sonst ~1,25), 40 Trades je Signaltag, H5 und H3 Kandidaten', 'H5 u ' + h5z.uBrutto.mittel.toFixed(3) + ' t ' + h5z.uNetto.t.toFixed(1) + ' / H3 u ' + h3z.uBrutto.mittel.toFixed(3) + ' t ' + h3z.uNetto.t.toFixed(1));
-ok(Math.abs(h50.uBrutto.mittel) < 0.3 && Math.abs(h50.uNetto.t) < 2.5 && !Em0.konfigurationen[0].kandidat && !Em0.konfigurationen[1].kandidat && LF.urteile(Em0, null, Rg0).urteil !== 'Messgeraet-Fehler',
-  'zeit, gepaarter Placebo: dieselbe Regel auf der Kunstwelt OHNE Effekt ~ 0, kein Kandidat, kein Messgeraet-Fehler', 'u ' + h50.uBrutto.mittel.toFixed(3) + ' t ' + h50.uNetto.t.toFixed(2));
+/* Nr. 121-2b: t auf dem Kassa-Netto (= uNetto vor der Kostenregel, bitgleich) - die Pruefung gilt dem Geraet, nicht der Kostenregel */
+ok(Math.abs(h50.uBrutto.mittel) < 0.3 && Math.abs(h50.uNettoKassa.t) < 2.5 && !Em0.konfigurationen[0].kandidat && !Em0.konfigurationen[1].kandidat && LF.urteile(Em0, null, Rg0).urteil !== 'Messgeraet-Fehler',
+  'zeit, gepaarter Placebo: dieselbe Regel auf der Kunstwelt OHNE Effekt ~ 0, kein Kandidat, kein Messgeraet-Fehler', 'u ' + h50.uBrutto.mittel.toFixed(3) + ' t ' + h50.uNettoKassa.t.toFixed(2));
 var k5z = Emz.konfigurationen[0], k3z = Emz.konfigurationen[1];
 ok(k5z.placebo.entfaellt === true && k5z.placebo.verstoss === false && k5z.placebo.uBrutto === null && /entfaellt im Modus zeit/.test(k5z.placebo.grund) && Emz.zaehler.placeboEntfaellt + Emz.zaehler.randFehlt === 3840 && Emz.zaehler.placeboOhnePartner === 0 && Emt.zaehler.placeboEntfaellt === undefined,
   'zeit: Placebo "anderer Wert gleicher Klasse" entfaellt und wird so ausgewiesen (Feld entfaellt, Zaehler placeboEntfaellt); im Modus topf wie bisher', Emz.zaehler.placeboEntfaellt + ' entfallen');
@@ -260,8 +261,8 @@ var eB = null; try { A.lauf(zufallSignal, Object.assign({}, KAND, { bewertung: '
 ok(eB && /bewertung muss topf \| zeit/.test(eB.message), 'Adapter: bewertung ausser topf | zeit wirft (auch ohne den Laeufer)', eB && eB.message);
 /* Sperrklinke topf: die Kunst-Eichung (Zufallssignal auf T0) liefert dieselben Zahlen wie der Adapter vor Nr. 118 (12.10.2026, 1e-12) */
 var eh5 = E0.konfigurationen[0].entdeckung, eh10 = E0.konfigurationen[1].entdeckung;
-ok(E0.bewertung === 'topf' && eh5.nTage === 428 && eh5.nTr === 782 && nahe(eh5.uBrutto.mittel, 0.029470027222302034, 1e-12) && nahe(eh5.uNetto.t, -0.16636927504682703, 1e-12) && nahe(eh10.uBrutto.mittel, -0.12499646857363268, 1e-12) && nahe(eh10.uNetto.t, -1.6507233659844247, 1e-12) && nahe(E0.konfigurationen[0].placebo.uBrutto.mittel, 0.045138616437735465, 1e-12),
-  'topf bitgleich: Kunst-Eichung (Zufallssignal, 428 Tage, 782 Trades) H5/H10 u brutto, t und Placebo wie vor Nr. 118 (alter Adapter, 1e-12)', eh5.uBrutto.mittel + ' / ' + eh10.uNetto.t);
+ok(E0.bewertung === 'topf' && eh5.nTage === 428 && eh5.nTr === 782 && nahe(eh5.uBrutto.mittel, 0.029470027222302034, 1e-12) && nahe(eh5.uNettoKassa.t, -0.16636927504682703, 1e-12) && nahe(eh10.uBrutto.mittel, -0.12499646857363268, 1e-12) && nahe(eh10.uNettoKassa.t, -1.6507233659844247, 1e-12) && nahe(E0.konfigurationen[0].placebo.uBrutto.mittel, 0.045138616437735465, 1e-12),
+  'topf bitgleich: Kunst-Eichung (Zufallssignal, 428 Tage, 782 Trades) H5/H10 u brutto, t (Kassa-Netto, seit Nr. 121-2b nachrichtlich) und Placebo wie vor Nr. 118 (alter Adapter, 1e-12)', eh5.uBrutto.mittel + ' / ' + eh10.uNettoKassa.t);
 /* Laeufer: Register nennt den Modus, ERGEBNIS.md und Belegstand-Zeile ebenso, Placebo "entfaellt (zeit)", Signaltage/Trades/je Signaltag, Satz zur Aufloesung, Warnung */
 var RgZ = LF.registerEintragen({ kennung: 'x', konfigurationen: [], gesamt: 0 }, 'z', 'tag', [{ key: 'H5', urteil: 'nein' }], '2026-10-12T00:00:00Z', 'zeit');
 RgZ = LF.registerEintragen(RgZ, 'k', 'korb', [{ key: 'k', urteil: 'nein' }], '2026-10-12T00:00:00Z', undefined);
@@ -518,7 +519,7 @@ try {
 var EP4 = JSON.parse(JSON.stringify(Emz)); EP4.konfigurationen[0].pruefung = { nTage: 40, nTr: 1600, uNetto: { mittel: 0.1, t: 2, obere: 0.2 }, nEff: 8, df: 7, pEinseitig: 0.04, pEinseitigNormal: 0.023 };
 var dP4 = LF.messgeraetDetails(kandZ, EP4).join('\n'), mdP4 = LF.ergebnisMarkdown(kandZ, EP4, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null, false), bsP4 = LF.belegstandAbsatz(kandZ, EP4, LF.urteile(Emz, null, Rg0), Rg0, siegelK, null);
 var pflicht4 = [/Topf-n je Trade Median \d+, Min \d+, Anteil n = 1 [\d,]+ %/, /Topf-Starttage relativ zum Signal \(Abstand:Anzahl\): -?\d+:\d+/, /Tor 1 verlangt netto ≥ \+11,31 × se = [+−][\d,]+ Pp; MDE80 = 2,80 × se = [+−][\d,]+ Pp/,
-  /\*\*Ohne Klasse:\*\* [\d,]+ % der Zeilen, \d+ von \d+ Reihen nie mit Klasse/, /Netto mit Eroeffnungshuerde \(nachrichtlich[^)]*\): [+−][\d,]+ \(t /, /zensiert \d+/, /Ueberschneidung mit einem Signalfenster [\d.]+ von [\d.]+ \([\d,]+ %\), nicht gewertet/, /Pruefung: n_eff \+8,0, df \+7,0, p einseitig \(t-Verteilung\) \+0,0400/];
+  /\*\*Ohne Klasse:\*\* [\d,]+ % der Zeilen, \d+ von \d+ Reihen nie mit Klasse/, /Urteil auf der Kostenregel \(Nr\. 121-2b[^)]*\): Huerde je Trade [+−][\d,]+/, /Kassa-Netto [+−][\d,]+ \(t /, /Eroeffnungsspanne ohne Gebuehr [+−][\d,]+ \(t /, /zensiert \d+/, /Ueberschneidung mit einem Signalfenster [\d.]+ von [\d.]+ \([\d,]+ %\), nicht gewertet/, /Pruefung: n_eff \+8,0, df \+7,0, p einseitig \(t-Verteilung\) \+0,0400/];
 var fehlt4 = pflicht4.filter(function (re) { return !re.test(dP4); }).map(String);
 ok(fehlt4.length === 0 && mdP4.indexOf('## Messgeraet (Nr. 121-1)') !== -1 && mdP4.indexOf(dP4.trim()) !== -1 && /Tor 1 verlangt netto ≥ \+11,31 × se = [+−][\d,]+ Pp; MDE80 = 2,80 × se/.test(bsP4),
   'F4: Protokollabschnitt "Messgeraet" traegt die Pflichtfelder (Topf-n Median/Min/Anteil n = 1, Histogramm, Tor 1 in t und Pp, MDE80, ohne Klasse, Eroeffnungs-Netto, zensiert, Versatz-Ueberschneidung, n_eff/df/p) und steht in ERGEBNIS.md; Belegstand nennt Tor 1 und MDE80', fehlt4.join(' | ') || 'alle da');
@@ -556,6 +557,8 @@ ok(/process\.env\.PRUEFSTRASSE_WERTPAPIERARTEN \|\| path\.join\(os\.homedir\(\),
 
 /* Nr. 121-2a: Tests der Stufe 2a in eigener Datei (gleiche Zaehlung, gleiche Kunstwelt) */
 require('./test-stufe2a.js')({ ok: ok, nahe: nahe, K: K, TF: TF, A: A, LF: LF, SG: SG, TAGE: TAGE, kunstReihen: kunstReihen, KAND: KAND, zufallSignal: zufallSignal, SCRATCH: SCRATCH, SCHNELL: SCHNELL, cp: cp });
+/* Nr. 121-2b: Kostenregel, Massstab Nasdaq-100, Papier-Mitschrift (eigene Datei, eigene Kunstwelt) */
+require('./test-stufe2b.js')({ ok: ok, nahe: nahe, K: K, TF: TF, A: A, LF: LF, SG: SG, SCRATCH: SCRATCH, SCHNELL: SCHNELL, cp: cp });
 
 console.log('6) Kalibrierung der Adapter gegen bekannte Ergebnisse (Auftrag §3)');
 var KAL = path.join(K.HIER, 'kalibrierung.json'), SOLL = {

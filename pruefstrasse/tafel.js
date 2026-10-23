@@ -22,8 +22,17 @@ var ABGANG_GRUPPEN = { uebernahme: 'uebernahme', 'fusion-aktientausch': 'ueberna
   cash_mergers: 'uebernahme', stock_mergers: 'uebernahme', stock_and_cash_mergers: 'uebernahme' };
 function gruppeVon(grund, lebend) { if (lebend) return null; return ABGANG_GRUPPEN[grund] || 'sonstige'; }
 
-/** Klassen (Umsatzklassen mit Kassa-Huerde je Umlauf) aus der Trendkanal-/Minutenstudie - unveraendert. */
-function klassen() { return require(path.join(K.TRENDKANAL_STUDIE, 'konfig.js')).KLASSEN; }
+/** Klassen (Umsatzklassen mit Kassa-Huerde je Umlauf): die vier der Trendkanal-/Minutenstudie unveraendert (huerde = Kassa, eroeffnungFaktor; sie
+ *  bestimmen Topf-Zelle und die nachrichtliche Kassa-Huerde) und als fuenfter Eintrag die Kostenklasse 5 "groesste" (Nr. 121-2b A.2, kosten.js) - sie
+ *  verfeinert Klasse 4 nur fuer die Kosten zur Laufzeit; die Topf-Zellen bleiben vier (u brutto bitgleich). Zu jedem Eintrag kassa/eroeffnung aus kosten.js. */
+function klassen() {
+  var KO = require('./kosten.js'), T = require(path.join(K.TRENDKANAL_STUDIE, 'konfig.js')).KLASSEN;
+  var aus = T.map(function (k, i) { return Object.assign({}, k, { kassa: KO.KLASSEN[i].kassa, eroeffnung: KO.KLASSEN[i].eroeffnung }); });
+  var k5 = KO.KLASSEN[4];
+  aus.push({ name: k5.name, von: k5.von, bis: Infinity, huerde: k5.kassa, eroeffnungFaktor: k5.faktor, huerdeEroeffnung: k5.eroeffnung, kassa: k5.kassa, eroeffnung: k5.eroeffnung,
+    nurKosten: true, gemessen: k5.gemessen });
+  return aus;
+}
 
 /** Kalender [von, bis] aus der Kalenderdatei des Archivs (konfig.json). */
 function kalender(von, bis) {

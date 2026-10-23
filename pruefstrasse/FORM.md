@@ -79,7 +79,7 @@ Sicht bis dorthin gefragt wird — die Form des „bestätigten Ausbruchs" der T
 Klassenfilter der Konfiguration wie in der Referenz (`trendkanal-tage/messen.js`: Cooldown je Linie/Richtung, kein Klassenfilter); das Protokoll
 zählt die Signale, die ein nicht gebuchtes Signal (Klasse ohne Konfiguration) sperrte (`cooldownDurchOhneKlasse`).
 **Bewertung `topf` | `zeit`** (`kandidat.json` `bewertung`, Nr. 118). **`topf`** (Vorgabe): Überschuss gegen den **Topf derselben Zelle**
-(Einstiegstag, Dauer, Klasse, lebend), Kassa-Hürde je Umsatzklasse, Standardfehler Hansen-Hodrick über die Tagesreihe (Lag = Haltedauer),
+(Einstiegstag, Dauer, Klasse, lebend), Urteilshürde nach der **Kostenregel** (unten; bis 23.10.2026 die Kassa-Hürde je Umsatzklasse), Standardfehler Hansen-Hodrick über die Tagesreihe (Lag = Haltedauer),
 Tor 1 — **seit Nr. 121-2a (23.10.2026) kein Kriterium mehr**, nur nachrichtlich zum Vergleich mit Messungen davor (Entdeckung ≥ 4 × projizierte
 Bestätigungs-„MDE" = 4 × 2 × se_E × √(TE/TB), TB = ½ TE, also netto ≥ 11,31 × se; an seine Stelle tritt das Machbarkeitstor **vor** dem Lauf, §5), **Tor 2 (delta80 unter der Hürde):
 für die Form tag nicht gebaut — Entscheid Stufe 2** — wie die Trendkanal-Studie
@@ -138,6 +138,39 @@ Median der 63 Abstände p. a., Rang gegen 200 Zufallsbücher — der Rechner von
 **minute** — ein Modul in der Form von `studien/messmaschine/strategien/rsi2seit.js`: `key`, `grund` (≥ 20 Zeichen), `zeitrahmen`,
 `haltedauerKerzen`, `richtung`, `universum`, `kosten`, `params`, `leseFensterKerzen`, `signal(bars, i, params) → { dir } | null`.
 Bewertung: Messmaschine (`messmaschine.js`, Kontrolle A7, Tagesclusterung, Placebo, Bonferroni), Kassa-Hürde je Klasse.
+**Minute: Kostenregel folgt mit Stufe 3** — die Hürde bleibt 0,10 Pp je Umlauf aus der Messmaschine (`kosten.jeUmlaufAnteil`); die Minutenform kennt je
+Kandidat weder Position noch Kurs noch Klasse, die Kostenregel unten ließe sich dort nur mit erfundenen Werten anwenden (Zweitleser Nr. 121-2b, 10).
+
+**Kostenregel (Nr. 121-2b, seit 23.10.2026; `pruefstrasse/kosten.js`, Konstanten in `konfig.js`).** Eine Funktion für alle Formen,
+`huerdeUmlauf(klasse, ausfuehrung, positionUsd, kurs) → { spannePp, gebuehrPp, gesamtPp, quelle }`, Einheit **Pp je Umlauf** (Kauf + Verkauf; je Seite die
+Hälfte, `jeSeiteBp` = gesamtPp × 100 / 2 für den Korb). **Formel:** Hürde = Spanne der Kostenklasse zur Ausführungszeit + (IBKR-Gebühr Kauf + Verkauf) /
+Position. Spanne = notierte Spanne (ap − bp)/mid, Symbol-Median, Fenster `mitte` (Kassa) × Eröffnungsfaktor der Klasse (Eröffnung). Gebühr = IBKR Ireland
+US-Aktien **Fixed** 0,005 $/Stück, mindestens 1 $, höchstens 1 % je Order, dazu CAT 0,000003 $/Stück und SEC 0,0000206 × Verkaufswert (Tiered nachrichtlich);
+Stückzahl = Position / roher Kurs. **Position 5.263 $** = 100.000 $ / 19 Plätze (`POSITION_USD`, Nr. 122); Sensitivität 1.000 $ nachrichtlich (dort greift
+die Mindestgebühr: +0,20 Pp je Umlauf). Herkunft: Klassen 1–4, Faktoren und Gebühren aus `studien/momentum-wiedervorlage-2026-10-23/kosten.js` und
+`quellen.md` (Nr. 122, abgerufen 23.10.2026), kopiert, nicht neu erfunden.
+
+| Kostenklasse | Median-Dollarumsatz (20 Tage vor dem Einstieg) | Kassa | Eröffnung | Kassa + Fixed (5.263 $) | **Eröffnung + Fixed (5.263 $)** |
+|---|---|---|---|---|---|
+| 1 | 5–50 Mio $ | 0,1569 | 0,4205 (× 2,68) | 0,1970 | **0,4606** |
+| 2 | 50–250 Mio $ | 0,0854 | 0,2101 (× 2,46) | 0,1255 | **0,2502** |
+| 3 | 250–1.000 Mio $ | 0,0647 | 0,1339 (× 2,07) | 0,1048 | **0,1740** |
+| 4 | ab 1.000 Mio $ | 0,0449 | 0,0813 (× 1,81) | 0,0850 | **0,1213** |
+| 5 „größte" | ab 3.800 Mio $ (`KLASSE5_UMSATZ`, gemessen) | 0,0188 | 0,0309 (gemessen, × 1,65) | 0,0589 | **0,0710** |
+| index (SPY, QQQ) | — | 0,0449 | 0,0813 | 0,0850 | **0,1213** — **Index-Spanne nicht gemessen** (Platzhalter = Klasse-4-Spanne) |
+
+(Gebühr bei dem Median-Kurs der Klasse 35,67 / 68,47 / 110,34 / 170,87 / 201,78 $; index mit 400 $.) **Klasse 5** verfeinert die Panel-Klasse 4 **zur
+Laufzeit** (Median von c × v der 20 Tafelzeilen vor dem Einstieg, volle 20 Zeilen nötig) — das Panelfeld bleibt unverändert, und die **Topf-Zelle bleibt
+die Panel-Klasse** (vier Klassen): Klasse 5 bewegt nur die Hürde, u brutto bleibt bitgleich. Die Grenze ist **gemessen** (`E:/Markt-Dashboard-Archiv/spannen/`,
+2021–2026, Klasse ab 1.000 Mio $, 110 Symbole; Positivkontrolle: alle 110 ergeben die 0,0449 der Studie exakt): Klasse 5 beginnt am ersten Umsatz-Dezil, ab dem
+jedes höhere Dezil und der Pool ≤ 0,7 × 0,0449 liegen — das oberste Dezil (11 Symbole, ab 3.833 Mio $; das Dezil darunter endet bei 3.680 Mio $). **Index-
+Instrumente** sind eine eigene Klasse; `spannen/` führt keine ETFs, deshalb Platzhalter mit Marke (0,0449 ist die Kassa-Spanne der Klasse ab 1.000 Mio $,
+kein Indexwert). **Spannen-Zeitraum:** gemessen ab 2021 (Spannen-Studie 03.09.2026); für 2016–2020 ungeprüft — dort waren sie kleiner (0,1107 / 0,0477 /
+0,0289 / 0,0222), die Hürde ist im Eichfenster also vorsichtig. **Ausführungszeit je Form:** tag — Ein- und Ausstieg zur **Eröffnung** (der Trade rechnet
+Eröffnung → Eröffnung), Kurs = rohe Eröffnung des Einstiegstags (ohne rohen Kurs, Quelle `trendkanal-tage`: Median-Kurs der Klasse); das Urteil steht auf
+diesem Netto (`uNetto`), die Kassa-Hürde und das Eröffnungs-Netto ohne Gebühr bleiben nachrichtlich (`uNettoKassa`, `uNettoEroeffnung`). Die Placebo- und
+Verschiebungsschranke (¼ der mittleren Hürde) rechnet weiter mit der Kassa-Hürde — sie prüft das Gerät, nicht die Kosten. korb — `kostenBpJeSeite` je
+Handel aus derselben Funktion (Teil B). minute — unverändert (oben). „schluss" ist nicht gebaut (kein Konsument, keine Intraday-Daten der tag-Form).
 
 ## 4. `test.js`
 
