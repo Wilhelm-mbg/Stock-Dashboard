@@ -140,6 +140,19 @@ module.exports = function (C) {
     var Rg = JSON.parse(fs.readFileSync(K.REGISTER, 'utf8')), mitDf = Rg.konfigurationen.filter(function (e) { return e.df > 0; }).length;
     return [Rg.konfigurationen.length >= 13 && mitDf === Rg.konfigurationen.length && Rg.m === TO.registerM(Rg, null) && typeof Rg.zufallKandidat === 'number' && typeof Rg.zufallBelegt === 'number', 'Eintraege ' + Rg.konfigurationen.length + ', mit df ' + mitDf + ', m ' + Rg.m + ', Kandidat unter Null ' + (Rg.zufallKandidat || 0).toFixed(4) + ', belegt ' + (Rg.zufallBelegt || 0).toFixed(5)];
   });
+  probe('V-1: Vorbehalt "dichter Plan" (Modus zeit, mittlerer Abstand der Signaltage je Reihe < ZEIT_DICHTE_WARNUNG = 15): Plan alle 10 Tage -> Warnung, alle 21 Tage -> keine, topf nie', function () {
+    var T = TF.kunstTafel(C.kunstReihen(null), TAGE), KZ = { kennung: 'kunst-dicht', form: 'tag', bewertung: 'zeit', konfigurationen: [{ key: 'H3', richtung: 'long', haltedauer: 3 }], params: {} }, KT = JSON.parse(JSON.stringify(KZ)); KT.bewertung = 'topf';
+    var plan = function (p) { return { signal: function (sicht, i) { return (i + 1) % p === 0 ? { dir: 1 } : null; } }; };
+    var E10 = A.lauf(plan(10), KZ, { tafel: T }), E21 = A.lauf(plan(21), KZ, { tafel: T }), E10t = A.lauf(plan(10), KT, { tafel: T });
+    var w10 = (E10.warnungen || []).filter(function (w) { return /Messgeraet unter Vorbehalt: dichter Plan/.test(w); }), w21 = (E21.warnungen || []).filter(function (w) { return /dichter Plan/.test(w); });
+    var bs = LF.belegstandAbsatz(Object.assign({ titel: 'Kunst dicht', erwartung: { groesse: 'x', richtung: 'positiv' } }, KZ), Object.assign(E10, { stand: '2026-10-23T00:00:00Z' }), { urteil: 'nicht entscheidbar', grund: 'x', kandidaten: 0 }, { gesamt: 0 }, { commit: '0123456789abcdef' }, null);
+    return [K.ZEIT_DICHTE_WARNUNG === 15 && w10.length === 1 && /Nr\. 124/.test(w10[0]) && E10.vorbehalt === w10[0] && Math.abs(E10.planAbstand.mittel - 10) < 1e-9 && w21.length === 0 && E21.vorbehalt === null && E10t.vorbehalt === null && /\*\*Messgeraet unter Vorbehalt/.test(bs),
+      'Abstand 10: ' + (w10[0] || '–').slice(0, 70) + ' | Abstand 21: ' + E21.planAbstand.mittel + ', keine | topf ' + E10t.vorbehalt];
+  });
+  probe('V-2: eichung.json traegt je Dichte ein eigenes bestanden und das Gesamturteil; EICHUNG.md nennt "nicht bestanden fuer dichte marktweite Plaene"', function () {
+    var J = JSON.parse(fs.readFileSync(path.join(K.HIER, 'eichung.json'), 'utf8')), md = fs.readFileSync(path.join(K.HIER, 'EICHUNG.md'), 'utf8');
+    return [typeof J.ergebnis.marktweit.bestanden === 'boolean' && typeof J.ergebnis.querschnitt.bestanden === 'boolean' && /dichte marktweite Plaene/.test(J.urteil || '') && /NICHT bestanden fuer dichte marktweite Plaene/.test(md), (J.urteil || '–') + ' | marktweit ' + J.ergebnis.marktweit.bestanden + ', querschnitt ' + J.ergebnis.querschnitt.bestanden];
+  });
   /* MARKE-B */
 
   console.log('R) Randregel des lokalen Topfs (QS 23.10.): ein Signal zaehlt im Modus zeit nur mit mindestens R Handelstagen beidseitig in seiner Reihe');

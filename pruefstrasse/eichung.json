@@ -72,7 +72,8 @@
    "poolAus": {
     "zufall": 100,
     "einsaatMinus030": 30
-   }
+   },
+   "bestanden": false
   },
   "querschnitt": {
    "modus": "topf",
@@ -112,7 +113,8 @@
    "poolAus": {
     "zufall": 100,
     "einsaatMinus030": 30
-   }
+   },
+   "bestanden": true
   }
  },
  "bestanden": false,
@@ -3762,10 +3764,11 @@
  ],
  "waechter": "sauber",
  "neuBewertet": {
-  "stand": "2026-10-23T14:03:19.251Z",
-  "grund": "Nachbesserung 5: Topf Klasse >= 0 - Laeufe der Eichung von 13:13 UTC (Stand Nachbesserung 3) eingesetzt; die Eichregel hat keine Konfigurationsklassen, ihr Topf war dort schon \"Klasse >= 0\", bitgleich nachgewiesen (Diagnose topfKlasseNoetig 130 marktweite Laeufe: -0,1664 / Einsaat 0,2085 identisch; Querschnitt Modus topf unberuehrt); verglichen wird u brutto, netto nachrichtlich",
+  "stand": "2026-10-23T14:08:34.449Z",
+  "grund": "Abschluss Nr. 121-2a (Urteil je Dichte) - Laeufe der Eichung von 13:13 UTC (Stand Nachbesserung 3) eingesetzt; die Eichregel hat keine Konfigurationsklassen, ihr Topf war dort schon \"Klasse >= 0\", bitgleich nachgewiesen (Diagnose topfKlasseNoetig 130 marktweite Laeufe: -0,1664 / Einsaat 0,2085 identisch; Querschnitt Modus topf unberuehrt); verglichen wird u brutto, netto nachrichtlich",
   "vorher": {
    "bestanden": false
   }
- }
+ },
+ "urteil": "bestanden fuer Querschnitt und marktweit ab Abstand >= 15 Tage; NICHT bestanden fuer dichte marktweite Plaene (Dichte 1/10)"
 }

@@ -199,7 +199,11 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   Beide Dichten (Nachbesserung QS 23.10.): **Nullpool** = 100 Zufall-Seeds + die 30 Einsaat-Seeds minus 0,30 (die Einsaat ist exakt additiv) — |Mittel| ≤
   2 · se_Mittel und Anteil |t| > 2 ≤ 15 %; **Einsaat** — Mittel innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40. Auf dem festen Marktpfad sind die
   Zufallspläne unabhängige Ziehungen; für ein fehlerfreies Gerät ist der Erwartungswert über Pläne null, se_Mittel ist der Maßstab für einen Geräteversatz.
-  `--eichung-bewerten` bewertet die gespeicherten Läufe von `eichung.json` neu, ohne neuen Lauf. Schreibt
+  `--eichung-bewerten` bewertet die gespeicherten Läufe von `eichung.json` neu, ohne neuen Lauf. **Urteil je Dichte (Abschluss Nr. 121-2a):** Eichung 23.10.2026
+  bestanden für Querschnitt und marktweit ab Abstand ≥ 15 Handelstage, **nicht bestanden** für dichte marktweite Pläne (Dichte 1/10: Gerätversatz −0,17 ± 0,05 Pp
+  brutto, Ursache offen, Nr. 124; Dichte 1/21: kein Versatz gefunden, QS 60 Seeds +0,011 ± 0,090). Deshalb schreibt der Läufer im Modus `zeit`, wenn der mittlere
+  Abstand der Signaltage einer Reihe unter `ZEIT_DICHTE_WARNUNG` = 15 Handelstagen liegt, den Vorbehalt **„Messgerät unter Vorbehalt: dichter Plan"** in
+  Protokoll (Warnung), Belegstand-Absatz und `ergebnis.json` (`vorbehalt`). Schreibt
   ausschließlich `EICHUNG.md` und `eichung.json` (der Code prüft es); `test.js` prüft Form und Alter (> 60 Tage: Warnung).
 - **Urteile:** `nicht messbar` (Machbarkeitstor, oben) · `belegt-Vorschlag` (Form tag: Vorwärtsmessung, oben; korb/minute: Prüfung: Holm über alle Konfigurationen des Kandidaten, einseitig 5 %, gleiche Richtung wie in
   der Entdeckung, netto > 0; p einseitig aus der t-Verteilung mit df = n_eff − 1, n_eff = Signaltage / H, Nr. 121-1; nachrichtlich, ob der

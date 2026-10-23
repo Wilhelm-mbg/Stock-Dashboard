@@ -74,14 +74,9 @@ module.exports = {
    * 179 Stuetzstellen (1,41; leave-one-rule-out-Median der 13 Konfigurationen 1,14, 8 von 13 unterschaetzt). nBedarf und Wiedervorlage rechnen nach der
    * Entdeckung mit der GEMESSENEN se (se_E x Wurzel(n_E / n)), nicht mit der Tabelle. */
   STREUUNG_FAKTOR: 1.4,
-  /* STREUUNG_FAKTOR (Nachbesserung QS 23.10.): das Machbarkeitstor rechnet mit 1,4 x se_geschaetzt - das P90 des Faktors se_ist / se_geschaetzt ueber die
-   * 179 Stuetzstellen (1,41; leave-one-rule-out-Median der 13 Konfigurationen 1,14, 8 von 13 unterschaetzt). nBedarf und Wiedervorlage rechnen nach der
-   * Entdeckung mit der GEMESSENEN se (se_E x Wurzel(n_E / n)), nicht mit der Tabelle. */
-  STREUUNG_FAKTOR: 1.4,
-  /* STREUUNG_FAKTOR (Nachbesserung QS 23.10.): das Machbarkeitstor rechnet mit 1,4 x se_geschaetzt - das P90 des Faktors se_ist / se_geschaetzt ueber die
-   * 179 Stuetzstellen (1,41; leave-one-rule-out-Median der 13 Konfigurationen 1,14, 8 von 13 unterschaetzt). nBedarf und Wiedervorlage rechnen nach der
-   * Entdeckung mit der GEMESSENEN se (se_E x Wurzel(n_E / n)), nicht mit der Tabelle. */
-  STREUUNG_FAKTOR: 1.4,
+  /* ZEIT_DICHTE_WARNUNG (Abschluss Nr. 121-2a): Modus zeit mit mittlerem Abstand der Signaltage je Reihe unter dieser Zahl Handelstage -> Vorbehalt im Protokoll
+   * (Eichung 23.10.2026: bei Dichte 1/10 Geraeteversatz -0,17 +- 0,05 Pp brutto, Ursache offen, Nr. 124; bei Dichte 1/21 kein Versatz) */
+  ZEIT_DICHTE_WARNUNG: 15,
   /* Modus zeit, lokaler Topf (Nr. 121-1, FORM.md §3): mindestens TOPF_N_MIN Fenster je Signal. Entscheid PM 21.10.: 1 statt 2 - ein einzelnes
    * Vergleichsfenster ist ein gepaarter Vergleich (Signalwoche gegen die folgende ungerade Woche, der Vergleich der Quelle), seine Streuung steht ueber
    * den Ueberschuss je Trade in der Tagesreihe und damit im se; die Schwelle 2 waehlte eine verzerrte Teilmenge (Zyklusenden, Luecken - fomc: 79 %

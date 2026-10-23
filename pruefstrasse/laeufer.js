@@ -369,7 +369,7 @@ function belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2, nachmessung) {
   return '- ' + datumDe(E.stand) + ' — ' + vorsatz + '**' + kand.titel + '** (`' + kand.kennung + '`, Form ' + kand.form + modusText(kand, E) + ', ' + konf.length + ' Konfigurationen): **' + U.urteil + '** — ' + U.grund + '. ' +
     'Beste Entdeckungszeile ' + beste.key + ': netto ' + de(bNetto(beste), kand.form === 'korb' ? 2 : 4) + (bT(beste) != null ? ' (t ' + de(bT(beste), 2) + ')' : '') +
     (beste.tor1FaktorSe != null ? '; Tor 1 verlangt netto ≥ ' + de(beste.tor1FaktorSe, 2) + ' × se = ' + de(beste.tor1Schwelle, 2) + ' Pp; MDE80 = ' + K.MDE_FAKTOR.toFixed(2).replace('.', ',') + ' × se = ' + de(beste.mde80, 2) + ' Pp' : ', MDE80 ' + de(beste.mde80)) + '. ' +
-    'Register: ' + Rg.gesamt + ' Konfigurationen bisher, ' + zufallText(Rg) + '. Ordner `pruefstrasse/erledigt/' + kand.kennung + '/`, Siegel 1 `' + siegel1.commit.slice(0, 7) + '`' + (siegel2 ? ', Siegel 2 `' + siegel2.commit.slice(0, 7) + '`' : '') + '. Quelle ' + E.quelle + '.';
+    (E.vorbehalt ? '**' + E.vorbehalt + '** ' : '') + 'Register: ' + Rg.gesamt + ' Konfigurationen bisher, ' + zufallText(Rg) + '. Ordner `pruefstrasse/erledigt/' + kand.kennung + '/`, Siegel 1 `' + siegel1.commit.slice(0, 7) + '`' + (siegel2 ? ', Siegel 2 `' + siegel2.commit.slice(0, 7) + '`' : '') + '. Quelle ' + E.quelle + '.';
 }
 
 /* ---------- Git (ein Befehl, nur genannte Pfade) ---------- */
@@ -532,7 +532,7 @@ function laufe(kennung, opt) {
   Rg = registerEintragen(Rg, kennung, kand.form, regKonf, E.stand, E.bewertung, zusatz); schreibeJson(REG, Rg);
   log('Register: ' + Rg.gesamt + ' Konfigurationen insgesamt, ' + Rg.zufallErwartet.toFixed(2) + ' Zufallstreffer erwartet');
   var ergebnis = { kennung: kennung, form: kand.form, titel: kand.titel, stand: E.stand, urteil: U.urteil, grund: U.grund, kandidaten: U.kandidaten, messgeraetFehler: U.fehler,
-    siegel1: siegel1, siegel2: siegel2, register: { gesamt: Rg.gesamt, zufallErwartet: Rg.zufallErwartet }, entdeckung: E, pruefung: P, nachmessung: NM };
+    siegel1: siegel1, siegel2: siegel2, register: { gesamt: Rg.gesamt, zufallErwartet: Rg.zufallErwartet }, entdeckung: E, pruefung: P, nachmessung: NM, vorbehalt: E.vorbehalt || null };
   schreibeJson(path.join(aus, 'ergebnis.json'), ergebnis);
   fs.writeFileSync(path.join(aus, 'ERGEBNIS.md'), ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, false, NM));
   var absatz = belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2, NM);
@@ -917,10 +917,10 @@ function eichung(opt) {
       }
     });
   });
-  var A2 = eichungAuswerten(zeilen); ergebnis = A2.ergebnis;
+  var A2 = eichungAuswerten(zeilen); ergebnis = A2.ergebnis; var urteilText = A2.urteil;
   var ms = Date.now() - t0, bestanden = A2.bestanden;
   var J = { kennung: 'pruefstrasse/eichung/v1', stand: jetzt(), datum: jetzt().slice(0, 10), panelKennung: TF.kennung, quelle: TF.quelle, eichfenster: { von: K.EICHUNG.von, bis: K.EICHUNG.bis, letzterTag: TF.tage[TF.maxTag], gesperrt: !!TF.gesperrt },
-    einstellungen: EICHUNG, seeds: { einsaat: [EICHUNG.seedEinsaat, EICHUNG.seedEinsaat + seeds - 1], zufall: [EICHUNG.seedZufall, EICHUNG.seedZufall + (opt.seedsZufall || EICHUNG.seedsZufall) - 1] }, ergebnis: ergebnis, bestanden: bestanden, laufzeitMs: ms, lesenMs: tLesen, laeufe: zeilen };
+    einstellungen: EICHUNG, seeds: { einsaat: [EICHUNG.seedEinsaat, EICHUNG.seedEinsaat + seeds - 1], zufall: [EICHUNG.seedZufall, EICHUNG.seedZufall + (opt.seedsZufall || EICHUNG.seedsZufall) - 1] }, ergebnis: ergebnis, bestanden: bestanden, urteil: urteilText, laufzeitMs: ms, lesenMs: tLesen, laeufe: zeilen };
   schreibeJson(path.join(ausOrd, 'eichung.json'), J);
   fs.writeFileSync(path.join(ausOrd, 'EICHUNG.md'), eichungMarkdown(J));
   return eichungWaechter(J, vor, REPO, ausOrd, erlaubt, log);
@@ -940,7 +940,13 @@ function eichungAuswerten(zeilen) {
     ergebnis[art] = { modus: dm[1], groesse: 'u brutto', nachrichtlich: nachr, einsaat: eichungBewerten(ze.map(function (x) { return x.uBrutto; }), ze.map(function (x) { return x.t; }), EICHUNG.einsaatPp),
       zufall: eichungBewerten(pool.map(function (x) { return x.u; }), pool.map(function (x) { return x.t; }), 0), poolAus: { zufall: zz.length, einsaatMinus030: ze.length } };
   });
-  return { ergebnis: ergebnis, bestanden: ['marktweit', 'querschnitt'].every(function (a) { return ergebnis[a].einsaat.bestanden && ergebnis[a].zufall.bestanden; }) };
+  ['marktweit', 'querschnitt'].forEach(function (a) { ergebnis[a].bestanden = ergebnis[a].einsaat.bestanden && ergebnis[a].zufall.bestanden; });
+  var alle = ergebnis.marktweit.bestanden && ergebnis.querschnitt.bestanden;
+  /* Abschluss Nr. 121-2a: Urteil je Dichte; marktweit dicht (1/10) nicht bestanden -> Vorbehalt im Protokoll fuer zeit-Plaene mit Abstand < ZEIT_DICHTE_WARNUNG */
+  var urteil = alle ? 'bestanden' : (ergebnis.querschnitt.bestanden && !ergebnis.marktweit.bestanden)
+    ? 'bestanden fuer Querschnitt und marktweit ab Abstand >= ' + K.ZEIT_DICHTE_WARNUNG + ' Tage; NICHT bestanden fuer dichte marktweite Plaene (Dichte ' + (EICHUNG.dichteMarkt === 0.1 ? '1/10' : EICHUNG.dichteMarkt) + ')'
+    : 'NICHT bestanden';
+  return { ergebnis: ergebnis, bestanden: alle, urteil: urteil };
 }
 function eichungWaechter(J, vor, REPO, ausOrd, erlaubt, log) {
   var fremd = fremdGeschrieben(vor, statusZeilen(REPO), erlaubt);
@@ -957,14 +963,15 @@ function eichungNeuBewerten(opt) {
   var J = liesJson(path.join(ausOrd, 'eichung.json'));
   if (!J.laeufe || !J.laeufe.every(function (z) { return z.se != null && z.t != null; })) throw new Error('EICHUNG: eichung.json ohne se/t je Lauf - neu eichen (--eichung)');
   var A2 = eichungAuswerten(J.laeufe), alt = { bestanden: J.bestanden, ergebnis: J.ergebnis };
-  J.ergebnis = A2.ergebnis; J.bestanden = A2.bestanden; J.neuBewertet = { stand: jetzt(), grund: opt.grund || 'Neubewertung der gespeicherten Laeufe nach dem geltenden Kriterium', vorher: { bestanden: alt.bestanden } };
+  J.ergebnis = A2.ergebnis; J.bestanden = A2.bestanden; J.urteil = A2.urteil; J.neuBewertet = { stand: jetzt(), grund: opt.grund || 'Neubewertung der gespeicherten Laeufe nach dem geltenden Kriterium', vorher: { bestanden: alt.bestanden } };
   schreibeJson(path.join(ausOrd, 'eichung.json'), J);
   fs.writeFileSync(path.join(ausOrd, 'EICHUNG.md'), eichungMarkdown(J));
   return eichungWaechter(J, vor, REPO, ausOrd, erlaubt, log);
 }
 function eichungMarkdown(J) {
   var ergebnis = J.ergebnis, bestanden = J.bestanden, zeilen = J.laeufe, ms = J.laufzeitMs, tLesen = J.lesenMs, E1 = J.einstellungen || EICHUNG;
-  var o = ['# Eichung der Pruefstrasse (Nr. 121-2a) — ' + (bestanden ? '**bestanden**' : '**NICHT bestanden**'), '',
+  var o = ['# Eichung der Pruefstrasse (Nr. 121-2a) — ' + (J.urteil ? '**' + J.urteil + '**' : bestanden ? '**bestanden**' : '**NICHT bestanden**'), '',
+    (J.urteil && !bestanden && ergebnis.querschnitt.bestanden ? 'Je Dichte: Querschnitt **bestanden**, marktweit 1/10 **nicht bestanden** (Nullpunkt brutto ' + de(ergebnis.marktweit.zufall.mittel, 3) + ' ± ' + de(ergebnis.marktweit.zufall.seMittel, 3) + ' Pp, Ursache offen, Nr. 124). Marktweit ab Abstand ≥ ' + K.ZEIT_DICHTE_WARNUNG + ' Handelstage: kein Versatz gefunden — Beleg QS 23.10. Dichte 1/21, 60 Seeds +0,011 ± 0,090 Pp, und Bau 1/21, 10 Seeds +0,009 ± 0,21 (geringe Trennschärfe: ein Versatz unter ≈ 0,18 Pp ist damit nicht ausgeschlossen). Protokolle im Modus zeit mit dichterem Plan tragen den Vorbehalt „Messgerät unter Vorbehalt: dichter Plan" (`konfig.js` `ZEIT_DICHTE_WARNUNG`).' : ''), '',
     'Datum ' + J.datum + ', Panel `' + J.panelKennung + '` (' + J.quelle + '), Eichfenster ' + K.EICHUNG.von + ' … ' + K.EICHUNG.bis + ' (letzter gelesener Tag ' + J.eichfenster.letzterTag + '), H = ' + E1.H + ', marktweit ein Signaltag je ' + Math.round(1 / E1.dichteMarkt) + ' Handelstage, Querschnitt ' + (100 * E1.dichteQuer).toFixed(0) + ' % der Reihen je Tag, Einsaat +' + E1.einsaatPp.toFixed(2).replace('.', ',') + ' Pp brutto nur auf die Signalfenster (im Speicher), Seeds Einsaat ' + J.seeds.einsaat.join('–') + ', Zufall ' + J.seeds.zufall.join('–') + '. Laufzeit ' + (ms / 1000).toFixed(0) + ' s (davon Lesen ' + (tLesen / 1000).toFixed(0) + ' s).' + (J.neuBewertet ? ' **Neu bewertet** ' + J.neuBewertet.stand.slice(0, 16).replace('T', ' ') + ' UTC aus den gespeicherten Läufen (kein neuer Lauf): ' + J.neuBewertet.grund + '; vorher bestanden: ' + J.neuBewertet.vorher.bestanden + '.' : ''), '',
     '| Dichte | Modus | Reihe | n | Mittel u brutto | sd | se_Mittel | t gegen Soll | Soll | innerhalb ± 2 se_Mittel | weiteres Kriterium | bestanden |', '|---|---|---|---|---|---|---|---|---|---|---|---|'];
   ['marktweit', 'querschnitt'].forEach(function (a) { ['einsaat', 'zufall'].forEach(function (typ) { var b = ergebnis[a][typ]; o.push('| ' + a + ' | ' + ergebnis[a].modus + ' | ' + (typ === 'zufall' && ergebnis[a].poolAus ? 'Nullpool (' + ergebnis[a].poolAus.zufall + ' Zufall + ' + ergebnis[a].poolAus.einsaatMinus030 + ' Einsaat − 0,30)' : typ) + ' | ' + b.n + ' | ' + de(b.mittel) + ' | ' + de(b.sd) + ' | ' + de(b.seMittel) + ' | ' + de(b.t, 2) + ' | ' + de(b.soll, 2) + ' | ' + (b.innerhalb2se ? 'ja' : 'nein') + ' | ' + (typ === 'einsaat' ? 'Mittel in 0,20 … 0,40: ' + (b.spanneOk ? 'ja' : 'nein') : '|t| > 2: ' + b.tUeber2 + ' von ' + b.n + ' = ' + (100 * b.anteilTUeber2).toFixed(0) + ' % (höchstens 15 %)') + ' | ' + (b.bestanden ? 'ja' : '**nein**') + ' |'); }); });

@@ -363,7 +363,7 @@ function messe(TF, regel, kand, opt) {
   var ueberlappung = { n: new Array(nK).fill(0), von: new Array(nK).fill(0) };
   if (zeit) zaehler.placeboEntfaellt = 0;
   var versatz = regel.bestaetigt ? 2 : 1, verstoesse = 0, beispiele = [];
-  var einsaat = opt.einsaat || 0;                       /* Nr. 121-2a D: Pp auf die Rendite der Signalfenster (art echt), nur --eichung */
+  var einsaat = opt.einsaat || 0, planAbstand = { summe: 0, n: 0 };                       /* Nr. 121-2a D: Pp auf die Rendite der Signalfenster (art echt), nur --eichung */
   /* Modus zeit (Nr. 121-1): lokaler Topf je Signal; opt.topfArt 'global' = der globale Topf von Nr. 118 (nur Tests, Rot-vor-Gruen). Radien je
    * Konfiguration [R, 2 H, 8 H] (R = topfRadius, Vorgabe 4 H; 2 H / 8 H nachrichtlich als Sensitivitaet). zN zaehlt die nachrichtlichen Buchungen. */
   var topfArt = opt.topfArt || 'lokal', nMin = opt.topfNMin || K.TOPF_N_MIN;     /* topfNMin: nur Tests/Nachbau (Schwelle ist Setzung, konfig.js) */
@@ -407,6 +407,8 @@ function messe(TF, regel, kand, opt) {
     /* Phase 1: Signale der Reihe sammeln (Sicht, Cooldown, Bestaetigung, Einstiegstag - unveraendert); die Einstiegstage ES sind im Modus zeit
      * die Ausschlussmenge des zeitlichen Topfs und in beiden Modi der Massstab fuer die Ueberlappung der verschobenen Fenster. */
     var P1 = signaleSammeln(S, TF, regel, params, versatz, bucht, zaehler), sigs = P1.sigs, tagsE = P1.tagsE;
+    /* Abschluss: Abstand der Signaltage je Reihe (Entdeckung, verschiedene Einstiegstage, Tafeltage) fuer den Vorbehalt "dichter Plan" (Modus zeit) */
+    var uE = eindeutig(tagsE.filter(function (t) { return t <= bisEnt; })); for (var ia = 1; ia < uE.length; ia++) { planAbstand.summe += uE[ia] - uE[ia - 1]; planAbstand.n++; }
     verstoesse += P1.verstoesse; P1.beispiele.forEach(function (b) { if (beispiele.length < 10) beispiele.push(b); });
     var ES = Int32Array.from(tagsE).sort(), TZ = null, zeitlichAlt = null;
     if (zeit && topfArt === 'global') {
@@ -477,7 +479,7 @@ function messe(TF, regel, kand, opt) {
   var tMessen = Date.now() - t0 - tTopf;
   return { zellen: Z, zaehler: zaehler, verstoesse: verstoesse, beispiele: beispiele, ms: { topf: tTopf, messen: tMessen }, konfs: konfs,
     bewertung: bewertung, versatzTage: versatzTage, iSchnitt: iSchnitt, sigTag: sigTag, zulTag: zulTag, ueberlappung: ueberlappung,
-    topfArt: zeit ? topfArt : null, zeitDetail: zeit && topfArt !== 'global' ? detail : null };
+    topfArt: zeit ? topfArt : null, zeitDetail: zeit && topfArt !== 'global' ? detail : null, planAbstand: { mittel: planAbstand.n ? planAbstand.summe / planAbstand.n : null, luecken: planAbstand.n } };
 }
 
 /* ---------- Statistik (Trendkanal auswerten.js: tagesreihe, momente, statistik) ---------- */
@@ -686,6 +688,13 @@ function warnungen(bewertung, SA) {
   return w;
 }
 
+/** Vorbehalt "dichter Plan" (Abschluss Nr. 121-2a): Modus zeit und mittlerer Abstand der Signaltage je Reihe < K.ZEIT_DICHTE_WARNUNG Handelstage. */
+function vorbehaltDichte(M) {
+  var pa = M.planAbstand;
+  if (M.bewertung !== 'zeit' || !pa || pa.mittel == null || !(pa.mittel < K.ZEIT_DICHTE_WARNUNG)) return null;
+  return 'Messgeraet unter Vorbehalt: dichter Plan (mittlerer Abstand der Signaltage je Reihe ' + pa.mittel.toFixed(1).replace('.', ',') + ' Handelstage < ' + K.ZEIT_DICHTE_WARNUNG + '). Eichung 23.10.2026: bei Dichte 1/10 Geraetversatz -0,17 +- 0,05 Pp brutto, Ursache offen (Nr. 124); bei Dichte 1/21 kein Versatz.';
+}
+
 /**
  * Ein ganzer Lauf: Tafel oeffnen, messen, auswerten. opt: quelle, pruefzeit, siegelPfad, schnitt (Vorgabe K.EICHUNG.schnitt),
  * pruefung (Liste der Kandidaten-Keys), nurReihen, ohneSpeicherpruefung, tafel (fertige Tafel, nur Tests), topfArt (Modus zeit: lokal | global, nur Tests).
@@ -705,17 +714,18 @@ function lauf(regel, kand, opt) {
   if (TF.gesperrt && opt.tbHandelstage) TB = opt.tbHandelstage;
   var M = messe(TF, regel, kand, { iSchnitt: iSchnitt, topfArt: opt.topfArt, topfNMin: opt.topfNMin, einsaat: opt.einsaat, topfMitMassnahmen: opt.topfMitMassnahmen, topfOhneKlasse: opt.topfOhneKlasse });
   var konf = auswerte(M, TF, { iSchnitt: iSchnitt, TE: TE, TB: TB, pruefung: opt.pruefung || null, registerM: opt.registerM });
-  var SA = signalAnteil(M, TF);
+  var SA = signalAnteil(M, TF), W = warnungen(M.bewertung, SA), vb = vorbehaltDichte(M);
+  if (vb) W.push(vb);
   return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum, reihen: TF.reihen.length, nTage: TF.nTage,
     letzterTag: TF.tage[TF.maxTag], schnitt: opt.schnitt === 'panelende' ? null : (TF.tage[iSchnitt] || null), entdeckungBis: TF.tage[Math.min(TF.maxTag, iSchnitt - 1)], registerM: opt.registerM == null ? null : opt.registerM, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
-    bewertung: M.bewertung, topfArt: M.topfArt, bewertungDetail: bewertungDetail(M.bewertung, M.versatzTage), versatzTage: M.versatzTage, signalAnteil: SA, warnungen: warnungen(M.bewertung, SA),
+    bewertung: M.bewertung, topfArt: M.topfArt, bewertungDetail: bewertungDetail(M.bewertung, M.versatzTage), versatzTage: M.versatzTage, signalAnteil: SA, warnungen: W, planAbstand: M.planAbstand, vorbehalt: vb,
     konfigurationen: konf, klassen: TF.klassen.map(function (k) { return { name: k.name, huerde: k.huerde }; }) };
 }
 
 module.exports = { lauf: lauf, messe: messe, zaehle: zaehle, signaleSammeln: signaleSammeln, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, kunstKalender: kunstKalender, Zellen: Zellen, momente: momente, statistik: statistik,
   tagesreihe: tagesreihe, phi: phi, handelstage: handelstage, indexAb: indexAb, fnv: fnv, mulberry32: mulberry32, ARTEN: ARTEN, GRUPPEN: GRUPPEN, POT_MAX_DAUER: POT_MAX_DAUER,
   zeitTopfGlobal: zeitTopfGlobal, lokalerTopf: lokalerTopf, topfMittel: topfMittel, topfRadiusVon: topfRadiusVon, zensiertAnSperre: zensiertAnSperre, tVerteilung: tVerteilung, ueberlappt: ueberlappt, signalAnteil: signalAnteil, warnungen: warnungen, bewertungDetail: bewertungDetail, versatzVon: versatzVon,
-  BEWERTUNGEN: BEWERTUNGEN, VERSATZ_MIN: VERSATZ_MIN, VERSATZ_MAX: VERSATZ_MAX };
+  vorbehaltDichte: vorbehaltDichte, BEWERTUNGEN: BEWERTUNGEN, VERSATZ_MIN: VERSATZ_MIN, VERSATZ_MAX: VERSATZ_MAX };
 
 /* Kalibrierung (FORM §3, Auftrag §3): node --max-old-space-size=6144 pruefstrasse/adapter/tag.js --kalibrierung [<ausgabe.json>]
  * Donchian-20-Ausbruch long, H5 auf den Tagesdateien der Trendkanal-Studie mit DEREN Schnitt (Bestaetigung ab 07.02.2023, Siegel
