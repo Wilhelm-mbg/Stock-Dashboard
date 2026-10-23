@@ -376,6 +376,8 @@ function belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2, nachmessung) {
   return '- ' + datumDe(E.stand) + ' — ' + vorsatz + '**' + kand.titel + '** (`' + kand.kennung + '`, Form ' + kand.form + modusText(kand, E) + ', ' + konf.length + ' Konfigurationen): **' + U.urteil + '** — ' + U.grund + '. ' +
     'Beste Entdeckungszeile ' + beste.key + ': netto ' + de(bNetto(beste), kand.form === 'korb' ? 2 : 4) + (bT(beste) != null ? ' (t ' + de(bT(beste), 2) + ')' : '') +
     (beste.tor1FaktorSe != null ? '; Tor 1 verlangt netto ≥ ' + de(beste.tor1FaktorSe, 2) + ' × se = ' + de(beste.tor1Schwelle, 2) + ' Pp; MDE80 = ' + K.MDE_FAKTOR.toFixed(2).replace('.', ',') + ' × se = ' + de(beste.mde80, 2) + ' Pp' : ', MDE80 ' + de(beste.mde80)) + '. ' +
+    (beste.entdeckung && beste.entdeckung.kKandSpanne != null ? 'Huerde ' + de(beste.entdeckung.kKand, 3) + ' Pp je Umlauf (Kostenregel Nr. 121-2b: Spanne zur Eroeffnung ' + de(beste.entdeckung.kKandSpanne, 3) + ' + IBKR ' + K.KOSTEN.modell + ' ' + de(beste.entdeckung.kKandGebuehr, 3) + ' bei ' + ganz(Math.round(K.POSITION_USD)) + ' $; Kassa-Huerde nachrichtlich ' + de(beste.entdeckung.kKandKassa, 3) + '). ' : '') +
+    (kand.form === 'korb' && E.massstab ? 'Massstab ' + (/Nasdaq/.test(E.massstab) ? 'Nasdaq-100 nach Steuer (seit 23.10.2026; vorher S&P 500)' : E.massstab) + '. ' : '') +
     (E.vorbehalt ? '**' + E.vorbehalt + '** ' : '') + 'Register: ' + Rg.gesamt + ' Konfigurationen bisher, ' + zufallText(Rg) + '. Ordner `pruefstrasse/erledigt/' + kand.kennung + '/`, Siegel 1 `' + siegel1.commit.slice(0, 7) + '`' + (siegel2 ? ', Siegel 2 `' + siegel2.commit.slice(0, 7) + '`' : '') + '. Quelle ' + E.quelle + '.';
 }
 

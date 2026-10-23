@@ -137,15 +137,16 @@ function Zellen(nKonf, nTage) {
   var z = ARTEN.length * nKonf * nTage * N_K * 2;
   this.nKonf = nKonf; this.nTage = nTage;
   this.n = new Float64Array(z); this.su = new Float64Array(z); this.sr = new Float64Array(z); this.sd = new Float64Array(z);
-  this.sh = new Float64Array(z); this.n5 = new Float64Array(z);       /* Nr. 121-2b: Summe der Urteilshuerden (Pp je Umlauf) und Trades der Kostenklasse 5 */
+  this.sh = new Float64Array(z); this.n5 = new Float64Array(z); this.ss = new Float64Array(z);       /* Nr. 121-2b: Summe der Urteilshuerden (Pp je Umlauf) und Trades der Kostenklasse 5 */
   this.dn = GRUPPEN.map(function () { return new Float64Array(z); }); this.ds = GRUPPEN.map(function () { return new Float64Array(z); });
   this.tn = new Float64Array(nTage * POT_MAX_DAUER * N_K * 2); this.ts = new Float64Array(nTage * POT_MAX_DAUER * N_K * 2);
 }
 Zellen.prototype.idx = function (art, konf, tag, k, lebend) { return ((((art * this.nKonf + konf) * this.nTage + tag) * N_K) + k) * 2 + lebend; };
 Zellen.prototype.topfIdx = function (tag, dauer, k, lebend) { return ((tag * POT_MAX_DAUER + (dauer - 1)) * N_K + k) * 2 + lebend; };
-Zellen.prototype.add = function (i, dir, r, u, dauer, gruppe, h, k5) {
+Zellen.prototype.add = function (i, dir, r, u, dauer, gruppe, h, k5, hs) {
   this.n[i]++; this.su[i] += u; this.sr[i] += dir * r; this.sd[i] += dauer;
   if (h != null) this.sh[i] += h;
+  if (hs != null) this.ss[i] += hs;
   if (k5) this.n5[i]++;
   if (gruppe) { var g = GRUPPEN.indexOf(gruppe); if (g < 0) g = 2; this.dn[g][i]++; this.ds[g][i] += dir * r; }
 };
@@ -274,7 +275,7 @@ function buche(TF, Z, art, kf, dir, S, ePos, ausPos, k, zaehler, tpZeit, plus) {
   var r = plus ? e.r + plus : e.r;                     /* Nr. 121-2a D: Einsaat (nur --eichung, nur Signalfenster), sonst e.r unveraendert */
   var kk = kostenKlasse(S, ePos, k);
   Z.add(Z.idx(art, kf, tagE, k, S.lebend), dir, r, dir * (r - tp), e.dauer, e.delist ? (zensiertAnSperre(TF, S) ? 'zensiert' : (S.gruppe || 'sonstige')) : null,
-    KO.gesamtPp(kk, K.KOSTEN.ausfuehrungTag, K.POSITION_USD, kursEinstieg(S, ePos), K.KOSTEN.modell), kk === 4);
+    KO.gesamtPp(kk, K.KOSTEN.ausfuehrungTag, K.POSITION_USD, kursEinstieg(S, ePos), K.KOSTEN.modell), kk === 4, KO.spannePp(kk, K.KOSTEN.ausfuehrungTag));
   return e;
 }
 /** A7: gesperrte Tafel und die letzte Zeile der Reihe ist der letzte Tag vor der Sperre -> die Reihe endet nur an der Sperre. */
@@ -516,11 +517,11 @@ function tagesreihe(Z, klassen, art, kf, sicht) {
   var aus = [], lVon = sicht === 'lebend' ? 1 : 0, nG = GRUPPEN.length;
   var hF = klassen.map(function (kl) { return kl.huerdeEroeffnung != null ? kl.huerdeEroeffnung : kl.huerde * (kl.eroeffnungFaktor || 1); });
   for (var t = 0; t < Z.nTage; t++) {
-    var z = { t: t, n: 0, su: 0, sr: 0, sd: 0, nh: 0, nhF: 0, nhU: 0, n5: 0, nK: [0, 0, 0, 0], dn: GRUPPEN.map(function () { return 0; }), ds: GRUPPEN.map(function () { return 0; }) };
+    var z = { t: t, n: 0, su: 0, sr: 0, sd: 0, nh: 0, nhF: 0, nhU: 0, nhS: 0, n5: 0, nK: [0, 0, 0, 0], dn: GRUPPEN.map(function () { return 0; }), ds: GRUPPEN.map(function () { return 0; }) };
     for (var k = 0; k < N_K; k++) for (var l = lVon; l <= 1; l++) {
       var i = Z.idx(art, kf, t, k, l), n = Z.n[i];
       if (!(n > 0)) continue;
-      z.n += n; z.su += Z.su[i]; z.sr += Z.sr[i]; z.sd += Z.sd[i]; z.nK[k] += n; z.nh += n * klassen[k].huerde; z.nhF += n * hF[k]; z.nhU += Z.sh[i]; z.n5 += Z.n5[i];
+      z.n += n; z.su += Z.su[i]; z.sr += Z.sr[i]; z.sd += Z.sd[i]; z.nK[k] += n; z.nh += n * klassen[k].huerde; z.nhF += n * hF[k]; z.nhU += Z.sh[i]; z.nhS += Z.ss[i]; z.n5 += Z.n5[i];
       for (var g = 0; g < nG; g++) { z.dn[g] += Z.dn[g][i]; z.ds[g] += Z.ds[g][i]; }
     }
     if (!(z.n > 0)) continue;
@@ -557,11 +558,11 @@ function momente(paare, L) {
 function paare(zeilen, feld) { return zeilen.map(function (z) { return { t: z.t, x: z[feld] }; }); }
 /** Kennzahlen einer Tagesmenge: Trades, Huerde je Trade, Abgaenge je Gruppe, uBrutto/uNetto/roh als Momente (Lag L). */
 function statistik(zeilen, L) {
-  var nG = GRUPPEN.length, N = 0, SU = 0, SR = 0, NH = 0, NHF = 0, NHU = 0, N5 = 0, SD = 0, nK = [0, 0, 0, 0], dn = GRUPPEN.map(function () { return 0; }), ds = GRUPPEN.map(function () { return 0; });
-  zeilen.forEach(function (z) { N += z.n; SU += z.su; SR += z.sr; NH += z.nh; NHF += z.nhF || 0; NHU += z.nhU || 0; N5 += z.n5 || 0; SD += z.sd; for (var k = 0; k < N_K; k++) nK[k] += z.nK[k]; for (var g = 0; g < nG; g++) { dn[g] += z.dn[g]; ds[g] += z.ds[g]; } });
+  var nG = GRUPPEN.length, N = 0, SU = 0, SR = 0, NH = 0, NHF = 0, NHU = 0, NHS = 0, N5 = 0, SD = 0, nK = [0, 0, 0, 0], dn = GRUPPEN.map(function () { return 0; }), ds = GRUPPEN.map(function () { return 0; });
+  zeilen.forEach(function (z) { N += z.n; SU += z.su; SR += z.sr; NH += z.nh; NHF += z.nhF || 0; NHU += z.nhU || 0; NHS += z.nhS || 0; N5 += z.n5 || 0; SD += z.sd; for (var k = 0; k < N_K; k++) nK[k] += z.nK[k]; for (var g = 0; g < nG; g++) { dn[g] += z.dn[g]; ds[g] += z.ds[g]; } });
   /* nKosten: Trades je Kostenklasse 1-5 (Klasse 5 aus Klasse 4 herausgerechnet); kKand = mittlere Urteilshuerde je Trade (Nr. 121-2b), kKandKassa die alte */
   var nKosten = [nK[0], nK[1], nK[2], nK[3] - N5, N5]; if (nKosten.length !== N_KK) throw new Error('nKosten');
-  var st = { nTage: zeilen.length, nTr: N, nK: nK, nKosten: nKosten, kKand: N > 0 ? NHU / N : null, kKandKassa: N > 0 ? NH / N : null, kKandEroeffnung: N > 0 ? NHF / N : null, dauerMittel: N > 0 ? SD / N : null,
+  var st = { nTage: zeilen.length, nTr: N, nK: nK, nKosten: nKosten, kKand: N > 0 ? NHU / N : null, kKandSpanne: N > 0 ? NHS / N : null, kKandGebuehr: N > 0 ? (NHU - NHS) / N : null, kKandKassa: N > 0 ? NH / N : null, kKandEroeffnung: N > 0 ? NHF / N : null, dauerMittel: N > 0 ? SD / N : null,
     abgaenge: GRUPPEN.map(function (g, i) { return { gruppe: g, n: dn[i], mittel: dn[i] > 0 ? ds[i] / dn[i] : null }; }),
     uBrutto: momente(paare(zeilen, 'uBrutto'), L), uNetto: momente(paare(zeilen, 'uNetto'), L), roh: momente(paare(zeilen, 'roh'), L),
     uNettoEroeffnung: momente(paare(zeilen, 'uNettoEroeffnung'), L), uNettoKassa: momente(paare(zeilen, 'uNettoKassa'), L) };
@@ -569,7 +570,7 @@ function statistik(zeilen, L) {
   return st;
 }
 function kurz(m) { return m ? { n: m.n, mittel: m.mittel, se: m.se, seNaiv: m.seNaiv, t: m.t, obere: m.obere, untere: m.untere, nEff: m.nEff, hh0: m.hh0, jeTrade: m.jeTrade } : null; }
-function kurzSt(st) { return { nTage: st.nTage, nTr: st.nTr, nK: st.nK, nKosten: st.nKosten, kKand: st.kKand, kKandKassa: st.kKandKassa, kKandEroeffnung: st.kKandEroeffnung, dauerMittel: st.dauerMittel, abgaenge: st.abgaenge, uBrutto: kurz(st.uBrutto), uNetto: kurz(st.uNetto), roh: kurz(st.roh), uNettoEroeffnung: kurz(st.uNettoEroeffnung), uNettoKassa: kurz(st.uNettoKassa) }; }
+function kurzSt(st) { return { nTage: st.nTage, nTr: st.nTr, nK: st.nK, nKosten: st.nKosten, kKand: st.kKand, kKandSpanne: st.kKandSpanne, kKandGebuehr: st.kKandGebuehr, kKandKassa: st.kKandKassa, kKandEroeffnung: st.kKandEroeffnung, dauerMittel: st.dauerMittel, abgaenge: st.abgaenge, uBrutto: kurz(st.uBrutto), uNetto: kurz(st.uNetto), roh: kurz(st.roh), uNettoEroeffnung: kurz(st.uNettoEroeffnung), uNettoKassa: kurz(st.uNettoKassa) }; }
 /** Verteilungsfunktion der Student-t-Verteilung P(T <= t) mit df Freiheitsgraden (A16, Nr. 121-1): regularisierte unvollstaendige Beta-Funktion
  *  (Kettenbruch nach Numerical Recipes betacf), df > 0 auch nicht ganzzahlig. */
 function tVerteilung(t, df) {

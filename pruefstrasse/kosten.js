@@ -86,6 +86,8 @@ function gesamtPp(klasse, ausfuehrung, positionUsd, kurs, modell) {
   var k = klasse === 'index' ? INDEX : KLASSEN[klasse], px = kurs > 0 ? kurs : (k.kurs || KLASSEN[3].kurs), stueck = positionUsd / px, md = modell || 'fixed';
   return (ausfuehrung === 'kassa' ? k.kassa : k.eroeffnung) + (ibkrGebuehr(md, 'kauf', stueck, px) + ibkrGebuehr(md, 'verkauf', stueck, px)) / positionUsd * 100;
 }
+/** Spannenanteil der Huerde (Pp je Umlauf) einer Klasse zur Ausfuehrungszeit - fuer die Zerlegung Spanne + Gebuehr im Protokoll. */
+function spannePp(klasse, ausfuehrung) { var k = klasse === 'index' ? INDEX : KLASSEN[klasse]; return ausfuehrung === 'kassa' ? k.kassa : k.eroeffnung; }
 /** Korb-Hilfe: Huerde je SEITE in Basispunkten (gesamtPp x 100 / 2). */
 function jeSeiteBp(h) { return h.gesamtPp * 100 / 2; }
 
@@ -106,4 +108,4 @@ function tabelle(positionen) {
 }
 
 module.exports = { KLASSEN: KLASSEN, INDEX: INDEX, AUSFUEHRUNGEN: AUSFUEHRUNGEN, IBKR: IBKR, ibkrGebuehr: ibkrGebuehr, klasseObj: klasseObj, klasseZurLaufzeit: klasseZurLaufzeit,
-  huerdeUmlauf: huerdeUmlauf, gesamtPp: gesamtPp, jeSeiteBp: jeSeiteBp, tabelle: tabelle };
+  huerdeUmlauf: huerdeUmlauf, gesamtPp: gesamtPp, spannePp: spannePp, jeSeiteBp: jeSeiteBp, tabelle: tabelle };

@@ -100,6 +100,24 @@ module.exports = function (C) {
     var z1 = LB.besteZeile(md1), z2 = LB.besteZeile(md2);
     return [/^\| H1 /.test(z1) && /^\| H2 /.test(z2), z1 + ' / ' + z2];
   });
+
+  console.log('C) Papier-Mitschrift letzte halbe Stunde (Nr. 121-2b): Kunsttest ohne E:');
+  probe('C-1: tools/papier-letzte-halbe-stunde.test.js gruen (Rendite, Halbtag, Luecke, Zeitzone Maerz/November, Idempotenz)', function () {
+    var r = C.cp.spawnSync(process.execPath, [path.join(K.REPO, 'tools', 'papier-letzte-halbe-stunde.test.js')], { cwd: K.REPO, encoding: 'utf8', timeout: 120000 });
+    return [r.status === 0, String(r.stdout || '').trim().split('\n').pop()];
+  });
+
+  console.log('D) Huerde im Protokoll, Rueckwirkung (Nr. 121-2b)');
+  probe('D-1: Huerde je Trade zerlegt in Spanne zur Eroeffnung + IBKR-Gebuehr (Summe = Huerde), Belegstand-Absatz nennt Huerde und Bestandteile', function () {
+    var e = laufWelt(function () { return 1e6; }), L = fs.readFileSync(path.join(K.HIER, 'laeufer.js'), 'utf8');
+    return [Math.abs(e.kKandSpanne + e.kKandGebuehr - e.kKand) < 1e-12 && Math.abs(e.kKandSpanne - KO.KLASSEN[3].eroeffnung) < 1e-12 && e.kKandGebuehr > 0.03 && /Spanne zur Eroeffnung ' \+ de\(beste\.entdeckung\.kKandSpanne/.test(L) && /Nasdaq-100 nach Steuer \(seit 23\.10\.2026; vorher S&P 500\)/.test(L),
+      'Huerde ' + e.kKand.toFixed(4) + ' = Spanne ' + e.kKandSpanne.toFixed(4) + ' + Gebuehr ' + e.kKandGebuehr.toFixed(4)];
+  });
+  probe('D-2: rueckwirkung-2b.js rechnet die 13 Konfigurationen offline (keine Renditen), nach den 2a-Regeln 13 von 13 nicht messbar', function () {
+    var aus = path.join(C.SCRATCH, 'rw2b.json'), r = C.cp.spawnSync(process.execPath, [path.join(K.HIER, 'rueckwirkung-2b.js'), aus], { cwd: K.REPO, encoding: 'utf8', timeout: 120000 });
+    var J = r.status === 0 ? JSON.parse(fs.readFileSync(aus, 'utf8')) : { zeilen: [] };
+    return [r.status === 0 && J.zeilen.length === 13 && J.zeilen.every(function (z) { return !z.messbarNeu && z.nettoNeu < z.nettoAlt; }), String(r.stdout || r.stderr).trim().split('\n').pop().slice(0, 200)];
+  });
 };
 /* Eigene kleine Kunstwelt (eigener Zufall, unabhaengig von der Reihenfolge in test.js): 12 Reihen ueber 300 Werktage, Klasse 3 (ab 1.000 Mio $),
  * Umsatz je Reihe waehlbar (v), Signal jeder 9. Tag. */
