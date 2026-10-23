@@ -53,11 +53,13 @@ module.exports = {
    * 2023-01-01). Unabhaengig vom Entdeckungsende der Kandidaten (ENTDECKUNG_BIS) - zwei Konstanten, zwei Namen. schnitt = erster Kalendertag
    * nach dem Fenster (Vorgabe-Schnitt des tag-Adapters; fuer jeden Handelskalender gleichbedeutend mit dem alten 2023-01-01). */
   EICHUNG: { von: J.eichung.von, bis: J.eichung.bis, schnitt: naechsterTag(J.eichung.bis) }, naechsterTag: naechsterTag,
+  /* ENTDECKUNG_BIS (Nr. 121-2a C1): 'panelende' = die Entdeckung neuer Kandidaten (Form tag) laeuft bis zum letzten Panel-Tag; die Pruefzeit 2023-2026
+   * gilt als gelesen (PM-Annahme aus Wilhelms Satz), Bestaetigung nur vorwaerts ab dem Stichtag nach Siegel 2 (laeufer.js --vorwaerts). */
   ENTDECKUNG_BIS: J.entdeckungBis, SPEICHER_MIN_GB: J.speicherMinGb,
   PRUEFSTAND: path.join(REPO, 'studien', 'querschnitt-pruefstand-2026-09-13'),
   TRENDKANAL_STUDIE: path.join(REPO, 'studien', 'vorregistrierung-2026-09-08-trendkanal-tage'),
   WARTESCHLANGE: path.join(HIER, 'warteschlange'), ERLEDIGT: path.join(HIER, 'erledigt'),
-  REGISTER: path.join(HIER, 'register.json'), VORSCHLAEGE: path.join(HIER, 'VORSCHLAEGE.md'),
+  REGISTER: path.join(HIER, 'register.json'), VORSCHLAEGE: path.join(HIER, 'VORSCHLAEGE.md'), VORWAERTS: path.join(HIER, 'VORWAERTS.md'),
   /* Kriterien (FORM §5) */
   /* KANDIDAT_T 3 seit Nr. 121-2a (vorher 2); TOR1_FAKTOR nur noch nachrichtlich (Tor 1 ist kein Kriterium mehr) */
   KANDIDAT_T: 3, TOR1_FAKTOR: 4, MDE_FAKTOR: 2.8016, Z_POWER80: 0.8416, HOLM_ALPHA: 0.05,

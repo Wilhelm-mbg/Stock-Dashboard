@@ -77,7 +77,7 @@ module.exports = function (C) {
   try {
     gitL(['init', '-q']); gitL(['config', 'user.name', 'test']); gitL(['config', 'user.email', 'test@example.invalid']); fs.mkdirSync(path.join(LR, 'wiki')); fs.mkdirSync(path.join(LR, 'pruefstrasse', 'erledigt'), { recursive: true });
     fs.writeFileSync(path.join(LR, 'wiki', 'belegstand.md'), '# Belegstand\n'); fs.writeFileSync(path.join(LR, 'wiki', 'log.md'), '# Log\n'); fs.writeFileSync(path.join(LR, 'pruefstrasse', 'register.json'), JSON.stringify({ kennung: 'pruefstrasse/register/v1', konfigurationen: [], gesamt: 0, zufallErwartet: 0 }));
-    gitL(['add', '-A']); gitL(['commit', '-q', '-m', 'Basis']); var basis = gitL(['rev-parse', 'HEAD']);
+    gitL(['add', '-A']); gitL(['commit', '-q', '-m', 'Basis']); var basis = gitL(['rev-parse', 'HEAD']); C.basis = basis;
     var ortL = { repo: LR, erledigt: path.join(LR, 'pruefstrasse', 'erledigt'), register: path.join(LR, 'pruefstrasse', 'register.json') };
     C.ortL = ortL;
     var TL = TF.kunstTafel(C.kunstReihen(function (r, i) { return (A.fnv('K' + r + '|' + (i - 1)) % 25) === 0 ? 0.02 : 0; }), TAGE, { offen: true });
@@ -141,6 +141,97 @@ module.exports = function (C) {
     return [Rg.konfigurationen.length >= 13 && mitDf === Rg.konfigurationen.length && Rg.m === TO.registerM(Rg, null) && typeof Rg.zufallKandidat === 'number' && typeof Rg.zufallBelegt === 'number', 'Eintraege ' + Rg.konfigurationen.length + ', mit df ' + mitDf + ', m ' + Rg.m + ', Kandidat unter Null ' + (Rg.zufallKandidat || 0).toFixed(4) + ', belegt ' + (Rg.zufallBelegt || 0).toFixed(5)];
   });
   /* MARKE-B */
+
+  console.log('C) Entdeckung bis zum Panel-Ende, Vorwaertsbestaetigung mit einem Blick, Hausregel, Wiedervorlage, --grund-daten (Nr. 121-2a)');
+  probe('C-1: ENTDECKUNG_BIS = panelende; Kandidatenlaeufe oeffnen die Tafel bis zum Panel-Ende (bisPanelende), die Eichfenster-Sperre bleibt Vorgabe', function () {
+    var q = fs.readFileSync(path.join(K.HIER, 'laeufer.js'), 'utf8'), qt = fs.readFileSync(path.join(K.HIER, 'tafel.js'), 'utf8');
+    var E = A.lauf(C.regelZ, C.KAND, { tafel: C.TL, schnitt: 'panelende' });
+    return [K.ENTDECKUNG_BIS === 'panelende' && /phase === 'entdeckung'\) E = require\('\.\/adapter\/tag\.js'\)\.lauf\(regel, kand, \{ quelle: kand\.daten \|\| 'panel', bisPanelende: true, schnitt: 'panelende'/.test(q) && /offen = !!siegel \|\| !!opt\.bisPanelende/.test(qt) && E.schnitt === null && E.letzterTag === TAGE[TAGE.length - 1] && E.konfigurationen.every(function (k) { return !k.pruefung; }) && Math.abs(E.konfigurationen[0].tor1FaktorSe - 11.31) < 0.02,
+      'Entdeckung bis ' + E.entdeckungBis + ', letzter Tag ' + E.letzterTag + ', Tor-1-Faktor nachrichtlich ' + E.konfigurationen[0].tor1FaktorSe.toFixed(2)];
+  });
+  probe('C-2: Stichtag = erster Handelstag des Panels NACH dem Commit-Tag von KANDIDATEN.json (Freitag -> Montag; Tag selbst nie)', function () {
+    var i1 = LF.stichtagNach(TAGE, '2022-06-10'), i2 = LF.stichtagNach(TAGE, '2022-06-11'), i3 = LF.stichtagNach(TAGE, '2030-01-01');
+    return [TAGE[i1] === '2022-06-13' && TAGE[i2] === '2022-06-13' && i3 === -1, TAGE[i1] + ' / ' + TAGE[i2] + ' / ' + i3];
+  });
+  var regelV = C.regelZ, kandV = { kennung: 'kunst-v2a', form: 'tag', titel: 'Kunst vorwaerts', quelle: 'q', autor: 'a', datum: '2026-10-23', erwartung: { groesse: 'gross', richtung: 'positiv', nettoPp: 3 }, konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5 }], params: {} };
+  probe('C-3: Stichtag-Leck: die Vorwaertsmessung nimmt keinen Tag vor dem Stichtag (Kurse vor dem Stichtag veraendert -> Messung bitgleich, alle Einstiege ab Stichtag)', function () {
+    var auftrag = { siegel2Datum: '2022-06-10', eintraege: [{ key: 'H5', nBedarf: 30, status: 'vorgemerkt' }] };
+    var iS = LF.stichtagNach(TAGE, '2022-06-10'), reihen1 = C.kunstReihen(function (r, i) { return (A.fnv('K' + r + '|' + (i - 1)) % 25) === 0 ? 0.02 : 0; }), reihen2 = JSON.parse(JSON.stringify(reihen1));
+    var r1 = LF.vorwaertsKind(TF.kunstTafel(reihen1, TAGE, { offen: true }), regelV, kandV, auftrag);
+    reihen2.forEach(function (sp) { for (var i = 0; i < iS; i++) { sp.o[i] *= 1.3; sp.c[i] *= 0.7; } });
+    var T2 = TF.kunstTafel(reihen2, TAGE, { offen: true }), r2 = LF.vorwaertsKind(T2, regelV, kandV, auftrag);
+    var p1 = r1.messung && r1.messung[0].pruefung, p2 = r2.messung && r2.messung[0].pruefung;
+    return [r1.stichtag === '2022-06-13' && p1 && JSON.stringify(p1.uNetto) === JSON.stringify(p2.uNetto) && JSON.stringify(p1.uBrutto) === JSON.stringify(p2.uBrutto) && r1.je[0].ersterTag >= r1.stichtag && p1.nTage <= r1.je[0].nStand,
+      'Stichtag ' + r1.stichtag + ', erster Signaltag ' + r1.je[0].ersterTag + ', n ' + (p1 && p1.nTage) + ' / ' + r1.je[0].nStand + ', netto ' + (p1 && p1.uNetto.mittel.toFixed(4)) + ' = ' + (p2 && p2.uNetto.mittel.toFixed(4))];
+  });
+  probe('C-4: Zaehlen ohne Renditen bis zum Bedarf (ertragLong gesperrt, keine Messung), ab Bedarf genau eine Messung', function () {
+    var KC = require(path.join(K.TRENDKANAL_STUDIE, 'kanaele.js')), orig = KC.ertragLong, r0;
+    KC.ertragLong = function () { throw new Error('Rendite gelesen'); };
+    try { r0 = LF.vorwaertsKind(C.TL, regelV, kandV, { siegel2Datum: '2022-06-10', eintraege: [{ key: 'H5', nBedarf: 100000, status: 'vorgemerkt' }] }); } finally { KC.ertragLong = orig; }
+    var r1 = LF.vorwaertsKind(C.TL, regelV, kandV, { siegel2Datum: '2022-06-10', eintraege: [{ key: 'H5', nBedarf: 50, status: 'vorgemerkt' }] });
+    return [r0.messung === null && r0.faellig.length === 0 && r0.je[0].nStand > 50 && r1.messung && r1.messung.length === 1 && r1.faellig.join() === 'H5', 'nStand ' + r0.je[0].nStand + ' ohne Rendite; faellig ' + r1.faellig.join(',')];
+  });
+  probe('C-5: Holm p-basiert (einseitig, alpha / (m - k)): p 0,01 / 0,04 / 0,03 -> nur der kleinste besteht', function () {
+    var H = C.TO.holm([0.01, 0.04, 0.03], 0.05);
+    return [H.bestanden.join() === 'true,false,false' && Math.abs(H.schwelle[0] - 0.05 / 3) < 1e-12 && Math.abs(H.schwelle[2] - 0.025) < 1e-12, JSON.stringify(H)];
+  });
+  probe('C-6: Kalender-Hausregel-Marke (zeit und Bedarf oder Bestaetigung < 1.000 Signaltage), Wiedervorlage-Datum aus streuung.json', function () {
+    var a = C.TO.hausregelMarke('zeit', 500, null), b = C.TO.hausregelMarke('topf', 500, null), c = C.TO.hausregelMarke('zeit', 1500, 1200), d = C.TO.hausregelMarke('zeit', 1500, 40);
+    var w = C.TO.wiedervorlage({ H: 4, nT: 80, d: 794, modus: 'zeit', nettoPp: 0.48, signaltageJeJahr: 12, ab: '2026-09-15' }), w2 = C.TO.wiedervorlage({ H: 1, nT: 1484, d: 13, modus: 'topf', nettoPp: 0.26, signaltageJeJahr: 212, ab: '2026-09-15' });
+    return [a === 'nicht muehlenfaehig (Hausregel CLAUDE.md)' && b === null && c === null && d === a && w.datum > '2030-01-01' && w.nNoetig > 80 && w2.jahre === 0 && w2.datum === '2026-09-15', 'Monatswende-artig ab ' + w.datum + ' (' + w.nNoetig + ' Signaltage), Umkehr-artig ' + w2.datum];
+  });
+  /* Laeufer + --vorwaerts im Temp-Repo des Teils A */
+  if (C.ortL) {
+    var ortL = C.ortL, LR = C.LR, gitL = C.gitL;
+    var auf3 = [], st = C.stubs(kandV, auf3), messerAlt = st.messer;
+    st.messer = function (kn, phase, aus, log, extra) { var E = messerAlt(kn, phase, aus, log, extra); if (phase === 'entdeckung') { E.konfigurationen.forEach(function (k) { k.versatz.verstoss = false; k.versatz.wirkt = false; }); fs.writeFileSync(aus, JSON.stringify(E)); } return E; };
+    probe('C-7: Laeufer: Kandidat der Entdeckung (bis Panel-Ende) -> keine Pruefzeit, Status vorgemerkt im Register (Siegel-2-Datum, Bedarf, Stand 0), Protokoll mit Vorwaerts-Satz', function () {
+      var r = LF.laufe('kunst-v2a', st), Rg = JSON.parse(fs.readFileSync(ortL.register, 'utf8')), e = Rg.konfigurationen.filter(function (x) { return x.kennung === 'kunst-v2a'; })[0];
+      var md = fs.readFileSync(path.join(ortL.erledigt, 'kunst-v2a', 'ERGEBNIS.md'), 'utf8'), heute = new Date().toISOString().slice(0, 10);
+      return [auf3.map(function (a) { return a.phase; }).join() === 'zaehlung,entdeckung' && e && e.status === 'vorgemerkt' && e.siegel2Datum === heute && e.nBedarf >= K.MIN_TAGE && e.nStand === 0 && e.stichtag === null && /Die Vorwaertsmessung prueft die Umsetzung; eine Kante von/.test(md) && /vorgemerkt/.test(r.grund),
+        'Aufrufe ' + auf3.map(function (a) { return a.phase; }).join(',') + ', ' + JSON.stringify({ status: e && e.status, s2: e && e.siegel2Datum, nBedarf: e && e.nBedarf })];
+    });
+    var vmd = path.join(LR, 'pruefstrasse', 'VORWAERTS.md'), vsl = path.join(LR, 'pruefstrasse', 'VORSCHLAEGE.md'), ortV = { repo: LR, erledigt: ortL.erledigt, register: ortL.register, vorwaertsMd: vmd, vorschlaege: vsl };
+    var mVor = function (kn, phase, aus, log, extra) { return JSON.parse(JSON.stringify(LF.vorwaertsKind(C.TL, regelV, kandV, extra))); }, still = function () {};
+    probe('C-8: --vorwaerts idempotent: Stichtag hinter dem Panel-Ende -> 0 Signaltage, erster Lauf schreibt und committet, zweiter Lauf schreibt nichts und committet nicht', function () {
+      var h0 = gitL(['rev-parse', 'HEAD']), r1 = LF.vorwaerts({ ort: ortV, messer: mVor, log: still }), h1 = gitL(['rev-parse', 'HEAD']), r2 = LF.vorwaerts({ ort: ortV, messer: mVor, log: still }), h2 = gitL(['rev-parse', 'HEAD']);
+      var vj = JSON.parse(fs.readFileSync(path.join(ortL.erledigt, 'kunst-v2a', 'vorwaerts.json'), 'utf8'));
+      return [r1.geaendert && h1 !== h0 && !r2.geaendert && r2.commit === null && h2 === h1 && vj.je[0].nStand === 0 && vj.stichtag === null && fs.existsSync(vmd) && gitL(['status', '--porcelain']) === '', 'Lauf 1 ' + r1.geschrieben.join(',') + ' | Lauf 2 geaendert ' + r2.geaendert];
+    });
+    probe('C-9: Rueckweg bei Abbruch: Register, vorwaerts.json, VORWAERTS.md zurueckgestellt, Index sauber, Marke mit Fehler liegt, naechster Lauf abgelehnt', function () {
+      var Rg = JSON.parse(fs.readFileSync(ortL.register, 'utf8')); Rg.konfigurationen.forEach(function (e) { if (e.kennung === 'kunst-v2a') { e.siegel2Datum = '2022-06-10'; e.nBedarf = 40; } });
+      fs.writeFileSync(ortL.register, JSON.stringify(Rg, null, 1) + '\n'); gitL(['add', '-A']); gitL(['commit', '-q', '-m', 'Testaufbau: Stichtag in der Tafel']);
+      var vorReg = fs.readFileSync(ortL.register, 'utf8'), vorVj = fs.readFileSync(path.join(ortL.erledigt, 'kunst-v2a', 'vorwaerts.json'), 'utf8'), bs = path.join(LR, 'wiki', 'belegstand.md'), bsText = fs.readFileSync(bs, 'utf8'), fehler = null;
+      fs.unlinkSync(bs);                                                         /* Statuswechsel scheitert am Belegstand-Anhang, NACH dem Schreiben von Register und vorwaerts.json */
+      try { LF.vorwaerts({ ort: ortV, messer: mVor, log: still }); } catch (e) { fehler = e; }
+      fs.writeFileSync(bs, bsText);
+      var mk = path.join(LR, 'pruefstrasse', LF.VORWAERTS_MARKE), mkJ = fs.existsSync(mk) ? JSON.parse(fs.readFileSync(mk, 'utf8')) : null, zweit = null;
+      try { LF.vorwaerts({ ort: ortV, messer: mVor, log: still }); } catch (e) { zweit = e; }
+      var gut = fehler && /VORWAERTS abgebrochen/.test(fehler.message) && fs.readFileSync(ortL.register, 'utf8') === vorReg && fs.readFileSync(path.join(ortL.erledigt, 'kunst-v2a', 'vorwaerts.json'), 'utf8') === vorVj && mkJ && mkJ.fehler && zweit && /liegt/.test(zweit.message) && gitL(['diff', '--cached', '--name-only']) === '';
+      if (fs.existsSync(mk)) fs.unlinkSync(mk);
+      return [gut, (fehler && fehler.message.slice(0, 120)) + ' | zweiter: ' + (zweit && zweit.message.slice(0, 60))];
+    });
+    probe('C-10: --vorwaerts misst bei Erreichen des Bedarfs GENAU EINMAL (Holm ueber die faelligen, Statuswechsel, Belegstand-Absatz), danach kein zweiter Blick', function () {
+      var r1 = LF.vorwaerts({ ort: ortV, messer: mVor, log: still }), Rg = JSON.parse(fs.readFileSync(ortL.register, 'utf8')), e = Rg.konfigurationen.filter(function (x) { return x.kennung === 'kunst-v2a'; })[0];
+      var bs = fs.readFileSync(path.join(LR, 'wiki', 'belegstand.md'), 'utf8'), aufrufe = 0, mZ = function (kn, ph, aus, log, extra) { aufrufe++; return mVor(kn, ph, aus, log, extra); };
+      var r2 = LF.vorwaerts({ ort: ortV, messer: mZ, log: still });
+      return [r1.statuswechsel.length === 1 && ['bestaetigt', 'abgelehnt', 'offen'].indexOf(e.status) !== -1 && e.vorwaerts && e.vorwaerts.holmM === 1 && e.vorwaerts.nTage >= 30 && /\*\*Vorwaertsmessung\*\* `kunst-v2a` H5/.test(bs) && !r2.geaendert && aufrufe === 0 && (e.urteil !== 'belegt-Vorschlag' || fs.existsSync(vsl)),
+        'Status ' + e.status + ', Urteil ' + e.urteil + ', n ' + (e.vorwaerts && e.vorwaerts.nTage) + ', p ' + (e.vorwaerts && e.vorwaerts.p.toFixed(5)) + ', zweiter Lauf Messer-Aufrufe ' + aufrufe];
+    });
+    probe('C-11: --grund-daten: Wiedervorlage ohne Messgeraet-Korrektur, Register zaehlt die Kennung danach doppelt (m), "nicht messbar" bleibt 0', function () {
+      var ws = path.join(LR, 'pruefstrasse', 'warteschlange', 'kunst-m2a'); fs.mkdirSync(ws, { recursive: true }); fs.writeFileSync(path.join(ws, 'kandidat.json'), JSON.stringify(C.kandM));
+      gitL(['add', '-A']); gitL(['commit', '-q', '-m', 'Kandidatenordner']); var cK = gitL(['rev-parse', 'HEAD']);
+      var ef = path.join(ortL.erledigt, 'kunst-m2a', 'ergebnis.json'), eg = JSON.parse(fs.readFileSync(ef, 'utf8')); eg.siegel1 = { commit: cK }; fs.writeFileSync(ef, JSON.stringify(eg)); gitL(['add', '-A']); gitL(['commit', '-q', '-m', 'Siegel 1 im Testprotokoll']);
+      var ortG = { repo: LR, erledigt: ortL.erledigt, warteschlange: path.join(LR, 'pruefstrasse', 'warteschlange'), register: ortL.register }, eKurz = null;
+      try { LF.nachmessungPruefen('kunst-m2a', 'kurz', null, ortG, 'daten'); } catch (e) { eKurz = e; }
+      var NM = LF.nachmessungPruefen('kunst-m2a', 'Panel bis 2027-06 fortgeschrieben (Nr. 123), rund 190 neue Handelstage', null, ortG, 'daten');
+      var m0 = C.TO.registerM(JSON.parse(fs.readFileSync(ortL.register, 'utf8')), null), auf = [], st2 = C.stubs(C.kandM, auf); st2.ort = ortL;
+      LF.laufe('kunst-m2a', Object.assign(st2, { nachmessung: Object.assign(NM, { marke: null }) }));
+      var Rg = JSON.parse(fs.readFileSync(ortL.register, 'utf8')), z = Rg.konfigurationen.filter(function (x) { return x.kennung === 'kunst-m2a'; }), m1 = C.TO.registerM(Rg, null);
+      var h5 = z.filter(function (x) { return x.key === 'H5'; })[0], h10 = z.filter(function (x) { return x.key === 'H10'; })[0], md = fs.readFileSync(path.join(ortL.erledigt, 'kunst-m2a', 'ERGEBNIS.md'), 'utf8');
+      return [eKurz && /grund-daten/.test(eKurz.message) && NM.art === 'daten' && NM.zaehlt === 2 && h5.zaehlt === 2 && h10.zaehlt === 0 && m1 === m0 + 1 && /zaehlt im Register 2-fach/i.test(md), 'm ' + m0 + ' -> ' + m1 + ', H5 zaehlt ' + h5.zaehlt + ', H10 ' + h10.zaehlt];
+    });
+  }
   /* MARKE-ENDE */
   if (C.LR) fs.rmSync(C.LR, { recursive: true, force: true });
 

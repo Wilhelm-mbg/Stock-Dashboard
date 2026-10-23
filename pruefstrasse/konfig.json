@@ -23,7 +23,7 @@
     "mindestDateien": 2000
   },
   "eichung": { "von": "2016-01-04", "bis": "2022-12-30" },
-  "entdeckungBis": "2022-12-30",
+  "entdeckungBis": "panelende",
   "speicherMinGb": 3.5,
   "wertpapierarten": null,
   "minute": {
