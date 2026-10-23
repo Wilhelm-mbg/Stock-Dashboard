@@ -44,8 +44,15 @@ Berichte: `Markt-Dashboard-Daten/panel-fortschreibung/trocken-<deckel>.json`, `s
    im Stamm-Zeitraum, gilt dieselbe Vorwärts-Formel ab dem Ex-Tag auf die Stamm-Zeilen des laufenden Jahres (faktor / f, Rendite am Ex-Tag neu, roh
    unverändert, Split-Sperre muss den Rohsprung sehen); nur im neuen Panel, nie in einem alten Jahresblock; einmal angewandt steht sie in
    `fortschreibung.korrekturen` und wird im nächsten Monat nicht wiederholt. Liegt der Ex-Tag nach dem Stamm-Ende, ist sie ein zusätzlicher Split.
-5b. **Marke `sprung` (QS B4b):** |Tagesrendite| > 50 % an einer Zeile mit MASSNAHME_NAH (±10 Handelstage um eine Maßnahme, auch Abspaltung ohne
-   Faktor, z. B. CTVA 01.10.2026, MOD 02.10.2026), über **alle** Zeilen des neuen Panels. Die acht Markenbits sind belegt, deshalb steht die Marke als
+5b. **Marke `sprung` (QS B4b, Entscheid PM 23.10.):** (1) der erste Tag ab dem Ex-Tag **jeder Abspaltung ohne Kursfaktor**, gleich wie groß der Sprung
+   ist (die Fortschreibung liest roh, also nie mit Faktor; z. B. CTVA 01.10.2026, MOD 02.10.2026) — Zuordnung der Alpaca-Typen:
+
+   | Alpaca (`_art`) | Abspaltung ohne Faktor → `sprung` am Ex-Tag |
+   |---|---|
+   | spin_offs (Feld `source_symbol` = Reihe) | ja |
+   | alle übrigen (splits, dividends, mergers, name_changes, …) | nein (Splits gehen über den Faktor) |
+
+   (2) zusätzlich |Tagesrendite| > 50 % an einer Zeile mit MASSNAHME_NAH (±10 Handelstage um eine Maßnahme), über **alle** Zeilen des neuen Panels. Die acht Markenbits sind belegt, deshalb steht die Marke als
    Liste `sprungZeilen` ([sym, tag]) im `_stand.json`; Zählung im Bericht (`kontrollen.sprung`). Die Prüfstraße (`tafel.js`) setzt `sprung`-Zeilen
    wie Maßnahmentage (kein Einstieg), und `adapter/tag.js ertragOhneSprung` gibt einem Fenster, das eine `sprung`-Zeile einschließt, keinen
    Horizont (Zähler `sprung`). voll-v23c hat keine Liste → leer, die Eichung bleibt bitgleich.

@@ -52,6 +52,7 @@ var ENDE_ARTEN = ['cash_mergers', 'stock_mergers', 'stock_and_cash_mergers', 'wo
 /* Ende-Gruende (QS B5): Alpaca-Wortschatz -> Wortschatz des Panels v2.3 (pruefstrasse/tafel.js ABGANG_GRUPPEN); ende_alpaca behaelt die Art */
 var GRUND_KARTE = { cash_mergers: 'uebernahme', stock_mergers: 'uebernahme', stock_and_cash_mergers: 'uebernahme', worthless_removals: 'insolvenz',
   name_changes: 'umbenennung-ticker', redemptions: 'rueckzahlung', verstummt: 'verstummt' };
+var ABSPALTUNG_ARTEN = ['spin_offs'];        /* Alpaca-Typ einer Abspaltung; die Fortschreibung liest roh -> nie ein Kursfaktor (Entscheid PM 23.10.: Marke sprung am Ex-Tag, unabhaengig von der Groesse) */
 var SPRUNG_MARKE_PP = 50;                   /* Marke `sprung` (QS B4b): |Tagesrendite| > 50 % an einer Zeile mit MASSNAHME_NAH (+-10 Tage um eine Massnahme, auch Abspaltung ohne Faktor) */
 var ABGANG_NAEHE_TAGE = 10;                 /* Ende-Massnahme hoechstens 10 Handelstage vor dem Stamm-Ende zaehlt fuer den sofortigen Abgang (QS B2) */
 var KORREKTUREN = path.join(__dirname, 'panel-fortschreiben-korrekturen.json');
@@ -238,7 +239,7 @@ function rechnen(opt) {
   K.FENSTER_BIS_MAX = KALENDER_BIS;
   var neu = [], W = { reihen: 0, tageGleich: 0, tageRundung: 0, tageUlp: 0, tageAnders: 0, tageFehlt: 0, korrekturAusgenommen: 0, listeUlp: [], listeAnders: [], rundungJeReihe: {}, reihenAnders: [] },
     splits = { neuAngenommen: [], neuAbgelehnt: [], vorStammEndeUnbekannt: [] }, abgaenge = [], nachleben = [], spruenge = [],
-    bitsLetzt = [], nahNeu = {}, dateiFehler = [], fortgeschrieben = 0, unentschieden = [];
+    bitsLetzt = [], nahNeu = {}, dateiFehler = [], fortgeschrieben = 0, unentschieden = [], sprungAbspaltung = {}, abspaltungen = [];
   try {
     lebend.forEach(function (s) {
       var sym = S.symbole[s], rows = zeilen[s] || [];
@@ -349,6 +350,13 @@ function rechnen(opt) {
         if (Math.abs(rendite) > SPRUNG_PP) spruenge.push({ reihe: sym.reihe, tag: T.tag, rendite: +rendite.toFixed(2) });
         meine.push(z); vorher = { b: bT };
       });
+      /* Abspaltung ohne Kursfaktor: der erste Tag ab dem Ex-Tag traegt die Marke sprung, gleich wie gross der Sprung ist */
+      saetze.forEach(function (m) {
+        if (ABSPALTUNG_ARTEN.indexOf(m._art) === -1 || (m.source_symbol || m.symbol) !== basis) return;
+        var ex = exVon(m); if (!ex || ex <= Ltag || ex > deckel) return;
+        var z0 = meine.filter(function (z) { return z.tagText >= ex; })[0];
+        if (z0 && !sprungAbspaltung[s + ':' + z0.tag]) { sprungAbspaltung[s + ':' + z0.tag] = 1; abspaltungen.push(sym.reihe + ' ' + z0.tagText + ' ' + (z0.rendite === z0.rendite ? z0.rendite.toFixed(1) + ' %' : 'ohne Rendite')); }
+      });
       if (meine.length) { meine[meine.length - 1].marken |= K.M_LETZTER_TAG; bitsLetzt.push(last); fortgeschrieben++; }
       meine.forEach(function (z) { neu.push(z); });
       /* lebend / Abgang (Regel lebenszeit-minuten.js) und Nachleben */
@@ -413,7 +421,7 @@ function rechnen(opt) {
   alleJahre.forEach(function (j) {
     var b = bloecke[j].kopie ? P.leseBlock(path.join(stammOrd, j + '.bin'), KENNUNG) : bloecke[j].sp, n = bloecke[j].kopie ? b.n : bloecke[j].n;
     for (var i = 0; i < n; i++) {
-      if (!(Math.abs(b.rendite[i]) > SPRUNG_MARKE_PP) || !(b.marken[i] & K.M_MASSNAHME_NAH)) continue;
+      if (!sprungAbspaltung[b.sym[i] + ':' + b.tag[i]] && (!(Math.abs(b.rendite[i]) > SPRUNG_MARKE_PP) || !(b.marken[i] & K.M_MASSNAHME_NAH))) continue;
       sprungZeilen.push([b.sym[i], b.tag[i]]);
       if (b.tag[i] > letzterStammTag) sprungNeu++;
       if (sprungBeispiele.length < 60) sprungBeispiele.push(S.symbole[b.sym[i]].reihe + ' ' + kal.tage[b.tag[i]] + ' ' + b.rendite[i].toFixed(1) + ' %');
@@ -446,7 +454,7 @@ function rechnen(opt) {
   });
   var monat = deckel.slice(0, 7);
   T.sprungZeilen = sprungZeilen;
-  T.sprungRegel = '|rendite| > ' + SPRUNG_MARKE_PP + ' % an einer Zeile mit MASSNAHME_NAH (+-' + K.MASSNAHMEN_FENSTER_TAGE + ' Handelstage um eine Massnahme, auch Abspaltung ohne Faktor); [sym, tag]; pruefstrasse/tafel.js: kein Einstieg, Fenster darueber ohne Horizont';
+  T.sprungRegel = 'Ex-Tag jeder Abspaltung ohne Kursfaktor (' + ABSPALTUNG_ARTEN.join(', ') + ') unabhaengig von der Groesse, dazu |rendite| > ' + SPRUNG_MARKE_PP + ' % an einer Zeile mit MASSNAHME_NAH (+-' + K.MASSNAHMEN_FENSTER_TAGE + ' Handelstage um eine Massnahme, auch Abspaltung ohne Faktor); [sym, tag]; pruefstrasse/tafel.js: kein Einstieg, Fenster darueber ohne Horizont';
   T.bau = 'v2.3+' + monat;
   T.stand = man.stand;                                    /* deterministisch: Stand der Quelle, nicht die Uhr */
   var shaBloecke = {};
@@ -510,7 +518,7 @@ function rechnen(opt) {
   if (W.tageUlp) B.warnungen.push('Wiedergabe: ' + W.tageUlp + ' Zeilen mit Umsatz 1 f32-ulp neben dem Stamm: ' + W.listeUlp.map(function (x) { return x.reihe + ' ' + x.tag + ' ' + x.felder.join('+'); }).join(', '));
   if (W.korrekturAusgenommen) B.warnungen.push('Wiedergabe: ' + W.korrekturAusgenommen + ' Stamm-Zeilen wegen Korrektur ausgenommen: ' + korAngewandt.map(function (k) { return k.schluessel + ' (' + k.zeilen + ' Zeilen)'; }).join(', '));
   KO.korrekturen = korAngewandt;
-  KO.sprung = { zeilen: sprungZeilen.length, neu: sprungNeu, beispiele: sprungBeispiele };
+  KO.sprung = { zeilen: sprungZeilen.length, neu: sprungNeu, abspaltungen: abspaltungen, beispiele: sprungBeispiele };
   KO.unentschieden = unentschieden;
   if (unentschieden.length) B.warnungen.push('unentschieden (1-' + LEBEND_TAGE + ' Tage still, ohne Ende-Massnahme, bleiben lebend): ' + unentschieden.join(', '));
   if (dateiFehler.length) B.befunde.push('Dateien: ' + dateiFehler.length + ' nicht lesbar: ' + dateiFehler.slice(0, 10).join(', '));

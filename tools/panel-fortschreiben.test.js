@@ -179,7 +179,9 @@ var Hh = { name: 'H', bis: '2026-03-04', preis: function (t) { return +(pfad(t) 
 var Nn = { name: 'N', preis: function (t) { return +((t >= EX_N ? 50 : 1) * pfad(t) * 0.3).toFixed(4); } };
 var Xx = { name: 'X', preis: function (t) { return +((t >= EX_X ? 0.4 : 1) * pfad(t) * 2).toFixed(4); },
   nachtrag: [{ _art: 'spin_offs', source_symbol: 'X', new_symbol: 'XNEU', ex_date: EX_X, id: 'kunst-ctva' }] };
-var W4 = welt('w4', [A, Gg, Hh, Nn, SPY, Xx]), ST4 = path.join(TMP, 'w4-stamm'); var S4 = stammBauen(W4, [A, Gg, Hh, Nn, SPY, Xx], ST4);
+var EX_M = '2026-03-02';
+var Mm = { name: 'M', preis: function (t) { return +((t >= EX_M ? 0.8 : 1) * pfad(t) * 1.7).toFixed(4); }, nachtrag: [{ _art: 'spin_offs', source_symbol: 'M', new_symbol: 'MNEU', ex_date: EX_M, id: 'kunst-mod' }] };
+var W4 = welt('w4', [A, Gg, Hh, Mm, Nn, SPY, Xx]), ST4 = path.join(TMP, 'w4-stamm'); var S4 = stammBauen(W4, [A, Gg, Hh, Mm, Nn, SPY, Xx], ST4);
 /* ulp: eine fruehe Stamm-Zeile von A im Auktionsumsatz um 1 f32-ulp verschieben (wie CVNA/MIDD/REZI/SPGI) */
 var b4 = P.leseBlock(path.join(ST4, 'panel', '2026.bin'), K.PANEL_KENNUNG_V23), iU = -1;
 for (var q4 = 0; q4 < b4.n; q4++) if (b4.sym[q4] === 0 && S4.kal.tage[b4.tag[q4]] === '2026-01-07') iU = q4;
@@ -201,14 +203,17 @@ ok(sp4.faktor[nN.vor] === 1 && sp4.faktor[nN.ex] === 50 && Math.abs(sp4.rendite[
   B4.zahlen.korrekturen.join(' | '));
 var sX = T4.symbole.findIndex(function (x) { return x.reihe === 'X'; });
 var sprX = T4.sprungZeilen.filter(function (z) { return z[0] === sX; });
-ok(sprX.length === 1 && S4.kal.tage[sprX[0][1]] === EX_X && B4.kontrollen.sprung.neu === 1,
-  'B4b: Abspaltung ohne Faktor (X -60 % am Ex-Tag, MASSNAHME_NAH) -> Marke sprung in der Liste des Stands, gezaehlt', JSON.stringify(B4.kontrollen.sprung));
+var sM = T4.symbole.findIndex(function (x) { return x.reihe === 'M'; }), sprM = T4.sprungZeilen.filter(function (z) { return z[0] === sM; });
+ok(sprM.length === 1 && S4.kal.tage[sprM[0][1]] === EX_M && B4.kontrollen.sprung.abspaltungen.length === 2,
+  'Abspaltung ohne Faktor mit kleinem Sprung (M -20 % am Ex-Tag, wie MOD) traegt die Marke sprung trotzdem', JSON.stringify(B4.kontrollen.sprung.abspaltungen));
+ok(sprX.length === 1 && S4.kal.tage[sprX[0][1]] === EX_X && B4.kontrollen.sprung.neu === 2,
+  'B4b: Abspaltung ohne Faktor (X -60 % am Ex-Tag) -> Marke sprung in der Liste des Stands, gezaehlt (X und M)', JSON.stringify(B4.kontrollen.sprung));
 var Z4 = path.join(TMP, 'w4-ziel'); F.schreiben(E4, Z4);
 var TF4 = TF.oeffne({ quelle: 'panel', panel: Z4, bisPanelende: true, ohneSpeicherpruefung: true }), SX = TF4.reihen.filter(function (x) { return x.reihe === 'X'; })[0];
 var AT = require(path.join(REPO, 'pruefstrasse', 'adapter', 'tag.js')), CK = require(path.join(REPO, 'studien', 'vorregistrierung-2026-09-08-trendkanal-tage', 'kanaele.js'));
 var pEx = -1; for (var q6 = 0; q6 < SX.n; q6++) if (TF4.tage[SX.tag[q6]] === EX_X) pEx = q6;
 var zS = {}, ueber = AT.ertragOhneSprung(SX, pEx - 3, CK.festAusstieg(SX, pEx - 3, 5), SX.lebend, zS), davor = AT.ertragOhneSprung(SX, pEx - 8, CK.festAusstieg(SX, pEx - 8, 5), SX.lebend, zS), danach = AT.ertragOhneSprung(SX, pEx, CK.festAusstieg(SX, pEx, 5), SX.lebend, zS);
-ok(TF4.sprungZeilen === 1 && SX.mass[pEx] === 1 && ueber === null && davor && danach && zS.sprung === 1,
+ok(TF4.sprungZeilen === 2 && SX.mass[pEx] === 1 && ueber === null && davor && danach && zS.sprung === 1,
   'Pruefstrasse: sprung-Zeile ist kein Einstiegstag, ein Fenster darueber hat keinen Horizont (Zaehler sprung), Fenster davor/ab dem Tag bleiben', 'sprung ' + TF4.sprungZeilen + ', Zaehler ' + zS.sprung);
 var TFe = TF.oeffne({ quelle: 'panel', panel: ST4, bisPanelende: true, ohneSpeicherpruefung: true }), SXe = TFe.reihen.filter(function (x) { return x.reihe === 'X'; })[0];
 ok(TFe.sprungZeilen === 0 && !SXe.sprungKum, 'ohne sprung-Liste (Stamm wie voll-v23c) bleibt alles wie bisher (Eichung bitgleich)');
