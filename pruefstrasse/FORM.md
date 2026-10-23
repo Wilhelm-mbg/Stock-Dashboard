@@ -173,6 +173,9 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
 - **Größenaussage (Audit B V2):** liegt die obere 95-%-Grenze brutto der Entdeckung unter `bruttoPp`, steht in Urteil, Protokoll, Belegstand-Absatz und
   Register „Literaturgröße ausgeschlossen" — mit dem Zusatz **„(im gemessenen Fenster)"**, wenn die Quelle ein anderes Fenster misst
   (`fensterWieQuelle` nicht `true`; Umkehr, Vor-FOMC, Großanstieg).
+- **Machbarkeitstor bei `--grund-daten` (Auflage QS 23.10.):** die Nachmessung rechnet mit der **gemessenen se der Vormessung** (`ergebnis.json`,
+  se_alt · √(n_alt / n)) statt 1,4 × Tabelle — sonst bliebe die Wiedervorlage an ihrem eigenen Datum „nicht messbar". Die Vorwärtszählung (`nStand`) wendet im
+  Modus zeit dieselbe Randregel an wie die Messung.
 - **Vorwärtsbestätigung (ein vorregistrierter Blick, Form tag).** Ein Kandidat erhält Status `vorgemerkt` (`register.json` je Konfiguration: `status`,
   `siegel2Datum`, `stichtag`, `nBedarf`, `nStand`). **Stichtag** = erster Handelstag des Panel-Kalenders **nach** dem Commit-Tag (Committer-Zeit nach UTC) von `KANDIDATEN.json` — nie die Systemuhr; ohne lesbare Commit-Zeit bricht der Lauf ab;
   **nBedarf** = Signaltage, bei denen MDE80_vorwärts = (t_(0,95; df) + 0,8416) · se(n) ≤ nettoPp (mindestens 30), se(n) = **gemessene** se der Entdeckung

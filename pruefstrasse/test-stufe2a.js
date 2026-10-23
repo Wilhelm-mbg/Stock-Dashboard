@@ -153,6 +153,23 @@ module.exports = function (C) {
     var J = JSON.parse(fs.readFileSync(path.join(K.HIER, 'eichung.json'), 'utf8')), md = fs.readFileSync(path.join(K.HIER, 'EICHUNG.md'), 'utf8');
     return [typeof J.ergebnis.marktweit.bestanden === 'boolean' && typeof J.ergebnis.querschnitt.bestanden === 'boolean' && /dichte marktweite Plaene/.test(J.urteil || '') && /NICHT bestanden fuer dichte marktweite Plaene/.test(md), (J.urteil || '–') + ' | marktweit ' + J.ergebnis.marktweit.bestanden + ', querschnitt ' + J.ergebnis.querschnitt.bestanden];
   });
+  probe('Q-1: Machbarkeitstor einer Nachmessung mit --grund-daten rechnet mit der gemessenen se der Vormessung (se_alt x Wurzel(n_alt/n)): bei n = Wiedervorlage-Bedarf messbar', function () {
+    var w = C.TO.wiedervorlage({ H: 4, nT: 80, d: 794, modus: 'zeit', nettoPp: 0.48, m: 3, signaltageJeJahr: 12, ab: '2026-09-15', seE: 0.3463, nE: 80 });
+    var kand = { kennung: 'kunst-gd2a', form: 'tag', bewertung: 'zeit', erwartung: { nettoPp: 0.48 }, konfigurationen: [{ key: 'H4', richtung: 'long', haltedauer: 4 }] };
+    var Zl = { konfigurationen: [{ key: 'H4', nT: w.nNoetig, nTr: w.nNoetig * 794, d: 794 }], TE: 2520, letzterTag: '2071-01-01' }, Rg = { konfigurationen: [{ kennung: 'x', key: 'a', urteil: 'nein' }, { kennung: 'y', key: 'b', urteil: 'nein' }] };
+    var NM = { art: 'daten', alt: { konf: [{ key: 'H4', se: 0.3463, nTage: 80 }] } }, MBd = LF.machbarkeitsPhase(kand, Zl, Rg, NM), MBt = LF.machbarkeitsPhase(kand, Zl, Rg, null);
+    return [w.nNoetig === 615 && MBd.je[0].messbar && MBd.je[0].seQuelle === 'Vormessung' && !MBt.je[0].messbar, 'Wiedervorlage ' + w.nNoetig + ' Tage: mit se der Vormessung messbar ' + MBd.je[0].messbar + ' (se ' + MBd.je[0].seGeschaetzt.toFixed(4) + '), mit 1,4 x Tabelle ' + MBt.je[0].messbar];
+  });
+  probe('Q-2: Vorwaertszaehlung (zaehle) wendet im Modus zeit die Randregel an: Signale naeher als R am Reihenende zaehlen nicht (wie die Messung)', function () {
+    var T = TF.kunstTafel(C.kunstReihen(null), TAGE, { offen: true }), KZ = { kennung: 'kunst-q2', form: 'tag', bewertung: 'zeit', konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5 }], params: {} }, KT = JSON.parse(JSON.stringify(KZ)); KT.bewertung = 'topf';
+    var R = { signal: function (sicht, i) { return (i + 1) % 16 === 0 ? { dir: 1 } : null; } }, Z = A.zaehle(T, R, KZ, { vollesFenster: true }), Zt = A.zaehle(T, R, KT, { vollesFenster: true });
+    var ende = TAGE.length - 1, soll = 0, sollT = 0; for (var tE = 16; tE <= T.maxTag; tE += 16) { if (tE + 5 <= T.maxTag) { sollT++; if (tE >= 20 && ende - tE >= 20) soll++; } }
+    return [Z.konfigurationen[0].nT === soll && Zt.konfigurationen[0].nT === sollT && soll < sollT, 'zeit ' + Z.konfigurationen[0].nT + ' (Soll ' + soll + '), topf ' + Zt.konfigurationen[0].nT + ' (Soll ' + sollT + ')'];
+  });
+  probe('Q-3: Minute-Stichtag greift: die Messmaschine schneidet jede Reihe VOR der Datenpruefung auf [vonMs, bisMs] (bisMs = minute.eichungBis 23:59:59)', function () {
+    var q = fs.readFileSync(path.join(K.REPO, 'studien', 'messmaschine', 'messmaschine.js'), 'utf8'), m = fs.readFileSync(path.join(K.HIER, 'adapter', 'minute.js'), 'utf8');
+    return [/j\.series = j\.series\.filter\(function \(b\) \{ return b && \(fenster\.vonMs == null \|\| b\[0\] >= fenster\.vonMs\) && \(fenster\.bisMs == null \|\| b\[0\] <= fenster\.bisMs\)/.test(q) && /bisMs: bis \? ms\(bis, true\) : null/.test(m) && /messe\(regel, K\.MINUTE\.von, K\.MINUTE\.eichungBis\)/.test(m), 'Schnitt in ladeUniversum, bisMs aus eichungBis'];
+  });
   /* MARKE-B */
 
   console.log('R) Randregel des lokalen Topfs (QS 23.10.): ein Signal zaehlt im Modus zeit nur mit mindestens R Handelstagen beidseitig in seiner Reihe');

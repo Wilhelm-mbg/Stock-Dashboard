@@ -386,7 +386,7 @@ function commit(pfade, nachricht, repo) {
 /** Aus der Trockenzaehlung Zl (adapter/tag.js zaehle, ohne Renditen) je Konfiguration: geschaetzter Standardfehler (streuung.json), Kandidatenschwelle
  *  t_krit(df, m), Bedingung (t_krit + 0,8416) * se_geschaetzt <= nettoPp und mindestens MIN_TAGE Signaltage. m fuer das Tor = Register (Gewichte, ohne
  *  die eigene Kennung) + alle Konfigurationen des Kandidaten; mLauf = Register + die messbaren (fuer das Kandidatenkriterium nach der Entdeckung). */
-function machbarkeitsPhase(kand, Zl, Rg) {
+function machbarkeitsPhase(kand, Zl, Rg, NM) {
   var mVor = TO.registerM(Rg, kand.kennung), m = mVor + kand.konfigurationen.length, modus = kand.bewertung || 'topf';
   var je = kand.konfigurationen.map(function (c) {
     var z = (Zl.konfigurationen || []).filter(function (x) { return x.key === c.key; })[0] || { nT: 0, nTr: 0, d: null };
@@ -394,7 +394,10 @@ function machbarkeitsPhase(kand, Zl, Rg) {
     var basis = { key: c.key, H: c.haltedauer, nT: z.nT, nTr: z.nTr, d: z.d, modus: modus, erwartung: er, signaltageJeJahr: sj };
     if (!er) return Object.assign(basis, { messbar: false, grund: 'keine Groessenbehauptung (erwartung.nettoPp)' });
     if (!(z.nT >= 2)) return Object.assign(basis, { messbar: false, grund: 'weniger als 2 Signaltage in der Trockenzaehlung', braeuchteSignaltage: null });
-    var M = TO.machbarkeit({ H: c.haltedauer, nT: z.nT, d: z.d, modus: modus, nettoPp: er.nettoPp, m: m, signaltageJeJahr: sj });
+    /* Auflage QS 23.10.: Nachmessung mit --grund-daten -> gemessene se der Vormessung (ergebnis.json, skaliert ueber die Signaltage) statt 1,4 x Tabelle */
+    var va = NM && NM.art === 'daten' ? ((NM.alt && NM.alt.konf) || []).filter(function (x) { return x.key === c.key && x.se > 0 && x.nTage > 0; })[0] : null;
+    var M = TO.machbarkeit(Object.assign({ H: c.haltedauer, nT: z.nT, d: z.d, modus: modus, nettoPp: er.nettoPp, m: m, signaltageJeJahr: sj }, va ? { seE: va.se, nE: va.nTage } : {}));
+    M.seQuelle = va ? 'Vormessung' : 'Tabelle x ' + K.STREUUNG_FAKTOR;
     if (M.messbar && z.nT < K.MIN_TAGE) { M.messbar = false; M.grund = 'unter ' + K.MIN_TAGE + ' Signaltagen'; }
     if (M.braeuchteSignaltage != null && M.braeuchteSignaltage < K.MIN_TAGE) M.braeuchteSignaltage = K.MIN_TAGE;
     M.braeuchteJahre = (M.braeuchteSignaltage != null && sj > 0) ? M.braeuchteSignaltage / sj : null;
@@ -476,7 +479,7 @@ function laufe(kennung, opt) {
   if (kand.form === 'tag' && !opt.trocken) {
     log('Machbarkeitstor: Trockenzaehlung ohne Renditen bis zum Panel-Ende (Signaltage, Trades, Trades je Signaltag)');
     Zl = messer(kennung, 'zaehlung', path.join(aus, 'zaehlung.json'), log, {});
-    MB = machbarkeitsPhase(kand, Zl, Rg);
+    MB = machbarkeitsPhase(kand, Zl, Rg, opt.nachmessung || null);
     MB.je.forEach(function (x) { log('  ' + x.key + ': ' + ganz(x.nT) + ' Signaltage, se geschaetzt ' + de(x.seGeschaetzt) + ', (t_krit ' + de(x.tKrit, 2) + ' + 0,84) x se = ' + de(x.links, 3) + ' gegen netto ' + (x.erwartung ? de(x.erwartung.nettoPp, 2) : '–') + ' -> ' + (x.messbar ? 'messbar' : 'NICHT messbar, braeuchte ' + ganz(x.braeuchteSignaltage) + ' Signaltage (' + jahreText(x.braeuchteJahre) + ' Jahre)')); });
     if (!MB.messbar.length) return nichtMessbarAbschluss(kennung, kand, MB, Zl, Rg, siegel1, aus, relAus, log, opt.nachmessung || null, ort);
     nur = MB.messbar.length < kand.konfigurationen.length ? MB.messbar : null;
@@ -851,7 +854,7 @@ function nachmessungDatenPruefen(kennung, grund, ort) {
   var vorher = fs.readdirSync(erl).filter(function (d) { return /^v\d+-\d{4}-\d{2}-\d{2}$/.test(d) && fs.statSync(path.join(erl, d)).isDirectory(); });
   var n = vorher.length + 1, ziel = 'v' + n + '-' + String(alt.stand || '').slice(0, 10);
   var Rg = register(ort.register), altZ = Rg.konfigurationen.filter(function (e) { return e.kennung === kennung; }).reduce(function (s, e) { return Math.max(s, e.zaehlt == null ? 1 : e.zaehlt); }, 1);
-  var konf = ((alt.entdeckung && alt.entdeckung.konfigurationen) || []).map(function (k) { var e = k.entdeckung || {}; return { key: k.key, netto: e.uNetto ? e.uNetto.mittel : null, t: e.uNetto ? e.uNetto.t : null, urteil: k.urteil }; });
+  var konf = ((alt.entdeckung && alt.entdeckung.konfigurationen) || []).map(function (k) { var e = k.entdeckung || {}; return { key: k.key, netto: e.uNetto ? e.uNetto.mittel : null, t: e.uNetto ? e.uNetto.t : null, se: e.uNetto ? e.uNetto.se : null, nTage: e.nTage || null, urteil: k.urteil }; });
   return { art: 'daten', zaehlt: altZ + 1, n: n, grund: String(grund).trim(), korrektur: null, korrekturTitel: null, korrekturDateien: [], vormessungCommit: null, repo: repo, ziel: ziel, erledigt: erl, blickePruefzeit: 0,
     alt: { stand: alt.stand, urteil: alt.urteil, grund: alt.grund, ordner: path.relative(repo, path.join(erl, ziel)).replace(/\\/g, '/'), konf: konf, pruefungGelesen: alt.pruefung != null, siegel1: alt.siegel1.commit } };
 }

@@ -85,7 +85,8 @@ function seGeschaetzt(H, nT, d, modus, S) {
 /* ---------- Machbarkeitstor (A3, Audit B V1) ---------- */
 /** Bedingung (t_krit(df, m) + Z_POWER80) * se_geschaetzt <= nettoPp fuer n Signaltage; liefert die Zahlen. */
 function machbarBei(n, z) {
-  var df = dfAus(n, z.H), s = kandidatSchwelle(df, z.m), se = (z.seFaktor != null ? z.seFaktor : K.STREUUNG_FAKTOR) * seGeschaetzt(z.H, n, z.d, z.modus, z.S), links = (s.t + K.Z_POWER80) * se;
+  /* Auflage QS 23.10.: mit z.seE (gemessene se einer Vormessung, Nachmessung --grund-daten) se_E x Wurzel(n_E / n) statt STREUUNG_FAKTOR x Tabelle */
+  var df = dfAus(n, z.H), s = kandidatSchwelle(df, z.m), se = z.seE != null ? z.seE * Math.sqrt((z.nE || n) / n) : (z.seFaktor != null ? z.seFaktor : K.STREUUNG_FAKTOR) * seGeschaetzt(z.H, n, z.d, z.modus, z.S), links = (s.t + K.Z_POWER80) * se;
   return { n: n, df: df, schwelle: s, se: se, links: links, ok: links <= z.nettoPp };
 }
 /** Kleinste Zahl Signaltage, bei der die Bedingung f(n) haelt (exponentielle Suche, dann Bisektion; null ueber 10 Mio). */

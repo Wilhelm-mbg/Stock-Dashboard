@@ -313,7 +313,7 @@ function zaehle(TF, regel, kand, opt) {
   opt = opt || {};
   var t0 = Date.now(), konfs = kand.konfigurationen.filter(function (c) { return !opt.nurKeys || opt.nurKeys.indexOf(c.key) !== -1; }), params = kand.params || {};
   var von = opt.von || 0, bis = opt.bis != null ? Math.min(opt.bis, TF.maxTag) : TF.maxTag, zaehler = leererZaehler(), versatz = regel.bestaetigt ? 2 : 1, bucht = buchtTafel(kand.konfigurationen);
-  var zulK = topf(TF, null, zaehler, false), sigTag = new Int32Array(TF.nTage), verstoesse = 0;
+  var zulK = topf(TF, null, zaehler, false), sigTag = new Int32Array(TF.nTage), verstoesse = 0, zeitRand = (kand.bewertung || 'topf') === 'zeit';
   var tageJe = konfs.map(function () { return {}; }), trades = konfs.map(function () { return 0; });
   TF.reihen.forEach(function (S) {
     var P1 = signaleSammeln(S, TF, regel, params, versatz, bucht, zaehler); verstoesse += P1.verstoesse;
@@ -324,6 +324,8 @@ function zaehle(TF, regel, kand, opt) {
       konfs.forEach(function (c, kf) {
         if (c.richtung !== richtung || (c.klassen && c.klassen.indexOf(sg.k) === -1)) return;
         if (opt.vollesFenster && sg.tagE + c.haltedauer > TF.maxTag) return;
+        /* Auflage QS 23.10.: Randregel wie in messe (Modus zeit) - Signale naeher als R am Anfang/Ende der Reihe zaehlen nicht (die Messung striche sie) */
+        if (zeitRand && (sg.tagE - S.tag[0] < topfRadiusVon(kand, c.haltedauer) || S.tag[S.n - 1] - sg.tagE < topfRadiusVon(kand, c.haltedauer))) return;
         tageJe[kf][sg.tagE] = (tageJe[kf][sg.tagE] || 0) + 1; trades[kf]++;
       });
     });
