@@ -108,7 +108,10 @@ im se; er bleibt als `zeitTopfGlobal` nur nachrichtlich („Überschuss gegen de
 **Standardfehler:** die Streuung des lokalen Topfs steckt im Überschuss jedes Trades und damit in der Tagesreihe; weil die Töpfe disjunkt sind,
 bleibt der Hansen-Hodrick-Lag = H wie im Modus `topf` (Beweis: Kunsttest D-i in `test.js`, 300 Seeds unter der Null mit unregelmäßigem Plan
 und Regime-Block). Nachrichtlich im Protokoll: Topf-n je Trade (Median, Min, Anteil n = 1), Histogramm der Topf-Starttage relativ zum Signal, Topf-Mittel,
-Überschuss gegen den globalen Topf, Sensitivität für R = 2 H und 8 H (kein Urteil). Kassa-Hürde, Tagesreihe (Mittel
+Überschuss gegen den globalen Topf, Sensitivität für R = 2 H und 8 H (kein Urteil). **Randregel (Nachbesserung QS 23.10.):** ein Signal zählt nur, wenn
+seine Reihe beidseitig mindestens R Tafeltage um den Einstieg hat (Anfang/Ende der Reihe in der Tafel, nicht des Zeitraums); sonst `randFehlt` (Zähler im
+Protokoll), der Trade entfällt mit allen Gegenproben — am Rand läge der lokale Topf nur auf einer Seite, und Anfang/Ende von Reihen tragen systematisch andere
+Renditen (Eichung Dichte 1/10: Nullpunkt −0,137 ± 0,051, randlose gegen randbehaftete Reihen gepaart +0,215, t 3,2). Kassa-Hürde, Tagesreihe (Mittel
 je Einstiegstag), Hansen-Hodrick und MDE80 = 2,8016 × se bleiben (Tor 1 nur nachrichtlich); bei einer marktweiten Regel ist jeder Signaltag **ein** Cluster,
 die Auflösung hängt an der Zahl der Ereignisfenster (Monatswende ≈ 84 in 2016–2022), nicht an der Zahl der Trades — das Protokoll nennt
 Signaltage, Trades und Trades je Signaltag und sagt das in einem Satz. **Nicht gewählt:** Überschuss gegen null (reiner Fensterertrag, wie
@@ -151,7 +154,8 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   Trades je Signaltag d, Anteil der Reihen mit Signal, H) → geschätzter Standardfehler se_g(H, n_T, d, Modus) aus `pruefstrasse/streuung.json`
   (einmal gefittet aus **versiegelten** Messungen: 13 Konfigurationen der Prüfstraße + 39 der Trendkanal-Studie mit Teilzeiträumen; Modell
   se = a_H · n_T^−0,5 · d^δ, Fit und Residuen in `streuung-fit.js`/`streuung.json`; nie aus dem Kandidaten selbst). Bedingung je Konfiguration:
-  **(t_krit + 0,8416) · se_g ≤ nettoPp** und mindestens 30 Signaltage, t_krit = Kandidatenschwelle unten mit df = n_T/H − 1 und m = Register +
+  **(t_krit + 0,8416) · 1,4 · se_g ≤ nettoPp** und mindestens 30 Signaltage (`STREUUNG_FAKTOR` 1,4 = P90 des Faktors se_ist / se_g über die 179 Stützstellen,
+  1,41; die Tabelle ist nicht konservativ — leave-one-rule-out-Median der 13 Konfigurationen 1,14, 8 von 13 unterschätzt, QS 23.10.), t_krit = Kandidatenschwelle unten mit df = n_T/H − 1 und m = Register +
   alle Konfigurationen des Kandidaten. Sonst **„nicht messbar mit diesen Daten"**: kein Entdeckungslauf für diese Konfiguration (keine messbar → kein
   Lauf, kein Siegel 2), Protokoll mit „bräuchte n Signaltage (≈ Jahre)", Register-Eintrag mit Urteil `nicht messbar` und Gewicht 0 (**zählt nicht** als Test).
 - **Siegel 1:** der Kandidatenordner liegt in mindestens einem Commit und hat nichts Ungesichertes. **Siegel 2:** der Läufer
@@ -167,7 +171,9 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   (`fensterWieQuelle` nicht `true`; Umkehr, Vor-FOMC, Großanstieg).
 - **Vorwärtsbestätigung (ein vorregistrierter Blick, Form tag).** Ein Kandidat erhält Status `vorgemerkt` (`register.json` je Konfiguration: `status`,
   `siegel2Datum`, `stichtag`, `nBedarf`, `nStand`). **Stichtag** = erster Handelstag des Panel-Kalenders **nach** dem Commit-Tag (Committer-Zeit nach UTC) von `KANDIDATEN.json` — nie die Systemuhr; ohne lesbare Commit-Zeit bricht der Lauf ab;
-  **nBedarf** = Signaltage, bei denen MDE80_vorwärts = (t_(0,95; df) + 0,8416) · se_g ≤ nettoPp (mindestens 30), mit geschätztem Datum im Protokoll.
+  **nBedarf** = Signaltage, bei denen MDE80_vorwärts = (t_(0,95; df) + 0,8416) · se(n) ≤ nettoPp (mindestens 30), se(n) = **gemessene** se der Entdeckung
+  × √(n_E / n) (nicht die Tabelle), mit geschätztem Datum im Protokoll. Die Richtung für `belegt-Vorschlag` kommt aus der versiegelten Kandidatenliste
+  (`KANDIDATEN.json`, Siegel 2), nie aus einer Neurechnung mit Daten vor dem Stichtag.
   `laeufer.js --vorwaerts` (nachtlauftauglich, idempotent — schreibt `erledigt/<k>/vorwaerts.json`, `VORWAERTS.md`, Register nur bei geändertem Inhalt und
   committet nur dann) zählt je vorgemerkter Konfiguration die Signaltage ab dem Stichtag **ohne Renditen** (nur Einstiege, deren Fenster ganz in der Tafel
   liegt); erst bei nStand ≥ nBedarf misst er **einmal** (Topf nur aus Vorwärtsdaten: Tageszelle bzw. lokaler Topf ab dem Stichtag; `topfFehlt`
@@ -179,24 +185,18 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
 - **Kalender-Hausregel (CLAUDE.md):** Konfigurationen mit Bewertung `zeit` und nBedarf oder Bestätigungs-Signaltagen unter 1.000 tragen in Register
   und Protokoll die Marke `nicht muehlenfaehig (Hausregel CLAUDE.md)`; sie können `belegt-Vorschlag` werden, gehen aber nicht in die Mühle.
 - **Wiedervorlage (Audit B V4):** jede nicht entscheidbare, nicht vorgemerkte Konfiguration erhält im Protokoll (und Register `wiedervorlage`) das Datum,
-  an dem MDE80 = 2,8016 · se_g ≤ nettoPp wäre (Datenzuwachs = Signaltage der Entdeckung je 252 Handelstage). Einziger Weg dorthin:
+  an dem die Nachmessung das eigene Tor bestünde: (t_krit + 0,8416) · se(n) ≤ nettoPp mit derselben Schwelle wie das Machbarkeitstor (nicht MDE80 = 2,80 · se)
+  und se(n) aus der gemessenen se der Entdeckung (Datenzuwachs = Signaltage der Entdeckung je 252 Handelstage). Einziger Weg dorthin:
   `laeufer.js --nachmessen <kennung> --grund-daten "<Text>"` (Kandidatenordner unverändert, kein Messgerät-Fehler nötig); die Kennung zählt danach im
   Register **doppelt** (Gewicht alte Zahl + 1, bewusst konservativ).
 - **Eichung (Nr. 121-2a D, nur PM, vor jeder Freigabe):** `laeufer.js --eichung` — Zufallsregel in zwei Dichten auf dem Panel im Eichfenster, H = 5:
   marktweit (ein Signaltag je ~10 Handelstage für alle Reihen, Modus zeit; Entscheid PM 23.10.) und Querschnitt (~1 % der Reihen je Tag, Modus topf); Einsaat
   +0,30 Pp brutto **nur** auf die Signalfenster (nicht Placebo-, Verschiebungs-, Topf-Fenster), 30 Seeds Einsaat + 30 Seeds Zufall je Dichte. Kriterien:
-  **Querschnitt** (Seeds ziehen verschiedene Reihen, nahezu unabhängig): Einsaat — Mittel innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40;
-  Zufall — Mittel innerhalb ± 2 · se_Mittel um 0, Anteil |t| > 2 höchstens 15 %. **Marktweit** (Entscheid PM 23.10.): die Seeds ziehen verschiedene Pläne aus
-  **demselben** Marktpfad 2016–2022 und sind nicht unabhängig; se_Mittel = sd/√n unterschätzt die Unsicherheit, weil ein gemeinsamer Marktzustand (ein Regime,
-  das jeden Plan trifft) nicht wegmittelt. Dort gilt: (a) Anteil |t| > 2 je Lauf höchstens 15 %, (b) |Mittel über Seeds| ≤ 2 × mittlere se **je Lauf**,
-  (c) Einsaat Mittel zwischen 0,20 und 0,40 und innerhalb ± 2 × mittlere se je Lauf um 0,30; se_Mittel steht nachrichtlich („nicht unabhängig").
+  Beide Dichten (Nachbesserung QS 23.10.): **Nullpool** = 100 Zufall-Seeds + die 30 Einsaat-Seeds minus 0,30 (die Einsaat ist exakt additiv) — |Mittel| ≤
+  2 · se_Mittel und Anteil |t| > 2 ≤ 15 %; **Einsaat** — Mittel innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40. Auf dem festen Marktpfad sind die
+  Zufallspläne unabhängige Ziehungen; für ein fehlerfreies Gerät ist der Erwartungswert über Pläne null, se_Mittel ist der Maßstab für einen Geräteversatz.
   `--eichung-bewerten` bewertet die gespeicherten Läufe von `eichung.json` neu, ohne neuen Lauf. Schreibt
   ausschließlich `EICHUNG.md` und `eichung.json` (der Code prüft es); `test.js` prüft Form und Alter (> 60 Tage: Warnung).
-- **Siegel 1:** der Kandidatenordner liegt in mindestens einem Commit und hat nichts Ungesichertes. **Siegel 2:** der Läufer
-  committet `erledigt/<kennung>/KANDIDATEN.json`.
-- **Kandidat** (je Konfiguration, Entdeckung): netto > 0, t ≥ 2, Tor 1, kein Placebo-Verstoß (|Placebo| > 2 se **und** > ¼ Hürde; im
-  Modus `zeit` gegenstandslos, dort wirkt dieselbe Regel auf das verschobene Signal, siehe Gegenproben). „t ≥ 2" ist das Kandidaten-Kriterium; **MDE80 = 2,8016 × se** (`konfig.js` des
-  Prüfstands) ist die Auflösung — zwei Zahlen, zwei Namen.
 - **Urteile:** `nicht messbar` (Machbarkeitstor, oben) · `belegt-Vorschlag` (Form tag: Vorwärtsmessung, oben; korb/minute: Prüfung: Holm über alle Konfigurationen des Kandidaten, einseitig 5 %, gleiche Richtung wie in
   der Entdeckung, netto > 0; p einseitig aus der t-Verteilung mit df = n_eff − 1, n_eff = Signaltage / H, Nr. 121-1; nachrichtlich, ob der
   Treffer Holm über **alle** Konfigurationen des Registers überstünde) ·

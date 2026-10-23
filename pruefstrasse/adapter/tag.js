@@ -257,7 +257,9 @@ function leererZaehler() {
     /* Nr. 121-1: cooldownDurchOhneKlasse (A13) = Signale, die der Cooldown eines Signals sperrte, dessen Klasse keine Konfiguration dieser Richtung
      * bucht; versatzUeberschneidung (B-V5) = verschobene Fenster, die ein Signalfenster der Reihe schneiden (nicht gewertet); reihen,
      * reihenOhneKlasse, zeilenJeKlasse (A5) */
-    cooldownDurchOhneKlasse: 0, versatzUeberschneidung: 0, reihen: 0, reihenOhneKlasse: 0, zeilenJeKlasse: [0, 0, 0, 0] };
+    cooldownDurchOhneKlasse: 0, versatzUeberschneidung: 0, reihen: 0, reihenOhneKlasse: 0, zeilenJeKlasse: [0, 0, 0, 0],
+    /* Nachbesserung QS 23.10. (Randregel, nur Modus zeit/lokal): Signale, deren Reihe nicht beidseitig mindestens R Tafeltage um den Einstieg hat */
+    randFehlt: 0 };
 }
 
 /** Phase 1 einer Reihe (Nr. 121-2a als Funktion herausgeloest, Schritte und Reihenfolge unveraendert): Sicht, Cooldown je Richtung, Bestaetigung,
@@ -360,7 +362,7 @@ function messe(TF, regel, kand, opt) {
   if (['lokal', 'global'].indexOf(topfArt) === -1) throw new Error('topfArt muss lokal | global sein');
   var bisEnt = Math.min(TF.maxTag, iSchnitt - 1), LEER = new Int32Array(0), zN = leererZaehler();
   var radien = konfs.map(function (c) { var H = c.haltedauer; return zeit ? [topfRadiusVon(kand, H), 2 * H, 8 * H] : null; });
-  var detail = konfs.map(function (c, kf) { return { R: radien[kf] ? radien[kf][0] : null, nMin: nMin, topfN: {}, hist: {}, topfSumme: 0, topfTrades: 0, topfFehlt: 0 }; });
+  var detail = konfs.map(function (c, kf) { return { R: radien[kf] ? radien[kf][0] : null, nMin: nMin, topfN: {}, hist: {}, topfSumme: 0, topfTrades: 0, topfFehlt: 0, randFehlt: 0 }; });
   /* bucht[dir][k]: bucht irgendeine Konfiguration dieser Richtung die Klasse k? (Zaehler cooldownDurchOhneKlasse, A13) */
   var bucht = buchtTafel(konfs);
   /** Lokale Toepfe einer Reihe je Konfiguration: Zuordnung je Zeitraum (Entdeckung: Einstiegstage <= bisEnt, Starttage 0..bisEnt; Pruefung: ab
@@ -415,7 +417,13 @@ function messe(TF, regel, kand, opt) {
         if (c.richtung !== richtung) continue;
         if (c.klassen && c.klassen.indexOf(k) === -1) continue;
         passend++;
-        var T = TZ ? TZ[kf] : null, tpE = T ? T.topf(tagE, 0) : zeitlichAlt, vorTF = zaehler.topfFehlt;
+        var T = TZ ? TZ[kf] : null;
+        /* Randregel (Nachbesserung QS 23.10.): am Anfang/Ende einer Reihe laege der lokale Topf nur auf einer Seite des Signals, und Anfang/Ende von Reihen
+         * tragen systematisch andere Renditen (Eichung 1/10: Nullpunkt -0,137 +- 0,051, randlose gegen randbehaftete Reihen gepaart +0,215, t 3,2). Ein Signal
+         * zaehlt deshalb nur, wenn seine Reihe beidseitig mindestens R = topfRadius Tafeltage um den Einstieg hat (Anfang/Ende der Reihe in der Tafel, nicht des
+         * Zeitraums); sonst randFehlt - der Trade entfaellt mit allen Gegenproben. Nur Modus zeit (lokaler Topf); topf bleibt bitgleich. */
+        if (T && tagE <= TF.maxTag && (tagE - S.tag[0] < radien[kf][0] || S.tag[S.n - 1] - tagE < radien[kf][0])) { zaehler.randFehlt++; if (tagE < iSchnitt) detail[kf].randFehlt++; continue; }
+        var tpE = T ? T.topf(tagE, 0) : zeitlichAlt, vorTF = zaehler.topfFehlt;
         var ausPos = C.festAusstieg(S, ePos, c.haltedauer);
         var e = buche(TF, Z, 0, kf, dir, S, ePos, ausPos, k, zaehler, tpE, einsaat);
         if (e) zaehler.gebucht++;
@@ -625,7 +633,7 @@ function zeitTopfBericht(M, Z, KL, kf, L, ent) {
   function zeile(art) { var s = statistik(tagesreihe(Z, KL, art, kf, 'alle').filter(ent), L); return { nTage: s.nTage, nTr: s.nTr, uBrutto: kurz(s.uBrutto), uNetto: kurz(s.uNetto) }; }
   var hist = Object.keys(dt.hist).map(Number).sort(function (a, b) { return a - b; }).map(function (o) { return [o, dt.hist[o]]; });
   return { art: 'lokal', R: dt.R, nMin: dt.nMin, hhLag: L, topfN: { trades: tot, median: med, min: ns.length ? ns[0] : null, max: ns.length ? ns[ns.length - 1] : null, anteilN1: tot ? (dt.topfN[1] || 0) / tot : null, verteilung: dt.topfN },
-    topfFehlt: dt.topfFehlt, topfMittel: dt.topfTrades ? dt.topfSumme / dt.topfTrades : null, histogramm: hist,
+    topfFehlt: dt.topfFehlt, randFehlt: dt.randFehlt, topfMittel: dt.topfTrades ? dt.topfSumme / dt.topfTrades : null, histogramm: hist,
     global: zeile(4), sensitivitaet: { R2H: Object.assign({ R: 2 * L }, zeile(5)), R8H: Object.assign({ R: 8 * L }, zeile(6)) }, zufallsplanRang: 'nicht gerechnet' };
 }
 /** Verteilungsfunktion der Standardnormalverteilung (erfc nach Numerical Recipes, Fehler < 1,2e-7). */

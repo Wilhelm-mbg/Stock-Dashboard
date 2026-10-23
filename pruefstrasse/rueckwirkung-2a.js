@@ -28,7 +28,7 @@ reihenfolge.forEach(function (kn) {
       schwelle = TO.kandidatSchwelle(Math.max(1, e.uNetto.nEff - 1), mLauf);
       kandidat = e.uNetto.mittel > 0 && e.uNetto.t >= schwelle.t && e.nTage >= K.MIN_TAGE && !(k.placebo && k.placebo.verstoss);
       neu = kandidat ? 'Kandidat -> vorgemerkt' : (e.uNetto.obere < 0 && e.nTage >= K.MIN_TAGE) ? 'nein' : 'nicht entscheidbar';
-      if (neu === 'nicht entscheidbar') wv = TO.wiedervorlage({ H: k.haltedauer, nT: e.nTage, d: e.tradesJeTag || e.nTr / e.nTage, modus: modus, nettoPp: x.er.nettoPp, signaltageJeJahr: x.sj, ab: ende });
+      if (neu === 'nicht entscheidbar') wv = TO.wiedervorlage({ H: k.haltedauer, nT: e.nTage, d: e.tradesJeTag || e.nTr / e.nTage, modus: modus, nettoPp: x.er.nettoPp, m: mLauf, signaltageJeJahr: x.sj, ab: ende, seE: e.uNetto.se, nE: e.nTage });
     }
     zeilen.push({ kennung: kn, key: k.key, H: k.haltedauer, modus: modus, nT: e.nTage, d: e.tradesJeTag || e.nTr / e.nTage, nettoPp: x.er.nettoPp, bruttoPp: x.er.bruttoPp, seIst: e.uNetto.se, seGeschaetzt: x.M.seGeschaetzt,
       mTor: mTor, tKritTor: x.M.tKrit, links: x.M.links, messbar: x.M.messbar, braeuchte: x.M.braeuchteSignaltage, braeuchteJahre: x.M.braeuchteSignaltage != null ? x.M.braeuchteSignaltage / x.sj : null,

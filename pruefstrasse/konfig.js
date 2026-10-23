@@ -70,6 +70,18 @@ module.exports = {
    * Pruefstrasse"; die ~3.400 Tests der Signalstudie 2026-08 stehen nur nachrichtlich (REGISTER_M_EXTERN_NACHRICHTLICH) - Wilhelm kann sie wirksam setzen.
    * HAUSREGEL_KALENDER_TAGE: CLAUDE.md "Kalendersignale unter 1.000 Bestaetigungs-Signaltagen nicht in die Muehle". */
   REGISTER_ALPHA: 0.05, REGISTER_M_EXTERN: 0, REGISTER_M_EXTERN_NACHRICHTLICH: 3400, HAUSREGEL_KALENDER_TAGE: 1000,
+  /* STREUUNG_FAKTOR (Nachbesserung QS 23.10.): das Machbarkeitstor rechnet mit 1,4 x se_geschaetzt - das P90 des Faktors se_ist / se_geschaetzt ueber die
+   * 179 Stuetzstellen (1,41; leave-one-rule-out-Median der 13 Konfigurationen 1,14, 8 von 13 unterschaetzt). nBedarf und Wiedervorlage rechnen nach der
+   * Entdeckung mit der GEMESSENEN se (se_E x Wurzel(n_E / n)), nicht mit der Tabelle. */
+  STREUUNG_FAKTOR: 1.4,
+  /* STREUUNG_FAKTOR (Nachbesserung QS 23.10.): das Machbarkeitstor rechnet mit 1,4 x se_geschaetzt - das P90 des Faktors se_ist / se_geschaetzt ueber die
+   * 179 Stuetzstellen (1,41; leave-one-rule-out-Median der 13 Konfigurationen 1,14, 8 von 13 unterschaetzt). nBedarf und Wiedervorlage rechnen nach der
+   * Entdeckung mit der GEMESSENEN se (se_E x Wurzel(n_E / n)), nicht mit der Tabelle. */
+  STREUUNG_FAKTOR: 1.4,
+  /* STREUUNG_FAKTOR (Nachbesserung QS 23.10.): das Machbarkeitstor rechnet mit 1,4 x se_geschaetzt - das P90 des Faktors se_ist / se_geschaetzt ueber die
+   * 179 Stuetzstellen (1,41; leave-one-rule-out-Median der 13 Konfigurationen 1,14, 8 von 13 unterschaetzt). nBedarf und Wiedervorlage rechnen nach der
+   * Entdeckung mit der GEMESSENEN se (se_E x Wurzel(n_E / n)), nicht mit der Tabelle. */
+  STREUUNG_FAKTOR: 1.4,
   /* Modus zeit, lokaler Topf (Nr. 121-1, FORM.md §3): mindestens TOPF_N_MIN Fenster je Signal. Entscheid PM 21.10.: 1 statt 2 - ein einzelnes
    * Vergleichsfenster ist ein gepaarter Vergleich (Signalwoche gegen die folgende ungerade Woche, der Vergleich der Quelle), seine Streuung steht ueber
    * den Ueberschuss je Trade in der Tagesreihe und damit im se; die Schwelle 2 waehlte eine verzerrte Teilmenge (Zyklusenden, Luecken - fomc: 79 %

@@ -39,7 +39,7 @@ module.exports = function (C) {
     return [form && mono && nP === 13 && nT === 39 && S.ausgeschlossen.length === 12 && S.stuetzstellen.every(function (x) { return x.faktor > 0; }), 'b ' + k.b + ' (frei ' + S.bFrei.koeffizienten.b.toFixed(3) + '), Stuetzstellen ' + nP + ' + ' + nT + ' (+ Teilzeitraeume ' + (S.stuetzstellen.length - nP - nT) + '), Faktor Median ' + S.faktorSeIstZuGeschaetzt.alle.median.toFixed(2)];
   });
   probe('A-2: Machbarkeitstor (Zahl): Monatswende-artig (H4, 80 Signaltage, zeit, netto 0,48, m 14) nicht messbar mit "braeuchte n"; Umkehr-artig (H1, 1.484, topf, netto 0,26) messbar', function () {
-    var a = TO.machbarkeit({ H: 4, nT: 80, d: 794, modus: 'zeit', nettoPp: 0.48, m: 14, signaltageJeJahr: 12 }), b = TO.machbarkeit({ H: 1, nT: 1484, d: 13, modus: 'topf', nettoPp: 0.26, m: 14, signaltageJeJahr: 212 });
+    var a = TO.machbarkeit({ H: 4, nT: 80, d: 794, modus: 'zeit', nettoPp: 0.48, m: 14, signaltageJeJahr: 12 }), b = TO.machbarkeit({ H: 1, nT: 1484, d: 13, modus: 'topf', nettoPp: 0.26, m: 14, signaltageJeJahr: 212, seFaktor: 1 });   /* Tabelle ohne Sicherheitsfaktor; STREUUNG_FAKTOR prueft C-6b */
     return [!a.messbar && a.braeuchteSignaltage > 80 && a.braeuchteJahre > 5 && b.messbar && b.links <= 0.26 && a.links > 0.48, 'MW: (' + a.tKrit.toFixed(2) + ' + 0,84) x ' + a.seGeschaetzt.toFixed(3) + ' = ' + a.links.toFixed(3) + ', braeuchte ' + a.braeuchteSignaltage + ' (' + a.braeuchteJahre.toFixed(0) + ' J.) | Umkehr ' + b.links.toFixed(3)];
   });
   probe('A-3: Groessenaussage mit/ohne Zusatz "im gemessenen Fenster" (obere 95-%-Grenze brutto < bruttoPp)', function () {
@@ -142,6 +142,16 @@ module.exports = function (C) {
   });
   /* MARKE-B */
 
+  console.log('R) Randregel des lokalen Topfs (QS 23.10.): ein Signal zaehlt im Modus zeit nur mit mindestens R Handelstagen beidseitig in seiner Reihe');
+  probe('R-1: zeit: Signale naeher als R am Anfang/Ende der Reihe entfallen (randFehlt, unabhaengig nachgezaehlt), topf unberuehrt', function () {
+    var T = TF.kunstTafel(C.kunstReihen(null), TAGE), KZ = { kennung: 'kunst-rand', form: 'tag', bewertung: 'zeit', konfigurationen: [{ key: 'H5', richtung: 'long', haltedauer: 5 }, { key: 'H3', richtung: 'long', haltedauer: 3 }], params: {} };
+    var KT = JSON.parse(JSON.stringify(KZ)); KT.bewertung = 'topf';
+    var R = { signal: function (sicht, i) { return (i + 1) % 16 === 0 ? { dir: 1 } : null; } }, Ez = A.lauf(R, KZ, { tafel: T }), Et = A.lauf(R, KT, { tafel: T });
+    var ende = TAGE.length - 1, soll = 0, nR = T.reihen.length;            /* Kunstreihen laufen bis zum Kalenderende; gezaehlt wird nur bis maxTag */
+    [20, 12].forEach(function (Rr) { for (var tE = 16; tE <= T.maxTag; tE += 16) if (tE < Rr || ende - tE < Rr) soll += nR; });
+    var rz = Ez.konfigurationen.map(function (k) { return k.zeitTopf.randFehlt; });
+    return [Ez.zaehler.randFehlt === soll && rz[0] + rz[1] === soll && (Et.zaehler.randFehlt || 0) === 0 && soll > 0, 'randFehlt ' + Ez.zaehler.randFehlt + ' (Soll ' + soll + ', je Konf ' + rz.join('/') + '), topf ' + (Et.zaehler.randFehlt || 0)];
+  });
   console.log('C) Entdeckung bis zum Panel-Ende, Vorwaertsbestaetigung mit einem Blick, Hausregel, Wiedervorlage, --grund-daten (Nr. 121-2a)');
   probe('C-1: ENTDECKUNG_BIS = panelende; Kandidatenlaeufe oeffnen die Tafel bis zum Panel-Ende (bisPanelende), die Eichfenster-Sperre bleibt Vorgabe', function () {
     var q = fs.readFileSync(path.join(K.HIER, 'laeufer.js'), 'utf8'), qt = fs.readFileSync(path.join(K.HIER, 'tafel.js'), 'utf8');
@@ -175,9 +185,17 @@ module.exports = function (C) {
     var H = C.TO.holm([0.01, 0.04, 0.03], 0.05);
     return [H.bestanden.join() === 'true,false,false' && Math.abs(H.schwelle[0] - 0.05 / 3) < 1e-12 && Math.abs(H.schwelle[2] - 0.025) < 1e-12, JSON.stringify(H)];
   });
+  probe('C-6b: Wiedervorlage mit (t_krit + 0,84) wie das Machbarkeitstor (Tabelle: Monatswende H4 783 statt 417), mit gemessener se der Entdeckung; nBedarf aus gemessener se; Machbarkeitstor mit STREUUNG_FAKTOR 1,4', function () {
+    var wT = C.TO.wiedervorlage({ H: 4, nT: 80, d: 794, modus: 'zeit', nettoPp: 0.48, m: 3, signaltageJeJahr: 12, ab: '2026-09-15', seFaktor: 1 });
+    var wE = C.TO.wiedervorlage({ H: 4, nT: 80, d: 794, modus: 'zeit', nettoPp: 0.48, m: 3, signaltageJeJahr: 12, ab: '2026-09-15', seE: 0.3463 });
+    var nE = C.TO.nBedarf({ H: 5, nettoPp: 0.3, seE: 0.12, nE: 400 }), soll = (function () { for (var n = 2; n < 1e6; n++) { var df = Math.max(1, n / 5 - 1); if ((C.TO.tQuantil(0.95, df) + 0.8416) * 0.12 * Math.sqrt(400 / n) <= 0.3) return Math.max(30, n); } })();
+    var m1 = C.TO.machbarkeit({ H: 4, nT: 80, d: 794, modus: 'zeit', nettoPp: 0.48, m: 14 }), m0 = C.TO.seGeschaetzt(4, 80, 794, 'zeit');
+    return [wT.nNoetig === 783 && wE.nNoetig > 80 && wE.seQuelle === 'Entdeckung' && nE === soll && K.STREUUNG_FAKTOR === 1.4 && Math.abs(m1.seGeschaetzt - 1.4 * m0) < 1e-12,
+      'Tabelle ' + wT.nNoetig + ', gemessen ' + wE.nNoetig + ' (' + wE.datum + '), nBedarf ' + nE + ' = ' + soll + ', se_g x ' + (m1.seGeschaetzt / m0).toFixed(2)];
+  });
   probe('C-6: Kalender-Hausregel-Marke (zeit und Bedarf oder Bestaetigung < 1.000 Signaltage), Wiedervorlage-Datum aus streuung.json', function () {
     var a = C.TO.hausregelMarke('zeit', 500, null), b = C.TO.hausregelMarke('topf', 500, null), c = C.TO.hausregelMarke('zeit', 1500, 1200), d = C.TO.hausregelMarke('zeit', 1500, 40);
-    var w = C.TO.wiedervorlage({ H: 4, nT: 80, d: 794, modus: 'zeit', nettoPp: 0.48, signaltageJeJahr: 12, ab: '2026-09-15' }), w2 = C.TO.wiedervorlage({ H: 1, nT: 1484, d: 13, modus: 'topf', nettoPp: 0.26, signaltageJeJahr: 212, ab: '2026-09-15' });
+    var w = C.TO.wiedervorlage({ H: 4, nT: 80, d: 794, modus: 'zeit', nettoPp: 0.48, m: 3, signaltageJeJahr: 12, ab: '2026-09-15', seE: 0.3463 }), w2 = C.TO.wiedervorlage({ H: 1, nT: 1484, d: 13, modus: 'topf', nettoPp: 0.26, m: 1, signaltageJeJahr: 212, ab: '2026-09-15', seE: 0.049 });
     return [a === 'nicht muehlenfaehig (Hausregel CLAUDE.md)' && b === null && c === null && d === a && w.datum > '2030-01-01' && w.nNoetig > 80 && w2.jahre === 0 && w2.datum === '2026-09-15', 'Monatswende-artig ab ' + w.datum + ' (' + w.nNoetig + ' Signaltage), Umkehr-artig ' + w2.datum];
   });
   /* Laeufer + --vorwaerts im Temp-Repo des Teils A */
@@ -227,6 +245,14 @@ module.exports = function (C) {
       var d = k[0].vorwaerts.siegel2Datum, iS = LF.stichtagNach(['2026-01-15', '2026-01-16', '2026-01-19'], d);
       return [r.status === 0 && d === '2026-01-16' && iS === 2 && e2 && /Commit-Zeit/.test(e2.message), 'Commit 22:30 New York = ' + d + ' UTC -> Stichtag-Index ' + iS + ' (2026-01-19); ohne Commit: ' + (e2 && e2.message.slice(0, 70))];
     });
+    probe('C-13: Richtung fuer belegt-Vorschlag aus der VERSIEGELTEN Entdeckung (KANDIDATEN.json), nicht aus einer Neurechnung vor dem Stichtag', function () {
+      var d = path.join(ortL.erledigt, 'kunst-r2a'); fs.mkdirSync(d, { recursive: true });
+      fs.writeFileSync(path.join(d, 'KANDIDATEN.json'), JSON.stringify({ kennung: 'kunst-r2a', kandidaten: [{ key: 'H5', netto: 0.4 }, { key: 'H10', netto: -0.2 }] }));
+      var a = LF.richtungAusSiegel(ortL.erledigt, 'kunst-r2a', 'H5'), b = LF.richtungAusSiegel(ortL.erledigt, 'kunst-r2a', 'H10'), c = LF.richtungAusSiegel(ortL.erledigt, 'kunst-r2a', 'H20');
+      var q = fs.readFileSync(path.join(K.HIER, 'laeufer.js'), 'utf8'), f = fs.readFileSync(path.join(K.HIER, 'FORM.md'), 'utf8');
+      fs.rmSync(d, { recursive: true, force: true });
+      return [a === 1 && b === -1 && c === null && !/pr\.gleicheRichtung !== false\) urteil = 'belegt-Vorschlag'/.test(q) && !/netto > 0, t ≥ 2, Tor 1/.test(f), 'H5 ' + a + ', H10 ' + b + ', H20 ' + c];
+    });
     probe('C-11: --grund-daten: Wiedervorlage ohne Messgeraet-Korrektur, Register zaehlt die Kennung danach doppelt (m), "nicht messbar" bleibt 0', function () {
       var ws = path.join(LR, 'pruefstrasse', 'warteschlange', 'kunst-m2a'); fs.mkdirSync(ws, { recursive: true }); fs.writeFileSync(path.join(ws, 'kandidat.json'), JSON.stringify(C.kandM));
       gitL(['add', '-A']); gitL(['commit', '-q', '-m', 'Kandidatenordner']); var cK = gitL(['rev-parse', 'HEAD']);
@@ -259,17 +285,20 @@ module.exports = function (C) {
     var z1 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [0.3, -1, 2.1, 0.5, -0.2, 1, -1.5, 0.1, 0, -0.4], 0), z2 = B([0.01, -0.02, 0.03, 0, -0.01, 0.02, -0.03, 0.01, 0, -0.01], [2.3, -2.1, 0.2, 0.5, -0.4, 1, -0.5, 0.1, 0, -0.4], 0);
     return [e1.bestanden && !e2.bestanden && z1.bestanden && z1.tUeber2 === 1 && !z2.bestanden && z2.tUeber2 === 2 && LF.EICHUNG.zufallAnteilMax === 0.15 && LF.EICHUNG.dichteMarkt === 0.1 && LF.EICHUNG.seeds === 30, 'e1 ' + e1.mittel.toFixed(3) + ' se ' + e1.seMittel.toFixed(3) + ' | e2 ' + e2.mittel.toFixed(3) + ' | z1 ' + z1.tUeber2 + ' | z2 ' + z2.tUeber2];
   });
-  probe('D-2b: marktweit (Seeds teilen den Marktpfad, PM 23.10.): |Mittel| <= 2 x mittlere se JE LAUF statt se_Mittel; Einsaat Spanne + 2 x se je Lauf; se_Mittel nur nachrichtlich', function () {
-    var B = LF.eichungBewerten, w = [], t = [], se = [];
-    for (var i = 0; i < 30; i++) { w.push(-0.16 + (i % 2 ? 0.4 : -0.4)); se.push(0.5); t.push(w[i] / 0.5); }
-    var z = B(w, t, 0, { seJeLauf: se, marktpfad: true }), zAlt = B(w, t, 0), e = B(w.map(function (x) { return x + 0.46; }), t, 0.30, { seJeLauf: se, marktpfad: true }), e2 = B(w.map(function (x) { return x + 0.66; }), t, 0.30, { seJeLauf: se, marktpfad: true });
-    var zu = B(w.map(function (x) { return x - 1.0; }), t, 0, { seJeLauf: se, marktpfad: true });
-    return [z.bestanden && !zAlt.bestanden && z.kriterium === 'marktpfad' && Math.abs(z.seJeLaufMittel - 0.5) < 1e-12 && z.innerhalb2seMittel === false && /nicht unabhaengig/.test(z.hinweis) && e.bestanden && !e2.bestanden && !zu.bestanden,
-      'Zufall -0,16: se je Lauf ' + z.seJeLaufMittel + ' -> ' + z.bestanden + ' (alt se_Mittel ' + zAlt.seMittel.toFixed(3) + ' -> ' + zAlt.bestanden + '); Einsaat 0,30 ' + e.bestanden + ', 0,50 ' + e2.bestanden + '; Zufall -1,16 ' + zu.bestanden];
+  probe('D-2b: Nullpunkt aus dem Pool (QS 23.10.): Zufall-Seeds + Einsaat-Seeds minus 0,30, Kriterium |Mittel| <= 2 se_Mittel und Anteil |t| > 2 <= 15 %, beide Dichten gleich', function () {
+    var L = [], i;
+    for (i = 0; i < 20; i++) L.push({ art: 'marktweit', typ: 'zufall', uBrutto: -0.15 + (i % 2 ? 0.1 : -0.1), se: 0.5, t: (-0.15 + (i % 2 ? 0.1 : -0.1)) / 0.5 });
+    for (i = 0; i < 10; i++) L.push({ art: 'marktweit', typ: 'einsaat', uBrutto: 0.15 + (i % 2 ? 0.1 : -0.1), se: 0.5, t: 0.3 });
+    for (i = 0; i < 20; i++) L.push({ art: 'querschnitt', typ: 'zufall', uBrutto: (i % 2 ? 0.01 : -0.01), se: 0.03, t: (i % 2 ? 0.3 : -0.3) });
+    for (i = 0; i < 10; i++) L.push({ art: 'querschnitt', typ: 'einsaat', uBrutto: 0.30 + (i % 2 ? 0.01 : -0.01), se: 0.03, t: 10 });
+    var A2 = LF.eichungAuswerten(L), mz = A2.ergebnis.marktweit.zufall, qz = A2.ergebnis.querschnitt.zufall, me = A2.ergebnis.marktweit.einsaat;
+    var q = fs.readFileSync(path.join(K.HIER, 'laeufer.js'), 'utf8') + fs.readFileSync(path.join(K.HIER, 'FORM.md'), 'utf8');
+    return [mz.n === 30 && Math.abs(mz.mittel + 0.15) < 1e-12 && !mz.bestanden && qz.n === 30 && qz.bestanden && !me.bestanden && mz.kriterium === 'se_Mittel' && !/teilen den Marktpfad/.test(q) && LF.EICHUNG.seedsZufall === 100,
+      'marktweit Pool n ' + mz.n + ', Mittel ' + mz.mittel.toFixed(3) + ' +- ' + mz.seMittel.toFixed(3) + ' -> ' + mz.bestanden + '; querschnitt ' + qz.bestanden + '; Marktpfad-Satz weg ' + !/teilen den Marktpfad/.test(q)];
   });
   probe('D-3: --eichung schreibt ausschliesslich EICHUNG.md und eichung.json (Kunstlauf in einen Temp-Ordner; Waechter erkennt fremde Pfade)', function () {
     var dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'pruefstrasse-eichung-')), J;
-    try { J = LF.eichung({ tafel: TF.kunstTafel(C.kunstReihen(null), TAGE), seeds: 2, aus: dir, log: function () {} }); var da = fs.readdirSync(dir).sort().join(','); } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+    try { J = LF.eichung({ tafel: TF.kunstTafel(C.kunstReihen(null), TAGE), seeds: 2, seedsZufall: 2, aus: dir, log: function () {} }); var da = fs.readdirSync(dir).sort().join(','); } finally { fs.rmSync(dir, { recursive: true, force: true }); }
     var fr = LF.fremdGeschrieben([' M pruefstrasse/a.js'], [' M pruefstrasse/a.js', '?? pruefstrasse/EICHUNG.md', '?? pruefstrasse/x.json'], ['pruefstrasse/EICHUNG.md', 'pruefstrasse/eichung.json']);
     /* Fehlalarm 23.10.: erste Statuszeile vorher ohne fuehrenden Leerraum (getrimmt), nachher mit - darf NICHT als fremd gelten */
     var fr2 = LF.fremdGeschrieben(['M pruefstrasse/FORM.md', ' M pruefstrasse/a.js'], [' M pruefstrasse/EICHUNG.md', ' M pruefstrasse/FORM.md', ' M pruefstrasse/a.js'], ['pruefstrasse/EICHUNG.md', 'pruefstrasse/eichung.json']);
@@ -279,7 +308,7 @@ module.exports = function (C) {
     var f = path.join(K.HIER, 'eichung.json');
     if (!fs.existsSync(f)) return [false, 'eichung.json fehlt - der PM faehrt node pruefstrasse/laeufer.js --eichung'];
     var J = JSON.parse(fs.readFileSync(f, 'utf8')), alter = (Date.now() - Date.parse(J.datum + 'T00:00:00Z')) / 86400000;
-    var form = /^\d{4}-\d{2}-\d{2}$/.test(J.datum) && J.panelKennung && J.eichfenster && J.eichfenster.bis === K.EICHUNG.bis && J.seeds && J.ergebnis.marktweit && J.ergebnis.querschnitt && typeof J.bestanden === 'boolean' && J.laufzeitMs > 0 && J.laeufe.length === 4 * (J.seeds.einsaat[1] - J.seeds.einsaat[0] + 1) && J.einstellungen.dichteMarkt === LF.EICHUNG.dichteMarkt && J.waechter === 'sauber' && J.ergebnis.marktweit.zufall.kriterium === 'marktpfad' && J.ergebnis.querschnitt.zufall.kriterium === 'unabhaengig' && J.ergebnis.marktweit.zufall.seJeLaufMittel > 0 && fs.existsSync(path.join(K.HIER, 'EICHUNG.md'));
+    var form = /^\d{4}-\d{2}-\d{2}$/.test(J.datum) && J.panelKennung && J.eichfenster && J.eichfenster.bis === K.EICHUNG.bis && J.seeds && J.ergebnis.marktweit && J.ergebnis.querschnitt && typeof J.bestanden === 'boolean' && J.laufzeitMs > 0 && J.laeufe.length === 2 * (J.seeds.einsaat[1] - J.seeds.einsaat[0] + 1 + J.seeds.zufall[1] - J.seeds.zufall[0] + 1) && J.einstellungen.dichteMarkt === LF.EICHUNG.dichteMarkt && J.waechter === 'sauber' && J.ergebnis.marktweit.zufall.kriterium === 'se_Mittel' && J.ergebnis.marktweit.zufall.n === J.laeufe.length / 2 && J.einstellungen.randRegel === true && fs.existsSync(path.join(K.HIER, 'EICHUNG.md'));
     if (alter > LF.EICHUNG.alterWarnTage) console.log('  WARNUNG eichung.json ist ' + alter.toFixed(0) + ' Tage alt (> ' + LF.EICHUNG.alterWarnTage + ') - vor der naechsten Freigabe neu eichen');
     return [form, 'Datum ' + J.datum + ' (' + alter.toFixed(0) + ' Tage), bestanden ' + J.bestanden + ', ' + (J.laufzeitMs / 1000).toFixed(0) + ' s'];
   });

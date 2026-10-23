@@ -85,7 +85,7 @@ function seGeschaetzt(H, nT, d, modus, S) {
 /* ---------- Machbarkeitstor (A3, Audit B V1) ---------- */
 /** Bedingung (t_krit(df, m) + Z_POWER80) * se_geschaetzt <= nettoPp fuer n Signaltage; liefert die Zahlen. */
 function machbarBei(n, z) {
-  var df = dfAus(n, z.H), s = kandidatSchwelle(df, z.m), se = seGeschaetzt(z.H, n, z.d, z.modus, z.S), links = (s.t + K.Z_POWER80) * se;
+  var df = dfAus(n, z.H), s = kandidatSchwelle(df, z.m), se = (z.seFaktor != null ? z.seFaktor : K.STREUUNG_FAKTOR) * seGeschaetzt(z.H, n, z.d, z.modus, z.S), links = (s.t + K.Z_POWER80) * se;
   return { n: n, df: df, schwelle: s, se: se, links: links, ok: links <= z.nettoPp };
 }
 /** Kleinste Zahl Signaltage, bei der die Bedingung f(n) haelt (exponentielle Suche, dann Bisektion; null ueber 10 Mio). */
@@ -103,25 +103,32 @@ function machbarkeit(z) {
   return { messbar: r.ok, nT: z.nT, H: z.H, d: z.d, modus: z.modus, nettoPp: z.nettoPp, m: r.schwelle.m, df: r.df, tKrit: r.schwelle.t, greift: r.schwelle.greift,
     seGeschaetzt: r.se, links: r.links, braeuchteSignaltage: braeuchte,
     braeuchteJahre: (braeuchte != null && z.signaltageJeJahr > 0) ? braeuchte / z.signaltageJeJahr : null,
-    regel: '(t_krit + ' + K.Z_POWER80 + ') * se_geschaetzt <= nettoPp, t_krit = max(' + K.KANDIDAT_T + ', t_(1 - ' + K.REGISTER_ALPHA + '/m; df)), df = n_T/H - 1, se aus streuung.json' };
+    seFaktor: z.seFaktor != null ? z.seFaktor : K.STREUUNG_FAKTOR,
+    regel: '(t_krit + ' + K.Z_POWER80 + ') * ' + (z.seFaktor != null ? z.seFaktor : K.STREUUNG_FAKTOR) + ' * se_geschaetzt <= nettoPp, t_krit = max(' + K.KANDIDAT_T + ', t_(1 - ' + K.REGISTER_ALPHA + '/m; df)), df = n_T/H - 1, se aus streuung.json' };
 }
 
 /* ---------- Vorwaerts-Bedarf (C2) und Wiedervorlage (C4) ---------- */
-/** nBedarf: kleinste Zahl Vorwaerts-Signaltage mit MDE80_vorwaerts = (t_(0,95; df) + Z_POWER80) * se_geschaetzt <= nettoPp, mindestens MIN_TAGE. */
+/** se bei n Signaltagen: mit z.seE/z.nE die GEMESSENE se der Entdeckung hochgerechnet (se_E x Wurzel(n_E / n), Nachbesserung QS 23.10.), sonst die Tabelle. */
+function seBei(z, n) { return z.seE != null ? z.seE * Math.sqrt((z.nE || z.nT) / n) : (z.seFaktor != null ? z.seFaktor : 1) * seGeschaetzt(z.H, n, z.d, z.modus, z.S); }
+/** nBedarf: kleinste Zahl Vorwaerts-Signaltage mit MDE80_vorwaerts = (t_(0,95; df) + Z_POWER80) * se(n) <= nettoPp, mindestens MIN_TAGE; se(n) aus der
+ *  gemessenen se der Entdeckung (z.seE, z.nE), ersatzweise aus der Tabelle. */
 function nBedarf(z) {
-  var f = function (n) { var df = dfAus(n, z.H); return (tQuantil(1 - K.HOLM_ALPHA, df) + K.Z_POWER80) * seGeschaetzt(z.H, n, z.d, z.modus, z.S) <= z.nettoPp; };
+  var f = function (n) { var df = dfAus(n, z.H); return (tQuantil(1 - K.HOLM_ALPHA, df) + K.Z_POWER80) * seBei(z, n) <= z.nettoPp; };
   var n = z.nettoPp > 0 ? kleinstesN(f, 2) : null;
   return n == null ? null : Math.max(K.MIN_TAGE, n);
 }
 /** Datum (JJJJ-MM-TT) ab einem Startdatum plus Jahre (Kalenderjahre zu 365,25 Tagen). */
 function datumPlusJahre(datum, jahre) { var ms = Date.parse(datum + 'T00:00:00Z') + jahre * 365.25 * 86400000; return new Date(ms).toISOString().slice(0, 10); }
-/** Wiedervorlage (nicht entscheidbar): Datum, an dem MDE80 = MDE_FAKTOR * se_geschaetzt <= nettoPp waere; Datenzuwachs signaltageJeJahr
- *  (aus der Entdeckung: n_T / Handelstage * 252). z = { H, nT, d, modus, nettoPp, signaltageJeJahr, ab (Panel-Ende) }. */
+/** Wiedervorlage (nicht entscheidbar): Datum, an dem die Nachmessung das eigene Tor bestuende: (t_krit(df, m) + Z_POWER80) * se(n) <= nettoPp (Nachbesserung
+ *  QS 23.10.: derselbe Faktor wie das Machbarkeitstor statt MDE_FAKTOR 2,80); se(n) aus der gemessenen se der Entdeckung (z.seE), ersatzweise Tabelle;
+ *  Datenzuwachs signaltageJeJahr (n_T / Handelstage * 252). z = { H, nT, d, modus, nettoPp, m, signaltageJeJahr, ab (Panel-Ende), seE? }. */
 function wiedervorlage(z) {
-  var n = z.nettoPp > 0 ? kleinstesN(function (n) { return K.MDE_FAKTOR * seGeschaetzt(z.H, n, z.d, z.modus, z.S) <= z.nettoPp; }, 2) : null;
-  if (n == null) return { nNoetig: null, jahre: null, datum: null, text: 'nie (keine positive Behauptung)' };
+  var f = function (n) { return (kandidatSchwelle(dfAus(n, z.H), z.m || 1).t + K.Z_POWER80) * seBei(z, n) <= z.nettoPp; };
+  var n = z.nettoPp > 0 ? kleinstesN(f, 2) : null, q = z.seE != null ? 'Entdeckung' : 'Tabelle';
+  if (n == null) return { nNoetig: null, jahre: null, datum: null, seQuelle: q, text: 'nie (keine positive Behauptung)' };
+  n = Math.max(K.MIN_TAGE, n);
   var jahre = n <= z.nT ? 0 : (z.signaltageJeJahr > 0 ? (n - z.nT) / z.signaltageJeJahr : null);
-  return { nNoetig: n, jahre: jahre, datum: jahre == null ? null : datumPlusJahre(z.ab, jahre), text: null };
+  return { nNoetig: n, jahre: jahre, datum: jahre == null ? null : datumPlusJahre(z.ab, jahre), seQuelle: q, text: null };
 }
 
 /* ---------- Groessenaussage (A4, Audit B V2) ---------- */
