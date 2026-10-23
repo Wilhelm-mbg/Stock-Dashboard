@@ -264,7 +264,7 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung
     ' Erwartung vorab: ' + kand.erwartung.groesse + ' (' + kand.erwartung.richtung + ').');
   o.push('');
   o.push('Siegel 1 (Kandidatenordner) `' + (siegel1 ? siegel1.commit.slice(0, 12) : '–') + '`' + (siegel2 ? ', Siegel 2 (KANDIDATEN.json) `' + siegel2.commit.slice(0, 12) + '`' : ', kein Siegel 2 (keine Pruefung)') +
-    '. Entdeckung bis ' + (E.schnitt ? 'vor ' + E.schnitt : K.ENTDECKUNG_BIS) + ', Pruefung ab ' + (E.form === 'minute' ? K.MINUTE.sperreAb : K.SPERRE_AB) + ' nur fuer Kandidaten. Kriterien: netto > 0, t ≥ ' + K.KANDIDAT_T +
+    '. Entdeckung bis ' + (E.schnitt ? 'vor ' + E.schnitt : K.ENTDECKUNG_BIS) + ', Pruefung ab ' + (E.form === 'minute' ? K.MINUTE.sperreAb : K.EICHUNG.schnitt) + ' nur fuer Kandidaten. Kriterien: netto > 0, t ≥ ' + K.KANDIDAT_T +
     ' (Kandidaten-Kriterium), Tor 1 (Entdeckung ≥ ' + K.TOR1_FAKTOR + ' × projizierte Bestaetigungs-MDE' + (kand.form === 'tag' ? ', gesperrt = netto ≥ 11,31 × se' : '') + '), kein Placebo-Verstoss (|Placebo| > ' + K.PLACEBO_T + ' se und > ¼ Huerde); das verschobene Signal mit derselben Schranke zweiseitig (sonst Messgeraet-Fehler); MDE80 = ' + K.MDE_FAKTOR + ' × se ist die Aufloesung, kein Kriterium.');
   o.push('');
   o.push('## Konfigurationen');
@@ -381,7 +381,7 @@ function laufe(kennung, opt) {
   log('Siegel 2: KANDIDATEN.json committet in ' + h2 + ' (Blob ' + siegel2.blob.slice(0, 12) + ')');
   var P = null;
   if (kandidaten.length && !U0.fehler.length) {
-    log('Pruefung ab ' + (kand.form === 'minute' ? K.MINUTE.sperreAb : K.SPERRE_AB) + ' fuer ' + kandidaten.map(function (k) { return k.key; }).join(', ') + ' (Daten erst jetzt lesbar)');
+    log('Pruefung ab ' + (kand.form === 'minute' ? K.MINUTE.sperreAb : K.EICHUNG.schnitt) + ' fuer ' + kandidaten.map(function (k) { return k.key; }).join(', ') + ' (Daten erst jetzt lesbar)');
     P = messenImKind(kennung, 'pruefung', path.join(aus, 'ergebnis-pruefung.json'), log);
     log('Pruefung fertig' + (P.verstoesse != null ? ', Verstoesse ' + P.verstoesse : ''));
   } else log(kandidaten.length ? 'Keine Pruefung: Messgeraet-Fehler' : 'Keine Pruefung: kein Kandidat');

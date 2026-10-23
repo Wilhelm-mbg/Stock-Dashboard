@@ -65,10 +65,10 @@ function lauf(regel, kand, opt) {
   return aus;
 }
 
-/** Kalibrierung (Auftrag §3): rsi2seit im Fenster des Protokolls rsi2seit-2026-08-26.json (26.09.2023 bis 24.08.2026). */
+/** Kalibrierung (Auftrag §3): rsi2seit im Fenster des Protokolls rsi2seit-2026-08-26.json (26.09.2023 bis 24.08.2026 = K.MINUTE.eichungBis, Nr. 121-2a). */
 function kalibrierung() {
   var regel = require(path.join(K.REPO, 'studien', 'messmaschine', 'strategien', 'rsi2seit.js'));
-  var r = messe(regel, '2023-09-26', '2026-08-24');
+  var r = messe(regel, K.MINUTE.von, K.MINUTE.eichungBis);
   return { zahlen: zahlen(r, 0), schnittTag: r.universum.schnittTag, soll: { datei: 'rsi2seit-2026-08-26.json', bruttoJeSignalPp: 0.02054524106238242, huerdePp: 0.1, nettoJeSignalPp: -0.07945475893761758, werte: 2874, handelstage: 730, schnittTag: '2025-03-12' } };
 }
 

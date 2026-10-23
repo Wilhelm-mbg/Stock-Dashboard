@@ -1,10 +1,11 @@
 'use strict';
-/* TAFEL der tag-Form: Tageskerzen je Reihe aus einer von zwei Quellen, hinter der Holdout-Sperre (FORM.md §3, §5).
- *   quelle 'panel'           - das Panel v2.3 des Pruefstands (Jahresbloecke; ohne Siegel werden die Jahre ab SPERRE_AB GAR NICHT
+/* TAFEL der tag-Form: Tageskerzen je Reihe aus einer von zwei Quellen, ohne Siegel gesperrt am Ende des EICHFENSTERS (K.EICHUNG.bis,
+ * Nr. 121-2a; bis Nr. 121-1 die Holdout-Sperre SPERRE_AB) (FORM.md §3, §5).
+ *   quelle 'panel'           - das Panel v2.3 des Pruefstands (Jahresbloecke; ohne Siegel werden die Jahre nach dem Eichfenster GAR NICHT
  *                              gelesen, wie studien/nachzuegler-2026-10/lesen.js). Hoch/Tief gibt es dort nicht (NaN).
  *   quelle 'trendkanal-tage' - die Tagesdateien der Trendkanal-Studie (E:/.../studien-zellen/trendkanal-tage-2026-09-09/tage-*),
- *                              gelesen mit deren eigenem Leser (M.ladeTage); ohne Siegel wird jede Reihe am letzten Tag vor
- *                              SPERRE_AB abgeschnitten. Fuer die Kalibrierung gegen die Studie und fuer Regeln, die Hoch/Tief brauchen.
+ *                              gelesen mit deren eigenem Leser (M.ladeTage); ohne Siegel wird jede Reihe am letzten Tag des
+ *                              Eichfensters abgeschnitten. Fuer die Kalibrierung gegen die Studie und fuer Regeln, die Hoch/Tief brauchen.
  * Reihe S = { reihe, n, tag (Kalenderindex), o, h, l, c, v, klasse (Int8, -1 ohne), mass (Uint8: 1 = Massnahmenfenster), lebend (0/1),
  *             gruppe ('uebernahme' | 'insolvenz' | 'sonstige' | null), nextPos } - die Form von kanaele.js (reiheAus);
  *             dazu roh (Float64, roher = unbereinigter Schluss; Nr. 113) nur, wo die Quelle ihn traegt - die Tafel meldet hatRoh.
@@ -31,7 +32,9 @@ function kalender(von, bis) {
   var idx = {}; tage.forEach(function (t, i) { idx[t] = i; });
   return { tage: tage, idx: idx };
 }
-function sperrIndex(tage) { var s = -1; for (var i = 0; i < tage.length; i++) if (tage[i] < K.SPERRE_AB) s = i; return s; }
+/** Letzter Index im Eichfenster (tage <= K.EICHUNG.bis); fuer jeden Handelskalender derselbe wie bis Nr. 121-1 (tage < 2023-01-01). */
+function sperrIndex(tage) { var s = -1; for (var i = 0; i < tage.length; i++) if (tage[i] <= K.EICHUNG.bis) s = i; return s; }
+function sperrJahr() { return +K.EICHUNG.bis.slice(0, 4); }
 
 /** Siegel 2 pruefen, wenn die Pruefzeit verlangt ist; sonst gesperrt. */
 function siegelFuer(opt) {
@@ -52,13 +55,13 @@ function ausPanel(opt) {
   if (stand.kennung !== kennung) throw new Error('Panelkennung ' + stand.kennung + ' statt ' + kennung);
   if (!Array.isArray(stand.tage) || !stand.tage.length || stand.letzterVollTagIdx == null) throw new Error('_stand.json ohne tage/letzterVollTagIdx');
   var tage = stand.tage, sperrIdx = sperrIndex(tage), nTage = tage.length;
-  var jahre = stand.jahre.map(function (j) { return j.jahr; }).filter(function (j) { return offen || j < +K.SPERRE_AB.slice(0, 4); }).sort(function (a, b) { return a - b; });
+  var jahre = stand.jahre.map(function (j) { return j.jahr; }).filter(function (j) { return offen || j <= sperrJahr(); }).sort(function (a, b) { return a - b; });
   var nSym = stand.symbole.length, sp = [];
   for (var s = 0; s < nSym; s++) sp.push({ tag: [], o: [], h: [], l: [], c: [], v: [], klasse: [], mass: [], roh: [] });
   jahre.forEach(function (j) {
     var b = PR.leseBlock(path.join(ordner, j + '.bin'), kennung);
     for (var q = 0; q < b.n; q++) {
-      if (!offen && b.tag[q] > sperrIdx) throw SG.sperrFehler('Block enthaelt einen Tag ab ' + K.SPERRE_AB + ' (' + tage[b.tag[q]] + ')');
+      if (!offen && b.tag[q] > sperrIdx) throw SG.sperrFehler('Block enthaelt einen Tag nach dem Eichfenster ' + K.EICHUNG.bis + ' (' + tage[b.tag[q]] + ')');
       var r = sp[b.sym[q]], f = b.faktor[q] || 1, cs = b.rohSchluss[q] / f;
       r.tag.push(b.tag[q]); r.o.push(b.rohEroeffnung[q] / f); r.h.push(NaN); r.l.push(NaN); r.c.push(cs);
       r.v.push(cs > 0 ? (b.umsatzReg[q] + b.umsatzAuktion[q]) / cs : 0);

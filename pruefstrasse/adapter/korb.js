@@ -88,7 +88,7 @@ function lauf(regel, kand, opt) {
   var V = vorbereiten(opt), T = V.T, Q = V.Q;
   var konf = kand.konfigurationen[0] || {}, korb = konf.korb || null, nB = opt.placeboBuecher == null ? K.KORB.placeboBuecher : opt.placeboBuecher;
   var ziel = function (roh, o) { return regel.zielfunktion(roh, Object.assign({}, o, konf.anzahl ? { anzahl: konf.anzahl } : {})); };
-  var fensterE = fenster(T, Q, (opt.entdeckung && opt.entdeckung.von) || '2017-01-04', (opt.entdeckung && opt.entdeckung.bis) || K.ENTDECKUNG_BIS);
+  var fensterE = fenster(T, Q, (opt.entdeckung && opt.entdeckung.von) || '2017-01-04', (opt.entdeckung && opt.entdeckung.bis) || K.EICHUNG.bis);   /* Nr. 121-2a: Korb bleibt im Eichfenster (Vorwaerts fuer Korb nicht gebaut) */
   var aus = { quelle: 'panel', kennungTafel: T.stand.kennung, gesperrt: T.gesperrt, siegel: T.siegel, letzterTag: String(T.kal.tage[T.maxTag]), korb: korb,
     kostenBp: K.KORB.kostenBp, kleinstAnteil: K.KORB.kleinstAnteil, phasen: K.KORB.phasen, massnahmen: { ordner: K.MASSNAHMEN.ordner, ergaenzt: V.protokoll.ergaenzt }, konfigurationen: [],
     placeboBuecher: nB, pBoden: 1 / (nB + 1), registerM: opt.registerM == null ? null : opt.registerM };     /* A10 (Nr. 121-1): B und p-Boden im Protokoll */

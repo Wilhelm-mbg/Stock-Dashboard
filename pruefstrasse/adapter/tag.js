@@ -260,7 +260,7 @@ function leererZaehler() {
 
 /**
  * Messung. TF = Tafel (tafel.js), regel = { signal, bestaetigt? }, kand = kandidat.json (bewertung topf | zeit, Vorgabe topf),
- * opt = { schnitt (erster Pruefungstag, Vorgabe K.SPERRE_AB) | iSchnitt (sein Kalenderindex) }.
+ * opt = { schnitt (erster Tag nach der Entdeckung, Vorgabe K.EICHUNG.schnitt = Eichfenster) | iSchnitt (sein Kalenderindex) }.
  * Liefert { zellen, zaehler, verstoesse, beispiele, ms, konfs, bewertung, iSchnitt, sigTag, zulTag, ueberlappung } - alle Zahlen in Pp.
  * sigTag[t] = Reihen mit Einstieg am Kalendertag t, zulTag[t] = zulaessige Reihen an t (Kennzahl "Anteil der Reihen mit Signal am Signaltag");
  * ueberlappung je Konfiguration: verschobene Fenster (Entdeckung), die sich mit einem Signalfenster derselben Reihe ueberschneiden.
@@ -270,7 +270,7 @@ function messe(TF, regel, kand, opt) {
   var konfs = kand.konfigurationen, params = kand.params || {}, nK = konfs.length, Z = new Zellen(nK, TF.nTage), zaehler = leererZaehler();
   var bewertung = kand.bewertung == null ? 'topf' : kand.bewertung;
   if (BEWERTUNGEN.indexOf(bewertung) === -1) throw new Error('kandidat.json: bewertung muss topf | zeit sein, nicht ' + JSON.stringify(kand.bewertung));
-  var zeit = bewertung === 'zeit', iSchnitt = opt.iSchnitt != null ? opt.iSchnitt : indexAb(TF, opt.schnitt || K.SPERRE_AB), versatzTage = versatzVon(kand);
+  var zeit = bewertung === 'zeit', iSchnitt = opt.iSchnitt != null ? opt.iSchnitt : indexAb(TF, opt.schnitt || K.EICHUNG.schnitt), versatzTage = versatzVon(kand);
   konfs.forEach(function (c) { if (!(c.haltedauer >= 1 && c.haltedauer <= 60)) throw new Error('Konfiguration ' + c.key + ': haltedauer 1..60 noetig'); if (c.richtung !== 'long' && c.richtung !== 'short') throw new Error('Konfiguration ' + c.key + ': richtung long|short'); });
   var t0 = Date.now(), zulK = topf(TF, Z, zaehler, !zeit), tTopf = Date.now() - t0;
   var sigTag = new Int32Array(TF.nTage), zulTag = new Int32Array(TF.nTage);
@@ -609,7 +609,7 @@ function warnungen(bewertung, SA) {
 }
 
 /**
- * Ein ganzer Lauf: Tafel oeffnen, messen, auswerten. opt: quelle, pruefzeit, siegelPfad, schnitt (Vorgabe K.SPERRE_AB),
+ * Ein ganzer Lauf: Tafel oeffnen, messen, auswerten. opt: quelle, pruefzeit, siegelPfad, schnitt (Vorgabe K.EICHUNG.schnitt),
  * pruefung (Liste der Kandidaten-Keys), nurReihen, ohneSpeicherpruefung, tafel (fertige Tafel, nur Tests), topfArt (Modus zeit: lokal | global, nur Tests).
  */
 function lauf(regel, kand, opt) {
@@ -619,7 +619,7 @@ function lauf(regel, kand, opt) {
   if (!TF.hatRoh && regel.brauchtRoh) throw new Error('MESSGERAET: die Regel braucht den rohen Schluss (roh), die Quelle ' + TF.quelle + ' hat ihn nicht');
   if (!TF.hatMarkt && regel.brauchtMarkt) throw new Error('MESSGERAET: die Regel braucht die Marktreihe (markt = SPY), die Quelle ' + TF.quelle + ' hat sie nicht');
   if (!TF.hatDatum && regel.brauchtDatum) throw new Error('MESSGERAET: die Regel braucht das Kalenderdatum (datum, Monatsfunktionen), die Quelle ' + TF.quelle + ' hat keinen Kalender');
-  var iSchnitt = indexAb(TF, opt.schnitt || K.SPERRE_AB);
+  var iSchnitt = indexAb(TF, opt.schnitt || K.EICHUNG.schnitt);
   var ersteZeile = TF.nTage; TF.reihen.forEach(function (S) { if (S.n && S.tag[0] < ersteZeile) ersteZeile = S.tag[0]; });
   var TE = handelstage(TF, ersteZeile, iSchnitt - 1), TB = TF.gesperrt ? Math.max(1, Math.round(TE * (opt.tbAnteil || 0.5))) : handelstage(TF, iSchnitt, TF.maxTag);
   if (TF.gesperrt && opt.tbHandelstage) TB = opt.tbHandelstage;

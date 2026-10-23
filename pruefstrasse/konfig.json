@@ -22,12 +22,13 @@
     "ordner": "<daten>/archiv60m",
     "mindestDateien": 2000
   },
-  "sperreAb": "2023-01-01",
+  "eichung": { "von": "2016-01-04", "bis": "2022-12-30" },
   "entdeckungBis": "2022-12-30",
   "speicherMinGb": 3.5,
   "wertpapierarten": null,
   "minute": {
     "sperreAb": "2025-10-01",
-    "von": "2023-09-26"
+    "von": "2023-09-26",
+    "eichungBis": "2026-08-24"
   }
 }

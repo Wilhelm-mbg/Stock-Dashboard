@@ -1,7 +1,7 @@
 'use strict';
 /* PANELTAFEL in der Form des Pruefstands (PR.Tafel), hinter der Holdout-Sperre - die eigene Kopie der Nr.-109-Logik
  * (studien/nachzuegler-2026-10/lesen.js oeffne), wie der Auftrag sie verlangt (GitHub traegt lesen.js nicht).
- * Ohne Siegel 2 werden die Jahresbloecke ab SPERRE_AB GAR NICHT gelesen und maxTag endet am letzten Tag davor; mit opt.pruefzeit
+ * Ohne Siegel 2 werden die Jahresbloecke nach dem Eichfenster (K.EICHUNG.bis, Nr. 121-2a) GAR NICHT gelesen und maxTag endet am letzten Tag davor; mit opt.pruefzeit
  * prueft siegel.js das Siegel VOR jedem Lesen. Dieselben Felder wie PR.Tafel - korb.js, rueckblick.js und mfhandel.js merken nichts.
  * NUR LESEN. Simulation mit virtuellem Kapital, keine Anlageberatung. */
 var fs = require('fs');
@@ -23,9 +23,9 @@ function oeffne(opt) {
   if (!Array.isArray(stand.tage) || !stand.tage.length) throw new Error('_stand.json ohne tage');
   if (stand.letzterVollTagIdx == null) throw new Error('_stand.json ohne letzterVollTagIdx');
   var tage = stand.tage, idx = {}; tage.forEach(function (t, i) { idx[t] = i; });
-  var sperrIdx = -1; for (var i = 0; i < tage.length; i++) if (tage[i] < K.SPERRE_AB) sperrIdx = i;
+  var sperrIdx = -1; for (var i = 0; i < tage.length; i++) if (tage[i] <= K.EICHUNG.bis) sperrIdx = i;
   var offen = !!siegel;
-  var jahre = stand.jahre.map(function (j) { return j.jahr; }).filter(function (j) { return offen || j < +K.SPERRE_AB.slice(0, 4); }).sort(function (a, b) { return a - b; });
+  var jahre = stand.jahre.map(function (j) { return j.jahr; }).filter(function (j) { return offen || j <= +K.EICHUNG.bis.slice(0, 4); }).sort(function (a, b) { return a - b; });
   var bloecke = jahre.map(function (j) { return P.leseBlock(path.join(ordner, j + '.bin'), kennung); });
   var n = 0; bloecke.forEach(function (b) { n += b.n; });
   var g = { n: 0 };
@@ -35,7 +35,7 @@ function oeffne(opt) {
   var o = 0;
   bloecke.forEach(function (b) {
     for (var q = 0; q < b.n; q++) {
-      if (!offen && b.tag[q] > sperrIdx) throw SG.sperrFehler('Block enthaelt einen Tag ab ' + K.SPERRE_AB + ' (' + tage[b.tag[q]] + ')');
+      if (!offen && b.tag[q] > sperrIdx) throw SG.sperrFehler('Block enthaelt einen Tag nach dem Eichfenster ' + K.EICHUNG.bis + ' (' + tage[b.tag[q]] + ')');
       g.tag[o] = b.tag[q]; g.sym[o] = b.sym[q]; g.marken[o] = b.marken[q]; g.klasse[o] = b.klasse[q];
       g.rohSchluss[o] = b.rohSchluss[q]; g.bSchluss[o] = b.rohSchluss[q] / b.faktor[q]; g.bEroeffnung[o] = b.rohEroeffnung[q] / b.faktor[q];
       g.rendite[o] = b.rendite[q]; g.renditeOC[o] = b.renditeOC[q]; g.umsatz[o] = b.umsatzReg[q] + b.umsatzAuktion[q];

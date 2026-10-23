@@ -29,6 +29,8 @@ function dateiPruefen(datei, was) {
 }
 /** Freier Speicher in GB. Linux: MemAvailable aus /proc/meminfo (os.freemem ist dort MemFree ohne Seitencache und
  *  meldete auf dem Rechenknecht zu wenig - Nr. 110 Uebergabe §6.4); sonst os.freemem. */
+/** Naechster Kalendertag (JJJJ-MM-TT, UTC). */
+function naechsterTag(d) { return new Date(Date.parse(d + 'T00:00:00Z') + 86400000).toISOString().slice(0, 10); }
 function speicherFreiGb() {
   if (process.platform === 'linux') {
     try { var m = /MemAvailable:\s+(\d+)\s*kB/.exec(fs.readFileSync('/proc/meminfo', 'utf8')); if (m) return +m[1] / 1048576; } catch (e) { /* unten */ }
@@ -43,9 +45,15 @@ module.exports = {
   MASSNAHMEN: { ordner: pfad(J.massnahmen.ordner), mindestDateien: J.massnahmen.mindestDateien },
   ARCHIV60M: { ordner: pfad(J.archiv60m.ordner), mindestDateien: J.archiv60m.mindestDateien },
   /* Minute: das 60m-Archiv beginnt erst 2023-09 - die Holdout-Sperre dieser Form ist deshalb ein eigenes Datum (FORM §3, minute). */
-  MINUTE: { sperreAb: J.minute.sperreAb, von: J.minute.von },
+  /* minute.eichungBis (Nr. 121-2a Schritt 0): letzter Tag des Kalibrierfensters der Minutenform = universum.bis des Protokolls
+   * Markt-Dashboard-Daten/protokolle/rsi2seit-2026-08-26.json ("bis": "2026-08-24"), aus dem die Soll-Zahl 0,0205 stammt. */
+  MINUTE: { sperreAb: J.minute.sperreAb, von: J.minute.von, eichungBis: J.minute.eichungBis },
   WERTPAPIERARTEN: process.env.PRUEFSTRASSE_WERTPAPIERARTEN || (J.wertpapierarten ? pfad(J.wertpapierarten) : null),   // Umgebung vor konfig.json (Server, Nr. 111)
-  SPERRE_AB: J.sperreAb, ENTDECKUNG_BIS: J.entdeckungBis, SPEICHER_MIN_GB: J.speicherMinGb,
+  /* EICHFENSTER (Nr. 121-2a Schritt 0): feste Grenze der Kalibrierung und der gesperrten Tafel (bis Nr. 121-1 die Holdout-Sperre SPERRE_AB
+   * 2023-01-01). Unabhaengig vom Entdeckungsende der Kandidaten (ENTDECKUNG_BIS) - zwei Konstanten, zwei Namen. schnitt = erster Kalendertag
+   * nach dem Fenster (Vorgabe-Schnitt des tag-Adapters; fuer jeden Handelskalender gleichbedeutend mit dem alten 2023-01-01). */
+  EICHUNG: { von: J.eichung.von, bis: J.eichung.bis, schnitt: naechsterTag(J.eichung.bis) }, naechsterTag: naechsterTag,
+  ENTDECKUNG_BIS: J.entdeckungBis, SPEICHER_MIN_GB: J.speicherMinGb,
   PRUEFSTAND: path.join(REPO, 'studien', 'querschnitt-pruefstand-2026-09-13'),
   TRENDKANAL_STUDIE: path.join(REPO, 'studien', 'vorregistrierung-2026-09-08-trendkanal-tage'),
   WARTESCHLANGE: path.join(HIER, 'warteschlange'), ERLEDIGT: path.join(HIER, 'erledigt'),

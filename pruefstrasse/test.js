@@ -75,9 +75,11 @@ var e2 = null; try { require('./paneltafel.js').oeffne({ pruefzeit: true, siegel
 ok(e2 && e2.sperre, 'Paneltafel: Siegel auf einer veraenderten/ungesicherten Datei scheitert', e2 && e2.message.slice(0, 80));
 var e3 = null; try { SG.pruefeSiegel(K.REPO, tmpSrel); } catch (e) { e3 = e; } finally { fs.unlinkSync(tmpS); }
 ok(e3 && e3.sperre && /keinem Commit/.test(e3.message), 'Siegel 2 auf einer Datei ohne Commit: SPERRE', e3 && e3.message);
-/* Nr. 118: Marke ist konfig.json, nicht FORM.md - FORM.md aendert jeder Form-Auftrag im Arbeitsbaum und die Probe war dann rot (Testmarken-Falle). */
-var s1 = SG.pruefeSiegel(K.REPO, 'pruefstrasse/konfig.json');
-ok(/^[0-9a-f]{40}$/.test(s1.commit) && s1.sha256.length === 64, 'Siegel 2 auf konfig.json (committet, von Bau-Auftraegen nie angefasst) liefert Commit und Pruefsumme', s1.commit.slice(0, 7));
+/* Nr. 118: Marke war konfig.json, nicht FORM.md - FORM.md aendert jeder Form-Auftrag im Arbeitsbaum und die Probe war dann rot (Testmarken-Falle).
+ * Nr. 121-2a: auch konfig.json aendert ein Bau-Auftrag (eichung, entdeckungBis) - Marke ist jetzt eine Datei eines KANDIDATENORDNERS, die nach
+ * FORM.md nie veraendert wird (donchian20-ausbruch-long/kandidat.json). */
+var s1 = SG.pruefeSiegel(K.REPO, 'pruefstrasse/warteschlange/donchian20-ausbruch-long/kandidat.json');
+ok(/^[0-9a-f]{40}$/.test(s1.commit) && s1.sha256.length === 64, 'Siegel 2 auf einer Datei eines Kandidatenordners (committet, nie veraendert) liefert Commit und Pruefsumme', s1.commit.slice(0, 7));
 var e4 = null; try { SG.siegel1(K.REPO, 'pruefstrasse/gibt-es-nicht'); } catch (e) { e4 = e; }
 ok(e4 && e4.sperre, 'Siegel 1 auf einem fehlenden Ordner: SPERRE');
 var E0 = A.lauf(zufallSignal, KAND, { tafel: T0 });
@@ -549,6 +551,9 @@ var quelleM = fs.readFileSync(path.join(K.REPO, 'studien', 'messmaschine', 'mess
 ok(/function ladeUniversum\(archivPfad, intervall, filter, fenster\)/.test(quelleM) && /optionen\.vonMs != null \|\| optionen\.bisMs != null\) \? \{ vonMs: optionen\.vonMs, bisMs: optionen\.bisMs \} : null/.test(quelleM), 'messmaschine.js: Fenster nur mit optionen.vonMs/bisMs, sonst null (alter Aufruf)');
 var wp = fs.readFileSync(path.join(K.REPO, 'studien', 'messmaschine', 'strategien', 'wertpapierart.js'), 'utf8');
 ok(/process\.env\.PRUEFSTRASSE_WERTPAPIERARTEN \|\| path\.join\(os\.homedir\(\), 'Downloads', 'Markt-Dashboard-Daten', 'massive', 'wertpapierarten\.json'\)/.test(wp), 'wertpapierart.js: Vorgabepfad unveraendert, Variable davor');
+
+/* Nr. 121-2a: Tests der Stufe 2a in eigener Datei (gleiche Zaehlung, gleiche Kunstwelt) */
+require('./test-stufe2a.js')({ ok: ok, nahe: nahe, K: K, TF: TF, A: A, LF: LF, SG: SG, TAGE: TAGE, kunstReihen: kunstReihen, KAND: KAND, zufallSignal: zufallSignal, SCRATCH: SCRATCH, SCHNELL: SCHNELL, cp: cp });
 
 console.log('6) Kalibrierung der Adapter gegen bekannte Ergebnisse (Auftrag §3)');
 var KAL = path.join(K.HIER, 'kalibrierung.json'), SOLL = {
