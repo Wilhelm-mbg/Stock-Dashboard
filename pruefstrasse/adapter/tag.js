@@ -223,6 +223,7 @@ function lokalerTopf(S, ES, EP, H, radien, klassen, von, bis, hist, zl) {
     else { e = EP[q]; d = t - e; }
     if (d > rMax) continue;
     if (S.mass[p] && !(zl && zl.mitMassnahmen)) { if (zl && d <= radien[0]) zl.topfMassnahme++; continue; }
+    if (zl && zl.klasseNoetig && S.klasse[p] < 0) continue;            /* nur Diagnose (opt.topfKlasseNoetig): irgendeine Klasse, nicht die der Konfiguration */
     var r = C.ertragLong(S, p, C.festAusstieg(S, p, H), S.lebend);
     if (!r) continue;
     for (var x = 0; x < radien.length; x++) if (d <= radien[x]) { var z = aus[x][e] || (aus[x][e] = [0, 0]); z[0] += r.r; z[1]++; }
@@ -376,7 +377,7 @@ function messe(TF, regel, kand, opt) {
     var ESa = Array.prototype.slice.call(ES), EPe = eindeutig(ESa.filter(function (t) { return t <= bisEnt; })), EPp = eindeutig(ESa.filter(function (t) { return t >= iSchnitt && t <= TF.maxTag; }));
     return konfs.map(function (c, kf) {
       var H = c.haltedauer, kl = c.klassen || null, rad = radien[kf];
-      var zlE = { topfMassnahme: 0, mitMassnahmen: !!opt.topfMitMassnahmen }, zlP = { topfMassnahme: 0, mitMassnahmen: !!opt.topfMitMassnahmen };
+      var zlE = { topfMassnahme: 0, mitMassnahmen: !!opt.topfMitMassnahmen, klasseNoetig: !!opt.topfKlasseNoetig }, zlP = { topfMassnahme: 0, mitMassnahmen: !!opt.topfMitMassnahmen, klasseNoetig: !!opt.topfKlasseNoetig };
       var Te = lokalerTopf(S, ES, EPe, H, rad, kl, 0, bisEnt, detail[kf].hist, zlE), Tp = lokalerTopf(S, ES, EPp, H, rad, kl, iSchnitt, TF.maxTag, null, zlP);
       detail[kf].topfMassnahme += zlE.topfMassnahme; zaehler.topfMassnahme += zlE.topfMassnahme + zlP.topfMassnahme;
       var EValle = [], EVok = [];
@@ -387,7 +388,7 @@ function messe(TF, regel, kand, opt) {
         var tV = S.tag[pV]; EValle.push(tV); if (!ueberlappt(ES, tV, H)) EVok.push(tV);
       });
       var ESV = Int32Array.from(ESa.concat(EValle)).sort();
-      var zlV = { topfMassnahme: 0, mitMassnahmen: !!opt.topfMitMassnahmen };
+      var zlV = { topfMassnahme: 0, mitMassnahmen: !!opt.topfMitMassnahmen, klasseNoetig: !!opt.topfKlasseNoetig };
       var Ve = lokalerTopf(S, ESV, eindeutig(EVok.filter(function (t) { return t <= bisEnt; })), H, [rad[0]], kl, 0, bisEnt, null, zlV)[0];
       var Vp = lokalerTopf(S, ESV, eindeutig(EVok.filter(function (t) { return t >= iSchnitt && t <= TF.maxTag; })), H, [rad[0]], kl, iSchnitt, TF.maxTag, null, zlV)[0];
       var G = {};
@@ -699,7 +700,7 @@ function lauf(regel, kand, opt) {
   /* TB nur noch fuer die nachrichtliche Tor-1-Schwelle: gesperrt oder ohne Pruefzeit (panelende) wie bisher TE / 2 (= 11,31 x se) */
   var TE = handelstage(TF, ersteZeile, iSchnitt - 1), TB = (TF.gesperrt || iSchnitt > TF.maxTag) ? Math.max(1, Math.round(TE * (opt.tbAnteil || 0.5))) : handelstage(TF, iSchnitt, TF.maxTag);
   if (TF.gesperrt && opt.tbHandelstage) TB = opt.tbHandelstage;
-  var M = messe(TF, regel, kand, { iSchnitt: iSchnitt, topfArt: opt.topfArt, topfNMin: opt.topfNMin, einsaat: opt.einsaat, topfMitMassnahmen: opt.topfMitMassnahmen });
+  var M = messe(TF, regel, kand, { iSchnitt: iSchnitt, topfArt: opt.topfArt, topfNMin: opt.topfNMin, einsaat: opt.einsaat, topfMitMassnahmen: opt.topfMitMassnahmen, topfKlasseNoetig: opt.topfKlasseNoetig });
   var konf = auswerte(M, TF, { iSchnitt: iSchnitt, TE: TE, TB: TB, pruefung: opt.pruefung || null, registerM: opt.registerM });
   var SA = signalAnteil(M, TF);
   return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum, reihen: TF.reihen.length, nTage: TF.nTage,
