@@ -62,6 +62,11 @@ module.exports = {
   KANDIDAT_T: 2, TOR1_FAKTOR: 4, MDE_FAKTOR: 2.8016, Z_POWER80: 0.8416, HOLM_ALPHA: 0.05,
   PLACEBO_T: 2, PLACEBO_ANTEIL_HUERDE: 0.25, VERSATZ_TAGE: 20, COOLDOWN_TAGE: 5, MIN_TAGE: 30,
   ZUFALL_JE_KONFIGURATION: 0.02275,            /* P(t >= 2) einseitig unter der Null */
+  /* Nr. 121-2a (FORM.md §5): Kandidat = netto > 0 und p_E <= min(P(T_df >= KANDIDAT_T), REGISTER_ALPHA / m), m = Register (Gewichte; "nicht messbar"
+   * 0, Nachmessung mit --grund-daten 2) + Konfigurationen des laufenden Kandidaten + REGISTER_M_EXTERN. REGISTER_M_EXTERN 0 = PM-Annahme "m = Register der
+   * Pruefstrasse"; die ~3.400 Tests der Signalstudie 2026-08 stehen nur nachrichtlich (REGISTER_M_EXTERN_NACHRICHTLICH) - Wilhelm kann sie wirksam setzen.
+   * HAUSREGEL_KALENDER_TAGE: CLAUDE.md "Kalendersignale unter 1.000 Bestaetigungs-Signaltagen nicht in die Muehle". */
+  REGISTER_ALPHA: 0.05, REGISTER_M_EXTERN: 0, REGISTER_M_EXTERN_NACHRICHTLICH: 3400, HAUSREGEL_KALENDER_TAGE: 1000,
   /* Modus zeit, lokaler Topf (Nr. 121-1, FORM.md §3): mindestens TOPF_N_MIN Fenster je Signal. Entscheid PM 21.10.: 1 statt 2 - ein einzelnes
    * Vergleichsfenster ist ein gepaarter Vergleich (Signalwoche gegen die folgende ungerade Woche, der Vergleich der Quelle), seine Streuung steht ueber
    * den Ueberschuss je Trade in der Tagesreihe und damit im se; die Schwelle 2 waehlte eine verzerrte Teilmenge (Zyklusenden, Luecken - fomc: 79 %

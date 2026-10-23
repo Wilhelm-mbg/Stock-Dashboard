@@ -258,6 +258,79 @@ function leererZaehler() {
     cooldownDurchOhneKlasse: 0, versatzUeberschneidung: 0, reihen: 0, reihenOhneKlasse: 0, zeilenJeKlasse: [0, 0, 0, 0] };
 }
 
+/** Phase 1 einer Reihe (Nr. 121-2a als Funktion herausgeloest, Schritte und Reihenfolge unveraendert): Sicht, Cooldown je Richtung, Bestaetigung,
+ *  Einstiegstag. Liefert die Signale { dir, k, ePos, tagE }, ihre Einstiegstage und die Verstoesse - KEINE Rendite wird gelesen. */
+function signaleSammeln(S, TF, regel, params, versatz, bucht, zaehler) {
+  var sicht = Sicht(S, TF), letzt = { 1: null, '-1': null }, letztK = { 1: -1, '-1': -1 }, sigs = [], tagsE = [];
+  for (var i = 0; i < S.n; i++) {
+    var k = S.klasse[i];
+    if (k < 0 || S.mass[i]) continue;
+    if (i + 1 >= S.n) continue;
+    sicht.setzeBis(i); zaehler.signalAufrufe++;
+    var sig = regel.signal(sicht, i, params);
+    if (!sig || !(sig.dir === 1 || sig.dir === -1)) continue;
+    var dir = sig.dir, tagI = S.tag[i];
+    if (letzt[dir] != null && tagI - letzt[dir] < K.COOLDOWN_TAGE) { zaehler.cooldown++; if (!bucht[dir][letztK[dir]]) zaehler.cooldownDurchOhneKlasse++; continue; }
+    if (regel.bestaetigt) {
+      if (i + 1 >= S.n) { zaehler.ohneBestaetigungstag++; continue; }
+      sicht.setzeBis(i + 1);
+      if (!regel.bestaetigt(sicht, i + 1, params, sig)) { zaehler.abgelehnt++; continue; }
+    }
+    var ePos = i + versatz;
+    if (ePos >= S.n) { zaehler.ohneEinstieg++; continue; }
+    if (S.mass[ePos]) { zaehler.einstiegMassnahmen++; continue; }
+    letzt[dir] = tagI; letztK[dir] = k; zaehler.signale++;
+    sigs.push({ dir: dir, k: k, ePos: ePos, tagE: S.tag[ePos] }); tagsE.push(S.tag[ePos]);
+  }
+  return { sigs: sigs, tagsE: tagsE, verstoesse: sicht.verstoesse(), beispiele: sicht.beispiele() };
+}
+/** bucht[dir][k]: bucht irgendeine Konfiguration dieser Richtung die Klasse k? */
+function buchtTafel(konfs) {
+  return { 1: [0, 1, 2, 3].map(function (k) { return konfs.some(function (c) { return c.richtung === 'long' && (!c.klassen || c.klassen.indexOf(k) !== -1); }); }),
+    '-1': [0, 1, 2, 3].map(function (k) { return konfs.some(function (c) { return c.richtung === 'short' && (!c.klassen || c.klassen.indexOf(k) !== -1); }); }) };
+}
+
+/**
+ * TROCKENZAEHLUNG OHNE RENDITEN (Nr. 121-2a, Machbarkeitstor A3 und Vorwaerts-Zaehlung C2): dieselbe Phase 1 wie messe (Sicht, Cooldown, Bestaetigung,
+ * Einstiegstag), aber keine Buchung - kein Kurs nach dem Einstieg, keine Rendite, kein Topf. Je Konfiguration (Richtung, Klassen): Signaltage
+ * n_T (verschiedene Einstiegstage in [von, bis]), Trades, Trades je Signaltag d, erster/letzter Signaltag; dazu der Anteil der zulaessigen Reihen
+ * mit Signal am Signaltag und die Handelstage TE des Zeitraums. opt = { von (Index, Vorgabe 0), bis (Index, Vorgabe TF.maxTag), vollesFenster
+ * (nur Einstiege mit tagE + H <= TF.maxTag: das Fenster liegt ganz in der Tafel - die Vorwaerts-Zaehlung), nurKeys }.
+ */
+function zaehle(TF, regel, kand, opt) {
+  opt = opt || {};
+  var t0 = Date.now(), konfs = kand.konfigurationen.filter(function (c) { return !opt.nurKeys || opt.nurKeys.indexOf(c.key) !== -1; }), params = kand.params || {};
+  var von = opt.von || 0, bis = opt.bis != null ? Math.min(opt.bis, TF.maxTag) : TF.maxTag, zaehler = leererZaehler(), versatz = regel.bestaetigt ? 2 : 1, bucht = buchtTafel(kand.konfigurationen);
+  var zulK = topf(TF, null, zaehler, false), sigTag = new Int32Array(TF.nTage), verstoesse = 0;
+  var tageJe = konfs.map(function () { return {}; }), trades = konfs.map(function () { return 0; });
+  TF.reihen.forEach(function (S) {
+    var P1 = signaleSammeln(S, TF, regel, params, versatz, bucht, zaehler); verstoesse += P1.verstoesse;
+    P1.sigs.forEach(function (sg) {
+      if (sg.tagE < von || sg.tagE > bis) return;
+      if (sg.tagE < sigTag.length && S.klasse[sg.ePos] >= 0) sigTag[sg.tagE]++;
+      var richtung = sg.dir > 0 ? 'long' : 'short';
+      konfs.forEach(function (c, kf) {
+        if (c.richtung !== richtung || (c.klassen && c.klassen.indexOf(sg.k) === -1)) return;
+        if (opt.vollesFenster && sg.tagE + c.haltedauer > TF.maxTag) return;
+        tageJe[kf][sg.tagE] = (tageJe[kf][sg.tagE] || 0) + 1; trades[kf]++;
+      });
+    });
+  });
+  var su = 0, n = 0, ueber = 0, max = null;
+  for (var t = von; t <= bis && t < TF.nTage; t++) {
+    var zl = zulK[t][0].length + zulK[t][1].length + zulK[t][2].length + zulK[t][3].length;
+    if (!(sigTag[t] > 0) || !(zl > 0)) continue;
+    var a = sigTag[t] / zl; su += a; n++; if (max === null || a > max) max = a; if (a > 0.5) ueber++;
+  }
+  var ersteZeile = TF.nTage; TF.reihen.forEach(function (S) { if (S.n && S.tag[0] < ersteZeile) ersteZeile = S.tag[0]; });
+  var TE = handelstage(TF, Math.max(von, ersteZeile), bis);
+  return { konfigurationen: konfs.map(function (c, kf) {
+    var tg = Object.keys(tageJe[kf]).map(Number).sort(function (x, y) { return x - y; }), nT = tg.length;
+    return { key: c.key, H: c.haltedauer, richtung: c.richtung, nT: nT, nTr: trades[kf], d: nT ? trades[kf] / nT : null, ersterTag: nT ? TF.tage[tg[0]] : null, letzterTag: nT ? TF.tage[tg[nT - 1]] : null };
+  }), signalAnteil: { tage: n, mittel: n ? su / n : null, max: max, tageUeber50: ueber }, TE: TE, von: TF.tage[von] || null, bis: TF.tage[bis] || null, letzterTag: TF.tage[TF.maxTag],
+    reihen: TF.reihen.length, verstoesse: verstoesse, zaehler: zaehler, ms: Date.now() - t0, bewertung: kand.bewertung || 'topf', ohneRenditen: true };
+}
+
 /**
  * Messung. TF = Tafel (tafel.js), regel = { signal, bestaetigt? }, kand = kandidat.json (bewertung topf | zeit, Vorgabe topf),
  * opt = { schnitt (erster Tag nach der Entdeckung, Vorgabe K.EICHUNG.schnitt = Eichfenster) | iSchnitt (sein Kalenderindex) }.
@@ -286,8 +359,7 @@ function messe(TF, regel, kand, opt) {
   var radien = konfs.map(function (c) { var H = c.haltedauer; return zeit ? [topfRadiusVon(kand, H), 2 * H, 8 * H] : null; });
   var detail = konfs.map(function (c, kf) { return { R: radien[kf] ? radien[kf][0] : null, nMin: nMin, topfN: {}, hist: {}, topfSumme: 0, topfTrades: 0, topfFehlt: 0 }; });
   /* bucht[dir][k]: bucht irgendeine Konfiguration dieser Richtung die Klasse k? (Zaehler cooldownDurchOhneKlasse, A13) */
-  var bucht = { 1: [0, 1, 2, 3].map(function (k) { return konfs.some(function (c) { return c.richtung === 'long' && (!c.klassen || c.klassen.indexOf(k) !== -1); }); }),
-    '-1': [0, 1, 2, 3].map(function (k) { return konfs.some(function (c) { return c.richtung === 'short' && (!c.klassen || c.klassen.indexOf(k) !== -1); }); }) };
+  var bucht = buchtTafel(konfs);
   /** Lokale Toepfe einer Reihe je Konfiguration: Zuordnung je Zeitraum (Entdeckung: Einstiegstage <= bisEnt, Starttage 0..bisEnt; Pruefung: ab
    *  iSchnitt bis maxTag), Ausschluss ueber ALLE Einstiegstage ES der Reihe. Das verschobene Signal bekommt einen eigenen lokalen Topf derselben Bauart:
    *  Zuordnung zu den gewerteten verschobenen Einstiegstagen, Ausschluss ueber ES UND alle verschobenen Einstiegstage. */
@@ -318,28 +390,8 @@ function messe(TF, regel, kand, opt) {
   TF.reihen.forEach(function (S, ri) {
     /* Phase 1: Signale der Reihe sammeln (Sicht, Cooldown, Bestaetigung, Einstiegstag - unveraendert); die Einstiegstage ES sind im Modus zeit
      * die Ausschlussmenge des zeitlichen Topfs und in beiden Modi der Massstab fuer die Ueberlappung der verschobenen Fenster. */
-    var sicht = Sicht(S, TF), letzt = { 1: null, '-1': null }, letztK = { 1: -1, '-1': -1 }, sigs = [], tagsE = [];
-    for (var i = 0; i < S.n; i++) {
-      var k = S.klasse[i];
-      if (k < 0 || S.mass[i]) continue;
-      if (i + 1 >= S.n) continue;
-      sicht.setzeBis(i); zaehler.signalAufrufe++;
-      var sig = regel.signal(sicht, i, params);
-      if (!sig || !(sig.dir === 1 || sig.dir === -1)) continue;
-      var dir = sig.dir, tagI = S.tag[i];
-      if (letzt[dir] != null && tagI - letzt[dir] < K.COOLDOWN_TAGE) { zaehler.cooldown++; if (!bucht[dir][letztK[dir]]) zaehler.cooldownDurchOhneKlasse++; continue; }
-      if (regel.bestaetigt) {
-        if (i + 1 >= S.n) { zaehler.ohneBestaetigungstag++; continue; }
-        sicht.setzeBis(i + 1);
-        if (!regel.bestaetigt(sicht, i + 1, params, sig)) { zaehler.abgelehnt++; continue; }
-      }
-      var ePos = i + versatz;
-      if (ePos >= S.n) { zaehler.ohneEinstieg++; continue; }
-      if (S.mass[ePos]) { zaehler.einstiegMassnahmen++; continue; }
-      letzt[dir] = tagI; letztK[dir] = k; zaehler.signale++;
-      sigs.push({ dir: dir, k: k, ePos: ePos, tagE: S.tag[ePos] }); tagsE.push(S.tag[ePos]);
-    }
-    verstoesse += sicht.verstoesse(); sicht.beispiele().forEach(function (b) { if (beispiele.length < 10) beispiele.push(b); });
+    var P1 = signaleSammeln(S, TF, regel, params, versatz, bucht, zaehler), sigs = P1.sigs, tagsE = P1.tagsE;
+    verstoesse += P1.verstoesse; P1.beispiele.forEach(function (b) { if (beispiele.length < 10) beispiele.push(b); });
     var ES = Int32Array.from(tagsE).sort(), TZ = null, zeitlichAlt = null;
     if (zeit && topfArt === 'global') {
       /* Nr. 118 (nur Rot-vor-Gruen, opt.topfArt 'global'): globaler zeitlicher Topf je Dauer und Zeitraum, einmal je Reihe gerechnet */
@@ -517,7 +569,8 @@ function auswerte(M, TF, opt) {
     if (!(e.nTage >= K.MIN_TAGE)) gruende.push('< ' + K.MIN_TAGE + ' Signaltage');
     if (!(e.uNetto.mittel > 0)) gruende.push('netto <= 0');
     if (!(e.uNetto.t >= K.KANDIDAT_T)) gruende.push('t < ' + K.KANDIDAT_T);
-    if (!tor1) gruende.push('Tor 1');
+    /* Nr. 121-2a A1: Tor 1 ist KEIN Kriterium mehr (tor1, tor1Schwelle bleiben nachrichtlich im Protokoll, zum Vergleich mit Messungen vor dem
+     * 23.10.2026); vor dem Lauf steht das Machbarkeitstor (laeufer.js machbarkeitsPhase, tore.js). */
     if (plV) gruende.push('Placebo-Verstoss');
     var kandidat = gruende.length === 0;
     /* A3 (Nr. 121-1, beide Modi): Sperrklinke auf das verschobene Signal ZWEISEITIG, dieselbe Regel wie der Placebo "anderer Wert": |u brutto| > PLACEBO_T se
@@ -619,20 +672,22 @@ function lauf(regel, kand, opt) {
   if (!TF.hatRoh && regel.brauchtRoh) throw new Error('MESSGERAET: die Regel braucht den rohen Schluss (roh), die Quelle ' + TF.quelle + ' hat ihn nicht');
   if (!TF.hatMarkt && regel.brauchtMarkt) throw new Error('MESSGERAET: die Regel braucht die Marktreihe (markt = SPY), die Quelle ' + TF.quelle + ' hat sie nicht');
   if (!TF.hatDatum && regel.brauchtDatum) throw new Error('MESSGERAET: die Regel braucht das Kalenderdatum (datum, Monatsfunktionen), die Quelle ' + TF.quelle + ' hat keinen Kalender');
-  var iSchnitt = indexAb(TF, opt.schnitt || K.EICHUNG.schnitt);
+  /* Nr. 121-2a C1: schnitt 'panelende' = Entdeckung bis zum letzten Tag der Tafel, keine Pruefzeit (die Bestaetigung ist vorwaerts) */
+  var iSchnitt = opt.schnitt === 'panelende' ? TF.maxTag + 1 : indexAb(TF, opt.schnitt || K.EICHUNG.schnitt);
   var ersteZeile = TF.nTage; TF.reihen.forEach(function (S) { if (S.n && S.tag[0] < ersteZeile) ersteZeile = S.tag[0]; });
-  var TE = handelstage(TF, ersteZeile, iSchnitt - 1), TB = TF.gesperrt ? Math.max(1, Math.round(TE * (opt.tbAnteil || 0.5))) : handelstage(TF, iSchnitt, TF.maxTag);
+  /* TB nur noch fuer die nachrichtliche Tor-1-Schwelle: gesperrt oder ohne Pruefzeit (panelende) wie bisher TE / 2 (= 11,31 x se) */
+  var TE = handelstage(TF, ersteZeile, iSchnitt - 1), TB = (TF.gesperrt || iSchnitt > TF.maxTag) ? Math.max(1, Math.round(TE * (opt.tbAnteil || 0.5))) : handelstage(TF, iSchnitt, TF.maxTag);
   if (TF.gesperrt && opt.tbHandelstage) TB = opt.tbHandelstage;
-  var M = messe(TF, regel, kand, { iSchnitt: iSchnitt, topfArt: opt.topfArt, topfNMin: opt.topfNMin });
-  var konf = auswerte(M, TF, { iSchnitt: iSchnitt, TE: TE, TB: TB, pruefung: opt.pruefung || null });
+  var M = messe(TF, regel, kand, { iSchnitt: iSchnitt, topfArt: opt.topfArt, topfNMin: opt.topfNMin, einsaat: opt.einsaat });
+  var konf = auswerte(M, TF, { iSchnitt: iSchnitt, TE: TE, TB: TB, pruefung: opt.pruefung || null, registerM: opt.registerM });
   var SA = signalAnteil(M, TF);
   return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum, reihen: TF.reihen.length, nTage: TF.nTage,
-    letzterTag: TF.tage[TF.maxTag], schnitt: TF.tage[iSchnitt] || null, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
+    letzterTag: TF.tage[TF.maxTag], schnitt: opt.schnitt === 'panelende' ? null : (TF.tage[iSchnitt] || null), entdeckungBis: TF.tage[Math.min(TF.maxTag, iSchnitt - 1)], registerM: opt.registerM == null ? null : opt.registerM, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
     bewertung: M.bewertung, topfArt: M.topfArt, bewertungDetail: bewertungDetail(M.bewertung, M.versatzTage), versatzTage: M.versatzTage, signalAnteil: SA, warnungen: warnungen(M.bewertung, SA),
     konfigurationen: konf, klassen: TF.klassen.map(function (k) { return { name: k.name, huerde: k.huerde }; }) };
 }
 
-module.exports = { lauf: lauf, messe: messe, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, kunstKalender: kunstKalender, Zellen: Zellen, momente: momente, statistik: statistik,
+module.exports = { lauf: lauf, messe: messe, zaehle: zaehle, signaleSammeln: signaleSammeln, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, kunstKalender: kunstKalender, Zellen: Zellen, momente: momente, statistik: statistik,
   tagesreihe: tagesreihe, phi: phi, handelstage: handelstage, indexAb: indexAb, fnv: fnv, mulberry32: mulberry32, ARTEN: ARTEN, GRUPPEN: GRUPPEN, POT_MAX_DAUER: POT_MAX_DAUER,
   zeitTopfGlobal: zeitTopfGlobal, lokalerTopf: lokalerTopf, topfMittel: topfMittel, topfRadiusVon: topfRadiusVon, zensiertAnSperre: zensiertAnSperre, tVerteilung: tVerteilung, ueberlappt: ueberlappt, signalAnteil: signalAnteil, warnungen: warnungen, bewertungDetail: bewertungDetail, versatzVon: versatzVon,
   BEWERTUNGEN: BEWERTUNGEN, VERSATZ_MIN: VERSATZ_MIN, VERSATZ_MAX: VERSATZ_MAX };

@@ -16,8 +16,10 @@ var path = require('path');
 var cp = require('child_process');
 var K = require('./konfig.js');
 var SG = require('./siegel.js');
+var TO = require('./tore.js');
 
-var URTEILE = ['belegt-Vorschlag', 'nicht entscheidbar', 'nein', 'Messgeraet-Fehler'];
+/* Nr. 121-2a: "nicht messbar" = das Machbarkeitstor vor dem Lauf (FORM.md §5) - kein Entdeckungslauf, Register-Eintrag mit Gewicht 0 */
+var URTEILE = ['belegt-Vorschlag', 'nicht entscheidbar', 'nein', 'Messgeraet-Fehler', 'nicht messbar'];
 var PFLICHT = ['kennung', 'form', 'titel', 'quelle', 'erwartung', 'konfigurationen', 'autor', 'datum'];
 var SCHNITTSTELLE = { tag: ['signal'], korb: ['zielfunktion', 'placeboZiel'], minute: ['key', 'grund', 'zeitrahmen', 'haltedauerKerzen', 'signal'] };
 var BEWERTUNGEN = ['topf', 'zeit'];          /* Tag-Form, Nr. 118 (FORM.md §3): Vorgabe topf; der Adapter prueft dasselbe (adapter/tag.js BEWERTUNGEN) */
@@ -50,6 +52,7 @@ function ladeKandidat(kennung) {
     });
   }
   if (!kand.erwartung || !kand.erwartung.groesse || !kand.erwartung.richtung) fehler.push('erwartung braucht groesse und richtung');
+  else if (kand.form === 'tag') erwartungFehler(kand).forEach(function (f) { fehler.push(f); });
   if (kand.bewertung != null) {
     if (kand.form !== 'tag') fehler.push('bewertung gibt es nur in der Form tag');
     else if (BEWERTUNGEN.indexOf(kand.bewertung) === -1) fehler.push('bewertung muss topf | zeit sein (' + JSON.stringify(kand.bewertung) + ')');
@@ -85,6 +88,20 @@ function ladeKandidat(kennung) {
     if (kand.form === 'tag' && kand.daten && kand.daten !== 'panel' && kand.daten !== 'trendkanal-tage') fehler.push('daten muss panel | trendkanal-tage sein');
   } catch (e) { fehler.push('regel.js laedt nicht: ' + e.message); }
   return { kennung: kennung, ordner: ordner, kand: kand, regel: regel, fehler: fehler, versatzGrund: versatzGrund, topfRadiusGrund: topfRadiusGrund };
+}
+/** Nr. 121-2a A2: Groessenbehauptung je Konfiguration - erwartung.nettoPp (Pflicht; Zahl oder { key: Zahl }, Pp je Trade nach Kosten),
+ *  erwartung.bruttoPp (optional, sonst netto + Kassa-Huerde Klasse 1), erwartung.fensterWieQuelle (optional, true = die Quelle misst dasselbe Fenster).
+ *  Die sieben vor dem 23.10.2026 gemessenen Kandidaten lesen ihre Zahl aus pruefstrasse/erwartungen-alt.json (Ordner unveraendert). */
+function erwartungFehler(kand) {
+  var e = kand.erwartung, f = [], zahl = function (v) { return typeof v === 'number' && isFinite(v); };
+  ['nettoPp', 'bruttoPp'].forEach(function (feld) {
+    var v = e[feld]; if (v == null) return;
+    if (typeof v === 'object') { (kand.konfigurationen || []).forEach(function (c) { if (!zahl(v[c.key])) f.push('erwartung.' + feld + ' ohne Zahl fuer ' + c.key); }); }
+    else if (!zahl(v)) f.push('erwartung.' + feld + ' muss eine Zahl (Pp je Trade) oder { key: Zahl } sein');
+  });
+  if (e.fensterWieQuelle != null && typeof e.fensterWieQuelle !== 'boolean') f.push('erwartung.fensterWieQuelle muss true | false sein');
+  if (!f.length) (kand.konfigurationen || []).forEach(function (c) { if (c && c.key && !TO.erwartungFuer(kand, c.key)) f.push('erwartung.nettoPp fehlt fuer ' + c.key + ' (Pflicht seit Nr. 121-2a: behauptete Kante je Trade nach Kosten in Pp, FORM.md §2)'); });
+  return f;
 }
 /** Text unter der Markdown-Ueberschrift "Versatz" (oder name, Nr. 121-1: "Topfradius") bis zur naechsten Ueberschrift, Leerraum zusammengezogen,
  *  hoechstens 400 Zeichen; null, wenn es sie nicht gibt oder weniger als 20 Zeichen folgen. */
@@ -130,12 +147,13 @@ function naechster(ort) {
 }
 
 /* ---------- Register (§6) ---------- */
-function register() { return fs.existsSync(K.REGISTER) ? liesJson(K.REGISTER) : { kennung: 'pruefstrasse/register/v1', konfigurationen: [], gesamt: 0, zufallErwartet: 0 }; }
+function register(pfad) { var p = pfad || K.REGISTER; return fs.existsSync(p) ? liesJson(p) : { kennung: 'pruefstrasse/register/v1', konfigurationen: [], gesamt: 0, zufallErwartet: 0 }; }
 /* Zahl fuer den Bericht - ein leeres Register (erster Lauf, Trockenlauf) hat noch keine Erwartung (PM 11.10.: Trockenlauf stuerzte an .toFixed). */
 function zufallText(Rg) { return typeof Rg.zufallErwartet === 'number' ? Rg.zufallErwartet.toFixed(1) : '–'; }
 function registerEintragen(Rg, kennung, form, konf, datum, bewertung, zusatz) {
   Rg.konfigurationen = Rg.konfigurationen.filter(function (e) { return e.kennung !== kennung; });   /* ersetzt, nie doppelt (auch bei Nachmessung) */
-  konf.forEach(function (k) { var e = { kennung: kennung, form: form, key: k.key, urteil: k.urteil, datum: datum }; if (bewertung) e.bewertung = bewertung; if (zusatz) Object.keys(zusatz).forEach(function (f) { e[f] = zusatz[f]; }); Rg.konfigurationen.push(e); });
+  /* k.register (Nr. 121-2a): weitere Felder je Konfiguration (zaehlt, df, status, nBedarf, ...) */
+  konf.forEach(function (k) { var e = { kennung: kennung, form: form, key: k.key, urteil: k.urteil, datum: datum }; if (bewertung) e.bewertung = bewertung; if (zusatz) Object.keys(zusatz).forEach(function (f) { e[f] = zusatz[f]; }); if (k.register) Object.keys(k.register).forEach(function (f) { e[f] = k.register[f]; }); Rg.konfigurationen.push(e); });
   Rg.gesamt = Rg.konfigurationen.length; Rg.zufallErwartet = Rg.gesamt * K.ZUFALL_JE_KONFIGURATION; Rg.stand = datum;
   return Rg;
 }
@@ -161,15 +179,22 @@ function panelSperre() {
   }
   throw new Error('ein anderer Panel-Prozess haelt ' + rel(SPERRDATEI) + ' seit einer Stunde');
 }
+/** Ein Adapterlauf. phase: 'zaehlung' (tag, Nr. 121-2a: Trockenzaehlung ohne Renditen fuer das Machbarkeitstor, Tafel bis zum Panel-Ende),
+ *  'entdeckung', 'pruefung' (korb/minute; tag seit Nr. 121-2a nicht mehr - die Bestaetigung ist vorwaerts). extra = { nur: [keys] (nur diese
+ *  Konfigurationen messen - die messbaren), m (Testzahl fuer das Kandidatenkriterium), tafel (Tests) }. */
 function messen(kennung, phase, ausDatei, extra) {
+  extra = extra || {};
   var L = ladeKandidat(kennung);
   if (L.fehler.length) throw new Error('Kandidat ungueltig: ' + L.fehler.join('; '));
   var kand = L.kand, regel = L.regel, pruefzeit = phase === 'pruefung', siegelPfad = 'pruefstrasse/erledigt/' + kennung + '/KANDIDATEN.json';
   var keys = pruefzeit ? liesJson(path.join(K.ERLEDIGT, kennung, 'KANDIDATEN.json')).kandidaten.map(function (x) { return x.key; }) : null;
+  if (extra.nur) { kand = JSON.parse(JSON.stringify(kand)); kand.konfigurationen = kand.konfigurationen.filter(function (c) { return extra.nur.indexOf(c.key) !== -1; }); }
   panelSperre();
   var E;
   try {
-    if (kand.form === 'tag') E = require('./adapter/tag.js').lauf(regel, kand, { quelle: kand.daten || 'panel', pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: keys, tafel: extra && extra.tafel });
+    if (kand.form === 'tag' && phase === 'zaehlung') { var AT = require('./adapter/tag.js'), TFz = extra.tafel || require('./tafel.js').oeffne({ quelle: kand.daten || 'panel', bisPanelende: true }); E = AT.zaehle(TFz, regel, kand, {}); E.quelle = TFz.quelle; E.kennungTafel = TFz.kennung; }
+    else if (kand.form === 'tag' && phase === 'entdeckung') E = require('./adapter/tag.js').lauf(regel, kand, { quelle: kand.daten || 'panel', bisPanelende: true, schnitt: 'panelende', registerM: extra.m, tafel: extra.tafel });
+    else if (kand.form === 'tag') E = require('./adapter/tag.js').lauf(regel, kand, { quelle: kand.daten || 'panel', pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: keys, tafel: extra.tafel, registerM: extra.m });
     else if (kand.form === 'korb') { var mK = (register().gesamt || 0) + 1; E = require('./adapter/korb.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: pruefzeit ? { von: '2023-01-03' } : null, placeboBuecher: K.korbBuecher(mK), registerM: mK }); }
     else E = require('./adapter/minute.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad });
   } finally { try { if (+fs.readFileSync(SPERRDATEI, 'utf8') === process.pid) fs.unlinkSync(SPERRDATEI); } catch (e) { /* Sperre ist Komfort */ } }
@@ -177,8 +202,9 @@ function messen(kennung, phase, ausDatei, extra) {
   if (ausDatei) schreibeJson(ausDatei, E);
   return E;
 }
-function messenImKind(kennung, phase, ausDatei, log) {
+function messenImKind(kennung, phase, ausDatei, log, extra) {
   var args = ['--max-old-space-size=6144', __filename, '--messen', kennung, '--phase', phase, '--aus', ausDatei];
+  if (extra && Object.keys(extra).length) { var xd = ausDatei + '.extra.json'; schreibeJson(xd, extra); args.push('--extra', xd); }
   var r = cp.spawnSync(process.execPath, args, { cwd: K.REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, timeout: 6 * 3600 * 1000 });
   String(r.stdout || '').trim().split('\n').filter(Boolean).slice(-5).forEach(function (z) { log('  [' + phase + '] ' + z.slice(0, 300)); });
   if (r.status !== 0) throw new Error('Adapterlauf ' + phase + ' gescheitert (Status ' + r.status + '): ' + String(r.stderr || '').trim().split('\n').slice(0, 4).join(' | ').slice(0, 800));
@@ -275,7 +301,10 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung
   o.push('');
   var zeit = kand.form === 'tag' && E.bewertung === 'zeit';
   o.push('Alle Groessen in Pp' + (kand.form === 'korb' ? ' p. a. bzw. $' : ' je Trade/Signal (Tagesmittel), se Hansen-Hodrick') + '. ' + (kand.form === 'tag' ? 'Gegenproben: ' + (zeit ? 'Placebo "anderer Wert gleicher Klasse am selben Tag" entfaellt im Modus zeit (traefe dieselbe Zelle); Placebo ist hier das verschobene Signal' : 'Placebo = anderer Wert gleicher Klasse am selben Tag, gleiche Richtung') + '; verschoben = dasselbe Signal ' + versatz + ' Handelstage spaeter (zeigt es einen Ausschlag in eine der beiden Richtungen, ist das Messgeraet verdaechtig; Fenster mit Ueberschneidung eines Signalfensters der Reihe gezaehlt, nicht gewertet); Ein-/Ausstieg +1 T = Einstieg und Ausstieg einen Handelstag spaeter (gleiche Haltedauer); Δ alle−lebend = Ueberlebensprobe; Abgaenge getrennt (uebernahme / insolvenz / sonstige / zensiert = Reihe endet nur an der Sperre).' : kand.form === 'korb' ? 'Placebo = ' + (E.placeboBuecher || 200) + ' Zufallsbuecher derselben Zielzahl aus denselben zulaessigen Werten (Nr. 100; B = max(200, 20 m + 1), m = ' + (E.registerM != null ? E.registerM : '–') + ', p-Boden ' + (E.pBoden != null ? E.pBoden.toFixed(4).replace('.', ',') : '–') + '); Startphasen = 63 Starttage; Reihenenden getrennt nach Grund. Die Gegenproben "Signal verschoben" und "alle gegen lebend" sind fuer diese Form nicht abbildbar (die Zielfunktion lehnt veraltete Kurse ab; Reihenenden buchen nach der Hauptregel).' : 'Zahlen der Messmaschine (Bestaetigungshaelfte ihres Schnitts B5); Placebo und Kontrolle A7 der Maschine im Protokoll.'));
+  if (kand.form === 'tag' && E.machbarkeit) { o.push(''); o.push(machbarkeitMarkdown(E.machbarkeit)); }
   if (kand.form === 'tag') {
+    var gs = groessenText(E);
+    o.push(''); o.push('**Groessenaussage (Nr. 121-2a, Audit B V2).** ' + (gs ? gs + '.' : 'keine: bei keiner Konfiguration liegt die obere 95-%-Grenze brutto unter der behaupteten Groesse brutto' + ((E.konfigurationen || []).some(function (k) { return k.erwartung; }) ? ' (' + E.konfigurationen.map(function (k) { return k.key + ' obere ' + de(k.entdeckung.uBrutto.obere, 3) + ' gegen ' + (k.erwartung ? de(k.erwartung.bruttoPp, 2) : '–'); }).join(', ') + ')' : '') + '.') + ' Der Zusatz „im gemessenen Fenster" steht, wenn die Quelle ein anderes Fenster misst (erwartung.fensterWieQuelle nicht true).');
     /* Nr. 118: Bewertungsmodus, Signaltage als Cluster, Anteil der Reihen mit Signal am Signaltag, Versatz der Verschiebung, Warnungen des Adapters */
     var SA = E.signalAnteil, pz = function (x) { return x == null ? '–' : (100 * x).toFixed(0) + ' %'; }, jeTag = function (x) { return x == null ? '–' : x.toFixed(1).replace('.', ','); };
     o.push('');
@@ -331,35 +360,125 @@ function belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2, nachmessung) {
 }
 
 /* ---------- Git (ein Befehl, nur genannte Pfade) ---------- */
-function commit(pfade, nachricht) {
-  var add = SG.git(K.REPO, ['add', '--'].concat(pfade));
+function commit(pfade, nachricht, repo) {
+  var R = repo || K.REPO;
+  var add = SG.git(R, ['add', '--'].concat(pfade));
   if (add.status !== 0) throw new Error('git add scheitert: ' + add.stderr.toString('utf8'));
-  var c = SG.git(K.REPO, ['commit', '-q', '-m', nachricht + '\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>', '--'].concat(pfade));
+  var c = SG.git(R, ['commit', '-q', '-m', nachricht + '\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>', '--'].concat(pfade));
   if (c.status !== 0) throw new Error('git commit scheitert: ' + c.stderr.toString('utf8') + c.stdout.toString('utf8'));
-  return SG.aus(SG.git(K.REPO, ['rev-parse', 'HEAD']));
+  return SG.aus(SG.git(R, ['rev-parse', 'HEAD']));
+}
+
+/* ---------- Machbarkeitstor (Nr. 121-2a A3, FORM.md §5) ---------- */
+/** Aus der Trockenzaehlung Zl (adapter/tag.js zaehle, ohne Renditen) je Konfiguration: geschaetzter Standardfehler (streuung.json), Kandidatenschwelle
+ *  t_krit(df, m), Bedingung (t_krit + 0,8416) * se_geschaetzt <= nettoPp und mindestens MIN_TAGE Signaltage. m fuer das Tor = Register (Gewichte, ohne
+ *  die eigene Kennung) + alle Konfigurationen des Kandidaten; mLauf = Register + die messbaren (fuer das Kandidatenkriterium nach der Entdeckung). */
+function machbarkeitsPhase(kand, Zl, Rg) {
+  var mVor = TO.registerM(Rg, kand.kennung), m = mVor + kand.konfigurationen.length, modus = kand.bewertung || 'topf';
+  var je = kand.konfigurationen.map(function (c) {
+    var z = (Zl.konfigurationen || []).filter(function (x) { return x.key === c.key; })[0] || { nT: 0, nTr: 0, d: null };
+    var er = TO.erwartungFuer(kand, c.key), sj = Zl.TE > 0 ? z.nT / Zl.TE * 252 : null;
+    var basis = { key: c.key, H: c.haltedauer, nT: z.nT, nTr: z.nTr, d: z.d, modus: modus, erwartung: er, signaltageJeJahr: sj };
+    if (!er) return Object.assign(basis, { messbar: false, grund: 'keine Groessenbehauptung (erwartung.nettoPp)' });
+    if (!(z.nT >= 2)) return Object.assign(basis, { messbar: false, grund: 'weniger als 2 Signaltage in der Trockenzaehlung', braeuchteSignaltage: null });
+    var M = TO.machbarkeit({ H: c.haltedauer, nT: z.nT, d: z.d, modus: modus, nettoPp: er.nettoPp, m: m, signaltageJeJahr: sj });
+    if (M.messbar && z.nT < K.MIN_TAGE) { M.messbar = false; M.grund = 'unter ' + K.MIN_TAGE + ' Signaltagen'; }
+    if (M.braeuchteSignaltage != null && M.braeuchteSignaltage < K.MIN_TAGE) M.braeuchteSignaltage = K.MIN_TAGE;
+    M.braeuchteJahre = (M.braeuchteSignaltage != null && sj > 0) ? M.braeuchteSignaltage / sj : null;
+    return Object.assign(basis, M);
+  });
+  var messbar = je.filter(function (x) { return x.messbar; }).map(function (x) { return x.key; });
+  return { je: je, messbar: messbar, mVor: mVor, mTor: m, mLauf: mVor + messbar.length, bewertung: modus, panelEnde: Zl.letzterTag, TE: Zl.TE, ohneRenditen: !!Zl.ohneRenditen,
+    regel: '(t_krit + ' + K.Z_POWER80 + ') x se_geschaetzt <= nettoPp, t_krit = max(' + K.KANDIDAT_T + ', t_(1 - ' + K.REGISTER_ALPHA + '/m; df = n_T/H - 1)), m = ' + m + ' (Register ' + mVor + ' + ' + kand.konfigurationen.length + ' Konfigurationen), se aus pruefstrasse/streuung.json (Fit aus versiegelten Messungen), mindestens ' + K.MIN_TAGE + ' Signaltage' };
+}
+function jahreText(j) { return j == null ? '–' : j < 0.05 ? '0' : j > 999 ? '> 999' : j.toFixed(1).replace('.', ','); }
+/** Abschnitt "Machbarkeitstor" fuer ERGEBNIS.md (beide Faelle). */
+function machbarkeitMarkdown(MB) {
+  var o = ['## Machbarkeitstor (vor dem Lauf, Trockenzaehlung ohne Renditen; Nr. 121-2a)', '', 'Regel: ' + MB.regel + '. Zaehlung bis zum Panel-Ende ' + (MB.panelEnde || '–') + ', ' + ganz(MB.TE) + ' Handelstage.', '',
+    '| Konf | H | Signaltage | Trades je Signaltag | Behauptung netto (brutto) | se geschaetzt | df | m | t_krit | (t_krit + 0,84) × se | messbar | braeuchte Signaltage (≈ Jahre) |', '|---|---|---|---|---|---|---|---|---|---|---|---|'];
+  MB.je.forEach(function (x) {
+    var er = x.erwartung;
+    o.push('| ' + x.key + ' | ' + x.H + ' | ' + ganz(x.nT) + ' | ' + (x.d == null ? '–' : x.d.toFixed(1).replace('.', ',')) + ' | ' + (er ? de(er.nettoPp, 2) + ' (' + de(er.bruttoPp, 2) + ')' : '–') + ' | ' + de(x.seGeschaetzt) + ' | ' + de(x.df, 1) + ' | ' + (x.m || '–') + ' | ' + de(x.tKrit, 2) + ' | ' + de(x.links, 3) + ' | ' + (x.messbar ? 'ja' : '**nein**' + (x.grund ? ' (' + x.grund + ')' : '')) + ' | ' + (x.messbar ? '–' : ganz(x.braeuchteSignaltage) + ' (' + jahreText(x.braeuchteJahre) + ')') + ' |');
+  });
+  o.push(''); o.push('Quelle der Behauptung: ' + MB.je.map(function (x) { return x.key + ' ' + (x.erwartung ? x.erwartung.quelle : '–'); }).join('; ') + '.');
+  return o.join('\n');
+}
+/** Groessenaussage (A4) je Konfiguration nach der Entdeckung: obere 95-%-Grenze brutto < bruttoPp. */
+function groessenAussagen(kand, E) {
+  (E.konfigurationen || []).forEach(function (k) {
+    var er = TO.erwartungFuer(kand, k.key), ob = k.entdeckung && k.entdeckung.uBrutto ? k.entdeckung.uBrutto.obere : null;
+    k.erwartung = er; k.groessenAussage = er ? TO.groessenAussage(ob, er.bruttoPp, er.fensterWieQuelle) : null;
+  });
+}
+function groessenText(E) { return (E.konfigurationen || []).filter(function (k) { return k.groessenAussage; }).map(function (k) { return k.key + ': ' + k.groessenAussage + ' (obere 95-%-Grenze brutto ' + de(k.entdeckung.uBrutto.obere, 3) + ' < ' + de(k.erwartung.bruttoPp, 2) + ' Pp)'; }).join('; '); }
+/** Abschluss "nicht messbar" (keine Konfiguration besteht das Machbarkeitstor): kein Entdeckungslauf, kein Siegel 2, Register-Eintraege mit Gewicht 0. */
+function nichtMessbarAbschluss(kennung, kand, MB, Zl, Rg, siegel1, aus, relAus, log, NM, ort) {
+  var REPO = ort.repo || K.REPO, REG = ort.register || K.REGISTER, stand = jetzt();
+  var konf = MB.je.map(function (x) { return { key: x.key, urteil: 'nicht messbar', register: { zaehlt: 0, braeuchteSignaltage: x.braeuchteSignaltage, nT: x.nT, H: x.H } }; });
+  var U = { urteil: 'nicht messbar', kandidaten: 0, fehler: [], grund: 'Machbarkeitstor: keine Konfiguration mit diesen Daten messbar (' + MB.je.map(function (x) { return x.key + ' hat ' + ganz(x.nT) + ' Signaltage, braeuchte ' + ganz(x.braeuchteSignaltage) + ' (≈ ' + jahreText(x.braeuchteJahre) + ' Jahre)'; }).join('; ') + '); kein Entdeckungslauf, zaehlt nicht als Test' };
+  var zusatz = NM ? { nachmessung: NM.n, ersetzt: NM.alt.stand } : null;
+  Rg = registerEintragen(Rg, kennung, kand.form, konf, stand, kand.bewertung || 'topf', zusatz); schreibeJson(REG, Rg);
+  log('URTEIL: nicht messbar - ' + U.grund);
+  var ergebnis = { kennung: kennung, form: kand.form, titel: kand.titel, stand: stand, urteil: U.urteil, grund: U.grund, kandidaten: 0, messgeraetFehler: [], siegel1: siegel1, siegel2: null,
+    register: { gesamt: Rg.gesamt, zufallErwartet: Rg.zufallErwartet }, machbarkeit: MB, zaehlung: Zl, entdeckung: null, pruefung: null, nachmessung: NM };
+  schreibeJson(path.join(aus, 'ergebnis.json'), ergebnis);
+  var md = '# ' + kand.titel + ' — **nicht messbar**\n\n' + (NM ? nachmessungAbsatz(NM, { konfigurationen: [], stand: stand }) + '\n\n' : '') + '**Kurzfassung.** Kandidat `' + kennung + '` (Form ' + kand.form + modusText(kand, null) + ', ' + kand.konfigurationen.length + ' Konfigurationen), geprueft ' + datumDe(stand) + ': **nicht messbar mit diesen Daten** — ' + U.grund + '. Register: ' + Rg.gesamt + ' Eintraege. Erwartung vorab: ' + kand.erwartung.groesse + '.\n\n' + machbarkeitMarkdown(MB) + '\n\nSiegel 1 `' + siegel1.commit.slice(0, 12) + '`. Alles Simulation mit virtuellem Kapital, keine Anlageberatung.\n';
+  fs.writeFileSync(path.join(aus, 'ERGEBNIS.md'), md);
+  var absatz = '- ' + datumDe(stand) + ' — ' + (NM ? '**Nachmessung ' + NM.n + '** ' : '') + '**' + kand.titel + '** (`' + kennung + '`, Form ' + kand.form + modusText(kand, null) + ', ' + kand.konfigurationen.length + ' Konfigurationen): **nicht messbar** — ' + U.grund + '. Ordner `pruefstrasse/erledigt/' + kennung + '/`, Siegel 1 `' + siegel1.commit.slice(0, 7) + '`.';
+  fs.writeFileSync(path.join(aus, 'belegstand-eintrag.md'), absatz + '\n');
+  wikiAnhaengen(REPO, absatz, '- ' + datumDe(stand) + ' (Prüfstraße, ' + new Date().toISOString().slice(11, 16) + ' UTC) — **' + kennung + ': nicht messbar** (' + kand.konfigurationen.length + ' Konfigurationen; Register ' + Rg.gesamt + '). Ordner `pruefstrasse/erledigt/' + kennung + '/`.');
+  var regRel = path.relative(REPO, REG).replace(/\\/g, '/');
+  var pfade = NM ? [relAus, regRel, 'wiki/belegstand.md', 'wiki/log.md'] : [relAus + '/ERGEBNIS.md', relAus + '/ergebnis.json', relAus + '/belegstand-eintrag.md', relAus + '/LAUF.log', relAus + '/zaehlung.json', regRel, 'wiki/belegstand.md', 'wiki/log.md'];
+  log('ENDE nicht messbar - Belegstand und Log angehaengt, Commit folgt');
+  if (NM && NM.marke && fs.existsSync(NM.marke)) fs.unlinkSync(NM.marke);
+  var h = commit(pfade, 'Pruefstrasse: ' + kennung + ' - ' + (NM ? 'Nachmessung ' + NM.n + ': ' : '') + 'nicht messbar (' + kand.konfigurationen.length + ' Konfigurationen, Machbarkeitstor)', REPO);
+  return { urteil: 'nicht messbar', grund: U.grund, commit: h, siegel1: siegel1.commit, siegel2: null };
+}
+/** Belegstand-Absatz unter der festen Ueberschrift und Zeile in wiki/log.md anhaengen (Kopf bleibt unberuehrt). */
+function wikiAnhaengen(REPO, absatz, logZeile) {
+  var bs = path.join(REPO, 'wiki', 'belegstand.md'), text = fs.readFileSync(bs, 'utf8'), ueber = '## Prüfstraße (automatisch gemessen)';
+  if (text.indexOf(ueber) === -1) text = text.replace(/\s*$/, function () { return '\n\n' + ueber + '\n\nJeder Absatz hier stammt vom Läufer (`pruefstrasse/laeufer.js`), nicht von einer Sitzung; Zahlen und Urteil stehen in `pruefstrasse/erledigt/<kennung>/`. Ein `belegt-Vorschlag` ist ein Vorschlag an den PM (zweiter unabhängiger Lauf bleibt Menschensache), kein Beleg.\n'; });
+  text = text.replace(/\s*$/, function () { return '\n' + absatz + '\n'; });
+  fs.writeFileSync(bs, text);
+  fs.appendFileSync(path.join(REPO, 'wiki', 'log.md'), logZeile + '\n');
 }
 
 /* ---------- Der Lauf ---------- */
+/** opt = { trocken, nachmessung, ort: { repo, erledigt, register } (Tests: Temp-Repo), messer (Tests: statt messenImKind), pruefer, lade (Tests) } */
 function laufe(kennung, opt) {
   opt = opt || {};
-  var aus = path.join(K.ERLEDIGT, kennung); fs.mkdirSync(aus, { recursive: true });
+  var ort = opt.ort || {}, REPO = ort.repo || K.REPO, REG = ort.register || K.REGISTER, messer = opt.messer || messenImKind;
+  var aus = path.join(ort.erledigt || K.ERLEDIGT, kennung); fs.mkdirSync(aus, { recursive: true });
+  var relAus = path.relative(REPO, aus).replace(/\\/g, '/');
   var logDatei = path.join(aus, 'LAUF.log');
   function log(t) { var z = jetzt() + '  ' + t; fs.appendFileSync(logDatei, z + '\n'); console.log(z); }
-  log('START ' + kennung + (opt.trocken ? ' (trocken)' : '') + ' auf Zweig ' + SG.aus(SG.git(K.REPO, ['rev-parse', '--abbrev-ref', 'HEAD'])));
-  var P1 = pruefen(kennung, { nachmessung: !!opt.nachmessung });
+  log('START ' + kennung + (opt.trocken ? ' (trocken)' : '') + ' auf Zweig ' + SG.aus(SG.git(REPO, ['rev-parse', '--abbrev-ref', 'HEAD'])));
+  var P1 = (opt.pruefer || pruefen)(kennung, { nachmessung: !!opt.nachmessung });
   if (!P1.gueltig) { log('ABBRUCH: Kandidat ungueltig: ' + P1.form.join('; ')); return { urteil: null, abbruch: P1.form }; }
   log('Form gueltig, test.js gruen (' + P1.test.letzteZeile + ')');
   var siegel1 = P1.siegel1; log('Siegel 1: Kandidatenordner in Commit ' + siegel1.commit + ', nichts Ungesichertes');
-  var L = ladeKandidat(kennung), kand = L.kand;
-  log('Entdeckung bis ' + (kand.form === 'minute' ? 'vor ' + K.MINUTE.sperreAb : K.ENTDECKUNG_BIS) + ' ueber ' + kand.konfigurationen.length + ' Konfigurationen (Form ' + kand.form + ', Adapter ' + kand.form + ', Quelle ' + (kand.daten || (kand.form === 'tag' ? 'panel' : kand.form === 'korb' ? 'panel' : '60m-archiv')) + modusText(kand, null) + ')');
-  var E = messenImKind(kennung, 'entdeckung', path.join(aus, 'ergebnis-entdeckung.json'), log);
-  if (E.konfigurationen.length !== kand.konfigurationen.length) throw new Error('Adapter lieferte ' + E.konfigurationen.length + ' statt ' + kand.konfigurationen.length + ' Konfigurationen');
+  var L = opt.lade ? opt.lade(kennung) : ladeKandidat(kennung), kand = L.kand, Rg = register(REG);
+  /* Nr. 121-2a A3: Machbarkeitstor VOR dem Lauf (Form tag): Trockenzaehlung ohne Renditen, se aus streuung.json, je Konfiguration messbar | nicht messbar */
+  var MB = null, Zl = null, nur = null;
+  if (kand.form === 'tag' && !opt.trocken) {
+    log('Machbarkeitstor: Trockenzaehlung ohne Renditen bis zum Panel-Ende (Signaltage, Trades, Trades je Signaltag)');
+    Zl = messer(kennung, 'zaehlung', path.join(aus, 'zaehlung.json'), log, {});
+    MB = machbarkeitsPhase(kand, Zl, Rg);
+    MB.je.forEach(function (x) { log('  ' + x.key + ': ' + ganz(x.nT) + ' Signaltage, se geschaetzt ' + de(x.seGeschaetzt) + ', (t_krit ' + de(x.tKrit, 2) + ' + 0,84) x se = ' + de(x.links, 3) + ' gegen netto ' + (x.erwartung ? de(x.erwartung.nettoPp, 2) : '–') + ' -> ' + (x.messbar ? 'messbar' : 'NICHT messbar, braeuchte ' + ganz(x.braeuchteSignaltage) + ' Signaltage (' + jahreText(x.braeuchteJahre) + ' Jahre)')); });
+    if (!MB.messbar.length) return nichtMessbarAbschluss(kennung, kand, MB, Zl, Rg, siegel1, aus, relAus, log, opt.nachmessung || null, ort);
+    nur = MB.messbar.length < kand.konfigurationen.length ? MB.messbar : null;
+  }
+  log('Entdeckung bis ' + (kand.form === 'minute' ? 'vor ' + K.MINUTE.sperreAb : kand.form === 'tag' ? 'zum Panel-Ende' + (MB ? ' ' + MB.panelEnde : '') : K.EICHUNG.bis) + ' ueber ' + (nur ? nur.length + ' von ' : '') + kand.konfigurationen.length + ' Konfigurationen (Form ' + kand.form + ', Adapter ' + kand.form + ', Quelle ' + (kand.daten || (kand.form === 'tag' ? 'panel' : kand.form === 'korb' ? 'panel' : '60m-archiv')) + modusText(kand, null) + ')');
+  var E = messer(kennung, 'entdeckung', path.join(aus, 'ergebnis-entdeckung.json'), log, MB ? { nur: nur, m: MB.mLauf } : {});
+  var soll = nur ? nur.length : kand.konfigurationen.length;
+  if (E.konfigurationen.length !== soll) throw new Error('Adapter lieferte ' + E.konfigurationen.length + ' statt ' + soll + ' Konfigurationen');
+  if (MB) { E.machbarkeit = MB; E.nichtMessbar = MB.je.filter(function (x) { return !x.messbar; }); }
+  if (kand.form === 'tag') groessenAussagen(kand, E);
   if (kand.form === 'tag') { E.versatzGrund = L.versatzGrund || null; if (kand.versatzTage != null) log('Verschiebungs-Gegenprobe: Versatz ' + E.versatzTage + ' Handelstage statt Vorgabe ' + K.VERSATZ_TAGE + ', Grund (REGEL.md "Versatz"): ' + E.versatzGrund); }
   log('Entdeckung fertig: ' + JSON.stringify(E.zaehler || {}).slice(0, 400) + (E.verstoesse != null ? ' | Verstoesse ' + E.verstoesse : ''));
   if (E.signalAnteil && E.signalAnteil.tage > 0) log('Anteil der zulaessigen Reihen mit Signal am Signaltag (Entdeckung): Mittel ' + (100 * E.signalAnteil.mittel).toFixed(1) + ' %, max ' + (100 * E.signalAnteil.max).toFixed(1) + ' %, ' + E.signalAnteil.tageUeber50 + ' von ' + E.signalAnteil.tage + ' Signaltagen ueber 50 %' + modusText(kand, E));
   (E.warnungen || []).forEach(function (w) { log('WARNUNG: ' + w); });
   E.konfigurationen.forEach(function (k) { var e = k.entdeckung; log('  ' + k.key + ': ' + (e.uNetto ? 'Tage ' + e.nTage + ', Trades ' + e.nTr + ', netto ' + de(e.uNetto.mittel) + ', t ' + de(e.uNetto.t, 2) : e.buch ? 'Median ' + de(e.buch.startphasen.median, 2) + ', Rang ' + e.rang + '/' + e.von : 'Signale ' + e.signale + ', netto ' + de(e.nettoJeSignalPp) + ', t ' + de(e.t, 2)) + (opt.trocken ? '' : ' -> ' + k.urteil + (k.gruende && k.gruende.length ? ' (' + k.gruende.join(', ') + ')' : ''))); });
-  var Rg = register();
   if (opt.trocken) {
     var T = { kennung: kennung, trocken: true, stand: E.stand, konfigurationen: E.konfigurationen.length, zaehler: E.zaehler, verstoesse: E.verstoesse, trades: E.konfigurationen.map(function (k) { return { key: k.key, nTage: k.entdeckung.nTage, nTr: k.entdeckung.nTr, signale: k.entdeckung.signale }; }) };
     schreibeJson(path.join(aus, 'TROCKEN.json'), T);
@@ -375,21 +494,26 @@ function laufe(kennung, opt) {
   schreibeJson(path.join(aus, 'KANDIDATEN.json'), { kennung: kennung, stand: E.stand, ergebnisEntdeckungSha256: sum, konfigurationen: E.konfigurationen.length,
     regel: 'FORM.md §5: netto > 0, t >= ' + K.KANDIDAT_T + ', Tor 1, kein Placebo-Verstoss', messgeraetFehler: U0.fehler,
     kandidaten: kandidaten.map(function (k) { var e = k.entdeckung; return { key: k.key, netto: e.uNetto ? e.uNetto.mittel : e.buch ? e.buch.startphasen.median : e.nettoJeSignalPp, t: e.uNetto ? e.uNetto.t : e.t, tor1Schwelle: k.tor1Schwelle || null }; }) });
-  var relAus = 'pruefstrasse/erledigt/' + kennung;
-  var h2 = commit([relAus + '/KANDIDATEN.json', relAus + '/ergebnis-entdeckung.json'], 'Pruefstrasse: ' + kennung + ' - Kandidatenliste (Siegel 2), ' + kandidaten.length + ' von ' + E.konfigurationen.length);
-  var siegel2 = SG.pruefeSiegel(K.REPO, relAus + '/KANDIDATEN.json');
+  var h2 = commit([relAus + '/KANDIDATEN.json', relAus + '/ergebnis-entdeckung.json'], 'Pruefstrasse: ' + kennung + ' - Kandidatenliste (Siegel 2), ' + kandidaten.length + ' von ' + E.konfigurationen.length, REPO);
+  var siegel2 = SG.pruefeSiegel(REPO, relAus + '/KANDIDATEN.json');
   log('Siegel 2: KANDIDATEN.json committet in ' + h2 + ' (Blob ' + siegel2.blob.slice(0, 12) + ')');
   var P = null;
   if (kandidaten.length && !U0.fehler.length) {
     log('Pruefung ab ' + (kand.form === 'minute' ? K.MINUTE.sperreAb : K.EICHUNG.schnitt) + ' fuer ' + kandidaten.map(function (k) { return k.key; }).join(', ') + ' (Daten erst jetzt lesbar)');
-    P = messenImKind(kennung, 'pruefung', path.join(aus, 'ergebnis-pruefung.json'), log);
+    P = messer(kennung, 'pruefung', path.join(aus, 'ergebnis-pruefung.json'), log, MB ? { m: MB.mLauf } : {});
     log('Pruefung fertig' + (P.verstoesse != null ? ', Verstoesse ' + P.verstoesse : ''));
   } else log(kandidaten.length ? 'Keine Pruefung: Messgeraet-Fehler' : 'Keine Pruefung: kein Kandidat');
   var NM = opt.nachmessung || null, zusatz = NM ? { nachmessung: NM.n, ersetzt: NM.alt.stand } : null;
-  var U = urteile(E, P, registerEintragen(JSON.parse(JSON.stringify(Rg)), kennung, kand.form, E.konfigurationen, E.stand, E.bewertung, zusatz));
+  /* Register: gemessene Konfigurationen und (Nr. 121-2a) die vor dem Lauf als nicht messbar ausgewiesenen (Gewicht 0) */
+  var regKonf = E.konfigurationen.concat((E.nichtMessbar || []).map(function (x) { return { key: x.key, urteil: 'nicht messbar', register: { zaehlt: 0, braeuchteSignaltage: x.braeuchteSignaltage, nT: x.nT, H: x.H } }; }));
+  var U = urteile(E, P, registerEintragen(JSON.parse(JSON.stringify(Rg)), kennung, kand.form, regKonf, E.stand, E.bewertung, zusatz));
+  var gT = kand.form === 'tag' ? groessenText(E) : '';
+  if (gT) U.grund += '; ' + gT;
   if (NM && U.urteil === 'belegt-Vorschlag') U.grund += ' - nach Nachmessung: zweiter unabhaengiger Lauf durch den PM Pflicht';
   log('URTEIL: ' + U.urteil + ' - ' + U.grund);
-  Rg = registerEintragen(Rg, kennung, kand.form, E.konfigurationen, E.stand, E.bewertung, zusatz); schreibeJson(K.REGISTER, Rg);
+  E.konfigurationen.forEach(function (k) { if (k.groessenAussage) k.register = Object.assign(k.register || {}, { groesse: k.groessenAussage }); });
+  regKonf = E.konfigurationen.concat(regKonf.slice(E.konfigurationen.length));
+  Rg = registerEintragen(Rg, kennung, kand.form, regKonf, E.stand, E.bewertung, zusatz); schreibeJson(REG, Rg);
   log('Register: ' + Rg.gesamt + ' Konfigurationen insgesamt, ' + Rg.zufallErwartet.toFixed(2) + ' Zufallstreffer erwartet');
   var ergebnis = { kennung: kennung, form: kand.form, titel: kand.titel, stand: E.stand, urteil: U.urteil, grund: U.grund, kandidaten: U.kandidaten, messgeraetFehler: U.fehler,
     siegel1: siegel1, siegel2: siegel2, register: { gesamt: Rg.gesamt, zufallErwartet: Rg.zufallErwartet }, entdeckung: E, pruefung: P, nachmessung: NM };
@@ -398,14 +522,11 @@ function laufe(kennung, opt) {
   var absatz = belegstandAbsatz(kand, E, U, Rg, siegel1, siegel2, NM);
   fs.writeFileSync(path.join(aus, 'belegstand-eintrag.md'), absatz + '\n');
   /* Belegstand: nur anhaengen unter der festen Ueberschrift, der Kopf bleibt unberuehrt */
-  var bs = path.join(K.REPO, 'wiki', 'belegstand.md'), text = fs.readFileSync(bs, 'utf8'), ueber = '## Prüfstraße (automatisch gemessen)';
-  if (text.indexOf(ueber) === -1) text = text.replace(/\s*$/, '\n\n' + ueber + '\n\nJeder Absatz hier stammt vom Läufer (`pruefstrasse/laeufer.js`), nicht von einer Sitzung; Zahlen und Urteil stehen in `pruefstrasse/erledigt/<kennung>/`. Ein `belegt-Vorschlag` ist ein Vorschlag an den PM (zweiter unabhängiger Lauf bleibt Menschensache), kein Beleg.\n');
-  text = text.replace(/\s*$/, '\n' + absatz + '\n');
-  fs.writeFileSync(bs, text);
-  var lg = path.join(K.REPO, 'wiki', 'log.md'), hhmm = new Date().toISOString().slice(11, 16);
-  fs.appendFileSync(lg, '- ' + datumDe(E.stand) + ' (Prüfstraße, ' + hhmm + ' UTC) — ' + (NM ? 'Nachmessung ' + NM.n + ' ' : '') + '**' + kennung + ': ' + U.urteil + '** (' + E.konfigurationen.length + ' Konfigurationen, ' + U.kandidaten + ' Kandidaten; Register ' + Rg.gesamt + '). Ordner `pruefstrasse/erledigt/' + kennung + '/`.\n');
-  var pfade = [relAus + '/ERGEBNIS.md', relAus + '/ergebnis.json', relAus + '/belegstand-eintrag.md', relAus + '/LAUF.log', 'pruefstrasse/register.json', 'wiki/belegstand.md', 'wiki/log.md'];
+  wikiAnhaengen(REPO, absatz, '- ' + datumDe(E.stand) + ' (Prüfstraße, ' + new Date().toISOString().slice(11, 16) + ' UTC) — ' + (NM ? 'Nachmessung ' + NM.n + ' ' : '') + '**' + kennung + ': ' + U.urteil + '** (' + E.konfigurationen.length + ' Konfigurationen, ' + U.kandidaten + ' Kandidaten; Register ' + Rg.gesamt + '). Ordner `pruefstrasse/erledigt/' + kennung + '/`.');
+  var regRel = path.relative(REPO, REG).replace(/\\/g, '/');
+  var pfade = [relAus + '/ERGEBNIS.md', relAus + '/ergebnis.json', relAus + '/belegstand-eintrag.md', relAus + '/LAUF.log', regRel, 'wiki/belegstand.md', 'wiki/log.md'];
   if (P) pfade.push(relAus + '/ergebnis-pruefung.json');
+  if (Zl) pfade.push(relAus + '/zaehlung.json');
   if (NM) pfade = [relAus].concat(pfade.filter(function (x) { return x.indexOf(relAus + '/') !== 0; }));   /* Nachmessung: der ganze Ordner (Verschiebung nach v<n> und neue Dateien) */
   if (U.urteil === 'belegt-Vorschlag') {
     fs.appendFileSync(K.VORSCHLAEGE, (fs.existsSync(K.VORSCHLAEGE) ? '' : '# Vorschlaege der Pruefstrasse an den PM (zweiter unabhaengiger Lauf ist Menschensache)\n\n') + absatz + '\n');
@@ -414,7 +535,7 @@ function laufe(kennung, opt) {
   }
   log('ENDE ' + U.urteil + ' - Belegstand und Log angehaengt, Commit folgt');
   if (NM && NM.marke && fs.existsSync(NM.marke)) fs.unlinkSync(NM.marke);       /* Marke nie in den Commit (Ordner-Pfadspezifikation); bei Fehler schreibt nachmessen sie neu */
-  var h3 = commit(pfade, 'Pruefstrasse: ' + kennung + ' - ' + (NM ? 'Nachmessung ' + NM.n + ': ' : '') + U.urteil + ' (' + E.konfigurationen.length + ' Konfigurationen, ' + U.kandidaten + ' Kandidaten)');
+  var h3 = commit(pfade, 'Pruefstrasse: ' + kennung + ' - ' + (NM ? 'Nachmessung ' + NM.n + ': ' : '') + U.urteil + ' (' + E.konfigurationen.length + ' Konfigurationen, ' + U.kandidaten + ' Kandidaten)', REPO);
   console.log(jetzt() + '  Commit ' + h3);
   return { urteil: U.urteil, grund: U.grund, commit: h3, siegel1: siegel1.commit, siegel2: siegel2.commit };
 }
@@ -541,7 +662,7 @@ if (require.main === module) {
   var a = process.argv.slice(2), arg = function (n) { var i = a.indexOf(n); return i >= 0 ? a[i + 1] : null; }, trocken = a.indexOf('--trocken') !== -1;
   try {
     if (a.indexOf('--pruefen') !== -1) { var B = pruefen(arg('--pruefen')); console.log(JSON.stringify(B, null, 1)); process.exit(B.gueltig ? 0 : 1); }
-    else if (a.indexOf('--messen') !== -1) { messen(arg('--messen'), arg('--phase'), arg('--aus')); console.log('fertig ' + arg('--phase')); }
+    else if (a.indexOf('--messen') !== -1) { var xd = arg('--extra'), ex = xd ? liesJson(xd) : null; if (xd) fs.unlinkSync(xd); messen(arg('--messen'), arg('--phase'), arg('--aus'), ex); console.log('fertig ' + arg('--phase')); }
     else if (a.indexOf('--kandidat') !== -1) { var r = laufe(arg('--kandidat'), { trocken: trocken }); console.log(JSON.stringify(r)); process.exit(r.abbruch ? 1 : 0); }
     else if (a.indexOf('--nachmessen') !== -1) { var rN = nachmessen(arg('--nachmessen'), arg('--grund'), arg('--korrektur')); console.log(JSON.stringify(rN)); process.exit(rN.abbruch ? 1 : 0); }
     else if (a.indexOf('--naechster') !== -1) { var n = naechster(); if (!n) { console.log('Warteschlange: kein gueltiger Kandidat'); process.exit(0); } var r2 = laufe(n, { trocken: trocken }); console.log(JSON.stringify(r2)); process.exit(r2.abbruch ? 1 : 0); }

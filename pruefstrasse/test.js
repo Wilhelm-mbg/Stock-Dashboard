@@ -296,7 +296,7 @@ var tmpV = 'kunst-versatz-tmp-' + process.pid, tmpVK = path.join(K.WARTESCHLANGE
 var langeProsa = 'Prosa der Regel mit Fundstelle. '.repeat(10);
 try {
   fs.mkdirSync(tmpVK, { recursive: true });
-  var kv = { kennung: tmpV, form: 'tag', titel: 'x', quelle: 'q', erwartung: { groesse: 'g', richtung: 'positiv' }, konfigurationen: [{ key: 'a', richtung: 'long', haltedauer: 5 }], autor: 'a', datum: '2026-10-12', versatzTage: 3 };
+  var kv = { kennung: tmpV, form: 'tag', titel: 'x', quelle: 'q', erwartung: { groesse: 'g', richtung: 'positiv', nettoPp: 0.2 }, konfigurationen: [{ key: 'a', richtung: 'long', haltedauer: 5 }], autor: 'a', datum: '2026-10-12', versatzTage: 3 };
   fs.writeFileSync(path.join(tmpVK, 'kandidat.json'), JSON.stringify(kv)); fs.writeFileSync(path.join(tmpVK, 'regel.js'), regelOk); fs.writeFileSync(path.join(tmpVK, 'test.js'), 'process.exit(0);'); fs.writeFileSync(path.join(tmpVK, 'REGEL.md'), '# Regel\n\n' + langeProsa + '\n');
   var LV1 = LF.ladeKandidat(tmpV);
   ok(LV1.fehler.some(function (f) { return /versatzTage muss eine ganze Zahl 5\.\.60/.test(f); }) && LV1.fehler.some(function (f) { return /ohne Ueberschrift "Versatz"/.test(f); }), 'ladeKandidat: versatzTage 3 -> Bereichsfehler UND fehlender Abschnitt "Versatz" gemeldet', LV1.fehler.join(' | '));
@@ -416,7 +416,7 @@ ok(eR && /topfRadius muss eine ganze Zahl 10\.\.60/.test(eR.message) && A.topfRa
 var tmpR = 'kunst-radius-tmp-' + process.pid, tmpRK = path.join(K.WARTESCHLANGE, tmpR);
 try {
   fs.mkdirSync(tmpRK, { recursive: true });
-  var kr = { kennung: tmpR, form: 'tag', titel: 'x', quelle: 'q', erwartung: { groesse: 'g', richtung: 'positiv' }, konfigurationen: [{ key: 'a', richtung: 'long', haltedauer: 5 }], autor: 'a', datum: '2026-10-21', bewertung: 'zeit' };
+  var kr = { kennung: tmpR, form: 'tag', titel: 'x', quelle: 'q', erwartung: { groesse: 'g', richtung: 'positiv', nettoPp: 0.2 }, konfigurationen: [{ key: 'a', richtung: 'long', haltedauer: 5 }], autor: 'a', datum: '2026-10-21', bewertung: 'zeit' };
   fs.writeFileSync(path.join(tmpRK, 'regel.js'), regelOk); fs.writeFileSync(path.join(tmpRK, 'test.js'), 'process.exit(0);'); fs.writeFileSync(path.join(tmpRK, 'REGEL.md'), '# Regel\n\n' + langeProsa + '\n');
   var lr = function (felder, regelMd) { var x = Object.assign({}, kr, felder); fs.writeFileSync(path.join(tmpRK, 'kandidat.json'), JSON.stringify(x)); if (regelMd) fs.writeFileSync(path.join(tmpRK, 'REGEL.md'), regelMd); return LF.ladeKandidat(tmpR); };
   var R0 = lr({}), R9 = lr({ topfRadius: 9 }), R61 = lr({ topfRadius: 61 }), R20 = lr({ topfRadius: 20 }), RT = lr({ topfRadius: 20, bewertung: 'topf' });

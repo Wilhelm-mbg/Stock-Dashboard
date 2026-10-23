@@ -36,7 +36,8 @@ function kalender(von, bis) {
 function sperrIndex(tage) { var s = -1; for (var i = 0; i < tage.length; i++) if (tage[i] <= K.EICHUNG.bis) s = i; return s; }
 function sperrJahr() { return +K.EICHUNG.bis.slice(0, 4); }
 
-/** Siegel 2 pruefen, wenn die Pruefzeit verlangt ist; sonst gesperrt. */
+/** Siegel 2 pruefen, wenn die Pruefzeit verlangt ist; sonst gesperrt - ausser opt.bisPanelende (Nr. 121-2a: Entdeckung neuer Kandidaten bis zum
+ *  letzten Panel-Tag; die Lesesperre gilt nur noch als Eichfenster-Grenze fuer Kalibrierung, Kunsttests und --eichung). */
 function siegelFuer(opt) {
   if (!opt.pruefzeit) return null;
   if (!opt.siegelPfad) throw SG.sperrFehler('Pruefzeit verlangt, aber kein Siegel (siegelPfad) genannt');
@@ -48,7 +49,7 @@ function ausPanel(opt) {
   var PR = require(path.join(K.PRUEFSTAND, 'paneldaten.js'));
   var KP = require(path.join(K.PRUEFSTAND, 'konfig.js'));
   var C = require(path.join(K.TRENDKANAL_STUDIE, 'kanaele.js'));
-  var siegel = siegelFuer(opt), offen = !!siegel;
+  var siegel = siegelFuer(opt), offen = !!siegel || !!opt.bisPanelende;
   var aus = opt.panel || K.PANEL, kennung = opt.panelKennung || K.PANEL_KENNUNG, ordner = path.join(aus, 'panel');
   K.ordnerPruefen(ordner, 5, 'Panel ' + aus);
   var stand = JSON.parse(fs.readFileSync(path.join(ordner, '_stand.json'), 'utf8'));
@@ -90,7 +91,7 @@ function ausTrendkanal(opt) {
   var M = require(path.join(K.TRENDKANAL_STUDIE, 'messen.js'));
   var C = require(path.join(K.TRENDKANAL_STUDIE, 'kanaele.js'));
   var KT = require(path.join(K.TRENDKANAL_STUDIE, 'konfig.js'));
-  var siegel = siegelFuer(opt), offen = !!siegel;
+  var siegel = siegelFuer(opt), offen = !!siegel || !!opt.bisPanelende;
   var ordner = opt.ordner || K.TRENDKANAL.ordner, summe = 0;
   ordner.forEach(function (o) { summe += K.ordnerPruefen(o, 1, 'Trendkanal-Tagesdateien'); });
   if (summe < K.TRENDKANAL.mindestDateien) throw new Error('DATENQUELLE LEER: Trendkanal-Tagesdateien ' + summe + ' < ' + K.TRENDKANAL.mindestDateien);
@@ -122,7 +123,8 @@ function ausTrendkanal(opt) {
     maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: F.kennung, dateien: T.dateien };
 }
 
-/** Tafel oeffnen. opt.quelle ('panel' | 'trendkanal-tage'), opt.pruefzeit, opt.siegelPfad, opt.repo, opt.nurReihen (nur Test/Trendkanal). */
+/** Tafel oeffnen. opt.quelle ('panel' | 'trendkanal-tage'), opt.pruefzeit, opt.siegelPfad, opt.repo, opt.nurReihen (nur Test/Trendkanal),
+ *  opt.bisPanelende (Nr. 121-2a: ohne Siegel bis zum letzten Tag der Quelle - Kandidatenlaeufe; ohne das Feld gesperrt am Eichfenster). */
 function oeffne(opt) {
   opt = opt || {};
   var frei = K.speicherFreiGb();

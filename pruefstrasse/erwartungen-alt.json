@@ -1,0 +1,17 @@
+{
+ "kennung": "pruefstrasse/erwartungen-alt/v1",
+ "zweck": "Groessenbehauptung (Pp je Trade) der sieben Kandidaten, die vor Nr. 121-2a gemessen wurden und kein erwartung.nettoPp tragen. Ihre Ordner bleiben unveraendert (FORM.md §2); der Laeufer liest diese Datei. Quelle je Zeile. bruttoPp = Literatur-/Quellzahl brutto aus kandidat.json erwartung bzw. REGEL.md; nettoPp = brutto - mittlere Kassa-Huerde der gemessenen Trades (kKand der Entdeckung) wie im Audit Nr. 120 B §2. fensterWieQuelle false = die Quelle misst ein anderes Fenster (Groessenaussage nur 'im gemessenen Fenster', Audit B §8 V2).",
+ "stand": "2026-10-23",
+ "kandidaten": {
+  "donchian20-ausbruch-long": { "bruttoPp": 0.34, "nettoPp": 0.21, "fensterWieQuelle": true, "quelle": "kandidat.json erwartung.groesse: keine Quellgroesse, obere Belegstand-Zahl 09.09.2026 '-0,04 bis +0,34 Pp' (Trendkanal-Studie, gleiches Fenster); netto = 0,34 - kKand 0,127 (Audit B §2)" },
+  "fomc-gerade-wochen-long": { "bruttoPp": 0.55, "nettoPp": 0.47, "fensterWieQuelle": true, "quelle": "kandidat.json erwartung.groesse: Quelle S&P/CRSP 1994-2013 gerade gegen ungerade Woche +0,5 bis +0,68 Pp je 5-Tage-Fenster, gewichtet ~ +0,55 Pp; netto = 0,55 - kKand 0,08 (Audit B §2)" },
+  "grossanstieg-ohne-umsatz": { "fensterWieQuelle": false, "quelle": "kandidat.json erwartung.groesse: Proxy A, Marktmodell, ab Schluss des Ereignistags: CAR 1-5 +0,77 Pp, CAR 1-20 +1,08 Pp brutto; netto = brutto - kKand 0,079 (Audit B §2); anderes Fenster (ab Schluss statt ab Folgeeroeffnung)",
+   "konfigurationen": { "H5": { "bruttoPp": 0.77, "nettoPp": 0.69 }, "H20": { "bruttoPp": 1.08, "nettoPp": 1.00 } } },
+  "hochvolumen-praemie": { "fensterWieQuelle": true, "quelle": "kandidat.json erwartung.groesse: Quelle 1963-1996, Long-Seite gegen Referenzportfolio: +0,18 bis +0,28 Pp bei 10 Tagen (Mitte 0,23), +0,29 bis +0,45 Pp bei 20 Tagen (Mitte 0,37) brutto; netto = brutto - kKand 0,08 (Audit B §2)",
+   "konfigurationen": { "H10": { "bruttoPp": 0.23, "nettoPp": 0.15 }, "H20": { "bruttoPp": 0.37, "nettoPp": 0.29 } } },
+  "monatswende-long": { "fensterWieQuelle": true, "quelle": "kandidat.json erwartung.groesse: Quelle CRSP wertgewichtet 1987-2005 +0,14 Pp je Tag im Fenster -1..+3, ~ +0,56 Pp je Fenster (H4), H3 = 3 Tage ~ +0,42; netto = brutto - kKand 0,08 (Audit B §2)",
+   "konfigurationen": { "H4": { "bruttoPp": 0.56, "nettoPp": 0.48 }, "H3": { "bruttoPp": 0.42, "nettoPp": 0.34 } } },
+  "umkehr-nach-vorzeichenserie": { "bruttoPp": 0.34, "nettoPp": 0.26, "fensterWieQuelle": false, "quelle": "kandidat.json erwartung.groesse: Quelle Folge von 5 Minustagen, Schluss zu Schluss am Folgetag +0,343 Pp (Tabelle 1); netto = 0,34 - kKand 0,08 (Audit B §2); anderes Fenster (Schluss -> Schluss inkl. Nacht statt Eroeffnung -> Eroeffnung)" },
+  "vor-fomc-long": { "bruttoPp": 0.49, "nettoPp": 0.41, "fensterWieQuelle": false, "quelle": "kandidat.json erwartung.groesse: Quelle 1994-2011 +0,49 Pp je Sitzung im S&P 500 (14:00 -> 14:00); netto = 0,49 - kKand 0,08 (Audit B §2); anderes Fenster (14:00 -> 14:00 statt Eroeffnung A-1 -> Eroeffnung A)" }
+ }
+}
