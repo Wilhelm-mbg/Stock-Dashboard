@@ -1,5 +1,5 @@
 {
- "stand": "2026-10-21T13:08:31.832Z",
+ "stand": "2026-10-23T14:16:45.430Z",
  "hinweis": "geschrieben von node pruefstrasse/test.js (ohne --schnell) bzw. den --kalibrierung-Laeufen der Adapter am 11.10.2026",
  "tag": {
   "entNTage": 1735,
@@ -15,8 +15,8 @@
   "reihen": 7299,
   "verstoesse": 0,
   "ms": {
-   "topf": 4818,
-   "messen": 3866
+   "topf": 4849,
+   "messen": 3909
   }
  },
  "korb": {
@@ -32,7 +32,7 @@
   "werte": 2894,
   "handelstage": 730,
   "schnittTag": "2025-03-12",
-  "signale": 105623,
+  "signale": 105633,
   "t": 0.9306674798120459
  },
  "soll": {
