@@ -114,12 +114,13 @@ ok(e5 && /^MESSGERAET:/.test(e5.message) && /Quelle kunst/.test(e5.message) && T
 var marktRegel = { brauchtRoh: true, brauchtMarkt: true, signal: function (sicht, i) { return i > 0 && sicht.markt(i) > sicht.markt(i - 1) && sicht.roh(i) > 5 && (A.fnv(sicht.reihe + '|' + i) % 25) === 0 ? { dir: 1 } : null; } };
 var Em = A.lauf(marktRegel, KAND, { tafel: T0 });
 ok(Em.hatRoh === true && Em.hatMarkt === true && Em.verstoesse === 0 && Em.konfigurationen[0].entdeckung.nTr > 0, 'Regel mit brauchtRoh/brauchtMarkt liest roh(i) und markt(i) auf der Kunst-Tafel: Trades, keine Verstoesse', Em.konfigurationen[0].entdeckung.nTr + ' Trades');
-/* Panel (nur wenn voll-v23c vorhanden): Split aus den Daten und markt(j) gegen die SPY-Reihe am selben Kalenderindex */
-if (!fs.existsSync(path.join(K.PANEL, 'panel', '_stand.json'))) {
-  ok(true, 'Panel ' + K.PANEL + ' nicht vorhanden - Split-Probe (roh/c am Ex-Tag) uebersprungen');
+/* Panel (nur wenn voll-v23c vorhanden): Split aus den Daten und markt(j) gegen die SPY-Reihe am selben Kalenderindex. Gesperrt geoeffnet = K.PANEL_EICHUNG (Nr. 123) */
+if (!fs.existsSync(path.join(K.PANEL_EICHUNG, 'panel', '_stand.json'))) {
+  ok(true, 'Panel ' + K.PANEL_EICHUNG + ' nicht vorhanden - Split-Probe (roh/c am Ex-Tag) uebersprungen');
   ok(true, 'Panel nicht vorhanden - Marktprobe (markt(j) = spy.c am Kalenderindex) uebersprungen');
 } else {
   var TP = TF.oeffne({ quelle: 'panel' }), aapl = null; TP.reihen.forEach(function (S) { if (S.reihe === 'AAPL') aapl = S; });
+  ok(TP.gesperrt === true && TP.panelOrdner === path.basename(K.PANEL_EICHUNG) && K.PANEL_EICHUNG.length > 0, 'Nr. 123: gesperrte Tafel liest panelEichung (eingefroren), nicht das fortgeschriebene panel', TP.panelOrdner + ' / bau ' + TP.bau);
   var sA = A.Sicht(aapl, TP); sA.setzeBis(aapl.n - 1);
   var ex = -1, qVor = NaN, qNach = NaN;
   for (var jA = 1; jA < aapl.n; jA++) { var qa = sA.roh(jA - 1) / sA.c(jA - 1), qb = sA.roh(jA) / sA.c(jA); if (Math.abs(qb - qa) > 1e-9) { ex = jA; qVor = qa; qNach = qb; break; } }
@@ -167,10 +168,10 @@ var datumRegel = { brauchtDatum: true, signal: function (sicht, i) { return i > 
 var Ed = A.lauf(datumRegel, KAND, { tafel: T0 });
 ok(Ed.hatDatum === true && Ed.verstoesse === 0 && Ed.zaehler.signale > 0 && Ed.konfigurationen[0].entdeckung.nTage === 23, 'Regel mit brauchtDatum (Signal am ersten Handelstag des Monats ueber istLetzterHandelstagImMonat(i-1)): 23 Signaltage 2021-02 .. 2022-12, keine Verstoesse', Ed.konfigurationen[0].entdeckung.nTage + ' Signaltage, ' + Ed.zaehler.signale + ' Signale');
 /* Panel (nur wenn vorhanden): datum(j) = Kalendertag aus _stand.json; Monatsfunktionen = unabhaengige Rechnung ueber denselben Kalender */
-if (!fs.existsSync(path.join(K.PANEL, 'panel', '_stand.json'))) {
+if (!fs.existsSync(path.join(K.PANEL_EICHUNG, 'panel', '_stand.json'))) {
   ok(true, 'Panel nicht vorhanden - Datumsprobe (datum(j) = Kalendertag aus _stand.json) uebersprungen');
 } else {
-  var TP2 = TF.oeffne({ quelle: 'panel' }), standTage = JSON.parse(fs.readFileSync(path.join(K.PANEL, 'panel', '_stand.json'), 'utf8')).tage;
+  var TP2 = TF.oeffne({ quelle: 'panel' }), standTage = JSON.parse(fs.readFileSync(path.join(K.PANEL_EICHUNG, 'panel', '_stand.json'), 'utf8')).tage;
   var geprueftD = 0, falschD = 0, letzteD = 0, ersteD = 0;
   var monD = function (d) { return d.slice(0, 7); };
   TP2.reihen.slice(0, 200).forEach(function (S) {

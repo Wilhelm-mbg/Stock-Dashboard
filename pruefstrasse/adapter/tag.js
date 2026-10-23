@@ -755,7 +755,7 @@ function lauf(regel, kand, opt) {
   if (vb) W.push(vb);
   return { quelle: TF.quelle, kennungTafel: TF.kennung, gesperrt: TF.gesperrt, siegel: TF.siegel, hatRoh: !!TF.hatRoh, hatMarkt: !!TF.hatMarkt, hatDatum: !!TF.hatDatum,
     marktreihe: TF.marktReihe ? TF.marktReihe.name : (TF.spy ? 'SPY (Panel-Referenz)' : null), marktreiheSeit: 'Nasdaq-100 (QQQ) seit 23.10.2026, vorher S&P 500 (SPY)', reihen: TF.reihen.length, nTage: TF.nTage,
-    letzterTag: TF.tage[TF.maxTag], schnitt: opt.schnitt === 'panelende' ? null : (TF.tage[iSchnitt] || null), entdeckungBis: TF.tage[Math.min(TF.maxTag, iSchnitt - 1)], registerM: opt.registerM == null ? null : opt.registerM, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
+    panelBau: TF.bau || null, letzterTag: TF.tage[TF.maxTag], schnitt: opt.schnitt === 'panelende' ? null : (TF.tage[iSchnitt] || null), entdeckungBis: TF.tage[Math.min(TF.maxTag, iSchnitt - 1)], registerM: opt.registerM == null ? null : opt.registerM, TE: TE, TB: TB, zaehler: M.zaehler, verstoesse: M.verstoesse, beispiele: M.beispiele, ms: M.ms,
     bewertung: M.bewertung, topfArt: M.topfArt, bewertungDetail: bewertungDetail(M.bewertung, M.versatzTage), versatzTage: M.versatzTage, signalAnteil: SA, warnungen: W, planAbstand: M.planAbstand, vorbehalt: vb,
     konfigurationen: konf, klassen: TF.klassen.map(function (k) { return { name: k.name, huerde: k.huerde, kassa: k.kassa, eroeffnung: k.eroeffnung, nurKosten: !!k.nurKosten }; }),
     kosten: kostenBeschreibung() };

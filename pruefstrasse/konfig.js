@@ -41,6 +41,10 @@ function speicherFreiGb() {
 module.exports = {
   HIER: HIER, REPO: REPO, DATEN: DATEN, pfad: pfad, ordnerPruefen: ordnerPruefen, dateiPruefen: dateiPruefen, speicherFreiGb: speicherFreiGb,
   PANEL: pfad(J.panel), PANEL_KENNUNG: J.panelKennung, KALENDER: pfad(J.kalender),
+  /* Nr. 123 (Entscheid PM 23.10.): die gesperrte Tafel (Kalibrierung, --eichung, Kunsttests am Eichfenster) liest den EINGEFRORENEN Ordner
+   * panelEichung (voll-v23c, Bau 2c) - so bleibt die Eichung bitgleich, waehrend `panel` monatlich fortgeschrieben wird (tools/panel-fortschreiben.js).
+   * Kandidatenlaeufe (Entdeckung bis Panel-Ende, Zaehlung, Pruefzeit, --vorwaerts) lesen `panel`. Ohne Eintrag: derselbe Ordner wie panel. */
+  PANEL_EICHUNG: pfad(J.panelEichung || J.panel),
   TRENDKANAL: { ordner: J.trendkanalTage.ordner.map(pfad), von: J.trendkanalTage.von, bis: J.trendkanalTage.bis, mindestDateien: J.trendkanalTage.mindestDateien },
   MASSNAHMEN: { ordner: pfad(J.massnahmen.ordner), mindestDateien: J.massnahmen.mindestDateien },
   ARCHIV60M: { ordner: pfad(J.archiv60m.ordner), mindestDateien: J.archiv60m.mindestDateien },

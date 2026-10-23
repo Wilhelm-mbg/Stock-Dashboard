@@ -16,7 +16,7 @@ function oeffne(opt) {
   if (!opt.ohneSpeicherpruefung && frei < K.SPEICHER_MIN_GB) throw new Error('SPEICHER: ' + frei.toFixed(1) + ' GB frei, unter ' + K.SPEICHER_MIN_GB + ' GB - warten');
   var siegel = null;
   if (opt.pruefzeit) { if (!opt.siegelPfad) throw SG.sperrFehler('Pruefzeit verlangt, aber kein Siegel genannt'); siegel = SG.pruefeSiegel(opt.repo || K.REPO, opt.siegelPfad); }
-  var aus = opt.panel || K.PANEL, kennung = opt.panelKennung || K.PANEL_KENNUNG, ordner = path.join(aus, 'panel');
+  var aus = opt.panel || (siegel ? K.PANEL : K.PANEL_EICHUNG), kennung = opt.panelKennung || K.PANEL_KENNUNG, ordner = path.join(aus, 'panel');   /* Nr. 123 wie tafel.js */
   K.ordnerPruefen(ordner, 5, 'Panel ' + aus);
   var stand = JSON.parse(fs.readFileSync(path.join(ordner, '_stand.json'), 'utf8'));
   if (stand.kennung !== kennung) throw new Error('Panelkennung ' + stand.kennung + ' statt ' + kennung);

@@ -1,5 +1,5 @@
 {
- "stand": "2026-10-23T15:14:03.833Z",
+ "stand": "2026-10-23T20:30:39.123Z",
  "hinweis": "geschrieben von node pruefstrasse/test.js (ohne --schnell) bzw. den --kalibrierung-Laeufen der Adapter am 11.10.2026",
  "tag": {
   "entNTage": 1735,
@@ -24,8 +24,8 @@
   "reihen": 7299,
   "verstoesse": 0,
   "ms": {
-   "topf": 4880,
-   "messen": 3974
+   "topf": 6306,
+   "messen": 5272
   }
  },
  "korb": {

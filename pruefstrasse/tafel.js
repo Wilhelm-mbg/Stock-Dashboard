@@ -68,7 +68,8 @@ function ausPanel(opt) {
   var KP = require(path.join(K.PRUEFSTAND, 'konfig.js'));
   var C = require(path.join(K.TRENDKANAL_STUDIE, 'kanaele.js'));
   var siegel = siegelFuer(opt), offen = !!siegel || !!opt.bisPanelende;
-  var aus = opt.panel || K.PANEL, kennung = opt.panelKennung || K.PANEL_KENNUNG, ordner = path.join(aus, 'panel');
+  /* Nr. 123: gesperrt (Eichfenster) -> eingefrorener Ordner K.PANEL_EICHUNG, offen (Siegel/bisPanelende) -> fortgeschriebenes K.PANEL */
+  var aus = opt.panel || (offen ? K.PANEL : K.PANEL_EICHUNG), kennung = opt.panelKennung || K.PANEL_KENNUNG, ordner = path.join(aus, 'panel');
   K.ordnerPruefen(ordner, 5, 'Panel ' + aus);
   var stand = JSON.parse(fs.readFileSync(path.join(ordner, '_stand.json'), 'utf8'));
   if (stand.kennung !== kennung) throw new Error('Panelkennung ' + stand.kennung + ' statt ' + kennung);
@@ -102,7 +103,7 @@ function ausPanel(opt) {
   sp = null;
   var mr = marktReiheFuer(tage, opt);
   return { quelle: 'panel', hochTief: false, hatRoh: true, hatMarkt: !!mr, marktReihe: mr, hatDatum: true, nTage: nTage, tage: tage, idx: stand.tage.reduce(function (m, t, i) { m[t] = i; return m; }, {}),
-    reihen: reihen, spy: spy, sperrIdx: sperrIdx, maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: stand.kennung, jahreGelesen: jahre };
+    reihen: reihen, spy: spy, sperrIdx: sperrIdx, maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: stand.kennung, bau: stand.bau || null, panelOrdner: path.basename(aus), jahreGelesen: jahre };
 }
 
 /* ---------- Quelle 2: die Tagesdateien der Trendkanal-Studie ---------- */

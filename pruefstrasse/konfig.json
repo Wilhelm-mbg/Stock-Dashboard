@@ -2,6 +2,7 @@
   "daten": "E:/Markt-Dashboard-Archiv",
   "panel": "studien/querschnitt-pruefstand-2026-09-13/voll-v23c",
   "panelKennung": "querschnitt-pruefstand-2026-09-13/panel/v2.3",
+  "panelEichung": "studien/querschnitt-pruefstand-2026-09-13/voll-v23c",
   "kalender": "<daten>/alpaca1m/_kalender.json",
   "trendkanalTage": {
     "ordner": [
