@@ -153,6 +153,16 @@ case $RC in
 esac
 z "Laeufer fertig: rc=$RC ($URTEIL) Dauer=${LAUFDAUER}s"
 
+# 6b. Vorwaertsbestaetigung (Nr. 121-2a, PM 23.10.2026): idempotent, committet selbst nur bei geaendertem Inhalt. Laeuft NACH --naechster,
+#     nie parallel: beide nehmen im Kindprozess pruefstrasse/.panel.lock (laeufer.js panelSperre wartet bis 1 h). Bricht sie ab, bleibt die
+#     Marke pruefstrasse/VORWAERTS-LAEUFT.json liegen und geht sichtbar mit in den Nachtcommit; der naechste Lauf lehnt ab, bis der PM sie entfernt.
+#     Ohne Panel-Fortschreibung (Nr. 123) zaehlt sie nur und misst nichts.
+z "Vorwaerts startet: $NODE $LAEUFER --vorwaerts"
+timeout --kill-after=10m "$ZEITGRENZE" "$NODE" "$LAEUFER" --vorwaerts 2>&1 | tee -a "$LAEUFERLOG"
+RCV=${PIPESTATUS[0]}
+z "Vorwaerts fertig: rc=$RCV"
+[ "$RCV" -ne 0 ] && URTEIL="$URTEIL; Vorwaerts rc=$RCV (Marke pruefstrasse/VORWAERTS-LAEUFT.json pruefen)"
+
 # 7. STATUS.md auf dem Zweig: letzter Lauf, Dauer, Warteschlange/Urteile (Laeufer-Ausgabe),
 #    Fehler, Push der Vornacht, nicht uebernommene Aenderungen.
 ANDERE=$(git status --short -- . ':!pruefstrasse' ':!STATUS.md' | head -30)
