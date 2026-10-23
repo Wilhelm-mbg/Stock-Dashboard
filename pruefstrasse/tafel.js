@@ -20,7 +20,7 @@ var SG = require('./siegel.js');
 
 /* Panel: ende_grund der Gruende-Tafel (Nr. 109); Trendkanal-Tagesdateien: ende.art der Quelle (cash_mergers ...). */
 var ABGANG_GRUPPEN = { uebernahme: 'uebernahme', 'fusion-aktientausch': 'uebernahme', 'spac-ende': 'uebernahme', insolvenz: 'insolvenz', 'zwangs-delisting': 'insolvenz',
-  cash_mergers: 'uebernahme', stock_mergers: 'uebernahme', stock_and_cash_mergers: 'uebernahme' };
+  cash_mergers: 'uebernahme', stock_mergers: 'uebernahme', stock_and_cash_mergers: 'uebernahme', worthless_removals: 'insolvenz' };   /* Nr. 123 B5: Alpaca-Wortschatz */
 function gruppeVon(grund, lebend) { if (lebend) return null; return ABGANG_GRUPPEN[grund] || 'sonstige'; }
 
 /** Klassen (Umsatzklassen mit Kassa-Huerde je Umlauf): die vier der Trendkanal-/Minutenstudie unveraendert (huerde = Kassa, eroeffnungFaktor; sie
@@ -78,6 +78,9 @@ function ausPanel(opt) {
   var jahre = stand.jahre.map(function (j) { return j.jahr; }).filter(function (j) { return offen || j <= sperrJahr(); }).sort(function (a, b) { return a - b; });
   var nSym = stand.symbole.length, sp = [];
   for (var s = 0; s < nSym; s++) sp.push({ tag: [], o: [], h: [], l: [], c: [], v: [], klasse: [], mass: [], roh: [] });
+  /* Nr. 123 (QS B4b): Zeilen mit Marke `sprung` (Liste im Stand des fortgeschriebenen Panels; voll-v23c hat keine -> leer) */
+  var sprungJe = {}, nSprung = 0;
+  (stand.sprungZeilen || []).forEach(function (z) { (sprungJe[z[0]] = sprungJe[z[0]] || {})[z[1]] = 1; });
   jahre.forEach(function (j) {
     var b = PR.leseBlock(path.join(ordner, j + '.bin'), kennung);
     for (var q = 0; q < b.n; q++) {
@@ -85,7 +88,9 @@ function ausPanel(opt) {
       var r = sp[b.sym[q]], f = b.faktor[q] || 1, cs = b.rohSchluss[q] / f;
       r.tag.push(b.tag[q]); r.o.push(b.rohEroeffnung[q] / f); r.h.push(NaN); r.l.push(NaN); r.c.push(cs);
       r.v.push(cs > 0 ? (b.umsatzReg[q] + b.umsatzAuktion[q]) / cs : 0);
-      r.klasse.push(b.klasse[q]); r.mass.push((b.marken[q] & KP.M_MASSNAHME_NAH) ? 1 : 0);
+      var spr = sprungJe[b.sym[q]] && sprungJe[b.sym[q]][b.tag[q]] ? 1 : 0;
+      if (spr) { (r.sprung = r.sprung || []).push(r.tag.length - 1); nSprung++; }
+      r.klasse.push(b.klasse[q]); r.mass.push(((b.marken[q] & KP.M_MASSNAHME_NAH) || spr) ? 1 : 0);   /* sprung wie Massnahmentag: kein Einstieg */
       r.roh.push(b.rohSchluss[q]);                                   /* Nr. 113: roher Schluss ohne Division (Preisfilter der Literatur) */
     }
   });
@@ -96,6 +101,7 @@ function ausPanel(opt) {
     var S = C.reiheAus(r, nTage);
     S.reihe = sym.reihe; S.klasse = Int8Array.from(r.klasse); S.mass = Uint8Array.from(r.mass); S.lebend = sym.lebend ? 1 : 0;
     S.roh = Float64Array.from(r.roh);
+    if (r.sprung) { S.sprungKum = new Int32Array(S.n + 1); r.sprung.forEach(function (p) { S.sprungKum[p + 1] = 1; }); for (var p2 = 1; p2 <= S.n; p2++) S.sprungKum[p2] += S.sprungKum[p2 - 1]; }
     S.gruppe = gruppeVon(sym.ende_grund, S.lebend); S.art = sym.art;
     if (sym.referenz) { if (sym.reihe === 'SPY') spy = S; return; }
     reihen.push(S);
@@ -103,7 +109,7 @@ function ausPanel(opt) {
   sp = null;
   var mr = marktReiheFuer(tage, opt);
   return { quelle: 'panel', hochTief: false, hatRoh: true, hatMarkt: !!mr, marktReihe: mr, hatDatum: true, nTage: nTage, tage: tage, idx: stand.tage.reduce(function (m, t, i) { m[t] = i; return m; }, {}),
-    reihen: reihen, spy: spy, sperrIdx: sperrIdx, maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: stand.kennung, bau: stand.bau || null, panelOrdner: path.basename(aus), jahreGelesen: jahre };
+    reihen: reihen, spy: spy, sperrIdx: sperrIdx, maxTag: maxTag, gesperrt: !offen, siegel: siegel, klassen: klassen(), kennung: stand.kennung, bau: stand.bau || null, panelOrdner: path.basename(aus), sprungZeilen: nSprung, jahreGelesen: jahre };
 }
 
 /* ---------- Quelle 2: die Tagesdateien der Trendkanal-Studie ---------- */

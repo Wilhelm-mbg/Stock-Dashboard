@@ -135,8 +135,8 @@ ok(iVor > 0 && iAb > 0 && neu26.faktor[iVor] === 1 && neu26.faktor[iAb] === 0.5 
   'Kunst-Split B 2:1: faktor 1 -> 0,5 (faktor_L / f), Rendite am Ex-Tag +0,2 % statt -50 %, bereinigt stetig, roh halbiert (roh bleibt roh), Marke MASSNAHME_NAH',
   'faktor ' + neu26.faktor[iVor] + '->' + neu26.faktor[iAb] + ', rendite ' + neu26.rendite[iAb].toFixed(3) + ', roh ' + neu26.rohSchluss[iVor].toFixed(2) + '->' + neu26.rohSchluss[iAb].toFixed(2));
 var T1 = JSON.parse(E1.standText), d1 = T1.symbole.filter(function (s) { return s.reihe === 'D'; })[0];
-ok(d1.lebend === 0 && d1.ende_grund === 'cash_mergers' && d1.ende_datum === L && T1.symbole.filter(function (s) { return s.lebend; }).length === 3,
-  'Abgang: D verstummt (> 10 Handelstage still) -> lebend 0, Grund cash_mergers aus dem Nachtrag, Ende = letzte Zeile', d1.ende_grund + ' ' + d1.ende_datum);
+ok(d1.lebend === 0 && d1.ende_grund === 'uebernahme' && d1.ende_alpaca === 'cash_mergers' && d1.ende_datum === L && T1.symbole.filter(function (s) { return s.lebend; }).length === 3,
+  'Abgang: D mit Uebernahme (cash_mergers) -> lebend 0, Grund uebernahme (Alpaca-Art behalten), Ende = letzte Zeile', d1.ende_grund + '/' + d1.ende_alpaca + ' ' + d1.ende_datum);
 ok(T1.kennung === K.PANEL_KENNUNG_V23 && T1.bau === 'v2.3+2026-03' && T1.letzterVollTag === ENDE && T1.fortschreibung.sha256['2024'] === vorher['2024.bin'] && T1.fortschreibung.sha256['2025'] === vorher['2025.bin'],
   'Stand: Kennung v2.3 bleibt, bau v2.3+2026-03, letzter voller Tag = Deckel, Pruefsummen der alten Bloecke = Stamm', T1.bau);
 var bl24 = fs.readFileSync(path.join(ST1, 'panel', '2026.bin')); var kopfNeu = JSON.parse(E1.bloecke[2026].puffer.slice(4, 4 + E1.bloecke[2026].puffer.readUInt32LE(0)).toString());
@@ -160,6 +160,65 @@ ok(TFo.bau === 'v2.3+2026-03' && TFo.tage[TFo.maxTag] === ENDE && TFo.reihen.len
 ok(F.rechnen({ stamm: Z1, wurzel: W1, deckel: ENDE }).B.nichtsZuTun && F.rechnen({ stamm: ST1, wurzel: W1, deckel: L }).B.nichtsZuTun, 'Nullprobe: Deckel = Stamm-Ende -> nichts zu tun');
 var nsw = F.rechnen({ stamm: ST1, wurzel: W1, deckel: '2026-03-09' }).B.nichtSoWeit;
 ok(!!nsw, 'Deckel hinter dem Archivende -> nicht so weit (Rueckgabe 2, kein Schreiben)', nsw);
+
+/* ================= QS B3: Deckel aus dem Lauftag, Rohdaten muessen ihn tragen ================= */
+var B3a = F.rechnen({ stamm: ST1, wurzel: W1, heute: '2026-04-02' }).B, B3b = F.rechnen({ stamm: ST1, wurzel: W1, heute: '2026-03-09' }).B;
+ok(!!B3a.nichtSoWeit && /Vormonatsende zum Lauftag 2026-04-02/.test(B3a.nichtSoWeit) && B3b.deckel === '2026-02-27' && B3b.bestanden,
+  'B3: Lauftag 02.04. -> Deckel 31.03. liegt hinter den Rohdaten (06.03.) -> kein Lauf; Lauftag 09.03. -> Deckel 27.02. (Vormonatsende), gebaut', B3a.nichtSoWeit);
+/* ================= QS B6: Sperre und Platz vor dem Schreiben ================= */
+var sperreK = path.join(TMP, 'kunst.panel.lock'); fs.writeFileSync(sperreK, '');
+var e6 = null; try { F.schreiben(E1b, path.join(TMP, 'w1-ziel-b6'), { sperre: sperreK }); } catch (e) { e6 = e; }
+var e6b = null; try { F.schreiben(E1b, path.join(TMP, 'w1-ziel-b6b'), { sperre: path.join(TMP, 'keine'), platzFaktor: 1e12 }); } catch (e) { e6b = e; }
+ok(e6 && /Sperre/.test(e6.message) && e6b && /Platz/.test(e6b.message) && !fs.existsSync(path.join(TMP, 'w1-ziel-b6')) && !fs.existsSync(path.join(TMP, 'w1-ziel-b6b')),
+  'B6: liegt .panel.lock oder fehlt Platz (>= 2 x Panelgroesse), wird nichts geschrieben', (e6 && e6.message.slice(0, 40)) + ' | ' + (e6b && e6b.message.slice(0, 40)));
+
+/* ================= Welt 4: QS B1 (ulp), B2 (sofortiger Abgang), B4a (Korrektur), B4b (sprung) ================= */
+var EX_N = '2026-02-10', EX_X = '2026-02-25';
+var Gg = { name: 'G', bis: '2026-03-02', preis: function (t) { return +(pfad(t) * 1.1).toFixed(4); }, nachtrag: [{ _art: 'cash_mergers', acquiree_symbol: 'G', acquirer_symbol: 'YY', effective_date: '2026-03-03', id: 'kunst-dbrg' }] };
+var Hh = { name: 'H', bis: '2026-03-04', preis: function (t) { return +(pfad(t) * 1.2).toFixed(4); }, nachtrag: [{ _art: 'name_changes', old_symbol: 'H', new_symbol: 'HNEU', process_date: '2026-03-04', id: 'kunst-csan' }] };
+var Nn = { name: 'N', preis: function (t) { return +((t >= EX_N ? 50 : 1) * pfad(t) * 0.3).toFixed(4); } };
+var Xx = { name: 'X', preis: function (t) { return +((t >= EX_X ? 0.4 : 1) * pfad(t) * 2).toFixed(4); },
+  nachtrag: [{ _art: 'spin_offs', source_symbol: 'X', new_symbol: 'XNEU', ex_date: EX_X, id: 'kunst-ctva' }] };
+var W4 = welt('w4', [A, Gg, Hh, Nn, SPY, Xx]), ST4 = path.join(TMP, 'w4-stamm'); var S4 = stammBauen(W4, [A, Gg, Hh, Nn, SPY, Xx], ST4);
+/* ulp: eine fruehe Stamm-Zeile von A im Auktionsumsatz um 1 f32-ulp verschieben (wie CVNA/MIDD/REZI/SPGI) */
+var b4 = P.leseBlock(path.join(ST4, 'panel', '2026.bin'), K.PANEL_KENNUNG_V23), iU = -1;
+for (var q4 = 0; q4 < b4.n; q4++) if (b4.sym[q4] === 0 && S4.kal.tage[b4.tag[q4]] === '2026-01-07') iU = q4;
+var vU = b4.umsatzAuktion[iU]; b4.umsatzAuktion[iU] = new Float32Array(new Uint32Array([new Uint32Array(new Float32Array([vU]).buffer)[0] + 1]).buffer)[0];
+fs.writeFileSync(path.join(ST4, 'panel', '2026.bin'), F.blockPuffer(b4, b4.n, 2026));
+var KOR4 = [{ reihe: 'N', art: 'reverse_splits', ex: EX_N, old_rate: 50, new_rate: 1, quelle: 'Kunst' }];
+var E4 = F.rechnen({ stamm: ST4, wurzel: W4, deckel: ENDE, korrekturen: KOR4 }), B4 = E4.B, T4 = JSON.parse(E4.standText);
+ok(B4.bestanden && B4.kontrollen.wiedergabe.tageUlp === 1 && B4.kontrollen.wiedergabe.listeUlp[0].reihe === 'A' && B4.kontrollen.wiedergabe.listeUlp[0].tag === '2026-01-07' && B4.kontrollen.wiedergabe.tageAnders === 0,
+  'B1: jede Stamm-Zeile geprueft; 1 f32-ulp im Auktionsumsatz wird gezaehlt und gelistet, kein Abbruch', JSON.stringify(B4.kontrollen.wiedergabe.listeUlp) + ' | Befunde ' + B4.befunde.join(' | '));
+var g4 = T4.symbole.filter(function (x) { return x.reihe === 'G'; })[0], h4 = T4.symbole.filter(function (x) { return x.reihe === 'H'; })[0];
+ok(g4.lebend === 0 && g4.ende_grund === 'uebernahme' && g4.ende_datum === '2026-03-02' && h4.lebend === 0 && h4.ende_grund === 'umbenennung-ticker' && h4.ende_datum === '2026-03-04',
+  'B2: Abgang sofort bei Ende-Massnahme (G Uebernahme 2 Tage vor dem Deckel still, H Umbenennung am letzten Tag) - nicht erst nach 10 stillen Tagen', g4.ende_grund + ' ' + g4.ende_datum + ' / ' + h4.ende_grund + ' ' + h4.ende_datum);
+var sN = T4.symbole.findIndex(function (x) { return x.reihe === 'N'; }), sp4 = E4.bloecke[2026].sp, nN = { vor: null, ex: null, neu: null };
+for (var q5 = 0; q5 < E4.bloecke[2026].n; q5++) { if (sp4.sym[q5] !== sN) continue; var t5 = S4.kal.tage[sp4.tag[q5]]; if (t5 === '2026-02-09') nN.vor = q5; if (t5 === EX_N) nN.ex = q5; if (t5 === '2026-02-17') nN.neu = q5; }
+var stN = P.leseBlock(path.join(ST4, 'panel', '2026.bin'), K.PANEL_KENNUNG_V23);
+ok(sp4.faktor[nN.vor] === 1 && sp4.faktor[nN.ex] === 50 && Math.abs(sp4.rendite[nN.ex] - 0.2) < 0.01 && stN.rendite[nN.ex] > 4000 && sp4.faktor[nN.neu] === 50 && Math.abs(sp4.rendite[nN.neu] - 0.2) < 0.01 &&
+  sp4.rohSchluss[nN.ex] === stN.rohSchluss[nN.ex] && B4.kontrollen.wiedergabe.korrekturAusgenommen > 0 && B4.kontrollen.korrekturen.length === 1 && T4.fortschreibung.korrekturen[0].schluessel === 'N|reverse_splits|' + EX_N,
+  'B4a: Korrektur N 1:50 im Stamm-Zeitraum: faktor ab Ex-Tag 50, Rendite am Ex-Tag ' + (stN.rendite[nN.ex]).toFixed(0) + ' % -> +0,2 %, roh bleibt, neue Zeilen tragen 50, Zeilen aus der Byte-Pruefung ausgenommen und gemeldet',
+  B4.zahlen.korrekturen.join(' | '));
+var sX = T4.symbole.findIndex(function (x) { return x.reihe === 'X'; });
+var sprX = T4.sprungZeilen.filter(function (z) { return z[0] === sX; });
+ok(sprX.length === 1 && S4.kal.tage[sprX[0][1]] === EX_X && B4.kontrollen.sprung.neu === 1,
+  'B4b: Abspaltung ohne Faktor (X -60 % am Ex-Tag, MASSNAHME_NAH) -> Marke sprung in der Liste des Stands, gezaehlt', JSON.stringify(B4.kontrollen.sprung));
+var Z4 = path.join(TMP, 'w4-ziel'); F.schreiben(E4, Z4);
+var TF4 = TF.oeffne({ quelle: 'panel', panel: Z4, bisPanelende: true, ohneSpeicherpruefung: true }), SX = TF4.reihen.filter(function (x) { return x.reihe === 'X'; })[0];
+var AT = require(path.join(REPO, 'pruefstrasse', 'adapter', 'tag.js')), CK = require(path.join(REPO, 'studien', 'vorregistrierung-2026-09-08-trendkanal-tage', 'kanaele.js'));
+var pEx = -1; for (var q6 = 0; q6 < SX.n; q6++) if (TF4.tage[SX.tag[q6]] === EX_X) pEx = q6;
+var zS = {}, ueber = AT.ertragOhneSprung(SX, pEx - 3, CK.festAusstieg(SX, pEx - 3, 5), SX.lebend, zS), davor = AT.ertragOhneSprung(SX, pEx - 8, CK.festAusstieg(SX, pEx - 8, 5), SX.lebend, zS), danach = AT.ertragOhneSprung(SX, pEx, CK.festAusstieg(SX, pEx, 5), SX.lebend, zS);
+ok(TF4.sprungZeilen === 1 && SX.mass[pEx] === 1 && ueber === null && davor && danach && zS.sprung === 1,
+  'Pruefstrasse: sprung-Zeile ist kein Einstiegstag, ein Fenster darueber hat keinen Horizont (Zaehler sprung), Fenster davor/ab dem Tag bleiben', 'sprung ' + TF4.sprungZeilen + ', Zaehler ' + zS.sprung);
+var TFe = TF.oeffne({ quelle: 'panel', panel: ST4, bisPanelende: true, ohneSpeicherpruefung: true }), SXe = TFe.reihen.filter(function (x) { return x.reihe === 'X'; })[0];
+ok(TFe.sprungZeilen === 0 && !SXe.sprungKum, 'ohne sprung-Liste (Stamm wie voll-v23c) bleibt alles wie bisher (Eichung bitgleich)');
+/* Welt 5: echte Abweichung in einer FRUEHEN Stamm-Zeile (nicht in den letzten 60) -> Abbruch */
+var W5 = welt('w5', [A, SPY]), ST5 = path.join(TMP, 'w5-stamm'); var S5 = stammBauen(W5, [A, SPY], ST5);
+var b5 = P.leseBlock(path.join(ST5, 'panel', '2026.bin'), K.PANEL_KENNUNG_V23); for (var q7 = 0; q7 < b5.n; q7++) if (b5.sym[q7] === 0 && S5.kal.tage[b5.tag[q7]] === '2026-01-05') b5.rohSchluss[q7] *= 1.01;
+fs.writeFileSync(path.join(ST5, 'panel', '2026.bin'), F.blockPuffer(b5, b5.n, 2026));
+var B5 = F.rechnen({ stamm: ST5, wurzel: W5, deckel: ENDE }).B;
+ok(!B5.bestanden && B5.kontrollen.wiedergabe.tageAnders === 1 && B5.kontrollen.wiedergabe.listeAnders[0].tag === '2026-01-05' && B5.befunde.some(function (b) { return /Wiedergabe: 1 Reihen mit echter Abweichung/.test(b); }),
+  'B1: echte Abweichung auch in einer fruehen Stamm-Zeile (05.01.) -> gelistet, Reihe nicht fortgeschrieben, Abbruch', JSON.stringify(B5.kontrollen.wiedergabe.listeAnders));
 
 /* ================= Welt 2: Vorgaenger-Doppel ================= */
 var Cc = { name: 'C', preis: function (t) { return t > L ? A.preis(t) : +(pfad(t) * 3).toFixed(4); } };

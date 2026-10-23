@@ -153,6 +153,13 @@ Zellen.prototype.add = function (i, dir, r, u, dauer, gruppe, h, k5, hs) {
 
 /** Durchgang 1: Topf je (Tag, Dauer, Klasse, lebend) und zulaessige Reihen je Tag und Klasse (Trendkanal topfUndListen).
  *  mitTopf = false (Modus zeit): nur die Listen der zulaessigen Reihen je Tag (Zaehler unveraendert), die Topfsummen bleiben leer. */
+/** Nr. 123 (QS B4b): ein Fenster (Einstieg ePos, Ausstieg ausPos), das eine Zeile mit Marke `sprung` (Tagesrendite > 50 % an einer Massnahme, z. B.
+ *  Abspaltung ohne Faktor) einschliesst, hat keinen Horizont - wie ein Massnahmentag; gezaehlt in zaehler.sprung. Ohne sprung-Liste (voll-v23c,
+ *  Kunsttafeln) genau C.ertragLong. */
+function ertragOhneSprung(S, ePos, ausPos, lebend, zaehler) {
+  if (S.sprungKum && ausPos != null && ausPos > ePos && S.sprungKum[Math.min(S.n, ausPos + 1)] - S.sprungKum[ePos + 1] > 0) { if (zaehler) zaehler.sprung = (zaehler.sprung || 0) + 1; return null; }
+  return C.ertragLong(S, ePos, ausPos, lebend);
+}
 function topf(TF, Z, zaehler, mitTopf) {
   var zulK = new Array(TF.nTage); for (var t = 0; t < TF.nTage; t++) zulK[t] = [[], [], [], []];
   TF.reihen.forEach(function (S, ri) {
@@ -169,7 +176,7 @@ function topf(TF, Z, zaehler, mitTopf) {
       zulK[tag][k].push(ri);
       if (mitTopf === false) continue;
       for (var d = 1; d <= POT_MAX_DAUER; d++) {
-        var e = C.ertragLong(S, p, C.festAusstieg(S, p, d), S.lebend);
+        var e = ertragOhneSprung(S, p, C.festAusstieg(S, p, d), S.lebend, zaehler);
         if (!e) break;
         var idx = Z.topfIdx(tag, d, k, S.lebend); Z.tn[idx]++; Z.ts[idx] += e.r;
         if (e.delist) { for (var d2 = d + 1; d2 <= POT_MAX_DAUER; d2++) { var i2 = Z.topfIdx(tag, d2, k, S.lebend); Z.tn[i2]++; Z.ts[i2] += e.r; } break; }
@@ -194,7 +201,7 @@ function zeitTopfGlobal(S, ES, d, von, bis) {
     if (S.klasse[p] < 0 || S.mass[p]) continue;
     while (j < ES.length && ES[j] <= t - d) j++;
     if (j < ES.length && ES[j] < t + d) continue;
-    var e = C.ertragLong(S, p, C.festAusstieg(S, p, d), S.lebend);
+    var e = ertragOhneSprung(S, p, C.festAusstieg(S, p, d), S.lebend, null);
     if (!e) continue;
     su += e.r; n++;
   }
@@ -238,7 +245,7 @@ function lokalerTopf(S, ES, EP, H, radien, klassen, von, bis, hist, zl) {
      * verzerren den Topf (Eichung Dichte 1/10 ganz ohne Filter: Nullpunkt -0,582 statt -0,166); die Klasse DER KONFIGURATION wird nicht verlangt
      * (Auswahl auf Zukunft, Nachbesserung 4). Diagnose zl.ohneKlasse: auch klassenlose Fenster (Stand Nachbesserung 4). */
     if (S.klasse[p] < 0 && !(zl && zl.ohneKlasse)) continue;
-    var r = C.ertragLong(S, p, C.festAusstieg(S, p, H), S.lebend);
+    var r = ertragOhneSprung(S, p, C.festAusstieg(S, p, H), S.lebend, zl);
     if (!r) continue;
     for (var x = 0; x < radien.length; x++) if (d <= radien[x]) { var z = aus[x][e] || (aus[x][e] = [0, 0]); z[0] += r.r; z[1]++; }
     if (hist && d <= radien[0]) hist[t - e] = (hist[t - e] || 0) + 1;
@@ -264,7 +271,7 @@ function kursEinstieg(S, ePos) { if (!S.roh || !(S.roh[ePos] > 0) || !(S.c[ePos]
  *  Topf des Signals; NaN = topfFehlt) bzw. eine Funktion (dauer, tagE) (globaler Topf, Nr. 118, nur opt.topfArt 'global').
  *  Abgang einer Reihe, deren letzte Zeile der letzte Tag vor der Sperre ist (gesperrte Tafel): Gruppe "zensiert" (A7). */
 function buche(TF, Z, art, kf, dir, S, ePos, ausPos, k, zaehler, tpZeit, plus) {
-  var e = C.ertragLong(S, ePos, ausPos, S.lebend);
+  var e = ertragOhneSprung(S, ePos, ausPos, S.lebend, zaehler);
   if (!e) { zaehler.ohneHorizont++; return null; }
   var dauer = Math.min(POT_MAX_DAUER, Math.max(1, e.dauer)), tagE = S.tag[ePos], tp;
   if (tagE > TF.maxTag) { zaehler.nachMaxTag++; return null; }
@@ -761,7 +768,7 @@ function lauf(regel, kand, opt) {
     kosten: kostenBeschreibung() };
 }
 
-module.exports = { lauf: lauf, messe: messe, zaehle: zaehle, signaleSammeln: signaleSammeln, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, kunstKalender: kunstKalender, Zellen: Zellen, momente: momente, statistik: statistik,
+module.exports = { ertragOhneSprung: ertragOhneSprung, lauf: lauf, messe: messe, zaehle: zaehle, signaleSammeln: signaleSammeln, auswerte: auswerte, Sicht: Sicht, kunstSicht: kunstSicht, kunstKalender: kunstKalender, Zellen: Zellen, momente: momente, statistik: statistik,
   tagesreihe: tagesreihe, phi: phi, handelstage: handelstage, indexAb: indexAb, fnv: fnv, mulberry32: mulberry32, ARTEN: ARTEN, GRUPPEN: GRUPPEN, POT_MAX_DAUER: POT_MAX_DAUER,
   zeitTopfGlobal: zeitTopfGlobal, lokalerTopf: lokalerTopf, topfMittel: topfMittel, topfRadiusVon: topfRadiusVon, zensiertAnSperre: zensiertAnSperre, tVerteilung: tVerteilung, ueberlappt: ueberlappt, signalAnteil: signalAnteil, warnungen: warnungen, bewertungDetail: bewertungDetail, versatzVon: versatzVon,
   vorbehaltDichte: vorbehaltDichte, kostenKlasse: kostenKlasse, kursEinstieg: kursEinstieg, kostenBeschreibung: kostenBeschreibung, N_KK: N_KK, BEWERTUNGEN: BEWERTUNGEN, VERSATZ_MIN: VERSATZ_MIN, VERSATZ_MAX: VERSATZ_MAX };

@@ -49,6 +49,20 @@ var SPRUNG_PP = 40;                         /* Trefferliste: |rendite| > 40 % an
 var KLASSE_MAX_PP = 3;                      /* Klassenverteilung: Anteil je Klasse neu vs. 20 Tage davor, hoechstens 3 Pp Abstand */
 var SPY_MEDIAN_PP = 0.02, SPY_MAX_PP = 0.3; /* SPY-Kreuzprobe gegen archiv1d (Yahoo): |Tagesrendite-Abstand| */
 var ENDE_ARTEN = ['cash_mergers', 'stock_mergers', 'stock_and_cash_mergers', 'worthless_removals', 'redemptions', 'name_changes'];
+/* Ende-Gruende (QS B5): Alpaca-Wortschatz -> Wortschatz des Panels v2.3 (pruefstrasse/tafel.js ABGANG_GRUPPEN); ende_alpaca behaelt die Art */
+var GRUND_KARTE = { cash_mergers: 'uebernahme', stock_mergers: 'uebernahme', stock_and_cash_mergers: 'uebernahme', worthless_removals: 'insolvenz',
+  name_changes: 'umbenennung-ticker', redemptions: 'rueckzahlung', verstummt: 'verstummt' };
+var SPRUNG_MARKE_PP = 50;                   /* Marke `sprung` (QS B4b): |Tagesrendite| > 50 % an einer Zeile mit MASSNAHME_NAH (+-10 Tage um eine Massnahme, auch Abspaltung ohne Faktor) */
+var ABGANG_NAEHE_TAGE = 10;                 /* Ende-Massnahme hoechstens 10 Handelstage vor dem Stamm-Ende zaehlt fuer den sofortigen Abgang (QS B2) */
+var KORREKTUREN = path.join(__dirname, 'panel-fortschreiben-korrekturen.json');
+var PANEL_SPERRE = path.join(REPO, 'pruefstrasse', '.panel.lock');
+function ulp32(v) { v = Math.abs(Math.fround(v)); if (!v) return 1.5e-45; return Math.pow(2, Math.floor(Math.log2(v)) - 23); }
+function lokalHeute() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate(); }
+/** letzter Handelstag, fuer den die Rohdaten vorliegen: <= Ende des Minuten-Manifests und der Nachlauf lief nach Boersenschluss (QS B3) */
+function letzterRohTag(kal, man) {
+  for (var i = kal.tage.length - 1; i >= 0; i--) { var t = kal.tage[i]; if (t <= man.ende && Date.parse(man.stand) > Date.parse(t + 'T21:15:00Z')) return t; }
+  return null;
+}
 var KALENDER_BIS = '2035-12-31';
 var BERICHTE = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten', 'panel-fortschreibung');
 var BITS_GLEICH = 0xff & ~(K.M_LETZTER_TAG | K.M_MASSNAHME_NAH);
@@ -180,14 +194,16 @@ function rechnen(opt) {
   var L = S.letzterVollTag, kal = kalender(wurzel), man = manifestLesen(wurzel);
   /* Stamm-Tage muessen ein Anfangsstueck des Kalenders sein */
   for (var q = 0; q < S.tage.length; q++) if (S.tage[q] !== kal.tage[q]) throw new Error('Kalender passt nicht zum Stamm an Index ' + q + ': ' + S.tage[q] + ' / ' + kal.tage[q]);
-  var deckel = opt.deckel || vormonatsEnde(kal, man.stand);
+  var heute = opt.heute || lokalHeute(), zielMonat = vormonatsEnde(kal, heute), roh = letzterRohTag(kal, man);
+  var deckel = opt.deckel || zielMonat;
   if (kal.idx[deckel] === undefined) throw new Error('Deckel ' + deckel + ' ist kein Handelstag');
   var B = { werkzeug: WERKZEUG, stamm: { ordner: path.basename(opt.stamm), bau: S.bau, letzterVollTag: L, zeilen: S.zeilen },
-    deckel: deckel, archiv: { manifestStand: man.stand, ende: man.ende, kalenderQuelleBis: kal.quelleBis }, befunde: [], warnungen: [] };
+    deckel: deckel, lauftag: heute, archiv: { manifestStand: man.stand, ende: man.ende, rohdatenBis: roh, kalenderQuelleBis: kal.quelleBis }, befunde: [], warnungen: [] };
   if (deckel <= L) { B.nichtsZuTun = 'Deckel ' + deckel + ' <= Stamm-Ende ' + L; return { B: B }; }
   /* Vorbedingung: das Archiv reicht ueber den Deckel, der Nachlauf lief nach dem Deckeltag */
-  if (!(man.ende >= deckel) || !(Date.parse(man.stand) > Date.parse(deckel + 'T21:15:00Z'))) {   /* Nachlauf nach Boersenschluss des Deckeltags */
-    B.nichtSoWeit = 'Minutenarchiv endet ' + man.ende + ' (Manifest ' + man.stand + ') - Deckel ' + deckel + ' noch nicht sicher drin';
+  if (!(roh >= deckel)) {   /* QS B3: die Rohdaten muessen den Deckel tragen - sonst kein Lauf (nie ein Panel mit altem Monat) */
+    B.nichtSoWeit = 'Rohdaten liegen bis ' + roh + ' vor (Minuten-Manifest Ende ' + man.ende + ', Stand ' + man.stand + ') - Deckel ' + deckel +
+      (opt.deckel ? '' : ' (Vormonatsende zum Lauftag ' + heute + ')') + ' nicht erreicht: kein Lauf';
     return { B: B };
   }
   var jahrL = +L.slice(0, 4), jahrD = +deckel.slice(0, 4);
@@ -210,14 +226,19 @@ function rechnen(opt) {
   });
   var MO = massnahmenOrdner(wurzel);
   B.massnahmenOrdner = MO.map(function (d) { return path.basename(d); });
+  /* Korrekturen (QS B4a): bekannte fehlende Massnahmen, nur im neuen Panel; schon im Stamm angewandte werden nicht wiederholt */
+  var KOR = opt.korrekturen || (fs.existsSync(KORREKTUREN) ? liesJson(KORREKTUREN).eintraege : []);
+  var schonKor = ((S.fortschreibung && S.fortschreibung.korrekturen) || []).map(function (k) { return k.schluessel; });
+  var korJe = {}; (KOR || []).forEach(function (k) { var sl = k.reihe + '|' + k.art + '|' + k.ex; if (schonKor.indexOf(sl) !== -1) return; (korJe[k.reihe] = korJe[k.reihe] || []).push(Object.assign({ schluessel: sl, faktor: Number(k.new_rate) / Number(k.old_rate) }, k)); });
+  var korAngewandt = [], korZeilen = {};
 
   /* Lesen in diesem Prozess: immer roh, Fenster bis KALENDER_BIS (lesen-panel.js bleibt unveraendert) */
   var bereinigtAlt = K.ORTE.bereinigt, fensterAlt = K.FENSTER_BIS_MAX;
   K.ORTE.bereinigt = function () { return path.join(wurzel, '__keine-kopien__'); };
   K.FENSTER_BIS_MAX = KALENDER_BIS;
-  var neu = [], W = { reihen: 0, tageGleich: 0, tageRundung: 0, tageAnders: 0, reihenAnders: [], ohneStammTagInDatei: 0 },
+  var neu = [], W = { reihen: 0, tageGleich: 0, tageRundung: 0, tageUlp: 0, tageAnders: 0, tageFehlt: 0, korrekturAusgenommen: 0, listeUlp: [], listeAnders: [], rundungJeReihe: {}, reihenAnders: [] },
     splits = { neuAngenommen: [], neuAbgelehnt: [], vorStammEndeUnbekannt: [] }, abgaenge = [], nachleben = [], spruenge = [],
-    bitsLetzt = [], nahNeu = {}, dateiFehler = [], fortgeschrieben = 0;
+    bitsLetzt = [], nahNeu = {}, dateiFehler = [], fortgeschrieben = 0, unentschieden = [];
   try {
     lebend.forEach(function (s) {
       var sym = S.symbole[s], rows = zeilen[s] || [];
@@ -227,7 +248,7 @@ function rechnen(opt) {
       var basis = basisVon(sym.ordner), R = { reihe: sym.reihe, ordner: sym.ordner, schnittMs: null, abMs: null };
       /* Tage aus den Rohdateien ab dem Jahr des Stamm-Endes der Reihe */
       var tage = [], quelleRein = {};
-      for (var j = +Ltag.slice(0, 4) - (rows[0].j < +Ltag.slice(0, 4) ? 0 : 0); j <= jahrD; j++) {
+      for (var j = +Ltag.slice(0, 4); j <= jahrD; j++) {
         var jr = LP.ladeJahr(R, j, kal, { eigeneSplits: [] });
         if (!jr.ok) { if (j <= jahrL || jr.grund !== 'Datei fehlt') dateiFehler.push(sym.reihe + '/' + j + ': ' + jr.grund); continue; }
         quelleRein[j] = jr.quelleRein;
@@ -236,32 +257,66 @@ function rechnen(opt) {
       W.reihen++;
       /* Wiedergabe an den Stamm-Tagen desselben Jahres: Feld fuer Feld */
       var proTag = {}; tage.forEach(function (t) { proTag[t.tag] = t; });
-      var anders = 0, rundung = 0, gleich = 0, fenster = [], fensterQuelle = [];
-      rows.forEach(function (r, k) {
+      var kor = korJe[sym.reihe] || [], korAb = null;
+      kor.forEach(function (k) { if (k.ex <= Ltag && (!korAb || k.ex < korAb)) korAb = k.ex; });
+      /* QS B1: JEDE Stamm-Zeile des eingelesenen Jahres, Feld fuer Feld; Kurse mit Toleranz 1e-9 (Rundung), Umsaetze bis 1 f32-ulp (gelistet),
+       * alles andere und fehlende Tage = echte Abweichung -> Reihe nicht fortgeschrieben, Befund. Zeilen ab einer Korrektur sind ausgenommen (gemeldet). */
+      var anders = 0, fenster = [], jahrLtag = +Ltag.slice(0, 4);
+      rows.forEach(function (r) {
         var b = geladen[r.j], tg = S.tage[b.tag[r.i]], T = proTag[tg];
         var u = b.umsatzReg[r.i] + b.umsatzAuktion[r.i];
+        if (korAb && tg >= korAb) { W.korrekturAusgenommen++; fenster.push(T ? T.umsatzReg + T.umsatzAuktion : u); if (fenster.length > K.UMSATZ_FENSTER) fenster.shift(); return; }
         if (T) {
           var rohS = T.dateiSchluss * T.faktor, rohE = T.dateiEroeffnung * T.faktor;
           var mk = 0; if (quelleRein[+tg.slice(0, 4)]) mk |= K.M_QUELLE_REIN; if (T.schlussErsatz) mk |= K.M_SCHLUSS_ERSATZ; if (T.dichteOk) mk |= K.M_DICHTE_OK;
           if (T.stempelTag) mk |= K.M_STEMPEL_TAG; if (T.eroeffnungErsatz) mk |= K.M_EROEFFNUNG_ERSATZ;
-          var feldGleich = b.kerzen[r.i] === Math.min(65535, T.kerzen) && b.umsatzReg[r.i] === f32(T.umsatzReg) && b.umsatzAuktion[r.i] === f32(T.umsatzAuktion) &&
-            (b.marken[r.i] & BITS_TAG) === mk;
-          if (feldGleich && b.rohSchluss[r.i] === rohS && b.rohEroeffnung[r.i] === rohE) gleich++;
-          else if (feldGleich && Math.abs(b.rohSchluss[r.i] / rohS - 1) < 1e-9 && Math.abs(b.rohEroeffnung[r.i] / rohE - 1) < 1e-9) rundung++;
-          else if (k >= rows.length - K.UMSATZ_FENSTER) anders++;
+          var glK = b.kerzen[r.i] === Math.min(65535, T.kerzen), glM = (b.marken[r.i] & BITS_TAG) === mk;
+          var uR = f32(T.umsatzReg), uA = f32(T.umsatzAuktion);
+          var ulpR = b.umsatzReg[r.i] === uR ? 0 : (Math.abs(b.umsatzReg[r.i] - uR) <= ulp32(uR) ? 1 : 2);
+          var ulpA = b.umsatzAuktion[r.i] === uA ? 0 : (Math.abs(b.umsatzAuktion[r.i] - uA) <= ulp32(uA) ? 1 : 2);
+          var kursGleich = b.rohSchluss[r.i] === rohS && b.rohEroeffnung[r.i] === rohE;
+          var kursRund = Math.abs(b.rohSchluss[r.i] / rohS - 1) < 1e-9 && Math.abs(b.rohEroeffnung[r.i] / rohE - 1) < 1e-9;
+          if (!glK || !glM || ulpR === 2 || ulpA === 2 || !kursRund) {
+            anders++; W.tageAnders++;
+            if (W.listeAnders.length < 500) W.listeAnders.push({ reihe: sym.reihe, tag: tg, felder: [!glK && 'kerzen', !glM && 'marken', ulpR === 2 && 'umsatzReg', ulpA === 2 && 'umsatzAuktion', !kursRund && 'kurs'].filter(Boolean) });
+          } else if (ulpR || ulpA) {
+            W.tageUlp++; W.listeUlp.push({ reihe: sym.reihe, tag: tg, felder: [ulpR && 'umsatzReg', ulpA && 'umsatzAuktion'].filter(Boolean), stamm: ulpA ? b.umsatzAuktion[r.i] : b.umsatzReg[r.i], neu: ulpA ? uA : uR });
+          } else if (kursGleich) W.tageGleich++;
+          else { W.tageRundung++; W.rundungJeReihe[sym.reihe] = (W.rundungJeReihe[sym.reihe] || 0) + 1; }
           fenster.push(T.umsatzReg + T.umsatzAuktion);                      /* f64 wie im Bau */
-        } else { if (+tg.slice(0, 4) >= +Ltag.slice(0, 4)) W.ohneStammTagInDatei++; fenster.push(u); }
+        } else {
+          if (+tg.slice(0, 4) >= jahrLtag) { anders++; W.tageFehlt++; if (W.listeAnders.length < 500) W.listeAnders.push({ reihe: sym.reihe, tag: tg, felder: ['Tag fehlt in der Rohdatei'] }); }
+          fenster.push(u);
+        }
         if (fenster.length > K.UMSATZ_FENSTER) fenster.shift();
       });
-      W.tageGleich += gleich; W.tageRundung += rundung; W.tageAnders += anders;
       if (anders) { W.reihenAnders.push(sym.reihe + ' (' + anders + ')'); return; }   /* nicht fortgeschrieben - Befund unten */
 
       /* Massnahmen: Splits nach dem Stamm-Ende (vorwaerts), Naehe-Marke, Ende */
       var saetze = saetzeFuer(MO, basis), eig = eigeneSplitsAus(saetze, basis);
-      eig.forEach(function (e) { if (e.ex > S.tage[Math.max(0, S.tage.indexOf(Ltag) - 10)] && e.ex <= Ltag && !LP.eigeneSplits(R).some(function (x) { return x.ex === e.ex; })) splits.vorStammEndeUnbekannt.push({ reihe: sym.reihe, ex: e.ex, faktor: e.faktor }); });
+      eig.forEach(function (e) { if (e.ex > S.tage[Math.max(0, S.tage.indexOf(Ltag) - 10)] && e.ex <= Ltag && !LP.eigeneSplits(R).some(function (x) { return x.ex === e.ex; }) && !kor.some(function (k) { return k.ex === e.ex; })) splits.vorStammEndeUnbekannt.push({ reihe: sym.reihe, ex: e.ex, faktor: e.faktor }); });
+      kor.forEach(function (k) { if (k.ex > Ltag && !eig.some(function (e) { return e.ex === k.ex; })) eig.push({ art: k.art, ex: k.ex, faktor: k.faktor, korrektur: k.schluessel }); });
       var neuS = eig.filter(function (e) { return e.ex > Ltag && e.ex <= deckel; });
       var neuTage = tage.filter(function (t) { return t.tag > Ltag; });
       var Lb = geladen[last.j], Li = last.i, fL = Lb.faktor[Li];
+      /* Korrektur im Stamm-Zeitraum (QS B4a): faktor ab dem Ex-Tag vorwaerts / f, Rendite am Ex-Tag neu, roh bleibt - nur im Jahr des Stamm-Endes */
+      kor.filter(function (k) { return k.ex <= Ltag; }).forEach(function (k) {
+        if (+k.ex.slice(0, 4) !== jahrL) { B.befunde.push('Korrektur ' + k.schluessel + ' traefe einen alten Jahresblock - nicht angewandt'); return; }
+        var ab = rows.filter(function (r) { return r.j === jahrL && S.tage[geladen[r.j].tag[r.i]] >= k.ex; });
+        var vor = rows.filter(function (r) { return S.tage[geladen[r.j].tag[r.i]] < k.ex; }).pop();
+        if (!ab.length || !vor) { B.befunde.push('Korrektur ' + k.schluessel + ': keine Zeilen um den Ex-Tag'); return; }
+        var b0 = geladen[ab[0].j], bv = geladen[vor.j];
+        var spK = P.splitSperre([{ tag: S.tage[bv.tag[vor.i]], dateiSchluss: bv.rohSchluss[vor.i], faktor: 1 }, { tag: S.tage[b0.tag[ab[0].i]], dateiSchluss: b0.rohSchluss[ab[0].i], faktor: 1 }], [{ art: k.art, ex: k.ex, faktor: k.faktor }], sym.reihe);
+        if (!spK.akzeptiert.length) { B.befunde.push('Korrektur ' + k.schluessel + ': Rohreihe zeigt keinen passenden Sprung (Split-Sperre)'); return; }
+        var fVor = bv.faktor[vor.i], bVor = bv.rohSchluss[vor.i] / fVor, n0 = 0;
+        ab.forEach(function (r, q3) {
+          var b3 = geladen[r.j], nf = b3.faktor[r.i] / k.faktor, kz = { faktor: nf };
+          if (q3 === 0) { var bt = b3.rohSchluss[r.i] / nf; kz.rendite = (bVor > 0 && bt > 0) ? 100 * (bt / bVor - 1) : NaN; }
+          korZeilen[r.j + ':' + r.i] = kz; n0++;
+        });
+        fL = fL / k.faktor;
+        korAngewandt.push({ schluessel: k.schluessel, reihe: sym.reihe, ex: k.ex, faktor: k.faktor, zeilen: n0, renditeExNeu: korZeilen[ab[0].j + ':' + ab[0].i].rendite, renditeExAlt: b0.rendite[ab[0].i], quelle: k.quelle });
+      });
       var probe = [{ tag: Ltag, dateiSchluss: Lb.rohSchluss[Li], faktor: 1 }].concat(neuTage.map(function (t) { return { tag: t.tag, dateiSchluss: t.dateiSchluss * t.faktor, faktor: 1 }; }));
       var sp = P.splitSperre(probe, neuS, sym.reihe);
       sp.akzeptiert.forEach(function (e) { splits.neuAngenommen.push({ reihe: sym.reihe, ex: e.ex, faktor: e.faktor }); });
@@ -302,10 +357,18 @@ function rechnen(opt) {
       var lmD = letzterMin && letzterMin > deckel ? deckel : letzterMin;
       var still = lmD && kal.idx[lmD] !== undefined ? kal.idx[deckel] - kal.idx[lmD] : 1e9;
       var letzteZeile = meine.length ? meine[meine.length - 1].tagText : Ltag;
-      if (still > LEBEND_TAGE) {
-        var grund = ende.filter(function (e) { return e.datum <= NYSE_plus(kal, letzteZeile, 30); }).pop();
-        abgaenge.push({ s: s, reihe: sym.reihe, ende_datum: letzteZeile, ende_grund: grund ? grund.art : 'verstummt', grundDatum: grund ? grund.datum : null, letzterMinutentag: letzterMin || null });
-      }
+      /* QS B2: Abgang SOFORT bei einer Ende-Massnahme (Uebernahme, Fusion, Umbenennung, worthless) bis zum Deckel ohne Zeile danach;
+       * sonst nach mehr als 10 stillen Handelstagen; 1-10 stille Tage ohne Massnahme = Trefferliste 'unentschieden' (bleibt lebend). */
+      var iLetzt = kal.idx[letzteZeile], iL0 = kal.idx[Ltag];
+      var sofort = ende.filter(function (e) {
+        var iE = kal.idx[e.datum] !== undefined ? kal.idx[e.datum] : kal.tage.findIndex(function (t) { return t >= e.datum; });
+        return e.datum <= deckel && iE >= iL0 - ABGANG_NAEHE_TAGE && iLetzt <= iE + 1;
+      }).pop();
+      if (sofort || still > LEBEND_TAGE) {
+        var grund = sofort || ende.filter(function (e) { return e.datum <= NYSE_plus(kal, letzteZeile, 30) && kal.idx[e.datum] !== undefined && kal.idx[e.datum] >= iL0 - ABGANG_NAEHE_TAGE; }).pop();
+        abgaenge.push({ s: s, reihe: sym.reihe, ende_datum: letzteZeile, ende_grund: GRUND_KARTE[grund ? grund.art : 'verstummt'] || 'sonstige', ende_alpaca: grund ? grund.art : null,
+          grundDatum: grund ? grund.datum : null, letzterMinutentag: letzterMin || null, regel: sofort ? 'Ende-Massnahme' : 'mehr als ' + LEBEND_TAGE + ' Handelstage still' });
+      } else if (still >= 1 && still <= LEBEND_TAGE) unentschieden.push(sym.reihe + ' (' + still + ' Tage still, letzter Minutentag ' + letzterMin + ')');
       ende.forEach(function (e) {
         if (e.datum <= Ltag || kal.idx[e.datum] === undefined && !kal.tage.some(function (t) { return t >= e.datum; })) return;
         var iE = kal.idx[e.datum] !== undefined ? kal.idx[e.datum] : kal.tage.findIndex(function (t) { return t >= e.datum; });
@@ -329,6 +392,7 @@ function rechnen(opt) {
     var alt = geladen[j] || { n: 0 }, n = alt.n + neuJ.length, sp = P.leer(Math.max(1, n));
     for (var i = 0; i < alt.n; i++) {
       P.SPALTEN.forEach(function (c) { sp[c.name][i] = alt[c.name][i]; });
+      var kz = korZeilen[j + ':' + i]; if (kz) { sp.faktor[i] = kz.faktor; if (kz.rendite !== undefined) sp.rendite[i] = kz.rendite; }
       var m = alt.marken[i];
       if (bitsLetztSet[j + ':' + i] && (m & K.M_LETZTER_TAG)) { m &= ~K.M_LETZTER_TAG; bitsGeaendert.letzterTagEntfernt++; }
       var nh = nahNeu[alt.sym[i]];
@@ -343,6 +407,19 @@ function rechnen(opt) {
     });
     bloecke[j] = { puffer: blockPuffer(sp, n, j), n: n, sp: sp, neu: neuJ.length };
   });
+
+  /* ---------- Marke `sprung` (QS B4b): ueber ALLE Zeilen des neuen Panels; eigene Liste im Stand, weil die acht Markenbits belegt sind ---------- */
+  var sprungZeilen = [], sprungNeu = 0, sprungBeispiele = [];
+  alleJahre.forEach(function (j) {
+    var b = bloecke[j].kopie ? P.leseBlock(path.join(stammOrd, j + '.bin'), KENNUNG) : bloecke[j].sp, n = bloecke[j].kopie ? b.n : bloecke[j].n;
+    for (var i = 0; i < n; i++) {
+      if (!(Math.abs(b.rendite[i]) > SPRUNG_MARKE_PP) || !(b.marken[i] & K.M_MASSNAHME_NAH)) continue;
+      sprungZeilen.push([b.sym[i], b.tag[i]]);
+      if (b.tag[i] > letzterStammTag) sprungNeu++;
+      if (sprungBeispiele.length < 60) sprungBeispiele.push(S.symbole[b.sym[i]].reihe + ' ' + kal.tage[b.tag[i]] + ' ' + b.rendite[i].toFixed(1) + ' %');
+    }
+  });
+  sprungZeilen.sort(function (a, b) { return a[1] - b[1] || a[0] - b[0]; });
 
   /* ---------- Stand ---------- */
   var T = JSON.parse(JSON.stringify(S));
@@ -364,10 +441,12 @@ function rechnen(opt) {
   T.jahre = alleJahre.map(function (j) { return { jahr: j, n: bloecke[j].kopie ? S.jahre.filter(function (x) { return x.jahr === j; })[0].n : bloecke[j].n }; });
   T.zeilen = T.jahre.reduce(function (a, j) { return a + j.n; }, 0);
   abgaenge.forEach(function (a) {
-    var e = T.symbole[a.s]; e.lebend = 0; e.ende_grund = a.ende_grund; e.ende_datum = a.ende_datum;
-    e.ende_quelle = WERKZEUG + ' (lebend-Regel lebenszeit-minuten: letzter Minutentag ' + a.letzterMinutentag + ', mehr als ' + LEBEND_TAGE + ' Handelstage vor dem Archivende ' + man.ende + (a.grundDatum ? '; Grund ' + a.ende_grund + ' ' + a.grundDatum : '') + ')';
+    var e = T.symbole[a.s]; e.lebend = 0; e.ende_grund = a.ende_grund; e.ende_datum = a.ende_datum; if (a.ende_alpaca) e.ende_alpaca = a.ende_alpaca;
+    e.ende_quelle = WERKZEUG + ' (lebend-Regel lebenszeit-minuten: letzter Minutentag ' + a.letzterMinutentag + ', mehr als ' + LEBEND_TAGE + ' Handelstage vor dem Deckel ' + deckel + '; Regel: ' + a.regel + (a.grundDatum ? '; Massnahme ' + a.ende_alpaca + ' ' + a.grundDatum : '') + ')';
   });
   var monat = deckel.slice(0, 7);
+  T.sprungZeilen = sprungZeilen;
+  T.sprungRegel = '|rendite| > ' + SPRUNG_MARKE_PP + ' % an einer Zeile mit MASSNAHME_NAH (+-' + K.MASSNAHMEN_FENSTER_TAGE + ' Handelstage um eine Massnahme, auch Abspaltung ohne Faktor); [sym, tag]; pruefstrasse/tafel.js: kein Einstieg, Fenster darueber ohne Horizont';
   T.bau = 'v2.3+' + monat;
   T.stand = man.stand;                                    /* deterministisch: Stand der Quelle, nicht die Uhr */
   var shaBloecke = {};
@@ -377,7 +456,9 @@ function rechnen(opt) {
     deckel: deckel, manifestStand: man.stand, massnahmenOrdner: B.massnahmenOrdner, kalender: { quelleBis: kal.quelleBis, danach: NYSE.QUELLE },
     faktorRegel: 'vorwaerts verankert: faktor_t = faktor_L x Produkt(1/f_s), L < ex_s <= t, f = new_rate/old_rate (angenommene eigene Splits)',
     neueTage: neueTagIdx.length, neueZeilen: neu.length, abgaenge: abgaenge.length, splitsNeu: splits.neuAngenommen.length,
-    bitsGeaendert: bitsGeaendert, sha256: shaBloecke,
+    bitsGeaendert: bitsGeaendert, sha256: shaBloecke, sprung: { zeilen: sprungZeilen.length, neu: sprungNeu },
+    korrekturen: ((S.fortschreibung && S.fortschreibung.korrekturen) || []).concat(korAngewandt.map(function (k) { return { schluessel: k.schluessel, bau: 'v2.3+' + monat, zeilen: k.zeilen, quelle: k.quelle }; })),
+    grundKarte: GRUND_KARTE,
     kette: ((S.fortschreibung && S.fortschreibung.kette) || []).concat([{ bau: T.bau, deckel: deckel, stamm: path.basename(opt.stamm) }]) };
   var standText = JSON.stringify(T);
 
@@ -387,9 +468,12 @@ function rechnen(opt) {
   var proTagN = neueTagIdx.map(function (ti2) { return { tag: kal.tage[ti2], zeilen: zjt[ti2] || 0 }; });
   KO.zeilenJeTag = { tage: proTagN, unvollstaendig: weg.length };
   /* dazu: jeder neue Tag traegt mindestens 80 % der Zeilen des letzten Stamm-Tages (ohne Teilmenge --reihen) */
-  var sollTag = (zjt[letzterStammTag] || 0) - abgaenge.filter(function (a) { return a.ende_datum <= kal.tage[letzterStammTag]; }).length, duenn = proTagN.filter(function (x) { return x.zeilen < 0.8 * sollTag; });
-  KO.zeilenJeTag.sollJeTag = sollTag;   /* Zeilen am Stamm-Ende minus Abgaenge ohne neue Zeile */
-  if (!opt.nurReihen && duenn.length) B.befunde.push('Zeilen je Tag: ' + duenn.length + ' neue Tage unter 80 % von ' + sollTag + ' (' + duenn.slice(0, 5).map(function (x) { return x.tag + ' ' + x.zeilen; }).join(', ') + ')');
+  /* Soll je Tag = Zeilen am Stamm-Ende minus die Abgaenge, deren letzte Zeile vor diesem Tag liegt */
+  var sollTag = zjt[letzterStammTag] || 0;
+  proTagN.forEach(function (x) { x.soll = sollTag - abgaenge.filter(function (a) { return a.ende_datum < x.tag; }).length; });
+  var duenn = proTagN.filter(function (x) { return x.zeilen < 0.8 * x.soll; });
+  KO.zeilenJeTag.sollStammEnde = sollTag;
+  if (!opt.nurReihen && duenn.length) B.befunde.push('Zeilen je Tag: ' + duenn.length + ' neue Tage unter 80 % des Solls (' + duenn.slice(0, 5).map(function (x) { return x.tag + ' ' + x.zeilen + '/' + x.soll; }).join(', ') + ')');
   if (weg.length) B.befunde.push('Zeilen je Tag: ' + weg.length + ' unvollstaendige Tage am Ende (' + weg.map(function (w) { return w.tag + ' ' + w.zeilen; }).join(', ') + ')');
   if (T.letzterVollTag !== deckel) B.befunde.push('letzter voller Tag ' + T.letzterVollTag + ' statt Deckel ' + deckel);
   /* K2 Klassenverteilung */
@@ -422,7 +506,13 @@ function rechnen(opt) {
   if (nachleben.length) B.befunde.push('Nachleben: ' + nachleben.map(function (x) { return x.reihe + ' ' + x.art + ' ' + x.datum + ' (' + x.zeilenDanach + ' Zeilen danach)'; }).join(', '));
   /* K6 Wiedergabe */
   KO.wiedergabe = W;
-  if (W.reihenAnders.length) B.befunde.push('Wiedergabe: ' + W.reihenAnders.length + ' Reihen weichen in den letzten ' + K.UMSATZ_FENSTER + ' Stamm-Zeilen ab: ' + W.reihenAnders.slice(0, 20).join(', '));
+  if (W.reihenAnders.length) B.befunde.push('Wiedergabe: ' + W.reihenAnders.length + ' Reihen mit echter Abweichung (' + W.tageAnders + ' Zeilen, davon ' + W.tageFehlt + ' fehlende Tage): ' + W.reihenAnders.slice(0, 20).join(', '));
+  if (W.tageUlp) B.warnungen.push('Wiedergabe: ' + W.tageUlp + ' Zeilen mit Umsatz 1 f32-ulp neben dem Stamm: ' + W.listeUlp.map(function (x) { return x.reihe + ' ' + x.tag + ' ' + x.felder.join('+'); }).join(', '));
+  if (W.korrekturAusgenommen) B.warnungen.push('Wiedergabe: ' + W.korrekturAusgenommen + ' Stamm-Zeilen wegen Korrektur ausgenommen: ' + korAngewandt.map(function (k) { return k.schluessel + ' (' + k.zeilen + ' Zeilen)'; }).join(', '));
+  KO.korrekturen = korAngewandt;
+  KO.sprung = { zeilen: sprungZeilen.length, neu: sprungNeu, beispiele: sprungBeispiele };
+  KO.unentschieden = unentschieden;
+  if (unentschieden.length) B.warnungen.push('unentschieden (1-' + LEBEND_TAGE + ' Tage still, ohne Ende-Massnahme, bleiben lebend): ' + unentschieden.join(', '));
   if (dateiFehler.length) B.befunde.push('Dateien: ' + dateiFehler.length + ' nicht lesbar: ' + dateiFehler.slice(0, 10).join(', '));
   /* K7 alte Bloecke byte-gleich (Kopien: Pruefsumme der Stamm-Datei; beim Schreiben nachgerechnet) */
   var vorJahre = alleJahre.filter(function (j) { return j < jahrL; });
@@ -435,8 +525,10 @@ function rechnen(opt) {
   if (spruenge.length) B.warnungen.push(spruenge.length + ' neue Zeilen mit |Rendite| > ' + SPRUNG_PP + ' %');
 
   B.zahlen = { reihenLebendStamm: lebend.length, reihenFortgeschrieben: fortgeschrieben, neueTage: neueTagIdx.length, ersterNeuerTag: neueTagIdx.length ? kal.tage[neueTagIdx[0]] : null,
-    neueZeilen: neu.length, zeilenGesamt: T.zeilen, abgaenge: abgaenge.map(function (a) { return a.reihe + ' ' + a.ende_datum + ' ' + a.ende_grund; }),
-    lebendNeu: T.symbole.filter(function (x) { return x.lebend === 1; }).length, splitsNeuAngenommen: splits.neuAngenommen, letzterVollTag: T.letzterVollTag, bau: T.bau };
+    neueZeilen: neu.length, zeilenGesamt: T.zeilen, abgaenge: abgaenge.map(function (a) { return a.reihe + ' ' + a.ende_datum + ' ' + a.ende_grund + (a.ende_alpaca ? ' (' + a.ende_alpaca + ')' : '') + ' [' + a.regel + ']'; }),
+    lebendNeu: T.symbole.filter(function (x) { return x.lebend === 1; }).length, splitsNeuAngenommen: splits.neuAngenommen, letzterVollTag: T.letzterVollTag, bau: T.bau,
+    sprungZeilen: sprungZeilen.length, sprungNeu: sprungNeu, korrekturen: korAngewandt.map(function (k) { return k.schluessel + ': ' + k.zeilen + ' Zeilen, Rendite Ex-Tag ' + (+k.renditeExAlt).toFixed(1) + ' -> ' + (+k.renditeExNeu).toFixed(2) + ' %'; }),
+    wiedergabe: W.tageGleich + ' gleich, ' + W.tageRundung + ' Rundung, ' + W.tageUlp + ' ulp, ' + W.tageAnders + ' anders, ' + W.korrekturAusgenommen + ' ausgenommen' };
   B.kontrollen = KO;
   B.sha256 = { bloecke: shaBloecke, stand: sha(Buffer.from(standText, 'utf8')) };
   B.bestanden = B.befunde.length === 0;
@@ -451,8 +543,15 @@ function vormonatsEnde(kal, stand) {
 }
 
 /* ================= Schreiben ================= */
-function schreiben(E, ziel) {
+function schreiben(E, ziel, opt) {
+  opt = opt || {};
   if (fs.existsSync(ziel)) throw new Error('Ziel ' + ziel + ' liegt schon - nichts ueberschrieben');
+  /* QS B6: keine Panel-Sperre der Pruefstrasse, Platz >= 2 x Panelgroesse */
+  var sperre = opt.sperre || PANEL_SPERRE;
+  if (fs.existsSync(sperre)) throw new Error('Sperre ' + sperre + ' liegt (Laeufer liest das Panel) - nichts geschrieben');
+  var groesse = 0; fs.readdirSync(E.stammOrd).forEach(function (f) { groesse += fs.statSync(path.join(E.stammOrd, f)).size; });
+  var st = fs.statfsSync(path.dirname(ziel)), frei = st.bavail * st.bsize;
+  if (frei < 2 * groesse * (opt.platzFaktor || 1)) throw new Error('Platz: ' + Math.round(frei / 1e6) + ' MB frei, noetig ' + Math.round(2 * groesse / 1e6) + ' MB - nichts geschrieben');
   var tmp = ziel + '.tmp';
   if (fs.existsSync(tmp)) fs.rmSync(tmp, { recursive: true, force: true });
   var pan = path.join(tmp, 'panel'); fs.mkdirSync(pan, { recursive: true });

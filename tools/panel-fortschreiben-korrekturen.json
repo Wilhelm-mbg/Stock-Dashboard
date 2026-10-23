@@ -1,0 +1,14 @@
+{
+ "kennung": "tools/panel-fortschreiben/korrekturen/v1",
+ "hinweis": "Bekannte Kapitalmassnahmen, die dem Stamm-Panel fehlten (Entscheid PM 23.10.2026, QS B4a). Gilt NUR im fortgeschriebenen Panel: der faktor der Zeilen ab dem Ex-Tag wird vorwaerts verankert (faktor / f, f = new_rate / old_rate), die Rendite am Ex-Tag neu gerechnet; roh bleibt roh. Nur im Jahr des Stamm-Endes (alte Jahresbloecke bleiben byte-gleich). Die Byte-Gleichheitspruefung nimmt die betroffenen Zeilen aus und meldet sie. Split-Sperre: die Rohreihe muss am Ex-Tag springen.",
+ "eintraege": [
+  {
+   "reihe": "NFE",
+   "art": "reverse_splits",
+   "ex": "2026-09-14",
+   "old_rate": 50,
+   "new_rate": 1,
+   "quelle": "Alpaca corporate-actions, Nachtrag E:/Markt-Dashboard-Archiv/alpaca-massnahmen-nachtrag-2026-10/NFE.json (reverse_splits, ex/process 2026-09-14, old_rate 50, new_rate 1, id 83b1a365-7aa0-4993-b01d-634bd0b3807d); im Stamm-Ordner alpaca-massnahmen/ (Stand 03.09.) fehlend; Rohreihe springt am 14.09. um +4.111 % (QS Nr. 123). Kein SEC-Beleg eingesehen (keine Websuche)."
+  }
+ ]
+}
