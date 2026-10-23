@@ -30,6 +30,7 @@
 var path = require('path');
 var K = require('../konfig.js');
 var C = require(path.join(K.TRENDKANAL_STUDIE, 'kanaele.js'));
+var TO = require('../tore.js');
 
 /* Arten der Zellen: echt, spaet (Einstieg +1 T, Ausstieg +1 T), versatz, placebo; nur Modus zeit, nachrichtlich: global (Ueberschuss gegen den
  * globalen Topf der Reihe OHNE Ausschluss der Signalfenster, Audit A §3d "alle Fenster"), radiusKlein/radiusGross (lokaler Topf mit R = 2 H / 8 H). */
@@ -568,7 +569,10 @@ function auswerte(M, TF, opt) {
     var gruende = [];
     if (!(e.nTage >= K.MIN_TAGE)) gruende.push('< ' + K.MIN_TAGE + ' Signaltage');
     if (!(e.uNetto.mittel > 0)) gruende.push('netto <= 0');
-    if (!(e.uNetto.t >= K.KANDIDAT_T)) gruende.push('t < ' + K.KANDIDAT_T);
+    /* Nr. 121-2a B1: Kandidat = netto > 0 und p_E <= min(P(T_df >= KANDIDAT_T), REGISTER_ALPHA / m), df = n_eff - 1 der Entdeckung, m = opt.registerM
+     * (Laeufer: Register + Konfigurationen des Laufs; ohne Angabe die Zahl der Konfigurationen) - gleichbedeutend mit t >= schwelle.t */
+    var dfE = e.uNetto.nEff != null ? Math.max(1, e.uNetto.nEff - 1) : null, schwelle = dfE != null ? TO.kandidatSchwelle(dfE, opt.registerM != null ? opt.registerM : M.konfs.length) : null;
+    if (!(schwelle && e.uNetto.t >= schwelle.t)) gruende.push('t < ' + (schwelle ? schwelle.t.toFixed(2).replace('.', ',') + ' (' + schwelle.greift + ', df ' + dfE.toFixed(0) + ')' : K.KANDIDAT_T));
     /* Nr. 121-2a A1: Tor 1 ist KEIN Kriterium mehr (tor1, tor1Schwelle bleiben nachrichtlich im Protokoll, zum Vergleich mit Messungen vor dem
      * 23.10.2026); vor dem Lauf steht das Machbarkeitstor (laeufer.js machbarkeitsPhase, tore.js). */
     if (plV) gruende.push('Placebo-Verstoss');
@@ -589,7 +593,7 @@ function auswerte(M, TF, opt) {
       TE: TE, TB: TB, seBproj: seB, mdeBproj: mdeB, tor1: tor1, tor1Schwelle: mdeB != null ? K.TOR1_FAKTOR * mdeB : null,
       /* A4 / B-V8: Tor 1 als t-Wert (Schwelle / se der Entdeckung, gesperrt 4 x 2 x Wurzel 2 = 11,31) neben MDE80 = 2,8016 se - zwei Zahlen, zwei Namen */
       tor1FaktorSe: (mdeB != null && e.uNetto.se > 0) ? K.TOR1_FAKTOR * mdeB / e.uNetto.se : null,
-      mde80: e.uNetto.se != null ? z1 * e.uNetto.se : null, kandidat: kandidat, gruende: gruende, urteil: urteil };
+      mde80: e.uNetto.se != null ? z1 * e.uNetto.se : null, kandidat: kandidat, gruende: gruende, urteil: urteil, schwelle: schwelle, df: dfE };
     k.entdeckung.tradesJeTag = e.nTage > 0 ? e.nTr / e.nTage : null;      /* Nr. 118: die Aufloesung haengt an den Signaltagen (Cluster), nicht an den Trades */
     if (zeit) k.zeitTopf = zeitTopfBericht(M, Z, KL, kf, L, ent);
     if (opt.pruefung && opt.pruefung.indexOf(c.key) !== -1) {

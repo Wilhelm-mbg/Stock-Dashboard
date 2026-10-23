@@ -112,6 +112,34 @@ module.exports = function (C) {
         'Aufrufe ' + auf2.map(function (a) { return a.phase + (a.extra && a.extra.nur ? '[' + a.extra.nur + ']' : ''); }).join(',') + ', H5 ' + (h5 && h5.urteil) + ', Urteil ' + r.urteil];
     });
   } catch (e) { ok(false, 'A-7/A-8: Temp-Repo des Laeufers', 'Ausnahme: ' + String(e.message).slice(0, 200)); }
+
+  console.log('B) Kandidat t >= 3 mit Korrektur ueber alle bisherigen Tests, in der t-Verteilung; Register mit zwei Zahlen (Nr. 121-2a)');
+  var TO = C.TO;
+  probe('B-1: t-Quantil und P(T >= 3) in der t-Verteilung (df 9: t_0,975 = 2,262, P(T >= 3) = 0,0075; df 53: 0,0020)', function () {
+    var q = TO.tQuantil(0.975, 9), p9 = TO.pEinseitig(3, 9), p53 = TO.pEinseitig(3, 53);
+    return [Math.abs(q - 2.2622) < 1e-3 && Math.abs(p9 - 0.0075) < 3e-4 && Math.abs(p53 - 0.0020) < 2e-4 && K.KANDIDAT_T === 3 && K.REGISTER_ALPHA === 0.05 && K.REGISTER_M_EXTERN === 0, 't ' + q.toFixed(4) + ', P9 ' + p9.toFixed(5) + ', P53 ' + p53.toFixed(5)];
+  });
+  probe('B-2: Kandidatenschwelle - df 9 / m 14: Korrektur greift (t = 3,46 einseitig, p 0,05/14; der Ueberschlag des Zweitlesers ~3,7 entspricht p 0,0025); df 53 / m 14: t >= 3 greift; df 9 / m 60 und df 53 / m 60: Korrektur (Zahlen in der Zeile)', function () {
+    var a = TO.kandidatSchwelle(9, 14), b = TO.kandidatSchwelle(53, 14), c = TO.kandidatSchwelle(9, 60), d = TO.kandidatSchwelle(53, 60);
+    var gut = /Korrektur/.test(a.greift) && a.t > 3.4 && a.t < 3.5 && /^t >= 3/.test(b.greift) && b.t === 3 && /Korrektur/.test(c.greift) && c.t > a.t && /Korrektur/.test(d.greift) && d.t > 3 && d.t < c.t && a.nachrichtlichExtern && a.nachrichtlichExtern.mGesamt === 3414 && a.nachrichtlichExtern.t > 5;
+    return [gut, 'df9/m14 ' + a.t.toFixed(2) + ' | df53/m14 ' + b.t.toFixed(2) + ' | df9/m60 ' + c.t.toFixed(2) + ' | df53/m60 ' + d.t.toFixed(2) + ' | extern m 3.414 df 9: ' + a.nachrichtlichExtern.t.toFixed(2)];
+  });
+  probe('B-3: Adapter wendet die Schwelle an: t 3,2 bei df ~85 wird mit m 2 Kandidat, mit m 200 nicht; Grund nennt die Schwelle', function () {
+    var T = TF.kunstTafel(C.kunstReihen(function (r, i) { return (A.fnv('K' + r + '|' + (i - 1)) % 25) === 0 ? 0.0059 : 0; }), TAGE);
+    var E2 = A.lauf(C.regelZ, C.KAND, { tafel: T, registerM: 2 }), E60 = A.lauf(C.regelZ, C.KAND, { tafel: T, registerM: 200 }), k2 = E2.konfigurationen[0], k60 = E60.konfigurationen[0], t = k2.entdeckung.uNetto.t;
+    return [t > k2.schwelle.t && t < k60.schwelle.t && k2.kandidat && !k60.kandidat && k60.gruende.some(function (g) { return /^t < 3,/.test(g); }) && k2.schwelle.m === 2 && k60.schwelle.m === 200, 't ' + t.toFixed(2) + ' df ' + k2.schwelle.df.toFixed(0) + ', Schwelle m 2 ' + k2.schwelle.t.toFixed(2) + ' / m 200 ' + k60.schwelle.t.toFixed(2) + ', Gruende ' + JSON.stringify(k60.gruende)];
+  });
+  probe('B-4: Register - m zaehlt Gewichte ("nicht messbar" 0, --grund-daten 2), zwei Zahlen aus df je Eintrag (Kandidat unter der Null; belegt-Vorschlag = x 0,05), Regeln neben Konfigurationen', function () {
+    var Rg = { konfigurationen: [{ kennung: 'a', key: 'H1', urteil: 'nein', df: 9 }, { kennung: 'a', key: 'H2', urteil: 'nicht entscheidbar', df: 53 }, { kennung: 'b', key: 'H5', urteil: 'nicht messbar', zaehlt: 0, df: 9 }, { kennung: 'c', key: 'H5', urteil: 'nicht entscheidbar', zaehlt: 2, df: 53 }] };
+    var Z = TO.registerZahlen(Rg), m = 4, p9 = Math.min(TO.pEinseitig(3, 9), 0.05 / m), p53 = Math.min(TO.pEinseitig(3, 53), 0.05 / m), soll = p9 + p53 + 2 * p53;
+    var R2 = LF.registerEintragen({ konfigurationen: [], gesamt: 0 }, 'x', 'tag', [{ key: 'H5', urteil: 'nein', register: { df: 30 } }], '2026-10-23T00:00:00Z');
+    return [Z.m === 4 && Z.regeln === 3 && Z.eintraege === 4 && Math.abs(Z.zufallKandidat - soll) < 1e-12 && Math.abs(Z.zufallBelegt - soll * 0.05) < 1e-12 && TO.registerM(Rg, 'c') === 2 && R2.m === 1 && typeof R2.zufallKandidat === 'number' && typeof R2.zufallBelegt === 'number' && R2.regeln === 1 && /df des Eintrags/.test(R2.zufallRechnung),
+      'm ' + Z.m + ', Kandidat unter Null ' + Z.zufallKandidat.toFixed(5) + ' (Soll ' + soll.toFixed(5) + '), belegt ' + Z.zufallBelegt.toFixed(6)];
+  });
+  probe('B-5: register.json - alle 13 alten Eintraege tragen df (aus ihrem Protokoll), m = 13, zwei Zufallszahlen stehen', function () {
+    var Rg = JSON.parse(fs.readFileSync(K.REGISTER, 'utf8')), mitDf = Rg.konfigurationen.filter(function (e) { return e.df > 0; }).length;
+    return [Rg.konfigurationen.length >= 13 && mitDf === Rg.konfigurationen.length && Rg.m === TO.registerM(Rg, null) && typeof Rg.zufallKandidat === 'number' && typeof Rg.zufallBelegt === 'number', 'Eintraege ' + Rg.konfigurationen.length + ', mit df ' + mitDf + ', m ' + Rg.m + ', Kandidat unter Null ' + (Rg.zufallKandidat || 0).toFixed(4) + ', belegt ' + (Rg.zufallBelegt || 0).toFixed(5)];
+  });
   /* MARKE-B */
   /* MARKE-ENDE */
   if (C.LR) fs.rmSync(C.LR, { recursive: true, force: true });

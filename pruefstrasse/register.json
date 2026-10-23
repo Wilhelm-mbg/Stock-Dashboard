@@ -6,21 +6,27 @@
    "form": "tag",
    "key": "H5",
    "urteil": "nein",
-   "datum": "2026-10-12T02:00:49.483Z"
+   "datum": "2026-10-12T02:00:49.483Z",
+   "df": 341.2,
+   "dfQuelle": "erledigt/donchian20-ausbruch-long/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "donchian20-ausbruch-long",
    "form": "tag",
    "key": "H10",
    "urteil": "nein",
-   "datum": "2026-10-12T02:00:49.483Z"
+   "datum": "2026-10-12T02:00:49.483Z",
+   "df": 170,
+   "dfQuelle": "erledigt/donchian20-ausbruch-long/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "donchian20-ausbruch-long",
    "form": "tag",
    "key": "H20",
    "urteil": "nein",
-   "datum": "2026-10-12T02:00:49.483Z"
+   "datum": "2026-10-12T02:00:49.483Z",
+   "df": 84.5,
+   "dfQuelle": "erledigt/donchian20-ausbruch-long/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "hochvolumen-praemie",
@@ -28,7 +34,9 @@
    "key": "H10",
    "urteil": "nein",
    "datum": "2026-10-20T15:13:42.908Z",
-   "bewertung": "topf"
+   "bewertung": "topf",
+   "df": 169.3,
+   "dfQuelle": "erledigt/hochvolumen-praemie/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "hochvolumen-praemie",
@@ -36,7 +44,9 @@
    "key": "H20",
    "urteil": "nein",
    "datum": "2026-10-20T15:13:42.908Z",
-   "bewertung": "topf"
+   "bewertung": "topf",
+   "df": 84.05,
+   "dfQuelle": "erledigt/hochvolumen-praemie/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "grossanstieg-ohne-umsatz",
@@ -44,7 +54,9 @@
    "key": "H5",
    "urteil": "nicht entscheidbar",
    "datum": "2026-10-20T15:15:56.477Z",
-   "bewertung": "topf"
+   "bewertung": "topf",
+   "df": 131.2,
+   "dfQuelle": "erledigt/grossanstieg-ohne-umsatz/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "grossanstieg-ohne-umsatz",
@@ -52,7 +64,9 @@
    "key": "H20",
    "urteil": "nicht entscheidbar",
    "datum": "2026-10-20T15:15:56.477Z",
-   "bewertung": "topf"
+   "bewertung": "topf",
+   "df": 31.799999999999997,
+   "dfQuelle": "erledigt/grossanstieg-ohne-umsatz/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "umkehr-nach-vorzeichenserie",
@@ -60,7 +74,9 @@
    "key": "H1",
    "urteil": "nicht entscheidbar",
    "datum": "2026-10-20T15:17:09.577Z",
-   "bewertung": "topf"
+   "bewertung": "topf",
+   "df": 1483,
+   "dfQuelle": "erledigt/umkehr-nach-vorzeichenserie/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "fomc-gerade-wochen-long",
@@ -70,7 +86,9 @@
    "datum": "2026-10-21T13:33:34.363Z",
    "bewertung": "zeit",
    "nachmessung": 1,
-   "ersetzt": "2026-10-20T15:17:44.265Z"
+   "ersetzt": "2026-10-20T15:17:44.265Z",
+   "df": 30.2,
+   "dfQuelle": "erledigt/fomc-gerade-wochen-long/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "monatswende-long",
@@ -80,7 +98,9 @@
    "datum": "2026-10-21T13:33:50.274Z",
    "bewertung": "zeit",
    "nachmessung": 1,
-   "ersetzt": "2026-10-20T15:16:22.885Z"
+   "ersetzt": "2026-10-20T15:16:22.885Z",
+   "df": 19,
+   "dfQuelle": "erledigt/monatswende-long/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "monatswende-long",
@@ -90,7 +110,9 @@
    "datum": "2026-10-21T13:33:50.274Z",
    "bewertung": "zeit",
    "nachmessung": 1,
-   "ersetzt": "2026-10-20T15:16:22.885Z"
+   "ersetzt": "2026-10-20T15:16:22.885Z",
+   "df": 25.666666666666668,
+   "dfQuelle": "erledigt/monatswende-long/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "vor-fomc-long",
@@ -100,7 +122,9 @@
    "datum": "2026-10-21T13:34:07.528Z",
    "bewertung": "zeit",
    "nachmessung": 1,
-   "ersetzt": "2026-10-20T15:16:48.741Z"
+   "ersetzt": "2026-10-20T15:16:48.741Z",
+   "df": 53,
+   "dfQuelle": "erledigt/vor-fomc-long/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   },
   {
    "kennung": "vor-fomc-long",
@@ -110,10 +134,17 @@
    "datum": "2026-10-21T13:34:07.528Z",
    "bewertung": "zeit",
    "nachmessung": 1,
-   "ersetzt": "2026-10-20T15:16:48.741Z"
+   "ersetzt": "2026-10-20T15:16:48.741Z",
+   "df": 26,
+   "dfQuelle": "erledigt/vor-fomc-long/ergebnis.json (n_eff - 1 der Entdeckung, nachgetragen Nr. 121-2a)"
   }
  ],
  "gesamt": 13,
  "zufallErwartet": 0.29575,
- "stand": "2026-10-21T13:34:07.528Z"
+ "stand": "2026-10-21T13:34:07.528Z",
+ "m": 13,
+ "regeln": 7,
+ "zufallKandidat": 0.028029614770919364,
+ "zufallBelegt": 0.001401480738545968,
+ "zufallRechnung": "Kandidat unter der Null je Eintrag = min(P(T_df >= 3), 0.05/m) mit df des Eintrags und m = 13, summiert; belegt-Vorschlag unter der Null = dieselbe Summe x 0.05 (Vorwaerts-Holm einseitig, unabhaengige Daten)"
 }

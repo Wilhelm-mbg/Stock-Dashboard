@@ -59,7 +59,8 @@ module.exports = {
   WARTESCHLANGE: path.join(HIER, 'warteschlange'), ERLEDIGT: path.join(HIER, 'erledigt'),
   REGISTER: path.join(HIER, 'register.json'), VORSCHLAEGE: path.join(HIER, 'VORSCHLAEGE.md'),
   /* Kriterien (FORM §5) */
-  KANDIDAT_T: 2, TOR1_FAKTOR: 4, MDE_FAKTOR: 2.8016, Z_POWER80: 0.8416, HOLM_ALPHA: 0.05,
+  /* KANDIDAT_T 3 seit Nr. 121-2a (vorher 2); TOR1_FAKTOR nur noch nachrichtlich (Tor 1 ist kein Kriterium mehr) */
+  KANDIDAT_T: 3, TOR1_FAKTOR: 4, MDE_FAKTOR: 2.8016, Z_POWER80: 0.8416, HOLM_ALPHA: 0.05,
   PLACEBO_T: 2, PLACEBO_ANTEIL_HUERDE: 0.25, VERSATZ_TAGE: 20, COOLDOWN_TAGE: 5, MIN_TAGE: 30,
   ZUFALL_JE_KONFIGURATION: 0.02275,            /* P(t >= 2) einseitig unter der Null */
   /* Nr. 121-2a (FORM.md §5): Kandidat = netto > 0 und p_E <= min(P(T_df >= KANDIDAT_T), REGISTER_ALPHA / m), m = Register (Gewichte; "nicht messbar"
