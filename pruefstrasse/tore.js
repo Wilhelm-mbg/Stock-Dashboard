@@ -193,15 +193,55 @@ function hausregelMarke(bewertung, nBed, nBest) {
   return null;
 }
 
+/* ---------- Korb-Form (Nr. 125a, FORM.md §5 Korb): Perioden statt Signaltage ---------- */
+/** Vollstaendige, nicht ueberlappende 63-Tage-Perioden in einem Zeitraum von `handelstage` Panel-Handelstagen ab dem ersten Ausfuehrungstag:
+ *  Umschichtungen an Tag 0, 63, 126, ...; eine Periode ist vollstaendig, wenn die naechste Umschichtung noch im Zeitraum liegt (wie korb.js perioden ohne `angebrochen`). */
+function korbPerioden(handelstage) { return handelstage >= 1 ? Math.floor((handelstage - 1) / K.KORB.periodeTage) : 0; }
+/** Standardfehler des mittleren Abstands p. a. bei n Perioden: se_pa(n) = sd_q * Wurzel(periodenJeJahr) / Wurzel(n). */
+function korbSePa(sdQ, n) { return sdQ * Math.sqrt(K.KORB.periodenJeJahr) / Math.sqrt(n); }
+/** MDE80_korb(n) = (t_krit(df = n - 1, m) + 0,8416) * se_pa(n) * faktor (Machbarkeitstor: faktor = STREUUNG_FAKTOR 1,4 wie die Tag-Form). */
+function korbMde80(n, sdQ, m, faktor) {
+  var df = Math.max(1, n - 1), s = kandidatSchwelle(df, m), se = korbSePa(sdQ, n), f = faktor == null ? K.STREUUNG_FAKTOR : faktor;
+  return { n: n, df: df, tKrit: s.t, greift: s.greift, m: s.m, sePa: se, faktor: f, mde80: (s.t + K.Z_POWER80) * se * f };
+}
+/** Machbarkeitstor Korb (vor dem Lauf, ohne Renditen): z = { nPerioden, sdQ (streuung.json korb.sdQ), nettoPp, m } -> messbar | nicht messbar mit
+ *  "braeuchte n Perioden (= n / 4 Jahre)". Unter KORB.minPerioden nie messbar. */
+function korbMachbarkeit(z) {
+  var r = korbMde80(z.nPerioden, z.sdQ, z.m, z.faktor), ok = function (n) { return n >= K.KORB.minPerioden && korbMde80(n, z.sdQ, z.m, z.faktor).mde80 <= z.nettoPp; };
+  var messbar = z.nettoPp > 0 && ok(z.nPerioden), braeuchte = messbar ? z.nPerioden : (z.nettoPp > 0 ? kleinstesN(ok, Math.max(2, z.nPerioden)) : null);
+  return Object.assign(r, { messbar: messbar, nettoPp: z.nettoPp, nPerioden: z.nPerioden, sdQ: z.sdQ, braeuchtePerioden: braeuchte,
+    braeuchteJahre: braeuchte == null ? null : braeuchte / K.KORB.periodenJeJahr,
+    regel: 'MDE80_korb(n) = (t_krit(df = n - 1, m) + ' + K.Z_POWER80 + ') * sd_q * Wurzel(' + K.KORB.periodenJeJahr + ') / Wurzel(n) * ' + (z.faktor == null ? K.STREUUNG_FAKTOR : z.faktor) + ' <= nettoPp (p. a.), t_krit = max(' + K.KANDIDAT_T + ', t_(1 - ' + K.REGISTER_ALPHA + '/m; df)), mindestens ' + K.KORB.minPerioden + ' Perioden, sd_q aus pruefstrasse/streuung.json korb' });
+}
+/** nBedarf Korb (Vormerkung): kleinste Zahl VOLLSTAENDIGER Vorwaerts-Perioden mit (t_(0,95; n - 1) + 0,8416) * sd_E * Wurzel(4) / Wurzel(n) <= nettoPp, mindestens
+ *  KORB.minPerioden - sd_E = GEMESSENE Streuung der Perioden-Abstaende der Entdeckung (nicht die Tabelle), Form wie nBedarf der Tag-Form. */
+function korbNBedarf(z) {
+  if (!(z.nettoPp > 0) || !(z.sdE > 0)) return null;
+  var f = function (n) { return (tQuantil(1 - K.HOLM_ALPHA, Math.max(1, n - 1)) + K.Z_POWER80) * korbSePa(z.sdE, n) <= z.nettoPp; };
+  var n = kleinstesN(f, 2);
+  return n == null ? null : Math.max(K.KORB.minPerioden, n);
+}
+/** Einseitiger t-Test auf Perioden-Abstaenden (Pp je Periode): H1 Mittel > 0. p = P(T_df >= t), obere 95-%-Grenze einseitig = Mittel + t_0,95 * se. */
+function korbTTest(x) {
+  var n = x.length; if (n < 2) return { n: n, mittel: n ? x[0] : null, sd: null, se: null, t: null, df: null, p: null, obere95: null };
+  var m = x.reduce(function (s, v) { return s + v; }, 0) / n, sd = Math.sqrt(x.reduce(function (s, v) { return s + (v - m) * (v - m); }, 0) / (n - 1)), se = sd / Math.sqrt(n), df = n - 1;
+  var t = se > 0 ? m / se : (m > 0 ? Infinity : m < 0 ? -Infinity : 0);
+  return { n: n, mittel: m, sd: sd, se: se, t: t, df: df, p: isFinite(t) ? pEinseitig(t, df) : (t > 0 ? 0 : 1), obere95: m + tQuantil(0.95, df) * se, mittelPa: m * K.KORB.periodenJeJahr };
+}
+/** Vorwaerts-Familie (Entscheid PM 26.10. zu Zweitleser 21): Zahl der Register-Eintraege, die JE vorgemerkt wurden (Status vorgemerkt | bestaetigt |
+ *  abgelehnt | offen) - Holm rechnet mit dieser Familiengroesse, nicht nur mit den am Tag faelligen. Alle Formen. */
+function mVorwaerts(Rg) { return (Rg.konfigurationen || []).filter(function (e) { return ['vorgemerkt', 'bestaetigt', 'abgelehnt', 'offen'].indexOf(e.status) !== -1; }).length; }
+
 /* ---------- Holm p-basiert (einseitig) ---------- */
-function holm(pListe, alpha) {
-  var m = pListe.length, idx = pListe.map(function (p, i) { return { p: p, i: i }; }).sort(function (a, b) { return a.p - b.p; });
-  var bestanden = new Array(m).fill(false), schwelle = new Array(m).fill(null), weiter = true;
+/** mFamilie (Nr. 125a, Entscheid 21): Groesse der Familie, falls groesser als die Liste - die nicht gelisteten Mitglieder zaehlen wie p = 1 (Holm bleibt gueltig). */
+function holm(pListe, alpha, mFamilie) {
+  var m = Math.max(pListe.length, mFamilie || 0), idx = pListe.map(function (p, i) { return { p: p, i: i }; }).sort(function (a, b) { return a.p - b.p; });
+  var bestanden = new Array(pListe.length).fill(false), schwelle = new Array(pListe.length).fill(null), weiter = true;
   idx.forEach(function (e, k) { var s = alpha / (m - k); schwelle[e.i] = s; if (weiter && e.p != null && e.p <= s) bestanden[e.i] = true; else weiter = false; });
-  return { bestanden: bestanden, schwelle: schwelle };
+  return { bestanden: bestanden, schwelle: schwelle, m: m };
 }
 
-module.exports = { tVerteilung: tVerteilung, pEinseitig: pEinseitig, tQuantil: tQuantil, dfAus: dfAus, kandidatSchwelle: kandidatSchwelle, istKandidat: istKandidat,
+module.exports = { korbPerioden: korbPerioden, korbSePa: korbSePa, korbMde80: korbMde80, korbMachbarkeit: korbMachbarkeit, korbNBedarf: korbNBedarf, korbTTest: korbTTest, mVorwaerts: mVorwaerts, tVerteilung: tVerteilung, pEinseitig: pEinseitig, tQuantil: tQuantil, dfAus: dfAus, kandidatSchwelle: kandidatSchwelle, istKandidat: istKandidat,
   streuung: streuung, seGeschaetzt: seGeschaetzt, machbarkeit: machbarkeit, nBedarf: nBedarf, wiedervorlage: wiedervorlage, datumPlusJahre: datumPlusJahre,
   groessenAussage: groessenAussage, erwartungFuer: erwartungFuer, erwartungenAlt: erwartungenAlt, gewicht: gewicht, registerM: registerM, registerZahlen: registerZahlen,
   hausregelMarke: hausregelMarke, holm: holm, kassaHuerdeKlasse1: kassaHuerdeKlasse1, huerdeKostenregel: huerdeKostenregel, STREUUNG: STREUUNG, ERWARTUNGEN_ALT: ERWARTUNGEN_ALT };

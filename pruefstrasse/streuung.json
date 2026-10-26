@@ -2516,5 +2516,37 @@
    "seGeschaetzt": 0.30816288045645707,
    "faktor": 0.9762117577522714
   }
- ]
+ ],
+ "korb": {
+  "kennung": "pruefstrasse/streuung/korb/v1",
+  "stand": "2026-10-26T15:44:31.483Z",
+  "auftrag": "Nr. 125a A (26.10.2026)",
+  "zweck": "Machbarkeitstor der Korb-Form vor dem Lauf: Streuung der NICHT UEBERLAPPENDEN 63-Handelstage-Perioden-Abstaende (Buch minus Massstab je Periode) eines Einzelpfads; die 63 Startphasen ueberlappen und sind keine unabhaengigen Perioden",
+  "einheit": "Pp je 63-Tage-Periode (Gesamtertrag Buch minus Gesamtertrag Massstab, vor Steuern)",
+  "periodeTage": 63,
+  "periodenJeJahr": 4,
+  "sdQ": 6.3247,
+  "massstab": "QQQ (Nasdaq-100, Gesamtertrag cb aus pruefstrasse/daten/qqq-tage.json) - der Massstab der Pruefstrasse, vor Steuern (nach Steuer schrumpfen die Abstaende, das Tor ist damit vorsichtig)",
+  "herleitung": "sd gepoolt innerhalb der Pfade (je Buch ein Pfad aus Fenster A 2017-01-04..2021-09-15 und B 2021-09-16..2026-09-15, k = 0, 37 vollstaendige Perioden je Pfad, Grenzen = Schluss des Tags vor der Umschichtung, erste Periode ab der Eroeffnung des Starttags), df-gewichtet ueber 202 Pfade (df 7272)",
+  "quelle": "neu gerechnet am Panel v2.3 (voll-v23c) mit den versiegelten Rechnern und Konfigurationen: Nr. 96 studien/momentum-korb-v23-2026-10-04 (Momentum-Korb 187, Regel K, 20 Bp; Endwerte 259.238,74 / 250.123,14 $ bitgleich), Nr. 100 studien/momentum-zufall-2026-10 (Zufallsbuecher 1..200, Ziehung lauf.js wahlZufall), Nr. 122 studien/momentum-wiedervorlage-2026-10-23 (Momentum-Korb 187 mit Kostenregel); Skript Kratzordner pruefstrasse-bau-125a/sdq-korb.js",
+  "nachrichtlich": {
+   "sdQNurZufallQqq": 6.152,
+   "sdQEichfensterQqq": 5.8832,
+   "sdQSpy": 5.1732,
+   "momentum187Qqq": {
+    "n": 37,
+    "sd": 15.9868,
+    "mittel": 2.5175
+   },
+   "momentum187RegelQqq": {
+    "n": 37,
+    "sd": 15.976,
+    "mittel": 2.6146
+   },
+   "trackingErrorPaQqq": 12.65,
+   "trackingErrorPaSpy": 10.35,
+   "trackingErrorTabelle": 10,
+   "hinweis": "Momentum-Pfade streuen 2.6-mal so stark wie Zufallsbuecher (wenige grosse Schuebe, -49/-57 % Rueckschlag) - das Tor mit sd_q ist fuer konzentrierte Momentum-Regeln OPTIMISTISCH; nBedarf nach der Entdeckung rechnet deshalb mit der GEMESSENEN Streuung des Kandidaten (sd_E), nicht mit dieser Zahl"
+  }
+ }
 }

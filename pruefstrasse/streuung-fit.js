@@ -84,6 +84,8 @@ var J = {
   faktorSeIstZuGeschaetzt: { alle: { n: fk.length, median: q(fk, 0.5), p10: q(fk, 0.1), p90: q(fk, 0.9), min: Math.min.apply(null, fk), max: Math.max.apply(null, fk) }, pruefstrasse13: { median: q(fk13, 0.5), min: Math.min.apply(null, fk13), max: Math.max.apply(null, fk13) } },
   stuetzstellen: stuetz, pruefpunkteBruch: pruefPunkte,
 };
+/* Nr. 125a: der Korb-Block (sd_q der Perioden-Abstaende, eigene Herleitung) ist kein Teil dieses Fits - beim Neufitten erhalten */
+if (ausJson && fs.existsSync(ausJson)) { var altJ = JSON.parse(fs.readFileSync(ausJson, 'utf8')); if (altJ.korb && !J.korb) J.korb = altJ.korb; }
 if (ausJson) fs.writeFileSync(ausJson, JSON.stringify(J, null, 1) + '\n');
 var o = [];
 o.push('b frei: ' + JSON.stringify(koefFrei, function (k, v) { return typeof v === 'number' ? +v.toFixed(4) : v; }) + ', sd Residuum (ln) ' + Ffrei.sdRes.toFixed(3));

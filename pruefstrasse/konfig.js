@@ -95,7 +95,12 @@ module.exports = {
   POSITION_USD: 100000 / 19, POSITION_SENSITIV_USD: 1000, KLASSE5_UMSATZ: 3.8e9, UMSATZ_FENSTER: 20,
   KOSTEN: { ausfuehrungTag: 'eroeffnung', modell: 'fixed', seit: '2026-10-23', grund: 'Kostenregel Nr. 121-2b' },
   /* KORB.kostenRegel / massstab (Nr. 121-2b): was der Laeufer dem Korb-Adapter uebergibt; die Adapter-Vorgabe bleibt 20 Bp / SPY (Kalibrierung A-187/B-187) */
-  KORB: { kostenBp: 20, kostenRegel: 'regel', massstab: 'nasdaq100-steuer', phasen: 63, kleinstAnteil: 0.05, placeboBuecher: 200, rangMin: 0.95 },
+  KORB: { kostenBp: 20, kostenRegel: 'regel', massstab: 'nasdaq100-steuer', phasen: 63, kleinstAnteil: 0.05, placeboBuecher: 200, rangMin: 0.95,
+    /* Nr. 125a (FORM.md §5 Korb): Entdeckung ab entdeckungVon bis zum Panel-Ende (Pruefung ab 2023 entfaellt, Entscheid PM 26.10. zu Zweitleser 9); Perioden = NICHT
+     * ueberlappende 63-Handelstage-Abschnitte (periodeTage, periodenJeJahr fuer Jahre); unter minPerioden kein Bestaetigungsurteil und kein "nein"
+     * (Entscheid 15: n >= 8); kapitalUsd = Startkapital der Kandidatenlaeufe (Entscheid 19: 10.000 EUR, Modell "Dollar wie Euro"; die Kalibrierung
+     * A-187/B-187 rechnet weiter mit 100.000 $ = R.START); nRangNein = Rang-p (Anteil besserer Zufallsbuecher), ab dem "nein" moeglich ist. */
+    entdeckungVon: '2017-01-04', periodeTage: 63, periodenJeJahr: 4, minPerioden: 8, kapitalUsd: 10000, rangNeinAb: 0.5 },
   /* A10 / B-V10 (Nr. 121-1): Zufallsbuecher B = max(200, 20 m + 1), m = Konfigurationen im Register + 1 (Register-Holm: kleinster p = 1/(B + 1)
    * <= alpha/m). Bei m <= 9 bleibt B = 200 (die Korb-Kalibrierung A-187/B-187 rechnet ohne Zufallsbuecher und ist davon unberuehrt). */
   korbBuecher: function (m) { return Math.max(200, 20 * m + 1); },
