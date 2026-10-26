@@ -1,0 +1,40 @@
+{
+  "kennung": "momentum-monate-halteband",
+  "form": "korb",
+  "titel": "Momentum 12-1 über Monate mit Halte-Band 40: 20 Werte aus den 100 umsatzstärksten des Panels (alle Börsen), Umschichtung alle 63 Handelstage",
+  "quelle": "Vorregistrierung des PM, Auftrag Nr. 125b Fassung 2 (26.10.2026); Anlass: Machbarkeitstabelle des Beraterrats (\\\\192.168.0.15\\archiv\\freigabe\\muehlwerk\\wiki\\analysen\\2026-10-23-machbarkeit-handelssystem.md Z. 28, 43, 62, 76; abgerufen 26.10.2026; Größenordnungsrechnung mit [u]-Markierungen, keine Regel) und Ratsurteil 2026-10-23-rat-strategiefindung.md; Rangmaß und Korbregel = App-Buch (mfhandel.js momentumZiel, momentum.js STANDARD 231/21, liquide.js KORB 100 Mio $ / 20 Balken; Live = Messung); Literatur nur über das Wiki: Jegadeesh/Titman 1993 (wiki/mehrfaktor-felder.md Z. 23), McLean/Pontiff 2016 (ebd. Z. 15)",
+  "erwartung": {
+    "groesse": "netto +1,2 Pp p. a. nach Kostenregel und deutscher Steuer gegen den Nasdaq-100-ETF (PM-Setzung = 10.000-EUR-Zeile der Machbarkeitstabelle; Tabelle netto vor Konto +1,5), brutto +2,5 Pp p. a. vor Kosten und Steuer (Tabelle Spalte 1/2: Literatur nach Veröffentlichung, Hälfte von 5,5 long-short, auf Nasdaq-100-Werte übertragen [u]); Größenordnung, nicht an diesen Daten gemessen",
+    "richtung": "positiv",
+    "nettoPp": 1.2,
+    "bruttoPp": 2.5,
+    "fensterWieQuelle": false
+  },
+  "konfigurationen": [
+    { "key": "M12-1-H40-T63", "anzahl": 20, "korb": 100 }
+  ],
+  "params": {
+    "halteBand": 40,
+    "rueckblick": 231,
+    "luecke": 21,
+    "minZeilen": 253,
+    "umsatzMin": 100000000,
+    "umsatzFenster": 20,
+    "mindestWerte": 100,
+    "maxAlterTage": 7,
+    "placebo": "Zufallsrang je Stichtag: sha256(placeboWort|nowMs|Kuerzel) ueber dieselben zulaessigen Werte, Rangliste der Laenge halteBand, dieselbe Band-Mechanik (mfhandel.js zielMitBand in der Huelle)",
+    "adapter": {
+      "_hinweis": "nicht von der Regel gelesen, sondern von Laeufer/Adapter gesetzt (konfig.js KORB); test.js prueft, dass konfig.js diese Werte traegt",
+      "taktHandelstage": 63,
+      "ausfuehrung": "Eroeffnung des Umschichtungstags, Stichtag = Panel-Handelstag davor",
+      "startphasen": 63,
+      "entdeckungVon": "2017-01-04",
+      "kleinstAnteil": 0.05,
+      "kostenRegel": "regel",
+      "kapitalUsd": 10000,
+      "massstab": "nasdaq100-steuer"
+    }
+  },
+  "autor": "Bau-Agent Nr. 125b (Opus) nach der Vorregistrierung des PM",
+  "datum": "2026-10-26"
+}
