@@ -293,6 +293,7 @@
     var sm = SAMMLER_STAND;
     return { D: D, HEALTH: HEALTH, jetzt: jetzt, appVersion: APP_VERSION, DepotAPI: API, MFDepot: window.MFDepot,
       StudienUrteile: window.StudienUrteile, Massstab: window.Massstab, Boerse: window.Boerse, Dash: window.Dash,
+      Kostenregel: window.Kostenregel,   /* Nr. 126: Kurztext der Kostenregel im Abschnitt regeln */
       Drift: window.Drift, Scoreboard: window.Scoreboard, antwortTexte: window.__antwortTexte,
       equityNow: equityNow, startKapital: START_CAPITAL, scanMs: modeParams().scanMs, abdeckung: EXPORT_ABDECKUNG,
       gesundheit: gesundheit, kursVon: kursVon,

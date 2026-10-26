@@ -2,7 +2,7 @@
   "kennung": "markt-dashboard/lagebild/v1",
   "exportiert": "2026-10-12T14:35:00Z",
   "appVersion": "8.45.1",
-  "hinweis": "Simulation mit virtuellem Kapital, keine Anlageberatung. KUNSTDATEN zum Testen des Reiters - keine echten Werte. Fassung 3 (12.10.: Schluessel ohne Umlaute - kostenHuerde, edgeWaechterAusfaelle; sonst wie Fassung 2, nach Zweitleser): Zeiten 2026, Sitzung passt zur Uhrzeit (14:35 UTC = 10:35 New York = haupt), Umlaute wie in der App.",
+  "hinweis": "Simulation mit virtuellem Kapital, keine Anlageberatung. KUNSTDATEN zum Testen des Reiters - keine echten Werte. Fassung 4 (26.10., Nr. 126: buecher[] um massstab, buchNachSteuerPa, abstandNachSteuerPa, kostenJahrPp, kostenRegel, regelK, regelnSeit, regelnText, vorwaertsAbschnitte, nachSteuerGrund, spyPa, bruttoPa ergaenzt; regeln.kostenRegel neu). Fassung 3 (12.10.: Schluessel ohne Umlaute - kostenHuerde, edgeWaechterAusfaelle; sonst wie Fassung 2, nach Zweitleser): Zeiten 2026, Sitzung passt zur Uhrzeit (14:35 UTC = 10:35 New York = haupt), Umlaute wie in der App.",
   "kopf": {
     "gesamtwert": 103250.4,
     "tagPct": 0.42,
@@ -69,7 +69,35 @@
         "kostenBp": 20,
         "korb": 187,
         "quelle": "gemessene Konfiguration (liquide.js), nur Anzeige"
-      }
+      },
+      "massstab": {
+        "name": "Nasdaq-100 nach Steuer",
+        "etf": "IE00BMFKG444",
+        "ertragPa": 14.2,
+        "nachSteuerPa": 12.9
+      },
+      "buchNachSteuerPa": 18.4,
+      "abstandNachSteuerPa": 5.5,
+      "kostenJahrPp": 1.0214,
+      "kostenRegel": "eroeffnung+ibkr",
+      "regelK": true,
+      "regelnSeit": "2026-10-26",
+      "regelnText": "Regeln seit 26.10.2026: Kosten nach der Kostenregel (Spanne der Umsatzklasse zur Eröffnung + IBKR Fixed, je Trade), Regel K gegen Kleinstpositionen an (unter 5 % des Platzwerts kein Kauf, kein gehaltener Bestand), Maßstab Nasdaq-100 nach deutscher Steuer (S&P 500 und brutto nachrichtlich)",
+      "vorwaertsAbschnitte": [
+        {
+          "von": "2026-08-25",
+          "bis": "2026-10-26",
+          "regeln": "Kosten 20 Bp je Seite, Regel K gegen Kleinstpositionen an (unter 5 % des Platzwerts kein Kauf, kein gehaltener Bestand), Maßstab S&P 500 brutto"
+        },
+        {
+          "von": "2026-10-26",
+          "bis": null,
+          "regeln": "Kosten nach der Kostenregel (Spanne der Umsatzklasse zur Eröffnung + IBKR Fixed, je Trade), Regel K gegen Kleinstpositionen an (unter 5 % des Platzwerts kein Kauf, kein gehaltener Bestand), Maßstab Nasdaq-100 nach deutscher Steuer (S&P 500 und brutto nachrichtlich)"
+        }
+      ],
+      "nachSteuerGrund": null,
+      "spyPa": 16.3,
+      "bruttoPa": 24.1
     },
     {
       "name": "drift",
@@ -108,7 +136,19 @@
       "konfiguration": {
         "takt": "woechentlich",
         "quelle": "Drift.STANDARD, nur Anzeige"
-      }
+      },
+      "massstab": null,
+      "buchNachSteuerPa": null,
+      "abstandNachSteuerPa": null,
+      "kostenJahrPp": null,
+      "kostenRegel": null,
+      "regelK": null,
+      "regelnSeit": null,
+      "regelnText": null,
+      "vorwaertsAbschnitte": [],
+      "nachSteuerGrund": null,
+      "spyPa": null,
+      "bruttoPa": null
     },
     {
       "name": "intraday",
@@ -140,7 +180,19 @@
         "haltedauer": 480,
         "bestaetigung": 15,
         "quelle": "nur Anzeige"
-      }
+      },
+      "massstab": null,
+      "buchNachSteuerPa": null,
+      "abstandNachSteuerPa": null,
+      "kostenJahrPp": null,
+      "kostenRegel": null,
+      "regelK": null,
+      "regelnSeit": null,
+      "regelnText": null,
+      "vorwaertsAbschnitte": [],
+      "nachSteuerGrund": null,
+      "spyPa": null,
+      "bruttoPa": null
     }
   ],
   "verlauf": {
@@ -442,6 +494,7 @@
         }
       ]
     },
+    "kostenRegel": "Kostenregel (Nr. 121-2b/126): je Seite halbe Spanne der Umsatzklasse zur Eröffnung + IBKR Fixed (0,005 $/Stück, min. 1 $, max. 1 %) + CAT, beim Verkauf SEC; Klasse aus dem Median-Dollarumsatz der 20 Tage vor dem Handel.",
     "strategien": [
       {
         "name": "Momentum im Querschnitt",

@@ -114,6 +114,26 @@
     if (!SU || !SU.rueckblicke || !schluessel) return [];
     return SU.rueckblicke(schluessel).map(function (r) { return { text: SU.rueckblickText(r), fundstelle: text(r.quelle) }; });
   }
+  /* Auftrag Nr. 126 (26.10.2026): Massstab Nasdaq-100 nach Steuer, Kosten und Regeln je Buch - nur ERGAENZT (Vertrag v1).
+   * Gerechnet wird in massstab.js (nachSteuer) und mfdepot.js (karteDaten); hier wird nur uebernommen und gerundet. Fuer Buecher
+   * ohne diese Rechnung (Drift, Intraday) stehen die Schluessel mit null da. */
+  function regelFelder(k, konfig) {
+    var ns = k && k.nachSteuer && k.nachSteuer.ok ? k.nachSteuer : null, kf = konfig || null;
+    return {
+      massstab: ns ? { name: text(ns.massstab.name), etf: text(ns.massstab.etf), ertragPa: z2(ns.massstab.ertragPa), nachSteuerPa: z2(ns.massstab.nachSteuerPa) } : null,
+      buchNachSteuerPa: ns ? z2(ns.buchNachSteuerPa) : null,
+      abstandNachSteuerPa: ns ? z2(ns.abstandNachSteuerPa) : null,
+      kostenJahrPp: ns ? z4(ns.kostenJahrPp) : null,
+      kostenRegel: kf && kf.kostenRegel ? text(kf.kostenRegel) : null,
+      regelK: kf ? !!(kf.kleinstAnteil > 0) : null,
+      regelnSeit: k && k.regelnSeit ? tagAus(k.regelnSeit) : null,
+      regelnText: k && k.regelnText ? text('Regeln seit ' + (tagAus(k.regelnSeit) || '?').split('-').reverse().join('.') + ': ' + k.regelnText) : null,
+      vorwaertsAbschnitte: ((k && k.abschnitte) || []).map(function (a) { return { von: tagAus(a.von), bis: tagAus(a.bis), regeln: text(a.regeln) }; }),
+      nachSteuerGrund: k && k.nachSteuer && !k.nachSteuer.ok ? text(k.nachSteuer.grund) : null,
+      spyPa: ns ? z2(ns.spyPa) : null,
+      bruttoPa: ns ? z2(ns.bruttoPa) : null
+    };
+  }
   function letzteHandlung(hs, buchName) {
     var h = (hs || []).filter(function (x) { return x && x.buch === buchName; })[0];
     return h ? { zeit: iso(h.at), text: text(h.art) } : { zeit: null, text: null };
@@ -128,7 +148,7 @@
       var k = MFD.karteDaten(name);
       var buch = k && k.buch;
       var pct = (k && q_pz) ? q_pz(k.wert, k.start) : null;
-      return {
+      return Object.assign({
         name: name, titel: titel, an: !!(k && k.an), wert: z2(k && k.wert), start: z2(k && k.start),
         ergebnisPct: z2(pct), ergebnisEuro: (k && zahl(k.wert) && zahl(k.start)) ? z2(k.wert - k.start) : null,
         positionen: positionenMf(buch, q.kursVon),
@@ -138,7 +158,7 @@
         rueckblick: rueckblickZeilen(rueckSchluessel, SU),
         buchSatz: (SU && SU.buchSatz) ? (SU.buchSatz(rueckSchluessel) || null) : null,
         konfiguration: konfig
-      };
+      }, regelFelder(k, name === 'momentum' && buch ? buch.konfig : null));
     }
     var kM = D.mfBuch && D.mfBuch.konfig ? Object.assign({}, D.mfBuch.konfig) : {};
     kM.quelle = 'gemessene Konfiguration des Buchs (mfBuch.konfig), nur Anzeige';
@@ -164,6 +184,7 @@
       gegenMarkt: gegenMarktAbschnitt(gm && gm.v, function () { return gm ? gm.text : null; }, M),
       rueckblick: [], buchSatz: null, konfiguration: kI
     };
+    Object.assign(intraday, regelFelder(null, null));
     return [mf('momentum', 'Momentum-Buch', 'Momentum-Buch', 'momentum-liquide', kM),
       mf('drift', 'Drift-Buch', 'Drift-Buch', 'drift', kD), intraday];
   }
@@ -324,6 +345,8 @@
     }
     return {
       antwort: { ueberschrift: 'Was wird gehandelt – und warum', absaetze: absaetze, handelt: handelt },
+      /* Nr. 126: die Kostenregel des Momentum-Buchs in einem Satz (kostenregel.js KURZTEXT) */
+      kostenRegel: q.Kostenregel && q.Kostenregel.KURZTEXT ? text(q.Kostenregel.KURZTEXT) : null,
       strategien: strategien,
       /* kostenHuerde: Schreibweise der Referenzdatei (Fassung 2) - der Schluessel ist das Soll. */
       intraday: { an: !!I.enabled, modus: text(I.mode), klartext: text(q.intradayKlartext || null),
