@@ -25458,7 +25458,9 @@ console.log('107) Lagebild-Export fuer den Reiter "Markt" im Management-Tool (Au
   schreib('pruefstrasse/register.json', JSON.stringify({ kennung: 'pruefstrasse/register/v1', konfigurationen: [{}, {}, {}], gesamt: 3, zufallErwartet: 0.06825 }));
   schreib('pruefstrasse/erledigt/kunst-a/ergebnis.json', JSON.stringify({ kennung: 'kunst-a', titel: 'Kunst A', urteil: 'nein', grund: 'ausgeschlossen', stand: '2026-10-12T02:00:49.483Z' }));
   schreib('pruefstrasse/erledigt/kunst-a/ERGEBNIS.md', '# Kunst A\n\n| Konf | R | Tage | Trades | brutto | netto | t |\n|---|---|---|---|---|---|---|\n| H5 | long | 10 | 20 | 0,1 | 0,05 | −3,01 |\n| H10 | long | 10 | 20 | 0,1 | 0,05 | −2,31 |\n');
-  schreib('pruefstrasse/warteschlange/kunst-b/kandidat.json', JSON.stringify({ kennung: 'kunst-b', titel: 'Kunst B', form: 'tag', konfigurationen: [{}, {}] }));
+  /* Nachbesserung QS Nr. 126 (F7, 26.10.2026): der Kandidat traegt sein Datum. Ohne es nimmt pruefstrasse-lagebild.js die Aenderungszeit der
+   * eben geschriebenen Datei - letzterLauf war dann der Testtag, und 107g war nur am 12.10.2026 gruen. */
+  schreib('pruefstrasse/warteschlange/kunst-b/kandidat.json', JSON.stringify({ kennung: 'kunst-b', titel: 'Kunst B', form: 'tag', konfigurationen: [{}, {}], datum: '2026-10-12T01:30:00Z' }));
   schreib('pruefstrasse/ideen-verworfen.md', '# Verworfen\n\n## 2026-10-11 · `kunst-c` — verworfen (Datenlaenge und Aufloesung)\n\n**Regel:** Erster Satz. Zweiter Satz.\n\n## 2026-10-12 · `kunst-d` — verworfen\n\nDie Groesse liegt unter der Wand. Mehr Text.\n');
   schreib('wiki/log.md', '- 11.10.2026 — Nachtlauf eingerichtet.\n- 12.10.2026 — Nachtlauf gelaufen, rc 0.\n- 12.10.2026 (PM, 15:05) — Wilhelm: Reiter Markt.\n');
   var ausDir = path.join(tmp, 'aus');
