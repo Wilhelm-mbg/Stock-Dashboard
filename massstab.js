@@ -349,6 +349,8 @@
    * ein Abrechnungsschritt) in den Aktien-Verlusttopf, Ausschuettungen netto, am Ende alles verkauft (Kosten je Seite = der mittlere
    * Kostensatz der Trades des Buchs) mit Endabrechnung. Nicht abgebildet: dass die gezahlte Steuer nicht mehr mitarbeitet (Zinseszins
    * der Steuerlast) - ueber Monate ein Bruchteil eines Pp.
+   * Nachbesserung QS (F1/F2, 26.10.2026): gerechnet wird je VORWAERTSABSCHNITT ab dem Buchwert am Stichtag seines Beginns (abschnittBezug),
+   * nie ab dem Startkapital; p. a. erst ab 20 Handelstagen; Anfang und Ende der QQQ-Reihe werden geprueft (Luecke > 3 Tage -> Grund).
    *
    * QQQ-TAGE aus dem Alpaca-Minutenarchiv (Kreuzprobe 26.10.2026: Yahoo-Tagesschluss weicht bis 0,023 Pp je Tag ab, > 0,01 Pp ->
    * Alpaca wie Nr. 122): qqqTage ist eine Kopie von pruefstrasse/daten/qqq-bauen.js tageAus + ausschuettungen (Eroeffnung = erste
@@ -406,44 +408,71 @@
   }
   function tagIso(ms) { return new Date(ms).toISOString().slice(0, 10); }
 
+  /** Werktage (Mo-Fr) nach tagA bis einschliesslich tagB ('JJJJ-MM-TT'); ein Kalender fuehrt massstab.js nicht. */
+  function werktageZwischen(tagA, tagB) {
+    var n = 0, t = Date.parse(tagA + 'T00:00:00Z') + 86400000, ende = Date.parse(tagB + 'T00:00:00Z');
+    for (; t <= ende && n < 4000; t += 86400000) { var w = new Date(t).getUTCDay(); if (w !== 0 && w !== 6) n++; }
+    return n;
+  }
+  function tagDe(tag) { return tag ? tag.slice(8, 10) + '.' + tag.slice(5, 7) + '.' + tag.slice(0, 4) : '?'; }
+  var MIN_TAGE_PA = 20, MAX_LUECKE_TAGE = 3;
+
+  /** QS F1 (Nachbesserung Nr. 126): der BEZUG eines Vorwaertsabschnitts - der Buchwert am Schluss des Stichtags, an dem der Abschnitt
+   *  beginnt (erste liquide Umschichtung bzw. Umstellung der Regeln), und je gehaltener Position ihr Wert zu diesem Schluss (fiktiver
+   *  Einstand fuer den Steuertopf: nur, was IM Abschnitt verdient wird, wird versteuert) neben ihrem Einstand. preise = Schluesse des
+   *  Stichtags (MFHandel.schluesseAm); ohne Kurs zaehlt der Einstand. start = Zeitpunkt des Abschnittsbeginns, tag = Stichtag. Rein. */
+  function abschnittBezug(buch, preise, start, tag) {
+    var wert = buch.cash, pos = {};
+    (buch.positionen || []).forEach(function (p) {
+      var k = (preise || {})[p.sym], w = p.stueck * (k > 0 ? k : p.einstand);
+      wert += w;
+      pos[p.sym] = { wertStart: w, einstandSumme: p.stueck * p.einstand };
+    });
+    return { start: start, tag: tag || null, wert: wert, positionen: pos };
+  }
+
   /**
-   * Das Buch nach Steuer gegen den Nasdaq-100 nach Steuer. e:
-   *   buch        das Momentum-Buch (start, cash, positionen, trades, massnahmen, liquideSeit, regelnSeit)
-   *   preise      {SYM: Kurs} - die Kurse der Bewertung (wie MFHandel.bewerte)
-   *   startMs     Beginn des Vorwaertstests (liquideSeit, Buchstart 25.08.2026); endeMs = Stand
-   *   qqq         [{ d, o, c, aus }] - QQQ-Tage (qqqTage), muss den Starttag (oder den naechsten Handelstag) und das Ende tragen
-   *   marktPct    nachrichtlich: S&P 500 (Gesamtertrag) in % ueber denselben Zeitraum (aus vergleich(), kein zweiter Rechenweg)
-   * Rueckgabe { ok, grund, von, bis, jahre, bruttoPa, buchNachSteuerPa, massstab: { name, etf, ertragPa, nachSteuerPa },
-   *   abstandNachSteuerPa, spyPa, kostenJahrPp, steuer: {...} } - Pp p. a. (Kalenderzeit wie Nr. 82 pa()). Wirft nie.
+   * Das Buch nach Steuer gegen den Nasdaq-100 nach Steuer UEBER EINEN VORWAERTSABSCHNITT. e:
+   *   buch        das Momentum-Buch (cash, positionen, trades, massnahmen)
+   *   abschnitt   der Bezug des Abschnitts (abschnittBezug: start, tag, wert, positionen) - ohne ihn keine Zahl (Grund)
+   *   preise      {SYM: Kurs} - die Kurse der Bewertung (wie MFHandel.bewerte); endeMs = Zeitpunkt dieser Kurse
+   *   qqq         [{ d, o, c, aus }] - QQQ-Tage (qqqTage); Anfang und Ende werden geprueft (QS F2, wie korb-kosten.js)
+   *   marktPct    nachrichtlich: S&P 500 in % aus vergleich() - nur, wenn marktAbStart (derselbe Beginn) gesetzt ist
+   * Rendite = Wert jetzt / Buchwert am Stichtag des Abschnitts (QS F1: nicht das Startkapital). p. a. erst ab MIN_TAGE_PA Handelstagen
+   * (QQQ-Tage des Abschnitts), sonst nur der Gesamtertrag (gesamt) mit paGrund "zu kurz fuer p. a.". Wirft nie.
    */
   function nachSteuer(e) {
-    var aus = { ok: false, grund: null, von: null, bis: null, jahre: null, bruttoPa: null, buchNachSteuerPa: null,
-      massstab: { name: MASSSTAB_NAME, etf: ETF_NASDAQ.isin, ertragPa: null, nachSteuerPa: null }, abstandNachSteuerPa: null, spyPa: null, kostenJahrPp: null, steuer: null };
+    var aus = { ok: false, grund: null, von: null, bis: null, jahre: null, handelstage: null, einheit: null, paGrund: null, bruttoPa: null, buchNachSteuerPa: null,
+      massstab: { name: MASSSTAB_NAME, etf: ETF_NASDAQ.isin, ertragPa: null, nachSteuerPa: null, qqqVon: null, qqqBis: null }, abstandNachSteuerPa: null, spyPa: null,
+      kostenJahrPp: null, gesamt: null, bezug: null, steuer: null };
     try {
-      var S = steuerModul(), b = e && e.buch;
+      var S = steuerModul(), b = e && e.buch, A = e && e.abschnitt;
       if (!S) { aus.grund = 'Steuerrechner (steuer.js) nicht geladen'; return aus; }
-      if (!b || !(b.start > 0)) { aus.grund = 'kein Buch'; return aus; }
-      var startMs = e.startMs, endeMs = e.endeMs;
-      if (!(startMs > 0) || !(endeMs > startMs)) { aus.grund = 'der Vorwärtstest hat noch keinen Zeitraum'; return aus; }
-      var jahre = (endeMs - startMs) / (365.25 * 86400000), skala = S.START / b.start, satz = S.MODELL.steuersatz;
-      aus.jahre = jahre; aus.von = tagIso(startMs); aus.bis = tagIso(endeMs);
-      function paVon(ende) { return S.pa(ende * skala, jahre); }
-      /* Buch brutto */
+      if (!b) { aus.grund = 'kein Buch'; return aus; }
+      if (!A || !(A.start > 0) || !(A.wert > 0)) { aus.grund = 'Bezug des Vorwärtsabschnitts fehlt (Buchwert am Stichtag)'; return aus; }
+      var startMs = A.start, endeMs = e.endeMs;
+      aus.bezug = { start: startMs, tag: A.tag, wert: A.wert };
+      if (!(endeMs > startMs)) { aus.grund = 'der Vorwärtsabschnitt hat noch keinen Zeitraum'; return aus; }
+      aus.von = tagIso(startMs); aus.bis = tagIso(endeMs);
+      var satz = S.MODELL.steuersatz, W0 = A.wert;
+      /* Buch brutto: Wert jetzt gegen den Buchwert am Stichtag */
       var wert = b.cash, kSumme = 0, wSumme = 0, kostenUsd = 0;
       (b.positionen || []).forEach(function (p) { var k = (e.preise || {})[p.sym]; wert += p.stueck * (k > 0 ? k : p.einstand); });
-      aus.bruttoPa = paVon(wert);
-      /* Kosten je Trade: getrennt gebucht (Kostenregel) oder - aeltere Trades - 20 Bp je Seite */
       var trades = (b.trades || []).filter(function (t) { return t.t >= startMs && (t.art === 'kauf' || t.art === 'verkauf'); });
       trades.forEach(function (t) {
         var w = t.stueck * t.kurs, k = t.kostenSpanne != null ? t.kostenSpanne + t.kostenGebuehr : w * 0.002;
         kostenUsd += k; kSumme += k; wSumme += w;
       });
-      aus.kostenJahrPp = kostenUsd / b.start * 100 / jahre;
-      /* Aktien-Verlusttopf: je Zeitstempel ein Abrechnungsschritt (Nr. 82 handel/steuerSchritt), Jahr nach UTC-Datum */
+      /* Aktien-Verlusttopf: je Zeitstempel ein Abrechnungsschritt; eine Position, die schon am Stichtag gehalten wurde, zaehlt nur ihren
+       * Gewinn IM Abschnitt (Erloes - Wert am Stichtag statt Erloes - Einstand: pnl + Einstand - Wert am Stichtag) */
+      var vorher = {};
+      Object.keys(A.positionen || {}).forEach(function (s) { vorher[s] = A.positionen[s]; });
       var topf = S.topfNeu(satz), schritte = {};
       (b.trades || []).forEach(function (t) {
         if (t.t < startMs || (t.art !== 'verkauf' && t.art !== 'reihenende') || typeof t.pnl !== 'number') return;
-        (schritte[t.t] = schritte[t.t] || []).push(t.pnl);
+        var g = t.pnl, v = vorher[t.sym];
+        if (v) { g = t.pnl + v.einstandSumme - v.wertStart; delete vorher[t.sym]; }
+        (schritte[t.t] = schritte[t.t] || []).push(g);
       });
       Object.keys(schritte).map(Number).sort(function (x, y) { return x - y; }).forEach(function (t) {
         S.topfJahr(topf, +tagIso(t).slice(0, 4));
@@ -451,37 +480,52 @@
         S.topfAbrechnen(topf);
       });
       S.topfJahr(topf, +tagIso(endeMs).slice(0, 4));
-      /* Ausschuettungen netto (nicht ueber den Topf); bei Leerverkauf (summe < 0) keine Steuer */
       var divBrutto = 0;
       (b.massnahmen || []).forEach(function (m) { if (m.art === 'div' && m.t >= startMs && m.summe > 0) divBrutto += m.summe; });
       var divSteuer = divBrutto * satz;
-      /* Endverkauf wie Nr. 82 (b): alles zum Kurs, Kosten je Seite = mittlerer Kostensatz der Trades (sonst 20 Bp) */
       var kEnde = wSumme > 0 ? kSumme / wSumme : 0.002, erloes = 0, gewinn = 0;
       (b.positionen || []).forEach(function (p) {
-        var k = (e.preise || {})[p.sym], kurs = k > 0 ? k : p.einstand, x = p.stueck * kurs * (1 - kEnde);
-        erloes += x; gewinn += x - p.stueck * p.einstand;
+        var k = (e.preise || {})[p.sym], kurs = k > 0 ? k : p.einstand, x = p.stueck * kurs * (1 - kEnde), v = vorher[p.sym];
+        erloes += x; gewinn += x - (v ? v.wertStart : p.stueck * p.einstand);
       });
       var topfDanach = S.topfStand(topf) + gewinn, steuerEnde = Math.max(0, topfDanach) * satz - topf.gezahlt;
       var frueher = topf.jahre.slice(0, -1).reduce(function (a, j) { return a + j.aktiensteuer; }, 0);
       var aktienSteuer = frueher + topf.gezahlt + steuerEnde;
       var buchNach = b.cash + erloes - aktienSteuer - divSteuer;
-      aus.buchNachSteuerPa = paVon(buchNach);
       aus.steuer = { modell: S.QUELLE, satz: satz, aktienSteuer: aktienSteuer, ausschuettungSteuer: divSteuer, endverkaufKostenSatz: kEnde,
-        verlustvortrag: topfDanach < 0 ? -topfDanach : 0, buchEnde: buchNach };
-      /* Nasdaq-100: QQQ-Fonds ab dem ersten QQQ-Tag am oder nach dem Start, Kauf zur Eroeffnung (Modell Nr. 82 fonds) */
+        verlustvortrag: topfDanach < 0 ? -topfDanach : 0, buchEnde: buchNach, buchWert: wert, bezugWert: W0 };
+      /* Nasdaq-100: QQQ-Fonds ab dem ersten QQQ-Tag am oder nach dem Start; Anfang und Ende muessen passen (QS F2) */
       var q = (e.qqq || []).filter(function (x) { return x.d >= aus.von && x.d <= aus.bis; });
-      if (!q.length) { aus.grund = 'QQQ-Reihe (Nasdaq-100) für den Zeitraum fehlt'; return aus; }
+      if (!q.length) { aus.grund = 'QQQ-Reihe (Nasdaq-100) für den Abschnitt ab ' + tagDe(aus.von) + ' fehlt'; return aus; }
+      var qVon = q[0].d, qBis = q[q.length - 1].d, luA = werktageZwischen(aus.von, qVon), luE = werktageZwischen(qBis, aus.bis);
+      aus.massstab.qqqVon = qVon; aus.massstab.qqqBis = qBis;
+      if (luE > MAX_LUECKE_TAGE) { aus.grund = 'Maßstab bis ' + tagDe(qBis) + ', Lücke ' + luE + ' Tage bis zum Bewertungstag ' + tagDe(aus.bis); return aus; }
+      if (luA > MAX_LUECKE_TAGE) { aus.grund = 'Maßstab erst ab ' + tagDe(qVon) + ', Lücke ' + luA + ' Tage nach dem Beginn ' + tagDe(aus.von); return aus; }
       var reihe = q.map(function (x) { return { datum: x.d, eroeffnung: x.o, schluss: x.c, aus: x.aus || [] }; });
       var fo = S.fonds(reihe, S.START, S.mit(S.MODELL, { kostenPa: ETF_NASDAQ.ter - TER_QQQ }));
-      aus.massstab.ertragPa = S.pa(fo.endA, jahre);
-      aus.massstab.nachSteuerPa = S.pa(fo.endB, jahre);
-      aus.massstab.qqqVon = reihe[0].datum; aus.massstab.qqqBis = reihe[reihe.length - 1].datum;
-      aus.abstandNachSteuerPa = aus.buchNachSteuerPa - aus.massstab.nachSteuerPa;
-      if (typeof e.marktPct === 'number' && isFinite(e.marktPct)) aus.spyPa = (Math.pow(1 + e.marktPct * 0.01, 1 / jahre) - 1) * 100;
+      var rB = wert / W0, rN = buchNach / W0, rQa = fo.endA / S.START, rQb = fo.endB / S.START;
+      aus.handelstage = q.length;
+      aus.gesamt = { bruttoPct: (rB - 1) * 100, buchNachSteuerPct: (rN - 1) * 100, massstabBruttoPct: (rQa - 1) * 100, massstabNachSteuerPct: (rQb - 1) * 100,
+        abstandPp: (rN - rQb) * 100, kostenPp: kostenUsd / W0 * 100, spyPct: typeof e.marktPct === 'number' && isFinite(e.marktPct) && e.marktAbStart ? e.marktPct : null };
+      if (q.length >= MIN_TAGE_PA) {
+        var jahre = (Date.parse(aus.bis) - Date.parse(aus.von)) / (365.25 * 86400000), jahreQ = (Date.parse(qBis) - Date.parse(qVon)) / (365.25 * 86400000);
+        aus.jahre = jahre; aus.einheit = 'pa';
+        aus.bruttoPa = S.pa(rB * S.START, jahre);
+        aus.buchNachSteuerPa = S.pa(rN * S.START, jahre);
+        aus.massstab.ertragPa = S.pa(fo.endA, jahreQ);
+        aus.massstab.nachSteuerPa = S.pa(fo.endB, jahreQ);
+        aus.abstandNachSteuerPa = aus.buchNachSteuerPa - aus.massstab.nachSteuerPa;
+        aus.kostenJahrPp = kostenUsd / W0 * 100 / jahre;
+        if (aus.gesamt.spyPct != null) aus.spyPa = (Math.pow(1 + aus.gesamt.spyPct * 0.01, 1 / jahre) - 1) * 100;
+      } else {
+        aus.einheit = 'gesamt';
+        aus.paGrund = 'zu kurz für p. a. (' + q.length + ' Handelstage, p. a. ab ' + MIN_TAGE_PA + ') – Gesamtertrag seit ' + tagDe(aus.von);
+      }
       aus.ok = true;
       return aus;
     } catch (err) { aus.grund = 'Rechnung nach Steuer: ' + String((err && err.message) || err).slice(0, 120); return aus; }
   }
+
 
   var Massstab = {
     prozent: prozent, vergleich: vergleich, vorLiquide: vorLiquide, mitMarkt: mitMarkt, marktAn: marktAn,
@@ -489,7 +533,7 @@
     hinweis: hinweis, hinweise: hinweise, marktName: marktName, marktZusatz: marktZusatz,
     MARKT_MAX_ALTER: MARKT_MAX_ALTER,
     /* Auftrag Nr. 126 */
-    nachSteuer: nachSteuer, qqqTage: qqqTage, qqqAusschuettungen: qqqAusschuettungen, ETF_NASDAQ: ETF_NASDAQ, MASSSTAB_NAME: MASSSTAB_NAME
+    nachSteuer: nachSteuer, abschnittBezug: abschnittBezug, MIN_TAGE_PA: MIN_TAGE_PA, qqqTage: qqqTage, qqqAusschuettungen: qqqAusschuettungen, ETF_NASDAQ: ETF_NASDAQ, MASSSTAB_NAME: MASSSTAB_NAME
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = Massstab; return; }
   root.Massstab = Massstab;

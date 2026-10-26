@@ -117,10 +117,17 @@
   /* Auftrag Nr. 126 (26.10.2026): Massstab Nasdaq-100 nach Steuer, Kosten und Regeln je Buch - nur ERGAENZT (Vertrag v1).
    * Gerechnet wird in massstab.js (nachSteuer) und mfdepot.js (karteDaten); hier wird nur uebernommen und gerundet. Fuer Buecher
    * ohne diese Rechnung (Drift, Intraday) stehen die Schluessel mit null da. */
+  /* Nachbesserung QS (F1/F4): massstab traegt Name und ISIN auch, wenn es (noch) keine Zahl gibt; p. a. erst ab 20 Handelstagen des
+   * Abschnitts, sonst stehen die p.-a.-Felder null und der Gesamtertrag in nachSteuerGesamt (mit paGrund). */
   function regelFelder(k, konfig) {
-    var ns = k && k.nachSteuer && k.nachSteuer.ok ? k.nachSteuer : null, kf = konfig || null;
+    var roh = k && k.nachSteuer ? k.nachSteuer : null, ns = roh && roh.ok ? roh : null, kf = konfig || null, g = ns && ns.gesamt ? ns.gesamt : null;
     return {
-      massstab: ns ? { name: text(ns.massstab.name), etf: text(ns.massstab.etf), ertragPa: z2(ns.massstab.ertragPa), nachSteuerPa: z2(ns.massstab.nachSteuerPa) } : null,
+      massstab: roh && roh.massstab ? { name: text(roh.massstab.name), etf: text(roh.massstab.etf), ertragPa: ns ? z2(ns.massstab.ertragPa) : null,
+        nachSteuerPa: ns ? z2(ns.massstab.nachSteuerPa) : null } : null,
+      nachSteuerGesamt: g ? { buchPct: z2(g.buchNachSteuerPct), massstabPct: z2(g.massstabNachSteuerPct), abstandPp: z2(g.abstandPp), bruttoPct: z2(g.bruttoPct),
+        massstabBruttoPct: z2(g.massstabBruttoPct), kostenPp: z4(g.kostenPp), von: text(ns.von), bis: text(ns.bis), massstabBis: text(ns.massstab.qqqBis) } : null,
+      abschnittHandelstage: ns && typeof ns.handelstage === 'number' ? ns.handelstage : null,
+      paGrund: ns ? text(ns.paGrund) : null,
       buchNachSteuerPa: ns ? z2(ns.buchNachSteuerPa) : null,
       abstandNachSteuerPa: ns ? z2(ns.abstandNachSteuerPa) : null,
       kostenJahrPp: ns ? z4(ns.kostenJahrPp) : null,

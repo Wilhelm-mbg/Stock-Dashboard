@@ -231,6 +231,7 @@
     d.mfBuch.korbVerlauf = [];
     d.mfBuch.regelnSeit = now;   // Nr. 126: Neustart - ein Abschnitt, keine Regeln davor
     delete d.mfBuch.regelnVorher;
+    delete d.mfBuch.abschnitt;   // QS F1: der Bezug entsteht neu bei der ersten liquiden Umschichtung
     return true;
   }
 
@@ -496,6 +497,13 @@
       if (!d.mfBuch) d.mfBuch = buchInit('momentum');
       var KONFIG = MH.buchKonfig();
       if (umstellungPruefen(d, KONFIG, now)) speichern();
+      /* Nr. 126, QS F1: beginnt ein Regel-Abschnitt NACH dem Beginn des Vorwaertstests (regelnSeit > liquideSeit), merkt sich das Buch
+       * seinen Bezug: Buchwert und Positionswerte zum Schluss des juengsten abgeschlossenen Handelstags vor der Umstellung. */
+      if (d.mfBuch.liquideSeit && d.mfBuch.regelnSeit > d.mfBuch.liquideSeit && !(d.mfBuch.abschnitt && d.mfBuch.abschnitt.start === d.mfBuch.regelnSeit) &&
+          daten.bezug && window.Massstab && window.Massstab.abschnittBezug) {
+        var xR = MH.punktTag(daten.bezug, d.mfBuch.regelnSeit);
+        if (xR) { d.mfBuch.abschnitt = window.Massstab.abschnittBezug(d.mfBuch, MH.schluesseAm(daten.roh, xR.tag).preise, d.mfBuch.regelnSeit, xR.tag); speichern(); }
+      }
       /* Splits und Ausschuettungen: nach dem Laden, VOR dem Planen, fuer beide Buecher -
        * der Plan soll die Stueckzahl nach dem Split und das Bargeld nach der Gutschrift sehen. */
       if (massnahmenBuchen(MH, d, daten, now)) speichern();
@@ -542,6 +550,8 @@
         if (!ausf.ok) hinweisM = ausf.hinweis;
         else {
           var zielA = ausf.ziel;
+          /* Nr. 126, QS F1: die erste liquide Umschichtung beginnt den Vorwaertsabschnitt - Bezug = Buch zu den Schluessen des Stichtags */
+          if (!d.mfBuch.liquideSeit && window.Massstab && window.Massstab.abschnittBezug) d.mfBuch.abschnitt = window.Massstab.abschnittBezug(d.mfBuch, MH.schluesseAm(daten.roh, ausf.stichtag).preise, now, ausf.stichtag);
           splitsHeuteBuchen(MH, d, ausf.ereignisse, ausf.barZeit, now);   // Generalprobe 23.11., Fund 1: Split vom Ausfuehrungstag vor dem Plan (gespeichert wird unten)
           var vorherM = (d.mfBuch.positionen || []).slice();              // Generalprobe 23.11., Fund 5: fuer anspruecheVormerken unten
           plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, { kleinstAnteil: KONFIG.kleinstAnteil });
@@ -677,12 +687,8 @@
       var bwM = MH.bewerte(d.mfBuch, daten.preise);
       /* Nr. 126: Buch nach Steuer gegen den Nasdaq-100 nach Steuer seit Beginn des Vorwaertstests (liquideSeit) - gerechnet in
        * massstab.js (nachSteuer), hier nur versorgt. S&P 500 nachrichtlich aus demselben vergleich() wie Karte und Kopf. */
-      if (d.mfBuch.liquideSeit && window.Massstab && window.Massstab.nachSteuer) {
-        var qq = await ladeQqq(d.mfBuch.liquideSeit), vM = vergleich('momentum');
-        STAND.nachSteuer = window.Massstab.nachSteuer({ buch: d.mfBuch, preise: daten.preise, startMs: d.mfBuch.liquideSeit,
-          endeMs: daten.juengster || now, qqq: qq && qq.ok ? qq.tage : null, marktPct: vM && vM.ok ? vM.marktPct : null });
-        if (qq && !qq.ok && !STAND.nachSteuer.ok) STAND.nachSteuer.grund = 'QQQ-Reihe: ' + qq.grund;
-      } else STAND.nachSteuer = null;
+      if (window.Massstab && window.Massstab.nachSteuer) STAND.nachSteuer = await nachSteuerStand(MH, d, daten, fl, now);
+      else STAND.nachSteuer = null;
       var bwD = d.driftBuch ? MH.bewerteDrift(d.driftBuch, daten.preise) : null;
 
       /* Pruef-Stempel: jeder durchgelaufene Takt haelt fest, DASS geprueft wurde -
@@ -765,6 +771,24 @@
   /* Nr. 126: die QQQ-Tage (Massstab Nasdaq-100 nach Steuer) aus dem Alpaca-Minutenarchiv - Auskunft massstab-qqq (main.js),
    * hoechstens einmal je Stunde gefragt; main.js merkt sich das Ergebnis je Dateistand. */
   var QQQ = { at: 0, antwort: null };
+  /** Nr. 126 (QS F1/F4): der Stand "Nasdaq-100 nach Steuer" des Momentum-Buchs - je Vorwaertsabschnitt (Beginn = regelnSeit, wenn
+   *  die Regeln nach liquideSeit umgestellt wurden, sonst liquideSeit) ab seinem Bezug (d.mfBuch.abschnitt). Vor der ersten liquiden
+   *  Umschichtung steht ein Grund mit dem erwarteten Tag da, keine Zahl. Gerechnet in massstab.js. */
+  function vorLiquideGrund(MH, fl, now) {
+    var tag = fl && fl.noch != null ? naechsteUmschichtung(fl.noch, now) : null;
+    return 'Vorwärtsabschnitt beginnt mit der ersten liquiden Umschichtung' + (tag ? ' (erwartet um ' + MH.datumDe(tag) + ')' : '');
+  }
+  async function nachSteuerStand(MH, d, daten, fl, now) {
+    var b = d.mfBuch;
+    if (!b.liquideSeit) { var r0 = window.Massstab.nachSteuer({ buch: b }); r0.grund = vorLiquideGrund(MH, fl, now); return r0; }
+    var abStart = b.regelnSeit > b.liquideSeit ? b.regelnSeit : b.liquideSeit;
+    var ab = b.abschnitt && b.abschnitt.start === abStart ? b.abschnitt : null;
+    var qq = await ladeQqq(abStart), vM = vergleich('momentum');
+    var r = window.Massstab.nachSteuer({ buch: b, abschnitt: ab, preise: daten.preise, endeMs: daten.juengster || now, qqq: qq && qq.ok ? qq.tage : null,
+      marktPct: vM && vM.ok ? vM.marktPct : null, marktAbStart: abStart === b.liquideSeit });
+    if (qq && !qq.ok && !r.ok && ab) r.grund = 'QQQ-Reihe: ' + qq.grund;
+    return r;
+  }
   async function ladeQqq(startMs) {
     if (!window.api || !window.api.massstabQqq) return null;
     if (Date.now() - QQQ.at < 3600000 && QQQ.antwort) return QQQ.antwort;
@@ -1000,7 +1024,7 @@
     var rueck = (rueckSchluessel && SU && SU.rueckblicke) ? SU.rueckblicke(rueckSchluessel) : [];
     var zeilen = [['Gegen den Markt', gegen]];
     /* Nr. 126: der Massstab Nasdaq-100 nach Steuer (massstab.js nachSteuer) und die Regeln seit der Umstellung - nur das Momentum-Buch. */
-    if (k.name === 'momentum' && k.buch && k.buch.liquideSeit) zeilen.push(['Nasdaq-100 nach Steuer', nachSteuerHtml(k)]);
+    if (k.name === 'momentum' && k.buch) zeilen.push(['Nasdaq-100 nach Steuer', nachSteuerHtml(k)]);
     if (rueck.length) {
       /* Auftrag Nr. 95 (B5): der Satz zum Buch selbst (beim Drift-Buch: warum es trotz „kein
        * Vorwärtstest angezeigt" läuft) - aus studienurteile.js, einmal unter den Zeilen. */
@@ -1027,6 +1051,13 @@
     var n = k.nachSteuer, klein = '<br><span style="color:var(--muted); font-size:var(--fs-klein);">';
     var regeln = k.regelnText ? klein + U.esc('Regeln seit ' + U.d(k.regelnSeit) + ': ' + k.regelnText + '.') + '</span>' : '';
     if (!n || !n.ok) return ohne(n && n.grund ? n.grund : 'noch nicht gerechnet') + regeln;
+    if (n.einheit === 'gesamt') {
+      var g = n.gesamt;
+      return U.esc('Seit ' + n.von.split('-').reverse().join('.') + ' (Bezug: Buchwert am Stichtag): Buch nach Steuer ' + ppDe(g.buchNachSteuerPct) + ' %, Nasdaq-100 nach Steuer ' +
+        ppDe(g.massstabNachSteuerPct) + ' % – Abstand ' + ppDe(g.abstandPp) + ' Pp.') + klein + U.esc(n.paGrund + '. Nachrichtlich: Buch brutto ' + ppDe(g.bruttoPct) +
+        ' %, Nasdaq-100 brutto ' + ppDe(g.massstabBruttoPct) + ' % (QQQ bis ' + n.massstab.qqqBis.split('-').reverse().join('.') + '); Kosten ' + ppDe(g.kostenPp).replace('+', '') +
+        ' Pp. Ein Rechenmodell (Steuer Nr. 82), keine Anlage- und keine Steuerberatung.') + '</span>' + regeln;
+    }
     return U.esc('Seit ' + n.von.split('-').reverse().join('.') + ': Buch nach Steuer ' + ppDe(n.buchNachSteuerPa) + ' % p. a., Nasdaq-100 nach Steuer ' +
       ppDe(n.massstab.nachSteuerPa) + ' % p. a. – Abstand ' + ppDe(n.abstandNachSteuerPa) + ' Pp p. a.') + klein +
       U.esc('Nachrichtlich: Buch brutto ' + ppDe(n.bruttoPa) + ' % p. a., Nasdaq-100 brutto ' + ppDe(n.massstab.ertragPa) + ' % p. a., S&P 500 ' + ppDe(n.spyPa) +

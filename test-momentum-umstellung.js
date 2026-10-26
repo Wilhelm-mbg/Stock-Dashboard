@@ -12,7 +12,7 @@ var fs = require('fs');
 var path = require('path');
 var os = require('os');
 var ROOT = process.env.TEST_ROOT || __dirname;
-var fails = 0, gesamt = 0;
+var fails = 0, gesamt = 0, warten = [];   /* warten: Pruefungen mit Promise (B.8), vor der Schlusszeile abgewartet */
 function ok(cond, name, extra) {
   gesamt++;
   console.log((cond ? '  ✅ ' : '  ❌ ') + name + (extra !== undefined ? '  [' + extra + ']' : ''));
@@ -166,30 +166,75 @@ teil(function () {
   var QQ = JSON.parse(fs.readFileSync(path.join(__dirname, 'pruefstrasse', 'daten', 'qqq-tage.json'), 'utf8'));
   var startMs = Date.UTC(2026, 7, 25, 14), endeMs = Date.UTC(2026, 9, 22, 14);
   var buch = { start: 100000, cash: 100000, positionen: [], trades: [], liquideSeit: startMs };
-  var r = MS.nachSteuer({ buch: buch, preise: {}, startMs: startMs, endeMs: endeMs, qqq: QQ.tage });
+  var AB0 = MS.abschnittBezug(buch, {}, startMs, '2026-08-24');
+  var r = MS.nachSteuer({ buch: buch, abschnitt: AB0, preise: {}, endeMs: endeMs, qqq: QQ.tage });
   var rq = QQ.tage.filter(function (x) { return x.d >= '2026-08-25' && x.d <= '2026-10-22'; }).map(function (x) { return { datum: x.d, eroeffnung: x.o, schluss: x.c, aus: x.aus || [] }; });
-  var jahre = (endeMs - startMs) / (365.25 * 86400000);
+  var jahre = (Date.parse('2026-10-22') - Date.parse('2026-08-25')) / (365.25 * 86400000);
   var fq = STO.fonds(rq, 100000, STO.mit(STO.MODELL, { kostenPa: KK.ETF.ter - 0.0020 }));
-  ok(r.ok && r.massstab.nachSteuerPa === STO.pa(fq.endB, jahre) && r.massstab.ertragPa === STO.pa(fq.endA, jahre) && r.massstab.etf === 'IE00BMFKG444',
-    'B.2 Nasdaq-100 nach Steuer seit 25.08.2026 = Fonds-Modell Nr. 82 wie korb-kosten.js (QQQ-Tage der Pruefstrasse)', r.ok ? r.massstab.nachSteuerPa.toFixed(4) + ' % p. a. nach Steuer, ' + r.massstab.ertragPa.toFixed(4) + ' brutto' : r.grund);
-  /* B.3 das Buch nach Steuer: Kunstbuch mit zwei Umschichtungen, Ausschuettung und Endverkauf - Handrechnung mit dem Original */
+  ok(r.ok && r.einheit === 'pa' && r.handelstage === rq.length && r.massstab.nachSteuerPa === STO.pa(fq.endB, jahre) && r.massstab.ertragPa === STO.pa(fq.endA, jahre) && r.massstab.etf === 'IE00BMFKG444',
+    'B.2 Nasdaq-100 nach Steuer seit 25.08.2026 = Fonds-Modell Nr. 82 wie korb-kosten.js (QQQ-Tage der Pruefstrasse, ' + rq.length + ' Handelstage)', r.ok ? r.massstab.nachSteuerPa.toFixed(4) + ' % p. a. nach Steuer, ' + r.massstab.ertragPa.toFixed(4) + ' brutto' : r.grund);
+  ok(rq.some(function (x) { return x.datum === '2026-09-21' && x.aus.length === 1 && x.aus[0] === 0.75143; }),
+    'B.2 qqq-tage.json traegt die Ausschuettung vom 21.09.2026 (0,75143 $, Nachtrag QS F3)');
+  /* B.3 das Buch nach Steuer: Kunstbuch mit zwei Umschichtungen, Ausschuettung, einer am Stichtag gehaltenen Position (B, C) und Endverkauf -
+   * Handrechnung mit dem Original. Bezug = Buchwert am Stichtag (hier 100.000 $); B und C zaehlen nur ihren Gewinn IM Abschnitt. */
   var t1 = Date.UTC(2026, 8, 1, 14), t2 = Date.UTC(2026, 9, 1, 14);
   var b2 = { start: 100000, cash: 60000, positionen: [{ sym: 'A', stueck: 100, einstand: 200 }, { sym: 'B', stueck: 50, einstand: 300 }],
     trades: [{ t: t1, art: 'verkauf', sym: 'X', stueck: 10, kurs: 100, pnl: 3000, kostenSpanne: 1, kostenGebuehr: 1 }, { t: t1, art: 'verkauf', sym: 'Y', stueck: 10, kurs: 100, pnl: -1000, kostenSpanne: 1, kostenGebuehr: 1 },
+      { t: t1, art: 'verkauf', sym: 'C', stueck: 10, kurs: 150, pnl: 500, kostenSpanne: 1, kostenGebuehr: 1 },
       { t: t1, art: 'kauf', sym: 'A', stueck: 100, kurs: 199.6, kostenSpanne: 20, kostenGebuehr: 1 }, { t: t2, art: 'verkauf', sym: 'Z', stueck: 5, kurs: 100, pnl: -2500, kostenSpanne: 1, kostenGebuehr: 1 }],
     massnahmen: [{ art: 'div', t: t2, summe: 80 }], liquideSeit: startMs };
+  var AB2 = { start: startMs, tag: '2026-08-24', wert: 100000, positionen: { B: { wertStart: 50 * 290, einstandSumme: 50 * 300 }, C: { wertStart: 1300, einstandSumme: 1000 } } };
   var preise = { A: 220, B: 280 };
-  var r2 = MS.nachSteuer({ buch: b2, preise: preise, startMs: startMs, endeMs: endeMs, qqq: QQ.tage });
+  var r2 = MS.nachSteuer({ buch: b2, abschnitt: AB2, preise: preise, endeMs: endeMs, qqq: QQ.tage });
   var T = STO.topfNeu(STO.MODELL.steuersatz);
-  STO.topfJahr(T, 2026); STO.topfBuche(T, 3000); STO.topfBuche(T, -1000); STO.topfAbrechnen(T); STO.topfBuche(T, -2500); STO.topfAbrechnen(T);
+  STO.topfJahr(T, 2026); STO.topfBuche(T, 3000); STO.topfBuche(T, -1000); STO.topfBuche(T, 500 + 1000 - 1300); STO.topfAbrechnen(T); STO.topfBuche(T, -2500); STO.topfAbrechnen(T);
   var wS = 0, kS = 0; b2.trades.forEach(function (t) { wS += t.stueck * t.kurs; kS += t.kostenSpanne + t.kostenGebuehr; });
-  var kE = kS / wS, erl = 100 * 220 * (1 - kE) + 50 * 280 * (1 - kE), gew = 100 * 220 * (1 - kE) - 20000 + 50 * 280 * (1 - kE) - 15000;
+  var kE = kS / wS, erl = 100 * 220 * (1 - kE) + 50 * 280 * (1 - kE), gew = 100 * 220 * (1 - kE) - 20000 + 50 * 280 * (1 - kE) - 50 * 290;
   var soll = 60000 + erl - Math.max(0, STO.topfStand(T) + gew) * STO.MODELL.steuersatz - 80 * STO.MODELL.steuersatz;
   ok(r2.ok && Math.abs(r2.steuer.buchEnde - soll) < 1e-6 && Math.abs(r2.buchNachSteuerPa - STO.pa(soll, jahre)) < 1e-9,
-    'B.3 Buch nach Steuer: Verlusttopf je Umschichtung, Ausschuettung netto, Endverkauf - Handrechnung mit dem Original Nr. 82', r2.ok ? r2.steuer.buchEnde.toFixed(2) + ' $ / Soll ' + soll.toFixed(2) : r2.grund);
-  ok(r2.ok && Math.abs(r2.kostenJahrPp - kS / 100000 * 100 / jahre) < 1e-12, 'B.3 Kosten je Jahr in Pp = gezahlte Spanne + Gebuehr / Startkapital / Jahre', r2.ok ? r2.kostenJahrPp.toFixed(4) : '');
-  var ohne = MS.nachSteuer({ buch: b2, preise: preise, startMs: startMs, endeMs: endeMs, qqq: [] });
-  ok(!ohne.ok && /QQQ/.test(ohne.grund) && ohne.buchNachSteuerPa != null, 'B.3 ohne QQQ-Reihe: kein Vergleich, ein Grund statt einer Zahl (das Buch nach Steuer steht trotzdem)');
+    'B.3 Buch nach Steuer: Verlusttopf je Umschichtung, am Stichtag gehaltene Positionen ab ihrem Stichtagswert, Ausschuettung netto, Endverkauf - Handrechnung mit dem Original Nr. 82', r2.ok ? r2.steuer.buchEnde.toFixed(2) + ' $ / Soll ' + soll.toFixed(2) : r2.grund);
+  ok(r2.ok && Math.abs(r2.kostenJahrPp - kS / 100000 * 100 / jahre) < 1e-12, 'B.3 Kosten je Jahr in Pp = gezahlte Spanne + Gebuehr / Buchwert am Stichtag / Jahre', r2.ok ? r2.kostenJahrPp.toFixed(4) : '');
+  var ohne = MS.nachSteuer({ buch: b2, abschnitt: AB2, preise: preise, endeMs: endeMs, qqq: [] });
+  ok(!ohne.ok && /QQQ/.test(ohne.grund) && ohne.buchNachSteuerPa === null && ohne.massstab.etf === 'IE00BMFKG444', 'B.3 ohne QQQ-Reihe: kein Vergleich, ein Grund statt einer Zahl (Name und ISIN des Massstabs bleiben)');
+  ok(!MS.nachSteuer({ buch: b2, preise: preise, endeMs: endeMs, qqq: QQ.tage }).ok, 'B.3 ohne Bezug des Abschnitts: Grund statt Zahl');
+
+  /* B.5 QS F1: Bezug = Buchwert am Stichtag des Abschnitts, nie das Startkapital. QS-Beispiel: Buch bei Beginn 105.000 $, danach flach -> 0, nicht +33 % */
+  var bF = { start: 100000, cash: 5000, positionen: [{ sym: 'X', stueck: 1000, einstand: 95 }], trades: [] };
+  var abF = MS.abschnittBezug(bF, { X: 100 }, startMs, '2026-08-24');
+  var rF = MS.nachSteuer({ buch: bF, abschnitt: abF, preise: { X: 100 }, endeMs: endeMs, qqq: QQ.tage });
+  var altF = (Math.pow(105000 / 100000, 1 / jahre) - 1) * 100;
+  ok(abF.wert === 105000 && rF.ok && rF.bruttoPa === 0 && rF.gesamt.bruttoPct === 0 && rF.buchNachSteuerPa < 0 && rF.buchNachSteuerPa > -2,
+    'B.5 QS F1: Buch mit 105.000 $ am Stichtag, danach flach: brutto 0,00 % p. a. (gegen das Startkapital waeren es ' + altF.toFixed(2) + ' %); nach Steuer nur der Endverkauf (Kosten, kein Gewinn im Abschnitt)',
+    rF.ok ? 'brutto ' + rF.bruttoPa.toFixed(4) + ' % p. a., nach Steuer ' + rF.buchNachSteuerPa.toFixed(4) + ' % p. a.' : rF.grund);
+  /* B.6 p. a. erst ab 20 Handelstagen - sonst der Gesamtertrag mit Grund */
+  var rK = MS.nachSteuer({ buch: bF, abschnitt: abF, preise: { X: 103 }, endeMs: Date.UTC(2026, 8, 4, 14), qqq: QQ.tage });
+  ok(rK.ok && rK.einheit === 'gesamt' && rK.buchNachSteuerPa === null && rK.bruttoPa === null && rK.kostenJahrPp === null && /zu kurz für p\. a\./.test(rK.paGrund) &&
+    Math.abs(rK.gesamt.bruttoPct - 3000 / 1050) < 1e-9 && rK.handelstage < 20,
+    'B.6 Abschnitt unter 20 Handelstagen: keine p.-a.-Zahl, Gesamtertrag seit dem Stichtag mit Grund "zu kurz für p. a."', rK.paGrund);
+  /* B.7 QS F2: Ende der QQQ-Reihe gegen den Bewertungstag (Klinke wie korb-kosten.js) */
+  var qBis = QQ.tage.filter(function (x) { return x.d <= '2026-10-15'; });
+  var rL = MS.nachSteuer({ buch: bF, abschnitt: abF, preise: { X: 100 }, endeMs: Date.UTC(2026, 9, 22, 14), qqq: qBis });
+  var rL3 = MS.nachSteuer({ buch: bF, abschnitt: abF, preise: { X: 100 }, endeMs: Date.UTC(2026, 9, 20, 14), qqq: qBis });
+  ok(!rL.ok && /^Maßstab bis 15\.10\.2026, Lücke 5 Tage/.test(rL.grund) && rL.buchNachSteuerPa === null && rL3.ok && rL3.massstab.qqqBis === '2026-10-15',
+    'B.7 QS F2: QQQ endet mehr als 3 Handelstage vor dem Bewertungstag -> Grund "Maßstab bis <Datum>, Lücke n Tage"; 3 Tage -> Zahl', rL.grund);
+  /* B.8 QS F3 (nur mit dem Archiv): die Auskunft massstab-qqq liest die Massnahmen-Nachtraege mit - die Ausschuettung vom 21.09.2026 kommt an */
+  var ARCH = 'E:/Markt-Dashboard-Archiv';
+  if (fs.existsSync(path.join(ARCH, 'alpaca-massnahmen-nachtrag-massstab-2026-10', 'QQQ.json'))) {
+    var mn = fs.readFileSync(path.join(ROOT, 'main.js'), 'utf8'), ia = mn.indexOf("ipcMain.handle('massstab-qqq'"), ie = mn.indexOf('\n});\n', ia);
+    var handler = null;
+    try {
+      handler = new Function('require', 'path', 'fs', 'Kerzen', 'alpacaOrdnerName', 'var ipcMain = { handle: function (n, f) { this.f = f; } }; var massstabQqqMerker = null;\n' +
+        mn.slice(ia, ie + 4).replace("require('./massstab.js')", "require('MASSSTAB')") + '\nreturn ipcMain.f;')(
+        function (m) { return m === 'MASSSTAB' ? MS : require(m); }, path, fs, { ordnerVon: function () { return path.join(ARCH, 'archiv60m'); } }, function (w, s) { return s; });
+    } catch (e) { handler = null; console.log('    ' + e.message); }
+    var probe = handler ? null : { ok: false };
+    if (handler) {
+      warten.push(handler(null, 2026).then(function (a) {
+        var t = a && a.ok ? a.tage.filter(function (x) { return x.d === '2026-09-21'; })[0] : null;
+        ok(!!t && t.aus.length === 1 && t.aus[0] === 0.75143 && /Nachtrag/.test(a.quelle), 'B.8 QS F3: massstab-qqq liefert die QQQ-Ausschuettung vom 21.09.2026 (0,75143 $) aus dem Nachtrag', a && a.ok ? a.quelle + ', bis ' + a.bis : (a && a.grund));
+      }, function (e) { ok(false, 'B.8 massstab-qqq: ' + e.message); }));
+    } else ok(false, 'B.8 die Auskunft massstab-qqq laesst sich aus main.js laden', JSON.stringify(probe));
+  } else console.log('  (B.8 uebersprungen: kein Archiv E:/Markt-Dashboard-Archiv mit dem Massstab-Nachtrag)');
   /* B.4 qqqTage = qqq-bauen.js tageAus (Kunstkerzen: Eroeffnung 09:30, Schluss = Eroeffnung der 16:00-Kerze, Halbtag, Dedupe) */
   var QB = require(path.join(__dirname, 'pruefstrasse', 'daten', 'qqq-bauen.js'));
   var kal = { '2026-10-20': { open: '09:30', close: '16:00' }, '2026-11-27': { open: '09:30', close: '13:00' }, '2026-10-21': { open: '09:30', close: '16:00' } };
@@ -273,14 +318,16 @@ console.log('\nD) Lagebild (Vertrag v1, nur ergaenzt)');
 teil(function () {
   if (!LB) { ok(false, 'D: lagebild fehlt'); return; }
   var ref = JSON.parse(fs.readFileSync(path.join(ROOT, 'test-daten', 'lagebild-beispiel.json'), 'utf8'));
-  var NEUE = ['massstab', 'buchNachSteuerPa', 'abstandNachSteuerPa', 'kostenJahrPp', 'kostenRegel', 'regelK', 'regelnSeit', 'regelnText', 'vorwaertsAbschnitte', 'nachSteuerGrund', 'spyPa', 'bruttoPa'];
-  ok(/Fassung 4/.test(ref.hinweis) && ref.buecher.every(function (b) { return NEUE.every(function (k) { return k in b; }); }) && 'kostenRegel' in ref.regeln,
-    'D.1 Referenz test-daten/lagebild-beispiel.json Fassung 4: alle Buecher tragen die neuen Schluessel, regeln.kostenRegel');
+  var NEUE = ['massstab', 'buchNachSteuerPa', 'abstandNachSteuerPa', 'kostenJahrPp', 'kostenRegel', 'regelK', 'regelnSeit', 'regelnText', 'vorwaertsAbschnitte', 'nachSteuerGrund', 'spyPa', 'bruttoPa', 'nachSteuerGesamt', 'abschnittHandelstage', 'paGrund'];
+  ok(/Fassung 5/.test(ref.hinweis) && ref.buecher.every(function (b) { return NEUE.every(function (k) { return k in b; }); }) && 'kostenRegel' in ref.regeln,
+    'D.1 Referenz test-daten/lagebild-beispiel.json Fassung 5: alle Buecher tragen die neuen Schluessel, regeln.kostenRegel');
   var m = ref.buecher[0];
   ok(m.massstab && m.massstab.name === 'Nasdaq-100 nach Steuer' && m.massstab.etf === 'IE00BMFKG444' && 'ertragPa' in m.massstab && 'nachSteuerPa' in m.massstab && m.kostenRegel === 'eroeffnung+ibkr' &&
     m.regelK === true && m.regelnSeit === '2026-10-26', 'D.1 Momentum-Buch der Referenz: massstab {name, etf, ertragPa, nachSteuerPa}, kostenRegel, regelK, regelnSeit');
   /* bau() mit einer Kunst-Quelle: die Felder kommen aus karteDaten (nachSteuer, regelnSeit, regelnText, abschnitte) */
-  var ns = { ok: true, massstab: { name: 'Nasdaq-100 nach Steuer', etf: 'IE00BMFKG444', ertragPa: 14.234, nachSteuerPa: 12.9111 }, buchNachSteuerPa: 18.4, abstandNachSteuerPa: 5.4889, kostenJahrPp: 1.02137, spyPa: 16.3, bruttoPa: 24.123 };
+  var ns = { ok: true, massstab: { name: 'Nasdaq-100 nach Steuer', etf: 'IE00BMFKG444', ertragPa: 14.234, nachSteuerPa: 12.9111 }, buchNachSteuerPa: 18.4, abstandNachSteuerPa: 5.4889, kostenJahrPp: 1.02137, spyPa: 16.3, bruttoPa: 24.123,
+    einheit: 'pa', handelstage: 41, paGrund: null, von: '2026-11-23', bis: '2027-01-21',
+    gesamt: { bruttoPct: 3.912, buchNachSteuerPct: 2.9, massstabBruttoPct: 2.2, massstabNachSteuerPct: 2.0, abstandPp: 0.9, kostenPp: 0.16321 } };
   var buch = { konfig: Object.assign({}, MH.buchKonfig()), positionen: [], trades: [] };
   var MFD = { karteDaten: function (name) {
     return { an: true, buch: name === 'momentum' ? buch : { positionen: [] }, wert: 100, start: 100, massstab: null, regelnSeit: name === 'momentum' ? Date.UTC(2026, 9, 26, 15) : null,
@@ -291,8 +338,18 @@ teil(function () {
   var bm = L.buecher && L.buecher[0];
   ok(!!bm && bm.massstab.nachSteuerPa === 12.91 && bm.buchNachSteuerPa === 18.4 && bm.abstandNachSteuerPa === 5.49 && bm.kostenJahrPp === 1.0214 && bm.kostenRegel === 'eroeffnung+ibkr' &&
     bm.regelK === true && bm.regelnSeit === '2026-10-26' && bm.vorwaertsAbschnitte.length === 2 && bm.vorwaertsAbschnitte[0].von === '2026-08-25' && bm.spyPa === 16.3 && bm.bruttoPa === 24.12 &&
-    /^Regeln seit 26\.10\.2026: /.test(bm.regelnText), 'D.2 Lagebild.bau uebernimmt die Felder aus karteDaten (gerundet, nichts nachgerechnet)', bm ? JSON.stringify(bm.massstab) : 'kein Buch');
+    /^Regeln seit 26\.10\.2026: /.test(bm.regelnText) && bm.nachSteuerGesamt.buchPct === 2.9 && bm.nachSteuerGesamt.kostenPp === 0.1632 && bm.abschnittHandelstage === 41 && bm.paGrund === null,
+    'D.2 Lagebild.bau uebernimmt die Felder aus karteDaten (gerundet, nichts nachgerechnet)', bm ? JSON.stringify(bm.massstab) : 'kein Buch');
   ok(L.buecher[1].massstab === null && L.buecher[2].buchNachSteuerPa === null && L.buecher[2].vorwaertsAbschnitte.length === 0, 'D.2 Drift- und Intraday-Buch: die Schluessel stehen mit null / []');
+  var vor = { ok: false, grund: 'Vorwärtsabschnitt beginnt mit der ersten liquiden Umschichtung (erwartet um 23.11.2026)', massstab: { name: 'Nasdaq-100 nach Steuer', etf: 'IE00BMFKG444' } };
+  var MFD2 = { karteDaten: function (name) { var x = MFD.karteDaten(name); if (name === 'momentum') { x.nachSteuer = vor; x.abschnitte = []; } return x; }, gegenMarktText: MFD.gegenMarktText };
+  var L2 = LB.bau({ D: { mfBuch: buch, driftBuch: null, positions: [] }, MFDepot: MFD2, Massstab: MS, Kostenregel: KR, jetzt: Date.UTC(2026, 9, 26, 16) }), b0 = L2.buecher && L2.buecher[0];
+  var mq = fs.readFileSync(path.join(ROOT, 'mfdepot.js'), 'utf8');
+  ok(!!b0 && b0.nachSteuerGrund === vor.grund && b0.massstab && b0.massstab.etf === 'IE00BMFKG444' && b0.massstab.nachSteuerPa === null && b0.nachSteuerGesamt === null &&
+    /if \(!b\.liquideSeit\) \{ var r0 = window\.Massstab\.nachSteuer\(\{ buch: b \}\); r0\.grund = vorLiquideGrund\(MH, fl, now\); return r0; \}/.test(mq) &&
+    /'Vorwärtsabschnitt beginnt mit der ersten liquiden Umschichtung' \+ \(tag \? ' \(erwartet um ' \+ MH\.datumDe\(tag\) \+ '\)' : ''\)/.test(mq) &&
+    /if \(k\.name === 'momentum' && k\.buch\) zeilen\.push\(\['Nasdaq-100 nach Steuer'/.test(mq),
+    'D.4 QS F4: vor der ersten liquiden Umschichtung zeigen Lagebild und Karte den Grund (erwarteter Tag), Name und ISIN des Massstabs - keine leere Stelle', b0 ? b0.nachSteuerGrund : '-');
   var sch = LB.pruefeSchema(L, ref);
   ok(sch.fremd.filter(function (x) { return /^buecher/.test(x) && !/\.buchSatz$/.test(x); }).length === 0 && sch.fehlend.filter(function (x) { return /^buecher\[\d\]\.(massstab|buchNach|abstand|kosten|regel|vorwaerts|spyPa|brutto|nachSteuer)/.test(x); }).length === 0,
     'D.3 Schema: keine fremden und keine fehlenden der neuen Schluessel im Abschnitt buecher', sch.fremd.concat(sch.fehlend).slice(0, 4).join(' | '));
@@ -328,7 +385,7 @@ teil(function () {
       try { var M = require(path.join(tmp, f)); return !!M && Object.keys(M).length > 3; } catch (e) { console.log('    ' + f + ': ' + e.message); return false; }
     });
     var M2 = geladen ? require(path.join(tmp, 'massstab.js')) : null;
-    var r = M2 ? M2.nachSteuer({ buch: { start: 100000, cash: 100000, positionen: [], trades: [] }, preise: {}, startMs: Date.UTC(2026, 7, 25), endeMs: Date.UTC(2026, 8, 25), qqq: [{ d: '2026-08-25', o: 100, c: 101, aus: [] }, { d: '2026-09-25', o: 102, c: 103, aus: [] }] }) : null;
+    var r = M2 ? M2.nachSteuer({ buch: { start: 100000, cash: 100000, positionen: [], trades: [] }, abschnitt: { start: Date.UTC(2026, 7, 25), wert: 100000, positionen: {} }, preise: {}, endeMs: Date.UTC(2026, 8, 25), qqq: [{ d: '2026-08-25', o: 100, c: 101, aus: [] }, { d: '2026-09-25', o: 102, c: 103, aus: [] }] }) : null;
     ok(geladen && r && r.ok, 'F.2 im nachgebauten Paket laden kostenregel, steuer, massstab, mfhandel und rechnen nach Steuer (ohne studien/, pruefstrasse/)', r ? (r.ok ? 'ok' : r.grund) : '-');
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
   var html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
@@ -340,5 +397,7 @@ teil(function () {
     'F.3 die QQQ-Tage kommen ueber die Auskunft massstab-qqq aus dem Alpaca-Minutenarchiv (main.js liest, massstab.js rechnet)');
 });
 
-console.log('\n' + (gesamt - fails) + ' von ' + gesamt + ' Pruefungen gruen' + (fails ? ', ' + fails + ' ROT' : ''));
-process.exit(fails ? 1 : 0);
+Promise.all(warten).then(function () {
+  console.log('\n' + (gesamt - fails) + ' von ' + gesamt + ' Pruefungen gruen' + (fails ? ', ' + fails + ' ROT' : ''));
+  process.exit(fails ? 1 : 0);
+});

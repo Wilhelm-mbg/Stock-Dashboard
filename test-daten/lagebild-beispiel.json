@@ -2,7 +2,7 @@
   "kennung": "markt-dashboard/lagebild/v1",
   "exportiert": "2026-10-12T14:35:00Z",
   "appVersion": "8.45.1",
-  "hinweis": "Simulation mit virtuellem Kapital, keine Anlageberatung. KUNSTDATEN zum Testen des Reiters - keine echten Werte. Fassung 4 (26.10., Nr. 126: buecher[] um massstab, buchNachSteuerPa, abstandNachSteuerPa, kostenJahrPp, kostenRegel, regelK, regelnSeit, regelnText, vorwaertsAbschnitte, nachSteuerGrund, spyPa, bruttoPa ergaenzt; regeln.kostenRegel neu). Fassung 3 (12.10.: Schluessel ohne Umlaute - kostenHuerde, edgeWaechterAusfaelle; sonst wie Fassung 2, nach Zweitleser): Zeiten 2026, Sitzung passt zur Uhrzeit (14:35 UTC = 10:35 New York = haupt), Umlaute wie in der App.",
+  "hinweis": "Simulation mit virtuellem Kapital, keine Anlageberatung. KUNSTDATEN zum Testen des Reiters - keine echten Werte. Fassung 5 (26.10., Nachbesserung QS Nr. 126: buecher[] zusaetzlich nachSteuerGesamt {buchPct, massstabPct, abstandPp, bruttoPct, massstabBruttoPct, kostenPp, von, bis, massstabBis}, abschnittHandelstage, paGrund - p. a. erst ab 20 Handelstagen des Vorwaertsabschnitts, Bezug = Buchwert am Stichtag; massstab traegt Name/ISIN auch ohne Zahl; Beispiel: EIN Abschnitt ab der ersten liquiden Umschichtung). Fassung 4 (26.10., Nr. 126: buecher[] um massstab, buchNachSteuerPa, abstandNachSteuerPa, kostenJahrPp, kostenRegel, regelK, regelnSeit, regelnText, vorwaertsAbschnitte, nachSteuerGrund, spyPa, bruttoPa ergaenzt; regeln.kostenRegel neu). Fassung 3 (12.10.: Schluessel ohne Umlaute - kostenHuerde, edgeWaechterAusfaelle; sonst wie Fassung 2, nach Zweitleser): Zeiten 2026, Sitzung passt zur Uhrzeit (14:35 UTC = 10:35 New York = haupt), Umlaute wie in der App.",
   "kopf": {
     "gesamtwert": 103250.4,
     "tagPct": 0.42,
@@ -66,9 +66,10 @@
         "luecke": 21,
         "halten": 63,
         "anteil": 0.05,
-        "kostenBp": 20,
         "korb": 187,
-        "quelle": "gemessene Konfiguration (liquide.js), nur Anzeige"
+        "quelle": "gemessene Konfiguration (liquide.js), nur Anzeige",
+        "kostenRegel": "eroeffnung+ibkr",
+        "massstab": "nasdaq100-steuer"
       },
       "massstab": {
         "name": "Nasdaq-100 nach Steuer",
@@ -85,19 +86,27 @@
       "regelnText": "Regeln seit 26.10.2026: Kosten nach der Kostenregel (Spanne der Umsatzklasse zur Eröffnung + IBKR Fixed, je Trade), Regel K gegen Kleinstpositionen an (unter 5 % des Platzwerts kein Kauf, kein gehaltener Bestand), Maßstab Nasdaq-100 nach deutscher Steuer (S&P 500 und brutto nachrichtlich)",
       "vorwaertsAbschnitte": [
         {
-          "von": "2026-08-25",
-          "bis": "2026-10-26",
-          "regeln": "Kosten 20 Bp je Seite, Regel K gegen Kleinstpositionen an (unter 5 % des Platzwerts kein Kauf, kein gehaltener Bestand), Maßstab S&P 500 brutto"
-        },
-        {
-          "von": "2026-10-26",
+          "von": "2026-11-23",
           "bis": null,
           "regeln": "Kosten nach der Kostenregel (Spanne der Umsatzklasse zur Eröffnung + IBKR Fixed, je Trade), Regel K gegen Kleinstpositionen an (unter 5 % des Platzwerts kein Kauf, kein gehaltener Bestand), Maßstab Nasdaq-100 nach deutscher Steuer (S&P 500 und brutto nachrichtlich)"
         }
       ],
       "nachSteuerGrund": null,
       "spyPa": 16.3,
-      "bruttoPa": 24.1
+      "bruttoPa": 24.1,
+      "nachSteuerGesamt": {
+        "buchPct": 2.9,
+        "massstabPct": 2,
+        "abstandPp": 0.9,
+        "bruttoPct": 3.91,
+        "massstabBruttoPct": 2.2,
+        "kostenPp": 0.1632,
+        "von": "2026-11-23",
+        "bis": "2027-01-21",
+        "massstabBis": "2027-01-21"
+      },
+      "abschnittHandelstage": 41,
+      "paGrund": null
     },
     {
       "name": "drift",
@@ -148,7 +157,10 @@
       "vorwaertsAbschnitte": [],
       "nachSteuerGrund": null,
       "spyPa": null,
-      "bruttoPa": null
+      "bruttoPa": null,
+      "nachSteuerGesamt": null,
+      "abschnittHandelstage": null,
+      "paGrund": null
     },
     {
       "name": "intraday",
@@ -192,7 +204,10 @@
       "vorwaertsAbschnitte": [],
       "nachSteuerGrund": null,
       "spyPa": null,
-      "bruttoPa": null
+      "bruttoPa": null,
+      "nachSteuerGesamt": null,
+      "abschnittHandelstage": null,
+      "paGrund": null
     }
   ],
   "verlauf": {
