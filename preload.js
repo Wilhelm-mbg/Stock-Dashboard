@@ -74,6 +74,8 @@ contextBridge.exposeInMainWorld('api', {
   archivKerzen: (sym, zeitrahmen, anzahl) => ipcRenderer.invoke('archiv-kerzen', sym, zeitrahmen, anzahl),
   /* Kapitalmassnahmen fuer die Ereignis-Marken des Viewers (8b). NUR LESEN. */
   archivMassnahmen: (sym) => ipcRenderer.invoke('archiv-massnahmen', sym),
+  /* Massstab Nasdaq-100 nach Steuer (Nr. 126): QQQ-Tage aus dem Alpaca-Minutenarchiv. NUR LESEN. */
+  massstabQqq: (vonJahr) => ipcRenderer.invoke('massstab-qqq', vonJahr),
   sammlerStart: (intervall) => ipcRenderer.invoke('sammler-start', intervall),
   sammlerStop: () => ipcRenderer.invoke('sammler-stop'),
   sammlerEinstellen: (e) => ipcRenderer.invoke('sammler-einstellen', e),

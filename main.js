@@ -2490,6 +2490,47 @@ async function holeTerminFenster(vonMs, bisMs) {
     req.end();
   });
 }
+/* ---- Massstab Nasdaq-100 nach Steuer: die QQQ-Tage aus dem Alpaca-Minutenarchiv (Auftrag Nr. 126, 26.10.2026) ----
+ * NUR LESEN. Kreuzprobe 26.10.2026: der Yahoo-Tagesschluss von QQQ weicht vom Alpaca-Tagesschluss bis 0,023 Pp je Tag ab
+ * (> 0,01 Pp) - deshalb wie Nr. 122 und die Pruefstrasse (pruefstrasse/daten/qqq-bauen.js) aus alpaca1m/QQQ/<Jahr>.json (roh,
+ * Alpaca SIP), Kalender alpaca1m/_kalender.json, Ausschuettungen alpaca-massnahmen/QQQ.json. Die Rechnung (Eroeffnung, Schluss
+ * = Eroeffnung der 16:00-Kerze, Dedupe der Ausschuettungen) steht in massstab.js (qqqTage, Kopie von qqq-bauen.js). Gelesen werden
+ * nur die Jahre ab vonJahr (Vorgabe: das Jahr des Buchstarts), asynchron (die Jahresdatei hat ~10 MB), das Ergebnis je
+ * Dateistand gemerkt. */
+let massstabQqqMerker = null;
+ipcMain.handle('massstab-qqq', async (_ev, vonJahr) => {
+  try {
+    const Massstab = require('./massstab.js');
+    const wurzel = path.dirname(Kerzen.ordnerVon('60m'));
+    const alp = path.join(wurzel, 'alpaca1m');
+    const ord = alpacaOrdnerName(alp, 'QQQ');
+    const jetzt = new Date().getUTCFullYear(), von = Math.max(2016, Math.min(jetzt, parseInt(vonJahr, 10) || jetzt));
+    const dateien = [];
+    for (let j = von; j <= jetzt; j++) { const f = path.join(alp, ord, j + '.json'); if (fs.existsSync(f)) dateien.push(f); }
+    const kalDatei = path.join(alp, '_kalender.json'), massDatei = path.join(wurzel, 'alpaca-massnahmen', ord + '.json');
+    if (!dateien.length || !fs.existsSync(kalDatei)) return { ok: false, grund: 'Alpaca-Minutenarchiv für QQQ fehlt' };
+    const stempel = (await Promise.all(dateien.concat([kalDatei, massDatei]).map(async (f) => { try { return (await fs.promises.stat(f)).mtimeMs; } catch (e) { return 0; } }))).join('|');
+    if (massstabQqqMerker && massstabQqqMerker.stempel === stempel) return massstabQqqMerker.antwort;
+    let kerzen = [];
+    for (const f of dateien) {
+      const J = JSON.parse(await fs.promises.readFile(f, 'utf8'));
+      if (J.felder !== '[zeit, schluss, umsatz, hoch, tief, eroeffnung]') return { ok: false, grund: 'Feldfolge ' + J.felder + ' in ' + path.basename(f) };
+      kerzen = kerzen.concat(J.series || []);
+    }
+    const kal = JSON.parse(await fs.promises.readFile(kalDatei, 'utf8')).tage || {};
+    let saetze = [];
+    try { saetze = JSON.parse(await fs.promises.readFile(massDatei, 'utf8')).saetze || []; } catch (e) { saetze = []; }
+    const A = Massstab.qqqAusschuettungen(saetze);
+    const tage = Massstab.qqqTage(kerzen, kal, A.je);
+    const antwort = { ok: true, quelle: 'alpaca1m/' + ord + ' (Alpaca SIP, roh) + alpaca-massnahmen', tage: tage, doppelt: A.doppelt,
+      von: tage.length ? tage[0].d : null, bis: tage.length ? tage[tage.length - 1].d : null };
+    massstabQqqMerker = { stempel: stempel, antwort: antwort };
+    return antwort;
+  } catch (e) {
+    return { ok: false, grund: String((e && e.message) || e).slice(0, 160) };
+  }
+});
+
 /* Kapitalmassnahmen eines Werts - NUR LESEN, kein Abruf.
  *
  * Die Datei schreibt die Vollsammlung (tools/alpaca-vollsammlung.js --massnahmen);

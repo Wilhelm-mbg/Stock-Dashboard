@@ -335,11 +335,161 @@
   /** Der Name der Marktlinie in einer Legende. */
   function marktName(v) { return 'S&P 500 (SPY, ' + marktZusatz(v) + ')'; }
 
+  /* ================= Massstab Nasdaq-100 nach deutscher Steuer (Auftrag Nr. 126, 26.10.2026) =================
+   *
+   * Wilhelms Massstab seit dem 23.10.2026: das Buch NACH STEUER gegen den Nasdaq-100 mit Ausschuettungen NACH STEUER (Fonds
+   * thesaurierend, Vorabpauschale, Verkauf am Ende) - wie die Pruefstrasse (Nr. 121-2b, adapter/korb-kosten.js nachSteuer) und
+   * Nr. 122. Handelbar waere der "Xtrackers Nasdaq 100 UCITS ETF 1C" (IE00BMFKG444) - nur genannt, seine Kurse braucht es nicht:
+   * gerechnet wird mit der QQQ-Reihe (TER beider 0,20 % - Aufschlag 0, wie korb-kosten.js). S&P 500 und brutto nachrichtlich.
+   * Das Steuermodell ist die Kopie aus Nr. 82 (steuer.js). Ein Rechenmodell, keine Steuerberatung.
+   *
+   * BUCH NACH STEUER - BEGRUENDETE ABWEICHUNG VON DER MESSUNG: Nr. 82 zieht die Steuer bei jeder Umschichtung aus dem Bargeld
+   * (zwischen Verkaeufen und Kaeufen). Das App-Buch handelt BRUTTO weiter (sein Stand bleibt mit allen alten Zahlen vergleichbar);
+   * die Steuer wird als Schatten gerechnet: realisierte Gewinne je Umschichtung (Trades art verkauf/reihenende, ein Zeitstempel =
+   * ein Abrechnungsschritt) in den Aktien-Verlusttopf, Ausschuettungen netto, am Ende alles verkauft (Kosten je Seite = der mittlere
+   * Kostensatz der Trades des Buchs) mit Endabrechnung. Nicht abgebildet: dass die gezahlte Steuer nicht mehr mitarbeitet (Zinseszins
+   * der Steuerlast) - ueber Monate ein Bruchteil eines Pp.
+   *
+   * QQQ-TAGE aus dem Alpaca-Minutenarchiv (Kreuzprobe 26.10.2026: Yahoo-Tagesschluss weicht bis 0,023 Pp je Tag ab, > 0,01 Pp ->
+   * Alpaca wie Nr. 122): qqqTage ist eine Kopie von pruefstrasse/daten/qqq-bauen.js tageAus + ausschuettungen (Eroeffnung = erste
+   * Kerze ab 09:30, Schluss = Eroeffnung der 16:00-Kerze, Halbtag 13:00; Ausschuettungen aus alpaca-massnahmen, dedupliziert nach
+   * Ex-Tag und Betrag). main.js liest die Dateien (Auskunft massstab-qqq), hier steht nur die Rechnung. */
+  var ETF_NASDAQ = { name: 'Xtrackers Nasdaq 100 UCITS ETF 1C', isin: 'IE00BMFKG444', ter: 0.0020 };
+  var TER_QQQ = 0.0020;
+  var MASSSTAB_NAME = 'Nasdaq-100 nach Steuer';
+
+  /** Kopie pruefstrasse/daten/qqq-bauen.js nyVersatzStunden / nyZeit / minuteVon (US-Sommerzeit ohne Tabelle). */
+  function nyVersatzStunden(ms) {
+    var d = new Date(ms), j = d.getUTCFullYear();
+    function sonntag(monat, n) { var t = new Date(Date.UTC(j, monat, 1)); var wd = t.getUTCDay(); return 1 + ((7 - wd) % 7) + 7 * (n - 1); }
+    var a = Date.UTC(j, 2, sonntag(2, 2), 7), e = Date.UTC(j, 10, sonntag(10, 1), 6);
+    return ms >= a && ms < e ? -4 : -5;
+  }
+  function nyZeitQ(ms) { var lok = new Date(ms + nyVersatzStunden(ms) * 3600000); return { datum: lok.toISOString().slice(0, 10), min: lok.getUTCHours() * 60 + lok.getUTCMinutes() }; }
+  function minuteVon(hhmm) { var p = String(hhmm).split(':'); return +p[0] * 60 + +p[1]; }
+  /** Kopie qqq-bauen.js ausschuettungen: je Ex-Tag die Betraege (cash_dividends), dedupliziert nach (Ex-Tag, Betrag). */
+  function qqqAusschuettungen(saetze) {
+    var je = {}, gesehen = {}, doppelt = [];
+    (saetze || []).forEach(function (x) {
+      if (x._art !== 'cash_dividends' || !(Number(x.rate) > 0)) return;
+      var key = x.ex_date + '|' + Number(x.rate);
+      if (gesehen[key]) { doppelt.push({ exTag: x.ex_date, betrag: Number(x.rate) }); return; }
+      gesehen[key] = true; (je[x.ex_date] = je[x.ex_date] || []).push(Number(x.rate));
+    });
+    return { je: je, doppelt: doppelt };
+  }
+  /** Kopie qqq-bauen.js tageAus (ohne cb): kerzen [[ms, schluss, umsatz, hoch, tief, eroeffnung], ...] sortiert,
+   *  kal { 'JJJJ-MM-TT': { open, close } }, aus { Ex-Tag: [Betraege] } -> [{ d, o, c, aus, halb, schlussArt }]. */
+  function qqqTage(kerzen, kal, aus) {
+    var je = {};
+    (kerzen || []).forEach(function (b) {
+      var z = nyZeitQ(b[0]), k = kal[z.datum]; if (!k) return;
+      var t = je[z.datum] || (je[z.datum] = { auf: NaN, aufMin: 9999, s: NaN, letzt: NaN, letztMin: -1, sMin: minuteVon(k.close), halb: k.close !== '16:00' });
+      if (z.min >= 570 && z.min < t.sMin && z.min < t.aufMin) { t.aufMin = z.min; t.auf = b[5]; }
+      if (z.min === t.sMin) t.s = b[5];
+      if (z.min >= 570 && z.min < t.sMin && z.min > t.letztMin) { t.letztMin = z.min; t.letzt = b[1]; }
+    });
+    var tage = [];
+    Object.keys(je).sort().forEach(function (d) {
+      var t = je[d];
+      if (!(t.auf > 0) || t.aufMin > 600) return;
+      var c = t.s > 0 ? t.s : t.letzt, art = t.s > 0 ? 'eroeffnung-' + (t.halb ? '13:00' : '16:00') : 'schluss-letzte-vor-' + (t.halb ? '13:00' : '16:00');
+      if (!(c > 0)) return;
+      tage.push({ d: d, o: t.auf, c: c, aus: (aus || {})[d] || [], halb: t.halb || undefined, schlussArt: art });
+    });
+    return tage;
+  }
+
+  function steuerModul() {
+    if (typeof module !== 'undefined' && module.exports) return require('./steuer.js');
+    return root.Steuer || null;
+  }
+  function tagIso(ms) { return new Date(ms).toISOString().slice(0, 10); }
+
+  /**
+   * Das Buch nach Steuer gegen den Nasdaq-100 nach Steuer. e:
+   *   buch        das Momentum-Buch (start, cash, positionen, trades, massnahmen, liquideSeit, regelnSeit)
+   *   preise      {SYM: Kurs} - die Kurse der Bewertung (wie MFHandel.bewerte)
+   *   startMs     Beginn des Vorwaertstests (liquideSeit, Buchstart 25.08.2026); endeMs = Stand
+   *   qqq         [{ d, o, c, aus }] - QQQ-Tage (qqqTage), muss den Starttag (oder den naechsten Handelstag) und das Ende tragen
+   *   marktPct    nachrichtlich: S&P 500 (Gesamtertrag) in % ueber denselben Zeitraum (aus vergleich(), kein zweiter Rechenweg)
+   * Rueckgabe { ok, grund, von, bis, jahre, bruttoPa, buchNachSteuerPa, massstab: { name, etf, ertragPa, nachSteuerPa },
+   *   abstandNachSteuerPa, spyPa, kostenJahrPp, steuer: {...} } - Pp p. a. (Kalenderzeit wie Nr. 82 pa()). Wirft nie.
+   */
+  function nachSteuer(e) {
+    var aus = { ok: false, grund: null, von: null, bis: null, jahre: null, bruttoPa: null, buchNachSteuerPa: null,
+      massstab: { name: MASSSTAB_NAME, etf: ETF_NASDAQ.isin, ertragPa: null, nachSteuerPa: null }, abstandNachSteuerPa: null, spyPa: null, kostenJahrPp: null, steuer: null };
+    try {
+      var S = steuerModul(), b = e && e.buch;
+      if (!S) { aus.grund = 'Steuerrechner (steuer.js) nicht geladen'; return aus; }
+      if (!b || !(b.start > 0)) { aus.grund = 'kein Buch'; return aus; }
+      var startMs = e.startMs, endeMs = e.endeMs;
+      if (!(startMs > 0) || !(endeMs > startMs)) { aus.grund = 'der Vorwärtstest hat noch keinen Zeitraum'; return aus; }
+      var jahre = (endeMs - startMs) / (365.25 * 86400000), skala = S.START / b.start, satz = S.MODELL.steuersatz;
+      aus.jahre = jahre; aus.von = tagIso(startMs); aus.bis = tagIso(endeMs);
+      function paVon(ende) { return S.pa(ende * skala, jahre); }
+      /* Buch brutto */
+      var wert = b.cash, kSumme = 0, wSumme = 0, kostenUsd = 0;
+      (b.positionen || []).forEach(function (p) { var k = (e.preise || {})[p.sym]; wert += p.stueck * (k > 0 ? k : p.einstand); });
+      aus.bruttoPa = paVon(wert);
+      /* Kosten je Trade: getrennt gebucht (Kostenregel) oder - aeltere Trades - 20 Bp je Seite */
+      var trades = (b.trades || []).filter(function (t) { return t.t >= startMs && (t.art === 'kauf' || t.art === 'verkauf'); });
+      trades.forEach(function (t) {
+        var w = t.stueck * t.kurs, k = t.kostenSpanne != null ? t.kostenSpanne + t.kostenGebuehr : w * 0.002;
+        kostenUsd += k; kSumme += k; wSumme += w;
+      });
+      aus.kostenJahrPp = kostenUsd / b.start * 100 / jahre;
+      /* Aktien-Verlusttopf: je Zeitstempel ein Abrechnungsschritt (Nr. 82 handel/steuerSchritt), Jahr nach UTC-Datum */
+      var topf = S.topfNeu(satz), schritte = {};
+      (b.trades || []).forEach(function (t) {
+        if (t.t < startMs || (t.art !== 'verkauf' && t.art !== 'reihenende') || typeof t.pnl !== 'number') return;
+        (schritte[t.t] = schritte[t.t] || []).push(t.pnl);
+      });
+      Object.keys(schritte).map(Number).sort(function (x, y) { return x - y; }).forEach(function (t) {
+        S.topfJahr(topf, +tagIso(t).slice(0, 4));
+        schritte[t].forEach(function (g) { S.topfBuche(topf, g); });
+        S.topfAbrechnen(topf);
+      });
+      S.topfJahr(topf, +tagIso(endeMs).slice(0, 4));
+      /* Ausschuettungen netto (nicht ueber den Topf); bei Leerverkauf (summe < 0) keine Steuer */
+      var divBrutto = 0;
+      (b.massnahmen || []).forEach(function (m) { if (m.art === 'div' && m.t >= startMs && m.summe > 0) divBrutto += m.summe; });
+      var divSteuer = divBrutto * satz;
+      /* Endverkauf wie Nr. 82 (b): alles zum Kurs, Kosten je Seite = mittlerer Kostensatz der Trades (sonst 20 Bp) */
+      var kEnde = wSumme > 0 ? kSumme / wSumme : 0.002, erloes = 0, gewinn = 0;
+      (b.positionen || []).forEach(function (p) {
+        var k = (e.preise || {})[p.sym], kurs = k > 0 ? k : p.einstand, x = p.stueck * kurs * (1 - kEnde);
+        erloes += x; gewinn += x - p.stueck * p.einstand;
+      });
+      var topfDanach = S.topfStand(topf) + gewinn, steuerEnde = Math.max(0, topfDanach) * satz - topf.gezahlt;
+      var frueher = topf.jahre.slice(0, -1).reduce(function (a, j) { return a + j.aktiensteuer; }, 0);
+      var aktienSteuer = frueher + topf.gezahlt + steuerEnde;
+      var buchNach = b.cash + erloes - aktienSteuer - divSteuer;
+      aus.buchNachSteuerPa = paVon(buchNach);
+      aus.steuer = { modell: S.QUELLE, satz: satz, aktienSteuer: aktienSteuer, ausschuettungSteuer: divSteuer, endverkaufKostenSatz: kEnde,
+        verlustvortrag: topfDanach < 0 ? -topfDanach : 0, buchEnde: buchNach };
+      /* Nasdaq-100: QQQ-Fonds ab dem ersten QQQ-Tag am oder nach dem Start, Kauf zur Eroeffnung (Modell Nr. 82 fonds) */
+      var q = (e.qqq || []).filter(function (x) { return x.d >= aus.von && x.d <= aus.bis; });
+      if (!q.length) { aus.grund = 'QQQ-Reihe (Nasdaq-100) für den Zeitraum fehlt'; return aus; }
+      var reihe = q.map(function (x) { return { datum: x.d, eroeffnung: x.o, schluss: x.c, aus: x.aus || [] }; });
+      var fo = S.fonds(reihe, S.START, S.mit(S.MODELL, { kostenPa: ETF_NASDAQ.ter - TER_QQQ }));
+      aus.massstab.ertragPa = S.pa(fo.endA, jahre);
+      aus.massstab.nachSteuerPa = S.pa(fo.endB, jahre);
+      aus.massstab.qqqVon = reihe[0].datum; aus.massstab.qqqBis = reihe[reihe.length - 1].datum;
+      aus.abstandNachSteuerPa = aus.buchNachSteuerPa - aus.massstab.nachSteuerPa;
+      if (typeof e.marktPct === 'number' && isFinite(e.marktPct)) aus.spyPa = (Math.pow(1 + e.marktPct * 0.01, 1 / jahre) - 1) * 100;
+      aus.ok = true;
+      return aus;
+    } catch (err) { aus.grund = 'Rechnung nach Steuer: ' + String((err && err.message) || err).slice(0, 120); return aus; }
+  }
+
   var Massstab = {
     prozent: prozent, vergleich: vergleich, vorLiquide: vorLiquide, mitMarkt: mitMarkt, marktAn: marktAn,
     kopfText: kopfText, langText: langText, datum: datum,
     hinweis: hinweis, hinweise: hinweise, marktName: marktName, marktZusatz: marktZusatz,
-    MARKT_MAX_ALTER: MARKT_MAX_ALTER
+    MARKT_MAX_ALTER: MARKT_MAX_ALTER,
+    /* Auftrag Nr. 126 */
+    nachSteuer: nachSteuer, qqqTage: qqqTage, qqqAusschuettungen: qqqAusschuettungen, ETF_NASDAQ: ETF_NASDAQ, MASSSTAB_NAME: MASSSTAB_NAME
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = Massstab; return; }
   root.Massstab = Massstab;
