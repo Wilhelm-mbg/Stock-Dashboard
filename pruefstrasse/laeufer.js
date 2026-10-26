@@ -218,7 +218,9 @@ function messen(kennung, phase, ausDatei, extra) {
     else if (kand.form === 'tag' && phase === 'entdeckung') E = require('./adapter/tag.js').lauf(regel, kand, { quelle: kand.daten || 'panel', bisPanelende: true, schnitt: 'panelende', registerM: extra.m, tafel: extra.tafel });
     else if (kand.form === 'tag' && phase === 'vorwaerts') { var TFv = extra.tafel || require('./tafel.js').oeffne({ quelle: kand.daten || 'panel', pruefzeit: true, siegelPfad: siegelPfad }); E = vorwaertsKind(TFv, regel, kand, extra); }
     else if (kand.form === 'tag') E = require('./adapter/tag.js').lauf(regel, kand, { quelle: kand.daten || 'panel', pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: keys, tafel: extra.tafel, registerM: extra.m });
-    else if (kand.form === 'korb') { var mK = (register().gesamt || 0) + 1; E = require('./adapter/korb.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad, pruefung: pruefzeit ? { von: '2023-01-03' } : null, placeboBuecher: K.korbBuecher(mK), registerM: mK, kostenBpJeSeite: K.KORB.kostenRegel, massstab: K.KORB.massstab }); }   /* Nr. 121-2b: Kostenregel + Nasdaq-100 nach Steuer */
+    else if (kand.form === 'korb' && phase === 'zaehlung') E = require('./adapter/korb.js').zaehle(kand, {});                    /* Nr. 125a: Machbarkeitstor - nur der Kalender, keine Rendite */
+    else if (kand.form === 'korb' && phase === 'vorwaerts') E = vorwaertsKindKorb(regel, kand, extra);
+    else if (kand.form === 'korb') { var mK = extra.m != null ? extra.m : korbM(register()); E = require('./adapter/korb.js').lauf(regel, kand, { bisPanelende: true, pruefung: null, placeboBuecher: K.korbBuecher(mK), registerM: mK, kostenBpJeSeite: K.KORB.kostenRegel, massstab: K.KORB.massstab, kapitalUsd: K.KORB.kapitalUsd }); }   /* Nr. 121-2b: Kostenregel + Nasdaq-100 nach Steuer; Nr. 125a: Entdeckung bis zum Panel-Ende, Bestaetigung nur vorwaerts, Kapital 10.000 */
     else E = require('./adapter/minute.js').lauf(regel, kand, { pruefzeit: pruefzeit, siegelPfad: siegelPfad });
   } finally { try { if (+fs.readFileSync(SPERRDATEI, 'utf8') === process.pid) fs.unlinkSync(SPERRDATEI); } catch (e) { /* Sperre ist Komfort */ } }
   E.kennung = kennung; E.form = kand.form; E.phase = phase; E.stand = jetzt(); E.konfigurationenSoll = kand.konfigurationen.length;
@@ -257,7 +259,7 @@ function urteile(E, P, Rg) {
   var kandidaten = konf.filter(function (k) { return k.kandidat; });
   var urteil, grund;
   if (fehler.length) { urteil = 'Messgeraet-Fehler'; grund = fehler.join('; '); }
-  else if (kandidaten.length && !P && E.vorgemerkt) { urteil = 'nicht entscheidbar'; grund = 'Kandidaten vorgemerkt fuer die Vorwaertsmessung (ein vorregistrierter Blick ab dem Stichtag nach Siegel 2): ' + kandidaten.map(function (k) { return k.key + ' (Bedarf ' + ganz(k.vorwaerts && k.vorwaerts.nBedarf) + ' Signaltage)'; }).join(', '); }
+  else if (kandidaten.length && !P && E.vorgemerkt) { urteil = 'nicht entscheidbar'; grund = 'Kandidaten vorgemerkt fuer die Vorwaertsmessung (ein vorregistrierter Blick ab dem Stichtag nach Siegel 2): ' + kandidaten.map(function (k) { return k.key + ' (Bedarf ' + ganz(k.vorwaerts && k.vorwaerts.nBedarf) + ' ' + ((k.vorwaerts && k.vorwaerts.einheit) || 'Signaltage') + ')'; }).join(', '); }
   else if (kandidaten.length && !P) { urteil = 'nicht entscheidbar'; grund = 'Kandidaten ohne Pruefung: ' + kandidaten.map(function (k) { return k.key; }).join(', '); }
   else if (P) {
     var zeilen = kandidaten.map(function (k) { var p = (P.konfigurationen.filter(function (x) { return x.key === k.key; })[0] || {}).pruefung; return { key: k.key, p: p && p.pEinseitig != null ? p.pEinseitig : 1, pr: p }; });
@@ -291,7 +293,7 @@ function zeileKorb(k) {
   var e = k.entdeckung, b = e.buch, ns = e.nachSteuer;
   /* Nr. 121-2b: mit Massstab Nasdaq-100 nach Steuer stehen Buch/ETF, Abstand, Median und vorn nach Steuer; vor Steuern (Buch / SPY in $) in Klammern */
   if (ns) return '| ' + k.key + ' | ' + e.fenster.von + '–' + e.fenster.bis + ' | nach Steuer ' + de(ns.k0.buchB, 2) + ' / Nasdaq-ETF ' + de(ns.k0.nasdaqB, 2) + ' % p. a. (vor Steuern ' + ganz(b.buchEnde) + ' $ / SPY ' + ganz(b.spyEnde) + ' $) | ' + de(ns.k0.buchB - ns.k0.nasdaqB, 2) + ' | ' + de(ns.median.abstandNasdaqB, 2) + ' | ' + ns.vornGegenNasdaqB + ' von ' + ns.phasen + ' | ' +
-    e.rang + ' von ' + e.von + ' (vor Steuern; Median ' + de(e.zufall.median, 2) + ', P95 ' + de(e.zufall.p95, 2) + ') | ' + de(b.rueckschlagBuch, 1) + ' % | ' + JSON.stringify(b.abgaenge) + ' | ' + k.urteil +
+    e.rang + ' von ' + e.von + ' (vor Steuern; Median ' + de(e.zufall.median, 2) + ', P95 ' + de(e.zufall.p95, 2) + (e.pSchwelle != null ? '; p ' + de(e.pEinseitig, 4) + ' gegen ' + de(e.pSchwelle, 4) + ', m ' + e.registerM + ', B ' + e.B : '') + ') | ' + de(b.rueckschlagBuch, 1) + ' % | ' + JSON.stringify(b.abgaenge) + ' | ' + k.urteil +
     (k.pruefung && k.pruefung.buch ? ' | ' + de(k.pruefung.nachSteuer ? k.pruefung.nachSteuer.median.abstandNasdaqB : k.pruefung.buch.startphasen.median, 2) + ' / Rang ' + k.pruefung.rang + (k.belegt ? ' Holm ja' : '') : '') + ' |';
   return '| ' + k.key + ' | ' + e.fenster.von + '–' + e.fenster.bis + ' | ' + ganz(b.buchEnde) + ' $ / ' + ganz(b.spyEnde) + ' $ | ' + de(b.abstandPa, 2) + ' | ' + de(b.startphasen.median, 2) + ' | ' + b.startphasen.vorDemMarkt + ' von ' + b.startphasen.anzahl + ' | ' +
     e.rang + ' von ' + e.von + ' (Median ' + de(e.zufall.median, 2) + ', P95 ' + de(e.zufall.p95, 2) + ') | ' + de(b.rueckschlagBuch, 1) + ' % | ' + JSON.stringify(b.abgaenge) + ' | ' + k.urteil +
@@ -318,7 +320,7 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung
     ' Erwartung vorab: ' + kand.erwartung.groesse + ' (' + kand.erwartung.richtung + ').');
   o.push('');
   o.push('Siegel 1 (Kandidatenordner) `' + (siegel1 ? siegel1.commit.slice(0, 12) : '–') + '`' + (siegel2 ? ', Siegel 2 (KANDIDATEN.json) `' + siegel2.commit.slice(0, 12) + '`' : ', kein Siegel 2 (keine Pruefung)') +
-    '. Entdeckung bis ' + (E.schnitt ? 'vor ' + E.schnitt : K.ENTDECKUNG_BIS) + ', Pruefung ab ' + (E.form === 'minute' ? K.MINUTE.sperreAb : K.EICHUNG.schnitt) + ' nur fuer Kandidaten. Kriterien (Nr. 121-2a): netto > 0 und p_E ≤ min(P(T_df ≥ ' + K.KANDIDAT_T + '), ' + K.REGISTER_ALPHA + '/m) in der t-Verteilung (df = n_eff − 1, m = Register + Konfigurationen des Laufs' + (E.registerM != null ? ' = ' + E.registerM : '') + '; Schwelle je Konfiguration im Abschnitt Messgeraet), Tor 1 nur nachrichtlich (' + K.TOR1_FAKTOR + ' × projizierte Bestaetigungs-MDE' + (kand.form === 'tag' ? ' = netto ≥ 11,31 × se, zum Vergleich mit Messungen vor dem 23.10.2026' : '') + '), kein Placebo-Verstoss (|Placebo| > ' + K.PLACEBO_T + ' se und > ¼ Huerde); das verschobene Signal mit derselben Schranke zweiseitig (sonst Messgeraet-Fehler); MDE80 = ' + K.MDE_FAKTOR + ' × se ist die Aufloesung, kein Kriterium.');
+    '. Entdeckung bis ' + (E.schnitt ? 'vor ' + E.schnitt : K.ENTDECKUNG_BIS) + (E.form === 'korb' ? ' (Korb seit Nr. 125a: Entdeckung bis zum Panel-Ende ' + (E.entdeckungBis || '') + ', Bestaetigung nur vorwaerts).' : ', Pruefung ab ' + (E.form === 'minute' ? K.MINUTE.sperreAb : K.EICHUNG.schnitt) + ' nur fuer Kandidaten.') + ' Kriterien (Nr. 121-2a): netto > 0 und p_E ≤ min(P(T_df ≥ ' + K.KANDIDAT_T + '), ' + K.REGISTER_ALPHA + '/m) in der t-Verteilung (df = n_eff − 1, m = Register + Konfigurationen des Laufs' + (E.registerM != null ? ' = ' + E.registerM : '') + '; Schwelle je Konfiguration im Abschnitt Messgeraet), Tor 1 nur nachrichtlich (' + K.TOR1_FAKTOR + ' × projizierte Bestaetigungs-MDE' + (kand.form === 'tag' ? ' = netto ≥ 11,31 × se, zum Vergleich mit Messungen vor dem 23.10.2026' : '') + '), kein Placebo-Verstoss (|Placebo| > ' + K.PLACEBO_T + ' se und > ¼ Huerde); das verschobene Signal mit derselben Schranke zweiseitig (sonst Messgeraet-Fehler); MDE80 = ' + K.MDE_FAKTOR + ' × se ist die Aufloesung, kein Kriterium.');
   o.push('');
   o.push('## Konfigurationen');
   o.push('');
@@ -328,8 +330,8 @@ function ergebnisMarkdown(kand, E, U, Rg, siegel1, siegel2, trocken, nachmessung
   o.push('');
   var zeit = kand.form === 'tag' && E.bewertung === 'zeit';
   o.push('Alle Groessen in Pp' + (kand.form === 'korb' ? ' p. a. bzw. $' : ' je Trade/Signal (Tagesmittel), se Hansen-Hodrick') + '. ' + (kand.form === 'tag' ? 'Gegenproben: ' + (zeit ? 'Placebo "anderer Wert gleicher Klasse am selben Tag" entfaellt im Modus zeit (traefe dieselbe Zelle); Placebo ist hier das verschobene Signal' : 'Placebo = anderer Wert gleicher Klasse am selben Tag, gleiche Richtung') + '; verschoben = dasselbe Signal ' + versatz + ' Handelstage spaeter (zeigt es einen Ausschlag in eine der beiden Richtungen, ist das Messgeraet verdaechtig; Fenster mit Ueberschneidung eines Signalfensters der Reihe gezaehlt, nicht gewertet); Ein-/Ausstieg +1 T = Einstieg und Ausstieg einen Handelstag spaeter (gleiche Haltedauer); Δ alle−lebend = Ueberlebensprobe; Abgaenge getrennt (uebernahme / insolvenz / sonstige / zensiert = Reihe endet nur an der Sperre).' : kand.form === 'korb' ? 'Placebo = ' + (E.placeboBuecher || 200) + ' Zufallsbuecher derselben Zielzahl aus denselben zulaessigen Werten (Nr. 100; B = max(200, 20 m + 1), m = ' + (E.registerM != null ? E.registerM : '–') + ', p-Boden ' + (E.pBoden != null ? E.pBoden.toFixed(4).replace('.', ',') : '–') + '); Startphasen = 63 Starttage; Reihenenden getrennt nach Grund. Die Gegenproben "Signal verschoben" und "alle gegen lebend" sind fuer diese Form nicht abbildbar (die Zielfunktion lehnt veraltete Kurse ab; Reihenenden buchen nach der Hauptregel).' : 'Zahlen der Messmaschine (Bestaetigungshaelfte ihres Schnitts B5); Placebo und Kontrolle A7 der Maschine im Protokoll.'));
-  if (kand.form === 'tag' && E.machbarkeit) { o.push(''); o.push(machbarkeitMarkdown(E.machbarkeit)); }
-  if (kand.form === 'tag') vorwaertsMarkdown(E).forEach(function (z) { o.push(z); });
+  if ((kand.form === 'tag' || kand.form === 'korb') && E.machbarkeit) { o.push(''); o.push(machbarkeitMarkdown(E.machbarkeit)); }
+  if (kand.form === 'tag' || kand.form === 'korb') vorwaertsMarkdown(E).forEach(function (z) { o.push(z); });
   if (kand.form === 'tag') {
     var gs = groessenText(E);
     o.push(''); o.push('**Groessenaussage (Nr. 121-2a, Audit B V2).** ' + (gs ? gs + '.' : 'keine: bei keiner Konfiguration liegt die obere 95-%-Grenze brutto unter der behaupteten Groesse brutto' + ((E.konfigurationen || []).some(function (k) { return k.erwartung; }) ? ' (' + E.konfigurationen.map(function (k) { return k.key + ' obere ' + de(k.entdeckung.uBrutto.obere, 3) + ' gegen ' + (k.erwartung ? de(k.erwartung.bruttoPp, 2) : '–'); }).join(', ') + ')' : '') + '.') + ' Der Zusatz „im gemessenen Fenster" steht, wenn die Quelle ein anderes Fenster misst (erwartung.fensterWieQuelle nicht true).');
@@ -425,9 +427,34 @@ function machbarkeitsPhase(kand, Zl, Rg, NM) {
   return { je: je, messbar: messbar, mVor: mVor, mTor: m, mLauf: mVor + messbar.length, bewertung: modus, panelEnde: Zl.letzterTag, TE: Zl.TE, ohneRenditen: !!Zl.ohneRenditen,
     regel: '(t_krit + ' + K.Z_POWER80 + ') x se_geschaetzt <= nettoPp, t_krit = max(' + K.KANDIDAT_T + ', t_(1 - ' + K.REGISTER_ALPHA + '/m; df = n_T/H - 1)), m = ' + m + ' (Register ' + mVor + ' + ' + kand.konfigurationen.length + ' Konfigurationen), se aus pruefstrasse/streuung.json (Fit aus versiegelten Messungen), mindestens ' + K.MIN_TAGE + ' Signaltage' };
 }
+/** Nr. 125a A: Machbarkeitstor der Korb-Form aus der Zaehlung Zl (adapter/korb.js zaehle: Panel-Handelstage der Entdeckung, vollstaendige 63-Tage-Perioden, KEINE
+ *  Rendite) und sd_q aus streuung.json korb (versiegelte Laeufe Nr. 96/100/122): MDE80_korb(n) = (t_krit(n - 1, m) + 0,8416) * sd_q * 2 / Wurzel(n) * 1,4 <= nettoPp.
+ *  m = korbM (Register-Eintraege + 1, dieselbe Zahl wie B und die Rang-Schwelle). Das Urteil "nicht messbar" zaehlt nicht im Register. */
+function korbM(Rg) { return (Rg.gesamt || 0) + 1; }
+function machbarkeitsPhaseKorb(kand, Zl, Rg) {
+  var S = TO.streuung(), sdQ = S.korb && S.korb.sdQ, m = korbM(Rg);
+  if (!(sdQ > 0)) throw new Error('streuung.json ohne Korb-Block (korb.sdQ) - Machbarkeitstor Korb nicht rechenbar');
+  var je = kand.konfigurationen.map(function (c) {
+    var er = TO.erwartungFuer(kand, c.key), basis = { key: c.key, H: K.KORB.periodeTage, einheit: 'Perioden', nT: Zl.perioden, TE: Zl.TE, erwartung: er, signaltageJeJahr: K.KORB.periodenJeJahr };
+    if (!er) return Object.assign(basis, { messbar: false, grund: 'keine Groessenbehauptung (erwartung.nettoPp)', braeuchteSignaltage: null, braeuchtePerioden: null });
+    var M = TO.korbMachbarkeit({ nPerioden: Zl.perioden, sdQ: sdQ, nettoPp: er.nettoPp, m: m });
+    if (!M.messbar && Zl.perioden < K.KORB.minPerioden) M.grund = 'unter ' + K.KORB.minPerioden + ' Perioden';
+    return Object.assign(basis, M, { seGeschaetzt: M.sePa, links: M.mde80, braeuchteSignaltage: M.braeuchtePerioden, seQuelle: 'streuung.json korb x ' + K.STREUUNG_FAKTOR });
+  });
+  var messbar = je.filter(function (x) { return x.messbar; }).map(function (x) { return x.key; });
+  return { form: 'korb', je: je, messbar: messbar, mVor: m - 1, mTor: m, mLauf: m, panelEnde: Zl.letzterTag, TE: Zl.TE, perioden: Zl.perioden, ohneRenditen: !!Zl.ohneRenditen, sdQ: sdQ, sdQQuelle: S.korb.quelle,
+    regel: 'MDE80_korb(n) = (t_krit + ' + K.Z_POWER80 + ') x sd_q x Wurzel(' + K.KORB.periodenJeJahr + ') / Wurzel(n) x ' + K.STREUUNG_FAKTOR + ' <= nettoPp (p. a.), t_krit = max(' + K.KANDIDAT_T + ', t_(1 - ' + K.REGISTER_ALPHA + '/m; df = n - 1)), m = ' + m + ' (Register ' + (m - 1) + ' + 1), sd_q = ' + sdQ.toFixed(3) + ' Pp je 63-Tage-Periode (streuung.json korb), n = vollstaendige, nicht ueberlappende 63-Tage-Perioden ab ' + K.KORB.entdeckungVon + ', mindestens ' + K.KORB.minPerioden };
+}
 function jahreText(j) { return j == null ? '–' : j < 0.05 ? '0' : j > 999 ? '> 999' : j.toFixed(1).replace('.', ','); }
 /** Abschnitt "Machbarkeitstor" fuer ERGEBNIS.md (beide Faelle). */
 function machbarkeitMarkdown(MB) {
+  if (MB.form === 'korb') {
+    var ok = ['## Machbarkeitstor (vor dem Lauf, Zaehlung ohne Renditen; Korb-Form, Nr. 125a)', '', 'Regel: ' + MB.regel + '. Zaehlung bis zum Panel-Ende ' + (MB.panelEnde || '–') + ', ' + ganz(MB.TE) + ' Handelstage = ' + MB.perioden + ' vollstaendige Perioden.', '',
+      '| Konf | Perioden | Behauptung netto p. a. (brutto) | sd_q | se_pa | df | m | t_krit | MDE80_korb | messbar | braeuchte Perioden (≈ Jahre) |', '|---|---|---|---|---|---|---|---|---|---|---|'];
+    MB.je.forEach(function (x) { var er = x.erwartung; ok.push('| ' + x.key + ' | ' + ganz(x.nT) + ' | ' + (er ? de(er.nettoPp, 2) + ' (' + de(er.bruttoPp, 2) + ')' : '–') + ' | ' + de(x.sdQ, 2) + ' | ' + de(x.sePa, 2) + ' | ' + de(x.df, 0) + ' | ' + (x.m || '–') + ' | ' + de(x.tKrit, 2) + ' | ' + de(x.mde80, 2) + ' | ' + (x.messbar ? 'ja' : '**nein**' + (x.grund ? ' (' + x.grund + ')' : '')) + ' | ' + (x.messbar ? '–' : ganz(x.braeuchtePerioden) + ' (' + jahreText(x.braeuchteJahre) + ')') + ' |'); });
+    ok.push(''); ok.push('Die 63 Startphasen der Entdeckung ueberlappen und sind keine unabhaengigen Perioden; die Aufloesung haengt an der Zahl der nicht ueberlappenden Perioden. Quelle sd_q: ' + MB.sdQQuelle + '. Quelle der Behauptung: ' + MB.je.map(function (x) { return x.key + ' ' + (x.erwartung ? x.erwartung.quelle : '–'); }).join('; ') + '.');
+    return ok.join('\n');
+  }
   var o = ['## Machbarkeitstor (vor dem Lauf, Trockenzaehlung ohne Renditen; Nr. 121-2a)', '', 'Regel: ' + MB.regel + '. Zaehlung bis zum Panel-Ende ' + (MB.panelEnde || '–') + ', ' + ganz(MB.TE) + ' Handelstage.', '',
     '| Konf | H | Signaltage | Trades je Signaltag | Behauptung netto (brutto) | se geschaetzt | df | m | t_krit | (t_krit + 0,84) × se | messbar | braeuchte Signaltage (≈ Jahre) |', '|---|---|---|---|---|---|---|---|---|---|---|---|'];
   MB.je.forEach(function (x) {
@@ -448,8 +475,8 @@ function groessenText(E) { return (E.konfigurationen || []).filter(function (k) 
 /** Abschluss "nicht messbar" (keine Konfiguration besteht das Machbarkeitstor): kein Entdeckungslauf, kein Siegel 2, Register-Eintraege mit Gewicht 0. */
 function nichtMessbarAbschluss(kennung, kand, MB, Zl, Rg, siegel1, aus, relAus, log, NM, ort) {
   var REPO = ort.repo || K.REPO, REG = ort.register || K.REGISTER, stand = jetzt();
-  var konf = MB.je.map(function (x) { return { key: x.key, urteil: 'nicht messbar', register: { zaehlt: 0, braeuchteSignaltage: x.braeuchteSignaltage, nT: x.nT, H: x.H } }; });
-  var U = { urteil: 'nicht messbar', kandidaten: 0, fehler: [], grund: 'Machbarkeitstor: keine Konfiguration mit diesen Daten messbar (' + MB.je.map(function (x) { return x.key + ' hat ' + ganz(x.nT) + ' Signaltage, braeuchte ' + ganz(x.braeuchteSignaltage) + ' (≈ ' + jahreText(x.braeuchteJahre) + ' Jahre)'; }).join('; ') + '); kein Entdeckungslauf, zaehlt nicht als Test' };
+  var konf = MB.je.map(function (x) { return { key: x.key, urteil: 'nicht messbar', register: Object.assign({ zaehlt: 0, braeuchteSignaltage: x.braeuchteSignaltage, nT: x.nT, H: x.H }, x.einheit ? { einheit: x.einheit, mde80: x.mde80 } : {}) }; });
+  var U = { urteil: 'nicht messbar', kandidaten: 0, fehler: [], grund: 'Machbarkeitstor: keine Konfiguration mit diesen Daten messbar (' + MB.je.map(function (x) { return x.key + ' hat ' + ganz(x.nT) + ' ' + (x.einheit || 'Signaltage') + (x.mde80 != null ? ' (MDE80_korb ' + de(x.mde80, 2) + ' Pp p. a. gegen netto ' + de(x.nettoPp, 2) + ')' : '') + ', braeuchte ' + ganz(x.braeuchteSignaltage) + ' (≈ ' + jahreText(x.braeuchteJahre) + ' Jahre)'; }).join('; ') + '); kein Entdeckungslauf, zaehlt nicht als Test' };
   var zusatz = NM ? { nachmessung: NM.n, ersetzt: NM.alt.stand } : null;
   Rg = registerEintragen(Rg, kennung, kand.form, konf, stand, kand.bewertung || 'topf', zusatz); schreibeJson(REG, Rg);
   log('URTEIL: nicht messbar - ' + U.grund);
@@ -502,7 +529,15 @@ function laufe(kennung, opt) {
     if (!MB.messbar.length) return nichtMessbarAbschluss(kennung, kand, MB, Zl, Rg, siegel1, aus, relAus, log, opt.nachmessung || null, ort);
     nur = MB.messbar.length < kand.konfigurationen.length ? MB.messbar : null;
   }
-  log('Entdeckung bis ' + (kand.form === 'minute' ? 'vor ' + K.MINUTE.sperreAb : kand.form === 'tag' ? 'zum Panel-Ende' + (MB ? ' ' + MB.panelEnde : '') : K.EICHUNG.bis) + ' ueber ' + (nur ? nur.length + ' von ' : '') + kand.konfigurationen.length + ' Konfigurationen (Form ' + kand.form + ', Adapter ' + kand.form + ', Quelle ' + (kand.daten || (kand.form === 'tag' ? 'panel' : kand.form === 'korb' ? 'panel' : '60m-archiv')) + modusText(kand, null) + ')');
+  /* Nr. 125a A: Machbarkeitstor der Korb-Form VOR dem Lauf (Kalender ohne Renditen, sd_q aus streuung.json korb) */
+  if (kand.form === 'korb' && !opt.trocken) {
+    log('Machbarkeitstor Korb: Zaehlung ohne Renditen bis zum Panel-Ende (Panel-Handelstage, vollstaendige 63-Tage-Perioden)');
+    Zl = messer(kennung, 'zaehlung', path.join(aus, 'zaehlung.json'), log, {});
+    MB = machbarkeitsPhaseKorb(kand, Zl, Rg);
+    MB.je.forEach(function (x) { log('  ' + x.key + ': ' + ganz(x.nT) + ' Perioden (' + ganz(Zl.TE) + ' Handelstage), sd_q ' + de(MB.sdQ, 2) + ' Pp, MDE80_korb ' + de(x.mde80, 2) + ' Pp p. a. gegen netto ' + (x.erwartung ? de(x.erwartung.nettoPp, 2) : '–') + ' -> ' + (x.messbar ? 'messbar' : 'NICHT messbar, braeuchte ' + ganz(x.braeuchtePerioden) + ' Perioden (' + jahreText(x.braeuchteJahre) + ' Jahre)')); });
+    if (!MB.messbar.length) return nichtMessbarAbschluss(kennung, kand, MB, Zl, Rg, siegel1, aus, relAus, log, opt.nachmessung || null, ort);
+  }
+  log('Entdeckung bis ' + (kand.form === 'minute' ? 'vor ' + K.MINUTE.sperreAb : kand.form === 'tag' || kand.form === 'korb' ? 'zum Panel-Ende' + (MB ? ' ' + MB.panelEnde : '') : K.EICHUNG.bis) + ' ueber ' + (nur ? nur.length + ' von ' : '') + kand.konfigurationen.length + ' Konfigurationen (Form ' + kand.form + ', Adapter ' + kand.form + ', Quelle ' + (kand.daten || (kand.form === 'tag' ? 'panel' : kand.form === 'korb' ? 'panel' : '60m-archiv')) + modusText(kand, null) + ')');
   var E = messer(kennung, 'entdeckung', path.join(aus, 'ergebnis-entdeckung.json'), log, MB ? { nur: nur, m: MB.mLauf } : {});
   var soll = nur ? nur.length : kand.konfigurationen.length;
   if (E.konfigurationen.length !== soll) throw new Error('Adapter lieferte ' + E.konfigurationen.length + ' statt ' + soll + ' Konfigurationen');
@@ -526,13 +561,14 @@ function laufe(kennung, opt) {
   log('Gegenproben: ' + (U0.fehler.length ? 'FEHLER - ' + U0.fehler.join('; ') : 'ohne Befund') + '; Kandidaten ' + kandidaten.length + ' von ' + E.konfigurationen.length);
   var sum = SG.sha256(fs.readFileSync(path.join(aus, 'ergebnis-entdeckung.json')));
   schreibeJson(path.join(aus, 'KANDIDATEN.json'), { kennung: kennung, stand: E.stand, ergebnisEntdeckungSha256: sum, konfigurationen: E.konfigurationen.length,
-    regel: 'FORM.md §5 (Nr. 121-2a): netto > 0, p_E <= min(P(T_df >= ' + K.KANDIDAT_T + '), ' + K.REGISTER_ALPHA + '/m), m = ' + (E.registerM != null ? E.registerM : E.konfigurationen.length) + ', kein Placebo-Verstoss, mindestens ' + K.MIN_TAGE + ' Signaltage (Tor 1 nur nachrichtlich)', messgeraetFehler: U0.fehler,
-    kandidaten: kandidaten.map(function (k) { var e = k.entdeckung; return { key: k.key, netto: e.uNetto ? e.uNetto.mittel : e.buch ? e.buch.startphasen.median : e.nettoJeSignalPp, t: e.uNetto ? e.uNetto.t : e.t, df: k.df != null ? k.df : null, tSchwelle: k.schwelle ? k.schwelle.t : null, tor1Schwelle: k.tor1Schwelle || null }; }) });
+    regel: kand.form === 'korb' ? 'FORM.md §5 Korb (Nr. 125a): Median der 63 Startphasen > 0 und Start am ersten Tag vorn (nach Steuer gegen den Nasdaq-ETF), Rang-p <= min(p(Rang 0,95), ' + K.REGISTER_ALPHA + '/m), m = ' + E.registerM + ', B = ' + E.placeboBuecher : 'FORM.md §5 (Nr. 121-2a): netto > 0, p_E <= min(P(T_df >= ' + K.KANDIDAT_T + '), ' + K.REGISTER_ALPHA + '/m), m = ' + (E.registerM != null ? E.registerM : E.konfigurationen.length) + ', kein Placebo-Verstoss, mindestens ' + K.MIN_TAGE + ' Signaltage (Tor 1 nur nachrichtlich)', messgeraetFehler: U0.fehler,
+    kandidaten: kandidaten.map(function (k) { var e = k.entdeckung; return { key: k.key, netto: e.uNetto ? e.uNetto.mittel : e.buch ? (e.nachSteuer ? e.nachSteuer.median.abstandNasdaqB : e.buch.startphasen.median) : e.nettoJeSignalPp, t: e.uNetto ? e.uNetto.t : e.t, df: k.df != null ? k.df : null, tSchwelle: k.schwelle ? k.schwelle.t : null, tor1Schwelle: k.tor1Schwelle || null }; }) });
   var h2 = commit([relAus + '/KANDIDATEN.json', relAus + '/ergebnis-entdeckung.json'], 'Pruefstrasse: ' + kennung + ' - Kandidatenliste (Siegel 2), ' + kandidaten.length + ' von ' + E.konfigurationen.length, REPO);
   var siegel2 = SG.pruefeSiegel(REPO, relAus + '/KANDIDATEN.json');
   log('Siegel 2: KANDIDATEN.json committet in ' + h2 + ' (Blob ' + siegel2.blob.slice(0, 12) + ')');
   var P = null;
   if (kand.form === 'tag' && kandidaten.length && !U0.fehler.length) vormerken(kand, E, kandidaten, siegel2, REPO, log);
+  else if (kand.form === 'korb' && kandidaten.length && !U0.fehler.length) vormerkenKorb(kand, E, kandidaten, siegel2, REPO, log);   /* Nr. 125a B.2 */
   else if (kandidaten.length && !U0.fehler.length) {
     log('Pruefung ab ' + (kand.form === 'minute' ? K.MINUTE.sperreAb : K.EICHUNG.schnitt) + ' fuer ' + kandidaten.map(function (k) { return k.key; }).join(', ') + ' (Daten erst jetzt lesbar)');
     P = messer(kennung, 'pruefung', path.join(aus, 'ergebnis-pruefung.json'), log, MB ? { m: MB.mLauf } : {});
@@ -702,12 +738,15 @@ function nachmessen(kennung, grund, korrektur, opt) {
  * zweiter Blick - Wiedervorlage nur ueber --nachmessen --grund-daten (zaehlt doppelt). */
 var VORWAERTS_MARKE = 'VORWAERTS-LAEUFT.json';
 /** Kandidaten nach Siegel 2 vormerken (Form tag): Felder fuer Register und Protokoll. */
-function vormerken(kand, E, kandidaten, siegel2, REPO, log) {
-  /* Nachbesserung 23.10. (PM): siegel2Datum kommt AUSSCHLIESSLICH aus dem Commit-Zeitpunkt von KANDIDATEN.json (Committer-Zeit, nach UTC), der Stichtag
-   * danach aus dem Panel-Kalender (vorwaertsKind / stichtagNach) - nie aus der Systemuhr. Ohne lesbare Commit-Zeit bricht der Lauf ab. */
-  var ci = SG.aus(SG.git(REPO, ['show', '-s', '--format=%cI', siegel2.commit])), ms = ci ? Date.parse(ci) : NaN, modus = kand.bewertung || 'topf';
+/* Nachbesserung 23.10. (PM): siegel2Datum kommt AUSSCHLIESSLICH aus dem Commit-Zeitpunkt von KANDIDATEN.json (Committer-Zeit, nach UTC), der Stichtag
+ * danach aus dem Panel-Kalender (vorwaertsKind / stichtagNach) - nie aus der Systemuhr. Ohne lesbare Commit-Zeit bricht der Lauf ab. Gemeinsam fuer tag und korb (Nr. 125a). */
+function siegel2DatumAus(siegel2, REPO) {
+  var ci = SG.aus(SG.git(REPO, ['show', '-s', '--format=%cI', siegel2.commit])), ms = ci ? Date.parse(ci) : NaN;
   if (!(ms === ms)) throw new Error('VORMERKEN: Commit-Zeit von KANDIDATEN.json (' + String(siegel2.commit).slice(0, 12) + ') nicht lesbar - kein Stichtag ohne Commit');
-  var datum = new Date(ms).toISOString().slice(0, 10);
+  return new Date(ms).toISOString().slice(0, 10);
+}
+function vormerken(kand, E, kandidaten, siegel2, REPO, log) {
+  var modus = kand.bewertung || 'topf', datum = siegel2DatumAus(siegel2, REPO);
   E.vorgemerkt = true;
   kandidaten.forEach(function (k) {
     var e = k.entdeckung, er = k.erwartung || TO.erwartungFuer(kand, k.key), sj = E.TE > 0 ? e.nTage / E.TE * 252 : null;
@@ -717,6 +756,22 @@ function vormerken(kand, E, kandidaten, siegel2, REPO, log) {
     k.vorwaerts = { status: 'vorgemerkt', siegel2Datum: datum, stichtag: null, nBedarf: nB, nStand: 0, jahre: jahre, datumGeschaetzt: jahre != null ? TO.datumPlusJahre(datum, jahre) : null, signaltageJeJahr: sj, nettoPp: er ? er.nettoPp : null, marke: marke };
     k.register = Object.assign(k.register || {}, { status: 'vorgemerkt', siegel2Datum: datum, stichtag: null, nBedarf: nB, nStand: 0, H: k.haltedauer, d: e.tradesJeTag }, marke ? { marke: marke } : {});
     log('  ' + k.key + ': vorgemerkt - Stichtag = erster Handelstag nach ' + datum + ', Bedarf ' + ganz(nB) + ' Vorwaerts-Signaltage (≈ ' + jahreText(jahre) + ' Jahre)' + (marke ? ', ' + marke : ''));
+  });
+}
+/** Nr. 125a B.2: Korb-Kandidat vormerken. nBedarf = vollstaendige Vorwaerts-Perioden, bei denen (t_0,95(n - 1) + 0,8416) x sd_E x 2 / Wurzel(n) <= nettoPp - sd_E = GEMESSENE
+ *  Streuung der Perioden-Abstaende der Entdeckung (adapter/korb.js perioden, gegen QQQ vor Steuern), nicht die Tabelle. Festgeschrieben (Entscheid 12, Register korbFest):
+ *  B (Zahl der Zufallsbuecher), wortBasis (placeboWort = wortBasis#b), Takt 63, Kapital, Universum-Stichtage (Panel-Tag vor jeder Umschichtung ab dem Stichtag). */
+function vormerkenKorb(kand, E, kandidaten, siegel2, REPO, log) {
+  var datum = siegel2DatumAus(siegel2, REPO);
+  E.vorgemerkt = true;
+  kandidaten.forEach(function (k) {
+    var e = k.entdeckung, er = TO.erwartungFuer(kand, k.key), sdE = e.perioden && e.perioden.tTest ? e.perioden.tTest.sd : null;
+    var nB = er ? TO.korbNBedarf({ sdE: sdE, nettoPp: er.nettoPp }) : null, jahre = nB != null ? nB / K.KORB.periodenJeJahr : null;
+    var fest = { B: e.B, wortBasis: kand.kennung, takt: K.KORB.periodeTage, kapitalUsd: E.kapitalUsd, registerM: e.registerM, universumStichtage: 'Panel-Tag vor jeder Umschichtung, Umschichtungen am Stichtag + k x ' + K.KORB.periodeTage + ' Panel-Handelstage' };
+    k.urteil = 'nicht entscheidbar'; k.status = 'vorgemerkt';
+    k.vorwaerts = { status: 'vorgemerkt', siegel2Datum: datum, stichtag: null, nBedarf: nB, nStand: 0, einheit: 'Perioden', jahre: jahre, datumGeschaetzt: jahre != null ? TO.datumPlusJahre(datum, jahre) : null, sdE: sdE, nettoPp: er ? er.nettoPp : null, fest: fest, marke: null };
+    k.register = Object.assign(k.register || {}, { status: 'vorgemerkt', siegel2Datum: datum, stichtag: null, nBedarf: nB, nStand: 0, einheit: 'Perioden', sdE: sdE, datumGeschaetzt: k.vorwaerts.datumGeschaetzt, korbFest: fest });
+    log('  ' + k.key + ': vorgemerkt (Korb) - Stichtag = erster Handelstag nach ' + datum + ', Bedarf ' + ganz(nB) + ' vollstaendige Perioden (≈ ' + jahreText(jahre) + ' Jahre; sd_E ' + de(sdE, 2) + ' Pp je Periode), B ' + fest.B + ', Wort ' + fest.wortBasis + '#b');
   });
 }
 /** Wiedervorlage (C4) je nicht entscheidbarer Konfiguration ohne Vormerkung: Datum, an dem MDE80 <= nettoPp waere (Datenzuwachs aus der Entdeckung). */
@@ -733,7 +788,7 @@ function vorwaertsMarkdown(E) {
   var o = [], konf = E.konfigurationen || [], vor = konf.filter(function (k) { return k.vorwaerts; }), wv = konf.filter(function (k) { return k.wiedervorlage; });
   if (vor.length) {
     o.push(''); o.push('## Vorwaertsbestaetigung (ein vorregistrierter Blick, Nr. 121-2a)'); o.push('');
-    vor.forEach(function (k) { var v = k.vorwaerts; o.push('- **' + k.key + '** vorgemerkt: Stichtag = erster Handelstag des Panels nach dem Commit von KANDIDATEN.json (' + v.siegel2Datum + '); vorregistrierter Bedarf **' + ganz(v.nBedarf) + ' Signaltage** (MDE80_vorwaerts = (t_0,95 + 0,84) × se der Entdeckung, hochgerechnet, ≤ ' + de(v.nettoPp, 2) + ' Pp), geschaetzt erreicht ' + (v.datumGeschaetzt || '–') + '. Die Vorwaertsmessung prueft die Umsetzung; eine Kante von ' + de(v.nettoPp, 2) + ' Pp braucht ' + ganz(v.nBedarf) + ' Signaltage ≈ ' + jahreText(v.jahre) + ' Jahre.' + (v.marke ? ' **' + v.marke + '**: auch ein belegt-Vorschlag geht nicht in die Muehle.' : '')); });
+    vor.forEach(function (k) { var v = k.vorwaerts; if (v.einheit === 'Perioden') { o.push('- **' + k.key + '** vorgemerkt (Korb): Stichtag = erster Handelstag des Panels nach dem Commit von KANDIDATEN.json (' + v.siegel2Datum + '); vorregistrierter Bedarf **' + ganz(v.nBedarf) + ' vollstaendige 63-Tage-Perioden** (MDE80_vorwaerts = (t_0,95 + 0,84) × sd_E × 2 / Wurzel(n) ≤ ' + de(v.nettoPp, 2) + ' Pp p. a., sd_E ' + de(v.sdE, 2) + ' Pp je Periode aus der Entdeckung), geschaetzt erreicht ' + (v.datumGeschaetzt || '–') + ' (≈ ' + jahreText(v.jahre) + ' Jahre). Festgeschrieben: B ' + v.fest.B + ' Zufallsbuecher, Wort ' + v.fest.wortBasis + '#b, Kapital ' + ganz(v.fest.kapitalUsd) + '. Vorwaertsblick erst bei nBedarf; bis dahin nur die Zahl der Perioden, keine Rendite.'); return; } o.push('- **' + k.key + '** vorgemerkt: Stichtag = erster Handelstag des Panels nach dem Commit von KANDIDATEN.json (' + v.siegel2Datum + '); vorregistrierter Bedarf **' + ganz(v.nBedarf) + ' Signaltage** (MDE80_vorwaerts = (t_0,95 + 0,84) × se der Entdeckung, hochgerechnet, ≤ ' + de(v.nettoPp, 2) + ' Pp), geschaetzt erreicht ' + (v.datumGeschaetzt || '–') + '. Die Vorwaertsmessung prueft die Umsetzung; eine Kante von ' + de(v.nettoPp, 2) + ' Pp braucht ' + ganz(v.nBedarf) + ' Signaltage ≈ ' + jahreText(v.jahre) + ' Jahre.' + (v.marke ? ' **' + v.marke + '**: auch ein belegt-Vorschlag geht nicht in die Muehle.' : '')); });
     o.push('Panel endet am ' + (E.letzterTag || '–') + ': bis zur Panel-Fortschreibung (Auftrag Nr. 123) ist die Vorwaertsmessung leer (0 Signaltage). `laeufer.js --vorwaerts` zaehlt ohne Renditen und misst genau einmal, wenn der Bedarf erreicht ist.');
   }
   if (wv.length) { o.push(''); o.push('**Wiedervorlage (nicht entscheidbar, Nr. 121-2a):** ' + wv.map(function (k) { var w = k.wiedervorlage; return k.key + (w.datum ? ' ab ≈ ' + w.datum + ' ((t_krit + 0,84) × se der Entdeckung, hochgerechnet, ≤ nettoPp bei ' + ganz(w.nNoetig) + ' Signaltagen, ≈ ' + jahreText(w.jahre) + ' Jahre Datenzuwachs)' : ' nie (' + (w.text || 'kein Datenzuwachs') + ')'); }).join('; ') + '. Einziger Weg: `laeufer.js --nachmessen <kennung> --grund-daten "<Text>"` - zaehlt im Register doppelt.'); }
@@ -744,7 +799,7 @@ function vorwaertsMarkdown(E) {
 function richtungAusSiegel(ERL, kennung, key) {
   var f = path.join(ERL, kennung, 'KANDIDATEN.json'), z = null;
   if (fs.existsSync(f)) z = (liesJson(f).kandidaten || []).filter(function (x) { return x.key === key; })[0];
-  if (!z) { var g = path.join(ERL, kennung, 'ergebnis.json'); if (fs.existsSync(g)) { var k = ((liesJson(g).entdeckung || {}).konfigurationen || []).filter(function (x) { return x.key === key; })[0]; if (k) z = { netto: k.entdeckung.uNetto.mittel }; } }
+  if (!z) { var g = path.join(ERL, kennung, 'ergebnis.json'); if (fs.existsSync(g)) { var k = ((liesJson(g).entdeckung || {}).konfigurationen || []).filter(function (x) { return x.key === key; })[0]; if (k) { var en = k.entdeckung || {}; z = { netto: en.uNetto ? en.uNetto.mittel : en.nachSteuer ? en.nachSteuer.median.abstandNasdaqB : en.buch ? en.buch.startphasen.median : null }; } } }
   return z && z.netto != null && z.netto !== 0 ? Math.sign(z.netto) : null;
 }
 /** Index des ersten Tages der Tafel nach dem Datum (Stichtag), -1 ohne. */
@@ -762,6 +817,23 @@ function vorwaertsKind(TF, regel, kand, auftrag) {
     messung = E.konfigurationen.map(function (k) { return { key: k.key, haltedauer: k.haltedauer, pruefung: k.pruefung, topfFehlt: E.zaehler ? E.zaehler.topfFehlt : null }; });
   }
   return { kennung: kand.kennung, stichtag: stichtag, panelEnde: TF.tage[TF.maxTag], je: je, faellig: faellig, messung: messung, ohneRenditenGezaehlt: true, quelle: TF.quelle, kennungTafel: TF.kennung, bauTafel: TF.bau || null };
+}
+/** Nr. 125a B.3: Kindprozess-Teil von --vorwaerts fuer die Korb-Form. Zaehlen OHNE Renditen (nur der Panel-Kalender: vollstaendige 63-Tage-Perioden ab dem Stichtag);
+ *  erst bei nStand >= nBedarf genau EINE Messung (adapter/korb.js vorwaertsMessung: Buch ab dem Stichtag, Kostenregel, App-Steuer, B Zufallsbuecher ueber denselben
+ *  Zeitraum, Parameterabgleich Live = Messung vor jeder Rendite). auftrag = { siegel2Datum, eintraege: [{ key, nBedarf, status, korbFest }], V, qqq, parameter (Tests) }.
+ *  Zwischenstand (Zweitleser 22): nur nStand, nBedarf, geschaetztes Datum und der Satz - keine Rendite, keine Abstandszahl. */
+function vorwaertsKindKorb(regel, kand, auftrag) {
+  var KA = require('./adapter/korb.js'), tage = auftrag.V ? auftrag.V.Q.ptage.map(function (d) { return String(auftrag.V.T.kal.tage[d]); }) : require('./paneltafel.js').kalender({ bisPanelende: true }).tage;
+  var Z = KA.zaehleVorwaerts(tage, auftrag.siegel2Datum);
+  var je = auftrag.eintraege.map(function (e) { return { key: e.key, nBedarf: e.nBedarf, nStand: Z.nStand, einheit: 'Perioden', ersterTag: Z.stichtag, letzterTag: Z.panelEnde, satz: 'Vorwaertsblick erst bei nBedarf' }; });
+  var faellig = je.filter(function (x, i) { return auftrag.eintraege[i].status === 'vorgemerkt' && x.nBedarf != null && x.nStand >= x.nBedarf; }).map(function (x) { return x.key; });
+  var messung = null;
+  if (faellig.length) {
+    var e0 = auftrag.eintraege.filter(function (e) { return e.key === faellig[0]; })[0], fest = e0.korbFest || {};
+    var M = KA.vorwaertsMessung(regel, kand, { siegel2Datum: auftrag.siegel2Datum, B: fest.B, wortBasis: fest.wortBasis, kapitalUsd: fest.kapitalUsd, V: auftrag.V, qqq: auftrag.qqq, parameter: auftrag.parameter });
+    messung = [{ key: faellig[0], form: 'korb', korb: M }];
+  }
+  return { kennung: kand.kennung, form: 'korb', stichtag: Z.stichtag, panelEnde: Z.panelEnde, je: je, faellig: faellig, messung: messung, ohneRenditenGezaehlt: true, quelle: 'panel' };
 }
 /** --vorwaerts (Nachtlauf, nur PM-/Nachtbetrieb): alle vorgemerkten Konfigurationen; idempotent (schreibt und committet nur bei geaendertem Inhalt).
  *  Rueckweg wie bei der Nachmessung: Marke pruefstrasse/VORWAERTS-LAEUFT.json vor dem Schreiben; scheitert ein Schritt, werden register.json, VORWAERTS.md,
@@ -786,17 +858,19 @@ function vorwaerts(opt) {
     kennungen.forEach(function (kn) {
       var eint = Rg.konfigurationen.filter(function (e) { return e.kennung === kn && e.status === 'vorgemerkt'; });
       var aus = path.join(require('os').tmpdir(), 'pruefstrasse-vorwaerts-' + process.pid + '-' + kn + '.json');
-      var r = messer(kn, 'vorwaerts', aus, log, { siegel2Datum: eint[0].siegel2Datum, eintraege: eint.map(function (e) { return { key: e.key, nBedarf: e.nBedarf, status: e.status }; }) });
+      var r = messer(kn, 'vorwaerts', aus, log, { siegel2Datum: eint[0].siegel2Datum, eintraege: eint.map(function (e) { return { key: e.key, nBedarf: e.nBedarf, status: e.status, korbFest: e.korbFest || null }; }) });
       try { if (fs.existsSync(aus)) fs.unlinkSync(aus); } catch (e) { /* Temp */ }
       r.je.forEach(function (x) { var e = eint.filter(function (y) { return y.key === x.key; })[0]; e.nStand = x.nStand; e.stichtag = r.stichtag; });
-      (r.messung || []).forEach(function (m) { var e = eint.filter(function (y) { return y.key === m.key; })[0]; faellige.push({ kennung: kn, eintrag: e, m: m, p: m.pruefung && m.pruefung.pEinseitig != null ? m.pruefung.pEinseitig : 1 }); });
+      (r.messung || []).forEach(function (m) { var e = eint.filter(function (y) { return y.key === m.key; })[0]; faellige.push({ kennung: kn, eintrag: e, m: m, p: m.form === 'korb' ? (m.korb && m.korb.tTest && m.korb.tTest.p != null ? m.korb.tTest.p : 1) : m.pruefung && m.pruefung.pEinseitig != null ? m.pruefung.pEinseitig : 1 }); });
       log('Vorwaerts ' + kn + ': Stichtag ' + (r.stichtag || '–') + ', Panel-Ende ' + r.panelEnde + (r.bauTafel ? ' (bau ' + r.bauTafel + ')' : '') + ', ' + r.je.map(function (x) { return x.key + ' ' + x.nStand + ' von ' + ganz(x.nBedarf); }).join(', ') + (r.faellig.length ? ', faellig: ' + r.faellig.join(', ') : ''));
       r._eint = eint; aenderung.push(r);
     });
-    /* Holm p-basiert ueber ALLE an diesem Tag faelligen Konfigurationen (einseitig 5 %, p aus der t-Verteilung mit df = n_eff - 1) */
+    /* Holm p-basiert (einseitig 5 %, p aus der t-Verteilung) - Familie seit Nr. 125a (Entscheid 21): ALLE je vorgemerkten Konfigurationen des Registers
+     * (TO.mVorwaerts), nicht nur die am Tag faelligen; gilt fuer tag und korb */
     if (faellige.length) {
-      var Hm = TO.holm(faellige.map(function (f) { return f.p; }), K.HOLM_ALPHA);
+      var Hm = TO.holm(faellige.map(function (f) { return f.p; }), K.HOLM_ALPHA, TO.mVorwaerts(Rg));
       faellige.forEach(function (f, i) {
+        if (f.m.form === 'korb') { wechsel.push(korbVorwaertsUrteil(f, Hm, i, ERL, heute)); return; }
         var pr = f.m.pruefung || {}, u = pr.uNetto || {}, nT = pr.nTage || 0, e = f.eintrag, urteil;
         if (nT < K.MIN_TAGE) urteil = 'nicht entscheidbar';                                               /* B V9: MIN_TAGE auch in der Bestaetigung */
         else if (Hm.bestanden[i] && u.mittel > 0 && richtungAusSiegel(ERL, f.kennung, e.key) === Math.sign(u.mittel)) urteil = 'belegt-Vorschlag';   /* Richtung aus Siegel 2 */
@@ -804,14 +878,14 @@ function vorwaerts(opt) {
         else urteil = 'nicht entscheidbar';
         var status = urteil === 'belegt-Vorschlag' ? 'bestaetigt' : urteil === 'nein' ? 'abgelehnt' : 'offen';
         e.urteil = urteil; e.status = status; e.vorwaertsDatum = heute.slice(0, 10);
-        e.vorwaerts = { nTage: nT, netto: u.mittel, t: u.t, p: f.p, holmSchwelle: Hm.schwelle[i], holmM: faellige.length, df: pr.df, obere: u.obere, topfFehlt: f.m.topfFehlt };
+        e.vorwaerts = { nTage: nT, netto: u.mittel, t: u.t, p: f.p, holmSchwelle: Hm.schwelle[i], holmM: Hm.m, holmFaellig: faellige.length, df: pr.df, obere: u.obere, topfFehlt: f.m.topfFehlt };
         var mk = TO.hausregelMarke(e.bewertung, e.nBedarf, nT); if (mk) e.marke = mk;
         wechsel.push({ kennung: f.kennung, key: e.key, urteil: urteil, status: status, e: e });
       });
     }
     var geschrieben = [];
     aenderung.forEach(function (r) {
-      var inhalt = { kennung: r.kennung, stichtag: r.stichtag, panelEnde: r.panelEnde, je: r._eint.map(function (e) { var x = r.je.filter(function (y) { return y.key === e.key; })[0] || {}; return { key: e.key, nBedarf: e.nBedarf, nStand: e.nStand, ersterTag: x.ersterTag || null, letzterTag: x.letzterTag || null, status: e.status, urteil: e.urteil, vorwaerts: e.vorwaerts || null }; }), messung: r.messung };
+      var inhalt = { kennung: r.kennung, stichtag: r.stichtag, panelEnde: r.panelEnde, je: r._eint.map(function (e) { var x = r.je.filter(function (y) { return y.key === e.key; })[0] || {}; return Object.assign({ key: e.key, nBedarf: e.nBedarf, nStand: e.nStand, ersterTag: x.ersterTag || null, letzterTag: x.letzterTag || null, status: e.status, urteil: e.urteil, vorwaerts: e.vorwaerts || null }, x.einheit ? { einheit: x.einheit, datumGeschaetzt: e.datumGeschaetzt || null, satz: x.satz } : {}); }), messung: r.messung };
       var f = path.join(ERL, r.kennung, 'vorwaerts.json'), alt = fs.existsSync(f) ? liesJson(f) : null;
       if (alt) delete alt.stand;
       if (JSON.stringify(alt) !== JSON.stringify(inhalt)) { inhalt.stand = heute; fs.mkdirSync(path.dirname(f), { recursive: true }); schreibeJson(f, inhalt); geschrieben.push(rel(f)); }
@@ -822,7 +896,9 @@ function vorwaerts(opt) {
     var md = vorwaertsTafel(Rg);
     if (vorher[1].text !== md) { fs.writeFileSync(VMD, md); geschrieben.push(rel(VMD)); }
     wechsel.forEach(function (w) {
-      var v = w.e.vorwaerts, absatz = '- ' + datumDe(heute) + ' — **Vorwaertsmessung** `' + w.kennung + '` ' + w.key + ': **' + w.urteil + '** (Status ' + w.status + ') — ' + ganz(v.nTage) + ' Signaltage ab Stichtag ' + w.e.stichtag + ' (Bedarf ' + ganz(w.e.nBedarf) + '), netto ' + de(v.netto) + ', t ' + de(v.t, 2) + ', p einseitig ' + de(v.p, 4) + ' gegen Holm-Schwelle ' + de(v.holmSchwelle, 4) + ' (' + v.holmM + ' faellige Konfigurationen). Ein Blick, kein zweiter.' + (w.e.marke ? ' **' + w.e.marke + '**.' : '') + ' Ordner `pruefstrasse/erledigt/' + w.kennung + '/`.';
+      var v = w.e.vorwaerts, absatz = '- ' + datumDe(heute) + ' — **Vorwaertsmessung** `' + w.kennung + '` ' + w.key + ': **' + w.urteil + '** (Status ' + w.status + ') — ' + (v.form === 'korb'
+        ? ganz(v.n) + ' vollstaendige Perioden ab Stichtag ' + w.e.stichtag + ' (Bedarf ' + ganz(w.e.nBedarf) + '), Perioden-Abstand gegen QQQ im Mittel ' + de(v.mittelPa, 2) + ' Pp p. a. (t ' + de(v.t, 2) + ', p einseitig ' + de(v.p, 4) + ' gegen Holm-Schwelle ' + de(v.holmSchwelle, 4) + ', Familie ' + v.holmM + '), nach Steuer ' + de(v.abstandNachSteuerPa, 2) + ' Pp p. a. gegen den Nasdaq-ETF, Rang-p ' + de(v.pRang, 3) + ' (nachrichtlich, ' + v.B + ' Zufallsbuecher). Ein Blick, kein zweiter.'
+        : ganz(v.nTage) + ' Signaltage ab Stichtag ' + w.e.stichtag + ' (Bedarf ' + ganz(w.e.nBedarf) + '), netto ' + de(v.netto) + ', t ' + de(v.t, 2) + ', p einseitig ' + de(v.p, 4) + ' gegen Holm-Schwelle ' + de(v.holmSchwelle, 4) + ' (Familie ' + v.holmM + ' vorgemerkte, ' + (v.holmFaellig || 1) + ' faellig). Ein Blick, kein zweiter.') + (w.e.marke ? ' **' + w.e.marke + '**.' : '') + ' Ordner `pruefstrasse/erledigt/' + w.kennung + '/`.';
       wikiAnhaengen(REPO, absatz, '- ' + datumDe(heute) + ' (Prüfstraße, ' + heute.slice(11, 16) + ' UTC) — Vorwaerts **' + w.kennung + ' ' + w.key + ': ' + w.urteil + '** (' + w.status + ').');
       if (w.urteil === 'belegt-Vorschlag') { fs.appendFileSync(VOR, (fs.existsSync(VOR) ? '' : '# Vorschlaege der Pruefstrasse an den PM (zweiter unabhaengiger Lauf ist Menschensache)\n\n') + absatz + '\n'); if (geschrieben.indexOf(rel(VOR)) === -1) geschrieben.push(rel(VOR)); }
     });
@@ -849,10 +925,27 @@ function vorwaerts(opt) {
 function vorwaertsTafel(Rg) {
   var z = Rg.konfigurationen.filter(function (e) { return e.status; });
   var o = ['# Vorwaertsbestaetigung der Pruefstrasse (Nr. 121-2a)', '', 'Geschrieben von `laeufer.js --vorwaerts`. Ein vorregistrierter Blick je Konfiguration: Stichtag = erster Handelstag nach Siegel 2, gezaehlt ohne Renditen, gemessen genau einmal bei Erreichen des Bedarfs. Simulation mit virtuellem Kapital, keine Anlageberatung.', '',
-    '| Kennung | Konf | Status | Siegel 2 | Stichtag | Bedarf | Stand | Urteil | Vorwaerts netto / t / p | Marke |', '|---|---|---|---|---|---|---|---|---|---|'];
-  z.forEach(function (e) { var v = e.vorwaerts; o.push('| ' + e.kennung + ' | ' + e.key + ' | ' + e.status + ' | ' + (e.siegel2Datum || '–') + ' | ' + (e.stichtag || '–') + ' | ' + ganz(e.nBedarf) + ' | ' + ganz(e.nStand) + ' | ' + e.urteil + ' | ' + (v ? de(v.netto) + ' / ' + de(v.t, 2) + ' / ' + de(v.p, 4) : '–') + ' | ' + (e.marke || '–') + ' |'); });
+    '| Kennung | Konf | Status | Siegel 2 | Stichtag | Bedarf (P = Perioden) | Stand | Urteil | Vorwaerts netto / t / p (Korb: Abstand p. a. / t / p) | Marke |', '|---|---|---|---|---|---|---|---|---|---|'];
+  z.forEach(function (e) { var v = e.vorwaerts, P = e.einheit === 'Perioden' ? ' P' : ''; o.push('| ' + e.kennung + ' | ' + e.key + ' | ' + e.status + ' | ' + (e.siegel2Datum || '–') + ' | ' + (e.stichtag || '–') + ' | ' + ganz(e.nBedarf) + P + ' | ' + ganz(e.nStand) + P + ' | ' + e.urteil + ' | ' + (v ? (v.form === 'korb' ? de(v.mittelPa, 2) + ' Pp p. a. / ' + de(v.t, 2) + ' / ' + de(v.p, 4) : de(v.netto) + ' / ' + de(v.t, 2) + ' / ' + de(v.p, 4)) : (P ? 'Vorwaertsblick erst bei nBedarf' + (e.datumGeschaetzt ? ' (≈ ' + e.datumGeschaetzt + ')' : '') : '–')) + ' | ' + (e.marke || '–') + ' |'); });
   if (!z.length) o.push('| – | – | – | – | – | – | – | – | – | – |');
   return o.join('\n') + '\n';
+}
+/** Nr. 125a B.3: Urteil der Korb-Vorwaertsmessung (ein Blick). belegt-Vorschlag: einseitiger t-Test der Perioden-Abstaende (gegen QQQ, Gesamtertrag) besteht Holm ueber die
+ *  Vorwaerts-Familie, Mittel > 0, Abstand p. a. NACH STEUER gegen den Nasdaq-ETF > 0, Richtung wie in der versiegelten Entdeckung. nein (Entscheid 15): obere
+ *  95-%-Grenze (einseitig) < 0 UND Rang-p >= 0,5 (Anteil der Zufallsbuecher, die besser sind - die Auswahl ist nicht besser als die mittlere Zufallsauswahl).
+ *  Unter KORB.minPerioden kein Bestaetigungsurteil. Der Rang ist sonst nachrichtlich (Zweitleser 20). */
+function korbVorwaertsUrteil(f, Hm, i, ERL, heute) {
+  var M = f.m.korb || {}, tt = M.tTest || {}, n = M.n || 0, e = f.eintrag, ns = M.nachSteuer || {}, rg = M.rang || {}, urteil;
+  if (M.leer || n < K.KORB.minPerioden) urteil = 'nicht entscheidbar';
+  else if (Hm.bestanden[i] && tt.mittel > 0 && ns.abstandNachSteuerPa > 0 && richtungAusSiegel(ERL, f.kennung, e.key) === 1) urteil = 'belegt-Vorschlag';
+  else if (tt.obere95 < 0 && rg.pRang >= K.KORB.rangNeinAb) urteil = 'nein';
+  else urteil = 'nicht entscheidbar';
+  var status = urteil === 'belegt-Vorschlag' ? 'bestaetigt' : urteil === 'nein' ? 'abgelehnt' : 'offen';
+  e.urteil = urteil; e.status = status; e.vorwaertsDatum = heute.slice(0, 10);
+  e.vorwaerts = { form: 'korb', n: n, mittelPp: tt.mittel, mittelPa: tt.mittelPa, sd: tt.sd, t: tt.t, df: tt.df, p: f.p, obere95: tt.obere95, holmSchwelle: Hm.schwelle[i], holmM: Hm.m, abstandNachSteuerPa: ns.abstandNachSteuerPa,
+    buchNachSteuerPa: ns.buchNachSteuerPa, nasdaqNachSteuerPa: ns.nasdaqNachSteuerPa, kostenJahrPp: ns.kostenJahrPp, pRang: rg.pRang, B: rg.B, stichtag: M.stichtag, panelEnde: M.panelEnde, parameterGleich: M.parameter ? M.parameter.gleich : null,
+    ausnahmen: M.parameter ? M.parameter.ausnahmen.map(function (a) { return a.feld; }) : null };
+  return { kennung: f.kennung, key: e.key, urteil: urteil, status: status, e: e };
 }
 /** --nachmessen --grund-daten (C4): Wiedervorlage einer Regel mit mehr Daten - kein Messgeraet-Fehler noetig, Kandidatenordner unveraendert seit Siegel 1
  *  der Vormessung, Register zaehlt die Kennung danach (alte Zahl + 1)-fach. */
@@ -940,8 +1033,10 @@ function eichung(opt) {
   });
   var A2 = eichungAuswerten(zeilen); ergebnis = A2.ergebnis; var urteilText = A2.urteil;
   var ms = Date.now() - t0, bestanden = A2.bestanden;
+  var altJ = fs.existsSync(path.join(ausOrd, 'eichung.json')) ? liesJson(path.join(ausOrd, 'eichung.json')) : null;   /* Nr. 125a: den Korb-Block nicht verlieren */
   var J = { kennung: 'pruefstrasse/eichung/v1', stand: jetzt(), datum: jetzt().slice(0, 10), panelKennung: TF.kennung, panelBau: TF.bau || null, panelOrdner: TF.panelOrdner || null, quelle: TF.quelle, eichfenster: { von: K.EICHUNG.von, bis: K.EICHUNG.bis, letzterTag: TF.tage[TF.maxTag], gesperrt: !!TF.gesperrt },
     einstellungen: EICHUNG, seeds: { einsaat: [EICHUNG.seedEinsaat, EICHUNG.seedEinsaat + seeds - 1], zufall: [EICHUNG.seedZufall, EICHUNG.seedZufall + (opt.seedsZufall || EICHUNG.seedsZufall) - 1] }, ergebnis: ergebnis, bestanden: bestanden, urteil: urteilText, laufzeitMs: ms, lesenMs: tLesen, laeufe: zeilen };
+  if (altJ && altJ.korb) J.korb = altJ.korb;
   schreibeJson(path.join(ausOrd, 'eichung.json'), J);
   fs.writeFileSync(path.join(ausOrd, 'EICHUNG.md'), eichungMarkdown(J));
   return eichungWaechter(J, vor, REPO, ausOrd, erlaubt, log);
@@ -989,6 +1084,75 @@ function eichungNeuBewerten(opt) {
   fs.writeFileSync(path.join(ausOrd, 'EICHUNG.md'), eichungMarkdown(J));
   return eichungWaechter(J, vor, REPO, ausOrd, erlaubt, log);
 }
+/* ---------- Eichung der Korb-Form (Nr. 125a C, FORM.md §5 Korb; nur PM, vor jeder Freigabe) ----------
+ * Echte Daten im Eichfenster (gesperrte Tafel = panelEichung, KORB.entdeckungVon .. EICHUNG.bis), Korb 187 wie die Kalibrierung, Kostenregel, Kapital wie die Kandidaten.
+ * Zufallsbuecher (zufallsZiel: Zielzahl wie momentumZiel, Auswahl per Wort) - REFERENZ: referenzBuecher Buecher ohne Einsaat; SEEDS: je Seed dasselbe Zufallsbuch
+ * ohne und mit Einsaat (+einsaatPp p. a. auf alle Aktienkurse ab dem Fensterstart, eine Kopie im Speicher - die Buchpositionen wachsen um 2 % p. a., die Rangfolge
+ * und der Massstab nicht). Kriterien (Entscheid 25: erst die Aufloesung, dann die Schwellen): (1) Einsaat gepaart (mit - ohne, derselbe Seed): Mittel in
+ * spanne; (2) Einsaat gegen die Referenz (mit - Mittel Referenz): |Mittel - einsaatPp| <= 2 se_Mittel; (3) Null (ohne - Mittel Referenz): |Mittel| <= 2 se_Mittel;
+ * (4) Anteil der Seeds mit Rang-p <= 0,05 gegen die Referenz hoechstens rangAnteilMax. se_Mittel = Wurzel(sd^2 / Seeds + sd_ref^2 / Referenz). Der Massstab
+ * faellt in allen vier heraus (gepaart bzw. gegen Buecher desselben Fensters). Schreibt nur eichung.json (Block korb) und EICHUNG.md (Abschnitt Korb). */
+var EICHUNG_KORB = { einsaatPp: 2, seeds: 20, referenzBuecher: 200, seedStart: 1, wortBasis: 'eichung-korb', korb: 187, spanne: [1.5, 2.5], rangP: 0.05, rangAnteilMax: 0.10, alterWarnTage: 60 };
+function eichungKorbBewerten(z, ref, E1) {
+  E1 = E1 || EICHUNG_KORB;
+  var mw = function (a) { return a.reduce(function (s, x) { return s + x; }, 0) / a.length; }, sd = function (a) { var m = mw(a); return a.length > 1 ? Math.sqrt(a.reduce(function (s, x) { return s + (x - m) * (x - m); }, 0) / (a.length - 1)) : 0; };
+  var mRef = mw(ref), sRef = sd(ref), N = z.length, NR = ref.length;
+  function reihe(werte, soll, mitRef) { var m = mw(werte), s = sd(werte), se = Math.sqrt(s * s / werte.length + (mitRef ? sRef * sRef / NR : 0)); return { n: werte.length, mittel: m, sd: s, seMittel: se, soll: soll, t: se > 0 ? (m - soll) / se : null, innerhalb2se: Math.abs(m - soll) <= 2 * se }; }
+  var gepaart = reihe(z.map(function (x) { return x.mit - x.ohne; }), E1.einsaatPp, false);
+  gepaart.spanne = E1.spanne; gepaart.spanneOk = gepaart.mittel >= E1.spanne[0] && gepaart.mittel <= E1.spanne[1]; gepaart.bestanden = gepaart.spanneOk;
+  var einsaat = reihe(z.map(function (x) { return x.mit - mRef; }), E1.einsaatPp, true); einsaat.bestanden = einsaat.innerhalb2se;
+  var nul = reihe(z.map(function (x) { return x.ohne - mRef; }), 0, true); nul.bestanden = nul.innerhalb2se;
+  var treffer = z.filter(function (x) { return x.rangP <= E1.rangP; }).length, rang = { n: N, treffer: treffer, anteil: N ? treffer / N : null, max: E1.rangAnteilMax, bestanden: N ? treffer / N <= E1.rangAnteilMax : false };
+  var aufloesung = { sdReferenz: sRef, mittelReferenz: mRef, referenzBuecher: NR, seMittelNull: nul.seMittel, seMittelGepaart: gepaart.seMittel, text: 'Ein Zufallsbuch streut im Eichfenster mit sd ' + sRef.toFixed(2) + ' Pp p. a.; bei ' + N + ' Seeds und ' + NR + ' Referenzbuechern ist se_Mittel ' + nul.seMittel.toFixed(2) + ' Pp - ein Geraeteversatz unter ~' + (2 * nul.seMittel).toFixed(1) + ' Pp p. a. ist ungepaart nicht sichtbar; gepaart (derselbe Seed mit/ohne Einsaat) se ' + gepaart.seMittel.toFixed(3) + ' Pp' };
+  return { gepaart: gepaart, einsaat: einsaat, null: nul, rang: rang, aufloesung: aufloesung, bestanden: gepaart.bestanden && einsaat.bestanden && nul.bestanden && rang.bestanden };
+}
+/** opt = { V (Tests: vorbereitete Kunsttafel), von, bis, korb, seeds, referenz, repo, aus, log } */
+function eichungKorb(opt) {
+  opt = opt || {};
+  var REPO = opt.repo || K.REPO, ausOrd = opt.aus || K.HIER, log = opt.log || function (x) { console.log(jetzt() + '  ' + x); }, KA = require('./adapter/korb.js');
+  var seeds = opt.seeds || EICHUNG_KORB.seeds, nRef = opt.referenz || EICHUNG_KORB.referenzBuecher, korb = opt.korb === undefined ? EICHUNG_KORB.korb : opt.korb;
+  var erlaubt = [path.relative(REPO, path.join(ausOrd, 'EICHUNG.md')).replace(/\\/g, '/'), path.relative(REPO, path.join(ausOrd, 'eichung.json')).replace(/\\/g, '/')], vor = statusZeilen(REPO), t0 = Date.now();
+  var V = opt.V || KA.vorbereiten({}), tLesen = Date.now() - t0;                                   /* ohne Siegel: gesperrt am Eichfenster (panelEichung) */
+  var von = opt.von || K.KORB.entdeckungVon, bis = opt.bis || K.EICHUNG.bis, F = KA.fenster(V.T, V.Q, von, bis);
+  log('Eichung Korb: Tafel ' + V.T.stand.kennung + (V.T.gesperrt ? ' (gesperrt am Eichfenster)' : '') + ', Fenster ' + F.vonText + ' .. ' + F.bisText + ', Korb ' + (korb || 'alle') + ', ' + seeds + ' Seeds, ' + nRef + ' Referenzbuecher, gelesen in ' + tLesen + ' ms');
+  var ref = [], tR = Date.now();
+  for (var b = 0; b < nRef; b++) ref.push(KA.eichLauf(V, F, EICHUNG_KORB.wortBasis + '-referenz#' + b, korb).abstandPa);
+  var msRef = Date.now() - tR; log('  Referenz: ' + nRef + ' Buecher in ' + Math.round(msRef / 1000) + ' s');
+  var T2 = KA.eingesaeteTafel(V.T, V.Q, F.von, EICHUNG_KORB.einsaatPp), V2 = KA.vorbereiten({ tafel: T2, echteMassnahmen: !opt.V, massnahmenLeser: opt.massnahmenLeser }), F2 = KA.fenster(V2.T, V2.Q, von, bis);
+  var zeilen = [];
+  for (var s = EICHUNG_KORB.seedStart; s < EICHUNG_KORB.seedStart + seeds; s++) {
+    var ts = Date.now(), wort = EICHUNG_KORB.wortBasis + '#' + s, a0 = KA.eichLauf(V, F, wort, korb), a1 = KA.eichLauf(V2, F2, wort, korb);
+    var besser = ref.filter(function (x) { return x > a0.abstandPa; }).length, z = { seed: s, ohne: a0.abstandPa, mit: a1.abstandPa, buchEndeOhne: a0.buchEnde, buchEndeMit: a1.buchEnde, rangP: (besser + 1) / (nRef + 1), ms: Date.now() - ts };
+    zeilen.push(z); log('  Seed ' + s + ': ohne ' + de(z.ohne, 2) + ', mit Einsaat ' + de(z.mit, 2) + ' (gepaart ' + de(z.mit - z.ohne, 3) + ') Pp p. a., Rang-p ' + z.rangP.toFixed(3) + ', ' + z.ms + ' ms');
+  }
+  var B = eichungKorbBewerten(zeilen, ref), ms = Date.now() - t0;
+  var datei = path.join(ausOrd, 'eichung.json'), J = fs.existsSync(datei) ? liesJson(datei) : { kennung: 'pruefstrasse/eichung/v1' };
+  J.korb = { kennung: 'pruefstrasse/eichung/korb/v1', stand: jetzt(), datum: jetzt().slice(0, 10), panelKennung: V.T.stand.kennung, panelBau: V.T.stand.bau || null, gesperrt: !!V.T.gesperrt, fenster: { von: F.vonText, bis: F.bisText },
+    einstellungen: EICHUNG_KORB, korb: korb, kapitalUsd: K.KORB.kapitalUsd, kosten: 'Kostenregel (Eroeffnung + IBKR Fixed), Handel ueber mfhandel.js fuehreAus opts.kostenRegel', seeds: [EICHUNG_KORB.seedStart, EICHUNG_KORB.seedStart + seeds - 1], referenzBuecher: nRef,
+    ergebnis: { gepaart: B.gepaart, einsaat: B.einsaat, null: B.null, rang: B.rang }, aufloesung: B.aufloesung, bestanden: B.bestanden, urteil: B.bestanden ? 'bestanden' : 'NICHT bestanden', laufzeitMs: ms, lesenMs: tLesen, referenzMs: msRef,
+    msJeLauf: Math.round((ms - tLesen) / (nRef + 2 * seeds)), referenz: ref, laeufe: zeilen };
+  schreibeJson(datei, J);
+  var mdDatei = path.join(ausOrd, 'EICHUNG.md'), md = fs.existsSync(mdDatei) ? fs.readFileSync(mdDatei, 'utf8') : '# Eichung der Pruefstrasse\n', marke = '\n## Korb-Form (Nr. 125a)';
+  if (md.indexOf(marke) !== -1) md = md.slice(0, md.indexOf(marke));
+  fs.writeFileSync(mdDatei, md.replace(/\s*$/, '\n') + eichungKorbMarkdown(J.korb));
+  var fremd = fremdGeschrieben(vor, statusZeilen(REPO), erlaubt);
+  if (fremd.length) { J.korb.waechter = 'fremd: ' + fremd.join(', '); schreibeJson(datei, J); throw new Error('EICHUNG KORB: hat ausser EICHUNG.md/eichung.json geschrieben: ' + fremd.join(', ')); }
+  J.korb.waechter = 'sauber'; schreibeJson(datei, J);
+  log('Eichung Korb ' + J.korb.urteil + ' in ' + (ms / 1000).toFixed(0) + ' s - ' + erlaubt.join(', '));
+  return J.korb;
+}
+function eichungKorbMarkdown(J) {
+  var e = J.ergebnis, E1 = J.einstellungen, zeile = function (name, b, krit) { return '| ' + name + ' | ' + b.n + ' | ' + de(b.mittel, 3) + ' | ' + de(b.sd, 3) + ' | ' + de(b.seMittel, 3) + ' | ' + de(b.soll, 2) + ' | ' + krit + ' | ' + (b.bestanden ? 'ja' : '**nein**') + ' |'; };
+  return ['', '## Korb-Form (Nr. 125a) — **' + J.urteil + '**', '',
+    'Datum ' + J.datum + ', Panel `' + J.panelKennung + '`' + (J.gesperrt ? ' (gesperrt am Eichfenster)' : '') + ', Fenster ' + J.fenster.von + ' … ' + J.fenster.bis + ', Korb ' + J.korb + ', Kapital ' + ganz(J.kapitalUsd) + ', ' + J.kosten + '. ' + (J.seeds[1] - J.seeds[0] + 1) + ' Seeds (je ohne und mit Einsaat +' + de(E1.einsaatPp, 1) + ' Pp p. a. auf alle Aktienkurse ab dem Fensterstart, im Speicher), ' + J.referenzBuecher + ' Referenzbuecher ohne Einsaat. Laufzeit ' + (J.laufzeitMs / 1000).toFixed(0) + ' s (Referenz ' + (J.referenzMs / 1000).toFixed(0) + ' s, ' + J.msJeLauf + ' ms je Lauf).', '',
+    '**Aufloesung zuerst (Entscheid 25):** ' + J.aufloesung.text + '.', '',
+    '| Reihe | n | Mittel (Pp p. a.) | sd | se_Mittel | Soll | Kriterium | bestanden |', '|---|---|---|---|---|---|---|---|',
+    zeile('Einsaat gepaart (mit − ohne, derselbe Seed)', e.gepaart, 'Mittel in ' + de(E1.spanne[0], 1) + ' … ' + de(E1.spanne[1], 1)),
+    zeile('Einsaat gegen die Referenz (mit − Mittel Referenz)', e.einsaat, '|Mittel − ' + de(E1.einsaatPp, 1) + '| ≤ 2 se_Mittel'),
+    zeile('Null (ohne − Mittel Referenz)', e.null, '|Mittel| ≤ 2 se_Mittel'),
+    '| Rang-p ≤ ' + de(E1.rangP, 2) + ' (ohne Einsaat) | ' + e.rang.n + ' | ' + e.rang.treffer + ' Treffer = ' + (100 * e.rang.anteil).toFixed(0) + ' % | – | – | – | höchstens ' + (100 * E1.rangAnteilMax).toFixed(0) + ' % | ' + (e.rang.bestanden ? 'ja' : '**nein**') + ' |', '',
+    'Der Massstab faellt in allen Kriterien heraus (gepaart bzw. gegen Buecher desselben Fensters). Die Einsaat waechst multiplikativ: ein voll investiertes Buch mit r p. a. gewinnt 2 × (1 + r) Pp, Bargeld und Kosten druecken es - deshalb gepaart eine Spanne, keine 2-se-Grenze. Einzellaeufe in `eichung.json` (Block `korb`). Simulation mit virtuellem Kapital, keine Anlageberatung.', ''].join('\n');
+}
 function eichungMarkdown(J) {
   var ergebnis = J.ergebnis, bestanden = J.bestanden, zeilen = J.laeufe, ms = J.laufzeitMs, tLesen = J.lesenMs, E1 = J.einstellungen || EICHUNG;
   var o = ['# Eichung der Pruefstrasse (Nr. 121-2a) — ' + (J.urteil ? '**' + J.urteil + '**' : bestanden ? '**bestanden**' : '**NICHT bestanden**'), '',
@@ -999,10 +1163,10 @@ function eichungMarkdown(J) {
   o.push(''); o.push('Verglichen wird **u brutto** (Geräteversatz, Nachbesserung 5); nachrichtlich netto und mittlere Hürde: ' + ['marktweit', 'querschnitt'].map(function (a) { var n = ergebnis[a].nachrichtlich || {}; return a + ' Zufall brutto ' + de(n.bruttoZufall) + ' / netto ' + de(n.nettoZufall) + ', Einsaat brutto ' + de(n.bruttoEinsaat) + ' / netto ' + de(n.nettoEinsaat) + ', mittlere Hürde ' + de(n.huerde); }).join('; ') + '.');
   o.push(''); o.push('Einzelläufe: ' + zeilen.map(function (z) { return z.art.slice(0, 5) + '/' + z.typ.slice(0, 3) + '/' + z.seed + ' ' + de(z.uBrutto, 3) + ' (t ' + de(z.t, 1) + ', ' + z.nTage + ' T)'; }).join('; ') + '.');
   o.push(''); o.push('Kriterien (FORM.md §5, Nachbesserung QS 23.10., beide Dichten): Nullpool = ' + (J.seeds.zufall[1] - J.seeds.zufall[0] + 1) + ' Zufall-Seeds + die Einsaat-Seeds minus 0,30 (Einsaat exakt additiv) — |Mittel| ≤ 2 · se_Mittel und Anteil |t| > 2 ≤ 15 %; Einsaat — Mittel innerhalb ± 2 · se_Mittel um 0,30 und zwischen 0,20 und 0,40. Auf dem festen Marktpfad sind die Zufallspläne unabhängige Ziehungen, se_Mittel ist der Maßstab für einen Geräteversatz. Lokaler Topf mit Randregel (Signal braucht R Tafeltage beidseitig in seiner Reihe). Die Eichung fährt der PM vor jeder Freigabe (`node pruefstrasse/laeufer.js --eichung`, Neubewertung gespeicherter Läufe: `--eichung-bewerten`); `test.js` prüft Form und Alter (> ' + EICHUNG.alterWarnTage + ' Tage: Warnung). Simulation mit virtuellem Kapital, keine Anlageberatung.');
-  return o.join('\n') + '\n';
+  return o.join('\n') + '\n' + (J.korb ? eichungKorbMarkdown(J.korb) : '');
 }
 
-module.exports = { richtungAusSiegel: richtungAusSiegel, eichungNeuBewerten: eichungNeuBewerten, eichungAuswerten: eichungAuswerten, eichung: eichung, eichRegel: eichRegel, eichungBewerten: eichungBewerten, fremdGeschrieben: fremdGeschrieben, EICHUNG: EICHUNG, vorwaerts: vorwaerts, vorwaertsKind: vorwaertsKind, vormerken: vormerken, wiedervorlagen: wiedervorlagen, machbarkeitsPhase: machbarkeitsPhase, stichtagNach: stichtagNach, VORWAERTS_MARKE: VORWAERTS_MARKE, ladeKandidat: ladeKandidat, pruefen: pruefen, naechster: naechster, laufe: laufe, messen: messen, urteile: urteile, holm: holm, register: register,
+module.exports = { eichungKorb: eichungKorb, eichungKorbBewerten: eichungKorbBewerten, eichungKorbMarkdown: eichungKorbMarkdown, EICHUNG_KORB: EICHUNG_KORB, vormerkenKorb: vormerkenKorb, vorwaertsKindKorb: vorwaertsKindKorb, korbVorwaertsUrteil: korbVorwaertsUrteil, machbarkeitsPhaseKorb: machbarkeitsPhaseKorb, korbM: korbM, machbarkeitMarkdown: machbarkeitMarkdown, vorwaertsTafel: vorwaertsTafel, richtungAusSiegel: richtungAusSiegel, eichungNeuBewerten: eichungNeuBewerten, eichungAuswerten: eichungAuswerten, eichung: eichung, eichRegel: eichRegel, eichungBewerten: eichungBewerten, fremdGeschrieben: fremdGeschrieben, EICHUNG: EICHUNG, vorwaerts: vorwaerts, vorwaertsKind: vorwaertsKind, vormerken: vormerken, wiedervorlagen: wiedervorlagen, machbarkeitsPhase: machbarkeitsPhase, stichtagNach: stichtagNach, VORWAERTS_MARKE: VORWAERTS_MARKE, ladeKandidat: ladeKandidat, pruefen: pruefen, naechster: naechster, laufe: laufe, messen: messen, urteile: urteile, holm: holm, register: register,
   registerEintragen: registerEintragen, ergebnisMarkdown: ergebnisMarkdown, belegstandAbsatz: belegstandAbsatz, messgeraetDetails: messgeraetDetails, URTEILE: URTEILE, PFLICHT: PFLICHT,
   nachmessungPruefen: nachmessungPruefen, nachmessungVerschieben: nachmessungVerschieben, nachmessSperre: nachmessSperre, NACHMESS_MARKE: NACHMESS_MARKE, nachmessungAbsatz: nachmessungAbsatz, nachmessen: nachmessen, obereGrenze: obereGrenze, versatzAbschnitt: versatzAbschnitt };
 
@@ -1014,7 +1178,8 @@ if (require.main === module) {
     else if (a.indexOf('--kandidat') !== -1) { var r = laufe(arg('--kandidat'), { trocken: trocken }); console.log(JSON.stringify(r)); process.exit(r.abbruch ? 1 : 0); }
     else if (a.indexOf('--nachmessen') !== -1) { var rN = a.indexOf('--grund-daten') !== -1 ? nachmessen(arg('--nachmessen'), arg('--grund-daten'), null, { art: 'daten' }) : nachmessen(arg('--nachmessen'), arg('--grund'), arg('--korrektur')); console.log(JSON.stringify(rN)); process.exit(rN.abbruch ? 1 : 0); }
     else if (a.indexOf('--eichung-bewerten') !== -1) { var J2 = eichungNeuBewerten({}); process.exit(J2.bestanden ? 0 : 1); }
-    else if (a.indexOf('--eichung') !== -1) { var J = eichung({}); process.exit(J.bestanden ? 0 : 1); }
+    else if (a.indexOf('--eichung') !== -1 && arg('--nur') === 'korb') { var JK = eichungKorb({}); process.exit(JK.bestanden ? 0 : 1); }     /* Nr. 125a C */
+    else if (a.indexOf('--eichung') !== -1) { var J = eichung({}); var JK2 = eichungKorb({}); process.exit(J.bestanden && JK2.bestanden ? 0 : 1); }
     else if (a.indexOf('--vorwaerts') !== -1) { var rV = vorwaerts({}); console.log(JSON.stringify({ geaendert: rV.geaendert, commit: rV.commit, statuswechsel: rV.statuswechsel })); process.exit(0); }
     else if (a.indexOf('--naechster') !== -1) { var n = naechster(); if (!n) { console.log('Warteschlange: kein gueltiger Kandidat'); process.exit(0); } var r2 = laufe(n, { trocken: trocken }); console.log(JSON.stringify(r2)); process.exit(r2.abbruch ? 1 : 0); }
     else { console.log('--pruefen <kennung> | --kandidat <kennung> [--trocken] | --naechster [--trocken] | --vorwaerts | --nachmessen <kennung> --grund "<Text>" --korrektur <commit> | --nachmessen <kennung> --grund-daten "<Text>" (nur PM)'); process.exit(2); }

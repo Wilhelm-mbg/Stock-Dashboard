@@ -109,5 +109,13 @@ function tabelle(positionen) {
   return z;
 }
 
-module.exports = { KLASSEN: KLASSEN, INDEX: INDEX, AUSFUEHRUNGEN: AUSFUEHRUNGEN, IBKR: IBKR, ibkrGebuehr: ibkrGebuehr, klasseObj: klasseObj, klasseZurLaufzeit: klasseZurLaufzeit,
+/** Nr. 125a (Vorschlag Nr. 126, offener Punkt 5): Kosten EINER Seite als Brueche des Handelswerts, getrennt - spanne = halbe Spanne der Kostenklasse
+ *  zur Ausfuehrungszeit (lage 'eroeffnung' | 'kassa'), gebuehr = IBKR-Gebuehr der Seite / Wert (Stueck = Wert / roher Kurs; ohne Wert oder Kurs 0).
+ *  spanne + gebuehr ist ziffergleich zu adapter/korb-kosten.js anteilSeite (Test K-1 in test-125a.js). Die App spiegelt sie in kostenregel.js. */
+function seite(klasse, lage, seiteArt, wertUsd, kursRoh, modell) {
+  var k = klasseObj(klasse), sp = (lage === 'kassa' ? k.kassa : k.eroeffnung) / 100 / 2;
+  return { spanne: sp, gebuehr: (wertUsd > 0 && kursRoh > 0) ? ibkrGebuehr(modell || K.KOSTEN.modell, seiteArt, wertUsd / kursRoh, kursRoh) / wertUsd : 0 };
+}
+
+module.exports = { seite: seite, KLASSEN: KLASSEN, INDEX: INDEX, AUSFUEHRUNGEN: AUSFUEHRUNGEN, IBKR: IBKR, ibkrGebuehr: ibkrGebuehr, klasseObj: klasseObj, klasseZurLaufzeit: klasseZurLaufzeit,
   huerdeUmlauf: huerdeUmlauf, gesamtPp: gesamtPp, spannePp: spannePp, jeSeiteBp: jeSeiteBp, tabelle: tabelle };

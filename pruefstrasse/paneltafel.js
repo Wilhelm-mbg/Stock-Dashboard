@@ -16,7 +16,8 @@ function oeffne(opt) {
   if (!opt.ohneSpeicherpruefung && frei < K.SPEICHER_MIN_GB) throw new Error('SPEICHER: ' + frei.toFixed(1) + ' GB frei, unter ' + K.SPEICHER_MIN_GB + ' GB - warten');
   var siegel = null;
   if (opt.pruefzeit) { if (!opt.siegelPfad) throw SG.sperrFehler('Pruefzeit verlangt, aber kein Siegel genannt'); siegel = SG.pruefeSiegel(opt.repo || K.REPO, opt.siegelPfad); }
-  var aus = opt.panel || (siegel ? K.PANEL : K.PANEL_EICHUNG), kennung = opt.panelKennung || K.PANEL_KENNUNG, ordner = path.join(aus, 'panel');   /* Nr. 123 wie tafel.js */
+  var offen = !!siegel || !!opt.bisPanelende;   /* Nr. 125a: bisPanelende wie tafel.js (Korb-Entdeckung bis zum Panel-Ende, Vorwaerts) */
+  var aus = opt.panel || (offen ? K.PANEL : K.PANEL_EICHUNG), kennung = opt.panelKennung || K.PANEL_KENNUNG, ordner = path.join(aus, 'panel');   /* Nr. 123 wie tafel.js */
   K.ordnerPruefen(ordner, 5, 'Panel ' + aus);
   var stand = JSON.parse(fs.readFileSync(path.join(ordner, '_stand.json'), 'utf8'));
   if (stand.kennung !== kennung) throw new Error('Panelkennung ' + stand.kennung + ' statt ' + kennung);
@@ -24,7 +25,6 @@ function oeffne(opt) {
   if (stand.letzterVollTagIdx == null) throw new Error('_stand.json ohne letzterVollTagIdx');
   var tage = stand.tage, idx = {}; tage.forEach(function (t, i) { idx[t] = i; });
   var sperrIdx = -1; for (var i = 0; i < tage.length; i++) if (tage[i] <= K.EICHUNG.bis) sperrIdx = i;
-  var offen = !!siegel;
   var jahre = stand.jahre.map(function (j) { return j.jahr; }).filter(function (j) { return offen || j <= +K.EICHUNG.bis.slice(0, 4); }).sort(function (a, b) { return a - b; });
   var bloecke = jahre.map(function (j) { return P.leseBlock(path.join(ordner, j + '.bin'), kennung); });
   var n = 0; bloecke.forEach(function (b) { n += b.n; });
@@ -70,4 +70,15 @@ function oeffne(opt) {
     gesperrt: !offen, sperrIdx: sperrIdx, siegel: siegel, jahreGelesen: jahre };
 }
 
-module.exports = { oeffne: oeffne };
+/** Nr. 125a: nur der Kalender des Panels (_stand.json: tage, letzterVollTagIdx, kennung) - ohne Jahresbloecke, ohne Renditen (Korb-Zaehlung). */
+function kalender(opt) {
+  opt = opt || {};
+  var aus = opt.panel || (opt.bisPanelende ? K.PANEL : K.PANEL_EICHUNG), kennung = opt.panelKennung || K.PANEL_KENNUNG, ordner = path.join(aus, 'panel');
+  var stand = JSON.parse(fs.readFileSync(path.join(ordner, '_stand.json'), 'utf8'));
+  if (stand.kennung !== kennung) throw new Error('Panelkennung ' + stand.kennung + ' statt ' + kennung);
+  var bis = stand.letzterVollTagIdx, tage = stand.tage.slice(0, bis + 1);
+  if (!opt.bisPanelende) tage = tage.filter(function (t) { return t <= K.EICHUNG.bis; });
+  return { tage: tage, kennung: stand.kennung, bau: stand.bau || null, panelOrdner: aus, letzterTag: tage[tage.length - 1] };
+}
+
+module.exports = { oeffne: oeffne, kalender: kalender };
