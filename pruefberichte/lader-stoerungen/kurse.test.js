@@ -321,7 +321,7 @@ TESTS.push({
       gp.d.mfBuch.positionen.length + ' Kaeufe, Auftraege ' + gpOffen + '. Die flache Kerze traegt o = Kurs von jetzt (kurse.js:' +
       H.zeileVon('kurse.js', "var op = kursOk(ops[i]) ? ops[i] : (o.offenRoh ? null : c);") + ' behaelt ihn), eroeffnung() nimmt sie als Eroeffnung (mfdepot.js:' +
       H.zeileVon('mfdepot.js', 'if (b[0] >= von && b[0] < bis && b[5] > 0 && (!best || b[0] < best[0])) best = b;') + ') -> MH.fuehreAus (mfdepot.js:' +
-      H.zeileVon('mfdepot.js', 'var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil });') + ').' };
+      H.zeileVon('mfdepot.js', 'var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, optsM);') + ').' };
   }
 });
 

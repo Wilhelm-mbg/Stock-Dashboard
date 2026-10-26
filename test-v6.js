@@ -14319,10 +14319,13 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
    * gegeneinander: wer die Handelskosten aendert, macht sie rot.
    * Seit Auftrag Nr. 87 traegt der Aufruf als fuenftes Argument den Schalter der Regel K;
    * die Kosten stehen weiter an vierter Stelle, und genau die werden hier gelesen. */
-  var kbp = /MH\.fuehreAus\(d\.mfBuch, plan, now, (\d+), \{ kleinstAnteil: KONFIG\.kleinstAnteil \}\)/.exec(mfd);
+  /* Seit Auftrag Nr. 126 handelt das Buch nach der Kostenregel (opts.kostenRegel aus handelsOpts); die Zahl an vierter Stelle bleibt die
+   * Vorgabe ohne Regel (Rueckfall ohne kostenregel.js) und die des Rechenblatts - das Feld sagt beides (Titel und Beschriftung). */
+  var kbp = /MH\.fuehreAus\(d\.mfBuch, plan, now, (\d+), optsM\)/.exec(mfd);
   var mfk = html.slice(html.indexOf('<select id="mfKosten" disabled>'), html.indexOf('</select>', html.indexOf('<select id="mfKosten" disabled>')));
   var gewaehlt = /<option value="(\d+)" selected>/.exec(mfk);
-  ok(!!kbp && !!gewaehlt && kbp[1] === gewaehlt[1],
+  var mfkLabel = html.slice(html.lastIndexOf('<label', html.indexOf('<select id="mfKosten" disabled>')), html.indexOf('<select id="mfKosten" disabled>'));
+  ok(!!kbp && !!gewaehlt && kbp[1] === gewaehlt[1] && /Kostenregel/.test(mfkLabel) && /var o = \{ kleinstAnteil: KONFIG\.kleinstAnteil \};\s*if \(KONFIG\.kostenRegel === 'eroeffnung\+ibkr'/.test(mfd),
      'Live=Messung: das gesperrte Kosten-Feld zeigt genau die Bp, mit denen das Buch wirklich handelt',
      (kbp ? kbp[1] : '?') + ' Bp im Buch, ' + (gewaehlt ? gewaehlt[1] : '?') + ' Bp im Feld');
   /* Die Kennungen bleiben vollstaendig erhalten (K18) - eine Sperre ist kein Ausbau.
@@ -22864,12 +22867,14 @@ console.log('95) Regel K gegen Kleinstpositionen: Schalter im Handelscode, Vorga
    * umgestellt: die Konfiguration des Buchs traegt 0,05, und mfdepot.js reicht genau dieses Feld an alle drei Aufrufe -
    * kein Aufruf ohne opts bleibt uebrig (ein vergessener waere wieder die Mechanik von vor Nr. 85). */
   var kf = MH.buchKonfig(), mfd95 = ohneKommentare(fs.readFileSync(__dirname + '/mfdepot.js', 'utf8'));
-  ok(kf.kleinstAnteil === 0.05 && Object.keys(kf).join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil',
+  /* Seit Auftrag Nr. 126 dahinter kostenRegel und massstab */
+  ok(kf.kleinstAnteil === 0.05 && Object.keys(kf).join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil,kostenRegel,massstab',
     '95.6 buchKonfig fuehrt den Schalter mit dem Wert 0,05 (an); die sieben Felder davor sind unveraendert', kf.kleinstAnteil);
   /* Umgeschrieben mit Auftrag Nr. 93 (A4): dazu die Planung zu den Eroeffnungen des Ausfuehrungstags - drei Planungen, jede mit { kleinstAnteil }. */
   ok(mfd95.split('MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise, { kleinstAnteil: KONFIG.kleinstAnteil })').length === 3 &&
      mfd95.split('MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, { kleinstAnteil: KONFIG.kleinstAnteil })').length === 2 &&
-     mfd95.split('MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil })').length === 2 &&
+     mfd95.split('MH.fuehreAus(d.mfBuch, plan, now, 20, optsM)').length === 2 && mfd95.split('var optsM = handelsOpts(MH, KONFIG, daten.roh, ausf.heute);').length === 2 &&
+     mfd95.split('var o = { kleinstAnteil: KONFIG.kleinstAnteil };').length === 2 &&
      mfd95.split('MH.planeUmschichtung(').length === 4 && mfd95.split('MH.fuehreAus(').length === 2 &&
      /var KONFIG = MH\.buchKonfig\(\);/.test(mfd95),
   '95.6 die App reicht den Schalter durch: mfdepot.js ruft zweimal planen und einmal ausfuehren, jedes Mal mit { kleinstAnteil } aus der Konfiguration des Buchs - kein Aufruf ohne');
@@ -22931,6 +22936,7 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
     return new Function(quelle.slice(a, b) + '\nreturn { pruefen: umstellungPruefen, text: konfigText, gleich: konfigGleich, felder: KONFIG_FELDER };')();
   }
   var NEU = MH.buchKonfig();
+  delete NEU.kostenRegel; delete NEU.massstab;   /* Nr. 126: dieser Abschnitt prueft die Umstellung von Nr. 87; Kostenregel und Massstab prueft test-momentum-umstellung.js */
   /* So merkte sich ein Buch seine Konfiguration vor Nr. 87: sieben Felder, kein kleinstAnteil. */
   var ALT7 = { rueckblick: NEU.rueckblick, luecke: NEU.luecke, halten: NEU.halten, anteil: NEU.anteil, mindestWerte: NEU.mindestWerte,
     umsatzMin: NEU.umsatzMin, umsatzFenster: NEU.umsatzFenster };
@@ -22978,7 +22984,7 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
         '96.1 ein Buch ganz ohne gemerkte Konfiguration (vor dem 02.09.) laeuft wie bisher: Korb-Umstellung, zurueckgesetzt'],
       [/Regel K gegen Kleinstpositionen an \(unter 5 % des Platzwerts/.test(zk.txt) && /Regel K gegen Kleinstpositionen aus/.test(zk.txt) &&
         /Regel K gegen Kleinstpositionen an/.test(U.text(NEU)) && /Regel K gegen Kleinstpositionen aus$/.test(U.text(ALT7)) &&
-        U.felder.join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil',
+        U.felder.join(',') === 'rueckblick,luecke,halten,anteil,mindestWerte,umsatzMin,umsatzFenster,kleinstAnteil,kostenRegel,massstab',
       '96.1 KONFIG_FELDER kennt kleinstAnteil; konfigText nennt die Regel in einem Halbsatz (alt: aus, neu: an)'],
       [r7 === true && /ausgeschaltet/.test(za.applied[0]) && za.txt.indexOf('alt 5 % des Platzwerts → neu aus') >= 0 && aus.mfBuch.liquideSeit === 111,
         '96.1 auch das Ausschalten bekaeme seine eigene Zeile (0,05 → aus) und setzte nichts zurueck']
@@ -23282,7 +23288,7 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
      iBuchen < taktQ.indexOf('d.momentumAn') && iBuchen < taktQ.indexOf('d.driftAn'),
   '96.5 im Takt wird einmal gebucht: nach dem Laden, vor dem Planen beider Buecher und vor (ausserhalb) der Abfrage der Schalter');
   /* Umgeschrieben mit Auftrag Nr. 93 (A4): gekauft wird zur Eroeffnung des Ausfuehrungstags - kursT ist der Stempel DIESES Balkens. */
-  ok(/MH\.fuehreAus\(d\.mfBuch, plan, now, 20, \{ kleinstAnteil: KONFIG\.kleinstAnteil \}\);\s*MH\.stempleKursT\(d\.mfBuch, ausf\.barZeit, now\);/.test(taktQ) &&
+  ok(/MH\.fuehreAus\(d\.mfBuch, plan, now, 20, optsM\);\s*MH\.stempleKursT\(d\.mfBuch, ausf\.barZeit, now\);/.test(taktQ) &&
      /getanD = MH\.driftAbgleich\(d\.driftBuch, heute, daten\.preise, now, \{\}\);\s*MH\.stempleKursT\(d\.driftBuch, daten\.barZeit, now\);/.test(taktQ) &&
      taktQ.split('MH.stempleKursT(').length === 3,
   '96.5 neue Positionen bekommen kursT gleich nach fuehreAus bzw. nach dem (echten) driftAbgleich');
@@ -23332,7 +23338,7 @@ console.log('96) Buchmechanik: Regel K eingeschaltet, Splits und Ausschuettungen
   var gleichD = fassungD(/'use strict';/, "'use strict'; ");
   var setztZurueck = fassungD(/d\.mfBuch\.kleinstSeit = now;/, 'd.mfBuch.kleinstSeit = now; d.mfBuch.liquideSeit = null; d.mfBuch.korbVerlauf = [];');
   var ohneEigenenWeg = fassungD(/if \(!andere\.length\) \{/, 'if (false) {');
-  var ohneFeld = fassungD(/'umsatzFenster', 'kleinstAnteil'\];/, "'umsatzFenster'];");
+  var ohneFeld = fassungD(/'umsatzFenster', 'kleinstAnteil', 'kostenRegel', 'massstab'\];/, "'umsatzFenster', 'kostenRegel', 'massstab'];");
   ok(!!gleichD && alle(pruefeUmstellung(gleichD)), '96.x Kontrolle: dieselbe Umstellungs-Logik, auf dem Weg der Gegenproben geladen, besteht alle Pruefungen');
   gegen96('setzt die K-Umstellung liquideSeit und korbVerlauf zurueck, faellt es auf', !!setztZurueck && !alle(pruefeUmstellung(setztZurueck)));
   gegen96('ohne den eigenen Weg (K-Umstellung als Korb-Umstellung, Text vom 02.09., zurueckgesetzt) faellt es auf', !!ohneEigenenWeg && !alle(pruefeUmstellung(ohneEigenenWeg)));
@@ -24260,7 +24266,7 @@ console.log('99) Eroeffnung am selben Tag nachfassen (Auftrag Nr. 94)');
   ok(/MH\.stempleKursT\(d\.mfBuch, ausf\.barZeit, now\);[^\n]*\s*var offenNeu = manuell === 'momentum' \? null : MH\.offeneAuftraege\(zielA\.ziel, plan, ausf\.heute\);\s*if \(offenNeu\) d\.mfBuch\.offen = offenNeu;/.test(takt99) &&
      (takt99.match(/\.offen = /g) || []).length === 1 && takt99.indexOf('MH.offenText(offenNeu, now) +') > 0,
      '99.1 offen setzt nur der Takt, gleich nach der Ausfuehrung der Umschichtung - der Knopf "jetzt umschichten" aendert nichts an offen; die Zeile der Umschichtung nennt sie');
-  var iP = takt99.indexOf('tagespunkt(MH, d, daten, now)'), iN = takt99.indexOf('if (d.mfBuch.offen && await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil)) speichern();'),
+  var iP = takt99.indexOf('tagespunkt(MH, d, daten, now)'), iN = takt99.indexOf('if (d.mfBuch.offen && await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil, daten.roh)) speichern();'),
     iU = takt99.indexOf('await ausfuehrungVorbereiten(');
   ok(iP > 0 && iN > iP && iU > iN, '99.2 im Takt: nachgefasst (oder beendet) wird nach dem Tagespunkt und vor einer Umschichtung - in jedem Takt, solange offen steht');
 

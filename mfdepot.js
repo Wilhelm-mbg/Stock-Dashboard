@@ -107,6 +107,7 @@
      * "Umstellung" gibt es nur fuer Buecher, die schon vorher liefen. */
     if (name === 'momentum' && window.MFHandel && window.MFHandel.buchKonfig) {
       b.konfig = window.MFHandel.buchKonfig(); b.konfigSeit = b.angelegt; b.liquideSeit = null; b.korbVerlauf = [];
+      b.regelnSeit = b.angelegt;   // Nr. 126: ein neues Buch rechnet von Anfang an nach den Regeln seiner Konfiguration
     }
     return b;
   }
@@ -119,11 +120,30 @@
    * Konfiguration. Gehandelt wird dabei NICHTS: die neue Regel greift bei der naechsten
    * regulaeren Umschichtung; Positionen ausserhalb des liquiden Korbs werden dort
    * verkauft, nicht sofort. */
-  var KONFIG_FELDER = ['rueckblick', 'luecke', 'halten', 'anteil', 'mindestWerte', 'umsatzMin', 'umsatzFenster', 'kleinstAnteil'];
+  var KONFIG_FELDER = ['rueckblick', 'luecke', 'halten', 'anteil', 'mindestWerte', 'umsatzMin', 'umsatzFenster', 'kleinstAnteil', 'kostenRegel', 'massstab'];
+  /* Auftrag Nr. 126 (Zweitleser 18, Entscheid PM 26.10.2026: der Vorwaertstest seit 25.08. bleibt erhalten): Felder, deren
+   * Aenderung KEINEN Neustart des Vorwaertstests ausloest - Regeln der Ausfuehrung und des Vergleichs, nicht des Korbs und der
+   * Rangfolge. liquideSeit, korbVerlauf, Trades und Verlauf bleiben; neu ist nur regelnSeit (und regelnVorher fuer den
+   * Abschnitt davor). Jedes andere Feld (Korb, Rangmass, Takt) setzt weiter zurueck wie bisher. regelnSeit steht hier, damit
+   * ein kuenftiges Konfigurationsfeld dieses Namens ebenfalls nicht zuruecksetzt. */
+  var KEIN_NEUSTART = ['kleinstAnteil', 'kostenRegel', 'massstab', 'regelnSeit'];
   /* Regel K (Feld kleinstAnteil, Auftrag Nr. 87): ein Buch, das sich seine Konfiguration vor
    * Nr. 87 gemerkt hat, traegt das Feld nicht - das heisst AUS, also 0. */
   function kleinstWert(k) { return k && k.kleinstAnteil > 0 ? k.kleinstAnteil : 0; }
-  function feldGleich(a, b, k) { return k === 'kleinstAnteil' ? kleinstWert(a) === kleinstWert(b) : a[k] === b[k]; }
+  /* Nr. 126: ein Buch ohne die Felder kostenRegel / massstab rechnete mit 20 Bp je Seite und gegen den S&P 500. */
+  function regelWert(k, feld) { var MH = typeof window !== 'undefined' ? window.MFHandel : null; return k && k[feld] ? k[feld] : (feld === 'kostenRegel' ? (MH ? MH.KOSTEN_ALT : '20bp') : (MH ? MH.MASSSTAB_ALT : 'sp500')); }
+  function feldGleich(a, b, k) {
+    if (k === 'kleinstAnteil') return kleinstWert(a) === kleinstWert(b);
+    if (k === 'kostenRegel' || k === 'massstab') return regelWert(a, k) === regelWert(b, k);
+    return a[k] === b[k];
+  }
+  function tagDe(ms) { var x = new Date(ms), z = function (n) { return (n < 10 ? '0' : '') + n; }; return z(x.getDate()) + '.' + z(x.getMonth() + 1) + '.' + x.getFullYear(); }
+  function kostenText(k) {
+    return regelWert(k, 'kostenRegel') === 'eroeffnung+ibkr' ? 'Kosten nach der Kostenregel (Spanne der Umsatzklasse zur Eröffnung + IBKR Fixed, je Trade)' : 'Kosten 20 Bp je Seite';
+  }
+  function massstabText(k) {
+    return regelWert(k, 'massstab') === 'nasdaq100-steuer' ? 'Maßstab Nasdaq-100 nach deutscher Steuer (S&P 500 und brutto nachrichtlich)' : 'Maßstab S&P 500 brutto';
+  }
   function konfigGleich(a, b) {
     if (!a || !b) return false;
     return KONFIG_FELDER.every(function (k) { return feldGleich(a, b, k); });
@@ -133,6 +153,17 @@
     return w > 0 ? 'Regel K gegen Kleinstpositionen an (unter ' + String(Math.round(w * 1000) / 10).replace('.', ',') + ' % des Platzwerts kein Kauf, kein gehaltener Bestand)'
       : 'Regel K gegen Kleinstpositionen aus';
   }
+  /** Nr. 126: die Regeln eines Abschnitts in einem Satz (Kostenregel, Regel K, Massstab). */
+  function regelnText(k) { return kostenText(k) + ', ' + kleinstText(k) + ', ' + massstabText(k); }
+  /** Nr. 126: die Abschnitte des Vorwaertstests mit ihren Regeln - vor der Umstellung (regelnVorher) und seit regelnSeit. */
+  function vorwaertsAbschnitte(buch) {
+    if (!buch || !buch.liquideSeit) return [];
+    var aus = [], v = buch.regelnVorher;
+    if (v && v.bis > buch.liquideSeit) aus.push({ von: buch.liquideSeit, bis: v.bis, regeln: regelnText(v.konfig || {}) });
+    aus.push({ von: v && v.bis > buch.liquideSeit ? v.bis : buch.liquideSeit, bis: null, regeln: buch.konfig ? regelnText(buch.konfig) : null });
+    return aus;
+  }
+
   function konfigText(k) {
     return 'Rückblick ' + k.rueckblick + ', Lücke ' + k.luecke + ', Halten ' + k.halten + ' Handelstage, stärkste ' +
       Math.round(k.anteil * 100) + ' %, mindestens ' + k.mindestWerte + ' zulässige Werte, Korb nur Median-Tagesumsatz ≥ ' +
@@ -147,8 +178,26 @@
      * zurueckzusetzen hiesse, den Vorwaertstest neu zu beginnen, obwohl sich an Korb und
      * Rangfolge nichts geaendert hat. Jede andere Abweichung laeuft weiter unten wie bisher. */
     var andere = !d.mfBuch.konfig ? ['alle'] : KONFIG_FELDER.filter(function (k) {
-      return k !== 'kleinstAnteil' && !feldGleich(d.mfBuch.konfig, KONFIG, k);
+      return KEIN_NEUSTART.indexOf(k) < 0 && !feldGleich(d.mfBuch.konfig, KONFIG, k);
     });
+    /* Nr. 126: Kostenregel und Massstab - eigene Journalzeile, regelnSeit neu, sonst nichts zurueckgesetzt. */
+    var regelFelder = !andere.length ? ['kostenRegel', 'massstab'].filter(function (k) { return !feldGleich(d.mfBuch.konfig, KONFIG, k); }) : [];
+    if (regelFelder.length) {
+      var alt = d.mfBuch.konfig;
+      d.mfBuch.regelnVorher = { konfig: JSON.parse(JSON.stringify(alt)), seit: d.mfBuch.regelnSeit || d.mfBuch.liquideSeit || d.mfBuch.konfigSeit || null, bis: now };
+      d.mfBuch.regelnSeit = now;
+      var aenderung = regelFelder.map(function (k) { return k === 'kostenRegel' ? kostenText(alt) + ' → ' + kostenText(KONFIG) : massstabText(alt) + ' → ' + massstabText(KONFIG); });
+      d.tuneLog.unshift({ id: 'mfregeln-' + now, at: now, quelle: 'umstellung',
+        applied: ['Momentum-Buch: Regeln umgestellt (' + regelFelder.map(function (k) { return k === 'kostenRegel' ? 'Kostenregel' : 'Maßstab'; }).join(', ') + ')'],
+        txt: 'Geändert: ' + aenderung.join('; ') + '. Regeln seit ' + tagDe(now) + ': ' + kostenText(KONFIG) + ', ' + kleinstText(KONFIG) + ', ' + massstabText(KONFIG) +
+          '. Gilt für jeden Handel ab jetzt (nächste Umschichtung, Nachfassen); vergangene Trades bleiben, wie sie gebucht wurden. Korb, Rangfolge und der ' +
+          'Beginn des Vorwärtstests bleiben – der Vorwärtstest hat damit zwei Abschnitte (vor und nach der Umstellung), beide mit ihren Regeln im Lagebild. ' +
+          'Simulation mit virtuellem Kapital, keine Anlage- und keine Steuerberatung.' });
+      var nurRegeln = feldGleich(alt, KONFIG, 'kleinstAnteil');
+      d.mfBuch.konfig = KONFIG;
+      if (nurRegeln) return true;
+      d.mfBuch.konfig = alt;   // Regel K hat sich auch geaendert: ihre eigene Zeile wie seit Nr. 87 (unten)
+    }
     if (!andere.length) {
       var altK = kleinstWert(d.mfBuch.konfig), neuK = kleinstWert(KONFIG);
       var pz = String(Math.round(neuK * 1000) / 10).replace('.', ',');
@@ -180,6 +229,8 @@
     d.mfBuch.konfigSeit = now;
     d.mfBuch.liquideSeit = null;
     d.mfBuch.korbVerlauf = [];
+    d.mfBuch.regelnSeit = now;   // Nr. 126: Neustart - ein Abschnitt, keine Regeln davor
+    delete d.mfBuch.regelnVorher;
     return true;
   }
 
@@ -357,7 +408,15 @@
    *  dann Kaeufe nach rang, Kosten und Regel K wie bei der Umschichtung). Danach, oder an einem spaeteren Tag,
    *  wird offen geloescht und eine Zeile nennt die liegen gebliebenen. Nachgefasst wird nur, solange das Buch
    *  selbst handelt (Schalter "handelt selbst"); beendet wird immer. Rueckgabe: true, wenn gespeichert werden muss. */
-  async function offenNachfassen(MH, d, now, kleinstAnteil) {
+  /** Nr. 126: die Optionen fuer planeUmschichtung / fuehreAus / nachfassen aus der Konfiguration des Buchs - Regel K und,
+   *  wenn das Buch nach der Kostenregel rechnet, die Kostenfunktion (kostenregel.js) mit der Umsatzklasse je Wert aus den
+   *  20 Tagesbalken VOR dem Ausfuehrungstag tag (New York). Ohne kostenregel.js im Fenster bleibt es bei 20 Bp. */
+  function handelsOpts(MH, KONFIG, roh, tag) {
+    var o = { kleinstAnteil: KONFIG.kleinstAnteil };
+    if (KONFIG.kostenRegel === 'eroeffnung+ibkr' && window.Kostenregel && roh) o.kostenRegel = window.Kostenregel.regelAusReihen(roh, MH.nyZeit(tag, 0, 0));
+    return o;
+  }
+  async function offenNachfassen(MH, d, now, kleinstAnteil, roh) {
     var b = d.mfBuch, o = b && b.offen;
     if (!o) return false;
     if (!d.tuneLog) d.tuneLog = [];
@@ -376,7 +435,7 @@
     }
     var split = splitsHeuteBuchen(MH, d, ereignisse, barZeit, now);   // Generalprobe 23.11., Fund 1: vor dem Verkauf zur Eroeffnung
     var vorher = (b.positionen || []).slice();
-    var res = MH.nachfassen(b, preise, barZeit, now, 20, { kleinstAnteil: kleinstAnteil });   // 20 Bp je Seite wie die Umschichtung
+    var res = MH.nachfassen(b, preise, barZeit, now, 20, handelsOpts(MH, Object.assign({}, b.konfig || {}, { kleinstAnteil: kleinstAnteil }), roh, o.tag));   // Kosten wie die Umschichtung (Nr. 126: Kostenregel)
     MH.anspruecheVormerken(b, vorher, barZeit, now);                  // Generalprobe 23.11., Fund 5: Anspruch der verkauften (REGEL C.3)
     var z = MH.nachfassenJournal(res, now);
     if (z) d.tuneLog.unshift({ id: 'mfnach-' + now, at: now, quelle: 'automatik', applied: z.applied, txt: z.txt });
@@ -461,7 +520,7 @@
         (MH.punktTag(daten.bezug, now) || {}).tag === MH.nyTag(now);
       if (daten.bezug && !punktNachHandel && tagespunkt(MH, d, daten, now)) speichern();
       /* Nr. 94: offene Auftraege der Umschichtung von heute zur Eroeffnung dieses Tages nachfassen - oder beenden. */
-      if (d.mfBuch.offen && await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil)) speichern();
+      if (d.mfBuch.offen && await offenNachfassen(MH, d, now, KONFIG.kleinstAnteil, daten.roh)) speichern();
       var faellig = fl.faellig === true;
       var ziel = MH.momentumZiel(daten.roh, { nowMs: daten.juengster || now });
       /* Gespeicherte Tagesdaten ohne Stueckzahlen (Bestand von vor dem Korbfilter): der
@@ -486,7 +545,8 @@
           splitsHeuteBuchen(MH, d, ausf.ereignisse, ausf.barZeit, now);   // Generalprobe 23.11., Fund 1: Split vom Ausfuehrungstag vor dem Plan (gespeichert wird unten)
           var vorherM = (d.mfBuch.positionen || []).slice();              // Generalprobe 23.11., Fund 5: fuer anspruecheVormerken unten
           plan = MH.planeUmschichtung(zielA.ziel, d.mfBuch, ausf.preise, { kleinstAnteil: KONFIG.kleinstAnteil });
-          var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, { kleinstAnteil: KONFIG.kleinstAnteil });
+          var optsM = handelsOpts(MH, KONFIG, daten.roh, ausf.heute);   // Nr. 126: Kostenregel je Order (Umsatzklasse vor dem Ausfuehrungstag)
+          var nM = MH.fuehreAus(d.mfBuch, plan, now, 20, optsM);
           MH.stempleKursT(d.mfBuch, ausf.barZeit, now);   // neue Positionen: Balken des Ausfuehrungstags, zu dessen Eroeffnung gekauft wurde
           /* Nr. 94: fehlt fuer einen geplanten Kauf oder Verkauf die Eroeffnung, merkt sich das Buch die offenen
            * Auftraege des Tages (die naechsten Takte fassen bis 16:00 New York nach). Nur der Takt - der Knopf
@@ -537,7 +597,7 @@
               ' Käufe auf das stärkste Zehntel (' + zielA.ziel.length + ' Werte). Ausführungstag ' + MH.datumDe(ausf.heute) +
               ', Rangfolge auf den Schlusskursen des Stichtags ' + MH.datumDe(ausf.stichtag) + ', gehandelt zur Eröffnung' +
               (spaet ? ' – ' + spaet + (spaet === 1 ? ' Handelstag' : ' Handelstage') + ' verspätet (' + spaetGrund + ')' : '') +
-              '. Kosten 20 Bp je Seite.' +
+              '. ' + (optsM.kostenRegel ? MH.KOSTENREGEL_SATZ : 'Kosten 20 Bp je Seite.') +
               (ausgefallenM ? ' ' + ausgefallenM + (ausgefallenM === 1 ? ' Kauf' : ' Käufe') + ' mangels Bargeld nicht ausgeführt.' : '') +
               (kleinstM ? ' ' + kleinstM + (kleinstM === 1 ? ' Kleinstbestand' : ' Kleinstbestände') + ' aufgelöst.' : '') +
               ' Korb: ' + zielA.korb.zulaessig + ' von ' + zielA.korb.geprueft + ' Werten zulässig (Median-Tagesumsatz ≥ ' +
@@ -615,6 +675,14 @@
       STAND.spy = spy;   // derselbe Marktstand fuer den Stand des letzten Takts (verlaufMitStand)
       STAND.spyT = spyT;
       var bwM = MH.bewerte(d.mfBuch, daten.preise);
+      /* Nr. 126: Buch nach Steuer gegen den Nasdaq-100 nach Steuer seit Beginn des Vorwaertstests (liquideSeit) - gerechnet in
+       * massstab.js (nachSteuer), hier nur versorgt. S&P 500 nachrichtlich aus demselben vergleich() wie Karte und Kopf. */
+      if (d.mfBuch.liquideSeit && window.Massstab && window.Massstab.nachSteuer) {
+        var qq = await ladeQqq(d.mfBuch.liquideSeit), vM = vergleich('momentum');
+        STAND.nachSteuer = window.Massstab.nachSteuer({ buch: d.mfBuch, preise: daten.preise, startMs: d.mfBuch.liquideSeit,
+          endeMs: daten.juengster || now, qqq: qq && qq.ok ? qq.tage : null, marktPct: vM && vM.ok ? vM.marktPct : null });
+        if (qq && !qq.ok && !STAND.nachSteuer.ok) STAND.nachSteuer.grund = 'QQQ-Reihe: ' + qq.grund;
+      } else STAND.nachSteuer = null;
       var bwD = d.driftBuch ? MH.bewerteDrift(d.driftBuch, daten.preise) : null;
 
       /* Pruef-Stempel: jeder durchgelaufene Takt haelt fest, DASS geprueft wurde -
@@ -693,7 +761,17 @@
    * dieselbe Zahl an zwei Orten, verschieden alt.
    * Hier wird NICHTS nachgerechnet: abgelegt wird nur, was takt() ohnehin gerechnet
    * hat (MFHandel.bewerte / bewerteDrift). */
-  var STAND = { momentum: null, drift: null, spy: null, spyT: null };
+  var STAND = { momentum: null, drift: null, spy: null, spyT: null, nachSteuer: null };
+  /* Nr. 126: die QQQ-Tage (Massstab Nasdaq-100 nach Steuer) aus dem Alpaca-Minutenarchiv - Auskunft massstab-qqq (main.js),
+   * hoechstens einmal je Stunde gefragt; main.js merkt sich das Ergebnis je Dateistand. */
+  var QQQ = { at: 0, antwort: null };
+  async function ladeQqq(startMs) {
+    if (!window.api || !window.api.massstabQqq) return null;
+    if (Date.now() - QQQ.at < 3600000 && QQQ.antwort) return QQQ.antwort;
+    QQQ.at = Date.now();
+    try { QQQ.antwort = await window.api.massstabQqq(new Date(startMs).getUTCFullYear()); } catch (e) { QQQ.antwort = { ok: false, grund: String(e && e.message || e) }; }
+    return QQQ.antwort;
+  }
 
   /* ---- Der Massstab (Auftrag Nr. 73, 04.10.2026) ----
    * Der Verlauf, wie ihn Kopf, Karte und Buecher-Verlauf lesen: die Tagespunkte aus
@@ -815,7 +893,12 @@
       hinweis: s && s.hinweis ? s.hinweis : null, noch: s && s.noch != null ? s.noch : null,
       ohneKurs: s && s.ohneKurs ? s.ohneKurs : [], ersterSatz: ersterPunktSatz(d),
       /* Lagebild (Nr. 115): der Tag der naechsten Umschichtung als Zeitpunkt, nicht als Text. */
-      naechsteUmschichtung: (s && s.noch != null) ? naechsteUmschichtung(s.noch, s.at) : null
+      naechsteUmschichtung: (s && s.noch != null) ? naechsteUmschichtung(s.noch, s.at) : null,
+      /* Nr. 126: Massstab Nasdaq-100 nach Steuer (massstab.js nachSteuer, nur Momentum-Buch) und die Regeln des Buchs. */
+      nachSteuer: name === 'momentum' ? STAND.nachSteuer : null,
+      regelnSeit: buch && buch.regelnSeit ? buch.regelnSeit : null,
+      regelnText: name === 'momentum' && buch && buch.konfig ? regelnText(buch.konfig) : null,
+      abschnitte: name === 'momentum' ? vorwaertsAbschnitte(buch) : []
     };
   }
 
@@ -916,6 +999,8 @@
     var rueckSchluessel = { momentum: 'momentum-liquide', drift: 'drift' }[k.name];
     var rueck = (rueckSchluessel && SU && SU.rueckblicke) ? SU.rueckblicke(rueckSchluessel) : [];
     var zeilen = [['Gegen den Markt', gegen]];
+    /* Nr. 126: der Massstab Nasdaq-100 nach Steuer (massstab.js nachSteuer) und die Regeln seit der Umstellung - nur das Momentum-Buch. */
+    if (k.name === 'momentum' && k.buch && k.buch.liquideSeit) zeilen.push(['Nasdaq-100 nach Steuer', nachSteuerHtml(k)]);
     if (rueck.length) {
       /* Auftrag Nr. 95 (B5): der Satz zum Buch selbst (beim Drift-Buch: warum es trotz „kein
        * Vorwärtstest angezeigt" läuft) - aus studienurteile.js, einmal unter den Zeilen. */
@@ -934,6 +1019,19 @@
       ['Nächster Takt', U.esc(taktTxt)],
       ['Zuletzt getan', handlungText(k.letzte)]
     ]));
+  }
+
+  /** Nr. 126: die Zeile "Nasdaq-100 nach Steuer" der Momentum-Karte - Zahlen aus massstab.js (nachSteuer), hier nur gesetzt. */
+  function ppDe(x) { return x == null || !isFinite(x) ? '–' : (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(2).replace('.', ','); }
+  function nachSteuerHtml(k) {
+    var n = k.nachSteuer, klein = '<br><span style="color:var(--muted); font-size:var(--fs-klein);">';
+    var regeln = k.regelnText ? klein + U.esc('Regeln seit ' + U.d(k.regelnSeit) + ': ' + k.regelnText + '.') + '</span>' : '';
+    if (!n || !n.ok) return ohne(n && n.grund ? n.grund : 'noch nicht gerechnet') + regeln;
+    return U.esc('Seit ' + n.von.split('-').reverse().join('.') + ': Buch nach Steuer ' + ppDe(n.buchNachSteuerPa) + ' % p. a., Nasdaq-100 nach Steuer ' +
+      ppDe(n.massstab.nachSteuerPa) + ' % p. a. – Abstand ' + ppDe(n.abstandNachSteuerPa) + ' Pp p. a.') + klein +
+      U.esc('Nachrichtlich: Buch brutto ' + ppDe(n.bruttoPa) + ' % p. a., Nasdaq-100 brutto ' + ppDe(n.massstab.ertragPa) + ' % p. a., S&P 500 ' + ppDe(n.spyPa) +
+        ' % p. a.; gezahlte Kosten ' + ppDe(n.kostenJahrPp).replace('+', '') + ' Pp je Jahr. Handelbar wäre der Xtrackers Nasdaq 100 UCITS ETF 1C (IE00BMFKG444). ' +
+        'Über einen kurzen Zeitraum hochgerechnet – ein Rechenmodell (Steuer Nr. 82), keine Anlage- und keine Steuerberatung.') + '</span>' + regeln;
   }
 
   /** Die zwei Buch-Karten oben im Bestand schreiben. depot.js render() ruft sie bei
@@ -1092,6 +1190,8 @@
     /** Lagebild-Export (Nr. 115): die Daten einer Buch-Karte und der Text ihrer Zeile
      *  "Gegen den Markt" - dieselben Funktionen, die die Karte selbst benutzt. */
     karteDaten: buchKarteDaten, gegenMarktText: gegenMarktText,
+    /** Nr. 126: die Felder, deren Umstellung keinen Neustart des Vorwaertstests ausloest. */
+    KEIN_NEUSTART: KEIN_NEUSTART.slice(),
     /** Die bereinigte SPY-Reihe, wie sie zuletzt gelesen wurde (oder null) - DIE eine
      *  Marktreihe des Massstabs, auch fuer das Intraday-Depot (depot.js). */
     markt: function () { return MARKT; },
