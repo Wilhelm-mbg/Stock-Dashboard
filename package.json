@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "test": "eslint . && node test-channel.js && node test-v6.js && node test-sicherheit.js && node test-sicherheit-xss.js && node test-autopilot-nacht.js",
+    "test": "eslint . && node test-channel.js && node test-v6.js && node test-sicherheit.js && node test-sicherheit-xss.js && node test-autopilot-nacht.js && node test-momentum-umstellung.js",
     "lint": "eslint ."
   },
   "devDependencies": {
