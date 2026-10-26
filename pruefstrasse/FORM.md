@@ -49,7 +49,12 @@ Konfiguration je Form:
   „Topfradius", sonst ungültig).
 - **korb:** **genau eine** Konfiguration (der Adapter misst `konfigurationen[0]`; `--pruefen` lehnt jede andere Zahl ab, Nr. 121-1):
   `key`, optional `anzahl` (Zielzahl; sonst entscheidet die Zielfunktion), `korb` (Zahl der umsatzstärksten Werte als
-  Universum, Vorgabe: alle zulässigen). Fenster, Takt (63 Starttage), Kosten (20 Bp je Seite) und Regel K setzt der Adapter.
+  Universum, Vorgabe: alle zulässigen). Fenster, Takt (63 Starttage), Kosten (Kostenregel; Startkapital der Kandidatenläufe **10.000 €**, Modell „Dollar wie Euro",
+  Entscheid PM 26.10. zu Zweitleser 19 — die Gebühr wird für die Order dieses Kapitals gerechnet) und Regel K setzt der Adapter. Optional **`params.halteBand`**
+  (Nr. 125a B2, ganze Zahl ≥ 1): eine gehaltene Position bleibt, solange ihr Platz in der Rangliste der Zielfunktion ≤ halteBand ist; aufgefüllt wird in Rangfolge
+  bis `anzahl`. Die Zielfunktion liefert dafür die **Rangliste** (mindestens halteBand Plätze, ohne Bestand — `korb.js` speichert die Ziele je Stichtag für alle
+  63 Startphasen und Zufallsbücher, ein bestandsabhängiges Ziel wäre falsch zwischengespeichert); `mfhandel.js zielMitBand(rangliste, buch, { anzahl, halteBand })`
+  wählt mit dem Bestand des Buchs (additiver Patch B2, **wartet auf die Freigabe des PM** — bis dahin bricht ein Kandidat mit halteBand laut ab, „B2 NICHT FREIGEGEBEN").
 - **minute:** `key`, optional `params` (eine Parametervariante der Messmaschine). Zeitrahmen, Haltedauer, Richtung, Universum
   stehen im Modul (`regel.js`), wie `strategien/rsi2seit.js`.
 
@@ -133,7 +138,11 @@ des Tests; Kunst-Eichung in `test.js`).
 der blind gesiegelten `studien/kandidaten-blind-2026-10/sektor-momentum/ziel.js`: `roh = { KUERZEL: [[zeitMs, schlussBereinigt,
 umsatzStueck], …] }`, `opts.nowMs` = Stichtag; Rückgabe `{ ziel, rangfolge, korb, zuWenig, uebersprungen, verworfen }`. Zeilen nach
 `nowMs` dürfen nicht gelesen werden (der Adapter prüft es am Kunstfall). `placeboZiel` zieht dieselbe Zahl Werte zufällig und
-deterministisch (`opts.placeboWort`) aus denselben zulässigen — das sind die 200 Zufallsbücher (Nr. 100).
+deterministisch (`opts.placeboWort`) aus denselben zulässigen — das sind die 200 Zufallsbücher (Nr. 100). **Umsatzschwelle:** `momentumZiel` lässt nur Werte mit
+Median-Tagesumsatz ≥ **100 Mio $** über 20 Balken bis zum Stichtag ranken (`liquide.js` `KORB.umsatzMin`/`fenster`, `opts.umsatzMin`); eine eigene Zielfunktion
+übernimmt die Schwelle als Parameter oder begründet in `REGEL.md`, warum nicht. `anzahl` aus `kandidat.json` kommt als `opts.anzahl` in Ziel- und Placebofunktion
+(`momentumZiel` selbst nimmt heute 10 % des Universums — Patch B2 ergänzt `opts.anzahl`). **Handel (Nr. 125a, Live = Messung):** die Hülle ruft das Original
+`mfhandel.js fuehreAus` mit `opts.kostenRegel` — dieselbe Funktion wie das App-Buch; die frühere Kopie `fuehreAusK` steht nur noch als Referenz der Bindungstests da.
 Bewertung: Rückblick (Gesamtertrag beide Seiten, Regel K 5 %, Hauptregel der Reihenenden), 63 Starttage, Median der 63 Abstände p. a., Rang gegen
 200 Zufallsbücher — der Rechner von Nr. 78/85/96 (`kleinst.js` → `korb.js` → `mfhandel.js`). **Maßstab Nasdaq-100 nach Steuer (seit 23.10.2026, Nr. 121-2b;
 vorher S&P 500):** der Läufer übergibt dem Adapter `kostenBpJeSeite: 'regel'` (Kostenregel je Handel, `adapter/korb-kosten.js`, Kopie der Handelshülle
@@ -194,7 +203,8 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   **Entdeckung bis zum letzten Panel-Tag** (`konfig.json` `entdeckungBis` = `"panelende"`; Panel v2.3 endet am 15.09.2026), Bestätigung **nur vorwärts**
   (unten). Die frühere Lesesperre bleibt als **Eichfenster** 2016-01-04 … 2022-12-30 (`konfig.json` `eichung`) — die Grenze der Kalibrierung, der
   Kunsttests und der Eichung; ohne Siegel und ohne `bisPanelende` öffnet die Tafel nur das Eichfenster. Zwei Konstanten, zwei Namen (`EICHUNG`,
-  `ENTDECKUNG_BIS`). Korb und Minute behalten Entdeckung/Prüfung wie bisher (Eichfenster bzw. `minute.sperreAb`); **Korb: Vorwärts noch nicht gebaut.**
+  `ENTDECKUNG_BIS`). Minute behält Entdeckung/Prüfung wie bisher (`minute.sperreAb`). **Korb (Nr. 125a, Entscheid PM 26.10. zu Zweitleser 9):** Entdeckung ab 04.01.2017
+  (`KORB.entdeckungVon`) bis zum Panel-Ende, die Prüfung ab 2023 entfällt (Zeitraum verbraucht, wie Tag-Form), Bestätigung nur vorwärts (unten).
 - **Machbarkeitstor (vor dem Lauf, Form tag, Audit B V1).** Trockenzählung **ohne Renditen** (`adapter/tag.js` `zaehle`: Signaltage n_T, Trades,
   Trades je Signaltag d, Anteil der Reihen mit Signal, H) → geschätzter Standardfehler se_g(H, n_T, d, Modus) aus `pruefstrasse/streuung.json`
   (einmal gefittet aus **versiegelten** Messungen: 13 Konfigurationen der Prüfstraße + 39 der Trendkanal-Studie mit Teilzeiträumen; Modell
@@ -203,6 +213,19 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   1,41; die Tabelle ist nicht konservativ — leave-one-rule-out-Median der 13 Konfigurationen 1,14, 8 von 13 unterschätzt, QS 23.10.), t_krit = Kandidatenschwelle unten mit df = n_T/H − 1 und m = Register +
   alle Konfigurationen des Kandidaten. Sonst **„nicht messbar mit diesen Daten"**: kein Entdeckungslauf für diese Konfiguration (keine messbar → kein
   Lauf, kein Siegel 2), Protokoll mit „bräuchte n Signaltage (≈ Jahre)", Register-Eintrag mit Urteil `nicht messbar` und Gewicht 0 (**zählt nicht** als Test).
+- **Machbarkeitstor Korb (Nr. 125a A, vor dem Lauf, ohne Renditen).** Die 63 Startphasen überlappen und sind keine unabhängigen Perioden. Auflösung = Streuung der
+  **nicht überlappenden 63-Handelstage-Perioden-Abstände** eines Einzelpfads (Buch minus Maßstab je Periode, Pp): `sd_q` aus `streuung.json` Block `korb`
+  (6,32 Pp je Periode gegen QQQ, Gesamtertrag vor Steuern; gepoolt innerhalb der Pfade über die 200 Zufallsbücher Nr. 100 und den Momentum-Korb 187 Nr. 96/122,
+  2017–2026, je 37 Perioden — neu gerechnet mit den versiegelten Rechnern; nachrichtlich Momentum allein 15,99). `se_pa(n) = sd_q · √4 / √n`,
+  **MDE80_korb(n) = (t_krit(df n − 1, m) + 0,8416) · se_pa(n) · 1,4** (t_krit und Faktor wie die Tag-Form, m = Register-Einträge + 1). Bedingung MDE80_korb(n) ≤
+  `erwartung.nettoPp` (p. a. nach Kosten und Steuer gegen den Nasdaq-100) mit n = vollständige Perioden der Entdeckung (Zählung `adapter/korb.js zaehle`: nur der
+  Panel-Kalender, `floor((Handelstage − 1) / 63)`, mindestens `KORB.minPerioden` 8). Sonst `nicht messbar` mit „bräuchte n Perioden (≈ n / 4 Jahre)", zählt
+  nicht im Register. 04.01.2017–15.09.2026: 38 Perioden, MDE80_korb 11,0 Pp p. a. — fast jede Korb-Regel mit einer Behauptung von wenigen Pp p. a. ist hier
+  „nicht messbar"; eine Vormerkung trotz „nicht messbar" gibt es nicht (Entscheid 24). **Vorsicht:** konzentrierte Momentum-Pfade streuen 2,6-mal so stark wie
+  Zufallsbücher — das Tor ist für sie optimistisch; nBedarf rechnet deshalb mit der gemessenen Streuung des Kandidaten.
+- **Kandidat Korb (Register-Korrektur, Nr. 125a B.1).** Median der 63 Startphasen > 0 und Start am ersten Tag vorn (nach Steuer gegen den Nasdaq-ETF) und
+  Rang-p = Rang / (B + 1) ≤ min(p(Rang 0,95), 0,05 / m), m = Register-Einträge + 1, B = max(200, 20 · m + 1) — der kleinste p 1/(B + 1) liegt so immer unter
+  0,05/m. Das Protokoll nennt m, B, p und die Schwelle.
 - **Siegel 1:** der Kandidatenordner liegt in mindestens einem Commit und hat nichts Ungesichertes. **Siegel 2:** der Läufer
   committet `erledigt/<kennung>/KANDIDATEN.json`.
 - **Kandidat** (je Konfiguration, Entdeckung, Nr. 121-2a): netto > 0 **und** einseitiges p_E ≤ min(P(T_df ≥ 3), 0,05 / m) in der t-Verteilung mit
@@ -225,11 +248,33 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   `laeufer.js --vorwaerts` (nachtlauftauglich, idempotent — schreibt `erledigt/<k>/vorwaerts.json`, `VORWAERTS.md`, Register nur bei geändertem Inhalt und
   committet nur dann) zählt je vorgemerkter Konfiguration die Signaltage ab dem Stichtag **ohne Renditen** (nur Einstiege, deren Fenster ganz in der Tafel
   liegt); erst bei nStand ≥ nBedarf misst er **einmal** (Topf nur aus Vorwärtsdaten: Tageszelle bzw. lokaler Topf ab dem Stichtag; `topfFehlt`
-  verringert die gemessenen Signaltage), Holm **p-basiert** über alle an diesem Tag fälligen Konfigurationen (einseitig 5 %, t-Verteilung). Urteil
+  verringert die gemessenen Signaltage), Holm **p-basiert** (einseitig 5 %, t-Verteilung) über die **Vorwärts-Familie** = alle je vorgemerkten
+  Konfigurationen des Registers (`tore.js mVorwaerts`, Status vorgemerkt | bestätigt | abgelehnt | offen; Entscheid PM 26.10. zu Zweitleser 21, seit Nr. 125a —
+  vorher nur die am Tag fälligen; die nicht fälligen zählen wie p = 1, Holm bleibt gültig). Urteil
   `belegt-Vorschlag` (netto > 0, Holm bestanden, gleiche Richtung) | `nein` (obere Grenze netto < 0) | `nicht entscheidbar`; **unter 30 Signaltagen kein
   Bestätigungsurteil** (Audit B V9). Status → `bestaetigt | abgelehnt | offen`, Belegstand-Absatz nur bei diesem Wechsel. Danach **kein zweiter Blick**.
   Rückweg wie bei der Nachmessung: Marke `pruefstrasse/VORWAERTS-LAEUFT.json`, bei Abbruch alles auf den Stand davor, Index nur für die eigenen Pfade,
   Marke mit `fehler` bleibt, der nächste Lauf lehnt ab. Bis zur Panel-Fortschreibung (Auftrag Nr. 123) ist die Vorwärtsmessung leer — das Protokoll sagt es.
+- **Vorwärtsbestätigung Korb (Nr. 125a B.2/B.3, ein vorregistrierter Blick).** Kandidat → Status `vorgemerkt` mit denselben Feldern wie die Tag-Form (Stichtag aus
+  der Commit-Zeit von KANDIDATEN.json, `einheit` Perioden). **nBedarf** = kleinste Zahl vollständiger Vorwärts-Perioden mit (t_(0,95; n − 1) + 0,8416) · sd_E · √4 / √n
+  ≤ nettoPp, mindestens 8 — sd_E = **gemessene** Streuung der Perioden-Abstände der Entdeckung (k = 0, gegen QQQ), nicht die Tabelle. **Festgeschrieben** bei der
+  Vormerkung (Register `korbFest`, Entscheid 12): B, Wortbasis der Zufallsbücher (placeboWort = Wortbasis#b), Takt 63, Kapital, Universum-Stichtage (Panel-Tag vor
+  jeder Umschichtung ab dem Stichtag). `--vorwaerts` zählt je vorgemerktem Korb-Kandidaten die vollständigen Perioden ab dem Stichtag **ohne Renditen** (nur der
+  Panel-Kalender); erst bei nStand ≥ nBedarf **eine** Messung (`adapter/korb.js vorwaertsMessung`): das Buch startet **am Stichtag** mit dem Startkapital (eine
+  Startphase, kein Rückblick) und läuft bis zum Panel-Ende mit exakt `kleinst.js`/`korb.js`/`mfhandel.js` (Regel K, Kostenregel über `fuehreAus opts.kostenRegel`,
+  Gutschrift wie `korb.js`); nach Steuer über **`massstab.js Massstab.nachSteuer`** (die Rechnung des App-Buchs, App-`steuer.js`) gegen den Nasdaq-ETF nach Steuer;
+  B Zufallsbücher über **denselben** Zeitraum (Rang **nachrichtlich**, Zweitleser 20: ein Pfad, B stark korrelierte Bücher — fast keine Trennschärfe). Vor jeder
+  Rendite der **Parameterabgleich Live = Messung** (`parameterAbgleich`: Regel K, Kostenregel, Ausführung, Gebührenmodell, Klassen, IBKR, Klasse-5-Grenze,
+  Umsatzfenster, Takt, Maßstab, Steuersatz, Gutschrift gegen `mfhandel.js buchKonfig`/`kostenregel.js`/`steuer.js` des App-Buchs); jede Abweichung außer den begründeten
+  Ausnahmen (Kapital 10.000 € statt 100.000 $ — Entscheid 19; Reihenende erster Tag ohne Zeile statt 5 Handelstage — Nr. 126 E) bricht mit `MESSGERAET:` ab, ohne
+  Messung. **Urteil:** `belegt-Vorschlag` = einseitiger t-Test der Perioden-Abstände (gegen QQQ, Gesamtertrag) besteht Holm über die Vorwärts-Familie, Mittel > 0,
+  Abstand p. a. **nach Steuer** > 0, Richtung wie in der versiegelten Entdeckung; `nein` (Entscheid 15) = obere 95-%-Grenze (einseitig, t_0,95) < 0 **und** Rang-p ≥ 0,5,
+  p = Anteil der Zufallsbücher, die über denselben Zeitraum besser waren — „nein" heißt: im Mittel hinter dem Maßstab **und** nicht besser als die mittlere
+  Zufallsauswahl aus demselben Universum (eine obere Grenze allein kann ein Marktpfad erzeugen, der alle Bücher trifft); sonst `nicht entscheidbar`; unter 8 Perioden
+  kein Bestätigungsurteil. Status `bestätigt | abgelehnt | offen`, danach kein zweiter Blick (Wiedervorlage nur `--nachmessen --grund-daten`). Idempotenz, Marke,
+  Rückweg: derselbe Code wie die Tag-Form (`vorwaerts`), nur Zähl- und Messfunktion sind formspezifisch (`vorwaertsKindKorb`).
+- **Zwischenstand (Zweitleser 22, Abschnitt B.4 gestrichen):** `--vorwaerts` schreibt für Korb je Kandidat nur `nStand`, `nBedarf`, das geschätzte Datum und den
+  Satz „Vorwärtsblick erst bei nBedarf" — keine Rendite, keine Abstandszahl (Stoppanreiz). Die laufende Buchzahl liefert der App-Vorwärtstest (Nr. 126), getrennt.
 - **Kalender-Hausregel (CLAUDE.md):** Konfigurationen mit Bewertung `zeit` und nBedarf oder Bestätigungs-Signaltagen unter 1.000 tragen in Register
   und Protokoll die Marke `nicht muehlenfaehig (Hausregel CLAUDE.md)`; sie können `belegt-Vorschlag` werden, gehen aber nicht in die Mühle.
 - **Wiedervorlage (Audit B V4):** jede nicht entscheidbare, nicht vorgemerkte Konfiguration erhält im Protokoll (und Register `wiedervorlage`) das Datum,
@@ -249,7 +294,15 @@ Zeilen nach `nowMs` verändern → Ziel unverändert (korb). Für `tag`-Kandidat
   Abstand der Signaltage einer Reihe unter `ZEIT_DICHTE_WARNUNG` = 15 Handelstagen liegt, den Vorbehalt **„Messgerät unter Vorbehalt: dichter Plan"** in
   Protokoll (Warnung), Belegstand-Absatz und `ergebnis.json` (`vorbehalt`). Schreibt
   ausschließlich `EICHUNG.md` und `eichung.json` (der Code prüft es); `test.js` prüft Form und Alter (> 60 Tage: Warnung).
-- **Urteile:** `nicht messbar` (Machbarkeitstor, oben) · `belegt-Vorschlag` (Form tag: Vorwärtsmessung, oben; korb/minute: Prüfung: Holm über alle Konfigurationen des Kandidaten, einseitig 5 %, gleiche Richtung wie in
+- **Eichung Korb (Nr. 125a C, nur PM, `laeufer.js --eichung --nur korb`; `--eichung` fährt beide Formen).** Echte Daten im Eichfenster (gesperrte Tafel =
+  `panelEichung`, 04.01.2017 … 30.12.2022), Korb 187, Kostenregel, Kapital wie die Kandidaten. Zufallsbücher (Zielzahl wie `momentumZiel`, Auswahl per Wort): 200
+  Referenzbücher; je Seed (20) dasselbe Zufallsbuch ohne und mit **Einsaat +2 Pp p. a.** auf alle Aktienkurse ab dem Fensterstart (Kopie im Speicher — die
+  Buchpositionen wachsen, Rangfolge und Maßstab nicht). **Erst die Auflösung** (Entscheid 25): sd eines Zufallsbuchs im Fenster und se_Mittel stehen im Protokoll.
+  Kriterien: Einsaat **gepaart** (mit − ohne, derselbe Seed) Mittel in 1,5 … 2,5 (multiplikativ: ein voll investiertes Buch mit r p. a. gewinnt 2 × (1 + r), Bargeld
+  und Kosten drücken es — deshalb eine Spanne, keine 2-se-Grenze); Einsaat **gegen die Referenz** |Mittel − 2| ≤ 2 se_Mittel; **Null** (ohne − Mittel Referenz)
+  |Mittel| ≤ 2 se_Mittel; Anteil der Seeds mit Rang-p ≤ 0,05 höchstens 10 %. se_Mittel = √(sd² / Seeds + sd_ref² / Referenz). Der Maßstab fällt überall heraus.
+  Schreibt nur den Block `korb` in `eichung.json` und den Abschnitt „Korb-Form" in `EICHUNG.md`; `test.js` prüft Form und Alter (> 60 Tage: Warnung).
+- **Urteile:** `nicht messbar` (Machbarkeitstor, oben) · `belegt-Vorschlag` (Form tag und korb: Vorwärtsmessung, oben; minute: Prüfung: Holm über alle Konfigurationen des Kandidaten, einseitig 5 %, gleiche Richtung wie in
   der Entdeckung, netto > 0; p einseitig aus der t-Verteilung mit df = n_eff − 1, n_eff = Signaltage / H, Nr. 121-1; nachrichtlich, ob der
   Treffer Holm über **alle** Konfigurationen des Registers überstünde) ·
   `nicht entscheidbar` (nichts belegt, aber auch nicht ausgeschlossen; MDE80 steht daneben) · `nein` (jede Konfiguration in der

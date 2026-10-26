@@ -560,6 +560,8 @@ ok(/process\.env\.PRUEFSTRASSE_WERTPAPIERARTEN \|\| path\.join\(os\.homedir\(\),
 require('./test-stufe2a.js')({ ok: ok, nahe: nahe, K: K, TF: TF, A: A, LF: LF, SG: SG, TAGE: TAGE, kunstReihen: kunstReihen, KAND: KAND, zufallSignal: zufallSignal, SCRATCH: SCRATCH, SCHNELL: SCHNELL, cp: cp });
 /* Nr. 121-2b: Kostenregel, Massstab Nasdaq-100, Papier-Mitschrift (eigene Datei, eigene Kunstwelt) */
 require('./test-stufe2b.js')({ ok: ok, nahe: nahe, K: K, TF: TF, A: A, LF: LF, SG: SG, SCRATCH: SCRATCH, SCHNELL: SCHNELL, cp: cp });
+/* Nr. 125a: Korb-Form - Machbarkeitstor, Register-Korrektur, Vormerkung, --vorwaerts Korb, Live = Messung, Eichung Korb, B2 (eigene Datei, Kunsttafel) */
+require('./test-125a.js')({ ok: ok, K: K, LF: LF, cp: cp });
 
 console.log('6) Kalibrierung der Adapter gegen bekannte Ergebnisse (Auftrag §3)');
 var KAL = path.join(K.HIER, 'kalibrierung.json'), SOLL = {
