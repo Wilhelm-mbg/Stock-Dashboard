@@ -13,11 +13,13 @@ Alles Simulation mit virtuellem Kapital, keine Anlageberatung.
   [u]-Markierungen. Sie legt keine Regel fest. **Die Regel unten ist eine Setzung des PM**; jede Zahl steht fest, bevor gemessen wird, und wird nach
   keinem Ergebnis verändert.
 - **Das Machbarkeitstor wird voraussichtlich „nicht messbar" ergeben.** Die Kalenderrechnung ohne Renditen gibt folgende Werte: 38 vollständige
-  63-Tage-Perioden (04.01.2017–15.09.2026) und m = 14. Daraus folgt MDE80_korb = 11,04 Pp p. a. gegen die behaupteten 1,2 Pp p. a., also **bräuchte die Regel ≈ 3.215 Perioden, ≈ 804 Jahre**
-  (FORM.md §5, `streuung.json` korb, sd_q 6,32 Pp je Periode). Die Tabelle nennt dafür ~280 Jahre: ihre Formel ist einfacher (t = 2, TE 10 %, ohne Sicherheitsfaktor 1,4
-  und ohne Register-Korrektur). Maßgeblich ist die Zahl im Protokoll des Läufers, nicht diese hier. **„Nicht messbar" ist das ehrliche Ergebnis, kein Grund
+  63-Tage-Perioden (04.01.2017–15.09.2026) und m = 14. Mit se_pa = 4 · sd_q / √n folgt MDE80_korb = **22,07 Pp p. a.** gegen die behaupteten 1,2 Pp p. a., also
+  **bräuchte die Regel ≈ 12.857 Perioden, ≈ 3.214 Jahre** (FORM.md §5, `tore.js` nach QS-Nachbesserung F1 vom 26.10.2026, Commit 266033b; `streuung.json` korb,
+  sd_q 6,32 Pp je Periode; die erste Fassung dieser Datei nannte nach der alten Formel 11,04 Pp und ≈ 804 Jahre). Die Tabelle nennt dafür ~280 Jahre. Der Faktor 11,5
+  ist ganz erklärt: Sicherheitsfaktor 1,4² = 1,96 × Schwelle ((3 + 0,84) / 2)² = 3,69 × Streuung (12,65 / 10)² = 1,6 (QS-Übergabe `korb-vorwaerts-qs-2026-10-26.md` F1).
+  Maßgeblich ist die Zahl im Protokoll des Läufers, nicht diese hier. **„Nicht messbar" ist das ehrliche Ergebnis, kein Grund
   nachzujustieren.** Nach FORM.md §5 (Entscheid 24) gibt es dann weder Entdeckungslauf noch Vormerkung noch Vorwärtsblick der Prüfstraße. Auch vorwärts
-  bräuchte eine Bestätigung bei 1,2 Pp p. a. und dieser Streuung grob 170 Jahre (eine Rechnung ohne Faktor 1,4 und ohne Bonferroni). Das Buch der App läuft getrennt weiter (Nr. 126).
+  bräuchte eine Bestätigung bei 1,2 Pp p. a. und dieser Streuung grob 690 Jahre (eine Rechnung ohne Faktor 1,4 und ohne Holm-Familie). Das Buch der App läuft getrennt weiter (Nr. 126).
 - **Die Entdeckung auf Panel v2.3 ist nicht frisch.** Korb 187 lief schon auf demselben Panel mit demselben Rechner: Nr. 96 und Nr. 122, Regel K 0,05,
   Fenster 231/21, 63 Starttage (`wiki/belegstand.md` „Rückblick über fünf Jahre"). Die Kante wurde nicht an diesen Daten gefunden,
   aber Wilhelm und der PM kennen die Daten und das Verhalten eines verwandten Korbs. Neu sind nur das Universum (100 statt 187), die Zielzahl
@@ -69,12 +71,16 @@ Alles Simulation mit virtuellem Kapital, keine Anlageberatung.
 10. **Maßstab:** Nasdaq-100-ETF nach deutscher Steuer (`massstab: 'nasdaq100-steuer'`, QQQ-Kurs mit Ausschüttungen, Steuerrechner Nr. 82). Der Rang gegen die
     Zufallsbücher wird vor Steuern bestimmt (FORM.md §3).
 11. **Placebo** (Zufallsbücher, B = max(200, 20 m + 1)): **dieselben zulässigen Werte, dasselbe Universum, dieselbe Band-Mechanik** (Zweitleser 13).
-    `placeboZiel` ordnet die zulässigen Werte nach sha256(placeboWort | Stichtag | Kürzel) neu und liefert eine Rangliste der Länge 40. Die Auswahl mit dem Bestand
-    trifft wie beim Kandidaten `zielMitBand`. Die Stärke geht nicht ein. *Fundstelle:* FORM.md §3 korb; `adapter/korb.js` zufallsZiel (Nr. 100).
-    **Bekannte Schieflage:** der Zufallsrang wird an jedem Stichtag neu gezogen, und die Momentum-Ränge sind zäh (die Fenster überlappen zu ~73 %).
-    Darum tauschen die Zufallsbücher etwa doppelt so viel wie der Kandidat (gezählt: 66 % gegen 32 % je Termin, unten). Bei 500-$-Positionen kostet das die
-    Zufallsbücher grob 0,6 Pp p. a. mehr. Der Rang vermischt deshalb Auswahl und Kostenersparnis. Ein fest gezogener Zufallsrang tauschte nur ~12 %, er wäre
-    nicht vergleichbarer. Die Wahl folgt Nr. 100 und der Eichung Korb (Ziehung je Stichtag).
+    **In den Kandidatenläufen baut der Adapter die Zufallsbücher selbst** als **persistenten Zufallsrang** (`adapter/korb.js persistentesPlacebo`, QS-Nachbesserung
+    F5 vom 26.10.2026, Commit 266033b). Jeder Wert hat einen Zufallswert, der je Termin mit Wahrscheinlichkeit q neu gezogen wird (mit Halte-Band Vorgabe q = 0,40,
+    gesetzt vor dem Rangvergleich ohne Renditen, bei der Vormerkung festgeschrieben). Die Zufallsbücher ziehen dieselbe Zahl Werte aus denselben zulässigen der
+    Zielfunktion dieses Kandidaten und laufen durch dasselbe Band. **Damit haben sie denselben Umschlag wie der Kandidat** (Protokoll: Umschlag Kandidat/Zufall, Ziel
+    ± 3 Pp; Rang nach **und vor** Kosten). Die Persistenz des Momentum-Rangs (überlappende 12-1-Fenster, ~73 %) ist Mechanik, keine Information; die faire
+    Nullhypothese ist deshalb ein gleich zäher Rang ohne Information. *Fundstelle:* FORM.md §3 korb (QS F5).
+    `regel.placeboZiel` bleibt Pflicht der Form und wird getestet. Es ordnet die zulässigen Werte nach sha256(placeboWort | Stichtag | Kürzel) je Stichtag neu, liefert
+    eine Rangliste der Länge 40 und läuft ebenfalls durch `zielMitBand` (das beschreibt auch `params.placebo` in `kandidat.json`). So ein frischer Zug je Termin
+    tauschte aber etwa doppelt so viel wie der Kandidat (gezählt: 66 % gegen 32 % je Termin, unten), bei 500-$-Positionen grob 0,6 Pp p. a. mehr Kosten — diese
+    Schieflage beseitigt der persistente Zufallsrang des Adapters.
 
 ## Parameter (alle fest vor der Messung)
 
@@ -140,7 +146,8 @@ Werte ohne Stammdaten sind meist erloschen.
   von 100 Werten (11–23). Fast die Hälfte der Verkäufe kommt also aus der Umsatz-Rangliste, nicht aus dem Momentum.
 - **Universum über alle Termine:** 317 verschiedene Werte. 31 davon sind später erloschen (Übernahme 20, Fusion mit Aktientausch 4, Insolvenz 2, Notierung unterbrochen 2,
   Ticker-Umbenennung 2, freiwillig 1) — erloschene Reihen sind im Universum also enthalten. 131 der 317 sind heute an der Nasdaq notiert, 37 haben keine Stammdaten.
-- **Placebo-Austausch (5 Zufallswörter, k = 0):** bei Zufallsrang je Stichtag 12,6–13,6 von 20 (≈ 66 %), bei festem Zufallsrang 2,0–2,7 (≈ 12 %).
+- **Placebo-Austausch (5 Zufallswörter, k = 0):** bei Zufallsrang je Stichtag 12,6–13,6 von 20 (≈ 66 %), bei festem Zufallsrang 2,0–2,7 (≈ 12 %). Die
+  Kandidatenläufe benutzen keinen von beiden, sondern den persistenten Zufallsrang mit q (Regel 11), der auf den Umschlag des Kandidaten zielt.
 
 ## Bekannte Grenzen
 
