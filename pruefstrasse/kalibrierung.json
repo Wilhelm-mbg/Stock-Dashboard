@@ -123,5 +123,42 @@
    "medianAbstand": 4.842405979767214,
    "vorn": 58
   }
+ },
+ "korbPlacebo": {
+  "stand": "2026-10-26T17:02:47.196Z",
+  "quelle": "Nachbesserung QS Nr. 125a F5: A-187/B-187 (Kostenregel, 100.000 $) gegen 200 Zufallsbuecher mit persistentem Zufallsrang (q aus dem Umschlag des Korbs), Rang nach und vor Kosten; alt = Nr. 100 (frischer Zug je Termin, 20 Bp)",
+  "laufzeitMs": 421498,
+  "A-187": {
+   "q": 0.40762692469527695,
+   "umschlagKandidat": 0.5144831373095047,
+   "umschlagZufall": 0.5069006513424082,
+   "buecher": 200,
+   "rangNachKosten": 20,
+   "rangVorKosten": 20,
+   "von": 201,
+   "abstandPa": 5.201156233800688,
+   "abstandBrutto": 5.607412034052352,
+   "alt": {
+    "quelle": "Nr. 100 (studien/momentum-zufall-2026-10, frischer Zug je Termin, 20 Bp)",
+    "rang": 15,
+    "von": 201
+   }
+  },
+  "B-187": {
+   "q": 0.3670518763433181,
+   "umschlagKandidat": 0.47634995044967343,
+   "umschlagZufall": 0.466978218411095,
+   "buecher": 200,
+   "rangNachKosten": 3,
+   "rangVorKosten": 3,
+   "von": 201,
+   "abstandPa": 7.959798847879608,
+   "abstandBrutto": 8.335798126770342,
+   "alt": {
+    "quelle": "Nr. 100 (studien/momentum-zufall-2026-10, frischer Zug je Termin, 20 Bp)",
+    "rang": 3,
+    "von": 201
+   }
+  }
  }
 }

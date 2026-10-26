@@ -3773,7 +3773,7 @@
  "urteil": "bestanden fuer Querschnitt und marktweit ab Abstand >= 15 Tage; NICHT bestanden fuer dichte marktweite Plaene (Dichte 1/10)",
  "korb": {
   "kennung": "pruefstrasse/eichung/korb/v1",
-  "stand": "2026-10-26T15:59:33.609Z",
+  "stand": "2026-10-26T16:46:52.258Z",
   "datum": "2026-10-26",
   "panelKennung": "querschnitt-pruefstand-2026-09-13/panel/v2.3",
   "panelBau": "2c",
@@ -3789,10 +3789,7 @@
    "seedStart": 1,
    "wortBasis": "eichung-korb",
    "korb": 187,
-   "spanne": [
-    1.5,
-    2.5
-   ],
+   "restMax": 0.1,
    "rangP": 0.05,
    "rangAnteilMax": 0.1,
    "alterWarnTage": 60
@@ -3806,6 +3803,25 @@
   ],
   "referenzBuecher": 200,
   "ergebnis": {
+   "geraetepaar": {
+    "n": 21,
+    "maxDelta": 0,
+    "toleranz": 1e-9,
+    "vollerWeg": 1,
+    "bestanden": true
+   },
+   "einsaatRest": {
+    "n": 20,
+    "mittel": 0.039071809005629746,
+    "sd": 0.008108676144031794,
+    "seMittel": 0.0018131551065585965,
+    "soll": 0,
+    "t": 21.549071485554702,
+    "innerhalb2se": false,
+    "maxAbweichung": 0.013760947775514218,
+    "restMax": 0.1,
+    "bestanden": true
+   },
    "gepaart": {
     "n": 20,
     "mittel": 2.163897433235873,
@@ -3814,12 +3830,7 @@
     "soll": 2,
     "t": 13.180536821485711,
     "innerhalb2se": false,
-    "spanne": [
-     1.5,
-     2.5
-    ],
-    "spanneOk": true,
-    "bestanden": true
+    "nachrichtlich": true
    },
    "einsaat": {
     "n": 20,
@@ -3829,7 +3840,8 @@
     "soll": 2,
     "t": -1.4934906183436742,
     "innerhalb2se": true,
-    "bestanden": true
+    "bestanden": true,
+    "nachrichtlich": true
    },
    "null": {
     "n": 20,
@@ -3839,7 +3851,8 @@
     "soll": 0,
     "t": -1.7473052708015409,
     "innerhalb2se": true,
-    "bestanden": true
+    "bestanden": true,
+    "nachrichtlich": true
    },
    "rang": {
     "n": 20,
@@ -3859,10 +3872,10 @@
   },
   "bestanden": true,
   "urteil": "bestanden",
-  "laufzeitMs": 174235,
-  "lesenMs": 487,
-  "referenzMs": 131897,
-  "msJeLauf": 724,
+  "laufzeitMs": 319807,
+  "lesenMs": 480,
+  "referenzMs": 130989,
+  "msJeLauf": 1331,
   "referenz": [
    -0.5473662310274001,
    -7.075720808854035,
@@ -4070,181 +4083,241 @@
     "seed": 1,
     "ohne": -7.279190950580071,
     "mit": -5.168778025253039,
+    "kandidatenweg": -7.279190950580071,
+    "vollerWeg": -7.279190950580071,
+    "buchPaOhne": 3.876311345423611,
     "buchEndeOhne": 125559.74,
     "buchEndeMit": 141621.3,
     "rangP": 0.8606965174129353,
-    "ms": 2177
+    "ms": 95118
    },
    {
     "seed": 2,
     "ohne": -0.6077139916030632,
     "mit": 1.6337690355396006,
+    "kandidatenweg": -0.6077139916030632,
+    "vollerWeg": null,
+    "buchPaOhne": 10.547788304400619,
     "buchEndeOhne": 182240.36,
     "buchEndeMit": 205503.72,
     "rangP": 0.19900497512437812,
-    "ms": 2173
+    "ms": 4410
    },
    {
     "seed": 3,
     "ohne": -9.605446967333187,
     "mit": -7.526977899662145,
+    "kandidatenweg": -9.605446967333187,
+    "vollerWeg": null,
+    "buchPaOhne": 1.5500553286704966,
     "buchEndeOhne": 109642.87,
     "buchEndeMit": 123777.81,
     "rangP": 0.9800995024875622,
-    "ms": 2115
+    "ms": 5889
    },
    {
     "seed": 4,
     "ohne": -3.8746799901418596,
     "mit": -1.6917789729791615,
+    "kandidatenweg": -3.8746799901418596,
+    "vollerWeg": null,
+    "buchPaOhne": 7.280822305861823,
     "buchEndeOhne": 152290.55,
     "buchEndeMit": 171802.69,
     "rangP": 0.5373134328358209,
-    "ms": 2023
+    "ms": 4229
    },
    {
     "seed": 5,
     "ohne": -1.2327761187427502,
     "mit": 1.0017730071568263,
+    "kandidatenweg": -1.2327761187427502,
+    "vollerWeg": null,
+    "buchPaOhne": 9.922726177260932,
     "buchEndeOhne": 176159.57,
     "buchEndeMit": 198707.56,
     "rangP": 0.27860696517412936,
-    "ms": 2130
+    "ms": 4113
    },
    {
     "seed": 6,
     "ohne": -10.306189911051831,
     "mit": -8.244429576830779,
+    "kandidatenweg": -10.306189911051831,
+    "vollerWeg": null,
+    "buchPaOhne": 0.8493123849518502,
     "buchEndeOhne": 105191.91,
     "buchEndeMit": 118736.7,
     "rangP": 0.9950248756218906,
-    "ms": 2057
+    "ms": 6108
    },
    {
     "seed": 7,
     "ohne": -2.9951827002205658,
     "mit": -0.8003142758276063,
+    "kandidatenweg": -2.9951827002205658,
+    "vollerWeg": null,
+    "buchPaOhne": 8.160319595783116,
     "buchEndeOhne": 159917.05,
     "buchEndeMit": 180348.34,
     "rangP": 0.43283582089552236,
-    "ms": 2110
+    "ms": 4129
    },
    {
     "seed": 8,
     "ohne": -2.8825983568435234,
     "mit": -0.6855421499903258,
+    "kandidatenweg": -2.8825983568435234,
+    "vollerWeg": null,
+    "buchPaOhne": 8.272903939160159,
     "buchEndeOhne": 160915.88,
     "buchEndeMit": 181473.83,
     "rangP": 0.4079601990049751,
-    "ms": 2103
+    "ms": 5011
    },
    {
     "seed": 9,
     "ohne": -2.3279785986592287,
     "mit": -0.12375019839743118,
+    "kandidatenweg": -2.3279785986592287,
+    "vollerWeg": null,
+    "buchPaOhne": 8.827523697344454,
     "buchEndeOhne": 165912.56,
     "buchEndeMit": 187067.7,
     "rangP": 0.3283582089552239,
-    "ms": 2021
+    "ms": 4814
    },
    {
     "seed": 10,
     "ohne": -5.241760074005518,
     "mit": -3.071285248345923,
+    "kandidatenweg": -5.241760074005518,
+    "vollerWeg": null,
+    "buchPaOhne": 5.913742221998164,
     "buchEndeOhne": 141038.65,
     "buchEndeMit": 159244.81,
     "rangP": 0.6616915422885572,
-    "ms": 1990
+    "ms": 4513
    },
    {
     "seed": 11,
     "ohne": -4.258960596767113,
     "mit": -2.0800114052998744,
+    "kandidatenweg": -4.258960596767113,
+    "vollerWeg": null,
+    "buchPaOhne": 6.896541699236569,
     "buchEndeOhne": 149054.74,
     "buchEndeMit": 168187.98,
     "rangP": 0.5771144278606966,
-    "ms": 2146
+    "ms": 6188
    },
    {
     "seed": 12,
     "ohne": -6.125429498844958,
     "mit": -3.974728318008113,
+    "kandidatenweg": -6.125429498844958,
+    "vollerWeg": null,
+    "buchPaOhne": 5.0300727971587245,
     "buchEndeOhne": 134140.85,
     "buchEndeMit": 151442.52,
     "rangP": 0.7562189054726368,
-    "ms": 2035
+    "ms": 4636
    },
    {
     "seed": 13,
     "ohne": -7.896587772667395,
     "mit": -5.7785767254195255,
+    "kandidatenweg": -7.896587772667395,
+    "vollerWeg": null,
+    "buchPaOhne": 3.258914523336287,
     "buchEndeOhne": 121158.98,
     "buchEndeMit": 136814.03,
     "rangP": 0.900497512437811,
-    "ms": 2074
+    "ms": 5734
    },
    {
     "seed": 14,
     "ohne": -7.647680741461426,
     "mit": -5.528935484135421,
+    "kandidatenweg": -7.647680741461426,
+    "vollerWeg": null,
+    "buchPaOhne": 3.5078215545422564,
     "buchEndeOhne": 122917.45,
     "buchEndeMit": 138765.34,
     "rangP": 0.8855721393034826,
-    "ms": 1967
+    "ms": 4798
    },
    {
     "seed": 15,
     "ohne": -2.686583580852986,
     "mit": -0.476604080710862,
+    "kandidatenweg": -2.686583580852986,
+    "vollerWeg": null,
+    "buchPaOhne": 8.468918715150696,
     "buchEndeOhne": 162667.29,
     "buchEndeMit": 183537.76,
     "rangP": 0.38308457711442784,
-    "ms": 2004
+    "ms": 4820
    },
    {
     "seed": 16,
     "ohne": -4.962239481640939,
     "mit": -2.799063618264828,
+    "kandidatenweg": -4.962239481640939,
+    "vollerWeg": null,
+    "buchPaOhne": 6.193262814362743,
     "buchEndeOhne": 143281.07,
     "buchEndeMit": 161660.34,
     "rangP": 0.6567164179104478,
-    "ms": 2045
+    "ms": 4090
    },
    {
     "seed": 17,
     "ohne": -10.448949440444032,
     "mit": -8.39265439518546,
+    "kandidatenweg": -10.448949440444032,
+    "vollerWeg": null,
+    "buchPaOhne": 0.7065528555596501,
     "buchEndeOhne": 104303.85,
     "buchEndeMit": 117716.83,
     "rangP": 0.9950248756218906,
-    "ms": 1968
+    "ms": 4758
    },
    {
     "seed": 18,
     "ohne": -1.6419076694509371,
     "mit": 0.5774134844092291,
+    "kandidatenweg": -1.6419076694509371,
+    "vollerWeg": null,
+    "buchPaOhne": 9.513594626552745,
     "buchEndeOhne": 172271.68,
     "buchEndeMit": 194250.11,
     "rangP": 0.27860696517412936,
-    "ms": 2130
+    "ms": 4096
    },
    {
     "seed": 19,
     "ohne": -3.1577107180336563,
     "mit": -0.9675590808140733,
+    "kandidatenweg": -3.1577107180336563,
+    "vollerWeg": null,
+    "buchPaOhne": 7.997791577970026,
     "buchEndeOhne": 158484.24,
     "buchEndeMit": 178718.7,
     "rangP": 0.44776119402985076,
-    "ms": 2087
+    "ms": 5589
    },
    {
     "seed": 20,
     "ohne": -3.104854530485433,
     "mit": -0.908439097094103,
+    "kandidatenweg": -3.104854530485433,
+    "vollerWeg": null,
+    "buchPaOhne": 8.05064776551825,
     "buchEndeOhne": 158949.03,
     "buchEndeMit": 179293.36,
     "rangP": 0.4427860696517413,
-    "ms": 2029
+    "ms": 4855
    }
   ],
   "waechter": "sauber"

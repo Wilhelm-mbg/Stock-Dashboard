@@ -19,15 +19,17 @@ Kriterien (FORM.md §5, Nachbesserung QS 23.10., beide Dichten): Nullpool = 100 
 
 ## Korb-Form (Nr. 125a) — **bestanden**
 
-Datum 2026-10-26, Panel `querschnitt-pruefstand-2026-09-13/panel/v2.3` (gesperrt am Eichfenster), Fenster 2017-01-04 … 2022-12-30, Korb 187, Kapital 10.000, Kostenregel (Eroeffnung + IBKR Fixed), Handel ueber mfhandel.js fuehreAus opts.kostenRegel. 20 Seeds (je ohne und mit Einsaat ++2,0 Pp p. a. auf alle Aktienkurse ab dem Fensterstart, im Speicher), 200 Referenzbuecher ohne Einsaat. Laufzeit 174 s (Referenz 132 s, 724 ms je Lauf).
+Datum 2026-10-26, Panel `querschnitt-pruefstand-2026-09-13/panel/v2.3` (gesperrt am Eichfenster), Fenster 2017-01-04 … 2022-12-30, Korb 187, Kapital 10.000, Kostenregel (Eroeffnung + IBKR Fixed), Handel ueber mfhandel.js fuehreAus opts.kostenRegel. 20 Seeds (je ohne und mit Einsaat ++2,0 Pp p. a. auf alle Aktienkurse ab dem Fensterstart, im Speicher), 200 Referenzbuecher ohne Einsaat. Laufzeit 320 s (Referenz 131 s, 1331 ms je Lauf).
 
 **Aufloesung zuerst (Entscheid 25):** Ein Zufallsbuch streut im Eichfenster mit sd 3.15 Pp p. a.; bei 20 Seeds und 200 Referenzbuechern ist se_Mittel 0.71 Pp - ein Geraeteversatz unter ~1.4 Pp p. a. ist ungepaart nicht sichtbar; gepaart (derselbe Seed mit/ohne Einsaat) se 0.012 Pp.
 
 | Reihe | n | Mittel (Pp p. a.) | sd | se_Mittel | Soll | Kriterium | bestanden |
 |---|---|---|---|---|---|---|---|
-| Einsaat gepaart (mit − ohne, derselbe Seed) | 20 | +2,164 | +0,056 | +0,012 | +2,00 | Mittel in +1,5 … +2,5 | ja |
-| Einsaat gegen die Referenz (mit − Mittel Referenz) | 20 | +0,915 | +3,094 | +0,727 | +2,00 | |Mittel − +2,0| ≤ 2 se_Mittel | ja |
-| Null (ohne − Mittel Referenz) | 20 | −1,249 | +3,038 | +0,715 | +0,00 | |Mittel| ≤ 2 se_Mittel | ja |
+| **Gerätepaar** (dasselbe Zufallsbuch über Kandidaten- und Placeboweg, Seed 1 auch über den vollen Kandidatenweg mit 63 Phasen) | 21 | max |Δ| 0.0e+0 | – | – | 0 | |Δ| < 1e-9 | ja |
+| **Einsaat-Rest** (gepaart − 2 × (1 + r)) | 20 | +0,039 | +0,008 | +0,002 | 0 | jeder Seed in Mittel ± 3 sd (max +0,014), |Mittel| ≤ +0,10 | ja |
+| Einsaat gepaart (mit − ohne), nachrichtlich | 20 | +2,164 | +0,056 | +0,012 | +2,00 | nachrichtlich | **nein** |
+| Einsaat gegen die Referenz, nachrichtlich | 20 | +0,915 | +3,094 | +0,727 | +2,00 | nachrichtlich (|Mittel − +2,0| ≤ 2 se) | ja |
+| Null (ohne − Mittel Referenz), nachrichtlich | 20 | −1,249 | +3,038 | +0,715 | +0,00 | nachrichtlich (|Mittel| ≤ 2 se) | ja |
 | Rang-p ≤ +0,05 (ohne Einsaat) | 20 | 0 Treffer = 0 % | – | – | – | höchstens 10 % | ja |
 
-Der Massstab faellt in allen Kriterien heraus (gepaart bzw. gegen Buecher desselben Fensters). Die Einsaat waechst multiplikativ: ein voll investiertes Buch mit r p. a. gewinnt 2 × (1 + r) Pp, Bargeld und Kosten druecken es - deshalb gepaart eine Spanne, keine 2-se-Grenze. Einzellaeufe in `eichung.json` (Block `korb`). Simulation mit virtuellem Kapital, keine Anlageberatung.
+Kriterien seit der Nachbesserung QS F4 (26.10.2026): Gerätepaar exakt 0, Einsaat-Rest gegen 2 × (1 + r), Rang-Anteil; Null und Einsaat gegen die Referenz sind Zweistichproben derselben Funktion (Erwartung exakt 0, nur Stichprobenzufall) und stehen nachrichtlich. Der Massstab faellt in allen Kriterien heraus. Einzellaeufe in `eichung.json` (Block `korb`). Simulation mit virtuellem Kapital, keine Anlageberatung.
