@@ -1,5 +1,5 @@
 {
- "stand": "2026-10-23T20:30:39.123Z",
+ "stand": "2026-10-26T17:47:39.136Z",
  "hinweis": "geschrieben von node pruefstrasse/test.js (ohne --schnell) bzw. den --kalibrierung-Laeufen der Adapter am 11.10.2026",
  "tag": {
   "entNTage": 1735,
@@ -24,8 +24,8 @@
   "reihen": 7299,
   "verstoesse": 0,
   "ms": {
-   "topf": 6306,
-   "messen": 5272
+   "topf": 4603,
+   "messen": 3944
   }
  },
  "korb": {
@@ -35,14 +35,20 @@
   "spyB": 181193.8652188327
  },
  "minute": {
-  "bruttoJeSignalPp": 0.025445960336359336,
+  "bruttoJeSignalPp": 0.025834718140097065,
   "huerdePp": 0.1,
-  "nettoJeSignalPp": -0.07455403966364067,
-  "werte": 2894,
+  "nettoJeSignalPp": -0.07416528185990294,
+  "werte": 2893,
   "handelstage": 730,
   "schnittTag": "2025-03-12",
-  "signale": 105633,
-  "t": 0.9306674798120459
+  "signale": 105593,
+  "t": 0.9267455380329412,
+  "daten": "eingefroren",
+  "eichdaten": {
+   "manifestSha256": "48e36fd6af838a36a63951420257d7fea89c0f1de3d766c7cca1870e2ff7c166",
+   "dateien": 2908,
+   "bytes": 1379970502
+  }
  },
  "soll": {
   "tag": {
@@ -95,13 +101,25 @@
    "toleranzPp": 0.1
   },
   "minute": {
-   "quelle": "Markt-Dashboard-Daten/protokolle/rsi2seit-2026-08-26.json",
-   "bruttoJeSignalPp": 0.02054524106238242,
+   "quelle": "Nr. 128: <daten>/eichdaten-minute-2026-10-26 (_manifest.json), gerechnet 26.10.2026",
+   "manifestSha256": "48e36fd6af838a36a63951420257d7fea89c0f1de3d766c7cca1870e2ff7c166",
+   "bruttoJeSignalPp": 0.025834718140097065,
    "huerdePp": 0.1,
-   "nettoJeSignalPp": -0.07945475893761758,
-   "werte": 2874,
+   "nettoJeSignalPp": -0.07416528185990294,
+   "t": 0.9267455380329412,
+   "werte": 2893,
+   "signale": 105593,
    "handelstage": 730,
-   "schnittTag": "2025-03-12"
+   "schnittTag": "2025-03-12",
+   "toleranz": 0.000001,
+   "alt": {
+    "quelle": "Markt-Dashboard-Daten/protokolle/rsi2seit-2026-08-26.json",
+    "bruttoJeSignalPp": 0.02054524106238242,
+    "nettoJeSignalPp": -0.07945475893761758,
+    "werte": 2874,
+    "toleranz": 0.005,
+    "grund": "Archiv lebte 2026-09 -> 2026-10; seit 26.10. eingefroren"
+   }
   }
  },
  "korbRegel": {
@@ -158,6 +176,27 @@
     "quelle": "Nr. 100 (studien/momentum-zufall-2026-10, frischer Zug je Termin, 20 Bp)",
     "rang": 3,
     "von": 201
+   }
+  }
+ },
+ "minuteLebend": {
+  "stand": "2026-10-26T17:47:39.136Z",
+  "bruttoJeSignalPp": 0.025834718140097065,
+  "nettoJeSignalPp": -0.07416528185990294,
+  "werte": 2893,
+  "signale": 105593,
+  "t": 0.9267455380329412,
+  "handelstage": 730,
+  "schnittTag": "2025-03-12",
+  "reihen": {
+   "gleich": 2907,
+   "geaendert": 0,
+   "neu": 0,
+   "fehlt": 0,
+   "beispiele": {
+    "geaendert": [],
+    "neu": [],
+    "fehlt": []
    }
   }
  }
