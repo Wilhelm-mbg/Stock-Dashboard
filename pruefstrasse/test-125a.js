@@ -29,7 +29,7 @@ function tests(C) {
     zielfunktion: function (roh, o) { return kunstZiel(roh, o); },
     placeboZiel: function (roh, o) { if (o.nowMs < spur.minNow) spur.minNow = o.nowMs; return kunstZiel(roh, o, function (p, n) { return p.map(function (x) { return { s: x.sym, h: hash(o.placeboWort + '|' + o.nowMs + '|' + x.sym) }; }).sort(function (a, b) { return a.h - b.h; }).slice(0, n).map(function (x) { return x.s; }); }); }
   };
-  var KAND = { kennung: 'kunst-korb-125a', form: 'korb', titel: 'Kunst Korb', quelle: 'Kunst', autor: 'test', datum: '2026-10-26', erwartung: { groesse: 'gross', richtung: 'positiv', nettoPp: 40 }, konfigurationen: [{ key: 'K20', anzahl: 20 }], params: {} };
+  var KAND = { kennung: 'kunst-korb-125a', form: 'korb', titel: 'Kunst Korb', quelle: 'Kunst', autor: 'test', datum: '2026-10-26', erwartung: { groesse: 'gross', richtung: 'positiv', nettoPp: 60 }, konfigurationen: [{ key: 'K20', anzahl: 20 }], params: {} };
 
   console.log('125a) Korb-Form: Live = Messung, Machbarkeitstor, Register-Korrektur, Vormerkung, --vorwaerts Korb, Eichung, B2');
   /* ---------- K: Live = Messung (Zweitleser 7) ---------- */
@@ -83,11 +83,11 @@ function tests(C) {
   });
 
   /* ---------- A: Machbarkeitstor ---------- */
-  probe('A-1: Tor Korb - MDE80_korb(n) = (t_krit(n-1, m) + 0,8416) x sd_q x 2 / Wurzel(n) x 1,4; netto 1,2 bei 38 Perioden nicht messbar (braeuchte n, Jahre = n / 4), netto 40 messbar, unter 8 Perioden nie', function () {
+  probe('A-1: Tor Korb - MDE80_korb(n) = (t_krit(n-1, m) + 0,8416) x 4 x sd_q / Wurzel(n) x 1,4 (QS F1: vorher Faktor 2 zu klein); 38 Perioden: MDE80 22,07, netto 1,2 nicht messbar (~12.857 Perioden ≈ 3.214 Jahre), netto 40 messbar, unter 8 Perioden nie', function () {
     var a = TO.korbMachbarkeit({ nPerioden: 38, sdQ: 6.3247, nettoPp: 1.2, m: 14 }), b = TO.korbMachbarkeit({ nPerioden: 38, sdQ: 6.3247, nettoPp: 40, m: 14 }), c = TO.korbMachbarkeit({ nPerioden: 6, sdQ: 1, nettoPp: 1000, m: 1 });
-    var hand = (Math.max(3, TO.tQuantil(1 - 0.05 / 14, 37)) + 0.8416) * 6.3247 * 2 / Math.sqrt(38) * 1.4, nb = a.braeuchtePerioden;
+    var hand = (Math.max(3, TO.tQuantil(1 - 0.05 / 14, 37)) + 0.8416) * 4 * 6.3247 / Math.sqrt(38) * 1.4, nb = a.braeuchtePerioden;
     var grenze = TO.korbMde80(nb, 6.3247, 14).mde80 <= 1.2 && TO.korbMde80(nb - 1, 6.3247, 14).mde80 > 1.2;
-    return [!a.messbar && Math.abs(a.mde80 - hand) < 1e-12 && grenze && a.braeuchteJahre === nb / 4 && b.messbar && !c.messbar && TO.korbPerioden(1) === 0 && TO.korbPerioden(64) === 1 && TO.korbPerioden(2437) === 38,
+    return [!a.messbar && Math.abs(a.mde80 - hand) < 1e-12 && Math.abs(a.mde80 - 22.07) < 0.01 && Math.abs(nb / 4 - 3214) < 2 && grenze && a.braeuchteJahre === nb / 4 && b.messbar && !c.messbar && TO.korbPerioden(1) === 0 && TO.korbPerioden(64) === 1 && TO.korbPerioden(2437) === 38,
       'MDE80 ' + a.mde80.toFixed(2) + ' Pp p. a., braeuchte ' + nb + ' Perioden = ' + a.braeuchteJahre + ' Jahre; netto 40 messbar ' + b.messbar];
   });
   probe('A-2: streuung.json Korb-Block (sd_q mit Quelle Nr. 96/100/122, Einheit Perioden, 4 je Jahr, Momentum nachrichtlich); streuung-fit.js erhaelt den Block', function () {
@@ -126,7 +126,7 @@ function tests(C) {
       messer: function (kn, phase, aus, log, extra) {
         aufrufe.push({ phase: phase, extra: extra });
         var E = phase === 'zaehlung' ? KA.zaehle(kand, { kalender: { tage: opt.kalenderTage || tageK, kennung: 'kunst' }, entdeckung: { von: tageK[0] } })
-          : KA.lauf(REGEL, kand, { tafel: W.T, qqq: W.qqq, bisPanelende: true, entdeckung: { von: '2021-03-01' }, placeboBuecher: 40, registerM: extra && extra.m, kostenBpJeSeite: 'regel', massstab: 'nasdaq100-steuer', kapitalUsd: K.KORB.kapitalUsd });
+          : KA.lauf(REGEL, kand, { tafel: W.T, qqq: W.qqq, bisPanelende: true, entdeckung: { von: '2021-03-01' }, placeboBuecher: 40, registerM: extra && extra.m, kostenBpJeSeite: 'regel', massstab: 'nasdaq100-steuer', kapitalUsd: K.KORB.kapitalUsd, placebo: 'persistent' });
         E.kennung = kn; E.form = 'korb'; E.phase = phase; E.stand = '2026-10-26T12:00:00.000Z'; E.konfigurationenSoll = kand.konfigurationen.length;
         fs.writeFileSync(aus, JSON.stringify(E)); return JSON.parse(JSON.stringify(E));
       } };
@@ -145,7 +145,7 @@ function tests(C) {
       var r = LF.laufe(KAND.kennung, stV), Rg = JSON.parse(fs.readFileSync(ortL.register, 'utf8')), e = Rg.konfigurationen.filter(function (x) { return x.kennung === KAND.kennung; })[0];
       var E = JSON.parse(fs.readFileSync(path.join(ortL.erledigt, KAND.kennung, 'ergebnis.json'), 'utf8')), sdE = E.entdeckung.konfigurationen[0].entdeckung.perioden.tTest.sd;
       var md = fs.readFileSync(path.join(ortL.erledigt, KAND.kennung, 'ERGEBNIS.md'), 'utf8'); regV = e;
-      return [auf(aufV) === 'zaehlung,entdeckung' && e && e.status === 'vorgemerkt' && e.einheit === 'Perioden' && e.nBedarf === TO.korbNBedarf({ sdE: sdE, nettoPp: 40 }) && e.korbFest && e.korbFest.B === 40 && e.korbFest.wortBasis === KAND.kennung && e.nStand === 0 && e.stichtag === null && /Vorwaertsblick erst bei nBedarf/.test(md) && !E.pruefung,
+      return [auf(aufV) === 'zaehlung,entdeckung' && e && e.status === 'vorgemerkt' && e.einheit === 'Perioden' && e.nBedarf === TO.korbNBedarf({ sdE: sdE, nettoPp: 60, mV: 1 }) && e.korbFest.q != null && e.korbFest.placebo === 'persistent' && e.korbFest && e.korbFest.B === 40 && e.korbFest.wortBasis === KAND.kennung && e.nStand === 0 && e.stichtag === null && /Vorwaertsblick erst bei nBedarf/.test(md) && !E.pruefung,
         'Aufrufe ' + auf(aufV) + ', ' + JSON.stringify({ status: e && e.status, nBedarf: e && e.nBedarf, sdE: sdE && sdE.toFixed(2), B: e && e.korbFest && e.korbFest.B, urteil: r.urteil })];
       function auf(a) { return a.map(function (x) { return x.phase; }).join(); }
     });
@@ -269,6 +269,17 @@ function tests(C) {
     return [a.join() === 'R1,R2,R3,R4,R5' && b.join() === 'R3,R6,R7,R8,R9' && m.ziel.length === 40 && m.anzahl === 20, 'leer ' + a.join() + ' | voll ' + b.join() + ' | Rangliste ' + m.ziel.length];
   });
 
+  /* ---------- QS F5: Zufallsbuecher mit gleichem Umschlag ---------- */
+  probe('F5-1: persistenter Zufallsrang - q vor dem Rangvergleich aus dem Umschlag des Kandidaten kalibriert, Umschlag Zufall im Mittel innerhalb 3 Pp am Kandidaten; Rang nach UND vor Kosten ausgewiesen; Vorgabe (ohne placebo) unveraendert', function () {
+    var RM = { zielfunktion: function (roh, o) { var p = []; Object.keys(roh).forEach(function (s) { var r = roh[s], i = r.length - 1; if (i < 151) return; p.push({ sym: s, staerke: r[i][1] / r[i - 150][1] - 1, umsatz: r[i][1] * r[i][2] }); }); if (p.length < 30) return { ziel: [], rangfolge: [], korb: { zulaessig: p.length, geprueft: Object.keys(roh).length }, zuWenig: true }; p.sort(function (a, b) { return b.staerke - a.staerke || (a.sym < b.sym ? -1 : 1); }); return { ziel: p.slice(0, o.anzahl || 20).map(function (x) { return x.sym; }), rangfolge: p, korb: { zulaessig: p.length, geprueft: Object.keys(roh).length }, zuWenig: false, uebersprungen: [], verworfen: [] }; }, placeboZiel: REGEL.placeboZiel };
+    var KM = { kennung: 'kunst-momentum-f5', form: 'korb', konfigurationen: [{ key: 'M20', anzahl: 20 }], params: {} };
+    var o = { tafel: W.T, qqq: W.qqq, bisPanelende: true, entdeckung: { von: '2021-09-01' }, placeboBuecher: 30, registerM: 1, kostenBpJeSeite: 'regel', massstab: 'SPY', kapitalUsd: 10000 };
+    var e = KA.lauf(RM, KM, Object.assign({ placebo: 'persistent' }, o)).konfigurationen[0].entdeckung, P = e.placebo, e0 = KA.lauf(RM, KM, o).konfigurationen[0].entdeckung;
+    var w0 = KA.zufallsWert('w', 'K1', Date.UTC(2022, 0, 3), 0), w0b = KA.zufallsWert('w', 'K1', Date.UTC(2022, 6, 3), 0), w1 = KA.zufallsWert('w', 'K1', Date.UTC(2022, 0, 3), 1), w1b = KA.zufallsWert('w', 'K1', Date.UTC(2022, 6, 3), 1);
+    return [P && P.q >= 0 && P.q <= 1 && P.innerhalb3Pp && P.rangVorKosten && P.rangVorKosten.von === 31 && P.rangNachKosten.rang === e.rang && e0.placebo === null && w0 === w0b && w1 !== w1b,
+      'q ' + (P && P.q.toFixed(3)) + ' (' + (P && P.qQuelle) + '), Umschlag Kandidat ' + (P && (100 * P.umschlagKandidat).toFixed(1)) + ' %, Zufall ' + (P && (100 * P.umschlagZufall).toFixed(1)) + ' %, Rang nach Kosten ' + e.rang + ' / vor Kosten ' + (P && P.rangVorKosten.rang) + ' von 31'];
+  });
+
   /* ---------- C: Eichung Korb ---------- */
   probe('C-1: Eichung Korb an der Kunsttafel - Form des Blocks (gepaart, Einsaat, Null, Rang, Aufloesung), Einsaat +2 Pp gepaart wiedergefunden, schreibt nur eichung.json/EICHUNG.md', function () {
     var aus = fs.mkdtempSync(path.join(require('os').tmpdir(), 'korb-eich-')); fs.writeFileSync(path.join(aus, 'eichung.json'), JSON.stringify({ kennung: 'pruefstrasse/eichung/v1', laeufe: [] }));
@@ -276,15 +287,15 @@ function tests(C) {
     var Jd = JSON.parse(fs.readFileSync(path.join(aus, 'eichung.json'), 'utf8')), md = fs.readFileSync(path.join(aus, 'EICHUNG.md'), 'utf8');
     fs.rmSync(aus, { recursive: true, force: true });
     var e = J.ergebnis;
-    return [Jd.korb && Jd.laeufe && e.gepaart.n === 4 && e.gepaart.mittel > 1.5 && e.gepaart.mittel < 2.5 && typeof e.null.innerhalb2se === 'boolean' && e.rang.n === 4 && J.aufloesung.sdReferenz > 0 && J.laufzeitMs > 0 && /Korb-Form \(Nr\. 125a\)/.test(md) && /Aufloesung zuerst/.test(md),
-      'gepaart ' + e.gepaart.mittel.toFixed(3) + ', Null ' + e.null.mittel.toFixed(2) + ' ± ' + e.null.seMittel.toFixed(2) + ', Urteil ' + J.urteil + ', ' + J.msJeLauf + ' ms je Lauf'];
+    return [Jd.korb && Jd.laeufe && e.geraetepaar.n === 5 && e.geraetepaar.maxDelta < 1e-9 && e.geraetepaar.bestanden && e.einsaatRest.n === 4 && Math.abs(e.einsaatRest.mittel) <= 0.1 && e.einsaatRest.bestanden && e.null.nachrichtlich && e.rang.n === 4 && J.aufloesung.sdReferenz > 0 && J.laufzeitMs > 0 && /Korb-Form \(Nr\. 125a\)/.test(md) && /Aufloesung zuerst/.test(md),
+      'Geraetepaar max ' + e.geraetepaar.maxDelta + ' (' + e.geraetepaar.n + '), Einsaat-Rest ' + e.einsaatRest.mittel.toFixed(3) + ' ± ' + e.einsaatRest.sd.toFixed(3) + ', gepaart ' + e.gepaart.mittel.toFixed(3) + ', Null ' + e.null.mittel.toFixed(2) + ' ± ' + e.null.seMittel.toFixed(2) + ', Urteil ' + J.urteil + ', ' + J.msJeLauf + ' ms je Lauf'];
   });
   probe('C-2: pruefstrasse/eichung.json traegt den Korb-Block (Form, Alter <= ' + 60 + ' Tage sonst Warnung) - der PM faehrt node pruefstrasse/laeufer.js --eichung --nur korb', function () {
     var J = JSON.parse(fs.readFileSync(path.join(K.HIER, 'eichung.json'), 'utf8')), k = J.korb;
     if (!k) return [false, 'Korb-Block fehlt (node pruefstrasse/laeufer.js --eichung --nur korb)'];
     var alter = (Date.now() - Date.parse(k.stand)) / 86400000;
     if (alter > 60) console.log('  WARNUNG: Eichung Korb ist ' + Math.floor(alter) + ' Tage alt');
-    return [k.kennung === 'pruefstrasse/eichung/korb/v1' && k.ergebnis && k.ergebnis.gepaart && k.ergebnis.null && k.ergebnis.rang && typeof k.bestanden === 'boolean' && k.laufzeitMs > 0 && Array.isArray(k.laeufe) && k.gesperrt === true, 'Stand ' + k.stand + ', ' + k.urteil + ', ' + (k.laufzeitMs / 1000).toFixed(0) + ' s'];
+    return [k.kennung === 'pruefstrasse/eichung/korb/v1' && k.ergebnis && k.ergebnis.geraetepaar && k.ergebnis.einsaatRest && k.ergebnis.gepaart && k.ergebnis.null && k.ergebnis.rang && typeof k.bestanden === 'boolean' && k.laufzeitMs > 0 && Array.isArray(k.laeufe) && k.gesperrt === true, 'Stand ' + k.stand + ', ' + k.urteil + ', ' + (k.laufzeitMs / 1000).toFixed(0) + ' s'];
   });
 
   /* ---------- D: FORM.md ---------- */

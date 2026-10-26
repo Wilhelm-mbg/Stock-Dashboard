@@ -56,11 +56,36 @@ function rueckblick(V, F, zielfunktion, korb, name) {
       vorDemMarkt: r.startphasen.vorDemMarkt, abstaende: r.startphasen.abstaende } };
 }
 /** Nur k = 0 mit Regel K (fuer die Zufallsbuecher). */
-function k0(V, F, zielfunktion, korb, name) {
+function k0(V, F, zielfunktion, korb, name, mitUmschlag) {
   frisch(V, F, zielfunktion, name);
-  var e = KS.k0(V, { name: name, fenster: name, korb: korb || null }, K.KORB.kleinstAnteil).kz;
-  return { buchEnde: e.buchEnde, spyEnde: e.spyEnde, abstandPa: e.abstandPa, schlaegt: e.schlaegt };
+  var x = KS.k0(V, { name: name, fenster: name, korb: korb || null }, K.KORB.kleinstAnteil), e = x.kz;
+  var aus = { buchEnde: e.buchEnde, spyEnde: e.spyEnde, abstandPa: e.abstandPa, schlaegt: e.schlaegt };
+  if (mitUmschlag) aus.umschlag = umschlagVon(x.L);         /* QS F5: nur auf Wunsch - die Kalibrierungsausgabe bleibt bitgleich */
+  return aus;
 }
+/* ---------- QS F5: Zufallsbuecher mit gleichem Umschlag wie der Kandidat (persistenter Zufallsrang) ----------
+ * Je Wert ein Zufallswert, der je Termin mit Wahrscheinlichkeit q neu gezogen wird - zustandslos per Hash (korbCache je Stichtag bleibt gueltig): Bloecke von 91
+ * Kalendertagen (~ 63 Handelstage = ein Termin), Neuziehung im Block b wenn h(wort|z|sym|b) < q, Wert = h(wort|w|sym|letzter Neuziehungsblock <= b). q = 0: fester
+ * Zufallsrang, q = 1: jeder Termin frisch (das alte Placebo der Nr. 100). Auswahl: dieselbe Zahl Werte aus denselben zulaessigen (Rangfolge der Zielfunktion des
+ * Kandidaten), die mit den hoechsten Zufallswerten; mit halteBand die Rangliste bis zum Band (zielMitBand haelt wie beim Kandidaten). */
+function hashU(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b) >>> 0; h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35) >>> 0; h ^= h >>> 16; return (h >>> 0) / 4294967296; }
+var BLOCK_MS = 91 * 86400000;
+function zufallsWert(wort, sym, nowMs, q) {
+  var b = Math.floor(nowMs / BLOCK_MS);
+  for (var k = 0; k < 400; k++) if (q >= 1 || (q > 0 && hashU(wort + '|z|' + sym + '|' + (b - k)) < q)) return hashU(wort + '|w|' + sym + '|' + (b - k));
+  return hashU(wort + '|w|' + sym + '|basis');
+}
+function persistentesPlacebo(zielfunktion, wort, q, memo) {
+  return function (roh, o) {
+    var schl = memo ? o.nowMs + '|' + Object.keys(roh).length : null, r = memo && memo.has(schl) ? memo.get(schl) : zielfunktion(roh, o);
+    if (memo && !memo.has(schl)) memo.set(schl, r);
+    if (r.zuWenig || !r.rangfolge || !r.ziel) return r;
+    var v = r.rangfolge.map(function (p) { return { sym: p.sym, v: zufallsWert(wort, p.sym, o.nowMs, q) }; }).sort(function (a, b) { return b.v - a.v || (a.sym < b.sym ? -1 : 1); });
+    return Object.assign({}, r, { ziel: v.slice(0, r.ziel.length).map(function (x) { return x.sym; }) });
+  };
+}
+/** Umschlag je Termin = Kaeufe / Positionen danach, Mittel ueber die Umschichtungen nach der ersten (aus der Handelsstruktur, ohne Rendite). */
+function umschlagVon(L) { var u = (L.umschichtungen || []).slice(1).filter(function (x) { return x.positionenDanach > 0; }); return u.length ? u.reduce(function (s, x) { return s + x.kaeufe / x.positionenDanach; }, 0) / u.length : null; }
 /** Nr. 125a: k = 0 mit dem ganzen Lauf L (Perioden, Reihenenden, Buch) - fuer Perioden-Abstaende und die Vorwaertsmessung. */
 function laufK0(V, F, zielfunktion, korb, name) {
   frisch(V, F, zielfunktion, name);
@@ -175,17 +200,34 @@ function lauf(regel, kand, opt) {
   function messeFenster(F, art) {
     var buch = mk(function () { return rueckblick(V, F, ziel, korb, art); });
     buch.abgaenge = mk(function () { return abgaenge(V, F, ziel, korb, art); });
-    var per = mk(function () { return perioden(laufK0(V, F, ziel, korb, art).L, QQQ); });
+    var lk = mk(function () { return laufK0(V, F, ziel, korb, art); }), per = perioden(lk.L, QQQ);
+    /* QS F5: q VOR dem Rangvergleich, ohne Renditen - mit Band Vorgabe 0,40, sonst aus dem Umschlag des Kandidaten (Handelsstruktur) kalibriert */
+    var PL = null, memo = new Map();
+    if (opt.placebo === 'persistent') {
+      var uK = umschlagVon(lk.L), uQ = function (q) { var s = 0; for (var j = 0; j < 4; j++) s += mk(function () { return k0(V, F, zielMitAnzahl(persistentesPlacebo(regel.zielfunktion, kand.kennung + '#kalib' + j, q, memo), konf, null, band), korb, art + '-kalib', true); }).umschlag; return s / 4; };
+      var q = opt.q != null ? opt.q : band ? 0.40 : null, qQuelle = opt.q != null ? 'festgeschrieben' : band ? 'Vorgabe 0,40 (Halte-Band)' : 'kalibriert';
+      if (q == null) { var u0 = uQ(0), u1 = uQ(1); q = u1 > u0 ? Math.min(1, Math.max(0, (uK - u0) / (u1 - u0))) : 1; var uq = uQ(q); if (Math.abs(uq - uK) > 0.03 && uq !== u0) { var q2 = Math.min(1, Math.max(0, q * (uK - u0) / (uq - u0))); if (Math.abs(uQ(q2) - uK) < Math.abs(uq - uK)) q = q2; } }
+      PL = { art: 'persistent', q: q, qQuelle: qQuelle, umschlagKandidat: uK };
+    }
+    var placeboFn = function (wort) { return PL ? zielMitAnzahl(persistentesPlacebo(regel.zielfunktion, wort, PL.q, memo), konf, null, band) : zielMitAnzahl(regel.placeboZiel, konf, { placeboWort: wort }, band); };
     var ns = massstab === 'nasdaq100-steuer' ? KK.mitBand(MH, band, function () { return nachSteuerFenster(V, F, ziel, korb, art, kostenArt, QQQ, null, kap); }) : null;
     var buecher = [];
     for (var b = 0; b < nB; b++) {
       var wort = kand.kennung + '#' + b;
-      buecher.push(mk(function () { return k0(V, F, zielMitAnzahl(regel.placeboZiel, konf, { placeboWort: wort }, band), korb, art + '-placebo'); }));
+      buecher.push(mk(function () { return k0(V, F, placeboFn(wort), korb, art + '-placebo', !!PL); }));
     }
     var u = urteil(buch, buecher, opt.registerM);
+    if (PL) {
+      PL.umschlagZufall = buecher.reduce(function (s, x) { return s + x.umschlag; }, 0) / buecher.length; PL.abweichungPp = 100 * (PL.umschlagZufall - PL.umschlagKandidat); PL.innerhalb3Pp = Math.abs(PL.abweichungPp) <= 3;
+      /* nachrichtlich: Rang VOR Kosten (Buch und Zufallsbuecher brutto) - trennt Auswahl von Kostenersparnis */
+      var mb = function (fn) { return KK.mitBand(MH, band, function () { return KK.mitKosten(KS, V, 'brutto', fn); }); }, kb = mb(function () { return k0(V, F, ziel, korb, art + '-brutto'); }), bb = [];
+      for (var b2 = 0; b2 < nB; b2++) { var w2 = kand.kennung + '#' + b2; bb.push(mb(function () { return k0(V, F, placeboFn(w2), korb, art + '-placebo-brutto'); })); }
+      var besserB = bb.filter(function (x) { return x.abstandPa > kb.abstandPa; }).length;
+      PL.rangVorKosten = { rang: besserB + 1, von: nB + 1, p: (besserB + 1) / (nB + 1), abstandBrutto: kb.abstandPa }; PL.rangNachKosten = { rang: u.rang, von: u.von, p: u.pEinseitig };
+    }
     if (ns) u = urteilNachSteuer(u, ns);
     return { fenster: { von: F.vonText, bis: F.bisText }, buch: buch, nachSteuer: ns, perioden: periodenKennzahlen(per), zufall: u.zufall, rang: u.rang, von: u.von, rangMax: u.rangMax, pEinseitig: u.pEinseitig,
-      pSchwelle: u.pSchwelle, registerM: u.registerM, B: u.B, kandidat: u.kandidat, gruende: u.gruende, urteil: u.urteil };
+      pSchwelle: u.pSchwelle, registerM: u.registerM, B: u.B, kandidat: u.kandidat, gruende: u.gruende, urteil: u.urteil, placebo: PL };
   }
   var e = messeFenster(fensterE, 'entdeckung');
   var k = { key: konf.key || 'korb', entdeckung: e, kandidat: e.kandidat, gruende: e.gruende, urteil: e.urteil, tor1: null, mde80: null };
@@ -220,7 +262,7 @@ function zaehleVorwaerts(tage, siegel2Datum) {
  *  ist nicht Teil des Abgleichs, das Geraet schon. Jede Abweichung ausser den begruendeten Ausnahmen ist ein Messgeraet-Fehler (Abbruch VOR jeder Rendite). */
 var AUSNAHMEN = {
   kapitalUsd: 'Entscheid PM 26.10. (Zweitleser 19): Kandidatenlaeufe mit 10.000 EUR (Modell Dollar wie Euro); das App-Buch rechnet mit 100.000 $ (Nr. 126 offener Punkt 4, Entscheid Wilhelm offen)',
-  reihenende: 'begruendete Ausnahme Nr. 126 E (Nr. 93 A2): Messung bucht am ersten Tag ohne Zeile aus, das App-Buch nach 5 Handelstagen ohne Balken',
+  reihenende: 'OFFENER ENTSCHEID WILHELM (Nr. 93 A2; Nr. 126 E: Abweichung): Messung bucht am ersten Tag ohne Zeile aus, das App-Buch nach 5 Handelstagen ohne Balken - bis zum Entscheid zugelassen, nicht begruendet',
   steuerBuch: 'begruendete Ausnahme Nr. 126 E nur fuer die Entdeckung (Nr. 82 simuliere); die Vorwaertsmessung rechnet mit Massstab.nachSteuer wie das App-Buch',
 };
 function parameterMessung() {
@@ -269,10 +311,10 @@ function vorwaertsMessung(regel, kand, opt) {
   if (lauf.L.startTag !== F.von) throw new Error('KLINKE: Vorwaertsbuch startet nicht am Stichtag');
   var per = perioden(lauf.L, QQQ), pk = periodenKennzahlen(per);
   var ns = KK.nachSteuerVorwaerts(KS, V, F, lauf.L, sammler, QQQ);
-  var buecher = [];
+  var buecher = [], memoV = new Map();   /* QS F5: mit festgeschriebenem q (korbFest) derselbe persistente Zufallsrang wie in der Entdeckung */
   for (var b = 0; b < B; b++) {
     var wort = opt.wortBasis + '#' + b;
-    buecher.push(KK.mitBand(MH, band, function () { return KK.mitKosten(KS, V, 'regel', function () { return k0(V, F, zielMitAnzahl(regel.placeboZiel, konf, { placeboWort: wort }, band), korb, 'vorwaerts-placebo'); }, { kapitalUsd: kap }); }));
+    buecher.push(KK.mitBand(MH, band, function () { return KK.mitKosten(KS, V, 'regel', function () { return k0(V, F, opt.q != null ? zielMitAnzahl(persistentesPlacebo(regel.zielfunktion, wort, opt.q, memoV), konf, null, band) : zielMitAnzahl(regel.placeboZiel, konf, { placeboWort: wort }, band), korb, 'vorwaerts-placebo'); }, { kapitalUsd: kap }); }));
   }
   var besser = buecher.filter(function (x) { return x.abstandPa > lauf.kz.abstandPa; }).length;
   return { leer: false, stichtag: F.vonText, panelEnde: F.bisText, erstePeriode: per.length ? per[0].von : null, n: per.length, perioden: per, abstaende: pk.abstaende, tTest: pk.tTest, massstabPerioden: pk.massstab,
@@ -366,6 +408,35 @@ function eichLauf(V, F, wort, korb) {
   return KK.mitKosten(KS, V, 'regel', function () { return k0(V, F, function (roh, o) { return zufallsZiel(roh, o, wort, memo); }, korb, 'eichung'); }, { kapitalUsd: K.KORB.kapitalUsd });
 }
 
+/** QS F4 Geraetepaar: dasselbe Zufallsbuch wie eichLauf ueber den KANDIDATENWEG - laufK0 (Perioden/Vorwaerts) bzw. mit voll = true rueckblick (k = 0 von KS.variante mit
+ *  den 63 Startphasen, ~100 s). Rueckgabe { abstandPa, buchPa }; muss eichLauf (Placeboweg k0) exakt treffen. */
+function eichKandidatenweg(V, F, wort, korb, voll) {
+  var memo = V.eichMemo || (V.eichMemo = new Map()), zf = function (roh, o) { return zufallsZiel(roh, o, wort, memo); };
+  return KK.mitKosten(KS, V, 'regel', function () { if (voll) { var r = rueckblick(V, F, zf, korb, 'eichung-voll'); return { abstandPa: r.abstandPa, buchPa: r.buchPa }; } var x = laufK0(V, F, zf, korb, 'eichung-kandidat').kz; return { abstandPa: x.abstandPa, buchPa: x.buchPa }; }, { kapitalUsd: K.KORB.kapitalUsd });
+}
+
+/** QS F5, zweite Zeile der Kalibrierung: A-187 / B-187 (Kostenregel, 100.000 $) gegen B Zufallsbuecher mit persistentem Zufallsrang (q aus dem Umschlag des Korbs kalibriert)
+ *  - Rang nach und vor Kosten; die alte Zeile (Nr. 100: frischer Zug je Termin, 20 Bp) steht unveraendert daneben. */
+function kalibrierungPlacebo(opt) {
+  opt = opt || {};
+  var V = vorbereiten(Object.assign({ pruefzeit: true }, opt)), T = V.T, Q = V.Q, aus = {}, R2 = { zielfunktion: MH.momentumZiel, placeboZiel: null };
+  var F = { 'A-187': fenster(T, Q, '2017-01-04', '2021-09-15'), 'B-187': fenster(T, Q, '2021-09-16', '2026-09-15') };
+  Object.keys(F).forEach(function (nm) { var E = lauf2(nm); aus[nm] = E; });
+  function lauf2(nm) {
+    var Fn = F[nm], memo = new Map(), mk = function (fn, art) { return KK.mitKosten(KS, V, art || 'regel', fn); };
+    var lk = mk(function () { return laufK0(V, Fn, MH.momentumZiel, S.KORB_N, nm); }), uK = umschlagVon(lk.L);
+    var uQ = function (q) { var s = 0; for (var j = 0; j < 4; j++) s += mk(function () { return k0(V, Fn, persistentesPlacebo(MH.momentumZiel, 'kalibrierung-placebo#kalib' + j, q, memo), S.KORB_N, nm + '-k', true); }).umschlag; return s / 4; };
+    var u0 = uQ(0), u1 = uQ(1), q = u1 > u0 ? Math.min(1, Math.max(0, (uK - u0) / (u1 - u0))) : 1, uq = uQ(q);
+    if (Math.abs(uq - uK) > 0.03 && uq !== u0) { var q2 = Math.min(1, Math.max(0, q * (uK - u0) / (uq - u0))), u2 = uQ(q2); if (Math.abs(u2 - uK) < Math.abs(uq - uK)) { q = q2; uq = u2; } }
+    var nB = opt.buecher || 200, bn = [], bb = [], kb = mk(function () { return k0(V, Fn, MH.momentumZiel, S.KORB_N, nm + '-brutto'); }, 'brutto');
+    for (var b = 0; b < nB; b++) { var w = 'kalibrierung-placebo#' + b; bn.push(mk(function () { return k0(V, Fn, persistentesPlacebo(MH.momentumZiel, w, q, memo), S.KORB_N, nm + '-p', true); })); bb.push(mk(function () { return k0(V, Fn, persistentesPlacebo(MH.momentumZiel, w, q, memo), S.KORB_N, nm + '-pb'); }, 'brutto')); }
+    var rang = function (x, arr) { return arr.filter(function (y) { return y.abstandPa > x; }).length + 1; };
+    return { q: q, umschlagKandidat: uK, umschlagZufall: bn.reduce(function (s, x) { return s + x.umschlag; }, 0) / nB, buecher: nB, rangNachKosten: rang(lk.kz.abstandPa, bn), rangVorKosten: rang(kb.abstandPa, bb), von: nB + 1,
+      abstandPa: lk.kz.abstandPa, abstandBrutto: kb.abstandPa, alt: { quelle: 'Nr. 100 (studien/momentum-zufall-2026-10, frischer Zug je Termin, 20 Bp)', rang: nm === 'A-187' ? 15 : 3, von: 201 } };
+  }
+  return aus;
+}
+
 /** Kalibrierung (Auftrag §3): A-187 und B-187 mit Regel K auf Panel v2.3 = Nr. 96 (259.238,74 / 250.123,14 $). */
 function kalibrierung(opt) {
   var V = vorbereiten(Object.assign({ pruefzeit: true }, opt || {})), T = V.T, Q = V.Q;
@@ -392,7 +463,7 @@ function kalibrierungRegel(opt) {
 }
 
 module.exports = { lauf: lauf, kalibrierung: kalibrierung, kalibrierungRegel: kalibrierungRegel, bpEffektiv: bpEffektiv, nachSteuerFenster: nachSteuerFenster, urteilNachSteuer: urteilNachSteuer, vorbereiten: vorbereiten, fenster: fenster, urteil: urteil, rueckblick: rueckblick, k0: k0,
-  laufK0: laufK0, perioden: perioden, periodenKennzahlen: periodenKennzahlen, zaehle: zaehle, zaehleVorwaerts: zaehleVorwaerts, stichtagNach: stichtagNach, vorwaertsMessung: vorwaertsMessung,
+  laufK0: laufK0, perioden: perioden, persistentesPlacebo: persistentesPlacebo, zufallsWert: zufallsWert, umschlagVon: umschlagVon, eichKandidatenweg: eichKandidatenweg, kalibrierungPlacebo: kalibrierungPlacebo, periodenKennzahlen: periodenKennzahlen, zaehle: zaehle, zaehleVorwaerts: zaehleVorwaerts, stichtagNach: stichtagNach, vorwaertsMessung: vorwaertsMessung,
   parameterMessung: parameterMessung, parameterApp: parameterApp, parameterAbgleich: parameterAbgleich, AUSNAHMEN: AUSNAHMEN, kunstTafel: kunstTafel, eingesaeteTafel: eingesaeteTafel, zufallsZiel: zufallsZiel, eichLauf: eichLauf,
   KS: KS, S: S, R: R, MH: MH, KK: KK };
 

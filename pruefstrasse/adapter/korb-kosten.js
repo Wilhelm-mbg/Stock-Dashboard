@@ -182,10 +182,11 @@ function huelle(KS) {
  *  art null -> fn ohne Umbau. opt = { kapitalUsd (Nr. 125a), sammler: { trades: [], einstand: {} } (Nr. 125a, Vorwaerts nach Steuer) }. */
 function mitKosten(KS, V, art, fn, opt) {
   if (!art) return fn();
-  if (art !== 'regel') throw new Error('korb-kosten: kostenBpJeSeite muss null (20 Bp) | regel sein, nicht ' + JSON.stringify(art));
+  if (art !== 'regel' && art !== 'brutto') throw new Error('korb-kosten: kostenBpJeSeite muss null (20 Bp) | regel | brutto sein, nicht ' + JSON.stringify(art));
   opt = opt || {};
   var MH = KS.MH, alt = MH.fuehreAus, altR = KF.regel, altS = KF.sammler;
-  KF.regel = regelFunktion(kontext(V, KS.R), { kapitalUsd: opt.kapitalUsd, start: KS.R.START }); KF.statistik = { n: 0, jeKlasse: [0, 0, 0, 0, 0] };
+  /* brutto (QS F5, nur nachrichtlich: Rang vor Kosten): dieselbe Huelle mit Kosten 0 */
+  KF.regel = art === 'brutto' ? function () { return { spanne: 0, gebuehr: 0, klasse: null }; } : regelFunktion(kontext(V, KS.R), { kapitalUsd: opt.kapitalUsd, start: KS.R.START }); KF.statistik = { n: 0, jeKlasse: [0, 0, 0, 0, 0] };
   KF.sammler = opt.sammler || null;
   MH.fuehreAus = huelle(KS);
   try { return fn(); } finally { MH.fuehreAus = alt; KF.regel = altR; KF.sammler = altS; }

@@ -197,8 +197,10 @@ function hausregelMarke(bewertung, nBed, nBest) {
 /** Vollstaendige, nicht ueberlappende 63-Tage-Perioden in einem Zeitraum von `handelstage` Panel-Handelstagen ab dem ersten Ausfuehrungstag:
  *  Umschichtungen an Tag 0, 63, 126, ...; eine Periode ist vollstaendig, wenn die naechste Umschichtung noch im Zeitraum liegt (wie korb.js perioden ohne `angebrochen`). */
 function korbPerioden(handelstage) { return handelstage >= 1 ? Math.floor((handelstage - 1) / K.KORB.periodeTage) : 0; }
-/** Standardfehler des mittleren Abstands p. a. bei n Perioden: se_pa(n) = sd_q * Wurzel(periodenJeJahr) / Wurzel(n). */
-function korbSePa(sdQ, n) { return sdQ * Math.sqrt(K.KORB.periodenJeJahr) / Math.sqrt(n); }
+/** Standardfehler des mittleren Abstands p. a. bei n Perioden: se_pa(n) = periodenJeJahr * sd_q / Wurzel(n) - das Mittel ueber n Periodenabstaende hat
+ *  se sd_q / Wurzel(n), der Jahresabstand ist periodenJeJahr (4) Perioden. Formel korrigiert 26.10.2026 (QS F1): vorher um Faktor 2 zu klein (sd_q * Wurzel(4) / Wurzel(n)); Beleg QS an Nr. 100:
+ *  Fensterabstand p. a. streut 4,06 / 4,71 Pp, diese Formel sagt 3,45 / 4,17, die alte 1,72 / 2,09. */
+function korbSePa(sdQ, n) { return sdQ * K.KORB.periodenJeJahr / Math.sqrt(n); }
 /** MDE80_korb(n) = (t_krit(df = n - 1, m) + 0,8416) * se_pa(n) * faktor (Machbarkeitstor: faktor = STREUUNG_FAKTOR 1,4 wie die Tag-Form). */
 function korbMde80(n, sdQ, m, faktor) {
   var df = Math.max(1, n - 1), s = kandidatSchwelle(df, m), se = korbSePa(sdQ, n), f = faktor == null ? K.STREUUNG_FAKTOR : faktor;
@@ -211,13 +213,15 @@ function korbMachbarkeit(z) {
   var messbar = z.nettoPp > 0 && ok(z.nPerioden), braeuchte = messbar ? z.nPerioden : (z.nettoPp > 0 ? kleinstesN(ok, Math.max(2, z.nPerioden)) : null);
   return Object.assign(r, { messbar: messbar, nettoPp: z.nettoPp, nPerioden: z.nPerioden, sdQ: z.sdQ, braeuchtePerioden: braeuchte,
     braeuchteJahre: braeuchte == null ? null : braeuchte / K.KORB.periodenJeJahr,
-    regel: 'MDE80_korb(n) = (t_krit(df = n - 1, m) + ' + K.Z_POWER80 + ') * sd_q * Wurzel(' + K.KORB.periodenJeJahr + ') / Wurzel(n) * ' + (z.faktor == null ? K.STREUUNG_FAKTOR : z.faktor) + ' <= nettoPp (p. a.), t_krit = max(' + K.KANDIDAT_T + ', t_(1 - ' + K.REGISTER_ALPHA + '/m; df)), mindestens ' + K.KORB.minPerioden + ' Perioden, sd_q aus pruefstrasse/streuung.json korb' });
+    regel: 'MDE80_korb(n) = (t_krit(df = n - 1, m) + ' + K.Z_POWER80 + ') * ' + K.KORB.periodenJeJahr + ' * sd_q / Wurzel(n) * ' + (z.faktor == null ? K.STREUUNG_FAKTOR : z.faktor) + ' <= nettoPp (p. a.), t_krit = max(' + K.KANDIDAT_T + ', t_(1 - ' + K.REGISTER_ALPHA + '/m; df)), mindestens ' + K.KORB.minPerioden + ' Perioden, sd_q aus pruefstrasse/streuung.json korb' });
 }
-/** nBedarf Korb (Vormerkung): kleinste Zahl VOLLSTAENDIGER Vorwaerts-Perioden mit (t_(0,95; n - 1) + 0,8416) * sd_E * Wurzel(4) / Wurzel(n) <= nettoPp, mindestens
+/** nBedarf Korb (Vormerkung; QS F3: mit der Holm-Familie und dem Sicherheitsfaktor wie das Tor): kleinste Zahl VOLLSTAENDIGER Vorwaerts-Perioden mit
+ *  (t_(1 - 0,05 / mV; n - 1) + 0,8416) * 4 * sd_E / Wurzel(n) * 1,4 <= nettoPp, mV = Vorwaerts-Familie einschliesslich dieses Kandidaten (z.mV), mindestens
  *  KORB.minPerioden - sd_E = GEMESSENE Streuung der Perioden-Abstaende der Entdeckung (nicht die Tabelle), Form wie nBedarf der Tag-Form. */
 function korbNBedarf(z) {
   if (!(z.nettoPp > 0) || !(z.sdE > 0)) return null;
-  var f = function (n) { return (tQuantil(1 - K.HOLM_ALPHA, Math.max(1, n - 1)) + K.Z_POWER80) * korbSePa(z.sdE, n) <= z.nettoPp; };
+  var mV = Math.max(1, z.mV || 1), fk = z.faktor == null ? K.STREUUNG_FAKTOR : z.faktor;
+  var f = function (n) { return (tQuantil(1 - K.HOLM_ALPHA / mV, Math.max(1, n - 1)) + K.Z_POWER80) * korbSePa(z.sdE, n) * fk <= z.nettoPp; };
   var n = kleinstesN(f, 2);
   return n == null ? null : Math.max(K.KORB.minPerioden, n);
 }
