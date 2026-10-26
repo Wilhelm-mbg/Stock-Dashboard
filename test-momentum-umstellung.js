@@ -117,7 +117,8 @@ teil(function () {
   if (fs.existsSync(altPfad)) {   /* als Modul im Wurzelordner uebersetzt - momentum.js und liquide.js loesen dort auf */
     var Mod = require('module'), mo = new Mod(path.join(__dirname, 'mfhandel-basis.js'), module);
     mo.filename = path.join(__dirname, 'mfhandel-basis.js'); mo.paths = Mod._nodeModulePaths(__dirname);
-    mo._compile(fs.readFileSync(altPfad, 'utf8'), mo.filename); ALT = mo.exports;
+    /* die .txt kommt mit autocrlf als CRLF aus git - Zeilenenden wie im .js (eol=lf), sonst waere der Quelltextvergleich unten falsch rot */
+    mo._compile(fs.readFileSync(altPfad, 'utf8').replace(/\r\n/g, '\n'), mo.filename); ALT = mo.exports;
   }
   ok(!!ALT, 'A.4 der alte Stand (test-daten/mfhandel-basis-6ceff4c.js.txt = git show 6ceff4c:mfhandel.js) liegt vor');
   if (ALT) {
