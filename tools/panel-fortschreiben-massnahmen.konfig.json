@@ -1,0 +1,4 @@
+{
+  "_hinweis": "Konfiguration von tools/panel-fortschreiben-massnahmen.js. massstabSymbole: Index-ETFs der Massstaebe (Nasdaq-100 = QQQ, S&P 500 = SPY), deren Kapitalmassnahmen zusaetzlich zu den lebenden Panel-Reihen geholt werden (Auftrag Nr. 126, QS F3, 26.10.2026). Mit --nur-massstab holt das Werkzeug NUR diese Liste, in einen eigenen Ordner alpaca-massnahmen-nachtrag-massstab-YYYY-MM.",
+  "massstabSymbole": ["QQQ", "SPY"]
+}

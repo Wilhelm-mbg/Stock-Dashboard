@@ -12,6 +12,12 @@
  * er schon vollstaendig (_nachtrag.json), wird nichts geholt und nichts ueberschrieben. Die alten Ordner werden nur gelesen.
  * NIE tools/alpaca-vollsammlung.js --massnahmen (Vollauf, verboten).
  *
+ * MASSSTAB-SYMBOLE (Auftrag Nr. 126, QS F3, 26.10.2026): die Index-ETFs der Massstaebe (QQQ, SPY) sind keine Panel-Reihen; ihre
+ * Ausschuettungen braucht der Massstab Nasdaq-100 nach Steuer (App: massstab-qqq, Pruefstrasse: daten/qqq-tage.json). Die Liste steht in
+ * tools/panel-fortschreiben-massnahmen.konfig.json (massstabSymbole) und wird bei jedem Lauf mitgeholt.
+ *   node tools/panel-fortschreiben-massnahmen.js --nur-massstab --von YYYY-MM-DD   holt NUR die Massstab-Symbole, in den eigenen Ordner
+ *   alpaca-massnahmen-nachtrag-massstab-YYYY-MM (der Monatsordner des Panel-Laufs bleibt unberuehrt).
+ *
  * ZUGANG: nur ueber studien/vorregistrierung-2026-09-02-spannen-historisch/schluessel.js (kopfzeilen(), verdecken());
  * die .cmd holt ihn aus Wilhelms Benutzerprofil. Er steht nie in einer Adresse, nie in einer Datei, nie im Protokoll.
  * Simulation mit virtuellem Kapital, keine Anlageberatung.
@@ -91,18 +97,39 @@ async function holen(opt) {
 
 /* ---------- Aufruf ---------- */
 function arg(n) { var i = process.argv.indexOf('--' + n); return i === -1 ? null : process.argv[i + 1]; }
+/** Die Massstab-Symbole aus der Konfiguration des Werkzeugs (nicht im Code). */
+function massstabSymbole() {
+  var k = JSON.parse(fs.readFileSync(path.join(__dirname, 'panel-fortschreiben-massnahmen.konfig.json'), 'utf8'));
+  if (!Array.isArray(k.massstabSymbole) || !k.massstabSymbole.length) throw new Error('panel-fortschreiben-massnahmen.konfig.json: massstabSymbole fehlt');
+  return k.massstabSymbole.map(String);
+}
+/** Die Kuerzel eines Laufs: lebende Panel-Reihen plus Massstab-Symbole (ohne Doppel); nurMassstab -> nur die Massstab-Symbole. */
+function kuerzelDesLaufs(lebende, massstab, nurMassstab) {
+  var aus = nurMassstab ? [] : lebende.slice();
+  massstab.forEach(function (x) { if (aus.indexOf(x) === -1) aus.push(x); });
+  return aus;
+}
 async function haupt() {
   var S = require(path.join(REPO, 'studien', 'vorregistrierung-2026-09-02-spannen-historisch', 'schluessel.js'));
   var V = require(path.join(REPO, 'tools', 'alpaca-vollsammlung.js'));
   var F = require('./panel-fortschreiben.js');
   var K = require(path.join(REPO, 'studien', 'querschnitt-pruefstand-2026-09-13', 'konfig.js'));
   if (!S.vorhanden()) { console.log('Kein Zugang in der Umgebung (es fehlt: ' + S.fehlend().join(', ') + ') - ueber tools\\panel-fortschreiben.cmd starten.'); return 2; }
+  var nurMassstab = process.argv.indexOf('--nur-massstab') !== -1, MS = massstabSymbole(), heute0 = new Date().toISOString().slice(0, 10);
+  if (nurMassstab) {
+    if (!arg('von')) { console.log('--nur-massstab braucht --von YYYY-MM-DD'); return 2; }
+    var Wm = K.archivWurzel();
+    var Rm = await holen({ wurzel: Wm, symbole: kuerzelDesLaufs([], MS, true), von: arg('von'), bis: arg('bis') || plusTage(heute0, NACH_TAGE),
+      ordnerName: 'alpaca-massnahmen-nachtrag-massstab-' + heute0.slice(0, 7), rate: V.RATE_JE_MIN, ordnerNameFn: V.ordnerName, kopfzeilen: S.kopfzeilen, verdecken: S.verdecken });
+    return Rm.ok ? 0 : 1;
+  }
   var PS = path.join(REPO, 'studien', 'querschnitt-pruefstand-2026-09-13');
   var stamm = arg('stamm') ? path.resolve(PS, arg('stamm')) : F.stammOrdnerWahl(PS);
   var st = JSON.parse(fs.readFileSync(path.join(stamm, 'panel', '_stand.json'), 'utf8'));
   var wurzel = K.archivWurzel(), man = JSON.parse(fs.readFileSync(path.join(wurzel, 'alpaca1m', '_manifest.json'), 'utf8')).eintraege, sym = {};
   Object.keys(man).forEach(function (k) { if (man[k].sym) sym[k.split('/')[0]] = man[k].sym; });
   var symbole = []; st.symbole.forEach(function (s) { if (s.lebend !== 1) return; var x = sym[s.ordner] || String(s.ordner).replace(/~\d+$/, ''); if (symbole.indexOf(x) === -1) symbole.push(x); });
+  symbole = kuerzelDesLaufs(symbole, MS, false);   // Nr. 126: die Massstab-Symbole (QQQ, SPY) laufen jeden Monat mit
   var heute = new Date().toISOString().slice(0, 10);
   var R = await holen({ wurzel: wurzel, symbole: symbole, von: plusTage(st.letzterVollTag, -VOR_TAGE), bis: arg('bis') || plusTage(heute, NACH_TAGE),
     ordnerName: 'alpaca-massnahmen-nachtrag-' + heute.slice(0, 7), rate: V.RATE_JE_MIN, ordnerNameFn: V.ordnerName, kopfzeilen: S.kopfzeilen, verdecken: S.verdecken });
@@ -112,4 +139,4 @@ if (require.main === module) haupt().then(function (rc) { process.exit(rc); }, f
   var S = require(path.join(REPO, 'studien', 'vorregistrierung-2026-09-02-spannen-historisch', 'schluessel.js'));
   console.log('FEHLER: ' + S.verdecken(String(e && e.message || e))); process.exit(1);
 });
-module.exports = { holen: holen, BLOCK: BLOCK };
+module.exports = { holen: holen, BLOCK: BLOCK, massstabSymbole: massstabSymbole, kuerzelDesLaufs: kuerzelDesLaufs };
