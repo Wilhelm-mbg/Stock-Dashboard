@@ -131,9 +131,19 @@ teil(function () {
     ok(bit === n, 'A.4 ohne Option: fuehreAus bitgleich zum Basis-Commit (20 Bp je Seite, mit und ohne Regel K) in ' + n + ' Kunstfaellen', bit + ' von ' + n);
     var src = function (M) { return M.fuehreAus.toString().split('\n').filter(function (z) { return z.indexOf('fuehreAusRegel(') < 0; }).join('\n'); };
     ok(src(MH) === src(ALT), 'A.4 der feste Zweig von fuehreAus ist zeichengleich zum Basis-Commit (nur die eine Weiche davor ist neu)');
-    var planGleich = ALT.planeUmschichtung.toString() === MH.planeUmschichtung.toString() && ALT.momentumZiel.toString() === MH.momentumZiel.toString() &&
-      ALT.bucheMassnahmen.toString() === MH.bucheMassnahmen.toString();
-    ok(planGleich, 'A.4 planeUmschichtung, momentumZiel, bucheMassnahmen unveraendert (Studien-Rechner Nr. 82/96 rechnen bitgleich)');
+    /* Nr. 125a B2 (Freigabe PM 26.10.2026): planeUmschichtung und momentumZiel haben ADDITIVE opts (anzahl, halteBand) - ohne sie bitgleich zum Basis-Commit,
+     * geprueft am Verhalten in 30 Kunstfaellen statt an der Zeichengleichheit; bucheMassnahmen bleibt zeichengleich. */
+    var T0b = Date.UTC(2025, 0, 2), verh = 0;
+    var rohB = function (nW, s) { var m = {}; for (var w = 0; w < nW; w++) { var r = [], p = 50 + (w * 7919 + s) % 100; for (var i = 0; i < 260; i++) { p *= 1 + ((((w + 3) * (i + 11) * 2654435761 + s) >>> 0) % 2001 - 1000) / 50000 + (w % 9) * 0.0002; r.push([T0b + i * 86400000, p, 3e6 + (w % 13) * 1e6]); } m['W' + w] = r; } return m; };
+    for (var s = 0; s < 30; s++) {
+      var roh = rohB(120 + s, s), oz = { nowMs: T0b + 259 * 86400000 }, za = ALT.momentumZiel(roh, oz), zb = MH.momentumZiel(roh, oz), preise = {};
+      Object.keys(roh).forEach(function (k) { preise[k] = roh[k][259][1]; });
+      var bu = { cash: 1000 * s, positionen: za.ziel.slice(0, 5).map(function (x, i) { return { sym: x, stueck: 10 + i, einstand: 40 }; }).concat([{ sym: 'W' + (s + 100), stueck: 3, einstand: 9 }]) };
+      var pa = ALT.planeUmschichtung(za.ziel, bu, preise, s % 2 ? { kleinstAnteil: 0.05 } : undefined), pb = MH.planeUmschichtung(zb.ziel, bu, preise, s % 2 ? { kleinstAnteil: 0.05 } : undefined);
+      if (JSON.stringify(za) === JSON.stringify(zb) && JSON.stringify(pa) === JSON.stringify(pb)) verh++;
+    }
+    var planGleich = verh === 30 && ALT.bucheMassnahmen.toString() === MH.bucheMassnahmen.toString();
+    ok(planGleich, 'A.4 planeUmschichtung, momentumZiel ohne die B2-opts bitgleich (30 Kunstfaelle), bucheMassnahmen unveraendert (Studien-Rechner Nr. 82/96 rechnen bitgleich)', verh + ' von 30');
   }
   /* A.5 die Klasse zur Laufzeit aus den Tagesreihen: Median der 20 Balken VOR dem Ausfuehrungstag */
   var reihe = [];

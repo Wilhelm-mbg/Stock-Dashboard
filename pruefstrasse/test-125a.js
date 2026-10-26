@@ -62,6 +62,14 @@ function tests(C) {
     [0, 1, 2, 3, 4, 'index'].forEach(function (kl) { ['kauf', 'verkauf'].forEach(function (s) { [0, 50, 999.5, 5263.16, 1e5].forEach(function (w) { [0, 3.2, 170.87].forEach(function (k) { var x = KO.seite(kl, 'eroeffnung', s, w, k, 'fixed'); seiteN++; if (x.spanne + x.gebuehr === KK.anteilSeite(kl, 'eroeffnung', s, w, k, 'fixed')) seiteOk++; }); }); }); });
     return [quelleOk && gleich === n && mitRegel > 30 && seiteOk === seiteN, 'Quelle ' + quelleOk + ', bitgleich ' + gleich + ' von ' + n + ' (' + mitRegel + ' mit Kostenregel-Trades), kosten.seite = anteilSeite ' + seiteOk + ' von ' + seiteN];
   });
+  probe('K-4: Laufzeit-Spion - der Korb-Lauf mit Kostenregel ruft das ORIGINAL fuehreAus (kleinst.js ECHT = mfhandel.js) mit opts.kostenRegel, nie die Kopie fuehreAusK', function () {
+    var E = KA.KS.ECHT, alt = E.fuehreAus, altK = KK.fuehreAusK, aufrufe = 0, mitRegel = 0, kopie = 0, V = KA.vorbereiten({ tafel: W.T }), F = KA.fenster(V.T, V.Q, '2021-03-01', V.T.kal.tage[V.T.maxTag]);
+    E.fuehreAus = function (b, p, ms, bp, o) { aufrufe++; if (o && typeof o.kostenRegel === 'function') mitRegel++; return alt.apply(this, arguments); };
+    KK.fuehreAusK = function () { kopie++; return altK.apply(this, arguments); };
+    try { KA.KK.mitKosten(KA.KS, V, 'regel', function () { return KA.laufK0(V, F, REGEL.zielfunktion, null, 'k4'); }); } finally { E.fuehreAus = alt; KK.fuehreAusK = altK; }
+    var kopf = /NUR REFERENZ FUER TEST A\.3, NICHT IM LAUF BENUTZT/.test(fs.readFileSync(path.join(K.HIER, 'adapter', 'korb-kosten.js'), 'utf8'));
+    return [aufrufe > 0 && mitRegel === aufrufe && kopie === 0 && kopf,'Original ' + aufrufe + ' Aufrufe (' + mitRegel + ' mit kostenRegel), Kopie ' + kopie + ', Kopfkommentar ' + kopf];
+  });
   probe('K-2: Kapital (Entscheid 19): kapitalUsd 10.000 skaliert nur die Gebuehr (Stueck und Wert x 0,1), die Spanne bleibt; ohne Kapital ziffergleich zu anteilSeite', function () {
     var Cx = { T: { symIdx: { A: 0 } }, tagVonMs: new Map([[1, 0]]), klasse: function () { return { index: 1 }; }, roh: function (s, d, k) { return k; } };
     var r0 = KK.regelFunktion(Cx)({ sym: 'A', seite: 'kauf', stueck: 100, kurs: 52.63, nowMs: 1 }), r1 = KK.regelFunktion(Cx, { kapitalUsd: 10000, start: 100000 })({ sym: 'A', seite: 'kauf', stueck: 100, kurs: 52.63, nowMs: 1 });
@@ -213,16 +221,52 @@ function tests(C) {
   });
 
   /* ---------- B2: Schnittstelle Halte-Band (Patch mfhandel.js wartet auf Freigabe) ---------- */
-  probe('B2-1: ohne halteBand kein Umbau (bitgleich), mit halteBand ohne mfhandel.zielMitBand lauter Abbruch "B2 NICHT FREIGEGEBEN", mit zielMitBand (Stub; der echte Test liegt beim Patch) laeuft jede Umschichtung durch das Band', function () {
-    var MH = KA.MH, V = KA.vorbereiten({ tafel: W.T }), F = KA.fenster(V.T, V.Q, '2021-03-01', V.T.kal.tage[V.T.maxTag]);
+  probe('B2-1: ohne halteBand kein Umbau (bitgleich); halteBand braucht anzahl; fehlt mfhandel.zielMitBand, lauter Abbruch "B2 NICHT FREIGEGEBEN"; mit dem echten zielMitBand (B2 angewandt) laeuft jede Umschichtung durch das Band', function () {
+    var MH = KA.MH, V = KA.vorbereiten({ tafel: W.T }), F = KA.fenster(V.T, V.Q, '2021-03-01', V.T.kal.tage[V.T.maxTag]), echt = MH.zielMitBand;
     var lauf = function (kand) { return KA.KK.mitBand(MH, KA.KK.bandOpts(kand), function () { return KA.laufK0(V, F, REGEL.zielfunktion, null, 'b2').kz.buchEnde; }); };
-    var ohne = lauf(KAND), mitLeer = lauf(Object.assign({}, KAND, { params: { anderes: 1 } })), e = null, hatte = MH.zielMitBand;
-    try { lauf(Object.assign({}, KAND, { params: { halteBand: 40 } })); } catch (x) { e = x; }
+    var ohne = lauf(KAND), mitLeer = lauf(Object.assign({}, KAND, { params: { anderes: 1 } })), e = null, gesehen = [];
     var ohneAnzahl = null; try { KA.KK.bandOpts({ konfigurationen: [{ key: 'k' }], params: { halteBand: 40 } }); } catch (x) { ohneAnzahl = x; }
-    var gesehen = [];
-    MH.zielMitBand = function (rang, buch, o) { gesehen.push(o.halteBand); var gehalten = (buch.positionen || []).filter(function (p) { var i = rang.indexOf(p.sym); return i >= 0 && i < o.halteBand; }).map(function (p) { return p.sym; }); return gehalten.concat(rang.filter(function (s) { return gehalten.indexOf(s) < 0; })).slice(0, o.anzahl || rang.length); };
-    try { lauf(Object.assign({}, KAND, { params: { halteBand: 40 } })); } finally { if (hatte) MH.zielMitBand = hatte; else delete MH.zielMitBand; }
-    return [ohne === mitLeer && e && /B2 NICHT FREIGEGEBEN/.test(e.message) && ohneAnzahl && /braucht konfigurationen\[0\]\.anzahl/.test(ohneAnzahl.message) && gesehen.length > 0 && gesehen.every(function (x) { return x === 40; }), 'ohne Band ' + ohne.toFixed(2) + ' = ' + mitLeer.toFixed(2) + '; Abbruch: ' + (e && e.message.slice(0, 60)) + '; Band-Aufrufe ' + gesehen.length];
+    delete MH.zielMitBand;
+    try { lauf(Object.assign({}, KAND, { params: { halteBand: 40 } })); } catch (x) { e = x; } finally { MH.zielMitBand = echt; }
+    MH.zielMitBand = function (rang, buch, o) { gesehen.push(o.halteBand); return echt(rang, buch, o); };
+    try { lauf(Object.assign({}, KAND, { params: { halteBand: 40 } })); } finally { MH.zielMitBand = echt; }
+    return [typeof echt === 'function' && ohne === mitLeer && e && /B2 NICHT FREIGEGEBEN/.test(e.message) && ohneAnzahl && /braucht konfigurationen\[0\]\.anzahl/.test(ohneAnzahl.message) && gesehen.length > 0 && gesehen.every(function (x) { return x === 40; }), 'ohne Band ' + ohne.toFixed(2) + ' = ' + mitLeer.toFixed(2) + '; ohne zielMitBand: ' + (e && e.message.slice(0, 40)) + '; Band-Aufrufe ' + gesehen.length];
+  });
+
+  /* ---------- B2 in mfhandel.js (Freigabe PM 26.10., Patch mfhandel-b2.patch; Proben aus b2/test-b2.js) ---------- */
+  var MF = require(path.join(K.REPO, 'mfhandel.js')), PLANE = (KA.KS && KA.KS.ECHT && KA.KS.ECHT.planeUmschichtung) || MF.planeUmschichtung, T0 = Date.UTC(2025, 0, 2), TAGMS = 86400000, JETZT = T0 + 259 * TAGMS;
+  function rohB2(nWerte, seed) { var m = {}; for (var w = 0; w < nWerte; w++) { var r = [], p = 50 + (w * 7919 + seed) % 100; for (var i = 0; i < 260; i++) { p *= 1 + ((((w + 3) * (i + 11) * 2654435761 + seed) >>> 0) % 2001 - 1000) / 50000 + (w % 9) * 0.0002; r.push([T0 + i * TAGMS, p, 3e6 + (w % 13) * 1e6]); } m['W' + w] = r; } return m; }
+  probe('B2-a: mfhandel.js ohne die neuen opts zeichengleich zum Stand vor B2 (git 1376d8e): momentumZiel und planeUmschichtung in 60 Kunstfaellen', function () {
+    var d = fs.mkdtempSync(path.join(require('os').tmpdir(), 'mfhandel-alt-')), g = cp.spawnSync('git', ['show', '1376d8e:mfhandel.js'], { cwd: K.REPO, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+    if (g.status !== 0) throw new Error('git show: ' + g.stderr);
+    fs.writeFileSync(path.join(d, 'mfhandel.js'), g.stdout); ['momentum.js', 'liquide.js'].forEach(function (x) { fs.copyFileSync(path.join(K.REPO, x), path.join(d, x)); });
+    var ALT = require(path.join(d, 'mfhandel.js')), gleich = 0;
+    for (var s = 0; s < 60; s++) {
+      var roh = rohB2(120 + s, s), o = { nowMs: JETZT }, a = ALT.momentumZiel(roh, o), b = MF.momentumZiel(roh, o);
+      var buch = { cash: 1000 * s, positionen: a.ziel.slice(0, 5).map(function (x, i) { return { sym: x, stueck: 10 + i, einstand: 40 }; }).concat([{ sym: 'W' + (s + 100), stueck: 3, einstand: 9 }]) }, preise = {};
+      Object.keys(roh).forEach(function (k) { preise[k] = roh[k][259][1]; });
+      var pa = ALT.planeUmschichtung(a.ziel, buch, preise, { kleinstAnteil: s % 2 ? 0.05 : 0 }), pb = PLANE(b.ziel, buch, preise, { kleinstAnteil: s % 2 ? 0.05 : 0 });
+      if (JSON.stringify(a) === JSON.stringify(b) && JSON.stringify(pa) === JSON.stringify(pb)) gleich++;
+    }
+    fs.rmSync(d, { recursive: true, force: true });
+    return [gleich === 60 && typeof MF.zielMitBand === 'function', gleich + ' von 60'];
+  });
+  probe('B2-b: anzahl 20 bei korb 100 -> 20 Plaetze (ohne anzahl 10 % = 10)', function () {
+    var roh = rohB2(100, 7), a = MF.momentumZiel(roh, { nowMs: JETZT, anzahl: 20, minWerte: 50 }), b = MF.momentumZiel(roh, { nowMs: JETZT, minWerte: 50 });
+    return [a.ziel.length === 20 && a.anzahl === 20 && b.ziel.length === 10 && b.anzahl === undefined && a.ziel.slice(0, 10).join() === b.ziel.join(), 'mit anzahl ' + a.ziel.length + ', ohne ' + b.ziel.length];
+  });
+  probe('B2-c: Halte-Band 40 - Rang 35 bleibt, Rang 45 geht, Zielzahl 20; planeUmschichtung verkauft R45 und haelt R35', function () {
+    var rang = []; for (var i = 1; i <= 60; i++) rang.push('R' + i);
+    var buch = { cash: 10000, positionen: [{ sym: 'R35', stueck: 10, einstand: 50 }, { sym: 'R45', stueck: 10, einstand: 50 }] }, preise = {}; rang.forEach(function (s) { preise[s] = 50; });
+    var z = MF.zielMitBand(rang, buch, { anzahl: 20, halteBand: 40 }), p = PLANE(rang, buch, preise, { anzahl: 20, halteBand: 40, kleinstAnteil: 0.05 });
+    return [z.length === 20 && z[0] === 'R35' && z.indexOf('R45') === -1 && z.indexOf('R19') !== -1 && z.indexOf('R20') === -1 && p.halten.join() === 'R35' && p.verkaufen.map(function (x) { return x.sym; }).join() === 'R45' && p.kaufen.length === 19,
+      'Ziel ' + z.slice(0, 3).join(',') + '... (' + z.length + '), halten ' + p.halten.join(',') + ', verkaufen ' + p.verkaufen.map(function (x) { return x.sym; }).join(',') + ', kaufen ' + p.kaufen.length];
+  });
+  probe('B2-d: Band ohne Bestand = die ersten anzahl; mehr Gehaltene im Band als anzahl -> die besten anzahl; momentumZiel mit halteBand liefert die Rangliste bis zum Band', function () {
+    var rang = []; for (var i = 1; i <= 60; i++) rang.push('R' + i);
+    var a = MF.zielMitBand(rang, { positionen: [] }, { anzahl: 5, halteBand: 10 }), b = MF.zielMitBand(rang, { positionen: ['R9', 'R3', 'R7', 'R8', 'R6', 'R10', 'R50'].map(function (s) { return { sym: s }; }) }, { anzahl: 5, halteBand: 10 });
+    var m = MF.momentumZiel(rohB2(100, 3), { nowMs: JETZT, anzahl: 20, halteBand: 40, minWerte: 50 });
+    return [a.join() === 'R1,R2,R3,R4,R5' && b.join() === 'R3,R6,R7,R8,R9' && m.ziel.length === 40 && m.anzahl === 20, 'leer ' + a.join() + ' | voll ' + b.join() + ' | Rangliste ' + m.ziel.length];
   });
 
   /* ---------- C: Eichung Korb ---------- */

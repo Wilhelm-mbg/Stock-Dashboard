@@ -83,8 +83,10 @@ function kostenFunktion(art, C, opt) {
   return function (name, seite, stueck, kurs, nowMs) { var x = r({ sym: name, seite: seite, stueck: stueck, kurs: kurs, nowMs: nowMs }); return x.spanne + x.gebuehr; };
 }
 
-/* ---------- REFERENZ (nicht mehr im Lauf): Kopie von rechnen.js fuehreAusK (Nr. 122; dort Kopie von mfhandel.js fuehreAus mit k je Handel) ----------
- * Bleibt fuer die Bindungstests stehen (App test-momentum-umstellung.js A.3, test-125a.js K-1): Original mit opts.kostenRegel == diese Kopie, bitgleich. */
+/* ---------- fuehreAusK: NUR REFERENZ FUER TEST A.3, NICHT IM LAUF BENUTZT ----------
+ * Kopie von rechnen.js fuehreAusK (Nr. 122; dort Kopie von mfhandel.js fuehreAus mit k je Handel). Der Korb-Lauf ruft das Original mfhandel.js fuehreAus mit
+ * opts.kostenRegel (huelle unten; test-125a.js K-1 Quelle + Bitgleichheit, K-4 Laufzeit-Spion). Die Kopie bleibt nur, weil der App-Test
+ * test-momentum-umstellung.js A.3 Original und Kopie bitgleich bindet. */
 function fuehreAusK(buch, plan, nowMs, kf, opts, log) {
   var kl = opts && opts.kleinstAnteil > 0 ? opts.kleinstAnteil : 0;
   var n = 0;
@@ -264,10 +266,11 @@ function nachSteuerVorwaerts(KS, V, F, L, sammler, qqq) {
   var preise = {};
   L.buch.positionen.forEach(function (p) { var s = T.symIdx[p.sym], e = R.endeBis(T, s, F.bis); if (e > T.symStart[s]) preise[p.sym] = g.bSchluss[T.symZeilen[e - 1]]; });
   var b = { start: R.START, cash: L.buch.cash, positionen: L.buch.positionen, trades: trades, massnahmen: [{ art: 'div', t: Q.ms[F.von], summe: L.zaehler.ausschuettungSumme }] };
-  /* Bezug des Abschnitts (App QS F1, massstab.js abschnittBezug): das Vorwaertsbuch beginnt am Stichtag mit Bargeld = Startsumme, ohne Positionen.
-   * startMs bleibt fuer die aeltere Signatur (Nr. 126 vor F1) mitgegeben - jede Fassung liest nur ihr Feld. */
-  var bezug = typeof MS.abschnittBezug === 'function' ? MS.abschnittBezug({ cash: R.START, positionen: [] }, {}, Q.ms[F.von], F.vonText) : { start: Q.ms[F.von], tag: F.vonText, wert: R.START, positionen: {} };
-  var r = MS.nachSteuer({ buch: b, abschnitt: bezug, startMs: Q.ms[F.von], endeMs: Q.ms[F.bis], preise: preise, qqq: qqq.tage });
+  /* Bezug des Abschnitts (App QS F1, massstab.js abschnittBezug, Commit 3f5504c): das Vorwaertsbuch beginnt am Stichtag mit Bargeld = Startsumme, ohne Positionen.
+   * Nur noch diese Signatur (Entscheid PM 26.10.); fehlt abschnittBezug, ist die App aelter als die Messung - Abbruch statt stiller Ersatzrechnung. */
+  if (typeof MS.abschnittBezug !== 'function') throw new Error('MESSGERAET: massstab.js ohne abschnittBezug (Nr. 126 QS F1) - Vorwaerts nach Steuer nicht rechenbar');
+  var bezug = MS.abschnittBezug({ cash: R.START, positionen: [] }, {}, Q.ms[F.von], F.vonText);
+  var r = MS.nachSteuer({ buch: b, abschnitt: bezug, endeMs: Q.ms[F.bis], preise: preise, qqq: qqq.tage });
   var wert = b.cash; b.positionen.forEach(function (p) { wert += p.stueck * preise[p.sym]; });
   if (Math.abs(wert - L.endBuch) > 1e-6 * Math.max(1, L.endBuch)) throw new Error('KLINKE: Buchwert fuer die Steuer (' + wert + ') ist nicht der Endwert des Laufs (' + L.endBuch + ')');
   r.rechnung = 'App massstab.js Massstab.nachSteuer (steuer.js, Kopie Nr. 82) auf dem Vorwaertsbuch';

@@ -54,7 +54,8 @@ Konfiguration je Form:
   (Nr. 125a B2, ganze Zahl ≥ 1): eine gehaltene Position bleibt, solange ihr Platz in der Rangliste der Zielfunktion ≤ halteBand ist; aufgefüllt wird in Rangfolge
   bis `anzahl`. Die Zielfunktion liefert dafür die **Rangliste** (mindestens halteBand Plätze, ohne Bestand — `korb.js` speichert die Ziele je Stichtag für alle
   63 Startphasen und Zufallsbücher, ein bestandsabhängiges Ziel wäre falsch zwischengespeichert); `mfhandel.js zielMitBand(rangliste, buch, { anzahl, halteBand })`
-  wählt mit dem Bestand des Buchs (additiver Patch B2, **wartet auf die Freigabe des PM** — bis dahin bricht ein Kandidat mit halteBand laut ab, „B2 NICHT FREIGEGEBEN").
+  wählt mit dem Bestand des Buchs (additiv, Nr. 125a B2, angewandt 26.10.2026 nach Freigabe des PM; fehlt die Funktion, bricht ein Kandidat mit halteBand laut ab,
+  „B2 NICHT FREIGEGEBEN"). `params.halteBand` verlangt `anzahl`.
 - **minute:** `key`, optional `params` (eine Parametervariante der Messmaschine). Zeitrahmen, Haltedauer, Richtung, Universum
   stehen im Modul (`regel.js`), wie `strategien/rsi2seit.js`.
 
@@ -141,7 +142,7 @@ umsatzStueck], …] }`, `opts.nowMs` = Stichtag; Rückgabe `{ ziel, rangfolge, k
 deterministisch (`opts.placeboWort`) aus denselben zulässigen — das sind die 200 Zufallsbücher (Nr. 100). **Umsatzschwelle:** `momentumZiel` lässt nur Werte mit
 Median-Tagesumsatz ≥ **100 Mio $** über 20 Balken bis zum Stichtag ranken (`liquide.js` `KORB.umsatzMin`/`fenster`, `opts.umsatzMin`); eine eigene Zielfunktion
 übernimmt die Schwelle als Parameter oder begründet in `REGEL.md`, warum nicht. `anzahl` aus `kandidat.json` kommt als `opts.anzahl` in Ziel- und Placebofunktion
-(`momentumZiel` selbst nimmt heute 10 % des Universums — Patch B2 ergänzt `opts.anzahl`). **Handel (Nr. 125a, Live = Messung):** die Hülle ruft das Original
+(`momentumZiel` nimmt ohne `opts.anzahl` 10 % des Universums; seit B2 setzt `opts.anzahl` die Zielzahl, `opts.halteBand` verlängert die Liste zur Rangliste). **Handel (Nr. 125a, Live = Messung):** die Hülle ruft das Original
 `mfhandel.js fuehreAus` mit `opts.kostenRegel` — dieselbe Funktion wie das App-Buch; die frühere Kopie `fuehreAusK` steht nur noch als Referenz der Bindungstests da.
 Bewertung: Rückblick (Gesamtertrag beide Seiten, Regel K 5 %, Hauptregel der Reihenenden), 63 Starttage, Median der 63 Abstände p. a., Rang gegen
 200 Zufallsbücher — der Rechner von Nr. 78/85/96 (`kleinst.js` → `korb.js` → `mfhandel.js`). **Maßstab Nasdaq-100 nach Steuer (seit 23.10.2026, Nr. 121-2b;

@@ -104,9 +104,15 @@
     });
     if (punkte.length < minWerte) return { ziel: [], rangfolge: [], uebersprungen: uebersprungen, verworfen: verworfen, korb: korb, zuWenig: true };
     punkte.sort(function (a, b) { return b.staerke - a.staerke; });
-    var n = Math.max(5, Math.round(punkte.length * anteil));
-    return { ziel: punkte.slice(0, n).map(function (p) { return p.sym; }), rangfolge: punkte,
+    /* Auftrag Nr. 125a B2 (additiv): opts.anzahl setzt die Zielzahl (statt anteil des Universums), opts.halteBand verlaengert die Liste zur Rangliste bis
+     * zum Band - die Auswahl mit dem Bestand trifft zielMitBand in planeUmschichtung. Ohne beide Felder genau der alte Ausdruck. */
+    var mitB2 = opts.anzahl > 0 || opts.halteBand > 0;
+    var n = opts.anzahl > 0 ? Math.min(punkte.length, Math.floor(opts.anzahl)) : Math.max(5, Math.round(punkte.length * anteil));
+    var lang = opts.halteBand > 0 ? Math.min(punkte.length, Math.max(n, Math.floor(opts.halteBand))) : n;
+    var aus = { ziel: punkte.slice(0, lang).map(function (p) { return p.sym; }), rangfolge: punkte,
       uebersprungen: uebersprungen, verworfen: verworfen, korb: korb };
+    if (mitB2) aus.anzahl = n;
+    return aus;
   }
 
   /** Umschichtung planen: Soll-Ist-Abgleich. Gleichgewichtung über die Zielliste.
@@ -122,7 +128,19 @@
    *  kleinst: [sym…]. Grund: fuehreAus verkleinert einen Kauf, wenn das Bargeld nicht
    *  reicht, bis auf 0,0001 Stück - und ein solcher Rest galt hier als volle Position, der
    *  Platz blieb leer, solange der Wert Ziel war (wiki/fehlerformen.md, 04.10.2026). */
+  /** Auftrag Nr. 125a B2 (additiv): Ziel mit Halte-Band. rangliste = Ziele in Rangfolge (bestes zuerst); gehalten bleibt jede Position, deren Platz in
+   *  der Rangliste <= halteBand ist (beste zuerst, hoechstens anzahl); aufgefuellt wird in Rangfolge bis anzahl. Ohne halteBand: die ersten anzahl. */
+  function zielMitBand(rangliste, buch, opts) {
+    var anzahl = opts && opts.anzahl > 0 ? Math.floor(opts.anzahl) : rangliste.length, band = opts && opts.halteBand > 0 ? Math.floor(opts.halteBand) : 0, platz = {};
+    rangliste.forEach(function (s, i) { if (platz[s] == null) platz[s] = i + 1; });
+    var ziel = band ? (buch.positionen || []).map(function (p) { return p.sym; }).filter(function (s) { return platz[s] != null && platz[s] <= band; })
+      .sort(function (a, b) { return platz[a] - platz[b]; }).slice(0, anzahl) : [];
+    rangliste.forEach(function (s) { if (ziel.length < anzahl && ziel.indexOf(s) === -1) ziel.push(s); });
+    return ziel;
+  }
+
   function planeUmschichtung(ziel, buch, preise, opts) {
+    if (opts && (opts.halteBand > 0 || opts.anzahl > 0)) ziel = zielMitBand(ziel, buch, opts);   // Nr. 125a B2 (additiv)
     var kl = opts && opts.kleinstAnteil > 0 ? opts.kleinstAnteil : 0;
     var zielSet = {};
     ziel.forEach(function (s) { zielSet[s] = true; });
@@ -1056,7 +1074,7 @@
   }
 
   var MFHandel = {
-    buchKonfig: buchKonfig, momentumZiel: momentumZiel, planeUmschichtung: planeUmschichtung,
+    buchKonfig: buchKonfig, momentumZiel: momentumZiel, planeUmschichtung: planeUmschichtung, zielMitBand: zielMitBand,   /* Nr. 125a B2 */
     fuehreAus: fuehreAus, bewerte: bewerte, rebalanceFaellig: rebalanceFaellig,
     driftAbgleich: driftAbgleich, bewerteDrift: bewerteDrift,
     bucheMassnahmen: bucheMassnahmen, stempleKursT: stempleKursT, massnahmenJournal: massnahmenJournal,
