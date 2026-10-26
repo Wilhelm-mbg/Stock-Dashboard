@@ -145,7 +145,9 @@ function urteilNachSteuer(u, ns) {
     massstab: 'Nasdaq-100 nach Steuer', abstandNachSteuer: ab0, medianNachSteuer: med });
 }
 /** Zielfunktion des Kandidaten mit anzahl (konfigurationen[0].anzahl) in den opts. */
-function zielMitAnzahl(f, konf, extra) { return function (roh, o) { return f(roh, Object.assign({}, o, extra || {}, konf.anzahl ? { anzahl: konf.anzahl } : {})); }; }
+/** Nr. 125a B2: mit params.halteBand bekommt die Zielfunktion auch opts.halteBand (sie liefert dann die Rangliste bis zum Band; die Auswahl mit dem Bestand trifft
+ *  mfhandel.js zielMitBand in der Huelle, korb-kosten.js mitBand). Ohne halteBand genau der alte Aufruf. */
+function zielMitAnzahl(f, konf, extra, band) { return function (roh, o) { return f(roh, Object.assign({}, o, extra || {}, konf.anzahl ? { anzahl: konf.anzahl } : {}, band ? { halteBand: band.halteBand } : {})); }; }
 
 /**
  * Ein ganzer Lauf. regel = { zielfunktion, placeboZiel }, kand = kandidat.json (form korb; konfigurationen[0].korb optional),
@@ -162,7 +164,7 @@ function lauf(regel, kand, opt) {
   if (KK.MASSSTAEBE.indexOf(massstab) === -1) throw new Error('korb: massstab muss ' + KK.MASSSTAEBE.join(' | ') + ' sein, nicht ' + JSON.stringify(massstab));
   var V = vorbereiten(opt), T = V.T, Q = V.Q, QQQ = massstab === 'nasdaq100-steuer' ? (opt.qqq || require('../daten/qqq.js').lade()) : (opt.qqq || null);
   var konf = kand.konfigurationen[0] || {}, korb = konf.korb || null, nB = opt.placeboBuecher == null ? K.KORB.placeboBuecher : opt.placeboBuecher, kap = opt.kapitalUsd || null;
-  var band = KK.bandOpts(kand), ziel = zielMitAnzahl(regel.zielfunktion, konf);
+  var band = KK.bandOpts(kand), ziel = zielMitAnzahl(regel.zielfunktion, konf, null, band);
   var bisE = (opt.entdeckung && opt.entdeckung.bis) || (opt.bisPanelende ? String(T.kal.tage[T.maxTag]) : K.EICHUNG.bis);
   var fensterE = fenster(T, Q, (opt.entdeckung && opt.entdeckung.von) || K.KORB.entdeckungVon, bisE);   /* Nr. 125a: Entdeckung bis zum Panel-Ende (bisPanelende), Bestaetigung nur vorwaerts */
   var aus = { quelle: 'panel', kennungTafel: T.stand.kennung, gesperrt: T.gesperrt, siegel: T.siegel, letzterTag: String(T.kal.tage[T.maxTag]), korb: korb,
@@ -178,7 +180,7 @@ function lauf(regel, kand, opt) {
     var buecher = [];
     for (var b = 0; b < nB; b++) {
       var wort = kand.kennung + '#' + b;
-      buecher.push(mk(function () { return k0(V, F, zielMitAnzahl(regel.placeboZiel, konf, { placeboWort: wort }), korb, art + '-placebo'); }));
+      buecher.push(mk(function () { return k0(V, F, zielMitAnzahl(regel.placeboZiel, konf, { placeboWort: wort }, band), korb, art + '-placebo'); }));
     }
     var u = urteil(buch, buecher, opt.registerM);
     if (ns) u = urteilNachSteuer(u, ns);
@@ -263,14 +265,14 @@ function vorwaertsMessung(regel, kand, opt) {
   var F = { von: Q.ptage[iS], bis: Q.ptage[Q.ptage.length - 1], vonText: tage[iS], bisText: tage[tage.length - 1] };
   var konf = kand.konfigurationen[0] || {}, korb = konf.korb || null, band = KK.bandOpts(kand), kap = opt.kapitalUsd || K.KORB.kapitalUsd, B = opt.B, sammler = { trades: [], einstand: {} };
   if (!(B >= 1) || !opt.wortBasis) throw new Error('VORWAERTS: B und wortBasis muessen aus dem Register kommen (Vormerkung), nicht neu gesetzt werden');
-  var lauf = KK.mitBand(MH, band, function () { return KK.mitKosten(KS, V, 'regel', function () { return laufK0(V, F, zielMitAnzahl(regel.zielfunktion, konf), korb, 'vorwaerts'); }, { kapitalUsd: kap, sammler: sammler }); });
+  var lauf = KK.mitBand(MH, band, function () { return KK.mitKosten(KS, V, 'regel', function () { return laufK0(V, F, zielMitAnzahl(regel.zielfunktion, konf, null, band), korb, 'vorwaerts'); }, { kapitalUsd: kap, sammler: sammler }); });
   if (lauf.L.startTag !== F.von) throw new Error('KLINKE: Vorwaertsbuch startet nicht am Stichtag');
   var per = perioden(lauf.L, QQQ), pk = periodenKennzahlen(per);
   var ns = KK.nachSteuerVorwaerts(KS, V, F, lauf.L, sammler, QQQ);
   var buecher = [];
   for (var b = 0; b < B; b++) {
     var wort = opt.wortBasis + '#' + b;
-    buecher.push(KK.mitBand(MH, band, function () { return KK.mitKosten(KS, V, 'regel', function () { return k0(V, F, zielMitAnzahl(regel.placeboZiel, konf, { placeboWort: wort }), korb, 'vorwaerts-placebo'); }, { kapitalUsd: kap }); }));
+    buecher.push(KK.mitBand(MH, band, function () { return KK.mitKosten(KS, V, 'regel', function () { return k0(V, F, zielMitAnzahl(regel.placeboZiel, konf, { placeboWort: wort }, band), korb, 'vorwaerts-placebo'); }, { kapitalUsd: kap }); }));
   }
   var besser = buecher.filter(function (x) { return x.abstandPa > lauf.kz.abstandPa; }).length;
   return { leer: false, stichtag: F.vonText, panelEnde: F.bisText, erstePeriode: per.length ? per[0].von : null, n: per.length, perioden: per, abstaende: pk.abstaende, tTest: pk.tTest, massstabPerioden: pk.massstab,
@@ -348,8 +350,10 @@ function eingesaeteTafel(T, Q, vonTag, einsaatPp) {
   return Object.assign({}, T, { g: g2 });
 }
 /** Zufallsziel der Eichung: dieselbe Zielzahl wie momentumZiel (App-Konfiguration), Auswahl deterministisch aus den zulaessigen per Wort. */
-function zufallsZiel(roh, opts, wort) {
-  var r = MH.momentumZiel(roh, opts);
+function zufallsZiel(roh, opts, wort, memo) {
+  /* memo (Eichung): momentumZiel je Stichtag und Reihenzahl einmal je Tafel - dieselbe rohMap ergibt dieselbe Rangfolge; die Auswahl per Wort bleibt je Buch */
+  var schl = memo ? opts.nowMs + '|' + Object.keys(roh).length : null, r = memo && memo.has(schl) ? memo.get(schl) : MH.momentumZiel(roh, opts);
+  if (memo && !memo.has(schl)) memo.set(schl, r);
   if (r.zuWenig) return r;
   var h = function (s) { return require('crypto').createHash('sha256').update(wort + '|' + opts.nowMs + '|' + s).digest('hex'); };
   var z = r.rangfolge.map(function (p) { return { sym: p.sym, h: h(p.sym) }; }).sort(function (a, b) { return a.h < b.h ? -1 : a.h > b.h ? 1 : 0; }).slice(0, r.ziel.length).map(function (x) { return x.sym; });
@@ -358,7 +362,8 @@ function zufallsZiel(roh, opts, wort) {
 /** Ein Eichlauf (k = 0, Kostenregel, Korb 187 wie die Kalibrierung): Zufallsbuch mit Wort, optional auf der eingesaeten Tafel. Rueckgabe abstandPa (vor Steuern gegen SPY:
  *  der Massstab faellt in beiden Kriterien heraus - Einsaat gepaart gegen denselben Seed ohne Einsaat, Null gegen das Mittel der Referenzbuecher derselben Tafel). */
 function eichLauf(V, F, wort, korb) {
-  return KK.mitKosten(KS, V, 'regel', function () { return k0(V, F, function (roh, o) { return zufallsZiel(roh, o, wort); }, korb, 'eichung'); }, { kapitalUsd: K.KORB.kapitalUsd });
+  var memo = V.eichMemo || (V.eichMemo = new Map());
+  return KK.mitKosten(KS, V, 'regel', function () { return k0(V, F, function (roh, o) { return zufallsZiel(roh, o, wort, memo); }, korb, 'eichung'); }, { kapitalUsd: K.KORB.kapitalUsd });
 }
 
 /** Kalibrierung (Auftrag §3): A-187 und B-187 mit Regel K auf Panel v2.3 = Nr. 96 (259.238,74 / 250.123,14 $). */

@@ -199,6 +199,7 @@ function bandOpts(kand) {
   var konf = (kand && kand.konfigurationen && kand.konfigurationen[0]) || {}, hb = kand && kand.params && kand.params.halteBand;
   if (hb == null) return null;
   if (!(hb >= 1) || Math.floor(hb) !== hb) throw new Error('korb: params.halteBand muss eine ganze Zahl >= 1 sein, nicht ' + JSON.stringify(hb));
+  if (!(konf.anzahl >= 1)) throw new Error('korb: params.halteBand braucht konfigurationen[0].anzahl (Zielzahl) - sonst waere die ganze Rangliste das Ziel');
   return { anzahl: konf.anzahl || null, halteBand: hb };
 }
 function mitBand(MH, opts, fn) {

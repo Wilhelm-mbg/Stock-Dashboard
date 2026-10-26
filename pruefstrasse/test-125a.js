@@ -41,7 +41,7 @@ function tests(C) {
     var namen = ['A', 'B', 'C', 'D', 'E', 'F'], KL = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 3 }, Cx = { T: { symIdx: { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5 } }, tagVonMs: new Map([[5000, 7]]),
       klasse: function (s) { return { index: KL[namen[s]], unter5: false }; }, roh: function (s, d, kurs) { return kurs * (1 + 0.37 * s); } };
     var gleich = 0, n = 0, mitRegel = 0;
-    if (MH.fuehreAus !== require(path.join(K.REPO, 'mfhandel.js')).buchKonfig && typeof MH.fuehreAus !== 'function') throw new Error('ECHT fehlt');
+    if (typeof MH.fuehreAus !== 'function' || !/opts\.kostenRegel/.test(String(MH.fuehreAus))) throw new Error('kleinst.js ECHT.fuehreAus ist nicht das mfhandel.js mit opts.kostenRegel (Nr. 126)');
     for (var i = 0; i < 40; i++) {
       var mk = function () {
         var pos = [], cash = 3000 + 997 * i;
@@ -218,10 +218,11 @@ function tests(C) {
     var lauf = function (kand) { return KA.KK.mitBand(MH, KA.KK.bandOpts(kand), function () { return KA.laufK0(V, F, REGEL.zielfunktion, null, 'b2').kz.buchEnde; }); };
     var ohne = lauf(KAND), mitLeer = lauf(Object.assign({}, KAND, { params: { anderes: 1 } })), e = null, hatte = MH.zielMitBand;
     try { lauf(Object.assign({}, KAND, { params: { halteBand: 40 } })); } catch (x) { e = x; }
+    var ohneAnzahl = null; try { KA.KK.bandOpts({ konfigurationen: [{ key: 'k' }], params: { halteBand: 40 } }); } catch (x) { ohneAnzahl = x; }
     var gesehen = [];
     MH.zielMitBand = function (rang, buch, o) { gesehen.push(o.halteBand); var gehalten = (buch.positionen || []).filter(function (p) { var i = rang.indexOf(p.sym); return i >= 0 && i < o.halteBand; }).map(function (p) { return p.sym; }); return gehalten.concat(rang.filter(function (s) { return gehalten.indexOf(s) < 0; })).slice(0, o.anzahl || rang.length); };
     try { lauf(Object.assign({}, KAND, { params: { halteBand: 40 } })); } finally { if (hatte) MH.zielMitBand = hatte; else delete MH.zielMitBand; }
-    return [ohne === mitLeer && e && /B2 NICHT FREIGEGEBEN/.test(e.message) && gesehen.length > 0 && gesehen.every(function (x) { return x === 40; }), 'ohne Band ' + ohne.toFixed(2) + ' = ' + mitLeer.toFixed(2) + '; Abbruch: ' + (e && e.message.slice(0, 60)) + '; Band-Aufrufe ' + gesehen.length];
+    return [ohne === mitLeer && e && /B2 NICHT FREIGEGEBEN/.test(e.message) && ohneAnzahl && /braucht konfigurationen\[0\]\.anzahl/.test(ohneAnzahl.message) && gesehen.length > 0 && gesehen.every(function (x) { return x === 40; }), 'ohne Band ' + ohne.toFixed(2) + ' = ' + mitLeer.toFixed(2) + '; Abbruch: ' + (e && e.message.slice(0, 60)) + '; Band-Aufrufe ' + gesehen.length];
   });
 
   /* ---------- C: Eichung Korb ---------- */
