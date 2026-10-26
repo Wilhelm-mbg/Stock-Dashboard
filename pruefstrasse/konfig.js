@@ -51,7 +51,9 @@ module.exports = {
   /* Minute: das 60m-Archiv beginnt erst 2023-09 - die Holdout-Sperre dieser Form ist deshalb ein eigenes Datum (FORM §3, minute). */
   /* minute.eichungBis (Nr. 121-2a Schritt 0): letzter Tag des Kalibrierfensters der Minutenform = universum.bis des Protokolls
    * Markt-Dashboard-Daten/protokolle/rsi2seit-2026-08-26.json ("bis": "2026-08-24"), aus dem die Soll-Zahl 0,0205 stammt. */
-  MINUTE: { sperreAb: J.minute.sperreAb, von: J.minute.von, eichungBis: J.minute.eichungBis },
+  /* minute.eichungOrdner (Nr. 128): eingefrorene Eingaben der Minute-Kalibrierung (60m-Reihen auf [von, eichungBis] geschnitten + wertpapierarten.json,
+   * _manifest.json mit SHA-256 je Datei). Die Kalibrierung liest NUR dort; das lebende archiv60m nur noch fuer die Zeile "Archiv lebt" und Kandidatenlaeufe. */
+  MINUTE: { sperreAb: J.minute.sperreAb, von: J.minute.von, eichungBis: J.minute.eichungBis, eichungOrdner: J.minute.eichungOrdner ? pfad(J.minute.eichungOrdner) : null },
   WERTPAPIERARTEN: process.env.PRUEFSTRASSE_WERTPAPIERARTEN || (J.wertpapierarten ? pfad(J.wertpapierarten) : null),   // Umgebung vor konfig.json (Server, Nr. 111)
   /* EICHFENSTER (Nr. 121-2a Schritt 0): feste Grenze der Kalibrierung und der gesperrten Tafel (bis Nr. 121-1 die Holdout-Sperre SPERRE_AB
    * 2023-01-01). Unabhaengig vom Entdeckungsende der Kandidaten (ENTDECKUNG_BIS) - zwei Konstanten, zwei Namen. schnitt = erster Kalendertag

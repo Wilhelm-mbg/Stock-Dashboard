@@ -574,11 +574,19 @@ var KAL = path.join(K.HIER, 'kalibrierung.json'), SOLL = {
     entUNetto: -0.6281, entT: -5.13, entHuerde: 0.37125, besUNetto: -0.5640, besT: -5.22, besHuerde: 0.34365,
     alt: { entUNetto: -0.3830, entT: -3.13, besUNetto: -0.3396, besT: -3.14, grund: 'Kassa-Huerde (Trendkanal-Studie), seit 23.10.2026 nachrichtlich' }, grund: 'Kostenregel Nr. 121-2b' },
   korbRegel: { quelle: 'studien/momentum-wiedervorlage-2026-10-23/massstab.json steuer.eroeffnung-fixed-100k (Nr. 122)', 'A-187': { buchB: 18.39, nasdaqB: 24.87 }, 'B-187': { buchB: 16.51, nasdaqB: 11.81 }, toleranzPp: 0.1 },
-  minute: { quelle: 'Markt-Dashboard-Daten/protokolle/rsi2seit-2026-08-26.json', bruttoJeSignalPp: 0.02054524106238242, huerdePp: 0.1, nettoJeSignalPp: -0.07945475893761758, werte: 2874, handelstage: 730, schnittTag: '2025-03-12' },
+  /* Nr. 128: Soll = rsi2seit auf den EINGEFRORENEN Eichdaten (minute.eichungOrdner, gerechnet 26.10.2026, bitgleich zum Vollauf desselben Tages auf dem lebenden
+   * Archiv) - Geraet gegen Geraet, Toleranz 1e-6. alt = Protokoll vom 26.08. (2.874 Werte), gegen das bis 26.10. mit 0,005 Pp gegen das lebende Archiv geprueft wurde. */
+  minute: { quelle: 'Nr. 128: <daten>/eichdaten-minute-2026-10-26 (_manifest.json), gerechnet 26.10.2026', manifestSha256: '48e36fd6af838a36a63951420257d7fea89c0f1de3d766c7cca1870e2ff7c166',
+    bruttoJeSignalPp: 0.025834718140097065, huerdePp: 0.1, nettoJeSignalPp: -0.07416528185990294, t: 0.9267455380329412, werte: 2893, signale: 105593, handelstage: 730, schnittTag: '2025-03-12', toleranz: 1e-6,
+    alt: { quelle: 'Markt-Dashboard-Daten/protokolle/rsi2seit-2026-08-26.json', bruttoJeSignalPp: 0.02054524106238242, nettoJeSignalPp: -0.07945475893761758, werte: 2874, toleranz: 5e-3, grund: 'Archiv lebte 2026-09 -> 2026-10; seit 26.10. eingefroren' } },
 };
 function adapterLauf(name, args, zeit) {
   var r = cp.spawnSync(process.execPath, ['--max-old-space-size=6144', path.join(K.HIER, 'adapter', name + '.js')].concat(args), { cwd: K.REPO, encoding: 'utf8', timeout: zeit, maxBuffer: 64 * 1024 * 1024 });
-  if (r.status !== 0) throw new Error(name + ' Kalibrierungslauf gescheitert: ' + String(r.stderr).slice(0, 600));
+  if (r.status !== 0) {
+    /* Nr. 128: Eichdaten veraendert -> der Lauf bricht mit MESSGERAET: ab (Zeilenanfang: Node zeigt davor die Quellzeile des throw, die den Text auch enthaelt) */
+    var mg = /(?:^|\n)(?:Error: )?(MESSGERAET:[^\r\n]*)/.exec(String(r.stderr));   /* Windows: stderr der Kinder endet mit \r\n */
+    throw new Error(mg ? mg[1] + ' (' + name + ' Kalibrierungslauf)' : name + ' Kalibrierungslauf gescheitert: ' + String(r.stderr).slice(0, 600));
+  }
   return r.stdout;
 }
 var Kal = fs.existsSync(KAL) ? JSON.parse(fs.readFileSync(KAL, 'utf8')) : { stand: null, tag: null, korb: null, minute: null };
@@ -596,7 +604,16 @@ if (!SCHNELL) {
   Kal.korbRegel = JSON.parse(adapterLauf('korb', ['--kalibrierung-regel'], 900000).trim().split(' ms ')[0]);   /* Nr. 121-2b */
   var minAus = path.join(SCRATCH, 'minute.json'); adapterLauf('minute', ['--kalibrierung', minAus], 1800000);
   var Em = JSON.parse(fs.readFileSync(minAus, 'utf8'));
-  Kal.minute = { bruttoJeSignalPp: Em.zahlen.bruttoJeSignalPp, huerdePp: Em.zahlen.huerdePp, nettoJeSignalPp: Em.zahlen.nettoJeSignalPp, werte: Em.zahlen.universum.werte, handelstage: Em.zahlen.universum.handelstage, schnittTag: Em.schnittTag, signale: Em.zahlen.signale, t: Em.zahlen.t };
+  Kal.minute = { bruttoJeSignalPp: Em.zahlen.bruttoJeSignalPp, huerdePp: Em.zahlen.huerdePp, nettoJeSignalPp: Em.zahlen.nettoJeSignalPp, werte: Em.zahlen.universum.werte, handelstage: Em.zahlen.universum.handelstage, schnittTag: Em.schnittTag, signale: Em.zahlen.signale, t: Em.zahlen.t,
+    daten: Em.daten, eichdaten: { manifestSha256: Em.eichdaten.manifestSha256, dateien: Em.eichdaten.dateien, bytes: Em.eichdaten.bytes } };
+  /* Nr. 128: Archiv lebt - dieselbe Rechnung auf dem lebenden archiv60m, nur nachrichtlich (ein Fehler hier faerbt nichts) */
+  try {
+    var lebAus = path.join(SCRATCH, 'minute-lebend.json'); adapterLauf('minute', ['--kalibrierung-lebend', lebAus], 1800000);
+    var El = JSON.parse(fs.readFileSync(lebAus, 'utf8')), Bw = El.bewegung;
+    Kal.minuteLebend = { stand: new Date().toISOString(), bruttoJeSignalPp: El.zahlen.bruttoJeSignalPp, nettoJeSignalPp: El.zahlen.nettoJeSignalPp, werte: El.zahlen.universum.werte, signale: El.zahlen.signale, t: El.zahlen.t,
+      handelstage: El.zahlen.universum.handelstage, schnittTag: El.schnittTag, reihen: { gleich: Bw.gleich, geaendert: Bw.geaendert.length, neu: Bw.neu.length, fehlt: Bw.fehlt.length,
+        beispiele: { geaendert: Bw.geaendert.slice(0, 10), neu: Bw.neu.slice(0, 10), fehlt: Bw.fehlt.slice(0, 10) } } };
+  } catch (e) { Kal.minuteLebend = { stand: new Date().toISOString(), fehler: String(e.message).slice(0, 300) }; }
   Kal.stand = new Date().toISOString(); Kal.soll = SOLL;
   fs.writeFileSync(KAL, JSON.stringify(Kal, null, 1) + '\n');
 }
@@ -622,15 +639,47 @@ if (Kal.korbRegel) {
   ok(['A-187', 'B-187'].every(function (n) { return nahe(kr[n].buchB, skr[n].buchB, skr.toleranzPp) && nahe(kr[n].nasdaqB, skr[n].nasdaqB, skr.toleranzPp); }), 'korb: Kostenregel / Nasdaq-100 nach Steuer trifft Nr. 122 (Buch 18,39 / 16,51, Nasdaq-ETF 24,87 / 11,81 % p. a., 0,1 Pp)',
     kr['A-187'].buchB.toFixed(2) + ' / ' + kr['A-187'].nasdaqB.toFixed(2) + ' | ' + kr['B-187'].buchB.toFixed(2) + ' / ' + kr['B-187'].nasdaqB.toFixed(2));
 } else ok(false, 'korb: Gegenprobe Kostenregel / Nasdaq-100 nach Steuer - Block korbRegel fehlt in kalibrierung.json (seit Vollauf 101ee61 Pflicht)');
+/* Nr. 128 Kunsttest: eine Eichdatei (Kopie aus dem eingefrorenen Ordner) mit ihrem echten Manifest-Eintrag besteht die Pruefung; ein Byte
+ * gekippt -> Pruefsummenfehler mit MESSGERAET:; eine fremde Datei daneben ebenso. Laeuft auch mit --schnell (ohne Messmaschinenlauf). */
+(function () {
+  var MI = require('./adapter/minute.js'), E = K.MINUTE.eichungOrdner, mp = E && path.join(E, '_manifest.json');
+  if (!mp || !fs.existsSync(mp)) { ok(false, 'minute: Kunsttest Pruefsumme - Eichdaten fehlen (' + E + ')'); return; }
+  var man = JSON.parse(fs.readFileSync(mp, 'utf8')), e = man.dateien.filter(function (x) { return /^bars_60m_/.test(x.datei); })[0];
+  var D = path.join(SCRATCH, 'eich-kunst'); fs.mkdirSync(D);
+  fs.copyFileSync(path.join(E, e.datei), path.join(D, e.datei));
+  fs.writeFileSync(path.join(D, '_manifest.json'), JSON.stringify({ fenster: man.fenster, dateien: [e] }));
+  function fehler() { try { MI.eichdatenPruefen(D); return null; } catch (x) { return String(x.message); } }
+  var heil = fehler(), b = fs.readFileSync(path.join(D, e.datei)), i = Math.floor(b.length / 2);
+  b[i] = b[i] === 0x31 ? 0x32 : 0x31; fs.writeFileSync(path.join(D, e.datei), b);
+  var kipp = fehler(), lauf = null;
+  try { adapterLauf('minute', ['--eichdaten-pruefen', D], 120000); } catch (x) { lauf = String(x.message); }   /* derselbe Weg wie der Kalibrierungslauf */
+  fs.copyFileSync(path.join(E, e.datei), path.join(D, e.datei)); fs.writeFileSync(path.join(D, 'fremd.json'), '{}');
+  var fremd = fehler();
+  ok(heil === null && /^MESSGERAET: Eichdaten veraendert - Pruefsumme /.test(kipp || '') && /^MESSGERAET: Eichdaten veraendert - Pruefsumme .*\(minute Kalibrierungslauf\)$/.test(lauf || '') && /^MESSGERAET: .*nicht im Manifest/.test(fremd || ''),
+    'minute: Kunsttest Pruefsumme - Kopie von ' + e.datei + ' besteht; ein Byte gekippt -> MESSGERAET: (auch als Kindlauf, test.js bricht ab); fremde Datei -> MESSGERAET:', (heil || 'heil') + ' | ' + String(lauf).slice(0, 90) + ' | ' + String(fremd).slice(0, 60));
+})();
 if (Kal.minute) {
   var m = Kal.minute, sm = SOLL.minute;
-  /* Das 60m-Archiv LEBT (die App sammelt; am 03.09. wurden alle Dateien neu geschrieben): die 2.874 Werte des Protokolls sind heute
-   * 2.892 - die Auswahl vom 26.08. laesst sich nicht wiederherstellen, deshalb nur eine Spanne fuer die Werte und 0,005 Pp fuer die
-   * Ertraege; Handelstage, Schnitt und Huerde muessen exakt treffen. Die Abweichung steht in der Uebergabe. */
-  ok(m.werte >= sm.werte && m.werte <= sm.werte + 40 && m.handelstage === sm.handelstage && m.schnittTag === sm.schnittTag, 'minute: Handelstage und Schnitt des Protokolls exakt (730 / 2025-03-12), Werte 2874..2914 (Archiv lebt)', m.werte + ' / ' + m.handelstage + ' / ' + m.schnittTag);
+  /* Nr. 128: die Kalibrierung rechnet auf den EINGEFRORENEN Eichdaten (Pruefsummen vor dem Lauf) - Geraet gegen Geraet, alles exakt bzw. 1e-6.
+   * Bis 26.10. lief sie gegen das lebende archiv60m (Spanne 2874..2914 Werte, 0,005 Pp) und wurde rot, ohne dass sich Code geaendert hatte. */
+  ok(m.daten === 'eingefroren' && m.eichdaten && m.eichdaten.manifestSha256 === sm.manifestSha256, 'minute: Kalibrierung lief auf den eingefrorenen Eichdaten (Manifest ' + sm.manifestSha256.slice(0, 12) + ', Pruefsummen vor dem Lauf)',
+    m.eichdaten ? m.daten + ' / ' + m.eichdaten.manifestSha256.slice(0, 12) + ' / ' + m.eichdaten.dateien + ' Dateien' : 'kalibrierung.json ohne eichdaten (lebendes Archiv)');
+  ok(m.werte === sm.werte && m.signale === sm.signale && m.handelstage === sm.handelstage && m.schnittTag === sm.schnittTag, 'minute: Werte, Signale, Handelstage und Schnitt exakt (2.893 / 105.593 / 730 / 2025-03-12)', m.werte + ' / ' + m.signale + ' / ' + m.handelstage + ' / ' + m.schnittTag);
   ok(nahe(m.huerdePp, sm.huerdePp, 1e-9), 'minute: Huerde 0,10 Pp je Umlauf', m.huerdePp);
-  ok(nahe(m.bruttoJeSignalPp, sm.bruttoJeSignalPp, 5e-3) && nahe(m.nettoJeSignalPp, sm.nettoJeSignalPp, 5e-3) && m.nettoJeSignalPp < 0 && m.bruttoJeSignalPp > 0, 'minute: brutto und netto je Signal wie im Protokoll (+0,0205 / −0,0795 Pp, Toleranz 0,005; Vorzeichen gleich)', m.bruttoJeSignalPp.toFixed(4) + ' / ' + m.nettoJeSignalPp.toFixed(4));
+  ok(nahe(m.bruttoJeSignalPp, sm.bruttoJeSignalPp, sm.toleranz) && nahe(m.nettoJeSignalPp, sm.nettoJeSignalPp, sm.toleranz) && nahe(m.t, sm.t, sm.toleranz),
+    'minute: brutto und netto je Signal Geraet gegen Geraet (+0,0258 / −0,0742 Pp, t 0,93, Toleranz 1e-6; alt Protokoll 26.08.: +0,0205 / −0,0795, Archiv lebte)', m.bruttoJeSignalPp.toFixed(6) + ' / ' + m.nettoJeSignalPp.toFixed(6) + ' / t ' + m.t.toFixed(4));
 }
+/* Nr. 128: Archiv lebt - nachrichtlich, nie rot, zaehlt nicht als Pruefung */
+(function () {
+  var L = Kal.minuteLebend, f = Kal.minute;
+  if (!L) { console.log('  info Archiv lebt: noch nicht gemessen (erst ein Vollauf rechnet das lebende archiv60m mit)'); return; }
+  if (L.fehler) { console.log('  info Archiv lebt: Vergleichslauf gescheitert (' + L.fehler + ') [' + L.stand + ']'); return; }
+  function d(a, b, s) { var x = a - b; return (x > 0 ? '+' : x < 0 ? '−' : '±') + Math.abs(x).toFixed(s); }
+  console.log('  info Archiv lebt (nachrichtlich, nie rot): lebend ' + L.werte + ' Werte / ' + L.signale + ' Signale / brutto ' + L.bruttoJeSignalPp.toFixed(4) + ' Pp gegen eingefroren ' +
+    (f ? f.werte + ' / ' + f.signale + ' / ' + f.bruttoJeSignalPp.toFixed(4) + ' (' + d(L.werte, f.werte, 0) + ' / ' + d(L.signale, f.signale, 0) + ' / ' + d(L.bruttoJeSignalPp, f.bruttoJeSignalPp, 4) + ' Pp)' : '?') +
+    '; Reihen im Fenster: ' + L.reihen.gleich + ' gleich, ' + L.reihen.geaendert + ' geaendert, ' + L.reihen.neu + ' neu, ' + L.reihen.fehlt + ' fehlen' +
+    (L.reihen.geaendert + L.reihen.neu + L.reihen.fehlt ? ' (' + [].concat(L.reihen.beispiele.geaendert, L.reihen.beispiele.neu.map(function (x) { return 'neu ' + x; }), L.reihen.beispiele.fehlt.map(function (x) { return 'fehlt ' + x; })).slice(0, 6).join(', ') + ')' : '') + ' [' + L.stand + ']');
+})();
 
 fs.rmSync(SCRATCH, { recursive: true, force: true });
 console.log('\n' + n + ' Pruefungen, ' + (fails ? fails + ' ROT' : 'ALLE TESTS GRUEN'));

@@ -30,6 +30,7 @@
   "minute": {
     "sperreAb": "2025-10-01",
     "von": "2023-09-26",
-    "eichungBis": "2026-08-24"
+    "eichungBis": "2026-08-24",
+    "eichungOrdner": "<daten>/eichdaten-minute-2026-10-26"
   }
 }
