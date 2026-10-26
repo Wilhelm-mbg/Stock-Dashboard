@@ -37,8 +37,15 @@
        * AUS; so wurde bis Nr. 85 gemessen. mfdepot.js liest das Feld und reicht es als
        * { kleinstAnteil } an planeUmschichtung und fuehreAus - die Funktionen selbst behalten
        * ihre Vorgabe AUS (wer sie ohne opts ruft, rechnet wie vor Nr. 85). */
-      kleinstAnteil: 0.05 };
+      kleinstAnteil: 0.05,
+      /* Auftrag Nr. 126 (26.10.2026, Live = Messung mit der Pruefstrasse Nr. 121-2b/122): Kosten je Order nach der Kostenregel
+       * (kostenregel.js: Spanne der Umsatzklasse zur Eroeffnung + IBKR Fixed) statt 20 Bp je Seite, und der Massstab des
+       * Vorwaertstests ist der Nasdaq-100 nach deutscher Steuer (Steuerrechner Nr. 82, steuer.js). Beide Felder loesen beim
+       * Umstellen KEINEN Neustart des Vorwaertstests aus (mfdepot.js KEIN_NEUSTART). Ein Buch ohne die Felder rechnete mit
+       * 20 Bp und gegen den S&P 500 (KOSTEN_ALT, MASSSTAB_ALT). */
+      kostenRegel: 'eroeffnung+ibkr', massstab: 'nasdaq100-steuer' };
   }
+  var KOSTEN_ALT = '20bp', MASSSTAB_ALT = 'sp500';
 
   /** 12-1-Momentum-Rangfolge auf ROHEN Serien — jede Serie mit ihren eigenen
    *  Handelstagen, bewusst ohne gemeinsame Zeitachse: Für ein Live-Ranking zählt der
@@ -157,6 +164,7 @@
    *  ausgeführt - keine Position, kein Trade, o.stueck = 0, das Bargeld bleibt. Ein Kauf
    *  ohne positives o.budget (ein anderer Aufrufer) läuft wie zuvor. */
   function fuehreAus(buch, plan, nowMs, kostenBp, opts) {
+    if (opts && typeof opts.kostenRegel === 'function') return fuehreAusRegel(buch, plan, nowMs, opts);   // Nr. 126: Kostenregel je Order
     var k = (kostenBp == null ? 20 : kostenBp) / 10000;
     var kl = opts && opts.kleinstAnteil > 0 ? opts.kleinstAnteil : 0;
     var n = 0;
@@ -185,6 +193,68 @@
       buch.cash -= kosten;
       buch.positionen.push({ sym: o.sym, stueck: o.stueck, einstand: o.kurs * (1 + k), seit: nowMs });
       buch.trades.push({ t: nowMs, sym: o.sym, art: 'kauf', stueck: o.stueck, kurs: o.kurs });
+      n++;
+    });
+    if (buch.trades.length > 400) buch.trades = buch.trades.slice(-400);
+    return n;
+  }
+
+  /** Auftrag Nr. 126 (26.10.2026): fuehreAus mit der KOSTENREGEL je Order statt fester kostenBp - der Zweig, den
+   *  fuehreAus nimmt, wenn opts.kostenRegel eine Funktion ist. Ohne die Option laeuft fuehreAus unveraendert (bitgleich,
+   *  20 Bp je Seite; die Studien-Rechner Nr. 82/96 rufen ohne sie).
+   *    opts.kostenRegel({ sym, seite: 'kauf'|'verkauf', stueck, kurs, nowMs }) -> { spanne, gebuehr, klasse }
+   *      spanne, gebuehr: Brueche des Handelswerts je Seite (kostenregel.js); k = spanne + gebuehr ersetzt kostenBp / 10000.
+   *    opts.protokoll (Liste, optional): je Ausfuehrung { art, sym, wert, k, spanne, gebuehr, klasse } - fuer Aufrufer, die
+   *      Kosten zaehlen (Pruefstrasse Nr. 125a: ersetzt die Kopie fuehreAusK in pruefstrasse/adapter/korb-kosten.js).
+   *  Die Rechnung ist ZIFFERNGLEICH zu fuehreAusK (korb-kosten.js, Kopie Nr. 122 rechnen.js): der Kauf rechnet seine Kosten mit
+   *  der geplanten Stueckzahl; reicht das Bargeld nicht, wird verkleinert und die Kosten mit der neuen Stueckzahl nachgerechnet
+   *  (hoechstens 50 Runden), passt es dann noch immer nicht, faellt der Kauf aus. Regel K1 wie im festen Zweig.
+   *  Jeder Trade traegt kostenSpanne und kostenGebuehr (USD) und klasse - die Kosten stehen getrennt im Protokoll. */
+  function fuehreAusRegel(buch, plan, nowMs, opts) {
+    var kl = opts.kleinstAnteil > 0 ? opts.kleinstAnteil : 0, regel = opts.kostenRegel, log = opts.protokoll || null;
+    var n = 0;
+    if (!buch.trades) buch.trades = [];
+    function kostenVon(sym, seite, stueck, kurs) {
+      var r = regel({ sym: sym, seite: seite, stueck: stueck, kurs: kurs, nowMs: nowMs });
+      return { k: r.spanne + r.gebuehr, spanne: r.spanne, gebuehr: r.gebuehr, klasse: r.klasse == null ? null : r.klasse };
+    }
+    function cent(x) { return Math.round(x * 100) / 100; }
+    plan.verkaufen.forEach(function (o) {
+      var idx = buch.positionen.findIndex(function (p) { return p.sym === o.sym; });
+      if (idx < 0) return;
+      var p = buch.positionen[idx];
+      var r = kostenVon(o.sym, 'verkauf', p.stueck, o.kurs), wert = p.stueck * o.kurs;
+      var erloes = p.stueck * o.kurs * (1 - r.k);
+      buch.cash += erloes;
+      if (log) log.push({ art: 'verkauf', sym: o.sym, wert: wert, k: r.k, spanne: r.spanne, gebuehr: r.gebuehr, klasse: r.klasse });
+      buch.trades.push({ t: nowMs, sym: o.sym, art: 'verkauf', stueck: p.stueck, kurs: o.kurs,
+        pnl: Math.round((erloes - p.stueck * p.einstand) * 100) / 100,
+        kostenSpanne: cent(wert * r.spanne), kostenGebuehr: cent(wert * r.gebuehr), klasse: r.klasse });
+      buch.positionen.splice(idx, 1);
+      n++;
+    });
+    plan.kaufen.forEach(function (o) {
+      var r = kostenVon(o.sym, 'kauf', o.stueck, o.kurs), k = r.k;
+      var kosten = o.stueck * o.kurs * (1 + k);
+      if (!(o.stueck > 0) || kosten > buch.cash) {
+        o.stueck = Math.max(0, Math.floor(buch.cash / (o.kurs * (1 + k)) * 10000) / 10000);
+        var r2 = o.stueck > 0 ? kostenVon(o.sym, 'kauf', o.stueck, o.kurs) : r, k2 = r2.k, schleife = 0, variabel = k2 !== k;
+        while (k2 !== k && o.stueck > 0 && o.stueck * o.kurs * (1 + k2) > buch.cash && schleife < 50) {
+          k = k2; o.stueck = Math.max(0, Math.floor(buch.cash / (o.kurs * (1 + k)) * 10000) / 10000);
+          r2 = o.stueck > 0 ? kostenVon(o.sym, 'kauf', o.stueck, o.kurs) : r2; k2 = r2.k; schleife++;
+        }
+        k = k2; r = r2;
+        kosten = o.stueck * o.kurs * (1 + k);
+        if (!(o.stueck > 0)) return;
+        if (variabel && kosten > buch.cash) { o.stueck = 0; return; }
+      }
+      if (kl > 0 && o.budget > 0 && o.stueck * o.kurs < kl * o.budget) { o.stueck = 0; return; }   // K1: kein Kleinstkauf
+      var wert = o.stueck * o.kurs;
+      buch.cash -= kosten;
+      if (log) log.push({ art: 'kauf', sym: o.sym, wert: wert, k: k, spanne: r.spanne, gebuehr: r.gebuehr, klasse: r.klasse });
+      buch.positionen.push({ sym: o.sym, stueck: o.stueck, einstand: o.kurs * (1 + k), seit: nowMs });
+      buch.trades.push({ t: nowMs, sym: o.sym, art: 'kauf', stueck: o.stueck, kurs: o.kurs,
+        kostenSpanne: cent(wert * r.spanne), kostenGebuehr: cent(wert * r.gebuehr), klasse: r.klasse });
       n++;
     });
     if (buch.trades.length > 400) buch.trades = buch.trades.slice(-400);
@@ -813,6 +883,8 @@
    * nicht gekauft, gehaltene Position ohne Kurs gehalten). Nur das Momentum-Buch; der Knopf "jetzt
    * umschichten" aendert nichts an offen. Rein, in Node pruefbar. */
   var NACHFASSEN_BIS = [16, 0];
+  /** Nr. 126: der Satz zu den Kosten in den Journalzeilen, wenn das Buch nach der Kostenregel handelt (kostenregel.js). */
+  var KOSTENREGEL_SATZ = 'Kosten nach der Kostenregel: je Seite halbe Spanne der Umsatzklasse zur Eröffnung + IBKR-Gebühr (Fixed), je Trade getrennt gebucht.';
   /** Uhrzeit eines Zeitstempels in New York, 'HH:MM'. */
   function nyUhr(ms) { var p = nyTeile(ms); return (p.stunde < 10 ? '0' : '') + p.stunde + ':' + (p.minute < 10 ? '0' : '') + p.minute; }
   function kursDe(x) { return geldDe(x); }                             // Tausenderpunkt seit Nr. 95 (C4)
@@ -878,6 +950,7 @@
     var o = buch && buch.offen;
     var res = { tag: o ? o.tag : null, verkauft: [], gekauft: [], wartet: [], entfallen: [], rest: null, geaendert: false,
       kostenBp: kostenBp == null ? 20 : kostenBp };
+    if (opts && typeof opts.kostenRegel === 'function') res.kostenRegel = true;   // Nr. 126: Text der Journalzeile
     if (!o) return res;
     preise = preise || {};
     var imBuch = {};
@@ -945,7 +1018,7 @@
       .concat(res.gekauft.map(function (k) { return 'Kauf ' + k.sym + ' zu ' + kursDe(k.kurs) + ' (' + stueckDe(k.stueck) + ' Stück)'; }));
     var applied = handel.length ? ['Momentum-Buch nachgefasst: ' + handel.join('; ')] : ['Momentum-Buch: offene Aufträge entfallen'];
     var txt = 'Momentum-Buch: Eröffnung vom ' + datumDe(res.tag) + ' nachgefasst um ' + nyUhr(nowMs) + ' New York' +
-      (handel.length ? ', gehandelt zur Eröffnung dieses Tages – ' + handel.join('; ') + '. Kosten ' + res.kostenBp + ' Bp je Seite.' : '.') +
+      (handel.length ? ', gehandelt zur Eröffnung dieses Tages – ' + handel.join('; ') + '. ' + (res.kostenRegel ? KOSTENREGEL_SATZ : 'Kosten ' + res.kostenBp + ' Bp je Seite.') : '.') +
       (res.entfallen.length ? ' Entfallen (Wert schon im Buch bzw. nicht mehr gehalten): ' + res.entfallen.join(', ') + '.' : '') +
       (res.wartet.length ? ' Eröffnung da, aber das Bargeld reicht nicht – bleibt offen: ' + res.wartet.join(', ') + '.' : '') +
       (res.rest ? ' Noch offen bis 16:00 New York: ' + auftraegeDe(res.rest.verkaeufe, res.rest.kaeufe.map(function (k) { return k.sym; })) + '.'
@@ -1000,7 +1073,9 @@
     nyUhr: nyUhr, offeneAuftraege: offeneAuftraege, offenLaeuft: offenLaeuft, offenWerte: offenWerte, nachfassen: nachfassen,
     offenBeenden: offenBeenden, offenText: offenText, nachfassenJournal: nachfassenJournal, offenEndeJournal: offenEndeJournal,
     eroeffnungAbwarten: eroeffnungAbwarten,   // Generalprobe 23.11., Fund 2
-    NACHFASSEN_BIS: NACHFASSEN_BIS
+    NACHFASSEN_BIS: NACHFASSEN_BIS,
+    /* Auftrag Nr. 126 */
+    KOSTENREGEL_SATZ: KOSTENREGEL_SATZ, KOSTEN_ALT: KOSTEN_ALT, MASSSTAB_ALT: MASSSTAB_ALT
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = MFHandel; return; }
   root.MFHandel = MFHandel;
